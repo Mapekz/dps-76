@@ -1,0 +1,9 @@
+/* App-specific styles */
+html { scroll-behavior: smooth; }
+
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: hsl(0 0% 10%); }
+  ::-webkit-scrollbar-thumb { background: hsl(0 0% 30%); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(0 0% 40%); }
+}
