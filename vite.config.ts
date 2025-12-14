@@ -16,5 +16,5 @@ export default defineConfig(({ command }) => ({
   },
   // GitHub Pages deployment config
   // Change 'fo76-dps-calc' to your repository name if different
-  base: command === 'build' ? '/fo76-dps-calc/' : '/',
+  base: command === 'build' ? '/dps-76/' : '/',
 }))
