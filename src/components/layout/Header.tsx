@@ -11,7 +11,7 @@ export function Header() {
       <div className="container mx-auto flex items-center justify-between px-4 py-4">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-bold tracking-tight">FO76 DPS Calculator</h1>
-          <span className="text-muted-foreground text-sm">v1.0</span>
+          <span className="text-muted-foreground text-sm">v0.1</span>
           <Badge>Alpha</Badge>
         </div>
         <div className="flex items-center gap-3">
