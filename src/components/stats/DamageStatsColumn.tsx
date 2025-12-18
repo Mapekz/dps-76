@@ -1,4 +1,3 @@
-import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ArrowDownIcon } from 'lucide-react';
 import type { DamageStats } from '@/types';
@@ -19,32 +18,29 @@ function StatRow({ label, value }: { label: string; value: number }) {
 
 export function DamageStatsColumn({ playerToEnemy, enemyToPlayer }: DamageStatsColumnProps) {
   return (
-    <Card className="w-full max-w-[280px]">
-      <CardContent className="p-4">
-        <div className="space-y-3">
-          <div className="flex items-center justify-center gap-2 text-sm font-medium">
-            <span>Player</span><ArrowDownIcon className="size-4 rotate-[-90deg]" /><span>Enemy</span>
-          </div>
-          <div className="space-y-2">
-            <StatRow label="DPS" value={playerToEnemy.dps} />
-            <StatRow label="Torso Hit" value={playerToEnemy.torsoHitDamage} />
-            <StatRow label="Weak Point" value={playerToEnemy.weakpointDamage} />
-            <StatRow label="VATS Crit" value={playerToEnemy.vatsCritDamage} />
-          </div>
+    <div className="w-full max-w-[280px] p-3 mt-12 space-y-24">
+      <div className="space-y-3">
+        <div className="flex items-center justify-center gap-2 text-sm font-medium">
+          <ArrowDownIcon className="rotate-[-90deg]" size={32} />
         </div>
-        <Separator className="my-4" />
-        <div className="space-y-3">
-          <div className="flex items-center justify-center gap-2 text-sm font-medium">
-            <span>Enemy</span><ArrowDownIcon className="size-4 rotate-[-90deg]" /><span>Player</span>
-          </div>
-          <div className="space-y-2">
-            <StatRow label="DPS" value={enemyToPlayer.dps} />
-            <StatRow label="Torso Hit" value={enemyToPlayer.torsoHitDamage} />
-            <StatRow label="Weak Point" value={enemyToPlayer.weakpointDamage} />
-          </div>
+        <div className="space-y-2">
+          <StatRow label="DPS" value={playerToEnemy.dps} />
+          <StatRow label="Torso Hit" value={playerToEnemy.torsoHitDamage} />
+          <StatRow label="Weak Point" value={playerToEnemy.weakpointDamage} />
+          <StatRow label="VATS Crit" value={playerToEnemy.vatsCritDamage} />
         </div>
-        <div className="text-muted-foreground mt-4 text-center text-xs"><p>v1: Incoming damage focus</p></div>
-      </CardContent>
-    </Card>
+      </div>
+      <Separator />
+      <div className="space-y-3">
+        <div className="flex items-center justify-center gap-2 text-sm font-medium">
+          <ArrowDownIcon className="rotate-[90deg]" size={32} />
+        </div>
+        <div className="space-y-2">
+          <StatRow label="DPS" value={enemyToPlayer.dps} />
+          <StatRow label="Torso Hit" value={enemyToPlayer.torsoHitDamage} />
+          <StatRow label="Weak Point" value={enemyToPlayer.weakpointDamage} />
+        </div>
+      </div>
+    </div>
   );
 }
