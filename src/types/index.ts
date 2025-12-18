@@ -1,13 +1,20 @@
+import type { StatModification } from '@/data/stats';
+import type { Special } from '@/data/special';
+
+// Re-export for convenience
+export type { Special } from '@/data/special';
+export type { PerkId } from '@/data/perk-ids';
+export type { Stat, StatModification } from '@/data/stats';
+
 // Game mode types
 export type GameMode = 'live' | 'pts';
 
-// Perk types
+// Perk definition
 export interface Perk {
-  id: string;
   name: string;
+  special: Special;
   maxRank: number;
-  category: 'strength' | 'perception' | 'endurance' | 'charisma' | 'intelligence' | 'agility' | 'luck';
-  statModifiers: Record<string, number[]>; // stat -> value per rank (index 0 = rank 1)
+  statsModified: StatModification[];
 }
 
 export interface PerkLoadout {
@@ -93,8 +100,6 @@ export interface Enemy {
   health: number;
   damageResist: number;
   energyResist: number;
-  baseDamage: number;
-  damageType: 'ballistic' | 'energy' | 'radiation' | 'poison' | 'melee';
 }
 
 export interface EnemyMutation {

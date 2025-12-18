@@ -1,6 +1,6 @@
 import type { Enemy, EnemyMutation } from '@/types';
 
-export const enemiesPTS: Record<string, Enemy> = {
+export const enemies: Record<string, Enemy> = {
   super_mutant: { id: 'super_mutant', name: 'Super Mutant', level: 100, health: 850, damageResist: 100, energyResist: 100, baseDamage: 75, damageType: 'ballistic' },
   super_mutant_behemoth: { id: 'super_mutant_behemoth', name: 'Super Mutant Behemoth', level: 100, health: 4500, damageResist: 250, energyResist: 250, baseDamage: 200, damageType: 'melee' },
   scorched: { id: 'scorched', name: 'Scorched', level: 100, health: 300, damageResist: 50, energyResist: 50, baseDamage: 50, damageType: 'ballistic' },
@@ -16,7 +16,7 @@ export const enemiesPTS: Record<string, Enemy> = {
   ultracite_titan: { id: 'ultracite_titan', name: 'Ultracite Titan', level: 100, health: 45000, damageResist: 350, energyResist: 350, baseDamage: 300, damageType: 'radiation' },
 };
 
-export const enemyMutationsPTS: Record<string, EnemyMutation> = {
+export const enemyMutations: Record<string, EnemyMutation> = {
   none: { id: 'none', name: 'None', statModifiers: {} },
   volatile: { id: 'volatile', name: 'Volatile', statModifiers: { explosionOnDeath: 100 } },
   freezing: { id: 'freezing', name: 'Freezing', statModifiers: { cryoDamageBonus: 25 } },
@@ -24,7 +24,7 @@ export const enemyMutationsPTS: Record<string, EnemyMutation> = {
   pyromaniac: { id: 'pyromaniac', name: 'Pyromaniac', statModifiers: { fireDamageBonus: 25 } },
 };
 
-export const legendaryRankModifiersPTS = {
+export const legendaryRankModifiers = {
   0: { healthMultiplier: 1.0, damageMultiplier: 1.0 },
   1: { healthMultiplier: 1.25, damageMultiplier: 1.1 },
   2: { healthMultiplier: 1.5, damageMultiplier: 1.2 },
