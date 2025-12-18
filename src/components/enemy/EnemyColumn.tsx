@@ -3,7 +3,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Combobox } from '@/components/ui/combobox';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { SkullIcon } from 'lucide-react';
+import { SkullIcon, Star } from 'lucide-react';
 import { useGameMode } from '@/hooks/useGameMode';
 import { getEnemyOptions, getMutationOptions, getWeaponOptions, getPowerArmorOptions } from '@/data';
 import type { EnemyConfig } from '@/types';
@@ -51,7 +51,7 @@ export function EnemyColumn({ config, onConfigChange }: EnemyColumnProps) {
                     <span className="text-muted-foreground text-sm">{config.legendaryRank === 0 ? 'Normal' : `${config.legendaryRank} Star`}</span>
                   </div>
                   <Slider value={[config.legendaryRank]} onValueChange={([value]) => updateConfig('legendaryRank', value as 0 | 1 | 2 | 3)} min={0} max={3} step={1} className="w-full" />
-                  <div className="text-muted-foreground flex justify-between text-xs"><span>Normal</span><span>★</span><span>★★</span><span>★★★</span></div>
+                  <div className="text-muted-foreground flex justify-between text-xs"><span>Normal</span><span><Star className="size-3 fill-current" /></span><span className="flex">{[...Array(2)].map((_, i) => <Star key={i} className="size-3 fill-current" />)}</span><span className="flex">{[...Array(3)].map((_, i) => <Star key={i} className="size-3 fill-current" />)}</span></div>
                 </div>
                 <div className="space-y-2">
                   <Label>Mutation</Label>
