@@ -20,12 +20,12 @@ export function Header() {
             <TooltipTrigger asChild>
               <div className="flex items-center gap-3 cursor-not-allowed opacity-60">
                 <Label htmlFor="game-mode-toggle" className={`text-sm font-medium transition-colors ${isLive ? 'text-foreground' : 'text-muted-foreground'}`}>Live</Label>
-                <Switch id="game-mode-toggle" checked={false} disabled aria-label="Toggle between Live and PTS" />
+                <Switch id="game-mode-toggle" checked={true} disabled aria-label="Toggle between Live and PTS" />
                 <Label htmlFor="game-mode-toggle" className={`text-sm font-medium transition-colors ${!isLive ? 'text-foreground' : 'text-muted-foreground'}`}>PTS</Label>
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <p>PTS mode is still being implemented</p>
+              <p>Live mode is still being implemented</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
