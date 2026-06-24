@@ -258,7 +258,24 @@ export const nukesDragonsPerks: Record<string, PerkId> = {
 };
 
 /**
+ * Returns true if the given N&D key belongs to a legendary perk.
+ * All legendary perk keys in the nukesDragonsPerks map start with "0".
+ */
+export function isLegendaryPerkKey(key: string): boolean {
+  return key.startsWith("0");
+}
+
+/**
  * Parse a Nukes & Dragons build URL to extract perks.
+ *
+ * The `p=` param contains both regular perks (keys like "ad") and, when present,
+ * legendary perk cards (keys like "01", "0b", etc.).  Both are parsed here; callers
+ * can separate them by checking `isLegendaryPerkKey(perk.key)`.
+ *
+ * Note on the `cd=` param: its encoding is not yet reverse-engineered from the
+ * sample URL.  See todos/special-parsing.md and todos/fire-rate.md for context.
+ * If legendary perk ranks are absent from results after fixing `parsedPerksToLoadout`,
+ * revisit whether they are encoded in `cd=` rather than in `p=`.
  */
 export function parseBuildUrl(url: string): ParsedPerk[] {
   try {
@@ -285,8 +302,15 @@ export function parsePerkString(perkString: string): ParsedPerk[] {
   return perks;
 }
 
+/**
+ * Convert parsed perks to PerkLoadout entries.
+ *
+ * BUG FIX: the previous implementation used `perk.key` (the 2-char N&D URL key,
+ * e.g. "ad") as the perkId.  The damage formula looks up perks by PerkId (e.g.
+ * "Gunslinger"), so nothing resolved.  `perk.name` already holds the correct PerkId.
+ */
 export function parsedPerksToLoadout(parsedPerks: ParsedPerk[]): PerkLoadout[] {
-  return parsedPerks.map((perk) => ({ perkId: perk.key, rank: perk.rank }));
+  return parsedPerks.map((perk) => ({ perkId: perk.name, rank: perk.rank }));
 }
 
 export function parseBuildName(url: string): string | null {
