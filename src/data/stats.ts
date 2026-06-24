@@ -34,6 +34,32 @@ export const Stat = {
   FireDamageBonus: "FireDamageBonus",
   PoisonDamageBonus: "PoisonDamageBonus",
   RadDamageBonus: "RadDamageBonus",
+
+  // Conditional damage bonuses
+  DamageToCrippledBonus: "DamageToCrippledBonus",
+  DamagePerCrippledLimb: "DamagePerCrippledLimb",
+  DamagePerStatusEffect: "DamagePerStatusEffect",
+  DamageToGlowingEnemiesBonus: "DamageToGlowingEnemiesBonus",
+
+  // Stacking mechanic stats
+  BulletStormDamagePerStack: "BulletStormDamagePerStack",
+  OnslaughtDamageBonus: "OnslaughtDamageBonus",
+  OnslaughtWeakspotPerStack: "OnslaughtWeakspotPerStack",
+  BulletStormBashPerStack: "BulletStormBashPerStack",
+
+  // Weapon category stats
+  UnarmedDamageBonus: "UnarmedDamageBonus",
+  BowDamageBonus: "BowDamageBonus",
+  GunDamageBonus: "GunDamageBonus",
+  RangedDamageBonus: "RangedDamageBonus",
+  ThrownWeaponDamageBonus: "ThrownWeaponDamageBonus",
+
+  // Weakspot/limb/torso stats
+  WeakspotDamageBonus: "WeakspotDamageBonus",
+  TorsoDamageBonus: "TorsoDamageBonus",
+
+  // Enemy armor stats
+  ArmorPenetrationVsInsects: "ArmorPenetrationVsInsects",
 } as const;
 
 export type Stat = (typeof Stat)[keyof typeof Stat];
@@ -73,6 +99,32 @@ export const StatDisplayNames: Record<Stat, string> = {
   [Stat.FireDamageBonus]: "Fire Damage Bonus",
   [Stat.PoisonDamageBonus]: "Poison Damage Bonus",
   [Stat.RadDamageBonus]: "Rad Damage Bonus",
+
+  // Conditional damage bonuses
+  [Stat.DamageToCrippledBonus]: "Damage to Crippled Bonus",
+  [Stat.DamagePerCrippledLimb]: "Damage per Crippled Limb",
+  [Stat.DamagePerStatusEffect]: "Damage per Status Effect",
+  [Stat.DamageToGlowingEnemiesBonus]: "Damage to Glowing Enemies",
+
+  // Stacking mechanic stats
+  [Stat.BulletStormDamagePerStack]: "Bullet Storm Damage per Stack",
+  [Stat.OnslaughtDamageBonus]: "Onslaught Damage Bonus",
+  [Stat.OnslaughtWeakspotPerStack]: "Onslaught Weakspot per Stack",
+  [Stat.BulletStormBashPerStack]: "Bullet Storm Bash per Stack",
+
+  // Weapon category stats
+  [Stat.UnarmedDamageBonus]: "Unarmed Damage Bonus",
+  [Stat.BowDamageBonus]: "Bow Damage Bonus",
+  [Stat.GunDamageBonus]: "Gun Damage Bonus",
+  [Stat.RangedDamageBonus]: "Ranged Damage Bonus",
+  [Stat.ThrownWeaponDamageBonus]: "Thrown Weapon Damage Bonus",
+
+  // Weakspot/limb/torso stats
+  [Stat.WeakspotDamageBonus]: "Weakspot Damage Bonus",
+  [Stat.TorsoDamageBonus]: "Torso Damage Bonus",
+
+  // Enemy armor stats
+  [Stat.ArmorPenetrationVsInsects]: "Armor Penetration vs Insects",
 };
 
 export const StatDefaultValues: Record<Stat, number> = {
@@ -110,6 +162,32 @@ export const StatDefaultValues: Record<Stat, number> = {
   [Stat.FireDamageBonus]: 0.0,
   [Stat.PoisonDamageBonus]: 0.0,
   [Stat.RadDamageBonus]: 0.0,
+
+  // Conditional damage bonuses
+  [Stat.DamageToCrippledBonus]: 0.0,
+  [Stat.DamagePerCrippledLimb]: 0.0,
+  [Stat.DamagePerStatusEffect]: 0.0,
+  [Stat.DamageToGlowingEnemiesBonus]: 0.0,
+
+  // Stacking mechanic stats
+  [Stat.BulletStormDamagePerStack]: 0.0,
+  [Stat.OnslaughtDamageBonus]: 0.0,
+  [Stat.OnslaughtWeakspotPerStack]: 0.0,
+  [Stat.BulletStormBashPerStack]: 0.0,
+
+  // Weapon category stats
+  [Stat.UnarmedDamageBonus]: 0.0,
+  [Stat.BowDamageBonus]: 0.0,
+  [Stat.GunDamageBonus]: 0.0,
+  [Stat.RangedDamageBonus]: 0.0,
+  [Stat.ThrownWeaponDamageBonus]: 0.0,
+
+  // Weakspot/limb/torso stats
+  [Stat.WeakspotDamageBonus]: 0.0,
+  [Stat.TorsoDamageBonus]: 0.0,
+
+  // Enemy armor stats
+  [Stat.ArmorPenetrationVsInsects]: 0.0,
 };
 
 export interface StatModification {
