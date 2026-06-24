@@ -1,73 +1,67 @@
-# React + TypeScript + Vite
+# DPS 76
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A Fallout 76 outgoing-DPS calculator. Configure your player build — perks, weapon, SPECIAL stats, and conditions — then optionally import a build URL from [Nukes & Dragons](https://nuclearwinter.wiki/nukes-and-dragons/) to see per-hit damage and DPS for weakpoint and non-weakpoint hits.
 
-Currently, two official plugins are available:
+**Live app:** <https://mapekz.github.io/dps-76/>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+> **MVP scope**: currently calculates outgoing DPS only. Enemy/incoming damage is scaffolded but dormant. The Live/PTS toggle UI is present but disabled for now. See `todos/` for the deferred feature backlog.
 
-## React Compiler
+## Tech stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19 + TypeScript (strict)
+- Vite (via `rolldown-vite` — see note below)
+- Tailwind CSS v4 + [shadcn/ui](https://ui.shadcn.com/) (Radix UI primitives)
+- No test framework (tests are manual)
 
-## Expanding the ESLint configuration
+## Getting started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+This project uses **pnpm**. Do not use npm or yarn.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```sh
+pnpm install
+pnpm dev        # dev server with HMR at http://localhost:5173
+pnpm build      # typecheck (tsc -b) + production build → dist/
+pnpm lint       # ESLint
+pnpm preview    # serve the production build locally
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### GitHub Pages deploy
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```sh
+pnpm build:gh-pages   # NODE_ENV=production build with base URL /dps-76/
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+CI deploys automatically via `.github/workflows/deploy.yml` on push to `main`.
+
+> **rolldown-vite note**: the project pins `vite` to `npm:rolldown-vite@7.2.5` via `package.json` devDependencies and a `pnpm.overrides` block. This is an experimental Rolldown-backed build; standard Vite is not used.
+
+## Data model
+
+Two parallel datasets live under `src/data/`:
+
+```
+src/data/
+  live/    perks.ts  weapons.ts  enemies.ts  armor.ts  power-armor.ts  curvetables/
+  pts/     perks.ts  weapons.ts  enemies.ts  armor.ts  power-armor.ts  curvetables/
+```
+
+Each `curvetables/` directory contains ~360 JSON files (creature HP/armor curves and player damage curves). Data is accessed mode-aware via `src/data/index.ts` (`getPerks(mode)`, `getWeapons(mode)`, etc.) and the `useGameMode` React context (`src/hooks/useGameMode.tsx`).
+
+The default game mode is `'live'`. PTS mode is selectable in code but the toggle UI is currently disabled.
+
+## Project structure
+
+```
+src/
+  components/
+    layout/     Header.tsx  ThreeColumnLayout.tsx  BuildUrlInput.tsx
+    player/     PlayerColumn.tsx
+    enemy/      EnemyColumn.tsx  (scaffolded, not rendered in MVP)
+    stats/      DamageStatsColumn.tsx
+    ui/         shadcn/ui wrappers (24 components)
+  data/         live/ + pts/ datasets + index.ts + stats.ts + perk-ids.ts
+  hooks/        useGameMode.tsx  useDamageCalc.ts
+  lib/          damage-formulas.ts  curve-tables.ts  fire-rate.ts  nukes-dragons.ts  utils.ts
+  types/        index.ts  (all shared types)
+  main.tsx      App.tsx
 ```
