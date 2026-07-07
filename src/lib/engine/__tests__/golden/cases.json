@@ -1,0 +1,65 @@
+{
+  "_readme": [
+    "Golden cases: in-game measured numbers that pin the engine to reality.",
+    "Fill `expected` from actual game measurements (pip-boy damage card or hit",
+    "numbers vs a known target). Cases with `expected: null` are skipped.",
+    "scenario: manualAim | manualAimWeakpoint | vats | vatsSneak.",
+    "conditions/enemyConditions patch the defaults from src/types/index.ts."
+  ],
+  "cases": [
+    {
+      "name": "Stock Fixer @50, no perks — pip-boy card damage",
+      "weaponId": "CombatRifle_Fixer",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "manualAim",
+      "measure": "perHit",
+      "expected": 103,
+      "tolerancePct": 2,
+      "source": "in-game (pending)"
+    },
+    {
+      "name": "Fixer + Powerful Automatic Receiver @50 — pip-boy card damage",
+      "weaponId": "CombatRifle_Fixer",
+      "itemLevel": 50,
+      "mods": { "ap_gun_Receiver": "mod_CombatRifle_Receiver_Damage-Auto" },
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "manualAim",
+      "measure": "perHit",
+      "expected": 90.125,
+      "tolerancePct": 2,
+      "source": "in-game (pending)"
+    },
+    {
+      "name": "Shishkebab @45 cap, 15 STR — dual-component total (verifies split-damage curve semantics)",
+      "weaponId": "Shishkebab",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": { "strength": 15 },
+      "enemyConditions": {},
+      "scenario": "manualAim",
+      "measure": "perHit",
+      "expected": 224,
+      "tolerancePct": 2,
+      "source": "user formula (72→64 per component: Shishkebab's max Eligible Level is 45, so (64×1.75)×2 — CONFIRM in-game that no lvl-50 Shishkebab exists; at 50 the curve would give 252)"
+    }
+  ]
+}
