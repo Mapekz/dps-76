@@ -12,12 +12,21 @@ export interface PlayerConditions {
   isSneaking: boolean;
   isInPowerArmor: boolean;
   isSolo: boolean;
+  isPowerAttacking: boolean; // melee power attacks (toggle; applies across scenarios)
   healthPercent: number; // 0-100 for perks like Nerd Rage, Serendipity
 
   // Stack counts
   bulletStormStacks: number; // 0-20 (10 base, 20 with Bringing the Big Guns)
   onslaughtStacks: number; // 0-10
   adredalineStacks: number; // 0-10 (always max per user preference)
+  tenderizerStacks: number; // 0-1000, 0.1 dbm per stack (manual team-scenario input)
+  furiousStacks: number; // Furious legendary ramp (steady-state assumption)
+
+  // Other steady-state inputs for conditional sources
+  addictionCount: number; // for Junkie's legendary
+  capsOnHand: number; // for Aristocrat's legendary
+  limitBreakingPieces: number; // 0-5 armor pieces with Limit Breaking (−10% crit cost each)
+  strangeInNumbers: boolean; // team with Strange in Numbers → mutation values ×1.25
 
   // SPECIAL stats
   strength: number; // 1-15 (can exceed with legendary perks)
@@ -40,6 +49,7 @@ export interface EnemyConditions {
   statusEffectCount: number; // number of debuffs/impairments
   isGlowing: boolean; // glowing enemy variant
   isInsect: boolean; // insect creature type
+  isFullHealth: boolean; // for Instigating (steady-state toggle)
 }
 
 // Game mode types
@@ -79,10 +89,15 @@ export interface WeaponMod {
  */
 export interface WeaponComponent {
   damageType: 'ballistic' | 'energy' | 'radiation' | 'poison' | 'cryo' | 'fire';
-  /** Universal damage curve tier (e.g. 24 for The Fixer). */
+  /** Universal damage curve tier (e.g. 24 for The Fixer). -1 when only inline points exist. */
   tier: number;
   /** Item level cap for this component — damage is clamped to this level. */
   levelCap: number;
+  /**
+   * Inline damage-by-level points from ESM extraction (authoritative when
+   * present; the tier-file lookup is the fallback for hand-authored data).
+   */
+  curvePoints?: Array<{ x: number; y: number }>;
 }
 
 export interface Weapon {
@@ -109,6 +124,24 @@ export interface Weapon {
   /** Auto: fire animation cycle length in seconds (default ≈ 0.11). */
   animDurationSec?: number;
 
+  // ── ESM-extracted metadata (present on generated weapons) ────────────────
+  /** Source ESM FormID (e.g. "0x0046D2A1"). */
+  formId?: string;
+  /** Resolved keyword editor_ids (WeaponTypeRifle, WeaponTypeAutomatic, ...). */
+  keywords?: string[];
+  /** Attach point slot formids — an OMOD fits when its attach point is listed here. */
+  attachParentSlots?: string[];
+  /** Base weapon crit damage multiplier (VATS crit; typically 2.0). */
+  critDamageMult?: number;
+  /** Crit meter fill multiplier per hit (typically 1.0). */
+  critChargeBonus?: number;
+  /** Base sneak attack multiplier (typically 2.0–2.75). */
+  sneakAttackMult?: number;
+  /** Projectiles per shot (shotguns > 1). */
+  projectileCount?: number;
+  /** Intrinsic Damage Bonus Multiplier (RGW3; baseline 1.0) — the "1 +" of the dbm fold. */
+  damageBonusMult?: number;
+
   // ── Legacy / scaffolding ─────────────────────────────────────────────────
   /** Flat base damage override (used by enemy weapon scaffolding). Derived
    *  weapons set this to 0; prefer `components` for player weapons. */
@@ -121,14 +154,9 @@ export interface Weapon {
 
 export interface WeaponConfig {
   weaponId: string;
-  mods: {
-    receiver: string | null;
-    barrel: string | null;
-    grip: string | null;
-    magazine: string | null;
-    sights: string | null;
-    muzzle: string | null;
-  };
+  /** Equipped OMOD id per attach-point slot edid (e.g. { ap_gun_Receiver: 'mod_...' }). */
+  mods: Record<string, string | null>;
+  /** Equipped legendary-effect OMOD ids (ap_Legendary1–4). */
   legendaryEffects: string[];
 }
 
@@ -224,10 +252,17 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     isSneaking: false,
     isInPowerArmor: false,
     isSolo: true,
+    isPowerAttacking: false,
     healthPercent: 100,
     bulletStormStacks: 10, // Assume max stacks by default
     onslaughtStacks: 10, // Assume max stacks by default
     adredalineStacks: 10, // Always max per user preference
+    tenderizerStacks: 0, // Solo default — no other players hitting the target
+    furiousStacks: 0,
+    addictionCount: 0,
+    capsOnHand: 0,
+    limitBreakingPieces: 0,
+    strangeInNumbers: false,
     strength: 15,
     perception: 15,
     endurance: 15,
@@ -247,6 +282,7 @@ export function createDefaultEnemyConditions(): EnemyConditions {
     statusEffectCount: 0,
     isGlowing: false,
     isInsect: false,
+    isFullHealth: false,
   };
 }
 

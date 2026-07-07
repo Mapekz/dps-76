@@ -46,7 +46,12 @@ function getCurve(mode: GameMode, tier: number): CurvePoint[] | null {
 /**
  * Linearly interpolate within an ordered set of curve points at the given x.
  * Clamps to the curve's range (no extrapolation).
+ * Exported for inline ESM-extracted curves (WeaponComponent.curvePoints).
  */
+export function interpolateCurve(points: CurvePoint[], x: number): number {
+  return interpolate(points, x);
+}
+
 function interpolate(points: CurvePoint[], x: number): number {
   if (points.length === 0) return 0;
 
