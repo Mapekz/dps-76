@@ -1,0 +1,271 @@
+[
+ {
+  "id": "Buffout",
+  "formId": "0x00033778",
+  "name": "Buffout",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Buffout: condition: GetIsPlayerGhoul()=0",
+   "Buffout: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
+   "Buffout: MGEF SURV_AddHunger_Potion_Effect: zero magnitude, no curve — script/scaled, needs override",
+   "Buffout: condition: GetIsPlayerGhoul()=1",
+   "Buffout: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+  ]
+ },
+ {
+  "id": "Psycho",
+  "formId": "0x0003377D",
+  "name": "Psycho",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0003377D:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0003377D",
+     "edid": "Psycho",
+     "name": "Psycho"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.14999999664723873,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "Psycho: condition: GetIsPlayerGhoul()=0",
+   "Psycho: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
+   "Psycho: MGEF SURV_AddHunger_Potion_Effect: zero magnitude, no curve — script/scaled, needs override",
+   "Psycho: condition: GetIsPlayerGhoul()=1",
+   "Psycho: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+  ]
+ },
+ {
+  "id": "Psychobuff",
+  "formId": "0x00058AAC",
+  "name": "Psychobuff",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00058AAC:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00058AAC",
+     "edid": "Psychobuff",
+     "name": "Psychobuff"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.24999999441206455,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "Psychobuff: condition: GetIsPlayerGhoul()=0",
+   "Psychobuff: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
+   "Psychobuff: MGEF SURV_AddHunger_Potion_Effect: zero magnitude, no curve — script/scaled, needs override",
+   "Psychobuff: condition: GetIsPlayerGhoul()=1",
+   "Psychobuff: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+  ]
+ },
+ {
+  "id": "Psychotats",
+  "formId": "0x00058AAA",
+  "name": "Psychotats",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00058AAA:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00058AAA",
+     "edid": "Psychotats",
+     "name": "Psychotats"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.24999999441206455,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "Psychotats: condition: GetIsPlayerGhoul()=0",
+   "Psychotats: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
+   "Psychotats: MGEF SURV_AddHunger_Potion_Effect: zero magnitude, no curve — script/scaled, needs override",
+   "Psychotats: condition: GetIsPlayerGhoul()=1",
+   "Psychotats: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+  ]
+ },
+ {
+  "id": "Bufftats",
+  "formId": "0x00058AA5",
+  "name": "Bufftats",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Bufftats: condition: GetIsPlayerGhoul()=0",
+   "Bufftats: MGEF SURV_AddHunger_Potion_Effect: zero magnitude, no curve — script/scaled, needs override",
+   "Bufftats: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
+   "Bufftats: condition: GetIsPlayerGhoul()=1",
+   "Bufftats: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+  ]
+ },
+ {
+  "id": "Fury",
+  "formId": "0x000628CA",
+  "name": "Fury",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x000628CA:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x000628CA",
+     "edid": "Fury",
+     "name": "Fury"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.29999999329447746,
+    "conditions": [
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeUnarmed",
+       "WeaponTypeMeleeGeneral"
+      ]
+     }
+    ]
+   }
+  ],
+  "notes": [
+   "Fury: condition: GetIsPlayerGhoul()=0",
+   "Fury: MGEF SURV_AddHunger_Potion_Effect: zero magnitude, no curve — script/scaled, needs override",
+   "Fury: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
+   "Fury: condition: GetIsPlayerGhoul()=1",
+   "Fury: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+  ]
+ },
+ {
+  "id": "Overdrive",
+  "formId": "0x00058AAD",
+  "name": "Overdrive",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00058AAD:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00058AAD",
+     "edid": "Overdrive",
+     "name": "Overdrive"
+    },
+    "bucket": "critDmgBonus",
+    "op": "ADD",
+    "value": 0.29999999329447746,
+    "conditions": []
+   },
+   {
+    "id": "0x00058AAD:1",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00058AAD",
+     "edid": "Overdrive",
+     "name": "Overdrive"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.14999999664723873,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "Overdrive: condition: GetIsPlayerGhoul()=0",
+   "Overdrive: MGEF SURV_AddHunger_Potion_Effect: zero magnitude, no curve — script/scaled, needs override",
+   "Overdrive: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
+   "Overdrive: condition: GetIsPlayerGhoul()=1",
+   "Overdrive: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+  ]
+ },
+ {
+  "id": "Calmex",
+  "formId": "0x00058AA7",
+  "name": "Calmex",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00058AA7:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00058AA7",
+     "edid": "Calmex",
+     "name": "Calmex"
+    },
+    "bucket": "sneakBonus",
+    "op": "ADD",
+    "value": 0.15,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "Calmex: condition: GetIsPlayerGhoul()=0",
+   "Calmex: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
+   "Calmex: condition: GetIsPlayerGhoul()=1",
+   "Calmex: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+  ]
+ },
+ {
+  "id": "MedX",
+  "formId": "0x00033779",
+  "name": "Med-X",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "MedX: condition: GetIsPlayerGhoul()=0",
+   "MedX: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
+   "MedX: MGEF SURV_AddHunger_Potion_Effect: zero magnitude, no curve — script/scaled, needs override",
+   "MedX: condition: GetIsPlayerGhoul()=1",
+   "MedX: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+  ]
+ },
+ {
+  "id": "Mentats",
+  "formId": "0x0003377B",
+  "name": "Mentats",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Mentats: condition: GetIsPlayerGhoul()=0",
+   "Mentats: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
+   "Mentats: condition: GetIsPlayerGhoul()=1",
+   "Mentats: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+  ]
+ },
+ {
+  "id": "BerryMentats",
+  "formId": "0x000518BB",
+  "name": "Berry Mentats",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "BerryMentats: condition: GetIsPlayerGhoul()=0",
+   "BerryMentats: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
+   "BerryMentats: MGEF DetectLifeApplyClientEffect archetype Script — needs override",
+   "BerryMentats: condition: GetIsPlayerGhoul()=1",
+   "BerryMentats: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+  ]
+ },
+ {
+  "id": "NukaColaQuantum",
+  "formId": "0x0004835F",
+  "name": "Nuka-Cola Quantum",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "NukaColaQuantum: MGEF DamageRadiationEating: zero magnitude, no curve — script/scaled, needs override",
+   "NukaColaQuantum: MGEF NukaColaBottlecapAdder archetype Script — needs override",
+   "NukaColaQuantum: MGEF RestoreHealthFood: zero magnitude, no curve — script/scaled, needs override"
+  ]
+ }
+]

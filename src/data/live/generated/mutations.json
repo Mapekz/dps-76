@@ -1,0 +1,439 @@
+[
+ {
+  "id": "Mutation_AdrenalReaction",
+  "formId": "0x004E1F14",
+  "name": "Adrenal Reaction",
+  "kind": "mutation",
+  "modifiers": [],
+  "notes": [
+   "Mutation_AdrenalReaction: condition: IsSpellTarget(RadX)=1",
+   "Mutation_AdrenalReaction: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_AdrenalReaction: condition: IsSpellTarget(RadX)=0",
+   "Mutation_AdrenalReaction: condition: IsSpellTarget(Serum_AdrenalReaction)=0",
+   "Mutation_AdrenalReaction: MGEF Mutation_AdrenalReaction_TextDummy archetype Script — needs override",
+   "Mutation_AdrenalReaction: MGEF Mutation_AdrenalReaction_TextDummySuper archetype Script — needs override",
+   "Mutation_AdrenalReaction: MGEF abPerkFortifyDmgAll: zero magnitude, no curve — script/scaled, needs override"
+  ]
+ },
+ {
+  "id": "Mutation_BirdBones",
+  "formId": "0x003C403D",
+  "name": "Bird Bones",
+  "kind": "mutation",
+  "modifiers": [],
+  "notes": [
+   "Mutation_BirdBones: condition: IsSpellTarget(RadX)=1",
+   "Mutation_BirdBones: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_BirdBones: MGEF Mutation_BirdBones_UIDummy archetype Script — needs override",
+   "Mutation_BirdBones: MGEF Mutation_BirdBones_UIDummySuper archetype Script — needs override",
+   "Mutation_BirdBones: condition: IsSpellTarget(RadX)=0",
+   "Mutation_BirdBones: condition: IsSpellTarget(Serum_BirdBones)=0"
+  ]
+ },
+ {
+  "id": "Mutation_Carnivore",
+  "formId": "0x003C4049",
+  "name": "Carnivore",
+  "kind": "mutation",
+  "modifiers": [],
+  "notes": [
+   "Mutation_Carnivore: condition: IsSpellTarget(RadX)=1",
+   "Mutation_Carnivore: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_Carnivore: condition: IsSpellTarget(RadX)=0",
+   "Mutation_Carnivore: MGEF Mutation_EatAllTheMeat archetype Script — needs override",
+   "Mutation_Carnivore: MGEF Mutation_EatSafeMeat archetype Script — needs override",
+   "Mutation_Carnivore: condition: IsSpellTarget(Serum_Carnivore)=0",
+   "Mutation_Carnivore: MGEF Mutation_EatNoVeggies archetype Script — needs override",
+   "Mutation_Carnivore: MGEF Mutation_Carnivore_UIDummy archetype Script — needs override",
+   "Mutation_Carnivore: condition: IsSpellTarget(Serum_Carnivore)=1",
+   "Mutation_Carnivore: MGEF Mutation_Carnivore_UIDummyWithSerum archetype Script — needs override"
+  ]
+ },
+ {
+  "id": "Mutation_Chameleon",
+  "formId": "0x004E4006",
+  "name": "Chameleon",
+  "kind": "mutation",
+  "modifiers": [],
+  "notes": [
+   "Mutation_Chameleon: condition: IsSpellTarget(RadX)=1",
+   "Mutation_Chameleon: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_Chameleon: condition: IsSpellTarget(RadX)=0",
+   "Mutation_Chameleon: condition: WornHasKeyword(ChameleonBlockingArmor)=0",
+   "Mutation_Chameleon: condition: HasMagicEffectKeyword(MutationChameleonIsAttacking)=0",
+   "Mutation_Chameleon: condition: HasMagicEffectKeyword(StealthBoyKeyword)=0",
+   "Mutation_Chameleon: condition: IsAttacking()=0",
+   "Mutation_Chameleon: condition: IsMoving()=0",
+   "Mutation_Chameleon: condition: OR-group[IsWeaponOut(undefined)=1 | IsWeaponOut(undefined)=2]",
+   "Mutation_Chameleon: MGEF Mutation_ChameleonEffect archetype Chameleon — needs override",
+   "Mutation_Chameleon: MGEF Mutation_InvisibilityEffect archetype Script — needs override",
+   "Mutation_Chameleon: MGEF Mutation_ChameleonAudioEffect archetype Script — needs override",
+   "Mutation_Chameleon: MGEF Mutation_Chameleon_UIDummy archetype Script — needs override",
+   "Mutation_Chameleon: MGEF Mutation_Chameleon_UIDummySerum archetype Script — needs override",
+   "Mutation_Chameleon: MGEF Mutation_Chameleon_StealthIcon archetype Script — needs override",
+   "Mutation_Chameleon: MGEF Mutation_Chameleon_AddOnAttackFlagPerk archetype Script — needs override"
+  ]
+ },
+ {
+  "id": "Mutation_EagleEyes",
+  "formId": "0x003C4037",
+  "name": "Eagle Eyes",
+  "kind": "mutation",
+  "modifiers": [
+   {
+    "id": "0x003C4037:0",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x003C4037",
+     "edid": "Mutation_EagleEyes",
+     "name": "Eagle Eyes"
+    },
+    "bucket": "critDmgBonus",
+    "op": "ADD",
+    "value": 0.4999999888241291,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": false
+     }
+    ]
+   },
+   {
+    "id": "0x003C4037:1",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x003C4037",
+     "edid": "Mutation_EagleEyes",
+     "name": "Eagle Eyes"
+    },
+    "bucket": "critDmgBonus",
+    "op": "ADD",
+    "value": 0.6249999860301614,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     }
+    ]
+   }
+  ],
+  "notes": [
+   "Mutation_EagleEyes: condition: IsSpellTarget(RadX)=1",
+   "Mutation_EagleEyes: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_EagleEyes: condition: IsSpellTarget(RadX)=0",
+   "Mutation_EagleEyes: condition: IsSpellTarget(Serum_EagleEyes)=0"
+  ]
+ },
+ {
+  "id": "Mutation_EggHead",
+  "formId": "0x003C4045",
+  "name": "Egg Head",
+  "kind": "mutation",
+  "modifiers": [],
+  "notes": [
+   "Mutation_EggHead: condition: IsSpellTarget(RadX)=1",
+   "Mutation_EggHead: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_EggHead: condition: IsSpellTarget(RadX)=0",
+   "Mutation_EggHead: condition: IsSpellTarget(Serum_EggHead)=0"
+  ]
+ },
+ {
+  "id": "Mutation_ElectricallyCharged",
+  "formId": "0x004E400D",
+  "name": "Electrically Charged",
+  "kind": "mutation",
+  "modifiers": [],
+  "notes": [
+   "Mutation_ElectricallyCharged: condition: IsSpellTarget(RadX)=1",
+   "Mutation_ElectricallyCharged: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_ElectricallyCharged: condition: GetDead()=0",
+   "Mutation_ElectricallyCharged: MGEF Mutation_ElectricallyChargedScriptEffect archetype Script — needs override",
+   "Mutation_ElectricallyCharged: MGEF Mutation_ElectricallyChargedSuperScriptEffect archetype Script — needs override"
+  ]
+ },
+ {
+  "id": "Mutation_Empath",
+  "formId": "0x004E1F16",
+  "name": "Empath",
+  "kind": "mutation",
+  "modifiers": [],
+  "notes": [
+   "Mutation_Empath: condition: IsSpellTarget(RadX)=1",
+   "Mutation_Empath: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_Empath: condition: IsSpellTarget(RadX)=0",
+   "Mutation_Empath: condition: IsSpellTarget(Serum_Empath)=0",
+   "Mutation_Empath: MGEF Mutation_EmpathEffect archetype Script — needs override",
+   "Mutation_Empath: MGEF Mutation_Empath_UIDummy archetype Script — needs override",
+   "Mutation_Empath: MGEF Mutation_EmpathTeamDMG_UIDummy archetype Script — needs override"
+  ]
+ },
+ {
+  "id": "Mutation_Grounded",
+  "formId": "0x004E4002",
+  "name": "Grounded",
+  "kind": "mutation",
+  "modifiers": [],
+  "notes": [
+   "Mutation_Grounded: condition: IsSpellTarget(RadX)=1",
+   "Mutation_Grounded: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_Grounded: condition: IsSpellTarget(RadX)=0",
+   "Mutation_Grounded: condition: IsSpellTarget(Serum_Grounded)=0",
+   "Mutation_Grounded: MGEF Mutation_ReduceEnergyDamage archetype Script — needs override"
+  ]
+ },
+ {
+  "id": "Mutation_HealingFactor",
+  "formId": "0x004DF1DB",
+  "name": "Healing Factor",
+  "kind": "mutation",
+  "modifiers": [],
+  "notes": [
+   "Mutation_HealingFactor: condition: IsSpellTarget(RadX)=1",
+   "Mutation_HealingFactor: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_HealingFactor: condition: IsSpellTarget(RadX)=0",
+   "Mutation_HealingFactor: condition: IsSpellTarget(Serum_HealingFactor)=0",
+   "Mutation_HealingFactor: MGEF Mutation_ReduceChemEffect archetype Script — needs override"
+  ]
+ },
+ {
+  "id": "Mutation_Herbivore",
+  "formId": "0x003C404E",
+  "name": "Herbivore",
+  "kind": "mutation",
+  "modifiers": [],
+  "notes": [
+   "Mutation_Herbivore: condition: IsSpellTarget(RadX)=1",
+   "Mutation_Herbivore: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_Herbivore: condition: IsSpellTarget(RadX)=0",
+   "Mutation_Herbivore: MGEF Mutation_EatAllTheVeggies archetype Script — needs override",
+   "Mutation_Herbivore: MGEF Mutation_EatSafeVeggies archetype Script — needs override",
+   "Mutation_Herbivore: condition: IsSpellTarget(Serum_Herbivore)=0",
+   "Mutation_Herbivore: MGEF Mutation_EatNoMeat archetype Script — needs override",
+   "Mutation_Herbivore: MGEF Mutation_Herbivore_UIDummy archetype Script — needs override",
+   "Mutation_Herbivore: condition: IsSpellTarget(Serum_Herbivore)=1",
+   "Mutation_Herbivore: MGEF Mutation_Herbivore_UIDummyWithSerum archetype Script — needs override"
+  ]
+ },
+ {
+  "id": "Mutation_HerdMentality",
+  "formId": "0x004E1F1E",
+  "name": "Herd Mentality",
+  "kind": "mutation",
+  "modifiers": [],
+  "notes": [
+   "Mutation_HerdMentality: condition: IsSpellTarget(RadX)=1",
+   "Mutation_HerdMentality: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_HerdMentality: condition: IsSpellTarget(RadX)=0",
+   "Mutation_HerdMentality: condition: IsSpellTarget(Serum_HerdMentality)=0",
+   "Mutation_HerdMentality: condition: IsMemberOfAPlayerTeam()=0",
+   "Mutation_HerdMentality: condition: IsTrueForConditionForm(Mutation_Check_UseNormalVersion_HerdMentality)=1",
+   "Mutation_HerdMentality: MGEF Mutation_HerdMentality_Reduce_UIDummy archetype Script — needs override",
+   "Mutation_HerdMentality: MGEF Mutation_HerdMentality_UIDummy archetype Script — needs override",
+   "Mutation_HerdMentality: condition: IsSpellTarget(Serum_HerdMentality)=1",
+   "Mutation_HerdMentality: MGEF Mutation_HerdMentality_UIDummyWithSerum archetype Script — needs override"
+  ]
+ },
+ {
+  "id": "Mutation_Marsupial",
+  "formId": "0x004DF1CE",
+  "name": "Marsupial",
+  "kind": "mutation",
+  "modifiers": [],
+  "notes": [
+   "Mutation_Marsupial: condition: IsSpellTarget(RadX)=1",
+   "Mutation_Marsupial: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_Marsupial: condition: IsSpellTarget(RadX)=0",
+   "Mutation_Marsupial: condition: IsSpellTarget(Serum_Marsupial)=0"
+  ]
+ },
+ {
+  "id": "Mutation_PlagueWalker",
+  "formId": "0x004E4021",
+  "name": "Plague Walker",
+  "kind": "mutation",
+  "modifiers": [],
+  "notes": [
+   "Mutation_PlagueWalker: condition: IsSpellTarget(RadX)=1",
+   "Mutation_PlagueWalker: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_PlagueWalker: MGEF Mutation_PlagueWalkerCloak archetype Cloak — needs override",
+   "Mutation_PlagueWalker: MGEF Mutation_PlagueWalkerCloakSuper archetype Cloak — needs override"
+  ]
+ },
+ {
+  "id": "Mutation_ScalySkin",
+  "formId": "0x004DF1CF",
+  "name": "Scaly Skin",
+  "kind": "mutation",
+  "modifiers": [],
+  "notes": [
+   "Mutation_ScalySkin: condition: IsSpellTarget(RadX)=1",
+   "Mutation_ScalySkin: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_ScalySkin: condition: IsSpellTarget(RadX)=0",
+   "Mutation_ScalySkin: condition: IsSpellTarget(Serum_ScalySkin)=0"
+  ]
+ },
+ {
+  "id": "Mutation_SpeedDemon",
+  "formId": "0x004DF1E0",
+  "name": "Speed Demon",
+  "kind": "mutation",
+  "modifiers": [],
+  "notes": [
+   "Mutation_SpeedDemon: condition: IsSpellTarget(RadX)=1",
+   "Mutation_SpeedDemon: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_SpeedDemon: condition: IsSpellTarget(RadX)=0",
+   "Mutation_SpeedDemon: condition: IsSpellTarget(Serum_SpeedDemon)=0",
+   "Mutation_SpeedDemon: MGEF Mutation_SpeedDemon_UIDummy archetype Script — needs override",
+   "Mutation_SpeedDemon: condition: GetIsPlayerGhoul()=0",
+   "Mutation_SpeedDemon: condition: IsMoving()=1",
+   "Mutation_SpeedDemon: MGEF Mutation_IncreasedHungerThirst archetype Script — needs override",
+   "Mutation_SpeedDemon: condition: GetIsPlayerGhoul()=1",
+   "Mutation_SpeedDemon: MGEF GHL_Mutation_IncreasedFeral archetype Script — needs override"
+  ]
+ },
+ {
+  "id": "Mutation_Talons",
+  "formId": "0x0028D3BC",
+  "name": "Talons",
+  "kind": "mutation",
+  "modifiers": [
+   {
+    "id": "0x0028D3BC:0",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x0028D3BC",
+     "edid": "Mutation_Talons",
+     "name": "Talons"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.24999999441206455,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": false
+     },
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     }
+    ]
+   },
+   {
+    "id": "0x0028D3BC:1",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x0028D3BC",
+     "edid": "Mutation_Talons",
+     "name": "Talons"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.3499999921768904,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     },
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "notes": [
+   "Mutation_Talons: condition: IsSpellTarget(RadX)=1",
+   "Mutation_Talons: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_Talons: condition: IsSpellTarget(RadX)=0",
+   "Mutation_Talons: condition: IsSpellTarget(Serum_Talons)=0"
+  ]
+ },
+ {
+  "id": "Mutation_TwistedMuscles",
+  "formId": "0x003C402F",
+  "name": "Twisted Muscles",
+  "kind": "mutation",
+  "modifiers": [
+   {
+    "id": "0x003C402F:0",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x003C402F",
+     "edid": "Mutation_TwistedMuscles",
+     "name": "Twisted Muscles"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.24999999441206455,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": false
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeUnarmed",
+       "WeaponTypeMeleeGeneral"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x003C402F:1",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x003C402F",
+     "edid": "Mutation_TwistedMuscles",
+     "name": "Twisted Muscles"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.3499999921768904,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeUnarmed",
+       "WeaponTypeMeleeGeneral"
+      ]
+     }
+    ]
+   }
+  ],
+  "notes": [
+   "Mutation_TwistedMuscles: condition: IsSpellTarget(RadX)=1",
+   "Mutation_TwistedMuscles: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_TwistedMuscles: condition: HasPerk(ClassFreak01)=0",
+   "Mutation_TwistedMuscles: condition: IsSpellTarget(RadX)=0",
+   "Mutation_TwistedMuscles: condition: IsSpellTarget(Serum_TwistedMuscles)=0",
+   "Mutation_TwistedMuscles: MGEF Mutation_ReduceAccuracy archetype Script — needs override",
+   "Mutation_TwistedMuscles: condition: HasPerk(ClassFreak02)=0",
+   "Mutation_TwistedMuscles: condition: HasPerk(ClassFreak01)=1",
+   "Mutation_TwistedMuscles: condition: HasPerk(ClassFreak03)=0",
+   "Mutation_TwistedMuscles: condition: HasPerk(ClassFreak02)=1",
+   "Mutation_TwistedMuscles: condition: HasPerk(ClassFreak03)=1"
+  ]
+ },
+ {
+  "id": "Mutation_UnstableIsotope",
+  "formId": "0x004E4017",
+  "name": "Unstable Isotope",
+  "kind": "mutation",
+  "modifiers": [],
+  "notes": [
+   "Mutation_UnstableIsotope: condition: IsSpellTarget(RadX)=1",
+   "Mutation_UnstableIsotope: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_UnstableIsotope: condition: GetDead()=0",
+   "Mutation_UnstableIsotope: MGEF Mutation_UnstableIsotopeScriptEffect archetype Script — needs override",
+   "Mutation_UnstableIsotope: MGEF Mutation_UnstableIsotopeSuperScriptEffect archetype Script — needs override"
+  ]
+ }
+]
