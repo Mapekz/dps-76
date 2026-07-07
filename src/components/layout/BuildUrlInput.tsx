@@ -2,11 +2,11 @@ import * as React from 'react';
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupButton } from '@/components/ui/input-group';
 import { Label } from '@/components/ui/label';
 import { LinkIcon, CheckIcon, XIcon, Loader2Icon } from 'lucide-react';
-import { parseBuildUrl, isValidNukesDragonsUrl, parseBuildName } from '@/lib/nukes-dragons';
+import { parseBuildUrl, isValidNukesDragonsUrl, parseBuildName, parseSpecialFromUrl, type ParsedSpecial } from '@/lib/nukes-dragons';
 import type { ParsedPerk } from '@/types';
 
 interface BuildUrlInputProps {
-  onPerksLoaded: (perks: ParsedPerk[], buildName: string | null) => void;
+  onPerksLoaded: (perks: ParsedPerk[], buildName: string | null, special: ParsedSpecial | null) => void;
 }
 
 type ParseState = 'idle' | 'parsing' | 'success' | 'error';
@@ -26,7 +26,7 @@ export function BuildUrlInput({ onPerksLoaded }: BuildUrlInputProps) {
         const perks = parseBuildUrl(url);
         const buildName = parseBuildName(url);
         if (perks.length === 0) { setError('No perks found in URL'); setParseState('error'); return; }
-        onPerksLoaded(perks, buildName);
+        onPerksLoaded(perks, buildName, parseSpecialFromUrl(url));
         setParseState('success'); setLastParsedUrl(url);
         setTimeout(() => setParseState('idle'), 2000);
       } catch { setError('Failed to parse build URL'); setParseState('error'); }

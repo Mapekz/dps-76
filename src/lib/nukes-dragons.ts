@@ -313,6 +313,34 @@ export function parsedPerksToLoadout(parsedPerks: ParsedPerk[]): PerkLoadout[] {
   return parsedPerks.map((perk) => ({ perkId: perk.name, rank: perk.rank }));
 }
 
+/**
+ * Parse the `s=` param: 7 hex digits in S-P-E-C-I-A-L order (a–f = 10–15).
+ * Returns null when the param is absent/malformed.
+ */
+export function parseSpecialFromUrl(url: string): ParsedSpecial | null {
+  try {
+    const params = new URLSearchParams(new URL(url).search);
+    const s = params.get('s');
+    if (!s || s.length < 7) return null;
+    const values = [...s.slice(0, 7)].map(ch => parseInt(ch, 16));
+    if (values.some(v => Number.isNaN(v))) return null;
+    const [strength, perception, endurance, charisma, intelligence, agility, luck] = values;
+    return { strength, perception, endurance, charisma, intelligence, agility, luck };
+  } catch {
+    return null;
+  }
+}
+
+export interface ParsedSpecial {
+  strength: number;
+  perception: number;
+  endurance: number;
+  charisma: number;
+  intelligence: number;
+  agility: number;
+  luck: number;
+}
+
 export function parseBuildName(url: string): string | null {
   try {
     const urlObj = new URL(url);

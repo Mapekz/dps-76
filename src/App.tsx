@@ -6,7 +6,7 @@ import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
 import { BuildUrlInput } from '@/components/layout/BuildUrlInput';
 import { PlayerColumn } from '@/components/player/PlayerColumn';
 import { DamageStatsColumn } from '@/components/stats/DamageStatsColumn';
-import { parsedPerksToLoadout, isLegendaryPerkKey } from '@/lib/nukes-dragons';
+import { parsedPerksToLoadout, isLegendaryPerkKey, type ParsedSpecial } from '@/lib/nukes-dragons';
 import {
   createDefaultPlayerConfig,
   createDefaultEnemyConfig,
@@ -25,11 +25,15 @@ function DPSCalculator() {
   const [playerConfig, setPlayerConfig] = React.useState<PlayerConfig>(createDefaultPlayerConfig());
   const [parsedPerks, setParsedPerks] = React.useState<ParsedPerk[]>([]);
   const [buildName, setBuildName] = React.useState<string | null>(null);
-  const [enemyConfig] = React.useState<EnemyConfig>(createDefaultEnemyConfig());
+  const [enemyConfig, setEnemyConfig] = React.useState<EnemyConfig>(createDefaultEnemyConfig());
 
-  const { playerToEnemy } = useDamageCalc(playerConfig, enemyConfig, mode);
+  const handleEnemyFullHealthChange = React.useCallback((value: boolean) => {
+    setEnemyConfig(prev => ({ ...prev, conditions: { ...prev.conditions, isFullHealth: value } }));
+  }, []);
 
-  const handlePerksLoaded = React.useCallback((perks: ParsedPerk[], name: string | null) => {
+  const { scenarios } = useDamageCalc(playerConfig, enemyConfig, mode);
+
+  const handlePerksLoaded = React.useCallback((perks: ParsedPerk[], name: string | null, special: ParsedSpecial | null) => {
     setParsedPerks(perks);
     setBuildName(name);
 
@@ -42,6 +46,8 @@ function DPSCalculator() {
       ...prev,
       perks:         parsedPerksToLoadout(regularPerks),
       legendaryPerks: parsedPerksToLoadout(leggoPerks),
+      // SPECIAL from the N&D `s=` param (STR feeds melee dbm, LCK feeds crit cadence).
+      conditions: special ? { ...prev.conditions, ...special } : prev.conditions,
     }));
   }, []);
 
@@ -64,9 +70,11 @@ function DPSCalculator() {
             config={playerConfig}
             parsedPerks={parsedPerks}
             onConfigChange={setPlayerConfig}
+            enemyFullHealth={enemyConfig.conditions.isFullHealth}
+            onEnemyFullHealthChange={handleEnemyFullHealthChange}
           />
         }
-        centerColumn={<DamageStatsColumn stats={playerToEnemy} />}
+        centerColumn={<DamageStatsColumn scenarios={scenarios} />}
         rightColumn={<div />}
       />
     </div>
