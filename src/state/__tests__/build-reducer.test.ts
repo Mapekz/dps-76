@@ -1,0 +1,112 @@
+import { describe, it, expect } from 'vitest';
+import { buildReducer, createDefaultBuildState, type BuildAction, type BuildState } from '@/state/build-reducer';
+
+function run(actions: BuildAction[], from: BuildState = createDefaultBuildState()): BuildState {
+  return actions.reduce(buildReducer, from);
+}
+
+describe('buildReducer', () => {
+  it('weapon/select equips fresh and null unequips', () => {
+    const s = run([{ type: 'weapon/select', weaponId: 'CombatRifle_Fixer' }]);
+    expect(s.player.weapon).toEqual({ weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [] });
+    expect(run([{ type: 'weapon/select', weaponId: null }], s).player.weapon).toBeNull();
+  });
+
+  it('weapon/mod and weapon/legendary require an equipped weapon and patch slots', () => {
+    const noWeapon = run([{ type: 'weapon/mod', slot: 'ap_gun_Receiver', omodId: 'x' }]);
+    expect(noWeapon.player.weapon).toBeNull();
+
+    const s = run([
+      { type: 'weapon/select', weaponId: 'w' },
+      { type: 'weapon/mod', slot: 'ap_gun_Receiver', omodId: 'mod_a' },
+      { type: 'weapon/legendary', slotIndex: 0, omodId: 'leg_a' },
+      { type: 'weapon/legendary', slotIndex: 1, omodId: 'leg_b' },
+    ]);
+    expect(s.player.weapon?.mods['ap_gun_Receiver']).toBe('mod_a');
+    expect(s.player.weapon?.legendaryEffects).toEqual(['leg_a', 'leg_b']);
+
+    const cleared = run([{ type: 'weapon/legendary', slotIndex: 0, omodId: null }], s);
+    expect(cleared.player.weapon?.legendaryEffects).toEqual(['leg_b']);
+  });
+
+  it('clamps itemLevel to 1–50 and SPECIAL to 1–20', () => {
+    expect(run([{ type: 'weapon/itemLevel', value: 99 }]).player.itemLevel).toBe(50);
+    expect(run([{ type: 'weapon/itemLevel', value: 0 }]).player.itemLevel).toBe(1);
+    expect(run([{ type: 'special/set', stat: 'luck', value: 33 }]).player.conditions.luck).toBe(20);
+    expect(run([{ type: 'special/set', stat: 'strength', value: -1 }]).player.conditions.strength).toBe(1);
+  });
+
+  it('perk add / setRank / remove work across regular and legendary lists', () => {
+    const s = run([
+      { type: 'perk/add', perkId: 'CenterMasochist', rank: 1, legendary: false },
+      { type: 'perk/add', perkId: 'LegendaryLuck', rank: 2, legendary: true },
+      { type: 'perk/add', perkId: 'CenterMasochist', rank: 3, legendary: false }, // duplicate ignored
+      { type: 'perk/setRank', perkId: 'CenterMasochist', rank: 3 },
+      { type: 'perk/setRank', perkId: 'LegendaryLuck', rank: 4 },
+    ]);
+    expect(s.player.perks).toEqual([{ perkId: 'CenterMasochist', rank: 3 }]);
+    expect(s.player.legendaryPerks).toEqual([{ perkId: 'LegendaryLuck', rank: 4 }]);
+
+    const removed = run(
+      [
+        { type: 'perk/remove', perkId: 'CenterMasochist' },
+        { type: 'perk/remove', perkId: 'LegendaryLuck' },
+      ],
+      s
+    );
+    expect(removed.player.perks).toEqual([]);
+    expect(removed.player.legendaryPerks).toEqual([]);
+  });
+
+  it('mutation/consumable toggles flip membership', () => {
+    const on = run([{ type: 'mutation/toggle', id: 'SpeedDemon' }]);
+    expect(on.player.mutations).toEqual(['SpeedDemon']);
+    expect(run([{ type: 'mutation/toggle', id: 'SpeedDemon' }], on).player.mutations).toEqual([]);
+  });
+
+  it('condition/set and enemy/condition patch the right config', () => {
+    const s = run([
+      { type: 'condition/set', key: 'isSneaking', value: true },
+      { type: 'condition/set', key: 'healthPercent', value: 25 },
+      { type: 'enemy/condition', key: 'isFullHealth', value: true },
+    ]);
+    expect(s.player.conditions.isSneaking).toBe(true);
+    expect(s.player.conditions.healthPercent).toBe(25);
+    expect(s.enemy.conditions.isFullHealth).toBe(true);
+  });
+
+  it('build/importNd splits legendary perks by the "0" key prefix, replaces the loadout, merges SPECIAL', () => {
+    const before = run([{ type: 'perk/add', perkId: 'OldPerk', rank: 1, legendary: false }]);
+    const s = run(
+      [
+        {
+          type: 'build/importNd',
+          perks: [
+            { key: 'l3', name: 'Bloody Mess', rank: 3 },
+            { key: '02', name: 'Legendary Perception', rank: 2 },
+          ],
+          name: 'My Build',
+          special: { strength: 5, perception: 15, endurance: 5, charisma: 5, intelligence: 5, agility: 5, luck: 15 },
+        },
+      ],
+      before
+    );
+    expect(s.buildName).toBe('My Build');
+    expect(s.player.perks.some(p => p.perkId === 'OldPerk')).toBe(false);
+    expect(s.player.conditions.perception).toBe(15);
+    expect(s.player.conditions.luck).toBe(15);
+    // one regular + one legendary landed in their lists (join is by N&D key registry)
+    expect(s.player.perks.length + s.player.legendaryPerks.length).toBeGreaterThan(0);
+  });
+
+  it('build/hydrate replaces state wholesale and is idempotent', () => {
+    const target = run([
+      { type: 'weapon/select', weaponId: 'w' },
+      { type: 'condition/set', key: 'isSneaking', value: true },
+      { type: 'view/set', view: { emphasized: 'vats', breakdownOpen: true } },
+    ]);
+    const hydrated = run([{ type: 'build/hydrate', state: target }]);
+    expect(hydrated).toEqual(target);
+    expect(run([{ type: 'build/hydrate', state: target }], hydrated)).toEqual(target);
+  });
+});

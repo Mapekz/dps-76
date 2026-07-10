@@ -265,6 +265,13 @@ export function isLegendaryPerkKey(key: string): boolean {
   return key.startsWith("0");
 }
 
+/** PerkIds that are legendary perk cards (derived from the "0"-prefixed N&D keys). */
+export const legendaryPerkIds: ReadonlySet<string> = new Set(
+  Object.entries(nukesDragonsPerks)
+    .filter(([key]) => isLegendaryPerkKey(key))
+    .map(([, perkId]) => perkId)
+);
+
 /**
  * Parse a Nukes & Dragons build URL to extract perks.
  *
