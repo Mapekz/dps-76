@@ -1,5 +1,10 @@
 # TODO: Enemy Defenses
 
+> **Superseded by [phase-3-enemies.md](phase-3-enemies.md)** (2026-07-10) —
+> the resist formula below is still the starting point, but the activation
+> steps reference pre-redesign architecture (App.tsx enemy column,
+> calculateOutgoingDamage) that no longer exists.
+
 ## What
 Re-enable enemy damage resistance (DR/ER) calculation and body-part multipliers.
 
