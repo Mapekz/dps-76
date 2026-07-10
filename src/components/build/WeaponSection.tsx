@@ -1,13 +1,30 @@
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Badge } from '@/components/ui/badge';
 import { Combobox } from '@/components/ui/combobox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getWeapons } from '@/data';
-import { getOmodSlots, getLegendaryOmodSlots } from '@/data/omods';
+import { getOmodSlots, getLegendaryOmodSlots, type OmodBadge, type OmodSlot } from '@/data/omods';
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import { SectionTrigger } from './SectionTrigger';
+
+const BADGE_LABELS: Record<OmodBadge, string> = {
+  inert: 'no effect yet',
+  pendingMechanic: 'pending rework',
+  needsEnemyDefenses: 'needs enemy DR',
+};
+
+function OmodBadgeTag({ slot, omodId }: { slot: OmodSlot; omodId: string }) {
+  const badge = slot.options.find(o => o.id === omodId)?.badge;
+  if (!badge) return null;
+  return (
+    <Badge variant="outline" className="text-muted-foreground ml-1 px-1 py-0 text-[10px] font-normal">
+      {BADGE_LABELS[badge]}
+    </Badge>
+  );
+}
 
 export function WeaponSection() {
   const { mode } = useGameMode();
@@ -55,7 +72,12 @@ export function WeaponSection() {
                 placeholder="Stock"
                 searchPlaceholder="Search mods…"
                 emptyText="No mod matches."
-                renderOptionExtra={o => <ActionDelta action={{ type: 'weapon/mod', slot: slot.slot, omodId: o.value }} />}
+                renderOptionExtra={o => (
+                  <>
+                    <OmodBadgeTag slot={slot} omodId={o.value} />
+                    <ActionDelta action={{ type: 'weapon/mod', slot: slot.slot, omodId: o.value }} />
+                  </>
+                )}
               />
             </div>
           ))}
@@ -70,7 +92,12 @@ export function WeaponSection() {
                 placeholder="None"
                 searchPlaceholder="Search effects…"
                 emptyText="No effect matches."
-                renderOptionExtra={o => <ActionDelta action={{ type: 'weapon/legendary', slotIndex: i, omodId: o.value }} />}
+                renderOptionExtra={o => (
+                  <>
+                    <OmodBadgeTag slot={slot} omodId={o.value} />
+                    <ActionDelta action={{ type: 'weapon/legendary', slotIndex: i, omodId: o.value }} />
+                  </>
+                )}
               />
             </div>
           ))}

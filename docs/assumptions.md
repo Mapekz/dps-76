@@ -107,8 +107,10 @@ Extracted automatically (`normalize/mgef.ts`, `Modifier.curve`):
 |---|---|---|---|
 | Bloodied | current HP fraction (AV 0x392) | (0.05 → +130) … (1.0 → 0) | linear between points; clamped below 5% HP |
 | Nerd Rage! | current HP fraction | (0.05→80, 0.2→40, 0.8→1, 1.0→0) | perk had zero magnitude — curve is the value |
-| Junkie's | addiction count (AV 0x1EB998) | +10 per addiction to 50 at 5 | |
-| Aristocrat's | caps on hand (AV 0x393) | breakpoints 0→0 … 17000→30 … | real in-game breakpoints |
+| Junkie's | addiction count (AV 0x1EB998) | (1→10 … 10→100) | +10%/addiction up to +100% at 10; the addiction COUNT itself is uncapped in-game (an active chem suppresses its own addiction — consumables-overhaul work) |
+| Aristocrat's | caps on hand (AV 0x393) | 0→0 … 17000→30 … 29000→50 | up to +50% at 29k caps |
+| Juggernaut's (`mod_Legendary_Weapon1_DamageViaHealth`) | ABSOLUTE current HP (AV 0x2D4) | (0→0, 1000→100) | linear +0.1%/HP; player max-HP input defaults to 300 (typical non-bloodied build) until a Max HP field lands |
+| Unarmored-target (`mod_Legendary_Weapon1_DamageUnarmored`) | enemy DamageResist (AV 0x2E3) | extracted | INERT: curve input reads 0 until enemy defenses land |
 | Adrenal (legendary weapon, `mod_Legendary_Weapon1_Adrenal`) | kill streak (AV 0x399) | (0→0, 1→10, 10→100) | +10%/stack; curve domain confirms the kill-streak cap of 10 |
 | Adrenaline (perk, `Adrenaline01`) | kill streak (AV 0x399) | (0→0, 1→10, 10→100) | +10%/stack — same trigger as the mutation/legendary, own value |
 
@@ -122,13 +124,21 @@ gates on curve effects are consumed by extraction (curves are 0 at 0 stacks).
 
 ## Hand-supplied values (script-computed, no curve — `src/data/overrides/`)
 
+Policy (2026-07 overhaul): wiki-sourced values are banned from overrides —
+ESM-derived or in-game-measured only. Effects the ESM can't express stay
+inert with a picker badge (`corrections.ts omodBadgeOverrides`).
+
 | Effect | Model | Source |
 |---|---|---|
-| Furious | +5% dbm per consecutive hit, max 9 | wiki 2026 (Script ENCH, no curve) |
-| Instigating | +100% dbm vs full-health target | wiki 2026 (Script ENCH) |
-| Two Shot | flat +25% dbm (projectile modeling deferred) | wiki 2026 (no ENCH property) |
+| Furious | INERT, badged 'pendingMechanic' — its real mechanic is Onslaught stacking (shared with Pounder's, Gunslinger/Guerrilla Expert+Master), deferred rework. Old wiki override (+5%/hit, max 9) deleted | ESM: Script ENCH, no curve |
+| Instigating | +100% dbm vs full-health target | ESM effect description text; matches in-game behavior |
+| Two Shot | extracted ENCH values flow through: dbm +0.75 and projectileCount +1. The extra projectile feeds NO damage term yet (per-projectile modeling deferred), so displayed effect = flat +75%. Wiki claims +25% — golden case `two-shot` (`expected: null`) awaits in-game measurement | ESM ENCH (extracted 2026-07-02) |
+| Anti-Armor (`mod_Legendary_Weapon1_ArmorPenetration`-family) | −50% target armor via OMOD property `ActorValues ADD ArmorPenetration 50.0` → `armorPen` bucket (0.5). INERT until enemy DR lands, badged 'needsEnemyDefenses' | ESM OMOD property |
+| Bleed/burn/shock mod DoTs | Damage-archetype MGEFs → `dotDamage` bucket with magnitude, `durationSec`, element from the MGEF Resist Value. INERT until a DoT model lands | ESM (extracted) |
 | Adrenal Reaction (mutation) | +5% dbm per KILL STREAK stack, cap 10 (+6.25%/stack with Strange in Numbers) | ESM curves Mutation_Adrenal_Normal/_Super are 5/stack linear (their x-range past 10 is unreachable — the counter caps at 10, user-confirmed + legendary Adrenal curve domain); hand-carried because the CLI's curve↔effect association is shifted on this record |
 | Tenderizer | +10% dbm per stack, manual stack input 0–1000 | ESM magnitude 0.1 (PerkTenderizer01Spell); stacking cap per user spec |
+| SPECIAL buffs (Buffout +2 STR/+2 END, Bufftats +3 STR/+3 END/+3 PER, Mentats +2 INT/+2 PER, Berry Mentats +5 INT) | flat unconditional ADDs folded into player STR/LCK in `resolveLoadout` (STR → melee term, LCK → crit meter); PER/END/CHA/INT/AGI stored-inert until perk-SPECIAL scaling. NO stacking/exclusivity enforcement — chems-one-at-a-time and same-keyword replacement land with the consumables overhaul | ESM Peak Value Modifier magnitudes (extracted) |
+| Juggernaut's max-HP input | `PlayerConditions.maxHealth` defaults to 300 (typical non-bloodied build) when unset | assumption pending a Max HP UI field |
 
 ## Resist mitigation (dormant scaffolding)
 

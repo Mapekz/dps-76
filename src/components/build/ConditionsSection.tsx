@@ -20,8 +20,10 @@ const NUMBER_FIELDS: Array<{
   max: number;
 }> = [
   { key: 'healthPercent', label: 'Health % (Bloodied, Adrenal Reaction)', min: 1, max: 100 },
+  { key: 'maxHealth', label: "Max HP (Juggernaut's scales with current HP)", min: 1, max: 99999 },
   { key: 'capsOnHand', label: "Caps on hand (Aristocrat's, max at 29k)", min: 0, max: 999999 },
-  { key: 'addictionCount', label: "Addictions (Junkie's, 0–5)", min: 0, max: 5 },
+  // Addictions are uncapped in-game; Junkie's bonus curve tops out at 10.
+  { key: 'addictionCount', label: "Addictions (Junkie's maxes at 10)", min: 0, max: 99 },
   { key: 'adrenalineStacks', label: 'Kill streak (Adrenal effects, 0–10)', min: 0, max: 10 },
   { key: 'furiousStacks', label: 'Furious consecutive hits (0–9)', min: 0, max: 9 },
   { key: 'tenderizerStacks', label: 'Tenderizer stacks (0–1000, team-dependent)', min: 0, max: 1000 },

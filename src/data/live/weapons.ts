@@ -1,6 +1,6 @@
 import type { Weapon, WeaponComponent } from '@/types';
 import type { GeneratedWeapon, GeneratedDamageType } from '@/types/generated';
-import { hiddenWeaponIds, weaponCorrections } from '../overrides/corrections';
+import { forceVisibleWeaponIds, hiddenWeaponIds, weaponCorrections } from '../overrides/corrections';
 import generatedWeapons from './generated/weapons.json';
 
 /**
@@ -65,6 +65,7 @@ function adaptWeapon(gw: GeneratedWeapon): Weapon {
     formId: gw.formId,
     keywords: gw.keywords,
     attachParentSlots: gw.attachParentSlots,
+    templateModFormIds: gw.templateModFormIds,
     critDamageMult: gw.critDamageMult,
     critChargeBonus: gw.critChargeBonus,
     sneakAttackMult: gw.sneakAttackMult,
@@ -76,6 +77,9 @@ function adaptWeapon(gw: GeneratedWeapon): Weapon {
 
 export const weapons: Record<string, Weapon> = Object.fromEntries(
   (generatedWeapons as GeneratedWeapon[])
-    .filter(gw => !hiddenWeaponIds.has(gw.id))
+    // Obtainability verdicts ride the generated data (obtainable: false =
+    // no player-reachable ESM reference); corrections.ts rescues false
+    // negatives and hides false positives.
+    .filter(gw => (gw.obtainable !== false || forceVisibleWeaponIds.has(gw.id)) && !hiddenWeaponIds.has(gw.id))
     .map(gw => [gw.id, adaptWeapon(gw)])
 );

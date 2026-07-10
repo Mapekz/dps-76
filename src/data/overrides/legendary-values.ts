@@ -6,8 +6,14 @@ import type { Modifier, ModifierFragment } from '@/types/modifiers';
  * extractable. Keyed by OMOD edid; when present, these REPLACE the extracted
  * modifiers for that omod.
  *
- * Values are community/wiki numbers pending in-game golden validation
- * (docs/assumptions.md). Sources: fallout.wiki legendary effect pages, 2026.
+ * Policy (2026-07 data-quality overhaul): wiki-sourced values are BANNED here.
+ * An entry needs either an ESM-derived value (with the record trail in its
+ * comment) or an in-game measurement. Effects the ESM can't express stay
+ * inert and get badged via corrections.ts omodBadgeOverrides instead:
+ * - Two Shot: override DELETED — the extracted ENCH values (dbm +0.75,
+ *   projectileCount +1) now flow through; golden case pending measurement.
+ * - Furious: override DELETED — its real mechanic is Onslaught stacking
+ *   (deferred rework); inert + badged 'pendingMechanic' until then.
  */
 
 function leg(edid: string, name: string, rest: ModifierFragment, index = 0): Modifier {
@@ -23,26 +29,13 @@ function leg(edid: string, name: string, rest: ModifierFragment, index = 0): Mod
 // Value), e.g. Bloodied is (5% HP → +130) … (100% HP → 0).
 
 export const legendaryValueOverrides: Readonly<Record<string, Modifier[]>> = {
-  // Furious: Script-archetype ENCH (no curve) — +5% per consecutive hit on
-  // the same target, max 9 stacks (+45%). Wiki 2026, pending golden.
-  mod_Legendary_Weapon1_DmgConsecutiveHits: [
-    leg('mod_Legendary_Weapon1_DmgConsecutiveHits', 'Furious', {
-      bucket: 'dbm', op: 'ADD', value: 0.05,
-      conditions: [{ kind: 'stacks', counter: 'furious', max: 9 }],
-    }),
-  ],
-  // Instigating: +100% against full-health targets.
+  // Instigating: +100% against full-health targets. Script-archetype ENCH
+  // (ench_LegendaryWeapon_DamageFirstBlood) — the ESM carries no magnitude;
+  // +100% is the effect's own description text and matches in-game behavior.
   mod_Legendary_Weapon1_DamageFirstBlood: [
     leg('mod_Legendary_Weapon1_DamageFirstBlood', 'Instigating', {
       bucket: 'dbm', op: 'ADD', value: 1.0,
       conditions: [{ kind: 'enemyFullHealth' }],
-    }),
-  ],
-  // Two Shot: extra projectile dealing 25% of base damage — approximated as
-  // a flat +25% dbm (projectile-level modeling is a later enhancement).
-  mod_Legendary_Weapon1_Guns_TwoShot: [
-    leg('mod_Legendary_Weapon1_Guns_TwoShot', 'Two Shot', {
-      bucket: 'dbm', op: 'ADD', value: 0.25, conditions: [],
     }),
   ],
 };
