@@ -232,20 +232,6 @@ export interface PlayerConfig {
   weakpointMult: number;
 }
 
-// Damage stats (player outgoing)
-export interface DamageStats {
-  /** Damage per hit against a normal (non-weakpoint) target, after perks and buffs. */
-  normalPerHit: number;
-  /** DPS against a normal (non-weakpoint) target (normalPerHit × fireRate). */
-  normalDps: number;
-  /** Damage per hit against a weakpoint, after perks + weakpointMult. */
-  weakpointPerHit: number;
-  /** DPS against a weakpoint (weakpointPerHit × fireRate). */
-  weakpointDps: number;
-  /** Derived fire rate in shots/sec (for display). */
-  fireRate: number;
-}
-
 // Default values factory
 export function createDefaultPlayerConditions(): PlayerConditions {
   return {
@@ -328,12 +314,3 @@ export function createDefaultEnemyConfig(): EnemyConfig {
   };
 }
 
-export function createDefaultDamageStats(): DamageStats {
-  return {
-    normalPerHit: 0,
-    normalDps: 0,
-    weakpointPerHit: 0,
-    weakpointDps: 0,
-    fireRate: 0,
-  };
-}

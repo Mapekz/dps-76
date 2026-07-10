@@ -1,14 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { getWeapons } from '@/data';
-import { getBuffModifiers } from '@/data/buffs';
-import { getOmodById } from '@/data/omods';
-import { getLoadoutModifiers } from '@/data/perk-modifiers';
-import { buildEffectiveWeapon } from '@/lib/engine/effective-weapon';
 import { computeScenarios } from '@/lib/engine/scenarios';
+import { resolveLoadout } from '@/lib/loadout';
 import {
+  createDefaultEnemyConfig,
   createDefaultEnemyConditions,
+  createDefaultPlayerConfig,
   createDefaultPlayerConditions,
   type EnemyConditions,
+  type EnemyConfig,
+  type PlayerConfig,
   type PlayerConditions,
 } from '@/types';
 import goldenData from './cases.json';
@@ -43,28 +43,25 @@ describe('golden cases (in-game measurements)', () => {
   for (const c of cases) {
     const run = c.expected === null ? it.skip : it;
     run(`${c.name} [${c.source}]`, () => {
-      const baseWeapon = getWeapons('live')[c.weaponId];
-      expect(baseWeapon, `weapon ${c.weaponId} exists`).toBeDefined();
-
-      const omods = [...Object.values(c.mods), ...c.legendaryEffects]
-        .map(id => getOmodById('live', id))
-        .filter(o => o !== undefined);
-      const { weapon, modifiers: omodModifiers } = buildEffectiveWeapon(baseWeapon, omods);
-
-      const scenarios = computeScenarios({
-        mode: 'live',
-        weapon,
+      const playerConfig: PlayerConfig = {
+        ...createDefaultPlayerConfig(),
+        weapon: { weaponId: c.weaponId, mods: c.mods, legendaryEffects: c.legendaryEffects },
+        perks: c.perks,
+        legendaryPerks: c.legendaryPerks,
+        mutations: c.mutations,
+        consumables: c.consumables,
         itemLevel: c.itemLevel,
-        modifiers: [
-          ...omodModifiers,
-          ...getLoadoutModifiers('live', c.perks),
-          ...getLoadoutModifiers('live', c.legendaryPerks),
-          ...getBuffModifiers('live', c.mutations, c.consumables),
-        ],
-        player: { ...createDefaultPlayerConditions(), ...c.conditions },
-        enemy: { ...createDefaultEnemyConditions(), ...c.enemyConditions },
-        weakpointMult: 2.0,
-      });
+        conditions: { ...createDefaultPlayerConditions(), ...c.conditions },
+      };
+      const enemyConfig: EnemyConfig = {
+        ...createDefaultEnemyConfig(),
+        conditions: { ...createDefaultEnemyConditions(), ...c.enemyConditions },
+      };
+
+      const input = resolveLoadout(playerConfig, enemyConfig, 'live');
+      expect(input, `weapon ${c.weaponId} exists`).not.toBeNull();
+
+      const scenarios = computeScenarios(input!);
 
       const scenario = c.scenario === 'manualAimWeakpoint' ? scenarios.manualAim : scenarios[c.scenario];
       const actual =

@@ -67,9 +67,10 @@ every value the engine asserts that isn't proven by ESM data — keep it current
 ### Damage Calculation Flow
 
 1. **Configuration:** Player and Enemy configs are managed in `App.tsx` state
-2. **Calculation:** `useDamageCalc` builds the effective weapon + modifier list
-   (perks, legendary perks, OMODs, legendary effects, mutations, consumables)
-   and calls `computeScenarios()`
+2. **Calculation:** `resolveLoadout` (`src/lib/loadout.ts`) assembles the
+   effective weapon + modifier list (perks, legendary perks, OMODs, legendary
+   effects, mutations, consumables) into a `ScenarioInput`; the `useDamageCalc`
+   hook is a thin wrapper that feeds it to `computeScenarios()`
 3. **Display:** `DamageStatsColumn` renders the three scenario columns
 
 ### Game Mode System
