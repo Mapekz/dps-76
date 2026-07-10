@@ -1,12 +1,13 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
-import type { GeneratedMeta } from '../../src/types/generated';
+import type { GeneratedMeta, GeneratedWeapon } from '../../src/types/generated';
 import { EsmClient } from './esm-client';
 import { extractWeapons } from './extract-weapons';
 import { extractPerks } from './extract-perks';
 import { extractOmods } from './extract-omods';
 import { extractBuffs } from './extract-buffs';
+import { checkAdrenalCurve } from './checks/adrenal-curve-check';
 
 const KNOWN_EXTRACTORS = ['weapons', 'perks', 'omods', 'buffs'] as const;
 type ExtractorName = (typeof KNOWN_EXTRACTORS)[number];
@@ -43,23 +44,41 @@ async function main() {
   await mkdir(outDir, { recursive: true });
 
   const client = new EsmClient(values.esm);
+  // Partial runs (--only …) start from the existing meta so the sections not
+  // re-run keep their counts/excluded review data (they'd be clobbered
+  // otherwise). `unresolved` stays run-scoped: it can't be attributed to a
+  // section after the fact — a full run refreshes it completely.
+  let previousMeta: Partial<GeneratedMeta> = {};
+  if (only.length < KNOWN_EXTRACTORS.length) {
+    try {
+      previousMeta = JSON.parse(await readFile(path.join(outDir, '_meta.json'), 'utf8')) as GeneratedMeta;
+    } catch {
+      // No previous meta — fresh start.
+    }
+  }
   const meta: GeneratedMeta = {
     esmPath: values.esm,
     // Convention: the ESM lives in a date-stamped directory (…/Data/20260702/SeventySix.esm)
     esmDate: /(\d{8})/.exec(values.esm)?.[1] ?? null,
     mode,
     extractedAt: new Date().toISOString(),
-    counts: {},
-    excluded: {},
+    counts: previousMeta.counts ?? {},
+    excluded: previousMeta.excluded ?? {},
+    excludedDetailed: previousMeta.excludedDetailed ?? {},
     unresolved: [],
   };
 
+  // Obtainable weapon formids feed the OMOD obtainability pass (two-phase).
+  let obtainableWeaponFormIds: Set<string> | undefined;
+
   if (only.includes('weapons')) {
     console.log('Extracting weapons…');
-    const { weapons, excluded, unresolved } = await extractWeapons(client);
+    const { weapons, excluded, excludedDetailed, unresolved, obtainableFormIds } = await extractWeapons(client);
+    obtainableWeaponFormIds = obtainableFormIds;
     await writeFile(path.join(outDir, 'weapons.json'), JSON.stringify(weapons, null, 1));
     meta.counts.weapons = weapons.length;
     meta.excluded = { ...meta.excluded, ...excluded };
+    meta.excludedDetailed = { ...meta.excludedDetailed, ...excludedDetailed };
     meta.unresolved.push(...unresolved);
     console.log(
       `  ${weapons.length} weapons (excluded: ${Object.entries(excluded)
@@ -89,16 +108,35 @@ async function main() {
 
   if (only.includes('omods')) {
     console.log('Extracting OMODs…');
-    const result = await extractOmods(client);
+    if (!obtainableWeaponFormIds) {
+      // `--only omods` without a weapons pass: read the checked-in generated set.
+      const existing = JSON.parse(
+        await readFile(path.join(outDir, 'weapons.json'), 'utf8')
+      ) as GeneratedWeapon[];
+      obtainableWeaponFormIds = new Set(existing.filter(w => w.obtainable !== false).map(w => w.formId));
+    }
+    const result = await extractOmods(client, obtainableWeaponFormIds);
     await writeFile(path.join(outDir, 'omods.json'), JSON.stringify(result.omods, null, 1));
     meta.counts.omods = result.omods.length;
+    meta.excluded = { ...meta.excluded, ...result.excluded };
+    meta.excludedDetailed = { ...meta.excludedDetailed, ...result.excludedDetailed };
     meta.unresolved.push(...result.unknownProperties.map(p => `unknown OMOD property: ${p}`));
     meta.unresolved.push(...result.notes);
-    console.log(`  ${result.omods.length} named weapon OMODs; unknown properties: ${result.unknownProperties.length}`);
+    console.log(
+      `  ${result.omods.length} named weapon OMODs (excluded: ${Object.entries(result.excluded)
+        .map(([k, v]) => `${v.length} ${k}`)
+        .join(', ')}); unknown properties: ${result.unknownProperties.length}`
+    );
   }
 
   if (only.includes('buffs')) {
     console.log('Extracting mutations & consumables…');
+    const adrenalCurveFixed = await checkAdrenalCurve(client);
+    if (!adrenalCurveFixed) {
+      console.warn('  ⚠ esm CLI curve bug still present — Adrenal Reaction buff override retained (buff-overrides.ts)');
+    } else {
+      console.warn('  ✔ Adrenal curves now associate correctly — retire the buff-overrides.ts Adrenal entry and regen buffs');
+    }
     const result = await extractBuffs(client);
     await writeFile(path.join(outDir, 'mutations.json'), JSON.stringify(result.mutations, null, 1));
     await writeFile(path.join(outDir, 'consumables.json'), JSON.stringify(result.consumables, null, 1));

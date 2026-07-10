@@ -17,6 +17,14 @@ export interface EsmRecord {
   fields: Record<string, unknown>;
 }
 
+export interface EsmRefRow {
+  form_id: string;
+  record_type: string;
+  editor_id: string;
+  name: string | null;
+  depth: number;
+}
+
 /**
  * Thin wrapper around the `esm` CLI (one-shot `-p` mode with a warm daemon).
  *
@@ -28,6 +36,7 @@ export interface EsmRecord {
  */
 export class EsmClient {
   private getCache = new Map<string, Promise<EsmRecord>>();
+  private refsCache = new Map<string, Promise<EsmRefRow[]>>();
 
   constructor(private esmPath: string) {}
 
@@ -61,6 +70,27 @@ export class EsmClient {
     if (!cached) {
       cached = this.run(['get', this.esmPath, target, '--json']).then(out => JSON.parse(out));
       this.getCache.set(target, cached);
+    }
+    return cached;
+  }
+
+  /**
+   * Records that reference `target` (reverse lookup). Cached.
+   * Always pass a formid — the CLI misparses numeric editor_ids when it
+   * auto-detects the target kind — and an explicit large limit (the default
+   * of 100 silently truncates popular records like the .44).
+   */
+  refs(formId: string, opts: { depth?: number; limit?: number } = {}): Promise<EsmRefRow[]> {
+    const depth = opts.depth ?? 1;
+    const limit = opts.limit ?? 4000;
+    const key = `${formId}:${depth}:${limit}`;
+    let cached = this.refsCache.get(key);
+    if (!cached) {
+      cached = this.run([
+        'refs', this.esmPath, '--formid', formId,
+        '--depth', String(depth), '--limit', String(limit), '--json',
+      ]).then(out => JSON.parse(out));
+      this.refsCache.set(key, cached);
     }
     return cached;
   }

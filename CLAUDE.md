@@ -15,6 +15,7 @@ This is a Fallout 76 DPS (Damage Per Second) calculator web application. It comp
 - `pnpm lint` - Run ESLint
 - `pnpm preview` - Preview production build locally
 - `pnpm extract --esm <path-to-SeventySix.esm> --mode live [--only weapons,perks,omods,buffs]` - Regenerate game data from an ESM dump (requires the `esm` CLI on PATH)
+- `pnpm extract:diff [--base HEAD]` - Markdown review report of generated-data changes vs a git ref; run after every extraction
 
 This project uses **pnpm** as the package manager, not npm or yarn.
 
@@ -28,8 +29,16 @@ Game data is **extracted, not hand-authored**:
    (`esm-client.ts` wraps it; a warm daemon makes repeated `get`s cheap).
 2. Extractors emit checked-in JSON under `src/data/<mode>/generated/`
    (`weapons.json`, `perks.json`, `omods.json`, `mutations.json`,
-   `consumables.json`, plus `_meta.json` with an unresolved-items report —
-   review it after every run).
+   `consumables.json`, plus `_meta.json` with unresolved-items and
+   `excludedDetailed` reports — review both after every run).
+   Weapons/omods carry an `obtainable` flag derived from ESM reverse
+   references (`scripts/extract/obtainability.ts`: COBJ/GMRW/LGDI/QUST/CONT/
+   MISC/FLST direct refs, recursive player-facing LVLI chains, modcol OMOD
+   chains, obtainable-WEAP inheritance). `obtainable: false` records stay in
+   the JSON but are hidden app-side; rescue false negatives via
+   `forceVisibleWeaponIds`/`forceVisibleOmodIds` in `overrides/corrections.ts`
+   — no re-extract needed. Script-granted quest rewards (VMAD properties)
+   have NO record-level reverse refs and always need the rescue list.
 3. `src/data/overrides/` is the hand-maintained layer that survives
    regeneration: N&D key fixes (`perk-overrides.ts`), script-computed
    legendary values (`legendary-values.ts`, `buff-overrides.ts`), weapon

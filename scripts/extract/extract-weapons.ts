@@ -1,22 +1,29 @@
 import type {
   CurvePoint,
+  ExcludedRecordDetail,
   GeneratedDamageComponent,
   GeneratedDamageType,
   GeneratedWeapon,
 } from '../../src/types/generated';
 import { EsmClient, mapPool, type EsmRecord } from './esm-client';
+import { ObtainabilityClassifier } from './obtainability';
 
 // EDID patterns for records that are never player weapons (creature attacks,
-// deleted/deprecated content, turrets, event-NPC gear...). The creature prefix
-// is 'cr' followed by an uppercase letter — plain prefix matching would
-// swallow real weapons like 'crossbow'.
+// deleted/deprecated content, turrets, event-NPC gear...). This is only a
+// cheap pre-filter — real gating is the obtainability derivation below.
+// The creature prefix is 'cr' followed by an uppercase letter and must stay
+// case-SENSITIVE: plain prefix matching would swallow 'crossbow'.
 // Stragglers are handled per-edid in src/data/overrides/corrections.ts.
 const EXCLUDED_EDID_PATTERNS = [
-  // 'cr' + non-lowercase = creature weapon (crFanatic..., cr44) — but keep 'crossbow'.
-  /^zzz/, /^DEL_/, /^DELETED/, /^DEPRECATED/, /^cr[^a-z]/, /^HTO_/, /^XPD_/,
-  /^POST_/, /^ATX_/, /^Test/, /^TEST/, /^Debug/, /^GasTrap/, /^WorkshopTurret/,
-  /^TrapTurret/, /^MTNM/, /^Survival_/, /NONPLAYABLE/i,
+  /^zzz/i, /^del_/i, /^deleted/i, /^deprecated/i, /^cr[^a-z]/, /^hto_/i, /^xpd_/i,
+  /^post_/i, /^atx_/i, /^test/i, /^debug/i, /^gastrap/i, /^workshopturret/i,
+  /^trapturret/i, /^mtnm/i, /^survival_/i, /NONPLAYABLE/i,
 ];
+
+/** Exposed for tests: does the pre-filter drop this editor_id? */
+export function isExcludedWeaponEdid(edid: string): boolean {
+  return EXCLUDED_EDID_PATTERNS.some(p => p.test(edid));
+}
 
 export const DAMAGE_TYPE_EDID_MAP: Record<string, GeneratedDamageType> = {
   dtPhysical: 'ballistic',
@@ -33,7 +40,10 @@ const TIER_RE = /Damage_Universal_Tier(\d+)/i;
 interface ExtractWeaponsResult {
   weapons: GeneratedWeapon[];
   excluded: Record<string, string[]>;
+  excludedDetailed: Record<string, ExcludedRecordDetail[]>;
   unresolved: string[];
+  /** Formids of obtainable weapons — feeds the OMOD obtainability pass. */
+  obtainableFormIds: Set<string>;
 }
 
 function asNumber(v: unknown, fallback = 0): number {
@@ -168,7 +178,7 @@ export async function extractWeapons(client: EsmClient): Promise<ExtractWeaponsR
 
   const excluded: Record<string, string[]> = { prefix: [], noDamage: [] };
   const candidates = named.filter(row => {
-    if (EXCLUDED_EDID_PATTERNS.some(p => p.test(row.editor_id))) {
+    if (isExcludedWeaponEdid(row.editor_id)) {
       excluded.prefix.push(row.editor_id);
       return false;
     }
@@ -193,6 +203,26 @@ export async function extractWeapons(client: EsmClient): Promise<ExtractWeaponsR
     weapons.push(weapon);
   }
 
+  // Obtainability derivation: reverse-reference each surviving weapon. Weapons
+  // that fail stay in the generated data flagged obtainable:false (the app
+  // hides them; corrections.ts forceVisibleWeaponIds rescues false negatives
+  // without a re-extract), and every failure lands in excludedDetailed with
+  // its evidence for post-run review.
+  const classifier = new ObtainabilityClassifier(client);
+  const verdicts = await classifier.classify(weapons.map(w => ({ formId: w.formId, edid: w.id })));
+  const excludedDetailed: Record<string, ExcludedRecordDetail[]> = { weaponUnobtainable: [] };
+  const obtainableFormIds = new Set<string>();
+  for (const weapon of weapons) {
+    const verdict = verdicts.get(weapon.formId);
+    weapon.obtainable = verdict?.obtainable ?? false;
+    if (weapon.obtainable) {
+      obtainableFormIds.add(weapon.formId);
+    } else {
+      (excluded.unobtainable ??= []).push(weapon.id);
+      excludedDetailed.weaponUnobtainable.push({ id: weapon.id, name: weapon.name, signals: verdict?.signals });
+    }
+  }
+
   weapons.sort((a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
-  return { weapons, excluded, unresolved: [...new Set(unresolved)] };
+  return { weapons, excluded, excludedDetailed, unresolved: [...new Set(unresolved)], obtainableFormIds };
 }

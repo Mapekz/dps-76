@@ -37,9 +37,11 @@ const MUTATION_SPELLS = [
 ];
 
 const CONSUMABLE_ITEMS = [
-  // Damage-relevant chems (extend as needed — food buffs come with SPECIAL modeling)
+  // Damage- or SPECIAL-relevant chems (full food/drink/alcohol extraction with
+  // category + stacking data is the consumables-overhaul workstream).
+  // Removed 2026-07: MedX, NukaColaQuantum — no damage or SPECIAL contribution.
   'Buffout', 'Psycho', 'Psychobuff', 'Psychotats', 'Bufftats', 'Fury',
-  'Overdrive', 'Calmex', 'MedX', 'Mentats', 'BerryMentats', 'NukaColaQuantum',
+  'Overdrive', 'Calmex', 'Mentats', 'BerryMentats',
 ];
 
 export interface ExtractBuffsResult {
@@ -69,7 +71,7 @@ async function extractBuff(
   const notes = new Set<string>();
   const fragments = [];
   for (const effect of parseMagicEffects(record)) {
-    const result = await translateMagicEffect({ client, routes, edidByFormId, timedIsActive: true }, effect);
+    const result = await translateMagicEffect({ client, routes, edidByFormId, timedIsActive: true, noteUnroutedAvs: true }, effect);
     fragments.push(...result.modifiers);
     result.notes.forEach(n => notes.add(`${edid}: ${n}`));
     result.unmappedAvifs.forEach(a => allUnmapped.add(a));

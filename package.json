@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "extract": "tsx scripts/extract/run-all.ts",
+    "extract:diff": "tsx scripts/extract/diff-report.ts",
     "preview": "vite preview",
     "build:gh-pages": "NODE_ENV=production pnpm run build"
   },

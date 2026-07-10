@@ -1,4 +1,4 @@
-import type { Bucket, Condition, CurveInput, Modifier, ModifierFragment, ModifierSource, ValueCurve } from '../../../src/types/modifiers';
+import type { Bucket, Condition, CurveInput, DamageType, Modifier, ModifierFragment, ModifierSource, ValueCurve } from '../../../src/types/modifiers';
 import type { EsmClient, EsmRecord } from '../esm-client';
 import {
   flattenConditionRows,
@@ -35,6 +35,18 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   STAT_DmgPowerAttack: { bucket: 'powerAttackBonus', scale: 0.01 },
   // Read directly by DamageVsNonWeakpoint_DO in the damage formula.
   STAT_DmgVsTorso: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'bodyPart', part: 'torso' }] },
+  // SPECIAL stat bonuses (Buffout +2 STR, Mentats +2 INT, legendary +SPECIAL
+  // stars...). Flat points, scale 1. Strength/Luck fold into player state in
+  // resolveLoadout; the rest are stored for perk-SPECIAL scaling. NOTE: these
+  // routes apply to every translate() caller (perks included) — review the
+  // perk diff after regeneration.
+  Strength: { bucket: 'specialStrength', scale: 1 },
+  Perception: { bucket: 'specialPerception', scale: 1 },
+  Endurance: { bucket: 'specialEndurance', scale: 1 },
+  Charisma: { bucket: 'specialCharisma', scale: 1 },
+  Intelligence: { bucket: 'specialIntelligence', scale: 1 },
+  Agility: { bucket: 'specialAgility', scale: 1 },
+  Luck: { bucket: 'specialLuck', scale: 1 },
 };
 
 export interface AvifRoute {
@@ -87,6 +99,24 @@ const CURVE_INPUT_AVS: Record<string, CurveInput> = {
   '0x00000399': 'killStreak', // Adrenal Reaction
   '0x001EB998': 'addictionCount', // Junkie's
   '0x006C3172': 'consecutiveHits', // Furious
+  '0x000002D4': 'healthCurrent', // Health (absolute) — Juggernaut's (x 0→1000, y 0→100)
+  '0x000002E3': 'enemyDamageResist', // DamageResist — DamageUnarmored (inert until enemy defenses)
+};
+
+/**
+ * Damage-archetype MGEFs (bleed/burn/shock weapon mods) carry their element in
+ * the record's "Resist Value" AV. Resolved edid → app damage type; unknown
+ * resists fall back to a note.
+ */
+const RESIST_AV_DAMAGE_TYPES: Record<string, DamageType> = {
+  DamageResist: 'ballistic', // bleeds resist as physical
+  EnergyResist: 'energy',
+  FireResist: 'fire',
+  ElectricalResist: 'energy',
+  FrostResist: 'cryo',
+  PoisonResist: 'poison',
+  RadResistExposure: 'radiation',
+  RadiationResist: 'radiation',
 };
 
 export interface SpellEffect {
@@ -126,6 +156,8 @@ export interface MgefInfo {
   name: string;
   archetype: string;
   actorValue: string | null;
+  /** "Resist Value" AV formid — carries the element of Damage-archetype effects. */
+  resistValue: string | null;
 }
 
 export async function getMgefInfo(client: EsmClient, formId: string): Promise<MgefInfo> {
@@ -136,6 +168,7 @@ export async function getMgefInfo(client: EsmClient, formId: string): Promise<Mg
     name: (record.fields['Name'] as string) ?? record.editor_id,
     archetype: ((data['Archetype'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown',
     actorValue: (data['Actor Value'] as string) ?? null,
+    resistValue: (data['Resist Value'] as string) ?? null,
   };
 }
 
@@ -149,6 +182,8 @@ export interface MgefTranslationDeps {
    * the toggle. Perk proc-buffs keep the flag.
    */
   timedIsActive?: boolean;
+  /** See TranslateOptions.noteUnroutedAvs. */
+  noteUnroutedAvs?: boolean;
 }
 
 export interface MgefTranslationResult {
@@ -160,6 +195,14 @@ export interface MgefTranslationResult {
 export interface TranslateOptions {
   timedIsActive?: boolean;
   conditionCtx?: Partial<ConditionTranslationContext>;
+  /**
+   * Note EVERY value-modifier effect whose AV has no route (instead of only
+   * the STAT_Dmg / STAT_Crit / STAT_Sneak prefixes). Legendary/buff extraction
+   * sets this so empty translations are visible gaps in _meta; perk extraction
+   * keeps it off — perks carry many deliberately-unmodeled AVs (AP, carry
+   * weight...).
+   */
+  noteUnroutedAvs?: boolean;
 }
 
 /**
@@ -184,6 +227,35 @@ export function translate(
   });
   if (effectConds === null) return result;
   unresolved.forEach(u => result.notes.push(`condition: ${u}`));
+
+  // Damage-archetype effects are DoTs (bleed/burn/shock weapon mods): extract
+  // value + duration + element into the inert dotDamage bucket (no DoT model
+  // in the engine yet). The element lives on the MGEF's Resist Value AV; the
+  // damageTypeScope condition here denotes the DoT's OWN element.
+  if (mgef.archetype === 'Damage' && (effect.magnitude > 0 || effect.curvePoints)) {
+    const resistEdid = mgef.resistValue ? (edidByFormId.get(mgef.resistValue) ?? mgef.resistValue) : null;
+    const damageType = resistEdid ? RESIST_AV_DAMAGE_TYPES[resistEdid] : undefined;
+    if (resistEdid && !damageType) {
+      result.notes.push(`MGEF ${mgef.edid}: unmapped Resist Value ${resistEdid} — DoT element unknown`);
+    }
+    const dotConds: Condition[] = damageType ? [...effectConds, { kind: 'damageTypeScope', types: [damageType] }] : effectConds;
+    let dotCurve: ValueCurve | undefined;
+    if (effect.curvePoints) {
+      const input = effect.curveInputAv ? CURVE_INPUT_AVS[effect.curveInputAv] : undefined;
+      if (input) {
+        dotCurve = { input, points: effect.curvePoints };
+      } else {
+        result.notes.push(`${mgef.edid}: DoT curve with unmapped input AV ${effect.curveInputAv} — needs override`);
+        return result;
+      }
+    }
+    result.modifiers.push(
+      dotCurve
+        ? { bucket: 'dotDamage', op: 'ADD', curve: dotCurve, curveScale: 1, conditions: dotConds, durationSec: effect.duration }
+        : { bucket: 'dotDamage', op: 'ADD', value: effect.magnitude, conditions: dotConds, durationSec: effect.duration }
+    );
+    return result;
+  }
 
   if (mgef.archetype !== 'Peak Value Modifier' && mgef.archetype !== 'Value Modifier') {
     if (effect.magnitude !== 0 || mgef.archetype === 'Script') {
@@ -240,6 +312,10 @@ export function translate(
     push(fallback.bucket, fallback.scale, [...allConds, ...(fallback.conditions ?? [])]);
   } else if (avifEdid.startsWith('STAT_Dmg') || avifEdid.startsWith('STAT_Crit') || avifEdid.startsWith('STAT_Sneak')) {
     result.unmappedAvifs.push(avifEdid);
+  } else if (opts.noteUnroutedAvs) {
+    // Without this a value-modifier effect vanishes silently and the record
+    // looks inexplicably empty in review (the pre-fix Juggernaut's failure mode).
+    result.notes.push(`MGEF ${mgef.edid}: no route for AV ${avifEdid} — needs mapping`);
   }
 
   return result;
@@ -270,8 +346,16 @@ export async function translateMagicEffect(
   if (isValueArchetype && mgef.actorValue && !edidByFormId.has(mgef.actorValue)) {
     edidByFormId.set(mgef.actorValue, await client.resolveEdid(mgef.actorValue));
   }
+  // Damage-archetype effects read the Resist Value (DoT element).
+  if (mgef.archetype === 'Damage' && mgef.resistValue && !edidByFormId.has(mgef.resistValue)) {
+    edidByFormId.set(mgef.resistValue, await client.resolveEdid(mgef.resistValue));
+  }
 
-  return translate(mgef, effect, deps.routes, edidByFormId, { timedIsActive: deps.timedIsActive, conditionCtx });
+  return translate(mgef, effect, deps.routes, edidByFormId, {
+    timedIsActive: deps.timedIsActive,
+    noteUnroutedAvs: deps.noteUnroutedAvs,
+    conditionCtx,
+  });
 }
 
 /** Attach source identity + ids to bucket-level modifier fragments. */

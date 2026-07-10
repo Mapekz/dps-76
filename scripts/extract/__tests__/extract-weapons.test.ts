@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import type { EsmClient, EsmRecord } from '../esm-client';
-import { toGeneratedWeapon } from '../extract-weapons';
+import { isExcludedWeaponEdid, toGeneratedWeapon } from '../extract-weapons';
+import { isExcludedOmodEdid } from '../extract-omods';
 import fixer from './fixtures/weap-fixer.json';
 import gatlingPlasma from './fixtures/weap-gatling-plasma.json';
 import mg42 from './fixtures/weap-mg42.json';
@@ -71,5 +72,37 @@ describe('toGeneratedWeapon', () => {
     const w = await toGeneratedWeapon(stubClient, record, unresolved);
     expect(w.components[1].damageType).toBe('unknown');
     expect(unresolved.some(u => u.includes('0x0BADF00D'))).toBe(true);
+  });
+});
+
+describe('isExcludedWeaponEdid', () => {
+  it('excludes zzz/debug/test/deleted/creature-attack edids', () => {
+    expect(isExcludedWeaponEdid('ZZZ_crWarGlaive_Copy01')).toBe(true);
+    expect(isExcludedWeaponEdid('debug_balance_AssaultRifle')).toBe(true);
+    expect(isExcludedWeaponEdid('zzz_TestAssaultRifle')).toBe(true);
+    expect(isExcludedWeaponEdid('DEL_foo')).toBe(true);
+    expect(isExcludedWeaponEdid('crMothmanAttack1')).toBe(true);
+  });
+
+  it('does not exclude legitimate weapon edids, including the crossbow "cr" trap', () => {
+    expect(isExcludedWeaponEdid('crossbow')).toBe(false);
+    expect(isExcludedWeaponEdid('CombatRifle_Fixer')).toBe(false);
+    expect(isExcludedWeaponEdid('TeslaRifle')).toBe(false);
+  });
+});
+
+describe('isExcludedOmodEdid', () => {
+  it('excludes debug/deleted/cut/test/player-tier junk edids', () => {
+    expect(isExcludedOmodEdid('DEBUG_ATX_mod_melee_Sledgehammer')).toBe(true);
+    expect(isExcludedOmodEdid('DEL_E08A_mod_x')).toBe(true);
+    expect(isExcludedOmodEdid('CUT_AAA_mod')).toBe(true);
+    expect(isExcludedOmodEdid('P62_mod_foo')).toBe(true);
+    expect(isExcludedOmodEdid('ZZZ_mod_Legendary_Weapon4_Crafting')).toBe(true);
+  });
+
+  it('does not exclude legitimate omod edids — ATX is deliberately NOT junk-filtered for omods', () => {
+    expect(isExcludedOmodEdid('mod_Legendary_Weapon1_DamageAddiction')).toBe(false);
+    expect(isExcludedOmodEdid('ATX_mod_StarletRifle')).toBe(false);
+    expect(isExcludedOmodEdid('dlc01_mod_melee_assaultronblade_Standard')).toBe(false);
   });
 });
