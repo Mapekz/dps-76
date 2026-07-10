@@ -755,7 +755,36 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x009005EB:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x009005EB",
+       "edid": "ATX_Cambot_Reporters_Instinct_Perk",
+       "name": "Reporter's Instinct",
+       "rank": 1
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x009005EB:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x009005EB",
+       "edid": "ATX_Cambot_Reporters_Instinct_Perk",
+       "name": "Reporter's Instinct",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -927,7 +956,65 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00905316:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00905316",
+       "edid": "ATX_TeaWizard_LuckyLeaf_AddPerk",
+       "name": "Lucky-Leaf Tea Perk",
+       "rank": 1
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00905316:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00905316",
+       "edid": "ATX_TeaWizard_LuckyLeaf_AddPerk",
+       "name": "Lucky-Leaf Tea Perk",
+       "rank": 1
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=2"
+       }
+      ]
+     },
+     {
+      "id": "0x00905316:r1:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00905316",
+       "edid": "ATX_TeaWizard_LuckyLeaf_AddPerk",
+       "name": "Lucky-Leaf Tea Perk",
+       "rank": 1
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=3"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -950,7 +1037,65 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0091C195:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0091C195",
+       "edid": "ATX_VaultTecGelatinCake_CakeSlice_AddPerk",
+       "name": "Vault-Tec Gelatin Cake Perk",
+       "rank": 1
+      },
+      "bucket": "specialCharisma",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0091C195:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0091C195",
+       "edid": "ATX_VaultTecGelatinCake_CakeSlice_AddPerk",
+       "name": "Vault-Tec Gelatin Cake Perk",
+       "rank": 1
+      },
+      "bucket": "specialCharisma",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=2"
+       }
+      ]
+     },
+     {
+      "id": "0x0091C195:r1:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0091C195",
+       "edid": "ATX_VaultTecGelatinCake_CakeSlice_AddPerk",
+       "name": "Vault-Tec Gelatin Cake Perk",
+       "rank": 1
+      },
+      "bucket": "specialCharisma",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=3"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -4144,6 +4289,120 @@
       "op": "MUL_ADD",
       "value": 0.04999995231628418,
       "conditions": []
+     },
+     {
+      "id": "0x00113618:r5:5:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00113618",
+       "edid": "DLC04_PerkMagPerkScav",
+       "name": "SCAV! - Villainous Virtuosity",
+       "rank": 5
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGold()=100"
+       }
+      ]
+     },
+     {
+      "id": "0x00113618:r5:5:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00113618",
+       "edid": "DLC04_PerkMagPerkScav",
+       "name": "SCAV! - Villainous Virtuosity",
+       "rank": 5
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGold()=1000"
+       }
+      ]
+     },
+     {
+      "id": "0x00113618:r5:5:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00113618",
+       "edid": "DLC04_PerkMagPerkScav",
+       "name": "SCAV! - Villainous Virtuosity",
+       "rank": 5
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGold()=10000"
+       }
+      ]
+     },
+     {
+      "id": "0x00113618:r5:5:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00113618",
+       "edid": "DLC04_PerkMagPerkScav",
+       "name": "SCAV! - Villainous Virtuosity",
+       "rank": 5
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGold()=100"
+       }
+      ]
+     },
+     {
+      "id": "0x00113618:r5:5:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00113618",
+       "edid": "DLC04_PerkMagPerkScav",
+       "name": "SCAV! - Villainous Virtuosity",
+       "rank": 5
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGold()=1000"
+       }
+      ]
+     },
+     {
+      "id": "0x00113618:r5:5:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00113618",
+       "edid": "DLC04_PerkMagPerkScav",
+       "name": "SCAV! - Villainous Virtuosity",
+       "rank": 5
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGold()=10000"
+       }
+      ]
      }
     ]
    }
@@ -4168,7 +4427,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001135CA:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001135CA",
+       "edid": "DLC04_VANS",
+       "name": "V.A.N.S.",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 2,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -6200,7 +6474,39 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x007A76BA:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x007A76BA",
+       "edid": "GHL_PlayerPerk",
+       "name": "Player Ghoul Perk",
+       "rank": 1
+      },
+      "bucket": "specialCharisma",
+      "op": "ADD",
+      "value": 10,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasActiveMagicEffect(DamageRadiationWaterInjestion)=0"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasActiveMagicEffect(DamageRadiationEating)=0"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasMagicEffectKeyword(GHL_RadiationBonusEffect)=0"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRadshieldPercentage()=0"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -6703,15 +7009,585 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00797E45:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E45:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 1
+      },
+      "bucket": "specialAgility",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E45:r1:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 1
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E45:r1:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E45:r1:1:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E45:r1:1:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E45:r1:1:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 1
+      },
+      "bucket": "specialCharisma",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00797E45:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 2
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E45:r2:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 2
+      },
+      "bucket": "specialAgility",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E45:r2:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 2
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E45:r2:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 2
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E45:r2:1:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 2
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E45:r2:1:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 2
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E45:r2:1:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 2
+      },
+      "bucket": "specialCharisma",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00797E45:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 3
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E45:r3:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 3
+      },
+      "bucket": "specialAgility",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E45:r3:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 3
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E45:r3:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 3
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E45:r3:1:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 3
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E45:r3:1:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 3
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E45:r3:1:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E45",
+       "edid": "GHL_UnitedOrdeal",
+       "name": "United Ordeal",
+       "rank": 3
+      },
+      "bucket": "specialCharisma",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsPlayerGhoul()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -8201,21 +9077,121 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0001DAFE:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0001DAFE",
+       "edid": "IronFist",
+       "name": "Iron Fist",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "curve": {
+       "input": "enemyDamageResist",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 1000,
+         "y": 100
+        }
+       ]
+      },
+      "curveScale": 0.009999999776482582,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeUnarmed",
+        "present": true
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0001DAFE:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0001DAFE",
+       "edid": "IronFist",
+       "name": "Iron Fist",
+       "rank": 2
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "curve": {
+       "input": "enemyDamageResist",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 1000,
+         "y": 100
+        }
+       ]
+      },
+      "curveScale": 0.009999999776482582,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeUnarmed",
+        "present": true
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0001DAFE:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0001DAFE",
+       "edid": "IronFist",
+       "name": "Iron Fist",
+       "rank": 3
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "curve": {
+       "input": "enemyDamageResist",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 1000,
+         "y": 100
+        }
+       ]
+      },
+      "curveScale": 0.009999999776482582,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeUnarmed",
+        "present": true
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
-  "notes": [
-   "AbPerkFortifyDmgMeleeUnarmed: curve with unmapped input AV 0x000002E3 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "IronStomach",
@@ -12261,11 +13237,127 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00323F92:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00323F92",
+       "edid": "MagneticPersonality",
+       "name": "Magnetic Personality",
+       "rank": 1
+      },
+      "bucket": "specialCharisma",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00323F92:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00323F92",
+       "edid": "MagneticPersonality",
+       "name": "Magnetic Personality",
+       "rank": 1
+      },
+      "bucket": "specialCharisma",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=2"
+       }
+      ]
+     },
+     {
+      "id": "0x00323F92:r1:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00323F92",
+       "edid": "MagneticPersonality",
+       "name": "Magnetic Personality",
+       "rank": 1
+      },
+      "bucket": "specialCharisma",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=3"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00323F92:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00323F92",
+       "edid": "MagneticPersonality",
+       "name": "Magnetic Personality",
+       "rank": 2
+      },
+      "bucket": "specialCharisma",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00323F92:r2:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00323F92",
+       "edid": "MagneticPersonality",
+       "name": "Magnetic Personality",
+       "rank": 2
+      },
+      "bucket": "specialCharisma",
+      "op": "ADD",
+      "value": 4,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=2"
+       }
+      ]
+     },
+     {
+      "id": "0x00323F92:r2:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00323F92",
+       "edid": "MagneticPersonality",
+       "name": "Magnetic Personality",
+       "rank": 2
+      },
+      "bucket": "specialCharisma",
+      "op": "ADD",
+      "value": 6,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount()=3"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -13660,7 +14752,46 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004C93B:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004C93B",
+       "edid": "NightPerson",
+       "name": "Night Person",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsTrueForConditionForm(Perk_Night_Condition)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0004C93B:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004C93B",
+       "edid": "NightPerson",
+       "name": "Night Person",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsTrueForConditionForm(Perk_Night_Condition)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -14086,7 +15217,141 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0080F857:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0080F857",
+       "edid": "P62_Legendary_Armor_CrusadersPerk",
+       "name": "Crusaders S.P.E.C.I.A.L. Perk",
+       "rank": 1
+      },
+      "bucket": "specialCharisma",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0080F857:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0080F857",
+       "edid": "P62_Legendary_Armor_CrusadersPerk",
+       "name": "Crusaders S.P.E.C.I.A.L. Perk",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=2"
+       }
+      ]
+     },
+     {
+      "id": "0x0080F857:r1:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0080F857",
+       "edid": "P62_Legendary_Armor_CrusadersPerk",
+       "name": "Crusaders S.P.E.C.I.A.L. Perk",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=3"
+       }
+      ]
+     },
+     {
+      "id": "0x0080F857:r1:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0080F857",
+       "edid": "P62_Legendary_Armor_CrusadersPerk",
+       "name": "Crusaders S.P.E.C.I.A.L. Perk",
+       "rank": 1
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=4"
+       }
+      ]
+     },
+     {
+      "id": "0x0080F857:r1:1:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0080F857",
+       "edid": "P62_Legendary_Armor_CrusadersPerk",
+       "name": "Crusaders S.P.E.C.I.A.L. Perk",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=5"
+       }
+      ]
+     },
+     {
+      "id": "0x0080F857:r1:1:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0080F857",
+       "edid": "P62_Legendary_Armor_CrusadersPerk",
+       "name": "Crusaders S.P.E.C.I.A.L. Perk",
+       "rank": 1
+      },
+      "bucket": "specialAgility",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=5"
+       }
+      ]
+     },
+     {
+      "id": "0x0080F857:r1:1:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0080F857",
+       "edid": "P62_Legendary_Armor_CrusadersPerk",
+       "name": "Crusaders S.P.E.C.I.A.L. Perk",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=5"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -16407,7 +17672,284 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005B7584:r1:5:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B7584",
+       "edid": "PT_PublicTeamBonuses_Perk",
+       "name": "Public Team Perk",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetTeammateBondScore()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetTeamType()=6"
+       }
+      ]
+     },
+     {
+      "id": "0x005B7584:r1:5:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B7584",
+       "edid": "PT_PublicTeamBonuses_Perk",
+       "name": "Public Team Perk",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetTeammateBondScore()=2"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetTeamType()=6"
+       }
+      ]
+     },
+     {
+      "id": "0x005B7584:r1:5:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B7584",
+       "edid": "PT_PublicTeamBonuses_Perk",
+       "name": "Public Team Perk",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetTeammateBondScore()=3"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetTeamType()=6"
+       }
+      ]
+     },
+     {
+      "id": "0x005B7584:r1:5:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B7584",
+       "edid": "PT_PublicTeamBonuses_Perk",
+       "name": "Public Team Perk",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 4,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetTeammateBondScore()=4"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetTeamType()=6"
+       }
+      ]
+     },
+     {
+      "id": "0x005B7584:r1:6:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B7584",
+       "edid": "PT_PublicTeamBonuses_Perk",
+       "name": "Public Team Perk",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetTeammateBondScore()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetTeamType()=4"
+       }
+      ]
+     },
+     {
+      "id": "0x005B7584:r1:6:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B7584",
+       "edid": "PT_PublicTeamBonuses_Perk",
+       "name": "Public Team Perk",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetTeammateBondScore()=2"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetTeamType()=4"
+       }
+      ]
+     },
+     {
+      "id": "0x005B7584:r1:6:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B7584",
+       "edid": "PT_PublicTeamBonuses_Perk",
+       "name": "Public Team Perk",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetTeammateBondScore()=3"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetTeamType()=4"
+       }
+      ]
+     },
+     {
+      "id": "0x005B7584:r1:6:7",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B7584",
+       "edid": "PT_PublicTeamBonuses_Perk",
+       "name": "Public Team Perk",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 4,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetTeammateBondScore()=4"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetTeamType()=4"
+       }
+      ]
+     },
+     {
+      "id": "0x005B7584:r1:7:8",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B7584",
+       "edid": "PT_PublicTeamBonuses_Perk",
+       "name": "Public Team Perk",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetTeammateBondScore()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetTeamType()=5"
+       }
+      ]
+     },
+     {
+      "id": "0x005B7584:r1:7:9",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B7584",
+       "edid": "PT_PublicTeamBonuses_Perk",
+       "name": "Public Team Perk",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetTeammateBondScore()=2"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetTeamType()=5"
+       }
+      ]
+     },
+     {
+      "id": "0x005B7584:r1:7:10",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B7584",
+       "edid": "PT_PublicTeamBonuses_Perk",
+       "name": "Public Team Perk",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetTeammateBondScore()=3"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetTeamType()=5"
+       }
+      ]
+     },
+     {
+      "id": "0x005B7584:r1:7:11",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B7584",
+       "edid": "PT_PublicTeamBonuses_Perk",
+       "name": "Public Team Perk",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 4,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetTeammateBondScore()=4"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetTeamType()=5"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -16563,7 +18105,333 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00393F7A:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00393F7A",
+       "edid": "Radicool",
+       "name": "Radicool",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Rads)=100"
+       }
+      ]
+     },
+     {
+      "id": "0x00393F7A:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00393F7A",
+       "edid": "Radicool",
+       "name": "Radicool",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Rads)=190"
+       }
+      ]
+     },
+     {
+      "id": "0x00393F7A:r1:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00393F7A",
+       "edid": "Radicool",
+       "name": "Radicool",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Rads)=280"
+       }
+      ]
+     },
+     {
+      "id": "0x00393F7A:r1:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00393F7A",
+       "edid": "Radicool",
+       "name": "Radicool",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Rads)=370"
+       }
+      ]
+     },
+     {
+      "id": "0x00393F7A:r1:1:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00393F7A",
+       "edid": "Radicool",
+       "name": "Radicool",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Rads)=460"
+       }
+      ]
+     },
+     {
+      "id": "0x00393F7A:r1:1:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00393F7A",
+       "edid": "Radicool",
+       "name": "Radicool",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(CUT_Radicool02)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Rads)=130"
+       }
+      ]
+     },
+     {
+      "id": "0x00393F7A:r1:1:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00393F7A",
+       "edid": "Radicool",
+       "name": "Radicool",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(CUT_Radicool02)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Rads)=220"
+       }
+      ]
+     },
+     {
+      "id": "0x00393F7A:r1:1:7",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00393F7A",
+       "edid": "Radicool",
+       "name": "Radicool",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(CUT_Radicool02)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Rads)=310"
+       }
+      ]
+     },
+     {
+      "id": "0x00393F7A:r1:1:8",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00393F7A",
+       "edid": "Radicool",
+       "name": "Radicool",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(CUT_Radicool02)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Rads)=400"
+       }
+      ]
+     },
+     {
+      "id": "0x00393F7A:r1:1:9",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00393F7A",
+       "edid": "Radicool",
+       "name": "Radicool",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(CUT_Radicool02)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Rads)=490"
+       }
+      ]
+     },
+     {
+      "id": "0x00393F7A:r1:1:10",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00393F7A",
+       "edid": "Radicool",
+       "name": "Radicool",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(CUT_Radicool03)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Rads)=160"
+       }
+      ]
+     },
+     {
+      "id": "0x00393F7A:r1:1:11",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00393F7A",
+       "edid": "Radicool",
+       "name": "Radicool",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(CUT_Radicool03)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Rads)=250"
+       }
+      ]
+     },
+     {
+      "id": "0x00393F7A:r1:1:12",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00393F7A",
+       "edid": "Radicool",
+       "name": "Radicool",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(CUT_Radicool03)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Rads)=340"
+       }
+      ]
+     },
+     {
+      "id": "0x00393F7A:r1:1:13",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00393F7A",
+       "edid": "Radicool",
+       "name": "Radicool",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(CUT_Radicool03)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Rads)=430"
+       }
+      ]
+     },
+     {
+      "id": "0x00393F7A:r1:1:14",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00393F7A",
+       "edid": "Radicool",
+       "name": "Radicool",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(CUT_Radicool03)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Rads)=520"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -17568,7 +19436,36 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0080F8F5:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0080F8F5",
+       "edid": "SCORE_S21_Unshakeable_Beliefs_Perk",
+       "name": "Roast_Proof",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0080F8F5:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0080F8F5",
+       "edid": "SCORE_S21_Unshakeable_Beliefs_Perk",
+       "name": "Roast_Proof",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -17608,7 +19505,31 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0061F70B:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0061F70B",
+       "edid": "SCORE_S5_COMP_SuperMutant_Perk_MartialArtist",
+       "name": "Martial Artist",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeMelee1H",
+         "WeaponTypeMelee2H",
+         "WeaponTypeUnarmed"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -18159,7 +20080,46 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004D8A7:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D8A7",
+       "edid": "SolarPowered",
+       "name": "Solar Powered",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsTrueForConditionForm(Perk_Day_Condition)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0004D8A7:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D8A7",
+       "edid": "SolarPowered",
+       "name": "Solar Powered",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsTrueForConditionForm(Perk_Day_Condition)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -19867,7 +21827,136 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0016E81E:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E81E",
+       "edid": "Underarmor_BOSPerk",
+       "name": "UnderarmorBOS Perk",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0016E81E:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E81E",
+       "edid": "Underarmor_BOSPerk",
+       "name": "UnderarmorBOS Perk",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining2)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E81E:r1:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E81E",
+       "edid": "Underarmor_BOSPerk",
+       "name": "UnderarmorBOS Perk",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining3)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E81E:r1:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E81E",
+       "edid": "Underarmor_BOSPerk",
+       "name": "UnderarmorBOS Perk",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining4)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E81E:r1:1:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E81E",
+       "edid": "Underarmor_BOSPerk",
+       "name": "UnderarmorBOS Perk",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining4)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E81E:r1:1:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E81E",
+       "edid": "Underarmor_BOSPerk",
+       "name": "UnderarmorBOS Perk",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E81E:r1:1:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E81E",
+       "edid": "Underarmor_BOSPerk",
+       "name": "UnderarmorBOS Perk",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -19891,7 +21980,193 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0016E801:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E801",
+       "edid": "Underarmor_CasualPerk",
+       "name": "UnderarmorCasual Perk",
+       "rank": 1
+      },
+      "bucket": "specialCharisma",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0016E801:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E801",
+       "edid": "Underarmor_CasualPerk",
+       "name": "UnderarmorCasual Perk",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining2)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E801:r1:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E801",
+       "edid": "Underarmor_CasualPerk",
+       "name": "UnderarmorCasual Perk",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining3)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E801:r1:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E801",
+       "edid": "Underarmor_CasualPerk",
+       "name": "UnderarmorCasual Perk",
+       "rank": 1
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining3)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E801:r1:1:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E801",
+       "edid": "Underarmor_CasualPerk",
+       "name": "UnderarmorCasual Perk",
+       "rank": 1
+      },
+      "bucket": "specialCharisma",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining4)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E801:r1:1:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E801",
+       "edid": "Underarmor_CasualPerk",
+       "name": "UnderarmorCasual Perk",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining4)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E801:r1:1:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E801",
+       "edid": "Underarmor_CasualPerk",
+       "name": "UnderarmorCasual Perk",
+       "rank": 1
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining4)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E801:r1:1:7",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E801",
+       "edid": "Underarmor_CasualPerk",
+       "name": "UnderarmorCasual Perk",
+       "rank": 1
+      },
+      "bucket": "specialCharisma",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E801:r1:1:8",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E801",
+       "edid": "Underarmor_CasualPerk",
+       "name": "UnderarmorCasual Perk",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E801:r1:1:9",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E801",
+       "edid": "Underarmor_CasualPerk",
+       "name": "UnderarmorCasual Perk",
+       "rank": 1
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -19915,7 +22190,136 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0016E7EC:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7EC",
+       "edid": "Underarmor_EnclavePerk",
+       "name": "Underarmor EnclavePerk",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0016E7EC:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7EC",
+       "edid": "Underarmor_EnclavePerk",
+       "name": "Underarmor EnclavePerk",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining2)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7EC:r1:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7EC",
+       "edid": "Underarmor_EnclavePerk",
+       "name": "Underarmor EnclavePerk",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining3)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7EC:r1:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7EC",
+       "edid": "Underarmor_EnclavePerk",
+       "name": "Underarmor EnclavePerk",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining4)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7EC:r1:1:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7EC",
+       "edid": "Underarmor_EnclavePerk",
+       "name": "Underarmor EnclavePerk",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining4)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7EC:r1:1:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7EC",
+       "edid": "Underarmor_EnclavePerk",
+       "name": "Underarmor EnclavePerk",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7EC:r1:1:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7EC",
+       "edid": "Underarmor_EnclavePerk",
+       "name": "Underarmor EnclavePerk",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -19939,7 +22343,193 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0016E7D9:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D9",
+       "edid": "Underarmor_MarinePerk",
+       "name": "Underarmor MarinePerk",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0016E7D9:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D9",
+       "edid": "Underarmor_MarinePerk",
+       "name": "Underarmor MarinePerk",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining2)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7D9:r1:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D9",
+       "edid": "Underarmor_MarinePerk",
+       "name": "Underarmor MarinePerk",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining3)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7D9:r1:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D9",
+       "edid": "Underarmor_MarinePerk",
+       "name": "Underarmor MarinePerk",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining3)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7D9:r1:1:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D9",
+       "edid": "Underarmor_MarinePerk",
+       "name": "Underarmor MarinePerk",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining4)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7D9:r1:1:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D9",
+       "edid": "Underarmor_MarinePerk",
+       "name": "Underarmor MarinePerk",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining4)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7D9:r1:1:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D9",
+       "edid": "Underarmor_MarinePerk",
+       "name": "Underarmor MarinePerk",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining4)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7D9:r1:1:7",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D9",
+       "edid": "Underarmor_MarinePerk",
+       "name": "Underarmor MarinePerk",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7D9:r1:1:8",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D9",
+       "edid": "Underarmor_MarinePerk",
+       "name": "Underarmor MarinePerk",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7D9:r1:1:9",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D9",
+       "edid": "Underarmor_MarinePerk",
+       "name": "Underarmor MarinePerk",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -19963,7 +22553,174 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0016E7D0:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D0",
+       "edid": "Underarmor_RaiderPerk",
+       "name": "Underarmor Raider Perk",
+       "rank": 1
+      },
+      "bucket": "specialAgility",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0016E7D0:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D0",
+       "edid": "Underarmor_RaiderPerk",
+       "name": "Underarmor Raider Perk",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining2)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7D0:r1:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D0",
+       "edid": "Underarmor_RaiderPerk",
+       "name": "Underarmor Raider Perk",
+       "rank": 1
+      },
+      "bucket": "specialAgility",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining3)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7D0:r1:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D0",
+       "edid": "Underarmor_RaiderPerk",
+       "name": "Underarmor Raider Perk",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining3)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7D0:r1:1:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D0",
+       "edid": "Underarmor_RaiderPerk",
+       "name": "Underarmor Raider Perk",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining4)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7D0:r1:1:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D0",
+       "edid": "Underarmor_RaiderPerk",
+       "name": "Underarmor Raider Perk",
+       "rank": 1
+      },
+      "bucket": "specialAgility",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining4)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7D0:r1:1:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D0",
+       "edid": "Underarmor_RaiderPerk",
+       "name": "Underarmor Raider Perk",
+       "rank": 1
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7D0:r1:1:7",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D0",
+       "edid": "Underarmor_RaiderPerk",
+       "name": "Underarmor Raider Perk",
+       "rank": 1
+      },
+      "bucket": "specialAgility",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7D0:r1:1:8",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7D0",
+       "edid": "Underarmor_RaiderPerk",
+       "name": "Underarmor Raider Perk",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -19987,7 +22744,250 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0016E7C7:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7C7",
+       "edid": "Underarmor_VaultPerk",
+       "name": "Underarmor Vault Perk",
+       "rank": 1
+      },
+      "bucket": "specialLuck",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x0016E7C7:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7C7",
+       "edid": "Underarmor_VaultPerk",
+       "name": "Underarmor Vault Perk",
+       "rank": 1
+      },
+      "bucket": "specialCharisma",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7C7:r1:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7C7",
+       "edid": "Underarmor_VaultPerk",
+       "name": "Underarmor Vault Perk",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7C7:r1:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7C7",
+       "edid": "Underarmor_VaultPerk",
+       "name": "Underarmor Vault Perk",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7C7:r1:1:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7C7",
+       "edid": "Underarmor_VaultPerk",
+       "name": "Underarmor Vault Perk",
+       "rank": 1
+      },
+      "bucket": "specialAgility",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7C7:r1:1:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7C7",
+       "edid": "Underarmor_VaultPerk",
+       "name": "Underarmor Vault Perk",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7C7:r1:1:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7C7",
+       "edid": "Underarmor_VaultPerk",
+       "name": "Underarmor Vault Perk",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining5)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7C7:r1:1:7",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7C7",
+       "edid": "Underarmor_VaultPerk",
+       "name": "Underarmor Vault Perk",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining4)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7C7:r1:1:8",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7C7",
+       "edid": "Underarmor_VaultPerk",
+       "name": "Underarmor Vault Perk",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining4)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7C7:r1:1:9",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7C7",
+       "edid": "Underarmor_VaultPerk",
+       "name": "Underarmor Vault Perk",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining4)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7C7:r1:1:10",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7C7",
+       "edid": "Underarmor_VaultPerk",
+       "name": "Underarmor Vault Perk",
+       "rank": 1
+      },
+      "bucket": "specialStrength",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining3)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7C7:r1:1:11",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7C7",
+       "edid": "Underarmor_VaultPerk",
+       "name": "Underarmor Vault Perk",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining3)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0016E7C7:r1:1:12",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016E7C7",
+       "edid": "Underarmor_VaultPerk",
+       "name": "Underarmor Vault Perk",
+       "rank": 1
+      },
+      "bucket": "specialPerception",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(dn_VaultSuitLining2)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,

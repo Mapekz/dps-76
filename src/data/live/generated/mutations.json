@@ -10,6 +10,9 @@
    "Mutation_AdrenalReaction: MGEF Mutation_Treated_Effect archetype Script — needs override",
    "Mutation_AdrenalReaction: condition: IsSpellTarget(RadX)=0",
    "Mutation_AdrenalReaction: condition: IsSpellTarget(Serum_AdrenalReaction)=0",
+   "Mutation_AdrenalReaction: MGEF Mutation_ReduceMaxHealth: no route for AV Health — needs mapping",
+   "Mutation_AdrenalReaction: MGEF abMutationCount: no route for AV MutationCount — needs mapping",
+   "Mutation_AdrenalReaction: MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping",
    "Mutation_AdrenalReaction: MGEF Mutation_AdrenalReaction_TextDummy archetype Script — needs override",
    "Mutation_AdrenalReaction: MGEF Mutation_AdrenalReaction_TextDummySuper archetype Script — needs override",
    "Mutation_AdrenalReaction: MGEF abPerkFortifyDmgAll: zero magnitude, no curve — script/scaled, needs override"
@@ -20,14 +23,76 @@
   "formId": "0x003C403D",
   "name": "Bird Bones",
   "kind": "mutation",
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x003C403D:0",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x003C403D",
+     "edid": "Mutation_BirdBones",
+     "name": "Bird Bones"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 4,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(RadX)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(Serum_BirdBones)=0"
+     }
+    ]
+   },
+   {
+    "id": "0x003C403D:1",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x003C403D",
+     "edid": "Mutation_BirdBones",
+     "name": "Bird Bones"
+    },
+    "bucket": "specialAgility",
+    "op": "ADD",
+    "value": 4,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": false
+     }
+    ]
+   },
+   {
+    "id": "0x003C403D:2",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x003C403D",
+     "edid": "Mutation_BirdBones",
+     "name": "Bird Bones"
+    },
+    "bucket": "specialAgility",
+    "op": "ADD",
+    "value": 5,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     }
+    ]
+   }
+  ],
   "notes": [
    "Mutation_BirdBones: condition: IsSpellTarget(RadX)=1",
    "Mutation_BirdBones: MGEF Mutation_Treated_Effect archetype Script — needs override",
    "Mutation_BirdBones: MGEF Mutation_BirdBones_UIDummy archetype Script — needs override",
    "Mutation_BirdBones: MGEF Mutation_BirdBones_UIDummySuper archetype Script — needs override",
    "Mutation_BirdBones: condition: IsSpellTarget(RadX)=0",
-   "Mutation_BirdBones: condition: IsSpellTarget(Serum_BirdBones)=0"
+   "Mutation_BirdBones: condition: IsSpellTarget(Serum_BirdBones)=0",
+   "Mutation_BirdBones: MGEF Mutation_ReduceFallDamage: no route for AV FallingDamageMod — needs mapping",
+   "Mutation_BirdBones: MGEF Mutation_ReduceFallSpeed: no route for AV FallSpeedMult — needs mapping",
+   "Mutation_BirdBones: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
  {
@@ -46,7 +111,8 @@
    "Mutation_Carnivore: MGEF Mutation_EatNoVeggies archetype Script — needs override",
    "Mutation_Carnivore: MGEF Mutation_Carnivore_UIDummy archetype Script — needs override",
    "Mutation_Carnivore: condition: IsSpellTarget(Serum_Carnivore)=1",
-   "Mutation_Carnivore: MGEF Mutation_Carnivore_UIDummyWithSerum archetype Script — needs override"
+   "Mutation_Carnivore: MGEF Mutation_Carnivore_UIDummyWithSerum archetype Script — needs override",
+   "Mutation_Carnivore: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
  {
@@ -71,7 +137,9 @@
    "Mutation_Chameleon: MGEF Mutation_Chameleon_UIDummy archetype Script — needs override",
    "Mutation_Chameleon: MGEF Mutation_Chameleon_UIDummySerum archetype Script — needs override",
    "Mutation_Chameleon: MGEF Mutation_Chameleon_StealthIcon archetype Script — needs override",
-   "Mutation_Chameleon: MGEF Mutation_Chameleon_AddOnAttackFlagPerk archetype Script — needs override"
+   "Mutation_Chameleon: MGEF Mutation_FortifyDamageResist_Hidden: no route for AV DamageResist — needs mapping",
+   "Mutation_Chameleon: MGEF Mutation_Chameleon_AddOnAttackFlagPerk archetype Script — needs override",
+   "Mutation_Chameleon: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
  {
@@ -82,6 +150,42 @@
   "modifiers": [
    {
     "id": "0x003C4037:0",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x003C4037",
+     "edid": "Mutation_EagleEyes",
+     "name": "Eagle Eyes"
+    },
+    "bucket": "specialPerception",
+    "op": "ADD",
+    "value": 4,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": false
+     }
+    ]
+   },
+   {
+    "id": "0x003C4037:1",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x003C4037",
+     "edid": "Mutation_EagleEyes",
+     "name": "Eagle Eyes"
+    },
+    "bucket": "specialPerception",
+    "op": "ADD",
+    "value": 5,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x003C4037:2",
     "source": {
      "kind": "mutation",
      "formId": "0x003C4037",
@@ -99,7 +203,7 @@
     ]
    },
    {
-    "id": "0x003C4037:1",
+    "id": "0x003C4037:3",
     "source": {
      "kind": "mutation",
      "formId": "0x003C4037",
@@ -115,13 +219,36 @@
       "value": true
      }
     ]
+   },
+   {
+    "id": "0x003C4037:4",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x003C4037",
+     "edid": "Mutation_EagleEyes",
+     "name": "Eagle Eyes"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 4,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(RadX)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(Serum_EagleEyes)=0"
+     }
+    ]
    }
   ],
   "notes": [
    "Mutation_EagleEyes: condition: IsSpellTarget(RadX)=1",
    "Mutation_EagleEyes: MGEF Mutation_Treated_Effect archetype Script — needs override",
    "Mutation_EagleEyes: condition: IsSpellTarget(RadX)=0",
-   "Mutation_EagleEyes: condition: IsSpellTarget(Serum_EagleEyes)=0"
+   "Mutation_EagleEyes: condition: IsSpellTarget(Serum_EagleEyes)=0",
+   "Mutation_EagleEyes: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
  {
@@ -129,12 +256,94 @@
   "formId": "0x003C4045",
   "name": "Egg Head",
   "kind": "mutation",
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x003C4045:0",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x003C4045",
+     "edid": "Mutation_EggHead",
+     "name": "Egg Head"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 3,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(RadX)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(Serum_EggHead)=0"
+     }
+    ]
+   },
+   {
+    "id": "0x003C4045:1",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x003C4045",
+     "edid": "Mutation_EggHead",
+     "name": "Egg Head"
+    },
+    "bucket": "specialEndurance",
+    "op": "ADD",
+    "value": 3,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(RadX)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(Serum_EggHead)=0"
+     }
+    ]
+   },
+   {
+    "id": "0x003C4045:2",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x003C4045",
+     "edid": "Mutation_EggHead",
+     "name": "Egg Head"
+    },
+    "bucket": "specialIntelligence",
+    "op": "ADD",
+    "value": 6,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": false
+     }
+    ]
+   },
+   {
+    "id": "0x003C4045:3",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x003C4045",
+     "edid": "Mutation_EggHead",
+     "name": "Egg Head"
+    },
+    "bucket": "specialIntelligence",
+    "op": "ADD",
+    "value": 8,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     }
+    ]
+   }
+  ],
   "notes": [
    "Mutation_EggHead: condition: IsSpellTarget(RadX)=1",
    "Mutation_EggHead: MGEF Mutation_Treated_Effect archetype Script — needs override",
    "Mutation_EggHead: condition: IsSpellTarget(RadX)=0",
-   "Mutation_EggHead: condition: IsSpellTarget(Serum_EggHead)=0"
+   "Mutation_EggHead: condition: IsSpellTarget(Serum_EggHead)=0",
+   "Mutation_EggHead: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
  {
@@ -148,7 +357,8 @@
    "Mutation_ElectricallyCharged: MGEF Mutation_Treated_Effect archetype Script — needs override",
    "Mutation_ElectricallyCharged: condition: GetDead()=0",
    "Mutation_ElectricallyCharged: MGEF Mutation_ElectricallyChargedScriptEffect archetype Script — needs override",
-   "Mutation_ElectricallyCharged: MGEF Mutation_ElectricallyChargedSuperScriptEffect archetype Script — needs override"
+   "Mutation_ElectricallyCharged: MGEF Mutation_ElectricallyChargedSuperScriptEffect archetype Script — needs override",
+   "Mutation_ElectricallyCharged: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
  {
@@ -164,7 +374,9 @@
    "Mutation_Empath: condition: IsSpellTarget(Serum_Empath)=0",
    "Mutation_Empath: MGEF Mutation_EmpathEffect archetype Script — needs override",
    "Mutation_Empath: MGEF Mutation_Empath_UIDummy archetype Script — needs override",
-   "Mutation_Empath: MGEF Mutation_EmpathTeamDMG_UIDummy archetype Script — needs override"
+   "Mutation_Empath: MGEF Mutation_EmpathTeamDMG_UIDummy archetype Script — needs override",
+   "Mutation_Empath: MGEF abMutationCount: no route for AV MutationCount — needs mapping",
+   "Mutation_Empath: MGEF abMutationEmpathStrength: no route for AV MutationEmpathStrength — needs mapping"
   ]
  },
  {
@@ -176,9 +388,11 @@
   "notes": [
    "Mutation_Grounded: condition: IsSpellTarget(RadX)=1",
    "Mutation_Grounded: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_Grounded: MGEF Mutation_FortifyEnergyResist: no route for AV EnergyResist — needs mapping",
    "Mutation_Grounded: condition: IsSpellTarget(RadX)=0",
    "Mutation_Grounded: condition: IsSpellTarget(Serum_Grounded)=0",
-   "Mutation_Grounded: MGEF Mutation_ReduceEnergyDamage archetype Script — needs override"
+   "Mutation_Grounded: MGEF Mutation_ReduceEnergyDamage archetype Script — needs override",
+   "Mutation_Grounded: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
  {
@@ -190,9 +404,11 @@
   "notes": [
    "Mutation_HealingFactor: condition: IsSpellTarget(RadX)=1",
    "Mutation_HealingFactor: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_HealingFactor: MGEF Mutation_FortifyHealRate: no route for AV HealRate — needs mapping",
    "Mutation_HealingFactor: condition: IsSpellTarget(RadX)=0",
    "Mutation_HealingFactor: condition: IsSpellTarget(Serum_HealingFactor)=0",
-   "Mutation_HealingFactor: MGEF Mutation_ReduceChemEffect archetype Script — needs override"
+   "Mutation_HealingFactor: MGEF Mutation_ReduceChemEffect archetype Script — needs override",
+   "Mutation_HealingFactor: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
  {
@@ -211,7 +427,8 @@
    "Mutation_Herbivore: MGEF Mutation_EatNoMeat archetype Script — needs override",
    "Mutation_Herbivore: MGEF Mutation_Herbivore_UIDummy archetype Script — needs override",
    "Mutation_Herbivore: condition: IsSpellTarget(Serum_Herbivore)=1",
-   "Mutation_Herbivore: MGEF Mutation_Herbivore_UIDummyWithSerum archetype Script — needs override"
+   "Mutation_Herbivore: MGEF Mutation_Herbivore_UIDummyWithSerum archetype Script — needs override",
+   "Mutation_Herbivore: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
  {
@@ -219,7 +436,442 @@
   "formId": "0x004E1F1E",
   "name": "Herd Mentality",
   "kind": "mutation",
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x004E1F1E:0",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(RadX)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(Serum_HerdMentality)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsMemberOfAPlayerTeam()=0"
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:1",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialPerception",
+    "op": "ADD",
+    "value": 2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(RadX)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(Serum_HerdMentality)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsMemberOfAPlayerTeam()=0"
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:2",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialEndurance",
+    "op": "ADD",
+    "value": 2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(RadX)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(Serum_HerdMentality)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsMemberOfAPlayerTeam()=0"
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:3",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialCharisma",
+    "op": "ADD",
+    "value": 2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(RadX)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(Serum_HerdMentality)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsMemberOfAPlayerTeam()=0"
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:4",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialIntelligence",
+    "op": "ADD",
+    "value": 2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(RadX)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(Serum_HerdMentality)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsMemberOfAPlayerTeam()=0"
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:5",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialAgility",
+    "op": "ADD",
+    "value": 2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(RadX)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(Serum_HerdMentality)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsMemberOfAPlayerTeam()=0"
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:6",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialLuck",
+    "op": "ADD",
+    "value": 2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(RadX)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(Serum_HerdMentality)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsMemberOfAPlayerTeam()=0"
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:7",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsTrueForConditionForm(Mutation_Check_UseNormalVersion_HerdMentality)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:8",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialPerception",
+    "op": "ADD",
+    "value": 2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsTrueForConditionForm(Mutation_Check_UseNormalVersion_HerdMentality)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:9",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialEndurance",
+    "op": "ADD",
+    "value": 2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsTrueForConditionForm(Mutation_Check_UseNormalVersion_HerdMentality)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:10",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialCharisma",
+    "op": "ADD",
+    "value": 2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsTrueForConditionForm(Mutation_Check_UseNormalVersion_HerdMentality)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:11",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialIntelligence",
+    "op": "ADD",
+    "value": 2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsTrueForConditionForm(Mutation_Check_UseNormalVersion_HerdMentality)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:12",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialAgility",
+    "op": "ADD",
+    "value": 2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsTrueForConditionForm(Mutation_Check_UseNormalVersion_HerdMentality)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:13",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialLuck",
+    "op": "ADD",
+    "value": 2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsTrueForConditionForm(Mutation_Check_UseNormalVersion_HerdMentality)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:14",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 3,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:15",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialPerception",
+    "op": "ADD",
+    "value": 3,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:16",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialEndurance",
+    "op": "ADD",
+    "value": 3,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:17",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialCharisma",
+    "op": "ADD",
+    "value": 3,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:18",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialIntelligence",
+    "op": "ADD",
+    "value": 3,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:19",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialAgility",
+    "op": "ADD",
+    "value": 3,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x004E1F1E:20",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E1F1E",
+     "edid": "Mutation_HerdMentality",
+     "name": "Herd Mentality"
+    },
+    "bucket": "specialLuck",
+    "op": "ADD",
+    "value": 3,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     }
+    ]
+   }
+  ],
   "notes": [
    "Mutation_HerdMentality: condition: IsSpellTarget(RadX)=1",
    "Mutation_HerdMentality: MGEF Mutation_Treated_Effect archetype Script — needs override",
@@ -230,7 +882,8 @@
    "Mutation_HerdMentality: MGEF Mutation_HerdMentality_Reduce_UIDummy archetype Script — needs override",
    "Mutation_HerdMentality: MGEF Mutation_HerdMentality_UIDummy archetype Script — needs override",
    "Mutation_HerdMentality: condition: IsSpellTarget(Serum_HerdMentality)=1",
-   "Mutation_HerdMentality: MGEF Mutation_HerdMentality_UIDummyWithSerum archetype Script — needs override"
+   "Mutation_HerdMentality: MGEF Mutation_HerdMentality_UIDummyWithSerum archetype Script — needs override",
+   "Mutation_HerdMentality: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
  {
@@ -238,12 +891,38 @@
   "formId": "0x004DF1CE",
   "name": "Marsupial",
   "kind": "mutation",
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x004DF1CE:0",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004DF1CE",
+     "edid": "Mutation_Marsupial",
+     "name": "Marsupial"
+    },
+    "bucket": "specialIntelligence",
+    "op": "ADD",
+    "value": 4,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(RadX)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(Serum_Marsupial)=0"
+     }
+    ]
+   }
+  ],
   "notes": [
    "Mutation_Marsupial: condition: IsSpellTarget(RadX)=1",
    "Mutation_Marsupial: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_Marsupial: MGEF Mutation_FortifyJumpHeight: no route for AV JumpHeightMult — needs mapping",
+   "Mutation_Marsupial: MGEF Mutation_FortifyCarryWeight: no route for AV CarryWeight — needs mapping",
    "Mutation_Marsupial: condition: IsSpellTarget(RadX)=0",
-   "Mutation_Marsupial: condition: IsSpellTarget(Serum_Marsupial)=0"
+   "Mutation_Marsupial: condition: IsSpellTarget(Serum_Marsupial)=0",
+   "Mutation_Marsupial: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
  {
@@ -256,7 +935,8 @@
    "Mutation_PlagueWalker: condition: IsSpellTarget(RadX)=1",
    "Mutation_PlagueWalker: MGEF Mutation_Treated_Effect archetype Script — needs override",
    "Mutation_PlagueWalker: MGEF Mutation_PlagueWalkerCloak archetype Cloak — needs override",
-   "Mutation_PlagueWalker: MGEF Mutation_PlagueWalkerCloakSuper archetype Cloak — needs override"
+   "Mutation_PlagueWalker: MGEF Mutation_PlagueWalkerCloakSuper archetype Cloak — needs override",
+   "Mutation_PlagueWalker: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
  {
@@ -268,8 +948,12 @@
   "notes": [
    "Mutation_ScalySkin: condition: IsSpellTarget(RadX)=1",
    "Mutation_ScalySkin: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_ScalySkin: MGEF Mutation_FortifyDamageResist: no route for AV DamageResist — needs mapping",
+   "Mutation_ScalySkin: MGEF Mutation_FortifyEnergyResist: no route for AV EnergyResist — needs mapping",
    "Mutation_ScalySkin: condition: IsSpellTarget(RadX)=0",
-   "Mutation_ScalySkin: condition: IsSpellTarget(Serum_ScalySkin)=0"
+   "Mutation_ScalySkin: condition: IsSpellTarget(Serum_ScalySkin)=0",
+   "Mutation_ScalySkin: MGEF Mutation_ReduceActionPoints: no route for AV ActionPoints — needs mapping",
+   "Mutation_ScalySkin: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
  {
@@ -288,7 +972,10 @@
    "Mutation_SpeedDemon: condition: IsMoving()=1",
    "Mutation_SpeedDemon: MGEF Mutation_IncreasedHungerThirst archetype Script — needs override",
    "Mutation_SpeedDemon: condition: GetIsPlayerGhoul()=1",
-   "Mutation_SpeedDemon: MGEF GHL_Mutation_IncreasedFeral archetype Script — needs override"
+   "Mutation_SpeedDemon: MGEF GHL_Mutation_IncreasedFeral archetype Script — needs override",
+   "Mutation_SpeedDemon: MGEF Mutation_FortifyMoveSpeed: no route for AV SpeedMult — needs mapping",
+   "Mutation_SpeedDemon: MGEF Mutation_FortifyReloadSpeed: no route for AV WeapReloadSpeedMult — needs mapping",
+   "Mutation_SpeedDemon: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
  {
@@ -342,13 +1029,36 @@
       "present": true
      }
     ]
+   },
+   {
+    "id": "0x0028D3BC:2",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x0028D3BC",
+     "edid": "Mutation_Talons",
+     "name": "Talons"
+    },
+    "bucket": "specialAgility",
+    "op": "ADD",
+    "value": 4,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(RadX)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsSpellTarget(Serum_Talons)=0"
+     }
+    ]
    }
   ],
   "notes": [
    "Mutation_Talons: condition: IsSpellTarget(RadX)=1",
    "Mutation_Talons: MGEF Mutation_Treated_Effect archetype Script — needs override",
    "Mutation_Talons: condition: IsSpellTarget(RadX)=0",
-   "Mutation_Talons: condition: IsSpellTarget(Serum_Talons)=0"
+   "Mutation_Talons: condition: IsSpellTarget(Serum_Talons)=0",
+   "Mutation_Talons: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
  {
@@ -415,6 +1125,7 @@
    "Mutation_TwistedMuscles: condition: IsSpellTarget(RadX)=0",
    "Mutation_TwistedMuscles: condition: IsSpellTarget(Serum_TwistedMuscles)=0",
    "Mutation_TwistedMuscles: MGEF Mutation_ReduceAccuracy archetype Script — needs override",
+   "Mutation_TwistedMuscles: MGEF abMutationCount: no route for AV MutationCount — needs mapping",
    "Mutation_TwistedMuscles: condition: HasPerk(ClassFreak02)=0",
    "Mutation_TwistedMuscles: condition: HasPerk(ClassFreak01)=1",
    "Mutation_TwistedMuscles: condition: HasPerk(ClassFreak03)=0",
@@ -433,7 +1144,8 @@
    "Mutation_UnstableIsotope: MGEF Mutation_Treated_Effect archetype Script — needs override",
    "Mutation_UnstableIsotope: condition: GetDead()=0",
    "Mutation_UnstableIsotope: MGEF Mutation_UnstableIsotopeScriptEffect archetype Script — needs override",
-   "Mutation_UnstableIsotope: MGEF Mutation_UnstableIsotopeSuperScriptEffect archetype Script — needs override"
+   "Mutation_UnstableIsotope: MGEF Mutation_UnstableIsotopeSuperScriptEffect archetype Script — needs override",
+   "Mutation_UnstableIsotope: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  }
 ]

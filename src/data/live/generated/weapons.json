@@ -149,7 +149,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "50CalMachineGun",
@@ -292,7 +293,8 @@
    "0x00114364",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "10mm",
@@ -434,7 +436,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "10mmSMG",
@@ -598,7 +601,8 @@
    "0x006214D8",
    "0x00521926",
    "0x001A8B4B"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Burn_crRadScorpionAbraxodyneSting",
@@ -837,7 +841,8 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": false
  },
  {
   "id": "AlienBlaster",
@@ -972,7 +977,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "AlienBlaster_DailyOps",
@@ -1250,7 +1256,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x00114364"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "AlienRifle",
@@ -1366,7 +1373,8 @@
    "0x004E89AB",
    "0x00114364",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DailyOps_crAlienRifle",
@@ -1623,7 +1631,8 @@
   "attachParentSlots": [
    "0x00024004",
    "0x00114364"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "MTR05_ChineseOfficerSword",
@@ -1736,7 +1745,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "MTR06_10mmSMG_ScorchedKiller",
@@ -1861,7 +1871,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "MTR05_10mm_ScorchedTrainer",
@@ -1980,7 +1991,8 @@
   "attachParentSlots": [
    "0x00024004",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "WorkshopArtillerySmokeFlare",
@@ -2029,7 +2041,8 @@
    50
   ],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": true
  },
  {
   "id": "AssaultRifle",
@@ -2176,7 +2189,8 @@
    "0x00114364",
    "0x0047A264",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "RD01_crAssaultRifle",
@@ -2468,7 +2482,8 @@
    "0x00114364",
    "0x0047A264",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "DLC01_AssaultronBlade",
@@ -2596,7 +2611,8 @@
    "0x006214D8",
    "0x00521926",
    "0x001A8B4B"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DailyOps_crAssaultronLaser",
@@ -2848,7 +2864,8 @@
    100
   ],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": false
  },
  {
   "id": "AutoAxe",
@@ -2975,7 +2992,8 @@
    "0x0047A264",
    "0x006214D8",
    "0x00521926"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "AutoGrenadeLauncher",
@@ -3079,7 +3097,8 @@
    "0x0047A264",
    "0x00114364",
    "0x001A8B4B"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "SDOW_crSlasherBoss_AutoGL_DailyOps",
@@ -3370,7 +3389,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "JoeyBello_SuperSledge_BadaBoom",
@@ -3635,271 +3655,8 @@
    "0x004E89AB",
    "0x0047A264",
    "0x001A001E"
-  ]
- },
- {
-  "id": "debug_balance_AssaultRifle",
-  "formId": "0x00442901",
-  "name": "Balance Assault Rifle",
-  "weaponTypeName": "Gun",
-  "keywords": [
-   "AnimsGripRifleAssault",
-   "s_40_RifleIstvan",
-   "ma_CanHaveNullMuzzle",
-   "s_IronSightsRifle",
-   "WeaponTypeBallistic",
-   "ObjectTypeWeapon",
-   "QuickkeyGun",
-   "ma_AssaultRifle",
-   "WeaponTypeAssaultRifle",
-   "WeaponTypeRanged",
-   "UI_WeaponTypeAssaultRifle",
-   "WeaponTypeRifle"
   ],
-  "components": [
-   {
-    "damageType": "ballistic",
-    "damageTypeEdid": null,
-    "amount": 30,
-    "tier": 25,
-    "curve": [
-     {
-      "x": 1,
-      "y": 34
-     },
-     {
-      "x": 5,
-      "y": 38
-     },
-     {
-      "x": 10,
-      "y": 42
-     },
-     {
-      "x": 15,
-      "y": 48
-     },
-     {
-      "x": 20,
-      "y": 54
-     },
-     {
-      "x": 25,
-      "y": 61
-     },
-     {
-      "x": 30,
-      "y": 69
-     },
-     {
-      "x": 35,
-      "y": 78
-     },
-     {
-      "x": 40,
-      "y": 88
-     },
-     {
-      "x": 45,
-      "y": 99
-     },
-     {
-      "x": 50,
-      "y": 112
-     }
-    ]
-   }
-  ],
-  "critDamageMult": 2.25,
-  "critChargeBonus": 1,
-  "sneakAttackMult": 2.25,
-  "speed": 0.8331999778747559,
-  "attackDelaySec": 0.30000001192092896,
-  "animationAttackSec": 0.6666666865348816,
-  "animationFireSec": 0.000009999999747378752,
-  "reloadSpeed": 0.6897000074386597,
-  "animationReloadSec": 1.9333434104919431,
-  "capacity": 20,
-  "ammoPerShot": 1,
-  "actionPointCost": 17,
-  "projectileCount": 1,
-  "reach": 1,
-  "secondaryDamage": 15,
-  "damageBonusMult": 1,
-  "eligibleLevels": [
-   30,
-   35,
-   40,
-   45,
-   50
-  ],
-  "templateModFormIds": [
-   "0x00312918",
-   "0x003128BB",
-   "0x0030EB3F",
-   "0x003128D6",
-   "0x0031295D",
-   "0x0004F21D",
-   "0x00312913",
-   "0x001C6F3F",
-   "0x001C6F42",
-   "0x001C6F43",
-   "0x001C6F46",
-   "0x001C6F49",
-   "0x001C6F4E",
-   "0x003128C5",
-   "0x0030EB31",
-   "0x00312909",
-   "0x001C6F41",
-   "0x001C6F44",
-   "0x001C6F40",
-   "0x001C6F47",
-   "0x003128BF",
-   "0x00312936",
-   "0x0023AC1B"
-  ],
-  "attachParentSlots": [
-   "0x00024004",
-   "0x001E32C8",
-   "0x004E89A8",
-   "0x004E89A9",
-   "0x004E89AA",
-   "0x004E89AB"
-  ]
- },
- {
-  "id": "debug_balance_HandMadeGun",
-  "formId": "0x004428EE",
-  "name": "Balance Handmade Rifle",
-  "weaponTypeName": "Gun",
-  "keywords": [
-   "WeaponTypeAssaultRifle",
-   "DLC04_ma_HandmadeAssaultRifle",
-   "ma_CanHaveNullMuzzle",
-   "s_IronSightsRifle",
-   "WeaponTypeBallistic",
-   "ObjectTypeWeapon",
-   "QuickkeyGun",
-   "AnimsHandmadeAssaultRifle",
-   "s_40_DLC04_RifleHandmadeAssault",
-   "WeaponTypeRanged",
-   "UI_WeaponTypeAssaultRifle"
-  ],
-  "components": [
-   {
-    "damageType": "ballistic",
-    "damageTypeEdid": null,
-    "amount": 32,
-    "tier": 18,
-    "curve": [
-     {
-      "x": 1,
-      "y": 18
-     },
-     {
-      "x": 5,
-      "y": 20
-     },
-     {
-      "x": 10,
-      "y": 22
-     },
-     {
-      "x": 15,
-      "y": 25
-     },
-     {
-      "x": 20,
-      "y": 29
-     },
-     {
-      "x": 25,
-      "y": 32
-     },
-     {
-      "x": 30,
-      "y": 36
-     },
-     {
-      "x": 35,
-      "y": 41
-     },
-     {
-      "x": 40,
-      "y": 46
-     },
-     {
-      "x": 45,
-      "y": 52
-     },
-     {
-      "x": 50,
-      "y": 59
-     }
-    ]
-   }
-  ],
-  "critDamageMult": 2.25,
-  "critChargeBonus": 1,
-  "sneakAttackMult": 2.25,
-  "speed": 1,
-  "attackDelaySec": 0.25,
-  "animationAttackSec": 0.6666666865348816,
-  "animationFireSec": 0.000009999999747378752,
-  "reloadSpeed": 1.25,
-  "animationReloadSec": 3.0333433151245117,
-  "capacity": 20,
-  "ammoPerShot": 1,
-  "actionPointCost": 16,
-  "projectileCount": 1,
-  "reach": 1,
-  "secondaryDamage": 15,
-  "damageBonusMult": 1,
-  "eligibleLevels": [
-   15,
-   20,
-   25,
-   30,
-   35,
-   40,
-   45,
-   50
-  ],
-  "templateModFormIds": [
-   "0x0004F21D",
-   "0x0031B193",
-   "0x0031B199",
-   "0x0031B1A9",
-   "0x0031B1DB",
-   "0x0031B1E3",
-   "0x0037D0C1",
-   "0x00114376",
-   "0x0031B1D5",
-   "0x00113989",
-   "0x0011398E",
-   "0x00113991",
-   "0x0011398D",
-   "0x00113986",
-   "0x0011398A",
-   "0x00113987",
-   "0x0011398F",
-   "0x0031B18C",
-   "0x00113990",
-   "0x0031B1D4",
-   "0x00113988",
-   "0x0011398C",
-   "0x0031B1E7",
-   "0x00113984"
-  ],
-  "attachParentSlots": [
-   "0x00024004",
-   "0x001E32C8",
-   "0x00114364",
-   "0x004E89A8",
-   "0x004E89A9",
-   "0x004E89AA",
-   "0x004E89AB"
-  ]
+  "obtainable": true
  },
  {
   "id": "BaseballBat",
@@ -4028,7 +3785,8 @@
    "0x0032CD06",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Baton",
@@ -4152,7 +3910,8 @@
    "0x006214D8",
    "0x0047A264",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "BearArm",
@@ -4276,7 +4035,8 @@
    "0x001A001E",
    "0x00521926",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Blackpowder_Pistol_Blunderbuss",
@@ -4401,7 +4161,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Blackpowder_Pistol",
@@ -4524,7 +4285,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "BlackPowder_Rifle",
@@ -4654,7 +4416,8 @@
    "0x004E89AB",
    "0x00114364",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "MoM_BladeOfBastet",
@@ -4762,7 +4525,8 @@
    "0x004E89A8",
    "0x004E89A9",
    "0x004E89AA"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Board",
@@ -4877,7 +4641,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "BoneClub",
@@ -4989,7 +4754,8 @@
    "0x0005524C",
    "0x006214D8",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Bonehammer",
@@ -5101,7 +4867,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "BoneTambo",
@@ -5212,7 +4979,8 @@
    "0x004E89AB",
    "0x0005524C",
    "0x0032CD06"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "RegularBow",
@@ -5338,7 +5106,8 @@
    "0x00022499",
    "0x00114364",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "BowieKnife",
@@ -5455,7 +5224,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "SDOW_crBowieKnife_SlasherBoss",
@@ -5729,7 +5499,8 @@
    "0x0032CD06",
    "0x006214D8",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "BoxingGlove",
@@ -5843,7 +5614,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Broadsider",
@@ -5936,7 +5708,8 @@
    "0x00114364",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "E09C_CompoundBow_BurningLove",
@@ -6065,7 +5838,8 @@
    "0x006214D8",
    "0x0047A264",
    "0x005867A7"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Burn_crRadScorpionBurningSting",
@@ -6304,7 +6078,8 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": false
  },
  {
   "id": "Burn_crStingWingAbraxodyneSting",
@@ -6543,7 +6318,8 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": false
  },
  {
   "id": "CamdenWhackerWeapon",
@@ -6641,7 +6417,8 @@
    "0x0005524C",
    "0x001E32C8",
    "0x0000283C"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "Cattleprod",
@@ -6760,7 +6537,8 @@
    "0x0000283C",
    "0x001A001E",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Chainsaw_76",
@@ -6887,7 +6665,8 @@
    "0x00114364",
    "0x0047A264",
    "0x001A8B4B"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "P62_crTheDrifterM79",
@@ -6967,7 +6746,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x001A8B4B"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "ChineseOfficerSword",
@@ -7088,7 +6868,8 @@
    "0x001A001E",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "10mm_CircuitBreaker",
@@ -7215,7 +6996,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DoubleBarrelShotgun_ColdShoulder",
@@ -7336,7 +7118,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "Knife",
@@ -7465,7 +7248,8 @@
    "0x001A001E",
    "0x00521926",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "CombatRifle",
@@ -7612,7 +7396,8 @@
    "0x004E89AB",
    "0x00114364",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "CombatShotgun",
@@ -7756,7 +7541,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "RD01_crCombatShotgun",
@@ -8051,7 +7837,8 @@
    "0x004E89AB",
    "0x00114364",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "DLC04_CommieWhacker",
@@ -8171,7 +7958,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "CompoundBow",
@@ -8308,7 +8096,8 @@
    "0x00114364",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Cremator",
@@ -8434,7 +8223,8 @@
    "0x00521926",
    "0x00729BD5",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "crcrossbow",
@@ -8713,7 +8503,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "crossbow",
@@ -8831,7 +8622,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "E08B_CombatShotgun_CrowdControl",
@@ -8953,7 +8745,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "bospistol",
@@ -9076,7 +8869,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DailyOps_crAlienBlaster_Cryo",
@@ -9344,7 +9138,8 @@
    "0x0002249F",
    "0x0005D4D7",
    "0x00114364"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "Cryolator",
@@ -9476,7 +9271,8 @@
    "0x00114364",
    "0x0005D4D7",
    "0x0002249C"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "SDOW_HTO_crSlasher_Boss_Cryolator",
@@ -9961,7 +9757,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "CultistBlade",
@@ -10082,7 +9879,8 @@
    "0x006214D8",
    "0x001A001E",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "CultistDagger",
@@ -10199,7 +9997,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DeathTambo",
@@ -10321,7 +10120,8 @@
    "0x0032CD06",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DeathclawGauntlet",
@@ -10443,7 +10243,8 @@
    "0x006214D8",
    "0x001A001E",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "CharGen_GolfClub_NoName",
@@ -10551,7 +10352,8 @@
   "attachParentSlots": [
    "0x0005524C",
    "0x0000283C"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "DoubleBarrelShotgun_WL005",
@@ -10823,7 +10625,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "E08B_HuntingRifle_DoctorsOrders",
@@ -10947,7 +10750,8 @@
    "0x00114364",
    "0x0047A264",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Nitro",
@@ -11072,7 +10876,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DoubleBarrelShotgun",
@@ -11209,7 +11014,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "RD01_crDoubleBarrelShotgun",
@@ -11489,7 +11295,8 @@
    "0x004E89AB",
    "0x00114364",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "Drill",
@@ -11605,7 +11412,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "MTR04_DrossThrownItem",
@@ -11643,7 +11451,8 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": true
  },
  {
   "id": "ElectroEnforcer",
@@ -11753,7 +11562,8 @@
    "0x004E89AB",
    "0x0032CD06",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Enclave_PlasmaGun",
@@ -11937,7 +11747,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "FaceBreaker",
@@ -12052,7 +11863,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "MTNL01_PumpActionShotgun_Fancy",
@@ -12185,7 +11997,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "MTNL01_SingleActionRevolver_Fancy",
@@ -12307,7 +12120,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Fatman",
@@ -12392,7 +12206,8 @@
    "0x00114364",
    "0x0047A264",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "W05_COMP_Beckett_50CalMachineGun_QuestReward",
@@ -12523,7 +12338,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x00114364"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "FireAxe",
@@ -12634,7 +12450,8 @@
    "0x0005524C",
    "0x001A001E",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Flamer",
@@ -12780,7 +12597,8 @@
    "0x00521926",
    "0x0047A264",
    "0x001A8B4B"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "WorkshopTrapFlamethrowerWeap01",
@@ -12889,7 +12707,8 @@
    "0x0002249D",
    "0x001E32C8",
    "0x001E8CAD"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "WorkshopTrapFlamethrowerWeap02",
@@ -12998,7 +12817,8 @@
    "0x0002249D",
    "0x001E32C8",
    "0x001E8CAD"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "FlareGun",
@@ -13092,7 +12912,8 @@
    1
   ],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": true
  },
  {
   "id": "E08B_Minigun_FoundationsVengeance",
@@ -13217,7 +13038,8 @@
    "0x00114364",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "FusionCoreWeapon",
@@ -13455,7 +13277,8 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": false
  },
  {
   "id": "SDOW_HTO_crSlasher_Boss_GammaGun",
@@ -13728,7 +13551,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "GatlingGun",
@@ -13873,7 +13697,8 @@
    "0x00114364",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "GatlingLaser",
@@ -14014,7 +13839,8 @@
    "0x00114364",
    "0x0047A264",
    "0x001A8B4B"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "GatlingPlasma",
@@ -14193,7 +14019,8 @@
    "0x004E89AB",
    "0x00114364",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Gauntlet",
@@ -14316,7 +14143,8 @@
    "0x006214D8",
    "0x0047A264",
    "0x001A8B4B"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "GaussMinigun",
@@ -14438,7 +14266,8 @@
    "0x004E89AB",
    "0x00114364",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "GaussPistol",
@@ -14568,7 +14397,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "GaussRifle",
@@ -14711,7 +14541,8 @@
    "0x00114364",
    "0x0047A264",
    "0x001A8B4B"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "gaussshotgun",
@@ -14845,7 +14676,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "GolfClub",
@@ -14959,331 +14791,8 @@
    "0x004E89AB",
    "0x001E32C8",
    "0x006214D8"
-  ]
- },
- {
-  "id": "ZZZ_Grahams_MeatTenderizer",
-  "formId": "0x005527BB",
-  "name": "Grahams Meat Tenderizer",
-  "weaponTypeName": "TwoHandSword",
-  "keywords": [
-   "Anims2hmWideWeapon",
-   "WeaponTypeMelee2H",
-   "QuickkeyMelee",
-   "ma_SuperSledge",
-   "ObjectTypeWeapon",
-   "WeaponTypeBlunt",
-   "WeaponTypeHammer",
-   "WeaponTypeMeleeGeneral",
-   "UI_WeaponTypeSupersledge",
-   "ma_Melee_Appearance"
   ],
-  "components": [
-   {
-    "damageType": "ballistic",
-    "damageTypeEdid": null,
-    "amount": 40,
-    "tier": null,
-    "curve": [
-     {
-      "x": 1,
-      "y": 51
-     },
-     {
-      "x": 5,
-      "y": 55
-     },
-     {
-      "x": 10,
-      "y": 59
-     },
-     {
-      "x": 15,
-      "y": 64
-     },
-     {
-      "x": 20,
-      "y": 69
-     },
-     {
-      "x": 25,
-      "y": 74
-     },
-     {
-      "x": 30,
-      "y": 80
-     },
-     {
-      "x": 35,
-      "y": 86
-     },
-     {
-      "x": 40,
-      "y": 93
-     },
-     {
-      "x": 45,
-      "y": 100
-     },
-     {
-      "x": 50,
-      "y": 107
-     }
-    ]
-   }
-  ],
-  "critDamageMult": 2,
-  "critChargeBonus": 1,
-  "sneakAttackMult": 2,
-  "speed": 1,
-  "attackDelaySec": 0,
-  "animationAttackSec": 1.800010085105896,
-  "animationFireSec": 0,
-  "reloadSpeed": 1,
-  "animationReloadSec": 0,
-  "capacity": 0,
-  "ammoPerShot": 1,
-  "actionPointCost": 45,
-  "projectileCount": 1,
-  "reach": 0.800000011920929,
-  "secondaryDamage": 15,
-  "damageBonusMult": 1,
-  "eligibleLevels": [
-   30,
-   40,
-   50
-  ],
-  "templateModFormIds": [
-   "0x000690B1",
-   "0x005117BF",
-   "0x0023030B"
-  ],
-  "attachParentSlots": [
-   "0x0005524C",
-   "0x001E32C8",
-   "0x004E89A8",
-   "0x004E89A9",
-   "0x004E89AA",
-   "0x004E89AB",
-   "0x0047A264",
-   "0x001A001E"
-  ]
- },
- {
-  "id": "ZZZ_Grahams_MeatTenderizer_Cayanne",
-  "formId": "0x005527BD",
-  "name": "Grahams Meat Tenderizer Cayanne",
-  "weaponTypeName": "TwoHandSword",
-  "keywords": [
-   "Anims2hmWideWeapon",
-   "WeaponTypeMelee2H",
-   "QuickkeyMelee",
-   "ma_SuperSledge",
-   "ObjectTypeWeapon",
-   "WeaponTypeBlunt",
-   "WeaponTypeHammer",
-   "WeaponTypeMeleeGeneral",
-   "UI_WeaponTypeSupersledge",
-   "ma_Melee_Appearance"
-  ],
-  "components": [
-   {
-    "damageType": "ballistic",
-    "damageTypeEdid": null,
-    "amount": 40,
-    "tier": null,
-    "curve": [
-     {
-      "x": 1,
-      "y": 51
-     },
-     {
-      "x": 5,
-      "y": 55
-     },
-     {
-      "x": 10,
-      "y": 59
-     },
-     {
-      "x": 15,
-      "y": 64
-     },
-     {
-      "x": 20,
-      "y": 69
-     },
-     {
-      "x": 25,
-      "y": 74
-     },
-     {
-      "x": 30,
-      "y": 80
-     },
-     {
-      "x": 35,
-      "y": 86
-     },
-     {
-      "x": 40,
-      "y": 93
-     },
-     {
-      "x": 45,
-      "y": 100
-     },
-     {
-      "x": 50,
-      "y": 107
-     }
-    ]
-   }
-  ],
-  "critDamageMult": 2,
-  "critChargeBonus": 1,
-  "sneakAttackMult": 2,
-  "speed": 1,
-  "attackDelaySec": 0,
-  "animationAttackSec": 1.800010085105896,
-  "animationFireSec": 0,
-  "reloadSpeed": 1,
-  "animationReloadSec": 0,
-  "capacity": 0,
-  "ammoPerShot": 1,
-  "actionPointCost": 45,
-  "projectileCount": 1,
-  "reach": 0.800000011920929,
-  "secondaryDamage": 15,
-  "damageBonusMult": 1,
-  "eligibleLevels": [
-   30,
-   40,
-   50
-  ],
-  "templateModFormIds": [
-   "0x000690B1",
-   "0x005117BF",
-   "0x0023030B"
-  ],
-  "attachParentSlots": [
-   "0x0005524C",
-   "0x001E32C8",
-   "0x004E89A8",
-   "0x004E89A9",
-   "0x004E89AA",
-   "0x004E89AB",
-   "0x0047A264",
-   "0x001A001E"
-  ]
- },
- {
-  "id": "ZZZ_Grahams_MeatTenderizer_Pepper",
-  "formId": "0x005527BC",
-  "name": "Grahams Meat Tenderizer Pepper",
-  "weaponTypeName": "TwoHandSword",
-  "keywords": [
-   "Anims2hmWideWeapon",
-   "WeaponTypeMelee2H",
-   "QuickkeyMelee",
-   "ma_SuperSledge",
-   "ObjectTypeWeapon",
-   "WeaponTypeBlunt",
-   "WeaponTypeHammer",
-   "WeaponTypeMeleeGeneral",
-   "UI_WeaponTypeSupersledge",
-   "ma_Melee_Appearance"
-  ],
-  "components": [
-   {
-    "damageType": "ballistic",
-    "damageTypeEdid": null,
-    "amount": 40,
-    "tier": null,
-    "curve": [
-     {
-      "x": 1,
-      "y": 51
-     },
-     {
-      "x": 5,
-      "y": 55
-     },
-     {
-      "x": 10,
-      "y": 59
-     },
-     {
-      "x": 15,
-      "y": 64
-     },
-     {
-      "x": 20,
-      "y": 69
-     },
-     {
-      "x": 25,
-      "y": 74
-     },
-     {
-      "x": 30,
-      "y": 80
-     },
-     {
-      "x": 35,
-      "y": 86
-     },
-     {
-      "x": 40,
-      "y": 93
-     },
-     {
-      "x": 45,
-      "y": 100
-     },
-     {
-      "x": 50,
-      "y": 107
-     }
-    ]
-   }
-  ],
-  "critDamageMult": 2,
-  "critChargeBonus": 1,
-  "sneakAttackMult": 2,
-  "speed": 1,
-  "attackDelaySec": 0,
-  "animationAttackSec": 1.800010085105896,
-  "animationFireSec": 0,
-  "reloadSpeed": 1,
-  "animationReloadSec": 0,
-  "capacity": 0,
-  "ammoPerShot": 1,
-  "actionPointCost": 45,
-  "projectileCount": 1,
-  "reach": 0.800000011920929,
-  "secondaryDamage": 15,
-  "damageBonusMult": 1,
-  "eligibleLevels": [
-   30,
-   40,
-   50
-  ],
-  "templateModFormIds": [
-   "0x000690B1",
-   "0x005117BF",
-   "0x0023030B"
-  ],
-  "attachParentSlots": [
-   "0x0005524C",
-   "0x001E32C8",
-   "0x004E89A8",
-   "0x004E89A9",
-   "0x004E89AA",
-   "0x004E89AB",
-   "0x0047A264",
-   "0x001A001E"
-  ]
+  "obtainable": true
  },
  {
   "id": "E09A_Broadsider_GrandFinale",
@@ -15363,7 +14872,8 @@
    "0x00114364",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "MoM02B_HistoricSword",
@@ -15475,7 +14985,8 @@
   ],
   "attachParentSlots": [
    "0x0005524C"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DN160_GrognakAxe",
@@ -15589,7 +15100,8 @@
    "0x0005524C",
    "0x006214D8",
    "0x0032CD06"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "GuitarSword",
@@ -15703,7 +15215,8 @@
    "0x004E89AB",
    "0x001A001E",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "E08A_GulperSmacker",
@@ -15825,7 +15338,8 @@
    "0x006214D8",
    "0x0064722C",
    "0x0064722B"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "E09D_SingleActionRevolver_GunthersRevolver",
@@ -15947,7 +15461,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "HalluciGenGrenade",
@@ -15988,7 +15503,8 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": true
  },
  {
   "id": "DLC04_HandMadeGun",
@@ -16138,7 +15654,8 @@
    "0x005867A7",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DLC03_HarpoonGun",
@@ -16268,7 +15785,8 @@
    "0x006214D8",
    "0x00114364",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Hatchet",
@@ -16387,7 +15905,8 @@
    "0x0005524C",
    "0x001A001E",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "BOSRocketLauncher",
@@ -16516,7 +16035,8 @@
    "0x004E89AB",
    "0x0047A264",
    "0x00114364"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "HogSplitter",
@@ -16629,7 +16149,8 @@
    "0x0005524C",
    "0x0047A264",
    "0x001A8B4B"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "HuntingRifle",
@@ -16795,46 +16316,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
- },
- {
-  "id": "DEl_crJerseyDevilChargeAttack_01",
-  "formId": "0x006CCADB",
-  "name": "Jersey Devil Charge Attack",
-  "weaponTypeName": "HandToHandMelee",
-  "keywords": [
-   "crWeaponRanged",
-   "NoRicochet",
-   "WeaponTypeRanged"
   ],
-  "components": [
-   {
-    "damageType": "ballistic",
-    "damageTypeEdid": null,
-    "amount": 1,
-    "tier": null,
-    "curve": null
-   }
-  ],
-  "critDamageMult": 2,
-  "critChargeBonus": 1,
-  "sneakAttackMult": 2,
-  "speed": 1,
-  "attackDelaySec": 0,
-  "animationAttackSec": 0.7832000255584717,
-  "animationFireSec": 0,
-  "reloadSpeed": 1,
-  "animationReloadSec": 0,
-  "capacity": 0,
-  "ammoPerShot": 1,
-  "actionPointCost": 20,
-  "projectileCount": 1,
-  "reach": 1.5,
-  "secondaryDamage": 0,
-  "damageBonusMult": 1,
-  "eligibleLevels": [],
-  "templateModFormIds": [],
-  "attachParentSlots": []
+  "obtainable": true
  },
  {
   "id": "Knuckles",
@@ -16953,7 +16436,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "LaserGun",
@@ -17113,7 +16597,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Gutsy02LeftArmLaserGunAuto",
@@ -17367,7 +16852,8 @@
   ],
   "attachParentSlots": [
    "0x00024004"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "LeadPipe",
@@ -17483,7 +16969,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DLC03_LeverGun",
@@ -17634,7 +17121,8 @@
    "0x00114364",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "MG42",
@@ -17755,7 +17243,8 @@
    "0x00114364",
    "0x0047A264",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "E09C_SubmachineGun_LoveTap",
@@ -17884,7 +17373,8 @@
    "0x006214D8",
    "0x0047A264",
    "0x00114364"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "E09A_MoleMinerM79",
@@ -17955,7 +17445,8 @@
    "0x004E89AB",
    "0x001E32C8",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "LC096_LvlScorchedGrenadeLauncher_M79",
@@ -18024,7 +17515,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x001E32C8"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "M79",
@@ -18115,7 +17607,8 @@
    "0x00114364",
    "0x00521926",
    "0x001A8B4B"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Machete",
@@ -18237,7 +17730,8 @@
    "0x001A001E",
    "0x006214D8",
    "0x0032CD06"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "MeatCleaver",
@@ -18324,7 +17818,8 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": true
  },
  {
   "id": "DLC03_MeatHook",
@@ -18440,7 +17935,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "PipeWrench_MechanicsBestFriend",
@@ -18554,7 +18050,8 @@
    "0x004E89AB",
    "0x0032CD06",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "44_MedicalMalpractice",
@@ -18670,7 +18167,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "MTR05_MeteoriteSword",
@@ -18777,7 +18275,8 @@
   "attachParentSlots": [
    "0x0005524C",
    "0x00521926"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "PlasmaGun_MindOverMatter",
@@ -18943,7 +18442,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Minigun",
@@ -19079,7 +18579,8 @@
    "0x00114364",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Minigun_Vertibird",
@@ -19331,7 +18832,8 @@
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "Minigun_Vertibird_Player",
@@ -19584,7 +19086,8 @@
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "W05_Minigun_Raider_Gail",
@@ -19864,7 +19367,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x00114364"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "MissileLauncher",
@@ -19967,113 +19471,8 @@
    "0x0047A264",
    "0x00114364",
    "0x006214D8"
-  ]
- },
- {
-  "id": "ZZZ_ATX_Pickaxe_Modern",
-  "formId": "0x004749C9",
-  "name": "Modern Pickaxe",
-  "weaponTypeName": "TwoHandSword",
-  "keywords": [
-   "Anims2hmWideWeapon",
-   "WeaponTypeMelee2H",
-   "QuickkeyMelee",
-   "WeaponTypeAxe",
-   "ObjectTypeWeapon",
-   "WeaponTypeArchaic",
-   "WeaponTypeMeleeGeneral",
-   "ma_PickAxe",
-   "UI_WeaponTypemelee2HSharp"
   ],
-  "components": [
-   {
-    "damageType": "ballistic",
-    "damageTypeEdid": null,
-    "amount": 23,
-    "tier": null,
-    "curve": [
-     {
-      "x": 1,
-      "y": 39
-     },
-     {
-      "x": 5,
-      "y": 42
-     },
-     {
-      "x": 10,
-      "y": 45
-     },
-     {
-      "x": 15,
-      "y": 49
-     },
-     {
-      "x": 20,
-      "y": 52
-     },
-     {
-      "x": 25,
-      "y": 56
-     },
-     {
-      "x": 30,
-      "y": 61
-     },
-     {
-      "x": 35,
-      "y": 65
-     },
-     {
-      "x": 40,
-      "y": 70
-     },
-     {
-      "x": 45,
-      "y": 76
-     },
-     {
-      "x": 50,
-      "y": 82
-     }
-    ]
-   }
-  ],
-  "critDamageMult": 2,
-  "critChargeBonus": 1,
-  "sneakAttackMult": 2,
-  "speed": 1,
-  "attackDelaySec": 0,
-  "animationAttackSec": 1.800010085105896,
-  "animationFireSec": 0,
-  "reloadSpeed": 1,
-  "animationReloadSec": 0,
-  "capacity": 0,
-  "ammoPerShot": 1,
-  "actionPointCost": 40,
-  "projectileCount": 1,
-  "reach": 0.800000011920929,
-  "secondaryDamage": 10,
-  "damageBonusMult": 1,
-  "eligibleLevels": [
-   5,
-   15,
-   25,
-   35,
-   45
-  ],
-  "templateModFormIds": [
-   "0x0000283D",
-   "0x0006A249"
-  ],
-  "attachParentSlots": [
-   "0x0005524C",
-   "0x001E32C8",
-   "0x004E89A8",
-   "0x004E89A9",
-   "0x004E89AA",
-   "0x004E89AB"
-  ]
+  "obtainable": true
  },
  {
   "id": "MoleMinerGauntlet",
@@ -20189,7 +19588,8 @@
    "0x004E89AB",
    "0x001A001E",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "RD01_crMoleMinerGauntlet",
@@ -20460,7 +19860,8 @@
    "0x004E89AB",
    "0x001A001E",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "E09A_BaseballBat_RatBat",
@@ -20579,7 +19980,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DLC05WorkshopFireworkWeaponPalmGold",
@@ -20680,7 +20082,8 @@
    "0x00022499",
    "0x0002249F",
    "0x0005D4D7"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DLC05WorkshopFireworkWeaponPalmSilver",
@@ -20781,7 +20184,8 @@
    "0x00022499",
    "0x0002249F",
    "0x0005D4D7"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DLC05WorkshopFireworkWeaponPeonyBlue",
@@ -20882,7 +20286,8 @@
    "0x00022499",
    "0x0002249F",
    "0x0005D4D7"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DLC05WorkshopFireworkWeaponPeonyCrackle",
@@ -20983,7 +20388,8 @@
    "0x00022499",
    "0x0002249F",
    "0x0005D4D7"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DLC05WorkshopFireworkWeaponPeonyGreen",
@@ -21084,7 +20490,8 @@
    "0x00022499",
    "0x0002249F",
    "0x0005D4D7"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DLC05WorkshopFireworkWeaponPeonyPink",
@@ -21185,7 +20592,8 @@
    "0x00022499",
    "0x0002249F",
    "0x0005D4D7"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DLC05WorkshopFireworkWeaponPeonyRed",
@@ -21286,7 +20694,8 @@
    "0x00022499",
    "0x0002249F",
    "0x0005D4D7"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DLC05WorkshopFireworkWeaponPeonyYellow",
@@ -21387,7 +20796,8 @@
    "0x00022499",
    "0x0002249F",
    "0x0005D4D7"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DLC05WorkshopFireworkWeaponWeatherClear",
@@ -21488,7 +20898,8 @@
    "0x00022499",
    "0x0002249F",
    "0x0005D4D7"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "DLC05WorkshopFireworkWeaponWeatherRadstorm",
@@ -21589,7 +21000,8 @@
    "0x00022499",
    "0x0002249F",
    "0x0005D4D7"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "DLC05WorkshopFireworkWeaponWeatherRain",
@@ -21690,7 +21102,8 @@
    "0x00022499",
    "0x0002249F",
    "0x0005D4D7"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "WorkshopArtilleryWeapon",
@@ -21946,7 +21359,8 @@
    "0x00022499",
    "0x0002249F",
    "0x0005D4D7"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "WorkshopArtilleryWeaponClose",
@@ -22202,7 +21616,8 @@
    "0x00022499",
    "0x0002249F",
    "0x0005D4D7"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "WorkshopArtilleryWeaponFar",
@@ -22459,7 +21874,8 @@
    "0x00022499",
    "0x0002249F",
    "0x0005D4D7"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "DLC01MrHandyBuzzBlade",
@@ -22569,7 +21985,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "WoodCuttingAxe",
@@ -22678,7 +22095,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "MTNS04_NailerSword",
@@ -22787,7 +22205,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "CUT_NeedleSMG",
@@ -22924,7 +22343,8 @@
    "0x0047A264",
    "0x00114364",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "SCORE_S11_AutoGrenadeLauncher_NukaLauncher",
@@ -23012,7 +22432,8 @@
    "0x004E89AB",
    "0x0047A264",
    "0x00114364"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "WarGlaive_Oathbreaker",
@@ -23123,7 +22544,8 @@
    "0x004E89AB",
    "0x0032CD06",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "W05_MQS_203P_10mmSMG",
@@ -23243,7 +22665,8 @@
    "0x004E89AB",
    "0x0047A264",
    "0x00114364"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "EN02_ScanGrenade",
@@ -23289,7 +22712,8 @@
   ],
   "attachParentSlots": [
    "0x00521926"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "E07B_Invaders_MissileStrikeWeapon",
@@ -23396,7 +22820,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "EN02_OrbitalStrikeWeapon",
@@ -23503,7 +22928,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "EN02_OrbitalStrikeGrenade",
@@ -23551,7 +22977,8 @@
   ],
   "attachParentSlots": [
    "0x00521926"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DLC04_PaddleBall",
@@ -23653,7 +23080,8 @@
   "attachParentSlots": [
    "0x00113720",
    "0x00113C69"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DLC04_PaddleBall_NWOT",
@@ -23754,7 +23182,8 @@
   "attachParentSlots": [
    "0x00113720",
    "0x00113C69"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "PepperShaker",
@@ -23883,7 +23312,8 @@
    "0x00114364",
    "0x0005D4D7",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "PharmaBot_Left_Spray",
@@ -24135,7 +23565,8 @@
    50
   ],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": true
  },
  {
   "id": "PharmaBot_Middle_Spray",
@@ -24387,7 +23818,8 @@
    50
   ],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": true
  },
  {
   "id": "PharmaBot_Right_Spray",
@@ -24639,7 +24071,8 @@
    50
   ],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": true
  },
  {
   "id": "pickaxe",
@@ -24763,7 +24196,8 @@
    "0x001A001E",
    "0x0005524C",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "PipeGun",
@@ -24915,7 +24349,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "PipeBoltAction",
@@ -25055,7 +24490,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "PipeRevolver",
@@ -25191,7 +24627,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "PipeWrench",
@@ -25313,7 +24750,8 @@
    "0x006214D8",
    "0x001A001E",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "E08B_Blunderbuss_PiratePunch",
@@ -25433,7 +24871,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Pitchfork",
@@ -25550,7 +24989,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "PlasmaGun",
@@ -25756,7 +25196,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "PlasmaCaster",
@@ -25930,7 +25371,8 @@
    "0x00024004",
    "0x00114364",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "PlasmaSword",
@@ -26043,7 +25485,8 @@
    "0x0032CD06",
    "0x001A001E",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "RD01_Enc01_PlatformGun",
@@ -26528,7 +25971,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x00114364"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "DLC03_PoleHook",
@@ -26642,7 +26086,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "W05_MQ_003P_Muscle_PollyAssaultronHead",
@@ -26756,7 +26201,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "PoolCue",
@@ -26874,7 +26320,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "PowerFist",
@@ -26995,7 +26442,8 @@
    "0x001A001E",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Camera_SnapMatic",
@@ -27056,7 +26504,8 @@
    "0x0002249F",
    "0x0002249D",
    "0x00114364"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "ProtestSign03",
@@ -27154,7 +26603,8 @@
   ],
   "attachParentSlots": [
    "0x0005524C"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "ProtestSign10",
@@ -27252,7 +26702,8 @@
   ],
   "attachParentSlots": [
    "0x0005524C"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "ProtestSign08",
@@ -27350,7 +26801,8 @@
   ],
   "attachParentSlots": [
    "0x0005524C"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "ProtestSign01",
@@ -27448,7 +26900,8 @@
   ],
   "attachParentSlots": [
    "0x0005524C"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "ProtestSign07",
@@ -27546,7 +26999,8 @@
   ],
   "attachParentSlots": [
    "0x0005524C"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "ProtestSign02",
@@ -27644,7 +27098,8 @@
   ],
   "attachParentSlots": [
    "0x0005524C"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "ProtestSign06",
@@ -27742,7 +27197,8 @@
   ],
   "attachParentSlots": [
    "0x0005524C"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "ProtestSign09",
@@ -27840,7 +27296,8 @@
   ],
   "attachParentSlots": [
    "0x0005524C"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "ProtestSign05",
@@ -27938,7 +27395,8 @@
   ],
   "attachParentSlots": [
    "0x0005524C"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "ProtestSign04",
@@ -28036,7 +27494,8 @@
   ],
   "attachParentSlots": [
    "0x0005524C"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "PumpActionShotgun",
@@ -28182,7 +27641,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "RD01_crPumpActionShotgun",
@@ -28478,7 +27938,8 @@
    "0x0047A264",
    "0x006214D8",
    "0x00521926"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "RadiumRifle",
@@ -28664,7 +28125,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x00114364"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "RailwayRifle",
@@ -28801,7 +28263,8 @@
    "0x00114364",
    "0x0047A264",
    "0x001A8B4B"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "SDOW_HTO_crSlasher_Boss_RailwayRifle",
@@ -29080,7 +28543,8 @@
    "0x00114364",
    "0x0047A264",
    "0x001A8B4B"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "Camera_Disposable",
@@ -29139,7 +28603,8 @@
    "0x0002249F",
    "0x0002249D",
    "0x00114364"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "RevolutionarySword",
@@ -29260,7 +28725,8 @@
    "0x001A001E",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Ripper",
@@ -29374,7 +28840,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "RollingPin",
@@ -29499,7 +28966,8 @@
    "0x004E89AB",
    "0x00521926",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DLC01AssaultronHeadCharging",
@@ -29622,7 +29090,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "SheepSquatchClub",
@@ -29735,7 +29204,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "SheepsquatchShard",
@@ -29875,7 +29345,8 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": true
  },
  {
   "id": "SheepsquatchStaff",
@@ -29987,7 +29458,8 @@
    "0x004E89AB",
    "0x0032CD06",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "ShepherdsCrook",
@@ -30099,7 +29571,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Shishkebab",
@@ -30271,7 +29744,8 @@
    "0x001A001E",
    "0x00521926",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Shovel",
@@ -30398,7 +29872,8 @@
    "0x006214D8",
    "0x0032CD06",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Sickle",
@@ -30518,7 +29993,8 @@
    "0x001E32C8",
    "0x00521926",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "SingleActionRevolver",
@@ -30647,7 +30123,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "SkiSword",
@@ -30768,7 +30245,8 @@
    "0x0047A264",
    "0x001A001E",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Creature_Holiday_Weapon_SlayBells",
@@ -31035,7 +30513,8 @@
    "0x004E89AB",
    "0x0005524C",
    "0x0032CD06"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "sledgehammer",
@@ -31150,7 +30629,8 @@
    "0x004E89AB",
    "0x0032CD06",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "W05_MQR_205P_PlasmaGun",
@@ -31336,7 +30816,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "LeverGun_SoleSurvivor",
@@ -31456,7 +30937,8 @@
    "0x004E89AB",
    "0x00114364",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "Spear",
@@ -31574,7 +31056,8 @@
    "0x006214D8",
    "0x001A001E",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "P62_crTheDrifter10mmSMG",
@@ -31858,7 +31341,8 @@
    "0x006214D8",
    "0x00521926",
    "0x001A8B4B"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "SubmachineGun",
@@ -31995,7 +31479,8 @@
    "0x00114364",
    "0x00521926",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "SuperSledge",
@@ -32125,7 +31610,8 @@
    "0x004E89AB",
    "0x0047A264",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "SpearHealing",
@@ -32236,7 +31722,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Switchblade",
@@ -32363,7 +31850,8 @@
    "0x001A001E",
    "0x00521926",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "PipeSyringer",
@@ -32473,7 +31961,8 @@
    "0x00022499",
    "0x0002249F",
    "0x0002249D"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "V96_1_SuppressionPipeSyringer",
@@ -32580,7 +32069,8 @@
    "0x00022499",
    "0x0002249F",
    "0x0002249D"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "P62_crTheDrifterAssaultronBlade",
@@ -32852,7 +32342,8 @@
    "0x006214D8",
    "0x00521926",
    "0x001A8B4B"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "MeatTenderizer",
@@ -32960,7 +32451,8 @@
    "0x0047A264",
    "0x001A001E",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DLC01LightningGun",
@@ -33089,7 +32581,8 @@
    "0x00114364",
    "0x0047A264",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "SDOW_HTO_crSlasher_Boss_TeslaCannon",
@@ -33587,7 +33080,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "TeslaCannon",
@@ -33719,7 +33213,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x0022CB66"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "SDOW_HTO_crSlasher_Boss_LightningGun",
@@ -34202,7 +33697,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "E08B_SuperSledge_TheDebilitator",
@@ -34312,7 +33808,8 @@
    "0x004E89AB",
    "0x0047A264",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "BlackPowder_Rifle_Dragon",
@@ -34436,7 +33933,8 @@
    "0x00114364",
    "0x005867A7",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "SuperSledge_TheFarmhand",
@@ -34547,7 +34045,8 @@
    "0x004E89AB",
    "0x0047A264",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "CombatRifle_Fixer",
@@ -34675,7 +34174,8 @@
    "0x00114364",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DLC01_AssaultronBlade_TheGutter",
@@ -34787,119 +34287,8 @@
    "0x004E89AB",
    "0x0047A264",
    "0x001A001E"
-  ]
- },
- {
-  "id": "atx_alienprobe",
-  "formId": "0x00559C99",
-  "name": "The Invader",
-  "weaponTypeName": "OneHandSword",
-  "keywords": [
-   "Anims1hmShortWeapon",
-   "WeaponTypeMelee1H",
-   "Anims1hmWeapon",
-   "QuickkeyMelee",
-   "ma_Knife",
-   "AnimsStabWeapon",
-   "ObjectTypeWeapon",
-   "WeaponTypeKnives",
-   "WeaponTypeBladed",
-   "WeaponTypeMeleeGeneral",
-   "UI_WeaponTypemelee1HBlade",
-   "ma_legendarycrafting_weaponmelee",
-   "ma_Misc_Legendarycrafting_Weapon_Melee4",
-   "ma_legendarycrafting_weapon"
   ],
-  "components": [
-   {
-    "damageType": "ballistic",
-    "damageTypeEdid": null,
-    "amount": 9,
-    "tier": 22,
-    "curve": [
-     {
-      "x": 1,
-      "y": 26
-     },
-     {
-      "x": 5,
-      "y": 29
-     },
-     {
-      "x": 10,
-      "y": 33
-     },
-     {
-      "x": 15,
-      "y": 37
-     },
-     {
-      "x": 20,
-      "y": 42
-     },
-     {
-      "x": 25,
-      "y": 47
-     },
-     {
-      "x": 30,
-      "y": 54
-     },
-     {
-      "x": 35,
-      "y": 61
-     },
-     {
-      "x": 40,
-      "y": 68
-     },
-     {
-      "x": 45,
-      "y": 77
-     },
-     {
-      "x": 50,
-      "y": 87
-     }
-    ]
-   }
-  ],
-  "critDamageMult": 3.5,
-  "critChargeBonus": 1,
-  "sneakAttackMult": 2.5,
-  "speed": 1,
-  "attackDelaySec": 0,
-  "animationAttackSec": 0.7944528460502625,
-  "animationFireSec": 0,
-  "reloadSpeed": 1,
-  "animationReloadSec": 0,
-  "capacity": 0,
-  "ammoPerShot": 1,
-  "actionPointCost": 18,
-  "projectileCount": 1,
-  "reach": 0.800000011920929,
-  "secondaryDamage": 10,
-  "damageBonusMult": 1,
-  "eligibleLevels": [
-   1,
-   5,
-   10,
-   20,
-   30,
-   40,
-   50
-  ],
-  "templateModFormIds": [],
-  "attachParentSlots": [
-   "0x0005524C",
-   "0x001E32C8",
-   "0x004E89A8",
-   "0x004E89A9",
-   "0x004E89AA",
-   "0x004E89AB",
-   "0x0032CD06",
-   "0x006214D8"
-  ]
+  "obtainable": false
  },
  {
   "id": "W05_COMP_Astronaut_AlienBlaster_QuestReward",
@@ -35019,7 +34408,8 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "ThirstZapper",
@@ -35134,7 +34524,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x00114364"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "AC_MQ02_Stage_ThrowingKnife_Weapon",
@@ -35224,7 +34615,8 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": true
  },
  {
   "id": "Throwing_Knife",
@@ -35312,7 +34704,8 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": true
  },
  {
   "id": "TireIron",
@@ -35428,7 +34821,8 @@
    "0x004E89AB",
    "0x006214D8",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Tomahawk",
@@ -35516,7 +34910,8 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": true
  },
  {
   "id": "E08B_DeathTambo_ToneDeath",
@@ -35632,112 +35027,8 @@
    "0x006214D8",
    "0x0047A264",
    "0x001A001E"
-  ]
- },
- {
-  "id": "ZZZATX_TurkeyRipper",
-  "formId": "0x0059BC16",
-  "name": "Turkey Ripper",
-  "weaponTypeName": "OneHandSword",
-  "keywords": [
-   "Anims1hmShortWeapon",
-   "WeaponTypeRipper",
-   "Anims1hmWeapon",
-   "QuickkeyMelee",
-   "AnimsRipper",
-   "ma_Ripper",
-   "AnimsStabWeapon",
-   "ObjectTypeWeapon",
-   "s_40_Ripper",
-   "UI_WeaponTypeRipper",
-   "WeaponTypeMelee1H",
-   "WeaponTypeBladed"
   ],
-  "components": [
-   {
-    "damageType": "ballistic",
-    "damageTypeEdid": null,
-    "amount": 0,
-    "tier": null,
-    "curve": [
-     {
-      "x": 1,
-      "y": 0
-     },
-     {
-      "x": 5,
-      "y": 0
-     },
-     {
-      "x": 10,
-      "y": 0
-     },
-     {
-      "x": 15,
-      "y": 0
-     },
-     {
-      "x": 20,
-      "y": 0
-     },
-     {
-      "x": 25,
-      "y": 0
-     },
-     {
-      "x": 30,
-      "y": 0
-     },
-     {
-      "x": 35,
-      "y": 0
-     },
-     {
-      "x": 40,
-      "y": 17
-     },
-     {
-      "x": 45,
-      "y": 20
-     },
-     {
-      "x": 50,
-      "y": 20
-     }
-    ]
-   }
-  ],
-  "critDamageMult": 2,
-  "critChargeBonus": 1,
-  "sneakAttackMult": 2,
-  "speed": 1,
-  "attackDelaySec": 0,
-  "animationAttackSec": 1.119051814079285,
-  "animationFireSec": 0,
-  "reloadSpeed": 1,
-  "animationReloadSec": 0,
-  "capacity": 0,
-  "ammoPerShot": 1,
-  "actionPointCost": 40,
-  "projectileCount": 1,
-  "reach": 0.800000011920929,
-  "secondaryDamage": 0,
-  "damageBonusMult": 1,
-  "eligibleLevels": [
-   40
-  ],
-  "templateModFormIds": [
-   "0x000FA2F7",
-   "0x00230308"
-  ],
-  "attachParentSlots": [
-   "0x0005524C",
-   "0x001E32C8",
-   "0x004E89A8",
-   "0x004E89A9",
-   "0x004E89AA",
-   "0x004E89AB"
-  ]
+  "obtainable": true
  },
  {
   "id": "DLC04_TurretMountedLaserGunSpaceBlue",
@@ -35981,7 +35272,8 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": false
  },
  {
   "id": "Ultracite_GatlingLaser",
@@ -36105,7 +35397,8 @@
    "0x004E89AB",
    "0x00114364",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "UltraciteLaserGun",
@@ -36232,7 +35525,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "UltraciteLaserGun_E09A",
@@ -36513,7 +35807,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "RD01_UltraciteTerrorSword",
@@ -36628,7 +35923,8 @@
    "0x00114364",
    "0x0047A264",
    "0x001A8B4B"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "UnarmedHuman",
@@ -36868,7 +36164,8 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": true
  },
  {
   "id": "UnarmedPowerArmor",
@@ -37107,7 +36404,8 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": true
  },
  {
   "id": "DeathclawGauntlet_UnstoppableMonster",
@@ -37216,7 +36514,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "meltdown",
@@ -37341,7 +36640,8 @@
    "0x0047A264",
    "0x00114364",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Stormcutter",
@@ -37451,7 +36751,8 @@
    "0x004E89AB",
    "0x0047A264",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "WorkshopVertibirdGrenade",
@@ -37502,7 +36803,8 @@
    50
   ],
   "templateModFormIds": [],
-  "attachParentSlots": []
+  "attachParentSlots": [],
+  "obtainable": true
  },
  {
   "id": "MoM_VoiceOfSet_44",
@@ -37615,7 +36917,8 @@
    "0x004E89A8",
    "0x004E89A9",
    "0x004E89AA"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "MTNS05_PipeSyringer_Vox",
@@ -37716,7 +37019,8 @@
    "0x00022499",
    "0x0002249F",
    "0x0002249D"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "Creature_Holiday_Weapon_CandyCane",
@@ -37985,7 +37289,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x0032CD06"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "WalkingCane",
@@ -38104,7 +37409,8 @@
    "0x0032CD06",
    "0x006214D8",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "WarDrum",
@@ -38216,7 +37522,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "WarGlaive",
@@ -38332,266 +37639,8 @@
    "0x001A001E",
    "0x006214D8",
    "0x0047A264"
-  ]
- },
- {
-  "id": "ZZZ_crWarGlaive_Copy01",
-  "formId": "0x00833265",
-  "name": "War Glaive",
-  "weaponTypeName": "TwoHandSword",
-  "keywords": [
-   "Anims2hmWideWeapon",
-   "ma_Melee_Appearance",
-   "ma_WarGlaive",
-   "NonPlayerTradable",
-   "ObjectTypeWeapon",
-   "QuickkeyMelee",
-   "UI_WeaponTypemelee2HBlunt",
-   "WeaponTypeBladed",
-   "WeaponTypeMelee2H",
-   "WeaponTypeMeleeGeneral"
   ],
-  "components": [
-   {
-    "damageType": "ballistic",
-    "damageTypeEdid": null,
-    "amount": 0,
-    "tier": 10,
-    "curve": [
-     {
-      "x": 1,
-      "y": 4
-     },
-     {
-      "x": 12,
-      "y": 4
-     },
-     {
-      "x": 23,
-      "y": 5
-     },
-     {
-      "x": 34,
-      "y": 6
-     },
-     {
-      "x": 45,
-      "y": 7
-     },
-     {
-      "x": 56,
-      "y": 8
-     },
-     {
-      "x": 67,
-      "y": 9
-     },
-     {
-      "x": 78,
-      "y": 11
-     },
-     {
-      "x": 89,
-      "y": 13
-     },
-     {
-      "x": 100,
-      "y": 15
-     },
-     {
-      "x": 111,
-      "y": 17
-     },
-     {
-      "x": 122,
-      "y": 20
-     },
-     {
-      "x": 133,
-      "y": 23
-     },
-     {
-      "x": 144,
-      "y": 27
-     },
-     {
-      "x": 155,
-      "y": 31
-     },
-     {
-      "x": 166,
-      "y": 36
-     },
-     {
-      "x": 177,
-      "y": 41
-     },
-     {
-      "x": 188,
-      "y": 48
-     },
-     {
-      "x": 199,
-      "y": 55
-     },
-     {
-      "x": 210,
-      "y": 64
-     },
-     {
-      "x": 221,
-      "y": 75
-     },
-     {
-      "x": 232,
-      "y": 87
-     },
-     {
-      "x": 243,
-      "y": 100
-     },
-     {
-      "x": 254,
-      "y": 116
-     },
-     {
-      "x": 265,
-      "y": 135
-     },
-     {
-      "x": 276,
-      "y": 157
-     },
-     {
-      "x": 287,
-      "y": 182
-     },
-     {
-      "x": 298,
-      "y": 212
-     },
-     {
-      "x": 309,
-      "y": 246
-     },
-     {
-      "x": 320,
-      "y": 285
-     },
-     {
-      "x": 331,
-      "y": 331
-     },
-     {
-      "x": 342,
-      "y": 385
-     },
-     {
-      "x": 353,
-      "y": 447
-     },
-     {
-      "x": 364,
-      "y": 520
-     },
-     {
-      "x": 375,
-      "y": 604
-     },
-     {
-      "x": 386,
-      "y": 702
-     },
-     {
-      "x": 397,
-      "y": 816
-     },
-     {
-      "x": 408,
-      "y": 949
-     },
-     {
-      "x": 419,
-      "y": 1103
-     },
-     {
-      "x": 430,
-      "y": 1282
-     },
-     {
-      "x": 441,
-      "y": 1490
-     },
-     {
-      "x": 452,
-      "y": 1733
-     },
-     {
-      "x": 463,
-      "y": 2015
-     },
-     {
-      "x": 474,
-      "y": 2342
-     },
-     {
-      "x": 485,
-      "y": 2723
-     },
-     {
-      "x": 496,
-      "y": 3167
-     },
-     {
-      "x": 507,
-      "y": 3682
-     },
-     {
-      "x": 518,
-      "y": 4281
-     },
-     {
-      "x": 529,
-      "y": 4978
-     },
-     {
-      "x": 540,
-      "y": 5789
-     }
-    ]
-   }
-  ],
-  "critDamageMult": 2,
-  "critChargeBonus": 1,
-  "sneakAttackMult": 2,
-  "speed": 1,
-  "attackDelaySec": 0,
-  "animationAttackSec": 2,
-  "animationFireSec": 0,
-  "reloadSpeed": 1,
-  "animationReloadSec": 0,
-  "capacity": 0,
-  "ammoPerShot": 1,
-  "actionPointCost": 40,
-  "projectileCount": 1,
-  "reach": 0.800000011920929,
-  "secondaryDamage": 10,
-  "damageBonusMult": 1,
-  "eligibleLevels": [
-   30,
-   40,
-   50
-  ],
-  "templateModFormIds": [
-   "0x005D7F2C",
-   "0x005117BF",
-   "0x0086245D"
-  ],
-  "attachParentSlots": [
-   "0x001A001E",
-   "0x0005524C",
-   "0x0032CD06"
-  ]
+  "obtainable": true
  },
  {
   "id": "WarShrike",
@@ -38709,7 +37758,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "DLC04_Revolver",
@@ -38834,7 +37884,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "E09D_LeverGun_WesternSpirit",
@@ -38957,7 +38008,8 @@
    "0x00114364",
    "0x006214D8",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "E09B_SuperSledge_WhackerSmacker",
@@ -39068,7 +38120,8 @@
    "0x004E89AB",
    "0x0047A264",
    "0x001A001E"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "AssaultRifle_WhistleInTheDark",
@@ -39187,7 +38240,8 @@
    "0x004E89AB",
    "0x00114364",
    "0x0047A264"
-  ]
+  ],
+  "obtainable": false
  },
  {
   "id": "SCORE_S7_GammaGun_Xerxos",
@@ -39305,7 +38359,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x006214D8"
-  ]
+  ],
+  "obtainable": true
  },
  {
   "id": "SCORE_S8_AlienBlaster_ZetasRevenge",
@@ -39426,6 +38481,7 @@
    "0x001E32C8",
    "0x004E89A8",
    "0x004E89A9"
-  ]
+  ],
+  "obtainable": true
  }
 ]
