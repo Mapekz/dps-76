@@ -35,8 +35,10 @@ Game data is **extracted, not hand-authored**:
    legendary values (`legendary-values.ts`, `buff-overrides.ts`), weapon
    corrections and hidden ids (`corrections.ts`). Every entry needs a source
    comment.
-4. `src/data/*.ts` adapters merge generated + overrides behind mode-aware
-   accessors (`getWeapons(mode)`, `getOmodSlots`, `getLoadoutModifiers`, ...).
+4. `src/data/dataset.ts` is the merge chokepoint: `getDataset(mode)` applies
+   every overlay once and resolves the live/pts split in one place. The
+   `src/data/*.ts` accessors (`getWeapons(mode)`, `getOmodSlots`,
+   `getLoadoutModifiers`, ...) are thin reads over it.
 
 Key extraction insight: perk/mutation/legendary stat semantics are data-driven
 from the game's hidden "plumbing" perks (`STAT_DamagePerk`,

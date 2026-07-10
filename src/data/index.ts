@@ -1,41 +1,35 @@
 import type { GameMode, Perk, PerkId, Enemy, EnemyMutation, Weapon } from '@/types';
-import { perks as perksLive } from './live/perks';
-import { enemies as enemiesLive, enemyMutations as enemyMutationsLive, legendaryRankModifiers as legendaryRankModifiersLive } from './live/enemies';
-import { weapons as weaponsLive } from './live/weapons';
-import { bodyArmor as bodyArmorLive } from './live/armor';
-import { powerArmor as powerArmorLive } from './live/power-armor';
-import { perks as perksPTS } from './pts/perks';
-import { enemies as enemiesPTS, enemyMutations as enemyMutationsPTS, legendaryRankModifiers as legendaryRankModifiersPTS } from './pts/enemies';
-import { weapons as weaponsPTS } from './pts/weapons';
-import { bodyArmor as bodyArmorPTS } from './pts/armor';
-import { powerArmor as powerArmorPTS } from './pts/power-armor';
+import { getDataset } from './dataset';
+
+// Thin projections over the single merged dataset (src/data/dataset.ts), which
+// owns the live/pts resolution and applies overrides once.
 
 export function getPerks(mode: GameMode): Record<PerkId, Perk> {
-  return mode === 'pts' ? perksPTS : perksLive;
+  return getDataset(mode).perkRegistry;
 }
 
 export function getEnemies(mode: GameMode): Record<string, Enemy> {
-  return mode === 'pts' ? enemiesPTS : enemiesLive;
+  return getDataset(mode).enemies;
 }
 
 export function getEnemyMutations(mode: GameMode): Record<string, EnemyMutation> {
-  return mode === 'pts' ? enemyMutationsPTS : enemyMutationsLive;
+  return getDataset(mode).enemyMutations;
 }
 
 export function getLegendaryRankModifiers(mode: GameMode) {
-  return mode === 'pts' ? legendaryRankModifiersPTS : legendaryRankModifiersLive;
+  return getDataset(mode).legendaryRankModifiers;
 }
 
 export function getWeapons(mode: GameMode): Record<string, Weapon> {
-  return mode === 'pts' ? weaponsPTS : weaponsLive;
+  return getDataset(mode).weapons;
 }
 
 export function getBodyArmor(mode: GameMode) {
-  return mode === 'pts' ? bodyArmorPTS : bodyArmorLive;
+  return getDataset(mode).bodyArmor;
 }
 
 export function getPowerArmor(mode: GameMode) {
-  return mode === 'pts' ? powerArmorPTS : powerArmorLive;
+  return getDataset(mode).powerArmor;
 }
 
 export function getPerkById(mode: GameMode, perkId: PerkId): Perk | undefined {
@@ -46,22 +40,27 @@ export function getEnemyById(mode: GameMode, enemyId: string): Enemy | undefined
   return getEnemies(mode)[enemyId];
 }
 
-export function getEnemyOptions(mode: GameMode): Array<{ value: string; label: string }> {
-  return Object.values(getEnemies(mode)).map((e) => ({ value: e.id, label: e.name }));
+/** Project an id/name-keyed record into combobox `{ value, label }` options. */
+function toOptions(record: Record<string, { id: string; name: string }>): Array<{ value: string; label: string }> {
+  return Object.values(record).map(x => ({ value: x.id, label: x.name }));
 }
 
-export function getMutationOptions(mode: GameMode): Array<{ value: string; label: string }> {
-  return Object.values(getEnemyMutations(mode)).map((m) => ({ value: m.id, label: m.name }));
+export function getEnemyOptions(mode: GameMode) {
+  return toOptions(getEnemies(mode));
 }
 
-export function getWeaponOptions(mode: GameMode): Array<{ value: string; label: string }> {
-  return Object.values(getWeapons(mode)).map((w) => ({ value: w.id, label: w.name }));
+export function getMutationOptions(mode: GameMode) {
+  return toOptions(getEnemyMutations(mode));
 }
 
-export function getBodyArmorOptions(mode: GameMode): Array<{ value: string; label: string }> {
-  return Object.values(getBodyArmor(mode)).map((ba) => ({ value: ba.id, label: ba.name }));
+export function getWeaponOptions(mode: GameMode) {
+  return toOptions(getWeapons(mode));
 }
 
-export function getPowerArmorOptions(mode: GameMode): Array<{ value: string; label: string }> {
-  return Object.values(getPowerArmor(mode)).map((pa) => ({ value: pa.id, label: pa.name }));
+export function getBodyArmorOptions(mode: GameMode) {
+  return toOptions(getBodyArmor(mode));
+}
+
+export function getPowerArmorOptions(mode: GameMode) {
+  return toOptions(getPowerArmor(mode));
 }

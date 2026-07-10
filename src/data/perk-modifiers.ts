@@ -1,25 +1,17 @@
 import type { GameMode, PerkId, PerkLoadout } from '@/types';
 import type { GeneratedPerk } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
-import { perks as perkRegistryLive } from './live/perks';
-import { perks as perkRegistryPts } from './pts/perks';
+import { getDataset } from './dataset';
 import { extraPerkModifiers, perkFamilyOverrides } from './overrides/perk-overrides';
-import generatedPerksLive from './live/generated/perks.json';
 
 /**
- * Bridges the PerkId registry (N&D-aligned, src/data/live/perks.ts) to the
- * ESM-generated perk families (src/data/live/generated/perks.json).
+ * Bridges the PerkId registry (N&D-aligned) to the ESM-generated perk families
+ * (both sourced from the merged dataset, src/data/dataset.ts).
  *
  * Join key: normalized display name — the registry already uses the
  * post-overhaul card names (e.g. PerkId.CenterMasochist ↔ "Center Masochist"
  * on ESM family "Commando"). Misses are patched via perkFamilyOverrides.
  */
-
-// PTS generated data doesn't exist yet — single ESM for now (see plan).
-const generatedByMode: Record<GameMode, GeneratedPerk[]> = {
-  live: generatedPerksLive as GeneratedPerk[],
-  pts: generatedPerksLive as GeneratedPerk[],
-};
 
 function normalizeName(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -37,7 +29,7 @@ function getJoinMaps(mode: GameMode): JoinMaps {
   if (!maps) {
     const byFamily = new Map<string, GeneratedPerk>();
     const byName = new Map<string, GeneratedPerk>();
-    for (const perk of generatedByMode[mode]) {
+    for (const perk of getDataset(mode).perks) {
       byFamily.set(perk.family, perk);
       const key = normalizeName(perk.name);
       const existing = byName.get(key);
@@ -55,8 +47,7 @@ export function getGeneratedPerk(mode: GameMode, perkId: string): GeneratedPerk 
   const maps = getJoinMaps(mode);
   const familyOverride = perkFamilyOverrides[perkId];
   if (familyOverride) return maps.byFamily.get(familyOverride);
-  const registry = mode === 'pts' ? perkRegistryPts : perkRegistryLive;
-  const entry = registry[perkId as PerkId];
+  const entry = getDataset(mode).perkRegistry[perkId as PerkId];
   if (!entry) return undefined;
   return maps.byName.get(normalizeName(entry.name));
 }
@@ -77,6 +68,6 @@ export function getLoadoutModifiers(mode: GameMode, loadouts: PerkLoadout[]): Mo
 
 /** Registry PerkIds with no generated family — review after each extraction run. */
 export function getUnjoinedPerkIds(mode: GameMode): string[] {
-  const registry = mode === 'pts' ? perkRegistryPts : perkRegistryLive;
+  const registry = getDataset(mode).perkRegistry;
   return Object.keys(registry).filter(perkId => !getGeneratedPerk(mode, perkId));
 }
