@@ -28816,7 +28816,6 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.009999999776482582,
     "curve": {
      "input": "healthFraction",
      "points": [
@@ -28830,6 +28829,7 @@
       }
      ]
     },
+    "curveScale": 0.009999999776482582,
     "conditions": []
    }
   ],
@@ -39967,7 +39967,6 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.009999999776482582,
     "curve": {
      "input": "killStreak",
      "points": [
@@ -39985,6 +39984,7 @@
       }
      ]
     },
+    "curveScale": 0.009999999776482582,
     "conditions": []
    }
   ],
@@ -40051,7 +40051,6 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.009999999776482582,
     "curve": {
      "input": "addictionCount",
      "points": [
@@ -40101,6 +40100,7 @@
       }
      ]
     },
+    "curveScale": 0.009999999776482582,
     "conditions": []
    }
   ],
@@ -40148,7 +40148,6 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.009999999776482582,
     "curve": {
      "input": "healthFraction",
      "points": [
@@ -40162,6 +40161,7 @@
       }
      ]
     },
+    "curveScale": 0.009999999776482582,
     "conditions": []
    }
   ],
@@ -40245,7 +40245,6 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.009999999776482582,
     "curve": {
      "input": "capsOnHand",
      "points": [
@@ -40279,6 +40278,7 @@
       }
      ]
     },
+    "curveScale": 0.009999999776482582,
     "conditions": []
    }
   ],
@@ -71288,7 +71288,6 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.009999999776482582,
     "curve": {
      "input": "killStreak",
      "points": [
@@ -71306,6 +71305,7 @@
       }
      ]
     },
+    "curveScale": 0.009999999776482582,
     "conditions": []
    }
   ],

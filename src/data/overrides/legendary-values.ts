@@ -1,4 +1,4 @@
-import type { Modifier } from '@/types/modifiers';
+import type { Modifier, ModifierFragment } from '@/types/modifiers';
 
 /**
  * Hand-authored modifiers for legendary weapon effects whose ESM magnitudes
@@ -10,7 +10,7 @@ import type { Modifier } from '@/types/modifiers';
  * (docs/assumptions.md). Sources: fallout.wiki legendary effect pages, 2026.
  */
 
-function leg(edid: string, name: string, rest: Omit<Modifier, 'id' | 'source'>, index = 0): Modifier {
+function leg(edid: string, name: string, rest: ModifierFragment, index = 0): Modifier {
   return {
     id: `override:${edid}:${index}`,
     source: { kind: 'legendaryEffect', formId: edid, edid, name },

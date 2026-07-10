@@ -366,8 +366,8 @@ export function PlayerColumn({ config, parsedPerks, onConfigChange, enemyFullHea
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="cond-killstreak">Kill streak (Adrenal effects, 0–10)</Label>
-                  <Input id="cond-killstreak" type="number" min={0} max={10} value={config.conditions.adredalineStacks}
-                    onChange={e => handleConditionChange('adredalineStacks', Math.max(0, Math.min(10, parseInt(e.target.value, 10) || 0)))} />
+                  <Input id="cond-killstreak" type="number" min={0} max={10} value={config.conditions.adrenalineStacks}
+                    onChange={e => handleConditionChange('adrenalineStacks', Math.max(0, Math.min(10, parseInt(e.target.value, 10) || 0)))} />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="cond-furious">Furious consecutive hits (0–9)</Label>

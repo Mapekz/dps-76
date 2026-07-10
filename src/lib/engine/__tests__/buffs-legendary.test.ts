@@ -60,17 +60,17 @@ describe('legendary weapon effects', () => {
   it('legendary Adrenal follows its extracted curve: +10% per kill-streak stack, max 10', () => {
     const adrenal = getOmodById('live', 'mod_Legendary_Weapon1_Adrenal')!;
     const { weapon, modifiers } = buildEffectiveWeapon(fixer, [adrenal]);
-    const at5 = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), adredalineStacks: 5 } }));
+    const at5 = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), adrenalineStacks: 5 } }));
     expect(at5.manualAim.perHit.total / stockTotal).toBeCloseTo(1.5, 4);
-    const at10 = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), adredalineStacks: 10 } }));
+    const at10 = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), adrenalineStacks: 10 } }));
     expect(at10.manualAim.perHit.total / stockTotal).toBeCloseTo(2.0, 4);
   });
 
   it('Adrenaline perk follows its extracted curve: +10%/kill-streak stack (distinct from mutation/legendary)', () => {
     const adrenaline = getLoadoutModifiers('live', [{ perkId: PerkId.Adrenaline, rank: 1 }]);
-    const at10 = computeScenarios(base({ modifiers: adrenaline, player: { ...createDefaultPlayerConditions(), adredalineStacks: 10 } }));
+    const at10 = computeScenarios(base({ modifiers: adrenaline, player: { ...createDefaultPlayerConditions(), adrenalineStacks: 10 } }));
     expect(at10.manualAim.perHit.total / stockTotal).toBeCloseTo(2.0, 4);
-    const at0 = computeScenarios(base({ modifiers: adrenaline, player: { ...createDefaultPlayerConditions(), adredalineStacks: 0 } }));
+    const at0 = computeScenarios(base({ modifiers: adrenaline, player: { ...createDefaultPlayerConditions(), adrenalineStacks: 0 } }));
     expect(at0.manualAim.perHit.total / stockTotal).toBeCloseTo(1.0, 6);
   });
 
@@ -92,7 +92,7 @@ describe('mutations and consumables', () => {
 
   it('Adrenal Reaction (override from ESM curves) scales with kill streak: +5%/stack, ×1.25 with Strange in Numbers', () => {
     const mods = getBuffModifiers('live', ['Mutation_AdrenalReaction'], []);
-    const player = { ...createDefaultPlayerConditions(), adredalineStacks: 10 };
+    const player = { ...createDefaultPlayerConditions(), adrenalineStacks: 10 };
     const solo = computeScenarios(base({ modifiers: mods, player }));
     expect(solo.manualAim.perHit.total).toBeCloseTo(stockTotal * 1.5, 6);
 

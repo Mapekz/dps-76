@@ -11,7 +11,7 @@ function ctx(overrides: Partial<ResolveContext['player']> = {}): ResolveContext 
     weapon: getWeapons('live')['CombatRifle_Fixer'],
     player: { ...createDefaultPlayerConditions(), ...overrides },
     enemy: createDefaultEnemyConditions(),
-    scenario: { isVats: true, isSneaking: false, isPowerAttack: false },
+    scenario: { isVats: true, isSneaking: false, isPowerAttack: false, isCrit: false },
   };
 }
 

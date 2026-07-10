@@ -1,7 +1,8 @@
-import type { Bucket, Condition, CurveInput, Modifier, ModifierSource, ValueCurve } from '../../../src/types/modifiers';
+import type { Bucket, Condition, CurveInput, Modifier, ModifierFragment, ModifierSource, ValueCurve } from '../../../src/types/modifiers';
 import type { EsmClient, EsmRecord } from '../esm-client';
 import {
   flattenConditionRows,
+  flattenPerkConditionRows,
   translateConditions,
   type ConditionTranslationContext,
   type RawCondition,
@@ -65,20 +66,7 @@ export async function buildAvifRoutes(client: EsmClient, formIdPool: Set<string>
       const actorValue = e['Function Parameter 3 (Actor Value)'] as string | undefined;
       if (!bucket || !actorValue) continue;
 
-      const rawConditions: RawCondition[] = [];
-      const tabs = e['Perk Conditions'];
-      if (Array.isArray(tabs)) {
-        for (const tab of tabs as Array<Record<string, unknown>>) {
-          const pc = tab['Perk Condition'] as Record<string, unknown> | undefined;
-          const tabIndex = (pc?.['Run On (Tab Index)'] as number) ?? 0;
-          const conditions = pc?.['Conditions'];
-          if (!Array.isArray(conditions)) continue;
-          for (const c of conditions as Array<Record<string, unknown>>) {
-            const data = (c['Condition'] as Record<string, unknown> | undefined)?.['Condition Data'] as RawCondition | undefined;
-            if (data) rawConditions.push(tabIndex === 2 ? { ...data, 'Run On': 'Target' } : data);
-          }
-        }
-      }
+      const rawConditions = flattenPerkConditionRows(e['Perk Conditions']);
       collectConditionFormIds(rawConditions, formIdPool);
       const list = routes.get(actorValue) ?? [];
       list.push({ bucket, scale: typeof e['Float'] === 'number' ? (e['Float'] as number) : 0.01, rawConditions });
@@ -164,38 +152,35 @@ export interface MgefTranslationDeps {
 }
 
 export interface MgefTranslationResult {
-  modifiers: Array<Pick<Modifier, 'bucket' | 'op' | 'value' | 'conditions'> & { curve?: ValueCurve }>;
+  modifiers: ModifierFragment[];
   notes: string[];
   unmappedAvifs: string[];
 }
 
-/**
- * Translate one magic effect (MGEF + magnitude/curve + effect-level
- * conditions) into IR modifiers via the AVIF routes. A value curve overrides
- * the magnitude: effective value = interpolate(curve, input) × route scale.
- * Non-stat archetypes and unmapped damage AVIFs come back as notes for the
- * overrides layer.
- */
-export async function translateMagicEffect(
-  deps: MgefTranslationDeps,
-  effect: SpellEffect,
-  conditionCtx?: Partial<ConditionTranslationContext>
-): Promise<MgefTranslationResult> {
-  const { client, routes, edidByFormId } = deps;
-  const result: MgefTranslationResult = { modifiers: [], notes: [], unmappedAvifs: [] };
-  const mgef = await getMgefInfo(client, effect.mgefFormId);
+export interface TranslateOptions {
+  timedIsActive?: boolean;
+  conditionCtx?: Partial<ConditionTranslationContext>;
+}
 
-  // Effect-level condition params must be resolvable for sync translation.
-  for (const row of effect.conditionRows) {
-    const p = row['Parameter 1'];
-    if (typeof p === 'string' && p.startsWith('0x') && !edidByFormId.has(p)) {
-      edidByFormId.set(p, await client.resolveEdid(p));
-    }
-  }
+/**
+ * Pure MGEF → IR translation. Every ESM lookup the effect needs must already
+ * be resolved into `edidByFormId` (condition params + the MGEF's actor value) —
+ * see `translateMagicEffect` for the async gather. A value curve overrides the
+ * magnitude: effective value = interpolate(curve, input) × route scale. Non-stat
+ * archetypes and unmapped damage AVIFs come back as notes for the overrides layer.
+ */
+export function translate(
+  mgef: MgefInfo,
+  effect: SpellEffect,
+  routes: Map<string, AvifRoute[]>,
+  edidByFormId: Map<string, string>,
+  opts: TranslateOptions = {}
+): MgefTranslationResult {
+  const result: MgefTranslationResult = { modifiers: [], notes: [], unmappedAvifs: [] };
 
   const { conditions: effectConds, unresolved } = translateConditions(effect.conditionRows, {
     edidByFormId,
-    ...conditionCtx,
+    ...opts.conditionCtx,
   });
   if (effectConds === null) return result;
   unresolved.forEach(u => result.notes.push(`condition: ${u}`));
@@ -223,25 +208,23 @@ export async function translateMagicEffect(
     return result;
   }
 
-  const avifEdid = edidByFormId.get(mgef.actorValue) ?? (await client.resolveEdid(mgef.actorValue));
-  edidByFormId.set(mgef.actorValue, avifEdid);
+  const avifEdid = edidByFormId.get(mgef.actorValue) ?? mgef.actorValue;
 
   const allConds = [...effectConds];
-  if (effect.duration > 0 && !deps.timedIsActive) {
+  if (effect.duration > 0 && !opts.timedIsActive) {
     const raw = `timedBuff(${effect.duration}s)`;
     allConds.push({ kind: 'unresolved', raw });
     result.notes.push(`${mgef.edid}: ${raw} — needs toggle override`);
   }
 
   const push = (bucket: Bucket, scale: number, conditions: Condition[]) => {
-    result.modifiers.push({
-      bucket,
-      op: 'ADD',
-      // With a curve, `value` is the scale applied to the interpolated Y.
-      value: curve ? scale : effect.magnitude * scale,
-      curve,
-      conditions,
-    });
+    // With a curve, the scale is `curveScale` (applied to the interpolated Y);
+    // otherwise it multiplies the flat magnitude.
+    result.modifiers.push(
+      curve
+        ? { bucket, op: 'ADD', curve, curveScale: scale, conditions }
+        : { bucket, op: 'ADD', value: effect.magnitude * scale, conditions }
+    );
   };
 
   const avifRoutes = routes.get(mgef.actorValue);
@@ -262,11 +245,36 @@ export async function translateMagicEffect(
   return result;
 }
 
+/**
+ * Async gather + `translate`: fetches the MGEF record and pre-resolves every
+ * edid the pure translation reads (condition params + the actor value), then
+ * delegates to the synchronous core.
+ */
+export async function translateMagicEffect(
+  deps: MgefTranslationDeps,
+  effect: SpellEffect,
+  conditionCtx?: Partial<ConditionTranslationContext>
+): Promise<MgefTranslationResult> {
+  const { client, edidByFormId } = deps;
+  const mgef = await getMgefInfo(client, effect.mgefFormId);
+
+  for (const row of effect.conditionRows) {
+    const p = row['Parameter 1'];
+    if (typeof p === 'string' && p.startsWith('0x') && !edidByFormId.has(p)) {
+      edidByFormId.set(p, await client.resolveEdid(p));
+    }
+  }
+  // Only value-modifier archetypes read the actor value; skip the resolve for
+  // the archetypes translate() discards (matches the old lazy resolution).
+  const isValueArchetype = mgef.archetype === 'Peak Value Modifier' || mgef.archetype === 'Value Modifier';
+  if (isValueArchetype && mgef.actorValue && !edidByFormId.has(mgef.actorValue)) {
+    edidByFormId.set(mgef.actorValue, await client.resolveEdid(mgef.actorValue));
+  }
+
+  return translate(mgef, effect, deps.routes, edidByFormId, { timedIsActive: deps.timedIsActive, conditionCtx });
+}
+
 /** Attach source identity + ids to bucket-level modifier fragments. */
-export function withSource(
-  fragments: MgefTranslationResult['modifiers'],
-  source: ModifierSource,
-  idPrefix: string
-): Modifier[] {
+export function withSource(fragments: ModifierFragment[], source: ModifierSource, idPrefix: string): Modifier[] {
   return fragments.map((f, i) => ({ id: `${idPrefix}:${i}`, source, ...f }));
 }

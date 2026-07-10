@@ -61,7 +61,7 @@ function isMelee(weapon: Weapon): boolean {
   return weapon.weaponClass === 'melee' || weapon.weaponClass === 'unarmed';
 }
 
-function hit(input: ScenarioInput, flags: ScenarioFlags, bodyPartMult: number, isCrit: boolean): HitBreakdown {
+function hit(input: ScenarioInput, flags: ScenarioFlags, bodyPartMult: number): HitBreakdown {
   return computePaperDamage({
     mode: input.mode,
     weapon: input.weapon,
@@ -70,7 +70,6 @@ function hit(input: ScenarioInput, flags: ScenarioFlags, bodyPartMult: number, i
     ctx: scenarioCtx(input, flags),
     bodyPartMult,
     bodyPart: bodyPartMult > 1.0 ? 'weakpoint' : 'torso',
-    isCrit,
   });
 }
 
@@ -92,24 +91,24 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   const powerAttack = input.player.isPowerAttacking;
 
   // Manual aim: crits are VATS-only, so never crit here.
-  const manualFlags: ScenarioFlags = { isVats: false, isSneaking: false, isPowerAttack: powerAttack };
-  const manualNormal = hit(input, manualFlags, 1.0, false);
-  const manualWeak = hit(input, manualFlags, input.weakpointMult, false);
+  const manualFlags: ScenarioFlags = { isVats: false, isSneaking: false, isPowerAttack: powerAttack, isCrit: false };
+  const manualNormal = hit(input, manualFlags, 1.0);
+  const manualWeak = hit(input, manualFlags, input.weakpointMult);
 
-  // VATS: weakpoint-locked, crit cadence applies.
-  const vatsFlags: ScenarioFlags = { isVats: true, isSneaking: false, isPowerAttack: powerAttack };
+  // VATS: weakpoint-locked, crit cadence blends a non-crit and a crit hit.
+  const vatsFlags: ScenarioFlags = { isVats: true, isSneaking: false, isPowerAttack: powerAttack, isCrit: false };
   const critRate =
     input.critRate ?? computeCritMeter(input.modifiers, input.weapon, scenarioCtx(input, vatsFlags)).critRate;
   const vatsAvg = critWeighted(
-    hit(input, vatsFlags, input.weakpointMult, false),
-    hit(input, vatsFlags, input.weakpointMult, true),
+    hit(input, vatsFlags, input.weakpointMult),
+    hit(input, { ...vatsFlags, isCrit: true }, input.weakpointMult),
     critRate
   );
 
-  const sneakFlags: ScenarioFlags = { isVats: true, isSneaking: true, isPowerAttack: powerAttack };
+  const sneakFlags: ScenarioFlags = { isVats: true, isSneaking: true, isPowerAttack: powerAttack, isCrit: false };
   const sneakAvg = critWeighted(
-    hit(input, sneakFlags, input.weakpointMult, false),
-    hit(input, sneakFlags, input.weakpointMult, true),
+    hit(input, sneakFlags, input.weakpointMult),
+    hit(input, { ...sneakFlags, isCrit: true }, input.weakpointMult),
     critRate
   );
 

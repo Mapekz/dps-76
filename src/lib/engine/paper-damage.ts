@@ -56,8 +56,6 @@ export interface PaperDamageInput {
   bodyPartMult: number;
   /** Body part the hit lands on (gates bodyPart-conditioned modifiers). */
   bodyPart: 'torso' | 'weakpoint' | 'limb';
-  /** This hit is a VATS critical. */
-  isCrit: boolean;
 }
 
 function componentBase(mode: GameMode, weapon: Weapon, itemLevel: number): Array<{ type: DamageType; base: number }> {
@@ -84,11 +82,12 @@ export function totalSneakMult(modifiers: Modifier[], weapon: Weapon, ctx: Resol
 }
 
 export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
-  const { mode, weapon, itemLevel, modifiers, bodyPartMult, isCrit } = input;
+  const { mode, weapon, itemLevel, modifiers, bodyPartMult } = input;
   const ctx = { ...input.ctx, bodyPart: input.bodyPart };
 
   // Weapon-level additive terms (identical across damage components).
-  const critTerm = isCrit ? totalCritMult(modifiers, weapon, ctx) - 1.0 : 0;
+  // Crit is a scenario flag (symmetric with sneaking/powerAttack).
+  const critTerm = ctx.scenario.isCrit ? totalCritMult(modifiers, weapon, ctx) - 1.0 : 0;
   const sneakTerm = ctx.scenario.isSneaking ? totalSneakMult(modifiers, weapon, ctx) - 1.0 : 0;
   const powerAttackTerm = ctx.scenario.isPowerAttack ? foldBucket(modifiers, 'powerAttackBonus', 0, ctx) : 0;
   const strTerm = strengthTerm(weapon, ctx.player.strength);

@@ -15,7 +15,7 @@ describe('perk registry ↔ generated family join', () => {
     expect(perk?.family).toBe('Commando');
     expect(perk?.maxRank).toBe(3);
     // +25/50/75% ranged damage vs torso
-    expect(perk?.ranks[2].modifiers.some(m => m.bucket === 'dbm' && m.value === 0.75)).toBe(true);
+    expect(perk?.ranks[2].modifiers.some(m => m.bucket === 'dbm' && !m.curve && m.value === 0.75)).toBe(true);
   });
 
   it('supplies the Tenderizer override modifier (stacking dbm)', () => {

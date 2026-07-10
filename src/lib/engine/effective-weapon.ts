@@ -1,6 +1,7 @@
 import type { Weapon } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
+import { foldOps } from './resolve';
 
 /**
  * Applies equipped OMODs to a weapon before the engine runs:
@@ -15,19 +16,13 @@ export interface EffectiveWeapon {
   modifiers: Modifier[];
 }
 
-// Same semantics as resolve.ts foldBucket: (last SET ?? base) + ΣMUL_ADD×base + ΣADD
-// (MUL_ADD reads the ORIGINAL base even when a SET replaced it — user-confirmed).
+// Weapon-stat OMODs carry no runtime conditions, so their raw values fold
+// through the shared foldOps primitive (same SET/MUL_ADD/ADD rule as foldBucket).
 function foldWeaponStat(modifiers: Modifier[], bucket: string, base: number): number {
-  let setValue: number | null = null;
-  let mulAdd = 0;
-  let add = 0;
-  for (const m of modifiers) {
-    if (m.bucket !== bucket) continue;
-    if (m.op === 'SET') setValue = m.value;
-    else if (m.op === 'MUL_ADD') mulAdd += m.value;
-    else add += m.value;
-  }
-  return (setValue ?? base) + mulAdd * base + add;
+  const entries = modifiers
+    .filter(m => m.bucket === bucket)
+    .map(m => ({ op: m.op, value: m.curve ? m.curveScale : m.value }));
+  return foldOps(entries, base);
 }
 
 export function buildEffectiveWeapon(weapon: Weapon, equippedOmods: GeneratedOmod[]): EffectiveWeapon {

@@ -18,7 +18,7 @@ export interface PlayerConditions {
   // Stack counts
   bulletStormStacks: number; // 0-20 (10 base, 20 with Bringing the Big Guns)
   onslaughtStacks: number; // 0-10
-  adredalineStacks: number; // 0-10 (always max per user preference)
+  adrenalineStacks: number; // 0-10 (always max per user preference)
   tenderizerStacks: number; // 0-1000, 0.1 dbm per stack (manual team-scenario input)
   furiousStacks: number; // Furious legendary ramp (steady-state assumption)
 
@@ -256,7 +256,7 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     healthPercent: 100,
     bulletStormStacks: 10, // Assume max stacks by default
     onslaughtStacks: 10, // Assume max stacks by default
-    adredalineStacks: 10, // Always max per user preference
+    adrenalineStacks: 10, // Always max per user preference
     tenderizerStacks: 0, // Solo default — no other players hitting the target
     furiousStacks: 0,
     addictionCount: 0,

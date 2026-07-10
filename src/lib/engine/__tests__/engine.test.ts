@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import type { Weapon } from '@/types';
-import type { Modifier } from '@/types/modifiers';
+import type { Bucket, Condition, ModOp, Modifier } from '@/types/modifiers';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
-import { foldBucket, type ResolveContext } from '@/lib/engine/resolve';
+import { foldBucket, foldOps, type ResolveContext } from '@/lib/engine/resolve';
 import { computePaperDamage, totalCritMult, totalSneakMult } from '@/lib/engine/paper-damage';
 import { computeScenarios } from '@/lib/engine/scenarios';
 
@@ -28,12 +28,14 @@ function makeWeapon(overrides: Partial<Weapon> = {}): Weapon {
   };
 }
 
-function mod(partial: Partial<Modifier> & Pick<Modifier, 'bucket' | 'op' | 'value'>): Modifier {
+function mod(partial: { bucket: Bucket; op: ModOp; value: number; id?: string; conditions?: Condition[] }): Modifier {
   return {
     id: partial.id ?? 'test-mod',
     source: { kind: 'perk', formId: '0x0', edid: 'TestSource', name: 'Test Source' },
-    conditions: [],
-    ...partial,
+    bucket: partial.bucket,
+    op: partial.op,
+    value: partial.value,
+    conditions: partial.conditions ?? [],
   };
 }
 
@@ -42,7 +44,7 @@ function makeCtx(weapon: Weapon, overrides: Partial<ResolveContext> = {}): Resol
     weapon,
     player: createDefaultPlayerConditions(),
     enemy: createDefaultEnemyConditions(),
-    scenario: { isVats: false, isSneaking: false, isPowerAttack: false },
+    scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
     ...overrides,
   };
 }
@@ -165,9 +167,9 @@ describe('computePaperDamage', () => {
       mod({ bucket: 'wholeDamage', op: 'ADD', value: 0.1 }),
       mod({ bucket: 'weakpointBonus', op: 'ADD', value: 0.3 }),
     ];
-    const ctx = makeCtx(weapon, { scenario: { isVats: true, isSneaking: true, isPowerAttack: false } });
+    const ctx = makeCtx(weapon, { scenario: { isVats: true, isSneaking: true, isPowerAttack: false, isCrit: true } });
     const result = computePaperDamage({
-      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx, bodyPartMult: 2.0, bodyPart: 'weakpoint', isCrit: true,
+      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx, bodyPartMult: 2.0, bodyPart: 'weakpoint',
     });
     // parenthesis = 1.4 + (2.5−1) + (2.0−1) = 3.9
     // total = 100 × 3.9 × (1.2 × 1.1) × 2.0 × 1.3 = 1338.48
@@ -178,7 +180,7 @@ describe('computePaperDamage', () => {
     const weapon = makeWeapon();
     const mods = [mod({ bucket: 'weakpointBonus', op: 'ADD', value: 0.3 })];
     const ctx = makeCtx(weapon);
-    const torso = computePaperDamage({ mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx, bodyPartMult: 1.0, bodyPart: 'torso', isCrit: false });
+    const torso = computePaperDamage({ mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx, bodyPartMult: 1.0, bodyPart: 'torso' });
     expect(torso.total).toBeCloseTo(100, 6);
   });
 
@@ -193,7 +195,7 @@ describe('computePaperDamage', () => {
       mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'damageTypeScope', types: ['fire'] }] }),
     ];
     const result = computePaperDamage({
-      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso', isCrit: false,
+      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
     });
     expect(result.components[0].damage).toBeCloseTo(100, 6); // ballistic untouched
     expect(result.components[1].damage).toBeCloseTo(150, 6); // fire boosted
@@ -204,13 +206,13 @@ describe('computePaperDamage', () => {
     const player = { ...createDefaultPlayerConditions(), strength: 20 };
     const melee = makeWeapon({ weaponClass: 'melee' });
     const meleeResult = computePaperDamage({
-      mode: 'live', weapon: melee, itemLevel: 50, modifiers: [], ctx: makeCtx(melee, { player }), bodyPartMult: 1, bodyPart: 'torso', isCrit: false,
+      mode: 'live', weapon: melee, itemLevel: 50, modifiers: [], ctx: makeCtx(melee, { player }), bodyPartMult: 1, bodyPart: 'torso',
     });
     expect(meleeResult.total).toBeCloseTo(100 * (1 + 20 / 20), 6);
 
     const unarmed = makeWeapon({ weaponClass: 'unarmed' });
     const unarmedResult = computePaperDamage({
-      mode: 'live', weapon: unarmed, itemLevel: 50, modifiers: [], ctx: makeCtx(unarmed, { player }), bodyPartMult: 1, bodyPart: 'torso', isCrit: false,
+      mode: 'live', weapon: unarmed, itemLevel: 50, modifiers: [], ctx: makeCtx(unarmed, { player }), bodyPartMult: 1, bodyPart: 'torso',
     });
     expect(unarmedResult.total).toBeCloseTo(100 * (1 + 20 / 10), 6);
   });
@@ -240,5 +242,37 @@ describe('computeScenarios', () => {
     expect(s.vats.sustainedDps).toBeCloseTo(400 * s.vats.fireRate, 6);
     // Sneak: sneak term +1.0 → non-crit 100×2×2=400, crit 100×4×2=800, avg 600.
     expect(s.vatsSneak.perHit.total).toBeCloseTo(600, 6);
+  });
+});
+
+describe('foldOps (shared fold arithmetic)', () => {
+  it('applies (last SET ?? base) + ΣMUL_ADD×base + ΣADD, MUL_ADD over the original base', () => {
+    // base 2.0, SET 0.8248, MUL_ADD 0.3, ADD 0.5 → 0.8248 + 0.3×2 + 0.5 = 1.9248
+    const entries = [
+      { op: 'SET' as const, value: 0.8248 },
+      { op: 'MUL_ADD' as const, value: 0.3 },
+      { op: 'ADD' as const, value: 0.5 },
+    ];
+    expect(foldOps(entries, 2.0)).toBeCloseTo(1.9248, 10);
+  });
+
+  it('falls back to base with no entries; last SET wins', () => {
+    expect(foldOps([], 3.0)).toBe(3.0);
+    expect(foldOps([{ op: 'SET' as const, value: 5 }, { op: 'SET' as const, value: 3 }], 1.0)).toBe(3);
+  });
+});
+
+describe('crit condition (first-class, symmetric with sneaking/powerAttack)', () => {
+  const weapon = makeWeapon();
+  const critMod = mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'crit' }] });
+
+  it('applies only when the scenario flags a crit', () => {
+    const critCtx = makeCtx(weapon, {
+      scenario: { isVats: true, isSneaking: false, isPowerAttack: false, isCrit: true },
+    });
+    expect(foldBucket([critMod], 'dbm', 1.0, critCtx)).toBeCloseTo(1.5, 10);
+
+    // makeCtx default is isCrit: false → the modifier is inactive.
+    expect(foldBucket([critMod], 'dbm', 1.0, makeCtx(weapon))).toBeCloseTo(1.0, 10);
   });
 });

@@ -1,7 +1,8 @@
 import type { GeneratedPerk } from '../../src/types/generated';
-import type { Bucket, Condition, Modifier, ValueCurve } from '../../src/types/modifiers';
+import type { Bucket, Condition, Modifier, ModifierValue } from '../../src/types/modifiers';
 import { EsmClient, mapPool, type EsmRecord } from './esm-client';
 import {
+  flattenPerkConditionRows,
   translateConditions,
   type ConditionTranslationContext,
   type RawCondition,
@@ -64,22 +65,7 @@ function parsePerkEffect(effect: Record<string, unknown>): PerkEffect {
   const header = (effect['Effect Header'] ?? {}) as Record<string, unknown>;
   const effectType = ((header['Effect Type'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown';
 
-  const conditionRows: RawCondition[] = [];
-  const tabs = effect['Perk Conditions'];
-  if (Array.isArray(tabs)) {
-    for (const tab of tabs as Array<Record<string, unknown>>) {
-      const pc = tab['Perk Condition'] as Record<string, unknown> | undefined;
-      const tabIndex = (pc?.['Run On (Tab Index)'] as number) ?? 0;
-      const conditions = pc?.['Conditions'];
-      if (!Array.isArray(conditions)) continue;
-      for (const item of conditions as Array<Record<string, unknown>>) {
-        const data = (item['Condition'] as Record<string, unknown> | undefined)?.['Condition Data'] as RawCondition | undefined;
-        if (!data) continue;
-        // Tab 2 conditions run on the target — force enemy-side translation.
-        conditionRows.push(tabIndex === 2 ? { ...data, 'Run On': 'Target' } : data);
-      }
-    }
-  }
+  const conditionRows = flattenPerkConditionRows(effect['Perk Conditions']);
 
   if (effectType === 'Entry Point') {
     const ep = (effect['Entry Point'] ?? {}) as Record<string, unknown>;
@@ -181,10 +167,9 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
       const pushModifier = (
         bucket: Bucket,
         op: Modifier['op'],
-        value: number,
+        payload: ModifierValue,
         conditions: Condition[],
-        sourceIndex: number,
-        curve?: ValueCurve
+        sourceIndex: number
       ) => {
         modifiers.push({
           id: `${formIds[0]}:r${rank}:${sourceIndex}:${modifiers.length}`,
@@ -197,8 +182,7 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
           },
           bucket,
           op,
-          value,
-          curve,
+          ...payload,
           conditions,
         });
       };
@@ -229,11 +213,11 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
             unresolved.forEach(u => allUnresolved.add(`${family}: ${u}`));
 
             if (ep.functionName === 'Add Value') {
-              pushModifier(bucket, 'ADD', ep.float, conditions, sourceIndex);
+              pushModifier(bucket, 'ADD', { value: ep.float }, conditions, sourceIndex);
             } else if (ep.functionName === 'Set Value') {
-              pushModifier(bucket, 'SET', ep.float, conditions, sourceIndex);
+              pushModifier(bucket, 'SET', { value: ep.float }, conditions, sourceIndex);
             } else if (ep.functionName === 'Multiply Value') {
-              pushModifier(bucket, 'MUL_ADD', ep.float - 1, conditions, sourceIndex);
+              pushModifier(bucket, 'MUL_ADD', { value: ep.float - 1 }, conditions, sourceIndex);
             } else {
               // Actor-value-scaled entry points (SPECIAL-scaled perks) — not modeled yet.
               notes.add(`entry point ${ep.name} uses ${ep.functionName} — skipped`);
@@ -256,14 +240,10 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
               result.notes.forEach(n => notes.add(n));
               result.unmappedAvifs.forEach(a => unmappedAvifs.add(a));
               for (const fragment of result.modifiers) {
-                pushModifier(
-                  fragment.bucket,
-                  fragment.op,
-                  fragment.value,
-                  [...grantConds, ...fragment.conditions],
-                  sourceIndex,
-                  fragment.curve
-                );
+                const payload: ModifierValue = fragment.curve
+                  ? { curve: fragment.curve, curveScale: fragment.curveScale }
+                  : { value: fragment.value };
+                pushModifier(fragment.bucket, fragment.op, payload, [...grantConds, ...fragment.conditions], sourceIndex);
               }
             }
           }

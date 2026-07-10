@@ -1,5 +1,5 @@
 import type { PlayerConditions, EnemyConditions, Weapon } from '@/types';
-import type { Bucket, Condition, CurveInput, DamageType, Modifier } from '@/types/modifiers';
+import type { Bucket, Condition, CurveInput, DamageType, Modifier, ModOp, StackCounter } from '@/types/modifiers';
 import { interpolateCurve } from '@/lib/curve-tables';
 
 /** Per-attack flags that differ between the displayed scenarios. */
@@ -7,6 +7,8 @@ export interface ScenarioFlags {
   isVats: boolean;
   isSneaking: boolean;
   isPowerAttack: boolean;
+  /** This attack is a VATS critical (gates `crit` conditions and the crit term). */
+  isCrit: boolean;
 }
 
 /** Everything a condition can be evaluated against. */
@@ -24,16 +26,25 @@ export interface ResolveContext {
   componentType?: DamageType;
 }
 
-function stackCount(ctx: ResolveContext, counter: string): number {
-  switch (counter) {
-    case 'tenderizer': return ctx.player.tenderizerStacks ?? 0;
-    case 'onslaught': return ctx.player.onslaughtStacks;
-    case 'bulletStorm': return ctx.player.bulletStormStacks;
-    case 'furious': return ctx.player.furiousStacks ?? 0;
-    case 'adrenaline': return ctx.player.adredalineStacks;
-    default: return 0;
-  }
-}
+/**
+ * Reads one scalar from player state for a stack counter or a curve input.
+ * Single source of truth for what game state each modifier axis consumes —
+ * add a row here when adding a StackCounter or CurveInput.
+ */
+const PLAYER_STATE_READERS: Record<StackCounter | CurveInput, (p: PlayerConditions) => number> = {
+  // Stack counters (modifier value × count).
+  tenderizer: p => p.tenderizerStacks ?? 0,
+  onslaught: p => p.onslaughtStacks,
+  bulletStorm: p => p.bulletStormStacks,
+  furious: p => p.furiousStacks ?? 0,
+  adrenaline: p => p.adrenalineStacks,
+  // Curve inputs (X value fed into a value curve).
+  healthFraction: p => p.healthPercent / 100,
+  capsOnHand: p => p.capsOnHand,
+  killStreak: p => p.adrenalineStacks,
+  addictionCount: p => p.addictionCount,
+  consecutiveHits: p => p.furiousStacks,
+};
 
 /**
  * Evaluate one condition. Returns null when the modifier does not apply,
@@ -62,6 +73,8 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       return ctx.scenario.isSneaking ? 1 : null;
     case 'powerAttack':
       return ctx.scenario.isPowerAttack ? 1 : null;
+    case 'crit':
+      return ctx.scenario.isCrit ? 1 : null;
     case 'healthBelowPct':
       return ctx.player.healthPercent < cond.pct ? 1 : null;
     case 'scaledByMissingHealth': {
@@ -74,7 +87,7 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       return scale > 0 ? scale : null;
     }
     case 'stacks': {
-      const count = Math.max(0, Math.min(stackCount(ctx, cond.counter), cond.max));
+      const count = Math.max(0, Math.min(PLAYER_STATE_READERS[cond.counter](ctx.player), cond.max));
       return count > 0 ? count : null;
     }
     case 'enemyFullHealth':
@@ -92,16 +105,6 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
   }
 }
 
-function curveInputValue(input: CurveInput, ctx: ResolveContext): number {
-  switch (input) {
-    case 'healthFraction': return ctx.player.healthPercent / 100;
-    case 'capsOnHand': return ctx.player.capsOnHand;
-    case 'killStreak': return ctx.player.adredalineStacks;
-    case 'addictionCount': return ctx.player.addictionCount;
-    case 'consecutiveHits': return ctx.player.furiousStacks;
-  }
-}
-
 /** The effective (condition-scaled) value of a modifier, or null if inactive. */
 export function effectiveValue(mod: Modifier, ctx: ResolveContext): number | null {
   let scale = 1;
@@ -111,14 +114,15 @@ export function effectiveValue(mod: Modifier, ctx: ResolveContext): number | nul
     scale *= s;
   }
   // Curve-driven values (Bloodied, Nerd Rage, ...): Y at the current input,
-  // scaled by mod.value (the route scale, e.g. 0.01 for STAT-point curves).
-  const base = mod.curve ? interpolateCurve(mod.curve.points, curveInputValue(mod.curve.input, ctx)) * mod.value : mod.value;
+  // scaled by mod.curveScale (the route scale, e.g. 0.01 for STAT-point curves).
+  const base = mod.curve
+    ? interpolateCurve(mod.curve.points, PLAYER_STATE_READERS[mod.curve.input](ctx.player)) * mod.curveScale
+    : mod.value;
   return base * scale;
 }
 
 /**
- * Fold all modifiers targeting one bucket over an intrinsic base value,
- * matching OMOD semantics (user-confirmed):
+ * Fold arithmetic shared by every bucket (user-confirmed OMOD semantics):
  *
  *   result = (last SET ?? base) + (Σ MUL_ADD) × base + Σ ADD
  *
@@ -126,17 +130,17 @@ export function effectiveValue(mod: Modifier, ctx: ResolveContext): number | nul
  * - MUL_ADD always multiplies the ORIGINAL base, even when a SET replaced it:
  *   Speed base 2.0 with SET 0.8248, MUL_ADD 0.3, ADD 0.5
  *   → 0.8248 + 0.3×2.0 + 0.5 = 1.9248.
+ *
+ * This is the one home for the rule; `foldBucket` feeds it condition-evaluated
+ * values, `effective-weapon.foldWeaponStat` feeds it raw values.
  */
-export function foldBucket(modifiers: Modifier[], bucket: Bucket, base: number, ctx: ResolveContext): number {
+export function foldOps(entries: Array<{ op: ModOp; value: number }>, base: number): number {
   let setValue: number | null = null;
   let mulAddAccum = 0;
   let addAccum = 0;
 
-  for (const mod of modifiers) {
-    if (mod.bucket !== bucket) continue;
-    const value = effectiveValue(mod, ctx);
-    if (value === null) continue;
-    switch (mod.op) {
+  for (const { op, value } of entries) {
+    switch (op) {
       case 'SET':
         setValue = value;
         break;
@@ -150,6 +154,18 @@ export function foldBucket(modifiers: Modifier[], bucket: Bucket, base: number, 
   }
 
   return (setValue ?? base) + mulAddAccum * base + addAccum;
+}
+
+/** Fold all active modifiers targeting one bucket over an intrinsic base value. */
+export function foldBucket(modifiers: Modifier[], bucket: Bucket, base: number, ctx: ResolveContext): number {
+  const entries: Array<{ op: ModOp; value: number }> = [];
+  for (const mod of modifiers) {
+    if (mod.bucket !== bucket) continue;
+    const value = effectiveValue(mod, ctx);
+    if (value === null) continue;
+    entries.push({ op: mod.op, value });
+  }
+  return foldOps(entries, base);
 }
 
 /**

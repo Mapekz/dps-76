@@ -86,6 +86,8 @@ export type Condition =
   | { kind: 'enemyType'; keywordOrRace: string }
   | { kind: 'sneaking' }
   | { kind: 'powerAttack' }
+  /** The hit is a VATS critical (symmetric with sneaking/powerAttack). */
+  | { kind: 'crit' }
   | { kind: 'healthBelowPct'; pct: number }
   /** value × missing-health fraction, capped (Bloodied: up to ×0.95 of the listed max). */
   | { kind: 'scaledByMissingHealth'; cap: number }
@@ -135,18 +137,30 @@ export interface ValueCurve {
   points: Array<{ x: number; y: number }>;
 }
 
-export interface Modifier {
+/**
+ * A modifier's magnitude, discriminated on `curve` so the value/curve contract
+ * lives in the type rather than a comment:
+ * - plain: `value` is the raw game-data decimal (0.25 = +25%).
+ * - curve-driven (Bloodied, Nerd Rage, ...): `curveScale` multiplies the
+ *   interpolated curve Y (e.g. 0.01 for STAT-point curves): effective value =
+ *   interpolate(curve, input) × curveScale.
+ */
+export type ModifierValue =
+  | { curve?: undefined; value: number }
+  | { curve: ValueCurve; curveScale: number };
+
+export type Modifier = {
   /** Stable id: formid, or `${formid}:${index}` for multi-effect sources. */
   id: string;
   source: ModifierSource;
   bucket: Bucket;
   op: ModOp;
-  /**
-   * Raw game-data decimal. When `curve` is set this is the SCALE applied to
-   * the interpolated curve Y (e.g. 0.01 for STAT-point curves): effective
-   * value = interpolate(curve, input) × value.
-   */
-  value: number;
-  curve?: ValueCurve;
   conditions: Condition[];
-}
+} & ModifierValue;
+
+/** A modifier fragment without its id/source (as produced by MGEF translation). */
+export type ModifierFragment = {
+  bucket: Bucket;
+  op: ModOp;
+  conditions: Condition[];
+} & ModifierValue;

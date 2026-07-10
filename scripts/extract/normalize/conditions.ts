@@ -154,6 +154,29 @@ export function translateConditions(rows: RawCondition[], ctx: ConditionTranslat
   return { conditions: out, unresolved };
 }
 
+/**
+ * Flatten a PERK "Perk Conditions" node (tabbed) into raw condition rows.
+ * Tab-index 2 conditions run on the target, so their `Run On` is forced to
+ * 'Target'. Shared by the plumbing-perk route builder and perk-effect parsing.
+ */
+export function flattenPerkConditionRows(perkConditions: unknown): RawCondition[] {
+  if (!Array.isArray(perkConditions)) return [];
+  const rows: RawCondition[] = [];
+  for (const tab of perkConditions as Array<Record<string, unknown>>) {
+    const pc = tab['Perk Condition'] as Record<string, unknown> | undefined;
+    const tabIndex = (pc?.['Run On (Tab Index)'] as number) ?? 0;
+    const conditions = pc?.['Conditions'];
+    if (!Array.isArray(conditions)) continue;
+    for (const item of conditions as Array<Record<string, unknown>>) {
+      const data = (item['Condition'] as Record<string, unknown> | undefined)?.['Condition Data'] as
+        | RawCondition
+        | undefined;
+      if (data) rows.push(tabIndex === 2 ? { ...data, 'Run On': 'Target' } : data);
+    }
+  }
+  return rows;
+}
+
 /** Pull the flat condition rows out of the ESM's nested Conditions structures. */
 export function flattenConditionRows(node: unknown): RawCondition[] {
   if (!node || typeof node !== 'object') return [];

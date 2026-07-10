@@ -49,11 +49,12 @@ from recursively flattened `Includes` chains.
 ### Modifier IR and Damage Engine
 
 Every damage source normalizes to one shape (`src/types/modifiers.ts`):
-`{ bucket, op: SET|MUL_ADD|ADD, value, conditions[] }`. Values are raw
-game-data decimals (0.25 = +25%).
+`{ bucket, op: SET|MUL_ADD|ADD, conditions[] }` plus a value discriminated on
+`curve` — either `value` (raw decimal, 0.25 = +25%) or `{ curve, curveScale }`
+where `curveScale` multiplies the interpolated curve Y.
 
 The engine lives in `src/lib/engine/`:
-- `resolve.ts` - condition evaluation + bucket folds (SET → ×Π(1+MUL_ADD) → +ΣADD)
+- `resolve.ts` - condition evaluation + bucket folds via the shared `foldOps` primitive (SET → ×Π(1+MUL_ADD) → +ΣADD)
 - `paper-damage.ts` - the spec formula, per damage component
 - `crit-meter.ts` - steady-state VATS crit cadence from LCK/Crit Savvy/Limit Breaking
 - `scenarios.ts` - one config → Manual Aim / VATS / VATS+Sneak results
