@@ -26,6 +26,7 @@ export interface PlayerConditions {
   // Other steady-state inputs for conditional sources
   addictionCount: number; // for Junkie's legendary
   capsOnHand: number; // for Aristocrat's legendary
+  maxHealth?: number; // absolute max HP for Juggernaut's health curve (default 300, docs/assumptions.md)
   limitBreakingPieces: number; // 0-5 armor pieces with Limit Breaking (−10% crit cost each)
   strangeInNumbers: boolean; // team with Strange in Numbers → mutation values ×1.25
 
@@ -142,6 +143,8 @@ export interface Weapon {
   keywords?: string[];
   /** Attach point slot formids — an OMOD fits when its attach point is listed here. */
   attachParentSlots?: string[];
+  /** OMOD formids from the weapon's default Object Template — the stock/default parts (picker display rule). */
+  templateModFormIds?: string[];
   /** Base weapon crit damage multiplier (VATS crit; typically 2.0). */
   critDamageMult?: number;
   /** Crit meter fill multiplier per hit (typically 1.0). */
@@ -259,6 +262,7 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     furiousStacks: 0,
     addictionCount: 0,
     capsOnHand: 0,
+    maxHealth: 300, // typical non-bloodied build (Juggernaut's curve input)
     limitBreakingPieces: 0,
     strangeInNumbers: false,
     strength: 15,

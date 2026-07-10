@@ -70,6 +70,13 @@ export interface GeneratedWeapon {
   templateModFormIds: string[];
   /** Attach point slot formids (phase 5: which mod slots exist). */
   attachParentSlots: string[];
+  /**
+   * False when reverse-reference derivation (scripts/extract/obtainability.ts)
+   * found no player-reachable source. Kept in the data for review/rescue —
+   * the app hides it unless corrections.ts force-visibles it. Absent = true
+   * (pre-derivation extractions).
+   */
+  obtainable?: boolean;
 }
 
 import type { Modifier } from './modifiers';
@@ -115,6 +122,10 @@ export interface GeneratedOmod {
   addedKeywords: string[];
   /** Mod carries an Enchantments property (legendary-effect chain — phase 7). */
   hasEnchantments: boolean;
+  /** See GeneratedWeapon.obtainable — false = no player-reachable reference found. */
+  obtainable?: boolean;
+  /** Extraction caveats for this record (unrouted AVs, unmodeled curves) — powers UI badges. */
+  notes?: string[];
 }
 
 export interface GeneratedBuff {
@@ -128,6 +139,13 @@ export interface GeneratedBuff {
   notes: string[];
 }
 
+export interface ExcludedRecordDetail {
+  id: string;
+  name?: string;
+  /** Obtainability evidence from scripts/extract/obtainability.ts. */
+  signals?: string[];
+}
+
 export interface GeneratedMeta {
   esmPath: string;
   esmDate: string | null;
@@ -136,6 +154,12 @@ export interface GeneratedMeta {
   counts: Record<string, number>;
   /** Records excluded by the playable filter, grouped by reason (for iteration). */
   excluded: Record<string, string[]>;
+  /**
+   * Named records excluded or marked unobtainable, with evidence — the
+   * post-extraction review artifact. Rescue false negatives via
+   * src/data/overrides/corrections.ts (forceVisible*Ids).
+   */
+  excludedDetailed?: Record<string, ExcludedRecordDetail[]>;
   /** Things the normalizer could not resolve — review after each run. */
   unresolved: string[];
 }

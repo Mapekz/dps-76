@@ -18,6 +18,8 @@ export interface ResolveContext {
   player: PlayerConditions;
   enemy: EnemyConditions;
   scenario: ScenarioFlags;
+  /** Weapon item level for itemLevel-input curves (scenarios always set it; defaults to the level-50 clamp). */
+  itemLevel?: number;
   /** Body part the hit lands on (for bodyPart-gated modifiers like Center Masochist). */
   bodyPart?: 'torso' | 'weakpoint' | 'limb';
   /**
@@ -28,11 +30,11 @@ export interface ResolveContext {
 }
 
 /**
- * Reads one scalar from player state for a stack counter or a curve input.
+ * Reads one scalar from resolve state for a stack counter or a curve input.
  * Single source of truth for what game state each modifier axis consumes —
  * add a row here when adding a StackCounter or CurveInput.
  */
-const PLAYER_STATE_READERS: Record<StackCounter | CurveInput, (p: PlayerConditions) => number> = {
+const PLAYER_STATE_READERS: Record<StackCounter | CurveInput, (p: PlayerConditions, ctx: ResolveContext) => number> = {
   // Stack counters (modifier value × count).
   tenderizer: p => p.tenderizerStacks ?? 0,
   onslaught: p => p.onslaughtStacks,
@@ -45,6 +47,12 @@ const PLAYER_STATE_READERS: Record<StackCounter | CurveInput, (p: PlayerConditio
   killStreak: p => p.adrenalineStacks,
   addictionCount: p => p.addictionCount,
   consecutiveHits: p => p.furiousStacks,
+  // Juggernaut's curve X is ABSOLUTE current HP; 300 max HP is a typical
+  // non-bloodied build (docs/assumptions.md) until a Max HP input lands.
+  healthCurrent: p => (p.healthPercent / 100) * (p.maxHealth ?? 300),
+  // Enemy defenses are not modeled yet — curve evaluates at DR 0.
+  enemyDamageResist: () => 0,
+  itemLevel: (_, ctx) => ctx.itemLevel ?? 50,
 };
 
 /**
@@ -88,7 +96,7 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       return scale > 0 ? scale : null;
     }
     case 'stacks': {
-      const count = Math.max(0, Math.min(PLAYER_STATE_READERS[cond.counter](ctx.player), cond.max));
+      const count = Math.max(0, Math.min(PLAYER_STATE_READERS[cond.counter](ctx.player, ctx), cond.max));
       return count > 0 ? count : null;
     }
     case 'enemyFullHealth':
@@ -117,7 +125,7 @@ export function effectiveValue(mod: Modifier, ctx: ResolveContext): number | nul
   // Curve-driven values (Bloodied, Nerd Rage, ...): Y at the current input,
   // scaled by mod.curveScale (the route scale, e.g. 0.01 for STAT-point curves).
   const base = mod.curve
-    ? interpolateCurve(mod.curve.points, PLAYER_STATE_READERS[mod.curve.input](ctx.player)) * mod.curveScale
+    ? interpolateCurve(mod.curve.points, PLAYER_STATE_READERS[mod.curve.input](ctx.player, ctx)) * mod.curveScale
     : mod.value;
   return base * scale;
 }

@@ -77,6 +77,7 @@ function scenarioCtx(input: ScenarioInput, flags: ScenarioFlags): ResolveContext
     player: input.player,
     enemy: input.enemy,
     scenario: { ...flags, isPowerAttack: flags.isPowerAttack && isMelee(input.weapon) },
+    itemLevel: input.itemLevel,
   };
 }
 

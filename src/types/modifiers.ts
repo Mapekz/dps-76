@@ -60,7 +60,19 @@ export type Bucket =
   | 'ammoCapacity'
   /** Reload speed multiplier rewrite from OMODs (quick-eject magazines) — feeds sustained DPS. */
   | 'reloadSpeed'
-  | 'addDamageComponent';
+  | 'addDamageComponent'
+  /** Armor penetration (Anti-Armor's ActorValues property) — extracted but inert until enemy DR lands. */
+  | 'armorPen'
+  /** Damage-over-time from Damage-archetype MGEFs (bleed/burn/shock mods) — extracted but inert until a DoT model lands. */
+  | 'dotDamage'
+  /** SPECIAL stat bonuses (consumables, legendary +STR...). Strength/Luck feed the engine; the rest are stored for perk-SPECIAL scaling. */
+  | 'specialStrength'
+  | 'specialPerception'
+  | 'specialEndurance'
+  | 'specialCharisma'
+  | 'specialIntelligence'
+  | 'specialAgility'
+  | 'specialLuck';
 
 export type WeaponClass = Weapon['weaponClass'];
 export type DamageType = Weapon['components'][number]['damageType'];
@@ -133,7 +145,10 @@ export type CurveInput =
   | 'capsOnHand' // Aristocrat's — AV 0x00000393
   | 'killStreak' // Adrenal Reaction — AV 0x00000399
   | 'addictionCount' // Junkie's — AV 0x001EB998
-  | 'consecutiveHits'; // Furious — AV 0x006C3172
+  | 'consecutiveHits' // Furious — AV 0x006C3172
+  | 'healthCurrent' // ABSOLUTE current HP (Juggernaut's: x 0→1000) — AV 0x000002D4
+  | 'enemyDamageResist' // enemy DR (DamageUnarmored) — AV 0x000002E3; reads 0 until enemy defenses land
+  | 'itemLevel'; // weapon item level — level-scaled OMOD properties (heated melee mods' AttackDamage curves)
 
 export interface ValueCurve {
   input: CurveInput;
@@ -160,6 +175,8 @@ export type Modifier = {
   bucket: Bucket;
   op: ModOp;
   conditions: Condition[];
+  /** Effect duration in seconds (DoT ticks, timed buffs) — carried for the future DoT model, unused by the engine. */
+  durationSec?: number;
 } & ModifierValue;
 
 /** A modifier fragment without its id/source (as produced by MGEF translation). */
@@ -167,4 +184,5 @@ export type ModifierFragment = {
   bucket: Bucket;
   op: ModOp;
   conditions: Condition[];
+  durationSec?: number;
 } & ModifierValue;
