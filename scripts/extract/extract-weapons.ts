@@ -147,6 +147,7 @@ export async function toGeneratedWeapon(
     animationAttackSec: asNumber(data['Animation Attack Seconds']),
     animationFireSec: asNumber(rgw3['Animation Fire Seconds']),
     reloadSpeed: asNumber(data['Reload Speed'], 1.0),
+    animationReloadSec: asNumber(rgw3['Animation Reload Seconds']),
     capacity: asNumber(data['Capacity']),
     ammoPerShot: asNumber(data['Ammo used per shot'], 1),
     actionPointCost: asNumber(data['Action Point Cost']),

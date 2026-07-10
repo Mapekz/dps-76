@@ -55,6 +55,9 @@ function buildSlots(
 ): OmodSlot[] {
   const groups = new Map<string, GeneratedOmod[]>();
   for (const omod of getDataset(mode).omods) {
+    // Authoring templates (_PARENT_ records, "TEMPLATE:"-named) carry the stats
+    // real mods include via their Includes chain — not equippable themselves.
+    if (omod.id.startsWith('_PARENT_') || omod.name.startsWith('TEMPLATE')) continue;
     if (!includeSlot(omod.attachPointEdid)) continue;
     if (!isAttachable(omod, weapon)) continue;
     (groups.get(omod.attachPointEdid) ?? groups.set(omod.attachPointEdid, []).get(omod.attachPointEdid)!).push(omod);

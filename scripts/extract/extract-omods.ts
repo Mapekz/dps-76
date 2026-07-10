@@ -29,12 +29,14 @@ const PROPERTY_BUCKETS: Record<string, PropertyMapping> = {
   IsAutomatic: { bucket: 'isAutomatic' },
   NumProjectiles: { bucket: 'projectileCount' },
   CriticalChargeBonus: { bucket: 'critFill' },
+  AmmoCapacity: { bucket: 'ammoCapacity' },
+  ReloadSpeed: { bucket: 'reloadSpeed' },
 };
 
 /** Property names that never affect the damage formula — skipped without reporting. */
 const PROPERTY_IGNORED = new Set([
-  'Weight', 'Value', 'Health', 'Ammo', 'AmmoCapacity', 'Reach', 'MinRange', 'MaxRange',
-  'AttackActionPointCost', 'ReloadSpeed', 'AimModelBaseStability', 'AimModelRecoilMaxDegPerShot',
+  'Weight', 'Value', 'Health', 'Ammo', 'Reach', 'MinRange', 'MaxRange',
+  'AttackActionPointCost', 'AimModelBaseStability', 'AimModelRecoilMaxDegPerShot',
   // NOTE: 'AttackDamage' and 'DamageTypeValues' are handled explicitly below
   // (they scale component base damage), not ignored.
   'AimModelRecoilMinDegPerShot', 'AimModelRecoilArcDeg', 'AimModelRecoilArcRotateDeg',

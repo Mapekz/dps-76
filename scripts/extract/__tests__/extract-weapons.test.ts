@@ -35,6 +35,11 @@ describe('toGeneratedWeapon', () => {
     expect(w.attackDelaySec).toBeCloseTo(0.28, 5);
     expect(w.projectileCount).toBe(1);
     expect(w.templateModFormIds.length).toBeGreaterThan(0);
+    // Magazine/reload fields (sustained DPS)
+    expect(w.capacity).toBe(20);
+    expect(w.ammoPerShot).toBe(1);
+    expect(w.reloadSpeed).toBeCloseTo(1.1765, 4);
+    expect(w.animationReloadSec).toBeCloseTo(3.2, 3);
   });
 
   it('Gatling Plasma: main curve present → phys + energy (all plasma weapons deal both)', async () => {
@@ -49,6 +54,7 @@ describe('toGeneratedWeapon', () => {
     expect(w.components).toHaveLength(1);
     expect(w.components[0].damageType).toBe('ballistic');
     expect(w.components[0].tier).toBe(16);
+    expect(w.animationReloadSec).toBeCloseTo(3.6667, 3);
   });
 
   it('Shishkebab: Base Damage > 0 plus typed fire entry → two components sharing the tier-20 curve', async () => {
