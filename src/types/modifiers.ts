@@ -56,6 +56,10 @@ export type Bucket =
   | 'fireRateSpeed'
   | 'isAutomatic'
   | 'projectileCount'
+  /** Magazine capacity rewrite from OMODs (drum/extended magazines) — feeds sustained DPS. */
+  | 'ammoCapacity'
+  /** Reload speed multiplier rewrite from OMODs (quick-eject magazines) — feeds sustained DPS. */
+  | 'reloadSpeed'
   | 'addDamageComponent';
 
 export type WeaponClass = Weapon['weaponClass'];

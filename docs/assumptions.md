@@ -70,6 +70,23 @@ PaperDamage = Σ_components base(c) × ( dbmFold(c) + Tenderizer + (CritMult−1
   whether in-game stock configurations include a default receiver's stats is
   unverified.
 
+## Sustained DPS (`src/lib/engine/sustain.ts`)
+
+- `burstDps = perHitAvg × fireRate` (mag-dump, no reload) — the old "sustained
+  DPS" renamed to what it actually was.
+- `sustainedDps = (perHitAvg × shotsPerMag) / (shotsPerMag / fireRate + reloadSec)`
+  with `shotsPerMag = floor(Capacity / Ammo used per shot)`.
+- **ASSUMPTION (unverified in-game):** `reloadSec = Animation Reload Seconds
+  (RGW3) / Reload Speed (Data)`. Fixer: 3.20 / 1.1765 ≈ 2.72 s. Pinned by a
+  `expected: null` golden case until someone stopwatches N full
+  mag-dump+reload cycles vs a target dummy.
+- Magazine OMODs: `AmmoCapacity`/`ReloadSpeed` properties map to the
+  `ammoCapacity`/`reloadSpeed` buckets and rewrite the effective weapon's
+  capacity/reload speed (`effective-weapon.ts`), same fold as Speed.
+- No magazine (melee/unarmed, `Capacity 0`): sustained = burst, reload 0.
+- Weapons extracted before the reload field landed lack `animationReloadSec`
+  → treated as zero-cost reload (sustained = burst) rather than guessing.
+
 ## Crit meter (`src/lib/engine/crit-meter.ts`)
 
 - `fillPerHit% = (5 + 1.5 × LCK) × weaponCritChargeBonus` from GMSTs

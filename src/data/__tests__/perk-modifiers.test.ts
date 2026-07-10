@@ -44,29 +44,31 @@ describe('perk effects through the engine (real data)', () => {
 
   it('Center Masochist boosts Fixer torso hits but not weakpoint hits', () => {
     const weapon = getWeapons('live')['CombatRifle_Fixer'];
-    const noPerk = computeScenarios({ ...base, weapon, modifiers: [] });
-    const withPerk = computeScenarios({
-      ...base,
-      weapon,
-      modifiers: getLoadoutModifiers('live', [{ perkId: PerkId.CenterMasochist, rank: 3 }]),
-    });
+    const perk = getLoadoutModifiers('live', [{ perkId: PerkId.CenterMasochist, rank: 3 }]);
+    const weakpoint = { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true };
 
-    expect(withPerk.manualAim.perHit.total).toBeCloseTo(noPerk.manualAim.perHit.total * 1.75, 6);
-    expect(withPerk.manualAim.weakpointPerHit.total).toBeCloseTo(noPerk.manualAim.weakpointPerHit.total, 6);
+    const noPerk = computeScenarios({ ...base, weapon, modifiers: [] });
+    const withPerk = computeScenarios({ ...base, weapon, modifiers: perk });
+    expect(withPerk.freeAim.perHit.total).toBeCloseTo(noPerk.freeAim.perHit.total * 1.75, 6);
+
+    const noPerkWeak = computeScenarios({ ...base, weapon, modifiers: [], player: weakpoint });
+    const withPerkWeak = computeScenarios({ ...base, weapon, modifiers: perk, player: weakpoint });
+    expect(withPerkWeak.freeAim.perHit.total).toBeCloseTo(noPerkWeak.freeAim.perHit.total, 6);
   });
 
   it('Ninja boosts sneak damage for melee but not for the Fixer', () => {
     const fixer = getWeapons('live')['CombatRifle_Fixer'];
     const sledge = getWeapons('live')['SuperSledge'];
     const ninja = getLoadoutModifiers('live', [{ perkId: PerkId.Ninja, rank: 1 }]);
+    const sneaking = { ...createDefaultPlayerConditions(), isSneaking: true };
 
-    const fixerBase = computeScenarios({ ...base, weapon: fixer, modifiers: [] });
-    const fixerNinja = computeScenarios({ ...base, weapon: fixer, modifiers: ninja });
-    expect(fixerNinja.vatsSneak.perHit.total).toBeCloseTo(fixerBase.vatsSneak.perHit.total, 6);
+    const fixerBase = computeScenarios({ ...base, weapon: fixer, modifiers: [], player: sneaking });
+    const fixerNinja = computeScenarios({ ...base, weapon: fixer, modifiers: ninja, player: sneaking });
+    expect(fixerNinja.vats.perHit.total).toBeCloseTo(fixerBase.vats.perHit.total, 6);
 
-    const sledgeBase = computeScenarios({ ...base, weapon: sledge, modifiers: [] });
-    const sledgeNinja = computeScenarios({ ...base, weapon: sledge, modifiers: ninja });
-    expect(sledgeNinja.vatsSneak.perHit.total).toBeGreaterThan(sledgeBase.vatsSneak.perHit.total);
+    const sledgeBase = computeScenarios({ ...base, weapon: sledge, modifiers: [], player: sneaking });
+    const sledgeNinja = computeScenarios({ ...base, weapon: sledge, modifiers: ninja, player: sneaking });
+    expect(sledgeNinja.vats.perHit.total).toBeGreaterThan(sledgeBase.vats.perHit.total);
   });
 
   it('Tenderizer stacks scale dbm through player conditions', () => {
@@ -79,7 +81,7 @@ describe('perk effects through the engine (real data)', () => {
       player: { ...createDefaultPlayerConditions(), tenderizerStacks: 10 },
     });
     const unstacked = computeScenarios({ ...base, weapon, modifiers: mods });
-    expect(stacked.manualAim.perHit.total).toBeCloseTo(unstacked.manualAim.perHit.total * 2.0, 6);
+    expect(stacked.freeAim.perHit.total).toBeCloseTo(unstacked.freeAim.perHit.total * 2.0, 6);
   });
 });
 

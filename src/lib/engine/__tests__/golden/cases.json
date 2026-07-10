@@ -3,7 +3,8 @@
     "Golden cases: in-game measured numbers that pin the engine to reality.",
     "Fill `expected` from actual game measurements (pip-boy damage card or hit",
     "numbers vs a known target). Cases with `expected: null` are skipped.",
-    "scenario: manualAim | manualAimWeakpoint | vats | vatsSneak.",
+    "scenario: freeAim | vats. Sneak and weakpoint targeting are player",
+    "conditions (isSneaking / isAimingAtWeakpoint), not scenarios.",
     "conditions/enemyConditions patch the defaults from src/types/index.ts."
   ],
   "cases": [
@@ -19,7 +20,7 @@
       "consumables": [],
       "conditions": {},
       "enemyConditions": {},
-      "scenario": "manualAim",
+      "scenario": "freeAim",
       "measure": "perHit",
       "expected": 103,
       "tolerancePct": 2,
@@ -37,7 +38,7 @@
       "consumables": [],
       "conditions": {},
       "enemyConditions": {},
-      "scenario": "manualAim",
+      "scenario": "freeAim",
       "measure": "perHit",
       "expected": 90.125,
       "tolerancePct": 2,
@@ -55,11 +56,29 @@
       "consumables": [],
       "conditions": { "strength": 15 },
       "enemyConditions": {},
-      "scenario": "manualAim",
+      "scenario": "freeAim",
       "measure": "perHit",
       "expected": 224,
       "tolerancePct": 2,
       "source": "user formula (72→64 per component: Shishkebab's max Eligible Level is 45, so (64×1.75)×2 — CONFIRM in-game that no lvl-50 Shishkebab exists; at 50 the curve would give 252)"
+    },
+    {
+      "name": "Stock Fixer @50 — sustained DPS incl. reload (reload ≈ 3.2s/1.1765 ≈ 2.72s, unverified)",
+      "weaponId": "CombatRifle_Fixer",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "sustainedDps",
+      "expected": null,
+      "tolerancePct": 5,
+      "source": "pending in-game stopwatch: time N full mag+reload cycles vs a target dummy (docs/assumptions.md, Sustained DPS)"
     }
   ]
 }

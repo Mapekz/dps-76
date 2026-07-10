@@ -30,8 +30,8 @@ interface GoldenCase {
   consumables: string[];
   conditions: Partial<PlayerConditions>;
   enemyConditions: Partial<EnemyConditions>;
-  scenario: 'manualAim' | 'manualAimWeakpoint' | 'vats' | 'vatsSneak';
-  measure: 'perHit' | 'dps' | 'fireRate';
+  scenario: 'freeAim' | 'vats';
+  measure: 'perHit' | 'burstDps' | 'sustainedDps' | 'fireRate';
   expected: number | null;
   tolerancePct: number;
   source: string;
@@ -63,16 +63,14 @@ describe('golden cases (in-game measurements)', () => {
 
       const scenarios = computeScenarios(input!);
 
-      const scenario = c.scenario === 'manualAimWeakpoint' ? scenarios.manualAim : scenarios[c.scenario];
+      const scenario = scenarios[c.scenario];
       const actual =
         c.measure === 'fireRate'
           ? scenario.fireRate
-          : c.scenario === 'manualAimWeakpoint'
-            ? c.measure === 'dps'
-              ? scenarios.manualAim.weakpointDps
-              : scenarios.manualAim.weakpointPerHit.total
-            : c.measure === 'dps'
-              ? scenario.sustainedDps
+          : c.measure === 'burstDps'
+            ? scenario.burstDps
+            : c.measure === 'sustainedDps'
+              ? scenario.sustain.sustainedDps
               : scenario.perHit.total;
 
       const tolerance = (c.expected! * c.tolerancePct) / 100;

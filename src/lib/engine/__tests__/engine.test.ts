@@ -219,29 +219,51 @@ describe('computePaperDamage', () => {
 });
 
 describe('computeScenarios', () => {
-  it('weights VATS per-hit by the crit rate and keeps manual crit-free', () => {
-    const weapon = makeWeapon({ animDelaySec: 1.0, isPhysical: false }); // fireRate 1.0/s for easy math
-    const mods = [mod({ bucket: 'critDmgBonus', op: 'ADD', value: 1.0 })]; // crit mult 3.0
-    const input = {
-      mode: 'live' as const,
-      weapon,
-      itemLevel: 50,
-      modifiers: mods,
-      player: { ...createDefaultPlayerConditions(), strength: 0 },
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2.0,
-      critRate: 0.5,
-    };
-    const s = computeScenarios(input);
+  const weapon = makeWeapon({ animDelaySec: 1.0, isPhysical: false }); // fireRate 1.0/s for easy math
+  const mods = [mod({ bucket: 'critDmgBonus', op: 'ADD', value: 1.0 })]; // crit mult 3.0
+  const input = {
+    mode: 'live' as const,
+    weapon,
+    itemLevel: 50,
+    modifiers: mods,
+    player: { ...createDefaultPlayerConditions(), strength: 0 },
+    enemy: createDefaultEnemyConditions(),
+    weakpointMult: 2.0,
+    critRate: 0.5,
+  };
+  const withConditions = (patch: Partial<ReturnType<typeof createDefaultPlayerConditions>>) => ({
+    ...input,
+    player: { ...input.player, ...patch },
+  });
 
-    expect(s.manualAim.perHit.total).toBeCloseTo(100, 6);
-    expect(s.manualAim.weakpointPerHit.total).toBeCloseTo(200, 6);
-    // VATS: weakpoint ×2; non-crit 200, crit adds (3.0−1)×base×bodyPart → 100×3×2=600? No:
-    // crit hit = 100 × (1 + (3−1)) × 2 = 600; avg = 0.5×200 + 0.5×600 = 400.
+  it('weights VATS per-hit by the crit rate and keeps free aim crit-free', () => {
+    const s = computeScenarios(input); // defaults: torso, no sneak
+    expect(s.freeAim.perHit.total).toBeCloseTo(100, 6);
+    // VATS torso: crit hit = 100 × (1 + (3−1)) = 300; avg = 0.5×100 + 0.5×300 = 200.
+    expect(s.vats.perHit.total).toBeCloseTo(200, 6);
+    expect(s.vats.burstDps).toBeCloseTo(200 * s.vats.fireRate, 6);
+  });
+
+  it('applies the weakpoint toggle to both scenarios', () => {
+    const s = computeScenarios(withConditions({ isAimingAtWeakpoint: true }));
+    expect(s.freeAim.perHit.total).toBeCloseTo(200, 6);
+    // VATS weakpoint: non-crit 200, crit 100×3×2=600, avg = 400.
     expect(s.vats.perHit.total).toBeCloseTo(400, 6);
-    expect(s.vats.sustainedDps).toBeCloseTo(400 * s.vats.fireRate, 6);
-    // Sneak: sneak term +1.0 → non-crit 100×2×2=400, crit 100×4×2=800, avg 600.
-    expect(s.vatsSneak.perHit.total).toBeCloseTo(600, 6);
+  });
+
+  it('applies the sneak toggle to both scenarios (free aim included)', () => {
+    const s = computeScenarios(withConditions({ isSneaking: true, isAimingAtWeakpoint: true }));
+    // Sneak term +1.0 → free aim 100×2×2 = 400 (sneak now works outside VATS).
+    expect(s.freeAim.perHit.total).toBeCloseTo(400, 6);
+    // VATS: non-crit 400, crit 100×4×2=800, avg 600.
+    expect(s.vats.perHit.total).toBeCloseTo(600, 6);
+  });
+
+  it('forwards the full crit-meter economy on the VATS result', () => {
+    const s = computeScenarios({ ...input, critRate: undefined });
+    expect(s.vats.critMeter).toBeDefined();
+    expect(s.vats.critRate).toBeCloseTo(s.vats.critMeter!.critRate, 10);
+    expect(s.freeAim.critMeter).toBeUndefined();
   });
 });
 

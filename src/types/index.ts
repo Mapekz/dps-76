@@ -10,6 +10,7 @@ export type { Stat, StatModification } from '@/data/stats';
 export interface PlayerConditions {
   // Combat state
   isSneaking: boolean;
+  isAimingAtWeakpoint: boolean; // weakpoint (head) targeting; applies to both scenarios
   isInPowerArmor: boolean;
   isSolo: boolean;
   isPowerAttacking: boolean; // melee power attacks (toggle; applies across scenarios)
@@ -124,6 +125,16 @@ export interface Weapon {
   /** Auto: fire animation cycle length in seconds (default ≈ 0.11). */
   animDurationSec?: number;
 
+  // ── Magazine / reload (sustained DPS) ────────────────────────────────────
+  /** Magazine capacity in rounds (0/undefined = no magazine: melee, some uniques). */
+  capacity?: number;
+  /** Ammo consumed per shot (Gauss Minigun 2, most weapons 1). */
+  ammoPerShot?: number;
+  /** Reload speed multiplier (Data.Reload Speed; higher = faster). */
+  reloadSpeed?: number;
+  /** Base reload animation length in seconds (RGW3 Animation Reload Seconds). */
+  animationReloadSec?: number;
+
   // ── ESM-extracted metadata (present on generated weapons) ────────────────
   /** Source ESM FormID (e.g. "0x0046D2A1"). */
   formId?: string;
@@ -236,6 +247,7 @@ export interface PlayerConfig {
 export function createDefaultPlayerConditions(): PlayerConditions {
   return {
     isSneaking: false,
+    isAimingAtWeakpoint: false,
     isInPowerArmor: false,
     isSolo: true,
     isPowerAttacking: false,

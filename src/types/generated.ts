@@ -53,6 +53,8 @@ export interface GeneratedWeapon {
   animationAttackSec: number;
   animationFireSec: number;
   reloadSpeed: number;
+  /** RGW3 Animation Reload Seconds (optional: absent from pre-reload extractions). */
+  animationReloadSec?: number;
   capacity: number;
   ammoPerShot: number;
   actionPointCost: number;

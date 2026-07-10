@@ -16,6 +16,8 @@ export function useDamageCalc(
 ): { scenarios: ScenarioSet | null } {
   return React.useMemo(() => {
     const input = resolveLoadout(playerConfig, enemyConfig, mode);
-    return { scenarios: input ? computeScenarios(input) : null };
+    // The displayed result carries attribution traces (the breakdown panel);
+    // speculative evals go through the suggestion engine without them.
+    return { scenarios: input ? computeScenarios({ ...input, collectTrace: true }) : null };
   }, [playerConfig, enemyConfig, mode]);
 }

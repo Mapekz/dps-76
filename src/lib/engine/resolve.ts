@@ -1,6 +1,7 @@
 import type { PlayerConditions, EnemyConditions, Weapon } from '@/types';
 import type { Bucket, Condition, CurveInput, DamageType, Modifier, ModOp, StackCounter } from '@/types/modifiers';
 import { interpolateCurve } from '@/lib/curve-tables';
+import type { BucketTrace, TraceContribution } from './trace';
 
 /** Per-attack flags that differ between the displayed scenarios. */
 export interface ScenarioFlags {
@@ -156,29 +157,64 @@ export function foldOps(entries: Array<{ op: ModOp; value: number }>, base: numb
   return (setValue ?? base) + mulAddAccum * base + addAccum;
 }
 
-/** Fold all active modifiers targeting one bucket over an intrinsic base value. */
-export function foldBucket(modifiers: Modifier[], bucket: Bucket, base: number, ctx: ResolveContext): number {
-  const entries: Array<{ op: ModOp; value: number }> = [];
+/**
+ * Fold all active modifiers targeting one bucket over an intrinsic base value.
+ * When `collect` is provided, a BucketTrace of every contribution (tagged with
+ * its ModifierSource) is pushed onto it; the no-trace path does no extra work.
+ */
+export function foldBucket(
+  modifiers: Modifier[],
+  bucket: Bucket,
+  base: number,
+  ctx: ResolveContext,
+  collect?: BucketTrace[]
+): number {
+  const entries: Array<{ op: ModOp; value: number; mod?: Modifier }> = [];
   for (const mod of modifiers) {
     if (mod.bucket !== bucket) continue;
     const value = effectiveValue(mod, ctx);
     if (value === null) continue;
-    entries.push({ op: mod.op, value });
+    entries.push(collect ? { op: mod.op, value, mod } : { op: mod.op, value });
   }
-  return foldOps(entries, base);
+  const result = foldOps(entries, base);
+
+  if (collect) {
+    const contribution = (e: { op: ModOp; value: number; mod?: Modifier }): TraceContribution => ({
+      source: e.mod!.source,
+      op: e.op,
+      value: e.value,
+    });
+    const sets = entries.filter(e => e.op === 'SET');
+    collect.push({
+      bucket,
+      base,
+      result,
+      set: sets.length > 0 ? contribution(sets[sets.length - 1]) : null,
+      overriddenSets: sets.slice(0, -1).map(contribution),
+      mulAdd: entries.filter(e => e.op === 'MUL_ADD').map(contribution),
+      add: entries.filter(e => e.op === 'ADD').map(contribution),
+    });
+  }
+
+  return result;
 }
 
 /**
  * Separate stacking whole-damage multipliers (TOFTT, Follow Through):
  * each active modifier contributes its own ×(1 + value) term.
  */
-export function foldWholeDamage(modifiers: Modifier[], ctx: ResolveContext): number {
+export function foldWholeDamage(
+  modifiers: Modifier[],
+  ctx: ResolveContext,
+  collect?: TraceContribution[]
+): number {
   let mult = 1;
   for (const mod of modifiers) {
     if (mod.bucket !== 'wholeDamage') continue;
     const value = effectiveValue(mod, ctx);
     if (value === null) continue;
     mult *= 1 + value;
+    collect?.push({ source: mod.source, op: mod.op, value });
   }
   return mult;
 }

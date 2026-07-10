@@ -1,6 +1,7 @@
 import type { Weapon } from '@/types';
 import type { Modifier } from '@/types/modifiers';
 import { foldBucket, type ResolveContext } from './resolve';
+import { lastTrace, type BucketTrace, type CritMeterTrace } from './trace';
 
 /**
  * VATS crit-meter economy → steady-state crit rate.
@@ -35,12 +36,21 @@ export interface CritMeterResult {
   shotsPerCrit: number;
 }
 
-export function computeCritMeter(modifiers: Modifier[], weapon: Weapon, ctx: ResolveContext): CritMeterResult {
+export function computeCritMeter(
+  modifiers: Modifier[],
+  weapon: Weapon,
+  ctx: ResolveContext,
+  trace?: CritMeterTrace
+): CritMeterResult {
   const luck = ctx.player.luck;
   const fillBase = (VATS_CRITICAL_CHARGE_BASE + VATS_CRITICAL_CHARGE_MULT * luck) * (weapon.critChargeBonus ?? 1.0);
-  const fillPerHit = foldBucket(modifiers, 'critFill', fillBase, ctx);
+  const fillCollect = trace ? ([] as BucketTrace[]) : undefined;
+  const fillPerHit = foldBucket(modifiers, 'critFill', fillBase, ctx, fillCollect);
+  if (trace && fillCollect) trace.fill = lastTrace(fillCollect);
 
-  const costFromPerks = foldBucket(modifiers, 'critConsumption', 100, ctx);
+  const costCollect = trace ? ([] as BucketTrace[]) : undefined;
+  const costFromPerks = foldBucket(modifiers, 'critConsumption', 100, ctx, costCollect);
+  if (trace && costCollect) trace.consumption = lastTrace(costCollect);
   const limitBreaking = 1 - 0.1 * Math.max(0, Math.min(5, ctx.player.limitBreakingPieces));
   const consumption = costFromPerks * limitBreaking;
 

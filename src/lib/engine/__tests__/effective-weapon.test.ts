@@ -40,7 +40,7 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
     const modded = computeScenarios({ ...base, weapon, modifiers, critRate: 0 });
 
     // AttackDamage MUL_ADD −0.3 scales base BEFORE dbm: 103 × 0.7 × 1.25 = 90.125
-    expect(modded.manualAim.perHit.total).toBeCloseTo(stock.manualAim.perHit.total * 0.7 * 1.25, 5);
+    expect(modded.freeAim.perHit.total).toBeCloseTo(stock.freeAim.perHit.total * 0.7 * 1.25, 5);
 
     // crit-weighted VATS: crit mult = 2.0 × 0.8 = 1.6 → crit term +0.6
     const critted = computeScenarios({ ...base, weapon, modifiers, critRate: 1 });
@@ -49,5 +49,42 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
 
     // automatic receiver: fire rate = 0.8248 / 0.11 ≈ 7.5
     expect(modded.vats.fireRate).toBeCloseTo(0.8248 / 0.11, 3);
+  });
+
+  it('folds ammoCapacity / reloadSpeed OMOD buckets into the effective weapon (synthetic)', () => {
+    const magazineOmod = {
+      id: 'test_mag',
+      formId: '0x0',
+      name: 'Test Drum Magazine',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_gun_Magazine',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [
+        {
+          id: '0x0:0',
+          source: { kind: 'omod' as const, formId: '0x0', edid: 'test_mag', name: 'Test Drum Magazine' },
+          bucket: 'ammoCapacity' as const,
+          op: 'MUL_ADD' as const,
+          value: 0.5,
+          conditions: [],
+        },
+        {
+          id: '0x0:1',
+          source: { kind: 'omod' as const, formId: '0x0', edid: 'test_mag', name: 'Test Drum Magazine' },
+          bucket: 'reloadSpeed' as const,
+          op: 'MUL_ADD' as const,
+          value: 0.25,
+          conditions: [],
+        },
+      ],
+    };
+    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [magazineOmod]);
+    expect(weapon.capacity).toBeCloseTo((fixer.capacity ?? 0) * 1.5, 6);
+    expect(weapon.reloadSpeed).toBeCloseTo((fixer.reloadSpeed ?? 1) * 1.25, 6);
+    // Weapon-stat buckets never leak into the resolver's modifier list.
+    expect(modifiers).toHaveLength(0);
   });
 });

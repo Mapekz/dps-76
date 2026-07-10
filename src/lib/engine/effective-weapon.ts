@@ -29,7 +29,7 @@ export function buildEffectiveWeapon(weapon: Weapon, equippedOmods: GeneratedOmo
   if (equippedOmods.length === 0) return { weapon, modifiers: [] };
 
   const allOmodModifiers = equippedOmods.flatMap(o => o.modifiers);
-  const weaponStatBuckets = new Set(['fireRateSpeed', 'isAutomatic']);
+  const weaponStatBuckets = new Set(['fireRateSpeed', 'isAutomatic', 'projectileCount', 'ammoCapacity', 'reloadSpeed']);
 
   const keywords = [...new Set([...(weapon.keywords ?? []), ...equippedOmods.flatMap(o => o.addedKeywords)])];
   const speed = foldWeaponStat(allOmodModifiers, 'fireRateSpeed', weapon.speed ?? 1.0);
@@ -37,9 +37,11 @@ export function buildEffectiveWeapon(weapon: Weapon, equippedOmods: GeneratedOmo
     foldWeaponStat(allOmodModifiers, 'isAutomatic', weapon.isAutomatic ? 1 : 0) > 0 ||
     keywords.includes('WeaponTypeAutomatic');
   const projectileCount = foldWeaponStat(allOmodModifiers, 'projectileCount', weapon.projectileCount ?? 1);
+  const capacity = foldWeaponStat(allOmodModifiers, 'ammoCapacity', weapon.capacity ?? 0);
+  const reloadSpeed = foldWeaponStat(allOmodModifiers, 'reloadSpeed', weapon.reloadSpeed ?? 1.0);
 
   return {
-    weapon: { ...weapon, keywords, speed, isAutomatic, projectileCount },
-    modifiers: allOmodModifiers.filter(m => !weaponStatBuckets.has(m.bucket) && m.bucket !== 'projectileCount'),
+    weapon: { ...weapon, keywords, speed, isAutomatic, projectileCount, capacity, reloadSpeed },
+    modifiers: allOmodModifiers.filter(m => !weaponStatBuckets.has(m.bucket)),
   };
 }

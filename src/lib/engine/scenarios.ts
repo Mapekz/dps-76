@@ -1,34 +1,52 @@
 import type { EnemyConditions, GameMode, PlayerConditions, Weapon } from '@/types';
 import type { Modifier } from '@/types/modifiers';
 import { getFireRate } from '@/lib/fire-rate';
-import { computeCritMeter } from './crit-meter';
+import { computeCritMeter, type CritMeterResult } from './crit-meter';
 import { computePaperDamage, type HitBreakdown } from './paper-damage';
+import { computeSustain, type SustainResult } from './sustain';
+import { createHitTrace, type CritMeterTrace, type HitTrace } from './trace';
 import type { ResolveContext, ScenarioFlags } from './resolve';
 
 /**
- * The three displayed scenarios, all computed from one resolved config:
- * - manualAim: no VATS, no sneak; body-part 1.0 plus a weakpoint variant
- *   (manual headshots are possible but not guaranteed).
- * - vats: weakpoint-locked (VATS targets weakpoints through cover at full
- *   fire rate), crit cadence from the crit meter.
- * - vatsSneak: same, sneaking — every hit carries the sneak-attack bonus.
+ * The two displayed scenarios, computed from one resolved config:
+ * - freeAim: no VATS, no crits (crits are VATS-only).
+ * - vats: crit cadence from the crit meter blends a non-crit and a crit hit.
+ *
+ * Sneaking and weakpoint targeting are global player conditions
+ * (`isSneaking`, `isAimingAtWeakpoint`) that apply to BOTH scenarios rather
+ * than scenario variants: sneak-attack bonuses work identically in and out
+ * of VATS, and VATS hits whatever body part the player targets.
  */
 
+/** Attribution traces for one scenario (present only when collectTrace was set). */
+export interface ScenarioExplain {
+  nonCrit: HitTrace;
+  /** The crit hit's trace (VATS only, when crits fire). */
+  crit: HitTrace | null;
+  critMeter?: CritMeterTrace;
+}
+
 export interface ScenarioResult {
-  /** Steady-state average per hit (crit-cadence-weighted for VATS scenarios). */
+  /** Steady-state average per hit (crit-cadence-weighted for VATS). */
   perHit: HitBreakdown;
-  sustainedDps: number;
+  /** Per-hit × fire rate (mag-dump, no reload). */
+  burstDps: number;
+  /** Magazine/reload cycle model — sustained DPS and its inputs. */
+  sustain: SustainResult;
   fireRate: number;
   /** Extracted fire-rate data is approximate until animation timing lands. */
   fireRateApproximate: true;
-  /** Crit-meter steady state (VATS scenarios only). */
+  /** Steady-state crit fraction (VATS only). */
   critRate?: number;
+  /** Full crit-meter economy (VATS only) — drives the crit gauge display. */
+  critMeter?: CritMeterResult;
+  /** Multiplier-chain attribution (only when input.collectTrace). */
+  explain?: ScenarioExplain;
 }
 
 export interface ScenarioSet {
-  manualAim: ScenarioResult & { weakpointPerHit: HitBreakdown; weakpointDps: number };
+  freeAim: ScenarioResult;
   vats: ScenarioResult;
-  vatsSneak: ScenarioResult;
 }
 
 export interface ScenarioInput {
@@ -41,11 +59,16 @@ export interface ScenarioInput {
   /** Body-part multiplier used for weakpoint hits (user-configurable, default 2.0). */
   weakpointMult: number;
   /**
-   * Steady-state crit fraction override for VATS scenarios. When omitted,
+   * Steady-state crit fraction override for the VATS scenario. When omitted,
    * it is computed from the crit meter (LCK, Crit Savvy, Limit Breaking,
    * weapon crit charge bonus).
    */
   critRate?: number;
+  /**
+   * Collect per-source attribution traces (ScenarioResult.explain). Off by
+   * default — the suggestion engine's speculative evals must never pay for it.
+   */
+  collectTrace?: boolean;
 }
 
 function scenarioCtx(input: ScenarioInput, flags: ScenarioFlags): ResolveContext {
@@ -61,7 +84,7 @@ function isMelee(weapon: Weapon): boolean {
   return weapon.weaponClass === 'melee' || weapon.weaponClass === 'unarmed';
 }
 
-function hit(input: ScenarioInput, flags: ScenarioFlags, bodyPartMult: number): HitBreakdown {
+function hit(input: ScenarioInput, flags: ScenarioFlags, bodyPartMult: number, trace?: HitTrace): HitBreakdown {
   return computePaperDamage({
     mode: input.mode,
     weapon: input.weapon,
@@ -70,6 +93,7 @@ function hit(input: ScenarioInput, flags: ScenarioFlags, bodyPartMult: number): 
     ctx: scenarioCtx(input, flags),
     bodyPartMult,
     bodyPart: bodyPartMult > 1.0 ? 'weakpoint' : 'torso',
+    trace,
   });
 }
 
@@ -89,51 +113,51 @@ function critWeighted(nonCrit: HitBreakdown, crit: HitBreakdown, critRate: numbe
 export function computeScenarios(input: ScenarioInput): ScenarioSet {
   const fireRate = getFireRate(input.weapon);
   const powerAttack = input.player.isPowerAttacking;
+  const sneaking = input.player.isSneaking;
+  const bodyPartMult = input.player.isAimingAtWeakpoint ? input.weakpointMult : 1.0;
+  const tracing = input.collectTrace === true;
 
-  // Manual aim: crits are VATS-only, so never crit here.
-  const manualFlags: ScenarioFlags = { isVats: false, isSneaking: false, isPowerAttack: powerAttack, isCrit: false };
-  const manualNormal = hit(input, manualFlags, 1.0);
-  const manualWeak = hit(input, manualFlags, input.weakpointMult);
+  // Free aim: crits are VATS-only, so never crit here.
+  const freeFlags: ScenarioFlags = { isVats: false, isSneaking: sneaking, isPowerAttack: powerAttack, isCrit: false };
+  const freeTrace = tracing ? createHitTrace() : undefined;
+  const freeHit = hit(input, freeFlags, bodyPartMult, freeTrace);
 
-  // VATS: weakpoint-locked, crit cadence blends a non-crit and a crit hit.
-  const vatsFlags: ScenarioFlags = { isVats: true, isSneaking: false, isPowerAttack: powerAttack, isCrit: false };
-  const critRate =
-    input.critRate ?? computeCritMeter(input.modifiers, input.weapon, scenarioCtx(input, vatsFlags)).critRate;
+  // VATS: crit cadence blends a non-crit and a crit hit.
+  const vatsFlags: ScenarioFlags = { isVats: true, isSneaking: sneaking, isPowerAttack: powerAttack, isCrit: false };
+  const critMeterTrace = tracing ? ({ fill: null, consumption: null } as CritMeterTrace) : undefined;
+  const critMeter = computeCritMeter(input.modifiers, input.weapon, scenarioCtx(input, vatsFlags), critMeterTrace);
+  const critRate = input.critRate ?? critMeter.critRate;
+  const vatsTrace = tracing ? createHitTrace() : undefined;
+  const vatsCritTrace = tracing ? createHitTrace() : undefined;
   const vatsAvg = critWeighted(
-    hit(input, vatsFlags, input.weakpointMult),
-    hit(input, { ...vatsFlags, isCrit: true }, input.weakpointMult),
+    hit(input, vatsFlags, bodyPartMult, vatsTrace),
+    hit(input, { ...vatsFlags, isCrit: true }, bodyPartMult, vatsCritTrace),
     critRate
   );
 
-  const sneakFlags: ScenarioFlags = { isVats: true, isSneaking: true, isPowerAttack: powerAttack, isCrit: false };
-  const sneakAvg = critWeighted(
-    hit(input, sneakFlags, input.weakpointMult),
-    hit(input, { ...sneakFlags, isCrit: true }, input.weakpointMult),
-    critRate
-  );
+  const freeSustain = computeSustain(freeHit.total, fireRate, input.weapon);
+  const vatsSustain = computeSustain(vatsAvg.total, fireRate, input.weapon);
 
   return {
-    manualAim: {
-      perHit: manualNormal,
-      sustainedDps: manualNormal.total * fireRate,
-      weakpointPerHit: manualWeak,
-      weakpointDps: manualWeak.total * fireRate,
+    freeAim: {
+      perHit: freeHit,
+      burstDps: freeSustain.burstDps,
+      sustain: freeSustain,
       fireRate,
       fireRateApproximate: true,
+      ...(tracing && { explain: { nonCrit: freeTrace!, crit: null } }),
     },
     vats: {
       perHit: vatsAvg,
-      sustainedDps: vatsAvg.total * fireRate,
+      burstDps: vatsSustain.burstDps,
+      sustain: vatsSustain,
       fireRate,
       fireRateApproximate: true,
       critRate,
-    },
-    vatsSneak: {
-      perHit: sneakAvg,
-      sustainedDps: sneakAvg.total * fireRate,
-      fireRate,
-      fireRateApproximate: true,
-      critRate,
+      critMeter,
+      ...(tracing && {
+        explain: { nonCrit: vatsTrace!, crit: critRate > 0 ? vatsCritTrace! : null, critMeter: critMeterTrace },
+      }),
     },
   };
 }
