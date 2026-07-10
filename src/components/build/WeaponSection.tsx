@@ -1,0 +1,111 @@
+import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Combobox } from '@/components/ui/combobox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useGameMode } from '@/hooks/useGameMode';
+import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
+import { getWeapons } from '@/data';
+import { getOmodSlots, getLegendaryOmodSlots } from '@/data/omods';
+import { ActionDelta } from '@/components/diff/ActionDelta';
+import { SectionTrigger } from './SectionTrigger';
+
+export function WeaponSection() {
+  const { mode } = useGameMode();
+  const { player } = useBuild();
+  const dispatch = useBuildDispatch();
+
+  const weapons = getWeapons(mode);
+  const weaponOptions = Object.values(weapons).map(w => ({ value: w.id, label: w.name }));
+  const selectedWeapon = player.weapon ? weapons[player.weapon.weaponId] : undefined;
+  const omodSlots = selectedWeapon ? getOmodSlots(mode, selectedWeapon) : [];
+  const legendarySlots = selectedWeapon ? getLegendaryOmodSlots(mode, selectedWeapon) : [];
+
+  const equippedModCount =
+    Object.values(player.weapon?.mods ?? {}).filter(Boolean).length + (player.weapon?.legendaryEffects.length ?? 0);
+  const summary = selectedWeapon
+    ? `${selectedWeapon.name}${equippedModCount > 0 ? ` · ${equippedModCount} mods` : ''}`
+    : 'none equipped';
+
+  return (
+    <AccordionItem value="weapon">
+      <AccordionTrigger>
+        <SectionTrigger label="Weapon" summary={summary} />
+      </AccordionTrigger>
+      <AccordionContent>
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <Label>Weapon</Label>
+            <Combobox
+              options={weaponOptions}
+              value={player.weapon?.weaponId ?? null}
+              onValueChange={weaponId => dispatch({ type: 'weapon/select', weaponId })}
+              placeholder="Pick a weapon…"
+              searchPlaceholder="Search weapons…"
+              emptyText="No weapon matches."
+            />
+          </div>
+
+          {omodSlots.map(slot => (
+            <div key={slot.slot} className="space-y-1.5">
+              <Label>{slot.label}</Label>
+              <Combobox
+                options={slot.options.map(o => ({ value: o.id, label: o.name }))}
+                value={player.weapon?.mods[slot.slot] ?? null}
+                onValueChange={omodId => dispatch({ type: 'weapon/mod', slot: slot.slot, omodId })}
+                placeholder="Stock"
+                searchPlaceholder="Search mods…"
+                emptyText="No mod matches."
+                renderOptionExtra={o => <ActionDelta action={{ type: 'weapon/mod', slot: slot.slot, omodId: o.value }} />}
+              />
+            </div>
+          ))}
+
+          {legendarySlots.map((slot, i) => (
+            <div key={slot.slot} className="space-y-1.5">
+              <Label>Legendary ★{i + 1}</Label>
+              <Combobox
+                options={slot.options.map(o => ({ value: o.id, label: o.name }))}
+                value={player.weapon?.legendaryEffects[i] ?? null}
+                onValueChange={omodId => dispatch({ type: 'weapon/legendary', slotIndex: i, omodId })}
+                placeholder="None"
+                searchPlaceholder="Search effects…"
+                emptyText="No effect matches."
+                renderOptionExtra={o => <ActionDelta action={{ type: 'weapon/legendary', slotIndex: i, omodId: o.value }} />}
+              />
+            </div>
+          ))}
+
+          <div className="space-y-1.5">
+            <Label htmlFor="item-level">Item level (1–50)</Label>
+            <Input
+              id="item-level"
+              type="number"
+              min={1}
+              max={50}
+              value={player.itemLevel}
+              onChange={e => dispatch({ type: 'weapon/itemLevel', value: parseInt(e.target.value, 10) || 50 })}
+            />
+            <p className="text-muted-foreground text-xs">
+              Base damage comes from the level curve. Level-capped weapons clamp at their cap.
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="weakpoint-mult">Weakpoint multiplier</Label>
+            <Input
+              id="weakpoint-mult"
+              type="number"
+              min={1}
+              step={0.1}
+              value={player.weakpointMult}
+              onChange={e => dispatch({ type: 'weapon/weakpointMult', value: parseFloat(e.target.value) || 2.0 })}
+            />
+            <p className="text-muted-foreground text-xs">
+              Applied when "Weakpoints" is on. 2.0 is a standard headshot.
+            </p>
+          </div>
+        </div>
+      </AccordionContent>
+    </AccordionItem>
+  );
+}

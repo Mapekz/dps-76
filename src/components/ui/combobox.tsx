@@ -31,6 +31,8 @@ interface ComboboxProps {
   emptyText?: string
   className?: string
   disabled?: boolean
+  /** Extra right-aligned content per option row (e.g. a ΔDPS preview). */
+  renderOptionExtra?: (option: ComboboxOption) => React.ReactNode
 }
 
 function Combobox({
@@ -42,6 +44,7 @@ function Combobox({
   emptyText = "No option found.",
   className,
   disabled = false,
+  renderOptionExtra,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
 
@@ -76,6 +79,7 @@ function Combobox({
                 <CommandItem
                   key={option.value}
                   value={option.value}
+                  keywords={[option.label]}
                   onSelect={(currentValue) => {
                     onValueChange(currentValue === value ? null : currentValue)
                     setOpen(false)
@@ -87,7 +91,8 @@ function Combobox({
                       value === option.value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {option.label}
+                  <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                  {renderOptionExtra?.(option)}
                 </CommandItem>
               ))}
             </CommandGroup>

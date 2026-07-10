@@ -1,92 +1,31 @@
-import * as React from 'react';
 import { GameModeProvider, useGameMode } from '@/hooks/useGameMode';
-import { useDamageCalc } from '@/hooks/useDamageCalc';
-import { Header } from '@/components/layout/Header';
-import { ThreeColumnLayout } from '@/components/layout/ThreeColumnLayout';
-import { BuildUrlInput } from '@/components/layout/BuildUrlInput';
-import { PlayerColumn } from '@/components/player/PlayerColumn';
-import { DamageStatsColumn } from '@/components/stats/DamageStatsColumn';
-import { parsedPerksToLoadout, isLegendaryPerkKey, type ParsedSpecial } from '@/lib/nukes-dragons';
-import {
-  createDefaultPlayerConfig,
-  createDefaultEnemyConfig,
-  type PlayerConfig,
-  type EnemyConfig,
-  type ParsedPerk,
-} from '@/types';
+import { ThemeProvider } from '@/hooks/useTheme';
+import { BuildProvider } from '@/state/BuildProvider';
+import { usePersistence } from '@/state/usePersistence';
+import { AppShell } from '@/components/layout/AppShell';
 import './App.css';
 
-// EnemyColumn is kept in the tree as scaffolding but not rendered for MVP.
-// Re-enable in the enemy-defenses week (todos/enemy-defenses.md).
-// import { EnemyColumn } from '@/components/enemy/EnemyColumn';
-
-function DPSCalculator() {
+/** Boot hydration (URL hash > localStorage > defaults) + debounced autosave. */
+function PersistenceGate({ children }: { children: React.ReactNode }) {
   const { mode } = useGameMode();
-  const [playerConfig, setPlayerConfig] = React.useState<PlayerConfig>(createDefaultPlayerConfig());
-  const [parsedPerks, setParsedPerks] = React.useState<ParsedPerk[]>([]);
-  const [buildName, setBuildName] = React.useState<string | null>(null);
-  const [enemyConfig, setEnemyConfig] = React.useState<EnemyConfig>(createDefaultEnemyConfig());
-
-  const handleEnemyFullHealthChange = React.useCallback((value: boolean) => {
-    setEnemyConfig(prev => ({ ...prev, conditions: { ...prev.conditions, isFullHealth: value } }));
-  }, []);
-
-  const { scenarios } = useDamageCalc(playerConfig, enemyConfig, mode);
-
-  const handlePerksLoaded = React.useCallback((perks: ParsedPerk[], name: string | null, special: ParsedSpecial | null) => {
-    setParsedPerks(perks);
-    setBuildName(name);
-
-    // Split parsed perks into regular vs legendary by N&D key prefix.
-    // Legendary perk keys all start with "0" in the nukesDragonsPerks map.
-    const regularPerks = perks.filter(p => !isLegendaryPerkKey(p.key));
-    const leggoPerks   = perks.filter(p =>  isLegendaryPerkKey(p.key));
-
-    setPlayerConfig(prev => ({
-      ...prev,
-      perks:         parsedPerksToLoadout(regularPerks),
-      legendaryPerks: parsedPerksToLoadout(leggoPerks),
-      // SPECIAL from the N&D `s=` param (STR feeds melee dbm, LCK feeds crit cadence).
-      conditions: special ? { ...prev.conditions, ...special } : prev.conditions,
-    }));
-  }, []);
-
-  return (
-    <div className="bg-background min-h-screen">
-      <Header />
-      <ThreeColumnLayout
-        topContent={
-          <div className="mx-auto max-w-2xl space-y-2">
-            <BuildUrlInput onPerksLoaded={handlePerksLoaded} />
-            {buildName && (
-              <p className="text-muted-foreground text-center text-sm">
-                Build: <span className="font-medium">{buildName}</span>
-              </p>
-            )}
-          </div>
-        }
-        leftColumn={
-          <PlayerColumn
-            config={playerConfig}
-            parsedPerks={parsedPerks}
-            onConfigChange={setPlayerConfig}
-            enemyFullHealth={enemyConfig.conditions.isFullHealth}
-            onEnemyFullHealthChange={handleEnemyFullHealthChange}
-          />
-        }
-        centerColumn={<DamageStatsColumn scenarios={scenarios} />}
-        rightColumn={<div />}
-      />
-    </div>
-  );
+  const { hydrated } = usePersistence(mode);
+  // Render nothing until hydration resolves so the first paint is the real build.
+  if (!hydrated) return null;
+  return <>{children}</>;
 }
 
 function App() {
   // Default to Live mode for MVP. PTS toggle re-enabled in todos/pts-toggle.md.
   return (
-    <GameModeProvider defaultMode="live">
-      <DPSCalculator />
-    </GameModeProvider>
+    <ThemeProvider>
+      <GameModeProvider defaultMode="live">
+        <BuildProvider>
+          <PersistenceGate>
+            <AppShell />
+          </PersistenceGate>
+        </BuildProvider>
+      </GameModeProvider>
+    </ThemeProvider>
   );
 }
 

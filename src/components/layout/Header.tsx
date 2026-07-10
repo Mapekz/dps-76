@@ -1,34 +1,50 @@
 import { useGameMode } from '@/hooks/useGameMode';
+import { useBuild } from '@/state/BuildProvider';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { BuildUrlInput } from './BuildUrlInput';
+import { ThemeToggle } from './ThemeToggle';
 
 export function Header() {
   const { isLive } = useGameMode();
+  const { buildName } = useBuild();
 
   return (
-    <header className="border-b bg-card">
-      <div className="container mx-auto flex items-center justify-between px-4 py-4">
+    <header className="border-b bg-card sticky top-0 z-40">
+      <div className="container mx-auto flex flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold tracking-tight">FO76 DPS Calculator</h1>
-          <span className="text-muted-foreground text-sm">v0.1</span>
-          <Badge>Alpha</Badge>
+          <h1 className="font-condensed text-xl font-semibold uppercase tracking-[0.12em]">
+            DPS-76
+          </h1>
+          <Badge variant="secondary">Alpha</Badge>
         </div>
-        <TooltipProvider>
+
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:max-w-md">
+          <BuildUrlInput />
+          {buildName && (
+            <Badge variant="outline" className="hidden max-w-40 truncate sm:inline-flex" title={buildName}>
+              {buildName}
+            </Badge>
+          )}
+        </div>
+
+        <div className="ml-auto flex items-center gap-3">
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center gap-3 cursor-not-allowed opacity-60">
-                <Label htmlFor="game-mode-toggle" className={`text-sm font-medium transition-colors ${isLive ? 'text-foreground' : 'text-muted-foreground'}`}>Live</Label>
+              <div className="hidden cursor-not-allowed items-center gap-2 opacity-60 sm:flex">
+                <Label htmlFor="game-mode-toggle" className={`text-sm ${isLive ? 'text-foreground' : 'text-muted-foreground'}`}>Live</Label>
                 <Switch id="game-mode-toggle" checked={true} disabled aria-label="Toggle between Live and PTS" />
-                <Label htmlFor="game-mode-toggle" className={`text-sm font-medium transition-colors ${!isLive ? 'text-foreground' : 'text-muted-foreground'}`}>PTS</Label>
+                <Label htmlFor="game-mode-toggle" className={`text-sm ${!isLive ? 'text-foreground' : 'text-muted-foreground'}`}>PTS</Label>
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Live mode is still being implemented</p>
+              <p>PTS data lands with the next extraction</p>
             </TooltipContent>
           </Tooltip>
-        </TooltipProvider>
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
