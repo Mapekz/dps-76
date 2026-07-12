@@ -58,17 +58,38 @@ PaperDamage = Σ_components base(c) × ( dbmFold(c) + Tenderizer + (CritMult−1
 - Explosive-on-projectile weapons (grenades, mines) are excluded until the
   EXPL-chase work; flagged `projectileOnly` in `_meta.json`.
 
-## Fire rate (approximate — `src/lib/fire-rate.ts`)
+## Fire rate (`src/lib/fire-rate.ts`)
 
 - Auto: `speed / 0.11`; semi: `speed / Attack Delay Seconds`; melee: 1.0/s stub.
-- The historical 0.8248 "physical" multiplier is actually `SET Speed <value>`
-  on automatic receiver OMODs — applied from each weapon's own mod data, not
-  hardcoded. The value DIFFERS per weapon family (user: Handmade vs Assault
-  Rifle use different values; heavy guns don't get it; Meltdown/V63 carbine
-  do despite being energy) — always confirm via OMOD lookups, never assume.
+- **Confirmed 2026-07-12** (user + ESM dig against the 2026-07-02 dump): the
+  flat `0.11`s auto-fire divisor is correct for almost every ranged weapon.
+  In-game Pip-Boy "Fire Rate" = `(speed / 0.11) × 10`, rounded, assuming an
+  infinite mag — a verifiable ground truth against the Pip-Boy stat.
+- The historical 0.8248 "physical" multiplier is `SET Speed <value>` on
+  automatic-receiver OMODs, resolved through the existing `Includes`-chain
+  flattening into a `fireRateSpeed` bucket — never hardcoded, always
+  per-weapon-family. Verified: Combat Rifle `SET 0.8248`, Assault Rifle
+  `SET 0.6872234`, Handmade `SET 0.8617234`, Combat Shotgun `MUL_ADD +0.30`
+  (base 1.0 → 1.3), Gatling Laser Charging Barrels `MUL_ADD −0.75` on base 2.0
+  → 0.5 (a deliberate charged-beam rate trade, not a bug). Heavy guns
+  (Minigun, Gatling Gun/Laser/Plasma) don't get a receiver override at all —
+  their base WEAP `Speed` (2.0) already carries the fast-fire multiplier.
+- **Correction (2026-07-12):** V63 Carbine/Meltdown does **not** get an
+  automatic-receiver `SET Speed` override — it has no automatic-receiver mod
+  at all (always-auto by base Flags; its mod slot uses "Capacitor" variants
+  instead of a receiver swap). Its reduced, ballistic-like fire rate comes
+  entirely from its base WEAP `Speed` of `0.8` (vs. the typical energy-weapon
+  1.0), already read by the plain extractor — no override needed. (Supersedes
+  an earlier, incorrect note here claiming it got a `SET 0.8248` override.)
 - Stock weapons with no receiver selected use the WEAP record's base stats;
   whether in-game stock configurations include a default receiver's stats is
   unverified.
+- **Still open** (needs in-game Pip-Boy readings, not ESM — Havok animation
+  files aren't parseable): Railway Rifle, Auto Combat Shotgun, and other
+  weapons with newer/custom animations likely don't use the flat `0.11`s
+  cycle; and it's unconfirmed whether Gatling Laser's Charging Barrels change
+  the animation itself on top of the Speed reduction above. See
+  `dps-todos/fire-rate.md` for the measurement checklist.
 
 ## Sustained DPS (`src/lib/engine/sustain.ts`)
 
