@@ -1,7 +1,6 @@
 import * as React from 'react';
 import type { GameMode } from '@/types';
 import { decodeBuild, encodeBuild } from '@/lib/persist/codec';
-import type { BuildState } from './build-reducer';
 import { useBuild, useBuildDispatch } from './BuildProvider';
 
 const STORAGE_KEY = 'dps76:build';
@@ -53,8 +52,6 @@ export function usePersistence(mode: GameMode): { warnings: string[]; hydrated: 
   }, []);
 
   // Autosave: debounce writes; skip the write caused by hydration itself.
-  const stateRef = React.useRef<BuildState>(state);
-  stateRef.current = state;
   React.useEffect(() => {
     if (!hydrated) return;
     if (skipNextWrite.current) {
@@ -62,7 +59,7 @@ export function usePersistence(mode: GameMode): { warnings: string[]; hydrated: 
       return;
     }
     const timer = window.setTimeout(async () => {
-      const encoded = await encodeBuild(stateRef.current);
+      const encoded = await encodeBuild(state);
       const params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
       params.set(HASH_PARAM, encoded);
       window.history.replaceState(null, '', `#${params.toString()}`);

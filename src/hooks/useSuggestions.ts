@@ -21,6 +21,8 @@ export function useSuggestions(): { report: SuggestionReport | null; stale: bool
   const [stale, setStale] = React.useState(false);
 
   React.useEffect(() => {
+    // Immediate stale flag so the panel dims while the debounced recompute runs.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setStale(true);
     const timer = window.setTimeout(() => {
       setReport(evaluateSuggestions(state, mode, emphasized));

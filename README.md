@@ -9,7 +9,7 @@ A Fallout 76 outgoing-DPS calculator. Configure your player build — perks, wea
 ## Tech stack
 
 - React 19 + TypeScript (strict)
-- Vite (via `rolldown-vite` — see note below)
+- Vite 8 (Rolldown-based bundler, built in)
 - Tailwind CSS v4 + [shadcn/ui](https://ui.shadcn.com/) (Radix UI primitives)
 - No test framework (tests are manual)
 
@@ -32,8 +32,6 @@ pnpm build:gh-pages   # NODE_ENV=production build with base URL /dps-76/
 ```
 
 CI deploys automatically via `.github/workflows/deploy.yml` on push to `main`.
-
-> **rolldown-vite note**: the project pins `vite` to `npm:rolldown-vite@7.2.5` via `package.json` devDependencies and a `pnpm.overrides` block. This is an experimental Rolldown-backed build; standard Vite is not used.
 
 ## Data model
 

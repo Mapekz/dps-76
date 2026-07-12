@@ -122,8 +122,8 @@ import { useGameMode } from '@/hooks/useGameMode';
 
 ## Build Configuration
 
-- Uses **rolldown-vite** (experimental Rolldown bundler) instead of standard Vite
-- TypeScript with strict mode; `pnpm.overrides` live in `pnpm-workspace.yaml` (pnpm 11)
+- Uses **Vite 8**, which bundles Rolldown natively (no more separate `rolldown-vite` alias/override)
+- TypeScript pinned to `~6.0.3` (not the latest 7.x native-compiler release) because `typescript-eslint@8.x` only supports `typescript <6.1.0`; revisit once typescript-eslint adds TS7 support
 - Tailwind CSS v4 with @tailwindcss/vite plugin
 - Base URL is `/dps-76/` for production builds (GitHub Pages) and `/` for dev
 
