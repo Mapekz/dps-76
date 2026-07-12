@@ -1,5 +1,13 @@
 # TODO: PTS Data Toggle
 
+> **Status (2026-07-12):** still NOT-STARTED — verified the `<Switch>` in
+> `src/components/layout/Header.tsx` is still hardwired `checked={true}
+> disabled` and never calls `setMode`. Smallest remaining win in the backlog:
+> just wiring the existing, already mode-aware plumbing (`useGameMode`,
+> `getPerks(mode)`/`getWeapons(mode)`, mode-keyed curve loader) to a live
+> toggle. Low value until a PTS dump that actually differs from live is
+> extracted — today `pnpm extract --mode pts` just re-exports live data.
+
 ## What
 Re-enable the Live/PTS mode toggle so users can compare damage between current Live
 and the PTS (Public Test Server) patch.

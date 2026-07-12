@@ -13,11 +13,12 @@ manually pasting an N&D URL.
    attack damage bonus (+100% base) on first/undetected hits.
 
 ## Dependency chain
-This feature depends on having all three working first:
-- ✅ Correct base damage + fire rate (Week 1)
-- [ ] Correct perk data (perk-data-pass.md)
-- [ ] VATS crit (vats-crit.md)
-- [ ] Sneak (sneak.md)
+All prerequisites are now done — this feature can be built:
+- ✅ Correct base damage + fire rate
+- ✅ Perk data (ESM-extracted per-perk modifiers, `src/data/perk-modifiers.ts` —
+  supersedes the old hand-authored `statsModified` pass)
+- ✅ VATS crit (steady-state crit meter, `src/lib/engine/crit-meter.ts`)
+- ✅ Sneak (`sneakBase`/`sneakBonus` buckets + `isSneaking` chip)
 
 ## UI concept
 A "Preset" dropdown or tab-switcher at the top of the Player column. Selecting a preset

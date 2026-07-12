@@ -4,8 +4,12 @@ Last remaining phase of the approved UI-redesign plan
 (`~/.claude/plans/i-want-to-redesign-vivid-heron.md`). Phases 1–2 (scenario
 axis, sustain model, trace, state layer, persistence, theme/shell, perk editor,
 suggestions/hover-diffs/breakdown) shipped 2026-07-10. Supersedes the older
-[enemy-defenses.md](enemy-defenses.md) — the mitigation math there is still the
-right starting point, but the surrounding architecture has changed.
+(now-removed) `enemy-defenses.md` — its resist formula is still the right
+starting point (`calculateDamageResistMult` in `src/lib/damage-formulas.ts`,
+kept as dormant scaffolding), but that doc's activation steps referenced
+pre-redesign architecture (`App.tsx` enemy column, `calculateOutgoingDamage`)
+that no longer exists. This is the app's #1 priority remaining feature — see
+`dps-todos/README.md`.
 
 ## Goal
 Full-width sortable table of ~15–20 curated notable enemies below the two

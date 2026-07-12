@@ -18,4 +18,8 @@ No armor data is populated, and armor is not factored into damage calculations.
 - Overeater's: +DR/ER per food/drink buff
 
 ## Phase
-Do armor after enemy defenses — both affect the incoming damage path.
+Do armor after enemy defenses/mitigation ([phase-3-enemies.md](phase-3-enemies.md),
+priority #1 in `dps-todos/README.md`) — both affect the incoming damage path,
+and the incoming-DR half of this doc (WWR/Bolstering/Overeater's) has nothing
+to multiply against until `mitigation.ts` exists. The outgoing-damage half
+(Unyielding, Zealot's) could ship independently if desired.
