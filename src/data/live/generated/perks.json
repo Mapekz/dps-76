@@ -14497,7 +14497,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 1.9999999552965164,
+      "value": 0.24999999441206455,
       "conditions": []
      }
     ]
@@ -14533,7 +14533,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 7.999999821186066,
+      "value": 0.24999999441206455,
       "conditions": []
      }
     ]
@@ -21048,8 +21048,9 @@
       "value": 0.5,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasKeyword(SDOW_HasLegendary_Weapon_Severing)=1"
+        "kind": "weaponKeyword",
+        "keyword": "SDOW_HasLegendary_Weapon_Severing",
+        "present": true
        },
        {
         "kind": "enemyHasActiveEffect",

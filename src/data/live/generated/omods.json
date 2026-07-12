@@ -33112,7 +33112,7 @@
     },
     "bucket": "dotDamage",
     "op": "ADD",
-    "value": 35,
+    "value": 30,
     "conditions": [
      {
       "kind": "damageTypeScope",
@@ -88242,7 +88242,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "perk P62_Legendary_Weapon_BrutalistsPerk: WornHasKeyword(P62_HasLegendary_Weapon_Brutalists)=1",
    "perk P62_Legendary_Weapon_BrutalistsPerk: entry point Apply On Kill Spell — not modeled"
   ],
   "obtainable": false
@@ -93060,6 +93059,580 @@
   "modifiers": [],
   "addedKeywords": [
    "SCORE_S9_dn_WeaponModel_Ranged_Shotgun_DastardlyDuo"
+  ],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_Fishing_mod_FishingRod_Weapon_RodBobber_SlasherBobber",
+  "formId": "0x008E0768",
+  "name": "Pint-Sized Slasher Bobber",
+  "description": "",
+  "attachPointFormId": "0x007A95B2",
+  "attachPointEdid": "ap_RodBobber",
+  "targetKeywords": [
+   "ma_FishingRod"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_Mod_Custom_RelicReaper",
+  "formId": "0x009097C3",
+  "name": "Relic Reaper",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "CustomItem_SpeciallyNamed",
+   "CustomItem_SpeciallyNamed",
+   "CustomItem_SpeciallyNamed",
+   "CustomItem_SpeciallyNamed",
+   "CustomItem_SpeciallyNamed",
+   "CustomItem_SpeciallyNamed"
+  ],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_Mod_Custom_RelicReaper_CanDo",
+  "formId": "0x0090ED04",
+  "name": "Relic Reaper",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "CustomItem_SpeciallyNamed"
+  ],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_Mod_Custom_RelicReaper_CapCollector",
+  "formId": "0x0090ED00",
+  "name": "Relic Reaper",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "CustomItem_SpeciallyNamed"
+  ],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_Mod_Custom_RelicReaper_FortuneFinder",
+  "formId": "0x0090ED01",
+  "name": "Relic Reaper",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "CustomItem_SpeciallyNamed"
+  ],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_Mod_Custom_RelicReaper_Pannapictagraphist",
+  "formId": "0x0090ED02",
+  "name": "Relic Reaper",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "CustomItem_SpeciallyNamed"
+  ],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_Mod_Custom_RelicReaper_PerceptiBobble",
+  "formId": "0x0090ED03",
+  "name": "Relic Reaper",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "CustomItem_SpeciallyNamed"
+  ],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_Mod_Custom_RelicReaper_PharmaFarma",
+  "formId": "0x0090ED05",
+  "name": "Relic Reaper",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "CustomItem_SpeciallyNamed"
+  ],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_Mod_Custom_SlasherAxe_Appearance",
+  "formId": "0x008E075F",
+  "name": "Super Slasher Paint",
+  "description": "",
+  "attachPointFormId": "0x001A001E",
+  "attachPointEdid": "ap_melee_Appearance",
+  "targetKeywords": [
+   "ma_AutoAxe",
+   "ma_Melee_Appearance"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_Mod_Custom_SlasherAxe_CustomName",
+  "formId": "0x008E076F",
+  "name": "Super Slasher",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [
+   "ma_AutoAxe",
+   "SDOW_ma_SlasherAxe"
+  ],
+  "modifiers": [
+   {
+    "id": "0x008E076F:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008E076F",
+     "edid": "SDOW_Mod_Custom_SlasherAxe_CustomName",
+     "name": "Super Slasher"
+    },
+    "bucket": "vatsApCost",
+    "op": "MUL_ADD",
+    "value": 0.05000000074505806,
+    "conditions": []
+   },
+   {
+    "id": "0x008E076F:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008E076F",
+     "edid": "SDOW_Mod_Custom_SlasherAxe_CustomName",
+     "name": "Super Slasher"
+    },
+    "bucket": "baseDamage",
+    "op": "MUL_ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": -0.4000000059604645
+      },
+      {
+       "x": 50,
+       "y": -0.4000000059604645
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "CustomItem_SpeciallyNamed",
+   "SDOW_CustomItemName_SlasherAxe",
+   "FeaturedItem",
+   "NonDroppable",
+   "NonPlayerTradable",
+   "UnsellableObject",
+   "dn_UniqueEffectBleedDamage",
+   "WeaponTypeBleedDamage"
+  ],
+  "hasEnchantments": true,
+  "notes": [
+   "SDOW_modWeapBleedEffect: DoT curve with unmapped input AV null — needs override"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_mod_Legendary_Weapon4_Severing",
+  "formId": "0x008E076E",
+  "name": "Severing",
+  "description": "Deal +50% Damage to Bleeding Targets",
+  "attachPointFormId": "0x004E89AA",
+  "attachPointEdid": "ap_Legendary4",
+  "targetKeywords": [
+   "ma_legendarycrafting_weapon"
+  ],
+  "modifiers": [
+   {
+    "id": "0x008E076E:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008E076E",
+     "edid": "SDOW_mod_Legendary_Weapon4_Severing",
+     "name": "Severing"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "SDOW_HasLegendary_Weapon_Severing",
+      "present": true
+     },
+     {
+      "kind": "enemyHasActiveEffect",
+      "keyword": "DamageTypeBleed"
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "SDOW_HasLegendary_Weapon_Severing",
+   "HasLegendary_Mod",
+   "FeaturedItem"
+  ],
+  "hasEnchantments": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_mod_melee_SlasherAxe_Burning",
+  "formId": "0x0091E6A9",
+  "name": "Slasher Burning",
+  "description": "",
+  "attachPointFormId": "0x00022499",
+  "attachPointEdid": "ap_gun_Scope",
+  "targetKeywords": [
+   "ma_AutoAxe",
+   "SDOW_ma_SlasherAxe"
+  ],
+  "modifiers": [
+   {
+    "id": "0x0091E6A9:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0091E6A9",
+     "edid": "SDOW_mod_melee_SlasherAxe_Burning",
+     "name": "Slasher Burning"
+    },
+    "bucket": "baseDamage",
+    "op": "MUL_ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": -0.4000000059604645
+      },
+      {
+       "x": 100,
+       "y": -0.4000000059604645
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x0091E6A9:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0091E6A9",
+     "edid": "SDOW_mod_melee_SlasherAxe_Burning",
+     "name": "Slasher Burning"
+    },
+    "bucket": "baseDamage",
+    "op": "MUL_ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 0.36000001430511475
+      },
+      {
+       "x": 100,
+       "y": 0.36000001430511475
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "WeaponTypeFireDamage",
+   "s_20_AutoAxeFlame",
+   "dn_HasAutoAxe_Burning",
+   "WeaponTypeFireDamage",
+   "dn_HasMeleeMod_Burning"
+  ],
+  "hasEnchantments": true,
+  "notes": [
+   "AutoFireDMG_Effect: DoT curve with unmapped input AV null — needs override",
+   "condition: IsUsingAltCurveTable()=0",
+   "condition: IsUsingAltCurveTable()=1"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_mod_melee_SlasherAxe_Electrified",
+  "formId": "0x0091E6AA",
+  "name": "Slasher Electrified",
+  "description": "",
+  "attachPointFormId": "0x00022499",
+  "attachPointEdid": "ap_gun_Scope",
+  "targetKeywords": [
+   "ma_AutoAxe",
+   "SDOW_ma_SlasherAxe"
+  ],
+  "modifiers": [
+   {
+    "id": "0x0091E6AA:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0091E6AA",
+     "edid": "SDOW_mod_melee_SlasherAxe_Electrified",
+     "name": "Slasher Electrified"
+    },
+    "bucket": "baseDamage",
+    "op": "MUL_ADD",
+    "value": -0.4000000059604645,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x0091E6AA:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0091E6AA",
+     "edid": "SDOW_mod_melee_SlasherAxe_Electrified",
+     "name": "Slasher Electrified"
+    },
+    "bucket": "baseDamage",
+    "op": "MUL_ADD",
+    "value": 0.6000000238418579,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "dn_HasMeleeMod_Shock",
+   "WeaponTypeEnergy",
+   "s_20_AutoAxeElectric",
+   "dn_HasAutoAxe_Electrified"
+  ],
+  "hasEnchantments": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_mod_melee_SlasherAxe_Null",
+  "formId": "0x0091E6AD",
+  "name": "Slasher No Mod",
+  "description": "",
+  "attachPointFormId": "0x00022499",
+  "attachPointEdid": "ap_gun_Scope",
+  "targetKeywords": [
+   "ma_AutoAxe",
+   "SDOW_ma_SlasherAxe"
+  ],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_mod_melee_SlasherAxe_Poison",
+  "formId": "0x0091E6AC",
+  "name": "Slasher Poisoned",
+  "description": "",
+  "attachPointFormId": "0x00022499",
+  "attachPointEdid": "ap_gun_Scope",
+  "targetKeywords": [
+   "ma_AutoAxe",
+   "SDOW_ma_SlasherAxe"
+  ],
+  "modifiers": [
+   {
+    "id": "0x0091E6AC:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0091E6AC",
+     "edid": "SDOW_mod_melee_SlasherAxe_Poison",
+     "name": "Slasher Poisoned"
+    },
+    "bucket": "baseDamage",
+    "op": "MUL_ADD",
+    "value": -0.4000000059604645,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x0091E6AC:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0091E6AC",
+     "edid": "SDOW_mod_melee_SlasherAxe_Poison",
+     "name": "Slasher Poisoned"
+    },
+    "bucket": "baseDamage",
+    "op": "MUL_ADD",
+    "value": 0.6000000238418579,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "poison"
+      ]
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "dn_HasMeleeMod_Poisoned",
+   "WeaponTypeDmgPoison",
+   "DamageTypePoison",
+   "s_20_AutoAxePoison",
+   "dn_HasAutoAxe_Poisoned"
+  ],
+  "hasEnchantments": true,
+  "notes": [
+   "condition: HasPerk(ImmuneToPoison)=0",
+   "condition: IsUsingAltCurveTable()=0",
+   "condition: IsUsingAltCurveTable()=1",
+   "dtPoisonEffectChanceAlways: DoT curve with unmapped input AV null — needs override"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_mod_melee_SlasherAxe_Turbo",
+  "formId": "0x0091E6AB",
+  "name": "Slasher Turbo",
+  "description": "",
+  "attachPointFormId": "0x00022499",
+  "attachPointEdid": "ap_gun_Scope",
+  "targetKeywords": [
+   "ma_AutoAxe",
+   "SDOW_ma_SlasherAxe"
+  ],
+  "modifiers": [
+   {
+    "id": "0x0091E6AB:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0091E6AB",
+     "edid": "SDOW_mod_melee_SlasherAxe_Turbo",
+     "name": "Slasher Turbo"
+    },
+    "bucket": "fireRateSpeed",
+    "op": "MUL_ADD",
+    "value": 0.25,
+    "conditions": []
+   }
+  ],
+  "addedKeywords": [
+   "s_20_AutoAxeTurbo",
+   "dn_HasAutoAxe_Turbo",
+   "dn_HasMeleeMod_Turbo"
+  ],
+  "hasEnchantments": false,
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_Mod_Shovel_Weapon_Paint_Gold",
+  "formId": "0x009097C4",
+  "name": "Gold Paint",
+  "description": "",
+  "attachPointFormId": "0x001A001E",
+  "attachPointEdid": "ap_melee_Appearance",
+  "targetKeywords": [
+   "ma_Melee_Appearance",
+   "ma_Shovel"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "dn_HasMaterial_Shovel_Gold"
   ],
   "hasEnchantments": false,
   "notes": [],
