@@ -61,57 +61,73 @@ PaperDamage = Σ_components base(c) × ( dbmFold(c) + Tenderizer + (CritMult−1
 ## Fire rate (`src/lib/fire-rate.ts`)
 
 - Auto: `speed / 0.11`; semi: `speed / Attack Delay Seconds`; melee: 1.0/s stub.
-- **Confirmed 2026-07-13** against 16 user-supplied in-game Pip-Boy Fire Rate
-  readings (2026-07-02 dump): 14/16 matched this formula exactly, with
-  Pip-Boy Fire Rate = `(speed / 0.11 or AttackDelaySec) × 10`, rounded. Full
-  weapon-by-weapon table in `dps-todos/fire-rate.md`. Matched: V63 Carbine,
-  .50 Cal Machine Gun, Gauss Minigun, Minigun, Pepper Shaker, 10mm SMG, 10mm
-  Pistol, Combat Shotgun, Combat Rifle, Assault Rifle, Handmade, Radium
-  Rifle, Light Machine Gun (MG42), Auto Grenade Launcher (flagged
-  `Repeatable Single Fire` not `Automatic` in the ESM — correctly takes the
-  semi branch despite the name).
-- The historical 0.8248 "physical" multiplier is `SET Speed <value>` on
-  automatic-receiver OMODs, resolved through the existing `Includes`-chain
-  flattening into a `fireRateSpeed` bucket — never hardcoded, always
-  per-weapon-family. Verified: Combat Rifle `SET 0.8248`, Assault Rifle
-  `SET 0.6872234`, Handmade `SET 0.8617234`, Combat Shotgun `MUL_ADD +0.30`
-  (base 1.0 → 1.3), Gatling Laser Charging Barrels `MUL_ADD −0.75` on base 2.0
-  → 0.5 (a deliberate charged-beam rate trade, not a bug).
+- **Confirmed 2026-07-13** against 30+ user-supplied in-game Pip-Boy Fire Rate
+  readings across base weapons and weapon+mod combos (2026-07-02 dump):
+  Pip-Boy Fire Rate = `(effectiveSpeed / cycleConstant) × 10`, rounded. The
+  overwhelming majority use `cycleConstant = 0.11` (auto) or the weapon's own
+  `Attack Delay Seconds` (semi) exactly as implemented — zero extraction or
+  engine changes needed. Full weapon-by-weapon tables in `dps-todos/fire-rate.md`.
+- The historical 0.8248 "physical" multiplier (and every other per-weapon-family
+  automatic-receiver Speed change) is `SET`/`MUL_ADD Speed <value>` on OMODs,
+  resolved through the existing `Includes`-chain flattening into a
+  `fireRateSpeed` bucket — never hardcoded. Confirmed across many weapon
+  families and barrel/receiver combos (Combat Rifle, Assault Rifle, Handmade,
+  Alien Disintegrator, Combat Shotgun, Minigun barrels, Gauss Minigun barrels,
+  MG42/LMG receivers). The recurring `_PARENT_mod_WEAPON_GENERIC_AntiScorchBeast`
+  piece (`Speed MUL_ADD −0.10`, plus minor AimModel/range/value tweaks) is the
+  shared "Prime" mod tax across weapon families.
 - **Correction (2026-07-12):** V63 Carbine/Meltdown does **not** get an
   automatic-receiver `SET Speed` override — it has no automatic-receiver mod
   at all (always-auto by base Flags; its mod slot uses "Capacitor" variants
   instead of a receiver swap). Its reduced, ballistic-like fire rate comes
   entirely from its base WEAP `Speed` of `0.8` (vs. the typical energy-weapon
   1.0), already read by the plain extractor — no override needed.
-- **Confirmed exceptions (2026-07-13) — don't use the flat 0.11 divisor,
-  despite being flagged `Automatic`:**
-  - **Gatling Gun**: base `Speed` is `1.0` (not 2.0 — correcting an earlier,
-    wrong note here that grouped it with Minigun/Gatling Laser's Speed-2.0
-    treatment). Flat-0.11 predicts Pip-Boy 91; the real reading is **20**,
-    giving a derived `animDurationSec` of **0.5s**. Neither of its two barrel
-    mods changes `Speed`, so this looks like a fixed weapon-level constant,
-    not a mod-dependent one.
-  - **Submachine Gun** (the newer, non-10mm-family weapon, `editorId`
-    `SubmachineGun`): base `Speed` `1.61`. Flat-0.11 predicts 146; real
-    reading is **75**, giving a derived `animDurationSec` of **≈0.2147s**
-    (single data point only — none of its receivers change `Speed`, so there's
-    no second reading to cross-check against yet).
-  - Minigun (Speed 2.0), Gatling Laser (Speed 2.0), and Gauss Minigun (Speed
-    1.0, despite carrying the same `Charging Attack` flag as Minigun/Gatling
-    Laser) all fit the flat `0.11` formula exactly — the `Charging Attack`
-    flag does not by itself imply a custom `animDurationSec`; Pip-Boy Fire
-    Rate appears to reflect the weapon's resting/base cycle, not its
-    charged-up rate.
+- **Confirmed exceptions (2026-07-13) — three real alternate animation-cycle
+  constants**, each tied to a specific weapon/receiver/barrel family (not
+  arbitrary per-weapon noise — confirmed by multiple independent readings
+  landing on the same derived constant):
+  - **0.5s** ("shotgun/gatling automatic cycle"): **Gatling Gun** (always —
+    no receiver option exists; base `Speed` is `1.0`, not `2.0` as an earlier,
+    now-corrected note here assumed) and **Combat Shotgun + Automatic
+    Receiver**. Two independent weapon families land on the exact same
+    derived constant (1.0/0.5×10=20 for Gatling Gun; 1.3/0.5×10=26 for Combat
+    Shotgun auto) — strong confirmation this is a real shared animation, not
+    coincidence.
+  - **1/6s ≈ 0.1667s** ("Gatling Laser Charging Barrels' charged-beam cycle"):
+    only when Charging Barrels are equipped (base Gatling Laser and its Prime
+    Receiver alone both still use the standard 0.11 cycle). Confirmed with
+    two independent effective-Speed values landing on the same constant:
+    Charging alone (0.5 effective) → 30 Pip-Boy; Charging + Prime Receiver
+    (0.3 effective) → 18 Pip-Boy — both back-solve to 1/6s exactly.
+  - **≈0.215s** (Submachine Gun's *stock-only* anomaly): applies only with
+    **no receiver mod installed**. Installing **any** receiver — even a
+    damage-only "Prime Receiver" — reverts it to the standard 0.11 cycle
+    (confirmed: Prime Receiver's Speed fold of 0.6638 / 0.11 × 10 = 60,
+    matching the user's reading exactly). Lower confidence on the precise
+    decimal (single data point, no second mod to cross-check) but high
+    confidence on the "reverts to 0.11 once modded" behavior.
+  - Minigun, Gatling Laser (both Speed 2.0), and Gauss Minigun (Speed 1.0,
+    despite carrying the same `Charging Attack` WEAP flag as Minigun/Gatling
+    Laser) all fit the flat `0.11` formula exactly in their base/receiver-only
+    states — the `Charging Attack` flag does not by itself imply a custom
+    `animDurationSec`; Pip-Boy Fire Rate reflects the weapon's resting cycle,
+    not any in-combat rev-up/charge behavior.
+  - **General pattern**: a receiver or barrel swap can change which attack
+    animation plays, not just the `Speed` stat. Rifle/SMG/pistol-style
+    automatic receivers all keep the standard 0.11s cycle; shotgun/gatling-
+    mechanism weapons get the slower 0.5s cycle; Gatling Laser's Charging
+    Barrels get their own 0.1667s cycle.
 - Stock weapons with no receiver selected use the WEAP record's base stats;
   whether in-game stock configurations include a default receiver's stats is
   unverified.
-- **Still open** (needs in-game Pip-Boy readings, not ESM — Havok animation
-  files aren't parseable): Railway Rifle (base and with its Automatic Piston
-  Receiver — which itself carries no `Speed` override, so any deviation from
-  the flat formula is purely animation-driven), Auto Combat Shotgun, and
-  whether Gatling Laser's Charging Barrels change the animation itself on top
-  of the already-confirmed Speed reduction. See `dps-todos/fire-rate.md` for
-  the exact predictions awaiting confirmation.
+- **Still open**: Railway Rifle's stock/no-receiver reading is ambiguous — the
+  user supplied two candidate numbers (10 or 25), neither matching the raw
+  ESM `Attack Delay Seconds` field (predicts 6). Its **automatic** reading
+  (52, via the Automatic Piston Receiver, which adds no `Speed` override of
+  its own) matches the standard flat-0.11 formula exactly using the same base
+  `Speed` (0.5774) — confirming Speed is right and this is the same
+  "stock-only anomaly" pattern as Submachine Gun. Needs one precise Pip-Boy
+  digit for the true stock state. See `dps-todos/fire-rate.md`.
 
 ## Sustained DPS (`src/lib/engine/sustain.ts`)
 
