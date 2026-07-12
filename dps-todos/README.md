@@ -12,42 +12,57 @@ blocks dps-76.
 Everything below was verified against actual code (not the todo text) as of
 the 2026-07-12 dump/build. `docs/assumptions.md` is the canonical record of
 every shipped mechanic's assumptions — this README is a priority queue, not a
-spec.
+spec. Priority order below reflects the user's 2026-07-12 reprioritization
+(supersedes the original enemy-mitigation-first ordering).
 
 ## Remaining implementable work, in priority order
 
-1. **Enemy table & mitigation** — [phase-3-enemies.md](phase-3-enemies.md).
-   The app's headline gap: everything downstream of enemy data is inert or
-   deferred (armor incoming-DR, VATS accuracy relevance, cripple-speed,
-   on-kill AP restores). Path: ESM spike (HP/DR/ER/BPTD on NPC_/RACE/TPLT
-   chains) → `extract-npcs.ts` + `npcs.json` + fixtures → curated
-   `notable-enemies.ts` → `mitigation.ts` (activate the dormant
-   `calculateDamageResistMult`, per damage component) + `armorPen` bucket fold
-   + `enemyType` conditions via an `EnemyProfile` → per-enemy
-   `{perHit, sustainedDps, retainedPct, ttk}` → `ui/table.tsx`, flip
-   `ENEMY_TABLE_ENABLED`.
-2. **PTS toggle** — [pts-toggle.md](pts-toggle.md). Smallest win: un-disable
-   the Header `Switch`, wire it to `setMode`. Low value until a genuinely
-   different PTS dump exists (pts re-exports live today).
-3. **Popular builds / presets** — [popular-builds.md](popular-builds.md).
-   All three dependencies (perk data, VATS crit, sneak) are done; just needs
-   the preset-selector UI + the 3 canned N&D configs.
-4. **Consumables overhaul** — [consumables-overhaul.md](consumables-overhaul.md).
+1. **Armor mods — outgoing damage** — [armor-mods-outgoing.md](armor-mods-outgoing.md).
+   Unyielding (SPECIAL-on-low-HP → feeds STR melee term) and Zealot's
+   (vs Scorched/Scorchbeast). No blockers — armor types already exist, just
+   unpopulated and unwired.
+2. **Ranged fire-rate validation (P0)** — [fire-rate.md](fire-rate.md).
+   Mostly resolved 2026-07-12: the flat `0.11`s auto-fire divisor and every
+   per-weapon-family `fireRateSpeed` override (Combat Rifle, Assault Rifle,
+   Handmade, Combat Shotgun, Gatling Laser Charging Barrels, V63 Carbine) are
+   now confirmed correct against the ESM and already extracted. What's left
+   needs **in-game Pip-Boy readings, not more ESM digging**: Railway Rifle,
+   Auto Combat Shotgun, and other custom-animation weapons' real
+   `animDurationSec`, plus confirming whether Gatling Laser's Charging
+   Barrels change the animation itself on top of the already-captured Speed
+   reduction. Knock this out with a quick in-game session — it's a short,
+   well-defined checklist now, not an open-ended investigation.
+3. **Consumables overhaul** — [consumables-overhaul.md](consumables-overhaul.md).
    Full ALCH extraction (category + dispel-keyword + addiction data) plus a
    sizeable stacking-rule UI. Plan a grill/design pass first — user rules are
    already pinned in the doc.
-5. **Melee cadence** — [fire-rate.md](fire-rate.md) +
-   [power-attacks.md](power-attacks.md) (one workstream, split across two
-   docs by history). Real per-weapon `animDelaySec` for melee replacing the
-   1 swing/sec stub, plus a `melee1h`/`melee2h` weaponClass split so
-   Gladiator vs Slugger can apply correctly.
-6. **Armor mods** — [armor-mods.md](armor-mods.md). Outgoing half
-   (Unyielding→SPECIAL, Zealot's) can ship any time; incoming half
-   (WWR/Bolstering/Overeater's DR) needs #1's `mitigation.ts` first.
-7. **VATS accuracy / hit chance** — [ap-and-accuracy.md](ap-and-accuracy.md).
-   Explicitly deferred 2026-07-11; AP economy itself is done. Lowest
-   priority — only worth it once enemy mitigation (#1) makes a real
-   hit-chance-weighted DPS number meaningful.
+4. **The rest** (no further internal ordering implied):
+   - **Enemy table & mitigation** — [phase-3-enemies.md](phase-3-enemies.md).
+     ESM spike (HP/DR/ER/BPTD on NPC_/RACE/TPLT chains) → `extract-npcs.ts` +
+     `npcs.json` + fixtures → curated `notable-enemies.ts` → `mitigation.ts`
+     (activate the dormant `calculateDamageResistMult`, per damage component)
+     + `armorPen` bucket fold + `enemyType` conditions via an `EnemyProfile` →
+     per-enemy `{perHit, sustainedDps, retainedPct, ttk}` → `ui/table.tsx`,
+     flip `ENEMY_TABLE_ENABLED`. Unlocks armor incoming-DR, cripple-speed,
+     on-kill AP restores, and real VATS-accuracy relevance.
+   - **Armor mods — incoming damage** — [armor-mods-incoming.md](armor-mods-incoming.md).
+     WWR/Bolstering/Overeater's DR — blocked on the mitigation engine above.
+   - **Popular builds / presets** — [popular-builds.md](popular-builds.md).
+     All dependencies (perk data, VATS crit, sneak) are done; just needs the
+     preset-selector UI + 3 canned N&D configs.
+   - **Melee cadence** — [fire-rate.md](fire-rate.md)'s melee section +
+     [power-attacks.md](power-attacks.md) (one workstream, split across two
+     docs by history). Real per-weapon `animDelaySec` for melee replacing the
+     1 swing/sec stub, plus a `melee1h`/`melee2h` weaponClass split so
+     Gladiator vs Slugger can apply correctly.
+   - **PTS toggle** — [pts-toggle.md](pts-toggle.md). Smallest mechanical win
+     whenever picked up: un-disable the Header `Switch`, wire it to
+     `setMode`. Low value until a genuinely different PTS dump exists (pts
+     re-exports live today).
+   - **VATS accuracy / hit chance** — [ap-and-accuracy.md](ap-and-accuracy.md).
+     Explicitly deferred 2026-07-11; AP economy itself is done. Only worth it
+     once enemy mitigation makes a real hit-chance-weighted DPS number
+     meaningful.
 
 ## ESM-parser todos (separate repo)
 
