@@ -131,7 +131,7 @@ inert with a picker badge (`corrections.ts omodBadgeOverrides`).
 
 | Effect | Model | Source |
 |---|---|---|
-| Furious | INERT, badged 'pendingMechanic' — its real mechanic is Onslaught stacking (shared with Pounder's, Gunslinger/Guerrilla Expert+Master), deferred rework. Old wiki override (+5%/hit, max 9) deleted | ESM: Script ENCH, no curve |
+| Furious | RESOLVED 2026-07-12 (was: INERT, badged 'pendingMechanic') — real mechanic is the shared Onslaught stack counter: +9 max stacks, +1%/stack dbm. See "Onslaught" below. Old wiki override (+5%/hit, max 9) stays deleted — the ESM value is +1%/stack, not +5% | ESM granted-perk chase: PERK `Legendary_Weapon_DmgConsecutiveHits`, EP190 +9 / EP189 +0.01 |
 | Instigating | +50% dbm while enemy HP ≥ 60% (override DELETED 2026-07-10 — the old +100%-at-full-health value came from description text and is stale post-rework) | ESM granted-perk chase: PERK Legendary_Weapon_DamageFirstBlood, dbm +0.5, target GetHealthPercentage ≥ 0.6 |
 | Executioner's | +50% dbm while enemy HP ≤ 40% (`enemyHealthBelowPct`; enemy HP defaults to 100 → inactive until set) | ESM granted-perk chase: LegendaryExecutePerk +0.5, threshold GLOB LGND_ExecuteHealthThreshold = 0.4 |
 | DmgVs* family (Hunter's, Exterminator's, Ghoul Slayer's, Assassin's, Troubleshooter's, Zealot's, Mutant Slayer's) | +50% dbm vs matching enemy types via `enemyTypeAny` conditions — INERT until enemy typing lands, badged 'needsEnemyDefenses'. Values ride flat itemLevel curves (1→50, 100→50) on `ActorValues` OMOD properties routed through the STAT_DamageVsPerk plumbing | ESM (extracted 2026-07-10) |
@@ -177,9 +177,11 @@ inert with a picker badge (`corrections.ts omodBadgeOverrides`).
   applies when the ESM record actually carries this GLOB reference, confirmed
   absent from other "zero magnitude" effects like the Recon scopes / Move
   Speed Sights, which are genuinely script-driven with no static value).
-- **Guerrilla Master is excluded from this route**: its `abPerkFortifyDmgClose`
-  effect curve-scales off the Onslaught stack count (AV 0x00000395), not a
-  flat magnitude — deferred to the Onslaught rework.
+- **Guerrilla Master was excluded from this route** at the time this stage
+  shipped: its `abPerkFortifyDmgClose` effect curve-scales off the Onslaught
+  stack count (AV 0x00000395), not a flat magnitude. **RESOLVED 2026-07-12**
+  by the Onslaught work — see "Onslaught" below for the full curve + max-stack
+  contribution.
 
 ## VATS AP economy & manual-aim hit rate (Stage B, `ap-economy.ts`)
 
@@ -324,6 +326,109 @@ inert with a picker badge (`corrections.ts omodBadgeOverrides`).
   emits exactly ONE unconditional `apRegen` modifier (0.15/0.30/0.45), not
   the previous 3-tiers-all-unresolved-and-inert shape — verified in
   `generated/perks.json` after re-extraction.
+
+## Onslaught (shared stack mechanic, 2026-07-12)
+
+The Onslaught stack counter is engine-hardcoded: raw actor value **0x00000395**
+has no AVIF record at all (no name, no default/min/max — a bare slot the
+engine reads/writes directly). MESG `HelpOnslaught` 0x007EE004 documents the
+build/decay rule in player-facing text: **+1 stack per direct hit, −1 stack
+per second**, engine-native — NOT modeled here (there's nothing to model: no
+formula, no GMST, just an engine counter ticking). The app's Onslaught-stacks
+**slider IS the steady-state input**, standing in for "whatever the counter
+settles at during sustained play" the same way `adrenalineStacks`/
+`bulletStormStacks` already stand in for their own kill-streak/steady-state
+counters. **Base max = 0 is an INFERENCE** (no record defines a starting cap;
+every contributor is a positive ADD, and the counter is clearly worthless with
+no cap at all) — not ESM-proven, flagged here per policy.
+
+**Max-stack mechanism**: Perk Entry Point 190 "Mod Max Consecutive Hits
+Allowed" (function "Add Value") is identical across every contributor — it
+ADDs a flat amount to the shared cap. New IR: `Bucket.onslaughtMaxStacks`
+(base 0), folded ONCE per scenario input (`scenarios.ts`) and carried on
+`ResolveContext.onslaughtMaxStacks`; exposed on `ScenarioSet.onslaughtMaxStacks`
+for the UI slider. All ten contributors, verified against the 20260702 dump:
+
+| Source | Chain | Max | Per-stack bonus |
+|---|---|---|---|
+| Guerrilla Expert (PERK `GuerrillaExpert01` 0x0031AF04 → SPEL `AbPerkGuerrillaExpert` 0x0031BE56) | +3 | curve (0,0)(1,0.01)(100,1.0) on 0x395 → +1%/stack reload speed (`AbPerkFortifyReloadSpeedMult` → `WeapReloadSpeedMult` → `reloadSpeed` bucket); gated `WeaponTypeRanged` |
+| Guerrilla Master (PERK `GuerrillaMaster01` 0x0031AF08 → SPEL `AbPerkGuerrillaMaster` 0x0031BE57) | +5 | curve (0,0)(1,5)(100,500) on 0x395 → +5%/stack dbm at close range (`abPerkFortifyDmgClose` → `STAT_DmgVsClose` → `dbm` + `targetDistance:'close'`); gated `WeaponTypeRanged`. Previously left **unresolved** in `_meta.json` ("curve with unmapped input AV 0x00000395") — resolved by the new `onslaughtStacks` CurveInput |
+| Gunslinger Expert (PERK `GunslingerExpert01` 0x0031AEFD → SPEL `AbPerkGunslingerExpert` 0x0031BE53) | +3 | curve (0,0)(1,1.0)(100,100.0) on 0x395 → +1%/stack weak-spot damage (`AbPerkFortifyDmgWeakSpot` 0x007C92C6 → AV `STAT_DmgVsWeakSpot` 0x007C92C5, already routed to `weakpointBonus` scale 0.01 for Pin-Pointer's — no new route needed); gated `WeaponTypeRanged` |
+| Gunslinger Master (PERK `GunslingerMaster01` 0x0004A09F) | +10 | NONE — EP190 is its ONLY effect. Its "gain stacks over time / spend on attack" behavior (per its own in-game description) is engine-opaque script logic with no other ESM footprint — max contribution only |
+| Furious (OMOD `mod_Legendary_Weapon1_DmgConsecutiveHits` 0x004F577D → ENCH 0x006C3173 → Script MGEF 0x006C3174 "Perk to Apply" → PERK 0x006C3175) | +9 (EP190 Add Value 9.0) | EP189 "Mod Damage on Consecutive Hits" (function "Add Actor Value Mult") 0.01 → +1%/stack dbm |
+| Pounder's (OMOD `mod_Legendary_Weapon4_Melee_Pounders` 0x007ACB3E → ENCH 0x007ACB3A → MGEF 0x007ACB3C → PERK 0x007ACB3F; EP190/EP189 both gated `GetIsPlayer=1` (consumed — always true for a player-granted perk) + `HasKeyword HasLegendary_Weapon_Pounders` self-check, added by the OMOD's own Keywords property) | +10 | EP189 0.01 → +1%/stack dbm |
+| Splinter's Special Effect (OMOD `P62_Mod_Custom_Splinter_SpecialEffect` 0x00802189, built into the unique weapon `P62_crTheDrifter10mmSMG` "Splinter" → ENCH 0x0080219B → MGEF 0x00802198 → PERK 0x00802199; both effects carry NO Perk Conditions — unconditional once equipped) | +10 | EP189 0.01 → +1%/stack dbm |
+| Whacker Smacker (OMOD `E09B_mod_Custom_WhackerSmacker` 0x0068311F → ENCH 0x00914F55, effect `AbFortifyPowerAttack` reads the shared AV 0x395 DIRECTLY as its curve input — no EP190 at all) | +0 (grants none) | curve (0,0)(1,5)(100,500) → +5%/stack power-attack damage (AV `STAT_DmgPowerAttack`, already routed to `powerAttackBonus` scale 0.01); needs an EXTERNAL max-stack source to do anything (verified: equipped alone, `onslaughtMaxStacks` stays 0 and the curve reads 0) |
+
+**Route B nuance** (Furious/Pounder's/Splinter's EP189): the function reads a
+PRIVATE per-effect AV, not the shared 0x395 — `LGND_Furious` 0x006C3172
+(Furious), `Legendary_Pounders_ConsecutiveHits` 0x007ACB37 (Pounder's),
+`P62_Weapon_Splinter_MaxConsecutiveHits` 0x0080219A (Splinter's). Every one of
+these MGEFs' descriptions says "per Onslaught stack", and there is no way to
+prove the private counter's update cadence from static ESM data (it's engine
+script logic) — so we **ASSUME the private counters tick in lockstep with the
+shared one** and model EP189 as reading the shared counter via the existing
+`{ kind: 'stacks', counter: 'onslaught', max: 99 }` condition (max 99 is a
+value the shared counter can never reach; the REAL clamp is the equipped cap,
+applied by the `onslaught` reader in `resolve.ts`). Their AVIF Maximum Values
+(45/100/100 on the private AVs) look like template authoring boilerplate —
+ignored; the shared max governs everywhere.
+
+**Sentinel default**: `PlayerConditions.onslaughtStacks` uses `-1` to mean
+"follow the computed max" (assume full stacks — the app's existing
+assume-max convention, matching `adrenalineStacks`/`bulletStormStacks`).
+Non-negative = an explicit user selection from the Onslaught-stacks slider
+(`ConditionsSection`), clamped to the current max at read time — both by the
+`onslaught` StackCounter reader (via `resolve.ts`'s `effectiveOnslaughtStacks`)
+and by the slider's own displayed value. With **zero equipped sources**, the
+computed max is 0, so every consumer (the counter AND the `onslaughtStacks`
+curve input, which reads the identical clamped value) is inactive regardless
+of the stored value — verified (`onslaughtStacks: 10` stored, max 0 → no bonus).
+
+**esm CLI quirk — misattributed Entry Point fields** (found via `esm get
+--raw` byte inspection on `GuerrillaExpert01`/`GuerrillaMaster01`): when a PERK
+record's Effects list pairs an "Ability" grant with an "Entry Point" effect,
+the raw subrecord bytes show the Entry Point's own trailing group (PRKC/CTDA
+"Perk Conditions" + EPFT/EPFD "Float") ALWAYS immediately follows its own
+`PRKE`+`DATA` (an Ability entry is always a bare `PRKE+DATA+PRKF` triple with
+no scalar param of its own — abilities don't carry a Float in this game). But
+the esm tool's JSON serializer attaches that trailing group to the PRECEDING
+Ability entry instead of the following Entry Point whenever Ability comes
+first in the array (`GuerrillaExpert01`/`GunslingerExpert01` — Ability then
+Entry Point); it's accidentally correct when Entry Point already comes first
+(`GuerrillaMaster01`/`GunslingerMaster01`). 30 PERK records carry this pattern
+game-wide. Fixed via `repairMisattributedPerkEntryFields`
+(`normalize/mgef.ts`, applied in both `extract-perks.ts`'s `getEffects` and
+`translateGrantedPerk`'s perk-effect gather): Perk Conditions are COPIED onto
+the Entry Point (the Ability grant still needs its own copy — that's what the
+shared PRKC actually gates in-game), Float is MOVED (Abilities never consume
+it). Without this fix Guerrilla/Gunslinger Expert's EP190 would read Float 0
+(no max contribution) and no gate.
+
+**`p62_` was NOT a junk prefix** — found chasing Splinter's OMOD, which
+extracted with zero modifiers despite `hasEnchantments: true` until this was
+fixed. `extract-omods.ts`'s `OMOD_JUNK_EDID_RE` blanket-excluded every `p62_`
+editor id pre-obtainability, silently dropping Splinter's Special Effect OMOD
+(and Chaos Engine's/Tempest's, plus an unrelated new legendary-effect family:
+Rebounders, Crusaders, Metabolic, Brutalists, Satiated, SightSeers, Ruiners,
+OverLoaders, Voltaic, StaggerProof — all real Named records in the 20260702
+dump). Removed from the regex; obtainability derivation is the real gate
+either way (some of the newly-surfaced weapon-side legendaries — Ruiner's,
+Sightseer's, Brutalist's, Satiated — now extract `obtainable: false` pending
+their own rescue-list review, out of scope for this pass).
+
+**Guerrilla Expert's reload-speed bonus extracts correctly but is not yet
+functionally wired**: `buildEffectiveWeapon` only folds `reloadSpeed` (and the
+other weapon-stat buckets — `fireRateSpeed`/`isAutomatic`/`projectileCount`/
+`ammoCapacity`/`vatsApCost`) from OMOD-sourced modifiers, called before perks
+are even gathered in `resolveLoadout` — a PRE-EXISTING architecture gap (also
+affects `GHL_GunTricks`, `GroundPounder`, `MartialArtist`, verified still
+present in the current dump), not introduced by this work. Fixing it means
+threading perk-sourced weapon-stat modifiers through the same fold, which
+touches every perk in that shape, not just Guerrilla Expert — left as a
+known gap rather than a scope-creeping fix. Guerrilla Master's dbm curve and
+Gunslinger Expert's weakpoint curve are NOT affected (`dbm`/`weakpointBonus`
+fold from the full modifier list regardless of source kind).
 
 ## Resist mitigation (dormant scaffolding)
 

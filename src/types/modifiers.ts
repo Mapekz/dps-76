@@ -113,7 +113,7 @@ export type Bucket =
 export type WeaponClass = Weapon['weaponClass'];
 export type DamageType = Weapon['components'][number]['damageType'];
 
-export type StackCounter = 'tenderizer' | 'onslaught' | 'bulletStorm' | 'furious' | 'adrenaline';
+export type StackCounter = 'tenderizer' | 'onslaught' | 'bulletStorm' | 'adrenaline';
 
 /**
  * Gating/scaling conditions attached to a modifier. All conditions must pass
@@ -213,13 +213,20 @@ export type CurveInput =
   | 'capsOnHand' // Aristocrat's — AV 0x00000393
   | 'killStreak' // Adrenal Reaction — AV 0x00000399
   | 'addictionCount' // Junkie's — AV 0x001EB998
-  | 'consecutiveHits' // Furious — AV 0x006C3172
   | 'healthCurrent' // ABSOLUTE current HP (Juggernaut's: x 0→1000) — AV 0x000002D4
   | 'enemyDamageResist' // enemy DR (DamageUnarmored) — AV 0x000002E3; reads 0 until enemy defenses land
   | 'itemLevel' // weapon item level — level-scaled OMOD properties (heated melee mods' AttackDamage curves)
   | 'mutationCount' // owned mutations (Mutant's) — AV MutationCount 0x006C2DBA; derived from the selected mutation list
   | 'hungerThirstTier' // food/drink fullness tier (Gourmand's) — AV HungerThirstTier 0x006D37DC
   | 'feralTier' // ghoul feral meter tier (Lucid, Feral's) — AV GHL_FeralTier 0x007A767A
+  /**
+   * The shared Onslaught stack counter (Whacker Smacker reads it directly as
+   * a curve input; Guerrilla/Gunslinger Expert+Master's per-stack SPELs feed
+   * the same AV) — raw engine AV 0x00000395, no AVIF record (hardcoded
+   * slot). Reader clamps `min(effective player stacks, ctx.onslaughtMaxStacks)`
+   * — see `resolve.ts` and docs/assumptions.md "Onslaught".
+   */
+  | 'onslaughtStacks'
   /**
    * Equipped weapon condition as a fraction (Polished): 1.0 = 100% (full
    * condition), 2.0 = 200% (over-repaired max). No AVIF exists for this axis —

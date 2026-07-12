@@ -88,7 +88,16 @@ const PROPERTY_IGNORED = new Set([
 // Dev/dead-record prefixes that never reach players (case-insensitive; the
 // weapon extractor has its own copy tuned for WEAP naming). Cheap pre-filter
 // only — obtainability derivation is the real gate.
-const OMOD_JUNK_EDID_RE = /^(zzz|del_|deleted|debug|cut_|test|wip|post_|hto_|sdow_|p62_|mtnm|xpd_)/i;
+//
+// NOTE (2026-07-12): `p62_` was REMOVED from this list — it's a real content
+// prefix (The Drifter boss encounter + its unique drops' legendary effects:
+// Splinter/Chaos Engine/Tempest's SpecialEffect mods, PLUS a whole family of
+// unrelated new legendaries — Rebounders, Crusaders, Metabolic, Brutalists,
+// Satiated, SightSeers, Ruiners, OverLoaders, Voltaic, StaggerProof — all
+// verified present in the 20260702 dump with real Names), not a dev/test
+// prefix. It was silently dropping all of them pre-obtainability; found while
+// chasing Splinter's Onslaught contribution (dps-todos/onslaught.md).
+const OMOD_JUNK_EDID_RE = /^(zzz|del_|deleted|debug|cut_|test|wip|post_|hto_|sdow_|mtnm|xpd_)/i;
 
 /** Exposed for tests: does the pre-filter drop this editor_id? */
 export function isExcludedOmodEdid(edid: string): boolean {

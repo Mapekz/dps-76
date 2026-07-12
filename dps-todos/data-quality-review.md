@@ -70,8 +70,8 @@ exposed" group both landed:
 - Crippling: limb-condition only, no HP term — cripple-speed stat waits for
   phase-3 enemy limb HP. Basher's: stays inert + badged (user decision).
 - Onslaught family (Furious, Pounder's, Splinter's, Whacker Smacker,
-  Gunslinger/Guerrilla Expert+Master) — deferred rework, shared stacking
-  mechanic; see [[onslaught]].
+  Gunslinger/Guerrilla Expert+Master) — **RESOLVED 2026-07-12** — see
+  [[onslaught]] (now a resolution log) and docs/assumptions.md "Onslaught".
 - Charged (4★): cadence model on top of a full power-attack model (Stage C);
   value hunt in AVIF/GMST is part of that stage.
 - Thrill-Seeker's: killstreak-scaled reload/melee speed off adrenalineStacks
@@ -94,5 +94,6 @@ exposed" group both landed:
   measurement or a deeper script chase.
 
 ## Related follow-up plans
-[[onslaught]] · [[consumables-overhaul]] — both deferred by explicit scope
-decision during the overhaul grill.
+[[onslaught]] — RESOLVED 2026-07-12 (now a resolution log, not a deferred
+plan). [[consumables-overhaul]] — still deferred by explicit scope decision
+during the overhaul grill.

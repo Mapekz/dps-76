@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Slider } from '@/components/ui/slider';
 import {
   createDefaultPlayerConditions,
   createDefaultEnemyConditions,
@@ -13,6 +14,7 @@ import {
   type PlayerConditions,
 } from '@/types';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
+import { useScenarioResults } from '@/state/useScenarioResults';
 import { SectionTrigger } from './SectionTrigger';
 
 /**
@@ -34,7 +36,6 @@ const NUMBER_FIELDS: Array<{
   // Addictions are uncapped in-game; Junkie's bonus curve tops out at 10.
   { key: 'addictionCount', label: "Addictions (Junkie's maxes at 10)", min: 0, max: 99 },
   { key: 'adrenalineStacks', label: 'Kill streak (Adrenal effects, 0–10)', min: 0, max: 10 },
-  { key: 'furiousStacks', label: 'Furious consecutive hits (0–9)', min: 0, max: 9 },
   { key: 'tenderizerStacks', label: 'Tenderizer stacks (0–1000, team-dependent)', min: 0, max: 1000 },
   { key: 'limitBreakingPieces', label: 'Limit Breaking armor pieces (0–5, −10% crit cost each)', min: 0, max: 5 },
   { key: 'hungerThirstTier', label: "Food + drink meter tier (Gourmand's, 0–8)", min: 0, max: 8 },
@@ -72,6 +73,18 @@ const ENEMY_CHECKBOXES: Array<{ key: keyof EnemyConditions; label: string }> = [
 export function ConditionsSection() {
   const { player, enemy } = useBuild();
   const dispatch = useBuildDispatch();
+  const { scenarios } = useScenarioResults();
+
+  // Onslaught stacks (shared engine counter — Guerrilla/Gunslinger
+  // Expert+Master, Furious, Pounder's, Splinter's, Whacker Smacker): the max
+  // is computed from equipped sources (ScenarioSet.onslaughtMaxStacks), not
+  // stored player state. Sentinel -1 = follow max (default); an explicit
+  // selection is clamped to the current max for display (the engine clamps
+  // the same way at read time).
+  const onslaughtMax = scenarios?.onslaughtMaxStacks ?? 0;
+  const onslaughtStored = player.conditions.onslaughtStacks;
+  const onslaughtValue = onslaughtStored === -1 ? onslaughtMax : Math.min(onslaughtStored, onslaughtMax);
+  const onslaughtActive = onslaughtStored !== -1;
 
   const playerDefaults = createDefaultPlayerConditions();
   const enemyDefaults = createDefaultEnemyConditions();
@@ -82,6 +95,7 @@ export function ConditionsSection() {
     (player.conditions.isPowerAttacking !== playerDefaults.isPowerAttacking ? 1 : 0) +
     ((player.conditions.isLastShot ?? false) !== (playerDefaults.isLastShot ?? false) ? 1 : 0) +
     ((player.conditions.isGhoul ?? false) !== (playerDefaults.isGhoul ?? false) ? 1 : 0) +
+    (onslaughtActive ? 1 : 0) +
     ((enemy.conditions.targetDistance ?? enemyDefaults.targetDistance) !== enemyDefaults.targetDistance ? 1 : 0);
 
   return (
@@ -115,6 +129,24 @@ export function ConditionsSection() {
               />
             </div>
           ))}
+
+          <div className="space-y-1.5">
+            <Label htmlFor="cond-onslaught">
+              Onslaught stacks ({onslaughtValue} / max {onslaughtMax})
+            </Label>
+            <Slider
+              id="cond-onslaught"
+              min={0}
+              max={onslaughtMax}
+              step={1}
+              disabled={onslaughtMax === 0}
+              value={[onslaughtValue]}
+              onValueChange={([v]) => dispatch({ type: 'condition/set', key: 'onslaughtStacks', value: v })}
+            />
+            {onslaughtMax === 0 && (
+              <p className="text-xs text-muted-foreground">No Onslaught sources equipped</p>
+            )}
+          </div>
 
           <label htmlFor="cond-power-attack" className="flex cursor-pointer items-center gap-2 text-sm">
             <Checkbox

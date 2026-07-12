@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   translate,
   parseMagicEffects,
+  repairMisattributedPerkEntryFields,
   type MgefInfo,
   type SpellEffect,
   type AvifRoute,
@@ -181,6 +182,86 @@ describe('translate (2026-07-11 A3/A4 routes)', () => {
     const r = translate(mgef({ edid: 'SomeOtherLegendaryEffect', archetype: 'Peak Value Modifier' }), curved, routedAv, edids);
     expect(r.modifiers).toHaveLength(0);
     expect(r.notes.some(n => n.includes('unmapped input AV null'))).toBe(true);
+  });
+});
+
+describe('translate (Onslaught, 2026-07-12)', () => {
+  it("carries curve.input 'onslaughtStacks' for a Peak Value Modifier on a routed AV (Whacker Smacker-style)", () => {
+    const routedAv = new Map<string, AvifRoute[]>([['0xAV', [{ bucket: 'powerAttackBonus', scale: 0.01, rawConditions: [] }]]]);
+    const curved = effect({
+      curvePoints: [
+        { x: 0, y: 0 },
+        { x: 1, y: 5 },
+        { x: 100, y: 500 },
+      ],
+      curveInputAv: '0x00000395',
+    });
+    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), curved, routedAv, edids);
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0].bucket).toBe('powerAttackBonus');
+    expect(r.modifiers[0].curve?.input).toBe('onslaughtStacks');
+    expect(r.modifiers[0].curve ? r.modifiers[0].curveScale : null).toBeCloseTo(0.01, 10);
+  });
+});
+
+describe('repairMisattributedPerkEntryFields (esm CLI quirk, 2026-07-12)', () => {
+  // Verified via `esm get --raw` byte inspection: an Ability entry is always
+  // a bare PRKE+DATA+PRKF triple with no scalar param of its own, so a
+  // trailing Float/Perk-Conditions group can only belong to the FOLLOWING
+  // Entry Point — but the esm tool's JSON serializer attaches it to the
+  // PRECEDING Ability instead (GuerrillaExpert01/GunslingerExpert01 pattern).
+  const abilityFirst = () => [
+    {
+      'Effect Header': { 'Effect Type': { name: 'Ability' } },
+      Ability: '0xSPEL',
+      'Perk Conditions': ['HasKeyword ranged'],
+      Float: 3.0,
+    },
+    {
+      'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+      'Entry Point': { 'Entry Point': { name: 'Mod Max Consecutive Hits Allowed' }, Function: { name: 'Add Value' } },
+    },
+  ];
+
+  it('moves Float and copies Perk Conditions from a preceding Ability entry onto the following Entry Point', () => {
+    const effects = abilityFirst();
+    repairMisattributedPerkEntryFields(effects);
+    expect(effects[1].Float).toBe(3.0);
+    expect(effects[1]['Perk Conditions']).toEqual(['HasKeyword ranged']);
+    // The Ability keeps its own (correct) Perk Conditions — it still needs
+    // them to gate its own grant — but loses the borrowed Float, which it
+    // never consumed anyway.
+    expect(effects[0]['Perk Conditions']).toEqual(['HasKeyword ranged']);
+    expect('Float' in effects[0]).toBe(false);
+  });
+
+  it('is a no-op when the Entry Point already owns its Float (GuerrillaMaster01/GunslingerMaster01 pattern)', () => {
+    const effects = [
+      {
+        'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+        'Entry Point': { 'Entry Point': { name: 'Mod Max Consecutive Hits Allowed' }, Function: { name: 'Add Value' } },
+        'Perk Conditions': ['HasKeyword ranged'],
+        Float: 5.0,
+      },
+      { 'Effect Header': { 'Effect Type': { name: 'Ability' } }, Ability: '0xSPEL' },
+    ];
+    const before = JSON.parse(JSON.stringify(effects));
+    repairMisattributedPerkEntryFields(effects);
+    expect(effects).toEqual(before);
+  });
+
+  it('is a no-op for a single-effect record (GunslingerMaster01 pattern, no Ability to misattribute from)', () => {
+    const effects = [
+      {
+        'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+        'Entry Point': { 'Entry Point': { name: 'Mod Max Consecutive Hits Allowed' }, Function: { name: 'Add Value' } },
+        'Perk Conditions': ['HasKeyword ranged'],
+        Float: 10.0,
+      },
+    ];
+    const before = JSON.parse(JSON.stringify(effects));
+    repairMisattributedPerkEntryFields(effects);
+    expect(effects).toEqual(before);
   });
 });
 

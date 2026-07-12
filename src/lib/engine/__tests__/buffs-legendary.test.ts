@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { getWeapons } from '@/data';
+import { adaptWeapon } from '@/data/live/weapons';
+import generatedWeapons from '@/data/live/generated/weapons.json';
+import type { GeneratedWeapon } from '@/types/generated';
 import { getBuffModifiers } from '@/data/buffs';
 import { getOmodById } from '@/data/omods';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
@@ -263,6 +266,130 @@ describe('Action Boy/Girl (Stage C4, cross-family rank gate fix)', () => {
     expect(rank1.vats.ap!.uptime).toBeLessThan(rank2.vats.ap!.uptime);
     expect(rank2.vats.ap!.uptime).toBeLessThan(rank3.vats.ap!.uptime);
     expect(rank3.vats.ap!.uptime).toBeLessThan(1);
+  });
+});
+
+describe('Onslaught (2026-07-12, real data)', () => {
+  it('Furious grants +9 max stacks and +1%/stack dbm; sentinel default assumes full stacks', () => {
+    // ESM: OMOD mod_Legendary_Weapon1_DmgConsecutiveHits → ENCH 0x006C3173 →
+    // Script MGEF → PERK Legendary_Weapon_DmgConsecutiveHits: EP190 Add Value
+    // 9.0 (onslaughtMaxStacks), EP189 Add Actor Value Mult 0.01 (dbm, stacks).
+    const furious = getOmodById('live', 'mod_Legendary_Weapon1_DmgConsecutiveHits')!;
+    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [furious]);
+
+    const atMax = computeScenarios(base({ weapon, modifiers }));
+    expect(atMax.onslaughtMaxStacks).toBe(9);
+    expect(atMax.freeAim.perHit.total / stockTotal).toBeCloseTo(1.09, 6); // sentinel -1 → full 9 stacks
+
+    const explicit4 = computeScenarios(
+      base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), onslaughtStacks: 4 } })
+    );
+    expect(explicit4.freeAim.perHit.total / stockTotal).toBeCloseTo(1.04, 6);
+
+    const overMax = computeScenarios(
+      base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), onslaughtStacks: 999 } })
+    );
+    expect(overMax.freeAim.perHit.total / stockTotal).toBeCloseTo(1.09, 6); // clamps to the computed max
+  });
+
+  it('zero Onslaught sources equipped → computed max is 0, no bonus regardless of stored stacks', () => {
+    const none = computeScenarios(base());
+    expect(none.onslaughtMaxStacks).toBe(0);
+    expect(none.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
+
+    const withStoredStacks = computeScenarios(base({ player: { ...createDefaultPlayerConditions(), onslaughtStacks: 10 } }));
+    expect(withStoredStacks.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
+  });
+
+  it("Pounder's grants +10 max stacks and +1%/stack dbm, self-gated to its own weapon via HasLegendary_Weapon_Pounders", () => {
+    // ESM: OMOD mod_Legendary_Weapon4_Melee_Pounders adds its own keyword
+    // (HasLegendary_Weapon_Pounders) and both EP190/EP189 gate on it —
+    // effective-weapon.ts merges addedKeywords, so it self-satisfies once equipped.
+    const bat = getWeapons('live')['BaseballBat'];
+    const pounders = getOmodById('live', 'mod_Legendary_Weapon4_Melee_Pounders')!;
+    const { weapon, modifiers } = buildEffectiveWeapon(bat, [pounders]);
+    const batStock = computeScenarios(base({ weapon: bat })).freeAim.perHit.total;
+    const result = computeScenarios(base({ weapon, modifiers }));
+    expect(result.onslaughtMaxStacks).toBe(10);
+    // Melee dbm folds over 1 + 0.05×STR (default 15) = 1.75 (Fencer's convention).
+    expect(result.freeAim.perHit.total / batStock).toBeCloseTo((1.75 + 0.1) / 1.75, 5);
+  });
+
+  it("Splinter's built-in Special Effect grants +10 max stacks and +1%/stack dbm, unconditional (unique weapon)", () => {
+    // ESM: OMOD P62_Mod_Custom_Splinter_SpecialEffect, built into the unique
+    // P62_crTheDrifter10mmSMG ("Splinter"). The P62 Drifter content never
+    // released, so the weapon is hidden app-side (corrections.ts) — this test
+    // adapts the raw generated record directly to keep the Onslaught modeling
+    // pinned for whenever P62 ships. EP190/EP189 carry NO Perk Conditions at
+    // all (unconditional once equipped).
+    const splinterRecord = (generatedWeapons as GeneratedWeapon[]).find(w => w.id === 'P62_crTheDrifter10mmSMG');
+    expect(splinterRecord).toBeDefined();
+    const splinter = adaptWeapon(splinterRecord!);
+    const splinterEffect = getOmodById('live', 'P62_Mod_Custom_Splinter_SpecialEffect')!;
+    const { weapon, modifiers } = buildEffectiveWeapon(splinter, [splinterEffect]);
+    const splinterStock = computeScenarios(base({ weapon: splinter })).freeAim.perHit.total;
+    const result = computeScenarios(base({ weapon, modifiers }));
+    expect(result.onslaughtMaxStacks).toBe(10);
+    expect(result.freeAim.perHit.total / splinterStock).toBeCloseTo(1.1, 5);
+  });
+
+  it("Guerrilla Master's ranged+close-range dbm curve now resolves (previously the unresolved 0x00000395 input) and its own +5 max stacks apply", () => {
+    const guerrillaMaster = getLoadoutModifiers('live', [{ perkId: PerkId.GuerrillaMaster, rank: 1 }]);
+    const none = computeScenarios(base({ modifiers: guerrillaMaster }));
+    expect(none.onslaughtMaxStacks).toBe(5);
+    expect(none.freeAim.perHit.total).toBeCloseTo(stockTotal, 6); // not close-range: inactive
+    const close = computeScenarios(base({ modifiers: guerrillaMaster, enemy: { ...createDefaultEnemyConditions(), targetDistance: 'close' } }));
+    // curve (0,0)(1,5)(100,500) at x=5 (its own max, sentinel default) → y=25, ×0.01 = +25%.
+    expect(close.freeAim.perHit.total / stockTotal).toBeCloseTo(1.25, 5);
+  });
+
+  it("Gunslinger Expert adds weak-spot damage per stack (ranged only) at its own +3 max", () => {
+    const gunslingerExpert = getLoadoutModifiers('live', [{ perkId: PerkId.GunslingerExpert, rank: 1 }]);
+    const noWeakpoint = computeScenarios(base({ modifiers: gunslingerExpert }));
+    expect(noWeakpoint.onslaughtMaxStacks).toBe(3);
+    expect(noWeakpoint.freeAim.perHit.total).toBeCloseTo(stockTotal, 6); // torso hit: weakpointBonus inactive
+    const stockWeakpoint = computeScenarios(base({ player: { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true } })).freeAim.perHit.total;
+    const withWeakpoint = computeScenarios(
+      base({ modifiers: gunslingerExpert, player: { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true } })
+    );
+    // curve (0,0)(1,1.0)(100,100.0) at x=3 → y=3.0, ×0.01 = +3% weak-spot damage.
+    expect(withWeakpoint.freeAim.perHit.total / stockWeakpoint).toBeCloseTo(1.03, 5);
+  });
+
+  it('Whacker Smacker grants NO max stacks of its own — its power-attack curve needs an external source to do anything', () => {
+    // ESM: OMOD E09B_mod_Custom_WhackerSmacker's ENCH reads the shared AV
+    // 0x00000395 DIRECTLY (no EP190 of its own): +5%/stack power-attack
+    // damage, curve (0,0)(1,5)(100,500) on STAT_DmgPowerAttack.
+    const whackerWeapon = getWeapons('live')['E09B_SuperSledge_WhackerSmacker'];
+    expect(whackerWeapon).toBeDefined();
+    const whackerEffect = getOmodById('live', 'E09B_mod_Custom_WhackerSmacker')!;
+    const paPlayer = { ...createDefaultPlayerConditions(), isPowerAttacking: true };
+
+    const aloneEff = buildEffectiveWeapon(whackerWeapon, [whackerEffect]);
+    const alone = computeScenarios(base({ weapon: aloneEff.weapon, modifiers: aloneEff.modifiers, player: paPlayer }));
+    expect(alone.onslaughtMaxStacks).toBe(0);
+    const plainStock = computeScenarios(base({ weapon: whackerWeapon, player: paPlayer })).freeAim.perHit.total;
+    expect(alone.freeAim.perHit.total).toBeCloseTo(plainStock, 6); // curve at x=0 → no bonus
+
+    // Pair with Furious (a separate legendary slot) to grant a real max (9) —
+    // demonstrates the shared-cap mechanic combining two independent sources.
+    const furious = getOmodById('live', 'mod_Legendary_Weapon1_DmgConsecutiveHits')!;
+    const paired = buildEffectiveWeapon(whackerWeapon, [whackerEffect, furious]);
+    const withMax = computeScenarios(base({ weapon: paired.weapon, modifiers: paired.modifiers, player: paPlayer }));
+    expect(withMax.onslaughtMaxStacks).toBe(9);
+    // parenthesis = dbm(1 + 9×0.01 from Furious) + strTerm(0.75, melee STR 15)
+    // + powerAttackTerm(curve@9=45, ×0.01=0.45), vs the alone baseline's
+    // dbm(1) + strTerm(0.75) + powerAttackTerm(0) — both share the same
+    // outer multiplier (paRaceMult etc.), so the ratio isolates this delta.
+    expect(withMax.freeAim.perHit.total / alone.freeAim.perHit.total).toBeCloseTo((1.09 + 0.75 + 0.45) / 1.75, 5);
+  });
+
+  it('max stacks aggregate across independently-equipped sources (Furious + Guerrilla Expert → 9 + 3 = 12)', () => {
+    const furious = getOmodById('live', 'mod_Legendary_Weapon1_DmgConsecutiveHits')!;
+    const { weapon, modifiers: omodModifiers } = buildEffectiveWeapon(fixer, [furious]);
+    const guerrillaExpert = getLoadoutModifiers('live', [{ perkId: PerkId.GuerrillaExpert, rank: 1 }]);
+    const result = computeScenarios(base({ weapon, modifiers: [...omodModifiers, ...guerrillaExpert] }));
+    expect(result.onslaughtMaxStacks).toBe(12);
   });
 });
 

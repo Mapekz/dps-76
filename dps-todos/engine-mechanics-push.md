@@ -41,8 +41,10 @@ chance, real melee animation timings ([fire-rate.md](fire-rate.md)).
   shipped; Guerrilla/Down Ranger/Sniper's routed via `STAT_DmgVsClose`/`Far`
   fallback routes. Sniper's needed an extractor fix (GLOB-valued magnitude,
   not script-scaled) rather than the measurement queue. Guerrilla Master
-  stays unresolved — its close-range dbm curve reads the Onslaught stack
-  count (AV 0x00000395), deferred to the Onslaught plan as decided above.
+  stayed unresolved at the time, deferred to the Onslaught plan as decided
+  above — **RESOLVED 2026-07-12** (`dps-todos/onslaught.md`,
+  docs/assumptions.md "Onslaught"): its close-range dbm curve reads the
+  now-mapped Onslaught stack count (AV 0x00000395).
 
 ### A4. Weapon condition slider (0–200%, 10% steps, default 100%)
 - 100% = full condition, 200% = over-repaired max (user-specified).

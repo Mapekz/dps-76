@@ -41,7 +41,12 @@ function classifyWeaponClass(gw: GeneratedWeapon): Weapon['weaponClass'] {
   return 'rifle';
 }
 
-function adaptWeapon(gw: GeneratedWeapon): Weapon {
+/**
+ * Exported for tests that exercise mechanics carried by records hidden from
+ * the app (e.g. the unreleased P62 "Splinter" and its built-in Onslaught
+ * effect) — the visibility filter below strips them from `weapons`.
+ */
+export function adaptWeapon(gw: GeneratedWeapon): Weapon {
   const levelCap = gw.eligibleLevels.length > 0 ? Math.min(50, Math.max(...gw.eligibleLevels)) : 50;
   const components = gw.components.map(c => ({
     damageType: DAMAGE_TYPE_MAP[c.damageType],

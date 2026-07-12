@@ -134,6 +134,84 @@ describe('condition evaluation', () => {
   });
 });
 
+describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp', () => {
+  const weapon = makeWeapon();
+
+  it('folds onslaughtMaxStacks contributions additively (base 0) — Furious alone → max 9', () => {
+    const furious = mod({ bucket: 'onslaughtMaxStacks', op: 'ADD', value: 9 });
+    expect(foldBucket([furious], 'onslaughtMaxStacks', 0, makeCtx(weapon))).toBe(9);
+    const guerrillaExpert = mod({ bucket: 'onslaughtMaxStacks', op: 'ADD', value: 3 });
+    expect(foldBucket([furious, guerrillaExpert], 'onslaughtMaxStacks', 0, makeCtx(weapon))).toBe(12);
+  });
+
+  it('sentinel -1 assumes full stacks (the app-wide assume-max convention)', () => {
+    const perStack = mod({
+      bucket: 'dbm', op: 'ADD', value: 0.01,
+      conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
+    });
+    const atDefault = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), onslaughtStacks: -1 },
+      onslaughtMaxStacks: 9,
+    });
+    expect(foldBucket([perStack], 'dbm', 1.0, atDefault)).toBeCloseTo(1.09, 10);
+  });
+
+  it('an explicit stack selection scales the per-stack bonus (Furious Fixer-style: 4 stacks → +4%)', () => {
+    const perStack = mod({
+      bucket: 'dbm', op: 'ADD', value: 0.01,
+      conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
+    });
+    const explicit4 = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), onslaughtStacks: 4 },
+      onslaughtMaxStacks: 9,
+    });
+    expect(foldBucket([perStack], 'dbm', 1.0, explicit4)).toBeCloseTo(1.04, 10);
+  });
+
+  it('an explicit selection above the computed max clamps down to the max', () => {
+    const perStack = mod({
+      bucket: 'dbm', op: 'ADD', value: 0.01,
+      conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
+    });
+    const overMax = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), onslaughtStacks: 999 },
+      onslaughtMaxStacks: 9,
+    });
+    expect(foldBucket([perStack], 'dbm', 1.0, overMax)).toBeCloseTo(1.09, 10);
+  });
+
+  it('zero Onslaught sources equipped (max 0) → no bonus even at an explicit stored value of 10', () => {
+    const perStack = mod({
+      bucket: 'dbm', op: 'ADD', value: 0.01,
+      conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
+    });
+    const noSources = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), onslaughtStacks: 10 },
+      // onslaughtMaxStacks omitted → defaults to 0 (ctx.onslaughtMaxStacks ?? 0).
+    });
+    expect(foldBucket([perStack], 'dbm', 1.0, noSources)).toBe(1.0);
+  });
+
+  it("Whacker Smacker-style curve (onslaughtStacks input) scales with the clamped shared counter", () => {
+    const curveMod: Modifier = {
+      id: 'whacker-smacker',
+      source: { kind: 'omod', formId: '0x0', edid: 'E09B_mod_Custom_WhackerSmacker', name: 'Whacker Smacker' },
+      bucket: 'powerAttackBonus',
+      op: 'ADD',
+      curve: { input: 'onslaughtStacks', points: [{ x: 0, y: 0 }, { x: 1, y: 5 }, { x: 100, y: 500 }] },
+      curveScale: 0.01,
+      conditions: [],
+    };
+    // No max-stack sources of its own (Whacker Smacker has NO EP190) — but
+    // still reads the SHARED counter once something else grants a max.
+    const atFive = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), onslaughtStacks: 5 },
+      onslaughtMaxStacks: 10,
+    });
+    expect(foldBucket([curveMod], 'powerAttackBonus', 0, atFive)).toBeCloseTo(0.25, 10); // interpolate(5)=25, ×0.01
+  });
+});
+
 describe('crit and sneak composition (MUL_ADD before ADD)', () => {
   const weapon = makeWeapon(); // critMult 2.0, sneakMult 2.0
 

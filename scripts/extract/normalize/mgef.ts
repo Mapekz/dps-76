@@ -27,6 +27,17 @@ export const ENTRY_POINT_BUCKETS: Record<string, Bucket> = {
   // Percent-of-meter semantics (Critical Savvy SETs 85/70/55); see crit-meter.ts.
   'Mod VATS Critical Cost': 'critConsumption',
   'Mod VATS Critical Charge': 'critFill',
+  // Onslaught (2026-07-12): EP190 "Mod Max Consecutive Hits Allowed" (Add
+  // Value) ADDs a flat contribution to the shared stack cap — identical
+  // entry point across every contributor (Guerrilla/Gunslinger Expert+Master
+  // PERK-direct; Furious/Pounder's/Splinter's via the granted-perk chase).
+  'Mod Max Consecutive Hits Allowed': 'onslaughtMaxStacks',
+  // EP189 "Mod Damage on Consecutive Hits" (Furious/Pounder's/Splinter's,
+  // function "Add Actor Value Mult"): per-stack dbm. The plain bucket lookup
+  // here only supplies the target bucket — `translateGrantedPerk` special-
+  // cases this entry point's function to append the `stacks:onslaught`
+  // condition (the value alone would otherwise apply unconditionally).
+  'Mod Damage on Consecutive Hits': 'dbm',
 };
 
 /** Fallback AVIF routes for stats consumed outside the plumbing perks (DFOBs etc.). */
@@ -145,12 +156,16 @@ const CURVE_INPUT_AVS: Record<string, CurveInput> = {
   '0x00000393': 'capsOnHand', // Aristocrat's
   '0x00000399': 'killStreak', // Adrenal Reaction
   '0x001EB998': 'addictionCount', // Junkie's
-  '0x006C3172': 'consecutiveHits', // Furious
   '0x000002D4': 'healthCurrent', // Health (absolute) — Juggernaut's (x 0→1000, y 0→100)
   '0x000002E3': 'enemyDamageResist', // DamageResist — DamageUnarmored (inert until enemy defenses)
   '0x006C2DBA': 'mutationCount', // MutationCount — Mutant's
   '0x006D37DC': 'hungerThirstTier', // HungerThirstTier — Gourmand's
   '0x007A767A': 'feralTier', // GHL_FeralTier — Lucid / ghoul effects
+  // Onslaught (2026-07-12): the shared engine counter, no AVIF record
+  // (hardcoded slot). Whacker Smacker reads it directly as a curve input
+  // (+5%/stack power-attack damage); Guerrilla/Gunslinger Expert+Master's
+  // per-stack Ability SPELs curve off the same AV.
+  '0x00000395': 'onslaughtStacks',
 };
 
 /**
@@ -406,6 +421,41 @@ export function translate(
 }
 
 /**
+ * esm CLI quirk (verified via `esm get --raw` byte inspection on
+ * GuerrillaExpert01/GunslingerExpert01 vs GuerrillaMaster01/GunslingerMaster01,
+ * 2026-07-12): when a PERK record's Effects list pairs an "Ability" entry
+ * with an "Entry Point" entry, the ENTRY POINT's own trailing subrecords
+ * (PRKC/CTDA "Perk Conditions" + EPFT/EPFD "Float") are attached by the esm
+ * tool's JSON serializer to the PRECEDING Ability entry instead of their true
+ * owner. The raw bytes prove ownership: an Ability entry is always a bare
+ * `PRKE+DATA+PRKF` triple with no scalar param of its own, so a trailing
+ * Float/Perk-Conditions group can ONLY belong to the following Entry Point.
+ * (30 PERK records carry this pattern game-wide; Guerrilla/Gunslinger Expert
+ * are two of them — Guerrilla/Gunslinger MASTER don't, because their Entry
+ * Point effect already comes first in the array and so already owns its own
+ * group.) Reassign in place before parsing: Perk Conditions are COPIED (the
+ * Ability grant needs its own gate too — it's what the shared PRKC actually
+ * gates in-game), Float is MOVED (Ability entries never consume it; only the
+ * Entry Point's function reads it).
+ */
+export function repairMisattributedPerkEntryFields(effects: Array<Record<string, unknown>>): void {
+  const typeName = (e: Record<string, unknown>): unknown => {
+    const header = e['Effect Header'] as Record<string, unknown> | undefined;
+    const type = header?.['Effect Type'] as Record<string, unknown> | undefined;
+    return type?.['name'];
+  };
+  for (let i = 0; i < effects.length - 1; i++) {
+    const cur = effects[i];
+    const next = effects[i + 1];
+    if (typeName(cur) === 'Ability' && typeName(next) === 'Entry Point' && typeof cur['Float'] === 'number' && typeof next['Float'] !== 'number') {
+      next['Perk Conditions'] = cur['Perk Conditions'];
+      next['Float'] = cur['Float'];
+      delete cur['Float'];
+    }
+  }
+}
+
+/**
  * Granted-perk chase (2026-07-10): Script-archetype legendary MGEFs carry a
  * "Perk to Apply" whose PERK record holds the real stats as entry-point
  * effects (Executioner's: `Mod Weapon DMG Bonus Mult` +0.5, target HP ≤ GLOB
@@ -433,6 +483,7 @@ async function translateGrantedPerk(
   const perkEffects = (effects as Array<Record<string, unknown>>)
     .map(item => item['Effect'] as Record<string, unknown> | undefined)
     .filter((e): e is Record<string, unknown> => !!e);
+  repairMisattributedPerkEntryFields(perkEffects);
 
   for (const e of perkEffects) {
     const header = (e['Effect Header'] ?? {}) as Record<string, unknown>;
@@ -477,6 +528,24 @@ async function translateGrantedPerk(
         result.modifiers.push({ bucket, op: 'SET', value: float, conditions });
       } else if (functionName === 'Multiply Value') {
         result.modifiers.push({ bucket, op: 'MUL_ADD', value: float - 1, conditions });
+      } else if (functionName === 'Add Actor Value Mult' && name === 'Mod Damage on Consecutive Hits') {
+        // Onslaught per-stack dbm (Furious/Pounder's/Splinter's EP189): the
+        // function reads a PRIVATE per-effect AV (LGND_Furious 0x006C3172,
+        // Legendary_Pounders_ConsecutiveHits 0x007ACB37, P62_..._MaxConsecutiveHits
+        // 0x0080219A) that we ASSUME ticks in lockstep with the shared
+        // Onslaught counter (0x00000395) — every one of these MGEFs'
+        // descriptions says "per Onslaught stack", and there is no way to
+        // prove the private-AV update cadence from static ESM data (engine-
+        // opaque, docs/assumptions.md "Onslaught"). Modeled as dbm scaled by
+        // the SHARED stack count via the existing `stacks` condition, max 99
+        // (a value the shared counter can never reach — the real clamp is
+        // the equipped cap, applied by the `onslaught` reader in resolve.ts).
+        result.modifiers.push({
+          bucket,
+          op: 'ADD',
+          value: float,
+          conditions: [...conditions, { kind: 'stacks', counter: 'onslaught', max: 99 }],
+        });
       } else {
         result.notes.push(`perk ${perkEdid}: entry point ${name} uses ${functionName} — skipped`);
       }

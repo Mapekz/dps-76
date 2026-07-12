@@ -39,6 +39,19 @@ export interface ResolveContext {
 }
 
 /**
+ * Effective Onslaught stack count: the player's stored value with the
+ * "follow max" sentinel (`-1`) resolved to the computed cap, then clamped to
+ * that same cap (an explicit user selection can't exceed the equipped max).
+ * Shared by the `onslaught` StackCounter reader and the `onslaughtStacks`
+ * CurveInput reader — both consumers read the identical clamped count.
+ */
+function effectiveOnslaughtStacks(p: PlayerConditions, ctx: ResolveContext): number {
+  const max = ctx.onslaughtMaxStacks ?? 0;
+  const raw = p.onslaughtStacks === -1 ? max : p.onslaughtStacks;
+  return Math.min(raw, max);
+}
+
+/**
  * Reads one scalar from resolve state for a stack counter or a curve input.
  * Single source of truth for what game state each modifier axis consumes —
  * add a row here when adding a StackCounter or CurveInput.
@@ -46,16 +59,15 @@ export interface ResolveContext {
 const PLAYER_STATE_READERS: Record<StackCounter | CurveInput, (p: PlayerConditions, ctx: ResolveContext) => number> = {
   // Stack counters (modifier value × count).
   tenderizer: p => p.tenderizerStacks ?? 0,
-  onslaught: p => p.onslaughtStacks,
+  onslaught: (p, ctx) => effectiveOnslaughtStacks(p, ctx),
   bulletStorm: p => p.bulletStormStacks,
-  furious: p => p.furiousStacks ?? 0,
   adrenaline: p => p.adrenalineStacks,
   // Curve inputs (X value fed into a value curve).
   healthFraction: p => p.healthPercent / 100,
   capsOnHand: p => p.capsOnHand,
   killStreak: p => p.adrenalineStacks,
   addictionCount: p => p.addictionCount,
-  consecutiveHits: p => p.furiousStacks,
+  onslaughtStacks: (p, ctx) => effectiveOnslaughtStacks(p, ctx),
   // Juggernaut's curve X is ABSOLUTE current HP; 300 max HP is a typical
   // non-bloodied build (docs/assumptions.md) until a Max HP input lands.
   healthCurrent: p => (p.healthPercent / 100) * (p.maxHealth ?? 300),

@@ -96,7 +96,6 @@ describe('isExcludedOmodEdid', () => {
     expect(isExcludedOmodEdid('DEBUG_ATX_mod_melee_Sledgehammer')).toBe(true);
     expect(isExcludedOmodEdid('DEL_E08A_mod_x')).toBe(true);
     expect(isExcludedOmodEdid('CUT_AAA_mod')).toBe(true);
-    expect(isExcludedOmodEdid('P62_mod_foo')).toBe(true);
     expect(isExcludedOmodEdid('ZZZ_mod_Legendary_Weapon4_Crafting')).toBe(true);
   });
 
@@ -104,5 +103,10 @@ describe('isExcludedOmodEdid', () => {
     expect(isExcludedOmodEdid('mod_Legendary_Weapon1_DamageAddiction')).toBe(false);
     expect(isExcludedOmodEdid('ATX_mod_StarletRifle')).toBe(false);
     expect(isExcludedOmodEdid('dlc01_mod_melee_assaultronblade_Standard')).toBe(false);
+  });
+
+  it('does not exclude p62_ — a real content prefix (The Drifter boss drops + a real legendary family), not junk (2026-07-12, found chasing Splinter)', () => {
+    expect(isExcludedOmodEdid('P62_Mod_Custom_Splinter_SpecialEffect')).toBe(false);
+    expect(isExcludedOmodEdid('P62_mod_Legendary_Weapon4_Satiated')).toBe(false);
   });
 });

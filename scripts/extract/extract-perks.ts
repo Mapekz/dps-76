@@ -12,6 +12,7 @@ import {
   buildAvifRoutes,
   collectConditionFormIds,
   parseMagicEffects,
+  repairMisattributedPerkEntryFields,
   translateMagicEffect,
   type SpellEffect,
 } from './normalize/mgef';
@@ -79,7 +80,13 @@ function junkPerk(edid: string): boolean {
 
 function getEffects(record: EsmRecord): Array<Record<string, unknown>> {
   const effects = record.fields['Effects'];
-  return Array.isArray(effects) ? effects.map(e => (e as Record<string, unknown>)['Effect'] as Record<string, unknown>) : [];
+  if (!Array.isArray(effects)) return [];
+  const parsed = effects.map(e => (e as Record<string, unknown>)['Effect'] as Record<string, unknown>);
+  // esm CLI quirk repair (mgef.ts): Ability+EntryPoint combo records
+  // (Guerrilla/Gunslinger Expert among them) have the Entry Point's own
+  // Float/Perk Conditions misattached to the preceding Ability entry.
+  repairMisattributedPerkEntryFields(parsed);
+  return parsed;
 }
 
 function parsePerkEffect(effect: Record<string, unknown>): PerkEffect {

@@ -79,9 +79,11 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([]);
  * picker badges (src/data/omods.ts classifyOmodDisplay).
  */
 export const omodBadgeOverrides: Readonly<Record<string, 'inert' | 'pendingMechanic' | 'needsEnemyDefenses'>> = {
-  // Onslaught-stack effects (Furious, Pounder's) — Onslaught rework deferred.
-  mod_Legendary_Weapon1_DmgConsecutiveHits: 'pendingMechanic',
-  mod_Legendary_Weapon4_Melee_Pounders: 'pendingMechanic',
+  // Furious / Pounder's badges REMOVED (Onslaught, 2026-07-12): both now emit
+  // real dbm+stacks modifiers via the granted-perk chase (EP189 "Mod Damage
+  // on Consecutive Hits" + EP190 "Mod Max Consecutive Hits Allowed") — see
+  // dps-todos/onslaught.md and docs/assumptions.md "Onslaught".
+  //
   // Charged and Thrill-Seeker's badges REMOVED (Stage C2/C3, 2026-07-11): both
   // mechanics now move real numbers — Charged's light-attack/detonation cycle
   // folds into sustained DPS (scenarios.ts), Thrill-Seeker's killstreak-tiered
