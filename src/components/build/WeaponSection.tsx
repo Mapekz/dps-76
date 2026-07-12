@@ -3,12 +3,24 @@ import { Badge } from '@/components/ui/badge';
 import { Combobox } from '@/components/ui/combobox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getWeapons } from '@/data';
 import { getOmodSlots, getLegendaryOmodSlots, type OmodBadge, type OmodSlot } from '@/data/omods';
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import { SectionTrigger } from './SectionTrigger';
+
+/** Weapons drop at level 1 then in steps of 5 — the only levels worth dialing. */
+const ITEM_LEVEL_STOPS = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50] as const;
+
+function nearestItemLevelIndex(level: number): number {
+  let best = 0;
+  for (let i = 1; i < ITEM_LEVEL_STOPS.length; i++) {
+    if (Math.abs(ITEM_LEVEL_STOPS[i] - level) < Math.abs(ITEM_LEVEL_STOPS[best] - level)) best = i;
+  }
+  return best;
+}
 
 const BADGE_LABELS: Record<OmodBadge, string> = {
   inert: 'no effect yet',
@@ -103,14 +115,14 @@ export function WeaponSection() {
           ))}
 
           <div className="space-y-1.5">
-            <Label htmlFor="item-level">Item level (1–50)</Label>
-            <Input
+            <Label htmlFor="item-level">Item level: {player.itemLevel}</Label>
+            <Slider
               id="item-level"
-              type="number"
-              min={1}
-              max={50}
-              value={player.itemLevel}
-              onChange={e => dispatch({ type: 'weapon/itemLevel', value: parseInt(e.target.value, 10) || 50 })}
+              min={0}
+              max={ITEM_LEVEL_STOPS.length - 1}
+              step={1}
+              value={[nearestItemLevelIndex(player.itemLevel)]}
+              onValueChange={([i]) => dispatch({ type: 'weapon/itemLevel', value: ITEM_LEVEL_STOPS[i] })}
             />
             <p className="text-muted-foreground text-xs">
               Base damage comes from the level curve. Level-capped weapons clamp at their cap.

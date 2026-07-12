@@ -17,12 +17,12 @@ export function AppShell() {
       </div>
 
       <main className="container mx-auto grid gap-6 px-4 py-6 lg:grid-cols-[minmax(0,1fr)_clamp(340px,32vw,420px)]">
-        <BuildColumn />
-        <div className="hidden lg:block">
+        {/* Mobile: damage output first, build config below it. */}
+        <div className="lg:hidden">
           <ResultsPane />
         </div>
-        {/* Mobile: full results below the build config. */}
-        <div className="lg:hidden">
+        <BuildColumn />
+        <div className="hidden lg:block">
           <ResultsPane />
         </div>
       </main>
