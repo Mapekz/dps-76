@@ -27,6 +27,15 @@ export interface ResolveContext {
    * if this component damage type is in scope (undefined = whole-weapon fold).
    */
   componentType?: DamageType;
+  /**
+   * The shared Onslaught stack cap, folded ONCE per scenario input from every
+   * equipped source's `onslaughtMaxStacks` modifier (`scenarios.ts`) and
+   * threaded onto every ResolveContext built after that fold. Defaults to 0
+   * (no Onslaught sources equipped → the `onslaught` reader and the
+   * `onslaughtStacks` curve input both clamp to 0, so every consumer is
+   * inactive). See docs/assumptions.md "Onslaught".
+   */
+  onslaughtMaxStacks?: number;
 }
 
 /**
@@ -53,6 +62,11 @@ const PLAYER_STATE_READERS: Record<StackCounter | CurveInput, (p: PlayerConditio
   // Enemy defenses are not modeled yet — curve evaluates at DR 0.
   enemyDamageResist: () => 0,
   itemLevel: (_, ctx) => ctx.itemLevel ?? 50,
+  mutationCount: p => p.mutationCount ?? 0,
+  hungerThirstTier: p => p.hungerThirstTier ?? 0,
+  feralTier: p => p.feralTier ?? 0,
+  // Polished's curve X = GetEquippedWeaponHealthPercent (0.0-2.0 fraction; no AVIF).
+  weaponCondition: p => (p.weaponConditionPct ?? 100) / 100,
 };
 
 /**
@@ -71,6 +85,7 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
     case 'bodyPart':
       return ctx.bodyPart === cond.part ? 1 : null;
     case 'enemyType':
+    case 'enemyTypeAny':
       // Enemy modeling is deferred — a generic target never matches a race gate.
       return null;
     case 'damageTypeScope':
@@ -86,6 +101,34 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       return ctx.scenario.isCrit ? 1 : null;
     case 'healthBelowPct':
       return ctx.player.healthPercent < cond.pct ? 1 : null;
+    case 'enemyHealthBelowPct':
+      // Unset enemy health = full (Executioner's inactive by default).
+      return (ctx.enemy.healthPercent ?? 100) <= cond.pct ? 1 : null;
+    case 'enemyHealthAbovePct':
+      // Unset enemy health = full (Instigating active by default).
+      return (ctx.enemy.healthPercent ?? 100) >= cond.pct ? 1 : null;
+    case 'perCrippledLimb': {
+      const count = Math.max(0, Math.min(ctx.enemy.crippledLimbCount ?? 0, cond.max));
+      return count > 0 ? count : null;
+    }
+    case 'lastRound':
+      return ctx.player.isLastShot ? 1 : null;
+    case 'enemyHasActiveEffect': {
+      const active =
+        cond.keyword === 'DamageTypeFire' ? ctx.enemy.isBurning
+        : cond.keyword === 'DamageTypePoison' ? ctx.enemy.isPoisoned
+        : false; // keywords beyond fire/poison have no UI input yet — inactive
+      return active ? 1 : null;
+    }
+    case 'enemyGroupCount': {
+      // Unset = 1: the target itself is a group of one (Encircler's base tier).
+      const n = ctx.enemy.groupTargetCount ?? 1;
+      return (cond.orMore ? n >= cond.count : n === cond.count) ? 1 : null;
+    }
+    case 'teammateCount':
+      return (ctx.player.teammateCount ?? 0) === cond.count ? 1 : null;
+    case 'killStreakCount':
+      return ctx.player.adrenalineStacks === cond.count ? 1 : null;
     case 'scaledByMissingHealth': {
       const missing = Math.max(0, Math.min(1, 1 - ctx.player.healthPercent / 100));
       const scale = Math.min(missing, cond.cap);
@@ -99,8 +142,6 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       const count = Math.max(0, Math.min(PLAYER_STATE_READERS[cond.counter](ctx.player, ctx), cond.max));
       return count > 0 ? count : null;
     }
-    case 'enemyFullHealth':
-      return ctx.enemy.isFullHealth ? 1 : null;
     case 'strangeInNumbers':
       return ctx.player.strangeInNumbers === cond.value ? 1 : null;
     case 'perAddiction': {
@@ -109,6 +150,11 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
     }
     case 'inPowerArmor':
       return ctx.player.isInPowerArmor === cond.value ? 1 : null;
+    case 'playerIsGhoul':
+      return (ctx.player.isGhoul ?? false) === cond.value ? 1 : null;
+    case 'targetDistance':
+      // Unset enemy distance = 'none' (neither close nor far perks active).
+      return (ctx.enemy.targetDistance ?? 'none') === cond.range ? 1 : null;
     case 'unresolved':
       return null;
   }

@@ -14,6 +14,8 @@ export interface PlayerConditions {
   isInPowerArmor: boolean;
   isSolo: boolean;
   isPowerAttacking: boolean; // melee power attacks (toggle; applies across scenarios)
+  isLastShot?: boolean; // firing the magazine's last round (Last Shot legendary; default false)
+  isGhoul?: boolean; // playing a ghoul character (gates Gourmand's off, feral-meter effects on; default false)
   healthPercent: number; // 0-100 for perks like Nerd Rage, Serendipity
 
   // Stack counts
@@ -27,8 +29,19 @@ export interface PlayerConditions {
   addictionCount: number; // for Junkie's legendary
   capsOnHand: number; // for Aristocrat's legendary
   maxHealth?: number; // absolute max HP for Juggernaut's health curve (default 300, docs/assumptions.md)
+  mutationCount?: number; // for Mutant's curve — derived from the selected mutations in resolveLoadout
+  hungerThirstTier?: number; // food/drink fullness tier for Gourmand's curve (default 0)
+  feralTier?: number; // ghoul feral meter tier for Lucid/Feral's curves (default 0)
   limitBreakingPieces: number; // 0-5 armor pieces with Limit Breaking (−10% crit cost each)
   strangeInNumbers: boolean; // team with Strange in Numbers → mutation values ×1.25
+  weaponConditionPct?: number; // 0-200: equipped weapon condition, 100 = full, 200 = over-repaired max (Polished; default 100)
+  /**
+   * Manual-aim (free-aim) hit rate %, 10-100, default 100. Models realistic
+   * misses (movement, target size — dps-todos/ap-and-accuracy.md) by scaling
+   * free-aim SUSTAINED dps only (not per-hit, not burst, not VATS — VATS
+   * accuracy is assumed 100%, hit-chance modeling explicitly out of scope).
+   */
+  hitRatePct?: number;
 
   // SPECIAL stats
   strength: number; // 1-15 (can exceed with legendary perks)
@@ -51,7 +64,12 @@ export interface EnemyConditions {
   statusEffectCount: number; // number of debuffs/impairments
   isGlowing: boolean; // glowing enemy variant
   isInsect: boolean; // insect creature type
-  isFullHealth: boolean; // for Instigating (steady-state toggle)
+  healthPercent?: number; // 0-100: Executioner's ≤40% / Instigating ≥60% gates (default 100 = full)
+  groupTargetCount?: number; // enemies in the engaged group incl. the target (Encircler's; default 1)
+  isBurning?: boolean; // active fire effect on the target (Pyromaniac's; default false)
+  isPoisoned?: boolean; // active poison effect on the target (Viper's; default false)
+  /** Target range bucket for Close/Far damage perks (Guerrilla, Down Ranger, Sniper's; default 'none'). */
+  targetDistance?: 'close' | 'none' | 'far';
 }
 
 // Game mode types
@@ -90,7 +108,13 @@ export interface WeaponMod {
  * The split is preserved for future enemy ER/DR and damage-type perk routing.
  */
 export interface WeaponComponent {
-  damageType: 'ballistic' | 'energy' | 'radiation' | 'poison' | 'cryo' | 'fire';
+  /**
+   * 'explosive' never appears on an extracted weapon component — it is the
+   * engine-synthesized twin damage type (Explosive 2★ `explosivePayload`,
+   * paper-damage.ts), reusing this union because `DamageType`
+   * (types/modifiers.ts) is aliased from it.
+   */
+  damageType: 'ballistic' | 'energy' | 'radiation' | 'poison' | 'cryo' | 'fire' | 'explosive';
   /** Universal damage curve tier (e.g. 24 for The Fixer). -1 when only inline points exist. */
   tier: number;
   /** Item level cap for this component — damage is clamped to this level. */
@@ -135,6 +159,12 @@ export interface Weapon {
   reloadSpeed?: number;
   /** Base reload animation length in seconds (RGW3 Animation Reload Seconds). */
   animationReloadSec?: number;
+  /**
+   * Per-shot VATS AP cost (WEAP Data."Action Point Cost"). Fixer 16, Minigun
+   * 8, Super Sledge 52. Rewritten by the `vatsApCost` OMOD bucket (V.A.T.S.
+   * Optimized) in `effective-weapon.ts`; consumed by `ap-economy.ts` (Stage B).
+   */
+  apCost?: number;
 
   // ── ESM-extracted metadata (present on generated weapons) ────────────────
   /** Source ESM FormID (e.g. "0x0046D2A1"). */
@@ -254,6 +284,8 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     isInPowerArmor: false,
     isSolo: true,
     isPowerAttacking: false,
+    isLastShot: false,
+    isGhoul: false,
     healthPercent: 100,
     bulletStormStacks: 10, // Assume max stacks by default
     onslaughtStacks: 10, // Assume max stacks by default
@@ -263,8 +295,12 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     addictionCount: 0,
     capsOnHand: 0,
     maxHealth: 300, // typical non-bloodied build (Juggernaut's curve input)
+    hungerThirstTier: 0, // Gourmand's curve input (0–8; both meters empty)
+    feralTier: 0, // Lucid/Feral's curve input (0–8; human default)
     limitBreakingPieces: 0,
     strangeInNumbers: false,
+    weaponConditionPct: 100, // full condition (Polished curve input; 200 = over-repaired max)
+    hitRatePct: 100, // manual-aim hit rate (100 = every shot lands; VATS is unaffected)
     strength: 15,
     perception: 15,
     endurance: 15,
@@ -284,7 +320,11 @@ export function createDefaultEnemyConditions(): EnemyConditions {
     statusEffectCount: 0,
     isGlowing: false,
     isInsect: false,
-    isFullHealth: false,
+    healthPercent: 100,
+    groupTargetCount: 1,
+    isBurning: false,
+    isPoisoned: false,
+    targetDistance: 'none',
   };
 }
 

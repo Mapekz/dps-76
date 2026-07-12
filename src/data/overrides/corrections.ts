@@ -78,10 +78,23 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([]);
  * is extracted but the engine has no enemy DR/ER to apply it to. Drives the
  * picker badges (src/data/omods.ts classifyOmodDisplay).
  */
-export const omodBadgeOverrides: Readonly<Record<string, 'pendingMechanic' | 'needsEnemyDefenses'>> = {
+export const omodBadgeOverrides: Readonly<Record<string, 'inert' | 'pendingMechanic' | 'needsEnemyDefenses'>> = {
   // Onslaught-stack effects (Furious, Pounder's) — Onslaught rework deferred.
   mod_Legendary_Weapon1_DmgConsecutiveHits: 'pendingMechanic',
   mod_Legendary_Weapon4_Melee_Pounders: 'pendingMechanic',
+  // Charged and Thrill-Seeker's badges REMOVED (Stage C2/C3, 2026-07-11): both
+  // mechanics now move real numbers — Charged's light-attack/detonation cycle
+  // folds into sustained DPS (scenarios.ts), Thrill-Seeker's killstreak-tiered
+  // reload/melee speed folds into the effective weapon (effective-weapon.ts).
+  // The V.A.T.S. Unknown effect variants: each grants real crit-perk ranks via
+  // OMOD property 116 (verified in the 2026-07-02 dump: BetterCriticals01-03,
+  // CriticalSavvy01-03, GHL_GlowingCriticals01-03, GrimReapersSprint01,
+  // Psychopath01). Inert until the perk-grant route lands in the extractor.
+  mod_Custom_TheVATSUnknown_BetterCriticals: 'inert',
+  mod_Custom_TheVATSUnknown_CritSavvy: 'inert',
+  mod_Custom_TheVATSUnknown_GlowingCriticals: 'inert',
+  mod_Custom_TheVATSUnknown_GrimReapersSprint: 'inert',
+  mod_Custom_TheVATSUnknown_Psychopath: 'inert',
 };
 
 /** Omod counterpart of forceVisibleWeaponIds (rescues obtainable:false records). */
@@ -93,7 +106,30 @@ export const forceVisibleOmodIds: ReadonlySet<string> = new Set<string>([
   'mod_Cryolator_Muzzle_Default', // Cryolator "Stock Muzzle"
   'mod_melee_Hatchet_Null', // Hatchet "No Upgrade"
   'mod_DoubleBarrelShotgun_barrel_short_Base_ColdShoulder', // Cold Shoulder standard barrel (weapon is itself rescue-listed)
+  // The V.A.T.S. Unknown (W05_COMP_Astronaut_AlienBlaster_QuestReward) effect
+  // variants: attached by the reward flow (no record-level reverse refs), each
+  // grants crit-perk ranks — see omodBadgeOverrides (2026-07-10 walk).
+  'mod_Custom_TheVATSUnknown_BetterCriticals',
+  'mod_Custom_TheVATSUnknown_CritSavvy',
+  'mod_Custom_TheVATSUnknown_GlowingCriticals',
+  'mod_Custom_TheVATSUnknown_GrimReapersSprint',
+  'mod_Custom_TheVATSUnknown_Psychopath',
 ]);
+
+/**
+ * Omods that must only be offered on specific weapons. Needed for mods with
+ * EMPTY targetKeywords on shared attach points (they'd pass isAttachable on
+ * every weapon exposing the slot).
+ */
+export const omodWeaponRestrictions: Readonly<Record<string, readonly string[]>> = {
+  // The V.A.T.S. Unknown effect variants belong to the unique alien blaster
+  // only (attached by the reward flow; 2026-07-10 walk).
+  mod_Custom_TheVATSUnknown_BetterCriticals: ['W05_COMP_Astronaut_AlienBlaster_QuestReward'],
+  mod_Custom_TheVATSUnknown_CritSavvy: ['W05_COMP_Astronaut_AlienBlaster_QuestReward'],
+  mod_Custom_TheVATSUnknown_GlowingCriticals: ['W05_COMP_Astronaut_AlienBlaster_QuestReward'],
+  mod_Custom_TheVATSUnknown_GrimReapersSprint: ['W05_COMP_Astronaut_AlienBlaster_QuestReward'],
+  mod_Custom_TheVATSUnknown_Psychopath: ['W05_COMP_Astronaut_AlienBlaster_QuestReward'],
+};
 
 /**
  * Per-weapon field patches applied after adaptation.
@@ -102,4 +138,16 @@ export const forceVisibleOmodIds: ReadonlySet<string> = new Set<string>([
  * approximate until animation-derived timing lands (dps-todos/fire-rate.md).
  * Verified timings belong here.
  */
-export const weaponCorrections: Readonly<Record<string, Partial<Weapon>>> = {};
+export const weaponCorrections: Readonly<Record<string, Partial<Weapon>>> = {
+  // The V.A.T.S. Unknown: its effect-variant mods sit on ap_customName
+  // (0x0047A264), a slot the WEAP record doesn't list because the reward flow
+  // attaches them as instance data. Appended so the picker can offer the
+  // variants (2026-07-10 walk; full extracted list + the custom slot).
+  W05_COMP_Astronaut_AlienBlaster_QuestReward: {
+    attachParentSlots: [
+      '0x00114364', '0x0002249D', '0x0002249F', '0x0005D4D7', '0x00022499',
+      '0x001E32C8', '0x004E89A8', '0x004E89A9', '0x004E89AA', '0x004E89AB',
+      '0x0047A264',
+    ],
+  },
+};

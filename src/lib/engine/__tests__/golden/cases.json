@@ -85,7 +85,7 @@
    "source": "pending in-game stopwatch: time N full mag+reload cycles vs a target dummy (docs/assumptions.md, Sustained DPS)"
   },
   {
-   "name": "Two Shot Fixer @50, no perks — validates extracted dbm 0.75 vs wiki 0.25",
+   "name": "Two Shot Fixer @50, no perks — validates extracted dbm 0.75",
    "weaponId": "CombatRifle_Fixer",
    "itemLevel": 50,
    "mods": {},
@@ -100,9 +100,9 @@
    "enemyConditions": {},
    "scenario": "freeAim",
    "measure": "perHit",
-   "expected": null,
+   "expected": 180.25,
    "tolerancePct": 2,
-   "source": "in-game measurement PENDING — decides the Two Shot dbm interpretation (docs/assumptions.md)"
+   "source": "user-confirmed 2026-07-10: base Fixer @50 = 103, Two Shot = 103 × 1.75 = 180.25 (pip-boy card rounds to 180/181; hundredths kept for the calc)"
   }
  ]
 }

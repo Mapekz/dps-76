@@ -9,7 +9,12 @@ import generatedWeapons from './generated/weapons.json';
  * src/data/overrides/corrections.ts layered on top.
  */
 
-const DAMAGE_TYPE_MAP: Record<GeneratedDamageType, WeaponComponent['damageType']> = {
+// 'explosive' is engine-synthesized only (paper-damage.ts twins) — extracted
+// components never carry it, so this map (and everything derived from it
+// below) is typed over the narrower ESM-derived subset of DamageType.
+type ExtractedDamageType = Exclude<WeaponComponent['damageType'], 'explosive'>;
+
+const DAMAGE_TYPE_MAP: Record<GeneratedDamageType, ExtractedDamageType> = {
   ballistic: 'ballistic',
   energy: 'energy',
   fire: 'fire',
@@ -38,7 +43,7 @@ function classifyWeaponClass(gw: GeneratedWeapon): Weapon['weaponClass'] {
 
 function adaptWeapon(gw: GeneratedWeapon): Weapon {
   const levelCap = gw.eligibleLevels.length > 0 ? Math.min(50, Math.max(...gw.eligibleLevels)) : 50;
-  const components: WeaponComponent[] = gw.components.map(c => ({
+  const components = gw.components.map(c => ({
     damageType: DAMAGE_TYPE_MAP[c.damageType],
     tier: c.tier ?? -1,
     levelCap,
@@ -46,7 +51,7 @@ function adaptWeapon(gw: GeneratedWeapon): Weapon {
   }));
   // Legacy single-type routing field; the ballistic component (when present)
   // is always first, so this is phys for mixed weapons, elemental for pure.
-  const primary = components[0]?.damageType ?? 'ballistic';
+  const primary: ExtractedDamageType = components[0]?.damageType ?? 'ballistic';
 
   return {
     id: gw.id,
@@ -62,6 +67,7 @@ function adaptWeapon(gw: GeneratedWeapon): Weapon {
     ammoPerShot: gw.ammoPerShot,
     reloadSpeed: gw.reloadSpeed,
     animationReloadSec: gw.animationReloadSec,
+    apCost: gw.actionPointCost,
     formId: gw.formId,
     keywords: gw.keywords,
     attachParentSlots: gw.attachParentSlots,

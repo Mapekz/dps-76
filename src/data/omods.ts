@@ -1,6 +1,6 @@
 import type { GameMode, Weapon } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
-import { forceVisibleOmodIds, hiddenOmodIds, omodBadgeOverrides } from './overrides/corrections';
+import { forceVisibleOmodIds, hiddenOmodIds, omodBadgeOverrides, omodWeaponRestrictions } from './overrides/corrections';
 import { getDataset } from './dataset';
 
 // Reads the merged omod list from the dataset chokepoint (legendary-value
@@ -32,7 +32,7 @@ function isAttachable(omod: GeneratedOmod, weapon: Weapon): boolean {
 
 /**
  * Picker badge for effects whose data can't move numbers yet:
- * - 'inert': no engine effect (extraction gap or stored-only buckets like DoT / unwired SPECIAL)
+ * - 'inert': no engine effect (extraction gap, limb/bash targeting not modeled, or unwired SPECIAL)
  * - 'pendingMechanic': the underlying game mechanic is a deferred rework (Onslaught)
  * - 'needsEnemyDefenses': value extracted, waiting on enemy DR/ER modeling
  */
@@ -40,9 +40,15 @@ export type OmodBadge = 'inert' | 'pendingMechanic' | 'needsEnemyDefenses';
 
 export type OmodOption = GeneratedOmod & { badge?: OmodBadge };
 
-/** Buckets the engine stores but does not fold into damage yet. specialStrength/specialLuck ARE wired (loadout). */
+/**
+ * Buckets the engine stores but does not fold into damage yet.
+ * specialStrength/specialLuck ARE wired (loadout); explosivePayload/
+ * explosionMult (Stage A1), dotDamage (Stage A2), and vatsApCost/apRegen/
+ * apPerCrit (Stage B, AP economy) are ALSO wired now — removed from this
+ * set, kept out of the badge path.
+ */
 const INERT_ENGINE_BUCKETS = new Set([
-  'armorPen', 'dotDamage',
+  'armorPen', 'limbDamage', 'bashDamage',
   'specialPerception', 'specialEndurance', 'specialCharisma', 'specialIntelligence', 'specialAgility',
 ]);
 
@@ -64,10 +70,13 @@ export function classifyOmodDisplay(omod: GeneratedOmod, weapon?: Weapon): { sho
     const isInert = (m: GeneratedOmod['modifiers'][number]) =>
       INERT_ENGINE_BUCKETS.has(m.bucket) ||
       m.curve?.input === 'enemyDamageResist' ||
-      m.conditions.some(c => c.kind === 'enemyType' || c.kind === 'unresolved');
+      m.conditions.some(c => c.kind === 'enemyType' || c.kind === 'enemyTypeAny' || c.kind === 'unresolved');
     if (omod.modifiers.every(isInert)) {
       const enemyFacing = omod.modifiers.every(
-        m => m.bucket === 'armorPen' || m.curve?.input === 'enemyDamageResist' || m.conditions.some(c => c.kind === 'enemyType')
+        m =>
+          m.bucket === 'armorPen' ||
+          m.curve?.input === 'enemyDamageResist' ||
+          m.conditions.some(c => c.kind === 'enemyType' || c.kind === 'enemyTypeAny')
       );
       return { show: true, badge: enemyFacing ? 'needsEnemyDefenses' : 'inert' };
     }
@@ -98,7 +107,7 @@ function slotLabel(attachPointEdid: string): string {
 function buildSlots(
   mode: GameMode,
   weapon: Weapon,
-  includeSlot: (attachPointEdid: string) => boolean,
+  includeSlot: (attachPointEdid: string, omod: GeneratedOmod) => boolean,
   sortSlots: (a: OmodSlot, b: OmodSlot) => number
 ): OmodSlot[] {
   const groups = new Map<string, OmodOption[]>();
@@ -110,7 +119,10 @@ function buildSlots(
     // Obtainability verdicts + hand corrections (see live/weapons.ts).
     if (omod.obtainable === false && !forceVisibleOmodIds.has(omod.id)) continue;
     if (hiddenOmodIds.has(omod.id)) continue;
-    if (!includeSlot(omod.attachPointEdid)) continue;
+    // Weapon-restricted mods (empty targetKeywords on shared slots) only
+    // appear on their own weapon.
+    if (omodWeaponRestrictions[omod.id] && !omodWeaponRestrictions[omod.id].includes(weapon.id)) continue;
+    if (!includeSlot(omod.attachPointEdid, omod)) continue;
     if (!isAttachable(omod, weapon)) continue;
     const { show, badge } = classifyOmodDisplay(omod, weapon);
     if (!show) continue;
@@ -131,7 +143,18 @@ export function getOmodSlots(mode: GameMode, weapon: Weapon): OmodSlot[] {
   return buildSlots(
     mode,
     weapon,
-    edid => !COSMETIC_SLOT_RE.test(edid) && !LEGENDARY_SLOT_RE.test(edid),
+    // Cosmetic slots (paint/customName/...) are skipped UNLESS the mod carries
+    // a real stat payload AND belongs to this weapon: unique-weapon effects
+    // ride cosmetic attach points (Perfect Storm, Cold Shoulder's cryptid
+    // bonus, Cursed melee mods, ...). templateModFormIds lists a weapon's
+    // possible instance templates, so it gates which uniques' mods belong;
+    // badge-override rescues (V.A.T.S. Unknown variants) pass explicitly and
+    // are weapon-gated by omodWeaponRestrictions instead.
+    (edid, omod) =>
+      (!COSMETIC_SLOT_RE.test(edid) ||
+        (omod.modifiers.length > 0 && (weapon.templateModFormIds ?? []).includes(omod.formId)) ||
+        omodBadgeOverrides[omod.id] !== undefined) &&
+      !LEGENDARY_SLOT_RE.test(edid),
     (a, b) => a.label.localeCompare(b.label)
   );
 }

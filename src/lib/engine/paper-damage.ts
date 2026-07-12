@@ -18,12 +18,29 @@ import { lastTrace, type BucketTrace, type HitTrace } from './trace';
  */
 
 /**
- * Base power-attack multiplier from HumanRace/PowerAttackRace — multiplies the
- * entire melee hit, distinct from the additive powerAttackBonus bucket.
- * PLACEHOLDER 1.0 until the RACE-record research lands (dps-todos/power-attacks.md);
- * the additive bucket (Heavy Hitter's) is already correct.
+ * Base power-attack multiplier from RACE records' per-attack-event "Damage
+ * Mult" on Power-Attack-flagged events (Stage C1, dps-todos/power-attacks.md):
+ * HumanRace (0x00013746) = 1.5; PowerArmorRace (0x0001D31E) = 2.0 — the PA
+ * race swap IS the multiplier, no separate perk/MGEF grants it. Multiplies
+ * the entire melee hit, distinct from the additive `powerAttackBonus` bucket
+ * (Heavy Hitter's, still additive inside the dbm parenthesis).
  */
-const POWER_ATTACK_RACE_MULT = 1.0;
+const POWER_ATTACK_RACE_MULT_NORMAL = 1.5;
+const POWER_ATTACK_RACE_MULT_POWER_ARMOR = 2.0;
+
+/**
+ * Carve-outs proven in the SAME RACE records (Damage Mult stays 1.0):
+ * automatic "power tool" melee (Ripper/Shredder/Auto Axe — the
+ * WeaponTypeAutomaticMelee keyword), gun bashes (no bash mechanic modeled),
+ * and UNARMED attacks (unarmed power events aren't even Power-Attack-flagged
+ * in the RACE data) all keep ×1.0. Ranged weapons never reach this path
+ * (scenarios.ts gates `isPowerAttack` to melee/unarmed already).
+ */
+function powerAttackRaceMult(weapon: Weapon, isInPowerArmor: boolean): number {
+  if (weapon.weaponClass !== 'melee') return 1.0; // excludes 'unarmed' and any other class
+  if ((weapon.keywords ?? []).includes('WeaponTypeAutomaticMelee')) return 1.0;
+  return isInPowerArmor ? POWER_ATTACK_RACE_MULT_POWER_ARMOR : POWER_ATTACK_RACE_MULT_NORMAL;
+}
 
 /** STR melee scaling: STR/20 for 1h/2h melee, STR/10 for unarmed/gauntlets. */
 function strengthTerm(weapon: Weapon, strength: number): number {
@@ -128,10 +145,10 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
     weakpointMult = 1.0 + foldBucket(modifiers, 'weakpointBonus', 0, ctx, collect);
     if (trace && collect) trace.weakpointBonus = lastTrace(collect);
   }
-  const powerAttackRaceMult = ctx.scenario.isPowerAttack ? POWER_ATTACK_RACE_MULT : 1.0;
-  const outerMult = wholeMult * bodyPartMult * weakpointMult * powerAttackRaceMult;
+  const paRaceMult = ctx.scenario.isPowerAttack ? powerAttackRaceMult(weapon, ctx.player.isInPowerArmor) : 1.0;
+  const outerMult = wholeMult * bodyPartMult * weakpointMult * paRaceMult;
 
-  const components: ComponentHit[] = componentBase(mode, weapon, itemLevel).map(({ type, base }) => {
+  const components: ComponentHit[] = componentBase(mode, weapon, itemLevel).flatMap(({ type, base }) => {
     const componentCtx = { ...ctx, componentType: type };
     const collect = trace ? ([] as BucketTrace[]) : undefined;
     // Base-damage scaling (AttackDamage / DamageTypeValues OMOD properties,
@@ -145,7 +162,36 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
       trace.components.push({ damageType: type, baseDamage: collect[0], dbm: collect[1] });
     }
     const parenthesis = dbmFold + strTerm + critTerm + sneakTerm + powerAttackTerm;
-    return { damageType: type, base: scaledBase, damage: scaledBase * parenthesis * outerMult };
+    const hit: ComponentHit = { damageType: type, base: scaledBase, damage: scaledBase * parenthesis * outerMult };
+
+    // Explosive payload (Explosive 2★, plan Stage A1): a condition-scaled
+    // fraction of THIS component's (baseDamage-scaled) damage spawns an
+    // explosive twin. The twin runs through the SAME parenthesis (strTerm/
+    // critTerm/sneakTerm/powerAttackTerm are weapon-level, not re-evaluated)
+    // but its OWN dbm fold — using componentType 'explosive' so
+    // damageTypeScope-scoped bonuses (Demolition Expert) apply only to
+    // twins — plus the explosive-only `explosionMult` bucket. Twins are
+    // summed into the totals today; per-component resist attribution is
+    // future work (docs/assumptions.md).
+    const payloadCollect = trace ? ([] as BucketTrace[]) : undefined;
+    const payloadFraction = foldBucket(modifiers, 'explosivePayload', 0, componentCtx, payloadCollect);
+    if (payloadFraction <= 0) return [hit];
+
+    const explosiveCtx = { ...ctx, componentType: 'explosive' as const };
+    const twinDbmCollect = trace ? ([] as BucketTrace[]) : undefined;
+    const twinDbmFold = foldBucket(modifiers, 'dbm', weapon.damageBonusMult ?? 1.0, explosiveCtx, twinDbmCollect);
+    const twinParenthesis = twinDbmFold + strTerm + critTerm + sneakTerm + powerAttackTerm;
+    const explosionMult = foldBucket(modifiers, 'explosionMult', 1.0, explosiveCtx);
+    const twinBase = scaledBase * payloadFraction;
+    const twin: ComponentHit = {
+      damageType: 'explosive',
+      base: twinBase,
+      damage: twinBase * twinParenthesis * outerMult * explosionMult,
+    };
+    if (trace && payloadCollect && twinDbmCollect) {
+      trace.components.push({ damageType: 'explosive', baseDamage: payloadCollect[0], dbm: twinDbmCollect[0] });
+    }
+    return [hit, twin];
   });
 
   if (trace) {
@@ -157,4 +203,24 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
     components,
     total: components.reduce((sum, c) => sum + c.damage, 0),
   };
+}
+
+/**
+ * Steady-state DoT contribution (Stage A2, user-confirmed refresh-only
+ * semantics): re-applying a bleed/burn/shock DoT resets its timer rather
+ * than stacking, so while continuously attacking the sustained add is just
+ * the sum of active `dotDamage` magnitudes — interpreted as damage/sec (NOT
+ * ESM-proven; docs/assumptions.md). Folded per weapon-component damage type
+ * so `damageTypeScope`-gated DoT mods (every extracted bleed/burn/shock OMOD)
+ * only count when the weapon actually deals that type; an unscoped DoT
+ * modifier on a multi-damage-type weapon would double-count across types —
+ * no such data exists today.
+ */
+export function computeDotDps(modifiers: Modifier[], weapon: Weapon, ctx: ResolveContext): number {
+  const componentTypes = new Set((weapon.components ?? []).map(c => c.damageType));
+  let total = 0;
+  for (const type of componentTypes) {
+    total += foldBucket(modifiers, 'dotDamage', 0, { ...ctx, componentType: type });
+  }
+  return total;
 }

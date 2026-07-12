@@ -12,7 +12,8 @@ import type { Condition } from '../../../src/types/modifiers';
 export interface RawCondition {
   Function: string;
   'Parameter 1'?: string | null;
-  'Comparison Value': number;
+  /** A number, or a GLOB formid (0x...) whose value must be pre-resolved into ctx.globalValues. */
+  'Comparison Value': number | string;
   Operator?: string;
   'AND/OR'?: string;
   'Run On'?: string;
@@ -21,6 +22,8 @@ export interface RawCondition {
 export interface ConditionTranslationContext {
   /** formid (0x...) → editor_id for every Parameter 1 seen (pre-resolved, since translation is sync). */
   edidByFormId: Map<string, string>;
+  /** GLOB formid → numeric value for global-valued Comparison Values (pre-resolved, since translation is sync). */
+  globalValues?: Map<string, number>;
   /**
    * Rank-chain formids of the perk family being processed, in rank order.
    * HasPerk conditions on these are rank gating, consumed by the simulation.
@@ -28,6 +31,15 @@ export interface ConditionTranslationContext {
   familyFormIds?: string[];
   /** Ranks owned in the current simulation (1-based count). */
   ownedRanks?: number;
+  /**
+   * Rank-chain formids of a paired GENDER-TWIN family (Action Boy ↔ Action
+   * Girl — extract-perks.ts's GENDER_TWIN_PAIRS), in rank order, mirroring
+   * `familyFormIds`. The two cards share one ability SPEL whose per-tier
+   * gates cross-reference BOTH families' own rank formids; the player owns
+   * ONE gender's card at a time, so a HasPerk row on this list resolves as if
+   * the paired family's rank mirrors `ownedRanks` (docs/assumptions.md).
+   */
+  pairedFamilyFormIds?: string[];
 }
 
 export interface TranslationResult {
@@ -37,7 +49,10 @@ export interface TranslationResult {
 }
 
 function isWeaponTypeKeyword(edid: string): boolean {
-  return edid.startsWith('WeaponType') || edid.startsWith('UI_WeaponType') || edid === 'HasSilencer';
+  // HasLegendary_* keywords are ADDed by the legendary OMOD itself, so a
+  // HasKeyword self-gate on one auto-passes once the mod is equipped
+  // (effective-weapon merges addedKeywords).
+  return edid.startsWith('WeaponType') || edid.startsWith('UI_WeaponType') || edid === 'HasSilencer' || edid.startsWith('HasLegendary_');
 }
 
 function isEnemyKeyword(edid: string): boolean {
@@ -47,7 +62,10 @@ function isEnemyKeyword(edid: string): boolean {
 function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): Condition | 'inactive' | null {
   const fn = cond.Function;
   const param = cond['Parameter 1'] ?? '';
-  const wants = cond['Comparison Value'] === 1;
+  // Comparison Values can reference a GLOB (Executioner's ≤ LGND_ExecuteHealthThreshold).
+  const rawCmp = cond['Comparison Value'];
+  const cmp = typeof rawCmp === 'string' ? ctx.globalValues?.get(rawCmp) : rawCmp;
+  const wants = cmp === 1;
   const edid = ctx.edidByFormId.get(param) ?? param;
 
   switch (fn) {
@@ -57,6 +75,17 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
         const owns = rankIndex < ctx.ownedRanks;
         return owns === wants ? null : 'inactive'; // rank gate: consumed or kills the effect
       }
+      // Gender-twin paired family (Action Boy/Girl, Stage C4): the player owns
+      // ONE gender's card at a time, so the paired family's rank mirrors the
+      // rank being simulated (docs/assumptions.md).
+      const pairedRankIndex = ctx.pairedFamilyFormIds?.indexOf(param) ?? -1;
+      if (pairedRankIndex >= 0 && ctx.ownedRanks !== undefined) {
+        const owns = pairedRankIndex < ctx.ownedRanks;
+        return owns === wants ? null : 'inactive';
+      }
+      // Viper's gates on the target lacking ImmuneToPoison — a generic target
+      // is assumed vulnerable, so the row is consumed (docs/assumptions.md).
+      if (cond['Run On'] === 'Target' && edid === 'ImmuneToPoison' && !wants) return null;
       return { kind: 'unresolved', raw: `HasPerk(${edid})=${cond['Comparison Value']}` };
     }
     case 'HasKeyword':
@@ -71,24 +100,94 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
     }
     case 'GetIsRace':
       return { kind: 'enemyType', keywordOrRace: edid };
+    case 'GetIsPlayer':
+      // Perk effects granted to the player: always true — consumed.
+      return wants ? null : 'inactive';
+    case 'GetIsPlayerGhoul':
+      // Character-type gate: Gourmand's (=0, human-only), Glowing Criticals (=1).
+      return { kind: 'playerIsGhoul', value: wants };
     case 'IsSneaking':
       return wants ? { kind: 'sneaking' } : { kind: 'unresolved', raw: 'IsSneaking=0' };
     case 'GetHealthPercentage': {
-      const pct = cond['Comparison Value'] * 100;
-      if (cond.Operator === 'Less Than' || cond.Operator === 'Less Than or Equal To') {
-        return { kind: 'healthBelowPct', pct };
+      if (typeof cmp !== 'number') {
+        return { kind: 'unresolved', raw: `GetHealthPercentage ${cond.Operator} ${rawCmp} (unresolved global)` };
       }
-      return { kind: 'unresolved', raw: `GetHealthPercentage ${cond.Operator} ${cond['Comparison Value']}` };
+      const pct = cmp * 100;
+      const onTarget = cond['Run On'] === 'Target';
+      if (/^less than( or equal to)?$/i.test(cond.Operator ?? '')) {
+        // Tab-index-2 perk conditions run on the target: that's the ENEMY's health
+        // (Executioner's ≤40%), not the player's (Bloodied-style gates).
+        return onTarget ? { kind: 'enemyHealthBelowPct', pct } : { kind: 'healthBelowPct', pct };
+      }
+      if (onTarget && /^greater than( or equal to)?$/i.test(cond.Operator ?? '')) {
+        return { kind: 'enemyHealthAbovePct', pct }; // Instigating: enemy ≥60%
+      }
+      return { kind: 'unresolved', raw: `GetHealthPercentage ${cond.Operator} ${cmp}` };
     }
     case 'IsPowerArmorFrame':
     case 'IsInPowerArmor':
       return { kind: 'inPowerArmor', value: wants };
     case 'GetValue': {
-      // "Kill streak ≥ 1" gates on curve-driven effects are redundant — the
-      // curves are 0 at 0 stacks (Adrenaline perk, Adrenal effects).
-      if (param === '0x00000399') return null;
+      if (param === '0x00000399') {
+        // Thrill-Seeker's (Stage C3): 10 discrete GetValue(killStreak) Equal
+        // To N tiers, each gating its own 0.03×N-scaled effect — translate to
+        // an exact-count condition (evaluated against adrenalineStacks).
+        if (/^equal to$/i.test(cond.Operator ?? '') && typeof cmp === 'number') {
+          return { kind: 'killStreakCount', count: cmp };
+        }
+        // "Kill streak ≥ 1" gates on curve-driven effects are redundant — the
+        // curves are 0 at 0 stacks (Adrenaline perk, Adrenal effects). Only
+        // consume the ≤1 redundant case; anything else stays unresolved so an
+        // unrecognized comparison doesn't silently vanish.
+        if (typeof cmp === 'number' && cmp <= 1) return null;
+        return { kind: 'unresolved', raw: `GetValue(${edid}) ${cond.Operator} ${rawCmp}` };
+      }
       return { kind: 'unresolved', raw: `GetValue(${edid})=${cond['Comparison Value']}` };
     }
+    case 'GetLoadedAmmoCount':
+      // Last Shot: the fired round empties the magazine. Circuit Breaker
+      // spells the same gate "< 1" (integer count).
+      if (
+        (/^equal to$/i.test(cond.Operator ?? '') && cmp === 0) ||
+        (/^less than$/i.test(cond.Operator ?? '') && cmp === 1)
+      ) {
+        return { kind: 'lastRound' };
+      }
+      return { kind: 'unresolved', raw: `GetLoadedAmmoCount ${cond.Operator} ${rawCmp}` };
+    case 'IsNextClipLastShot':
+      // Companion row to GetLoadedAmmoCount()=0 — the same last-round gate
+      // (translateConditions dedupes the pair to one lastRound condition).
+      if ((/^greater than$/i.test(cond.Operator ?? '') && cmp === 0) || wants) return { kind: 'lastRound' };
+      return { kind: 'unresolved', raw: `IsNextClipLastShot ${cond.Operator} ${rawCmp}` };
+    case 'GetNumActiveEffectsWithKeyword': {
+      // "Target is burning/poisoned" gates (Pyromaniac's fire, Viper's poison).
+      const atLeastOne =
+        (/^greater than or equal to$/i.test(cond.Operator ?? '') && cmp === 1) ||
+        (/^greater than$/i.test(cond.Operator ?? '') && cmp === 0);
+      if (cond['Run On'] === 'Target' && atLeastOne) return { kind: 'enemyHasActiveEffect', keyword: edid };
+      return { kind: 'unresolved', raw: `GetNumActiveEffectsWithKeyword(${edid}) ${cond.Operator} ${rawCmp}` };
+    }
+    case 'GetGroupTargetCount': {
+      // Encircler's tiers: == 1..4, ≥ 5 for the top.
+      if (typeof cmp === 'number') {
+        if (/^equal to$/i.test(cond.Operator ?? '')) return { kind: 'enemyGroupCount', count: cmp };
+        if (/^greater than or equal to$/i.test(cond.Operator ?? '')) {
+          return { kind: 'enemyGroupCount', count: cmp, orMore: true };
+        }
+      }
+      return { kind: 'unresolved', raw: `GetGroupTargetCount ${cond.Operator} ${rawCmp}` };
+    }
+    case 'GetPlayerTeammateCount':
+      // Fencer's tiers: exact teammate counts 0..3.
+      if (typeof cmp === 'number' && /^equal to$/i.test(cond.Operator ?? '')) {
+        return { kind: 'teammateCount', count: cmp };
+      }
+      return { kind: 'unresolved', raw: `GetPlayerTeammateCount ${cond.Operator} ${rawCmp}` };
+    case 'GetDistance':
+      // Fencer's teammate-range rows (< 2500 units on Potential Players):
+      // consumed — teammates are assumed in range (docs/assumptions.md).
+      if (cond['Run On'] === 'Potential Players' && /^less than/i.test(cond.Operator ?? '')) return null;
+      return { kind: 'unresolved', raw: `GetDistance ${cond.Operator} ${rawCmp} on ${cond['Run On']}` };
     case 'IsTrueForConditionForm': {
       // Mutation value-tier CNDFs (base vs Strange-in-Numbers-boosted).
       if (edid === 'Mutation_Check_UseNormalVersion') return { kind: 'strangeInNumbers', value: !wants };
@@ -98,6 +197,36 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
     default:
       return { kind: 'unresolved', raw: `${fn}(${edid})=${cond['Comparison Value']}` };
   }
+}
+
+/**
+ * Resolve an OR-group made ENTIRELY of HasPerk rows against the rank-chain
+ * simulation (own family and/or its gender-twin paired family — Action
+ * Boy/Girl's shared-ability tiers, Stage C4): 'consumed' when at least one
+ * row's actual owned/not-owned state matches what it demands (the group
+ * passes, so it's dropped from the output like a single-row rank gate);
+ * 'inactive' when every row can be resolved but none match (kills the whole
+ * effect, same as a failing single-row rank gate); undefined when the group
+ * isn't a pure rank-gate OR-group (mixed content, or a formid outside both
+ * families) — the caller falls through to the existing weaponKeywordAny /
+ * enemyTypeAny handling.
+ */
+function resolveHasPerkRankGroup(group: RawCondition[], ctx: ConditionTranslationContext): 'consumed' | 'inactive' | undefined {
+  if (ctx.ownedRanks === undefined) return undefined;
+  let anySatisfied = false;
+  for (const row of group) {
+    if (row.Function !== 'HasPerk') return undefined;
+    const param = row['Parameter 1'] ?? '';
+    const wants = row['Comparison Value'] === 1;
+    const ownIdx = ctx.familyFormIds?.indexOf(param) ?? -1;
+    const pairedIdx = ctx.pairedFamilyFormIds?.indexOf(param) ?? -1;
+    let owns: boolean;
+    if (ownIdx >= 0) owns = ownIdx < ctx.ownedRanks;
+    else if (pairedIdx >= 0) owns = pairedIdx < ctx.ownedRanks;
+    else return undefined;
+    if (owns === wants) anySatisfied = true;
+  }
+  return anySatisfied ? 'consumed' : 'inactive';
 }
 
 /**
@@ -130,20 +259,39 @@ export function translateConditions(rows: RawCondition[], ctx: ConditionTranslat
       continue;
     }
 
-    // OR-group: supported when every row is a positive weapon-keyword check.
+    // HasPerk rank-gate OR-group (Action Boy/Girl's cross-family tiers,
+    // Stage C4): resolve via the SAME rank simulation the single-row branch
+    // uses, extended with the optional paired family.
+    const hasPerkResolution = resolveHasPerkRankGroup(group, ctx);
+    if (hasPerkResolution === 'inactive') return { conditions: null, unresolved };
+    if (hasPerkResolution === 'consumed') continue;
+
+    // OR-group: supported when every row is a positive weapon-keyword check,
+    // or every row is a positive enemy-type check (Ghoul Slayer's:
+    // ActorTypeFeralGhoul OR ActorTypeGhoul).
     const keywords: string[] = [];
+    const enemyTypes: string[] = [];
     let supported = true;
+    let enemySupported = true;
     for (const row of group) {
       const edid = ctx.edidByFormId.get(row['Parameter 1'] ?? '') ?? '';
       const isKeywordFn = row.Function === 'HasKeyword' || row.Function === 'WornHasKeyword';
-      if (!(isKeywordFn && row['Comparison Value'] === 1 && isWeaponTypeKeyword(edid) && row['Run On'] !== 'Target')) {
+      const positive = row['Comparison Value'] === 1;
+      if (!(isKeywordFn && positive && isWeaponTypeKeyword(edid) && row['Run On'] !== 'Target')) {
         supported = false;
-        break;
+      }
+      const isEnemyCheck =
+        (isKeywordFn && (row['Run On'] === 'Target' || isEnemyKeyword(edid))) || row.Function === 'GetIsRace';
+      if (!(isEnemyCheck && positive)) {
+        enemySupported = false;
       }
       keywords.push(edid);
+      enemyTypes.push(edid);
     }
     if (supported) {
       out.push({ kind: 'weaponKeywordAny', keywords });
+    } else if (enemySupported) {
+      out.push({ kind: 'enemyTypeAny', keywordsOrRaces: enemyTypes });
     } else {
       const raw = `OR-group[${group.map(r => `${r.Function}(${ctx.edidByFormId.get(r['Parameter 1'] ?? '') ?? r['Parameter 1']})=${r['Comparison Value']}`).join(' | ')}]`;
       unresolved.push(raw);
@@ -151,7 +299,17 @@ export function translateConditions(rows: RawCondition[], ctx: ConditionTranslat
     }
   }
 
-  return { conditions: out, unresolved };
+  // Distinct ESM rows can translate to the same IR condition (Last Shot's
+  // GetLoadedAmmoCount()=0 + IsNextClipLastShot pair → one lastRound gate).
+  const seen = new Set<string>();
+  const deduped = out.filter(c => {
+    const key = JSON.stringify(c);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  return { conditions: deduped, unresolved };
 }
 
 /**

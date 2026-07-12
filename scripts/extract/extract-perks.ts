@@ -34,6 +34,27 @@ import {
 
 const EXCLUDED_PERK_EDIDS = [/^zzz/, /^CUT_/, /^DEL/, /^DEPRECATED/, /^Test/, /^TEST/, /^POST_/];
 
+/**
+ * Gender-twin perk family pairs (Stage C4): Action Boy and Action Girl are
+ * separate PERK families that share ONE ability SPEL (AbPerkActionBoyGirl
+ * 0x0004D871, verified in the 20260702 dump) whose 3 magnitude tiers
+ * (15/30/45) each gate on HasPerk rows spanning BOTH families' own rank
+ * formids (e.g. rank-1's "OR[HasPerk(ActionBoy02)|HasPerk(ActionGirl02)]").
+ * The per-family rank simulation in conditions.ts needs the sibling family's
+ * formids to resolve these — supplied here as `pairedFamilyFormIds`.
+ *
+ * Party Boy/Girl is the only other Boy/Girl-named perk pair in the 20260702
+ * dump; it produces ZERO modifiers today (its "double/triple alcohol
+ * effects" mechanic isn't bucket-routed), so it doesn't need pairing — kept
+ * as a small hardcoded map rather than inferring pairs from naming, since
+ * "Boy"/"Girl" substring matching would be fragile (e.g. it would also catch
+ * unrelated cards if any existed).
+ */
+const GENDER_TWIN_PAIRS: Record<string, string> = {
+  ActionBoy: 'ActionGirl',
+  ActionGirl: 'ActionBoy',
+};
+
 /** Entry-point names that are known damage-irrelevant (not reported as unknown). */
 const ENTRY_POINT_IGNORED = new Set([
   'Mod Player Explosion Scale',
@@ -157,12 +178,19 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
 
   for (const [family, familyRecords] of families) {
     const formIds = familyRecords.map(r => r.header.form_id);
+    const pairedFamily = GENDER_TWIN_PAIRS[family];
+    const pairedFamilyFormIds = pairedFamily ? families.get(pairedFamily)?.map(r => r.header.form_id) : undefined;
     const notes = new Set<string>();
     const ranks: GeneratedPerk['ranks'] = [];
 
     for (let rank = 1; rank <= familyRecords.length; rank++) {
       const modifiers: Modifier[] = [];
-      const translationCtx: ConditionTranslationContext = { edidByFormId, familyFormIds: formIds, ownedRanks: rank };
+      const translationCtx: ConditionTranslationContext = {
+        edidByFormId,
+        familyFormIds: formIds,
+        ownedRanks: rank,
+        ...(pairedFamilyFormIds && { pairedFamilyFormIds }),
+      };
 
       const pushModifier = (
         bucket: Bucket,
@@ -235,7 +263,7 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
               const result = await translateMagicEffect(
                 { client, routes: avifRoutes, edidByFormId },
                 se,
-                { familyFormIds: formIds, ownedRanks: rank }
+                { familyFormIds: formIds, ownedRanks: rank, ...(pairedFamilyFormIds && { pairedFamilyFormIds }) }
               );
               result.notes.forEach(n => notes.add(n));
               result.unmappedAvifs.forEach(a => unmappedAvifs.add(a));

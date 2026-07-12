@@ -29,8 +29,11 @@ export type ModOp = 'SET' | 'MUL_ADD' | 'ADD';
  *   only activates when the body-part multiplier exceeds 1.0.
  * - wholeDamage: separate stacking whole-damage multipliers (TOFTT, Follow Through).
  * - critFill / critConsumption: crit-meter economy (Crit Savvy, Limit Breaking).
- * - fireRateSpeed / isAutomatic / projectileCount / addDamageComponent:
- *   weapon-stat rewrites from OMODs (receiver speed, Two Shot, Explosive prefix).
+ * - fireRateSpeed / isAutomatic / projectileCount / vatsApCost / addDamageComponent:
+ *   weapon-stat rewrites from OMODs (receiver speed, Two Shot, Explosive
+ *   prefix, V.A.T.S. Optimized's AP-cost cut).
+ * - apRegen / apPerCrit: VATS AP steady-state economy (Stage B,
+ *   `ap-economy.ts`) — not part of the paper-damage fold itself.
  */
 export type Bucket =
   /**
@@ -51,6 +54,10 @@ export type Bucket =
   | 'limbDamage'
   /** Multiplier on explosion damage (STAT_DmgExplosive plumbing) — wired with explosive components. */
   | 'explosionMult'
+  /** Bash-attack damage (STAT_DmgBash — Basher's) — inert until bash attacks are modeled. */
+  | 'bashDamage'
+  /** Fraction of a component's damage that spawns an explosive twin (LGND_ExplosivePayload — Explosive), folded per-component in paper-damage.ts. */
+  | 'explosivePayload'
   | 'critFill'
   | 'critConsumption'
   | 'fireRateSpeed'
@@ -60,10 +67,39 @@ export type Bucket =
   | 'ammoCapacity'
   /** Reload speed multiplier rewrite from OMODs (quick-eject magazines) — feeds sustained DPS. */
   | 'reloadSpeed'
+  /**
+   * Rewrite on the weapon's per-shot VATS AP cost (WEAP "Action Point Cost").
+   * V.A.T.S. Optimized MUL_ADD −0.35 (OMOD property AttackActionPointCost).
+   * Folded over the weapon base the same way as ammoCapacity/reloadSpeed
+   * (`effective-weapon.ts`); consumed by `ap-economy.ts` (Stage B).
+   */
+  | 'vatsApCost'
+  /**
+   * Additive % on the base AP regen rate (perks — Action Boy/Girl's
+   * ActorValue ActionPointsRateMult). Decimals: 0.45 = +45%. Consumed by
+   * `ap-economy.ts`'s `regenPerSec = 4.0 × (1 + Σ apRegen)`.
+   */
+  | 'apRegen'
+  /**
+   * Flat AP restored per VATS crit (Conductor's: 110 = 10 instant + 100 over
+   * 5s, hand-supplied in `overrides/legendary-values.ts` — the entry point is
+   * script-driven and not extractor-modeled). Consumed by `ap-economy.ts`.
+   */
+  | 'apPerCrit'
+  /**
+   * Flat ADD contributions to the shared Onslaught stack cap (Perk Entry
+   * Point 190 "Mod Max Consecutive Hits Allowed" — Guerrilla/Gunslinger
+   * Expert+Master, Furious, Pounder's, Splinter's). Base 0 (no AVIF exists
+   * for the raw counter — inferred, docs/assumptions.md "Onslaught").
+   * Folded ONCE per scenario input (`scenarios.ts`) and carried on
+   * `ResolveContext.onslaughtMaxStacks`, which both the `onslaught` stack
+   * counter and the `onslaughtStacks` curve input clamp against.
+   */
+  | 'onslaughtMaxStacks'
   | 'addDamageComponent'
   /** Armor penetration (Anti-Armor's ActorValues property) — extracted but inert until enemy DR lands. */
   | 'armorPen'
-  /** Damage-over-time from Damage-archetype MGEFs (bleed/burn/shock mods) — extracted but inert until a DoT model lands. */
+  /** Damage-over-time from Damage-archetype MGEFs (bleed/burn/shock mods) — refresh-only steady-state dmg/sec, summed into `ScenarioResult.dotDps`. */
   | 'dotDamage'
   /** SPECIAL stat bonuses (consumables, legendary +STR...). Strength/Luck feed the engine; the rest are stored for perk-SPECIAL scaling. */
   | 'specialStrength'
@@ -100,22 +136,54 @@ export type Condition =
   | { kind: 'bodyPart'; part: 'torso' | 'weakpoint' | 'limb' }
   /** Enemy race/type gating (Exterminator etc.) — inert until enemy modeling lands. */
   | { kind: 'enemyType'; keywordOrRace: string }
+  /** OR-group of enemy race/type gates (Ghoul Slayer's: FeralGhoul OR Ghoul) — inert until enemy modeling lands. */
+  | { kind: 'enemyTypeAny'; keywordsOrRaces: string[] }
   | { kind: 'sneaking' }
   | { kind: 'powerAttack' }
   /** The hit is a VATS critical (symmetric with sneaking/powerAttack). */
   | { kind: 'crit' }
   | { kind: 'healthBelowPct'; pct: number }
+  /** ENEMY health at or below pct (Executioner's: ≤40, threshold from GLOB LGND_ExecuteHealthThreshold). */
+  | { kind: 'enemyHealthBelowPct'; pct: number }
+  /** ENEMY health at or above pct (Instigating: ≥60 — the ESM's post-rework gate). */
+  | { kind: 'enemyHealthAbovePct'; pct: number }
+  /** value × enemy crippled-limb count, clamped (Bully's — STAT_DmgPerCrippled). */
+  | { kind: 'perCrippledLimb'; max: number }
+  /** The fired round is the magazine's last (Last Shot — GetLoadedAmmoCount()=0 + IsNextClipLastShot). */
+  | { kind: 'lastRound' }
+  /** Target carries ≥1 active effect with this keyword (Pyromaniac's: DamageTypeFire; Viper's: DamageTypePoison). */
+  | { kind: 'enemyHasActiveEffect'; keyword: string }
+  /** Enemies in the engaged group == count, or ≥ count for the top tier (Encircler's — GetGroupTargetCount). */
+  | { kind: 'enemyGroupCount'; count: number; orMore?: boolean }
+  /** Player teammate count == count (Fencer's — GetPlayerTeammateCount; teammates assumed in range). */
+  | { kind: 'teammateCount'; count: number }
+  /**
+   * Kill-streak count == count, exact-match tier (Thrill-Seeker's 10 discrete
+   * GetValue(killStreak) Equal To N rows — 0.03×N magnitude per tier, distinct
+   * from the `stacks`/curve-scaled kill-streak sources). Evaluated against
+   * `PlayerConditions.adrenalineStacks` (the app's kill-streak counter).
+   */
+  | { kind: 'killStreakCount'; count: number }
   /** value × missing-health fraction, capped (Bloodied: up to ×0.95 of the listed max). */
   | { kind: 'scaledByMissingHealth'; cap: number }
   /** value × min(capsOnHand / capsForMax, 1) (Aristocrat's). */
   | { kind: 'scaledByCaps'; capsForMax: number }
   /** value × stackCount (clamped to max) from the matching player-state counter. */
   | { kind: 'stacks'; counter: StackCounter; max: number }
-  | { kind: 'enemyFullHealth' }
   /** Mutation value tier: false = base values, true = Strange in Numbers boosted (+25%). */
   | { kind: 'strangeInNumbers'; value: boolean }
   | { kind: 'perAddiction'; max: number }
   | { kind: 'inPowerArmor'; value: boolean }
+  /** Character-type gate (GetIsPlayerGhoul): Gourmand's is human-only, Glowing Criticals ghoul-only. */
+  | { kind: 'playerIsGhoul'; value: boolean }
+  /**
+   * Target range bucket (Guerrilla: close, Down Ranger / Sniper's: far). The
+   * close/far gate is native engine code — no distance condition rows exist
+   * anywhere in ESM data; the only threshold on record is GMST
+   * fDistanceForCloseDamage = 850 units (≈12m, approximate). The far
+   * threshold isn't in data at all. See docs/assumptions.md.
+   */
+  | { kind: 'targetDistance'; range: 'close' | 'far' }
   /** Extraction escape hatch: condition semantics not yet understood. Engine skips the modifier; UI badges it. */
   | { kind: 'unresolved'; raw: string };
 
@@ -148,7 +216,18 @@ export type CurveInput =
   | 'consecutiveHits' // Furious — AV 0x006C3172
   | 'healthCurrent' // ABSOLUTE current HP (Juggernaut's: x 0→1000) — AV 0x000002D4
   | 'enemyDamageResist' // enemy DR (DamageUnarmored) — AV 0x000002E3; reads 0 until enemy defenses land
-  | 'itemLevel'; // weapon item level — level-scaled OMOD properties (heated melee mods' AttackDamage curves)
+  | 'itemLevel' // weapon item level — level-scaled OMOD properties (heated melee mods' AttackDamage curves)
+  | 'mutationCount' // owned mutations (Mutant's) — AV MutationCount 0x006C2DBA; derived from the selected mutation list
+  | 'hungerThirstTier' // food/drink fullness tier (Gourmand's) — AV HungerThirstTier 0x006D37DC
+  | 'feralTier' // ghoul feral meter tier (Lucid, Feral's) — AV GHL_FeralTier 0x007A767A
+  /**
+   * Equipped weapon condition as a fraction (Polished): 1.0 = 100% (full
+   * condition), 2.0 = 200% (over-repaired max). No AVIF exists for this axis —
+   * the effect-level curve input is the engine function
+   * GetEquippedWeaponHealthPercent, proven by the cut DEL_Legendary_Weapon_
+   * PolishedPerk predecessor record (docs/assumptions.md).
+   */
+  | 'weaponCondition';
 
 export interface ValueCurve {
   input: CurveInput;

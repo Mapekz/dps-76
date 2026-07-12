@@ -1,9 +1,17 @@
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ButtonGroup } from '@/components/ui/button-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { createDefaultPlayerConditions, createDefaultEnemyConditions, type PlayerConditions } from '@/types';
+import { Separator } from '@/components/ui/separator';
+import {
+  createDefaultPlayerConditions,
+  createDefaultEnemyConditions,
+  type EnemyConditions,
+  type PlayerConditions,
+} from '@/types';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { SectionTrigger } from './SectionTrigger';
 
@@ -18,6 +26,7 @@ const NUMBER_FIELDS: Array<{
   label: string;
   min: number;
   max: number;
+  step?: number;
 }> = [
   { key: 'healthPercent', label: 'Health % (Bloodied, Adrenal Reaction)', min: 1, max: 100 },
   { key: 'maxHealth', label: "Max HP (Juggernaut's scales with current HP)", min: 1, max: 99999 },
@@ -28,6 +37,36 @@ const NUMBER_FIELDS: Array<{
   { key: 'furiousStacks', label: 'Furious consecutive hits (0–9)', min: 0, max: 9 },
   { key: 'tenderizerStacks', label: 'Tenderizer stacks (0–1000, team-dependent)', min: 0, max: 1000 },
   { key: 'limitBreakingPieces', label: 'Limit Breaking armor pieces (0–5, −10% crit cost each)', min: 0, max: 5 },
+  { key: 'hungerThirstTier', label: "Food + drink meter tier (Gourmand's, 0–8)", min: 0, max: 8 },
+  { key: 'feralTier', label: "Feral meter tier (Lucid, ghoul builds, 0–8)", min: 0, max: 8 },
+  // Teams cap at 4 players = 3 teammates (Fencer's top tier).
+  { key: 'teammateCount', label: "Teammates (Fencer's maxes at 3)", min: 0, max: 3 },
+  // Polished maxes its curve at 200% (over-repaired); 100% = full condition.
+  { key: 'weaponConditionPct', label: 'Weapon condition % (Polished maxes at 200%)', min: 0, max: 200, step: 10 },
+  // Manual-aim only — VATS accuracy is assumed 100% (hit-chance modeling out of scope).
+  { key: 'hitRatePct', label: 'Free-aim hit rate % (misses waste shots)', min: 10, max: 100, step: 5 },
+];
+
+const TARGET_DISTANCE_OPTIONS: Array<{ value: NonNullable<EnemyConditions['targetDistance']>; label: string }> = [
+  { value: 'none', label: 'None' },
+  { value: 'close', label: 'Close' },
+  { value: 'far', label: 'Far' },
+];
+
+const ENEMY_NUMBER_FIELDS: Array<{
+  key: keyof EnemyConditions;
+  label: string;
+  min: number;
+  max: number;
+}> = [
+  { key: 'healthPercent', label: "Target health % (Executioner's ≤40, Instigating ≥60)", min: 1, max: 100 },
+  { key: 'crippledLimbCount', label: "Target crippled limbs (Bully's, Tormentor, 0–6)", min: 0, max: 6 },
+  { key: 'groupTargetCount', label: "Enemies in the group (Encircler's maxes at 5)", min: 1, max: 99 },
+];
+
+const ENEMY_CHECKBOXES: Array<{ key: keyof EnemyConditions; label: string }> = [
+  { key: 'isBurning', label: "Target is burning (Pyromaniac's)" },
+  { key: 'isPoisoned', label: "Target is poisoned (Viper's)" },
 ];
 
 export function ConditionsSection() {
@@ -37,9 +76,13 @@ export function ConditionsSection() {
   const playerDefaults = createDefaultPlayerConditions();
   const enemyDefaults = createDefaultEnemyConditions();
   const activeCount =
-    NUMBER_FIELDS.filter(f => player.conditions[f.key] !== playerDefaults[f.key]).length +
+    NUMBER_FIELDS.filter(f => (player.conditions[f.key] ?? playerDefaults[f.key]) !== playerDefaults[f.key]).length +
+    ENEMY_NUMBER_FIELDS.filter(f => (enemy.conditions[f.key] ?? enemyDefaults[f.key]) !== enemyDefaults[f.key]).length +
+    ENEMY_CHECKBOXES.filter(f => (enemy.conditions[f.key] ?? false) !== (enemyDefaults[f.key] ?? false)).length +
     (player.conditions.isPowerAttacking !== playerDefaults.isPowerAttacking ? 1 : 0) +
-    (enemy.conditions.isFullHealth !== enemyDefaults.isFullHealth ? 1 : 0);
+    ((player.conditions.isLastShot ?? false) !== (playerDefaults.isLastShot ?? false) ? 1 : 0) +
+    ((player.conditions.isGhoul ?? false) !== (playerDefaults.isGhoul ?? false) ? 1 : 0) +
+    ((enemy.conditions.targetDistance ?? enemyDefaults.targetDistance) !== enemyDefaults.targetDistance ? 1 : 0);
 
   return (
     <AccordionItem value="conditions">
@@ -60,7 +103,8 @@ export function ConditionsSection() {
                 type="number"
                 min={field.min}
                 max={field.max}
-                value={player.conditions[field.key] as number}
+                step={field.step}
+                value={(player.conditions[field.key] as number | undefined) ?? (playerDefaults[field.key] as number)}
                 onChange={e =>
                   dispatch({
                     type: 'condition/set',
@@ -81,14 +125,78 @@ export function ConditionsSection() {
             <span>Power attacking (melee)</span>
           </label>
 
-          <label htmlFor="cond-enemy-full" className="flex cursor-pointer items-center gap-2 text-sm">
+          <label htmlFor="cond-last-shot" className="flex cursor-pointer items-center gap-2 text-sm">
             <Checkbox
-              id="cond-enemy-full"
-              checked={enemy.conditions.isFullHealth}
-              onCheckedChange={v => dispatch({ type: 'enemy/condition', key: 'isFullHealth', value: v === true })}
+              id="cond-last-shot"
+              checked={player.conditions.isLastShot ?? false}
+              onCheckedChange={v => dispatch({ type: 'condition/set', key: 'isLastShot', value: v === true })}
             />
-            <span>Target at full health (Instigating)</span>
+            <span>Firing the magazine's last round (Last Shot)</span>
           </label>
+
+          <label htmlFor="cond-ghoul" className="flex cursor-pointer items-center gap-2 text-sm">
+            <Checkbox
+              id="cond-ghoul"
+              checked={player.conditions.isGhoul ?? false}
+              onCheckedChange={v => dispatch({ type: 'condition/set', key: 'isGhoul', value: v === true })}
+            />
+            <span>Ghoul character (feral meter applies; Gourmand's is human-only)</span>
+          </label>
+
+          <Separator />
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Target</p>
+
+          <div className="space-y-1.5">
+            <Label>Target distance (Close ≈12m: Guerrilla · Far: Down Ranger, Sniper's)</Label>
+            <ButtonGroup>
+              {TARGET_DISTANCE_OPTIONS.map(opt => (
+                <Button
+                  key={opt.value}
+                  type="button"
+                  size="sm"
+                  variant={(enemy.conditions.targetDistance ?? enemyDefaults.targetDistance) === opt.value ? 'default' : 'outline'}
+                  onClick={() => dispatch({ type: 'enemy/condition', key: 'targetDistance', value: opt.value })}
+                >
+                  {opt.label}
+                </Button>
+              ))}
+            </ButtonGroup>
+          </div>
+
+          {ENEMY_NUMBER_FIELDS.map(field => (
+            <div key={field.key} className="space-y-1.5">
+              <Label htmlFor={`cond-enemy-${field.key}`}>{field.label}</Label>
+              <Input
+                id={`cond-enemy-${field.key}`}
+                type="number"
+                min={field.min}
+                max={field.max}
+                value={(enemy.conditions[field.key] as number | undefined) ?? (enemyDefaults[field.key] as number)}
+                onChange={e =>
+                  dispatch({
+                    type: 'enemy/condition',
+                    key: field.key,
+                    value: Math.max(field.min, Math.min(field.max, parseInt(e.target.value, 10) || field.min)),
+                  })
+                }
+              />
+            </div>
+          ))}
+
+          {ENEMY_CHECKBOXES.map(field => (
+            <label
+              key={field.key}
+              htmlFor={`cond-enemy-${field.key}`}
+              className="flex cursor-pointer items-center gap-2 text-sm"
+            >
+              <Checkbox
+                id={`cond-enemy-${field.key}`}
+                checked={(enemy.conditions[field.key] as boolean | undefined) ?? false}
+                onCheckedChange={v => dispatch({ type: 'enemy/condition', key: field.key, value: v === true })}
+              />
+              <span>{field.label}</span>
+            </label>
+          ))}
         </div>
       </AccordionContent>
     </AccordionItem>

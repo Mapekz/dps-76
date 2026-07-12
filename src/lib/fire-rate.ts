@@ -17,9 +17,14 @@ import type { Weapon } from '@/types';
  * - Returns shots/sec (multiply by perHit to get DPS — do NOT divide by 60).
  */
 export function getFireRate(weapon: Weapon): number {
-  // Melee/unarmed: stub 1 swing/sec until real animation timings are confirmed.
+  // Melee/unarmed: 1 swing/sec stub until real animation timings are
+  // confirmed (dps-todos/fire-rate.md). Speed-affecting mods (Thrill-Seeker's
+  // melee-speed AV, Cursed melee event mods) apply RELATIVELY on top of the
+  // stub — `weapon.speed` already carries a 1.0 baseline (WEAP Data.Speed)
+  // through the same fireRateSpeed OMOD fold ranged weapons use (Stage C,
+  // dps-todos/engine-mechanics-push.md: "speed effects apply relatively").
   if (weapon.weaponClass === 'melee' || weapon.weaponClass === 'unarmed') {
-    return 1.0;
+    return 1.0 * (weapon.speed ?? 1.0);
   }
 
   const speed = weapon.speed ?? 1.0;

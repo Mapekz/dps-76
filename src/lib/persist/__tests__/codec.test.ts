@@ -30,7 +30,7 @@ describe('build codec', () => {
       { type: 'special/set', stat: 'luck', value: 20 },
       { type: 'condition/set', key: 'isSneaking', value: true },
       { type: 'condition/set', key: 'healthPercent', value: 20 },
-      { type: 'enemy/condition', key: 'isFullHealth', value: true },
+      { type: 'enemy/condition', key: 'isBurning', value: true },
       { type: 'view/set', view: { emphasized: 'vats', breakdownOpen: true } },
       { type: 'build/importNd', perks: [], name: 'Bloodied Commando', special: null },
     ]);

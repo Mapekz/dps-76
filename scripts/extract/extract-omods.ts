@@ -1,7 +1,8 @@
 import type { ExcludedRecordDetail, GeneratedOmod } from '../../src/types/generated';
 import type { Bucket, Modifier } from '../../src/types/modifiers';
 import { EsmClient, mapPool, type EsmRecord } from './esm-client';
-import { buildAvifRoutes, parseMagicEffects, translateMagicEffect, type AvifRoute } from './normalize/mgef';
+import { FALLBACK_AVIF_ROUTES, buildAvifRoutes, parseMagicEffects, translateMagicEffect, type AvifRoute } from './normalize/mgef';
+import { translateConditions } from './normalize/conditions';
 import { DAMAGE_TYPE_EDID_MAP } from './extract-weapons';
 import { ObtainabilityClassifier } from './obtainability';
 
@@ -31,6 +32,16 @@ const ACTOR_VALUE_BUCKETS: Record<string, { bucket: Bucket; scale: number }> = {
   ArmorPenetration: { bucket: 'armorPen', scale: 0.01 }, // 50.0 ⇒ 0.5 (inert until enemy DR lands)
 };
 
+/**
+ * AVs deliberately NOT mapped from ActorValues properties because the same
+ * OMOD carries the value elsewhere — mapping both would double-count.
+ */
+const ACTOR_VALUE_SKIP: Record<string, string> = {
+  // Executioner's: value + threshold live on the granted LegendaryExecutePerk
+  // (dbm +0.5, target HP ≤ GLOB LGND_ExecuteHealthThreshold) via the ENCH chase.
+  LGND_ExecuteDmg: 'carried by granted LegendaryExecutePerk',
+};
+
 /** OMOD Property name → formula bucket. Unknown damage-ish names are reported. */
 const PROPERTY_BUCKETS: Record<string, PropertyMapping> = {
   DamageBonusMult: { bucket: 'dbm' },
@@ -42,12 +53,17 @@ const PROPERTY_BUCKETS: Record<string, PropertyMapping> = {
   CriticalChargeBonus: { bucket: 'critFill' },
   AmmoCapacity: { bucket: 'ammoCapacity' },
   ReloadSpeed: { bucket: 'reloadSpeed' },
+  // V.A.T.S. Optimized: MUL_ADD −0.35 on the weapon's per-shot VATS AP cost
+  // (mod_Legendary_Weapon3_VATSCostAP, 0x00524154 — verified in the
+  // 2026-07-02 dump). Folded over Weapon.apCost in effective-weapon.ts, same
+  // pattern as ammoCapacity/reloadSpeed; consumed by ap-economy.ts (Stage B).
+  AttackActionPointCost: { bucket: 'vatsApCost' },
 };
 
 /** Property names that never affect the damage formula — skipped without reporting. */
 const PROPERTY_IGNORED = new Set([
   'Weight', 'Value', 'Health', 'Ammo', 'Reach', 'MinRange', 'MaxRange',
-  'AttackActionPointCost', 'AimModelBaseStability', 'AimModelRecoilMaxDegPerShot',
+  'AimModelBaseStability', 'AimModelRecoilMaxDegPerShot',
   // NOTE: 'AttackDamage' and 'DamageTypeValues' are handled explicitly below
   // (they scale component base damage), not ignored.
   'AimModelRecoilMinDegPerShot', 'AimModelRecoilArcDeg', 'AimModelRecoilArcRotateDeg',
@@ -231,20 +247,45 @@ export async function extractOmods(
         continue;
       }
       if (prop.property === 'ActorValues') {
-        // Value 1 = AV formid, Value 2 = amount (Anti-Armor: ArmorPenetration 50.0).
+        // Value 1 = AV formid, Value 2 = amount (Anti-Armor: ArmorPenetration
+        // 50.0). A curve table OVERRIDES Value 2: Y by item level (the DmgVs
+        // family carries flat (1,50)→(100,50) curves with Value 2 = 0).
         if (typeof prop.value1 === 'string' && typeof prop.value2 === 'number') {
           const avEdid = await client.resolveEdid(prop.value1);
+          const flatValue = prop.value2;
+          const curvePoints = prop.curvePoints;
+          const op = prop.functionType === 'MUL_ADD' ? ('MUL_ADD' as const) : ('ADD' as const);
+          const pushAv = (bucket: Bucket, scale: number, conditions: Modifier['conditions']) => {
+            modifiers.push(
+              curvePoints
+                ? {
+                    id: `${record.header.form_id}:${modifiers.length}`, source, bucket, op,
+                    curve: { input: 'itemLevel', points: curvePoints }, curveScale: scale, conditions,
+                  }
+                : {
+                    id: `${record.header.form_id}:${modifiers.length}`, source, bucket, op,
+                    value: flatValue * scale, conditions,
+                  }
+            );
+          };
+          // 1) Plumbing-perk routes (STAT_DamageVsPerk & co.) — bucket, scale,
+          //    AND conditions (enemy-type gates) are data-driven, same as the
+          //    MGEF path. This is how the DmgVs* legendary family feeds dbm.
+          const plumbed = avifRoutes.get(prop.value1);
+          const fallback = FALLBACK_AVIF_ROUTES[avEdid];
           const avMapping = ACTOR_VALUE_BUCKETS[avEdid];
-          if (avMapping) {
-            modifiers.push({
-              id: `${record.header.form_id}:${modifiers.length}`,
-              source,
-              bucket: avMapping.bucket,
-              op: prop.functionType === 'MUL_ADD' ? 'MUL_ADD' : 'ADD',
-              value: prop.value2 * avMapping.scale,
-              conditions: [],
-            });
-          } else {
+          if (plumbed) {
+            for (const route of plumbed) {
+              const { conditions, unresolved } = translateConditions(route.rawConditions, { edidByFormId });
+              if (conditions === null) continue;
+              unresolved.forEach(u => modNotes.add(`route(${avEdid}): ${u}`));
+              pushAv(route.bucket, route.scale, conditions);
+            }
+          } else if (fallback) {
+            pushAv(fallback.bucket, fallback.scale, [...(fallback.conditions ?? [])]);
+          } else if (avMapping) {
+            pushAv(avMapping.bucket, avMapping.scale, []);
+          } else if (!(avEdid in ACTOR_VALUE_SKIP)) {
             modNotes.add(`ActorValues on ${avEdid} — unmapped`);
           }
         }

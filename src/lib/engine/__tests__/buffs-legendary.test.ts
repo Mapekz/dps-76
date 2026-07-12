@@ -48,13 +48,16 @@ describe('legendary weapon effects', () => {
     expect(dying.freeAim.perHit.total / stockTotal).toBeCloseTo(2.3, 3);
   });
 
-  it('Instigating doubles damage only against full-health targets', () => {
+  it('Instigating adds +50% against targets at or above 60% health (granted-perk chase)', () => {
+    // ESM: MGEF AbLegendary_Weapon_DamageFirstBlood → PERK
+    // Legendary_Weapon_DamageFirstBlood: dbm +0.5, target GetHealthPercentage ≥ 0.6.
     const instigating = getOmodById('live', 'mod_Legendary_Weapon1_DamageFirstBlood')!;
     const { weapon, modifiers } = buildEffectiveWeapon(fixer, [instigating]);
-    const vsHurt = computeScenarios(base({ weapon, modifiers }));
+    // Unset enemy health defaults to full → active.
+    const vsFull = computeScenarios(base({ weapon, modifiers }));
+    expect(vsFull.freeAim.perHit.total).toBeCloseTo(stockTotal * 1.5, 6);
+    const vsHurt = computeScenarios(base({ weapon, modifiers, enemy: { ...createDefaultEnemyConditions(), healthPercent: 50 } }));
     expect(vsHurt.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
-    const vsFull = computeScenarios(base({ weapon, modifiers, enemy: { ...createDefaultEnemyConditions(), isFullHealth: true } }));
-    expect(vsFull.freeAim.perHit.total).toBeCloseTo(stockTotal * 2.0, 6);
   });
 
   it('legendary Adrenal follows its extracted curve: +10% per kill-streak stack, max 10', () => {
@@ -79,6 +82,187 @@ describe('legendary weapon effects', () => {
     const { weapon, modifiers } = buildEffectiveWeapon(fixer, [junkies]);
     const withAddictions = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), addictionCount: 3 } }));
     expect(withAddictions.freeAim.perHit.total / stockTotal).toBeCloseTo(1.3, 4);
+  });
+});
+
+describe('legendary weapon effects (2026-07-11 condition kinds)', () => {
+  it('Last Shot adds +100% only while firing the last round in the magazine', () => {
+    const lastShot = getOmodById('live', 'mod_Legendary_Weapon2_Guns_LastShot')!;
+    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [lastShot]);
+    const normally = computeScenarios(base({ weapon, modifiers }));
+    expect(normally.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
+    const lastRound = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), isLastShot: true } }));
+    expect(lastRound.freeAim.perHit.total / stockTotal).toBeCloseTo(2.0, 6);
+  });
+
+  it("Encircler's picks its tier from the enemy group size: +10% solo target, +30% at 3, capped +50% at ≥5", () => {
+    const encirclers = getOmodById('live', 'mod_Legendary_Weapon4_Encirclers')!;
+    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [encirclers]);
+    // Unset group count defaults to 1 (the target itself) → base tier active.
+    const solo = computeScenarios(base({ weapon, modifiers }));
+    expect(solo.freeAim.perHit.total / stockTotal).toBeCloseTo(1.1, 5);
+    const pack = computeScenarios(base({ weapon, modifiers, enemy: { ...createDefaultEnemyConditions(), groupTargetCount: 3 } }));
+    expect(pack.freeAim.perHit.total / stockTotal).toBeCloseTo(1.3, 5);
+    const horde = computeScenarios(base({ weapon, modifiers, enemy: { ...createDefaultEnemyConditions(), groupTargetCount: 8 } }));
+    expect(horde.freeAim.perHit.total / stockTotal).toBeCloseTo(1.5, 5);
+  });
+
+  it("Fencer's (melee) scales with teammates: +12.5% solo up to +50% with 3", () => {
+    const bat = getWeapons('live')['BaseballBat'];
+    const fencers = getOmodById('live', 'mod_Legendary_Weapon4_Melee_Fencers')!;
+    const { weapon, modifiers } = buildEffectiveWeapon(bat, [fencers]);
+    const batStock = computeScenarios(base({ weapon: bat })).freeAim.perHit.total;
+    // Melee dbm folds over 1 + 0.05×STR (default 15) = 1.75, so +x dbm scales by (1.75+x)/1.75.
+    const solo = computeScenarios(base({ weapon, modifiers }));
+    expect(solo.freeAim.perHit.total / batStock).toBeCloseTo(1.875 / 1.75, 5);
+    const fullTeam = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), teammateCount: 3 } }));
+    expect(fullTeam.freeAim.perHit.total / batStock).toBeCloseTo(2.25 / 1.75, 5);
+  });
+
+  it("Gourmand's follows its hunger/thirst tier curve for humans and shuts off for ghouls", () => {
+    const gourmands = getOmodById('live', 'mod_Legendary_Weapon1_Gourmand')!;
+    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [gourmands]);
+    const empty = computeScenarios(base({ weapon, modifiers }));
+    expect(empty.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
+    const fed = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), hungerThirstTier: 8 } }));
+    expect(fed.freeAim.perHit.total / stockTotal).toBeCloseTo(1.4, 5);
+    // ESM gates Gourmand's on GetIsPlayerGhoul()=0 — ghouls run the feral meter instead.
+    const ghoul = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), hungerThirstTier: 8, isGhoul: true } }));
+    expect(ghoul.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
+  });
+
+  it("Pyromaniac's and Viper's add +50% only against burning / poisoned targets", () => {
+    for (const [id, key] of [
+      ['mod_Legendary_Weapon4_Pyromaniac', 'isBurning'],
+      ['mod_Legendary_Weapon4_Vipers', 'isPoisoned'],
+    ] as const) {
+      const omod = getOmodById('live', id)!;
+      const { weapon, modifiers } = buildEffectiveWeapon(fixer, [omod]);
+      const clean = computeScenarios(base({ weapon, modifiers }));
+      expect(clean.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
+      const afflicted = computeScenarios(base({ weapon, modifiers, enemy: { ...createDefaultEnemyConditions(), [key]: true } }));
+      expect(afflicted.freeAim.perHit.total / stockTotal).toBeCloseTo(1.5, 5);
+    }
+  });
+});
+
+describe('AP economy (Stage B, real data)', () => {
+  it('V.A.T.S. Optimized cuts the effective VATS AP cost by 35% (MUL_ADD −0.35 on vatsApCost)', () => {
+    const vatsOptimized = getOmodById('live', 'mod_Legendary_Weapon3_VATSCostAP')!;
+    const { weapon } = buildEffectiveWeapon(fixer, [vatsOptimized]);
+    expect(weapon.apCost).toBeCloseTo((fixer.apCost ?? 0) * 0.65, 6);
+    expect(fixer.apCost).toBe(16); // WEAP Data."Action Point Cost" — extractor-verified
+  });
+
+  it("Conductor's 110-AP-per-crit override outpaces the Fixer's 16-AP drain and saturates uptime", () => {
+    // ESM chain hand-supplied in overrides/legendary-values.ts (script-driven
+    // entry point, not extractor-modeled): 10 instant + 100 over 5s = 110/crit.
+    const conductors = getOmodById('live', 'mod_Legendary_Weapon4_Conductors')!;
+    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [conductors]);
+    const withConductors = computeScenarios(base({ weapon, modifiers }));
+    const without = computeScenarios(base());
+
+    expect(without.vats.ap).toBeDefined();
+    expect(without.vats.ap!.uptime).toBeLessThan(1); // stock Fixer is AP-limited in VATS
+    expect(withConductors.vats.ap).toBeDefined();
+    expect(withConductors.vats.ap!.uptime).toBe(1); // Conductor's AP gain swamps the drain
+  });
+});
+
+describe('explosive payload (Stage A1, real data)', () => {
+  it('Explosive (2★) spawns a 20% explosive twin: freeAim total = stock × 1.2 with no other mods', () => {
+    const explosive = getOmodById('live', 'mod_Legendary_Weapon2_Guns_ExplosiveBullets')!;
+    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [explosive]);
+    const result = computeScenarios(base({ weapon, modifiers }));
+    expect(result.freeAim.perHit.total).toBeCloseTo(stockTotal * 1.2, 6);
+  });
+});
+
+describe('target distance & weapon condition (Stage A3/A4, real data)', () => {
+  it("Sniper's adds +100% dbm only against far-range targets (targetDistance condition, GLOB-valued magnitude)", () => {
+    // ESM: ENCH BOUNTY_ench_LegendaryWeapon_Snipers → MGEF abPerkFortifyDmgFar
+    // on STAT_DmgVsFar, magnitude via GLOB BOUNTY_SnipersBonus = 100.
+    const snipers = getOmodById('live', 'mod_Legendary_Weapon1_Guns_Sniper')!;
+    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [snipers]);
+    const none = computeScenarios(base({ weapon, modifiers }));
+    expect(none.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
+    const close = computeScenarios(base({ weapon, modifiers, enemy: { ...createDefaultEnemyConditions(), targetDistance: 'close' } }));
+    expect(close.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
+    const far = computeScenarios(base({ weapon, modifiers, enemy: { ...createDefaultEnemyConditions(), targetDistance: 'far' } }));
+    expect(far.freeAim.perHit.total / stockTotal).toBeCloseTo(2.0, 5);
+  });
+
+  it("Guerrilla (rank 3) adds +20% dbm to ranged weapons only against close-range targets", () => {
+    const guerrilla3 = getLoadoutModifiers('live', [{ perkId: PerkId.Guerrilla, rank: 3 }]);
+    const none = computeScenarios(base({ modifiers: guerrilla3 }));
+    expect(none.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
+    const close = computeScenarios(base({ modifiers: guerrilla3, enemy: { ...createDefaultEnemyConditions(), targetDistance: 'close' } }));
+    expect(close.freeAim.perHit.total / stockTotal).toBeCloseTo(1.2, 5);
+    const far = computeScenarios(base({ modifiers: guerrilla3, enemy: { ...createDefaultEnemyConditions(), targetDistance: 'far' } }));
+    expect(far.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
+  });
+
+  it("Polished follows its extracted 27-point curve: 0% at 100% condition (stock), +30% at 150%, +60% at 200% over-repaired", () => {
+    // ESM: MGEF Legendary_Weapon_PolishedPerkApplyEffect on STAT_DmgAll, curve
+    // input GetEquippedWeaponHealthPercent (no AVIF — edid-keyed override).
+    // Extracted curve carries exact points (x: 1.5, y: 30) and (x: 2.0, y: 60)
+    // at curveScale ≈ 0.01 — asserted directly, no interpolation needed.
+    const polished = getOmodById('live', 'mod_Legendary_Weapon4_Polished')!;
+    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [polished]);
+    const stock = computeScenarios(base({ weapon, modifiers }));
+    expect(stock.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
+    const at150 = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), weaponConditionPct: 150 } }));
+    expect(at150.freeAim.perHit.total / stockTotal).toBeCloseTo(1.3, 5);
+    const at200 = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), weaponConditionPct: 200 } }));
+    expect(at200.freeAim.perHit.total / stockTotal).toBeCloseTo(1.6, 5);
+  });
+});
+
+describe("Thrill-Seeker's (Stage C3, real data)", () => {
+  it('reload speed scales with kill-streak count (0/5/10 stacks), raising sustained DPS', () => {
+    const thrillSeeker = getOmodById('live', 'RA_mod_Legendary_Weapon4_ThrillSeeker')!;
+    const at0 = { ...createDefaultPlayerConditions(), adrenalineStacks: 0 };
+    const at5 = { ...createDefaultPlayerConditions(), adrenalineStacks: 5 };
+    const at10 = { ...createDefaultPlayerConditions(), adrenalineStacks: 10 };
+
+    const w0 = buildEffectiveWeapon(fixer, [thrillSeeker], 50, at0).weapon;
+    const w5 = buildEffectiveWeapon(fixer, [thrillSeeker], 50, at5).weapon;
+    const w10 = buildEffectiveWeapon(fixer, [thrillSeeker], 50, at10).weapon;
+
+    const baseReload = fixer.reloadSpeed ?? 1.0;
+    expect(w0.reloadSpeed).toBeCloseTo(baseReload, 6); // no tier matches 0 kill streak
+    expect(w5.reloadSpeed).toBeCloseTo(baseReload + 0.15, 5); // ONLY the count:5 tier (0.03×5)
+    expect(w10.reloadSpeed).toBeCloseTo(baseReload + 0.3, 5); // ONLY the count:10 tier (0.03×10)
+
+    const s0 = computeScenarios(base({ weapon: w0, player: at0 })).freeAim.sustain.sustainedDps;
+    const s5 = computeScenarios(base({ weapon: w5, player: at5 })).freeAim.sustain.sustainedDps;
+    const s10 = computeScenarios(base({ weapon: w10, player: at10 })).freeAim.sustain.sustainedDps;
+    expect(s5).toBeGreaterThan(s0);
+    expect(s10).toBeGreaterThan(s5);
+  });
+});
+
+describe('Action Boy/Girl (Stage C4, cross-family rank gate fix)', () => {
+  it('rank 3 (+45% AP regen) raises the stock Fixer\'s VATS AP-limited uptime', () => {
+    const withoutActionBoy = computeScenarios(base());
+    const actionBoy3 = getLoadoutModifiers('live', [{ perkId: PerkId.ActionBoyGirl, rank: 3 }]);
+    const withActionBoy = computeScenarios(base({ modifiers: actionBoy3 }));
+
+    expect(withoutActionBoy.vats.ap).toBeDefined();
+    expect(withoutActionBoy.vats.ap!.uptime).toBeLessThan(1); // stock Fixer is AP-limited in VATS
+    expect(withActionBoy.vats.ap).toBeDefined();
+    expect(withActionBoy.vats.ap!.uptime).toBeGreaterThan(withoutActionBoy.vats.ap!.uptime);
+  });
+
+  it('each rank grants its OWN flat tier, not a cumulative stack (15%/30%/45%, not 15+30+45%)', () => {
+    const rank1 = computeScenarios(base({ modifiers: getLoadoutModifiers('live', [{ perkId: PerkId.ActionBoyGirl, rank: 1 }]) }));
+    const rank2 = computeScenarios(base({ modifiers: getLoadoutModifiers('live', [{ perkId: PerkId.ActionBoyGirl, rank: 2 }]) }));
+    const rank3 = computeScenarios(base({ modifiers: getLoadoutModifiers('live', [{ perkId: PerkId.ActionBoyGirl, rank: 3 }]) }));
+    // uptime is monotonic in AP regen bonus (15% < 30% < 45%), all below 1
+    // (still AP-limited) so the comparison is meaningful.
+    expect(rank1.vats.ap!.uptime).toBeLessThan(rank2.vats.ap!.uptime);
+    expect(rank2.vats.ap!.uptime).toBeLessThan(rank3.vats.ap!.uptime);
+    expect(rank3.vats.ap!.uptime).toBeLessThan(1);
   });
 });
 

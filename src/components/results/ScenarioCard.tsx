@@ -1,9 +1,13 @@
 import { cn } from '@/lib/utils';
+import { formatDamage } from '@/lib/format';
 import type { ScenarioResult } from '@/lib/engine/scenarios';
 import type { ScenarioKey } from '@/state/build-reducer';
 import { useBuildDispatch } from '@/state/BuildProvider';
 import { DeltaFlash } from './DeltaFlash';
 import { CritGauge } from './CritGauge';
+
+const formatDotDps = (value: number) => `+${formatDamage(value)}/s`;
+const formatUptimePct = (uptime: number) => `${Math.round(uptime * 100)}% uptime`;
 
 interface ScenarioCardProps {
   scenarioKey: ScenarioKey;
@@ -43,6 +47,18 @@ export function ScenarioCard({ scenarioKey, label, result, emphasized }: Scenari
           value={hasReloadModel ? result.sustain.sustainedDps : result.perHit.total}
         />
       </div>
+      {result.dotDps > 0 && (
+        <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
+          <span>dot</span>
+          <DeltaFlash className="text-foreground text-sm" value={result.dotDps} format={formatDotDps} />
+        </div>
+      )}
+      {result.ap && result.ap.uptime < 1 && (
+        <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
+          <span>ap-limited ({formatUptimePct(result.ap.uptime)})</span>
+          <DeltaFlash className="text-foreground text-sm" value={result.ap.apLimitedDps} format={formatDamage} />
+        </div>
+      )}
       {result.critMeter && (
         <div className="pt-1">
           <CritGauge critMeter={result.critMeter} />

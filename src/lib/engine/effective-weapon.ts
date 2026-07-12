@@ -1,8 +1,8 @@
-import type { Weapon } from '@/types';
+import type { EnemyConditions, PlayerConditions, Weapon } from '@/types';
+import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
-import type { Modifier } from '@/types/modifiers';
-import { interpolateCurve } from '@/lib/curve-tables';
-import { foldOps } from './resolve';
+import type { Bucket, ModOp, Modifier } from '@/types/modifiers';
+import { effectiveValue, foldOps, type ResolveContext } from './resolve';
 
 /**
  * Applies equipped OMODs to a weapon before the engine runs:
@@ -17,40 +17,65 @@ export interface EffectiveWeapon {
   modifiers: Modifier[];
 }
 
-// Weapon-stat OMODs carry no runtime conditions, so their raw values fold
-// through the shared foldOps primitive (same SET/MUL_ADD/ADD rule as foldBucket).
-// Curve-valued stats (level-scaled Speed etc.) only have itemLevel as an axis
-// here — non-itemLevel curves on weapon stats would need the full resolver.
-function foldWeaponStat(modifiers: Modifier[], bucket: string, base: number, itemLevel: number): number {
-  const entries = modifiers
-    .filter(m => m.bucket === bucket)
-    .map(m => ({
-      op: m.op,
-      value: m.curve ? interpolateCurve(m.curve.points, itemLevel) * m.curveScale : m.value,
-    }));
+// Weapon-stat OMODs are USUALLY unconditional (receiver stats apply for as
+// long as the mod is equipped), but Thrill-Seeker's (Stage C3) proves a
+// conditioned case: its fireRateSpeed/reloadSpeed tiers gate on an exact
+// killStreakCount, so this fold must evaluate conditions like foldBucket
+// does — hence sharing `effectiveValue` (condition scale + curve/plain value)
+// rather than reading `m.value`/`m.curve` directly. `ctx` supplies whatever
+// player/enemy state those conditions read (itemLevel curves — level-scaled
+// Speed on heated melee mods — read `ctx.itemLevel`).
+function foldWeaponStat(modifiers: Modifier[], bucket: Bucket, base: number, ctx: ResolveContext): number {
+  const entries: Array<{ op: ModOp; value: number }> = [];
+  for (const m of modifiers) {
+    if (m.bucket !== bucket) continue;
+    const value = effectiveValue(m, ctx);
+    if (value !== null) entries.push({ op: m.op, value });
+  }
   return foldOps(entries, base);
 }
 
-export function buildEffectiveWeapon(weapon: Weapon, equippedOmods: GeneratedOmod[], itemLevel = 50): EffectiveWeapon {
+export function buildEffectiveWeapon(
+  weapon: Weapon,
+  equippedOmods: GeneratedOmod[],
+  itemLevel = 50,
+  player: PlayerConditions = createDefaultPlayerConditions(),
+  enemy: EnemyConditions = createDefaultEnemyConditions()
+): EffectiveWeapon {
   if (equippedOmods.length === 0) return { weapon, modifiers: [] };
 
   const allOmodModifiers = equippedOmods.flatMap(o => o.modifiers);
-  const weaponStatBuckets = new Set(['fireRateSpeed', 'isAutomatic', 'projectileCount', 'ammoCapacity', 'reloadSpeed']);
+  const weaponStatBuckets = new Set([
+    'fireRateSpeed', 'isAutomatic', 'projectileCount', 'ammoCapacity', 'reloadSpeed', 'vatsApCost',
+  ]);
 
   const keywords = [...new Set([...(weapon.keywords ?? []), ...equippedOmods.flatMap(o => o.addedKeywords)])];
-  const speed = foldWeaponStat(allOmodModifiers, 'fireRateSpeed', weapon.speed ?? 1.0, itemLevel);
+  // A neutral scenario (no VATS/sneak/crit/power-attack flags): weapon-stat
+  // conditions seen so far (killStreakCount) are scenario-independent, and
+  // this fold runs once per resolveLoadout call, before scenario branching.
+  const ctx: ResolveContext = {
+    weapon: { ...weapon, keywords },
+    player,
+    enemy,
+    scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
+    itemLevel,
+  };
+  const speed = foldWeaponStat(allOmodModifiers, 'fireRateSpeed', weapon.speed ?? 1.0, ctx);
   const isAutomatic =
-    foldWeaponStat(allOmodModifiers, 'isAutomatic', weapon.isAutomatic ? 1 : 0, itemLevel) > 0 ||
+    foldWeaponStat(allOmodModifiers, 'isAutomatic', weapon.isAutomatic ? 1 : 0, ctx) > 0 ||
     keywords.includes('WeaponTypeAutomatic');
   // NOTE: projectileCount folds into the effective weapon but NO damage term
   // consumes it yet — per-projectile/pellet modeling is deferred (with the
   // DoT engine work). Two Shot's damage today is only its extracted dbm.
-  const projectileCount = foldWeaponStat(allOmodModifiers, 'projectileCount', weapon.projectileCount ?? 1, itemLevel);
-  const capacity = foldWeaponStat(allOmodModifiers, 'ammoCapacity', weapon.capacity ?? 0, itemLevel);
-  const reloadSpeed = foldWeaponStat(allOmodModifiers, 'reloadSpeed', weapon.reloadSpeed ?? 1.0, itemLevel);
+  const projectileCount = foldWeaponStat(allOmodModifiers, 'projectileCount', weapon.projectileCount ?? 1, ctx);
+  const capacity = foldWeaponStat(allOmodModifiers, 'ammoCapacity', weapon.capacity ?? 0, ctx);
+  const reloadSpeed = foldWeaponStat(allOmodModifiers, 'reloadSpeed', weapon.reloadSpeed ?? 1.0, ctx);
+  // V.A.T.S. Optimized (Stage B): MUL_ADD −0.35 on the weapon's per-shot VATS
+  // AP cost, same fold pattern as ammoCapacity/reloadSpeed above.
+  const apCost = foldWeaponStat(allOmodModifiers, 'vatsApCost', weapon.apCost ?? 0, ctx);
 
   return {
-    weapon: { ...weapon, keywords, speed, isAutomatic, projectileCount, capacity, reloadSpeed },
+    weapon: { ...weapon, keywords, speed, isAutomatic, projectileCount, capacity, reloadSpeed, apCost },
     modifiers: allOmodModifiers.filter(m => !weaponStatBuckets.has(m.bucket)),
   };
 }

@@ -20,6 +20,22 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
     expect(slots.some(s => /legendary|customName|Appearance|Description/i.test(s.slot))).toBe(false);
   });
 
+  it('unique-effect mods on cosmetic slots surface only on their own weapons', () => {
+    // Perfect Storm's payload rides ap_customName and is listed in the 10mm
+    // SMG's templateModFormIds — offered there, never on the Fixer.
+    const smgSlots = getOmodSlots('live', getWeapons('live')['10mmSMG']);
+    const customSlot = smgSlots.find(s => s.slot === 'ap_customName');
+    expect(customSlot?.options.some(o => o.id === 'mod_Custom_PerfectStorm')).toBe(true);
+
+    // The V.A.T.S. Unknown crit-perk variants: badge-rescued + restricted to
+    // the unique alien blaster (weaponCorrections adds its missing slot).
+    const vatsUnknown = getWeapons('live')['W05_COMP_Astronaut_AlienBlaster_QuestReward'];
+    const vatsSlots = getOmodSlots('live', vatsUnknown);
+    const vatsCustom = vatsSlots.find(s => s.slot === 'ap_customName');
+    expect(vatsCustom?.options.map(o => o.id)).toContain('mod_Custom_TheVATSUnknown_BetterCriticals');
+    expect(vatsCustom?.options.filter(o => o.id.startsWith('mod_Custom_TheVATSUnknown_'))).toHaveLength(5);
+  });
+
   it('rewrites speed/automatic state and merges keywords', () => {
     const { weapon } = buildEffectiveWeapon(fixer, [receiver]);
     expect(weapon.speed).toBeCloseTo(0.8248, 4);
@@ -84,6 +100,66 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
     const { weapon, modifiers } = buildEffectiveWeapon(fixer, [magazineOmod]);
     expect(weapon.capacity).toBeCloseTo((fixer.capacity ?? 0) * 1.5, 6);
     expect(weapon.reloadSpeed).toBeCloseTo((fixer.reloadSpeed ?? 1) * 1.25, 6);
+    // Weapon-stat buckets never leak into the resolver's modifier list.
+    expect(modifiers).toHaveLength(0);
+  });
+
+  it('folds weapon-stat modifiers ONLY when their condition matches (synthetic, Stage C3 killStreakCount)', () => {
+    // Thrill-Seeker's shape: 3 mutually-exclusive killStreakCount tiers on
+    // reloadSpeed. Before Stage C3, foldWeaponStat ignored conditions
+    // entirely and would have summed all 3 unconditionally (0.03+0.06+0.09).
+    const thrillSeekerLike = {
+      id: 'test_thrill_seeker',
+      formId: '0x0',
+      name: "Test Thrill-Seeker's",
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_Legendary4',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: true,
+      modifiers: [1, 2, 3].map(n => ({
+        id: `0x0:${n}`,
+        source: { kind: 'omod' as const, formId: '0x0', edid: 'test_thrill_seeker', name: "Test Thrill-Seeker's" },
+        bucket: 'reloadSpeed' as const,
+        op: 'ADD' as const,
+        value: 0.03 * n,
+        conditions: [{ kind: 'killStreakCount' as const, count: n }],
+      })),
+    };
+    const base = fixer.reloadSpeed ?? 1.0;
+
+    const at0 = buildEffectiveWeapon(fixer, [thrillSeekerLike], 50, { ...createDefaultPlayerConditions(), adrenalineStacks: 0 });
+    expect(at0.weapon.reloadSpeed).toBeCloseTo(base, 6); // no tier matches 0 stacks
+
+    const at2 = buildEffectiveWeapon(fixer, [thrillSeekerLike], 50, { ...createDefaultPlayerConditions(), adrenalineStacks: 2 });
+    expect(at2.weapon.reloadSpeed).toBeCloseTo(base + 0.06, 6); // ONLY the count:2 tier fires
+  });
+
+  it('folds the vatsApCost OMOD bucket into the effective weapon (synthetic, Stage B)', () => {
+    const vatsOptimizedLike = {
+      id: 'test_vats_optimized',
+      formId: '0x0',
+      name: 'Test V.A.T.S. Optimized',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_Legendary3',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [
+        {
+          id: '0x0:0',
+          source: { kind: 'omod' as const, formId: '0x0', edid: 'test_vats_optimized', name: 'Test V.A.T.S. Optimized' },
+          bucket: 'vatsApCost' as const,
+          op: 'MUL_ADD' as const,
+          value: -0.35,
+          conditions: [],
+        },
+      ],
+    };
+    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [vatsOptimizedLike]);
+    expect(weapon.apCost).toBeCloseTo((fixer.apCost ?? 0) * 0.65, 6);
     // Weapon-stat buckets never leak into the resolver's modifier list.
     expect(modifiers).toHaveLength(0);
   });

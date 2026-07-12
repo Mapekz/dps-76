@@ -68,11 +68,11 @@ describe('buildReducer', () => {
     const s = run([
       { type: 'condition/set', key: 'isSneaking', value: true },
       { type: 'condition/set', key: 'healthPercent', value: 25 },
-      { type: 'enemy/condition', key: 'isFullHealth', value: true },
+      { type: 'enemy/condition', key: 'healthPercent', value: 35 },
     ]);
     expect(s.player.conditions.isSneaking).toBe(true);
     expect(s.player.conditions.healthPercent).toBe(25);
-    expect(s.enemy.conditions.isFullHealth).toBe(true);
+    expect(s.enemy.conditions.healthPercent).toBe(35);
   });
 
   it('build/importNd splits legendary perks by the "0" key prefix, replaces the loadout, merges SPECIAL', () => {

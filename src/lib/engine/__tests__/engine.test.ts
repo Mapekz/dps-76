@@ -3,7 +3,7 @@ import type { Weapon } from '@/types';
 import type { Bucket, Condition, ModOp, Modifier } from '@/types/modifiers';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
 import { foldBucket, foldOps, type ResolveContext } from '@/lib/engine/resolve';
-import { computePaperDamage, totalCritMult, totalSneakMult } from '@/lib/engine/paper-damage';
+import { computeDotDps, computePaperDamage, totalCritMult, totalSneakMult } from '@/lib/engine/paper-damage';
 import { computeScenarios } from '@/lib/engine/scenarios';
 
 // Engine-core tests: synthetic weapon + hand-fed modifiers, hand-computed
@@ -215,6 +215,260 @@ describe('computePaperDamage', () => {
       mode: 'live', weapon: unarmed, itemLevel: 50, modifiers: [], ctx: makeCtx(unarmed, { player }), bodyPartMult: 1, bodyPart: 'torso',
     });
     expect(unarmedResult.total).toBeCloseTo(100 * (1 + 20 / 10), 6);
+  });
+});
+
+describe('power-attack race multiplier (Stage C1, RACE record Damage Mult)', () => {
+  // HumanRace (0x00013746) = 1.5, PowerArmorRace (0x0001D31E) = 2.0 — the PA
+  // race swap IS the multiplier, applied as a whole factor OUTSIDE the dbm
+  // parenthesis (distinct from the additive powerAttackBonus bucket). Zero
+  // strength isolates the race mult from the STR melee term.
+  const zeroStr = { ...createDefaultPlayerConditions(), strength: 0 };
+  const paFlags = { isVats: false, isSneaking: false, isPowerAttack: true, isCrit: false };
+
+  it('multiplies a melee power attack ×1.5 normally', () => {
+    const melee = makeWeapon({ weaponClass: 'melee' });
+    const result = computePaperDamage({
+      mode: 'live', weapon: melee, itemLevel: 50, modifiers: [],
+      ctx: makeCtx(melee, { player: zeroStr, scenario: paFlags }), bodyPartMult: 1, bodyPart: 'torso',
+    });
+    expect(result.total).toBeCloseTo(150, 6); // 100 × 1.0 × 1.5
+  });
+
+  it('multiplies a melee power attack ×2.0 in Power Armor', () => {
+    const melee = makeWeapon({ weaponClass: 'melee' });
+    const result = computePaperDamage({
+      mode: 'live', weapon: melee, itemLevel: 50, modifiers: [],
+      ctx: makeCtx(melee, { player: { ...zeroStr, isInPowerArmor: true }, scenario: paFlags }),
+      bodyPartMult: 1, bodyPart: 'torso',
+    });
+    expect(result.total).toBeCloseTo(200, 6); // 100 × 1.0 × 2.0
+  });
+
+  it('does not apply to a non-power-attack hit', () => {
+    const melee = makeWeapon({ weaponClass: 'melee' });
+    const result = computePaperDamage({
+      mode: 'live', weapon: melee, itemLevel: 50, modifiers: [],
+      ctx: makeCtx(melee, { player: zeroStr }), bodyPartMult: 1, bodyPart: 'torso',
+    });
+    expect(result.total).toBeCloseTo(100, 6);
+  });
+
+  it('excludes automatic "power tool" melee (WeaponTypeAutomaticMelee — Ripper/Shredder/Auto Axe)', () => {
+    const autoMelee = makeWeapon({ weaponClass: 'melee', keywords: ['WeaponTypeAutomaticMelee'] });
+    const result = computePaperDamage({
+      mode: 'live', weapon: autoMelee, itemLevel: 50, modifiers: [],
+      ctx: makeCtx(autoMelee, { player: zeroStr, scenario: paFlags }), bodyPartMult: 1, bodyPart: 'torso',
+    });
+    expect(result.total).toBeCloseTo(100, 6); // no race mult
+  });
+
+  it('excludes unarmed power attacks (unarmed power events are not Power-Attack-flagged in RACE data)', () => {
+    const unarmed = makeWeapon({ weaponClass: 'unarmed' });
+    const result = computePaperDamage({
+      mode: 'live', weapon: unarmed, itemLevel: 50, modifiers: [],
+      ctx: makeCtx(unarmed, { player: zeroStr, scenario: paFlags }), bodyPartMult: 1, bodyPart: 'torso',
+    });
+    expect(result.total).toBeCloseTo(100, 6); // no race mult
+  });
+});
+
+describe('Charged cadence (Stage C2, cycle folded into sustained DPS)', () => {
+  // ESM: OMOD mod_Legendary_Weapon4_Melee_Charged ADDs WeaponHasSecondaryCharging
+  // (no enchantment); CURV weapon_chargedmeleeattack.json: charges 1/2/3 →
+  // +0.5/+1.5/+3.0 damage bonus, max 3. Modeled cycle: 3 light (normal) hits
+  // + 1 full-charge detonation (full power-attack treatment × (1 + 3.0)).
+  const chargedWeapon = makeWeapon({ weaponClass: 'melee', keywords: ['WeaponHasSecondaryCharging'] });
+  const zeroStr = { ...createDefaultPlayerConditions(), strength: 0 };
+  const baseInput = {
+    mode: 'live' as const, weapon: chargedWeapon, itemLevel: 50, modifiers: [],
+    player: zeroStr, enemy: createDefaultEnemyConditions(), weakpointMult: 2.0, critRate: 0,
+  };
+
+  it('averages 3 normal hits + 1 detonation over the 4-attack cycle', () => {
+    const s = computeScenarios(baseInput);
+    // normal hit = 100 (dbm 1.0, strTerm 0, no power-attack terms).
+    // detonation = 100 × 1.5 (race mult, not in Power Armor) × (1 + 3.0) = 600.
+    // cycle avg = (100×3 + 600) / 4 = 225; fireRate 1.0/s (unmodified melee
+    // stub) → burst = sustained = 225 (melee has no magazine to reload).
+    expect(s.freeAim.perHit.total).toBeCloseTo(100, 6); // per-hit display stays the plain hit
+    expect(s.freeAim.burstDps).toBeCloseTo(225, 6);
+    expect(s.freeAim.sustain.sustainedDps).toBeCloseTo(225, 6);
+  });
+
+  it('applies regardless of the isPowerAttacking toggle', () => {
+    const on = computeScenarios({ ...baseInput, player: { ...zeroStr, isPowerAttacking: true } });
+    const off = computeScenarios({ ...baseInput, player: { ...zeroStr, isPowerAttacking: false } });
+    expect(on.freeAim.burstDps).toBeCloseTo(225, 6);
+    expect(off.freeAim.burstDps).toBeCloseTo(225, 6);
+  });
+
+  it('doubles the detonation race mult in Power Armor (×2.0 instead of ×1.5)', () => {
+    const inPa = computeScenarios({ ...baseInput, player: { ...zeroStr, isInPowerArmor: true } });
+    // detonation = 100 × 2.0 × 4.0 = 800; cycle = (300 + 800) / 4 = 275.
+    expect(inPa.freeAim.burstDps).toBeCloseTo(275, 6);
+  });
+
+  it('a non-Charged melee weapon is unaffected (plain hit × fire rate, no cycle)', () => {
+    const plainMelee = makeWeapon({ weaponClass: 'melee' });
+    const s = computeScenarios({ ...baseInput, weapon: plainMelee });
+    expect(s.freeAim.burstDps).toBeCloseTo(100, 6);
+  });
+});
+
+describe('explosive payload twins (Stage A1, Explosive 2★)', () => {
+  const weapon = makeWeapon(); // 1 ballistic component, base 100, damageBonusMult 1.0
+
+  it('an explosive-scoped dbm modifier boosts ONLY the payload portion', () => {
+    const mods = [
+      mod({ bucket: 'explosivePayload', op: 'ADD', value: 0.2 }),
+      mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }] }),
+    ];
+    const result = computePaperDamage({
+      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    expect(result.components).toHaveLength(2);
+    expect(result.components[0]).toMatchObject({ damageType: 'ballistic' });
+    expect(result.components[0].damage).toBeCloseTo(100, 6); // ballistic untouched
+    expect(result.components[1]).toMatchObject({ damageType: 'explosive' });
+    // Twin base = 100 × 0.2 = 20; twin dbm = 1.0 (weapon base) + 0.5 (explosive-scoped) = 1.5.
+    expect(result.components[1].base).toBeCloseTo(20, 6);
+    expect(result.components[1].damage).toBeCloseTo(20 * 1.5, 6);
+    expect(result.total).toBeCloseTo(100 + 30, 6);
+  });
+
+  it('explosionMult multiplies only the twin', () => {
+    const mods = [
+      mod({ bucket: 'explosivePayload', op: 'ADD', value: 0.2 }),
+      mod({ bucket: 'explosionMult', op: 'MUL_ADD', value: 0.5 }),
+    ];
+    const result = computePaperDamage({
+      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    expect(result.components[0].damage).toBeCloseTo(100, 6); // original component unaffected
+    // Twin base 20, dbm fold 1.0 (no dbm mods), explosionMult 1.0 + 0.5×1.0 = 1.5 → 20 × 1.0 × 1.5 = 30.
+    expect(result.components[1].damage).toBeCloseTo(30, 6);
+    expect(result.total).toBeCloseTo(130, 6);
+  });
+
+  it('no twin is spawned when explosivePayload is inactive', () => {
+    const result = computePaperDamage({
+      mode: 'live', weapon, itemLevel: 50, modifiers: [], ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    expect(result.components).toHaveLength(1);
+    expect(result.total).toBeCloseTo(100, 6);
+  });
+});
+
+describe('computeDotDps (Stage A2, DoT line)', () => {
+  it('sums an active dotDamage magnitude into dotDps, 0 when its conditions fail', () => {
+    const weapon = makeWeapon({
+      components: [{ damageType: 'fire', tier: -1, levelCap: 50, curvePoints: FLAT_100 }],
+    });
+    const ctx = makeCtx(weapon);
+    const active = mod({
+      bucket: 'dotDamage', op: 'ADD', value: 3,
+      conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
+    });
+    expect(computeDotDps([active], weapon, ctx)).toBeCloseTo(3, 10);
+
+    // Scope names a type the weapon doesn't deal — the condition never matches.
+    const mismatched = mod({
+      bucket: 'dotDamage', op: 'ADD', value: 3,
+      conditions: [{ kind: 'damageTypeScope', types: ['poison'] }],
+    });
+    expect(computeDotDps([mismatched], weapon, ctx)).toBe(0);
+  });
+
+  it('surfaces on ScenarioResult.dotDps without moving perHit/burstDps/sustain', () => {
+    const weapon = makeWeapon({
+      components: [{ damageType: 'fire', tier: -1, levelCap: 50, curvePoints: FLAT_100 }],
+    });
+    const mods = [mod({ bucket: 'dotDamage', op: 'ADD', value: 3, conditions: [{ kind: 'damageTypeScope', types: ['fire'] }] })];
+    const input = {
+      mode: 'live' as const, weapon, itemLevel: 50, modifiers: mods,
+      player: createDefaultPlayerConditions(), enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2.0, critRate: 0,
+    };
+    const withDot = computeScenarios(input);
+    const withoutDot = computeScenarios({ ...input, modifiers: [] });
+    expect(withDot.freeAim.dotDps).toBeCloseTo(3, 10);
+    expect(withDot.vats.dotDps).toBeCloseTo(3, 10);
+    expect(withDot.freeAim.perHit.total).toBeCloseTo(withoutDot.freeAim.perHit.total, 10);
+    expect(withDot.freeAim.burstDps).toBeCloseTo(withoutDot.freeAim.burstDps, 10);
+    expect(withoutDot.freeAim.dotDps).toBe(0);
+  });
+});
+
+describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
+  // 20-round mag, 1 shot/s fire rate, 4s reload → magDumpSec 20s, reloadSec 4s,
+  // reload-inclusive shots/s = 20/24 (effectiveShotsPerSecond, NOT the raw 1.0/s
+  // fire rate — see ap-economy.ts's doc comment on why reload downtime counts).
+  const apWeapon = makeWeapon({
+    animDelaySec: 1.0, isPhysical: false, apCost: 16,
+    capacity: 20, ammoPerShot: 1, reloadSpeed: 1.0, animationReloadSec: 4.0,
+  });
+  const baseInput = {
+    mode: 'live' as const, weapon: apWeapon, itemLevel: 50, modifiers: [],
+    player: { ...createDefaultPlayerConditions(), agility: 15 },
+    enemy: createDefaultEnemyConditions(), weakpointMult: 2.0, critRate: 0,
+  };
+
+  it('surfaces an ap-limited uptime for a ranged weapon with a real VATS AP cost', () => {
+    const s = computeScenarios(baseInput);
+    // shotsPerSec = 20/24; drainPerSec = 16×20/24 = 40/3; regenPerSec = 4
+    // (no apRegen mods); apGainPerSec = 4 (no apPerCrit mods) → uptime = 4/(40/3) = 0.3.
+    expect(s.vats.ap).toBeDefined();
+    expect(s.vats.ap!.uptime).toBeCloseTo(0.3, 10);
+    expect(s.vats.ap!.apLimitedDps).toBeCloseTo(s.vats.sustain.sustainedDps * 0.3, 10);
+    expect(s.vats.ap!.secondsToEmpty).toBeDefined();
+    // AP economy is a VATS-only concept — free aim never carries it.
+    expect(s.freeAim.ap).toBeUndefined();
+  });
+
+  it('omits ap for melee weapons (AP-limited uptime is undefined for melee) and for zero-cost weapons', () => {
+    const meleeWeapon = makeWeapon({ weaponClass: 'melee', apCost: 52 });
+    expect(computeScenarios({ ...baseInput, weapon: meleeWeapon }).vats.ap).toBeUndefined();
+
+    const noCostWeapon = makeWeapon({ animDelaySec: 1.0, isPhysical: false, apCost: 0 });
+    expect(computeScenarios({ ...baseInput, weapon: noCostWeapon }).vats.ap).toBeUndefined();
+  });
+
+  it('apRegen/apPerCrit modifiers raise the gain rate and can saturate uptime at 1', () => {
+    const richRegen = [mod({ bucket: 'apRegen', op: 'ADD', value: 10 })]; // absurd but isolates the math
+    const s = computeScenarios({ ...baseInput, modifiers: richRegen });
+    expect(s.vats.ap!.uptime).toBe(1);
+    expect(s.vats.ap!.secondsToEmpty).toBeUndefined();
+  });
+});
+
+describe('computeScenarios hit rate (Stage B, manual-aim only)', () => {
+  const weapon = makeWeapon({
+    animDelaySec: 1.0, isPhysical: false, capacity: 20, ammoPerShot: 1, reloadSpeed: 1.0, animationReloadSec: 4.0,
+  });
+  const input = {
+    mode: 'live' as const, weapon, itemLevel: 50, modifiers: [],
+    player: createDefaultPlayerConditions(), enemy: createDefaultEnemyConditions(),
+    weakpointMult: 2.0, critRate: 0,
+  };
+
+  it('scales free-aim SUSTAINED dps only — burst, per-hit, and VATS stay unchanged', () => {
+    const full = computeScenarios(input);
+    const half = computeScenarios({ ...input, player: { ...input.player, hitRatePct: 50 } });
+
+    expect(half.freeAim.sustain.sustainedDps).toBeCloseTo(full.freeAim.sustain.sustainedDps * 0.5, 10);
+    expect(half.freeAim.burstDps).toBeCloseTo(full.freeAim.burstDps, 10);
+    expect(half.freeAim.perHit.total).toBeCloseTo(full.freeAim.perHit.total, 10);
+    expect(half.vats.sustain.sustainedDps).toBeCloseTo(full.vats.sustain.sustainedDps, 10);
+    expect(half.vats.burstDps).toBeCloseTo(full.vats.burstDps, 10);
+  });
+
+  it('defaults to unscaled (100%) when hitRatePct is entirely omitted from player state', () => {
+    const playerWithoutHitRate = createDefaultPlayerConditions();
+    delete playerWithoutHitRate.hitRatePct;
+    const withField = computeScenarios(input); // default factory sets hitRatePct: 100
+    const withoutField = computeScenarios({ ...input, player: playerWithoutHitRate });
+    expect(withoutField.freeAim.sustain.sustainedDps).toBeCloseTo(withField.freeAim.sustain.sustainedDps, 10);
   });
 });
 
