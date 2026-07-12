@@ -1,0 +1,811 @@
+{
+  "header": {
+    "signature": "BPTD",
+    "form_id": "0x00017AD4",
+    "flags": 0,
+    "form_version": 202,
+    "data_size": 4218,
+    "offset": 906895809
+  },
+  "editor_id": "HumanBodyPartData",
+  "fields": {
+    "_record_type": "Body Part Data",
+    "Editor ID": "HumanBodyPartData",
+    "Model": {
+      "Model FileName": "actors\\Character\\CharacterAssets\\skeleton.nif",
+      "Model Information": {
+        "Counters": {
+          "Textures": 0,
+          "Addon Nodes": 0,
+          "SRGB": 0,
+          "Materials": 0
+        },
+        "Textures": [],
+        "Addon Nodes": [],
+        "Materials": []
+      }
+    },
+    "Body Parts": [
+      {
+        "Body Part": {
+          "Part Name": "Headtracking",
+          "Part Node": "Head",
+          "VATS Target": "AnimObjectA",
+          "Data": {
+            "Damage Mult": 1.0,
+            "Explodable - Debris": null,
+            "Explodable - Explosion": null,
+            "Explodable - Debris Scale": 1.0,
+            "Severable - Debris": null,
+            "Severable - Explosion": null,
+            "Severable - Debris Scale": 1.0,
+            "Cut - Min": 0.0,
+            "Cut - Max": 0.0,
+            "Cut - Radius": 0.0,
+            "Gore Effects - Local Rotate X": 0.0,
+            "Gore Effects - Local Rotate Y": 0.0,
+            "Cut - Tesselation": 0.0,
+            "Severable - Impact DataSet": null,
+            "Explodable - Impact DataSet": null,
+            "Explodable - Limb Replacement Scale": 1.0,
+            "Flags": {
+              "value": "0x0",
+              "flags": []
+            },
+            "Part Type": {
+              "value": 2,
+              "name": "Eye"
+            },
+            "Health Percent": 0,
+            "Actor Value": null,
+            "To Hit Chance": 0,
+            "Explodable - Explosion Chance %": 0,
+            "Non-Lethal Dismemberment Chance": 0,
+            "Severable - Debris Count": 0,
+            "Explodable - Debris Count": 0,
+            "Severable - Decal Count": 0,
+            "Explodable - Decal Count": 0,
+            "Geometry Segment Index": 0,
+            "On Cripple": {
+              "Art Object": null,
+              "Debris": null,
+              "Explosion": null,
+              "Impact DataSet": null,
+              "Debris Scale": 1.0,
+              "Debris Count": 0,
+              "Decal Count": 0
+            },
+            "Unknown": 0.0
+          },
+          "Limb Replacement Model": "",
+          "Gore Effects - Target Bone": "AnimObjectA",
+          "Model Information": {
+            "hex": "",
+            "_raw": true
+          },
+          "Hit Reaction - Start": "AnimObjectA",
+          "Hit Reaction - End": "AnimObjectA",
+          "Meat Cap TextureSet": "0x000B3439",
+          "Twist Variable Prefix": "",
+          "Bone Name": "Head"
+        }
+      },
+      {
+        "Body Part": {
+          "Part Name": "RaiderLeftFoot",
+          "Part Node": "LLeg_Foot",
+          "VATS Target": "LLeg_Foot",
+          "Data": {
+            "Damage Mult": 1.0,
+            "Explodable - Debris": null,
+            "Explodable - Explosion": null,
+            "Explodable - Debris Scale": 1.0,
+            "Severable - Debris": null,
+            "Severable - Explosion": null,
+            "Severable - Debris Scale": 1.0,
+            "Cut - Min": 0.0,
+            "Cut - Max": 0.0,
+            "Cut - Radius": 0.0,
+            "Gore Effects - Local Rotate X": 0.0,
+            "Gore Effects - Local Rotate Y": 0.0,
+            "Cut - Tesselation": 0.0,
+            "Severable - Impact DataSet": null,
+            "Explodable - Impact DataSet": null,
+            "Explodable - Limb Replacement Scale": 1.0,
+            "Flags": {
+              "value": "0x0",
+              "flags": []
+            },
+            "Part Type": {
+              "value": 23,
+              "name": "Left Foot"
+            },
+            "Health Percent": 35,
+            "Actor Value": "0x00000370",
+            "To Hit Chance": 50,
+            "Explodable - Explosion Chance %": 0,
+            "Non-Lethal Dismemberment Chance": 0,
+            "Severable - Debris Count": 0,
+            "Explodable - Debris Count": 0,
+            "Severable - Decal Count": 0,
+            "Explodable - Decal Count": 0,
+            "Geometry Segment Index": 6,
+            "On Cripple": {
+              "Art Object": null,
+              "Debris": null,
+              "Explosion": null,
+              "Impact DataSet": null,
+              "Debris Scale": 1.0,
+              "Debris Count": 0,
+              "Decal Count": 0
+            },
+            "Unknown": 0.0
+          },
+          "Limb Replacement Model": "",
+          "Gore Effects - Target Bone": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Model Information": {
+            "hex": "",
+            "_raw": true
+          },
+          "Hit Reaction - Start": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Hit Reaction - End": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Meat Cap TextureSet": "0x000B3438",
+          "Twist Variable Prefix": "",
+          "Bone Name": "LLeg_Foot"
+        }
+      },
+      {
+        "Body Part": {
+          "Part Name": "RaiderRightFoot",
+          "Part Node": "RLeg_Foot",
+          "VATS Target": "RLeg_Foot",
+          "Data": {
+            "Damage Mult": 1.0,
+            "Explodable - Debris": null,
+            "Explodable - Explosion": null,
+            "Explodable - Debris Scale": 1.0,
+            "Severable - Debris": null,
+            "Severable - Explosion": null,
+            "Severable - Debris Scale": 1.0,
+            "Cut - Min": 0.0,
+            "Cut - Max": 0.0,
+            "Cut - Radius": 0.0,
+            "Gore Effects - Local Rotate X": 0.0,
+            "Gore Effects - Local Rotate Y": 0.0,
+            "Cut - Tesselation": 0.0,
+            "Severable - Impact DataSet": null,
+            "Explodable - Impact DataSet": null,
+            "Explodable - Limb Replacement Scale": 1.0,
+            "Flags": {
+              "value": "0x0",
+              "flags": []
+            },
+            "Part Type": {
+              "value": 24,
+              "name": "Right Foot"
+            },
+            "Health Percent": 35,
+            "Actor Value": "0x00000371",
+            "To Hit Chance": 50,
+            "Explodable - Explosion Chance %": 0,
+            "Non-Lethal Dismemberment Chance": 0,
+            "Severable - Debris Count": 0,
+            "Explodable - Debris Count": 0,
+            "Severable - Decal Count": 0,
+            "Explodable - Decal Count": 0,
+            "Geometry Segment Index": 5,
+            "On Cripple": {
+              "Art Object": null,
+              "Debris": null,
+              "Explosion": null,
+              "Impact DataSet": null,
+              "Debris Scale": 1.0,
+              "Debris Count": 0,
+              "Decal Count": 0
+            },
+            "Unknown": 0.0
+          },
+          "Limb Replacement Model": "",
+          "Gore Effects - Target Bone": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Model Information": {
+            "hex": "",
+            "_raw": true
+          },
+          "Hit Reaction - Start": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Hit Reaction - End": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Meat Cap TextureSet": "0x000B3438",
+          "Twist Variable Prefix": "",
+          "Bone Name": "RLeg_Foot"
+        }
+      },
+      {
+        "Body Part": {
+          "Part Name": "Weapon",
+          "Part Node": "RArm_Hand",
+          "VATS Target": "RArm_Hand",
+          "Data": {
+            "Damage Mult": 1.0,
+            "Explodable - Debris": null,
+            "Explodable - Explosion": null,
+            "Explodable - Debris Scale": 1.0,
+            "Severable - Debris": null,
+            "Severable - Explosion": null,
+            "Severable - Debris Scale": 1.0,
+            "Cut - Min": 0.0,
+            "Cut - Max": 0.0,
+            "Cut - Radius": 0.0,
+            "Gore Effects - Local Rotate X": 0.0,
+            "Gore Effects - Local Rotate Y": 0.0,
+            "Cut - Tesselation": 0.0,
+            "Severable - Impact DataSet": null,
+            "Explodable - Impact DataSet": null,
+            "Explodable - Limb Replacement Scale": 1.0,
+            "Flags": {
+              "value": "0x0",
+              "flags": []
+            },
+            "Part Type": {
+              "value": 17,
+              "name": "Weapon"
+            },
+            "Health Percent": 0,
+            "Actor Value": null,
+            "To Hit Chance": 0,
+            "Explodable - Explosion Chance %": 0,
+            "Non-Lethal Dismemberment Chance": 0,
+            "Severable - Debris Count": 0,
+            "Explodable - Debris Count": 0,
+            "Severable - Decal Count": 0,
+            "Explodable - Decal Count": 0,
+            "Geometry Segment Index": 0,
+            "On Cripple": {
+              "Art Object": null,
+              "Debris": null,
+              "Explosion": null,
+              "Impact DataSet": null,
+              "Debris Scale": 1.0,
+              "Debris Count": 0,
+              "Decal Count": 0
+            },
+            "Unknown": 0.0
+          },
+          "Limb Replacement Model": "",
+          "Gore Effects - Target Bone": "AnimObjectA",
+          "Model Information": {
+            "hex": "",
+            "_raw": true
+          },
+          "Hit Reaction - Start": "AnimObjectA",
+          "Hit Reaction - End": "AnimObjectA",
+          "Twist Variable Prefix": "",
+          "Bone Name": "RArm_Hand"
+        }
+      },
+      {
+        "Body Part": {
+          "Part Name": "Root",
+          "Part Node": "Root",
+          "VATS Target": "Root",
+          "Data": {
+            "Damage Mult": 1.0,
+            "Explodable - Debris": null,
+            "Explodable - Explosion": null,
+            "Explodable - Debris Scale": 1.0,
+            "Severable - Debris": null,
+            "Severable - Explosion": null,
+            "Severable - Debris Scale": 1.0,
+            "Cut - Min": 0.0,
+            "Cut - Max": 0.0,
+            "Cut - Radius": 0.0,
+            "Gore Effects - Local Rotate X": 0.0,
+            "Gore Effects - Local Rotate Y": 0.0,
+            "Cut - Tesselation": 0.0,
+            "Severable - Impact DataSet": null,
+            "Explodable - Impact DataSet": null,
+            "Explodable - Limb Replacement Scale": 1.0,
+            "Flags": {
+              "value": "0x0",
+              "flags": []
+            },
+            "Part Type": {
+              "value": 18,
+              "name": "Root"
+            },
+            "Health Percent": 0,
+            "Actor Value": null,
+            "To Hit Chance": 0,
+            "Explodable - Explosion Chance %": 0,
+            "Non-Lethal Dismemberment Chance": 0,
+            "Severable - Debris Count": 0,
+            "Explodable - Debris Count": 0,
+            "Severable - Decal Count": 0,
+            "Explodable - Decal Count": 0,
+            "Geometry Segment Index": 0,
+            "On Cripple": {
+              "Art Object": null,
+              "Debris": null,
+              "Explosion": null,
+              "Impact DataSet": null,
+              "Debris Scale": 1.0,
+              "Debris Count": 0,
+              "Decal Count": 0
+            },
+            "Unknown": 0.0
+          },
+          "Limb Replacement Model": "",
+          "Gore Effects - Target Bone": "AnimObjectA",
+          "Model Information": {
+            "hex": "",
+            "_raw": true
+          },
+          "Hit Reaction - Start": "AnimObjectA",
+          "Hit Reaction - End": "AnimObjectA",
+          "Twist Variable Prefix": "",
+          "Bone Name": "Root"
+        }
+      },
+      {
+        "Body Part": {
+          "Part Name": "Camera",
+          "Part Node": "Camera",
+          "VATS Target": "Camera",
+          "Data": {
+            "Damage Mult": 1.0,
+            "Explodable - Debris": null,
+            "Explodable - Explosion": null,
+            "Explodable - Debris Scale": 1.0,
+            "Severable - Debris": null,
+            "Severable - Explosion": null,
+            "Severable - Debris Scale": 1.0,
+            "Cut - Min": 0.0,
+            "Cut - Max": 0.0,
+            "Cut - Radius": 0.0,
+            "Gore Effects - Local Rotate X": 0.0,
+            "Gore Effects - Local Rotate Y": 0.0,
+            "Cut - Tesselation": 0.0,
+            "Severable - Impact DataSet": null,
+            "Explodable - Impact DataSet": null,
+            "Explodable - Limb Replacement Scale": 1.0,
+            "Flags": {
+              "value": "0x0",
+              "flags": []
+            },
+            "Part Type": {
+              "value": 21,
+              "name": "Camera"
+            },
+            "Health Percent": 0,
+            "Actor Value": null,
+            "To Hit Chance": 0,
+            "Explodable - Explosion Chance %": 0,
+            "Non-Lethal Dismemberment Chance": 0,
+            "Severable - Debris Count": 0,
+            "Explodable - Debris Count": 0,
+            "Severable - Decal Count": 0,
+            "Explodable - Decal Count": 0,
+            "Geometry Segment Index": 0,
+            "On Cripple": {
+              "Art Object": null,
+              "Debris": null,
+              "Explosion": null,
+              "Impact DataSet": null,
+              "Debris Scale": 1.0,
+              "Debris Count": 0,
+              "Decal Count": 0
+            },
+            "Unknown": 0.0
+          },
+          "Limb Replacement Model": "",
+          "Gore Effects - Target Bone": "AnimObjectA",
+          "Model Information": {
+            "hex": "",
+            "_raw": true
+          },
+          "Hit Reaction - Start": "AnimObjectA",
+          "Hit Reaction - End": "AnimObjectA",
+          "Twist Variable Prefix": "",
+          "Bone Name": "Camera"
+        }
+      },
+      {
+        "Body Part": {
+          "Part Name": "Right Leg",
+          "Part Node": "RLeg_Thigh",
+          "VATS Target": "RLeg_Calf",
+          "Data": {
+            "Damage Mult": 1.0,
+            "Explodable - Debris": null,
+            "Explodable - Explosion": null,
+            "Explodable - Debris Scale": 0.0,
+            "Severable - Debris": null,
+            "Severable - Explosion": null,
+            "Severable - Debris Scale": 0.0,
+            "Cut - Min": 0.0,
+            "Cut - Max": 0.0,
+            "Cut - Radius": 0.0,
+            "Gore Effects - Local Rotate X": 0.0,
+            "Gore Effects - Local Rotate Y": 0.0,
+            "Cut - Tesselation": 0.0,
+            "Severable - Impact DataSet": null,
+            "Explodable - Impact DataSet": null,
+            "Explodable - Limb Replacement Scale": 1.0,
+            "Flags": {
+              "value": "0x9",
+              "flags": [
+                "Severable",
+                "Explodable"
+              ]
+            },
+            "Part Type": {
+              "value": 13,
+              "name": "RightLeg1"
+            },
+            "Health Percent": 35,
+            "Actor Value": "0x00000371",
+            "To Hit Chance": 50,
+            "Explodable - Explosion Chance %": 50,
+            "Non-Lethal Dismemberment Chance": 0,
+            "Severable - Debris Count": 0,
+            "Explodable - Debris Count": 0,
+            "Severable - Decal Count": 0,
+            "Explodable - Decal Count": 0,
+            "Geometry Segment Index": 5,
+            "On Cripple": {
+              "Art Object": null,
+              "Debris": null,
+              "Explosion": null,
+              "Impact DataSet": null,
+              "Debris Scale": 1.0,
+              "Debris Count": 0,
+              "Decal Count": 0
+            },
+            "Unknown": 0.0
+          },
+          "Limb Replacement Model": "Gore\\GoreHumanLegR.nif",
+          "Gore Effects - Target Bone": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Model Information": {
+            "hex": "",
+            "_raw": true
+          },
+          "Hit Reaction - Start": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Hit Reaction - End": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Twist Variable Prefix": "",
+          "Bone Name": "RLeg_Thigh"
+        }
+      },
+      {
+        "Body Part": {
+          "Part Name": "Left Leg",
+          "Part Node": "LLeg_Thigh",
+          "VATS Target": "LLeg_Calf",
+          "Data": {
+            "Damage Mult": 1.0,
+            "Explodable - Debris": null,
+            "Explodable - Explosion": null,
+            "Explodable - Debris Scale": 0.0,
+            "Severable - Debris": null,
+            "Severable - Explosion": null,
+            "Severable - Debris Scale": 0.0,
+            "Cut - Min": 0.0,
+            "Cut - Max": 0.0,
+            "Cut - Radius": 0.0,
+            "Gore Effects - Local Rotate X": 0.0,
+            "Gore Effects - Local Rotate Y": 0.0,
+            "Cut - Tesselation": 0.0,
+            "Severable - Impact DataSet": null,
+            "Explodable - Impact DataSet": null,
+            "Explodable - Limb Replacement Scale": 1.0,
+            "Flags": {
+              "value": "0x9",
+              "flags": [
+                "Severable",
+                "Explodable"
+              ]
+            },
+            "Part Type": {
+              "value": 10,
+              "name": "LeftLeg1"
+            },
+            "Health Percent": 35,
+            "Actor Value": "0x00000370",
+            "To Hit Chance": 50,
+            "Explodable - Explosion Chance %": 50,
+            "Non-Lethal Dismemberment Chance": 0,
+            "Severable - Debris Count": 0,
+            "Explodable - Debris Count": 0,
+            "Severable - Decal Count": 0,
+            "Explodable - Decal Count": 0,
+            "Geometry Segment Index": 6,
+            "On Cripple": {
+              "Art Object": null,
+              "Debris": null,
+              "Explosion": null,
+              "Impact DataSet": null,
+              "Debris Scale": 1.0,
+              "Debris Count": 0,
+              "Decal Count": 0
+            },
+            "Unknown": 0.0
+          },
+          "Limb Replacement Model": "Gore\\GoreHumanLegL.nif",
+          "Gore Effects - Target Bone": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Model Information": {
+            "hex": "",
+            "_raw": true
+          },
+          "Hit Reaction - Start": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Hit Reaction - End": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Twist Variable Prefix": "",
+          "Bone Name": "LLeg_Thigh"
+        }
+      },
+      {
+        "Body Part": {
+          "Part Name": "Right Arm",
+          "Part Node": "RArm_UpperArm",
+          "VATS Target": "RArm_ForeArm1",
+          "Data": {
+            "Damage Mult": 1.0,
+            "Explodable - Debris": null,
+            "Explodable - Explosion": null,
+            "Explodable - Debris Scale": 0.0,
+            "Severable - Debris": null,
+            "Severable - Explosion": null,
+            "Severable - Debris Scale": 0.0,
+            "Cut - Min": 0.0,
+            "Cut - Max": 0.0,
+            "Cut - Radius": 0.0,
+            "Gore Effects - Local Rotate X": 0.0,
+            "Gore Effects - Local Rotate Y": 0.0,
+            "Cut - Tesselation": 0.0,
+            "Severable - Impact DataSet": null,
+            "Explodable - Impact DataSet": null,
+            "Explodable - Limb Replacement Scale": 1.0,
+            "Flags": {
+              "value": "0x9",
+              "flags": [
+                "Severable",
+                "Explodable"
+              ]
+            },
+            "Part Type": {
+              "value": 8,
+              "name": "RightArm1"
+            },
+            "Health Percent": 25,
+            "Actor Value": "0x0000036F",
+            "To Hit Chance": 45,
+            "Explodable - Explosion Chance %": 50,
+            "Non-Lethal Dismemberment Chance": 0,
+            "Severable - Debris Count": 0,
+            "Explodable - Debris Count": 0,
+            "Severable - Decal Count": 0,
+            "Explodable - Decal Count": 0,
+            "Geometry Segment Index": 2,
+            "On Cripple": {
+              "Art Object": null,
+              "Debris": null,
+              "Explosion": null,
+              "Impact DataSet": null,
+              "Debris Scale": 1.0,
+              "Debris Count": 0,
+              "Decal Count": 0
+            },
+            "Unknown": 0.0
+          },
+          "Limb Replacement Model": "Gore\\GoreHumanArmR.nif",
+          "Gore Effects - Target Bone": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Model Information": {
+            "hex": "",
+            "_raw": true
+          },
+          "Hit Reaction - Start": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Hit Reaction - End": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Twist Variable Prefix": "",
+          "Bone Name": "RArm_UpperArm"
+        }
+      },
+      {
+        "Body Part": {
+          "Part Name": "Left Arm",
+          "Part Node": "LArm_UpperArm",
+          "VATS Target": "LArm_ForeArm1",
+          "Data": {
+            "Damage Mult": 1.0,
+            "Explodable - Debris": null,
+            "Explodable - Explosion": null,
+            "Explodable - Debris Scale": 0.0,
+            "Severable - Debris": null,
+            "Severable - Explosion": null,
+            "Severable - Debris Scale": 0.0,
+            "Cut - Min": 0.0,
+            "Cut - Max": 0.0,
+            "Cut - Radius": 0.0,
+            "Gore Effects - Local Rotate X": 0.0,
+            "Gore Effects - Local Rotate Y": 0.0,
+            "Cut - Tesselation": 0.0,
+            "Severable - Impact DataSet": null,
+            "Explodable - Impact DataSet": null,
+            "Explodable - Limb Replacement Scale": 1.0,
+            "Flags": {
+              "value": "0x9",
+              "flags": [
+                "Severable",
+                "Explodable"
+              ]
+            },
+            "Part Type": {
+              "value": 6,
+              "name": "LeftArm1"
+            },
+            "Health Percent": 25,
+            "Actor Value": "0x0000036E",
+            "To Hit Chance": 45,
+            "Explodable - Explosion Chance %": 50,
+            "Non-Lethal Dismemberment Chance": 0,
+            "Severable - Debris Count": 0,
+            "Explodable - Debris Count": 0,
+            "Severable - Decal Count": 0,
+            "Explodable - Decal Count": 0,
+            "Geometry Segment Index": 4,
+            "On Cripple": {
+              "Art Object": null,
+              "Debris": null,
+              "Explosion": null,
+              "Impact DataSet": null,
+              "Debris Scale": 1.0,
+              "Debris Count": 0,
+              "Decal Count": 0
+            },
+            "Unknown": 0.0
+          },
+          "Limb Replacement Model": "Gore\\GoreHumanArmL.nif",
+          "Gore Effects - Target Bone": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Model Information": {
+            "hex": "",
+            "_raw": true
+          },
+          "Hit Reaction - Start": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Hit Reaction - End": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Twist Variable Prefix": "",
+          "Bone Name": "LArm_UpperArm"
+        }
+      },
+      {
+        "Body Part": {
+          "Part Name": "Head",
+          "Part Node": "Neck",
+          "VATS Target": "Head",
+          "Data": {
+            "Damage Mult": 1.5,
+            "Explodable - Debris": null,
+            "Explodable - Explosion": null,
+            "Explodable - Debris Scale": 0.0,
+            "Severable - Debris": null,
+            "Severable - Explosion": null,
+            "Severable - Debris Scale": 0.0,
+            "Cut - Min": 0.0,
+            "Cut - Max": 2.0,
+            "Cut - Radius": 0.0,
+            "Gore Effects - Local Rotate X": 0.0,
+            "Gore Effects - Local Rotate Y": 0.0,
+            "Cut - Tesselation": 0.0,
+            "Severable - Impact DataSet": null,
+            "Explodable - Impact DataSet": null,
+            "Explodable - Limb Replacement Scale": 0.0,
+            "Flags": {
+              "value": "0x1B",
+              "flags": [
+                "Severable",
+                "Hit Reaction",
+                "Explodable",
+                "Cut - Meat Cap Sever"
+              ]
+            },
+            "Part Type": {
+              "value": 1,
+              "name": "Head1"
+            },
+            "Health Percent": 20,
+            "Actor Value": "0x0000036C",
+            "To Hit Chance": 30,
+            "Explodable - Explosion Chance %": 50,
+            "Non-Lethal Dismemberment Chance": 0,
+            "Severable - Debris Count": 0,
+            "Explodable - Debris Count": 8,
+            "Severable - Decal Count": 0,
+            "Explodable - Decal Count": 0,
+            "Geometry Segment Index": 1,
+            "On Cripple": {
+              "Art Object": null,
+              "Debris": null,
+              "Explosion": null,
+              "Impact DataSet": null,
+              "Debris Scale": 1.0,
+              "Debris Count": 0,
+              "Decal Count": 0
+            },
+            "Unknown": 0.0
+          },
+          "Limb Replacement Model": "Gore\\GoreHumanHead01.nif",
+          "Gore Effects - Target Bone": "BASE Meshes\\actors\\Character\\CharacterAssets\\skeleton.nif",
+          "Model Information": {
+            "hex": "",
+            "_raw": true
+          },
+          "Hit Reaction - Start": "Neck",
+          "Hit Reaction - End": "Head",
+          "Twist Variable Prefix": "Head",
+          "Bone Name": "Neck"
+        }
+      },
+      {
+        "Body Part": {
+          "Part Name": "Torso",
+          "Part Node": "COM",
+          "VATS Target": "Chest",
+          "Data": {
+            "Damage Mult": 1.0,
+            "Explodable - Debris": null,
+            "Explodable - Explosion": "0x00054A73",
+            "Explodable - Debris Scale": 0.0,
+            "Severable - Debris": null,
+            "Severable - Explosion": null,
+            "Severable - Debris Scale": 1.0,
+            "Cut - Min": 0.0,
+            "Cut - Max": 0.0,
+            "Cut - Radius": 0.0,
+            "Gore Effects - Local Rotate X": 0.0,
+            "Gore Effects - Local Rotate Y": 0.0,
+            "Cut - Tesselation": 0.0,
+            "Severable - Impact DataSet": null,
+            "Explodable - Impact DataSet": null,
+            "Explodable - Limb Replacement Scale": 1.0,
+            "Flags": {
+              "value": "0xE",
+              "flags": [
+                "Hit Reaction",
+                "Hit Reaction - Default",
+                "Explodable"
+              ]
+            },
+            "Part Type": {
+              "value": 0,
+              "name": "Torso"
+            },
+            "Health Percent": 75,
+            "Actor Value": "0x0000036D",
+            "To Hit Chance": 60,
+            "Explodable - Explosion Chance %": 100,
+            "Non-Lethal Dismemberment Chance": 0,
+            "Severable - Debris Count": 0,
+            "Explodable - Debris Count": 10,
+            "Severable - Decal Count": 0,
+            "Explodable - Decal Count": 0,
+            "Geometry Segment Index": 3,
+            "On Cripple": {
+              "Art Object": null,
+              "Debris": null,
+              "Explosion": null,
+              "Impact DataSet": null,
+              "Debris Scale": 1.0,
+              "Debris Count": 0,
+              "Decal Count": 0
+            },
+            "Unknown": 0.0
+          },
+          "Limb Replacement Model": "Gore\\GoreHumanTorso.nif",
+          "Gore Effects - Target Bone": "COM",
+          "Model Information": {
+            "hex": "",
+            "_raw": true
+          },
+          "Hit Reaction - Start": "SPINE1",
+          "Hit Reaction - End": "Chest",
+          "Twist Variable Prefix": "Spine",
+          "Bone Name": "COM"
+        }
+      }
+    ]
+  }
+}

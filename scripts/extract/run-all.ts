@@ -7,9 +7,10 @@ import { extractWeapons } from './extract-weapons';
 import { extractPerks } from './extract-perks';
 import { extractOmods } from './extract-omods';
 import { extractBuffs } from './extract-buffs';
+import { extractBodyParts } from './extract-bodyparts';
 import { checkAdrenalCurve } from './checks/adrenal-curve-check';
 
-const KNOWN_EXTRACTORS = ['weapons', 'perks', 'omods', 'buffs'] as const;
+const KNOWN_EXTRACTORS = ['weapons', 'perks', 'omods', 'buffs', 'bodyparts'] as const;
 type ExtractorName = (typeof KNOWN_EXTRACTORS)[number];
 
 async function main() {
@@ -145,6 +146,15 @@ async function main() {
     meta.unresolved.push(...result.notes);
     meta.unresolved.push(...result.unmappedAvifs.map(a => `unmapped buff AVIF: ${a}`));
     console.log(`  ${result.mutations.length} mutations, ${result.consumables.length} consumables (notes: ${result.notes.length})`);
+  }
+
+  if (only.includes('bodyparts')) {
+    console.log('Extracting enemy body parts…');
+    const result = await extractBodyParts(client);
+    await writeFile(path.join(outDir, 'bodyparts.json'), JSON.stringify(result.races, null, 1));
+    meta.counts.bodypartRaces = result.races.length;
+    meta.unresolved.push(...result.unresolved);
+    console.log(`  ${result.races.length} races (unresolved: ${result.unresolved.length})`);
   }
 
   await writeFile(path.join(outDir, '_meta.json'), JSON.stringify(meta, null, 2));
