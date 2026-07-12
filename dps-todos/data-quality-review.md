@@ -72,6 +72,10 @@ exposed" group both landed:
 - Onslaught family (Furious, Pounder's, Splinter's, Whacker Smacker,
   Gunslinger/Guerrilla Expert+Master) — **RESOLVED 2026-07-12** — see
   [[onslaught]] (now a resolution log) and docs/assumptions.md "Onslaught".
+  Combo-Breaker's was REMOVED from this family (corrected 2026-07-12): its
+  granted perk uses EP79/EP27 AP-cost entry points gated by a random-percent
+  chance, unrelated to the shared stack counter — still badged
+  `pendingMechanic` pending the AP-economy work that would model it.
 - Charged (4★): cadence model on top of a full power-attack model (Stage C);
   value hunt in AVIF/GMST is part of that stage.
 - Thrill-Seeker's: killstreak-scaled reload/melee speed off adrenalineStacks

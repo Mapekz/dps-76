@@ -33,11 +33,15 @@ export const hiddenWeaponIds: ReadonlySet<string> = new Set<string>([
   'crcrossbow', // creature copy of 'crossbow' (same display name)
   'AC_MQ02_Stage_ThrowingKnife_Weapon', // quest-stage prop dup of Throwing_Knife
   'V96_1_SuppressionPipeSyringer', // Vault 96 staged Syringer dup of PipeSyringer
-  // Test Your Metal boss gear: quest-alias (QUST) references prove NPC use,
-  // not player access — their only LVLI is NONPLAYABLE (2026-07-02 run).
-  'P62_crTheDrifter10mmSMG',
-  'P62_crTheDrifterM79',
-  'P62_crTheDrifterAssaultronBlade',
+  // The Drifter's signature gear (P62_crTheDrifter*): the P62 content drop
+  // ("The Drifter" boss encounter) NEVER RELEASED — user-confirmed 2026-07-12.
+  // These were briefly un-hidden during the Onslaught pass (the reverse-ref
+  // pattern looked like a script-driven on-defeat loot grant), but the whole
+  // encounter is unreleased content, so no player can obtain them. Re-hidden.
+  // If P62 ever ships, delete these three lines.
+  'P62_crTheDrifter10mmSMG', // "Splinter"
+  'P62_crTheDrifterM79', // "Chaos Engine"
+  'P62_crTheDrifterAssaultronBlade', // "Tempest"
 ]);
 
 /**
@@ -64,13 +68,27 @@ export const forceVisibleWeaponIds: ReadonlySet<string> = new Set<string>([
   'E08B_CombatShotgun_CrowdControl', // Crowd Control — Invaders event reward
   'MTR05_ChineseOfficerSword', // Ancient Blade — Camden Park quest reward
   'CamdenWhackerWeapon', // Camden Whacker — Camden Park event reward
+  // Atomic Shop weapons (^atx_ prefix filter dropped 2026-07-10): shop grants
+  // are account-side, so real ownable weapons have NO ESM reverse refs.
+  // Reskin duplicates stay hidden (ATX_CroquetMallet_Red, ATX_KDInkwell_Quill
+  // — the latter even displays as "Baton").
+  'ATX_Sten', // The Black Knight
+  'ATX_TurkeyRipper', // Turkey Ripper
+  'ATX_Grognak_HockeyStick', // Grognak's Hockey Stick
+  'ATX_CroquetMallet', // Croquet Mallet
 ]);
 
 /**
  * Generated omods to hide from pickers: records that pass extraction and
  * obtainability but are wrong anyway.
  */
-export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([]);
+export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
+  // Combo-Breaker's: exists in the ESM as a 4★ melee legendary (granted perk =
+  // GetRandomPercent-gated Set-Value-0 on EP79/EP27 AP costs) but was never
+  // released to players — user-confirmed 2026-07-12, not in the in-game
+  // legendary mod pool. Delete this line if it ever ships.
+  'mod_Legendary_Weapon4_Melee_ComboBreaker',
+]);
 
 /**
  * Effects whose data cannot move numbers yet: 'pendingMechanic' = the game
@@ -84,6 +102,8 @@ export const omodBadgeOverrides: Readonly<Record<string, 'inert' | 'pendingMecha
   // on Consecutive Hits" + EP190 "Mod Max Consecutive Hits Allowed") — see
   // dps-todos/onslaught.md and docs/assumptions.md "Onslaught".
   //
+  // Combo-Breaker's badge REMOVED (2026-07-12): the mod is unreleased and now
+  // lives in hiddenOmodIds above (mechanical analysis preserved there).
   // Charged and Thrill-Seeker's badges REMOVED (Stage C2/C3, 2026-07-11): both
   // mechanics now move real numbers — Charged's light-attack/detonation cycle
   // folds into sustained DPS (scenarios.ts), Thrill-Seeker's killstreak-tiered

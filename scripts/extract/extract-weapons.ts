@@ -14,9 +14,12 @@ import { ObtainabilityClassifier } from './obtainability';
 // The creature prefix is 'cr' followed by an uppercase letter and must stay
 // case-SENSITIVE: plain prefix matching would swallow 'crossbow'.
 // Stragglers are handled per-edid in src/data/overrides/corrections.ts.
+// atx_ (Atomic Shop) is deliberately NOT excluded: shop weapons players can
+// own are real picker entries — obtainability derivation gates them
+// per-record instead (user decision, 2026-07-10 review).
 const EXCLUDED_EDID_PATTERNS = [
   /^zzz/i, /^del_/i, /^deleted/i, /^deprecated/i, /^cr[^a-z]/, /^hto_/i, /^xpd_/i,
-  /^post_/i, /^atx_/i, /^test/i, /^debug/i, /^gastrap/i, /^workshopturret/i,
+  /^post_/i, /^test/i, /^debug/i, /^gastrap/i, /^workshopturret/i,
   /^trapturret/i, /^mtnm/i, /^survival_/i, /NONPLAYABLE/i,
 ];
 

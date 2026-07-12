@@ -417,6 +417,23 @@ either way (some of the newly-surfaced weapon-side legendaries — Ruiner's,
 Sightseer's, Brutalist's, Satiated — now extract `obtainable: false` pending
 their own rescue-list review, out of scope for this pass).
 
+**Splinter/Chaos Engine/Tempest weapon visibility** (found investigating
+Splinter): all three `P62_crTheDrifter*` weapons were in `hiddenWeaponIds`
+with a comment claiming "NPC use only" (their only direct reverse refs are an
+own NONPLAYABLE LVLI + the shared QUST `P62_TheDrifter_Quest`). That's the
+signature of a script-driven on-defeat loot grant (VMAD, invisible to `esm
+refs`), and all three extract `obtainable: true` — but the P62 content drop
+("The Drifter" encounter) **never released**, so the entire family is
+unobtainable regardless of what the record graph implies. Briefly un-hidden
+during the Onslaught pass, RE-hidden 2026-07-12 (user-confirmed). Splinter's
+Special Effect stays modeled in the Onslaught table above for when P62 ships,
+but no player can equip it today. Same verdict for the P62 weapon-side
+legendaries (Ruiner's, Sightseer's, Brutalist's, Satiated — `obtainable:
+false` is CORRECT, no rescue needed), and for **Combo-Breaker's**
+(`mod_Legendary_Weapon4_Melee_ComboBreaker`, a 4★ melee AP-cost-gamble effect
+that exists in the ESM but was never added to the player legendary pool —
+hidden in `corrections.ts`, user-confirmed 2026-07-12).
+
 **Guerrilla Expert's reload-speed bonus extracts correctly but is not yet
 functionally wired**: `buildEffectiveWeapon` only folds `reloadSpeed` (and the
 other weapon-stat buckets — `fireRateSpeed`/`isAutomatic`/`projectileCount`/
