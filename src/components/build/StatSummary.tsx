@@ -48,7 +48,7 @@ export function StatSummary() {
       })}
       <div
         className="bg-muted/40 ml-auto flex items-center gap-1 rounded border px-1.5 py-0.5"
-        title="Max HP = 245 + 5×END + max-HP buffs (Lifegiver…)"
+        title="Max HP = 245 + 5×END + max-HP buffs"
       >
         <HeartIcon className="text-muted-foreground size-3" />
         <span className="font-mono text-xs tabular-nums">{stats.maxHealth}</span>

@@ -102,3 +102,40 @@ describe('build codec', () => {
     expect(encoded.length).toBeLessThan(200);
   });
 });
+
+describe('derived condition fields', () => {
+  it('never serializes derived keys, even when non-default in state', async () => {
+    const state = createDefaultBuildState();
+    state.player.conditions.strangeInNumbers = true;
+    state.player.conditions.hungerThirstTier = 6;
+    state.player.conditions.maxHealth = 999;
+    state.player.conditions.mutationCount = 5;
+    const encoded = await encodeBuild(state);
+    const decoded = await decodeBuild(encoded, 'live');
+    const defaults = createDefaultBuildState().player.conditions;
+    expect(decoded!.state.player.conditions.strangeInNumbers).toBe(defaults.strangeInNumbers);
+    expect(decoded!.state.player.conditions.hungerThirstTier).toBe(defaults.hungerThirstTier);
+    expect(decoded!.state.player.conditions.maxHealth).toBe(defaults.maxHealth);
+    expect(decoded!.state.player.conditions.mutationCount).toBe(defaults.mutationCount);
+  });
+
+  it('new picker/status fields round-trip', async () => {
+    const state = stateFrom([
+      { type: 'condition/set', key: 'foodTier', value: 3 },
+      { type: 'condition/set', key: 'drinkTier', value: 4 },
+      { type: 'condition/set', key: 'bodyPartHitRatePct', value: 80 },
+      { type: 'enemy/condition', key: 'isBleeding', value: true },
+      { type: 'enemy/condition', key: 'isFrozen', value: true },
+      { type: 'enemy/condition', key: 'targetRace', value: 'SuperMutantRace' },
+      { type: 'enemy/condition', key: 'targetBodyPart', value: 'Head' },
+    ]);
+    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    expect(decoded!.state.player.conditions.foodTier).toBe(3);
+    expect(decoded!.state.player.conditions.drinkTier).toBe(4);
+    expect(decoded!.state.player.conditions.bodyPartHitRatePct).toBe(80);
+    expect(decoded!.state.enemy.conditions.isBleeding).toBe(true);
+    expect(decoded!.state.enemy.conditions.isFrozen).toBe(true);
+    expect(decoded!.state.enemy.conditions.targetRace).toBe('SuperMutantRace');
+    expect(decoded!.state.enemy.conditions.targetBodyPart).toBe('Head');
+  });
+});

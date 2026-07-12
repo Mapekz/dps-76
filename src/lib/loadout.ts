@@ -6,7 +6,15 @@ import { getOmodById } from '@/data/omods';
 import { getBuffModifiers } from '@/data/buffs';
 import { buildEffectiveWeapon } from '@/lib/engine/effective-weapon';
 import { legendaryBonusOf } from '@/data/perk-budget';
-import { derivePlayerStats, SPECIAL_KEYS, type DerivedPlayerStats, type SpecialKey } from '@/lib/player-stats';
+import { getBodyPartMult } from '@/data/bodyparts';
+import {
+  deriveHungerThirstTier,
+  derivePlayerStats,
+  deriveStrangeInNumbers,
+  SPECIAL_KEYS,
+  type DerivedPlayerStats,
+  type SpecialKey,
+} from '@/lib/player-stats';
 import type { ScenarioInput } from '@/lib/engine/scenarios';
 
 /**
@@ -116,7 +124,16 @@ export function resolveLoadout(
     maxHealth,
     // Mutant's curve input: the selected mutation list IS the mutation count.
     mutationCount: playerConfig.conditions.mutationCount ?? playerConfig.mutations.length,
+    // Gourmand's curve input: the two meter tiers sum to the HungerThirstTier AV.
+    hungerThirstTier: deriveHungerThirstTier(playerConfig.conditions),
+    // Strange in Numbers gate: the card equipped + a teammate to be mutated with.
+    strangeInNumbers: deriveStrangeInNumbers(playerConfig.perks, playerConfig.conditions),
   };
+
+  // Body-part mult: the Target section's race + part pick resolves through
+  // BPTD data; without one the custom multiplier applies.
+  const { targetRace, targetBodyPart } = enemyConfig.conditions;
+  const pickedMult = targetRace && targetBodyPart ? getBodyPartMult(mode, targetRace, targetBodyPart) : undefined;
 
   return {
     mode,
@@ -125,7 +142,7 @@ export function resolveLoadout(
     modifiers,
     player,
     enemy: enemyConfig.conditions,
-    weakpointMult: playerConfig.weakpointMult,
+    weakpointMult: pickedMult ?? playerConfig.weakpointMult,
     // critRate omitted → computed from the crit meter (LCK, Crit Savvy,
     // Limit Breaking, weapon crit charge bonus).
   };

@@ -6,7 +6,8 @@ import { PerkEditorSection } from './PerkEditorSection';
 import { SpecialSection } from './SpecialSection';
 import { StatSummary } from './StatSummary';
 import { MutationsSection, ConsumablesSection } from './BuffsSections';
-import { ConditionsSection } from './ConditionsSection';
+import { CharacterSection } from './CharacterSection';
+import { TargetSection } from './TargetSection';
 
 export function BuildColumn() {
   return (
@@ -21,11 +22,12 @@ export function BuildColumn() {
         <StatSummary />
         <Accordion type="multiple" defaultValue={['weapon', 'perks']} className="w-full">
           <WeaponSection />
+          <CharacterSection />
           <SpecialSection />
           <PerkEditorSection />
           <MutationsSection />
           <ConsumablesSection />
-          <ConditionsSection />
+          <TargetSection />
         </Accordion>
       </CardContent>
     </Card>

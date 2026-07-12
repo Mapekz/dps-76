@@ -47,10 +47,26 @@ export interface PlayerConditions {
    */
   maxHealth?: number;
   mutationCount?: number; // for Mutant's curve — derived from the selected mutations in resolveLoadout
-  hungerThirstTier?: number; // food/drink fullness tier for Gourmand's curve (default 0)
-  feralTier?: number; // ghoul feral meter tier for Lucid/Feral's curves (default 0)
+  /**
+   * HungerThirstTier AV (0x006D37DC, 0–8) for Gourmand's curve. DERIVED in
+   * resolveLoadout as foodTier + drinkTier (each meter contributes its 0–4
+   * threshold tier — docs/assumptions.md "Hunger & thirst tiers"); the stored
+   * value only feeds synthetic engine tests.
+   */
+  hungerThirstTier?: number;
+  /** Food meter threshold tier, 0–4: Hungry → Fully Fed (SURV_NewHungerThreshold_Msg_*; default 0). */
+  foodTier?: number;
+  /** Drink meter threshold tier, 0–4: Thirsty → Fully Hydrated (SURV_NewThirstThreshold_Msg_*; default 0). */
+  drinkTier?: number;
+  feralTier?: number; // ghoul feral meter tier for Lucid/Feral's curves (default 0; GHL_FeralTier AV 0–8, 8 = "Wonderful")
   limitBreakingPieces: number; // 0-5 armor pieces with Limit Breaking (−10% crit cost each)
-  strangeInNumbers: boolean; // team with Strange in Numbers → mutation values ×1.25
+  /**
+   * Strange in Numbers gate → mutation values ×1.25. DERIVED in resolveLoadout
+   * (StrangeInNumbers perk equipped AND teammateCount ≥ 1 — the card needs a
+   * mutated teammate, docs/assumptions.md); the stored value only feeds
+   * synthetic engine tests.
+   */
+  strangeInNumbers: boolean;
   weaponConditionPct?: number; // 0-200: equipped weapon condition, 100 = full, 200 = over-repaired max (Polished; default 100)
   /**
    * Manual-aim (free-aim) hit rate %, 10-100, default 100. Models realistic
@@ -59,6 +75,13 @@ export interface PlayerConditions {
    * accuracy is assumed 100%, hit-chance modeling explicitly out of scope).
    */
   hitRatePct?: number;
+  /**
+   * Chance (10–100, default 100) that an aimed shot actually lands on the
+   * targeted body part instead of the torso. Only applies while
+   * isAimingAtWeakpoint: each hit blends bodyPartMult and torso damage by this
+   * rate (scenarios.ts bodyPartBlendedHit).
+   */
+  bodyPartHitRatePct?: number;
 
   // SPECIAL stats
   strength: number; // 1-15 (can exceed with legendary perks)
@@ -77,7 +100,7 @@ export interface PlayerConditions {
 // Enemy conditions for conditional damage calculations
 export interface EnemyConditions {
   isCrippled: boolean; // at least one limb crippled
-  crippledLimbCount: number; // 0-6 limbs
+  crippledLimbCount: number; // 0-10 parts (Storm Goliath has 9 damageable; Bully's/Tormentor scaling caps at 6 per ESM)
   statusEffectCount: number; // number of debuffs/impairments
   isGlowing: boolean; // glowing enemy variant
   isInsect: boolean; // insect creature type
@@ -85,8 +108,14 @@ export interface EnemyConditions {
   groupTargetCount?: number; // enemies in the engaged group incl. the target (Encircler's; default 1)
   isBurning?: boolean; // active fire effect on the target (Pyromaniac's; default false)
   isPoisoned?: boolean; // active poison effect on the target (Viper's; default false)
+  isBleeding?: boolean; // active bleed effect on the target (Severing's 4★; default false)
+  isFrozen?: boolean; // active cryo effect on the target (no data consumers yet — forward-looking; default false)
   /** Target range bucket for Close/Far damage perks (Guerrilla, Down Ranger, Sniper's; default 'none'). */
   targetDistance?: 'close' | 'none' | 'far';
+  /** Selected target race id (bodyparts.json `id`) driving the body-part mult picker; null = custom multiplier. */
+  targetRace?: string | null;
+  /** Selected body part name on targetRace; null = custom multiplier. */
+  targetBodyPart?: string | null;
 }
 
 // Game mode types
@@ -289,7 +318,11 @@ export interface PlayerConfig {
   conditions: PlayerConditions;
   /** Global item level for base-damage curve lookup (1–50, default 50). */
   itemLevel: number;
-  /** Configurable weakpoint damage multiplier (default 2.0). */
+  /**
+   * Custom enemy body-part damage multiplier (default 1.5 — the standard
+   * humanoid headshot per BPTD data). Overridden by the Target section's
+   * race + body-part picker when one is selected (resolveLoadout).
+   */
   weakpointMult: number;
 }
 
@@ -311,12 +344,15 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     addictionCount: 0,
     capsOnHand: 0,
     maxHealth: 300, // synthetic-test default; the app derives it in resolveLoadout (245 + 5×END + buffs)
-    hungerThirstTier: 0, // Gourmand's curve input (0–8; both meters empty)
+    hungerThirstTier: 0, // synthetic-test default; the app derives it in resolveLoadout (foodTier + drinkTier)
+    foodTier: 0, // food meter empty (Hungry)
+    drinkTier: 0, // drink meter empty (Thirsty)
     feralTier: 0, // Lucid/Feral's curve input (0–8; human default)
     limitBreakingPieces: 0,
-    strangeInNumbers: false,
+    strangeInNumbers: false, // synthetic-test default; the app derives it in resolveLoadout (perk + teammates)
     weaponConditionPct: 100, // full condition (Polished curve input; 200 = over-repaired max)
     hitRatePct: 100, // manual-aim hit rate (100 = every shot lands; VATS is unaffected)
+    bodyPartHitRatePct: 100, // aimed shots always land on the targeted body part
     strength: 15,
     perception: 15,
     endurance: 15,
@@ -340,7 +376,11 @@ export function createDefaultEnemyConditions(): EnemyConditions {
     groupTargetCount: 1,
     isBurning: false,
     isPoisoned: false,
+    isBleeding: false,
+    isFrozen: false,
     targetDistance: 'none',
+    targetRace: null,
+    targetBodyPart: null,
   };
 }
 
@@ -371,7 +411,7 @@ export function createDefaultPlayerConfig(): PlayerConfig {
     consumables: [],
     conditions: createDefaultPlayerConditions(),
     itemLevel: 50,
-    weakpointMult: 2.0,
+    weakpointMult: 1.5,
   };
 }
 

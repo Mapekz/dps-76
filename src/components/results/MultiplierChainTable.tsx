@@ -105,7 +105,12 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
           {wholeDamageRows(trace.wholeDamage)}
         </>
       )}
-      {trace.bodyPartMult !== 1 && <Row label="Body part (weakpoint)" value={`×${trace.bodyPartMult.toFixed(2)}`} />}
+      {trace.bodyPartMult !== 1 && (
+        <Row
+          label={trace.bodyPartMult > 1 ? 'Body part (weakpoint)' : 'Body part (limb)'}
+          value={`×${trace.bodyPartMult.toFixed(2)}`}
+        />
+      )}
       {trace.weakpointBonus && trace.weakpointBonus.result !== 0 && (
         <>
           <Row label="Weakpoint bonus" value={`×${(1 + trace.weakpointBonus.result).toFixed(2)}`} />

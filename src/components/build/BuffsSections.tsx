@@ -1,8 +1,10 @@
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getConsumables, getMutations } from '@/data/buffs';
+import { deriveStrangeInNumbers } from '@/lib/player-stats';
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import type { BuildAction } from '@/state/build-reducer';
 import { SectionTrigger } from './SectionTrigger';
@@ -36,19 +38,35 @@ export function MutationsSection() {
   const dispatch = useBuildDispatch();
   const mutations = getMutations(mode);
 
+  // Derived, not a toggle: the Strange in Numbers card equipped + a teammate
+  // to be mutated with (same rule resolveLoadout feeds the engine).
+  const sinEquipped = player.perks.some(p => p.perkId === 'StrangeInNumbers');
+  const sinActive = deriveStrangeInNumbers(player.perks, player.conditions);
+
   return (
     <AccordionItem value="mutations">
       <AccordionTrigger>
-        <SectionTrigger label="Mutations" summary={player.mutations.length > 0 ? `${player.mutations.length} active` : 'none'} />
+        <SectionTrigger
+          label="Mutations"
+          summary={player.mutations.length > 0 ? `${player.mutations.length} active` : 'none'}
+          badge={
+            sinEquipped && (
+              <Badge
+                variant={sinActive ? 'default' : 'outline'}
+                title={
+                  sinActive
+                    ? 'Strange in Numbers: mutation effects +25%'
+                    : 'Strange in Numbers equipped but inactive — needs at least 1 teammate (Character section)'
+                }
+              >
+                {sinActive ? 'SiN +25%' : 'SiN inactive'}
+              </Badge>
+            )
+          }
+        />
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-0.5">
-          <CheckboxRow
-            id="strange-in-numbers"
-            label="Strange in Numbers (team, +25% mutation effects)"
-            checked={player.conditions.strangeInNumbers}
-            onCheckedChange={value => dispatch({ type: 'condition/set', key: 'strangeInNumbers', value })}
-          />
           {mutations.map(m => (
             <CheckboxRow
               key={m.id}

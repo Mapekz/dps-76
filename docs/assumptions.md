@@ -195,7 +195,7 @@ Extracted automatically (`normalize/mgef.ts`, `Modifier.curve`):
 | Nerd Rage! | current HP fraction | (0.05→80, 0.2→40, 0.8→1, 1.0→0) | perk had zero magnitude — curve is the value |
 | Junkie's | addiction count (AV 0x1EB998) | (1→10 … 10→100) | +10%/addiction up to +100% at 10; the addiction COUNT itself is uncapped in-game (an active chem suppresses its own addiction — consumables-overhaul work) |
 | Aristocrat's | caps on hand (AV 0x393) | 0→0 … 17000→30 … 29000→50 | up to +50% at 29k caps |
-| Juggernaut's (`mod_Legendary_Weapon1_DamageViaHealth`) | ABSOLUTE current HP (AV 0x2D4) | (0→0, 1000→100) | linear +0.1%/HP; player max-HP input defaults to 300 (typical non-bloodied build) until a Max HP field lands |
+| Juggernaut's (`mod_Legendary_Weapon1_DamageViaHealth`) | ABSOLUTE current HP (AV 0x2D4) | (0→0, 1000→100) | linear +0.1%/HP; max HP is derived (see "Max HP"), the 300 fallback only feeds synthetic engine tests |
 | Unarmored-target (`mod_Legendary_Weapon1_DamageUnarmored`) | enemy DamageResist (AV 0x2E3) | extracted | INERT: curve input reads 0 until enemy defenses land |
 | Adrenal (legendary weapon, `mod_Legendary_Weapon1_Adrenal`) | kill streak (AV 0x399) | (0→0, 1→10, 10→100) | +10%/stack; curve domain confirms the kill-streak cap of 10 |
 | Adrenaline (perk, `Adrenaline01`) | kill streak (AV 0x399) | (0→0, 1→10, 10→100) | +10%/stack — same trigger as the mutation/legendary, own value |
@@ -224,18 +224,22 @@ inert with a picker badge (`corrections.ts omodBadgeOverrides`).
 | Bully's (and Tormentor perk) | dbm per crippled enemy limb (Bully's +25%, Tormentor +20%), `perCrippledLimb` cap **6** (limb count from `EnemyConditions.crippledLimbCount`, default 0 → inactive) | ESM STAT_DmgPerCrippled; the 6-limb cap is ours (max humanoid/creature limbs) |
 | Explosive (2★) | `explosivePayload` (0.2 = 20% of damage as explosive) spawns an explosive twin PER damage component, folded through the full paper formula (dbm/crit/sneak/power-attack/whole-damage) plus explosive-only bonuses: `damageTypeScope: ['explosive']` dbm modifiers (Demolition Expert) and the `explosionMult` bucket (SCAV! rank 4/5). Twins sum into today's totals; each stays a separate component so it can face its own resist once enemy mitigation lands (Stage A1, `paper-damage.ts`) | ESM LGND_ExplosivePayload OMOD property; Demolition Expert's own dbm bonus is NOT extracted (empty ranks in generated data — needs its own chase before it does anything) |
 | Crippling / Basher's | values extracted to `limbDamage` / `bashDamage` buckets — INERT until limb targeting / bash attacks are modeled | ESM STAT_DmgLimbs / STAT_DmgBash |
-| Pyromaniac's / Viper's | +50% dbm while the target has ≥1 active fire / poison effect (`enemyHasActiveEffect`; UI checkboxes "Target is burning/poisoned", default off). Viper's `HasPerk(ImmuneToPoison)=0` target row is CONSUMED — a generic target is assumed vulnerable to poison | ESM granted-perk chase (conditions wired 2026-07-11) |
+| Pyromaniac's / Viper's / Severing's | +50% dbm while the target has ≥1 active fire / poison / bleed effect (`enemyHasActiveEffect`; Target section status toggles, default off). Viper's `HasPerk(ImmuneToPoison)=0` target row is CONSUMED — a generic target is assumed vulnerable to poison. Severing's (4★, `SDOW_mod_Legendary_Weapon4_Severing`) was silently dropped pre-2026-07-12 by the `sdow_` junk-prefix filter (same class of bug as `p62_`); its `HasKeyword(SDOW_HasLegendary_Weapon_Severing)` self-gate resolves like the other HasLegendary_* self-gates. A "Frozen" toggle maps `DamageTypeCryo` → `isFrozen` but NO extracted effect consumes it yet (Icebreaker is "Cryo Slow On Bash" — it applies a slow, it doesn't benefit from one) — forward-looking UI only | ESM granted-perk chase (fire/poison 2026-07-11, bleed 2026-07-12) |
 | Last Shot | +100% dbm while firing the magazine's last round (`lastRound` from `GetLoadedAmmoCount()=0` + `IsNextClipLastShot`; UI checkbox, default off). Steady-state DPS does NOT model the once-per-magazine cadence — the toggle shows the boosted hit | ESM granted-perk chase (conditions wired 2026-07-11) |
 | Encircler's | +10%×N dbm from `enemyGroupCount` tiers (==1..4, ≥5 → +50%). `EnemyConditions.groupTargetCount` defaults to **1** (the target itself counts as a group of one → +10% baseline), matching `GetGroupTargetCount`'s minimum for an engaged target | ESM granted-perk ability spell (conditions wired 2026-07-11) |
 | Fencer's (melee) | +12.5%–50% dbm from exact `teammateCount` tiers (==0..3). The ESM's `GetDistance < 2500` (~35m) rows on Potential Players are CONSUMED — teammates are assumed in range when the count is set | ESM granted-perk ability spell (conditions wired 2026-07-11) |
-| Mutant's / Gourmand's / Lucid | curve-driven dbm on new inputs: `mutationCount` (derived from the selected mutation list), `hungerThirstTier` (UI field, 0–8, default 0), `feralTier` (UI field, 0–8 ghoul meter, default 0). Gourmand's is human-only (`playerIsGhoul` false gate from GetIsPlayerGhoul()=0; "Ghoul character" checkbox, default off) | ESM curves; input AVs MutationCount / HungerThirstTier / GHL_FeralTier |
+| Mutant's / Gourmand's / Lucid | curve-driven dbm on new inputs: `mutationCount` (derived from the selected mutation list), `hungerThirstTier` (DERIVED, see below), `feralTier` (UI slider, 0–8 ghoul meter, default 0). Gourmand's is human-only (`playerIsGhoul` false gate from GetIsPlayerGhoul()=0; the Character section's exclusive Human/Ghoul toggle, default human) | ESM curves; input AVs MutationCount / HungerThirstTier / GHL_FeralTier |
+| Hunger & thirst tiers | `hungerThirstTier` (0–8) = `foodTier` + `drinkTier`, two 0–4 UI sliders labeled with the game's threshold names (SURV_NewHungerThreshold_Msg_0..4 "Fully Fed"…"Hungry", SURV_NewThirstThreshold_Msg_0..4 "Fully Hydrated"…"Thirsty"; msg index 0 = fullest = tier 4). The SUM decomposition is an INFERENCE from the AV's 0–8 max (0x006D37DC) against two 5-state meters — matches Gourmand's "each 25% of both meters" behavior but is not record-proven | ESM AVIF HungerThirstTier (max 8) + threshold MESG/GLOB records; composition rule is ours |
+| Feral meter names | The feral slider labels its 0–8 tier with GHL_SURV_FeralThreshold_Msg_0..4 names ("Wonderful"/"Normal"/"Odd"/"Losing it"/"Feral") banded 8 / 6–7 / 4–5 / 2–3 / 0–1. Tier 8 = "Wonderful" (well-fed end — Lucid's curve peaks there); the intermediate cutoffs are an INFERENCE (5 names over 9 tiers), display-only | ESM MESG records; banding is ours |
 | Two Shot | extracted ENCH values flow through: dbm +0.75 and projectileCount +1. The extra projectile feeds NO damage term yet (per-projectile modeling deferred), so displayed effect = flat +75%. RESOLVED 2026-07-10: user-confirmed ×1.75 (Fixer @50: 103 → 180.25), golden case `Two Shot Fixer @50` asserts it; the old wiki +25% claim was wrong | ESM ENCH (extracted 2026-07-02) + user confirmation |
 | Anti-Armor (`mod_Legendary_Weapon1_ArmorPenetration`-family) | −50% target armor via OMOD property `ActorValues ADD ArmorPenetration 50.0` → `armorPen` bucket (0.5). INERT until enemy DR lands, badged 'needsEnemyDefenses' | ESM OMOD property |
 | Bleed/burn/shock mod DoTs | Damage-archetype MGEFs → `dotDamage` bucket with magnitude, `durationSec`, element from the MGEF Resist Value. **Refresh-only model** (user-confirmed, Stage A2): re-applying resets the timer rather than stacking, so the steady-state contribution while continuously attacking is the summed magnitude — INTERPRETED as damage/sec, NOT ESM-proven (the ESM only proves the total-over-duration magnitude, not a per-second rate). Displayed as a separate "DoT +X/s" line; burst per-hit and sustained DPS are unchanged. Folded per weapon-component damage type (every extracted entry carries exactly one `damageTypeScope` type) so it only counts on a weapon that actually deals that type | ESM (extracted); dmg/sec interpretation + refresh-only rule are ours |
 | Adrenal Reaction (mutation) | +5% dbm per KILL STREAK stack, cap 10 (+6.25%/stack with Strange in Numbers) | ESM curves Mutation_Adrenal_Normal/_Super are 5/stack linear (their x-range past 10 is unreachable — the counter caps at 10, user-confirmed + legendary Adrenal curve domain); hand-carried because the CLI's curve↔effect association is shifted on this record |
 | Tenderizer | +10% dbm per stack, manual stack input 0–1000 | ESM magnitude 0.1 (PerkTenderizer01Spell); stacking cap per user spec |
 | SPECIAL buffs (Buffout +2 STR/+2 END, Bufftats +3 STR/+3 END/+3 PER, Mentats +2 INT/+2 PER, Berry Mentats +5 INT) | flat unconditional ADDs folded into player STR/LCK in `resolveLoadout` (STR → melee term, LCK → crit meter); PER/END/CHA/INT/AGI stored-inert until perk-SPECIAL scaling. NO stacking/exclusivity enforcement — chems-one-at-a-time and same-keyword replacement land with the consumables overhaul | ESM Peak Value Modifier magnitudes (extracted) |
-| Juggernaut's max-HP input | `PlayerConditions.maxHealth` defaults to 300 (typical non-bloodied build) when unset; a Max HP field exists in the Conditions UI | default kept per 2026-07-10 review |
+| Juggernaut's max-HP input | `PlayerConditions.maxHealth` is DERIVED (see "Max HP") and shown read-only in the Character section — the old editable Conditions field was dead (resolveLoadout always overwrote it); the 300 default only feeds synthetic engine tests | derivation 2026-07-12; dead input removed with the Character section |
+| Strange in Numbers | DERIVED gate, not a stored toggle: active ⇔ the StrangeInNumbers card is equipped AND `teammateCount` ≥ 1 (the +25% mutation boost needs a mutated teammate; teammate mutation status isn't modeled, so any teammate counts — user-decided 2026-07-12). Mutations header shows an active/inactive badge; legacy URLs carrying the old stored flag decode to the derived value | card description + user decision |
+| Kill-streak slider gating | The Character section's kill-streak slider disables when no equipped source reads the counter — detection is an existence SCAN over assembled modifiers (`curve.input: killStreak`, `killStreakCount` conditions, `stacks: adrenaline`), unlike Onslaught's `onslaughtMaxStacks` bucket fold: kill-streak sources attach to arbitrary buckets, there is no dedicated bucket to fold (`ScenarioSet.hasKillStreakSources`) | engine wiring 2026-07-12 |
 
 ## Target distance (Close / Far, Stage A3)
 
@@ -584,16 +588,32 @@ column's stat summary displays the same number.
   factor clamps to [1%, 99%] of paper damage (user-confirmed), so paper damage
   is never fully realized nor fully negated.
 
-## Body parts (future refinement)
+## Body parts (BPTD-extracted, 2026-07-12 — `scripts/extract/extract-bodyparts.ts`)
 
-- Current model: manual-aim normal hit = generic torso (non-weakpoint), VATS
-  hit = generic weakpoint; `bodyPart` conditions gate on that label.
-- Reality (user): torso CAN be the weakpoint depending on the enemy (UC
-  Abomination torso/belly, EN06 Guardian's torso after shield break, deathclaw
-  belly, super mutant head...). When enemy body-part data lands, model
-  location (torso/head/limb) and weakpoint-ness as separate axes so
-  torso-scoped bonuses (Center Masochist) stack with weakpoint multipliers on
-  torso-weakpoint enemies.
+- **Per-enemy multipliers are real data now**: RACE → "Body Part Data" BPTD →
+  per-part `Damage Mult` (`bodyparts.json`, curated race list). Humanoid head
+  (Human/Feral Ghoul/Scorched/Mole Miner/Scorchbeast) = 1.5×; Super Mutant /
+  Yao Guai / Behemoth / Wendigo / Mothman / Mirelurk head = 1.25× (their torso
+  0.9×); Deathclaw belly 1.35×; Assaultron head 0.5×, Combat Inhibitor 0.25×;
+  Mirelurk shell 0.15×. The Target section's enemy + part picker resolves the
+  engine's `weakpointMult` from this; no pick = the custom multiplier input
+  (default 1.5, the standard humanoid headshot — was 2.0 pre-2026-07-12).
+- `ctx.bodyPart` now discriminates by direction: mult > 1 → `weakpoint`
+  (weakpointBonus applies), mult < 1 → `limb`, exactly 1 → `torso`. Weakpoint-
+  ness and location are still ONE axis — torso-weakpoint enemies (UC
+  Abomination belly) remain a future refinement so torso-scoped bonuses
+  (Center Masochist) can stack with weakpoint multipliers there.
+- **Body-part hit rate** (`bodyPartHitRatePct`, default 100): while aiming at
+  a body part, each hit blends `rate × aimed-part + (1−rate) × torso`
+  (`scenarios.ts bodyPartBlendedHit`, all scenarios incl. the Charged cycle).
+  Only the on-target leg carries the attribution trace — `explain` shows the
+  landed-hit chain (same simplest-defensible split as the Charged cycle).
+  Independent of free-aim `hitRatePct`, which still scales free-aim sustained
+  DPS only.
+- Crippled-limbs input caps at the picked race's crippable-part count
+  ("On Cripple"/Explodable BPTD flags; 10 when no race picked — Storm Goliath
+  has 9 damageable parts). Bully's/Tormentor's ESM `perCrippledLimb` max stays
+  6 — parts 7+ add no damage from those sources.
 - Auto-receiver crit/sneak base MUL_ADDs are −20% (user-confirmed correct;
   the −30% applies to AttackDamage/DamageTypeValues).
 - Shishkebab max Eligible Level 45 confirmed by user — item level clamps there.

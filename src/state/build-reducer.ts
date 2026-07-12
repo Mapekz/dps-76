@@ -9,6 +9,7 @@ import {
 } from '@/types';
 import { isLegendaryPerkKey, parsedPerksToLoadout, type ParsedSpecial } from '@/lib/nukes-dragons';
 import { computePerkBudget, perkSpecialKey } from '@/data/perk-budget';
+import { perkRaceRestriction } from '@/data/perk-race';
 import { canSlotCardPoints, SPECIAL_ALLOCATION_POOL, SPECIAL_KEYS, SPECIAL_POINTS_CAP } from '@/lib/player-stats';
 
 /**
@@ -134,7 +135,8 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
       return withPlayer(state, { ...player, itemLevel: Math.max(1, Math.min(50, action.value)) });
 
     case 'weapon/weakpointMult':
-      return withPlayer(state, { ...player, weakpointMult: Math.max(0, action.value) });
+      // Floor 0.1: sub-1 values model armored parts (Mirelurk shell 0.15×), 0 would zero the scenario.
+      return withPlayer(state, { ...player, weakpointMult: Math.max(0.1, action.value) });
 
     case 'perk/add': {
       const list = action.legendary ? 'legendaryPerks' : 'perks';
@@ -144,8 +146,17 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
       // the stat's perk-point budget (min(15, base + Legendary SPECIAL bonus)).
       if (action.legendary && player.legendaryPerks.length >= LEGENDARY_PERK_SLOTS) return state;
       if (!action.legendary && regularSlotBlocked(player, action.perkId, rank)) return state;
+      // A race-locked card forces the matching character race (ghoul-only →
+      // ghoul, human-only → human) — in the reducer so speculative diffs and
+      // imports stay consistent with the UI's locked race toggle.
+      const race = perkRaceRestriction('live', action.perkId);
+      const conditions =
+        race !== null && (player.conditions.isGhoul ?? false) !== (race === 'ghoul')
+          ? { ...player.conditions, isGhoul: race === 'ghoul' }
+          : player.conditions;
       return withPlayer(state, {
         ...player,
+        conditions,
         [list]: [...player[list], { perkId: action.perkId, rank }],
       });
     }

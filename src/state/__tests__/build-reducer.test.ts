@@ -166,3 +166,23 @@ describe('buildReducer', () => {
     expect(run([{ type: 'build/hydrate', state: target }], hydrated)).toEqual(target);
   });
 });
+
+describe('body-part mult and race forcing', () => {
+  it('weapon/weakpointMult floors at 0.1', () => {
+    const s = run([{ type: 'weapon/weakpointMult', value: 0 }]);
+    expect(s.player.weakpointMult).toBe(0.1);
+    const s2 = run([{ type: 'weapon/weakpointMult', value: 0.15 }]);
+    expect(s2.player.weakpointMult).toBe(0.15);
+  });
+
+  it('adding a ghoul-only perk forces the ghoul race', () => {
+    const s = run([{ type: 'perk/add', perkId: 'GlowingCriticals', rank: 1, legendary: true }]);
+    expect(s.player.legendaryPerks.some(p => p.perkId === 'GlowingCriticals')).toBe(true);
+    expect(s.player.conditions.isGhoul).toBe(true);
+  });
+
+  it('adding an unrestricted perk leaves race alone', () => {
+    const s = run([{ type: 'perk/add', perkId: 'Commando', rank: 1, legendary: false }]);
+    expect(s.player.conditions.isGhoul).toBe(false);
+  });
+});

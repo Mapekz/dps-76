@@ -630,3 +630,118 @@ describe('crit condition (first-class, symmetric with sneaking/powerAttack)', ()
     expect(foldBucket([critMod], 'dbm', 1.0, makeCtx(weapon))).toBeCloseTo(1.0, 10);
   });
 });
+
+describe('body-part damage direction (sub-1 multipliers = limb hits)', () => {
+  it("a <1 body-part mult scales damage down and doesn't trigger weakpoint bonuses via scenarios", () => {
+    const weapon = makeWeapon({ animDelaySec: 1.0 });
+    const input = {
+      mode: 'live' as const, weapon, itemLevel: 50,
+      modifiers: [mod({ bucket: 'weakpointBonus', op: 'ADD', value: 0.3 })],
+      player: { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true },
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 0.5, critRate: 0,
+    };
+    const result = computeScenarios(input);
+    // ×0.5 body part, weakpointBonus must NOT apply (bodyPart resolves to 'limb', not 'weakpoint').
+    expect(result.freeAim.perHit.total).toBeCloseTo(100 * 0.5, 6);
+  });
+
+  it('torso-gated modifiers are inert on limb hits', () => {
+    const weapon = makeWeapon();
+    const mods = [mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'bodyPart', part: 'torso' }] })];
+    const limb = computePaperDamage({
+      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 0.5, bodyPart: 'limb',
+    });
+    expect(limb.total).toBeCloseTo(100 * 0.5, 6);
+  });
+});
+
+describe('computeScenarios body-part hit rate (weakpoint aiming only)', () => {
+  const weapon = makeWeapon({
+    animDelaySec: 1.0, isPhysical: false, capacity: 20, ammoPerShot: 1, reloadSpeed: 1.0, animationReloadSec: 4.0,
+  });
+  const base = {
+    mode: 'live' as const, weapon, itemLevel: 50, modifiers: [] as Modifier[],
+    player: { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true },
+    enemy: createDefaultEnemyConditions(),
+    weakpointMult: 2.0, critRate: 0,
+  };
+
+  it('blends the aimed-part hit with a torso hit by the rate', () => {
+    const full = computeScenarios(base);
+    const blended = computeScenarios({ ...base, player: { ...base.player, bodyPartHitRatePct: 75 } });
+    // 75% land at ×2, 25% at ×1 → 100 × (0.75×2 + 0.25×1) = 175
+    expect(full.freeAim.perHit.total).toBeCloseTo(200, 6);
+    expect(blended.freeAim.perHit.total).toBeCloseTo(175, 6);
+    expect(blended.vats.perHit.total).toBeCloseTo(175, 6);
+  });
+
+  it('is a no-op at 100% and when not aiming at a weakpoint', () => {
+    const at100 = computeScenarios({ ...base, player: { ...base.player, bodyPartHitRatePct: 100 } });
+    expect(at100.freeAim.perHit.total).toBeCloseTo(computeScenarios(base).freeAim.perHit.total, 10);
+
+    const notAiming = computeScenarios({
+      ...base,
+      player: { ...base.player, isAimingAtWeakpoint: false, bodyPartHitRatePct: 25 },
+    });
+    expect(notAiming.freeAim.perHit.total).toBeCloseTo(100, 6);
+  });
+
+  it('applies inside the Charged cycle too', () => {
+    const charged = makeWeapon({ weaponClass: 'melee', keywords: ['WeaponHasSecondaryCharging'] });
+    const input = { ...base, weapon: charged };
+    const full = computeScenarios(input);
+    const blended = computeScenarios({ ...input, player: { ...input.player, bodyPartHitRatePct: 50 } });
+    // Every leg of the cycle blends ×2 and ×1 hits at 50% → the whole sustained metric scales by 0.75.
+    expect(blended.freeAim.sustain.sustainedDps).toBeCloseTo(full.freeAim.sustain.sustainedDps * 0.75, 6);
+  });
+});
+
+describe('target status effect conditions (bleed/cryo)', () => {
+  const weapon = makeWeapon();
+
+  it.each([
+    ['DamageTypeBleed', 'isBleeding'],
+    ['DamageTypeCryo', 'isFrozen'],
+    ['DamageTypeFire', 'isBurning'],
+    ['DamageTypePoison', 'isPoisoned'],
+  ] as const)('%s gates on enemy.%s', (keyword, flag) => {
+    const m = mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'enemyHasActiveEffect', keyword }] });
+    const off = makeCtx(weapon);
+    const on = makeCtx(weapon, { enemy: { ...createDefaultEnemyConditions(), [flag]: true } });
+    expect(foldBucket([m], 'dbm', 1.0, off)).toBeCloseTo(1.0, 10);
+    expect(foldBucket([m], 'dbm', 1.0, on)).toBeCloseTo(1.5, 10);
+  });
+});
+
+describe('hasKillStreakSources detection', () => {
+  const weapon = makeWeapon({ animDelaySec: 1.0 });
+  const base = {
+    mode: 'live' as const, weapon, itemLevel: 50, modifiers: [] as Modifier[],
+    player: createDefaultPlayerConditions(), enemy: createDefaultEnemyConditions(),
+    weakpointMult: 2.0, critRate: 0,
+  };
+
+  it('is false with no kill-streak reader equipped', () => {
+    expect(computeScenarios(base).hasKillStreakSources).toBe(false);
+  });
+
+  it('detects killStreak curves, killStreakCount conditions, and adrenaline stack counters', () => {
+    const curveMod: Modifier = {
+      id: 'ks-curve',
+      source: { kind: 'perk', formId: '0x0', edid: 'TestSource', name: 'Test Source' },
+      bucket: 'dbm',
+      op: 'ADD',
+      curve: { input: 'killStreak', points: [{ x: 0, y: 0 }, { x: 10, y: 50 }] },
+      curveScale: 0.01,
+      conditions: [],
+    };
+    expect(computeScenarios({ ...base, modifiers: [curveMod] }).hasKillStreakSources).toBe(true);
+
+    const countMod = mod({ bucket: 'dbm', op: 'ADD', value: 0.3, conditions: [{ kind: 'killStreakCount', count: 10 }] });
+    expect(computeScenarios({ ...base, modifiers: [countMod] }).hasKillStreakSources).toBe(true);
+
+    const stackMod = mod({ bucket: 'dbm', op: 'ADD', value: 0.05, conditions: [{ kind: 'stacks', counter: 'adrenaline', max: 10 }] });
+    expect(computeScenarios({ ...base, modifiers: [stackMod] }).hasKillStreakSources).toBe(true);
+  });
+});

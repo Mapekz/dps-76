@@ -66,11 +66,20 @@ export interface ScenarioSet {
   /**
    * The shared Onslaught stack cap folded from every equipped source's
    * `onslaughtMaxStacks` modifier (0 when none are equipped). Exposed here
-   * so the UI's Onslaught-stacks slider (`ConditionsSection`) can read the
+   * so the UI's Onslaught-stacks slider (`CharacterSection`) can read the
    * bound without re-running `resolveLoadout` — see docs/assumptions.md
    * "Onslaught".
    */
   onslaughtMaxStacks: number;
+  /**
+   * True when any equipped source reads the kill-streak counter (Adrenaline,
+   * Crowd Control, Sole Survivor; Lawbringer, Adrenal, Thrill-Seeker's) — the
+   * UI's kill-streak slider disables without one. Unlike onslaughtMaxStacks
+   * this is an existence scan, not a bucket fold: kill-streak sources are
+   * curves/conditions attached to arbitrary buckets, there is no dedicated
+   * bucket to fold.
+   */
+  hasKillStreakSources: boolean;
 }
 
 export interface ScenarioInput {
@@ -162,14 +171,14 @@ function chargedCycleHit(
   onslaughtMaxStacks: number
 ): HitBreakdown {
   const normal = critWeighted(
-    hit(input, { ...flags, isPowerAttack: false, isCrit: false }, bodyPartMult, onslaughtMaxStacks),
-    hit(input, { ...flags, isPowerAttack: false, isCrit: true }, bodyPartMult, onslaughtMaxStacks),
+    bodyPartBlendedHit(input, { ...flags, isPowerAttack: false, isCrit: false }, bodyPartMult, onslaughtMaxStacks),
+    bodyPartBlendedHit(input, { ...flags, isPowerAttack: false, isCrit: true }, bodyPartMult, onslaughtMaxStacks),
     critRate
   );
   const detonation = scaleHit(
     critWeighted(
-      hit(input, { ...flags, isPowerAttack: true, isCrit: false }, bodyPartMult, onslaughtMaxStacks),
-      hit(input, { ...flags, isPowerAttack: true, isCrit: true }, bodyPartMult, onslaughtMaxStacks),
+      bodyPartBlendedHit(input, { ...flags, isPowerAttack: true, isCrit: false }, bodyPartMult, onslaughtMaxStacks),
+      bodyPartBlendedHit(input, { ...flags, isPowerAttack: true, isCrit: true }, bodyPartMult, onslaughtMaxStacks),
       critRate
     ),
     1 + CHARGED_FULL_BONUS
@@ -197,9 +206,46 @@ function hit(
     modifiers: input.modifiers,
     ctx: scenarioCtx(input, flags, onslaughtMaxStacks),
     bodyPartMult,
-    bodyPart: bodyPartMult > 1.0 ? 'weakpoint' : 'torso',
+    // >1 = a weakpoint (weakpointBonus perks apply); <1 = an armored limb/part
+    // (Mirelurk shell 0.15×) — neither satisfies torso-only gates (Center Masochist).
+    bodyPart: bodyPartMult > 1.0 ? 'weakpoint' : bodyPartMult < 1.0 ? 'limb' : 'torso',
     trace,
   });
+}
+
+/** Weight an on-target hit against the torso hit that lands instead when the aimed part is missed. */
+function bodyPartWeighted(atTarget: HitBreakdown, atTorso: HitBreakdown, rate: number): HitBreakdown {
+  const w = Math.max(0, Math.min(rate, 1));
+  return {
+    components: atTarget.components.map((c, i) => ({
+      ...c,
+      damage: c.damage * w + atTorso.components[i].damage * (1 - w),
+    })),
+    total: atTarget.total * w + atTorso.total * (1 - w),
+  };
+}
+
+/**
+ * A hit while aiming at a body part: bodyPartHitRatePct of shots land on the
+ * aimed part (bodyPartMult), the rest hit the torso (×1.0). Short-circuits to
+ * a plain hit at 100% (the default) so the common path does zero extra work.
+ * Only the on-target leg carries the trace — `explain` shows the landed-hit
+ * chain, the same simplest-defensible split as the Charged cycle's perHit.
+ */
+function bodyPartBlendedHit(
+  input: ScenarioInput,
+  flags: ScenarioFlags,
+  bodyPartMult: number,
+  onslaughtMaxStacks: number,
+  trace?: HitTrace
+): HitBreakdown {
+  const rate = (input.player.bodyPartHitRatePct ?? 100) / 100;
+  if (!input.player.isAimingAtWeakpoint || rate >= 1 || bodyPartMult === 1.0) {
+    return hit(input, flags, bodyPartMult, onslaughtMaxStacks, trace);
+  }
+  const atTarget = hit(input, flags, bodyPartMult, onslaughtMaxStacks, trace);
+  const atTorso = hit(input, flags, 1.0, onslaughtMaxStacks);
+  return bodyPartWeighted(atTarget, atTorso, rate);
 }
 
 /** Weight two hit breakdowns (non-crit vs crit) by the steady-state crit rate. */
@@ -231,10 +277,17 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   const bootstrapFlags: ScenarioFlags = { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false };
   const onslaughtMaxStacks = foldBucket(input.modifiers, 'onslaughtMaxStacks', 0, scenarioCtx(input, bootstrapFlags, 0));
 
+  // Kill-streak sources (existence scan — see ScenarioSet.hasKillStreakSources).
+  const hasKillStreakSources = input.modifiers.some(
+    m =>
+      m.curve?.input === 'killStreak' ||
+      m.conditions.some(c => c.kind === 'killStreakCount' || (c.kind === 'stacks' && c.counter === 'adrenaline'))
+  );
+
   // Free aim: crits are VATS-only, so never crit here.
   const freeFlags: ScenarioFlags = { isVats: false, isSneaking: sneaking, isPowerAttack: powerAttack, isCrit: false };
   const freeTrace = tracing ? createHitTrace() : undefined;
-  const freeHit = hit(input, freeFlags, bodyPartMult, onslaughtMaxStacks, freeTrace);
+  const freeHit = bodyPartBlendedHit(input, freeFlags, bodyPartMult, onslaughtMaxStacks, freeTrace);
 
   // VATS: crit cadence blends a non-crit and a crit hit.
   const vatsFlags: ScenarioFlags = { isVats: true, isSneaking: sneaking, isPowerAttack: powerAttack, isCrit: false };
@@ -244,8 +297,8 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   const vatsTrace = tracing ? createHitTrace() : undefined;
   const vatsCritTrace = tracing ? createHitTrace() : undefined;
   const vatsAvg = critWeighted(
-    hit(input, vatsFlags, bodyPartMult, onslaughtMaxStacks, vatsTrace),
-    hit(input, { ...vatsFlags, isCrit: true }, bodyPartMult, onslaughtMaxStacks, vatsCritTrace),
+    bodyPartBlendedHit(input, vatsFlags, bodyPartMult, onslaughtMaxStacks, vatsTrace),
+    bodyPartBlendedHit(input, { ...vatsFlags, isCrit: true }, bodyPartMult, onslaughtMaxStacks, vatsCritTrace),
     critRate
   );
 
@@ -302,6 +355,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
 
   return {
     onslaughtMaxStacks,
+    hasKillStreakSources,
     freeAim: {
       perHit: freeHit,
       burstDps: freeSustain.burstDps,

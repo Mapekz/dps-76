@@ -35,7 +35,7 @@ interface SerializedBuild {
   w?: [string, Record<string, string | null>, string[]];
   /** itemLevel (default 50) */
   il?: number;
-  /** weakpointMult (default 2) */
+  /** weakpointMult (default 1.5) */
   wm?: number;
   /** perks as concatenated N&D-style 3-char chunks (key + base36 rank) */
   p?: string;
@@ -112,6 +112,18 @@ function diffAgainstDefaults<T extends object>(value: T, defaults: T): Partial<T
   return out;
 }
 
+/**
+ * Derived player-condition fields (resolveLoadout recomputes them from the
+ * build every run): never written to URLs and ignored when a legacy payload
+ * carries one — the stored values only feed synthetic engine tests.
+ */
+const DERIVED_PLAYER_CONDITION_KEYS = new Set<keyof PlayerConditions>([
+  'strangeInNumbers',
+  'hungerThirstTier',
+  'maxHealth',
+  'mutationCount',
+]);
+
 // ── deflate/base64url plumbing (browser + Node ≥18) ─────────────────────────
 
 async function pipe(bytes: Uint8Array<ArrayBuffer>, stream: CompressionStream | DecompressionStream): Promise<Uint8Array> {
@@ -156,6 +168,7 @@ export async function encodeBuild(state: BuildState): Promise<string> {
     ...(view.breakdownOpen && { vb: true }),
   };
   const pc = diffAgainstDefaults(player.conditions, createDefaultPlayerConditions());
+  for (const key of DERIVED_PLAYER_CONDITION_KEYS) delete pc[key];
   if (Object.keys(pc).length > 0) wire.pc = pc;
   const ec = diffAgainstDefaults(enemy.conditions, createDefaultEnemyConditions());
   if (Object.keys(ec).length > 0) wire.ec = ec;
@@ -206,7 +219,7 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
   }
 
   if (typeof wire.il === 'number') state.player.itemLevel = Math.max(1, Math.min(50, wire.il));
-  if (typeof wire.wm === 'number') state.player.weakpointMult = Math.max(0, wire.wm);
+  if (typeof wire.wm === 'number') state.player.weakpointMult = Math.max(0.1, wire.wm);
 
   const keepKnown = (loadout: PerkLoadout[]) =>
     loadout.filter(p => {
@@ -232,6 +245,7 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
 
   // Conditions: only keys that exist in the current schema survive.
   for (const [key, value] of Object.entries(wire.pc ?? {})) {
+    if (DERIVED_PLAYER_CONDITION_KEYS.has(key as keyof PlayerConditions)) continue; // legacy payloads
     if (key in state.player.conditions) {
       (state.player.conditions as unknown as Record<string, unknown>)[key] = value;
     }

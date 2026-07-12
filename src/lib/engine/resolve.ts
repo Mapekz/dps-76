@@ -132,7 +132,9 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       const active =
         cond.keyword === 'DamageTypeFire' ? ctx.enemy.isBurning
         : cond.keyword === 'DamageTypePoison' ? ctx.enemy.isPoisoned
-        : false; // keywords beyond fire/poison have no UI input yet — inactive
+        : cond.keyword === 'DamageTypeBleed' ? ctx.enemy.isBleeding
+        : cond.keyword === 'DamageTypeCryo' ? ctx.enemy.isFrozen
+        : false; // keywords beyond fire/poison/bleed/cryo have no UI input yet — inactive
       return active ? 1 : null;
     }
     case 'enemyGroupCount': {

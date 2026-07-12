@@ -51,3 +51,26 @@ describe('derivePlayerStats', () => {
     expect(maxHealth).toBe(BASE_MAX_HP + MAX_HP_PER_ENDURANCE * 8 + 65);
   });
 });
+
+describe('deriveStrangeInNumbers', () => {
+  it('requires both the card and at least one teammate', async () => {
+    const { deriveStrangeInNumbers } = await import('@/lib/player-stats');
+    const conditions = createDefaultPlayerConditions();
+    const withTeam = { ...conditions, teammateCount: 2 };
+    const sin = [{ perkId: 'StrangeInNumbers', rank: 1 }];
+    expect(deriveStrangeInNumbers(sin, withTeam)).toBe(true);
+    expect(deriveStrangeInNumbers(sin, conditions)).toBe(false); // solo
+    expect(deriveStrangeInNumbers([], withTeam)).toBe(false); // no card
+  });
+});
+
+describe('deriveHungerThirstTier', () => {
+  it('sums the two meter tiers, clamped to 0-4 each', async () => {
+    const { deriveHungerThirstTier } = await import('@/lib/player-stats');
+    const base = createDefaultPlayerConditions();
+    expect(deriveHungerThirstTier(base)).toBe(0);
+    expect(deriveHungerThirstTier({ ...base, foodTier: 4, drinkTier: 4 })).toBe(8);
+    expect(deriveHungerThirstTier({ ...base, foodTier: 3, drinkTier: 1 })).toBe(4);
+    expect(deriveHungerThirstTier({ ...base, foodTier: 9, drinkTier: -2 })).toBe(4); // clamped
+  });
+});

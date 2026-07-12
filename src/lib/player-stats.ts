@@ -1,4 +1,4 @@
-import type { EnemyConditions, PlayerConditions, Weapon } from '@/types';
+import type { EnemyConditions, PerkLoadout, PlayerConditions, Weapon } from '@/types';
 import { createDefaultEnemyConditions } from '@/types';
 import type { Bucket, Modifier } from '@/types/modifiers';
 import { foldBucket, foldOps, type ResolveContext } from '@/lib/engine/resolve';
@@ -128,6 +128,22 @@ export function derivePerkBudget(
 /** Can `delta` more card points be slotted into `stat` within its budget? */
 export function canSlotCardPoints(budget: PerkBudget, stat: SpecialKey, delta = 1): boolean {
   return budget.cardPoints[stat] + delta <= budget.budgetPerStat[stat];
+}
+
+/**
+ * Strange in Numbers is a derived gate, not stored state: the card must be
+ * equipped AND at least one teammate present (the +25% mutation boost needs a
+ * mutated teammate — teammate mutation status isn't modeled, so any teammate
+ * counts; docs/assumptions.md "Strange in Numbers"). Shared by resolveLoadout
+ * (feeds the engine) and the Mutations header badge.
+ */
+export function deriveStrangeInNumbers(perks: PerkLoadout[], conditions: PlayerConditions): boolean {
+  return perks.some(p => p.perkId === 'StrangeInNumbers') && (conditions.teammateCount ?? 0) >= 1;
+}
+
+/** HungerThirstTier (0–8) = food meter tier + drink meter tier (0–4 each) — docs/assumptions.md. */
+export function deriveHungerThirstTier(conditions: PlayerConditions): number {
+  return Math.max(0, Math.min(4, conditions.foodTier ?? 0)) + Math.max(0, Math.min(4, conditions.drinkTier ?? 0));
 }
 
 export interface DerivedPlayerStats {

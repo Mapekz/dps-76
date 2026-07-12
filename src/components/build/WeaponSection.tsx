@@ -1,7 +1,6 @@
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Combobox } from '@/components/ui/combobox';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { useGameMode } from '@/hooks/useGameMode';
@@ -123,24 +122,10 @@ export function WeaponSection() {
               step={1}
               value={[nearestItemLevelIndex(player.itemLevel)]}
               onValueChange={([i]) => dispatch({ type: 'weapon/itemLevel', value: ITEM_LEVEL_STOPS[i] })}
+              marks={ITEM_LEVEL_STOPS.map((level, i) => ({ value: i, label: String(level) }))}
             />
             <p className="text-muted-foreground text-xs">
               Base damage comes from the level curve. Level-capped weapons clamp at their cap.
-            </p>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="weakpoint-mult">Weakpoint multiplier</Label>
-            <Input
-              id="weakpoint-mult"
-              type="number"
-              min={1}
-              step={0.1}
-              value={player.weakpointMult}
-              onChange={e => dispatch({ type: 'weapon/weakpointMult', value: parseFloat(e.target.value) || 2.0 })}
-            />
-            <p className="text-muted-foreground text-xs">
-              Applied when "Weakpoints" is on. 2.0 is a standard headshot.
             </p>
           </div>
         </div>
