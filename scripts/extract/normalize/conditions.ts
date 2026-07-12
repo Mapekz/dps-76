@@ -51,8 +51,16 @@ export interface TranslationResult {
 function isWeaponTypeKeyword(edid: string): boolean {
   // HasLegendary_* keywords are ADDed by the legendary OMOD itself, so a
   // HasKeyword self-gate on one auto-passes once the mod is equipped
-  // (effective-weapon merges addedKeywords).
-  return edid.startsWith('WeaponType') || edid.startsWith('UI_WeaponType') || edid === 'HasSilencer' || edid.startsWith('HasLegendary_');
+  // (effective-weapon merges addedKeywords). Newer content prefixes its
+  // records (SDOW_HasLegendary_Weapon_Severing) — match anywhere after a
+  // prefix, not just at the start.
+  return (
+    edid.startsWith('WeaponType') ||
+    edid.startsWith('UI_WeaponType') ||
+    edid === 'HasSilencer' ||
+    edid.startsWith('HasLegendary_') ||
+    edid.includes('_HasLegendary_')
+  );
 }
 
 function isEnemyKeyword(edid: string): boolean {

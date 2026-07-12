@@ -157,6 +157,7 @@ export async function buildAvifRoutes(client: EsmClient, formIdPool: Set<string>
  * no ESM records, so they're mapped by formid constant.
  */
 const CURVE_INPUT_AVS: Record<string, CurveInput> = {
+  '0x000002C4': 'endurance', // Endurance — Lifegiver's END-keyed max-HP curve (docs/assumptions.md "Max HP")
   '0x00000392': 'healthFraction', // current HP / max HP (Bloodied, Nerd Rage)
   '0x00000393': 'capsOnHand', // Aristocrat's
   '0x00000399': 'killStreak', // Adrenal Reaction

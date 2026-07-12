@@ -97,7 +97,12 @@ const PROPERTY_IGNORED = new Set([
 // verified present in the 20260702 dump with real Names), not a dev/test
 // prefix. It was silently dropping all of them pre-obtainability; found while
 // chasing Splinter's Onslaught contribution (dps-todos/onslaught.md).
-const OMOD_JUNK_EDID_RE = /^(zzz|del_|deleted|debug|cut_|test|wip|post_|hto_|sdow_|mtnm|xpd_)/i;
+//
+// NOTE (2026-07-12): `sdow_` was REMOVED for the same reason as `p62_` — it's
+// a real content prefix (the Severing 4★ legendary, fishing-rod mods, Slasher
+// event gear), not dev/test. It was silently dropping the Severing OMOD
+// entirely; found while wiring the target-is-bleeding condition.
+const OMOD_JUNK_EDID_RE = /^(zzz|del_|deleted|debug|cut_|test|wip|post_|hto_|mtnm|xpd_)/i;
 
 /** Exposed for tests: does the pre-filter drop this editor_id? */
 export function isExcludedOmodEdid(edid: string): boolean {
