@@ -104,11 +104,17 @@
   "notes": [
    "Mutation_Carnivore: condition: IsSpellTarget(RadX)=1",
    "Mutation_Carnivore: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_Carnivore: perk Mutation_EatAllTheMeat_Perk: EPMagic_SpellHasKeyword(IngredientTypeMeat)=1",
+   "Mutation_Carnivore: perk Mutation_EatAllTheMeat_Perk: OR-group[EPAlchemyEffectHasKeyword(SURV_EffectTypeFoodBuff)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeFoodHunger)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeFoodHealing)=1]",
+   "Mutation_Carnivore: perk Mutation_EatAllTheMeat_Perk: entry point Mod Spell Magnitude — not modeled",
    "Mutation_Carnivore: condition: IsSpellTarget(RadX)=0",
-   "Mutation_Carnivore: MGEF Mutation_EatAllTheMeat archetype Script — needs override",
-   "Mutation_Carnivore: MGEF Mutation_EatSafeMeat archetype Script — needs override",
+   "Mutation_Carnivore: perk Mutation_EatSafeMeat_Perk: EPMagic_SpellHasKeyword(IngredientTypeMeat)=1",
+   "Mutation_Carnivore: perk Mutation_EatSafeMeat_Perk: OR-group[EPAlchemyEffectHasKeyword(RadiationInjestion)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeDiseaseVector)=1 | EPAlchemyEffectHasKeyword(ChemEffect)=1]",
+   "Mutation_Carnivore: perk Mutation_EatSafeMeat_Perk: entry point Mod Spell Magnitude — not modeled",
+   "Mutation_Carnivore: perk Mutation_EatNoVeggies_Perk: EPMagic_SpellHasKeyword(IngredientTypeVegetable)=1",
+   "Mutation_Carnivore: perk Mutation_EatNoVeggies_Perk: OR-group[EPAlchemyEffectHasKeyword(SURV_EffectTypeFoodBuff)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeFoodHunger)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeFoodHealing)=1]",
+   "Mutation_Carnivore: perk Mutation_EatNoVeggies_Perk: entry point Mod Spell Magnitude — not modeled",
    "Mutation_Carnivore: condition: IsSpellTarget(Serum_Carnivore)=0",
-   "Mutation_Carnivore: MGEF Mutation_EatNoVeggies archetype Script — needs override",
    "Mutation_Carnivore: MGEF Mutation_Carnivore_UIDummy archetype Script — needs override",
    "Mutation_Carnivore: condition: IsSpellTarget(Serum_Carnivore)=1",
    "Mutation_Carnivore: MGEF Mutation_Carnivore_UIDummyWithSerum archetype Script — needs override",
@@ -136,9 +142,9 @@
    "Mutation_Chameleon: MGEF Mutation_ChameleonAudioEffect archetype Script — needs override",
    "Mutation_Chameleon: MGEF Mutation_Chameleon_UIDummy archetype Script — needs override",
    "Mutation_Chameleon: MGEF Mutation_Chameleon_UIDummySerum archetype Script — needs override",
-   "Mutation_Chameleon: MGEF Mutation_Chameleon_StealthIcon archetype Script — needs override",
+   "Mutation_Chameleon: perk Mutation_ChameleonStealthIcon_Perk: MGEF Mutation_Chameleon_UIDummyStealthIcon archetype Script — needs override",
    "Mutation_Chameleon: MGEF Mutation_FortifyDamageResist_Hidden: no route for AV DamageResist — needs mapping",
-   "Mutation_Chameleon: MGEF Mutation_Chameleon_AddOnAttackFlagPerk archetype Script — needs override",
+   "Mutation_Chameleon: perk Mutation_ChameleonOnAttack_Perk: entry point Apply Weapon Attack Spell — not modeled",
    "Mutation_Chameleon: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
@@ -370,9 +376,15 @@
   "notes": [
    "Mutation_Empath: condition: IsSpellTarget(RadX)=1",
    "Mutation_Empath: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_Empath: perk Mutation_EmpathPenalty_Perk: HasPerk(ClassFreak01)=0",
+   "Mutation_Empath: perk Mutation_EmpathPenalty_Perk: entry point Mod Incoming Weapon Damage — not modeled",
+   "Mutation_Empath: perk Mutation_EmpathPenalty_Perk: HasPerk(ClassFreak02)=0",
+   "Mutation_Empath: perk Mutation_EmpathPenalty_Perk: HasPerk(ClassFreak01)=1",
+   "Mutation_Empath: perk Mutation_EmpathPenalty_Perk: HasPerk(ClassFreak03)=0",
+   "Mutation_Empath: perk Mutation_EmpathPenalty_Perk: HasPerk(ClassFreak02)=1",
+   "Mutation_Empath: perk Mutation_EmpathPenalty_Perk: HasPerk(ClassFreak03)=1",
    "Mutation_Empath: condition: IsSpellTarget(RadX)=0",
    "Mutation_Empath: condition: IsSpellTarget(Serum_Empath)=0",
-   "Mutation_Empath: MGEF Mutation_EmpathEffect archetype Script — needs override",
    "Mutation_Empath: MGEF Mutation_Empath_UIDummy archetype Script — needs override",
    "Mutation_Empath: MGEF Mutation_EmpathTeamDMG_UIDummy archetype Script — needs override",
    "Mutation_Empath: MGEF abMutationCount: no route for AV MutationCount — needs mapping",
@@ -389,9 +401,15 @@
    "Mutation_Grounded: condition: IsSpellTarget(RadX)=1",
    "Mutation_Grounded: MGEF Mutation_Treated_Effect archetype Script — needs override",
    "Mutation_Grounded: MGEF Mutation_FortifyEnergyResist: no route for AV EnergyResist — needs mapping",
+   "Mutation_Grounded: perk Mutation_ReduceEnergyDamage_Perk: HasPerk(ClassFreak01)=0",
+   "Mutation_Grounded: perk Mutation_ReduceEnergyDamage_Perk: entry point Mod Weapon Attack Damage — not modeled",
+   "Mutation_Grounded: perk Mutation_ReduceEnergyDamage_Perk: HasPerk(ClassFreak02)=0",
+   "Mutation_Grounded: perk Mutation_ReduceEnergyDamage_Perk: HasPerk(ClassFreak01)=1",
+   "Mutation_Grounded: perk Mutation_ReduceEnergyDamage_Perk: HasPerk(ClassFreak02)=1",
+   "Mutation_Grounded: perk Mutation_ReduceEnergyDamage_Perk: HasPerk(ClassFreak03)=0",
+   "Mutation_Grounded: perk Mutation_ReduceEnergyDamage_Perk: HasPerk(ClassFreak03)=1",
    "Mutation_Grounded: condition: IsSpellTarget(RadX)=0",
    "Mutation_Grounded: condition: IsSpellTarget(Serum_Grounded)=0",
-   "Mutation_Grounded: MGEF Mutation_ReduceEnergyDamage archetype Script — needs override",
    "Mutation_Grounded: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
@@ -405,9 +423,16 @@
    "Mutation_HealingFactor: condition: IsSpellTarget(RadX)=1",
    "Mutation_HealingFactor: MGEF Mutation_Treated_Effect archetype Script — needs override",
    "Mutation_HealingFactor: MGEF Mutation_FortifyHealRate: no route for AV HealRate — needs mapping",
+   "Mutation_HealingFactor: perk Mutation_ReduceChemEffect_Perk: HasPerk(ClassFreak01)=0",
+   "Mutation_HealingFactor: perk Mutation_ReduceChemEffect_Perk: OR-group[EPAlchemyEffectHasKeyword(ChemTypeStimpack)=1 | EPAlchemyEffectHasKeyword(ChemTypeRadaway)=1 | EPAlchemyEffectHasKeyword(ChemTypeHealing)=1 | EPAlchemyEffectHasKeyword(ChemEffect)=1 | EPAlchemyEffectHasKeyword(PerkMedic)=1]",
+   "Mutation_HealingFactor: perk Mutation_ReduceChemEffect_Perk: entry point Mod Spell Magnitude — not modeled",
+   "Mutation_HealingFactor: perk Mutation_ReduceChemEffect_Perk: HasPerk(ClassFreak01)=1",
+   "Mutation_HealingFactor: perk Mutation_ReduceChemEffect_Perk: HasPerk(ClassFreak02)=0",
+   "Mutation_HealingFactor: perk Mutation_ReduceChemEffect_Perk: HasPerk(ClassFreak02)=1",
+   "Mutation_HealingFactor: perk Mutation_ReduceChemEffect_Perk: HasPerk(ClassFreak03)=0",
+   "Mutation_HealingFactor: perk Mutation_ReduceChemEffect_Perk: HasPerk(ClassFreak03)=1",
    "Mutation_HealingFactor: condition: IsSpellTarget(RadX)=0",
    "Mutation_HealingFactor: condition: IsSpellTarget(Serum_HealingFactor)=0",
-   "Mutation_HealingFactor: MGEF Mutation_ReduceChemEffect archetype Script — needs override",
    "Mutation_HealingFactor: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
@@ -420,11 +445,15 @@
   "notes": [
    "Mutation_Herbivore: condition: IsSpellTarget(RadX)=1",
    "Mutation_Herbivore: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_Herbivore: perk Mutation_EatAllTheVeggies_Perk: OR-group[EPMagic_SpellHasKeyword(IngredientTypeVegetable)=1 | EPMagic_SpellHasKeyword(IngredientTypeHerb)=1 | EPMagic_SpellHasKeyword(IngredientTypeFruit)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeFoodBuff)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeFoodHunger)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeFoodHealing)=1]",
+   "Mutation_Herbivore: perk Mutation_EatAllTheVeggies_Perk: entry point Mod Spell Magnitude — not modeled",
    "Mutation_Herbivore: condition: IsSpellTarget(RadX)=0",
-   "Mutation_Herbivore: MGEF Mutation_EatAllTheVeggies archetype Script — needs override",
-   "Mutation_Herbivore: MGEF Mutation_EatSafeVeggies archetype Script — needs override",
+   "Mutation_Herbivore: perk Mutation_EatSafeVeggies_Perk: OR-group[EPMagic_SpellHasKeyword(IngredientTypeVegetable)=1 | EPMagic_SpellHasKeyword(IngredientTypeHerb)=1 | EPMagic_SpellHasKeyword(IngredientTypeFruit)=1 | EPAlchemyEffectHasKeyword(RadiationInjestion)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeDiseaseVector)=1 | EPAlchemyEffectHasKeyword(ChemEffect)=1]",
+   "Mutation_Herbivore: perk Mutation_EatSafeVeggies_Perk: entry point Mod Spell Magnitude — not modeled",
+   "Mutation_Herbivore: perk Mutation_EatNoMeat_Perk: EPMagic_SpellHasKeyword(IngredientTypeMeat)=1",
+   "Mutation_Herbivore: perk Mutation_EatNoMeat_Perk: OR-group[EPAlchemyEffectHasKeyword(SURV_EffectTypeFoodBuff)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeFoodHunger)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeFoodHealing)=1]",
+   "Mutation_Herbivore: perk Mutation_EatNoMeat_Perk: entry point Mod Spell Magnitude — not modeled",
    "Mutation_Herbivore: condition: IsSpellTarget(Serum_Herbivore)=0",
-   "Mutation_Herbivore: MGEF Mutation_EatNoMeat archetype Script — needs override",
    "Mutation_Herbivore: MGEF Mutation_Herbivore_UIDummy archetype Script — needs override",
    "Mutation_Herbivore: condition: IsSpellTarget(Serum_Herbivore)=1",
    "Mutation_Herbivore: MGEF Mutation_Herbivore_UIDummyWithSerum archetype Script — needs override",
@@ -961,20 +990,68 @@
   "formId": "0x004DF1E0",
   "name": "Speed Demon",
   "kind": "mutation",
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x004DF1E0:0",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004DF1E0",
+     "edid": "Mutation_SpeedDemon",
+     "name": "Speed Demon"
+    },
+    "bucket": "reloadSpeed",
+    "op": "ADD",
+    "value": 0.30000001192092896,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": false
+     }
+    ]
+   },
+   {
+    "id": "0x004DF1E0:1",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004DF1E0",
+     "edid": "Mutation_SpeedDemon",
+     "name": "Speed Demon"
+    },
+    "bucket": "reloadSpeed",
+    "op": "ADD",
+    "value": 0.4000000059604645,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     }
+    ]
+   }
+  ],
   "notes": [
    "Mutation_SpeedDemon: condition: IsSpellTarget(RadX)=1",
    "Mutation_SpeedDemon: MGEF Mutation_Treated_Effect archetype Script — needs override",
    "Mutation_SpeedDemon: condition: IsSpellTarget(RadX)=0",
    "Mutation_SpeedDemon: condition: IsSpellTarget(Serum_SpeedDemon)=0",
    "Mutation_SpeedDemon: MGEF Mutation_SpeedDemon_UIDummy archetype Script — needs override",
-   "Mutation_SpeedDemon: condition: GetIsPlayerGhoul()=0",
+   "Mutation_SpeedDemon: perk Mutation_IncreasedHungerThirst_Perk: HasPerk(ClassFreak01)=0",
+   "Mutation_SpeedDemon: perk Mutation_IncreasedHungerThirst_Perk: OR-group[EPAlchemyEffectHasKeyword(SURV_EffectTypeHunger)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeThirst)=1]",
+   "Mutation_SpeedDemon: perk Mutation_IncreasedHungerThirst_Perk: entry point Mod Spell Magnitude — not modeled",
+   "Mutation_SpeedDemon: perk Mutation_IncreasedHungerThirst_Perk: HasPerk(ClassFreak02)=0",
+   "Mutation_SpeedDemon: perk Mutation_IncreasedHungerThirst_Perk: HasPerk(ClassFreak01)=1",
+   "Mutation_SpeedDemon: perk Mutation_IncreasedHungerThirst_Perk: HasPerk(ClassFreak03)=0",
+   "Mutation_SpeedDemon: perk Mutation_IncreasedHungerThirst_Perk: HasPerk(ClassFreak02)=1",
+   "Mutation_SpeedDemon: perk Mutation_IncreasedHungerThirst_Perk: HasPerk(ClassFreak03)=1",
    "Mutation_SpeedDemon: condition: IsMoving()=1",
-   "Mutation_SpeedDemon: MGEF Mutation_IncreasedHungerThirst archetype Script — needs override",
-   "Mutation_SpeedDemon: condition: GetIsPlayerGhoul()=1",
-   "Mutation_SpeedDemon: MGEF GHL_Mutation_IncreasedFeral archetype Script — needs override",
+   "Mutation_SpeedDemon: perk GHL_Mutation_IncreasedFeral_Perk: HasPerk(ClassFreak01)=0",
+   "Mutation_SpeedDemon: perk GHL_Mutation_IncreasedFeral_Perk: EPAlchemyEffectHasKeyword(GHL_SURV_EffectTypeFeral)=1",
+   "Mutation_SpeedDemon: perk GHL_Mutation_IncreasedFeral_Perk: entry point Mod Spell Magnitude — not modeled",
+   "Mutation_SpeedDemon: perk GHL_Mutation_IncreasedFeral_Perk: HasPerk(ClassFreak02)=0",
+   "Mutation_SpeedDemon: perk GHL_Mutation_IncreasedFeral_Perk: HasPerk(ClassFreak01)=1",
+   "Mutation_SpeedDemon: perk GHL_Mutation_IncreasedFeral_Perk: HasPerk(ClassFreak03)=0",
+   "Mutation_SpeedDemon: perk GHL_Mutation_IncreasedFeral_Perk: HasPerk(ClassFreak02)=1",
+   "Mutation_SpeedDemon: perk GHL_Mutation_IncreasedFeral_Perk: HasPerk(ClassFreak03)=1",
    "Mutation_SpeedDemon: MGEF Mutation_FortifyMoveSpeed: no route for AV SpeedMult — needs mapping",
-   "Mutation_SpeedDemon: MGEF Mutation_FortifyReloadSpeed: no route for AV WeapReloadSpeedMult — needs mapping",
    "Mutation_SpeedDemon: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
@@ -1121,10 +1198,17 @@
   "notes": [
    "Mutation_TwistedMuscles: condition: IsSpellTarget(RadX)=1",
    "Mutation_TwistedMuscles: MGEF Mutation_Treated_Effect archetype Script — needs override",
+   "Mutation_TwistedMuscles: perk Mutation_ReduceAccuracy_Perk: HasPerk(ClassFreak01)=0",
+   "Mutation_TwistedMuscles: perk Mutation_ReduceAccuracy_Perk: entry point Mod Cone-of-fire Mult — not modeled",
+   "Mutation_TwistedMuscles: perk Mutation_ReduceAccuracy_Perk: entry point Mod VATS Hit Chance — not modeled",
+   "Mutation_TwistedMuscles: perk Mutation_ReduceAccuracy_Perk: HasPerk(ClassFreak02)=0",
+   "Mutation_TwistedMuscles: perk Mutation_ReduceAccuracy_Perk: HasPerk(ClassFreak01)=1",
+   "Mutation_TwistedMuscles: perk Mutation_ReduceAccuracy_Perk: HasPerk(ClassFreak03)=0",
+   "Mutation_TwistedMuscles: perk Mutation_ReduceAccuracy_Perk: HasPerk(ClassFreak02)=1",
+   "Mutation_TwistedMuscles: perk Mutation_ReduceAccuracy_Perk: HasPerk(ClassFreak03)=1",
    "Mutation_TwistedMuscles: condition: HasPerk(ClassFreak01)=0",
    "Mutation_TwistedMuscles: condition: IsSpellTarget(RadX)=0",
    "Mutation_TwistedMuscles: condition: IsSpellTarget(Serum_TwistedMuscles)=0",
-   "Mutation_TwistedMuscles: MGEF Mutation_ReduceAccuracy archetype Script — needs override",
    "Mutation_TwistedMuscles: MGEF abMutationCount: no route for AV MutationCount — needs mapping",
    "Mutation_TwistedMuscles: condition: HasPerk(ClassFreak02)=0",
    "Mutation_TwistedMuscles: condition: HasPerk(ClassFreak01)=1",

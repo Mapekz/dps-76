@@ -183,24 +183,64 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004D869:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D869",
+       "edid": "ActionBoy",
+       "name": "Action Boy",
+       "rank": 1
+      },
+      "bucket": "apRegen",
+      "op": "ADD",
+      "value": 0.15,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004D869:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D869",
+       "edid": "ActionBoy",
+       "name": "Action Boy",
+       "rank": 2
+      },
+      "bucket": "apRegen",
+      "op": "ADD",
+      "value": 0.3,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004D869:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D869",
+       "edid": "ActionBoy",
+       "name": "Action Boy",
+       "rank": 3
+      },
+      "bucket": "apRegen",
+      "op": "ADD",
+      "value": 0.45,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
-  "notes": [
-   "condition: HasPerk(ActionGirl02)=0",
-   "condition: HasPerk(ActionGirl03)=0",
-   "condition: OR-group[HasPerk(ActionBoy02)=1 | HasPerk(ActionGirl02)=1]",
-   "condition: OR-group[HasPerk(ActionBoy03)=1 | HasPerk(ActionGirl03)=1]"
-  ]
+  "notes": []
  },
  {
   "family": "ActionGirl",
@@ -219,24 +259,64 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004D872:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D872",
+       "edid": "ActionGirl",
+       "name": "Action Girl",
+       "rank": 1
+      },
+      "bucket": "apRegen",
+      "op": "ADD",
+      "value": 0.15,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004D872:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D872",
+       "edid": "ActionGirl",
+       "name": "Action Girl",
+       "rank": 2
+      },
+      "bucket": "apRegen",
+      "op": "ADD",
+      "value": 0.3,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004D872:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D872",
+       "edid": "ActionGirl",
+       "name": "Action Girl",
+       "rank": 3
+      },
+      "bucket": "apRegen",
+      "op": "ADD",
+      "value": 0.45,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
-  "notes": [
-   "condition: HasPerk(ActionBoy02)=0",
-   "condition: HasPerk(ActionBoy03)=0",
-   "condition: OR-group[HasPerk(ActionBoy02)=1 | HasPerk(ActionGirl02)=1]",
-   "condition: OR-group[HasPerk(ActionBoy03)=1 | HasPerk(ActionGirl03)=1]"
-  ]
+  "notes": []
  },
  {
   "family": "AdamantiumSkeleton",
@@ -255,9 +335,7 @@
    }
   ],
   "hasCard": true,
-  "notes": [
-   "AbPerkFortifyLimbDamageResistance: curve with unmapped input AV 0x000002C4 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "AddictionManager",
@@ -971,8 +1049,8 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "kind": "teammateCount",
+        "count": 1
        }
       ]
      },
@@ -990,8 +1068,8 @@
       "value": 2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=2"
+        "kind": "teammateCount",
+        "count": 2
        }
       ]
      },
@@ -1009,8 +1087,8 @@
       "value": 3,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=3"
+        "kind": "teammateCount",
+        "count": 3
        }
       ]
      }
@@ -1018,11 +1096,7 @@
    }
   ],
   "hasCard": false,
-  "notes": [
-   "condition: GetPlayerTeammateCount()=1",
-   "condition: GetPlayerTeammateCount()=2",
-   "condition: GetPlayerTeammateCount()=3"
-  ]
+  "notes": []
  },
  {
   "family": "ATX_VaultTecGelatinCake_CakeSlice_AddPerk",
@@ -1052,8 +1126,8 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "kind": "teammateCount",
+        "count": 1
        }
       ]
      },
@@ -1071,8 +1145,8 @@
       "value": 2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=2"
+        "kind": "teammateCount",
+        "count": 2
        }
       ]
      },
@@ -1090,8 +1164,8 @@
       "value": 3,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=3"
+        "kind": "teammateCount",
+        "count": 3
        }
       ]
      }
@@ -1099,11 +1173,7 @@
    }
   ],
   "hasCard": false,
-  "notes": [
-   "condition: GetPlayerTeammateCount()=1",
-   "condition: GetPlayerTeammateCount()=2",
-   "condition: GetPlayerTeammateCount()=3"
-  ]
+  "notes": []
  },
  {
   "family": "Awareness",
@@ -1649,12 +1719,9 @@
   ],
   "hasCard": false,
   "notes": [
-   "condition: GetPlayerTeammateCount()=0",
+   "condition: GetPlayerTeammateCount Greater Than 0",
    "AbPerkFortifyResistDamage: curve with unmapped input AV 0x000002C5 — needs override",
-   "AbPerkFortifyResistEnergy: curve with unmapped input AV 0x000002C5 — needs override",
-   "condition: GetPlayerTeammateCount()=1",
-   "condition: GetPlayerTeammateCount()=2",
-   "condition: GetPlayerTeammateCount()=3"
+   "AbPerkFortifyResistEnergy: curve with unmapped input AV 0x000002C5 — needs override"
   ]
  },
  {
@@ -3400,7 +3467,39 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x008F2AEA:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F2AEA",
+       "edid": "CrowdControlPerk",
+       "name": "Crowd Control",
+       "rank": 1
+      },
+      "bucket": "limbDamage",
+      "op": "ADD",
+      "curve": {
+       "input": "killStreak",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 1,
+         "y": 5
+        },
+        {
+         "x": 10,
+         "y": 50
+        }
+       ]
+      },
+      "curveScale": 0.01,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -3889,8 +3988,10 @@
   ],
   "hasCard": false,
   "notes": [
-   "condition: GetValue(Health)=0.019999999552965164",
-   "MGEF DailyOps_MutationEffect_Resilient_FortifyResistRadiationExpose archetype Script — needs override"
+   "perk ImmuneToRadiation: entry point Mod Rads for Rad Health Max — not modeled",
+   "perk ImmuneToRadiation: EPMagic_SpellHasKeyword(DamageTypeRadiation)=1",
+   "perk ImmuneToRadiation: entry point Mod Incoming Spell Magnitude — not modeled",
+   "condition: GetValue(Health)=0.019999999552965164"
   ]
  },
  {
@@ -3925,7 +4026,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00829BB5:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00829BB5",
+       "edid": "DailyOps_MutationPerk_SwiftFooted",
+       "name": "Swift-Footed Perk",
+       "rank": 1
+      },
+      "bucket": "reloadSpeed",
+      "op": "ADD",
+      "value": 0.4000000059604645,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -4056,8 +4172,7 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: IsSprinting()=1",
-   "condition: GetHealthPercentage Less Than Or Equal To 0.4000000059604645"
+   "condition: IsSprinting()=1"
   ]
  },
  {
@@ -4159,7 +4274,6 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetHealthPercentage Less Than Or Equal To 0.20000000298023224",
    "MGEF DLC03_PerkDestroyerArcadia archetype Script — needs override"
   ]
  },
@@ -4219,7 +4333,6 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetHealthPercentage Less Than Or Equal To 0.20000000298023224",
    "MGEF DLC03_PerkProtectorArcadia archetype Script — needs override"
   ]
  },
@@ -4615,13 +4728,7 @@
    }
   ],
   "hasCard": true,
-  "notes": [
-   "MGEF AbPerkFortifyResistDamage: zero magnitude, no curve — script/scaled, needs override",
-   "MGEF AbPerkFortifyResistEnergy: zero magnitude, no curve — script/scaled, needs override",
-   "MGEF AbPerkFortifyResistFire: zero magnitude, no curve — script/scaled, needs override",
-   "MGEF AbPerkFortifyResistCryo: zero magnitude, no curve — script/scaled, needs override",
-   "MGEF AbPerkFortifyResistPoison: zero magnitude, no curve — script/scaled, needs override"
-  ]
+  "notes": []
  },
  {
   "family": "E09A_AbominationPreventPrematureDeath",
@@ -4844,15 +4951,102 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00322354:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00322354",
+       "edid": "Enforcer",
+       "name": "Enforcer",
+       "rank": 1
+      },
+      "bucket": "limbDamage",
+      "op": "ADD",
+      "value": 0.25,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeRifle",
+         "WeaponTypePistol",
+         "WeaponTypeShotgun"
+        ]
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00322354:r2:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00322354",
+       "edid": "Enforcer",
+       "name": "Enforcer",
+       "rank": 2
+      },
+      "bucket": "limbDamage",
+      "op": "ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeRifle",
+         "WeaponTypePistol",
+         "WeaponTypeShotgun"
+        ]
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00322354:r3:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00322354",
+       "edid": "Enforcer",
+       "name": "Enforcer",
+       "rank": 3
+      },
+      "bucket": "limbDamage",
+      "op": "ADD",
+      "value": 0.75,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeRifle",
+         "WeaponTypePistol",
+         "WeaponTypeShotgun"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -5476,20 +5670,91 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00797E5C:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E5C",
+       "edid": "GHL_ActionGhoul",
+       "name": "Action Ghoul",
+       "rank": 1
+      },
+      "bucket": "apRegen",
+      "op": "ADD",
+      "value": 0.15,
+      "conditions": [
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Rads)=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00797E5C:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E5C",
+       "edid": "GHL_ActionGhoul",
+       "name": "Action Ghoul",
+       "rank": 2
+      },
+      "bucket": "apRegen",
+      "op": "ADD",
+      "value": 0.3,
+      "conditions": [
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Rads)=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00797E5C:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E5C",
+       "edid": "GHL_ActionGhoul",
+       "name": "Action Ghoul",
+       "rank": 3
+      },
+      "bucket": "apRegen",
+      "op": "ADD",
+      "value": 0.45,
+      "conditions": [
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Rads)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetIsPlayerGhoul()=1",
    "condition: GetValue(Rads)=1"
   ]
  },
@@ -5542,7 +5807,6 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetIsPlayerGhoul()=1",
    "condition: GetCombatState()=1",
    "condition: GetValue(Rads)=0"
   ]
@@ -5577,7 +5841,6 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetIsPlayerGhoul()=1",
    "condition: OR-group[IsTrueForConditionForm(GHL_HasModerateGlowConsumptionFeralRage_Condition)=1 | GetValue(Rads)=0x007F68BB]"
   ]
  },
@@ -5598,21 +5861,94 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00797E47:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E47",
+       "edid": "GHL_BoneShatterer",
+       "name": "Bone shatterer",
+       "rank": 1
+      },
+      "bucket": "limbDamage",
+      "op": "ADD",
+      "value": 0.25,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeMeleeGeneral",
+        "present": true
+       },
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00797E47:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E47",
+       "edid": "GHL_BoneShatterer",
+       "name": "Bone shatterer",
+       "rank": 2
+      },
+      "bucket": "limbDamage",
+      "op": "ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeMeleeGeneral",
+        "present": true
+       },
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00797E47:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E47",
+       "edid": "GHL_BoneShatterer",
+       "name": "Bone shatterer",
+       "rank": 3
+      },
+      "bucket": "limbDamage",
+      "op": "ADD",
+      "value": 0.75,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeMeleeGeneral",
+        "present": true
+       },
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
-  "notes": [
-   "condition: GetIsPlayerGhoul()=1"
-  ]
+  "notes": []
  },
  {
   "family": "GHL_BreatheItIn",
@@ -5643,9 +5979,7 @@
    }
   ],
   "hasCard": true,
-  "notes": [
-   "condition: GetIsPlayerGhoul()=1"
-  ]
+  "notes": []
  },
  {
   "family": "GHL_BrickWall",
@@ -5716,7 +6050,6 @@
   "hasCard": true,
   "notes": [
    "condition: GetIsDisguisedWithKeyword(GHL_PlayerGhoulDisguiseKeyword)=1",
-   "condition: GetIsPlayerGhoul()=1",
    "MGEF GHL_DisguiseUIDummyEffect archetype Script — needs override"
   ]
  },
@@ -5750,7 +6083,6 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetIsPlayerGhoul()=1",
    "condition: GetDistanceToClosestHostileActor()=10",
    "condition: GetDistanceToClosestHostileActor()=20",
    "condition: GetDistanceToClosestHostileActor()=30"
@@ -5784,8 +6116,8 @@
       "value": 0.14999999664723873,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -5798,7 +6130,6 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetIsPlayerGhoul()=1",
    "condition: GetWeakPointDamageMultiplier()=1"
   ]
  },
@@ -5859,8 +6190,8 @@
       "value": 0.20000000298023224,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -5887,8 +6218,8 @@
       "value": 0.3499999940395355,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -5915,8 +6246,8 @@
       "value": 0.5,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -6004,7 +6335,6 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetIsPlayerGhoul()=1",
    "condition: GetValue(Rads)=180",
    "MGEF GHL_GlowingOnePerkCloakEffect01 archetype Cloak — needs override",
    "MGEF GHL_GlowingOneUIDummyEffect archetype Script — needs override",
@@ -6047,21 +6377,79 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x007ADC79:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x007ADC79",
+       "edid": "GHL_GunTricks",
+       "name": "Gun Tricks",
+       "rank": 1
+      },
+      "bucket": "reloadSpeed",
+      "op": "ADD",
+      "value": 0.10000000149011612,
+      "conditions": [
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x007ADC79:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x007ADC79",
+       "edid": "GHL_GunTricks",
+       "name": "Gun Tricks",
+       "rank": 2
+      },
+      "bucket": "reloadSpeed",
+      "op": "ADD",
+      "value": 0.20000000298023224,
+      "conditions": [
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x007ADC79:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x007ADC79",
+       "edid": "GHL_GunTricks",
+       "name": "Gun Tricks",
+       "rank": 3
+      },
+      "bucket": "reloadSpeed",
+      "op": "ADD",
+      "value": 0.30000001192092896,
+      "conditions": [
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
-  "notes": [
-   "condition: GetIsPlayerGhoul()=1"
-  ]
+  "notes": []
  },
  {
   "family": "GHL_HyperReflexes",
@@ -6093,7 +6481,6 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetIsPlayerGhoul()=1",
    "condition: GetValue(Rads)=180",
    "condition: WornHasKeyword(ArmorTypePower)=0"
   ]
@@ -6122,7 +6509,6 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetIsPlayerGhoul()=1",
    "condition: GetValue(Rads)=200",
    "condition: IsSprinting()=1"
   ]
@@ -6276,8 +6662,8 @@
         "raw": "GetValue(Rads)=1"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -6335,8 +6721,8 @@
         "raw": "GetValue(Rads)=1"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -6394,8 +6780,8 @@
         "raw": "GetValue(Rads)=1"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -6419,7 +6805,6 @@
   "hasCard": true,
   "notes": [
    "condition: GetValue(Rads)=1",
-   "condition: GetIsPlayerGhoul()=1",
    "condition: IsPowerAttacking()=0"
   ]
  },
@@ -6510,9 +6895,7 @@
    }
   ],
   "hasCard": false,
-  "notes": [
-   "condition: GetIsPlayerGhoul()=1"
-  ]
+  "notes": []
  },
  {
   "family": "GHL_RadiationPower",
@@ -6558,8 +6941,8 @@
         "raw": "GetDead()=0"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -6602,8 +6985,8 @@
         "raw": "GetDead()=0"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -6646,8 +7029,8 @@
         "raw": "GetDead()=0"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -6664,7 +7047,6 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetIsPlayerGhoul()=1",
    "condition: GetValue(Rads)=0x007F68B6",
    "condition: IsPowerAttacking()=0"
   ]
@@ -6727,8 +7109,56 @@
         "present": false
        },
        {
+        "kind": "playerIsGhoul",
+        "value": true
+       },
+       {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "raw": "GetValue(Rads)=0x007F68BB"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E1D:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E1D",
+       "edid": "GHL_RadioactiveStrength",
+       "name": "Radioactive Strength",
+       "rank": 1
+      },
+      "bucket": "bashDamage",
+      "op": "ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsPowerAttacking()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "OR-group[IsTrueForConditionForm(GHL_HasModerateGlowConsumptionFeralRage_Condition)=1 | GetValue(Rads)=0x007F68BB]"
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeAutomaticMelee",
+        "present": false
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasKeyword(AnimsMinigunShredder)=0"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=0"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(AnimsMinigunShredder)=0"
+       },
+       {
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -6781,8 +7211,56 @@
         "present": false
        },
        {
+        "kind": "playerIsGhoul",
+        "value": true
+       },
+       {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "raw": "GetValue(Rads)=0x007F68BB"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E1D:r2:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E1D",
+       "edid": "GHL_RadioactiveStrength",
+       "name": "Radioactive Strength",
+       "rank": 2
+      },
+      "bucket": "bashDamage",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsPowerAttacking()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "OR-group[IsTrueForConditionForm(GHL_HasModerateGlowConsumptionFeralRage_Condition)=1 | GetValue(Rads)=0x007F68BB]"
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeAutomaticMelee",
+        "present": false
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasKeyword(AnimsMinigunShredder)=0"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=0"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(AnimsMinigunShredder)=0"
+       },
+       {
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -6835,8 +7313,56 @@
         "present": false
        },
        {
+        "kind": "playerIsGhoul",
+        "value": true
+       },
+       {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "raw": "GetValue(Rads)=0x007F68BB"
+       }
+      ]
+     },
+     {
+      "id": "0x00797E1D:r3:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E1D",
+       "edid": "GHL_RadioactiveStrength",
+       "name": "Radioactive Strength",
+       "rank": 3
+      },
+      "bucket": "bashDamage",
+      "op": "ADD",
+      "value": 1.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsPowerAttacking()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "OR-group[IsTrueForConditionForm(GHL_HasModerateGlowConsumptionFeralRage_Condition)=1 | GetValue(Rads)=0x007F68BB]"
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeAutomaticMelee",
+        "present": false
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasKeyword(AnimsMinigunShredder)=0"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=0"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(AnimsMinigunShredder)=0"
+       },
+       {
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -6849,7 +7375,6 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetIsPlayerGhoul()=1",
    "condition: GetValue(Rads)=0x007F68BB",
    "condition: WornHasKeyword(AnimsMinigunShredder)=0"
   ]
@@ -6903,7 +7428,6 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetIsPlayerGhoul()=1",
    "MGEF GHL_RadSpecialistUIDummyEffect archetype Script — needs override"
   ]
  },
@@ -6956,7 +7480,6 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetIsPlayerGhoul()=1",
    "condition: GetValue(GHL_SURV_Feral)=0x007A7693",
    "MGEF GHL_SURV_FeralVFX_FeralTier5Effect archetype Script — needs override"
   ]
@@ -7024,16 +7547,12 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      },
@@ -7051,16 +7570,12 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      },
@@ -7078,16 +7593,12 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      },
@@ -7105,16 +7616,12 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      },
@@ -7132,16 +7639,12 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      },
@@ -7159,16 +7662,12 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      },
@@ -7186,16 +7685,12 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      }
@@ -7218,16 +7713,12 @@
       "value": 2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      },
@@ -7245,16 +7736,12 @@
       "value": 2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      },
@@ -7272,16 +7759,12 @@
       "value": 2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      },
@@ -7299,16 +7782,12 @@
       "value": 2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      },
@@ -7326,16 +7805,12 @@
       "value": 2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      },
@@ -7353,16 +7828,12 @@
       "value": 2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      },
@@ -7380,16 +7851,12 @@
       "value": 2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      }
@@ -7412,16 +7879,12 @@
       "value": 3,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      },
@@ -7439,16 +7902,12 @@
       "value": 3,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      },
@@ -7466,16 +7925,12 @@
       "value": 3,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      },
@@ -7493,16 +7948,12 @@
       "value": 3,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      },
@@ -7520,16 +7971,12 @@
       "value": 3,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      },
@@ -7547,16 +7994,12 @@
       "value": 3,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      },
@@ -7574,16 +8017,12 @@
       "value": 3,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
+        "kind": "playerIsGhoul",
+        "value": true
        },
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayerGhoul()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
        }
       ]
      }
@@ -7592,8 +8031,7 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetIsPlayerGhoul()=1",
-   "condition: GetPlayerTeammateCount()=1",
+   "condition: GetPlayerTeammateCount Greater Than Or Equal To 1",
    "MGEF AbPerkFortifyAllSPECIAL_Desc archetype Script — needs override"
   ]
  },
@@ -7962,15 +8400,75 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00006F9B:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00006F9B",
+       "edid": "GroundPounder",
+       "name": "Ground Pounder",
+       "rank": 1
+      },
+      "bucket": "reloadSpeed",
+      "op": "ADD",
+      "value": 0.10000000149011612,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsTrueForConditionForm(SmallGun_Actor_Condition)=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00006F9B:r2:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00006F9B",
+       "edid": "GroundPounder",
+       "name": "Ground Pounder",
+       "rank": 2
+      },
+      "bucket": "reloadSpeed",
+      "op": "ADD",
+      "value": 0.20000000298023224,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsTrueForConditionForm(SmallGun_Actor_Condition)=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00006F9B:r3:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00006F9B",
+       "edid": "GroundPounder",
+       "name": "Ground Pounder",
+       "rank": 3
+      },
+      "bucket": "reloadSpeed",
+      "op": "ADD",
+      "value": 0.30000001192092896,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsTrueForConditionForm(SmallGun_Actor_Condition)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -7995,21 +8493,94 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0031AF01:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF01",
+       "edid": "Guerrilla",
+       "name": "Guerrilla",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.1,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       },
+       {
+        "kind": "targetDistance",
+        "range": "close"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0031AF01:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF01",
+       "edid": "Guerrilla",
+       "name": "Guerrilla",
+       "rank": 2
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.15,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       },
+       {
+        "kind": "targetDistance",
+        "range": "close"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0031AF01:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF01",
+       "edid": "Guerrilla",
+       "name": "Guerrilla",
+       "rank": 3
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.2,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       },
+       {
+        "kind": "targetDistance",
+        "range": "close"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
-  "notes": [
-   "MGEF abPerkFortifyDmgClose: zero magnitude, no curve — script/scaled, needs override"
-  ]
+  "notes": []
  },
  {
   "family": "GuerrillaExpert",
@@ -8024,13 +8595,69 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0031AF04:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF04",
+       "edid": "GuerrillaExpert",
+       "name": "Guerrilla Expert",
+       "rank": 1
+      },
+      "bucket": "reloadSpeed",
+      "op": "ADD",
+      "curve": {
+       "input": "onslaughtStacks",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 1,
+         "y": 0.009999999776482582
+        },
+        {
+         "x": 100,
+         "y": 1
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       }
+      ]
+     },
+     {
+      "id": "0x0031AF04:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF04",
+       "edid": "GuerrillaExpert",
+       "name": "Guerrilla Expert",
+       "rank": 1
+      },
+      "bucket": "onslaughtMaxStacks",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
-  "notes": [
-   "AbPerkFortifyReloadSpeedMult: curve with unmapped input AV 0x00000395 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "GuerrillaMaster",
@@ -8045,13 +8672,73 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0031AF08:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF08",
+       "edid": "GuerrillaMaster",
+       "name": "Guerrilla Master",
+       "rank": 1
+      },
+      "bucket": "onslaughtMaxStacks",
+      "op": "ADD",
+      "value": 5,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       }
+      ]
+     },
+     {
+      "id": "0x0031AF08:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF08",
+       "edid": "GuerrillaMaster",
+       "name": "Guerrilla Master",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "curve": {
+       "input": "onslaughtStacks",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 1,
+         "y": 5
+        },
+        {
+         "x": 100,
+         "y": 500
+        }
+       ]
+      },
+      "curveScale": 0.01,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       },
+       {
+        "kind": "targetDistance",
+        "range": "close"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
-  "notes": [
-   "abPerkFortifyDmgClose: curve with unmapped input AV 0x00000395 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "GunFu",
@@ -8218,13 +8905,74 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0031AEFD:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AEFD",
+       "edid": "GunslingerExpert",
+       "name": "Gunslinger Expert",
+       "rank": 1
+      },
+      "bucket": "weakpointBonus",
+      "op": "ADD",
+      "curve": {
+       "input": "onslaughtStacks",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 1,
+         "y": 1
+        },
+        {
+         "x": 100,
+         "y": 100
+        }
+       ]
+      },
+      "curveScale": 0.009999999776482582,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       }
+      ]
+     },
+     {
+      "id": "0x0031AEFD:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AEFD",
+       "edid": "GunslingerExpert",
+       "name": "Gunslinger Expert",
+       "rank": 1
+      },
+      "bucket": "onslaughtMaxStacks",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
-  "notes": [
-   "AbPerkFortifyDmgWeakSpot: curve with unmapped input AV 0x00000395 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "GunslingerMaster",
@@ -8239,7 +8987,28 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004A09F:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004A09F",
+       "edid": "GunslingerMaster",
+       "name": "Gunslinger Master",
+       "rank": 1
+      },
+      "bucket": "onslaughtMaxStacks",
+      "op": "ADD",
+      "value": 10,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -9223,9 +9992,7 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetNumActiveEffectsWithKeyword(SURV_EffectTypeDisease)=0",
-   "abFortifyDamageResist: curve with unmapped input AV 0x000002C4 — needs override",
-   "AbPerkFortifyResistEnergy: curve with unmapped input AV 0x000002C4 — needs override"
+   "condition: GetNumActiveEffectsWithKeyword(SURV_EffectTypeDisease) Equal To 0"
   ]
  },
  {
@@ -9356,9 +10123,7 @@
    }
   ],
   "hasCard": true,
-  "notes": [
-   "AbPerkFortifyResistRadiationIngest: curve with unmapped input AV 0x000002C4 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "Legendary_AmmoCapacityx4Perk",
@@ -9427,10 +10192,6 @@
       "conditions": [
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayer()=1"
-       },
-       {
-        "kind": "unresolved",
         "raw": "WornApparelHasKeywordCount(HasLegendary_Armor_LimitBreak)=1"
        }
       ]
@@ -9448,10 +10209,6 @@
       "op": "MUL_ADD",
       "value": -0.19999998807907104,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetIsPlayer()=1"
-       },
        {
         "kind": "unresolved",
         "raw": "WornApparelHasKeywordCount(HasLegendary_Armor_LimitBreak)=2"
@@ -9473,10 +10230,6 @@
       "conditions": [
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayer()=1"
-       },
-       {
-        "kind": "unresolved",
         "raw": "WornApparelHasKeywordCount(HasLegendary_Armor_LimitBreak)=3"
        }
       ]
@@ -9496,10 +10249,6 @@
       "conditions": [
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayer()=1"
-       },
-       {
-        "kind": "unresolved",
         "raw": "WornApparelHasKeywordCount(HasLegendary_Armor_LimitBreak)=4"
        }
       ]
@@ -9517,10 +10266,6 @@
       "op": "MUL_ADD",
       "value": -0.5,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetIsPlayer()=1"
-       },
        {
         "kind": "unresolved",
         "raw": "WornApparelHasKeywordCount(HasLegendary_Armor_LimitBreak)=5"
@@ -9696,12 +10441,7 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetLoadedAmmoCount()=0"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "IsNextClipLastShot()=0"
+        "kind": "lastRound"
        }
       ]
      }
@@ -9866,12 +10606,9 @@
       "value": 0.5,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayer()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "WornHasKeyword(HasLegendary_Weapon_Bully)=1"
+        "kind": "weaponKeyword",
+        "keyword": "HasLegendary_Weapon_Bully",
+        "present": true
        },
        {
         "kind": "unresolved",
@@ -9926,7 +10663,8 @@
   ],
   "hasCard": true,
   "notes": [
-   "MGEF Legendary_Weapon_ConductorsApplyPerkEffect archetype Script — needs override"
+   "perk Legendary_Weapon_ConductorsPlayerPerk: GetLastHitCritical()=1",
+   "perk Legendary_Weapon_ConductorsPlayerPerk: entry point Apply Combat Hit Spell — not modeled"
   ]
  },
  {
@@ -10018,8 +10756,8 @@
       "value": 0.09999999776482582,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetGroupTargetCount()=1"
+        "kind": "enemyGroupCount",
+        "count": 1
        }
       ]
      },
@@ -10037,8 +10775,8 @@
       "value": 0.19999999552965164,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetGroupTargetCount()=2"
+        "kind": "enemyGroupCount",
+        "count": 2
        }
       ]
      },
@@ -10056,8 +10794,8 @@
       "value": 0.29999999329447746,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetGroupTargetCount()=3"
+        "kind": "enemyGroupCount",
+        "count": 3
        }
       ]
      },
@@ -10075,8 +10813,8 @@
       "value": 0.3999999910593033,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetGroupTargetCount()=4"
+        "kind": "enemyGroupCount",
+        "count": 4
        }
       ]
      },
@@ -10094,8 +10832,9 @@
       "value": 0.4999999888241291,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetGroupTargetCount()=5"
+        "kind": "enemyGroupCount",
+        "count": 5,
+        "orMore": true
        }
       ]
      }
@@ -10103,13 +10842,7 @@
    }
   ],
   "hasCard": true,
-  "notes": [
-   "condition: GetGroupTargetCount()=1",
-   "condition: GetGroupTargetCount()=2",
-   "condition: GetGroupTargetCount()=3",
-   "condition: GetGroupTargetCount()=4",
-   "condition: GetGroupTargetCount()=5"
-  ]
+  "notes": []
  },
  {
   "family": "Legendary_Weapon_FencersPerk",
@@ -10139,8 +10872,8 @@
       "value": 0.12499999720603228,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=0"
+        "kind": "teammateCount",
+        "count": 0
        },
        {
         "kind": "weaponKeywordAny",
@@ -10165,12 +10898,8 @@
       "value": 0.24999999441206455,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDistance()=2500"
+        "kind": "teammateCount",
+        "count": 1
        },
        {
         "kind": "weaponKeywordAny",
@@ -10195,12 +10924,8 @@
       "value": 0.37499999161809683,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=2"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDistance()=2500"
+        "kind": "teammateCount",
+        "count": 2
        },
        {
         "kind": "weaponKeywordAny",
@@ -10225,12 +10950,8 @@
       "value": 0.4999999888241291,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=3"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDistance()=2500"
+        "kind": "teammateCount",
+        "count": 3
        },
        {
         "kind": "weaponKeywordAny",
@@ -10245,13 +10966,7 @@
    }
   ],
   "hasCard": true,
-  "notes": [
-   "condition: GetPlayerTeammateCount()=0",
-   "condition: GetPlayerTeammateCount()=1",
-   "condition: GetDistance()=2500",
-   "condition: GetPlayerTeammateCount()=2",
-   "condition: GetPlayerTeammateCount()=3"
-  ]
+  "notes": []
  },
  {
   "family": "Legendary_Weapon_FracturersPerk",
@@ -10325,11 +11040,34 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x007ACB3F:r1:1:0",
+      "source": {
+       "kind": "legendaryPerk",
+       "formId": "0x007ACB3F",
+       "edid": "Legendary_Weapon_PoundersPerk",
+       "name": "Pounder's Weapon Perk",
+       "rank": 1
+      },
+      "bucket": "onslaughtMaxStacks",
+      "op": "ADD",
+      "value": 10,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "HasLegendary_Weapon_Pounders",
+        "present": true
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
-  "notes": []
+  "notes": [
+   "entry point Mod Damage on Consecutive Hits uses Add Actor Value Mult — skipped"
+  ]
  },
  {
   "family": "Legendary_Weapon_PyromaniacPerk",
@@ -10359,16 +11097,13 @@
       "value": 0.5,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayer()=1"
+        "kind": "weaponKeyword",
+        "keyword": "HasLegendary_Weapon_Pyromaniac",
+        "present": true
        },
        {
-        "kind": "unresolved",
-        "raw": "HasKeyword(HasLegendary_Weapon_Pyromaniac)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetNumActiveEffectsWithKeyword(DamageTypeFire)=1"
+        "kind": "enemyHasActiveEffect",
+        "keyword": "DamageTypeFire"
        }
       ]
      }
@@ -10406,20 +11141,13 @@
       "value": 0.5,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsPlayer()=1"
+        "kind": "weaponKeyword",
+        "keyword": "HasLegendary_Weapon_Vipers",
+        "present": true
        },
        {
-        "kind": "unresolved",
-        "raw": "HasKeyword(HasLegendary_Weapon_Vipers)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "HasPerk(ImmuneToPoison)=0"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetNumActiveEffectsWithKeyword(DamageTypePoison)=1"
+        "kind": "enemyHasActiveEffect",
+        "keyword": "DamageTypePoison"
        }
       ]
      }
@@ -11754,21 +12482,139 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004A0CF:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004A0CF",
+       "edid": "LifeGiver",
+       "name": "LifeGiver",
+       "rank": 1
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "curve": {
+       "input": "endurance",
+       "points": [
+        {
+         "x": 1,
+         "y": 10
+        },
+        {
+         "x": 15,
+         "y": 120
+        },
+        {
+         "x": 30,
+         "y": 180
+        },
+        {
+         "x": 60,
+         "y": 230
+        },
+        {
+         "x": 100,
+         "y": 250
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004A0CF:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004A0CF",
+       "edid": "LifeGiver",
+       "name": "LifeGiver",
+       "rank": 2
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "curve": {
+       "input": "endurance",
+       "points": [
+        {
+         "x": 1,
+         "y": 10
+        },
+        {
+         "x": 15,
+         "y": 120
+        },
+        {
+         "x": 30,
+         "y": 180
+        },
+        {
+         "x": 60,
+         "y": 230
+        },
+        {
+         "x": 100,
+         "y": 250
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004A0CF:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004A0CF",
+       "edid": "LifeGiver",
+       "name": "LifeGiver",
+       "rank": 3
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "curve": {
+       "input": "endurance",
+       "points": [
+        {
+         "x": 1,
+         "y": 10
+        },
+        {
+         "x": 15,
+         "y": 120
+        },
+        {
+         "x": 30,
+         "y": 180
+        },
+        {
+         "x": 60,
+         "y": 230
+        },
+        {
+         "x": 100,
+         "y": 250
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
-  "notes": [
-   "AbPerkFortifyHealth: curve with unmapped input AV 0x000002C4 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "Lightfooted",
@@ -13252,8 +14098,8 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "kind": "teammateCount",
+        "count": 1
        }
       ]
      },
@@ -13271,8 +14117,8 @@
       "value": 2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=2"
+        "kind": "teammateCount",
+        "count": 2
        }
       ]
      },
@@ -13290,8 +14136,8 @@
       "value": 3,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=3"
+        "kind": "teammateCount",
+        "count": 3
        }
       ]
      }
@@ -13314,8 +14160,8 @@
       "value": 2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=1"
+        "kind": "teammateCount",
+        "count": 1
        }
       ]
      },
@@ -13333,8 +14179,8 @@
       "value": 4,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=2"
+        "kind": "teammateCount",
+        "count": 2
        }
       ]
      },
@@ -13352,8 +14198,8 @@
       "value": 6,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount()=3"
+        "kind": "teammateCount",
+        "count": 3
        }
       ]
      }
@@ -13361,11 +14207,7 @@
    }
   ],
   "hasCard": true,
-  "notes": [
-   "condition: GetPlayerTeammateCount()=1",
-   "condition: GetPlayerTeammateCount()=2",
-   "condition: GetPlayerTeammateCount()=3"
-  ]
+  "notes": []
  },
  {
   "family": "MakeshiftWarrior",
@@ -13446,15 +14288,99 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003E9565:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003E9565",
+       "edid": "MartialArtist",
+       "name": "Martial Artist",
+       "rank": 1
+      },
+      "bucket": "fireRateSpeed",
+      "op": "ADD",
+      "value": 0.10000000149011612,
+      "conditions": [
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeMelee1H",
+         "WeaponTypeMelee2H",
+         "WeaponTypeUnarmed"
+        ]
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetWeaponAnimType()=6"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003E9565:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003E9565",
+       "edid": "MartialArtist",
+       "name": "Martial Artist",
+       "rank": 2
+      },
+      "bucket": "fireRateSpeed",
+      "op": "ADD",
+      "value": 0.20000000298023224,
+      "conditions": [
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeMelee1H",
+         "WeaponTypeMelee2H",
+         "WeaponTypeUnarmed"
+        ]
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetWeaponAnimType()=6"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003E9565:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003E9565",
+       "edid": "MartialArtist",
+       "name": "Martial Artist",
+       "rank": 3
+      },
+      "bucket": "fireRateSpeed",
+      "op": "ADD",
+      "value": 0.30000001192092896,
+      "conditions": [
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeMelee1H",
+         "WeaponTypeMelee2H",
+         "WeaponTypeUnarmed"
+        ]
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetWeaponAnimType()=6"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -13571,7 +14497,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.24999999441206455,
+      "value": 1.9999999552965164,
       "conditions": []
      }
     ]
@@ -13579,10 +14505,6 @@
   ],
   "hasCard": true,
   "notes": [
-   "MGEF AbPerkFortifyResistDamage: zero magnitude, no curve — script/scaled, needs override",
-   "MGEF AbPerkFortifyResistEnergy: zero magnitude, no curve — script/scaled, needs override",
-   "MGEF AbPerkFortifyResistFire: zero magnitude, no curve — script/scaled, needs override",
-   "MGEF AbPerkFortifyResistCryo: zero magnitude, no curve — script/scaled, needs override",
    "MGEF AbPerkFortifyResistPoison: zero magnitude, no curve — script/scaled, needs override"
   ]
  },
@@ -13611,7 +14533,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.24999999441206455,
+      "value": 7.999999821186066,
       "conditions": []
      }
     ]
@@ -13619,10 +14541,6 @@
   ],
   "hasCard": true,
   "notes": [
-   "MGEF AbPerkFortifyResistDamage: zero magnitude, no curve — script/scaled, needs override",
-   "MGEF AbPerkFortifyResistEnergy: zero magnitude, no curve — script/scaled, needs override",
-   "MGEF AbPerkFortifyResistFire: zero magnitude, no curve — script/scaled, needs override",
-   "MGEF AbPerkFortifyResistCryo: zero magnitude, no curve — script/scaled, needs override",
    "MGEF AbPerkFortifyResistPoison: zero magnitude, no curve — script/scaled, needs override"
   ]
  },
@@ -14075,15 +14993,102 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0000EE1C:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0000EE1C",
+       "edid": "ModernRenegade",
+       "name": "Modern Renegade",
+       "rank": 1
+      },
+      "bucket": "limbDamage",
+      "op": "ADD",
+      "value": 0.25,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeRifle",
+         "WeaponTypePistol",
+         "WeaponTypeShotgun"
+        ]
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0000EE1C:r2:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0000EE1C",
+       "edid": "ModernRenegade",
+       "name": "Modern Renegade",
+       "rank": 2
+      },
+      "bucket": "limbDamage",
+      "op": "ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeRifle",
+         "WeaponTypePistol",
+         "WeaponTypeShotgun"
+        ]
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0000EE1C:r3:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0000EE1C",
+       "edid": "ModernRenegade",
+       "name": "Modern Renegade",
+       "rank": 3
+      },
+      "bucket": "limbDamage",
+      "op": "ADD",
+      "value": 0.75,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeRifle",
+         "WeaponTypePistol",
+         "WeaponTypeShotgun"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -14657,10 +15662,7 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetNumActiveEffectsWithKeyword(SURV_EffectTypeDisease)=0",
-   "AbPerkFortifyResistCryo: curve with unmapped input AV 0x000002C4 — needs override",
-   "AbPerkFortifyResistPoison: curve with unmapped input AV 0x000002C4 — needs override",
-   "AbPerkFortifyResistFire: curve with unmapped input AV 0x000002C4 — needs override"
+   "condition: GetNumActiveEffectsWithKeyword(SURV_EffectTypeDisease) Equal To 0"
   ]
  },
  {
@@ -14679,6 +15681,41 @@
     "modifiers": [
      {
       "id": "0x0004D886:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D886",
+       "edid": "NerdRage",
+       "name": "Nerd Rage!",
+       "rank": 1
+      },
+      "bucket": "apRegen",
+      "op": "ADD",
+      "curve": {
+       "input": "healthFraction",
+       "points": [
+        {
+         "x": 0.05000000074505806,
+         "y": 30
+        },
+        {
+         "x": 0.20000000298023224,
+         "y": 15
+        },
+        {
+         "x": 0.800000011920929,
+         "y": 1
+        },
+        {
+         "x": 1,
+         "y": 0
+        }
+       ]
+      },
+      "curveScale": 0.01,
+      "conditions": []
+     },
+     {
+      "id": "0x0004D886:r1:1:1",
       "source": {
        "kind": "perk",
        "formId": "0x0004D886",
@@ -14921,11 +15958,51 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00259C55:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00259C55",
+       "edid": "NocturnalFortitude",
+       "name": "Nocturnal Fortitude",
+       "rank": 1
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "value": 50,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsTrueForConditionForm(Perk_Night_Condition)=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00259C55:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00259C55",
+       "edid": "NocturnalFortitude",
+       "name": "Nocturnal Fortitude",
+       "rank": 2
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "value": 100,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsTrueForConditionForm(Perk_Night_Condition)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -15007,15 +16084,78 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00320157:r1:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00320157",
+       "edid": "OneGunArmy",
+       "name": "One Gun Army",
+       "rank": 1
+      },
+      "bucket": "limbDamage",
+      "op": "ADD",
+      "value": 0.25,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": true
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00320157:r2:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00320157",
+       "edid": "OneGunArmy",
+       "name": "One Gun Army",
+       "rank": 2
+      },
+      "bucket": "limbDamage",
+      "op": "ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": true
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00320157:r3:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00320157",
+       "edid": "OneGunArmy",
+       "name": "One Gun Army",
+       "rank": 3
+      },
+      "bucket": "limbDamage",
+      "op": "ADD",
+      "value": 0.75,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": true
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -15592,11 +16732,28 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00802199:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00802199",
+       "edid": "P62_Weapon_Splinter_ConsecutiveHitsPerk",
+       "name": "Splinter Apply Consecutive Hits Perk",
+       "rank": 1
+      },
+      "bucket": "onslaughtMaxStacks",
+      "op": "ADD",
+      "value": 10,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
-  "notes": []
+  "notes": [
+   "entry point Mod Damage on Consecutive Hits uses Add Actor Value Mult — skipped"
+  ]
  },
  {
   "family": "P62_Weapon_Splinter_StabilityPerk",
@@ -15839,7 +16996,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0031E523:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031E523",
+       "edid": "PackinLight",
+       "name": "Packin' Light",
+       "rank": 1
+      },
+      "bucket": "apRegen",
+      "op": "ADD",
+      "value": 0.25,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsOverEncumbered()=0"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -17202,7 +18379,6 @@
   "hasCard": false,
   "notes": [
    "entry point Mod Sneak Attack Mult uses Add Actor Value Mult — skipped",
-   "condition: GetIsPlayerGhoul()=1",
    "condition: GetValue(GHL_SURV_Feral)=0x007A7680",
    "condition: GetValue(GHL_SURV_Feral)=0x007A7698",
    "condition: GetValue(GHL_SURV_Feral)=0x007A7681",
@@ -17230,7 +18406,194 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0046C7CF:r1:7:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0046C7CF",
+       "edid": "PlayerPerk_Spotlight",
+       "name": "Spotlight Player Perk",
+       "rank": 1
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "value": 15,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_DoubleVendorCurrency_LegendaryScrip)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsID(LegendaryTokens)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(isUnstoppable_Grognak)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_Unstoppable)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0046C7CF:r1:7:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0046C7CF",
+       "edid": "PlayerPerk_Spotlight",
+       "name": "Spotlight Player Perk",
+       "rank": 1
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "value": 15,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_DoubleVendorCurrency_LegendaryScrip)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsID(LegendaryTokens)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(isUnstoppable_Inspector)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_Unstoppable)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0046C7CF:r1:7:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0046C7CF",
+       "edid": "PlayerPerk_Spotlight",
+       "name": "Spotlight Player Perk",
+       "rank": 1
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "value": 15,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_DoubleVendorCurrency_LegendaryScrip)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsID(LegendaryTokens)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(isUnstoppable_MantaMan)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_Unstoppable)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0046C7CF:r1:7:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0046C7CF",
+       "edid": "PlayerPerk_Spotlight",
+       "name": "Spotlight Player Perk",
+       "rank": 1
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "value": 15,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_DoubleVendorCurrency_LegendaryScrip)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsID(LegendaryTokens)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(isUnstoppable_MistressOfMystery)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_Unstoppable)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0046C7CF:r1:7:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0046C7CF",
+       "edid": "PlayerPerk_Spotlight",
+       "name": "Spotlight Player Perk",
+       "rank": 1
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "value": 15,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_DoubleVendorCurrency_LegendaryScrip)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsID(LegendaryTokens)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(isUnstoppable_SilverShroud)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_Unstoppable)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0046C7CF:r1:7:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0046C7CF",
+       "edid": "PlayerPerk_Spotlight",
+       "name": "Spotlight Player Perk",
+       "rank": 1
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "value": 15,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_DoubleVendorCurrency_LegendaryScrip)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsID(LegendaryTokens)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_Unstoppable)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "OR-group[WornHasKeyword(isUnstoppable_Grognak)=1 | WornHasKeyword(isUnstoppable_Inspector)=1 | WornHasKeyword(isUnstoppable_MantaMan)=1 | WornHasKeyword(isUnstoppable_MistressOfMystery)=1 | WornHasKeyword(isUnstoppable_SilverShroud)=1]"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -17255,11 +18618,8 @@
    "condition: GetKeywordItemCount(ObjectTypeToy)=3",
    "condition: GetKeywordItemCount(ObjectTypeToy)=2",
    "condition: GetKeywordItemCount(ObjectTypeToy)=1",
-   "condition: GetPlayerTeammateCount()=1",
    "condition: GetGlobalValue(Spotlight_ShareTheLove)=1",
    "MGEF Spotlight_ShareTheLove_15_Desc archetype Script — needs override",
-   "condition: GetPlayerTeammateCount()=3",
-   "condition: GetPlayerTeammateCount()=2",
    "MGEF Spotlight_ShareTheLove_30_Desc archetype Script — needs override",
    "MGEF Spotlight_ShareTheLove_45_Desc archetype Script — needs override",
    "condition: WornHasKeyword(isUnstoppable_Grognak)=1",
@@ -17296,7 +18656,7 @@
   "hasCard": false,
   "notes": [
    "condition: GetGlobalValue(SpotlightWeekIndex)=1",
-   "condition: GetPlayerTeammateCount()=0",
+   "condition: GetPlayerTeammateCount Greater Than 0",
    "condition: GetGlobalValue(SpotlightWeekIndex)=8",
    "MGEF AbSpotlightTextDummyWeek008 archetype Script — needs override"
   ]
@@ -17954,23 +19314,54 @@
   ],
   "hasCard": false,
   "notes": [
+   "perk PT_DailyOpsTeamBonusPerk: GetTeammateBondScore()=1",
+   "perk PT_DailyOpsTeamBonusPerk: GetTeamType()=12",
+   "perk PT_DailyOpsTeamBonusPerk: GetQuestFormType()=9",
+   "perk PT_DailyOpsTeamBonusPerk: entry point Mod Exp — not modeled",
+   "perk PT_DailyOpsTeamBonusPerk: GetTeammateBondScore()=2",
+   "perk PT_DailyOpsTeamBonusPerk: GetTeammateBondScore()=3",
+   "perk PT_DailyOpsTeamBonusPerk: GetTeammateBondScore()=4",
    "condition: GetTeamType()=12",
    "condition: GetTeammateBondScore()=1",
-   "MGEF PT_DailyOpsTeamBonusBuff archetype Script — needs override",
    "condition: GetTeammateBondScore()=2",
    "condition: GetTeammateBondScore()=3",
    "condition: GetTeammateBondScore()=4",
+   "perk PT_RaidTeamBonusPerk: GetInCurrentLocationFormList(PT_RaidTeamBonusLocationCheck)=1",
+   "perk PT_RaidTeamBonusPerk: GetTeammateBondScore()=1",
+   "perk PT_RaidTeamBonusPerk: GetTeamType()=14",
+   "perk PT_RaidTeamBonusPerk: HasKeyword(ObjectTypeWeapon)=1",
+   "perk PT_RaidTeamBonusPerk: entry point Mod Item Condition Loss — not modeled",
+   "perk PT_RaidTeamBonusPerk: GetTeammateBondScore()=2",
+   "perk PT_RaidTeamBonusPerk: GetTeammateBondScore()=3",
+   "perk PT_RaidTeamBonusPerk: GetTeammateBondScore()=4",
    "condition: GetTeamType()=14",
-   "MGEF PT_RaidTeamBonusBuff archetype Script — needs override",
+   "perk PT_HuntingTeamBonusPerk: GetTeammateBondScore()=1",
+   "perk PT_HuntingTeamBonusPerk: GetTeamType()=1",
+   "perk PT_HuntingTeamBonusPerk: HasPerk(EpicCreaturePerk)=1",
+   "perk PT_HuntingTeamBonusPerk: entry point Mod Exp — not modeled",
+   "perk PT_HuntingTeamBonusPerk: GetTeammateBondScore()=2",
+   "perk PT_HuntingTeamBonusPerk: GetTeammateBondScore()=3",
+   "perk PT_HuntingTeamBonusPerk: GetTeammateBondScore()=4",
    "condition: GetTeamType()=1",
-   "MGEF PT_HuntingTeamBonusBuff archetype Script — needs override",
+   "perk PT_EventTeamBonusPerk: GetTeammateBondScore()=1",
+   "perk PT_EventTeamBonusPerk: GetTeamType()=3",
+   "perk PT_EventTeamBonusPerk: GetVATSValue(0)=1",
+   "perk PT_EventTeamBonusPerk: entry point Mod Exp — not modeled",
+   "perk PT_EventTeamBonusPerk: GetTeammateBondScore()=2",
+   "perk PT_EventTeamBonusPerk: GetTeammateBondScore()=3",
+   "perk PT_EventTeamBonusPerk: GetTeammateBondScore()=4",
    "condition: GetTeamType()=3",
-   "MGEF PT_EventTeamBonusBuff archetype Script — needs override",
    "condition: GetTeamType()=6",
    "condition: GetTeamType()=4",
    "condition: GetTeamType()=5",
-   "condition: GetTeamType()=13",
-   "MGEF PT_ExpeditionTeamBonusBuff archetype Script — needs override"
+   "perk PT_Expediton_TeamBonusPerk: GetTeammateBondScore()=1",
+   "perk PT_Expediton_TeamBonusPerk: GetTeamType()=13",
+   "perk PT_Expediton_TeamBonusPerk: GetQuestFormType()=10",
+   "perk PT_Expediton_TeamBonusPerk: entry point Mod Exp — not modeled",
+   "perk PT_Expediton_TeamBonusPerk: GetTeammateBondScore()=2",
+   "perk PT_Expediton_TeamBonusPerk: GetTeammateBondScore()=3",
+   "perk PT_Expediton_TeamBonusPerk: GetTeammateBondScore()=4",
+   "condition: GetTeamType()=13"
   ]
  },
  {
@@ -18490,9 +19881,7 @@
    }
   ],
   "hasCard": true,
-  "notes": [
-   "AbPerkFortifyResistRadiationExpose: curve with unmapped input AV 0x000002C4 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "RadSponge",
@@ -18848,21 +20237,79 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004A0B6:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004A0B6",
+       "edid": "Rifleman",
+       "name": "Down Ranger",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.1,
+      "conditions": [
+       {
+        "kind": "targetDistance",
+        "range": "far"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004A0B6:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004A0B6",
+       "edid": "Rifleman",
+       "name": "Down Ranger",
+       "rank": 2
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.15,
+      "conditions": [
+       {
+        "kind": "targetDistance",
+        "range": "far"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004A0B6:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004A0B6",
+       "edid": "Rifleman",
+       "name": "Down Ranger",
+       "rank": 3
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.2,
+      "conditions": [
+       {
+        "kind": "targetDistance",
+        "range": "far"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
-  "notes": [
-   "MGEF abPerkFortifyDmgFar: zero magnitude, no curve — script/scaled, needs override"
-  ]
+  "notes": []
  },
  {
   "family": "RiflemanExpert",
@@ -19602,15 +21049,11 @@
       "conditions": [
        {
         "kind": "unresolved",
-        "raw": "GetIsPlayer()=1"
-       },
-       {
-        "kind": "unresolved",
         "raw": "HasKeyword(SDOW_HasLegendary_Weapon_Severing)=1"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetNumActiveEffectsWithKeyword(DamageTypeBleed)=1"
+        "kind": "enemyHasActiveEffect",
+        "keyword": "DamageTypeBleed"
        }
       ]
      }
@@ -19674,7 +21117,6 @@
   "notes": [
    "condition: IsOverEncumbered()=0",
    "condition: WornHasKeyword(ArmorTypePower)=0",
-   "condition: GetHealthPercentage Less Than Or Equal To 0.30000001192092896",
    "AbPerkFortifyEvadeChance: curve with unmapped input AV 0x000002C8 — needs override"
   ]
  },
@@ -19971,7 +21413,33 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x000E36FE:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x000E36FE",
+       "edid": "SluggerExpert",
+       "name": "Knee-Capper",
+       "rank": 1
+      },
+      "bucket": "limbDamage",
+      "op": "ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeMeleeGeneral",
+        "present": true
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeAutomaticMelee",
+        "present": false
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -19990,13 +21458,37 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00520BD4:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00520BD4",
+       "edid": "SluggerMaster",
+       "name": "Heavy Hitter",
+       "rank": 1
+      },
+      "bucket": "powerAttackBonus",
+      "op": "ADD",
+      "value": 0.25,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeMeleeGeneral",
+        "present": true
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeAutomaticMelee",
+        "present": false
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
-  "notes": [
-   "MGEF AbPerkFortifyPowerAttack: zero magnitude, no curve — script/scaled, needs override"
-  ]
+  "notes": []
  },
  {
   "family": "Slumlord",
@@ -20736,7 +22228,6 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetIsPlayerGhoul()=0",
    "condition: IsTrueForConditionForm(Perk_Day_Condition)=1"
   ]
  },
@@ -21127,8 +22618,7 @@
   ],
   "hasCard": true,
   "notes": [
-   "condition: GetNumActiveEffectsWithKeyword(SURV_EffectTypeDisease)=0",
-   "AbFortifyActionPoints: curve with unmapped input AV 0x000002C4 — needs override"
+   "condition: GetNumActiveEffectsWithKeyword(SURV_EffectTypeDisease) Equal To 0"
   ]
  },
  {
@@ -21169,7 +22659,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0009535E:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0009535E",
+       "edid": "Tormentor",
+       "name": "Tormentor",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.2,
+      "conditions": [
+       {
+        "kind": "perCrippledLimb",
+        "max": 6
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -21801,8 +23311,13 @@
       "value": 0.24999999441206455,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "OR-group[HasKeyword(ActorTypeMirelurkQueen)=1 | HasKeyword(ActorTypeMirelurkKing)=1 | HasKeyword(ActorTypeMirelurkHunter)=1 | HasKeyword(ActorTypeMirelurk)=1]"
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "ActorTypeMirelurkQueen",
+         "ActorTypeMirelurkKing",
+         "ActorTypeMirelurkHunter",
+         "ActorTypeMirelurk"
+        ]
        }
       ]
      }
@@ -21810,9 +23325,7 @@
    }
   ],
   "hasCard": false,
-  "notes": [
-   "route(STAT_DmgVsMirelurks): OR-group[HasKeyword(ActorTypeMirelurkQueen)=1 | HasKeyword(ActorTypeMirelurkKing)=1 | HasKeyword(ActorTypeMirelurkHunter)=1 | HasKeyword(ActorTypeMirelurk)=1]"
-  ]
+  "notes": []
  },
  {
   "family": "Underarmor_BOSPerk",
@@ -23084,9 +24597,7 @@
    }
   ],
   "hasCard": false,
-  "notes": [
-   "AbReduceDiseaseChanceAll: curve with unmapped input AV 0x000002C4 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "VANS",
@@ -23815,7 +25326,7 @@
   ],
   "hasCard": true,
   "notes": [
-   "MGEF ZZZ_SCORE_NukaX_FortifyReloadSpeed archetype Script — needs override"
+   "perk ZZZ_SCORE_NukaX_FastReloadSpeedPerk: perk ZZZ_SCORE_NukaX_FastReloadSpeedPerk: MGEF ZZZ_SCORE_NukaX_FortifyReloadSpeed archetype Script — needs override"
   ]
  },
  {
@@ -23836,7 +25347,7 @@
   ],
   "hasCard": true,
   "notes": [
-   "MGEF ZZZ_SCORE_NukaX_PerkFireResistApply archetype Script — needs override"
+   "perk ZZZ_SCORE_NukaX_FireResistPerk: perk ZZZ_SCORE_NukaX_FireResistPerk: MGEF ZZZ_SCORE_NukaX_PerkFireResistApply archetype Script — needs override"
   ]
  },
  {
@@ -23852,7 +25363,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x007B11B1:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x007B11B1",
+       "edid": "ZZZ_SCORE_NukaX_MeleeSpeedPerk",
+       "name": "Swinger",
+       "rank": 1
+      },
+      "bucket": "fireRateSpeed",
+      "op": "ADD",
+      "value": 0.20000000298023224,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetWeaponAnimType()=6"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,

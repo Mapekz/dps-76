@@ -3789,6 +3789,114 @@
   "obtainable": true
  },
  {
+  "id": "ATX_KDInkwell_Quill",
+  "formId": "0x005EF6F9",
+  "name": "Baton",
+  "weaponTypeName": "OneHandSword",
+  "keywords": [
+   "Anims1hmWeapon",
+   "WeaponTypeMelee1H",
+   "WeaponTypeClub",
+   "QuickkeyMelee",
+   "UI_WeaponTypemelee1HBlunt",
+   "WeaponTypeBlunt",
+   "ObjectTypeWeapon",
+   "WeaponTypeMeleeGeneral",
+   "ma_CanHaveNullMeleeMod"
+  ],
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 11,
+    "tier": 27,
+    "curve": [
+     {
+      "x": 1,
+      "y": 39
+     },
+     {
+      "x": 5,
+      "y": 44
+     },
+     {
+      "x": 10,
+      "y": 49
+     },
+     {
+      "x": 15,
+      "y": 56
+     },
+     {
+      "x": 20,
+      "y": 63
+     },
+     {
+      "x": 25,
+      "y": 71
+     },
+     {
+      "x": 30,
+      "y": 80
+     },
+     {
+      "x": 35,
+      "y": 90
+     },
+     {
+      "x": 40,
+      "y": 102
+     },
+     {
+      "x": 45,
+      "y": 115
+     },
+     {
+      "x": 50,
+      "y": 130
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 3,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 4,
+  "speed": 1,
+  "attackDelaySec": 0,
+  "animationAttackSec": 1.1388938426971436,
+  "animationFireSec": 0,
+  "reloadSpeed": 1,
+  "animationReloadSec": 0,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 26,
+  "projectileCount": 1,
+  "reach": 0.800000011920929,
+  "secondaryDamage": 0,
+  "damageBonusMult": 1,
+  "eligibleLevels": [
+   5,
+   15,
+   25,
+   35,
+   45
+  ],
+  "templateModFormIds": [
+   "0x000E7C3E",
+   "0x002302FE",
+   "0x0017BBC5"
+  ],
+  "attachParentSlots": [
+   "0x0005524C",
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB"
+  ],
+  "obtainable": false
+ },
+ {
   "id": "Baton",
   "formId": "0x0008C14D",
   "name": "Baton",
@@ -8225,6 +8333,238 @@
    "0x006214D8"
   ],
   "obtainable": true
+ },
+ {
+  "id": "ATX_CroquetMallet",
+  "formId": "0x00498710",
+  "name": "Croquet Mallet",
+  "weaponTypeName": "TwoHandSword",
+  "keywords": [
+   "ma_ATX_CroquetMallet",
+   "WeaponTypeMelee1H",
+   "QuickkeyMelee",
+   "ma_WalkingCane",
+   "ma_CanHaveNullMeleeMod",
+   "ObjectTypeWeapon",
+   "WeaponTypeMeleeGeneral",
+   "WeaponTypeClub",
+   "WeaponTypeWeird",
+   "WeaponTypeBlunt",
+   "UI_WeaponTypemelee1HBlunt",
+   "Anims2hmWideWeapon"
+  ],
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 10,
+    "tier": 33,
+    "curve": [
+     {
+      "x": 1,
+      "y": 58
+     },
+     {
+      "x": 5,
+      "y": 65
+     },
+     {
+      "x": 10,
+      "y": 73
+     },
+     {
+      "x": 15,
+      "y": 83
+     },
+     {
+      "x": 20,
+      "y": 94
+     },
+     {
+      "x": 25,
+      "y": 106
+     },
+     {
+      "x": 30,
+      "y": 119
+     },
+     {
+      "x": 35,
+      "y": 135
+     },
+     {
+      "x": 40,
+      "y": 152
+     },
+     {
+      "x": 45,
+      "y": 172
+     },
+     {
+      "x": 50,
+      "y": 194
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 3,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 4,
+  "speed": 1,
+  "attackDelaySec": 0,
+  "animationAttackSec": 1.800010085105896,
+  "animationFireSec": 0,
+  "reloadSpeed": 1,
+  "animationReloadSec": 0,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 37,
+  "projectileCount": 1,
+  "reach": 0.800000011920929,
+  "secondaryDamage": 0,
+  "damageBonusMult": 1,
+  "eligibleLevels": [
+   1,
+   5,
+   10,
+   15,
+   20,
+   25,
+   30,
+   35,
+   40,
+   45,
+   50
+  ],
+  "templateModFormIds": [
+   "0x000E7C3E",
+   "0x00230314"
+  ],
+  "attachParentSlots": [
+   "0x0005524C",
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB"
+  ],
+  "obtainable": false
+ },
+ {
+  "id": "ATX_CroquetMallet_Red",
+  "formId": "0x004716BA",
+  "name": "Croquet Mallet",
+  "weaponTypeName": "TwoHandSword",
+  "keywords": [
+   "ma_ATX_CroquetMallet",
+   "WeaponTypeMelee1H",
+   "QuickkeyMelee",
+   "ma_WalkingCane",
+   "ma_CanHaveNullMeleeMod",
+   "ObjectTypeWeapon",
+   "WeaponTypeMeleeGeneral",
+   "WeaponTypeClub",
+   "WeaponTypeWeird",
+   "WeaponTypeBlunt",
+   "UI_WeaponTypemelee1HBlunt",
+   "Anims2hmWideWeapon"
+  ],
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 10,
+    "tier": 33,
+    "curve": [
+     {
+      "x": 1,
+      "y": 58
+     },
+     {
+      "x": 5,
+      "y": 65
+     },
+     {
+      "x": 10,
+      "y": 73
+     },
+     {
+      "x": 15,
+      "y": 83
+     },
+     {
+      "x": 20,
+      "y": 94
+     },
+     {
+      "x": 25,
+      "y": 106
+     },
+     {
+      "x": 30,
+      "y": 119
+     },
+     {
+      "x": 35,
+      "y": 135
+     },
+     {
+      "x": 40,
+      "y": 152
+     },
+     {
+      "x": 45,
+      "y": 172
+     },
+     {
+      "x": 50,
+      "y": 194
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 3,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 4,
+  "speed": 1,
+  "attackDelaySec": 0,
+  "animationAttackSec": 1.800010085105896,
+  "animationFireSec": 0,
+  "reloadSpeed": 1,
+  "animationReloadSec": 0,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 37,
+  "projectileCount": 1,
+  "reach": 0.800000011920929,
+  "secondaryDamage": 0,
+  "damageBonusMult": 1,
+  "eligibleLevels": [
+   1,
+   5,
+   10,
+   15,
+   20,
+   25,
+   30,
+   35,
+   40,
+   45,
+   50
+  ],
+  "templateModFormIds": [
+   "0x000E7C3E",
+   "0x00230314"
+  ],
+  "attachParentSlots": [
+   "0x0005524C",
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB"
+  ],
+  "obtainable": false
  },
  {
   "id": "crcrossbow",
@@ -15104,6 +15444,108 @@
   "obtainable": true
  },
  {
+  "id": "ATX_Grognak_HockeyStick",
+  "formId": "0x005A5316",
+  "name": "Grognak's Hockey Stick",
+  "weaponTypeName": "TwoHandSword",
+  "keywords": [
+   "Anims2hmWideWeapon",
+   "WeaponTypeMelee2H",
+   "WeaponTypeWeird",
+   "QuickkeyMelee",
+   "UI_WeaponTypemelee2HSharp",
+   "WeaponTypeAxe",
+   "WeaponTypeMeleeGeneral",
+   "WeaponTypeBladed",
+   "WeaponTypeArchaic",
+   "ObjectTypeWeapon"
+  ],
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 25,
+    "tier": 33,
+    "curve": [
+     {
+      "x": 1,
+      "y": 58
+     },
+     {
+      "x": 5,
+      "y": 65
+     },
+     {
+      "x": 10,
+      "y": 73
+     },
+     {
+      "x": 15,
+      "y": 83
+     },
+     {
+      "x": 20,
+      "y": 94
+     },
+     {
+      "x": 25,
+      "y": 106
+     },
+     {
+      "x": 30,
+      "y": 119
+     },
+     {
+      "x": 35,
+      "y": 135
+     },
+     {
+      "x": 40,
+      "y": 152
+     },
+     {
+      "x": 45,
+      "y": 172
+     },
+     {
+      "x": 50,
+      "y": 194
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 4,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 3,
+  "speed": 1,
+  "attackDelaySec": 0,
+  "animationAttackSec": 1.800010085105896,
+  "animationFireSec": 0,
+  "reloadSpeed": 1,
+  "animationReloadSec": 0,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 46,
+  "projectileCount": 1,
+  "reach": 0.800000011920929,
+  "secondaryDamage": 10,
+  "damageBonusMult": 1,
+  "eligibleLevels": [
+   30,
+   40,
+   50
+  ],
+  "templateModFormIds": [],
+  "attachParentSlots": [
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB"
+  ],
+  "obtainable": false
+ },
+ {
   "id": "GuitarSword",
   "formId": "0x0000DC56",
   "name": "Guitar Sword",
@@ -16310,6 +16752,124 @@
    "0x00114364",
    "0x00024004",
    "0x000498A0",
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB",
+   "0x006214D8"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "ATX_AssaultronHeadCharging_Imposter",
+  "formId": "0x00424B66",
+  "name": "Imposter Assaultron Head",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "AnimsAssaultronHead",
+   "AnimsGripPistol",
+   "AnimsPlasmaPistol",
+   "BlockSuperDuperPerk",
+   "ma_AssaultronHead",
+   "ma_legendarycrafting_weapon",
+   "ma_legendarycrafting_weaponranged",
+   "modskill_EnergyGuns",
+   "ObjectTypeWeapon",
+   "QuickkeyGun",
+   "s_40_wpn_laser_sheepsquatch",
+   "s_IronSightsRifle",
+   "UI_WeaponTypeDLC01AssaultronHeadCharging",
+   "VATSWeaponLaserBeam",
+   "WeaponTypeEnergy",
+   "WeaponTypeLaser",
+   "WeaponTypePistol",
+   "WeaponTypeRanged"
+  ],
+  "components": [
+   {
+    "damageType": "energy",
+    "damageTypeEdid": "dtEnergy",
+    "amount": 35,
+    "tier": 31,
+    "curve": [
+     {
+      "x": 1,
+      "y": 51
+     },
+     {
+      "x": 5,
+      "y": 57
+     },
+     {
+      "x": 10,
+      "y": 65
+     },
+     {
+      "x": 15,
+      "y": 73
+     },
+     {
+      "x": 20,
+      "y": 83
+     },
+     {
+      "x": 25,
+      "y": 93
+     },
+     {
+      "x": 30,
+      "y": 105
+     },
+     {
+      "x": 35,
+      "y": 119
+     },
+     {
+      "x": 40,
+      "y": 134
+     },
+     {
+      "x": 45,
+      "y": 152
+     },
+     {
+      "x": 50,
+      "y": 171
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2.75,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0.15000000596046448,
+  "animationAttackSec": 0.6666666865348816,
+  "animationFireSec": 0.000009999999747378752,
+  "reloadSpeed": 1,
+  "animationReloadSec": 0.8333433866500854,
+  "capacity": 5,
+  "ammoPerShot": 1,
+  "actionPointCost": 30,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 24,
+  "damageBonusMult": 1,
+  "eligibleLevels": [
+   25,
+   35,
+   45
+  ],
+  "templateModFormIds": [
+   "0x0010EAE7"
+  ],
+  "attachParentSlots": [
+   "0x0040BD77",
+   "0x0040BD78",
+   "0x0040BD79",
+   "0x0040BD7A",
+   "0x00024004",
    "0x001E32C8",
    "0x004E89A8",
    "0x004E89A9",
@@ -33701,6 +34261,122 @@
   "obtainable": false
  },
  {
+  "id": "ATX_Sten",
+  "formId": "0x004FD64B",
+  "name": "The Black Knight",
+  "weaponTypeName": "Gun",
+  "keywords": [
+   "ma_HuntingRifle",
+   "WeaponTypeRifle",
+   "s_40_RifleHuntingA",
+   "AnimsHuntingRifle",
+   "s_IronSightsRifle",
+   "WeaponTypeBallistic",
+   "ma_BallisticGun",
+   "ObjectTypeWeapon",
+   "modskill_Guns",
+   "QuickkeyGun",
+   "ma_CanHaveNullMuzzle",
+   "WeaponTypeSniper",
+   "WeaponTypeRanged",
+   "UI_WeaponTypeRifle"
+  ],
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 20,
+    "tier": 31,
+    "curve": [
+     {
+      "x": 1,
+      "y": 51
+     },
+     {
+      "x": 5,
+      "y": 57
+     },
+     {
+      "x": 10,
+      "y": 65
+     },
+     {
+      "x": 15,
+      "y": 73
+     },
+     {
+      "x": 20,
+      "y": 83
+     },
+     {
+      "x": 25,
+      "y": 93
+     },
+     {
+      "x": 30,
+      "y": 105
+     },
+     {
+      "x": 35,
+      "y": 119
+     },
+     {
+      "x": 40,
+      "y": 134
+     },
+     {
+      "x": 45,
+      "y": 152
+     },
+     {
+      "x": 50,
+      "y": 171
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1.25,
+  "attackDelaySec": 0.15000000596046448,
+  "animationAttackSec": 0.8333333134651184,
+  "animationFireSec": 0.000009999999747378752,
+  "reloadSpeed": 1.25,
+  "animationReloadSec": 4.000010013580322,
+  "capacity": 5,
+  "ammoPerShot": 1,
+  "actionPointCost": 28,
+  "projectileCount": 1,
+  "reach": 1,
+  "secondaryDamage": 15,
+  "damageBonusMult": 1,
+  "eligibleLevels": [
+   1,
+   5,
+   10,
+   15,
+   20,
+   25,
+   30,
+   35,
+   40,
+   45,
+   50
+  ],
+  "templateModFormIds": [],
+  "attachParentSlots": [
+   "0x00024004",
+   "0x000498A0",
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB"
+  ],
+  "obtainable": false
+ },
+ {
   "id": "E08B_SuperSledge_TheDebilitator",
   "formId": "0x006477ED",
   "name": "The Debilitator",
@@ -34289,6 +34965,119 @@
    "0x001A001E"
   ],
   "obtainable": false
+ },
+ {
+  "id": "atx_alienprobe",
+  "formId": "0x00559C99",
+  "name": "The Invader",
+  "weaponTypeName": "OneHandSword",
+  "keywords": [
+   "Anims1hmShortWeapon",
+   "WeaponTypeMelee1H",
+   "Anims1hmWeapon",
+   "QuickkeyMelee",
+   "ma_Knife",
+   "AnimsStabWeapon",
+   "ObjectTypeWeapon",
+   "WeaponTypeKnives",
+   "WeaponTypeBladed",
+   "WeaponTypeMeleeGeneral",
+   "UI_WeaponTypemelee1HBlade",
+   "ma_legendarycrafting_weaponmelee",
+   "ma_Misc_Legendarycrafting_Weapon_Melee4",
+   "ma_legendarycrafting_weapon"
+  ],
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 9,
+    "tier": 22,
+    "curve": [
+     {
+      "x": 1,
+      "y": 26
+     },
+     {
+      "x": 5,
+      "y": 29
+     },
+     {
+      "x": 10,
+      "y": 33
+     },
+     {
+      "x": 15,
+      "y": 37
+     },
+     {
+      "x": 20,
+      "y": 42
+     },
+     {
+      "x": 25,
+      "y": 47
+     },
+     {
+      "x": 30,
+      "y": 54
+     },
+     {
+      "x": 35,
+      "y": 61
+     },
+     {
+      "x": 40,
+      "y": 68
+     },
+     {
+      "x": 45,
+      "y": 77
+     },
+     {
+      "x": 50,
+      "y": 87
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 3.5,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2.5,
+  "speed": 1,
+  "attackDelaySec": 0,
+  "animationAttackSec": 0.7944528460502625,
+  "animationFireSec": 0,
+  "reloadSpeed": 1,
+  "animationReloadSec": 0,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 18,
+  "projectileCount": 1,
+  "reach": 0.800000011920929,
+  "secondaryDamage": 10,
+  "damageBonusMult": 1,
+  "eligibleLevels": [
+   1,
+   5,
+   10,
+   20,
+   30,
+   40,
+   50
+  ],
+  "templateModFormIds": [],
+  "attachParentSlots": [
+   "0x0005524C",
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB",
+   "0x0032CD06",
+   "0x006214D8"
+  ],
+  "obtainable": true
  },
  {
   "id": "W05_COMP_Astronaut_AlienBlaster_QuestReward",
@@ -35029,6 +35818,113 @@
    "0x001A001E"
   ],
   "obtainable": true
+ },
+ {
+  "id": "ATX_TurkeyRipper",
+  "formId": "0x0059561C",
+  "name": "Turkey Ripper",
+  "weaponTypeName": "OneHandSword",
+  "keywords": [
+   "Anims1hmShortWeapon",
+   "WeaponTypeRipper",
+   "Anims1hmWeapon",
+   "QuickkeyMelee",
+   "AnimsRipper",
+   "ma_Ripper",
+   "AnimsStabWeapon",
+   "ObjectTypeWeapon",
+   "s_40_Ripper",
+   "UI_WeaponTypeRipper",
+   "WeaponTypeMelee1H",
+   "WeaponTypeBladed"
+  ],
+  "components": [
+   {
+    "damageType": "ballistic",
+    "damageTypeEdid": null,
+    "amount": 0,
+    "tier": 12,
+    "curve": [
+     {
+      "x": 1,
+      "y": 8
+     },
+     {
+      "x": 5,
+      "y": 9
+     },
+     {
+      "x": 10,
+      "y": 11
+     },
+     {
+      "x": 15,
+      "y": 12
+     },
+     {
+      "x": 20,
+      "y": 14
+     },
+     {
+      "x": 25,
+      "y": 15
+     },
+     {
+      "x": 30,
+      "y": 17
+     },
+     {
+      "x": 35,
+      "y": 19
+     },
+     {
+      "x": 40,
+      "y": 22
+     },
+     {
+      "x": 45,
+      "y": 25
+     },
+     {
+      "x": 50,
+      "y": 28
+     }
+    ]
+   }
+  ],
+  "critDamageMult": 2,
+  "critChargeBonus": 1,
+  "sneakAttackMult": 2,
+  "speed": 1,
+  "attackDelaySec": 0,
+  "animationAttackSec": 1.1388938426971436,
+  "animationFireSec": 0,
+  "reloadSpeed": 1,
+  "animationReloadSec": 0,
+  "capacity": 0,
+  "ammoPerShot": 1,
+  "actionPointCost": 40,
+  "projectileCount": 1,
+  "reach": 0.800000011920929,
+  "secondaryDamage": 0,
+  "damageBonusMult": 1,
+  "eligibleLevels": [
+   40
+  ],
+  "templateModFormIds": [
+   "0x000FA2F7",
+   "0x00230308"
+  ],
+  "attachParentSlots": [
+   "0x0005524C",
+   "0x001E32C8",
+   "0x004E89A8",
+   "0x004E89A9",
+   "0x004E89AA",
+   "0x004E89AB",
+   "0x0000283C"
+  ],
+  "obtainable": false
  },
  {
   "id": "DLC04_TurretMountedLaserGunSpaceBlue",

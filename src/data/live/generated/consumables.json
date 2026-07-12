@@ -33,12 +33,10 @@
    }
   ],
   "notes": [
-   "Buffout: condition: GetIsPlayerGhoul()=0",
-   "Buffout: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
-   "Buffout: MGEF SURV_AddHunger_Potion_Effect: zero magnitude, no curve — script/scaled, needs override",
+   "Buffout: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
+   "Buffout: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
    "Buffout: MGEF AddictionOddsBuffout: no route for AV AddictionBuffout — needs mapping",
    "Buffout: MGEF FortifyHealthChemEffect: no route for AV Health — needs mapping",
-   "Buffout: condition: GetIsPlayerGhoul()=1",
    "Buffout: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
   ]
  },
@@ -63,12 +61,10 @@
    }
   ],
   "notes": [
-   "Psycho: condition: GetIsPlayerGhoul()=0",
-   "Psycho: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
-   "Psycho: MGEF SURV_AddHunger_Potion_Effect: zero magnitude, no curve — script/scaled, needs override",
+   "Psycho: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
+   "Psycho: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
    "Psycho: MGEF FortifyDamageResistPsycho: no route for AV DamageResist — needs mapping",
    "Psycho: MGEF AddictionOddsPsycho: no route for AV AddictionPsycho — needs mapping",
-   "Psycho: condition: GetIsPlayerGhoul()=1",
    "Psycho: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
   ]
  },
@@ -119,12 +115,10 @@
    }
   ],
   "notes": [
-   "Psychobuff: condition: GetIsPlayerGhoul()=0",
-   "Psychobuff: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
-   "Psychobuff: MGEF SURV_AddHunger_Potion_Effect: zero magnitude, no curve — script/scaled, needs override",
+   "Psychobuff: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
+   "Psychobuff: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
    "Psychobuff: MGEF AddictionOddsPsycho: no route for AV AddictionPsycho — needs mapping",
    "Psychobuff: MGEF FortifyHealthPsycho: no route for AV Health — needs mapping",
-   "Psychobuff: condition: GetIsPlayerGhoul()=1",
    "Psychobuff: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
   ]
  },
@@ -162,12 +156,10 @@
    }
   ],
   "notes": [
-   "Psychotats: condition: GetIsPlayerGhoul()=0",
-   "Psychotats: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
-   "Psychotats: MGEF SURV_AddHunger_Potion_Effect: zero magnitude, no curve — script/scaled, needs override",
+   "Psychotats: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
+   "Psychotats: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
    "Psychotats: MGEF AddictionOddsPsycho: no route for AV AddictionPsycho — needs mapping",
    "Psychotats: MGEF FortifyDamageResistPsycho: no route for AV DamageResist — needs mapping",
-   "Psychotats: condition: GetIsPlayerGhoul()=1",
    "Psychotats: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
   ]
  },
@@ -218,12 +210,10 @@
    }
   ],
   "notes": [
-   "Bufftats: condition: GetIsPlayerGhoul()=0",
-   "Bufftats: MGEF SURV_AddHunger_Potion_Effect: zero magnitude, no curve — script/scaled, needs override",
-   "Bufftats: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
+   "Bufftats: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
+   "Bufftats: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "Bufftats: MGEF AddictionOddsBuffout: no route for AV AddictionBuffout — needs mapping",
    "Bufftats: MGEF FortifyHealthChemEffect: no route for AV Health — needs mapping",
-   "Bufftats: condition: GetIsPlayerGhoul()=1",
    "Bufftats: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
   ]
  },
@@ -269,12 +259,10 @@
    }
   ],
   "notes": [
-   "Fury: condition: GetIsPlayerGhoul()=0",
-   "Fury: MGEF SURV_AddHunger_Potion_Effect: zero magnitude, no curve — script/scaled, needs override",
-   "Fury: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
+   "Fury: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
+   "Fury: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "Fury: MGEF FortifyDamageResistFury: no route for AV DamageResist — needs mapping",
    "Fury: MGEF AddictionOddsFury: no route for AV AddictionFury — needs mapping",
-   "Fury: condition: GetIsPlayerGhoul()=1",
    "Fury: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
   ]
  },
@@ -312,11 +300,9 @@
    }
   ],
   "notes": [
-   "Overdrive: condition: GetIsPlayerGhoul()=0",
-   "Overdrive: MGEF SURV_AddHunger_Potion_Effect: zero magnitude, no curve — script/scaled, needs override",
-   "Overdrive: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
+   "Overdrive: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
+   "Overdrive: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "Overdrive: MGEF AddictionOddsOverdrive: no route for AV AddictionOverdrive — needs mapping",
-   "Overdrive: condition: GetIsPlayerGhoul()=1",
    "Overdrive: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
   ]
  },
@@ -367,10 +353,8 @@
    }
   ],
   "notes": [
-   "Calmex: condition: GetIsPlayerGhoul()=0",
-   "Calmex: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
+   "Calmex: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "Calmex: MGEF AddictionOddsCalmex: no route for AV AddictionCalmex — needs mapping",
-   "Calmex: condition: GetIsPlayerGhoul()=1",
    "Calmex: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
   ]
  },
@@ -408,10 +392,8 @@
    }
   ],
   "notes": [
-   "Mentats: condition: GetIsPlayerGhoul()=0",
-   "Mentats: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
+   "Mentats: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "Mentats: MGEF AddictionOddsMentats: no route for AV AddictionMentats — needs mapping",
-   "Mentats: condition: GetIsPlayerGhoul()=1",
    "Mentats: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
   ]
  },
@@ -436,11 +418,9 @@
    }
   ],
   "notes": [
-   "BerryMentats: condition: GetIsPlayerGhoul()=0",
-   "BerryMentats: MGEF SURV_AddThirst_Potion_Effect_Chem: zero magnitude, no curve — script/scaled, needs override",
+   "BerryMentats: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "BerryMentats: MGEF AddictionOddsMentats: no route for AV AddictionMentats — needs mapping",
    "BerryMentats: MGEF DetectLifeApplyClientEffect archetype Script — needs override",
-   "BerryMentats: condition: GetIsPlayerGhoul()=1",
    "BerryMentats: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
   ]
  }
