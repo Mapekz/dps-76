@@ -65,7 +65,7 @@ export function adaptWeapon(gw: GeneratedWeapon): Weapon {
     damageType: primary,
     weaponClass: classifyWeaponClass(gw),
     speed: gw.speed,
-    isAutomatic: gw.keywords.includes('WeaponTypeAutomatic'),
+    isAutomatic: gw.isAutomaticFlag,
     isPhysical: components[0]?.damageType === 'ballistic',
     animDelaySec: gw.attackDelaySec > 0 ? gw.attackDelaySec : undefined,
     capacity: gw.capacity,

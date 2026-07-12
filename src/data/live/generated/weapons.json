@@ -23,6 +23,7 @@
    "WeaponTypeRanged",
    "WeaponTypeRevolver"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -179,6 +180,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -323,6 +325,7 @@
    "WeaponTypePistol",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -465,6 +468,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -613,6 +617,7 @@
    "AnimsUnarmed",
    "WeaponTypeUnarmed"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -868,6 +873,7 @@
    "WeaponTypePistol",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "energy",
@@ -1004,6 +1010,7 @@
    "WeaponTypeRanged",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "energy",
@@ -1282,6 +1289,7 @@
    "s_40_RifleAlienDisintegrator",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "energy",
@@ -1390,6 +1398,7 @@
    "AnimsGripPistol",
    "s_40_RifleAlienDisintegrator"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "energy",
@@ -1655,6 +1664,7 @@
    "ma_CanHaveNullMeleeMod",
    "WeaponTypeBleedDamage"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -1771,6 +1781,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -1897,6 +1908,7 @@
    "WeaponTypePistol",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -2002,6 +2014,7 @@
   "keywords": [
    "WeaponTypeGrenade"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -2068,6 +2081,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -2216,6 +2230,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -2507,6 +2522,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBleedDamage"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -2625,6 +2641,7 @@
    "WeaponTypeRanged",
    "WeaponTypeLaser"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "energy",
@@ -2890,6 +2907,7 @@
    "ma_legendarycrafting_weapon",
    "UnsellableObject"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -3024,6 +3042,7 @@
    "ma_legendarycrafting_weapon",
    "ma_Misc_Legendarycrafting_Weapon_Ranged4"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -3121,6 +3140,7 @@
    "UI_WeaponTypeAutoGrenadeLauncher",
    "WeaponTypeHeavyGun"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -3409,6 +3429,7 @@
    "UI_WeaponTypeSupersledge",
    "ma_Melee_Appearance"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -3681,6 +3702,7 @@
    "ma_Melee_Appearance",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -3804,6 +3826,7 @@
    "WeaponTypeMeleeGeneral",
    "ma_CanHaveNullMeleeMod"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -3918,6 +3941,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -4047,6 +4071,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBladed"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -4170,6 +4195,7 @@
    "WeaponTypePistol",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -4298,6 +4324,7 @@
    "WeaponTypePistol",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -4425,6 +4452,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -4547,6 +4575,7 @@
    "UnsellableObject",
    "WeaponTypeBleedDamage"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -4659,6 +4688,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -4774,6 +4804,7 @@
    "ma_1hMelee",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -4888,6 +4919,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -4998,6 +5030,7 @@
    "UI_WeaponTypeHandToHand",
    "ma_DeathTambo"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -5115,6 +5148,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponNoReload"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -5241,6 +5275,7 @@
    "ma_Knife_Blades",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -5359,6 +5394,7 @@
    "ma_Knife_Blades",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -5634,6 +5670,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBlunt"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -5752,6 +5789,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Ranged4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -5843,6 +5881,7 @@
    "ma_All_Bow_MDSP",
    "FeaturedItem"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -5958,6 +5997,7 @@
    "AnimsUnarmed",
    "WeaponTypeUnarmed"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -6198,6 +6238,7 @@
    "AnimsUnarmed",
    "WeaponTypeUnarmed"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -6447,6 +6488,7 @@
    "WeaponTypeClub",
    "UI_WeaponTypeMelee1H"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -6549,6 +6591,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -6673,6 +6716,7 @@
    "ma_ChainsawCanHaveFlamer",
    "ma_ChainsawCanHaveDualBar"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -6802,6 +6846,7 @@
    "WeaponTypeHeavyGun",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -6879,6 +6924,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBleedDamage"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -7003,6 +7049,7 @@
    "ma_legendarycrafting_weaponranged",
    "ma_Misc_Legendarycrafting_Weapon_Ranged4"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "energy",
@@ -7128,6 +7175,7 @@
    "WeaponTypeRanged",
    "WeaponTypeShotgun"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -7253,6 +7301,7 @@
    "ma_CombatKnife",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -7384,6 +7433,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -7532,6 +7582,7 @@
    "WeaponTypeRanged",
    "WeaponTypeShotgun"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -7678,6 +7729,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -7971,6 +8023,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponmelee"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -8097,6 +8150,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponNoReload"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -8234,6 +8288,7 @@
    "NonPlayerTradable",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "fire",
@@ -8353,6 +8408,7 @@
    "UI_WeaponTypemelee1HBlunt",
    "Anims2hmWideWeapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -8469,6 +8525,7 @@
    "UI_WeaponTypemelee1HBlunt",
    "Anims2hmWideWeapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -8591,6 +8648,7 @@
    "IsSingleShotWeapon",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -8871,6 +8929,7 @@
    "IsSingleShotWeapon",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -8986,6 +9045,7 @@
    "WeaponTypeRanged",
    "WeaponTypeShotgun"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -9115,6 +9175,7 @@
    "WeaponTypePistol",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -9234,6 +9295,7 @@
    "QuickkeyMelee",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "cryo",
@@ -9504,6 +9566,7 @@
    "AnimsCryolator",
    "ma_CanHaveNullMuzzle"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "cryo",
@@ -9638,6 +9701,7 @@
    "WeaponTypeHeavyGun",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -10124,6 +10188,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBleedDamage"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -10248,6 +10313,7 @@
    "ma_Knife",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -10365,6 +10431,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBladed"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -10489,6 +10556,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBladed"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -10603,6 +10671,7 @@
    "ma_golfclub",
    "UI_WeaponTypeMelee2H"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -10712,6 +10781,7 @@
    "WeaponTypeShotgun",
    "UI_WeaponTypeShotgun"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -10991,6 +11061,7 @@
    "ma_Gun_Appearance",
    "QuickkeyMelee"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -11117,6 +11188,7 @@
    "dn_weap_Nitro",
    "ma_Gun_Appearance"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -11240,6 +11312,7 @@
    "WeaponTypeRanged",
    "WeaponTypeShotgun"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -11379,6 +11452,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -11663,6 +11737,7 @@
    "WeaponTypeAutomaticMelee",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -11764,6 +11839,7 @@
    "UnscrappableObject",
    "WeaponTypeGrenade"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -11813,6 +11889,7 @@
    "ma_Melee_Appearance",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -11926,6 +12003,7 @@
    "WeaponTypePlasmaPistol",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -12113,6 +12191,7 @@
    "NonDroppable",
    "WeaponTypeBlunt"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -12226,6 +12305,7 @@
    "WeaponTypeShotgun",
    "ma_Gun_Appearance"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -12362,6 +12442,7 @@
    "WeaponTypeRevolver",
    "ma_Gun_Appearance"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -12491,6 +12572,7 @@
    "IsAmmoType_MiniNuke",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -12572,6 +12654,7 @@
    "AlwaysShowCrossHairIn1stPersonADS",
    "ma_Gun_Appearance"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -12701,6 +12784,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -12822,6 +12906,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Ranged4",
    "ma_CanHavePaint"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "fire",
@@ -12960,6 +13045,7 @@
    "NoRicochet",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "energy",
@@ -13070,6 +13156,7 @@
    "NoRicochet",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "energy",
@@ -13178,6 +13265,7 @@
    "UI_WeaponTypeFlareGun",
    "WeaponTypePistol"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -13280,6 +13368,7 @@
    "WeaponTypeAutomatic",
    "AlwaysShowCrossHairIn1stPersonADS"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -13389,6 +13478,7 @@
   "keywords": [
    "s_40_LauncherGrenade"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -13644,6 +13734,7 @@
    "WeaponTypePistol",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -13923,6 +14014,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -14068,6 +14160,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeLaser"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "energy",
@@ -14214,6 +14307,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -14387,6 +14481,7 @@
    "ma_CanHaveMeleeMod",
    "WeaponTypeBladed"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -14515,6 +14610,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Ranged4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -14633,6 +14729,7 @@
    "WeaponTypePistol",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -14765,6 +14862,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Ranged4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -14909,6 +15007,7 @@
    "WeaponTypeRanged",
    "WeaponTypeShotgun"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -15042,6 +15141,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -15158,6 +15258,7 @@
    "IsSingleShotWeapon",
    "ma_Gun_Appearance"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -15236,6 +15337,7 @@
    "BlockSuperDuperPerk",
    "WeaponTypeBleedDamage"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -15351,6 +15453,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBleedDamage"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -15460,6 +15563,7 @@
    "WeaponTypeArchaic",
    "ObjectTypeWeapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -15569,6 +15673,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBleedDamage"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -15683,6 +15788,7 @@
    "ma_CanHaveNullMeleeBladeMod",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -15806,6 +15912,7 @@
    "WeaponTypeRanged",
    "WeaponTypeRevolver"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -15918,6 +16025,7 @@
    "UI_WeaponTypeThrown",
    "PerkLastLaughGrenade"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -15971,6 +16079,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -16123,6 +16232,7 @@
    "ma_legendarycrafting_weapon",
    "AlwaysShowCrossHairIn1stPersonADS"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -16254,6 +16364,7 @@
    "ma_1hMelee",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -16380,6 +16491,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBallistic"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -16501,6 +16613,7 @@
    "ma_legendarycrafting_weapon",
    "ma_HogSplitter"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -16621,6 +16734,7 @@
    "WeaponTypeRifle",
    "WeaponTypeSniper"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -16786,6 +16900,7 @@
    "WeaponTypePistol",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "energy",
@@ -16903,6 +17018,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBlunt"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -17023,6 +17139,7 @@
    "WeaponTypeLaser",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "energy",
@@ -17176,6 +17293,7 @@
    "VATSWeaponLaserBeam",
    "s_40_LaserGutsy"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "energy",
@@ -17437,6 +17555,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -17557,6 +17676,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -17705,6 +17825,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -17826,6 +17947,7 @@
    "ma_Gun_Appearance",
    "ma_LoveTap"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -17958,6 +18080,7 @@
    "IsSingleShotWeapon",
    "animsDoubleBarrelShotgun"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -18029,6 +18152,7 @@
    "WeaponTypeGrenadeLauncher",
    "WeaponTypeHeavyGun"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -18104,6 +18228,7 @@
    "ma_legendarycrafting_weapon",
    "ma_Gun_Appearance"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -18195,6 +18320,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBleedDamage"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -18306,6 +18432,7 @@
    "WeaponTypeThrowingKnife",
    "WeaponTypeGrenade"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -18406,6 +18533,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBladed"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -18514,6 +18642,7 @@
    "WeaponTypeMeleeGeneral",
    "ma_Melee_Appearance"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -18635,6 +18764,7 @@
    "WeaponTypeRanged",
    "WeaponTypeRevolver"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -18749,6 +18879,7 @@
    "WeaponTypeSword",
    "WeaponTypeBleedDamage"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -18855,6 +18986,7 @@
    "WeaponTypePlasmaPistol",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -19033,6 +19165,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -19159,6 +19292,7 @@
    "ma_Minigun",
    "crWeaponRanged"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -19413,6 +19547,7 @@
    "crWeaponRanged",
    "DogmeatNoVisualsOnRetrieve"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -19674,6 +19809,7 @@
    "WeaponTypeAutomatic",
    "AlwaysShowCrossHairIn1stPersonADS"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -19962,6 +20098,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBallistic"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -20058,6 +20195,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBladed"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -20174,6 +20312,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -20443,6 +20582,7 @@
    "ma_CanHaveNullMeleeMod",
    "ma_BaseballBat"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -20561,6 +20701,7 @@
    "DogmeatNoVisualsOnRetrieve",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -20663,6 +20804,7 @@
    "DogmeatNoVisualsOnRetrieve",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -20765,6 +20907,7 @@
    "DogmeatNoVisualsOnRetrieve",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -20867,6 +21010,7 @@
    "DogmeatNoVisualsOnRetrieve",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -20969,6 +21113,7 @@
    "DogmeatNoVisualsOnRetrieve",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -21071,6 +21216,7 @@
    "DogmeatNoVisualsOnRetrieve",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -21173,6 +21319,7 @@
    "DogmeatNoVisualsOnRetrieve",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -21275,6 +21422,7 @@
    "DogmeatNoVisualsOnRetrieve",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -21377,6 +21525,7 @@
    "DogmeatNoVisualsOnRetrieve",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -21479,6 +21628,7 @@
    "DogmeatNoVisualsOnRetrieve",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -21581,6 +21731,7 @@
    "DogmeatNoVisualsOnRetrieve",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -21682,6 +21833,7 @@
    "ma_Broadsider",
    "DogmeatNoVisualsOnRetrieve"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -21939,6 +22091,7 @@
    "ma_Broadsider",
    "DogmeatNoVisualsOnRetrieve"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -22197,6 +22350,7 @@
    "DogmeatNoVisualsOnRetrieve",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -22458,6 +22612,7 @@
    "WeaponTypeAutomaticMelee",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -22568,6 +22723,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -22674,6 +22830,7 @@
    "UI_WeaponTypeMelee1H",
    "WeaponTypeBleedDamage"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -22791,6 +22948,7 @@
    "ma_Gun_Appearance",
    "ma_PipeSyringer"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -22930,6 +23088,7 @@
    "WeaponTypeHeavyGun",
    "ma_Gun_Appearance"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -23013,6 +23172,7 @@
    "UI_WeaponTypemelee2HBlade",
    "WeaponTypeBleedDamage"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -23130,6 +23290,7 @@
    "ma_Gun_Appearance",
    "FeaturedItem"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -23241,6 +23402,7 @@
    "WeaponTypeEnclaveGrenade",
    "ObjectTypeOrdnance"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -23295,6 +23457,7 @@
    "WeaponTypeThrown",
    "UI_WeaponTypeThrown"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -23403,6 +23566,7 @@
    "WeaponTypeThrown",
    "UI_WeaponTypeThrown"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -23506,6 +23670,7 @@
    "BlockSuperDuperPerk",
    "ObjectTypeOrdnance"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -23560,6 +23725,7 @@
    "UI_WeaponTypeMelee1H",
    "ObjectTypeToy"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -23662,6 +23828,7 @@
    "UI_WeaponTypeMelee1H",
    "ObjectTypeToy"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -23774,6 +23941,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -23885,6 +24053,7 @@
    "s_40_Flamer_MrHandy",
    "NoRicochet"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "energy",
@@ -24138,6 +24307,7 @@
    "s_40_Flamer_MrHandy",
    "NoRicochet"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "energy",
@@ -24391,6 +24561,7 @@
    "s_40_Flamer_MrHandy",
    "NoRicochet"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "energy",
@@ -24653,6 +24824,7 @@
    "WeaponTypeMelee2H",
    "WeaponTypeMeleeGeneral"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -24785,6 +24957,7 @@
    "WeaponTypePipe",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -24940,6 +25113,7 @@
    "WeaponTypeRanged",
    "WeaponTypeSniper"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -25081,6 +25255,7 @@
    "WeaponTypeRanged",
    "WeaponTypeRevolver"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -25210,6 +25385,7 @@
    "ma_1hMelee",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -25335,6 +25511,7 @@
    "WeaponTypePistol",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -25456,6 +25633,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -25573,6 +25751,7 @@
    "WeaponTypePlasmaPistol",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -25789,6 +25968,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -25956,6 +26136,7 @@
    "ma_1hMelee",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -26071,6 +26252,7 @@
    "ma_legendarycrafting_weaponranged",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -26557,6 +26739,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -26671,6 +26854,7 @@
    "WeaponTypePistol",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "energy",
@@ -26790,6 +26974,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -26907,6 +27092,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBlunt"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -27029,6 +27215,7 @@
    "ma_Gun_Appearance",
    "NonPlayerTradable"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -27085,6 +27272,7 @@
    "ma_CanHaveNullMeleeMod",
    "UI_WeaponTypemelee2HBlunt"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -27184,6 +27372,7 @@
    "ma_CanHaveNullMeleeMod",
    "UI_WeaponTypemelee2HBlunt"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -27283,6 +27472,7 @@
    "ma_CanHaveNullMeleeMod",
    "UI_WeaponTypemelee2HBlunt"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -27382,6 +27572,7 @@
    "ma_CanHaveNullMeleeMod",
    "UI_WeaponTypemelee2HBlunt"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -27481,6 +27672,7 @@
    "ma_CanHaveNullMeleeMod",
    "UI_WeaponTypemelee2HBlunt"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -27580,6 +27772,7 @@
    "ma_CanHaveNullMeleeMod",
    "UI_WeaponTypemelee2HBlunt"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -27679,6 +27872,7 @@
    "ma_CanHaveNullMeleeMod",
    "UI_WeaponTypemelee2HBlunt"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -27778,6 +27972,7 @@
    "ma_CanHaveNullMeleeMod",
    "UI_WeaponTypemelee2HBlunt"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -27877,6 +28072,7 @@
    "ma_CanHaveNullMeleeMod",
    "UI_WeaponTypemelee2HBlunt"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -27976,6 +28172,7 @@
    "ma_CanHaveNullMeleeMod",
    "UI_WeaponTypemelee2HBlunt"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -28082,6 +28279,7 @@
    "WeaponTypeRanged",
    "WeaponTypeShotgun"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -28230,6 +28428,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -28524,6 +28723,7 @@
    "ma_legendarycrafting_weaponexplosivebullets",
    "ma_Gun_Appearance"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -28713,6 +28913,7 @@
    "ma_legendarycrafting_weaponexplosivebullets",
    "ma_Misc_Legendarycrafting_Weapon_Ranged4"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -28851,6 +29052,7 @@
    "ma_legendarycrafting_weaponexplosivebullets",
    "ma_Misc_Legendarycrafting_Weapon_Ranged4"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -29128,6 +29330,7 @@
    "ObjectTypeCamera",
    "WeaponTypeCamera"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -29188,6 +29391,7 @@
    "UI_WeaponTypemelee2HBlade",
    "WeaponTypeBleedDamage"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -29312,6 +29516,7 @@
    "ma_legendarycrafting_weapon",
    "ma_Melee_Appearance"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -29425,6 +29630,7 @@
    "ma_1hMelee",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -29554,6 +29760,7 @@
    "WeaponTypePistol",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "energy",
@@ -29675,6 +29882,7 @@
    "ma_1hMelee",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -29781,6 +29989,7 @@
    "UnsellableObject",
    "WeaponTypeThrowingKnife"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -29929,6 +30138,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -30043,6 +30253,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -30158,6 +30369,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBleedDamage"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -30330,6 +30542,7 @@
    "WeaponTypeBlunt",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -30456,6 +30669,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBleedDamage"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -30583,6 +30797,7 @@
    "WeaponTypeRanged",
    "WeaponTypeRevolver"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -30710,6 +30925,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -30828,6 +31044,7 @@
    "UI_WeaponTypeHandToHand",
    "ma_DeathTambo"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -31096,6 +31313,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -31209,6 +31427,7 @@
    "WeaponTypePlasmaPistol",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -31399,6 +31618,7 @@
    "AnimsSequentialReload",
    "ma_Gun_Appearance"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -31522,6 +31742,7 @@
    "ma_Spear",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -31645,6 +31866,7 @@
    "ma_legendarycrafting_weaponexplosivebullets",
    "UI_WeaponTypeMachineGun"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -31927,6 +32149,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -32061,6 +32284,7 @@
    "ma_legendarycrafting_weaponmelee",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -32191,6 +32415,7 @@
    "UI_WeaponTypemelee2HBlade",
    "ma_Melee_Appearance"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -32308,6 +32533,7 @@
    "ma_Melee_Appearance",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -32434,6 +32660,7 @@
    "WeaponTypeRanged",
    "UI_WeaponTypeSyringer"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -32546,6 +32773,7 @@
    "UnsellableObject",
    "UncraftableObject"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -32653,6 +32881,7 @@
    "ma_legendarycrafting_weapon",
    "UI_WeaponTypemelee2HBlade"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -32925,6 +33154,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -33037,6 +33267,7 @@
    "ma_Gun_Appearance",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "energy",
@@ -33173,6 +33404,7 @@
    "WeaponTypeRanged",
    "WeaponTypeTeslaCannon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -33672,6 +33904,7 @@
    "WeaponTypeEnergy",
    "IsAmmoType_FusionCell"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "energy",
@@ -33799,6 +34032,7 @@
    "WeaponTypeRanged",
    "WeaponTypeRifle"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -34281,6 +34515,7 @@
    "WeaponTypeRanged",
    "UI_WeaponTypeRifle"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -34393,6 +34628,7 @@
    "UI_WeaponTypeSupersledge",
    "ma_Melee_Appearance"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -34515,6 +34751,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -34629,6 +34866,7 @@
    "UI_WeaponTypeSupersledge",
    "ma_Melee_Appearance"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -34750,6 +34988,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponexplosivebullets"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -34871,6 +35110,7 @@
    "ma_Melee_Appearance",
    "WeaponTypeBleedDamage"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -34987,6 +35227,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -35100,6 +35341,7 @@
    "WeaponTypePistol",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "energy",
@@ -35219,6 +35461,7 @@
    "ma_legendarycrafting_weapon",
    "ma_Gun_Appearance"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -35332,6 +35575,7 @@
    "NonPlayerTradable",
    "UnsellableObject"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -35421,6 +35665,7 @@
    "WeaponTypeKnives",
    "WeaponTypeThrowingKnife"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -35518,6 +35763,7 @@
    "ma_Melee_Appearance",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -35627,6 +35873,7 @@
    "WeaponTypeTomahawk",
    "WeaponTypeThrowingKnife"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -35724,6 +35971,7 @@
    "ma_Melee_Appearance",
    "ma_Misc_Legendarycrafting_Weapon_Melee4"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -35838,6 +36086,7 @@
    "WeaponTypeMelee1H",
    "WeaponTypeBladed"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "ballistic",
@@ -35940,6 +36189,7 @@
    "WeaponTypeLaser",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "energy",
@@ -36199,6 +36449,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeUltracite"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "energy",
@@ -36320,6 +36571,7 @@
    "WeaponTypeRanged",
    "WeaponTypeUltracite"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "energy",
@@ -36446,6 +36698,7 @@
    "AnimsGripRifleAssault",
    "WeaponTypeUltracite"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "energy",
@@ -36727,6 +36980,7 @@
    "WeaponTypeMelee2H",
    "WeaponTypeBleedDamage"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -36832,6 +37086,7 @@
    "WeaponTypeUnarmed",
    "CanUnarmedBlockKeyword"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -37072,6 +37327,7 @@
    "AnimsUnarmed",
    "WeaponTypeUnarmed"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -37323,6 +37579,7 @@
    "NonPlayerTradable",
    "ma_Melee_Appearance"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -37442,6 +37699,7 @@
    "ma_Gun_Appearance",
    "WeaponTypeV63"
   ],
+  "isAutomaticFlag": true,
   "components": [
    {
     "damageType": "energy",
@@ -37560,6 +37818,7 @@
    "ma_legendarycrafting_weapon",
    "ma_legendarycrafting_weaponmelee"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -37660,6 +37919,7 @@
    "UnscrappableObject",
    "UnsellableObject"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -37724,6 +37984,7 @@
    "WeaponTypeRevolver",
    "UnsellableObject"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -37835,6 +38096,7 @@
    "AnimsSyringer",
    "UnscrappableObject"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -37936,6 +38198,7 @@
    "WeaponTypeBlunt",
    "UI_WeaponTypemelee1HBlunt"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -38211,6 +38474,7 @@
    "ma_Melee_Appearance",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -38331,6 +38595,7 @@
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "ma_legendarycrafting_weapon"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -38441,6 +38706,7 @@
    "ma_legendarycrafting_weapon",
    "WeaponTypeBleedDamage"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -38563,6 +38829,7 @@
    "AnimsWarShrike",
    "AnimsGripBird"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -38681,6 +38948,7 @@
    "WeaponTypeRanged",
    "WeaponTypeRevolver"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -38805,6 +39073,7 @@
    "IsSingleShotWeapon",
    "FeaturedItem"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -38924,6 +39193,7 @@
    "UI_WeaponTypeSupersledge",
    "ma_Melee_Appearance"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -39039,6 +39309,7 @@
    "ma_Gun_Appearance",
    "WeaponTypeRifle"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -39162,6 +39433,7 @@
    "WeaponTypePistol",
    "WeaponTypeRanged"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "ballistic",
@@ -39282,6 +39554,7 @@
    "WeaponTypeEnergy",
    "WeaponTypePistol"
   ],
+  "isAutomaticFlag": false,
   "components": [
    {
     "damageType": "energy",

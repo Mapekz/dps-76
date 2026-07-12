@@ -7,9 +7,14 @@ import { effectiveValue, foldOps, type ResolveContext } from './resolve';
 /**
  * Applies equipped OMODs to a weapon before the engine runs:
  * - keyword ADDs merge into weapon.keywords (WeaponTypeAutomatic, HasSilencer, …
- *   drive perk conditions and the automatic/semi fire-rate path)
- * - fireRateSpeed / isAutomatic buckets rewrite the weapon's speed/auto state
- *   (auto receivers SET Speed 0.8248 — the old hardcoded "physical" multiplier)
+ *   drive perk conditions ONLY — WeaponTypeAutomatic is not a fire-rate signal,
+ *   see the isAutomatic note below)
+ * - fireRateSpeed / isAutomatic / animDurationSec buckets rewrite the weapon's
+ *   speed/auto state/animation-cycle length (auto receivers SET Speed 0.8248 —
+ *   the old hardcoded "physical" multiplier; isAutomatic reflects the real
+ *   WEAP Data.Flags "Automatic" bit + OMOD `IsAutomatic` property, never a
+ *   keyword — some OMODs add WeaponTypeAutomatic without the weapon actually
+ *   being full-auto, e.g. Combat Shotgun's Automatic Receiver)
  * - remaining modifiers (dbm, critDmgBase, sneakBase, …) feed the resolver
  */
 export interface EffectiveWeapon {
@@ -46,7 +51,7 @@ export function buildEffectiveWeapon(
 
   const allOmodModifiers = equippedOmods.flatMap(o => o.modifiers);
   const weaponStatBuckets = new Set([
-    'fireRateSpeed', 'isAutomatic', 'projectileCount', 'ammoCapacity', 'reloadSpeed', 'vatsApCost',
+    'fireRateSpeed', 'isAutomatic', 'animDurationSec', 'projectileCount', 'ammoCapacity', 'reloadSpeed', 'vatsApCost',
   ]);
 
   const keywords = [...new Set([...(weapon.keywords ?? []), ...equippedOmods.flatMap(o => o.addedKeywords)])];
@@ -61,9 +66,15 @@ export function buildEffectiveWeapon(
     itemLevel,
   };
   const speed = foldWeaponStat(allOmodModifiers, 'fireRateSpeed', weapon.speed ?? 1.0, ctx);
-  const isAutomatic =
-    foldWeaponStat(allOmodModifiers, 'isAutomatic', weapon.isAutomatic ? 1 : 0, ctx) > 0 ||
-    keywords.includes('WeaponTypeAutomatic');
+  // NOTE (2026-07-13, user-confirmed): `WeaponTypeAutomatic` is a perk-condition
+  // keyword only, not a real fire-mode signal — some OMODs add it without the
+  // weapon actually firing full-auto (Combat Shotgun's Automatic Receiver sets
+  // `HasRepeatableSingleFire`, not `IsAutomatic`). The `isAutomatic` bucket
+  // (folded from the base weapon's real WEAP Data.Flags "Automatic" bit, SET
+  // by OMODs that carry an explicit `IsAutomatic` property) is the only
+  // correct signal — do not OR in a keyword check here.
+  const isAutomatic = foldWeaponStat(allOmodModifiers, 'isAutomatic', weapon.isAutomatic ? 1 : 0, ctx) > 0;
+  const animDurationSec = foldWeaponStat(allOmodModifiers, 'animDurationSec', weapon.animDurationSec ?? 0.11, ctx);
   // NOTE: projectileCount folds into the effective weapon but NO damage term
   // consumes it yet — per-projectile/pellet modeling is deferred (with the
   // DoT engine work). Two Shot's damage today is only its extracted dbm.
@@ -75,7 +86,7 @@ export function buildEffectiveWeapon(
   const apCost = foldWeaponStat(allOmodModifiers, 'vatsApCost', weapon.apCost ?? 0, ctx);
 
   return {
-    weapon: { ...weapon, keywords, speed, isAutomatic, projectileCount, capacity, reloadSpeed, apCost },
+    weapon: { ...weapon, keywords, speed, isAutomatic, animDurationSec, projectileCount, capacity, reloadSpeed, apCost },
     modifiers: allOmodModifiers.filter(m => !weaponStatBuckets.has(m.bucket)),
   };
 }

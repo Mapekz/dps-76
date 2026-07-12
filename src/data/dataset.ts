@@ -24,6 +24,7 @@ import { powerArmor as powerArmorPts } from './pts/power-armor';
 
 import { legendaryValueOverrides } from './overrides/legendary-values';
 import { buffValueOverrides } from './overrides/buff-overrides';
+import { omodModifierAdditions } from './overrides/corrections';
 import generatedOmodsLive from './live/generated/omods.json';
 import generatedPerksLive from './live/generated/perks.json';
 import generatedMutationsLive from './live/generated/mutations.json';
@@ -49,6 +50,17 @@ export function applyModifierOverride<T extends { id: string; modifiers: Modifie
   return items.map(item => {
     const override = overridesById[item.id];
     return override ? { ...item, modifiers: override } : item;
+  });
+}
+
+/** Concatenate additional modifiers onto an item's `.modifiers` when keyed by its id (omods). */
+export function applyModifierAddition<T extends { id: string; modifiers: Modifier[] }>(
+  items: T[],
+  additionsById: Readonly<Record<string, Modifier[]>>
+): T[] {
+  return items.map(item => {
+    const addition = additionsById[item.id];
+    return addition ? { ...item, modifiers: [...item.modifiers, ...addition] } : item;
   });
 }
 
@@ -83,7 +95,10 @@ interface HandAuthored {
 
 // Generated (ESM-extracted) collections + overlays. Single ESM today, so these
 // are shared across modes; per-mode generated data would be threaded here.
-const mergedOmods = applyModifierOverride(generatedOmodsLive as GeneratedOmod[], legendaryValueOverrides);
+const mergedOmods = applyModifierAddition(
+  applyModifierOverride(generatedOmodsLive as GeneratedOmod[], legendaryValueOverrides),
+  omodModifierAdditions
+);
 const mergedMutations = applyModifierOverride(generatedMutationsLive as GeneratedBuff[], buffValueOverrides);
 const mergedConsumables = applyModifierOverride(generatedConsumablesLive as GeneratedBuff[], buffValueOverrides);
 const generatedPerks = generatedPerksLive as GeneratedPerk[];

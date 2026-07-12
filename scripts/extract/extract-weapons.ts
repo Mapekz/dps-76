@@ -137,6 +137,8 @@ export async function toGeneratedWeapon(
   const data = (fields['Data'] ?? {}) as Record<string, unknown>;
   const rgw3 = (fields['RGW3'] ?? {}) as Record<string, unknown>;
   const crit = (fields['Critical Data'] ?? {}) as Record<string, unknown>;
+  const flagsNode = (data['Flags'] ?? {}) as Record<string, unknown>;
+  const flagNames = Array.isArray(flagsNode['flags']) ? (flagsNode['flags'] as string[]) : [];
   const keywordsNode = (fields['Keywords'] ?? {}) as Record<string, unknown>;
   const keywordFormIds: string[] = Array.isArray(keywordsNode['Keywords'])
     ? (keywordsNode['Keywords'] as string[])
@@ -151,6 +153,7 @@ export async function toGeneratedWeapon(
     name: (fields['Name'] as string) ?? record.editor_id,
     weaponTypeName,
     keywords,
+    isAutomaticFlag: flagNames.includes('Automatic'),
     components: await buildComponents(client, fields, unresolved),
     critDamageMult: asNumber(crit['Crit Damage Mult'], 1.0),
     critChargeBonus: asNumber(crit['Crit Charge Bonus'], 1.0),

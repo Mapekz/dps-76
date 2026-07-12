@@ -41,6 +41,14 @@ export interface GeneratedWeapon {
   /** Resolved keyword editor_ids (WeaponTypeRifle, WeaponTypeAutomatic, ...). */
   keywords: string[];
   components: GeneratedDamageComponent[];
+  /**
+   * WEAP Data.Flags "Automatic" bit — the real fire-mode signal (2026-07-13,
+   * user-confirmed). `WeaponTypeAutomatic` is a perk-condition keyword only
+   * and must NOT be used to derive fire rate; some OMODs add it without
+   * making the weapon truly automatic (e.g. Combat Shotgun's Automatic
+   * Receiver, which sets `HasRepeatableSingleFire`, not `IsAutomatic`).
+   */
+  isAutomaticFlag: boolean;
 
   // Crit / sneak
   critDamageMult: number;
@@ -137,6 +145,28 @@ export interface GeneratedBuff {
   modifiers: Modifier[];
   /** Extraction caveats (script magnitudes, timed buffs — override candidates). */
   notes: string[];
+}
+
+export interface GeneratedBodyPart {
+  /** BPTD "Part Name" (e.g. "Head", "Belly", "Combat Inhibitor"). */
+  name: string;
+  /** BPTD Part Type name (Head1, Torso, LeftArm1, Brain, ...). */
+  partType: string;
+  /** BPTD Data."Damage Mult" — the engine's body-part damage multiplier for hits on this part. */
+  dmgMult: number;
+  /** Part carries the "On Cripple" or "Explodable" flag — counts toward crippled-limb effects. */
+  crippable: boolean;
+}
+
+export interface GeneratedBodyPartRace {
+  /** Stable id = RACE editor_id (e.g. "HumanRace", "StormBossRace"). */
+  id: string;
+  formId: string;
+  /** Curated display label (RACE names collide — three "Human" races). */
+  name: string;
+  /** BPTD record the parts came from. */
+  bodyPartDataFormId: string;
+  parts: GeneratedBodyPart[];
 }
 
 export interface ExcludedRecordDetail {

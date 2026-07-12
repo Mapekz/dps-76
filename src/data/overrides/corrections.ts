@@ -1,4 +1,5 @@
 import type { Weapon } from '@/types';
+import type { Modifier } from '@/types/modifiers';
 
 /**
  * Hand-maintained corrections layered over ESM-generated data.
@@ -156,9 +157,15 @@ export const omodWeaponRestrictions: Readonly<Record<string, readonly string[]>>
 /**
  * Per-weapon field patches applied after adaptation.
  *
- * Fire-rate note: extracted `attackDelaySec` / automatic-keyword data is
- * approximate until animation-derived timing lands (dps-todos/fire-rate.md).
- * Verified timings belong here.
+ * Fire-rate note: extracted `attackDelaySec` / automatic-flag data is
+ * ESM-verified for the base weapon (dps-todos/fire-rate.md — 30+ in-game
+ * Pip-Boy Fire Rate readings, 2026-07-13). The two entries below are the only
+ * confirmed exceptions to the standard `speed / 0.11` auto-fire divisor;
+ * every other "exception" candidate (Submachine Gun, Railway Rifle, Combat
+ * Shotgun's Automatic Receiver) turned out to be fully explained by ordinary
+ * Speed SET/MUL_ADD folding once `isAutomatic` stopped reading the
+ * `WeaponTypeAutomatic` keyword (see effective-weapon.ts) — no override
+ * needed for those.
  */
 export const weaponCorrections: Readonly<Record<string, Partial<Weapon>>> = {
   // The V.A.T.S. Unknown: its effect-variant mods sit on ap_customName
@@ -172,4 +179,57 @@ export const weaponCorrections: Readonly<Record<string, Partial<Weapon>>> = {
       '0x0047A264',
     ],
   },
+  // Gatling Gun: confirmed via a dedicated `AnimsGatlingGun` keyword (distinct
+  // from every other automatic weapon's own bespoke Anims* keyword, e.g.
+  // Minigun's `AnimsMinigun` — which DOES use the standard 0.11s cycle,
+  // proving each weapon's animation resource is independent, not a shared
+  // override) — real, in-game Pip-Boy Fire Rate confirmed 2026-07-13: base
+  // Speed 1.0, Pip-Boy 20 ⇒ animDurationSec 0.5s (1.0/0.5×10=20). No barrel
+  // mod changes Speed, so this is a fixed weapon-level constant.
+  GatlingGun: {
+    animDurationSec: 0.5,
+  },
+};
+
+/**
+ * Modifier ADDITIONS layered onto an OMOD's extracted modifiers (unlike
+ * `legendary-values.ts`'s `legendaryValueOverrides`, which REPLACES — these
+ * concatenate, for cases where extraction got everything right except one
+ * value with no corresponding ESM property). Keyed by OMOD edid.
+ */
+export const omodModifierAdditions: Readonly<Record<string, Modifier[]>> = {
+  // Gatling Laser Charging Barrels: confirmed via two independent in-game
+  // Pip-Boy Fire Rate readings (2026-07-13) landing on the identical derived
+  // constant — Charging alone (0.5 effective speed, Pip-Boy 30) and Charging
+  // + Prime Receiver (0.3 effective speed, Pip-Boy 18) both back-solve to
+  // exactly 1/6s, confirming this OMOD swaps to a genuinely different,
+  // slower "charged-beam" animation on top of its Speed MUL_ADD −0.75 (which
+  // stays correctly extracted — this ADDS to it, doesn't replace it). All 4
+  // regular + 4 Ultracite Gatling Laser variants share the same underlying
+  // `_PARENT_mod_WEAPON_GatlingLaser_Super` include (0x0083EB31) and need the
+  // identical addition.
+  ...Object.fromEntries(
+    [
+      'mod_GatlingLaser_barrel_Super_Base',
+      'mod_GatlingLaser_Barrel_Super_HipAccuracy',
+      'mod_GatlingLaser_Barrel_Super_Recoil',
+      'mod_GatlingLaser_Barrel_Super_Recoil-HipAccuracy',
+      'mod_Ultracite_GatlingLaser_barrel_Super_Base',
+      'mod_Ultracite_GatlingLaser_Barrel_Super_HipAccuracy',
+      'mod_Ultracite_GatlingLaser_Barrel_Super_Recoil',
+      'mod_Ultracite_GatlingLaser_Barrel_Super_Recoil-HipAccuracy',
+    ].map((edid): [string, Modifier[]] => [
+      edid,
+      [
+        {
+          id: `${edid}:animDurationSec`,
+          source: { kind: 'omod', formId: '', edid, name: 'Charging Barrels' },
+          bucket: 'animDurationSec',
+          op: 'SET',
+          value: 1 / 6,
+          conditions: [],
+        },
+      ],
+    ])
+  ),
 };

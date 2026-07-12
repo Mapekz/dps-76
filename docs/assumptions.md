@@ -58,76 +58,103 @@ PaperDamage = Σ_components base(c) × ( dbmFold(c) + Tenderizer + (CritMult−1
 - Explosive-on-projectile weapons (grenades, mines) are excluded until the
   EXPL-chase work; flagged `projectileOnly` in `_meta.json`.
 
-## Fire rate (`src/lib/fire-rate.ts`)
+## Fire rate (`src/lib/fire-rate.ts`) — CLOSED 2026-07-13
 
-- Auto: `speed / 0.11`; semi: `speed / Attack Delay Seconds`; melee: 1.0/s stub.
-- **Confirmed 2026-07-13** against 30+ user-supplied in-game Pip-Boy Fire Rate
-  readings across base weapons and weapon+mod combos (2026-07-02 dump):
-  Pip-Boy Fire Rate = `(effectiveSpeed / cycleConstant) × 10`, rounded. The
-  overwhelming majority use `cycleConstant = 0.11` (auto) or the weapon's own
-  `Attack Delay Seconds` (semi) exactly as implemented — zero extraction or
-  engine changes needed. Full weapon-by-weapon tables in `dps-todos/fire-rate.md`.
+- Auto: `speed / 0.11`; semi: `speed / Attack Delay Seconds`; melee: 1.0/s stub
+  (melee timing is the only open scope left, `dps-todos/fire-rate.md`).
+- **Confirmed** against 30+ user-supplied in-game Pip-Boy Fire Rate readings
+  across base weapons and weapon+mod combos, across both the live
+  (2026-07-02) and PTS (2026-07-10) dumps: Pip-Boy Fire Rate =
+  `(effectiveSpeed / cycleConstant) × 10`, rounded. The overwhelming majority
+  use `cycleConstant = 0.11` (auto) or the weapon's own `Attack Delay
+  Seconds` (semi), exactly as implemented. Full weapon-by-weapon tables in
+  `dps-todos/fire-rate.md`.
 - The historical 0.8248 "physical" multiplier (and every other per-weapon-family
   automatic-receiver Speed change) is `SET`/`MUL_ADD Speed <value>` on OMODs,
   resolved through the existing `Includes`-chain flattening into a
   `fireRateSpeed` bucket — never hardcoded. Confirmed across many weapon
   families and barrel/receiver combos (Combat Rifle, Assault Rifle, Handmade,
   Alien Disintegrator, Combat Shotgun, Minigun barrels, Gauss Minigun barrels,
-  MG42/LMG receivers). The recurring `_PARENT_mod_WEAPON_GENERIC_AntiScorchBeast`
-  piece (`Speed MUL_ADD −0.10`, plus minor AimModel/range/value tweaks) is the
-  shared "Prime" mod tax across weapon families.
-- **Correction (2026-07-12):** V63 Carbine/Meltdown does **not** get an
-  automatic-receiver `SET Speed` override — it has no automatic-receiver mod
-  at all (always-auto by base Flags; its mod slot uses "Capacitor" variants
-  instead of a receiver swap). Its reduced, ballistic-like fire rate comes
-  entirely from its base WEAP `Speed` of `0.8` (vs. the typical energy-weapon
-  1.0), already read by the plain extractor — no override needed.
-- **Confirmed exceptions (2026-07-13) — three real alternate animation-cycle
-  constants**, each tied to a specific weapon/receiver/barrel family (not
-  arbitrary per-weapon noise — confirmed by multiple independent readings
-  landing on the same derived constant):
-  - **0.5s** ("shotgun/gatling automatic cycle"): **Gatling Gun** (always —
-    no receiver option exists; base `Speed` is `1.0`, not `2.0` as an earlier,
-    now-corrected note here assumed) and **Combat Shotgun + Automatic
-    Receiver**. Two independent weapon families land on the exact same
-    derived constant (1.0/0.5×10=20 for Gatling Gun; 1.3/0.5×10=26 for Combat
-    Shotgun auto) — strong confirmation this is a real shared animation, not
-    coincidence.
-  - **1/6s ≈ 0.1667s** ("Gatling Laser Charging Barrels' charged-beam cycle"):
-    only when Charging Barrels are equipped (base Gatling Laser and its Prime
-    Receiver alone both still use the standard 0.11 cycle). Confirmed with
-    two independent effective-Speed values landing on the same constant:
-    Charging alone (0.5 effective) → 30 Pip-Boy; Charging + Prime Receiver
-    (0.3 effective) → 18 Pip-Boy — both back-solve to 1/6s exactly.
-  - **≈0.215s** (Submachine Gun's *stock-only* anomaly): applies only with
-    **no receiver mod installed**. Installing **any** receiver — even a
-    damage-only "Prime Receiver" — reverts it to the standard 0.11 cycle
-    (confirmed: Prime Receiver's Speed fold of 0.6638 / 0.11 × 10 = 60,
-    matching the user's reading exactly). Lower confidence on the precise
-    decimal (single data point, no second mod to cross-check) but high
-    confidence on the "reverts to 0.11 once modded" behavior.
+  MG42/LMG receivers, Railway Rifle). The recurring
+  `_PARENT_mod_WEAPON_GENERIC_AntiScorchBeast` piece (`Speed MUL_ADD −0.10`,
+  plus minor AimModel/range/value tweaks) is the shared "Prime" mod tax
+  across weapon families.
+- **Bug found and fixed**: `isAutomatic` was derived from the
+  `WeaponTypeAutomatic` **keyword** (`gw.keywords.includes('WeaponTypeAutomatic')`
+  in `weapons.ts`; `keywords.includes(...)` in `effective-weapon.ts`).
+  User-confirmed: that keyword drives perk conditions only, not real fire
+  mode — some OMODs add it without the weapon actually being full-auto.
+  Combat Shotgun's Automatic Receiver is the concrete case: it sets
+  `HasRepeatableSingleFire` (a hold-to-repeat semi mechanic, same as Auto
+  Grenade Launcher's base record), never `IsAutomatic`, yet its include
+  chain still adds the `WeaponTypeAutomatic` keyword — so the app was
+  computing its fire rate via the flat 0.11 divisor (wrongly predicting 118)
+  instead of its own `Attack Delay Seconds` with the boosted Speed (1.3/0.5×10=26,
+  confirmed exactly in-game). **Fixed**: `GeneratedWeapon.isAutomaticFlag`
+  now comes from the base WEAP's `Data.Flags` "Automatic" bit
+  (`extract-weapons.ts`); `effective-weapon.ts`'s `isAutomatic` fold no
+  longer ORs in any keyword check — only the base flag + an OMOD's real
+  `IsAutomatic SET` property. Re-extracted (`pnpm extract --only weapons`,
+  2026-07-02 dump); `pnpm test` 204 passed.
+- V63 Carbine/Meltdown does **not** get an automatic-receiver `SET Speed`
+  override — it has no automatic-receiver mod at all (always-auto by base
+  Flags; its mod slot uses "Capacitor" variants instead of a receiver swap).
+  Its reduced, ballistic-like fire rate comes entirely from its base WEAP
+  `Speed` of `0.8` (vs. the typical energy-weapon 1.0), already read by the
+  plain extractor — no override needed.
+- **Confirmed exceptions — two real alternate animation-cycle constants**,
+  each shipped as a hand-maintained override (`src/data/overrides/corrections.ts`,
+  new `animDurationSec` modifier bucket folded in `effective-weapon.ts`
+  exactly like `fireRateSpeed`; no ESM property encodes these, Havok
+  animation timing isn't parseable):
+  - **Gatling Gun — 0.5s** (`weaponCorrections.GatlingGun.animDurationSec`).
+    Confirmed via a dedicated `AnimsGatlingGun` ESM keyword — distinct from
+    every other weapon's own bespoke `Anims*` keyword (e.g. Minigun's
+    `AnimsMinigun`, which uses the standard 0.11s cycle) — proving this is a
+    real, intentional per-weapon animation resource, not a coincidental or
+    buggy shared override. In-game: base Speed 1.0, Pip-Boy 20 (1.0/0.5×10=20).
+  - **Gatling Laser Charging Barrels — 1/6s ≈ 0.1667s** (`omodModifierAdditions`,
+    an additive override mechanism distinct from `legendaryValueOverrides`'s
+    replace semantics, since this OMOD's `Speed MUL_ADD −0.75` was already
+    correctly extracted — only the animation-cycle piece needed adding).
+    Confirmed with two independent effective-Speed readings landing on the
+    same constant: Charging alone (0.5 effective) → Pip-Boy 30; Charging +
+    Prime Receiver (0.3 effective) → Pip-Boy 18 — both back-solve to 1/6s
+    exactly. All 8 Charging Barrel variants (4 regular + 4 Ultracite) share
+    the underlying `_PARENT_mod_WEAPON_GatlingLaser_Super` include and get
+    the same addition.
   - Minigun, Gatling Laser (both Speed 2.0), and Gauss Minigun (Speed 1.0,
     despite carrying the same `Charging Attack` WEAP flag as Minigun/Gatling
     Laser) all fit the flat `0.11` formula exactly in their base/receiver-only
     states — the `Charging Attack` flag does not by itself imply a custom
     `animDurationSec`; Pip-Boy Fire Rate reflects the weapon's resting cycle,
     not any in-combat rev-up/charge behavior.
-  - **General pattern**: a receiver or barrel swap can change which attack
-    animation plays, not just the `Speed` stat. Rifle/SMG/pistol-style
-    automatic receivers all keep the standard 0.11s cycle; shotgun/gatling-
-    mechanism weapons get the slower 0.5s cycle; Gatling Laser's Charging
-    Barrels get their own 0.1667s cycle.
-- Stock weapons with no receiver selected use the WEAP record's base stats;
-  whether in-game stock configurations include a default receiver's stats is
-  unverified.
-- **Still open**: Railway Rifle's stock/no-receiver reading is ambiguous — the
-  user supplied two candidate numbers (10 or 25), neither matching the raw
-  ESM `Attack Delay Seconds` field (predicts 6). Its **automatic** reading
-  (52, via the Automatic Piston Receiver, which adds no `Speed` override of
-  its own) matches the standard flat-0.11 formula exactly using the same base
-  `Speed` (0.5774) — confirming Speed is right and this is the same
-  "stock-only anomaly" pattern as Submachine Gun. Needs one precise Pip-Boy
-  digit for the true stock state. See `dps-todos/fire-rate.md`.
+- **False-positive "exceptions" that turned out to need no fix** (both were
+  process gaps — not walking a weapon's own default/base-state Includes
+  chain with the same rigor as its divergent variant — not ESM limitations):
+  - **Submachine Gun**: its "Standard Receiver" was assumed Speed-neutral by
+    analogy with Combat Rifle/Assault Rifle (where the semi/default state
+    genuinely has no Speed override) — but Submachine Gun has no semi mode
+    at all (always-automatic natively), and *every* receiver option,
+    including "Standard," pulls in the same shared
+    `_PARENT_mod_WEAPON_Receiver_AutomaticInit` template (`IsAutomatic SET
+    True` + `Speed SET 0.8248`) that Combat Rifle/Alien Disintegrator use.
+    The raw, truly-unmodified WEAP Speed (1.61) is never a real achievable
+    in-game state. Both readings (75 stock, 60 Prime) match the ordinary
+    Speed fold exactly, standard 0.11 divisor — no override.
+  - **Railway Rifle**: the earlier "10-vs-25, matches neither the ESM"
+    finding was because it was checked against the wrong dump. The user's
+    numbers came from a **PTS** client (`FO76-Tools/esm/Data/20260710/`),
+    which has different base stats (`Speed 1.0`, `Attack Delay Seconds 0.4`)
+    than the live 2026-07-02 dump (`Speed 0.5774`, `Attack Delay Seconds
+    1.0`). All 6 PTS readings (25 semi/Standard, 45 Automatic Piston
+    Receiver, 25 Shotgun/Splitter Receiver, 22 Prime + Prime Shotgun, 36
+    Prime Automatic Piston) match the ordinary formula exactly on that dump.
+    (This app currently only ships a live dataset — `dps-todos/pts-toggle.md`.)
+- Stock weapons with no receiver selected use the WEAP record's base stats —
+  verified this is generally fine EXCEPT when a weapon has no true semi/auto
+  choice at all (Submachine Gun above); in that case its "Standard" receiver
+  option may still carry a real Speed override and must be walked, not assumed.
 
 ## Sustained DPS (`src/lib/engine/sustain.ts`)
 

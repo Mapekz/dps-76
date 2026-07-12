@@ -62,6 +62,16 @@ export type Bucket =
   | 'critConsumption'
   | 'fireRateSpeed'
   | 'isAutomatic'
+  /**
+   * Rewrite of the weapon's automatic-fire animation-cycle length in seconds
+   * (the divisor `getFireRate` uses for automatic weapons; default 0.11 when
+   * unset). Hand-authored only — no ESM property encodes this; Havok
+   * animation timing isn't parseable. Confirmed real per-weapon/per-OMOD
+   * exceptions (2026-07-13, in-game Pip-Boy Fire Rate readings): Gatling Gun
+   * (weapon-level, `overrides/corrections.ts`) and Gatling Laser Charging
+   * Barrels (OMOD-level, `overrides/corrections.ts` omodModifierAdditions).
+   */
+  | 'animDurationSec'
   | 'projectileCount'
   /** Magazine capacity rewrite from OMODs (drum/extended magazines) — feeds sustained DPS. */
   | 'ammoCapacity'
