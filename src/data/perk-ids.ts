@@ -252,6 +252,16 @@ export const PerkId = {
   WildWestHands: "WildWestHands",
   BreathItIn: "BreathItIn",
   BoneShatterer: "BoneShatterer",
+  // Legendary SPECIAL cards (+1/+2/+3/+5 stat AND perk points by rank, budget
+  // caps at 15 — src/lib/player-stats.ts). No known N&D URL key yet, so
+  // imports can't bring them; slotted in-app only.
+  LegendaryStrength: "LegendaryStrength",
+  LegendaryPerception: "LegendaryPerception",
+  LegendaryEndurance: "LegendaryEndurance",
+  LegendaryCharisma: "LegendaryCharisma",
+  LegendaryIntelligence: "LegendaryIntelligence",
+  LegendaryAgility: "LegendaryAgility",
+  LegendaryLuck: "LegendaryLuck",
 } as const;
 
 export type PerkId = (typeof PerkId)[keyof typeof PerkId];

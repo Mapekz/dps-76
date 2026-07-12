@@ -17,8 +17,10 @@ import { cn } from '@/lib/utils';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getPerks } from '@/data';
+import { computePerkBudget } from '@/data/perk-budget';
 import { Special } from '@/data/special';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';
+import { canSlotCardPoints, type PerkBudget } from '@/lib/player-stats';
 import type { Perk, PerkLoadout } from '@/types';
 import type { SpecialKey } from '@/state/build-reducer';
 import { ActionDelta } from '@/components/diff/ActionDelta';
@@ -56,33 +58,29 @@ function usePerkRegistry() {
   }, [mode]);
 }
 
-/** Card cost = rank (FO76 rule); budget per SPECIAL = the stat value. */
-function spentPerSpecial(perks: PerkEntry[]): Map<Special, number> {
-  const spent = new Map<Special, number>();
-  for (const { perk, rank } of perks) {
-    spent.set(perk.special, (spent.get(perk.special) ?? 0) + rank);
-  }
-  return spent;
-}
-
-function SpecialBudgetBar({ spent }: { spent: Map<Special, number> }) {
-  const { player } = useBuild();
+/**
+ * Card cost = rank (FO76 rule). Budget per stat = min(15, base allocation +
+ * Legendary SPECIAL card bonus) — src/lib/player-stats.ts. Base allocation is
+ * set in the SPECIAL section above.
+ */
+function SpecialBudgetBar({ budget }: { budget: PerkBudget }) {
   return (
     <div className="grid grid-cols-7 gap-1">
       {SPECIAL_ORDER.map(({ key, special, letter }) => {
-        const used = spent.get(special) ?? 0;
-        const budget = player.conditions[key];
-        const over = used > budget;
+        const used = budget.cardPoints[key];
+        const cap = budget.budgetPerStat[key];
+        const over = used > cap;
+        const leggo = budget.legendaryBonus[key];
         return (
           <div
             key={key}
             className={cn(
-              'rounded border px-1 py-0.5 text-center text-[11px] font-mono tabular-nums',
+              'rounded border px-1 py-0.5 text-center font-mono text-[11px] tabular-nums',
               over ? 'border-negative text-negative' : 'text-muted-foreground'
             )}
-            title={`${special}: ${used} of ${budget} points used${over ? ' — over budget' : ''}`}
+            title={`${special}: ${used} of ${cap} card points (${budget.allocation[key]} allocated${leggo > 0 ? ` + ${leggo} from Legendary ${special}` : ''})${over ? ' — over budget' : ''}`}
           >
-            <span className="font-condensed font-semibold">{letter}</span> {used}/{budget}
+            <span className="font-condensed font-semibold">{letter}</span> {used}/{cap}
           </div>
         );
       })}
@@ -90,7 +88,7 @@ function SpecialBudgetBar({ spent }: { spent: Map<Special, number> }) {
   );
 }
 
-function PerkRow({ entry, maxRank }: { entry: PerkEntry; maxRank: number }) {
+function PerkRow({ entry, maxRank, raiseBlocked }: { entry: PerkEntry; maxRank: number; raiseBlocked?: boolean }) {
   const dispatch = useBuildDispatch();
   return (
     <div className="bg-muted/40 flex items-center gap-1 rounded px-2 py-1 text-sm">
@@ -113,8 +111,9 @@ function PerkRow({ entry, maxRank }: { entry: PerkEntry; maxRank: number }) {
           variant="ghost"
           size="icon"
           className="size-6"
-          disabled={entry.rank >= maxRank}
+          disabled={entry.rank >= maxRank || raiseBlocked}
           aria-label={`Raise ${entry.perk.name} rank`}
+          title={raiseBlocked && entry.rank < maxRank ? 'SPECIAL budget exhausted (15/stat, 56 total)' : undefined}
           onClick={() => dispatch({ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank + 1 })}
         >
           <PlusIcon className="size-3" />
@@ -133,15 +132,31 @@ function PerkRow({ entry, maxRank }: { entry: PerkEntry; maxRank: number }) {
   );
 }
 
-function PerkAddCombobox() {
+const SPECIAL_TO_KEY = Object.fromEntries(SPECIAL_ORDER.map(({ special, key }) => [special, key])) as Record<
+  Special,
+  SpecialKey
+>;
+
+function PerkAddCombobox({ budget }: { budget: PerkBudget }) {
   const [open, setOpen] = React.useState(false);
   const { regular, legendary } = usePerkRegistry();
   const { player } = useBuild();
   const dispatch = useBuildDispatch();
 
   const equipped = new Map([...player.perks, ...player.legendaryPerks].map(p => [p.perkId, p.rank]));
+  const legendarySlotsFull = player.legendaryPerks.length >= LEGENDARY_SLOTS;
+
+  // Mirrors the reducer's blocking rules so blocked picks read as disabled
+  // instead of silently doing nothing.
+  const slotBlocked = (perkId: string, isLegendary: boolean, perk: Perk): boolean => {
+    const rank = equipped.get(perkId);
+    if (isLegendary) return rank === undefined && legendarySlotsFull;
+    if (rank !== undefined && rank >= perk.maxRank) return false; // no-op anyway
+    return !canSlotCardPoints(budget, SPECIAL_TO_KEY[perk.special], 1);
+  };
 
   const select = (perkId: string, isLegendary: boolean, perk: Perk) => {
+    if (slotBlocked(perkId, isLegendary, perk)) return;
     const currentRank = equipped.get(perkId);
     if (currentRank === undefined) {
       dispatch({ type: 'perk/add', perkId, rank: 1, legendary: isLegendary });
@@ -156,19 +171,31 @@ function PerkAddCombobox() {
     <CommandGroup heading={heading}>
       {items.map(({ perkId, perk }) => {
         const rank = equipped.get(perkId);
-        const previewAction =
-          rank === undefined
-            ? ({ type: 'perk/add', perkId, rank: 1, legendary: isLegendary } as const)
-            : rank < perk.maxRank
-              ? ({ type: 'perk/setRank', perkId, rank: rank + 1 } as const)
-              : null;
+        const blocked = slotBlocked(perkId, isLegendary, perk);
         return (
-          <CommandItem key={perkId} value={perkId} keywords={[perk.name]} onSelect={() => select(perkId, isLegendary, perk)}>
+          <CommandItem
+            key={perkId}
+            value={perkId}
+            keywords={[perk.name]}
+            disabled={blocked}
+            onSelect={() => select(perkId, isLegendary, perk)}
+          >
             <CheckIcon className={cn('mr-2 size-4', rank !== undefined ? 'opacity-100' : 'opacity-0')} />
             <span className="min-w-0 flex-1 truncate">{perk.name}</span>
-            {previewAction && <ActionDelta action={previewAction} />}
+            {!blocked &&
+              (rank === undefined ? (
+                <ActionDelta action={{ type: 'perk/add', perkId, rank: 1, legendary: isLegendary }} />
+              ) : rank < perk.maxRank ? (
+                <ActionDelta action={{ type: 'perk/setRank', perkId, rank: rank + 1 }} />
+              ) : null)}
             <span className="text-muted-foreground ml-2 text-xs">
-              {rank !== undefined ? `rank ${rank}/${perk.maxRank}` : `max ${perk.maxRank}`}
+              {blocked
+                ? isLegendary
+                  ? 'slots full'
+                  : 'budget full'
+                : rank !== undefined
+                  ? `rank ${rank}/${perk.maxRank}`
+                  : `max ${perk.maxRank}`}
             </span>
           </CommandItem>
         );
@@ -206,6 +233,7 @@ function PerkAddCombobox() {
 
 export function PerkEditorSection() {
   const { registry } = usePerkRegistry();
+  const { mode } = useGameMode();
   const { player } = useBuild();
 
   const resolve = (loadout: PerkLoadout[]): PerkEntry[] =>
@@ -215,9 +243,13 @@ export function PerkEditorSection() {
 
   const regularEntries = resolve(player.perks);
   const legendaryEntries = resolve(player.legendaryPerks);
-  const spent = spentPerSpecial(regularEntries);
+  const allocation = Object.fromEntries(SPECIAL_ORDER.map(({ key }) => [key, player.conditions[key]])) as Record<
+    SpecialKey,
+    number
+  >;
+  const budget = computePerkBudget(mode, player.perks, player.legendaryPerks, allocation);
 
-  const overBudget = SPECIAL_ORDER.some(({ key, special }) => (spent.get(special) ?? 0) > player.conditions[key]);
+  const overBudget = budget.overBudget;
   const legendaryOver = legendaryEntries.length > LEGENDARY_SLOTS;
   const cardCount = regularEntries.length + legendaryEntries.length;
 
@@ -238,14 +270,19 @@ export function PerkEditorSection() {
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-3">
-          <SpecialBudgetBar spent={spent} />
+          <SpecialBudgetBar budget={budget} />
 
-          <PerkAddCombobox />
+          <PerkAddCombobox budget={budget} />
 
           {regularEntries.length > 0 ? (
             <div className="grid gap-1">
               {regularEntries.map(entry => (
-                <PerkRow key={entry.perkId} entry={entry} maxRank={entry.perk.maxRank} />
+                <PerkRow
+                  key={entry.perkId}
+                  entry={entry}
+                  maxRank={entry.perk.maxRank}
+                  raiseBlocked={!canSlotCardPoints(budget, SPECIAL_TO_KEY[entry.perk.special], 1)}
+                />
               ))}
             </div>
           ) : (
@@ -274,8 +311,9 @@ export function PerkEditorSection() {
           )}
 
           <p className="text-muted-foreground text-xs">
-            Card cost equals rank; each SPECIAL's budget is its stat value. Going over budget is flagged, not blocked —
-            experiments are allowed here even when the game would say no.
+            Card cost equals rank. Each stat's budget is its base allocation (SPECIAL section) plus Legendary SPECIAL
+            card bonuses, capped at 15. Adding past the budget is blocked — imported or re-allocated builds that
+            exceed it are flagged instead.
           </p>
         </div>
       </AccordionContent>

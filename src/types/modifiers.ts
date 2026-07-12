@@ -101,6 +101,13 @@ export type Bucket =
   | 'armorPen'
   /** Damage-over-time from Damage-archetype MGEFs (bleed/burn/shock mods) — refresh-only steady-state dmg/sec, summed into `ScenarioResult.dotDps`. */
   | 'dotDamage'
+  /**
+   * Flat max-HP bonuses (MGEF Peak Value Modifiers on AV HealthBonus
+   * 0x007B74E4 — Lifegiver, Overeater-side effects...). Folded in
+   * `resolveLoadout` over the base-HP formula 245 + 5×END
+   * (docs/assumptions.md "Max HP") to derive `PlayerConditions.maxHealth`.
+   */
+  | 'maxHealth'
   /** SPECIAL stat bonuses (consumables, legendary +STR...). Strength/Luck feed the engine; the rest are stored for perk-SPECIAL scaling. */
   | 'specialStrength'
   | 'specialPerception'
@@ -227,6 +234,11 @@ export type CurveInput =
    * — see `resolve.ts` and docs/assumptions.md "Onslaught".
    */
   | 'onslaughtStacks'
+  /**
+   * The player's (buff-folded) Endurance stat — AV 0x000002C4. Lifegiver's
+   * max-HP curve reads it (curve x = END points, y = flat HP).
+   */
+  | 'endurance'
   /**
    * Equipped weapon condition as a fraction (Polished): 1.0 = 100% (full
    * condition), 2.0 = 200% (over-repaired max). No AVIF exists for this axis —

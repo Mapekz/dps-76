@@ -32,6 +32,36 @@ export const perkFamilyOverrides: Readonly<Record<string, string>> = {
  * rank − 1.
  */
 export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
+  // Lifegiver ranks 2/3: LifeGiver02/03 are effect-less PERK records — only
+  // their descriptions state the bonus ("Gain a total of +30/+45 to your
+  // maximum Health"). Rank 1's extracted END-keyed max-HP curve (SPEL
+  // AbPerkLifeGiver 0x0004A0D3 → MGEF AbPerkFortifyHealth 0x00511AE4) is
+  // already carried forward to ranks 2/3 by the extractor's rank-ability
+  // inheritance; these overrides add only the described flat totals
+  // (docs/assumptions.md "Max HP").
+  LifeGiver: [
+    [], // rank 1: END curve extracts from the ESM directly
+    [
+      {
+        id: 'override:LifeGiver:r2:flat',
+        source: { kind: 'perk', formId: '0x001D2465', edid: 'LifeGiver02', name: 'LifeGiver', rank: 2 },
+        bucket: 'maxHealth',
+        op: 'ADD',
+        value: 30,
+        conditions: [],
+      },
+    ],
+    [
+      {
+        id: 'override:LifeGiver:r3:flat',
+        source: { kind: 'perk', formId: '0x001D2467', edid: 'LifeGiver03', name: 'LifeGiver', rank: 3 },
+        bucket: 'maxHealth',
+        op: 'ADD',
+        value: 45,
+        conditions: [],
+      },
+    ],
+  ],
   // Tenderizer applies PerkTenderizer01Spell on hit: a stacking +10% damage
   // taken debuff on the target (MGEF 0x003E21F7, magnitude 0.1). Stack count
   // is a manual scenario input (0–1000 per user spec, team-dependent).

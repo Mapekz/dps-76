@@ -38,7 +38,14 @@ export interface PlayerConditions {
   // Other steady-state inputs for conditional sources
   addictionCount: number; // for Junkie's legendary
   capsOnHand: number; // for Aristocrat's legendary
-  maxHealth?: number; // absolute max HP for Juggernaut's health curve (default 300, docs/assumptions.md)
+  /**
+   * Absolute max HP (Juggernaut's health curve, health-fraction thresholds).
+   * DERIVED in resolveLoadout — 245 + 5×effective END + maxHealth-bucket
+   * folds (Lifegiver &c., src/lib/player-stats.ts) — not user-editable; the
+   * stored default only feeds synthetic engine tests (docs/assumptions.md
+   * "Max HP").
+   */
+  maxHealth?: number;
   mutationCount?: number; // for Mutant's curve — derived from the selected mutations in resolveLoadout
   hungerThirstTier?: number; // food/drink fullness tier for Gourmand's curve (default 0)
   feralTier?: number; // ghoul feral meter tier for Lucid/Feral's curves (default 0)
@@ -303,7 +310,7 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     tenderizerStacks: 0, // Solo default — no other players hitting the target
     addictionCount: 0,
     capsOnHand: 0,
-    maxHealth: 300, // typical non-bloodied build (Juggernaut's curve input)
+    maxHealth: 300, // synthetic-test default; the app derives it in resolveLoadout (245 + 5×END + buffs)
     hungerThirstTier: 0, // Gourmand's curve input (0–8; both meters empty)
     feralTier: 0, // Lucid/Feral's curve input (0–8; human default)
     limitBreakingPieces: 0,

@@ -29,15 +29,70 @@ describe('buildReducer', () => {
     expect(cleared.player.weapon?.legendaryEffects).toEqual(['leg_b']);
   });
 
-  it('clamps itemLevel to 1–50 and SPECIAL to 1–20', () => {
+  it('clamps itemLevel to 1–50', () => {
     expect(run([{ type: 'weapon/itemLevel', value: 99 }]).player.itemLevel).toBe(50);
     expect(run([{ type: 'weapon/itemLevel', value: 0 }]).player.itemLevel).toBe(1);
-    expect(run([{ type: 'special/set', stat: 'luck', value: 33 }]).player.conditions.luck).toBe(20);
+  });
+
+  it('special/set clamps to 1–15 and refuses raises past the 56-point pool', () => {
+    // Fresh build starts at 1 across the board.
+    expect(createDefaultBuildState().player.conditions.strength).toBe(1);
+    expect(run([{ type: 'special/set', stat: 'luck', value: 33 }]).player.conditions.luck).toBe(15);
     expect(run([{ type: 'special/set', stat: 'strength', value: -1 }]).player.conditions.strength).toBe(1);
+
+    // All stats at 8 = exactly 56 allocated; any further raise is refused.
+    const maxedPool = run(
+      (['strength', 'perception', 'endurance', 'charisma', 'intelligence', 'agility', 'luck'] as const).map(stat => ({
+        type: 'special/set' as const,
+        stat,
+        value: 8,
+      }))
+    );
+    const refused = run([{ type: 'special/set', stat: 'luck', value: 9 }], maxedPool);
+    expect(refused).toBe(maxedPool);
+    // Lowering is always allowed.
+    expect(run([{ type: 'special/set', stat: 'luck', value: 3 }], maxedPool).player.conditions.luck).toBe(3);
+  });
+
+  it('blocks card slotting past min(15, base + Legendary SPECIAL bonus) and past the 4 legendary slots', () => {
+    // Base Perception 1 → budget 1: a second Perception card point is refused.
+    const one = run([{ type: 'perk/add', perkId: 'CenterMasochist', rank: 1, legendary: false }]);
+    const refused = run([{ type: 'perk/setRank', perkId: 'CenterMasochist', rank: 2 }], one);
+    expect(refused).toBe(one); // unchanged — blocked, not clamped
+
+    // Raising base Perception unlocks the rank-up.
+    const raised = run(
+      [
+        { type: 'special/set', stat: 'perception', value: 3 },
+        { type: 'perk/setRank', perkId: 'CenterMasochist', rank: 3 },
+      ],
+      one
+    );
+    expect(raised.player.perks).toEqual([{ perkId: 'CenterMasochist', rank: 3 }]);
+
+    // A Legendary SPECIAL card raises the budget too (+1 at rank 1).
+    const viaLeggo = run(
+      [
+        { type: 'perk/add', perkId: 'LegendaryPerception', rank: 1, legendary: true },
+        { type: 'perk/setRank', perkId: 'CenterMasochist', rank: 2 },
+      ],
+      one
+    );
+    expect(viaLeggo.player.perks).toEqual([{ perkId: 'CenterMasochist', rank: 2 }]);
+
+    const legendaries = run([
+      { type: 'perk/add', perkId: 'LegendaryStrength', rank: 1, legendary: true },
+      { type: 'perk/add', perkId: 'LegendaryPerception', rank: 1, legendary: true },
+      { type: 'perk/add', perkId: 'LegendaryEndurance', rank: 1, legendary: true },
+      { type: 'perk/add', perkId: 'LegendaryCharisma', rank: 1, legendary: true },
+    ]);
+    const fifth = run([{ type: 'perk/add', perkId: 'LegendaryLuck', rank: 1, legendary: true }], legendaries);
+    expect(fifth.player.legendaryPerks).toHaveLength(4);
   });
 
   it('perk add / setRank / remove work across regular and legendary lists', () => {
     const s = run([
+      { type: 'special/set', stat: 'perception', value: 3 }, // budget for Center Masochist rank 3
       { type: 'perk/add', perkId: 'CenterMasochist', rank: 1, legendary: false },
       { type: 'perk/add', perkId: 'LegendaryLuck', rank: 2, legendary: true },
       { type: 'perk/add', perkId: 'CenterMasochist', rank: 3, legendary: false }, // duplicate ignored
@@ -86,13 +141,14 @@ describe('buildReducer', () => {
             { key: '02', name: 'Legendary Perception', rank: 2 },
           ],
           name: 'My Build',
-          special: { strength: 5, perception: 15, endurance: 5, charisma: 5, intelligence: 5, agility: 5, luck: 15 },
+          special: { strength: 5, perception: 20, endurance: 5, charisma: 5, intelligence: 5, agility: 5, luck: 15 },
         },
       ],
       before
     );
     expect(s.buildName).toBe('My Build');
     expect(s.player.perks.some(p => p.perkId === 'OldPerk')).toBe(false);
+    // s= SPECIAL merged, clamped to the 15-per-stat cap.
     expect(s.player.conditions.perception).toBe(15);
     expect(s.player.conditions.luck).toBe(15);
     // one regular + one legendary landed in their lists (join is by N&D key registry)

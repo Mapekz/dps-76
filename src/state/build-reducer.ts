@@ -8,6 +8,8 @@ import {
   type PlayerConfig,
 } from '@/types';
 import { isLegendaryPerkKey, parsedPerksToLoadout, type ParsedSpecial } from '@/lib/nukes-dragons';
+import { computePerkBudget, perkSpecialKey } from '@/data/perk-budget';
+import { canSlotCardPoints, SPECIAL_ALLOCATION_POOL, SPECIAL_KEYS, SPECIAL_POINTS_CAP } from '@/lib/player-stats';
 
 /**
  * The one store behind the whole app. The BuildAction union is the shared
@@ -61,8 +63,12 @@ export type BuildAction =
   | { type: 'build/hydrate'; state: BuildState };
 
 export function createDefaultBuildState(): BuildState {
+  // A fresh build starts at 1/1/1/1/1/1/1 like the game (the type factory's
+  // 15s exist for synthetic engine tests, not the app).
+  const player = createDefaultPlayerConfig();
+  for (const k of SPECIAL_KEYS) player.conditions[k] = 1;
   return {
-    player: createDefaultPlayerConfig(),
+    player,
     enemy: createDefaultEnemyConfig(),
     buildName: null,
     view: { emphasized: null, breakdownOpen: false },
@@ -75,6 +81,28 @@ function toggle(list: string[], id: string): string[] {
 
 function withPlayer(state: BuildState, player: PlayerConfig): BuildState {
   return { ...state, player };
+}
+
+/** In-app legendary perk card slots (game rule). */
+export const LEGENDARY_PERK_SLOTS = 4;
+
+/** The user-defined base SPECIAL allocation stored in conditions, as a plain record. */
+function allocationOf(player: PlayerConfig): Record<SpecialKey, number> {
+  return Object.fromEntries(SPECIAL_KEYS.map(k => [k, player.conditions[k]])) as Record<SpecialKey, number>;
+}
+
+/**
+ * Would raising `perkId`'s regular-card cost by `delta` break its stat's
+ * perk-point budget, min(15, base allocation + Legendary SPECIAL bonus)?
+ * Legendary cards have their own slot cap and never consume card points.
+ * The registry is mode-independent today (pts re-exports live).
+ */
+function regularSlotBlocked(player: PlayerConfig, perkId: string, delta: number): boolean {
+  if (delta <= 0) return false;
+  const stat = perkSpecialKey('live', perkId);
+  if (!stat) return false; // unknown perk: don't block (import edge cases)
+  const budget = computePerkBudget('live', player.perks, player.legendaryPerks, allocationOf(player));
+  return !canSlotCardPoints(budget, stat, delta);
 }
 
 export function buildReducer(state: BuildState, action: BuildAction): BuildState {
@@ -111,15 +139,27 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
     case 'perk/add': {
       const list = action.legendary ? 'legendaryPerks' : 'perks';
       if (player[list].some(p => p.perkId === action.perkId)) return state;
+      const rank = Math.max(1, action.rank);
+      // Enforce the game's limits: 4 legendary slots; regular cards must fit
+      // the stat's perk-point budget (min(15, base + Legendary SPECIAL bonus)).
+      if (action.legendary && player.legendaryPerks.length >= LEGENDARY_PERK_SLOTS) return state;
+      if (!action.legendary && regularSlotBlocked(player, action.perkId, rank)) return state;
       return withPlayer(state, {
         ...player,
-        [list]: [...player[list], { perkId: action.perkId, rank: Math.max(1, action.rank) }],
+        [list]: [...player[list], { perkId: action.perkId, rank }],
       });
     }
 
     case 'perk/setRank': {
+      const current =
+        player.perks.find(p => p.perkId === action.perkId) ??
+        player.legendaryPerks.find(p => p.perkId === action.perkId);
+      if (!current) return state;
+      const rank = Math.max(1, action.rank);
+      const isRegular = player.perks.some(p => p.perkId === action.perkId);
+      if (isRegular && regularSlotBlocked(player, action.perkId, rank - current.rank)) return state;
       const bump = (list: typeof player.perks) =>
-        list.map(p => (p.perkId === action.perkId ? { ...p, rank: Math.max(1, action.rank) } : p));
+        list.map(p => (p.perkId === action.perkId ? { ...p, rank } : p));
       return withPlayer(state, {
         ...player,
         perks: bump(player.perks),
@@ -134,11 +174,16 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
         legendaryPerks: player.legendaryPerks.filter(p => p.perkId !== action.perkId),
       });
 
-    case 'special/set':
-      return withPlayer(state, {
-        ...player,
-        conditions: { ...player.conditions, [action.stat]: Math.max(1, Math.min(20, action.value)) },
-      });
+    case 'special/set': {
+      // Base allocation is user-defined: 1–15 per stat from the 56-point
+      // pool. Raising a stat past what the pool covers is refused; lowering
+      // below what slotted cards need is allowed and flagged (like imports).
+      const value = Math.max(1, Math.min(SPECIAL_POINTS_CAP, action.value));
+      const next = { ...player.conditions, [action.stat]: value };
+      const total = SPECIAL_KEYS.reduce((sum, k) => sum + next[k], 0);
+      if (value > player.conditions[action.stat] && total > SPECIAL_ALLOCATION_POOL) return state;
+      return withPlayer(state, { ...player, conditions: next });
+    }
 
     case 'mutation/toggle':
       return withPlayer(state, { ...player, mutations: toggle(player.mutations, action.id) });
@@ -160,9 +205,16 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
 
     case 'build/importNd': {
       // N&D legendary perk keys all start with "0"; import REPLACES the perk
-      // loadout (documented in the import UI) and merges SPECIAL when present.
+      // loadout (documented in the import UI) and merges the URL's s= SPECIAL
+      // (clamped to 1–15) when present. Imports are not blocked by the
+      // budget — violations surface as the "over budget" badge.
       const regular = action.perks.filter(p => !isLegendaryPerkKey(p.key));
       const legendary = action.perks.filter(p => isLegendaryPerkKey(p.key));
+      const importedSpecial = action.special
+        ? (Object.fromEntries(
+            Object.entries(action.special).map(([k, v]) => [k, Math.max(1, Math.min(SPECIAL_POINTS_CAP, v))])
+          ) as unknown as ParsedSpecial)
+        : null;
       return {
         ...state,
         buildName: action.name,
@@ -170,7 +222,7 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
           ...player,
           perks: parsedPerksToLoadout(regular),
           legendaryPerks: parsedPerksToLoadout(legendary),
-          conditions: action.special ? { ...player.conditions, ...action.special } : player.conditions,
+          conditions: importedSpecial ? { ...player.conditions, ...importedSpecial } : player.conditions,
         },
       };
     }

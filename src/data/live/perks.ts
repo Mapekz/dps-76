@@ -257,4 +257,15 @@ export const perks: Record<PerkId, Perk> = {
   [PerkId.WildWestHands]: { name: "Wild West Hands", special: Special.Agility, maxRank: 4, statsModified: [] }, // 36% instant reload chance - not direct damage
   [PerkId.BreathItIn]: { name: "Breath It In", special: Special.Endurance, maxRank: 4, statsModified: [] }, // Rad immunity - not direct combat
   [PerkId.BoneShatterer]: { name: "Bone Shatterer", special: Special.Strength, maxRank: 4, statsModified: [{ stat: Stat.MeleeLimbDamageBonus, value: 75 }] },
+  // Legendary SPECIAL cards: +1/+2/+3/+5 stat and perk points by rank (ESM
+  // families LGN_Legendary*_Perk; the bonus is applied via the perk-budget
+  // derivation in src/lib/player-stats.ts — their PERK records emit no
+  // modifiers, so there is no double-count with the specialX buff buckets).
+  [PerkId.LegendaryStrength]: { name: "Legendary Strength", special: Special.Strength, maxRank: 4, statsModified: [] },
+  [PerkId.LegendaryPerception]: { name: "Legendary Perception", special: Special.Perception, maxRank: 4, statsModified: [] },
+  [PerkId.LegendaryEndurance]: { name: "Legendary Endurance", special: Special.Endurance, maxRank: 4, statsModified: [] },
+  [PerkId.LegendaryCharisma]: { name: "Legendary Charisma", special: Special.Charisma, maxRank: 4, statsModified: [] },
+  [PerkId.LegendaryIntelligence]: { name: "Legendary Intelligence", special: Special.Intelligence, maxRank: 4, statsModified: [] },
+  [PerkId.LegendaryAgility]: { name: "Legendary Agility", special: Special.Agility, maxRank: 4, statsModified: [] },
+  [PerkId.LegendaryLuck]: { name: "Legendary Luck", special: Special.Luck, maxRank: 4, statsModified: [] },
 };

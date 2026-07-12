@@ -68,13 +68,16 @@ const PLAYER_STATE_READERS: Record<StackCounter | CurveInput, (p: PlayerConditio
   killStreak: p => p.adrenalineStacks,
   addictionCount: p => p.addictionCount,
   onslaughtStacks: (p, ctx) => effectiveOnslaughtStacks(p, ctx),
-  // Juggernaut's curve X is ABSOLUTE current HP; 300 max HP is a typical
-  // non-bloodied build (docs/assumptions.md) until a Max HP input lands.
+  // Juggernaut's curve X is ABSOLUTE current HP. maxHealth is derived in
+  // resolveLoadout (245 + 5×END + maxHealth bucket — docs/assumptions.md
+  // "Max HP"); the 300 fallback only serves synthetic engine tests.
   healthCurrent: p => (p.healthPercent / 100) * (p.maxHealth ?? 300),
   // Enemy defenses are not modeled yet — curve evaluates at DR 0.
   enemyDamageResist: () => 0,
   itemLevel: (_, ctx) => ctx.itemLevel ?? 50,
   mutationCount: p => p.mutationCount ?? 0,
+  // Lifegiver's max-HP curve X — the buff-folded END stat (resolveLoadout).
+  endurance: p => p.endurance,
   hungerThirstTier: p => p.hungerThirstTier ?? 0,
   feralTier: p => p.feralTier ?? 0,
   // Polished's curve X = GetEquippedWeaponHealthPercent (0.0-2.0 fraction; no AVIF).

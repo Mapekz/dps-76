@@ -26,8 +26,11 @@ describe('build codec', () => {
       { type: 'weapon/mod', slot: 'ap_gun_Receiver', omodId: 'mod_CombatRifle_Receiver_Damage-Auto' },
       { type: 'weapon/itemLevel', value: 45 },
       { type: 'weapon/weakpointMult', value: 2.5 },
+      // Raise every stat to 8 (56 = exactly the pool) so any rank-3 card fits its stat's budget.
+      ...(['strength', 'perception', 'endurance', 'charisma', 'intelligence', 'agility', 'luck'] as const).map(
+        stat => ({ type: 'special/set' as const, stat, value: 8 })
+      ),
       { type: 'perk/add', perkId: ndPerkId, rank: 3, legendary: false },
-      { type: 'special/set', stat: 'luck', value: 20 },
       { type: 'condition/set', key: 'isSneaking', value: true },
       { type: 'condition/set', key: 'healthPercent', value: 20 },
       { type: 'enemy/condition', key: 'isBurning', value: true },
@@ -42,7 +45,12 @@ describe('build codec', () => {
   });
 
   it('round-trips perks through the N&D key dictionary', async () => {
-    const state = stateFrom([{ type: 'perk/add', perkId: ndPerkId, rank: 2, legendary: false }]);
+    const state = stateFrom([
+      ...(['strength', 'perception', 'endurance', 'charisma', 'intelligence', 'agility', 'luck'] as const).map(
+        stat => ({ type: 'special/set' as const, stat, value: 8 })
+      ),
+      { type: 'perk/add', perkId: ndPerkId, rank: 2, legendary: false },
+    ]);
     const encoded = await encodeBuild(state);
     const decoded = await decodeBuild(encoded, 'live');
     expect(decoded!.state.player.perks).toEqual([{ perkId: ndPerkId, rank: 2 }]);

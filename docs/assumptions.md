@@ -447,6 +447,51 @@ known gap rather than a scope-creeping fix. Guerrilla Master's dbm curve and
 Gunslinger Expert's weakpoint curve are NOT affected (`dbm`/`weakpointBonus`
 fold from the full modifier list regardless of source kind).
 
+## SPECIAL & perk budget (2026-07-12 — `src/lib/player-stats.ts`)
+
+Rules (user-confirmed 2026-07-12; second pass superseding the brief
+derive-from-perks experiment):
+
+- **Base allocation is user-defined**: 1–15 per stat (SPECIAL section
+  steppers), from a pool of 7 base points (1/stat) + 49 level-ups = **56**.
+  The reducer clamps to 1–15 and refuses raises past the pool.
+- **Legendary SPECIAL cards** (LGN_Legendary*_Perk, added to the registry —
+  they have no known N&D URL key, so imports can't carry them): +1/+2/+3/+5 by
+  rank, ON TOP of base (stat may exceed 15) AND that many extra perk points —
+  the perk-point budget per stat is `min(15, base + legendary bonus)`. Their
+  PERK records carry no effects — the bonus is applied in
+  `baseSpecialOf`/`legendaryBonusOf` (`loadout.ts`/`perk-budget.ts`), so
+  there's no double-count with the `specialX` buff buckets. Other SPECIAL
+  boosts (consumables, gear) never grant perk points.
+- **Effective SPECIAL** (engine + stat summary) = base + legendary bonus +
+  `specialX` buff-bucket folds. STR feeds melee, LCK the crit meter, END the
+  HP formula.
+- **Blocking**: in-app card slotting past a stat's budget or the 4 legendary
+  slots is refused by the reducer (and disabled in the picker). N&D imports
+  are NOT blocked — violations show the "over budget" badge; the URL's `s=`
+  SPECIAL param is merged (clamped to 1–15).
+
+## Max HP (derived, 2026-07-12 — `src/lib/player-stats.ts`)
+
+Max HP is no longer a manual input: `resolveLoadout` derives it and the Build
+column's stat summary displays the same number.
+
+- **Base formula: `245 + 5 × effective END`** — user-supplied convention
+  (2026-07-12), NOT ESM-proven (the level-scaling GMSTs weren't chased).
+  Effective END = base END + `specialEndurance`-bucket buffs.
+- **`maxHealth` bucket** (new): MGEF Peak Value Modifiers on AV `HealthBonus`
+  0x007B74E4 route here (`normalize/mgef.ts`). Extracted sources in the
+  20260702 dump: Lifegiver (END-keyed curve `Perks\LifeGiverBonus.json`:
+  (1,10)(15,120)(30,180)(60,230)(100,250), all ranks — the new `endurance`
+  CurveInput, AVIF 0x000002C4), Nocturnal Fortitude (+50/+100), Spotlight.
+- **Lifegiver ranks 2/3 flat totals are description-sourced**: LifeGiver02/03
+  are effect-less PERK records — "Gain a total of +30/+45" exists nowhere in
+  data. Hand-added in `overrides/perk-overrides.ts`; the END curve is assumed
+  to persist across ranks (a rank-up losing it would be a downgrade).
+- Consumers: Juggernaut's `healthCurrent` curve X (`healthPercent/100 ×
+  maxHealth`) and the displayed HP stat. The engine's `?? 300` fallback only
+  serves synthetic tests that bypass `resolveLoadout`.
+
 ## Resist mitigation (dormant scaffolding)
 
 - `DamageResistMult = clamp((dmg × 0.15 / resist)^0.365, 0.01, 0.99)` — the

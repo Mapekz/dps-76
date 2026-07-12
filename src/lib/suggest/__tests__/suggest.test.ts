@@ -34,15 +34,21 @@ describe('enumerateVariants', () => {
     const rankUp = variants.find(v => v.id === `perk-rank:${PerkId.CenterMasochist}`);
     expect(rankUp?.action).toEqual({ type: 'perk/setRank', perkId: PerkId.CenterMasochist, rank: 2 });
     expect(variants.some(v => v.id.startsWith('perk-add:'))).toBe(true);
-    // Perk at max rank is not offered a rank-up.
-    const maxed = stateFrom([{ type: 'perk/setRank', perkId: PerkId.CenterMasochist, rank: 3 }], fixerState);
+    // Perk at max rank is not offered a rank-up (base raised so the rank-up isn't budget-blocked).
+    const maxed = stateFrom(
+      [
+        { type: 'special/set', stat: 'perception', value: 3 },
+        { type: 'perk/setRank', perkId: PerkId.CenterMasochist, rank: 3 },
+      ],
+      fixerState
+    );
     expect(enumerateVariants(maxed, 'live').some(v => v.id === `perk-rank:${PerkId.CenterMasochist}`)).toBe(false);
   });
 
   it('flags perk moves that break the SPECIAL budget with the deficit', () => {
-    // Perception 1 with 1 point already spent → any further Perception perk is illegal.
-    const tight = stateFrom([{ type: 'special/set', stat: 'perception', value: 1 }], fixerState);
-    const variants = enumerateVariants(tight, 'live');
+    // Base Perception 1 with its 1 card point spent (Center Masochist rank 1)
+    // → the rank-up is illegal by exactly 1 point.
+    const variants = enumerateVariants(fixerState, 'live');
     const rankUp = variants.find(v => v.id === `perk-rank:${PerkId.CenterMasochist}`);
     expect(rankUp?.budget).toEqual({ legal: false, special: 'perception', deficit: 1 });
   });

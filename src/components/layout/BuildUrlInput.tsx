@@ -7,9 +7,9 @@ import { useBuildDispatch } from '@/state/BuildProvider';
 type ParseState = 'idle' | 'parsing' | 'success' | 'error';
 
 /**
- * Nukes & Dragons import. Importing REPLACES the perk loadout and merges
- * SPECIAL; weapon/mutation/consumable state is untouched (N&D URLs don't
- * carry it in a decoded form yet).
+ * Nukes & Dragons import. Importing REPLACES the perk loadout and merges the
+ * URL's s= SPECIAL (clamped to 1–15); weapon/mutation/consumable state is
+ * untouched (N&D URLs don't carry it in a decoded form yet).
  */
 export function BuildUrlInput() {
   const dispatch = useBuildDispatch();

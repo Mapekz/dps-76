@@ -4,6 +4,7 @@ import { UserIcon } from 'lucide-react';
 import { WeaponSection } from './WeaponSection';
 import { PerkEditorSection } from './PerkEditorSection';
 import { SpecialSection } from './SpecialSection';
+import { StatSummary } from './StatSummary';
 import { MutationsSection, ConsumablesSection } from './BuffsSections';
 import { ConditionsSection } from './ConditionsSection';
 
@@ -17,10 +18,11 @@ export function BuildColumn() {
         </CardTitle>
       </CardHeader>
       <CardContent>
+        <StatSummary />
         <Accordion type="multiple" defaultValue={['weapon', 'perks']} className="w-full">
           <WeaponSection />
-          <PerkEditorSection />
           <SpecialSection />
+          <PerkEditorSection />
           <MutationsSection />
           <ConsumablesSection />
           <ConditionsSection />

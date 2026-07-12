@@ -98,6 +98,11 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   // resolveLoadout; the rest are stored for perk-SPECIAL scaling. NOTE: these
   // routes apply to every translate() caller (perks included) — review the
   // perk diff after regeneration.
+  // Max-HP bonuses (Lifegiver's AbPerkFortifyHealth — Peak Value Modifier on
+  // AV HealthBonus 0x007B74E4 "Health"/HP, END-keyed curve; also Nocturnal
+  // Fortitude etc.). Flat HP points, scale 1. Folded over the base-HP formula
+  // in resolveLoadout (docs/assumptions.md "Max HP").
+  HealthBonus: { bucket: 'maxHealth', scale: 1 },
   Strength: { bucket: 'specialStrength', scale: 1 },
   Perception: { bucket: 'specialPerception', scale: 1 },
   Endurance: { bucket: 'specialEndurance', scale: 1 },
