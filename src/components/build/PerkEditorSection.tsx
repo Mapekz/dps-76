@@ -54,6 +54,10 @@ function usePerkRegistry() {
     for (const [perkId, perk] of Object.entries(registry)) {
       (legendaryPerkIds.has(perkId) ? legendary : regular).push({ perkId, perk });
     }
+    // Pickers list by display name, not registry (edid) order.
+    const byName = (a: { perk: Perk }, b: { perk: Perk }) => a.perk.name.localeCompare(b.perk.name);
+    regular.sort(byName);
+    legendary.sort(byName);
     return { registry, regular, legendary };
   }, [mode]);
 }
@@ -63,7 +67,7 @@ function usePerkRegistry() {
  * Legendary SPECIAL card bonus) — src/lib/player-stats.ts. Base allocation is
  * set in the SPECIAL section above.
  */
-function SpecialBudgetBar({ budget }: { budget: PerkBudget }) {
+function SpecialBudgetBar({ budget, onSelectSpecial }: { budget: PerkBudget; onSelectSpecial?: (s: Special) => void }) {
   return (
     <div className="grid grid-cols-7 gap-1">
       {SPECIAL_ORDER.map(({ key, special, letter }) => {
@@ -72,16 +76,18 @@ function SpecialBudgetBar({ budget }: { budget: PerkBudget }) {
         const over = used > cap;
         const leggo = budget.legendaryBonus[key];
         return (
-          <div
+          <button
+            type="button"
             key={key}
             className={cn(
-              'rounded border px-1 py-0.5 text-center font-mono text-[11px] tabular-nums',
+              'hover:bg-muted/60 cursor-pointer rounded border px-1 py-0.5 text-center font-mono text-[11px] tabular-nums',
               over ? 'border-negative text-negative' : 'text-muted-foreground'
             )}
-            title={`${special}: ${used} of ${cap} card points (${budget.allocation[key]} allocated${leggo > 0 ? ` + ${leggo} from Legendary ${special}` : ''})${over ? ' — over budget' : ''}`}
+            title={`${special}: ${used} of ${cap} card points (${budget.allocation[key]} allocated${leggo > 0 ? ` + ${leggo} from Legendary ${special}` : ''})${over ? ' — over budget' : ''} — click to browse ${special} perks`}
+            onClick={() => onSelectSpecial?.(special)}
           >
             <span className="font-condensed font-semibold">{letter}</span> {used}/{cap}
-          </div>
+          </button>
         );
       })}
     </div>
@@ -137,8 +143,35 @@ const SPECIAL_TO_KEY = Object.fromEntries(SPECIAL_ORDER.map(({ special, key }) =
   SpecialKey
 >;
 
-function PerkAddCombobox({ budget }: { budget: PerkBudget }) {
-  const [open, setOpen] = React.useState(false);
+function PerkAddCombobox({
+  budget,
+  scope = 'all',
+  triggerLabel = 'Add perk…',
+  open: openProp,
+  onOpenChange,
+  filterSpecial: filterSpecialProp,
+  onFilterSpecialChange,
+}: {
+  budget: PerkBudget;
+  /** 'legendary' renders only legendary cards (grouped by SPECIAL, no super-heading). */
+  scope?: 'all' | 'legendary';
+  triggerLabel?: string;
+  /** Controlled open state (the SpecialBudgetBar opens the main picker); uncontrolled when omitted. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  /** Controlled SPECIAL filter; uncontrolled when omitted. */
+  filterSpecial?: Special | null;
+  onFilterSpecialChange?: (s: Special | null) => void;
+}) {
+  const [openState, setOpenState] = React.useState(false);
+  const [filterState, setFilterState] = React.useState<Special | null>(null);
+  const open = openProp ?? openState;
+  const filterSpecial = filterSpecialProp !== undefined ? filterSpecialProp : filterState;
+  const setFilterSpecial = onFilterSpecialChange ?? setFilterState;
+  const setOpen = (next: boolean) => {
+    (onOpenChange ?? setOpenState)(next);
+    if (!next) setFilterSpecial(null); // a fresh open starts unfiltered
+  };
   const { regular, legendary } = usePerkRegistry();
   const { player } = useBuild();
   const dispatch = useBuildDispatch();
@@ -203,27 +236,62 @@ function PerkAddCombobox({ budget }: { budget: PerkBudget }) {
     </CommandGroup>
   );
 
-  const bySpecial = (special: Special) => regular.filter(r => r.perk.special === special);
+  const pool = scope === 'legendary' ? legendary : regular;
+  const bySpecial = (special: Special) => pool.filter(r => r.perk.special === special);
+  const visibleSpecials = SPECIAL_ORDER.filter(({ special }) => filterSpecial === null || special === filterSpecial);
+  const legendaryItems =
+    scope === 'all'
+      ? filterSpecial === null
+        ? legendary
+        : legendary.filter(l => l.perk.special === filterSpecial)
+      : [];
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="w-full justify-start">
-          <PlusIcon className="mr-1 size-3.5" /> Add perk…
+          <PlusIcon className="mr-1 size-3.5" /> {triggerLabel}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
         <Command>
-          <CommandInput placeholder="Search perks…" />
+          <CommandInput placeholder={scope === 'legendary' ? 'Search legendary perks…' : 'Search perks…'} />
+          <div className="flex items-center gap-0.5 border-b px-2 py-1">
+            {SPECIAL_ORDER.map(({ special, letter }) => (
+              <Button
+                key={special}
+                type="button"
+                variant={filterSpecial === special ? 'default' : 'ghost'}
+                size="sm"
+                className="h-6 flex-1 px-0 font-mono text-xs"
+                title={`Show only ${special} perks`}
+                onClick={() => setFilterSpecial(filterSpecial === special ? null : special)}
+              >
+                {letter}
+              </Button>
+            ))}
+            {filterSpecial !== null && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="size-6"
+                aria-label="Clear SPECIAL filter"
+                onClick={() => setFilterSpecial(null)}
+              >
+                <XIcon className="size-3" />
+              </Button>
+            )}
+          </div>
           <CommandList className="max-h-72">
             <CommandEmpty>No perk matches.</CommandEmpty>
-            {SPECIAL_ORDER.map(({ special }) => {
+            {visibleSpecials.map(({ special }) => {
               const items = bySpecial(special);
               return items.length > 0 ? (
-                <React.Fragment key={special}>{renderGroup(special, items, false)}</React.Fragment>
+                <React.Fragment key={special}>{renderGroup(special, items, scope === 'legendary')}</React.Fragment>
               ) : null;
             })}
-            {legendary.length > 0 && renderGroup('Legendary', legendary, true)}
+            {legendaryItems.length > 0 && renderGroup('Legendary', legendaryItems, true)}
           </CommandList>
         </Command>
       </PopoverContent>
@@ -235,6 +303,9 @@ export function PerkEditorSection() {
   const { registry } = usePerkRegistry();
   const { mode } = useGameMode();
   const { player } = useBuild();
+  // Main picker state lives here so the SpecialBudgetBar can open it pre-filtered.
+  const [pickerOpen, setPickerOpen] = React.useState(false);
+  const [pickerFilter, setPickerFilter] = React.useState<Special | null>(null);
 
   const resolve = (loadout: PerkLoadout[]): PerkEntry[] =>
     loadout
@@ -270,9 +341,21 @@ export function PerkEditorSection() {
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-3">
-          <SpecialBudgetBar budget={budget} />
+          <SpecialBudgetBar
+            budget={budget}
+            onSelectSpecial={special => {
+              setPickerFilter(special);
+              setPickerOpen(true);
+            }}
+          />
 
-          <PerkAddCombobox budget={budget} />
+          <PerkAddCombobox
+            budget={budget}
+            open={pickerOpen}
+            onOpenChange={setPickerOpen}
+            filterSpecial={pickerFilter}
+            onFilterSpecialChange={setPickerFilter}
+          />
 
           {regularEntries.length > 0 ? (
             <div className="grid gap-1">
@@ -300,6 +383,7 @@ export function PerkEditorSection() {
               {legendaryEntries.length}/{LEGENDARY_SLOTS} slots
             </span>
           </div>
+          <PerkAddCombobox budget={budget} scope="legendary" triggerLabel="Add legendary perk…" />
           {legendaryEntries.length > 0 ? (
             <div className="grid gap-1">
               {legendaryEntries.map(entry => (

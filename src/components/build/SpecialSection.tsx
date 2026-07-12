@@ -1,3 +1,4 @@
+import type * as React from 'react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
@@ -32,6 +33,16 @@ export function SpecialSection() {
           {SPECIAL_KEYS.map(key => {
             const base = player.conditions[key];
             const leggo = legendaryBonus[key];
+            // Shift-click steps by 2; the delta is pre-clamped because the
+            // reducer refuses an over-pool raise outright (no partial credit).
+            const lower = (e: React.MouseEvent) => {
+              const delta = Math.min(e.shiftKey ? 2 : 1, base - 1);
+              if (delta > 0) dispatch({ type: 'special/set', stat: key, value: base - delta });
+            };
+            const raise = (e: React.MouseEvent) => {
+              const delta = Math.min(e.shiftKey ? 2 : 1, SPECIAL_POINTS_CAP - base, poolLeft);
+              if (delta > 0) dispatch({ type: 'special/set', stat: key, value: base + delta });
+            };
             return (
               <div key={key} className="space-y-1 text-center">
                 <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase">
@@ -48,7 +59,7 @@ export function SpecialSection() {
                     className="size-5"
                     disabled={base <= 1}
                     aria-label={`Lower ${key}`}
-                    onClick={() => dispatch({ type: 'special/set', stat: key, value: base - 1 })}
+                    onClick={lower}
                   >
                     <MinusIcon className="size-3" />
                   </Button>
@@ -58,7 +69,7 @@ export function SpecialSection() {
                     className="size-5"
                     disabled={base >= SPECIAL_POINTS_CAP || poolLeft <= 0}
                     aria-label={`Raise ${key}`}
-                    onClick={() => dispatch({ type: 'special/set', stat: key, value: base + 1 })}
+                    onClick={raise}
                   >
                     <PlusIcon className="size-3" />
                   </Button>
