@@ -35533,7 +35533,66 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x008F0DCC:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F0DCC",
+     "edid": "mod_Custom_TheGuarantee",
+     "name": "The Guarantee"
+    },
+    "bucket": "explosionMult",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(DemolitionExpert02)=0"
+     }
+    ]
+   },
+   {
+    "id": "0x008F0DCC:perk:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F0DCC",
+     "edid": "mod_Custom_TheGuarantee",
+     "name": "The Guarantee"
+    },
+    "bucket": "explosionMult",
+    "op": "ADD",
+    "value": 0.4,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(DemolitionExpert02)=1"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(DemolitionExpert03)=0"
+     }
+    ]
+   },
+   {
+    "id": "0x008F0DCC:perk:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F0DCC",
+     "edid": "mod_Custom_TheGuarantee",
+     "name": "The Guarantee"
+    },
+    "bucket": "explosionMult",
+    "op": "ADD",
+    "value": 0.6,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(DemolitionExpert03)=1"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed"
@@ -36566,7 +36625,7 @@
   ],
   "hasEnchantments": false,
   "notes": [],
-  "obtainable": false
+  "obtainable": true
  },
  {
   "id": "mod_Custom_ZetasRevenge",

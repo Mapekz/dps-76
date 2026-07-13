@@ -53,6 +53,12 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   STAT_DmgLimbs: { bucket: 'limbDamage', scale: 0.01 }, // Crippling
   STAT_DmgBash: { bucket: 'bashDamage', scale: 0.01 }, // Basher's
   LGND_ExplosivePayload: { bucket: 'explosivePayload', scale: 0.01 }, // Explosive
+  // Demolition Expert (AbPerkDemolitionExpert, magnitudes 20/40/60 with
+  // HasPerk rank gates): multiplier on explosion damage — the launcher
+  // EXPL-chase components and the Explosive-legendary twins both fold the
+  // explosionMult bucket (paper-damage.ts). Was an unmapped-AVIF gap: the
+  // perk extracted with zero modifiers until the 2026-07-13 launcher work.
+  STAT_DmgExplosive: { bucket: 'explosionMult', scale: 0.01 },
   // Bully's: +X% per crippled enemy limb (6 limbs max — docs/assumptions.md).
   STAT_DmgPerCrippled: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'perCrippledLimb', max: 6 }] },
   // Enemy-status 4★ effects, reworked by the 2026-07-10 patch from ENCH

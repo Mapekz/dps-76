@@ -110,6 +110,104 @@ async function buildComponents(
   return components;
 }
 
+/**
+ * Launcher explosion damage (dps-todos/launcher-explosives.md): the real
+ * payload of Fat Man / Missile Launcher / grenade launchers / Broadsider /
+ * Gamma Gun rides the projectile's EXPL record, not the WEAP (whose "Base
+ * Damage" is a token 3–5 impact value). Chain: WEAP RGW3."Override
+ * Projectile" (M79, Cremator, Hellstorm) ?? AMMO(Data.Ammo).DNAM.Projectile
+ * → PROJ Data.Explosion → EXPL Data.
+ *
+ * The PROJ Data.Flags "Explosion" bit is the gate — several projectiles
+ * carry a stale Explosion formid that never detonates (ProjectilePlasmaLarge
+ * points at the missile-shell EXPL but lacks the flag; blanket-chasing
+ * without it would give the Plasma Gun +968 phantom damage).
+ *
+ * EXPL damage mirrors the WEAP shape: a main "Damage Curve Table" (physical
+ * explosion → damageType 'explosive') plus a typed "Damage Types" array
+ * (Cremator's fire ball, Gamma Gun's radiation burst) — both emitted as
+ * components flagged `fromExplosion` so the engine can apply explosion-only
+ * modifiers (Demolition Expert) regardless of element. "Base Weapon Damage
+ * Mult" (Gauss family: 0.15) is a fraction of the weapon's own damage dealt
+ * again as explosion — returned separately and folded through the existing
+ * `explosivePayload` twin mechanic rather than as a component.
+ */
+export interface ExplosionChaseResult {
+  components: GeneratedDamageComponent[];
+  baseWeaponDamageMult: number;
+}
+
+export async function chaseExplosion(
+  client: EsmClient,
+  fields: Record<string, unknown>,
+  edid: string,
+  unresolved: string[]
+): Promise<ExplosionChaseResult> {
+  const none: ExplosionChaseResult = { components: [], baseWeaponDamageMult: 0 };
+  const rgw3 = (fields['RGW3'] ?? {}) as Record<string, unknown>;
+  const data = (fields['Data'] ?? {}) as Record<string, unknown>;
+
+  try {
+    let projFormId = rgw3['Override Projectile'] as string | null;
+    if (!projFormId) {
+      const ammoFormId = data['Ammo'] as string | null;
+      if (!ammoFormId || ammoFormId === '0x00000000') return none;
+      const ammo = await client.get(ammoFormId);
+      projFormId = ((ammo.fields['DNAM'] ?? {}) as Record<string, unknown>)['Projectile'] as string | null;
+    }
+    if (!projFormId || projFormId === '0x00000000') return none;
+
+    const proj = await client.get(projFormId);
+    const projData = (proj.fields['Data'] ?? {}) as Record<string, unknown>;
+    const projFlags = ((projData['Flags'] ?? {}) as Record<string, unknown>)['flags'];
+    if (!Array.isArray(projFlags) || !projFlags.includes('Explosion')) return none;
+    const explFormId = projData['Explosion'] as string | null;
+    if (!explFormId || explFormId === '0x00000000') return none;
+
+    const expl = await client.get(explFormId);
+    const explData = (expl.fields['Data'] ?? {}) as Record<string, unknown>;
+    const components: GeneratedDamageComponent[] = [];
+
+    // Main physical explosion damage (same node shape as WEAP "Damage Curve").
+    const mainCurve = parseCurve(explData['Damage Curve Table']);
+    const flatDamage = asNumber(explData['Damage']);
+    if (mainCurve.curve || flatDamage > 0) {
+      components.push({
+        damageType: 'explosive',
+        damageTypeEdid: null,
+        amount: flatDamage,
+        ...mainCurve,
+        fromExplosion: true,
+      });
+    }
+
+    // Typed entries (Cremator fire, Gamma Gun radiation) — WEAP-identical shape.
+    const typedEntries = Array.isArray(expl.fields['Damage Types'])
+      ? (expl.fields['Damage Types'] as Array<Record<string, unknown>>)
+      : [];
+    for (const entry of typedEntries) {
+      const typeFormId = entry['Type'] as string;
+      const typeEdid = await client.resolveEdid(typeFormId);
+      const damageType = DAMAGE_TYPE_EDID_MAP[typeEdid];
+      if (!damageType) unresolved.push(`damage type ${typeEdid} (${typeFormId})`);
+      const { tier, curve } = parseCurve(entry['Curve Table']);
+      components.push({
+        damageType: damageType ?? 'unknown',
+        damageTypeEdid: typeEdid,
+        amount: asNumber(entry['Amount']),
+        tier,
+        curve,
+        fromExplosion: true,
+      });
+    }
+
+    return { components, baseWeaponDamageMult: asNumber(explData['Base Weapon Damage Mult']) };
+  } catch (err) {
+    unresolved.push(`explosion chase failed for ${edid}: ${err instanceof Error ? err.message : String(err)}`);
+    return none;
+  }
+}
+
 function templateCombinationItems(fields: Record<string, unknown>): Array<Record<string, unknown>> {
   const template = fields['Object Template'] as Record<string, unknown> | undefined;
   const combinations = template?.['Combinations'];
@@ -242,13 +340,26 @@ export async function extractWeapons(client: EsmClient): Promise<ExtractWeaponsR
   const records = await mapPool(candidates, 8, row => client.get(row.form_id));
   for (const record of records) {
     const weapon = await toGeneratedWeapon(client, record, unresolved);
-    // Playable heuristic: must deal curve-scaled damage on the WEAP itself.
-    // Grenades/mines carry damage on their projectile's explosion instead —
-    // deferred until the EXPL-chase work (tracked separately from junk).
+    // Grenades/mines (thrown, or projectile-override with no WEAP damage)
+    // stay out per the 2026-07-12 vetting-scope decision (launchers, not
+    // throwables) — this exclusion is evaluated on WEAP-level components
+    // BEFORE the explosion chase so it can't be rescued by one.
     if (weapon.components.length === 0) {
       const rgw3 = (record.fields['RGW3'] ?? {}) as Record<string, unknown>;
-      const isProjectileOnly = rgw3['Override Projectile'] != null || weapon.weaponTypeName === 'Grenade';
-      (excluded[isProjectileOnly ? 'projectileOnly' : 'noDamage'] ??= []).push(weapon.id);
+      if (rgw3['Override Projectile'] != null || weapon.weaponTypeName === 'Grenade') {
+        (excluded.projectileOnly ??= []).push(weapon.id);
+        continue;
+      }
+    }
+    // Launcher/explosion payload chase (see chaseExplosion). Rescues weapons
+    // whose ONLY damage is the explosion (Gamma Gun — previously noDamage).
+    const explosion = await chaseExplosion(client, record.fields, weapon.id, unresolved);
+    weapon.components.push(...explosion.components);
+    if (explosion.baseWeaponDamageMult > 0) {
+      weapon.explosionBaseWeaponDamageMult = explosion.baseWeaponDamageMult;
+    }
+    if (weapon.components.length === 0) {
+      excluded.noDamage.push(weapon.id);
       continue;
     }
     weapons.push(weapon);

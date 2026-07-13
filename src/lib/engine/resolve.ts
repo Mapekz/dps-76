@@ -28,6 +28,14 @@ export interface ResolveContext {
    */
   componentType?: DamageType;
   /**
+   * The component being folded is explosion damage (an extracted
+   * `fromExplosion` launcher-payload component, or an Explosive-legendary
+   * twin). 'explosive'-scoped damageTypeScope conditions match these
+   * regardless of the component's elemental type (Cremator's fire ball,
+   * Gamma Gun's radiation burst are still explosions).
+   */
+  componentIsExplosion?: boolean;
+  /**
    * The shared Onslaught stack cap, folded ONCE per scenario input from every
    * equipped source's `onslaughtMaxStacks` modifier (`scenarios.ts`) and
    * threaded onto every ResolveContext built after that fold. Defaults to 0
@@ -105,9 +113,12 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       return null;
     case 'damageTypeScope':
       // Whole-weapon folds skip component-scoped modifiers; per-component
-      // folds require a matching component type.
+      // folds require a matching component type. 'explosive' scope also
+      // matches elemental components that ARE explosions (fromExplosion
+      // launcher payloads / legendary twins — ctx.componentIsExplosion).
       if (ctx.componentType === undefined) return null;
-      return cond.types.includes(ctx.componentType) ? 1 : null;
+      if (cond.types.includes(ctx.componentType)) return 1;
+      return ctx.componentIsExplosion && cond.types.includes('explosive') ? 1 : null;
     case 'sneaking':
       return ctx.scenario.isSneaking ? 1 : null;
     case 'powerAttack':

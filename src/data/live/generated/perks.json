@@ -4957,23 +4957,98 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003440B0:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003440B0",
+       "edid": "DemolitionExpert",
+       "name": "Demolition Expert",
+       "rank": 1
+      },
+      "bucket": "explosionMult",
+      "op": "ADD",
+      "value": 0.2,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003440B0:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003440B0",
+       "edid": "DemolitionExpert",
+       "name": "Demolition Expert",
+       "rank": 2
+      },
+      "bucket": "explosionMult",
+      "op": "ADD",
+      "value": 0.4,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003440B0:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003440B0",
+       "edid": "DemolitionExpert",
+       "name": "Demolition Expert",
+       "rank": 3
+      },
+      "bucket": "explosionMult",
+      "op": "ADD",
+      "value": 0.6,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 4,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003440B0:r4:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003440B0",
+       "edid": "DemolitionExpert",
+       "name": "Demolition Expert",
+       "rank": 4
+      },
+      "bucket": "explosionMult",
+      "op": "ADD",
+      "value": 0.6,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 5,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003440B0:r5:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003440B0",
+       "edid": "DemolitionExpert",
+       "name": "Demolition Expert",
+       "rank": 5
+      },
+      "bucket": "explosionMult",
+      "op": "ADD",
+      "value": 0.6,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,

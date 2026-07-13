@@ -17,18 +17,28 @@ export type GeneratedDamageType =
   | 'cryo'
   | 'poison'
   | 'radiation'
+  /** Physical explosion damage from the projectile's EXPL main curve (launcher payload chase). */
+  | 'explosive'
   | 'unknown';
 
 export interface GeneratedDamageComponent {
   damageType: GeneratedDamageType;
   /** Source damage-type record edid (e.g. "dtEnergy"); null for the base physical component. */
   damageTypeEdid: string | null;
-  /** Flat amount from the record (display/debug; the curve is authoritative when present). */
+  /** Flat amount from the record (authoritative only when no curve exists — token launcher impact damage). */
   amount: number;
   /** Universal curve tier parsed from curve_path (e.g. 24), null for non-tier curves. */
   tier: number | null;
   /** Inline damage-by-level curve points from the ESM (authoritative). */
   curve: CurvePoint[] | null;
+  /**
+   * Component came from the projectile's EXPL record, not the WEAP
+   * (chaseExplosion, extract-weapons.ts). Explosion-only modifiers
+   * (Demolition Expert's explosionMult, 'explosive'-scoped dbm) apply to
+   * these components regardless of their elemental damageType (Cremator's
+   * fire ball, Gamma Gun's radiation burst).
+   */
+  fromExplosion?: boolean;
 }
 
 export interface GeneratedWeapon {
@@ -85,6 +95,12 @@ export interface GeneratedWeapon {
   defaultModFormIds: string[];
   /** Attach point slot formids (phase 5: which mod slots exist). */
   attachParentSlots: string[];
+  /**
+   * EXPL "Base Weapon Damage Mult" (Gauss family: 0.15): fraction of the
+   * weapon's own damage dealt again as an explosion — the intrinsic base of
+   * the `explosivePayload` twin fold (paper-damage.ts). Absent when 0.
+   */
+  explosionBaseWeaponDamageMult?: number;
   /**
    * False when reverse-reference derivation (scripts/extract/obtainability.ts)
    * found no player-reachable source. Kept in the data for review/rescue —

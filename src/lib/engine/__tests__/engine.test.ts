@@ -452,6 +452,65 @@ describe('explosive payload twins (Stage A1, Explosive 2★)', () => {
     expect(result.components).toHaveLength(1);
     expect(result.total).toBeCloseTo(100, 6);
   });
+
+  it("Gauss intrinsic payload (explosionBaseWeaponDamageMult) spawns a twin with no legendary, and the Explosive 2★ ADDs on top", () => {
+    const gauss = makeWeapon({ explosionBaseWeaponDamageMult: 0.15 });
+    const bare = computePaperDamage({
+      mode: 'live', weapon: gauss, itemLevel: 50, modifiers: [], ctx: makeCtx(gauss), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    expect(bare.components).toHaveLength(2);
+    expect(bare.components[1]).toMatchObject({ damageType: 'explosive' });
+    expect(bare.components[1].damage).toBeCloseTo(15, 6); // 100 × 0.15
+
+    const withLegendary = computePaperDamage({
+      mode: 'live', weapon: gauss, itemLevel: 50,
+      modifiers: [mod({ bucket: 'explosivePayload', op: 'ADD', value: 0.2 })],
+      ctx: makeCtx(gauss), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    expect(withLegendary.components[1].damage).toBeCloseTo(35, 6); // 100 × (0.15 + 0.2)
+  });
+});
+
+describe('launcher explosion components (fromExplosion, EXPL chase)', () => {
+  // Fat Man shape: token flat impact (5) + the EXPL payload as its own component.
+  const launcher = makeWeapon({
+    components: [
+      { damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: [{ x: 1, y: 5 }] },
+      { damageType: 'explosive', tier: -1, levelCap: 50, curvePoints: FLAT_100, fromExplosion: true },
+    ],
+  });
+
+  it('explosionMult (Demolition Expert) multiplies the explosion component, not the impact', () => {
+    const mods = [mod({ bucket: 'explosionMult', op: 'ADD', value: 0.6 })];
+    const result = computePaperDamage({
+      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: mods, ctx: makeCtx(launcher), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    expect(result.components).toHaveLength(2);
+    expect(result.components[0].damage).toBeCloseTo(5, 6); // impact untouched
+    expect(result.components[1].damage).toBeCloseTo(160, 6); // 100 × (1 + 0.6)
+  });
+
+  it("'explosive'-scoped dbm applies to an elemental explosion component (Cremator fire ball, Gamma radiation burst)", () => {
+    const gamma = makeWeapon({
+      components: [{ damageType: 'radiation', tier: -1, levelCap: 50, curvePoints: FLAT_100, fromExplosion: true }],
+    });
+    const mods = [mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }] })];
+    const result = computePaperDamage({
+      mode: 'live', weapon: gamma, itemLevel: 50, modifiers: mods, ctx: makeCtx(gamma), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    expect(result.components[0].damage).toBeCloseTo(150, 6); // dbm 1.0 + 0.5
+  });
+
+  it('an explosion component never spawns an explosive twin of itself', () => {
+    const mods = [mod({ bucket: 'explosivePayload', op: 'ADD', value: 0.2 })];
+    const result = computePaperDamage({
+      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: mods, ctx: makeCtx(launcher), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    // impact + its twin + explosion — NOT a fourth twin-of-explosion.
+    expect(result.components).toHaveLength(3);
+    expect(result.components.filter(c => c.damageType === 'explosive')).toHaveLength(2);
+    expect(result.components[1].damage).toBeCloseTo(1, 6); // 5 × 0.2 twin
+  });
 });
 
 describe('computeDotDps (Stage A2, DoT line)', () => {

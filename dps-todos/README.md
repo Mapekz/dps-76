@@ -55,6 +55,10 @@ spec. Priority order below reflects the user's 2026-07-12 reprioritization
      docs by history). Real per-weapon `animDelaySec` for melee replacing the
      1 swing/sec stub, plus a `melee1h`/`melee2h` weaponClass split so
      Gladiator vs Slugger can apply correctly.
+   - **Launcher explosion damage** — [launcher-explosives.md](launcher-explosives.md):
+     **DONE 2026-07-13** (EXPL chase + Demolition Expert fix + Gamma Gun
+     graduation); only in-game pip-boy verification of the WEAP+EXPL summing
+     assumption remains (two null golden cases).
    - **Perk weapon-stat fold gap + legendary measurement queue** —
      [measurement-backlog.md](measurement-backlog.md). The fold gap is a
      self-contained engine fix (no blockers); the measurement queue needs

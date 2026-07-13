@@ -103,6 +103,42 @@
    "expected": 180.25,
    "tolerancePct": 2,
    "source": "user-confirmed 2026-07-10: base Fixer @50 = 103, Two Shot = 103 × 1.75 = 180.25 (pip-boy card rounds to 180/181; hundredths kept for the calc)"
+  },
+  {
+   "name": "Stock Fat Man @50, no perks — EXPL payload chase (engine: 5 impact + 1386 explosion @45 eligible-level cap = 1391; does the pip-boy card show the sum?)",
+   "weaponId": "Fatman",
+   "itemLevel": 50,
+   "mods": {},
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {},
+   "enemyConditions": {},
+   "scenario": "freeAim",
+   "measure": "perHit",
+   "expected": null,
+   "tolerancePct": 2,
+   "source": "pending in-game pip-boy reading (dps-todos/launcher-explosives.md: verifies the WEAP-impact + EXPL-curve summing assumption, docs/assumptions.md 'Launcher explosion damage')"
+  },
+  {
+   "name": "Stock Missile Launcher @50, no perks — EXPL payload chase (engine: 5 impact + 968 explosion = 973)",
+   "weaponId": "MissileLauncher",
+   "itemLevel": 50,
+   "mods": {},
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {},
+   "enemyConditions": {},
+   "scenario": "freeAim",
+   "measure": "perHit",
+   "expected": null,
+   "tolerancePct": 2,
+   "source": "pending in-game pip-boy reading (dps-todos/launcher-explosives.md)"
   }
  ]
 }

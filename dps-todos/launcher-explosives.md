@@ -1,46 +1,47 @@
-# Launcher explosion damage (EXPL chase)
+# Launcher explosion damage (EXPL chase) — DONE 2026-07-13
 
-Filed 2026-07-12 during the weapon-roster vetting pass (user decision: model
-explosives from **launchers**, not throwables).
+> **Shipped 2026-07-13.** `chaseExplosion` (scripts/extract/extract-weapons.ts)
+> follows WEAP → (RGW3 Override Projectile ?? AMMO default PROJ) → PROJ
+> `Explosion` → EXPL, gated on the PROJ `Data.Flags` "Explosion" bit (the
+> critical discovery: ProjectilePlasmaLarge carries a stale missile-shell EXPL
+> formid WITHOUT the flag — an ungated chase would have given every plasma
+> weapon +968 phantom damage). Full semantics in `docs/assumptions.md`
+> "Launcher explosion damage".
 
-## Problem
+## What shipped
 
-Explosive launchers are listed in the picker but compute from their token
-WEAP-level flat damage — the real payload rides the projectile's explosion:
+- **Extractor**: EXPL main curve → `explosive` component; typed EXPL entries →
+  elemental components (Cremator fire, Gamma Gun radiation + energy); all
+  flagged `fromExplosion`. EXPL "Base Weapon Damage Mult" (Gauss 0.15, Tesla
+  Cannon 0.10) → `GeneratedWeapon.explosionBaseWeaponDamageMult`, the
+  intrinsic base of the `explosivePayload` twin fold (Explosive 2★ ADDs on
+  top). Grenades/mines stay `projectileOnly`-excluded (vetting-scope
+  decision) — the exclusion is evaluated before the chase.
+- **Engine**: `fromExplosion` components fold `explosionMult` and match
+  `damageTypeScope ['explosive']` regardless of element
+  (`ResolveContext.componentIsExplosion`); an explosion never spawns a twin
+  of itself. Flat-amount components (token launcher impact damage) now adapt
+  to constant curves instead of computing 0.
+- **Demolition Expert fixed**: its STAT_DmgExplosive AV was an unmapped-AVIF
+  gap (the perk extracted ZERO modifiers). Routed to `explosionMult`
+  (+20/40/60%, `normalize/mgef.ts` FALLBACK_AVIF_ROUTES).
+- **Results @50** (free aim, no perks): Fat Man 1391 (was ~5), Missile
+  Launcher 973, M79 525, Broadsider 693, AGL 247, Hellstorm 758, Cremator
+  172, Gamma Gun 104. Gauss family & Tesla Cannon gained their intrinsic
+  explosive twin (15% / 10%).
+- **Gamma Gun graduated** from the `noDamage` bucket into the vetted roster;
+  its `mod_Custom_Xerxos` unique mod cascade-rescued via WEAP inheritance.
+- **Tests**: chain fixtures (Fat Man, Gamma Gun, plasma-negative, Gauss) +
+  engine unit tests + two `expected: null` golden cases.
 
-| Weapon | WEAP damage today | Real damage source |
-|---|---|---|
-| Fat Man | 5 flat | mini-nuke PROJ → EXPL |
-| Missile Launcher | 5 flat | missile PROJ → EXPL |
-| Auto Grenade Launcher | 3 flat | grenade PROJ → EXPL |
-| M79 Grenade Launcher | 3 flat | grenade PROJ → EXPL |
-| Broadsider / Grand Finale | 5 flat | cannonball PROJ → EXPL |
-| Nuka-Launcher | 3 flat | (rescued scoreboard AGL) |
-| Cremator | fire curve (partial) | projectile DoT + explosion |
+## Remaining (in-game measurement, not code)
 
-Also parked here: the plain **Gamma Gun** (`GammaGun`) is excluded in the
-`noDamage` bucket for the same reason — its radiation burst is an EXPL, not a
-WEAP component. Same for the 51 `projectileOnly` records (grenades/mines),
-which stay out of the picker per the vetting-scope decision even after this
-lands.
-
-## Shape of the fix
-
-1. **Extractor**: chase WEAP → `RGW3.Override Projectile` (or the ammo's
-   default PROJ) → PROJ `Explosion` → EXPL damage (+ curve if any). Emit as a
-   new component (`damageType: 'explosive'`? — careful: that union member is
-   currently engine-synthesized only, see `src/types/index.ts`
-   WeaponComponent).
-2. **Engine**: explosion component folding — the `explosivePayload` /
-   `explosionMult` buckets already exist and are wired (Stage A1), so
-   Demolition Expert (`STAT_*` plumbing perk chase in `normalize/mgef.ts`)
-   and Grenadier interactions land on existing rails.
-3. **Data review**: several launchers' pellet/AoE semantics need in-game
-   verification (does the Pip-Boy card show WEAP + EXPL summed?) —
-   `docs/assumptions.md` entry required.
-
-## Acceptance
-
-- Fat Man / Missile Launcher / AGL / M79 / Broadsider show realistic damage.
-- Golden case measured in-game for at least one launcher.
-- `GammaGun` graduates from the `noDamage` excluded bucket into the picker.
+- **Pip-boy summing verification**: does the card show WEAP impact + EXPL
+  (Fat Man 1391, Missile Launcher 973)? Fill the two golden cases in
+  `src/lib/engine/__tests__/golden/cases.json`. Hellstorm (379+379=758) is
+  the sharpest probe — its two halves are separately authored tier-46 curves.
+- **Explosive-legendary stacking on Gauss** (0.15 + 0.2 = 0.35 assumed
+  additive) — measure if a Gauss + Explosive roll is available.
+- **Cremator**: projectile DoT (the WEAP-side fire curve's "partial" caveat)
+  unchanged by this work — the explosion component is new, the DoT chase is
+  still open.

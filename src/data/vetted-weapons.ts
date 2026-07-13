@@ -70,6 +70,9 @@ export const VETTED_WEAPON_IDS: readonly string[] = [
   'FireAxe',
   'Flamer',
   'FlareGun',
+  // Graduated from the noDamage excluded bucket 2026-07-13: its radiation +
+  // energy burst is the projectile's EXPL (launcher-explosives chase).
+  'GammaGun',
   'GatlingGun',
   'GatlingLaser',
   'GatlingPlasma',

@@ -1,25 +1,59 @@
 import { describe, it, expect } from 'vitest';
 import type { EsmClient, EsmRecord } from '../esm-client';
-import { isExcludedWeaponEdid, toGeneratedWeapon } from '../extract-weapons';
+import { chaseExplosion, isExcludedWeaponEdid, toGeneratedWeapon } from '../extract-weapons';
 import { isExcludedOmodEdid } from '../extract-omods';
 import fixer from './fixtures/weap-fixer.json';
 import gatlingPlasma from './fixtures/weap-gatling-plasma.json';
 import mg42 from './fixtures/weap-mg42.json';
 import shishkebab from './fixtures/weap-shishkebab.json';
+import weapFatman from './fixtures/weap-fatman.json';
+import ammoFatmanMiniNuke from './fixtures/ammo-fatman-mininuke.json';
+import projFatman from './fixtures/proj-fatman.json';
+import explFatman from './fixtures/expl-fatman.json';
+import weapGammaGun from './fixtures/weap-gammagun.json';
+import ammoGammaCell from './fixtures/ammo-gammacell.json';
+import projGammaGun from './fixtures/proj-gammagun.json';
+import explGammaGun from './fixtures/expl-gammagun.json';
+import ammoPlasmaCartridge from './fixtures/ammo-plasma-cartridge.json';
+import projPlasmaLarge from './fixtures/proj-plasma-large.json';
+import ammo2mmEc from './fixtures/ammo-2mmec.json';
+import projGaussRifle from './fixtures/proj-gauss-rifle.json';
+import explGaussImpact from './fixtures/expl-gauss-impact.json';
 
-// Fixtures are verbatim `esm -p get <formid> --json` output (20260702 ESM).
+// Fixtures are verbatim `esm -p get <formid> --json` output (20260702 ESM;
+// explosion-chain fixtures from the 20260710 dump).
 // These tests pin the WEAP → GeneratedWeapon normalization semantics.
 
 const KNOWN_EDIDS: Record<string, string> = {
   '0x00060A81': 'dtEnergy',
   '0x00060A82': 'dtFire',
+  '0x00060A85': 'dtRadiationExposure',
   '0x0004A0A1': 'WeaponTypeRifle',
   '0x0004A0A5': 'WeaponTypeHeavyGun',
+};
+
+const CHAIN_RECORDS: Record<string, unknown> = {
+  '0x000E6B2E': ammoFatmanMiniNuke,
+  '0x000E6B2F': projFatman,
+  '0x001A7FF2': explFatman,
+  '0x000DF279': ammoGammaCell,
+  '0x000F0DDC': projGammaGun,
+  '0x000F17EC': explGammaGun,
+  '0x0001DBB7': ammoPlasmaCartridge,
+  '0x00125C9B': projPlasmaLarge,
+  '0x0018ABDF': ammo2mmEc,
+  '0x001CC149': projGaussRifle,
+  '0x0022E05D': explGaussImpact,
 };
 
 const stubClient = {
   async resolveEdid(formId: string): Promise<string> {
     return KNOWN_EDIDS[formId] ?? `kw_${formId}`;
+  },
+  async get(formId: string): Promise<EsmRecord> {
+    const record = CHAIN_RECORDS[formId];
+    if (!record) throw new Error(`stub: no record for ${formId}`);
+    return record as EsmRecord;
   },
 } as unknown as EsmClient;
 
@@ -85,6 +119,63 @@ describe('toGeneratedWeapon', () => {
     const w = await toGeneratedWeapon(stubClient, record, unresolved);
     expect(w.components[1].damageType).toBe('unknown');
     expect(unresolved.some(u => u.includes('0x0BADF00D'))).toBe(true);
+  });
+});
+
+describe('chaseExplosion', () => {
+  it('Fat Man: ammo → PROJ → EXPL main curve becomes an explosive fromExplosion component', async () => {
+    const record = weapFatman as unknown as EsmRecord;
+    const unresolved: string[] = [];
+    const result = await chaseExplosion(stubClient, record.fields, 'Fatman', unresolved);
+    expect(result.components).toHaveLength(1);
+    expect(result.components[0]).toMatchObject({
+      damageType: 'explosive',
+      damageTypeEdid: null,
+      tier: 89,
+      fromExplosion: true,
+    });
+    expect(result.components[0].curve?.at(-1)).toEqual({ x: 50, y: 1565 });
+    expect(result.baseWeaponDamageMult).toBe(0);
+    expect(unresolved).toEqual([]);
+  });
+
+  it('Gamma Gun: typed EXPL entries become radiation + energy fromExplosion components (noDamage rescue)', async () => {
+    const record = weapGammaGun as unknown as EsmRecord;
+    const result = await chaseExplosion(stubClient, record.fields, 'GammaGun', []);
+    // No main curve (Damage 0) — two typed entries, both tier-18 curves.
+    expect(result.components).toHaveLength(2);
+    expect(result.components[0]).toMatchObject({
+      damageType: 'radiation',
+      damageTypeEdid: 'dtRadiationExposure',
+      tier: 18,
+      fromExplosion: true,
+    });
+    expect(result.components[1]).toMatchObject({ damageType: 'energy', tier: 18, fromExplosion: true });
+  });
+
+  it('Plasma Gun: PROJ without the Explosion flag is inert even though it carries an EXPL formid', async () => {
+    // ProjectilePlasmaLarge points at the missile-shell EXPL (tier 72, 968 dmg
+    // at 50) but lacks Data.Flags "Explosion" — chasing it anyway would give
+    // every plasma weapon phantom missile damage.
+    const fields = { Data: { Ammo: '0x0001DBB7' }, RGW3: {} };
+    const result = await chaseExplosion(stubClient, fields, 'PlasmaGun', []);
+    expect(result.components).toEqual([]);
+    expect(result.baseWeaponDamageMult).toBe(0);
+  });
+
+  it('Gauss Rifle: EXPL with only Base Weapon Damage Mult yields the intrinsic payload fraction', async () => {
+    const fields = { Data: { Ammo: '0x0018ABDF' }, RGW3: { 'Override Projectile': '0x001CC149' } };
+    const result = await chaseExplosion(stubClient, fields, 'GaussRifle', []);
+    expect(result.components).toEqual([]);
+    expect(result.baseWeaponDamageMult).toBeCloseTo(0.15, 5);
+  });
+
+  it('missing chain records surface as unresolved notes, not crashes', async () => {
+    const fields = { Data: { Ammo: '0xDEADBEEF' }, RGW3: {} };
+    const unresolved: string[] = [];
+    const result = await chaseExplosion(stubClient, fields, 'BrokenWeapon', unresolved);
+    expect(result.components).toEqual([]);
+    expect(unresolved.some(u => u.includes('BrokenWeapon'))).toBe(true);
   });
 });
 

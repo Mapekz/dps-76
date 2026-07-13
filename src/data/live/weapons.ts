@@ -9,18 +9,15 @@ import generatedWeapons from './generated/weapons.json';
  * src/data/overrides/corrections.ts layered on top.
  */
 
-// 'explosive' is engine-synthesized only (paper-damage.ts twins) — extracted
-// components never carry it, so this map (and everything derived from it
-// below) is typed over the narrower ESM-derived subset of DamageType.
-type ExtractedDamageType = Exclude<WeaponComponent['damageType'], 'explosive'>;
-
-const DAMAGE_TYPE_MAP: Record<GeneratedDamageType, ExtractedDamageType> = {
+const DAMAGE_TYPE_MAP: Record<GeneratedDamageType, WeaponComponent['damageType']> = {
   ballistic: 'ballistic',
   energy: 'energy',
   fire: 'fire',
   cryo: 'cryo',
   poison: 'poison',
   radiation: 'radiation',
+  // Launcher payload chase: the projectile EXPL's main physical damage.
+  explosive: 'explosive',
   // No dedicated bucket yet — treat as ballistic until one exists.
   unknown: 'ballistic',
 };
@@ -52,11 +49,18 @@ export function adaptWeapon(gw: GeneratedWeapon): Weapon {
     damageType: DAMAGE_TYPE_MAP[c.damageType],
     tier: c.tier ?? -1,
     levelCap,
-    curvePoints: c.curve ?? undefined,
+    // Flat-amount components (no tier, no curve — launcher token impact
+    // damage, e.g. Fat Man's 5) become a constant one-point curve; the old
+    // tier -1 lookup warned and computed 0.
+    curvePoints: c.curve ?? (c.tier == null ? [{ x: 1, y: c.amount }] : undefined),
+    fromExplosion: c.fromExplosion,
   }));
   // Legacy single-type routing field; the ballistic component (when present)
   // is always first, so this is phys for mixed weapons, elemental for pure.
-  const primary: ExtractedDamageType = components[0]?.damageType ?? 'ballistic';
+  // 'explosive' payloads route as physical here (explosion damage resists as
+  // ballistic; the fromExplosion flag carries the explosion semantics).
+  const first = components[0]?.damageType ?? 'ballistic';
+  const primary: Weapon['damageType'] = first === 'explosive' ? 'ballistic' : first;
 
   return {
     id: gw.id,
@@ -83,6 +87,7 @@ export function adaptWeapon(gw: GeneratedWeapon): Weapon {
     sneakAttackMult: gw.sneakAttackMult,
     projectileCount: gw.projectileCount,
     damageBonusMult: gw.damageBonusMult,
+    explosionBaseWeaponDamageMult: gw.explosionBaseWeaponDamageMult,
     ...weaponCorrections[gw.id],
   };
 }

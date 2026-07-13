@@ -78,14 +78,18 @@ export interface PaperDamageInput {
   trace?: HitTrace;
 }
 
-function componentBase(mode: GameMode, weapon: Weapon, itemLevel: number): Array<{ type: DamageType; base: number }> {
+function componentBase(
+  mode: GameMode,
+  weapon: Weapon,
+  itemLevel: number
+): Array<{ type: DamageType; base: number; isExplosion: boolean }> {
   const clamped = Math.max(1, Math.min(itemLevel, 50));
   return (weapon.components ?? []).map(comp => {
     const level = Math.min(clamped, comp.levelCap);
     const base = comp.curvePoints
       ? interpolateCurve(comp.curvePoints, level)
       : getBaseDamage(mode, comp.tier, level);
-    return { type: comp.damageType, base };
+    return { type: comp.damageType, base, isExplosion: comp.fromExplosion ?? false };
   });
 }
 
@@ -148,8 +152,8 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
   const paRaceMult = ctx.scenario.isPowerAttack ? powerAttackRaceMult(weapon, ctx.player.isInPowerArmor) : 1.0;
   const outerMult = wholeMult * bodyPartMult * weakpointMult * paRaceMult;
 
-  const components: ComponentHit[] = componentBase(mode, weapon, itemLevel).flatMap(({ type, base }) => {
-    const componentCtx = { ...ctx, componentType: type };
+  const components: ComponentHit[] = componentBase(mode, weapon, itemLevel).flatMap(({ type, base, isExplosion }) => {
+    const componentCtx = { ...ctx, componentType: type, componentIsExplosion: isExplosion };
     const collect = trace ? ([] as BucketTrace[]) : undefined;
     // Base-damage scaling (AttackDamage / DamageTypeValues OMOD properties,
     // e.g. automatic receivers' −30%) applies BEFORE the dbm parenthesis.
@@ -162,22 +166,38 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
       trace.components.push({ damageType: type, baseDamage: collect[0], dbm: collect[1] });
     }
     const parenthesis = dbmFold + strTerm + critTerm + sneakTerm + powerAttackTerm;
-    const hit: ComponentHit = { damageType: type, base: scaledBase, damage: scaledBase * parenthesis * outerMult };
+    // Explosion components (launcher EXPL payloads) additionally fold the
+    // explosion-only multiplier (Demolition Expert's STAT_DmgExplosive).
+    const componentExplosionMult = isExplosion ? foldBucket(modifiers, 'explosionMult', 1.0, componentCtx) : 1.0;
+    const hit: ComponentHit = {
+      damageType: type,
+      base: scaledBase,
+      damage: scaledBase * parenthesis * outerMult * componentExplosionMult,
+    };
+    // An explosion never spawns an explosive twin of itself.
+    if (isExplosion) return [hit];
 
-    // Explosive payload (Explosive 2★, plan Stage A1): a condition-scaled
+    // Explosive payload (Explosive 2★, plan Stage A1; intrinsic base from the
+    // Gauss family's EXPL "Base Weapon Damage Mult" 0.15): a condition-scaled
     // fraction of THIS component's (baseDamage-scaled) damage spawns an
     // explosive twin. The twin runs through the SAME parenthesis (strTerm/
     // critTerm/sneakTerm/powerAttackTerm are weapon-level, not re-evaluated)
-    // but its OWN dbm fold — using componentType 'explosive' so
-    // damageTypeScope-scoped bonuses (Demolition Expert) apply only to
-    // twins — plus the explosive-only `explosionMult` bucket. Twins are
-    // summed into the totals today; per-component resist attribution is
-    // future work (docs/assumptions.md).
+    // but its OWN dbm fold — componentType 'explosive' + componentIsExplosion
+    // so explosive-scoped dbm applies only to twins — plus the explosion-only
+    // `explosionMult` bucket (Demolition Expert). Twins are summed into the
+    // totals today; per-component resist attribution is future work
+    // (docs/assumptions.md).
     const payloadCollect = trace ? ([] as BucketTrace[]) : undefined;
-    const payloadFraction = foldBucket(modifiers, 'explosivePayload', 0, componentCtx, payloadCollect);
+    const payloadFraction = foldBucket(
+      modifiers,
+      'explosivePayload',
+      weapon.explosionBaseWeaponDamageMult ?? 0,
+      componentCtx,
+      payloadCollect
+    );
     if (payloadFraction <= 0) return [hit];
 
-    const explosiveCtx = { ...ctx, componentType: 'explosive' as const };
+    const explosiveCtx = { ...ctx, componentType: 'explosive' as const, componentIsExplosion: true };
     const twinDbmCollect = trace ? ([] as BucketTrace[]) : undefined;
     const twinDbmFold = foldBucket(modifiers, 'dbm', weapon.damageBonusMult ?? 1.0, explosiveCtx, twinDbmCollect);
     const twinParenthesis = twinDbmFold + strTerm + critTerm + sneakTerm + powerAttackTerm;

@@ -55,8 +55,55 @@ PaperDamage = Σ_components base(c) × ( dbmFold(c) + Tenderizer + (CritMult−1
   full-curve validated by golden: (64×1.75)×2 = 224 at its level-45 cap.
 - Item level clamps to the weapon's max Eligible Level (Shishkebab 45 — a
   "level 50" variant would give 252; confirm no such drop exists in-game).
-- Explosive-on-projectile weapons (grenades, mines) are excluded until the
-  EXPL-chase work; flagged `projectileOnly` in `_meta.json`.
+- Thrown explosives (grenades, mines) stay excluded per the 2026-07-12
+  vetting-scope decision (launchers, not throwables); flagged
+  `projectileOnly` in `_meta.json`. Launchers are covered below.
+
+## Launcher explosion damage (2026-07-13 — `chaseExplosion`, extract-weapons.ts)
+
+Explosive launchers carry a token WEAP `Base Damage` (Fat Man 5, M79 3); the
+real payload rides the projectile's explosion. ESM-proven chain: WEAP
+`RGW3."Override Projectile"` (M79/Cremator/Hellstorm) ?? AMMO(`Data.Ammo`)
+`.DNAM.Projectile` → PROJ `Data.Explosion` → EXPL `Data`.
+
+- **Gate**: the PROJ `Data.Flags` "Explosion" bit. Several projectiles carry a
+  stale Explosion formid that never detonates — ProjectilePlasmaLarge points
+  at the missile-shell EXPL (968 @50) without the flag; chasing unflagged
+  projectiles would give every plasma weapon phantom missile damage.
+- **EXPL damage mirrors the WEAP shape**: main "Damage Curve Table" → an
+  `explosive` component; typed "Damage Types" entries → elemental components
+  (Cremator's fire ball tier 13; Gamma Gun's radiation + energy tier 18).
+  All are flagged `fromExplosion`.
+- **WEAP + EXPL sum per shot** (ASSUMPTION, not ESM-proven): the engine adds
+  the token impact damage and the explosion (Fat Man @45 cap: 5 + 1386;
+  Hellstorm: WEAP tier-46 curve 379 + EXPL tier-46 curve 379 = 758 — its two
+  halves are authored separately). Whether the in-game Pip-Boy card shows the
+  sum needs the pending golden-case measurements (cases.json: Fat Man,
+  Missile Launcher).
+- **EXPL "Base Weapon Damage Mult"** (Gauss family 0.15, Tesla Cannon 0.10):
+  fraction of the weapon's own damage dealt again as explosion — modeled as
+  the intrinsic BASE of the `explosivePayload` twin fold, so the Explosive 2★
+  legendary (+0.2) ADDs on top (additive stacking is an ASSUMPTION; the AV
+  fold shape supports it but no in-game measurement yet).
+- **Explosion-only modifiers**: `fromExplosion` components (and legendary
+  twins) fold `explosionMult` — Demolition Expert's STAT_DmgExplosive AV
+  (magnitudes 20/40/60, scale 0.01), previously an unmapped-AVIF gap that
+  left the perk with zero modifiers. `damageTypeScope ['explosive']` dbm
+  conditions also match `fromExplosion` components regardless of their
+  elemental type (`ResolveContext.componentIsExplosion`, resolve.ts) —
+  explosion damage keeps its element for future enemy-resist routing while
+  still counting as an explosion for perk scoping.
+- **Flat-amount components** (no tier, no curve — the token launcher impact
+  values) adapt to a constant one-point curve (`src/data/live/weapons.ts`);
+  the old tier -1 lookup warned and computed 0.
+- **Not modeled**: OMOD projectile overrides swapping the explosion (Fat Man
+  MIRV's extra projectiles ride `projectileCount`, but a mod pointing at a
+  DIFFERENT EXPL record would keep the base explosion's numbers); explosion
+  radius/AoE (Grenadier extracts nothing damage-relevant); self-damage.
+- Gamma Gun graduated from the `noDamage` excluded bucket (its only damage is
+  the explosion); the toy/NPC records the chase also rescued
+  (ToyFireworkLauncher_*, artillery, orbital strike) stay hidden via
+  obtainability or `hiddenWeaponIds`.
 
 ## Fire rate (`src/lib/fire-rate.ts`) — CLOSED 2026-07-13
 

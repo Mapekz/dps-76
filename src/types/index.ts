@@ -170,10 +170,11 @@ export interface WeaponMod {
  */
 export interface WeaponComponent {
   /**
-   * 'explosive' never appears on an extracted weapon component — it is the
+   * 'explosive' appears two ways: extracted launcher-payload components (the
+   * projectile EXPL's main physical damage, `fromExplosion`) and the
    * engine-synthesized twin damage type (Explosive 2★ `explosivePayload`,
-   * paper-damage.ts), reusing this union because `DamageType`
-   * (types/modifiers.ts) is aliased from it.
+   * paper-damage.ts). `DamageType` (types/modifiers.ts) is aliased from this
+   * union.
    */
   damageType: 'ballistic' | 'energy' | 'radiation' | 'poison' | 'cryo' | 'fire' | 'explosive';
   /** Universal damage curve tier (e.g. 24 for The Fixer). -1 when only inline points exist. */
@@ -185,6 +186,12 @@ export interface WeaponComponent {
    * present; the tier-file lookup is the fallback for hand-authored data).
    */
   curvePoints?: Array<{ x: number; y: number }>;
+  /**
+   * Component is the projectile's explosion (launcher EXPL chase) —
+   * explosion-only modifiers (Demolition Expert's explosionMult,
+   * 'explosive'-scoped dbm) apply regardless of the elemental damageType.
+   */
+  fromExplosion?: boolean;
 }
 
 export interface Weapon {
@@ -248,6 +255,13 @@ export interface Weapon {
   projectileCount?: number;
   /** Intrinsic Damage Bonus Multiplier (RGW3; baseline 1.0) — the "1 +" of the dbm fold. */
   damageBonusMult?: number;
+  /**
+   * EXPL "Base Weapon Damage Mult" (Gauss family: 0.15): fraction of each
+   * component's damage dealt again as an explosive twin — the intrinsic base
+   * of the `explosivePayload` fold in paper-damage.ts (the Explosive 2★
+   * legendary ADDs on top of it).
+   */
+  explosionBaseWeaponDamageMult?: number;
 
   // ── Legacy / scaffolding ─────────────────────────────────────────────────
   /** Flat base damage override (used by enemy weapon scaffolding). Derived
