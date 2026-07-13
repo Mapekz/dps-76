@@ -65,6 +65,14 @@ export interface PlayerConditions {
   /** Drink meter threshold tier, 0–4: Thirsty → Fully Hydrated (SURV_NewThirstThreshold_Msg_*; default 0). */
   drinkTier?: number;
   feralTier?: number; // ghoul feral meter tier for Lucid/Feral's curves (default 0; GHL_FeralTier AV 0–8, 8 = "Wonderful")
+  /**
+   * Ghoul Glow meter (the Rads AV, 0x000002E1) — absolute value, 0..maxHealth
+   * (max Glow = max HP). Gates threshold conditions like Glowing Criticals'
+   * ≥180 (glowAtLeast). DERIVED-clamped in resolveLoadout (min(glow, maxHealth))
+   * so the engine never sees a value above the character's current max HP;
+   * the stored default only feeds synthetic engine tests.
+   */
+  glow?: number;
   limitBreakingPieces: number; // 0-5 armor pieces with Limit Breaking (−10% crit cost each)
   /**
    * Strange in Numbers gate → mutation values ×1.25. DERIVED in resolveLoadout
@@ -363,6 +371,7 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     foodTier: 0, // food meter empty (Hungry)
     drinkTier: 0, // drink meter empty (Thirsty)
     feralTier: 0, // Lucid/Feral's curve input (0–8; human default)
+    glow: 0, // ghoul Glow meter, absolute (0..maxHealth; human/no-Glow default)
     limitBreakingPieces: 0,
     strangeInNumbers: false, // synthetic-test default; the app derives it in resolveLoadout (perk + teammates)
     weaponConditionPct: 100, // full condition (Polished curve input; 200 = over-repaired max)

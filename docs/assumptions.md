@@ -655,6 +655,28 @@ column's stat summary displays the same number.
   maxHealth`) and the displayed HP stat. The engine's `?? 300` fallback only
   serves synthetic tests that bypass `resolveLoadout`.
 
+## Ghoul Glow (2026-07-13 — `glowAtLeast`, Conditions slider)
+
+Glow is the ghoul resource stored in the **Rads actor value (0x000002E1)**;
+ghoul perk effects gate on it with `GetValue(Rads) ≥ N` condition rows.
+
+- **Max Glow = max HP** — user-stated convention (2026-07-13), NOT ESM-proven
+  (no cap record was chased). The Conditions slider ranges 0..derived
+  `maxHealth` and `resolveLoadout` clamps the stored value to it.
+- **Thresholds are absolute**: literals (160–520 across GHL_ActionGhoul,
+  GHL_GlowingCriticals ≥180, GHL_MadScientist, GHL_RadiationPower, …) and
+  GLOB-resolved spend gates (GHL_BasicGlowUse=5, GHL_PowerGlowUseBasic=50).
+  All translate to `{ kind: 'glowAtLeast', min }` in
+  `normalize/conditions.ts`; only `Greater Than Or Equal To` occurs on player
+  perks in the 20260710 dump.
+- **Spend gates are steady-state**: a `≥5`/`≥50` "can afford the ability"
+  gate passes whenever the slider is at/above the cost — the calculator
+  doesn't model Glow drain over time.
+- **Still unresolved by design**: GHL_RadioactiveStrength's
+  `OR[IsTrueForConditionForm(GHL_HasModerateGlowConsumptionFeralRage_Condition) | GetValue(Rads)≥GLOB]`
+  rows and GHL_PlayerPerk's `GetRadshieldPercentage()=0` (7 rows total) —
+  badge as unresolved in the UI, engine skips them.
+
 ## Elemental 2★ effects & enemy-status 4★ rework (20260710 patch)
 
 - **Cryologist's / Poisoner's (2★, `STAT_DmgMultCryo`/`STAT_DmgMultPoison`

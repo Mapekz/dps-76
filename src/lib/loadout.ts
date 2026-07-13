@@ -131,6 +131,9 @@ export function resolveLoadout(
     maxHealth,
     // Mutant's curve input: the selected mutation list IS the mutation count.
     mutationCount: playerConfig.conditions.mutationCount ?? playerConfig.mutations.length,
+    // Ghoul Glow meter: clamp to the derived max HP (max Glow = max HP) so a
+    // stored value from a since-shrunk build never reads above the cap.
+    glow: Math.min(playerConfig.conditions.glow ?? 0, maxHealth),
     // Gourmand's curve input: the two meter tiers sum to the HungerThirstTier AV.
     hungerThirstTier: deriveHungerThirstTier(playerConfig.conditions),
     // Strange in Numbers gate: the card equipped + a teammate to be mutated with.

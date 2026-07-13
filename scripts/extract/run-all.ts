@@ -103,10 +103,13 @@ async function main() {
     if (result.unmappedAvifs.length > 0) {
       meta.unresolved.push(...result.unmappedAvifs.map(a => `unmapped damage AVIF: ${a}`));
     }
+    if (result.unresolvedCards.length > 0) {
+      meta.unresolved.push(...result.unresolvedCards.map(c => `unresolved perk card: ${c}`));
+    }
     console.log(
       `  ${result.perks.length} perk families (junk: ${result.excluded.junkEdid.length}, non-card: ${result.excluded.noNameOrCard.length})`
     );
-    console.log(`  unknown entry points: ${result.unknownEntryPoints.length}, unmapped AVIFs: ${result.unmappedAvifs.length}, unresolved conds: ${result.unresolved.length}`);
+    console.log(`  unknown entry points: ${result.unknownEntryPoints.length}, unmapped AVIFs: ${result.unmappedAvifs.length}, unresolved conds: ${result.unresolved.length}, unresolved cards: ${result.unresolvedCards.length}`);
   }
 
   if (only.includes('omods')) {

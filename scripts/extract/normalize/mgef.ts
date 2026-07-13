@@ -148,6 +148,19 @@ export function collectConditionFormIds(rows: RawCondition[], into: Set<string>)
   }
 }
 
+/**
+ * Harvest GLOB formids referenced as a condition row's `Comparison Value`
+ * (e.g. GHL_MadScientist's `GetValue(Rads) >= 0x007F68B6`), mirroring how
+ * `collectConditionFormIds` walks the same rows for `Parameter 1`. Resolved
+ * async via the client into a `globalValues` map before sync translation.
+ */
+export function collectConditionGlobalIds(rows: RawCondition[], into: Set<string>): void {
+  for (const row of rows) {
+    const cmp = row['Comparison Value'];
+    if (typeof cmp === 'string' && cmp.startsWith('0x')) into.add(cmp);
+  }
+}
+
 export async function buildAvifRoutes(client: EsmClient, formIdPool: Set<string>): Promise<Map<string, AvifRoute[]>> {
   const routes = new Map<string, AvifRoute[]>();
   for (const edid of PLUMBING_PERKS) {

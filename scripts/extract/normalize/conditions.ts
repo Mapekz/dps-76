@@ -150,6 +150,23 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
         if (typeof cmp === 'number' && cmp <= 1) return null;
         return { kind: 'unresolved', raw: `GetValue(${edid}) ${cond.Operator} ${rawCmp}` };
       }
+      if (param === '0x000002E1') {
+        // Rads AV = the ghoul Glow meter. Every Rads gate on a real player
+        // perk in the 20260710 dump (GHL_GlowingCriticals*, GHL_MadScientist,
+        // GHL_BrickWall, GHL_RadiationPower, GHL_RadioactiveStrength,
+        // GHL_BombScientist) uses "Greater Than Or Equal To", against either a
+        // literal (180.0) or a GLOB (GHL_BasicGlowUse=5, GHL_PowerGlowUseBasic=50,
+        // resolved via ctx.globalValues into `cmp` same as any other row). A
+        // strict "Greater Than" doesn't occur in data; approximate it the same
+        // as ≥ (min = cmp exactly) rather than leaving it unresolved, since the
+        // Glow meter's practical granularity makes the off-by-epsilon
+        // difference immaterial. Non-≥ comparisons (e.g. the companion-perk
+        // "Less Than" tiers on OverlyGenerous01) stay unresolved.
+        if (/^greater than( or equal to)?$/i.test(cond.Operator ?? '') && typeof cmp === 'number') {
+          return { kind: 'glowAtLeast', min: cmp };
+        }
+        return { kind: 'unresolved', raw: `GetValue(${edid}) ${cond.Operator} ${rawCmp}` };
+      }
       return { kind: 'unresolved', raw: `GetValue(${edid})=${cond['Comparison Value']}` };
     }
     case 'GetLoadedAmmoCount':

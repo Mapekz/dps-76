@@ -113,12 +113,16 @@ export function ConditionsSection() {
   const foodTier = conditions.foodTier ?? 0;
   const drinkTier = conditions.drinkTier ?? 0;
   const feralTier = conditions.feralTier ?? 0;
+  // Clamp the displayed value only — the engine already clamps glow to
+  // maxHealth in resolveLoadout; don't dispatch a correction on render.
+  const glow = Math.min(conditions.glow ?? 0, stats.maxHealth);
 
   const activeCount =
     (conditions.healthPercent !== defaults.healthPercent ? 1 : 0) +
     (foodTier !== (defaults.foodTier ?? 0) ? 1 : 0) +
     (drinkTier !== (defaults.drinkTier ?? 0) ? 1 : 0) +
     (feralTier !== (defaults.feralTier ?? 0) ? 1 : 0) +
+    (glow !== (defaults.glow ?? 0) ? 1 : 0) +
     (conditions.capsOnHand !== defaults.capsOnHand ? 1 : 0) +
     (conditions.adrenalineStacks !== defaults.adrenalineStacks ? 1 : 0) +
     (onslaughtStored !== -1 ? 1 : 0) +
@@ -196,6 +200,27 @@ export function ConditionsSection() {
                 value={[feralTier]}
                 onValueChange={([v]) => set('feralTier', v)}
                 marks={Array.from({ length: 9 }, (_, i) => ({ value: i, label: i % 2 === 0 ? String(i) : undefined }))}
+              />
+            </div>
+          )}
+
+          {isGhoul && (
+            <div className="space-y-1.5">
+              <Label htmlFor="char-glow">
+                Glow: {glow} / {stats.maxHealth}
+              </Label>
+              <Slider
+                id="char-glow"
+                min={0}
+                max={stats.maxHealth}
+                step={5}
+                value={[glow]}
+                onValueChange={([v]) => set('glow', v)}
+                marks={[
+                  { value: 0, label: '0' },
+                  { value: 180, label: '180' },
+                  { value: stats.maxHealth, label: String(stats.maxHealth) },
+                ]}
               />
             </div>
           )}

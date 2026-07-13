@@ -172,6 +172,10 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
     case 'targetDistance':
       // Unset enemy distance = 'none' (neither close nor far perks active).
       return (ctx.enemy.targetDistance ?? 'none') === cond.range ? 1 : null;
+    case 'glowAtLeast':
+      // Ghoul Glow meter (Rads AV) at or above the threshold — a plain gate,
+      // not a stack scale (Glowing Criticals ≥180, Glow-spend ≥5/≥50).
+      return (ctx.player.glow ?? 0) >= cond.min ? 1 : null;
     case 'unresolved':
       return null;
   }

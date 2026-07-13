@@ -132,6 +132,22 @@ describe('condition evaluation', () => {
     });
     expect(foldBucket([bloodied, paOnly, broken], 'dbm', 1.0, lowHpInPa)).toBeCloseTo(1.75, 10);
   });
+
+  it('glowAtLeast gates on the ghoul Glow meter (Glowing Criticals-style ≥180 threshold)', () => {
+    const glowingCrit = mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'glowAtLeast', min: 180 }] });
+
+    const atThreshold = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), glow: 180 } });
+    expect(foldBucket([glowingCrit], 'dbm', 1.0, atThreshold)).toBeCloseTo(1.5, 10);
+
+    const aboveThreshold = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), glow: 300 } });
+    expect(foldBucket([glowingCrit], 'dbm', 1.0, aboveThreshold)).toBeCloseTo(1.5, 10);
+
+    const belowThreshold = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), glow: 179 } });
+    expect(foldBucket([glowingCrit], 'dbm', 1.0, belowThreshold)).toBe(1.0);
+
+    const unset = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), glow: undefined } });
+    expect(foldBucket([glowingCrit], 'dbm', 1.0, unset)).toBe(1.0); // glow undefined → treated as 0
+  });
 });
 
 describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp', () => {

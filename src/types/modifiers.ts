@@ -201,6 +201,12 @@ export type Condition =
    * threshold isn't in data at all. See docs/assumptions.md.
    */
   | { kind: 'targetDistance'; range: 'close' | 'far' }
+  /**
+   * Ghoul Glow meter (the Rads AV, 0x000002E1) at or above `min` — absolute
+   * value, 0..maxHealth (max Glow = max HP). Gates like Glowing Criticals'
+   * ≥180 and Glow-spend checks (≥5/≥50 via GHL_*GlowUse GLOBs).
+   */
+  | { kind: 'glowAtLeast'; min: number }
   /** Extraction escape hatch: condition semantics not yet understood. Engine skips the modifier; UI badges it. */
   | { kind: 'unresolved'; raw: string };
 

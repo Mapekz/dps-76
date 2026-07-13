@@ -101,6 +101,25 @@ export interface GeneratedPerkRank {
   modifiers: Modifier[];
 }
 
+/**
+ * Perk-card metadata from the record's PCRD (join key: any rank's Male/Female
+ * Perk formid matching the family's own rank formids — scripts/extract/
+ * extract-perks.ts's `toGeneratedPerkCard`). PCRD is a separate record type
+ * from PERK; a family only carries `card` when a PCRD actually joined it.
+ */
+export interface GeneratedPerkCard {
+  /** PCRD Unknown.Special.name (e.g. "Charisma") — the SPECIAL stat the card slots under. */
+  special: string;
+  /** Per-rank point costs, index 0 = rank 1, from Perks[].Perk."Card Rank Cost". */
+  costs: number[];
+  /** PCRD Unknown."Min Level". */
+  minLevel: number;
+  /** PCRD Unknown."Race Restriction".name mapped to a stable tag; 'None' → null. */
+  raceRestriction: 'human' | 'ghoul' | null;
+  /** PCRD "Perk Card Flags".flags includes "Legendary Perk". */
+  isLegendaryCard: boolean;
+}
+
 export interface GeneratedPerk {
   /** Family key = ESM editor_id minus the rank suffix (Commando01..03 → "Commando"). */
   family: string;
@@ -113,8 +132,10 @@ export interface GeneratedPerk {
   descriptions: string[];
   /** Effective modifiers when owning rank N (index by rank − 1 via ranks[i].modifiers). */
   ranks: GeneratedPerkRank[];
-  /** Rank-1 record has an SWF sprite (a proper perk card). Some real perks lack it (Nerd Rage!). */
+  /** A PCRD record joined this family by rank formid (see GeneratedPerkCard). */
   hasCard: boolean;
+  /** Perk-card metadata (SPECIAL, point costs, level gate, race restriction) — present iff hasCard. */
+  card?: GeneratedPerkCard;
   /** Extraction caveats for this perk (unresolved conditions, script magnitudes, timed buffs). */
   notes: string[];
 }

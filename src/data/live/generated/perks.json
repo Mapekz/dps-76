@@ -15,7 +15,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -34,7 +34,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -53,7 +53,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -72,7 +72,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -91,7 +91,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -240,6 +240,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 2,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -316,6 +327,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 2,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -335,6 +357,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1
+   ],
+   "minLevel": 21,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -405,6 +436,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    2
+   ],
+   "minLevel": 49,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -423,7 +463,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -442,7 +482,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -474,6 +514,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    2
+   ],
+   "minLevel": 41,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -498,7 +547,17 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 34,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -530,6 +589,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 30,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -555,6 +625,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 25,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "MGEF AbPerkAntibiotic_ScriptEffect archetype Script — needs override"
   ]
@@ -582,6 +662,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 34,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: GetRandomPercent()=50",
    "MGEF AbPerkAntiEpidemic_ScriptEffect archetype Script — needs override"
@@ -604,6 +694,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1
+   ],
+   "minLevel": 26,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsSwimming()=1"
   ]
@@ -625,6 +724,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1
+   ],
+   "minLevel": 26,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsSwimming()=1"
   ]
@@ -658,6 +766,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 2,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -754,6 +873,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    2
+   ],
+   "minLevel": 15,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -773,6 +901,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    3
+   ],
+   "minLevel": 35,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -792,6 +929,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1
+   ],
+   "minLevel": 15,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -854,7 +1000,17 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 28,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -942,7 +1098,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -981,7 +1137,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -1000,7 +1156,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -1019,7 +1175,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -1057,7 +1213,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -1095,7 +1251,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -1269,6 +1425,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    2
+   ],
+   "minLevel": 20,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "AbFortifyVATSAccuracy: curve with unmapped input AV 0x000002C3 — needs override"
   ]
@@ -1289,7 +1454,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -1314,7 +1479,17 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 22,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -1345,7 +1520,16 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1
+   ],
+   "minLevel": 14,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "AbPerkFortifyResistDamage: curve with unmapped input AV 0x000002C2 — needs override"
   ]
@@ -1373,6 +1557,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 11,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -1397,7 +1591,17 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 28,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -1428,7 +1632,16 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1
+   ],
+   "minLevel": 35,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -1505,6 +1718,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 47,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -1535,7 +1759,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -1560,7 +1784,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -1592,6 +1816,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 21,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -1611,6 +1846,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1
+   ],
+   "minLevel": 11,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -1642,6 +1886,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1
+   ],
+   "minLevel": 42,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -1794,7 +2047,16 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1
+   ],
+   "minLevel": 5,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: GetPlayerTeammateCount Greater Than 0",
    "AbPerkFortifyResistDamage: curve with unmapped input AV 0x000002C5 — needs override",
@@ -1830,6 +2092,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 3,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: GetRadsHealthPercentage()=0",
    "condition: GetRadsHealthPercentage()=0.20000000298023224",
@@ -1931,7 +2204,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -1950,7 +2223,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -1969,7 +2242,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -1988,7 +2261,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -2007,7 +2280,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -2039,6 +2312,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 6,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -2057,7 +2340,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -2076,7 +2359,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -2095,7 +2378,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -2114,7 +2397,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -2146,6 +2429,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 39,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -2332,6 +2626,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 3,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -2351,6 +2656,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1
+   ],
+   "minLevel": 7,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -2382,6 +2696,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1
+   ],
+   "minLevel": 15,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -2401,6 +2724,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1
+   ],
+   "minLevel": 16,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -2512,7 +2844,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -2532,6 +2864,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    2
+   ],
+   "minLevel": 23,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -2550,7 +2891,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -2570,6 +2911,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1
+   ],
+   "minLevel": 34,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -2595,6 +2945,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 43,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -2645,6 +3005,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 46,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -2670,6 +3041,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 14,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -2776,6 +3157,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 5,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -2795,6 +3187,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    2
+   ],
+   "minLevel": 20,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -2814,6 +3215,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    3
+   ],
+   "minLevel": 40,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -2832,7 +3242,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -2851,7 +3261,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -2928,6 +3338,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 2,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -2947,6 +3368,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1
+   ],
+   "minLevel": 1,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -2972,6 +3402,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 18,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -3108,6 +3548,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 27,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -3177,6 +3628,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 7,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -3318,7 +3780,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -3368,7 +3830,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -3445,6 +3907,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 44,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -3463,7 +3936,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "MGEF PerkPacifyEffect archetype Calm — needs override"
   ]
@@ -3579,7 +4052,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -3831,6 +4304,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1
+   ],
+   "minLevel": 19,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -3869,7 +4351,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -3888,7 +4370,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -4222,7 +4704,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -4248,6 +4730,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 8,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsSprinting()=1"
   ]
@@ -4293,6 +4785,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 10,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -4349,7 +4852,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "MGEF DLC03_PerkDestroyerArcadia archetype Script — needs override"
   ]
@@ -4370,7 +4873,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -4389,7 +4892,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -4408,7 +4911,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "MGEF DLC03_PerkProtectorArcadia archetype Script — needs override"
   ]
@@ -4597,7 +5100,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "condition: GetGold()=100",
    "condition: GetGold()=1000",
@@ -4654,7 +5157,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -4685,7 +5188,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -4705,6 +5208,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    2
+   ],
+   "minLevel": 45,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsOverEncumbered()=0",
    "condition: WornHasKeyword(ArmorTypePower)=0"
@@ -4733,6 +5245,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 3,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -4752,6 +5274,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1
+   ],
+   "minLevel": 23,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -4804,7 +5335,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -4861,7 +5392,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -4899,7 +5430,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -4918,7 +5449,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -4937,7 +5468,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "entry point Mod My Critical Hit Damage Mult uses Add Actor Value Mult — skipped"
   ]
@@ -4970,7 +5501,16 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    2
+   ],
+   "minLevel": 9,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -5008,7 +5548,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -5127,6 +5667,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 30,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -5241,6 +5792,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1
+   ],
+   "minLevel": 35,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -5260,6 +5820,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1
+   ],
+   "minLevel": 17,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsOverEncumbered()=0",
    "condition: WornHasKeyword(ArmorTypePower)=0",
@@ -5295,6 +5864,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 14,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -5313,7 +5893,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -5332,7 +5912,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -5351,7 +5931,16 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    2
+   ],
+   "minLevel": 15,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -5383,6 +5972,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1
+   ],
+   "minLevel": 5,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -5414,6 +6012,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 27,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -5433,6 +6042,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1
+   ],
+   "minLevel": 2,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "AbPerkFortifyStimpakHealing: curve with unmapped input AV 0x000002C6 — needs override"
   ]
@@ -5453,7 +6071,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -5485,6 +6103,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 27,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -5651,6 +6280,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1
+   ],
+   "minLevel": 22,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -5670,6 +6308,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1
+   ],
+   "minLevel": 29,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "AbPerkFortifyVATSCritFillOnMiss: curve with unmapped input AV 0x000002C8 — needs override"
   ]
@@ -5703,6 +6350,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 48,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -5728,6 +6386,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 33,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -5766,8 +6434,8 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=1"
+        "kind": "glowAtLeast",
+        "min": 1
        }
       ]
      }
@@ -5794,8 +6462,8 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=1"
+        "kind": "glowAtLeast",
+        "min": 1
        }
       ]
      }
@@ -5822,8 +6490,8 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=1"
+        "kind": "glowAtLeast",
+        "min": 1
        }
       ]
      }
@@ -5831,9 +6499,18 @@
    }
   ],
   "hasCard": true,
-  "notes": [
-   "condition: GetValue(Rads)=1"
-  ]
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 50,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
+  "notes": []
  },
  {
   "family": "GHL_ArmsOfSteel",
@@ -5858,6 +6535,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 70,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -5883,9 +6570,19 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 80,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: GetCombatState()=1",
-   "condition: GetValue(Rads)=0"
+   "condition: GetValue(Rads) Equal To 0"
   ]
  },
  {
@@ -5917,6 +6614,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 80,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: OR-group[IsTrueForConditionForm(GHL_HasModerateGlowConsumptionFeralRage_Condition)=1 | GetValue(Rads)=0x007F68BB]"
   ]
@@ -6025,6 +6733,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 90,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -6056,6 +6775,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 60,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -6075,6 +6805,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    2
+   ],
+   "minLevel": 100,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -6106,6 +6845,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 55,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -6124,7 +6874,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "condition: GetIsDisguisedWithKeyword(GHL_PlayerGhoulDisguiseKeyword)=1",
    "MGEF GHL_DisguiseUIDummyEffect archetype Script — needs override"
@@ -6159,6 +6909,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 85,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: GetDistanceToClosestHostileActor()=10",
    "condition: GetDistanceToClosestHostileActor()=20",
@@ -6206,6 +6967,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    2
+   ],
+   "minLevel": 75,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: GetWeakPointDamageMultiplier()=1"
   ]
@@ -6233,6 +7003,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 80,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -6271,8 +7051,8 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=180"
+        "kind": "glowAtLeast",
+        "min": 180
        }
       ]
      }
@@ -6299,8 +7079,8 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=180"
+        "kind": "glowAtLeast",
+        "min": 180
        }
       ]
      }
@@ -6327,8 +7107,8 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=180"
+        "kind": "glowAtLeast",
+        "min": 180
        }
       ]
      }
@@ -6336,6 +7116,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 100,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -6367,6 +7158,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 80,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -6386,6 +7188,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1
+   ],
+   "minLevel": 75,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -6411,8 +7222,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 50,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": [
-   "condition: GetValue(Rads)=180",
    "MGEF GHL_GlowingOnePerkCloakEffect01 archetype Cloak — needs override",
    "MGEF GHL_GlowingOneUIDummyEffect archetype Script — needs override",
    "MGEF GHL_GlowingOnePerkCloakEffect02 archetype Cloak — needs override"
@@ -6434,7 +7254,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -6526,6 +7346,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 80,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -6557,8 +7388,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 100,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": [
-   "condition: GetValue(Rads)=180",
    "condition: WornHasKeyword(ArmorTypePower)=0"
   ]
  },
@@ -6585,8 +7426,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 60,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": [
-   "condition: GetValue(Rads)=200",
    "condition: IsSprinting()=1"
   ]
  },
@@ -6625,6 +7475,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "minLevel": 50,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": true
+  },
   "notes": []
  },
  {
@@ -6662,6 +7524,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "minLevel": 50,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": true
+  },
   "notes": [
    "condition: GetValue(GHL_SURV_Feral)=0x007A7689",
    "MGEF GHL_LGN_AddFeralRagePerk archetype Script — needs override"
@@ -6683,7 +7557,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -6722,8 +7596,8 @@
         "raw": "IsPowerAttacking()=0"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=0x007F68B6"
+        "kind": "glowAtLeast",
+        "min": 5
        },
        {
         "kind": "weaponKeyword",
@@ -6735,8 +7609,8 @@
         "raw": "GetDead()=0"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=1"
+        "kind": "glowAtLeast",
+        "min": 1
        },
        {
         "kind": "playerIsGhoul",
@@ -6781,8 +7655,8 @@
         "raw": "IsPowerAttacking()=0"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=0x007F68B6"
+        "kind": "glowAtLeast",
+        "min": 5
        },
        {
         "kind": "weaponKeyword",
@@ -6794,8 +7668,8 @@
         "raw": "GetDead()=0"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=1"
+        "kind": "glowAtLeast",
+        "min": 1
        },
        {
         "kind": "playerIsGhoul",
@@ -6840,8 +7714,8 @@
         "raw": "IsPowerAttacking()=0"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=0x007F68B6"
+        "kind": "glowAtLeast",
+        "min": 5
        },
        {
         "kind": "weaponKeyword",
@@ -6853,8 +7727,8 @@
         "raw": "GetDead()=0"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=1"
+        "kind": "glowAtLeast",
+        "min": 1
        },
        {
         "kind": "playerIsGhoul",
@@ -6880,8 +7754,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 60,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": [
-   "condition: GetValue(Rads)=1",
    "condition: IsPowerAttacking()=0"
   ]
  },
@@ -6901,7 +7785,16 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1
+   ],
+   "minLevel": 70,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -7010,8 +7903,8 @@
         "raw": "IsPowerAttacking()=0"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=0x007F68B6"
+        "kind": "glowAtLeast",
+        "min": 5
        },
        {
         "kind": "unresolved",
@@ -7022,8 +7915,8 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=0x007F68B6"
+        "kind": "glowAtLeast",
+        "min": 5
        },
        {
         "kind": "unresolved",
@@ -7054,8 +7947,8 @@
         "raw": "IsPowerAttacking()=0"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=0x007F68B6"
+        "kind": "glowAtLeast",
+        "min": 5
        },
        {
         "kind": "unresolved",
@@ -7066,8 +7959,8 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=0x007F68B6"
+        "kind": "glowAtLeast",
+        "min": 5
        },
        {
         "kind": "unresolved",
@@ -7098,8 +7991,8 @@
         "raw": "IsPowerAttacking()=0"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=0x007F68B6"
+        "kind": "glowAtLeast",
+        "min": 5
        },
        {
         "kind": "unresolved",
@@ -7110,8 +8003,8 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=0x007F68B6"
+        "kind": "glowAtLeast",
+        "min": 5
        },
        {
         "kind": "unresolved",
@@ -7123,8 +8016,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 50,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": [
-   "condition: GetValue(Rads)=0x007F68B6",
    "condition: IsPowerAttacking()=0"
   ]
  },
@@ -7190,8 +8093,8 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=0x007F68BB"
+        "kind": "glowAtLeast",
+        "min": 50
        }
       ]
      },
@@ -7238,8 +8141,8 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=0x007F68BB"
+        "kind": "glowAtLeast",
+        "min": 50
        }
       ]
      }
@@ -7292,8 +8195,8 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=0x007F68BB"
+        "kind": "glowAtLeast",
+        "min": 50
        }
       ]
      },
@@ -7340,8 +8243,8 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=0x007F68BB"
+        "kind": "glowAtLeast",
+        "min": 50
        }
       ]
      }
@@ -7394,8 +8297,8 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=0x007F68BB"
+        "kind": "glowAtLeast",
+        "min": 50
        }
       ]
      },
@@ -7442,8 +8345,8 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=0x007F68BB"
+        "kind": "glowAtLeast",
+        "min": 50
        }
       ]
      }
@@ -7451,8 +8354,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 80,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": [
-   "condition: GetValue(Rads)=0x007F68BB",
    "condition: WornHasKeyword(AnimsMinigunShredder)=0"
   ]
  },
@@ -7473,6 +8386,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    2
+   ],
+   "minLevel": 100,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -7504,6 +8426,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 70,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": [
    "MGEF GHL_RadSpecialistUIDummyEffect archetype Script — needs override"
   ]
@@ -7537,6 +8470,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 100,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -7555,7 +8499,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "condition: GetValue(GHL_SURV_Feral)=0x007A7693",
    "MGEF GHL_SURV_FeralVFX_FeralTier5Effect archetype Script — needs override"
@@ -7590,6 +8534,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 60,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -8107,6 +9062,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 60,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: GetPlayerTeammateCount Greater Than Or Equal To 1",
    "MGEF AbPerkFortifyAllSPECIAL_Desc archetype Script — needs override"
@@ -8141,6 +9107,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 65,
+   "raceRestriction": "ghoul",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -8172,6 +9149,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 36,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -8263,6 +9251,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 2,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -8282,6 +9281,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1
+   ],
+   "minLevel": 15,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -8301,6 +9309,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1
+   ],
+   "minLevel": 35,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -8392,6 +9409,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 33,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -8411,6 +9439,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1
+   ],
+   "minLevel": 32,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -8430,6 +9467,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1
+   ],
+   "minLevel": 8,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -8455,6 +9501,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 9,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -8473,7 +9529,16 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1
+   ],
+   "minLevel": 4,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -8499,6 +9564,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 35,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -8518,6 +9593,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    2
+   ],
+   "minLevel": 33,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -8609,6 +9693,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 18,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsTrueForConditionForm(SmallGun_Actor_Condition)=1"
   ]
@@ -8717,6 +9812,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 5,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -8794,6 +9900,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    2
+   ],
+   "minLevel": 20,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -8875,6 +9990,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    3
+   ],
+   "minLevel": 40,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -8906,6 +10030,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -8930,7 +10065,17 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 4,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsSprinting()=0"
   ]
@@ -9027,6 +10172,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 2,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -9109,6 +10265,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    2
+   ],
+   "minLevel": 15,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -9149,6 +10314,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    3
+   ],
+   "minLevel": 35,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -9180,6 +10354,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 11,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -9199,6 +10384,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1
+   ],
+   "minLevel": 4,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -9218,6 +10412,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1
+   ],
+   "minLevel": 22,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -9237,6 +10440,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1
+   ],
+   "minLevel": 38,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -9262,6 +10474,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 3,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -9287,6 +10509,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 17,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -9306,6 +10538,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1
+   ],
+   "minLevel": 7,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -9324,7 +10565,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -9343,7 +10584,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -9363,6 +10604,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1
+   ],
+   "minLevel": 28,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -9394,6 +10644,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 30,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "abAmmoSpenderFortifyStacks: curve with unmapped input AV 0x0000039B — needs override",
    "condition: HasPerk(HeavyGunnerMaster01)=1",
@@ -9427,6 +10688,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    2
+   ],
+   "minLevel": 40,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -9446,6 +10716,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    3
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -9464,7 +10743,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -9483,7 +10762,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -9503,6 +10782,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1
+   ],
+   "minLevel": 19,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: OR-group[LocationHasPlayerOwnedWorkshop(undefined)=1 | IsPlayerInCampOwned(undefined)=1 | IsPlayerInShelterOwned(undefined)=1]"
   ]
@@ -9536,6 +10824,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 22,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -9554,7 +10853,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -9630,7 +10929,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -9725,7 +11024,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -9751,6 +11050,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 11,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -9787,7 +11096,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -9806,7 +11115,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -9838,6 +11147,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 34,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -9857,6 +11177,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1
+   ],
+   "minLevel": 19,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -9888,6 +11217,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1
+   ],
+   "minLevel": 2,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsMemberOfAPlayerTeam()=1",
    "AbFortifyXP: curve with unmapped input AV 0x000002C5 — needs override"
@@ -9909,7 +11247,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -9940,7 +11278,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -9984,6 +11322,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 30,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -10117,6 +11466,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1
+   ],
+   "minLevel": 2,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -10148,6 +11506,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1
+   ],
+   "minLevel": 4,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: GetNumActiveEffectsWithKeyword(SURV_EffectTypeDisease) Equal To 0"
   ]
@@ -10169,6 +11536,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1
+   ],
+   "minLevel": 10,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "AbPerkFortifyResistDamage: curve with unmapped input AV 0x00000394 — needs override",
    "AbPerkFortifyResistEnergy: curve with unmapped input AV 0x00000394 — needs override"
@@ -10202,7 +11578,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -10222,6 +11598,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1
+   ],
+   "minLevel": 27,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "MGEF AbPerkLastLaugh_ScriptEffect archetype Script — needs override"
   ]
@@ -10280,6 +11665,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1
+   ],
+   "minLevel": 2,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -10491,7 +11885,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -10510,7 +11904,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -10529,7 +11923,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -10548,7 +11942,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -10567,7 +11961,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -10605,7 +11999,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -10624,7 +12018,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -10694,7 +12088,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -10713,7 +12107,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -10732,7 +12126,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -10818,7 +12212,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "perk Legendary_Weapon_ConductorsPlayerPerk: GetLastHitCritical()=1",
    "perk Legendary_Weapon_ConductorsPlayerPerk: entry point Apply Combat Hit Spell — not modeled"
@@ -10840,7 +12234,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -10998,7 +12392,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -11122,7 +12516,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -11141,7 +12535,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -11221,7 +12615,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "entry point Mod Damage on Consecutive Hits uses Add Actor Value Mult — skipped"
   ]
@@ -11295,7 +12689,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -11390,7 +12784,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -11428,7 +12822,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -11465,7 +12859,19 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": []
  },
  {
@@ -11484,7 +12890,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -11522,6 +12928,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": []
  },
  {
@@ -11559,6 +12977,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": [
    "MGEF LGN_BrawlingChemist_Effect01 archetype Script — needs override",
    "MGEF LGN_BrawlingChemist_Effect02 archetype Script — needs override",
@@ -11601,6 +13031,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": []
  },
  {
@@ -11638,6 +13080,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": []
  },
  {
@@ -11675,6 +13129,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": []
  },
  {
@@ -11712,6 +13178,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": []
  },
  {
@@ -11730,7 +13208,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -11768,6 +13246,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": []
  },
  {
@@ -11805,6 +13295,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": []
  },
  {
@@ -11842,6 +13344,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": [
    "condition: OR-group[WornApparelHasKeywordCount(XPD_AC_dn_armor_Muni)=5 | WornApparelHasKeywordCount(dn_armor_Robot)=5 | WornApparelHasKeywordCount(dn_armor_RaiderMod)=5 | WornApparelHasKeywordCount(dn_armor_Trapper)=5 | WornApparelHasKeywordCount(dn_armor_SecretService)=5 | WornApparelHasKeywordCount(ma_armor_Wood)=5 | WornApparelHasKeywordCount(dn_armor_Metal)=5 | WornApparelHasKeywordCount(DLC03_dn_armor_Marine)=5 | WornApparelHasKeywordCount(dn_armor_Combat)=5 | WornApparelHasKeywordCount(ma_EnclaveScoutUniform)=5 | WornApparelHasKeywordCount(dn_armor_EnclaveScoutUniform_Solar)=5 | WornApparelHasKeywordCount(dn_armor_EnclaveScoutUniform_Thorn)=5 | WornApparelHasKeywordCount(ma_armor_Leather)=5 | WornApparelHasKeywordCount(dn_armor_BOSInfantry)=5 | WornApparelHasKeywordCount(dn_armor_EnclaveScoutUniform_Covert)=5 | WornApparelHasKeywordCount(dn_PowerArmor_Excavator)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Raider)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T45)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T51)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T60)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T65)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Ultracite)=6 | WornApparelHasKeywordCount(dn_PowerArmor_V94_Ultracite)=6 | WornApparelHasKeywordCount(dn_PowerArmor_X01)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Hellcat)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Union)=6 | WornApparelHasKeywordCount(RD01_dn_PowerArmor_EnclaveVulcan)=6]",
    "condition: OR-group[WornApparelHasKeywordCount(XPD_AC_dn_armor_Muni)=5 | WornApparelHasKeywordCount(dn_armor_Robot)=5 | WornApparelHasKeywordCount(dn_armor_RaiderMod)=5 | WornApparelHasKeywordCount(dn_armor_Trapper)=5 | WornApparelHasKeywordCount(dn_armor_SecretService)=5 | WornApparelHasKeywordCount(ma_armor_Wood)=5 | WornApparelHasKeywordCount(dn_armor_Metal)=5 | WornApparelHasKeywordCount(DLC03_dn_armor_Marine)=5 | WornApparelHasKeywordCount(dn_armor_Combat)=5 | WornApparelHasKeywordCount(dn_armor_EnclaveScoutUniform_Solar)=5 | WornApparelHasKeywordCount(dn_armor_EnclaveScoutUniform_Thorn)=5 | WornApparelHasKeywordCount(ma_armor_Leather)=5 | WornApparelHasKeywordCount(ma_EnclaveScoutUniform)=5 | WornApparelHasKeywordCount(dn_armor_BOSInfantry)=5 | WornApparelHasKeywordCount(dn_armor_EnclaveScoutUniform_Covert)=5 | WornApparelHasKeywordCount(dn_PowerArmor_Excavator)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Raider)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T45)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T51)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T60)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T65)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Ultracite)=6 | WornApparelHasKeywordCount(dn_PowerArmor_V94_Ultracite)=6 | WornApparelHasKeywordCount(dn_PowerArmor_X01)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Hellcat)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Union)=6 | WornApparelHasKeywordCount(RD01_dn_PowerArmor_EnclaveVulcan)=6]",
@@ -11882,7 +13396,19 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": []
  },
  {
@@ -11919,7 +13445,19 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": [
    "MGEF AbLgnPerkFortifyAgility archetype Dual Value Modifier — needs override"
   ]
@@ -11958,7 +13496,19 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": [
    "MGEF AbLgnPerkFortifyCharisma archetype Dual Value Modifier — needs override"
   ]
@@ -11997,7 +13547,19 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": [
    "MGEF AbLgnPerkFortifyEndurance archetype Dual Value Modifier — needs override"
   ]
@@ -12036,7 +13598,19 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": [
    "MGEF AbLgnPerkFortifyIntelligence archetype Dual Value Modifier — needs override"
   ]
@@ -12075,7 +13649,19 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": [
    "MGEF AbLgnPerkFortifyLuck archetype Dual Value Modifier — needs override"
   ]
@@ -12114,7 +13700,19 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": [
    "MGEF AbLgnPerkFortifyPerception archetype Dual Value Modifier — needs override"
   ]
@@ -12153,7 +13751,19 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": [
    "MGEF AbLgnPerkFortifyStrength archetype Dual Value Modifier — needs override"
   ]
@@ -12192,7 +13802,19 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": []
  },
  {
@@ -12230,6 +13852,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": []
  },
  {
@@ -12267,6 +13901,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": []
  },
  {
@@ -12304,6 +13950,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": [
    "entry point Mod Power Attack Damage uses Select Spell — skipped"
   ]
@@ -12343,6 +14001,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": [
    "condition: OR-group[WornApparelHasKeywordCount(XPD_AC_dn_armor_Muni)=5 | WornApparelHasKeywordCount(dn_armor_Robot)=5 | WornApparelHasKeywordCount(dn_armor_RaiderMod)=5 | WornApparelHasKeywordCount(dn_armor_Trapper)=5 | WornApparelHasKeywordCount(dn_armor_SecretService)=5 | WornApparelHasKeywordCount(ma_armor_Wood)=5 | WornApparelHasKeywordCount(dn_armor_Metal)=5 | WornApparelHasKeywordCount(DLC03_dn_armor_Marine)=5 | WornApparelHasKeywordCount(dn_armor_Combat)=5 | WornApparelHasKeywordCount(dn_armor_EnclaveScoutUniform_Solar)=5 | WornApparelHasKeywordCount(dn_armor_EnclaveScoutUniform_Thorn)=5 | WornApparelHasKeywordCount(ma_armor_Leather)=5 | WornApparelHasKeywordCount(ma_EnclaveScoutUniform)=5 | WornApparelHasKeywordCount(dn_armor_BOSInfantry)=5 | WornApparelHasKeywordCount(dn_armor_EnclaveScoutUniform_Covert)=5 | WornApparelHasKeywordCount(dn_PowerArmor_Excavator)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Raider)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T45)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T51)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T60)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T65)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Ultracite)=6 | WornApparelHasKeywordCount(dn_PowerArmor_V94_Ultracite)=6 | WornApparelHasKeywordCount(dn_PowerArmor_X01)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Hellcat)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Union)=6 | WornApparelHasKeywordCount(RD01_dn_PowerArmor_EnclaveVulcan)=6]",
    "condition: OR-group[WornApparelHasKeywordCount(XPD_AC_dn_armor_Muni)=5 | WornApparelHasKeywordCount(dn_armor_Robot)=5 | WornApparelHasKeywordCount(dn_armor_RaiderMod)=5 | WornApparelHasKeywordCount(dn_armor_Trapper)=5 | WornApparelHasKeywordCount(dn_armor_SecretService)=5 | WornApparelHasKeywordCount(ma_armor_Wood)=5 | WornApparelHasKeywordCount(dn_armor_Metal)=5 | WornApparelHasKeywordCount(DLC03_dn_armor_Marine)=5 | WornApparelHasKeywordCount(dn_armor_Combat)=5 | WornApparelHasKeywordCount(dn_armor_EnclaveScoutUniform_Solar)=5 | WornApparelHasKeywordCount(dn_armor_EnclaveScoutUniform_Thorn)=5 | WornApparelHasKeywordCount(ma_EnclaveScoutUniform)=5 | WornApparelHasKeywordCount(ma_armor_Leather)=5 | WornApparelHasKeywordCount(dn_armor_BOSInfantry)=5 | WornApparelHasKeywordCount(dn_armor_EnclaveScoutUniform_Covert)=5 | WornApparelHasKeywordCount(dn_PowerArmor_Excavator)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Raider)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T45)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T51)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T60)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T65)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Ultracite)=6 | WornApparelHasKeywordCount(dn_PowerArmor_V94_Ultracite)=6 | WornApparelHasKeywordCount(dn_PowerArmor_X01)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Hellcat)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Union)=6 | WornApparelHasKeywordCount(RD01_dn_PowerArmor_EnclaveVulcan)=6]",
@@ -12385,6 +14055,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": [
    "MGEF LGN_SurvivalShortcut_Effect01 archetype Script — needs override",
    "MGEF LGN_SurvivalShortcut_Effect02 archetype Script — needs override",
@@ -12426,7 +14108,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -12464,6 +14146,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": true
+  },
   "notes": []
  },
  {
@@ -12501,6 +14195,18 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    1,
+    1,
+    1
+   ],
+   "minLevel": 50,
+   "raceRestriction": "human",
+   "isLegendaryCard": true
+  },
   "notes": []
  },
  {
@@ -12532,6 +14238,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 5,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -12683,6 +14400,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    2
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -12702,6 +14428,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1
+   ],
+   "minLevel": 29,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -12727,6 +14462,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 1,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -12751,7 +14496,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -12783,6 +14528,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    2
+   ],
+   "minLevel": 37,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -12813,7 +14567,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -12845,6 +14599,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    2
+   ],
+   "minLevel": 4,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsMemberOfAPlayerTeam()=0",
    "AbPerkFortifyActionPointRegen: curve with unmapped input AV 0x000002C5 — needs override",
@@ -12868,6 +14631,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1
+   ],
+   "minLevel": 37,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -12886,7 +14658,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -12905,7 +14677,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -12924,7 +14696,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -12956,6 +14728,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 14,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -12987,6 +14770,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 24,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -13025,7 +14819,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13064,7 +14858,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13103,7 +14897,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13142,7 +14936,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13181,7 +14975,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13221,7 +15015,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13240,7 +15034,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13259,7 +15053,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13298,7 +15092,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13317,7 +15111,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13336,7 +15130,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13376,7 +15170,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13395,7 +15189,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13414,7 +15208,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13433,7 +15227,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13452,7 +15246,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13471,7 +15265,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13490,7 +15284,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13509,7 +15303,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13528,7 +15322,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13547,7 +15341,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13566,7 +15360,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13605,7 +15399,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13624,7 +15418,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13658,7 +15452,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13677,7 +15471,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13696,7 +15490,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13715,7 +15509,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13734,7 +15528,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13753,7 +15547,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13772,7 +15566,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13791,7 +15585,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13810,7 +15604,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13829,7 +15623,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13962,7 +15756,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -13981,7 +15775,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -14000,7 +15794,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -14019,7 +15813,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -14038,7 +15832,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -14115,7 +15909,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -14276,6 +16070,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 13,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -14307,6 +16111,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 9,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -14338,6 +16153,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 13,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -14453,6 +16279,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 16,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: GetWeaponAnimType()=6"
   ]
@@ -14473,7 +16310,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -14649,7 +16486,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "MGEF AbPerkFortifyResistPoison: zero magnitude, no curve — script/scaled, needs override"
   ]
@@ -14685,7 +16522,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "MGEF AbPerkFortifyResistPoison: zero magnitude, no curve — script/scaled, needs override"
   ]
@@ -14706,7 +16543,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "MGEF AbPerkFortifyIntelligence: zero magnitude, no curve — script/scaled, needs override"
   ]
@@ -14814,6 +16651,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 37,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -15237,7 +17084,18 @@
     ]
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 18,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -15311,6 +17169,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 5,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsSprinting()=1",
    "condition: WornHasKeyword(ArmorTypePower)=0"
@@ -15339,6 +17208,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 17,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -15397,7 +17276,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -15416,7 +17295,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -15435,7 +17314,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -15454,7 +17333,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -15473,7 +17352,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -15492,7 +17371,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -15511,7 +17390,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -15549,7 +17428,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -15568,7 +17447,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -15587,7 +17466,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -15606,7 +17485,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -15625,7 +17504,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -15644,7 +17523,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -15663,7 +17542,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -15695,6 +17574,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 49,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -15726,6 +17616,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 26,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -15775,7 +17676,18 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 12,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -15807,6 +17719,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1
+   ],
+   "minLevel": 10,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: GetNumActiveEffectsWithKeyword(SURV_EffectTypeDisease) Equal To 0"
   ]
@@ -15898,7 +17819,16 @@
     ]
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    2
+   ],
+   "minLevel": 46,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -15918,6 +17848,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "MGEF PerkNocturnalEffect archetype Script — needs override"
   ]
@@ -15978,6 +17917,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    2
+   ],
+   "minLevel": 24,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsTrueForConditionForm(Perk_Night_Condition)=1"
   ]
@@ -16087,6 +18035,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 15,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -16152,6 +18110,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 29,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsTrueForConditionForm(Perk_Night_Condition)=1"
   ]
@@ -16172,7 +18140,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -16305,6 +18273,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 31,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -16330,6 +18309,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 31,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -16355,6 +18344,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 32,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -16373,7 +18372,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -16392,7 +18391,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -16411,7 +18410,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -16430,7 +18429,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -16449,7 +18448,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -16741,7 +18740,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -16896,7 +18895,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "entry point Mod Damage on Consecutive Hits uses Add Actor Value Mult — skipped"
   ]
@@ -17165,7 +19164,16 @@
     ]
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1
+   ],
+   "minLevel": 9,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsOverEncumbered()=0"
   ]
@@ -17192,7 +19200,17 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 7,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -17224,6 +19242,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 41,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -17243,6 +19272,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1
+   ],
+   "minLevel": 12,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -17268,6 +19306,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    2,
+    3
+   ],
+   "minLevel": 24,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -17293,6 +19341,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    2,
+    3
+   ],
+   "minLevel": 24,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -17323,7 +19381,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -17343,6 +19401,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1
+   ],
+   "minLevel": 16,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -17361,7 +19428,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -17380,7 +19447,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -17600,7 +19667,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -17619,7 +19686,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -17638,7 +19705,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -17705,7 +19772,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -17724,7 +19791,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -17870,7 +19937,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -17913,7 +19980,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -18104,7 +20171,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -18123,7 +20190,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -18142,7 +20209,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -18209,7 +20276,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "condition: IsSwimming()=1"
   ]
@@ -18230,7 +20297,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -18250,6 +20317,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1
+   ],
+   "minLevel": 6,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": [
    "AbPerkFortifyRadawayHealing: curve with unmapped input AV 0x000002C6 — needs override"
   ]
@@ -18271,6 +20347,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1
+   ],
+   "minLevel": 2,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -18302,6 +20387,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 39,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "MGEF AbPerkPhilanthropist_ScriptEffect archetype Script — needs override"
   ]
@@ -18329,6 +20425,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 47,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsTrueForConditionForm(Perk_Day_Condition)=1"
   ]
@@ -18350,6 +20456,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1
+   ],
+   "minLevel": 5,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -18369,6 +20484,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1
+   ],
+   "minLevel": 19,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -18388,6 +20512,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1
+   ],
+   "minLevel": 40,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -18484,7 +20617,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -18836,6 +20969,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 24,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsSprinting()=0",
    "condition: WornHasKeyword(ArmorTypePower)=1"
@@ -18857,7 +21001,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -18927,6 +21071,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 44,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -18946,6 +21101,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1
+   ],
+   "minLevel": 41,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -18977,6 +21141,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -18996,6 +21171,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    2
+   ],
+   "minLevel": 39,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -19087,6 +21271,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    2
+   ],
+   "minLevel": 20,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -19546,6 +21739,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1
+   ],
+   "minLevel": 22,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -19577,6 +21779,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 40,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -19657,8 +21870,8 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=100"
+        "kind": "glowAtLeast",
+        "min": 100
        }
       ]
      },
@@ -19676,8 +21889,8 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=190"
+        "kind": "glowAtLeast",
+        "min": 190
        }
       ]
      },
@@ -19695,8 +21908,8 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=280"
+        "kind": "glowAtLeast",
+        "min": 280
        }
       ]
      },
@@ -19714,8 +21927,8 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=370"
+        "kind": "glowAtLeast",
+        "min": 370
        }
       ]
      },
@@ -19733,8 +21946,8 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=460"
+        "kind": "glowAtLeast",
+        "min": 460
        }
       ]
      },
@@ -19756,8 +21969,8 @@
         "raw": "HasPerk(CUT_Radicool02)=1"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=130"
+        "kind": "glowAtLeast",
+        "min": 130
        }
       ]
      },
@@ -19779,8 +21992,8 @@
         "raw": "HasPerk(CUT_Radicool02)=1"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=220"
+        "kind": "glowAtLeast",
+        "min": 220
        }
       ]
      },
@@ -19802,8 +22015,8 @@
         "raw": "HasPerk(CUT_Radicool02)=1"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=310"
+        "kind": "glowAtLeast",
+        "min": 310
        }
       ]
      },
@@ -19825,8 +22038,8 @@
         "raw": "HasPerk(CUT_Radicool02)=1"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=400"
+        "kind": "glowAtLeast",
+        "min": 400
        }
       ]
      },
@@ -19848,8 +22061,8 @@
         "raw": "HasPerk(CUT_Radicool02)=1"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=490"
+        "kind": "glowAtLeast",
+        "min": 490
        }
       ]
      },
@@ -19871,8 +22084,8 @@
         "raw": "HasPerk(CUT_Radicool03)=1"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=160"
+        "kind": "glowAtLeast",
+        "min": 160
        }
       ]
      },
@@ -19894,8 +22107,8 @@
         "raw": "HasPerk(CUT_Radicool03)=1"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=250"
+        "kind": "glowAtLeast",
+        "min": 250
        }
       ]
      },
@@ -19917,8 +22130,8 @@
         "raw": "HasPerk(CUT_Radicool03)=1"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=340"
+        "kind": "glowAtLeast",
+        "min": 340
        }
       ]
      },
@@ -19940,8 +22153,8 @@
         "raw": "HasPerk(CUT_Radicool03)=1"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=430"
+        "kind": "glowAtLeast",
+        "min": 430
        }
       ]
      },
@@ -19963,33 +22176,27 @@
         "raw": "HasPerk(CUT_Radicool03)=1"
        },
        {
-        "kind": "unresolved",
-        "raw": "GetValue(Rads)=520"
+        "kind": "glowAtLeast",
+        "min": 520
        }
       ]
      }
     ]
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1
+   ],
+   "minLevel": 38,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": [
-   "condition: GetValue(Rads)=100",
-   "condition: GetValue(Rads)=190",
-   "condition: GetValue(Rads)=280",
-   "condition: GetValue(Rads)=370",
-   "condition: GetValue(Rads)=460",
    "condition: HasPerk(CUT_Radicool02)=1",
-   "condition: GetValue(Rads)=130",
-   "condition: GetValue(Rads)=220",
-   "condition: GetValue(Rads)=310",
-   "condition: GetValue(Rads)=400",
-   "condition: GetValue(Rads)=490",
-   "condition: HasPerk(CUT_Radicool03)=1",
-   "condition: GetValue(Rads)=160",
-   "condition: GetValue(Rads)=250",
-   "condition: GetValue(Rads)=340",
-   "condition: GetValue(Rads)=430",
-   "condition: GetValue(Rads)=520"
+   "condition: HasPerk(CUT_Radicool03)=1"
   ]
  },
  {
@@ -20027,6 +22234,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1
+   ],
+   "minLevel": 34,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -20058,6 +22274,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    2
+   ],
+   "minLevel": 44,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -20201,7 +22426,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -20277,7 +22502,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -20297,6 +22522,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    2
+   ],
+   "minLevel": 32,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "AbPerkFortifyResistEnergy: curve with unmapped input AV 0x000002C3 — needs override"
   ]
@@ -20324,6 +22558,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 12,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -20343,6 +22587,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1
+   ],
+   "minLevel": 32,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -20362,6 +22615,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1
+   ],
+   "minLevel": 38,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "AbPerkFortifyDeflectChance: curve with unmapped input AV 0x000002C8 — needs override"
   ]
@@ -20455,6 +22717,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 2,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -20474,6 +22747,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    2
+   ],
+   "minLevel": 15,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -20517,6 +22799,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    3
+   ],
+   "minLevel": 35,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -20535,7 +22826,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "AbPerkFortifyResistFire: curve with unmapped input AV 0x0000032C — needs override"
   ]
@@ -20569,6 +22860,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 48,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -20599,7 +22901,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "condition: IsMoving()=0",
    "MGEF PerkRootedScriptEffect archetype Script — needs override"
@@ -20754,7 +23056,16 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    2
+   ],
+   "minLevel": 18,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -20774,6 +23085,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    2
+   ],
+   "minLevel": 20,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "AbPerkFortifyDmgMultEnergy: curve with unmapped input AV 0x000002C6 — needs override"
   ]
@@ -20795,6 +23115,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    2
+   ],
+   "minLevel": 30,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "AbPerkFortifyDmgMultFire: curve with unmapped input AV 0x000002C6 — needs override"
   ]
@@ -20816,6 +23145,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    2
+   ],
+   "minLevel": 40,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "AbPerkFortifyDmgMultCryo: curve with unmapped input AV 0x000002C6 — needs override"
   ]
@@ -20836,7 +23174,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -20880,7 +23218,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -20899,7 +23237,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -20918,7 +23256,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -20937,7 +23275,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -20956,7 +23294,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -20975,7 +23313,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -20994,7 +23332,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -21013,7 +23351,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -21061,7 +23399,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "AbPerkFortifyResistEnergy: curve with unmapped input AV 0x0000032C — needs override"
   ]
@@ -21082,7 +23420,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -21125,7 +23463,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -21145,6 +23483,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1
+   ],
+   "minLevel": 13,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -21164,6 +23511,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1
+   ],
+   "minLevel": 3,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -21195,6 +23551,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 47,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: HasPerkCardEquipped(SecretAgentCard)=0",
    "condition: HasPerkCardEquipped(SecretAgentCard)=1"
@@ -21217,6 +23584,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1
+   ],
+   "minLevel": 5,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsOverEncumbered()=0",
    "condition: WornHasKeyword(ArmorTypePower)=0",
@@ -21385,6 +23761,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 5,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -21404,6 +23791,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    2
+   ],
+   "minLevel": 20,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -21423,6 +23819,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    3
+   ],
+   "minLevel": 40,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: GetValue(<unresolved:0x00000398>)=1",
    "abPerkFortifyDmgCrippled: curve with unmapped input AV 0x00000398 — needs override"
@@ -21445,6 +23850,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1
+   ],
+   "minLevel": 10,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -21470,6 +23884,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 5,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -21501,6 +23925,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 2,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -21546,6 +23981,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    2
+   ],
+   "minLevel": 15,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -21591,6 +24035,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    3
+   ],
+   "minLevel": 35,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -21609,7 +24062,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -21641,6 +24094,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Agility",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 20,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -21660,6 +24124,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1
+   ],
+   "minLevel": 28,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -21718,6 +24191,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    2
+   ],
+   "minLevel": 22,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsTrueForConditionForm(Perk_Day_Condition)=1"
   ]
@@ -21770,7 +24252,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -21802,6 +24284,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1
+   ],
+   "minLevel": 36,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsMemberOfAPlayerTeam()=1",
    "abRestoreHealth: curve with unmapped input AV 0x000002C5 — needs override"
@@ -21830,6 +24321,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 37,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsMemberOfAPlayerTeam()=1",
    "condition: IsSprinting()=0"
@@ -21883,6 +24384,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    2
+   ],
+   "minLevel": 36,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -21914,6 +24424,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 39,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -21939,6 +24460,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1
+   ],
+   "minLevel": 30,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -22048,7 +24578,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -22086,7 +24616,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -22173,7 +24703,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -22199,6 +24729,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 35,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsInInterior()=0",
    "condition: OR-group[IsInWeather(NewWeatherMistyRainy)=1 | IsInWeather(NewWeatherRain)=1 | IsInWeather(NewWeatherRadstorm)=1]"
@@ -22240,6 +24780,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1
+   ],
+   "minLevel": 42,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -22258,7 +24807,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -22278,6 +24827,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    2
+   ],
+   "minLevel": 26,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "AbPerkFortifyCarryWeight: curve with unmapped input AV 0x000002C2 — needs override"
   ]
@@ -22304,7 +24862,17 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 13,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -22330,6 +24898,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 45,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: IsTrueForConditionForm(Perk_Day_Condition)=1"
   ]
@@ -22362,7 +24940,18 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -22394,6 +24983,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 40,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -22437,7 +25037,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -22469,6 +25069,16 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 30,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -22500,6 +25110,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 20,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": [
    "MGEF AbPerkTeamMedic_ScriptEffect archetype Script — needs override"
   ]
@@ -22521,6 +25142,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    2
+   ],
+   "minLevel": 46,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -22539,7 +25169,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -22685,7 +25315,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "condition: HasMagicEffectKeyword(AbilityTypeMutation)=1",
    "MGEF AbPerkTheWeird_ScriptEffect archetype Script — needs override"
@@ -22720,6 +25350,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1
+   ],
+   "minLevel": 6,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": [
    "condition: GetNumActiveEffectsWithKeyword(SURV_EffectTypeDisease) Equal To 0"
   ]
@@ -22746,7 +25385,17 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 7,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -22786,6 +25435,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Perception",
+   "costs": [
+    2
+   ],
+   "minLevel": 37,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -23112,6 +25770,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1
+   ],
+   "minLevel": 26,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -23136,7 +25803,17 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1,
+    2
+   ],
+   "minLevel": 3,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -24649,7 +27326,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -24668,7 +27345,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -24699,7 +27376,16 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Endurance",
+   "costs": [
+    1
+   ],
+   "minLevel": 16,
+   "raceRestriction": "human",
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -24718,7 +27404,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -24737,7 +27423,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -24901,6 +27587,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Charisma",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 50,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -24932,6 +27629,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 40,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -24975,7 +27683,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -25007,6 +27715,17 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Intelligence",
+   "costs": [
+    1,
+    2,
+    3
+   ],
+   "minLevel": 39,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -25025,7 +27744,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -25063,7 +27782,16 @@
     "modifiers": []
    }
   ],
-  "hasCard": false,
+  "hasCard": true,
+  "card": {
+   "special": "Luck",
+   "costs": [
+    1
+   ],
+   "minLevel": 17,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -25590,6 +28318,15 @@
    }
   ],
   "hasCard": true,
+  "card": {
+   "special": "Strength",
+   "costs": [
+    1
+   ],
+   "minLevel": 29,
+   "raceRestriction": null,
+   "isLegendaryCard": false
+  },
   "notes": []
  },
  {
@@ -25608,7 +28345,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -25627,7 +28364,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -25684,7 +28421,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -25703,7 +28440,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -25760,7 +28497,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
@@ -25779,7 +28516,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "perk ZZZ_SCORE_NukaX_FastReloadSpeedPerk: perk ZZZ_SCORE_NukaX_FastReloadSpeedPerk: MGEF ZZZ_SCORE_NukaX_FortifyReloadSpeed archetype Script — needs override"
   ]
@@ -25800,7 +28537,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "perk ZZZ_SCORE_NukaX_FireResistPerk: perk ZZZ_SCORE_NukaX_FireResistPerk: MGEF ZZZ_SCORE_NukaX_PerkFireResistApply archetype Script — needs override"
   ]
@@ -25841,7 +28578,7 @@
     ]
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": [
    "condition: GetWeaponAnimType()=6"
   ]
@@ -25862,7 +28599,7 @@
     "modifiers": []
    }
   ],
-  "hasCard": true,
+  "hasCard": false,
   "notes": []
  },
  {
