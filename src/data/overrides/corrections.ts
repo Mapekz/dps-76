@@ -43,6 +43,16 @@ export const hiddenWeaponIds: ReadonlySet<string> = new Set<string>([
   'P62_crTheDrifter10mmSMG', // "Splinter"
   'P62_crTheDrifterM79', // "Chaos Engine"
   'P62_crTheDrifterAssaultronBlade', // "Tempest"
+  // Companion/robot attack records that pass obtainability via COBJ/GMRW
+  // chains (2026-07-12 vetting pass): PharmaBot (Mister Handy) spray attacks,
+  // display their raw edids as names.
+  'PharmaBot_Left_Spray',
+  'PharmaBot_Middle_Spray',
+  'PharmaBot_Right_Spray',
+  // Photo-mode tools, not weapons: WeaponTypeNonOffensive + BlockVATS +
+  // ObjectTypeCamera (2026-07-12 vetting pass).
+  'Camera_SnapMatic', // "ProSnap Deluxe Camera"
+  'Camera_Disposable', // "Recon Imager"
 ]);
 
 /**
@@ -168,6 +178,13 @@ export const omodWeaponRestrictions: Readonly<Record<string, readonly string[]>>
  * needed for those.
  */
 export const weaponCorrections: Readonly<Record<string, Partial<Weapon>>> = {
+  // Bare-fist damage records (real, engine-supported unarmed archetype —
+  // paper-damage.ts STR/10 scaling). Renamed from "Unarmed Human"/"Unarmed
+  // Power Armor" so they read as deliberate build options; the PA record is
+  // the only way to model power-armored punches (higher damage tier).
+  // User decision, 2026-07-12 vetting pass.
+  UnarmedHuman: { name: 'Unarmed' },
+  UnarmedPowerArmor: { name: 'Unarmed (Power Armor)' },
   // The V.A.T.S. Unknown: its effect-variant mods sit on ap_customName
   // (0x0047A264), a slot the WEAP record doesn't list because the reward flow
   // attaches them as instance data. Appended so the picker can offer the
