@@ -46,16 +46,16 @@ describe('legendary weapon effects', () => {
     // At 20% HP: linear between (0.05, 130) and (1.0, 0) → +109.47% dbm.
     const at20 = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), healthPercent: 20 } }));
     const expected = 130 * (1 - (0.2 - 0.05) / 0.95) * 0.01;
-    expect(at20.freeAim.perHit.total / stockTotal).toBeCloseTo(1 + expected, 3);
+    expect(at20.freeAim.perHit.total / stockTotal).toBeCloseTo(1 + expected, 6);
   });
 
   it('Bloodied at full HP adds nothing; below the first curve point clamps to +130%', () => {
     const bloodied = getOmodById('live', 'mod_Legendary_Weapon1_DamageInverseHealth')!;
     const { weapon, modifiers } = buildEffectiveWeapon(fixer, [bloodied]);
     const full = computeScenarios(base({ weapon, modifiers }));
-    expect(full.freeAim.perHit.total).toBeCloseTo(stockTotal, 4);
+    expect(full.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
     const dying = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), healthPercent: 1 } }));
-    expect(dying.freeAim.perHit.total / stockTotal).toBeCloseTo(2.3, 3);
+    expect(dying.freeAim.perHit.total / stockTotal).toBeCloseTo(2.3, 6);
   });
 
   it('Instigating adds +50% against targets at or above 60% health (granted-perk chase)', () => {
@@ -74,15 +74,15 @@ describe('legendary weapon effects', () => {
     const adrenal = getOmodById('live', 'mod_Legendary_Weapon1_Adrenal')!;
     const { weapon, modifiers } = buildEffectiveWeapon(fixer, [adrenal]);
     const at5 = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), adrenalineStacks: 5 } }));
-    expect(at5.freeAim.perHit.total / stockTotal).toBeCloseTo(1.5, 4);
+    expect(at5.freeAim.perHit.total / stockTotal).toBeCloseTo(1.5, 6);
     const at10 = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), adrenalineStacks: 10 } }));
-    expect(at10.freeAim.perHit.total / stockTotal).toBeCloseTo(2.0, 4);
+    expect(at10.freeAim.perHit.total / stockTotal).toBeCloseTo(2.0, 6);
   });
 
   it('Adrenaline perk follows its extracted curve: +10%/kill-streak stack (distinct from mutation/legendary)', () => {
     const adrenaline = getLoadoutModifiers('live', [{ perkId: PerkId.Adrenaline, rank: 1 }]);
     const at10 = computeScenarios(base({ modifiers: adrenaline, player: { ...createDefaultPlayerConditions(), adrenalineStacks: 10 } }));
-    expect(at10.freeAim.perHit.total / stockTotal).toBeCloseTo(2.0, 4);
+    expect(at10.freeAim.perHit.total / stockTotal).toBeCloseTo(2.0, 6);
     const at0 = computeScenarios(base({ modifiers: adrenaline, player: { ...createDefaultPlayerConditions(), adrenalineStacks: 0 } }));
     expect(at0.freeAim.perHit.total / stockTotal).toBeCloseTo(1.0, 6);
   });
@@ -91,7 +91,7 @@ describe('legendary weapon effects', () => {
     const junkies = getOmodById('live', 'mod_Legendary_Weapon1_DamageAddiction')!;
     const { weapon, modifiers } = buildEffectiveWeapon(fixer, [junkies]);
     const withAddictions = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), addictionCount: 3 } }));
-    expect(withAddictions.freeAim.perHit.total / stockTotal).toBeCloseTo(1.3, 4);
+    expect(withAddictions.freeAim.perHit.total / stockTotal).toBeCloseTo(1.3, 6);
   });
 });
 
@@ -110,11 +110,11 @@ describe('legendary weapon effects (2026-07-11 condition kinds)', () => {
     const { weapon, modifiers } = buildEffectiveWeapon(fixer, [encirclers]);
     // Unset group count defaults to 1 (the target itself) → base tier active.
     const solo = computeScenarios(base({ weapon, modifiers }));
-    expect(solo.freeAim.perHit.total / stockTotal).toBeCloseTo(1.1, 5);
+    expect(solo.freeAim.perHit.total / stockTotal).toBeCloseTo(1.1, 6);
     const pack = computeScenarios(base({ weapon, modifiers, enemy: { ...createDefaultEnemyConditions(), groupTargetCount: 3 } }));
-    expect(pack.freeAim.perHit.total / stockTotal).toBeCloseTo(1.3, 5);
+    expect(pack.freeAim.perHit.total / stockTotal).toBeCloseTo(1.3, 6);
     const horde = computeScenarios(base({ weapon, modifiers, enemy: { ...createDefaultEnemyConditions(), groupTargetCount: 8 } }));
-    expect(horde.freeAim.perHit.total / stockTotal).toBeCloseTo(1.5, 5);
+    expect(horde.freeAim.perHit.total / stockTotal).toBeCloseTo(1.5, 6);
   });
 
   it("Fencer's (melee) scales with teammates: +12.5% solo up to +50% with 3", () => {
@@ -124,9 +124,9 @@ describe('legendary weapon effects (2026-07-11 condition kinds)', () => {
     const batStock = computeScenarios(base({ weapon: bat })).freeAim.perHit.total;
     // Melee dbm folds over 1 + 0.05×STR (default 15) = 1.75, so +x dbm scales by (1.75+x)/1.75.
     const solo = computeScenarios(base({ weapon, modifiers }));
-    expect(solo.freeAim.perHit.total / batStock).toBeCloseTo(1.875 / 1.75, 5);
+    expect(solo.freeAim.perHit.total / batStock).toBeCloseTo(1.875 / 1.75, 6);
     const fullTeam = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), teammateCount: 3 } }));
-    expect(fullTeam.freeAim.perHit.total / batStock).toBeCloseTo(2.25 / 1.75, 5);
+    expect(fullTeam.freeAim.perHit.total / batStock).toBeCloseTo(2.25 / 1.75, 6);
   });
 
   it("Gourmand's follows its hunger/thirst tier curve for humans and shuts off for ghouls", () => {
@@ -135,7 +135,7 @@ describe('legendary weapon effects (2026-07-11 condition kinds)', () => {
     const empty = computeScenarios(base({ weapon, modifiers }));
     expect(empty.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
     const fed = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), hungerThirstTier: 8 } }));
-    expect(fed.freeAim.perHit.total / stockTotal).toBeCloseTo(1.4, 5);
+    expect(fed.freeAim.perHit.total / stockTotal).toBeCloseTo(1.4, 6);
     // ESM gates Gourmand's on GetIsPlayerGhoul()=0 — ghouls run the feral meter instead.
     const ghoul = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), hungerThirstTier: 8, isGhoul: true } }));
     expect(ghoul.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
@@ -151,7 +151,7 @@ describe('legendary weapon effects (2026-07-11 condition kinds)', () => {
       const clean = computeScenarios(base({ weapon, modifiers }));
       expect(clean.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
       const afflicted = computeScenarios(base({ weapon, modifiers, enemy: { ...createDefaultEnemyConditions(), [key]: true } }));
-      expect(afflicted.freeAim.perHit.total / stockTotal).toBeCloseTo(1.5, 5);
+      expect(afflicted.freeAim.perHit.total / stockTotal).toBeCloseTo(1.5, 6);
     }
   });
 });
@@ -199,7 +199,7 @@ describe('target distance & weapon condition (Stage A3/A4, real data)', () => {
     const close = computeScenarios(base({ weapon, modifiers, enemy: { ...createDefaultEnemyConditions(), targetDistance: 'close' } }));
     expect(close.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
     const far = computeScenarios(base({ weapon, modifiers, enemy: { ...createDefaultEnemyConditions(), targetDistance: 'far' } }));
-    expect(far.freeAim.perHit.total / stockTotal).toBeCloseTo(2.0, 5);
+    expect(far.freeAim.perHit.total / stockTotal).toBeCloseTo(2.0, 6);
   });
 
   it("Guerrilla (rank 3) adds +20% dbm to ranged weapons only against close-range targets", () => {
@@ -207,7 +207,7 @@ describe('target distance & weapon condition (Stage A3/A4, real data)', () => {
     const none = computeScenarios(base({ modifiers: guerrilla3 }));
     expect(none.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
     const close = computeScenarios(base({ modifiers: guerrilla3, enemy: { ...createDefaultEnemyConditions(), targetDistance: 'close' } }));
-    expect(close.freeAim.perHit.total / stockTotal).toBeCloseTo(1.2, 5);
+    expect(close.freeAim.perHit.total / stockTotal).toBeCloseTo(1.2, 6);
     const far = computeScenarios(base({ modifiers: guerrilla3, enemy: { ...createDefaultEnemyConditions(), targetDistance: 'far' } }));
     expect(far.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
   });
@@ -222,9 +222,9 @@ describe('target distance & weapon condition (Stage A3/A4, real data)', () => {
     const stock = computeScenarios(base({ weapon, modifiers }));
     expect(stock.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
     const at150 = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), weaponConditionPct: 150 } }));
-    expect(at150.freeAim.perHit.total / stockTotal).toBeCloseTo(1.3, 5);
+    expect(at150.freeAim.perHit.total / stockTotal).toBeCloseTo(1.3, 6);
     const at200 = computeScenarios(base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), weaponConditionPct: 200 } }));
-    expect(at200.freeAim.perHit.total / stockTotal).toBeCloseTo(1.6, 5);
+    expect(at200.freeAim.perHit.total / stockTotal).toBeCloseTo(1.6, 6);
   });
 });
 
@@ -241,8 +241,8 @@ describe("Thrill-Seeker's (Stage C3, real data)", () => {
 
     const baseReload = fixer.reloadSpeed ?? 1.0;
     expect(w0.reloadSpeed).toBeCloseTo(baseReload, 6); // no tier matches 0 kill streak
-    expect(w5.reloadSpeed).toBeCloseTo(baseReload + 0.15, 5); // ONLY the count:5 tier (0.03×5)
-    expect(w10.reloadSpeed).toBeCloseTo(baseReload + 0.3, 5); // ONLY the count:10 tier (0.03×10)
+    expect(w5.reloadSpeed).toBeCloseTo(baseReload + 0.15, 6); // ONLY the count:5 tier (0.03×5)
+    expect(w10.reloadSpeed).toBeCloseTo(baseReload + 0.3, 6); // ONLY the count:10 tier (0.03×10)
 
     const s0 = computeScenarios(base({ weapon: w0, player: at0 })).freeAim.sustain.sustainedDps;
     const s5 = computeScenarios(base({ weapon: w5, player: at5 })).freeAim.sustain.sustainedDps;
@@ -319,7 +319,7 @@ describe('Onslaught (2026-07-12, real data)', () => {
     const result = computeScenarios(base({ weapon, modifiers }));
     expect(result.onslaughtMaxStacks).toBe(10);
     // Melee dbm folds over 1 + 0.05×STR (default 15) = 1.75 (Fencer's convention).
-    expect(result.freeAim.perHit.total / batStock).toBeCloseTo((1.75 + 0.1) / 1.75, 5);
+    expect(result.freeAim.perHit.total / batStock).toBeCloseTo((1.75 + 0.1) / 1.75, 6);
   });
 
   it("Splinter's built-in Special Effect grants +10 max stacks and +1%/stack dbm, unconditional (unique weapon)", () => {
@@ -337,7 +337,7 @@ describe('Onslaught (2026-07-12, real data)', () => {
     const splinterStock = computeScenarios(base({ weapon: splinter })).freeAim.perHit.total;
     const result = computeScenarios(base({ weapon, modifiers }));
     expect(result.onslaughtMaxStacks).toBe(10);
-    expect(result.freeAim.perHit.total / splinterStock).toBeCloseTo(1.1, 5);
+    expect(result.freeAim.perHit.total / splinterStock).toBeCloseTo(1.1, 6);
   });
 
   it("Guerrilla Master's ranged+close-range dbm curve now resolves (previously the unresolved 0x00000395 input) and its own +5 max stacks apply", () => {
@@ -347,7 +347,7 @@ describe('Onslaught (2026-07-12, real data)', () => {
     expect(none.freeAim.perHit.total).toBeCloseTo(stockTotal, 6); // not close-range: inactive
     const close = computeScenarios(base({ modifiers: guerrillaMaster, enemy: { ...createDefaultEnemyConditions(), targetDistance: 'close' } }));
     // curve (0,0)(1,5)(100,500) at x=5 (its own max, sentinel default) → y=25, ×0.01 = +25%.
-    expect(close.freeAim.perHit.total / stockTotal).toBeCloseTo(1.25, 5);
+    expect(close.freeAim.perHit.total / stockTotal).toBeCloseTo(1.25, 6);
   });
 
   it("Gunslinger Expert adds weak-spot damage per stack (ranged only) at its own +3 max", () => {
@@ -360,7 +360,7 @@ describe('Onslaught (2026-07-12, real data)', () => {
       base({ modifiers: gunslingerExpert, player: { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true } })
     );
     // curve (0,0)(1,1.0)(100,100.0) at x=3 → y=3.0, ×0.01 = +3% weak-spot damage.
-    expect(withWeakpoint.freeAim.perHit.total / stockWeakpoint).toBeCloseTo(1.03, 5);
+    expect(withWeakpoint.freeAim.perHit.total / stockWeakpoint).toBeCloseTo(1.03, 6);
   });
 
   it('Whacker Smacker grants NO max stacks of its own — its power-attack curve needs an external source to do anything', () => {
@@ -393,7 +393,7 @@ describe('Onslaught (2026-07-12, real data)', () => {
     // + powerAttackTerm(curve@9=45, ×0.01=0.45), vs the alone baseline's
     // dbm(1) + strTerm(0.75) + powerAttackTerm(0) — both share the same
     // outer multiplier (paRaceMult etc.), so the ratio isolates this delta.
-    expect(withMax.freeAim.perHit.total / alone.freeAim.perHit.total).toBeCloseTo((1.09 + 0.75 + 0.45) / 1.75, 5);
+    expect(withMax.freeAim.perHit.total / alone.freeAim.perHit.total).toBeCloseTo((1.09 + 0.75 + 0.45) / 1.75, 6);
   });
 
   it('max stacks aggregate across independently-equipped sources (Furious + Guerrilla Expert → 9 + 3 = 12)', () => {
@@ -409,11 +409,10 @@ describe('mutations and consumables', () => {
   it('Psychobuff adds +25% dbm', () => {
     const mods = getBuffModifiers('live', [], ['Psychobuff']);
     const result = computeScenarios(base({ modifiers: mods }));
-    // ESM stores float32 (0.2499999944…) — compare at 5 decimals.
-    expect(result.freeAim.perHit.total).toBeCloseTo(stockTotal * 1.25, 5);
+    expect(result.freeAim.perHit.total).toBeCloseTo(stockTotal * 1.25, 6);
   });
 
-  it('Adrenal Reaction (override from ESM curves) scales with kill streak: +5%/stack, ×1.25 with Strange in Numbers', () => {
+  it('Adrenal Reaction (extracted ESM curves) scales with kill streak: +5%/stack, ×1.25 with Strange in Numbers', () => {
     const mods = getBuffModifiers('live', ['Mutation_AdrenalReaction'], []);
     const player = { ...createDefaultPlayerConditions(), adrenalineStacks: 10 };
     const solo = computeScenarios(base({ modifiers: mods, player }));
@@ -426,7 +425,7 @@ describe('mutations and consumables', () => {
   it('Nerd Rage follows its extracted curve: +80% damage at 5% HP, 0 at full HP', () => {
     const nerdRage = getLoadoutModifiers('live', [{ perkId: PerkId.NerdRage, rank: 1 }]);
     const at5 = computeScenarios(base({ modifiers: nerdRage, player: { ...createDefaultPlayerConditions(), healthPercent: 5 } }));
-    expect(at5.freeAim.perHit.total / stockTotal).toBeCloseTo(1.8, 4);
+    expect(at5.freeAim.perHit.total / stockTotal).toBeCloseTo(1.8, 6);
     const atFull = computeScenarios(base({ modifiers: nerdRage }));
     expect(atFull.freeAim.perHit.total / stockTotal).toBeCloseTo(1.0, 6);
   });
@@ -486,6 +485,6 @@ describe('consumables overhaul integration (2026-07-13, real extracted data)', (
     // sides and cancels out of the difference.
     const suppressedTotal = computeScenarios(suppressed).freeAim.perHit.total;
     const unsuppressedTotal = computeScenarios(unsuppressed).freeAim.perHit.total;
-    expect((unsuppressedTotal - suppressedTotal) / stockTotal).toBeCloseTo(0.1, 4);
+    expect((unsuppressedTotal - suppressedTotal) / stockTotal).toBeCloseTo(0.1, 6);
   });
 });

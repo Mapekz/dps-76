@@ -442,7 +442,7 @@
         }
        ]
       },
-      "curveScale": 0.009999999776482582,
+      "curveScale": 0.01,
       "conditions": []
      }
     ]
@@ -1186,7 +1186,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.15000000596046448,
+      "value": 0.15,
       "conditions": [
        {
         "kind": "enemyType",
@@ -2210,11 +2210,11 @@
   },
   "notes": [
    "condition: GetRadsHealthPercentage()=0",
-   "condition: GetRadsHealthPercentage()=0.20000000298023224",
+   "condition: GetRadsHealthPercentage()=0.2",
    "condition: OR-group[GetItemCount(Stimpak)=0 | GetItemCount(SuperStimpak)=0 | GetItemCount(StimpakDiluted)=0]",
    "MGEF AbPerkBornSurvivor_ScriptEffect archetype Script — needs override",
-   "condition: GetRadsHealthPercentage()=0.30000001192092896",
-   "condition: GetRadsHealthPercentage()=0.4000000059604645"
+   "condition: GetRadsHealthPercentage()=0.3",
+   "condition: GetRadsHealthPercentage()=0.4"
   ]
  },
  {
@@ -3439,60 +3439,15 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": [
-     {
-      "id": "0x0004D890:r1:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x0004D890",
-       "edid": "ConcentratedFire",
-       "name": "Concentrated Fire",
-       "rank": 1
-      },
-      "bucket": "limbDamage",
-      "op": "ADD",
-      "value": 0.009999999776482582,
-      "conditions": []
-     }
-    ]
+    "modifiers": []
    },
    {
     "rank": 2,
-    "modifiers": [
-     {
-      "id": "0x0004D890:r2:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x0004D890",
-       "edid": "ConcentratedFire",
-       "name": "Concentrated Fire",
-       "rank": 2
-      },
-      "bucket": "limbDamage",
-      "op": "ADD",
-      "value": 0.019999999552965164,
-      "conditions": []
-     }
-    ]
+    "modifiers": []
    },
    {
     "rank": 3,
-    "modifiers": [
-     {
-      "id": "0x0004D890:r3:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x0004D890",
-       "edid": "ConcentratedFire",
-       "name": "Concentrated Fire",
-       "rank": 3
-      },
-      "bucket": "limbDamage",
-      "op": "ADD",
-      "value": 0.029999999329447746,
-      "conditions": []
-     }
-    ]
+    "modifiers": []
    }
   ],
   "hasCard": true,
@@ -3613,7 +3568,7 @@
       },
       "bucket": "sneakBonus",
       "op": "ADD",
-      "value": 0.15000000596046448,
+      "value": 0.15,
       "conditions": [
        {
         "kind": "unresolved",
@@ -3652,7 +3607,7 @@
       },
       "bucket": "sneakBonus",
       "op": "ADD",
-      "value": 0.30000001192092896,
+      "value": 0.3,
       "conditions": [
        {
         "kind": "unresolved",
@@ -4738,7 +4693,7 @@
    "perk ImmuneToRadiation: entry point Mod Rads for Rad Health Max — not modeled",
    "perk ImmuneToRadiation: EPMagic_SpellHasKeyword(DamageTypeRadiation)=1",
    "perk ImmuneToRadiation: entry point Mod Incoming Spell Magnitude — not modeled",
-   "condition: GetValue(Health)=0.019999999552965164"
+   "condition: GetValue(Health)=0.02"
   ]
  },
  {
@@ -4785,7 +4740,7 @@
       },
       "bucket": "reloadSpeed",
       "op": "ADD",
-      "value": 0.4000000059604645,
+      "value": 0.4,
       "conditions": []
      }
     ]
@@ -5268,7 +5223,7 @@
       },
       "bucket": "dbm",
       "op": "MUL_ADD",
-      "value": 0.04999995231628418,
+      "value": 0.050000000000000044,
       "conditions": [
        {
         "kind": "damageTypeScope",
@@ -5294,7 +5249,7 @@
       },
       "bucket": "dbm",
       "op": "MUL_ADD",
-      "value": 0.04999995231628418,
+      "value": 0.050000000000000044,
       "conditions": [
        {
         "kind": "damageTypeScope",
@@ -5660,7 +5615,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.4999999888241291,
+      "value": 0.5,
       "conditions": []
      }
     ]
@@ -6585,7 +6540,7 @@
       },
       "bucket": "sneakBonus",
       "op": "ADD",
-      "value": 0.15000000596046448,
+      "value": 0.15,
       "conditions": []
      }
     ]
@@ -7376,7 +7331,7 @@
       },
       "bucket": "weakpointBonus",
       "op": "ADD",
-      "value": 0.14999999664723873,
+      "value": 0.15,
       "conditions": [
        {
         "kind": "playerIsGhoul",
@@ -7476,7 +7431,7 @@
       },
       "bucket": "critDmgBonus",
       "op": "ADD",
-      "value": 0.20000000298023224,
+      "value": 0.2,
       "conditions": [
        {
         "kind": "playerIsGhoul",
@@ -7504,7 +7459,7 @@
       },
       "bucket": "critDmgBonus",
       "op": "ADD",
-      "value": 0.3499999940395355,
+      "value": 0.35,
       "conditions": [
        {
         "kind": "playerIsGhoul",
@@ -7735,7 +7690,7 @@
       },
       "bucket": "reloadSpeed",
       "op": "ADD",
-      "value": 0.10000000149011612,
+      "value": 0.1,
       "conditions": [
        {
         "kind": "playerIsGhoul",
@@ -7759,7 +7714,7 @@
       },
       "bucket": "reloadSpeed",
       "op": "ADD",
-      "value": 0.20000000298023224,
+      "value": 0.2,
       "conditions": [
        {
         "kind": "playerIsGhoul",
@@ -7783,7 +7738,7 @@
       },
       "bucket": "reloadSpeed",
       "op": "ADD",
-      "value": 0.30000001192092896,
+      "value": 0.3,
       "conditions": [
        {
         "kind": "playerIsGhoul",
@@ -8064,25 +8019,8 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.09999999776482582,
+      "value": 0.1,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=0"
-       },
-       {
-        "kind": "glowAtLeast",
-        "min": 5
-       },
-       {
-        "kind": "weaponKeyword",
-        "keyword": "WeaponTypeEnergy",
-        "present": true
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=0"
-       },
        {
         "kind": "glowAtLeast",
         "min": 1
@@ -8123,25 +8061,8 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.14999999664723873,
+      "value": 0.15,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=0"
-       },
-       {
-        "kind": "glowAtLeast",
-        "min": 5
-       },
-       {
-        "kind": "weaponKeyword",
-        "keyword": "WeaponTypeEnergy",
-        "present": true
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=0"
-       },
        {
         "kind": "glowAtLeast",
         "min": 1
@@ -8182,25 +8103,8 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.19999999552965164,
+      "value": 0.2,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=0"
-       },
-       {
-        "kind": "glowAtLeast",
-        "min": 5
-       },
-       {
-        "kind": "weaponKeyword",
-        "keyword": "WeaponTypeEnergy",
-        "present": true
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=0"
-       },
        {
         "kind": "glowAtLeast",
         "min": 1
@@ -8325,24 +8229,7 @@
       "bucket": "specialCharisma",
       "op": "ADD",
       "value": 10,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "HasActiveMagicEffect(DamageRadiationWaterInjestion)=0"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "HasActiveMagicEffect(DamageRadiationEating)=0"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "HasMagicEffectKeyword(GHL_RadiationBonusEffect)=0"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetRadshieldPercentage()=0"
-       }
-      ]
+      "conditions": []
      }
     ]
    }
@@ -8379,20 +8266,8 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.09999999776482582,
+      "value": 0.1,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=0"
-       },
-       {
-        "kind": "glowAtLeast",
-        "min": 5
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=0"
-       },
        {
         "kind": "playerIsGhoul",
         "value": true
@@ -8423,20 +8298,8 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.14999999664723873,
+      "value": 0.15,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=0"
-       },
-       {
-        "kind": "glowAtLeast",
-        "min": 5
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=0"
-       },
        {
         "kind": "playerIsGhoul",
         "value": true
@@ -8467,20 +8330,8 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.19999999552965164,
+      "value": 0.2,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=0"
-       },
-       {
-        "kind": "glowAtLeast",
-        "min": 5
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=0"
-       },
        {
         "kind": "playerIsGhoul",
         "value": true
@@ -8551,27 +8402,6 @@
       "value": 0.5,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "OR-group[IsTrueForConditionForm(GHL_HasModerateGlowConsumptionFeralRage_Condition)=1 | GetValue(Rads)=0x007F68BB]"
-       },
-       {
-        "kind": "weaponKeyword",
-        "keyword": "WeaponTypeAutomaticMelee",
-        "present": false
-       },
-       {
-        "kind": "unresolved",
-        "raw": "HasKeyword(AnimsMinigunShredder)=0"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=0"
-       },
-       {
         "kind": "weaponKeyword",
         "keyword": "WeaponTypeAutomaticMelee",
         "present": false
@@ -8599,27 +8429,6 @@
       "op": "ADD",
       "value": 0.5,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "OR-group[IsTrueForConditionForm(GHL_HasModerateGlowConsumptionFeralRage_Condition)=1 | GetValue(Rads)=0x007F68BB]"
-       },
-       {
-        "kind": "weaponKeyword",
-        "keyword": "WeaponTypeAutomaticMelee",
-        "present": false
-       },
-       {
-        "kind": "unresolved",
-        "raw": "HasKeyword(AnimsMinigunShredder)=0"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=0"
-       },
        {
         "kind": "unresolved",
         "raw": "WornHasKeyword(AnimsMinigunShredder)=0"
@@ -8653,27 +8462,6 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "OR-group[IsTrueForConditionForm(GHL_HasModerateGlowConsumptionFeralRage_Condition)=1 | GetValue(Rads)=0x007F68BB]"
-       },
-       {
-        "kind": "weaponKeyword",
-        "keyword": "WeaponTypeAutomaticMelee",
-        "present": false
-       },
-       {
-        "kind": "unresolved",
-        "raw": "HasKeyword(AnimsMinigunShredder)=0"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=0"
-       },
-       {
         "kind": "weaponKeyword",
         "keyword": "WeaponTypeAutomaticMelee",
         "present": false
@@ -8701,27 +8489,6 @@
       "op": "ADD",
       "value": 1,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "OR-group[IsTrueForConditionForm(GHL_HasModerateGlowConsumptionFeralRage_Condition)=1 | GetValue(Rads)=0x007F68BB]"
-       },
-       {
-        "kind": "weaponKeyword",
-        "keyword": "WeaponTypeAutomaticMelee",
-        "present": false
-       },
-       {
-        "kind": "unresolved",
-        "raw": "HasKeyword(AnimsMinigunShredder)=0"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=0"
-       },
        {
         "kind": "unresolved",
         "raw": "WornHasKeyword(AnimsMinigunShredder)=0"
@@ -8755,27 +8522,6 @@
       "value": 1.5,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "OR-group[IsTrueForConditionForm(GHL_HasModerateGlowConsumptionFeralRage_Condition)=1 | GetValue(Rads)=0x007F68BB]"
-       },
-       {
-        "kind": "weaponKeyword",
-        "keyword": "WeaponTypeAutomaticMelee",
-        "present": false
-       },
-       {
-        "kind": "unresolved",
-        "raw": "HasKeyword(AnimsMinigunShredder)=0"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=0"
-       },
-       {
         "kind": "weaponKeyword",
         "keyword": "WeaponTypeAutomaticMelee",
         "present": false
@@ -8803,27 +8549,6 @@
       "op": "ADD",
       "value": 1.5,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "OR-group[IsTrueForConditionForm(GHL_HasModerateGlowConsumptionFeralRage_Condition)=1 | GetValue(Rads)=0x007F68BB]"
-       },
-       {
-        "kind": "weaponKeyword",
-        "keyword": "WeaponTypeAutomaticMelee",
-        "present": false
-       },
-       {
-        "kind": "unresolved",
-        "raw": "HasKeyword(AnimsMinigunShredder)=0"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetDead()=0"
-       },
        {
         "kind": "unresolved",
         "raw": "WornHasKeyword(AnimsMinigunShredder)=0"
@@ -9886,7 +9611,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.19999999552965164,
+      "value": 0.2,
       "conditions": [
        {
         "kind": "enemyType",
@@ -9910,7 +9635,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.3999999910593033,
+      "value": 0.4,
       "conditions": [
        {
         "kind": "enemyType",
@@ -9934,7 +9659,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.5999999865889549,
+      "value": 0.6,
       "conditions": [
        {
         "kind": "enemyType",
@@ -10195,7 +9920,7 @@
       },
       "bucket": "reloadSpeed",
       "op": "ADD",
-      "value": 0.10000000149011612,
+      "value": 0.1,
       "conditions": [
        {
         "kind": "unresolved",
@@ -10219,7 +9944,7 @@
       },
       "bucket": "reloadSpeed",
       "op": "ADD",
-      "value": 0.20000000298023224,
+      "value": 0.2,
       "conditions": [
        {
         "kind": "unresolved",
@@ -10243,7 +9968,7 @@
       },
       "bucket": "reloadSpeed",
       "op": "ADD",
-      "value": 0.30000001192092896,
+      "value": 0.3,
       "conditions": [
        {
         "kind": "unresolved",
@@ -10431,7 +10156,7 @@
         },
         {
          "x": 1,
-         "y": 0.009999999776482582
+         "y": 0.01
         },
         {
          "x": 100,
@@ -10440,13 +10165,7 @@
        ]
       },
       "curveScale": 1,
-      "conditions": [
-       {
-        "kind": "weaponKeyword",
-        "keyword": "WeaponTypeRanged",
-        "present": true
-       }
-      ]
+      "conditions": []
      },
      {
       "id": "0x0031AF04:r1:2:1",
@@ -10696,7 +10415,7 @@
       },
       "bucket": "weakpointBonus",
       "op": "ADD",
-      "value": 0.05999999865889549,
+      "value": 0.06,
       "conditions": [
        {
         "kind": "weaponKeyword",
@@ -10721,7 +10440,7 @@
       },
       "bucket": "weakpointBonus",
       "op": "ADD",
-      "value": 0.08999999798834324,
+      "value": 0.09,
       "conditions": [
        {
         "kind": "weaponKeyword",
@@ -10746,7 +10465,7 @@
       },
       "bucket": "weakpointBonus",
       "op": "ADD",
-      "value": 0.11999999731779099,
+      "value": 0.12,
       "conditions": [
        {
         "kind": "weaponKeyword",
@@ -10819,13 +10538,8 @@
         }
        ]
       },
-      "curveScale": 0.009999999776482582,
+      "curveScale": 0.01,
       "conditions": [
-       {
-        "kind": "weaponKeyword",
-        "keyword": "WeaponTypeRanged",
-        "present": true
-       },
        {
         "kind": "weaponKeyword",
         "keyword": "WeaponTypeRanged",
@@ -11287,18 +11001,17 @@
    ]
   },
   "notes": [
-   "abAmmoSpenderFortifyStacks: curve with unmapped input AV 0x0000039B — needs override",
    "condition: HasPerk(HeavyGunnerMaster01)=1",
    "condition: WornHasKeyword(CustomItemName_FoundationsVengeance)=1",
    "abPerkFortifyDmgAll: curve with unmapped input AV 0x0000039B — needs override",
    "condition: HasPerk(LockAndLoad01)=1",
-   "MGEF AbPerkFortifyReloadSpeedMult: zero magnitude, no curve — script/scaled, needs override",
+   "AbPerkFortifyReloadSpeedMult: curve with unmapped input AV 0x0000039B — needs override",
    "condition: WornHasKeyword(dn_TheActionHero)=1",
    "MGEF AbPerkFortifyDeflectChance: zero magnitude, no curve — script/scaled, needs override",
    "condition: HasPerk(BearArms01)=1",
-   "MGEF AbPerkFortifyDamageBashing: zero magnitude, no curve — script/scaled, needs override",
+   "AbPerkFortifyDamageBashing: curve with unmapped input AV 0x0000039B — needs override",
    "condition: WornHasKeyword(RD01_CustomItemName_Valkyrie)=1",
-   "MGEF AbPerkFortifyActorWeaponChargeUpSpeedMult: zero magnitude, no curve — script/scaled, needs override",
+   "AbPerkFortifyActorWeaponChargeUpSpeedMult: curve with unmapped input AV 0x0000039B — needs override",
    "MGEF abAmmoSpenderFortifyStacks_Desc archetype Script — needs override"
   ]
  },
@@ -12042,7 +11755,7 @@
         }
        ]
       },
-      "curveScale": 0.009999999776482582,
+      "curveScale": 0.01,
       "conditions": [
        {
         "kind": "weaponKeyword",
@@ -12080,7 +11793,7 @@
         }
        ]
       },
-      "curveScale": 0.009999999776482582,
+      "curveScale": 0.01,
       "conditions": [
        {
         "kind": "weaponKeyword",
@@ -12118,7 +11831,7 @@
         }
        ]
       },
-      "curveScale": 0.009999999776482582,
+      "curveScale": 0.01,
       "conditions": [
        {
         "kind": "weaponKeyword",
@@ -12419,7 +12132,7 @@
       },
       "bucket": "critConsumption",
       "op": "MUL_ADD",
-      "value": -0.10000002384185791,
+      "value": -0.09999999999999998,
       "conditions": [
        {
         "kind": "unresolved",
@@ -12438,7 +12151,7 @@
       },
       "bucket": "critConsumption",
       "op": "MUL_ADD",
-      "value": -0.19999998807907104,
+      "value": -0.19999999999999996,
       "conditions": [
        {
         "kind": "unresolved",
@@ -12457,7 +12170,7 @@
       },
       "bucket": "critConsumption",
       "op": "MUL_ADD",
-      "value": -0.30000001192092896,
+      "value": -0.30000000000000004,
       "conditions": [
        {
         "kind": "unresolved",
@@ -12476,7 +12189,7 @@
       },
       "bucket": "critConsumption",
       "op": "MUL_ADD",
-      "value": -0.3999999761581421,
+      "value": -0.4,
       "conditions": [
        {
         "kind": "unresolved",
@@ -12984,7 +12697,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.09999999776482582,
+      "value": 0.1,
       "conditions": [
        {
         "kind": "enemyGroupCount",
@@ -13003,7 +12716,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.19999999552965164,
+      "value": 0.2,
       "conditions": [
        {
         "kind": "enemyGroupCount",
@@ -13022,7 +12735,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.29999999329447746,
+      "value": 0.3,
       "conditions": [
        {
         "kind": "enemyGroupCount",
@@ -13041,7 +12754,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.3999999910593033,
+      "value": 0.4,
       "conditions": [
        {
         "kind": "enemyGroupCount",
@@ -13060,7 +12773,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.4999999888241291,
+      "value": 0.5,
       "conditions": [
        {
         "kind": "enemyGroupCount",
@@ -13100,7 +12813,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.12499999720603228,
+      "value": 0.125,
       "conditions": [
        {
         "kind": "teammateCount",
@@ -13126,7 +12839,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.24999999441206455,
+      "value": 0.25,
       "conditions": [
        {
         "kind": "teammateCount",
@@ -13152,7 +12865,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.37499999161809683,
+      "value": 0.375,
       "conditions": [
        {
         "kind": "teammateCount",
@@ -13178,7 +12891,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.4999999888241291,
+      "value": 0.5,
       "conditions": [
        {
         "kind": "teammateCount",
@@ -15678,7 +15391,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.15000000596046448,
+      "value": 0.15,
       "conditions": [
        {
         "kind": "enemyType",
@@ -15717,7 +15430,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.15000000596046448,
+      "value": 0.15,
       "conditions": [
        {
         "kind": "enemyType",
@@ -15756,7 +15469,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.15000000596046448,
+      "value": 0.15,
       "conditions": [
        {
         "kind": "enemyType",
@@ -15795,7 +15508,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.15000000596046448,
+      "value": 0.15,
       "conditions": [
        {
         "kind": "enemyType",
@@ -15834,7 +15547,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.15000000596046448,
+      "value": 0.15,
       "conditions": [
        {
         "kind": "enemyType",
@@ -15951,7 +15664,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.15000000596046448,
+      "value": 0.15,
       "conditions": [
        {
         "kind": "unresolved",
@@ -16258,7 +15971,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.15000000596046448,
+      "value": 0.15,
       "conditions": [
        {
         "kind": "enemyType",
@@ -16316,7 +16029,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.10000000149011612,
+      "value": 0.1,
       "conditions": []
      }
     ]
@@ -17079,16 +16792,8 @@
       },
       "bucket": "fireRateSpeed",
       "op": "ADD",
-      "value": 0.10000000149011612,
+      "value": 0.1,
       "conditions": [
-       {
-        "kind": "weaponKeywordAny",
-        "keywords": [
-         "WeaponTypeMelee1H",
-         "WeaponTypeMelee2H",
-         "WeaponTypeUnarmed"
-        ]
-       },
        {
         "kind": "unresolved",
         "raw": "GetWeaponAnimType()=6"
@@ -17111,16 +16816,8 @@
       },
       "bucket": "fireRateSpeed",
       "op": "ADD",
-      "value": 0.20000000298023224,
+      "value": 0.2,
       "conditions": [
-       {
-        "kind": "weaponKeywordAny",
-        "keywords": [
-         "WeaponTypeMelee1H",
-         "WeaponTypeMelee2H",
-         "WeaponTypeUnarmed"
-        ]
-       },
        {
         "kind": "unresolved",
         "raw": "GetWeaponAnimType()=6"
@@ -17143,16 +16840,8 @@
       },
       "bucket": "fireRateSpeed",
       "op": "ADD",
-      "value": 0.30000001192092896,
+      "value": 0.3,
       "conditions": [
-       {
-        "kind": "weaponKeywordAny",
-        "keywords": [
-         "WeaponTypeMelee1H",
-         "WeaponTypeMelee2H",
-         "WeaponTypeUnarmed"
-        ]
-       },
        {
         "kind": "unresolved",
         "raw": "GetWeaponAnimType()=6"
@@ -17227,7 +16916,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.4000000059604645,
+      "value": 0.4,
       "conditions": [
        {
         "kind": "unresolved",
@@ -17246,7 +16935,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.20000000298023224,
+      "value": 0.2,
       "conditions": [
        {
         "kind": "unresolved",
@@ -17265,7 +16954,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.20000000298023224,
+      "value": 0.2,
       "conditions": [
        {
         "kind": "unresolved",
@@ -17369,16 +17058,14 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.24999999441206455,
+      "value": 0.25,
       "conditions": []
      }
     ]
    }
   ],
   "hasCard": false,
-  "notes": [
-   "MGEF AbPerkFortifyResistPoison: zero magnitude, no curve — script/scaled, needs override"
-  ]
+  "notes": []
  },
  {
   "family": "MILE_Caravan_Tier03_DamageResistPerk",
@@ -17405,16 +17092,14 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.24999999441206455,
+      "value": 0.25,
       "conditions": []
      }
     ]
    }
   ],
   "hasCard": false,
-  "notes": [
-   "MGEF AbPerkFortifyResistPoison: zero magnitude, no curve — script/scaled, needs override"
-  ]
+  "notes": []
  },
  {
   "family": "MindOverMatterPerk",
@@ -18686,15 +18371,15 @@
        "input": "healthFraction",
        "points": [
         {
-         "x": 0.05000000074505806,
+         "x": 0.05,
          "y": 30
         },
         {
-         "x": 0.20000000298023224,
+         "x": 0.2,
          "y": 15
         },
         {
-         "x": 0.800000011920929,
+         "x": 0.8,
          "y": 1
         },
         {
@@ -18721,15 +18406,15 @@
        "input": "healthFraction",
        "points": [
         {
-         "x": 0.05000000074505806,
+         "x": 0.05,
          "y": 80
         },
         {
-         "x": 0.20000000298023224,
+         "x": 0.2,
          "y": 40
         },
         {
-         "x": 0.800000011920929,
+         "x": 0.8,
          "y": 1
         },
         {
@@ -18738,7 +18423,7 @@
         }
        ]
       },
-      "curveScale": 0.009999999776482582,
+      "curveScale": 0.01,
       "conditions": []
      }
     ]
@@ -18953,7 +18638,7 @@
       },
       "bucket": "sneakBonus",
       "op": "ADD",
-      "value": 0.8999999761581421,
+      "value": 0.9,
       "conditions": [
        {
         "kind": "weaponKeywordAny",
@@ -19761,12 +19446,8 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.4999999888241291,
+      "value": 0.5,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetInIronSights()=1"
-       },
        {
         "kind": "unresolved",
         "raw": "GetInIronSights()=1"
@@ -20456,7 +20137,7 @@
       },
       "bucket": "critDmgBonus",
       "op": "ADD",
-      "value": 0.05000000074505806,
+      "value": 0.05,
       "conditions": [
        {
         "kind": "weaponKeyword",
@@ -20476,7 +20157,7 @@
       },
       "bucket": "critDmgBonus",
       "op": "ADD",
-      "value": 0.10000000149011612,
+      "value": 0.1,
       "conditions": [
        {
         "kind": "weaponKeyword",
@@ -20496,7 +20177,7 @@
       },
       "bucket": "critDmgBonus",
       "op": "ADD",
-      "value": 0.15000000596046448,
+      "value": 0.15,
       "conditions": [
        {
         "kind": "weaponKeyword",
@@ -20516,7 +20197,7 @@
       },
       "bucket": "critDmgBonus",
       "op": "ADD",
-      "value": 0.20000000298023224,
+      "value": 0.2,
       "conditions": [
        {
         "kind": "weaponKeyword",
@@ -20556,7 +20237,7 @@
       },
       "bucket": "critDmgBonus",
       "op": "ADD",
-      "value": 0.30000001192092896,
+      "value": 0.3,
       "conditions": [
        {
         "kind": "weaponKeyword",
@@ -20576,7 +20257,7 @@
       },
       "bucket": "critDmgBonus",
       "op": "ADD",
-      "value": 0.3499999940395355,
+      "value": 0.35,
       "conditions": [
        {
         "kind": "weaponKeyword",
@@ -20596,7 +20277,7 @@
       },
       "bucket": "critDmgBonus",
       "op": "ADD",
-      "value": 0.4000000059604645,
+      "value": 0.4,
       "conditions": [
        {
         "kind": "weaponKeyword",
@@ -20616,7 +20297,7 @@
       },
       "bucket": "critDmgBonus",
       "op": "ADD",
-      "value": 0.44999998807907104,
+      "value": 0.45,
       "conditions": [
        {
         "kind": "weaponKeyword",
@@ -20800,7 +20481,7 @@
       },
       "bucket": "limbDamage",
       "op": "MUL_ADD",
-      "value": 0.019999980926513672,
+      "value": 0.020000000000000018,
       "conditions": []
      },
      {
@@ -20814,7 +20495,7 @@
       },
       "bucket": "limbDamage",
       "op": "MUL_ADD",
-      "value": 0.03999996185302712,
+      "value": 0.040000000000000036,
       "conditions": []
      },
      {
@@ -20828,7 +20509,7 @@
       },
       "bucket": "limbDamage",
       "op": "MUL_ADD",
-      "value": 0.059999942779541016,
+      "value": 0.06000000000000005,
       "conditions": []
      },
      {
@@ -20842,7 +20523,7 @@
       },
       "bucket": "limbDamage",
       "op": "MUL_ADD",
-      "value": 0.08000004291534424,
+      "value": 0.08000000000000007,
       "conditions": []
      },
      {
@@ -20856,7 +20537,7 @@
       },
       "bucket": "limbDamage",
       "op": "MUL_ADD",
-      "value": 0.10000002384185791,
+      "value": 0.10000000000000009,
       "conditions": []
      },
      {
@@ -20870,7 +20551,7 @@
       },
       "bucket": "limbDamage",
       "op": "MUL_ADD",
-      "value": 0.12000000476837158,
+      "value": 0.1200000000000001,
       "conditions": []
      },
      {
@@ -20884,7 +20565,7 @@
       },
       "bucket": "limbDamage",
       "op": "MUL_ADD",
-      "value": 0.13999998569488525,
+      "value": 0.1399999999999999,
       "conditions": []
      },
      {
@@ -20898,7 +20579,7 @@
       },
       "bucket": "limbDamage",
       "op": "MUL_ADD",
-      "value": 0.15999996662139893,
+      "value": 0.15999999999999992,
       "conditions": []
      },
      {
@@ -20912,7 +20593,7 @@
       },
       "bucket": "limbDamage",
       "op": "MUL_ADD",
-      "value": 0.1799999475479126,
+      "value": 0.17999999999999994,
       "conditions": []
      }
     ]
@@ -20989,7 +20670,7 @@
       },
       "bucket": "critDmgBonus",
       "op": "ADD",
-      "value": 0.05000000074505806,
+      "value": 0.05,
       "conditions": [
        {
         "kind": "unresolved",
@@ -21008,7 +20689,7 @@
       },
       "bucket": "critDmgBonus",
       "op": "ADD",
-      "value": 0.10000000149011612,
+      "value": 0.1,
       "conditions": [
        {
         "kind": "unresolved",
@@ -21027,7 +20708,7 @@
       },
       "bucket": "critDmgBonus",
       "op": "ADD",
-      "value": 0.15000000596046448,
+      "value": 0.15,
       "conditions": [
        {
         "kind": "unresolved",
@@ -21046,7 +20727,7 @@
       },
       "bucket": "critDmgBonus",
       "op": "ADD",
-      "value": 0.20000000298023224,
+      "value": 0.2,
       "conditions": [
        {
         "kind": "unresolved",
@@ -21084,7 +20765,7 @@
       },
       "bucket": "critDmgBonus",
       "op": "ADD",
-      "value": 0.30000001192092896,
+      "value": 0.3,
       "conditions": [
        {
         "kind": "unresolved",
@@ -21103,7 +20784,7 @@
       },
       "bucket": "critDmgBonus",
       "op": "ADD",
-      "value": 0.3499999940395355,
+      "value": 0.35,
       "conditions": [
        {
         "kind": "unresolved",
@@ -21122,7 +20803,7 @@
       },
       "bucket": "critDmgBonus",
       "op": "ADD",
-      "value": 0.4000000059604645,
+      "value": 0.4,
       "conditions": [
        {
         "kind": "unresolved",
@@ -21141,7 +20822,7 @@
       },
       "bucket": "critDmgBonus",
       "op": "ADD",
-      "value": 0.44999998807907104,
+      "value": 0.45,
       "conditions": [
        {
         "kind": "unresolved",
@@ -21706,14 +21387,6 @@
       "conditions": [
        {
         "kind": "unresolved",
-        "raw": "GetGlobalValue(Spotlight_DoubleVendorCurrency_LegendaryScrip)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetIsID(LegendaryTokens)=1"
-       },
-       {
-        "kind": "unresolved",
         "raw": "WornHasKeyword(isUnstoppable_Grognak)=1"
        },
        {
@@ -21735,14 +21408,6 @@
       "op": "ADD",
       "value": 15,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetGlobalValue(Spotlight_DoubleVendorCurrency_LegendaryScrip)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetIsID(LegendaryTokens)=1"
-       },
        {
         "kind": "unresolved",
         "raw": "WornHasKeyword(isUnstoppable_Inspector)=1"
@@ -21768,14 +21433,6 @@
       "conditions": [
        {
         "kind": "unresolved",
-        "raw": "GetGlobalValue(Spotlight_DoubleVendorCurrency_LegendaryScrip)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetIsID(LegendaryTokens)=1"
-       },
-       {
-        "kind": "unresolved",
         "raw": "WornHasKeyword(isUnstoppable_MantaMan)=1"
        },
        {
@@ -21797,14 +21454,6 @@
       "op": "ADD",
       "value": 15,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetGlobalValue(Spotlight_DoubleVendorCurrency_LegendaryScrip)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetIsID(LegendaryTokens)=1"
-       },
        {
         "kind": "unresolved",
         "raw": "WornHasKeyword(isUnstoppable_MistressOfMystery)=1"
@@ -21830,14 +21479,6 @@
       "conditions": [
        {
         "kind": "unresolved",
-        "raw": "GetGlobalValue(Spotlight_DoubleVendorCurrency_LegendaryScrip)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetIsID(LegendaryTokens)=1"
-       },
-       {
-        "kind": "unresolved",
         "raw": "WornHasKeyword(isUnstoppable_SilverShroud)=1"
        },
        {
@@ -21859,14 +21500,6 @@
       "op": "ADD",
       "value": 15,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetGlobalValue(Spotlight_DoubleVendorCurrency_LegendaryScrip)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetIsID(LegendaryTokens)=1"
-       },
        {
         "kind": "unresolved",
         "raw": "GetGlobalValue(Spotlight_Unstoppable)=1"
@@ -22237,7 +21870,7 @@
       },
       "bucket": "critFill",
       "op": "MUL_ADD",
-      "value": -0.8999999985098839,
+      "value": -0.9,
       "conditions": [
        {
         "kind": "unresolved",
@@ -22261,7 +21894,7 @@
       },
       "bucket": "critFill",
       "op": "MUL_ADD",
-      "value": -0.8999999985098839,
+      "value": -0.9,
       "conditions": [
        {
         "kind": "unresolved",
@@ -22285,7 +21918,7 @@
       },
       "bucket": "critFill",
       "op": "MUL_ADD",
-      "value": -0.8999999985098839,
+      "value": -0.9,
       "conditions": [
        {
         "kind": "unresolved",
@@ -24536,16 +24169,7 @@
       "bucket": "specialStrength",
       "op": "ADD",
       "value": 1,
-      "conditions": [
-       {
-        "kind": "weaponKeywordAny",
-        "keywords": [
-         "WeaponTypeMelee1H",
-         "WeaponTypeMelee2H",
-         "WeaponTypeUnarmed"
-        ]
-       }
-      ]
+      "conditions": []
      }
     ]
    }
@@ -25387,7 +25011,7 @@
         }
        ]
       },
-      "curveScale": 0.009999999776482582,
+      "curveScale": 0.01,
       "conditions": []
      }
     ]
@@ -25803,21 +25427,8 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.29999999329447746,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetWeaponAnimType()=0"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetWeaponAnimType()=8"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "HasMagicEffect(DailyOps_FreezingTouchSlow_Effect)=0"
-       }
-      ]
+      "value": 0.3,
+      "conditions": []
      }
     ]
    }
@@ -26415,7 +26026,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.20000000298023224,
+      "value": 0.2,
       "conditions": [
        {
         "kind": "unresolved",
@@ -26434,7 +26045,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.20000000298023224,
+      "value": 0.2,
       "conditions": [
        {
         "kind": "unresolved",
@@ -26453,7 +26064,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.20000000298023224,
+      "value": 0.2,
       "conditions": [
        {
         "kind": "unresolved",
@@ -26472,7 +26083,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.20000000298023224,
+      "value": 0.2,
       "conditions": [
        {
         "kind": "unresolved",
@@ -27304,7 +26915,7 @@
       },
       "bucket": "dbm",
       "op": "ADD",
-      "value": 0.24999999441206455,
+      "value": 0.25,
       "conditions": [
        {
         "kind": "enemyTypeAny",
@@ -29056,7 +28667,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 2,
+      "value": 0,
       "conditions": []
      },
      {
@@ -29070,7 +28681,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 3.5,
+      "value": 2,
       "conditions": [
        {
         "kind": "unresolved",
@@ -29093,7 +28704,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 5.5,
+      "value": 3.5,
       "conditions": [
        {
         "kind": "unresolved",
@@ -29116,7 +28727,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 8,
+      "value": 5.5,
       "conditions": [
        {
         "kind": "unresolved",
@@ -29139,7 +28750,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 0,
+      "value": 8,
       "conditions": [
        {
         "kind": "unresolved",
@@ -29178,7 +28789,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 2,
+      "value": 0,
       "conditions": []
      },
      {
@@ -29192,7 +28803,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 3.5,
+      "value": 2,
       "conditions": [
        {
         "kind": "unresolved",
@@ -29215,7 +28826,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 5.5,
+      "value": 3.5,
       "conditions": [
        {
         "kind": "unresolved",
@@ -29238,7 +28849,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 8,
+      "value": 5.5,
       "conditions": [
        {
         "kind": "unresolved",
@@ -29261,7 +28872,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 0,
+      "value": 8,
       "conditions": [
        {
         "kind": "unresolved",
@@ -29300,7 +28911,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 2,
+      "value": 0,
       "conditions": []
      },
      {
@@ -29314,7 +28925,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 3.5,
+      "value": 2,
       "conditions": [
        {
         "kind": "unresolved",
@@ -29337,7 +28948,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 5.5,
+      "value": 3.5,
       "conditions": [
        {
         "kind": "unresolved",
@@ -29360,7 +28971,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 8,
+      "value": 5.5,
       "conditions": [
        {
         "kind": "unresolved",
@@ -29383,7 +28994,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 0,
+      "value": 8,
       "conditions": [
        {
         "kind": "unresolved",
@@ -29441,7 +29052,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 2,
+      "value": 0,
       "conditions": []
      },
      {
@@ -29455,7 +29066,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 3.5,
+      "value": 2,
       "conditions": [
        {
         "kind": "unresolved",
@@ -29478,7 +29089,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 5.5,
+      "value": 3.5,
       "conditions": [
        {
         "kind": "unresolved",
@@ -29501,7 +29112,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 8,
+      "value": 5.5,
       "conditions": [
        {
         "kind": "unresolved",
@@ -29524,7 +29135,7 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 0,
+      "value": 8,
       "conditions": [
        {
         "kind": "unresolved",
@@ -29807,7 +29418,7 @@
       },
       "bucket": "fireRateSpeed",
       "op": "ADD",
-      "value": 0.20000000298023224,
+      "value": 0.2,
       "conditions": [
        {
         "kind": "unresolved",

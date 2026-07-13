@@ -31,7 +31,7 @@
    "E08A_GulperVenom: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "E08A_GulperVenom: MGEF SURV_DiseaseVector_Food_Effect: no route for AV SURV_Disease_FoodDrinkItemCard_CosmeticOnly — needs mapping",
    "E08A_GulperVenom: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "E08A_GulperVenom: MGEF SURV_Drink_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "E08A_GulperVenom: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [],
@@ -173,37 +173,13 @@
      "edid": "Brew_BallisticBock",
      "name": "Ballistic Bock"
     },
-    "bucket": "dbm",
-    "op": "ADD",
-    "value": 0.14999999664723873,
-    "conditions": [
-     {
-      "kind": "weaponKeyword",
-      "keyword": "WeaponTypeBallistic",
-      "present": true
-     },
-     {
-      "kind": "weaponKeyword",
-      "keyword": "WeaponTypeHeavyGun",
-      "present": false
-     }
-    ]
-   },
-   {
-    "id": "0x0046983F:1",
-    "source": {
-     "kind": "consumable",
-     "formId": "0x0046983F",
-     "edid": "Brew_BallisticBock",
-     "name": "Ballistic Bock"
-    },
     "bucket": "specialLuck",
     "op": "ADD",
     "value": 2,
     "conditions": []
    },
    {
-    "id": "0x0046983F:2",
+    "id": "0x0046983F:1",
     "source": {
      "kind": "consumable",
      "formId": "0x0046983F",
@@ -220,6 +196,7 @@
    "Brew_BallisticBock: MGEF BallisticBock_Duration archetype Script — needs override",
    "Brew_BallisticBock: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "Brew_BallisticBock: perk BallisticBock_Perk: entry point Mod Item Condition Loss — not modeled",
+   "Brew_BallisticBock: BallisticBock_FortifyDamageBallistic_Effect: curve with unmapped input AV null — needs override",
    "Brew_BallisticBock: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -366,7 +343,7 @@
    "BerryMentats: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "BerryMentats: MGEF AddictionOddsMentats: no route for AV AddictionMentats — needs mapping",
    "BerryMentats: MGEF DetectLifeApplyClientEffect archetype Script — needs override",
-   "BerryMentats: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "BerryMentats: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -397,7 +374,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.09999999776482582,
+    "value": 0.1,
     "conditions": []
    }
   ],
@@ -544,7 +521,7 @@
     },
     "bucket": "critDmgBonus",
     "op": "ADD",
-    "value": 0.24999999441206455,
+    "value": 0.5,
     "conditions": []
    }
   ],
@@ -833,7 +810,7 @@
    "Buffout: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
    "Buffout: MGEF AddictionOddsBuffout: no route for AV AddictionBuffout — needs mapping",
    "Buffout: MGEF FortifyHealthChemEffect: no route for AV Health — needs mapping",
-   "Buffout: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "Buffout: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -900,7 +877,7 @@
    "Bufftats: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "Bufftats: MGEF AddictionOddsBuffout: no route for AV AddictionBuffout — needs mapping",
    "Bufftats: MGEF FortifyHealthChemEffect: no route for AV Health — needs mapping",
-   "Bufftats: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "Bufftats: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -966,7 +943,7 @@
   "notes": [
    "Calmex: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "Calmex: MGEF AddictionOddsCalmex: no route for AV AddictionCalmex — needs mapping",
-   "Calmex: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "Calmex: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -1044,7 +1021,7 @@
   "notes": [
    "DLC04_Calmex: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "DLC04_Calmex: MGEF AddictionOddsCalmex: no route for AV AddictionCalmex — needs mapping",
-   "DLC04_Calmex: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "DLC04_Calmex: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -1157,7 +1134,7 @@
     },
     "bucket": "critDmgBonus",
     "op": "ADD",
-    "value": 0.24999999441206455,
+    "value": 0.5,
     "conditions": []
    }
   ],
@@ -1362,7 +1339,7 @@
     },
     "bucket": "critDmgBonus",
     "op": "ADD",
-    "value": 0.4999999888241291,
+    "value": 0.5,
     "conditions": []
    }
   ],
@@ -1659,6 +1636,42 @@
    "0x00552758:0"
   ],
   "obtainable": true
+ },
+ {
+  "id": "Milk_Chally",
+  "formId": "0x00553ED5",
+  "name": "Chally's Milk",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00553ED5:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00553ED5",
+     "edid": "Milk_Chally",
+     "name": "Chally's Milk"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "Milk_Chally: MGEF RestoreRadsFood: no route for AV Rads — needs mapping",
+   "Milk_Chally: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
+   "Milk_Chally: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
+   "Milk_Chally: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+  ],
+  "category": "drink",
+  "dispelKeys": [
+   "FoodDispelEffect_Strength|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [],
+  "foodScalableModifierIds": [
+   "0x00553ED5:0"
+  ],
+  "obtainable": false
  },
  {
   "id": "ScorchBeastMeatLiverCooked",
@@ -2010,7 +2023,7 @@
   "notes": [
    "DaddyO: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "DaddyO: MGEF AddictionOddsDaddyO: no route for AV AddictionDaddyO — needs mapping",
-   "DaddyO: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "DaddyO: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -2075,7 +2088,7 @@
   "notes": [
    "DayTripper: MGEF AddictionOddsDaytripper: no route for AV AddictionDaytripper — needs mapping",
    "DayTripper: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
-   "DayTripper: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "DayTripper: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -2308,7 +2321,7 @@
     },
     "bucket": "critDmgBonus",
     "op": "ADD",
-    "value": 0.24999999441206455,
+    "value": 0.25,
     "conditions": []
    }
   ],
@@ -2604,7 +2617,7 @@
    "SFS09_FormulaP: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "SFS09_FormulaP: MGEF FortifyGunAccuracyChemEffect: no route for AV STAT_GunAccuracy — needs mapping",
    "SFS09_FormulaP: MGEF AddictionOddsFormulaP: no route for AV AddictionCalmex — needs mapping",
-   "SFS09_FormulaP: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "SFS09_FormulaP: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -2804,7 +2817,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.29999999329447746,
+    "value": 0.3,
     "conditions": [
      {
       "kind": "weaponKeywordAny",
@@ -2821,7 +2834,7 @@
    "Fury: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "Fury: MGEF FortifyDamageResistFury: no route for AV DamageResist — needs mapping",
    "Fury: MGEF AddictionOddsFury: no route for AV AddictionFury — needs mapping",
-   "Fury: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "Fury: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -2912,7 +2925,7 @@
   "notes": [
    "Brew_Fussfungle: MGEF Whiskey_Duration archetype Script — needs override",
    "Brew_Fussfungle: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
-   "Brew_Fussfungle: MGEF Alcohol_DiseaseResist: zero magnitude, no curve — script/scaled, needs override",
+   "Brew_Fussfungle: MGEF Alcohol_DiseaseResist: no route for AV SURV_DiseaseResistance — needs mapping",
    "Brew_Fussfungle: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -2947,7 +2960,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.09999999776482582,
+    "value": 0.4,
     "conditions": [
      {
       "kind": "weaponKeywordAny",
@@ -3042,7 +3055,7 @@
    "GrapeMentats: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "GrapeMentats: MGEF AddictionOddsMentats: no route for AV AddictionMentats — needs mapping",
    "GrapeMentats: MGEF FortifyBarterChemEffect archetype Script — needs override",
-   "GrapeMentats: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "GrapeMentats: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -3286,10 +3299,10 @@
    }
   ],
   "notes": [
-   "Brew_LemonadeHard: DamageRadiationEating: curve with unmapped input AV null — needs override",
-   "Brew_LemonadeHard: SURV_Drink_Effect: curve with unmapped input AV null — needs override",
-   "Brew_LemonadeHard: MGEF FortifyActionPointsAlcohol: zero magnitude, no curve — script/scaled, needs override",
-   "Brew_LemonadeHard: MGEF Alcohol_APRegen: zero magnitude, no curve — script/scaled, needs override",
+   "Brew_LemonadeHard: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "Brew_LemonadeHard: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
+   "Brew_LemonadeHard: FortifyActionPointsAlcohol: curve with unmapped input AV null — needs override",
+   "Brew_LemonadeHard: Alcohol_APRegen: curve with unmapped input AV null — needs override",
    "Brew_LemonadeHard: MGEF LemonadeHard_Duration archetype Script — needs override"
   ],
   "category": "alcohol",
@@ -3320,37 +3333,13 @@
      "edid": "Brew_HighVoltageHefe",
      "name": "High Voltage Hefe"
     },
-    "bucket": "dbm",
-    "op": "ADD",
-    "value": 0.14999999664723873,
-    "conditions": [
-     {
-      "kind": "weaponKeyword",
-      "keyword": "WeaponTypeEnergy",
-      "present": true
-     },
-     {
-      "kind": "weaponKeyword",
-      "keyword": "WeaponTypeHeavyGun",
-      "present": false
-     }
-    ]
-   },
-   {
-    "id": "0x003EC3E7:1",
-    "source": {
-     "kind": "consumable",
-     "formId": "0x003EC3E7",
-     "edid": "Brew_HighVoltageHefe",
-     "name": "High Voltage Hefe"
-    },
     "bucket": "specialLuck",
     "op": "ADD",
     "value": 2,
     "conditions": []
    },
    {
-    "id": "0x003EC3E7:2",
+    "id": "0x003EC3E7:1",
     "source": {
      "kind": "consumable",
      "formId": "0x003EC3E7",
@@ -3367,6 +3356,7 @@
    "Brew_HighVoltageHefe: MGEF HighVoltageHefe_Duration archetype Script — needs override",
    "Brew_HighVoltageHefe: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "Brew_HighVoltageHefe: perk HighVoltageHefe_Perk: entry point Mod Item Condition Loss — not modeled",
+   "Brew_HighVoltageHefe: HighVoltageHefe_FortifyDamageEnergy_Effect: curve with unmapped input AV null — needs override",
    "Brew_HighVoltageHefe: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -3396,31 +3386,13 @@
      "edid": "Brew_HoppyHunter",
      "name": "Hoppy Hunter IPA"
     },
-    "bucket": "dbm",
-    "op": "ADD",
-    "value": 0.14999999664723873,
-    "conditions": [
-     {
-      "kind": "enemyType",
-      "keywordOrRace": "ActorTypeAnimal"
-     }
-    ]
-   },
-   {
-    "id": "0x00454128:1",
-    "source": {
-     "kind": "consumable",
-     "formId": "0x00454128",
-     "edid": "Brew_HoppyHunter",
-     "name": "Hoppy Hunter IPA"
-    },
     "bucket": "specialLuck",
     "op": "ADD",
     "value": 3,
     "conditions": []
    },
    {
-    "id": "0x00454128:2",
+    "id": "0x00454128:1",
     "source": {
      "kind": "consumable",
      "formId": "0x00454128",
@@ -3434,7 +3406,8 @@
    }
   ],
   "notes": [
-   "Brew_HoppyHunter: SURV_Drink_Effect: curve with unmapped input AV null — needs override",
+   "Brew_HoppyHunter: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
+   "Brew_HoppyHunter: HoppyHunter_FortifyDamageVsAnimals: curve with unmapped input AV null — needs override",
    "Brew_HoppyHunter: perk HoppyHunter_ScopeStability: entry point Mod Actor Scope Stability — not modeled",
    "Brew_HoppyHunter: perk HoppyHunter_ScopeStability: entry point Mod VATS Hit Chance — not modeled",
    "Brew_HoppyHunter: MGEF HoppyHunter_Duration archetype Script — needs override"
@@ -3547,7 +3520,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.04999999888241291,
+    "value": 0.05,
     "conditions": [
      {
       "kind": "weaponKeyword",
@@ -3566,7 +3539,7 @@
    "SCORE_S22_Consumable_SunsetSarsaparilla_Irradiated: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
    "SCORE_S22_Consumable_SunsetSarsaparilla_Irradiated: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
    "SCORE_S22_Consumable_SunsetSarsaparilla_Irradiated: MGEF NukaColaBottlecapAdder archetype Script — needs override",
-   "SCORE_S22_Consumable_SunsetSarsaparilla_Irradiated: MGEF DamageRadiationEating: zero magnitude, no curve — script/scaled, needs override"
+   "SCORE_S22_Consumable_SunsetSarsaparilla_Irradiated: MGEF DamageRadiationEating: no route for AV Rads — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -3648,10 +3621,10 @@
   ],
   "notes": [
    "Brew_LeadChampagneFresh: MGEF LeadChampagne_Duration archetype Script — needs override",
-   "Brew_LeadChampagneFresh: AddictionOddsAlcohol: curve with unmapped input AV null — needs override",
+   "Brew_LeadChampagneFresh: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "Brew_LeadChampagneFresh: LeadChampagne_IncreaseSprintAP: curve with unmapped input AV null — needs override",
-   "Brew_LeadChampagneFresh: MGEF Alcohol_ResistRadiationExpose: no route for AV RadResistExposure — needs mapping",
-   "Brew_LeadChampagneFresh: MGEF LeadChampagne_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
+   "Brew_LeadChampagneFresh: Alcohol_ResistRadiationExpose: curve with unmapped input AV null — needs override",
+   "Brew_LeadChampagneFresh: LeadChampagne_AdjustFallSpeed: curve with unmapped input AV null — needs override",
    "Brew_LeadChampagneFresh: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -3702,10 +3675,10 @@
   ],
   "notes": [
    "Brew_LeadChampagneBellini: MGEF LeadChampagne_Duration archetype Script — needs override",
-   "Brew_LeadChampagneBellini: AddictionOddsAlcohol: curve with unmapped input AV null — needs override",
+   "Brew_LeadChampagneBellini: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "Brew_LeadChampagneBellini: LeadChampagne_IncreaseSprintAP: curve with unmapped input AV null — needs override",
-   "Brew_LeadChampagneBellini: MGEF Alcohol_DamageResist: no route for AV DamageResist — needs mapping",
-   "Brew_LeadChampagneBellini: MGEF LeadChampagne_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
+   "Brew_LeadChampagneBellini: Alcohol_DamageResist: curve with unmapped input AV null — needs override",
+   "Brew_LeadChampagneBellini: LeadChampagne_AdjustFallSpeed: curve with unmapped input AV null — needs override",
    "Brew_LeadChampagneBellini: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -3756,10 +3729,10 @@
   ],
   "notes": [
    "Brew_LeadChampagneMimosa: MGEF LeadChampagne_Duration archetype Script — needs override",
-   "Brew_LeadChampagneMimosa: AddictionOddsAlcohol: curve with unmapped input AV null — needs override",
+   "Brew_LeadChampagneMimosa: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "Brew_LeadChampagneMimosa: Alcohol_ResistRadiationExpose: curve with unmapped input AV null — needs override",
-   "Brew_LeadChampagneMimosa: MGEF LeadChampagne_IncreaseSprintAP: no route for AV STAT_SprintAPCost — needs mapping",
-   "Brew_LeadChampagneMimosa: MGEF LeadChampagne_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
+   "Brew_LeadChampagneMimosa: LeadChampagne_IncreaseSprintAP: curve with unmapped input AV null — needs override",
+   "Brew_LeadChampagneMimosa: LeadChampagne_AdjustFallSpeed: curve with unmapped input AV null — needs override",
    "Brew_LeadChampagneMimosa: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -3791,7 +3764,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.19999999552965164,
+    "value": 0.2,
     "conditions": [
      {
       "kind": "weaponKeywordAny",
@@ -3838,7 +3811,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.19999999552965164,
+    "value": 0.2,
     "conditions": [
      {
       "kind": "weaponKeywordAny",
@@ -3884,7 +3857,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.19999999552965164,
+    "value": 0.2,
     "conditions": [
      {
       "kind": "weaponKeywordAny",
@@ -4092,7 +4065,7 @@
    "MedX: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
    "MedX: MGEF FortifyDamageResistMedX: no route for AV DamageResist — needs mapping",
    "MedX: MGEF AddictionOddsMedX: no route for AV AddictionMedX — needs mapping",
-   "MedX: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "MedX: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -4122,7 +4095,7 @@
     },
     "bucket": "critDmgBonus",
     "op": "ADD",
-    "value": 0.4999999888241291,
+    "value": 0.5,
     "conditions": []
    }
   ],
@@ -4182,7 +4155,7 @@
   "notes": [
    "Mentats: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "Mentats: MGEF AddictionOddsMentats: no route for AV AddictionMentats — needs mapping",
-   "Mentats: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "Mentats: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -4213,7 +4186,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.4999999888241291,
+    "value": 0.5,
     "conditions": [
      {
       "kind": "unresolved",
@@ -4275,7 +4248,7 @@
    "E08A_Brew_GulpershineFresh: condition: HasActiveMagicEffect(E08A_GulperSmacker_GulpershineBuff_ME)=1",
    "E08A_Brew_GulpershineFresh: perk ToxicGin_PoisonEnemies: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | IsSpellTarget(ToxicGin_PoisonsOnHit)=0]",
    "E08A_Brew_GulpershineFresh: perk ToxicGin_PoisonEnemies: entry point Apply Combat Hit Spell — not modeled",
-   "E08A_Brew_GulpershineFresh: MGEF DamageRadiationEating: zero magnitude, no curve — script/scaled, needs override",
+   "E08A_Brew_GulpershineFresh: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "E08A_Brew_GulpershineFresh: MGEF Gulpershine_Duration archetype Script — needs override"
   ],
   "category": "alcohol",
@@ -4613,7 +4586,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.09999999776482582,
+    "value": 0.4,
     "conditions": [
      {
       "kind": "weaponKeywordAny",
@@ -4843,7 +4816,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.09999999776482582,
+    "value": 0.4,
     "conditions": [
      {
       "kind": "weaponKeywordAny",
@@ -5037,7 +5010,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.9999999776482582,
+    "value": 1,
     "conditions": []
    }
   ],
@@ -5045,7 +5018,7 @@
    "W05_MQR_203P_ChemBlend: MGEF FortifyDamageResistPsycho: no route for AV DamageResist — needs mapping",
    "W05_MQR_203P_ChemBlend: MGEF FortifyHealthChemEffect: no route for AV Health — needs mapping",
    "W05_MQR_203P_ChemBlend: MGEF StimpakRestoreHealth archetype Stimpak — needs override",
-   "W05_MQR_203P_ChemBlend: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "W05_MQR_203P_ChemBlend: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -5079,7 +5052,7 @@
   "notes": [
    "NukaVictoryCandyMachine_Candy: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
    "NukaVictoryCandyMachine_Candy: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
-   "NukaVictoryCandyMachine_Candy: MGEF RestoreActionPointsFood: zero magnitude, no curve — script/scaled, needs override"
+   "NukaVictoryCandyMachine_Candy: MGEF RestoreActionPointsFood: no route for AV ActionPoints — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [],
@@ -5219,7 +5192,7 @@
   "notes": [
    "NukaQuantumCandyMachine_Candy: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
    "NukaQuantumCandyMachine_Candy: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
-   "NukaQuantumCandyMachine_Candy: MGEF RestoreActionPointsFood: zero magnitude, no curve — script/scaled, needs override"
+   "NukaQuantumCandyMachine_Candy: MGEF RestoreActionPointsFood: no route for AV ActionPoints — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [],
@@ -5235,12 +5208,12 @@
   "kind": "consumable",
   "modifiers": [],
   "notes": [
-   "Brew_NukashineFresh: DamageRadiationEating: curve with unmapped input AV null — needs override",
-   "Brew_NukashineFresh: AddictionOddsAlcohol: curve with unmapped input AV null — needs override",
+   "Brew_NukashineFresh: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "Brew_NukashineFresh: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "Brew_NukashineFresh: MGEF Nukashine_Duration archetype Script — needs override",
-   "Brew_NukashineFresh: MGEF Nukashine_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
-   "Brew_NukashineFresh: MGEF Nukashine_FortifySprintAP: no route for AV STAT_SprintAPCost — needs mapping",
-   "Brew_NukashineFresh: MGEF Nukashine_APRegen: no route for AV ActionPointsRate — needs mapping",
+   "Brew_NukashineFresh: Nukashine_AdjustFallSpeed: curve with unmapped input AV null — needs override",
+   "Brew_NukashineFresh: Nukashine_FortifySprintAP: curve with unmapped input AV null — needs override",
+   "Brew_NukashineFresh: Nukashine_APRegen: curve with unmapped input AV null — needs override",
    "Brew_NukashineFresh: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -5493,7 +5466,7 @@
    "OrangeMentats: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "OrangeMentats: MGEF AddictionOddsMentats: no route for AV AddictionMentats — needs mapping",
    "OrangeMentats: MGEF FortifyVATSAccuracyChem: no route for AV STAT_VATSAccuracy — needs mapping",
-   "OrangeMentats: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "OrangeMentats: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -5524,7 +5497,7 @@
     },
     "bucket": "critDmgBonus",
     "op": "ADD",
-    "value": 0.29999999329447746,
+    "value": 0.3,
     "conditions": []
    },
    {
@@ -5537,7 +5510,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.14999999664723873,
+    "value": 0.15,
     "conditions": []
    }
   ],
@@ -5545,7 +5518,7 @@
    "Overdrive: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
    "Overdrive: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "Overdrive: MGEF AddictionOddsOverdrive: no route for AV AddictionOverdrive — needs mapping",
-   "Overdrive: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "Overdrive: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -5759,7 +5732,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.14999999664723873,
+    "value": 0.15,
     "conditions": []
    }
   ],
@@ -5768,7 +5741,7 @@
    "Psycho: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
    "Psycho: MGEF FortifyDamageResistPsycho: no route for AV DamageResist — needs mapping",
    "Psycho: MGEF AddictionOddsPsycho: no route for AV AddictionPsycho — needs mapping",
-   "Psycho: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "Psycho: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -5799,7 +5772,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.24999999441206455,
+    "value": 0.25,
     "conditions": []
    },
    {
@@ -5834,7 +5807,7 @@
    "Psychobuff: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
    "Psychobuff: MGEF AddictionOddsPsycho: no route for AV AddictionPsycho — needs mapping",
    "Psychobuff: MGEF FortifyHealthPsycho: no route for AV Health — needs mapping",
-   "Psychobuff: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "Psychobuff: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -5867,7 +5840,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.24999999441206455,
+    "value": 0.25,
     "conditions": []
    },
    {
@@ -5889,7 +5862,7 @@
    "Psychotats: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
    "Psychotats: MGEF AddictionOddsPsycho: no route for AV AddictionPsycho — needs mapping",
    "Psychotats: MGEF FortifyDamageResistPsycho: no route for AV DamageResist — needs mapping",
-   "Psychotats: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "Psychotats: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -5981,7 +5954,7 @@
   "notes": [
    "Brew_RadAntLager: MGEF RadAntLager_Duration archetype Script — needs override",
    "Brew_RadAntLager: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
-   "Brew_RadAntLager: MGEF RadAntLager_FortifyCarryWeight: no route for AV CarryWeight — needs mapping",
+   "Brew_RadAntLager: RadAntLager_FortifyCarryWeight: curve with unmapped input AV null — needs override",
    "Brew_RadAntLager: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -7079,7 +7052,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.14999999664723873,
+    "value": 0.15,
     "conditions": []
    }
   ],
@@ -7087,7 +7060,7 @@
    "VenisonAndTatoStew_Psycho: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
    "VenisonAndTatoStew_Psycho: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
    "VenisonAndTatoStew_Psycho: MGEF FortifyResistDamageFood: no route for AV DamageResist — needs mapping",
-   "VenisonAndTatoStew_Psycho: MGEF RestoreHealthFood: zero magnitude, no curve — script/scaled, needs override"
+   "VenisonAndTatoStew_Psycho: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -7159,7 +7132,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.09999999776482582,
+    "value": 0.1,
     "conditions": [
      {
       "kind": "weaponKeyword",
@@ -7507,7 +7480,7 @@
     },
     "bucket": "critDmgBonus",
     "op": "ADD",
-    "value": 0.24999999441206455,
+    "value": 0.5,
     "conditions": []
    }
   ],
@@ -7615,14 +7588,14 @@
   "kind": "consumable",
   "modifiers": [],
   "notes": [
-   "SCORE_Brew_NukashineVintage_SugarFree: DamageRadiationEating: curve with unmapped input AV null — needs override",
-   "SCORE_Brew_NukashineVintage_SugarFree: AddictionOddsAlcohol: curve with unmapped input AV null — needs override",
+   "SCORE_Brew_NukashineVintage_SugarFree: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "SCORE_Brew_NukashineVintage_SugarFree: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "SCORE_Brew_NukashineVintage_SugarFree: MGEF SCORE_Nukashine_Duration_SugarFree archetype Script — needs override",
    "SCORE_Brew_NukashineVintage_SugarFree: Nukashine_FortifyUnarmedDamage: curve with unmapped input AV null — needs override",
    "SCORE_Brew_NukashineVintage_SugarFree: Nukashine_DamageResist: curve with unmapped input AV null — needs override",
-   "SCORE_Brew_NukashineVintage_SugarFree: MGEF Nukashine_FortifySprintAP: no route for AV STAT_SprintAPCost — needs mapping",
-   "SCORE_Brew_NukashineVintage_SugarFree: MGEF Nukashine_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
-   "SCORE_Brew_NukashineVintage_SugarFree: MGEF Nukashine_APRegen: no route for AV ActionPointsRate — needs mapping",
+   "SCORE_Brew_NukashineVintage_SugarFree: Nukashine_FortifySprintAP: curve with unmapped input AV null — needs override",
+   "SCORE_Brew_NukashineVintage_SugarFree: Nukashine_AdjustFallSpeed: curve with unmapped input AV null — needs override",
+   "SCORE_Brew_NukashineVintage_SugarFree: Nukashine_APRegen: curve with unmapped input AV null — needs override",
    "SCORE_Brew_NukashineVintage_SugarFree: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -7760,7 +7733,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.04999999888241291,
+    "value": 0.05,
     "conditions": [
      {
       "kind": "weaponKeyword",
@@ -7816,7 +7789,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.29999999329447746,
+    "value": 0.3,
     "conditions": [
      {
       "kind": "weaponKeywordAny",
@@ -7830,7 +7803,7 @@
   ],
   "notes": [
    "LGN_BrawlingChemist_Chem01: MGEF FortifyDamageResistPsycho: no route for AV DamageResist — needs mapping",
-   "LGN_BrawlingChemist_Chem01: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "LGN_BrawlingChemist_Chem01: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -7857,7 +7830,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.14999999664723873,
+    "value": 0.15,
     "conditions": []
    },
    {
@@ -7896,7 +7869,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.29999999329447746,
+    "value": 0.3,
     "conditions": [
      {
       "kind": "weaponKeywordAny",
@@ -7942,7 +7915,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.14999999664723873,
+    "value": 0.15,
     "conditions": []
    },
    {
@@ -7981,7 +7954,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.29999999329447746,
+    "value": 0.3,
     "conditions": [
      {
       "kind": "weaponKeywordAny",
@@ -8027,7 +8000,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.14999999664723873,
+    "value": 0.15,
     "conditions": []
    },
    {
@@ -8066,7 +8039,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.29999999329447746,
+    "value": 0.3,
     "conditions": [
      {
       "kind": "weaponKeywordAny",
@@ -8134,7 +8107,7 @@
    "AC_SQ01_HellsEagles_SurlysBuffout: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
    "AC_SQ01_HellsEagles_SurlysBuffout: MGEF AddictionOddsBuffout: no route for AV AddictionBuffout — needs mapping",
    "AC_SQ01_HellsEagles_SurlysBuffout: MGEF FortifyHealthChemEffect: no route for AV Health — needs mapping",
-   "AC_SQ01_HellsEagles_SurlysBuffout: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "AC_SQ01_HellsEagles_SurlysBuffout: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -8166,7 +8139,7 @@
     },
     "bucket": "critDmgBonus",
     "op": "ADD",
-    "value": 0.4999999888241291,
+    "value": 0.5,
     "conditions": []
    }
   ],
@@ -8325,7 +8298,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.24999999441206455,
+    "value": 0.85,
     "conditions": [
      {
       "kind": "weaponKeywordAny",
@@ -8374,7 +8347,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.8499999810010195,
+    "value": 0.85,
     "conditions": [
      {
       "kind": "weaponKeywordAny",
@@ -8421,7 +8394,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.8499999810010195,
+    "value": 0.85,
     "conditions": [
      {
       "kind": "weaponKeywordAny",
@@ -8808,11 +8781,11 @@
   ],
   "notes": [
    "Brew_LeadChampagneVintage: MGEF LeadChampagne_Duration archetype Script — needs override",
-   "Brew_LeadChampagneVintage: AddictionOddsAlcohol: curve with unmapped input AV null — needs override",
+   "Brew_LeadChampagneVintage: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "Brew_LeadChampagneVintage: Alcohol_ResistRadiationExpose: curve with unmapped input AV null — needs override",
    "Brew_LeadChampagneVintage: Alcohol_DamageResist: curve with unmapped input AV null — needs override",
-   "Brew_LeadChampagneVintage: MGEF LeadChampagne_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
-   "Brew_LeadChampagneVintage: MGEF LeadChampagne_IncreaseSprintAP: no route for AV STAT_SprintAPCost — needs mapping",
+   "Brew_LeadChampagneVintage: LeadChampagne_AdjustFallSpeed: curve with unmapped input AV null — needs override",
+   "Brew_LeadChampagneVintage: LeadChampagne_IncreaseSprintAP: curve with unmapped input AV null — needs override",
    "Brew_LeadChampagneVintage: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -8844,7 +8817,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.9999999776482582,
+    "value": 1,
     "conditions": [
      {
       "kind": "unresolved",
@@ -8900,14 +8873,14 @@
    }
   ],
   "notes": [
-   "E08A_Brew_GulpershineVintage: SURV_Drink_Effect: curve with unmapped input AV null — needs override",
+   "E08A_Brew_GulpershineVintage: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
    "E08A_Brew_GulpershineVintage: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "E08A_Brew_GulpershineVintage: MGEF E08A_GulperShine_ME archetype Script — needs override",
    "E08A_Brew_GulpershineVintage: condition: HasActiveMagicEffect(E08A_GulperSmacker_GulpershineBuff_ME)=1",
-   "E08A_Brew_GulpershineVintage: MGEF E08A_Gulpershine_DamageResist: no route for AV DamageResist — needs mapping",
+   "E08A_Brew_GulpershineVintage: E08A_Gulpershine_DamageResist: curve with unmapped input AV null — needs override",
    "E08A_Brew_GulpershineVintage: perk ToxicGin_PoisonEnemies: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | IsSpellTarget(ToxicGin_PoisonsOnHit)=0]",
    "E08A_Brew_GulpershineVintage: perk ToxicGin_PoisonEnemies: entry point Apply Combat Hit Spell — not modeled",
-   "E08A_Brew_GulpershineVintage: MGEF DamageRadiationEating: zero magnitude, no curve — script/scaled, needs override",
+   "E08A_Brew_GulpershineVintage: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "E08A_Brew_GulpershineVintage: MGEF Gulpershine_Duration archetype Script — needs override"
   ],
   "category": "alcohol",
@@ -8932,14 +8905,14 @@
   "kind": "consumable",
   "modifiers": [],
   "notes": [
-   "Brew_NukashineVintage: DamageRadiationEating: curve with unmapped input AV null — needs override",
-   "Brew_NukashineVintage: AddictionOddsAlcohol: curve with unmapped input AV null — needs override",
+   "Brew_NukashineVintage: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "Brew_NukashineVintage: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "Brew_NukashineVintage: MGEF Nukashine_Duration archetype Script — needs override",
    "Brew_NukashineVintage: Nukashine_FortifyUnarmedDamage: curve with unmapped input AV null — needs override",
    "Brew_NukashineVintage: Nukashine_DamageResist: curve with unmapped input AV null — needs override",
-   "Brew_NukashineVintage: MGEF Nukashine_FortifySprintAP: no route for AV STAT_SprintAPCost — needs mapping",
-   "Brew_NukashineVintage: MGEF Nukashine_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
-   "Brew_NukashineVintage: MGEF Nukashine_APRegen: no route for AV ActionPointsRate — needs mapping",
+   "Brew_NukashineVintage: Nukashine_FortifySprintAP: curve with unmapped input AV null — needs override",
+   "Brew_NukashineVintage: Nukashine_AdjustFallSpeed: curve with unmapped input AV null — needs override",
+   "Brew_NukashineVintage: Nukashine_APRegen: curve with unmapped input AV null — needs override",
    "Brew_NukashineVintage: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -9484,7 +9457,7 @@
    "XCell: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "XCell: MGEF AddictionOddsXCell: no route for AV AddictionXCell — needs mapping",
    "XCell: MGEF XCellUIDummyEffect archetype Script — needs override",
-   "XCell: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+   "XCell: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
   "dispelKeys": [
@@ -9520,7 +9493,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.09999999776482582,
+    "value": 0.4,
     "conditions": [
      {
       "kind": "weaponKeywordAny",
