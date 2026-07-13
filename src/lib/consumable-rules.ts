@@ -9,7 +9,8 @@ import { getConsumables } from '@/data/buffs';
  * buffsById lookup so callers can pass real data (`consumablesById`) or
  * synthetic fixtures in tests.
  *
- * Binding rules (`dps-todos/consumables-overhaul.md`, user rules):
+ * Binding rules (user-specified 2026-07-10; recorded in docs/assumptions.md
+ * "Consumable stacking & addictions"):
  * - Only one CHEM active at a time.
  * - Only one ALCOHOL active at a time (independent of chem).
  * - FOOD and non-alcohol DRINK stack UNLESS they grant the "same bonus" —

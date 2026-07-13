@@ -1,7 +1,8 @@
 import type { SustainResult } from './sustain';
 
 /**
- * Steady-state VATS AP economy (Stage B, dps-todos/engine-mechanics-push.md).
+ * Steady-state VATS AP economy (docs/assumptions.md "VATS AP economy &
+ * manual-aim hit rate").
  *
  * Every VATS shot costs AP (WEAP "Action Point Cost" — Weapon.apCost); AP
  * regenerates over time and VATS crits can restore extra AP (Conductor's).
@@ -11,7 +12,7 @@ import type { SustainResult } from './sustain';
  * regen must catch back up), and `apLimitedDps` is the sustained VATS DPS
  * scaled by that duty cycle.
  *
- * GMST sources (20260702 ESM, per dps-todos/engine-mechanics-push.md):
+ * GMST sources (20260702 ESM, recorded in the same assumptions.md section):
  * - `fAVDActionPointsBase` = 60, `fAVDActionPointsMult` = 10 → MaxAP = 60 + 10×AGI.
  * - `fActionPointsRestoreRate` = 4.0 AP/s base regen.
  *

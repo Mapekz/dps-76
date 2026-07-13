@@ -48,5 +48,7 @@ A fresh extraction only requires reviewing the **delta**, not re-vetting all
   Monster → Deathclaw Gauntlet). Expect waves of unique-WEAP removals whose
   effects reappear as OMODs — that's roster shrinkage to *accept* (update the
   pinned list), not rescue.
-- Throwables (grenades/mines, `projectileOnly` bucket) and launcher explosion
-  damage are deferred: dps-todos/launcher-explosives.md.
+- Launcher explosion damage SHIPPED 2026-07-13 (the WEAP→PROJ→EXPL chase,
+  docs/assumptions.md "Launcher explosion damage"). Throwables (grenades/
+  mines, `projectileOnly` bucket) stay excluded by vetting-scope decision —
+  the exclusion is evaluated before the EXPL chase.

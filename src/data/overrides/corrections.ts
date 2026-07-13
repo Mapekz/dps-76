@@ -54,7 +54,8 @@ export const hiddenWeaponIds: ReadonlySet<string> = new Set<string>([
   'Camera_SnapMatic', // "ProSnap Deluxe Camera"
   'Camera_Disposable', // "Recon Imager"
   // Utility/effect throwables with placeholder WEAP damage (1–5 flat) — their
-  // real payloads ride EXPL records (dps-todos/launcher-explosives.md).
+  // real payloads ride EXPL records (docs/assumptions.md "Launcher explosion
+  // damage").
   // Throwing BLADES (Throwing Knife, Tomahawk, Meat Cleaver, Sheepsquatch
   // Shard) carry real damage curves and stay. User decision, 2026-07-12
   // vetting pass.
@@ -234,7 +235,7 @@ export const omodWeaponRestrictions: Readonly<Record<string, readonly string[]>>
  * Per-weapon field patches applied after adaptation.
  *
  * Fire-rate note: extracted `attackDelaySec` / automatic-flag data is
- * ESM-verified for the base weapon (dps-todos/fire-rate.md — 30+ in-game
+ * ESM-verified for the base weapon (docs/assumptions.md — 30+ in-game
  * Pip-Boy Fire Rate readings, 2026-07-13). The two entries below are the only
  * confirmed exceptions to the standard `speed / 0.11` auto-fire divisor;
  * every other "exception" candidate (Submachine Gun, Railway Rifle, Combat

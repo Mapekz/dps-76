@@ -19,7 +19,8 @@ import { lastTrace, type BucketTrace, type HitTrace } from './trace';
 
 /**
  * Base power-attack multiplier from RACE records' per-attack-event "Damage
- * Mult" on Power-Attack-flagged events (Stage C1, dps-todos/power-attacks.md):
+ * Mult" on Power-Attack-flagged events (docs/assumptions.md "Power attacks &
+ * melee cadence"):
  * HumanRace (0x00013746) = 1.5; PowerArmorRace (0x0001D31E) = 2.0 — the PA
  * race swap IS the multiplier, no separate perk/MGEF grants it. Multiplies
  * the entire melee hit, distinct from the additive `powerAttackBonus` bucket

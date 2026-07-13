@@ -1,6 +1,6 @@
 # dps-todos/ — Remaining Work Index
 
-Curated 2026-07-12: this folder is scoped to the **dps-76 app** only. Todos for
+Curated 2026-07-13: this folder is scoped to the **dps-76 app** only. Todos for
 the separate Rust ESM parser (`~/dev/fo76/FO76-Tools/esm/`) live in
 `~/dev/fo76/FO76-Tools/todos/` instead — that crate is far past its original
 POC (181 record types, zero raw-fallback records, strings/BA2/VMAD/CTDA/napi/
@@ -10,10 +10,18 @@ extraction` (arguably obsolete) still have anything open, and none of it
 blocks dps-76.
 
 Everything below was verified against actual code (not the todo text) as of
-the 2026-07-12 dump/build. `docs/assumptions.md` is the canonical record of
-every shipped mechanic's assumptions — this README is a priority queue, not a
-spec. Priority order below reflects the user's 2026-07-12 reprioritization
+2026-07-13. `docs/assumptions.md` is the canonical record of every shipped
+mechanic's assumptions — this README is a priority queue, not a spec.
+Priority order below reflects the user's 2026-07-12 reprioritization
 (supersedes the original enemy-mitigation-first ordering).
+
+Removed as **completed** on 2026-07-13 (recover via git history; shipped
+detail lives in `docs/assumptions.md`): `consumables-overhaul.md`,
+`carnivore-herbivore.md`, `launcher-explosives.md`, plus the ranged half of
+`fire-rate.md` and the power-attack half of `power-attacks.md` — those two
+docs' remaining melee scope merged into
+[melee-cadence.md](melee-cadence.md); their measurement leftovers moved to
+[measurement-backlog.md](measurement-backlog.md).
 
 ## Remaining implementable work, in priority order
 
@@ -21,24 +29,11 @@ spec. Priority order below reflects the user's 2026-07-12 reprioritization
    Unyielding (SPECIAL-on-low-HP → feeds STR melee term) and Zealot's
    (vs Scorched/Scorchbeast). No blockers — armor types already exist, just
    unpopulated and unwired.
-2. **Ranged fire-rate validation (P0)** — [fire-rate.md](fire-rate.md).
-   Mostly resolved 2026-07-12: the flat `0.11`s auto-fire divisor and every
-   per-weapon-family `fireRateSpeed` override (Combat Rifle, Assault Rifle,
-   Handmade, Combat Shotgun, Gatling Laser Charging Barrels, V63 Carbine) are
-   now confirmed correct against the ESM and already extracted. What's left
-   needs **in-game Pip-Boy readings, not more ESM digging**: Railway Rifle,
-   Auto Combat Shotgun, and other custom-animation weapons' real
-   `animDurationSec`, plus confirming whether Gatling Laser's Charging
-   Barrels change the animation itself on top of the already-captured Speed
-   reduction. Knock this out with a quick in-game session — it's a short,
-   well-defined checklist now, not an open-ended investigation.
-3. **Consumables overhaul** — [consumables-overhaul.md](consumables-overhaul.md).
-   Full ALCH extraction (category + dispel-keyword + addiction data) plus a
-   sizeable stacking-rule UI. Plan a grill/design pass first — user rules are
-   already pinned in the doc.
-4. **The rest** (no further internal ordering implied):
+2. **The rest** (no further internal ordering implied):
    - **Enemy table & mitigation** — [phase-3-enemies.md](phase-3-enemies.md).
-     ESM spike (HP/DR/ER/BPTD on NPC_/RACE/TPLT chains) → `extract-npcs.ts` +
+     Spike partially done 2026-07-12: BPTD body-part/weakpoint extraction +
+     the Target section race/body-part picker already shipped. Remaining:
+     HP/DR/ER spike (NPC_/RACE/TPLT chains) → `extract-npcs.ts` +
      `npcs.json` + fixtures → curated `notable-enemies.ts` → `mitigation.ts`
      (activate the dormant `calculateDamageResistMult`, per damage component)
      + `armorPen` bucket fold + `enemyType` conditions via an `EnemyProfile` →
@@ -50,23 +45,15 @@ spec. Priority order below reflects the user's 2026-07-12 reprioritization
    - **Popular builds / presets** — [popular-builds.md](popular-builds.md).
      All dependencies (perk data, VATS crit, sneak) are done; just needs the
      preset-selector UI + 3 canned N&D configs.
-   - **Melee cadence** — [fire-rate.md](fire-rate.md)'s melee section +
-     [power-attacks.md](power-attacks.md) (one workstream, split across two
-     docs by history). Real per-weapon `animDelaySec` for melee replacing the
-     1 swing/sec stub, plus a `melee1h`/`melee2h` weaponClass split so
-     Gladiator vs Slugger can apply correctly.
-   - **Launcher explosion damage** — [launcher-explosives.md](launcher-explosives.md):
-     **DONE 2026-07-13** (EXPL chase + Demolition Expert fix + Gamma Gun
-     graduation); only in-game pip-boy verification of the WEAP+EXPL summing
-     assumption remains (two null golden cases).
-   - **Carnivore's / Herbivore's food scaling** —
-     [carnivore-herbivore.md](carnivore-herbivore.md): **DONE 2026-07-13**
-     (perk-condition-derived classification, per-modifier effect gate,
-     ×2/×2.5-SIN/zeroed transform, reducer exclusivity, food-row badges).
-   - **Perk weapon-stat fold gap + legendary measurement queue** —
+   - **Melee cadence** — [melee-cadence.md](melee-cadence.md). Real
+     per-weapon `animDelaySec` for melee replacing the 1 swing/sec stub.
+     (The old 1h/2h weaponClass split is dropped — no perk or OMOD in the
+     current dump gates on handedness; see the doc.)
+   - **Perk weapon-stat fold gap + measurement queue** —
      [measurement-backlog.md](measurement-backlog.md). The fold gap is a
      self-contained engine fix (no blockers); the measurement queue needs
-     in-game golden cases per effect.
+     in-game golden cases per effect — now also holds the launcher pip-boy
+     summing verification and the Carnivore/Herbivore confirmations.
    - **PTS toggle** — [pts-toggle.md](pts-toggle.md). Smallest mechanical win
      whenever picked up: un-disable the Header `Switch`, wire it to
      `setMode`. Low value until a genuinely different PTS dump exists (pts
@@ -85,9 +72,10 @@ See `~/dev/fo76/FO76-Tools/todos/`: `write-support.md` (not needed by dps-76),
 ## Known gaps & measurement backlog
 
 The perk-sourced weapon-stat fold gap (Guerrilla Expert et al.) and the
-in-game measurement queue (legendary effects extracting zero modifiers) now
-live in [measurement-backlog.md](measurement-backlog.md). What remains below
-is only the parked-by-design list — full derivations for everything live in
+in-game measurement queue (legendary effects extracting zero modifiers, plus
+the shipped-mechanic confirmations) live in
+[measurement-backlog.md](measurement-backlog.md). What remains below is only
+the parked-by-design list — full derivations for everything live in
 `docs/assumptions.md`.
 
 - **Parked by explicit design decision** (not oversights):
@@ -97,9 +85,9 @@ is only the parked-by-design list — full derivations for everything live in
     probabilistic AP-cost-reduction effect (EP79/EP27 gated by
     `GetRandomPercent`), waits on AP-economy modeling of random effects.
   - Crippling / cripple-speed stat — limb damage is limb-condition only (no
-    HP term); waits on enemy limb HP (priority #1 above).
+    HP term); waits on enemy limb HP (phase-3-enemies.md).
   - On-kill AP restores (Grim Reaper's Sprint, Conductor's kill-half) — wait
-    on enemy TTK (priority #1 above).
+    on enemy TTK (phase-3-enemies.md).
   - Gunslinger Master's per-stack "gain over time / spend on attack" — engine
     -opaque, no further ESM footprint to chase (max-stack contribution only).
   - N&D Slugger/IronFist Expert/Master import keys are missing from

@@ -2,7 +2,9 @@
 
 Split out of this folder's README ("Known gaps & measurement backlog",
 originally rescued from the deleted `onslaught.md` / `engine-mechanics-push.md`
-/ `data-quality-review.md` resolution logs) on 2026-07-13. Full derivations
+/ `data-quality-review.md` resolution logs) on 2026-07-13. Also absorbed the
+measurement remainders of the deleted `launcher-explosives.md` and
+`carnivore-herbivore.md` docs (both shipped 2026-07-13) — section 3 below. Full derivations
 live in `docs/assumptions.md`; this file is the actionable queue. The
 "parked by explicit design decision" items (Basher's, Combo-Breaker's,
 cripple-speed, on-kill AP restores, Gunslinger Master stacks, N&D
@@ -67,3 +69,29 @@ Workflow per effect:
 2. If genuinely script/exe-driven: measure in-game, pin a golden case, and
    model the value in `src/data/overrides/legendary-values.ts` with a source
    comment (existing pattern for script-computed legendary values).
+
+## 3. In-game confirmations for shipped mechanics (from closed todo docs)
+
+From **launcher explosion damage** (shipped 2026-07-13, see
+`docs/assumptions.md` "Launcher explosion damage"):
+
+- **Pip-Boy summing verification**: does the damage card show WEAP impact +
+  EXPL (Fat Man 1391, Missile Launcher 973)? Fill the two `expected: null`
+  golden cases in `src/lib/engine/__tests__/golden/cases.json`. Hellstorm
+  (379+379=758) is the sharpest probe — its two halves are separately
+  authored tier-46 curves.
+- **Explosive-legendary stacking on Gauss** (0.15 intrinsic + 0.2 legendary
+  = 0.35 assumed additive) — measure if a Gauss + Explosive roll is
+  available.
+- **Cremator projectile DoT** — not a measurement item: the WEAP-side fire
+  curve's "partial" caveat is an open ESM/VMAD chase (the explosion component
+  shipped; the DoT chase did not).
+
+From **Carnivore's/Herbivore's food scaling** (shipped 2026-07-13, see
+`docs/assumptions.md` "Carnivore's / Herbivore's food scaling") — optional
+confirmations, nothing blocking:
+
+- Pip-Boy effect-card reading for a doubled food under Strange in Numbers
+  (expect ×2.5).
+- Rudy's Pozole exemption: its plain FortifyCharisma/Luck effects should NOT
+  scale (the one data-driven exemption among the 77 audited foods).

@@ -17,18 +17,27 @@ panes, showing per-enemy **effective DPS, % damage retained, and TTK** for the
 emphasized scenario. Plus a pinned-enemy chip in the results pane
 ("vs SBQ · 94s") as the above-the-fold ambassador.
 
-## 3.1 Spike first (gate for everything else)
-Run the `esm` CLI (`~/.local/bin/esm`, dump at
-`~/dev/fo76/FO76-Tools/esm/Data/20260702/SeventySix.esm`) against known NPCs —
-Earle, Scorchbeast Queen, Super Mutant — to pin down:
+## 3.1 Spike first (gate for everything else) — PARTIALLY DONE 2026-07-12
+
+**Already shipped** (2026-07-12 sessions, ahead of the rest of this phase):
+- **BPTD body-part / weakpoint data**: `scripts/extract/extract-bodyparts.ts`
+  → `generated/bodyparts.json` + `src/data/bodyparts.ts`, including the
+  `NPC_`→`RACE` extractor resolution. The Target section
+  (`src/components/build/TargetSection.tsx`) has a race + body-part picker
+  (categories: raid/infestation/headhunt/standard, grouped Combobox) feeding
+  `enemyConfig.conditions.targetRace`/`targetBodyPart`, and
+  `resolveLoadout` applies the real per-race multiplier via
+  `getBodyPartMult` — the old global ×2.0 weakpoint default is gone.
+  Location and weakpoint-ness are modeled separately (torso CAN be the
+  weakpoint, user-confirmed).
+
+**Still to spike** — run the `esm` CLI (`~/.local/bin/esm`; dump path comes
+from `FO76_ESM_PATH`, currently `~/dev/fo76/Data/20260710/SeventySix.esm`)
+against known NPCs — Earle, Scorchbeast Queen, Super Mutant — to pin down:
 - Where HP/DR/ER actually live: `NPC_` record vs `RACE` vs leveled/template
   chains (TPLT). Expect template indirection.
 - How enemy level maps to the already-extracted
   `armor_universal_tier*.json` curvetables.
-- Body-part / weakpoint data (BPTD) — at minimum the weakpoint multiplier per
-  enemy so the global weakpoint toggle uses real values instead of the ×2.0
-  default. Note: torso CAN be the weakpoint for some enemies (user-confirmed) —
-  model location and weakpoint-ness separately.
 
 Findings → `docs/assumptions.md`. CLI quirks to remember: `list --limit 0`
 returns `[]` (use `--limit 99999`), `search` needs `"*"` not `""`, `list`
@@ -80,8 +89,10 @@ never returns names.
   become enemy-aware (they don't have to be in v1).
 
 ## Related data gaps (not Phase 3 blockers, found during Phase 2)
-- Bloody Mess has empty rank modifiers in generated `perks.json`.
+- Bloody Mess has empty rank modifiers in generated `perks.json` — verified
+  still true 2026-07-13 (`ranks: [0,0,0]` modifiers, no override).
 - ★4 legendary "BonusDamage x4/x5/x6" raw ESM names; x5 ≡ x6 values — needs
-  `legendary-values.ts` overrides.
+  `legendary-values.ts` overrides. **Re-verify first**: the 20260710 sync's
+  4★ enemy-status AV rework may have superseded these records.
 - Some magazine omods (10mm, Gatling Gun) do capacity via script MGEF
   (unresolved report).

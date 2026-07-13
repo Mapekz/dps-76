@@ -1,13 +1,13 @@
 import type { Weapon } from '@/types';
 
 /**
- * Derives the weapon's fire rate in shots-per-second (approximate until
- * animation-derived timing lands — dps-todos/fire-rate.md).
+ * Derives the weapon's fire rate in shots-per-second (melee approximate until
+ * animation-derived timing lands — dps-todos/melee-cadence.md).
  *
  * Formula:
  *   fireRate_auto   = speed / animDurationSec   (most autos ≈ 0.11 s)
  *   fireRate_semi   = speed / attackDelaySec    (extracted WEAP "Attack Delay Seconds")
- *   fireRate_melee  = 1.0  (stub — real timings tracked in todos/fire-rate.md)
+ *   fireRate_melee  = 1.0  (stub — real timings tracked in dps-todos/melee-cadence.md)
  *
  * Notes:
  * - `speed` is the EFFECTIVE weapon speed. The historical 0.8248× "physical"
@@ -18,11 +18,11 @@ import type { Weapon } from '@/types';
  */
 export function getFireRate(weapon: Weapon): number {
   // Melee/unarmed: 1 swing/sec stub until real animation timings are
-  // confirmed (dps-todos/fire-rate.md). Speed-affecting mods (Thrill-Seeker's
-  // melee-speed AV, Cursed melee event mods) apply RELATIVELY on top of the
-  // stub — `weapon.speed` already carries a 1.0 baseline (WEAP Data.Speed)
-  // through the same fireRateSpeed OMOD fold ranged weapons use (Stage C,
-  // dps-todos/engine-mechanics-push.md: "speed effects apply relatively").
+  // confirmed (dps-todos/melee-cadence.md). Speed-affecting mods
+  // (Thrill-Seeker's melee-speed AV, Cursed melee event mods) apply RELATIVELY
+  // on top of the stub — `weapon.speed` already carries a 1.0 baseline (WEAP
+  // Data.Speed) through the same fireRateSpeed OMOD fold ranged weapons use
+  // (docs/assumptions.md "Power attacks & melee cadence").
   if (weapon.weaponClass === 'melee' || weapon.weaponClass === 'unarmed') {
     return 1.0 * (weapon.speed ?? 1.0);
   }

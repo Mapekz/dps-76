@@ -21,7 +21,7 @@ import {
  * Mutations (SPEL) and consumables (ALCH). Mutations stay a curated
  * whitelist (a small, stable set — pattern-matching would pull in dozens of
  * aux sub-spells). Consumables are fully enumerated from ALCH: see
- * dps-todos/consumables-overhaul.md and the implementation plan for the
+ * docs/assumptions.md "Consumable stacking & addictions" for the
  * category/dispelKeys/addiction design.
  */
 

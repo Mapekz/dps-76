@@ -111,7 +111,8 @@ async function buildComponents(
 }
 
 /**
- * Launcher explosion damage (dps-todos/launcher-explosives.md): the real
+ * Launcher explosion damage (docs/assumptions.md "Launcher explosion
+ * damage"): the real
  * payload of Fat Man / Missile Launcher / grenade launchers / Broadsider /
  * Gamma Gun rides the projectile's EXPL record, not the WEAP (whose "Base
  * Damage" is a token 3–5 impact value). Chain: WEAP RGW3."Override

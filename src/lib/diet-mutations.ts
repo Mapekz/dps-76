@@ -2,7 +2,8 @@ import type { GeneratedBuff } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 
 /**
- * Carnivore's / Herbivore's food scaling (dps-todos/carnivore-herbivore.md).
+ * Carnivore's / Herbivore's food scaling (docs/assumptions.md "Carnivore's /
+ * Herbivore's food scaling").
  *
  * ESM-proven mechanic (Mutation_Carnivore / Mutation_Herbivore SPELs grant
  * Script-MGEF perks whose "Mod Spell Magnitude" entry points multiply food

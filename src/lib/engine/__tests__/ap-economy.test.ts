@@ -9,7 +9,7 @@ import {
 } from '@/lib/engine/ap-economy';
 import type { SustainResult } from '@/lib/engine/sustain';
 
-// Stage B (dps-todos/engine-mechanics-push.md): steady-state VATS AP economy.
+// Steady-state VATS AP economy (docs/assumptions.md "VATS AP economy").
 // Hand-computed expectations straight from the spec formula in ap-economy.ts.
 
 function sustain(overrides: Partial<SustainResult> = {}): SustainResult {

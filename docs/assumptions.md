@@ -113,14 +113,15 @@ real payload rides the projectile's explosion. ESM-proven chain: WEAP
 ## Fire rate (`src/lib/fire-rate.ts`) — CLOSED 2026-07-13
 
 - Auto: `speed / 0.11`; semi: `speed / Attack Delay Seconds`; melee: 1.0/s stub
-  (melee timing is the only open scope left, `dps-todos/fire-rate.md`).
+  (melee timing is the only open scope left, `dps-todos/melee-cadence.md`).
 - **Confirmed** against 30+ user-supplied in-game Pip-Boy Fire Rate readings
   across base weapons and weapon+mod combos, across both the live
   (2026-07-02) and PTS (2026-07-10) dumps: Pip-Boy Fire Rate =
   `(effectiveSpeed / cycleConstant) × 10`, rounded. The overwhelming majority
   use `cycleConstant = 0.11` (auto) or the weapon's own `Attack Delay
-  Seconds` (semi), exactly as implemented. Full weapon-by-weapon tables in
-  `dps-todos/fire-rate.md`.
+  Seconds` (semi), exactly as implemented. Full weapon-by-weapon tables lived
+  in `dps-todos/fire-rate.md`, deleted 2026-07-13 when the ranged scope
+  closed — recover via git history if ever needed.
 - The historical 0.8248 "physical" multiplier (and every other per-weapon-family
   automatic-receiver Speed change) is `SET`/`MUL_ADD Speed <value>` on OMODs,
   resolved through the existing `Includes`-chain flattening into a
@@ -295,7 +296,7 @@ inert with a picker badge (`corrections.ts omodBadgeOverrides`).
 
 ## Consumable stacking & addictions (2026-07-13 consumables overhaul)
 
-Binding rules (user-specified, `dps-todos/consumables-overhaul.md`), enforced
+Binding rules (user-specified 2026-07-10), enforced
 in `src/lib/consumable-rules.ts` (the ONE implementation shared by the build
 reducer, the persistence codec, and the picker UI):
 
@@ -401,11 +402,6 @@ with that key explicitly SKIPPED (with a warning) — there's no way to map a
 bare count back to specific addiction ids, so it's dropped rather than
 silently winning over the (now addiction-less) picker state.
 
-**Deferred**: Carnivore's/Herbivore's food ×2/disable mutation interaction —
-the extractor captures `GeneratedBuff.ingredientKeywords` (IngredientType*/
-MealType* KYWD edids) now so the follow-up needs no re-extract, but the
-app-side classification (which foods count as "meat" vs "veggie", including
-soups/mixed dishes) is unimplemented. See `dps-todos/carnivore-herbivore.md`.
 
 ## Target distance (Close / Far, Stage A3)
 
@@ -522,7 +518,7 @@ soups/mixed dishes) is unimplemented. See `dps-todos/carnivore-herbivore.md`.
   OMOD/AV rewrites (Thrill-Seeker's melee-speed AV, pre-existing "Cursed"
   event melee mods) have an effect; stock melee weapons carry `speed: 1.0` so
   unmodified behavior is unchanged. Absolute swing timings are still
-  unmeasured (`dps-todos/fire-rate.md`).
+  unmeasured (`dps-todos/melee-cadence.md`).
 - **Charged (4★ melee, `mod_Legendary_Weapon4_Melee_Charged` 0x00885C6A)**:
   has NO enchantment — its whole payload is 4 ADDed keywords, the mechanic
   trigger being `WeaponHasSecondaryCharging` (KYWD 0x0089A83D), engine-native

@@ -228,7 +228,8 @@ export interface GeneratedBuff {
    * Consumable-only: resolved IngredientType* / MealType* KYWD edids — the
    * Carnivore's/Herbivore's classification input (src/lib/diet-mutations.ts):
    * IngredientTypeMeat ⇒ meat; IngredientTypeVegetable/Herb/Fruit ⇒ herbivore
-   * fare (the perk-condition keyword sets, dps-todos/carnivore-herbivore.md).
+   * fare (the perk-condition keyword sets — docs/assumptions.md "Carnivore's
+   * / Herbivore's food scaling").
    */
   ingredientKeywords?: string[];
   /**
