@@ -18,10 +18,18 @@ PaperDamage = Σ_components base(c) × ( dbmFold(c) + Tenderizer + (CritMult−1
   Multiple MUL_ADDs stack additively with each other, and MUL_ADD always
   multiplies the ORIGINAL base — even when a SET replaced it (Speed base 2.0
   with SET 0.8248 / MUL_ADD 0.3 / ADD 0.5 → 0.8248 + 0.6 + 0.5 = 1.9248).
-- **Curve tables override hardcoded values**: any OMOD property carrying a
-  curve table ignores its flat value. Such properties are flagged in
-  `_meta.json` and skipped (162 mods, mostly flaming/level-scaled elemental
-  mods) rather than extracted wrong.
+- **Curve tables override hardcoded values**: any OMOD property or MGEF effect
+  carrying a curve table ignores its flat value. OMOD-property curves
+  (`extract-omods.ts`) always default their input to `itemLevel` — never
+  dropped. MGEF/ENCH effect curves (`normalize/mgef.ts`) need a resolvable
+  input axis (an Actor Value the engine can read); an unresolvable one drops
+  the whole modifier with a `_meta.json` note, EXCEPT a curve with no Actor
+  Value at all (`curveInputAv: null`) whose X domain looks level-shaped
+  (≤100) also defaults to `itemLevel` (2026-07-13 — see "Value curves" below).
+  Remaining drops (~9 records, `_meta.json`) are genuinely unmodeled axes:
+  a handful of `cr`-prefixed creature/event DoTs with a non-level domain
+  (X up to 540+), a lockpicking-tier gimmick mod, a caps-scaled hidden mod,
+  and PA battery drain (non-damage).
 - `DamageTypeValues` on dtPhysical ≡ `AttackDamage` (both phys-only; the
   former is rare).
 - **Base-damage scaling** (`baseDamage` bucket): `AttackDamage` and
@@ -306,6 +314,48 @@ reason to carry a resolvable input AV at all). Confirmed on three alcohol
 `dbm` effects whose Curve Table Y exactly matches their flat EFIT magnitude:
 Ballistic Bock (`BallisticBock_BallisticDMG.json`, {1→15}), High Voltage Hefe,
 Hoppy Hunter IPA — all +15% dbm, previously dropped entirely (2026-07-13).
+
+**Null-input DoT curves default to `itemLevel`** (2026-07-13): weapon-mod
+bleed/burn/shock/poison DoTs (Damage-archetype MGEFs, `dotDamage` bucket) are
+delivered via ENCH→MGEF with a multi-point curve and NO Actor Value at all
+(`curveInputAv: null` — there's no AVIF for "item level" as an effect-level
+input, so the engine reads it straight off the equipped weapon, same as OMOD
+property curves). Confirmed item-level (X = 1→50) on every sampled weapon-mod
+DoT, e.g. `EnchWeapMod_HarpoonGunBleed` (X 1→50, Y 10→32 — genuinely
+level-scaled) and the **Bleeding legendary** (`ench_LegendaryWeapon_Bleed`,
+flat magnitude 0, all damage in the curve, Y 5→17 — previously 0 bleed DoT).
+`normalize/mgef.ts` defaults these to `itemLevel` when the curve's last point
+is ≤100 (a level-shaped domain), restoring 125 obtainable weapon mods
+(12 of which had dropped to a fully empty modifier list). The guard matters:
+some MGEFs sharing the same effect edid (e.g. `dtPoisonEffectChanceAlways`)
+are ALSO used on creature/event effects with a genuinely different, much
+wider domain (`PoisonStingwingBite`, X up to 540; the `cr`-prefixed
+"Poison Frame"/"Radscorpion Venom" mod variants, same wider domain) — those
+correctly stay dropped with a note rather than being misread as item level.
+
+**SPECIAL-scaled damage axes** (2026-07-13): `strength` and `charisma` join
+`endurance`/`intelligence` as buff-folded SPECIAL `CurveInput`s. The Debilitator
+(`limbDamage`, X = STR, routed via `STAT_DmgLimbs`) and Peace Maker (`dbm`
+explosive-scoped, X = CHA, routed via `STAT_DmgExplosive`) both had their AVIF
+route already mapped — only the curve's input axis (AV `0x000002C2`/`0x000002C5`)
+was missing, so each was a clean single-gap fix (no route ambiguity). Mapping
+CHA also incidentally un-dropped **Lone Wanderer**'s `apRegen` curve (same AV
+— "AP regen based on your CHA while not on a team"), correctly extracted but
+still inactive: its `IsMemberOfAPlayerTeam()=0` gate is an `unresolved`
+condition (team membership isn't modeled), so the modifier is skipped at
+runtime same as any other unresolved-condition modifier.
+
+**Bullet Storm / Heavy Gunner's ammo-spent stacks** (2026-07-13): a new
+`bulletStormStacks` `CurveInput`, AV `0x0000039B`, no AVIF record (hardcoded
+slot, same pattern as Onslaught) — mirrors the existing `bulletStorm`
+StackCounter reader (same underlying `PlayerConditions.bulletStormStacks`
+field; a separate CurveInput entry is needed only because `ValueCurve.input`
+is typed as `CurveInput`, not `StackCounter`). Restores Bullet Storm's `dbm`
+curve (+3/6/9%/stack ×10 stacks, verified: curve Y 90/180/270 at X=30,
+interpolated at X=10 × route scale 0.01 = 30/60/90%) plus sibling
+reload-speed/bash-damage/charge-up-speed curves on the same AV (though those
+are further gated on `HasPerk(...)` conditions the extractor doesn't resolve,
+so they stay inactive — only the ungated `dbm` curve currently applies).
 
 | Effect | Input (X) | Curve | Notes |
 |---|---|---|---|
@@ -996,6 +1046,11 @@ ghoul perk effects gate on it with `GetValue(Rads) ≥ N` condition rows.
   "Mixed damage-type OMOD conversion (DamageTypeValues)" above.
 - SPECIAL-scaled perk entry points ("Add Actor Value Mult" on player perks)
   are skipped and noted per-perk in `generated/perks.json` notes.
+- A handful of `cr`-prefixed creature/event DoT curves (non-level X domain,
+  up to 540) and a few niche unique-mod damage curves remain unmapped: Pirate
+  Punch (lockpicking-tier gimmick), Eat The Rich (NPC-only reward from Head
+  Hunts, not player-obtainable), PA battery drain (no DPS/AP/HP impact — see
+  "Curve tables override hardcoded values" above).
 - Unjoined registry perks (removed/renamed by the overhaul):
   `getUnjoinedPerkIds()` in `src/data/perk-modifiers.ts`.
 - `GammaGun` (obtainable in-game, craftable) is excluded as `noDamage`: its

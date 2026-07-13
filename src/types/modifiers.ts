@@ -266,6 +266,25 @@ export type CurveInput =
    */
   | 'intelligence'
   /**
+   * The player's (buff-folded) Strength stat — AV 0x000002C2. The
+   * Debilitator's limb-damage-vs-STR curve reads it (mirrors endurance/intelligence).
+   */
+  | 'strength'
+  /**
+   * The player's (buff-folded) Charisma stat — AV 0x000002C5. The
+   * Peace Maker's explosive-damage-vs-CHA curve reads it.
+   */
+  | 'charisma'
+  /**
+   * The shared Bullet Storm / Heavy Gunner stack counter (ammo-spent stacks,
+   * max 10) — AV 0x0000039B, no AVIF record (hardcoded slot, mirrors
+   * onslaughtStacks). Distinct CurveInput from the `bulletStorm` StackCounter
+   * (same underlying `PlayerConditions.bulletStormStacks` field, different
+   * type space) because ValueCurve.input is typed as CurveInput, not
+   * StackCounter.
+   */
+  | 'bulletStormStacks'
+  /**
    * Equipped weapon condition as a fraction (Polished): 1.0 = 100% (full
    * condition), 2.0 = 200% (over-repaired max). No AVIF exists for this axis —
    * the effect-level curve input is the engine function

@@ -1600,9 +1600,7 @@
     1
    ]
   },
-  "notes": [
-   "AbPerkFortifyResistDamage: curve with unmapped input AV 0x000002C2 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "Basher",
@@ -2158,9 +2156,7 @@
    ]
   },
   "notes": [
-   "condition: GetPlayerTeammateCount Greater Than 0",
-   "AbPerkFortifyResistDamage: curve with unmapped input AV 0x000002C5 — needs override",
-   "AbPerkFortifyResistEnergy: curve with unmapped input AV 0x000002C5 — needs override"
+   "condition: GetPlayerTeammateCount Greater Than 0"
   ]
  },
  {
@@ -10970,15 +10966,291 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0031AF14:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "curve": {
+       "input": "bulletStormStacks",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 30,
+         "y": 90
+        }
+       ]
+      },
+      "curveScale": 0.01,
+      "conditions": []
+     },
+     {
+      "id": "0x0031AF14:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 1
+      },
+      "bucket": "reloadSpeed",
+      "op": "ADD",
+      "curve": {
+       "input": "bulletStormStacks",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 30,
+         "y": 0.3
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(LockAndLoad01)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0031AF14:r1:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 1
+      },
+      "bucket": "bashDamage",
+      "op": "ADD",
+      "curve": {
+       "input": "bulletStormStacks",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 100,
+         "y": 500
+        }
+       ]
+      },
+      "curveScale": 0.01,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(BearArms01)=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0031AF14:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 2
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "curve": {
+       "input": "bulletStormStacks",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 30,
+         "y": 180
+        }
+       ]
+      },
+      "curveScale": 0.01,
+      "conditions": []
+     },
+     {
+      "id": "0x0031AF14:r2:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 2
+      },
+      "bucket": "reloadSpeed",
+      "op": "ADD",
+      "curve": {
+       "input": "bulletStormStacks",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 30,
+         "y": 0.3
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(LockAndLoad01)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0031AF14:r2:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 2
+      },
+      "bucket": "bashDamage",
+      "op": "ADD",
+      "curve": {
+       "input": "bulletStormStacks",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 100,
+         "y": 500
+        }
+       ]
+      },
+      "curveScale": 0.01,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(BearArms01)=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0031AF14:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 3
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "curve": {
+       "input": "bulletStormStacks",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 30,
+         "y": 270
+        }
+       ]
+      },
+      "curveScale": 0.01,
+      "conditions": []
+     },
+     {
+      "id": "0x0031AF14:r3:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 3
+      },
+      "bucket": "reloadSpeed",
+      "op": "ADD",
+      "curve": {
+       "input": "bulletStormStacks",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 30,
+         "y": 0.3
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(LockAndLoad01)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0031AF14:r3:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 3
+      },
+      "bucket": "bashDamage",
+      "op": "ADD",
+      "curve": {
+       "input": "bulletStormStacks",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 100,
+         "y": 500
+        }
+       ]
+      },
+      "curveScale": 0.01,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(BearArms01)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -11001,15 +11273,11 @@
   "notes": [
    "condition: HasPerk(HeavyGunnerMaster01)=1",
    "condition: WornHasKeyword(CustomItemName_FoundationsVengeance)=1",
-   "abPerkFortifyDmgAll: curve with unmapped input AV 0x0000039B — needs override",
    "condition: HasPerk(LockAndLoad01)=1",
-   "AbPerkFortifyReloadSpeedMult: curve with unmapped input AV 0x0000039B — needs override",
    "condition: WornHasKeyword(dn_TheActionHero)=1",
    "MGEF AbPerkFortifyDeflectChance: zero magnitude, no curve — script/scaled, needs override",
    "condition: HasPerk(BearArms01)=1",
-   "AbPerkFortifyDamageBashing: curve with unmapped input AV 0x0000039B — needs override",
    "condition: WornHasKeyword(RD01_CustomItemName_Valkyrie)=1",
-   "AbPerkFortifyActorWeaponChargeUpSpeedMult: curve with unmapped input AV 0x0000039B — needs override",
    "MGEF abAmmoSpenderFortifyStacks_Desc archetype Script — needs override"
   ]
  },
@@ -11598,8 +11866,7 @@
    ]
   },
   "notes": [
-   "condition: IsMemberOfAPlayerTeam()=1",
-   "AbFortifyXP: curve with unmapped input AV 0x000002C5 — needs override"
+   "condition: IsMemberOfAPlayerTeam()=1"
   ]
  },
  {
@@ -15152,15 +15419,150 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001D246B:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001D246B",
+       "edid": "LoneWanderer",
+       "name": "Lone Wanderer",
+       "rank": 1
+      },
+      "bucket": "apRegen",
+      "op": "ADD",
+      "curve": {
+       "input": "charisma",
+       "points": [
+        {
+         "x": 1,
+         "y": 10
+        },
+        {
+         "x": 15,
+         "y": 30
+        },
+        {
+         "x": 30,
+         "y": 45
+        },
+        {
+         "x": 60,
+         "y": 70
+        },
+        {
+         "x": 100,
+         "y": 85
+        }
+       ]
+      },
+      "curveScale": 0.01,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsMemberOfAPlayerTeam()=0"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001D246B:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001D246B",
+       "edid": "LoneWanderer",
+       "name": "Lone Wanderer",
+       "rank": 2
+      },
+      "bucket": "apRegen",
+      "op": "ADD",
+      "curve": {
+       "input": "charisma",
+       "points": [
+        {
+         "x": 1,
+         "y": 10
+        },
+        {
+         "x": 15,
+         "y": 30
+        },
+        {
+         "x": 30,
+         "y": 45
+        },
+        {
+         "x": 60,
+         "y": 70
+        },
+        {
+         "x": 100,
+         "y": 85
+        }
+       ]
+      },
+      "curveScale": 0.01,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsMemberOfAPlayerTeam()=0"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001D246B:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001D246B",
+       "edid": "LoneWanderer",
+       "name": "Lone Wanderer",
+       "rank": 3
+      },
+      "bucket": "apRegen",
+      "op": "ADD",
+      "curve": {
+       "input": "charisma",
+       "points": [
+        {
+         "x": 1,
+         "y": 10
+        },
+        {
+         "x": 15,
+         "y": 30
+        },
+        {
+         "x": 30,
+         "y": 45
+        },
+        {
+         "x": 60,
+         "y": 70
+        },
+        {
+         "x": 100,
+         "y": 85
+        }
+       ]
+      },
+      "curveScale": 0.01,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsMemberOfAPlayerTeam()=0"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -15178,7 +15580,6 @@
   },
   "notes": [
    "condition: IsMemberOfAPlayerTeam()=0",
-   "AbPerkFortifyActionPointRegen: curve with unmapped input AV 0x000002C5 — needs override",
    "MGEF AbPerkDamageReduction_Description archetype Script — needs override"
   ]
  },
@@ -25193,8 +25594,7 @@
    ]
   },
   "notes": [
-   "condition: IsMemberOfAPlayerTeam()=1",
-   "abRestoreHealth: curve with unmapped input AV 0x000002C5 — needs override"
+   "condition: IsMemberOfAPlayerTeam()=1"
   ]
  },
  {
@@ -25747,9 +26147,7 @@
     1
    ]
   },
-  "notes": [
-   "AbPerkFortifyCarryWeight: curve with unmapped input AV 0x000002C2 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "SturdyFrame",

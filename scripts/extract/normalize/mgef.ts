@@ -219,7 +219,9 @@ export async function buildAvifRoutes(client: EsmClient, formIdPool: Set<string>
  * no ESM records, so they're mapped by formid constant.
  */
 const CURVE_INPUT_AVS: Record<string, CurveInput> = {
+  '0x000002C2': 'strength', // Strength — The Debilitator's limb-damage-vs-STR curve
   '0x000002C4': 'endurance', // Endurance — Lifegiver's END-keyed max-HP curve (docs/assumptions.md "Max HP")
+  '0x000002C5': 'charisma', // Charisma — The Peace Maker's explosive-damage-vs-CHA curve
   '0x000002C6': 'intelligence', // Intelligence — Science!/Pyro-Technician's/Cryologist's damage-vs-INT curves
   '0x00000392': 'healthFraction', // current HP / max HP (Bloodied, Nerd Rage)
   '0x00000393': 'capsOnHand', // Aristocrat's
@@ -235,6 +237,10 @@ const CURVE_INPUT_AVS: Record<string, CurveInput> = {
   // (+5%/stack power-attack damage); Guerrilla/Gunslinger Expert+Master's
   // per-stack Ability SPELs curve off the same AV.
   '0x00000395': 'onslaughtStacks',
+  // Bullet Storm / Heavy Gunner's ammo-spent stack counter, no AVIF record
+  // (hardcoded slot, same pattern as Onslaught above). Feeds abPerkFortifyDmgAll
+  // (+3/6/9%/stack, ×10 max) plus the family's reload-speed/bashing/charge-up curves.
+  '0x0000039B': 'bulletStormStacks',
 };
 
 /**
@@ -415,9 +421,10 @@ export function translate(
   unresolved.forEach(u => result.notes.push(`condition: ${u}`));
 
   // Damage-archetype effects are DoTs (bleed/burn/shock weapon mods): extract
-  // value + duration + element into the inert dotDamage bucket (no DoT model
-  // in the engine yet). The element lives on the MGEF's Resist Value AV; the
-  // damageTypeScope condition here denotes the DoT's OWN element.
+  // value + duration + element into the dotDamage bucket, folded into
+  // steady-state DPS by computeDotDps (refresh-only semantics — paper-damage.ts).
+  // The element lives on the MGEF's Resist Value AV; the damageTypeScope
+  // condition here denotes the DoT's OWN element.
   if (mgef.archetype === 'Damage' && (effect.magnitude > 0 || effect.curvePoints)) {
     const resistEdid = mgef.resistValue ? (edidByFormId.get(mgef.resistValue) ?? mgef.resistValue) : null;
     const damageType = resistEdid ? RESIST_AV_DAMAGE_TYPES[resistEdid] : undefined;
@@ -437,6 +444,17 @@ export function translate(
       const input = resolveCurveInput(effect.curveInputAv, mgef.edid);
       if (input) {
         dotCurve = { input, points: effect.curvePoints };
+      } else if (effect.curveInputAv === null && effect.curvePoints[effect.curvePoints.length - 1].x <= 100) {
+        // No Actor Value at all (curveInputAv null) AND the curve's X domain
+        // looks level-shaped (≤100, matching the 1-50 item-level range OMOD
+        // properties use). Weapon-mod bleed/burn/poison DoTs are exactly this:
+        // e.g. EnchWeapMod_HarpoonGunBleed (x 1→50, y 10→32) — no AVIF exists
+        // for "item level" as an effect-level Actor Value, so the engine reads
+        // it straight off the equipped weapon (mirrors the itemLevel default
+        // extract-omods.ts already applies to OMOD-property curves). A wider
+        // domain (e.g. PoisonStingwingBite's creature venom, x up to 540) is
+        // NOT item level and correctly falls through to the drop below.
+        dotCurve = { input: 'itemLevel', points: effect.curvePoints };
       } else {
         result.notes.push(`${mgef.edid}: DoT curve with unmapped input AV ${effect.curveInputAv} — needs override`);
         return result;

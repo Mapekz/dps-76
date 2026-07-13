@@ -89,6 +89,13 @@ const PLAYER_STATE_READERS: Record<StackCounter | CurveInput, (p: PlayerConditio
   // Science!/Pyro-Technician's/Cryologist's damage-vs-INT curve X — the
   // buff-folded INT stat (mirrors the endurance reader above).
   intelligence: p => p.intelligence,
+  // The Debilitator's limb-damage-vs-STR curve X.
+  strength: p => p.strength,
+  // The Peace Maker's explosive-damage-vs-CHA curve X.
+  charisma: p => p.charisma,
+  // Bullet Storm / Heavy Gunner's ammo-spent stack curve X (shared field with
+  // the `bulletStorm` StackCounter reader above).
+  bulletStormStacks: p => p.bulletStormStacks,
   hungerThirstTier: p => p.hungerThirstTier ?? 0,
   feralTier: p => p.feralTier ?? 0,
   // Polished's curve X = GetEquippedWeaponHealthPercent (0.0-2.0 fraction; no AVIF).
