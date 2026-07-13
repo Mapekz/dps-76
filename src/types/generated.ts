@@ -74,8 +74,15 @@ export interface GeneratedWeapon {
   damageBonusMult: number;
 
   eligibleLevels: number[];
-  /** OMOD formids from the default Object Template combination (phase 5). */
+  /** OMOD formids flattened from ALL Object Template combinations (phase 5). */
   templateModFormIds: string[];
+  /**
+   * OMOD formids from the Default=True Object Template combination (or the
+   * sole combination when only one exists — unique weapons leave the flag
+   * unset) — the weapon's real in-game standard parts. Empty when no
+   * combination qualifies (logged to unresolved).
+   */
+  defaultModFormIds: string[];
   /** Attach point slot formids (phase 5: which mod slots exist). */
   attachParentSlots: string[];
   /**
@@ -158,15 +165,25 @@ export interface GeneratedBodyPart {
   crippable: boolean;
 }
 
+/** Target-picker grouping for a curated body-part entry. */
+export type BodyPartRaceCategory = 'standard' | 'raid' | 'infestation' | 'headhunt';
+
 export interface GeneratedBodyPartRace {
-  /** Stable id = RACE editor_id (e.g. "HumanRace", "StormBossRace"). */
+  /**
+   * Stable id — the curated editor_id: a RACE edid for standard entries
+   * ("HumanRace"), an NPC_ edid for boss entries ("RD01_Enc01_GuardianBot",
+   * unique per boss even when several share a RACE). Persisted as
+   * EnemyConditions.targetRace, so existing ids must not change.
+   */
   id: string;
+  /** formId of the RACE record whose BPTD was used (for NPC_ entries, the resolved race). */
   formId: string;
   /** Curated display label (RACE names collide — three "Human" races). */
   name: string;
   /** BPTD record the parts came from. */
   bodyPartDataFormId: string;
   parts: GeneratedBodyPart[];
+  category: BodyPartRaceCategory;
 }
 
 export interface ExcludedRecordDetail {

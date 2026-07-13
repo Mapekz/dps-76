@@ -9,6 +9,7 @@ import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getBodyPartRaces, getBodyPartRace, getCrippablePartCount } from '@/data/bodyparts';
 import { createDefaultEnemyConditions, type EnemyConditions } from '@/types';
+import type { BodyPartRaceCategory } from '@/types/generated';
 import { SectionTrigger } from './SectionTrigger';
 
 /**
@@ -40,6 +41,14 @@ const ENEMY_NUMBER_FIELDS: Array<{
   { key: 'groupTargetCount', label: 'Enemies in the group', min: 1, max: 99 },
 ];
 
+const TARGET_CATEGORY_LABELS: Record<BodyPartRaceCategory, string> = {
+  raid: 'Raid Enemies',
+  infestation: 'Infestation Bosses',
+  headhunt: 'Head Hunt Bosses',
+  standard: 'Enemies',
+};
+const TARGET_CATEGORY_ORDER: BodyPartRaceCategory[] = ['raid', 'infestation', 'headhunt', 'standard'];
+
 export function TargetSection() {
   const { mode } = useGameMode();
   const { player, enemy } = useBuild();
@@ -51,6 +60,13 @@ export function TargetSection() {
     dispatch({ type: 'enemy/condition', key, value });
 
   const races = getBodyPartRaces(mode);
+  // Category groups in a fixed order, alphabetized within each.
+  const raceOptions = TARGET_CATEGORY_ORDER.flatMap(category =>
+    races
+      .filter(r => r.category === category)
+      .map(r => ({ value: r.id, label: r.name, group: TARGET_CATEGORY_LABELS[category] }))
+      .sort((a, b) => a.label.localeCompare(b.label))
+  );
   const selectedRace = conditions.targetRace ? getBodyPartRace(mode, conditions.targetRace) : undefined;
   const selectedPart = selectedRace?.parts.find(p => p.name === conditions.targetBodyPart);
   const effectiveMult = selectedPart?.dmgMult ?? player.weakpointMult;
@@ -89,7 +105,7 @@ export function TargetSection() {
           <div className="space-y-1.5">
             <Label>Target enemy</Label>
             <Combobox
-              options={races.map(r => ({ value: r.id, label: r.name }))}
+              options={raceOptions}
               value={conditions.targetRace ?? null}
               onValueChange={selectRace}
               placeholder="Custom multiplier…"

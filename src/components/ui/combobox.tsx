@@ -20,6 +20,8 @@ import {
 export interface ComboboxOption {
   value: string
   label: string
+  /** Group heading this option renders under; ungrouped options share one headingless group. */
+  group?: string
 }
 
 interface ComboboxProps {
@@ -53,6 +55,18 @@ function Combobox({
     [options, value]
   )
 
+  // One CommandGroup per group in first-seen order (callers pre-sort);
+  // cmdk filters items across groups and hides groups that empty out.
+  const groups = React.useMemo(() => {
+    const map = new Map<string | undefined, ComboboxOption[]>()
+    for (const option of options) {
+      const bucket = map.get(option.group)
+      if (bucket) bucket.push(option)
+      else map.set(option.group, [option])
+    }
+    return [...map.entries()]
+  }, [options])
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -74,28 +88,30 @@ function Combobox({
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
             <CommandEmpty>{emptyText}</CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.value}
-                  value={option.value}
-                  keywords={[option.label]}
-                  onSelect={(currentValue) => {
-                    onValueChange(currentValue === value ? null : currentValue)
-                    setOpen(false)
-                  }}
-                >
-                  <CheckIcon
-                    className={cn(
-                      "mr-2 size-4",
-                      value === option.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  <span className="min-w-0 flex-1 truncate">{option.label}</span>
-                  {renderOptionExtra?.(option)}
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            {groups.map(([group, groupOptions]) => (
+              <CommandGroup key={group ?? ""} heading={group}>
+                {groupOptions.map((option) => (
+                  <CommandItem
+                    key={option.value}
+                    value={option.value}
+                    keywords={[option.label]}
+                    onSelect={(currentValue) => {
+                      onValueChange(currentValue === value ? null : currentValue)
+                      setOpen(false)
+                    }}
+                  >
+                    <CheckIcon
+                      className={cn(
+                        "mr-2 size-4",
+                        value === option.value ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                    {renderOptionExtra?.(option)}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            ))}
           </CommandList>
         </Command>
       </PopoverContent>
