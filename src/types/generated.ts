@@ -118,6 +118,16 @@ export interface GeneratedPerkCard {
   raceRestriction: 'human' | 'ghoul' | null;
   /** PCRD "Perk Card Flags".flags includes "Legendary Perk". */
   isLegendaryCard: boolean;
+  /**
+   * 1-based family rank backing each card rank (index 0 = card rank 1).
+   * The card's `Perks[]` list is the LIVE shape of the perk — 28 rebalanced
+   * ("compressed") cards record fewer entries than the family has PERK ranks,
+   * and the surplus ranks are dead content (their zzz/CUT-era records stay in
+   * `ranks` for fidelity but must never be reachable in the app). Almost
+   * always [1..n]; the one exception in the 20260710 dump is StarchedGenes,
+   * whose single live rank is the family's old rank-2 record → [2].
+   */
+  rankSources: number[];
 }
 
 export interface GeneratedPerk {

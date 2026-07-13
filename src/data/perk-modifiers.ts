@@ -67,9 +67,16 @@ export function getLoadoutModifiers(mode: GameMode, loadouts: PerkLoadout[]): Mo
   for (const loadout of loadouts) {
     const generated = getGeneratedPerk(mode, loadout.perkId);
     if (!generated) continue;
-    const rank = Math.max(1, Math.min(loadout.rank, generated.maxRank));
-    modifiers.push(...generated.ranks[rank - 1].modifiers);
-    const extra = extraPerkModifiers[generated.family]?.[rank - 1];
+    // The PCRD card is the live shape: its entry count caps the rank, and
+    // rankSources maps each card rank to the family PERK rank backing it
+    // (identity for all but compressed cards — StarchedGenes' one live rank
+    // is the family's rank-2 record). Card-less families read ranks directly.
+    const card = generated.card;
+    const maxRank = card ? card.rankSources.length : generated.maxRank;
+    const rank = Math.max(1, Math.min(loadout.rank, maxRank));
+    const familyRank = card ? card.rankSources[rank - 1] : rank;
+    modifiers.push(...generated.ranks[familyRank - 1].modifiers);
+    const extra = extraPerkModifiers[generated.family]?.[familyRank - 1];
     if (extra) modifiers.push(...extra);
   }
   return modifiers;

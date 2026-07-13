@@ -111,7 +111,6 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.Radicool]: { name: "Radicool" },
   [PerkId.RadSponge]: { name: "Rad Sponge" },
   [PerkId.Photosynthetic]: { name: "Photosynthetic" },
-  [PerkId.LightMeal]: { name: "Light Meal" },
 
   // ============ CHARISMA ============
   [PerkId.AnimalFriend]: { name: "Animal Friend" },
@@ -142,7 +141,6 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.AntiEpidemic]: { name: "Anti Epidemic" },
   [PerkId.Tenderizer]: { name: "Tenderizer" }, // Enemy debuff - stacking damage taken
   [PerkId.WastelandWhisperer]: { name: "Wasteland Whisperer" },
-  [PerkId.Antibiotic]: { name: "Antibiotic" },
 
   // ============ INTELLIGENCE ============
   [PerkId.FirstAid]: { name: "First Aid" },
@@ -171,7 +169,6 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.WeaponArtisan]: { name: "Weapon Artisan" },
   [PerkId.NerdRage]: { name: "Nerd Rage" }, // Low health damage boost - conditional
   [PerkId.StableTools]: { name: "Stable Tools" },
-  [PerkId.Conductor]: { name: "Conductor" },
 
   // ============ AGILITY ============
   [PerkId.Adrenaline]: { name: "Adrenaline" }, // +10% per kill, max 10 stacks = +100%

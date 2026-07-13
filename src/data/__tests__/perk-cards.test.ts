@@ -3,7 +3,7 @@ import { PerkId } from '@/data/perk-ids';
 import { Special } from '@/data/special';
 import { getPerks } from '@/data';
 import { getDataset } from '@/data/dataset';
-import { getGeneratedPerk } from '@/data/perk-modifiers';
+import { getGeneratedPerk, getLoadoutModifiers } from '@/data/perk-modifiers';
 import { computePerkBudget } from '@/data/perk-budget';
 import { perkCardOverrides } from '@/data/overrides/perk-overrides';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';
@@ -39,7 +39,11 @@ describe('perk card registry — join coverage', () => {
     // ONE combined PerkId (ActionBoyGirl/AquaBoyGirl/PartyBoyGirl) to the Boy
     // family (perkFamilyOverrides), so the Girl family is expected to stay
     // unclaimed rather than getting its own PerkId.
-    expect(orphans).toEqual(['ActionGirl', 'Aquagirl', 'PartyGirl']);
+    // Antibiotic/Conductor/LightMeal: real PCRDs in the ESM, but NOT cards in
+    // the live game (user-confirmed 2026-07-13 — unreleased content, the
+    // record graph can't distinguish shipped from unshipped) — deliberately
+    // given no PerkId.
+    expect(orphans).toEqual(['ActionGirl', 'Antibiotic', 'Aquagirl', 'Conductor', 'LightMeal', 'PartyGirl']);
   });
 
   it('every perkCardOverrides entry is for a PerkId that cannot otherwise derive a card (no stale overrides)', () => {
@@ -110,18 +114,42 @@ describe('perk card registry — pinned real values (20260710 ESM)', () => {
     expect(registry[PerkId.BringingOutTheBigGuns]).toMatchObject({ special: Special.Strength, maxRank: 1, costs: [3] });
   });
 
-  it('the 5 net-new PerkIds join real ESM cards', () => {
-    expect(registry[PerkId.Antibiotic]).toMatchObject({ special: Special.Charisma, maxRank: 2, costs: [1, 2] });
-    expect(registry[PerkId.Conductor]).toMatchObject({ special: Special.Intelligence, maxRank: 1, costs: [1] });
-    expect(registry[PerkId.LightMeal]).toMatchObject({ special: Special.Endurance, maxRank: 2, costs: [1, 2] });
+  it('the net-new PerkIds join real ESM cards', () => {
     expect(registry[PerkId.PortablePower]).toMatchObject({ special: Special.Strength, maxRank: 3, costs: [1, 2, 3] });
     expect(registry[PerkId.SturdyFrame]).toMatchObject({ special: Special.Strength, maxRank: 2, costs: [1, 2] });
   });
 
-  it('repairs the truncated-PCRD legacy cards (extraction race — see perk-cards.ts padCosts) to their known real costs', () => {
-    // LifeGiver: rank1 2pts (lvl5), rank2 3pts (lvl30), rank3 4pts (lvl50) — FO76 wiki.
-    expect(registry[PerkId.LifeGiver]).toMatchObject({ special: Special.Endurance, maxRank: 3, costs: [2, 3, 4] });
-    // Bodyguards: 4 ranks, cost = rank (1/2/3/4) — FO76 wiki.
-    expect(registry[PerkId.Bodyguards]).toMatchObject({ special: Special.Charisma, maxRank: 4, costs: [1, 2, 3, 4] });
+  it('compressed cards clamp maxRank to the PCRD entry count — the surplus PERK ranks are dead content', () => {
+    // LifegiverCard 0x0000BB40: single live rank costing 2 END (LifeGiver02/03 are dead).
+    expect(registry[PerkId.LifeGiver]).toMatchObject({ special: Special.Endurance, maxRank: 1, costs: [2] });
+    // BodyguardsCard 0x00310BF8: single live rank costing 1 CHA (ranks 2-4 dead).
+    expect(registry[PerkId.Bodyguards]).toMatchObject({ special: Special.Charisma, maxRank: 1, costs: [1] });
+    // DemolitionExpertCard 0x003440B9: 3 live ranks costing 1/2/3 INT (ranks 4-5 dead).
+    expect(registry[PerkId.DemolitionExpert]).toMatchObject({
+      special: Special.Intelligence,
+      maxRank: 3,
+      costs: [1, 2, 3],
+    });
+  });
+
+  it("Starched Genes resolves its single live rank through rankSources to the family's rank-2 record", () => {
+    const generated = getGeneratedPerk('live', PerkId.StarchedGenes);
+    expect(generated?.card?.rankSources).toEqual([2]);
+    expect(registry[PerkId.StarchedGenes]?.maxRank).toBe(1);
+    // The modifiers served for card rank 1 must be the family's rank-2 set.
+    const served = getLoadoutModifiers('live', [{ perkId: PerkId.StarchedGenes, rank: 1 }]);
+    expect(served).toEqual(generated!.ranks[1].modifiers);
+  });
+
+  it('every joined card has rankSources aligned with costs and within the family rank range', () => {
+    const broken = getDataset('live')
+      .perks.filter(
+        f =>
+          f.card &&
+          (f.card.rankSources.length !== f.card.costs.length ||
+            f.card.rankSources.some(r => r < 1 || r > f.maxRank))
+      )
+      .map(f => f.family);
+    expect(broken).toEqual([]);
   });
 });

@@ -39,27 +39,6 @@ const SPECIAL_BY_CARD_STRING: Readonly<Record<string, Special>> = {
  */
 const FALLBACK_MAX_RANK = 3;
 
-/**
- * Extends a short PCRD cost array so `costs.length === maxRank`.
- *
- * 28 legacy (pre-"Perks 2.0") cards in the 20260710 dump — LifeGiver,
- * Bodyguards, Barbarian, Ironclad, Demolition Expert, … — genuinely record
- * fewer `Perks[]` rank entries than the family has PERK ranks (LifegiverCard
- * 0x0000BB40 lists only rank 1 at cost 2 while LifeGiver01-03 exist; exactly
- * one PCRD per family, verified — no per-rank card records). The game's
- * legacy upgrade rule fills the gap: each rank past the recorded ones costs
- * +1 over the previous (base + rank − 1). Reproduces the known in-game
- * values exactly — LifeGiver 2/3/4, Bodyguards 1/2/3/4, Demolition Expert
- * 1/2/3/4/5. Not ESM-proven for all 28: see docs/assumptions.md.
- */
-function padCosts(costs: number[], maxRank: number): number[] {
-  if (costs.length >= maxRank) return costs.slice(0, maxRank);
-  if (costs.length === 0) return Array.from({ length: maxRank }, (_, i) => i + 1);
-  const out = [...costs];
-  while (out.length < maxRank) out.push(out[out.length - 1] + 1);
-  return out;
-}
-
 function findGeneratedFamily(
   perkId: string,
   name: string,
@@ -88,19 +67,26 @@ export function derivePerkRegistry(
     // ESM data when available) purely so maxRank === costs.length holds
     // uniformly across the registry; it is inert without `special`.
     if (legendaryPerkIds.has(perkId)) {
-      const maxRank = generated?.maxRank ?? FALLBACK_MAX_RANK;
-      const costs = generated?.card ? padCosts(generated.card.costs, maxRank) : Array.from({ length: maxRank }, () => 1);
+      // Card entries are the live rank count (see the non-legendary path).
+      const maxRank = generated?.card ? generated.card.costs.length : (generated?.maxRank ?? FALLBACK_MAX_RANK);
+      const costs = generated?.card ? [...generated.card.costs] : Array.from({ length: maxRank }, () => 1);
       out[perkId] = { name, maxRank, costs };
       continue;
     }
 
     const card = generated?.card;
     if (generated && card) {
+      // The PCRD's Perks[] list IS the live shape of the card: 28 rebalanced
+      // ("compressed") cards record fewer entries than the family has PERK
+      // ranks (LifegiverCard 0x0000BB40 lists one rank at cost 2 while
+      // LifeGiver01-03 exist) — the surplus ranks are dead content, so
+      // maxRank clamps DOWN to the entry count. Rank → PERK-record resolution
+      // goes through card.rankSources (perk-modifiers.ts).
       out[perkId] = {
         name,
         special: SPECIAL_BY_CARD_STRING[card.special],
-        maxRank: generated.maxRank,
-        costs: padCosts(card.costs, generated.maxRank),
+        maxRank: card.costs.length,
+        costs: [...card.costs],
       };
       continue;
     }

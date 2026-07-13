@@ -80,9 +80,27 @@ function junkPerk(edid: string): boolean {
 }
 
 export interface ToGeneratedPerkCardResult {
-  card: GeneratedPerkCard;
-  /** Every rank's Male + Female Perk formid (in Perks[] order) — the join key into extracted families. */
-  perkFormIds: string[];
+  /** Card data minus `rankSources`, which is per-family (composed at the join site). */
+  card: Omit<GeneratedPerkCard, 'rankSources'>;
+  /** Each Perks[] entry's Male/Female Perk formids (in rank order) — the join key into extracted families. */
+  rankPerkFormIds: string[][];
+}
+
+/**
+ * Maps each card rank's entry to the 1-based family rank whose PERK record it
+ * points at (Male or Female — twins resolve against their own family's list).
+ * Returns null when any entry matches no rank of the family. Usually [1..n];
+ * compressed cards record fewer entries than the family has ranks, and
+ * StarchedGenes' single entry points at the family's rank-2 record → [2].
+ */
+export function resolveRankSources(rankPerkFormIds: string[][], familyFormIds: string[]): number[] | null {
+  const sources: number[] = [];
+  for (const entryIds of rankPerkFormIds) {
+    const idx = familyFormIds.findIndex(formId => entryIds.includes(formId));
+    if (idx === -1) return null;
+    sources.push(idx + 1);
+  }
+  return sources;
 }
 
 /**
@@ -111,14 +129,13 @@ export function toGeneratedPerkCard(record: EsmRecord): ToGeneratedPerkCardResul
   const perksNode = record.fields['Perks'];
   const perkEntries = Array.isArray(perksNode) ? (perksNode as Array<Record<string, unknown>>) : [];
   const costs: number[] = [];
-  const perkFormIds: string[] = [];
+  const rankPerkFormIds: string[][] = [];
   for (const entry of perkEntries) {
     const perk = (entry['Perk'] ?? {}) as Record<string, unknown>;
     costs.push(typeof perk['Card Rank Cost'] === 'number' ? (perk['Card Rank Cost'] as number) : 0);
     const male = perk['Male Perk'];
     const female = perk['Female Perk'];
-    if (typeof male === 'string') perkFormIds.push(male);
-    if (typeof female === 'string') perkFormIds.push(female);
+    rankPerkFormIds.push([male, female].filter((id): id is string => typeof id === 'string'));
   }
 
   const flagsAt = (node: unknown): string[] => {
@@ -137,7 +154,7 @@ export function toGeneratedPerkCard(record: EsmRecord): ToGeneratedPerkCardResul
       raceRestriction,
       isLegendaryCard,
     },
-    perkFormIds,
+    rankPerkFormIds,
   };
 }
 
@@ -281,19 +298,30 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
     8,
     async row => {
       const record = await client.get(row.form_id);
-      const { card, perkFormIds } = toGeneratedPerkCard(record);
+      const { card, rankPerkFormIds } = toGeneratedPerkCard(record);
+      const allPerkFormIds = rankPerkFormIds.flat();
       const matchedFamilies = new Set(
-        perkFormIds.map(id => formIdToFamily.get(id)).filter((f): f is string => !!f)
+        allPerkFormIds.map(id => formIdToFamily.get(id)).filter((f): f is string => !!f)
       );
       if (matchedFamilies.size === 0) {
         unresolvedCards.push(
-          `${record.editor_id}: no rank perk formid (${perkFormIds.join(', ') || 'none'}) matched an extracted family`
+          `${record.editor_id}: no rank perk formid (${allPerkFormIds.join(', ') || 'none'}) matched an extracted family`
         );
         return;
       }
       // Attach to EVERY matched family — gender-twin cards (ActionBoyGirlCard)
       // match both the Boy and Girl family via their Male/Female Perk formids.
-      for (const family of matchedFamilies) cardByFamily.set(family, card);
+      for (const family of matchedFamilies) {
+        const familyFormIds = families.get(family)!.map(r => r.header.form_id);
+        const rankSources = resolveRankSources(rankPerkFormIds, familyFormIds);
+        if (!rankSources) {
+          unresolvedCards.push(
+            `${record.editor_id}: a Perks[] entry matched no rank of family ${family} (${familyFormIds.join(', ')})`
+          );
+          continue;
+        }
+        cardByFamily.set(family, { ...card, rankSources });
+      }
     }
   );
 

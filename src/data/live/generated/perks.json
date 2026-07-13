@@ -249,7 +249,12 @@
    ],
    "minLevel": 2,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -336,7 +341,12 @@
    ],
    "minLevel": 2,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -364,7 +374,10 @@
    ],
    "minLevel": 21,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -443,7 +456,10 @@
    ],
    "minLevel": 49,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -521,7 +537,10 @@
    ],
    "minLevel": 41,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -556,7 +575,11 @@
    ],
    "minLevel": 34,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -598,7 +621,12 @@
    ],
    "minLevel": 30,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -633,7 +661,11 @@
    ],
    "minLevel": 25,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": [
    "MGEF AbPerkAntibiotic_ScriptEffect archetype Script — needs override"
@@ -670,7 +702,11 @@
    ],
    "minLevel": 34,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": [
    "condition: GetRandomPercent()=50",
@@ -701,7 +737,10 @@
    ],
    "minLevel": 26,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: IsSwimming()=1"
@@ -731,7 +770,10 @@
    ],
    "minLevel": 26,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: IsSwimming()=1"
@@ -775,7 +817,12 @@
    ],
    "minLevel": 2,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -880,7 +927,10 @@
    ],
    "minLevel": 15,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -908,7 +958,10 @@
    ],
    "minLevel": 35,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -936,7 +989,10 @@
    ],
    "minLevel": 15,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -1009,7 +1065,11 @@
    ],
    "minLevel": 28,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -1432,7 +1492,10 @@
    ],
    "minLevel": 20,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "AbFortifyVATSAccuracy: curve with unmapped input AV 0x000002C3 — needs override"
@@ -1488,7 +1551,11 @@
    ],
    "minLevel": 22,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -1528,7 +1595,10 @@
    ],
    "minLevel": 14,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "AbPerkFortifyResistDamage: curve with unmapped input AV 0x000002C2 — needs override"
@@ -1565,7 +1635,11 @@
    ],
    "minLevel": 11,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -1600,7 +1674,11 @@
    ],
    "minLevel": 28,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -1640,7 +1718,10 @@
    ],
    "minLevel": 35,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -1727,7 +1808,12 @@
    ],
    "minLevel": 47,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -1825,7 +1911,12 @@
    ],
    "minLevel": 21,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -1853,7 +1944,10 @@
    ],
    "minLevel": 11,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -1893,7 +1987,10 @@
    ],
    "minLevel": 42,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -2055,7 +2152,10 @@
    ],
    "minLevel": 5,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: GetPlayerTeammateCount Greater Than 0",
@@ -2101,7 +2201,12 @@
    ],
    "minLevel": 3,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": [
    "condition: GetRadsHealthPercentage()=0",
@@ -2320,7 +2425,11 @@
    ],
    "minLevel": 6,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -2438,7 +2547,12 @@
    ],
    "minLevel": 39,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -2635,7 +2749,12 @@
    ],
    "minLevel": 3,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -2663,7 +2782,10 @@
    ],
    "minLevel": 7,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -2703,7 +2825,10 @@
    ],
    "minLevel": 15,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -2731,7 +2856,10 @@
    ],
    "minLevel": 16,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -2871,7 +2999,10 @@
    ],
    "minLevel": 23,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -2918,7 +3049,10 @@
    ],
    "minLevel": 34,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -2953,7 +3087,11 @@
    ],
    "minLevel": 43,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -3014,7 +3152,12 @@
    ],
    "minLevel": 46,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -3049,7 +3192,11 @@
    ],
    "minLevel": 14,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -3166,7 +3313,12 @@
    ],
    "minLevel": 5,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -3194,7 +3346,10 @@
    ],
    "minLevel": 20,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -3222,7 +3377,10 @@
    ],
    "minLevel": 40,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -3347,7 +3505,12 @@
    ],
    "minLevel": 2,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -3375,7 +3538,10 @@
    ],
    "minLevel": 1,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -3410,7 +3576,11 @@
    ],
    "minLevel": 18,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -3557,7 +3727,12 @@
    ],
    "minLevel": 27,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -3637,7 +3812,12 @@
    ],
    "minLevel": 7,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -3916,7 +4096,12 @@
    ],
    "minLevel": 44,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -4311,7 +4496,10 @@
    ],
    "minLevel": 19,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -4738,7 +4926,11 @@
    ],
    "minLevel": 8,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": [
    "condition: IsSprinting()=1"
@@ -4794,7 +4986,12 @@
    ],
    "minLevel": 10,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -5215,7 +5412,10 @@
    ],
    "minLevel": 45,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: IsOverEncumbered()=0",
@@ -5253,7 +5453,11 @@
    ],
    "minLevel": 3,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -5281,7 +5485,10 @@
    ],
    "minLevel": 23,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -5509,7 +5716,10 @@
    ],
    "minLevel": 9,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -5676,7 +5886,12 @@
    ],
    "minLevel": 30,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -5799,7 +6014,10 @@
    ],
    "minLevel": 35,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -5827,7 +6045,10 @@
    ],
    "minLevel": 17,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: IsOverEncumbered()=0",
@@ -5873,7 +6094,12 @@
    ],
    "minLevel": 14,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -5939,7 +6165,10 @@
    ],
    "minLevel": 15,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -5979,7 +6208,10 @@
    ],
    "minLevel": 5,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -6021,7 +6253,12 @@
    ],
    "minLevel": 27,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -6049,7 +6286,10 @@
    ],
    "minLevel": 2,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "AbPerkFortifyStimpakHealing: curve with unmapped input AV 0x000002C6 — needs override"
@@ -6112,7 +6352,12 @@
    ],
    "minLevel": 27,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -6287,7 +6532,10 @@
    ],
    "minLevel": 22,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -6315,7 +6563,10 @@
    ],
    "minLevel": 29,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "AbPerkFortifyVATSCritFillOnMiss: curve with unmapped input AV 0x000002C8 — needs override"
@@ -6359,7 +6610,12 @@
    ],
    "minLevel": 48,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -6394,7 +6650,11 @@
    ],
    "minLevel": 33,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -6508,7 +6768,12 @@
    ],
    "minLevel": 50,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -6543,7 +6808,11 @@
    ],
    "minLevel": 70,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -6578,7 +6847,11 @@
    ],
    "minLevel": 80,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": [
    "condition: GetCombatState()=1",
@@ -6623,7 +6896,12 @@
    ],
    "minLevel": 80,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": [
    "condition: OR-group[IsTrueForConditionForm(GHL_HasModerateGlowConsumptionFeralRage_Condition)=1 | GetValue(Rads)=0x007F68BB]"
@@ -6742,7 +7020,12 @@
    ],
    "minLevel": 90,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -6784,7 +7067,12 @@
    ],
    "minLevel": 60,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -6812,7 +7100,10 @@
    ],
    "minLevel": 100,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -6854,7 +7145,12 @@
    ],
    "minLevel": 55,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -6918,7 +7214,12 @@
    ],
    "minLevel": 85,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": [
    "condition: GetDistanceToClosestHostileActor()=10",
@@ -6974,7 +7275,10 @@
    ],
    "minLevel": 75,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: GetWeakPointDamageMultiplier()=1"
@@ -7011,7 +7315,11 @@
    ],
    "minLevel": 80,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -7125,7 +7433,12 @@
    ],
    "minLevel": 100,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -7167,7 +7480,12 @@
    ],
    "minLevel": 80,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -7195,7 +7513,10 @@
    ],
    "minLevel": 75,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -7230,7 +7551,11 @@
    ],
    "minLevel": 50,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": [
    "MGEF GHL_GlowingOnePerkCloakEffect01 archetype Cloak — needs override",
@@ -7355,7 +7680,12 @@
    ],
    "minLevel": 80,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -7397,7 +7727,12 @@
    ],
    "minLevel": 100,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": [
    "condition: WornHasKeyword(ArmorTypePower)=0"
@@ -7434,7 +7769,11 @@
    ],
    "minLevel": 60,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": [
    "condition: IsSprinting()=1"
@@ -7485,7 +7824,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": []
  },
@@ -7534,7 +7879,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": [
    "condition: GetValue(GHL_SURV_Feral)=0x007A7689",
@@ -7763,7 +8114,12 @@
    ],
    "minLevel": 60,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": [
    "condition: IsPowerAttacking()=0"
@@ -7793,7 +8149,10 @@
    ],
    "minLevel": 70,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -8025,7 +8384,12 @@
    ],
    "minLevel": 50,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": [
    "condition: IsPowerAttacking()=0"
@@ -8363,7 +8727,12 @@
    ],
    "minLevel": 80,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": [
    "condition: WornHasKeyword(AnimsMinigunShredder)=0"
@@ -8393,7 +8762,10 @@
    ],
    "minLevel": 100,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -8435,7 +8807,12 @@
    ],
    "minLevel": 70,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": [
    "MGEF GHL_RadSpecialistUIDummyEffect archetype Script — needs override"
@@ -8479,7 +8856,12 @@
    ],
    "minLevel": 100,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -8543,7 +8925,12 @@
    ],
    "minLevel": 60,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -9071,7 +9458,12 @@
    ],
    "minLevel": 60,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": [
    "condition: GetPlayerTeammateCount Greater Than Or Equal To 1",
@@ -9116,7 +9508,12 @@
    ],
    "minLevel": 65,
    "raceRestriction": "ghoul",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -9158,7 +9555,12 @@
    ],
    "minLevel": 36,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -9260,7 +9662,12 @@
    ],
    "minLevel": 2,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -9288,7 +9695,10 @@
    ],
    "minLevel": 15,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -9316,7 +9726,10 @@
    ],
    "minLevel": 35,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -9418,7 +9831,12 @@
    ],
    "minLevel": 33,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -9446,7 +9864,10 @@
    ],
    "minLevel": 32,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -9474,7 +9895,10 @@
    ],
    "minLevel": 8,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -9509,7 +9933,11 @@
    ],
    "minLevel": 9,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -9537,7 +9965,10 @@
    ],
    "minLevel": 4,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -9572,7 +10003,11 @@
    ],
    "minLevel": 35,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -9600,7 +10035,10 @@
    ],
    "minLevel": 33,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -9702,7 +10140,12 @@
    ],
    "minLevel": 18,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": [
    "condition: IsTrueForConditionForm(SmallGun_Actor_Condition)=1"
@@ -9821,7 +10264,12 @@
    ],
    "minLevel": 5,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -9907,7 +10355,10 @@
    ],
    "minLevel": 20,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -9997,7 +10448,10 @@
    ],
    "minLevel": 40,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -10039,7 +10493,12 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -10074,7 +10533,11 @@
    ],
    "minLevel": 4,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": [
    "condition: IsSprinting()=0"
@@ -10181,7 +10644,12 @@
    ],
    "minLevel": 2,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -10272,7 +10740,10 @@
    ],
    "minLevel": 15,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -10321,7 +10792,10 @@
    ],
    "minLevel": 35,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -10363,7 +10837,12 @@
    ],
    "minLevel": 11,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -10391,7 +10870,10 @@
    ],
    "minLevel": 4,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -10419,7 +10901,10 @@
    ],
    "minLevel": 22,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -10447,7 +10932,10 @@
    ],
    "minLevel": 38,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -10482,7 +10970,11 @@
    ],
    "minLevel": 3,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -10517,7 +11009,11 @@
    ],
    "minLevel": 17,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -10545,7 +11041,10 @@
    ],
    "minLevel": 7,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -10611,7 +11110,10 @@
    ],
    "minLevel": 28,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -10653,7 +11155,12 @@
    ],
    "minLevel": 30,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": [
    "abAmmoSpenderFortifyStacks: curve with unmapped input AV 0x0000039B — needs override",
@@ -10695,7 +11202,10 @@
    ],
    "minLevel": 40,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -10723,7 +11233,10 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -10789,7 +11302,10 @@
    ],
    "minLevel": 19,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: OR-group[LocationHasPlayerOwnedWorkshop(undefined)=1 | IsPlayerInCampOwned(undefined)=1 | IsPlayerInShelterOwned(undefined)=1]"
@@ -10833,7 +11349,12 @@
    ],
    "minLevel": 22,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -11058,7 +11579,11 @@
    ],
    "minLevel": 11,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -11156,7 +11681,12 @@
    ],
    "minLevel": 34,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -11184,7 +11714,10 @@
    ],
    "minLevel": 19,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -11224,7 +11757,10 @@
    ],
    "minLevel": 2,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: IsMemberOfAPlayerTeam()=1",
@@ -11331,7 +11867,12 @@
    ],
    "minLevel": 30,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -11473,7 +12014,10 @@
    ],
    "minLevel": 2,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -11513,7 +12057,10 @@
    ],
    "minLevel": 4,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: GetNumActiveEffectsWithKeyword(SURV_EffectTypeDisease) Equal To 0"
@@ -11543,7 +12090,10 @@
    ],
    "minLevel": 10,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "AbPerkFortifyResistDamage: curve with unmapped input AV 0x00000394 — needs override",
@@ -11605,7 +12155,10 @@
    ],
    "minLevel": 27,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "MGEF AbPerkLastLaugh_ScriptEffect archetype Script — needs override"
@@ -11672,7 +12225,10 @@
    ],
    "minLevel": 2,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -12870,7 +13426,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": []
  },
@@ -12938,7 +13500,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": []
  },
@@ -12987,7 +13555,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": [
    "MGEF LGN_BrawlingChemist_Effect01 archetype Script — needs override",
@@ -13041,7 +13615,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": []
  },
@@ -13090,7 +13670,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": []
  },
@@ -13139,7 +13725,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": []
  },
@@ -13188,7 +13780,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": []
  },
@@ -13256,7 +13854,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": []
  },
@@ -13305,7 +13909,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": []
  },
@@ -13354,7 +13964,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": [
    "condition: OR-group[WornApparelHasKeywordCount(XPD_AC_dn_armor_Muni)=5 | WornApparelHasKeywordCount(dn_armor_Robot)=5 | WornApparelHasKeywordCount(dn_armor_RaiderMod)=5 | WornApparelHasKeywordCount(dn_armor_Trapper)=5 | WornApparelHasKeywordCount(dn_armor_SecretService)=5 | WornApparelHasKeywordCount(ma_armor_Wood)=5 | WornApparelHasKeywordCount(dn_armor_Metal)=5 | WornApparelHasKeywordCount(DLC03_dn_armor_Marine)=5 | WornApparelHasKeywordCount(dn_armor_Combat)=5 | WornApparelHasKeywordCount(ma_EnclaveScoutUniform)=5 | WornApparelHasKeywordCount(dn_armor_EnclaveScoutUniform_Solar)=5 | WornApparelHasKeywordCount(dn_armor_EnclaveScoutUniform_Thorn)=5 | WornApparelHasKeywordCount(ma_armor_Leather)=5 | WornApparelHasKeywordCount(dn_armor_BOSInfantry)=5 | WornApparelHasKeywordCount(dn_armor_EnclaveScoutUniform_Covert)=5 | WornApparelHasKeywordCount(dn_PowerArmor_Excavator)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Raider)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T45)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T51)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T60)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T65)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Ultracite)=6 | WornApparelHasKeywordCount(dn_PowerArmor_V94_Ultracite)=6 | WornApparelHasKeywordCount(dn_PowerArmor_X01)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Hellcat)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Union)=6 | WornApparelHasKeywordCount(RD01_dn_PowerArmor_EnclaveVulcan)=6]",
@@ -13407,7 +14023,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": []
  },
@@ -13456,7 +14078,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": [
    "MGEF AbLgnPerkFortifyAgility archetype Dual Value Modifier — needs override"
@@ -13507,7 +14135,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": [
    "MGEF AbLgnPerkFortifyCharisma archetype Dual Value Modifier — needs override"
@@ -13558,7 +14192,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": [
    "MGEF AbLgnPerkFortifyEndurance archetype Dual Value Modifier — needs override"
@@ -13609,7 +14249,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": [
    "MGEF AbLgnPerkFortifyIntelligence archetype Dual Value Modifier — needs override"
@@ -13660,7 +14306,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": [
    "MGEF AbLgnPerkFortifyLuck archetype Dual Value Modifier — needs override"
@@ -13711,7 +14363,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": [
    "MGEF AbLgnPerkFortifyPerception archetype Dual Value Modifier — needs override"
@@ -13762,7 +14420,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": [
    "MGEF AbLgnPerkFortifyStrength archetype Dual Value Modifier — needs override"
@@ -13813,7 +14477,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": []
  },
@@ -13862,7 +14532,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": []
  },
@@ -13911,7 +14587,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": []
  },
@@ -13960,7 +14642,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": [
    "entry point Mod Power Attack Damage uses Select Spell — skipped"
@@ -14011,7 +14699,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": [
    "condition: OR-group[WornApparelHasKeywordCount(XPD_AC_dn_armor_Muni)=5 | WornApparelHasKeywordCount(dn_armor_Robot)=5 | WornApparelHasKeywordCount(dn_armor_RaiderMod)=5 | WornApparelHasKeywordCount(dn_armor_Trapper)=5 | WornApparelHasKeywordCount(dn_armor_SecretService)=5 | WornApparelHasKeywordCount(ma_armor_Wood)=5 | WornApparelHasKeywordCount(dn_armor_Metal)=5 | WornApparelHasKeywordCount(DLC03_dn_armor_Marine)=5 | WornApparelHasKeywordCount(dn_armor_Combat)=5 | WornApparelHasKeywordCount(dn_armor_EnclaveScoutUniform_Solar)=5 | WornApparelHasKeywordCount(dn_armor_EnclaveScoutUniform_Thorn)=5 | WornApparelHasKeywordCount(ma_armor_Leather)=5 | WornApparelHasKeywordCount(ma_EnclaveScoutUniform)=5 | WornApparelHasKeywordCount(dn_armor_BOSInfantry)=5 | WornApparelHasKeywordCount(dn_armor_EnclaveScoutUniform_Covert)=5 | WornApparelHasKeywordCount(dn_PowerArmor_Excavator)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Raider)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T45)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T51)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T60)=6 | WornApparelHasKeywordCount(dn_PowerArmor_T65)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Ultracite)=6 | WornApparelHasKeywordCount(dn_PowerArmor_V94_Ultracite)=6 | WornApparelHasKeywordCount(dn_PowerArmor_X01)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Hellcat)=6 | WornApparelHasKeywordCount(dn_PowerArmor_Union)=6 | WornApparelHasKeywordCount(RD01_dn_PowerArmor_EnclaveVulcan)=6]",
@@ -14065,7 +14759,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": [
    "MGEF LGN_SurvivalShortcut_Effect01 archetype Script — needs override",
@@ -14156,7 +14856,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": []
  },
@@ -14205,7 +14911,13 @@
    ],
    "minLevel": 50,
    "raceRestriction": "human",
-   "isLegendaryCard": true
+   "isLegendaryCard": true,
+   "rankSources": [
+    1,
+    2,
+    3,
+    4
+   ]
   },
   "notes": []
  },
@@ -14247,7 +14959,12 @@
    ],
    "minLevel": 5,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -14407,7 +15124,10 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -14435,7 +15155,10 @@
    ],
    "minLevel": 29,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -14470,7 +15193,11 @@
    ],
    "minLevel": 1,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -14535,7 +15262,10 @@
    ],
    "minLevel": 37,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -14606,7 +15336,10 @@
    ],
    "minLevel": 4,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: IsMemberOfAPlayerTeam()=0",
@@ -14638,7 +15371,10 @@
    ],
    "minLevel": 37,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -14737,7 +15473,12 @@
    ],
    "minLevel": 14,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -14779,7 +15520,12 @@
    ],
    "minLevel": 24,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -16078,7 +16824,11 @@
    ],
    "minLevel": 13,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -16120,7 +16870,12 @@
    ],
    "minLevel": 9,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -16162,7 +16917,12 @@
    ],
    "minLevel": 13,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -16288,7 +17048,12 @@
    ],
    "minLevel": 16,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": [
    "condition: GetWeaponAnimType()=6"
@@ -16659,7 +17424,11 @@
    ],
    "minLevel": 37,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -17094,7 +17863,12 @@
    ],
    "minLevel": 18,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -17178,7 +17952,12 @@
    ],
    "minLevel": 5,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": [
    "condition: IsSprinting()=1",
@@ -17216,7 +17995,11 @@
    ],
    "minLevel": 17,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -17583,7 +18366,12 @@
    ],
    "minLevel": 49,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -17625,7 +18413,12 @@
    ],
    "minLevel": 26,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -17686,7 +18479,12 @@
    ],
    "minLevel": 12,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -17726,7 +18524,10 @@
    ],
    "minLevel": 10,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: GetNumActiveEffectsWithKeyword(SURV_EffectTypeDisease) Equal To 0"
@@ -17827,7 +18628,10 @@
    ],
    "minLevel": 46,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -17855,7 +18659,10 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "MGEF PerkNocturnalEffect archetype Script — needs override"
@@ -17924,7 +18731,10 @@
    ],
    "minLevel": 24,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: IsTrueForConditionForm(Perk_Night_Condition)=1"
@@ -18043,7 +18853,11 @@
    ],
    "minLevel": 15,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -18118,7 +18932,11 @@
    ],
    "minLevel": 29,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": [
    "condition: IsTrueForConditionForm(Perk_Night_Condition)=1"
@@ -18282,7 +19100,12 @@
    ],
    "minLevel": 31,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -18317,7 +19140,11 @@
    ],
    "minLevel": 31,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -18352,7 +19179,11 @@
    ],
    "minLevel": 32,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -19172,7 +20003,10 @@
    ],
    "minLevel": 9,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: IsOverEncumbered()=0"
@@ -19209,7 +20043,11 @@
    ],
    "minLevel": 7,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -19251,7 +20089,12 @@
    ],
    "minLevel": 41,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -19279,7 +20122,10 @@
    ],
    "minLevel": 12,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -19314,7 +20160,11 @@
    ],
    "minLevel": 24,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -19349,7 +20199,11 @@
    ],
    "minLevel": 24,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -19408,7 +20262,10 @@
    ],
    "minLevel": 16,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -20324,7 +21181,10 @@
    ],
    "minLevel": 6,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "AbPerkFortifyRadawayHealing: curve with unmapped input AV 0x000002C6 — needs override"
@@ -20354,7 +21214,10 @@
    ],
    "minLevel": 2,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -20396,7 +21259,12 @@
    ],
    "minLevel": 39,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": [
    "MGEF AbPerkPhilanthropist_ScriptEffect archetype Script — needs override"
@@ -20433,7 +21301,11 @@
    ],
    "minLevel": 47,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": [
    "condition: IsTrueForConditionForm(Perk_Day_Condition)=1"
@@ -20463,7 +21335,10 @@
    ],
    "minLevel": 5,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -20491,7 +21366,10 @@
    ],
    "minLevel": 19,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -20519,7 +21397,10 @@
    ],
    "minLevel": 40,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -20978,7 +21859,12 @@
    ],
    "minLevel": 24,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": [
    "condition: IsSprinting()=0",
@@ -21080,7 +21966,12 @@
    ],
    "minLevel": 44,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -21108,7 +21999,10 @@
    ],
    "minLevel": 41,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -21150,7 +22044,12 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -21178,7 +22077,10 @@
    ],
    "minLevel": 39,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -21278,7 +22180,10 @@
    ],
    "minLevel": 20,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -21746,7 +22651,10 @@
    ],
    "minLevel": 22,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -21788,7 +22696,12 @@
    ],
    "minLevel": 40,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -22192,7 +23105,10 @@
    ],
    "minLevel": 38,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: HasPerk(CUT_Radicool02)=1",
@@ -22241,7 +23157,10 @@
    ],
    "minLevel": 34,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -22281,7 +23200,10 @@
    ],
    "minLevel": 44,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -22529,7 +23451,10 @@
    ],
    "minLevel": 32,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "AbPerkFortifyResistEnergy: curve with unmapped input AV 0x000002C3 — needs override"
@@ -22566,7 +23491,11 @@
    ],
    "minLevel": 12,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -22594,7 +23523,10 @@
    ],
    "minLevel": 32,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -22622,7 +23554,10 @@
    ],
    "minLevel": 38,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "AbPerkFortifyDeflectChance: curve with unmapped input AV 0x000002C8 — needs override"
@@ -22726,7 +23661,12 @@
    ],
    "minLevel": 2,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -22754,7 +23694,10 @@
    ],
    "minLevel": 15,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -22806,7 +23749,10 @@
    ],
    "minLevel": 35,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -22869,7 +23815,12 @@
    ],
    "minLevel": 48,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -23064,7 +24015,10 @@
    ],
    "minLevel": 18,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -23092,7 +24046,10 @@
    ],
    "minLevel": 20,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "AbPerkFortifyDmgMultEnergy: curve with unmapped input AV 0x000002C6 — needs override"
@@ -23122,7 +24079,10 @@
    ],
    "minLevel": 30,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "AbPerkFortifyDmgMultFire: curve with unmapped input AV 0x000002C6 — needs override"
@@ -23152,7 +24112,10 @@
    ],
    "minLevel": 40,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "AbPerkFortifyDmgMultCryo: curve with unmapped input AV 0x000002C6 — needs override"
@@ -23490,7 +24453,10 @@
    ],
    "minLevel": 13,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -23518,7 +24484,10 @@
    ],
    "minLevel": 3,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -23560,7 +24529,12 @@
    ],
    "minLevel": 47,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": [
    "condition: HasPerkCardEquipped(SecretAgentCard)=0",
@@ -23591,7 +24565,10 @@
    ],
    "minLevel": 5,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: IsOverEncumbered()=0",
@@ -23770,7 +24747,12 @@
    ],
    "minLevel": 5,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -23798,7 +24780,10 @@
    ],
    "minLevel": 20,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -23826,7 +24811,10 @@
    ],
    "minLevel": 40,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: GetValue(<unresolved:0x00000398>)=1",
@@ -23857,7 +24845,10 @@
    ],
    "minLevel": 10,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -23892,7 +24883,11 @@
    ],
    "minLevel": 5,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -23934,7 +24929,12 @@
    ],
    "minLevel": 2,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -23988,7 +24988,10 @@
    ],
    "minLevel": 15,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -24042,7 +25045,10 @@
    ],
    "minLevel": 35,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -24103,7 +25109,12 @@
    ],
    "minLevel": 20,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -24131,7 +25142,10 @@
    ],
    "minLevel": 28,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -24198,7 +25212,10 @@
    ],
    "minLevel": 22,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: IsTrueForConditionForm(Perk_Day_Condition)=1"
@@ -24291,7 +25308,10 @@
    ],
    "minLevel": 36,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: IsMemberOfAPlayerTeam()=1",
@@ -24329,7 +25349,11 @@
    ],
    "minLevel": 37,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": [
    "condition: IsMemberOfAPlayerTeam()=1",
@@ -24391,7 +25415,10 @@
    ],
    "minLevel": 36,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -24433,7 +25460,12 @@
    ],
    "minLevel": 39,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -24467,7 +25499,10 @@
    ],
    "minLevel": 30,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    2
+   ]
   },
   "notes": []
  },
@@ -24737,7 +25772,11 @@
    ],
    "minLevel": 35,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": [
    "condition: IsInInterior()=0",
@@ -24787,7 +25826,10 @@
    ],
    "minLevel": 42,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -24834,7 +25876,10 @@
    ],
    "minLevel": 26,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "AbPerkFortifyCarryWeight: curve with unmapped input AV 0x000002C2 — needs override"
@@ -24871,7 +25916,11 @@
    ],
    "minLevel": 13,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -24906,7 +25955,11 @@
    ],
    "minLevel": 45,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": [
    "condition: IsTrueForConditionForm(Perk_Day_Condition)=1"
@@ -24950,7 +26003,12 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -24992,7 +26050,12 @@
    ],
    "minLevel": 40,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -25077,7 +26140,11 @@
    ],
    "minLevel": 30,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -25119,7 +26186,12 @@
    ],
    "minLevel": 20,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": [
    "MGEF AbPerkTeamMedic_ScriptEffect archetype Script — needs override"
@@ -25149,7 +26221,10 @@
    ],
    "minLevel": 46,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -25357,7 +26432,10 @@
    ],
    "minLevel": 6,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": [
    "condition: GetNumActiveEffectsWithKeyword(SURV_EffectTypeDisease) Equal To 0"
@@ -25394,7 +26472,11 @@
    ],
    "minLevel": 7,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -25442,7 +26524,10 @@
    ],
    "minLevel": 37,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -25777,7 +26862,10 @@
    ],
    "minLevel": 26,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -25812,7 +26900,11 @@
    ],
    "minLevel": 3,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2
+   ]
   },
   "notes": []
  },
@@ -27384,7 +28476,10 @@
    ],
    "minLevel": 16,
    "raceRestriction": "human",
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -27596,7 +28691,12 @@
    ],
    "minLevel": 50,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -27638,7 +28738,12 @@
    ],
    "minLevel": 40,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -27724,7 +28829,12 @@
    ],
    "minLevel": 39,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1,
+    2,
+    3
+   ]
   },
   "notes": []
  },
@@ -27790,7 +28900,10 @@
    ],
    "minLevel": 17,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },
@@ -28325,7 +29438,10 @@
    ],
    "minLevel": 29,
    "raceRestriction": null,
-   "isLegendaryCard": false
+   "isLegendaryCard": false,
+   "rankSources": [
+    1
+   ]
   },
   "notes": []
  },

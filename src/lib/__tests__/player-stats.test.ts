@@ -39,10 +39,10 @@ describe('derivePlayerStats', () => {
     expect(maxHealth).toBe(BASE_MAX_HP + MAX_HP_PER_ENDURANCE * 15 + 120);
   });
 
-  it('Lifegiver rank 3 = END curve + the description-sourced flat 45', () => {
+  it('Lifegiver is a single live rank — an out-of-range rank clamps to rank 1 (ranks 2/3 are dead content)', () => {
     const lifegiver = getLoadoutModifiers('live', [{ perkId: PerkId.LifeGiver, rank: 3 }]);
     const { maxHealth } = derivePlayerStats(lifegiver, baseSpecial({ endurance: 15 }), conditions);
-    expect(maxHealth).toBe(BASE_MAX_HP + MAX_HP_PER_ENDURANCE * 15 + 120 + 45);
+    expect(maxHealth).toBe(BASE_MAX_HP + MAX_HP_PER_ENDURANCE * 15 + 120);
   });
 
   it('Lifegiver interpolates the curve between END points', () => {

@@ -636,13 +636,20 @@ derive-from-perks experiment):
   Tenderizer costs 2 CHA points; Rifleman Expert/Master ("Scoped-up"/"Smart
   Shot") cost 2/3. Legendary PCRDs also carry costs, but those belong to the
   perk-coin system and never feed the SPECIAL budget.
-- **Legacy card cost continuation is NOT ESM-proven**: 28 pre-"Perks 2.0"
-  cards record fewer `Perks[]` entries than the family has ranks (LifegiverCard
-  lists only rank 1 at cost 2; exactly one PCRD per family — no per-rank
-  records exist). `padCosts` (`src/data/perk-cards.ts`) extends by +1 per
-  missing rank (base + rank − 1), which reproduces the known in-game values
-  for LifeGiver (2/3/4), Bodyguards (1/2/3/4), and Demolition Expert
-  (1/2/3/4/5); the other 25 are assumed to follow the same rule.
+- **The PCRD `Perks[]` list is the LIVE shape of a card** (user-confirmed
+  2026-07-13): 28 rebalanced ("compressed") cards record fewer entries than
+  the family has PERK ranks (LifegiverCard 0x0000BB40 lists a single rank at
+  cost 2 while LifeGiver01-03 exist) — the surplus ranks are dead content
+  from before the rebalance, NOT missing data. `maxRank` clamps to the entry
+  count (`derivePerkRegistry`), and `card.rankSources` maps each card rank to
+  the family PERK record backing it (`getLoadoutModifiers`). The one
+  non-identity mapping in the 20260710 dump is StarchedGenes: its single live
+  rank is the family's old rank-2 record (`rankSources: [2]`).
+- **Antibiotic / Conductor / Light Meal are NOT live cards** (user-confirmed
+  2026-07-13): their PCRDs exist in the ESM (0x003D295E / 0x0077B579 /
+  0x0077B57A) but the cards are unreleased — the record graph cannot
+  distinguish shipped from unshipped content, so they deliberately get no
+  PerkId (pinned as expected orphans in `perk-cards.test.ts`).
 - **Card SPECIAL/rank counts are PCRD-derived** (2026-07-13): the PerkId
   registry keeps display names only; special/maxRank/costs come from the
   extracted card data at dataset build (`derivePerkRegistry`). The ESM wins
@@ -666,10 +673,11 @@ column's stat summary displays the same number.
   20260702 dump: Lifegiver (END-keyed curve `Perks\LifeGiverBonus.json`:
   (1,10)(15,120)(30,180)(60,230)(100,250), all ranks — the new `endurance`
   CurveInput, AVIF 0x000002C4), Nocturnal Fortitude (+50/+100), Spotlight.
-- **Lifegiver ranks 2/3 flat totals are description-sourced**: LifeGiver02/03
-  are effect-less PERK records — "Gain a total of +30/+45" exists nowhere in
-  data. Hand-added in `overrides/perk-overrides.ts`; the END curve is assumed
-  to persist across ranks (a rank-up losing it would be a downgrade).
+- **Lifegiver ranks 2/3 are dead content** (2026-07-13): the live
+  LifegiverCard PCRD records a single rank, so the effect-less LifeGiver02/03
+  PERK records (whose "+30/+45 total" existed only in descriptions) are
+  unreachable — their former `overrides/perk-overrides.ts` flat-total entries
+  were removed. Rank 1's END-keyed curve is the whole live effect.
 - Consumers: Juggernaut's `healthCurrent` curve X (`healthPercent/100 ×
   maxHealth`) and the displayed HP stat. The engine's `?? 300` fallback only
   serves synthetic tests that bypass `resolveLoadout`.

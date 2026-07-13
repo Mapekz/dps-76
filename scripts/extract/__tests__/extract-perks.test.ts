@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { EsmRecord } from '../esm-client';
-import { toGeneratedPerkCard } from '../extract-perks';
+import { resolveRankSources, toGeneratedPerkCard } from '../extract-perks';
 import { flattenPerkConditionRows, translateConditions } from '../normalize/conditions';
 import tenderizerCard from './fixtures/pcrd-tenderizercard.json';
 import commandoCard from './fixtures/pcrd-commandocard.json';
@@ -15,47 +15,44 @@ import ghlMadScientist01 from './fixtures/perk-ghlmadscientist01.json';
 
 describe('toGeneratedPerkCard', () => {
   it('TenderizerCard (0x003E2202): Charisma, single rank costing 2, not legendary, no race restriction', () => {
-    const { card, perkFormIds } = toGeneratedPerkCard(tenderizerCard as unknown as EsmRecord);
+    const { card, rankPerkFormIds } = toGeneratedPerkCard(tenderizerCard as unknown as EsmRecord);
     expect(card.special).toBe('Charisma');
     expect(card.costs).toEqual([2]);
     expect(card.minLevel).toBe(46);
     expect(card.raceRestriction).toBeNull();
     expect(card.isLegendaryCard).toBe(false);
-    expect(perkFormIds).toEqual(['0x003E21F4']);
+    expect(rankPerkFormIds).toEqual([['0x003E21F4']]);
   });
 
   it('CommandoCard (0x0031AEF6): Perception, 3 ranks costing 1/2/3', () => {
-    const { card, perkFormIds } = toGeneratedPerkCard(commandoCard as unknown as EsmRecord);
+    const { card, rankPerkFormIds } = toGeneratedPerkCard(commandoCard as unknown as EsmRecord);
     expect(card.special).toBe('Perception');
     expect(card.costs).toEqual([1, 2, 3]);
     expect(card.isLegendaryCard).toBe(false);
-    expect(perkFormIds).toEqual(['0x0031AEEF', '0x0031AEF0', '0x0031AEF1']);
+    expect(rankPerkFormIds).toEqual([['0x0031AEEF'], ['0x0031AEF0'], ['0x0031AEF1']]);
   });
 
   it('ActionBoyGirlCard (0x00093E84): gender twin — both Male and Female Perk formids surfaced per rank', () => {
-    const { card, perkFormIds } = toGeneratedPerkCard(actionBoyGirlCard as unknown as EsmRecord);
+    const { card, rankPerkFormIds } = toGeneratedPerkCard(actionBoyGirlCard as unknown as EsmRecord);
     expect(card.special).toBe('Agility');
     expect(card.costs).toEqual([1, 2, 3]);
     expect(card.minLevel).toBe(2);
-    // Male Perk then Female Perk, one pair per rank, in rank order.
-    expect(perkFormIds).toEqual([
-      '0x0004D869',
-      '0x0004D872',
-      '0x00065DF5',
-      '0x00065DF6',
-      '0x0017ED8A',
-      '0x0017ED8B',
+    // [Male Perk, Female Perk] per rank, in rank order.
+    expect(rankPerkFormIds).toEqual([
+      ['0x0004D869', '0x0004D872'],
+      ['0x00065DF5', '0x00065DF6'],
+      ['0x0017ED8A', '0x0017ED8B'],
     ]);
   });
 
   it('LGN_WhatRads_Card (0x005A5943): isLegendaryCard true via "Perk Card Flags", human race restriction', () => {
-    const { card, perkFormIds } = toGeneratedPerkCard(lgnWhatRadsCard as unknown as EsmRecord);
+    const { card, rankPerkFormIds } = toGeneratedPerkCard(lgnWhatRadsCard as unknown as EsmRecord);
     expect(card.isLegendaryCard).toBe(true);
     expect(card.raceRestriction).toBe('human');
     expect(card.special).toBe('Strength');
     expect(card.minLevel).toBe(50);
     expect(card.costs).toEqual([1, 1, 1, 1]);
-    expect(perkFormIds).toHaveLength(4);
+    expect(rankPerkFormIds).toHaveLength(4);
   });
 
   it('GHL_GlowingCriticalsCard-style ghoul restriction maps to "ghoul" (name-based, not the raw numeric value)', () => {
@@ -77,6 +74,28 @@ describe('toGeneratedPerkCard', () => {
     } as unknown as EsmRecord;
     const { card } = toGeneratedPerkCard(record);
     expect(card.raceRestriction).toBe('ghoul');
+  });
+});
+
+describe('resolveRankSources', () => {
+  it('maps a full-length card to the identity [1..n]', () => {
+    expect(resolveRankSources([['0xA'], ['0xB'], ['0xC']], ['0xA', '0xB', '0xC'])).toEqual([1, 2, 3]);
+  });
+
+  it('maps a compressed card to the family rank prefix (LifegiverCard: 1 entry, 3 family ranks)', () => {
+    expect(resolveRankSources([['0x0004A0CF']], ['0x0004A0CF', '0x001D2465', '0x001D2467'])).toEqual([1]);
+  });
+
+  it("maps StarchedGenesCard's single entry to family rank 2 (the live card is the old rank-2 record)", () => {
+    expect(resolveRankSources([['0x00397CB1']], ['0x00397CB0', '0x00397CB1'])).toEqual([2]);
+  });
+
+  it('resolves a gender-twin entry against the female family too', () => {
+    expect(resolveRankSources([['0x0004D869', '0x0004D872']], ['0x0004D872', '0xFEM2'])).toEqual([1]);
+  });
+
+  it('returns null when an entry matches no rank of the family', () => {
+    expect(resolveRankSources([['0xA'], ['0xNOPE']], ['0xA', '0xB'])).toBeNull();
   });
 });
 
