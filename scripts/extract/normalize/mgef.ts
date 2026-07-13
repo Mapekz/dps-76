@@ -722,21 +722,41 @@ export async function translateMagicEffect(
     edidByFormId.set(mgef.resistValue, await client.resolveEdid(mgef.resistValue));
   }
 
-  // GLOB-valued magnitude override (Sniper's-style): resolve the Global's
-  // Value and substitute it for the ZERO Effect Item Data magnitude. Only
-  // when the flat magnitude is 0 — consumables (Psycho, Buffout...) carry a
-  // sibling Magnitude GLOB that is a survival size/scale constant
-  // (SURV_Chem_AddThirstSize_2_Normal = 108...), NOT the effect magnitude;
-  // overriding their real nonzero flat values corrupted every chem
-  // (Psycho dbm 0.15 → 10.8, Buffout STR 2 → 720; found 2026-07-12).
+  // GLOB-valued magnitude override (Sniper's-style): when an effect carries
+  // a `magnitudeGlobal` FormID, that Global's Value is the authoritative
+  // magnitude and overrides the flat Effect Item Data float — the same
+  // relationship a Curve Table has to the flat magnitude (see the
+  // curve-override path above, which needs no equivalent guard).
+  //
+  // This used to be gated on `magnitude === 0` to work around a bug in the
+  // external `esm` CLI's Rust decoder: it mis-associated each effect's
+  // OPTIONAL trailing GLOB/curve-table subrecord across effects within one
+  // record via a global FIFO queue, so an effect with no GLOB trailer of its
+  // own could wrongly inherit a later effect's GLOB. A present
+  // `magnitudeGlobal` was therefore not reliably the CURRENT effect's own
+  // reference. Gating on `magnitude === 0` was a defensive heuristic that
+  // happened to dodge the worst symptom — Psycho's real dbm 0.15 and
+  // Buffout's real STR 2 stealing a sibling effect's survival-restore GLOB
+  // and inflating to 10.8 / 720 — but it also silently kept
+  // BlightVegetableCookedSoup's crit-damage bonus wrong: its flat magnitude
+  // (25.0 → 0.25) is nonzero, so the guard skipped its own genuinely-
+  // associated GLOB (Value 50.0 → the correct 0.5, i.e. +50% crit damage).
+  //
+  // That decoder bug is now fixed at the source (FO76-Tools/esm/src/decode.rs
+  // binds each effect's optional trailing subrecords to the physically
+  // correct effect instead of a global FIFO queue), so a present
+  // `magnitudeGlobal` is always this effect's own reference and should always
+  // win over the flat magnitude. Requires a fresh `pnpm extract` against a
+  // rebuilt `esm` binary to take effect.
   let resolvedEffect = effect;
-  if (effect.magnitudeGlobal && effect.magnitude === 0) {
+  if (effect.magnitudeGlobal) {
     try {
       const glob = await client.get(effect.magnitudeGlobal);
       const value = glob.fields['Value'];
       if (typeof value === 'number') resolvedEffect = { ...effect, magnitude: value };
     } catch {
-      /* leave magnitude as-is; an unresolved GLOB surfaces as the usual zero-magnitude note */
+      /* leave the flat magnitude as-is; if it was already 0 this surfaces downstream as
+       * the usual zero-magnitude note, otherwise the flat value stands unresolved */
     }
   }
 
