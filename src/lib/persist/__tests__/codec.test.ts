@@ -1,7 +1,8 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { decodeBuild, encodeBuild } from '@/lib/persist/codec';
 import { buildReducer, createDefaultBuildState, type BuildAction } from '@/state/build-reducer';
 import { nukesDragonsPerks } from '@/lib/nukes-dragons';
+import type { GeneratedAddiction, GeneratedBuff } from '@/types/generated';
 
 function stateFrom(actions: BuildAction[]) {
   return actions.reduce(buildReducer, createDefaultBuildState());
@@ -10,6 +11,43 @@ function stateFrom(actions: BuildAction[]) {
 // A real N&D key → PerkId pair to exercise the dictionary path.
 const [ndKey, ndPerkId] = Object.entries(nukesDragonsPerks).find(([k]) => !k.startsWith('0'))!;
 void ndKey;
+
+// Synthetic consumable/addiction fixtures — hermetic against whatever
+// scripts/extract currently produces for consumables.json/addictions.json (a
+// concurrent agent is rewriting the buff extractor). Mocking '@/data/buffs'
+// also makes src/lib/consumable-rules.ts's consumablesById() (which reads
+// getConsumables from this same module) resolve against these fixtures.
+const testChemA: GeneratedBuff = {
+  id: 'TestChemA', formId: '0xC1', name: 'Test Chem A', kind: 'consumable', modifiers: [], notes: [], category: 'chem',
+};
+const testChemB: GeneratedBuff = {
+  id: 'TestChemB', formId: '0xC2', name: 'Test Chem B', kind: 'consumable', modifiers: [], notes: [], category: 'chem',
+};
+const testAddiction: GeneratedAddiction = {
+  id: 'TestAddictionX', formId: '0xA1', name: 'Test Addiction X', causedBy: ['TestChemA'],
+};
+
+vi.mock('@/data/buffs', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/data/buffs')>();
+  return {
+    ...actual,
+    getConsumables: () => [testChemA, testChemB],
+    getAddictions: () => [testAddiction],
+  };
+});
+
+/** Hand-builds a v1 wire payload without going through encodeBuild — lets a
+ * test simulate a legacy/adversarial URL shape that the current app would
+ * never itself produce (e.g. a stale manual `addictionCount`). */
+async function encodeRawWire(wire: Record<string, unknown>): Promise<string> {
+  const bytes = new TextEncoder().encode(JSON.stringify(wire));
+  const deflated = new Uint8Array(
+    await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer()
+  );
+  let bin = '';
+  for (const b of deflated) bin += String.fromCharCode(b);
+  return '1.' + btoa(bin).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '');
+}
 
 describe('build codec', () => {
   it('round-trips the default state', async () => {
@@ -110,6 +148,7 @@ describe('derived condition fields', () => {
     state.player.conditions.hungerThirstTier = 6;
     state.player.conditions.maxHealth = 999;
     state.player.conditions.mutationCount = 5;
+    state.player.conditions.addictionCount = 7;
     const encoded = await encodeBuild(state);
     const decoded = await decodeBuild(encoded, 'live');
     const defaults = createDefaultBuildState().player.conditions;
@@ -117,6 +156,7 @@ describe('derived condition fields', () => {
     expect(decoded!.state.player.conditions.hungerThirstTier).toBe(defaults.hungerThirstTier);
     expect(decoded!.state.player.conditions.maxHealth).toBe(defaults.maxHealth);
     expect(decoded!.state.player.conditions.mutationCount).toBe(defaults.mutationCount);
+    expect(decoded!.state.player.conditions.addictionCount).toBe(defaults.addictionCount);
   });
 
   it('new picker/status fields round-trip', async () => {
@@ -149,5 +189,51 @@ describe('derived condition fields', () => {
     expect(decoded!.state.player.legendaryPerks).toEqual([]);
     expect(decoded!.state.player.perks).toEqual([{ perkId: 'RadSpecialist', rank: 1 }]);
     expect(decoded!.warnings.some(w => w.includes('classification'))).toBe(true);
+  });
+});
+
+describe('consumables & addictions (2026-07-13 overhaul, hermetic fixtures)', () => {
+  it('round-trips selected addictions', async () => {
+    const state = createDefaultBuildState();
+    state.player.addictions = ['TestAddictionX'];
+    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    expect(decoded).not.toBeNull();
+    expect(decoded!.state.player.addictions).toEqual(['TestAddictionX']);
+    expect(decoded!.warnings).toEqual([]);
+  });
+
+  it('drops an unknown addiction id with a warning', async () => {
+    const state = createDefaultBuildState();
+    state.player.addictions = ['NotARealAddiction'];
+    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    expect(decoded!.state.player.addictions).toEqual([]);
+    expect(decoded!.warnings.some(w => w.includes('unknown addiction'))).toBe(true);
+  });
+
+  it('sanitizes a legacy two-chem payload down to one, with a warning', async () => {
+    // Hand-crafted: the reducer's consumable/toggle would never let two chems
+    // coexist, so this simulates an old (or adversarial) share URL.
+    const state = createDefaultBuildState();
+    state.player.consumables = ['TestChemA', 'TestChemB'];
+    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    expect(decoded!.state.player.consumables).toEqual(['TestChemB']);
+    expect(decoded!.warnings.some(w => w.includes('stacking rules'))).toBe(true);
+  });
+
+  it('a legal single-consumable payload round-trips without a stacking warning', async () => {
+    const state = createDefaultBuildState();
+    state.player.consumables = ['TestChemA'];
+    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    expect(decoded!.state.player.consumables).toEqual(['TestChemA']);
+    expect(decoded!.warnings).toEqual([]);
+  });
+
+  it('skips an incoming addictionCount condition key with a warning and does not set it', async () => {
+    // Simulates a pre-overhaul URL that stored a manual addictionCount.
+    const encoded = await encodeRawWire({ pc: { addictionCount: 7 } });
+    const decoded = await decodeBuild(encoded, 'live');
+    expect(decoded).not.toBeNull();
+    expect(decoded!.state.player.conditions.addictionCount).toBe(createDefaultBuildState().player.conditions.addictionCount);
+    expect(decoded!.warnings.some(w => w.includes('addictionCount'))).toBe(true);
   });
 });

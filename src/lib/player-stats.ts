@@ -146,6 +146,16 @@ export function deriveHungerThirstTier(conditions: PlayerConditions): number {
   return Math.max(0, Math.min(4, conditions.foodTier ?? 0)) + Math.max(0, Math.min(4, conditions.drinkTier ?? 0));
 }
 
+/**
+ * Junkie's addictionCount curve input: selected addictions minus those
+ * SUPPRESSED by a currently-active addictive consumable (category-agnostic —
+ * `getSuppressedAddictions`, src/data/buffs.ts). Docs/assumptions.md
+ * "Consumable stacking & addictions".
+ */
+export function deriveAddictionCount(addictions: string[], suppressed: ReadonlySet<string>): number {
+  return addictions.filter(id => !suppressed.has(id)).length;
+}
+
 export interface DerivedPlayerStats {
   /** Effective SPECIAL: base (allocation + legendary SPECIAL perks) + buff folds. */
   special: Record<SpecialKey, number>;

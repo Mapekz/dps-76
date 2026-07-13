@@ -36,7 +36,13 @@ export interface PlayerConditions {
   tenderizerStacks: number; // 0-1000, 0.1 dbm per stack (manual team-scenario input)
 
   // Other steady-state inputs for conditional sources
-  addictionCount: number; // for Junkie's legendary
+  /**
+   * For Junkie's legendary. DERIVED in resolveLoadout — selected
+   * PlayerConfig.addictions minus those suppressed by an active addictive
+   * consumable (src/lib/player-stats.ts deriveAddictionCount); not
+   * user-editable. The stored default only feeds synthetic engine tests.
+   */
+  addictionCount: number;
   capsOnHand: number; // for Aristocrat's legendary
   /**
    * Absolute max HP (Juggernaut's health curve, health-fraction thresholds).
@@ -318,6 +324,12 @@ export interface PlayerConfig {
   armor: ArmorConfig;
   mutations: string[];
   consumables: string[];
+  /**
+   * Selected "I have this addiction" ids (GeneratedAddiction.id). Independent
+   * of which consumable is active — suppression by an active addictive item
+   * is derived (getSuppressedAddictions), never stored.
+   */
+  addictions: string[];
   conditions: PlayerConditions;
   /** Global item level for base-damage curve lookup (1–50, default 50). */
   itemLevel: number;
@@ -412,6 +424,7 @@ export function createDefaultPlayerConfig(): PlayerConfig {
     armor: createDefaultArmorConfig(),
     mutations: [],
     consumables: [],
+    addictions: [],
     conditions: createDefaultPlayerConditions(),
     itemLevel: 50,
     weakpointMult: 1.5,

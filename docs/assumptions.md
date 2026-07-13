@@ -236,10 +236,83 @@ inert with a picker badge (`corrections.ts omodBadgeOverrides`).
 | Bleed/burn/shock mod DoTs | Damage-archetype MGEFs → `dotDamage` bucket with magnitude, `durationSec`, element from the MGEF Resist Value. **Refresh-only model** (user-confirmed, Stage A2): re-applying resets the timer rather than stacking, so the steady-state contribution while continuously attacking is the summed magnitude — INTERPRETED as damage/sec, NOT ESM-proven (the ESM only proves the total-over-duration magnitude, not a per-second rate). Displayed as a separate "DoT +X/s" line; burst per-hit and sustained DPS are unchanged. Folded per weapon-component damage type (every extracted entry carries exactly one `damageTypeScope` type) so it only counts on a weapon that actually deals that type | ESM (extracted); dmg/sec interpretation + refresh-only rule are ours |
 | Adrenal Reaction (mutation) | +5% dbm per KILL STREAK stack, cap 10 (+6.25%/stack with Strange in Numbers) | ESM curves Mutation_Adrenal_Normal/_Super are 5/stack linear (their x-range past 10 is unreachable — the counter caps at 10, user-confirmed + legendary Adrenal curve domain); hand-carried because the CLI's curve↔effect association is shifted on this record |
 | Tenderizer | +10% dbm per stack, manual stack input 0–1000 | ESM magnitude 0.1 (PerkTenderizer01Spell); stacking cap per user spec |
-| SPECIAL buffs (Buffout +2 STR/+2 END, Bufftats +3 STR/+3 END/+3 PER, Mentats +2 INT/+2 PER, Berry Mentats +5 INT) | flat unconditional ADDs folded into player STR/LCK in `resolveLoadout` (STR → melee term, LCK → crit meter); PER/END/CHA/INT/AGI stored-inert until perk-SPECIAL scaling. NO stacking/exclusivity enforcement — chems-one-at-a-time and same-keyword replacement land with the consumables overhaul | ESM Peak Value Modifier magnitudes (extracted) |
+| SPECIAL buffs (Buffout +2 STR/+2 END, Bufftats +3 STR/+3 END/+3 PER, Mentats +2 INT/+2 PER, Berry Mentats +5 INT) | flat unconditional ADDs folded into player STR/LCK in `resolveLoadout` (STR → melee term, LCK → crit meter); PER/END/CHA/INT/AGI stored-inert until perk-SPECIAL scaling. Selection-level stacking/exclusivity (one chem/alcohol at a time, same-bonus food/drink displacement) is enforced in `src/lib/consumable-rules.ts` — see "Consumable stacking & addictions" below | ESM Peak Value Modifier magnitudes (extracted) |
 | Juggernaut's max-HP input | `PlayerConditions.maxHealth` is DERIVED (see "Max HP") and shown read-only in the Character section — the old editable Conditions field was dead (resolveLoadout always overwrote it); the 300 default only feeds synthetic engine tests | derivation 2026-07-12; dead input removed with the Character section |
 | Strange in Numbers | DERIVED gate, not a stored toggle: active ⇔ the StrangeInNumbers card is equipped AND `teammateCount` ≥ 1 (the +25% mutation boost needs a mutated teammate; teammate mutation status isn't modeled, so any teammate counts — user-decided 2026-07-12). Mutations header shows an active/inactive badge; legacy URLs carrying the old stored flag decode to the derived value | card description + user decision |
 | Kill-streak slider gating | The Character section's kill-streak slider disables when no equipped source reads the counter — detection is an existence SCAN over assembled modifiers (`curve.input: killStreak`, `killStreakCount` conditions, `stacks: adrenaline`), unlike Onslaught's `onslaughtMaxStacks` bucket fold: kill-streak sources attach to arbitrary buckets, there is no dedicated bucket to fold (`ScenarioSet.hasKillStreakSources`) | engine wiring 2026-07-12 |
+
+## Consumable stacking & addictions (2026-07-13 consumables overhaul)
+
+Binding rules (user-specified, `dps-todos/consumables-overhaul.md`), enforced
+in `src/lib/consumable-rules.ts` (the ONE implementation shared by the build
+reducer, the persistence codec, and the picker UI):
+
+- **Chem**: only one active at a time — selecting a new chem displaces
+  whichever chem is currently active.
+- **Alcohol**: only one active at a time, independent of chem.
+- **Food / non-alcohol drink**: stack freely UNLESS they grant the "same
+  bonus", in which case the new item displaces the old one.
+
+**"Same bonus" is derived from ESM data, never hand-authored.** Each
+dispel-flagged MGEF effect (ALCH `Magic Effect Data.Data.Flags` includes
+"Dispel with Keywords") resolves to `GeneratedBuff.dispelKeys`: one key per
+dispel-flagged effect, the effect's own resolved KYWD edids, sorted and
+joined with `|`. Two buffs share a bonus iff they carry an IDENTICAL key —
+**exact keyword-SET equality, not any-keyword intersection**. Intersection is
+provably wrong: every food effect carries the same broad, non-discriminating
+`FoodEffect` + `SURV_EffectTypeFoodBuff` keywords regardless of what it
+actually buffs, so an intersection test would collide a Strength food with an
+Endurance food. Each dispel-flagged effect ALSO carries exactly one
+discriminating keyword (`FoodDispelEffect_Strength`, `StackBuffStrength`,
+`StackPsychoStrength`, `StackAlcoholStrength`, ...) — the exact-set test is
+what actually isolates same-bonus pairs. Proof point: `FortifyStrengthFood`
+is the shared Base Effect on 18 ALCH records spanning BOTH food and drink
+(e.g. `Milk_Chally`, a drink) — same-bonus collision is genuinely
+cross-category, which is why the collision check runs on `dispelKeys` for
+food/drink regardless of category, and separately on category equality for
+chem/alcohol (some chems/alcohols carry no dispel-flagged effect at all —
+e.g. flat-HP-only items — but "one at a time" still applies to them by
+category).
+
+**Displacement is item-level, not per-effect**: a collision on any single
+`dispelKeys` entry evicts the WHOLE colliding item, not just the matching
+effect. This is a deliberate simplification of the game's real per-effect
+dispel system (documented tradeoff, not an oversight) — revisit only if a
+build genuinely needs partial multi-effect items to partially stack.
+
+**Addiction**: each ALCH record's `Effect Data.Addiction` field (when
+non-null) points directly at an `AbAddiction<Name>` SPEL — no AVIF chase
+needed. `GeneratedAddiction` catalogs these
+(`src/data/live/generated/addictions.json`), scoped to addictions caused by
+an OBTAINABLE, in-app-selectable consumable (`causedBy`) — an unobtainable
+chem's addiction (e.g. Jet, confirmed unobtainable in FO76) drops out of the
+catalog automatically, no special-casing needed.
+
+`PlayerConfig.addictions` is the player's free-form "I have this addiction"
+picker selection (independent of category — any addictive item, chem or
+alcohol or food/drink, can cause an addiction). `PlayerConditions.
+addictionCount` (Junkie's curve input) is DERIVED, never stored:
+`deriveAddictionCount` (`src/lib/player-stats.ts`) = selected addictions
+minus those SUPPRESSED by a currently-active addictive consumable
+(`getSuppressedAddictions`, `src/data/buffs.ts`) — suppression is
+**category-agnostic** (an active chem, alcohol, food, or drink all suppress
+their own addiction equally; grill-session decision, 2026-07-13) and checked
+by consumable id membership in `GeneratedAddiction.causedBy`, not by
+category. `resolveLoadout` overrides `addictionCount` unconditionally — the
+stored `PlayerConditions.addictionCount` field only feeds synthetic engine
+tests that bypass `resolveLoadout` (mirrors `hungerThirstTier`/
+`strangeInNumbers`).
+
+Old share URLs carrying a manual `addictionCount` in `conditions` are decoded
+with that key explicitly SKIPPED (with a warning) — there's no way to map a
+bare count back to specific addiction ids, so it's dropped rather than
+silently winning over the (now addiction-less) picker state.
+
+**Deferred**: Carnivore's/Herbivore's food ×2/disable mutation interaction —
+the extractor captures `GeneratedBuff.ingredientKeywords` (IngredientType*/
+MealType* KYWD edids) now so the follow-up needs no re-extract, but the
+app-side classification (which foods count as "meat" vs "veggie", including
+soups/mixed dishes) is unimplemented. See `dps-todos/carnivore-herbivore.md`.
 
 ## Target distance (Close / Far, Stage A3)
 

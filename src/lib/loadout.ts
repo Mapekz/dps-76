@@ -3,11 +3,12 @@ import type { Modifier } from '@/types/modifiers';
 import { getWeapons } from '@/data';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
 import { getDefaultOmods, getOmodById } from '@/data/omods';
-import { getBuffModifiers } from '@/data/buffs';
+import { getBuffModifiers, getSuppressedAddictions } from '@/data/buffs';
 import { buildEffectiveWeapon } from '@/lib/engine/effective-weapon';
 import { legendaryBonusOf } from '@/data/perk-budget';
 import { getBodyPartMult } from '@/data/bodyparts';
 import {
+  deriveAddictionCount,
   deriveHungerThirstTier,
   derivePlayerStats,
   deriveStrangeInNumbers,
@@ -134,6 +135,11 @@ export function resolveLoadout(
     hungerThirstTier: deriveHungerThirstTier(playerConfig.conditions),
     // Strange in Numbers gate: the card equipped + a teammate to be mutated with.
     strangeInNumbers: deriveStrangeInNumbers(playerConfig.perks, playerConfig.conditions),
+    // Junkie's curve input: selected addictions minus ones suppressed by an
+    // active addictive consumable (any category — docs/assumptions.md
+    // "Consumable stacking & addictions"). Unconditional override: the
+    // stored conditions value only feeds synthetic engine tests.
+    addictionCount: deriveAddictionCount(playerConfig.addictions, getSuppressedAddictions(mode, playerConfig.consumables)),
   };
 
   // Body-part mult: the Target section's race + part pick resolves through

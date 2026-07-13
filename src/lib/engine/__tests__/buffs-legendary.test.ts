@@ -9,7 +9,14 @@ import { getLoadoutModifiers } from '@/data/perk-modifiers';
 import { PerkId } from '@/data/perk-ids';
 import { buildEffectiveWeapon } from '@/lib/engine/effective-weapon';
 import { computeScenarios, type ScenarioInput } from '@/lib/engine/scenarios';
-import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
+import { resolveLoadout } from '@/lib/loadout';
+import {
+  createDefaultEnemyConditions,
+  createDefaultEnemyConfig,
+  createDefaultPlayerConditions,
+  createDefaultPlayerConfig,
+  type PlayerConfig,
+} from '@/types';
 
 // Phase 7 milestone: legendary effects, mutations, and consumables move the
 // numbers per wiki values (pending in-game golden validation).
@@ -428,5 +435,52 @@ describe('mutations and consumables', () => {
 
     const team = computeScenarios(base({ modifiers: mods, critRate: 1, player: { ...createDefaultPlayerConditions(), strangeInNumbers: true } }));
     expect(team.vats.perHit.total / none.vats.perHit.total).toBeCloseTo(2.625 / 2.0, 6);
+  });
+});
+
+describe('consumables overhaul integration (2026-07-13, real extracted data)', () => {
+  it("an active chem suppresses its own addiction from Junkie's count (3 selected, 1 suppressed → count 2, not 3)", () => {
+    // Depends on the real post-overhaul consumables.json/addictions.json
+    // shape (GeneratedBuff.category/.addiction, GeneratedAddiction catalog)
+    // produced by the rewritten scripts/extract/extract-buffs.ts. If a
+    // future re-extraction changes these ids, update them here rather than
+    // deleting the test — this is the one place suppression is pinned
+    // end-to-end through resolveLoadout.
+    const withJunkies = (overrides: Partial<PlayerConfig>) => {
+      const playerConfig: PlayerConfig = {
+        ...createDefaultPlayerConfig(),
+        weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: ['mod_Legendary_Weapon1_DamageAddiction'] },
+        ...overrides,
+      };
+      const result = resolveLoadout(playerConfig, createDefaultEnemyConfig(), 'live');
+      expect(result).not.toBeNull();
+      return result!;
+    };
+
+    // Psycho (active chem) causes AbAddictionPsycho — selecting it among the
+    // 3 addictions should suppress exactly that one.
+    const suppressed = withJunkies({
+      consumables: ['Psycho'],
+      addictions: ['AbAddictionPsycho', 'AbAddictionBuffout', 'AbAddictionMentats'],
+    });
+    expect(suppressed.player.addictionCount).toBe(2);
+
+    // Same active chem (keeps Psycho's own dbm buff constant across both
+    // scenarios), but none of these 3 addictions is caused by Psycho — no
+    // suppression.
+    const unsuppressed = withJunkies({
+      consumables: ['Psycho'],
+      addictions: ['AbAddictionBuffout', 'AbAddictionMentats', 'AbAddictionFury'],
+    });
+    expect(unsuppressed.player.addictionCount).toBe(3);
+
+    // Full pipeline: the suppression flows through to computed damage.
+    // Junkie's curve is exactly +10%/addiction (pinned above), so the two
+    // scenarios' totals should differ by exactly one Junkie's stack (10%
+    // of stockTotal) — Psycho's own separate dbm buff is identical on both
+    // sides and cancels out of the difference.
+    const suppressedTotal = computeScenarios(suppressed).freeAim.perHit.total;
+    const unsuppressedTotal = computeScenarios(unsuppressed).freeAim.perHit.total;
+    expect((unsuppressedTotal - suppressedTotal) / stockTotal).toBeCloseTo(0.1, 4);
   });
 });

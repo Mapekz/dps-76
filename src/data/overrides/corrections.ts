@@ -303,3 +303,17 @@ export const omodModifierAdditions: Readonly<Record<string, Modifier[]>> = {
     ])
   ),
 };
+
+/**
+ * Generated consumables to hide from pickers: records that pass extraction
+ * and obtainability but are wrong anyway (mirrors hiddenOmodIds).
+ */
+export const hiddenConsumableIds: ReadonlySet<string> = new Set<string>([]);
+
+/**
+ * Consumable counterpart of forceVisibleWeaponIds/forceVisibleOmodIds
+ * (rescues obtainable:false records). Review `_meta.json →
+ * excludedDetailed.consumableUnobtainable` after each extraction and rescue
+ * false negatives here — no re-extract needed.
+ */
+export const forceVisibleConsumableIds: ReadonlySet<string> = new Set<string>([]);

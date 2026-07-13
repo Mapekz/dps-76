@@ -11,6 +11,7 @@ import { isLegendaryPerkKey, parsedPerksToLoadout, type ParsedSpecial } from '@/
 import { computePerkBudget, perkSpecialKey } from '@/data/perk-budget';
 import { equippedRaceLock, perkRaceRestriction } from '@/data/perk-race';
 import { canSlotCardPoints, SPECIAL_ALLOCATION_POOL, SPECIAL_KEYS, SPECIAL_POINTS_CAP } from '@/lib/player-stats';
+import { consumablesById, toggleConsumable } from '@/lib/consumable-rules';
 
 /**
  * The one store behind the whole app. The BuildAction union is the shared
@@ -57,6 +58,7 @@ export type BuildAction =
   | { type: 'special/set'; stat: SpecialKey; value: number }
   | { type: 'mutation/toggle'; id: string }
   | { type: 'consumable/toggle'; id: string }
+  | { type: 'addiction/toggle'; id: string }
   | { type: 'condition/set'; key: keyof PlayerConditions; value: PlayerConditions[keyof PlayerConditions] }
   | { type: 'enemy/condition'; key: keyof EnemyConditions; value: EnemyConditions[keyof EnemyConditions] }
   | { type: 'view/set'; view: Partial<ViewState> }
@@ -200,7 +202,18 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
       return withPlayer(state, { ...player, mutations: toggle(player.mutations, action.id) });
 
     case 'consumable/toggle':
-      return withPlayer(state, { ...player, consumables: toggle(player.consumables, action.id) });
+      // consumablesById needs a GameMode; the reducer has none in scope and
+      // the registry is mode-independent today (pts re-exports live) — same
+      // precedent as regularSlotBlocked's hardcoded 'live' above. Stacking
+      // rules (one chem/alcohol at a time, same-bonus food/drink
+      // displacement) are enforced here, not in the engine.
+      return withPlayer(state, {
+        ...player,
+        consumables: toggleConsumable(consumablesById('live'), player.consumables, action.id).consumables,
+      });
+
+    case 'addiction/toggle':
+      return withPlayer(state, { ...player, addictions: toggle(player.addictions, action.id) });
 
     case 'condition/set':
       return withPlayer(state, { ...player, conditions: { ...player.conditions, [action.key]: action.value } });

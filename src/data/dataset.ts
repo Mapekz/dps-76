@@ -1,5 +1,5 @@
 import type { GameMode, Perk, PerkId, Enemy, EnemyMutation, Weapon } from '@/types';
-import type { GeneratedBodyPartRace, GeneratedOmod, GeneratedBuff, GeneratedPerk } from '@/types/generated';
+import type { GeneratedAddiction, GeneratedBodyPartRace, GeneratedOmod, GeneratedBuff, GeneratedPerk } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 
 import { weapons as weaponsLive } from './live/weapons';
@@ -29,6 +29,7 @@ import generatedOmodsLive from './live/generated/omods.json';
 import generatedPerksLive from './live/generated/perks.json';
 import generatedMutationsLive from './live/generated/mutations.json';
 import generatedConsumablesLive from './live/generated/consumables.json';
+import generatedAddictionsLive from './live/generated/addictions.json';
 import generatedBodyPartsLive from './live/generated/bodyparts.json';
 
 /**
@@ -76,6 +77,8 @@ export interface Dataset {
   perkRegistry: Record<PerkId, Perk>;
   mutations: GeneratedBuff[];
   consumables: GeneratedBuff[];
+  /** Mode-wide addiction catalog (obtainable-only, see extract-buffs.ts) — mode-shared like mutations today. */
+  addictions: GeneratedAddiction[];
   bodyPartRaces: GeneratedBodyPartRace[];
   enemies: Record<string, Enemy>;
   enemyMutations: Record<string, EnemyMutation>;
@@ -104,6 +107,7 @@ const mergedOmods = applyModifierAddition(
 const mergedMutations = applyModifierOverride(generatedMutationsLive as GeneratedBuff[], buffValueOverrides);
 const mergedConsumables = applyModifierOverride(generatedConsumablesLive as GeneratedBuff[], buffValueOverrides);
 const generatedPerks = generatedPerksLive as GeneratedPerk[];
+const generatedAddictions = generatedAddictionsLive as GeneratedAddiction[];
 const generatedBodyParts = generatedBodyPartsLive as GeneratedBodyPartRace[];
 
 function buildDataset(hand: HandAuthored): Dataset {
@@ -113,6 +117,7 @@ function buildDataset(hand: HandAuthored): Dataset {
     perks: generatedPerks,
     mutations: mergedMutations,
     consumables: mergedConsumables,
+    addictions: generatedAddictions,
     bodyPartRaces: generatedBodyParts,
   };
 }

@@ -7,9 +7,10 @@ import {
   type PlayerConditions,
 } from '@/types';
 import { getPerks, getWeapons } from '@/data';
-import { getConsumables, getMutations } from '@/data/buffs';
+import { getAddictions, getConsumables, getMutations } from '@/data/buffs';
 import { getOmodById } from '@/data/omods';
 import { nukesDragonsPerks, reclassifyPerkLoadouts } from '@/lib/nukes-dragons';
+import { consumablesById, sanitizeConsumables } from '@/lib/consumable-rules';
 import { createDefaultBuildState, type BuildState } from '@/state/build-reducer';
 import type { PerkId } from '@/data/perk-ids';
 
@@ -46,6 +47,8 @@ interface SerializedBuild {
   lpx?: Array<[string, number]>;
   m?: string[];
   c?: string[];
+  /** selected addiction ids (GeneratedAddiction.id) */
+  ad?: string[];
   /** non-default player conditions */
   pc?: Partial<PlayerConditions>;
   /** non-default enemy conditions */
@@ -122,6 +125,7 @@ const DERIVED_PLAYER_CONDITION_KEYS = new Set<keyof PlayerConditions>([
   'hungerThirstTier',
   'maxHealth',
   'mutationCount',
+  'addictionCount',
 ]);
 
 // ── deflate/base64url plumbing (browser + Node ≥18) ─────────────────────────
@@ -163,6 +167,7 @@ export async function encodeBuild(state: BuildState): Promise<string> {
     ...(legendaryPerks.fallback.length > 0 && { lpx: legendaryPerks.fallback }),
     ...(player.mutations.length > 0 && { m: player.mutations }),
     ...(player.consumables.length > 0 && { c: player.consumables }),
+    ...(player.addictions.length > 0 && { ad: player.addictions }),
     ...(buildName && { n: buildName }),
     ...(view.emphasized && { ve: view.emphasized }),
     ...(view.breakdownOpen && { vb: true }),
@@ -247,14 +252,38 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
     return false;
   });
   const knownConsumables = new Set(getConsumables(mode).map(b => b.id));
-  state.player.consumables = (wire.c ?? []).filter(id => {
+  const knownConsumableIds = (wire.c ?? []).filter(id => {
     if (knownConsumables.has(id)) return true;
     warnings.push(`unknown consumable "${id}" — removed`);
+    return false;
+  });
+  // Old/adversarial payloads can encode combinations the stacking rules
+  // (src/lib/consumable-rules.ts) no longer allow (two chems, two same-key
+  // foods, ...) — replay through the same rules the reducer enforces.
+  const sanitizedConsumables = sanitizeConsumables(consumablesById(mode), knownConsumableIds);
+  if (sanitizedConsumables.length !== knownConsumableIds.length) {
+    warnings.push(
+      "removed to satisfy stacking rules (one chem/alcohol at a time; same-bonus food/drink don't stack)"
+    );
+  }
+  state.player.consumables = sanitizedConsumables;
+
+  const knownAddictions = new Set(getAddictions(mode).map(a => a.id));
+  state.player.addictions = (wire.ad ?? []).filter(id => {
+    if (knownAddictions.has(id)) return true;
+    warnings.push(`unknown addiction "${id}" — removed`);
     return false;
   });
 
   // Conditions: only keys that exist in the current schema survive.
   for (const [key, value] of Object.entries(wire.pc ?? {})) {
+    if (key === 'addictionCount') {
+      // Pre-overhaul URLs stored a manual count; there's no way to map a
+      // bare number back to specific addiction ids, so it's dropped rather
+      // than silently winning over the (now addiction-less) picker state.
+      warnings.push('"addictionCount" is no longer a manual input — pick your addictions in Chems & Addictions');
+      continue;
+    }
     if (DERIVED_PLAYER_CONDITION_KEYS.has(key as keyof PlayerConditions)) continue; // legacy payloads
     if (key in state.player.conditions) {
       (state.player.conditions as unknown as Record<string, unknown>)[key] = value;

@@ -1,9 +1,23 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { buildReducer, createDefaultBuildState, type BuildAction, type BuildState } from '@/state/build-reducer';
+import type { GeneratedBuff } from '@/types/generated';
 
 function run(actions: BuildAction[], from: BuildState = createDefaultBuildState()): BuildState {
   return actions.reduce(buildReducer, from);
 }
+
+// Stubs consumablesById's data source only — keeps the REAL toggleConsumable
+// (and every other export) so the reducer exercises the real stacking-rule
+// implementation against fixtures that are hermetic against whatever
+// scripts/extract currently produces (a concurrent agent is rewriting the
+// buff extractor).
+vi.mock('@/lib/consumable-rules', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/lib/consumable-rules')>();
+  const chemA: GeneratedBuff = { id: 'ChemA', formId: '0xC1', name: 'Chem A', kind: 'consumable', modifiers: [], notes: [], category: 'chem' };
+  const chemB: GeneratedBuff = { id: 'ChemB', formId: '0xC2', name: 'Chem B', kind: 'consumable', modifiers: [], notes: [], category: 'chem' };
+  const stub = new Map<string, GeneratedBuff>([[chemA.id, chemA], [chemB.id, chemB]]);
+  return { ...actual, consumablesById: () => stub };
+});
 
 describe('buildReducer', () => {
   it('weapon/select equips fresh and null unequips', () => {
@@ -119,6 +133,21 @@ describe('buildReducer', () => {
     const on = run([{ type: 'mutation/toggle', id: 'SpeedDemon' }]);
     expect(on.player.mutations).toEqual(['SpeedDemon']);
     expect(run([{ type: 'mutation/toggle', id: 'SpeedDemon' }], on).player.mutations).toEqual([]);
+  });
+
+  it('consumable/toggle enforces stacking rules (auto-displaces a colliding chem)', () => {
+    const withA = run([{ type: 'consumable/toggle', id: 'ChemA' }]);
+    expect(withA.player.consumables).toEqual(['ChemA']);
+    const withB = run([{ type: 'consumable/toggle', id: 'ChemB' }], withA);
+    expect(withB.player.consumables).toEqual(['ChemB']); // ChemA auto-displaced
+    const removed = run([{ type: 'consumable/toggle', id: 'ChemB' }], withB);
+    expect(removed.player.consumables).toEqual([]); // active id: plain removal
+  });
+
+  it('addiction/toggle flips membership, independent of consumable selection', () => {
+    const on = run([{ type: 'addiction/toggle', id: 'AbAddictionX' }]);
+    expect(on.player.addictions).toEqual(['AbAddictionX']);
+    expect(run([{ type: 'addiction/toggle', id: 'AbAddictionX' }], on).player.addictions).toEqual([]);
   });
 
   it('condition/set and enemy/condition patch the right config', () => {
