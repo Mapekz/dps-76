@@ -55,6 +55,10 @@ spec. Priority order below reflects the user's 2026-07-12 reprioritization
      docs by history). Real per-weapon `animDelaySec` for melee replacing the
      1 swing/sec stub, plus a `melee1h`/`melee2h` weaponClass split so
      Gladiator vs Slugger can apply correctly.
+   - **Perk weapon-stat fold gap + legendary measurement queue** —
+     [measurement-backlog.md](measurement-backlog.md). The fold gap is a
+     self-contained engine fix (no blockers); the measurement queue needs
+     in-game golden cases per effect.
    - **PTS toggle** — [pts-toggle.md](pts-toggle.md). Smallest mechanical win
      whenever picked up: un-disable the Header `Switch`, wire it to
      `setMode`. Low value until a genuinely different PTS dump exists (pts
@@ -72,22 +76,12 @@ See `~/dev/fo76/FO76-Tools/todos/`: `write-support.md` (not needed by dps-76),
 
 ## Known gaps & measurement backlog
 
-Rescued from the resolution logs (`onslaught.md`, `engine-mechanics-push.md`,
-`data-quality-review.md`) before their deletion — full derivations live in
+The perk-sourced weapon-stat fold gap (Guerrilla Expert et al.) and the
+in-game measurement queue (legendary effects extracting zero modifiers) now
+live in [measurement-backlog.md](measurement-backlog.md). What remains below
+is only the parked-by-design list — full derivations for everything live in
 `docs/assumptions.md`.
 
-- **Perk-sourced weapon-stat fold gap**: Guerrilla Expert's reload-speed bonus
-  extracts correctly but is inert, along with `GHL_GunTricks`, `GroundPounder`,
-  and `MartialArtist` — all need perk-sourced weapon-stat buckets wired into
-  `buildEffectiveWeapon`'s fold (a pre-existing gap, not specific to any one
-  perk).
-- **In-game measurement queue** (extraction reads zero modifier, needs a
-  measured golden case or a deeper script chase): Feral's, Barbarian,
-  Fracturer's, Electrician's, Locked, Glowing, Ghost's, Vampire's,
-  Suppressor's, Medic's, Durability, Pick Pocketer's, Nimble, Resilient,
-  Steadfast, Defender's, Blocker, Stabilizer's, Lightweight, V.A.T.S.
-  Enhanced, Riposting. Utility-only ones stay hidden by the display rule;
-  damage-relevant ones are the actual queue.
 - **Parked by explicit design decision** (not oversights):
   - Basher's — inert + badged, no bash action modeled; revisit only with a
     melee-flow rework.
