@@ -8,7 +8,6 @@ import { extractPerks } from './extract-perks';
 import { extractOmods } from './extract-omods';
 import { extractBuffs } from './extract-buffs';
 import { extractBodyParts } from './extract-bodyparts';
-import { checkAdrenalCurve } from './checks/adrenal-curve-check';
 
 const KNOWN_EXTRACTORS = ['weapons', 'perks', 'omods', 'buffs', 'bodyparts'] as const;
 type ExtractorName = (typeof KNOWN_EXTRACTORS)[number];
@@ -137,12 +136,6 @@ async function main() {
 
   if (only.includes('buffs')) {
     console.log('Extracting mutations & consumables…');
-    const adrenalCurveFixed = await checkAdrenalCurve(client);
-    if (!adrenalCurveFixed) {
-      console.warn('  ⚠ esm CLI curve bug still present — Adrenal Reaction buff override retained (buff-overrides.ts)');
-    } else {
-      console.warn('  ✔ Adrenal curves now associate correctly — retire the buff-overrides.ts Adrenal entry and regen buffs');
-    }
     const result = await extractBuffs(client);
     await writeFile(path.join(outDir, 'mutations.json'), JSON.stringify(result.mutations, null, 1));
     await writeFile(path.join(outDir, 'consumables.json'), JSON.stringify(result.consumables, null, 1));
