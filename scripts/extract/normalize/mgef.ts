@@ -55,6 +55,16 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   LGND_ExplosivePayload: { bucket: 'explosivePayload', scale: 0.01 }, // Explosive
   // Bully's: +X% per crippled enemy limb (6 limbs max — docs/assumptions.md).
   STAT_DmgPerCrippled: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'perCrippledLimb', max: 6 }] },
+  // Enemy-status 4★ effects, reworked by the 2026-07-10 patch from ENCH
+  // properties to these new plumbing AVs (Pyromaniac's / Viper's / Icemen's /
+  // Severing, each ADD 50 = +50%). Conditions mirror the pre-patch ENCH
+  // translation — resolve.ts maps the keyword to isBurning/isPoisoned/
+  // isFrozen/isBleeding. Icemen's is a REAL rework: it was +20% cryo-scoped
+  // baseDamage, now +50% vs Freezing targets.
+  STAT_DmgVsBurning: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'enemyHasActiveEffect', keyword: 'DamageTypeFire' }] },
+  STAT_DmgVsPoisoned: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'enemyHasActiveEffect', keyword: 'DamageTypePoison' }] },
+  STAT_DmgVsFreezing: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'enemyHasActiveEffect', keyword: 'DamageTypeCryo' }] },
+  STAT_DmgVsBleeding: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'enemyHasActiveEffect', keyword: 'DamageTypeBleed' }] },
   // Target-distance perks (2026-07-11 review): abPerkFortifyDmgClose /
   // abPerkFortifyDmgFar are Peak Value Modifier MGEFs on these AVIFs with NO
   // distance condition rows in data — the close/far range gate is native

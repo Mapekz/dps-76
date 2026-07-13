@@ -12721,7 +12721,7 @@
   "id": "E08B_mod_Custom_FoundationsVengeance",
   "formId": "0x0064781F",
   "name": "Foundation's Vengeance",
-  "description": "",
+  "description": "+5 Max Bullet Storm Stacks While Under 25% HP",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
@@ -12750,7 +12750,9 @@
    "CustomItemName_DoctorsOrders"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "ActorValues on CheatDeathResetOnWeakPointChance — unmapped"
+  ],
   "obtainable": true
  },
  {
@@ -12992,28 +12994,7 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [
-   {
-    "id": "0x0067A475:0",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0067A475",
-     "edid": "E09C_mod_Custom_BurningLove",
-     "name": "Burning Love Custom Mod"
-    },
-    "bucket": "baseDamage",
-    "op": "MUL_ADD",
-    "value": -0.20000000298023224,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "ballistic"
-      ]
-     }
-    ]
-   }
-  ],
+  "modifiers": [],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed",
@@ -32376,9 +32357,9 @@
      "edid": "mod_Cryolator_Barrel_Long",
      "name": "Crystallizing Barrel"
     },
-    "bucket": "fireRateSpeed",
-    "op": "MUL_ADD",
-    "value": 1.5,
+    "bucket": "isAutomatic",
+    "op": "SET",
+    "value": 1,
     "conditions": []
    },
    {
@@ -32389,9 +32370,22 @@
      "edid": "mod_Cryolator_Barrel_Long",
      "name": "Crystallizing Barrel"
     },
+    "bucket": "fireRateSpeed",
+    "op": "SET",
+    "value": 0.8248000144958496,
+    "conditions": []
+   },
+   {
+    "id": "0x00172359:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00172359",
+     "edid": "mod_Cryolator_Barrel_Long",
+     "name": "Crystallizing Barrel"
+    },
     "bucket": "baseDamage",
     "op": "MUL_ADD",
-    "value": 3,
+    "value": -0.25,
     "conditions": [
      {
       "kind": "damageTypeScope",
@@ -32966,7 +32960,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 1.5,
+    "value": 0.75,
     "conditions": []
    },
    {
@@ -33858,7 +33852,7 @@
   "id": "mod_Custom_FinalWord",
   "formId": "0x008F1037",
   "name": "Final Word",
-  "description": "",
+  "description": "Gain 1 Bullet Storm Stack on Kill",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
@@ -33868,7 +33862,9 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "ActorValues on EnableAmmoSpenderOnKill — unmapped"
+  ],
   "obtainable": true
  },
  {
@@ -34366,7 +34362,9 @@
    "CustomItemName_Overkill"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "ActorValues on KillStreakPerKillCount — unmapped"
+  ],
   "obtainable": true
  },
  {
@@ -34728,7 +34726,7 @@
     },
     "bucket": "reloadSpeed",
     "op": "MUL_ADD",
-    "value": -0.30000001192092896,
+    "value": -0.15000000596046448,
     "conditions": []
    },
    {
@@ -34901,16 +34899,61 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x005EC26A:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x005EC26A",
+     "edid": "mod_Custom_SuperSledge_TheFarmhand",
+     "name": "The Farmhand"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "curve": {
+     "input": "endurance",
+     "points": [
+      {
+       "x": 1,
+       "y": 5
+      },
+      {
+       "x": 15,
+       "y": 22
+      },
+      {
+       "x": 30,
+       "y": 35
+      },
+      {
+       "x": 60,
+       "y": 45
+      },
+      {
+       "x": 100,
+       "y": 50
+      }
+     ]
+    },
+    "curveScale": 0.009999999776482582,
+    "conditions": [
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeUnarmed",
+       "WeaponTypeMeleeGeneral"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed",
    "CustomItemName_TheFarmhand"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "abTheFarmhand: curve with unmapped input AV 0x000002C4 — needs override"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -35317,9 +35360,7 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "MGEF AbQucikFix_Description archetype Script — needs override"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -51858,6 +51899,26 @@
   "obtainable": true
  },
  {
+  "id": "mod_Legendary_Weapon2_Cryo",
+  "formId": "0x0083DA6D",
+  "name": "Cryologist's",
+  "description": "",
+  "attachPointFormId": "0x004E89A8",
+  "attachPointEdid": "ap_Legendary2",
+  "targetKeywords": [
+   "ma_legendarycrafting_weapon"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "FeaturedItem"
+  ],
+  "hasEnchantments": false,
+  "notes": [
+   "ActorValues on STAT_DmgMultCryo — unmapped"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "mod_Legendary_Weapon2_DmgCrits",
   "formId": "0x0052414B",
   "name": "Vital",
@@ -52361,6 +52422,26 @@
   ],
   "hasEnchantments": false,
   "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "mod_Legendary_Weapon2_Poison",
+  "formId": "0x00849317",
+  "name": "Poisoner's",
+  "description": "",
+  "attachPointFormId": "0x004E89A8",
+  "attachPointEdid": "ap_Legendary2",
+  "targetKeywords": [
+   "ma_legendarycrafting_weapon"
+  ],
+  "modifiers": [],
+  "addedKeywords": [
+   "FeaturedItem"
+  ],
+  "hasEnchantments": false,
+  "notes": [
+   "ActorValues on STAT_DmgMultPoison — unmapped"
+  ],
   "obtainable": true
  },
  {
@@ -53240,7 +53321,7 @@
   "id": "mod_Legendary_Weapon4_Icemens",
   "formId": "0x00792985",
   "name": "Icemen's",
-  "description": "+20% Cryo Damage",
+  "description": "",
   "attachPointFormId": "0x004E89AA",
   "attachPointEdid": "ap_Legendary4",
   "targetKeywords": [
@@ -53255,15 +53336,13 @@
      "edid": "mod_Legendary_Weapon4_Icemens",
      "name": "Icemen's"
     },
-    "bucket": "baseDamage",
-    "op": "MUL_ADD",
-    "value": 0.20000000298023224,
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.5,
     "conditions": [
      {
-      "kind": "damageTypeScope",
-      "types": [
-       "cryo"
-      ]
+      "kind": "enemyHasActiveEffect",
+      "keyword": "DamageTypeCryo"
      }
     ]
    }
@@ -53665,7 +53744,7 @@
   "id": "mod_Legendary_Weapon4_Pyromaniac",
   "formId": "0x0079297F",
   "name": "Pyromaniac's",
-  "description": "When a Combat Target is Burning, Deal +50% Bonus Damage",
+  "description": "",
   "attachPointFormId": "0x004E89AA",
   "attachPointEdid": "ap_Legendary4",
   "targetKeywords": [
@@ -53673,7 +53752,7 @@
   ],
   "modifiers": [
    {
-    "id": "0x0079297F:ench:0",
+    "id": "0x0079297F:0",
     "source": {
      "kind": "omod",
      "formId": "0x0079297F",
@@ -53684,11 +53763,6 @@
     "op": "ADD",
     "value": 0.5,
     "conditions": [
-     {
-      "kind": "weaponKeyword",
-      "keyword": "HasLegendary_Weapon_Pyromaniac",
-      "present": true
-     },
      {
       "kind": "enemyHasActiveEffect",
       "keyword": "DamageTypeFire"
@@ -53701,7 +53775,7 @@
    "HasLegendary_Mod",
    "FeaturedItem"
   ],
-  "hasEnchantments": true,
+  "hasEnchantments": false,
   "notes": [],
   "obtainable": true
  },
@@ -53709,7 +53783,7 @@
   "id": "mod_Legendary_Weapon4_Vipers",
   "formId": "0x0079297A",
   "name": "Viper's",
-  "description": "When a Combat Target is Poisoned, Deal +50% Bonus Damage",
+  "description": "",
   "attachPointFormId": "0x004E89AA",
   "attachPointEdid": "ap_Legendary4",
   "targetKeywords": [
@@ -53717,7 +53791,7 @@
   ],
   "modifiers": [
    {
-    "id": "0x0079297A:ench:0",
+    "id": "0x0079297A:0",
     "source": {
      "kind": "omod",
      "formId": "0x0079297A",
@@ -53728,11 +53802,6 @@
     "op": "ADD",
     "value": 0.5,
     "conditions": [
-     {
-      "kind": "weaponKeyword",
-      "keyword": "HasLegendary_Weapon_Vipers",
-      "present": true
-     },
      {
       "kind": "enemyHasActiveEffect",
       "keyword": "DamageTypePoison"
@@ -53745,7 +53814,7 @@
    "HasLegendary_Mod",
    "FeaturedItem"
   ],
-  "hasEnchantments": true,
+  "hasEnchantments": false,
   "notes": [],
   "obtainable": true
  },
@@ -81138,19 +81207,6 @@
       ]
      }
     ]
-   },
-   {
-    "id": "0x00470A24:4",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00470A24",
-     "edid": "mod_RailwayRifle_Receiver_AntiScorchBeast",
-     "name": "Prime Receiver"
-    },
-    "bucket": "fireRateSpeed",
-    "op": "MUL_ADD",
-    "value": 0.7319999933242798,
-    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -81416,6 +81472,19 @@
     "op": "SET",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x00913B64:15",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00913B64",
+     "edid": "mod_RailwayRifle_Receiver_Automatic_AntiScorchBeast",
+     "name": "Prime Automatic Piston Receiver"
+    },
+    "bucket": "fireRateSpeed",
+    "op": "ADD",
+    "value": -0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -81624,6 +81693,19 @@
     "op": "SET",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x001AC258:11",
+    "source": {
+     "kind": "omod",
+     "formId": "0x001AC258",
+     "edid": "mod_RailwayRifle_Receiver_Automatic1",
+     "name": "Automatic Piston Receiver"
+    },
+    "bucket": "fireRateSpeed",
+    "op": "ADD",
+    "value": -0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -81668,26 +81750,13 @@
      "edid": "mod_RailwayRifle_Receiver_Splitter",
      "name": "Shotgun Receiver"
     },
-    "bucket": "fireRateSpeed",
-    "op": "MUL_ADD",
-    "value": 0.7319999933242798,
-    "conditions": []
-   },
-   {
-    "id": "0x00913B65:2",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00913B65",
-     "edid": "mod_RailwayRifle_Receiver_Splitter",
-     "name": "Shotgun Receiver"
-    },
     "bucket": "ammoCapacity",
     "op": "MUL_ADD",
     "value": -0.3499999940395355,
     "conditions": []
    },
    {
-    "id": "0x00913B65:3",
+    "id": "0x00913B65:2",
     "source": {
      "kind": "omod",
      "formId": "0x00913B65",
@@ -81707,7 +81776,7 @@
     ]
    },
    {
-    "id": "0x00913B65:4",
+    "id": "0x00913B65:3",
     "source": {
      "kind": "omod",
      "formId": "0x00913B65",
@@ -81820,26 +81889,13 @@
      "edid": "mod_RailwayRifle_Receiver_Splitter_AntiScorchBeast",
      "name": "Prime Shotgun Receiver"
     },
-    "bucket": "fireRateSpeed",
-    "op": "MUL_ADD",
-    "value": 0.7319999933242798,
-    "conditions": []
-   },
-   {
-    "id": "0x00919FDC:6",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00919FDC",
-     "edid": "mod_RailwayRifle_Receiver_Splitter_AntiScorchBeast",
-     "name": "Prime Shotgun Receiver"
-    },
     "bucket": "ammoCapacity",
     "op": "MUL_ADD",
     "value": -0.3499999940395355,
     "conditions": []
    },
    {
-    "id": "0x00919FDC:7",
+    "id": "0x00919FDC:6",
     "source": {
      "kind": "omod",
      "formId": "0x00919FDC",
@@ -81859,7 +81915,7 @@
     ]
    },
    {
-    "id": "0x00919FDC:8",
+    "id": "0x00919FDC:7",
     "source": {
      "kind": "omod",
      "formId": "0x00919FDC",
@@ -81891,21 +81947,7 @@
   "targetKeywords": [
    "ma_RailwayRifle"
   ],
-  "modifiers": [
-   {
-    "id": "0x0010771B:0",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0010771B",
-     "edid": "mod_RailwayRifle_Receiver_Standard",
-     "name": "Standard Receiver"
-    },
-    "bucket": "fireRateSpeed",
-    "op": "MUL_ADD",
-    "value": 0.7319999933242798,
-    "conditions": []
-   }
-  ],
+  "modifiers": [],
   "addedKeywords": [
    "IsAmmoType_RRSpike",
    "dn_HasReceiver_Standard"
@@ -89539,8 +89581,7 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [
-   "ma_AutoGrenadeLauncher",
-   "RD01_ma_ResolveBreaker"
+   "ma_AutoGrenadeLauncher"
   ],
   "modifiers": [],
   "addedKeywords": [
@@ -89576,8 +89617,8 @@
  {
   "id": "RD01_Mod_Custom_StrikeBreaker_CustomName",
   "formId": "0x00793512",
-  "name": "Flatliner Custom Name",
-  "description": "",
+  "name": "Flatliner",
+  "description": "Fully Charged Shots Deal 100% More Damage",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [
@@ -89964,28 +90005,7 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [
-   {
-    "id": "0x008989D9:0",
-    "source": {
-     "kind": "omod",
-     "formId": "0x008989D9",
-     "edid": "SCORE_MiniSeason_LoveHurts_mod_Custom_PiercingLove",
-     "name": "Piercing Love Custom Mod"
-    },
-    "bucket": "baseDamage",
-    "op": "MUL_ADD",
-    "value": -0.20000000298023224,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "ballistic"
-      ]
-     }
-    ]
-   }
-  ],
+  "modifiers": [],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed",
@@ -92445,6 +92465,24 @@
     "op": "MUL_ADD",
     "value": 0.30000001192092896,
     "conditions": []
+   },
+   {
+    "id": "0x007FA40F:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x007FA40F",
+     "edid": "SCORE_S21_mod_custom_IceBreaker",
+     "name": "Ice Breaker"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "enemyHasActiveEffect",
+      "keyword": "DamageTypeCryo"
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -92456,7 +92494,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "ActorValues on STAT_DmgVsFreezing — unmapped",
    "MGEF S21_IceBreakerEffect_TextDummy archetype Script — needs override",
    "perk SCORE_S21_IceBreaker_Perk: entry point Apply On Kill Spell — not modeled"
   ],
@@ -93301,7 +93338,7 @@
   "id": "SDOW_mod_Legendary_Weapon4_Severing",
   "formId": "0x008E076E",
   "name": "Severing",
-  "description": "Deal +50% Damage to Bleeding Targets",
+  "description": "",
   "attachPointFormId": "0x004E89AA",
   "attachPointEdid": "ap_Legendary4",
   "targetKeywords": [
@@ -93309,7 +93346,7 @@
   ],
   "modifiers": [
    {
-    "id": "0x008E076E:ench:0",
+    "id": "0x008E076E:0",
     "source": {
      "kind": "omod",
      "formId": "0x008E076E",
@@ -93320,11 +93357,6 @@
     "op": "ADD",
     "value": 0.5,
     "conditions": [
-     {
-      "kind": "weaponKeyword",
-      "keyword": "SDOW_HasLegendary_Weapon_Severing",
-      "present": true
-     },
      {
       "kind": "enemyHasActiveEffect",
       "keyword": "DamageTypeBleed"
@@ -93337,7 +93369,7 @@
    "HasLegendary_Mod",
    "FeaturedItem"
   ],
-  "hasEnchantments": true,
+  "hasEnchantments": false,
   "notes": [],
   "obtainable": true
  },

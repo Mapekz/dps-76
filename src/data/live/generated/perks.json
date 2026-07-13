@@ -673,7 +673,84 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00563B90:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00563B90",
+       "edid": "ArcherExpert",
+       "name": "Deal Sealer",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.1,
+      "conditions": [
+       {
+        "kind": "enemyHasActiveEffect",
+        "keyword": "DamageTypeBleed"
+       }
+      ]
+     },
+     {
+      "id": "0x00563B90:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00563B90",
+       "edid": "ArcherExpert",
+       "name": "Deal Sealer",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.1,
+      "conditions": [
+       {
+        "kind": "enemyHasActiveEffect",
+        "keyword": "DamageTypeFire"
+       }
+      ]
+     },
+     {
+      "id": "0x00563B90:r1:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00563B90",
+       "edid": "ArcherExpert",
+       "name": "Deal Sealer",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.1,
+      "conditions": [
+       {
+        "kind": "enemyHasActiveEffect",
+        "keyword": "DamageTypePoison"
+       }
+      ]
+     },
+     {
+      "id": "0x00563B90:r1:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00563B90",
+       "edid": "ArcherExpert",
+       "name": "Deal Sealer",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.1,
+      "conditions": [
+       {
+        "kind": "enemyHasActiveEffect",
+        "keyword": "DamageTypeCryo"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -8114,15 +8191,75 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003440A8:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003440A8",
+       "edid": "Gladiator",
+       "name": "Wound Salter",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.1,
+      "conditions": [
+       {
+        "kind": "enemyHasActiveEffect",
+        "keyword": "DamageTypeBleed"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003440A8:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003440A8",
+       "edid": "Gladiator",
+       "name": "Wound Salter",
+       "rank": 2
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.2,
+      "conditions": [
+       {
+        "kind": "enemyHasActiveEffect",
+        "keyword": "DamageTypeBleed"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003440A8:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003440A8",
+       "edid": "Gladiator",
+       "name": "Wound Salter",
+       "rank": 3
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.3,
+      "conditions": [
+       {
+        "kind": "enemyHasActiveEffect",
+        "keyword": "DamageTypeBleed"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -9260,9 +9397,10 @@
   "notes": [
    "abAmmoSpenderFortifyStacks: curve with unmapped input AV 0x0000039B — needs override",
    "condition: HasPerk(HeavyGunnerMaster01)=1",
+   "condition: WornHasKeyword(CustomItemName_FoundationsVengeance)=1",
    "abPerkFortifyDmgAll: curve with unmapped input AV 0x0000039B — needs override",
    "condition: HasPerk(LockAndLoad01)=1",
-   "AbPerkFortifyReloadSpeedMult: curve with unmapped input AV 0x0000039B — needs override",
+   "MGEF AbPerkFortifyReloadSpeedMult: zero magnitude, no curve — script/scaled, needs override",
    "condition: WornHasKeyword(dn_TheActionHero)=1",
    "MGEF AbPerkFortifyDeflectChance: zero magnitude, no curve — script/scaled, needs override",
    "condition: HasPerk(BearArms01)=1",
@@ -9299,7 +9437,7 @@
   ],
   "maxRank": 1,
   "descriptions": [
-   "Your Bullet Storm stack limit is doubled."
+   "Your Bullet Storm stack limit is increased by 10."
   ],
   "ranks": [
    {
@@ -9319,6 +9457,25 @@
   "maxRank": 1,
   "descriptions": [
    ""
+  ],
+  "ranks": [
+   {
+    "rank": 1,
+    "modifiers": []
+   }
+  ],
+  "hasCard": true,
+  "notes": []
+ },
+ {
+  "family": "HolyFire_Perk",
+  "name": "Holy Fire",
+  "formIds": [
+   "0x00928016"
+  ],
+  "maxRank": 1,
+  "descriptions": [
+   "You and Teammates Hit by Your Flame Gain +30% Damage and +50 DR for 15 Seconds"
   ],
   "ranks": [
    {
@@ -11068,94 +11225,6 @@
   "notes": [
    "entry point Mod Damage on Consecutive Hits uses Add Actor Value Mult — skipped"
   ]
- },
- {
-  "family": "Legendary_Weapon_PyromaniacPerk",
-  "name": "Pyromaniac's Weapon Perk",
-  "formIds": [
-   "0x007954D2"
-  ],
-  "maxRank": 1,
-  "descriptions": [
-   ""
-  ],
-  "ranks": [
-   {
-    "rank": 1,
-    "modifiers": [
-     {
-      "id": "0x007954D2:r1:1:0",
-      "source": {
-       "kind": "legendaryPerk",
-       "formId": "0x007954D2",
-       "edid": "Legendary_Weapon_PyromaniacPerk",
-       "name": "Pyromaniac's Weapon Perk",
-       "rank": 1
-      },
-      "bucket": "dbm",
-      "op": "ADD",
-      "value": 0.5,
-      "conditions": [
-       {
-        "kind": "weaponKeyword",
-        "keyword": "HasLegendary_Weapon_Pyromaniac",
-        "present": true
-       },
-       {
-        "kind": "enemyHasActiveEffect",
-        "keyword": "DamageTypeFire"
-       }
-      ]
-     }
-    ]
-   }
-  ],
-  "hasCard": true,
-  "notes": []
- },
- {
-  "family": "Legendary_Weapon_VipersPerk",
-  "name": "Viper's Weapon Perk",
-  "formIds": [
-   "0x0079552F"
-  ],
-  "maxRank": 1,
-  "descriptions": [
-   ""
-  ],
-  "ranks": [
-   {
-    "rank": 1,
-    "modifiers": [
-     {
-      "id": "0x0079552F:r1:1:0",
-      "source": {
-       "kind": "legendaryPerk",
-       "formId": "0x0079552F",
-       "edid": "Legendary_Weapon_VipersPerk",
-       "name": "Viper's Weapon Perk",
-       "rank": 1
-      },
-      "bucket": "dbm",
-      "op": "ADD",
-      "value": 0.5,
-      "conditions": [
-       {
-        "kind": "weaponKeyword",
-        "keyword": "HasLegendary_Weapon_Vipers",
-        "present": true
-       },
-       {
-        "kind": "enemyHasActiveEffect",
-        "keyword": "DamageTypePoison"
-       }
-      ]
-     }
-    ]
-   }
-  ],
-  "hasCard": true,
-  "notes": []
  },
  {
   "family": "Legendary2xDmgPerk",
@@ -14405,6 +14474,83 @@
    }
   ],
   "hasCard": true,
+  "notes": []
+ },
+ {
+  "family": "MechanicsBestFriend_Perk",
+  "name": "Mechanic's Best Friend",
+  "formIds": [
+   "0x00928015"
+  ],
+  "maxRank": 1,
+  "descriptions": [
+   "Makeshift Warrior Also Increases Damage"
+  ],
+  "ranks": [
+   {
+    "rank": 1,
+    "modifiers": [
+     {
+      "id": "0x00928015:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00928015",
+       "edid": "MechanicsBestFriend_Perk",
+       "name": "Mechanic's Best Friend",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.4000000059604645,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(MakeshiftWarrior01)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00928015:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00928015",
+       "edid": "MechanicsBestFriend_Perk",
+       "name": "Mechanic's Best Friend",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.20000000298023224,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(MakeshiftWarrior02)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00928015:r1:3:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00928015",
+       "edid": "MechanicsBestFriend_Perk",
+       "name": "Mechanic's Best Friend",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.20000000298023224,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(MakeshiftWarrior03)=1"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "hasCard": false,
   "notes": []
  },
  {
@@ -21021,50 +21167,6 @@
   "notes": []
  },
  {
-  "family": "SDOW_Legendary_Weapon_SeveringPerk",
-  "name": "Severing's Weapon Perk",
-  "formIds": [
-   "0x008E0723"
-  ],
-  "maxRank": 1,
-  "descriptions": [
-   ""
-  ],
-  "ranks": [
-   {
-    "rank": 1,
-    "modifiers": [
-     {
-      "id": "0x008E0723:r1:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x008E0723",
-       "edid": "SDOW_Legendary_Weapon_SeveringPerk",
-       "name": "Severing's Weapon Perk",
-       "rank": 1
-      },
-      "bucket": "dbm",
-      "op": "ADD",
-      "value": 0.5,
-      "conditions": [
-       {
-        "kind": "weaponKeyword",
-        "keyword": "SDOW_HasLegendary_Weapon_Severing",
-        "present": true
-       },
-       {
-        "kind": "enemyHasActiveEffect",
-        "keyword": "DamageTypeBleed"
-       }
-      ]
-     }
-    ]
-   }
-  ],
-  "hasCard": true,
-  "notes": []
- },
- {
   "family": "SecretAgent",
   "name": "Secret Agent",
   "formIds": [
@@ -24989,8 +25091,96 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 0,
+      "value": 2,
       "conditions": []
+     },
+     {
+      "id": "0x008DC2CE:r1:3:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CE",
+       "edid": "WorldPets_Cat_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "SET",
+      "value": 3.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=50"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=100"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CE:r1:5:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CE",
+       "edid": "WorldPets_Cat_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "SET",
+      "value": 5.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=100"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=150"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CE:r1:7:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CE",
+       "edid": "WorldPets_Cat_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "SET",
+      "value": 8,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=150"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=200"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CE:r1:9:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CE",
+       "edid": "WorldPets_Cat_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "SET",
+      "value": 0,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=200"
+       }
+      ]
      }
     ]
    }
@@ -25023,8 +25213,96 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 0,
+      "value": 2,
       "conditions": []
+     },
+     {
+      "id": "0x008DC2CD:r1:3:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CD",
+       "edid": "WorldPets_Deathclaw_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "SET",
+      "value": 3.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=50"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=100"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CD:r1:5:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CD",
+       "edid": "WorldPets_Deathclaw_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "SET",
+      "value": 5.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=100"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=150"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CD:r1:7:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CD",
+       "edid": "WorldPets_Deathclaw_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "SET",
+      "value": 8,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=150"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=200"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CD:r1:9:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CD",
+       "edid": "WorldPets_Deathclaw_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "SET",
+      "value": 0,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=200"
+       }
+      ]
      }
     ]
    }
@@ -25057,8 +25335,96 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 0,
+      "value": 2,
       "conditions": []
+     },
+     {
+      "id": "0x008DC2CC:r1:3:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CC",
+       "edid": "WorldPets_Dog_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "SET",
+      "value": 3.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=50"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=100"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CC:r1:5:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CC",
+       "edid": "WorldPets_Dog_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "SET",
+      "value": 5.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=100"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=150"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CC:r1:7:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CC",
+       "edid": "WorldPets_Dog_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "SET",
+      "value": 8,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=150"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=200"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CC:r1:9:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CC",
+       "edid": "WorldPets_Dog_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "SET",
+      "value": 0,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=200"
+       }
+      ]
      }
     ]
    }
@@ -25110,8 +25476,96 @@
       },
       "bucket": "dbm",
       "op": "SET",
-      "value": 0,
+      "value": 2,
       "conditions": []
+     },
+     {
+      "id": "0x008DC2CA:r1:3:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CA",
+       "edid": "WorldPets_Radhog_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "SET",
+      "value": 3.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=50"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=100"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CA:r1:5:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CA",
+       "edid": "WorldPets_Radhog_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "SET",
+      "value": 5.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=100"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=150"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CA:r1:7:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CA",
+       "edid": "WorldPets_Radhog_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "SET",
+      "value": 8,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=150"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=200"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CA:r1:9:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CA",
+       "edid": "WorldPets_Radhog_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "SET",
+      "value": 0,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=200"
+       }
+      ]
      }
     ]
    }
