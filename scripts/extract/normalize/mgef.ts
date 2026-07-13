@@ -22,7 +22,12 @@ export const ENTRY_POINT_BUCKETS: Record<string, Bucket> = {
   'Mod Sneak Attack Mult': 'sneakBonus',
   'Mod Weak Body Part Damage Mult': 'weakpointBonus',
   'Mod Outgoing Limb Damage': 'limbDamage',
-  'Mod Player Explosion Damage': 'explosionMult',
+  // June 2026 patch (user-reported 2026-07-13): explosion-damage bonuses no
+  // longer multiply the finished damage — they fold ADDITIVELY into the
+  // general dbm parenthesis, scoped to explosion components/twins via the
+  // ENTRY_POINT_EXTRA_CONDITIONS row below (Bloodied 0.9 + Adrenal 0.5 +
+  // Demo Expert 0.6 → ×3.0, not (1+0.9+0.5)×(1+0.6)=×3.84).
+  'Mod Player Explosion Damage': 'dbm',
   'Mod Power Attack Damage': 'powerAttackBonus',
   // Percent-of-meter semantics (Critical Savvy SETs 85/70/55); see crit-meter.ts.
   'Mod VATS Critical Cost': 'critConsumption',
@@ -40,6 +45,21 @@ export const ENTRY_POINT_BUCKETS: Record<string, Bucket> = {
   'Mod Damage on Consecutive Hits': 'dbm',
 };
 
+/**
+ * Baked conditions appended to every modifier an entry point produces —
+ * for entry points whose scope isn't expressible by the bucket alone.
+ * Consumed by both entry-point translation sites (extract-perks.ts's direct
+ * PERK path and `translateGrantedPerk` below). No plumbing perk carries
+ * these entry points, so `buildAvifRoutes` needs no wiring.
+ */
+export const ENTRY_POINT_EXTRA_CONDITIONS: Record<string, Condition[]> = {
+  // Explosion-scoped dbm (see the ENTRY_POINT_BUCKETS note): applies to
+  // `fromExplosion` components and explosive twins only —
+  // `damageTypeScope ['explosive']` matches both via
+  // `ResolveContext.componentIsExplosion` (resolve.ts).
+  'Mod Player Explosion Damage': [{ kind: 'damageTypeScope', types: ['explosive'] }],
+};
+
 /** Fallback AVIF routes for stats consumed outside the plumbing perks (DFOBs etc.). */
 export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: number; conditions?: Condition[] }> = {
   STAT_SneakAttackBonus: { bucket: 'sneakBonus', scale: 0.01 },
@@ -54,11 +74,13 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   STAT_DmgBash: { bucket: 'bashDamage', scale: 0.01 }, // Basher's
   LGND_ExplosivePayload: { bucket: 'explosivePayload', scale: 0.01 }, // Explosive
   // Demolition Expert (AbPerkDemolitionExpert, magnitudes 20/40/60 with
-  // HasPerk rank gates): multiplier on explosion damage — the launcher
-  // EXPL-chase components and the Explosive-legendary twins both fold the
-  // explosionMult bucket (paper-damage.ts). Was an unmapped-AVIF gap: the
-  // perk extracted with zero modifiers until the 2026-07-13 launcher work.
-  STAT_DmgExplosive: { bucket: 'explosionMult', scale: 0.01 },
+  // HasPerk rank gates). Was an unmapped-AVIF gap: the perk extracted with
+  // zero modifiers until the 2026-07-13 launcher work. June 2026 patch
+  // (user-reported): explosion bonuses fold ADDITIVELY into the general dbm
+  // parenthesis (with Bloodied, Adrenal...), scoped to explosion
+  // components/twins — no longer a separate multiplier on the finished
+  // explosion damage.
+  STAT_DmgExplosive: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }] },
   // Bully's: +X% per crippled enemy limb (6 limbs max — docs/assumptions.md).
   STAT_DmgPerCrippled: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'perCrippledLimb', max: 6 }] },
   // Enemy-status 4★ effects, reworked by the 2026-07-10 patch from ENCH
@@ -592,12 +614,13 @@ export async function translateGrantedPerk(
         result.notes.push(`perk ${perkEdid}: entry point ${name} — not modeled`);
         continue;
       }
+      const epConditions = [...conditions, ...(ENTRY_POINT_EXTRA_CONDITIONS[name] ?? [])];
       if (functionName === 'Add Value') {
-        result.modifiers.push({ bucket, op: 'ADD', value: float, conditions });
+        result.modifiers.push({ bucket, op: 'ADD', value: float, conditions: epConditions });
       } else if (functionName === 'Set Value') {
-        result.modifiers.push({ bucket, op: 'SET', value: float, conditions });
+        result.modifiers.push({ bucket, op: 'SET', value: float, conditions: epConditions });
       } else if (functionName === 'Multiply Value') {
-        result.modifiers.push({ bucket, op: 'MUL_ADD', value: float - 1, conditions });
+        result.modifiers.push({ bucket, op: 'MUL_ADD', value: float - 1, conditions: epConditions });
       } else if (functionName === 'Add Actor Value Mult' && name === 'Mod Damage on Consecutive Hits') {
         // Onslaught per-stack dbm (Furious/Pounder's/Splinter's EP189): the
         // function reads a PRIVATE per-effect AV (LGND_Furious 0x006C3172,

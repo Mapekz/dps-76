@@ -94,10 +94,11 @@ export type OmodOption = GeneratedOmod & { badge?: OmodBadge };
 
 /**
  * Buckets the engine stores but does not fold into damage yet.
- * specialStrength/specialLuck ARE wired (loadout); explosivePayload/
- * explosionMult (Stage A1), dotDamage (Stage A2), and vatsApCost/apRegen/
- * apPerCrit (Stage B, AP economy) are ALSO wired now — removed from this
- * set, kept out of the badge path.
+ * specialStrength/specialLuck ARE wired (loadout); explosivePayload
+ * (Stage A1), dotDamage (Stage A2), and vatsApCost/apRegen/apPerCrit
+ * (Stage B, AP economy) are ALSO wired now — removed from this set, kept
+ * out of the badge path. (explosionMult was retired 2026-07-13: explosion
+ * bonuses are explosive-scoped dbm post-June-2026-patch.)
  */
 const INERT_ENGINE_BUCKETS = new Set([
   'armorPen', 'limbDamage', 'bashDamage',

@@ -85,14 +85,19 @@ real payload rides the projectile's explosion. ESM-proven chain: WEAP
   the intrinsic BASE of the `explosivePayload` twin fold, so the Explosive 2★
   legendary (+0.2) ADDs on top (additive stacking is an ASSUMPTION; the AV
   fold shape supports it but no in-game measurement yet).
-- **Explosion-only modifiers**: `fromExplosion` components (and legendary
-  twins) fold `explosionMult` — Demolition Expert's STAT_DmgExplosive AV
-  (magnitudes 20/40/60, scale 0.01), previously an unmapped-AVIF gap that
-  left the perk with zero modifiers. `damageTypeScope ['explosive']` dbm
-  conditions also match `fromExplosion` components regardless of their
-  elemental type (`ResolveContext.componentIsExplosion`, resolve.ts) —
-  explosion damage keeps its element for future enemy-resist routing while
-  still counting as an explosion for perk scoping.
+- **Explosion bonuses are ADDITIVE dbm (June 2026 patch, user-reported
+  2026-07-13)**: Demolition Expert's STAT_DmgExplosive AV (magnitudes
+  20/40/60, scale 0.01 — previously an unmapped-AVIF gap that left the perk
+  with zero modifiers) and the 'Mod Player Explosion Damage' entry point
+  (SCAV! magazine) route to `dbm` with a `damageTypeScope ['explosive']`
+  condition. They fold in the same parenthesis as Bloodied/Adrenal etc.:
+  0.9 + 0.5 + 0.6 → ×3.0, NOT the pre-patch (1+0.9+0.5)×(1+0.6) = ×3.84.
+  The old separate-multiplier `explosionMult` bucket was removed with this
+  change. The 'explosive' scope matches `fromExplosion` components
+  regardless of their elemental type
+  (`ResolveContext.componentIsExplosion`, resolve.ts) — explosion damage
+  keeps its element for future enemy-resist routing while still counting as
+  an explosion for perk scoping.
 - **Flat-amount components** (no tier, no curve — the token launcher impact
   values) adapt to a constant one-point curve (`src/data/live/weapons.ts`);
   the old tier -1 lookup warned and computed 0.
@@ -269,7 +274,7 @@ inert with a picker badge (`corrections.ts omodBadgeOverrides`).
 | Executioner's | +50% dbm while enemy HP ≤ 40% (`enemyHealthBelowPct`; enemy HP defaults to 100 → inactive until set) | ESM granted-perk chase: LegendaryExecutePerk +0.5, threshold GLOB LGND_ExecuteHealthThreshold = 0.4 |
 | DmgVs* family (Hunter's, Exterminator's, Ghoul Slayer's, Assassin's, Troubleshooter's, Zealot's, Mutant Slayer's) | +50% dbm vs matching enemy types via `enemyTypeAny` conditions — INERT until enemy typing lands, badged 'needsEnemyDefenses'. Values ride flat itemLevel curves (1→50, 100→50) on `ActorValues` OMOD properties routed through the STAT_DamageVsPerk plumbing | ESM (extracted 2026-07-10) |
 | Bully's (and Tormentor perk) | dbm per crippled enemy limb (Bully's +25%, Tormentor +20%), `perCrippledLimb` cap **6** (limb count from `EnemyConditions.crippledLimbCount`, default 0 → inactive) | ESM STAT_DmgPerCrippled; the 6-limb cap is ours (max humanoid/creature limbs) |
-| Explosive (2★) | `explosivePayload` (0.2 = 20% of damage as explosive) spawns an explosive twin PER damage component, folded through the full paper formula (dbm/crit/sneak/power-attack/whole-damage) plus explosive-only bonuses: `damageTypeScope: ['explosive']` dbm modifiers (Demolition Expert) and the `explosionMult` bucket (SCAV! rank 4/5). Twins sum into today's totals; each stays a separate component so it can face its own resist once enemy mitigation lands (Stage A1, `paper-damage.ts`) | ESM LGND_ExplosivePayload OMOD property; Demolition Expert's own dbm bonus is NOT extracted (empty ranks in generated data — needs its own chase before it does anything) |
+| Explosive (2★) | `explosivePayload` (0.2 = 20% of damage as explosive) spawns an explosive twin PER damage component, folded through the full paper formula (dbm/crit/sneak/power-attack/whole-damage). Explosive-scoped dbm modifiers (`damageTypeScope: ['explosive']` — Demolition Expert, SCAV! magazine) add into the twin's dbm parenthesis (June 2026 additive semantics; the old `explosionMult` bucket is gone). Twins sum into today's totals; each stays a separate component so it can face its own resist once enemy mitigation lands (Stage A1, `paper-damage.ts`) | ESM LGND_ExplosivePayload OMOD property; Demolition Expert extracts since 2026-07-13 (STAT_DmgExplosive route) |
 | Crippling / Basher's | values extracted to `limbDamage` / `bashDamage` buckets — INERT until limb targeting / bash attacks are modeled | ESM STAT_DmgLimbs / STAT_DmgBash |
 | Pyromaniac's / Viper's / Severing's | +50% dbm while the target has ≥1 active fire / poison / bleed effect (`enemyHasActiveEffect`; Target section status toggles, default off). Viper's `HasPerk(ImmuneToPoison)=0` target row is CONSUMED — a generic target is assumed vulnerable to poison. Severing's (4★, `SDOW_mod_Legendary_Weapon4_Severing`) was silently dropped pre-2026-07-12 by the `sdow_` junk-prefix filter (same class of bug as `p62_`); its `HasKeyword(SDOW_HasLegendary_Weapon_Severing)` self-gate resolves like the other HasLegendary_* self-gates. A "Frozen" toggle maps `DamageTypeCryo` → `isFrozen` but NO extracted effect consumes it yet (Icebreaker is "Cryo Slow On Bash" — it applies a slow, it doesn't benefit from one) — forward-looking UI only | ESM granted-perk chase (fire/poison 2026-07-11, bleed 2026-07-12) |
 | Last Shot | +100% dbm while firing the magazine's last round (`lastRound` from `GetLoadedAmmoCount()=0` + `IsNextClipLastShot`; UI checkbox, default off). Steady-state DPS does NOT model the once-per-magazine cadence — the toggle shows the boosted hit | ESM granted-perk chase (conditions wired 2026-07-11) |

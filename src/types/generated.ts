@@ -33,10 +33,10 @@ export interface GeneratedDamageComponent {
   curve: CurvePoint[] | null;
   /**
    * Component came from the projectile's EXPL record, not the WEAP
-   * (chaseExplosion, extract-weapons.ts). Explosion-only modifiers
-   * (Demolition Expert's explosionMult, 'explosive'-scoped dbm) apply to
-   * these components regardless of their elemental damageType (Cremator's
-   * fire ball, Gamma Gun's radiation burst).
+   * (chaseExplosion, extract-weapons.ts). Explosive-scoped dbm modifiers
+   * (Demolition Expert) apply to these components regardless of their
+   * elemental damageType (Cremator's fire ball, Gamma Gun's radiation
+   * burst) — additive in the dbm parenthesis, June 2026 patch semantics.
    */
   fromExplosion?: boolean;
 }

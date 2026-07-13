@@ -35542,13 +35542,19 @@
      "edid": "mod_Custom_TheGuarantee",
      "name": "The Guarantee"
     },
-    "bucket": "explosionMult",
+    "bucket": "dbm",
     "op": "ADD",
     "value": 0.2,
     "conditions": [
      {
       "kind": "unresolved",
       "raw": "HasPerk(DemolitionExpert02)=0"
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "explosive"
+      ]
      }
     ]
    },
@@ -35560,7 +35566,7 @@
      "edid": "mod_Custom_TheGuarantee",
      "name": "The Guarantee"
     },
-    "bucket": "explosionMult",
+    "bucket": "dbm",
     "op": "ADD",
     "value": 0.4,
     "conditions": [
@@ -35571,6 +35577,12 @@
      {
       "kind": "unresolved",
       "raw": "HasPerk(DemolitionExpert03)=0"
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "explosive"
+      ]
      }
     ]
    },
@@ -35582,13 +35594,19 @@
      "edid": "mod_Custom_TheGuarantee",
      "name": "The Guarantee"
     },
-    "bucket": "explosionMult",
+    "bucket": "dbm",
     "op": "ADD",
     "value": 0.6,
     "conditions": [
      {
       "kind": "unresolved",
       "raw": "HasPerk(DemolitionExpert03)=1"
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "explosive"
+      ]
      }
     ]
    }

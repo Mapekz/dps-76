@@ -4967,10 +4967,17 @@
        "name": "Demolition Expert",
        "rank": 1
       },
-      "bucket": "explosionMult",
+      "bucket": "dbm",
       "op": "ADD",
       "value": 0.2,
-      "conditions": []
+      "conditions": [
+       {
+        "kind": "damageTypeScope",
+        "types": [
+         "explosive"
+        ]
+       }
+      ]
      }
     ]
    },
@@ -4986,10 +4993,17 @@
        "name": "Demolition Expert",
        "rank": 2
       },
-      "bucket": "explosionMult",
+      "bucket": "dbm",
       "op": "ADD",
       "value": 0.4,
-      "conditions": []
+      "conditions": [
+       {
+        "kind": "damageTypeScope",
+        "types": [
+         "explosive"
+        ]
+       }
+      ]
      }
     ]
    },
@@ -5005,10 +5019,17 @@
        "name": "Demolition Expert",
        "rank": 3
       },
-      "bucket": "explosionMult",
+      "bucket": "dbm",
       "op": "ADD",
       "value": 0.6,
-      "conditions": []
+      "conditions": [
+       {
+        "kind": "damageTypeScope",
+        "types": [
+         "explosive"
+        ]
+       }
+      ]
      }
     ]
    },
@@ -5024,10 +5045,17 @@
        "name": "Demolition Expert",
        "rank": 4
       },
-      "bucket": "explosionMult",
+      "bucket": "dbm",
       "op": "ADD",
       "value": 0.6,
-      "conditions": []
+      "conditions": [
+       {
+        "kind": "damageTypeScope",
+        "types": [
+         "explosive"
+        ]
+       }
+      ]
      }
     ]
    },
@@ -5043,10 +5071,17 @@
        "name": "Demolition Expert",
        "rank": 5
       },
-      "bucket": "explosionMult",
+      "bucket": "dbm",
       "op": "ADD",
       "value": 0.6,
-      "conditions": []
+      "conditions": [
+       {
+        "kind": "damageTypeScope",
+        "types": [
+         "explosive"
+        ]
+       }
+      ]
      }
     ]
    }
@@ -5231,10 +5266,17 @@
        "name": "SCAV! - Villainous Virtuosity",
        "rank": 4
       },
-      "bucket": "explosionMult",
+      "bucket": "dbm",
       "op": "MUL_ADD",
       "value": 0.04999995231628418,
-      "conditions": []
+      "conditions": [
+       {
+        "kind": "damageTypeScope",
+        "types": [
+         "explosive"
+        ]
+       }
+      ]
      }
     ]
    },
@@ -5250,10 +5292,17 @@
        "name": "SCAV! - Villainous Virtuosity",
        "rank": 5
       },
-      "bucket": "explosionMult",
+      "bucket": "dbm",
       "op": "MUL_ADD",
       "value": 0.04999995231628418,
-      "conditions": []
+      "conditions": [
+       {
+        "kind": "damageTypeScope",
+        "types": [
+         "explosive"
+        ]
+       }
+      ]
      },
      {
       "id": "0x00113618:r5:5:1",

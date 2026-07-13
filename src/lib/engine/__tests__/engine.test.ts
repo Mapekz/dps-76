@@ -431,18 +431,19 @@ describe('explosive payload twins (Stage A1, Explosive 2★)', () => {
     expect(result.total).toBeCloseTo(100 + 30, 6);
   });
 
-  it('explosionMult multiplies only the twin', () => {
+  it('explosive-scoped dbm (Demolition Expert) folds ADDITIVELY with general dbm on the twin (June 2026 patch)', () => {
     const mods = [
       mod({ bucket: 'explosivePayload', op: 'ADD', value: 0.2 }),
-      mod({ bucket: 'explosionMult', op: 'MUL_ADD', value: 0.5 }),
+      mod({ bucket: 'dbm', op: 'ADD', value: 0.9, id: 'bloodied' }), // unscoped — applies everywhere
+      mod({ bucket: 'dbm', op: 'ADD', value: 0.6, id: 'demo', conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }] }),
     ];
     const result = computePaperDamage({
       mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
     });
-    expect(result.components[0].damage).toBeCloseTo(100, 6); // original component unaffected
-    // Twin base 20, dbm fold 1.0 (no dbm mods), explosionMult 1.0 + 0.5×1.0 = 1.5 → 20 × 1.0 × 1.5 = 30.
-    expect(result.components[1].damage).toBeCloseTo(30, 6);
-    expect(result.total).toBeCloseTo(130, 6);
+    expect(result.components[0].damage).toBeCloseTo(190, 6); // 100 × (1 + 0.9)
+    // Twin: 20 × (1 + 0.9 + 0.6) = 50 — additive, NOT 20 × 1.9 × 1.6 = 60.8.
+    expect(result.components[1].damage).toBeCloseTo(50, 6);
+    expect(result.total).toBeCloseTo(240, 6);
   });
 
   it('no twin is spawned when explosivePayload is inactive', () => {
@@ -480,14 +481,19 @@ describe('launcher explosion components (fromExplosion, EXPL chase)', () => {
     ],
   });
 
-  it('explosionMult (Demolition Expert) multiplies the explosion component, not the impact', () => {
-    const mods = [mod({ bucket: 'explosionMult', op: 'ADD', value: 0.6 })];
+  it('Demolition Expert (explosive-scoped dbm) adds into the explosion parenthesis, not the impact, additively with general dbm', () => {
+    const mods = [
+      mod({ bucket: 'dbm', op: 'ADD', value: 0.6, id: 'demo', conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }] }),
+      mod({ bucket: 'dbm', op: 'ADD', value: 0.5, id: 'adrenal' }), // unscoped
+    ];
     const result = computePaperDamage({
       mode: 'live', weapon: launcher, itemLevel: 50, modifiers: mods, ctx: makeCtx(launcher), bodyPartMult: 1.0, bodyPart: 'torso',
     });
     expect(result.components).toHaveLength(2);
-    expect(result.components[0].damage).toBeCloseTo(5, 6); // impact untouched
-    expect(result.components[1].damage).toBeCloseTo(160, 6); // 100 × (1 + 0.6)
+    expect(result.components[0].damage).toBeCloseTo(7.5, 6); // impact: 5 × (1 + 0.5)
+    // Explosion: 100 × (1 + 0.5 + 0.6) = 210 — June 2026 additive fold,
+    // NOT 100 × 1.5 × 1.6 = 240.
+    expect(result.components[1].damage).toBeCloseTo(210, 6);
   });
 
   it("'explosive'-scoped dbm applies to an elemental explosion component (Cremator fire ball, Gamma radiation burst)", () => {

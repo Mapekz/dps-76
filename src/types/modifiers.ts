@@ -52,8 +52,13 @@ export type Bucket =
   | 'wholeDamage'
   /** Multiplier on limb hits (STAT_DmgLimbs plumbing) — inert until limb targeting exists. */
   | 'limbDamage'
-  /** Multiplier on explosion damage (STAT_DmgExplosive plumbing) — wired with explosive components. */
-  | 'explosionMult'
+  // NOTE: no explosion-damage bucket exists — the June 2026 patch made
+  // explosion bonuses (Demolition Expert's STAT_DmgExplosive, the
+  // 'Mod Player Explosion Damage' entry point) ADDITIVE inside the general
+  // dbm parenthesis, scoped via damageTypeScope ['explosive'] (matches
+  // fromExplosion components and explosive twins). The old `explosionMult`
+  // bucket (a separate multiplier on finished explosion damage) modeled the
+  // pre-patch formula and was removed 2026-07-13.
   /** Bash-attack damage (STAT_DmgBash — Basher's) — inert until bash attacks are modeled. */
   | 'bashDamage'
   /** Fraction of a component's damage that spawns an explosive twin (LGND_ExplosivePayload — Explosive), folded per-component in paper-damage.ts. */

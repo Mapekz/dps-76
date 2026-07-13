@@ -17,14 +17,18 @@
   intrinsic base of the `explosivePayload` twin fold (Explosive 2★ ADDs on
   top). Grenades/mines stay `projectileOnly`-excluded (vetting-scope
   decision) — the exclusion is evaluated before the chase.
-- **Engine**: `fromExplosion` components fold `explosionMult` and match
-  `damageTypeScope ['explosive']` regardless of element
+- **Engine**: `fromExplosion` components match `damageTypeScope
+  ['explosive']` regardless of element
   (`ResolveContext.componentIsExplosion`); an explosion never spawns a twin
   of itself. Flat-amount components (token launcher impact damage) now adapt
   to constant curves instead of computing 0.
 - **Demolition Expert fixed**: its STAT_DmgExplosive AV was an unmapped-AVIF
-  gap (the perk extracted ZERO modifiers). Routed to `explosionMult`
-  (+20/40/60%, `normalize/mgef.ts` FALLBACK_AVIF_ROUTES).
+  gap (the perk extracted ZERO modifiers). Routed to explosive-scoped `dbm`
+  (+20/40/60%, `normalize/mgef.ts` FALLBACK_AVIF_ROUTES) — ADDITIVE with
+  Bloodied/Adrenal etc. inside the dbm parenthesis per the June 2026 patch
+  (user-reported 2026-07-13; initially shipped as the pre-patch
+  multiplicative `explosionMult` bucket, corrected same day and the bucket
+  removed).
 - **Results @50** (free aim, no perks): Fat Man 1391 (was ~5), Missile
   Launcher 973, M79 525, Broadsider 693, AGL 247, Hellstorm 758, Cremator
   172, Gamma Gun 104. Gauss family & Tesla Cannon gained their intrinsic

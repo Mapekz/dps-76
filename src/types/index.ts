@@ -188,8 +188,9 @@ export interface WeaponComponent {
   curvePoints?: Array<{ x: number; y: number }>;
   /**
    * Component is the projectile's explosion (launcher EXPL chase) —
-   * explosion-only modifiers (Demolition Expert's explosionMult,
-   * 'explosive'-scoped dbm) apply regardless of the elemental damageType.
+   * explosive-scoped dbm modifiers (Demolition Expert) apply regardless of
+   * the elemental damageType (additive in the dbm parenthesis, June 2026
+   * patch semantics).
    */
   fromExplosion?: boolean;
 }

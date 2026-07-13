@@ -166,14 +166,11 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
       trace.components.push({ damageType: type, baseDamage: collect[0], dbm: collect[1] });
     }
     const parenthesis = dbmFold + strTerm + critTerm + sneakTerm + powerAttackTerm;
-    // Explosion components (launcher EXPL payloads) additionally fold the
-    // explosion-only multiplier (Demolition Expert's STAT_DmgExplosive).
-    const componentExplosionMult = isExplosion ? foldBucket(modifiers, 'explosionMult', 1.0, componentCtx) : 1.0;
-    const hit: ComponentHit = {
-      damageType: type,
-      base: scaledBase,
-      damage: scaledBase * parenthesis * outerMult * componentExplosionMult,
-    };
+    // Explosion components (launcher EXPL payloads) need no extra factor:
+    // explosion bonuses (Demolition Expert) are explosive-scoped dbm ADDs in
+    // the parenthesis above — additive with Bloodied/Adrenal etc., per the
+    // June 2026 patch (docs/assumptions.md "Launcher explosion damage").
+    const hit: ComponentHit = { damageType: type, base: scaledBase, damage: scaledBase * parenthesis * outerMult };
     // An explosion never spawns an explosive twin of itself.
     if (isExplosion) return [hit];
 
@@ -183,10 +180,9 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
     // explosive twin. The twin runs through the SAME parenthesis (strTerm/
     // critTerm/sneakTerm/powerAttackTerm are weapon-level, not re-evaluated)
     // but its OWN dbm fold — componentType 'explosive' + componentIsExplosion
-    // so explosive-scoped dbm applies only to twins — plus the explosion-only
-    // `explosionMult` bucket (Demolition Expert). Twins are summed into the
-    // totals today; per-component resist attribution is future work
-    // (docs/assumptions.md).
+    // so explosive-scoped dbm (Demolition Expert) applies only to twins.
+    // Twins are summed into the totals today; per-component resist
+    // attribution is future work (docs/assumptions.md).
     const payloadCollect = trace ? ([] as BucketTrace[]) : undefined;
     const payloadFraction = foldBucket(
       modifiers,
@@ -201,12 +197,11 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
     const twinDbmCollect = trace ? ([] as BucketTrace[]) : undefined;
     const twinDbmFold = foldBucket(modifiers, 'dbm', weapon.damageBonusMult ?? 1.0, explosiveCtx, twinDbmCollect);
     const twinParenthesis = twinDbmFold + strTerm + critTerm + sneakTerm + powerAttackTerm;
-    const explosionMult = foldBucket(modifiers, 'explosionMult', 1.0, explosiveCtx);
     const twinBase = scaledBase * payloadFraction;
     const twin: ComponentHit = {
       damageType: 'explosive',
       base: twinBase,
-      damage: twinBase * twinParenthesis * outerMult * explosionMult,
+      damage: twinBase * twinParenthesis * outerMult,
     };
     if (trace && payloadCollect && twinDbmCollect) {
       trace.components.push({ damageType: 'explosive', baseDamage: payloadCollect[0], dbm: twinDbmCollect[0] });

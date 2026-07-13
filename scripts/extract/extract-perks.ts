@@ -9,6 +9,7 @@ import {
 } from './normalize/conditions';
 import {
   ENTRY_POINT_BUCKETS,
+  ENTRY_POINT_EXTRA_CONDITIONS,
   buildAvifRoutes,
   collectConditionFormIds,
   collectConditionGlobalIds,
@@ -391,9 +392,12 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
               if (!ENTRY_POINT_IGNORED.has(ep.name)) unknownEntryPoints.add(ep.name);
               continue;
             }
-            const { conditions, unresolved } = translateConditions(parsed.conditionRows, translationCtx);
-            if (conditions === null) continue; // inactive at this rank
+            const { conditions: translated, unresolved } = translateConditions(parsed.conditionRows, translationCtx);
+            if (translated === null) continue; // inactive at this rank
             unresolved.forEach(u => allUnresolved.add(`${family}: ${u}`));
+            // Baked scope conditions for entry points the bucket alone can't
+            // express (Mod Player Explosion Damage → explosive-scoped dbm).
+            const conditions = [...translated, ...(ENTRY_POINT_EXTRA_CONDITIONS[ep.name] ?? [])];
 
             if (ep.functionName === 'Add Value') {
               pushModifier(bucket, 'ADD', { value: ep.float }, conditions, sourceIndex);
