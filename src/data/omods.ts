@@ -146,7 +146,11 @@ export interface OmodSlot {
   options: OmodOption[];
 }
 
+/** Slots whose edid-derived label reads worse than a fixed name. */
+const SLOT_LABEL_OVERRIDES: Record<string, string> = { ap_customName: 'Unique' };
+
 function slotLabel(attachPointEdid: string): string {
+  if (SLOT_LABEL_OVERRIDES[attachPointEdid]) return SLOT_LABEL_OVERRIDES[attachPointEdid];
   const raw = attachPointEdid.replace(/^ap_(gun_|melee_|Gun|Melee)?/i, '').replace(/[_-]+/g, ' ').trim();
   return raw.charAt(0).toUpperCase() + raw.slice(1);
 }
@@ -215,6 +219,11 @@ export function getOmodSlots(mode: GameMode, weapon: Weapon): OmodSlot[] {
     (edid, omod) =>
       (!COSMETIC_SLOT_RE.test(edid) ||
         (omod.modifiers.length > 0 && (weapon.templateModFormIds ?? []).includes(omod.formId)) ||
+        // Identity uniques surfaced even with no stats — 2026-07-13 unique
+        // rework, see docs/assumptions.md "Unique weapons".
+        (edid === 'ap_customName' &&
+          omod.addedKeywords.includes('ObjectTypeUnique') &&
+          (weapon.templateModFormIds ?? []).includes(omod.formId)) ||
         omodBadgeOverrides[omod.id] !== undefined) &&
       !LEGENDARY_SLOT_RE.test(edid),
     (a, b) => a.label.localeCompare(b.label)
@@ -229,4 +238,22 @@ export function getLegendaryOmodSlots(mode: GameMode, weapon: Weapon): OmodSlot[
     edid => LEGENDARY_SLOT_RE.test(edid),
     (a, b) => a.slot.localeCompare(b.slot)
   );
+}
+
+/**
+ * Display name after unique mods: an equipped `ap_customName` mod carrying
+ * `ObjectTypeUnique` renames the weapon (e.g. "All Rise" instead of "Super
+ * Sledge") — explicit choice, or the weapon's own default fold-in (The
+ * Fixer's mod is a default part, never an explicit pick). Falls back to the
+ * weapon's own name otherwise. Display-only; no engine/state change.
+ */
+export function effectiveWeaponName(
+  mode: GameMode,
+  weapon: Weapon,
+  mods: Record<string, string | null | undefined>
+): string {
+  const chosen = mods['ap_customName'];
+  const omodId = typeof chosen === 'string' ? chosen : getDefaultOmodId(mode, weapon, 'ap_customName');
+  const omod = omodId ? getOmodById(mode, omodId) : undefined;
+  return omod?.addedKeywords.includes('ObjectTypeUnique') ? omod.name : weapon.name;
 }

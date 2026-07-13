@@ -2082,7 +2082,7 @@
    "0x00024004",
    "0x006214D8"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "WorkshopArtillerySmokeFlare",
@@ -5904,7 +5904,7 @@
    "0x0047A264",
    "0x005867A7"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "Burn_crRadScorpionBurningSting",
@@ -12586,7 +12586,7 @@
    "0x004E89AA",
    "0x004E89AB"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "MTNL01_SingleActionRevolver_Fancy",
@@ -12717,7 +12717,7 @@
    "0x004E89AA",
    "0x004E89AB"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "Fatman",
@@ -12951,7 +12951,7 @@
    "0x004E89AB",
    "0x00114364"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "FireAxe",
@@ -15611,7 +15611,7 @@
    "0x006214D8",
    "0x0047A264"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "MoM02B_HistoricSword",
@@ -16334,7 +16334,7 @@
    "0x004E89AB",
    "0x006214D8"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "HalluciGenGrenade",
@@ -18469,7 +18469,7 @@
    "0x0047A264",
    "0x00114364"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "E09A_MoleMinerM79",
@@ -19425,7 +19425,7 @@
    "0x0005524C",
    "0x00521926"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "PlasmaGun_MindOverMatter",
@@ -19604,7 +19604,7 @@
    "0x004E89AA",
    "0x004E89AB"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "Minigun",
@@ -21190,7 +21190,7 @@
    "0x006214D8",
    "0x0047A264"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "DLC05WorkshopFireworkWeaponPalmGold",
@@ -23510,7 +23510,7 @@
    "0x004E89AA",
    "0x004E89AB"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "CUT_NeedleSMG",
@@ -23877,7 +23877,7 @@
    "0x0032CD06",
    "0x001A001E"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "W05_MQS_203P_10mmSMG",
@@ -24008,7 +24008,7 @@
    "0x0047A264",
    "0x00114364"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "EN02_ScanGrenade",
@@ -32754,7 +32754,7 @@
    "0x004E89AA",
    "0x004E89AB"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "LeverGun_SoleSurvivor",
@@ -33708,7 +33708,7 @@
    "0x006214D8",
    "0x001A001E"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "Switchblade",
@@ -36232,7 +36232,7 @@
    "0x0047A264",
    "0x001A001E"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "CombatRifle_Fixer",
@@ -36744,7 +36744,7 @@
    "0x004E89AA",
    "0x004E89AB"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "ThirstZapper",
@@ -40842,7 +40842,7 @@
    "0x006214D8",
    "0x0047A264"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "E09B_SuperSledge_WhackerSmacker",
@@ -40963,7 +40963,7 @@
    "0x0047A264",
    "0x001A001E"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "AssaultRifle_WhistleInTheDark",
@@ -41225,7 +41225,7 @@
    "0x004E89AB",
    "0x006214D8"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "SCORE_S8_AlienBlaster_ZetasRevenge",
@@ -41358,6 +41358,6 @@
    "0x004E89A8",
    "0x004E89A9"
   ],
-  "obtainable": true
+  "obtainable": false
  }
 ]

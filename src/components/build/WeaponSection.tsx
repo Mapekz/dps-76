@@ -6,7 +6,14 @@ import { Slider } from '@/components/ui/slider';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getWeapons } from '@/data';
-import { getDefaultOmodId, getOmodSlots, getLegendaryOmodSlots, type OmodBadge, type OmodSlot } from '@/data/omods';
+import {
+  effectiveWeaponName,
+  getDefaultOmodId,
+  getOmodSlots,
+  getLegendaryOmodSlots,
+  type OmodBadge,
+  type OmodSlot,
+} from '@/data/omods';
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import { SectionTrigger } from './SectionTrigger';
 
@@ -56,7 +63,7 @@ export function WeaponSection() {
     Object.entries(player.weapon?.mods ?? {}).filter(([slot, id]) => id && id !== defaultOmodIds.get(slot)).length +
     (player.weapon?.legendaryEffects.length ?? 0);
   const summary = selectedWeapon
-    ? `${selectedWeapon.name}${equippedModCount > 0 ? ` · ${equippedModCount} mods` : ''}`
+    ? `${effectiveWeaponName(mode, selectedWeapon, player.weapon?.mods ?? {})}${equippedModCount > 0 ? ` · ${equippedModCount} mods` : ''}`
     : 'none equipped';
 
   return (

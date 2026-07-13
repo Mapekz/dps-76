@@ -366,8 +366,13 @@ describe('Onslaught (2026-07-12, real data)', () => {
   it('Whacker Smacker grants NO max stacks of its own — its power-attack curve needs an external source to do anything', () => {
     // ESM: OMOD E09B_mod_Custom_WhackerSmacker's ENCH reads the shared AV
     // 0x00000395 DIRECTLY (no EP190 of its own): +5%/stack power-attack
-    // damage, curve (0,0)(1,5)(100,500) on STAT_DmgPowerAttack.
-    const whackerWeapon = getWeapons('live')['E09B_SuperSledge_WhackerSmacker'];
+    // damage, curve (0,0)(1,5)(100,500) on STAT_DmgPowerAttack. The legacy
+    // standalone E09B_SuperSledge_WhackerSmacker WEAP is hidden post unique-
+    // weapons-rework (its identity is now this OMOD, hosted on base
+    // SuperSledge's templateModFormIds) — use base SuperSledge, which is
+    // stat-identical except speed (1 vs the legacy record's 1.5), which
+    // doesn't factor into per-hit damage.
+    const whackerWeapon = getWeapons('live')['SuperSledge'];
     expect(whackerWeapon).toBeDefined();
     const whackerEffect = getOmodById('live', 'E09B_mod_Custom_WhackerSmacker')!;
     const paPlayer = { ...createDefaultPlayerConditions(), isPowerAttacking: true };

@@ -1,4 +1,8 @@
 import { useScenarioResults } from '@/state/useScenarioResults';
+import { useBuild } from '@/state/BuildProvider';
+import { useGameMode } from '@/hooks/useGameMode';
+import { getWeapons } from '@/data';
+import { effectiveWeaponName } from '@/data/omods';
 import { cn } from '@/lib/utils';
 import { formatDamage } from '@/lib/format';
 import { DeltaFlash } from './DeltaFlash';
@@ -18,6 +22,11 @@ const LABELS = { freeAim: 'Free Aim', vats: 'VATS' } as const;
  */
 export function HeadlineStrip({ variant = 'full' }: HeadlineStripProps) {
   const { scenarios, emphasized } = useScenarioResults();
+  const { mode } = useGameMode();
+  const { player } = useBuild();
+  const weaponConfig = player.weapon;
+  const equippedWeapon = weaponConfig ? getWeapons(mode)[weaponConfig.weaponId] : undefined;
+  const weaponName = weaponConfig && equippedWeapon ? effectiveWeaponName(mode, equippedWeapon, weaponConfig.mods) : undefined;
 
   if (variant === 'condensed') {
     if (!scenarios) return <p className="text-muted-foreground text-sm">Pick a weapon to see DPS.</p>;
@@ -48,6 +57,7 @@ export function HeadlineStrip({ variant = 'full' }: HeadlineStripProps) {
 
   return (
     <div className="space-y-2">
+      {weaponName && <p className="text-muted-foreground truncate text-xs font-medium">{weaponName}</p>}
       <div className="flex items-center justify-between">
         <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.14em]">
           Damage output

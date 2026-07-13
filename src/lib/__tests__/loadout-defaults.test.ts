@@ -53,10 +53,16 @@ describe('default mod folding (assemble-time)', () => {
     expect(cleared!.modifiers.map(m => m.id).sort()).toEqual(untouched!.modifiers.map(m => m.id).sort());
   });
 
-  it("Cold Shoulder's Paranormal Mod (stat-carrying cosmetic-slot default) folds in unselected", () => {
-    const input = loadout('DoubleBarrelShotgun_ColdShoulder');
-    const paranormal = getOmodById('live', getDefaultOmodId('live', input!.weapon, 'ap_customName')!);
-    expect(paranormal?.modifiers.length).toBeGreaterThan(0);
+  it('stat-carrying cosmetic-slot unique folds in when selected', () => {
+    // DoubleBarrelShotgun_ColdShoulder (the legacy standalone WEAP) is hidden
+    // post unique-weapons-rework — its identity now lives as the Paranormal
+    // Mod (mod_custom_Coldshoulder_DmgvsCryptid), a real ap_customName mod
+    // hosted on base DoubleBarrelShotgun's templateModFormIds. Explicitly
+    // selecting it (rather than relying on default-fold, since it isn't the
+    // weapon's default part) still folds its modifiers in.
+    const input = loadout('DoubleBarrelShotgun', { ap_customName: 'mod_custom_Coldshoulder_DmgvsCryptid' });
+    const paranormal = getOmodById('live', 'mod_custom_Coldshoulder_DmgvsCryptid');
+    expect(paranormal?.modifiers.length).toBe(3);
     expect(input!.modifiers.some(m => m.source.edid === paranormal!.id)).toBe(true);
   });
 

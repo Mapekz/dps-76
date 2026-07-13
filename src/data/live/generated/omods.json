@@ -13025,7 +13025,9 @@
    "CustomItemName_LoveTap"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk LoveTapPerk: entry point Apply Combat Melee Spell — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -13087,7 +13089,27 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0066957E:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0066957E",
+     "edid": "E09D_mod_custom_WesternSpirit",
+     "name": "Western Spirit"
+    },
+    "bucket": "onslaughtMaxStacks",
+    "op": "ADD",
+    "value": 10,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeRanged",
+      "present": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed",
@@ -32803,16 +32825,28 @@
    "ma_Melee_Appearance",
    "ma_SuperSledge"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0047187E:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0047187E",
+     "edid": "mod_Custom_AllRise",
+     "name": "All Rise Custom Mod"
+    },
+    "bucket": "maxHealth",
+    "op": "ADD",
+    "value": 50,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItemName_AllRise",
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "ActorValues on Health — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -33695,7 +33729,10 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk Perk_Daisycutter: GetRandomPercent()=30",
+   "perk Perk_Daisycutter: entry point Auto Fill Weapon Clip — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -34189,14 +34226,73 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0061384F:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0061384F",
+     "edid": "mod_Custom_MechanicsBestFriend",
+     "name": "Mechanic's Best Friend"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.4000000059604645,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(MakeshiftWarrior01)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x0061384F:perk:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0061384F",
+     "edid": "mod_Custom_MechanicsBestFriend",
+     "name": "Mechanic's Best Friend"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.20000000298023224,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(MakeshiftWarrior02)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x0061384F:perk:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0061384F",
+     "edid": "mod_Custom_MechanicsBestFriend",
+     "name": "Mechanic's Best Friend"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.20000000298023224,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(MakeshiftWarrior03)=1"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed",
    "CustomItemName_MechanicsBestFriend"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk MechanicsBestFriend_Perk: HasPerk(MakeshiftWarrior01)=1",
+   "perk MechanicsBestFriend_Perk: HasPerk(MakeshiftWarrior02)=1",
+   "perk MechanicsBestFriend_Perk: HasPerk(MakeshiftWarrior03)=1"
+  ],
   "obtainable": true
  },
  {
@@ -34216,7 +34312,9 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk MedicalMalpractice_Perk: entry point Mod Weapon DMG Bonus Mult uses Add Actor Value Mult — skipped"
+  ],
   "obtainable": true
  },
  {
@@ -34227,13 +34325,327 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x008F20B8:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F20B8",
+     "edid": "mod_Custom_MeteoriteSword",
+     "name": "Meteorite Sword Paint"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "glowAtLeast",
+      "min": 100
+     }
+    ]
+   },
+   {
+    "id": "0x008F20B8:perk:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F20B8",
+     "edid": "mod_Custom_MeteoriteSword",
+     "name": "Meteorite Sword Paint"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "glowAtLeast",
+      "min": 190
+     }
+    ]
+   },
+   {
+    "id": "0x008F20B8:perk:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F20B8",
+     "edid": "mod_Custom_MeteoriteSword",
+     "name": "Meteorite Sword Paint"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "glowAtLeast",
+      "min": 280
+     }
+    ]
+   },
+   {
+    "id": "0x008F20B8:perk:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F20B8",
+     "edid": "mod_Custom_MeteoriteSword",
+     "name": "Meteorite Sword Paint"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "glowAtLeast",
+      "min": 370
+     }
+    ]
+   },
+   {
+    "id": "0x008F20B8:perk:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F20B8",
+     "edid": "mod_Custom_MeteoriteSword",
+     "name": "Meteorite Sword Paint"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "glowAtLeast",
+      "min": 460
+     }
+    ]
+   },
+   {
+    "id": "0x008F20B8:perk:5",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F20B8",
+     "edid": "mod_Custom_MeteoriteSword",
+     "name": "Meteorite Sword Paint"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(CUT_Radicool02)=1"
+     },
+     {
+      "kind": "glowAtLeast",
+      "min": 130
+     }
+    ]
+   },
+   {
+    "id": "0x008F20B8:perk:6",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F20B8",
+     "edid": "mod_Custom_MeteoriteSword",
+     "name": "Meteorite Sword Paint"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(CUT_Radicool02)=1"
+     },
+     {
+      "kind": "glowAtLeast",
+      "min": 220
+     }
+    ]
+   },
+   {
+    "id": "0x008F20B8:perk:7",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F20B8",
+     "edid": "mod_Custom_MeteoriteSword",
+     "name": "Meteorite Sword Paint"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(CUT_Radicool02)=1"
+     },
+     {
+      "kind": "glowAtLeast",
+      "min": 310
+     }
+    ]
+   },
+   {
+    "id": "0x008F20B8:perk:8",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F20B8",
+     "edid": "mod_Custom_MeteoriteSword",
+     "name": "Meteorite Sword Paint"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(CUT_Radicool02)=1"
+     },
+     {
+      "kind": "glowAtLeast",
+      "min": 400
+     }
+    ]
+   },
+   {
+    "id": "0x008F20B8:perk:9",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F20B8",
+     "edid": "mod_Custom_MeteoriteSword",
+     "name": "Meteorite Sword Paint"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(CUT_Radicool02)=1"
+     },
+     {
+      "kind": "glowAtLeast",
+      "min": 490
+     }
+    ]
+   },
+   {
+    "id": "0x008F20B8:perk:10",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F20B8",
+     "edid": "mod_Custom_MeteoriteSword",
+     "name": "Meteorite Sword Paint"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(CUT_Radicool03)=1"
+     },
+     {
+      "kind": "glowAtLeast",
+      "min": 160
+     }
+    ]
+   },
+   {
+    "id": "0x008F20B8:perk:11",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F20B8",
+     "edid": "mod_Custom_MeteoriteSword",
+     "name": "Meteorite Sword Paint"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(CUT_Radicool03)=1"
+     },
+     {
+      "kind": "glowAtLeast",
+      "min": 250
+     }
+    ]
+   },
+   {
+    "id": "0x008F20B8:perk:12",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F20B8",
+     "edid": "mod_Custom_MeteoriteSword",
+     "name": "Meteorite Sword Paint"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(CUT_Radicool03)=1"
+     },
+     {
+      "kind": "glowAtLeast",
+      "min": 340
+     }
+    ]
+   },
+   {
+    "id": "0x008F20B8:perk:13",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F20B8",
+     "edid": "mod_Custom_MeteoriteSword",
+     "name": "Meteorite Sword Paint"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(CUT_Radicool03)=1"
+     },
+     {
+      "kind": "glowAtLeast",
+      "min": 430
+     }
+    ]
+   },
+   {
+    "id": "0x008F20B8:perk:14",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F20B8",
+     "edid": "mod_Custom_MeteoriteSword",
+     "name": "Meteorite Sword Paint"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(CUT_Radicool03)=1"
+     },
+     {
+      "kind": "glowAtLeast",
+      "min": 520
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk Radicool01: condition: HasPerk(CUT_Radicool02)=1",
+   "perk Radicool01: condition: HasPerk(CUT_Radicool03)=1"
+  ],
   "obtainable": true
  },
  {
@@ -34269,7 +34681,9 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk NailerPerk: entry point Mod Power Attack Damage uses Select Spell — skipped"
+  ],
   "obtainable": true
  },
  {
@@ -34541,7 +34955,10 @@
    "CustomItemName_MindOverMatter"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk MindOverMatterPerk: MGEF AbPerkFortifyIntelligence: zero magnitude, no curve — script/scaled, needs override",
+   "perk MindOverMatterPerk: MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping"
+  ],
   "obtainable": true
  },
  {
@@ -34830,7 +35247,8 @@
   ],
   "hasEnchantments": false,
   "notes": [
-   "ActorValues on LGND_APOnKill — unmapped"
+   "ActorValues on LGND_APOnKill — unmapped",
+   "perk LegendaryAPViaKillPerk: entry point Apply On Kill Spell — not modeled"
   ],
   "obtainable": true
  },
@@ -34842,7 +35260,38 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00613850:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00613850",
+     "edid": "mod_Custom_SoleSurvivor",
+     "name": "Sole Survivor Custom Mod"
+    },
+    "bucket": "weakpointBonus",
+    "op": "ADD",
+    "curve": {
+     "input": "killStreak",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 10,
+       "y": 30
+      }
+     ]
+    },
+    "curveScale": 0.009999999776482582,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed",
@@ -34850,7 +35299,9 @@
    "ma_SoleSurvivor"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk SoleSurvivorPerk: MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping"
+  ],
   "obtainable": true
  },
  {
@@ -34971,7 +35422,8 @@
   ],
   "hasEnchantments": false,
   "notes": [
-   "ActorValues on LGND_Medic — unmapped"
+   "ActorValues on LGND_Medic — unmapped",
+   "perk Legendary_Weapon_MedicPerk: entry point Apply Friendly Hit Spell — not modeled"
   ],
   "obtainable": true
  },
@@ -35087,7 +35539,12 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk DemolitionExpert01: condition: HasPerk(DemolitionExpert02)=0",
+   "perk DemolitionExpert01: condition: HasPerk(DemolitionExpert02)=1",
+   "perk DemolitionExpert01: condition: HasPerk(DemolitionExpert03)=0",
+   "perk DemolitionExpert01: condition: HasPerk(DemolitionExpert03)=1"
+  ],
   "obtainable": true
  },
  {
@@ -35309,10 +35766,88 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0091EE2C:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0091EE2C",
+     "edid": "mod_Custom_ThePipe",
+     "name": "The Pipe"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.20000000298023224,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(LicensedPlumber01)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x0091EE2C:perk:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0091EE2C",
+     "edid": "mod_Custom_ThePipe",
+     "name": "The Pipe"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.20000000298023224,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(LicensedPlumber02)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x0091EE2C:perk:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0091EE2C",
+     "edid": "mod_Custom_ThePipe",
+     "name": "The Pipe"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.20000000298023224,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(LicensedPlumber03)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x0091EE2C:perk:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0091EE2C",
+     "edid": "mod_Custom_ThePipe",
+     "name": "The Pipe"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.20000000298023224,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasCompletedChallenge(Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe)=1"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk ThePipe_Perk: HasCompletedChallenge(Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe)=1",
+   "perk ThePipe_Perk: HasPerk(LicensedPlumber01)=1",
+   "perk ThePipe_Perk: HasPerk(LicensedPlumber02)=1",
+   "perk ThePipe_Perk: HasPerk(LicensedPlumber03)=1"
+  ],
   "obtainable": true
  },
  {
@@ -35391,13 +35926,66 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x008F1648:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F1648",
+     "edid": "mod_Custom_TheVATSUnknown_BetterCriticals",
+     "name": "The V.A.T.S. Unknown"
+    },
+    "bucket": "critDmgBonus",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(BetterCriticals02)=0"
+     }
+    ]
+   },
+   {
+    "id": "0x008F1648:perk:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F1648",
+     "edid": "mod_Custom_TheVATSUnknown_BetterCriticals",
+     "name": "The V.A.T.S. Unknown"
+    },
+    "bucket": "critDmgBonus",
+    "op": "ADD",
+    "value": 0.75,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(BetterCriticals03)=0"
+     }
+    ]
+   },
+   {
+    "id": "0x008F1648:perk:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F1648",
+     "edid": "mod_Custom_TheVATSUnknown_BetterCriticals",
+     "name": "The V.A.T.S. Unknown"
+    },
+    "bucket": "critDmgBonus",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk BetterCriticals01: HasPerk(BetterCriticals02)=0",
+   "perk BetterCriticals02: HasPerk(BetterCriticals03)=0"
+  ],
   "obtainable": false
  },
  {
@@ -35408,13 +35996,66 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x008F1647:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F1647",
+     "edid": "mod_Custom_TheVATSUnknown_CritSavvy",
+     "name": "The V.A.T.S. Unknown"
+    },
+    "bucket": "critConsumption",
+    "op": "SET",
+    "value": 85,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(CriticalSavvy02)=0"
+     }
+    ]
+   },
+   {
+    "id": "0x008F1647:perk:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F1647",
+     "edid": "mod_Custom_TheVATSUnknown_CritSavvy",
+     "name": "The V.A.T.S. Unknown"
+    },
+    "bucket": "critConsumption",
+    "op": "SET",
+    "value": 70,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(CriticalSavvy03)=0"
+     }
+    ]
+   },
+   {
+    "id": "0x008F1647:perk:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F1647",
+     "edid": "mod_Custom_TheVATSUnknown_CritSavvy",
+     "name": "The V.A.T.S. Unknown"
+    },
+    "bucket": "critConsumption",
+    "op": "SET",
+    "value": 55,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk CriticalSavvy01: HasPerk(CriticalSavvy02)=0",
+   "perk CriticalSavvy02: HasPerk(CriticalSavvy03)=0"
+  ],
   "obtainable": false
  },
  {
@@ -35425,13 +36066,101 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x008F164B:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F164B",
+     "edid": "mod_Custom_TheVATSUnknown_GlowingCriticals",
+     "name": "The V.A.T.S. Unknown"
+    },
+    "bucket": "critDmgBonus",
+    "op": "ADD",
+    "value": 0.20000000298023224,
+    "conditions": [
+     {
+      "kind": "playerIsGhoul",
+      "value": true
+     },
+     {
+      "kind": "glowAtLeast",
+      "min": 180
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(GHL_GlowingCriticals02)=0"
+     }
+    ]
+   },
+   {
+    "id": "0x008F164B:perk:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F164B",
+     "edid": "mod_Custom_TheVATSUnknown_GlowingCriticals",
+     "name": "The V.A.T.S. Unknown"
+    },
+    "bucket": "critDmgBonus",
+    "op": "ADD",
+    "value": 0.3499999940395355,
+    "conditions": [
+     {
+      "kind": "playerIsGhoul",
+      "value": true
+     },
+     {
+      "kind": "glowAtLeast",
+      "min": 180
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(GHL_GlowingCriticals02)=1"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(GHL_GlowingCriticals03)=0"
+     }
+    ]
+   },
+   {
+    "id": "0x008F164B:perk:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F164B",
+     "edid": "mod_Custom_TheVATSUnknown_GlowingCriticals",
+     "name": "The V.A.T.S. Unknown"
+    },
+    "bucket": "critDmgBonus",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": [
+     {
+      "kind": "playerIsGhoul",
+      "value": true
+     },
+     {
+      "kind": "glowAtLeast",
+      "min": 180
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(GHL_GlowingCriticals03)=1"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk GHL_GlowingCriticals01: HasPerk(GHL_GlowingCriticals02)=0",
+   "perk GHL_GlowingCriticals02: HasPerk(GHL_GlowingCriticals02)=1",
+   "perk GHL_GlowingCriticals02: HasPerk(GHL_GlowingCriticals03)=0",
+   "perk GHL_GlowingCriticals03: HasPerk(GHL_GlowingCriticals03)=1"
+  ],
   "obtainable": false
  },
  {
@@ -35448,7 +36177,9 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk GrimReapersSprint01: entry point Mod VATS Player AP On Kill Chance — not modeled"
+  ],
   "obtainable": false
  },
  {
@@ -35459,13 +36190,39 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x008F164A:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F164A",
+     "edid": "mod_Custom_TheVATSUnknown_Psychopath",
+     "name": "The V.A.T.S. Unknown"
+    },
+    "bucket": "critFill",
+    "op": "MUL_ADD",
+    "value": -0.8999999985098839,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(Psychopath01)=1"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetIsInVATS()=0"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk Psychopath01: GetIsInVATS()=0",
+   "perk Psychopath01: HasPerk(Psychopath01)=1"
+  ],
   "obtainable": false
  },
  {
@@ -35487,7 +36244,9 @@
    "ma_TickettoRevenge"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk custom_TickettoRevenge_Perk: entry point Mod Target Damage Resistance — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -35521,7 +36280,9 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk UnstoppableMonster_Perk: entry point Mod Incoming Weapon Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -35560,7 +36321,9 @@
    "ma_V63-BERTHA"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk mod_custom_V63-BERTHA_Perk: entry point Unknown — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -35599,7 +36362,9 @@
    "ma_v63GatlingLaser"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk mod_weapon_penetrating: entry point Mod VATS Penetration Min Visibility — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -35714,7 +36479,62 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x005D8D86:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x005D8D86",
+     "edid": "mod_Custom_WhistleInTheDark",
+     "name": "Whistle in the Dark Custom Mod"
+    },
+    "bucket": "sneakBonus",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasSilencer",
+      "present": true
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(MisterSandman02)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(MisterSandman01)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x005D8D86:perk:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x005D8D86",
+     "edid": "mod_Custom_WhistleInTheDark",
+     "name": "Whistle in the Dark Custom Mod"
+    },
+    "bucket": "sneakBonus",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasSilencer",
+      "present": true
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(MisterSandman02)=1"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(MisterSandman01)=1"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed",
@@ -35722,7 +36542,11 @@
    "ma_WhistleInTheDark"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk MisterSandman01: condition: HasPerk(MisterSandman01)=1",
+   "perk MisterSandman01: condition: HasPerk(MisterSandman02)=0",
+   "perk MisterSandman01: condition: HasPerk(MisterSandman02)=1"
+  ],
   "obtainable": true
  },
  {
@@ -51829,7 +52653,8 @@
   ],
   "hasEnchantments": false,
   "notes": [
-   "ActorValues on LGND_Medic — unmapped"
+   "ActorValues on LGND_Medic — unmapped",
+   "perk Legendary_Weapon_MedicPerk: entry point Apply Friendly Hit Spell — not modeled"
   ],
   "obtainable": true
  },
@@ -51894,7 +52719,8 @@
   ],
   "hasEnchantments": false,
   "notes": [
-   "ActorValues on LGND_APOnKill — unmapped"
+   "ActorValues on LGND_APOnKill — unmapped",
+   "perk LegendaryAPViaKillPerk: entry point Apply On Kill Spell — not modeled"
   ],
   "obtainable": true
  },
@@ -52751,7 +53577,8 @@
   ],
   "hasEnchantments": false,
   "notes": [
-   "ActorValues on LGND_DmgFromBlocking — unmapped"
+   "ActorValues on LGND_DmgFromBlocking — unmapped",
+   "perk Legendary_LessDamageBlock: entry point Mod Percent Blocked — not modeled"
   ],
   "obtainable": true
  },
@@ -87343,7 +88170,7 @@
   ],
   "hasEnchantments": false,
   "notes": [],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "MTNL01_mod_PumpActionShotgun_Grip_Fancy",
@@ -87363,7 +88190,7 @@
   ],
   "hasEnchantments": false,
   "notes": [],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "MTNL01_mod_PumpActionShotgun_Receiver_Fancy",
@@ -87447,7 +88274,7 @@
   ],
   "hasEnchantments": false,
   "notes": [],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "MTNL01_mod_PumpActionShotgun_Weapon_Paint_Fancy",
@@ -87517,7 +88344,7 @@
   ],
   "hasEnchantments": false,
   "notes": [],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "MTNL01_mod_SingleActionRevolver_Grip_Fancy",
@@ -87535,7 +88362,7 @@
   ],
   "hasEnchantments": false,
   "notes": [],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "MTNL01_mod_SingleActionRevolver_Receiver_Fancy",
@@ -87578,7 +88405,7 @@
   "addedKeywords": [],
   "hasEnchantments": false,
   "notes": [],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "MTNS05_mod_PipeSyringer_Barrel_Vox",
@@ -89590,7 +90417,10 @@
    "UnsellableObject"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk RD01_Weapon_LicketySplit: HasKeyword(RD01_CustomItemName_LicketySplit)=1",
+   "perk RD01_Weapon_LicketySplit: entry point Mod Projectile Bounce Count — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -93174,7 +94004,35 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk CanDo01: GetRandomPercent()=20",
+   "perk CanDo01: GetRandomPercent()=40",
+   "perk CanDo01: GetRandomPercent()=60",
+   "perk CanDo01: GetRandomPercent()=85",
+   "perk CanDo01: GetValue(Luck)=15",
+   "perk CanDo01: GetValue(Luck)=30",
+   "perk CanDo01: GetValue(Luck)=60",
+   "perk CanDo01: HasKeyword(MealTypePackaged)=1",
+   "perk CanDo01: entry point Mod Item Spawn Count — not modeled",
+   "perk CapCollector01: GetIsID(Caps001)=1",
+   "perk CapCollector01: GetRandomPercent()=20",
+   "perk CapCollector01: GetRandomPercent()=40",
+   "perk CapCollector01: GetRandomPercent()=60",
+   "perk CapCollector01: GetRandomPercent()=85",
+   "perk CapCollector01: GetValue(Luck)=15",
+   "perk CapCollector01: GetValue(Luck)=30",
+   "perk CapCollector01: GetValue(Luck)=60",
+   "perk CapCollector01: entry point Mod Item Spawn Count — not modeled",
+   "perk PharmaFarma01: GetRandomPercent()=20",
+   "perk PharmaFarma01: GetRandomPercent()=40",
+   "perk PharmaFarma01: GetRandomPercent()=60",
+   "perk PharmaFarma01: GetRandomPercent()=85",
+   "perk PharmaFarma01: GetValue(Luck)=15",
+   "perk PharmaFarma01: GetValue(Luck)=30",
+   "perk PharmaFarma01: GetValue(Luck)=60",
+   "perk PharmaFarma01: HasKeyword(ChemTypeHealing)=1",
+   "perk PharmaFarma01: entry point Mod Item Spawn Count — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -93191,7 +94049,17 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk CanDo01: GetRandomPercent()=20",
+   "perk CanDo01: GetRandomPercent()=40",
+   "perk CanDo01: GetRandomPercent()=60",
+   "perk CanDo01: GetRandomPercent()=85",
+   "perk CanDo01: GetValue(Luck)=15",
+   "perk CanDo01: GetValue(Luck)=30",
+   "perk CanDo01: GetValue(Luck)=60",
+   "perk CanDo01: HasKeyword(MealTypePackaged)=1",
+   "perk CanDo01: entry point Mod Item Spawn Count — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -93208,7 +94076,17 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk CapCollector01: GetIsID(Caps001)=1",
+   "perk CapCollector01: GetRandomPercent()=20",
+   "perk CapCollector01: GetRandomPercent()=40",
+   "perk CapCollector01: GetRandomPercent()=60",
+   "perk CapCollector01: GetRandomPercent()=85",
+   "perk CapCollector01: GetValue(Luck)=15",
+   "perk CapCollector01: GetValue(Luck)=30",
+   "perk CapCollector01: GetValue(Luck)=60",
+   "perk CapCollector01: entry point Mod Item Spawn Count — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -93276,7 +94154,17 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk PharmaFarma01: GetRandomPercent()=20",
+   "perk PharmaFarma01: GetRandomPercent()=40",
+   "perk PharmaFarma01: GetRandomPercent()=60",
+   "perk PharmaFarma01: GetRandomPercent()=85",
+   "perk PharmaFarma01: GetValue(Luck)=15",
+   "perk PharmaFarma01: GetValue(Luck)=30",
+   "perk PharmaFarma01: GetValue(Luck)=60",
+   "perk PharmaFarma01: HasKeyword(ChemTypeHealing)=1",
+   "perk PharmaFarma01: entry point Mod Item Spawn Count — not modeled"
+  ],
   "obtainable": true
  },
  {

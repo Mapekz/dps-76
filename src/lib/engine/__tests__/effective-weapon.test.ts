@@ -16,8 +16,13 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
     const slots = getOmodSlots('live', fixer);
     const receiverSlot = slots.find(s => s.slot === 'ap_gun_Receiver');
     expect(receiverSlot?.options.some(o => o.id === receiver.id)).toBe(true);
-    // Cosmetic and legendary slots are hidden from the standard picker.
-    expect(slots.some(s => /legendary|customName|Appearance|Description/i.test(s.slot))).toBe(false);
+    // Cosmetic and legendary slots are hidden from the standard picker — except
+    // ap_customName, which now surfaces the Fixer's own identity unique mod.
+    expect(slots.some(s => /legendary|Appearance|Description/i.test(s.slot))).toBe(false);
+
+    const uniqueSlot = slots.find(s => s.slot === 'ap_customName');
+    expect(uniqueSlot?.label).toBe('Unique');
+    expect(uniqueSlot?.options.map(o => o.id)).toEqual(['P01B_mod_Custom_Fixer']);
   });
 
   it('unique-effect mods on cosmetic slots surface only on their own weapons', () => {
@@ -28,12 +33,32 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
     expect(customSlot?.options.some(o => o.id === 'mod_Custom_PerfectStorm')).toBe(true);
 
     // The V.A.T.S. Unknown crit-perk variants: badge-rescued + restricted to
-    // the unique alien blaster (weaponCorrections adds its missing slot).
-    const vatsUnknown = getWeapons('live')['W05_COMP_Astronaut_AlienBlaster_QuestReward'];
+    // the unique alien blaster. Re-homed 2026-07-13 (unique-weapons rework)
+    // from the now-hidden legacy W05_COMP_Astronaut_AlienBlaster_QuestReward
+    // WEAP to base 'AlienBlaster', which already lists ap_customName in its
+    // own attachParentSlots.
+    const vatsUnknown = getWeapons('live')['AlienBlaster'];
     const vatsSlots = getOmodSlots('live', vatsUnknown);
     const vatsCustom = vatsSlots.find(s => s.slot === 'ap_customName');
     expect(vatsCustom?.options.map(o => o.id)).toContain('mod_Custom_TheVATSUnknown_BetterCriticals');
     expect(vatsCustom?.options.filter(o => o.id.startsWith('mod_Custom_TheVATSUnknown_'))).toHaveLength(5);
+  });
+
+  it('equipping Perfect Storm on the 10mm SMG changes freeAim.perHit.total vs stock', () => {
+    const smg = getWeapons('live')['10mmSMG'];
+    const perfectStorm = getOmodById('live', 'mod_Custom_PerfectStorm')!;
+    const base = {
+      mode: 'live' as const,
+      itemLevel: 50,
+      player: createDefaultPlayerConditions(),
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2.0,
+    };
+    const stock = computeScenarios({ ...base, weapon: smg, modifiers: [], critRate: 0 });
+    const { weapon, modifiers } = buildEffectiveWeapon(smg, [perfectStorm]);
+    const modded = computeScenarios({ ...base, weapon, modifiers, critRate: 0 });
+
+    expect(modded.freeAim.perHit.total).not.toBeCloseTo(stock.freeAim.perHit.total, 5);
   });
 
   it('rewrites speed/automatic state and merges keywords', () => {

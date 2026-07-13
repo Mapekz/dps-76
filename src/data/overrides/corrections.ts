@@ -91,6 +91,18 @@ export const hiddenWeaponIds: ReadonlySet<string> = new Set<string>([
   'ProtestSign08',
   'ProtestSign09',
   'ProtestSign10',
+  // Unique-weapons rework (2026-07-13): dead legacy WEAPs the obtainability
+  // heuristic can't catch because their COBJs are real-looking but are
+  // themselves unreferenced (not REPAIRONLY/NOCRAFT-suffixed, just orphaned)
+  // — the game's unique-registry LVLIs actually grant the base weapon + a
+  // mod_Custom_* OMOD. Verified via `esm refs` 2026-07-13. This
+  // unreferenced-COBJ class is invisible to scripts/extract/obtainability.ts
+  // — needs periodic manual re-review after future extractions.
+  'E08B_SuperSledge_TheDebilitator', // -> SuperSledge Unique slot (E08B_mod_Custom_TheDebilitator)
+  'E08B_HuntingRifle_DoctorsOrders', // -> HuntingRifle Unique slot (E08B_mod_Custom_HuntingRifle_DoctorsOrders)
+  'E08B_Minigun_FoundationsVengeance', // -> Minigun Unique slot (E08B_mod_Custom_FoundationsVengeance)
+  'E08B_Blunderbuss_PiratePunch', // -> Blackpowder_Pistol_Blunderbuss Unique slot (E08B_mod_Custom_Blackpowder_PiratePunch)
+  'E08B_DeathTambo_ToneDeath', // -> DeathTambo Unique slot (E08B_mod_Custom_ToneDeath)
 ]);
 
 /**
@@ -100,22 +112,23 @@ export const hiddenWeaponIds: ReadonlySet<string> = new Set<string>([
  * and rescue false negatives here — no re-extract needed.
  */
 export const forceVisibleWeaponIds: ReadonlySet<string> = new Set<string>([
-  // Script/vendor-granted uniques with NO record-level reverse reference in
-  // the ESM (quest VMAD script properties and gold-bullion vendors aren't
-  // indexed by `esm refs`) — rescued from the 2026-07-02 derivation run.
-  // Source: known player-obtainable uniques; review against
-  // _meta.excludedDetailed.weaponUnobtainable after each extraction.
-  'DoubleBarrelShotgun_ColdShoulder', // Cold Shoulder — gold bullion vendor
-  'AssaultRifle_WhistleInTheDark', // Whistle in the Dark — event/quest reward
-  'DLC01_AssaultronBlade_TheGutter', // The Gutter — gold bullion vendor
-  'DeathclawGauntlet_UnstoppableMonster', // Unstoppable Monster — gold bullion vendor
-  '44_MedicalMalpractice', // Medical Malpractice — Wayward quest reward
-  'FaceBreaker', // Face Breaker — event reward
-  'LeverGun_SoleSurvivor', // Sole Survivor — quest reward
-  'PipeWrench_MechanicsBestFriend', // Mechanic's Best Friend — event reward
-  'SCORE_S11_AutoGrenadeLauncher_NukaLauncher', // Nuka-Launcher — scoreboard reward
-  'E08B_CombatShotgun_CrowdControl', // Crowd Control — Invaders event reward
-  'CamdenWhackerWeapon', // Camden Whacker — Camden Park event reward
+  // Pleasant Valley bellhop protectron ticket-exchange uniques: script-
+  // granted (ticket redemption has no record-level ESM reverse reference —
+  // invisible to `esm refs`), user-confirmed obtainable in-game 2026-07-13.
+  'MTNL01_PumpActionShotgun_Fancy', // Fancy Pump Action Shotgun
+  'MTNL01_SingleActionRevolver_Fancy', // Fancy Single Action Revolver
+  // 2026-07-13 unique-weapons rework cleanup: removed the 11 rescues that
+  // used to live here (DoubleBarrelShotgun_ColdShoulder,
+  // AssaultRifle_WhistleInTheDark, DeathclawGauntlet_UnstoppableMonster,
+  // 44_MedicalMalpractice, LeverGun_SoleSurvivor,
+  // PipeWrench_MechanicsBestFriend, E08B_CombatShotgun_CrowdControl,
+  // DLC01_AssaultronBlade_TheGutter, FaceBreaker,
+  // SCORE_S11_AutoGrenadeLauncher_NukaLauncher, CamdenWhackerWeapon) — they
+  // were presumed obtainability false-negatives but are verified true
+  // negatives (`esm refs`: no refs, or only REPAIRONLY/NOCRAFT COBJ stubs).
+  // Each identity now lives as a mod_Custom_* OMOD on a base weapon's
+  // templateModFormIds, not a standalone WEAP — see docs/assumptions.md
+  // "Unique weapons".
   // 2026-07-12 user-review removals from this rescue list (they revert to
   // their obtainable:false hiding): MTR05_ChineseOfficerSword ("Ancient
   // Blade" — misnamed/not a real player weapon), ATX_Sten ("The Black
@@ -173,10 +186,24 @@ export const forceVisibleOmodIds: ReadonlySet<string> = new Set<string>([
   'mod_50CalMachineGun_AmmoCan', // .50 Cal "Standard Magazine"
   'mod_Cryolator_Muzzle_Default', // Cryolator "Stock Muzzle"
   'mod_melee_Hatchet_Null', // Hatchet "No Upgrade"
-  'mod_DoubleBarrelShotgun_barrel_short_Base_ColdShoulder', // Cold Shoulder standard barrel (weapon is itself rescue-listed)
-  // The V.A.T.S. Unknown (W05_COMP_Astronaut_AlienBlaster_QuestReward) effect
-  // variants: attached by the reward flow (no record-level reverse refs), each
-  // grants crit-perk ranks — see omodBadgeOverrides (2026-07-10 walk).
+  // Fancy Pump Action Shotgun / Fancy Single Action Revolver stat mods:
+  // flipped obtainable:false alongside their host WEAPs when the unique-
+  // weapons rework hid the standalone Fancy records (same Pleasant Valley
+  // bellhop protectron ticket-exchange rationale as forceVisibleWeaponIds
+  // above) — rescue the mods too so the rescued weapons' slots populate.
+  // Source: user-confirmed 2026-07-13.
+  'MTNL01_mod_PumpActionShotgun_Barrel_Fancy',
+  'MTNL01_mod_PumpActionShotgun_Grip_Fancy',
+  'MTNL01_mod_PumpActionShotgun_Receiver_Fancy',
+  'MTNL01_mod_SingleActionRevolver_Barrel_Fancy',
+  'MTNL01_mod_SingleActionRevolver_Grip_Fancy',
+  'MTNL01_mod_SingleActionRevolver_Receiver_Fancy',
+  // The V.A.T.S. Unknown effect variants (2026-07-13: re-homed from the now-
+  // hidden legacy W05_COMP_Astronaut_AlienBlaster_QuestReward record — base
+  // AlienBlaster hosts mod_Custom_TheVATSUnknown in its templateModFormIds
+  // and has always had the ap_customName attach slot): attached by the
+  // reward flow (no record-level reverse refs), each grants crit-perk ranks
+  // — see omodBadgeOverrides (2026-07-10 walk).
   'mod_Custom_TheVATSUnknown_BetterCriticals',
   'mod_Custom_TheVATSUnknown_CritSavvy',
   'mod_Custom_TheVATSUnknown_GlowingCriticals',
@@ -191,12 +218,16 @@ export const forceVisibleOmodIds: ReadonlySet<string> = new Set<string>([
  */
 export const omodWeaponRestrictions: Readonly<Record<string, readonly string[]>> = {
   // The V.A.T.S. Unknown effect variants belong to the unique alien blaster
-  // only (attached by the reward flow; 2026-07-10 walk).
-  mod_Custom_TheVATSUnknown_BetterCriticals: ['W05_COMP_Astronaut_AlienBlaster_QuestReward'],
-  mod_Custom_TheVATSUnknown_CritSavvy: ['W05_COMP_Astronaut_AlienBlaster_QuestReward'],
-  mod_Custom_TheVATSUnknown_GlowingCriticals: ['W05_COMP_Astronaut_AlienBlaster_QuestReward'],
-  mod_Custom_TheVATSUnknown_GrimReapersSprint: ['W05_COMP_Astronaut_AlienBlaster_QuestReward'],
-  mod_Custom_TheVATSUnknown_Psychopath: ['W05_COMP_Astronaut_AlienBlaster_QuestReward'],
+  // only (attached by the reward flow; 2026-07-10 walk). Re-homed 2026-07-13
+  // from the legacy W05_COMP_Astronaut_AlienBlaster_QuestReward WEAP (now
+  // hidden — unique-weapons rework) to base 'AlienBlaster', which has always
+  // had the ap_customName attach slot (0x0047A264, verified) and hosts
+  // mod_Custom_TheVATSUnknown in its templateModFormIds.
+  mod_Custom_TheVATSUnknown_BetterCriticals: ['AlienBlaster'],
+  mod_Custom_TheVATSUnknown_CritSavvy: ['AlienBlaster'],
+  mod_Custom_TheVATSUnknown_GlowingCriticals: ['AlienBlaster'],
+  mod_Custom_TheVATSUnknown_GrimReapersSprint: ['AlienBlaster'],
+  mod_Custom_TheVATSUnknown_Psychopath: ['AlienBlaster'],
 };
 
 /**
@@ -238,17 +269,14 @@ export const weaponCorrections: Readonly<Record<string, Partial<Weapon>>> = {
   // Ten stat-identical sign-text variants consolidated into this one (the
   // other nine are in hiddenWeaponIds).
   ProtestSign01: { name: 'Protest Sign' },
-  // The V.A.T.S. Unknown: its effect-variant mods sit on ap_customName
-  // (0x0047A264), a slot the WEAP record doesn't list because the reward flow
-  // attaches them as instance data. Appended so the picker can offer the
-  // variants (2026-07-10 walk; full extracted list + the custom slot).
-  W05_COMP_Astronaut_AlienBlaster_QuestReward: {
-    attachParentSlots: [
-      '0x00114364', '0x0002249D', '0x0002249F', '0x0005D4D7', '0x00022499',
-      '0x001E32C8', '0x004E89A8', '0x004E89A9', '0x004E89AA', '0x004E89AB',
-      '0x0047A264',
-    ],
-  },
+  // The V.A.T.S. Unknown patch for the legacy
+  // W05_COMP_Astronaut_AlienBlaster_QuestReward record REMOVED (2026-07-13,
+  // unique-weapons rework): that WEAP is now hidden (hiddenWeaponIds handles
+  // it implicitly via obtainable:false — no explicit entry needed) and its
+  // attachParentSlots patch is stale. The effect-variant mods are re-homed to
+  // base 'AlienBlaster' (see omodWeaponRestrictions), which already lists
+  // ap_customName (0x0047A264) in its own attachParentSlots — no patch
+  // required there either.
   // Gatling Gun: confirmed via a dedicated `AnimsGatlingGun` keyword (distinct
   // from every other automatic weapon's own bespoke Anims* keyword, e.g.
   // Minigun's `AnimsMinigun` — which DOES use the standard 0.11s cycle,
