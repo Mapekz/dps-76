@@ -750,6 +750,56 @@ ghoul perk effects gate on it with `GetValue(Rads) ≥ N` condition rows.
   the −30% applies to AttackDamage/DamageTypeValues).
 - Shishkebab max Eligible Level 45 confirmed by user — item level clamps there.
 
+## Unique weapons (2026-07-13 rework — base weapon + `ap_customName` mod)
+
+- The game's registry is the `WeaponsUniqueNamedList` FLST (0x00789213,
+  "Unique Named Weapons for Data Validation"): one LVLI per reworked unique
+  (e.g. `LL_Weapon_Melee_SuperSledge_TheDebilitator`), each granting the
+  **base** WEAP. The unique's identity + effects ride a `mod_Custom_*` OMOD
+  at `ap_customName` (0x0047A264) carrying the `ObjectTypeUnique` keyword,
+  which the base weapon lists in `templateModFormIds`. Each unique = one
+  effect mod + a paint (user-confirmed); owned pre-rework items were
+  auto-converted by the game, so the legacy standalone WEAP records are dead
+  for everyone — their stats are stale and must not be shown.
+- Dead legacy WEAPs classify `obtainable: false` via the obtainability rule
+  that `_REPAIRONLY`/`*NOCRAFT*` COBJ refs are non-granting (they leave a
+  `noGrantCobj:` audit signal). Caveat: a NOCRAFT scrap recipe no longer
+  proves ownership either — records like ProtestSign01 survive via
+  independent FLST refs. Five E08B legacies have real-looking but themselves
+  unreferenced COBJs the heuristic can't catch — hand-hidden in
+  `corrections.ts` `hiddenWeaponIds`, needs periodic manual re-review.
+- Still-live standalone uniques (WEAP listed directly in the FLST and/or real
+  grant refs, kept in the roster): `CombatRifle_Fixer` (its mod is hosted only
+  by its own template; base CombatRifle has no ap_customName slot),
+  `10mm_CircuitBreaker`, `MoM_BladeOfBastet`, `MoM_VoiceOfSet_44`,
+  `MTNS05_PipeSyringer_Vox`, `atx_alienprobe`, `BlackPowder_Rifle_Dragon`.
+  `MoM02B_HistoricSword` stays hidden (user decision). The Fancy Pump Action
+  Shotgun / Fancy Single Action Revolver are NOT reworked uniques — they are
+  script-granted (Pleasant Valley bellhop-protectron ticket exchange,
+  user-confirmed) and rescue-listed with their stat mods.
+- Cold Shoulder's real effect is `mod_custom_Coldshoulder_DmgvsCryptid`
+  ("Paranormal Mod", 3 modifiers) on base `DoubleBarrelShotgun` — NOT the
+  `mod_DoubleBarrelShotgun_barrel_short_Base_ColdShoulder` barrel record,
+  which is a cosmetic stub that never attached to the base weapon.
+- App-side, identity uniques surface as the "Unique" mod slot
+  (`getOmodSlots`: `ap_customName` + `ObjectTypeUnique` + template
+  membership, additive to the pre-existing `modifiers.length > 0` cosmetic
+  gate). An equipped unique renames the weapon in the Build summary and
+  results header (`effectiveWeaponName`).
+- Unique-mod effect extraction: OMOD property 116 = attached PERK (decoded
+  via `translateGrantedPerk`); `ActorValues` `Health` ADD → `maxHealth`
+  bucket (All Rise +50). Deliberately note-only (no formula bucket):
+  damage-TAKEN perks (Unstoppable Monster's DR-per-killstreak — see
+  "Incoming DPS" future stream), `EnableAmmoSpenderOnKill` (Final Word's
+  Bullet Storm enable flag — boolean AV, not a stack cap),
+  `STAT_DeflectChance` (Old Guard), sneak/detection AVs (Fixer's
+  `ArmorShadowHide`, `Mod_StealthMove_AV`). All carry omod `notes` and badge
+  `'inert'` in the picker via the notes fallback.
+- Xerxo's Gamma Ray Gun is currently unobtainable in-game (user-confirmed)
+  and hidden. Base `GammaGun` IS obtainable in-game but is excluded from
+  extraction as `noDamage` — its damage lives on the projectile explosion,
+  which the engine doesn't model (see Known gaps).
+
 ## Known gaps / deferred
 
 - **Taking One for the Team / Follow Through**: the families exist in the
@@ -768,6 +818,10 @@ ghoul perk effects gate on it with `GetValue(Rads) ≥ N` condition rows.
   are skipped and noted per-perk in `generated/perks.json` notes.
 - Unjoined registry perks (removed/renamed by the overhaul):
   `getUnjoinedPerkIds()` in `src/data/perk-modifiers.ts`.
+- `GammaGun` (obtainable in-game, craftable) is excluded as `noDamage`: its
+  WEAP record carries no direct damage — the payload is the projectile's
+  explosion, and projectile/explosion damage is unmodeled. Revisit alongside
+  explosive-weapon damage support.
 
 ## Future DPS streams (user-supplied rationale, 2026-07-07)
 
@@ -786,5 +840,6 @@ yet modeled:
 | VATS uptime | Field Surgeon (stim HP/s vs Blood Sacrifice HP cost) | AP/HP economy modeling |
 | Ghoul Glow economy | Breathe It In (rad resist → Glow gain) | feeds Glow spenders, not a direct damage term |
 | Low-health damage | Nerd Rage (damage + DR, still exists per user) | no ESM family joined — locate its current record/values |
+| Incoming DPS / survivability | Unstoppable Monster (DR + DR/killstreak), Ricochet-class DR sources | model enemy→player damage so damage-TAKEN effects stop being note-only (user request 2026-07-13) |
 - Mutation SPECIAL side-effects (Egg Head etc.) are not applied — SPECIAL is
   a manual input; set it to your buffed values.
