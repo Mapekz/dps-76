@@ -22,8 +22,10 @@ async function main() {
     },
   });
 
-  if (!values.esm) {
+  const esmPath = values.esm ?? process.env.FO76_ESM_PATH;
+  if (!esmPath) {
     console.error('Usage: pnpm extract --esm <path-to-SeventySix.esm> [--mode live|pts] [--only weapons,...]');
+    console.error('(or set FO76_ESM_PATH in your shell profile to omit --esm)');
     process.exit(1);
   }
   const mode = values.mode!;
@@ -44,7 +46,7 @@ async function main() {
   const outDir = path.join(import.meta.dirname, '../../src/data', mode, 'generated');
   await mkdir(outDir, { recursive: true });
 
-  const client = new EsmClient(values.esm);
+  const client = new EsmClient(esmPath);
   // Partial runs (--only …) start from the existing meta so the sections not
   // re-run keep their counts/excluded review data (they'd be clobbered
   // otherwise). `unresolved` stays run-scoped: it can't be attributed to a
@@ -58,9 +60,9 @@ async function main() {
     }
   }
   const meta: GeneratedMeta = {
-    esmPath: values.esm,
+    esmPath,
     // Convention: the ESM lives in a date-stamped directory (…/Data/20260702/SeventySix.esm)
-    esmDate: /(\d{8})/.exec(values.esm)?.[1] ?? null,
+    esmDate: /(\d{8})/.exec(esmPath)?.[1] ?? null,
     mode,
     extractedAt: new Date().toISOString(),
     counts: previousMeta.counts ?? {},

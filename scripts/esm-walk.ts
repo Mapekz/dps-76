@@ -1,5 +1,3 @@
-import { readFileSync } from 'node:fs';
-import { resolve as resolvePath } from 'node:path';
 import { EsmClient, type EsmRecord } from './extract/esm-client';
 import { repairMisattributedPerkEntryFields } from './extract/normalize/mgef';
 import { flattenConditionRows, flattenPerkConditionRows, type RawCondition } from './extract/normalize/conditions';
@@ -12,6 +10,9 @@ import { flattenConditionRows, flattenPerkConditionRows, type RawCondition } fro
  * classifies reverse references for obtainability review.
  *
  *   pnpm esm:walk <formid|edid> [--refs] [--depth N] [--esm <path>]
+ *
+ * ESM path resolves from --esm, else the FO76_ESM_PATH env var — set that in
+ * your shell profile to skip passing --esm every time.
  *
  * The digest is for AGENT/human reading — the extraction pipeline never uses
  * this file. Judgment guidance lives in .claude/skills/esm-walk/SKILL.md.
@@ -41,11 +42,10 @@ function parseArgs(): Args {
     console.error('Usage: pnpm esm:walk <formid|edid> [--refs] [--depth N] [--esm <path>]');
     process.exit(1);
   }
+  esmPath ||= process.env.FO76_ESM_PATH ?? '';
   if (!esmPath) {
-    const meta = JSON.parse(
-      readFileSync(resolvePath(import.meta.dirname, '../src/data/live/generated/_meta.json'), 'utf8')
-    );
-    esmPath = meta.esmPath;
+    console.error('No ESM path: pass --esm <path> or set FO76_ESM_PATH in your shell profile.');
+    process.exit(1);
   }
   return { target, refs, depth, esmPath };
 }

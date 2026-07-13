@@ -16,7 +16,7 @@ pnpm esm:walk <formid|edid> [--refs] [--depth N] [--esm <path>]
 - Accepts editor ids or `0x...` formids; falls back to a search when not found.
 - `--refs` appends reverse references grouped by record type (obtainability).
 - `--depth` caps chain-following (default 2; use 3 for OMOD → granted-perk).
-- ESM path defaults from `src/data/live/generated/_meta.json → esmPath`.
+- ESM path resolves from `--esm`, else the `FO76_ESM_PATH` env var.
 - The script (`scripts/esm-walk.ts`) already applies the known esm-CLI quirks
   (one-shot `-p --json` mode, the Ability/Entry-Point field misattribution
   repair). Only drop to raw `esm get` for fields the digest truncates.
