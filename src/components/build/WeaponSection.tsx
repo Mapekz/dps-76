@@ -6,7 +6,7 @@ import { Slider } from '@/components/ui/slider';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getWeapons } from '@/data';
-import { getOmodSlots, getLegendaryOmodSlots, type OmodBadge, type OmodSlot } from '@/data/omods';
+import { getDefaultOmodId, getOmodSlots, getLegendaryOmodSlots, type OmodBadge, type OmodSlot } from '@/data/omods';
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import { SectionTrigger } from './SectionTrigger';
 
@@ -48,8 +48,13 @@ export function WeaponSection() {
   const omodSlots = selectedWeapon ? getOmodSlots(mode, selectedWeapon) : [];
   const legendarySlots = selectedWeapon ? getLegendaryOmodSlots(mode, selectedWeapon) : [];
 
+  // A slot showing its standard part isn't a "mod" — count only deviations.
+  const defaultOmodIds = new Map(
+    selectedWeapon ? omodSlots.map(slot => [slot.slot, getDefaultOmodId(mode, selectedWeapon, slot.slot)]) : []
+  );
   const equippedModCount =
-    Object.values(player.weapon?.mods ?? {}).filter(Boolean).length + (player.weapon?.legendaryEffects.length ?? 0);
+    Object.entries(player.weapon?.mods ?? {}).filter(([slot, id]) => id && id !== defaultOmodIds.get(slot)).length +
+    (player.weapon?.legendaryEffects.length ?? 0);
   const summary = selectedWeapon
     ? `${selectedWeapon.name}${equippedModCount > 0 ? ` · ${equippedModCount} mods` : ''}`
     : 'none equipped';
@@ -73,25 +78,37 @@ export function WeaponSection() {
             />
           </div>
 
-          {omodSlots.map(slot => (
-            <div key={slot.slot} className="space-y-1.5">
-              <Label>{slot.label}</Label>
-              <Combobox
-                options={slot.options.map(o => ({ value: o.id, label: o.name }))}
-                value={player.weapon?.mods[slot.slot] ?? null}
-                onValueChange={omodId => dispatch({ type: 'weapon/mod', slot: slot.slot, omodId })}
-                placeholder="Stock"
-                searchPlaceholder="Search mods…"
-                emptyText="No mod matches."
-                renderOptionExtra={o => (
-                  <>
-                    <OmodBadgeTag slot={slot} omodId={o.value} />
-                    <ActionDelta action={{ type: 'weapon/mod', slot: slot.slot, omodId: o.value }} />
-                  </>
-                )}
-              />
-            </div>
-          ))}
+          {omodSlots.map(slot => {
+            const defaultOmodId = defaultOmodIds.get(slot.slot);
+            const chosen = player.weapon?.mods[slot.slot];
+            // An undecided slot carries its real standard part (folded into the
+            // damage engine by assemble()) — show it as genuinely selected.
+            const displayValue = typeof chosen === 'string' ? chosen : (defaultOmodId ?? null);
+            return (
+              <div key={slot.slot} className="space-y-1.5">
+                <Label>{slot.label}</Label>
+                <Combobox
+                  options={slot.options.map(o => ({ value: o.id, label: o.name }))}
+                  value={displayValue}
+                  onValueChange={omodId => dispatch({ type: 'weapon/mod', slot: slot.slot, omodId })}
+                  placeholder="Standard"
+                  searchPlaceholder="Search mods…"
+                  emptyText="No mod matches."
+                  renderOptionExtra={o => (
+                    <>
+                      {o.value === defaultOmodId && (
+                        <Badge variant="outline" className="text-muted-foreground ml-1 px-1 py-0 text-[10px] font-normal">
+                          standard
+                        </Badge>
+                      )}
+                      <OmodBadgeTag slot={slot} omodId={o.value} />
+                      <ActionDelta action={{ type: 'weapon/mod', slot: slot.slot, omodId: o.value }} />
+                    </>
+                  )}
+                />
+              </div>
+            );
+          })}
 
           {legendarySlots.map((slot, i) => (
             <div key={slot.slot} className="space-y-1.5">
