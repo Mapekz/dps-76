@@ -35,7 +35,7 @@ describe('vetted weapon roster', () => {
   });
 
   it('keeps the rescued script/vendor-granted uniques visible', () => {
-    for (const id of ['DoubleBarrelShotgun_ColdShoulder', 'ATX_Sten', '44_MedicalMalpractice']) {
+    for (const id of ['DoubleBarrelShotgun_ColdShoulder', 'FaceBreaker', '44_MedicalMalpractice']) {
       expect(weapons[id], id).toBeDefined();
     }
   });

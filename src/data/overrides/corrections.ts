@@ -70,6 +70,27 @@ export const hiddenWeaponIds: ReadonlySet<string> = new Set<string>([
   // DLC04_PaddleBall_NWOT (sold by Chloe: NWOT_LL_Chloe_Weapon →
   // NWOT_Clown_VendorChest), which stays visible as the sole "Paddle Ball".
   'DLC04_PaddleBall',
+  // 2026-07-12 user-review batch: NPC/quest/skin records that pass
+  // obtainability via shared chains but aren't real player weapons.
+  'Gutsy02LeftArmLaserGunAuto', // "Laser Gun" — Mister Gutsy robot-arm weapon
+  'JoeyBello_SuperSledge_BadaBoom', // "Bada-Boom" — Joey Bello's NPC super sledge
+  'ATX_AssaultronHeadCharging_Imposter', // "Imposter Assaultron Head" — not a player weapon
+  'W05_MQ_003P_Muscle_PollyAssaultronHead', // "Polly's Assaultron Head" — quest prop
+  'atx_alienprobe', // "The Invader" — cosmetic skin item, not a weapon
+  'MTNS05_PipeSyringer_Vox', // "Vox Syringer" — quest-item syringer
+  'WarShrike', // "War Shrike" — not player-obtainable (yet); unhide if it ships
+  'MoM02B_HistoricSword', // "Grant's Saber" — quest item, not a general player weapon
+  // Protest signs: ten stat-identical records differing only in sign text —
+  // consolidated into ProtestSign01 (renamed "Protest Sign" below).
+  'ProtestSign02',
+  'ProtestSign03',
+  'ProtestSign04',
+  'ProtestSign05',
+  'ProtestSign06',
+  'ProtestSign07',
+  'ProtestSign08',
+  'ProtestSign09',
+  'ProtestSign10',
 ]);
 
 /**
@@ -94,16 +115,13 @@ export const forceVisibleWeaponIds: ReadonlySet<string> = new Set<string>([
   'PipeWrench_MechanicsBestFriend', // Mechanic's Best Friend — event reward
   'SCORE_S11_AutoGrenadeLauncher_NukaLauncher', // Nuka-Launcher — scoreboard reward
   'E08B_CombatShotgun_CrowdControl', // Crowd Control — Invaders event reward
-  'MTR05_ChineseOfficerSword', // Ancient Blade — Camden Park quest reward
   'CamdenWhackerWeapon', // Camden Whacker — Camden Park event reward
-  // Atomic Shop weapons (^atx_ prefix filter dropped 2026-07-10): shop grants
-  // are account-side, so real ownable weapons have NO ESM reverse refs.
-  // Reskin duplicates stay hidden (ATX_CroquetMallet_Red, ATX_KDInkwell_Quill
-  // — the latter even displays as "Baton").
-  'ATX_Sten', // The Black Knight
-  'ATX_TurkeyRipper', // Turkey Ripper
-  'ATX_Grognak_HockeyStick', // Grognak's Hockey Stick
-  'ATX_CroquetMallet', // Croquet Mallet
+  // 2026-07-12 user-review removals from this rescue list (they revert to
+  // their obtainable:false hiding): MTR05_ChineseOfficerSword ("Ancient
+  // Blade" — misnamed/not a real player weapon), ATX_Sten ("The Black
+  // Knight" — not player-obtainable), ATX_TurkeyRipper (not a real weapon),
+  // ATX_Grognak_HockeyStick (cosmetic skin of another weapon),
+  // ATX_CroquetMallet (wrong name / invalid weapon).
 ]);
 
 /**
@@ -202,6 +220,24 @@ export const weaponCorrections: Readonly<Record<string, Partial<Weapon>>> = {
   // User decision, 2026-07-12 vetting pass.
   UnarmedHuman: { name: 'Unarmed' },
   UnarmedPowerArmor: { name: 'Unarmed (Power Armor)' },
+  // In-game display names are FULL + an Instance Naming (INNR) class chunk
+  // the extractor doesn't evaluate — dn_CommonGun (0x002377CF) appends
+  // "Pistol"/"Rifle"/... from grip/stock keywords. Baked here as the
+  // standard-config name (2026-07-12 user review). Note: dn_CommonGun has no
+  // "Revolver" chunk — the .44 reads ".44 Pistol" in game.
+  '10mm': { name: '10mm Pistol' },
+  '44': { name: '.44 Pistol' },
+  LaserGun: { name: 'Laser Gun' },
+  PlasmaGun: { name: 'Plasma Gun' },
+  Enclave_PlasmaGun: { name: 'Enclave Plasma Gun' },
+  UltraciteLaserGun: { name: 'Ultracite Laser Gun' },
+  PipeGun: { name: 'Pipe Gun' },
+  RadiumRifle: { name: 'Radium Rifle' },
+  RailwayRifle: { name: 'Railway Rifle' },
+  DLC01LightningGun: { name: 'Tesla Rifle' },
+  // Ten stat-identical sign-text variants consolidated into this one (the
+  // other nine are in hiddenWeaponIds).
+  ProtestSign01: { name: 'Protest Sign' },
   // The V.A.T.S. Unknown: its effect-variant mods sit on ap_customName
   // (0x0047A264), a slot the WEAP record doesn't list because the reward flow
   // attaches them as instance data. Appended so the picker can offer the
