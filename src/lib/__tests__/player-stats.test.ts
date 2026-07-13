@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
+import { computePerkBudget } from '@/data/perk-budget';
 import { PerkId } from '@/data/perk-ids';
 import { derivePlayerStats, BASE_MAX_HP, MAX_HP_PER_ENDURANCE, SPECIAL_KEYS, type SpecialKey } from '@/lib/player-stats';
 import { createDefaultPlayerConditions } from '@/types';
@@ -49,6 +50,28 @@ describe('derivePlayerStats', () => {
     const { maxHealth } = derivePlayerStats(lifegiver, baseSpecial({ endurance: 8 }), conditions);
     // Between (1,10) and (15,120): 10 + (8−1)/(15−1)×110 = 65.
     expect(maxHealth).toBe(BASE_MAX_HP + MAX_HP_PER_ENDURANCE * 8 + 65);
+  });
+});
+
+describe('computePerkBudget (real card costs, not rank)', () => {
+  it('Tenderizer rank 1 costs 2 Charisma points (its real PCRD cost, not rank 1)', () => {
+    const budget = computePerkBudget(
+      'live',
+      [{ perkId: PerkId.Tenderizer, rank: 1 }],
+      [],
+      baseSpecial()
+    );
+    expect(budget.cardPoints.charisma).toBe(2);
+  });
+
+  it('a rank-2 Party Boy/Girl costs 3 (its rank-2 cost), not cumulative 2+3', () => {
+    const budget = computePerkBudget(
+      'live',
+      [{ perkId: PerkId.PartyBoyGirl, rank: 2 }],
+      [],
+      baseSpecial()
+    );
+    expect(budget.cardPoints.charisma).toBe(3);
   });
 });
 

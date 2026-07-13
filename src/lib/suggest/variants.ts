@@ -5,7 +5,7 @@ import { getLegendaryOmodSlots, getOmodSlots } from '@/data/omods';
 import { computePerkBudget } from '@/data/perk-budget';
 import { getGeneratedPerk } from '@/data/perk-modifiers';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';
-import type { PerkBudget } from '@/lib/player-stats';
+import { perkCardCostAtRank, type PerkBudget } from '@/lib/player-stats';
 import { Special } from '@/data/special';
 import { LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS, type BuildState, type SpecialKey } from '@/state/build-reducer';
 import type { SuggestionBudget, SuggestionCandidate } from './types';
@@ -108,12 +108,13 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
 
     if (currentRank !== undefined) {
       if (currentRank < perk.maxRank) {
+        const extraCost = perkCardCostAtRank(perk, currentRank + 1) - perkCardCostAtRank(perk, currentRank);
         out.push({
           id: `perk-rank:${perkId}`,
           action: { type: 'perk/setRank', perkId, rank: currentRank + 1 },
           label: `${perk.name} rank ${currentRank + 1}`,
           group: 'perk',
-          budget: isLegendary ? LEGAL : perkBudget(cardBudget, perk, 1),
+          budget: isLegendary ? LEGAL : perkBudget(cardBudget, perk, extraCost),
         });
       }
     } else {
@@ -121,7 +122,7 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
         ? player.legendaryPerks.length >= LEGENDARY_SLOTS
           ? { legal: false, deficit: 1 }
           : LEGAL
-        : perkBudget(cardBudget, perk, 1);
+        : perkBudget(cardBudget, perk, perkCardCostAtRank(perk, 1));
       out.push({
         id: `perk-add:${perkId}`,
         action: { type: 'perk/add', perkId, rank: 1, legendary: isLegendary },

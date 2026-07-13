@@ -3,7 +3,7 @@ import type { GeneratedAddiction, GeneratedBodyPartRace, GeneratedOmod, Generate
 import type { Modifier } from '@/types/modifiers';
 
 import { weapons as weaponsLive } from './live/weapons';
-import { perks as perkRegistryLive } from './live/perks';
+import { perks as perkNamesLive } from './live/perks';
 import {
   enemies as enemiesLive,
   enemyMutations as enemyMutationsLive,
@@ -13,7 +13,7 @@ import { bodyArmor as bodyArmorLive } from './live/armor';
 import { powerArmor as powerArmorLive } from './live/power-armor';
 
 import { weapons as weaponsPts } from './pts/weapons';
-import { perks as perkRegistryPts } from './pts/perks';
+import { perks as perkNamesPts } from './pts/perks';
 import {
   enemies as enemiesPts,
   enemyMutations as enemyMutationsPts,
@@ -25,6 +25,7 @@ import { powerArmor as powerArmorPts } from './pts/power-armor';
 import { legendaryValueOverrides } from './overrides/legendary-values';
 import { buffValueOverrides } from './overrides/buff-overrides';
 import { omodModifierAdditions } from './overrides/corrections';
+import { derivePerkRegistry, type PerkNameEntry } from './perk-cards';
 import generatedOmodsLive from './live/generated/omods.json';
 import generatedPerksLive from './live/generated/perks.json';
 import generatedMutationsLive from './live/generated/mutations.json';
@@ -90,7 +91,8 @@ export interface Dataset {
 /** Hand-authored collections that would diverge per mode once a PTS dump exists. */
 interface HandAuthored {
   weapons: Record<string, Weapon>;
-  perkRegistry: Record<PerkId, Perk>;
+  /** Name-only PerkId registry; `perkRegistry` (special/maxRank/costs) is DERIVED below (perk-cards.ts). */
+  perkNames: Record<PerkId, PerkNameEntry>;
   enemies: Record<string, Enemy>;
   enemyMutations: Record<string, EnemyMutation>;
   legendaryRankModifiers: LegendaryRankModifiers;
@@ -111,10 +113,12 @@ const generatedAddictions = generatedAddictionsLive as GeneratedAddiction[];
 const generatedBodyParts = generatedBodyPartsLive as GeneratedBodyPartRace[];
 
 function buildDataset(hand: HandAuthored): Dataset {
+  const { perkNames, ...rest } = hand;
   return {
-    ...hand,
+    ...rest,
     omods: mergedOmods,
     perks: generatedPerks,
+    perkRegistry: derivePerkRegistry(perkNames, generatedPerks),
     mutations: mergedMutations,
     consumables: mergedConsumables,
     addictions: generatedAddictions,
@@ -125,7 +129,7 @@ function buildDataset(hand: HandAuthored): Dataset {
 const datasets: Record<GameMode, Dataset> = {
   live: buildDataset({
     weapons: weaponsLive,
-    perkRegistry: perkRegistryLive,
+    perkNames: perkNamesLive,
     enemies: enemiesLive,
     enemyMutations: enemyMutationsLive,
     legendaryRankModifiers: legendaryRankModifiersLive,
@@ -134,7 +138,7 @@ const datasets: Record<GameMode, Dataset> = {
   }),
   pts: buildDataset({
     weapons: weaponsPts,
-    perkRegistry: perkRegistryPts,
+    perkNames: perkNamesPts,
     enemies: enemiesPts,
     enemyMutations: enemyMutationsPts,
     legendaryRankModifiers: legendaryRankModifiersPts,

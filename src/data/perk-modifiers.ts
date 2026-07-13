@@ -13,13 +13,31 @@ import { extraPerkModifiers, perkFamilyOverrides } from './overrides/perk-overri
  * on ESM family "Commando"). Misses are patched via perkFamilyOverrides.
  */
 
-function normalizeName(name: string): string {
+export function normalizeName(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
-interface JoinMaps {
+export interface JoinMaps {
   byFamily: Map<string, GeneratedPerk>;
   byName: Map<string, GeneratedPerk>;
+}
+
+/**
+ * Builds the family/name join maps over a list of generated perks. Exported
+ * so the registry derivation (perk-cards.ts) reuses EXACTLY the same join
+ * logic without going through the mode-keyed dataset cache below.
+ */
+export function buildPerkJoinMaps(perks: GeneratedPerk[]): JoinMaps {
+  const byFamily = new Map<string, GeneratedPerk>();
+  const byName = new Map<string, GeneratedPerk>();
+  for (const perk of perks) {
+    byFamily.set(perk.family, perk);
+    const key = normalizeName(perk.name);
+    const existing = byName.get(key);
+    // Prefer proper perk cards on name collisions (NPC perks share names).
+    if (!existing || (!existing.hasCard && perk.hasCard)) byName.set(key, perk);
+  }
+  return { byFamily, byName };
 }
 
 const joinCache = new Map<GameMode, JoinMaps>();
@@ -27,16 +45,7 @@ const joinCache = new Map<GameMode, JoinMaps>();
 function getJoinMaps(mode: GameMode): JoinMaps {
   let maps = joinCache.get(mode);
   if (!maps) {
-    const byFamily = new Map<string, GeneratedPerk>();
-    const byName = new Map<string, GeneratedPerk>();
-    for (const perk of getDataset(mode).perks) {
-      byFamily.set(perk.family, perk);
-      const key = normalizeName(perk.name);
-      const existing = byName.get(key);
-      // Prefer proper perk cards on name collisions (NPC perks share names).
-      if (!existing || (!existing.hasCard && perk.hasCard)) byName.set(key, perk);
-    }
-    maps = { byFamily, byName };
+    maps = buildPerkJoinMaps(getDataset(mode).perks);
     joinCache.set(mode, maps);
   }
   return maps;

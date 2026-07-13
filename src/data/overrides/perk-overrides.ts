@@ -1,4 +1,5 @@
 import type { Modifier } from '@/types/modifiers';
+import type { Special } from '@/data/special';
 
 /**
  * Hand-maintained perk overrides layered over ESM-generated perk data.
@@ -30,7 +31,22 @@ export const perkFamilyOverrides: Readonly<Record<string, string>> = {
   // tiebreak is extraction-order dependent — pin the leveled card
   // (source: 20260702 ESM).
   BloodSacrifice: 'LGN_BloodSacrifice_Perk',
+  // The registry kept the pre-overhaul name "Bringing Out the Big Guns"; the
+  // card was renamed "Bringing the Big Guns" and its ESM family is the old
+  // standalone "HeavyGunnerMaster" perk repurposed as the card's home (source:
+  // 20260710 ESM — the old standalone HeavyGunnerMaster perk was removed).
+  BringingOutTheBigGuns: 'HeavyGunnerMaster',
 };
+
+/**
+ * Last-resort card data (special/maxRank/costs) for PerkIds that join no
+ * generated family AND have no perkFamilyOverrides entry, OR join a family
+ * without a PCRD card. Keyed by PerkId. Seeded from whatever
+ * `perk-cards.test.ts`'s drift check finds unjoined after every extraction —
+ * currently empty (every non-legendary registry PerkId joins a carded family
+ * once BringingOutTheBigGuns is pinned above).
+ */
+export const perkCardOverrides: Readonly<Record<string, { special?: Special; maxRank: number; costs: number[] }>> = {};
 
 /**
  * Hand-authored modifiers for perks whose ESM effects are procedural and not

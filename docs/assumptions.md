@@ -629,7 +629,26 @@ derive-from-perks experiment):
 - **Effective SPECIAL** (engine + stat summary) = base + legendary bonus +
   `specialX` buff-bucket folds. STR feeds melee, LCK the crit meter, END the
   HP formula.
-- **Blocking**: in-app card slotting past a stat's budget or the 4 legendary
+- **Card point costs are PCRD data, not rank** (2026-07-13): each card's
+  per-rank cost comes from its PCRD record's `Card Rank Cost` entries
+  (`GeneratedPerkCard.costs`), joined by perk formid in
+  `scripts/extract/extract-perks.ts` and folded in `derivePerkBudget`. Rank-1
+  Tenderizer costs 2 CHA points; Rifleman Expert/Master ("Scoped-up"/"Smart
+  Shot") cost 2/3. Legendary PCRDs also carry costs, but those belong to the
+  perk-coin system and never feed the SPECIAL budget.
+- **Legacy card cost continuation is NOT ESM-proven**: 28 pre-"Perks 2.0"
+  cards record fewer `Perks[]` entries than the family has ranks (LifegiverCard
+  lists only rank 1 at cost 2; exactly one PCRD per family — no per-rank
+  records exist). `padCosts` (`src/data/perk-cards.ts`) extends by +1 per
+  missing rank (base + rank − 1), which reproduces the known in-game values
+  for LifeGiver (2/3/4), Bodyguards (1/2/3/4), and Demolition Expert
+  (1/2/3/4/5); the other 25 are assumed to follow the same rule.
+- **Card SPECIAL/rank counts are PCRD-derived** (2026-07-13): the PerkId
+  registry keeps display names only; special/maxRank/costs come from the
+  extracted card data at dataset build (`derivePerkRegistry`). The ESM wins
+  over folk knowledge — e.g. Tenderizer is a 1-rank Charisma card in the
+  20260710 dump.
+- **Blocking**: in-app card slotting past a stat's budget or the 6 legendary
   slots is refused by the reducer (and disabled in the picker). N&D imports
   are NOT blocked — violations show the "over budget" badge; the URL's `s=`
   SPECIAL param is merged (clamped to 1–15).

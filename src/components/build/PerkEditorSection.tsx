@@ -18,7 +18,7 @@ import { getPerks } from '@/data';
 import { usePerkStatus } from './usePerkStatus';
 import { Special } from '@/data/special';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';
-import { canSlotCardPoints, type PerkBudget } from '@/lib/player-stats';
+import { canSlotCardPoints, perkCardCostAtRank, type PerkBudget } from '@/lib/player-stats';
 import type { Perk, PerkLoadout } from '@/types';
 import { LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS, type SpecialKey } from '@/state/build-reducer';
 import { ActionDelta } from '@/components/diff/ActionDelta';
@@ -41,6 +41,11 @@ interface PerkEntry {
   rank: number;
 }
 
+/** Perk-point cost delta for moving `perk` from `fromRank` to `toRank` (0 = unequipped). */
+function costDelta(perk: Perk, fromRank: number, toRank: number): number {
+  return perkCardCostAtRank(perk, toRank) - perkCardCostAtRank(perk, fromRank);
+}
+
 function usePerkRegistry() {
   const { mode } = useGameMode();
   return React.useMemo(() => {
@@ -59,9 +64,11 @@ function usePerkRegistry() {
 }
 
 /**
- * Card cost = rank (FO76 rule). Budget per stat = min(15, base allocation +
- * Legendary SPECIAL card bonus) — src/lib/player-stats.ts. Base allocation is
- * set in the SPECIAL section above.
+ * Card cost = the PCRD's per-rank "Card Rank Cost" (perk.costs[rank-1], NOT
+ * necessarily equal to rank — e.g. Tenderizer's single rank costs 2).
+ * Budget per stat = min(15, base allocation + Legendary SPECIAL card bonus)
+ * — src/lib/player-stats.ts. Base allocation is set in the SPECIAL section
+ * above.
  */
 function SpecialBudgetBar({ budget, onSelectSpecial }: { budget: PerkBudget; onSelectSpecial?: (s: Special) => void }) {
   return (
@@ -92,9 +99,16 @@ function SpecialBudgetBar({ budget, onSelectSpecial }: { budget: PerkBudget; onS
 
 function PerkRow({ entry, maxRank, raiseBlocked }: { entry: PerkEntry; maxRank: number; raiseBlocked?: boolean }) {
   const dispatch = useBuildDispatch();
+  // Legendary cards (no `special`) never consume SPECIAL perk points.
+  const cost = entry.perk.special ? perkCardCostAtRank(entry.perk, entry.rank) : null;
   return (
     <div className="bg-muted/40 flex items-center gap-1 rounded px-2 py-1 text-sm">
       <span className="min-w-0 flex-1 truncate">{entry.perk.name}</span>
+      {cost !== null && (
+        <span className="text-muted-foreground text-[10px] tabular-nums" title={`Costs ${cost} perk point${cost === 1 ? '' : 's'} at rank ${entry.rank}`}>
+          {cost} pt
+        </span>
+      )}
       <DiffTooltip action={{ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank - 1 }}>
         <Button
           variant="ghost"
@@ -182,7 +196,8 @@ function PerkAddCombobox({
     if (isLegendary) return rank === undefined && legendarySlotsFull;
     if (rank !== undefined && rank >= perk.maxRank) return false; // no-op anyway
     if (!perk.special) return false; // fail open, like the reducer's regularSlotBlocked
-    return !canSlotCardPoints(budget, SPECIAL_TO_KEY[perk.special], 1);
+    const delta = costDelta(perk, rank ?? 0, (rank ?? 0) + 1);
+    return !canSlotCardPoints(budget, SPECIAL_TO_KEY[perk.special], delta);
   };
 
   const select = (perkId: string, isLegendary: boolean, perk: Perk) => {
@@ -224,8 +239,12 @@ function PerkAddCombobox({
                   ? 'slots full'
                   : 'budget full'
                 : rank !== undefined
-                  ? `rank ${rank}/${perk.maxRank}`
-                  : `max ${perk.maxRank}`}
+                  ? rank < perk.maxRank && perk.special
+                    ? `rank ${rank}/${perk.maxRank} · +${costDelta(perk, rank, rank + 1)} pt`
+                    : `rank ${rank}/${perk.maxRank}`
+                  : perk.special
+                    ? `max ${perk.maxRank} · ${perkCardCostAtRank(perk, 1)} pt`
+                    : `max ${perk.maxRank}`}
             </span>
           </CommandItem>
         );
@@ -346,7 +365,13 @@ export function PerkEditor() {
                   entry={entry}
                   maxRank={entry.perk.maxRank}
                   raiseBlocked={
-                    entry.perk.special ? !canSlotCardPoints(budget, SPECIAL_TO_KEY[entry.perk.special], 1) : false
+                    entry.perk.special
+                      ? !canSlotCardPoints(
+                          budget,
+                          SPECIAL_TO_KEY[entry.perk.special],
+                          costDelta(entry.perk, entry.rank, entry.rank + 1)
+                        )
+                      : false
                   }
                 />
               ))}
@@ -378,9 +403,9 @@ export function PerkEditor() {
           )}
 
           <p className="text-muted-foreground text-xs">
-            Card cost equals rank. Each stat's budget is its base allocation (SPECIAL section) plus Legendary SPECIAL
-            card bonuses, capped at 15. Adding past the budget is blocked — imported or re-allocated builds that
-            exceed it are flagged instead.
+            Card cost is the card's own per-rank point cost (not always equal to rank). Each stat's budget is its base
+            allocation (SPECIAL section) plus Legendary SPECIAL card bonuses, capped at 15. Adding past the budget is
+            blocked — imported or re-allocated builds that exceed it are flagged instead.
           </p>
     </div>
   );

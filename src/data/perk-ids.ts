@@ -33,6 +33,8 @@ export const PerkId = {
   LockAndLoad: "LockAndLoad",
   PainTrain: "PainTrain",
   ArmsKeeper: "ArmsKeeper",
+  PortablePower: "PortablePower",
+  SturdyFrame: "SturdyFrame",
 
   // Perception
   ConcentratedFire: "ConcentratedFire",
@@ -101,6 +103,7 @@ export const PerkId = {
   Radicool: "Radicool",
   RadSponge: "RadSponge",
   Photosynthetic: "Photosynthetic",
+  LightMeal: "LightMeal",
 
   // Charisma
   AnimalFriend: "AnimalFriend",
@@ -131,6 +134,7 @@ export const PerkId = {
   AntiEpidemic: "AntiEpidemic",
   Tenderizer: "Tenderizer",
   WastelandWhisperer: "WastelandWhisperer",
+  Antibiotic: "Antibiotic",
 
   // Intelligence
   FirstAid: "FirstAid",
@@ -159,6 +163,7 @@ export const PerkId = {
   WeaponArtisan: "WeaponArtisan",
   NerdRage: "NerdRage",
   StableTools: "StableTools",
+  Conductor: "Conductor",
 
   // Agility
   Adrenaline: "Adrenaline",

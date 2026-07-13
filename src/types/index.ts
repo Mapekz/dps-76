@@ -1,4 +1,3 @@
-import type { StatModification } from '@/data/stats';
 import type { Special } from '@/data/special';
 
 // Re-export for convenience
@@ -141,7 +140,8 @@ export interface Perk {
   /** SPECIAL the card slots into; absent on legendary perks (not SPECIAL-tied). */
   special?: Special;
   maxRank: number;
-  statsModified: StatModification[];
+  /** Per-rank perk-point cost from the PCRD card; index 0 = rank 1 cost. */
+  costs: number[];
 }
 
 export interface PerkLoadout {

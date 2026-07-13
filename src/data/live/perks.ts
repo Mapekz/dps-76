@@ -1,304 +1,312 @@
-import type { Perk } from "@/types";
+import type { PerkNameEntry } from "@/data/perk-cards";
 import { PerkId } from "@/data/perk-ids";
-import { Special } from "@/data/special";
-import { Stat } from "@/data/stats";
 
-// PTS data - mirrors live for now, update when PTS changes
-export const perks: Record<PerkId, Perk> = {
+/**
+ * Name-only perk registry: PerkId -> display name. SPECIAL/maxRank/costs are
+ * DERIVED from the ESM-generated perk cards (src/data/perk-cards.ts,
+ * wired in src/data/dataset.ts) — this file only supplies the join key
+ * (the display name) and preserves PerkId ordering/section grouping.
+ */
+export const perks: Record<PerkId, PerkNameEntry> = {
   // ============ STRENGTH ============
-  [PerkId.Bandolier]: { name: "Bandolier", special: Special.Strength, maxRank: 2, statsModified: [] },
-  [PerkId.BatteriesIncluded]: { name: "Batteries Included", special: Special.Strength, maxRank: 3, statsModified: [] },
-  [PerkId.BearArms]: { name: "Bear Arms", special: Special.Strength, maxRank: 3, statsModified: [] },
-  [PerkId.TightlyWound]: { name: "Tightly Wound", special: Special.Strength, maxRank: 3, statsModified: [] },
-  [PerkId.Slugger]: { name: "Slugger", special: Special.Strength, maxRank: 3, statsModified: [{ stat: Stat.DamageToCrippledBonus, value: 30 }] },
-  [PerkId.WoundSalter]: { name: "Wound Salter", special: Special.Strength, maxRank: 3, statsModified: [] },
-  [PerkId.ThruHiker]: { name: "Thru Hiker", special: Special.Strength, maxRank: 3, statsModified: [] },
-  [PerkId.BulletShield]: { name: "Bullet Shield", special: Special.Strength, maxRank: 3, statsModified: [] },
-  [PerkId.IronFist]: { name: "Iron Fist", special: Special.Strength, maxRank: 3, statsModified: [{ stat: Stat.UnarmedDamageBonus, value: 20 }] },
-  [PerkId.PackRat]: { name: "Pack Rat", special: Special.Strength, maxRank: 3, statsModified: [] },
-  [PerkId.TravelingPharmacy]: { name: "Traveling Pharmacy", special: Special.Strength, maxRank: 3, statsModified: [] },
-  [PerkId.Basher]: { name: "Basher", special: Special.Strength, maxRank: 3, statsModified: [{ stat: Stat.BashDamageBonus, value: 50 }, { stat: Stat.LimbDamageBonus, value: 75 }] },
-  [PerkId.EasyTarget]: { name: "Easy Target", special: Special.Strength, maxRank: 3, statsModified: [{ stat: Stat.DamageToCrippledBonus, value: 75 }] },
-  [PerkId.Incisor]: { name: "Incisor", special: Special.Strength, maxRank: 3, statsModified: [{ stat: Stat.ArmorPenetration, value: 75 }] },
-  [PerkId.Barbarian]: { name: "Barbarian", special: Special.Strength, maxRank: 3, statsModified: [] }, // SPECIAL-scaled: DR = STR value
-  [PerkId.Blocker]: { name: "Blocker", special: Special.Strength, maxRank: 3, statsModified: [{ stat: Stat.IncomingDamageMultiplier, value: -45 }] },
-  [PerkId.NaturalStance]: { name: "Natural Stance", special: Special.Strength, maxRank: 3, statsModified: [] }, // -25% stagger - not implemented
-  [PerkId.BloodLuster]: { name: "Blood Luster", special: Special.Strength, maxRank: 3, statsModified: [] }, // Team buff - not implemented
-  [PerkId.Kneecapper]: { name: "Knee-capper", special: Special.Strength, maxRank: 3, statsModified: [{ stat: Stat.MeleeLimbDamageBonus, value: 50 }] },
-  [PerkId.HeavyHitter]: { name: "Heavy Hitter", special: Special.Strength, maxRank: 3, statsModified: [{ stat: Stat.PowerAttackDamageBonus, value: 50 }] },
-  [PerkId.LoveTheSpread]: { name: "Love the Spread", special: Special.Strength, maxRank: 3, statsModified: [] }, // +30% range - not damage
-  [PerkId.ShotgunChamp]: { name: "Shotgun Champ", special: Special.Strength, maxRank: 3, statsModified: [{ stat: Stat.DamageToCrippledBonus, value: 10 }] }, // Per projectile
-  [PerkId.BulletStorm]: { name: "Bullet Storm", special: Special.Strength, maxRank: 3, statsModified: [{ stat: Stat.BulletStormDamagePerStack, value: 9 }] },
-  [PerkId.BringingOutTheBigGuns]: { name: "Bringing Out the Big Guns", special: Special.Strength, maxRank: 3, statsModified: [] }, // Doubles Bullet Storm max stacks - special handling
-  [PerkId.MartialArtist]: { name: "Martial Artist", special: Special.Strength, maxRank: 3, statsModified: [] }, // +30% swing speed - not direct damage
-  [PerkId.FullCharge]: { name: "Full Charge", special: Special.Strength, maxRank: 3, statsModified: [{ stat: Stat.PowerAttackDamageBonus, value: 50 }] },
-  [PerkId.Scattershot]: { name: "Scattershot", special: Special.Strength, maxRank: 3, statsModified: [] }, // Shotgun-specific - need to verify
-  [PerkId.StrongBack]: { name: "Strong Back", special: Special.Strength, maxRank: 4, statsModified: [] }, // Carry weight - not combat
-  [PerkId.OrdnanceExpress]: { name: "Ordnance Express", special: Special.Strength, maxRank: 3, statsModified: [] }, // Weight reduction - not combat
-  [PerkId.LockAndLoad]: { name: "Lock And Load", special: Special.Strength, maxRank: 3, statsModified: [] }, // Reload speed - indirect combat
-  [PerkId.PainTrain]: { name: "Pain Train", special: Special.Strength, maxRank: 3, statsModified: [] }, // Sprint damage - not implemented
-  [PerkId.ArmsKeeper]: { name: "Arms Keeper", special: Special.Strength, maxRank: 3, statsModified: [] }, // Durability - not combat
+  [PerkId.Bandolier]: { name: "Bandolier" },
+  [PerkId.BatteriesIncluded]: { name: "Batteries Included" },
+  [PerkId.BearArms]: { name: "Bear Arms" },
+  [PerkId.TightlyWound]: { name: "Tightly Wound" },
+  [PerkId.Slugger]: { name: "Slugger" },
+  [PerkId.WoundSalter]: { name: "Wound Salter" },
+  [PerkId.ThruHiker]: { name: "Thru Hiker" },
+  [PerkId.BulletShield]: { name: "Bullet Shield" },
+  [PerkId.IronFist]: { name: "Iron Fist" },
+  [PerkId.PackRat]: { name: "Pack Rat" },
+  [PerkId.TravelingPharmacy]: { name: "Traveling Pharmacy" },
+  [PerkId.Basher]: { name: "Basher" },
+  [PerkId.EasyTarget]: { name: "Easy Target" },
+  [PerkId.Incisor]: { name: "Incisor" },
+  [PerkId.Barbarian]: { name: "Barbarian" }, // SPECIAL-scaled: DR = STR value
+  [PerkId.Blocker]: { name: "Blocker" },
+  [PerkId.NaturalStance]: { name: "Natural Stance" }, // -25% stagger - not implemented
+  [PerkId.BloodLuster]: { name: "Blood Luster" }, // Team buff - not implemented
+  [PerkId.Kneecapper]: { name: "Knee-capper" },
+  [PerkId.HeavyHitter]: { name: "Heavy Hitter" },
+  [PerkId.LoveTheSpread]: { name: "Love the Spread" }, // +30% range - not damage
+  [PerkId.ShotgunChamp]: { name: "Shotgun Champ" }, // Per projectile
+  [PerkId.BulletStorm]: { name: "Bullet Storm" },
+  [PerkId.BringingOutTheBigGuns]: { name: "Bringing Out the Big Guns" }, // Doubles Bullet Storm max stacks - special handling
+  [PerkId.MartialArtist]: { name: "Martial Artist" }, // +30% swing speed - not direct damage
+  [PerkId.FullCharge]: { name: "Full Charge" },
+  [PerkId.Scattershot]: { name: "Scattershot" }, // Shotgun-specific - need to verify
+  [PerkId.StrongBack]: { name: "Strong Back" }, // Carry weight - not combat
+  [PerkId.OrdnanceExpress]: { name: "Ordnance Express" }, // Weight reduction - not combat
+  [PerkId.LockAndLoad]: { name: "Lock And Load" }, // Reload speed - indirect combat
+  [PerkId.PainTrain]: { name: "Pain Train" }, // Sprint damage - not implemented
+  [PerkId.ArmsKeeper]: { name: "Arms Keeper" }, // Durability - not combat
+  [PerkId.PortablePower]: { name: "Portable Power" },
+  [PerkId.SturdyFrame]: { name: "Sturdy Frame" },
 
   // ============ PERCEPTION ============
-  [PerkId.ConcentratedFire]: { name: "Concentrated Fire", special: Special.Perception, maxRank: 3, statsModified: [] }, // +3% accuracy & damage per shot - stacking mechanic not implemented
-  [PerkId.GreenThumb]: { name: "Green Thumb", special: Special.Perception, maxRank: 1, statsModified: [] }, // Harvesting - not combat
-  [PerkId.NightPerson]: { name: "Night Person", special: Special.Perception, maxRank: 3, statsModified: [] }, // Night time bonus - not implemented
-  [PerkId.Pannapictagraphist]: { name: "Pannapictagraphist", special: Special.Perception, maxRank: 1, statsModified: [] }, // Photo mode - not combat
-  [PerkId.Perceptibobble]: { name: "Perceptibobble", special: Special.Perception, maxRank: 1, statsModified: [] }, // Bobblehead duration - not combat
-  [PerkId.Refractor]: { name: "Refractor", special: Special.Perception, maxRank: 5, statsModified: [] }, // SPECIAL-scaled: ER = PER value
-  [PerkId.Sniper]: { name: "Sniper", special: Special.Perception, maxRank: 3, statsModified: [] }, // Scoped rifle damage - need weapon mod check
-  [PerkId.ButchersBounty]: { name: "Butcher's Bounty", special: Special.Perception, maxRank: 3, statsModified: [] }, // Meat harvest - not combat
-  [PerkId.PicklockExpert]: { name: "Picklock Expert", special: Special.Perception, maxRank: 1, statsModified: [] }, // Lockpicking - not combat
-  [PerkId.PicklockMaster]: { name: "Picklock Master", special: Special.Perception, maxRank: 1, statsModified: [] }, // Lockpicking - not combat
-  [PerkId.Picklock]: { name: "Picklock", special: Special.Perception, maxRank: 1, statsModified: [] }, // Lockpicking - not combat
-  [PerkId.CrackShot]: { name: "Crack Shot", special: Special.Perception, maxRank: 3, statsModified: [] }, // Accuracy - not direct damage
-  [PerkId.SkeetShooter]: { name: "Skeet Shooter", special: Special.Perception, maxRank: 3, statsModified: [] }, // Accuracy - not direct damage
-  [PerkId.DownRanger]: { name: "Down Ranger", special: Special.Perception, maxRank: 3, statsModified: [] }, // +20% ranged damage to distant enemies - conditional
-  [PerkId.GlowSight]: { name: "Glow Sight", special: Special.Perception, maxRank: 3, statsModified: [{ stat: Stat.DamageToGlowingEnemiesBonus, value: 60 }] },
-  [PerkId.Awareness]: { name: "Awareness", special: Special.Perception, maxRank: 1, statsModified: [] }, // Enemy info display - not combat
-  [PerkId.CenterMasochist]: { name: "Center Masochist", special: Special.Perception, maxRank: 3, statsModified: [{ stat: Stat.TorsoDamageBonus, value: 75 }] },
-  [PerkId.FastFighter]: { name: "Fast Fighter", special: Special.Perception, maxRank: 3, statsModified: [] }, // Fire rate - not direct damage
-  [PerkId.NumberCruncher]: { name: "Number Cruncher", special: Special.Perception, maxRank: 3, statsModified: [] }, // Damage numbers display - not combat
-  [PerkId.StrongArm]: { name: "Strong Arm", special: Special.Perception, maxRank: 3, statsModified: [] }, // Throwing range - not direct damage
-  [PerkId.RiflemanExpert]: { name: "Rifleman Expert", special: Special.Perception, maxRank: 3, statsModified: [] }, // Old weapon-type perk - reworked
-  [PerkId.RiflemanMaster]: { name: "Rifleman Master", special: Special.Perception, maxRank: 3, statsModified: [] }, // Old weapon-type perk - reworked
-  [PerkId.Exterminator]: { name: "Exterminator", special: Special.Perception, maxRank: 3, statsModified: [{ stat: Stat.ArmorPenetrationVsInsects, value: 75 }] },
-  [PerkId.BowBeforeMe]: { name: "Bow Before Me", special: Special.Perception, maxRank: 3, statsModified: [{ stat: Stat.ArmorPenetration, value: 40 }] }, // Bow/crossbow only
-  [PerkId.GroundPounder]: { name: "Ground Pounder", special: Special.Perception, maxRank: 3, statsModified: [] }, // Reload speed & accuracy - not direct damage
-  [PerkId.TankKiller]: { name: "Tank Killer", special: Special.Perception, maxRank: 3, statsModified: [{ stat: Stat.ArmorPenetration, value: 40 }] },
-  [PerkId.Grenadier]: { name: "Grenadier", special: Special.Perception, maxRank: 2, statsModified: [] }, // 2x explosion radius - area effect not damage
-  [PerkId.LongShot]: { name: "Long Shot", special: Special.Perception, maxRank: 3, statsModified: [] }, // Range/accuracy - not direct damage
-  [PerkId.NightEyes]: { name: "Night Eyes", special: Special.Perception, maxRank: 1, statsModified: [] }, // Night vision - not combat
-  [PerkId.Archer]: { name: "Archer", special: Special.Perception, maxRank: 3, statsModified: [{ stat: Stat.BowDamageBonus, value: 60 }] },
-  [PerkId.ArcherExpert]: { name: "Archer Expert", special: Special.Perception, maxRank: 3, statsModified: [{ stat: Stat.BowDamageBonus, value: 75 }] },
-  [PerkId.ArcherMaster]: { name: "Archer Master", special: Special.Perception, maxRank: 3, statsModified: [{ stat: Stat.BowDamageBonus, value: 100 }] },
+  [PerkId.ConcentratedFire]: { name: "Concentrated Fire" }, // +3% accuracy & damage per shot - stacking mechanic not implemented
+  [PerkId.GreenThumb]: { name: "Green Thumb" }, // Harvesting - not combat
+  [PerkId.NightPerson]: { name: "Night Person" }, // Night time bonus - not implemented
+  [PerkId.Pannapictagraphist]: { name: "Pannapictagraphist" }, // Photo mode - not combat
+  [PerkId.Perceptibobble]: { name: "Perceptibobble" }, // Bobblehead duration - not combat
+  [PerkId.Refractor]: { name: "Refractor" }, // SPECIAL-scaled: ER = PER value
+  [PerkId.Sniper]: { name: "Sniper" }, // Scoped rifle damage - need weapon mod check
+  [PerkId.ButchersBounty]: { name: "Butcher's Bounty" }, // Meat harvest - not combat
+  [PerkId.PicklockExpert]: { name: "Picklock Expert" }, // Lockpicking - not combat
+  [PerkId.PicklockMaster]: { name: "Picklock Master" }, // Lockpicking - not combat
+  [PerkId.Picklock]: { name: "Picklock" }, // Lockpicking - not combat
+  [PerkId.CrackShot]: { name: "Crack Shot" }, // Accuracy - not direct damage
+  [PerkId.SkeetShooter]: { name: "Skeet Shooter" }, // Accuracy - not direct damage
+  [PerkId.DownRanger]: { name: "Down Ranger" }, // +20% ranged damage to distant enemies - conditional
+  [PerkId.GlowSight]: { name: "Glow Sight" },
+  [PerkId.Awareness]: { name: "Awareness" }, // Enemy info display - not combat
+  [PerkId.CenterMasochist]: { name: "Center Masochist" },
+  [PerkId.FastFighter]: { name: "Fast Fighter" }, // Fire rate - not direct damage
+  [PerkId.NumberCruncher]: { name: "Number Cruncher" }, // Damage numbers display - not combat
+  [PerkId.StrongArm]: { name: "Strong Arm" }, // Throwing range - not direct damage
+  [PerkId.RiflemanExpert]: { name: "Rifleman Expert" }, // Old weapon-type perk - reworked
+  [PerkId.RiflemanMaster]: { name: "Rifleman Master" }, // Old weapon-type perk - reworked
+  [PerkId.Exterminator]: { name: "Exterminator" },
+  [PerkId.BowBeforeMe]: { name: "Bow Before Me" }, // Bow/crossbow only
+  [PerkId.GroundPounder]: { name: "Ground Pounder" }, // Reload speed & accuracy - not direct damage
+  [PerkId.TankKiller]: { name: "Tank Killer" },
+  [PerkId.Grenadier]: { name: "Grenadier" }, // 2x explosion radius - area effect not damage
+  [PerkId.LongShot]: { name: "Long Shot" }, // Range/accuracy - not direct damage
+  [PerkId.NightEyes]: { name: "Night Eyes" }, // Night vision - not combat
+  [PerkId.Archer]: { name: "Archer" },
+  [PerkId.ArcherExpert]: { name: "Archer Expert" },
+  [PerkId.ArcherMaster]: { name: "Archer Master" },
 
   // ============ ENDURANCE ============
-  [PerkId.AquaBoyGirl]: { name: "Aqua Boy/Girl", special: Special.Endurance, maxRank: 1, statsModified: [] },
-  [PerkId.Dromedary]: { name: "Dromedary", special: Special.Endurance, maxRank: 3, statsModified: [] },
-  [PerkId.ProfessionalDrinker]: { name: "Professional Drinker", special: Special.Endurance, maxRank: 3, statsModified: [] },
-  [PerkId.Revenant]: { name: "Revenant", special: Special.Endurance, maxRank: 2, statsModified: [] },
-  [PerkId.SlowMetabolizer]: { name: "Slow Metabolizer", special: Special.Endurance, maxRank: 3, statsModified: [] },
-  [PerkId.Vaccinated]: { name: "Vaccinated", special: Special.Endurance, maxRank: 3, statsModified: [] },
-  [PerkId.GoodDoggy]: { name: "Good Doggy", special: Special.Endurance, maxRank: 3, statsModified: [] },
-  [PerkId.IronStomach]: { name: "Iron Stomach", special: Special.Endurance, maxRank: 3, statsModified: [] },
-  [PerkId.LeadBelly]: { name: "Lead Belly", special: Special.Endurance, maxRank: 3, statsModified: [] },
-  [PerkId.ThirstQuencher]: { name: "Thirst Quencher", special: Special.Endurance, maxRank: 3, statsModified: [] },
-  [PerkId.HydroFix]: { name: "Hydro Fix", special: Special.Endurance, maxRank: 3, statsModified: [] },
-  [PerkId.NaturalResistance]: { name: "Natural Resistance", special: Special.Endurance, maxRank: 3, statsModified: [] },
-  [PerkId.RadResistant]: { name: "Rad Resistant", special: Special.Endurance, maxRank: 4, statsModified: [] },
-  [PerkId.LifeGiver]: { name: "Life Giver", special: Special.Endurance, maxRank: 4, statsModified: [] },
-  [PerkId.AllNightLong]: { name: "All Night Long", special: Special.Endurance, maxRank: 3, statsModified: [] },
-  [PerkId.ChemResistant]: { name: "Chem Resistant", special: Special.Endurance, maxRank: 2, statsModified: [] },
-  [PerkId.Fireproof]: { name: "Fireproof", special: Special.Endurance, maxRank: 3, statsModified: [{ stat: Stat.IncomingExplosionDamageMultiplier, value: -45 }, { stat: Stat.FireResist, value: 45 }] },
-  [PerkId.Ghoulish]: { name: "Ghoulish", special: Special.Endurance, maxRank: 3, statsModified: [] }, // Rad healing - special mechanic
-  [PerkId.Ironclad]: { name: "Ironclad", special: Special.Endurance, maxRank: 5, statsModified: [{ stat: Stat.DamageResist, value: 25 }, { stat: Stat.EnergyResist, value: 25 }] }, // +50% with matching armor set
-  [PerkId.Rejuvenated]: { name: "Rejuvenated", special: Special.Endurance, maxRank: 2, statsModified: [] }, // Well fed/hydrated bonuses - not direct combat
-  [PerkId.Cannibal]: { name: "Cannibal", special: Special.Endurance, maxRank: 3, statsModified: [] }, // Corpse eating - not combat
-  [PerkId.ColaNut]: { name: "Cola Nut", special: Special.Endurance, maxRank: 2, statsModified: [] }, // Nuka-Cola bonuses - consumable effect
-  [PerkId.MunchyResistance]: { name: "Munchy Resistance", special: Special.Endurance, maxRank: 3, statsModified: [] }, // Chem addiction - not combat
-  [PerkId.AdamantiumSkeleton]: { name: "Adamantium Skeleton", special: Special.Endurance, maxRank: 3, statsModified: [{ stat: Stat.LimbDamageReduction, value: 75 }] },
-  [PerkId.SunKissed]: { name: "Sun Kissed", special: Special.Endurance, maxRank: 3, statsModified: [] },
-  [PerkId.Homebody]: { name: "Homebody", special: Special.Endurance, maxRank: 3, statsModified: [] },
-  [PerkId.SolarPowered]: { name: "Solar Powered", special: Special.Endurance, maxRank: 3, statsModified: [] },
-  [PerkId.ChemFiend]: { name: "Chem Fiend", special: Special.Endurance, maxRank: 3, statsModified: [] },
-  [PerkId.NocturnalFortitude]: { name: "Nocturnal Fortitude", special: Special.Endurance, maxRank: 3, statsModified: [] },
-  [PerkId.Radicool]: { name: "Radicool", special: Special.Endurance, maxRank: 1, statsModified: [] },
-  [PerkId.RadSponge]: { name: "Rad Sponge", special: Special.Endurance, maxRank: 3, statsModified: [] },
-  [PerkId.Photosynthetic]: { name: "Photosynthetic", special: Special.Endurance, maxRank: 2, statsModified: [] },
+  [PerkId.AquaBoyGirl]: { name: "Aqua Boy/Girl" },
+  [PerkId.Dromedary]: { name: "Dromedary" },
+  [PerkId.ProfessionalDrinker]: { name: "Professional Drinker" },
+  [PerkId.Revenant]: { name: "Revenant" },
+  [PerkId.SlowMetabolizer]: { name: "Slow Metabolizer" },
+  [PerkId.Vaccinated]: { name: "Vaccinated" },
+  [PerkId.GoodDoggy]: { name: "Good Doggy" },
+  [PerkId.IronStomach]: { name: "Iron Stomach" },
+  [PerkId.LeadBelly]: { name: "Lead Belly" },
+  [PerkId.ThirstQuencher]: { name: "Thirst Quencher" },
+  [PerkId.HydroFix]: { name: "Hydro Fix" },
+  [PerkId.NaturalResistance]: { name: "Natural Resistance" },
+  [PerkId.RadResistant]: { name: "Rad Resistant" },
+  [PerkId.LifeGiver]: { name: "Life Giver" },
+  [PerkId.AllNightLong]: { name: "All Night Long" },
+  [PerkId.ChemResistant]: { name: "Chem Resistant" },
+  [PerkId.Fireproof]: { name: "Fireproof" },
+  [PerkId.Ghoulish]: { name: "Ghoulish" }, // Rad healing - special mechanic
+  [PerkId.Ironclad]: { name: "Ironclad" }, // +50% with matching armor set
+  [PerkId.Rejuvenated]: { name: "Rejuvenated" }, // Well fed/hydrated bonuses - not direct combat
+  [PerkId.Cannibal]: { name: "Cannibal" }, // Corpse eating - not combat
+  [PerkId.ColaNut]: { name: "Cola Nut" }, // Nuka-Cola bonuses - consumable effect
+  [PerkId.MunchyResistance]: { name: "Munchy Resistance" }, // Chem addiction - not combat
+  [PerkId.AdamantiumSkeleton]: { name: "Adamantium Skeleton" },
+  [PerkId.SunKissed]: { name: "Sun Kissed" },
+  [PerkId.Homebody]: { name: "Homebody" },
+  [PerkId.SolarPowered]: { name: "Solar Powered" },
+  [PerkId.ChemFiend]: { name: "Chem Fiend" },
+  [PerkId.NocturnalFortitude]: { name: "Nocturnal Fortitude" },
+  [PerkId.Radicool]: { name: "Radicool" },
+  [PerkId.RadSponge]: { name: "Rad Sponge" },
+  [PerkId.Photosynthetic]: { name: "Photosynthetic" },
+  [PerkId.LightMeal]: { name: "Light Meal" },
 
   // ============ CHARISMA ============
-  [PerkId.AnimalFriend]: { name: "Animal Friend", special: Special.Charisma, maxRank: 3, statsModified: [] },
-  [PerkId.Bodyguards]: { name: "Bodyguards", special: Special.Charisma, maxRank: 4, statsModified: [] }, // SPECIAL-scaled DR/ER per teammate
-  [PerkId.FriendlyFire]: { name: "Friendly Fire", special: Special.Charisma, maxRank: 3, statsModified: [] },
-  [PerkId.HappyCamper]: { name: "Happy Camper", special: Special.Charisma, maxRank: 2, statsModified: [] },
-  [PerkId.HappyGoLucky]: { name: "Happy-Go-Lucky", special: Special.Charisma, maxRank: 3, statsModified: [] },
-  [PerkId.HardBargain]: { name: "Hard Bargain", special: Special.Charisma, maxRank: 3, statsModified: [] },
-  [PerkId.Inspirational]: { name: "Inspirational", special: Special.Charisma, maxRank: 3, statsModified: [] },
-  [PerkId.LoneWanderer]: { name: "Lone Wanderer", special: Special.Charisma, maxRank: 4, statsModified: [] }, // SPECIAL-scaled DR/ER when solo
-  [PerkId.PartyBoyGirl]: { name: "Party Boy/Girl", special: Special.Charisma, maxRank: 3, statsModified: [] },
-  [PerkId.QuackSurgeon]: { name: "Quack Surgeon", special: Special.Charisma, maxRank: 3, statsModified: [] },
-  [PerkId.SpiritualHealer]: { name: "Spiritual Healer", special: Special.Charisma, maxRank: 3, statsModified: [] },
-  [PerkId.Philanthropist]: { name: "Philanthropist", special: Special.Charisma, maxRank: 1, statsModified: [] },
-  [PerkId.SquadManeuvers]: { name: "Squad Maneuvers", special: Special.Charisma, maxRank: 2, statsModified: [] },
-  [PerkId.StrangeInNumbers]: { name: "Strange In Numbers", special: Special.Charisma, maxRank: 1, statsModified: [] },
-  [PerkId.TeamMedic]: { name: "Team Medic", special: Special.Charisma, maxRank: 3, statsModified: [] },
-  [PerkId.Bloodsucker]: { name: "Bloodsucker", special: Special.Charisma, maxRank: 3, statsModified: [] },
-  [PerkId.EMT]: { name: "EMT", special: Special.Charisma, maxRank: 3, statsModified: [] },
-  [PerkId.MagneticPersonality]: { name: "Magnetic Personality", special: Special.Charisma, maxRank: 2, statsModified: [] },
-  [PerkId.FieldSurgeon]: { name: "Field Surgeon", special: Special.Charisma, maxRank: 1, statsModified: [] },
-  [PerkId.Injector]: { name: "Injector", special: Special.Charisma, maxRank: 3, statsModified: [] },
-  [PerkId.Suppressor]: { name: "Suppressor", special: Special.Charisma, maxRank: 3, statsModified: [] }, // Enemy debuff - reduces enemy damage by 30%
-  [PerkId.DryNurse]: { name: "Dry Nurse", special: Special.Charisma, maxRank: 3, statsModified: [] },
-  [PerkId.HealingHands]: { name: "Healing Hands", special: Special.Charisma, maxRank: 1, statsModified: [] },
-  [PerkId.TravelAgent]: { name: "Travel Agent", special: Special.Charisma, maxRank: 1, statsModified: [] },
-  [PerkId.OverlyGenerous]: { name: "Overly Generous", special: Special.Charisma, maxRank: 3, statsModified: [] },
-  [PerkId.AntiEpidemic]: { name: "Anti Epidemic", special: Special.Charisma, maxRank: 3, statsModified: [] },
-  [PerkId.Tenderizer]: { name: "Tenderizer", special: Special.Charisma, maxRank: 3, statsModified: [] }, // Enemy debuff - stacking damage taken
-  [PerkId.WastelandWhisperer]: { name: "Wasteland Whisperer", special: Special.Charisma, maxRank: 3, statsModified: [] },
+  [PerkId.AnimalFriend]: { name: "Animal Friend" },
+  [PerkId.Bodyguards]: { name: "Bodyguards" }, // SPECIAL-scaled DR/ER per teammate
+  [PerkId.FriendlyFire]: { name: "Friendly Fire" },
+  [PerkId.HappyCamper]: { name: "Happy Camper" },
+  [PerkId.HappyGoLucky]: { name: "Happy-Go-Lucky" },
+  [PerkId.HardBargain]: { name: "Hard Bargain" },
+  [PerkId.Inspirational]: { name: "Inspirational" },
+  [PerkId.LoneWanderer]: { name: "Lone Wanderer" }, // SPECIAL-scaled DR/ER when solo
+  [PerkId.PartyBoyGirl]: { name: "Party Boy/Girl" },
+  [PerkId.QuackSurgeon]: { name: "Quack Surgeon" },
+  [PerkId.SpiritualHealer]: { name: "Spiritual Healer" },
+  [PerkId.Philanthropist]: { name: "Philanthropist" },
+  [PerkId.SquadManeuvers]: { name: "Squad Maneuvers" },
+  [PerkId.StrangeInNumbers]: { name: "Strange In Numbers" },
+  [PerkId.TeamMedic]: { name: "Team Medic" },
+  [PerkId.Bloodsucker]: { name: "Bloodsucker" },
+  [PerkId.EMT]: { name: "EMT" },
+  [PerkId.MagneticPersonality]: { name: "Magnetic Personality" },
+  [PerkId.FieldSurgeon]: { name: "Field Surgeon" },
+  [PerkId.Injector]: { name: "Injector" },
+  [PerkId.Suppressor]: { name: "Suppressor" }, // Enemy debuff - reduces enemy damage by 30%
+  [PerkId.DryNurse]: { name: "Dry Nurse" },
+  [PerkId.HealingHands]: { name: "Healing Hands" },
+  [PerkId.TravelAgent]: { name: "Travel Agent" },
+  [PerkId.OverlyGenerous]: { name: "Overly Generous" },
+  [PerkId.AntiEpidemic]: { name: "Anti Epidemic" },
+  [PerkId.Tenderizer]: { name: "Tenderizer" }, // Enemy debuff - stacking damage taken
+  [PerkId.WastelandWhisperer]: { name: "Wasteland Whisperer" },
+  [PerkId.Antibiotic]: { name: "Antibiotic" },
 
   // ============ INTELLIGENCE ============
-  [PerkId.FirstAid]: { name: "First Aid", special: Special.Intelligence, maxRank: 3, statsModified: [] },
-  [PerkId.Hacker]: { name: "Hacker", special: Special.Intelligence, maxRank: 1, statsModified: [] },
-  [PerkId.MakeshiftWarrior]: { name: "Makeshift Warrior", special: Special.Intelligence, maxRank: 5, statsModified: [] },
-  [PerkId.HackerMaster]: { name: "Hacker Master", special: Special.Intelligence, maxRank: 1, statsModified: [] },
-  [PerkId.Contractor]: { name: "Contractor", special: Special.Intelligence, maxRank: 2, statsModified: [] },
-  [PerkId.Science]: { name: "Science!", special: Special.Intelligence, maxRank: 3, statsModified: [] },
-  [PerkId.LicensedPlumber]: { name: "Licensed Plumber", special: Special.Intelligence, maxRank: 3, statsModified: [] },
-  [PerkId.Pharmacist]: { name: "Pharmacist", special: Special.Intelligence, maxRank: 3, statsModified: [] },
-  [PerkId.HackerExpert]: { name: "Hacker Expert", special: Special.Intelligence, maxRank: 1, statsModified: [] },
-  [PerkId.DemolitionExpert]: { name: "Demolition Expert", special: Special.Intelligence, maxRank: 5, statsModified: [{ stat: Stat.OutgoingExplosionDamageMultiplier, value: 100 }] },
-  [PerkId.Gunsmith]: { name: "Gunsmith", special: Special.Intelligence, maxRank: 5, statsModified: [] },
-  [PerkId.PowerUser]: { name: "Power User", special: Special.Intelligence, maxRank: 3, statsModified: [] },
-  [PerkId.PowerSmith]: { name: "Power Smith", special: Special.Intelligence, maxRank: 3, statsModified: [] },
-  [PerkId.FixItGood]: { name: "Fix It Good", special: Special.Intelligence, maxRank: 3, statsModified: [] },
-  [PerkId.PowerPatcher]: { name: "Power Patcher", special: Special.Intelligence, maxRank: 3, statsModified: [] },
-  [PerkId.Scrapper]: { name: "Scrapper", special: Special.Intelligence, maxRank: 3, statsModified: [] },
-  [PerkId.Armorer]: { name: "Armorer", special: Special.Intelligence, maxRank: 3, statsModified: [] },
-  [PerkId.Chemist]: { name: "Chemist", special: Special.Intelligence, maxRank: 1, statsModified: [] },
-  [PerkId.RoboticsExpert]: { name: "Robotics Expert", special: Special.Intelligence, maxRank: 3, statsModified: [] },
-  [PerkId.PyroTechnician]: { name: "Pyro-Technician", special: Special.Intelligence, maxRank: 3, statsModified: [] }, // SPECIAL-scaled fire damage
-  [PerkId.Cryologist]: { name: "Cryologist", special: Special.Intelligence, maxRank: 3, statsModified: [] }, // SPECIAL-scaled cryo damage
-  [PerkId.WreckingBall]: { name: "Wrecking Ball", special: Special.Intelligence, maxRank: 3, statsModified: [] }, // +100% damage to objects - not enemy combat
-  [PerkId.Stabilized]: { name: "Stabilized", special: Special.Intelligence, maxRank: 3, statsModified: [{ stat: Stat.ArmorPenetration, value: 30 }] }, // Big guns, doubled in PA
-  [PerkId.WeaponArtisan]: { name: "Weapon Artisan", special: Special.Intelligence, maxRank: 3, statsModified: [] },
-  [PerkId.NerdRage]: { name: "Nerd Rage", special: Special.Intelligence, maxRank: 3, statsModified: [] }, // Low health damage boost - conditional
-  [PerkId.StableTools]: { name: "Stable Tools", special: Special.Intelligence, maxRank: 3, statsModified: [] },
+  [PerkId.FirstAid]: { name: "First Aid" },
+  [PerkId.Hacker]: { name: "Hacker" },
+  [PerkId.MakeshiftWarrior]: { name: "Makeshift Warrior" },
+  [PerkId.HackerMaster]: { name: "Hacker Master" },
+  [PerkId.Contractor]: { name: "Contractor" },
+  [PerkId.Science]: { name: "Science!" },
+  [PerkId.LicensedPlumber]: { name: "Licensed Plumber" },
+  [PerkId.Pharmacist]: { name: "Pharmacist" },
+  [PerkId.HackerExpert]: { name: "Hacker Expert" },
+  [PerkId.DemolitionExpert]: { name: "Demolition Expert" },
+  [PerkId.Gunsmith]: { name: "Gunsmith" },
+  [PerkId.PowerUser]: { name: "Power User" },
+  [PerkId.PowerSmith]: { name: "Power Smith" },
+  [PerkId.FixItGood]: { name: "Fix It Good" },
+  [PerkId.PowerPatcher]: { name: "Power Patcher" },
+  [PerkId.Scrapper]: { name: "Scrapper" },
+  [PerkId.Armorer]: { name: "Armorer" },
+  [PerkId.Chemist]: { name: "Chemist" },
+  [PerkId.RoboticsExpert]: { name: "Robotics Expert" },
+  [PerkId.PyroTechnician]: { name: "Pyro-Technician" }, // SPECIAL-scaled fire damage
+  [PerkId.Cryologist]: { name: "Cryologist" }, // SPECIAL-scaled cryo damage
+  [PerkId.WreckingBall]: { name: "Wrecking Ball" }, // +100% damage to objects - not enemy combat
+  [PerkId.Stabilized]: { name: "Stabilized" }, // Big guns, doubled in PA
+  [PerkId.WeaponArtisan]: { name: "Weapon Artisan" },
+  [PerkId.NerdRage]: { name: "Nerd Rage" }, // Low health damage boost - conditional
+  [PerkId.StableTools]: { name: "Stable Tools" },
+  [PerkId.Conductor]: { name: "Conductor" },
 
   // ============ AGILITY ============
-  [PerkId.Adrenaline]: { name: "Adrenaline", special: Special.Agility, maxRank: 5, statsModified: [{ stat: Stat.OutgoingDamageMultiplier, value: 100 }] }, // +10% per kill, max 10 stacks = +100%
-  [PerkId.Dodgy]: { name: "Dodgy", special: Special.Agility, maxRank: 3, statsModified: [{ stat: Stat.DeflectChance, value: 5 }] },
-  [PerkId.GoatLegs]: { name: "Goat Legs", special: Special.Agility, maxRank: 2, statsModified: [] },
-  [PerkId.GunFu]: { name: "Gun Fu", special: Special.Agility, maxRank: 3, statsModified: [] },
-  [PerkId.Marathoner]: { name: "Marathoner", special: Special.Agility, maxRank: 3, statsModified: [] },
-  [PerkId.MisterSandman]: { name: "Mister Sandman", special: Special.Agility, maxRank: 3, statsModified: [{ stat: Stat.SneakDamageBonus, value: 100 }] }, // Silenced weapons only
-  [PerkId.GunRunner]: { name: "Gun Runner", special: Special.Agility, maxRank: 2, statsModified: [] },
-  [PerkId.ActionBoyGirl]: { name: "Action Boy/Girl", special: Special.Agility, maxRank: 3, statsModified: [] },
-  [PerkId.BornSurvivor]: { name: "Born Survivor", special: Special.Agility, maxRank: 3, statsModified: [] },
-  [PerkId.DeadManSprinting]: { name: "Dead Man Sprinting", special: Special.Agility, maxRank: 3, statsModified: [] },
-  [PerkId.MovingTarget]: { name: "Moving Target", special: Special.Agility, maxRank: 3, statsModified: [] },
-  [PerkId.Guerrilla]: { name: "Guerrilla", special: Special.Agility, maxRank: 3, statsModified: [] },
-  [PerkId.PackinLight]: { name: "Packin' Light", special: Special.Agility, maxRank: 3, statsModified: [] },
-  [PerkId.Gunslinger]: { name: "Gunslinger", special: Special.Agility, maxRank: 3, statsModified: [] },
-  [PerkId.SecretAgent]: { name: "Secret Agent", special: Special.Agility, maxRank: 3, statsModified: [] },
-  [PerkId.GuerrillaExpert]: { name: "Guerrilla Expert", special: Special.Agility, maxRank: 3, statsModified: [] },
-  [PerkId.HomeDefense]: { name: "Home Defense", special: Special.Agility, maxRank: 3, statsModified: [] },
-  [PerkId.Lightfooted]: { name: "Light Footed", special: Special.Agility, maxRank: 2, statsModified: [] },
-  [PerkId.GuerrillaMaster]: { name: "Guerrilla Master", special: Special.Agility, maxRank: 3, statsModified: [] },
-  [PerkId.Ninja]: { name: "Ninja", special: Special.Agility, maxRank: 3, statsModified: [{ stat: Stat.SneakDamageBonus, value: 100 }] }, // Melee/bow/thrown only
-  [PerkId.GunslingerExpert]: { name: "Gunslinger Expert", special: Special.Agility, maxRank: 3, statsModified: [] },
-  [PerkId.GunslingerMaster]: { name: "Gunslinger Master", special: Special.Agility, maxRank: 3, statsModified: [] },
-  [PerkId.Evasive]: { name: "Evasive", special: Special.Agility, maxRank: 3, statsModified: [] }, // SPECIAL-scaled evade chance
-  [PerkId.CovertOperative]: { name: "Covert Operative", special: Special.Agility, maxRank: 3, statsModified: [{ stat: Stat.SneakDamageBonus, value: 50 }] }, // Ranged attacks
-  [PerkId.EscapeArtist]: { name: "Escape Artist", special: Special.Agility, maxRank: 1, statsModified: [] },
-  [PerkId.ModernRenegade]: { name: "Modern Renegade", special: Special.Agility, maxRank: 3, statsModified: [{ stat: Stat.LimbDamageBonus, value: 75 }] }, // Small guns, +30% hip fire accuracy
-  [PerkId.Sneak]: { name: "Sneak", special: Special.Agility, maxRank: 3, statsModified: [] },
-  [PerkId.Enforcer]: { name: "Enforcer", special: Special.Agility, maxRank: 3, statsModified: [{ stat: Stat.LimbDamageBonus, value: 75 }] }, // Small guns, +15% stagger
-  [PerkId.Ammosmith]: { name: "Ammosmith", special: Special.Agility, maxRank: 2, statsModified: [] },
-  [PerkId.WhiteKnight]: { name: "White Knight", special: Special.Agility, maxRank: 3, statsModified: [] },
+  [PerkId.Adrenaline]: { name: "Adrenaline" }, // +10% per kill, max 10 stacks = +100%
+  [PerkId.Dodgy]: { name: "Dodgy" },
+  [PerkId.GoatLegs]: { name: "Goat Legs" },
+  [PerkId.GunFu]: { name: "Gun Fu" },
+  [PerkId.Marathoner]: { name: "Marathoner" },
+  [PerkId.MisterSandman]: { name: "Mister Sandman" }, // Silenced weapons only
+  [PerkId.GunRunner]: { name: "Gun Runner" },
+  [PerkId.ActionBoyGirl]: { name: "Action Boy/Girl" },
+  [PerkId.BornSurvivor]: { name: "Born Survivor" },
+  [PerkId.DeadManSprinting]: { name: "Dead Man Sprinting" },
+  [PerkId.MovingTarget]: { name: "Moving Target" },
+  [PerkId.Guerrilla]: { name: "Guerrilla" },
+  [PerkId.PackinLight]: { name: "Packin' Light" },
+  [PerkId.Gunslinger]: { name: "Gunslinger" },
+  [PerkId.SecretAgent]: { name: "Secret Agent" },
+  [PerkId.GuerrillaExpert]: { name: "Guerrilla Expert" },
+  [PerkId.HomeDefense]: { name: "Home Defense" },
+  [PerkId.Lightfooted]: { name: "Light Footed" },
+  [PerkId.GuerrillaMaster]: { name: "Guerrilla Master" },
+  [PerkId.Ninja]: { name: "Ninja" }, // Melee/bow/thrown only
+  [PerkId.GunslingerExpert]: { name: "Gunslinger Expert" },
+  [PerkId.GunslingerMaster]: { name: "Gunslinger Master" },
+  [PerkId.Evasive]: { name: "Evasive" }, // SPECIAL-scaled evade chance
+  [PerkId.CovertOperative]: { name: "Covert Operative" }, // Ranged attacks
+  [PerkId.EscapeArtist]: { name: "Escape Artist" },
+  [PerkId.ModernRenegade]: { name: "Modern Renegade" }, // Small guns, +30% hip fire accuracy
+  [PerkId.Sneak]: { name: "Sneak" },
+  [PerkId.Enforcer]: { name: "Enforcer" }, // Small guns, +15% stagger
+  [PerkId.Ammosmith]: { name: "Ammosmith" },
+  [PerkId.WhiteKnight]: { name: "White Knight" },
 
   // ============ LUCK ============
-  [PerkId.CanDo]: { name: "Can Do!", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.GrimReapersSprint]: { name: "Grim Reaper's Sprint", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.LuckOfTheDraw]: { name: "Luck Of The Draw", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.MysteriousSavior]: { name: "Mysterious Savior", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.MysteriousStranger]: { name: "Mysterious Stranger", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.MysteryMeat]: { name: "Mystery Meat", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.Scrounger]: { name: "Scrounger", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.StarchedGenes]: { name: "Starched Genes", special: Special.Luck, maxRank: 2, statsModified: [] },
-  [PerkId.PharmaFarma]: { name: "Pharma Farma", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.Serendipity]: { name: "Serendipity", special: Special.Luck, maxRank: 3, statsModified: [] }, // SPECIAL-scaled evade below 30% health
-  [PerkId.GoodWithSalt]: { name: "Good With Salt", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.JunkShield]: { name: "Junk Shield", special: Special.Luck, maxRank: 3, statsModified: [] }, // SPECIAL-scaled DR/ER based on junk
-  [PerkId.Psychopath]: { name: "Psychopath", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.QuickHands]: { name: "Quick Hands", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.WoodChucker]: { name: "Wood Chucker", special: Special.Luck, maxRank: 1, statsModified: [] },
-  [PerkId.Ricochet]: { name: "Ricochet", special: Special.Luck, maxRank: 3, statsModified: [] }, // SPECIAL-scaled deflect chance
-  [PerkId.StormChaser]: { name: "Storm Chaser", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.Tormentor]: { name: "Tormentor", special: Special.Luck, maxRank: 3, statsModified: [{ stat: Stat.DamagePerCrippledLimb, value: 20 }] },
-  [PerkId.CapCollector]: { name: "Cap Collector", special: Special.Luck, maxRank: 2, statsModified: [] },
-  [PerkId.CriticalSavvy]: { name: "Critical Savvy", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.LastLaugh]: { name: "Last Laugh", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.SuperDuper]: { name: "Super Duper", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.FortuneFinder]: { name: "Fortune Finder", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.LuckyBreak]: { name: "Lucky Break", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.Curator]: { name: "Curator", special: Special.Luck, maxRank: 2, statsModified: [] },
-  [PerkId.FourLeafClover]: { name: "Four Leaf Clover", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.OneGunArmy]: { name: "One Gun Army", special: Special.Luck, maxRank: 3, statsModified: [{ stat: Stat.LimbDamageBonus, value: 75 }] }, // Heavy guns, +12% stagger
-  [PerkId.BloodyMess]: { name: "Bloody Mess", special: Special.Luck, maxRank: 3, statsModified: [{ stat: Stat.OutgoingDamageMultiplier, value: 15 }] },
-  [PerkId.ClassFreak]: { name: "Class Freak", special: Special.Luck, maxRank: 3, statsModified: [] },
-  [PerkId.BetterCriticals]: { name: "Better Criticals", special: Special.Luck, maxRank: 3, statsModified: [{ stat: Stat.CriticalDamageBonus, value: 100 }] },
+  [PerkId.CanDo]: { name: "Can Do!" },
+  [PerkId.GrimReapersSprint]: { name: "Grim Reaper's Sprint" },
+  [PerkId.LuckOfTheDraw]: { name: "Luck Of The Draw" },
+  [PerkId.MysteriousSavior]: { name: "Mysterious Savior" },
+  [PerkId.MysteriousStranger]: { name: "Mysterious Stranger" },
+  [PerkId.MysteryMeat]: { name: "Mystery Meat" },
+  [PerkId.Scrounger]: { name: "Scrounger" },
+  [PerkId.StarchedGenes]: { name: "Starched Genes" },
+  [PerkId.PharmaFarma]: { name: "Pharma Farma" },
+  [PerkId.Serendipity]: { name: "Serendipity" }, // SPECIAL-scaled evade below 30% health
+  [PerkId.GoodWithSalt]: { name: "Good With Salt" },
+  [PerkId.JunkShield]: { name: "Junk Shield" }, // SPECIAL-scaled DR/ER based on junk
+  [PerkId.Psychopath]: { name: "Psychopath" },
+  [PerkId.QuickHands]: { name: "Quick Hands" },
+  [PerkId.WoodChucker]: { name: "Wood Chucker" },
+  [PerkId.Ricochet]: { name: "Ricochet" }, // SPECIAL-scaled deflect chance
+  [PerkId.StormChaser]: { name: "Storm Chaser" },
+  [PerkId.Tormentor]: { name: "Tormentor" },
+  [PerkId.CapCollector]: { name: "Cap Collector" },
+  [PerkId.CriticalSavvy]: { name: "Critical Savvy" },
+  [PerkId.LastLaugh]: { name: "Last Laugh" },
+  [PerkId.SuperDuper]: { name: "Super Duper" },
+  [PerkId.FortuneFinder]: { name: "Fortune Finder" },
+  [PerkId.LuckyBreak]: { name: "Lucky Break" },
+  [PerkId.Curator]: { name: "Curator" },
+  [PerkId.FourLeafClover]: { name: "Four Leaf Clover" },
+  [PerkId.OneGunArmy]: { name: "One Gun Army" }, // Heavy guns, +12% stagger
+  [PerkId.BloodyMess]: { name: "Bloody Mess" },
+  [PerkId.ClassFreak]: { name: "Class Freak" },
+  [PerkId.BetterCriticals]: { name: "Better Criticals" },
 
   // ============ GHOUL PERKS ============
   // Regular SPECIAL-slotted cards usable by ghoul characters only (ESM GHL_*
   // families; N&D "0"-prefixed keys). SPECIAL and maxRank sourced from the
   // Nukes & Dragons character bundle (data.nukesdragons.com) and cross-checked
   // against ESM rank counts — the two agree on every card.
-  [PerkId.RadSpecialist]: { name: "Rad Specialist", special: Special.Intelligence, maxRank: 3, statsModified: [] }, // Armor Glow intake - not direct damage
-  [PerkId.RadioactiveStrength]: { name: "Radioactive Strength", special: Special.Strength, maxRank: 3, statsModified: [{ stat: Stat.PowerAttackDamageBonus, value: 150 }, { stat: Stat.BashDamageBonus, value: 150 }] }, // Assumes high Glow
-  [PerkId.ArmsOfSteel]: { name: "Arms of Steel", special: Special.Strength, maxRank: 2, statsModified: [] }, // Unarmed/melee AP - not direct damage
-  [PerkId.MadScientist]: { name: "Mad Scientist", special: Special.Intelligence, maxRank: 3, statsModified: [{ stat: Stat.EnergyDamageBonus, value: 20 }] }, // Assumes high Glow
-  [PerkId.EyeOfTheHunter]: { name: "Eye Of The Hunter", special: Special.Perception, maxRank: 3, statsModified: [] }, // +30% VATS accuracy at long range - not direct damage
-  [PerkId.BrickWall]: { name: "Brick Wall", special: Special.Strength, maxRank: 1, statsModified: [] }, // Stagger immunity when Glow high - not damage
-  [PerkId.ChemDiet]: { name: "Chem Diet", special: Special.Endurance, maxRank: 3, statsModified: [] }, // Chem weight reduction - not combat
-  [PerkId.ScienceMonster]: { name: "Science Monster", special: Special.Intelligence, maxRank: 3, statsModified: [{ stat: Stat.OutgoingDamageMultiplier, value: 15 }] }, // +15% damage for 10s when hit with Glow
-  [PerkId.BombScientist]: { name: "Bomb Scientist", special: Special.Intelligence, maxRank: 3, statsModified: [{ stat: Stat.OutgoingExplosionDamageMultiplier, value: 50 }] }, // Assumes high Glow
-  [PerkId.MoralSupport]: { name: "Moral Support", special: Special.Charisma, maxRank: 1, statsModified: [] }, // Team damage/resistances - not implemented
-  [PerkId.RadReaver]: { name: "Rad Reaver", special: Special.Perception, maxRank: 1, statsModified: [] }, // Rad heal & damage - complex
-  [PerkId.GunTricks]: { name: "Gun Tricks", special: Special.Agility, maxRank: 3, statsModified: [] }, // 30% reload speed - not direct damage
-  [PerkId.HyperReflexes]: { name: "Hyper Reflexes", special: Special.Agility, maxRank: 3, statsModified: [{ stat: Stat.DeflectChance, value: 20 }] }, // Assumes high Glow, no PA
-  [PerkId.GlowingOne]: { name: "Glowing One", special: Special.Charisma, maxRank: 2, statsModified: [] }, // SPECIAL-scaled HP & resistances when Glow high
-  [PerkId.GlowingHunter]: { name: "Glowing Hunter", special: Special.Perception, maxRank: 1, statsModified: [{ stat: Stat.DamageToGlowingEnemiesBonus, value: 30 }] }, // Additional bonus vs Glowing
-  [PerkId.ThickSkin]: { name: "Thick Skin", special: Special.Endurance, maxRank: 3, statsModified: [{ stat: Stat.IncomingDamageMultiplier, value: -10 }] }, // No PA
-  [PerkId.BattleGenes]: { name: "Battle Genes", special: Special.Luck, maxRank: 2, statsModified: [] }, // Melee scaling - complex
-  [PerkId.FeralPresence]: { name: "Feral Presence", special: Special.Charisma, maxRank: 2, statsModified: [] }, // -30% enemy damage while Feral - enemy debuff
-  [PerkId.UnitedOrdeal]: { name: "United Ordeal", special: Special.Charisma, maxRank: 3, statsModified: [] }, // Team bonuses - not implemented
-  [PerkId.FaultySpots]: { name: "Faulty Spots", special: Special.Luck, maxRank: 1, statsModified: [{ stat: Stat.WeakspotDamageBonus, value: 15 }] },
-  [PerkId.GlowingGut]: { name: "Glowing Gut", special: Special.Endurance, maxRank: 3, statsModified: [] }, // Healing restores Glow - not direct combat
-  [PerkId.JaguarSpeed]: { name: "Jaguar Speed", special: Special.Agility, maxRank: 2, statsModified: [] }, // Movement speed - not direct damage
-  [PerkId.ActionGhoul]: { name: "Action Ghoul", special: Special.Agility, maxRank: 3, statsModified: [] }, // AP regen - not direct damage
-  [PerkId.GlowingCriticals]: { name: "Glowing Criticals", special: Special.Luck, maxRank: 3, statsModified: [{ stat: Stat.CriticalDamageBonus, value: 50 }] }, // Assumes high Glow
-  [PerkId.RadiationPower]: { name: "Radiation Power", special: Special.Endurance, maxRank: 3, statsModified: [{ stat: Stat.OutgoingDamageMultiplier, value: 20 }] }, // Assumes high Glow
-  [PerkId.WildWestHands]: { name: "Wild West Hands", special: Special.Luck, maxRank: 3, statsModified: [] }, // 36% instant reload chance - not direct damage
-  [PerkId.BreathItIn]: { name: "Breathe It In", special: Special.Perception, maxRank: 3, statsModified: [] }, // Rad immunity - not direct combat
-  [PerkId.BoneShatterer]: { name: "Bone Shatterer", special: Special.Strength, maxRank: 3, statsModified: [{ stat: Stat.MeleeLimbDamageBonus, value: 75 }] },
+  [PerkId.RadSpecialist]: { name: "Rad Specialist" }, // Armor Glow intake - not direct damage
+  [PerkId.RadioactiveStrength]: { name: "Radioactive Strength" }, // Assumes high Glow
+  [PerkId.ArmsOfSteel]: { name: "Arms of Steel" }, // Unarmed/melee AP - not direct damage
+  [PerkId.MadScientist]: { name: "Mad Scientist" }, // Assumes high Glow
+  [PerkId.EyeOfTheHunter]: { name: "Eye Of The Hunter" }, // +30% VATS accuracy at long range - not direct damage
+  [PerkId.BrickWall]: { name: "Brick Wall" }, // Stagger immunity when Glow high - not damage
+  [PerkId.ChemDiet]: { name: "Chem Diet" }, // Chem weight reduction - not combat
+  [PerkId.ScienceMonster]: { name: "Science Monster" }, // +15% damage for 10s when hit with Glow
+  [PerkId.BombScientist]: { name: "Bomb Scientist" }, // Assumes high Glow
+  [PerkId.MoralSupport]: { name: "Moral Support" }, // Team damage/resistances - not implemented
+  [PerkId.RadReaver]: { name: "Rad Reaver" }, // Rad heal & damage - complex
+  [PerkId.GunTricks]: { name: "Gun Tricks" }, // 30% reload speed - not direct damage
+  [PerkId.HyperReflexes]: { name: "Hyper Reflexes" }, // Assumes high Glow, no PA
+  [PerkId.GlowingOne]: { name: "Glowing One" }, // SPECIAL-scaled HP & resistances when Glow high
+  [PerkId.GlowingHunter]: { name: "Glowing Hunter" }, // Additional bonus vs Glowing
+  [PerkId.ThickSkin]: { name: "Thick Skin" }, // No PA
+  [PerkId.BattleGenes]: { name: "Battle Genes" }, // Melee scaling - complex
+  [PerkId.FeralPresence]: { name: "Feral Presence" }, // -30% enemy damage while Feral - enemy debuff
+  [PerkId.UnitedOrdeal]: { name: "United Ordeal" }, // Team bonuses - not implemented
+  [PerkId.FaultySpots]: { name: "Faulty Spots" },
+  [PerkId.GlowingGut]: { name: "Glowing Gut" }, // Healing restores Glow - not direct combat
+  [PerkId.JaguarSpeed]: { name: "Jaguar Speed" }, // Movement speed - not direct damage
+  [PerkId.ActionGhoul]: { name: "Action Ghoul" }, // AP regen - not direct damage
+  [PerkId.GlowingCriticals]: { name: "Glowing Criticals" }, // Assumes high Glow
+  [PerkId.RadiationPower]: { name: "Radiation Power" }, // Assumes high Glow
+  [PerkId.WildWestHands]: { name: "Wild West Hands" }, // 36% instant reload chance - not direct damage
+  [PerkId.BreathItIn]: { name: "Breathe It In" }, // Rad immunity - not direct combat
+  [PerkId.BoneShatterer]: { name: "Bone Shatterer" },
 
   // ============ LEGENDARY PERKS ============
   // Not tied to any SPECIAL (no `special` field). ESM LGN_*_Perk families;
   // N&D "x"-prefixed keys except the two ghoul-exclusive cards (0D/0N).
   // Effects are not yet extracted (empty ESM modifiers) — display/slotting only.
-  [PerkId.AmmoFactory]: { name: "Ammo Factory", maxRank: 4, statsModified: [] }, // Ammo crafting - not combat
-  [PerkId.BloodSacrifice]: { name: "Blood Sacrifice!", maxRank: 4, statsModified: [] }, // VATS AP costs HP - not direct damage
-  [PerkId.BrawlingChemist]: { name: "Brawling Chemist", maxRank: 4, statsModified: [] }, // Chem generation - not combat
-  [PerkId.CollateralDamage]: { name: "Collateral Damage", maxRank: 4, statsModified: [] }, // Corpse explosions - not modeled
-  [PerkId.DetonationContagion]: { name: "Detonation Contagion", maxRank: 4, statsModified: [] }, // Kill explosions - not modeled
-  [PerkId.ElectricAbsorption]: { name: "Electric Absorption", maxRank: 4, statsModified: [] }, // Energy damage absorption - defensive
-  [PerkId.ExplodingPalm]: { name: "Exploding Palm", maxRank: 4, statsModified: [] }, // Melee explosion proc - not modeled
-  [PerkId.FarFlungFireworks]: { name: "Far-Flung Fireworks", maxRank: 4, statsModified: [] }, // Kill explosions - not modeled
-  [PerkId.FollowThrough]: { name: "Follow Through", maxRank: 4, statsModified: [] }, // Ranged sneak → target takes more damage (wholeDamage bucket, pending extraction)
-  [PerkId.FunkyDuds]: { name: "Funky Duds", maxRank: 4, statsModified: [] }, // Poison resistance - defensive
-  [PerkId.HackAndSlash]: { name: "Hack and Slash", maxRank: 4, statsModified: [] }, // Melee AoE proc - not modeled
-  [PerkId.MasterInfiltrator]: { name: "Master Infiltrator", maxRank: 4, statsModified: [] }, // Lockpick/hack - not combat
-  [PerkId.PowerArmorReboot]: { name: "Power Armor Reboot", maxRank: 4, statsModified: [] }, // Fusion core revive - not combat
-  [PerkId.PowerSprinter]: { name: "Power Sprinter", maxRank: 4, statsModified: [] }, // PA sprint AP - not combat
-  [PerkId.Retribution]: { name: "Retribution", maxRank: 4, statsModified: [] }, // Counterattack proc - not modeled
-  [PerkId.SizzlingStyle]: { name: "Sizzling Style", maxRank: 4, statsModified: [] }, // Fire resistance - defensive
-  [PerkId.SurvivalShortcut]: { name: "Survival Shortcut", maxRank: 4, statsModified: [] }, // Chem generation - not combat
-  [PerkId.TakingOneForTheTeam]: { name: "Taking One For The Team", maxRank: 4, statsModified: [] }, // Attackers take more damage (wholeDamage bucket, pending extraction)
-  [PerkId.WhatRads]: { name: "What Rads?", maxRank: 4, statsModified: [] }, // Rad immunity - defensive
-  [PerkId.ActionDiet]: { name: "Action Diet", maxRank: 4, statsModified: [] }, // Ghoul-exclusive (N&D key 0D): on-kill heal + feral reduction
-  [PerkId.FeralRage]: { name: "Feral Rage", maxRank: 4, statsModified: [] }, // Ghoul-exclusive (N&D key 0N)
+  [PerkId.AmmoFactory]: { name: "Ammo Factory" }, // Ammo crafting - not combat
+  [PerkId.BloodSacrifice]: { name: "Blood Sacrifice!" }, // VATS AP costs HP - not direct damage
+  [PerkId.BrawlingChemist]: { name: "Brawling Chemist" }, // Chem generation - not combat
+  [PerkId.CollateralDamage]: { name: "Collateral Damage" }, // Corpse explosions - not modeled
+  [PerkId.DetonationContagion]: { name: "Detonation Contagion" }, // Kill explosions - not modeled
+  [PerkId.ElectricAbsorption]: { name: "Electric Absorption" }, // Energy damage absorption - defensive
+  [PerkId.ExplodingPalm]: { name: "Exploding Palm" }, // Melee explosion proc - not modeled
+  [PerkId.FarFlungFireworks]: { name: "Far-Flung Fireworks" }, // Kill explosions - not modeled
+  [PerkId.FollowThrough]: { name: "Follow Through" }, // Ranged sneak → target takes more damage (wholeDamage bucket, pending extraction)
+  [PerkId.FunkyDuds]: { name: "Funky Duds" }, // Poison resistance - defensive
+  [PerkId.HackAndSlash]: { name: "Hack and Slash" }, // Melee AoE proc - not modeled
+  [PerkId.MasterInfiltrator]: { name: "Master Infiltrator" }, // Lockpick/hack - not combat
+  [PerkId.PowerArmorReboot]: { name: "Power Armor Reboot" }, // Fusion core revive - not combat
+  [PerkId.PowerSprinter]: { name: "Power Sprinter" }, // PA sprint AP - not combat
+  [PerkId.Retribution]: { name: "Retribution" }, // Counterattack proc - not modeled
+  [PerkId.SizzlingStyle]: { name: "Sizzling Style" }, // Fire resistance - defensive
+  [PerkId.SurvivalShortcut]: { name: "Survival Shortcut" }, // Chem generation - not combat
+  [PerkId.TakingOneForTheTeam]: { name: "Taking One For The Team" }, // Attackers take more damage (wholeDamage bucket, pending extraction)
+  [PerkId.WhatRads]: { name: "What Rads?" }, // Rad immunity - defensive
+  [PerkId.ActionDiet]: { name: "Action Diet" }, // Ghoul-exclusive (N&D key 0D): on-kill heal + feral reduction
+  [PerkId.FeralRage]: { name: "Feral Rage" }, // Ghoul-exclusive (N&D key 0N)
   // Legendary SPECIAL cards: +1/+2/+3/+5 stat and perk points by rank (ESM
   // families LGN_Legendary*_Perk; the bonus is applied via the perk-budget
   // derivation keyed by PerkId in LEGENDARY_SPECIAL_PERKS — no `special`
   // field, these are legendary slots, not SPECIAL-slotted cards. Their PERK
   // records emit no modifiers, so there is no double-count with the specialX
   // buff buckets).
-  [PerkId.LegendaryStrength]: { name: "Legendary Strength", maxRank: 4, statsModified: [] },
-  [PerkId.LegendaryPerception]: { name: "Legendary Perception", maxRank: 4, statsModified: [] },
-  [PerkId.LegendaryEndurance]: { name: "Legendary Endurance", maxRank: 4, statsModified: [] },
-  [PerkId.LegendaryCharisma]: { name: "Legendary Charisma", maxRank: 4, statsModified: [] },
-  [PerkId.LegendaryIntelligence]: { name: "Legendary Intelligence", maxRank: 4, statsModified: [] },
-  [PerkId.LegendaryAgility]: { name: "Legendary Agility", maxRank: 4, statsModified: [] },
-  [PerkId.LegendaryLuck]: { name: "Legendary Luck", maxRank: 4, statsModified: [] },
+  [PerkId.LegendaryStrength]: { name: "Legendary Strength" },
+  [PerkId.LegendaryPerception]: { name: "Legendary Perception" },
+  [PerkId.LegendaryEndurance]: { name: "Legendary Endurance" },
+  [PerkId.LegendaryCharisma]: { name: "Legendary Charisma" },
+  [PerkId.LegendaryIntelligence]: { name: "Legendary Intelligence" },
+  [PerkId.LegendaryAgility]: { name: "Legendary Agility" },
+  [PerkId.LegendaryLuck]: { name: "Legendary Luck" },
 };

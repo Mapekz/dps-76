@@ -5,6 +5,7 @@ import { Special } from '@/data/special';
 import {
   derivePerkBudget,
   legendarySpecialBonus,
+  perkCardCostAtRank,
   SPECIAL_KEYS,
   type PerkBudget,
   type SpecialKey,
@@ -55,11 +56,11 @@ export function computePerkBudget(
 ): PerkBudget {
   const registry = getPerks(mode);
 
-  const cards: Array<{ special: SpecialKey; rank: number }> = [];
+  const cards: Array<{ special: SpecialKey; cost: number }> = [];
   for (const { perkId, rank } of perks) {
     const perk = registry[perkId as keyof typeof registry];
     // No `special` = a legendary card (mis-filed here by an old build) — costs nothing.
-    if (perk?.special) cards.push({ special: SPECIAL_TO_KEY[perk.special], rank });
+    if (perk?.special) cards.push({ special: SPECIAL_TO_KEY[perk.special], cost: perkCardCostAtRank(perk, rank) });
   }
 
   return derivePerkBudget(cards, legendaryBonusOf(legendaryPerks), allocation);
@@ -69,4 +70,17 @@ export function computePerkBudget(
 export function perkSpecialKey(mode: GameMode, perkId: string): SpecialKey | null {
   const perk = getPerks(mode)[perkId as keyof ReturnType<typeof getPerks>];
   return perk?.special ? SPECIAL_TO_KEY[perk.special] : null;
+}
+
+/**
+ * Perk-point cost DELTA for moving `perkId` from `fromRank` to `toRank`
+ * (0 = unequipped). Used to gate slotting/rank-ups against the SPECIAL
+ * budget — the budget's `cardPoints` reflects the cost of a card's CURRENT
+ * rank only (not a cumulative sum across ranks), so the delta of an add or
+ * a rank-up is `cost(toRank) − cost(fromRank)`.
+ */
+export function perkCardCostDelta(mode: GameMode, perkId: string, fromRank: number, toRank: number): number {
+  const perk = getPerks(mode)[perkId as keyof ReturnType<typeof getPerks>];
+  if (!perk) return 0; // unknown perk: don't block (import edge cases)
+  return perkCardCostAtRank(perk, toRank) - perkCardCostAtRank(perk, fromRank);
 }

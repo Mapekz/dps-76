@@ -1,4 +1,4 @@
-import type { EnemyConditions, PerkLoadout, PlayerConditions, Weapon } from '@/types';
+import type { EnemyConditions, Perk, PerkLoadout, PlayerConditions, Weapon } from '@/types';
 import { createDefaultEnemyConditions } from '@/types';
 import type { Bucket, Modifier } from '@/types/modifiers';
 import { foldBucket, foldOps, type ResolveContext } from '@/lib/engine/resolve';
@@ -88,7 +88,7 @@ export function legendarySpecialBonus(rank: number): number {
 }
 
 export interface PerkBudget {
-  /** Σ slotted card ranks per stat (card cost = rank). */
+  /** Σ slotted card costs per stat (real per-rank PCRD cost, not rank). */
   cardPoints: Record<SpecialKey, number>;
   /** +1/+2/+3/+5 from slotted Legendary SPECIAL cards. */
   legendaryBonus: Record<SpecialKey, number>;
@@ -104,13 +104,24 @@ export interface PerkBudget {
   overBudget: boolean;
 }
 
+/**
+ * Perk-point cost of a card at `rank` (0 = unequipped → 0). `costs[]` is
+ * index 0 = rank 1, from the PCRD's "Card Rank Cost" (perk-cards.ts). Falls
+ * back to `rank` when costs data is missing (shouldn't happen post-derivation
+ * — see perk-cards.test.ts's drift check).
+ */
+export function perkCardCostAtRank(perk: Pick<Perk, 'costs'> | undefined, rank: number): number {
+  if (!perk || rank <= 0) return 0;
+  return perk.costs[rank - 1] ?? rank;
+}
+
 export function derivePerkBudget(
-  cards: Array<{ special: SpecialKey; rank: number }>,
+  cards: Array<{ special: SpecialKey; cost: number }>,
   legendaryBonus: Record<SpecialKey, number>,
   allocation: Record<SpecialKey, number>
 ): PerkBudget {
   const cardPoints = Object.fromEntries(SPECIAL_KEYS.map(k => [k, 0])) as Record<SpecialKey, number>;
-  for (const card of cards) cardPoints[card.special] += Math.max(1, card.rank);
+  for (const card of cards) cardPoints[card.special] += card.cost;
 
   const budgetPerStat = Object.fromEntries(
     SPECIAL_KEYS.map(k => [k, Math.min(SPECIAL_POINTS_CAP, allocation[k] + legendaryBonus[k])])

@@ -8,10 +8,12 @@ import {
   type PlayerConfig,
 } from '@/types';
 import { isLegendaryPerkKey, parsedPerksToLoadout, type ParsedSpecial } from '@/lib/nukes-dragons';
-import { computePerkBudget, perkSpecialKey } from '@/data/perk-budget';
+import { computePerkBudget, perkCardCostDelta, perkSpecialKey } from '@/data/perk-budget';
 import { equippedRaceLock, perkRaceRestriction } from '@/data/perk-race';
 import { canSlotCardPoints, SPECIAL_ALLOCATION_POOL, SPECIAL_KEYS, SPECIAL_POINTS_CAP } from '@/lib/player-stats';
 import { consumablesById, toggleConsumable } from '@/lib/consumable-rules';
+import { getPerks } from '@/data';
+import type { PerkId } from '@/data/perk-ids';
 
 /**
  * The one store behind the whole app. The BuildAction union is the shared
@@ -95,15 +97,16 @@ function allocationOf(player: PlayerConfig): Record<SpecialKey, number> {
 }
 
 /**
- * Would raising `perkId`'s regular-card cost by `delta` break its stat's
+ * Would moving `perkId` from `fromRank` to `toRank` break its stat's
  * perk-point budget, min(15, base allocation + Legendary SPECIAL bonus)?
  * Legendary cards have their own slot cap and never consume card points.
  * The registry is mode-independent today (pts re-exports live).
  */
-function regularSlotBlocked(player: PlayerConfig, perkId: string, delta: number): boolean {
-  if (delta <= 0) return false;
+function regularSlotBlocked(player: PlayerConfig, perkId: string, fromRank: number, toRank: number): boolean {
   const stat = perkSpecialKey('live', perkId);
   if (!stat) return false; // unknown perk: don't block (import edge cases)
+  const delta = perkCardCostDelta('live', perkId, fromRank, toRank);
+  if (delta <= 0) return false;
   const budget = computePerkBudget('live', player.perks, player.legendaryPerks, allocationOf(player));
   return !canSlotCardPoints(budget, stat, delta);
 }
@@ -147,7 +150,7 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
       // Enforce the game's limits: 4 legendary slots; regular cards must fit
       // the stat's perk-point budget (min(15, base + Legendary SPECIAL bonus)).
       if (action.legendary && player.legendaryPerks.length >= LEGENDARY_PERK_SLOTS) return state;
-      if (!action.legendary && regularSlotBlocked(player, action.perkId, rank)) return state;
+      if (!action.legendary && regularSlotBlocked(player, action.perkId, 0, rank)) return state;
       // A race-locked card forces the matching character race (ghoul-only →
       // ghoul, human-only → human) — in the reducer so speculative diffs and
       // imports stay consistent with the UI's locked race toggle.
@@ -168,9 +171,12 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
         player.perks.find(p => p.perkId === action.perkId) ??
         player.legendaryPerks.find(p => p.perkId === action.perkId);
       if (!current) return state;
-      const rank = Math.max(1, action.rank);
+      // Defensive clamp: a stale/imported action.rank must not exceed the
+      // card's real maxRank (derived from the ESM card — see perk-cards.ts).
+      const maxRank = getPerks('live')[action.perkId as PerkId]?.maxRank ?? action.rank;
+      const rank = Math.max(1, Math.min(action.rank, maxRank));
       const isRegular = player.perks.some(p => p.perkId === action.perkId);
-      if (isRegular && regularSlotBlocked(player, action.perkId, rank - current.rank)) return state;
+      if (isRegular && regularSlotBlocked(player, action.perkId, current.rank, rank)) return state;
       const bump = (list: typeof player.perks) =>
         list.map(p => (p.perkId === action.perkId ? { ...p, rank } : p));
       return withPlayer(state, {

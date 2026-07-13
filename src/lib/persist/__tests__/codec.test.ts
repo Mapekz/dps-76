@@ -94,6 +94,19 @@ describe('build codec', () => {
     expect(decoded!.state.player.perks).toEqual([{ perkId: ndPerkId, rank: 2 }]);
   });
 
+  it('silently clamps an out-of-range decoded rank to the card maxRank', async () => {
+    // Tenderizer is a real single-rank card (maxRank 1) — an out-of-range
+    // rank could come from a stale link (a card's maxRank shrinking after an
+    // ESM sync) or an adversarial payload. `px` bypasses the N&D key
+    // dictionary so the fallback [perkId, rank] path is exercised directly.
+    const encoded = await encodeRawWire({ px: [['Tenderizer', 99]] });
+    const decoded = await decodeBuild(encoded, 'live');
+    expect(decoded).not.toBeNull();
+    expect(decoded!.state.player.perks).toEqual([{ perkId: 'Tenderizer', rank: 1 }]);
+    // Silent: no warning for the clamp itself (the over-budget flag covers overruns).
+    expect(decoded!.warnings).toEqual([]);
+  });
+
   it('returns null for corrupt or foreign input', async () => {
     expect(await decodeBuild('garbage', 'live')).toBeNull();
     expect(await decodeBuild('1.not-base64!!!', 'live')).toBeNull();

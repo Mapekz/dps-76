@@ -227,11 +227,19 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
   if (typeof wire.wm === 'number') state.player.weakpointMult = Math.max(0.1, wire.wm);
 
   const keepKnown = (loadout: PerkLoadout[]) =>
-    loadout.filter(p => {
-      if (perkRegistry[p.perkId as PerkId]) return true;
-      warnings.push(`unknown perk "${p.perkId}" — removed`);
-      return false;
-    });
+    loadout
+      .filter(p => {
+        if (perkRegistry[p.perkId as PerkId]) return true;
+        warnings.push(`unknown perk "${p.perkId}" — removed`);
+        return false;
+      })
+      // Silent clamp: an out-of-range rank (stale/adversarial payload, or a
+      // card's maxRank shrinking after an ESM sync) is clamped rather than
+      // dropped — the existing over-budget flag covers budget overruns.
+      .map(p => {
+        const maxRank = perkRegistry[p.perkId as PerkId].maxRank;
+        return p.rank > maxRank ? { ...p, rank: maxRank } : p;
+      });
   state.player.perks = keepKnown(decodePerks(wire.p, wire.px, warnings));
   state.player.legendaryPerks = keepKnown(decodePerks(wire.lp, wire.lpx, warnings));
   // Builds encoded before the ghoul-card/legendary-perk classification fix
