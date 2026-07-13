@@ -15,7 +15,7 @@ import { SectionTrigger } from './SectionTrigger';
 /**
  * What's being shot: which enemy and body part (BPTD damage mult), its state
  * (health, distance, statuses, crippled parts) and team-applied debuffs
- * (Tenderizer). Player steady state lives in CharacterSection.
+ * (Tenderizer). Player steady state lives in ConditionsSection.
  */
 
 const TARGET_DISTANCE_OPTIONS: Array<{ value: NonNullable<EnemyConditions['targetDistance']>; label: string }> = [

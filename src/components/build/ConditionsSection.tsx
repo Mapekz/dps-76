@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { ButtonGroup } from '@/components/ui/button-group';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
@@ -10,15 +8,15 @@ import { Switch } from '@/components/ui/switch';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
-import { equippedRaceLock } from '@/data/perk-race';
 import { resolveStats } from '@/lib/loadout';
 import { createDefaultPlayerConditions, type PlayerConditions } from '@/types';
 import { SectionTrigger } from './SectionTrigger';
 
 /**
- * Who the character is and what steady state they're in: race, health, meters,
- * caps, streak/stack counters, team, weapon upkeep, and aim rates. Target
- * state lives in TargetSection; sneak/weakpoint stay on the headline chips.
+ * The character's steady state: health, meters, caps, streak/stack counters,
+ * team, weapon upkeep, and aim rates. Race lives in the SPECIAL Loadout
+ * section (SpecialLoadoutSection.tsx); target state in TargetSection;
+ * sneak/weakpoint stay on the headline chips.
  */
 
 /** In-game meter state names — SURV_NewHungerThreshold_Msg_* / SURV_NewThirstThreshold_Msg_* (tier 4 = fullest). */
@@ -90,7 +88,7 @@ function SwitchRow({
   );
 }
 
-export function CharacterSection() {
+export function ConditionsSection() {
   const { mode } = useGameMode();
   const { player, enemy } = useBuild();
   const dispatch = useBuildDispatch();
@@ -102,12 +100,6 @@ export function CharacterSection() {
   const conditions = player.conditions;
   const defaults = createDefaultPlayerConditions();
   const isGhoul = conditions.isGhoul ?? false;
-
-  // Race lock from equipped race-restricted perks (Glowing Criticals → ghoul, ...).
-  const raceLock = React.useMemo(
-    () => equippedRaceLock(mode, player.perks, player.legendaryPerks),
-    [mode, player.perks, player.legendaryPerks]
-  );
 
   const stats = React.useMemo(() => resolveStats(player, enemy, mode), [player, enemy, mode]);
 
@@ -123,7 +115,6 @@ export function CharacterSection() {
   const feralTier = conditions.feralTier ?? 0;
 
   const activeCount =
-    (isGhoul !== (defaults.isGhoul ?? false) ? 1 : 0) +
     (conditions.healthPercent !== defaults.healthPercent ? 1 : 0) +
     (foodTier !== (defaults.foodTier ?? 0) ? 1 : 0) +
     (drinkTier !== (defaults.drinkTier ?? 0) ? 1 : 0) +
@@ -141,52 +132,16 @@ export function CharacterSection() {
     (conditions.limitBreakingPieces !== defaults.limitBreakingPieces ? 1 : 0);
 
   return (
-    <AccordionItem value="character">
+    <AccordionItem value="conditions">
       <AccordionTrigger>
         <SectionTrigger
-          label="Character"
+          label="Conditions"
           summary={activeCount === 0 ? 'defaults' : undefined}
           badge={activeCount > 0 && <Badge variant="secondary">{activeCount} active</Badge>}
         />
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-3">
-          <div className="space-y-1.5">
-            <Label>Race</Label>
-            <div className="flex items-center gap-2">
-              <ButtonGroup>
-                {(['human', 'ghoul'] as const).map(race => {
-                  const selected = (race === 'ghoul') === isGhoul;
-                  const lockedOut = raceLock.locked !== null && raceLock.locked !== race;
-                  return (
-                    <Button
-                      key={race}
-                      type="button"
-                      size="sm"
-                      variant={selected ? 'default' : 'outline'}
-                      disabled={lockedOut}
-                      title={
-                        lockedOut
-                          ? `Locked to ${raceLock.locked}: ${raceLock.lockedBy.join(', ')}`
-                          : race === 'ghoul'
-                            ? 'Ghoul: feral meter applies; food/drink meters do not'
-                            : 'Human: food/drink meters apply; feral meter does not'
-                      }
-                      onClick={() => set('isGhoul', race === 'ghoul')}
-                    >
-                      {race === 'human' ? 'Human' : 'Ghoul'}
-                    </Button>
-                  );
-                })}
-              </ButtonGroup>
-              {raceLock.conflict && (
-                <Badge variant="outline" className="border-negative text-negative" title={raceLock.lockedBy.join(', ')}>
-                  conflicting race-locked perks
-                </Badge>
-              )}
-            </div>
-          </div>
-
           <NumberField
             id="char-health"
             label="Health %"

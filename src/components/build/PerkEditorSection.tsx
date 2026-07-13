@@ -1,7 +1,5 @@
 import * as React from 'react';
 import { CheckIcon, MinusIcon, PlusIcon, XIcon } from 'lucide-react';
-import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
@@ -17,7 +15,7 @@ import { cn } from '@/lib/utils';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getPerks } from '@/data';
-import { computePerkBudget } from '@/data/perk-budget';
+import { usePerkStatus } from './usePerkStatus';
 import { Special } from '@/data/special';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';
 import { canSlotCardPoints, type PerkBudget } from '@/lib/player-stats';
@@ -25,7 +23,6 @@ import type { Perk, PerkLoadout } from '@/types';
 import { LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS, type SpecialKey } from '@/state/build-reducer';
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import { DiffTooltip } from '@/components/diff/DiffTooltip';
-import { SectionTrigger } from './SectionTrigger';
 
 const SPECIAL_ORDER: Array<{ key: SpecialKey; special: Special; letter: string }> = [
   { key: 'strength', special: Special.Strength, letter: 'S' },
@@ -301,9 +298,12 @@ function PerkAddCombobox({
   );
 }
 
-export function PerkEditorSection() {
+/**
+ * Content-only perk editor — rendered inside the SPECIAL Loadout section
+ * (SpecialLoadoutSection.tsx), not its own accordion item.
+ */
+export function PerkEditor() {
   const { registry } = usePerkRegistry();
-  const { mode } = useGameMode();
   const { player } = useBuild();
   // Main picker state lives here so the SpecialBudgetBar can open it pre-filtered.
   const [pickerOpen, setPickerOpen] = React.useState(false);
@@ -316,33 +316,12 @@ export function PerkEditorSection() {
 
   const regularEntries = resolve(player.perks);
   const legendaryEntries = resolve(player.legendaryPerks);
-  const allocation = Object.fromEntries(SPECIAL_ORDER.map(({ key }) => [key, player.conditions[key]])) as Record<
-    SpecialKey,
-    number
-  >;
-  const budget = computePerkBudget(mode, player.perks, player.legendaryPerks, allocation);
+  const { budget } = usePerkStatus();
 
-  const overBudget = budget.overBudget;
   const legendaryOver = legendaryEntries.length > LEGENDARY_SLOTS;
-  const cardCount = regularEntries.length + legendaryEntries.length;
 
   return (
-    <AccordionItem value="perks">
-      <AccordionTrigger>
-        <SectionTrigger
-          label="Perks"
-          summary={cardCount > 0 ? `${cardCount} cards` : 'none — import or add'}
-          badge={
-            (overBudget || legendaryOver) && (
-              <Badge variant="outline" className="border-negative text-negative">
-                over budget
-              </Badge>
-            )
-          }
-        />
-      </AccordionTrigger>
-      <AccordionContent>
-        <div className="space-y-3">
+    <div className="space-y-3">
           <SpecialBudgetBar
             budget={budget}
             onSelectSpecial={special => {
@@ -403,8 +382,6 @@ export function PerkEditorSection() {
             card bonuses, capped at 15. Adding past the budget is blocked — imported or re-allocated builds that
             exceed it are flagged instead.
           </p>
-        </div>
-      </AccordionContent>
-    </AccordionItem>
+    </div>
   );
 }

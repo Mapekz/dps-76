@@ -2,11 +2,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion } from '@/components/ui/accordion';
 import { UserIcon } from 'lucide-react';
 import { WeaponSection } from './WeaponSection';
-import { PerkEditorSection } from './PerkEditorSection';
-import { SpecialSection } from './SpecialSection';
+import { SpecialLoadoutSection } from './SpecialLoadoutSection';
 import { StatSummary } from './StatSummary';
 import { MutationsSection, ConsumablesSection } from './BuffsSections';
-import { CharacterSection } from './CharacterSection';
+import { ConditionsSection } from './ConditionsSection';
 import { TargetSection } from './TargetSection';
 
 export function BuildColumn() {
@@ -20,12 +19,11 @@ export function BuildColumn() {
       </CardHeader>
       <CardContent>
         <StatSummary />
-        <Accordion type="multiple" defaultValue={['weapon', 'perks']} className="w-full">
+        <Accordion type="multiple" defaultValue={['weapon', 'special-loadout']} className="w-full">
           <WeaponSection />
-          <CharacterSection />
-          <SpecialSection />
-          <PerkEditorSection />
+          <SpecialLoadoutSection />
           <MutationsSection />
+          <ConditionsSection />
           <ConsumablesSection />
           <TargetSection />
         </Accordion>

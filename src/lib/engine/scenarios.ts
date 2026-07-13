@@ -66,7 +66,7 @@ export interface ScenarioSet {
   /**
    * The shared Onslaught stack cap folded from every equipped source's
    * `onslaughtMaxStacks` modifier (0 when none are equipped). Exposed here
-   * so the UI's Onslaught-stacks slider (`CharacterSection`) can read the
+   * so the UI's Onslaught-stacks slider (`ConditionsSection`) can read the
    * bound without re-running `resolveLoadout` — see docs/assumptions.md
    * "Onslaught".
    */
