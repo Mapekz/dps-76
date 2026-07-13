@@ -169,7 +169,7 @@ export function CharacterSection() {
                         lockedOut
                           ? `Locked to ${raceLock.locked}: ${raceLock.lockedBy.join(', ')}`
                           : race === 'ghoul'
-                            ? 'Ghoul: feral meter applies; food/drink meters (Gourmand’s) do not'
+                            ? 'Ghoul: feral meter applies; food/drink meters do not'
                             : 'Human: food/drink meters apply; feral meter does not'
                       }
                       onClick={() => set('isGhoul', race === 'ghoul')}
@@ -189,7 +189,7 @@ export function CharacterSection() {
 
           <NumberField
             id="char-health"
-            label="Health % (Bloodied, Adrenal Reaction)"
+            label="Health %"
             value={conditions.healthPercent}
             min={1}
             max={100}
@@ -197,63 +197,57 @@ export function CharacterSection() {
           />
 
           <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Max HP (derived: 245 + 5×END + buffs)</span>
+            <span className="text-muted-foreground">Max HP</span>
             <span className="font-mono tabular-nums">{stats.maxHealth}</span>
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="char-food">
-              Food meter: {FOOD_TIER_NAMES[foodTier]} (Gourmand's{isGhoul ? ' — human-only' : ''})
-            </Label>
-            <Slider
-              id="char-food"
-              min={0}
-              max={4}
-              step={1}
-              disabled={isGhoul}
-              value={[foodTier]}
-              onValueChange={([v]) => set('foodTier', v)}
-              marks={FOOD_TIER_NAMES.map((_, i) => ({ value: i }))}
-            />
-          </div>
+          {!isGhoul && (
+            <>
+              <div className="space-y-1.5">
+                <Label htmlFor="char-food">Food meter: {FOOD_TIER_NAMES[foodTier]}</Label>
+                <Slider
+                  id="char-food"
+                  min={0}
+                  max={4}
+                  step={1}
+                  value={[foodTier]}
+                  onValueChange={([v]) => set('foodTier', v)}
+                  marks={FOOD_TIER_NAMES.map((_, i) => ({ value: i }))}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="char-drink">Drink meter: {DRINK_TIER_NAMES[drinkTier]}</Label>
+                <Slider
+                  id="char-drink"
+                  min={0}
+                  max={4}
+                  step={1}
+                  value={[drinkTier]}
+                  onValueChange={([v]) => set('drinkTier', v)}
+                  marks={DRINK_TIER_NAMES.map((_, i) => ({ value: i }))}
+                />
+              </div>
+            </>
+          )}
+
+          {isGhoul && (
+            <div className="space-y-1.5">
+              <Label htmlFor="char-feral">Feral meter: {feralStateName(feralTier)}</Label>
+              <Slider
+                id="char-feral"
+                min={0}
+                max={8}
+                step={1}
+                value={[feralTier]}
+                onValueChange={([v]) => set('feralTier', v)}
+                marks={Array.from({ length: 9 }, (_, i) => ({ value: i, label: i % 2 === 0 ? String(i) : undefined }))}
+              />
+            </div>
+          )}
 
           <div className="space-y-1.5">
-            <Label htmlFor="char-drink">
-              Drink meter: {DRINK_TIER_NAMES[drinkTier]}
-              {isGhoul ? ' (human-only)' : ''}
-            </Label>
-            <Slider
-              id="char-drink"
-              min={0}
-              max={4}
-              step={1}
-              disabled={isGhoul}
-              value={[drinkTier]}
-              onValueChange={([v]) => set('drinkTier', v)}
-              marks={DRINK_TIER_NAMES.map((_, i) => ({ value: i }))}
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="char-feral">
-              Feral meter: {feralStateName(feralTier)} (Lucid{!isGhoul ? ' — ghoul-only' : ''})
-            </Label>
-            <Slider
-              id="char-feral"
-              min={0}
-              max={8}
-              step={1}
-              disabled={!isGhoul}
-              value={[feralTier]}
-              onValueChange={([v]) => set('feralTier', v)}
-              marks={Array.from({ length: 9 }, (_, i) => ({ value: i, label: i % 2 === 0 ? String(i) : undefined }))}
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="char-caps">
-              Caps on hand: {conditions.capsOnHand.toLocaleString()} (Aristocrat's maxes at 29k)
-            </Label>
+            <Label htmlFor="char-caps">Caps on hand: {conditions.capsOnHand.toLocaleString()}</Label>
             <Slider
               id="char-caps"
               min={0}
@@ -266,9 +260,7 @@ export function CharacterSection() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="char-killstreak">
-              Kill streak: {conditions.adrenalineStacks} (Adrenal effects, 0–10)
-            </Label>
+            <Label htmlFor="char-killstreak">Kill streak: {conditions.adrenalineStacks}</Label>
             <Slider
               id="char-killstreak"
               min={0}
@@ -307,9 +299,7 @@ export function CharacterSection() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="char-teammates">
-              Teammates: {conditions.teammateCount} (Fencer's, Strange in Numbers)
-            </Label>
+            <Label htmlFor="char-teammates">Teammates: {conditions.teammateCount}</Label>
             <Slider
               id="char-teammates"
               min={0}
@@ -323,7 +313,7 @@ export function CharacterSection() {
 
           <NumberField
             id="char-weapon-condition"
-            label="Weapon condition % (Polished maxes at 200%)"
+            label="Weapon condition %"
             value={conditions.weaponConditionPct ?? 100}
             min={0}
             max={200}
@@ -333,7 +323,7 @@ export function CharacterSection() {
 
           <NumberField
             id="char-hit-rate"
-            label="Free-aim hit rate % (misses waste shots)"
+            label="Free-aim hit rate %"
             value={conditions.hitRatePct ?? 100}
             min={10}
             max={100}
@@ -344,7 +334,7 @@ export function CharacterSection() {
           <div className="space-y-1.5">
             <NumberField
               id="char-bodypart-rate"
-              label="Body part hit rate % (weakpoint aiming)"
+              label="Body part hit rate %"
               value={conditions.bodyPartHitRatePct ?? 100}
               min={10}
               max={100}
@@ -365,14 +355,14 @@ export function CharacterSection() {
 
           <SwitchRow
             id="char-last-shot"
-            label="Firing the magazine's last round (Last Shot)"
+            label="Firing the magazine's last round"
             checked={conditions.isLastShot ?? false}
             onCheckedChange={v => set('isLastShot', v)}
           />
 
           <NumberField
             id="char-addictions"
-            label="Addictions (Junkie's maxes at 10)"
+            label="Addictions"
             value={conditions.addictionCount}
             min={0}
             max={99}
@@ -381,7 +371,7 @@ export function CharacterSection() {
 
           <NumberField
             id="char-limit-breaking"
-            label="Limit Breaking armor pieces (0–5, −10% crit cost each)"
+            label="Limit Breaking armor pieces"
             value={conditions.limitBreakingPieces}
             min={0}
             max={5}

@@ -36,8 +36,8 @@ const ENEMY_NUMBER_FIELDS: Array<{
   min: number;
   max: number;
 }> = [
-  { key: 'healthPercent', label: "Target health % (Executioner's ≤40, Instigating ≥60)", min: 1, max: 100 },
-  { key: 'groupTargetCount', label: "Enemies in the group (Encircler's maxes at 5)", min: 1, max: 99 },
+  { key: 'healthPercent', label: 'Target health %', min: 1, max: 100 },
+  { key: 'groupTargetCount', label: 'Enemies in the group', min: 1, max: 99 },
 ];
 
 export function TargetSection() {
@@ -87,7 +87,7 @@ export function TargetSection() {
       <AccordionContent>
         <div className="space-y-3">
           <div className="space-y-1.5">
-            <Label>Target enemy (body-part multipliers from game data)</Label>
+            <Label>Target enemy</Label>
             <Combobox
               options={races.map(r => ({ value: r.id, label: r.name }))}
               value={conditions.targetRace ?? null}
@@ -153,7 +153,7 @@ export function TargetSection() {
           </div>
 
           <div className="space-y-1.5">
-            <Label>Target distance (Close ≈12m: Guerrilla · Far: Down Ranger, Sniper's)</Label>
+            <Label>Target distance</Label>
             <ButtonGroup>
               {TARGET_DISTANCE_OPTIONS.map(opt => (
                 <Button
@@ -187,8 +187,7 @@ export function TargetSection() {
 
           <div className="space-y-1.5">
             <Label htmlFor="target-crippled">
-              Crippled limbs (Bully's/Tormentor scaling caps at 6; {crippableMax} crippable
-              {selectedRace ? ` on ${selectedRace.name}` : ' max'})
+              Crippled limbs ({crippableMax} crippable{selectedRace ? ` on ${selectedRace.name}` : ' max'})
             </Label>
             <Input
               id="target-crippled"
@@ -203,7 +202,7 @@ export function TargetSection() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="target-tenderizer">Tenderizer stacks on the target (0–1000, team-dependent)</Label>
+            <Label htmlFor="target-tenderizer">Tenderizer stacks on the target</Label>
             <Input
               id="target-tenderizer"
               type="number"

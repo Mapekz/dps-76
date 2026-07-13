@@ -32,7 +32,7 @@ export interface PlayerConditions {
    * "Onslaught").
    */
   onslaughtStacks: number;
-  adrenalineStacks: number; // 0-10 (always max per user preference)
+  adrenalineStacks: number; // 0-10 (default 0 per user preference)
   tenderizerStacks: number; // 0-1000, 0.1 dbm per stack (manual team-scenario input)
 
   // Other steady-state inputs for conditional sources
@@ -339,7 +339,7 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     healthPercent: 100,
     bulletStormStacks: 10, // Assume max stacks by default
     onslaughtStacks: -1, // Follow the computed max (sentinel; see field comment)
-    adrenalineStacks: 10, // Always max per user preference
+    adrenalineStacks: 0, // Default per user preference
     tenderizerStacks: 0, // Solo default — no other players hitting the target
     addictionCount: 0,
     capsOnHand: 0,
