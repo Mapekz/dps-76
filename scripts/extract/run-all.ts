@@ -25,7 +25,7 @@ async function main() {
   const esmPath = values.esm ?? process.env.FO76_ESM_PATH;
   if (!esmPath) {
     console.error('Usage: pnpm extract --esm <path-to-SeventySix.esm> [--mode live|pts] [--only weapons,...]');
-    console.error('(or set FO76_ESM_PATH in your shell profile to omit --esm)');
+    console.error('(or set the FO76_ESM_PATH env var to omit --esm)');
     process.exit(1);
   }
   const mode = values.mode!;

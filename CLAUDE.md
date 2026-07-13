@@ -14,7 +14,7 @@ This is a Fallout 76 DPS (Damage Per Second) calculator web application. It comp
 - `pnpm test` - Run vitest suite (engine unit tests, extraction fixtures, golden cases)
 - `pnpm lint` - Run ESLint
 - `pnpm preview` - Preview production build locally
-- `pnpm extract --esm <path-to-SeventySix.esm> --mode live [--only weapons,perks,omods,buffs]` - Regenerate game data from an ESM dump (requires the `esm` CLI on PATH). `--esm` can be omitted if the `FO76_ESM_PATH` env var is set (a local-only convention — see below); `pnpm esm:walk` uses the same fallback.
+- `pnpm extract --esm <path-to-SeventySix.esm> --mode live [--only weapons,perks,omods,buffs]` - Regenerate game data from an ESM dump (requires the `esm` CLI on PATH). `--esm` can be omitted if the `FO76_ESM_PATH` env var is set instead; `pnpm esm:walk` uses the same fallback.
 - `pnpm extract:diff [--base HEAD]` - Markdown review report of generated-data changes vs a git ref; run after every extraction
 
 This project uses **pnpm** as the package manager, not npm or yarn.

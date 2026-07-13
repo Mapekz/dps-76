@@ -11,8 +11,7 @@ import { flattenConditionRows, flattenPerkConditionRows, type RawCondition } fro
  *
  *   pnpm esm:walk <formid|edid> [--refs] [--depth N] [--esm <path>]
  *
- * ESM path resolves from --esm, else the FO76_ESM_PATH env var — set that in
- * your shell profile to skip passing --esm every time.
+ * ESM path resolves from --esm, else the FO76_ESM_PATH env var.
  *
  * The digest is for AGENT/human reading — the extraction pipeline never uses
  * this file. Judgment guidance lives in .claude/skills/esm-walk/SKILL.md.
@@ -44,7 +43,7 @@ function parseArgs(): Args {
   }
   esmPath ||= process.env.FO76_ESM_PATH ?? '';
   if (!esmPath) {
-    console.error('No ESM path: pass --esm <path> or set FO76_ESM_PATH in your shell profile.');
+    console.error('No ESM path: pass --esm <path> or set the FO76_ESM_PATH env var.');
     process.exit(1);
   }
   return { target, refs, depth, esmPath };
