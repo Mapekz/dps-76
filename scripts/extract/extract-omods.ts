@@ -1,7 +1,14 @@
 import type { ExcludedRecordDetail, GeneratedOmod } from '../../src/types/generated';
 import type { Bucket, Modifier } from '../../src/types/modifiers';
 import { EsmClient, mapPool, type EsmRecord } from './esm-client';
-import { FALLBACK_AVIF_ROUTES, buildAvifRoutes, parseMagicEffects, translateMagicEffect, type AvifRoute } from './normalize/mgef';
+import {
+  FALLBACK_AVIF_ROUTES,
+  buildAvifRoutes,
+  parseMagicEffects,
+  translateGrantedPerk,
+  translateMagicEffect,
+  type AvifRoute,
+} from './normalize/mgef';
 import { translateConditions } from './normalize/conditions';
 import { DAMAGE_TYPE_EDID_MAP } from './extract-weapons';
 import { ObtainabilityClassifier } from './obtainability';
@@ -27,9 +34,26 @@ interface PropertyMapping {
  * carries `ActorValues ADD ArmorPenetration 50.0` — the value lives on the
  * OMOD property, NOT its enchantment. Unmapped AVs are reported so the map
  * grows deliberately.
+ *
+ * Unique-mod rework AVs resolved but deliberately left OUT of this map
+ * (2026-07-13 — they fall through to the "ActorValues on X — unmapped" note
+ * below instead):
+ * - Final Word's 0x00924DB9 → `EnableAmmoSpenderOnKill`, an AVIF flagged
+ *   "Boolean" (a plain enable flag), not a stack counter — doesn't fit
+ *   `bulletStorm`'s StackCounter semantics.
+ * - Old Guard's 0x007ACE76 → `STAT_DeflectChance` ("Deflect Chance") — a
+ *   defensive/dodge stat; no formula bucket models deflect chance.
+ * - The Fixer's 0x00183312 / 0x00245BEB → `ArmorShadowHide` ("Stealth in
+ *   Shadows") / `Mod_StealthMove_AV` ("Sneaking Speed") — sneak-detection
+ *   stats, non-damage.
  */
 const ACTOR_VALUE_BUCKETS: Record<string, { bucket: Bucket; scale: number }> = {
   ArmorPenetration: { bucket: 'armorPen', scale: 0.01 }, // 50.0 ⇒ 0.5 (inert until enemy DR lands)
+  // All Rise (unique-mod rework, 2026-07-13): flat Health ADD +50. Same
+  // bucket/scale as mgef.ts's HealthBonus route (Lifegiver's) — the OMOD
+  // carries the value directly on this property instead of an MGEF Peak
+  // Value Modifier, but the semantics (flat max-HP points) are identical.
+  Health: { bucket: 'maxHealth', scale: 1 },
 };
 
 /**
@@ -120,6 +144,31 @@ interface RawProperty {
   curvePoints: Array<{ x: number; y: number }> | null;
 }
 
+/**
+ * Property values that arrive as a bare number instead of the usual
+ * `{value,name}` join (verified 2026-07-13 on mod_Custom_UnstoppableMonster /
+ * WhistleInTheDark / SoleSurvivor): 116 = "attach this PERK to the wielder"
+ * (Value 1 = PERK formid, Value 2 = 1, ADD — the unique-mod rework's
+ * mechanism for granting a perk from gear, decoded below as 'AttachedPerk').
+ * Other raw numbers are unmapped today.
+ */
+const RAW_NUMERIC_PROPERTIES: Record<number, string> = {
+  116: 'AttachedPerk',
+};
+
+/**
+ * Exposed for tests: resolve a raw `Property` field to its name. Named
+ * properties (`{value,name}`) pass through unchanged; unmapped raw numbers
+ * become `Property#<n>` so they surface in `unknownProperties` instead of
+ * collapsing into the 'Unknown' bucket (which used to also catch genuinely
+ * nameless properties — see PROPERTY_IGNORED).
+ */
+export function propertyName(raw: unknown): string {
+  if (typeof raw === 'number') return RAW_NUMERIC_PROPERTIES[raw] ?? `Property#${raw}`;
+  const named = (raw as Record<string, unknown> | null | undefined)?.['name'];
+  return typeof named === 'string' ? named : 'Unknown';
+}
+
 function parseProperties(data: Record<string, unknown>): RawProperty[] {
   const props = data['Properties'];
   if (!Array.isArray(props)) return [];
@@ -127,7 +176,7 @@ function parseProperties(data: Record<string, unknown>): RawProperty[] {
     const curveNode = p['Curve Table'] as { curve?: Array<{ x: number; y: number }> } | null | undefined;
     return {
       functionType: (((p['Function Type'] as Record<string, unknown>)?.['name'] as string) ?? 'SET').replace('MUL+ADD', 'MUL_ADD'),
-      property: ((p['Property'] as Record<string, unknown>)?.['name'] as string) ?? 'Unknown',
+      property: propertyName(p['Property']),
       value1: p['Value 1'],
       value2: p['Value 2'],
       hasCurveTable: p['Curve Table'] != null,
@@ -257,6 +306,28 @@ export async function extractOmods(
         hasEnchantments = true;
         if (typeof prop.value1 === 'string') {
           await enchantmentModifiers(prop.value1, source, modifiers, modNotes);
+        }
+        continue;
+      }
+      if (prop.property === 'AttachedPerk') {
+        // Property 116, decoded above by propertyName(): Value 1 = PERK
+        // formid, Value 2 = 1 (ADD) — attach this perk to the wielder
+        // (unique-mod rework). Decode it exactly like a legendary's
+        // Script-archetype "Perk to Apply" chase (mgef.ts's
+        // translateGrantedPerk): Entry Point effects with a formula bucket
+        // become modifiers on THIS omod; effects with none (e.g. "Mod
+        // Incoming Weapon Damage" — damage TAKEN, out of scope) become a
+        // note, never a silent drop.
+        if (typeof prop.value1 === 'string') {
+          const result = await translateGrantedPerk(
+            { client, routes: avifRoutes, edidByFormId, timedIsActive: true, noteUnroutedAvs: true },
+            record.editor_id,
+            prop.value1
+          );
+          result.notes.forEach(n => modNotes.add(n));
+          for (const fragment of result.modifiers) {
+            modifiers.push({ id: `${record.header.form_id}:perk:${modifiers.length}`, source, ...fragment });
+          }
         }
         continue;
       }

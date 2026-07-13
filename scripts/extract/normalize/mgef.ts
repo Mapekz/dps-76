@@ -519,10 +519,16 @@ export function repairMisattributedPerkEntryFields(effects: Array<Record<string,
  * effects (Executioner's: `Mod Weapon DMG Bonus Mult` +0.5, target HP ≤ GLOB
  * threshold) or as a granted Ability SPEL (chased through the normal MGEF
  * translation). Entry points we can't model become notes, not silence.
+ *
+ * Exported (2026-07-13): also the decode path for OMOD property 116
+ * ("AttachedPerk" — unique-mod rework, extract-omods.ts's `mod_Custom_*`
+ * family), which attaches a PERK straight to the wielder with no MGEF wrapper
+ * at all — `contextEdid` is just the caller's own edid for the not-found note
+ * text, so either caller (an MGEF or an OMOD) works unchanged.
  */
-async function translateGrantedPerk(
+export async function translateGrantedPerk(
   deps: MgefTranslationDeps,
-  mgefEdid: string,
+  contextEdid: string,
   perkFormId: string
 ): Promise<MgefTranslationResult> {
   const { client, edidByFormId } = deps;
@@ -532,7 +538,7 @@ async function translateGrantedPerk(
   try {
     perk = await client.get(perkFormId);
   } catch {
-    result.notes.push(`MGEF ${mgefEdid}: granted perk ${perkFormId} not found`);
+    result.notes.push(`${contextEdid}: granted perk ${perkFormId} not found`);
     return result;
   }
   const perkEdid = perk.editor_id;
