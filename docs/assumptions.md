@@ -242,6 +242,17 @@ Curve-bearing magic effects (Curve Table + input Actor Value on the effect)
 supply Y at X = a player stat; the curve overrides the flat magnitude.
 Extracted automatically (`normalize/mgef.ts`, `Modifier.curve`):
 
+**Single-point curve tables** (exactly one `{x, y}` pair) carry no real input
+axis — interpolating one point always returns that Y regardless of X, so
+it's an authored constant rather than a curve. `normalize/mgef.ts` uses the Y
+value directly as the effect's magnitude in this case, bypassing the usual
+`curveInputAv` resolution (which would otherwise drop the modifier with a
+"curve with unmapped input AV null" note, since a single-point curve has no
+reason to carry a resolvable input AV at all). Confirmed on three alcohol
+`dbm` effects whose Curve Table Y exactly matches their flat EFIT magnitude:
+Ballistic Bock (`BallisticBock_BallisticDMG.json`, {1→15}), High Voltage Hefe,
+Hoppy Hunter IPA — all +15% dbm, previously dropped entirely (2026-07-13).
+
 | Effect | Input (X) | Curve | Notes |
 |---|---|---|---|
 | Bloodied | current HP fraction (AV 0x392) | (0.05 → +130) … (1.0 → 0) | linear between points; clamped below 5% HP |

@@ -425,7 +425,14 @@ export function translate(
     }
     const dotConds: Condition[] = damageType ? [...effectConds, { kind: 'damageTypeScope', types: [damageType] }] : effectConds;
     let dotCurve: ValueCurve | undefined;
-    if (effect.curvePoints) {
+    let dotMagnitude = effect.magnitude;
+    if (effect.curvePoints && effect.curvePoints.length === 1) {
+      // A single-point curve table has no input axis to speak of — interpolating
+      // one point always returns that Y regardless of X, so it's an authored
+      // constant. Use the Y value directly rather than requiring a resolvable
+      // curveInputAv (see docs/assumptions.md, "Single-point curve tables").
+      dotMagnitude = effect.curvePoints[0].y;
+    } else if (effect.curvePoints) {
       const input = resolveCurveInput(effect.curveInputAv, mgef.edid);
       if (input) {
         dotCurve = { input, points: effect.curvePoints };
@@ -437,7 +444,7 @@ export function translate(
     result.modifiers.push(
       dotCurve
         ? { bucket: 'dotDamage', op: 'ADD', curve: dotCurve, curveScale: 1, conditions: dotConds, durationSec: effect.duration }
-        : { bucket: 'dotDamage', op: 'ADD', value: effect.magnitude, conditions: dotConds, durationSec: effect.duration }
+        : { bucket: 'dotDamage', op: 'ADD', value: dotMagnitude, conditions: dotConds, durationSec: effect.duration }
     );
     return result;
   }
@@ -452,7 +459,14 @@ export function translate(
 
   // Value curve (Bloodied, Nerd Rage...): Y at X = input AV; overrides magnitude.
   let curve: ValueCurve | undefined;
-  if (effect.curvePoints) {
+  let effectiveMagnitude = effect.magnitude;
+  if (effect.curvePoints && effect.curvePoints.length === 1) {
+    // A single-point curve table has no input axis to speak of — interpolating
+    // one point always returns that Y regardless of X, so it's an authored
+    // constant. Use the Y value directly rather than requiring a resolvable
+    // curveInputAv (see docs/assumptions.md, "Single-point curve tables").
+    effectiveMagnitude = effect.curvePoints[0].y;
+  } else if (effect.curvePoints) {
     const input = resolveCurveInput(effect.curveInputAv, mgef.edid);
     if (input) {
       curve = { input, points: effect.curvePoints };
@@ -480,7 +494,7 @@ export function translate(
     result.modifiers.push(
       curve
         ? { bucket, op: 'ADD', curve, curveScale: scale, conditions }
-        : { bucket, op: 'ADD', value: effect.magnitude * scale, conditions }
+        : { bucket, op: 'ADD', value: effectiveMagnitude * scale, conditions }
     );
   };
 

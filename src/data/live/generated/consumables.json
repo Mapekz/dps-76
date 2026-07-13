@@ -173,13 +173,37 @@
      "edid": "Brew_BallisticBock",
      "name": "Ballistic Bock"
     },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.15,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeBallistic",
+      "present": true
+     },
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeHeavyGun",
+      "present": false
+     }
+    ]
+   },
+   {
+    "id": "0x0046983F:1",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0046983F",
+     "edid": "Brew_BallisticBock",
+     "name": "Ballistic Bock"
+    },
     "bucket": "specialLuck",
     "op": "ADD",
     "value": 2,
     "conditions": []
    },
    {
-    "id": "0x0046983F:1",
+    "id": "0x0046983F:2",
     "source": {
      "kind": "consumable",
      "formId": "0x0046983F",
@@ -196,7 +220,6 @@
    "Brew_BallisticBock: MGEF BallisticBock_Duration archetype Script — needs override",
    "Brew_BallisticBock: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "Brew_BallisticBock: perk BallisticBock_Perk: entry point Mod Item Condition Loss — not modeled",
-   "Brew_BallisticBock: BallisticBock_FortifyDamageBallistic_Effect: curve with unmapped input AV null — needs override",
    "Brew_BallisticBock: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -3301,8 +3324,8 @@
   "notes": [
    "Brew_LemonadeHard: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "Brew_LemonadeHard: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "Brew_LemonadeHard: FortifyActionPointsAlcohol: curve with unmapped input AV null — needs override",
-   "Brew_LemonadeHard: Alcohol_APRegen: curve with unmapped input AV null — needs override",
+   "Brew_LemonadeHard: MGEF FortifyActionPointsAlcohol: no route for AV ActionPoints — needs mapping",
+   "Brew_LemonadeHard: MGEF Alcohol_APRegen: no route for AV ActionPointsRate — needs mapping",
    "Brew_LemonadeHard: MGEF LemonadeHard_Duration archetype Script — needs override"
   ],
   "category": "alcohol",
@@ -3333,13 +3356,37 @@
      "edid": "Brew_HighVoltageHefe",
      "name": "High Voltage Hefe"
     },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.15,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeEnergy",
+      "present": true
+     },
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeHeavyGun",
+      "present": false
+     }
+    ]
+   },
+   {
+    "id": "0x003EC3E7:1",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x003EC3E7",
+     "edid": "Brew_HighVoltageHefe",
+     "name": "High Voltage Hefe"
+    },
     "bucket": "specialLuck",
     "op": "ADD",
     "value": 2,
     "conditions": []
    },
    {
-    "id": "0x003EC3E7:1",
+    "id": "0x003EC3E7:2",
     "source": {
      "kind": "consumable",
      "formId": "0x003EC3E7",
@@ -3356,7 +3403,6 @@
    "Brew_HighVoltageHefe: MGEF HighVoltageHefe_Duration archetype Script — needs override",
    "Brew_HighVoltageHefe: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "Brew_HighVoltageHefe: perk HighVoltageHefe_Perk: entry point Mod Item Condition Loss — not modeled",
-   "Brew_HighVoltageHefe: HighVoltageHefe_FortifyDamageEnergy_Effect: curve with unmapped input AV null — needs override",
    "Brew_HighVoltageHefe: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -3386,13 +3432,31 @@
      "edid": "Brew_HoppyHunter",
      "name": "Hoppy Hunter IPA"
     },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.15,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeAnimal"
+     }
+    ]
+   },
+   {
+    "id": "0x00454128:1",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00454128",
+     "edid": "Brew_HoppyHunter",
+     "name": "Hoppy Hunter IPA"
+    },
     "bucket": "specialLuck",
     "op": "ADD",
     "value": 3,
     "conditions": []
    },
    {
-    "id": "0x00454128:1",
+    "id": "0x00454128:2",
     "source": {
      "kind": "consumable",
      "formId": "0x00454128",
@@ -3407,7 +3471,6 @@
   ],
   "notes": [
    "Brew_HoppyHunter: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "Brew_HoppyHunter: HoppyHunter_FortifyDamageVsAnimals: curve with unmapped input AV null — needs override",
    "Brew_HoppyHunter: perk HoppyHunter_ScopeStability: entry point Mod Actor Scope Stability — not modeled",
    "Brew_HoppyHunter: perk HoppyHunter_ScopeStability: entry point Mod VATS Hit Chance — not modeled",
    "Brew_HoppyHunter: MGEF HoppyHunter_Duration archetype Script — needs override"
@@ -3622,9 +3685,9 @@
   "notes": [
    "Brew_LeadChampagneFresh: MGEF LeadChampagne_Duration archetype Script — needs override",
    "Brew_LeadChampagneFresh: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
-   "Brew_LeadChampagneFresh: LeadChampagne_IncreaseSprintAP: curve with unmapped input AV null — needs override",
-   "Brew_LeadChampagneFresh: Alcohol_ResistRadiationExpose: curve with unmapped input AV null — needs override",
-   "Brew_LeadChampagneFresh: LeadChampagne_AdjustFallSpeed: curve with unmapped input AV null — needs override",
+   "Brew_LeadChampagneFresh: MGEF LeadChampagne_IncreaseSprintAP: no route for AV STAT_SprintAPCost — needs mapping",
+   "Brew_LeadChampagneFresh: MGEF Alcohol_ResistRadiationExpose: no route for AV RadResistExposure — needs mapping",
+   "Brew_LeadChampagneFresh: MGEF LeadChampagne_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
    "Brew_LeadChampagneFresh: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -3676,9 +3739,9 @@
   "notes": [
    "Brew_LeadChampagneBellini: MGEF LeadChampagne_Duration archetype Script — needs override",
    "Brew_LeadChampagneBellini: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
-   "Brew_LeadChampagneBellini: LeadChampagne_IncreaseSprintAP: curve with unmapped input AV null — needs override",
-   "Brew_LeadChampagneBellini: Alcohol_DamageResist: curve with unmapped input AV null — needs override",
-   "Brew_LeadChampagneBellini: LeadChampagne_AdjustFallSpeed: curve with unmapped input AV null — needs override",
+   "Brew_LeadChampagneBellini: MGEF LeadChampagne_IncreaseSprintAP: no route for AV STAT_SprintAPCost — needs mapping",
+   "Brew_LeadChampagneBellini: MGEF Alcohol_DamageResist: no route for AV DamageResist — needs mapping",
+   "Brew_LeadChampagneBellini: MGEF LeadChampagne_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
    "Brew_LeadChampagneBellini: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -3730,9 +3793,9 @@
   "notes": [
    "Brew_LeadChampagneMimosa: MGEF LeadChampagne_Duration archetype Script — needs override",
    "Brew_LeadChampagneMimosa: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
-   "Brew_LeadChampagneMimosa: Alcohol_ResistRadiationExpose: curve with unmapped input AV null — needs override",
-   "Brew_LeadChampagneMimosa: LeadChampagne_IncreaseSprintAP: curve with unmapped input AV null — needs override",
-   "Brew_LeadChampagneMimosa: LeadChampagne_AdjustFallSpeed: curve with unmapped input AV null — needs override",
+   "Brew_LeadChampagneMimosa: MGEF Alcohol_ResistRadiationExpose: no route for AV RadResistExposure — needs mapping",
+   "Brew_LeadChampagneMimosa: MGEF LeadChampagne_IncreaseSprintAP: no route for AV STAT_SprintAPCost — needs mapping",
+   "Brew_LeadChampagneMimosa: MGEF LeadChampagne_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
    "Brew_LeadChampagneMimosa: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -5211,9 +5274,9 @@
    "Brew_NukashineFresh: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "Brew_NukashineFresh: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "Brew_NukashineFresh: MGEF Nukashine_Duration archetype Script — needs override",
-   "Brew_NukashineFresh: Nukashine_AdjustFallSpeed: curve with unmapped input AV null — needs override",
-   "Brew_NukashineFresh: Nukashine_FortifySprintAP: curve with unmapped input AV null — needs override",
-   "Brew_NukashineFresh: Nukashine_APRegen: curve with unmapped input AV null — needs override",
+   "Brew_NukashineFresh: MGEF Nukashine_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
+   "Brew_NukashineFresh: MGEF Nukashine_FortifySprintAP: no route for AV STAT_SprintAPCost — needs mapping",
+   "Brew_NukashineFresh: MGEF Nukashine_APRegen: no route for AV ActionPointsRate — needs mapping",
    "Brew_NukashineFresh: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -5954,7 +6017,7 @@
   "notes": [
    "Brew_RadAntLager: MGEF RadAntLager_Duration archetype Script — needs override",
    "Brew_RadAntLager: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
-   "Brew_RadAntLager: RadAntLager_FortifyCarryWeight: curve with unmapped input AV null — needs override",
+   "Brew_RadAntLager: MGEF RadAntLager_FortifyCarryWeight: no route for AV CarryWeight — needs mapping",
    "Brew_RadAntLager: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -7586,16 +7649,35 @@
   "formId": "0x005FD9A7",
   "name": "Sugar-Free Nukashine",
   "kind": "consumable",
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x005FD9A7:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x005FD9A7",
+     "edid": "SCORE_Brew_NukashineVintage_SugarFree",
+     "name": "Sugar-Free Nukashine"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     }
+    ]
+   }
+  ],
   "notes": [
    "SCORE_Brew_NukashineVintage_SugarFree: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "SCORE_Brew_NukashineVintage_SugarFree: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "SCORE_Brew_NukashineVintage_SugarFree: MGEF SCORE_Nukashine_Duration_SugarFree archetype Script — needs override",
-   "SCORE_Brew_NukashineVintage_SugarFree: Nukashine_FortifyUnarmedDamage: curve with unmapped input AV null — needs override",
-   "SCORE_Brew_NukashineVintage_SugarFree: Nukashine_DamageResist: curve with unmapped input AV null — needs override",
-   "SCORE_Brew_NukashineVintage_SugarFree: Nukashine_FortifySprintAP: curve with unmapped input AV null — needs override",
-   "SCORE_Brew_NukashineVintage_SugarFree: Nukashine_AdjustFallSpeed: curve with unmapped input AV null — needs override",
-   "SCORE_Brew_NukashineVintage_SugarFree: Nukashine_APRegen: curve with unmapped input AV null — needs override",
+   "SCORE_Brew_NukashineVintage_SugarFree: MGEF Nukashine_DamageResist: no route for AV DamageResist — needs mapping",
+   "SCORE_Brew_NukashineVintage_SugarFree: MGEF Nukashine_FortifySprintAP: no route for AV STAT_SprintAPCost — needs mapping",
+   "SCORE_Brew_NukashineVintage_SugarFree: MGEF Nukashine_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
+   "SCORE_Brew_NukashineVintage_SugarFree: MGEF Nukashine_APRegen: no route for AV ActionPointsRate — needs mapping",
    "SCORE_Brew_NukashineVintage_SugarFree: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -8782,10 +8864,10 @@
   "notes": [
    "Brew_LeadChampagneVintage: MGEF LeadChampagne_Duration archetype Script — needs override",
    "Brew_LeadChampagneVintage: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
-   "Brew_LeadChampagneVintage: Alcohol_ResistRadiationExpose: curve with unmapped input AV null — needs override",
-   "Brew_LeadChampagneVintage: Alcohol_DamageResist: curve with unmapped input AV null — needs override",
-   "Brew_LeadChampagneVintage: LeadChampagne_AdjustFallSpeed: curve with unmapped input AV null — needs override",
-   "Brew_LeadChampagneVintage: LeadChampagne_IncreaseSprintAP: curve with unmapped input AV null — needs override",
+   "Brew_LeadChampagneVintage: MGEF Alcohol_ResistRadiationExpose: no route for AV RadResistExposure — needs mapping",
+   "Brew_LeadChampagneVintage: MGEF Alcohol_DamageResist: no route for AV DamageResist — needs mapping",
+   "Brew_LeadChampagneVintage: MGEF LeadChampagne_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
+   "Brew_LeadChampagneVintage: MGEF LeadChampagne_IncreaseSprintAP: no route for AV STAT_SprintAPCost — needs mapping",
    "Brew_LeadChampagneVintage: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -8877,7 +8959,7 @@
    "E08A_Brew_GulpershineVintage: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "E08A_Brew_GulpershineVintage: MGEF E08A_GulperShine_ME archetype Script — needs override",
    "E08A_Brew_GulpershineVintage: condition: HasActiveMagicEffect(E08A_GulperSmacker_GulpershineBuff_ME)=1",
-   "E08A_Brew_GulpershineVintage: E08A_Gulpershine_DamageResist: curve with unmapped input AV null — needs override",
+   "E08A_Brew_GulpershineVintage: MGEF E08A_Gulpershine_DamageResist: no route for AV DamageResist — needs mapping",
    "E08A_Brew_GulpershineVintage: perk ToxicGin_PoisonEnemies: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | IsSpellTarget(ToxicGin_PoisonsOnHit)=0]",
    "E08A_Brew_GulpershineVintage: perk ToxicGin_PoisonEnemies: entry point Apply Combat Hit Spell — not modeled",
    "E08A_Brew_GulpershineVintage: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
@@ -8903,16 +8985,35 @@
   "formId": "0x0047BC08",
   "name": "Vintage Nukashine",
   "kind": "consumable",
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0047BC08:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0047BC08",
+     "edid": "Brew_NukashineVintage",
+     "name": "Vintage Nukashine"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     }
+    ]
+   }
+  ],
   "notes": [
    "Brew_NukashineVintage: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "Brew_NukashineVintage: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "Brew_NukashineVintage: MGEF Nukashine_Duration archetype Script — needs override",
-   "Brew_NukashineVintage: Nukashine_FortifyUnarmedDamage: curve with unmapped input AV null — needs override",
-   "Brew_NukashineVintage: Nukashine_DamageResist: curve with unmapped input AV null — needs override",
-   "Brew_NukashineVintage: Nukashine_FortifySprintAP: curve with unmapped input AV null — needs override",
-   "Brew_NukashineVintage: Nukashine_AdjustFallSpeed: curve with unmapped input AV null — needs override",
-   "Brew_NukashineVintage: Nukashine_APRegen: curve with unmapped input AV null — needs override",
+   "Brew_NukashineVintage: MGEF Nukashine_DamageResist: no route for AV DamageResist — needs mapping",
+   "Brew_NukashineVintage: MGEF Nukashine_FortifySprintAP: no route for AV STAT_SprintAPCost — needs mapping",
+   "Brew_NukashineVintage: MGEF Nukashine_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
+   "Brew_NukashineVintage: MGEF Nukashine_APRegen: no route for AV ActionPointsRate — needs mapping",
    "Brew_NukashineVintage: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
