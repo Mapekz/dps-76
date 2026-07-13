@@ -143,11 +143,21 @@ async function main() {
     const result = await extractBuffs(client);
     await writeFile(path.join(outDir, 'mutations.json'), JSON.stringify(result.mutations, null, 1));
     await writeFile(path.join(outDir, 'consumables.json'), JSON.stringify(result.consumables, null, 1));
+    await writeFile(path.join(outDir, 'addictions.json'), JSON.stringify(result.addictions, null, 1));
     meta.counts.mutations = result.mutations.length;
     meta.counts.consumables = result.consumables.length;
+    meta.counts.addictions = result.addictions.length;
+    meta.excluded = { ...meta.excluded, ...result.excluded };
+    meta.excludedDetailed = { ...meta.excludedDetailed, ...result.excludedDetailed };
     meta.unresolved.push(...result.notes);
     meta.unresolved.push(...result.unmappedAvifs.map(a => `unmapped buff AVIF: ${a}`));
-    console.log(`  ${result.mutations.length} mutations, ${result.consumables.length} consumables (notes: ${result.notes.length})`);
+    console.log(
+      `  ${result.mutations.length} mutations, ${result.consumables.length} consumables, ${result.addictions.length} addictions (excluded: ${Object.entries(
+        result.excluded
+      )
+        .map(([k, v]) => `${v.length} ${k}`)
+        .join(', ')}; notes: ${result.notes.length})`
+    );
   }
 
   if (only.includes('bodyparts')) {

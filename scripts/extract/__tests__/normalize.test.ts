@@ -3,18 +3,30 @@ import {
   translate,
   parseMagicEffects,
   repairMisattributedPerkEntryFields,
+  getMgefInfo,
   type MgefInfo,
   type SpellEffect,
   type AvifRoute,
 } from '../normalize/mgef';
 import { flattenPerkConditionRows, translateConditions, type RawCondition } from '../normalize/conditions';
-import type { EsmRecord } from '../esm-client';
+import type { EsmClient, EsmRecord } from '../esm-client';
+import fortifyStrengthChemEffect from './fixtures/mgef-fortifystrengthchemeffect.json';
 
 // Pins the PURE (sync) MGEF → IR translation with plain fixtures — no esm CLI
 // client, no shell-out. The async gather lives in translateMagicEffect.
 
 function mgef(overrides: Partial<MgefInfo> = {}): MgefInfo {
-  return { edid: 'TestMgef', name: 'Test', archetype: 'Value Modifier', actorValue: '0xAV', resistValue: null, perkToApply: null, ...overrides };
+  return {
+    edid: 'TestMgef',
+    name: 'Test',
+    archetype: 'Value Modifier',
+    actorValue: '0xAV',
+    resistValue: null,
+    perkToApply: null,
+    keywords: [],
+    dispelWithKeywords: false,
+    ...overrides,
+  };
 }
 
 function effect(overrides: Partial<SpellEffect> = {}): SpellEffect {
@@ -201,6 +213,47 @@ describe('translate (Onslaught, 2026-07-12)', () => {
     expect(r.modifiers[0].bucket).toBe('powerAttackBonus');
     expect(r.modifiers[0].curve?.input).toBe('onslaughtStacks');
     expect(r.modifiers[0].curve ? r.modifiers[0].curveScale : null).toBeCloseTo(0.01, 10);
+  });
+});
+
+describe('getMgefInfo (consumables overhaul, 2026-07-13)', () => {
+  // Fixture is verbatim `esm -p get FortifyStrengthChemEffect --json` output
+  // (20260710 ESM), formid 0x002466E6 — the "Chem: Fortify Strength" MGEF
+  // Buffout's Effects list applies. Proof point from the plan: this MGEF
+  // carries the "Dispel with Keywords" flag plus 3 keywords (ChemEffect,
+  // StackBuffStrength, ChemDispelEffects) — StackBuffStrength is the
+  // discriminating keyword that keeps chem STR buffs from colliding with
+  // food STR buffs (which key off FoodDispelEffect_Strength instead).
+  const stubClient = {
+    async get(formId: string): Promise<EsmRecord> {
+      if (formId === '0x002466E6') return fortifyStrengthChemEffect as unknown as EsmRecord;
+      throw new Error(`unexpected get(${formId})`);
+    },
+  } as unknown as EsmClient;
+
+  it('parses keywords and dispelWithKeywords from the raw record shape', async () => {
+    const info = await getMgefInfo(stubClient, '0x002466E6');
+    expect(info.edid).toBe('FortifyStrengthChemEffect');
+    expect(info.archetype).toBe('Peak Value Modifier');
+    expect(info.keywords).toEqual(['0x0004D897', '0x00246704', '0x0037E0BB']);
+    expect(info.dispelWithKeywords).toBe(true);
+  });
+
+  it('defaults keywords to [] and dispelWithKeywords to false when absent', async () => {
+    const bareClient = {
+      async get(): Promise<EsmRecord> {
+        return {
+          header: { signature: 'MGEF', form_id: '0xBARE' },
+          editor_id: 'BareMgef',
+          fields: {
+            'Magic Effect Data': { Data: { Archetype: { name: 'Value Modifier' }, Flags: { value: '0x0', flags: [] } } },
+          },
+        } as unknown as EsmRecord;
+      },
+    } as unknown as EsmClient;
+    const info = await getMgefInfo(bareClient, '0xBARE');
+    expect(info.keywords).toEqual([]);
+    expect(info.dispelWithKeywords).toBe(false);
   });
 });
 

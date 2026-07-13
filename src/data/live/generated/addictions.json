@@ -1,0 +1,141 @@
+[
+ {
+  "id": "AbAddictionAlcohol",
+  "formId": "0x0003E061",
+  "name": "Alcohol Addiction",
+  "causedBy": [
+   "Brew_BallisticBock",
+   "Brew_BeerBottleStandard01",
+   "Brew_BlackwaterBrew",
+   "Brew_Bourbon",
+   "Brew_CranberryMoonshine",
+   "Brew_DLC04_NukaCola_Dark",
+   "Brew_DuchessDram",
+   "Brew_FirecrackerWhiskeyVintage",
+   "Brew_Fussfungle",
+   "Brew_HighVoltageHefe",
+   "Brew_HoppyHunter",
+   "Brew_LeadChampagneBellini",
+   "Brew_LeadChampagneFresh",
+   "Brew_LeadChampagneMimosa",
+   "Brew_LeadChampagneVintage",
+   "Brew_LemonadeHard",
+   "Brew_LiquidCourage",
+   "Brew_MountainHoneyMoonshine",
+   "Brew_NewRiverRedAle",
+   "Brew_OakHollerLager",
+   "Brew_OldPossum",
+   "Brew_PickAxePilsner",
+   "Brew_RadAntLager",
+   "Brew_Rum",
+   "Brew_TickBloodTequilaFresh",
+   "Brew_TickBloodTequilaMargarita",
+   "Brew_TickBloodTequilaSunrise",
+   "Brew_TickBloodTequilaVintage",
+   "Brew_Vodka",
+   "Brew_Whiskey",
+   "Brew_WhiteRussian",
+   "Brew_Wine",
+   "E08A_Brew_GulpershineFresh",
+   "FFZ13_BrewSweetwaterTastyTea",
+   "MTN04_BeerBottleReserve",
+   "SFS01_Brew_MuttberryShine",
+   "SFS01_Brew_SundayShine",
+   "SFS01_Brew_TaterShine"
+  ]
+ },
+ {
+  "id": "AbAddictionBuffout",
+  "formId": "0x0004BAE0",
+  "name": "Buffout Addiction",
+  "causedBy": [
+   "AC_SQ01_HellsEagles_SurlysBuffout",
+   "Buffout",
+   "Bufftats",
+   "MTNZ03_FormulaB"
+  ]
+ },
+ {
+  "id": "AbAddictionCalmex",
+  "formId": "0x00156D0C",
+  "name": "Calmex Addiction",
+  "causedBy": [
+   "Calmex"
+  ]
+ },
+ {
+  "id": "AbAddictionDaddyO",
+  "formId": "0x00156D0E",
+  "name": "Daddy-O Addiction",
+  "causedBy": [
+   "DaddyO"
+  ]
+ },
+ {
+  "id": "AbAddictionDaytripper",
+  "formId": "0x00156D0F",
+  "name": "Daytripper Addiction",
+  "causedBy": [
+   "DayTripper"
+  ]
+ },
+ {
+  "id": "AbAddictionFormulaP",
+  "formId": "0x00421216",
+  "name": "Formula P Addiction",
+  "causedBy": [
+   "SFS09_FormulaP"
+  ]
+ },
+ {
+  "id": "AbAddictionFury",
+  "formId": "0x00156D0A",
+  "name": "Fury Addiction",
+  "causedBy": [
+   "Fury"
+  ]
+ },
+ {
+  "id": "AbAddictionMedX",
+  "formId": "0x0004BAE4",
+  "name": "Med-X Addiction",
+  "causedBy": []
+ },
+ {
+  "id": "AbAddictionMentats",
+  "formId": "0x0004BAE2",
+  "name": "Mentats Addiction",
+  "causedBy": [
+   "BerryMentats",
+   "GrapeMentats",
+   "Mentats",
+   "OrangeMentats"
+  ]
+ },
+ {
+  "id": "AbAddictionOverdrive",
+  "formId": "0x00156D10",
+  "name": "Overdrive Addiction",
+  "causedBy": [
+   "Overdrive"
+  ]
+ },
+ {
+  "id": "AbAddictionPsycho",
+  "formId": "0x0004BAE3",
+  "name": "Psycho Addiction",
+  "causedBy": [
+   "Psycho",
+   "Psychobuff",
+   "Psychotats"
+  ]
+ },
+ {
+  "id": "AbAddictionXCell",
+  "formId": "0x00156D0D",
+  "name": "X-Cell Addiction",
+  "causedBy": [
+   "XCell"
+  ]
+ }
+]

@@ -280,12 +280,28 @@ export interface MgefInfo {
   resistValue: string | null;
   /** "Perk to Apply" PERK formid — Script-archetype legendary effects carry their stats on a granted perk. */
   perkToApply: string | null;
+  /**
+   * Consumable-only: raw KYWD formids from the MGEF's top-level
+   * `Keywords.Keywords` field (empty array when the record carries none).
+   */
+  keywords: string[];
+  /**
+   * Consumable-only: `Magic Effect Data.Data.Flags.flags` includes "Dispel
+   * with Keywords" — the engine dispels any other active effect that shares
+   * this effect's full keyword set when this one is (re)applied. See
+   * scripts/extract/extract-buffs.ts's dispelKeys construction.
+   */
+  dispelWithKeywords: boolean;
 }
 
 export async function getMgefInfo(client: EsmClient, formId: string): Promise<MgefInfo> {
   const record = await client.get(formId);
   const data = ((record.fields['Magic Effect Data'] as Record<string, unknown> | undefined)?.['Data'] ?? {}) as Record<string, unknown>;
   const perkToApply = (data['Perk to Apply'] as string) || null;
+  const keywordsNode = (record.fields['Keywords'] ?? {}) as Record<string, unknown>;
+  const keywords = Array.isArray(keywordsNode['Keywords']) ? (keywordsNode['Keywords'] as string[]) : [];
+  const flagsNode = (data['Flags'] ?? {}) as Record<string, unknown>;
+  const flagNames = Array.isArray(flagsNode['flags']) ? (flagsNode['flags'] as string[]) : [];
   return {
     edid: record.editor_id,
     name: (record.fields['Name'] as string) ?? record.editor_id,
@@ -293,6 +309,8 @@ export async function getMgefInfo(client: EsmClient, formId: string): Promise<Mg
     actorValue: (data['Actor Value'] as string) ?? null,
     resistValue: (data['Resist Value'] as string) ?? null,
     perkToApply: perkToApply === '0x00000000' ? null : perkToApply,
+    keywords,
+    dispelWithKeywords: flagNames.includes('Dispel with Keywords'),
   };
 }
 

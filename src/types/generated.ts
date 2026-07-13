@@ -143,6 +143,18 @@ export interface GeneratedOmod {
   notes?: string[];
 }
 
+/** Consumable classification from ALCH ObjectType* / DrinkTypeAlcohol keywords. */
+export type BuffCategory = 'chem' | 'alcohol' | 'drink' | 'food';
+
+/** The addiction SPEL an ALCH record's "Effect Data"."Addiction" field points at. */
+export interface GeneratedAddictionRef {
+  /** Addiction SPEL editor_id (e.g. "AbAddictionBuffout") — stable, data-driven id. */
+  id: string;
+  formId: string;
+  /** SPEL "Name" field (e.g. "Buffout Addiction"). */
+  name: string;
+}
+
 export interface GeneratedBuff {
   /** ESM editor_id (SPEL for mutations, ALCH for consumables). */
   id: string;
@@ -152,6 +164,33 @@ export interface GeneratedBuff {
   modifiers: Modifier[];
   /** Extraction caveats (script magnitudes, timed buffs — override candidates). */
   notes: string[];
+  /** Consumable-only: chem/alcohol/drink/food (priority chem > alcohol > drink > food). */
+  category?: BuffCategory;
+  /**
+   * Consumable-only: one key per dispel-flagged effect — the MGEF's resolved KYWD
+   * edids, sorted and joined with '|'. Two buffs carry the same bonus iff they share
+   * a key (exact keyword-set equality; any-keyword intersection is wrong because all
+   * foods share broad keywords like FoodEffect). See src/lib/consumable-rules.ts.
+   */
+  dispelKeys?: string[];
+  /** Consumable-only: the addiction this item causes (and suppresses while active). */
+  addiction?: GeneratedAddictionRef;
+  /** See GeneratedWeapon.obtainable — false = no player-reachable reference found. */
+  obtainable?: boolean;
+  /**
+   * Consumable-only: resolved IngredientType* / MealType* KYWD edids — captured for
+   * the deferred Carnivore/Herbivore food-scaling follow-up (no consumer yet).
+   */
+  ingredientKeywords?: string[];
+}
+
+/** One entry of the mode-wide addiction catalog (addictions.json). */
+export interface GeneratedAddiction {
+  id: string;
+  formId: string;
+  name: string;
+  /** consumables.json ids whose activation suppresses this addiction. */
+  causedBy: string[];
 }
 
 export interface GeneratedBodyPart {
