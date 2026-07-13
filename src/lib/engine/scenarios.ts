@@ -316,8 +316,8 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
 
   // Manual-aim hit rate (Stage B): free-aim SUSTAINED dps only — never burst,
   // never per-hit, never VATS (VATS accuracy is assumed 100%; hit-chance
-  // modeling is explicitly out of scope). Models realistic misses (movement,
-  // target size — dps-todos/ap-and-accuracy.md); a miss still costs the shot
+  // modeling is permanently out of scope, see dps-todos/ap-regen.md). Models
+  // realistic misses (movement, target size); a miss still costs the shot
   // but deals no damage, so scaling the steady-state dps by the landed
   // fraction is equivalent to (and simpler than) modeling individual misses.
   const hitRateFraction = (input.player.hitRatePct ?? 100) / 100;

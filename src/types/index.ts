@@ -83,9 +83,9 @@ export interface PlayerConditions {
   weaponConditionPct?: number; // 0-200: equipped weapon condition, 100 = full, 200 = over-repaired max (Polished; default 100)
   /**
    * Manual-aim (free-aim) hit rate %, 10-100, default 100. Models realistic
-   * misses (movement, target size — dps-todos/ap-and-accuracy.md) by scaling
-   * free-aim SUSTAINED dps only (not per-hit, not burst, not VATS — VATS
-   * accuracy is assumed 100%, hit-chance modeling explicitly out of scope).
+   * misses (movement, target size) by scaling free-aim SUSTAINED dps only
+   * (not per-hit, not burst, not VATS — VATS accuracy is assumed 100%,
+   * hit-chance modeling permanently out of scope, see dps-todos/ap-regen.md).
    */
   hitRatePct?: number;
   /**

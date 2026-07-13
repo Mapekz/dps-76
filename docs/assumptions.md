@@ -513,11 +513,11 @@ silently winning over the (now addiction-less) picker state.
 - **Manual-aim hit rate**: `PlayerConditions.hitRatePct` (10–100, default
   100) scales free-aim **SUSTAINED** dps only — never per-hit, never burst,
   never VATS (VATS accuracy is assumed 100%; hit-chance modeling is
-  explicitly out of scope per the plan). Models realistic misses (movement,
-  target size — `dps-todos/ap-and-accuracy.md`'s 30–70% miss note): a missed
-  shot still costs the time/ammo but deals no damage, so scaling the
-  steady-state dps by the landed fraction is equivalent to modeling
-  individual misses without adding per-shot state.
+  permanently out of scope — closed-box formula, see `dps-todos/ap-regen.md`).
+  Models realistic misses (movement, target size): a missed shot still costs
+  the time/ammo but deals no damage, so scaling the steady-state dps by the
+  landed fraction is equivalent to modeling individual misses without adding
+  per-shot state.
 
 ## Power attacks & melee cadence (Stage C, `paper-damage.ts` / `scenarios.ts`)
 

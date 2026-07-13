@@ -12,8 +12,8 @@ blocks dps-76.
 Everything below was verified against actual code (not the todo text) as of
 2026-07-13. `docs/assumptions.md` is the canonical record of every shipped
 mechanic's assumptions — this README is a priority queue, not a spec.
-Priority order below reflects the user's 2026-07-12 reprioritization
-(supersedes the original enemy-mitigation-first ordering).
+Priority order below reflects the user's 2026-07-13 reprioritization
+(supersedes the 2026-07-12 ordering, which put armor-mods-outgoing first).
 
 Removed as **completed** on 2026-07-13 (recover via git history; shipped
 detail lives in `docs/assumptions.md`): `consumables-overhaul.md`,
@@ -23,13 +23,60 @@ docs' remaining melee scope merged into
 [melee-cadence.md](melee-cadence.md); their measurement leftovers moved to
 [measurement-backlog.md](measurement-backlog.md).
 
+`ap-and-accuracy.md` was renamed to [ap-regen.md](ap-regen.md) and rescoped
+2026-07-13: VATS hit-chance/accuracy is now permanently out of scope (closed
+box, not just deferred), and the doc's remaining scope is VATS AP regen/sec
+sources instead (Conductor's active on-crit regen already ships; Lone
+Wanderer's passive solo regen and any armor-sourced passive regen do not).
+
 ## Remaining implementable work, in priority order
 
-1. **Armor mods — outgoing damage** — [armor-mods-outgoing.md](armor-mods-outgoing.md).
-   Unyielding (SPECIAL-on-low-HP → feeds STR melee term) and Zealot's
-   (vs Scorched/Scorchbeast). No blockers — armor types already exist, just
-   unpopulated and unwired.
-2. **The rest** (no further internal ordering implied):
+1. **wholeDamage legendary perks** — [wholedamage-perks.md](wholedamage-perks.md).
+   Follow Through and Taking One for the Team both select in the UI but fold
+   to nothing — real ESM perks, zero decoded modifiers, engine's
+   `wholeDamage` bucket exists and is tested but has no real data source.
+   Model as manual 0-40% sliders → 1.0x-1.4x damage-taken multiplier on the
+   enemy. Tenderizer (already correctly modeled as a stacking `dbm` ADD, not
+   `wholeDamage`) is NOT part of this gap.
+2. **Measurement backlog** — [measurement-backlog.md](measurement-backlog.md).
+   Perk weapon-stat fold gap (self-contained engine fix, no blockers) +
+   in-game golden-case queue (legendary effects extracting zero modifiers,
+   launcher pip-boy summing verification, Carnivore/Herbivore confirmations).
+3. **Team mechanics** — [team-mechanics.md](team-mechanics.md). Teammate
+   requirement is invisible in the UI, United Ordeal is fully inert
+   (unresolved teammate condition + conditional SPECIAL never folds), and
+   public team bonuses (Casual +INT / Exploration +END) aren't modeled at
+   all. Scoped 2026-07-13; no blockers.
+4. **VATS AP regen** — [ap-regen.md](ap-regen.md). Rescoped 2026-07-13:
+   VATS hit-chance/accuracy dropped permanently (closed-box formula, not
+   worth chasing). Remaining scope is AP regen/sec sources — Conductor's
+   (active, on-crit) already ships; Lone Wanderer's passive solo AP regen
+   is dead on an unmapped curve AV, and passive armor-sourced regen (e.g. a
+   "Powered"-style effect) hasn't been located yet (no armor-omod
+   extraction pipeline exists at all — see the doc).
+5. **Popular builds / presets** — [popular-builds.md](popular-builds.md).
+   All dependencies (perk data, VATS crit, sneak) are done; just needs the
+   preset-selector UI + 3 canned N&D configs.
+6. **PTS toggle** — [pts-toggle.md](pts-toggle.md). Smallest mechanical win
+   whenever picked up: un-disable the Header `Switch`, wire it to
+   `setMode`. Low value until a genuinely different PTS dump exists (pts
+   re-exports live today).
+7. **Melee cadence** — [melee-cadence.md](melee-cadence.md). Real
+   per-weapon `animDelaySec` for melee replacing the 1 swing/sec stub.
+   (The old 1h/2h weaponClass split is dropped — no perk or OMOD in the
+   current dump gates on handedness; see the doc.)
+8. **Armor mods — outgoing damage** — [armor-mods-outgoing.md](armor-mods-outgoing.md).
+   Narrowed 2026-07-13 to specific mods: Unyielding, Nocturnal (caution — a
+   weapon legendary already extracted under this name; confirm it's the
+   right target before building an armor one), 2-star SPECIAL armor bonuses,
+   Optimized Bracers (found — power-armor intrinsic AP-cost reduction on
+   power attacks, fully unwired), Auto-Stim legendary / Medic Pump (for
+   HP-for-AP "blood sacrifice" VATS builds), plus a handful more to be swept
+   once the pipeline exists. Not actually unblocked as the doc previously
+   claimed — no armor OMOD/legendary extraction pipeline exists yet at all;
+   building one is now a prerequisite, shared with `ap-regen.md`'s "Powered"
+   chase.
+9. **Last, tied — Enemy table & mitigation, and Armor mods — incoming damage**:
    - **Enemy table & mitigation** — [phase-3-enemies.md](phase-3-enemies.md).
      Spike partially done 2026-07-12: BPTD body-part/weakpoint extraction +
      the Target section race/body-part picker already shipped. Remaining:
@@ -39,29 +86,10 @@ docs' remaining melee scope merged into
      + `armorPen` bucket fold + `enemyType` conditions via an `EnemyProfile` →
      per-enemy `{perHit, sustainedDps, retainedPct, ttk}` → `ui/table.tsx`,
      flip `ENEMY_TABLE_ENABLED`. Unlocks armor incoming-DR, cripple-speed,
-     on-kill AP restores, and real VATS-accuracy relevance.
+     and on-kill AP restores. (No longer motivated by VATS-accuracy
+     relevance — that scope is permanently dropped, see `ap-regen.md`.)
    - **Armor mods — incoming damage** — [armor-mods-incoming.md](armor-mods-incoming.md).
      WWR/Bolstering/Overeater's DR — blocked on the mitigation engine above.
-   - **Popular builds / presets** — [popular-builds.md](popular-builds.md).
-     All dependencies (perk data, VATS crit, sneak) are done; just needs the
-     preset-selector UI + 3 canned N&D configs.
-   - **Melee cadence** — [melee-cadence.md](melee-cadence.md). Real
-     per-weapon `animDelaySec` for melee replacing the 1 swing/sec stub.
-     (The old 1h/2h weaponClass split is dropped — no perk or OMOD in the
-     current dump gates on handedness; see the doc.)
-   - **Perk weapon-stat fold gap + measurement queue** —
-     [measurement-backlog.md](measurement-backlog.md). The fold gap is a
-     self-contained engine fix (no blockers); the measurement queue needs
-     in-game golden cases per effect — now also holds the launcher pip-boy
-     summing verification and the Carnivore/Herbivore confirmations.
-   - **PTS toggle** — [pts-toggle.md](pts-toggle.md). Smallest mechanical win
-     whenever picked up: un-disable the Header `Switch`, wire it to
-     `setMode`. Low value until a genuinely different PTS dump exists (pts
-     re-exports live today).
-   - **VATS accuracy / hit chance** — [ap-and-accuracy.md](ap-and-accuracy.md).
-     Explicitly deferred 2026-07-11; AP economy itself is done. Only worth it
-     once enemy mitigation makes a real hit-chance-weighted DPS number
-     meaningful.
 
 ## ESM-parser todos (separate repo)
 
