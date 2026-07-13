@@ -350,6 +350,47 @@ stored `PlayerConditions.addictionCount` field only feeds synthetic engine
 tests that bypass `resolveLoadout` (mirrors `hungerThirstTier`/
 `strangeInNumbers`).
 
+## Carnivore's / Herbivore's food scaling (2026-07-13 — `src/lib/diet-mutations.ts`)
+
+ESM-proven end to end: `Mutation_Carnivore` / `Mutation_Herbivore` SPELs
+grant Script-MGEF perks whose **"Mod Spell Magnitude"** entry points
+(function Multiply Value) rescale ingested food effects:
+
+| Perk | Spell keyword gate (tab 1) | Float |
+|---|---|---|
+| `Mutation_EatAllTheMeat_Perk` | `IngredientTypeMeat` | ×2.0 normal / ×2.5 SIN (`Mutation_Check_UseNormal/SuperVersion`) |
+| `Mutation_EatNoVeggies_Perk` | `IngredientTypeVegetable` | ×0 |
+| `Mutation_EatAllTheVeggies_Perk` | `IngredientTypeVegetable` OR `Herb` OR `Fruit` | ×2.0 / ×2.5 SIN |
+| `Mutation_EatNoMeat_Perk` | `IngredientTypeMeat` | ×0 |
+
+- **The asymmetry is real**: Carnivore only ZEROES Vegetable-tagged food —
+  pure Herb/Fruit dishes keep their (undoubled) benefit under Carnivore.
+- **Effect-level gate (tab 3)**: only effects whose MGEF carries
+  `SURV_EffectTypeFood{Buff,Hunger,Healing}` scale — captured at extraction
+  as `GeneratedBuff.foodScalableModifierIds`. Audited across all 77 meat/veg
+  damage-relevant foods (2026-07-13): every `Fortify*Food` MGEF qualifies;
+  the ONE exception is `Moon_Rudy_Pozole`, whose plain `FortifyCharisma`/
+  `FortifyLuck` effects lack the keyword and are exempt in-game. Drinks are
+  naturally exempt (their effects carry DrinkBuff-family keywords), so no
+  category check is needed.
+- **Engine model**: `applyDietScaling` (called from `getBuffModifiers`)
+  emits ×2.0/×2.5 variants conditioned on the existing `strangeInNumbers`
+  condition kind (the SIN gate is literally the same UseNormal/SuperVersion
+  condition forms every mutation uses), and drops zeroed modifiers. The UI
+  badges active foods (×2 diet / struck-through "no effect").
+- **Mixed meat+vegetable dishes**: both entry points would apply and
+  compose ×2 × ×0 = 0 for either mutation (modeled as zeroing-wins). No
+  damage-relevant record carries both tags today (pinned by test) — the
+  rule is shape-derived from entry-point composition, NOT measured in-game.
+- **Carnivore + Herbivore together** is impossible in-game (each serum
+  cures the other); the build reducer enforces the exclusivity on toggle. A
+  hydrated share-URL that somehow carries both zeroes all tagged food
+  (the multiplicative composition), which is the degenerate-but-consistent
+  reading.
+- RadX suppression of mutation effects (the `IsSpellTarget(RadX)` rows on
+  the mutation SPELs) is NOT modeled — mutation selection is already the
+  app's active/inactive toggle (same stance as every other mutation).
+
 Old share URLs carrying a manual `addictionCount` in `conditions` are decoded
 with that key explicitly SKIPPED (with a warning) — there's no way to map a
 bare count back to specific addiction ids, so it's dropped rather than

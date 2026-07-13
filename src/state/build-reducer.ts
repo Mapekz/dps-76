@@ -12,6 +12,7 @@ import { computePerkBudget, perkCardCostDelta, perkSpecialKey } from '@/data/per
 import { equippedRaceLock, perkRaceRestriction } from '@/data/perk-race';
 import { canSlotCardPoints, SPECIAL_ALLOCATION_POOL, SPECIAL_KEYS, SPECIAL_POINTS_CAP } from '@/lib/player-stats';
 import { consumablesById, toggleConsumable } from '@/lib/consumable-rules';
+import { CARNIVORE_MUTATION_ID, HERBIVORE_MUTATION_ID } from '@/lib/diet-mutations';
 import { getPerks } from '@/data';
 import type { PerkId } from '@/data/perk-ids';
 
@@ -204,8 +205,19 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
       return withPlayer(state, { ...player, conditions: next });
     }
 
-    case 'mutation/toggle':
-      return withPlayer(state, { ...player, mutations: toggle(player.mutations, action.id) });
+    case 'mutation/toggle': {
+      let mutations = toggle(player.mutations, action.id);
+      // Carnivore ↔ Herbivore are mutually exclusive in-game (taking one
+      // serum cures the other) — selecting one evicts its counterpart.
+      const dietTwin =
+        action.id === CARNIVORE_MUTATION_ID ? HERBIVORE_MUTATION_ID
+        : action.id === HERBIVORE_MUTATION_ID ? CARNIVORE_MUTATION_ID
+        : null;
+      if (dietTwin && mutations.includes(action.id)) {
+        mutations = mutations.filter(id => id !== dietTwin);
+      }
+      return withPlayer(state, { ...player, mutations });
+    }
 
     case 'consumable/toggle':
       // consumablesById needs a GameMode; the reducer has none in scope and

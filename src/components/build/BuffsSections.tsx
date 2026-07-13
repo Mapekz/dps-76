@@ -19,6 +19,7 @@ import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getAddictions, getConsumables, getMutations, getSuppressedAddictions } from '@/data/buffs';
 import { applySelection, consumablesById } from '@/lib/consumable-rules';
+import { dietVerdict, type DietVerdict } from '@/lib/diet-mutations';
 import { deriveStrangeInNumbers } from '@/lib/player-stats';
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import type { BuildAction } from '@/state/build-reducer';
@@ -300,11 +301,13 @@ function FoodDrinkAddCombobox({
   );
 }
 
-function FoodDrinkRow({ item }: { item: GeneratedBuff }) {
+function FoodDrinkRow({ item, diet }: { item: GeneratedBuff; diet: DietVerdict }) {
   const dispatch = useBuildDispatch();
   return (
     <div className="bg-muted/40 flex items-center gap-1 rounded px-2 py-1 text-sm">
       <span className="min-w-0 flex-1 truncate">{item.name}</span>
+      {diet === 'doubled' && <span className="text-emerald-500 shrink-0 text-xs">×2 diet</span>}
+      {diet === 'zeroed' && <span className="text-muted-foreground shrink-0 text-xs line-through">no effect</span>}
       <ActionDelta action={{ type: 'consumable/toggle', id: item.id }} />
       <Button
         variant="ghost"
@@ -344,7 +347,9 @@ export function FoodDrinkSection() {
           {activeItems.length > 0 ? (
             <div className="grid gap-1">
               {activeItems.map(item => (
-                <FoodDrinkRow key={item.id} item={item} />
+                // Carnivore's/Herbivore's verdict badge: ×2 (doubled) or
+                // struck-through (zeroed) — src/lib/diet-mutations.ts.
+                <FoodDrinkRow key={item.id} item={item} diet={dietVerdict(item, player.mutations)} />
               ))}
             </div>
           ) : (

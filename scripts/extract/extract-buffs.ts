@@ -75,8 +75,22 @@ export function classifyConsumableCategory(keywordEdids: readonly string[]): Buf
   return null;
 }
 
-/** Ingredient-type keywords captured for the deferred Carnivore/Herbivore follow-up (no consumer yet). */
+/** Ingredient-type keywords — the Carnivore/Herbivore spell-level classification input (src/lib/diet-mutations.ts). */
 const INGREDIENT_KEYWORD_RE = /^(IngredientType|MealType)/;
+
+/**
+ * Effect-level gate on the Carnivore/Herbivore scaling perks
+ * (Mutation_EatAllTheMeat_Perk & co., condition tab 3): only effects whose
+ * MGEF carries one of these keywords have their magnitude multiplied (×2 /
+ * ×2.5 / ×0). Every Fortify*Food MGEF carries SURV_EffectTypeFoodBuff; the
+ * one live outlier is Moon_Rudy_Pozole's plain FortifyCharisma/FortifyLuck
+ * (audited 2026-07-13 across all 77 meat/veg foods).
+ */
+const FOOD_SCALE_KEYWORD_EDIDS = new Set([
+  'SURV_EffectTypeFoodBuff',
+  'SURV_EffectTypeFoodHunger',
+  'SURV_EffectTypeFoodHealing',
+]);
 
 /**
  * Same-bonus collision key for one dispel-flagged effect: its resolved
@@ -196,8 +210,19 @@ async function buildConsumable(
   const effects = parseMagicEffects(record);
   const notes = new Set<string>();
   const fragments = [];
+  // Fragment indexes whose source MGEF carries a food-scale keyword (the
+  // Carnivore/Herbivore effect-level gate) — mapped to modifier ids below,
+  // after withSource assigns them.
+  const scalableIndexes = new Set<number>();
   for (const effect of effects) {
     const result = await translateMagicEffect({ client, routes, edidByFormId, timedIsActive: true, noteUnroutedAvs: true }, effect);
+    if (result.modifiers.length > 0) {
+      const mgef = await getMgefInfo(client, effect.mgefFormId);
+      const kwEdids = await Promise.all(mgef.keywords.map(k => client.resolveEdid(k)));
+      if (kwEdids.some(k => FOOD_SCALE_KEYWORD_EDIDS.has(k))) {
+        for (let i = 0; i < result.modifiers.length; i++) scalableIndexes.add(fragments.length + i);
+      }
+    }
     fragments.push(...result.modifiers);
     result.notes.forEach(n => notes.add(`${record.editor_id}: ${n}`));
     result.unmappedAvifs.forEach(a => allUnmapped.add(a));
@@ -214,17 +239,21 @@ async function buildConsumable(
     name: (record.fields['Name'] as string) ?? record.editor_id,
   };
 
+  const modifiers = withSource(fragments, source, record.header.form_id);
+  const foodScalableModifierIds = modifiers.filter((_, i) => scalableIndexes.has(i)).map(m => m.id);
+
   const buff: GeneratedBuff = {
     id: record.editor_id,
     formId: record.header.form_id,
     name: source.name,
     kind: 'consumable',
-    modifiers: withSource(fragments, source, record.header.form_id),
+    modifiers,
     notes: [...notes],
     category,
     dispelKeys,
     addiction,
     ingredientKeywords,
+    ...(foodScalableModifierIds.length > 0 ? { foodScalableModifierIds } : {}),
   };
   return { buff, category };
 }

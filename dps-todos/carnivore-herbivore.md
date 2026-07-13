@@ -1,46 +1,33 @@
-# Carnivore's / Herbivore's food scaling (deferred)
+# Carnivore's / Herbivore's food scaling — DONE 2026-07-13
 
-Filed 2026-07-13 during the consumables overhaul (grill-session decision:
-deferred — the extractor captures the data now so this needs no re-extract
-later).
+> **Shipped 2026-07-13**, same-day follow-up to the consumables overhaul.
+> Full semantics in `docs/assumptions.md` "Carnivore's / Herbivore's food
+> scaling"; implementation in `src/lib/diet-mutations.ts`.
 
-## What's missing
+## What shipped
 
-Carnivore's and Herbivore's mutations double food buffs from meat/vegetable
-ALCH records respectively and DISABLE food buffs from the opposite type
-("Herbivore" doubles veggies, zeroes meat buffs; "Carnivore" the reverse).
-Neither interaction is modeled: selected food items apply their flat
-extracted modifiers regardless of which mutation (if any) is active.
+- **Classification audit resolved from the game's own perk conditions** (no
+  keyword-name guessing): the Mutation_Carnivore/Herbivore SPELs grant perks
+  with "Mod Spell Magnitude" entry points — Carnivore ×2.0 on
+  `IngredientTypeMeat` spells (×2.5 with Strange in Numbers, via the same
+  UseNormal/SuperVersion condition forms as every mutation), ×0 on
+  `IngredientTypeVegetable`; Herbivore ×2.0/×2.5 on `Vegetable|Herb|Fruit`,
+  ×0 on `Meat`. The asymmetry (Carnivore doesn't zero herb/fruit dishes) is
+  real ESM data.
+- **Effect-level gate**: only MGEFs carrying
+  `SURV_EffectTypeFood{Buff,Hunger,Healing}` scale — captured per-modifier at
+  extraction (`GeneratedBuff.foodScalableModifierIds`). Audited all 77
+  meat/veg damage-relevant foods: one exemption exists (Rudy's Pozole's plain
+  FortifyCharisma/Luck) and it's honored data-driven.
+- **Engine**: `applyDietScaling` in `getBuffModifiers` — doubled modifiers
+  become ×2.0/×2.5 `strangeInNumbers`-conditioned variants; zeroed ones drop.
+- **Mixed dishes**: zero records carry both meat+vegetable tags (pinned by
+  test); if one ever ships, zeroing wins (entry points compose ×2 × ×0).
+- **UI/state**: Carnivore ↔ Herbivore mutually exclusive in the build
+  reducer (each serum cures the other); active Food & Drink rows badge
+  "×2 diet" / struck-through "no effect".
 
-## What's already there
+## Remaining
 
-`scripts/extract/extract-buffs.ts` (consumables overhaul) captures
-`GeneratedBuff.ingredientKeywords` — the resolved `IngredientType*` /
-`MealType*` KYWD edids off each ALCH record — for exactly this follow-up. No
-app-side consumer exists yet.
-
-## Shape of the fix
-
-1. **Classification audit**: `IngredientType*` keywords aren't a clean
-   meat/veggie binary — soups, mixed dishes (e.g. stews with both meat and
-   vegetable ingredients), and processed foods (jerky, canned goods) need a
-   real audit against in-game Carnivore's/Herbivore's tooltips before writing
-   a classification rule. Don't guess from keyword names alone.
-2. **Engine/state**: once classified, Carnivore's/Herbivore's selection
-   (mutation toggle) needs to scale or zero the SPECIAL/damage modifiers of
-   ACTIVE food consumables specifically — this is a selection-dependent
-   modifier transform, not a flat curve/bucket fold like the rest of the
-   mutation system, so it likely needs its own small pass in
-   `src/lib/loadout.ts` (or a new bucket-scoped condition) rather than
-   reusing the generic `getBuffModifiers` fold.
-3. **Docs**: add a "Carnivore's / Herbivore's" entry to
-   `docs/assumptions.md` alongside the rest of the mutation table once
-   implemented.
-
-## Acceptance
-
-- Herbivore doubles a selected vegetable food's effect magnitude and zeroes a
-  selected meat food's.
-- Carnivore does the reverse.
-- Mixed/ambiguous dishes have a documented, ESM-justified classification (not
-  a guess).
+Nothing blocking. Optional in-game confirmations: pip-boy effect-card
+readings for a doubled food under SIN (×2.5) and the pozole exemption.

@@ -59,6 +59,10 @@ spec. Priority order below reflects the user's 2026-07-12 reprioritization
      **DONE 2026-07-13** (EXPL chase + Demolition Expert fix + Gamma Gun
      graduation); only in-game pip-boy verification of the WEAP+EXPL summing
      assumption remains (two null golden cases).
+   - **Carnivore's / Herbivore's food scaling** —
+     [carnivore-herbivore.md](carnivore-herbivore.md): **DONE 2026-07-13**
+     (perk-condition-derived classification, per-modifier effect gate,
+     ×2/×2.5-SIN/zeroed transform, reducer exclusivity, food-row badges).
    - **Perk weapon-stat fold gap + legendary measurement queue** —
      [measurement-backlog.md](measurement-backlog.md). The fold gap is a
      self-contained engine fix (no blockers); the measurement queue needs

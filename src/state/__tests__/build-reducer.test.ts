@@ -135,6 +135,15 @@ describe('buildReducer', () => {
     expect(run([{ type: 'mutation/toggle', id: 'SpeedDemon' }], on).player.mutations).toEqual([]);
   });
 
+  it('Carnivore ↔ Herbivore are mutually exclusive (selecting one evicts the other)', () => {
+    const carn = run([{ type: 'mutation/toggle', id: 'Mutation_Carnivore' }]);
+    expect(carn.player.mutations).toEqual(['Mutation_Carnivore']);
+    const herb = run([{ type: 'mutation/toggle', id: 'Mutation_Herbivore' }], carn);
+    expect(herb.player.mutations).toEqual(['Mutation_Herbivore']);
+    // Toggling the active one OFF does not resurrect the evicted twin.
+    expect(run([{ type: 'mutation/toggle', id: 'Mutation_Herbivore' }], herb).player.mutations).toEqual([]);
+  });
+
   it('consumable/toggle enforces stacking rules (auto-displaces a colliding chem)', () => {
     const withA = run([{ type: 'consumable/toggle', id: 'ChemA' }]);
     expect(withA.player.consumables).toEqual(['ChemA']);

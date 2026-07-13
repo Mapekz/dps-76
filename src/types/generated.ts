@@ -225,10 +225,22 @@ export interface GeneratedBuff {
   /** See GeneratedWeapon.obtainable — false = no player-reachable reference found. */
   obtainable?: boolean;
   /**
-   * Consumable-only: resolved IngredientType* / MealType* KYWD edids — captured for
-   * the deferred Carnivore/Herbivore food-scaling follow-up (no consumer yet).
+   * Consumable-only: resolved IngredientType* / MealType* KYWD edids — the
+   * Carnivore's/Herbivore's classification input (src/lib/diet-mutations.ts):
+   * IngredientTypeMeat ⇒ meat; IngredientTypeVegetable/Herb/Fruit ⇒ herbivore
+   * fare (the perk-condition keyword sets, dps-todos/carnivore-herbivore.md).
    */
   ingredientKeywords?: string[];
+  /**
+   * Consumable-only: ids of this buff's modifiers whose source MGEF carries a
+   * SURV_EffectTypeFood{Buff,Hunger,Healing} keyword — the effect-level gate
+   * on the Mutation_EatAllTheMeat / Mutation_EatNoVeggies (& veggie twins)
+   * perks' Mod Spell Magnitude entry points. Only these modifiers are
+   * doubled/zeroed by
+   * Carnivore's/Herbivore's (Rudy's Pozole's plain FortifyCharisma/Luck
+   * effects lack the keyword and are exempt). Absent when none qualify.
+   */
+  foodScalableModifierIds?: string[];
 }
 
 /** One entry of the mode-wide addiction catalog (addictions.json). */

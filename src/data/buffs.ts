@@ -1,6 +1,7 @@
 import type { GameMode } from '@/types';
 import type { GeneratedAddiction, GeneratedBuff } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
+import { applyDietScaling } from '@/lib/diet-mutations';
 import { getDataset } from './dataset';
 import { forceVisibleConsumableIds, hiddenConsumableIds } from './overrides/corrections';
 
@@ -58,7 +59,9 @@ export function getBuffModifiers(mode: GameMode, mutationIds: string[], consumab
     if (mutationIds.includes(buff.id)) modifiers.push(...buff.modifiers);
   }
   for (const buff of dataset.consumables) {
-    if (consumableIds.includes(buff.id)) modifiers.push(...buff.modifiers);
+    // Carnivore's/Herbivore's transform selected foods' scalable modifiers
+    // (×2 / ×2.5-with-SIN / dropped) — src/lib/diet-mutations.ts.
+    if (consumableIds.includes(buff.id)) modifiers.push(...applyDietScaling(buff, mutationIds));
   }
   return modifiers;
 }
