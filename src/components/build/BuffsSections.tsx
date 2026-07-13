@@ -4,6 +4,8 @@ import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
+import { Radio } from '@/components/ui/radio';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Command,
@@ -18,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getAddictions, getConsumables, getMutations, getSuppressedAddictions } from '@/data/buffs';
+import { getOmodById } from '@/data/omods';
 import { applySelection, consumablesById } from '@/lib/consumable-rules';
 import { dietVerdict, type DietVerdict } from '@/lib/diet-mutations';
 import { deriveStrangeInNumbers } from '@/lib/player-stats';
@@ -103,129 +106,337 @@ export function MutationsSection() {
   );
 }
 
-/** Strips the SPEL's " Addiction" suffix ("Psycho Addiction" → "Psycho") for compact chip labels. */
-function addictionChipLabel(name: string): string {
+/** Strips the SPEL's " Addiction" suffix ("Psycho Addiction" → "Psycho"). */
+function familyLabel(name: string): string {
   return name.replace(/ Addiction$/, '');
 }
 
-function AddictionChip({
-  addiction,
-  selected,
-  suppressed,
-  onToggle,
-}: {
-  addiction: GeneratedAddiction;
-  selected: boolean;
-  suppressed: boolean;
-  onToggle: () => void;
-}) {
-  const dimmed = selected && suppressed;
-  const button = (
-    <Button
-      type="button"
-      variant={selected && !suppressed ? 'default' : 'outline'}
-      size="sm"
-      className={cn('h-7 px-2 text-xs', dimmed && 'opacity-60')}
-      aria-pressed={selected}
-      onClick={onToggle}
-    >
-      {dimmed && <BanIcon className="size-3" />}
-      {addictionChipLabel(addiction.name)}
-    </Button>
-  );
-  if (!dimmed) return button;
+/**
+ * One row of the ledger: an addiction FAMILY plus the consumables that cause it.
+ * This is the ESM's own shape — Psycho, Psychobuff and Psychotats all carry
+ * `addiction: AbAddictionPsycho`, so "addicted" is a family-level fact that
+ * cannot be set per chem. Chems that cause no addiction each get a family-less
+ * group of their own.
+ *
+ * Causes split by how many there are, not by category. A family's chems (1–4)
+ * are radio rows, so their ΔDPS is visible without a click. All 40-odd brews
+ * cause the single Alcohol addiction and nearly none of them move damage — as
+ * rows they'd be a wall of ±0%, so that family's causes collapse into one
+ * combobox (`picker`) on its row instead. Med-X has neither: no modeled chem
+ * causes it, but the family still gets a row so the Junkie's count is complete.
+ */
+interface LedgerGroup {
+  addiction: GeneratedAddiction | null;
+  chems: GeneratedBuff[];
+  picker: GeneratedBuff[];
+  sortKey: string;
+}
+
+function buildLedger(
+  chems: GeneratedBuff[],
+  alcohols: GeneratedBuff[],
+  addictions: readonly GeneratedAddiction[]
+): LedgerGroup[] {
+  const chemsByFamily = new Map<string, GeneratedBuff[]>();
+  const alcoholsByFamily = new Map<string, GeneratedBuff[]>();
+  const unaddictive: LedgerGroup[] = [];
+
+  const push = (map: Map<string, GeneratedBuff[]>, key: string, item: GeneratedBuff) => {
+    const bucket = map.get(key);
+    if (bucket) bucket.push(item);
+    else map.set(key, [item]);
+  };
+
+  for (const chem of chems) {
+    if (!chem.addiction) unaddictive.push({ addiction: null, chems: [chem], picker: [], sortKey: chem.name });
+    else push(chemsByFamily, chem.addiction.id, chem);
+  }
+  for (const alcohol of alcohols) {
+    if (alcohol.addiction) push(alcoholsByFamily, alcohol.addiction.id, alcohol);
+  }
+
+  const families = addictions.map(a => ({
+    addiction: a,
+    chems: (chemsByFamily.get(a.id) ?? []).sort(byName),
+    picker: (alcoholsByFamily.get(a.id) ?? []).sort(byName),
+    sortKey: familyLabel(a.name),
+  }));
+  return [...families, ...unaddictive].sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+}
+
+/**
+ * One option of a single-select consumable list. A radio, not a checkbox: only
+ * one chem (and one alcohol) can be active, and `applySelection` silently
+ * evicts the incumbent — the control should say so before the click, not after.
+ */
+function ConsumableRadioRow({ item, groupName }: { item: GeneratedBuff; groupName: string }) {
+  const { player } = useBuild();
+  const dispatch = useBuildDispatch();
+  const active = player.consumables.includes(item.id);
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>{button}</TooltipTrigger>
-      <TooltipContent>{addiction.name}: suppressed while its chem is active</TooltipContent>
-    </Tooltip>
+    <label
+      className={cn(
+        'hover:bg-muted/40 flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1 text-sm',
+        active && 'bg-muted/50'
+      )}
+    >
+      <Radio
+        name={groupName}
+        checked={active}
+        onChange={() => dispatch({ type: 'consumable/toggle', id: item.id })}
+      />
+      <span className="min-w-0 flex-1 truncate">{item.name}</span>
+      <ActionDelta action={{ type: 'consumable/toggle', id: item.id }} />
+    </label>
+  );
+}
+
+/** Sentinel for the picker's "nothing selected" option — cmdk needs a real value. */
+const NONE = '__none__';
+
+/**
+ * The collapsed form of a cause list too long to be rows (the brews). Same
+ * single-select contract as the radios — `applySelection` evicts the incumbent
+ * brew — just folded into one control, with each option's ΔDPS in the popover.
+ */
+function CausePicker({ items, placeholder }: { items: GeneratedBuff[]; placeholder: string }) {
+  const { player } = useBuild();
+  const dispatch = useBuildDispatch();
+  const active = items.find(i => player.consumables.includes(i.id));
+  const options: ComboboxOption[] = [
+    { value: NONE, label: placeholder },
+    ...items.map(i => ({ value: i.id, label: i.name })),
+  ];
+
+  const select = (value: string | null) => {
+    // Picking a brew evicts the active one on its own (alcohol-vs-alcohol);
+    // only clearing needs an explicit toggle-off.
+    if (value && value !== NONE) dispatch({ type: 'consumable/toggle', id: value });
+    else if (active) dispatch({ type: 'consumable/toggle', id: active.id });
+  };
+
+  return (
+    <div className="px-2 py-1">
+      <Combobox
+        options={options}
+        value={active?.id ?? NONE}
+        onValueChange={select}
+        placeholder={placeholder}
+        searchPlaceholder="Search brews…"
+        emptyText="No brew found."
+        className="h-8 text-sm font-normal"
+        renderOptionExtra={option =>
+          option.value !== NONE && <ActionDelta action={{ type: 'consumable/toggle', id: option.value }} />
+        }
+      />
+    </div>
+  );
+}
+
+/** The deselect option a radio group needs — you can't un-pick a radio. */
+function NoneRadioRow({ label, groupName, activeId }: { label: string; groupName: string; activeId?: string }) {
+  const dispatch = useBuildDispatch();
+  return (
+    <label className="hover:bg-muted/40 text-muted-foreground flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1 text-sm">
+      <Radio
+        name={groupName}
+        checked={activeId === undefined}
+        onChange={() => activeId && dispatch({ type: 'consumable/toggle', id: activeId })}
+      />
+      <span className="min-w-0 flex-1 truncate">{label}</span>
+    </label>
+  );
+}
+
+/**
+ * Right-rail cell: the family's one addiction toggle, or why it has none.
+ * `showDelta` is gated on an equipped effect that actually reads addictionCount
+ * — without one every row would read ±0%, which is true but only noise.
+ */
+function AddictionCell({
+  group,
+  suppressedBy,
+  showDelta,
+}: {
+  group: LedgerGroup;
+  suppressedBy?: GeneratedBuff;
+  showDelta: boolean;
+}) {
+  const { player } = useBuild();
+  const dispatch = useBuildDispatch();
+
+  if (!group.addiction) {
+    return <span className="text-muted-foreground/60 px-2 text-xs">Not addictive</span>;
+  }
+  const { addiction } = group;
+  const addicted = player.addictions.includes(addiction.id);
+  const id = `addiction-${addiction.id}`;
+
+  return (
+    <label
+      htmlFor={id}
+      className="hover:bg-muted/40 flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1 text-sm"
+    >
+      <Checkbox
+        id={id}
+        checked={addicted}
+        onCheckedChange={() => dispatch({ type: 'addiction/toggle', id: addiction.id })}
+      />
+      <span className={cn('min-w-0 flex-1 truncate', addicted && suppressedBy && 'text-muted-foreground line-through')}>
+        {familyLabel(addiction.name)}
+      </span>
+      {suppressedBy ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span
+              className={cn(
+                'text-muted-foreground flex shrink-0 items-center gap-1 text-[10px] uppercase tracking-wide',
+                !addicted && 'opacity-50'
+              )}
+            >
+              <BanIcon className="size-3" />
+              {/* Narrow columns can't spare the word — the icon and its tooltip still say it. */}
+              <span className="hidden sm:inline">suppressed</span>
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>
+            {suppressedBy.name} is active, so {addiction.name} doesn't count toward Junkie's.
+          </TooltipContent>
+        </Tooltip>
+      ) : (
+        showDelta && <ActionDelta action={{ type: 'addiction/toggle', id: addiction.id }} />
+      )}
+    </label>
+  );
+}
+
+/**
+ * The ledger's spine: one vertical rule splitting the transient axis (which
+ * chem is active) from the persistent one (what you're addicted to). It reads
+ * heavier than the row rules on purpose — it's the primary structural split.
+ *
+ * Proportional, not fixed: a hard `w-56` is wider than a phone can spare and
+ * pushes the whole page into a horizontal scroll. 40% caps out at the same 224px
+ * on desktop and shrinks with the column below that, so the two axes stay lined
+ * up at every width.
+ */
+const RAIL = 'w-2/5 max-w-56 min-w-0 shrink-0 border-l border-border pl-1';
+
+/** One ledger row: a family's causes on the left, its single addiction toggle in the rail. */
+function LedgerRow({
+  group,
+  suppressorOf,
+  showDelta,
+}: {
+  group: LedgerGroup;
+  suppressorOf: ReadonlyMap<string, GeneratedBuff>;
+  showDelta: boolean;
+}) {
+  return (
+    <div className="flex items-stretch">
+      <div className="min-w-0 flex-1 py-0.5">
+        {group.chems.map(c => (
+          <ConsumableRadioRow key={c.id} item={c} groupName="active-chem" />
+        ))}
+        {group.picker.length > 0 && <CausePicker items={group.picker} placeholder="No alcohol" />}
+        {group.chems.length === 0 && group.picker.length === 0 && (
+          <p className="text-muted-foreground/60 px-2 py-1 text-sm italic">No modeled chem causes it</p>
+        )}
+      </div>
+      <div className={cn(RAIL, 'flex items-center py-0.5 pl-2')}>
+        <AddictionCell group={group} suppressedBy={suppressorOf.get(group.addiction?.id ?? '')} showDelta={showDelta} />
+      </div>
+    </div>
   );
 }
 
 export function ChemsSection() {
   const { mode } = useGameMode();
   const { player } = useBuild();
-  const dispatch = useBuildDispatch();
-  const chems = getConsumables(mode)
-    .filter(c => c.category === 'chem')
-    .sort(byName);
-  const addictions = [...getAddictions(mode)].sort((a, b) => a.name.localeCompare(b.name));
+  const consumables = getConsumables(mode);
+  const chems = consumables.filter(c => c.category === 'chem').sort(byName);
+  const alcohols = consumables.filter(c => c.category === 'alcohol').sort(byName);
+  const ledger = buildLedger(chems, alcohols, getAddictions(mode));
   const suppressed = getSuppressedAddictions(mode, player.consumables);
 
+  // Families whose causes collapse to a picker (alcohol) sit above the chem
+  // radio group; everything the radios cover — plus cause-less families like
+  // Med-X — sits below it, under the "No chem" deselect.
+  const alcoholGroups = ledger.filter(g => g.picker.length > 0);
+  const chemGroups = ledger.filter(g => g.picker.length === 0);
+
+  // What suppresses each addiction — any active item that causes it, chem or brew.
+  const suppressorOf = new Map<string, GeneratedBuff>();
+  for (const c of consumables) {
+    if (c.addiction && player.consumables.includes(c.id)) suppressorOf.set(c.addiction.id, c);
+  }
+
+  // Junkie's reads addictionCount off a curve — find it in the data rather than
+  // by name, so any future effect on the same axis lights the badge too.
+  const junkies = (player.weapon?.legendaryEffects ?? []).some(id =>
+    getOmodById(mode, id)?.modifiers.some(m => m.curve?.input === 'addictionCount')
+  );
+
   const activeChem = chems.find(c => player.consumables.includes(c.id));
-  const addictionCount = player.addictions.length;
-  const countedAddictions = player.addictions.filter(id => !suppressed.has(id)).length;
+  const activeAlcohol = alcohols.find(c => player.consumables.includes(c.id));
+  const counted = player.addictions.filter(id => !suppressed.has(id)).length;
+
+  const taking = [activeChem?.name, activeAlcohol?.name].filter(Boolean).join(' + ');
   const summary =
-    addictionCount > 0
-      ? `${activeChem?.name ?? 'none'} · ${addictionCount} addiction${addictionCount === 1 ? '' : 's'} (${countedAddictions} counted)`
-      : (activeChem?.name ?? 'none');
+    player.addictions.length > 0
+      ? `${taking || 'nothing'} · ${counted} of ${player.addictions.length} addictions counted`
+      : taking || 'none';
 
   return (
     <AccordionItem value="chems">
       <AccordionTrigger>
-        <SectionTrigger label="Chems & Addictions" summary={summary} />
+        <SectionTrigger
+          label="Chems, Alcohol & Addictions"
+          summary={summary}
+          badge={
+            junkies ? (
+              <Badge title={`Junkie's is scaling off ${counted} counted addiction${counted === 1 ? '' : 's'}`}>
+                Junkie's ×{counted}
+              </Badge>
+            ) : (
+              player.addictions.length > 0 && (
+                <Badge variant="outline" title="Nothing equipped reads your addiction count, so these addictions change no damage">
+                  no Junkie's
+                </Badge>
+              )
+            )
+          }
+        />
       </AccordionTrigger>
       <AccordionContent>
-        <div className="space-y-3">
-          <div className="space-y-0.5">
-            {chems.map(c => (
-              <CheckboxRow
-                key={c.id}
-                id={`chem-${c.id}`}
-                label={c.name}
-                checked={player.consumables.includes(c.id)}
-                onCheckedChange={() => dispatch({ type: 'consumable/toggle', id: c.id })}
-                action={{ type: 'consumable/toggle', id: c.id }}
-              />
-            ))}
-          </div>
-
-          <div className="space-y-1.5">
-            <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.1em]">
-              Addictions
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {addictions.map(a => (
-                <AddictionChip
-                  key={a.id}
-                  addiction={a}
-                  selected={player.addictions.includes(a.id)}
-                  suppressed={suppressed.has(a.id)}
-                  onToggle={() => dispatch({ type: 'addiction/toggle', id: a.id })}
-                />
-              ))}
-            </div>
-          </div>
+        <div className="font-condensed text-muted-foreground flex items-stretch pb-1 text-[10px] font-semibold uppercase tracking-[0.1em]">
+          <span className="flex-1 px-2">Active — one alcohol, one chem</span>
+          <span className={cn(RAIL, 'px-2 pl-3')}>Addicted — Junkie's stacks</span>
         </div>
-      </AccordionContent>
-    </AccordionItem>
-  );
-}
 
-export function AlcoholSection() {
-  const { mode } = useGameMode();
-  const { player } = useBuild();
-  const dispatch = useBuildDispatch();
-  const alcohols = getConsumables(mode)
-    .filter(c => c.category === 'alcohol')
-    .sort(byName);
-  const activeAlcohol = alcohols.find(c => player.consumables.includes(c.id));
+        {/* Alcohol first: it's one control, and it's the only row whose chem cell
+            isn't part of the chem radio group. The gap below keeps it from reading
+            as the first option of that group. */}
+        <div className="divide-border/50 divide-y">
+          {alcoholGroups.map(group => (
+            <LedgerRow key={group.addiction!.id} group={group} suppressorOf={suppressorOf} showDelta={junkies} />
+          ))}
+        </div>
 
-  return (
-    <AccordionItem value="alcohol">
-      <AccordionTrigger>
-        <SectionTrigger label="Alcohol" summary={activeAlcohol?.name ?? 'none'} />
-      </AccordionTrigger>
-      <AccordionContent>
-        <div className="space-y-0.5">
-          {alcohols.map(c => (
-            <CheckboxRow
-              key={c.id}
-              id={`alcohol-${c.id}`}
-              label={c.name}
-              checked={player.consumables.includes(c.id)}
-              onCheckedChange={() => dispatch({ type: 'consumable/toggle', id: c.id })}
-              action={{ type: 'consumable/toggle', id: c.id }}
+        <div className="mt-4 divide-border/50 divide-y">
+          <div className="flex items-stretch">
+            <div className="min-w-0 flex-1 py-0.5">
+              <NoneRadioRow label="No chem" groupName="active-chem" activeId={activeChem?.id} />
+            </div>
+            <div className={RAIL} />
+          </div>
+
+          {chemGroups.map(group => (
+            <LedgerRow
+              key={group.addiction?.id ?? group.chems[0].id}
+              group={group}
+              suppressorOf={suppressorOf}
+              showDelta={junkies}
             />
           ))}
         </div>

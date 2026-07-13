@@ -4,7 +4,7 @@ import { UserIcon } from 'lucide-react';
 import { WeaponSection } from './WeaponSection';
 import { SpecialLoadoutSection } from './SpecialLoadoutSection';
 import { StatSummary } from './StatSummary';
-import { MutationsSection, ChemsSection, AlcoholSection, FoodDrinkSection } from './BuffsSections';
+import { MutationsSection, ChemsSection, FoodDrinkSection } from './BuffsSections';
 import { ConditionsSection } from './ConditionsSection';
 import { TargetSection } from './TargetSection';
 
@@ -25,7 +25,6 @@ export function BuildColumn() {
           <MutationsSection />
           <ConditionsSection />
           <ChemsSection />
-          <AlcoholSection />
           <FoodDrinkSection />
           <TargetSection />
         </Accordion>

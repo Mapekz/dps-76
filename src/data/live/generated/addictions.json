@@ -23,6 +23,8 @@
    "Brew_LiquidCourage",
    "Brew_MountainHoneyMoonshine",
    "Brew_NewRiverRedAle",
+   "Brew_NukashineFresh",
+   "Brew_NukashineVintage",
    "Brew_OakHollerLager",
    "Brew_OldPossum",
    "Brew_PickAxePilsner",
@@ -39,6 +41,7 @@
    "E08A_Brew_GulpershineFresh",
    "FFZ13_BrewSweetwaterTastyTea",
    "MTN04_BeerBottleReserve",
+   "SCORE_Brew_NukashineVintage_SugarFree",
    "SFS01_Brew_MuttberryShine",
    "SFS01_Brew_SundayShine",
    "SFS01_Brew_TaterShine"
@@ -99,7 +102,9 @@
   "id": "AbAddictionMedX",
   "formId": "0x0004BAE4",
   "name": "Med-X Addiction",
-  "causedBy": []
+  "causedBy": [
+   "MedX"
+  ]
  },
  {
   "id": "AbAddictionMentats",

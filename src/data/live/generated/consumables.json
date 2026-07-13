@@ -4082,6 +4082,31 @@
   "obtainable": false
  },
  {
+  "id": "MedX",
+  "formId": "0x00033779",
+  "name": "Med-X",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "MedX: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
+   "MedX: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
+   "MedX: MGEF FortifyDamageResistMedX: no route for AV DamageResist — needs mapping",
+   "MedX: MGEF AddictionOddsMedX: no route for AV AddictionMedX — needs mapping",
+   "MedX: MGEF GHL_SURV_Chem_Effect: zero magnitude, no curve — script/scaled, needs override"
+  ],
+  "category": "chem",
+  "dispelKeys": [
+   "ChemDispelEffects|ChemEffect|StackMedXDamageResist"
+  ],
+  "addiction": {
+   "id": "AbAddictionMedX",
+   "formId": "0x0004BAE4",
+   "name": "Med-X Addiction"
+  },
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "MegaSlothMushroomVegetableCookedSoup",
   "formId": "0x00294519",
   "name": "Megasloth Mushroom Soup",
@@ -5202,6 +5227,33 @@
    "MealTypePackaged"
   ],
   "obtainable": false
+ },
+ {
+  "id": "Brew_NukashineFresh",
+  "formId": "0x0047BC14",
+  "name": "Nukashine",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Brew_NukashineFresh: DamageRadiationEating: curve with unmapped input AV null — needs override",
+   "Brew_NukashineFresh: AddictionOddsAlcohol: curve with unmapped input AV null — needs override",
+   "Brew_NukashineFresh: MGEF Nukashine_Duration archetype Script — needs override",
+   "Brew_NukashineFresh: MGEF Nukashine_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
+   "Brew_NukashineFresh: MGEF Nukashine_FortifySprintAP: no route for AV STAT_SprintAPCost — needs mapping",
+   "Brew_NukashineFresh: MGEF Nukashine_APRegen: no route for AV ActionPointsRate — needs mapping",
+   "Brew_NukashineFresh: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
+  ],
+  "category": "alcohol",
+  "dispelKeys": [
+   "AlcoholEffect"
+  ],
+  "addiction": {
+   "id": "AbAddictionAlcohol",
+   "formId": "0x0003E061",
+   "name": "Alcohol Addiction"
+  },
+  "ingredientKeywords": [],
+  "obtainable": true
  },
  {
   "id": "Brew_OakHollerLager",
@@ -7557,6 +7609,35 @@
   "obtainable": true
  },
  {
+  "id": "SCORE_Brew_NukashineVintage_SugarFree",
+  "formId": "0x005FD9A7",
+  "name": "Sugar-Free Nukashine",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "SCORE_Brew_NukashineVintage_SugarFree: DamageRadiationEating: curve with unmapped input AV null — needs override",
+   "SCORE_Brew_NukashineVintage_SugarFree: AddictionOddsAlcohol: curve with unmapped input AV null — needs override",
+   "SCORE_Brew_NukashineVintage_SugarFree: MGEF SCORE_Nukashine_Duration_SugarFree archetype Script — needs override",
+   "SCORE_Brew_NukashineVintage_SugarFree: Nukashine_FortifyUnarmedDamage: curve with unmapped input AV null — needs override",
+   "SCORE_Brew_NukashineVintage_SugarFree: Nukashine_DamageResist: curve with unmapped input AV null — needs override",
+   "SCORE_Brew_NukashineVintage_SugarFree: MGEF Nukashine_FortifySprintAP: no route for AV STAT_SprintAPCost — needs mapping",
+   "SCORE_Brew_NukashineVintage_SugarFree: MGEF Nukashine_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
+   "SCORE_Brew_NukashineVintage_SugarFree: MGEF Nukashine_APRegen: no route for AV ActionPointsRate — needs mapping",
+   "SCORE_Brew_NukashineVintage_SugarFree: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
+  ],
+  "category": "alcohol",
+  "dispelKeys": [
+   "AlcoholEffect"
+  ],
+  "addiction": {
+   "id": "AbAddictionAlcohol",
+   "formId": "0x0003E061",
+   "name": "Alcohol Addiction"
+  },
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "SFS01_Brew_SundayShine",
   "formId": "0x000115E3",
   "name": "Sunday Shine",
@@ -8843,6 +8924,35 @@
   },
   "ingredientKeywords": [],
   "obtainable": false
+ },
+ {
+  "id": "Brew_NukashineVintage",
+  "formId": "0x0047BC08",
+  "name": "Vintage Nukashine",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Brew_NukashineVintage: DamageRadiationEating: curve with unmapped input AV null — needs override",
+   "Brew_NukashineVintage: AddictionOddsAlcohol: curve with unmapped input AV null — needs override",
+   "Brew_NukashineVintage: MGEF Nukashine_Duration archetype Script — needs override",
+   "Brew_NukashineVintage: Nukashine_FortifyUnarmedDamage: curve with unmapped input AV null — needs override",
+   "Brew_NukashineVintage: Nukashine_DamageResist: curve with unmapped input AV null — needs override",
+   "Brew_NukashineVintage: MGEF Nukashine_FortifySprintAP: no route for AV STAT_SprintAPCost — needs mapping",
+   "Brew_NukashineVintage: MGEF Nukashine_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
+   "Brew_NukashineVintage: MGEF Nukashine_APRegen: no route for AV ActionPointsRate — needs mapping",
+   "Brew_NukashineVintage: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
+  ],
+  "category": "alcohol",
+  "dispelKeys": [
+   "AlcoholEffect"
+  ],
+  "addiction": {
+   "id": "AbAddictionAlcohol",
+   "formId": "0x0003E061",
+   "name": "Alcohol Addiction"
+  },
+  "ingredientKeywords": [],
+  "obtainable": true
  },
  {
   "id": "Brew_TickBloodTequilaVintage",

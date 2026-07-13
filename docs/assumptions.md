@@ -341,6 +341,24 @@ an OBTAINABLE, in-app-selectable consumable (`causedBy`) — an unobtainable
 chem's addiction (e.g. Jet, confirmed unobtainable in FO76) drops out of the
 catalog automatically, no special-casing needed.
 
+**Suppressors survive the damage gate** (2026-07-13). The consumables list
+normally keeps only records with ≥1 routed modifier, but a record with an
+addiction AND ≥1 `dispelKeys` entry is kept even at zero modifiers
+(`extract-buffs.ts`). Rationale: taking a chem suppresses its own addiction,
+dropping a Junkie's stack — so a 0-modifier chem is still a real (negative)
+damage lever. Med-X buffs nothing this engine models (its only effect is
+`FortifyDamageResistMedX`, unrouted), but taking it costs a Med-X-addicted
+Junkie's build a stack; gating on modifiers alone dropped it entirely and left
+`AbAddictionMedX` in the catalog with an empty `causedBy` and no selectable
+suppressor. The `dispelKeys` half of the test is what separates a real
+suppressor from a look-alike: it holds one entry per dispel-flagged MGEF, i.e.
+per chem/alcohol effect actually applied. Med-X has one
+(`StackMedXDamageResist`) and Nukashine has one (`AlcoholEffect`); the
+unfermented-mash records (`Brew_*Ferm`) and SCORE boosters merely *reference*
+an addiction while applying only rads/disease/thirst, carry no dispel-flagged
+effect, and so cannot suppress anything. Net effect of the clause: Med-X +
+three Nukashine variants, nothing else.
+
 `PlayerConfig.addictions` is the player's free-form "I have this addiction"
 picker selection (independent of category — any addictive item, chem or
 alcohol or food/drink, can cause an addiction). `PlayerConditions.

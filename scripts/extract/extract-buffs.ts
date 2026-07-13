@@ -323,13 +323,33 @@ export async function extractBuffs(client: EsmClient): Promise<ExtractBuffsResul
 
   // Final consumables list: categorized records with ≥1 routed modifier
   // (HealthBonus→maxHealth already routes, so flat-HP food stays relevant;
-  // rads/hunger/disease effects have no route and correctly drop out).
-  // Unobtainable records with real modifiers STILL make this list (kept in
-  // the JSON, hidden app-side) — obtainability and the damage gate are
-  // independent filters, same as weapons/omods.
-  const consumables = categorized.map(c => c.buff).filter(b => b.modifiers.length > 0);
+  // rads/hunger/disease effects have no route and correctly drop out) — OR a
+  // suppressor: an addiction plus at least one dispel-flagged effect.
+  //
+  // The suppressor clause matters because taking a chem SUPPRESSES its own
+  // addiction, which drops a Junkie's stack. A 0-modifier chem is therefore
+  // still a real damage lever, just a negative one: Med-X buffs nothing this
+  // engine models, but taking it costs a Med-X-addicted Junkie's build a stack.
+  // Gating on modifiers alone dropped those records entirely, leaving their
+  // addictions in the catalog (below) with an empty `causedBy` and no way to
+  // select the chem that suppresses them.
+  //
+  // `dispelKeys` is what separates a suppressor from a look-alike. It holds one
+  // entry per dispel-flagged MGEF — i.e. per actual chem/alcohol effect applied.
+  // Med-X has one (StackMedXDamageResist) and Nukashine has one (AlcoholEffect),
+  // so both really do apply the effect that suppresses. The unfermented mash
+  // records (Brew_*Ferm) and SCORE boosters merely *reference* an addiction while
+  // applying only rads/disease/thirst — no dispel-flagged effect, so nothing to
+  // suppress. Without this clause they'd all land in the brew picker as no-ops.
+  //
+  // Unobtainable records with real modifiers STILL make this list (kept in the
+  // JSON, hidden app-side) — obtainability and the damage gate are independent
+  // filters, same as weapons/omods.
+  const isRelevant = (b: GeneratedBuff): boolean =>
+    b.modifiers.length > 0 || (b.addiction !== undefined && (b.dispelKeys?.length ?? 0) > 0);
+  const consumables = categorized.map(c => c.buff).filter(isRelevant);
   for (const { buff } of categorized) {
-    if (buff.modifiers.length === 0) {
+    if (!isRelevant(buff)) {
       excluded.consumableNoDamageOrSpecial.push(buff.id);
       excludedDetailed.consumableNoDamageOrSpecial.push({ id: buff.id, name: buff.name });
     }
