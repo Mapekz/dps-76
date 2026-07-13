@@ -41,7 +41,8 @@
     "dmgMult": 1,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "FeralGhoulRace",
@@ -85,7 +86,8 @@
     "dmgMult": 1.5,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "ScorchedRace",
@@ -129,7 +131,8 @@
     "dmgMult": 1,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "SuperMutantRace",
@@ -173,7 +176,8 @@
     "dmgMult": 1.25,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "SupermutantBehemothRace",
@@ -193,7 +197,8 @@
     "dmgMult": 1.25,
     "crippable": false
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "MoleMinerRace",
@@ -231,7 +236,8 @@
     "dmgMult": 1,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "ViciousDogRace",
@@ -263,7 +269,8 @@
     "dmgMult": 1.5,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "WendigoRace",
@@ -307,7 +314,8 @@
     "dmgMult": 1,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "WendigoColossusRace",
@@ -345,7 +353,8 @@
     "dmgMult": 1.35,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "YaoGuaiRace",
@@ -377,7 +386,8 @@
     "dmgMult": 1.25,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "DeathclawRace",
@@ -439,7 +449,8 @@
     "dmgMult": 1,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "MirelurkRace",
@@ -489,7 +500,8 @@
     "dmgMult": 0.9,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "MirelurkHunterRace",
@@ -539,7 +551,8 @@
     "dmgMult": 0.9,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "MirelurkKingRace",
@@ -583,7 +596,8 @@
     "dmgMult": 1.5,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "MirelurkQueenRace",
@@ -651,7 +665,8 @@
     "dmgMult": 0.5,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "MothmanRace",
@@ -683,7 +698,8 @@
     "dmgMult": 1,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "ScorchBeastRace",
@@ -697,7 +713,8 @@
     "dmgMult": 1.5,
     "crippable": false
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "RadScorpionRace",
@@ -747,7 +764,8 @@
     "dmgMult": 0.85,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "SnallyGasterRace",
@@ -791,7 +809,8 @@
     "dmgMult": 1,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "GraftonMonsterRace",
@@ -835,7 +854,8 @@
     "dmgMult": 1,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "SheepsquatchRace",
@@ -879,7 +899,8 @@
     "dmgMult": 1.15,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "MegaSlothRace",
@@ -929,7 +950,8 @@
     "dmgMult": 1,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "HoneyBeastRace",
@@ -967,7 +989,8 @@
     "dmgMult": 0.95,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "DLC03_AnglerRace",
@@ -1011,7 +1034,8 @@
     "dmgMult": 1.25,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "DLC03_FogCrawlerRace",
@@ -1055,7 +1079,8 @@
     "dmgMult": 0.85,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "DLC03_GulperRace",
@@ -1105,7 +1130,8 @@
     "dmgMult": 1.25,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "FlatwoodsMonsterRace",
@@ -1125,7 +1151,8 @@
     "dmgMult": 0.9,
     "crippable": false
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "BlueDevilRace",
@@ -1181,7 +1208,8 @@
     "dmgMult": 1.5,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "OguaRace",
@@ -1237,7 +1265,8 @@
     "dmgMult": 1,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "UltraciteAbominationRace",
@@ -1269,7 +1298,8 @@
     "dmgMult": 0.85,
     "crippable": false
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "AssaultronRace",
@@ -1319,7 +1349,8 @@
     "dmgMult": 0.5,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "ProtectronRace",
@@ -1369,7 +1400,8 @@
     "dmgMult": 1.1,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "SentryBotRace",
@@ -1449,7 +1481,8 @@
     "dmgMult": 0.9,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
  },
  {
   "id": "StormBossRace",
@@ -1505,6 +1538,1897 @@
     "dmgMult": 0.85,
     "crippable": true
    }
-  ]
+  ],
+  "category": "standard"
+ },
+ {
+  "id": "RD01_Enc01_GuardianBot",
+  "formId": "0x00774595",
+  "name": "EN06 Guardian",
+  "bodyPartDataFormId": "0x0077B596",
+  "parts": [
+   {
+    "name": "Shoulder Right",
+    "partType": "RightArm2",
+    "dmgMult": 3,
+    "crippable": true
+   },
+   {
+    "name": "Shoulder Left",
+    "partType": "LeftArm2",
+    "dmgMult": 3,
+    "crippable": true
+   },
+   {
+    "name": "Ultragenetic Shield System",
+    "partType": "Pelvis",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 3,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 3,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 3,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 3,
+    "crippable": true
+   }
+  ],
+  "category": "raid"
+ },
+ {
+  "id": "RD01_Enc04_Grenadier",
+  "formId": "0x00013746",
+  "name": "Epsilon Squad - Lynx",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "raid"
+ },
+ {
+  "id": "RD01_Enc04_Assassin",
+  "formId": "0x00013746",
+  "name": "Epsilon Squad - Vulture",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "raid"
+ },
+ {
+  "id": "RD01_Enc04_Brute",
+  "formId": "0x00013746",
+  "name": "Epsilon Squad - Bloodhound",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "raid"
+ },
+ {
+  "id": "RD01_Enc06_ScorchtongueHead",
+  "formId": "0x00786D48",
+  "name": "Ultracite Terror",
+  "bodyPartDataFormId": "0x00786D45",
+  "parts": [
+   {
+    "name": "LeftEye",
+    "partType": "Head2",
+    "dmgMult": 3,
+    "crippable": false
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.25,
+    "crippable": false
+   }
+  ],
+  "category": "raid"
+ },
+ {
+  "id": "HTO_LvlBloodEagle_Boss_T5",
+  "formId": "0x00013746",
+  "name": "Blood Eagle Destroyer",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "infestation"
+ },
+ {
+  "id": "HTO_LvlPRCGhoul_Boss_T5",
+  "formId": "0x000EAFB6",
+  "name": "Communist Commissar",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "infestation"
+ },
+ {
+  "id": "HTO_LvlCultist_Boss_T5",
+  "formId": "0x00013746",
+  "name": "Cultist Prophet",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "infestation"
+ },
+ {
+  "id": "HTO_LvlMoleMiner_Boss_T5",
+  "formId": "0x00012E6B",
+  "name": "Mole Miner Juggernaut",
+  "bodyPartDataFormId": "0x00012E6E",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": false
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "infestation"
+ },
+ {
+  "id": "HTO_LvlSuperMutant_Boss_T5",
+  "formId": "0x0001A009",
+  "name": "Super Mutant Primus",
+  "bodyPartDataFormId": "0x0002B4C3",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 0.9,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.25,
+    "crippable": true
+   }
+  ],
+  "category": "infestation"
+ },
+ {
+  "id": "HTO_LvlScorched_Boss_T5",
+  "formId": "0x0010CA5F",
+  "name": "Scorched Exterminator",
+  "bodyPartDataFormId": "0x0010CA60",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "infestation"
+ },
+ {
+  "id": "HTO_LvlRobot_Boss_T5",
+  "formId": "0x000D8417",
+  "name": "Assaultron Intimidator",
+  "bodyPartDataFormId": "0x000DF255",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Combat Inhibitor",
+    "partType": "Brain",
+    "dmgMult": 0.25,
+    "crippable": false
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 0.85,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 0.5,
+    "crippable": true
+   }
+  ],
+  "category": "infestation"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Death",
+  "formId": "0x000EAFB6",
+  "name": "The Pale Horseman",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_War",
+  "formId": "0x00013746",
+  "name": "The Red Rider",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Pestilence",
+  "formId": "0x00013746",
+  "name": "The White Horseman",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Famine",
+  "formId": "0x00013746",
+  "name": "The Black Horseman",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Granny",
+  "formId": "0x00013746",
+  "name": "Granny Dolores",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Astronaut",
+  "formId": "0x00013746",
+  "name": "The Space Ranger",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_AntiGhoul",
+  "formId": "0x00013746",
+  "name": "Cletus Brimstone",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Irradiated",
+  "formId": "0x00013746",
+  "name": "Irene The Irradiated",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Pilot",
+  "formId": "0x00013746",
+  "name": "The Ace",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_NukaQueen",
+  "formId": "0x00013746",
+  "name": "Anna The Nuka-Queen",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_QuackDoctor",
+  "formId": "0x00013746",
+  "name": "The Malpractitioner",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Patriot",
+  "formId": "0x00013746",
+  "name": "Corporal Jane",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Foreman",
+  "formId": "0x00013746",
+  "name": "The Foreman",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Researcher",
+  "formId": "0x00013746",
+  "name": "The Chief Researcher",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_ScoutLeader",
+  "formId": "0x00013746",
+  "name": "Scout Leader Karen",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_BarryTone",
+  "formId": "0x00013746",
+  "name": "Ragtime Randy",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Devil",
+  "formId": "0x00013746",
+  "name": "The Devil of Defiance",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Rich",
+  "formId": "0x00013746",
+  "name": "Baron Boris Wazie",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Gambler",
+  "formId": "0x00013746",
+  "name": "Vito \"The Vic\" Bronco",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Mechanist",
+  "formId": "0x00013746",
+  "name": "Tincan Toni",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Fisherman",
+  "formId": "0x00013746",
+  "name": "Amadi the Piranha",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_RoboBrain",
+  "formId": "0x0010EAE9",
+  "name": "Chief Engineer Lewis",
+  "bodyPartDataFormId": "0x0010F0E3",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg2",
+    "dmgMult": 0.9,
+    "crippable": true
+   },
+   {
+    "name": "Right Foot",
+    "partType": "Right Foot",
+    "dmgMult": 0.8,
+    "crippable": true
+   },
+   {
+    "name": "Left Foot",
+    "partType": "Left Foot",
+    "dmgMult": 0.8,
+    "crippable": true
+   },
+   {
+    "name": "Combat Inhibitor",
+    "partType": "Brain",
+    "dmgMult": 0.65,
+    "crippable": false
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 0.9,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.15,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Sniper",
+  "formId": "0x00013746",
+  "name": "Charlie Half-Cocked",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Boxer",
+  "formId": "0x00013746",
+  "name": "Becca The Heavyweight",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Gunslinger",
+  "formId": "0x00013746",
+  "name": "Cowgirl Janine",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_BigGun",
+  "formId": "0x00013746",
+  "name": "Richie Finesse",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Crusher",
+  "formId": "0x00013746",
+  "name": "Gentle Gary",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Commie",
+  "formId": "0x00013746",
+  "name": "The Proletariat Punisher",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Abraxo",
+  "formId": "0x00013746",
+  "name": "The Cleaner",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Hunter",
+  "formId": "0x00013746",
+  "name": "Colt the Bolt",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "headhunt"
  }
 ]
