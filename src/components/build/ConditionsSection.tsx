@@ -128,7 +128,6 @@ export function ConditionsSection() {
     ((conditions.bodyPartHitRatePct ?? 100) !== (defaults.bodyPartHitRatePct ?? 100) ? 1 : 0) +
     (conditions.isPowerAttacking !== defaults.isPowerAttacking ? 1 : 0) +
     ((conditions.isLastShot ?? false) !== (defaults.isLastShot ?? false) ? 1 : 0) +
-    (conditions.addictionCount !== defaults.addictionCount ? 1 : 0) +
     (conditions.limitBreakingPieces !== defaults.limitBreakingPieces ? 1 : 0);
 
   return (
@@ -313,15 +312,6 @@ export function ConditionsSection() {
             label="Firing the magazine's last round"
             checked={conditions.isLastShot ?? false}
             onCheckedChange={v => set('isLastShot', v)}
-          />
-
-          <NumberField
-            id="char-addictions"
-            label="Addictions"
-            value={conditions.addictionCount}
-            min={0}
-            max={99}
-            onChange={v => set('addictionCount', v)}
           />
 
           <NumberField

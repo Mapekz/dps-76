@@ -4,7 +4,7 @@ import { UserIcon } from 'lucide-react';
 import { WeaponSection } from './WeaponSection';
 import { SpecialLoadoutSection } from './SpecialLoadoutSection';
 import { StatSummary } from './StatSummary';
-import { MutationsSection, ConsumablesSection } from './BuffsSections';
+import { MutationsSection, ChemsSection, AlcoholSection, FoodDrinkSection } from './BuffsSections';
 import { ConditionsSection } from './ConditionsSection';
 import { TargetSection } from './TargetSection';
 
@@ -24,7 +24,9 @@ export function BuildColumn() {
           <SpecialLoadoutSection />
           <MutationsSection />
           <ConditionsSection />
-          <ConsumablesSection />
+          <ChemsSection />
+          <AlcoholSection />
+          <FoodDrinkSection />
           <TargetSection />
         </Accordion>
       </CardContent>
