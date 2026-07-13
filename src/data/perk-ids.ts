@@ -224,8 +224,10 @@ export const PerkId = {
   ClassFreak: "ClassFreak",
   BetterCriticals: "BetterCriticals",
 
-  // Legendary Perks
+  // Ghoul perks (regular SPECIAL-slotted cards, ghoul characters only —
+  // N&D "0"-prefixed keys; NOT legendary perks)
   RadSpecialist: "RadSpecialist",
+  ArmsOfSteel: "ArmsOfSteel",
   RadioactiveStrength: "RadioactiveStrength",
   MadScientist: "MadScientist",
   EyeOfTheHunter: "EyeOfTheHunter",
@@ -252,9 +254,33 @@ export const PerkId = {
   WildWestHands: "WildWestHands",
   BreathItIn: "BreathItIn",
   BoneShatterer: "BoneShatterer",
+
+  // Legendary perks (not tied to any SPECIAL; N&D "x"-prefixed keys, plus
+  // ghoul-exclusive 0D Action Diet / 0N Feral Rage)
+  AmmoFactory: "AmmoFactory",
+  BloodSacrifice: "BloodSacrifice",
+  BrawlingChemist: "BrawlingChemist",
+  CollateralDamage: "CollateralDamage",
+  DetonationContagion: "DetonationContagion",
+  ElectricAbsorption: "ElectricAbsorption",
+  ExplodingPalm: "ExplodingPalm",
+  FarFlungFireworks: "FarFlungFireworks",
+  FollowThrough: "FollowThrough",
+  FunkyDuds: "FunkyDuds",
+  HackAndSlash: "HackAndSlash",
+  MasterInfiltrator: "MasterInfiltrator",
+  PowerArmorReboot: "PowerArmorReboot",
+  PowerSprinter: "PowerSprinter",
+  Retribution: "Retribution",
+  SizzlingStyle: "SizzlingStyle",
+  SurvivalShortcut: "SurvivalShortcut",
+  TakingOneForTheTeam: "TakingOneForTheTeam",
+  WhatRads: "WhatRads",
+  ActionDiet: "ActionDiet",
+  FeralRage: "FeralRage",
   // Legendary SPECIAL cards (+1/+2/+3/+5 stat AND perk points by rank, budget
-  // caps at 15 — src/lib/player-stats.ts). No known N&D URL key yet, so
-  // imports can't bring them; slotted in-app only.
+  // caps at 15 — src/lib/player-stats.ts). N&D URL keys x4 (Agility) … xa
+  // (Strength) — see nukesDragonsPerks.
   LegendaryStrength: "LegendaryStrength",
   LegendaryPerception: "LegendaryPerception",
   LegendaryEndurance: "LegendaryEndurance",

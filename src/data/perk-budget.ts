@@ -58,14 +58,15 @@ export function computePerkBudget(
   const cards: Array<{ special: SpecialKey; rank: number }> = [];
   for (const { perkId, rank } of perks) {
     const perk = registry[perkId as keyof typeof registry];
-    if (perk) cards.push({ special: SPECIAL_TO_KEY[perk.special], rank });
+    // No `special` = a legendary card (mis-filed here by an old build) — costs nothing.
+    if (perk?.special) cards.push({ special: SPECIAL_TO_KEY[perk.special], rank });
   }
 
   return derivePerkBudget(cards, legendaryBonusOf(legendaryPerks), allocation);
 }
 
-/** The SPECIAL a (regular) perk card slots into, or null when unknown. */
+/** The SPECIAL a (regular) perk card slots into, or null when unknown/legendary. */
 export function perkSpecialKey(mode: GameMode, perkId: string): SpecialKey | null {
   const perk = getPerks(mode)[perkId as keyof ReturnType<typeof getPerks>];
-  return perk ? SPECIAL_TO_KEY[perk.special] : null;
+  return perk?.special ? SPECIAL_TO_KEY[perk.special] : null;
 }

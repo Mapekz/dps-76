@@ -124,7 +124,8 @@ export type GameMode = 'live' | 'pts';
 // Perk definition
 export interface Perk {
   name: string;
-  special: Special;
+  /** SPECIAL the card slots into; absent on legendary perks (not SPECIAL-tied). */
+  special?: Special;
   maxRank: number;
   statsModified: StatModification[];
 }
@@ -219,8 +220,10 @@ export interface Weapon {
   keywords?: string[];
   /** Attach point slot formids — an OMOD fits when its attach point is listed here. */
   attachParentSlots?: string[];
-  /** OMOD formids from the weapon's default Object Template — the stock/default parts (picker display rule). */
+  /** OMOD formids flattened from ALL Object Template combinations (instance-template gating for unique mods). */
   templateModFormIds?: string[];
+  /** OMOD formids of the Default combination — the weapon's real standard parts (picker default + engine fold-in). */
+  defaultModFormIds?: string[];
   /** Base weapon crit damage multiplier (VATS crit; typically 2.0). */
   critDamageMult?: number;
   /** Crit meter fill multiplier per hit (typically 1.0). */

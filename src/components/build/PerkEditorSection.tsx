@@ -22,7 +22,7 @@ import { Special } from '@/data/special';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';
 import { canSlotCardPoints, type PerkBudget } from '@/lib/player-stats';
 import type { Perk, PerkLoadout } from '@/types';
-import type { SpecialKey } from '@/state/build-reducer';
+import { LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS, type SpecialKey } from '@/state/build-reducer';
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import { DiffTooltip } from '@/components/diff/DiffTooltip';
 import { SectionTrigger } from './SectionTrigger';
@@ -37,7 +37,6 @@ const SPECIAL_ORDER: Array<{ key: SpecialKey; special: Special; letter: string }
   { key: 'luck', special: Special.Luck, letter: 'L' },
 ];
 
-const LEGENDARY_SLOTS = 4;
 
 interface PerkEntry {
   perkId: string;
@@ -153,7 +152,7 @@ function PerkAddCombobox({
   onFilterSpecialChange,
 }: {
   budget: PerkBudget;
-  /** 'legendary' renders only legendary cards (grouped by SPECIAL, no super-heading). */
+  /** 'legendary' renders only legendary cards (one flat alphabetized list — no SPECIAL grouping/filter). */
   scope?: 'all' | 'legendary';
   triggerLabel?: string;
   /** Controlled open state (the SpecialBudgetBar opens the main picker); uncontrolled when omitted. */
@@ -185,6 +184,7 @@ function PerkAddCombobox({
     const rank = equipped.get(perkId);
     if (isLegendary) return rank === undefined && legendarySlotsFull;
     if (rank !== undefined && rank >= perk.maxRank) return false; // no-op anyway
+    if (!perk.special) return false; // fail open, like the reducer's regularSlotBlocked
     return !canSlotCardPoints(budget, SPECIAL_TO_KEY[perk.special], 1);
   };
 
@@ -200,7 +200,7 @@ function PerkAddCombobox({
     // Popover stays open for multi-add.
   };
 
-  const renderGroup = (heading: string, items: Array<{ perkId: string; perk: Perk }>, isLegendary: boolean) => (
+  const renderGroup = (heading: string | undefined, items: Array<{ perkId: string; perk: Perk }>, isLegendary: boolean) => (
     <CommandGroup heading={heading}>
       {items.map(({ perkId, perk }) => {
         const rank = equipped.get(perkId);
@@ -236,15 +236,8 @@ function PerkAddCombobox({
     </CommandGroup>
   );
 
-  const pool = scope === 'legendary' ? legendary : regular;
-  const bySpecial = (special: Special) => pool.filter(r => r.perk.special === special);
+  const bySpecial = (special: Special) => regular.filter(r => r.perk.special === special);
   const visibleSpecials = SPECIAL_ORDER.filter(({ special }) => filterSpecial === null || special === filterSpecial);
-  const legendaryItems =
-    scope === 'all'
-      ? filterSpecial === null
-        ? legendary
-        : legendary.filter(l => l.perk.special === filterSpecial)
-      : [];
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -256,42 +249,51 @@ function PerkAddCombobox({
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
         <Command>
           <CommandInput placeholder={scope === 'legendary' ? 'Search legendary perks…' : 'Search perks…'} />
-          <div className="flex items-center gap-0.5 border-b px-2 py-1">
-            {SPECIAL_ORDER.map(({ special, letter }) => (
-              <Button
-                key={special}
-                type="button"
-                variant={filterSpecial === special ? 'default' : 'ghost'}
-                size="sm"
-                className="h-6 flex-1 px-0 font-mono text-xs"
-                title={`Show only ${special} perks`}
-                onClick={() => setFilterSpecial(filterSpecial === special ? null : special)}
-              >
-                {letter}
-              </Button>
-            ))}
-            {filterSpecial !== null && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="size-6"
-                aria-label="Clear SPECIAL filter"
-                onClick={() => setFilterSpecial(null)}
-              >
-                <XIcon className="size-3" />
-              </Button>
-            )}
-          </div>
+          {scope !== 'legendary' && (
+            <div className="flex items-center gap-0.5 border-b px-2 py-1">
+              {SPECIAL_ORDER.map(({ special, letter }) => (
+                <Button
+                  key={special}
+                  type="button"
+                  variant={filterSpecial === special ? 'default' : 'ghost'}
+                  size="sm"
+                  className="h-6 flex-1 px-0 font-mono text-xs"
+                  title={`Show only ${special} perks`}
+                  onClick={() => setFilterSpecial(filterSpecial === special ? null : special)}
+                >
+                  {letter}
+                </Button>
+              ))}
+              {filterSpecial !== null && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="size-6"
+                  aria-label="Clear SPECIAL filter"
+                  onClick={() => setFilterSpecial(null)}
+                >
+                  <XIcon className="size-3" />
+                </Button>
+              )}
+            </div>
+          )}
           <CommandList className="max-h-72">
             <CommandEmpty>No perk matches.</CommandEmpty>
-            {visibleSpecials.map(({ special }) => {
-              const items = bySpecial(special);
-              return items.length > 0 ? (
-                <React.Fragment key={special}>{renderGroup(special, items, scope === 'legendary')}</React.Fragment>
-              ) : null;
-            })}
-            {legendaryItems.length > 0 && renderGroup('Legendary', legendaryItems, true)}
+            {scope === 'legendary' ? (
+              // Legendary perks aren't SPECIAL-tied — one flat, name-sorted list.
+              renderGroup(undefined, legendary, true)
+            ) : (
+              <>
+                {visibleSpecials.map(({ special }) => {
+                  const items = bySpecial(special);
+                  return items.length > 0 ? (
+                    <React.Fragment key={special}>{renderGroup(special, items, false)}</React.Fragment>
+                  ) : null;
+                })}
+                {filterSpecial === null && legendary.length > 0 && renderGroup('Legendary', legendary, true)}
+              </>
+            )}
           </CommandList>
         </Command>
       </PopoverContent>
@@ -364,7 +366,9 @@ export function PerkEditorSection() {
                   key={entry.perkId}
                   entry={entry}
                   maxRank={entry.perk.maxRank}
-                  raiseBlocked={!canSlotCardPoints(budget, SPECIAL_TO_KEY[entry.perk.special], 1)}
+                  raiseBlocked={
+                    entry.perk.special ? !canSlotCardPoints(budget, SPECIAL_TO_KEY[entry.perk.special], 1) : false
+                  }
                 />
               ))}
             </div>

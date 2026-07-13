@@ -620,10 +620,14 @@ column's stat summary displays the same number.
 
 ## Known gaps / deferred
 
-- **Taking One for the Team / Follow Through**: no matching perk families in
-  the 20260702 ESM under those names — likely renamed/removed by the combat
-  overhaul. The `wholeDamage` bucket is implemented and tested; wire the
-  actual sources once identified.
+- **Taking One for the Team / Follow Through**: the families exist in the
+  20260702 ESM (`LGN_TakingOneForTheTeam_Perk`, `LGN_FollowThrough_Perk`,
+  4 ranks each) and join the registry, but their extracted `modifiers` are
+  empty — the extractor doesn't yet map their MGEF effects. The `wholeDamage`
+  bucket is implemented and tested; it stays inert for these two cards until
+  the mgef → wholeDamage mapping is added (scripts/extract/normalize/mgef.ts).
+  Same applies to the rest of the legendary perks (registry entries are
+  display/slotting-only for now).
 - Enemy DR/ER, armor pen, race-gated damage (`enemyType` conditions evaluate
   to inactive), range falloff, limb targeting: deferred by plan.
 - `DamageTypeValues` OMOD property (elemental barrel conversions) not yet
@@ -648,7 +652,7 @@ yet modeled:
 | Deflect/Reflect return damage | Ricochet, Bullet Shield, Reflective 4★ | scales with DR (ER & other resists reduce incoming but do NOT boost return) |
 | Reload-inclusive sustained DPS | Gun Runner (move speed → Fast Fighter reload), Rapid | DPS across multiple magazines |
 | VATS uptime | Field Surgeon (stim HP/s vs Blood Sacrifice HP cost) | AP/HP economy modeling |
-| Ghoul Glow economy | Breath It In (rad resist → Glow gain) | feeds Glow spenders, not a direct damage term |
+| Ghoul Glow economy | Breathe It In (rad resist → Glow gain) | feeds Glow spenders, not a direct damage term |
 | Low-health damage | Nerd Rage (damage + DR, still exists per user) | no ESM family joined — locate its current record/values |
 - Mutation SPECIAL side-effects (Egg Head etc.) are not applied — SPECIAL is
   a manual input; set it to your buffed values.

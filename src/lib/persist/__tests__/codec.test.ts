@@ -138,4 +138,16 @@ describe('derived condition fields', () => {
     expect(decoded!.state.enemy.conditions.targetRace).toBe('SuperMutantRace');
     expect(decoded!.state.enemy.conditions.targetBodyPart).toBe('Head');
   });
+
+  it('reclassifies a legacy build that stored a ghoul card under legendaryPerks', async () => {
+    // Pre-classification-fix builds filed ghoul cards (e.g. RadSpecialist) as
+    // legendary. encodePerks serializes whatever is in the array, so this
+    // legitimately simulates an old payload.
+    const legacy = createDefaultBuildState();
+    legacy.player.legendaryPerks = [{ perkId: 'RadSpecialist', rank: 1 }];
+    const decoded = await decodeBuild(await encodeBuild(legacy), 'live');
+    expect(decoded!.state.player.legendaryPerks).toEqual([]);
+    expect(decoded!.state.player.perks).toEqual([{ perkId: 'RadSpecialist', rank: 1 }]);
+    expect(decoded!.warnings.some(w => w.includes('classification'))).toBe(true);
+  });
 });

@@ -7,7 +7,7 @@ import { getGeneratedPerk } from '@/data/perk-modifiers';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';
 import type { PerkBudget } from '@/lib/player-stats';
 import { Special } from '@/data/special';
-import type { BuildState, SpecialKey } from '@/state/build-reducer';
+import { LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS, type BuildState, type SpecialKey } from '@/state/build-reducer';
 import type { SuggestionBudget, SuggestionCandidate } from './types';
 
 /**
@@ -28,7 +28,6 @@ const SPECIAL_TO_KEY: Record<Special, SpecialKey> = {
   [Special.Luck]: 'luck',
 };
 
-const LEGENDARY_SLOTS = 4;
 const LEGAL: SuggestionBudget = { legal: true };
 
 /** A perk family is damage-relevant when any rank emits modifiers. */
@@ -43,6 +42,7 @@ function isDamageRelevant(mode: GameMode, perkId: string): boolean {
  * Deficit = how many points past the budget the move would land.
  */
 function perkBudget(budget: PerkBudget, perk: Perk, extraCost: number): SuggestionBudget {
+  if (!perk.special) return LEGAL; // legendary cards are never SPECIAL-budget-constrained
   const key = SPECIAL_TO_KEY[perk.special];
   const deficit = budget.cardPoints[key] + extraCost - budget.budgetPerStat[key];
   return deficit > 0 ? { legal: false, special: key, deficit } : LEGAL;

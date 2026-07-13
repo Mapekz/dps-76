@@ -54,7 +54,7 @@ describe('buildReducer', () => {
     expect(run([{ type: 'special/set', stat: 'luck', value: 3 }], maxedPool).player.conditions.luck).toBe(3);
   });
 
-  it('blocks card slotting past min(15, base + Legendary SPECIAL bonus) and past the 4 legendary slots', () => {
+  it('blocks card slotting past min(15, base + Legendary SPECIAL bonus) and past the 6 legendary slots', () => {
     // Base Perception 1 → budget 1: a second Perception card point is refused.
     const one = run([{ type: 'perk/add', perkId: 'CenterMasochist', rank: 1, legendary: false }]);
     const refused = run([{ type: 'perk/setRank', perkId: 'CenterMasochist', rank: 2 }], one);
@@ -85,9 +85,11 @@ describe('buildReducer', () => {
       { type: 'perk/add', perkId: 'LegendaryPerception', rank: 1, legendary: true },
       { type: 'perk/add', perkId: 'LegendaryEndurance', rank: 1, legendary: true },
       { type: 'perk/add', perkId: 'LegendaryCharisma', rank: 1, legendary: true },
+      { type: 'perk/add', perkId: 'LegendaryIntelligence', rank: 1, legendary: true },
+      { type: 'perk/add', perkId: 'LegendaryAgility', rank: 1, legendary: true },
     ]);
-    const fifth = run([{ type: 'perk/add', perkId: 'LegendaryLuck', rank: 1, legendary: true }], legendaries);
-    expect(fifth.player.legendaryPerks).toHaveLength(4);
+    const seventh = run([{ type: 'perk/add', perkId: 'LegendaryLuck', rank: 1, legendary: true }], legendaries);
+    expect(seventh.player.legendaryPerks).toHaveLength(6);
   });
 
   it('perk add / setRank / remove work across regular and legendary lists', () => {
@@ -130,15 +132,16 @@ describe('buildReducer', () => {
     expect(s.enemy.conditions.healthPercent).toBe(35);
   });
 
-  it('build/importNd splits legendary perks by the "0" key prefix, replaces the loadout, merges SPECIAL', () => {
+  it('build/importNd splits legendary perks by N&D key, replaces the loadout, merges SPECIAL', () => {
     const before = run([{ type: 'perk/add', perkId: 'OldPerk', rank: 1, legendary: false }]);
     const s = run(
       [
         {
           type: 'build/importNd',
           perks: [
-            { key: 'l3', name: 'Bloody Mess', rank: 3 },
-            { key: '02', name: 'Legendary Perception', rank: 2 },
+            { key: 'l3', name: 'BloodyMess', rank: 3 },
+            { key: 'xp', name: 'TakingOneForTheTeam', rank: 2 },
+            { key: '01', name: 'RadSpecialist', rank: 1 }, // ghoul card — regular, not legendary
           ],
           name: 'My Build',
           special: { strength: 5, perception: 20, endurance: 5, charisma: 5, intelligence: 5, agility: 5, luck: 15 },
@@ -151,8 +154,24 @@ describe('buildReducer', () => {
     // s= SPECIAL merged, clamped to the 15-per-stat cap.
     expect(s.player.conditions.perception).toBe(15);
     expect(s.player.conditions.luck).toBe(15);
-    // one regular + one legendary landed in their lists (join is by N&D key registry)
-    expect(s.player.perks.length + s.player.legendaryPerks.length).toBeGreaterThan(0);
+    expect(s.player.perks).toEqual([
+      { perkId: 'BloodyMess', rank: 3 },
+      { perkId: 'RadSpecialist', rank: 1 },
+    ]);
+    expect(s.player.legendaryPerks).toEqual([{ perkId: 'TakingOneForTheTeam', rank: 2 }]);
+  });
+
+  it('build/importNd forces the ghoul race when the imported loadout is ghoul-locked', () => {
+    const s = run([
+      {
+        type: 'build/importNd',
+        perks: [{ key: '0n', name: 'GlowingCriticals', rank: 1 }],
+        name: null,
+        special: null,
+      },
+    ]);
+    expect(s.player.perks.some(p => p.perkId === 'GlowingCriticals')).toBe(true);
+    expect(s.player.conditions.isGhoul).toBe(true);
   });
 
   it('build/hydrate replaces state wholesale and is idempotent', () => {
@@ -176,8 +195,9 @@ describe('body-part mult and race forcing', () => {
   });
 
   it('adding a ghoul-only perk forces the ghoul race', () => {
-    const s = run([{ type: 'perk/add', perkId: 'GlowingCriticals', rank: 1, legendary: true }]);
-    expect(s.player.legendaryPerks.some(p => p.perkId === 'GlowingCriticals')).toBe(true);
+    // Ghoul cards are regular SPECIAL-slotted perks (not legendary).
+    const s = run([{ type: 'perk/add', perkId: 'GlowingCriticals', rank: 1, legendary: false }]);
+    expect(s.player.perks.some(p => p.perkId === 'GlowingCriticals')).toBe(true);
     expect(s.player.conditions.isGhoul).toBe(true);
   });
 

@@ -9,7 +9,7 @@ import {
 } from '@/types';
 import { isLegendaryPerkKey, parsedPerksToLoadout, type ParsedSpecial } from '@/lib/nukes-dragons';
 import { computePerkBudget, perkSpecialKey } from '@/data/perk-budget';
-import { perkRaceRestriction } from '@/data/perk-race';
+import { equippedRaceLock, perkRaceRestriction } from '@/data/perk-race';
 import { canSlotCardPoints, SPECIAL_ALLOCATION_POOL, SPECIAL_KEYS, SPECIAL_POINTS_CAP } from '@/lib/player-stats';
 
 /**
@@ -84,8 +84,8 @@ function withPlayer(state: BuildState, player: PlayerConfig): BuildState {
   return { ...state, player };
 }
 
-/** In-app legendary perk card slots (game rule). */
-export const LEGENDARY_PERK_SLOTS = 4;
+/** Legendary perk card slots (game rule: unlocked at level 50/75/100/150/200/300). */
+export const LEGENDARY_PERK_SLOTS = 6;
 
 /** The user-defined base SPECIAL allocation stored in conditions, as a plain record. */
 function allocationOf(player: PlayerConfig): Record<SpecialKey, number> {
@@ -215,25 +215,33 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
       return { ...state, view: { ...state.view, ...action.view } };
 
     case 'build/importNd': {
-      // N&D legendary perk keys all start with "0"; import REPLACES the perk
-      // loadout (documented in the import UI) and merges the URL's s= SPECIAL
-      // (clamped to 1–15) when present. Imports are not blocked by the
-      // budget — violations surface as the "over budget" badge.
-      const regular = action.perks.filter(p => !isLegendaryPerkKey(p.key));
-      const legendary = action.perks.filter(p => isLegendaryPerkKey(p.key));
+      // Import REPLACES the perk loadout (documented in the import UI),
+      // splitting regular vs legendary by N&D key, and merges the URL's s=
+      // SPECIAL (clamped to 1–15) when present. Imports are not blocked by
+      // the budget — violations surface as the "over budget" badge.
+      const regular = parsedPerksToLoadout(action.perks.filter(p => !isLegendaryPerkKey(p.key)));
+      const legendary = parsedPerksToLoadout(action.perks.filter(p => isLegendaryPerkKey(p.key)));
       const importedSpecial = action.special
         ? (Object.fromEntries(
             Object.entries(action.special).map(([k, v]) => [k, Math.max(1, Math.min(SPECIAL_POINTS_CAP, v))])
           ) as unknown as ParsedSpecial)
         : null;
+      let conditions = importedSpecial ? { ...player.conditions, ...importedSpecial } : player.conditions;
+      // Race-locked cards force the matching character race, same as perk/add
+      // does — without this, an imported ghoul build keeps isGhoul: false and
+      // every playerIsGhoul-gated modifier silently evaluates to nothing.
+      const { locked } = equippedRaceLock('live', regular, legendary);
+      if (locked !== null && (conditions.isGhoul ?? false) !== (locked === 'ghoul')) {
+        conditions = { ...conditions, isGhoul: locked === 'ghoul' };
+      }
       return {
         ...state,
         buildName: action.name,
         player: {
           ...player,
-          perks: parsedPerksToLoadout(regular),
-          legendaryPerks: parsedPerksToLoadout(legendary),
-          conditions: importedSpecial ? { ...player.conditions, ...importedSpecial } : player.conditions,
+          perks: regular,
+          legendaryPerks: legendary,
+          conditions,
         },
       };
     }

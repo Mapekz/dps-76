@@ -227,9 +227,11 @@ export const nukesDragonsPerks: Record<string, PerkId> = {
   lu: PerkId.ClassFreak,
   lv: PerkId.BetterCriticals,
 
-  // Legendary Perks
+  // Ghoul perks (regular SPECIAL cards, ghoul-only). N&D's "0"-prefixed key
+  // space, case-sensitive — "0d"/"0D" and "0n"/"0N" are DIFFERENT perks.
   "01": PerkId.RadSpecialist,
   "03": PerkId.RadioactiveStrength,
+  "05": PerkId.ArmsOfSteel,
   "07": PerkId.MadScientist,
   "09": PerkId.EyeOfTheHunter,
   "0B": PerkId.BrickWall,
@@ -255,20 +257,63 @@ export const nukesDragonsPerks: Record<string, PerkId> = {
   "0v": PerkId.WildWestHands,
   "0x": PerkId.BreathItIn,
   "0z": PerkId.BoneShatterer,
+
+  // Legendary perks: N&D's "x"-prefixed keys, plus the two ghoul-exclusive
+  // legendary cards 0D (Action Diet) and 0N (Feral Rage) which share the
+  // ghoul "0" key space. Verified against N&D's own character bundle
+  // (data.nukesdragons.com/db/fallout-76/character.bundle.json).
+  x0: PerkId.AmmoFactory,
+  x1: PerkId.FunkyDuds,
+  x2: PerkId.HackAndSlash,
+  x3: PerkId.SizzlingStyle,
+  x4: PerkId.LegendaryAgility,
+  x5: PerkId.LegendaryCharisma,
+  x6: PerkId.LegendaryEndurance,
+  x7: PerkId.LegendaryIntelligence,
+  x8: PerkId.LegendaryLuck,
+  x9: PerkId.LegendaryPerception,
+  xa: PerkId.LegendaryStrength,
+  xb: PerkId.MasterInfiltrator,
+  xd: PerkId.PowerSprinter,
+  xe: PerkId.SurvivalShortcut,
+  xf: PerkId.BloodSacrifice,
+  xg: PerkId.BrawlingChemist,
+  xh: PerkId.CollateralDamage,
+  xi: PerkId.DetonationContagion,
+  xj: PerkId.ElectricAbsorption,
+  xk: PerkId.ExplodingPalm,
+  xl: PerkId.FarFlungFireworks,
+  xm: PerkId.FollowThrough,
+  xn: PerkId.PowerArmorReboot,
+  xo: PerkId.Retribution,
+  xp: PerkId.TakingOneForTheTeam,
+  xq: PerkId.WhatRads,
+  "0D": PerkId.ActionDiet,
+  "0N": PerkId.FeralRage,
 };
 
 /**
- * Returns true if the given N&D key belongs to a legendary perk.
- * All legendary perk keys in the nukesDragonsPerks map start with "0".
+ * N&D keys of legendary perk cards. An explicit set, NOT a prefix rule:
+ * ghoul perks own most of the "0" key space (case-sensitively — "0d" is the
+ * ghoul card Feral Presence while "0D" is the legendary Action Diet), and
+ * legendary perks use "x" keys plus those two "0" stragglers.
  */
+const LEGENDARY_PERK_KEYS: ReadonlySet<string> = new Set([
+  "x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "xa", "xb",
+  "xd", "xe", "xf", "xg", "xh", "xi", "xj", "xk", "xl", "xm", "xn", "xo",
+  "xp", "xq", "0D", "0N",
+]);
+
+/** Returns true if the given N&D key belongs to a legendary perk. */
 export function isLegendaryPerkKey(key: string): boolean {
-  return key.startsWith("0");
+  return LEGENDARY_PERK_KEYS.has(key);
 }
 
 /**
- * PerkIds that are legendary perk cards: derived from the "0"-prefixed N&D
- * keys, plus the Legendary SPECIAL cards (registry-only — no known N&D key,
- * so imports can't carry them; they exist for the in-app perk-budget rules).
+ * PerkIds that are legendary perk cards: derived from the legendary N&D keys,
+ * plus an explicit union of the Legendary SPECIAL cards — redundant with the
+ * x4–xa keys but kept as a safety net since those seven drive the perk-point
+ * budget derivation (src/lib/player-stats.ts).
  */
 export const legendaryPerkIds: ReadonlySet<string> = new Set<string>([
   ...Object.entries(nukesDragonsPerks)
@@ -286,21 +331,21 @@ export const legendaryPerkIds: ReadonlySet<string> = new Set<string>([
 /**
  * Parse a Nukes & Dragons build URL to extract perks.
  *
- * The `p=` param contains both regular perks (keys like "ad") and, when present,
- * legendary perk cards (keys like "01", "0b", etc.).  Both are parsed here; callers
- * can separate them by checking `isLegendaryPerkKey(perk.key)`.
- *
- * Note on the `cd=` param: its encoding is not yet reverse-engineered from the
- * sample URL.  See todos/special-parsing.md and todos/fire-rate.md for context.
- * If legendary perk ranks are absent from results after fixing `parsedPerksToLoadout`,
- * revisit whether they are encoded in `cd=` rather than in `p=`.
+ * The `p=` param carries regular perks (keys like "ad") including ghoul cards
+ * ("0"-keys); the `lp=` param carries legendary perk cards ("x"-keys plus
+ * 0D/0N) in the same 3-char chunk encoding — verified against the live N&D
+ * planner (v=2 URLs). Both are parsed and merged here; callers separate them
+ * by checking `isLegendaryPerkKey(perk.key)`, so a perk arriving in either
+ * param still lands in the right list.
  */
 export function parseBuildUrl(url: string): ParsedPerk[] {
   try {
     const urlObj = new URL(url);
     const params = new URLSearchParams(urlObj.search);
-    const perkString = params.get("p") ?? "";
-    return parsePerkString(perkString);
+    return [
+      ...parsePerkString(params.get("p") ?? ""),
+      ...parsePerkString(params.get("lp") ?? ""),
+    ];
   } catch {
     return parsePerkString(url);
   }
@@ -329,6 +374,27 @@ export function parsePerkString(perkString: string): ParsedPerk[] {
  */
 export function parsedPerksToLoadout(parsedPerks: ParsedPerk[]): PerkLoadout[] {
   return parsedPerks.map((perk) => ({ perkId: perk.name, rank: perk.rank }));
+}
+
+/**
+ * Re-sorts a decoded perk/legendaryPerk split against the CURRENT
+ * legendaryPerkIds set. Builds encoded before the ghoul-card/legendary-perk
+ * reclassification stored now-regular PerkIds (e.g. RadSpecialist) under
+ * legendaryPerks; this moves every perk to the list its PerkId belongs in.
+ */
+export function reclassifyPerkLoadouts(
+  perks: PerkLoadout[],
+  legendaryPerks: PerkLoadout[]
+): { perks: PerkLoadout[]; legendaryPerks: PerkLoadout[]; migrated: number } {
+  const all = [...perks, ...legendaryPerks];
+  const migrated =
+    perks.filter((p) => legendaryPerkIds.has(p.perkId)).length +
+    legendaryPerks.filter((p) => !legendaryPerkIds.has(p.perkId)).length;
+  return {
+    perks: all.filter((p) => !legendaryPerkIds.has(p.perkId)),
+    legendaryPerks: all.filter((p) => legendaryPerkIds.has(p.perkId)),
+    migrated,
+  };
 }
 
 /**

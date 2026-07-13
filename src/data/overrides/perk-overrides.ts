@@ -24,6 +24,12 @@ export const perkFamilyOverrides: Readonly<Record<string, string>> = {
   ActionBoyGirl: 'ActionBoy',
   AquaBoyGirl: 'Aquaboy',
   PartyBoyGirl: 'PartyBoy',
+  // Two ESM families share the display name "Blood Sacrifice!": the leveled
+  // legendary card (4 ranks, N&D key xf) and a 1-rank on-death team-buff
+  // "fanfare" helper. Both have hasCard:true, so the name-join's first-wins
+  // tiebreak is extraction-order dependent — pin the leveled card
+  // (source: 20260702 ESM).
+  BloodSacrifice: 'LGN_BloodSacrifice_Perk',
 };
 
 /**

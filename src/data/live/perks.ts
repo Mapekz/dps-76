@@ -229,43 +229,76 @@ export const perks: Record<PerkId, Perk> = {
   [PerkId.ClassFreak]: { name: "Class Freak", special: Special.Luck, maxRank: 3, statsModified: [] },
   [PerkId.BetterCriticals]: { name: "Better Criticals", special: Special.Luck, maxRank: 3, statsModified: [{ stat: Stat.CriticalDamageBonus, value: 100 }] },
 
+  // ============ GHOUL PERKS ============
+  // Regular SPECIAL-slotted cards usable by ghoul characters only (ESM GHL_*
+  // families; N&D "0"-prefixed keys). SPECIAL and maxRank sourced from the
+  // Nukes & Dragons character bundle (data.nukesdragons.com) and cross-checked
+  // against ESM rank counts — the two agree on every card.
+  [PerkId.RadSpecialist]: { name: "Rad Specialist", special: Special.Intelligence, maxRank: 3, statsModified: [] }, // Armor Glow intake - not direct damage
+  [PerkId.RadioactiveStrength]: { name: "Radioactive Strength", special: Special.Strength, maxRank: 3, statsModified: [{ stat: Stat.PowerAttackDamageBonus, value: 150 }, { stat: Stat.BashDamageBonus, value: 150 }] }, // Assumes high Glow
+  [PerkId.ArmsOfSteel]: { name: "Arms of Steel", special: Special.Strength, maxRank: 2, statsModified: [] }, // Unarmed/melee AP - not direct damage
+  [PerkId.MadScientist]: { name: "Mad Scientist", special: Special.Intelligence, maxRank: 3, statsModified: [{ stat: Stat.EnergyDamageBonus, value: 20 }] }, // Assumes high Glow
+  [PerkId.EyeOfTheHunter]: { name: "Eye Of The Hunter", special: Special.Perception, maxRank: 3, statsModified: [] }, // +30% VATS accuracy at long range - not direct damage
+  [PerkId.BrickWall]: { name: "Brick Wall", special: Special.Strength, maxRank: 1, statsModified: [] }, // Stagger immunity when Glow high - not damage
+  [PerkId.ChemDiet]: { name: "Chem Diet", special: Special.Endurance, maxRank: 3, statsModified: [] }, // Chem weight reduction - not combat
+  [PerkId.ScienceMonster]: { name: "Science Monster", special: Special.Intelligence, maxRank: 3, statsModified: [{ stat: Stat.OutgoingDamageMultiplier, value: 15 }] }, // +15% damage for 10s when hit with Glow
+  [PerkId.BombScientist]: { name: "Bomb Scientist", special: Special.Intelligence, maxRank: 3, statsModified: [{ stat: Stat.OutgoingExplosionDamageMultiplier, value: 50 }] }, // Assumes high Glow
+  [PerkId.MoralSupport]: { name: "Moral Support", special: Special.Charisma, maxRank: 1, statsModified: [] }, // Team damage/resistances - not implemented
+  [PerkId.RadReaver]: { name: "Rad Reaver", special: Special.Perception, maxRank: 1, statsModified: [] }, // Rad heal & damage - complex
+  [PerkId.GunTricks]: { name: "Gun Tricks", special: Special.Agility, maxRank: 3, statsModified: [] }, // 30% reload speed - not direct damage
+  [PerkId.HyperReflexes]: { name: "Hyper Reflexes", special: Special.Agility, maxRank: 3, statsModified: [{ stat: Stat.DeflectChance, value: 20 }] }, // Assumes high Glow, no PA
+  [PerkId.GlowingOne]: { name: "Glowing One", special: Special.Charisma, maxRank: 2, statsModified: [] }, // SPECIAL-scaled HP & resistances when Glow high
+  [PerkId.GlowingHunter]: { name: "Glowing Hunter", special: Special.Perception, maxRank: 1, statsModified: [{ stat: Stat.DamageToGlowingEnemiesBonus, value: 30 }] }, // Additional bonus vs Glowing
+  [PerkId.ThickSkin]: { name: "Thick Skin", special: Special.Endurance, maxRank: 3, statsModified: [{ stat: Stat.IncomingDamageMultiplier, value: -10 }] }, // No PA
+  [PerkId.BattleGenes]: { name: "Battle Genes", special: Special.Luck, maxRank: 2, statsModified: [] }, // Melee scaling - complex
+  [PerkId.FeralPresence]: { name: "Feral Presence", special: Special.Charisma, maxRank: 2, statsModified: [] }, // -30% enemy damage while Feral - enemy debuff
+  [PerkId.UnitedOrdeal]: { name: "United Ordeal", special: Special.Charisma, maxRank: 3, statsModified: [] }, // Team bonuses - not implemented
+  [PerkId.FaultySpots]: { name: "Faulty Spots", special: Special.Luck, maxRank: 1, statsModified: [{ stat: Stat.WeakspotDamageBonus, value: 15 }] },
+  [PerkId.GlowingGut]: { name: "Glowing Gut", special: Special.Endurance, maxRank: 3, statsModified: [] }, // Healing restores Glow - not direct combat
+  [PerkId.JaguarSpeed]: { name: "Jaguar Speed", special: Special.Agility, maxRank: 2, statsModified: [] }, // Movement speed - not direct damage
+  [PerkId.ActionGhoul]: { name: "Action Ghoul", special: Special.Agility, maxRank: 3, statsModified: [] }, // AP regen - not direct damage
+  [PerkId.GlowingCriticals]: { name: "Glowing Criticals", special: Special.Luck, maxRank: 3, statsModified: [{ stat: Stat.CriticalDamageBonus, value: 50 }] }, // Assumes high Glow
+  [PerkId.RadiationPower]: { name: "Radiation Power", special: Special.Endurance, maxRank: 3, statsModified: [{ stat: Stat.OutgoingDamageMultiplier, value: 20 }] }, // Assumes high Glow
+  [PerkId.WildWestHands]: { name: "Wild West Hands", special: Special.Luck, maxRank: 3, statsModified: [] }, // 36% instant reload chance - not direct damage
+  [PerkId.BreathItIn]: { name: "Breathe It In", special: Special.Perception, maxRank: 3, statsModified: [] }, // Rad immunity - not direct combat
+  [PerkId.BoneShatterer]: { name: "Bone Shatterer", special: Special.Strength, maxRank: 3, statsModified: [{ stat: Stat.MeleeLimbDamageBonus, value: 75 }] },
+
   // ============ LEGENDARY PERKS ============
-  [PerkId.RadSpecialist]: { name: "Rad Specialist", special: Special.Endurance, maxRank: 4, statsModified: [] },
-  [PerkId.RadioactiveStrength]: { name: "Radioactive Strength", special: Special.Strength, maxRank: 4, statsModified: [{ stat: Stat.PowerAttackDamageBonus, value: 150 }, { stat: Stat.BashDamageBonus, value: 150 }] }, // Assumes high Glow
-  [PerkId.MadScientist]: { name: "Mad Scientist", special: Special.Intelligence, maxRank: 4, statsModified: [{ stat: Stat.EnergyDamageBonus, value: 20 }] }, // Assumes high Glow
-  [PerkId.EyeOfTheHunter]: { name: "Eye Of The Hunter", special: Special.Perception, maxRank: 4, statsModified: [] }, // +30% VATS accuracy at long range - not direct damage
-  [PerkId.BrickWall]: { name: "Brick Wall", special: Special.Strength, maxRank: 4, statsModified: [] }, // Stagger immunity when Glow high - not damage
-  [PerkId.ChemDiet]: { name: "Chem Diet", special: Special.Endurance, maxRank: 4, statsModified: [] }, // Chem weight reduction - not combat
-  [PerkId.ScienceMonster]: { name: "Science Monster", special: Special.Intelligence, maxRank: 4, statsModified: [{ stat: Stat.OutgoingDamageMultiplier, value: 15 }] }, // +15% damage for 10s when hit with Glow
-  [PerkId.BombScientist]: { name: "Bomb Scientist", special: Special.Intelligence, maxRank: 4, statsModified: [{ stat: Stat.OutgoingExplosionDamageMultiplier, value: 50 }] }, // Assumes high Glow
-  [PerkId.MoralSupport]: { name: "Moral Support", special: Special.Charisma, maxRank: 4, statsModified: [] }, // Team damage/resistances - not implemented
-  [PerkId.RadReaver]: { name: "Rad Reaver", special: Special.Endurance, maxRank: 4, statsModified: [] }, // Rad heal & damage - complex
-  [PerkId.GunTricks]: { name: "Gun Tricks", special: Special.Agility, maxRank: 4, statsModified: [] }, // 30% reload speed - not direct damage
-  [PerkId.HyperReflexes]: { name: "Hyper Reflexes", special: Special.Agility, maxRank: 4, statsModified: [{ stat: Stat.DeflectChance, value: 20 }] }, // Assumes high Glow, no PA
-  [PerkId.GlowingOne]: { name: "Glowing One", special: Special.Endurance, maxRank: 4, statsModified: [] }, // SPECIAL-scaled HP & resistances when Glow high
-  [PerkId.GlowingHunter]: { name: "Glowing Hunter", special: Special.Perception, maxRank: 4, statsModified: [{ stat: Stat.DamageToGlowingEnemiesBonus, value: 30 }] }, // Additional bonus vs Glowing
-  [PerkId.ThickSkin]: { name: "Thick Skin", special: Special.Endurance, maxRank: 4, statsModified: [{ stat: Stat.IncomingDamageMultiplier, value: -10 }] }, // No PA
-  [PerkId.BattleGenes]: { name: "Battle Genes", special: Special.Luck, maxRank: 4, statsModified: [] }, // Melee scaling - complex
-  [PerkId.FeralPresence]: { name: "Feral Presence", special: Special.Endurance, maxRank: 4, statsModified: [] }, // -30% enemy damage while Feral - enemy debuff
-  [PerkId.UnitedOrdeal]: { name: "United Ordeal", special: Special.Charisma, maxRank: 4, statsModified: [] }, // Team bonuses - not implemented
-  [PerkId.FaultySpots]: { name: "Faulty Spots", special: Special.Luck, maxRank: 4, statsModified: [{ stat: Stat.WeakspotDamageBonus, value: 15 }] },
-  [PerkId.GlowingGut]: { name: "Glowing Gut", special: Special.Endurance, maxRank: 4, statsModified: [] }, // Healing restores Glow - not direct combat
-  [PerkId.JaguarSpeed]: { name: "Jaguar Speed", special: Special.Agility, maxRank: 4, statsModified: [] }, // Movement speed - not direct damage
-  [PerkId.ActionGhoul]: { name: "Action Ghoul", special: Special.Agility, maxRank: 4, statsModified: [] }, // AP regen - not direct damage
-  [PerkId.GlowingCriticals]: { name: "Glowing Criticals", special: Special.Luck, maxRank: 4, statsModified: [{ stat: Stat.CriticalDamageBonus, value: 50 }] }, // Assumes high Glow
-  [PerkId.RadiationPower]: { name: "Radiation Power", special: Special.Endurance, maxRank: 4, statsModified: [{ stat: Stat.OutgoingDamageMultiplier, value: 20 }] }, // Assumes high Glow
-  [PerkId.WildWestHands]: { name: "Wild West Hands", special: Special.Agility, maxRank: 4, statsModified: [] }, // 36% instant reload chance - not direct damage
-  [PerkId.BreathItIn]: { name: "Breath It In", special: Special.Endurance, maxRank: 4, statsModified: [] }, // Rad immunity - not direct combat
-  [PerkId.BoneShatterer]: { name: "Bone Shatterer", special: Special.Strength, maxRank: 4, statsModified: [{ stat: Stat.MeleeLimbDamageBonus, value: 75 }] },
+  // Not tied to any SPECIAL (no `special` field). ESM LGN_*_Perk families;
+  // N&D "x"-prefixed keys except the two ghoul-exclusive cards (0D/0N).
+  // Effects are not yet extracted (empty ESM modifiers) — display/slotting only.
+  [PerkId.AmmoFactory]: { name: "Ammo Factory", maxRank: 4, statsModified: [] }, // Ammo crafting - not combat
+  [PerkId.BloodSacrifice]: { name: "Blood Sacrifice!", maxRank: 4, statsModified: [] }, // VATS AP costs HP - not direct damage
+  [PerkId.BrawlingChemist]: { name: "Brawling Chemist", maxRank: 4, statsModified: [] }, // Chem generation - not combat
+  [PerkId.CollateralDamage]: { name: "Collateral Damage", maxRank: 4, statsModified: [] }, // Corpse explosions - not modeled
+  [PerkId.DetonationContagion]: { name: "Detonation Contagion", maxRank: 4, statsModified: [] }, // Kill explosions - not modeled
+  [PerkId.ElectricAbsorption]: { name: "Electric Absorption", maxRank: 4, statsModified: [] }, // Energy damage absorption - defensive
+  [PerkId.ExplodingPalm]: { name: "Exploding Palm", maxRank: 4, statsModified: [] }, // Melee explosion proc - not modeled
+  [PerkId.FarFlungFireworks]: { name: "Far-Flung Fireworks", maxRank: 4, statsModified: [] }, // Kill explosions - not modeled
+  [PerkId.FollowThrough]: { name: "Follow Through", maxRank: 4, statsModified: [] }, // Ranged sneak → target takes more damage (wholeDamage bucket, pending extraction)
+  [PerkId.FunkyDuds]: { name: "Funky Duds", maxRank: 4, statsModified: [] }, // Poison resistance - defensive
+  [PerkId.HackAndSlash]: { name: "Hack and Slash", maxRank: 4, statsModified: [] }, // Melee AoE proc - not modeled
+  [PerkId.MasterInfiltrator]: { name: "Master Infiltrator", maxRank: 4, statsModified: [] }, // Lockpick/hack - not combat
+  [PerkId.PowerArmorReboot]: { name: "Power Armor Reboot", maxRank: 4, statsModified: [] }, // Fusion core revive - not combat
+  [PerkId.PowerSprinter]: { name: "Power Sprinter", maxRank: 4, statsModified: [] }, // PA sprint AP - not combat
+  [PerkId.Retribution]: { name: "Retribution", maxRank: 4, statsModified: [] }, // Counterattack proc - not modeled
+  [PerkId.SizzlingStyle]: { name: "Sizzling Style", maxRank: 4, statsModified: [] }, // Fire resistance - defensive
+  [PerkId.SurvivalShortcut]: { name: "Survival Shortcut", maxRank: 4, statsModified: [] }, // Chem generation - not combat
+  [PerkId.TakingOneForTheTeam]: { name: "Taking One For The Team", maxRank: 4, statsModified: [] }, // Attackers take more damage (wholeDamage bucket, pending extraction)
+  [PerkId.WhatRads]: { name: "What Rads?", maxRank: 4, statsModified: [] }, // Rad immunity - defensive
+  [PerkId.ActionDiet]: { name: "Action Diet", maxRank: 4, statsModified: [] }, // Ghoul-exclusive (N&D key 0D): on-kill heal + feral reduction
+  [PerkId.FeralRage]: { name: "Feral Rage", maxRank: 4, statsModified: [] }, // Ghoul-exclusive (N&D key 0N)
   // Legendary SPECIAL cards: +1/+2/+3/+5 stat and perk points by rank (ESM
   // families LGN_Legendary*_Perk; the bonus is applied via the perk-budget
-  // derivation in src/lib/player-stats.ts — their PERK records emit no
-  // modifiers, so there is no double-count with the specialX buff buckets).
-  [PerkId.LegendaryStrength]: { name: "Legendary Strength", special: Special.Strength, maxRank: 4, statsModified: [] },
-  [PerkId.LegendaryPerception]: { name: "Legendary Perception", special: Special.Perception, maxRank: 4, statsModified: [] },
-  [PerkId.LegendaryEndurance]: { name: "Legendary Endurance", special: Special.Endurance, maxRank: 4, statsModified: [] },
-  [PerkId.LegendaryCharisma]: { name: "Legendary Charisma", special: Special.Charisma, maxRank: 4, statsModified: [] },
-  [PerkId.LegendaryIntelligence]: { name: "Legendary Intelligence", special: Special.Intelligence, maxRank: 4, statsModified: [] },
-  [PerkId.LegendaryAgility]: { name: "Legendary Agility", special: Special.Agility, maxRank: 4, statsModified: [] },
-  [PerkId.LegendaryLuck]: { name: "Legendary Luck", special: Special.Luck, maxRank: 4, statsModified: [] },
+  // derivation keyed by PerkId in LEGENDARY_SPECIAL_PERKS — no `special`
+  // field, these are legendary slots, not SPECIAL-slotted cards. Their PERK
+  // records emit no modifiers, so there is no double-count with the specialX
+  // buff buckets).
+  [PerkId.LegendaryStrength]: { name: "Legendary Strength", maxRank: 4, statsModified: [] },
+  [PerkId.LegendaryPerception]: { name: "Legendary Perception", maxRank: 4, statsModified: [] },
+  [PerkId.LegendaryEndurance]: { name: "Legendary Endurance", maxRank: 4, statsModified: [] },
+  [PerkId.LegendaryCharisma]: { name: "Legendary Charisma", maxRank: 4, statsModified: [] },
+  [PerkId.LegendaryIntelligence]: { name: "Legendary Intelligence", maxRank: 4, statsModified: [] },
+  [PerkId.LegendaryAgility]: { name: "Legendary Agility", maxRank: 4, statsModified: [] },
+  [PerkId.LegendaryLuck]: { name: "Legendary Luck", maxRank: 4, statsModified: [] },
 };

@@ -9,7 +9,7 @@ import {
 import { getPerks, getWeapons } from '@/data';
 import { getConsumables, getMutations } from '@/data/buffs';
 import { getOmodById } from '@/data/omods';
-import { nukesDragonsPerks } from '@/lib/nukes-dragons';
+import { nukesDragonsPerks, reclassifyPerkLoadouts } from '@/lib/nukes-dragons';
 import { createDefaultBuildState, type BuildState } from '@/state/build-reducer';
 import type { PerkId } from '@/data/perk-ids';
 
@@ -229,6 +229,16 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
     });
   state.player.perks = keepKnown(decodePerks(wire.p, wire.px, warnings));
   state.player.legendaryPerks = keepKnown(decodePerks(wire.lp, wire.lpx, warnings));
+  // Builds encoded before the ghoul-card/legendary-perk classification fix
+  // stored ghoul cards under legendaryPerks — re-sort against the current set.
+  const reclassified = reclassifyPerkLoadouts(state.player.perks, state.player.legendaryPerks);
+  if (reclassified.migrated > 0) {
+    warnings.push(
+      `${reclassified.migrated} perk(s) moved between regular/legendary after a classification fix`
+    );
+    state.player.perks = reclassified.perks;
+    state.player.legendaryPerks = reclassified.legendaryPerks;
+  }
 
   const knownMutations = new Set(getMutations(mode).map(b => b.id));
   state.player.mutations = (wire.m ?? []).filter(id => {

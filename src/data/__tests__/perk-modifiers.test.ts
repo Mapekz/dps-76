@@ -30,6 +30,15 @@ describe('perk registry ↔ generated family join', () => {
     // Sanity ceiling: the bulk of the registry must join.
     expect(unjoined.length).toBeLessThan(60);
   });
+
+  it('joins the reclassified legendary perks to their LGN_ families', () => {
+    expect(getGeneratedPerk('live', PerkId.TakingOneForTheTeam)?.family).toBe('LGN_TakingOneForTheTeam_Perk');
+    // Pinned via perkFamilyOverrides — two families share the name "Blood Sacrifice!".
+    expect(getGeneratedPerk('live', PerkId.BloodSacrifice)?.family).toBe('LGN_BloodSacrifice_Perk');
+    // Registry name fixed from "Breath It In" — joins the GHL_ ghoul family.
+    expect(getGeneratedPerk('live', PerkId.BreathItIn)?.family).toBe('GHL_BreatheItIn');
+    expect(getGeneratedPerk('live', PerkId.ActionDiet)?.family).toBe('GHL_LGN_ActionDiet');
+  });
 });
 
 describe('perk effects through the engine (real data)', () => {
