@@ -139,6 +139,68 @@
    "expected": null,
    "tolerancePct": 2,
    "source": "pending in-game pip-boy reading (dps-todos/launcher-explosives.md)"
+  },
+  {
+   "name": "Gauss Minigun + Tesla Coil Capacitor @50, no perks — validates the materialized energy component (DamageTypeValues conversion)",
+   "weaponId": "GaussMinigun",
+   "itemLevel": 50,
+   "mods": {
+    "ap_gun_Tesla": "mod_GaussMinigun_Tesla_Capacitor"
+   },
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {},
+   "enemyConditions": {},
+   "scenario": "freeAim",
+   "measure": "perHit",
+   "expected": null,
+   "tolerancePct": 2,
+   "source": "pending in-game measurement"
+  },
+  {
+   "name": "Gauss Minigun + Tesla Coil Capacitor @50 + Science! rank 1 — validates the energy component AND its explosive twin both take the energy-scoped bonus",
+   "weaponId": "GaussMinigun",
+   "itemLevel": 50,
+   "mods": {
+    "ap_gun_Tesla": "mod_GaussMinigun_Tesla_Capacitor"
+   },
+   "legendaryEffects": [],
+   "perks": [
+    { "perkId": "Science", "rank": 1 }
+   ],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {},
+   "enemyConditions": {},
+   "scenario": "freeAim",
+   "measure": "perHit",
+   "expected": null,
+   "tolerancePct": 2,
+   "source": "pending in-game measurement"
+  },
+  {
+   "name": "War Glaive + Plasma Blade @50, no perks — validates the DamageTypeValues-converted energy component on a melee weapon",
+   "weaponId": "WarGlaive",
+   "itemLevel": 50,
+   "mods": {
+    "ap_melee_MeleeMod": "mod_melee_WarGlaive_Plasma"
+   },
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {},
+   "enemyConditions": {},
+   "scenario": "freeAim",
+   "measure": "perHit",
+   "expected": null,
+   "tolerancePct": 2,
+   "source": "pending in-game measurement"
   }
  ]
 }

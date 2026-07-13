@@ -109,6 +109,102 @@ describe('extractOmods (unique-mod rework, 2026-07-13)', () => {
   });
 });
 
+/**
+ * Stub client for a synthetic OMOD carrying DamageTypeValues ADD/SET
+ * properties (Task A, 2026-07-13). Verified raw ESM shape: Value 1 =
+ * damage-type formid, Value 2 = amount, for all three operators (SET/
+ * MUL_ADD/ADD) — mirrors the makeStubClient() pattern above but with its own
+ * minimal record set (the OMOD plus the two damage-type formids it resolves).
+ */
+function makeDamageTypeValuesStubClient(): EsmClient {
+  const dtEnergyFormId = '0x0001CA9F';
+  const dtFireFormId = '0x0001CAA0';
+  const omodFormId = '0x00DEC001';
+  const known: Record<string, EsmRecord> = {
+    [omodFormId]: {
+      header: { signature: 'OMOD', form_id: omodFormId },
+      editor_id: 'mod_Test_DamageTypeValues',
+      fields: {
+        Name: 'Test Damage Type Values Mod',
+        Data: {
+          'Form Type': { name: 'Weapon' },
+          'Attach Point': '0x0047A264',
+          Properties: [
+            {
+              'Function Type': { name: 'ADD' },
+              Property: { name: 'DamageTypeValues' },
+              'Value 1': dtEnergyFormId,
+              'Value 2': 5,
+            },
+            {
+              'Function Type': { name: 'SET' },
+              Property: { name: 'DamageTypeValues' },
+              'Value 1': dtFireFormId,
+              'Value 2': 0,
+            },
+          ],
+        },
+      },
+    } as unknown as EsmRecord,
+    [dtEnergyFormId]: {
+      header: { signature: 'DMGT', form_id: dtEnergyFormId },
+      editor_id: 'dtEnergy',
+      fields: {},
+    } as unknown as EsmRecord,
+    [dtFireFormId]: {
+      header: { signature: 'DMGT', form_id: dtFireFormId },
+      editor_id: 'dtFire',
+      fields: {},
+    } as unknown as EsmRecord,
+  };
+  const get = async (target: string): Promise<EsmRecord> => {
+    if (known[target]) return known[target];
+    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+  };
+  return {
+    async list(type: string): Promise<EsmListRow[]> {
+      if (type !== 'OMOD') return [];
+      return [
+        {
+          form_id: omodFormId,
+          record_type: 'OMOD',
+          editor_id: 'mod_Test_DamageTypeValues',
+          name: 'Test Damage Type Values Mod',
+        },
+      ];
+    },
+    get,
+    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+    refs: async () => [],
+  } as unknown as EsmClient;
+}
+
+describe('extractOmods (DamageTypeValues ADD/SET, Task A 2026-07-13)', () => {
+  it('emits baseDamage modifiers for ADD and SET, damage-type scoped, with no "not yet modeled" note', async () => {
+    const result = await extractOmods(makeDamageTypeValuesStubClient(), new Set());
+    const omod = result.omods.find(o => o.id === 'mod_Test_DamageTypeValues');
+    expect(omod).toBeDefined();
+    expect(omod!.modifiers).toContainEqual(
+      expect.objectContaining({
+        bucket: 'baseDamage',
+        op: 'ADD',
+        value: 5,
+        conditions: [{ kind: 'damageTypeScope', types: ['energy'] }],
+      })
+    );
+    expect(omod!.modifiers).toContainEqual(
+      expect.objectContaining({
+        bucket: 'baseDamage',
+        op: 'SET',
+        value: 0,
+        conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
+      })
+    );
+    expect((omod!.notes ?? []).some(n => n.includes('not yet modeled'))).toBe(false);
+    expect(result.notes.some(n => n.includes('not yet modeled'))).toBe(false);
+  });
+});
+
 describe('isExcludedOmodEdid (regression, unrelated pre-filter)', () => {
   it('still drops dev/test-prefixed edids', () => {
     expect(isExcludedOmodEdid('zzzDeprecatedMod')).toBe(true);

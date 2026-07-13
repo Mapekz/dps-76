@@ -37,7 +37,10 @@ interface GoldenCase {
   source: string;
 }
 
-const cases = (goldenData as { cases: GoldenCase[] }).cases;
+// Through `unknown`: cases with different `mods` slot keys make TS infer a
+// union with optional-undefined properties, which is not directly comparable
+// to Record<string, string>.
+const cases = (goldenData as unknown as { cases: GoldenCase[] }).cases;
 
 describe('golden cases (in-game measurements)', () => {
   for (const c of cases) {

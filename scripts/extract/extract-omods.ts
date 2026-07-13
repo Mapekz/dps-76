@@ -406,32 +406,38 @@ export async function extractOmods(
         continue;
       }
       if (prop.property === 'DamageTypeValues') {
-        // Value 1 = damage-type formid, Value 2 = multiplier (MUL_ADD case);
-        // a curve table overrides Value 2.
-        if (prop.functionType === 'MUL_ADD' && typeof prop.value1 === 'string') {
+        // Value 1 = damage-type formid, Value 2 = amount — for all three
+        // operators (SET/MUL_ADD/ADD, verified via raw `esm get`); a curve
+        // table overrides Value 2. SET/ADD emit the matching op alongside
+        // MUL_ADD — paper-damage.ts folds SET → ×Π(1+MUL_ADD) → +ΣADD per
+        // damage-type-scoped component, so all three land the same way
+        // AttackDamage's phys-only MUL/ADD does above.
+        if (typeof prop.value1 === 'string') {
           const dtEdid = await client.resolveEdid(prop.value1);
           const damageType = DAMAGE_TYPE_EDID_MAP[dtEdid];
           const curved = prop.curvePoints != null;
           if (damageType && damageType !== 'unknown' && (curved || typeof prop.value2 === 'number')) {
+            const op =
+              prop.functionType === 'SET' ? ('SET' as const) :
+              prop.functionType === 'MUL_ADD' ? ('MUL_ADD' as const) :
+              ('ADD' as const);
             const conditions: Modifier['conditions'] = [{ kind: 'damageTypeScope', types: [damageType] }];
             modifiers.push(
               curved
                 ? {
-                    id: `${record.header.form_id}:${modifiers.length}`, source, bucket: 'baseDamage', op: 'MUL_ADD',
+                    id: `${record.header.form_id}:${modifiers.length}`, source, bucket: 'baseDamage', op,
                     curve: { input: 'itemLevel', points: prop.curvePoints! }, curveScale: 1, conditions,
                   }
                 : {
-                    id: `${record.header.form_id}:${modifiers.length}`, source, bucket: 'baseDamage', op: 'MUL_ADD',
+                    id: `${record.header.form_id}:${modifiers.length}`, source, bucket: 'baseDamage', op,
                     value: prop.value2 as number, conditions,
                   }
             );
           } else {
-            modNotes.add(`DamageTypeValues MUL_ADD on unmapped type ${dtEdid}`);
+            modNotes.add(`DamageTypeValues ${prop.functionType} on unmapped type ${dtEdid}`);
           }
         } else {
-          // ADD/SET add or replace typed components — needs the
-          // addDamageComponent work; flagged so it isn't silently wrong.
-          modNotes.add(`DamageTypeValues ${prop.functionType} — component change not yet modeled`);
+          modNotes.add(`DamageTypeValues ${prop.functionType} with non-formid value1 ${JSON.stringify(prop.value1)} — unhandled`);
         }
         continue;
       }

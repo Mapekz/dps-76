@@ -170,11 +170,13 @@ export interface WeaponMod {
  */
 export interface WeaponComponent {
   /**
-   * 'explosive' appears two ways: extracted launcher-payload components (the
-   * projectile EXPL's main physical damage, `fromExplosion`) and the
-   * engine-synthesized twin damage type (Explosive 2★ `explosivePayload`,
-   * paper-damage.ts). `DamageType` (types/modifiers.ts) is aliased from this
-   * union.
+   * 'explosive' names extracted launcher-payload components (the projectile
+   * EXPL's main physical damage, `fromExplosion`) — NOT the engine-synthesized
+   * explosive-twin damage type (Explosive 2★ `explosivePayload`,
+   * paper-damage.ts): twins inherit their parent component's `damageType`
+   * (2026-07-13 user-confirmed) and are distinguished by `componentIsExplosion`
+   * on the resolve context instead. `DamageType` (types/modifiers.ts) is
+   * aliased from this union.
    */
   damageType: 'ballistic' | 'energy' | 'radiation' | 'poison' | 'cryo' | 'fire' | 'explosive';
   /** Universal damage curve tier (e.g. 24 for The Fixer). -1 when only inline points exist. */
@@ -193,6 +195,20 @@ export interface WeaponComponent {
    * patch semantics).
    */
   fromExplosion?: boolean;
+  /**
+   * Materialized-component scaling (effective-weapon.ts, DamageTypeValues
+   * OMOD conversion — 2026-07-13 user-confirmed semantics): set when this
+   * component was synthesized for a damage type the base weapon didn't deal.
+   * Multiplies the curve-derived base (Σ positive MUL_ADDs on the type's
+   * `baseDamage` modifiers scoped to it); absent/undefined = 1 (neutral).
+   */
+  scale?: number;
+  /**
+   * Flat bonus added on top of `curveBase × scale`, NOT level-scaled
+   * ((last SET ?? 0) + Σ ADD from the same materialization fold). Absent =
+   * 0 (neutral).
+   */
+  flatBonus?: number;
 }
 
 export interface Weapon {

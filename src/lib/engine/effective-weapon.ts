@@ -1,7 +1,7 @@
-import type { EnemyConditions, PlayerConditions, Weapon } from '@/types';
+import type { EnemyConditions, PlayerConditions, Weapon, WeaponComponent } from '@/types';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
-import type { Bucket, ModOp, Modifier } from '@/types/modifiers';
+import type { Bucket, DamageType, ModOp, Modifier } from '@/types/modifiers';
 import { effectiveValue, foldOps, type ResolveContext } from './resolve';
 
 /**
@@ -15,6 +15,10 @@ import { effectiveValue, foldOps, type ResolveContext } from './resolve';
  *   WEAP Data.Flags "Automatic" bit + OMOD `IsAutomatic` property, never a
  *   keyword — some OMODs add WeaponTypeAutomatic without the weapon actually
  *   being full-auto, e.g. Combat Shotgun's Automatic Receiver)
+ * - `baseDamage` modifiers scoped to a damage type the weapon doesn't already
+ *   deal materialize a new `WeaponComponent` for that type (Tesla Coil
+ *   Capacitor's +0.5 energy on the ballistic-only Gauss Minigun) —
+ *   `materializeDamageTypeComponents` below
  * - remaining modifiers (dbm, critDmgBase, sneakBase, …) feed the resolver
  */
 export interface EffectiveWeapon {
@@ -38,6 +42,105 @@ function foldWeaponStat(modifiers: Modifier[], bucket: Bucket, base: number, ctx
     if (value !== null) entries.push({ op: m.op, value });
   }
   return foldOps(entries, base);
+}
+
+/**
+ * DamageTypeValues/AttackDamage OMOD conversion (2026-07-13 user-confirmed
+ * semantics, docs/assumptions.md "Mixed damage-type OMOD conversion"): a
+ * `baseDamage` modifier scoped to a damage type the weapon doesn't already
+ * deal used to silently no-op — paper-damage.ts only folds `baseDamage` per
+ * EXISTING component (the Tesla Coil Capacitor's +0.5 energy MUL_ADD on the
+ * ballistic-only Gauss Minigun had no energy component to apply to). This
+ * synthesizes the missing component so the fold has somewhere to land.
+ *
+ * - `scale` = Σ POSITIVE MUL_ADD values only. A negative MUL_ADD on a missing
+ *   type multiplies that type's own (zero) base and contributes nothing — it
+ *   is DROPPED per-modifier, NOT netted against positives. This is what
+ *   keeps the ~54 blanket "−30% on all six damage types" automatic-receiver/
+ *   barrel OMODs (Powerful Automatic Receiver et al. — verified 344 such
+ *   values in omods.json) from spawning five phantom components on e.g. the
+ *   ballistic-only Fixer: every non-ballistic type sees ONLY a dropped
+ *   negative, so scale and flatBonus both stay 0 and nothing materializes.
+ * - `flatBonus` = (last SET ?? 0) + Σ ADD — flat and absolute, no
+ *   weapon-level curve scaling (SET/ADD-shaped `DamageTypeValues` properties).
+ * - Materializes only when `scale > 0 || flatBonus > 0`.
+ * - The new component borrows its curve (tier/levelCap/curvePoints) from the
+ *   FALLBACK — the weapon's first non-`fromExplosion` ballistic component,
+ *   else its first non-`fromExplosion` component (never `weapon.damageType`,
+ *   which would misroute explosive-first launchers). `fromExplosion`
+ *   components (launcher EXPL payloads) never serve as the fallback base or
+ *   as a "the weapon already deals this" target — they're a separate damage
+ *   stream. A weapon with no eligible fallback (Gamma-Gun-shaped, all
+ *   `fromExplosion`) materializes nothing.
+ * - Every `baseDamage` modifier that fed a materialized type's scale/
+ *   flatBonus — including its dropped negatives — is consumed (its id
+ *   returned for the caller to filter out), so paper-damage's ordinary
+ *   per-component fold can't apply it a second time. Modifiers scoped to
+ *   types the weapon ALREADY deals are left untouched: the existing
+ *   per-component fold in paper-damage.ts already handles boost/ADD/SET/
+ *   clamp correctly for those, and types that end up NOT materializing
+ *   (all-dropped-negative groups) are also left alone — harmless, since no
+ *   component of that type exists for them to match against.
+ */
+function materializeDamageTypeComponents(
+  weapon: Weapon,
+  modifiers: Modifier[],
+  ctx: ResolveContext
+): { components: WeaponComponent[]; consumedIds: Set<string> } {
+  const existingTypes = new Set((weapon.components ?? []).filter(c => !c.fromExplosion).map(c => c.damageType));
+  const fallback =
+    (weapon.components ?? []).find(c => !c.fromExplosion && c.damageType === 'ballistic') ??
+    (weapon.components ?? []).find(c => !c.fromExplosion);
+  if (!fallback) return { components: [], consumedIds: new Set() };
+
+  const candidateTypes = new Set<DamageType>();
+  for (const m of modifiers) {
+    if (m.bucket !== 'baseDamage') continue;
+    for (const cond of m.conditions) {
+      if (cond.kind !== 'damageTypeScope') continue;
+      for (const t of cond.types) {
+        if (t !== 'explosive' && !existingTypes.has(t)) candidateTypes.add(t);
+      }
+    }
+  }
+
+  const components: WeaponComponent[] = [];
+  const consumedIds = new Set<string>();
+  for (const type of candidateTypes) {
+    const typeCtx: ResolveContext = { ...ctx, componentType: type, componentIsExplosion: false };
+    const matching = modifiers
+      .filter(m => m.bucket === 'baseDamage')
+      .map(m => ({ mod: m, value: effectiveValue(m, typeCtx) }))
+      .filter((e): e is { mod: Modifier; value: number } => e.value !== null);
+    if (matching.length === 0) continue;
+
+    let scale = 0;
+    let setValue: number | null = null;
+    let addSum = 0;
+    for (const { mod: m, value } of matching) {
+      if (m.op === 'MUL_ADD') {
+        if (value > 0) scale += value;
+      } else if (m.op === 'SET') {
+        setValue = value;
+      } else {
+        addSum += value;
+      }
+    }
+    const flatBonus = (setValue ?? 0) + addSum;
+    if (scale <= 0 && flatBonus <= 0) continue;
+
+    components.push({
+      damageType: type,
+      tier: fallback.tier,
+      levelCap: fallback.levelCap,
+      curvePoints: fallback.curvePoints,
+      scale,
+      flatBonus,
+    });
+    for (const { mod: m } of matching) consumedIds.add(m.id);
+  }
+
+  return { components, consumedIds };
 }
 
 export function buildEffectiveWeapon(
@@ -85,8 +188,22 @@ export function buildEffectiveWeapon(
   // AP cost, same fold pattern as ammoCapacity/reloadSpeed above.
   const apCost = foldWeaponStat(allOmodModifiers, 'vatsApCost', weapon.apCost ?? 0, ctx);
 
+  const modifiers = allOmodModifiers.filter(m => !weaponStatBuckets.has(m.bucket));
+  const { components: materialized, consumedIds } = materializeDamageTypeComponents(weapon, modifiers, ctx);
+
   return {
-    weapon: { ...weapon, keywords, speed, isAutomatic, animDurationSec, projectileCount, capacity, reloadSpeed, apCost },
-    modifiers: allOmodModifiers.filter(m => !weaponStatBuckets.has(m.bucket)),
+    weapon: {
+      ...weapon,
+      keywords,
+      speed,
+      isAutomatic,
+      animDurationSec,
+      projectileCount,
+      capacity,
+      reloadSpeed,
+      apCost,
+      components: [...weapon.components, ...materialized],
+    },
+    modifiers: modifiers.filter(m => !consumedIds.has(m.id)),
   };
 }

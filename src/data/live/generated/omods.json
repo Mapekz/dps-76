@@ -4449,10 +4449,255 @@
      "edid": "Bounty_Mod_Custom_AbraxoGun",
      "name": "Meadow Breeze Sprayer Bounty"
     },
+    "bucket": "baseDamage",
+    "op": "SET",
+    "value": 0,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x00885C2D:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00885C2D",
+     "edid": "Bounty_Mod_Custom_AbraxoGun",
+     "name": "Meadow Breeze Sprayer Bounty"
+    },
     "bucket": "dbm",
     "op": "ADD",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x00885C2D:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00885C2D",
+     "edid": "Bounty_Mod_Custom_AbraxoGun",
+     "name": "Meadow Breeze Sprayer Bounty"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 11
+      },
+      {
+       "x": 12,
+       "y": 13
+      },
+      {
+       "x": 23,
+       "y": 15
+      },
+      {
+       "x": 34,
+       "y": 17
+      },
+      {
+       "x": 45,
+       "y": 20
+      },
+      {
+       "x": 56,
+       "y": 23
+      },
+      {
+       "x": 67,
+       "y": 26
+      },
+      {
+       "x": 78,
+       "y": 30
+      },
+      {
+       "x": 89,
+       "y": 35
+      },
+      {
+       "x": 100,
+       "y": 40
+      },
+      {
+       "x": 111,
+       "y": 46
+      },
+      {
+       "x": 122,
+       "y": 52
+      },
+      {
+       "x": 133,
+       "y": 60
+      },
+      {
+       "x": 144,
+       "y": 69
+      },
+      {
+       "x": 155,
+       "y": 79
+      },
+      {
+       "x": 166,
+       "y": 91
+      },
+      {
+       "x": 177,
+       "y": 104
+      },
+      {
+       "x": 188,
+       "y": 119
+      },
+      {
+       "x": 199,
+       "y": 137
+      },
+      {
+       "x": 210,
+       "y": 157
+      },
+      {
+       "x": 221,
+       "y": 180
+      },
+      {
+       "x": 232,
+       "y": 206
+      },
+      {
+       "x": 243,
+       "y": 237
+      },
+      {
+       "x": 254,
+       "y": 271
+      },
+      {
+       "x": 265,
+       "y": 311
+      },
+      {
+       "x": 276,
+       "y": 357
+      },
+      {
+       "x": 287,
+       "y": 410
+      },
+      {
+       "x": 298,
+       "y": 470
+      },
+      {
+       "x": 309,
+       "y": 539
+      },
+      {
+       "x": 320,
+       "y": 619
+      },
+      {
+       "x": 331,
+       "y": 710
+      },
+      {
+       "x": 342,
+       "y": 815
+      },
+      {
+       "x": 353,
+       "y": 935
+      },
+      {
+       "x": 364,
+       "y": 1073
+      },
+      {
+       "x": 375,
+       "y": 1231
+      },
+      {
+       "x": 386,
+       "y": 1412
+      },
+      {
+       "x": 397,
+       "y": 1621
+      },
+      {
+       "x": 408,
+       "y": 1860
+      },
+      {
+       "x": 419,
+       "y": 2135
+      },
+      {
+       "x": 430,
+       "y": 2450
+      },
+      {
+       "x": 441,
+       "y": 2812
+      },
+      {
+       "x": 452,
+       "y": 3228
+      },
+      {
+       "x": 463,
+       "y": 3705
+      },
+      {
+       "x": 474,
+       "y": 4252
+      },
+      {
+       "x": 485,
+       "y": 4880
+      },
+      {
+       "x": 496,
+       "y": 5602
+      },
+      {
+       "x": 507,
+       "y": 6429
+      },
+      {
+       "x": 518,
+       "y": 7380
+      },
+      {
+       "x": 529,
+       "y": 8471
+      },
+      {
+       "x": 540,
+       "y": 9723
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -4461,8 +4706,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
-   "DamageTypeValues SET — component change not yet modeled",
    "FXFireHitVisuals: DoT curve with unmapped input AV null — needs override"
   ],
   "obtainable": false
@@ -5363,6 +5606,26 @@
      "edid": "DLC01_mod_LightningGun_Barrel_Lobber",
      "name": "Lobber Barrel"
     },
+    "bucket": "baseDamage",
+    "op": "SET",
+    "value": 0,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x0010EAAF:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0010EAAF",
+     "edid": "DLC01_mod_LightningGun_Barrel_Lobber",
+     "name": "Lobber Barrel"
+    },
     "bucket": "fireRateSpeed",
     "op": "MUL_ADD",
     "value": -0.5,
@@ -5376,9 +5639,7 @@
    "s_30_ChargedLob"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "DamageTypeValues SET — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -31313,15 +31574,50 @@
     "op": "MUL_ADD",
     "value": -0.1428,
     "conditions": []
+   },
+   {
+    "id": "0x00729BEA:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00729BEA",
+     "edid": "mod_Cremator_BarrelHose_Heavy",
+     "name": "Heavy Barrel"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 30,
+       "y": 60
+      },
+      {
+       "x": 40,
+       "y": 80
+      },
+      {
+       "x": 50,
+       "y": 100
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
    "dn_HasBarrel_Heavy"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -34890,7 +35186,97 @@
   "targetKeywords": [
    "ma_AbraxoGun"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00839C68:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00839C68",
+     "edid": "mod_Custom_Plasma_AbraxoGun",
+     "name": "Meadow Breeze Sprayer"
+    },
+    "bucket": "baseDamage",
+    "op": "SET",
+    "value": 0,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x00839C68:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00839C68",
+     "edid": "mod_Custom_Plasma_AbraxoGun",
+     "name": "Meadow Breeze Sprayer"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 11
+      },
+      {
+       "x": 5,
+       "y": 12
+      },
+      {
+       "x": 10,
+       "y": 14
+      },
+      {
+       "x": 15,
+       "y": 16
+      },
+      {
+       "x": 20,
+       "y": 18
+      },
+      {
+       "x": 25,
+       "y": 20
+      },
+      {
+       "x": 30,
+       "y": 23
+      },
+      {
+       "x": 35,
+       "y": 26
+      },
+      {
+       "x": 40,
+       "y": 29
+      },
+      {
+       "x": 45,
+       "y": 33
+      },
+      {
+       "x": 50,
+       "y": 37
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "poison"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItemName_Plasma_AbraxoGun",
@@ -34898,8 +35284,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
-   "DamageTypeValues SET — component change not yet modeled",
    "dtPoisonEffectChanceAlways: DoT curve with unmapped input AV null — needs override"
   ],
   "obtainable": true
@@ -34914,7 +35298,97 @@
   "targetKeywords": [
    "ma_Abraxolator"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00856AFE:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00856AFE",
+     "edid": "mod_Custom_Plasma_Abraxolator",
+     "name": "Prototype ABX03"
+    },
+    "bucket": "baseDamage",
+    "op": "SET",
+    "value": 0,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x00856AFE:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00856AFE",
+     "edid": "mod_Custom_Plasma_Abraxolator",
+     "name": "Prototype ABX03"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 16
+      },
+      {
+       "x": 5,
+       "y": 18
+      },
+      {
+       "x": 10,
+       "y": 20
+      },
+      {
+       "x": 15,
+       "y": 23
+      },
+      {
+       "x": 20,
+       "y": 26
+      },
+      {
+       "x": 25,
+       "y": 29
+      },
+      {
+       "x": 30,
+       "y": 33
+      },
+      {
+       "x": 35,
+       "y": 37
+      },
+      {
+       "x": 40,
+       "y": 42
+      },
+      {
+       "x": 45,
+       "y": 47
+      },
+      {
+       "x": 50,
+       "y": 53
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItemName_Plasma_Abraxolator",
@@ -34922,8 +35396,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
-   "DamageTypeValues SET — component change not yet modeled",
    "FXFireHitVisuals: DoT curve with unmapped input AV null — needs override"
   ],
   "obtainable": true
@@ -40435,6 +40907,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x0018C6FA:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0018C6FA",
+     "edid": "mod_Enclave_PlasmaGun_Receiver_Burning",
+     "name": "Gamma Wave Emitter"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 7
+      },
+      {
+       "x": 5,
+       "y": 8
+      },
+      {
+       "x": 10,
+       "y": 9
+      },
+      {
+       "x": 15,
+       "y": 10
+      },
+      {
+       "x": 20,
+       "y": 12
+      },
+      {
+       "x": 25,
+       "y": 13
+      },
+      {
+       "x": 30,
+       "y": 15
+      },
+      {
+       "x": 35,
+       "y": 17
+      },
+      {
+       "x": 40,
+       "y": 19
+      },
+      {
+       "x": 45,
+       "y": 21
+      },
+      {
+       "x": 50,
+       "y": 24
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -40444,7 +40985,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=0",
    "condition: IsUsingAltCurveTable()=1"
@@ -40553,6 +41093,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x0018C706:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0018C706",
+     "edid": "mod_Enclave_PlasmaGun_Receiver_Burning-CritDMG",
+     "name": "Severe Beta Wave Tuner"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 7
+      },
+      {
+       "x": 5,
+       "y": 8
+      },
+      {
+       "x": 10,
+       "y": 9
+      },
+      {
+       "x": 15,
+       "y": 10
+      },
+      {
+       "x": 20,
+       "y": 12
+      },
+      {
+       "x": 25,
+       "y": 13
+      },
+      {
+       "x": 30,
+       "y": 15
+      },
+      {
+       "x": 35,
+       "y": 17
+      },
+      {
+       "x": 40,
+       "y": 19
+      },
+      {
+       "x": 45,
+       "y": 21
+      },
+      {
+       "x": 50,
+       "y": 24
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -40562,7 +41171,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=0",
    "condition: IsUsingAltCurveTable()=1"
@@ -40645,6 +41253,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x0018C70A:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0018C70A",
+     "edid": "mod_Enclave_PlasmaGun_Receiver_Burning-HipAccuracy",
+     "name": "Refined Beta Wave Tuner"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 7
+      },
+      {
+       "x": 5,
+       "y": 8
+      },
+      {
+       "x": 10,
+       "y": 9
+      },
+      {
+       "x": 15,
+       "y": 10
+      },
+      {
+       "x": 20,
+       "y": 12
+      },
+      {
+       "x": 25,
+       "y": 13
+      },
+      {
+       "x": 30,
+       "y": 15
+      },
+      {
+       "x": 35,
+       "y": 17
+      },
+      {
+       "x": 40,
+       "y": 19
+      },
+      {
+       "x": 45,
+       "y": 21
+      },
+      {
+       "x": 50,
+       "y": 24
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -40654,7 +41331,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=0",
    "condition: IsUsingAltCurveTable()=1"
@@ -42635,6 +43311,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x00312AF5:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312AF5",
+     "edid": "mod_GatlingLaser_Receiver_Burning_Base",
+     "name": "Gamma Wave Emitter"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 5,
+       "y": 4
+      },
+      {
+       "x": 10,
+       "y": 4
+      },
+      {
+       "x": 15,
+       "y": 5
+      },
+      {
+       "x": 20,
+       "y": 6
+      },
+      {
+       "x": 25,
+       "y": 6
+      },
+      {
+       "x": 30,
+       "y": 7
+      },
+      {
+       "x": 35,
+       "y": 8
+      },
+      {
+       "x": 40,
+       "y": 9
+      },
+      {
+       "x": 45,
+       "y": 10
+      },
+      {
+       "x": 50,
+       "y": 12
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -42646,7 +43391,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=0",
    "condition: IsUsingAltCurveTable()=1"
@@ -42722,6 +43466,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x00312AF7:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312AF7",
+     "edid": "mod_GatlingLaser_Receiver_Burning-CritDMG",
+     "name": "Severe Beta Wave Tuner"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 5,
+       "y": 4
+      },
+      {
+       "x": 10,
+       "y": 4
+      },
+      {
+       "x": 15,
+       "y": 5
+      },
+      {
+       "x": 20,
+       "y": 6
+      },
+      {
+       "x": 25,
+       "y": 6
+      },
+      {
+       "x": 30,
+       "y": 7
+      },
+      {
+       "x": 35,
+       "y": 8
+      },
+      {
+       "x": 40,
+       "y": 9
+      },
+      {
+       "x": 45,
+       "y": 10
+      },
+      {
+       "x": 50,
+       "y": 12
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -42733,7 +43546,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=0",
    "condition: IsUsingAltCurveTable()=1"
@@ -42783,6 +43595,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x00312AF8:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312AF8",
+     "edid": "mod_GatlingLaser_Receiver_Burning-HipAccuracy",
+     "name": "Refined Beta Wave Tuner"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 5,
+       "y": 4
+      },
+      {
+       "x": 10,
+       "y": 4
+      },
+      {
+       "x": 15,
+       "y": 5
+      },
+      {
+       "x": 20,
+       "y": 6
+      },
+      {
+       "x": 25,
+       "y": 6
+      },
+      {
+       "x": 30,
+       "y": 7
+      },
+      {
+       "x": 35,
+       "y": 8
+      },
+      {
+       "x": 40,
+       "y": 9
+      },
+      {
+       "x": 45,
+       "y": 10
+      },
+      {
+       "x": 50,
+       "y": 12
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -42794,7 +43675,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=0",
    "condition: IsUsingAltCurveTable()=1"
@@ -43577,6 +44457,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x007B23D6:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x007B23D6",
+     "edid": "mod_GatlingPlasma_Receiver_Burning",
+     "name": "Gamma Wave Emitter"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 5,
+       "y": 4
+      },
+      {
+       "x": 10,
+       "y": 4
+      },
+      {
+       "x": 15,
+       "y": 5
+      },
+      {
+       "x": 20,
+       "y": 6
+      },
+      {
+       "x": 25,
+       "y": 6
+      },
+      {
+       "x": 30,
+       "y": 7
+      },
+      {
+       "x": 35,
+       "y": 8
+      },
+      {
+       "x": 40,
+       "y": 9
+      },
+      {
+       "x": 45,
+       "y": 10
+      },
+      {
+       "x": 50,
+       "y": 12
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -43586,7 +44535,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=0",
    "condition: IsUsingAltCurveTable()=1"
@@ -50501,6 +51449,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x003129D3:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x003129D3",
+     "edid": "mod_LaserGun_Receiver_Burning",
+     "name": "Gamma Wave Emitter"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 8
+      },
+      {
+       "x": 5,
+       "y": 9
+      },
+      {
+       "x": 10,
+       "y": 11
+      },
+      {
+       "x": 15,
+       "y": 12
+      },
+      {
+       "x": 20,
+       "y": 14
+      },
+      {
+       "x": 25,
+       "y": 15
+      },
+      {
+       "x": 30,
+       "y": 17
+      },
+      {
+       "x": 35,
+       "y": 19
+      },
+      {
+       "x": 40,
+       "y": 22
+      },
+      {
+       "x": 45,
+       "y": 25
+      },
+      {
+       "x": 50,
+       "y": 28
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -50512,7 +51529,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=0",
    "condition: IsUsingAltCurveTable()=1"
@@ -50588,6 +51604,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x003129D5:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x003129D5",
+     "edid": "mod_LaserGun_Receiver_Burning-CritDMG",
+     "name": "Severe Beta Wave Tuner"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 8
+      },
+      {
+       "x": 5,
+       "y": 9
+      },
+      {
+       "x": 10,
+       "y": 11
+      },
+      {
+       "x": 15,
+       "y": 12
+      },
+      {
+       "x": 20,
+       "y": 14
+      },
+      {
+       "x": 25,
+       "y": 15
+      },
+      {
+       "x": 30,
+       "y": 17
+      },
+      {
+       "x": 35,
+       "y": 19
+      },
+      {
+       "x": 40,
+       "y": 22
+      },
+      {
+       "x": 45,
+       "y": 25
+      },
+      {
+       "x": 50,
+       "y": 28
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -50599,7 +51684,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=0",
    "condition: IsUsingAltCurveTable()=1"
@@ -50662,6 +51746,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x003129D7:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x003129D7",
+     "edid": "mod_LaserGun_Receiver_Burning-FastTrigger",
+     "name": "Tuned Beta Wave Tuner"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 8
+      },
+      {
+       "x": 5,
+       "y": 9
+      },
+      {
+       "x": 10,
+       "y": 11
+      },
+      {
+       "x": 15,
+       "y": 12
+      },
+      {
+       "x": 20,
+       "y": 14
+      },
+      {
+       "x": 25,
+       "y": 15
+      },
+      {
+       "x": 30,
+       "y": 17
+      },
+      {
+       "x": 35,
+       "y": 19
+      },
+      {
+       "x": 40,
+       "y": 22
+      },
+      {
+       "x": 45,
+       "y": 25
+      },
+      {
+       "x": 50,
+       "y": 28
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -50673,7 +51826,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=0",
    "condition: IsUsingAltCurveTable()=1"
@@ -50723,6 +51875,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x003129D6:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x003129D6",
+     "edid": "mod_LaserGun_Receiver_Burning-HipAccuracy",
+     "name": "Refined Beta Wave Tuner"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 8
+      },
+      {
+       "x": 5,
+       "y": 9
+      },
+      {
+       "x": 10,
+       "y": 11
+      },
+      {
+       "x": 15,
+       "y": 12
+      },
+      {
+       "x": 20,
+       "y": 14
+      },
+      {
+       "x": 25,
+       "y": 15
+      },
+      {
+       "x": 30,
+       "y": 17
+      },
+      {
+       "x": 35,
+       "y": 19
+      },
+      {
+       "x": 40,
+       "y": 22
+      },
+      {
+       "x": 45,
+       "y": 25
+      },
+      {
+       "x": 50,
+       "y": 28
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -50734,7 +51955,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=0",
    "condition: IsUsingAltCurveTable()=1"
@@ -61244,6 +62464,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x0014EC64:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0014EC64",
+     "edid": "mod_melee_Shishkebab_ExtraFlameJets",
+     "name": "Extra Flame Jets"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 7
+      },
+      {
+       "x": 5,
+       "y": 8
+      },
+      {
+       "x": 10,
+       "y": 9
+      },
+      {
+       "x": 15,
+       "y": 10
+      },
+      {
+       "x": 20,
+       "y": 12
+      },
+      {
+       "x": 25,
+       "y": 13
+      },
+      {
+       "x": 30,
+       "y": 15
+      },
+      {
+       "x": 35,
+       "y": 17
+      },
+      {
+       "x": 40,
+       "y": 19
+      },
+      {
+       "x": 45,
+       "y": 21
+      },
+      {
+       "x": 50,
+       "y": 24
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -61252,7 +62541,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "FXFireHitVisuals: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=1",
    "modWeapSecondaryBleedEffect: DoT curve with unmapped input AV null — needs override"
@@ -74538,6 +75826,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x0086DBEC:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0086DBEC",
+     "edid": "mod_PlasmaCaster_Receiver_Burning",
+     "name": "Gamma Wave Emitter"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 5,
+       "y": 4
+      },
+      {
+       "x": 10,
+       "y": 4
+      },
+      {
+       "x": 15,
+       "y": 5
+      },
+      {
+       "x": 20,
+       "y": 6
+      },
+      {
+       "x": 25,
+       "y": 6
+      },
+      {
+       "x": 30,
+       "y": 7
+      },
+      {
+       "x": 35,
+       "y": 8
+      },
+      {
+       "x": 40,
+       "y": 9
+      },
+      {
+       "x": 45,
+       "y": 10
+      },
+      {
+       "x": 50,
+       "y": 12
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -74547,7 +75904,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=0",
    "condition: IsUsingAltCurveTable()=1"
@@ -77353,6 +78709,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x0018C46C:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0018C46C",
+     "edid": "mod_PlasmaGun_Receiver_Burning",
+     "name": "Gamma Wave Emitter"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 6
+      },
+      {
+       "x": 5,
+       "y": 7
+      },
+      {
+       "x": 10,
+       "y": 8
+      },
+      {
+       "x": 15,
+       "y": 9
+      },
+      {
+       "x": 20,
+       "y": 10
+      },
+      {
+       "x": 25,
+       "y": 11
+      },
+      {
+       "x": 30,
+       "y": 13
+      },
+      {
+       "x": 35,
+       "y": 14
+      },
+      {
+       "x": 40,
+       "y": 16
+      },
+      {
+       "x": 45,
+       "y": 18
+      },
+      {
+       "x": 50,
+       "y": 20
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -77363,7 +78788,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=0",
    "condition: IsUsingAltCurveTable()=1"
@@ -77472,6 +78896,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x0018C46D:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0018C46D",
+     "edid": "mod_PlasmaGun_Receiver_Burning-CritDMG",
+     "name": "Calibrated Beta Wave Tuner"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 6
+      },
+      {
+       "x": 5,
+       "y": 7
+      },
+      {
+       "x": 10,
+       "y": 8
+      },
+      {
+       "x": 15,
+       "y": 9
+      },
+      {
+       "x": 20,
+       "y": 10
+      },
+      {
+       "x": 25,
+       "y": 11
+      },
+      {
+       "x": 30,
+       "y": 13
+      },
+      {
+       "x": 35,
+       "y": 14
+      },
+      {
+       "x": 40,
+       "y": 16
+      },
+      {
+       "x": 45,
+       "y": 18
+      },
+      {
+       "x": 50,
+       "y": 20
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -77482,7 +78975,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=0",
    "condition: IsUsingAltCurveTable()=1"
@@ -77565,6 +79057,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x0018C46E:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0018C46E",
+     "edid": "mod_PlasmaGun_Receiver_Burning-HipAccuracy",
+     "name": "Refined Beta Wave Tuner"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 6
+      },
+      {
+       "x": 5,
+       "y": 7
+      },
+      {
+       "x": 10,
+       "y": 8
+      },
+      {
+       "x": 15,
+       "y": 9
+      },
+      {
+       "x": 20,
+       "y": 10
+      },
+      {
+       "x": 25,
+       "y": 11
+      },
+      {
+       "x": 30,
+       "y": 13
+      },
+      {
+       "x": 35,
+       "y": 14
+      },
+      {
+       "x": 40,
+       "y": 16
+      },
+      {
+       "x": 45,
+       "y": 18
+      },
+      {
+       "x": 50,
+       "y": 20
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -77575,7 +79136,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=0",
    "condition: IsUsingAltCurveTable()=1"
@@ -85362,6 +86922,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x00312B2C:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312B2C",
+     "edid": "mod_Ultracite_GatlingLaser_Receiver_Burning",
+     "name": "Gamma Wave Emitter"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 5,
+       "y": 4
+      },
+      {
+       "x": 10,
+       "y": 4
+      },
+      {
+       "x": 15,
+       "y": 5
+      },
+      {
+       "x": 20,
+       "y": 6
+      },
+      {
+       "x": 25,
+       "y": 6
+      },
+      {
+       "x": 30,
+       "y": 7
+      },
+      {
+       "x": 35,
+       "y": 8
+      },
+      {
+       "x": 40,
+       "y": 9
+      },
+      {
+       "x": 45,
+       "y": 10
+      },
+      {
+       "x": 50,
+       "y": 12
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -85373,7 +87002,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=0",
    "condition: IsUsingAltCurveTable()=1"
@@ -85449,6 +87077,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x00312B2E:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312B2E",
+     "edid": "mod_Ultracite_GatlingLaser_Receiver_Burning-CritDMG",
+     "name": "Severe Beta Wave Tuner"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 5,
+       "y": 4
+      },
+      {
+       "x": 10,
+       "y": 4
+      },
+      {
+       "x": 15,
+       "y": 5
+      },
+      {
+       "x": 20,
+       "y": 6
+      },
+      {
+       "x": 25,
+       "y": 6
+      },
+      {
+       "x": 30,
+       "y": 7
+      },
+      {
+       "x": 35,
+       "y": 8
+      },
+      {
+       "x": 40,
+       "y": 9
+      },
+      {
+       "x": 45,
+       "y": 10
+      },
+      {
+       "x": 50,
+       "y": 12
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -85460,7 +87157,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=0",
    "condition: IsUsingAltCurveTable()=1"
@@ -85510,6 +87206,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x00312B2F:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312B2F",
+     "edid": "mod_Ultracite_GatlingLaser_Receiver_Burning-HipAccuracy",
+     "name": "Refined Beta Wave Tuner"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 5,
+       "y": 4
+      },
+      {
+       "x": 10,
+       "y": 4
+      },
+      {
+       "x": 15,
+       "y": 5
+      },
+      {
+       "x": 20,
+       "y": 6
+      },
+      {
+       "x": 25,
+       "y": 6
+      },
+      {
+       "x": 30,
+       "y": 7
+      },
+      {
+       "x": 35,
+       "y": 8
+      },
+      {
+       "x": 40,
+       "y": 9
+      },
+      {
+       "x": 45,
+       "y": 10
+      },
+      {
+       "x": 50,
+       "y": 12
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -85521,7 +87286,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override",
    "condition: IsUsingAltCurveTable()=0",
    "condition: IsUsingAltCurveTable()=1"
@@ -87601,6 +89365,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x00312A68:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312A68",
+     "edid": "mod_UltraciteLaserGun_Receiver_Burning",
+     "name": "Gamma Wave Emitter"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 10
+      },
+      {
+       "x": 5,
+       "y": 11
+      },
+      {
+       "x": 10,
+       "y": 12
+      },
+      {
+       "x": 15,
+       "y": 14
+      },
+      {
+       "x": 20,
+       "y": 16
+      },
+      {
+       "x": 25,
+       "y": 18
+      },
+      {
+       "x": 30,
+       "y": 20
+      },
+      {
+       "x": 35,
+       "y": 22
+      },
+      {
+       "x": 40,
+       "y": 25
+      },
+      {
+       "x": 45,
+       "y": 29
+      },
+      {
+       "x": 50,
+       "y": 32
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -87612,7 +89445,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override"
   ],
   "obtainable": true
@@ -87686,6 +89518,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x00312A6A:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312A6A",
+     "edid": "mod_UltraciteLaserGun_Receiver_Burning-CritDMG",
+     "name": "Severe Beta Wave Tuner"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 10
+      },
+      {
+       "x": 5,
+       "y": 11
+      },
+      {
+       "x": 10,
+       "y": 12
+      },
+      {
+       "x": 15,
+       "y": 14
+      },
+      {
+       "x": 20,
+       "y": 16
+      },
+      {
+       "x": 25,
+       "y": 18
+      },
+      {
+       "x": 30,
+       "y": 20
+      },
+      {
+       "x": 35,
+       "y": 22
+      },
+      {
+       "x": 40,
+       "y": 25
+      },
+      {
+       "x": 45,
+       "y": 29
+      },
+      {
+       "x": 50,
+       "y": 32
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -87697,7 +89598,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override"
   ],
   "obtainable": true
@@ -87758,6 +89658,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x00312A6B:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312A6B",
+     "edid": "mod_UltraciteLaserGun_Receiver_Burning-FastTrigger",
+     "name": "Tuned Beta Wave Tuner"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 10
+      },
+      {
+       "x": 5,
+       "y": 11
+      },
+      {
+       "x": 10,
+       "y": 12
+      },
+      {
+       "x": 15,
+       "y": 14
+      },
+      {
+       "x": 20,
+       "y": 16
+      },
+      {
+       "x": 25,
+       "y": 18
+      },
+      {
+       "x": 30,
+       "y": 20
+      },
+      {
+       "x": 35,
+       "y": 22
+      },
+      {
+       "x": 40,
+       "y": 25
+      },
+      {
+       "x": 45,
+       "y": 29
+      },
+      {
+       "x": 50,
+       "y": 32
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -87769,7 +89738,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override"
   ],
   "obtainable": true
@@ -87817,6 +89785,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x00312A6C:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312A6C",
+     "edid": "mod_UltraciteLaserGun_Receiver_Burning-HipAccuracy",
+     "name": "Refined Beta Wave Tuner"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 10
+      },
+      {
+       "x": 5,
+       "y": 11
+      },
+      {
+       "x": 10,
+       "y": 12
+      },
+      {
+       "x": 15,
+       "y": 14
+      },
+      {
+       "x": 20,
+       "y": 16
+      },
+      {
+       "x": 25,
+       "y": 18
+      },
+      {
+       "x": 30,
+       "y": 20
+      },
+      {
+       "x": 35,
+       "y": 22
+      },
+      {
+       "x": 40,
+       "y": 25
+      },
+      {
+       "x": 45,
+       "y": 29
+      },
+      {
+       "x": 50,
+       "y": 32
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -87828,7 +89865,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "ModEnergyWeaponFireDamage: DoT curve with unmapped input AV null — needs override"
   ],
   "obtainable": true
@@ -89347,7 +91383,232 @@
   ],
   "modifiers": [
    {
-    "id": "0x00113D65:ench:0",
+    "id": "0x00113D65:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00113D65",
+     "edid": "POST-DLC04_mod_melee_Sledgehammer_ExtraHeavyHead_Rocket_Blades_ShockAndStun",
+     "name": "Heavy Shocking Sharp Rocket"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 2
+      },
+      {
+       "x": 2,
+       "y": 2
+      },
+      {
+       "x": 3,
+       "y": 2
+      },
+      {
+       "x": 4,
+       "y": 2
+      },
+      {
+       "x": 5,
+       "y": 2
+      },
+      {
+       "x": 6,
+       "y": 2
+      },
+      {
+       "x": 7,
+       "y": 2
+      },
+      {
+       "x": 8,
+       "y": 2
+      },
+      {
+       "x": 9,
+       "y": 2
+      },
+      {
+       "x": 10,
+       "y": 3
+      },
+      {
+       "x": 11,
+       "y": 3
+      },
+      {
+       "x": 12,
+       "y": 3
+      },
+      {
+       "x": 13,
+       "y": 3
+      },
+      {
+       "x": 14,
+       "y": 3
+      },
+      {
+       "x": 15,
+       "y": 3
+      },
+      {
+       "x": 16,
+       "y": 3
+      },
+      {
+       "x": 17,
+       "y": 3
+      },
+      {
+       "x": 18,
+       "y": 3
+      },
+      {
+       "x": 19,
+       "y": 3
+      },
+      {
+       "x": 20,
+       "y": 4
+      },
+      {
+       "x": 21,
+       "y": 4
+      },
+      {
+       "x": 22,
+       "y": 4
+      },
+      {
+       "x": 23,
+       "y": 4
+      },
+      {
+       "x": 24,
+       "y": 4
+      },
+      {
+       "x": 25,
+       "y": 4
+      },
+      {
+       "x": 26,
+       "y": 4
+      },
+      {
+       "x": 27,
+       "y": 4
+      },
+      {
+       "x": 28,
+       "y": 4
+      },
+      {
+       "x": 29,
+       "y": 4
+      },
+      {
+       "x": 30,
+       "y": 5
+      },
+      {
+       "x": 31,
+       "y": 5
+      },
+      {
+       "x": 32,
+       "y": 5
+      },
+      {
+       "x": 33,
+       "y": 5
+      },
+      {
+       "x": 34,
+       "y": 5
+      },
+      {
+       "x": 35,
+       "y": 5
+      },
+      {
+       "x": 36,
+       "y": 5
+      },
+      {
+       "x": 37,
+       "y": 5
+      },
+      {
+       "x": 38,
+       "y": 5
+      },
+      {
+       "x": 39,
+       "y": 5
+      },
+      {
+       "x": 40,
+       "y": 6
+      },
+      {
+       "x": 41,
+       "y": 6
+      },
+      {
+       "x": 42,
+       "y": 6
+      },
+      {
+       "x": 43,
+       "y": 6
+      },
+      {
+       "x": 44,
+       "y": 6
+      },
+      {
+       "x": 45,
+       "y": 7
+      },
+      {
+       "x": 46,
+       "y": 7
+      },
+      {
+       "x": 47,
+       "y": 7
+      },
+      {
+       "x": 48,
+       "y": 7
+      },
+      {
+       "x": 49,
+       "y": 7
+      },
+      {
+       "x": 50,
+       "y": 8
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x00113D65:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x00113D65",
@@ -89376,7 +91637,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "modWeapBleedEffect: DoT curve with unmapped input AV null — needs override"
   ],
   "obtainable": false
@@ -89621,6 +91881,26 @@
      }
     ],
     "durationSec": 0
+   },
+   {
+    "id": "0x00102D59:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00102D59",
+     "edid": "POST-mod_JunkJet_SpecialMuzzle_Electricity",
+     "name": "Electrification Module"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 5,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -89628,9 +91908,7 @@
    "dn_HasMuzzleElectrical"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -89664,15 +91942,33 @@
      }
     ],
     "durationSec": 3
+   },
+   {
+    "id": "0x00102D58:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00102D58",
+     "edid": "POST-mod_JunkJet_SpecialMuzzle_Fire",
+     "name": "Ignition Module"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 10,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
    "dn_HasMuzzleFire"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -89687,7 +91983,232 @@
   ],
   "modifiers": [
    {
-    "id": "0x000C44CA:ench:0",
+    "id": "0x000C44CA:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x000C44CA",
+     "edid": "POST-mod_melee_Baton_ShockAndStun",
+     "name": "Stun Pack"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 2
+      },
+      {
+       "x": 2,
+       "y": 2
+      },
+      {
+       "x": 3,
+       "y": 2
+      },
+      {
+       "x": 4,
+       "y": 2
+      },
+      {
+       "x": 5,
+       "y": 2
+      },
+      {
+       "x": 6,
+       "y": 2
+      },
+      {
+       "x": 7,
+       "y": 2
+      },
+      {
+       "x": 8,
+       "y": 2
+      },
+      {
+       "x": 9,
+       "y": 2
+      },
+      {
+       "x": 10,
+       "y": 3
+      },
+      {
+       "x": 11,
+       "y": 3
+      },
+      {
+       "x": 12,
+       "y": 3
+      },
+      {
+       "x": 13,
+       "y": 3
+      },
+      {
+       "x": 14,
+       "y": 3
+      },
+      {
+       "x": 15,
+       "y": 3
+      },
+      {
+       "x": 16,
+       "y": 3
+      },
+      {
+       "x": 17,
+       "y": 3
+      },
+      {
+       "x": 18,
+       "y": 3
+      },
+      {
+       "x": 19,
+       "y": 3
+      },
+      {
+       "x": 20,
+       "y": 4
+      },
+      {
+       "x": 21,
+       "y": 4
+      },
+      {
+       "x": 22,
+       "y": 4
+      },
+      {
+       "x": 23,
+       "y": 4
+      },
+      {
+       "x": 24,
+       "y": 4
+      },
+      {
+       "x": 25,
+       "y": 4
+      },
+      {
+       "x": 26,
+       "y": 4
+      },
+      {
+       "x": 27,
+       "y": 4
+      },
+      {
+       "x": 28,
+       "y": 4
+      },
+      {
+       "x": 29,
+       "y": 4
+      },
+      {
+       "x": 30,
+       "y": 5
+      },
+      {
+       "x": 31,
+       "y": 5
+      },
+      {
+       "x": 32,
+       "y": 5
+      },
+      {
+       "x": 33,
+       "y": 5
+      },
+      {
+       "x": 34,
+       "y": 5
+      },
+      {
+       "x": 35,
+       "y": 5
+      },
+      {
+       "x": 36,
+       "y": 5
+      },
+      {
+       "x": 37,
+       "y": 5
+      },
+      {
+       "x": 38,
+       "y": 5
+      },
+      {
+       "x": 39,
+       "y": 5
+      },
+      {
+       "x": 40,
+       "y": 6
+      },
+      {
+       "x": 41,
+       "y": 6
+      },
+      {
+       "x": 42,
+       "y": 6
+      },
+      {
+       "x": 43,
+       "y": 6
+      },
+      {
+       "x": 44,
+       "y": 6
+      },
+      {
+       "x": 45,
+       "y": 7
+      },
+      {
+       "x": 46,
+       "y": 7
+      },
+      {
+       "x": 47,
+       "y": 7
+      },
+      {
+       "x": 48,
+       "y": 7
+      },
+      {
+       "x": 49,
+       "y": 7
+      },
+      {
+       "x": 50,
+       "y": 8
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x000C44CA:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x000C44CA",
@@ -89712,9 +92233,7 @@
    "dn_HasMeleeMod_ShockAndStun"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": false
  },
  {
@@ -89729,7 +92248,232 @@
   ],
   "modifiers": [
    {
-    "id": "0x0013B023:ench:0",
+    "id": "0x0013B023:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0013B023",
+     "edid": "POST-mod_melee_RevolutionarySword_ShockAndStun",
+     "name": "Stun Pack"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 2
+      },
+      {
+       "x": 2,
+       "y": 2
+      },
+      {
+       "x": 3,
+       "y": 2
+      },
+      {
+       "x": 4,
+       "y": 2
+      },
+      {
+       "x": 5,
+       "y": 2
+      },
+      {
+       "x": 6,
+       "y": 2
+      },
+      {
+       "x": 7,
+       "y": 2
+      },
+      {
+       "x": 8,
+       "y": 2
+      },
+      {
+       "x": 9,
+       "y": 2
+      },
+      {
+       "x": 10,
+       "y": 3
+      },
+      {
+       "x": 11,
+       "y": 3
+      },
+      {
+       "x": 12,
+       "y": 3
+      },
+      {
+       "x": 13,
+       "y": 3
+      },
+      {
+       "x": 14,
+       "y": 3
+      },
+      {
+       "x": 15,
+       "y": 3
+      },
+      {
+       "x": 16,
+       "y": 3
+      },
+      {
+       "x": 17,
+       "y": 3
+      },
+      {
+       "x": 18,
+       "y": 3
+      },
+      {
+       "x": 19,
+       "y": 3
+      },
+      {
+       "x": 20,
+       "y": 4
+      },
+      {
+       "x": 21,
+       "y": 4
+      },
+      {
+       "x": 22,
+       "y": 4
+      },
+      {
+       "x": 23,
+       "y": 4
+      },
+      {
+       "x": 24,
+       "y": 4
+      },
+      {
+       "x": 25,
+       "y": 4
+      },
+      {
+       "x": 26,
+       "y": 4
+      },
+      {
+       "x": 27,
+       "y": 4
+      },
+      {
+       "x": 28,
+       "y": 4
+      },
+      {
+       "x": 29,
+       "y": 4
+      },
+      {
+       "x": 30,
+       "y": 5
+      },
+      {
+       "x": 31,
+       "y": 5
+      },
+      {
+       "x": 32,
+       "y": 5
+      },
+      {
+       "x": 33,
+       "y": 5
+      },
+      {
+       "x": 34,
+       "y": 5
+      },
+      {
+       "x": 35,
+       "y": 5
+      },
+      {
+       "x": 36,
+       "y": 5
+      },
+      {
+       "x": 37,
+       "y": 5
+      },
+      {
+       "x": 38,
+       "y": 5
+      },
+      {
+       "x": 39,
+       "y": 5
+      },
+      {
+       "x": 40,
+       "y": 6
+      },
+      {
+       "x": 41,
+       "y": 6
+      },
+      {
+       "x": 42,
+       "y": 6
+      },
+      {
+       "x": 43,
+       "y": 6
+      },
+      {
+       "x": 44,
+       "y": 6
+      },
+      {
+       "x": 45,
+       "y": 7
+      },
+      {
+       "x": 46,
+       "y": 7
+      },
+      {
+       "x": 47,
+       "y": 7
+      },
+      {
+       "x": 48,
+       "y": 7
+      },
+      {
+       "x": 49,
+       "y": 7
+      },
+      {
+       "x": 50,
+       "y": 8
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x0013B023:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x0013B023",
@@ -89748,15 +92492,33 @@
      }
     ],
     "durationSec": 0
+   },
+   {
+    "id": "0x0013B023:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0013B023",
+     "edid": "POST-mod_melee_RevolutionarySword_ShockAndStun",
+     "name": "Stun Pack"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 15,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
    "dn_HasMeleeMod_ShockAndStun"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": false
  },
  {
@@ -89771,7 +92533,232 @@
   ],
   "modifiers": [
    {
-    "id": "0x000690AF:ench:0",
+    "id": "0x000690AF:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x000690AF",
+     "edid": "POST-mod_melee_SuperSledge_ShockAndStun",
+     "name": "Stun Pack"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 2
+      },
+      {
+       "x": 2,
+       "y": 2
+      },
+      {
+       "x": 3,
+       "y": 2
+      },
+      {
+       "x": 4,
+       "y": 2
+      },
+      {
+       "x": 5,
+       "y": 2
+      },
+      {
+       "x": 6,
+       "y": 2
+      },
+      {
+       "x": 7,
+       "y": 2
+      },
+      {
+       "x": 8,
+       "y": 2
+      },
+      {
+       "x": 9,
+       "y": 2
+      },
+      {
+       "x": 10,
+       "y": 3
+      },
+      {
+       "x": 11,
+       "y": 3
+      },
+      {
+       "x": 12,
+       "y": 3
+      },
+      {
+       "x": 13,
+       "y": 3
+      },
+      {
+       "x": 14,
+       "y": 3
+      },
+      {
+       "x": 15,
+       "y": 3
+      },
+      {
+       "x": 16,
+       "y": 3
+      },
+      {
+       "x": 17,
+       "y": 3
+      },
+      {
+       "x": 18,
+       "y": 3
+      },
+      {
+       "x": 19,
+       "y": 3
+      },
+      {
+       "x": 20,
+       "y": 4
+      },
+      {
+       "x": 21,
+       "y": 4
+      },
+      {
+       "x": 22,
+       "y": 4
+      },
+      {
+       "x": 23,
+       "y": 4
+      },
+      {
+       "x": 24,
+       "y": 4
+      },
+      {
+       "x": 25,
+       "y": 4
+      },
+      {
+       "x": 26,
+       "y": 4
+      },
+      {
+       "x": 27,
+       "y": 4
+      },
+      {
+       "x": 28,
+       "y": 4
+      },
+      {
+       "x": 29,
+       "y": 4
+      },
+      {
+       "x": 30,
+       "y": 5
+      },
+      {
+       "x": 31,
+       "y": 5
+      },
+      {
+       "x": 32,
+       "y": 5
+      },
+      {
+       "x": 33,
+       "y": 5
+      },
+      {
+       "x": 34,
+       "y": 5
+      },
+      {
+       "x": 35,
+       "y": 5
+      },
+      {
+       "x": 36,
+       "y": 5
+      },
+      {
+       "x": 37,
+       "y": 5
+      },
+      {
+       "x": 38,
+       "y": 5
+      },
+      {
+       "x": 39,
+       "y": 5
+      },
+      {
+       "x": 40,
+       "y": 6
+      },
+      {
+       "x": 41,
+       "y": 6
+      },
+      {
+       "x": 42,
+       "y": 6
+      },
+      {
+       "x": 43,
+       "y": 6
+      },
+      {
+       "x": 44,
+       "y": 6
+      },
+      {
+       "x": 45,
+       "y": 7
+      },
+      {
+       "x": 46,
+       "y": 7
+      },
+      {
+       "x": 47,
+       "y": 7
+      },
+      {
+       "x": 48,
+       "y": 7
+      },
+      {
+       "x": 49,
+       "y": 7
+      },
+      {
+       "x": 50,
+       "y": 8
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x000690AF:ench:1",
     "source": {
      "kind": "omod",
      "formId": "0x000690AF",
@@ -89796,9 +92783,7 @@
    "dn_HasMeleeMod_ShockAndStun"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": false
  },
  {
@@ -89832,15 +92817,33 @@
      }
     ],
     "durationSec": 0
+   },
+   {
+    "id": "0x0013A30E:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0013A30E",
+     "edid": "POST-Parent_mod_melee_Weapon_ShockAndStun",
+     "name": "Stun Pack"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": 15,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
    "dn_HasMeleeMod_ShockAndStun"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": false
  },
  {
@@ -90345,6 +93348,75 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x00796EB4:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00796EB4",
+     "edid": "RD01_Mod_Custom_Cauterizer_CustomName",
+     "name": "Cauterizer Custom Name"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 2
+      },
+      {
+       "x": 5,
+       "y": 3
+      },
+      {
+       "x": 10,
+       "y": 3
+      },
+      {
+       "x": 15,
+       "y": 3
+      },
+      {
+       "x": 20,
+       "y": 4
+      },
+      {
+       "x": 25,
+       "y": 4
+      },
+      {
+       "x": 30,
+       "y": 5
+      },
+      {
+       "x": 35,
+       "y": 5
+      },
+      {
+       "x": 40,
+       "y": 6
+      },
+      {
+       "x": 45,
+       "y": 7
+      },
+      {
+       "x": 50,
+       "y": 7
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -90360,7 +93432,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "DamageTypeValues ADD — component change not yet modeled",
    "RD01_Weapon_Cauterizer_FireDamageEffect: DoT curve with unmapped input AV 0x007875B5 — needs override"
   ],
   "obtainable": true
@@ -92298,15 +95369,82 @@
     "op": "MUL_ADD",
     "value": 0.2,
     "conditions": []
+   },
+   {
+    "id": "0x0079A630:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A630",
+     "edid": "SCORE_S19_mod_TeslaCannon_Barrel_EdisonI",
+     "name": "Edison Series I"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 5
+      },
+      {
+       "x": 5,
+       "y": 6
+      },
+      {
+       "x": 10,
+       "y": 6
+      },
+      {
+       "x": 15,
+       "y": 7
+      },
+      {
+       "x": 20,
+       "y": 8
+      },
+      {
+       "x": 25,
+       "y": 9
+      },
+      {
+       "x": 30,
+       "y": 11
+      },
+      {
+       "x": 35,
+       "y": 12
+      },
+      {
+       "x": 40,
+       "y": 13
+      },
+      {
+       "x": 45,
+       "y": 15
+      },
+      {
+       "x": 50,
+       "y": 17
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
    "remapNode_C-Handle_P-Handle"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -92332,15 +95470,82 @@
     "op": "MUL_ADD",
     "value": 0.2,
     "conditions": []
+   },
+   {
+    "id": "0x0079A639:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A639",
+     "edid": "SCORE_S19_mod_TeslaCannon_Barrel_EdisonII",
+     "name": "Edison Series II"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 10
+      },
+      {
+       "x": 5,
+       "y": 11
+      },
+      {
+       "x": 10,
+       "y": 12
+      },
+      {
+       "x": 15,
+       "y": 14
+      },
+      {
+       "x": 20,
+       "y": 16
+      },
+      {
+       "x": 25,
+       "y": 18
+      },
+      {
+       "x": 30,
+       "y": 20
+      },
+      {
+       "x": 35,
+       "y": 22
+      },
+      {
+       "x": 40,
+       "y": 25
+      },
+      {
+       "x": 45,
+       "y": 29
+      },
+      {
+       "x": 50,
+       "y": 32
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
    "remapNode_C-Handle_P-Handle"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -92366,15 +95571,33 @@
     "op": "MUL_ADD",
     "value": 0.2,
     "conditions": []
+   },
+   {
+    "id": "0x0079A637:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A637",
+     "edid": "SCORE_S19_mod_TeslaCannon_Barrel_NikolaI",
+     "name": "Nikola Series I"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": -20,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
    "remapNode_C-Handle_P-Handle"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -92400,15 +95623,33 @@
     "op": "MUL_ADD",
     "value": 0.2,
     "conditions": []
+   },
+   {
+    "id": "0x0079A638:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A638",
+     "edid": "SCORE_S19_mod_TeslaCannon_Barrel_NikolaII",
+     "name": "Nikola Series II"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "value": -40,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [
    "remapNode_C-Handle_P-Handle"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -92574,13 +95815,80 @@
     "op": "MUL_ADD",
     "value": -0.05,
     "conditions": []
+   },
+   {
+    "id": "0x0079A62F:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A62F",
+     "edid": "SCORE_S19_mod_TeslaCannon_Receiver_DuoWaveOscillator",
+     "name": "Wave Oscillator Double-Resonant"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 11
+      },
+      {
+       "x": 5,
+       "y": 12
+      },
+      {
+       "x": 10,
+       "y": 14
+      },
+      {
+       "x": 15,
+       "y": 16
+      },
+      {
+       "x": 20,
+       "y": 18
+      },
+      {
+       "x": 25,
+       "y": 20
+      },
+      {
+       "x": 30,
+       "y": 23
+      },
+      {
+       "x": 35,
+       "y": 26
+      },
+      {
+       "x": 40,
+       "y": 29
+      },
+      {
+       "x": 45,
+       "y": 33
+      },
+      {
+       "x": 50,
+       "y": 37
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [],
   "hasEnchantments": false,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -92606,13 +95914,80 @@
     "op": "ADD",
     "value": -2,
     "conditions": []
+   },
+   {
+    "id": "0x0079A62C:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A62C",
+     "edid": "SCORE_S19_mod_TeslaCannon_Receiver_SolidStateI",
+     "name": "Solid State Series I"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 5
+      },
+      {
+       "x": 5,
+       "y": 6
+      },
+      {
+       "x": 10,
+       "y": 6
+      },
+      {
+       "x": 15,
+       "y": 7
+      },
+      {
+       "x": 20,
+       "y": 8
+      },
+      {
+       "x": 25,
+       "y": 9
+      },
+      {
+       "x": 30,
+       "y": 11
+      },
+      {
+       "x": 35,
+       "y": 12
+      },
+      {
+       "x": 40,
+       "y": 13
+      },
+      {
+       "x": 45,
+       "y": 15
+      },
+      {
+       "x": 50,
+       "y": 17
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [],
   "hasEnchantments": false,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -92638,13 +96013,80 @@
     "op": "ADD",
     "value": -4,
     "conditions": []
+   },
+   {
+    "id": "0x0079A62E:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A62E",
+     "edid": "SCORE_S19_mod_TeslaCannon_Receiver_SolidStateII",
+     "name": "Solid State Series II"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 8
+      },
+      {
+       "x": 5,
+       "y": 9
+      },
+      {
+       "x": 10,
+       "y": 11
+      },
+      {
+       "x": 15,
+       "y": 12
+      },
+      {
+       "x": 20,
+       "y": 14
+      },
+      {
+       "x": 25,
+       "y": 15
+      },
+      {
+       "x": 30,
+       "y": 17
+      },
+      {
+       "x": 35,
+       "y": 19
+      },
+      {
+       "x": 40,
+       "y": 22
+      },
+      {
+       "x": 45,
+       "y": 25
+      },
+      {
+       "x": 50,
+       "y": 28
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [],
   "hasEnchantments": false,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -92683,13 +96125,80 @@
     "op": "ADD",
     "value": -6,
     "conditions": []
+   },
+   {
+    "id": "0x0079A631:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A631",
+     "edid": "SCORE_S19_mod_TeslaCannon_Receiver_SolidStateIII",
+     "name": "Solid State Series III"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 10
+      },
+      {
+       "x": 5,
+       "y": 11
+      },
+      {
+       "x": 10,
+       "y": 12
+      },
+      {
+       "x": 15,
+       "y": 14
+      },
+      {
+       "x": 20,
+       "y": 16
+      },
+      {
+       "x": 25,
+       "y": 18
+      },
+      {
+       "x": 30,
+       "y": 20
+      },
+      {
+       "x": 35,
+       "y": 22
+      },
+      {
+       "x": 40,
+       "y": 25
+      },
+      {
+       "x": 45,
+       "y": 29
+      },
+      {
+       "x": 50,
+       "y": 32
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [],
   "hasEnchantments": false,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -92728,13 +96237,80 @@
     "op": "ADD",
     "value": 2,
     "conditions": []
+   },
+   {
+    "id": "0x0079A63A:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A63A",
+     "edid": "SCORE_S19_mod_TeslaCannon_Receiver_SparkGapI",
+     "name": "Spark-Gap Series I"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 5,
+       "y": 4
+      },
+      {
+       "x": 10,
+       "y": 4
+      },
+      {
+       "x": 15,
+       "y": 5
+      },
+      {
+       "x": 20,
+       "y": 6
+      },
+      {
+       "x": 25,
+       "y": 6
+      },
+      {
+       "x": 30,
+       "y": 7
+      },
+      {
+       "x": 35,
+       "y": 8
+      },
+      {
+       "x": 40,
+       "y": 9
+      },
+      {
+       "x": 45,
+       "y": 10
+      },
+      {
+       "x": 50,
+       "y": 12
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [],
   "hasEnchantments": false,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -92773,13 +96349,80 @@
     "op": "ADD",
     "value": 4,
     "conditions": []
+   },
+   {
+    "id": "0x0079A635:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A635",
+     "edid": "SCORE_S19_mod_TeslaCannon_Receiver_SparkGapII",
+     "name": "Spark-Gap Series II"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 5
+      },
+      {
+       "x": 5,
+       "y": 6
+      },
+      {
+       "x": 10,
+       "y": 6
+      },
+      {
+       "x": 15,
+       "y": 7
+      },
+      {
+       "x": 20,
+       "y": 8
+      },
+      {
+       "x": 25,
+       "y": 9
+      },
+      {
+       "x": 30,
+       "y": 11
+      },
+      {
+       "x": 35,
+       "y": 12
+      },
+      {
+       "x": 40,
+       "y": 13
+      },
+      {
+       "x": 45,
+       "y": 15
+      },
+      {
+       "x": 50,
+       "y": 17
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [],
   "hasEnchantments": false,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -92818,13 +96461,80 @@
     "op": "ADD",
     "value": 6,
     "conditions": []
+   },
+   {
+    "id": "0x0079A633:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A633",
+     "edid": "SCORE_S19_mod_TeslaCannon_Receiver_SparkGapIII",
+     "name": "Spark-Gap Series III"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 8
+      },
+      {
+       "x": 5,
+       "y": 9
+      },
+      {
+       "x": 10,
+       "y": 11
+      },
+      {
+       "x": 15,
+       "y": 12
+      },
+      {
+       "x": 20,
+       "y": 14
+      },
+      {
+       "x": 25,
+       "y": 15
+      },
+      {
+       "x": 30,
+       "y": 17
+      },
+      {
+       "x": 35,
+       "y": 19
+      },
+      {
+       "x": 40,
+       "y": 22
+      },
+      {
+       "x": 45,
+       "y": 25
+      },
+      {
+       "x": 50,
+       "y": 28
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [],
   "hasEnchantments": false,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -92866,13 +96576,80 @@
     "op": "MUL_ADD",
     "value": -0.1,
     "conditions": []
+   },
+   {
+    "id": "0x0079A636:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A636",
+     "edid": "SCORE_S19_mod_TeslaCannon_Receiver_Triple-ResonantWaveOscillator",
+     "name": "Wave Oscillator Triple-Resonant"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 16
+      },
+      {
+       "x": 5,
+       "y": 18
+      },
+      {
+       "x": 10,
+       "y": 20
+      },
+      {
+       "x": 15,
+       "y": 23
+      },
+      {
+       "x": 20,
+       "y": 26
+      },
+      {
+       "x": 25,
+       "y": 29
+      },
+      {
+       "x": 30,
+       "y": 33
+      },
+      {
+       "x": 35,
+       "y": 37
+      },
+      {
+       "x": 40,
+       "y": 42
+      },
+      {
+       "x": 45,
+       "y": 47
+      },
+      {
+       "x": 50,
+       "y": 53
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
    }
   ],
   "addedKeywords": [],
   "hasEnchantments": false,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -92885,12 +96662,80 @@
   "targetKeywords": [
    "ma_TeslaCannon"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0079A62D:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A62D",
+     "edid": "SCORE_S19_mod_TeslaCannon_Receiver_WaveOscillator",
+     "name": "Wave Oscillator"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 8
+      },
+      {
+       "x": 5,
+       "y": 9
+      },
+      {
+       "x": 10,
+       "y": 11
+      },
+      {
+       "x": 15,
+       "y": 12
+      },
+      {
+       "x": 20,
+       "y": 14
+      },
+      {
+       "x": 25,
+       "y": 15
+      },
+      {
+       "x": 30,
+       "y": 17
+      },
+      {
+       "x": 35,
+       "y": 19
+      },
+      {
+       "x": 40,
+       "y": 22
+      },
+      {
+       "x": 45,
+       "y": 25
+      },
+      {
+       "x": 50,
+       "y": 28
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [],
   "hasEnchantments": false,
-  "notes": [
-   "DamageTypeValues ADD — component change not yet modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

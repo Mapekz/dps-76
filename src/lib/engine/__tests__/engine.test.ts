@@ -312,6 +312,42 @@ describe('computePaperDamage', () => {
   });
 });
 
+describe('baseDamage fold (2026-07-13, DamageTypeValues fold-fix + zero clamp)', () => {
+  const weapon = makeWeapon(); // 1 ballistic component, base 100
+
+  it('ADD on baseDamage is flat, not scaled by the component base (fold-shape fix)', () => {
+    const mods = [mod({ bucket: 'baseDamage', op: 'ADD', value: 5 })];
+    const result = computePaperDamage({
+      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    // base 100 + flat ADD 5 = 105 — NOT 100 × (1 + 5) = 600, the old
+    // `base * foldBucket(mods, 'baseDamage', 1.0, ...)` shape.
+    expect(result.components[0].base).toBeCloseTo(105, 6);
+    expect(result.total).toBeCloseTo(105, 6);
+  });
+
+  it('SET replaces the base; MUL_ADD still multiplies the ORIGINAL base (SET 50 + MUL_ADD 0.5 on base 100 → 100)', () => {
+    const mods = [
+      mod({ bucket: 'baseDamage', op: 'SET', value: 50 }),
+      mod({ bucket: 'baseDamage', op: 'MUL_ADD', value: 0.5 }),
+    ];
+    const result = computePaperDamage({
+      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    // 50 (SET) + 0.5 × 100 (ORIGINAL base, per foldOps) = 100.
+    expect(result.components[0].base).toBeCloseTo(100, 6);
+  });
+
+  it('zero clamp: a baseDamage fold driven negative contributes 0, not negative damage', () => {
+    const mods = [mod({ bucket: 'baseDamage', op: 'ADD', value: -500 })];
+    const result = computePaperDamage({
+      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    expect(result.components[0].base).toBe(0);
+    expect(result.total).toBe(0);
+  });
+});
+
 describe('power-attack race multiplier (Stage C1, RACE record Damage Mult)', () => {
   // HumanRace (0x00013746) = 1.5, PowerArmorRace (0x0001D31E) = 2.0 — the PA
   // race swap IS the multiplier, applied as a whole factor OUTSIDE the dbm
@@ -424,7 +460,9 @@ describe('explosive payload twins (Stage A1, Explosive 2★)', () => {
     expect(result.components).toHaveLength(2);
     expect(result.components[0]).toMatchObject({ damageType: 'ballistic' });
     expect(result.components[0].damage).toBeCloseTo(100, 6); // ballistic untouched
-    expect(result.components[1]).toMatchObject({ damageType: 'explosive' });
+    // Twin inherits the parent component's type (ballistic) — the
+    // 'explosive'-scoped dbm still matches it via componentIsExplosion.
+    expect(result.components[1]).toMatchObject({ damageType: 'ballistic' });
     // Twin base = 100 × 0.2 = 20; twin dbm = 1.0 (weapon base) + 0.5 (explosive-scoped) = 1.5.
     expect(result.components[1].base).toBeCloseTo(20, 6);
     expect(result.components[1].damage).toBeCloseTo(20 * 1.5, 6);
@@ -460,7 +498,7 @@ describe('explosive payload twins (Stage A1, Explosive 2★)', () => {
       mode: 'live', weapon: gauss, itemLevel: 50, modifiers: [], ctx: makeCtx(gauss), bodyPartMult: 1.0, bodyPart: 'torso',
     });
     expect(bare.components).toHaveLength(2);
-    expect(bare.components[1]).toMatchObject({ damageType: 'explosive' });
+    expect(bare.components[1]).toMatchObject({ damageType: 'ballistic' }); // twin inherits the parent type
     expect(bare.components[1].damage).toBeCloseTo(15, 6); // 100 × 0.15
 
     const withLegendary = computePaperDamage({
@@ -469,6 +507,24 @@ describe('explosive payload twins (Stage A1, Explosive 2★)', () => {
       ctx: makeCtx(gauss), bodyPartMult: 1.0, bodyPart: 'torso',
     });
     expect(withLegendary.components[1].damage).toBeCloseTo(35, 6); // 100 × (0.15 + 0.2)
+  });
+
+  it('a ballistic-scoped (non-explosive) dbm modifier ALSO hits the ballistic twin (Science!-shape regression)', () => {
+    // The twin now inherits its parent's elemental type instead of a
+    // hardcoded 'explosive', so a plain damage-type-scoped dbm bonus
+    // (Science!'s energy scope, mirrored here with ballistic) reaches BOTH
+    // the main component and its twin — not just an 'explosive'-scoped one.
+    const mods = [
+      mod({ bucket: 'explosivePayload', op: 'ADD', value: 0.2 }),
+      mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'damageTypeScope', types: ['ballistic'] }] }),
+    ];
+    const result = computePaperDamage({
+      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    expect(result.components[0].damage).toBeCloseTo(150, 6); // 100 × (1 + 0.5)
+    expect(result.components[1]).toMatchObject({ damageType: 'ballistic' });
+    expect(result.components[1].damage).toBeCloseTo(30, 6); // twin base 20 × (1 + 0.5)
+    expect(result.total).toBeCloseTo(180, 6);
   });
 });
 
@@ -512,9 +568,12 @@ describe('launcher explosion components (fromExplosion, EXPL chase)', () => {
     const result = computePaperDamage({
       mode: 'live', weapon: launcher, itemLevel: 50, modifiers: mods, ctx: makeCtx(launcher), bodyPartMult: 1.0, bodyPart: 'torso',
     });
-    // impact + its twin + explosion — NOT a fourth twin-of-explosion.
+    // impact + its own-type twin + explosion — NOT a fourth twin-of-explosion.
     expect(result.components).toHaveLength(3);
-    expect(result.components.filter(c => c.damageType === 'explosive')).toHaveLength(2);
+    // The impact's twin inherits 'ballistic' (its parent's type); only the
+    // REAL EXPL-chased component stays typed 'explosive'.
+    expect(result.components.filter(c => c.damageType === 'explosive')).toHaveLength(1);
+    expect(result.components[1]).toMatchObject({ damageType: 'ballistic' });
     expect(result.components[1].damage).toBeCloseTo(1, 6); // 5 × 0.2 twin
   });
 });

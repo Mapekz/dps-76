@@ -110,6 +110,60 @@ real payload rides the projectile's explosion. ESM-proven chain: WEAP
   (ToyFireworkLauncher_*, artillery, orbital strike) stay hidden via
   obtainability or `hiddenWeaponIds`.
 
+## Mixed damage-type OMOD conversion (DamageTypeValues) (2026-07-13 — `materializeDamageTypeComponents`, effective-weapon.ts)
+
+OMODs like the Gauss Minigun's Tesla Coil Capacitor convert/add damage types
+(`baseDamage MUL_ADD −0.2` ballistic-scoped, `+0.5` energy-scoped). The +0.5
+used to silently no-op — `paper-damage.ts` only folds `baseDamage` per
+EXISTING weapon component, and a ballistic-only weapon has nowhere for an
+energy-scoped bonus to land.
+
+- **Fold formula** (user-confirmed): `final(X) = max(0, (last SET ?? base(X))
+  + Σ(MUL_ADD × MUL-base) + Σ ADD)`. `foldOps` (resolve.ts) already implements
+  the SET/MUL/ADD ordering; `paper-damage.ts`'s per-component `baseDamage`
+  fold clamps the result to 0 (a component driven negative contributes
+  nothing rather than flipping the parenthesis sign).
+- **Missing-type materialization**: a `baseDamage` modifier scoped to a type
+  the weapon doesn't already deal synthesizes a NEW component instead of
+  no-op'ing. `scale` = Σ POSITIVE MUL_ADD values only — a NEGATIVE MUL_ADD on
+  a missing type multiplies that type's own (zero) base and contributes
+  nothing, DROPPED per-modifier rather than netted against positives. This is
+  what keeps the ~54 real "−30% on all six damage types" blanket
+  automatic-receiver/barrel OMODs (344 individual scoped MUL_ADD values
+  counted in `omods.json` — Powerful Automatic Receiver et al.) from spawning
+  five phantom components on e.g. the ballistic-only Fixer.
+- `flatBonus` = `(last SET ?? 0) + Σ ADD` — flat and absolute, NO
+  weapon-level curve scaling (these are literal game-data numbers, not curve
+  inputs; SET/ADD-shaped `DamageTypeValues` properties). MUL-derived
+  materialized damage DOES level-scale, via the fallback component's curve.
+- A type materializes only when `scale > 0 || flatBonus > 0`. The new
+  component borrows its curve (tier/levelCap/curvePoints) from the
+  **fallback**: the weapon's first non-`fromExplosion` ballistic component,
+  else its first non-`fromExplosion` component — never `weapon.damageType`,
+  which would misroute explosive-first launchers. `fromExplosion` components
+  (launcher EXPL payloads) never count as "the weapon already deals this
+  type" and never serve as the fallback base — they're a separate damage
+  stream. A weapon with no eligible fallback (Gamma-Gun-shaped, entirely
+  `fromExplosion`) materializes nothing.
+- Every `baseDamage` modifier that fed a materialized type's scale/flatBonus
+  — including its dropped negatives — is CONSUMED (removed before the
+  modifier list reaches the resolver), so the ordinary per-component fold in
+  `paper-damage.ts` can't apply it a second time. Modifiers scoped to types
+  the weapon ALREADY deals are left untouched — the existing per-component
+  fold already handles boost/ADD/SET/clamp correctly for those.
+- **Twins inherit the parent component's damage type** instead of the old
+  hardcoded `'explosive'` (`paper-damage.ts`), keeping
+  `componentIsExplosion: true`. User-confirmed via the Gauss Minigun + Tesla
+  Coil Capacitor + its intrinsic `explosionBaseWeaponDamageMult` (0.15,
+  unconditional): the explosive tick deals a phys twin off the ballistic
+  component AND an energy twin off the materialized energy component (the
+  "Tesla Gauss 15% tick = phys + energy" case). Demolition Expert
+  (`explosive` scope) still matches via `componentIsExplosion`
+  (resolve.ts's existing dual-match); Science! (`energy` scope,
+  `damageTypeScope ['energy']`) now also reaches the energy twin the same
+  way. Generalizing this to damage types beyond ballistic/energy is an
+  ASSUMPTION — only the Tesla/Science! combination is user-verified.
+
 ## Fire rate (`src/lib/fire-rate.ts`) — CLOSED 2026-07-13
 
 - Auto: `speed / 0.11`; semi: `speed / Attack Delay Seconds`; melee: 1.0/s stub
@@ -938,8 +992,8 @@ ghoul perk effects gate on it with `GetValue(Rads) ≥ N` condition rows.
   display/slotting-only for now).
 - Enemy DR/ER, armor pen, race-gated damage (`enemyType` conditions evaluate
   to inactive), range falloff, limb targeting: deferred by plan.
-- `DamageTypeValues` OMOD property (elemental barrel conversions) not yet
-  modeled — flagged per-mod in `_meta.json`.
+- `DamageTypeValues`/`AttackDamage` elemental conversions are modeled — see
+  "Mixed damage-type OMOD conversion (DamageTypeValues)" above.
 - SPECIAL-scaled perk entry points ("Add Actor Value Mult" on player perks)
   are skipped and noted per-perk in `generated/perks.json` notes.
 - Unjoined registry perks (removed/renamed by the overhaul):

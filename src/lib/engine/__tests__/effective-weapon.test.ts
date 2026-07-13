@@ -189,3 +189,142 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
     expect(modifiers).toHaveLength(0);
   });
 });
+
+describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-13)', () => {
+  const fixer = getWeapons('live')['CombatRifle_Fixer']; // ballistic-only
+  const gaussMinigun = getWeapons('live')['GaussMinigun']; // ballistic-only, base 53 @ level 50
+  // Tesla Coil Capacitor: baseDamage MUL_ADD −0.2 ballistic-scoped, +0.5
+  // energy-scoped — the +0.5 used to silently no-op with no energy component.
+  const teslaCapacitor = getOmodById('live', 'mod_GaussMinigun_Tesla_Capacitor')!;
+
+  /** A synthetic blanket "−30% on every damage type" barrel/receiver shape. */
+  function blanketBaseDamageOmod(id: string, types: Array<'ballistic' | 'energy' | 'cryo' | 'fire' | 'poison' | 'radiation'>, value: number) {
+    return {
+      id,
+      formId: '0x0',
+      name: `Test ${id}`,
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_gun_Receiver',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: types.map((type, i) => ({
+        id: `0x0:${i}`,
+        source: { kind: 'omod' as const, formId: '0x0', edid: id, name: `Test ${id}` },
+        bucket: 'baseDamage' as const,
+        op: 'MUL_ADD' as const,
+        value,
+        conditions: [{ kind: 'damageTypeScope' as const, types: [type] }],
+      })),
+    };
+  }
+
+  it('materializes an energy component on the ballistic-only Gauss Minigun with the real Tesla Coil Capacitor', () => {
+    const { weapon, modifiers } = buildEffectiveWeapon(gaussMinigun, [teslaCapacitor]);
+
+    expect(weapon.components.map(c => c.damageType)).toEqual(['ballistic', 'energy']);
+    const [ballistic, energy] = weapon.components;
+    expect(energy.scale).toBeCloseTo(0.5, 10);
+    expect(energy.flatBonus ?? 0).toBeCloseTo(0, 10);
+    // Curve borrowed from the fallback (the weapon's own ballistic component).
+    expect(energy.tier).toBe(ballistic.tier);
+    expect(energy.levelCap).toBe(ballistic.levelCap);
+    expect(energy.curvePoints).toBe(ballistic.curvePoints);
+
+    // The energy-scoped baseDamage MUL_ADD fed the materialization and is
+    // consumed; the ballistic-scoped one targets an EXISTING component and
+    // survives untouched for the normal per-component fold.
+    const baseDamageMods = modifiers.filter(m => m.bucket === 'baseDamage');
+    expect(baseDamageMods).toHaveLength(1);
+    expect(baseDamageMods[0].conditions).toEqual([{ kind: 'damageTypeScope', types: ['ballistic'] }]);
+  });
+
+  it('feeds through the engine with no double count: ballistic 53×0.8, energy 53×0.5 (plus their intrinsic 15% explosive twins)', () => {
+    const { weapon, modifiers } = buildEffectiveWeapon(gaussMinigun, [teslaCapacitor]);
+    const base = {
+      mode: 'live' as const, itemLevel: 50,
+      player: createDefaultPlayerConditions(), enemy: createDefaultEnemyConditions(), weakpointMult: 2.0,
+    };
+    const result = computeScenarios({ ...base, weapon, modifiers, critRate: 0 });
+    const components = result.freeAim.perHit.components;
+    // GaussMinigun's intrinsic 15% explosive payload (Gauss family,
+    // unconditional) spawns a twin for EACH declared component, so ballistic
+    // and the materialized energy component each contribute a hit + a twin —
+    // the plan's "Tesla Gauss 15% tick = phys + energy" example, reproduced.
+    expect(components).toHaveLength(4);
+    const [ballisticHit, ballisticTwin, energyHit, energyTwin] = components;
+    expect(ballisticHit).toMatchObject({ damageType: 'ballistic' });
+    expect(ballisticHit.base).toBeCloseTo(53 * 0.8, 6); // 53 × (1 − 0.2)
+    expect(ballisticTwin).toMatchObject({ damageType: 'ballistic' });
+    expect(ballisticTwin.base).toBeCloseTo(53 * 0.8 * 0.15, 6);
+    expect(energyHit).toMatchObject({ damageType: 'energy' });
+    expect(energyHit.base).toBeCloseTo(53 * 0.5, 6); // materialized scale 0.5, no flat bonus — NOT 53×1.5
+    expect(energyTwin).toMatchObject({ damageType: 'energy' });
+    expect(energyTwin.base).toBeCloseTo(53 * 0.5 * 0.15, 6);
+  });
+
+  it('a synthetic blanket −30%-on-every-type omod spawns no phantom components on the ballistic-only Fixer', () => {
+    const blanket = blanketBaseDamageOmod(
+      'test_blanket_receiver',
+      ['ballistic', 'energy', 'cryo', 'fire', 'poison', 'radiation'],
+      -0.3
+    );
+    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [blanket]);
+
+    // Every non-ballistic type saw ONLY a dropped negative — nothing materializes.
+    expect(weapon.components.map(c => c.damageType)).toEqual(['ballistic']);
+    // Nothing was consumed: no type materialized, so all 6 baseDamage mods survive
+    // (the 5 non-ballistic ones stay inert — no matching component to fold over).
+    expect(modifiers.filter(m => m.bucket === 'baseDamage')).toHaveLength(6);
+  });
+
+  it('negative MULs on a missing type are dropped, not netted: Tesla + a synthetic −0.3 energy blanket still materializes scale 0.5', () => {
+    const energyBlanket = blanketBaseDamageOmod('test_energy_blanket', ['energy'], -0.3);
+    const { weapon } = buildEffectiveWeapon(gaussMinigun, [teslaCapacitor, energyBlanket]);
+
+    const energy = weapon.components.find(c => c.damageType === 'energy');
+    expect(energy).toBeDefined();
+    // NOT 0.5 − 0.3 = 0.2 — the negative multiplies energy's own zero base
+    // and contributes nothing, dropped per-modifier.
+    expect(energy!.scale).toBeCloseTo(0.5, 10);
+  });
+
+  it('a synthetic SET 0 + ADD 5 materializes a flat-only component (no MUL_ADD present)', () => {
+    const flatConversionLike = {
+      id: 'test_flat_conversion',
+      formId: '0x0',
+      name: 'Test Flat Conversion Mod',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_melee_MeleeMod',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [
+        {
+          id: '0x0:0',
+          source: { kind: 'omod' as const, formId: '0x0', edid: 'test_flat_conversion', name: 'Test Flat Conversion Mod' },
+          bucket: 'baseDamage' as const,
+          op: 'SET' as const,
+          value: 0,
+          conditions: [{ kind: 'damageTypeScope' as const, types: ['energy' as const] }],
+        },
+        {
+          id: '0x0:1',
+          source: { kind: 'omod' as const, formId: '0x0', edid: 'test_flat_conversion', name: 'Test Flat Conversion Mod' },
+          bucket: 'baseDamage' as const,
+          op: 'ADD' as const,
+          value: 5,
+          conditions: [{ kind: 'damageTypeScope' as const, types: ['energy' as const] }],
+        },
+      ],
+    };
+    const { weapon } = buildEffectiveWeapon(fixer, [flatConversionLike]);
+
+    const energy = weapon.components.find(c => c.damageType === 'energy');
+    expect(energy).toBeDefined();
+    expect(energy!.scale).toBeCloseTo(0, 10);
+    expect(energy!.flatBonus).toBeCloseTo(5, 10);
+  });
+});

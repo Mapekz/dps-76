@@ -87,9 +87,12 @@ function componentBase(
   const clamped = Math.max(1, Math.min(itemLevel, 50));
   return (weapon.components ?? []).map(comp => {
     const level = Math.min(clamped, comp.levelCap);
-    const base = comp.curvePoints
+    const curveBase = comp.curvePoints
       ? interpolateCurve(comp.curvePoints, level)
       : getBaseDamage(mode, comp.tier, level);
+    // Materialized components (effective-weapon.ts) carry scale/flatBonus;
+    // absent on ordinary weapon-declared components (1 / 0, neutral).
+    const base = Math.max(0, curveBase * (comp.scale ?? 1) + (comp.flatBonus ?? 0));
     return { type: comp.damageType, base, isExplosion: comp.fromExplosion ?? false };
   });
 }
@@ -158,7 +161,10 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
     const collect = trace ? ([] as BucketTrace[]) : undefined;
     // Base-damage scaling (AttackDamage / DamageTypeValues OMOD properties,
     // e.g. automatic receivers' −30%) applies BEFORE the dbm parenthesis.
-    const scaledBase = base * foldBucket(modifiers, 'baseDamage', 1.0, componentCtx, collect);
+    // foldBucket already implements MUL_ADD × ORIGINAL base + flat ADD (SET
+    // replaces outright); clamp so a component driven negative contributes 0
+    // rather than flipping the parenthesis sign (user-confirmed zero clamp).
+    const scaledBase = Math.max(0, foldBucket(modifiers, 'baseDamage', base, componentCtx, collect));
     // dbm folds per component so damage-type-scoped bonuses hit only matching parts.
     // Base = the weapon's intrinsic Damage Bonus Multiplier (RGW3, 1.0 baseline),
     // which is the "1 +" of the spec formula.
@@ -180,8 +186,12 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
     // fraction of THIS component's (baseDamage-scaled) damage spawns an
     // explosive twin. The twin runs through the SAME parenthesis (strTerm/
     // critTerm/sneakTerm/powerAttackTerm are weapon-level, not re-evaluated)
-    // but its OWN dbm fold — componentType 'explosive' + componentIsExplosion
-    // so explosive-scoped dbm (Demolition Expert) applies only to twins.
+    // but its OWN dbm fold. The twin INHERITS the parent component's damage
+    // type (Tesla Gauss 15% tick = phys + energy at the parent's split;
+    // user-confirmed 2026-07-13) rather than a hardcoded 'explosive' — it
+    // keeps componentIsExplosion true so explosive-scoped dbm (Demolition
+    // Expert) still matches via resolve.ts's dual-match damageTypeScope
+    // check, while damage-type-scoped bonuses (Science!) also reach it.
     // Twins are summed into the totals today; per-component resist
     // attribution is future work (docs/assumptions.md).
     const payloadCollect = trace ? ([] as BucketTrace[]) : undefined;
@@ -194,18 +204,18 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
     );
     if (payloadFraction <= 0) return [hit];
 
-    const explosiveCtx = { ...ctx, componentType: 'explosive' as const, componentIsExplosion: true };
+    const explosiveCtx = { ...ctx, componentType: type, componentIsExplosion: true };
     const twinDbmCollect = trace ? ([] as BucketTrace[]) : undefined;
     const twinDbmFold = foldBucket(modifiers, 'dbm', weapon.damageBonusMult ?? 1.0, explosiveCtx, twinDbmCollect);
     const twinParenthesis = twinDbmFold + strTerm + critTerm + sneakTerm + powerAttackTerm;
     const twinBase = scaledBase * payloadFraction;
     const twin: ComponentHit = {
-      damageType: 'explosive',
+      damageType: type,
       base: twinBase,
       damage: twinBase * twinParenthesis * outerMult,
     };
     if (trace && payloadCollect && twinDbmCollect) {
-      trace.components.push({ damageType: 'explosive', baseDamage: payloadCollect[0], dbm: twinDbmCollect[0] });
+      trace.components.push({ damageType: type, baseDamage: payloadCollect[0], dbm: twinDbmCollect[0] });
     }
     return [hit, twin];
   });

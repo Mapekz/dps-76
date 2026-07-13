@@ -6370,9 +6370,7 @@
     1
    ]
   },
-  "notes": [
-   "AbPerkFortifyStimpakHealing: curve with unmapped input AV 0x000002C6 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "Fishing_SlowHungerPerk",
@@ -20991,9 +20989,7 @@
     1
    ]
   },
-  "notes": [
-   "AbPerkFortifyRadawayHealing: curve with unmapped input AV 0x000002C6 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "PharmaFarma",
@@ -23792,7 +23788,54 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003440C0:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003440C0",
+       "edid": "Science",
+       "name": "Science!",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "curve": {
+       "input": "intelligence",
+       "points": [
+        {
+         "x": 1,
+         "y": 0.05
+        },
+        {
+         "x": 15,
+         "y": 0.22
+        },
+        {
+         "x": 30,
+         "y": 0.35
+        },
+        {
+         "x": 60,
+         "y": 0.45
+        },
+        {
+         "x": 100,
+         "y": 0.5
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": [
+       {
+        "kind": "damageTypeScope",
+        "types": [
+         "energy"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -23808,9 +23851,7 @@
     1
    ]
   },
-  "notes": [
-   "AbPerkFortifyDmgMultEnergy: curve with unmapped input AV 0x000002C6 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "ScienceExpert",
@@ -23825,7 +23866,54 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003440C1:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003440C1",
+       "edid": "ScienceExpert",
+       "name": "Pyro-Technician",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "curve": {
+       "input": "intelligence",
+       "points": [
+        {
+         "x": 1,
+         "y": 0.05
+        },
+        {
+         "x": 15,
+         "y": 0.22
+        },
+        {
+         "x": 30,
+         "y": 0.35
+        },
+        {
+         "x": 60,
+         "y": 0.45
+        },
+        {
+         "x": 100,
+         "y": 0.5
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": [
+       {
+        "kind": "damageTypeScope",
+        "types": [
+         "fire"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -23841,9 +23929,7 @@
     1
    ]
   },
-  "notes": [
-   "AbPerkFortifyDmgMultFire: curve with unmapped input AV 0x000002C6 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "ScienceMaster",
@@ -23858,7 +23944,54 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003440C2:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003440C2",
+       "edid": "ScienceMaster",
+       "name": "Cryologist",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "curve": {
+       "input": "intelligence",
+       "points": [
+        {
+         "x": 1,
+         "y": 0.05
+        },
+        {
+         "x": 15,
+         "y": 0.22
+        },
+        {
+         "x": 30,
+         "y": 0.35
+        },
+        {
+         "x": 60,
+         "y": 0.45
+        },
+        {
+         "x": 100,
+         "y": 0.5
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": [
+       {
+        "kind": "damageTypeScope",
+        "types": [
+         "cryo"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -23874,9 +24007,7 @@
     1
    ]
   },
-  "notes": [
-   "AbPerkFortifyDmgMultCryo: curve with unmapped input AV 0x000002C6 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "SCORE_Banner_BattleCharged_Perk",

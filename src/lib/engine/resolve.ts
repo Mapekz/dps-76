@@ -86,6 +86,9 @@ const PLAYER_STATE_READERS: Record<StackCounter | CurveInput, (p: PlayerConditio
   mutationCount: p => p.mutationCount ?? 0,
   // Lifegiver's max-HP curve X — the buff-folded END stat (resolveLoadout).
   endurance: p => p.endurance,
+  // Science!/Pyro-Technician's/Cryologist's damage-vs-INT curve X — the
+  // buff-folded INT stat (mirrors the endurance reader above).
+  intelligence: p => p.intelligence,
   hungerThirstTier: p => p.hungerThirstTier ?? 0,
   feralTier: p => p.feralTier ?? 0,
   // Polished's curve X = GetEquippedWeaponHealthPercent (0.0-2.0 fraction; no AVIF).

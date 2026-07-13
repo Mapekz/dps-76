@@ -261,6 +261,11 @@ export type CurveInput =
    */
   | 'endurance'
   /**
+   * The player's (buff-folded) Intelligence stat — AV 0x000002C6.
+   * Science!/Pyro-Technician's/Cryologist's damage-vs-INT curves read it.
+   */
+  | 'intelligence'
+  /**
    * Equipped weapon condition as a fraction (Polished): 1.0 = 100% (full
    * condition), 2.0 = 200% (over-repaired max). No AVIF exists for this axis —
    * the effect-level curve input is the engine function

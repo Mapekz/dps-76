@@ -78,6 +78,16 @@ describe('translate (pure MGEF → IR)', () => {
     expect(r.modifiers).toHaveLength(1);
     expect(r.modifiers[0].curve?.input).toBe('healthCurrent');
   });
+
+  it("carries curve.input 'intelligence' for a Peak Value Modifier effect on STAT_DmgMultEnergy (Science!-style)", () => {
+    const scienceEdids = new Map<string, string>([['0xAV', 'STAT_DmgMultEnergy']]);
+    const curved = effect({ curvePoints: [{ x: 0, y: 0 }, { x: 15, y: 0.3 }], curveInputAv: '0x000002C6' });
+    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), curved, noRoutes, scienceEdids);
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0].bucket).toBe('dbm');
+    expect(r.modifiers[0].conditions).toEqual([{ kind: 'damageTypeScope', types: ['energy'] }]);
+    expect(r.modifiers[0].curve?.input).toBe('intelligence');
+  });
 });
 
 describe('translate (2026-07-10 review routes)', () => {

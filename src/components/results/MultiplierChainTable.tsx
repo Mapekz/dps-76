@@ -68,8 +68,9 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
         const poolBase = component.dbm.base;
         return (
           // Index-qualified: a multi-component weapon can spawn more than one
-          // 'explosive' twin (one per payload-bearing component), so
-          // damageType alone is not a stable/unique key.
+          // explosive twin (one per payload-bearing component, each keeping
+          // its PARENT's damageType rather than a shared 'explosive' label),
+          // so damageType alone is not a stable/unique key.
           <Fragment key={`${component.damageType}-${i}`}>
             {multi && (
               <p className="font-condensed text-muted-foreground pt-1 text-[10px] font-semibold uppercase tracking-wide">
