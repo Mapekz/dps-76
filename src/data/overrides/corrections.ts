@@ -53,6 +53,23 @@ export const hiddenWeaponIds: ReadonlySet<string> = new Set<string>([
   // ObjectTypeCamera (2026-07-12 vetting pass).
   'Camera_SnapMatic', // "ProSnap Deluxe Camera"
   'Camera_Disposable', // "Recon Imager"
+  // Utility/effect throwables with placeholder WEAP damage (1–5 flat) — their
+  // real payloads ride EXPL records (dps-todos/launcher-explosives.md).
+  // Throwing BLADES (Throwing Knife, Tomahawk, Meat Cleaver, Sheepsquatch
+  // Shard) carry real damage curves and stay. User decision, 2026-07-12
+  // vetting pass.
+  'WorkshopArtillerySmokeFlare', // "Artillery Smoke Grenade" — artillery call-in flare
+  'MTR04_DrossThrownItem', // "Dross" — Camden Park trash-toss prop
+  'HalluciGenGrenade', // "HalluciGen Gas Grenade" — gas cloud, no direct damage
+  'EN02_ScanGrenade', // "Orbital Scan Beacon"
+  'EN02_OrbitalStrikeGrenade', // "Orbital Strike Beacon"
+  'EN02_OrbitalStrikeWeapon', // "Orbital Strike" — the strike effect the beacon triggers, never held
+  // Original Paddle Ball: every reverse-ref chain is dead (its LVLIs are
+  // themselves unreferenced, its COBJ is a *_NOCRAFT dummy, plus a debug
+  // FLST) — dev-room item, user-confirmed 2026-07-12. The obtainable one is
+  // DLC04_PaddleBall_NWOT (sold by Chloe: NWOT_LL_Chloe_Weapon →
+  // NWOT_Clown_VendorChest), which stays visible as the sole "Paddle Ball".
+  'DLC04_PaddleBall',
 ]);
 
 /**
