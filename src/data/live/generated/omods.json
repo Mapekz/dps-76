@@ -51908,14 +51908,33 @@
   "targetKeywords": [
    "ma_legendarycrafting_weapon"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0083DA6D:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0083DA6D",
+     "edid": "mod_Legendary_Weapon2_Cryo",
+     "name": "Cryologist's"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.20000000298023224,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "cryo"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "ActorValues on STAT_DmgMultCryo — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -52434,14 +52453,33 @@
   "targetKeywords": [
    "ma_legendarycrafting_weapon"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00849317:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00849317",
+     "edid": "mod_Legendary_Weapon2_Poison",
+     "name": "Poisoner's"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.20000000298023224,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "poison"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "ActorValues on STAT_DmgMultPoison — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

@@ -582,6 +582,24 @@ column's stat summary displays the same number.
   maxHealth`) and the displayed HP stat. The engine's `?? 300` fallback only
   serves synthetic tests that bypass `resolveLoadout`.
 
+## Elemental 2★ effects & enemy-status 4★ rework (20260710 patch)
+
+- **Cryologist's / Poisoner's (2★, `STAT_DmgMultCryo`/`STAT_DmgMultPoison`
+  ADD 0.2)**: user-confirmed semantics (2026-07-12) — additive into the
+  general dbm parenthesis but scoped to the matching damage type only (a
+  laser gun with a gamma-emitter fire component gains Pyro-Technician's on
+  the fire portion and its DoT, not the energy portion). Modeled as dbm ADD
+  with a `damageTypeScope` condition, the same per-component fold as
+  Demolition Expert. `STAT_DmgMultEnergy`/`STAT_DmgMultFire` are pre-routed;
+  the weapon-side Pyro-Technician's OMOD (`mod_Legendary_Weapon2_Fire`) has
+  NO attach point and no attachable wrapper in the 20260710 dump — it is not
+  in the weapon legendary pool yet, so it correctly does not extract.
+- **Pyromaniac's / Viper's / Icemen's / Severing (4★)** were reworked from
+  ENCH properties to plumbing AVs (`STAT_DmgVsBurning`/`Poisoned`/`Freezing`/
+  `Bleeding`, ADD 50 = +50% dbm gated on the enemy's active status effect).
+  Icemen's is a REAL balance change: pre-patch it was +20% cryo-scoped
+  damage; now +50% vs frozen targets.
+
 ## Resist mitigation (dormant scaffolding)
 
 - `DamageResistMult = clamp((dmg × 0.15 / resist)^0.365, 0.01, 0.99)` — the
