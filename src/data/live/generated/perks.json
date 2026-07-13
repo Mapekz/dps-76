@@ -854,8 +854,8 @@
       "value": 0.1,
       "conditions": [
        {
-        "kind": "enemyHasActiveEffect",
-        "keyword": "DamageTypeBleed"
+        "kind": "perCrippledLimb",
+        "max": 1
        }
       ]
      },
@@ -874,7 +874,7 @@
       "conditions": [
        {
         "kind": "enemyHasActiveEffect",
-        "keyword": "DamageTypeFire"
+        "keyword": "DamageTypeBleed"
        }
       ]
      },
@@ -893,12 +893,31 @@
       "conditions": [
        {
         "kind": "enemyHasActiveEffect",
-        "keyword": "DamageTypePoison"
+        "keyword": "DamageTypeFire"
        }
       ]
      },
      {
       "id": "0x00563B90:r1:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00563B90",
+       "edid": "ArcherExpert",
+       "name": "Deal Sealer",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.1,
+      "conditions": [
+       {
+        "kind": "enemyHasActiveEffect",
+        "keyword": "DamageTypePoison"
+       }
+      ]
+     },
+     {
+      "id": "0x00563B90:r1:1:4",
       "source": {
        "kind": "perk",
        "formId": "0x00563B90",
@@ -25006,15 +25025,90 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00090590:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00090590",
+       "edid": "Shotgunner",
+       "name": "Easy Target",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.25,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       },
+       {
+        "kind": "perCrippledLimb",
+        "max": 1
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00090590:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00090590",
+       "edid": "Shotgunner",
+       "name": "Easy Target",
+       "rank": 2
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       },
+       {
+        "kind": "perCrippledLimb",
+        "max": 1
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00090590:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00090590",
+       "edid": "Shotgunner",
+       "name": "Easy Target",
+       "rank": 3
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.75,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       },
+       {
+        "kind": "perCrippledLimb",
+        "max": 1
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -25080,7 +25174,45 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001A2DE1:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001A2DE1",
+       "edid": "ShotgunnerMaster",
+       "name": "Shotgun Champ",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "curve": {
+       "input": "projectileCount",
+       "points": [
+        {
+         "x": 1,
+         "y": 10
+        },
+        {
+         "x": 30,
+         "y": 300
+        }
+       ]
+      },
+      "curveScale": 0.01,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       },
+       {
+        "kind": "perCrippledLimb",
+        "max": 1
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -25096,10 +25228,7 @@
     1
    ]
   },
-  "notes": [
-   "condition: GetValue(<unresolved:0x00000398>)=1",
-   "abPerkFortifyDmgCrippled: curve with unmapped input AV 0x00000398 — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "SkeetShooter",
@@ -25188,15 +25317,90 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004A0B5:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004A0B5",
+       "edid": "Slugger",
+       "name": "Slugger",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.1,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeMeleeGeneral",
+        "present": true
+       },
+       {
+        "kind": "perCrippledLimb",
+        "max": 1
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004A0B5:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004A0B5",
+       "edid": "Slugger",
+       "name": "Slugger",
+       "rank": 2
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.2,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeMeleeGeneral",
+        "present": true
+       },
+       {
+        "kind": "perCrippledLimb",
+        "max": 1
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004A0B5:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004A0B5",
+       "edid": "Slugger",
+       "name": "Slugger",
+       "rank": 3
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.3,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeMeleeGeneral",
+        "present": true
+       },
+       {
+        "kind": "perCrippledLimb",
+        "max": 1
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,

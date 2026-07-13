@@ -285,6 +285,14 @@ export type CurveInput =
    */
   | 'bulletStormStacks'
   /**
+   * Number of projectiles the equipped (effective, OMOD-folded) weapon fires
+   * per shot — AV 0x00000398, no AVIF record. Shotgun Champ's damage-vs-
+   * crippled curve reads it (+10%/projectile, gated by `perCrippledLimb` with
+   * `max: 1` as a boolean "target has a crippled limb" check, not a
+   * per-limb-count scale like Tormentor's).
+   */
+  | 'projectileCount'
+  /**
    * Equipped weapon condition as a fraction (Polished): 1.0 = 100% (full
    * condition), 2.0 = 200% (over-repaired max). No AVIF exists for this axis —
    * the effect-level curve input is the engine function

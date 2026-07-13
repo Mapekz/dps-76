@@ -96,6 +96,9 @@ const PLAYER_STATE_READERS: Record<StackCounter | CurveInput, (p: PlayerConditio
   // Bullet Storm / Heavy Gunner's ammo-spent stack curve X (shared field with
   // the `bulletStorm` StackCounter reader above).
   bulletStormStacks: p => p.bulletStormStacks,
+  // Shotgun Champ's damage-vs-crippled curve X — the effective (OMOD-folded)
+  // weapon's projectile count.
+  projectileCount: (_, ctx) => ctx.weapon.projectileCount ?? 1,
   hungerThirstTier: p => p.hungerThirstTier ?? 0,
   feralTier: p => p.feralTier ?? 0,
   // Polished's curve X = GetEquippedWeaponHealthPercent (0.0-2.0 fraction; no AVIF).

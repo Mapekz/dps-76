@@ -150,6 +150,14 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
         if (typeof cmp === 'number' && cmp <= 1) return null;
         return { kind: 'unresolved', raw: `GetValue(${edid}) ${cond.Operator} ${rawCmp}` };
       }
+      if (param === '0x00000398') {
+        // Shotgun Champ: "projectiles fired ≥ 1" is always true (every
+        // weapon fires ≥1 projectile) and redundant with the
+        // projectileCount curve itself — same reasoning as the killStreak
+        // ≥1 case above.
+        if (typeof cmp === 'number' && cmp <= 1) return null;
+        return { kind: 'unresolved', raw: `GetValue(${edid}) ${cond.Operator} ${rawCmp}` };
+      }
       if (param === '0x000002E1') {
         // Rads AV = the ghoul Glow meter. Every Rads gate on a real player
         // perk in the 20260710 dump (GHL_GlowingCriticals*, GHL_MadScientist,

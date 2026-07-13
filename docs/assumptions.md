@@ -357,6 +357,25 @@ reload-speed/bash-damage/charge-up-speed curves on the same AV (though those
 are further gated on `HasPerk(...)` conditions the extractor doesn't resolve,
 so they stay inactive — only the ungated `dbm` curve currently applies).
 
+**Shotgun Champ's projectile-count axis + the `STAT_DmgVsCrippled` route**
+(2026-07-13, user-confirmed mechanic): `abPerkFortifyDmgCrippled`
+("+10%/projectile to crippled targets") looked like a single-axis gap but
+needed two: a new `projectileCount` `CurveInput` (AV `0x00000398`, no AVIF
+record — reads the effective, OMOD-folded weapon's projectile count,
+`ctx.weapon.projectileCount`), AND a `FALLBACK_AVIF_ROUTES` entry for
+`STAT_DmgVsCrippled` (previously entirely unmapped, unlike the already-routed
+`STAT_DmgPerCrippled` used by Bully's/Tormentor). User-confirmed semantics:
+the projectile count SCALES the bonus (curve X); crippled-limb presence is a
+binary GATE, not a per-limb-count scale like Bully's — expressed by reusing
+`perCrippledLimb` with `max: 1` (clamps the scale factor to exactly 0 or 1,
+vs. Bully's `max: 6` which scales continuously by limb count). The redundant
+`GetValue(0x00000398)≥1` condition row ("fires ≥1 projectile", always true)
+is dropped during condition translation (`conditions.ts`), mirroring the
+existing killStreak-≥1 redundant-gate handling. The same route fix also
+un-dropped **Slugger** (+10/20/30% dmg vs crippled, melee, same boolean gate)
+and **Deal Sealer** ("+10% damage per impairment your target has" — crippled
+was the missing impairment component; bleed/fire/poison/cryo already worked).
+
 | Effect | Input (X) | Curve | Notes |
 |---|---|---|---|
 | Bloodied | current HP fraction (AV 0x392) | (0.05 → +130) … (1.0 → 0) | linear between points; clamped below 5% HP |

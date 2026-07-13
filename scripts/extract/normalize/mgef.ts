@@ -83,6 +83,11 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   STAT_DmgExplosive: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }] },
   // Bully's: +X% per crippled enemy limb (6 limbs max — docs/assumptions.md).
   STAT_DmgPerCrippled: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'perCrippledLimb', max: 6 }] },
+  // Shotgun Champ: +10%/projectile fired (curve, AV 0x00000398 — see
+  // CURVE_INPUT_AVS 'projectileCount'), gated boolean-style on the target
+  // having a crippled limb (`perCrippledLimb` with max: 1 clamps the scale
+  // factor to 0 or 1, unlike Bully's count-scaled max: 6 above).
+  STAT_DmgVsCrippled: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'perCrippledLimb', max: 1 }] },
   // Enemy-status 4★ effects, reworked by the 2026-07-10 patch from ENCH
   // properties to these new plumbing AVs (Pyromaniac's / Viper's / Icemen's /
   // Severing, each ADD 50 = +50%). Conditions mirror the pre-patch ENCH
@@ -241,6 +246,10 @@ const CURVE_INPUT_AVS: Record<string, CurveInput> = {
   // (hardcoded slot, same pattern as Onslaught above). Feeds abPerkFortifyDmgAll
   // (+3/6/9%/stack, ×10 max) plus the family's reload-speed/bashing/charge-up curves.
   '0x0000039B': 'bulletStormStacks',
+  // Shotgun Champ: projectiles fired per shot, no AVIF record (hardcoded
+  // slot). Feeds abPerkFortifyDmgCrippled via the STAT_DmgVsCrippled route
+  // (FALLBACK_AVIF_ROUTES above).
+  '0x00000398': 'projectileCount',
 };
 
 /**
