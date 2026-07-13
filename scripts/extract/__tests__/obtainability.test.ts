@@ -61,13 +61,28 @@ describe('ObtainabilityClassifier', () => {
     expect(verdict.signals.some(s => s.startsWith('cobj:'))).toBe(true);
   });
 
-  it('ProtestSign01: scrap recipe (COBJ _NOCRAFT) → obtainable', async () => {
+  it('ProtestSign01: scrap recipe (COBJ _NOCRAFT) no longer proves access, but an independent FLST ref does → obtainable', async () => {
     const client = stubClient({ '0x002D481E': protestSign01 });
     const classifier = new ObtainabilityClassifier(client);
     const verdicts = await classifier.classify([{ formId: '0x002D481E', edid: 'ProtestSign01' }]);
     const verdict = verdicts.get('0x002D481E')!;
     expect(verdict.obtainable).toBe(true);
-    expect(verdict.signals.some(s => s.startsWith('cobj:'))).toBe(true);
+    expect(verdict.signals.some(s => s.startsWith('flst:'))).toBe(true);
+  });
+
+  it('synthetic: only referencer is a _REPAIRONLY/_NOCRAFT COBJ → unobtainable, noGrantCobj', async () => {
+    const client = stubClient({
+      '0xWEAPON_DEAD_UNIQUE': [
+        { form_id: '0xCOBJ1', record_type: 'COBJ', editor_id: 'co_SuperSledge_TheFarmhand_REPAIRONLY', name: null, depth: 1 },
+        { form_id: '0xCOBJ2', record_type: 'COBJ', editor_id: 'co_Weapon_Melee_SomeUnique_NOCRAFT', name: null, depth: 1 },
+      ],
+    });
+    const classifier = new ObtainabilityClassifier(client);
+    const verdicts = await classifier.classify([{ formId: '0xWEAPON_DEAD_UNIQUE', edid: 'DeadLegacyUnique' }]);
+    const verdict = verdicts.get('0xWEAPON_DEAD_UNIQUE')!;
+    expect(verdict.obtainable).toBe(false);
+    expect(verdict.signals).toContain('noGrantCobj:co_SuperSledge_TheFarmhand_REPAIRONLY');
+    expect(verdict.signals).toContain('noGrantCobj:co_Weapon_Melee_SomeUnique_NOCRAFT');
   });
 
   it('LVLI chain: a weapon whose only referencer is a loot LVLI reaching a GMRW → obtainable, lvli:', async () => {

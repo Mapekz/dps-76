@@ -4,8 +4,9 @@ import { EsmClient, mapPool } from './esm-client';
  * Player-obtainability derivation via reverse references (`esm refs`).
  *
  * A record is player-obtainable when something a player can reach references
- * it: a crafting recipe (COBJ — including `_NOCRAFT` scrap recipes, since you
- * can only scrap what you own), a game reward (GMRW), a legendary item mod
+ * it: a crafting recipe (COBJ — excluding `_REPAIRONLY`/`_NOCRAFT` stubs,
+ * which don't prove fresh-craft access; see NON_GRANTING_COBJ_RE), a game
+ * reward (GMRW), a legendary item mod
  * (LGDI), a quest (QUST — quest-alias rewards), a non-QA container (CONT), a
  * loose-mod item (MISC), a form list (FLST — legendary crafting pools), a
  * player-facing leveled list, or — for OMODs — an obtainable weapon's
@@ -50,6 +51,12 @@ const OBTAINABLE_REF_TYPES: Record<string, string> = {
   FLST: 'flst',
 };
 
+/** COBJ recipes that reference a record without proving fresh-craft access:
+ *  `_REPAIRONLY` (repair-bench only) and `_NOCRAFT` (scrap/dummy stubs).
+ *  Unique-weapon rework fallout (2026-07-13): dead legacy unique WEAPs'
+ *  only refs are these — see docs/assumptions.md "Unique weapons". */
+const NON_GRANTING_COBJ_RE = /(REPAIRONLY$|NOCRAFT)/i;
+
 const LVLI_DEPTH_CAP = 4;
 const OMOD_DEPTH_CAP = 3;
 
@@ -91,6 +98,10 @@ export class ObtainabilityClassifier {
 
     for (const ref of refs) {
       if (JUNK_REFERRER_RE.test(ref.editor_id)) continue;
+      if (ref.record_type === 'COBJ' && NON_GRANTING_COBJ_RE.test(ref.editor_id)) {
+        signals.push(`noGrantCobj:${ref.editor_id}`);
+        continue;
+      }
       const signalPrefix = OBTAINABLE_REF_TYPES[ref.record_type];
       if (signalPrefix) {
         obtainable = true;
@@ -159,6 +170,7 @@ export class ObtainabilityClassifier {
     let result = refs.some(
       ref =>
         !JUNK_REFERRER_RE.test(ref.editor_id) &&
+        !(ref.record_type === 'COBJ' && NON_GRANTING_COBJ_RE.test(ref.editor_id)) &&
         (OBTAINABLE_REF_TYPES[ref.record_type] !== undefined ||
           (ref.record_type === 'WEAP' && this.obtainableWeaponFormIds.has(ref.form_id)))
     );
