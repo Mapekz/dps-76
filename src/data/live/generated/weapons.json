@@ -140,6 +140,13 @@
    "0x008DC2D7",
    "0x008DC2D8"
   ],
+  "defaultModFormIds": [
+   "0x001A05D8",
+   "0x00158253",
+   "0x001A05E3",
+   "0x00158240",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x0047A264",
    "0x00114364",
@@ -270,6 +277,13 @@
    "0x007904EA",
    "0x0052414F",
    "0x008F1037"
+  ],
+  "defaultModFormIds": [
+   "0x0003A0B8",
+   "0x0003A0CA",
+   "0x0003A0CD",
+   "0x0003A0B6",
+   "0x0037D0C1"
   ],
   "attachParentSlots": [
    "0x0002249D",
@@ -428,6 +442,15 @@
    "0x0005EAFA",
    "0x00148333",
    "0x003C3457"
+  ],
+  "defaultModFormIds": [
+   "0x001F660E",
+   "0x0005E8A1",
+   "0x0005E633",
+   "0x0005EAE6",
+   "0x0005E9BD",
+   "0x0004F21D",
+   "0x0037D0C1"
   ],
   "attachParentSlots": [
    "0x00114364",
@@ -592,6 +615,14 @@
    "0x007904EA",
    "0x005299F9",
    "0x008EC5A9"
+  ],
+  "defaultModFormIds": [
+   "0x0010D87B",
+   "0x0010D883",
+   "0x0010D8B7",
+   "0x0010D896",
+   "0x0010DB0E",
+   "0x00040973"
   ],
   "attachParentSlots": [
    "0x00024004",
@@ -846,6 +877,7 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": false
  },
@@ -969,6 +1001,13 @@
    "0x006069EC",
    "0x00524154",
    "0x008F173E"
+  ],
+  "defaultModFormIds": [
+   "0x00161C29",
+   "0x001C50A5",
+   "0x001888DE",
+   "0x001888DF",
+   "0x0037D0C1"
   ],
   "attachParentSlots": [
    "0x00114364",
@@ -1252,6 +1291,13 @@
    "0x0062EB04",
    "0x0062EB05"
   ],
+  "defaultModFormIds": [
+   "0x00161C29",
+   "0x001C50A5",
+   "0x001888DE",
+   "0x001888DF",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499",
@@ -1367,6 +1413,12 @@
    50
   ],
   "templateModFormIds": [
+   "0x0062FE8B",
+   "0x0004F21D",
+   "0x0037D0C1",
+   "0x0063C0F4"
+  ],
+  "defaultModFormIds": [
    "0x0062FE8B",
    "0x0004F21D",
    "0x0037D0C1",
@@ -1637,6 +1689,12 @@
    "0x0037D0C1",
    "0x0063C0F4"
   ],
+  "defaultModFormIds": [
+   "0x0064D184",
+   "0x0004F21D",
+   "0x0037D0C1",
+   "0x0063C0F4"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x00114364"
@@ -1746,6 +1804,10 @@
    "0x00176DF8",
    "0x000E7C3E",
    "0x00230303"
+  ],
+  "defaultModFormIds": [
+   "0x00176DF8",
+   "0x000E7C3E"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -1875,6 +1937,14 @@
    "0x00040891",
    "0x0004C852"
   ],
+  "defaultModFormIds": [
+   "0x0010D87B",
+   "0x0010D883",
+   "0x0010D8B7",
+   "0x0010D896",
+   "0x0010DB0E",
+   "0x00040973"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -2000,6 +2070,14 @@
    "0x00524441",
    "0x0004F21D"
   ],
+  "defaultModFormIds": [
+   "0x004F496E",
+   "0x0005E8A1",
+   "0x0005E633",
+   "0x0005EAE6",
+   "0x00524441",
+   "0x0004F21D"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x006214D8"
@@ -2054,6 +2132,7 @@
    50
   ],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": true
  },
@@ -2192,6 +2271,15 @@
    "0x005D8D86",
    "0x005D2BA3",
    "0x0052501F"
+  ],
+  "defaultModFormIds": [
+   "0x00312913",
+   "0x003128BB",
+   "0x0030EB3F",
+   "0x003128D6",
+   "0x0031295D",
+   "0x0004F21D",
+   "0x0037D0C1"
   ],
   "attachParentSlots": [
    "0x00024004",
@@ -2487,6 +2575,15 @@
    "0x00312936",
    "0x0023AC1B"
   ],
+  "defaultModFormIds": [
+   "0x00312913",
+   "0x003128BB",
+   "0x0030EB3F",
+   "0x003128D6",
+   "0x0031295D",
+   "0x0004F21D",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -2614,6 +2711,10 @@
    "0x00527F84",
    "0x007904EB",
    "0x007904EC"
+  ],
+  "defaultModFormIds": [
+   "0x0010FB8E",
+   "0x005117BF"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -2881,6 +2982,7 @@
    100
   ],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": false
  },
@@ -2997,6 +3099,10 @@
    "0x007904EC",
    "0x008E076E"
   ],
+  "defaultModFormIds": [
+   "0x00571D9C",
+   "0x005117BF"
+  ],
   "attachParentSlots": [
    "0x00022499",
    "0x0005524C",
@@ -3090,6 +3196,13 @@
    "0x004F6D76",
    "0x00682045",
    "0x00685D57"
+  ],
+  "defaultModFormIds": [
+   "0x0014AB28",
+   "0x00196D3F",
+   "0x00196D40",
+   "0x00196D41",
+   "0x0037D0C1"
   ],
   "attachParentSlots": [
    "0x0002249D",
@@ -3387,6 +3500,12 @@
    "0x00196D40",
    "0x00196D41"
   ],
+  "defaultModFormIds": [
+   "0x0014AB28",
+   "0x00196D3F",
+   "0x00196D40",
+   "0x00196D41"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499",
@@ -3667,6 +3786,12 @@
    "0x004ED02C",
    "0x005299FC"
   ],
+  "defaultModFormIds": [
+   "0x000690B1",
+   "0x004F6AA1",
+   "0x004ED02C",
+   "0x005299FC"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -3795,6 +3920,10 @@
    "0x0067A476",
    "0x00685D59"
   ],
+  "defaultModFormIds": [
+   "0x001A0352",
+   "0x00405CF8"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001A001E",
@@ -3908,6 +4037,9 @@
    "0x000E7C3E",
    "0x002302FE",
    "0x0017BBC5"
+  ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -4031,6 +4163,9 @@
    "0x005281B8",
    "0x007904EB",
    "0x008EF10A"
+  ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -4157,6 +4292,10 @@
    "0x001A7BD3",
    "0x006E2245"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E",
+   "0x005117BF"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -4279,6 +4418,9 @@
    "0x007904EB",
    "0x00524150",
    "0x0064D004"
+  ],
+  "defaultModFormIds": [
+   "0x00525598"
   ],
   "attachParentSlots": [
    "0x0002249D",
@@ -4403,6 +4545,9 @@
    50
   ],
   "templateModFormIds": [
+   "0x00525598"
+  ],
+  "defaultModFormIds": [
    "0x00525598"
   ],
   "attachParentSlots": [
@@ -4536,6 +4681,13 @@
    "0x0007F15E",
    "0x0037D0C1"
   ],
+  "defaultModFormIds": [
+   "0x0004F21D",
+   "0x00091B66",
+   "0x00091BAF",
+   "0x0007F15E",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x000498A0",
@@ -4655,6 +4807,10 @@
    "0x00176DF8",
    "0x00522666"
   ],
+  "defaultModFormIds": [
+   "0x00176DF8",
+   "0x00522666"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x00521926",
@@ -4771,6 +4927,9 @@
    "0x000E7C3E",
    "0x00230301"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -4882,6 +5041,9 @@
    45
   ],
   "templateModFormIds": [
+   "0x00349E45"
+  ],
+  "defaultModFormIds": [
    "0x00349E45"
   ],
   "attachParentSlots": [
@@ -4999,6 +5161,9 @@
   "templateModFormIds": [
    "0x00349E46"
   ],
+  "defaultModFormIds": [
+   "0x00349E46"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -5111,6 +5276,9 @@
    "0x00573F02",
    "0x000E7C3E",
    "0x00460736"
+  ],
+  "defaultModFormIds": [
+   "0x00573F02"
   ],
   "attachParentSlots": [
    "0x001E32C8",
@@ -5237,6 +5405,11 @@
    "0x005894B4",
    "0x0037D0C1"
   ],
+  "defaultModFormIds": [
+   "0x005894AB",
+   "0x005894B4",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -5357,6 +5530,10 @@
    "0x00424492",
    "0x00424493",
    "0x0067F1E1"
+  ],
+  "defaultModFormIds": [
+   "0x00424492",
+   "0x00424493"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -5633,6 +5810,10 @@
    "0x00424493",
    "0x0067F1E1"
   ],
+  "defaultModFormIds": [
+   "0x00424492",
+   "0x00424493"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -5752,6 +5933,9 @@
    "0x000E7C3E",
    "0x00230302"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -5839,6 +6023,11 @@
    "0x007904EC",
    "0x006696FC",
    "0x006696F9"
+  ],
+  "defaultModFormIds": [
+   "0x00167873",
+   "0x00188987",
+   "0x00188986"
   ],
   "attachParentSlots": [
    "0x0002249D",
@@ -5964,6 +6153,15 @@
    50
   ],
   "templateModFormIds": [
+   "0x00014017",
+   "0x0057275D",
+   "0x004F5770",
+   "0x00524153",
+   "0x004F5772",
+   "0x0067A475",
+   "0x00685D58"
+  ],
+  "defaultModFormIds": [
    "0x00014017",
    "0x0057275D",
    "0x004F5770",
@@ -6226,6 +6424,7 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": false
  },
@@ -6467,6 +6666,7 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": false
  },
@@ -6561,6 +6761,9 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [
+   "0x000E7C3E"
+  ],
+  "defaultModFormIds": [
    "0x000E7C3E"
   ],
   "attachParentSlots": [
@@ -6675,6 +6878,10 @@
    50
   ],
   "templateModFormIds": [
+   "0x00591668",
+   "0x005117BF"
+  ],
+  "defaultModFormIds": [
    "0x00591668",
    "0x005117BF"
   ],
@@ -6805,6 +7012,11 @@
    "0x007904EC",
    "0x007ACBF5"
   ],
+  "defaultModFormIds": [
+   "0x0004DEF8",
+   "0x00597808",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499",
@@ -6879,6 +7091,15 @@
    45
   ],
   "templateModFormIds": [
+   "0x0008F0FB",
+   "0x0008F173",
+   "0x0008F10A",
+   "0x004F6D76",
+   "0x00802184",
+   "0x00802185",
+   "0x00835A70"
+  ],
+  "defaultModFormIds": [
    "0x0008F0FB",
    "0x0008F173",
    "0x0008F10A",
@@ -7012,6 +7233,10 @@
    "0x007904EC",
    "0x008F20B8"
   ],
+  "defaultModFormIds": [
+   "0x00176DF8",
+   "0x005117BF"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -7140,6 +7365,19 @@
    "0x007904EB",
    "0x007904EC"
   ],
+  "defaultModFormIds": [
+   "0x006DC8E7",
+   "0x006DC8DC",
+   "0x006DC8DA",
+   "0x006DC8E2",
+   "0x006DC8E5",
+   "0x006DC8E6",
+   "0x006DC8DD",
+   "0x006DED92",
+   "0x005281B4",
+   "0x007904EB",
+   "0x007904EC"
+  ],
   "attachParentSlots": [
    "0x00114364",
    "0x00024004",
@@ -7253,6 +7491,17 @@
    45
   ],
   "templateModFormIds": [
+   "0x000498A1",
+   "0x0023D89A",
+   "0x0027A5CF",
+   "0x002D5D0B",
+   "0x0004F21D",
+   "0x0023D904",
+   "0x00690C7D",
+   "0x00692273",
+   "0x00692ECC"
+  ],
+  "defaultModFormIds": [
    "0x000498A1",
    "0x0023D89A",
    "0x0027A5CF",
@@ -7394,6 +7643,10 @@
    "0x007904EA",
    "0x0052414B",
    "0x00524154"
+  ],
+  "defaultModFormIds": [
+   "0x0017650C",
+   "0x005117BF"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -7545,6 +7798,15 @@
    "0x0024313B",
    "0x00243141"
   ],
+  "defaultModFormIds": [
+   "0x00242F30",
+   "0x00242F32",
+   "0x00242F34",
+   "0x00242F36",
+   "0x00242F37",
+   "0x0004F21D",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -7688,6 +7950,15 @@
    "0x007904EC",
    "0x0064D006",
    "0x0065B8F4"
+  ],
+  "defaultModFormIds": [
+   "0x000498A1",
+   "0x0020498F",
+   "0x001F673D",
+   "0x00203022",
+   "0x002049A2",
+   "0x0004F21D",
+   "0x001F7FDC"
   ],
   "attachParentSlots": [
    "0x00114364",
@@ -7987,6 +8258,15 @@
    "0x00186591",
    "0x00186598"
   ],
+  "defaultModFormIds": [
+   "0x000498A1",
+   "0x0020498F",
+   "0x001F673D",
+   "0x00203022",
+   "0x002049A2",
+   "0x0004F21D",
+   "0x001F7FDC"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x000498A0",
@@ -8109,6 +8389,9 @@
    "0x007904EB",
    "0x007904EC",
    "0x008EDF26"
+  ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -8246,6 +8529,7 @@
    "0x0067A475",
    "0x00685D58"
   ],
+  "defaultModFormIds": [],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -8365,6 +8649,13 @@
    50
   ],
   "templateModFormIds": [
+   "0x00729BE6",
+   "0x00729BF1",
+   "0x00729BE9",
+   "0x0037D0C1",
+   "0x00729BEB"
+  ],
+  "defaultModFormIds": [
    "0x00729BE6",
    "0x00729BF1",
    "0x00729BE9",
@@ -8496,6 +8787,9 @@
    "0x000E7C3E",
    "0x00230314"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -8612,6 +8906,9 @@
   "templateModFormIds": [
    "0x000E7C3E",
    "0x00230314"
+  ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -8893,6 +9190,11 @@
    "0x005281B4",
    "0x0087BC05"
   ],
+  "defaultModFormIds": [
+   "0x001ACE9D",
+   "0x0032CEDC",
+   "0x00572760"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -9013,6 +9315,11 @@
    "0x0057275E",
    "0x0057275F"
   ],
+  "defaultModFormIds": [
+   "0x001ACE9D",
+   "0x0032CEDC",
+   "0x00572760"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -9121,6 +9428,20 @@
    50
   ],
   "templateModFormIds": [
+   "0x000498A1",
+   "0x0020498F",
+   "0x001F673D",
+   "0x00203022",
+   "0x002049A2",
+   "0x0004F21D",
+   "0x001F7FDC",
+   "0x005281B8",
+   "0x00524152",
+   "0x004F5771",
+   "0x0064D006",
+   "0x0065B8F4"
+  ],
+  "defaultModFormIds": [
    "0x000498A1",
    "0x0020498F",
    "0x001F673D",
@@ -9254,6 +9575,14 @@
    50
   ],
   "templateModFormIds": [
+   "0x005E6FBE",
+   "0x005E6FBA",
+   "0x005E6FBD",
+   "0x005E6FB7",
+   "0x0004F21D",
+   "0x0037D0C1"
+  ],
+  "defaultModFormIds": [
    "0x005E6FBE",
    "0x005E6FBA",
    "0x005E6FBD",
@@ -9534,6 +9863,12 @@
    "0x00161C28",
    "0x0055AEF6"
   ],
+  "defaultModFormIds": [
+   "0x001888DF",
+   "0x001C13A8",
+   "0x00161C28",
+   "0x0055AEF6"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499",
@@ -9659,6 +9994,12 @@
    "0x0052414E",
    "0x00524150",
    "0x00680831"
+  ],
+  "defaultModFormIds": [
+   "0x001889BD",
+   "0x001889BF",
+   "0x0023994B",
+   "0x0037D0C1"
   ],
   "attachParentSlots": [
    "0x0002249D",
@@ -10149,6 +10490,12 @@
    "0x0023994B",
    "0x0037D0C1"
   ],
+  "defaultModFormIds": [
+   "0x001889BD",
+   "0x001889BF",
+   "0x0023994B",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x0047A264",
    "0x00114364",
@@ -10274,6 +10621,9 @@
    "0x001A7BD3",
    "0x008EC62B"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
+  ],
   "attachParentSlots": [
    "0x0000283C",
    "0x004E89A8",
@@ -10393,6 +10743,9 @@
   "templateModFormIds": [
    "0x0017650C",
    "0x0023030E"
+  ],
+  "defaultModFormIds": [
+   "0x0017650C"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -10516,6 +10869,10 @@
    "0x007904EC",
    "0x0064D005",
    "0x0066275C"
+  ],
+  "defaultModFormIds": [
+   "0x000E7C3E",
+   "0x00460736"
   ],
   "attachParentSlots": [
    "0x001E32C8",
@@ -10641,6 +10998,9 @@
    "0x008F0DD1",
    "0x008F0DD2"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -10756,6 +11116,9 @@
    50
   ],
   "templateModFormIds": [
+   "0x0002B52A"
+  ],
+  "defaultModFormIds": [
    "0x0002B52A"
   ],
   "attachParentSlots": [
@@ -11027,6 +11390,14 @@
    "0x001C6F3C",
    "0x001C6F3A"
   ],
+  "defaultModFormIds": [
+   "0x000498A1",
+   "0x0027A5CF",
+   "0x0023D8A1",
+   "0x002D5D0B",
+   "0x0004F21D",
+   "0x0023D8F8"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x000498A0",
@@ -11137,6 +11508,20 @@
    50
   ],
   "templateModFormIds": [
+   "0x000498A2",
+   "0x002DEB0D",
+   "0x00242EFA",
+   "0x002446D1",
+   "0x0028A0B5",
+   "0x002DEDC4",
+   "0x0004F21D",
+   "0x0037D0C1",
+   "0x00527F84",
+   "0x004ED02C",
+   "0x00609E4F",
+   "0x0064D007"
+  ],
+  "defaultModFormIds": [
    "0x000498A2",
    "0x002DEB0D",
    "0x00242EFA",
@@ -11266,6 +11651,16 @@
    50
   ],
   "templateModFormIds": [
+   "0x008445DD",
+   "0x008445E2",
+   "0x00869A3E",
+   "0x00844604",
+   "0x008445EC",
+   "0x008445E8",
+   "0x008445E3",
+   "0x0037D0C1"
+  ],
+  "defaultModFormIds": [
    "0x008445DD",
    "0x008445E2",
    "0x00869A3E",
@@ -11415,6 +11810,15 @@
    "0x00692ECC",
    "0x004F6AB1",
    "0x007904EC"
+  ],
+  "defaultModFormIds": [
+   "0x000498A1",
+   "0x0027A5CF",
+   "0x0023D8A1",
+   "0x002D5D0B",
+   "0x0004F21D",
+   "0x0023D8F8",
+   "0x0037D0C1"
   ],
   "attachParentSlots": [
    "0x00114364",
@@ -11699,6 +12103,15 @@
    "0x001C6F3C",
    "0x001C6F3A"
   ],
+  "defaultModFormIds": [
+   "0x000498A1",
+   "0x0027A5CF",
+   "0x0023D8A1",
+   "0x002D5D0B",
+   "0x0004F21D",
+   "0x0023D8F8",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x000498A0",
@@ -11817,6 +12230,9 @@
   "templateModFormIds": [
    "0x0000270B"
   ],
+  "defaultModFormIds": [
+   "0x0000270B"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x0002249D",
@@ -11867,6 +12283,7 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": true
  },
@@ -11967,6 +12384,10 @@
    50
   ],
   "templateModFormIds": [
+   "0x00630C78",
+   "0x005117BF"
+  ],
+  "defaultModFormIds": [
    "0x00630C78",
    "0x005117BF"
   ],
@@ -12156,6 +12577,14 @@
    "0x002FD9B0",
    "0x002FD9B3"
   ],
+  "defaultModFormIds": [
+   "0x0018C6F7",
+   "0x0018C6D3",
+   "0x0018C4E0",
+   "0x002FD98A",
+   "0x0018C73C",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x00114364",
    "0x00024004",
@@ -12268,6 +12697,13 @@
    50
   ],
   "templateModFormIds": [
+   "0x000E7C3E",
+   "0x004F577D",
+   "0x001A7BE2",
+   "0x005299FC",
+   "0x005117BF"
+  ],
+  "defaultModFormIds": [
    "0x000E7C3E",
    "0x004F577D",
    "0x001A7BE2",
@@ -12389,6 +12825,18 @@
    50
   ],
   "templateModFormIds": [
+   "0x000498A1",
+   "0x0012DBB7",
+   "0x0012DBBC",
+   "0x0036C4BA",
+   "0x0036C4B5",
+   "0x0036C4B8",
+   "0x005A38D9",
+   "0x005281B4",
+   "0x004ED02C",
+   "0x004F5772"
+  ],
+  "defaultModFormIds": [
    "0x000498A1",
    "0x0012DBB7",
    "0x0012DBBC",
@@ -12527,6 +12975,13 @@
    "0x007860C3",
    "0x0014E5C0"
   ],
+  "defaultModFormIds": [
+   "0x0036C4AF",
+   "0x0036C4B0",
+   "0x0036C4B2",
+   "0x007860C3",
+   "0x0014E5C0"
+  ],
   "attachParentSlots": [
    "0x00114364",
    "0x0002249D",
@@ -12616,6 +13071,10 @@
    "0x00471882",
    "0x004F6AA5",
    "0x008F0DCC"
+  ],
+  "defaultModFormIds": [
+   "0x001C6C03",
+   "0x0037D0C1"
   ],
   "attachParentSlots": [
    "0x0002249D",
@@ -12738,6 +13197,16 @@
    "0x0052414F",
    "0x004F5777",
    "0x0003A0B8"
+  ],
+  "defaultModFormIds": [
+   "0x0003A0BB",
+   "0x0003A0CA",
+   "0x0003A0CD",
+   "0x0003A0B6",
+   "0x0037D0C1",
+   "0x005281B4",
+   "0x0052414F",
+   "0x004F5777"
   ],
   "attachParentSlots": [
    "0x0002249D",
@@ -12863,6 +13332,9 @@
    45
   ],
   "templateModFormIds": [
+   "0x00494A35"
+  ],
+  "defaultModFormIds": [
    "0x00494A35"
   ],
   "attachParentSlots": [
@@ -13007,6 +13479,13 @@
    "0x007934FC",
    "0x0079297F"
   ],
+  "defaultModFormIds": [
+   "0x00147AFF",
+   "0x00147AF9",
+   "0x00147AFB",
+   "0x00147AFD",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x0005D4D7",
@@ -13127,6 +13606,12 @@
    "0x001C5ABD",
    "0x001C5ABE"
   ],
+  "defaultModFormIds": [
+   "0x007A6D94",
+   "0x00147AF9",
+   "0x00147AFB",
+   "0x00147AFD"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x0005D4D7",
@@ -13238,6 +13723,12 @@
    "0x001C5ABD",
    "0x001C5ABE"
   ],
+  "defaultModFormIds": [
+   "0x007A6D94",
+   "0x00147AF9",
+   "0x00147AFB",
+   "0x00147AFD"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x0005D4D7",
@@ -13340,6 +13831,7 @@
    1
   ],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": true
  },
@@ -13443,6 +13935,16 @@
    45
   ],
   "templateModFormIds": [
+   "0x00121D53",
+   "0x00121D56",
+   "0x0011B45F",
+   "0x004F5777",
+   "0x004F5771",
+   "0x004F6AA0",
+   "0x0064781F",
+   "0x0066275B"
+  ],
+  "defaultModFormIds": [
    "0x00121D53",
    "0x00121D56",
    "0x0011B45F",
@@ -13707,6 +14209,7 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": false
  },
@@ -13973,6 +14476,11 @@
    "0x0014F6E8",
    "0x0014F6E9"
   ],
+  "defaultModFormIds": [
+   "0x0014F6E7",
+   "0x0014F6E8",
+   "0x0014F6E9"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x0002249F",
@@ -14112,6 +14620,15 @@
    "0x007904EB",
    "0x004F5772",
    "0x008F0DCE"
+  ],
+  "defaultModFormIds": [
+   "0x00011BFC",
+   "0x00011C10",
+   "0x00011BFF",
+   "0x00011BF7",
+   "0x00011C03",
+   "0x0004F21D",
+   "0x0037D0C1"
   ],
   "attachParentSlots": [
    "0x0002249D",
@@ -14259,6 +14776,12 @@
    "0x0079342E",
    "0x007904EB",
    "0x0079298C"
+  ],
+  "defaultModFormIds": [
+   "0x00312AD9",
+   "0x00312AFD",
+   "0x00312B0B",
+   "0x0004F21D"
   ],
   "attachParentSlots": [
    "0x00024004",
@@ -14444,6 +14967,13 @@
    "0x0019A7F5",
    "0x0017E6C9"
   ],
+  "defaultModFormIds": [
+   "0x0001EC4E",
+   "0x0001EC53",
+   "0x0001EC63",
+   "0x0001EC60",
+   "0x00485581"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -14567,6 +15097,10 @@
    "0x007904EC",
    "0x00792982"
   ],
+  "defaultModFormIds": [
+   "0x005117BF",
+   "0x005698AD"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -14686,6 +15220,12 @@
    50
   ],
   "templateModFormIds": [
+   "0x0037D0C1",
+   "0x005754BA",
+   "0x005894A6",
+   "0x005894A4"
+  ],
+  "defaultModFormIds": [
    "0x0037D0C1",
    "0x005754BA",
    "0x005894A6",
@@ -14820,6 +15360,13 @@
    "0x0054A178",
    "0x0054A170",
    "0x0054A172"
+  ],
+  "defaultModFormIds": [
+   "0x0058BCFC",
+   "0x0054A173",
+   "0x0054A175",
+   "0x0037D0C1",
+   "0x0054A17B"
   ],
   "attachParentSlots": [
    "0x00114364",
@@ -14963,6 +15510,13 @@
    "0x007904EC",
    "0x007ACB0B"
   ],
+  "defaultModFormIds": [
+   "0x00133A7C",
+   "0x00313919",
+   "0x00313924",
+   "0x00313978",
+   "0x0004F21D"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499",
@@ -15087,6 +15641,16 @@
    50
   ],
   "templateModFormIds": [
+   "0x000498A1",
+   "0x0057373B",
+   "0x00573732",
+   "0x0037D0C1",
+   "0x00589363",
+   "0x00589366",
+   "0x00589367",
+   "0x005A3522"
+  ],
+  "defaultModFormIds": [
    "0x000498A1",
    "0x0057373B",
    "0x00573732",
@@ -15223,6 +15787,9 @@
   "templateModFormIds": [
    "0x0002B52A"
   ],
+  "defaultModFormIds": [
+   "0x0002B52A"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x004E89A8",
@@ -15290,6 +15857,16 @@
    45
   ],
   "templateModFormIds": [
+   "0x00167873",
+   "0x00188987",
+   "0x00188986",
+   "0x004F6D76",
+   "0x0052414E",
+   "0x004F5777",
+   "0x006696FC",
+   "0x006696F9"
+  ],
+  "defaultModFormIds": [
    "0x00167873",
    "0x00188987",
    "0x00188986",
@@ -15425,6 +16002,9 @@
    "0x00176DF8",
    "0x00357FBF"
   ],
+  "defaultModFormIds": [
+   "0x00176DF8"
+  ],
   "attachParentSlots": [
    "0x0005524C"
   ],
@@ -15530,6 +16110,10 @@
    50
   ],
   "templateModFormIds": [
+   "0x005117BF",
+   "0x008B8109"
+  ],
+  "defaultModFormIds": [
    "0x005117BF",
    "0x008B8109"
   ],
@@ -15640,6 +16224,7 @@
    50
   ],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [
    "0x001E32C8",
    "0x004E89A8",
@@ -15751,6 +16336,9 @@
    45
   ],
   "templateModFormIds": [
+   "0x000E7C3E"
+  ],
+  "defaultModFormIds": [
    "0x000E7C3E"
   ],
   "attachParentSlots": [
@@ -15874,6 +16462,11 @@
    "0x0063E389",
    "0x0063E38D",
    "0x0063E38A"
+  ],
+  "defaultModFormIds": [
+   "0x0064687D",
+   "0x00647233",
+   "0x00647234"
   ],
   "attachParentSlots": [
    "0x001A001E",
@@ -16000,6 +16593,16 @@
    "0x00668F1E",
    "0x00663504"
   ],
+  "defaultModFormIds": [
+   "0x0012DC9C",
+   "0x0012DCA3",
+   "0x0012DC9D",
+   "0x004F6D76",
+   "0x0052414F",
+   "0x00524150",
+   "0x00668F1E",
+   "0x00663504"
+  ],
   "attachParentSlots": [
    "0x0047A264",
    "0x00114364",
@@ -16053,6 +16656,7 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": true
  },
@@ -16194,6 +16798,15 @@
    "0x00113869",
    "0x00606B73"
   ],
+  "defaultModFormIds": [
+   "0x0004F21D",
+   "0x0031B193",
+   "0x0031B199",
+   "0x0031B1A9",
+   "0x0031B1D5",
+   "0x0031B1E3",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -16325,6 +16938,10 @@
    "0x001F81EB",
    "0x008EF32C"
   ],
+  "defaultModFormIds": [
+   "0x00111068",
+   "0x00111590"
+  ],
   "attachParentSlots": [
    "0x001E32C8",
    "0x00022499",
@@ -16449,6 +17066,10 @@
    "0x005117BF",
    "0x005117C0"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E",
+   "0x005117BF"
+  ],
   "attachParentSlots": [
    "0x004E89A8",
    "0x004E89A9",
@@ -16572,6 +17193,11 @@
    "0x0037D0C1",
    "0x005E47E3"
   ],
+  "defaultModFormIds": [
+   "0x005E47E2",
+   "0x0037D0C1",
+   "0x005E47E3"
+  ],
   "attachParentSlots": [
    "0x0017037C",
    "0x00170370",
@@ -16690,6 +17316,10 @@
    50
   ],
   "templateModFormIds": [
+   "0x008B3A1E",
+   "0x005117BF"
+  ],
+  "defaultModFormIds": [
    "0x008B3A1E",
    "0x005117BF"
   ],
@@ -16861,6 +17491,16 @@
    "0x007904EB",
    "0x0064D007"
   ],
+  "defaultModFormIds": [
+   "0x000498A2",
+   "0x002DEB09",
+   "0x00244667",
+   "0x002446D0",
+   "0x0028A0B5",
+   "0x002DEDB6",
+   "0x0004F21D",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x0047A264",
    "0x00114364",
@@ -16977,6 +17617,9 @@
    45
   ],
   "templateModFormIds": [
+   "0x0010EAE7"
+  ],
+  "defaultModFormIds": [
    "0x0010EAE7"
   ],
   "attachParentSlots": [
@@ -17103,6 +17746,9 @@
    "0x0023030F",
    "0x00527F84",
    "0x001A7BE2"
+  ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -17263,6 +17909,14 @@
    "0x003129F7",
    "0x004F6AA1",
    "0x008EE1EB"
+  ],
+  "defaultModFormIds": [
+   "0x003129C6",
+   "0x0031297E",
+   "0x0031299A",
+   "0x00312A2B",
+   "0x0004F21D",
+   "0x0037D0C1"
   ],
   "attachParentSlots": [
    "0x0047A264",
@@ -17528,6 +18182,13 @@
    "0x00312A2B",
    "0x0004F21D"
   ],
+  "defaultModFormIds": [
+   "0x003129C6",
+   "0x0031297E",
+   "0x0031299A",
+   "0x00312A2B",
+   "0x0004F21D"
+  ],
   "attachParentSlots": [
    "0x00024004"
   ],
@@ -17638,6 +18299,9 @@
   "templateModFormIds": [
    "0x000E7C3E",
    "0x00230311"
+  ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -17790,6 +18454,15 @@
    "0x0066957E",
    "0x0066957D"
   ],
+  "defaultModFormIds": [
+   "0x001114F8",
+   "0x000326A0",
+   "0x000324C0",
+   "0x00032511",
+   "0x00142EA9",
+   "0x0004F21D",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x000498A0",
@@ -17913,6 +18586,13 @@
    "0x007904EB",
    "0x00524150",
    "0x0075C3B8"
+  ],
+  "defaultModFormIds": [
+   "0x0007C200",
+   "0x0007C20C",
+   "0x0007C793",
+   "0x0007BE00",
+   "0x0084CCA1"
   ],
   "attachParentSlots": [
    "0x00024004",
@@ -18045,6 +18725,19 @@
    "0x001B2B2A",
    "0x001CA8D4"
   ],
+  "defaultModFormIds": [
+   "0x0015B044",
+   "0x00188A67",
+   "0x0015B045",
+   "0x0015B047",
+   "0x001CA8D2",
+   "0x0004F21D",
+   "0x00527F84",
+   "0x0052414F",
+   "0x0037F7D9",
+   "0x00663B0C",
+   "0x00685D56"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -18120,6 +18813,11 @@
    "0x00067C20",
    "0x00067F45"
   ],
+  "defaultModFormIds": [
+   "0x0008F5A1",
+   "0x0008F0FB",
+   "0x0008F5A2"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x004E89A8",
@@ -18191,6 +18889,11 @@
    "0x00019FC7",
    "0x00067C20",
    "0x00067F45"
+  ],
+  "defaultModFormIds": [
+   "0x0008F5A1",
+   "0x0008F0FB",
+   "0x0008F5A2"
   ],
   "attachParentSlots": [
    "0x00024004",
@@ -18279,6 +18982,11 @@
    "0x007904EA",
    "0x007904EC",
    "0x008EF0F7"
+  ],
+  "defaultModFormIds": [
+   "0x0008F5A1",
+   "0x0008F0FB",
+   "0x0008F5A2"
   ],
   "attachParentSlots": [
    "0x00024004",
@@ -18406,6 +19114,10 @@
    "0x001CF2A0",
    "0x00230312"
   ],
+  "defaultModFormIds": [
+   "0x00174E18",
+   "0x005117BF"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -18505,6 +19217,7 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": true
  },
@@ -18615,6 +19328,9 @@
    "0x000E7C3E",
    "0x00111736"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -18723,6 +19439,14 @@
    50
   ],
   "templateModFormIds": [
+   "0x000975D3",
+   "0x005FB446",
+   "0x004F577C",
+   "0x001A7BE2",
+   "0x005299FC",
+   "0x0061384F"
+  ],
+  "defaultModFormIds": [
    "0x000975D3",
    "0x005FB446",
    "0x004F577C",
@@ -18848,6 +19572,16 @@
    "0x00524153",
    "0x00524154"
   ],
+  "defaultModFormIds": [
+   "0x002E5B30",
+   "0x002E5B51",
+   "0x001A05E8",
+   "0x002E5B44",
+   "0x0037D0C1",
+   "0x0075EAC6",
+   "0x00524153",
+   "0x00524154"
+  ],
   "attachParentSlots": [
    "0x0047A264",
    "0x00114364",
@@ -18960,6 +19694,10 @@
    50
   ],
   "templateModFormIds": [
+   "0x0037F7DA",
+   "0x00176DF8"
+  ],
+  "defaultModFormIds": [
    "0x0037F7DA",
    "0x00176DF8"
   ],
@@ -19126,6 +19864,17 @@
    "0x004F5772",
    "0x005EC269"
   ],
+  "defaultModFormIds": [
+   "0x0018C46F",
+   "0x0018C438",
+   "0x0018AC1D",
+   "0x0018C46A",
+   "0x0018C480",
+   "0x004F5779",
+   "0x0052414E",
+   "0x004F5772",
+   "0x005EC269"
+  ],
   "attachParentSlots": [
    "0x0047A264",
    "0x00024004",
@@ -19256,6 +20005,12 @@
    "0x004F5777",
    "0x0064781F",
    "0x0066275B"
+  ],
+  "defaultModFormIds": [
+   "0x00121D53",
+   "0x00188A05",
+   "0x0004F21D",
+   "0x0037D0C1"
   ],
   "attachParentSlots": [
    "0x0002249D",
@@ -19523,6 +20278,9 @@
   "templateModFormIds": [
    "0x00121D53"
   ],
+  "defaultModFormIds": [
+   "0x00121D53"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499"
@@ -19776,6 +20534,9 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [
+   "0x00121D53"
+  ],
+  "defaultModFormIds": [
    "0x00121D53"
   ],
   "attachParentSlots": [
@@ -20050,6 +20811,12 @@
    "0x001C6BC6",
    "0x0037D0C4"
   ],
+  "defaultModFormIds": [
+   "0x00121D53",
+   "0x00188A05",
+   "0x0004F21D",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499",
@@ -20149,6 +20916,12 @@
    "0x005281B4",
    "0x006069EC",
    "0x0037F7D9"
+  ],
+  "defaultModFormIds": [
+   "0x00170374",
+   "0x000A2D77",
+   "0x0004F21D",
+   "0x0037D0C1"
   ],
   "attachParentSlots": [
    "0x0017037C",
@@ -20276,6 +21049,10 @@
    "0x0000E973",
    "0x005117BF",
    "0x0000E972"
+  ],
+  "defaultModFormIds": [
+   "0x0000E973",
+   "0x005117BF"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -20550,6 +21327,10 @@
    "0x005117BF",
    "0x0000E972"
   ],
+  "defaultModFormIds": [
+   "0x0000E973",
+   "0x005117BF"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -20669,6 +21450,14 @@
    "0x0067A476",
    "0x00685D59"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E",
+   "0x004F577D",
+   "0x00606C8D",
+   "0x005299FC",
+   "0x0067A476",
+   "0x00685D59"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001A001E",
@@ -20778,6 +21567,11 @@
    "0x00188987",
    "0x00188986"
   ],
+  "defaultModFormIds": [
+   "0x00167873",
+   "0x00188987",
+   "0x00188986"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499",
@@ -20877,6 +21671,11 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [
+   "0x00167873",
+   "0x00188987",
+   "0x00188986"
+  ],
+  "defaultModFormIds": [
    "0x00167873",
    "0x00188987",
    "0x00188986"
@@ -20984,6 +21783,11 @@
    "0x00188987",
    "0x00188986"
   ],
+  "defaultModFormIds": [
+   "0x00167873",
+   "0x00188987",
+   "0x00188986"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499",
@@ -21083,6 +21887,11 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [
+   "0x00167873",
+   "0x00188987",
+   "0x00188986"
+  ],
+  "defaultModFormIds": [
    "0x00167873",
    "0x00188987",
    "0x00188986"
@@ -21190,6 +21999,11 @@
    "0x00188987",
    "0x00188986"
   ],
+  "defaultModFormIds": [
+   "0x00167873",
+   "0x00188987",
+   "0x00188986"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499",
@@ -21289,6 +22103,11 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [
+   "0x00167873",
+   "0x00188987",
+   "0x00188986"
+  ],
+  "defaultModFormIds": [
    "0x00167873",
    "0x00188987",
    "0x00188986"
@@ -21396,6 +22215,11 @@
    "0x00188987",
    "0x00188986"
   ],
+  "defaultModFormIds": [
+   "0x00167873",
+   "0x00188987",
+   "0x00188986"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499",
@@ -21495,6 +22319,11 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [
+   "0x00167873",
+   "0x00188987",
+   "0x00188986"
+  ],
+  "defaultModFormIds": [
    "0x00167873",
    "0x00188987",
    "0x00188986"
@@ -21602,6 +22431,11 @@
    "0x00188987",
    "0x00188986"
   ],
+  "defaultModFormIds": [
+   "0x00167873",
+   "0x00188987",
+   "0x00188986"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499",
@@ -21705,6 +22539,11 @@
    "0x00188987",
    "0x00188986"
   ],
+  "defaultModFormIds": [
+   "0x00167873",
+   "0x00188987",
+   "0x00188986"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499",
@@ -21804,6 +22643,11 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [
+   "0x00167873",
+   "0x00188987",
+   "0x00188986"
+  ],
+  "defaultModFormIds": [
    "0x00167873",
    "0x00188987",
    "0x00188986"
@@ -22066,6 +22910,11 @@
    "0x00188987",
    "0x00188986"
   ],
+  "defaultModFormIds": [
+   "0x00167873",
+   "0x00188987",
+   "0x00188986"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499",
@@ -22320,6 +23169,11 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [
+   "0x00167873",
+   "0x00188987",
+   "0x00188986"
+  ],
+  "defaultModFormIds": [
    "0x00167873",
    "0x00188987",
    "0x00188986"
@@ -22583,6 +23437,11 @@
    "0x00188987",
    "0x00188986"
   ],
+  "defaultModFormIds": [
+   "0x00167873",
+   "0x00188987",
+   "0x00188986"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499",
@@ -22690,6 +23549,9 @@
    45
   ],
   "templateModFormIds": [
+   "0x0010FB91"
+  ],
+  "defaultModFormIds": [
    "0x0010FB91"
   ],
   "attachParentSlots": [
@@ -22803,6 +23665,7 @@
    45
   ],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -22912,6 +23775,10 @@
    50
   ],
   "templateModFormIds": [
+   "0x004F6AA0",
+   "0x0043B76A"
+  ],
+  "defaultModFormIds": [
    "0x004F6AA0",
    "0x0043B76A"
   ],
@@ -23051,6 +23918,14 @@
    "0x004F5773",
    "0x00471884"
   ],
+  "defaultModFormIds": [
+   "0x0010D87B",
+   "0x0010D883",
+   "0x0010D8B7",
+   "0x0010D896",
+   "0x0010DB0E",
+   "0x00040973"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -23119,6 +23994,16 @@
    50
   ],
   "templateModFormIds": [
+   "0x0014AB28",
+   "0x00196D3F",
+   "0x00196D40",
+   "0x00196D41",
+   "0x004F6D76",
+   "0x004ED02C",
+   "0x00524152",
+   "0x00682045"
+  ],
+  "defaultModFormIds": [
    "0x0014AB28",
    "0x00196D3F",
    "0x00196D40",
@@ -23255,6 +24140,13 @@
    "0x001A7BE2",
    "0x001A7BD3"
   ],
+  "defaultModFormIds": [
+   "0x005D7F2C",
+   "0x005117BF",
+   "0x005281B8",
+   "0x001A7BE2",
+   "0x001A7BD3"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -23377,6 +24269,15 @@
    "0x0010DB0D",
    "0x005281B4"
   ],
+  "defaultModFormIds": [
+   "0x0002D346",
+   "0x002FD8FE",
+   "0x002FD8FA",
+   "0x002FD90E",
+   "0x0010DB0E",
+   "0x0010DB0D",
+   "0x005281B4"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -23430,6 +24331,9 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [
+   "0x004930E9"
+  ],
+  "defaultModFormIds": [
    "0x004930E9"
   ],
   "attachParentSlots": [
@@ -23530,6 +24434,11 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [
+   "0x00167873",
+   "0x00188987",
+   "0x00188986"
+  ],
+  "defaultModFormIds": [
    "0x00167873",
    "0x00188987",
    "0x00188986"
@@ -23643,6 +24552,11 @@
    "0x00188987",
    "0x00188986"
   ],
+  "defaultModFormIds": [
+   "0x00167873",
+   "0x00188987",
+   "0x00188986"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499",
@@ -23698,6 +24612,9 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [
+   "0x004930E8"
+  ],
+  "defaultModFormIds": [
    "0x004930E8"
   ],
   "attachParentSlots": [
@@ -23803,6 +24720,9 @@
    "0x00113722",
    "0x001140A2"
   ],
+  "defaultModFormIds": [
+   "0x00113722"
+  ],
   "attachParentSlots": [
    "0x00113720",
    "0x00113C69"
@@ -23905,6 +24825,9 @@
   "templateModFormIds": [
    "0x00113722",
    "0x001140A2"
+  ],
+  "defaultModFormIds": [
+   "0x00113722"
   ],
   "attachParentSlots": [
    "0x00113720",
@@ -24019,6 +24942,13 @@
    50
   ],
   "templateModFormIds": [
+   "0x0060E0EB",
+   "0x0004F21D",
+   "0x0037D0C1",
+   "0x0060E0EC",
+   "0x00611A68"
+  ],
+  "defaultModFormIds": [
    "0x0060E0EB",
    "0x0004F21D",
    "0x0037D0C1",
@@ -24294,6 +25224,7 @@
    50
   ],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": true
  },
@@ -24548,6 +25479,7 @@
    50
   ],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": true
  },
@@ -24802,6 +25734,7 @@
    50
   ],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": true
  },
@@ -24916,6 +25849,10 @@
    "0x001A7BDA",
    "0x0075DF6E",
    "0x008F8636"
+  ],
+  "defaultModFormIds": [
+   "0x0000283D",
+   "0x005117BF"
   ],
   "attachParentSlots": [
    "0x00521926",
@@ -25073,6 +26010,14 @@
    "0x007A0D35",
    "0x0091EE2C"
   ],
+  "defaultModFormIds": [
+   "0x002D5E2C",
+   "0x002D5DD7",
+   "0x002D5DDD",
+   "0x002D5DF9",
+   "0x002D5E43",
+   "0x0004F21D"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -25215,6 +26160,14 @@
    "0x00164A7F",
    "0x002D5D32"
   ],
+  "defaultModFormIds": [
+   "0x000498A2",
+   "0x002D5D62",
+   "0x002D5D31",
+   "0x002D5D2B",
+   "0x002D5D7D",
+   "0x0004F21D"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x000498A0",
@@ -25354,6 +26307,13 @@
    "0x0016500B",
    "0x00165008"
   ],
+  "defaultModFormIds": [
+   "0x002D5EDE",
+   "0x002D5EA0",
+   "0x002D5E9A",
+   "0x000556F0",
+   "0x0004F21D"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -25476,6 +26436,10 @@
    "0x0061384F",
    "0x008F0F68"
   ],
+  "defaultModFormIds": [
+   "0x001843E3",
+   "0x005FB446"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -25587,6 +26551,13 @@
    50
   ],
   "templateModFormIds": [
+   "0x00525598",
+   "0x00524150",
+   "0x00524153",
+   "0x004F6D76",
+   "0x0064D004"
+  ],
+  "defaultModFormIds": [
    "0x00525598",
    "0x00524150",
    "0x00524153",
@@ -25716,6 +26687,9 @@
    "0x000268E2",
    "0x001791A2",
    "0x0003A1D0"
+  ],
+  "defaultModFormIds": [
+   "0x000268E2"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -25925,6 +26899,13 @@
    "0x004F5779",
    "0x005EC269"
   ],
+  "defaultModFormIds": [
+   "0x0018C46F",
+   "0x0018C438",
+   "0x0018AC1D",
+   "0x0018C46A",
+   "0x0018C4D6"
+  ],
   "attachParentSlots": [
    "0x0047A264",
    "0x00114364",
@@ -26102,6 +27083,12 @@
    "0x00584FB9",
    "0x0037D0C1"
   ],
+  "defaultModFormIds": [
+   "0x00575E81",
+   "0x00584FB8",
+   "0x00584FB9",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x001E32C8",
    "0x004E89A8",
@@ -26213,6 +27200,10 @@
    50
   ],
   "templateModFormIds": [
+   "0x005E959A",
+   "0x005117BF"
+  ],
+  "defaultModFormIds": [
    "0x005E959A",
    "0x005117BF"
   ],
@@ -26702,6 +27693,13 @@
    "0x0062EB04",
    "0x0062EB05"
   ],
+  "defaultModFormIds": [
+   "0x00161C29",
+   "0x001C50A5",
+   "0x001888DE",
+   "0x001888DF",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499",
@@ -26821,6 +27819,9 @@
    "0x000E7C3E",
    "0x00111730"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -26937,6 +27938,9 @@
   "templateModFormIds": [
    "0x00596E66",
    "0x0010EAE7"
+  ],
+  "defaultModFormIds": [
+   "0x00596E66"
   ],
   "attachParentSlots": [
    "0x00024004",
@@ -27056,6 +28060,9 @@
   "templateModFormIds": [
    "0x000E7C3E",
    "0x00230305"
+  ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -27178,6 +28185,10 @@
    "0x008F1034",
    "0x008F1033"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E",
+   "0x005117BF"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -27243,6 +28254,10 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [
+   "0x0046F483",
+   "0x0037D0C1"
+  ],
+  "defaultModFormIds": [
    "0x0046F483",
    "0x0037D0C1"
   ],
@@ -27349,6 +28364,9 @@
   "templateModFormIds": [
    "0x000E7C3E"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
+  ],
   "attachParentSlots": [
    "0x0005524C"
   ],
@@ -27447,6 +28465,9 @@
    1
   ],
   "templateModFormIds": [
+   "0x000E7C3E"
+  ],
+  "defaultModFormIds": [
    "0x000E7C3E"
   ],
   "attachParentSlots": [
@@ -27549,6 +28570,9 @@
   "templateModFormIds": [
    "0x000E7C3E"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
+  ],
   "attachParentSlots": [
    "0x0005524C"
   ],
@@ -27647,6 +28671,9 @@
    1
   ],
   "templateModFormIds": [
+   "0x000E7C3E"
+  ],
+  "defaultModFormIds": [
    "0x000E7C3E"
   ],
   "attachParentSlots": [
@@ -27749,6 +28776,9 @@
   "templateModFormIds": [
    "0x000E7C3E"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
+  ],
   "attachParentSlots": [
    "0x0005524C"
   ],
@@ -27847,6 +28877,9 @@
    1
   ],
   "templateModFormIds": [
+   "0x000E7C3E"
+  ],
+  "defaultModFormIds": [
    "0x000E7C3E"
   ],
   "attachParentSlots": [
@@ -27949,6 +28982,9 @@
   "templateModFormIds": [
    "0x000E7C3E"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
+  ],
   "attachParentSlots": [
    "0x0005524C"
   ],
@@ -28047,6 +29083,9 @@
    1
   ],
   "templateModFormIds": [
+   "0x000E7C3E"
+  ],
+  "defaultModFormIds": [
    "0x000E7C3E"
   ],
   "attachParentSlots": [
@@ -28149,6 +29188,9 @@
   "templateModFormIds": [
    "0x000E7C3E"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
+  ],
   "attachParentSlots": [
    "0x0005524C"
   ],
@@ -28247,6 +29289,9 @@
    1
   ],
   "templateModFormIds": [
+   "0x000E7C3E"
+  ],
+  "defaultModFormIds": [
    "0x000E7C3E"
   ],
   "attachParentSlots": [
@@ -28386,6 +29431,16 @@
    "0x005A38D9",
    "0x0052820C",
    "0x0018AADF"
+  ],
+  "defaultModFormIds": [
+   "0x000498A1",
+   "0x0018AAFC",
+   "0x0004F21D",
+   "0x0018AAD9",
+   "0x0018AAC9",
+   "0x0012DBBC",
+   "0x0012DBB7",
+   "0x0037D0C1"
   ],
   "attachParentSlots": [
    "0x0047A264",
@@ -28685,6 +29740,16 @@
    "0x006E2242",
    "0x0018AAE5"
   ],
+  "defaultModFormIds": [
+   "0x000498A1",
+   "0x0018AAFC",
+   "0x0004F21D",
+   "0x0018AAD9",
+   "0x0018AAC9",
+   "0x0012DBBC",
+   "0x0012DBB7",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x000498A0",
@@ -28876,6 +29941,15 @@
    "0x0031B17B",
    "0x0011125D"
   ],
+  "defaultModFormIds": [
+   "0x00314FAC",
+   "0x00295644",
+   "0x002955E2",
+   "0x002DAD82",
+   "0x00314FD1",
+   "0x0004F21D",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -29012,6 +30086,13 @@
    "0x00793807",
    "0x007904EA",
    "0x00792983"
+  ],
+  "defaultModFormIds": [
+   "0x0010771B",
+   "0x0014CDA3",
+   "0x0010771E",
+   "0x00188A81",
+   "0x0004F21D"
   ],
   "attachParentSlots": [
    "0x00024004",
@@ -29294,6 +30375,14 @@
    "0x0014CDA6",
    "0x0064003B"
   ],
+  "defaultModFormIds": [
+   "0x0010771D",
+   "0x001AC258",
+   "0x0014CDA4",
+   "0x0010771C",
+   "0x0014CDA6",
+   "0x0064003B"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -29358,6 +30447,10 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [
+   "0x0046F483",
+   "0x0037D0C1"
+  ],
+  "defaultModFormIds": [
    "0x0046F483",
    "0x0037D0C1"
   ],
@@ -29479,6 +30572,10 @@
    "0x007904EC",
    "0x008EE2A8"
   ],
+  "defaultModFormIds": [
+   "0x00178EAF",
+   "0x000E7C3E"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -29595,6 +30692,10 @@
    "0x000FA2F7",
    "0x005117BF",
    "0x00230308"
+  ],
+  "defaultModFormIds": [
+   "0x000FA2F7",
+   "0x005117BF"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -29722,6 +30823,10 @@
    "0x004F6AAE",
    "0x005299FC"
   ],
+  "defaultModFormIds": [
+   "0x0014943D",
+   "0x000E7C3E"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001A001E",
@@ -29845,6 +30950,9 @@
    "0x0040BD80",
    "0x0040BD81"
   ],
+  "defaultModFormIds": [
+   "0x0010EAE7"
+  ],
   "attachParentSlots": [
    "0x0040BD77",
    "0x0040BD78",
@@ -29961,6 +31069,9 @@
    50
   ],
   "templateModFormIds": [
+   "0x003F7F1E"
+  ],
+  "defaultModFormIds": [
    "0x003F7F1E"
   ],
   "attachParentSlots": [
@@ -30114,6 +31225,7 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": true
  },
@@ -30217,6 +31329,9 @@
    50
   ],
   "templateModFormIds": [
+   "0x003F7F1F"
+  ],
+  "defaultModFormIds": [
    "0x003F7F1F"
   ],
   "attachParentSlots": [
@@ -30332,6 +31447,9 @@
    50
   ],
   "templateModFormIds": [
+   "0x003F5100"
+  ],
+  "defaultModFormIds": [
    "0x003F5100"
   ],
   "attachParentSlots": [
@@ -30505,6 +31623,9 @@
    "0x00691D4E",
    "0x007AA31C"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -30633,6 +31754,9 @@
    "0x007904EC",
    "0x009097C3"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001A001E",
@@ -30757,6 +31881,9 @@
    "0x00614357",
    "0x004F6AA1",
    "0x001A7C39"
+  ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
   ],
   "attachParentSlots": [
    "0x0000283C",
@@ -30888,6 +32015,12 @@
    "0x00663504",
    "0x007860C3"
   ],
+  "defaultModFormIds": [
+   "0x0012DC9C",
+   "0x0012DC9E",
+   "0x0012DC9D",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x00114364",
    "0x00024004",
@@ -31010,6 +32143,9 @@
    "0x001A7C39",
    "0x007904EC",
    "0x0047187F"
+  ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
   ],
   "attachParentSlots": [
    "0x004E89A8",
@@ -31282,6 +32418,10 @@
    "0x0046073A",
    "0x00460736"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E",
+   "0x0046073A"
+  ],
   "attachParentSlots": [
    "0x001E32C8",
    "0x004E89A8",
@@ -31397,6 +32537,10 @@
    "0x0023030A",
    "0x004F6AA0",
    "0x001A7BDA"
+  ],
+  "defaultModFormIds": [
+   "0x00185CF9",
+   "0x004ECBA4"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -31587,6 +32731,13 @@
    "0x0052414B",
    "0x00524152"
   ],
+  "defaultModFormIds": [
+   "0x0018C46F",
+   "0x0018C438",
+   "0x0018AC1D",
+   "0x0018C46A",
+   "0x0018C4D6"
+  ],
   "attachParentSlots": [
    "0x0047A264",
    "0x00024004",
@@ -31695,6 +32846,19 @@
    45
   ],
   "templateModFormIds": [
+   "0x001114F8",
+   "0x00033A3D",
+   "0x00024199",
+   "0x0003253D",
+   "0x0019E3DE",
+   "0x000325EE",
+   "0x0037D0C1",
+   "0x004F5770",
+   "0x0052414E",
+   "0x004F5772",
+   "0x00613850"
+  ],
+  "defaultModFormIds": [
    "0x001114F8",
    "0x00033A3D",
    "0x00024199",
@@ -31826,6 +32990,7 @@
    "0x008F20E4",
    "0x008F20E5"
   ],
+  "defaultModFormIds": [],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -32111,6 +33276,17 @@
    "0x00802188",
    "0x00802189"
   ],
+  "defaultModFormIds": [
+   "0x0002D344",
+   "0x002FD904",
+   "0x0010D8B3",
+   "0x002FD90F",
+   "0x0072AECB",
+   "0x004F5771",
+   "0x00802187",
+   "0x00802188",
+   "0x00802189"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -32251,6 +33427,14 @@
    "0x00663B0C",
    "0x00685D56"
   ],
+  "defaultModFormIds": [
+   "0x0015B044",
+   "0x00188A67",
+   "0x0015B045",
+   "0x0015B047",
+   "0x001CA8D2",
+   "0x0004F21D"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -32385,6 +33569,10 @@
    "0x0068311F",
    "0x00674C25"
   ],
+  "defaultModFormIds": [
+   "0x000690B1",
+   "0x005117BF"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -32493,6 +33681,11 @@
    45
   ],
   "templateModFormIds": [
+   "0x0075EAC6",
+   "0x001A7BDA",
+   "0x001A7BD3"
+  ],
+  "defaultModFormIds": [
    "0x0075EAC6",
    "0x001A7BDA",
    "0x001A7BD3"
@@ -32625,6 +33818,10 @@
    "0x007904EC",
    "0x008F0DCF"
   ],
+  "defaultModFormIds": [
+   "0x001796C3",
+   "0x005117BF"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -32744,6 +33941,11 @@
    "0x00188A2A",
    "0x002492B9"
   ],
+  "defaultModFormIds": [
+   "0x0014D096",
+   "0x00188A29",
+   "0x00188A45"
+  ],
   "attachParentSlots": [
    "0x00022499",
    "0x0002249F",
@@ -32852,6 +34054,11 @@
    "0x0053F189",
    "0x005439B2",
    "0x005439B1"
+  ],
+  "defaultModFormIds": [
+   "0x0014D096",
+   "0x00188A29",
+   "0x00188A45"
   ],
   "attachParentSlots": [
    "0x00022499",
@@ -33119,6 +34326,12 @@
    "0x0080218B",
    "0x00835A71"
   ],
+  "defaultModFormIds": [
+   "0x0010F3F3",
+   "0x0080218A",
+   "0x0080218B",
+   "0x00835A71"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -33229,6 +34442,9 @@
    50
   ],
   "templateModFormIds": [
+   "0x005528E2"
+  ],
+  "defaultModFormIds": [
    "0x005528E2"
   ],
   "attachParentSlots": [
@@ -33358,6 +34574,11 @@
    "0x0075C3B7",
    "0x004F6AAE",
    "0x008F0DD3"
+  ],
+  "defaultModFormIds": [
+   "0x0010EAE8",
+   "0x0010EAAD",
+   "0x0010F185"
   ],
   "attachParentSlots": [
    "0x0002249D",
@@ -33854,6 +35075,14 @@
    "0x0079C798",
    "0x0079C11E"
   ],
+  "defaultModFormIds": [
+   "0x0037D0C1",
+   "0x0079C797",
+   "0x0079CAA3",
+   "0x007A264F",
+   "0x0079C798",
+   "0x0079C11E"
+  ],
   "attachParentSlots": [
    "0x0047A264",
    "0x00114364",
@@ -33981,6 +35210,14 @@
    50
   ],
   "templateModFormIds": [
+   "0x0037D0C1",
+   "0x0079C797",
+   "0x0079CAA3",
+   "0x007A264F",
+   "0x0079C798",
+   "0x0079C11E"
+  ],
+  "defaultModFormIds": [
    "0x0037D0C1",
    "0x0079C797",
    "0x0079CAA3",
@@ -34479,6 +35716,11 @@
    "0x0010EAAD",
    "0x0010F185"
   ],
+  "defaultModFormIds": [
+   "0x0010EAE8",
+   "0x0010EAAD",
+   "0x0010F185"
+  ],
   "attachParentSlots": [
    "0x0047A264",
    "0x00114364",
@@ -34600,6 +35842,7 @@
    50
   ],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [
    "0x00024004",
    "0x000498A0",
@@ -34704,6 +35947,14 @@
    50
   ],
   "templateModFormIds": [
+   "0x000690B1",
+   "0x004F577B",
+   "0x001A7BDA",
+   "0x005299FC",
+   "0x0064D008",
+   "0x0066275A"
+  ],
+  "defaultModFormIds": [
    "0x000690B1",
    "0x004F577B",
    "0x001A7BDA",
@@ -34832,6 +36083,12 @@
    "0x0004F21D",
    "0x0037D0C1"
   ],
+  "defaultModFormIds": [
+   "0x00312B42",
+   "0x006C3182",
+   "0x0004F21D",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x000498A0",
@@ -34943,6 +36200,14 @@
    50
   ],
   "templateModFormIds": [
+   "0x000690B1",
+   "0x005117BF",
+   "0x001A7BDA",
+   "0x005299FD",
+   "0x004F5779",
+   "0x005EC26A"
+  ],
+  "defaultModFormIds": [
    "0x000690B1",
    "0x005117BF",
    "0x001A7BDA",
@@ -35078,6 +36343,19 @@
    "0x007904EB",
    "0x007904EC"
   ],
+  "defaultModFormIds": [
+   "0x0046D29E",
+   "0x00242FD2",
+   "0x002430BC",
+   "0x002430FB",
+   "0x00243142",
+   "0x00242F94",
+   "0x00242FA1",
+   "0x005E4555",
+   "0x007904EA",
+   "0x007904EB",
+   "0x007904EC"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -35187,6 +36465,14 @@
    45
   ],
   "templateModFormIds": [
+   "0x0010FB8E",
+   "0x005D982A",
+   "0x005D9D1C",
+   "0x00527F84",
+   "0x00606B72",
+   "0x00609E4F"
+  ],
+  "defaultModFormIds": [
    "0x0010FB8E",
    "0x005D982A",
    "0x005D9D1C",
@@ -35308,6 +36594,7 @@
    50
   ],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -35419,6 +36706,16 @@
    50
   ],
   "templateModFormIds": [
+   "0x001C13A8",
+   "0x001C50A5",
+   "0x00161C28",
+   "0x001888DF",
+   "0x0037D0C1",
+   "0x0075EAC6",
+   "0x0052414B",
+   "0x0052414C"
+  ],
+  "defaultModFormIds": [
    "0x001C13A8",
    "0x001C50A5",
    "0x00161C28",
@@ -35544,6 +36841,9 @@
   "templateModFormIds": [
    "0x00113689"
   ],
+  "defaultModFormIds": [
+   "0x00113689"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x00022499",
@@ -35648,6 +36948,7 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": true
  },
@@ -35738,6 +37039,7 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": true
  },
@@ -35847,6 +37149,9 @@
    "0x000E7C3E",
    "0x00184AFA"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -35946,6 +37251,7 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": true
  },
@@ -36046,6 +37352,14 @@
    45
   ],
   "templateModFormIds": [
+   "0x000E7C3E",
+   "0x005281B8",
+   "0x001A7BDA",
+   "0x005299FC",
+   "0x0064D005",
+   "0x0066275C"
+  ],
+  "defaultModFormIds": [
    "0x000E7C3E",
    "0x005281B8",
    "0x001A7BDA",
@@ -36163,6 +37477,9 @@
   "templateModFormIds": [
    "0x000FA2F7",
    "0x00230308"
+  ],
+  "defaultModFormIds": [
+   "0x000FA2F7"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -36418,6 +37735,7 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": false
  },
@@ -36534,6 +37852,12 @@
    "0x000407B3",
    "0x00312B35",
    "0x0036FB4C"
+  ],
+  "defaultModFormIds": [
+   "0x00312B2B",
+   "0x0039E6FC",
+   "0x0004F21D",
+   "0x00312B1D"
   ],
   "attachParentSlots": [
    "0x00024004",
@@ -36664,6 +37988,13 @@
    "0x00312A8D",
    "0x00312ABF",
    "0x00312A86"
+  ],
+  "defaultModFormIds": [
+   "0x00312A7F",
+   "0x00312A93",
+   "0x00312A67",
+   "0x0036FB40",
+   "0x0004F21D"
   ],
   "attachParentSlots": [
    "0x00024004",
@@ -36948,6 +38279,13 @@
    "0x00312ABF",
    "0x00312A86"
   ],
+  "defaultModFormIds": [
+   "0x00312A7F",
+   "0x00312A93",
+   "0x00312A67",
+   "0x0036FB40",
+   "0x0004F21D"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -37055,6 +38393,14 @@
    50
   ],
   "templateModFormIds": [
+   "0x005117BF",
+   "0x00796644",
+   "0x007904EA",
+   "0x007904EB",
+   "0x007904EC",
+   "0x0079297A"
+  ],
+  "defaultModFormIds": [
    "0x005117BF",
    "0x00796644",
    "0x007904EA",
@@ -37315,6 +38661,7 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": true
  },
@@ -37556,6 +38903,7 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": true
  },
@@ -37654,6 +39002,12 @@
    50
   ],
   "templateModFormIds": [
+   "0x00179B06",
+   "0x004F6AA0",
+   "0x001A7BE2",
+   "0x001A7BD3"
+  ],
+  "defaultModFormIds": [
    "0x00179B06",
    "0x004F6AA0",
    "0x001A7BE2",
@@ -37784,6 +39138,13 @@
    "0x00797B8A",
    "0x0037D0C1"
   ],
+  "defaultModFormIds": [
+   "0x007970E8",
+   "0x00797B88",
+   "0x00797B89",
+   "0x00797B8A",
+   "0x0037D0C1"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x001E32C8",
@@ -37897,6 +39258,9 @@
   "templateModFormIds": [
    "0x00914C8A"
   ],
+  "defaultModFormIds": [
+   "0x00914C8A"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -37959,6 +39323,7 @@
    50
   ],
   "templateModFormIds": [],
+  "defaultModFormIds": [],
   "attachParentSlots": [],
   "obtainable": true
  },
@@ -38067,6 +39432,13 @@
    "0x001A05D8",
    "0x00522667"
   ],
+  "defaultModFormIds": [
+   "0x00158253",
+   "0x001A05E8",
+   "0x00158240",
+   "0x001A05D8",
+   "0x00522667"
+  ],
   "attachParentSlots": [
    "0x00024004",
    "0x00521926",
@@ -38169,6 +39541,11 @@
   "damageBonusMult": 1,
   "eligibleLevels": [],
   "templateModFormIds": [
+   "0x00188A29",
+   "0x00188A45",
+   "0x0050C2D5"
+  ],
+  "defaultModFormIds": [
    "0x00188A29",
    "0x00188A45",
    "0x0050C2D5"
@@ -38440,6 +39817,10 @@
    "0x0047737B",
    "0x00230314"
   ],
+  "defaultModFormIds": [
+   "0x0047737A",
+   "0x000E7C3E"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -38559,6 +39940,10 @@
    "0x0047737B",
    "0x00230314"
   ],
+  "defaultModFormIds": [
+   "0x000E7C3E",
+   "0x0047737B"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -38673,6 +40058,9 @@
    45
   ],
   "templateModFormIds": [
+   "0x000690B1"
+  ],
+  "defaultModFormIds": [
    "0x000690B1"
   ],
   "attachParentSlots": [
@@ -38790,6 +40178,10 @@
    "0x001A7BD3",
    "0x008F16B1"
   ],
+  "defaultModFormIds": [
+   "0x005D7F2C",
+   "0x005117BF"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -38904,6 +40296,9 @@
    50
   ],
   "templateModFormIds": [
+   "0x007D3AF1"
+  ],
+  "defaultModFormIds": [
    "0x007D3AF1"
   ],
   "attachParentSlots": [
@@ -39039,6 +40434,12 @@
    "0x00527084",
    "0x0052708D"
   ],
+  "defaultModFormIds": [
+   "0x00527089",
+   "0x00527082",
+   "0x00527093",
+   "0x0052707E"
+  ],
   "attachParentSlots": [
    "0x00114364",
    "0x00024004",
@@ -39150,6 +40551,19 @@
    45
   ],
   "templateModFormIds": [
+   "0x001114F8",
+   "0x00061B09",
+   "0x00024893",
+   "0x0003251D",
+   "0x00142EA5",
+   "0x000325A6",
+   "0x004F577D",
+   "0x0052414E",
+   "0x00524150",
+   "0x0066957E",
+   "0x0066957D"
+  ],
+  "defaultModFormIds": [
    "0x001114F8",
    "0x00061B09",
    "0x00024893",
@@ -39277,6 +40691,14 @@
    "0x0068311F",
    "0x00674C25"
   ],
+  "defaultModFormIds": [
+   "0x000690B1",
+   "0x004F6AA1",
+   "0x004ED02C",
+   "0x005299FC",
+   "0x0068311F",
+   "0x00674C25"
+  ],
   "attachParentSlots": [
    "0x0005524C",
    "0x001E32C8",
@@ -39386,6 +40808,19 @@
    50
   ],
   "templateModFormIds": [
+   "0x003128C7",
+   "0x0030EB38",
+   "0x003128D9",
+   "0x00312922",
+   "0x003128EE",
+   "0x004F6AAE",
+   "0x00524153",
+   "0x005299FA",
+   "0x005D8D86",
+   "0x005D2BA3",
+   "0x0052501F"
+  ],
+  "defaultModFormIds": [
    "0x003128C7",
    "0x0030EB38",
    "0x003128D9",
@@ -39518,6 +40953,14 @@
    "0x00606B72",
    "0x00524154"
   ],
+  "defaultModFormIds": [
+   "0x0004F21D",
+   "0x0014F6E7",
+   "0x0014F6E8",
+   "0x005281B4",
+   "0x00606B72",
+   "0x00524154"
+  ],
   "attachParentSlots": [
    "0x0002249D",
    "0x0002249F",
@@ -39632,6 +41075,16 @@
    50
   ],
   "templateModFormIds": [
+   "0x001C13A8",
+   "0x001C50A5",
+   "0x0037D0C1",
+   "0x00161C28",
+   "0x00161C2A",
+   "0x004F5770",
+   "0x006069EC",
+   "0x00524154"
+  ],
+  "defaultModFormIds": [
    "0x001C13A8",
    "0x001C50A5",
    "0x0037D0C1",

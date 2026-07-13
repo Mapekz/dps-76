@@ -110,22 +110,66 @@ async function buildComponents(
   return components;
 }
 
-function extractTemplateModFormIds(fields: Record<string, unknown>): string[] {
+function templateCombinationItems(fields: Record<string, unknown>): Array<Record<string, unknown>> {
   const template = fields['Object Template'] as Record<string, unknown> | undefined;
   const combinations = template?.['Combinations'];
   if (!Array.isArray(combinations)) return [];
+  return (combinations as Array<Record<string, unknown>>)
+    .map(
+      combo =>
+        (combo['Combination'] as Record<string, unknown> | undefined)?.['Object Mod Template Item'] as
+          | Record<string, unknown>
+          | undefined
+    )
+    .filter((item): item is Record<string, unknown> => item !== undefined);
+}
+
+function flattenIncludes(items: Array<Record<string, unknown>>): string[] {
   const modIds = new Set<string>();
-  for (const combo of combinations as Array<Record<string, unknown>>) {
-    const item = (combo['Combination'] as Record<string, unknown> | undefined)?.['Object Mod Template Item'] as
-      | Record<string, unknown>
-      | undefined;
-    const includes = item?.['Includes'];
+  for (const item of items) {
+    const includes = item['Includes'];
     if (!Array.isArray(includes)) continue;
     for (const inc of includes as Array<Record<string, unknown>>) {
       if (typeof inc['Mod'] === 'string') modIds.add(inc['Mod'] as string);
     }
   }
   return [...modIds];
+}
+
+function extractTemplateModFormIds(fields: Record<string, unknown>): string[] {
+  return flattenIncludes(templateCombinationItems(fields));
+}
+
+/**
+ * The weapon's standard parts: the Default=True combination's includes.
+ * Some records leave the flag unset — a combination NAMED "Default"
+ * (CombatRifle) or a sole combination (unique weapons like the Fixer) is
+ * still authoritative. Multiple combos with neither signal is an authoring
+ * state we refuse to guess at (never index 0): log and emit [].
+ */
+function extractDefaultModFormIds(
+  fields: Record<string, unknown>,
+  edid: string,
+  unresolved: string[]
+): string[] {
+  const template = fields['Object Template'] as Record<string, unknown> | undefined;
+  const combinations = template?.['Combinations'];
+  const combos = Array.isArray(combinations) ? (combinations as Array<Record<string, unknown>>) : [];
+  if (combos.length === 0) return [];
+  const itemOf = (combo: Record<string, unknown>) =>
+    (combo['Combination'] as Record<string, unknown> | undefined)?.['Object Mod Template Item'] as
+      | Record<string, unknown>
+      | undefined;
+  const items = (predicate: (combo: Record<string, unknown>) => boolean) =>
+    combos.filter(predicate).map(itemOf).filter((i): i is Record<string, unknown> => i !== undefined);
+
+  const flagged = items(c => (itemOf(c)?.['Default'] as Record<string, unknown> | undefined)?.['value'] === 1);
+  if (flagged.length > 0) return flattenIncludes(flagged);
+  const named = items(c => (c['Combination'] as Record<string, unknown>)?.['Name'] === 'Default');
+  if (named.length > 0) return flattenIncludes(named);
+  if (combos.length === 1) return flattenIncludes(items(() => true));
+  unresolved.push(`no Default combination for ${edid} (${combos.length} combos)`);
+  return [];
 }
 
 export async function toGeneratedWeapon(
@@ -173,6 +217,7 @@ export async function toGeneratedWeapon(
     damageBonusMult: asNumber(rgw3['Damage Bonus Multiplier'], 1.0),
     eligibleLevels: Array.isArray(fields['Eligible Levels']) ? (fields['Eligible Levels'] as number[]) : [],
     templateModFormIds: extractTemplateModFormIds(fields),
+    defaultModFormIds: extractDefaultModFormIds(fields, record.editor_id, unresolved),
     attachParentSlots: Array.isArray(fields['Attach Parent Slots'])
       ? (fields['Attach Parent Slots'] as string[])
       : [],

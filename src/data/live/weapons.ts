@@ -77,6 +77,7 @@ export function adaptWeapon(gw: GeneratedWeapon): Weapon {
     keywords: gw.keywords,
     attachParentSlots: gw.attachParentSlots,
     templateModFormIds: gw.templateModFormIds,
+    defaultModFormIds: gw.defaultModFormIds,
     critDamageMult: gw.critDamageMult,
     critChargeBonus: gw.critChargeBonus,
     sneakAttackMult: gw.sneakAttackMult,

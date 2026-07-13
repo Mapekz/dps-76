@@ -36,6 +36,10 @@ describe('toGeneratedWeapon', () => {
     expect(w.attackDelaySec).toBeCloseTo(0.28, 5);
     expect(w.projectileCount).toBe(1);
     expect(w.templateModFormIds.length).toBeGreaterThan(0);
+    // Sole-combination fallback: the Fixer's one combo is named "Default" but
+    // flagged False (unique weapons don't bother setting it) — it's still the
+    // authoritative standard-parts list.
+    expect(w.defaultModFormIds).toEqual(w.templateModFormIds);
     // Magazine/reload fields (sustained DPS)
     expect(w.capacity).toBe(20);
     expect(w.ammoPerShot).toBe(1);
@@ -48,6 +52,11 @@ describe('toGeneratedWeapon', () => {
     expect(w.components.map(c => c.damageType)).toEqual(['ballistic', 'energy']);
     expect(w.components[0].tier).toBe(12);
     expect(w.components[1].tier).toBe(12);
+    // Default=True combination only — the unnamed "None" combo swaps in
+    // 0x0019A7F5/0x0017E6C9, which must NOT leak into the standard parts.
+    expect(w.defaultModFormIds).toEqual(['0x0001EC4E', '0x0001EC53', '0x0001EC63', '0x0001EC60', '0x00485581']);
+    expect(w.defaultModFormIds).not.toContain('0x0019A7F5');
+    expect(w.defaultModFormIds).not.toContain('0x0017E6C9');
   });
 
   it('MG42: Base Damage 0 with no typed entries → physical from the main curve', async () => {
@@ -56,6 +65,10 @@ describe('toGeneratedWeapon', () => {
     expect(w.components[0].damageType).toBe('ballistic');
     expect(w.components[0].tier).toBe(16);
     expect(w.animationReloadSec).toBeCloseTo(3.6667, 3);
+    // Flagged-Default path with 6 combos: the 5-part Default set, not the
+    // 10-part "None" combo's union.
+    expect(w.defaultModFormIds).toEqual(['0x0007C200', '0x0007C20C', '0x0007C793', '0x0007BE00', '0x0084CCA1']);
+    expect(w.defaultModFormIds).not.toContain('0x0007AD6E');
   });
 
   it('Shishkebab: Base Damage > 0 plus typed fire entry → two components sharing the tier-20 curve', async () => {
