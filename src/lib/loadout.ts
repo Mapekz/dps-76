@@ -2,7 +2,7 @@ import type { PlayerConfig, EnemyConfig, GameMode, Weapon } from '@/types';
 import type { Modifier } from '@/types/modifiers';
 import { getWeapons } from '@/data';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
-import { getOmodById } from '@/data/omods';
+import { getDefaultOmods, getOmodById } from '@/data/omods';
 import { getBuffModifiers } from '@/data/buffs';
 import { buildEffectiveWeapon } from '@/lib/engine/effective-weapon';
 import { legendaryBonusOf } from '@/data/perk-budget';
@@ -41,11 +41,17 @@ function assemble(
   let weapon: Weapon | undefined;
   let omodModifiers: Modifier[] = [];
   if (baseWeapon) {
-    const equippedOmodIds = [
-      ...Object.values(playerConfig.weapon?.mods ?? {}),
-      ...(playerConfig.weapon?.legendaryEffects ?? []),
-    ].filter((id): id is string => !!id);
-    const equippedOmods = equippedOmodIds.map(id => getOmodById(mode, id)).filter(o => o !== undefined);
+    const chosenMods = playerConfig.weapon?.mods ?? {};
+    const equippedOmodIds = [...Object.values(chosenMods), ...(playerConfig.weapon?.legendaryEffects ?? [])].filter(
+      (id): id is string => !!id
+    );
+    const equippedOmods = [
+      ...equippedOmodIds.map(id => getOmodById(mode, id)).filter(o => o !== undefined),
+      // Undecided slots carry the weapon's real standard parts (no weapon
+      // instance has an empty slot) — getDefaultOmods skips decided slots,
+      // so an explicitly chosen mod is never double-counted.
+      ...getDefaultOmods(mode, baseWeapon, chosenMods),
+    ];
     const built = buildEffectiveWeapon(
       baseWeapon,
       equippedOmods,

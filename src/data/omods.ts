@@ -23,6 +23,58 @@ export function getOmodById(mode: GameMode, id: string): GeneratedOmod | undefin
   return map.get(id);
 }
 
+const byFormIdCache = new Map<GameMode, Map<string, GeneratedOmod>>();
+
+function omodsByFormId(mode: GameMode): Map<string, GeneratedOmod> {
+  let map = byFormIdCache.get(mode);
+  if (!map) {
+    map = new Map(getDataset(mode).omods.map(o => [o.formId, o]));
+    byFormIdCache.set(mode, map);
+  }
+  return map;
+}
+
+/**
+ * The weapon's real standard part for one attach point (from the ESM Object
+ * Template's Default combination). Undefined when extraction found none or
+ * the formid isn't an extracted omod (e.g. legendary-slot placeholders).
+ */
+export function getDefaultOmodId(mode: GameMode, weapon: Weapon, slot: string): string | undefined {
+  for (const formId of weapon.defaultModFormIds ?? []) {
+    const omod = omodsByFormId(mode).get(formId);
+    if (omod?.attachPointEdid === slot) return omod.id;
+  }
+  return undefined;
+}
+
+/**
+ * Default omods to fold into the effective weapon for slots the player hasn't
+ * decided on — no real weapon instance has an empty slot, so an untouched (or
+ * explicitly cleared) slot means its standard part. Only a *string* value in
+ * `chosenMods` marks a slot as decided. Cosmetic/legendary attach points are
+ * skipped (own pickers / no stats).
+ */
+export function getDefaultOmods(
+  mode: GameMode,
+  weapon: Weapon,
+  chosenMods: Record<string, string | null | undefined>
+): GeneratedOmod[] {
+  const out: GeneratedOmod[] = [];
+  for (const formId of weapon.defaultModFormIds ?? []) {
+    const omod = omodsByFormId(mode).get(formId);
+    if (!omod) continue;
+    if (LEGENDARY_SLOT_RE.test(omod.attachPointEdid)) continue;
+    // Pure-appearance cosmetic defaults are noise, but stat-carrying ones are
+    // real unique effects riding cosmetic attach points (Cold Shoulder's
+    // Paranormal Mod on ap_customName) — same rule as the picker's
+    // getOmodSlots includeSlot.
+    if (COSMETIC_SLOT_RE.test(omod.attachPointEdid) && omod.modifiers.length === 0) continue;
+    if (typeof chosenMods[omod.attachPointEdid] === 'string') continue;
+    out.push(omod);
+  }
+  return out;
+}
+
 function isAttachable(omod: GeneratedOmod, weapon: Weapon): boolean {
   const slots = weapon.attachParentSlots ?? [];
   if (!slots.includes(omod.attachPointFormId)) return false;
@@ -116,8 +168,11 @@ function buildSlots(
     // real mods include via their Includes chain — not equippable themselves.
     // (The extractor stopped emitting them; this guards pre-derivation data.)
     if (omod.id.startsWith('_PARENT_') || omod.name.startsWith('TEMPLATE')) continue;
-    // Obtainability verdicts + hand corrections (see live/weapons.ts).
-    if (omod.obtainable === false && !forceVisibleOmodIds.has(omod.id)) continue;
+    // Obtainability verdicts + hand corrections (see live/weapons.ts). A
+    // weapon's own standard parts are always visible: default mods are often
+    // attached purely by template/keyword with no reverse reference.
+    const isWeaponDefault = (weapon.defaultModFormIds ?? []).includes(omod.formId);
+    if (omod.obtainable === false && !forceVisibleOmodIds.has(omod.id) && !isWeaponDefault) continue;
     if (hiddenOmodIds.has(omod.id)) continue;
     // Weapon-restricted mods (empty targetKeywords on shared slots) only
     // appear on their own weapon.
@@ -129,11 +184,18 @@ function buildSlots(
     const option: OmodOption = badge ? { ...omod, badge } : omod;
     (groups.get(omod.attachPointEdid) ?? groups.set(omod.attachPointEdid, []).get(omod.attachPointEdid)!).push(option);
   }
+  const defaultFormIds = new Set(weapon.defaultModFormIds ?? []);
   return [...groups.entries()]
     .map(([slot, options]) => ({
       slot,
       label: slotLabel(slot),
-      options: options.sort((a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id)),
+      options: options.sort(
+        (a, b) =>
+          // The weapon's standard part first, then alphabetical.
+          Number(defaultFormIds.has(b.formId)) - Number(defaultFormIds.has(a.formId)) ||
+          a.name.localeCompare(b.name) ||
+          a.id.localeCompare(b.id)
+      ),
     }))
     .sort(sortSlots);
 }
