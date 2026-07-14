@@ -1516,6 +1516,15 @@ walked live against the 20260710 dump:
   legacy `_REPAIRONLY`/`NOCRAFT` edid regex.
 - **`Repair Method` 5 is NOT a NOCRAFT marker** — real scrap-learnable recipes
   (`co_Weapon_Ranged_NWOT_ThirstZapper`) carry it too. Never gates.
+- **Mod boxes substitute for recipe knowledge** (user-clarified 2026-07-14): a
+  Learn-Method-0 COBJ whose `Learn Recipe From` is the NOCRAFT dummy is not a
+  learnable recipe, yet the mod is still player-slottable whenever a matching
+  loose-mod / mod-box MISC item (referenced from the COBJ or the OMOD) is in
+  inventory — e.g. all ~40 non-standard Enclave plasma mods (quest drops,
+  vendor stock). Obtainability for these flows through the MISC reverse-ref
+  chain, so `hasGrantingCobj: false` on them is *correct*, and neither
+  `hasGrantingCobj` nor COBJ-learnability in general may ever gate app-side
+  eligibility or visibility.
 - **Vendor recipe pools run ~8 LVLIs deep** (BOOK → `LLS_Recipes_*` → … →
   `Vendor_LC060_Whitespring_BoS` → CONT), so the BOOK chase uses its own
   `BOOK_LVLI_DEPTH_CAP = 10` while the general LVLI cap stays 4 (NPC-loadout

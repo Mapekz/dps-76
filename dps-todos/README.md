@@ -23,6 +23,12 @@ docs' remaining melee scope merged into
 [melee-cadence.md](melee-cadence.md); their measurement leftovers moved to
 [measurement-backlog.md](measurement-backlog.md).
 
+Removed as **completed** on 2026-07-14: `omod-eligibility.md` (COBJ-anchored
+`isEligible`; empty-`targetKeywords` mods gated by template membership /
+explicit rescue) and `omod-obtainability-chains.md` (`cobj-index.ts` forward
+index, plan-BOOK + scrap-to-learn chases, weak-evidence review queue) — full
+spec in `docs/assumptions.md` "OMOD eligibility & recipe chains".
+
 `ap-and-accuracy.md` was renamed to [ap-regen.md](ap-regen.md) and rescoped
 2026-07-13: VATS hit-chance/accuracy is now permanently out of scope (closed
 box, not just deferred), and the doc's remaining scope is VATS AP regen/sec
@@ -32,18 +38,12 @@ Wanderer's passive solo regen and any armor-sourced passive regen do not).
 ## Weapon-mod selection sweep (added 2026-07-14, unprioritized)
 
 Six barebones spikes carved from the 2026-07-14 tester bug sweep (~50 mod
-picker issues), grouped by root cause. The user picks execution order; #1 and
-#2 share a COBJ index and should run together or #1 first. Every reported
-issue lives in exactly one file's checklist.
+picker issues), grouped by root cause. Every reported issue lives in exactly
+one file's checklist. The two foundational fixes — `omod-eligibility.md`
+(COBJ-anchored mod↔weapon matching) and `omod-obtainability-chains.md`
+(plan/recipe/vendor chases) — completed 2026-07-14 and were removed (see
+above).
 
-- **[omod-eligibility.md](omod-eligibility.md)** — COBJ-anchored mod↔weapon
-  matching; kills the empty-`targetKeywords` pollution (Vox Syringe barrel
-  everywhere, internal suppressor on chainsaws, paddle-ball fire mods, bogus
-  AGL/M79/.50-cal slots). The foundational fix.
-- **[omod-obtainability-chains.md](omod-obtainability-chains.md)** — chase
-  recipe-BOOK teaching, scrap-to-learn, and vendor (bullion/caps) chains;
-  fixes missing barrels/muzzles/cores/sights (plasma, laser, gatling plasma,
-  gauss minigun, gamma gun) and drops cut content (gauss pistol energy barrel).
 - **[omod-slot-naming.md](omod-slot-naming.md)** — slot label overrides +
   per-weapon layer ("MeleeMod", "ChemicalType", auto-axe "Scope" → Blade,
   chainsaw/drill "Barrel" → Bar/Drill Bit).
