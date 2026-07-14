@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import type { EsmClient, EsmRefRow } from '../esm-client';
 import { ObtainabilityClassifier } from '../obtainability';
+import { emptyCobjIndex, type CobjIndex, type CobjInfo } from '../cobj-index';
+import bookFastTriggerRefs from './fixtures/refs-book-fasttrigger-plan.json';
 import minigunVertibird from './fixtures/refs-minigun-vertibird.json';
 import rd01CrAssaultRifle from './fixtures/refs-rd01-crassaultrifle.json';
 import lvliNpc from './fixtures/refs-lvli-npc.json';
@@ -274,5 +276,223 @@ describe('ObtainabilityClassifier', () => {
     ]);
     expect(verdicts.get('0xTHROWS')).toEqual({ obtainable: false, signals: ['refsError'] });
     expect(verdicts.get('0xNOTHING')).toEqual({ obtainable: false, signals: ['noRefs'] });
+  });
+});
+
+/** Minimal CobjInfo factory for learn-method-gated tests. */
+function cobjInfo(overrides: Partial<CobjInfo> & Pick<CobjInfo, 'formId' | 'edid'>): CobjInfo {
+  return {
+    createdObjectFormId: null,
+    learnMethod: null,
+    repairMethod: null,
+    learnRecipeFrom: null,
+    ...overrides,
+  };
+}
+
+function indexOf(...infos: CobjInfo[]): CobjIndex {
+  const index = emptyCobjIndex();
+  for (const info of infos) {
+    index.byFormId.set(info.formId, info);
+    if (info.createdObjectFormId) {
+      const list = index.byCreatedObject.get(info.createdObjectFormId) ?? [];
+      list.push(info);
+      index.byCreatedObject.set(info.createdObjectFormId, list);
+    }
+  }
+  return index;
+}
+
+const COBJ_REF = (formId: string, edid: string): EsmRefRow => ({
+  form_id: formId,
+  record_type: 'COBJ',
+  editor_id: edid,
+  name: null,
+  depth: 1,
+});
+
+describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () => {
+  it('plan-taught recipe (Learn Method 4) with an obtainable BOOK → obtainable, cobjBook', async () => {
+    // refs-book-fasttrigger-plan.json is the REAL captured refs of BOOK
+    // 0x00000871 (Plan: Assault Rifle Fierce Receiver): vendor LVLIs, an FLST
+    // exclusion list, a Test chest, and the COBJ it teaches. The direct
+    // terminals are all skippable (COBJ circular, FLST exclusion, CONT
+    // junk-named), so proof must come through the vendor LVLI chase — stubbed
+    // here to reach a CONT vendor chest in one hop.
+    const client = stubClient({
+      '0xOMOD_PLAN': [COBJ_REF('0x00525025', 'co_mod_AssaultRifle_Receiver_FastTrigger-CritDMG')],
+      '0x00000871': bookFastTriggerRefs,
+      // First vendor LVLI in the book's refs → a vendor container.
+      '0x003EC64A': [
+        { form_id: '0xCONT_V', record_type: 'CONT', editor_id: 'LC060_WhitespringVendorChest_BoS', name: null, depth: 1 },
+      ],
+    });
+    const index = indexOf(
+      cobjInfo({
+        formId: '0x00525025',
+        edid: 'co_mod_AssaultRifle_Receiver_FastTrigger-CritDMG',
+        createdObjectFormId: '0xOMOD_PLAN',
+        learnMethod: 4,
+        learnRecipeFrom: { formId: '0x00000871', recordType: 'BOOK', edid: 'recipe_mod_AssaultRifle_Receiver_FastTrigger-CritDMG' },
+      })
+    );
+    const classifier = new ObtainabilityClassifier(client, new Set(), index);
+    const verdicts = await classifier.classify([{ formId: '0xOMOD_PLAN', edid: 'mod_AssaultRifle_Receiver_FastTrigger' }]);
+    const verdict = verdicts.get('0xOMOD_PLAN')!;
+    expect(verdict.obtainable).toBe(true);
+    expect(verdict.signals).toContain('cobjBook:co_mod_AssaultRifle_Receiver_FastTrigger-CritDMG');
+  });
+
+  it('plan-taught recipe whose BOOK reaches nothing → unobtainable, cobjBookUnproven', async () => {
+    const client = stubClient({
+      '0xOMOD_CUT': [COBJ_REF('0xCOBJ_CUT', 'co_mod_Cut_Content')],
+      // The BOOK's only referencers: the teaching COBJ (circular) and an
+      // exclusion FLST — neither proves a player can get the plan.
+      '0xBOOK_CUT': [
+        COBJ_REF('0xCOBJ_CUT', 'co_mod_Cut_Content'),
+        { form_id: '0xFLST_EX', record_type: 'FLST', editor_id: 'BabylonExcludeList', name: null, depth: 1 },
+      ],
+    });
+    const index = indexOf(
+      cobjInfo({
+        formId: '0xCOBJ_CUT',
+        edid: 'co_mod_Cut_Content',
+        createdObjectFormId: '0xOMOD_CUT',
+        learnMethod: 4,
+        learnRecipeFrom: { formId: '0xBOOK_CUT', recordType: 'BOOK', edid: 'recipe_mod_Cut_Content' },
+      })
+    );
+    const classifier = new ObtainabilityClassifier(client, new Set(), index);
+    const verdicts = await classifier.classify([{ formId: '0xOMOD_CUT', edid: 'mod_Cut_Content' }]);
+    const verdict = verdicts.get('0xOMOD_CUT')!;
+    expect(verdict.obtainable).toBe(false);
+    expect(verdict.signals).toContain('cobjBookUnproven:co_mod_Cut_Content');
+  });
+
+  it('vendor recipe pools run deeper than the general LVLI cap — the BOOK chase still walks them', async () => {
+    // Synthetic 8-LVLI vendor chain (the live Whitespring BoS shape): under
+    // the general cap of 4 this is a truncated false; the book chase's own
+    // cap must walk it to the CONT terminal.
+    const chain: Record<string, unknown> = {
+      '0xOMOD_VENDOR': [COBJ_REF('0xCOBJ_VENDOR', 'co_mod_Vendor_Taught')],
+      '0xBOOK_VENDOR': [{ form_id: '0xLVL1', record_type: 'LVLI', editor_id: 'LLS_Recipes_L1', name: null, depth: 1 }],
+    };
+    for (let i = 1; i < 8; i++) {
+      chain[`0xLVL${i}`] = [{ form_id: `0xLVL${i + 1}`, record_type: 'LVLI', editor_id: `LL_Recipes_L${i + 1}`, name: null, depth: 1 }];
+    }
+    chain['0xLVL8'] = [{ form_id: '0xCONT_VENDOR', record_type: 'CONT', editor_id: 'VendorChest', name: null, depth: 1 }];
+    const client = stubClient(chain);
+    const index = indexOf(
+      cobjInfo({
+        formId: '0xCOBJ_VENDOR',
+        edid: 'co_mod_Vendor_Taught',
+        createdObjectFormId: '0xOMOD_VENDOR',
+        learnMethod: 4,
+        learnRecipeFrom: { formId: '0xBOOK_VENDOR', recordType: 'BOOK', edid: 'recipe_mod_Vendor_Taught' },
+      })
+    );
+    const classifier = new ObtainabilityClassifier(client, new Set(), index);
+    const verdicts = await classifier.classify([{ formId: '0xOMOD_VENDOR', edid: 'mod_Vendor_Taught' }]);
+    expect(verdicts.get('0xOMOD_VENDOR')!.obtainable).toBe(true);
+  });
+
+  it('scrap-taught recipe (Learn Method 1): obtainable WEAP scrap source proves access; unobtainable one does not', async () => {
+    const client = stubClient({
+      '0xOMOD_BAYONET': [COBJ_REF('0xCOBJ_BAYONET', 'co_mod_BlackPowder_Rifle_Bayonet')],
+      '0xOMOD_UNSCRAP': [COBJ_REF('0xCOBJ_UNSCRAP', 'co_mod_Cut_Scrap')],
+    });
+    const index = indexOf(
+      cobjInfo({
+        formId: '0xCOBJ_BAYONET',
+        edid: 'co_mod_BlackPowder_Rifle_Bayonet',
+        createdObjectFormId: '0xOMOD_BAYONET',
+        learnMethod: 1,
+        learnRecipeFrom: { formId: '0xWEAP_BPR', recordType: 'WEAP', edid: 'BlackPowder_Rifle' },
+      }),
+      cobjInfo({
+        formId: '0xCOBJ_UNSCRAP',
+        edid: 'co_mod_Cut_Scrap',
+        createdObjectFormId: '0xOMOD_UNSCRAP',
+        learnMethod: 1,
+        learnRecipeFrom: { formId: '0xWEAP_CUT', recordType: 'WEAP', edid: 'CutWeapon' },
+      })
+    );
+    const classifier = new ObtainabilityClassifier(client, new Set(['0xWEAP_BPR']), index);
+    const verdicts = await classifier.classify([
+      { formId: '0xOMOD_BAYONET', edid: 'mod_BlackPowder_Rifle_Bayonet' },
+      { formId: '0xOMOD_UNSCRAP', edid: 'mod_Cut_Scrap' },
+    ]);
+    const bayonet = verdicts.get('0xOMOD_BAYONET')!;
+    expect(bayonet.obtainable).toBe(true);
+    expect(bayonet.signals).toContain('cobjScrap:co_mod_BlackPowder_Rifle_Bayonet');
+    const cut = verdicts.get('0xOMOD_UNSCRAP')!;
+    expect(cut.obtainable).toBe(false);
+    expect(cut.signals).toContain('cobjScrapUnproven:co_mod_Cut_Scrap');
+  });
+
+  it('scrap-taught recipe whose scrap source is the created object itself cannot bootstrap access', async () => {
+    const client = stubClient({
+      '0xOMOD_SELF': [COBJ_REF('0xCOBJ_SELF', 'co_mod_Self_Scrap')],
+    });
+    const index = indexOf(
+      cobjInfo({
+        formId: '0xCOBJ_SELF',
+        edid: 'co_mod_Self_Scrap',
+        createdObjectFormId: '0xOMOD_SELF',
+        learnMethod: 1,
+        learnRecipeFrom: { formId: '0xOMOD_SELF', recordType: 'OMOD', edid: 'mod_Self_Scrap' },
+      })
+    );
+    const classifier = new ObtainabilityClassifier(client, new Set(), index);
+    const verdicts = await classifier.classify([{ formId: '0xOMOD_SELF', edid: 'mod_Self_Scrap' }]);
+    expect(verdicts.get('0xOMOD_SELF')!.obtainable).toBe(false);
+  });
+
+  it('field-based NOCRAFT: a dummy-learn-from recipe is non-granting even with a clean edid', async () => {
+    const client = stubClient({
+      '0xWEAP_DEAD': [COBJ_REF('0xCOBJ_DUMMY', 'co_Weapon_CleanSoundingName')],
+    });
+    const index = indexOf(
+      cobjInfo({
+        formId: '0xCOBJ_DUMMY',
+        edid: 'co_Weapon_CleanSoundingName',
+        createdObjectFormId: '0xWEAP_DEAD',
+        learnMethod: 0,
+        learnRecipeFrom: { formId: '0x00054A1F', recordType: 'MISC', edid: 'recipe_Dummy_Uncraftable_Item_NOCRAFT' },
+      })
+    );
+    const classifier = new ObtainabilityClassifier(client, new Set(), index);
+    const verdicts = await classifier.classify([{ formId: '0xWEAP_DEAD', edid: 'DeadWeapon' }]);
+    const verdict = verdicts.get('0xWEAP_DEAD')!;
+    expect(verdict.obtainable).toBe(false);
+    expect(verdict.signals).toContain('noGrantCobj:co_Weapon_CleanSoundingName');
+  });
+
+  it('learn methods 0/3 and unindexed COBJs grant unconditionally (pre-index behavior)', async () => {
+    const client = stubClient({
+      '0xOMOD_DEFAULT': [COBJ_REF('0xCOBJ_KNOWN', 'co_mod_Known_By_Default')],
+      '0xOMOD_NOINDEX': [COBJ_REF('0xCOBJ_MISSING', 'co_mod_Not_In_Index')],
+    });
+    const index = indexOf(
+      cobjInfo({
+        formId: '0xCOBJ_KNOWN',
+        edid: 'co_mod_Known_By_Default',
+        createdObjectFormId: '0xOMOD_DEFAULT',
+        learnMethod: 3,
+      })
+    );
+    const classifier = new ObtainabilityClassifier(client, new Set(), index);
+    const verdicts = await classifier.classify([
+      { formId: '0xOMOD_DEFAULT', edid: 'mod_Known_By_Default' },
+      { formId: '0xOMOD_NOINDEX', edid: 'mod_Not_In_Index' },
+    ]);
+    expect(verdicts.get('0xOMOD_DEFAULT')).toEqual({
+      obtainable: true,
+      signals: ['cobj:co_mod_Known_By_Default'],
+    });
+    expect(verdicts.get('0xOMOD_NOINDEX')).toEqual({
+      obtainable: true,
+      signals: ['cobj:co_mod_Not_In_Index'],
+    });
   });
 });
