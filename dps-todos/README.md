@@ -38,15 +38,15 @@ Wanderer's passive solo regen and any armor-sourced passive regen do not).
 ## Weapon-mod selection sweep (added 2026-07-14, unprioritized)
 
 Six barebones spikes carved from the 2026-07-14 tester bug sweep (~50 mod
-picker issues), grouped by root cause. Every reported issue lives in exactly
-one file's checklist. The two foundational fixes — `omod-eligibility.md`
-(COBJ-anchored mod↔weapon matching) and `omod-obtainability-chains.md`
-(plan/recipe/vendor chases) — completed 2026-07-14 and were removed (see
-above).
+picker issues), grouped by root cause. Five of the six completed 2026-07-14
+and were removed: `omod-eligibility.md` (COBJ-anchored mod↔weapon matching),
+`omod-obtainability-chains.md` (plan/recipe/vendor chases),
+`omod-nondps-stats.md` (show-all-mods display policy, inert badges),
+`omod-slot-hygiene.md` (dedupe + no-decision slot hiding), and
+`omod-slot-naming.md` (KYWD-FULL/global + per-weapon power-tool labels) —
+recover via git history; shipped detail in `docs/assumptions.md`. Only one
+remains:
 
-- **[omod-slot-naming.md](omod-slot-naming.md)** — slot label overrides +
-  per-weapon layer ("MeleeMod", "ChemicalType", auto-axe "Scope" → Blade,
-  chainsaw/drill "Barrel" → Bar/Drill Bit).
 - **[unique-cursed-mods.md](unique-cursed-mods.md)** — unique-slot
   completion: missing uniques (Cold Shoulder, Holy Fire, Flatliner, …),
   cursed mods under "Item Description", bogus entries ("The Pipe", Minty

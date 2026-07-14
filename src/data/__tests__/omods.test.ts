@@ -223,3 +223,34 @@ describe('slot hygiene against live data', () => {
     }
   });
 });
+
+// 2026-07-14 slot naming (dps-todos/omod-slot-naming.md): global overrides
+// (KYWD FULL-sourced where one exists) + a per-weapon layer for power tools
+// whose gun attach points hold non-gun parts.
+
+describe('slot labels', () => {
+  const labelOf = (weaponId: string, slot: string): string | undefined => {
+    const weapon = getWeapons('live')[weaponId];
+    expect(weapon, weaponId).toBeDefined();
+    return getOmodSlots('live', weapon).find(s => s.slot === slot)?.label;
+  };
+
+  it('global overrides: melee "MeleeMod" reads Upgrade (KYWD FULL), Cremator "ChemicalType" reads Tank, "Mag" reads Magazine', () => {
+    expect(labelOf('Machete', 'ap_melee_MeleeMod')).toBe('Upgrade');
+    expect(labelOf('Cremator', 'ap_gun_ChemicalType')).toBe('Tank');
+    expect(labelOf('Cremator', 'ap_gun_Mag')).toBe('Magazine');
+  });
+
+  it('power-tool per-weapon overrides derived from each slot\'s eligible mods', () => {
+    expect(labelOf('AutoAxe', 'ap_gun_Scope')).toBe('Blade');
+    expect(labelOf('Chainsaw_76', 'ap_gun_Barrel')).toBe('Bar');
+    expect(labelOf('Chainsaw_76', 'ap_gun_Scope')).toBe('Attachment');
+    expect(labelOf('Drill', 'ap_gun_Barrel')).toBe('Drill Bit');
+    expect(labelOf('Ripper', 'ap_melee_MeleeMod')).toBe('Blade');
+  });
+
+  it('gun weapons keep their auto-derived labels (no per-weapon leakage)', () => {
+    expect(labelOf('AlienBlaster', 'ap_gun_Scope')).toBe('Scope');
+    expect(labelOf('AlienBlaster', 'ap_gun_Barrel')).toBe('Barrel');
+  });
+});

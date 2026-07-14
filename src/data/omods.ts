@@ -1,7 +1,13 @@
 import type { GameMode, Weapon } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
 import { INERT_ENGINE_BUCKETS } from '@/types/modifiers';
-import { forceVisibleOmodIds, hiddenOmodIds, omodBadgeOverrides, omodWeaponRestrictions } from './overrides/corrections';
+import {
+  forceVisibleOmodIds,
+  hiddenOmodIds,
+  omodBadgeOverrides,
+  omodWeaponRestrictions,
+  perWeaponSlotLabelOverrides,
+} from './overrides/corrections';
 import { getDataset } from './dataset';
 import { isRecordVisible } from './overlay';
 
@@ -191,10 +197,26 @@ export interface OmodSlot {
  */
 const NON_HYGIENE_SLOT_RE = /legendary|customname/i;
 
-/** Slots whose edid-derived label reads worse than a fixed name. */
-const SLOT_LABEL_OVERRIDES: Record<string, string> = { ap_customName: 'Unique' };
+/**
+ * Slots whose edid-derived label reads worse than a fixed name. Sourced from
+ * the attach-point KYWD's FULL name where one exists (20260710 dump);
+ * inventions are commented.
+ */
+const SLOT_LABEL_OVERRIDES: Record<string, string> = {
+  ap_customName: 'Unique',
+  // KYWD 0x0005524C FULL = "Upgrade" (48 melee weapons).
+  ap_melee_MeleeMod: 'Upgrade',
+  // KYWD 0x0005D4D7 FULL = "Magazine".
+  ap_gun_Mag: 'Magazine',
+  // KYWD 0x00729BD5 FULL is ALSO "Magazine", which would collide with
+  // ap_gun_Mag on the Cremator — the only weapon using this attach point,
+  // whose options here are all "... Tank" (Napalm/Slow-Burning). Invented.
+  ap_gun_ChemicalType: 'Tank',
+};
 
-function slotLabel(attachPointEdid: string): string {
+function slotLabel(weaponId: string, attachPointEdid: string): string {
+  const perWeapon = perWeaponSlotLabelOverrides[weaponId]?.[attachPointEdid];
+  if (perWeapon) return perWeapon;
   if (SLOT_LABEL_OVERRIDES[attachPointEdid]) return SLOT_LABEL_OVERRIDES[attachPointEdid];
   const raw = attachPointEdid.replace(/^ap_(gun_|melee_|Gun|Melee)?/i, '').replace(/[_-]+/g, ' ').trim();
   return raw.charAt(0).toUpperCase() + raw.slice(1);
@@ -252,7 +274,7 @@ function buildSlots(
     [...groups.entries()]
       .map(([slot, options]) => ({
         slot,
-        label: slotLabel(slot),
+        label: slotLabel(weapon.id, slot),
         options: (NON_HYGIENE_SLOT_RE.test(slot) ? options : dedupe(options)).sort(
           (a, b) =>
             // The weapon's standard part first, then alphabetical.

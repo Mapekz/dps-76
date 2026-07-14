@@ -280,6 +280,30 @@ export const omodWeaponRestrictions: Readonly<Record<string, readonly string[]>>
 };
 
 /**
+ * Per-weapon slot label overrides — (weaponId, attachPointEdid) → label.
+ *
+ * The game reuses gun attach points on automatic-melee/power-tool weapons, so
+ * their slots inherit nonsense gun names ("Scope" holding blades). None of
+ * these attach-point KYWDs carries a FULL name to source, so each label is
+ * derived from the slot's actual eligible mods (2026-07-14 sweep,
+ * dps-todos/omod-slot-naming.md). Power tools NOT listed need nothing: the
+ * Mr. Handy Buzz Blade's sole shock mod rides ap_melee_MeleeMod, which
+ * already reads "Upgrade" (its real KYWD FULL) via SLOT_LABEL_OVERRIDES.
+ */
+export const perWeaponSlotLabelOverrides: Readonly<Record<string, Readonly<Record<string, string>>>> = {
+  // "Scope" options: No Mod / Burning / Electrified / Poisoned / Turbo —
+  // blade treatments.
+  AutoAxe: { ap_gun_Scope: 'Blade' },
+  // "Barrel" options: Standard/Bow/Dual/Long Bow BAR; "Scope" options:
+  // No Mod / Flamer — an accessory, not optics.
+  Chainsaw_76: { ap_gun_Barrel: 'Bar', ap_gun_Scope: 'Attachment' },
+  // "Barrel" options: Standard / Piercing DRILL BIT.
+  Drill: { ap_gun_Barrel: 'Drill Bit' },
+  // "Upgrade" options: Standard / Curved BLADE / Extended BLADE.
+  Ripper: { ap_melee_MeleeMod: 'Blade' },
+};
+
+/**
  * Per-weapon field patches applied after adaptation.
  *
  * Fire-rate note: extracted `attackDelaySec` / automatic-flag data is
