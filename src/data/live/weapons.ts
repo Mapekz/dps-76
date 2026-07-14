@@ -1,6 +1,7 @@
 import type { Weapon, WeaponComponent } from '@/types';
 import type { GeneratedWeapon, GeneratedDamageType } from '@/types/generated';
 import { forceVisibleWeaponIds, hiddenWeaponIds, weaponCorrections } from '../overrides/corrections';
+import { isRecordVisible } from '../overlay';
 import generatedWeapons from './generated/weapons.json';
 
 /**
@@ -111,11 +112,24 @@ export function adaptWeapon(gw: GeneratedWeapon): Weapon {
   };
 }
 
+/**
+ * Raw generated weapons, pre-visibility-filter — the id space the overlay
+ * reviewer (`getUnresolvedOverrideKeys` in dataset.ts) validates weapon-keyed
+ * overlay tables against. Hidden records must still resolve here so the
+ * reviewer can tell "this key targets a real, now-hidden record" apart from
+ * "this key never matched anything."
+ */
+export const generatedWeaponsRaw = generatedWeapons as GeneratedWeapon[];
+
 export const weapons: Record<string, Weapon> = Object.fromEntries(
-  (generatedWeapons as GeneratedWeapon[])
+  generatedWeaponsRaw
     // Obtainability verdicts ride the generated data (obtainable: false =
     // no player-reachable ESM reference); corrections.ts rescues false
-    // negatives and hides false positives.
-    .filter(gw => (gw.obtainable !== false || forceVisibleWeaponIds.has(gw.id)) && !hiddenWeaponIds.has(gw.id))
+    // negatives and hides false positives. Unlike omods/consumables, hidden
+    // weapon records are dropped from the dataset entirely (not just the
+    // picker) — hiddenWeaponIds targets records that were never real player
+    // weapons in the first place (dev items, workshop objects, NPC
+    // duplicates), not real content a stale build might still reference.
+    .filter(gw => isRecordVisible(gw, { hidden: hiddenWeaponIds, forceVisible: forceVisibleWeaponIds }))
     .map(gw => [gw.id, adaptWeapon(gw)])
 );

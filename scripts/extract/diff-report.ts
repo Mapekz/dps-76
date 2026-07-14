@@ -133,6 +133,19 @@ async function main() {
   for (const o of zeroModLegendaries.sort((a, b) => a.id.localeCompare(b.id))) {
     out.push(`- \`${o.id}\` — ${o.name}${o.hasEnchantments ? ' (has enchantment — translation gap)' : ''}`);
   }
+  out.push('');
+
+  // Overlay reviewer: an id rename above can orphan an override in
+  // src/data/overrides/* — this script only diffs raw JSON, so run the
+  // reviewer test (imports the Vite-flavored @/data layer, which this plain
+  // tsx script deliberately doesn't) to catch it per mode.
+  out.push(
+    '## Overlay reviewer',
+    '',
+    'Run `pnpm test src/data/__tests__/dataset.test.ts` — asserts every hand-maintained ' +
+      'override (src/data/overrides/*) still targets a real generated id, for both live and pts.',
+    ''
+  );
 
   console.log(out.join('\n'));
 }

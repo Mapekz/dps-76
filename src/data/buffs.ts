@@ -5,6 +5,7 @@ import { applyDietScaling } from '@/lib/diet-mutations';
 import { applyClassFreakPenaltyScaling } from '@/lib/class-freak-mutations';
 import { getDataset } from './dataset';
 import { forceVisibleConsumableIds, hiddenConsumableIds } from './overrides/corrections';
+import { isRecordVisible } from './overlay';
 
 // Reads the merged mutation/consumable lists from the dataset chokepoint
 // (buff-value overrides already applied).
@@ -21,8 +22,8 @@ export function getMutations(mode: GameMode): GeneratedBuff[] {
  * selected one keeps computing — only the pickers stop offering them.
  */
 export function getConsumables(mode: GameMode): GeneratedBuff[] {
-  return getDataset(mode).consumables.filter(
-    b => (b.obtainable !== false || forceVisibleConsumableIds.has(b.id)) && !hiddenConsumableIds.has(b.id)
+  return getDataset(mode).consumables.filter(b =>
+    isRecordVisible(b, { hidden: hiddenConsumableIds, forceVisible: forceVisibleConsumableIds })
   );
 }
 

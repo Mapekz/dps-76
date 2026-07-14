@@ -2,6 +2,7 @@ import type { GameMode, Weapon } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
 import { forceVisibleOmodIds, hiddenOmodIds, omodBadgeOverrides, omodWeaponRestrictions } from './overrides/corrections';
 import { getDataset } from './dataset';
+import { isRecordVisible } from './overlay';
 
 // Reads the merged omod list from the dataset chokepoint (legendary-value
 // overrides already applied), so every access path — by-id lookup and slot
@@ -175,10 +176,11 @@ function buildSlots(
     if (omod.id.startsWith('_PARENT_') || omod.name.startsWith('TEMPLATE')) continue;
     // Obtainability verdicts + hand corrections (see live/weapons.ts). A
     // weapon's own standard parts are always visible: default mods are often
-    // attached purely by template/keyword with no reverse reference.
+    // attached purely by template/keyword with no reverse reference — that
+    // rescue is weapon-contextual (needs the weapon being modded), so it
+    // stays here rather than folding into the shared visibility predicate.
     const isWeaponDefault = (weapon.defaultModFormIds ?? []).includes(omod.formId);
-    if (omod.obtainable === false && !forceVisibleOmodIds.has(omod.id) && !isWeaponDefault) continue;
-    if (hiddenOmodIds.has(omod.id)) continue;
+    if (!isRecordVisible(omod, { hidden: hiddenOmodIds, forceVisible: forceVisibleOmodIds }, isWeaponDefault)) continue;
     // Weapon-restricted mods (empty targetKeywords on shared slots) only
     // appear on their own weapon.
     if (omodWeaponRestrictions[omod.id] && !omodWeaponRestrictions[omod.id].includes(weapon.id)) continue;
