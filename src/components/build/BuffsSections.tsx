@@ -551,7 +551,7 @@ export function ChemsSection() {
     <AccordionItem value="chems">
       <AccordionTrigger>
         <SectionTrigger
-          label="Chems, Alcohol & Addictions"
+          label="Chems & Alcohol"
           summary={summary}
           badge={
             junkies ? (
