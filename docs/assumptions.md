@@ -423,6 +423,7 @@ inert with a picker badge (`corrections.ts omodBadgeOverrides`).
 | Bleed/burn/shock mod DoTs | Damage-archetype MGEFs → `dotDamage` bucket with magnitude, `durationSec`, element from the MGEF Resist Value. **Refresh-only model** (user-confirmed, Stage A2): re-applying resets the timer rather than stacking, so the steady-state contribution while continuously attacking is the summed magnitude — INTERPRETED as damage/sec, NOT ESM-proven (the ESM only proves the total-over-duration magnitude, not a per-second rate). Displayed as a separate "DoT +X/s" line; burst per-hit and sustained DPS are unchanged. Folded per weapon-component damage type (every extracted entry carries exactly one `damageTypeScope` type) so it only counts on a weapon that actually deals that type | ESM (extracted); dmg/sec interpretation + refresh-only rule are ours |
 | Adrenal Reaction (mutation) | +5% dbm per KILL STREAK stack (+6.25%/stack with Strange in Numbers), extracted directly as ESM curves (Mutation_Adrenal_Normal/_Super, x:1→20). Below x=1 (the kill-streak slider's minimum, 0) the curve clamps to its lowest point (5%/6.25%) rather than reading 0 — this is the SAME endpoint-clamp convention the game's own curve tables use (compare `legendarymods/armor_resistancesperkill.json`, no x=0 point, vs `weapon_damageperkill.json`, explicit x=0→0), not an engine bug; no special-case zero floor is added | ESM curves (RETIRED the hand-carried `buff-overrides.ts` entry 2026-07-13 once the esm-CLI curve↔effect mis-association was fixed at the parser level — see decode.rs) |
 | Tenderizer | +10% dbm per stack, manual stack input 0–1000 | ESM magnitude 0.1 (PerkTenderizer01Spell); stacking cap per user spec |
+| Follow Through / Taking One for the Team | Both are `wholeDamage` ×(1+value) target-side damage-taken debuffs, esm-walk-confirmed exact match to the card description (10/20/30/40% per rank — no wiki-vs-ESM mismatch). Both are conditional 10s-window procs (Follow Through: after a ranged/thrown sneak hit; TOftT: on a teamed player being attacked) that aren't steady-state-computable, so each is modeled as a manual 0–40% uptime slider (`followThroughPct` / `takingOneForTheTeamPct`, default 0) representing the player's own assumption, independent of which card rank is equipped — NOT a rank-locked lookup. Slider only renders/applies while the corresponding legendary card is equipped; composes multiplicatively with the other via `foldWholeDamage`'s existing Π(1+value) (1.0×–1.4× each, up to ~1.96× if both maxed) | ESM chase 2026-07-14: Follow Through card → `Apply Combat Hit Spell` (IsStealthed + WeaponTypeThrown/Ranged) → SPEL → MGEF (`Perk to Apply`) → hidden debuff PERK `FollowThroughDamageDebuffPerk0{1-4}` (0x005A5D6D–70), `Mod Incoming Weapon Damage` ×1.1/1.2/1.3/1.4, unconditional 10s. TOftT's visible card (0x005A59C7–CA) is a pure gate (`GetPlayerTeammateCount()>0` + `IsMemberOfAPlayerTeam()`); real magnitude lives on hidden companion `LGN_TakingOneForTheTeam_DamageIncrease_Perk` (0x005B01AE–B1, `hasCard: false`, granted to the attacker), same `Mod Incoming Weapon Damage` ×1.1/1.2/1.3/1.4 mechanism |
 | SPECIAL buffs (Buffout +2 STR/+2 END, Bufftats +3 STR/+3 END/+3 PER, Mentats +2 INT/+2 PER, Berry Mentats +5 INT) | flat unconditional ADDs folded into player STR/LCK in `resolveLoadout` (STR → melee term, LCK → crit meter); PER/END/CHA/INT/AGI stored-inert until perk-SPECIAL scaling. Selection-level stacking/exclusivity (one chem/alcohol at a time, same-bonus food/drink displacement) is enforced in `src/lib/consumable-rules.ts` — see "Consumable stacking & addictions" below | ESM Peak Value Modifier magnitudes (extracted) |
 | Juggernaut's max-HP input | `PlayerConditions.maxHealth` is DERIVED (see "Max HP") and shown read-only in the Character section — the old editable Conditions field was dead (resolveLoadout always overwrote it); the 300 default only feeds synthetic engine tests | derivation 2026-07-12; dead input removed with the Character section |
 | Strange in Numbers | DERIVED gate, not a stored toggle: active ⇔ the StrangeInNumbers card is equipped AND `teammateCount` ≥ 1 (the +25% mutation boost needs a mutated teammate; teammate mutation status isn't modeled, so any teammate counts — user-decided 2026-07-12). Mutations header shows an active/inactive badge; legacy URLs carrying the old stored flag decode to the derived value | card description + user decision |
@@ -1289,14 +1290,25 @@ would let every creature death-explosion through).
 
 ## Known gaps / deferred
 
-- **Taking One for the Team / Follow Through**: the families exist in the
-  20260702 ESM (`LGN_TakingOneForTheTeam_Perk`, `LGN_FollowThrough_Perk`,
-  4 ranks each) and join the registry, but their extracted `modifiers` are
-  empty — the extractor doesn't yet map their MGEF effects. The `wholeDamage`
-  bucket is implemented and tested; it stays inert for these two cards until
-  the mgef → wholeDamage mapping is added (scripts/extract/normalize/mgef.ts).
-  Same applies to the rest of the legendary perks (registry entries are
-  display/slotting-only for now).
+- **Taking One for the Team / Follow Through**: the families still extract
+  with empty `modifiers` (the extractor doesn't yet follow the
+  `Select Spell`/`Perk to Apply` chain to the hidden debuff/companion perks —
+  see mgef → wholeDamage mapping, scripts/extract/normalize/mgef.ts), but both
+  cards are no longer inert — a manual uptime slider models their effect
+  directly in `assemble()` (`src/lib/loadout.ts`); see the manual-input table
+  above. Same "registry entries are display/slotting-only" gap applies to the
+  rest of the legendary perks.
+- **Taking One for the Team's bundled enemy DR debuff**: the same companion
+  perk that grants the attacker's damage-taken bonus ALSO applies a
+  `Peak Value Modifier` DamageResist debuff to the attacker (Detrimental,
+  10s, no Energy Resist component) — esm-walk-confirmed magnitudes
+  **-6 / -10 / -15 / -50** DR at ranks 1–4 (MGEF
+  `LGN_TakingOneForTheTeam_DamageIncrease_Effect01-04`, formIds
+  0x005A5DEF/0x005B01AB-AD). The 6→10→15→**50** progression is non-arithmetic
+  (steps of ~4–5 then a jump of 35) — plausibly a data-entry anomaly, not
+  confirmed intentional. Not modeled here (no enemy DR/ER mitigation exists
+  yet); scoped to `dps-todos/phase-3-enemies.md` §3.3 for whoever wires
+  `armorPen`/enemy resistance.
 - Enemy DR/ER, armor pen, race-gated damage (`enemyType` conditions evaluate
   to inactive), range falloff, limb targeting: deferred by plan.
 - `DamageTypeValues`/`AttackDamage` elemental conversions are modeled — see

@@ -101,6 +101,12 @@ export function ConditionsSection() {
   const defaults = createDefaultPlayerConditions();
   const isGhoul = conditions.isGhoul ?? false;
 
+  // Follow Through / Taking One for the Team: manual uptime sliders are only
+  // meaningful (and only shown) while the legendary card is actually equipped
+  // — see docs/assumptions.md and dps-todos/wholedamage-perks.md.
+  const hasFollowThrough = player.legendaryPerks.some(p => p.perkId === 'FollowThrough');
+  const hasTakingOneForTheTeam = player.legendaryPerks.some(p => p.perkId === 'TakingOneForTheTeam');
+
   const stats = React.useMemo(() => resolveStats(player, enemy, mode), [player, enemy, mode]);
 
   // Onslaught: the max folds from equipped sources (ScenarioSet.onslaughtMaxStacks);
@@ -130,6 +136,8 @@ export function ConditionsSection() {
     ((conditions.weaponConditionPct ?? 100) !== (defaults.weaponConditionPct ?? 100) ? 1 : 0) +
     ((conditions.hitRatePct ?? 100) !== (defaults.hitRatePct ?? 100) ? 1 : 0) +
     ((conditions.bodyPartHitRatePct ?? 100) !== (defaults.bodyPartHitRatePct ?? 100) ? 1 : 0) +
+    ((conditions.followThroughPct ?? 0) !== (defaults.followThroughPct ?? 0) ? 1 : 0) +
+    ((conditions.takingOneForTheTeamPct ?? 0) !== (defaults.takingOneForTheTeamPct ?? 0) ? 1 : 0) +
     (conditions.isPowerAttacking !== defaults.isPowerAttacking ? 1 : 0) +
     ((conditions.isLastShot ?? false) !== (defaults.isLastShot ?? false) ? 1 : 0) +
     (conditions.limitBreakingPieces !== defaults.limitBreakingPieces ? 1 : 0);
@@ -324,6 +332,44 @@ export function ConditionsSection() {
               While "Weakpoints" is on: this share of hits lands on the aimed body part, the rest hit the torso.
             </p>
           </div>
+
+          {hasFollowThrough && (
+            <div className="space-y-1.5">
+              <Label htmlFor="char-follow-through">Follow Through uptime: {conditions.followThroughPct ?? 0}%</Label>
+              <Slider
+                id="char-follow-through"
+                min={0}
+                max={40}
+                step={5}
+                value={[conditions.followThroughPct ?? 0]}
+                onValueChange={([v]) => set('followThroughPct', v)}
+                marks={[0, 10, 20, 30, 40].map(value => ({ value, label: String(value) }))}
+              />
+              <p className="text-muted-foreground text-xs">
+                Manual estimate of the 10s ranged-sneak damage-taken debuff's effective uptime.
+              </p>
+            </div>
+          )}
+
+          {hasTakingOneForTheTeam && (
+            <div className="space-y-1.5">
+              <Label htmlFor="char-toftt">
+                Taking One for the Team uptime: {conditions.takingOneForTheTeamPct ?? 0}%
+              </Label>
+              <Slider
+                id="char-toftt"
+                min={0}
+                max={40}
+                step={5}
+                value={[conditions.takingOneForTheTeamPct ?? 0]}
+                onValueChange={([v]) => set('takingOneForTheTeamPct', v)}
+                marks={[0, 10, 20, 30, 40].map(value => ({ value, label: String(value) }))}
+              />
+              <p className="text-muted-foreground text-xs">
+                Manual estimate of the teamed-attacker damage-taken debuff's effective uptime.
+              </p>
+            </div>
+          )}
 
           <SwitchRow
             id="char-power-attack"

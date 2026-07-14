@@ -66,12 +66,17 @@ never returns names.
   via an `EnemyProfile` (raceEdid / keywords) so Exterminator-style
   damage-vs-X perks finally evaluate per enemy.
 - **Taking One for the Team's enemy-Resist debuff** — user-reported
-  2026-07-13, suspected dev oversight bundled into TOftT's effect chain (see
-  [wholedamage-perks.md](wholedamage-perks.md)): while esm-walking the
-  `armorPen` chain above, also check TOftT's `LGN_TakingOneForTheTeam_Perk`/
-  `LGN_TakingOneForTheTeam_DamageIncrease_Perk` records for a bundled DR/ER
-  debuff on the attacker. Likely lands as an `armorPen`-shaped ADD once that
-  bucket exists, rather than a new bucket.
+  2026-07-13, esm-walk-confirmed 2026-07-14 (see
+  [wholedamage-perks.md](wholedamage-perks.md) and docs/assumptions.md
+  "Known gaps"): the hidden companion perk
+  `LGN_TakingOneForTheTeam_DamageIncrease_Perk` bundles a `Peak Value
+  Modifier` DamageResist debuff (Detrimental, 10s, no Energy Resist) onto the
+  attacker alongside its damage-taken bonus — magnitudes **-6 / -10 / -15 /
+  -50** DR at ranks 1–4 (MGEF `..._DamageIncrease_Effect01-04`, formIds
+  0x005A5DEF/0x005B01AB-AD). The rank-4 jump to 50 (vs an expected ~20) is
+  non-arithmetic — flag as a possible ESM data-entry anomaly, not confirmed
+  intentional, when modeling. Likely lands as an `armorPen`-shaped ADD once
+  that bucket exists, rather than a new bucket.
 - Output shape per enemy: `effective: { perHit, sustainedDps, retainedPct, ttk }`.
   TTK = enemy HP / effective sustained DPS (decide burst-vs-sustained per row;
   plan says emphasized-scenario metric drives the table).

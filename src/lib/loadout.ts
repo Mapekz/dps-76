@@ -68,6 +68,40 @@ function assemble(
     ...getAddictionModifiers(mode, countedAddictions),
   ];
 
+  // Follow Through / Taking One for the Team: manual uptime sliders folding
+  // to one wholeDamage ADD modifier each when the legendary card is equipped.
+  // Real per-rank magnitude is 10/20/30/40% (esm-walk-confirmed), but both
+  // are conditional 10s-window procs, not steady-state-computable — the
+  // slider is the player's own uptime assumption, independent of card rank
+  // (docs/assumptions.md).
+  const followThroughPct = conditions.followThroughPct ?? 0;
+  if (followThroughPct > 0 && playerConfig.legendaryPerks.some(p => p.perkId === 'FollowThrough')) {
+    loadoutModifiers.push({
+      id: 'manual:FollowThrough',
+      source: { kind: 'legendaryPerk', formId: '0x005A5D69', edid: 'LGN_FollowThrough_Perk', name: 'Follow Through' },
+      bucket: 'wholeDamage',
+      op: 'ADD',
+      value: followThroughPct / 100,
+      conditions: [],
+    });
+  }
+  const takingOneForTheTeamPct = conditions.takingOneForTheTeamPct ?? 0;
+  if (takingOneForTheTeamPct > 0 && playerConfig.legendaryPerks.some(p => p.perkId === 'TakingOneForTheTeam')) {
+    loadoutModifiers.push({
+      id: 'manual:TakingOneForTheTeam',
+      source: {
+        kind: 'legendaryPerk',
+        formId: '0x005A59C7',
+        edid: 'LGN_TakingOneForTheTeam_Perk',
+        name: 'Taking One for the Team',
+      },
+      bucket: 'wholeDamage',
+      op: 'ADD',
+      value: takingOneForTheTeamPct / 100,
+      conditions: [],
+    });
+  }
+
   // Apply equipped OMODs (standard slots + legendary effects) to the weapon.
   let weapon: Weapon | undefined;
   let omodModifiers: Modifier[] = [];
