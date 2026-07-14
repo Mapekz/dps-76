@@ -50,9 +50,6 @@ above).
 - **[omod-slot-hygiene.md](omod-slot-hygiene.md)** — dedupe duplicate
   Standard entries, hide Standard-only slots, hide non-craftable/no-op slots
   (universal range offsets, Weapon Model Replacement).
-- **[omod-nondps-stats.md](omod-nondps-stats.md)** — keep AP-cost/armor-pen/
-  utility mods selectable (Aligned, Glow Sights, Perforating mags, Prime);
-  policy: show all valid+obtainable mods, badge inert ones.
 - **[unique-cursed-mods.md](unique-cursed-mods.md)** — unique-slot
   completion: missing uniques (Cold Shoulder, Holy Fire, Flatliner, …),
   cursed mods under "Item Description", bogus entries ("The Pipe", Minty

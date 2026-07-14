@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import type { Weapon } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
 import { getWeapons } from '@/data';
-import { getOmodSlots, isEligible } from '@/data/omods';
+import { getLegendaryOmodSlots, getOmodSlots, isEligible } from '@/data/omods';
 
 // 2026-07-13 unique-weapon rework: named uniques collapsed into base weapon +
 // a mod_Custom_* OMOD at ap_customName. Many carry zero extracted modifiers
@@ -127,6 +127,45 @@ describe('COBJ-anchored eligibility against live data (regression cases from the
       'mod_Custom_TheVATSUnknown_Psychopath',
     ]) {
       expect(ids, id).toContain(id);
+    }
+  });
+});
+
+// 2026-07-14 show-all-mods display policy (dps-todos/omod-nondps-stats.md):
+// valid + obtainable zero-modifier mods surface badged 'inert' instead of
+// vanishing; dead-mechanic slots and reroll placeholders stay out.
+
+describe('show-all-mods display policy against live data', () => {
+  const slotsOf = (weaponId: string) => {
+    const weapon = getWeapons('live')[weaponId];
+    expect(weapon, weaponId).toBeDefined();
+    return getOmodSlots('live', weapon);
+  };
+
+  it("the Black Powder Rifle's muzzle slot offers the Large Bayonet, badged inert", () => {
+    const muzzle = slotsOf('BlackPowder_Rifle').find(s => s.slot === 'ap_gun_Muzzle');
+    const bayonet = muzzle?.options.find(o => o.id === 'mod_BlackPowder_Rifle_Bayonet');
+    expect(bayonet).toBeDefined();
+    expect(bayonet?.badge).toBe('inert');
+  });
+
+  it("the Gauss Minigun's sight slot offers the Gunner Sights, badged inert", () => {
+    const sight = slotsOf('GaussMinigun').find(s => s.slot === 'ap_gun_Sight');
+    const gunnerSights = sight?.options.find(o => o.id === 'mod_GaussMinigun_Scope_SightReflex');
+    expect(gunnerSights).toBeDefined();
+    expect(gunnerSights?.badge).toBe('inert');
+  });
+
+  it('dead-mechanic slots and legendary-reroll placeholders never surface anywhere in the roster', () => {
+    for (const weapon of Object.values(getWeapons('live'))) {
+      const slots = [...getOmodSlots('live', weapon), ...getLegendaryOmodSlots('live', weapon)];
+      for (const slot of slots) {
+        expect(slot.slot, weapon.id).not.toBe('ap_Gun_UniversalOffset_Range');
+        expect(slot.slot, weapon.id).not.toBe('ap_Weapon_Model_Replacement');
+        for (const o of slot.options) {
+          expect(o.id.startsWith('mod_Legendary_Crafting_Weapon'), `${weapon.id}/${o.id}`).toBe(false);
+        }
+      }
     }
   });
 });

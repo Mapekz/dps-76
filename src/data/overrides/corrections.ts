@@ -155,6 +155,15 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
   // from recipe_Dummy_Uncraftable_Item_NOCRAFT). Tester-confirmed not
   // craftable/obtainable in game (dps-todos/omod-obtainability-chains.md).
   'mod_GaussPistol_Barrel_Energy',
+  // Legendary-crafting reroll placeholders (ap_Legendary_Reroll): workbench
+  // UI machinery, not equippable effects — their FULL names are mojibake
+  // star glyphs ("Random �..."). Surfaced by the 2026-07-14 show-all-mods
+  // display policy (dps-todos/omod-nondps-stats.md); nothing else lives on
+  // that attach point.
+  'mod_Legendary_Crafting_Weapon1',
+  'mod_Legendary_Crafting_Weapon2',
+  'mod_Legendary_Crafting_Weapon3',
+  'mod_Legendary_Crafting_Weapon4',
 ]);
 
 /**

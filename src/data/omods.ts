@@ -13,6 +13,17 @@ import { isRecordVisible } from './overlay';
 const COSMETIC_SLOT_RE = /appearance|paint|skin|customname|item_description|material/i;
 /** Legendary-effect slots — handled by the legendary picker, not the mod slots. */
 const LEGENDARY_SLOT_RE = /legendary/i;
+/**
+ * Attach points with zero real player choice — the mechanic was removed from
+ * the game (universal range offsets ship stat-less) or it's a pure 3D-model
+ * reskin outside COSMETIC_SLOT_RE. Curated, not heuristic: these are the only
+ * two attach points whose every option is a zero-modifier non-choice
+ * (roster-wide sweep, 2026-07-14, dps-todos/omod-nondps-stats.md).
+ */
+const DEAD_MECHANIC_SLOT_EDIDS: ReadonlySet<string> = new Set([
+  'ap_Gun_UniversalOffset_Range',
+  'ap_Weapon_Model_Replacement',
+]);
 
 const byIdCache = new Map<GameMode, Map<string, GeneratedOmod>>();
 
@@ -130,16 +141,18 @@ export type OmodOption = GeneratedOmod & { badge?: OmodBadge };
 const STOCK_NAME_RE = /^(standard|no |stock)/i;
 
 /**
- * Picker display rule (user decision, 2026-07 overhaul): show mods that are
- * damage-relevant OR SPECIAL-modifying OR the weapon's stock/default parts;
- * hide pure utility (durability, weight — they extract with no modifiers).
- * Inert-but-shown entries get a badge instead of silently doing nothing.
+ * Picker display rule (user decision, 2026-07-14, superseding the earlier
+ * "hide pure utility" policy): show ALL valid + obtainable mods, even those
+ * with zero DPS delta — genre convention (Path of Building, WoWSims model the
+ * full loadout), sight/grip choices are part of the build mental model, and
+ * AP-cost / armor-pen wiring is coming (ap-regen.md, phase-3-enemies.md).
+ * Zero-modifier non-stock mods show badged 'inert' instead of vanishing.
  */
 export function classifyOmodDisplay(omod: GeneratedOmod, weapon?: Weapon): { show: boolean; badge?: OmodBadge } {
   const overrideBadge = omodBadgeOverrides[omod.id];
   const isStock = (weapon?.templateModFormIds ?? []).includes(omod.formId) || STOCK_NAME_RE.test(omod.name);
   const hasModifiers = omod.modifiers.length > 0;
-  if (!hasModifiers && !overrideBadge && !isStock) return { show: false };
+  if (!hasModifiers && !overrideBadge && !isStock) return { show: true, badge: 'inert' };
   if (overrideBadge) return { show: true, badge: overrideBadge };
   if (hasModifiers) {
     const isInert = (m: GeneratedOmod['modifiers'][number]) =>
@@ -195,6 +208,7 @@ function buildSlots(
     // real mods include via their Includes chain — not equippable themselves.
     // (The extractor stopped emitting them; this guards pre-derivation data.)
     if (omod.id.startsWith('_PARENT_') || omod.name.startsWith('TEMPLATE')) continue;
+    if (DEAD_MECHANIC_SLOT_EDIDS.has(omod.attachPointEdid)) continue;
     // Obtainability verdicts + hand corrections (see live/weapons.ts). A
     // weapon's own standard parts are always visible: default mods are often
     // attached purely by template/keyword with no reverse reference — that

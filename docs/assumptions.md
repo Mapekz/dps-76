@@ -1542,6 +1542,19 @@ sharing the attach point — the "Vox Syringe Barrel on a gauss minigun" bug
 class. Slots left with zero eligible mods disappear from the picker emergently
 (`buildSlots` only groups surviving options).
 
+Picker display policy (user decision 2026-07-14, superseding the earlier
+"hide pure utility" rule — dps-todos/omod-nondps-stats.md): **show ALL
+valid + obtainable mods**, including zero-DPS ones (sights, grips,
+AP-cost-only parts) — genre convention, and AP-cost/armor-pen wiring is
+planned. A zero-modifier non-stock mod now renders badged `inert` instead of
+being hidden (`classifyOmodDisplay`). Two curated exceptions, not ESM-proven
+but swept roster-wide: `ap_Gun_UniversalOffset_Range` (mechanic removed from
+the game; every option stat-less) and `ap_Weapon_Model_Replacement` (pure 3D
+reskins) are excluded wholesale in `buildSlots`
+(`DEAD_MECHANIC_SLOT_EDIDS`), and the four `mod_Legendary_Crafting_Weapon*`
+reroll placeholders (mojibake workbench machinery on `ap_Legendary_Reroll`)
+are hand-hidden in `hiddenOmodIds`.
+
 Weak-evidence review (user decision 2026-07-14: **flag, never auto-hide**): an
 obtainable standard-slot mod whose only proof is riding along on its weapon
 (`weap:`/`omod:` signals, no seat in `defaultModFormIds`) lands in
