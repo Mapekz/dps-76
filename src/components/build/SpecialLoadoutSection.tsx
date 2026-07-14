@@ -3,11 +3,12 @@ import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ButtonGroup } from '@/components/ui/button-group';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
-import { equippedRaceLock } from '@/data/perk-race';
+import { wrongRacePerks } from '@/data/perk-race';
 import { legendaryBonusOf } from '@/data/perk-budget';
 import { SPECIAL_KEYS } from '@/lib/player-stats';
 import { SectionTrigger } from './SectionTrigger';
@@ -16,23 +17,92 @@ import { PerkEditor } from './PerkEditorSection';
 import { usePerkStatus } from './usePerkStatus';
 
 /**
+ * Human/Ghoul toggle. Switching is always allowed — perks locked to the race
+ * being left behind are pruned by `race/set`, with a confirmation dialog
+ * first whenever that would actually remove something equipped.
+ */
+function RaceControl() {
+  const { mode } = useGameMode();
+  const { player } = useBuild();
+  const dispatch = useBuildDispatch();
+  const isGhoul = player.conditions.isGhoul ?? false;
+
+  // Non-null while the removal-confirm dialog is open.
+  const [pending, setPending] = React.useState<{ isGhoul: boolean; removing: string[] } | null>(null);
+
+  const handleClick = (race: 'human' | 'ghoul') => {
+    const target = race === 'ghoul';
+    if (target === isGhoul) return;
+    const removing = wrongRacePerks(mode, player.perks, player.legendaryPerks, target);
+    if (removing.length === 0) dispatch({ type: 'race/set', isGhoul: target });
+    else setPending({ isGhoul: target, removing });
+  };
+
+  const confirm = () => {
+    if (!pending) return;
+    dispatch({ type: 'race/set', isGhoul: pending.isGhoul });
+    setPending(null);
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <Label>Race</Label>
+      <ButtonGroup>
+        {(['human', 'ghoul'] as const).map(race => {
+          const selected = (race === 'ghoul') === isGhoul;
+          return (
+            <Button
+              key={race}
+              type="button"
+              size="sm"
+              variant={selected ? 'default' : 'outline'}
+              title={
+                race === 'ghoul'
+                  ? 'Ghoul: feral meter applies; food/drink meters do not'
+                  : 'Human: food/drink meters apply; feral meter does not'
+              }
+              onClick={() => handleClick(race)}
+            >
+              {race === 'human' ? 'Human' : 'Ghoul'}
+            </Button>
+          );
+        })}
+      </ButtonGroup>
+
+      <Dialog open={pending !== null} onOpenChange={open => !open && setPending(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Switch to {pending?.isGhoul ? 'Ghoul' : 'Human'}?</DialogTitle>
+            <DialogDescription>
+              These {pending?.isGhoul ? 'human' : 'ghoul'}-only perks will be removed:
+            </DialogDescription>
+          </DialogHeader>
+          <ul className="text-negative list-inside list-disc text-sm">
+            {pending?.removing.map(name => <li key={name}>{name}</li>)}
+          </ul>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setPending(null)}>
+              Cancel
+            </Button>
+            <Button type="button" variant="destructive" onClick={confirm}>
+              Switch &amp; remove
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+/**
  * Who the character IS: race (human/ghoul), base SPECIAL allocation, and the
  * perk loadout — the durable build identity, as opposed to the steady-state
  * inputs in ConditionsSection.
  */
 export function SpecialLoadoutSection() {
-  const { mode } = useGameMode();
   const { player } = useBuild();
-  const dispatch = useBuildDispatch();
 
   const isGhoul = player.conditions.isGhoul ?? false;
-
-  // Race lock from equipped race-restricted perks (Glowing Criticals → ghoul, ...).
-  const raceLock = React.useMemo(
-    () => equippedRaceLock(mode, player.perks, player.legendaryPerks),
-    [mode, player.perks, player.legendaryPerks]
-  );
-
   const { cardCount, overBudget } = usePerkStatus();
   const legendaryBonus = legendaryBonusOf(player.legendaryPerks);
   const specialSummary = SPECIAL_KEYS.map(k => player.conditions[k] + legendaryBonus[k]).join('·');
@@ -55,41 +125,7 @@ export function SpecialLoadoutSection() {
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-3">
-          <div className="space-y-1.5">
-            <Label>Race</Label>
-            <div className="flex items-center gap-2">
-              <ButtonGroup>
-                {(['human', 'ghoul'] as const).map(race => {
-                  const selected = (race === 'ghoul') === isGhoul;
-                  const lockedOut = raceLock.locked !== null && raceLock.locked !== race;
-                  return (
-                    <Button
-                      key={race}
-                      type="button"
-                      size="sm"
-                      variant={selected ? 'default' : 'outline'}
-                      disabled={lockedOut}
-                      title={
-                        lockedOut
-                          ? `Locked to ${raceLock.locked}: ${raceLock.lockedBy.join(', ')}`
-                          : race === 'ghoul'
-                            ? 'Ghoul: feral meter applies; food/drink meters do not'
-                            : 'Human: food/drink meters apply; feral meter does not'
-                      }
-                      onClick={() => dispatch({ type: 'condition/set', key: 'isGhoul', value: race === 'ghoul' })}
-                    >
-                      {race === 'human' ? 'Human' : 'Ghoul'}
-                    </Button>
-                  );
-                })}
-              </ButtonGroup>
-              {raceLock.conflict && (
-                <Badge variant="outline" className="border-negative text-negative" title={raceLock.lockedBy.join(', ')}>
-                  conflicting race-locked perks
-                </Badge>
-              )}
-            </div>
-          </div>
+          <RaceControl />
 
           <SpecialAllocationEditor />
 

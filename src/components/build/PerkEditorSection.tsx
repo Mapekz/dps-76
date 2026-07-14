@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CheckIcon, MinusIcon, PlusIcon, XIcon } from 'lucide-react';
+import { CheckIcon, LockIcon, MinusIcon, PlusIcon, XIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
@@ -188,6 +188,12 @@ function PerkAddCombobox({
 
   const equipped = new Map([...player.perks, ...player.legendaryPerks].map(p => [p.perkId, p.rank]));
   const legendarySlotsFull = player.legendaryPerks.length >= LEGENDARY_SLOTS;
+  const currentRace = (player.conditions.isGhoul ?? false) ? 'ghoul' : 'human';
+
+  // A card locked to the other race can't be added (mirrors the reducer's
+  // perk/add rejection) — the picker greys it out with a lock instead of
+  // silently doing nothing. Race itself only changes via the Race toggle.
+  const raceBlocked = (perk: Perk): boolean => perk.raceRestriction !== null && perk.raceRestriction !== currentRace;
 
   // Mirrors the reducer's blocking rules so blocked picks read as disabled
   // instead of silently doing nothing.
@@ -201,7 +207,7 @@ function PerkAddCombobox({
   };
 
   const select = (perkId: string, isLegendary: boolean, perk: Perk) => {
-    if (slotBlocked(perkId, isLegendary, perk)) return;
+    if (slotBlocked(perkId, isLegendary, perk) || raceBlocked(perk)) return;
     const currentRank = equipped.get(perkId);
     if (currentRank === undefined) {
       dispatch({ type: 'perk/add', perkId, rank: 1, legendary: isLegendary });
@@ -216,7 +222,10 @@ function PerkAddCombobox({
     <CommandGroup heading={heading}>
       {items.map(({ perkId, perk }) => {
         const rank = equipped.get(perkId);
-        const blocked = slotBlocked(perkId, isLegendary, perk);
+        // An equipped perk always matches the current race (the reducer keeps
+        // that invariant), so raceLocked only ever fires for unequipped cards.
+        const raceLocked = rank === undefined && raceBlocked(perk);
+        const blocked = raceLocked || slotBlocked(perkId, isLegendary, perk);
         return (
           <CommandItem
             key={perkId}
@@ -226,6 +235,7 @@ function PerkAddCombobox({
             onSelect={() => select(perkId, isLegendary, perk)}
           >
             <CheckIcon className={cn('mr-2 size-4', rank !== undefined ? 'opacity-100' : 'opacity-0')} />
+            {raceLocked && <LockIcon className="text-muted-foreground mr-1 size-3 shrink-0" />}
             <span className="min-w-0 flex-1 truncate">{perk.name}</span>
             {!blocked &&
               (rank === undefined ? (
@@ -234,17 +244,19 @@ function PerkAddCombobox({
                 <ActionDelta action={{ type: 'perk/setRank', perkId, rank: rank + 1 }} />
               ) : null)}
             <span className="text-muted-foreground ml-2 text-xs">
-              {blocked
-                ? isLegendary
-                  ? 'slots full'
-                  : 'budget full'
-                : rank !== undefined
-                  ? rank < perk.maxRank && perk.special
-                    ? `rank ${rank}/${perk.maxRank} · +${costDelta(perk, rank, rank + 1)} pt`
-                    : `rank ${rank}/${perk.maxRank}`
-                  : perk.special
-                    ? `max ${perk.maxRank} · ${perkCardCostAtRank(perk, 1)} pt`
-                    : `max ${perk.maxRank}`}
+              {raceLocked
+                ? `${perk.raceRestriction} only`
+                : blocked
+                  ? isLegendary
+                    ? 'slots full'
+                    : 'budget full'
+                  : rank !== undefined
+                    ? rank < perk.maxRank && perk.special
+                      ? `rank ${rank}/${perk.maxRank} · +${costDelta(perk, rank, rank + 1)} pt`
+                      : `rank ${rank}/${perk.maxRank}`
+                    : perk.special
+                      ? `max ${perk.maxRank} · ${perkCardCostAtRank(perk, 1)} pt`
+                      : `max ${perk.maxRank}`}
             </span>
           </CommandItem>
         );

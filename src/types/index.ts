@@ -166,6 +166,8 @@ export interface Perk {
   maxRank: number;
   /** Per-rank perk-point cost from the PCRD card; index 0 = rank 1 cost. */
   costs: number[];
+  /** PCRD "Race Restriction" — 'None' → null. From src/data/perk-cards.ts's card join. */
+  raceRestriction: 'human' | 'ghoul' | null;
 }
 
 export interface PerkLoadout {

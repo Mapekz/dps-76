@@ -183,6 +183,7 @@ describe('buildReducer', () => {
           ],
           name: 'My Build',
           special: { strength: 5, perception: 20, endurance: 5, charisma: 5, intelligence: 5, agility: 5, luck: 15 },
+          isGhoul: true, // RadSpecialist (key '01') is ghoul-only — Human would prune it
         },
       ],
       before
@@ -199,17 +200,34 @@ describe('buildReducer', () => {
     expect(s.player.legendaryPerks).toEqual([{ perkId: 'TakingOneForTheTeam', rank: 2 }]);
   });
 
-  it('build/importNd forces the ghoul race when the imported loadout is ghoul-locked', () => {
+  it('build/importNd sets race from the caller-resolved isGhoul and prunes perks that no longer fit', () => {
     const s = run([
       {
         type: 'build/importNd',
         perks: [{ key: '0n', name: 'GlowingCriticals', rank: 1 }],
         name: null,
         special: null,
+        isGhoul: true,
       },
     ]);
     expect(s.player.perks.some(p => p.perkId === 'GlowingCriticals')).toBe(true);
     expect(s.player.conditions.isGhoul).toBe(true);
+
+    // A mixed-race (invalid) link imported as Human drops the ghoul-only card.
+    const mixed = run([
+      {
+        type: 'build/importNd',
+        perks: [
+          { key: '2f', name: 'QuickHands', rank: 1 },
+          { key: '0n', name: 'GlowingCriticals', rank: 1 },
+        ],
+        name: null,
+        special: null,
+        isGhoul: false,
+      },
+    ]);
+    expect(mixed.player.conditions.isGhoul).toBe(false);
+    expect(mixed.player.perks).toEqual([{ perkId: 'QuickHands', rank: 1 }]);
   });
 
   it('build/hydrate replaces state wholesale and is idempotent', () => {
@@ -232,15 +250,41 @@ describe('body-part mult and race forcing', () => {
     expect(s2.player.weakpointMult).toBe(0.15);
   });
 
-  it('adding a ghoul-only perk forces the ghoul race', () => {
-    // Ghoul cards are regular SPECIAL-slotted perks (not legendary).
+  it('rejects adding a ghoul-only perk while Human is selected (state unchanged)', () => {
+    // Fresh builds start Human. Ghoul cards are regular SPECIAL-slotted perks (not legendary).
     const s = run([{ type: 'perk/add', perkId: 'GlowingCriticals', rank: 1, legendary: false }]);
+    expect(s.player.perks.some(p => p.perkId === 'GlowingCriticals')).toBe(false);
+    expect(s.player.conditions.isGhoul).toBe(false);
+  });
+
+  it('adds a ghoul-only perk once the race is already Ghoul', () => {
+    const asGhoul = run([{ type: 'race/set', isGhoul: true }]);
+    const s = run([{ type: 'perk/add', perkId: 'GlowingCriticals', rank: 1, legendary: false }], asGhoul);
     expect(s.player.perks.some(p => p.perkId === 'GlowingCriticals')).toBe(true);
-    expect(s.player.conditions.isGhoul).toBe(true);
   });
 
   it('adding an unrestricted perk leaves race alone', () => {
     const s = run([{ type: 'perk/add', perkId: 'Commando', rank: 1, legendary: false }]);
     expect(s.player.conditions.isGhoul).toBe(false);
+  });
+
+  it('race/set switches race and prunes equipped perks locked to the old race', () => {
+    const withHumanPerk = run([{ type: 'race/set', isGhoul: false }, { type: 'perk/add', perkId: 'QuickHands', rank: 1, legendary: false }]);
+    expect(withHumanPerk.player.perks).toEqual([{ perkId: 'QuickHands', rank: 1 }]);
+
+    const switched = run([{ type: 'race/set', isGhoul: true }], withHumanPerk);
+    expect(switched.player.conditions.isGhoul).toBe(true);
+    expect(switched.player.perks).toEqual([]); // Quick Hands (human-only) pruned
+
+    const back = run([{ type: 'race/set', isGhoul: false }], switched);
+    expect(back.player.conditions.isGhoul).toBe(false);
+  });
+
+  it('race/set leaves unrestricted perks equipped across the switch', () => {
+    const s = run([
+      { type: 'perk/add', perkId: 'Commando', rank: 1, legendary: false },
+      { type: 'race/set', isGhoul: true },
+    ]);
+    expect(s.player.perks).toEqual([{ perkId: 'Commando', rank: 1 }]);
   });
 });

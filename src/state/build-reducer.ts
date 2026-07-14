@@ -4,12 +4,13 @@ import {
   type EnemyConditions,
   type EnemyConfig,
   type ParsedPerk,
+  type PerkLoadout,
   type PlayerConditions,
   type PlayerConfig,
 } from '@/types';
 import { isLegendaryPerkKey, parsedPerksToLoadout, type ParsedSpecial } from '@/lib/nukes-dragons';
 import { computePerkBudget, perkCardCostDelta, perkSpecialKey } from '@/data/perk-budget';
-import { equippedRaceLock, perkRaceRestriction } from '@/data/perk-race';
+import { perkRaceRestriction } from '@/data/perk-race';
 import { canSlotCardPoints, SPECIAL_ALLOCATION_POOL, SPECIAL_KEYS, SPECIAL_POINTS_CAP } from '@/lib/player-stats';
 import { consumablesById, toggleConsumable } from '@/lib/consumable-rules';
 import { CARNIVORE_MUTATION_ID, HERBIVORE_MUTATION_ID } from '@/lib/diet-mutations';
@@ -63,9 +64,10 @@ export type BuildAction =
   | { type: 'consumable/toggle'; id: string }
   | { type: 'addiction/toggle'; id: string }
   | { type: 'condition/set'; key: keyof PlayerConditions; value: PlayerConditions[keyof PlayerConditions] }
+  | { type: 'race/set'; isGhoul: boolean }
   | { type: 'enemy/condition'; key: keyof EnemyConditions; value: EnemyConditions[keyof EnemyConditions] }
   | { type: 'view/set'; view: Partial<ViewState> }
-  | { type: 'build/importNd'; perks: ParsedPerk[]; name: string | null; special: ParsedSpecial | null }
+  | { type: 'build/importNd'; perks: ParsedPerk[]; name: string | null; special: ParsedSpecial | null; isGhoul: boolean }
   | { type: 'build/hydrate'; state: BuildState };
 
 export function createDefaultBuildState(): BuildState {
@@ -87,6 +89,15 @@ function toggle(list: string[], id: string): string[] {
 
 function withPlayer(state: BuildState, player: PlayerConfig): BuildState {
   return { ...state, player };
+}
+
+/** Drop equipped perks locked to the race being left behind (registry is mode-independent today). */
+function keepForRace(list: PerkLoadout[], isGhoul: boolean): PerkLoadout[] {
+  const target = isGhoul ? 'ghoul' : 'human';
+  return list.filter(p => {
+    const race = perkRaceRestriction('live', p.perkId);
+    return race === null || race === target;
+  });
 }
 
 /** Legendary perk card slots (game rule: unlocked at level 50/75/100/150/200/300). */
@@ -152,17 +163,13 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
       // the stat's perk-point budget (min(15, base + Legendary SPECIAL bonus)).
       if (action.legendary && player.legendaryPerks.length >= LEGENDARY_PERK_SLOTS) return state;
       if (!action.legendary && regularSlotBlocked(player, action.perkId, 0, rank)) return state;
-      // A race-locked card forces the matching character race (ghoul-only →
-      // ghoul, human-only → human) — in the reducer so speculative diffs and
-      // imports stay consistent with the UI's locked race toggle.
+      // A card locked to the other race can't be added — the picker greys it
+      // out for the same reason (PerkEditorSection.tsx). Race itself only
+      // changes via race/set, which prunes the loadout to match.
       const race = perkRaceRestriction('live', action.perkId);
-      const conditions =
-        race !== null && (player.conditions.isGhoul ?? false) !== (race === 'ghoul')
-          ? { ...player.conditions, isGhoul: race === 'ghoul' }
-          : player.conditions;
+      if (race !== null && (player.conditions.isGhoul ?? false) !== (race === 'ghoul')) return state;
       return withPlayer(state, {
         ...player,
-        conditions,
         [list]: [...player[list], { perkId: action.perkId, rank }],
       });
     }
@@ -236,6 +243,16 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
     case 'condition/set':
       return withPlayer(state, { ...player, conditions: { ...player.conditions, [action.key]: action.value } });
 
+    case 'race/set':
+      // The user's choice, not a side effect of adding a perk — prune whatever
+      // no longer fits instead of blocking the switch (UI confirms first).
+      return withPlayer(state, {
+        ...player,
+        conditions: { ...player.conditions, isGhoul: action.isGhoul },
+        perks: keepForRace(player.perks, action.isGhoul),
+        legendaryPerks: keepForRace(player.legendaryPerks, action.isGhoul),
+      });
+
     case 'enemy/condition':
       return {
         ...state,
@@ -246,25 +263,32 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
       return { ...state, view: { ...state.view, ...action.view } };
 
     case 'build/importNd': {
-      // Import REPLACES the perk loadout (documented in the import UI),
-      // splitting regular vs legendary by N&D key, and merges the URL's s=
-      // SPECIAL (clamped to 1–15) when present. Imports are not blocked by
-      // the budget — violations surface as the "over budget" badge.
-      const regular = parsedPerksToLoadout(action.perks.filter(p => !isLegendaryPerkKey(p.key)));
-      const legendary = parsedPerksToLoadout(action.perks.filter(p => isLegendaryPerkKey(p.key)));
+      // Import REPLACES the perk loadout AND race together (the UI resolves
+      // action.isGhoul from the link's own race lock — BuildUrlInput.tsx —
+      // confirming first only when that changes the current race or the link
+      // conflicts). Merges the URL's s= SPECIAL (clamped to 1–15) when
+      // present. Imports are not blocked by the budget — violations surface
+      // as the "over budget" badge. Perks locked to the other race are
+      // pruned so a mixed-race (invalid) link can't leave silently-inert
+      // cards behind once a race is chosen for it.
+      const regular = keepForRace(
+        parsedPerksToLoadout(action.perks.filter(p => !isLegendaryPerkKey(p.key))),
+        action.isGhoul
+      );
+      const legendary = keepForRace(
+        parsedPerksToLoadout(action.perks.filter(p => isLegendaryPerkKey(p.key))),
+        action.isGhoul
+      );
       const importedSpecial = action.special
         ? (Object.fromEntries(
             Object.entries(action.special).map(([k, v]) => [k, Math.max(1, Math.min(SPECIAL_POINTS_CAP, v))])
           ) as unknown as ParsedSpecial)
         : null;
-      let conditions = importedSpecial ? { ...player.conditions, ...importedSpecial } : player.conditions;
-      // Race-locked cards force the matching character race, same as perk/add
-      // does — without this, an imported ghoul build keeps isGhoul: false and
-      // every playerIsGhoul-gated modifier silently evaluates to nothing.
-      const { locked } = equippedRaceLock('live', regular, legendary);
-      if (locked !== null && (conditions.isGhoul ?? false) !== (locked === 'ghoul')) {
-        conditions = { ...conditions, isGhoul: locked === 'ghoul' };
-      }
+      const conditions = {
+        ...player.conditions,
+        ...(importedSpecial ?? {}),
+        isGhoul: action.isGhoul,
+      };
       return {
         ...state,
         buildName: action.name,

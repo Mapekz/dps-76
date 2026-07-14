@@ -73,7 +73,7 @@ describe('build codec', () => {
       { type: 'condition/set', key: 'healthPercent', value: 20 },
       { type: 'enemy/condition', key: 'isBurning', value: true },
       { type: 'view/set', view: { emphasized: 'vats', breakdownOpen: true } },
-      { type: 'build/importNd', perks: [], name: 'Bloodied Commando', special: null },
+      { type: 'build/importNd', perks: [], name: 'Bloodied Commando', special: null, isGhoul: false },
     ]);
     const decoded = await decodeBuild(await encodeBuild(state), 'live');
     expect(decoded).not.toBeNull();

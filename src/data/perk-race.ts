@@ -1,34 +1,21 @@
 import type { GameMode, PerkLoadout } from '@/types';
 import { getPerks } from '@/data';
-import { getGeneratedPerk } from './perk-modifiers';
 
 /**
- * Race (human/ghoul) restrictions implied by equipped perks. Restrictions are
- * not perk-level metadata — they're `playerIsGhoul` conditions on the perk's
- * ESM modifiers (Gourmand's value:false, Glowing Criticals value:true). A perk
- * is race-locked only when EVERY one of its modifiers agrees: mixed or absent
- * conditions mean the card works for both races (some effects just switch off).
+ * Race (human/ghoul) restrictions on perk cards, straight from the ESM PCRD
+ * "Race Restriction" enum (`Perk.raceRestriction`, joined in
+ * `src/data/perk-cards.ts`). This is perk-level card metadata, not something
+ * derived from `playerIsGhoul` modifier conditions — most race-locked cards
+ * (Quick Hands, Wild West Hands, both legendary ActionDiet/WhatRads/FeralRage
+ * cards, ...) carry no such condition on their modifiers at all, so scanning
+ * modifiers would miss them.
  */
 
 export type RaceRestriction = 'human' | 'ghoul';
 
 /** The race a perk requires, or null when it works for both. */
 export function perkRaceRestriction(mode: GameMode, perkId: string): RaceRestriction | null {
-  const generated = getGeneratedPerk(mode, perkId);
-  if (!generated) return null;
-  const modifiers = generated.ranks.flatMap(r => r.modifiers);
-  if (modifiers.length === 0) return null;
-  let allGhoul = true;
-  let allHuman = true;
-  for (const mod of modifiers) {
-    const gate = mod.conditions.find(c => c.kind === 'playerIsGhoul');
-    if (!gate || gate.kind !== 'playerIsGhoul') return null; // an unrestricted modifier → card is dual-race
-    if (gate.value) allHuman = false;
-    else allGhoul = false;
-  }
-  if (allGhoul && !allHuman) return 'ghoul';
-  if (allHuman && !allGhoul) return 'human';
-  return null;
+  return getPerks(mode)[perkId as keyof ReturnType<typeof getPerks>]?.raceRestriction ?? null;
 }
 
 export interface RaceLock {
@@ -57,4 +44,21 @@ export function equippedRaceLock(mode: GameMode, perks: PerkLoadout[], legendary
   if (humanBy.length > 0) return { locked: 'human', lockedBy: humanBy, conflict: false };
   if (ghoulBy.length > 0) return { locked: 'ghoul', lockedBy: ghoulBy, conflict: false };
   return { locked: null, lockedBy: [], conflict: false };
+}
+
+/** Display names of equipped perks a switch to `targetIsGhoul` would remove. */
+export function wrongRacePerks(
+  mode: GameMode,
+  perks: PerkLoadout[],
+  legendaryPerks: PerkLoadout[],
+  targetIsGhoul: boolean
+): string[] {
+  const registry = getPerks(mode);
+  const target: RaceRestriction = targetIsGhoul ? 'ghoul' : 'human';
+  return [...perks, ...legendaryPerks]
+    .filter(({ perkId }) => {
+      const restriction = perkRaceRestriction(mode, perkId);
+      return restriction !== null && restriction !== target;
+    })
+    .map(({ perkId }) => registry[perkId as keyof typeof registry]?.name ?? perkId);
 }

@@ -1287,6 +1287,23 @@ derive-from-perks experiment):
   slots is refused by the reducer (and disabled in the picker). N&D imports
   are NOT blocked — violations show the "over budget" badge; the URL's `s=`
   SPECIAL param is merged (clamped to 1–15).
+- **Race-restricted cards** (2026-07-14 — `src/data/perk-race.ts`,
+  `Perk.raceRestriction`): 52 perk families (regular + legendary, e.g. Quick
+  Hands/Natural Resistance/Ghoulish human-only, Wild West Hands/Battle-Genes/
+  Radioactive Strength/ActionDiet/FeralRage ghoul-only, WhatRads human-only)
+  carry a PCRD "Race Restriction" enum, joined verbatim as
+  `card.raceRestriction` (`extract-perks.ts`) — this is card-level ESM data,
+  NOT derived from `playerIsGhoul` modifier conditions (most of these cards
+  have no modifiers at all to scan). The reducer refuses `perk/add` for a card
+  locked to the other race (picker greys it out with a lock + "human/ghoul
+  only" label); switching race (`race/set`) instead prunes whatever no longer
+  fits, after a confirm dialog listing what's removed
+  (`SpecialLoadoutSection.tsx`'s `RaceControl`) — the user's choice is never
+  silently overridden. N&D import (`build/importNd`) replaces perks AND race
+  together, resolved by the importing UI from the link's own race lock
+  (`equippedRaceLock`); it only confirms first when that changes the current
+  race or the link mixes both races (an invalid link — the user picks which
+  race to import as, and the other race's cards are pruned).
 
 ## Max HP (derived, 2026-07-12 — `src/lib/player-stats.ts`)
 
