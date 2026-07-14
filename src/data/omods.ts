@@ -86,7 +86,7 @@ function isAttachable(omod: GeneratedOmod, weapon: Weapon): boolean {
 
 /**
  * Picker badge for effects whose data can't move numbers yet:
- * - 'inert': no engine effect (extraction gap, limb/bash targeting not modeled, or unwired SPECIAL)
+ * - 'inert': no engine effect (extraction gap, limb/bash targeting not modeled)
  * - 'pendingMechanic': the underlying game mechanic is a deferred rework (Onslaught)
  * - 'needsEnemyDefenses': value extracted, waiting on enemy DR/ER modeling
  */

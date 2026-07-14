@@ -62,12 +62,13 @@ describe('BUCKET_REGISTRY', () => {
   });
 
   it('derives INERT_ENGINE_BUCKETS as exactly the no-engine-effect buckets', () => {
-    // Endurance/Charisma/Intelligence/Agility are folded (playerStat regime)
-    // AND have a real downstream effect (max HP, a curve input, or the VATS
-    // AP pool) — only Perception's fold is a true dead end. limbDamage/
-    // bashDamage/addDamageComponent/armorPen have no fold consumer at all.
+    // Every specialX bucket (playerStat regime) has a real downstream effect:
+    // Endurance/Charisma/Intelligence/Agility feed max HP, a curve input, or
+    // the VATS AP pool; Perception has no paper-damage consumer but its
+    // folded value is what StatSummary renders. limbDamage/bashDamage/
+    // addDamageComponent/armorPen have no fold consumer at all.
     expect([...INERT_ENGINE_BUCKETS].sort()).toEqual(
-      ['limbDamage', 'bashDamage', 'addDamageComponent', 'armorPen', 'specialPerception'].sort()
+      ['limbDamage', 'bashDamage', 'addDamageComponent', 'armorPen'].sort()
     );
   });
 });

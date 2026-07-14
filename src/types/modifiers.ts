@@ -125,12 +125,13 @@ export type Bucket =
   | 'maxHealth'
   /**
    * SPECIAL stat bonuses (consumables, legendary +STR...), folded uniformly
-   * by player-stats.ts into `special.<key>`. Most feed a real downstream
-   * consumer (Strength → the melee term + its curve input, Luck → crit-meter
-   * fill, Endurance → max HP + its curve input, Intelligence/Charisma →
-   * their curve inputs, Agility → the VATS AP pool) — see BUCKET_REGISTRY
-   * below for the exact wiring. Perception is the one true dead end: folded
-   * into `special.perception` but never read again anywhere.
+   * by player-stats.ts into `special.<key>`. Every one of the seven feeds a
+   * real downstream consumer: Strength → the melee term + its curve input,
+   * Luck → crit-meter fill, Endurance → max HP + its curve input,
+   * Intelligence/Charisma → their curve inputs, Agility → the VATS AP pool,
+   * and Perception → no paper-damage term yet, but its folded value is the
+   * one `StatSummary` renders and highlights when buffed — see
+   * BUCKET_REGISTRY below for the exact wiring.
    */
   | 'specialStrength'
   | 'specialPerception'
@@ -186,6 +187,15 @@ export interface BucketRegimeEntry {
   foldedBy: string;
 }
 
+/**
+ * `hasEngineEffect: false` above means the fold happens but nothing downstream
+ * reads its result at all — e.g. `armorPen` extracts a real value but no
+ * enemy-DR model consumes it yet. Contrast the `specialX` buckets: every one
+ * of them, including Perception, feeds `DerivedPlayerStats.special` and is
+ * rendered by `StatSummary`, so all seven are `hasEngineEffect: true` even
+ * though Perception has no paper-damage consumer.
+ */
+
 export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   baseDamage: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts computePaperDamage (per-component base scaling, before the dbm parenthesis)' },
   dbm: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts computePaperDamage (dbm parenthesis)' },
@@ -216,7 +226,7 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   dotDamage: { regime: 'dot', hasEngineEffect: true, foldedBy: 'paper-damage.ts computeDotDps' },
   maxHealth: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats (245 + 5xEND + this fold)' },
   specialStrength: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds paper-damage.ts strengthTerm + the strength CurveInput (Debilitator\'s)' },
-  specialPerception: { regime: 'playerStat', hasEngineEffect: false, foldedBy: 'player-stats.ts derivePlayerStats folds it into special.perception, but nothing reads that value again — no CurveInput, no formula' },
+  specialPerception: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; no CurveInput/formula reads it, but the folded value is what StatSummary renders (and highlights when buffed) — same as the other six SPECIALs' },
   specialEndurance: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds the maxHealth formula + the endurance CurveInput (Lifegiver\'s)' },
   specialCharisma: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds the charisma CurveInput (Peace Maker\'s)' },
   specialIntelligence: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds the intelligence CurveInput (Science!, Pyro-Technician\'s, Cryologist\'s)' },
