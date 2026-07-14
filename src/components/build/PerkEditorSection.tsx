@@ -373,6 +373,24 @@ export function PerkEditor() {
 
   const legendaryOver = legendaryEntries.length > LEGENDARY_SLOTS;
 
+  const raiseBlockedFor = (entry: PerkEntry) =>
+    entry.perk.special
+      ? !canSlotCardPoints(budget, SPECIAL_TO_KEY[entry.perk.special], costDelta(entry.perk, entry.rank, entry.rank + 1))
+      : false;
+
+  // Equipped perks grouped by SPECIAL (SPECIAL order, alpha within) so the
+  // list mirrors the budget bar's taxonomy instead of raw loadout/import order.
+  const byName = (a: PerkEntry, b: PerkEntry) => a.perk.name.localeCompare(b.perk.name);
+  const regularGroups = SPECIAL_ORDER.map(({ key, special, letter }) => ({
+    key,
+    special,
+    letter,
+    entries: regularEntries.filter(e => e.perk.special === special).sort(byName),
+  })).filter(g => g.entries.length > 0);
+  // Safety net: a perk with no (or unrecognized) `.special` would otherwise vanish silently.
+  const claimed = new Set(regularGroups.flatMap(g => g.entries.map(e => e.perkId)));
+  const ungroupedEntries = regularEntries.filter(e => !claimed.has(e.perkId)).sort(byName);
+
   return (
     <div className="space-y-3">
           <SpecialBudgetBar
@@ -392,23 +410,55 @@ export function PerkEditor() {
           />
 
           {regularEntries.length > 0 ? (
-            <div className="grid gap-1">
-              {regularEntries.map(entry => (
-                <PerkRow
-                  key={entry.perkId}
-                  entry={entry}
-                  maxRank={entry.perk.maxRank}
-                  raiseBlocked={
-                    entry.perk.special
-                      ? !canSlotCardPoints(
-                          budget,
-                          SPECIAL_TO_KEY[entry.perk.special],
-                          costDelta(entry.perk, entry.rank, entry.rank + 1)
-                        )
-                      : false
-                  }
-                />
-              ))}
+            <div className="space-y-2">
+              {regularGroups.map(group => {
+                const used = budget.cardPoints[group.key];
+                const cap = budget.budgetPerStat[group.key];
+                return (
+                  <div key={group.key} className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.1em]">
+                        {group.letter} · {group.special}
+                      </p>
+                      <span
+                        className={cn(
+                          'font-mono text-[11px] tabular-nums',
+                          used > cap ? 'text-negative' : 'text-muted-foreground'
+                        )}
+                      >
+                        {used}/{cap} pt
+                      </span>
+                    </div>
+                    <div className="grid gap-1">
+                      {group.entries.map(entry => (
+                        <PerkRow
+                          key={entry.perkId}
+                          entry={entry}
+                          maxRank={entry.perk.maxRank}
+                          raiseBlocked={raiseBlockedFor(entry)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+              {ungroupedEntries.length > 0 && (
+                <div className="space-y-1">
+                  <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.1em]">
+                    Other
+                  </p>
+                  <div className="grid gap-1">
+                    {ungroupedEntries.map(entry => (
+                      <PerkRow
+                        key={entry.perkId}
+                        entry={entry}
+                        maxRank={entry.perk.maxRank}
+                        raiseBlocked={raiseBlockedFor(entry)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <p className="text-muted-foreground text-sm">
