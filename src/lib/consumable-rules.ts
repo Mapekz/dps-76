@@ -15,6 +15,9 @@ import { getConsumables } from '@/data/buffs';
  * - Only one ALCOHOL active at a time (independent of chem).
  * - FOOD and non-alcohol DRINK stack UNLESS they grant the "same bonus" —
  *   the new item displaces the old one.
+ * - Only one MAGAZINE and one BOBBLEHEAD active at a time (2026-07-13,
+ *   each independent of the other and of chem/alcohol/food/drink) — the
+ *   in-game buff-duration slots, same category-only collision as chem/alcohol.
  *
  * "Same bonus" is derived from ESM data, never hand-authored. Each
  * dispel-flagged MGEF effect resolves to one `GeneratedBuff.dispelKeys`
@@ -53,6 +56,11 @@ export interface SelectionResult {
 function sharesBonus(a: GeneratedBuff, b: GeneratedBuff): boolean {
   if (a.category === 'chem' && b.category === 'chem') return true;
   if (a.category === 'alcohol' && b.category === 'alcohol') return true;
+  // Magazines and bobbleheads: only one of each held at a time (2026-07-13),
+  // same category-only collision as chem/alcohol — independent of each
+  // other and of food/chems.
+  if (a.category === 'magazine' && b.category === 'magazine') return true;
+  if (a.category === 'bobblehead' && b.category === 'bobblehead') return true;
   if (!a.dispelKeys || !b.dispelKeys) return false;
   const bKeys = new Set(b.dispelKeys);
   return a.dispelKeys.some(key => bKeys.has(key));

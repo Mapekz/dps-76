@@ -336,8 +336,29 @@ export const omodModifierAdditions: Readonly<Record<string, Modifier[]>> = {
 /**
  * Generated consumables to hide from pickers: records that pass extraction
  * and obtainability but are wrong anyway (mirrors hiddenOmodIds).
+ *
+ * `GHL_Glowing*` bobbleheads (2026-07-13): ghoul-mode duplicate ALCH records
+ * of the 13 normal bobbleheads, carrying the identical extracted modifier
+ * (verified live — e.g. `GHL_GlowingBobbleHead_SmallGuns_Potion` and
+ * `BobbleHead_SmallGuns_Potion` both resolve to the same +20% ballistic dbm).
+ * Since they're mechanically indistinguishable from the base item, showing
+ * both in the picker is pure clutter — hide the glowing twin, keep the base.
  */
-export const hiddenConsumableIds: ReadonlySet<string> = new Set<string>([]);
+export const hiddenConsumableIds: ReadonlySet<string> = new Set<string>([
+  'GHL_GlowingBobblehead_Agility_Potion',
+  'GHL_GlowingBobbleHead_BigGuns_Potion',
+  'GHL_GlowingBobbleHead_Charisma_Potion',
+  'GHL_GlowingBobbleHead_Endurance_Potion',
+  'GHL_GlowingBobbleHead_EnergyWeapons_Potion',
+  'GHL_GlowingBobbleHead_Explosives_Potion',
+  'GHL_GlowingBobbleHead_Intelligence_Potion',
+  'GHL_GlowingBobbleHead_Luck_Potion',
+  'GHL_GlowingBobbleHead_Melee_Potion',
+  'GHL_GlowingBobbleHead_Perception_Potion',
+  'GHL_GlowingBobbleHead_SmallGuns_Potion',
+  'GHL_GlowingBobbleHead_Strength_Potion',
+  'GHL_GlowingBobbleHead_Unarmed_Potion',
+]);
 
 /**
  * Consumable counterpart of forceVisibleWeaponIds/forceVisibleOmodIds

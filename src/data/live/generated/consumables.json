@@ -122,6 +122,190 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_AwesomeTales01_Potion",
+  "formId": "0x0043038B",
+  "name": "Astoundingly Awesome Tales 1",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0043038B:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0043038B",
+     "edid": "Magazine_AwesomeTales01_Potion",
+     "name": "Astoundingly Awesome Tales 1"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.15,
+    "conditions": [
+     {
+      "kind": "enemyTypeAny",
+      "keywordsOrRaces": [
+       "ActorTypeMirelurkQueen",
+       "ActorTypeMirelurkKing",
+       "ActorTypeMirelurkHunter",
+       "ActorTypeMirelurk"
+      ]
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_AwesomeTales10_Potion",
+  "formId": "0x004303A6",
+  "name": "Astoundingly Awesome Tales 10",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004303A6:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004303A6",
+     "edid": "Magazine_AwesomeTales10_Potion",
+     "name": "Astoundingly Awesome Tales 10"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.35000000000000003,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetInIronSights()=1"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "OR-group[HasKeyword(HasScopeRecon)=1 | HasKeyword(HasScope)=1]"
+     }
+    ]
+   }
+  ],
+  "notes": [
+   "Magazine_AwesomeTales10_Potion: route(STAT_DmgScoped): GetInIronSights()=1",
+   "Magazine_AwesomeTales10_Potion: route(STAT_DmgScoped): OR-group[HasKeyword(HasScopeRecon)=1 | HasKeyword(HasScope)=1]"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_AwesomeTales11_Potion",
+  "formId": "0x004303A9",
+  "name": "Astoundingly Awesome Tales 11",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004303A9:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004303A9",
+     "edid": "Magazine_AwesomeTales11_Potion",
+     "name": "Astoundingly Awesome Tales 11"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.15,
+    "conditions": [
+     {
+      "kind": "enemyTypeAny",
+      "keywordsOrRaces": [
+       "ActorTypeFeralGhoul",
+       "ActorTypeGhoul"
+      ]
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_AwesomeTales02_Potion",
+  "formId": "0x0043038E",
+  "name": "Astoundingly Awesome Tales 2",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0043038E:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0043038E",
+     "edid": "Magazine_AwesomeTales02_Potion",
+     "name": "Astoundingly Awesome Tales 2"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.15,
+    "conditions": [
+     {
+      "kind": "enemyTypeAny",
+      "keywordsOrRaces": [
+       "ActorTypeSuperMutantBehemoth",
+       "ActorTypeSuperMutant"
+      ]
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_AwesomeTales04_Potion",
+  "formId": "0x00430394",
+  "name": "Astoundingly Awesome Tales 4",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00430394:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00430394",
+     "edid": "Magazine_AwesomeTales04_Potion",
+     "name": "Astoundingly Awesome Tales 4"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.25,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeAlienBlaster",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "OpossumMeatCooked",
   "formId": "0x004E722B",
   "name": "Awesome Opossum Bacon",
@@ -157,6 +341,73 @@
   "foodScalableModifierIds": [
    "0x004E722B:0"
   ],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_Backwoodsman05_Potion",
+  "formId": "0x004303BF",
+  "name": "Backwoodsman 5",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004303BF:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004303BF",
+     "edid": "Magazine_Backwoodsman05_Potion",
+     "name": "Backwoodsman 5"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.15,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeAnimal"
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_Backwoodsman02_Potion",
+  "formId": "0x004303B6",
+  "name": "Backwoodsman 7",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004303B6:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004303B6",
+     "edid": "Magazine_Backwoodsman02_Potion",
+     "name": "Backwoodsman 7"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeThrowingKnife",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
   "obtainable": true
  },
  {
@@ -567,6 +818,418 @@
   "foodScalableModifierIds": [
    "0x002944EB:0"
   ],
+  "obtainable": true
+ },
+ {
+  "id": "Bobblehead_Agility_Potion",
+  "formId": "0x004FE4E3",
+  "name": "Bobblehead: Agility",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004FE4E3:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004FE4E3",
+     "edid": "Bobblehead_Agility_Potion",
+     "name": "Bobblehead: Agility"
+    },
+    "bucket": "specialAgility",
+    "op": "ADD",
+    "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "BobbleHead_BigGuns_Potion",
+  "formId": "0x004FE4E8",
+  "name": "Bobblehead: Big Guns",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004FE4E8:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004FE4E8",
+     "edid": "BobbleHead_BigGuns_Potion",
+     "name": "Bobblehead: Big Guns"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "OR-group[HasKeyword(WeaponTypeExplosiveHybrid)=1 | IsTrueForConditionForm(Perks_Weap_IsHeavyGunCondition)=1]"
+     }
+    ]
+   }
+  ],
+  "notes": [
+   "BobbleHead_BigGuns_Potion: route(STAT_DmgHeavyGuns): OR-group[HasKeyword(WeaponTypeExplosiveHybrid)=1 | IsTrueForConditionForm(Perks_Weap_IsHeavyGunCondition)=1]"
+  ],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "BobbleHead_Charisma_Potion",
+  "formId": "0x004FE4EC",
+  "name": "Bobblehead: Charisma",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004FE4EC:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004FE4EC",
+     "edid": "BobbleHead_Charisma_Potion",
+     "name": "Bobblehead: Charisma"
+    },
+    "bucket": "specialCharisma",
+    "op": "ADD",
+    "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "BobbleHead_Endurance_Potion",
+  "formId": "0x004FE4EE",
+  "name": "Bobblehead: Endurance",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004FE4EE:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004FE4EE",
+     "edid": "BobbleHead_Endurance_Potion",
+     "name": "Bobblehead: Endurance"
+    },
+    "bucket": "specialEndurance",
+    "op": "ADD",
+    "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "BobbleHead_EnergyWeapons_Potion",
+  "formId": "0x004FE4F0",
+  "name": "Bobblehead: Energy Weapons",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004FE4F0:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004FE4F0",
+     "edid": "BobbleHead_EnergyWeapons_Potion",
+     "name": "Bobblehead: Energy Weapons"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeEnergy",
+      "present": true
+     },
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeHeavyGun",
+      "present": false
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "BobbleHead_Explosives_Potion",
+  "formId": "0x004FE4F2",
+  "name": "Bobblehead: Explosive",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004FE4F2:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004FE4F2",
+     "edid": "BobbleHead_Explosives_Potion",
+     "name": "Bobblehead: Explosive"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.3,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "explosive"
+      ]
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "BobbleHead_Intelligence_Potion",
+  "formId": "0x004FE4F4",
+  "name": "Bobblehead: Intelligence",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004FE4F4:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004FE4F4",
+     "edid": "BobbleHead_Intelligence_Potion",
+     "name": "Bobblehead: Intelligence"
+    },
+    "bucket": "specialIntelligence",
+    "op": "ADD",
+    "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "BobbleHead_Luck_Potion",
+  "formId": "0x0042FED6",
+  "name": "Bobblehead: Luck",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0042FED6:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0042FED6",
+     "edid": "BobbleHead_Luck_Potion",
+     "name": "Bobblehead: Luck"
+    },
+    "bucket": "specialLuck",
+    "op": "ADD",
+    "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "BobbleHead_Melee_Potion",
+  "formId": "0x0042FEDA",
+  "name": "Bobblehead: Melee",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0042FEDA:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0042FEDA",
+     "edid": "BobbleHead_Melee_Potion",
+     "name": "Bobblehead: Melee"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeMeleeGeneral",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "BobbleHead_Perception_Potion",
+  "formId": "0x0042FEDC",
+  "name": "Bobblehead: Perception",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0042FEDC:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0042FEDC",
+     "edid": "BobbleHead_Perception_Potion",
+     "name": "Bobblehead: Perception"
+    },
+    "bucket": "specialPerception",
+    "op": "ADD",
+    "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "BobbleHead_SmallGuns_Potion",
+  "formId": "0x0042FEE2",
+  "name": "Bobblehead: Small Guns",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0042FEE2:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0042FEE2",
+     "edid": "BobbleHead_SmallGuns_Potion",
+     "name": "Bobblehead: Small Guns"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeBallistic",
+      "present": true
+     },
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeHeavyGun",
+      "present": false
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "BobbleHead_Strength_Potion",
+  "formId": "0x0042FEE6",
+  "name": "Bobblehead: Strength",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0042FEE6:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0042FEE6",
+     "edid": "BobbleHead_Strength_Potion",
+     "name": "Bobblehead: Strength"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "BobbleHead_Unarmed_Potion",
+  "formId": "0x0042FEE8",
+  "name": "Bobblehead: Unarmed",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0042FEE8:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0042FEE8",
+     "edid": "BobbleHead_Unarmed_Potion",
+     "name": "Bobblehead: Unarmed"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.25,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
   "obtainable": true
  },
  {
@@ -2968,6 +3631,418 @@
   "obtainable": true
  },
  {
+  "id": "GHL_GlowingBobblehead_Agility_Potion",
+  "formId": "0x007A2F8E",
+  "name": "Glowing Bobblehead: Agility",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x007A2F8E:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x007A2F8E",
+     "edid": "GHL_GlowingBobblehead_Agility_Potion",
+     "name": "Glowing Bobblehead: Agility"
+    },
+    "bucket": "specialAgility",
+    "op": "ADD",
+    "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "GHL_GlowingBobbleHead_BigGuns_Potion",
+  "formId": "0x007A2F8F",
+  "name": "Glowing Bobblehead: Big Guns",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x007A2F8F:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x007A2F8F",
+     "edid": "GHL_GlowingBobbleHead_BigGuns_Potion",
+     "name": "Glowing Bobblehead: Big Guns"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "OR-group[HasKeyword(WeaponTypeExplosiveHybrid)=1 | IsTrueForConditionForm(Perks_Weap_IsHeavyGunCondition)=1]"
+     }
+    ]
+   }
+  ],
+  "notes": [
+   "GHL_GlowingBobbleHead_BigGuns_Potion: route(STAT_DmgHeavyGuns): OR-group[HasKeyword(WeaponTypeExplosiveHybrid)=1 | IsTrueForConditionForm(Perks_Weap_IsHeavyGunCondition)=1]"
+  ],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "GHL_GlowingBobbleHead_Charisma_Potion",
+  "formId": "0x007A2F91",
+  "name": "Glowing Bobblehead: Charisma",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x007A2F91:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x007A2F91",
+     "edid": "GHL_GlowingBobbleHead_Charisma_Potion",
+     "name": "Glowing Bobblehead: Charisma"
+    },
+    "bucket": "specialCharisma",
+    "op": "ADD",
+    "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "GHL_GlowingBobbleHead_Endurance_Potion",
+  "formId": "0x007A2F92",
+  "name": "Glowing Bobblehead: Endurance",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x007A2F92:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x007A2F92",
+     "edid": "GHL_GlowingBobbleHead_Endurance_Potion",
+     "name": "Glowing Bobblehead: Endurance"
+    },
+    "bucket": "specialEndurance",
+    "op": "ADD",
+    "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "GHL_GlowingBobbleHead_EnergyWeapons_Potion",
+  "formId": "0x007A2F93",
+  "name": "Glowing Bobblehead: Energy Weapons",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x007A2F93:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x007A2F93",
+     "edid": "GHL_GlowingBobbleHead_EnergyWeapons_Potion",
+     "name": "Glowing Bobblehead: Energy Weapons"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeEnergy",
+      "present": true
+     },
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeHeavyGun",
+      "present": false
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "GHL_GlowingBobbleHead_Explosives_Potion",
+  "formId": "0x007A2F94",
+  "name": "Glowing Bobblehead: Explosive",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x007A2F94:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x007A2F94",
+     "edid": "GHL_GlowingBobbleHead_Explosives_Potion",
+     "name": "Glowing Bobblehead: Explosive"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.3,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "explosive"
+      ]
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "GHL_GlowingBobbleHead_Intelligence_Potion",
+  "formId": "0x007A2F95",
+  "name": "Glowing Bobblehead: Intelligence",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x007A2F95:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x007A2F95",
+     "edid": "GHL_GlowingBobbleHead_Intelligence_Potion",
+     "name": "Glowing Bobblehead: Intelligence"
+    },
+    "bucket": "specialIntelligence",
+    "op": "ADD",
+    "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "GHL_GlowingBobbleHead_Luck_Potion",
+  "formId": "0x007A2F98",
+  "name": "Glowing Bobblehead: Luck",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x007A2F98:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x007A2F98",
+     "edid": "GHL_GlowingBobbleHead_Luck_Potion",
+     "name": "Glowing Bobblehead: Luck"
+    },
+    "bucket": "specialLuck",
+    "op": "ADD",
+    "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "GHL_GlowingBobbleHead_Melee_Potion",
+  "formId": "0x007A2F9A",
+  "name": "Glowing Bobblehead: Melee",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x007A2F9A:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x007A2F9A",
+     "edid": "GHL_GlowingBobbleHead_Melee_Potion",
+     "name": "Glowing Bobblehead: Melee"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeMeleeGeneral",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "GHL_GlowingBobbleHead_Perception_Potion",
+  "formId": "0x007A2F9B",
+  "name": "Glowing Bobblehead: Perception",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x007A2F9B:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x007A2F9B",
+     "edid": "GHL_GlowingBobbleHead_Perception_Potion",
+     "name": "Glowing Bobblehead: Perception"
+    },
+    "bucket": "specialPerception",
+    "op": "ADD",
+    "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "GHL_GlowingBobbleHead_SmallGuns_Potion",
+  "formId": "0x007A2F9E",
+  "name": "Glowing Bobblehead: Small Guns",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x007A2F9E:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x007A2F9E",
+     "edid": "GHL_GlowingBobbleHead_SmallGuns_Potion",
+     "name": "Glowing Bobblehead: Small Guns"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeBallistic",
+      "present": true
+     },
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeHeavyGun",
+      "present": false
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "GHL_GlowingBobbleHead_Strength_Potion",
+  "formId": "0x007A2FA0",
+  "name": "Glowing Bobblehead: Strength",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x007A2FA0:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x007A2FA0",
+     "edid": "GHL_GlowingBobbleHead_Strength_Potion",
+     "name": "Glowing Bobblehead: Strength"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "GHL_GlowingBobbleHead_Unarmed_Potion",
+  "formId": "0x007A2FA1",
+  "name": "Glowing Bobblehead: Unarmed",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x007A2FA1:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x007A2FA1",
+     "edid": "GHL_GlowingBobbleHead_Unarmed_Potion",
+     "name": "Glowing Bobblehead: Unarmed"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.25,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeUnarmed",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "GlowingMeatCooked",
   "formId": "0x003B9424",
   "name": "Glowing Meat Steak",
@@ -3210,6 +4285,115 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_GrognakTheBarbarian01_Potion",
+  "formId": "0x004303D0",
+  "name": "Grognak the Barbarian 1",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004303D0:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004303D0",
+     "edid": "Magazine_GrognakTheBarbarian01_Potion",
+     "name": "Grognak the Barbarian 1"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.15,
+    "conditions": [
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeUnarmed",
+       "WeaponTypeMeleeGeneral"
+      ]
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_GrognakTheBarbarian04_Potion",
+  "formId": "0x004303D6",
+  "name": "Grognak the Barbarian 4",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004303D6:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004303D6",
+     "edid": "Magazine_GrognakTheBarbarian04_Potion",
+     "name": "Grognak the Barbarian 4"
+    },
+    "bucket": "critDmgBonus",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeMelee1H",
+       "WeaponTypeMelee2H",
+       "WeaponTypeUnarmed"
+      ]
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_GrognakTheBarbarian05_Potion",
+  "formId": "0x004303D9",
+  "name": "Grognak the Barbarian 5",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004303D9:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004303D9",
+     "edid": "Magazine_GrognakTheBarbarian05_Potion",
+     "name": "Grognak the Barbarian 5"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.15,
+    "conditions": [
+     {
+      "kind": "enemyTypeAny",
+      "keywordsOrRaces": [
+       "ActorTypeScorched",
+       "ActorTypeScorchbeast"
+      ]
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "MoleratMeatTasty",
   "formId": "0x0004A3B8",
   "name": "Ground Mole Rat",
@@ -3286,6 +4470,235 @@
   "foodScalableModifierIds": [
    "0x00669394:0"
   ],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_GunsAndBullets01_Potion",
+  "formId": "0x004303F5",
+  "name": "Guns and Bullets 1",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004303F5:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004303F5",
+     "edid": "Magazine_GunsAndBullets01_Potion",
+     "name": "Guns and Bullets 1"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.15,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeRobot"
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_GunsAndBullets10_Potion",
+  "formId": "0x00430410",
+  "name": "Guns and Bullets 10",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00430410:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00430410",
+     "edid": "Magazine_GunsAndBullets10_Potion",
+     "name": "Guns and Bullets 10"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.15,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeLiberator"
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_GunsAndBullets02_Potion",
+  "formId": "0x004303F8",
+  "name": "Guns and Bullets 2",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004303F8:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004303F8",
+     "edid": "Magazine_GunsAndBullets02_Potion",
+     "name": "Guns and Bullets 2"
+    },
+    "bucket": "critDmgBonus",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeLaser",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_GunsAndBullets03_Potion",
+  "formId": "0x004303FB",
+  "name": "Guns and Bullets 3",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004303FB:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004303FB",
+     "edid": "Magazine_GunsAndBullets03_Potion",
+     "name": "Guns and Bullets 3"
+    },
+    "bucket": "critDmgBonus",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeBallistic",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_GunsAndBullets07_Potion",
+  "formId": "0x00430407",
+  "name": "Guns and Bullets 7",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00430407:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00430407",
+     "edid": "Magazine_GunsAndBullets07_Potion",
+     "name": "Guns and Bullets 7"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.1,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_GunsAndBullets08_Potion",
+  "formId": "0x0043040A",
+  "name": "Guns and Bullets 8",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0043040A:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0043040A",
+     "edid": "Magazine_GunsAndBullets08_Potion",
+     "name": "Guns and Bullets 8"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.15,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeYaoGuai"
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_GunsAndBullets09_Potion",
+  "formId": "0x0043040D",
+  "name": "Guns and Bullets 9",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0043040D:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0043040D",
+     "edid": "Magazine_GunsAndBullets09_Potion",
+     "name": "Guns and Bullets 9"
+    },
+    "bucket": "critDmgBonus",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypePlasma",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
   "obtainable": true
  },
  {
@@ -4025,6 +5438,78 @@
    "formId": "0x0003E061",
    "name": "Alcohol Addiction"
   },
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_LiveAndLove02_Potion",
+  "formId": "0x00432CC4",
+  "name": "Live & Love 2",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00432CC4:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00432CC4",
+     "edid": "Magazine_LiveAndLove02_Potion",
+     "name": "Live & Love 2"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.05,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsMemberOfAPlayerTeam()=1"
+     }
+    ]
+   }
+  ],
+  "notes": [
+   "Magazine_LiveAndLove02_Potion: condition: IsMemberOfAPlayerTeam()=1",
+   "Magazine_LiveAndLove02_Potion: MGEF Magazine_LiveAndLove02_UIDummyEffect archetype Script — needs override"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_LiveAndLove05_Potion",
+  "formId": "0x00432CCD",
+  "name": "Live & Love 5",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00432CCD:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00432CCD",
+     "edid": "Magazine_LiveAndLove05_Potion",
+     "name": "Live & Love 5"
+    },
+    "bucket": "specialLuck",
+    "op": "ADD",
+    "value": 2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasMagicEffectKeyword(AlcoholEffect)=1"
+     }
+    ]
+   }
+  ],
+  "notes": [
+   "Magazine_LiveAndLove05_Potion: condition: HasMagicEffectKeyword(AlcoholEffect)=1",
+   "Magazine_LiveAndLove05_Potion: MGEF Magazine_LiveAndLove05_UIDummyEffect archetype Script — needs override"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
   "ingredientKeywords": [],
   "obtainable": true
  },
@@ -8365,6 +9850,171 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_AstonishingTales05_Potion",
+  "formId": "0x00430388",
+  "name": "Tales from the West Virginia Hills 1",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00430388:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00430388",
+     "edid": "Magazine_AstonishingTales05_Potion",
+     "name": "Tales from the West Virginia Hills 1"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.15,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeWendigo"
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_AstonishingTales01_Potion",
+  "formId": "0x004FE4E4",
+  "name": "Tales from the West Virginia Hills 2",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004FE4E4:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004FE4E4",
+     "edid": "Magazine_AstonishingTales01_Potion",
+     "name": "Tales from the West Virginia Hills 2"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.15,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeMothman"
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_AstonishingTales02_Potion",
+  "formId": "0x0043037F",
+  "name": "Tales from the West Virginia Hills 3",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0043037F:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0043037F",
+     "edid": "Magazine_AstonishingTales02_Potion",
+     "name": "Tales from the West Virginia Hills 3"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.15,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeGraftonMonster"
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_AstonishingTales03_Potion",
+  "formId": "0x00430382",
+  "name": "Tales from the West Virginia Hills 4",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00430382:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00430382",
+     "edid": "Magazine_AstonishingTales03_Potion",
+     "name": "Tales from the West Virginia Hills 4"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.15,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeSnallygaster"
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_AstonishingTales04_Potion",
+  "formId": "0x00430385",
+  "name": "Tales from the West Virginia Hills 5",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00430385:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00430385",
+     "edid": "Magazine_AstonishingTales04_Potion",
+     "name": "Tales from the West Virginia Hills 5"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.15,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeFlatwoodsMonster"
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "MutantHoundMeatTastyStew",
   "formId": "0x003C60DF",
   "name": "Tasty Mutant Hound Stew",
@@ -8615,6 +10265,104 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_TeslaScience07_Potion",
+  "formId": "0x00432D0D",
+  "name": "Tesla Science 7",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00432D0D:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00432D0D",
+     "edid": "Magazine_TeslaScience07_Potion",
+     "name": "Tesla Science 7"
+    },
+    "bucket": "critDmgBonus",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeLaser",
+       "WeaponTypePlasma"
+      ]
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_TeslaScience08_Potion",
+  "formId": "0x00432D10",
+  "name": "Tesla Science 8",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00432D10:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00432D10",
+     "edid": "Magazine_TeslaScience08_Potion",
+     "name": "Tesla Science 8"
+    },
+    "bucket": "critDmgBonus",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_TeslaScience09_Potion",
+  "formId": "0x00432D13",
+  "name": "Tesla Science 9",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00432D13:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00432D13",
+     "edid": "Magazine_TeslaScience09_Potion",
+     "name": "Tesla Science 9"
+    },
+    "bucket": "critDmgBonus",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeHeavyGun",
+      "present": true
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "Brew_TickBloodTequilaFresh",
   "formId": "0x0046985D",
   "name": "Tick Blood Tequila",
@@ -8770,6 +10518,130 @@
    "formId": "0x0003E061",
    "name": "Alcohol Addiction"
   },
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_USCovertOps10_Potion",
+  "formId": "0x00432D54",
+  "name": "U.S. Covert Operations Manual 10",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00432D54:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00432D54",
+     "edid": "Magazine_USCovertOps10_Potion",
+     "name": "U.S. Covert Operations Manual 10"
+    },
+    "bucket": "specialAgility",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_USCovertOps04_Potion",
+  "formId": "0x00432D42",
+  "name": "U.S. Covert Operations Manual 4",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00432D42:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00432D42",
+     "edid": "Magazine_USCovertOps04_Potion",
+     "name": "U.S. Covert Operations Manual 4"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.1,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "HumanRace"
+     }
+    ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_USCovertOps05_Potion",
+  "formId": "0x00432D45",
+  "name": "U.S. Covert Operations Manual 5",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00432D45:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00432D45",
+     "edid": "Magazine_USCovertOps05_Potion",
+     "name": "U.S. Covert Operations Manual 5"
+    },
+    "bucket": "specialPerception",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_USCovertOps08_Potion",
+  "formId": "0x00432D4E",
+  "name": "U.S. Covert Operations Manual 8",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00432D4E:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00432D4E",
+     "edid": "Magazine_USCovertOps08_Potion",
+     "name": "U.S. Covert Operations Manual 8"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(ma_Knife)=1 | HasKeyword(ma_Switchblade)=1]"
+     }
+    ]
+   }
+  ],
+  "notes": [
+   "Magazine_USCovertOps08_Potion: perk Magazine_USCovertOps08Perk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(ma_Knife)=1 | HasKeyword(ma_Switchblade)=1]"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
   "ingredientKeywords": [],
   "obtainable": true
  },

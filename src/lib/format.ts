@@ -9,3 +9,11 @@ export function formatPercentDelta(fraction: number): string {
   const pct = fraction * 100;
   return `${pct > 0 ? '+' : ''}${pct.toFixed(1)}%`;
 }
+
+/** "+25%" for whole-number percentages, "+7.5%" otherwise. */
+export function formatPercent(fraction: number): string {
+  const pct = fraction * 100;
+  const rounded = Math.round(pct * 10) / 10;
+  const magnitude = Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(1);
+  return `${pct > 0 ? '+' : ''}${magnitude}%`;
+}

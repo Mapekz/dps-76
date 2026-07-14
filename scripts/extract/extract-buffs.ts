@@ -65,9 +65,17 @@ export function isExcludedConsumableEdid(edid: string): boolean {
  * purified water carries both food+drink keywords, so drink wins over food.
  * ObjectTypeSerum / MealTypeRaw / raw ingredients carry none of these and
  * fall through to `null` (excluded — consumableNoCategory).
+ *
+ * Magazines and bobbleheads (2026-07-13) are ALCH records too, but carry
+ * their own dedicated keywords instead — MagazineKeyword (0x001D4A70) /
+ * BobbleheadKeyword (0x00135E6C), verified live against
+ * Magazine_GunsAndBullets07_Potion / BobbleHead_Strength_Potion. Checked
+ * ahead of chem/food/drink since they never co-occur with those keywords.
  */
 export function classifyConsumableCategory(keywordEdids: readonly string[]): BuffCategory | null {
   const set = new Set(keywordEdids);
+  if (set.has('MagazineKeyword')) return 'magazine';
+  if (set.has('BobbleheadKeyword')) return 'bobblehead';
   if (set.has('ObjectTypeChem')) return 'chem';
   if (set.has('ObjectTypeDrink') && set.has('DrinkTypeAlcohol')) return 'alcohol';
   if (set.has('ObjectTypeDrink')) return 'drink';

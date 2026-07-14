@@ -508,6 +508,81 @@ stored `PlayerConditions.addictionCount` field only feeds synthetic engine
 tests that bypass `resolveLoadout` (mirrors `hungerThirstTier`/
 `strangeInNumbers`).
 
+## Magazines & bobbleheads (2026-07-13 — `extract-buffs.ts`, `consumable-rules.ts`)
+
+Magazines and bobbleheads are ALCH records, same as chems/food/drink/alcohol,
+but carry their own dedicated keywords instead of an `ObjectType*` one —
+verified live against `Magazine_GunsAndBullets07_Potion` (`MagazineKeyword`
+0x001D4A70 + a per-series `MagazineType*` keyword) and
+`BobbleHead_Strength_Potion` (`BobbleheadKeyword` 0x00135E6C + a per-stat
+`BobbleheadType*` keyword). `classifyConsumableCategory` checks these two
+keywords ahead of the chem/food/drink/alcohol ones (no observed overlap).
+Every other stage of the pipeline — `buildConsumable`, obtainability, the
+`isRelevant` damage/SPECIAL gate, `getBuffModifiers`, diet scaling (a no-op:
+magazines/bobbleheads carry no `ingredientKeywords`) — is unchanged and fully
+category-agnostic, so no new plumbing was needed beyond the keyword check.
+
+**How the buff value resolves**, reusing existing machinery with zero new
+code: SPECIAL bobbleheads (Strength, Perception, Endurance, Charisma,
+Intelligence, Agility, Luck) are a direct `Peak Value Modifier` MGEF on the
+plain SPECIAL AV — same `FALLBACK_AVIF_ROUTES` entry food/chems already use.
+Combat magazines/bobbleheads (Small/Big Guns, Energy Weapons, Melee, Unarmed,
+Explosive; Guns and Bullets, Tesla Science, Astonishing Tales, Grognak the
+Barbarian, U.S. Covert Ops, Awesome Tales issues, ...) are a `Script`-archetype
+MGEF with a "Perk to Apply" grant — `translateMagicEffect` already
+auto-chases this into `translateGrantedPerk` (mgef.ts), the same path
+`extract-omods.ts` uses for a legendary's `AttachedPerk` property. The
+class-scoped weapon-damage AVs these carry (`STAT_DmgBallistic`,
+`STAT_DmgHeavyGuns`, `STAT_DmgEnergy`, `STAT_DmgMeleeWeapons`,
+`STAT_DmgMeleeUnarmed`) already route through `STAT_DamagePerk` (the shared
+plumbing-perk mechanism); `STAT_DmgExplosive` is an existing
+`FALLBACK_AVIF_ROUTES` entry. Result: 31 magazine issues and 26 extracted
+bobbleheads (13 base + 13 `GHL_Glowing*` ghoul-mode duplicates, verified
+mechanically identical to their base counterpart — e.g.
+`GHL_GlowingBobbleHead_SmallGuns_Potion` resolves the same +20% ballistic dbm
+as `BobbleHead_SmallGuns_Potion`) with a working `dbm`/`special*` modifier on
+the 2026-07-13 (20260710 ESM dump) run; everything else (recipes, XP, carry
+weight, crafting, hacking guesses, lockpicking, fusion-core longevity, ...)
+has no route and correctly drops via the `isRelevant` gate — "DPS-relevant
+only" per user decision, no hand-curated allowlist needed. The 13 `GHL_Glowing*`
+duplicates are hidden from the picker via `hiddenConsumableIds`
+(`overrides/corrections.ts`, 2026-07-13 user request) — being mechanically
+identical, listing both is pure clutter; the base 13 stay visible.
+
+**Sorting**: pickers order by `name.localeCompare(..., { numeric: true })`
+(2026-07-13) — plain string sort put "...10" before "...2" for numbered
+magazine issues; the numeric collator option sorts the embedded issue number,
+not the string.
+
+**Bonus text**: each row shows a small muted line describing what the item
+actually does (`describeBuffModifiers`, `src/lib/buff-description.ts`,
+2026-07-13), derived from the extracted `Modifier[]` — deliberately NOT from
+the ESM's own perk/card description text, which can promise a condition the
+data doesn't carry (Guns and Bullets 7's card text says "without scopes" but
+its modifier is unconditional). Known-inert entries (see below) say so
+inline ("— not modeled yet, no effect") rather than showing a bonus that
+silently does nothing.
+
+**Stacking**: one magazine and one bobblehead active at a time (2026-07-13,
+matching the game's real buff-duration slots), independent of each other and
+of chem/alcohol/food/drink — `sharesBonus` (`consumable-rules.ts`) checks
+category equality alone, the same shape as the existing chem/alcohol rule
+(some magazines/bobbleheads carry no dispel-flagged effect to key off of).
+UI: `MagazinesSection`/`BobbleheadsSection` (`BuffsSections.tsx`), a shared
+`SingleSelectBuffSection` radio-group component — the chem/alcohol radio
+contract from `ChemsSection`, minus the addiction ledger those two don't need.
+
+**Known-inert entries** (extracted, selectable, but currently 0% ΔDPS —
+pre-existing `conditions.ts` gaps, not introduced by this feature; same
+category as the already-shipped Hoppy Hunter IPA `enemyType` case above):
+U.S. Covert Ops 8 (`ma_Knife`/`ma_Switchblade` aren't recognized by
+`isWeaponTypeKeyword`'s `WeaponType*`-only prefix match), Big Guns bobblehead
+(mixed `HasKeyword`/`IsTrueForConditionForm` OR-group — its now-hidden glowing
+twin carries the identical gap), Awesome Tales 10 (`GetInIronSights()` — same
+gap as the existing `STAT_DmgScoped` route), Live & Love 2
+(`IsMemberOfAPlayerTeam()`) and Live & Love 5
+(`HasMagicEffectKeyword(AlcoholEffect)`). See "Known gaps / deferred" below.
+
 ## Carnivore's / Herbivore's food scaling (2026-07-13 — `src/lib/diet-mutations.ts`)
 
 ESM-proven end to end: `Mutation_Carnivore` / `Mutation_Herbivore` SPELs
@@ -1067,15 +1142,47 @@ ghoul perk effects gate on it with `GetValue(Rads) ≥ N` condition rows.
   are skipped and noted per-perk in `generated/perks.json` notes.
 - A handful of `cr`-prefixed creature/event DoT curves (non-level X domain,
   up to 540) and a few niche unique-mod damage curves remain unmapped: Pirate
-  Punch (lockpicking-tier gimmick), Eat The Rich (NPC-only reward from Head
-  Hunts, not player-obtainable), PA battery drain (no DPS/AP/HP impact — see
-  "Curve tables override hardcoded values" above).
+  Punch (lockpicking-tier gimmick — see the dedicated bullet below), Eat The
+  Rich (NPC-only reward from Head Hunts, not player-obtainable), PA battery
+  drain (no DPS/AP/HP impact — see "Curve tables override hardcoded values"
+  above).
 - Unjoined registry perks (removed/renamed by the overhaul):
   `getUnjoinedPerkIds()` in `src/data/perk-modifiers.ts`.
 - `GammaGun` (obtainable in-game, craftable) is excluded as `noDamage`: its
   WEAP record carries no direct damage — the payload is the projectile's
   explosion, and projectile/explosion damage is unmodeled. Revisit alongside
   explosive-weapon damage support.
+- **Pirate Punch / lockpick skill (2026-07-13, deferred — user decision)**:
+  `E08B_mod_Custom_Blackpowder_PiratePunch`'s enchantment
+  (`AbPerkFortifyDmgPistolsNonAuto`) is a real, ESM-proven curve — "+5%
+  Damage per Lockpick Skill" — but extracts with zero modifiers because its
+  curve input AV (`0x0032CB37`, lockpick skill) isn't in `CURVE_INPUT_AVS`
+  (mgef.ts). Landing it needs, mirroring the SPECIAL-stat curve pattern
+  (`derivePlayerStats`/`SPECIAL_BUCKETS`, `PLAYER_STATE_READERS` in
+  resolve.ts): a `lockpickSkill` `CurveInput` + `PlayerConditions` field, a
+  `CURVE_INPUT_AVS` entry for `0x0032CB37`, and a new aggregation step
+  (Locksmith base + Picklock/Picklock Expert/Picklock Master ×1 each +
+  Master Infiltrator + the lockpick magazine [`Tumblers Today`, excluded
+  today as `consumableNoCategory`/no route] + the lockpick bobblehead
+  [extracted as `bobblehead` category but excluded by the `isRelevant` gate
+  today — `STAT_Lockpicking` has no route]). Master Infiltrator's real
+  per-rank grant needs ESM verification before implementing — its card text
+  reads "+3 Lockpick and Hacking skills" at EVERY rank (`LGN_MasterInfiltrator_Perk`,
+  all 4 ranks, `src/data/live/generated/perks.json`), which conflicts with a
+  "+1/rank at ranks 2–4" recollection; do not trust either without walking
+  the ESM (`esm-walk` skill) for the actual granted magnitude.
+- **A handful of magazine/bobblehead buffs are extracted but currently
+  inert** (2026-07-13, see "Magazines & bobbleheads" above for the full
+  list) — pre-existing `conditions.ts` translation gaps (an OR-group mixing
+  `HasKeyword`/`IsTrueForConditionForm`, native engine boolean functions like
+  `GetInIronSights()`/`IsMemberOfAPlayerTeam()`/`HasMagicEffectKeyword(...)`,
+  and `isWeaponTypeKeyword`'s `WeaponType*`-only prefix missing the parallel
+  `ma_*` weapon-archetype keyword namespace used by U.S. Covert Ops 8's
+  Fist/Knife bonus). Widening `isWeaponTypeKeyword` to recognize `ma_*` would
+  fix U.S. Covert Ops 8, but that helper is shared by every extractor
+  (perks/omods/legendary effects) — deliberately NOT done here to keep this
+  feature's diff scoped to magazines/bobbleheads; revisit as its own change
+  with a full dataset diff review.
 
 ## Future DPS streams (user-supplied rationale, 2026-07-07)
 

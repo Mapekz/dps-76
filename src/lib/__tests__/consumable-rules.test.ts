@@ -18,9 +18,16 @@ const foodStr2 = buff('FoodStr2', 'food', ['FoodEffect|SURV_EffectTypeFoodBuff|F
 const foodEnd = buff('FoodEnd', 'food', ['FoodEffect|SURV_EffectTypeFoodBuff|FoodDispelEffect_Endurance']);
 // Milk_Chally-style case: a DRINK sharing a food's exact key (cross-category).
 const drinkStr = buff('DrinkStr', 'drink', ['FoodEffect|SURV_EffectTypeFoodBuff|FoodDispelEffect_Strength']);
+// Magazines/bobbleheads carry no dispelKeys — category alone drives their collision.
+const magazineA = buff('MagazineA', 'magazine');
+const magazineB = buff('MagazineB', 'magazine');
+const bobbleheadA = buff('BobbleheadA', 'bobblehead');
+const bobbleheadB = buff('BobbleheadB', 'bobblehead');
 
 const buffsById = new Map<string, GeneratedBuff>(
-  [chemA, chemB, alcoholA, alcoholB, foodStr1, foodStr2, foodEnd, drinkStr].map(b => [b.id, b])
+  [chemA, chemB, alcoholA, alcoholB, foodStr1, foodStr2, foodEnd, drinkStr, magazineA, magazineB, bobbleheadA, bobbleheadB].map(
+    b => [b.id, b]
+  )
 );
 
 describe('applySelection', () => {
@@ -41,6 +48,36 @@ describe('applySelection', () => {
     const withBoth = applySelection(buffsById, withChem.consumables, 'AlcoholA');
     expect(withBoth.consumables.sort()).toEqual(['AlcoholA', 'ChemA']);
     expect(withBoth.replaced).toEqual([]);
+  });
+
+  it('a new magazine replaces an active magazine', () => {
+    const result = applySelection(buffsById, ['MagazineA'], 'MagazineB');
+    expect(result.consumables).toEqual(['MagazineB']);
+    expect(result.replaced).toEqual(['MagazineA']);
+  });
+
+  it('a new bobblehead replaces an active bobblehead', () => {
+    const result = applySelection(buffsById, ['BobbleheadA'], 'BobbleheadB');
+    expect(result.consumables).toEqual(['BobbleheadB']);
+    expect(result.replaced).toEqual(['BobbleheadA']);
+  });
+
+  it('a magazine and a bobblehead coexist (independent categories)', () => {
+    const withMagazine = applySelection(buffsById, [], 'MagazineA');
+    const withBoth = applySelection(buffsById, withMagazine.consumables, 'BobbleheadA');
+    expect(withBoth.consumables.sort()).toEqual(['BobbleheadA', 'MagazineA']);
+    expect(withBoth.replaced).toEqual([]);
+  });
+
+  it('a magazine/bobblehead coexists with chem/alcohol/food (fully independent axes)', () => {
+    let active: string[] = [];
+    active = applySelection(buffsById, active, 'ChemA').consumables;
+    active = applySelection(buffsById, active, 'AlcoholA').consumables;
+    active = applySelection(buffsById, active, 'FoodStr1').consumables;
+    active = applySelection(buffsById, active, 'MagazineA').consumables;
+    const result = applySelection(buffsById, active, 'BobbleheadA');
+    expect(result.consumables.sort()).toEqual(['AlcoholA', 'BobbleheadA', 'ChemA', 'FoodStr1', 'MagazineA'].sort());
+    expect(result.replaced).toEqual([]);
   });
 
   it('a same-key food replaces the active food (exact dispelKeys match)', () => {
@@ -118,5 +155,10 @@ describe('sanitizeConsumables', () => {
     // FoodStr1 then FoodStr2 (Str2 wins) — final set: ChemB, AlcoholA, FoodStr2.
     const result = sanitizeConsumables(buffsById, ['ChemA', 'ChemB', 'AlcoholA', 'FoodStr1', 'FoodStr2']);
     expect(result.slice().sort()).toEqual(['AlcoholA', 'ChemB', 'FoodStr2'].sort());
+  });
+
+  it('two magazines in a legacy payload → the last one wins, independent of a bobblehead', () => {
+    const result = sanitizeConsumables(buffsById, ['MagazineA', 'BobbleheadA', 'MagazineB']);
+    expect(result.slice().sort()).toEqual(['BobbleheadA', 'MagazineB'].sort());
   });
 });

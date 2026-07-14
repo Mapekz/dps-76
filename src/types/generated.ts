@@ -190,8 +190,13 @@ export interface GeneratedOmod {
   notes?: string[];
 }
 
-/** Consumable classification from ALCH ObjectType* / DrinkTypeAlcohol keywords. */
-export type BuffCategory = 'chem' | 'alcohol' | 'drink' | 'food';
+/**
+ * Consumable classification from ALCH ObjectType* / DrinkTypeAlcohol
+ * keywords (chem/alcohol/drink/food), or the dedicated MagazineKeyword /
+ * BobbleheadKeyword (magazine/bobblehead) — see classifyConsumableCategory
+ * in extract-buffs.ts.
+ */
+export type BuffCategory = 'chem' | 'alcohol' | 'drink' | 'food' | 'magazine' | 'bobblehead';
 
 /** The addiction SPEL an ALCH record's "Effect Data"."Addiction" field points at. */
 export interface GeneratedAddictionRef {

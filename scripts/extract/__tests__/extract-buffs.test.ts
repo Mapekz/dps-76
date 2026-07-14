@@ -38,6 +38,14 @@ describe('isExcludedConsumableEdid', () => {
 });
 
 describe('classifyConsumableCategory', () => {
+  it('magazine (dedicated MagazineKeyword, e.g. Guns and Bullets issues)', () => {
+    expect(classifyConsumableCategory(['MagazineKeyword', 'MagazineTypeGunsAndBullets'])).toBe('magazine');
+  });
+
+  it('bobblehead (dedicated BobbleheadKeyword, e.g. Strength/Small Guns bobbleheads)', () => {
+    expect(classifyConsumableCategory(['BobbleheadKeyword', 'BobbleheadTypeStrength'])).toBe('bobblehead');
+  });
+
   it('chem takes top priority', () => {
     expect(classifyConsumableCategory(['ObjectTypeChem', 'ChemTutorialKeyword'])).toBe('chem');
   });
