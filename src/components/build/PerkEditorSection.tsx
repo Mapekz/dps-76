@@ -218,6 +218,20 @@ function PerkAddCombobox({
     // Popover stays open for multi-add.
   };
 
+  // Right-click mirrors `select` in reverse: lower a rank, or drop the card
+  // entirely from rank 1. `perk/setRank` clamps at rank 1 (it can never reach
+  // 0), so zeroing out means dispatching `perk/remove` instead.
+  const decrement = (perkId: string) => {
+    const currentRank = equipped.get(perkId);
+    if (currentRank === undefined) return; // not equipped — nothing to lower
+    if (currentRank > 1) {
+      dispatch({ type: 'perk/setRank', perkId, rank: currentRank - 1 });
+    } else {
+      dispatch({ type: 'perk/remove', perkId });
+    }
+    // Popover stays open for multi-adjust.
+  };
+
   const renderGroup = (heading: string | undefined, items: Array<{ perkId: string; perk: Perk }>, isLegendary: boolean) => (
     <CommandGroup heading={heading}>
       {items.map(({ perkId, perk }) => {
@@ -233,6 +247,11 @@ function PerkAddCombobox({
             keywords={[perk.name]}
             disabled={blocked}
             onSelect={() => select(perkId, isLegendary, perk)}
+            onContextMenu={e => {
+              e.preventDefault();
+              decrement(perkId);
+            }}
+            title={rank === undefined ? undefined : rank > 1 ? 'Right-click to lower' : 'Right-click to remove'}
           >
             <CheckIcon className={cn('mr-2 size-4', rank !== undefined ? 'opacity-100' : 'opacity-0')} />
             {raceLocked && <LockIcon className="text-muted-foreground mr-1 size-3 shrink-0" />}
@@ -323,6 +342,9 @@ function PerkAddCombobox({
               </>
             )}
           </CommandList>
+          <p className="text-muted-foreground border-t px-2 py-1 text-[11px]">
+            Left-click to add or raise a rank · right-click to lower or remove.
+          </p>
         </Command>
       </PopoverContent>
     </Popover>
