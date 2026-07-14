@@ -123,7 +123,15 @@ export type Bucket =
    * (docs/assumptions.md "Max HP") to derive `PlayerConditions.maxHealth`.
    */
   | 'maxHealth'
-  /** SPECIAL stat bonuses (consumables, legendary +STR...). Strength/Luck feed the engine; the rest are stored for perk-SPECIAL scaling. */
+  /**
+   * SPECIAL stat bonuses (consumables, legendary +STR...), folded uniformly
+   * by player-stats.ts into `special.<key>`. Most feed a real downstream
+   * consumer (Strength → the melee term + its curve input, Luck → crit-meter
+   * fill, Endurance → max HP + its curve input, Intelligence/Charisma →
+   * their curve inputs, Agility → the VATS AP pool) — see BUCKET_REGISTRY
+   * below for the exact wiring. Perception is the one true dead end: folded
+   * into `special.perception` but never read again anywhere.
+   */
   | 'specialStrength'
   | 'specialPerception'
   | 'specialEndurance'
@@ -131,6 +139,104 @@ export type Bucket =
   | 'specialIntelligence'
   | 'specialAgility'
   | 'specialLuck';
+
+/**
+ * Which fold mechanism consumes a Bucket, and whether that fold's result
+ * actually reaches anything — the **Bucket Regime** (CONTEXT.md). The `Bucket`
+ * union promises one normalized shape for every damage source, but WHICH
+ * function folds a given bucket (and whether the result does anything) is
+ * otherwise only discoverable by grepping resolve.ts/paper-damage.ts/
+ * crit-meter.ts/ap-economy.ts/player-stats.ts/effective-weapon.ts by hand.
+ * This is the one table that answers both questions; `WEAPON_STAT_BUCKETS`
+ * (effective-weapon.ts) and `INERT_ENGINE_BUCKETS` (omods.ts, the picker's
+ * "no engine effect" badge) are DERIVED from it below instead of hand-
+ * maintained, so neither can silently drift from what the engine actually
+ * wires. Add a row here whenever a new Bucket is added to the union above —
+ * `assertBucketRegistryIsExhaustive` (modifiers.test.ts) enforces it.
+ */
+export type BucketRegime =
+  /** Per-hit paper damage — paper-damage.ts `computePaperDamage`. */
+  | 'damageFold'
+  /** Damage-over-time — paper-damage.ts `computeDotDps`. */
+  | 'dot'
+  /** Rewrites an effective-weapon field, then is dropped from the modifier list — effective-weapon.ts `buildEffectiveWeapon`. */
+  | 'weaponStat'
+  /** VATS crit-meter fill/consumption — crit-meter.ts `computeCritMeter`. */
+  | 'critEconomy'
+  /** VATS AP pool/regen/drain — scenarios.ts, folded into ap-economy.ts `computeApEconomy`. */
+  | 'apEconomy'
+  /** Effective SPECIAL / max HP — player-stats.ts `derivePlayerStats`. */
+  | 'playerStat'
+  /** Folded once per scenario input and threaded on `ResolveContext.onslaughtMaxStacks` rather than re-folded per damage term. */
+  | 'bootstrap'
+  /** No fold consumes this bucket at all (as opposed to a fold whose result nothing reads — see `hasEngineEffect`). */
+  | 'unfolded';
+
+export interface BucketRegimeEntry {
+  regime: BucketRegime;
+  /**
+   * False when the fold happens but its result reaches nothing further
+   * (specialPerception: folded into `special.perception`, never read again)
+   * — distinct from `regime: 'unfolded'`, where no fold happens at all.
+   * `INERT_ENGINE_BUCKETS` = every bucket where this is false OR regime is
+   * 'unfolded'.
+   */
+  hasEngineEffect: boolean;
+  /** Where this bucket is folded (function/module), or why it has no effect. */
+  foldedBy: string;
+}
+
+export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
+  baseDamage: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts computePaperDamage (per-component base scaling, before the dbm parenthesis)' },
+  dbm: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts computePaperDamage (dbm parenthesis)' },
+  critDmgBase: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts totalCritMult' },
+  critDmgBonus: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts totalCritMult' },
+  sneakBase: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts totalSneakMult' },
+  sneakBonus: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts totalSneakMult' },
+  powerAttackBonus: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts computePaperDamage (dbm parenthesis)' },
+  weakpointBonus: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts computePaperDamage (outer multiplier)' },
+  wholeDamage: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'resolve.ts foldWholeDamage (outer multiplier)' },
+  limbDamage: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — limb targeting not modeled (STAT_DmgLimbs plumbing extracted, e.g. Crippling\'s override, but no consumer yet)' },
+  bashDamage: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — bash attacks not modeled (STAT_DmgBash extracted, no consumer yet)' },
+  explosivePayload: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts computePaperDamage (explosive-twin branch)' },
+  critFill: { regime: 'critEconomy', hasEngineEffect: true, foldedBy: 'crit-meter.ts computeCritMeter' },
+  critConsumption: { regime: 'critEconomy', hasEngineEffect: true, foldedBy: 'crit-meter.ts computeCritMeter' },
+  fireRateSpeed: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.speed rewrite)' },
+  isAutomatic: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.isAutomatic rewrite)' },
+  animDurationSec: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.animDurationSec rewrite)' },
+  projectileCount: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.projectileCount rewrite); no damage term multiplies per-projectile yet, but Shotgun Champ\'s curve reads the folded value via the projectileCount CurveInput' },
+  ammoCapacity: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.capacity rewrite); feeds sustained DPS (sustain.ts)' },
+  reloadSpeed: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.reloadSpeed rewrite); feeds sustained DPS (sustain.ts)' },
+  vatsApCost: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.apCost rewrite); feeds ap-economy.ts' },
+  apRegen: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy' },
+  apPerCrit: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy' },
+  onslaughtMaxStacks: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'scenarios.ts / effective-weapon.ts — folded once, threaded on ResolveContext.onslaughtMaxStacks; caps the onslaught StackCounter and onslaughtStacks CurveInput' },
+  addDamageComponent: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — no reader anywhere in the codebase; likely superseded by explosivePayload/materializeDamageTypeComponents' },
+  armorPen: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — extracted but inert until enemy DR lands' },
+  dotDamage: { regime: 'dot', hasEngineEffect: true, foldedBy: 'paper-damage.ts computeDotDps' },
+  maxHealth: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats (245 + 5xEND + this fold)' },
+  specialStrength: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds paper-damage.ts strengthTerm + the strength CurveInput (Debilitator\'s)' },
+  specialPerception: { regime: 'playerStat', hasEngineEffect: false, foldedBy: 'player-stats.ts derivePlayerStats folds it into special.perception, but nothing reads that value again — no CurveInput, no formula' },
+  specialEndurance: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds the maxHealth formula + the endurance CurveInput (Lifegiver\'s)' },
+  specialCharisma: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds the charisma CurveInput (Peace Maker\'s)' },
+  specialIntelligence: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds the intelligence CurveInput (Science!, Pyro-Technician\'s, Cryologist\'s)' },
+  specialAgility: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds ap-economy.ts computeApEconomy\'s AP pool size' },
+  specialLuck: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds crit-meter.ts computeCritMeter\'s fill rate' },
+};
+
+/** Buckets whose fold rewrites an effective-weapon field rather than feeding a damage term — derived from BUCKET_REGISTRY. */
+export const WEAPON_STAT_BUCKETS: ReadonlySet<Bucket> = new Set(
+  (Object.entries(BUCKET_REGISTRY) as Array<[Bucket, BucketRegimeEntry]>)
+    .filter(([, entry]) => entry.regime === 'weaponStat')
+    .map(([bucket]) => bucket)
+);
+
+/** Buckets with no engine effect today — derived from BUCKET_REGISTRY; drives the OMOD/consumable picker's 'inert' badge. */
+export const INERT_ENGINE_BUCKETS: ReadonlySet<Bucket> = new Set(
+  (Object.entries(BUCKET_REGISTRY) as Array<[Bucket, BucketRegimeEntry]>)
+    .filter(([, entry]) => !entry.hasEngineEffect)
+    .map(([bucket]) => bucket)
+);
 
 export type WeaponClass = Weapon['weaponClass'];
 export type DamageType = Weapon['components'][number]['damageType'];

@@ -1,5 +1,6 @@
 import type { GameMode, Weapon } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
+import { INERT_ENGINE_BUCKETS } from '@/types/modifiers';
 import { forceVisibleOmodIds, hiddenOmodIds, omodBadgeOverrides, omodWeaponRestrictions } from './overrides/corrections';
 import { getDataset } from './dataset';
 import { isRecordVisible } from './overlay';
@@ -93,18 +94,14 @@ export type OmodBadge = 'inert' | 'pendingMechanic' | 'needsEnemyDefenses';
 
 export type OmodOption = GeneratedOmod & { badge?: OmodBadge };
 
-/**
- * Buckets the engine stores but does not fold into damage yet.
- * specialStrength/specialLuck ARE wired (loadout); explosivePayload
- * (Stage A1), dotDamage (Stage A2), and vatsApCost/apRegen/apPerCrit
- * (Stage B, AP economy) are ALSO wired now — removed from this set, kept
- * out of the badge path. (explosionMult was retired 2026-07-13: explosion
- * bonuses are explosive-scoped dbm post-June-2026-patch.)
- */
-const INERT_ENGINE_BUCKETS = new Set([
-  'armorPen', 'limbDamage', 'bashDamage',
-  'specialPerception', 'specialEndurance', 'specialCharisma', 'specialIntelligence', 'specialAgility',
-]);
+// INERT_ENGINE_BUCKETS (buckets with no engine effect today — drives the
+// 'inert' picker badge below) is derived from BUCKET_REGISTRY
+// (@/types/modifiers), not hand-maintained here: the engine's own fold sites
+// are the source of truth for what does and doesn't move a number, so this
+// list can't silently go stale the way a second hand-kept copy would (as it
+// did for specialEndurance/Charisma/Intelligence/Agility, each of which DOES
+// have a real downstream effect — max HP, or a perk's curve input, or the
+// VATS AP pool — despite once being badged 'inert' here).
 
 const STOCK_NAME_RE = /^(standard|no |stock)/i;
 

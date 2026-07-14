@@ -2,7 +2,10 @@ import type { EnemyConditions, PlayerConditions, Weapon, WeaponComponent } from 
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
 import type { Bucket, DamageType, ModOp, Modifier } from '@/types/modifiers';
+import { WEAPON_STAT_BUCKETS } from '@/types/modifiers';
 import { effectiveValue, foldOps, type ResolveContext } from './resolve';
+
+export { WEAPON_STAT_BUCKETS };
 
 /**
  * Applies equipped OMODs to a weapon before the engine runs:
@@ -29,15 +32,11 @@ export interface EffectiveWeapon {
   modifiers: Modifier[];
 }
 
-/**
- * Buckets that rewrite effective-weapon fields rather than feeding the
- * resolver. Folded here from OMOD *and* loadout (perk/mutation/consumable)
- * modifiers, then dropped from the downstream modifier list — no damage term
- * reads them as modifiers, only as `ctx.weapon` fields.
- */
-export const WEAPON_STAT_BUCKETS: ReadonlySet<string> = new Set([
-  'fireRateSpeed', 'isAutomatic', 'animDurationSec', 'projectileCount', 'ammoCapacity', 'reloadSpeed', 'vatsApCost',
-]);
+// WEAPON_STAT_BUCKETS (buckets that rewrite effective-weapon fields rather
+// than feeding the resolver — folded here from OMOD *and* loadout
+// (perk/mutation/consumable) modifiers, then dropped from the downstream
+// modifier list) is derived from BUCKET_REGISTRY (@/types/modifiers) and
+// re-exported above, not hand-maintained here.
 
 // Weapon-stat OMODs are USUALLY unconditional (receiver stats apply for as
 // long as the mod is equipped), but Thrill-Seeker's (Stage C3) proves a
