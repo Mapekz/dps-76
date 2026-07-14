@@ -23,8 +23,9 @@ import { getAddictions, getConsumables, getMutations, getSuppressedAddictions } 
 import { getOmodById } from '@/data/omods';
 import { applySelection, consumablesById } from '@/lib/consumable-rules';
 import { dietVerdict, type DietVerdict } from '@/lib/diet-mutations';
-import { deriveStrangeInNumbers } from '@/lib/player-stats';
+import { deriveClassFreakRank, deriveStrangeInNumbers } from '@/lib/player-stats';
 import { describeBuffModifiers } from '@/lib/buff-description';
+import { CLASS_FREAK_TIER_FACTORS } from '@/lib/class-freak-mutations';
 import { byName } from '@/lib/buff-sort';
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import type { BuildAction } from '@/state/build-reducer';
@@ -38,6 +39,8 @@ function CheckboxRow({
   checked,
   onCheckedChange,
   action,
+  description,
+  penaltyDescription,
 }: {
   id: string;
   label: string;
@@ -45,12 +48,28 @@ function CheckboxRow({
   onCheckedChange: (checked: boolean) => void;
   /** When set, the row shows the ΔDPS of toggling it. */
   action?: BuildAction;
+  /** Muted "what this does" line under the label (see describeBuffModifiers). */
+  description?: string | null;
+  /** Same, styled as a penalty — a mutation's Class-Freak-scaled downside. */
+  penaltyDescription?: string | null;
 }) {
+  const hasDescription = Boolean(description) || Boolean(penaltyDescription);
   return (
-    <label htmlFor={id} className="flex cursor-pointer items-center gap-2 py-0.5 text-sm">
-      <Checkbox id={id} checked={checked} onCheckedChange={v => onCheckedChange(v === true)} />
-      <span className="min-w-0 flex-1 truncate">{label}</span>
-      {action && <ActionDelta action={action} />}
+    <label
+      htmlFor={id}
+      className={cn('flex cursor-pointer gap-2 py-0.5 text-sm', hasDescription ? 'items-start' : 'items-center')}
+    >
+      <div className={hasDescription ? 'pt-0.5' : undefined}>
+        <Checkbox id={id} checked={checked} onCheckedChange={v => onCheckedChange(v === true)} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <span className="min-w-0 flex-1 truncate">{label}</span>
+          {action && <ActionDelta action={action} />}
+        </div>
+        {description && <p className="text-muted-foreground text-xs">{description}</p>}
+        {penaltyDescription && <p className="text-negative text-xs">{penaltyDescription}</p>}
+      </div>
     </label>
   );
 }
@@ -65,6 +84,8 @@ export function MutationsSection() {
   // to be mutated with (same rule resolveLoadout feeds the engine).
   const sinEquipped = player.perks.some(p => p.perkId === 'StrangeInNumbers');
   const sinActive = deriveStrangeInNumbers(player.perks, player.conditions);
+  const classFreakRank = deriveClassFreakRank(player.perks);
+  const classFreakReductionPct = Math.round((1 - CLASS_FREAK_TIER_FACTORS[classFreakRank]) * 100);
 
   return (
     <AccordionItem value="mutations">
@@ -73,33 +94,52 @@ export function MutationsSection() {
           label="Mutations"
           summary={player.mutations.length > 0 ? `${player.mutations.length} active` : 'none'}
           badge={
-            sinEquipped && (
-              <Badge
-                variant={sinActive ? 'default' : 'outline'}
-                title={
-                  sinActive
-                    ? 'Strange in Numbers: mutation effects +25%'
-                    : 'Strange in Numbers equipped but inactive — needs at least 1 teammate (Character section)'
-                }
-              >
-                {sinActive ? 'SiN +25%' : 'SiN inactive'}
-              </Badge>
-            )
+            <>
+              {sinEquipped && (
+                <Badge
+                  variant={sinActive ? 'default' : 'outline'}
+                  title={
+                    sinActive
+                      ? 'Strange in Numbers: mutation effects +25%'
+                      : 'Strange in Numbers equipped but inactive — needs at least 1 teammate (Character section)'
+                  }
+                >
+                  {sinActive ? 'SiN +25%' : 'SiN inactive'}
+                </Badge>
+              )}
+              {classFreakRank > 0 && (
+                <Badge title={`Class Freak: mutation penalties reduced by ${classFreakReductionPct}%`}>
+                  CF −{classFreakReductionPct}%
+                </Badge>
+              )}
+            </>
           }
         />
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-0.5">
-          {mutations.map(m => (
-            <CheckboxRow
-              key={m.id}
-              id={`mutation-${m.id}`}
-              label={m.name}
-              checked={player.mutations.includes(m.id)}
-              onCheckedChange={() => dispatch({ type: 'mutation/toggle', id: m.id })}
-              action={{ type: 'mutation/toggle', id: m.id }}
-            />
-          ))}
+          {mutations.map(m => {
+            const penaltySet = new Set(m.penaltyModifierIds ?? []);
+            const positives = m.modifiers.filter(mod => !penaltySet.has(mod.id));
+            const penalties = m.modifiers.filter(mod => penaltySet.has(mod.id));
+            const description = describeBuffModifiers({ modifiers: positives }, { strangeInNumbers: sinActive, classFreakRank });
+            const penaltyDescription = describeBuffModifiers(
+              { modifiers: penalties },
+              { strangeInNumbers: sinActive, classFreakRank, penaltyScale: CLASS_FREAK_TIER_FACTORS[classFreakRank] }
+            );
+            return (
+              <CheckboxRow
+                key={m.id}
+                id={`mutation-${m.id}`}
+                label={m.name}
+                checked={player.mutations.includes(m.id)}
+                onCheckedChange={() => dispatch({ type: 'mutation/toggle', id: m.id })}
+                action={{ type: 'mutation/toggle', id: m.id }}
+                description={description}
+                penaltyDescription={penaltyDescription}
+              />
+            );
+          })}
         </div>
       </AccordionContent>
     </AccordionItem>
@@ -227,6 +267,7 @@ function CausePicker({ items, placeholder }: { items: GeneratedBuff[]; placehold
     { value: NONE, label: placeholder },
     ...items.map(i => ({ value: i.id, label: i.name })),
   ];
+  const description = active ? describeBuffModifiers(active) : null;
 
   const select = (value: string | null) => {
     // Picking a brew evicts the active one on its own (alcohol-vs-alcohol);
@@ -249,6 +290,7 @@ function CausePicker({ items, placeholder }: { items: GeneratedBuff[]; placehold
           option.value !== NONE && <ActionDelta action={{ type: 'consumable/toggle', id: option.value }} />
         }
       />
+      {description && <p className="text-muted-foreground px-1 pt-1 text-xs">{description}</p>}
     </div>
   );
 }
@@ -291,41 +333,59 @@ function AddictionCell({
   const { addiction } = group;
   const addicted = player.addictions.includes(addiction.id);
   const id = `addiction-${addiction.id}`;
+  // Counted = actually dragging Junkie's/damage down right now; suppressed or
+  // unselected addictions still get a preview line, just in the quiet tone.
+  const counted = addicted && !suppressedBy;
+  const description = addiction.modifiers?.length ? describeBuffModifiers(addiction) : null;
 
   return (
     <label
       htmlFor={id}
-      className="hover:bg-muted/40 flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1 text-sm"
-    >
-      <Checkbox
-        id={id}
-        checked={addicted}
-        onCheckedChange={() => dispatch({ type: 'addiction/toggle', id: addiction.id })}
-      />
-      <span className={cn('min-w-0 flex-1 truncate', addicted && suppressedBy && 'text-muted-foreground line-through')}>
-        {familyLabel(addiction.name)}
-      </span>
-      {suppressedBy ? (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span
-              className={cn(
-                'text-muted-foreground flex shrink-0 items-center gap-1 text-[10px] uppercase tracking-wide',
-                !addicted && 'opacity-50'
-              )}
-            >
-              <BanIcon className="size-3" />
-              {/* Narrow columns can't spare the word — the icon and its tooltip still say it. */}
-              <span className="hidden sm:inline">suppressed</span>
-            </span>
-          </TooltipTrigger>
-          <TooltipContent>
-            {suppressedBy.name} is active, so {addiction.name} doesn't count toward Junkie's.
-          </TooltipContent>
-        </Tooltip>
-      ) : (
-        showDelta && <ActionDelta action={{ type: 'addiction/toggle', id: addiction.id }} />
+      className={cn(
+        'hover:bg-muted/40 flex w-full cursor-pointer gap-2 rounded-sm px-2 py-1 text-sm',
+        description ? 'items-start' : 'items-center'
       )}
+    >
+      <div className={description ? 'pt-0.5' : undefined}>
+        <Checkbox
+          id={id}
+          checked={addicted}
+          onCheckedChange={() => dispatch({ type: 'addiction/toggle', id: addiction.id })}
+        />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <span
+            className={cn('min-w-0 flex-1 truncate', addicted && suppressedBy && 'text-muted-foreground line-through')}
+          >
+            {familyLabel(addiction.name)}
+          </span>
+          {suppressedBy ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span
+                  className={cn(
+                    'text-muted-foreground flex shrink-0 items-center gap-1 text-[10px] uppercase tracking-wide',
+                    !addicted && 'opacity-50'
+                  )}
+                >
+                  <BanIcon className="size-3" />
+                  {/* Narrow columns can't spare the word — the icon and its tooltip still say it. */}
+                  <span className="hidden sm:inline">suppressed</span>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                {suppressedBy.name} is active, so {addiction.name} doesn't count toward Junkie's.
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            showDelta && <ActionDelta action={{ type: 'addiction/toggle', id: addiction.id }} />
+          )}
+        </div>
+        {description && (
+          <p className={cn('text-[10px]', counted ? 'text-negative' : 'text-muted-foreground')}>{description}</p>
+        )}
+      </div>
     </label>
   );
 }
@@ -356,7 +416,7 @@ function LedgerRow({
     <div className="flex items-stretch">
       <div className="min-w-0 flex-1 py-0.5">
         {group.chems.map(c => (
-          <ConsumableRadioRow key={c.id} item={c} groupName="active-chem" />
+          <ConsumableRadioRow key={c.id} item={c} groupName="active-chem" description={describeBuffModifiers(c)} />
         ))}
         {group.picker.length > 0 && <CausePicker items={group.picker} placeholder="No alcohol" />}
         {group.chems.length === 0 && group.picker.length === 0 && (
@@ -574,10 +634,14 @@ function FoodDrinkAddCombobox({
         const selected = activeSet.has(item.id);
         const replaced = selected ? [] : applySelection(byId, active, item.id).replaced;
         const replacedNames = replaced.map(id => byId.get(id)?.name ?? id);
+        const description = describeBuffModifiers(item);
         return (
           <CommandItem key={item.id} value={item.id} keywords={[item.name]} onSelect={() => select(item.id)}>
             <CheckIcon className={cn('mr-2 size-4', selected ? 'opacity-100' : 'opacity-0')} />
-            <span className="min-w-0 flex-1 truncate">{item.name}</span>
+            <div className="min-w-0 flex-1">
+              <span className="block truncate">{item.name}</span>
+              {description && <p className="text-muted-foreground truncate text-xs">{description}</p>}
+            </div>
             {replacedNames.length > 0 && (
               <span className="text-muted-foreground ml-2 truncate text-xs">replaces {replacedNames.join(', ')}</span>
             )}
@@ -614,21 +678,29 @@ function FoodDrinkAddCombobox({
 
 function FoodDrinkRow({ item, diet }: { item: GeneratedBuff; diet: DietVerdict }) {
   const dispatch = useBuildDispatch();
+  const description = describeBuffModifiers(item);
   return (
-    <div className="bg-muted/40 flex items-center gap-1 rounded px-2 py-1 text-sm">
-      <span className="min-w-0 flex-1 truncate">{item.name}</span>
-      {diet === 'doubled' && <span className="text-emerald-500 shrink-0 text-xs">×2 diet</span>}
-      {diet === 'zeroed' && <span className="text-muted-foreground shrink-0 text-xs line-through">no effect</span>}
-      <ActionDelta action={{ type: 'consumable/toggle', id: item.id }} />
-      <Button
-        variant="ghost"
-        size="icon"
-        className="text-muted-foreground size-6"
-        aria-label={`Remove ${item.name}`}
-        onClick={() => dispatch({ type: 'consumable/toggle', id: item.id })}
-      >
-        <XIcon className="size-3" />
-      </Button>
+    <div className={cn('bg-muted/40 flex gap-1 rounded px-2 py-1 text-sm', description ? 'items-start' : 'items-center')}>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-1">
+          <span className="min-w-0 flex-1 truncate">{item.name}</span>
+          {diet === 'doubled' && <span className="text-emerald-500 shrink-0 text-xs">×2 diet</span>}
+          {diet === 'zeroed' && <span className="text-muted-foreground shrink-0 text-xs line-through">no effect</span>}
+        </div>
+        {description && <p className="text-muted-foreground text-xs">{description}</p>}
+      </div>
+      <div className={cn('flex items-center gap-1', description && 'pt-0.5')}>
+        <ActionDelta action={{ type: 'consumable/toggle', id: item.id }} />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-muted-foreground size-6"
+          aria-label={`Remove ${item.name}`}
+          onClick={() => dispatch({ type: 'consumable/toggle', id: item.id })}
+        >
+          <XIcon className="size-3" />
+        </Button>
+      </div>
     </div>
   );
 }

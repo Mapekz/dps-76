@@ -87,3 +87,294 @@ describe('describeBuffModifiers', () => {
     expect(describeBuffModifiers(buff([]))).toBeNull();
   });
 });
+
+describe('describeBuffModifiers ctx: strangeInNumbers / classFreakRank filtering', () => {
+  it('strangeInNumbers picks the false-conditioned variant by default', () => {
+    const base: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.1,
+      conditions: [{ kind: 'strangeInNumbers', value: false }],
+    };
+    const boosted: Modifier = {
+      id: '0x1:1',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.15,
+      conditions: [{ kind: 'strangeInNumbers', value: true }],
+    };
+    expect(describeBuffModifiers(buff([base, boosted]))).toBe('+10% damage');
+  });
+
+  it('strangeInNumbers: true picks the boosted variant', () => {
+    const base: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.1,
+      conditions: [{ kind: 'strangeInNumbers', value: false }],
+    };
+    const boosted: Modifier = {
+      id: '0x1:1',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.15,
+      conditions: [{ kind: 'strangeInNumbers', value: true }],
+    };
+    expect(describeBuffModifiers(buff([base, boosted]), { strangeInNumbers: true })).toBe('+15% damage');
+  });
+
+  it('strangeInNumbers condition never renders as a clause', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.1,
+      conditions: [{ kind: 'strangeInNumbers', value: false }],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+10% damage');
+  });
+
+  it('classFreakRank drops a modifier whose tier the current rank falls outside of', () => {
+    const tier1: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: -0.15,
+      conditions: [{ kind: 'classFreakRank', min: 1, max: 1 }],
+    };
+    expect(describeBuffModifiers(buff([tier1]), { classFreakRank: 0 })).toBeNull();
+    expect(describeBuffModifiers(buff([tier1]), { classFreakRank: 2 })).toBeNull();
+  });
+
+  it('classFreakRank selects the matching tier and renders no clause for the gate', () => {
+    const tier0: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: -0.2,
+      conditions: [{ kind: 'classFreakRank', min: 0, max: 0 }],
+    };
+    const tier1: Modifier = {
+      id: '0x1:1',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: -0.15,
+      conditions: [{ kind: 'classFreakRank', min: 1, max: 1 }],
+    };
+    expect(describeBuffModifiers(buff([tier0, tier1]), { classFreakRank: 0 })).toBe('-20% damage');
+    expect(describeBuffModifiers(buff([tier0, tier1]), { classFreakRank: 1 })).toBe('-15% damage');
+  });
+});
+
+describe('describeBuffModifiers ctx: penaltyScale', () => {
+  it('scales a flat (non-SPECIAL) bucket value — maxHealth', () => {
+    const mod: Modifier = { id: '0x1:0', source, bucket: 'maxHealth', op: 'ADD', value: -20, conditions: [] };
+    expect(describeBuffModifiers(buff([mod]), { penaltyScale: 0.5 })).toBe('-10 max HP');
+  });
+
+  it('scales a SPECIAL point bucket value', () => {
+    const mod: Modifier = { id: '0x1:0', source, bucket: 'specialStrength', op: 'ADD', value: -4, conditions: [] };
+    expect(describeBuffModifiers(buff([mod]), { penaltyScale: 0.5 })).toBe('-2 Strength');
+  });
+
+  it('scales a percent-bucket curve range', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      curve: {
+        input: 'killStreak',
+        points: [
+          { x: 0, y: 5 },
+          { x: 10, y: 100 },
+        ],
+      },
+      curveScale: 0.01,
+      conditions: [],
+    };
+    expect(describeBuffModifiers(buff([mod]), { penaltyScale: 0.5 })).toBe(
+      '+2.5–50% damage (scales with kill streak)'
+    );
+  });
+
+  it('scales a dotDamage rate', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dotDamage',
+      op: 'ADD',
+      value: 10,
+      conditions: [{ kind: 'damageTypeScope', types: ['poison'] }],
+      durationSec: 15,
+    };
+    expect(describeBuffModifiers(buff([mod]), { penaltyScale: 0.5 })).toBe('+5/s poison damage (15s)');
+  });
+});
+
+describe('describeBuffModifiers: curve support', () => {
+  it('a percent-bucket curve reads as a range with the axis named (Adrenal Reaction)', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      curve: {
+        input: 'killStreak',
+        points: [
+          { x: 0, y: 5 },
+          { x: 10, y: 100 },
+        ],
+      },
+      curveScale: 0.01,
+      conditions: [],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+5–100% damage (scales with kill streak)');
+  });
+
+  it('an unmapped curve axis falls back to the raw CurveInput name', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      curve: {
+        input: 'capsOnHand',
+        points: [
+          { x: 0, y: 0 },
+          { x: 10, y: 20 },
+        ],
+      },
+      curveScale: 0.01,
+      conditions: [],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('0–20% damage (scales with capsOnHand)');
+  });
+
+  it('a curve on a non-percent bucket is omitted, not guessed at', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'maxHealth',
+      op: 'ADD',
+      curve: {
+        input: 'endurance',
+        points: [
+          { x: 0, y: 0 },
+          { x: 10, y: 20 },
+        ],
+      },
+      curveScale: 1,
+      conditions: [],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBeNull();
+  });
+});
+
+describe('describeBuffModifiers: new bucket labels', () => {
+  it('maxHealth reads as a flat HP point add, not a percentage', () => {
+    const mod: Modifier = { id: '0x1:0', source, bucket: 'maxHealth', op: 'ADD', value: -50, conditions: [] };
+    expect(describeBuffModifiers(buff([mod]))).toBe('-50 max HP');
+  });
+
+  it('reloadSpeed reads as a percentage', () => {
+    const mod: Modifier = { id: '0x1:0', source, bucket: 'reloadSpeed', op: 'ADD', value: 0.3, conditions: [] };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+30% reload speed');
+  });
+});
+
+describe('describeBuffModifiers: dotDamage', () => {
+  it('renders a damage/sec rate with duration, consuming damageTypeScope into the label (Acidic Gulper Venom)', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dotDamage',
+      op: 'ADD',
+      value: 10,
+      conditions: [{ kind: 'damageTypeScope', types: ['poison'] }],
+      durationSec: 15,
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+10/s poison damage (15s)');
+  });
+
+  it('does not render damageTypeScope a second time as a separate clause', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dotDamage',
+      op: 'ADD',
+      value: 10,
+      conditions: [{ kind: 'damageTypeScope', types: ['poison'] }],
+      durationSec: 15,
+    };
+    const result = describeBuffModifiers(buff([mod]));
+    expect(result?.match(/poison/g)?.length).toBe(1);
+    expect(result).not.toContain('poison damage only');
+  });
+});
+
+describe('describeBuffModifiers: teammateCount clause', () => {
+  it('count 0 reads as "while solo"', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.1,
+      conditions: [{ kind: 'teammateCount', count: 0 }],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+10% damage (while solo)');
+  });
+
+  it('orMore reads as "with N+ teammates"', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.1,
+      conditions: [{ kind: 'teammateCount', count: 2, orMore: true }],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+10% damage (with 2+ teammates)');
+  });
+
+  it('an exact singular count reads as "with 1 teammate", not "1 teammates"', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.1,
+      conditions: [{ kind: 'teammateCount', count: 1 }],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+10% damage (with 1 teammate)');
+  });
+});
+
+describe('describeBuffModifiers: relaxed param type', () => {
+  it('accepts a bare { modifiers } shape, not just a full GeneratedBuff (GeneratedAddiction callers)', () => {
+    const mod: Modifier = { id: '0x1:0', source, bucket: 'specialAgility', op: 'ADD', value: -1, conditions: [] };
+    // Shaped like GeneratedAddiction (id/formId/name/causedBy/modifiers/notes),
+    // not GeneratedBuff (no `kind`/`category`) — describeBuffModifiers must not
+    // require anything beyond `modifiers`.
+    const addictionShaped = {
+      id: 'AbAddictionAlcohol',
+      formId: '0xTEST',
+      name: 'Alcohol Addiction',
+      causedBy: ['SomeBrew'],
+      modifiers: [mod],
+      notes: [],
+    };
+    expect(describeBuffModifiers(addictionShaped)).toBe('-1 Agility');
+  });
+});
