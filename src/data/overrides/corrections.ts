@@ -164,6 +164,16 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
   'mod_Legendary_Crafting_Weapon2',
   'mod_Legendary_Crafting_Weapon3',
   'mod_Legendary_Crafting_Weapon4',
+  // Cremator flame-color chems: pure cosmetics (zero modifiers) riding the
+  // stat-bearing ap_gun_Receiver attach point instead of a COSMETIC_SLOT_RE
+  // slot, so the cosmetic-slot exclusion can't catch them (tester report,
+  // dps-todos/omod-slot-hygiene.md). Hiding all four empties the Cremator's
+  // bogus "Receiver" slot; its real stat slots (Barrel/Tank/Magazine) are
+  // unaffected.
+  'mod_Cremator_Chemical_RedFire',
+  'mod_Cremator_Chemical_BlueFire',
+  'mod_Cremator_Chemical_GreenFire',
+  'mod_Cremator_Chemical_PinkFire',
 ]);
 
 /**

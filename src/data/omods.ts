@@ -182,6 +182,15 @@ export interface OmodSlot {
   options: OmodOption[];
 }
 
+/**
+ * Slots exempt from the hygiene rules below (dedupe, hide-standard-only):
+ * unique-identity slots legitimately hold same-named variants (the six
+ * "The V.A.T.S. Unknown" records differ only in modifiers) and single-option
+ * identity slots must stay visible (The Fixer's Unique slot IS its identity);
+ * legendary slots are star pickers, not upgrade choices.
+ */
+const NON_HYGIENE_SLOT_RE = /legendary|customname/i;
+
 /** Slots whose edid-derived label reads worse than a fixed name. */
 const SLOT_LABEL_OVERRIDES: Record<string, string> = { ap_customName: 'Unique' };
 
@@ -224,19 +233,50 @@ function buildSlots(
     (groups.get(omod.attachPointEdid) ?? groups.set(omod.attachPointEdid, []).get(omod.attachPointEdid)!).push(option);
   }
   const defaultFormIds = new Set(weapon.defaultModFormIds ?? []);
-  return [...groups.entries()]
-    .map(([slot, options]) => ({
-      slot,
-      label: slotLabel(slot),
-      options: options.sort(
-        (a, b) =>
-          // The weapon's standard part first, then alphabetical.
-          Number(defaultFormIds.has(b.formId)) - Number(defaultFormIds.has(a.formId)) ||
-          a.name.localeCompare(b.name) ||
-          a.id.localeCompare(b.id)
-      ),
-    }))
-    .sort(sortSlots);
+  const templateFormIds = new Set(weapon.templateModFormIds ?? []);
+  // Hygiene rule 1 (dedupe): several weapons carry two records with the same
+  // display name AND identical modifier payloads (Hatchet's "No Upgrade"
+  // pair) — pure picker noise. Same name with DIFFERENT payloads is a real
+  // choice and always survives. Prefer the record the weapon's own template
+  // whitelists; the key strips per-record Modifier fields (id, source).
+  const dedupe = (options: OmodOption[]): OmodOption[] => {
+    const byKey = new Map<string, OmodOption>();
+    for (const option of options) {
+      const key = `${option.name} ${JSON.stringify(option.modifiers.map(m => Object.fromEntries(Object.entries(m).filter(([field]) => field !== 'id' && field !== 'source'))))}`;
+      const prev = byKey.get(key);
+      if (!prev || (templateFormIds.has(option.formId) && !templateFormIds.has(prev.formId))) byKey.set(key, option);
+    }
+    return [...byKey.values()];
+  };
+  return (
+    [...groups.entries()]
+      .map(([slot, options]) => ({
+        slot,
+        label: slotLabel(slot),
+        options: (NON_HYGIENE_SLOT_RE.test(slot) ? options : dedupe(options)).sort(
+          (a, b) =>
+            // The weapon's standard part first, then alphabetical.
+            Number(defaultFormIds.has(b.formId)) - Number(defaultFormIds.has(a.formId)) ||
+            a.name.localeCompare(b.name) ||
+            a.id.localeCompare(b.id)
+        ),
+      }))
+      // Hygiene rule 2 (hide no-decision slots): drop a slot whose every
+      // option is the weapon's own default part, or whose SOLE option is a
+      // stock-named zero-stat part that merely isn't listed as a default
+      // (AGL's "Standard Magazine" _Base on ap_Bot_Mag). Multi-option slots
+      // with a stock alternative stay — clearing the Bone Club's default
+      // Wounding mod down to "No Upgrade" is a real stat decision. The
+      // engine still folds default parts via getDefaultOmods. (User req,
+      // dps-todos/omod-slot-hygiene.md.)
+      .filter(
+        ({ slot, options }) =>
+          NON_HYGIENE_SLOT_RE.test(slot) ||
+          (options.some(o => !defaultFormIds.has(o.formId)) &&
+            !(options.length === 1 && STOCK_NAME_RE.test(options[0].name) && options[0].modifiers.length === 0))
+      )
+      .sort(sortSlots)
+  );
 }
 
 /** Standard mod slots (receiver/barrel/…) available for a weapon, options sorted by name. */

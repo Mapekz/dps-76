@@ -169,3 +169,57 @@ describe('show-all-mods display policy against live data', () => {
     }
   });
 });
+
+// 2026-07-14 slot hygiene (dps-todos/omod-slot-hygiene.md): dedupe
+// same-name/same-payload options; hide slots that offer no decision.
+// ap_customName and legendary slots are exempt from both rules.
+
+describe('slot hygiene against live data', () => {
+  const slotsOf = (weaponId: string) => {
+    const weapon = getWeapons('live')[weaponId];
+    expect(weapon, weaponId).toBeDefined();
+    return getOmodSlots('live', weapon);
+  };
+
+  it("the Hatchet's melee slot keeps exactly one \"No Upgrade\" (template-preferred) alongside its real upgrades", () => {
+    const melee = slotsOf('Hatchet').find(s => s.slot === 'ap_melee_MeleeMod');
+    const noUpgrades = melee?.options.filter(o => o.name === 'No Upgrade') ?? [];
+    expect(noUpgrades.map(o => o.id)).toEqual(['mod_melee_Null_MeleeMod']);
+    expect(melee?.options.map(o => o.id)).toContain('mod_melee_Hatchet_ElectroFusion');
+  });
+
+  it('standard-only slots disappear: M79 receiver, Auto Grenade Launcher feeder/grip/sight', () => {
+    expect(slotsOf('M79').map(s => s.slot)).not.toContain('ap_gun_Receiver');
+    const aglSlots = slotsOf('AutoGrenadeLauncher').map(s => s.slot);
+    for (const slot of ['ap_gun_FeedThroat', 'ap_gun_Grip', 'ap_gun_Sight']) {
+      expect(aglSlots, slot).not.toContain(slot);
+    }
+  });
+
+  it('single-option stock-part slots disappear even when the part is not a listed default (AGL Bot Mag, .50 cal Mag)', () => {
+    expect(slotsOf('AutoGrenadeLauncher').map(s => s.slot)).not.toContain('ap_Bot_Mag');
+    expect(slotsOf('50CalMachineGun').map(s => s.slot)).not.toContain('ap_gun_Mag');
+  });
+
+  it("the Bone Club keeps its melee slot — clearing the default Wounding mod to \"No Upgrade\" is a real choice", () => {
+    const melee = slotsOf('BoneClub').find(s => s.slot === 'ap_melee_MeleeMod');
+    expect(melee?.options.map(o => o.name)).toContain('No Upgrade');
+    expect(melee?.options.length).toBeGreaterThan(1);
+  });
+
+  it("the Cremator's bogus receiver slot (flame-color cosmetics) is gone; its real stat slots remain", () => {
+    const slots = slotsOf('Cremator').map(s => s.slot);
+    expect(slots).not.toContain('ap_gun_Receiver');
+    for (const slot of ['ap_gun_Barrel', 'ap_gun_ChemicalType', 'ap_gun_Mag']) {
+      expect(slots, slot).toContain(slot);
+    }
+  });
+
+  it('single-option unique-identity slots survive the standard-only rule (The Fixer, Circuit Breaker)', () => {
+    for (const weaponId of ['CombatRifle_Fixer', '10mm_CircuitBreaker']) {
+      const unique = slotsOf(weaponId).find(s => s.slot === 'ap_customName');
+      expect(unique, weaponId).toBeDefined();
+      expect(unique!.options.length, weaponId).toBeGreaterThan(0);
+    }
+  });
+});

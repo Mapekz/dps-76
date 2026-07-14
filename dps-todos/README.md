@@ -47,9 +47,6 @@ above).
 - **[omod-slot-naming.md](omod-slot-naming.md)** — slot label overrides +
   per-weapon layer ("MeleeMod", "ChemicalType", auto-axe "Scope" → Blade,
   chainsaw/drill "Barrel" → Bar/Drill Bit).
-- **[omod-slot-hygiene.md](omod-slot-hygiene.md)** — dedupe duplicate
-  Standard entries, hide Standard-only slots, hide non-craftable/no-op slots
-  (universal range offsets, Weapon Model Replacement).
 - **[unique-cursed-mods.md](unique-cursed-mods.md)** — unique-slot
   completion: missing uniques (Cold Shoulder, Holy Fire, Flatliner, …),
   cursed mods under "Item Description", bogus entries ("The Pipe", Minty
