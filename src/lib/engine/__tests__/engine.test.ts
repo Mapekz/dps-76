@@ -788,6 +788,75 @@ describe('computeDotDps (Stage A2, DoT line)', () => {
     });
   });
 
+  describe('DoT ignores sneak, crit, and body-part multipliers (2026-07-14, user spec)', () => {
+    // Same fire weapon + active fire dotDamage mod shape as the tests above.
+    const weapon = makeWeapon({
+      components: [{ damageType: 'fire', tier: -1, levelCap: 50, curvePoints: FLAT_100 }],
+    });
+    const mods = [mod({ bucket: 'dotDamage', op: 'ADD', value: 3, conditions: [{ kind: 'damageTypeScope', types: ['fire'] }] })];
+
+    it('computeDotDps returns the same value sneaking or not', () => {
+      const notSneaking = computeDotDps(mods, weapon, makeCtx(weapon));
+      const sneaking = computeDotDps(mods, weapon, makeCtx(weapon, {
+        scenario: { isVats: false, isSneaking: true, isPowerAttack: false, isCrit: false },
+      }));
+      expect(sneaking).toBeCloseTo(notSneaking, 10);
+      expect(notSneaking).toBeCloseTo(3, 10);
+    });
+
+    it('computeDotDps returns the same value critting or not', () => {
+      const noCrit = computeDotDps(mods, weapon, makeCtx(weapon));
+      const crit = computeDotDps(mods, weapon, makeCtx(weapon, {
+        scenario: { isVats: true, isSneaking: false, isPowerAttack: false, isCrit: true },
+      }));
+      expect(crit).toBeCloseTo(noCrit, 10);
+      expect(noCrit).toBeCloseTo(3, 10);
+    });
+    // No unit case for body part: computeDotDps takes no body-part argument at
+    // all — it is structurally impossible for a body-part multiplier to reach
+    // it. Covered end-to-end via computeScenarios below instead.
+
+    // Scenario-level: dotDps stays put while the paper hit visibly moves —
+    // proves the multiplier is live but simply never reaches the DoT line
+    // (a bare equality on dotDps alone could pass vacuously if the toggle did
+    // nothing at all).
+    const baseInput = {
+      mode: 'live' as const, weapon, itemLevel: 50, modifiers: mods,
+      enemy: createDefaultEnemyConditions(), weakpointMult: 2.0,
+    };
+
+    it('toggling sneak leaves dotDps unchanged but raises the free-aim per-hit total', () => {
+      const notSneaking = computeScenarios({ ...baseInput, player: createDefaultPlayerConditions() });
+      const sneaking = computeScenarios({
+        ...baseInput, player: { ...createDefaultPlayerConditions(), isSneaking: true },
+      });
+      expect(sneaking.freeAim.dotDps).toBeCloseTo(notSneaking.freeAim.dotDps, 10);
+      expect(sneaking.vats.dotDps).toBeCloseTo(notSneaking.vats.dotDps, 10);
+      expect(sneaking.freeAim.perHit.total).toBeGreaterThan(notSneaking.freeAim.perHit.total);
+    });
+
+    it('toggling weakpoint targeting (body-part mult) leaves dotDps unchanged but raises the per-hit total', () => {
+      const torso = computeScenarios({ ...baseInput, player: createDefaultPlayerConditions() });
+      const weakpoint = computeScenarios({
+        ...baseInput, player: { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true },
+      });
+      expect(weakpoint.freeAim.dotDps).toBeCloseTo(torso.freeAim.dotDps, 10);
+      expect(weakpoint.vats.dotDps).toBeCloseTo(torso.vats.dotDps, 10);
+      expect(weakpoint.freeAim.perHit.total).toBeGreaterThan(torso.freeAim.perHit.total);
+    });
+
+    it('raising the VATS crit rate leaves vats.dotDps unchanged but raises the VATS per-hit total', () => {
+      const noCrit = computeScenarios({
+        ...baseInput, player: createDefaultPlayerConditions(), critRate: 0,
+      });
+      const critting = computeScenarios({
+        ...baseInput, player: createDefaultPlayerConditions(), critRate: 0.5,
+      });
+      expect(critting.vats.dotDps).toBeCloseTo(noCrit.vats.dotDps, 10);
+      expect(critting.vats.perHit.total).toBeGreaterThan(noCrit.vats.perHit.total);
+    });
+  });
+
   it('surfaces on ScenarioResult.dotDps without moving perHit/burstDps/sustain', () => {
     const weapon = makeWeapon({
       components: [{ damageType: 'fire', tier: -1, levelCap: 50, curvePoints: FLAT_100 }],
