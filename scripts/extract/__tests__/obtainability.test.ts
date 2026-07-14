@@ -7,9 +7,21 @@ import lvliNpc from './fixtures/refs-lvli-npc.json';
 import weapon44 from './fixtures/refs-44.json';
 import protestSign01 from './fixtures/refs-protestsign01.json';
 import lvliLoot from './fixtures/refs-lvli-loot.json';
+import nukaColaCandy from './fixtures/refs-nukacolacandy.json';
+import lvliResoNukaColaCandy from './fixtures/refs-lvli-reso-nukacolacandy.json';
+import sunsetSarsaparilla from './fixtures/refs-sunsetsarsaparilla.json';
+import lvliSarsaparillaCommon from './fixtures/refs-lvli-sarsaparilla-common.json';
+import lvliSarsaparillaDrinks from './fixtures/refs-lvli-sarsaparilla-drinks.json';
+import actiSarsaparillaMachine from './fixtures/refs-acti-sarsaparillamachine.json';
+import gulpershineVintage from './fixtures/refs-gulpershine-vintage.json';
+import gulpershineFresh from './fixtures/refs-gulpershine-fresh.json';
+import gulpershineFerm from './fixtures/refs-gulpershine-ferm.json';
+import firecrackerFresh from './fixtures/refs-firecracker-fresh.json';
+import firecrackerFerm from './fixtures/refs-firecracker-ferm.json';
 
 // Fixtures are verbatim `esm -p refs <esmPath> --formid/--edid <target> --json
-// --limit 4000 --depth 1` output (20260702 ESM). Formids:
+// --limit 4000 --depth 1` output (20260702 ESM; the consumable-chain ones below
+// from 20260710). Formids:
 //   refs-minigun-vertibird.json   Minigun_Vertibird                  0x001299A6
 //   refs-rd01-crassaultrifle.json RD01_crAssaultRifle                0x007BC5C4
 //   refs-lvli-npc.json            LLI_RD01_MoleMiner_Ranged_Weapons  0x007BC5BA
@@ -20,6 +32,23 @@ import lvliLoot from './fixtures/refs-lvli-loot.json';
 //                                 (one of .44's LVLI referencers; its own refs
 //                                 reach a GMRW — QuestReward_RE_SceneTS04_Stage500_01
 //                                 — directly at depth 1)
+//
+// Consumable-chain fixtures (2026-07-14 audit), each the full chain end to end:
+//   RESO camp generator — Nuka-Cola Candy Machine
+//   refs-nukacolacandy.json            NukaColaCandyMachine_Candy               0x0067B396
+//   refs-lvli-reso-nukacolacandy.json  ATX_Resources_NukaColaCandyMachine_Candy 0x0067B39C
+//   Craftable dispensing ACTI — Sunset Sarsaparilla machine
+//   refs-sunsetsarsaparilla.json       SCORE_S22_Consumable_SunsetSarsaparilla  0x00832CA7
+//   refs-lvli-sarsaparilla-common.json SCORE_S22_LL_SarsaparillaMachine_Common  0x00837E0F
+//   refs-lvli-sarsaparilla-drinks.json SCORE_S22_LL_SarsaparillaMachine_drinks  0x00832CB2
+//   refs-acti-sarsaparillamachine.json SCORE_S22_SarsaparillaMachine            0x00832CA6
+//   ALCH ferment/age chain — Mire Magic Moonshine (craftable) vs Firecracker
+//   Whiskey (whose recipes have no Created Object, so the chain dead-ends)
+//   refs-gulpershine-vintage.json      E08A_Brew_GulpershineVintage             0x00655D13
+//   refs-gulpershine-fresh.json        E08A_Brew_GulpershineFresh               0x00622F8B
+//   refs-gulpershine-ferm.json         E08A_Brew_GulpershineFerm                0x00655D12
+//   refs-firecracker-fresh.json        Brew_FirecrackerWhiskeyFresh             0x00469853
+//   refs-firecracker-ferm.json         Brew_FirecrackerWhiskeyFerm              0x00469852
 
 /** Stub EsmClient: formid -> canned refs rows, or 'throw' to simulate a refs() failure. */
 function stubClient(rows: Record<string, unknown>): EsmClient {
@@ -154,6 +183,86 @@ describe('ObtainabilityClassifier', () => {
     expect(ok.obtainable).toBe(true);
     expect(ok.signals).toContain('weap:SomeWeaponEdid');
     expect(verdicts.get('0xOMOD_BAD')!.obtainable).toBe(false);
+  });
+
+  it('RESO chain: a CAMP resource generator produce list makes its LVLI player-facing → obtainable', async () => {
+    // Nuka-Cola Candy: ALCH <- LVLI ATX_Resources_* <- RESO ATX_Resource_*.
+    // The RESO is a buildable machine's produce list (COBJ
+    // SCORE_S11_workshop_co_Utility_NukaColaCandyMachine builds it), and it is
+    // the LVLI's ONLY referencer — so without the RESO terminal this reads as
+    // an NPC loadout list and the candy falls out entirely.
+    const client = stubClient({
+      '0x0067B396': nukaColaCandy,
+      '0x0067B39C': lvliResoNukaColaCandy,
+    });
+    const classifier = new ObtainabilityClassifier(client);
+    const verdicts = await classifier.classify([{ formId: '0x0067B396', edid: 'NukaColaCandyMachine_Candy' }]);
+    const verdict = verdicts.get('0x0067B396')!;
+    expect(verdict.obtainable).toBe(true);
+    expect(verdict.signals).toContain('lvli:ATX_Resources_NukaColaCandyMachine_Candy');
+  });
+
+  it('craftable ACTI: a buildable vending machine dispensing from an LVLI → obtainable', async () => {
+    // Sunset Sarsaparilla: ALCH <- LVLI _Common <- LVLI _drinks <- ACTI
+    // SCORE_S22_SarsaparillaMachine, which COBJ
+    // SCORE_S22_workshop_co_Resources_SarsaparillaMachine builds.
+    const client = stubClient({
+      '0x00832CA7': sunsetSarsaparilla,
+      '0x00837E0F': lvliSarsaparillaCommon,
+      '0x00832CB2': lvliSarsaparillaDrinks,
+      '0x00832CA6': actiSarsaparillaMachine,
+    });
+    const classifier = new ObtainabilityClassifier(client);
+    const verdicts = await classifier.classify([
+      { formId: '0x00832CA7', edid: 'SCORE_S22_Consumable_SunsetSarsaparilla' },
+    ]);
+    const verdict = verdicts.get('0x00832CA7')!;
+    expect(verdict.obtainable).toBe(true);
+    expect(verdict.signals).toContain('lvli:SCORE_S22_LL_SarsaparillaMachine_Common');
+  });
+
+  it('craftable ACTI: an activator with NO build recipe cannot launder access → unobtainable', async () => {
+    // Same shape as the Sarsaparilla machine, but the activator has no COBJ —
+    // a world activator that merely holds a loot list proves nothing.
+    const client = stubClient({
+      '0xALCH_VIA_WORLD_ACTI': [
+        { form_id: '0xLVLI_X', record_type: 'LVLI', editor_id: 'LL_SomeDispenser', name: null, depth: 1 },
+      ],
+      '0xLVLI_X': [{ form_id: '0xACTI_X', record_type: 'ACTI', editor_id: 'SomeWorldActivator', name: null, depth: 1 }],
+      '0xACTI_X': [{ form_id: '0xREFR_X', record_type: 'REFR', editor_id: null, name: null, depth: 1 }],
+    });
+    const classifier = new ObtainabilityClassifier(client);
+    const verdicts = await classifier.classify([{ formId: '0xALCH_VIA_WORLD_ACTI', edid: 'WorldActiConsumable' }]);
+    expect(verdicts.get('0xALCH_VIA_WORLD_ACTI')!.obtainable).toBe(false);
+  });
+
+  it('ALCH chain: an aged brew rides along on the craftable state it ferments from → obtainable', async () => {
+    // Vintage Mire Magic Moonshine's only referencer is the Fresh state it ages
+    // from; Fresh's chain reaches COBJ E08A_co_Gulpershine via Ferm.
+    const client = stubClient({
+      '0x00655D13': gulpershineVintage,
+      '0x00622F8B': gulpershineFresh,
+      '0x00655D12': gulpershineFerm,
+    });
+    const classifier = new ObtainabilityClassifier(client);
+    const verdicts = await classifier.classify([{ formId: '0x00655D13', edid: 'E08A_Brew_GulpershineVintage' }]);
+    const verdict = verdicts.get('0x00655D13')!;
+    expect(verdict.obtainable).toBe(true);
+    expect(verdict.signals).toContain('alch:E08A_Brew_GulpershineFresh');
+  });
+
+  it('ALCH chain: Firecracker Whiskey dead-ends at a no-output recipe → still unobtainable', async () => {
+    // Regression guard for the ALCH ride-along. Fresh <- ALCH Ferm, but NOTHING
+    // creates Ferm: co_Brewing_FirecrackerWhiskey carries no Created Object
+    // field at all, so its only referencers are POST_/CUT_ challenge records.
+    // Challenges are authored against cut content, so CHAL must never count.
+    const client = stubClient({
+      '0x00469853': firecrackerFresh,
+      '0x00469852': firecrackerFerm,
+    });
+    const classifier = new ObtainabilityClassifier(client);
+    const verdicts = await classifier.classify([{ formId: '0x00469853', edid: 'Brew_FirecrackerWhiskeyFresh' }]);
+    expect(verdicts.get('0x00469853')!.obtainable).toBe(false);
   });
 
   it('refs() throwing → refsError; empty refs → noRefs', async () => {

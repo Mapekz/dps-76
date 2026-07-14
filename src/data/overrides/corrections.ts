@@ -366,4 +366,21 @@ export const hiddenConsumableIds: ReadonlySet<string> = new Set<string>([
  * excludedDetailed.consumableUnobtainable` after each extraction and rescue
  * false negatives here — no re-extract needed.
  */
-export const forceVisibleConsumableIds: ReadonlySet<string> = new Set<string>([]);
+export const forceVisibleConsumableIds: ReadonlySet<string> = new Set<string>([
+  // 2026-07-14 audit of excludedDetailed.consumableUnobtainable. The RESO
+  // (CAMP resource generator), craftable-ACTI and ALCH ferment/age routes are
+  // now derived by scripts/extract/obtainability.ts, so the camp-machine foods,
+  // the Sunset Sarsaparillas and Vintage Mire Magic Moonshine no longer need
+  // rescuing. These two remain script-granted, with no record-level reverse
+  // reference the derivation could ever see:
+  //
+  // Milked from Chally the Moo-Moo: MGEF abBrahminRaceEffect runs
+  // Creatures:BrahminRaceMilkingScript, whose `ChallyMilk` property points at
+  // this ALCH, gated on the unique NPC's ChallyKeyword. Verified 2026-07-14.
+  'Milk_Chally',
+  // Spawned by EXPL Storm_SE09_ChickenExplosion via its *Placed Object* field
+  // (quest Storm_SE09, "Storm Encounter: Roast Chicken"). Following EXPL
+  // referencers in general would let every creature death-explosion through, so
+  // this one stays a hand-rescue. Verified 2026-07-14.
+  'Storm_SE09_ChickenMeatCooked',
+]);

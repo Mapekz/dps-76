@@ -5022,7 +5022,7 @@
    "SunsetSarsaparillaDispelEffects"
   ],
   "ingredientKeywords": [],
-  "obtainable": false
+  "obtainable": true
  },
  {
   "id": "SeasonalFish_Meal_SummerJelliedFish",
@@ -5600,7 +5600,7 @@
    "MealTypeTasty",
    "MealTypeDelbertRSVP02"
   ],
-  "obtainable": false
+  "obtainable": true
  },
  {
   "id": "MedX",
@@ -6607,7 +6607,7 @@
   "ingredientKeywords": [
    "MealTypePackaged"
   ],
-  "obtainable": false
+  "obtainable": true
  },
  {
   "id": "Brew_DLC04_NukaCola_Dark",
@@ -6747,7 +6747,7 @@
   "ingredientKeywords": [
    "MealTypePackaged"
   ],
-  "obtainable": false
+  "obtainable": true
  },
  {
   "id": "Brew_NukashineFresh",
@@ -8328,7 +8328,7 @@
   "foodScalableModifierIds": [
    "0x006F7E7B:0"
   ],
-  "obtainable": false
+  "obtainable": true
  },
  {
   "id": "PumpkinPieSlice",
@@ -8369,7 +8369,7 @@
   "foodScalableModifierIds": [
    "0x0083E768:0"
   ],
-  "obtainable": false
+  "obtainable": true
  },
  {
   "id": "SlimeCakeSlice",
@@ -8505,7 +8505,7 @@
   "foodScalableModifierIds": [
    "0x008D2AF6:0"
   ],
-  "obtainable": false
+  "obtainable": true
  },
  {
   "id": "ScorchBeastMeatLungCooked",
@@ -8705,7 +8705,7 @@
    "SunsetSarsaparillaDispelEffects"
   ],
   "ingredientKeywords": [],
-  "obtainable": false
+  "obtainable": true
  },
  {
   "id": "StarlightBerryCookedCobbler",
@@ -9325,7 +9325,7 @@
    "SunsetSarsaparillaDispelEffects"
   ],
   "ingredientKeywords": [],
-  "obtainable": false
+  "obtainable": true
  },
  {
   "id": "LGN_BrawlingChemist_Chem01",
@@ -10850,7 +10850,7 @@
    "name": "Alcohol Addiction"
   },
   "ingredientKeywords": [],
-  "obtainable": false
+  "obtainable": true
  },
  {
   "id": "Brew_NukashineVintage",

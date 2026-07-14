@@ -1117,6 +1117,46 @@ ghoul perk effects gate on it with `GetValue(Rads) ≥ N` condition rows.
   the −30% applies to AttackDamage/DamageTypeValues).
 - Shishkebab max Eligible Level 45 confirmed by user — item level clamps there.
 
+## CAMP resource generators & consumable chains (2026-07-14 — `obtainability.ts`)
+
+Audit of all 211 `_meta.excludedDetailed` records against the 20260710 dump. Weapons
+(92) and omods (83) were all true negatives; consumables had three missing grant routes,
+now derived. None of these values are assumptions — each is an ESM-proven reference
+chain — but the *rules* are judgment calls worth recording:
+
+- **RESO = player-obtainable.** A RESO ("Resource") is a workshop generator's produce
+  list: `ALCH ← LVLI ← RESO`, with a buildable machine behind it (COBJ
+  `ATX_workshop_co_*` + CONT `ATX_CAMP_Collector_*`). All 52 RESO records in the ESM are
+  player workshop resources (water/food/scavenge/ammo/junk + the ATX camp machines), so a
+  RESO terminal always proves access. Without it every camp-machine food (Nuka-Cola
+  Quantum Candy, Slice of Birthday Cake, Lucky-Leaf Tea, …) read as an NPC loadout list.
+- **A dispensing ACTI counts only if the player can BUILD it** — i.e. a non-junk COBJ
+  constructs it (`SCORE_S22_SarsaparillaMachine` ← `SCORE_S22_workshop_co_Resources_…`).
+  Never recursed, so a world activator that merely holds a loot list can't launder access.
+- **ALCH → ALCH ferment/spoil chains are followed.** A brew's aged state is referenced
+  only by the state it ages from (`co_Gulpershine` crafts Ferm → Fresh → Vintage).
+- **CHAL (challenge) referencers deliberately do NOT count.** Challenges are authored
+  against cut content too. This is what keeps Firecracker Whiskey out (below).
+
+Deliberate stay-hidden calls (user-confirmed 2026-07-14):
+
+- **Firecracker Whiskey** (Fresh/Manhattan/Old Fashioned) — unshipped. Its
+  `co_Brewing_FirecrackerWhiskey*` recipes carry **no `Created Object` field at all**
+  (`co_Brewing_WhiteRussian` does), so nothing creates `Brew_FirecrackerWhiskeyFerm` and
+  the whole aging chain is dead; both plan BOOKs are unreferenced. Its only referencers
+  are `POST_Challenge_*` records — the same "POST" unshipped bucket as the never-shipped
+  Stun Pack mods. Pinned by a regression test.
+- **Calmex Silk** (`DLC04_Calmex`) — 4 placed world REFRs, no recipe/loot list/vendor.
+  Placed refs alone stay insufficient (the standing `placedRef` rule).
+- **`LGN_BrawlingChemist_Chem01`–`04`** ("Super Chem MK I–III") — internal effect-carriers
+  for the Brawling Chemist legendary perk; never enter inventory.
+
+Two rescues are script-granted and can never be derived — they live in
+`corrections.ts` `forceVisibleConsumableIds`: **Chally's Milk** (VMAD
+`BrahminRaceMilkingScript` property) and **Roast Chicken** (`Storm_SE09_ChickenExplosion`
+spawns the ALCH via its *Placed Object* field; following EXPL referencers in general
+would let every creature death-explosion through).
+
 ## Unique weapons (2026-07-13 rework — base weapon + `ap_customName` mod)
 
 - The game's registry is the `WeaponsUniqueNamedList` FLST (0x00789213,
