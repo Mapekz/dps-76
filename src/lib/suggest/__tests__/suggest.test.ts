@@ -1,10 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { buildReducer, createDefaultBuildState, type BuildAction, type BuildState } from '@/state/build-reducer';
+import { makeBuildReducer, createDefaultBuildState, type BuildAction, type BuildState } from '@/state/build-reducer';
 import { enumerateVariants } from '@/lib/suggest/variants';
 import { evaluateSuggestions, snapshotOf, topSuggestions } from '@/lib/suggest/evaluate';
 import { resolveLoadout } from '@/lib/loadout';
 import { computeScenarios } from '@/lib/engine/scenarios';
 import { PerkId } from '@/data/perk-ids';
+
+const buildReducer = makeBuildReducer('live');
 
 function stateFrom(actions: BuildAction[], from: BuildState = createDefaultBuildState()): BuildState {
   return actions.reduce(buildReducer, from);

@@ -1,7 +1,7 @@
 import type { GameMode } from '@/types';
 import { resolveLoadout } from '@/lib/loadout';
 import { computeScenarios, type ScenarioResult, type ScenarioSet } from '@/lib/engine/scenarios';
-import { buildReducer, type BuildAction, type BuildState, type ScenarioKey } from '@/state/build-reducer';
+import { makeBuildReducer, type BuildAction, type BuildState, type ScenarioKey } from '@/state/build-reducer';
 import { enumerateVariants } from './variants';
 import type { DpsSnapshot, EvaluatedSuggestion, ScenarioHeadline, SuggestionCandidate, SuggestionReport } from './types';
 
@@ -44,7 +44,7 @@ export function evaluateAction(
   action: BuildAction,
   baseline: DpsSnapshot
 ): { result: DpsSnapshot; delta: DpsSnapshot } | null {
-  const result = computeSnapshot(buildReducer(state, action), mode);
+  const result = computeSnapshot(makeBuildReducer(mode)(state, action), mode);
   if (!result) return null;
   return {
     result,

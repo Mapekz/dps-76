@@ -1,6 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
-import { buildReducer, createDefaultBuildState, type BuildAction, type BuildState } from '@/state/build-reducer';
+import { makeBuildReducer, createDefaultBuildState, type BuildAction, type BuildState } from '@/state/build-reducer';
 import type { GeneratedBuff } from '@/types/generated';
+
+const buildReducer = makeBuildReducer('live');
 
 function run(actions: BuildAction[], from: BuildState = createDefaultBuildState()): BuildState {
   return actions.reduce(buildReducer, from);

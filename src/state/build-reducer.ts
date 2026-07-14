@@ -3,6 +3,7 @@ import {
   createDefaultPlayerConfig,
   type EnemyConditions,
   type EnemyConfig,
+  type GameMode,
   type ParsedPerk,
   type PerkLoadout,
   type PlayerConditions,
@@ -21,8 +22,16 @@ import type { PerkId } from '@/data/perk-ids';
  * The one store behind the whole app. The BuildAction union is the shared
  * "change" vocabulary: the UI dispatches actions to commit, the hover-diff
  * tooltips and the suggestions panel run the SAME actions through the reducer
- * speculatively (`buildReducer(state, action)` is pure) and feed the result to
- * the engine — one vocabulary, three consumers.
+ * speculatively (`makeBuildReducer(mode)(state, action)` is pure) and feed
+ * the result to the engine — one vocabulary, three consumers.
+ *
+ * Mode is a parameter to the reducer FACTORY, not a field of `BuildState`
+ * (see docs/adr/0002): a build is version-agnostic — the live/pts switcher
+ * holds the build fixed and varies the game-data version to compare the DPS
+ * math, so a build can't "have" a mode. The reducer still needs the ACTIVE
+ * editing mode for perk-point-budget/race rules (they read the registry,
+ * which is mode-keyed), hence the factory closes over it instead of reaching
+ * for a hardcoded constant.
  */
 
 export type SpecialKey =
@@ -91,11 +100,11 @@ function withPlayer(state: BuildState, player: PlayerConfig): BuildState {
   return { ...state, player };
 }
 
-/** Drop equipped perks locked to the race being left behind (registry is mode-independent today). */
-function keepForRace(list: PerkLoadout[], isGhoul: boolean): PerkLoadout[] {
+/** Drop equipped perks locked to the race being left behind. */
+function keepForRace(list: PerkLoadout[], isGhoul: boolean, mode: GameMode): PerkLoadout[] {
   const target = isGhoul ? 'ghoul' : 'human';
   return list.filter(p => {
-    const race = perkRaceRestriction('live', p.perkId);
+    const race = perkRaceRestriction(mode, p.perkId);
     return race === null || race === target;
   });
 }
@@ -112,18 +121,32 @@ function allocationOf(player: PlayerConfig): Record<SpecialKey, number> {
  * Would moving `perkId` from `fromRank` to `toRank` break its stat's
  * perk-point budget, min(15, base allocation + Legendary SPECIAL bonus)?
  * Legendary cards have their own slot cap and never consume card points.
- * The registry is mode-independent today (pts re-exports live).
  */
-function regularSlotBlocked(player: PlayerConfig, perkId: string, fromRank: number, toRank: number): boolean {
-  const stat = perkSpecialKey('live', perkId);
+function regularSlotBlocked(
+  player: PlayerConfig,
+  perkId: string,
+  fromRank: number,
+  toRank: number,
+  mode: GameMode
+): boolean {
+  const stat = perkSpecialKey(mode, perkId);
   if (!stat) return false; // unknown perk: don't block (import edge cases)
-  const delta = perkCardCostDelta('live', perkId, fromRank, toRank);
+  const delta = perkCardCostDelta(mode, perkId, fromRank, toRank);
   if (delta <= 0) return false;
-  const budget = computePerkBudget('live', player.perks, player.legendaryPerks, allocationOf(player));
+  const budget = computePerkBudget(mode, player.perks, player.legendaryPerks, allocationOf(player));
   return !canSlotCardPoints(budget, stat, delta);
 }
 
-export function buildReducer(state: BuildState, action: BuildAction): BuildState {
+/**
+ * Builds the reducer for `mode` — the active editing mode, NOT build data
+ * (docs/adr/0002). Re-create (memoized) when mode changes; the returned
+ * function is otherwise a plain, pure `(state, action) => BuildState` reducer.
+ */
+export function makeBuildReducer(mode: GameMode): (state: BuildState, action: BuildAction) => BuildState {
+  return (state, action) => buildReducer(state, action, mode);
+}
+
+function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): BuildState {
   const { player } = state;
   switch (action.type) {
     case 'weapon/select':
@@ -162,11 +185,11 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
       // Enforce the game's limits: 4 legendary slots; regular cards must fit
       // the stat's perk-point budget (min(15, base + Legendary SPECIAL bonus)).
       if (action.legendary && player.legendaryPerks.length >= LEGENDARY_PERK_SLOTS) return state;
-      if (!action.legendary && regularSlotBlocked(player, action.perkId, 0, rank)) return state;
+      if (!action.legendary && regularSlotBlocked(player, action.perkId, 0, rank, mode)) return state;
       // A card locked to the other race can't be added — the picker greys it
       // out for the same reason (PerkEditorSection.tsx). Race itself only
       // changes via race/set, which prunes the loadout to match.
-      const race = perkRaceRestriction('live', action.perkId);
+      const race = perkRaceRestriction(mode, action.perkId);
       if (race !== null && (player.conditions.isGhoul ?? false) !== (race === 'ghoul')) return state;
       return withPlayer(state, {
         ...player,
@@ -181,10 +204,10 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
       if (!current) return state;
       // Defensive clamp: a stale/imported action.rank must not exceed the
       // card's real maxRank (derived from the ESM card — see perk-cards.ts).
-      const maxRank = getPerks('live')[action.perkId as PerkId]?.maxRank ?? action.rank;
+      const maxRank = getPerks(mode)[action.perkId as PerkId]?.maxRank ?? action.rank;
       const rank = Math.max(1, Math.min(action.rank, maxRank));
       const isRegular = player.perks.some(p => p.perkId === action.perkId);
-      if (isRegular && regularSlotBlocked(player, action.perkId, current.rank, rank)) return state;
+      if (isRegular && regularSlotBlocked(player, action.perkId, current.rank, rank, mode)) return state;
       const bump = (list: typeof player.perks) =>
         list.map(p => (p.perkId === action.perkId ? { ...p, rank } : p));
       return withPlayer(state, {
@@ -227,14 +250,11 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
     }
 
     case 'consumable/toggle':
-      // consumablesById needs a GameMode; the reducer has none in scope and
-      // the registry is mode-independent today (pts re-exports live) — same
-      // precedent as regularSlotBlocked's hardcoded 'live' above. Stacking
-      // rules (one chem/alcohol at a time, same-bonus food/drink
+      // Stacking rules (one chem/alcohol at a time, same-bonus food/drink
       // displacement) are enforced here, not in the engine.
       return withPlayer(state, {
         ...player,
-        consumables: toggleConsumable(consumablesById('live'), player.consumables, action.id).consumables,
+        consumables: toggleConsumable(consumablesById(mode), player.consumables, action.id).consumables,
       });
 
     case 'addiction/toggle':
@@ -249,8 +269,8 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
       return withPlayer(state, {
         ...player,
         conditions: { ...player.conditions, isGhoul: action.isGhoul },
-        perks: keepForRace(player.perks, action.isGhoul),
-        legendaryPerks: keepForRace(player.legendaryPerks, action.isGhoul),
+        perks: keepForRace(player.perks, action.isGhoul, mode),
+        legendaryPerks: keepForRace(player.legendaryPerks, action.isGhoul, mode),
       });
 
     case 'enemy/condition':
@@ -273,11 +293,13 @@ export function buildReducer(state: BuildState, action: BuildAction): BuildState
       // cards behind once a race is chosen for it.
       const regular = keepForRace(
         parsedPerksToLoadout(action.perks.filter(p => !isLegendaryPerkKey(p.key))),
-        action.isGhoul
+        action.isGhoul,
+        mode
       );
       const legendary = keepForRace(
         parsedPerksToLoadout(action.perks.filter(p => isLegendaryPerkKey(p.key))),
-        action.isGhoul
+        action.isGhoul,
+        mode
       );
       const importedSpecial = action.special
         ? (Object.fromEntries(

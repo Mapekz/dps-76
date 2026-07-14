@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { buildReducer, createDefaultBuildState, type BuildAction, type BuildState } from './build-reducer';
+import { useGameMode } from '@/hooks/useGameMode';
+import { makeBuildReducer, createDefaultBuildState, type BuildAction, type BuildState } from './build-reducer';
 
 /**
  * State and dispatch contexts are split so components that only dispatch
@@ -9,7 +10,13 @@ const BuildStateContext = React.createContext<BuildState | null>(null);
 const BuildDispatchContext = React.createContext<React.Dispatch<BuildAction> | null>(null);
 
 export function BuildProvider({ children, initialState }: { children: React.ReactNode; initialState?: BuildState }) {
-  const [state, dispatch] = React.useReducer(buildReducer, initialState, init => init ?? createDefaultBuildState());
+  // The reducer needs the ACTIVE editing mode for perk-budget/race rules
+  // (docs/adr/0002: mode is a comparison axis, not build data — it isn't
+  // BuildState, so it comes from GameModeContext instead). Re-derive the
+  // reducer only when mode changes; it's otherwise a stable pure function.
+  const { mode } = useGameMode();
+  const reducer = React.useMemo(() => makeBuildReducer(mode), [mode]);
+  const [state, dispatch] = React.useReducer(reducer, initialState, init => init ?? createDefaultBuildState());
   return (
     <BuildStateContext.Provider value={state}>
       <BuildDispatchContext.Provider value={dispatch}>{children}</BuildDispatchContext.Provider>

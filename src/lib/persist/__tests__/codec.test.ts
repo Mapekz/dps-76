@@ -1,8 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { decodeBuild, encodeBuild } from '@/lib/persist/codec';
-import { buildReducer, createDefaultBuildState, type BuildAction } from '@/state/build-reducer';
+import { makeBuildReducer, createDefaultBuildState, type BuildAction } from '@/state/build-reducer';
 import { nukesDragonsPerks } from '@/lib/nukes-dragons';
 import type { GeneratedAddiction, GeneratedBuff } from '@/types/generated';
+
+const buildReducer = makeBuildReducer('live');
 
 function stateFrom(actions: BuildAction[]) {
   return actions.reduce(buildReducer, createDefaultBuildState());

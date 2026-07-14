@@ -60,7 +60,12 @@ _Avoid_: build (that's the user-facing config, `PlayerConfig`), config.
 
 **Mode**:
 The game-data variant, `live` or `pts`. One ESM is extracted today, so both
-resolve to the same data.
+resolve to the same data. The switcher holds a build FIXED and varies Mode to
+compare how a formula/calculation change affects that same build — Mode is a
+comparison axis a build is evaluated *at* (a parameter to `resolveLoadout`,
+`makeBuildReducer`, every `@/data` accessor), never a property a build *has*.
+It lives in `GameModeContext`, not `BuildState`, and is never persisted
+(`docs/adr/0002`).
 _Avoid_: version, environment, scenario.
 
 **OMOD**:
