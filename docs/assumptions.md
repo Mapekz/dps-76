@@ -1496,6 +1496,51 @@ Two rescues are script-granted and can never be derived — they live in
 spawns the ALCH via its *Placed Object* field; following EXPL referencers in general
 would let every creature death-explosion through).
 
+## OMOD eligibility & recipe chains (2026-07-14 — `cobj-index.ts`, `isEligible`)
+
+COBJ-anchored rework of which mods the picker offers and which count obtainable
+(dps-todos/omod-eligibility.md + omod-obtainability-chains.md). ESM ground truth
+walked live against the 20260710 dump:
+
+- **A COBJ cannot name a target weapon.** Standard mod recipes carry no CTDA
+  conditions and no restricting workbench keyword — the linkage is only
+  `Created Object` → OMOD. Per-weapon gating lives entirely in the OMOD
+  (attach point + Target OMOD Keywords). So "recipe exists" (`hasGrantingCobj`,
+  emitted on generated omods) is a diagnostic, never an eligibility input.
+- **`Learn Recipe From` is polymorphic by `Learn Method`**: the plan BOOK
+  (method 4 — `co_mod_AssaultRifle_Receiver_FastTrigger-CritDMG` → BOOK
+  0x00000871), the explicit scrap source (method 1 —
+  `co_mod_BlackPowder_Rifle_Bayonet` → WEAP `BlackPowder_Rifle`), or the
+  `recipe_Dummy_Uncraftable_Item_NOCRAFT` MISC stub on non-craftable records —
+  the field-based NOCRAFT signal (`isNonGrantingCobj`), stronger than the
+  legacy `_REPAIRONLY`/`NOCRAFT` edid regex.
+- **`Repair Method` 5 is NOT a NOCRAFT marker** — real scrap-learnable recipes
+  (`co_Weapon_Ranged_NWOT_ThirstZapper`) carry it too. Never gates.
+- **Vendor recipe pools run ~8 LVLIs deep** (BOOK → `LLS_Recipes_*` → … →
+  `Vendor_LC060_Whitespring_BoS` → CONT), so the BOOK chase uses its own
+  `BOOK_LVLI_DEPTH_CAP = 10` while the general LVLI cap stays 4 (NPC-loadout
+  laundering keeps failing fast). FLST exclusion lists (`BabylonExcludeList`
+  names every plan) and the teaching COBJ itself never count as book proof.
+
+Picker eligibility (`isEligible`, `src/data/omods.ts`): attach point must be on
+the weapon; keyword-scoped mods use the game's own subset gate
+(`targetKeywords ⊆ weapon.keywords`); **empty-keyword mods match nothing by
+default** — they're offered only where the weapon's own Object Template
+whitelists them (`templateModFormIds`) or an `omodWeaponRestrictions` entry
+rescues them (reward-granted identity mods with no record-level refs, e.g. the
+V.A.T.S. Unknown variants). Previously empty keywords matched every weapon
+sharing the attach point — the "Vox Syringe Barrel on a gauss minigun" bug
+class. Slots left with zero eligible mods disappear from the picker emergently
+(`buildSlots` only groups surviving options).
+
+Weak-evidence review (user decision 2026-07-14: **flag, never auto-hide**): an
+obtainable standard-slot mod whose only proof is riding along on its weapon
+(`weap:`/`omod:` signals, no seat in `defaultModFormIds`) lands in
+`_meta.json` `reviewFlagged.omodWeakEvidence` each extraction; confirmed cut
+content is hand-hidden via `hiddenOmodIds` with a source comment.
+Identity/paint/legendary slots are exempt — inherited-only evidence is normal
+there.
+
 ## Unique weapons (2026-07-13 rework — base weapon + `ap_customName` mod)
 
 - The game's registry is the `WeaponsUniqueNamedList` FLST (0x00789213,

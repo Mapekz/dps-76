@@ -77,11 +77,35 @@ export function getDefaultOmods(
   return out;
 }
 
-function isAttachable(omod: GeneratedOmod, weapon: Weapon): boolean {
+/**
+ * May the picker offer this mod on this weapon?
+ *
+ * Branch 0 — the attach point must exist on the weapon (ESM-authoritative).
+ * Branch 1 — keyword-scoped mods (the overwhelming majority): eligible iff
+ *   targetKeywords ⊆ weapon.keywords, the game's own family gate.
+ * Branch 2 — EMPTY targetKeywords match nothing by themselves (they used to
+ *   match everything sharing the attach point — the source of "Vox Syringe
+ *   Barrel on a gauss minigun"-class pollution, dps-todos/omod-eligibility).
+ *   Such a mod is eligible only when this weapon's own ESM instance template
+ *   whitelists it (Object Template Includes → templateModFormIds), or an
+ *   explicit omodWeaponRestrictions rescue names the weapon (reward-granted
+ *   identity mods with no ESM-derivable weapon tie at all).
+ *
+ * A crafting recipe existing (hasGrantingCobj) is deliberately NOT an input:
+ * COBJs carry no CTDA/BNAM naming a weapon (verified live 2026-07-14), so a
+ * recipe can never say WHICH weapon a keyword-less mod belongs to.
+ */
+export function isEligible(omod: GeneratedOmod, weapon: Weapon): boolean {
   const slots = weapon.attachParentSlots ?? [];
   if (!slots.includes(omod.attachPointFormId)) return false;
-  const keywords = weapon.keywords ?? [];
-  return omod.targetKeywords.every(k => keywords.includes(k));
+  if (omod.targetKeywords.length > 0) {
+    const keywords = weapon.keywords ?? [];
+    return omod.targetKeywords.every(k => keywords.includes(k));
+  }
+  return (
+    (weapon.templateModFormIds ?? []).includes(omod.formId) ||
+    (omodWeaponRestrictions[omod.id]?.includes(weapon.id) ?? false)
+  );
 }
 
 /**
@@ -178,11 +202,8 @@ function buildSlots(
     // stays here rather than folding into the shared visibility predicate.
     const isWeaponDefault = (weapon.defaultModFormIds ?? []).includes(omod.formId);
     if (!isRecordVisible(omod, { hidden: hiddenOmodIds, forceVisible: forceVisibleOmodIds }, isWeaponDefault)) continue;
-    // Weapon-restricted mods (empty targetKeywords on shared slots) only
-    // appear on their own weapon.
-    if (omodWeaponRestrictions[omod.id] && !omodWeaponRestrictions[omod.id].includes(weapon.id)) continue;
     if (!includeSlot(omod.attachPointEdid, omod)) continue;
-    if (!isAttachable(omod, weapon)) continue;
+    if (!isEligible(omod, weapon)) continue;
     const { show, badge } = classifyOmodDisplay(omod, weapon);
     if (!show) continue;
     const option: OmodOption = badge ? { ...omod, badge } : omod;

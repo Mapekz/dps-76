@@ -36,20 +36,41 @@ below; and conversely cut/POST content sneaks through when a stale ref exists.
 
 ## Issue checklist
 
+**DONE 2026-07-14** — landed as `scripts/extract/cobj-index.ts` (forward COBJ
+index: Created Object, Learn Method, Learn Recipe From, Repair Method) +
+learn-method-gated COBJ handling in obtainability.ts (`cobjBook`/`cobjScrap`
+chases, `BOOK_LVLI_DEPTH_CAP=10` for ~8-LVLI-deep vendor plan pools, field-based
+NOCRAFT via the `recipe_Dummy_Uncraftable_Item_NOCRAFT` learn-from stub) + a
+`reviewFlagged.omodWeakEvidence` queue in `_meta.json` (user decision: flag,
+never auto-hide). Scrap-to-learn needed NO inference: `Learn Recipe From`
+explicitly names the scrap source. Vendor LVLI/FLST roots were already
+reachable — the problem was depth (BOOK → vendor CONT is 8 LVLIs), not seeds.
+See docs/assumptions.md "OMOD eligibility & recipe chains".
+
 Missing (likely obtainability false negatives — verify each via `/esm-walk`):
-- [ ] Gauss minigun gunner sight.
-- [ ] PlasmaGun + Enclave plasma gun barrel slot entirely missing.
-- [ ] Laser + ultracite laser: barrel + muzzle mods.
-- [ ] Gatling laser + ultracite gatling laser: barrel mods.
-- [ ] Gatling plasma: muzzle + core mods (stinging/swift/large core
-      receptacle).
-- [ ] Plasma caster: barrel mods.
-- [ ] Gamma gun: muzzle slot (signal repeater, electric signal antennae —
-      note in-game there may be NO plain/standard option for this slot).
+- [x] ALL of these turned out to be display-layer, not obtainability: every
+      listed mod is obtainable:true with correct targetKeywords, but extracts
+      with zero modifiers and the "hide pure utility" display rule hides it →
+      [omod-nondps-stats.md](omod-nondps-stats.md) scope. (Gauss minigun
+      gunner sight, PlasmaGun/Enclave barrels, laser/ultracite barrel+muzzle,
+      gatling laser barrels, gatling plasma muzzle/core, plasma caster
+      barrels, gamma gun muzzle.) The 2026-07-14 re-extract flipped ZERO
+      records false→true — there were no obtainability false negatives here.
+- [x] Real false negatives the book chase DID surface (script/terminal
+      vendors are invisible to the record graph — rescued in
+      `forceVisibleOmodIds` with sources): Tesla Rifle Lobber Barrel (stamps
+      vendor plan) and the three Thirst Zapper mags (Nuka-Cade prize plan).
 
 False positives (cut/unobtainable content leaking through):
-- [ ] Gauss pistol "energy barrel" — cut/deprecated/POST, not obtainable.
-- [ ] Sweep for other COBJ-less, drop-less mods once chains are complete.
+- [x] Gauss pistol "energy barrel" — confirmed cut (its only recipe learns
+      from the uncraftable dummy; obtainable only via template ride-along) →
+      `hiddenOmodIds`. Flagged automatically by the weak-evidence queue.
+- [x] Sweep — `_meta.json reviewFlagged.omodWeakEvidence` now self-reports
+      every standard-slot mod whose only proof is weap:/omod: inheritance
+      (52 entries on the 20260710 dump; reviewed: Enclave plasma mods are
+      correct loose-mod drops, paddle ball trio was cut → now junk-filtered
+      via the `CUT_` referencer prefix, MG42 craft variants → dummy-learn-from
+      hides). Re-populated on every extraction.
 
 ## Files
 

@@ -38,25 +38,46 @@ Use `/esm-walk` to confirm the COBJ condition encoding (likely CTDA
 
 ## Issue checklist (from tester sweep, 2026-07-14)
 
-- [ ] Vox Syringe Barrel appears on: gauss minigun, auto grenade launcher,
-      black powder pistol/rifle/blunderbuss/dragon, broadsider, chainsaw,
-      cremator, and more. (Syringer-only or quest weapon; likely 0 DPS impact
-      — may end up hidden entirely by nondps/obtainability rules.)
-- [ ] Internal suppressor on chainsaw ("misc" slot), gatling laser, AGL misc.
-      In-game only the Anchorage Ace (10mm SMG) has it built-in; everything
-      else uses a normal Suppressor muzzle mod.
-- [ ] Paddle ball offers fire/spiked etc. melee mods.
-- [ ] Auto grenade launcher: bogus mag ("bot mag"), FeedThroat, grip, misc,
-      sight slots — only the barrel is real in-game.
-- [ ] .50 cal: grip/mag/sight slots not craftable today (leave data intact —
-      may become real when new mods ship; hidden by no-COBJ rule).
-- [ ] M79: receiver + misc slots (no user-changeable mods in-game yet).
-- [ ] Bow + compound bow: purposeless receiver slot.
-- [ ] Black powder family: muzzle slot currently shows nothing — the bayonet
-      slots here; KEEP the slot with the bayonet (COBJ exists, learned from
-      the MISC mod item).
-- [ ] Gauss minigun missing gunner sight (may be an obtainability false
-      negative instead — see sibling doc).
+**DONE 2026-07-14** — landed as `isEligible` (`src/data/omods.ts`): attach
+point gate, keyword-subset gate, and for EMPTY-targetKeywords mods a
+template-membership / `omodWeaponRestrictions`-rescue gate. Key ground-truth
+correction vs the sketch below: **COBJs carry no CTDA/BNAM naming a weapon**
+(walked live), so "a COBJ ties the mod to this weapon" is not encodable —
+template membership is the restrictive signal; `hasGrantingCobj` is emitted as
+a diagnostic only. See docs/assumptions.md "OMOD eligibility & recipe chains".
+
+- [x] Vox Syringe Barrel — empty targetKeywords; now offered only on
+      MTNS05_PipeSyringer_Vox (its sole template seat). Pinned by test.
+- [x] Internal suppressor — same mechanism; only the 10mm SMG templates it.
+      Pinned by test.
+- [x] Paddle ball fire/spiked mods — tester was RIGHT: cut content. Their
+      plan books are `CUT_recipe_mod_PaddleBall_*` with zero referencers and
+      obtainability was laundered through `CUT_DLC04_modcol_melee_Paddleball`;
+      `CUT_` is now a junk-referencer prefix (obtainability.ts) and all three
+      flipped obtainable:false. (Paddle ball isn't in the vetted roster
+      anyway.)
+- [x] AGL — misc slot gone (internal suppressor). Remaining bot mag/
+      FeedThroat/grip/sight each hold ONLY the weapon's own keyword-scoped
+      `_Base` standard part — that's [omod-slot-hygiene.md](omod-slot-hygiene.md)
+      scope (single-standard-part slots), not eligibility pollution.
+- [x] .50 cal — grip/mag/muzzle + Critical receivers flipped
+      obtainable:false: their COBJs learn from
+      `recipe_Dummy_Uncraftable_Item_NOCRAFT` (the new field-based non-granting
+      check; edids are clean so the legacy regex never saw them). Data intact,
+      hidden — un-hides itself if a patch makes them craftable.
+- [x] M79 — misc slot gone (P62 Chaos Engine needs the P62_ma keyword);
+      "Standard"-named Assaultron-head receivers no longer leak (empty
+      keywords, templated on no weapon). Remaining receiver slot holds only
+      mod_M79_Receiver_Standard → slot-hygiene scope.
+- [x] Bow + compound bow — receiver slot gone (same Assaultron-head leak).
+- [x] Black powder family — muzzle slot kept (mod_Null_Muzzle). The bayonet
+      is obtainable:true (its Learn-Method-1 recipe's `Learn Recipe From`
+      names WEAP BlackPowder_Rifle — better than the MISC guess) but extracts
+      with zero modifiers, so the no-modifier display rule still hides it →
+      [omod-nondps-stats.md](omod-nondps-stats.md) scope.
+- [x] Gauss minigun gunner sight — NOT an eligibility/obtainability bug:
+      already obtainable:true with correct ma_GaussMinigun keyword; hidden by
+      the no-modifier display rule → [omod-nondps-stats.md](omod-nondps-stats.md).
 
 ## Files
 

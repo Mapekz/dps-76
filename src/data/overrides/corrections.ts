@@ -148,6 +148,13 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
   // released to players — user-confirmed 2026-07-12, not in the in-game
   // legendary mod pool. Delete this line if it ever ships.
   'mod_Legendary_Weapon4_Melee_ComboBreaker',
+  // Gauss Pistol "Energy Barrel": cut content that stays obtainable:true only
+  // by riding the Gauss Pistol's template (2026-07-14 weak-evidence sweep,
+  // _meta.reviewFlagged.omodWeakEvidence: weap:GaussPistol +
+  // noGrantCobj:co_mod_GaussPistol_Barrel_Energy — its only recipe learns
+  // from recipe_Dummy_Uncraftable_Item_NOCRAFT). Tester-confirmed not
+  // craftable/obtainable in game (dps-todos/omod-obtainability-chains.md).
+  'mod_GaussPistol_Barrel_Energy',
 ]);
 
 /**
@@ -210,12 +217,34 @@ export const forceVisibleOmodIds: ReadonlySet<string> = new Set<string>([
   'mod_Custom_TheVATSUnknown_GlowingCriticals',
   'mod_Custom_TheVATSUnknown_GrimReapersSprint',
   'mod_Custom_TheVATSUnknown_Psychopath',
+  // Terminal/script-sold plan books (2026-07-14 book-chain rework): these
+  // mods' recipes are Learn-Method-4 with a real BOOK, but the BOOK's only
+  // referencer is the recipe itself — the plans are sold by script-driven
+  // vendors the record graph can't see, so the book chase correctly reports
+  // cobjBookUnproven and the mods flip obtainable:false. Both are shipped,
+  // player-purchasable content:
+  // "Plan: Tesla Rifle Lobber Barrel" (recipe_DLC01_mod_LightningGun_Barrel_
+  // Lobber, 0x007284E7) — expedition stamps vendor.
+  'DLC01_mod_LightningGun_Barrel_Lobber',
+  // "Plan: Weaponized Nuka-Cola Schematics" (Recipe_NWOT_mod_WeaponizedNukaCola,
+  // 0x006692B7) — Nuka World on Tour Nuka-Cade prize terminal; teaches all
+  // three Thirst Zapper magazine conversions. NOTE: still invisible in the
+  // picker today — they extract with zero modifiers (payload is a projectile
+  // swap) and the no-modifier display rule hides them; this rescue records
+  // obtainability so they surface once dps-todos/omod-nondps-stats.md lands.
+  'mod_ThirstZapper_Mag_NukaCola',
+  'mod_ThirstZapper_Mag_Cherry',
+  'mod_ThirstZapper_Mag_Quantum',
 ]);
 
 /**
- * Omods that must only be offered on specific weapons. Needed for mods with
- * EMPTY targetKeywords on shared attach points (they'd pass isAttachable on
- * every weapon exposing the slot).
+ * ADDITIVE rescue for empty-targetKeywords mods with no ESM-derivable weapon
+ * tie: isEligible (src/data/omods.ts) branch 2 offers a keyword-less mod only
+ * where the weapon's own templateModFormIds whitelist it — OR where an entry
+ * here names the weapon. Since the 2026-07-14 COBJ-anchored eligibility
+ * rework this table no longer restricts anything by itself (keyword-less mods
+ * are hidden-by-default everywhere); it exists for reward/script-granted mods
+ * that appear in NO weapon's template (no record-level reverse refs at all).
  */
 export const omodWeaponRestrictions: Readonly<Record<string, readonly string[]>> = {
   // The V.A.T.S. Unknown effect variants belong to the unique alien blaster
