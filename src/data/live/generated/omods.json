@@ -58918,7 +58918,26 @@
     ]
    },
    {
-    "id": "0x004ED02C:1",
+    "id": "0x004ED02C:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x004ED02C",
+     "edid": "mod_Legendary_Weapon2_DmgLimbs",
+     "name": "Crippling"
+    },
+    "bucket": "dbm",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": true
+     }
+    ]
+   },
+   {
+    "id": "0x004ED02C:2",
     "source": {
      "kind": "omod",
      "formId": "0x004ED02C",
@@ -58950,8 +58969,7 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "perk LegendaryCommonWeaponPerk: entry point Mod Outgoing Limb Bash Damage — not modeled",
-   "perk LegendaryCommonWeaponPerk: entry point Mod Weapon Attack Damage — not modeled"
+   "perk LegendaryCommonWeaponPerk: entry point Mod Outgoing Limb Bash Damage — not modeled"
   ],
   "obtainable": true
  },
@@ -101799,7 +101817,344 @@
   "targetKeywords": [
    "ma_legendarycrafting_weaponranged"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00812022:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00812022",
+     "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
+     "name": "Ruiner's"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 500,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=5"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetRandomPercent()=5"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasKeyword(IsSingleShotWeapon)=1"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetDead()=1"
+     }
+    ]
+   },
+   {
+    "id": "0x00812022:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00812022",
+     "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
+     "name": "Ruiner's"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 500,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=5"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=10"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetRandomPercent()=10"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasKeyword(IsSingleShotWeapon)=1"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetDead()=1"
+     }
+    ]
+   },
+   {
+    "id": "0x00812022:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00812022",
+     "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
+     "name": "Ruiner's"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 500,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=10"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=15"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetRandomPercent()=15"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasKeyword(IsSingleShotWeapon)=1"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetDead()=1"
+     }
+    ]
+   },
+   {
+    "id": "0x00812022:ench:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00812022",
+     "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
+     "name": "Ruiner's"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 500,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=15"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=20"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetRandomPercent()=20"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasKeyword(IsSingleShotWeapon)=1"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetDead()=1"
+     }
+    ]
+   },
+   {
+    "id": "0x00812022:ench:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00812022",
+     "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
+     "name": "Ruiner's"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 500,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=20"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=25"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetRandomPercent()=25"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasKeyword(IsSingleShotWeapon)=1"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetDead()=1"
+     }
+    ]
+   },
+   {
+    "id": "0x00812022:ench:5",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00812022",
+     "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
+     "name": "Ruiner's"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 500,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=25"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=30"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetRandomPercent()=30"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasKeyword(IsSingleShotWeapon)=1"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetDead()=1"
+     }
+    ]
+   },
+   {
+    "id": "0x00812022:ench:6",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00812022",
+     "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
+     "name": "Ruiner's"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 500,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=30"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=35"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetRandomPercent()=35"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasKeyword(IsSingleShotWeapon)=1"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetDead()=1"
+     }
+    ]
+   },
+   {
+    "id": "0x00812022:ench:7",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00812022",
+     "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
+     "name": "Ruiner's"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 500,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=35"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=40"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetRandomPercent()=40"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasKeyword(IsSingleShotWeapon)=1"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetDead()=1"
+     }
+    ]
+   },
+   {
+    "id": "0x00812022:ench:8",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00812022",
+     "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
+     "name": "Ruiner's"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 500,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=40"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=45"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetRandomPercent()=45"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasKeyword(IsSingleShotWeapon)=1"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetDead()=1"
+     }
+    ]
+   },
+   {
+    "id": "0x00812022:ench:9",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00812022",
+     "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
+     "name": "Ruiner's"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 500,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=45"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(Luck)=50"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetRandomPercent()=50"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasKeyword(IsSingleShotWeapon)=1"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "GetDead()=1"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "P62_HasLegendary_Weapon_Ruiners",
    "HasLegendary_Mod",
@@ -101828,8 +102183,7 @@
    "perk P62_Legendary_Weapon_RuinersPerk: GetValue(Luck)=45",
    "perk P62_Legendary_Weapon_RuinersPerk: GetValue(Luck)=5",
    "perk P62_Legendary_Weapon_RuinersPerk: GetValue(Luck)=50",
-   "perk P62_Legendary_Weapon_RuinersPerk: HasKeyword(IsSingleShotWeapon)=1",
-   "perk P62_Legendary_Weapon_RuinersPerk: entry point Mod Weapon Attack Damage — not modeled"
+   "perk P62_Legendary_Weapon_RuinersPerk: HasKeyword(IsSingleShotWeapon)=1"
   ],
   "obtainable": false
  },

@@ -46,7 +46,36 @@
    "SFS01_Brew_MuttberryShine",
    "SFS01_Brew_SundayShine",
    "SFS01_Brew_TaterShine"
-  ]
+  ],
+  "modifiers": [
+   {
+    "id": "0x0003E061:0",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x0003E061",
+     "edid": "AbAddictionAlcohol",
+     "name": "Alcohol Addiction"
+    },
+    "bucket": "specialAgility",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   },
+   {
+    "id": "0x0003E061:1",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x0003E061",
+     "edid": "AbAddictionAlcohol",
+     "name": "Alcohol Addiction"
+    },
+    "bucket": "specialCharisma",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   }
+  ],
+  "notes": []
  },
  {
   "id": "AbAddictionBuffout",
@@ -57,7 +86,36 @@
    "Buffout",
    "Bufftats",
    "MTNZ03_FormulaB"
-  ]
+  ],
+  "modifiers": [
+   {
+    "id": "0x0004BAE0:0",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x0004BAE0",
+     "edid": "AbAddictionBuffout",
+     "name": "Buffout Addiction"
+    },
+    "bucket": "specialEndurance",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   },
+   {
+    "id": "0x0004BAE0:1",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x0004BAE0",
+     "edid": "AbAddictionBuffout",
+     "name": "Buffout Addiction"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   }
+  ],
+  "notes": []
  },
  {
   "id": "AbAddictionCalmex",
@@ -65,7 +123,36 @@
   "name": "Calmex Addiction",
   "causedBy": [
    "Calmex"
-  ]
+  ],
+  "modifiers": [
+   {
+    "id": "0x00156D0C:0",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00156D0C",
+     "edid": "AbAddictionCalmex",
+     "name": "Calmex Addiction"
+    },
+    "bucket": "specialPerception",
+    "op": "ADD",
+    "value": -2,
+    "conditions": []
+   },
+   {
+    "id": "0x00156D0C:1",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00156D0C",
+     "edid": "AbAddictionCalmex",
+     "name": "Calmex Addiction"
+    },
+    "bucket": "specialAgility",
+    "op": "ADD",
+    "value": -2,
+    "conditions": []
+   }
+  ],
+  "notes": []
  },
  {
   "id": "AbAddictionDaddyO",
@@ -73,7 +160,36 @@
   "name": "Daddy-O Addiction",
   "causedBy": [
    "DaddyO"
-  ]
+  ],
+  "modifiers": [
+   {
+    "id": "0x00156D0E:0",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00156D0E",
+     "edid": "AbAddictionDaddyO",
+     "name": "Daddy-O Addiction"
+    },
+    "bucket": "specialPerception",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   },
+   {
+    "id": "0x00156D0E:1",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00156D0E",
+     "edid": "AbAddictionDaddyO",
+     "name": "Daddy-O Addiction"
+    },
+    "bucket": "specialIntelligence",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   }
+  ],
+  "notes": []
  },
  {
   "id": "AbAddictionDaytripper",
@@ -81,7 +197,36 @@
   "name": "Daytripper Addiction",
   "causedBy": [
    "DayTripper"
-  ]
+  ],
+  "modifiers": [
+   {
+    "id": "0x00156D0F:0",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00156D0F",
+     "edid": "AbAddictionDaytripper",
+     "name": "Daytripper Addiction"
+    },
+    "bucket": "specialCharisma",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   },
+   {
+    "id": "0x00156D0F:1",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00156D0F",
+     "edid": "AbAddictionDaytripper",
+     "name": "Daytripper Addiction"
+    },
+    "bucket": "specialLuck",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   }
+  ],
+  "notes": []
  },
  {
   "id": "AbAddictionFormulaP",
@@ -89,7 +234,36 @@
   "name": "Formula P Addiction",
   "causedBy": [
    "SFS09_FormulaP"
-  ]
+  ],
+  "modifiers": [
+   {
+    "id": "0x00421216:0",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00421216",
+     "edid": "AbAddictionFormulaP",
+     "name": "Formula P Addiction"
+    },
+    "bucket": "specialCharisma",
+    "op": "ADD",
+    "value": -2,
+    "conditions": []
+   },
+   {
+    "id": "0x00421216:1",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00421216",
+     "edid": "AbAddictionFormulaP",
+     "name": "Formula P Addiction"
+    },
+    "bucket": "specialLuck",
+    "op": "ADD",
+    "value": -2,
+    "conditions": []
+   }
+  ],
+  "notes": []
  },
  {
   "id": "AbAddictionFury",
@@ -97,7 +271,36 @@
   "name": "Fury Addiction",
   "causedBy": [
    "Fury"
-  ]
+  ],
+  "modifiers": [
+   {
+    "id": "0x00156D0A:0",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00156D0A",
+     "edid": "AbAddictionFury",
+     "name": "Fury Addiction"
+    },
+    "bucket": "specialPerception",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   },
+   {
+    "id": "0x00156D0A:1",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00156D0A",
+     "edid": "AbAddictionFury",
+     "name": "Fury Addiction"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   }
+  ],
+  "notes": []
  },
  {
   "id": "AbAddictionMedX",
@@ -105,6 +308,24 @@
   "name": "Med-X Addiction",
   "causedBy": [
    "MedX"
+  ],
+  "modifiers": [
+   {
+    "id": "0x0004BAE4:0",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x0004BAE4",
+     "edid": "AbAddictionMedX",
+     "name": "Med-X Addiction"
+    },
+    "bucket": "specialAgility",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "AbAddictionMedX: MGEF abReduceDamageResistAddiction: no route for AV DamageResist — needs mapping"
   ]
  },
  {
@@ -116,7 +337,23 @@
    "GrapeMentats",
    "Mentats",
    "OrangeMentats"
-  ]
+  ],
+  "modifiers": [
+   {
+    "id": "0x0004BAE2:0",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x0004BAE2",
+     "edid": "AbAddictionMentats",
+     "name": "Mentats Addiction"
+    },
+    "bucket": "specialCharisma",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   }
+  ],
+  "notes": []
  },
  {
   "id": "AbAddictionOverdrive",
@@ -124,7 +361,36 @@
   "name": "Overdrive Addiction",
   "causedBy": [
    "Overdrive"
-  ]
+  ],
+  "modifiers": [
+   {
+    "id": "0x00156D10:0",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00156D10",
+     "edid": "AbAddictionOverdrive",
+     "name": "Overdrive Addiction"
+    },
+    "bucket": "specialAgility",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   },
+   {
+    "id": "0x00156D10:1",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00156D10",
+     "edid": "AbAddictionOverdrive",
+     "name": "Overdrive Addiction"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   }
+  ],
+  "notes": []
  },
  {
   "id": "AbAddictionPsycho",
@@ -134,6 +400,24 @@
    "Psycho",
    "Psychobuff",
    "Psychotats"
+  ],
+  "modifiers": [
+   {
+    "id": "0x0004BAE3:0",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x0004BAE3",
+     "edid": "AbAddictionPsycho",
+     "name": "Psycho Addiction"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "AbAddictionPsycho: MGEF abReduceDamageResistAddiction: no route for AV DamageResist — needs mapping"
   ]
  },
  {
@@ -142,6 +426,100 @@
   "name": "X-Cell Addiction",
   "causedBy": [
    "XCell"
-  ]
+  ],
+  "modifiers": [
+   {
+    "id": "0x00156D0D:0",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00156D0D",
+     "edid": "AbAddictionXCell",
+     "name": "X-Cell Addiction"
+    },
+    "bucket": "specialPerception",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   },
+   {
+    "id": "0x00156D0D:1",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00156D0D",
+     "edid": "AbAddictionXCell",
+     "name": "X-Cell Addiction"
+    },
+    "bucket": "specialAgility",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   },
+   {
+    "id": "0x00156D0D:2",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00156D0D",
+     "edid": "AbAddictionXCell",
+     "name": "X-Cell Addiction"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   },
+   {
+    "id": "0x00156D0D:3",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00156D0D",
+     "edid": "AbAddictionXCell",
+     "name": "X-Cell Addiction"
+    },
+    "bucket": "specialEndurance",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   },
+   {
+    "id": "0x00156D0D:4",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00156D0D",
+     "edid": "AbAddictionXCell",
+     "name": "X-Cell Addiction"
+    },
+    "bucket": "specialCharisma",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   },
+   {
+    "id": "0x00156D0D:5",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00156D0D",
+     "edid": "AbAddictionXCell",
+     "name": "X-Cell Addiction"
+    },
+    "bucket": "specialLuck",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   },
+   {
+    "id": "0x00156D0D:6",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x00156D0D",
+     "edid": "AbAddictionXCell",
+     "name": "X-Cell Addiction"
+    },
+    "bucket": "specialIntelligence",
+    "op": "ADD",
+    "value": -1,
+    "conditions": []
+   }
+  ],
+  "notes": []
  }
 ]

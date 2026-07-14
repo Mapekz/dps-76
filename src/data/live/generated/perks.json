@@ -1851,15 +1851,87 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004A0D4:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004A0D4",
+       "edid": "BlackWidow",
+       "name": "Black Widow",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.050000000000000044,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeNPC"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsSex(0)=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004A0D4:r2:4:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004A0D4",
+       "edid": "BlackWidow",
+       "name": "Black Widow",
+       "rank": 2
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeNPC"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsSex(0)=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004A0D4:r3:5:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004A0D4",
+       "edid": "BlackWidow",
+       "name": "Black Widow",
+       "rank": 3
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.1499999999999999,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeNPC"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetIsSex(0)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -3823,7 +3895,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00031AC6:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00031AC6",
+       "edid": "crDeathclaw_NerfPlz_perk",
+       "name": "Deathclaw Exploit",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -3842,7 +3934,123 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00023753:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00023753",
+       "edid": "crDeathclaw_rage_perk",
+       "name": "Deathclaw Rage",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.25,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetCombatGroupMemberCount()=2"
+       }
+      ]
+     },
+     {
+      "id": "0x00023753:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00023753",
+       "edid": "crDeathclaw_rage_perk",
+       "name": "Deathclaw Rage",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetCombatGroupMemberCount()=3"
+       }
+      ]
+     },
+     {
+      "id": "0x00023753:r1:3:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00023753",
+       "edid": "crDeathclaw_rage_perk",
+       "name": "Deathclaw Rage",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetCombatGroupMemberCount()=4"
+       }
+      ]
+     },
+     {
+      "id": "0x00023753:r1:4:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00023753",
+       "edid": "crDeathclaw_rage_perk",
+       "name": "Deathclaw Rage",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 1.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetCombatGroupMemberCount()=5"
+       }
+      ]
+     },
+     {
+      "id": "0x00023753:r1:5:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00023753",
+       "edid": "crDeathclaw_rage_perk",
+       "name": "Deathclaw Rage",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetCombatGroupMemberCount()=6"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -4223,7 +4431,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00853D33:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00853D33",
+       "edid": "crRadHogFury_perk",
+       "name": "Radhog Fury",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.25,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasActiveMagicEffect(abRadHogFury_Visual_Effect)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -4544,7 +4772,31 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0020F48E:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0020F48E",
+       "edid": "CZ_ReduceDamage",
+       "name": "Combat Zone Damage Reduction",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "SET",
+      "value": 0.01,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetStageDoneCurrentInstance(0)=0"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "OR-group[GetIsID(null)=1 | GetIsID(null)=1]"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -4724,7 +4976,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00866D88:r1:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00866D88",
+       "edid": "DailyOps_MutationPerk_SavageStrike",
+       "name": "Savage Strike Perk",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.5,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -5107,7 +5374,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00110E3F:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00110E3F",
+       "edid": "DLC03_AcadiaDestroyerBonusDamage",
+       "name": "Destroyer of Acadia",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 3,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -5218,17 +5500,116 @@
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00113618:r2:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00113618",
+       "edid": "DLC04_PerkMagPerkScav",
+       "name": "SCAV! - Villainous Virtuosity",
+       "rank": 2
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.25,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "OR-group[GetIsID(Knife)=1 | GetIsID(Switchblade)=1 | GetIsID(null)=1]"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00113618:r3:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00113618",
+       "edid": "DLC04_PerkMagPerkScav",
+       "name": "SCAV! - Villainous Virtuosity",
+       "rank": 3
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.25,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "OR-group[GetIsID(Knife)=1 | GetIsID(Switchblade)=1 | GetIsID(null)=1]"
+       }
+      ]
+     },
+     {
+      "id": "0x00113618:r3:3:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00113618",
+       "edid": "DLC04_PerkMagPerkScav",
+       "name": "SCAV! - Villainous Virtuosity",
+       "rank": 3
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHandToHand",
+        "present": true
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 4,
     "modifiers": [
      {
-      "id": "0x00113618:r4:4:0",
+      "id": "0x00113618:r4:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00113618",
+       "edid": "DLC04_PerkMagPerkScav",
+       "name": "SCAV! - Villainous Virtuosity",
+       "rank": 4
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.25,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "OR-group[GetIsID(Knife)=1 | GetIsID(Switchblade)=1 | GetIsID(null)=1]"
+       }
+      ]
+     },
+     {
+      "id": "0x00113618:r4:3:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00113618",
+       "edid": "DLC04_PerkMagPerkScav",
+       "name": "SCAV! - Villainous Virtuosity",
+       "rank": 4
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHandToHand",
+        "present": true
+       }
+      ]
+     },
+     {
+      "id": "0x00113618:r4:4:2",
       "source": {
        "kind": "perk",
        "formId": "0x00113618",
@@ -5254,7 +5635,46 @@
     "rank": 5,
     "modifiers": [
      {
-      "id": "0x00113618:r5:4:0",
+      "id": "0x00113618:r5:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00113618",
+       "edid": "DLC04_PerkMagPerkScav",
+       "name": "SCAV! - Villainous Virtuosity",
+       "rank": 5
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.25,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "OR-group[GetIsID(Knife)=1 | GetIsID(Switchblade)=1 | GetIsID(null)=1]"
+       }
+      ]
+     },
+     {
+      "id": "0x00113618:r5:3:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00113618",
+       "edid": "DLC04_PerkMagPerkScav",
+       "name": "SCAV! - Villainous Virtuosity",
+       "rank": 5
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHandToHand",
+        "present": true
+       }
+      ]
+     },
+     {
+      "id": "0x00113618:r5:4:2",
       "source": {
        "kind": "perk",
        "formId": "0x00113618",
@@ -5275,7 +5695,7 @@
       ]
      },
      {
-      "id": "0x00113618:r5:5:1",
+      "id": "0x00113618:r5:5:3",
       "source": {
        "kind": "perk",
        "formId": "0x00113618",
@@ -5294,7 +5714,7 @@
       ]
      },
      {
-      "id": "0x00113618:r5:5:2",
+      "id": "0x00113618:r5:5:4",
       "source": {
        "kind": "perk",
        "formId": "0x00113618",
@@ -5313,7 +5733,7 @@
       ]
      },
      {
-      "id": "0x00113618:r5:5:3",
+      "id": "0x00113618:r5:5:5",
       "source": {
        "kind": "perk",
        "formId": "0x00113618",
@@ -5332,7 +5752,7 @@
       ]
      },
      {
-      "id": "0x00113618:r5:5:4",
+      "id": "0x00113618:r5:5:6",
       "source": {
        "kind": "perk",
        "formId": "0x00113618",
@@ -5351,7 +5771,7 @@
       ]
      },
      {
-      "id": "0x00113618:r5:5:5",
+      "id": "0x00113618:r5:5:7",
       "source": {
        "kind": "perk",
        "formId": "0x00113618",
@@ -5370,7 +5790,7 @@
       ]
      },
      {
-      "id": "0x00113618:r5:5:6",
+      "id": "0x00113618:r5:5:8",
       "source": {
        "kind": "perk",
        "formId": "0x00113618",
@@ -6082,7 +6502,9 @@
    }
   ],
   "hasCard": false,
-  "notes": []
+  "notes": [
+   "entry point Mod Weapon Attack Damage uses Multiply Actor Value Mult — skipped"
+  ]
  },
  {
   "family": "EscapeArtist",
@@ -6466,7 +6888,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x006331B3:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x006331B3",
+       "edid": "FlatwoodsMonster_ZetanBoost_Perk",
+       "name": "Zetan Boost Spell",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.25,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -8241,7 +8678,7 @@
       },
       "bucket": "specialCharisma",
       "op": "ADD",
-      "value": 10,
+      "value": -10,
       "conditions": []
      }
     ]
@@ -11537,7 +11974,238 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x008F8622:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8622",
+       "edid": "HTO_crFortifyDamage_Boss",
+       "name": "Fortify Damage For Infestation Boss",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Boss)=0"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8622:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8622",
+       "edid": "HTO_crFortifyDamage_Boss",
+       "name": "Fortify Damage For Infestation Boss",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Boss)=10"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8622:r1:3:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8622",
+       "edid": "HTO_crFortifyDamage_Boss",
+       "name": "Fortify Damage For Infestation Boss",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.19999999999999996,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Boss)=20"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8622:r1:4:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8622",
+       "edid": "HTO_crFortifyDamage_Boss",
+       "name": "Fortify Damage For Infestation Boss",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.30000000000000004,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Boss)=30"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8622:r1:5:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8622",
+       "edid": "HTO_crFortifyDamage_Boss",
+       "name": "Fortify Damage For Infestation Boss",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.3999999999999999,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Boss)=40"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8622:r1:6:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8622",
+       "edid": "HTO_crFortifyDamage_Boss",
+       "name": "Fortify Damage For Infestation Boss",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Boss)=50"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8622:r1:7:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8622",
+       "edid": "HTO_crFortifyDamage_Boss",
+       "name": "Fortify Damage For Infestation Boss",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.6000000000000001,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Boss)=60"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8622:r1:8:7",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8622",
+       "edid": "HTO_crFortifyDamage_Boss",
+       "name": "Fortify Damage For Infestation Boss",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.7,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Boss)=70"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8622:r1:9:8",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8622",
+       "edid": "HTO_crFortifyDamage_Boss",
+       "name": "Fortify Damage For Infestation Boss",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.8,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Boss)=80"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8622:r1:10:9",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8622",
+       "edid": "HTO_crFortifyDamage_Boss",
+       "name": "Fortify Damage For Infestation Boss",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Boss)=100"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -11556,7 +12224,261 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x008F8624:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8624",
+       "edid": "HTO_crFortifyDamage_Mob",
+       "name": "Fortify Damage For Infestation Mob",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.19999999999999996,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Mob)=0"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8624:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8624",
+       "edid": "HTO_crFortifyDamage_Mob",
+       "name": "Fortify Damage For Infestation Mob",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.30000000000000004,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Mob)=10"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8624:r1:3:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8624",
+       "edid": "HTO_crFortifyDamage_Mob",
+       "name": "Fortify Damage For Infestation Mob",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.3999999999999999,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Mob)=20"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8624:r1:4:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8624",
+       "edid": "HTO_crFortifyDamage_Mob",
+       "name": "Fortify Damage For Infestation Mob",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Mob)=30"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8624:r1:5:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8624",
+       "edid": "HTO_crFortifyDamage_Mob",
+       "name": "Fortify Damage For Infestation Mob",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.6000000000000001,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Mob)=40"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8624:r1:6:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8624",
+       "edid": "HTO_crFortifyDamage_Mob",
+       "name": "Fortify Damage For Infestation Mob",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.7,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Mob)=50"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8624:r1:7:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8624",
+       "edid": "HTO_crFortifyDamage_Mob",
+       "name": "Fortify Damage For Infestation Mob",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.8,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Mob)=60"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8624:r1:8:7",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8624",
+       "edid": "HTO_crFortifyDamage_Mob",
+       "name": "Fortify Damage For Infestation Mob",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.8999999999999999,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Mob)=70"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8624:r1:9:8",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8624",
+       "edid": "HTO_crFortifyDamage_Mob",
+       "name": "Fortify Damage For Infestation Mob",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Mob)=80"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8624:r1:10:9",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8624",
+       "edid": "HTO_crFortifyDamage_Mob",
+       "name": "Fortify Damage For Infestation Mob",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 1.1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Mob)=90"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8624:r1:11:10",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8624",
+       "edid": "HTO_crFortifyDamage_Mob",
+       "name": "Fortify Damage For Infestation Mob",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 1.2000000000000002,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Mob)=100"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -11575,7 +12497,261 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x008F8623:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8623",
+       "edid": "HTO_crFortifyDamage_Support",
+       "name": "Fortify Damage For Infestation Support",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Support)=0"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8623:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8623",
+       "edid": "HTO_crFortifyDamage_Support",
+       "name": "Fortify Damage For Infestation Support",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.6000000000000001,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Support)=10"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8623:r1:3:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8623",
+       "edid": "HTO_crFortifyDamage_Support",
+       "name": "Fortify Damage For Infestation Support",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.7,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Support)=20"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8623:r1:4:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8623",
+       "edid": "HTO_crFortifyDamage_Support",
+       "name": "Fortify Damage For Infestation Support",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.8,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Support)=30"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8623:r1:5:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8623",
+       "edid": "HTO_crFortifyDamage_Support",
+       "name": "Fortify Damage For Infestation Support",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.8999999999999999,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Support)=40"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8623:r1:6:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8623",
+       "edid": "HTO_crFortifyDamage_Support",
+       "name": "Fortify Damage For Infestation Support",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Support)=50"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8623:r1:7:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8623",
+       "edid": "HTO_crFortifyDamage_Support",
+       "name": "Fortify Damage For Infestation Support",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 1.1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Support)=60"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8623:r1:8:7",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8623",
+       "edid": "HTO_crFortifyDamage_Support",
+       "name": "Fortify Damage For Infestation Support",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 1.2000000000000002,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Support)=70"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8623:r1:9:8",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8623",
+       "edid": "HTO_crFortifyDamage_Support",
+       "name": "Fortify Damage For Infestation Support",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 1.2999999999999998,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Support)=80"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8623:r1:10:9",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8623",
+       "edid": "HTO_crFortifyDamage_Support",
+       "name": "Fortify Damage For Infestation Support",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 1.4,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Support)=90"
+       }
+      ]
+     },
+     {
+      "id": "0x008F8623:r1:11:10",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F8623",
+       "edid": "HTO_crFortifyDamage_Support",
+       "name": "Fortify Damage For Infestation Support",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 1.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Toggle)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(HTO_LCP_HostileTakeOver_FortifyDamage_Support)=100"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -11909,9 +13085,7 @@
     1
    ]
   },
-  "notes": [
-   "condition: IsMemberOfAPlayerTeam()=1"
-  ]
+  "notes": []
  },
  {
   "family": "Intelligence",
@@ -12263,15 +13437,75 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00019AA3:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00019AA3",
+       "edid": "LadyKiller",
+       "name": "Lady Killer",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.050000000000000044,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsSex(1)=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00019AA3:r2:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00019AA3",
+       "edid": "LadyKiller",
+       "name": "Lady Killer",
+       "rank": 2
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsSex(1)=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00019AA3:r3:5:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00019AA3",
+       "edid": "LadyKiller",
+       "name": "Lady Killer",
+       "rank": 3
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.1499999999999999,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsSex(1)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -13388,7 +14622,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005281BF:r1:1:0",
+      "source": {
+       "kind": "legendaryPerk",
+       "formId": "0x005281BF",
+       "edid": "LegendaryDebuffDamage_TargetPerk",
+       "name": "Suppressor legendary effect",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": -0.25,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -15503,8 +16752,8 @@
       "curveScale": 0.01,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsMemberOfAPlayerTeam()=0"
+        "kind": "teammateCount",
+        "count": 0
        }
       ]
      }
@@ -15552,8 +16801,8 @@
       "curveScale": 0.01,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsMemberOfAPlayerTeam()=0"
+        "kind": "teammateCount",
+        "count": 0
        }
       ]
      }
@@ -15601,8 +16850,8 @@
       "curveScale": 0.01,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsMemberOfAPlayerTeam()=0"
+        "kind": "teammateCount",
+        "count": 0
        }
       ]
      }
@@ -15623,7 +16872,6 @@
    ]
   },
   "notes": [
-   "condition: IsMemberOfAPlayerTeam()=0",
    "MGEF AbPerkDamageReduction_Description archetype Script — needs override"
   ]
  },
@@ -16057,7 +17305,28 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0016968E:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0016968E",
+       "edid": "Magazine_AwesomeTales05Perk",
+       "name": "Astoundingly Awesome 5",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.25,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeCryolator",
+        "present": true
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -17868,7 +19137,31 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00470A2A:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00470A2A",
+       "edid": "mod_weapon_antiscorchbeast_perk",
+       "name": "Anti-Scorchbeast",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.3500000000000001,
+      "conditions": [
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "ActorTypeScorchbeastQueen",
+         "ActorTypeScorchbeast",
+         "ActorTypeScorched"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -18515,7 +19808,126 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x004E4007:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E4007",
+       "edid": "Mutation_ReduceEnergyDamage_Perk",
+       "name": "Charged Penalty",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": -0.5,
+      "conditions": [
+       {
+        "kind": "classFreakRank",
+        "min": 0,
+        "max": 0
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeEnergy",
+         "WeaponTypeAlienBlaster"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "0x004E4007:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E4007",
+       "edid": "Mutation_ReduceEnergyDamage_Perk",
+       "name": "Charged Penalty",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": -0.37,
+      "conditions": [
+       {
+        "kind": "classFreakRank",
+        "min": 0,
+        "max": 1
+       },
+       {
+        "kind": "classFreakRank",
+        "min": 1,
+        "max": 3
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeEnergy",
+         "WeaponTypeAlienBlaster"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "0x004E4007:r1:3:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E4007",
+       "edid": "Mutation_ReduceEnergyDamage_Perk",
+       "name": "Charged Penalty",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": -0.25,
+      "conditions": [
+       {
+        "kind": "classFreakRank",
+        "min": 2,
+        "max": 3
+       },
+       {
+        "kind": "classFreakRank",
+        "min": 0,
+        "max": 2
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeEnergy",
+         "WeaponTypeAlienBlaster"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "0x004E4007:r1:4:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E4007",
+       "edid": "Mutation_ReduceEnergyDamage_Perk",
+       "name": "Charged Penalty",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": -0.12,
+      "conditions": [
+       {
+        "kind": "classFreakRank",
+        "min": 3,
+        "max": 3
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeEnergy",
+         "WeaponTypeAlienBlaster"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -19837,7 +21249,354 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00812021:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00812021",
+       "edid": "P62_Legendary_Weapon_RuinersPerk",
+       "name": "Ruiner's Weapon Perk",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 500,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=5"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=5"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasKeyword(IsSingleShotWeapon)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00812021:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00812021",
+       "edid": "P62_Legendary_Weapon_RuinersPerk",
+       "name": "Ruiner's Weapon Perk",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 500,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=5"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=10"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=10"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasKeyword(IsSingleShotWeapon)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00812021:r1:3:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00812021",
+       "edid": "P62_Legendary_Weapon_RuinersPerk",
+       "name": "Ruiner's Weapon Perk",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 500,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=10"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=15"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=15"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasKeyword(IsSingleShotWeapon)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00812021:r1:4:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00812021",
+       "edid": "P62_Legendary_Weapon_RuinersPerk",
+       "name": "Ruiner's Weapon Perk",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 500,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=15"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=20"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=20"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasKeyword(IsSingleShotWeapon)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00812021:r1:5:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00812021",
+       "edid": "P62_Legendary_Weapon_RuinersPerk",
+       "name": "Ruiner's Weapon Perk",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 500,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=20"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=25"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=25"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasKeyword(IsSingleShotWeapon)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00812021:r1:6:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00812021",
+       "edid": "P62_Legendary_Weapon_RuinersPerk",
+       "name": "Ruiner's Weapon Perk",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 500,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=25"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=30"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=30"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasKeyword(IsSingleShotWeapon)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00812021:r1:7:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00812021",
+       "edid": "P62_Legendary_Weapon_RuinersPerk",
+       "name": "Ruiner's Weapon Perk",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 500,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=30"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=35"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=35"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasKeyword(IsSingleShotWeapon)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00812021:r1:8:7",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00812021",
+       "edid": "P62_Legendary_Weapon_RuinersPerk",
+       "name": "Ruiner's Weapon Perk",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 500,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=35"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=40"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=40"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasKeyword(IsSingleShotWeapon)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00812021:r1:9:8",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00812021",
+       "edid": "P62_Legendary_Weapon_RuinersPerk",
+       "name": "Ruiner's Weapon Perk",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 500,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=40"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=45"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=45"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasKeyword(IsSingleShotWeapon)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x00812021:r1:10:9",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00812021",
+       "edid": "P62_Legendary_Weapon_RuinersPerk",
+       "name": "Ruiner's Weapon Perk",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 500,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=45"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(Luck)=50"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=50"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasKeyword(IsSingleShotWeapon)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -20314,15 +22073,75 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004D89B:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D89B",
+       "edid": "PainTrain",
+       "name": "Pain Train",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.05,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsID(PainTrainWeapon)=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004D89B:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D89B",
+       "edid": "PainTrain",
+       "name": "Pain Train",
+       "rank": 2
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsID(PainTrainWeapon)=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004D89B:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D89B",
+       "edid": "PainTrain",
+       "name": "Pain Train",
+       "rank": 3
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.15000000000000002,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsID(PainTrainWeapon)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -20342,7 +22161,9 @@
     3
    ]
   },
-  "notes": []
+  "notes": [
+   "route(PainTrain): GetIsID(PainTrainWeapon)=1"
+  ]
  },
  {
   "family": "Pannapictagraphist",
@@ -20891,7 +22712,31 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001696B2:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001696B2",
+       "edid": "PerkMagLiveNLoveExtraDmg",
+       "name": "Live & Love 10",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.050000000000000044,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetInFaction(CurrentCompanionFaction)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "HasPerk(PerkMagLiveNLove03)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -21812,7 +23657,76 @@
     "rank": 1,
     "modifiers": [
      {
-      "id": "0x0046C7CF:r1:7:0",
+      "id": "0x0046C7CF:r1:6:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0046C7CF",
+       "edid": "PlayerPerk_Spotlight",
+       "name": "Spotlight Player Perk",
+       "rank": 1
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "value": 15,
+      "conditions": [
+       {
+        "kind": "teammateCount",
+        "count": 1
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_ShareTheLove)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0046C7CF:r1:6:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0046C7CF",
+       "edid": "PlayerPerk_Spotlight",
+       "name": "Spotlight Player Perk",
+       "rank": 1
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "value": 45,
+      "conditions": [
+       {
+        "kind": "teammateCount",
+        "count": 3
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_ShareTheLove)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0046C7CF:r1:6:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0046C7CF",
+       "edid": "PlayerPerk_Spotlight",
+       "name": "Spotlight Player Perk",
+       "rank": 1
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "value": 30,
+      "conditions": [
+       {
+        "kind": "teammateCount",
+        "count": 2
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_ShareTheLove)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0046C7CF:r1:7:3",
       "source": {
        "kind": "perk",
        "formId": "0x0046C7CF",
@@ -21835,7 +23749,7 @@
       ]
      },
      {
-      "id": "0x0046C7CF:r1:7:1",
+      "id": "0x0046C7CF:r1:7:4",
       "source": {
        "kind": "perk",
        "formId": "0x0046C7CF",
@@ -21858,7 +23772,7 @@
       ]
      },
      {
-      "id": "0x0046C7CF:r1:7:2",
+      "id": "0x0046C7CF:r1:7:5",
       "source": {
        "kind": "perk",
        "formId": "0x0046C7CF",
@@ -21881,7 +23795,7 @@
       ]
      },
      {
-      "id": "0x0046C7CF:r1:7:3",
+      "id": "0x0046C7CF:r1:7:6",
       "source": {
        "kind": "perk",
        "formId": "0x0046C7CF",
@@ -21904,7 +23818,7 @@
       ]
      },
      {
-      "id": "0x0046C7CF:r1:7:4",
+      "id": "0x0046C7CF:r1:7:7",
       "source": {
        "kind": "perk",
        "formId": "0x0046C7CF",
@@ -21927,7 +23841,7 @@
       ]
      },
      {
-      "id": "0x0046C7CF:r1:7:5",
+      "id": "0x0046C7CF:r1:7:8",
       "source": {
        "kind": "perk",
        "formId": "0x0046C7CF",
@@ -24037,15 +25951,99 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001D247F:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001D247F",
+       "edid": "Rooted",
+       "name": "Rooted",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.25,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsMoving()=0"
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeUnarmed",
+         "WeaponTypeMelee1H",
+         "WeaponTypeMelee2H"
+        ]
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001D247F:r2:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001D247F",
+       "edid": "Rooted",
+       "name": "Rooted",
+       "rank": 2
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsMoving()=0"
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeUnarmed",
+         "WeaponTypeMelee1H",
+         "WeaponTypeMelee2H"
+        ]
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001D247F:r3:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001D247F",
+       "edid": "Rooted",
+       "name": "Rooted",
+       "rank": 3
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsMoving()=0"
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeUnarmed",
+         "WeaponTypeMelee1H",
+         "WeaponTypeMelee2H"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -24086,7 +26084,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x000A5993:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x000A5993",
+       "edid": "RRInTheBloodPerk",
+       "name": "In The Blood",
+       "rank": 1
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "value": -5,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -24949,7 +26962,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00007393:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00007393",
+       "edid": "SFZ03_Queen_FlatwoodsPerk",
+       "name": "Flatwoods Monster Insight",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "FlatwoodsMonsterRace"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -24968,7 +27001,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00007394:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00007394",
+       "edid": "SFZ03_Queen_GraftonPerk",
+       "name": "Grafton Monster Insight",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "GraftonMonsterRace"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -24987,7 +27040,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00007395:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00007395",
+       "edid": "SFZ03_Queen_Mothman",
+       "name": "Mothman Insight",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "MothmanRace"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -25006,7 +27079,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00007396:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00007396",
+       "edid": "SFZ03_Queen_Snallygaster",
+       "name": "Snallygaster Insight",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "SnallyGasterRace"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -25025,7 +27118,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00007397:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00007397",
+       "edid": "SFZ03_Queen_Wendigo",
+       "name": "Wendigo Insight",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "WendigoRace"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -25820,9 +27933,7 @@
     1
    ]
   },
-  "notes": [
-   "condition: IsMemberOfAPlayerTeam()=1"
-  ]
+  "notes": []
  },
  {
   "family": "SquadManeuvers",
@@ -25862,7 +27973,6 @@
    ]
   },
   "notes": [
-   "condition: IsMemberOfAPlayerTeam()=1",
    "condition: IsSprinting()=0"
   ]
  },
@@ -26072,6 +28182,7 @@
   "notes": [
    "entry point Mod Weapon DMG Bonus Mult uses Add Actor Value Mult — skipped",
    "entry point Mod Player Explosion Damage uses Multiply 1 + Actor Value Mult — skipped",
+   "entry point Mod Weapon Attack Damage uses Multiply 1 + Actor Value Mult — skipped",
    "entry point Mod Weak Body Part Damage Mult uses Multiply 1 + Actor Value Mult — skipped",
    "entry point Mod Outgoing Limb Damage uses Multiply 1 + Actor Value Mult — skipped"
   ]
@@ -26154,7 +28265,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00783157:r1:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00783157",
+       "edid": "Storm_MQ08_LostPerk",
+       "name": "Empowered Lost Perk",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.5,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -26186,6 +28312,20 @@
       "bucket": "dbm",
       "op": "ADD",
       "value": 0.3,
+      "conditions": []
+     },
+     {
+      "id": "0x006B3C3A:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x006B3C3A",
+       "edid": "Storm_MutationPerk_Electric",
+       "name": "Electric  Perk",
+       "rank": 1
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "value": 30,
       "conditions": []
      }
     ]
@@ -26567,7 +28707,9 @@
    }
   ],
   "hasCard": false,
-  "notes": []
+  "notes": [
+   "entry point Mod Weapon Attack Damage uses Multiply 1 + Actor Value Mult — skipped"
+  ]
  },
  {
   "family": "SURV_WellRestedXPBonus",
@@ -27412,7 +29554,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x004E2551:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E2551",
+       "edid": "TW004AnglerPerk",
+       "name": "Angler Hunter",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeAngler"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -27431,7 +29593,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x004E2554:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E2554",
+       "edid": "TW004BloodbugPerk",
+       "name": "Bloodbug Hunter",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeBloodbug"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -27450,7 +29632,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x004E2558:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E2558",
+       "edid": "TW004HoneybeastPerk",
+       "name": "Angler Hunter",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeHoneyBeast"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -27469,7 +29671,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x004E254F:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E254F",
+       "edid": "TW004MirelurkPerk",
+       "name": "Mirelurk Hunter",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeMirelurk"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -27488,7 +29710,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x004E254B:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E254B",
+       "edid": "TW004MongrelPerk",
+       "name": "Mongrel Hunter",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeViciousDogPack"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -27507,7 +29749,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x004E2556:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E2556",
+       "edid": "TW004RadscorpionPerk",
+       "name": "Radscorpion Hunter",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeRadScorpion"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -27526,7 +29788,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x004E2555:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E2555",
+       "edid": "TW004RadstagPerk",
+       "name": "Radstag Hunter",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeRadStag"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -27545,7 +29827,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x004E2559:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E2559",
+       "edid": "TW004RadtoadPerk",
+       "name": "Radtoad Hunter",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeToad"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -27564,7 +29866,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x004E2557:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E2557",
+       "edid": "TW004SnallygasterPerk",
+       "name": "Snallygaster Hunter",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeSnallygaster"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -27583,7 +29905,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x004E2553:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E2553",
+       "edid": "TW004StingwingPerk",
+       "name": "Stingwing Hunter",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeStingwing"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -27602,7 +29944,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x004E2552:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E2552",
+       "edid": "TW004SuperMutantPerk",
+       "name": "Super Mutant Hunter",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeSuperMutant"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -27621,7 +29983,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x004E2550:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E2550",
+       "edid": "TW004YaoGuaiPerk",
+       "name": "Yao Guai Hunter",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeYaoGuai"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -27640,7 +30022,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00370E71:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00370E71",
+       "edid": "TW006ScorchedHunter",
+       "name": "Scorched Hunter",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 0.5,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeScorched"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -29138,7 +31540,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00437FF0:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00437FF0",
+       "edid": "Wanted_DebtorsDisease_Perk",
+       "name": "Bankruptcy Penalty",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": -0.5,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -29918,7 +32335,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00185995:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00185995",
+       "edid": "WreckingBall",
+       "name": "Wrecking Ball",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "OR-group[IsActor(undefined)=0 | GetIsRace(TurretWorkshopRace)=1]"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -30063,7 +32500,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x006316B4:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x006316B4",
+       "edid": "ZZZ_Perk_Legendary_Weapon_Warmongers_IncreaseDamagePerk",
+       "name": "Warmonger Fortify Damage",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "MUL_ADD",
+      "value": 1.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=0"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,

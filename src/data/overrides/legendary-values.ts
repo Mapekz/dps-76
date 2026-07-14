@@ -27,6 +27,38 @@ import type { Modifier } from '@/types/modifiers';
 // Value), e.g. Bloodied is (5% HP → +130) … (100% HP → 0).
 
 export const legendaryValueOverrides: Readonly<Record<string, Modifier[]>> = {
+  // Crippling (2★): pin to the real +50% limb damage (the extracted ENCH
+  // curve, flat 50 across item levels ×0.01). The 2026-07-14 "Mod Weapon
+  // Attack Damage" entry-point route also surfaced two ×0 (MUL_ADD −1) rows
+  // from the shared LegendaryCommonWeaponPerk this ENCH grants — Medic's
+  // ally-heal machinery ("weapons with HasLegendary_Weapon_HealAllies deal
+  // no damage to the allies they heal", gated WornHasKeyword/HasKeyword
+  // 0x001F109B across owner/weapon/target tabs). Ally-directed fire is
+  // permanently out of scope for an enemy-DPS engine, and the weapon-tab gate
+  // alone would wrongly zero ALL damage when Medic's + Crippling are equipped
+  // together — so the override keeps only the limb curve.
+  mod_Legendary_Weapon2_DmgLimbs: [
+    {
+      id: 'mod_Legendary_Weapon2_DmgLimbs:override:0',
+      source: {
+        kind: 'omod',
+        formId: '0x004ED02C',
+        edid: 'mod_Legendary_Weapon2_DmgLimbs',
+        name: 'Crippling',
+      },
+      bucket: 'limbDamage',
+      op: 'ADD',
+      curve: {
+        input: 'itemLevel',
+        points: [
+          { x: 1, y: 50 },
+          { x: 100, y: 50 },
+        ],
+      },
+      curveScale: 0.01,
+      conditions: [],
+    },
+  ],
   // Conductor's (Stage B, AP economy): "Critical Hits Restore 10 Health &
   // Action Points instantly and 100 more over 5 seconds" = 110 AP per VATS
   // crit. Script-computed — the entry point isn't extractor-modeled (verified
