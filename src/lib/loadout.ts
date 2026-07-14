@@ -4,6 +4,7 @@ import { getWeapons } from '@/data';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
 import { getDefaultOmods, getOmodById } from '@/data/omods';
 import { getAddictionModifiers, getBuffModifiers, getSuppressedAddictions } from '@/data/buffs';
+import { getManualUptimeModifiers } from '@/data/manual-uptime';
 import { buildEffectiveWeapon, WEAPON_STAT_BUCKETS } from '@/lib/engine/effective-weapon';
 import { legendaryBonusOf } from '@/data/perk-budget';
 import { getBodyPartMult } from '@/data/bodyparts';
@@ -68,39 +69,10 @@ function assemble(
     ...getAddictionModifiers(mode, countedAddictions),
   ];
 
-  // Follow Through / Taking One for the Team: manual uptime sliders folding
-  // to one wholeDamage ADD modifier each when the legendary card is equipped.
-  // Real per-rank magnitude is 10/20/30/40% (esm-walk-confirmed), but both
-  // are conditional 10s-window procs, not steady-state-computable — the
-  // slider is the player's own uptime assumption, independent of card rank
-  // (docs/assumptions.md).
-  const followThroughPct = conditions.followThroughPct ?? 0;
-  if (followThroughPct > 0 && playerConfig.legendaryPerks.some(p => p.perkId === 'FollowThrough')) {
-    loadoutModifiers.push({
-      id: 'manual:FollowThrough',
-      source: { kind: 'legendaryPerk', formId: '0x005A5D69', edid: 'LGN_FollowThrough_Perk', name: 'Follow Through' },
-      bucket: 'wholeDamage',
-      op: 'ADD',
-      value: followThroughPct / 100,
-      conditions: [],
-    });
-  }
-  const takingOneForTheTeamPct = conditions.takingOneForTheTeamPct ?? 0;
-  if (takingOneForTheTeamPct > 0 && playerConfig.legendaryPerks.some(p => p.perkId === 'TakingOneForTheTeam')) {
-    loadoutModifiers.push({
-      id: 'manual:TakingOneForTheTeam',
-      source: {
-        kind: 'legendaryPerk',
-        formId: '0x005A59C7',
-        edid: 'LGN_TakingOneForTheTeam_Perk',
-        name: 'Taking One for the Team',
-      },
-      bucket: 'wholeDamage',
-      op: 'ADD',
-      value: takingOneForTheTeamPct / 100,
-      conditions: [],
-    });
-  }
+  // Follow Through / Taking One for the Team manual uptime sliders — see
+  // @/data/manual-uptime for the equipped-card predicate + modifier shape
+  // (shared with ConditionsSection.tsx so the slider and the fold can't drift).
+  loadoutModifiers.push(...getManualUptimeModifiers(playerConfig.legendaryPerks, conditions));
 
   // Apply equipped OMODs (standard slots + legendary effects) to the weapon.
   let weapon: Weapon | undefined;
@@ -165,9 +137,9 @@ export function resolveStats(playerConfig: PlayerConfig, enemyConfig: EnemyConfi
  *
  * This is the one sanctioned bridge from the data layer (`@/data`) to the
  * damage engine (`@/lib/engine`, which stays data-adapter-free). Both the
- * `useDamageCalc` hook and the golden-case harness go through here, so the
- * assembly — which OMOD ids get collected, in what order, from which config
- * fields — lives in exactly one testable place.
+ * `useScenarioResults` hook and the golden-case harness go through here, so
+ * the assembly — which OMOD ids get collected, in what order, from which
+ * config fields — lives in exactly one testable place.
  *
  * Returns null when the config has no equipped weapon (nothing to compute).
  */

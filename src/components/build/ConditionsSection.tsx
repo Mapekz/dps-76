@@ -9,6 +9,7 @@ import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
 import { resolveStats } from '@/lib/loadout';
+import { activeManualUptimePerks } from '@/data/manual-uptime';
 import { createDefaultPlayerConditions, type PlayerConditions } from '@/types';
 import { SectionTrigger } from './SectionTrigger';
 
@@ -103,9 +104,12 @@ export function ConditionsSection() {
 
   // Follow Through / Taking One for the Team: manual uptime sliders are only
   // meaningful (and only shown) while the legendary card is actually equipped
-  // — see docs/assumptions.md and dps-todos/wholedamage-perks.md.
-  const hasFollowThrough = player.legendaryPerks.some(p => p.perkId === 'FollowThrough');
-  const hasTakingOneForTheTeam = player.legendaryPerks.some(p => p.perkId === 'TakingOneForTheTeam');
+  // — see docs/assumptions.md and dps-todos/wholedamage-perks.md. Shared
+  // predicate with resolveLoadout's fold (@/data/manual-uptime) so a visible
+  // slider can't silently apply nothing, or vice versa.
+  const { FollowThrough: hasFollowThrough, TakingOneForTheTeam: hasTakingOneForTheTeam } = activeManualUptimePerks(
+    player.legendaryPerks
+  );
 
   const stats = React.useMemo(() => resolveStats(player, enemy, mode), [player, enemy, mode]);
 

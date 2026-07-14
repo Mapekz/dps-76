@@ -2,7 +2,7 @@
  * Legacy damage-formula module. The outgoing paper-damage path now lives in
  * src/lib/engine/ (resolve.ts, paper-damage.ts, scenarios.ts); this file keeps
  * only the dormant enemy-mitigation scaffolding for the enemy-defenses
- * enhancement (out of scope for paper-damage v1 — see dps-todos/enemy-defenses.md).
+ * enhancement (out of scope for paper-damage v1 — see dps-todos/phase-3-enemies.md).
  */
 
 /**
