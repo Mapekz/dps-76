@@ -4,7 +4,7 @@ import { getWeapons } from '@/data';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
 import { getDefaultOmods, getOmodById } from '@/data/omods';
 import { getBuffModifiers, getSuppressedAddictions } from '@/data/buffs';
-import { buildEffectiveWeapon } from '@/lib/engine/effective-weapon';
+import { buildEffectiveWeapon, WEAPON_STAT_BUCKETS } from '@/lib/engine/effective-weapon';
 import { legendaryBonusOf } from '@/data/perk-budget';
 import { getBodyPartMult } from '@/data/bodyparts';
 import {
@@ -38,6 +38,16 @@ function assemble(
 ): { weapon: Weapon | undefined; modifiers: Modifier[] } {
   const baseWeapon = playerConfig.weapon ? getWeapons(mode)[playerConfig.weapon.weaponId] : undefined;
 
+  // Perk/legendary-perk/buff modifiers, gathered BEFORE the effective weapon
+  // is built so their weapon-stat buckets (reloadSpeed, fireRateSpeed, …)
+  // fold into it alongside OMOD stats — Guerrilla Expert's reload was inert
+  // when this ran after buildEffectiveWeapon (measurement-backlog §1).
+  const loadoutModifiers = [
+    ...getLoadoutModifiers(mode, playerConfig.perks),
+    ...getLoadoutModifiers(mode, playerConfig.legendaryPerks),
+    ...getBuffModifiers(mode, playerConfig.mutations, playerConfig.consumables),
+  ];
+
   // Apply equipped OMODs (standard slots + legendary effects) to the weapon.
   let weapon: Weapon | undefined;
   let omodModifiers: Modifier[] = [];
@@ -58,7 +68,8 @@ function assemble(
       equippedOmods,
       playerConfig.itemLevel,
       playerConfig.conditions,
-      enemyConfig.conditions
+      enemyConfig.conditions,
+      loadoutModifiers
     );
     weapon = built.weapon;
     omodModifiers = built.modifiers;
@@ -68,9 +79,10 @@ function assemble(
     weapon,
     modifiers: [
       ...omodModifiers,
-      ...getLoadoutModifiers(mode, playerConfig.perks),
-      ...getLoadoutModifiers(mode, playerConfig.legendaryPerks),
-      ...getBuffModifiers(mode, playerConfig.mutations, playerConfig.consumables),
+      // Weapon-stat buckets were consumed by the effective-weapon fold above —
+      // dropping them mirrors what buildEffectiveWeapon does to OMOD modifiers
+      // and keeps them from double-counting if a damage term ever folds them.
+      ...loadoutModifiers.filter(m => !WEAPON_STAT_BUCKETS.has(m.bucket)),
     ],
   };
 }

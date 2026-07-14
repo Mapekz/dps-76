@@ -73,6 +73,23 @@ describe('default mod folding (assemble-time)', () => {
   });
 });
 
+describe('loadout weapon-stat folding (perk weapon-stat fold gap)', () => {
+  it('Speed Demon folds +0.3 reload speed into the effective weapon and leaves no reloadSpeed modifier downstream', () => {
+    const playerConfig: PlayerConfig = {
+      ...createDefaultPlayerConfig(),
+      weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [] },
+      mutations: ['Mutation_SpeedDemon'],
+    };
+    const withMutation = resolveLoadout(playerConfig, createDefaultEnemyConfig(), 'live');
+    const stock = loadout('CombatRifle_Fixer');
+
+    // Mutation_SpeedDemon: reloadSpeed ADD 0.3 (0.4 under Strange in Numbers).
+    expect(withMutation!.weapon.reloadSpeed).toBeCloseTo((stock!.weapon.reloadSpeed ?? 1) + 0.3, 6);
+    // Consumed by the effective-weapon fold — never left in the resolver list.
+    expect(withMutation!.modifiers.some(m => m.bucket === 'reloadSpeed')).toBe(false);
+  });
+});
+
 describe('getDefaultOmodId', () => {
   it('resolves the Handmade slot defaults by their real in-game names', () => {
     const handmade = getWeapons('live')['DLC04_HandMadeGun'];

@@ -12,33 +12,24 @@ Slugger/IronFist keys) are NOT here — they stay in the README because each
 waits on a specific other workstream, not on measurement or a self-contained
 fix.
 
-## 1. Perk-sourced weapon-stat fold gap (engine fix, no measurement needed)
+## 1. Perk-sourced weapon-stat fold gap — SHIPPED 2026-07-14
 
-`buildEffectiveWeapon` (`src/lib/engine/effective-weapon.ts`) only folds the
-weapon-stat buckets (`reloadSpeed`, `fireRateSpeed`, `isAutomatic`,
-`projectileCount`, `ammoCapacity`, `vatsApCost`) from **OMOD-sourced**
-modifiers, and `resolveLoadout` calls it before perks are even gathered. Any
-perk that emits one of those buckets extracts correctly but is functionally
-inert:
+Resolved: `assemble` (`src/lib/loadout.ts`) now gathers perk/legendary-perk/
+mutation/consumable modifiers before `buildEffectiveWeapon` and threads them
+into the weapon-stat fold (new `loadoutModifiers` parameter; exported
+`WEAPON_STAT_BUCKETS` set). The fold was already condition-aware (Stage C3's
+`effectiveValue` sharing), and Onslaught-curve inputs now read a stack cap
+bootstrap-folded inside `buildEffectiveWeapon` mirroring `scenarios.ts`.
+Activates Guerrilla Expert, Gun Tricks, Swift-Footed, and Speed Demon's
+reload. See `docs/assumptions.md` "Guerrilla Expert's reload-speed bonus is
+now functionally wired" for the two assumptions (raw-conditions ctx,
+OMOD-only materialization/keywords).
 
-- **Guerrilla Expert** — +1%/Onslaught-stack reload speed
-  (`AbPerkFortifyReloadSpeedMult` → `reloadSpeed`), gated `WeaponTypeRanged`.
-- **GHL_GunTricks**, **GroundPounder**, **MartialArtist** — same shape,
-  verified still present in the current dump.
-
-Fix: thread perk-sourced weapon-stat modifiers through the same fold. This is
-an architecture change in `resolveLoadout` ordering (weapon-stat modifiers
-must be gathered from perks *before* `buildEffectiveWeapon`, while everything
-downstream keeps consuming the effective weapon), and it touches every perk in
-that shape at once — that breadth is why it was left as a known gap rather
-than patched per-perk. Note the fold is also condition-blind today
-(OMOD modifiers are unconditional; perk modifiers like Guerrilla Expert's
-carry `WeaponTypeRanged` gates and Onslaught-stack curves), so the fold entry
-point needs condition evaluation, not just a bigger modifier list.
-
-Not affected (no action): Guerrilla Master's `dbm` curve and Gunslinger
-Expert's `weakpointBonus` — those buckets fold from the full modifier list
-regardless of source kind.
+Remainder (extraction, not engine): **GroundPounder**, **MartialArtist**,
+**Swinger** weapon-stat modifiers still carry `unresolved` conditions
+(`IsTrueForConditionForm(SmallGun_Actor_Condition)`, `GetWeaponAnimType()=6`)
+and stay inert until those condition kinds are mapped in
+`scripts/extract/normalize/mgef.ts`.
 
 ## 2. In-game measurement queue (legendary effects extracting zero modifiers)
 

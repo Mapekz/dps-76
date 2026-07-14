@@ -190,6 +190,86 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
   });
 });
 
+describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, measurement-backlog §1)', () => {
+  const fixer = getWeapons('live')['CombatRifle_Fixer'];
+  const base = fixer.reloadSpeed ?? 1.0;
+  const perkSource = { kind: 'perk' as const, formId: '0x1', edid: 'test_perk', name: 'Test Perk' };
+
+  it('folds a perk reloadSpeed ADD with NO OMODs equipped (Swift-Footed shape)', () => {
+    const perkReload = {
+      id: '0x1:0',
+      source: perkSource,
+      bucket: 'reloadSpeed' as const,
+      op: 'ADD' as const,
+      value: 0.4,
+      conditions: [],
+    };
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      fixer, [], 50, createDefaultPlayerConditions(), createDefaultEnemyConditions(), [perkReload]
+    );
+    expect(weapon.reloadSpeed).toBeCloseTo(base + 0.4, 6);
+    // Loadout modifiers stay owned by the caller — the returned list only
+    // ever carries leftover OMOD modifiers.
+    expect(modifiers).toHaveLength(0);
+  });
+
+  it('evaluates perk condition gates (Gun Tricks shape: playerIsGhoul)', () => {
+    const ghoulReload = {
+      id: '0x1:0',
+      source: perkSource,
+      bucket: 'reloadSpeed' as const,
+      op: 'ADD' as const,
+      value: 0.3,
+      conditions: [{ kind: 'playerIsGhoul' as const, value: true }],
+    };
+    const asHuman = buildEffectiveWeapon(
+      fixer, [], 50, createDefaultPlayerConditions(), createDefaultEnemyConditions(), [ghoulReload]
+    );
+    expect(asHuman.weapon.reloadSpeed).toBeCloseTo(base, 6);
+
+    const asGhoul = buildEffectiveWeapon(
+      fixer, [], 50, { ...createDefaultPlayerConditions(), isGhoul: true }, createDefaultEnemyConditions(), [ghoulReload]
+    );
+    expect(asGhoul.weapon.reloadSpeed).toBeCloseTo(base + 0.3, 6);
+  });
+
+  it('Guerrilla Expert shape: an onslaughtStacks reload curve reads the cap folded from a co-equipped onslaughtMaxStacks source', () => {
+    // Real extracted curve: +1% reload per Onslaught stack.
+    const guerrillaExpertLike = {
+      id: '0x1:0',
+      source: perkSource,
+      bucket: 'reloadSpeed' as const,
+      op: 'ADD' as const,
+      curve: {
+        input: 'onslaughtStacks' as const,
+        points: [{ x: 0, y: 0 }, { x: 1, y: 0.01 }, { x: 100, y: 1 }],
+      },
+      curveScale: 1,
+      conditions: [],
+    };
+    const capSource = {
+      id: '0x2:0',
+      source: { kind: 'perk' as const, formId: '0x2', edid: 'test_onslaught_cap', name: 'Test Onslaught Cap' },
+      bucket: 'onslaughtMaxStacks' as const,
+      op: 'ADD' as const,
+      value: 10,
+      conditions: [],
+    };
+    // Default onslaughtStacks is -1 ("follow the computed max").
+    const player = createDefaultPlayerConditions();
+
+    // No cap source equipped → the curve clamps to 0 stacks → inert.
+    const withoutCap = buildEffectiveWeapon(fixer, [], 50, player, createDefaultEnemyConditions(), [guerrillaExpertLike]);
+    expect(withoutCap.weapon.reloadSpeed).toBeCloseTo(base, 6);
+
+    // Cap 10 equipped → follow-max resolves to 10 → curve Y = 0.1.
+    const withCap = buildEffectiveWeapon(
+      fixer, [], 50, player, createDefaultEnemyConditions(), [guerrillaExpertLike, capSource]
+    );
+    expect(withCap.weapon.reloadSpeed).toBeCloseTo(base + 0.1, 6);
+  });
+});
+
 describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-13)', () => {
   const fixer = getWeapons('live')['CombatRifle_Fixer']; // ballistic-only
   const gaussMinigun = getWeapons('live')['GaussMinigun']; // ballistic-only, base 53 @ level 50

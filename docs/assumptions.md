@@ -913,18 +913,30 @@ false` is CORRECT, no rescue needed), and for **Combo-Breaker's**
 that exists in the ESM but was never added to the player legendary pool —
 hidden in `corrections.ts`, user-confirmed 2026-07-12).
 
-**Guerrilla Expert's reload-speed bonus extracts correctly but is not yet
-functionally wired**: `buildEffectiveWeapon` only folds `reloadSpeed` (and the
-other weapon-stat buckets — `fireRateSpeed`/`isAutomatic`/`projectileCount`/
-`ammoCapacity`/`vatsApCost`) from OMOD-sourced modifiers, called before perks
-are even gathered in `resolveLoadout` — a PRE-EXISTING architecture gap (also
-affects `GHL_GunTricks`, `GroundPounder`, `MartialArtist`, verified still
-present in the current dump), not introduced by this work. Fixing it means
-threading perk-sourced weapon-stat modifiers through the same fold, which
-touches every perk in that shape, not just Guerrilla Expert — left as a
-known gap rather than a scope-creeping fix. Guerrilla Master's dbm curve and
-Gunslinger Expert's weakpoint curve are NOT affected (`dbm`/`weakpointBonus`
-fold from the full modifier list regardless of source kind).
+**Guerrilla Expert's reload-speed bonus is now functionally wired**
+(2026-07-14, closing the perk weapon-stat fold gap): `resolveLoadout`'s
+`assemble` gathers perk/legendary-perk/mutation/consumable modifiers BEFORE
+`buildEffectiveWeapon` and passes them in as a `loadoutModifiers` parameter;
+the weapon-stat buckets (`reloadSpeed`/`fireRateSpeed`/`isAutomatic`/
+`projectileCount`/`ammoCapacity`/`vatsApCost`/`animDurationSec`) fold from
+OMOD + loadout sources together, then are dropped from the downstream
+modifier list exactly like OMOD weapon-stat modifiers always were (exported
+`WEAPON_STAT_BUCKETS` set is the single bucket list). This activates
+Guerrilla Expert, Gun Tricks, Swift-Footed, Speed Demon's reload, and any
+future perk/buff in that shape; `GroundPounder`/`MartialArtist`/`Swinger`
+still carry `unresolved` conditions (`IsTrueForConditionForm`,
+`GetWeaponAnimType`) so they stay inert until those are mapped. Two
+assumptions in the fold: (1) it evaluates against RAW player conditions, not
+the buff-derived SPECIAL (no known weapon-stat source reads a SPECIAL-input
+curve; derived stats would create a resolveLoadout ordering cycle), and
+(2) Onslaught-curve inputs (Guerrilla Expert) read a stack cap
+bootstrap-folded from `onslaughtMaxStacks` inside `buildEffectiveWeapon`,
+mirroring `scenarios.ts` (cap sources are never onslaught-gated, so cap-0
+bootstrap is exact). Loadout modifiers never feed keyword merging or
+DamageTypeValues component materialization — those stay OMOD-only semantics.
+Guerrilla Master's dbm curve and Gunslinger Expert's weakpoint curve were
+never affected (`dbm`/`weakpointBonus` fold from the full modifier list
+regardless of source kind).
 
 ## SPECIAL & perk budget (2026-07-12 — `src/lib/player-stats.ts`)
 
