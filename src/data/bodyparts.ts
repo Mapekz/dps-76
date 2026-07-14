@@ -21,10 +21,10 @@ export function getBodyPartMult(mode: GameMode, raceId: string, partName: string
   return getBodyPartRace(mode, raceId)?.parts.find(p => p.name === partName)?.dmgMult;
 }
 
-/** Crippable-part count for a race — the Target section's crippled-limbs input max (fallback 10). */
+/** Crippable-limb count for a race — the Target section's crippled-limbs input max (0 when `noCripple`; fallback 10 for no/unknown race). */
 export function getCrippablePartCount(mode: GameMode, raceId: string | null | undefined): number {
   if (!raceId) return 10;
   const race = getBodyPartRace(mode, raceId);
   if (!race) return 10;
-  return race.parts.filter(p => p.crippable).length;
+  return race.crippableLimbCount;
 }

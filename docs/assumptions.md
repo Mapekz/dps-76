@@ -1417,10 +1417,31 @@ ghoul perk effects gate on it with `GetValue(Rads) ≥ N` condition rows.
   landed-hit chain (same simplest-defensible split as the Charged cycle).
   Independent of free-aim `hitRatePct`, which still scales free-aim sustained
   DPS only.
-- Crippled-limbs input caps at the picked race's crippable-part count
-  ("On Cripple"/Explodable BPTD flags; 10 when no race picked — Storm Goliath
-  has 9 damageable parts). Bully's/Tormentor's ESM `perCrippledLimb` max stays
-  6 — parts 7+ add no damage from those sources.
+- Crippled-limbs input caps at the picked race's `crippableLimbCount` — the
+  number of *distinct* BPTD Data."Actor Value" limb conditions among its
+  non-torso parts (10 when no race picked — Storm Goliath has 8 crippable of
+  9 total damageable parts). A part with no Actor Value is armor/weakpoint
+  flavor only (e.g. the Ogua's ×0.1 shell), not a trackable limb; two named
+  zones sharing one condition (the Ultracite Titan's Chest+Belly, both
+  EnduranceCondition) count once. Bully's/Tormentor's ESM `perCrippledLimb`
+  max stays 6 — limbs 7+ add no damage from those sources.
+- **NoCripple** (`NoCripplePerk` PERK `0x004121E8`, "Mod Incoming Limb Damage"
+  ×0 — or the bare `NoCripple` KYWD `0x00248D2D`): the actor takes zero limb
+  damage, so none of its parts can be crippled. No BPTD flag encodes this —
+  it's hand-authored per curated target (`crippleImmune` in
+  `CURATED_TARGETS`) on Blue Devil, Bigfoot, and the Deathclaw Matriarch
+  (`Burn_E01_EncDeathclawMatriarch`; the plain "Deathclaw" entry shares
+  `DeathclawRace` but not this NPC-scoped perk, so it stays crippable).
+- **EN06 Guardian**: only 2 of its 8 BPTD parts carry a real Actor Value — the
+  "Ultragenetic Shield System" (weak point, crippable) and the Torso (×3, not
+  crippable — matches the "torso can't be crippled" in-game behavior). Its
+  other 6 parts are perk-gated phantoms (`RD01_Enc01_PreventLimbDamage_Perk`
+  `0x0077459D` zeroes their damage mult and — while a `DamageState` keyword is
+  absent — the torso's too) dropped via `conditionPartsOnly`. The in-game
+  "torso is damage-immune until the shield generator breaks" phase gate is
+  **not modeled** — this is a steady-state paper-DPS calc with no phase
+  scripting; exposing both parts and picking the shield generator is the
+  closest approximation.
 - Auto-receiver crit/sneak base MUL_ADDs are −20% (user-confirmed correct;
   the −30% applies to AttackDamage/DamageTypeValues).
 - Shishkebab max Eligible Level 45 confirmed by user — item level clamps there.

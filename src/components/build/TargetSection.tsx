@@ -203,7 +203,13 @@ export function TargetSection() {
 
           <div className="space-y-1.5">
             <Label htmlFor="target-crippled">
-              Crippled limbs ({crippableMax} crippable{selectedRace ? ` on ${selectedRace.name}` : ' max'})
+              Crippled limbs (
+              {crippableMax === 0
+                ? selectedRace
+                  ? `${selectedRace.name} cannot be crippled`
+                  : '0 crippable'
+                : `${crippableMax} crippable${selectedRace ? ` on ${selectedRace.name}` : ' max'}`}
+              )
             </Label>
             <Input
               id="target-crippled"
@@ -211,6 +217,7 @@ export function TargetSection() {
               min={0}
               max={crippableMax}
               value={conditions.crippledLimbCount}
+              disabled={crippableMax === 0}
               onChange={e =>
                 setEnemy('crippledLimbCount', Math.max(0, Math.min(crippableMax, parseInt(e.target.value, 10) || 0)))
               }

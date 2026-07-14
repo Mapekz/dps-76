@@ -6,14 +6,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -39,10 +39,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "FeralGhoulRace",
@@ -51,26 +53,26 @@
   "bodyPartDataFormId": "0x0006B4F1",
   "parts": [
    {
-    "name": "Torso",
-    "partType": "Torso",
-    "dmgMult": 1,
-    "crippable": true
-   },
-   {
     "name": "Right Leg",
     "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Right Arm",
-    "partType": "RightArm1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": false
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -87,7 +89,9 @@
     "crippable": true
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "ScorchedRace",
@@ -96,14 +100,14 @@
   "bodyPartDataFormId": "0x0010CA60",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -129,10 +133,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "SuperMutantRace",
@@ -141,6 +147,12 @@
   "bodyPartDataFormId": "0x0002B4C3",
   "parts": [
    {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
     "name": "Right Leg",
     "partType": "RightLeg1",
     "dmgMult": 1,
@@ -156,13 +168,7 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.9,
-    "crippable": true
-   },
-   {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
-    "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    },
    {
     "name": "Left Arm",
@@ -177,7 +183,9 @@
     "crippable": true
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "SupermutantBehemothRace",
@@ -186,26 +194,11 @@
   "bodyPartDataFormId": "0x000BB7DC",
   "parts": [
    {
-    "name": "Torso",
-    "partType": "Torso",
-    "dmgMult": 0.9,
-    "crippable": false
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
    },
-   {
-    "name": "Head",
-    "partType": "Head1",
-    "dmgMult": 1.25,
-    "crippable": false
-   }
-  ],
-  "category": "standard"
- },
- {
-  "id": "MoleMinerRace",
-  "formId": "0x00012E6B",
-  "name": "Mole Miner",
-  "bodyPartDataFormId": "0x00012E6E",
-  "parts": [
    {
     "name": "Right Leg",
     "partType": "RightLeg1",
@@ -213,8 +206,14 @@
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 0.9,
+    "crippable": false
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -227,17 +226,60 @@
    {
     "name": "Head",
     "partType": "Head1",
+    "dmgMult": 1.25,
+    "crippable": true
+   }
+  ],
+  "category": "standard",
+  "crippableLimbCount": 5,
+  "noCripple": false
+ },
+ {
+  "id": "MoleMinerRace",
+  "formId": "0x00012E6B",
+  "name": "Mole Miner",
+  "bodyPartDataFormId": "0x00012E6E",
+  "parts": [
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
     "dmgMult": 1.5,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "ViciousDogRace",
@@ -247,13 +289,13 @@
   "parts": [
    {
     "name": "Right Legs",
-    "partType": "RightArm2",
+    "partType": "RightArm1",
     "dmgMult": 1,
     "crippable": true
    },
    {
     "name": "Left Legs",
-    "partType": "LeftLeg2",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -261,7 +303,7 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    },
    {
     "name": "Head",
@@ -270,7 +312,9 @@
     "crippable": true
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 3,
+  "noCripple": false
  },
  {
   "id": "WendigoRace",
@@ -285,14 +329,14 @@
     "crippable": true
    },
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -300,7 +344,7 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.9,
-    "crippable": true
+    "crippable": false
    },
    {
     "name": "Left Arm",
@@ -315,7 +359,9 @@
     "crippable": true
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "WendigoColossusRace",
@@ -324,21 +370,9 @@
   "bodyPartDataFormId": "0x0055AEC9",
   "parts": [
    {
-    "name": "Poisonous Head",
-    "partType": "Brain",
+    "name": "Screeching Head",
+    "partType": "Head1",
     "dmgMult": 1.35,
-    "crippable": true
-   },
-   {
-    "name": "Corrosive Head",
-    "partType": "Head2",
-    "dmgMult": 1.35,
-    "crippable": true
-   },
-   {
-    "name": "Right Leg",
-    "partType": "RightArm1",
-    "dmgMult": 1,
     "crippable": true
    },
    {
@@ -348,13 +382,21 @@
     "crippable": true
    },
    {
-    "name": "Screeching Head",
-    "partType": "Head1",
-    "dmgMult": 1.35,
+    "name": "Right Leg",
+    "partType": "RightArm1",
+    "dmgMult": 1,
     "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": false
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 3,
+  "noCripple": false
  },
  {
   "id": "YaoGuaiRace",
@@ -364,13 +406,13 @@
   "parts": [
    {
     "name": "Left Legs",
-    "partType": "LeftLeg2",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
     "name": "Right Legs",
-    "partType": "RightLeg2",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -378,7 +420,7 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.9,
-    "crippable": true
+    "crippable": false
    },
    {
     "name": "Head",
@@ -387,7 +429,9 @@
     "crippable": true
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 3,
+  "noCripple": false
  },
  {
   "id": "DeathclawRace",
@@ -399,25 +443,25 @@
     "name": "Belly",
     "partType": "Torso",
     "dmgMult": 1.35,
-    "crippable": true
+    "crippable": false
    },
    {
     "name": "Tail",
     "partType": "LeftLeg2",
     "dmgMult": 0.75,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "LeftFoot",
     "partType": "Left Foot",
     "dmgMult": 0.85,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "RightFoot",
     "partType": "Right Foot",
     "dmgMult": 0.85,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Right Leg",
@@ -429,6 +473,12 @@
     "name": "Left Leg",
     "partType": "LeftLeg1",
     "dmgMult": 0.9,
+    "crippable": true
+   },
+   {
+    "name": "Body",
+    "partType": "Pelvis",
+    "dmgMult": 1,
     "crippable": true
    },
    {
@@ -450,7 +500,9 @@
     "crippable": true
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 7,
+  "noCripple": false
  },
  {
   "id": "MirelurkRace",
@@ -459,14 +511,14 @@
   "bodyPartDataFormId": "0x00023FFF",
   "parts": [
    {
-    "name": "Left Legs",
-    "partType": "LeftLeg2",
+    "name": "Right Legs",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Right Legs",
-    "partType": "RightLeg2",
+    "name": "Left Legs",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -498,10 +550,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.9,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 6,
+  "noCripple": false
  },
  {
   "id": "MirelurkHunterRace",
@@ -517,7 +571,7 @@
    },
    {
     "name": "Left Legs",
-    "partType": "LeftLeg3",
+    "partType": "LeftArm2",
     "dmgMult": 1,
     "crippable": true
    },
@@ -525,7 +579,7 @@
     "name": "Shell",
     "partType": "Head2",
     "dmgMult": 0.5,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Right Claw",
@@ -549,10 +603,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.9,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 6,
+  "noCripple": false
  },
  {
   "id": "MirelurkKingRace",
@@ -561,14 +617,14 @@
   "bodyPartDataFormId": "0x000B7F94",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -576,7 +632,7 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.9,
-    "crippable": true
+    "crippable": false
    },
    {
     "name": "Left Arm",
@@ -597,7 +653,9 @@
     "crippable": true
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "MirelurkQueenRace",
@@ -606,52 +664,46 @@
   "bodyPartDataFormId": "0x000E12AA",
   "parts": [
    {
+    "name": "Spouts",
+    "partType": "Eye",
+    "dmgMult": 1.1,
+    "crippable": true
+   },
+   {
     "name": "Shell",
     "partType": "Head2",
     "dmgMult": 0.25,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Right Legs",
     "partType": "RightArm2",
     "dmgMult": 0.8,
-    "crippable": false
-   },
-   {
-    "name": "Left Foot",
-    "partType": "Left Foot",
-    "dmgMult": 0.8,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Left Legs",
-    "partType": "LeftLeg2",
+    "partType": "LeftArm2",
     "dmgMult": 0.8,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Spouts",
     "partType": "Brain",
     "dmgMult": 1.1,
-    "crippable": false
-   },
-   {
-    "name": "Right Foot",
-    "partType": "Right Foot",
-    "dmgMult": 0.8,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Right Arm",
     "partType": "RightArm1",
     "dmgMult": 0.75,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Left Arm",
     "partType": "LeftArm1",
     "dmgMult": 0.75,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Head",
@@ -663,10 +715,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.5,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 8,
+  "noCripple": false
  },
  {
   "id": "MothmanRace",
@@ -675,8 +729,14 @@
   "bodyPartDataFormId": "0x0000DAFE",
   "parts": [
    {
-    "name": "Left Legs",
-    "partType": "LeftLeg2",
+    "name": "Right Arm",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -687,19 +747,27 @@
     "crippable": true
    },
    {
+    "name": "Left Legs",
+    "partType": "LeftLeg2",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
     "name": "Head",
     "partType": "Head1",
     "dmgMult": 1.25,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "ScorchBeastRace",
@@ -708,13 +776,51 @@
   "bodyPartDataFormId": "0x00017DD5",
   "parts": [
    {
+    "name": "Right Arm",
+    "partType": "RightArm2",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm2",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Wing",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Wing",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
     "name": "Head",
     "partType": "Head1",
     "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
     "crippable": false
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 6,
+  "noCripple": false
  },
  {
   "id": "RadScorpionRace",
@@ -724,13 +830,13 @@
   "parts": [
    {
     "name": "Right Legs",
-    "partType": "RightLeg3",
+    "partType": "RightArm2",
     "dmgMult": 1,
     "crippable": true
    },
    {
     "name": "Left Legs",
-    "partType": "LeftLeg3",
+    "partType": "LeftArm2",
     "dmgMult": 1,
     "crippable": true
    },
@@ -762,10 +868,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.85,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 6,
+  "noCripple": false
  },
  {
   "id": "SnallyGasterRace",
@@ -786,31 +894,21 @@
     "crippable": true
    },
    {
-    "name": "Right Arm",
-    "partType": "RightArm1",
+    "name": "Torso",
+    "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
-   },
-   {
-    "name": "Left Arm",
-    "partType": "LeftArm1",
-    "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    },
    {
     "name": "Head",
     "partType": "Head1",
     "dmgMult": 1.35,
     "crippable": true
-   },
-   {
-    "name": "Torso",
-    "partType": "Torso",
-    "dmgMult": 1,
-    "crippable": true
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 3,
+  "noCripple": false
  },
  {
   "id": "GraftonMonsterRace",
@@ -822,12 +920,6 @@
     "name": "Blowholes",
     "partType": "Head2",
     "dmgMult": 1.5,
-    "crippable": false
-   },
-   {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
-    "dmgMult": 1,
     "crippable": true
    },
    {
@@ -837,10 +929,16 @@
     "crippable": true
    },
    {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.85,
-    "crippable": true
+    "crippable": false
    },
    {
     "name": "Left Arm",
@@ -855,7 +953,9 @@
     "crippable": true
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "SheepsquatchRace",
@@ -864,14 +964,14 @@
   "bodyPartDataFormId": "0x00479D3B",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -879,7 +979,7 @@
     "name": "Body",
     "partType": "Pelvis",
     "dmgMult": 0.85,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Left Arm",
@@ -900,7 +1000,9 @@
     "crippable": true
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 6,
+  "noCripple": false
  },
  {
   "id": "MegaSlothRace",
@@ -921,14 +1023,14 @@
     "crippable": true
    },
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -936,7 +1038,7 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.85,
-    "crippable": true
+    "crippable": false
    },
    {
     "name": "Left Arm",
@@ -951,7 +1053,9 @@
     "crippable": true
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 6,
+  "noCripple": false
  },
  {
   "id": "HoneyBeastRace",
@@ -961,13 +1065,13 @@
   "parts": [
    {
     "name": "Right Legs",
-    "partType": "RightLeg3",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
     "name": "Left Legs",
-    "partType": "LeftLeg3",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -987,10 +1091,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.95,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 4,
+  "noCripple": false
  },
  {
   "id": "DLC03_AnglerRace",
@@ -999,14 +1105,14 @@
   "bodyPartDataFormId": "0x00110932",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -1014,7 +1120,7 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    },
    {
     "name": "Left Arm",
@@ -1035,7 +1141,9 @@
     "crippable": true
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "DLC03_FogCrawlerRace",
@@ -1045,13 +1153,13 @@
   "parts": [
    {
     "name": "Left Legs",
-    "partType": "LeftLeg2",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
     "name": "Right Legs",
-    "partType": "RightLeg3",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -1077,10 +1185,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.85,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "DLC03_GulperRace",
@@ -1092,11 +1202,11 @@
     "name": "Belly",
     "partType": "Torso",
     "dmgMult": 1.1,
-    "crippable": true
+    "crippable": false
    },
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Tail",
+    "partType": "LeftLeg2",
     "dmgMult": 1,
     "crippable": true
    },
@@ -1107,10 +1217,16 @@
     "crippable": true
    },
    {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
     "name": "Body",
     "partType": "Pelvis",
     "dmgMult": 0.85,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Left Arm",
@@ -1131,7 +1247,9 @@
     "crippable": true
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 7,
+  "noCripple": false
  },
  {
   "id": "FlatwoodsMonsterRace",
@@ -1143,50 +1261,11 @@
     "name": "Head",
     "partType": "Head1",
     "dmgMult": 1.25,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Torso",
     "partType": "Torso",
-    "dmgMult": 0.9,
-    "crippable": false
-   }
-  ],
-  "category": "standard"
- },
- {
-  "id": "BlueDevilRace",
-  "formId": "0x006A0649",
-  "name": "Blue Devil",
-  "bodyPartDataFormId": "0x006CA373",
-  "parts": [
-   {
-    "name": "Belly",
-    "partType": "Torso",
-    "dmgMult": 0.9,
-    "crippable": true
-   },
-   {
-    "name": "Tail",
-    "partType": "LeftLeg2",
-    "dmgMult": 0.5,
-    "crippable": false
-   },
-   {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
-    "dmgMult": 1,
-    "crippable": true
-   },
-   {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
-    "dmgMult": 1,
-    "crippable": true
-   },
-   {
-    "name": "Body",
-    "partType": "Pelvis",
     "dmgMult": 0.9,
     "crippable": false
    },
@@ -1201,15 +1280,64 @@
     "partType": "RightArm1",
     "dmgMult": 1,
     "crippable": true
+   }
+  ],
+  "category": "standard",
+  "crippableLimbCount": 3,
+  "noCripple": false
+ },
+ {
+  "id": "BlueDevilRace",
+  "formId": "0x006A0649",
+  "name": "Blue Devil",
+  "bodyPartDataFormId": "0x006CA373",
+  "parts": [
+   {
+    "name": "Belly",
+    "partType": "Torso",
+    "dmgMult": 0.9,
+    "crippable": false
+   },
+   {
+    "name": "Tail",
+    "partType": "LeftLeg2",
+    "dmgMult": 0.5,
+    "crippable": false
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": false
+   },
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": false
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": false
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": false
    },
    {
     "name": "Head",
     "partType": "Head1",
     "dmgMult": 1.5,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 0,
+  "noCripple": true
  },
  {
   "id": "OguaRace",
@@ -1236,14 +1364,14 @@
     "crippable": true
    },
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -1251,7 +1379,7 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.85,
-    "crippable": true
+    "crippable": false
    },
    {
     "name": "Left Arm",
@@ -1266,31 +1394,45 @@
     "crippable": true
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 6,
+  "noCripple": false
  },
  {
   "id": "UltraciteAbominationRace",
   "formId": "0x00656CD6",
-  "name": "Ultracite Abomination",
+  "name": "Ultracite Titan",
   "bodyPartDataFormId": "0x00656CD4",
   "parts": [
    {
     "name": "Chest",
     "partType": "Head2",
     "dmgMult": 1.35,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Belly",
     "partType": "Pelvis",
     "dmgMult": 1.15,
-    "crippable": false
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
    },
    {
     "name": "Head",
     "partType": "Head1",
     "dmgMult": 1.5,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Torso",
@@ -1299,7 +1441,9 @@
     "crippable": false
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 4,
+  "noCripple": false
  },
  {
   "id": "AssaultronRace",
@@ -1314,22 +1458,22 @@
     "crippable": true
    },
    {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
     "name": "Combat Inhibitor",
     "partType": "Brain",
     "dmgMult": 0.25,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.85,
-    "crippable": true
-   },
-   {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
-    "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    },
    {
     "name": "Right Arm",
@@ -1350,7 +1494,9 @@
     "crippable": true
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 6,
+  "noCripple": false
  },
  {
   "id": "ProtectronRace",
@@ -1365,22 +1511,22 @@
     "crippable": true
    },
    {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
     "name": "Combat Inhibitor",
     "partType": "Brain",
     "dmgMult": 0.25,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.9,
-    "crippable": true
-   },
-   {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
-    "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    },
    {
     "name": "Right Arm",
@@ -1401,7 +1547,9 @@
     "crippable": true
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 6,
+  "noCripple": false
  },
  {
   "id": "SentryBotRace",
@@ -1428,14 +1576,8 @@
     "crippable": true
    },
    {
-    "name": "Right Foot",
-    "partType": "Right Foot",
-    "dmgMult": 1,
-    "crippable": true
-   },
-   {
-    "name": "Left Foot",
-    "partType": "Left Foot",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -1449,17 +1591,11 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.9,
-    "crippable": true
+    "crippable": false
    },
    {
     "name": "Back Leg",
     "partType": "RightLeg1",
-    "dmgMult": 1,
-    "crippable": true
-   },
-   {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -1482,7 +1618,38 @@
     "crippable": true
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 9,
+  "noCripple": false
+ },
+ {
+  "id": "LiberatorRace",
+  "formId": "0x00002ECF",
+  "name": "Liberator",
+  "bodyPartDataFormId": "0x00002ED2",
+  "parts": [
+   {
+    "name": "Left Legs",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Legs",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1,
+    "crippable": true
+   }
+  ],
+  "category": "standard",
+  "crippableLimbCount": 3,
+  "noCripple": false
  },
  {
   "id": "StormBossRace",
@@ -1490,6 +1657,12 @@
   "name": "Storm Goliath",
   "bodyPartDataFormId": "0x006D79FF",
   "parts": [
+   {
+    "name": "Back Panel",
+    "partType": "Brain",
+    "dmgMult": 1,
+    "crippable": true
+   },
    {
     "name": "Right Foot",
     "partType": "RightLeg2",
@@ -1530,16 +1703,136 @@
     "name": "Glass",
     "partType": "Head1",
     "dmgMult": 1.15,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.85,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "standard"
+  "category": "standard",
+  "crippableLimbCount": 8,
+  "noCripple": false
+ },
+ {
+  "id": "BigfootRace",
+  "formId": "0x00868BBC",
+  "name": "Bigfoot",
+  "bodyPartDataFormId": "0x00868BAA",
+  "parts": [
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": false
+   },
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": false
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 0.9,
+    "crippable": false
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": false
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": false
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.25,
+    "crippable": false
+   }
+  ],
+  "category": "standard",
+  "crippableLimbCount": 0,
+  "noCripple": true
+ },
+ {
+  "id": "Burn_E01_EncDeathclawMatriarch",
+  "formId": "0x0001DB4A",
+  "name": "Deathclaw Matriarch",
+  "bodyPartDataFormId": "0x0001DB4D",
+  "parts": [
+   {
+    "name": "Belly",
+    "partType": "Torso",
+    "dmgMult": 1.35,
+    "crippable": false
+   },
+   {
+    "name": "Tail",
+    "partType": "LeftLeg2",
+    "dmgMult": 0.75,
+    "crippable": false
+   },
+   {
+    "name": "LeftFoot",
+    "partType": "Left Foot",
+    "dmgMult": 0.85,
+    "crippable": false
+   },
+   {
+    "name": "RightFoot",
+    "partType": "Right Foot",
+    "dmgMult": 0.85,
+    "crippable": false
+   },
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 0.9,
+    "crippable": false
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 0.9,
+    "crippable": false
+   },
+   {
+    "name": "Body",
+    "partType": "Pelvis",
+    "dmgMult": 1,
+    "crippable": false
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 0.9,
+    "crippable": false
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 0.9,
+    "crippable": false
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1,
+    "crippable": false
+   }
+  ],
+  "category": "standard",
+  "crippableLimbCount": 0,
+  "noCripple": true
  },
  {
   "id": "RD01_Enc01_GuardianBot",
@@ -1547,18 +1840,6 @@
   "name": "EN06 Guardian",
   "bodyPartDataFormId": "0x0077B596",
   "parts": [
-   {
-    "name": "Shoulder Right",
-    "partType": "RightArm2",
-    "dmgMult": 3,
-    "crippable": true
-   },
-   {
-    "name": "Shoulder Left",
-    "partType": "LeftArm2",
-    "dmgMult": 3,
-    "crippable": true
-   },
    {
     "name": "Ultragenetic Shield System",
     "partType": "Pelvis",
@@ -1569,28 +1850,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 3,
-    "crippable": true
-   },
-   {
-    "name": "Right Arm",
-    "partType": "RightArm1",
-    "dmgMult": 3,
-    "crippable": true
-   },
-   {
-    "name": "Left Arm",
-    "partType": "LeftArm1",
-    "dmgMult": 3,
-    "crippable": true
-   },
-   {
-    "name": "Head",
-    "partType": "Head1",
-    "dmgMult": 3,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "raid"
+  "category": "raid",
+  "crippableLimbCount": 1,
+  "noCripple": false
  },
  {
   "id": "RD01_Enc04_Grenadier",
@@ -1599,14 +1864,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -1632,10 +1897,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "raid"
+  "category": "raid",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "RD01_Enc04_Assassin",
@@ -1644,14 +1911,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -1677,10 +1944,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "raid"
+  "category": "raid",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "RD01_Enc04_Brute",
@@ -1689,14 +1958,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -1722,10 +1991,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "raid"
+  "category": "raid",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "RD01_Enc06_ScorchtongueHead",
@@ -1737,16 +2008,66 @@
     "name": "LeftEye",
     "partType": "Head2",
     "dmgMult": 3,
-    "crippable": false
+    "crippable": true
+   },
+   {
+    "name": "RightEye",
+    "partType": "Eye",
+    "dmgMult": 3,
+    "crippable": true
+   },
+   {
+    "name": "Plate G",
+    "partType": "LeftLeg3",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Plate F",
+    "partType": "LeftLeg2",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Plate E",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Plate D",
+    "partType": "RightArm2",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Plate C",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Plate B",
+    "partType": "LeftArm2",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Plate A",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
    },
    {
     "name": "Head",
     "partType": "Head1",
     "dmgMult": 1.25,
-    "crippable": false
+    "crippable": true
    }
   ],
-  "category": "raid"
+  "category": "raid",
+  "crippableLimbCount": 10,
+  "noCripple": false
  },
  {
   "id": "HTO_LvlBloodEagle_Boss_T5",
@@ -1755,14 +2076,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -1788,10 +2109,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "infestation"
+  "category": "infestation",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "HTO_LvlPRCGhoul_Boss_T5",
@@ -1800,14 +2123,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -1833,10 +2156,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "infestation"
+  "category": "infestation",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "HTO_LvlCultist_Boss_T5",
@@ -1845,14 +2170,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -1878,10 +2203,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "infestation"
+  "category": "infestation",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "HTO_LvlMoleMiner_Boss_T5",
@@ -1890,14 +2217,14 @@
   "bodyPartDataFormId": "0x00012E6E",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -1908,19 +2235,27 @@
     "crippable": true
    },
    {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
     "name": "Head",
     "partType": "Head1",
     "dmgMult": 1.5,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "infestation"
+  "category": "infestation",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "HTO_LvlSuperMutant_Boss_T5",
@@ -1928,6 +2263,12 @@
   "name": "Super Mutant Primus",
   "bodyPartDataFormId": "0x0002B4C3",
   "parts": [
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
    {
     "name": "Right Leg",
     "partType": "RightLeg1",
@@ -1944,13 +2285,7 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.9,
-    "crippable": true
-   },
-   {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
-    "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    },
    {
     "name": "Left Arm",
@@ -1965,7 +2300,9 @@
     "crippable": true
    }
   ],
-  "category": "infestation"
+  "category": "infestation",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "HTO_LvlScorched_Boss_T5",
@@ -1974,14 +2311,14 @@
   "bodyPartDataFormId": "0x0010CA60",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2007,10 +2344,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "infestation"
+  "category": "infestation",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "HTO_LvlRobot_Boss_T5",
@@ -2025,22 +2364,22 @@
     "crippable": true
    },
    {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
     "name": "Combat Inhibitor",
     "partType": "Brain",
     "dmgMult": 0.25,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 0.85,
-    "crippable": true
-   },
-   {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
-    "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    },
    {
     "name": "Right Arm",
@@ -2061,7 +2400,9 @@
     "crippable": true
    }
   ],
-  "category": "infestation"
+  "category": "infestation",
+  "crippableLimbCount": 6,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Death",
@@ -2070,14 +2411,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2103,10 +2444,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_War",
@@ -2115,14 +2458,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2148,10 +2491,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Pestilence",
@@ -2160,14 +2505,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2193,10 +2538,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Famine",
@@ -2205,14 +2552,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2238,10 +2585,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Granny",
@@ -2250,14 +2599,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2283,10 +2632,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Astronaut",
@@ -2295,14 +2646,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2328,10 +2679,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_AntiGhoul",
@@ -2340,14 +2693,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2373,10 +2726,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Irradiated",
@@ -2385,14 +2740,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2418,10 +2773,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Pilot",
@@ -2430,14 +2787,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2463,10 +2820,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_NukaQueen",
@@ -2475,14 +2834,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2508,10 +2867,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_QuackDoctor",
@@ -2520,14 +2881,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2553,10 +2914,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Patriot",
@@ -2565,14 +2928,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2598,10 +2961,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Foreman",
@@ -2610,14 +2975,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2643,10 +3008,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Researcher",
@@ -2655,14 +3022,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2688,10 +3055,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_ScoutLeader",
@@ -2700,14 +3069,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2733,10 +3102,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_BarryTone",
@@ -2745,14 +3116,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2778,10 +3149,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Devil",
@@ -2790,14 +3163,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2823,10 +3196,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Rich",
@@ -2835,14 +3210,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2868,10 +3243,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Gambler",
@@ -2880,14 +3257,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2913,10 +3290,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Mechanist",
@@ -2925,14 +3304,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -2958,10 +3337,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Fisherman",
@@ -2970,14 +3351,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -3003,10 +3384,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_RoboBrain",
@@ -3036,13 +3419,13 @@
     "name": "Combat Inhibitor",
     "partType": "Brain",
     "dmgMult": 0.65,
-    "crippable": false
+    "crippable": true
    },
    {
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    },
    {
     "name": "Left Leg",
@@ -3069,7 +3452,9 @@
     "crippable": true
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 6,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Sniper",
@@ -3078,14 +3463,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -3111,10 +3496,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Boxer",
@@ -3123,14 +3510,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -3156,10 +3543,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Gunslinger",
@@ -3168,14 +3557,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -3201,10 +3590,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_BigGun",
@@ -3213,14 +3604,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -3246,10 +3637,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Crusher",
@@ -3258,14 +3651,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -3291,10 +3684,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Commie",
@@ -3303,14 +3698,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -3336,10 +3731,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Abraxo",
@@ -3348,14 +3745,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -3381,10 +3778,12 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  },
  {
   "id": "Burn_BountyTarget_BIG_Hunter",
@@ -3393,14 +3792,14 @@
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {
-    "name": "Right Leg",
-    "partType": "RightLeg1",
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
     "dmgMult": 1,
     "crippable": true
    },
    {
-    "name": "Left Leg",
-    "partType": "LeftLeg1",
+    "name": "Right Leg",
+    "partType": "RightLeg1",
     "dmgMult": 1,
     "crippable": true
    },
@@ -3426,9 +3825,11 @@
     "name": "Torso",
     "partType": "Torso",
     "dmgMult": 1,
-    "crippable": true
+    "crippable": false
    }
   ],
-  "category": "headhunt"
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
  }
 ]

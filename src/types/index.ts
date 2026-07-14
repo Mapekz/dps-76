@@ -137,7 +137,7 @@ export interface PlayerConditions {
 // Enemy conditions for conditional damage calculations
 export interface EnemyConditions {
   isCrippled: boolean; // at least one limb crippled
-  crippledLimbCount: number; // 0-10 parts (Storm Goliath has 9 damageable; Bully's/Tormentor scaling caps at 6 per ESM)
+  crippledLimbCount: number; // 0-10 limbs (Storm Goliath has 8 crippable of 9 damageable parts; Bully's/Tormentor scaling caps at 6 per ESM)
   statusEffectCount: number; // number of debuffs/impairments
   isGlowing: boolean; // glowing enemy variant
   isInsect: boolean; // insect creature type

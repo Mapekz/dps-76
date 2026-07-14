@@ -296,7 +296,11 @@ export interface GeneratedBodyPart {
   partType: string;
   /** BPTD Data."Damage Mult" — the engine's body-part damage multiplier for hits on this part. */
   dmgMult: number;
-  /** Part carries the "On Cripple" or "Explodable" flag — counts toward crippled-limb effects. */
+  /**
+   * Part has a limb condition (non-null BPTD Data."Actor Value") and isn't
+   * the torso core — counts toward crippled-limb effects (Bully's/Tormentor).
+   * Always false when the race is `noCripple`.
+   */
   crippable: boolean;
 }
 
@@ -319,6 +323,10 @@ export interface GeneratedBodyPartRace {
   bodyPartDataFormId: string;
   parts: GeneratedBodyPart[];
   category: BodyPartRaceCategory;
+  /** Distinct crippable Actor Values across `parts` — the crippled-limbs input's max (0 when `noCripple`). */
+  crippableLimbCount: number;
+  /** Actor holds NoCripplePerk/NoCripple (takes zero limb damage) — every part is non-crippable. */
+  noCripple: boolean;
 }
 
 export interface ExcludedRecordDetail {
