@@ -186,8 +186,15 @@ export type Condition =
   | { kind: 'enemyHasActiveEffect'; keyword: string }
   /** Enemies in the engaged group == count, or ≥ count for the top tier (Encircler's — GetGroupTargetCount). */
   | { kind: 'enemyGroupCount'; count: number; orMore?: boolean }
-  /** Player teammate count == count (Fencer's — GetPlayerTeammateCount; teammates assumed in range). */
-  | { kind: 'teammateCount'; count: number }
+  /**
+   * Player teammate count == count, or ≥ count with orMore (Fencer's exact
+   * tiers — GetPlayerTeammateCount; teammates assumed in range. Herd
+   * Mentality's IsMemberOfAPlayerTeam gate translates to count 0 (solo) /
+   * count 1 + orMore (in a team) — "in a team" is approximated as ≥1
+   * teammate, consistent with Strange in Numbers' derivation;
+   * docs/assumptions.md "Mutation penalties & Class Freak").
+   */
+  | { kind: 'teammateCount'; count: number; orMore?: boolean }
   /**
    * Kill-streak count == count, exact-match tier (Thrill-Seeker's 10 discrete
    * GetValue(killStreak) Equal To N rows — 0.03×N magnitude per tier, distinct
@@ -203,6 +210,16 @@ export type Condition =
   | { kind: 'stacks'; counter: StackCounter; max: number }
   /** Mutation value tier: false = base values, true = Strange in Numbers boosted (+25%). */
   | { kind: 'strangeInNumbers'; value: boolean }
+  /**
+   * Class Freak rank (0–3, derived from the equipped perk loadout) within
+   * [min, max] inclusive. Two ESM shapes both land here: mutation-penalty
+   * tier variants emitted app-side by `applyClassFreakPenaltyScaling`
+   * (min == max — exact tier), and HasPerk(ClassFreak0N) rows on granted
+   * penalty perks (Grounded's Mod Weapon Attack Damage tiers): =1 → rank ≥ N
+   * ({min: N, max: 3}), =0 → rank < N ({min: 0, max: N−1}); rows AND
+   * together into exact tiers.
+   */
+  | { kind: 'classFreakRank'; min: number; max: number }
   | { kind: 'perAddiction'; max: number }
   | { kind: 'inPowerArmor'; value: boolean }
   /** Character-type gate (GetIsPlayerGhoul): Gourmand's is human-only, Glowing Criticals ghoul-only. */
@@ -230,7 +247,9 @@ export type ModifierSourceKind =
   | 'omod'
   | 'legendaryEffect'
   | 'mutation'
-  | 'consumable';
+  | 'consumable'
+  /** Withdrawal penalties from a selected-and-unsuppressed addiction (addictions.json). */
+  | 'addiction';
 
 export interface ModifierSource {
   kind: ModifierSourceKind;

@@ -1,14 +1,15 @@
-import type { PlayerConfig, EnemyConfig, GameMode, Weapon } from '@/types';
+import type { PlayerConfig, EnemyConfig, GameMode, PlayerConditions, Weapon } from '@/types';
 import type { Modifier } from '@/types/modifiers';
 import { getWeapons } from '@/data';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
 import { getDefaultOmods, getOmodById } from '@/data/omods';
-import { getBuffModifiers, getSuppressedAddictions } from '@/data/buffs';
+import { getAddictionModifiers, getBuffModifiers, getSuppressedAddictions } from '@/data/buffs';
 import { buildEffectiveWeapon, WEAPON_STAT_BUCKETS } from '@/lib/engine/effective-weapon';
 import { legendaryBonusOf } from '@/data/perk-budget';
 import { getBodyPartMult } from '@/data/bodyparts';
 import {
   deriveAddictionCount,
+  deriveClassFreakRank,
   deriveHungerThirstTier,
   derivePlayerStats,
   deriveStrangeInNumbers,
@@ -35,8 +36,26 @@ function assemble(
   playerConfig: PlayerConfig,
   enemyConfig: EnemyConfig,
   mode: GameMode
-): { weapon: Weapon | undefined; modifiers: Modifier[] } {
+): { weapon: Weapon | undefined; modifiers: Modifier[]; conditions: PlayerConditions } {
   const baseWeapon = playerConfig.weapon ? getWeapons(mode)[playerConfig.weapon.weaponId] : undefined;
+
+  // Derived gates resolved ONCE over the stored conditions: strangeInNumbers
+  // (SiN card + teammate) and classFreakRank (equipped ClassFreak rank) both
+  // gate modifiers folded here (Speed Demon's reload, mutation penalty
+  // tiers) and downstream (SPECIAL folds, the engine) — every consumer must
+  // see the same derived values, never the stored synthetic-test defaults.
+  const conditions: PlayerConditions = {
+    ...playerConfig.conditions,
+    strangeInNumbers: deriveStrangeInNumbers(playerConfig.perks, playerConfig.conditions),
+    classFreakRank: deriveClassFreakRank(playerConfig.perks),
+  };
+
+  // Withdrawal penalties for counted addictions — selected minus suppressed
+  // (an active consumable suppresses its own family's withdrawal, the same
+  // rule Junkie's addictionCount uses; docs/assumptions.md "Consumable
+  // stacking & addictions").
+  const suppressed = getSuppressedAddictions(mode, playerConfig.consumables);
+  const countedAddictions = playerConfig.addictions.filter(id => !suppressed.has(id));
 
   // Perk/legendary-perk/buff modifiers, gathered BEFORE the effective weapon
   // is built so their weapon-stat buckets (reloadSpeed, fireRateSpeed, …)
@@ -46,6 +65,7 @@ function assemble(
     ...getLoadoutModifiers(mode, playerConfig.perks),
     ...getLoadoutModifiers(mode, playerConfig.legendaryPerks),
     ...getBuffModifiers(mode, playerConfig.mutations, playerConfig.consumables),
+    ...getAddictionModifiers(mode, countedAddictions),
   ];
 
   // Apply equipped OMODs (standard slots + legendary effects) to the weapon.
@@ -67,7 +87,7 @@ function assemble(
       baseWeapon,
       equippedOmods,
       playerConfig.itemLevel,
-      playerConfig.conditions,
+      conditions,
       enemyConfig.conditions,
       loadoutModifiers
     );
@@ -84,6 +104,7 @@ function assemble(
       // and keeps them from double-counting if a damage term ever folds them.
       ...loadoutModifiers.filter(m => !WEAPON_STAT_BUCKETS.has(m.bucket)),
     ],
+    conditions,
   };
 }
 
@@ -93,15 +114,8 @@ function assemble(
  * without an equipped weapon (weapon-gated stat modifiers just don't match).
  */
 export function resolveStats(playerConfig: PlayerConfig, enemyConfig: EnemyConfig, mode: GameMode): DerivedPlayerStats {
-  const { weapon, modifiers } = assemble(playerConfig, enemyConfig, mode);
-  return derivePlayerStats(
-    modifiers,
-    baseSpecialOf(playerConfig),
-    playerConfig.conditions,
-    enemyConfig.conditions,
-    weapon,
-    playerConfig.itemLevel
-  );
+  const { weapon, modifiers, conditions } = assemble(playerConfig, enemyConfig, mode);
+  return derivePlayerStats(modifiers, baseSpecialOf(playerConfig), conditions, enemyConfig.conditions, weapon, playerConfig.itemLevel);
 }
 
 /**
@@ -121,24 +135,28 @@ export function resolveLoadout(
   enemyConfig: EnemyConfig,
   mode: GameMode
 ): ScenarioInput | null {
-  const { weapon, modifiers } = assemble(playerConfig, enemyConfig, mode);
+  const { weapon, modifiers, conditions } = assemble(playerConfig, enemyConfig, mode);
   if (!weapon) return null;
 
   // Effective SPECIAL (base + SPECIAL-bucket buffs: Buffout +2 STR...) and
   // derived max HP (245 + 5×END + maxHealth bucket: Lifegiver...) — shared
   // derivation with the Build column's stat summary (src/lib/player-stats.ts).
   // STR feeds the melee term, LCK the crit meter, END the HP formula,
-  // maxHealth the healthCurrent curve input (Juggernaut's).
+  // maxHealth the healthCurrent curve input (Juggernaut's). `conditions`
+  // carries the derived strangeInNumbers/classFreakRank gates the
+  // condition-aware SPECIAL folds read.
   const { special, maxHealth } = derivePlayerStats(
     modifiers,
     baseSpecialOf(playerConfig),
-    playerConfig.conditions,
+    conditions,
     enemyConfig.conditions,
     weapon,
     playerConfig.itemLevel
   );
   const player = {
-    ...playerConfig.conditions,
+    // Derived-gate view of the stored conditions (strangeInNumbers,
+    // classFreakRank — see assemble()).
+    ...conditions,
     ...special,
     maxHealth,
     // Mutant's curve input: the selected mutation list IS the mutation count.
@@ -148,8 +166,6 @@ export function resolveLoadout(
     glow: Math.min(playerConfig.conditions.glow ?? 0, maxHealth),
     // Gourmand's curve input: the two meter tiers sum to the HungerThirstTier AV.
     hungerThirstTier: deriveHungerThirstTier(playerConfig.conditions),
-    // Strange in Numbers gate: the card equipped + a teammate to be mutated with.
-    strangeInNumbers: deriveStrangeInNumbers(playerConfig.perks, playerConfig.conditions),
     // Junkie's curve input: selected addictions minus ones suppressed by an
     // active addictive consumable (any category — docs/assumptions.md
     // "Consumable stacking & addictions"). Unconditional override: the

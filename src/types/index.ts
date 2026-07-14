@@ -80,6 +80,14 @@ export interface PlayerConditions {
    * synthetic engine tests.
    */
   strangeInNumbers: boolean;
+  /**
+   * Class Freak perk rank 0–3 → mutation penalties ×1/×0.75/×0.5/×0.25.
+   * DERIVED in resolveLoadout/resolveStats (src/lib/player-stats.ts
+   * deriveClassFreakRank — the equipped ClassFreak card's rank); the stored
+   * value only feeds synthetic engine tests. Gates `classFreakRank`
+   * conditions (mutation penalty tiers, Grounded's energy-damage tiers).
+   */
+  classFreakRank?: number;
   weaponConditionPct?: number; // 0-200: equipped weapon condition, 100 = full, 200 = over-repaired max (Polished; default 100)
   /**
    * Manual-aim (free-aim) hit rate %, 10-100, default 100. Models realistic
@@ -412,6 +420,7 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     glow: 0, // ghoul Glow meter, absolute (0..maxHealth; human/no-Glow default)
     limitBreakingPieces: 0,
     strangeInNumbers: false, // synthetic-test default; the app derives it in resolveLoadout (perk + teammates)
+    classFreakRank: 0, // synthetic-test default; the app derives it in resolveLoadout (equipped ClassFreak rank)
     weaponConditionPct: 100, // full condition (Polished curve input; 200 = over-repaired max)
     hitRatePct: 100, // manual-aim hit rate (100 = every shot lands; VATS is unaffected)
     bodyPartHitRatePct: 100, // aimed shots always land on the targeted body part

@@ -101,6 +101,25 @@ const FOOD_SCALE_KEYWORD_EDIDS = new Set([
 ]);
 
 /**
+ * Effect-level gate on Class Freak's own perk ranks (ClassFreak01/02/03,
+ * 0x00391F0E/0x00391F11/0x00391F12): each rank's "Mod Spell Magnitude"
+ * ×0.75/×0.5/×0.25 applies to spell effects carrying this keyword
+ * (EPAlchemyEffectHasKeyword 0x00391F0F). Every mutation "Reduce" MGEF
+ * (Mutation_ReduceStrength & co.) carries it alongside the Detrimental flag —
+ * both are required for the penalty tag (the keyword alone also sits on
+ * non-stat UI-dummy effects).
+ */
+const MUTATION_NEGATIVE_EFFECT_KEYWORD = 'AbilityTypeMutation_NegativeEffect';
+
+/**
+ * Addiction-SPEL effects computed app-side instead of extracted:
+ * abAddictionCount feeds the Junkie's curve via `deriveAddictionCount`
+ * (src/lib/player-stats.ts), and CA_AddictionEffect is a no-op Script marker.
+ * Skipped by edid so they don't surface as spurious "no route" notes.
+ */
+const ADDICTION_BOOKKEEPING_MGEF_EDIDS = new Set(['abAddictionCount', 'CA_AddictionEffect']);
+
+/**
  * Same-bonus collision key for one dispel-flagged effect: its resolved
  * keyword edids, sorted and joined with '|'. Exact keyword-SET equality
  * (not any-keyword intersection — all foods share broad keywords like
@@ -153,7 +172,15 @@ export interface ExtractBuffsResult {
   unmappedAvifs: string[];
 }
 
-async function extractMutation(
+/**
+ * Exported for tests (precedent: isExcludedConsumableEdid/classifyConsumableCategory/
+ * buildDispelKeys/resolveAddiction below are all extraction internals exposed the
+ * same way): pins the Detrimental + AbilityTypeMutation_NegativeEffect →
+ * penaltyModifierIds tagging without standing up the full extractBuffs graph
+ * (AVIF-route plumbing perks, ALCH search, obtainability). Otherwise only
+ * called from extractBuffs' MUTATION_SPELLS loop.
+ */
+export async function extractMutation(
   client: EsmClient,
   edid: string,
   routes: Map<string, AvifRoute[]>,
@@ -171,8 +198,20 @@ async function extractMutation(
 
   const notes = new Set<string>();
   const fragments = [];
+  // Fragment indexes from a penalty MGEF (NegativeEffect keyword +
+  // Detrimental — the Class Freak scaling gate), mapped to modifier ids
+  // below, after withSource assigns them (mirrors buildConsumable's
+  // scalableIndexes pattern).
+  const penaltyIndexes = new Set<number>();
   for (const effect of parseMagicEffects(record)) {
     const result = await translateMagicEffect({ client, routes, edidByFormId, timedIsActive: true, noteUnroutedAvs: true }, effect);
+    if (result.modifiers.length > 0) {
+      const mgef = await getMgefInfo(client, effect.mgefFormId);
+      const kwEdids = await Promise.all(mgef.keywords.map(k => client.resolveEdid(k)));
+      if (mgef.detrimental && kwEdids.includes(MUTATION_NEGATIVE_EFFECT_KEYWORD)) {
+        for (let i = 0; i < result.modifiers.length; i++) penaltyIndexes.add(fragments.length + i);
+      }
+    }
     fragments.push(...result.modifiers);
     result.notes.forEach(n => notes.add(`${edid}: ${n}`));
     result.unmappedAvifs.forEach(a => allUnmapped.add(a));
@@ -185,20 +224,60 @@ async function extractMutation(
     name: (record.fields['Name'] as string) ?? record.editor_id,
   };
 
+  const modifiers = withSource(fragments, source, record.header.form_id);
+  const penaltyModifierIds = modifiers.filter((_, i) => penaltyIndexes.has(i)).map(m => m.id);
+
   allNotes.push(...notes);
   return {
     id: record.editor_id,
     formId: record.header.form_id,
     name: source.name,
     kind: 'mutation',
-    modifiers: withSource(fragments, source, record.header.form_id),
+    modifiers,
     notes: [...notes],
+    ...(penaltyModifierIds.length > 0 ? { penaltyModifierIds } : {}),
   };
 }
 
 interface CategorizedBuff {
   buff: GeneratedBuff;
   category: BuffCategory;
+}
+
+/**
+ * Withdrawal penalty modifiers from an addiction SPEL's own effects — flat
+ * Detrimental SPECIAL reducers (abReduce<SPECIAL><Family>Addiction, e.g.
+ * Alcohol Addiction: −1 AGI, −1 CHA), translated through the same MGEF
+ * pipeline as mutations. Bookkeeping effects (abAddictionCount /
+ * CA_AddictionEffect) are skipped; unrouted ones (Med-X/Psycho's
+ * abReduceDamageResistAddiction — player DR, out of scope) become notes.
+ *
+ * Exported for tests (same precedent as extractMutation above).
+ */
+export async function extractAddictionEffects(
+  client: EsmClient,
+  spel: EsmRecord,
+  routes: Map<string, AvifRoute[]>,
+  edidByFormId: Map<string, string>,
+  allUnmapped: Set<string>
+): Promise<{ modifiers: GeneratedAddiction['modifiers']; notes: string[] }> {
+  const notes = new Set<string>();
+  const fragments = [];
+  for (const effect of parseMagicEffects(spel)) {
+    const mgef = await getMgefInfo(client, effect.mgefFormId);
+    if (ADDICTION_BOOKKEEPING_MGEF_EDIDS.has(mgef.edid)) continue;
+    const result = await translateMagicEffect({ client, routes, edidByFormId, timedIsActive: true, noteUnroutedAvs: true }, effect);
+    fragments.push(...result.modifiers);
+    result.notes.forEach(n => notes.add(`${spel.editor_id}: ${n}`));
+    result.unmappedAvifs.forEach(a => allUnmapped.add(a));
+  }
+  const source = {
+    kind: 'addiction' as const,
+    formId: spel.header.form_id,
+    edid: spel.editor_id,
+    name: (spel.fields['Name'] as string) ?? spel.editor_id,
+  };
+  return { modifiers: withSource(fragments, source, spel.header.form_id), notes: [...notes] };
 }
 
 /** Build a GeneratedBuff for one categorized ALCH record (even when 0 modifiers result — needed for the addiction catalog). */
@@ -375,11 +454,23 @@ export async function extractBuffs(client: EsmClient): Promise<ExtractBuffsResul
   for (const { buff } of categorized) {
     if (!buff.obtainable || !buff.addiction) continue;
     if (!addictionById.has(buff.addiction.id)) {
+      // Withdrawal penalties extracted ONCE per family from the shared SPEL
+      // (every causing consumable references the same record).
+      let penalty: { modifiers: GeneratedAddiction['modifiers']; notes: string[] } = { modifiers: [], notes: [] };
+      try {
+        const spel = await client.get(buff.addiction.formId);
+        penalty = await extractAddictionEffects(client, spel, routes, edidByFormId, unmapped);
+      } catch {
+        penalty.notes.push(`${buff.addiction.id}: addiction SPEL ${buff.addiction.formId} not readable — no withdrawal penalties extracted`);
+      }
+      notes.push(...penalty.notes);
       addictionById.set(buff.addiction.id, {
         id: buff.addiction.id,
         formId: buff.addiction.formId,
         name: buff.addiction.name,
         causedBy: [],
+        modifiers: penalty.modifiers,
+        notes: penalty.notes,
       });
     }
     if (consumableIds.has(buff.id)) {

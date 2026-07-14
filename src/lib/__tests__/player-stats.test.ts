@@ -2,12 +2,32 @@ import { describe, it, expect } from 'vitest';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
 import { computePerkBudget } from '@/data/perk-budget';
 import { PerkId } from '@/data/perk-ids';
-import { derivePlayerStats, BASE_MAX_HP, MAX_HP_PER_ENDURANCE, SPECIAL_KEYS, type SpecialKey } from '@/lib/player-stats';
+import {
+  derivePlayerStats,
+  deriveClassFreakRank,
+  BASE_MAX_HP,
+  MAX_HP_PER_ENDURANCE,
+  SPECIAL_KEYS,
+  type SpecialKey,
+} from '@/lib/player-stats';
+import { applyClassFreakPenaltyScaling } from '@/lib/class-freak-mutations';
 import { createDefaultPlayerConditions } from '@/types';
-import type { Modifier } from '@/types/modifiers';
+import type { GeneratedBuff } from '@/types/generated';
+import type { Bucket, Condition, Modifier } from '@/types/modifiers';
 
 function baseSpecial(overrides: Partial<Record<SpecialKey, number>> = {}): Record<SpecialKey, number> {
   return { ...(Object.fromEntries(SPECIAL_KEYS.map(k => [k, 1])) as Record<SpecialKey, number>), ...overrides };
+}
+
+function specialMod(bucket: Bucket, value: number, conditions: Condition[] = [], id = 'test-special-mod'): Modifier {
+  return {
+    id,
+    source: { kind: 'mutation', formId: '0xC1A55', edid: 'TestMutation', name: 'Test Mutation' },
+    bucket,
+    op: 'ADD',
+    value,
+    conditions,
+  };
 }
 
 const conditions = createDefaultPlayerConditions();
@@ -95,5 +115,69 @@ describe('deriveHungerThirstTier', () => {
     expect(deriveHungerThirstTier({ ...base, foodTier: 4, drinkTier: 4 })).toBe(8);
     expect(deriveHungerThirstTier({ ...base, foodTier: 3, drinkTier: 1 })).toBe(4);
     expect(deriveHungerThirstTier({ ...base, foodTier: 9, drinkTier: -2 })).toBe(4); // clamped
+  });
+});
+
+describe('deriveClassFreakRank', () => {
+  it('reads the equipped ClassFreak card rank, defaulting to 0 and ignoring other perks', () => {
+    expect(deriveClassFreakRank([])).toBe(0);
+    expect(deriveClassFreakRank([{ perkId: PerkId.ClassFreak, rank: 2 }])).toBe(2);
+    expect(deriveClassFreakRank([{ perkId: PerkId.LifeGiver, rank: 3 }])).toBe(0);
+  });
+});
+
+describe('derivePlayerStats: condition-aware SPECIAL folds (2026-07-14)', () => {
+  it('classFreakRank-gated SPECIAL modifiers (Egg Head STR shape) apply only at their exact tier', () => {
+    // Real shape: applyClassFreakPenaltyScaling expands a tagged flat
+    // modifier into 4 rank-conditioned variants (×1/×0.75/×0.5/×0.25).
+    const strengthPenalty: GeneratedBuff = {
+      id: 'TestMutation',
+      formId: '0xC1A55',
+      name: 'Test Mutation',
+      kind: 'mutation',
+      modifiers: [specialMod('specialStrength', -3, [], '0xC1A55:0')],
+      notes: [],
+      penaltyModifierIds: ['0xC1A55:0'],
+    };
+    const variants = applyClassFreakPenaltyScaling(strengthPenalty);
+    expect(variants).toHaveLength(4);
+
+    const rank0 = derivePlayerStats(variants, baseSpecial({ strength: 10 }), { ...conditions, classFreakRank: 0 });
+    expect(rank0.special.strength).toBe(7); // 10 + (−3 × 1)
+
+    const rank2 = derivePlayerStats(variants, baseSpecial({ strength: 10 }), { ...conditions, classFreakRank: 2 });
+    expect(rank2.special.strength).toBe(8.5); // 10 + (−3 × 0.5)
+  });
+
+  it('teammateCount-gated SPECIAL modifiers pick by team state (Herd Mentality shape)', () => {
+    const herdMentality = [
+      specialMod('specialLuck', -2, [{ kind: 'teammateCount', count: 0 }], 'herd:solo'),
+      specialMod('specialLuck', 2, [{ kind: 'teammateCount', count: 1, orMore: true }], 'herd:team'),
+    ];
+
+    const solo = derivePlayerStats(herdMentality, baseSpecial({ luck: 5 }), { ...conditions, teammateCount: 0 });
+    expect(solo.special.luck).toBe(3); // 5 − 2
+
+    const inTeam = derivePlayerStats(herdMentality, baseSpecial({ luck: 5 }), { ...conditions, teammateCount: 2 });
+    expect(inTeam.special.luck).toBe(7); // 5 + 2
+  });
+
+  it('strangeInNumbers-gated SPECIAL modifiers pick by SIN state (Egg Head INT shape)', () => {
+    const eggHeadInt = [
+      specialMod('specialIntelligence', 6, [{ kind: 'strangeInNumbers', value: false }], 'sin:false'),
+      specialMod('specialIntelligence', 8, [{ kind: 'strangeInNumbers', value: true }], 'sin:true'),
+    ];
+
+    const withoutSin = derivePlayerStats(eggHeadInt, baseSpecial({ intelligence: 5 }), {
+      ...conditions,
+      strangeInNumbers: false,
+    });
+    expect(withoutSin.special.intelligence).toBe(11); // 5 + 6
+
+    const withSin = derivePlayerStats(eggHeadInt, baseSpecial({ intelligence: 5 }), {
+      ...conditions,
+      strangeInNumbers: true,
+    });
+    expect(withSin.special.intelligence).toBe(13); // 5 + 8
   });
 });

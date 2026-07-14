@@ -43,6 +43,15 @@ export const ENTRY_POINT_BUCKETS: Record<string, Bucket> = {
   // cases this entry point's function to append the `stacks:onslaught`
   // condition (the value alone would otherwise apply unconditionally).
   'Mod Damage on Consecutive Hits': 'dbm',
+  // Grounded's Charged Penalty (Mutation_ReduceEnergyDamage_Perk): Multiply
+  // Value 0.5/0.63/0.75/0.88 by Class Freak tier, scoped WeaponTypeEnergy OR
+  // WeaponTypeAlienBlaster. Folded as dbm MUL_ADD (float−1) — additive in the
+  // dbm parenthesis like every other fold; whether the engine multiplies the
+  // finished damage instead is unprovable from static data
+  // (docs/assumptions.md "Mutation penalties & Class Freak"). Ripple: also
+  // activates LegendaryCommonWeaponPerk and P62_..._RuinersPerk, both of
+  // which stay inert behind `unresolved` gates (verified 2026-07-14).
+  'Mod Weapon Attack Damage': 'dbm',
 };
 
 /**
@@ -60,8 +69,14 @@ export const ENTRY_POINT_EXTRA_CONDITIONS: Record<string, Condition[]> = {
   'Mod Player Explosion Damage': [{ kind: 'damageTypeScope', types: ['explosive'] }],
 };
 
-/** Fallback AVIF routes for stats consumed outside the plumbing perks (DFOBs etc.). */
-export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: number; conditions?: Condition[] }> = {
+/**
+ * Fallback AVIF routes for stats consumed outside the plumbing perks (DFOBs
+ * etc.). `archetypes`, when present, restricts the route to those MGEF
+ * archetypes — the Health route must catch Peak Value Modifiers (Adrenal
+ * Reaction's permanent max-HP cut) but never Value Modifiers (every cooked
+ * food's instant RestoreHealthFood heal sits on the same AV).
+ */
+export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: number; conditions?: Condition[]; archetypes?: string[] }> = {
   STAT_SneakAttackBonus: { bucket: 'sneakBonus', scale: 0.01 },
   STAT_DmgPowerAttack: { bucket: 'powerAttackBonus', scale: 0.01 },
   // Read directly by DamageVsNonWeakpoint_DO in the damage formula.
@@ -157,6 +172,12 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   // Fortitude etc.). Flat HP points, scale 1. Folded over the base-HP formula
   // in resolveLoadout (docs/assumptions.md "Max HP").
   HealthBonus: { bucket: 'maxHealth', scale: 1 },
+  // Max-HP PENALTIES sit on the raw Health AV (0x000002D4) instead —
+  // Mutation_ReduceMaxHealth (Adrenal Reaction, Peak Value Modifier +
+  // Detrimental). Peak-only: instant heals (RestoreHealthFood & co.) are
+  // Value Modifiers on the same AV and must stay unrouted (they're not
+  // longer-term buffs — user scope rule, 2026-07-14).
+  Health: { bucket: 'maxHealth', scale: 1, archetypes: ['Peak Value Modifier'] },
   Strength: { bucket: 'specialStrength', scale: 1 },
   Perception: { bucket: 'specialPerception', scale: 1 },
   Endurance: { bucket: 'specialEndurance', scale: 1 },
@@ -388,6 +409,15 @@ export interface MgefInfo {
    * scripts/extract/extract-buffs.ts's dispelKeys construction.
    */
   dispelWithKeywords: boolean;
+  /**
+   * `Magic Effect Data.Data.Flags.flags` includes "Detrimental": the effect's
+   * magnitude REDUCES its actor value (Mutation_ReduceStrength mag 3 = −3
+   * STR, abReduceCharismaAlcoholAddiction mag 1 = −1 CHA). translate()
+   * negates flat value-modifier magnitudes accordingly; Damage-archetype
+   * effects (DoTs, also flagged Detrimental) are unaffected — their magnitude
+   * is the damage amount, not a stat delta.
+   */
+  detrimental: boolean;
 }
 
 export async function getMgefInfo(client: EsmClient, formId: string): Promise<MgefInfo> {
@@ -407,6 +437,7 @@ export async function getMgefInfo(client: EsmClient, formId: string): Promise<Mg
     perkToApply: perkToApply === '0x00000000' ? null : perkToApply,
     keywords,
     dispelWithKeywords: flagNames.includes('Dispel with Keywords'),
+    detrimental: flagNames.includes('Detrimental'),
   };
 }
 
@@ -546,6 +577,18 @@ export function translate(
     return result;
   }
 
+  // Detrimental flag: the magnitude REDUCES the actor value (mutation/
+  // addiction "Reduce" effects). Flat magnitudes negate here; a Detrimental
+  // multi-point curve doesn't occur in this dump's value-modifier effects —
+  // surface it as a note rather than silently mis-signing the curve Y.
+  if (mgef.detrimental) {
+    if (curve) {
+      result.notes.push(`MGEF ${mgef.edid}: Detrimental + value curve — sign semantics unverified, needs override`);
+      return result;
+    }
+    effectiveMagnitude = -effectiveMagnitude;
+  }
+
   const avifEdid = edidByFormId.get(mgef.actorValue) ?? mgef.actorValue;
 
   const allConds = [...effectConds];
@@ -566,7 +609,10 @@ export function translate(
   };
 
   const avifRoutes = routes.get(mgef.actorValue);
-  const fallback = FALLBACK_AVIF_ROUTES[avifEdid];
+  const fallbackEntry = FALLBACK_AVIF_ROUTES[avifEdid];
+  // Archetype-restricted routes (Health → maxHealth is Peak-only) fall
+  // through to the unrouted paths below when the archetype doesn't match.
+  const fallback = fallbackEntry && (!fallbackEntry.archetypes || fallbackEntry.archetypes.includes(mgef.archetype)) ? fallbackEntry : undefined;
   if (avifRoutes) {
     for (const route of avifRoutes) {
       const { conditions: routeConds, unresolved: routeUnresolved } = translateConditions(route.rawConditions, { edidByFormId });

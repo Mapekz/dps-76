@@ -24,7 +24,7 @@ const testChemB: GeneratedBuff = {
   id: 'TestChemB', formId: '0xC2', name: 'Test Chem B', kind: 'consumable', modifiers: [], notes: [], category: 'chem',
 };
 const testAddiction: GeneratedAddiction = {
-  id: 'TestAddictionX', formId: '0xA1', name: 'Test Addiction X', causedBy: ['TestChemA'],
+  id: 'TestAddictionX', formId: '0xA1', name: 'Test Addiction X', causedBy: ['TestChemA'], modifiers: [], notes: [],
 };
 
 vi.mock('@/data/buffs', async importOriginal => {

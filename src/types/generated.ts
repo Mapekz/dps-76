@@ -247,6 +247,15 @@ export interface GeneratedBuff {
    * effects lack the keyword and are exempt). Absent when none qualify.
    */
   foodScalableModifierIds?: string[];
+  /**
+   * Mutation-only: ids of this buff's modifiers whose source MGEF carries the
+   * AbilityTypeMutation_NegativeEffect keyword (0x00391F0F) + Detrimental
+   * flag — the effect-level gate on Class Freak's "Mod Spell Magnitude"
+   * ×0.75/×0.5/×0.25 rank scaling. Only these modifiers are reduced by Class
+   * Freak (src/lib/class-freak-mutations.ts); the UI styles them as
+   * penalties. Absent when none qualify.
+   */
+  penaltyModifierIds?: string[];
 }
 
 /** One entry of the mode-wide addiction catalog (addictions.json). */
@@ -256,6 +265,16 @@ export interface GeneratedAddiction {
   name: string;
   /** consumables.json ids whose activation suppresses this addiction. */
   causedBy: string[];
+  /**
+   * Withdrawal penalty modifiers from the addiction SPEL's own effects
+   * (abReduce<SPECIAL><Family>Addiction — flat negative SPECIAL adds).
+   * Applied by resolveLoadout for every selected-and-unsuppressed addiction
+   * (src/data/buffs.ts getAddictionModifiers). The SPEL's abAddictionCount /
+   * CA_AddictionEffect bookkeeping effects are skipped at extraction.
+   */
+  modifiers: Modifier[];
+  /** Extraction caveats (unrouted AVs — e.g. Med-X/Psycho's DamageResist debuff). */
+  notes: string[];
 }
 
 export interface GeneratedBodyPart {

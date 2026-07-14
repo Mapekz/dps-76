@@ -5,8 +5,20 @@ import {
   classifyConsumableCategory,
   buildDispelKeys,
   resolveAddiction,
+  extractMutation,
+  extractAddictionEffects,
 } from '../extract-buffs';
-import type { SpellEffect } from '../normalize/mgef';
+import type { SpellEffect, AvifRoute } from '../normalize/mgef';
+import mutationEggHead from './fixtures/spel-mutation-egghead.json';
+import mgefTreatedEffect from './fixtures/mgef-mutation-treatedeffect.json';
+import mgefReduceStrength from './fixtures/mgef-mutation-reducestrength.json';
+import mgefReduceEndurance from './fixtures/mgef-mutation-reduceendurance.json';
+import mgefFortifyIntelligence from './fixtures/mgef-mutation-fortifyintelligence.json';
+import mgefAbMutationCount from './fixtures/mgef-abmutationcount.json';
+import addictionAlcohol from './fixtures/spel-abaddictionalcohol.json';
+import mgefReduceAgilityAlcohol from './fixtures/mgef-abreduceagilityalcoholaddiction.json';
+import mgefReduceCharismaAlcohol from './fixtures/mgef-abreducecharismaalcoholaddiction.json';
+import mgefAbAddictionCount from './fixtures/mgef-abaddictioncount.json';
 
 // Stubbed-client pattern from obtainability.test.ts: cast a plain object
 // implementing only the EsmClient methods each helper actually calls.
@@ -200,5 +212,117 @@ describe('resolveAddiction', () => {
     const bare = record({ fields: {} });
     const ref = await resolveAddiction(client, bare, new Set());
     expect(ref).toBeUndefined();
+  });
+});
+
+describe('extractMutation (penaltyModifierIds tagging, 2026-07-14)', () => {
+  // Real ESM fixtures (20260710 dump): Mutation_EggHead SPEL (0x003C4045) and
+  // its five distinct effect MGEFs. FortifyIntelligence appears TWICE in the
+  // Effects list (magnitude 6 gated by Mutation_Check_UseNormalVersion,
+  // magnitude 8 gated by Mutation_Check_UseSuperVersion — the strangeInNumbers
+  // tiers); Mutation_Treated_Effect is suppressed by IsSpellTarget(RadX)=1 and
+  // abMutationCount has no AVIF route, so both contribute zero modifiers.
+  // The remaining formid/edid pairs (condition params, actor values, the
+  // penalty-tag keywords) are resolved via client.resolveEdid — verified
+  // against the same dump rather than fixture files, since only their
+  // editor_id matters here (see buildDispelKeys' keywordRecords above for the
+  // same inline-stub precedent).
+  const edidOnly = (formId: string, signature: string, editorId: string): EsmRecord =>
+    record({ header: { signature, form_id: formId }, editor_id: editorId });
+
+  const mutationClient = stubClientFor({
+    Mutation_EggHead: mutationEggHead as unknown as EsmRecord,
+    '0x0028D3BD': mgefTreatedEffect as unknown as EsmRecord,
+    '0x003C4038': mgefReduceStrength as unknown as EsmRecord,
+    '0x003C4048': mgefReduceEndurance as unknown as EsmRecord,
+    '0x003C404A': mgefFortifyIntelligence as unknown as EsmRecord,
+    '0x006C2DBC': mgefAbMutationCount as unknown as EsmRecord,
+    // Condition-row Parameter 1 formids.
+    '0x00024057': edidOnly('0x00024057', 'ALCH', 'RadX'),
+    '0x0050A5CB': edidOnly('0x0050A5CB', 'ALCH', 'Serum_EggHead'),
+    '0x00467939': edidOnly('0x00467939', 'CNDF', 'Mutation_Check_UseNormalVersion'),
+    '0x0046793B': edidOnly('0x0046793B', 'CNDF', 'Mutation_Check_UseSuperVersion'),
+    // Actor Value formids the effects target.
+    '0x000002C2': edidOnly('0x000002C2', 'AVIF', 'Strength'),
+    '0x000002C4': edidOnly('0x000002C4', 'AVIF', 'Endurance'),
+    '0x000002C6': edidOnly('0x000002C6', 'AVIF', 'Intelligence'),
+    '0x006C2DBA': edidOnly('0x006C2DBA', 'AVIF', 'MutationCount'),
+    // Penalty-tag keyword formids, resolved in extractMutation's own loop.
+    '0x00391F0F': edidOnly('0x00391F0F', 'KYWD', 'AbilityTypeMutation_NegativeEffect'),
+    '0x003808CE': edidOnly('0x003808CE', 'KYWD', 'AbilityTypeMutation'),
+    '0x003808D3': edidOnly('0x003808D3', 'KYWD', 'AbilityTypeMutation_PositiveEffect'),
+  });
+
+  it('emits specialStrength/specialEndurance −3 and specialIntelligence +6/+8, tagging exactly the two negatives as penaltyModifierIds', async () => {
+    const notes: string[] = [];
+    const unmapped = new Set<string>();
+    const buff = await extractMutation(
+      mutationClient,
+      'Mutation_EggHead',
+      new Map<string, AvifRoute[]>(),
+      new Map<string, string>(),
+      notes,
+      unmapped
+    );
+
+    expect(buff).not.toBeNull();
+    const mods = buff!.modifiers;
+    // Order mirrors the SPEL's Effects list; Mutation_Treated_Effect and
+    // abMutationCount contribute zero modifiers each (see comment above).
+    expect(mods).toHaveLength(4);
+    expect(mods[0]).toMatchObject({ bucket: 'specialStrength', op: 'ADD', value: -3, conditions: [] });
+    expect(mods[1]).toMatchObject({ bucket: 'specialEndurance', op: 'ADD', value: -3, conditions: [] });
+    expect(mods[2]).toMatchObject({
+      bucket: 'specialIntelligence',
+      op: 'ADD',
+      value: 6,
+      conditions: [{ kind: 'strangeInNumbers', value: false }],
+    });
+    expect(mods[3]).toMatchObject({
+      bucket: 'specialIntelligence',
+      op: 'ADD',
+      value: 8,
+      conditions: [{ kind: 'strangeInNumbers', value: true }],
+    });
+
+    expect(buff!.penaltyModifierIds).toEqual([mods[0].id, mods[1].id]);
+  });
+});
+
+describe('extractAddictionEffects (2026-07-14)', () => {
+  // Real ESM fixtures: AbAddictionAlcohol SPEL (0x0003E061), whose Effects
+  // list is exactly [abReduceAgilityAlcoholAddiction, abReduceCharismaAlcoholAddiction,
+  // abAddictionCount] — the last MUST be skipped by edid (bookkeeping, no AV
+  // route note) per ADDICTION_BOOKKEEPING_MGEF_EDIDS.
+  const edidOnly = (formId: string, editorId: string): EsmRecord =>
+    record({ header: { signature: 'AVIF', form_id: formId }, editor_id: editorId });
+
+  const addictionClient = stubClientFor({
+    '0x0010224F': mgefReduceAgilityAlcohol as unknown as EsmRecord,
+    '0x00102251': mgefReduceCharismaAlcohol as unknown as EsmRecord,
+    '0x001EB997': mgefAbAddictionCount as unknown as EsmRecord,
+    '0x000002C7': edidOnly('0x000002C7', 'Agility'),
+    '0x000002C5': edidOnly('0x000002C5', 'Charisma'),
+  });
+
+  it('emits unconditional specialAgility/specialCharisma −1 addiction modifiers and skips abAddictionCount entirely', async () => {
+    const unmapped = new Set<string>();
+    const { modifiers, notes } = await extractAddictionEffects(
+      addictionClient,
+      addictionAlcohol as unknown as EsmRecord,
+      new Map<string, AvifRoute[]>(),
+      new Map<string, string>(),
+      unmapped
+    );
+
+    expect(modifiers).toHaveLength(2);
+    expect(modifiers[0]).toMatchObject({ bucket: 'specialAgility', op: 'ADD', value: -1, conditions: [] });
+    expect(modifiers[1]).toMatchObject({ bucket: 'specialCharisma', op: 'ADD', value: -1, conditions: [] });
+    expect(modifiers[0].source.kind).toBe('addiction');
+    expect(modifiers[1].source.kind).toBe('addiction');
+
+    // abAddictionCount is bookkeeping-only: no "no route for AV" note leaks
+    // through (it would if the skip-by-edid guard regressed).
+    expect(notes.some(n => n.includes('no route for AV'))).toBe(false);
   });
 });

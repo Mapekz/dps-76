@@ -58,6 +58,19 @@ export interface TranslationResult {
   unresolved: string[];
 }
 
+/**
+ * Class Freak's rank-record formids (ClassFreak01/02/03 — the Luck perk that
+ * reduces mutation penalties ×0.75/×0.5/×0.25 via its "Mod Spell Magnitude"
+ * keyword scaling). HasPerk rows on these appear inside mutations' granted
+ * penalty PERKs (Grounded's Mutation_ReduceEnergyDamage_Perk tiers) and
+ * translate to `classFreakRank` range conditions instead of `unresolved`.
+ */
+const CLASS_FREAK_RANK_BY_FORM_ID: Record<string, number> = {
+  '0x00391F0E': 1, // ClassFreak01
+  '0x00391F11': 2, // ClassFreak02
+  '0x00391F12': 3, // ClassFreak03
+};
+
 function isWeaponTypeKeyword(edid: string): boolean {
   // HasLegendary_* keywords are ADDed by the legendary OMOD itself, so a
   // HasKeyword self-gate on one auto-passes once the mod is equipped
@@ -104,8 +117,29 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
       // Viper's gates on the target lacking ImmuneToPoison — a generic target
       // is assumed vulnerable, so the row is consumed (docs/assumptions.md).
       if (cond['Run On'] === 'Target' && edid === 'ImmuneToPoison' && !wants) return null;
+      // Class Freak tier gates on mutation penalty perks (Grounded's Mod
+      // Weapon Attack Damage tiers): =1 → rank ≥ N, =0 → rank < N. The rows
+      // AND together into exact-tier ranges — no OR-group handling needed.
+      const cfRank = CLASS_FREAK_RANK_BY_FORM_ID[param];
+      if (cfRank !== undefined) {
+        return wants ? { kind: 'classFreakRank', min: cfRank, max: 3 } : { kind: 'classFreakRank', min: 0, max: cfRank - 1 };
+      }
       return { kind: 'unresolved', raw: `HasPerk(${edid})=${cond['Comparison Value']}` };
     }
+    case 'IsSpellTarget':
+      // RadX/serum suppression of mutation effects is deliberately NOT
+      // modeled — selecting the mutation IS the app's active/inactive toggle
+      // (docs/assumptions.md "Carnivore's / Herbivore's food scaling",
+      // reaffirmed under "Mutation penalties & Class Freak"). The =0 rows
+      // (effect active while unsuppressed) are consumed; the =1 rows gate the
+      // treated/serum variants we never model, killing those effects.
+      if (edid === 'RadX' || edid.startsWith('Serum_')) return wants ? 'inactive' : null;
+      return { kind: 'unresolved', raw: `IsSpellTarget(${edid})=${cond['Comparison Value']}` };
+    case 'IsMemberOfAPlayerTeam':
+      // Herd Mentality's solo penalty / team bonus gate. "In a team" is
+      // approximated as ≥1 teammate (consistent with Strange in Numbers'
+      // derivation — docs/assumptions.md "Mutation penalties & Class Freak").
+      return wants ? { kind: 'teammateCount', count: 1, orMore: true } : { kind: 'teammateCount', count: 0 };
     case 'HasKeyword':
     case 'WornHasKeyword': {
       if (cond['Run On'] === 'Target' || isEnemyKeyword(edid)) {

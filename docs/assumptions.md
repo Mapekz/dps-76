@@ -508,6 +508,22 @@ stored `PlayerConditions.addictionCount` field only feeds synthetic engine
 tests that bypass `resolveLoadout` (mirrors `hungerThirstTier`/
 `strangeInNumbers`).
 
+**Withdrawal penalties (2026-07-14)**: each addiction SPEL's own effects are
+flat `Detrimental` Peak Value Modifiers on SPECIAL AVs
+(`abReduce<SPECIAL><Family>Addiction`, e.g. Alcohol Addiction −1 AGI −1 CHA;
+uniform across all 12 catalog families, no Class Freak gating — verified in
+the 20260710 dump), extracted onto `GeneratedAddiction.modifiers` through the
+same MGEF pipeline mutations use. Two bookkeeping effects are skipped by edid
+(`abAddictionCount` — computed app-side by `deriveAddictionCount`;
+`CA_AddictionEffect` — a no-op Script marker). Med-X/Psycho additionally
+carry `abReduceDamageResistAddiction` (player DR taken) — out of scope, same
+dormant-survivability category as `damage-formulas.ts`, surfaced as a note.
+**Application is selection-time, not condition-time**: `assemble()`
+(`src/lib/loadout.ts`) spreads `getAddictionModifiers(mode,
+countedAddictions)` into the modifier list only for selected-and-unsuppressed
+families — the same suppression derivation Junkie's uses — so the modifiers
+themselves stay unconditional.
+
 ## Magazines & bobbleheads (2026-07-13 — `extract-buffs.ts`, `consumable-rules.ts`)
 
 Magazines and bobbleheads are ALCH records, same as chems/food/drink/alcohol,
@@ -629,6 +645,70 @@ with that key explicitly SKIPPED (with a warning) — there's no way to map a
 bare count back to specific addiction ids, so it's dropped rather than
 silently winning over the (now addiction-less) picker state.
 
+
+## Mutation penalties & Class Freak (2026-07-14 — `src/lib/class-freak-mutations.ts`)
+
+ESM-proven via two parallel mechanisms (both verified in the 20260710 dump):
+
+- **Mechanism A — generic keyword scaling** (the Carnivore's/Herbivore's
+  shape again): every mutation "Reduce" MGEF (`Mutation_ReduceStrength`,
+  `Mutation_ReduceMaxHealth`, the `*_Hidden` Herd Mentality set, ...) carries
+  keyword `AbilityTypeMutation_NegativeEffect` (0x00391F0F) + the
+  `Detrimental` flag. Class Freak's own rank PERKs (ClassFreak01/02/03 =
+  0x00391F0E/0x00391F11/0x00391F12) each carry one **"Mod Spell Magnitude"**
+  entry point (Multiply Value, Float 0.75/0.5/0.25) gated
+  `EPAlchemyEffectHasKeyword(0x00391F0F)=1`, each rank also gated
+  `HasPerk(next rank)=0` so exactly one factor applies. Extraction tags the
+  affected modifiers (`GeneratedBuff.penaltyModifierIds` — keyword AND flag
+  required; the keyword alone also sits on non-stat UI dummies);
+  `applyClassFreakPenaltyScaling` expands each into 4 `classFreakRank`-
+  conditioned variants ×1/×0.75/×0.5/×0.25 (`CLASS_FREAK_TIER_FACTORS`, the
+  ESM floats with rank 0 prepended). Tagged set in this dump: EggHead (−3
+  STR, −3 END), Eagle Eyes (−4 STR), Talons (−4 AGI), Marsupial (−4 INT),
+  Bird Bones (−4 STR), Herd Mentality (−2 all SPECIAL while solo), Adrenal
+  Reaction (−50 max HP).
+- **Mechanism B — per-tier granted perks**: Grounded's
+  `Mutation_ReduceEnergyDamage_Perk` bakes 4 discrete tiers ("Mod Weapon
+  Attack Damage", Multiply 0.5/0.63/0.75/0.88) gated by
+  `HasPerk(ClassFreak0N)` rows, scoped `WeaponTypeEnergy OR
+  WeaponTypeAlienBlaster`. These extract directly: the HasPerk rows translate
+  to `classFreakRank` range conditions (`=1` → rank ≥ N, `=0` → rank < N;
+  ANDed rows form exact tiers), no app-side expansion. **Fold-shape
+  assumption**: "Mod Weapon Attack Damage" routes to `dbm` as MUL_ADD
+  (float−1), i.e. additive inside the dbm parenthesis like every other fold —
+  whether the engine instead multiplies finished damage is unprovable from
+  static data. Out-of-scope Mechanism B penalties: Empath (damage TAKEN),
+  Twisted Muscles/Eagle Eyes accuracy, Speed Demon hunger/thirst drain,
+  Healing Factor chem-effectiveness (a second-order Mod-Spell-Magnitude on
+  other consumables), Bird Bones fall damage — all remain extraction notes.
+- **`classFreakRank` is derived, never stored**: `deriveClassFreakRank`
+  (`src/lib/player-stats.ts`) reads the equipped ClassFreak card's rank;
+  `assemble()` threads it (with the derived `strangeInNumbers`) into the
+  effective-weapon fold, the SPECIAL/max-HP folds, and the engine context.
+- **The MGEF `Detrimental` flag now negates flat value-modifier magnitudes**
+  globally (`normalize/mgef.ts`) — before 2026-07-14 every extracted
+  "Reduce" effect shipped POSITIVE (EggHead read +3 STR; alcohol +1 INT).
+  Damage-archetype DoTs (also flagged Detrimental) are exempt: their
+  magnitude is the damage amount. A Detrimental + multi-point-curve
+  combination doesn't occur in this dump and would surface as a note, not a
+  silent sign guess.
+- `IsSpellTarget(RadX | Serum_*)` condition rows are now CONSUMED (`=0` →
+  always true, `=1` → effect dropped): RadX/serum suppression stays
+  unmodeled per the existing stance that mutation selection IS the
+  active/inactive toggle. This is what un-inerts the SPECIAL penalties —
+  they previously carried these rows as `unresolved`.
+- `IsMemberOfAPlayerTeam` translates to `teammateCount` conditions ("in a
+  team" ≈ ≥1 teammate, consistent with the Strange in Numbers derivation).
+  Herd Mentality's suffixed check form
+  (`Mutation_Check_UseNormalVersion_HerdMentality` = generic normal check
+  AND in-team) expands through the existing `IsTrueForConditionForm`
+  inline-expansion path once that row translates.
+- **SPECIAL folds are condition-aware** (`derivePlayerStats` now folds
+  SPECIAL buckets through `foldBucket` with a context carrying the derived
+  gates): penalties, Herd Mentality's team-gated bonuses, and SiN-boosted
+  SPECIAL variants all reach net SPECIAL. Before 2026-07-14 ANY conditioned
+  SPECIAL modifier was silently dropped from net stats (EggHead's +6 INT
+  never applied).
 
 ## Target distance (Close / Far, Stage A3)
 

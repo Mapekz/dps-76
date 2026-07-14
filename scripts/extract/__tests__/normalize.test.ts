@@ -4,6 +4,7 @@ import {
   parseMagicEffects,
   repairMisattributedPerkEntryFields,
   getMgefInfo,
+  ENTRY_POINT_BUCKETS,
   type MgefInfo,
   type SpellEffect,
   type AvifRoute,
@@ -25,6 +26,7 @@ function mgef(overrides: Partial<MgefInfo> = {}): MgefInfo {
     perkToApply: null,
     keywords: [],
     dispelWithKeywords: false,
+    detrimental: false,
     ...overrides,
   };
 }
@@ -724,5 +726,162 @@ describe('translateConditions (2026-07-14 anim-type gate + CNDF expansion)', () 
     expect(noForm.conditions).toEqual([
       { kind: 'unresolved', raw: 'IsTrueForConditionForm(SmallGun_Actor_Condition)=1' },
     ]);
+  });
+});
+
+describe('getMgefInfo (Detrimental flag, 2026-07-14)', () => {
+  // Inline records (bareClient pattern from the "consumables overhaul" describe
+  // above) rather than a checked-in fixture — only the Flags shape matters here.
+  function flagRecord(flags: string[]): EsmRecord {
+    return {
+      header: { signature: 'MGEF', form_id: '0xFLAGS' },
+      editor_id: 'FlagsMgef',
+      fields: {
+        'Magic Effect Data': { Data: { Archetype: { name: 'Peak Value Modifier' }, Flags: { value: '0x0', flags } } },
+      },
+    } as unknown as EsmRecord;
+  }
+
+  it('is true for a Detrimental-flagged MGEF (Mutation_ReduceStrength-style)', async () => {
+    const client = { async get() { return flagRecord(['Recover', 'Detrimental', 'No Duration', 'No Area']); } } as unknown as EsmClient;
+    const info = await getMgefInfo(client, '0xFLAGS');
+    expect(info.detrimental).toBe(true);
+  });
+
+  it('is false when the flag is absent (FortifyStrengthChemEffect-style)', async () => {
+    const client = { async get() { return flagRecord(['Recover', 'Dispel with Keywords', 'No Area']); } } as unknown as EsmClient;
+    const info = await getMgefInfo(client, '0xFLAGS');
+    expect(info.detrimental).toBe(false);
+  });
+});
+
+describe('translate (Detrimental sign handling, 2026-07-14)', () => {
+  // AV routed via FALLBACK_AVIF_ROUTES['Strength'] (scale 1) so the sign of
+  // the pushed value is a direct read of translate()'s negation logic.
+  const strEdids = new Map<string, string>([['0xAV', 'Strength']]);
+
+  it('negates a flat Peak Value Modifier magnitude when detrimental (Mutation_ReduceStrength-style: mag 3 → −3)', () => {
+    const r = translate(mgef({ archetype: 'Peak Value Modifier', detrimental: true }), effect({ magnitude: 3 }), noRoutes, strEdids);
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0]).toEqual({ bucket: 'specialStrength', op: 'ADD', value: -3, conditions: [] });
+  });
+
+  it('does NOT negate when detrimental is false (guard against over-negation)', () => {
+    const r = translate(mgef({ archetype: 'Peak Value Modifier', detrimental: false }), effect({ magnitude: 3 }), noRoutes, strEdids);
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0]).toEqual({ bucket: 'specialStrength', op: 'ADD', value: 3, conditions: [] });
+  });
+
+  it('leaves a Damage-archetype DoT magnitude positive despite detrimental (DoT magnitude is damage, not a stat delta)', () => {
+    const r = translate(mgef({ archetype: 'Damage', detrimental: true }), effect({ magnitude: 10, duration: 5 }), noRoutes, edids);
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0]).toEqual({ bucket: 'dotDamage', op: 'ADD', value: 10, durationSec: 5, conditions: [] });
+  });
+
+  it('drops a Detrimental multi-point curve and notes the sign ambiguity instead of guessing', () => {
+    const curved = effect({ curvePoints: [{ x: 0.05, y: 130 }, { x: 1.0, y: 0 }], curveInputAv: '0x00000392' });
+    const r = translate(mgef({ archetype: 'Peak Value Modifier', detrimental: true }), curved, noRoutes, edids);
+    expect(r.modifiers).toHaveLength(0);
+    expect(r.notes.some(n => /Detrimental.*curve/.test(n))).toBe(true);
+  });
+});
+
+describe('translate (Health-route archetype scoping, 2026-07-14)', () => {
+  const healthEdids = new Map<string, string>([['0xAV', 'Health']]);
+
+  it("routes a Peak Value Modifier on AV Health to maxHealth (Adrenal Reaction's permanent max-HP cut)", () => {
+    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), effect({ magnitude: 25 }), noRoutes, healthEdids);
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0]).toEqual({ bucket: 'maxHealth', op: 'ADD', value: 25, conditions: [] });
+  });
+
+  it('does NOT route a Value Modifier on the same AV Health (instant heals like RestoreHealthFood must stay unrouted)', () => {
+    const r = translate(
+      mgef({ archetype: 'Value Modifier' }),
+      effect({ magnitude: 25 }),
+      noRoutes,
+      healthEdids,
+      { noteUnroutedAvs: true }
+    );
+    expect(r.modifiers).toHaveLength(0);
+    expect(r.notes.some(n => n.includes('no route for AV Health'))).toBe(true);
+  });
+});
+
+describe('translateConditions (Class Freak rank tiers, 2026-07-14)', () => {
+  // Real Grounded perk formids: ClassFreak01/02/03 = 0x00391F0E/11/12.
+  const rank = (formId: string, cmp: number): RawCondition => ({
+    Function: 'HasPerk',
+    'Parameter 1': formId,
+    'Comparison Value': cmp,
+    Operator: 'Equal To',
+  });
+
+  it('tier 0 (below ClassFreak01): [HasPerk(01)=0] → [{min:0,max:0}]', () => {
+    const { conditions } = translateConditions([rank('0x00391F0E', 0)], { edidByFormId: new Map() });
+    expect(conditions).toEqual([{ kind: 'classFreakRank', min: 0, max: 0 }]);
+  });
+
+  it('tier 1 (ClassFreak01 only): [HasPerk(02)=0, HasPerk(01)=1] → [{0,1},{1,3}]', () => {
+    const rows = [rank('0x00391F11', 0), rank('0x00391F0E', 1)];
+    const { conditions } = translateConditions(rows, { edidByFormId: new Map() });
+    expect(conditions).toEqual([
+      { kind: 'classFreakRank', min: 0, max: 1 },
+      { kind: 'classFreakRank', min: 1, max: 3 },
+    ]);
+  });
+
+  it('tier 2 (ClassFreak02): [HasPerk(02)=1, HasPerk(03)=0] → [{2,3},{0,2}]', () => {
+    const rows = [rank('0x00391F11', 1), rank('0x00391F12', 0)];
+    const { conditions } = translateConditions(rows, { edidByFormId: new Map() });
+    expect(conditions).toEqual([
+      { kind: 'classFreakRank', min: 2, max: 3 },
+      { kind: 'classFreakRank', min: 0, max: 2 },
+    ]);
+  });
+
+  it('tier 3 (ClassFreak03): [HasPerk(03)=1] → [{3,3}]', () => {
+    const { conditions } = translateConditions([rank('0x00391F12', 1)], { edidByFormId: new Map() });
+    expect(conditions).toEqual([{ kind: 'classFreakRank', min: 3, max: 3 }]);
+  });
+});
+
+describe('translateConditions (IsSpellTarget RadX/Serum suppression, 2026-07-14)', () => {
+  const suppressionEdids = new Map([['0x00024057', 'RadX'], ['0x0050A5CB', 'Serum_EggHead']]);
+
+  it('consumes both RadX=0 and Serum_EggHead=0 (effect active while unsuppressed)', () => {
+    const rows: RawCondition[] = [
+      { Function: 'IsSpellTarget', 'Parameter 1': '0x00024057', 'Comparison Value': 0, Operator: 'Equal To' },
+      { Function: 'IsSpellTarget', 'Parameter 1': '0x0050A5CB', 'Comparison Value': 0, Operator: 'Equal To' },
+    ];
+    const { conditions, unresolved } = translateConditions(rows, { edidByFormId: suppressionEdids });
+    expect(conditions).toEqual([]);
+    expect(unresolved).toEqual([]);
+  });
+
+  it('kills the effect for RadX=1 (the treated/suppressed variant we never model)', () => {
+    const row: RawCondition = { Function: 'IsSpellTarget', 'Parameter 1': '0x00024057', 'Comparison Value': 1, Operator: 'Equal To' };
+    const { conditions } = translateConditions([row], { edidByFormId: suppressionEdids });
+    expect(conditions).toBeNull();
+  });
+});
+
+describe('translateConditions (IsMemberOfAPlayerTeam, 2026-07-14)', () => {
+  it('=1 → teammateCount ≥1 (Herd Mentality team bonus)', () => {
+    const row: RawCondition = { Function: 'IsMemberOfAPlayerTeam', 'Comparison Value': 1, Operator: 'Equal To' };
+    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([{ kind: 'teammateCount', count: 1, orMore: true }]);
+  });
+
+  it('=0 → teammateCount 0 (Herd Mentality solo penalty)', () => {
+    const row: RawCondition = { Function: 'IsMemberOfAPlayerTeam', 'Comparison Value': 0, Operator: 'Equal To' };
+    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([{ kind: 'teammateCount', count: 0 }]);
+  });
+});
+
+describe('ENTRY_POINT_BUCKETS (Mod Weapon Attack Damage, 2026-07-14)', () => {
+  it("maps 'Mod Weapon Attack Damage' to the dbm bucket (Grounded's Charged Penalty)", () => {
+    expect(ENTRY_POINT_BUCKETS['Mod Weapon Attack Damage']).toBe('dbm');
   });
 });

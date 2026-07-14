@@ -1,7 +1,7 @@
 import type { EnemyConditions, Perk, PerkLoadout, PlayerConditions, Weapon } from '@/types';
 import { createDefaultEnemyConditions } from '@/types';
 import type { Bucket, Modifier } from '@/types/modifiers';
-import { foldBucket, foldOps, type ResolveContext } from '@/lib/engine/resolve';
+import { foldBucket, type ResolveContext } from '@/lib/engine/resolve';
 
 /**
  * Derived player stats: effective SPECIAL (base + buff-bucket folds) and max
@@ -52,20 +52,6 @@ const NO_WEAPON: Weapon = {
   isAutomatic: false,
   isPhysical: true,
 };
-
-/**
- * SPECIAL buff fold: flat unconditional ADDs only, matching the engine's
- * historical behavior — no cap; real stacking/exclusivity rules come with the
- * consumables overhaul (docs/assumptions.md).
- */
-export function foldSpecialStat(modifiers: Modifier[], bucket: Bucket, base: number): number {
-  return foldOps(
-    modifiers
-      .filter((m): m is Modifier & { value: number } => m.bucket === bucket && !m.curve && m.conditions.length === 0)
-      .map(m => ({ op: m.op, value: m.value })),
-    base
-  );
-}
 
 /**
  * SPECIAL allocation rules (user-confirmed 2026-07-12):
@@ -152,6 +138,17 @@ export function deriveStrangeInNumbers(perks: PerkLoadout[], conditions: PlayerC
   return perks.some(p => p.perkId === 'StrangeInNumbers') && (conditions.teammateCount ?? 0) >= 1;
 }
 
+/**
+ * Class Freak rank (0 = not equipped, 1–3): mutation penalties scale
+ * ×1/×0.75/×0.5/×0.25 (src/lib/class-freak-mutations.ts) and Grounded's
+ * energy-damage tiers gate on it. Derived from the perk loadout, not stored
+ * state — mirrors `deriveStrangeInNumbers`. Shared by resolveLoadout /
+ * resolveStats (feeds the engine + stat folds) and the Mutations header badge.
+ */
+export function deriveClassFreakRank(perks: PerkLoadout[]): number {
+  return perks.find(p => p.perkId === 'ClassFreak')?.rank ?? 0;
+}
+
 /** HungerThirstTier (0–8) = food meter tier + drink meter tier (0–4 each) — docs/assumptions.md. */
 export function deriveHungerThirstTier(conditions: PlayerConditions): number {
   return Math.max(0, Math.min(4, conditions.foodTier ?? 0)) + Math.max(0, Math.min(4, conditions.drinkTier ?? 0));
@@ -182,20 +179,30 @@ export function derivePlayerStats(
   weapon?: Weapon,
   itemLevel?: number
 ): DerivedPlayerStats {
-  const special = Object.fromEntries(
-    SPECIAL_KEYS.map(key => [key, foldSpecialStat(modifiers, SPECIAL_BUCKETS[key], baseSpecial[key])])
-  ) as Record<SpecialKey, number>;
+  const scenario = { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false };
+  const enemyCtx = enemy ?? createDefaultEnemyConditions();
 
-  // The maxHealth fold resolves real curves/conditions (Lifegiver's curve X
-  // is the buff-folded END), so it runs through foldBucket with a context.
-  const ctx: ResolveContext = {
+  // SPECIAL folds are condition-aware (mutation penalties carry classFreakRank
+  // tiers, Herd Mentality's bonuses/penalties carry team gates, mutation
+  // bonuses carry strangeInNumbers variants) — the caller passes DERIVED
+  // gates (strangeInNumbers, classFreakRank) in `player`, so this early
+  // context needs no SPECIAL values beyond the raw allocation it starts from.
+  const earlyCtx: ResolveContext = {
     weapon: weapon ?? NO_WEAPON,
-    player: { ...player, ...special },
-    enemy: enemy ?? createDefaultEnemyConditions(),
-    scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
+    player,
+    enemy: enemyCtx,
+    scenario,
     itemLevel: itemLevel ?? 50,
     onslaughtMaxStacks: 0,
   };
+  const special = Object.fromEntries(
+    SPECIAL_KEYS.map(key => [key, foldBucket(modifiers, SPECIAL_BUCKETS[key], baseSpecial[key], earlyCtx)])
+  ) as Record<SpecialKey, number>;
+
+  // The maxHealth fold resolves real curves/conditions (Lifegiver's curve X
+  // is the buff-folded END), so it runs through foldBucket with the folded
+  // SPECIAL in context.
+  const ctx: ResolveContext = { ...earlyCtx, player: { ...player, ...special } };
   const maxHealth = Math.round(
     foldBucket(modifiers, 'maxHealth', BASE_MAX_HP + MAX_HP_PER_ENDURANCE * special.endurance, ctx)
   );

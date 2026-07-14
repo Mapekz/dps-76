@@ -2,6 +2,7 @@ import type { GameMode } from '@/types';
 import type { GeneratedAddiction, GeneratedBuff } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 import { applyDietScaling } from '@/lib/diet-mutations';
+import { applyClassFreakPenaltyScaling } from '@/lib/class-freak-mutations';
 import { getDataset } from './dataset';
 import { forceVisibleConsumableIds, hiddenConsumableIds } from './overrides/corrections';
 
@@ -56,7 +57,9 @@ export function getBuffModifiers(mode: GameMode, mutationIds: string[], consumab
   const dataset = getDataset(mode);
   const modifiers: Modifier[] = [];
   for (const buff of dataset.mutations) {
-    if (mutationIds.includes(buff.id)) modifiers.push(...buff.modifiers);
+    // Penalty-tagged modifiers expand into 4 Class-Freak-rank variants
+    // (×1/×0.75/×0.5/×0.25) — src/lib/class-freak-mutations.ts.
+    if (mutationIds.includes(buff.id)) modifiers.push(...applyClassFreakPenaltyScaling(buff));
   }
   for (const buff of dataset.consumables) {
     // Carnivore's/Herbivore's transform selected foods' scalable modifiers
@@ -64,4 +67,19 @@ export function getBuffModifiers(mode: GameMode, mutationIds: string[], consumab
     if (consumableIds.includes(buff.id)) modifiers.push(...applyDietScaling(buff, mutationIds));
   }
   return modifiers;
+}
+
+/**
+ * Withdrawal penalty modifiers for the player's COUNTED addictions — the
+ * selected list minus families suppressed by an active consumable (the same
+ * derivation Junkie's addictionCount uses: `deriveAddictionCount` +
+ * `getSuppressedAddictions`). No conditions needed: suppression is decided
+ * here at assembly time, not at fold time.
+ */
+export function getAddictionModifiers(mode: GameMode, countedAddictionIds: readonly string[]): Modifier[] {
+  if (countedAddictionIds.length === 0) return [];
+  const counted = new Set(countedAddictionIds);
+  return getDataset(mode)
+    .addictions.filter(a => counted.has(a.id))
+    .flatMap(a => a.modifiers ?? []);
 }

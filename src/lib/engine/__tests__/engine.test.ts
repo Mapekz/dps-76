@@ -150,6 +150,41 @@ describe('condition evaluation', () => {
   });
 });
 
+describe('Grounded (2026-07-14): classFreakRank tier selection on a dbm MUL_ADD', () => {
+  const energyWeapon = makeWeapon({ keywords: ['WeaponTypeEnergy'] });
+  const ballisticWeapon = makeWeapon(); // no WeaponTypeEnergy keyword
+
+  // Shape mirrors the extractor's Grounded output: one exact-tier
+  // classFreakRank condition per rank, plus a weaponKeywordAny energy gate.
+  const groundedTiers = [-0.5, -0.37, -0.25, -0.12].map((value, rank) =>
+    mod({
+      bucket: 'dbm',
+      op: 'MUL_ADD',
+      value,
+      id: `grounded:${rank}`,
+      conditions: [
+        { kind: 'weaponKeywordAny', keywords: ['WeaponTypeEnergy'] },
+        { kind: 'classFreakRank', min: rank, max: rank },
+      ],
+    })
+  );
+
+  it.each([
+    [0, 0.5],
+    [1, 0.63],
+    [2, 0.75],
+    [3, 0.88],
+  ])('classFreakRank %i selects exactly its own tier (base 1.0 → %f)', (rank, expected) => {
+    const ctx = makeCtx(energyWeapon, { player: { ...createDefaultPlayerConditions(), classFreakRank: rank } });
+    expect(foldBucket(groundedTiers, 'dbm', 1.0, ctx)).toBeCloseTo(expected, 10);
+  });
+
+  it('the weaponKeywordAny energy gate keeps Grounded off a ballistic weapon', () => {
+    const ctx = makeCtx(ballisticWeapon, { player: { ...createDefaultPlayerConditions(), classFreakRank: 0 } });
+    expect(foldBucket(groundedTiers, 'dbm', 1.0, ctx)).toBe(1.0);
+  });
+});
+
 describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp', () => {
   const weapon = makeWeapon();
 

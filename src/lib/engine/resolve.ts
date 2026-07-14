@@ -170,8 +170,10 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       const n = ctx.enemy.groupTargetCount ?? 1;
       return (cond.orMore ? n >= cond.count : n === cond.count) ? 1 : null;
     }
-    case 'teammateCount':
-      return (ctx.player.teammateCount ?? 0) === cond.count ? 1 : null;
+    case 'teammateCount': {
+      const n = ctx.player.teammateCount ?? 0;
+      return (cond.orMore ? n >= cond.count : n === cond.count) ? 1 : null;
+    }
     case 'killStreakCount':
       return ctx.player.adrenalineStacks === cond.count ? 1 : null;
     case 'scaledByMissingHealth': {
@@ -189,6 +191,11 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
     }
     case 'strangeInNumbers':
       return ctx.player.strangeInNumbers === cond.value ? 1 : null;
+    case 'classFreakRank': {
+      // Rank 0–3 derived from the perk loadout (deriveClassFreakRank).
+      const rank = ctx.player.classFreakRank ?? 0;
+      return rank >= cond.min && rank <= cond.max ? 1 : null;
+    }
     case 'perAddiction': {
       const count = Math.max(0, Math.min(ctx.player.addictionCount ?? 0, cond.max));
       return count > 0 ? count : null;
