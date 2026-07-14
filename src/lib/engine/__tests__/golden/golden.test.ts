@@ -28,6 +28,7 @@ interface GoldenCase {
   legendaryPerks: Array<{ perkId: string; rank: number }>;
   mutations: string[];
   consumables: string[];
+  addictions?: string[];
   conditions: Partial<PlayerConditions>;
   enemyConditions: Partial<EnemyConditions>;
   scenario: 'freeAim' | 'vats';
@@ -53,6 +54,7 @@ describe('golden cases (in-game measurements)', () => {
         legendaryPerks: c.legendaryPerks,
         mutations: c.mutations,
         consumables: c.consumables,
+        addictions: c.addictions ?? [],
         itemLevel: c.itemLevel,
         conditions: { ...createDefaultPlayerConditions(), ...c.conditions },
       };
