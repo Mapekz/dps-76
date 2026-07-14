@@ -26,6 +26,15 @@ Power tools (automatic melee) already work — `WeaponHasSecondaryCharging`/
 auto-melee keywords merge via `effective-weapon.ts`, fire rate = speed / 0.11
 like automatic guns. Only non-auto melee is stubbed.
 
+## Related verification: Mole Miner Gauntlet Extra Claw (added 2026-07-14)
+
+Tester reports the Extra Claw mod shows a damage DECREASE. Plausibly correct:
+it trades base physical damage for a small DBM gain plus a DoT — and if the
+DoT refreshes on every hit (never ticking to completion at real swing speeds),
+sustained DPS drops. Confirm the DoT-refresh interaction once real melee
+cadence exists; until then note it as expected-but-unverified in
+`docs/assumptions.md` if users ask.
+
 ## Where to update
 
 - `src/data/live/weapons.ts` — populate real `animDelaySec` for melee weapons.

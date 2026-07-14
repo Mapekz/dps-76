@@ -29,6 +29,38 @@ box, not just deferred), and the doc's remaining scope is VATS AP regen/sec
 sources instead (Conductor's active on-crit regen already ships; Lone
 Wanderer's passive solo regen and any armor-sourced passive regen do not).
 
+## Weapon-mod selection sweep (added 2026-07-14, unprioritized)
+
+Six barebones spikes carved from the 2026-07-14 tester bug sweep (~50 mod
+picker issues), grouped by root cause. The user picks execution order; #1 and
+#2 share a COBJ index and should run together or #1 first. Every reported
+issue lives in exactly one file's checklist.
+
+- **[omod-eligibility.md](omod-eligibility.md)** — COBJ-anchored mod↔weapon
+  matching; kills the empty-`targetKeywords` pollution (Vox Syringe barrel
+  everywhere, internal suppressor on chainsaws, paddle-ball fire mods, bogus
+  AGL/M79/.50-cal slots). The foundational fix.
+- **[omod-obtainability-chains.md](omod-obtainability-chains.md)** — chase
+  recipe-BOOK teaching, scrap-to-learn, and vendor (bullion/caps) chains;
+  fixes missing barrels/muzzles/cores/sights (plasma, laser, gatling plasma,
+  gauss minigun, gamma gun) and drops cut content (gauss pistol energy barrel).
+- **[omod-slot-naming.md](omod-slot-naming.md)** — slot label overrides +
+  per-weapon layer ("MeleeMod", "ChemicalType", auto-axe "Scope" → Blade,
+  chainsaw/drill "Barrel" → Bar/Drill Bit).
+- **[omod-slot-hygiene.md](omod-slot-hygiene.md)** — dedupe duplicate
+  Standard entries, hide Standard-only slots, hide non-craftable/no-op slots
+  (universal range offsets, Weapon Model Replacement).
+- **[omod-nondps-stats.md](omod-nondps-stats.md)** — keep AP-cost/armor-pen/
+  utility mods selectable (Aligned, Glow Sights, Perforating mags, Prime);
+  policy: show all valid+obtainable mods, badge inert ones.
+- **[unique-cursed-mods.md](unique-cursed-mods.md)** — unique-slot
+  completion: missing uniques (Cold Shoulder, Holy Fire, Flatliner, …),
+  cursed mods under "Item Description", bogus entries ("The Pipe", Minty
+  Breather), Kabloom naming.
+
+One-off deferral: mole-miner-gauntlet Extra Claw damage decrease → noted in
+[melee-cadence.md](melee-cadence.md) (likely correct; DoT-refresh math).
+
 ## Remaining implementable work, in priority order
 
 1. **wholeDamage legendary perks** — [wholedamage-perks.md](wholedamage-perks.md).
