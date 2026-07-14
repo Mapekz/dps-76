@@ -51,6 +51,15 @@ remains:
   completion: missing uniques (Cold Shoulder, Holy Fire, Flatliner, …),
   cursed mods under "Item Description", bogus entries ("The Pipe", Minty
   Breather), Kabloom naming.
+- **[weapon-attach-point-closure.md](weapon-attach-point-closure.md)** —
+  NEW 2026-07-14 (found post-sweep, user-flagged via the Hunting Rifle's
+  missing scope slot): the extractor ignores mod-granted attach points
+  (OMOD `Data."Attach Parent Slots"`), so **96 of 282 weapons** are missing
+  real slots — The Fixer shows only Receiver+Unique; pipe guns, plasma,
+  radium, railway, SMG, lever guns likewise. Root cause of the old hygiene
+  checklist's mis-routed ".44/10mm/SMG/AR only have a receiver slot" tester
+  report. Extraction fixpoint + re-extract; the highest-impact open item in
+  this group.
 
 One-off deferral: mole-miner-gauntlet Extra Claw damage decrease → noted in
 [melee-cadence.md](melee-cadence.md) (likely correct; DoT-refresh math).
