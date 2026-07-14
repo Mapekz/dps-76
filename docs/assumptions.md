@@ -8,10 +8,17 @@ measurement (`src/lib/engine/__tests__/golden/`).
 
 ```
 PaperDamage = Σ_components base(c) × ( dbmFold(c) + Tenderizer + (CritMult−1)[crit]
-              + (SneakMult−1)[sneak] + PowerAttackBonus + STR term[melee] )
-              × Π wholeDamage × BodyPartMult × (1 + weakpointBonus)[BodyPartMult>1]
+              + (SneakMult−1)[sneak, non-explosive] + PowerAttackBonus + STR term[melee] )
+              × Π wholeDamage × BodyPartMult[non-explosive] × (1 + weakpointBonus)[BodyPartMult>1, non-explosive]
               × PowerAttackRaceMult[melee power attack]
 ```
+
+Explosive components (launcher `fromExplosion` payloads and Explosive-legendary
+twins) are carved out of the sneak term and both body-part factors (2026-07-14,
+user spec): an explosive payload lands its flat damage on whatever part it
+strikes rather than a targeted shot, and isn't a stealth attack. It still
+scales with dbm, crit, power-attack, and whole-damage multipliers. See
+"Launcher explosion damage" below.
 
 - **Bucket fold** (`resolve.ts`), user-confirmed:
   `result = (last SET ?? base) + (Σ MUL_ADD) × base + Σ ADD`.
@@ -50,6 +57,15 @@ PaperDamage = Σ_components base(c) × ( dbmFold(c) + Tenderizer + (CritMult−1
 - **STR melee scaling**: STR/20 for 1h/2h melee, STR/10 for unarmed (user spec).
 - **Body-part multiplier** is a user input (default ×2.0). Per-enemy BPTD
   extraction is deferred (paper-damage v1).
+- **Explosive damage is exempt from sneak and body-part multipliers**
+  (2026-07-14, user spec): explosive components (`isExplosion`/`fromExplosion`
+  payloads and Explosive-legendary twins) skip `(SneakMult−1)` and both
+  `BodyPartMult` and `weakpointBonus` — it deals its flat payload to whichever
+  part it strikes and is never a sneak attack. Crit, power-attack, and
+  whole-damage multipliers still apply. `src/lib/engine/paper-damage.ts`'s
+  `explosiveOuterMult` implements the body-part carve-out; the breakdown UI
+  (`MultiplierChainTable.tsx`) hides/qualifies the shared sneak/body-part rows
+  on a weapon that has any explosive component so the panel keeps reconciling.
 
 ## Base damage & components
 
@@ -117,6 +133,12 @@ real payload rides the projectile's explosion. ESM-proven chain: WEAP
   the explosion); the toy/NPC records the chase also rescued
   (ToyFireworkLauncher_*, artillery, orbital strike) stay hidden via
   obtainability or `hiddenWeaponIds`.
+- **Sneak and body-part multipliers do not apply** (2026-07-14, user spec):
+  `fromExplosion` components skip the sneak term and both `BodyPartMult` and
+  `weakpointBonus` in `computePaperDamage` — an AoE payload lands on whatever
+  part it strikes rather than a targeted/stealth shot. Crit, power-attack, and
+  whole-damage multipliers are unaffected. Same carve-out applies to the
+  `explosivePayload` twin (Explosive 2★) below.
 
 ## Weapon-intrinsic DoT & OMOD replacement (2026-07-14 — `chaseWeaponEnchantment`/`translateEnchantment`, `computeDotDps`)
 
@@ -597,7 +619,7 @@ inert with a picker badge (`corrections.ts omodBadgeOverrides`).
 | Executioner's | +50% dbm while enemy HP ≤ 40% (`enemyHealthBelowPct`; enemy HP defaults to 100 → inactive until set) | ESM granted-perk chase: LegendaryExecutePerk +0.5, threshold GLOB LGND_ExecuteHealthThreshold = 0.4 |
 | DmgVs* family (Hunter's, Exterminator's, Ghoul Slayer's, Assassin's, Troubleshooter's, Zealot's, Mutant Slayer's) | +50% dbm vs matching enemy types via `enemyTypeAny` conditions — INERT until enemy typing lands, badged 'needsEnemyDefenses'. Values ride flat itemLevel curves (1→50, 100→50) on `ActorValues` OMOD properties routed through the STAT_DamageVsPerk plumbing | ESM (extracted 2026-07-10) |
 | Bully's (and Tormentor perk) | dbm per crippled enemy limb (Bully's +25%, Tormentor +20%), `perCrippledLimb` cap **6** (limb count from `EnemyConditions.crippledLimbCount`, default 0 → inactive) | ESM STAT_DmgPerCrippled; the 6-limb cap is ours (max humanoid/creature limbs) |
-| Explosive (2★) | `explosivePayload` (0.2 = 20% of damage as explosive) spawns an explosive twin PER damage component, folded through the full paper formula (dbm/crit/sneak/power-attack/whole-damage). Explosive-scoped dbm modifiers (`damageTypeScope: ['explosive']` — Demolition Expert, SCAV! magazine) add into the twin's dbm parenthesis (June 2026 additive semantics; the old `explosionMult` bucket is gone). Twins sum into today's totals; each stays a separate component so it can face its own resist once enemy mitigation lands (Stage A1, `paper-damage.ts`) | ESM LGND_ExplosivePayload OMOD property; Demolition Expert extracts since 2026-07-13 (STAT_DmgExplosive route) |
+| Explosive (2★) | `explosivePayload` (0.2 = 20% of damage as explosive) spawns an explosive twin PER damage component, folded through dbm/crit/power-attack/whole-damage — but NOT sneak or the body-part multipliers (2026-07-14, user spec: an explosive payload lands on whatever part it strikes and isn't a stealth attack). Explosive-scoped dbm modifiers (`damageTypeScope: ['explosive']` — Demolition Expert, SCAV! magazine) add into the twin's dbm parenthesis (June 2026 additive semantics; the old `explosionMult` bucket is gone). Twins sum into today's totals; each stays a separate component so it can face its own resist once enemy mitigation lands (Stage A1, `paper-damage.ts`) | ESM LGND_ExplosivePayload OMOD property; Demolition Expert extracts since 2026-07-13 (STAT_DmgExplosive route) |
 | Crippling / Basher's | values extracted to `limbDamage` / `bashDamage` buckets — INERT until limb targeting / bash attacks are modeled | ESM STAT_DmgLimbs / STAT_DmgBash |
 | Pyromaniac's / Viper's / Severing's | +50% dbm while the target has ≥1 active fire / poison / bleed effect (`enemyHasActiveEffect`; Target section status toggles, default off). Viper's `HasPerk(ImmuneToPoison)=0` target row is CONSUMED — a generic target is assumed vulnerable to poison. Severing's (4★, `SDOW_mod_Legendary_Weapon4_Severing`) was silently dropped pre-2026-07-12 by the `sdow_` junk-prefix filter (same class of bug as `p62_`); its `HasKeyword(SDOW_HasLegendary_Weapon_Severing)` self-gate resolves like the other HasLegendary_* self-gates. A "Frozen" toggle maps `DamageTypeCryo` → `isFrozen` but NO extracted effect consumes it yet (Icebreaker is "Cryo Slow On Bash" — it applies a slow, it doesn't benefit from one) — forward-looking UI only | ESM granted-perk chase (fire/poison 2026-07-11, bleed 2026-07-12) |
 | Last Shot | +100% dbm while firing the magazine's last round (`lastRound` from `GetLoadedAmmoCount()=0` + `IsNextClipLastShot`; UI checkbox, default off). Steady-state DPS does NOT model the once-per-magazine cadence — the toggle shows the boosted hit | ESM granted-perk chase (conditions wired 2026-07-11) |

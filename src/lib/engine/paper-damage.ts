@@ -7,14 +7,20 @@ import { lastTrace, type BucketTrace, type HitTrace } from './trace';
 /**
  * The paper-damage formula (user spec, docs/assumptions.md):
  *
- *   PaperDamage = Σ_c base(c) × ( dbmFold(c) + (CritMult−1)[crit] + (SneakMult−1)[sneak]
+ *   PaperDamage = Σ_c base(c) × ( dbmFold(c) + (CritMult−1)[crit] + (SneakMult−1)[sneak, non-explosive]
  *                                 + PowerAttackBonus[powerAttack] + STR term[melee] )
- *                 × Π wholeDamage × BodyPartMult × (1 + weakpointBonus)[BodyPartMult>1]
+ *                 × Π wholeDamage × BodyPartMult[non-explosive] × (1 + weakpointBonus)[BodyPartMult>1, non-explosive]
  *                 × PowerAttackRaceMult[powerAttack]
  *
  * dbmFold starts from the weapon's intrinsic Damage Bonus Multiplier (1.0),
  * so the spec's "1 + DBM" falls out of the bucket fold. Tenderizer and other
  * stack/conditional bonuses are ordinary dbm modifiers with conditions.
+ *
+ * Explosive damage (launcher EXPL payloads and Explosive-legendary twins) is
+ * carved out of the sneak term and the body-part multipliers: it lands its
+ * flat payload on whatever part it strikes rather than a targeted shot, and
+ * it is not a stealth attack (user spec, FO76-accurate). It still scales with
+ * crit, power-attack, and whole-damage multipliers.
  */
 
 /**
@@ -155,6 +161,12 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
   }
   const paRaceMult = ctx.scenario.isPowerAttack ? powerAttackRaceMult(weapon, ctx.player.isInPowerArmor) : 1.0;
   const outerMult = wholeMult * bodyPartMult * weakpointMult * paRaceMult;
+  // Explosive damage (launcher payloads AND Explosive-legendary twins) lands
+  // its flat payload on whatever part it strikes: it is unaffected by
+  // body-part multipliers (weakpoint AND strongpoint) and gains no sneak
+  // bonus, while still scaling with whole-damage, crit, and power-attack
+  // (user spec: FO76 explosive AoE ignores sneak + body-part mults).
+  const explosiveOuterMult = wholeMult * paRaceMult;
 
   const components: ComponentHit[] = componentBase(mode, weapon, itemLevel).flatMap(({ type, base, isExplosion }) => {
     const componentCtx = { ...ctx, componentType: type, componentIsExplosion: isExplosion };
@@ -170,28 +182,37 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
     // which is the "1 +" of the spec formula.
     const dbmFold = foldBucket(modifiers, 'dbm', weapon.damageBonusMult ?? 1.0, componentCtx, collect);
     if (trace && collect) {
-      trace.components.push({ damageType: type, baseDamage: collect[0], dbm: collect[1] });
+      trace.components.push({ damageType: type, baseDamage: collect[0], dbm: collect[1], isExplosion });
     }
-    const parenthesis = dbmFold + strTerm + critTerm + sneakTerm + powerAttackTerm;
-    // Explosion components (launcher EXPL payloads) need no extra factor:
+    // Explosion components (launcher EXPL payloads) need no extra dbm factor:
     // explosion bonuses (Demolition Expert) are explosive-scoped dbm ADDs in
-    // the parenthesis above — additive with Bloodied/Adrenal etc., per the
-    // June 2026 patch (docs/assumptions.md "Launcher explosion damage").
-    const hit: ComponentHit = { damageType: type, base: scaledBase, damage: scaledBase * parenthesis * outerMult };
+    // the parenthesis below — additive with Bloodied/Adrenal etc., per the
+    // June 2026 patch (docs/assumptions.md "Launcher explosion damage"). They
+    // DO, however, drop sneakTerm and use explosiveOuterMult (no bodyPartMult/
+    // weakpointMult): explosive damage lands on whatever part it strikes and
+    // is not a stealth attack (user spec).
+    const parenthesis = dbmFold + strTerm + critTerm + (isExplosion ? 0 : sneakTerm) + powerAttackTerm;
+    const hit: ComponentHit = {
+      damageType: type,
+      base: scaledBase,
+      damage: scaledBase * parenthesis * (isExplosion ? explosiveOuterMult : outerMult),
+    };
     // An explosion never spawns an explosive twin of itself.
     if (isExplosion) return [hit];
 
     // Explosive payload (Explosive 2★, plan Stage A1; intrinsic base from the
     // Gauss family's EXPL "Base Weapon Damage Mult" 0.15): a condition-scaled
     // fraction of THIS component's (baseDamage-scaled) damage spawns an
-    // explosive twin. The twin runs through the SAME parenthesis (strTerm/
-    // critTerm/sneakTerm/powerAttackTerm are weapon-level, not re-evaluated)
-    // but its OWN dbm fold. The twin INHERITS the parent component's damage
-    // type (Tesla Gauss 15% tick = phys + energy at the parent's split;
-    // user-confirmed 2026-07-13) rather than a hardcoded 'explosive' — it
-    // keeps componentIsExplosion true so explosive-scoped dbm (Demolition
-    // Expert) still matches via resolve.ts's dual-match damageTypeScope
-    // check, while damage-type-scoped bonuses (Science!) also reach it.
+    // explosive twin. The twin runs through the SAME critTerm/powerAttackTerm
+    // (weapon-level, not re-evaluated) but drops sneakTerm and uses
+    // explosiveOuterMult (no bodyPartMult/weakpointMult) — it is explosive
+    // damage, same carve-out as launcher payloads above — and has its OWN dbm
+    // fold. The twin INHERITS the parent component's damage type (Tesla Gauss
+    // 15% tick = phys + energy at the parent's split; user-confirmed
+    // 2026-07-13) rather than a hardcoded 'explosive' — it keeps
+    // componentIsExplosion true so explosive-scoped dbm (Demolition Expert)
+    // still matches via resolve.ts's dual-match damageTypeScope check, while
+    // damage-type-scoped bonuses (Science!) also reach it.
     // Twins are summed into the totals today; per-component resist
     // attribution is future work (docs/assumptions.md).
     const payloadCollect = trace ? ([] as BucketTrace[]) : undefined;
@@ -207,15 +228,15 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
     const explosiveCtx = { ...ctx, componentType: type, componentIsExplosion: true };
     const twinDbmCollect = trace ? ([] as BucketTrace[]) : undefined;
     const twinDbmFold = foldBucket(modifiers, 'dbm', weapon.damageBonusMult ?? 1.0, explosiveCtx, twinDbmCollect);
-    const twinParenthesis = twinDbmFold + strTerm + critTerm + sneakTerm + powerAttackTerm;
+    const twinParenthesis = twinDbmFold + strTerm + critTerm + powerAttackTerm; // no sneakTerm — explosive
     const twinBase = scaledBase * payloadFraction;
     const twin: ComponentHit = {
       damageType: type,
       base: twinBase,
-      damage: twinBase * twinParenthesis * outerMult,
+      damage: twinBase * twinParenthesis * explosiveOuterMult,
     };
     if (trace && payloadCollect && twinDbmCollect) {
-      trace.components.push({ damageType: type, baseDamage: payloadCollect[0], dbm: twinDbmCollect[0] });
+      trace.components.push({ damageType: type, baseDamage: payloadCollect[0], dbm: twinDbmCollect[0], isExplosion: true });
     }
     return [hit, twin];
   });

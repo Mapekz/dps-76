@@ -613,6 +613,107 @@ describe('launcher explosion components (fromExplosion, EXPL chase)', () => {
   });
 });
 
+describe('explosive damage ignores sneak & body-part multipliers', () => {
+  // Ballistic impact (5) + explosive payload (100, fromExplosion) — same
+  // shape as the launcher fixture above, so the ballistic component acts as
+  // a control that SHOULD still receive sneak/body-part while the explosive
+  // component should not.
+  const launcher = makeWeapon({
+    components: [
+      { damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: [{ x: 1, y: 5 }] },
+      { damageType: 'explosive', tier: -1, levelCap: 50, curvePoints: FLAT_100, fromExplosion: true },
+    ],
+  });
+
+  it('a fromExplosion component ignores sneak while a non-explosive component on the same weapon still gets it', () => {
+    const noSneak = computePaperDamage({
+      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: [], ctx: makeCtx(launcher), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    const sneaking = computePaperDamage({
+      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: [],
+      ctx: makeCtx(launcher, { scenario: { isVats: false, isSneaking: true, isPowerAttack: false, isCrit: false } }),
+      bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    // Ballistic impact: sneakAttackMult 2.0 default → sneakTerm 1.0 → 5 × (1 + 1) = 10.
+    expect(sneaking.components[0].damage).toBeCloseTo(10, 6);
+    // Explosive payload: unaffected — stays at its no-sneak value.
+    expect(sneaking.components[1].damage).toBeCloseTo(noSneak.components[1].damage, 6);
+    expect(sneaking.components[1].damage).toBeCloseTo(100, 6);
+  });
+
+  it('a fromExplosion component ignores the weakpoint multiplier AND weakpointBonus perks', () => {
+    const torso = computePaperDamage({
+      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: [], ctx: makeCtx(launcher), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    const mods = [mod({ bucket: 'weakpointBonus', op: 'ADD', value: 0.5 })];
+    const weakpoint = computePaperDamage({
+      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: mods, ctx: makeCtx(launcher), bodyPartMult: 2.0, bodyPart: 'weakpoint',
+    });
+    // Ballistic impact: bodyPartMult 2.0 × weakpointMult (1 + 0.5) = 3.0 → 5 × 3 = 15.
+    expect(weakpoint.components[0].damage).toBeCloseTo(15, 6);
+    // Explosive payload: unaffected by both bodyPartMult and weakpointBonus.
+    expect(weakpoint.components[1].damage).toBeCloseTo(torso.components[1].damage, 6);
+    expect(weakpoint.components[1].damage).toBeCloseTo(100, 6);
+  });
+
+  it('a fromExplosion component ignores a strongpoint (armored-limb) multiplier < 1.0', () => {
+    const torso = computePaperDamage({
+      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: [], ctx: makeCtx(launcher), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    const strongpoint = computePaperDamage({
+      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: [], ctx: makeCtx(launcher), bodyPartMult: 0.15, bodyPart: 'limb',
+    });
+    // Ballistic impact: 5 × 0.15 = 0.75.
+    expect(strongpoint.components[0].damage).toBeCloseTo(0.75, 6);
+    // Explosive payload: unaffected — flat payload lands regardless of part.
+    expect(strongpoint.components[1].damage).toBeCloseTo(torso.components[1].damage, 6);
+    expect(strongpoint.components[1].damage).toBeCloseTo(100, 6);
+  });
+
+  it('an Explosive-legendary twin ignores sneak AND body-part multipliers, unlike its parent component', () => {
+    const weapon = makeWeapon(); // 1 ballistic component, base 100
+    const mods = [mod({ bucket: 'explosivePayload', op: 'ADD', value: 0.2 })];
+    const baseline = computePaperDamage({
+      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    const sneakingWeakpoint = computePaperDamage({
+      mode: 'live', weapon, itemLevel: 50, modifiers: mods,
+      ctx: makeCtx(weapon, { scenario: { isVats: false, isSneaking: true, isPowerAttack: false, isCrit: false } }),
+      bodyPartMult: 2.0, bodyPart: 'weakpoint',
+    });
+    // Parent ballistic: sneakTerm 1.0 × bodyPartMult 2.0 → 100 × 2 × 2 = 400 (baseline 100).
+    expect(sneakingWeakpoint.components[0].damage).toBeCloseTo(400, 6);
+    expect(baseline.components[0].damage).toBeCloseTo(100, 6);
+    // Twin: flat 100 × 0.2 = 20, unaffected by either sneak or body-part.
+    expect(baseline.components[1].damage).toBeCloseTo(20, 6);
+    expect(sneakingWeakpoint.components[1].damage).toBeCloseTo(baseline.components[1].damage, 6);
+  });
+
+  it('crit still scales explosive damage (fromExplosion component AND explosive twin — only sneak/body-part are exempt)', () => {
+    const critCtx = makeCtx(launcher, { scenario: { isVats: true, isSneaking: false, isPowerAttack: false, isCrit: true } });
+    const noCrit = computePaperDamage({
+      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: [], ctx: makeCtx(launcher), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    const crit = computePaperDamage({
+      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: [], ctx: critCtx, bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    // critDamageMult default 2.0 → critTerm 1.0 → doubles the explosion component too.
+    expect(crit.components[1].damage).toBeCloseTo(noCrit.components[1].damage * 2, 6);
+
+    const twinWeapon = makeWeapon();
+    const twinMods = [mod({ bucket: 'explosivePayload', op: 'ADD', value: 0.2 })];
+    const twinNoCrit = computePaperDamage({
+      mode: 'live', weapon: twinWeapon, itemLevel: 50, modifiers: twinMods, ctx: makeCtx(twinWeapon), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    const twinCrit = computePaperDamage({
+      mode: 'live', weapon: twinWeapon, itemLevel: 50, modifiers: twinMods,
+      ctx: makeCtx(twinWeapon, { scenario: { isVats: true, isSneaking: false, isPowerAttack: false, isCrit: true } }),
+      bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    expect(twinCrit.components[1].damage).toBeCloseTo(twinNoCrit.components[1].damage * 2, 6);
+  });
+});
+
 describe('computeDotDps (Stage A2, DoT line)', () => {
   it('sums an active dotDamage magnitude into dotDps, 0 when its conditions fail', () => {
     const weapon = makeWeapon({

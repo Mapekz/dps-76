@@ -9,6 +9,11 @@ import { formatDamage } from '@/lib/format';
  * base damage → the additive bonus pool (each source named) → outer
  * multipliers → per hit → fire rate → DPS. The traced computation IS the
  * displayed number, so these rows always reconcile.
+ *
+ * Sneak and body-part multipliers are recorded once at the weapon level in
+ * the trace but don't apply to explosive components (paper-damage.ts) — the
+ * shared rows below are hidden/qualified per-component so reconciliation
+ * still holds on a weapon with an explosive twin or launcher payload.
  */
 
 function Num({ children, className }: { children: React.ReactNode; className?: string }) {
@@ -60,6 +65,15 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
   if (!explain) return null;
   const trace = explain.nonCrit;
   const multi = trace.components.length > 1;
+  // Sneak and body-part multipliers are recorded once at the weapon level but
+  // don't apply to explosive components (launcher payloads / Explosive twins
+  // land their flat payload regardless of where they strike, and aren't a
+  // stealth attack). Only show those shared rows when at least one component
+  // actually received them, and qualify the label on a mixed weapon so the
+  // rows keep reconciling with the per-component totals above.
+  const anyExplosive = trace.components.some(c => c.isExplosion);
+  const anyNonExplosive = trace.components.some(c => !c.isExplosion);
+  const mixed = anyExplosive && anyNonExplosive;
 
   return (
     <div className="space-y-1.5">
@@ -81,14 +95,20 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
             {contributionRows(component.baseDamage, `bd-${i}`)}
             <Row label={`Bonus pool (weapon base ${poolBase.toFixed(2)})`} value={`Σ ${component.dbm.result.toFixed(2)}`} />
             {contributionRows(component.dbm, `dbm-${i}`)}
+            {component.isExplosion && (
+              <Row muted indent label="Explosive — ignores sneak & body part" value="" />
+            )}
           </Fragment>
         );
       })}
 
       {trace.strTerm > 0 && <Row indent label="Strength (melee)" value={signed(trace.strTerm)} />}
-      {trace.sneak && (
+      {trace.sneak && anyNonExplosive && (
         <>
-          <Row label="Sneak attack" value={signed(trace.sneak.base.result + trace.sneak.bonus.result - 1)} />
+          <Row
+            label={mixed ? 'Sneak attack (non-explosive)' : 'Sneak attack'}
+            value={signed(trace.sneak.base.result + trace.sneak.bonus.result - 1)}
+          />
           {contributionRows(trace.sneak.base, 'sb')}
           {contributionRows(trace.sneak.bonus, 'sn')}
         </>
@@ -106,15 +126,18 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
           {wholeDamageRows(trace.wholeDamage)}
         </>
       )}
-      {trace.bodyPartMult !== 1 && (
+      {trace.bodyPartMult !== 1 && anyNonExplosive && (
         <Row
-          label={trace.bodyPartMult > 1 ? 'Body part (weakpoint)' : 'Body part (limb)'}
+          label={`${trace.bodyPartMult > 1 ? 'Body part (weakpoint)' : 'Body part (limb)'}${mixed ? ' (non-explosive)' : ''}`}
           value={`×${trace.bodyPartMult.toFixed(2)}`}
         />
       )}
-      {trace.weakpointBonus && trace.weakpointBonus.result !== 0 && (
+      {trace.weakpointBonus && trace.weakpointBonus.result !== 0 && anyNonExplosive && (
         <>
-          <Row label="Weakpoint bonus" value={`×${(1 + trace.weakpointBonus.result).toFixed(2)}`} />
+          <Row
+            label={mixed ? 'Weakpoint bonus (non-explosive)' : 'Weakpoint bonus'}
+            value={`×${(1 + trace.weakpointBonus.result).toFixed(2)}`}
+          />
           {contributionRows(trace.weakpointBonus, 'wp')}
         </>
       )}

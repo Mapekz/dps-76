@@ -106,6 +106,19 @@ describe('attribution trace', () => {
     expect(torso.freeAim.explain!.nonCrit.weakpointBonus).toBeNull();
   });
 
+  it('flags explosive components in the trace (fromExplosion vs normal) — drives the breakdown UI carve-out', () => {
+    const weapon = makeWeapon({
+      components: [
+        { damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: FLAT_100 },
+        { damageType: 'explosive', tier: -1, levelCap: 50, curvePoints: FLAT_100, fromExplosion: true },
+      ],
+    });
+    const s = computeScenarios(input([], { weapon, collectTrace: true }));
+    const components = s.freeAim.explain!.nonCrit.components;
+    expect(components[0].isExplosion).toBe(false);
+    expect(components[1].isExplosion).toBe(true);
+  });
+
   it('invariant holds over a real loadout (Fixer + perks)', () => {
     const weapon = getWeapons('live')['CombatRifle_Fixer'];
     const modifiers = getLoadoutModifiers('live', [

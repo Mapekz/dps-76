@@ -37,6 +37,8 @@ export interface ComponentTrace {
   damageType: DamageType;
   baseDamage: BucketTrace;
   dbm: BucketTrace;
+  /** Launcher EXPL payload or Explosive-legendary twin — exempt from sneak/body-part mults. */
+  isExplosion: boolean;
 }
 
 /** Full derivation of one paper-damage hit. Null sections did not apply. */
