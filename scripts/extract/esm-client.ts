@@ -23,6 +23,9 @@ export interface EsmRefRow {
   editor_id: string;
   name: string | null;
   depth: number;
+  /** Only present with `refs({ paths: true })`; JSON field path(s) from the referrer to `target`. */
+  field_paths?: string[];
+  offset?: number;
 }
 
 /**
@@ -33,6 +36,9 @@ export interface EsmRefRow {
  * - `search` requires "*" (not "") to match all records.
  * - `get` results are memo-cached per formid/edid — keyword and damage-type
  *   formids repeat across thousands of records.
+ * - `get`'s multi-selector form (`bulkGet`) returns one JSON array entry per
+ *   target (`{sel, ...record}` or `{sel, error}` for an unresolvable one) —
+ *   unlike the single-target form, a bad selector doesn't fail the whole call.
  */
 export class EsmClient {
   private getCache = new Map<string, Promise<EsmRecord>>();
@@ -75,21 +81,65 @@ export class EsmClient {
   }
 
   /**
+   * Fetch many records in one CLI round-trip, then return them via `get()`
+   * (so both this call's results and every later `get`/`resolveEdid` on the
+   * same targets hit the warm cache). Order of the returned array matches
+   * `targets`, duplicates included.
+   */
+  bulkGet(targets: string[]): Promise<EsmRecord[]> {
+    const uncached = [...new Set(targets)].filter(t => !this.getCache.has(t));
+    if (uncached.length === 1) {
+      // The CLI's multi-selector form only activates for 2+ targets; a
+      // single uncached target just goes through the classic get() path.
+      void this.get(uncached[0]);
+    } else if (uncached.length > 1) {
+      const bulk = this.run(['get', this.esmPath, ...uncached, '--json']).then(
+        out => JSON.parse(out) as Array<{ sel: string; error?: string } & Partial<EsmRecord>>
+      );
+      for (const target of uncached) {
+        this.getCache.set(
+          target,
+          bulk.then(entries => {
+            const entry = entries.find(e => e.sel === target);
+            if (!entry || entry.error) {
+              throw new Error(`esm get ${target}: ${entry?.error ?? 'missing from bulk response'}`);
+            }
+            const { sel: _sel, ...record } = entry;
+            return record as EsmRecord;
+          })
+        );
+      }
+    }
+    return Promise.all(targets.map(t => this.get(t)));
+  }
+
+  /**
    * Records that reference `target` (reverse lookup). Cached.
    * Always pass a formid — the CLI misparses numeric editor_ids when it
    * auto-detects the target kind — and an explicit large limit (the default
    * of 100 silently truncates popular records like the .44).
+   *
+   * `type` narrows to one 4-char referrer record type server-side (e.g.
+   * `OMOD`); `paths` annotates each row with the JSON field path(s) from the
+   * referrer to `target` (e.g. `Effects[2].Conditions[0].Parameter 1`) — off
+   * by default since it decodes every emitted row.
    */
-  refs(formId: string, opts: { depth?: number; limit?: number } = {}): Promise<EsmRefRow[]> {
+  refs(
+    formId: string,
+    opts: { depth?: number; limit?: number; type?: string; paths?: boolean } = {}
+  ): Promise<EsmRefRow[]> {
     const depth = opts.depth ?? 1;
     const limit = opts.limit ?? 4000;
-    const key = `${formId}:${depth}:${limit}`;
+    const type = opts.type;
+    const paths = opts.paths ?? false;
+    const key = `${formId}:${depth}:${limit}:${type ?? ''}:${paths}`;
     let cached = this.refsCache.get(key);
     if (!cached) {
-      cached = this.run([
-        'refs', this.esmPath, '--formid', formId,
-        '--depth', String(depth), '--limit', String(limit), '--json',
-      ]).then(out => JSON.parse(out));
+      const args = ['refs', this.esmPath, '--formid', formId, '--depth', String(depth), '--limit', String(limit)];
+      if (type) args.push('--type', type);
+      if (paths) args.push('--paths');
+      args.push('--json');
+      cached = this.run(args).then(out => JSON.parse(out));
       this.refsCache.set(key, cached);
     }
     return cached;

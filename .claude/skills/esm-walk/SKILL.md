@@ -19,7 +19,66 @@ pnpm esm:walk <formid|edid> [--refs] [--depth N] [--esm <path>]
 - ESM path resolves from `--esm`, else the `FO76_ESM_PATH` env var.
 - The script (`scripts/esm-walk.ts`) already applies the known esm-CLI quirks
   (one-shot `-p --json` mode, the Ability/Entry-Point field misattribution
-  repair). Only drop to raw `esm get` for fields the digest truncates.
+  repair) and batches per-record fetches with bulk `get`.
+- Walking a KYWD or AVIF reverse-chases its SPEL/PERK consumers
+  (`refs --type SPEL`/`PERK --paths`) instead of dumping the (mostly empty)
+  record itself — the same hop `esm chase` does from the OMOD side, below.
+
+## Raw CLI power tools (when the digest truncates)
+
+Reach for these directly when the walker's digest isn't enough — a field it
+truncates, a record type it doesn't special-case, or a wider reverse-ref scan
+than `--refs` gives you. One-shot calls need `-p` (otherwise the CLI drops
+into a REPL after printing).
+
+- **Bulk `get`**: `esm -p get <esm> <sel1> <sel2> … --json` fetches many
+  records in one call. One target → the classic single object; two or more →
+  a JSON array, one entry per selector in input order, each tagged with its
+  own `sel` (a bad selector becomes `{"sel":…, "error":…}` instead of failing
+  the whole call). The wrapper exposes this as `client.bulkGet()`.
+- **`get --resolve none|stub|full`**: inlines FormID references instead of
+  leaving them as bare `0x...` strings — `stub` gives
+  `{formid, editor_id, record_type}` (cheap, one extra field per ref); `full`
+  recursively inlines the referenced record itself. A `CURV` record fetched
+  directly already inlines its own curve points regardless of `--resolve`.
+- **`refs --type <SIG>`**: narrows rows to referencing records of one 4-char
+  type (e.g. `--type OMOD`), applied server-side so `--limit`/`--depth`
+  interact correctly with the filter — one type per call, not a list.
+- **`refs --paths`**: annotates each row with the JSON field path(s) from the
+  referrer to the target (e.g. `Effects[2].Conditions[0].Parameter 1`) —
+  decodes every emitted row, so it's off by default; this is how `esm chase`
+  locates the exact `Effects[N]` a keyword/AVIF gates.
+- **`refs --depth N`** (1–6): direct refs only at 1; raise for a reference
+  reached through an intermediary (e.g. a quest alias).
+- **Gotcha**: `refs`'s default `--limit 100` truncates AND appends a
+  non-JSON `note: output capped at N of M results; use --limit 0 to show all`
+  trailer to stdout — that breaks a naive `JSON.parse`. Pass an explicit large
+  limit (or `--limit 0` for everything) and always pass `--formid` (not a bare
+  positional) — the CLI misparses numeric editor_ids when auto-detecting.
+
+## `esm chase` — unique-weapon OMOD effects
+
+```bash
+esm -p chase <esm> <omod-formid|edid> [--depth N] [--ref-limit N] [--json]
+```
+
+Automates the "chase pattern" for a `mod_Custom_*`-style unique OMOD: it reads
+the OMOD's `Data.Properties[]` rows and classifies each one — a bare number
+(nothing to chase), an ENCH/SPEL attached directly to the weapon (forward
+`get`), a PERK grant (`Value 1` is property 116/"Perks"; forward `get`s the
+granted PERK, whose `Effects` ARE the mechanic), or a KYWD/AVIF hook (reverse
+`refs --type SPEL` and `refs --type PERK`, each with `--paths`, to find the
+SPEL/PERK whose Conditions test `WornHasKeyword(<keyword>)`, then slices out
+just the gated `Effects[N]` via the field path) — and prints a compact
+evidence tree, not full record dumps.
+
+Reach for `esm chase` specifically when decoding a unique weapon's
+`mod_Custom_*` OMOD; use `pnpm esm:walk` for everything else (MGEF archetypes,
+curves, GLOBs, conditions, PERK entry points) — the two share the same
+underlying reverse-chase hop, `esm chase` just automates the OMOD-property
+taxonomy end to end. It implements "the chase pattern" documented in
+`../FO76-Tools/.claude/skills/patch-notes/mechanics-kb.md` — read that first if
+a property doesn't fit its 3-way classification.
 
 ## Reading the digest
 

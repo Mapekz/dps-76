@@ -202,6 +202,7 @@ async function digestWeap(rec: EsmRecord): Promise<void> {
   const data = (f['Data'] ?? {}) as Record<string, unknown>;
   const keywordsNode = (f['Keywords'] ?? {}) as Record<string, unknown>;
   const keywordIds = (keywordsNode['Keywords'] as string[]) ?? [];
+  await client.bulkGet(keywordIds).catch(() => {});
   const keywords: string[] = [];
   for (const k of keywordIds) {
     const edid = await client.resolveEdid(k);
@@ -245,6 +246,26 @@ async function digestGeneric(rec: EsmRecord): Promise<void> {
   const MAX = 120;
   for (const line of dump.slice(0, MAX)) emit(1, line);
   if (dump.length > MAX) emit(1, `… ${dump.length - MAX} more lines (use \`esm get\` for the full record)`);
+}
+
+/**
+ * KYWD/AVIF records carry no behavior themselves — they're read by whichever
+ * SPEL/PERK gates an effect on them (`WornHasKeyword(...)` / an entry-point
+ * function's target AV). Reverse-`refs --type ... --paths` finds those
+ * consumers and the exact field path each one gates through, same hop
+ * `esm chase` does from the OMOD side (see esm-walk skill).
+ */
+async function digestKeywordOrAv(formId: string): Promise<void> {
+  for (const type of ['SPEL', 'PERK'] as const) {
+    const rows = await client.refs(formId, { depth: 1, type, paths: true }).catch(() => []);
+    if (rows.length === 0) continue;
+    emit(1, `${type} consumers (gate on this):`);
+    for (const r of rows.slice(0, 10)) {
+      const path = r.field_paths?.[0];
+      emit(2, `${r.form_id} ${r.editor_id}${path ? `  via ${path}` : ''}`);
+    }
+    if (rows.length > 10) emit(2, `… +${rows.length - 10} more`);
+  }
 }
 
 async function digestRefs(formId: string): Promise<void> {
@@ -293,7 +314,10 @@ async function walk(target: string, depth: number, via: string): Promise<void> {
   emit(0, `${'▸'.repeat(depth + 1)} ${sig} ${formId} ${rec.editor_id}${name}${via ? `  (via ${via})` : ''}`);
 
   if (sig === 'GLOB') emit(1, `value ${rec.fields['Value']}`);
-  else if (sig === 'AVIF') emit(1, `abbrev ${rec.fields['Abbreviation'] ?? '—'}  default ${rec.fields['Default Value'] ?? '?'}  max ${rec.fields['Maximum Value'] ?? '?'}`);
+  else if (sig === 'AVIF') {
+    emit(1, `abbrev ${rec.fields['Abbreviation'] ?? '—'}  default ${rec.fields['Default Value'] ?? '?'}  max ${rec.fields['Maximum Value'] ?? '?'}`);
+    await digestKeywordOrAv(formId);
+  } else if (sig === 'KYWD') await digestKeywordOrAv(formId);
   else if (sig === 'MGEF') await digestMgef(rec, depth);
   else if (sig === 'SPEL' || sig === 'ENCH' || sig === 'ALCH') await digestMagicItem(rec, depth);
   else if (sig === 'PERK') await digestPerk(rec, depth);
@@ -304,7 +328,9 @@ async function walk(target: string, depth: number, via: string): Promise<void> {
   // full OMOD → ENCH → MGEF → granted-perk chain lands in one invocation.
   if (sig === 'OMOD') {
     const formIds = [...new Set(JSON.stringify(rec.fields).match(/0x[0-9A-Fa-f]{8}/g) ?? [])];
-    for (const f of formIds.slice(0, 25)) {
+    const sliceIds = formIds.slice(0, 25);
+    await client.bulkGet(sliceIds).catch(() => {});
+    for (const f of sliceIds) {
       const sub = await client.get(f).catch(() => null);
       if (sub?.header.signature === 'ENCH') {
         emit(1, `enchantment → ${f} ${sub.editor_id}`);
