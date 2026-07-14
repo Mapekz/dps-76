@@ -2,9 +2,9 @@ import type { Perk } from '@/types';
 import type { GeneratedPerk } from '@/types/generated';
 import type { PerkId } from './perk-ids';
 import { Special } from './special';
-import { buildPerkJoinMaps, normalizeName } from './perk-modifiers';
+import { buildPerkJoinMaps, resolveFamily } from './perk-join';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';
-import { perkCardOverrides, perkFamilyOverrides } from './overrides/perk-overrides';
+import { perkCardOverrides } from './overrides/perk-overrides';
 
 /**
  * Derives the full `Perk` registry (special/maxRank/costs) from the
@@ -13,8 +13,10 @@ import { perkCardOverrides, perkFamilyOverrides } from './overrides/perk-overrid
  * (src/data/live/generated/perks.json). Wired into the dataset at
  * `src/data/dataset.ts` so every accessor keeps reading `Record<PerkId, Perk>`.
  *
- * Join order mirrors `getGeneratedPerk` (perk-modifiers.ts): perkFamilyOverrides
- * first, then normalized-display-name via the shared join maps.
+ * The join itself (perkFamilyOverrides first, else normalized-display-name)
+ * is `resolveFamily` (./perk-join, a leaf module) — shared with
+ * perk-modifiers.ts's `getGeneratedPerk` so the two lifecycle points (build
+ * this registry vs. read it later) can't drift apart.
  */
 
 /** Name-only registry entry — all a PerkId needs before card data is joined. */
@@ -39,16 +41,6 @@ const SPECIAL_BY_CARD_STRING: Readonly<Record<string, Special>> = {
  */
 const FALLBACK_MAX_RANK = 3;
 
-function findGeneratedFamily(
-  perkId: string,
-  name: string,
-  joinMaps: ReturnType<typeof buildPerkJoinMaps>
-): GeneratedPerk | undefined {
-  const familyOverride = perkFamilyOverrides[perkId];
-  if (familyOverride) return joinMaps.byFamily.get(familyOverride);
-  return joinMaps.byName.get(normalizeName(name));
-}
-
 export function derivePerkRegistry(
   nameRegistry: Readonly<Record<PerkId, PerkNameEntry>>,
   generatedPerks: GeneratedPerk[]
@@ -58,7 +50,7 @@ export function derivePerkRegistry(
 
   for (const perkId of Object.keys(nameRegistry) as PerkId[]) {
     const { name } = nameRegistry[perkId];
-    const generated = findGeneratedFamily(perkId, name, joinMaps);
+    const generated = resolveFamily(perkId, name, joinMaps);
 
     // Legendary perks are never SPECIAL-slotted and never consume SPECIAL
     // perk points (they use the separate 6-slot system) — even though their

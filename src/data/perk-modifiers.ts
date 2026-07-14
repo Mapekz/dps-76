@@ -2,43 +2,16 @@ import type { GameMode, PerkId, PerkLoadout } from '@/types';
 import type { GeneratedPerk } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 import { getDataset } from './dataset';
-import { extraPerkModifiers, perkFamilyOverrides } from './overrides/perk-overrides';
+import { extraPerkModifiers } from './overrides/perk-overrides';
+import { buildPerkJoinMaps, resolveFamily, type JoinMaps } from './perk-join';
 
 /**
  * Bridges the PerkId registry (N&D-aligned) to the ESM-generated perk families
- * (both sourced from the merged dataset, src/data/dataset.ts).
- *
- * Join key: normalized display name — the registry already uses the
- * post-overhaul card names (e.g. PerkId.CenterMasochist ↔ "Center Masochist"
- * on ESM family "Commando"). Misses are patched via perkFamilyOverrides.
+ * (both sourced from the merged dataset, src/data/dataset.ts). The join rule
+ * itself (`resolveFamily`, `buildPerkJoinMaps`) lives in `./perk-join` — a
+ * leaf module shared with perk-cards.ts's registry derivation; this file only
+ * adds the mode-keyed dataset lookup on top.
  */
-
-export function normalizeName(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]/g, '');
-}
-
-export interface JoinMaps {
-  byFamily: Map<string, GeneratedPerk>;
-  byName: Map<string, GeneratedPerk>;
-}
-
-/**
- * Builds the family/name join maps over a list of generated perks. Exported
- * so the registry derivation (perk-cards.ts) reuses EXACTLY the same join
- * logic without going through the mode-keyed dataset cache below.
- */
-export function buildPerkJoinMaps(perks: GeneratedPerk[]): JoinMaps {
-  const byFamily = new Map<string, GeneratedPerk>();
-  const byName = new Map<string, GeneratedPerk>();
-  for (const perk of perks) {
-    byFamily.set(perk.family, perk);
-    const key = normalizeName(perk.name);
-    const existing = byName.get(key);
-    // Prefer proper perk cards on name collisions (NPC perks share names).
-    if (!existing || (!existing.hasCard && perk.hasCard)) byName.set(key, perk);
-  }
-  return { byFamily, byName };
-}
 
 const joinCache = new Map<GameMode, JoinMaps>();
 
@@ -53,12 +26,9 @@ function getJoinMaps(mode: GameMode): JoinMaps {
 
 /** The generated perk family backing a PerkId, or undefined when unjoined. */
 export function getGeneratedPerk(mode: GameMode, perkId: string): GeneratedPerk | undefined {
-  const maps = getJoinMaps(mode);
-  const familyOverride = perkFamilyOverrides[perkId];
-  if (familyOverride) return maps.byFamily.get(familyOverride);
   const entry = getDataset(mode).perkRegistry[perkId as PerkId];
   if (!entry) return undefined;
-  return maps.byName.get(normalizeName(entry.name));
+  return resolveFamily(perkId, entry.name, getJoinMaps(mode));
 }
 
 /** All engine modifiers contributed by a perk loadout (regular or legendary). */
