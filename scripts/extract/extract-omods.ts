@@ -12,6 +12,7 @@ import {
 import { translateConditions } from './normalize/conditions';
 import { DAMAGE_TYPE_EDID_MAP, decodeExplosionDamage, projectileExplosionFormId } from './normalize/explosion';
 import { ObtainabilityClassifier } from './obtainability';
+import { CobjIndex, emptyCobjIndex, isNonGrantingCobj } from './cobj-index';
 
 /**
  * OMOD extraction. A weapon mod's real stats usually live on _PARENT_ template
@@ -199,10 +200,29 @@ function includeFormIds(data: Record<string, unknown>): string[] {
     .filter((m): m is string => typeof m === 'string');
 }
 
+/** Obtainability signals that PROVE access (vs informational ones like
+ *  npcOnly/noGrantCobj/cobjScrapUnproven) — see obtainability.ts classifyOne. */
+const PROVING_SIGNAL_RE = /^(cobj|cobjBook|cobjScrap|gmrw|lgdi|qust|cont|misc|flst|reso|lvli|alch|weap|omod):/;
+/** The inherited subset of proofs: the record rides along on its weapon (or a
+ *  mod collection) without any recipe/drop/reward of its own. */
+const INHERITED_SIGNAL_RE = /^(weap|omod):/;
+
+function isWeakEvidence(signals: string[]): boolean {
+  const proofs = signals.filter(s => PROVING_SIGNAL_RE.test(s));
+  return proofs.length > 0 && proofs.every(s => INHERITED_SIGNAL_RE.test(s));
+}
+
+/** Slots whose mods legitimately have no recipe or drop of their own
+ *  (identity/paint/legendary parts, granted with the weapon) — inherited-only
+ *  evidence is normal there, so they stay out of the weak-evidence queue. */
+const NON_CRAFT_SLOT_RE = /appearance|paint|skin|customname|item_description|material|legendary/i;
+
 export interface ExtractOmodsResult {
   omods: GeneratedOmod[];
   excluded: Record<string, string[]>;
   excludedDetailed: Record<string, ExcludedRecordDetail[]>;
+  /** Kept-but-weakly-evidenced records (see GeneratedMeta.reviewFlagged). */
+  reviewFlagged: Record<string, ExcludedRecordDetail[]>;
   unknownProperties: string[];
   notes: string[];
 }
@@ -212,7 +232,11 @@ export async function extractOmods(
   /** Formids of obtainable weapons (from the weapons pass) — an OMOD referenced by one rides along. */
   obtainableWeaponFormIds: ReadonlySet<string>,
   /** See ExtractWeaponsResult.explosiveFamilyKeywords (extract-weapons.ts) — gates the OverrideProjectile chase. */
-  explosiveFamilyKeywords: ReadonlySet<string> = new Set()
+  explosiveFamilyKeywords: ReadonlySet<string> = new Set(),
+  /** Forward COBJ index (buildCobjIndex) — learn-method-aware obtainability + hasGrantingCobj. */
+  cobjIndex: CobjIndex = emptyCobjIndex(),
+  /** Union of every weapon's defaultModFormIds — a default part is never flagged weak-evidence. */
+  defaultModFormIds: ReadonlySet<string> = new Set()
 ): Promise<ExtractOmodsResult> {
   const rows = await client.list('OMOD');
   const records = await mapPool(rows, 8, r => client.get(r.form_id));
@@ -676,6 +700,9 @@ export async function extractOmods(
     }
 
     for (const note of modNotes) notes.add(`${record.editor_id}: ${note}`);
+    const hasGrantingCobj = (cobjIndex.byCreatedObject.get(record.header.form_id) ?? []).some(
+      c => !isNonGrantingCobj(c, c.edid)
+    );
     omods.push({
       id: record.editor_id,
       formId: record.header.form_id,
@@ -687,24 +714,32 @@ export async function extractOmods(
       modifiers,
       addedKeywords,
       hasEnchantments,
+      ...(hasGrantingCobj ? { hasGrantingCobj } : {}),
       notes: [...modNotes].sort(),
     });
   }
 
   // Obtainability derivation (see extract-weapons.ts for the flag semantics:
   // failures stay in the data as obtainable:false for app-side hiding/rescue).
-  const classifier = new ObtainabilityClassifier(client, obtainableWeaponFormIds);
+  const classifier = new ObtainabilityClassifier(client, obtainableWeaponFormIds, cobjIndex);
   const verdicts = await classifier.classify(omods.map(o => ({ formId: o.formId, edid: o.id })));
   const excludedDetailed: Record<string, ExcludedRecordDetail[]> = { omodUnobtainable: [] };
+  const reviewFlagged: Record<string, ExcludedRecordDetail[]> = { omodWeakEvidence: [] };
   for (const omod of omods) {
     const verdict = verdicts.get(omod.formId);
     omod.obtainable = verdict?.obtainable ?? false;
     if (!omod.obtainable) {
       (excluded.omodUnobtainable ??= []).push(omod.id);
       excludedDetailed.omodUnobtainable.push({ id: omod.id, name: omod.name, signals: verdict?.signals });
+    } else if (
+      isWeakEvidence(verdict?.signals ?? []) &&
+      !defaultModFormIds.has(omod.formId) &&
+      !NON_CRAFT_SLOT_RE.test(omod.attachPointEdid)
+    ) {
+      reviewFlagged.omodWeakEvidence.push({ id: omod.id, name: omod.name, signals: verdict?.signals });
     }
   }
 
   omods.sort((a, b) => a.id.localeCompare(b.id));
-  return { omods, excluded, excludedDetailed, unknownProperties: [...unknownProperties].sort(), notes: [...notes] };
+  return { omods, excluded, excludedDetailed, reviewFlagged, unknownProperties: [...unknownProperties].sort(), notes: [...notes] };
 }

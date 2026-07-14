@@ -198,6 +198,14 @@ export interface GeneratedOmod {
   hasEnchantments: boolean;
   /** See GeneratedWeapon.obtainable — false = no player-reachable reference found. */
   obtainable?: boolean;
+  /**
+   * ≥1 non-repair/non-scrap-stub COBJ's Created Object points at this OMOD —
+   * a real crafting recipe exists. Diagnostic only, NEVER an eligibility
+   * input: standard mod COBJs carry no CTDA/BNAM naming a weapon (verified
+   * live 2026-07-14), so per-weapon association is fully carried by
+   * targetKeywords/template membership. Emitted only when true.
+   */
+  hasGrantingCobj?: boolean;
   /** Extraction caveats for this record (unrouted AVs, unmodeled curves) — powers UI badges. */
   notes?: string[];
 }
@@ -350,6 +358,14 @@ export interface GeneratedMeta {
    * src/data/overrides/corrections.ts (forceVisible*Ids).
    */
   excludedDetailed?: Record<string, ExcludedRecordDetail[]>;
+  /**
+   * Kept (obtainable:true) records whose only evidence was weak/inherited —
+   * e.g. an OMOD riding along on its weapon's obtainability with no
+   * recipe/drop of its own and no seat in the weapon's default parts. A
+   * self-reporting review queue (user decision 2026-07-14: never auto-hide);
+   * confirmed cut content gets hand-hidden via hiddenOmodIds.
+   */
+  reviewFlagged?: Record<string, ExcludedRecordDetail[]>;
   /** Things the normalizer could not resolve — review after each run. */
   unresolved: string[];
 }

@@ -3,6 +3,7 @@ import path from 'node:path';
 import { parseArgs } from 'node:util';
 import type { GeneratedMeta, GeneratedWeapon } from '../../src/types/generated';
 import { EsmClient } from './esm-client';
+import { buildCobjIndex } from './cobj-index';
 import { explosiveFamilyKeywordsOf, extractWeapons } from './extract-weapons';
 import { extractPerks } from './extract-perks';
 import { extractOmods } from './extract-omods';
@@ -67,11 +68,15 @@ async function main() {
     counts: previousMeta.counts ?? {},
     excluded: previousMeta.excluded ?? {},
     excludedDetailed: previousMeta.excludedDetailed ?? {},
+    reviewFlagged: previousMeta.reviewFlagged ?? {},
     unresolved: [],
   };
 
   // Obtainable weapon formids feed the OMOD obtainability pass (two-phase).
   let obtainableWeaponFormIds: Set<string> | undefined;
+  // Full weapons list — the OMOD pass reads defaultModFormIds off it (a
+  // weapon's default part is never weak-evidence-flagged).
+  let allWeapons: GeneratedWeapon[] | undefined;
   // Keywords of weapons already carrying their own fromExplosion component —
   // feeds the OverrideProjectile chase's launcher-family guard (see
   // ExtractWeaponsResult.explosiveFamilyKeywords).
@@ -83,6 +88,7 @@ async function main() {
       await extractWeapons(client);
     obtainableWeaponFormIds = obtainableFormIds;
     explosiveFamilyKeywords = efk;
+    allWeapons = weapons;
     await writeFile(path.join(outDir, 'weapons.json'), JSON.stringify(weapons, null, 1));
     meta.counts.weapons = weapons.length;
     meta.excluded = { ...meta.excluded, ...excluded };
@@ -119,25 +125,37 @@ async function main() {
 
   if (only.includes('omods')) {
     console.log('Extracting OMODs…');
-    if (!obtainableWeaponFormIds || !explosiveFamilyKeywords) {
+    if (!allWeapons) {
       // `--only omods` without a weapons pass: read the checked-in generated set.
-      const existing = JSON.parse(
+      allWeapons = JSON.parse(
         await readFile(path.join(outDir, 'weapons.json'), 'utf8')
       ) as GeneratedWeapon[];
-      obtainableWeaponFormIds ??= new Set(existing.filter(w => w.obtainable !== false).map(w => w.formId));
-      explosiveFamilyKeywords ??= explosiveFamilyKeywordsOf(existing);
     }
-    const result = await extractOmods(client, obtainableWeaponFormIds, explosiveFamilyKeywords);
+    obtainableWeaponFormIds ??= new Set(allWeapons.filter(w => w.obtainable !== false).map(w => w.formId));
+    explosiveFamilyKeywords ??= explosiveFamilyKeywordsOf(allWeapons);
+    const defaultModFormIds = new Set(allWeapons.flatMap(w => w.defaultModFormIds ?? []));
+    console.log('  building COBJ index…');
+    const cobjIndex = await buildCobjIndex(client);
+    const result = await extractOmods(
+      client,
+      obtainableWeaponFormIds,
+      explosiveFamilyKeywords,
+      cobjIndex,
+      defaultModFormIds
+    );
     await writeFile(path.join(outDir, 'omods.json'), JSON.stringify(result.omods, null, 1));
     meta.counts.omods = result.omods.length;
     meta.excluded = { ...meta.excluded, ...result.excluded };
     meta.excludedDetailed = { ...meta.excludedDetailed, ...result.excludedDetailed };
+    meta.reviewFlagged = { ...meta.reviewFlagged, ...result.reviewFlagged };
     meta.unresolved.push(...result.unknownProperties.map(p => `unknown OMOD property: ${p}`));
     meta.unresolved.push(...result.notes);
     console.log(
       `  ${result.omods.length} named weapon OMODs (excluded: ${Object.entries(result.excluded)
         .map(([k, v]) => `${v.length} ${k}`)
-        .join(', ')}); unknown properties: ${result.unknownProperties.length}`
+        .join(', ')}); unknown properties: ${result.unknownProperties.length}; weak-evidence review: ${
+        result.reviewFlagged.omodWeakEvidence.length
+      }`
     );
   }
 
