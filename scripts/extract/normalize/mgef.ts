@@ -905,3 +905,54 @@ export async function translateMagicEffect(
 export function withSource(fragments: ModifierFragment[], source: ModifierSource, idPrefix: string): Modifier[] {
   return fragments.map((f, i) => ({ id: `${idPrefix}:${i}`, source, ...f }));
 }
+
+export interface EnchantmentTranslation {
+  modifiers: ModifierFragment[];
+  notes: string[];
+  /** The record's own Delivery ("Target Type") name (e.g. "Contact", "Self"), or null when the record wasn't found. */
+  targetType: string | null;
+}
+
+/**
+ * Resolve an ENCH or SPEL record's own Delivery field ("Target Type" — ENCH
+ * nests it under `Effect Data`, SPEL directly under `Data`; same enum,
+ * different parent key).
+ */
+function recordTargetType(record: EsmRecord): string {
+  const effectData = (record.fields['Effect Data'] ?? record.fields['Data'] ?? {}) as Record<string, unknown>;
+  return ((effectData['Target Type'] as Record<string, unknown> | undefined)?.['name'] as string) ?? '';
+}
+
+/**
+ * Walk an ENCH's (or a HAZD-placed SPEL's — same "Effects" list shape,
+ * `parseMagicEffects` is signature-agnostic) own Effects list into modifier
+ * fragments, exactly like a granted ability — EXCEPT: Contact/Fire-and-
+ * Forget-delivery records (on-hit weapon-mod procs: bleed/burn/poison DoTs,
+ * Cremator's fire hit, Lobber-family hazard ticks) apply to the STRUCK
+ * TARGET, not the wielder, so their `GetIsPlayer` rows need the inverted
+ * reading `subjectIsTarget` supplies (conditions.ts) — Self/other-delivery
+ * records (ordinary granted legendary effects) keep the default reading.
+ * Shared by extract-omods.ts's OMOD `Enchantments`/`OverrideProjectile`
+ * chases and extract-weapons.ts's WEAP `Enchantment` chase.
+ */
+export async function translateEnchantment(
+  deps: MgefTranslationDeps,
+  enchOrSpelFormId: string
+): Promise<EnchantmentTranslation> {
+  let record: EsmRecord;
+  try {
+    record = await deps.client.get(enchOrSpelFormId);
+  } catch {
+    return { modifiers: [], notes: [`enchantment ${enchOrSpelFormId} not found`], targetType: null };
+  }
+  const targetType = recordTargetType(record);
+  const conditionCtx = targetType === 'Contact' ? { subjectIsTarget: true } : undefined;
+  const modifiers: ModifierFragment[] = [];
+  const notes: string[] = [];
+  for (const effect of parseMagicEffects(record)) {
+    const result = await translateMagicEffect(deps, effect, conditionCtx);
+    result.notes.forEach(n => notes.push(n));
+    modifiers.push(...result.modifiers);
+  }
+  return { modifiers, notes, targetType };
+}

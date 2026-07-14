@@ -211,3 +211,395 @@ describe('isExcludedOmodEdid (regression, unrelated pre-filter)', () => {
     expect(isExcludedOmodEdid('mod_Custom_AllRise')).toBe(false);
   });
 });
+
+/**
+ * Stub client mirroring Cremator's Slow-Burner receiver (2026-07-14 fix):
+ * REM Enchantments '0xBASEENCH' (the base weapon's own fire-hit ench — must
+ * be skipped, never walked) + ADD Enchantments '0xNEWENCH' (the receiver's
+ * own tier-17-shaped NPC-only dot). '0xBASEENCH' carries only a PVP-only
+ * (GetIsPlayer=1) branch, so if it were ever walked (the REM-as-ADD bug) it
+ * would still surface a wrong modifier — this stub also checks that REM is
+ * never fetched at all (an unexpected-get throw would fail the test).
+ */
+function makeSlowBurnerStubClient(): EsmClient {
+  const omodFormId = '0xSLOWBURNER';
+  const newEnchFormId = '0xNEWENCH';
+  const newMgefFormId = '0xNEWMGEF';
+  const fireResistFormId = '0xFIRERESIST';
+  const known: Record<string, EsmRecord> = {
+    [omodFormId]: {
+      header: { signature: 'OMOD', form_id: omodFormId },
+      editor_id: 'mod_Test_SlowBurner',
+      fields: {
+        Name: 'Test Slow-Burning Tank',
+        Data: {
+          'Form Type': { name: 'Weapon' },
+          'Attach Point': '0x0047A264',
+          Properties: [
+            { 'Function Type': { name: 'REM' }, Property: { name: 'Enchantments' }, 'Value 1': '0xBASEENCH', 'Value 2': 1 },
+            { 'Function Type': { name: 'ADD' }, Property: { name: 'Enchantments' }, 'Value 1': newEnchFormId, 'Value 2': 1 },
+          ],
+        },
+      },
+    } as unknown as EsmRecord,
+    ['0xBASEENCH']: {
+      header: { signature: 'ENCH', form_id: '0xBASEENCH' },
+      editor_id: 'BaseFireHitEnch',
+      fields: {
+        'Effect Data': { 'Target Type': { name: 'Contact' } },
+        Effects: [
+          {
+            Effect: {
+              'Base Effect': '0xBASEMGEF',
+              'Effect Item Data': { Magnitude: 3, Duration: 6 },
+              Conditions: {
+                Conditions: [
+                  { Condition: { 'Condition Data': { Function: 'GetIsPlayer', 'Comparison Value': 1, Operator: 'Equal To', 'Run On': 'Subject' } } },
+                ],
+              },
+            },
+          },
+        ],
+      },
+    } as unknown as EsmRecord,
+    [newEnchFormId]: {
+      header: { signature: 'ENCH', form_id: newEnchFormId },
+      editor_id: 'NewSlowBurnEnch',
+      fields: {
+        'Effect Data': { 'Target Type': { name: 'Contact' } },
+        Effects: [
+          {
+            Effect: {
+              'Base Effect': newMgefFormId,
+              'Effect Item Data': { Magnitude: 16, Duration: 12 },
+              Conditions: {
+                Conditions: [
+                  { Condition: { 'Condition Data': { Function: 'GetIsPlayer', 'Comparison Value': 0, Operator: 'Equal To', 'Run On': 'Subject' } } },
+                ],
+              },
+            },
+          },
+        ],
+      },
+    } as unknown as EsmRecord,
+    [newMgefFormId]: {
+      header: { signature: 'MGEF', form_id: newMgefFormId },
+      editor_id: 'NewSlowBurnMgef',
+      fields: {
+        'Magic Effect Data': { Data: { Archetype: { name: 'Damage' }, 'Resist Value': fireResistFormId, Flags: { value: '0x0', flags: [] } } },
+      },
+    } as unknown as EsmRecord,
+    [fireResistFormId]: { header: { signature: 'AVIF', form_id: fireResistFormId }, editor_id: 'FireResist', fields: {} } as unknown as EsmRecord,
+  };
+  const get = async (target: string): Promise<EsmRecord> => {
+    if (known[target]) return known[target];
+    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+  };
+  return {
+    async list(type: string): Promise<EsmListRow[]> {
+      if (type !== 'OMOD') return [];
+      return [{ form_id: omodFormId, record_type: 'OMOD', editor_id: 'mod_Test_SlowBurner', name: 'Test Slow-Burning Tank' }];
+    },
+    get,
+    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+    refs: async () => [],
+  } as unknown as EsmClient;
+}
+
+describe('extractOmods (Enchantments REM-vs-ADD + GetIsPlayer/subjectIsTarget, 2026-07-14)', () => {
+  it('skips the REMed base ench entirely (never fetched, note-only) and keeps only the ADDed ench\'s NPC-branch dot', async () => {
+    const result = await extractOmods(makeSlowBurnerStubClient(), new Set());
+    const omod = result.omods.find(o => o.id === 'mod_Test_SlowBurner');
+    expect(omod).toBeDefined();
+    expect(omod!.modifiers).toEqual([
+      expect.objectContaining({
+        bucket: 'dotDamage',
+        op: 'ADD',
+        value: 16,
+        durationSec: 12,
+        conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
+      }),
+    ]);
+    expect((omod!.notes ?? []).some(n => n.includes('removes enchantment BaseFireHitEnch'))).toBe(true);
+  });
+});
+
+/**
+ * Stub client mirroring the Lobber Barrel / Polar Lobber `OverrideProjectile`
+ * chase (2026-07-14 fix): PROJ (Explosion flag) → EXPL (no direct damage,
+ * "Placed Object" → HAZD) → HAZD (Lifetime 7, Effect → SPEL) → SPEL (Contact
+ * delivery, one energy-scoped Damage-archetype effect, magnitude 34,
+ * duration 1 — overridden to the HAZD's own Lifetime on the materialized
+ * modifier).
+ */
+function makeLobberStubClient(cosmetic = false): EsmClient {
+  const omodFormId = '0xLOBBER';
+  const projFormId = '0xPROJ1';
+  const explFormId = '0xEXPL1';
+  const hazdFormId = '0xHAZD1';
+  const spelFormId = '0xSPEL1';
+  const mgefFormId = '0xHAZMGEF';
+  const energyResistFormId = '0xENERGYRESIST';
+  const known: Record<string, EsmRecord> = {
+    [omodFormId]: {
+      header: { signature: 'OMOD', form_id: omodFormId },
+      editor_id: 'mod_Test_LobberBarrel',
+      fields: {
+        Name: 'Test Lobber Barrel',
+        Data: {
+          'Form Type': { name: 'Weapon' },
+          'Attach Point': '0x0002249D',
+          Properties: [{ 'Function Type': { name: 'SET' }, Property: { name: 'OverrideProjectile' }, 'Value 1': projFormId, 'Value 2': 1 }],
+        },
+        'Target OMOD Keywords': ['0xMA_TESTLAUNCHER'],
+      },
+    } as unknown as EsmRecord,
+    [projFormId]: {
+      header: { signature: 'PROJ', form_id: projFormId },
+      editor_id: 'TestLobberProjectile',
+      fields: {
+        Data: cosmetic
+          ? { Flags: { flags: [] }, Explosion: explFormId }
+          : { Flags: { flags: ['Explosion'] }, Explosion: explFormId },
+      },
+    } as unknown as EsmRecord,
+    [explFormId]: {
+      header: { signature: 'EXPL', form_id: explFormId },
+      editor_id: 'TestLobberExplosion',
+      fields: { Data: { Damage: 0, 'Placed Object': hazdFormId, 'Base Weapon Damage Mult': 0 } },
+    } as unknown as EsmRecord,
+    [hazdFormId]: {
+      header: { signature: 'HAZD', form_id: hazdFormId },
+      editor_id: 'TestLobberHazard',
+      fields: { Data: { Limit: 20, Radius: 25, Lifetime: 7, 'Target Interval': 0.3, Effect: spelFormId } },
+    } as unknown as EsmRecord,
+    [spelFormId]: {
+      header: { signature: 'SPEL', form_id: spelFormId },
+      editor_id: 'TestLobberHazardSpell',
+      fields: {
+        Data: { 'Target Type': { name: 'Contact' }, 'Cast Type': { name: 'Fire and Forget' } },
+        Effects: [{ Effect: { 'Base Effect': mgefFormId, 'Effect Item Data': { Magnitude: 34, Duration: 1 } } }],
+      },
+    } as unknown as EsmRecord,
+    [mgefFormId]: {
+      header: { signature: 'MGEF', form_id: mgefFormId },
+      editor_id: 'TestLobberHazardEffect',
+      fields: {
+        'Magic Effect Data': { Data: { Archetype: { name: 'Damage' }, 'Resist Value': energyResistFormId, Flags: { value: '0x0', flags: [] } } },
+      },
+    } as unknown as EsmRecord,
+    [energyResistFormId]: { header: { signature: 'AVIF', form_id: energyResistFormId }, editor_id: 'EnergyResist', fields: {} } as unknown as EsmRecord,
+  };
+  const get = async (target: string): Promise<EsmRecord> => {
+    if (known[target]) return known[target];
+    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+  };
+  return {
+    async list(type: string): Promise<EsmListRow[]> {
+      if (type !== 'OMOD') return [];
+      return [{ form_id: omodFormId, record_type: 'OMOD', editor_id: 'mod_Test_LobberBarrel', name: 'Test Lobber Barrel' }];
+    },
+    get,
+    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+    refs: async () => [],
+  } as unknown as EsmClient;
+}
+
+describe('extractOmods (OverrideProjectile launcher-hazard chase, 2026-07-14)', () => {
+  it('chases PROJ → EXPL → HAZD → SPEL into an energy-scoped dotDamage modifier, durationSec from HAZD Lifetime', async () => {
+    const result = await extractOmods(makeLobberStubClient(), new Set());
+    const omod = result.omods.find(o => o.id === 'mod_Test_LobberBarrel');
+    expect(omod).toBeDefined();
+    expect(omod!.modifiers).toEqual([
+      expect.objectContaining({
+        bucket: 'dotDamage',
+        op: 'ADD',
+        value: 34,
+        durationSec: 7, // HAZD Lifetime, NOT the SPEL's own per-tick Duration (1)
+        conditions: [{ kind: 'damageTypeScope', types: ['energy'] }],
+      }),
+    ]);
+  });
+
+  it('materializes nothing for a PROJ lacking the Explosion flag (the ~154-cosmetic-mod majority)', async () => {
+    const result = await extractOmods(makeLobberStubClient(true), new Set());
+    const omod = result.omods.find(o => o.id === 'mod_Test_LobberBarrel');
+    expect(omod).toBeDefined();
+    expect(omod!.modifiers).toEqual([]);
+    expect(omod!.notes).toEqual([]);
+  });
+
+  it('materializes nothing (note-only) when the omod targets a weapon family that already has its own launcher explosion (Hellstorm + Napalm/Cryo/Plasma tube barrels)', async () => {
+    // Same Lobber-shaped chain as above, but this time the omod's target
+    // keyword is flagged (via explosiveFamilyKeywords) as already belonging
+    // to a weapon with its own fromExplosion component — chaseExplosion is
+    // WEAP-level and barrel-agnostic, so this OMOD's own hazard/direct damage
+    // would ADD to that stale baseline rather than replace it.
+    const result = await extractOmods(makeLobberStubClient(), new Set(), new Set(['0xMA_TESTLAUNCHER']));
+    const omod = result.omods.find(o => o.id === 'mod_Test_LobberBarrel');
+    expect(omod).toBeDefined();
+    expect(omod!.modifiers).toEqual([]);
+    expect((omod!.notes ?? []).some(n => n.includes('already has its own launcher explosion'))).toBe(true);
+  });
+});
+
+/**
+ * Stub client mirroring the Cremator flame-color false-positive found while
+ * validating the OverrideProjectile fix (2026-07-14): PROJ (Explosion flag)
+ * → EXPL carrying typed damage but NO "Placed Object" (a re-skinned
+ * fireball-impact VFX, purely cosmetic — Cremator's chemical colors don't
+ * change damage in-game) — must materialize NOTHING (just a note), unlike
+ * the Polar Lobber shape (typed damage PLUS a hazard) above.
+ */
+function makeCosmeticReskinStubClient(): EsmClient {
+  const omodFormId = '0xCOSMETIC';
+  const projFormId = '0xCOSMETICPROJ';
+  const explFormId = '0xCOSMETICEXPL';
+  const known: Record<string, EsmRecord> = {
+    [omodFormId]: {
+      header: { signature: 'OMOD', form_id: omodFormId },
+      editor_id: 'mod_Test_CosmeticReskin',
+      fields: {
+        Name: 'Test Cosmetic Reskin',
+        Data: {
+          'Form Type': { name: 'Weapon' },
+          'Attach Point': '0x00024004',
+          Properties: [{ 'Function Type': { name: 'SET' }, Property: { name: 'OverrideProjectile' }, 'Value 1': projFormId, 'Value 2': 1 }],
+        },
+      },
+    } as unknown as EsmRecord,
+    [projFormId]: {
+      header: { signature: 'PROJ', form_id: projFormId },
+      editor_id: 'TestReskinProjectile',
+      fields: { Data: { Flags: { flags: ['Explosion'] }, Explosion: explFormId } },
+    } as unknown as EsmRecord,
+    [explFormId]: {
+      header: { signature: 'EXPL', form_id: explFormId },
+      editor_id: 'TestReskinExplosion',
+      fields: {
+        Data: { Damage: 0, 'Placed Object': null, 'Base Weapon Damage Mult': 0 },
+        'Damage Types': [{ Type: '0xDTFIRE', Amount: 25, 'Curve Table': { curve_path: 'Player\\Damage\\Damage_Universal_Tier13.json', curve: [{ x: 1, y: 10 }, { x: 50, y: 32 }] } }],
+      },
+    } as unknown as EsmRecord,
+    '0xDTFIRE': { header: { signature: 'DMGT', form_id: '0xDTFIRE' }, editor_id: 'dtFire', fields: {} } as unknown as EsmRecord,
+  };
+  const get = async (target: string): Promise<EsmRecord> => {
+    if (known[target]) return known[target];
+    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+  };
+  return {
+    async list(type: string): Promise<EsmListRow[]> {
+      if (type !== 'OMOD') return [];
+      return [{ form_id: omodFormId, record_type: 'OMOD', editor_id: 'mod_Test_CosmeticReskin', name: 'Test Cosmetic Reskin' }];
+    },
+    get,
+    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+    refs: async () => [],
+  } as unknown as EsmClient;
+}
+
+describe('extractOmods (OverrideProjectile cosmetic-reskin guard, 2026-07-14)', () => {
+  it('does NOT materialize direct EXPL typed damage when there is no Placed Object hazard (Cremator chemical-color false positive)', async () => {
+    const result = await extractOmods(makeCosmeticReskinStubClient(), new Set());
+    const omod = result.omods.find(o => o.id === 'mod_Test_CosmeticReskin');
+    expect(omod).toBeDefined();
+    expect(omod!.modifiers).toEqual([]);
+    expect((omod!.notes ?? []).some(n => n.includes('not modeled'))).toBe(true);
+  });
+});
+
+describe('extractOmods (OverrideProjectile REM/SET, 2026-07-14)', () => {
+  it('skips a REMed projectile override entirely (never chased) while still chasing the SET one', async () => {
+    // Mirrors Cremator's Lithium (Pink)/(Blue)/(Green): REM the shared default
+    // projectile (which, if walked, would ALSO carry the same typed damage +
+    // hazard as the SET one, double-counting it) while SETting its own.
+    const omodFormId = '0xPINKLIKE';
+    const remProjFormId = '0xREMPROJ';
+    const setProjFormId = '0xSETPROJ';
+    const explFormId = '0xSETEXPL';
+    const hazdFormId = '0xSETHAZD';
+    const spelFormId = '0xSETSPEL';
+    const mgefFormId = '0xSETMGEF';
+    const known: Record<string, EsmRecord> = {
+      [omodFormId]: {
+        header: { signature: 'OMOD', form_id: omodFormId },
+        editor_id: 'mod_Test_PinkLike',
+        fields: {
+          Name: 'Test Pink-Like',
+          Data: {
+            'Form Type': { name: 'Weapon' },
+            'Attach Point': '0x00024004',
+            Properties: [
+              { 'Function Type': { name: 'REM' }, Property: { name: 'OverrideProjectile' }, 'Value 1': remProjFormId, 'Value 2': 1 },
+              { 'Function Type': { name: 'SET' }, Property: { name: 'OverrideProjectile' }, 'Value 1': setProjFormId, 'Value 2': 1 },
+            ],
+          },
+        },
+      } as unknown as EsmRecord,
+      [setProjFormId]: {
+        header: { signature: 'PROJ', form_id: setProjFormId },
+        editor_id: 'TestSetProjectile',
+        fields: { Data: { Flags: { flags: ['Explosion'] }, Explosion: explFormId } },
+      } as unknown as EsmRecord,
+      [explFormId]: {
+        header: { signature: 'EXPL', form_id: explFormId },
+        editor_id: 'TestSetExplosion',
+        fields: { Data: { Damage: 0, 'Placed Object': hazdFormId, 'Base Weapon Damage Mult': 0 } },
+      } as unknown as EsmRecord,
+      [hazdFormId]: {
+        header: { signature: 'HAZD', form_id: hazdFormId },
+        editor_id: 'TestSetHazard',
+        fields: { Data: { Limit: 20, Radius: 25, Lifetime: 7, Effect: spelFormId } },
+      } as unknown as EsmRecord,
+      [spelFormId]: {
+        header: { signature: 'SPEL', form_id: spelFormId },
+        editor_id: 'TestSetHazardSpell',
+        fields: {
+          Data: { 'Target Type': { name: 'Contact' } },
+          Effects: [{ Effect: { 'Base Effect': mgefFormId, 'Effect Item Data': { Magnitude: 20, Duration: 1 } } }],
+        },
+      } as unknown as EsmRecord,
+      [mgefFormId]: {
+        header: { signature: 'MGEF', form_id: mgefFormId },
+        editor_id: 'TestSetHazardEffect',
+        fields: { 'Magic Effect Data': { Data: { Archetype: { name: 'Damage' }, 'Resist Value': '0xFIRERESISTX', Flags: { value: '0x0', flags: [] } } } },
+      } as unknown as EsmRecord,
+      '0xFIRERESISTX': { header: { signature: 'AVIF', form_id: '0xFIRERESISTX' }, editor_id: 'FireResist', fields: {} } as unknown as EsmRecord,
+      // The REM code path resolves this projectile's OWN edid (for the
+      // note text — mirrors the Enchantments REM fix), so it's legitimately
+      // fetched; what must NEVER be fetched is what it chases TO (its own
+      // `Explosion` field, `0xREMEXPL`) — that would mean the REM branch was
+      // walked/decoded like the SET one, the exact bug this test guards.
+      [remProjFormId]: {
+        header: { signature: 'PROJ', form_id: remProjFormId },
+        editor_id: 'TestRemProjectile',
+        fields: { Data: { Flags: { flags: ['Explosion'] }, Explosion: '0xREMEXPL' } },
+      } as unknown as EsmRecord,
+    };
+    const forbidden = new Set(['0xREMEXPL']);
+    const get = async (target: string): Promise<EsmRecord> => {
+      if (forbidden.has(target)) throw new Error(`unexpected get(${target}) — the REMed branch must never be chased`);
+      if (known[target]) return known[target];
+      // Placeholder for the plumbing-perk edids buildAvifRoutes always
+      // fetches (STAT_DamagePerk & co.) and any keyword/AVIF lookups.
+      return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+    };
+    const client = {
+      async list(type: string): Promise<EsmListRow[]> {
+        if (type !== 'OMOD') return [];
+        return [{ form_id: omodFormId, record_type: 'OMOD', editor_id: 'mod_Test_PinkLike', name: 'Test Pink-Like' }];
+      },
+      get,
+      resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+      refs: async () => [],
+    } as unknown as EsmClient;
+
+    const result = await extractOmods(client, new Set());
+    const omod = result.omods.find(o => o.id === 'mod_Test_PinkLike');
+    expect(omod).toBeDefined();
+    expect(omod!.modifiers).toEqual([
+      expect.objectContaining({ bucket: 'dotDamage', op: 'ADD', value: 20 }),
+    ]);
+    expect((omod!.notes ?? []).some(n => n.includes('removes projectile override TestRemProjectile'))).toBe(true);
+  });
+});

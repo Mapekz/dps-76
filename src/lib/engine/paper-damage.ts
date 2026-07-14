@@ -241,12 +241,33 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
  * only count when the weapon actually deals that type; an unscoped DoT
  * modifier on a multi-damage-type weapon would double-count across types —
  * no such data exists today.
+ *
+ * Weapon-intrinsic DoT & OMOD replacement (docs/assumptions.md): a modifier
+ * sourced `kind: 'weapon'` (the WEAP's own on-hit Enchantment chase —
+ * Cremator's built-in fire DoT) is folded FIRST, on its own, to derive the
+ * intrinsic per-damage-type base every OTHER (OMOD/perk) `dotDamage`
+ * modifier then folds ON TOP of — exactly the base-vs-modifier split
+ * `weapon.speed`/`weapon.reloadSpeed` already use for OMOD stat rewrites,
+ * applied here because `dotDamage` has no such intrinsic weapon field of its
+ * own. This lets an OMOD ADD an additional DoT layer (HarpoonGun's own bleed
+ * + the Barbed Harpoon magazine's extra bleed: both stack, as in-game) while
+ * ALSO letting an OMOD that REMs the base weapon's ench replace it outright:
+ * `overrides/legendary-values.ts` flips such an OMOD's extracted dotDamage op
+ * from ADD to SET, which — being folded in the SAME `rest` pass, not against
+ * the intrinsic fold's 0 base — replaces only the intrinsic contribution
+ * (Cremator's Slow-Burner), leaving any unrelated same-type `rest` modifier
+ * on a DIFFERENT weapon or component type untouched (each is its own
+ * `foldBucket` call, scoped by `componentType`).
  */
 export function computeDotDps(modifiers: Modifier[], weapon: Weapon, ctx: ResolveContext): number {
   const componentTypes = new Set((weapon.components ?? []).map(c => c.damageType));
+  const intrinsic = modifiers.filter(m => m.source.kind === 'weapon');
+  const rest = modifiers.filter(m => m.source.kind !== 'weapon');
   let total = 0;
   for (const type of componentTypes) {
-    total += foldBucket(modifiers, 'dotDamage', 0, { ...ctx, componentType: type });
+    const typeCtx = { ...ctx, componentType: type };
+    const intrinsicBase = foldBucket(intrinsic, 'dotDamage', 0, typeCtx);
+    total += foldBucket(rest, 'dotDamage', intrinsicBase, typeCtx);
   }
   return total;
 }

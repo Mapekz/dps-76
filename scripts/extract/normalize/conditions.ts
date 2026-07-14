@@ -50,6 +50,20 @@ export interface ConditionTranslationContext {
    * the unresolved row unchanged.
    */
   conditionForms?: Map<string, RawCondition[]>;
+  /**
+   * Set while walking a Contact/Fire-and-Forget-delivery ENCH or SPEL (an
+   * on-hit weapon-mod proc: bleed/burn/poison DoTs, Cremator's fire hit, the
+   * Lobber-family hazard ticks) — its effects' Subject is the STRUCK TARGET,
+   * not the wielder. `GetIsPlayer(Run On: Subject)` rows on these records
+   * split an NPC-target branch (=0, the PvE case this calculator always
+   * models) from a PVP-only player-target branch (=1) — the OPPOSITE of the
+   * usual "granted to the player" GetIsPlayer reading used everywhere else
+   * (perk/legendary self-gates). Set by `translateEnchantment`
+   * (normalize/mgef.ts) from the record's own Delivery field; every other
+   * caller leaves this unset and gets the default reading. See
+   * docs/assumptions.md "Weapon-intrinsic DoT & OMOD replacement".
+   */
+  subjectIsTarget?: boolean;
 }
 
 export interface TranslationResult {
@@ -153,6 +167,13 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
     case 'GetIsRace':
       return { kind: 'enemyType', keywordOrRace: edid };
     case 'GetIsPlayer':
+      if (ctx.subjectIsTarget) {
+        // Contact-delivery on-hit effect: Subject = the struck target, which
+        // in a PvE damage calculator is never the player. The =1 (PVP-only)
+        // branch is inactive; the =0 (NPC) branch is the one this calculator
+        // models, so it's consumed.
+        return wants ? 'inactive' : null;
+      }
       // Perk effects granted to the player: always true — consumed.
       return wants ? null : 'inactive';
     case 'GetIsPlayerGhoul':

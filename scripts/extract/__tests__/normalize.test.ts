@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   translate,
+  translateEnchantment,
   parseMagicEffects,
   repairMisattributedPerkEntryFields,
   getMgefInfo,
@@ -375,6 +376,28 @@ describe('translateConditions (2026-07-10 review)', () => {
     };
     const { conditions } = translateConditions([row], { edidByFormId: new Map() });
     expect(conditions).toEqual([{ kind: 'enemyHealthAbovePct', pct: 60 }]);
+  });
+});
+
+describe('translateConditions (subjectIsTarget — Contact-delivery GetIsPlayer inversion, 2026-07-14)', () => {
+  it('consumes GetIsPlayer()=0 (the NPC branch) instead of marking it inactive, when subjectIsTarget is set', () => {
+    const row: RawCondition = { Function: 'GetIsPlayer', 'Comparison Value': 0, Operator: 'Equal To', 'Run On': 'Subject' };
+    const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map(), subjectIsTarget: true });
+    expect(conditions).toEqual([]);
+    expect(unresolved).toEqual([]);
+  });
+
+  it('marks GetIsPlayer()=1 (the PVP-only branch) inactive when subjectIsTarget is set', () => {
+    const row: RawCondition = { Function: 'GetIsPlayer', 'Comparison Value': 1, Operator: 'Equal To', 'Run On': 'Subject' };
+    const { conditions } = translateConditions([row], { edidByFormId: new Map(), subjectIsTarget: true });
+    expect(conditions).toBeNull();
+  });
+
+  it('leaves the default (granted-to-player) GetIsPlayer reading unchanged when subjectIsTarget is unset', () => {
+    const grantedRow: RawCondition = { Function: 'GetIsPlayer', 'Comparison Value': 1, Operator: 'Equal To' };
+    expect(translateConditions([grantedRow], { edidByFormId: new Map() }).conditions).toEqual([]);
+    const inactiveRow: RawCondition = { Function: 'GetIsPlayer', 'Comparison Value': 0, Operator: 'Equal To' };
+    expect(translateConditions([inactiveRow], { edidByFormId: new Map() }).conditions).toBeNull();
   });
 });
 
@@ -883,5 +906,119 @@ describe('translateConditions (IsMemberOfAPlayerTeam, 2026-07-14)', () => {
 describe('ENTRY_POINT_BUCKETS (Mod Weapon Attack Damage, 2026-07-14)', () => {
   it("maps 'Mod Weapon Attack Damage' to the dbm bucket (Grounded's Charged Penalty)", () => {
     expect(ENTRY_POINT_BUCKETS['Mod Weapon Attack Damage']).toBe('dbm');
+  });
+});
+
+describe('translateEnchantment (Contact-delivery weapon/OMOD on-hit procs, 2026-07-14)', () => {
+  // Synthetic records mirroring Cremator's real ESM shape (CrematorFXEnchFireHit,
+  // 0x00729BCD): Effect Data.Target Type "Contact", two Damage-archetype effects
+  // gated by GetIsPlayer(Run On: Subject) — NPC branch (=0, curve, the one this
+  // calculator must keep) and a PVP-only branch (=1, flat, must be dropped).
+  const damageMgef = (formId: string, resistValue: string): EsmRecord =>
+    ({
+      header: { signature: 'MGEF', form_id: formId },
+      editor_id: `Mgef${formId}`,
+      fields: {
+        'Magic Effect Data': {
+          Data: { Archetype: { name: 'Damage' }, 'Resist Value': resistValue, Flags: { value: '0x0', flags: [] } },
+        },
+      },
+    }) as unknown as EsmRecord;
+
+  const enchFormId = '0xENCH1';
+  const mgefFormId = '0xMGEF1';
+  const get = async (formId: string): Promise<EsmRecord> => {
+    if (formId === enchFormId) {
+      return {
+        header: { signature: 'ENCH', form_id: enchFormId },
+        editor_id: 'TestFireHitEnch',
+        fields: {
+          'Effect Data': { 'Target Type': { name: 'Contact' }, 'Cast Type': { name: 'Fire and Forget' } },
+          Effects: [
+            {
+              Effect: {
+                'Base Effect': mgefFormId,
+                'Effect Item Data': { Magnitude: 10, Duration: 6 },
+                Conditions: {
+                  Conditions: [
+                    { Condition: { 'Condition Data': { Function: 'GetIsPlayer', 'Comparison Value': 0, Operator: 'Equal To', 'Run On': 'Subject' } } },
+                  ],
+                },
+              },
+            },
+            {
+              Effect: {
+                'Base Effect': mgefFormId,
+                'Effect Item Data': { Magnitude: 3, Duration: 6 },
+                Conditions: {
+                  Conditions: [
+                    { Condition: { 'Condition Data': { Function: 'GetIsPlayer', 'Comparison Value': 1, Operator: 'Equal To', 'Run On': 'Subject' } } },
+                  ],
+                },
+              },
+            },
+          ],
+        },
+      } as unknown as EsmRecord;
+    }
+    if (formId === mgefFormId) return damageMgef(mgefFormId, '0xRESIST_FIRE');
+    if (formId === '0xRESIST_FIRE') return { header: { signature: 'AVIF', form_id: '0xRESIST_FIRE' }, editor_id: 'FireResist', fields: {} } as unknown as EsmRecord;
+    throw new Error(`unexpected get(${formId})`);
+  };
+  const stubClient = { get, resolveEdid: async (formId: string) => (await get(formId)).editor_id } as unknown as EsmClient;
+
+  const deps = { client: stubClient, routes: new Map<string, AvifRoute[]>(), edidByFormId: new Map<string, string>() };
+
+  it('keeps the NPC branch (=0) as a fire-scoped dotDamage modifier and drops the PVP-only branch (=1)', async () => {
+    const result = await translateEnchantment(deps, enchFormId);
+    expect(result.targetType).toBe('Contact');
+    expect(result.modifiers).toEqual([
+      {
+        bucket: 'dotDamage',
+        op: 'ADD',
+        value: 10,
+        conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
+        durationSec: 6,
+      },
+    ]);
+  });
+
+  it('reports targetType null and a not-found note when the record is missing', async () => {
+    const result = await translateEnchantment(deps, '0xMISSING');
+    expect(result.targetType).toBeNull();
+    expect(result.modifiers).toEqual([]);
+    expect(result.notes.some(n => n.includes('not found'))).toBe(true);
+  });
+
+  it('does NOT invert GetIsPlayer for a Self-delivery record (ordinary granted effect)', async () => {
+    const selfEnchFormId = '0xENCH2';
+    const getSelf = async (formId: string): Promise<EsmRecord> => {
+      if (formId === selfEnchFormId) {
+        return {
+          header: { signature: 'ENCH', form_id: selfEnchFormId },
+          editor_id: 'TestSelfEnch',
+          fields: {
+            'Effect Data': { 'Target Type': { name: 'Self' }, 'Cast Type': { name: 'Constant Effect' } },
+            Effects: [{ Effect: { 'Base Effect': '0xMGEF2', 'Effect Item Data': { Magnitude: 0, Duration: 0 } } }],
+          },
+        } as unknown as EsmRecord;
+      }
+      if (formId === '0xMGEF2') {
+        return {
+          header: { signature: 'MGEF', form_id: '0xMGEF2' },
+          editor_id: 'TestSelfMgef',
+          fields: { 'Magic Effect Data': { Data: { Archetype: { name: 'Script' }, Flags: { value: '0x0', flags: [] } } } },
+        } as unknown as EsmRecord;
+      }
+      throw new Error(`unexpected get(${formId})`);
+    };
+    const selfClient = { get: getSelf, resolveEdid: async (formId: string) => (await getSelf(formId)).editor_id } as unknown as EsmClient;
+    const result = await translateEnchantment(
+      { client: selfClient, routes: new Map<string, AvifRoute[]>(), edidByFormId: new Map<string, string>() },
+      selfEnchFormId
+    );
+    expect(result.targetType).toBe('Self');
+    // Script archetype with no Perk to Apply and zero magnitude: no note, no modifier.
+    expect(result.modifiers).toEqual([]);
   });
 });

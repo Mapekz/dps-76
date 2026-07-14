@@ -118,6 +118,194 @@ real payload rides the projectile's explosion. ESM-proven chain: WEAP
   (ToyFireworkLauncher_*, artillery, orbital strike) stay hidden via
   obtainability or `hiddenWeaponIds`.
 
+## Weapon-intrinsic DoT & OMOD replacement (2026-07-14 — `chaseWeaponEnchantment`/`translateEnchantment`, `computeDotDps`)
+
+Some weapons carry their own on-hit damage-over-time effect directly on the
+WEAP record's `Enchantment` field (distinct from an OMOD's `Enchantments`
+property) — Cremator's built-in fire DoT, bladed melee weapons' innate bleed
+(Machete, Tomahawk, Throwing Knife, ChineseOfficerSword, MeatCleaver, Sickle,
+WarGlaive/Oathbreaker, GuitarSword, HogSplitter, CultistBlade,
+RevolutionarySword, GrognakAxe, UltraciteTerrorSword, MTR05_MeteoriteSword,
+MTNS04_NailerSword, ...), Shishkebab's burn+bleed, HarpoonGun's bleed. This was
+entirely unchased before 2026-07-14 (extract-weapons.ts never read
+`WEAP.Enchantment` at all).
+
+- **Chase**: `chaseWeaponEnchantment` (extract-weapons.ts) reads the WEAP's own
+  `Enchantment` field and walks it through `translateEnchantment`
+  (normalize/mgef.ts) — the same MGEF translation OMOD `Enchantments`
+  properties use. Gated to Contact-delivery (`Effect Data."Target Type"` =
+  "Contact") — every WEAP.Enchantment reference in the 20260710 dump (29
+  distinct ENCHs across 50 weapons) is Contact/Fire-and-Forget; a
+  Self-delivery weapon enchantment would be a permanent stat buff and is
+  deliberately out of scope. Materialized onto `GeneratedWeapon.modifiers`
+  (always present, empty by default), sourced `kind: 'weapon'`
+  (`src/types/modifiers.ts`).
+- **GetIsPlayer inversion for Contact-delivery effects**: a Contact/Fire-and-
+  Forget ENCH or SPEL's Effects apply to the STRUCK TARGET (`Run On:
+  Subject` in the ESM, verified on Cremator's own ench and every bleed ench
+  sampled), not the wielder. `GetIsPlayer(Subject)` rows therefore split an
+  NPC-target branch (`=0`, the PvE case this calculator always models) from a
+  PVP-only player-target branch (`=1`) — the OPPOSITE of every OTHER
+  GetIsPlayer reading in this codebase (perk/legendary self-gates, where
+  `=1` means "granted to the player" and is unconditionally consumed).
+  `conditions.ts`'s `subjectIsTarget` context flag (set by
+  `translateEnchantment` when the record's own Delivery is Contact) flips
+  just that one case; every other caller (perk effects, granted-ability
+  chases) is unaffected. Before this fix, the NPC branch of every
+  Contact-delivery on-hit DoT ench was wrongly marked `'inactive'` (dropped
+  entirely) while a same-record PVP-only branch (when present) was wrongly
+  treated as unconditionally active — Cremator's Slow-Burner receiver showed a
+  flat 3-damage/6s fire DoT in `omods.json` (that record's PVP branch) instead
+  of its real tier-17 curve/12s NPC DoT, and HarpoonGun-family bleed enchants
+  extracted ZERO modifiers at all (their sole branch is NPC-only, so the old
+  code marked the whole effect inactive). `GetIsPlayerGhoul` was NOT touched —
+  no co-occurrence with this pattern was found in the dump; revisit if one
+  appears.
+- **OMOD REM of an Enchantments property is now skipped, not walked**
+  (extract-omods.ts): the OMOD `Enchantments` property carries three
+  functionTypes (ADD/SET/REM) with NO functionType check previously — a REM
+  (an OMOD removing the base weapon's own ench, e.g. Slow-Burner REMs
+  Cremator's `CrematorFXEnchFireHit`) was walked exactly like an ADD, which is
+  how the Slow-Burner's wrong 3/6s entry came from the REM'd base ench's own
+  PVP branch. REM now emits a `removes enchantment <edid>` note instead.
+- **Replacement semantics**: an OMOD that REMs the base weapon's ench and ADDs
+  its own (Cremator + Slow-Burner) needs its own dotDamage contribution to
+  REPLACE the weapon-intrinsic one, not stack with it — the in-game mechanic
+  is exclusive (one chemical-type receiver at a time). `computeDotDps`
+  (paper-damage.ts) folds every `kind: 'weapon'`-sourced `dotDamage` modifier
+  FIRST, on its own, to derive an intrinsic per-damage-type BASE; every OTHER
+  (OMOD/perk) `dotDamage` modifier then folds ON TOP of that base via a
+  SEPARATE `foldBucket` call — mirroring the base-vs-modifier split
+  `effective-weapon.ts` already uses for weapon-stat rewrites (Speed, reload,
+  ...), applied here because `dotDamage` has no intrinsic weapon FIELD of its
+  own to hold the base. Consequence: a plain OMOD **ADD** stacks with the
+  intrinsic base (HarpoonGun's own bleed + the Barbed Harpoon magazine's
+  additional bleed both apply, matching two independent ENCHs on record), while
+  a **SET** replaces it outright (`overrides/legendary-values.ts`'s
+  `mod_Cremator_Reciever_SlowBurner` entry flips the OMOD's extracted ADD to
+  SET for exactly this reason) — verified that a SET only overrides the
+  `foldBucket` call's `base` argument, not sibling ADD entries within the SAME
+  fold, so it cannot wipe an unrelated same-type dotDamage source stacked
+  alongside it (each weapon/component-type pair is its own `foldBucket` call
+  in the first place, so cross-weapon interference isn't possible either).
+- **`durationSec` remains inert** (`Modifier.durationSec` — "carried for the
+  future DoT model, unused by the engine"): the weapon-intrinsic and
+  OMOD-level fixes above don't change the existing refresh-only
+  magnitude-as-dps convention; only the op (ADD vs SET) and condition
+  (subjectIsTarget) semantics changed.
+
+## OMOD-chased launcher payloads (2026-07-14 — `overrideProjectileModifiers`, extract-omods.ts)
+
+Some weapon OMODs carry an `OverrideProjectile` property (154 in the
+20260710 dump) that swaps the fired projectile for a different one — the
+overwhelming majority are cosmetic (suppressors, focusers) whose PROJ/EXPL
+carry no damage, but two convert a beam weapon into a lobbed-explosive
+barrel: the Lightning Gun's Lobber Barrel and the Cryolator's Polar Lobber
+Barrel. Both previously extracted zero damage-relevant modifiers (the property
+was in `PROPERTY_IGNORED`).
+
+- **Chase**: PROJ (gated on the `Data.Flags` "Explosion" bit, same gate
+  `chaseExplosion` uses for WEAP-level launchers — the Destructible-stage
+  Explosion field is a shot-down fallback and must never be chased) → EXPL's
+  own direct damage (main curve / flat `Damage` / typed `Damage Types`) —
+  shared field-decoding (`decodeExplosionDamage`, `normalize/explosion.ts`)
+  with `chaseExplosion` so the two callers don't duplicate the EXPL shape.
+  PLUS a NEW hop this OMOD chase adds: EXPL `Data."Placed Object"` → HAZD →
+  HAZD `Data.Effect` (a SPEL, not an ENCH — same "Effects" list shape,
+  `translateEnchantment` is signature-agnostic) → Damage-archetype MGEF
+  magnitude/curve/damage-type, exactly like any other Damage-archetype
+  translation (the damage TYPE is derived automatically from the MGEF's own
+  `Resist Value` AV, same `RESIST_AV_DAMAGE_TYPES` lookup every other DoT
+  uses — no new type-inference code needed: the Lobber's hazard resolves
+  `EnergyResist` → energy, the Polar Lobber's resolves `FrostResist` → cryo).
+- **Materialization**: EXPL's own direct typed damage → `baseDamage` ADD
+  (itemLevel curve, damage-type-scoped) — an instant, dbm-scaled hit, same
+  shape as any `DamageTypeValues` property (Polar Lobber's cryo impact, tier
+  40, 86@lvl1–285@lvl50). The HAZD's own tick damage → `dotDamage` (NOT
+  `baseDamage`) — a deliberate bucket choice, not just a SET-collision
+  workaround: a HAZD tick is a lingering, non-instant field, semantically the
+  SAME "refresh-only, magnitude=dps" DoT convention used everywhere else
+  (see the section above), so `dotDamage` is the honest bucket regardless of
+  whether it would also avoid colliding with the Lobber's existing
+  `baseDamage SET 0` energy-scoped modifier (which zeros the Lightning Gun's
+  normal beam when this barrel is equipped) — landing the hazard in a
+  SEPARATE bucket (`dotDamage`) sidesteps that question entirely rather than
+  relying on `foldOps`' SET-only-overrides-`base` behavior to save it.
+  `durationSec` on the resulting modifier is overridden with the HAZD's own
+  `Data.Lifetime` (how long the lingering field persists — 7s Lobber, 6s
+  Polar Lobber) rather than the SPEL's own per-tick Effect Item Data duration
+  (1s Lobber, 12s Polar Lobber); inert metadata either way today.
+- **Direct EXPL damage is gated on a "Placed Object" (HAZD) hop also
+  existing** — found 2026-07-14 while validating the fix: Cremator's
+  flame-color Receiver mods (Chemical_BlueFire/GreenFire/PinkFire) EACH carry
+  their own `OverrideProjectile` SET pointing at a re-skinned
+  "ExplosionCrematorFireball_&lt;Color&gt;" EXPL with the SAME typed fire
+  damage (tier 13, 10@lvl1–32@lvl50) as Cremator's own on-hit Enchantment —
+  purely a VFX re-skin (Cremator's chemical colors are cosmetic in-game; the
+  RedFire/default color's own EXPL carries zero damage) that would otherwise
+  silently ADD an extra ~10-32 fire hit for 3 of the weapon's 4 color choices
+  only, on top of the correctly-modeled weapon-intrinsic DoT (the "Fix 1"
+  section above). Every non-cosmetic OverrideProjectile OMOD chased so far
+  (Lobber, Polar Lobber) pairs its direct EXPL damage with a lingering hazard
+  (`Placed Object`); every cosmetic re-skin found doesn't. Direct EXPL damage
+  (`baseDamage`) is therefore only materialized when a hazard ALSO exists;
+  without one a `note` records the value when non-zero rather than silently
+  dropping or double-counting it. The SAME investigation also caught a REM
+  bug mirroring the Enchantments one above: these color mods REM
+  `ProjectileCremator` (the shared default projectile) before SETting their
+  own — walking the REM identically to the SET (the pre-fix state of this
+  code) double-chased the removed AND the added projectile. `OverrideProjectile`
+  REM is now skipped (note-only), exactly like `Enchantments` REM.
+- **Launcher-family guard (`explosiveFamilyKeywords`)**: found while
+  validating the fix on the BOS Rocket Launcher's Napalm/Cryo/Plasma tube
+  barrels — the Hellstorm Missile Launcher WEAP already carries its own
+  `fromExplosion` component (`chaseExplosion`, weapon-level, keyed off the
+  WEAP's OWN `RGW3.Override Projectile` — a fixed field independent of which
+  barrel is equipped). A barrel OMOD's `OverrideProjectile` swaps which
+  projectile ACTUALLY fires, but nothing removes the weapon's now-stale
+  baseline component (chaseExplosion's own doc comment already calls this out
+  as a pre-existing, accepted gap: "OMOD projectile overrides swapping the
+  explosion... not modeled") — so materializing this OMOD's own EXPL/HAZD
+  damage would ADD an extra number on top of an already-wrong baseline rather
+  than fixing it. `extract-weapons.ts` now returns
+  `explosiveFamilyKeywords` (every keyword of every weapon with a
+  `fromExplosion` component); `extractOmods` checks each omod's own
+  `targetKeywords` against it and — when they intersect — skips the
+  OverrideProjectile chase's materialization entirely (note-only, mirroring
+  the no-hazard cosmetic case), regardless of whether a hazard exists. Lobber
+  Barrel / Polar Lobber are unaffected: Lightning Gun and Cryolator are pure
+  beam weapons with NO `fromExplosion` component to conflict with. This is a
+  narrower fix than properly reconciling OMOD-level projectile swaps with the
+  weapon's baseline explosion (which would need the OMOD chase to also
+  suppress/replace the weapon's own component) — that reconciliation is out
+  of scope here and stays a known gap for launcher-family barrel swaps
+  generally (BOS Rocket Launcher's 3 elemental barrels now correctly extract
+  NOTHING new, same as before this whole fix, rather than a wrong number).
+- **ASSUMPTION, unconfirmed in-game**: HAZD `Target Interval` (how often the
+  field re-ticks a target within it, 0.3s for both) and `Limit` (max targets
+  simultaneously affected, 20/12) are NOT modeled at all — the engine's
+  existing DoT convention has no per-tick-interval or per-target-limit
+  concept, so the HAZD's magnitude is folded exactly like any other
+  extracted DoT (steady-state damage/sec while continuously engaged), which
+  may over- or under-state a lobbed-grenade's real sustained contribution
+  relative to a direct-hit weapon's bleed/burn. Queued for in-game
+  confirmation.
+- **NOT modeled: EXPL "Base Weapon Damage Mult"** (Polar Lobber's EXPL
+  carries 1.0 — a launcher payload "worth 100% of the weapon's own damage
+  again"). The existing `explosivePayload` mechanic (Gauss family) is a
+  WEAPON-FIELD base (`weapon.explosionBaseWeaponDamageMult`) that OMOD
+  modifiers fold on top of, not an OMOD-originated value itself — and unlike
+  the Gauss case (a kinetic slug PLUS a separate explosive charge), the Polar
+  Lobber's barrel entirely REPLACES the Cryolator's normal firing mode (no
+  separate "primary hit" coexists once OverrideProjectile swaps the
+  projectile type to a Missile), so whether BWDM 1.0 means "double the EXPL's
+  own direct damage" or "twin the weapon's original beam damage" is
+  genuinely ambiguous from static data alone. Extracted but deliberately left
+  unmodeled — a single `note` records the value per omod
+  (`EXPL <edid> Base Weapon Damage Mult <n> — not modeled`) rather than
+  guessing; needs a user decision (and ideally an in-game measurement) before
+  it's wired to any bucket.
+
 ## Mixed damage-type OMOD conversion (DamageTypeValues) (2026-07-13 — `materializeDamageTypeComponents`, effective-weapon.ts)
 
 OMODs like the Gauss Minigun's Tesla Coil Capacitor convert/add damage types

@@ -249,7 +249,17 @@ export type ModifierSourceKind =
   | 'mutation'
   | 'consumable'
   /** Withdrawal penalties from a selected-and-unsuppressed addiction (addictions.json). */
-  | 'addiction';
+  | 'addiction'
+  /**
+   * The weapon's own intrinsic modifier (WEAP.Enchantment chase — Cremator's
+   * built-in fire DoT, bladed melee weapons' innate bleed, ...), as opposed to
+   * an OMOD/perk/buff a player equips. `computeDotDps` (paper-damage.ts) folds
+   * these first to derive the intrinsic per-damage-type dotDamage base that
+   * OMOD-sourced dotDamage modifiers stack onto (or, via a SET override,
+   * replace) — see docs/assumptions.md "Weapon-intrinsic DoT & OMOD
+   * replacement".
+   */
+  | 'weapon';
 
 export interface ModifierSource {
   kind: ModifierSourceKind;

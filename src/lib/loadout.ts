@@ -132,6 +132,13 @@ function assemble(
   return {
     weapon,
     modifiers: [
+      // Weapon-intrinsic modifiers (Weapon.modifiers — the WEAP's own
+      // Contact-delivery Enchantment chase, e.g. Cremator's built-in fire
+      // DoT). Sourced `kind: 'weapon'`; today only feeds `dotDamage` (folded
+      // as the intrinsic base by paper-damage.ts's `computeDotDps`), which
+      // isn't a WEAPON_STAT_BUCKETS bucket, so no effective-weapon folding is
+      // needed before it joins the modifier list.
+      ...(baseWeapon?.modifiers ?? []),
       ...omodModifiers,
       // Weapon-stat buckets were consumed by the effective-weapon fold above —
       // dropping them mirrors what buildEffectiveWeapon does to OMOD modifiers

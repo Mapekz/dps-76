@@ -5167,7 +5167,9 @@
    "NWOT_dn_ThirstZapper_HasNukaQuantum"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL crExplosionDLC04_ThirstZapperQuantum carries direct damage with no Placed Object hazard — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+  ],
   "obtainable": false
  },
  {
@@ -5606,6 +5608,76 @@
      "edid": "DLC01_mod_LightningGun_Barrel_Lobber",
      "name": "Lobber Barrel"
     },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 34
+      },
+      {
+       "x": 5,
+       "y": 38
+      },
+      {
+       "x": 10,
+       "y": 42
+      },
+      {
+       "x": 15,
+       "y": 48
+      },
+      {
+       "x": 20,
+       "y": 54
+      },
+      {
+       "x": 25,
+       "y": 61
+      },
+      {
+       "x": 30,
+       "y": 69
+      },
+      {
+       "x": 35,
+       "y": 78
+      },
+      {
+       "x": 40,
+       "y": 88
+      },
+      {
+       "x": 45,
+       "y": 99
+      },
+      {
+       "x": 50,
+       "y": 112
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ],
+    "durationSec": 7
+   },
+   {
+    "id": "0x0010EAAF:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0010EAAF",
+     "edid": "DLC01_mod_LightningGun_Barrel_Lobber",
+     "name": "Lobber Barrel"
+    },
     "bucket": "baseDamage",
     "op": "SET",
     "value": 0,
@@ -5619,7 +5691,7 @@
     ]
    },
    {
-    "id": "0x0010EAAF:2",
+    "id": "0x0010EAAF:3",
     "source": {
      "kind": "omod",
      "formId": "0x0010EAAF",
@@ -5913,6 +5985,76 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x0011106A:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0011106A",
+     "edid": "DLC03_mod_HarpoonGun_Magazine_Barbed",
+     "name": "Barbed Harpoon"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 10
+      },
+      {
+       "x": 5,
+       "y": 11
+      },
+      {
+       "x": 10,
+       "y": 12
+      },
+      {
+       "x": 15,
+       "y": 14
+      },
+      {
+       "x": 20,
+       "y": 16
+      },
+      {
+       "x": 25,
+       "y": 18
+      },
+      {
+       "x": 30,
+       "y": 20
+      },
+      {
+       "x": 35,
+       "y": 22
+      },
+      {
+       "x": 40,
+       "y": 25
+      },
+      {
+       "x": 45,
+       "y": 29
+      },
+      {
+       "x": 50,
+       "y": 32
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     }
+    ],
+    "durationSec": 15
    }
   ],
   "addedKeywords": [
@@ -25457,7 +25599,9 @@
    "remapNode_C-Handle_P-Handle"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL ExplosionMissileShellBOSLauncher_Cryo targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+  ],
   "obtainable": true
  },
  {
@@ -25561,7 +25705,9 @@
    "WeaponTypeFireDamage"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL ExplosionMissileShellBOSLauncher_Napalm targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+  ],
   "obtainable": true
  },
  {
@@ -25595,7 +25741,9 @@
    "remapNode_C-Handle_P-Handle"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL ExplosionMissileShellBOSLauncher_Plasma targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+  ],
   "obtainable": true
  },
  {
@@ -32763,7 +32911,9 @@
    "dn_HasProjectile_Explosive"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL ExplosionArrowExplosive carries direct damage with no Placed Object hazard — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+  ],
   "obtainable": true
  },
  {
@@ -33374,7 +33524,10 @@
   "modifiers": [],
   "addedKeywords": [],
   "hasEnchantments": true,
-  "notes": [],
+  "notes": [
+   "EXPL ExplosionCrematorFireball_Blue targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")",
+   "removes projectile override ProjectileCremator"
+  ],
   "obtainable": true
  },
  {
@@ -33390,7 +33543,10 @@
   "modifiers": [],
   "addedKeywords": [],
   "hasEnchantments": true,
-  "notes": [],
+  "notes": [
+   "EXPL ExplosionCrematorFireball_Green targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")",
+   "removes projectile override ProjectileCremator"
+  ],
   "obtainable": true
  },
  {
@@ -33406,7 +33562,10 @@
   "modifiers": [],
   "addedKeywords": [],
   "hasEnchantments": true,
-  "notes": [],
+  "notes": [
+   "EXPL ExplosionCrematorFireball_Pink targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")",
+   "removes projectile override ProjectileCremator"
+  ],
   "obtainable": true
  },
  {
@@ -33683,7 +33842,56 @@
     },
     "bucket": "dotDamage",
     "op": "ADD",
-    "value": 3,
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 16
+      },
+      {
+       "x": 5,
+       "y": 18
+      },
+      {
+       "x": 10,
+       "y": 20
+      },
+      {
+       "x": 15,
+       "y": 23
+      },
+      {
+       "x": 20,
+       "y": 26
+      },
+      {
+       "x": 25,
+       "y": 29
+      },
+      {
+       "x": 30,
+       "y": 33
+      },
+      {
+       "x": 35,
+       "y": 37
+      },
+      {
+       "x": 40,
+       "y": 42
+      },
+      {
+       "x": 45,
+       "y": 47
+      },
+      {
+       "x": 50,
+       "y": 53
+      }
+     ]
+    },
+    "curveScale": 1,
     "conditions": [
      {
       "kind": "damageTypeScope",
@@ -33692,7 +33900,7 @@
       ]
      }
     ],
-    "durationSec": 6
+    "durationSec": 12
    }
   ],
   "addedKeywords": [
@@ -33703,7 +33911,8 @@
   "notes": [
    "perk Cremator_Longevity_Perk: EPAlchemyEffectHasKeyword(Cremator_FlameLongetivity_Effect)=1",
    "perk Cremator_Longevity_Perk: WornHasKeyword(dn_HasReciever_Slowburner)=1",
-   "perk Cremator_Longevity_Perk: entry point Mod Spell Duration — not modeled"
+   "perk Cremator_Longevity_Perk: entry point Mod Spell Duration — not modeled",
+   "removes enchantment CrematorFXEnchFireHit"
   ],
   "obtainable": true
  },
@@ -33882,7 +34091,9 @@
    "dn_HasProjectile_Explosive"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL ExplosionArrowExplosive carries direct damage with no Placed Object hazard — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+  ],
   "obtainable": true
  },
  {
@@ -33901,7 +34112,9 @@
    "dn_HasProjectile_Firework"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL ExplosionArrowFireworks carries direct damage with no Placed Object hazard — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+  ],
   "obtainable": false
  },
  {
@@ -34640,14 +34853,156 @@
   "targetKeywords": [
    "ma_Cryolator"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x008EE1E3:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008EE1E3",
+     "edid": "mod_Cryolator_Barrel_PolarLobber",
+     "name": "Polar Lobber Barrel"
+    },
+    "bucket": "baseDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 86
+      },
+      {
+       "x": 5,
+       "y": 96
+      },
+      {
+       "x": 10,
+       "y": 108
+      },
+      {
+       "x": 15,
+       "y": 122
+      },
+      {
+       "x": 20,
+       "y": 138
+      },
+      {
+       "x": 25,
+       "y": 155
+      },
+      {
+       "x": 30,
+       "y": 175
+      },
+      {
+       "x": 35,
+       "y": 198
+      },
+      {
+       "x": 40,
+       "y": 224
+      },
+      {
+       "x": 45,
+       "y": 253
+      },
+      {
+       "x": 50,
+       "y": 285
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "cryo"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x008EE1E3:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008EE1E3",
+     "edid": "mod_Cryolator_Barrel_PolarLobber",
+     "name": "Polar Lobber Barrel"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 34
+      },
+      {
+       "x": 5,
+       "y": 38
+      },
+      {
+       "x": 10,
+       "y": 42
+      },
+      {
+       "x": 15,
+       "y": 48
+      },
+      {
+       "x": 20,
+       "y": 54
+      },
+      {
+       "x": 25,
+       "y": 61
+      },
+      {
+       "x": 30,
+       "y": 69
+      },
+      {
+       "x": 35,
+       "y": 78
+      },
+      {
+       "x": 40,
+       "y": 88
+      },
+      {
+       "x": 45,
+       "y": 99
+      },
+      {
+       "x": 50,
+       "y": 112
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "cryo"
+      ]
+     }
+    ],
+    "durationSec": 6
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_CryoCell",
    "s_40_Cryolator_Polar_Lobber",
    "dn_Cryolator_PolarLobber"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL ExplosionCryo_Cryolator_PolarLobber Base Weapon Damage Mult 1 — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -36899,6 +37254,7 @@
   "addedKeywords": [],
   "hasEnchantments": true,
   "notes": [
+   "EXPL Bounty_War_ExplosionCrematorFireball_Red carries direct damage with no Placed Object hazard — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")",
    "MGEF Legendary_DamageInverseHealth_Description archetype Script — needs override"
   ],
   "obtainable": false
@@ -39157,7 +39513,7 @@
       ]
      }
     ],
-    "durationSec": 1
+    "durationSec": 10
    },
    {
     "id": "0x006E2242:ench:3",
@@ -39235,7 +39591,7 @@
       ]
      }
     ],
-    "durationSec": 1
+    "durationSec": 7
    }
   ],
   "addedKeywords": [
@@ -45202,7 +45558,9 @@
    "remapNode_CNuke_P-Nuke"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL ExplosionFatManMIRVPack targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+  ],
   "obtainable": true
  },
  {
@@ -45788,7 +46146,9 @@
    "dn_HasBarrel_Long"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL ExplosionGammaGunLarge targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+  ],
   "obtainable": true
  },
  {
@@ -45806,7 +46166,9 @@
    "dn_HasBarrel_Short"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL ExplosionGammaGun targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+  ],
   "obtainable": true
  },
  {
@@ -70824,146 +71186,6 @@
      "points": [
       {
        "x": 1,
-       "y": 10
-      },
-      {
-       "x": 5,
-       "y": 11
-      },
-      {
-       "x": 10,
-       "y": 12
-      },
-      {
-       "x": 15,
-       "y": 14
-      },
-      {
-       "x": 20,
-       "y": 16
-      },
-      {
-       "x": 25,
-       "y": 18
-      },
-      {
-       "x": 30,
-       "y": 20
-      },
-      {
-       "x": 35,
-       "y": 22
-      },
-      {
-       "x": 40,
-       "y": 25
-      },
-      {
-       "x": 45,
-       "y": 29
-      },
-      {
-       "x": 50,
-       "y": 32
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 5
-   },
-   {
-    "id": "0x0014EC64:ench:2",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0014EC64",
-     "edid": "mod_melee_Shishkebab_ExtraFlameJets",
-     "name": "Extra Flame Jets"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 3
-      },
-      {
-       "x": 5,
-       "y": 4
-      },
-      {
-       "x": 10,
-       "y": 4
-      },
-      {
-       "x": 15,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 6
-      },
-      {
-       "x": 25,
-       "y": 6
-      },
-      {
-       "x": 30,
-       "y": 7
-      },
-      {
-       "x": 35,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 9
-      },
-      {
-       "x": 45,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 12
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "ballistic"
-      ]
-     }
-    ],
-    "durationSec": 10
-   },
-   {
-    "id": "0x0014EC64:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0014EC64",
-     "edid": "mod_melee_Shishkebab_ExtraFlameJets",
-     "name": "Extra Flame Jets"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
        "y": 8
       },
       {
@@ -71024,7 +71246,7 @@
     "durationSec": 5
    },
    {
-    "id": "0x0014EC64:4",
+    "id": "0x0014EC64:2",
     "source": {
      "kind": "omod",
      "formId": "0x0014EC64",
@@ -71099,7 +71321,8 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "condition: IsUsingAltCurveTable()=1"
+   "condition: IsUsingAltCurveTable()=1",
+   "removes enchantment ShishkebabBleedFireDOT"
   ],
   "obtainable": true
  },
@@ -74179,7 +74402,9 @@
    "dn_HasScope_Recon"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL ExplosionMissileShell targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+  ],
   "obtainable": true
  },
  {
@@ -75866,7 +76091,9 @@
   ],
   "addedKeywords": [],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL Nitro_Explosive carries direct damage with no Placed Object hazard — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+  ],
   "obtainable": true
  },
  {
@@ -75904,6 +76131,7 @@
   "addedKeywords": [],
   "hasEnchantments": true,
   "notes": [
+   "EXPL Nitro_Explosive carries direct damage with no Placed Object hazard — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")",
    "perk mod_weapon_NitroPenetrating: entry point Mod VATS Penetration Min Visibility — not modeled"
   ],
   "obtainable": true
@@ -84616,7 +84844,9 @@
    "remapNode_RINGMOVE_P-RINGMOVE"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL ExplosionGammaGunLarge carries direct damage with no Placed Object hazard — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+  ],
   "obtainable": true
  },
  {
@@ -94558,7 +94788,9 @@
    "dn_HasProjectile_Explosive"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL ExplosionArrowExplosive carries direct damage with no Placed Object hazard — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+  ],
   "obtainable": true
  },
  {
@@ -101591,7 +101823,9 @@
   "modifiers": [],
   "addedKeywords": [],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL P62_ExplosionGrenade_ChaosEngine_Cryogenic targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+  ],
   "obtainable": true
  },
  {
@@ -101622,7 +101856,9 @@
   "modifiers": [],
   "addedKeywords": [],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL P62_crExplosionGrenade_ChaosEngine_Cryogenic targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+  ],
   "obtainable": true
  },
  {
@@ -104766,7 +105002,9 @@
    "UnsellableObject"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL RD01_ExplosionAutoGrenadeLauncher_ResolveBreaker targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+  ],
   "obtainable": true
  },
  {
@@ -105643,7 +105881,9 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "EXPL ExplosionNukaLauncher carries direct damage with no Placed Object hazard — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+  ],
   "obtainable": true
  },
  {

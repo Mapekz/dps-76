@@ -633,6 +633,60 @@ describe('computeDotDps (Stage A2, DoT line)', () => {
     expect(computeDotDps([mismatched], weapon, ctx)).toBe(0);
   });
 
+  describe('weapon-intrinsic base (2026-07-14, Cremator/Slow-Burner)', () => {
+    const weapon = makeWeapon({
+      components: [{ damageType: 'fire', tier: -1, levelCap: 50, curvePoints: FLAT_100 }],
+    });
+    const ctx = makeCtx(weapon);
+    const intrinsicDot = (value: number): Modifier => ({
+      id: 'weapon-intrinsic-dot',
+      source: { kind: 'weapon', formId: '0xW', edid: 'TestWeapon', name: 'Test Weapon' },
+      bucket: 'dotDamage',
+      op: 'ADD',
+      value,
+      conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
+    });
+
+    it('a kind:"weapon" modifier alone folds as an ordinary intrinsic dotDamage source', () => {
+      expect(computeDotDps([intrinsicDot(13)], weapon, ctx)).toBeCloseTo(13, 10);
+    });
+
+    it('an OMOD ADD dotDamage modifier STACKS on top of the weapon-intrinsic base (HarpoonGun + Barbed Harpoon)', () => {
+      const omodAdd = mod({
+        bucket: 'dotDamage', op: 'ADD', value: 10,
+        conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
+      });
+      expect(computeDotDps([intrinsicDot(13), omodAdd], weapon, ctx)).toBeCloseTo(23, 10);
+    });
+
+    it('an OMOD SET dotDamage modifier REPLACES the weapon-intrinsic base rather than stacking (Cremator + Slow-Burner)', () => {
+      const omodSet = mod({
+        bucket: 'dotDamage', op: 'SET', value: 17,
+        conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
+      });
+      expect(computeDotDps([intrinsicDot(13), omodSet], weapon, ctx)).toBeCloseTo(17, 10);
+    });
+
+    it('the SET-replacement does not affect an unrelated dotDamage source on a different damage type', () => {
+      const bleedWeapon = makeWeapon({
+        components: [
+          { damageType: 'fire', tier: -1, levelCap: 50, curvePoints: FLAT_100 },
+          { damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: FLAT_100 },
+        ],
+      });
+      const bleedCtx = makeCtx(bleedWeapon);
+      const omodSet = mod({
+        bucket: 'dotDamage', op: 'SET', value: 17,
+        conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
+      });
+      const unrelatedBleed = mod({
+        bucket: 'dotDamage', op: 'ADD', value: 5,
+        conditions: [{ kind: 'damageTypeScope', types: ['ballistic'] }],
+      });
+      expect(computeDotDps([intrinsicDot(13), omodSet, unrelatedBleed], bleedWeapon, bleedCtx)).toBeCloseTo(22, 10); // 17 (fire, replaced) + 5 (ballistic, untouched)
+    });
+  });
+
   it('surfaces on ScenarioResult.dotDps without moving perHit/burstDps/sustain', () => {
     const weapon = makeWeapon({
       components: [{ damageType: 'fire', tier: -1, levelCap: 50, curvePoints: FLAT_100 }],

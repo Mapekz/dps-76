@@ -1,12 +1,11 @@
-import type {
-  CurvePoint,
-  ExcludedRecordDetail,
-  GeneratedDamageComponent,
-  GeneratedDamageType,
-  GeneratedWeapon,
-} from '../../src/types/generated';
+import type { ExcludedRecordDetail, GeneratedDamageComponent, GeneratedWeapon } from '../../src/types/generated';
+import type { Modifier } from '../../src/types/modifiers';
 import { EsmClient, mapPool, type EsmRecord } from './esm-client';
+import { asNumber, DAMAGE_TYPE_EDID_MAP, decodeExplosionDamage, parseCurve, projectileExplosionFormId } from './normalize/explosion';
+import { buildAvifRoutes, translateEnchantment, type AvifRoute } from './normalize/mgef';
 import { ObtainabilityClassifier } from './obtainability';
+
+export { DAMAGE_TYPE_EDID_MAP };
 
 // EDID patterns for records that are never player weapons (creature attacks,
 // deleted/deprecated content, turrets, event-NPC gear...). This is only a
@@ -28,18 +27,6 @@ export function isExcludedWeaponEdid(edid: string): boolean {
   return EXCLUDED_EDID_PATTERNS.some(p => p.test(edid));
 }
 
-export const DAMAGE_TYPE_EDID_MAP: Record<string, GeneratedDamageType> = {
-  dtPhysical: 'ballistic',
-  dtEnergy: 'energy',
-  dtFire: 'fire',
-  dtCryo: 'cryo',
-  dtPoison: 'poison',
-  dtRadiationExposure: 'radiation',
-  dtRadiation: 'radiation',
-};
-
-const TIER_RE = /Damage_Universal_Tier(\d+)/i;
-
 interface ExtractWeaponsResult {
   weapons: GeneratedWeapon[];
   excluded: Record<string, string[]>;
@@ -47,20 +34,34 @@ interface ExtractWeaponsResult {
   unresolved: string[];
   /** Formids of obtainable weapons — feeds the OMOD obtainability pass. */
   obtainableFormIds: Set<string>;
+  /**
+   * Keywords of every weapon that already carries its OWN `fromExplosion`
+   * component (chaseExplosion, weapon-level — launcher families: Missile
+   * Launchers, Fat Man, Gamma Gun, ...). Feeds extract-omods.ts's
+   * `OverrideProjectile` chase: a barrel/receiver OMOD targeting one of these
+   * keywords swaps WHICH projectile such a weapon fires — its own EXPL/HAZD
+   * chase would materialize damage ALONGSIDE the weapon's now-stale baseline
+   * fromExplosion component instead of replacing it (a pre-existing,
+   * documented gap — chaseExplosion's own doc comment: "OMOD projectile
+   * overrides swapping the explosion... not modeled"), so that chase must
+   * stay note-only for these weapon families (docs/assumptions.md
+   * "OMOD-chased launcher payloads"). Verified 2026-07-14 on the Hellstorm
+   * Missile Launcher's Napalm/Cryo/Plasma tube barrels — unlike Lobber/Polar
+   * Lobber (Lightning Gun/Cryolator are pure beam weapons with NO
+   * fromExplosion component to conflict with).
+   */
+  explosiveFamilyKeywords: Set<string>;
 }
 
-function asNumber(v: unknown, fallback = 0): number {
-  return typeof v === 'number' && Number.isFinite(v) ? v : fallback;
-}
-
-function parseCurve(node: unknown): { tier: number | null; curve: CurvePoint[] | null } {
-  if (!node || typeof node !== 'object') return { tier: null, curve: null };
-  const obj = node as { curve_path?: string; curve?: CurvePoint[] };
-  const match = obj.curve_path ? TIER_RE.exec(obj.curve_path) : null;
-  return {
-    tier: match ? Number(match[1]) : null,
-    curve: Array.isArray(obj.curve) && obj.curve.length > 0 ? obj.curve : null,
-  };
+/** Shared by extractWeapons() and run-all.ts's `--only omods`-without-weapons fallback. */
+export function explosiveFamilyKeywordsOf(weapons: Pick<GeneratedWeapon, 'keywords' | 'components'>[]): Set<string> {
+  const keywords = new Set<string>();
+  for (const w of weapons) {
+    if (w.components.some(c => c.fromExplosion)) {
+      for (const kw of w.keywords) keywords.add(kw);
+    }
+  }
+  return keywords;
 }
 
 async function buildComponents(
@@ -158,55 +159,81 @@ export async function chaseExplosion(
     }
     if (!projFormId || projFormId === '0x00000000') return none;
 
-    const proj = await client.get(projFormId);
-    const projData = (proj.fields['Data'] ?? {}) as Record<string, unknown>;
-    const projFlags = ((projData['Flags'] ?? {}) as Record<string, unknown>)['flags'];
-    if (!Array.isArray(projFlags) || !projFlags.includes('Explosion')) return none;
-    const explFormId = projData['Explosion'] as string | null;
-    if (!explFormId || explFormId === '0x00000000') return none;
+    const explFormId = await projectileExplosionFormId(client, projFormId);
+    if (!explFormId) return none;
 
     const expl = await client.get(explFormId);
-    const explData = (expl.fields['Data'] ?? {}) as Record<string, unknown>;
+    const decoded = await decodeExplosionDamage(client, expl, unresolved);
     const components: GeneratedDamageComponent[] = [];
 
     // Main physical explosion damage (same node shape as WEAP "Damage Curve").
-    const mainCurve = parseCurve(explData['Damage Curve Table']);
-    const flatDamage = asNumber(explData['Damage']);
-    if (mainCurve.curve || flatDamage > 0) {
+    if (decoded.main) {
       components.push({
         damageType: 'explosive',
         damageTypeEdid: null,
-        amount: flatDamage,
-        ...mainCurve,
+        amount: decoded.main.amount,
+        tier: decoded.main.tier,
+        curve: decoded.main.curve,
         fromExplosion: true,
       });
     }
 
     // Typed entries (Cremator fire, Gamma Gun radiation) — WEAP-identical shape.
-    const typedEntries = Array.isArray(expl.fields['Damage Types'])
-      ? (expl.fields['Damage Types'] as Array<Record<string, unknown>>)
-      : [];
-    for (const entry of typedEntries) {
-      const typeFormId = entry['Type'] as string;
-      const typeEdid = await client.resolveEdid(typeFormId);
-      const damageType = DAMAGE_TYPE_EDID_MAP[typeEdid];
-      if (!damageType) unresolved.push(`damage type ${typeEdid} (${typeFormId})`);
-      const { tier, curve } = parseCurve(entry['Curve Table']);
+    for (const entry of decoded.typed) {
       components.push({
-        damageType: damageType ?? 'unknown',
-        damageTypeEdid: typeEdid,
-        amount: asNumber(entry['Amount']),
-        tier,
-        curve,
+        damageType: entry.damageType,
+        damageTypeEdid: entry.damageTypeEdid,
+        amount: entry.amount,
+        tier: entry.tier,
+        curve: entry.curve,
         fromExplosion: true,
       });
     }
 
-    return { components, baseWeaponDamageMult: asNumber(explData['Base Weapon Damage Mult']) };
+    return { components, baseWeaponDamageMult: decoded.baseWeaponDamageMult };
   } catch (err) {
     unresolved.push(`explosion chase failed for ${edid}: ${err instanceof Error ? err.message : String(err)}`);
     return none;
   }
+}
+
+/**
+ * Weapon-intrinsic on-hit enchantment chase (Cremator's built-in fire DoT,
+ * bladed melee weapons' innate bleed, Shishkebab's burn+bleed, HarpoonGun's
+ * bleed, ...): the WEAP record's own `Enchantment` field (distinct from an
+ * OMOD's `Enchantments` property — extract-omods.ts's `enchantmentModifiers`)
+ * chased through the SAME MGEF translation OMOD enchantments use
+ * (`translateEnchantment`, normalize/mgef.ts), gated to Contact-delivery
+ * enchantments — every WEAP.Enchantment reference in the 20260710 dump is
+ * Contact/Fire-and-Forget (on-hit procs); a Self-delivery weapon enchantment
+ * would be a permanent stat buff and is deliberately out of scope here.
+ * Materialized onto GeneratedWeapon.modifiers, sourced `kind: 'weapon'` so
+ * paper-damage.ts's `computeDotDps` can fold it as the intrinsic BASE an
+ * OMOD's own dotDamage modifiers stack onto (or, via a SET override, replace
+ * — docs/assumptions.md "Weapon-intrinsic DoT & OMOD replacement").
+ */
+export async function chaseWeaponEnchantment(
+  client: EsmClient,
+  fields: Record<string, unknown>,
+  formId: string,
+  edid: string,
+  name: string,
+  avifRoutes: Map<string, AvifRoute[]>,
+  edidByFormId: Map<string, string>,
+  unresolved: string[]
+): Promise<Modifier[]> {
+  const enchFormId = fields['Enchantment'] as string | null;
+  if (!enchFormId || enchFormId === '0x00000000') return [];
+
+  const { modifiers, notes, targetType } = await translateEnchantment(
+    { client, routes: avifRoutes, edidByFormId, timedIsActive: true, noteUnroutedAvs: true },
+    enchFormId
+  );
+  notes.forEach(n => unresolved.push(`${edid}: weapon enchantment: ${n}`));
+  if (targetType !== 'Contact') return []; // Self/other-delivery weapon enchantments: out of scope (see doc comment above).
+
+  const source: Modifier['source'] = { kind: 'weapon', formId, edid, name };
+  return modifiers.map((f, i) => ({ id: `${formId}:weaponEnch:${i}`, source, ...f }));
 }
 
 function templateCombinationItems(fields: Record<string, unknown>): Array<Record<string, unknown>> {
@@ -320,6 +347,7 @@ export async function toGeneratedWeapon(
     attachParentSlots: Array.isArray(fields['Attach Parent Slots'])
       ? (fields['Attach Parent Slots'] as string[])
       : [],
+    modifiers: [],
   };
 }
 
@@ -337,6 +365,16 @@ export async function extractWeapons(client: EsmClient): Promise<ExtractWeaponsR
 
   const unresolved: string[] = [];
   const weapons: GeneratedWeapon[] = [];
+
+  // Weapon-intrinsic Enchantment chase (chaseWeaponEnchantment) shares the
+  // plumbing-perk AVIF routes with every other MGEF-translation site, in case
+  // a future weapon-level effect turns out to be a Peak/Value Modifier rather
+  // than the Damage-archetype DoTs seen in the 20260710 dump (which don't
+  // consult routes at all).
+  const routePool = new Set<string>();
+  const avifRoutes = await buildAvifRoutes(client, routePool);
+  const edidByFormId = new Map<string, string>();
+  for (const id of routePool) edidByFormId.set(id, await client.resolveEdid(id));
 
   const records = await mapPool(candidates, 8, row => client.get(row.form_id));
   for (const record of records) {
@@ -363,6 +401,11 @@ export async function extractWeapons(client: EsmClient): Promise<ExtractWeaponsR
       excluded.noDamage.push(weapon.id);
       continue;
     }
+    // Weapon-intrinsic on-hit Enchantment chase (Cremator's built-in fire
+    // DoT, bladed melee weapons' innate bleed, ...) — see chaseWeaponEnchantment.
+    weapon.modifiers = await chaseWeaponEnchantment(
+      client, record.fields, weapon.formId, weapon.id, weapon.name, avifRoutes, edidByFormId, unresolved
+    );
     weapons.push(weapon);
   }
 
@@ -387,5 +430,12 @@ export async function extractWeapons(client: EsmClient): Promise<ExtractWeaponsR
   }
 
   weapons.sort((a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
-  return { weapons, excluded, excludedDetailed, unresolved: [...new Set(unresolved)], obtainableFormIds };
+  return {
+    weapons,
+    excluded,
+    excludedDetailed,
+    unresolved: [...new Set(unresolved)],
+    obtainableFormIds,
+    explosiveFamilyKeywords: explosiveFamilyKeywordsOf(weapons),
+  };
 }

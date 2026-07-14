@@ -106,6 +106,7 @@ export function adaptWeapon(gw: GeneratedWeapon): Weapon {
     projectileCount: gw.projectileCount,
     damageBonusMult: gw.damageBonusMult,
     explosionBaseWeaponDamageMult: gw.explosionBaseWeaponDamageMult,
+    modifiers: gw.modifiers,
     ...weaponCorrections[gw.id],
   };
 }

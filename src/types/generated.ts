@@ -108,6 +108,18 @@ export interface GeneratedWeapon {
    * (pre-derivation extractions).
    */
   obtainable?: boolean;
+  /**
+   * Weapon-intrinsic modifiers — chased from the WEAP record's own
+   * `Enchantment` field (Contact-delivery on-hit effects: Cremator's built-in
+   * fire DoT, bladed melee weapons' innate bleed, Shishkebab's burn+bleed,
+   * HarpoonGun's bleed, ...), NOT from an equipped OMOD/perk/buff. Sourced
+   * `kind: 'weapon'` (src/types/modifiers.ts) so the engine can tell them
+   * apart from player-equipped sources — see paper-damage.ts's
+   * `computeDotDps` and docs/assumptions.md "Weapon-intrinsic DoT & OMOD
+   * replacement". Always present (empty when the weapon has no chased
+   * Enchantment), mirroring GeneratedOmod.modifiers.
+   */
+  modifiers: Modifier[];
 }
 
 import type { Modifier } from './modifiers';

@@ -1,4 +1,5 @@
 import type { Special } from '@/data/special';
+import type { Modifier } from '@/types/modifiers';
 
 // Re-export for convenience
 export type { Special } from '@/data/special';
@@ -309,6 +310,14 @@ export interface Weapon {
    * legendary ADDs on top of it).
    */
   explosionBaseWeaponDamageMult?: number;
+  /**
+   * Weapon-intrinsic modifiers (GeneratedWeapon.modifiers — the WEAP's own
+   * Contact-delivery Enchantment chase, e.g. Cremator's built-in fire DoT).
+   * Sourced `kind: 'weapon'`; folded by `computeDotDps` (paper-damage.ts) as
+   * the intrinsic base an OMOD's own same-bucket modifiers stack onto or
+   * replace (docs/assumptions.md "Weapon-intrinsic DoT & OMOD replacement").
+   */
+  modifiers?: Modifier[];
 
   // ── Legacy / scaffolding ─────────────────────────────────────────────────
   /** Flat base damage override (used by enemy weapon scaffolding). Derived

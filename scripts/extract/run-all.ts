@@ -3,7 +3,7 @@ import path from 'node:path';
 import { parseArgs } from 'node:util';
 import type { GeneratedMeta, GeneratedWeapon } from '../../src/types/generated';
 import { EsmClient } from './esm-client';
-import { extractWeapons } from './extract-weapons';
+import { explosiveFamilyKeywordsOf, extractWeapons } from './extract-weapons';
 import { extractPerks } from './extract-perks';
 import { extractOmods } from './extract-omods';
 import { extractBuffs } from './extract-buffs';
@@ -72,11 +72,17 @@ async function main() {
 
   // Obtainable weapon formids feed the OMOD obtainability pass (two-phase).
   let obtainableWeaponFormIds: Set<string> | undefined;
+  // Keywords of weapons already carrying their own fromExplosion component —
+  // feeds the OverrideProjectile chase's launcher-family guard (see
+  // ExtractWeaponsResult.explosiveFamilyKeywords).
+  let explosiveFamilyKeywords: Set<string> | undefined;
 
   if (only.includes('weapons')) {
     console.log('Extracting weapons…');
-    const { weapons, excluded, excludedDetailed, unresolved, obtainableFormIds } = await extractWeapons(client);
+    const { weapons, excluded, excludedDetailed, unresolved, obtainableFormIds, explosiveFamilyKeywords: efk } =
+      await extractWeapons(client);
     obtainableWeaponFormIds = obtainableFormIds;
+    explosiveFamilyKeywords = efk;
     await writeFile(path.join(outDir, 'weapons.json'), JSON.stringify(weapons, null, 1));
     meta.counts.weapons = weapons.length;
     meta.excluded = { ...meta.excluded, ...excluded };
@@ -113,14 +119,15 @@ async function main() {
 
   if (only.includes('omods')) {
     console.log('Extracting OMODs…');
-    if (!obtainableWeaponFormIds) {
+    if (!obtainableWeaponFormIds || !explosiveFamilyKeywords) {
       // `--only omods` without a weapons pass: read the checked-in generated set.
       const existing = JSON.parse(
         await readFile(path.join(outDir, 'weapons.json'), 'utf8')
       ) as GeneratedWeapon[];
-      obtainableWeaponFormIds = new Set(existing.filter(w => w.obtainable !== false).map(w => w.formId));
+      obtainableWeaponFormIds ??= new Set(existing.filter(w => w.obtainable !== false).map(w => w.formId));
+      explosiveFamilyKeywords ??= explosiveFamilyKeywordsOf(existing);
     }
-    const result = await extractOmods(client, obtainableWeaponFormIds);
+    const result = await extractOmods(client, obtainableWeaponFormIds, explosiveFamilyKeywords);
     await writeFile(path.join(outDir, 'omods.json'), JSON.stringify(result.omods, null, 1));
     meta.counts.omods = result.omods.length;
     meta.excluded = { ...meta.excluded, ...result.excluded };

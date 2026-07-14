@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import type { EsmClient, EsmRecord } from '../esm-client';
-import { chaseExplosion, isExcludedWeaponEdid, toGeneratedWeapon } from '../extract-weapons';
+import { chaseExplosion, chaseWeaponEnchantment, isExcludedWeaponEdid, toGeneratedWeapon } from '../extract-weapons';
+import type { AvifRoute } from '../normalize/mgef';
 import { isExcludedOmodEdid } from '../extract-omods';
 import fixer from './fixtures/weap-fixer.json';
 import gatlingPlasma from './fixtures/weap-gatling-plasma.json';
@@ -176,6 +177,120 @@ describe('chaseExplosion', () => {
     const result = await chaseExplosion(stubClient, fields, 'BrokenWeapon', unresolved);
     expect(result.components).toEqual([]);
     expect(unresolved.some(u => u.includes('BrokenWeapon'))).toBe(true);
+  });
+});
+
+/**
+ * Stub client mirroring Cremator's real WEAP.Enchantment chase (2026-07-14
+ * fix): the base ENCH (CrematorFXEnchFireHit-shaped) carries an NPC-target
+ * branch (GetIsPlayer=0, Run On: Subject — a tier-13-shaped curve, the one
+ * this calculator must keep) and a PVP-only branch (GetIsPlayer=1 — a flat
+ * value that must be dropped).
+ */
+function makeWeaponEnchantmentStubClient(): EsmClient {
+  const enchFormId = '0xWEAPENCH';
+  const mgefFormId = '0xWEAPMGEF';
+  const fireResistFormId = '0xFIRERESIST';
+  const known: Record<string, EsmRecord> = {
+    [enchFormId]: {
+      header: { signature: 'ENCH', form_id: enchFormId },
+      editor_id: 'TestWeaponFireHitEnch',
+      fields: {
+        'Effect Data': { 'Target Type': { name: 'Contact' }, 'Cast Type': { name: 'Fire and Forget' } },
+        Effects: [
+          {
+            Effect: {
+              'Base Effect': mgefFormId,
+              'Effect Item Data': {
+                Magnitude: 10,
+                Duration: 6,
+              },
+              'Curve Table': {
+                curve_path: 'Player\\Damage\\Damage_Universal_Tier13.json',
+                curve: [
+                  { x: 1, y: 10 },
+                  { x: 50, y: 32 },
+                ],
+              },
+              Conditions: {
+                Conditions: [
+                  { Condition: { 'Condition Data': { Function: 'GetIsPlayer', 'Comparison Value': 0, Operator: 'Equal To', 'Run On': 'Subject' } } },
+                ],
+              },
+            },
+          },
+          {
+            Effect: {
+              'Base Effect': mgefFormId,
+              'Effect Item Data': { Magnitude: 3, Duration: 6 },
+              Conditions: {
+                Conditions: [
+                  { Condition: { 'Condition Data': { Function: 'GetIsPlayer', 'Comparison Value': 1, Operator: 'Equal To', 'Run On': 'Subject' } } },
+                ],
+              },
+            },
+          },
+        ],
+      },
+    } as unknown as EsmRecord,
+    [mgefFormId]: {
+      header: { signature: 'MGEF', form_id: mgefFormId },
+      editor_id: 'TestWeaponFireHitMgef',
+      fields: {
+        'Magic Effect Data': { Data: { Archetype: { name: 'Damage' }, 'Resist Value': fireResistFormId, Flags: { value: '0x0', flags: [] } } },
+      },
+    } as unknown as EsmRecord,
+    [fireResistFormId]: { header: { signature: 'AVIF', form_id: fireResistFormId }, editor_id: 'FireResist', fields: {} } as unknown as EsmRecord,
+  };
+  const get = async (target: string): Promise<EsmRecord> => {
+    if (known[target]) return known[target];
+    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+  };
+  return { get, resolveEdid: async (formId: string) => (await get(formId)).editor_id } as unknown as EsmClient;
+}
+
+describe('chaseWeaponEnchantment (weapon-intrinsic on-hit DoT, 2026-07-14)', () => {
+  const client = makeWeaponEnchantmentStubClient();
+  const routes = new Map<string, AvifRoute[]>();
+  const edidByFormId = new Map<string, string>();
+
+  it("keeps the NPC branch (fire-scoped dotDamage, curve) and drops the PVP-only branch, sourced kind 'weapon'", async () => {
+    const unresolved: string[] = [];
+    const modifiers = await chaseWeaponEnchantment(
+      client, { Enchantment: '0xWEAPENCH' }, '0xCREMATOR', 'Cremator', 'Cremator', routes, edidByFormId, unresolved
+    );
+    expect(modifiers).toHaveLength(1);
+    expect(modifiers[0]).toMatchObject({
+      source: { kind: 'weapon', formId: '0xCREMATOR', edid: 'Cremator', name: 'Cremator' },
+      bucket: 'dotDamage',
+      op: 'ADD',
+      durationSec: 6,
+      conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
+    });
+    expect(modifiers[0].curve?.points).toEqual([{ x: 1, y: 10 }, { x: 50, y: 32 }]);
+  });
+
+  it('returns [] when the weapon has no Enchantment field', async () => {
+    const modifiers = await chaseWeaponEnchantment(client, {}, '0xCREMATOR', 'Cremator', 'Cremator', routes, edidByFormId, []);
+    expect(modifiers).toEqual([]);
+  });
+
+  it('returns [] for a Self-delivery weapon enchantment (out of scope)', async () => {
+    const get = async (formId: string): Promise<EsmRecord> => {
+      if (formId === '0xSELFENCH') {
+        return {
+          header: { signature: 'ENCH', form_id: '0xSELFENCH' },
+          editor_id: 'TestSelfWeaponEnch',
+          fields: { 'Effect Data': { 'Target Type': { name: 'Self' } }, Effects: [] },
+        } as unknown as EsmRecord;
+      }
+      throw new Error(`unexpected get(${formId})`);
+    };
+    const selfClient = { get, resolveEdid: async (formId: string) => (await get(formId)).editor_id } as unknown as EsmClient;
+    const modifiers = await chaseWeaponEnchantment(
+      selfClient, { Enchantment: '0xSELFENCH' }, '0xW', 'TestWeapon', 'Test Weapon', routes, edidByFormId, []
+    );
+    expect(modifiers).toEqual([]);
   });
 });
 
