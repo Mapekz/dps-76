@@ -152,6 +152,15 @@ export type Condition =
   | { kind: 'weaponKeyword'; keyword: string; present: boolean }
   /** OR-group: the weapon must carry at least one of these keywords (Ninja: bow OR thrown OR melee). */
   | { kind: 'weaponKeywordAny'; keywords: string[] }
+  /**
+   * WEAP anim-type enum (Data."Weapon Type", GetWeaponAnimType()) at or below
+   * `max`. Martial Artist's melee gate is ≤6: melee/unarmed anim types are
+   * 0/1/5/6 while every true ranged weapon is 9 (Gun) and thrown 10 (Grenade)
+   * — verified by a 2026-07-14 sweep of all 282 roster weapons. Notably
+   * excludes gun-animated melee (Paddle Ball, War Shrike), which a keyword
+   * gate would wrongly include.
+   */
+  | { kind: 'weaponAnimTypeMax'; max: number }
   /** Restrict a dbm modifier to matching damage components (Demolition Expert → explosive only). */
   | { kind: 'damageTypeScope'; types: DamageType[] }
   /** Which body part the hit lands on (Center Masochist → torso only). */

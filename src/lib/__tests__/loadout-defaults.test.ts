@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { resolveLoadout } from '@/lib/loadout';
 import { getDefaultOmodId, getOmodById } from '@/data/omods';
 import { getWeapons } from '@/data';
+import { PerkId } from '@/data/perk-ids';
 import {
   createDefaultEnemyConfig,
   createDefaultPlayerConfig,
@@ -74,6 +75,41 @@ describe('default mod folding (assemble-time)', () => {
 });
 
 describe('loadout weapon-stat folding (perk weapon-stat fold gap)', () => {
+  function loadoutWithPerks(weaponId: string, perks: PlayerConfig['perks']) {
+    const playerConfig: PlayerConfig = {
+      ...createDefaultPlayerConfig(),
+      weapon: { weaponId, mods: {}, legendaryEffects: [] },
+      perks,
+    };
+    return resolveLoadout(playerConfig, createDefaultEnemyConfig(), 'live');
+  }
+
+  it('Martial Artist rank 3 folds +0.3 swing speed on a melee weapon (weaponAnimTypeMax gate, 2026-07-14)', () => {
+    const stock = loadout('Machete');
+    const withPerk = loadoutWithPerks('Machete', [{ perkId: PerkId.MartialArtist, rank: 3 }]);
+    expect(stock!.weapon.animType).toBe(1); // OneHandSword
+    expect(withPerk!.weapon.speed).toBeCloseTo((stock!.weapon.speed ?? 1) + 0.3, 6);
+  });
+
+  it('Martial Artist does NOT speed up gun-animated weapons: the Fixer (Gun) and the melee-classed Paddle Ball (Gun)', () => {
+    for (const weaponId of ['CombatRifle_Fixer', 'DLC04_PaddleBall_NWOT']) {
+      const stock = loadout(weaponId);
+      const withPerk = loadoutWithPerks(weaponId, [{ perkId: PerkId.MartialArtist, rank: 3 }]);
+      expect(stock!.weapon.animType).toBe(9); // Gun — GetWeaponAnimType()≤6 fails
+      expect(withPerk!.weapon.speed).toBeCloseTo(stock!.weapon.speed ?? 1, 6);
+    }
+  });
+
+  it('Ground Pounder rank 3 folds +0.3 reload speed on small guns but not heavy guns (expanded SmallGun_Actor_Condition, 2026-07-14)', () => {
+    const stockFixer = loadout('CombatRifle_Fixer');
+    const fixer = loadoutWithPerks('CombatRifle_Fixer', [{ perkId: PerkId.GroundPounder, rank: 3 }]);
+    expect(fixer!.weapon.reloadSpeed).toBeCloseTo((stockFixer!.weapon.reloadSpeed ?? 1) + 0.3, 6);
+
+    const stockGauss = loadout('GaussMinigun');
+    const gauss = loadoutWithPerks('GaussMinigun', [{ perkId: PerkId.GroundPounder, rank: 3 }]);
+    expect(gauss!.weapon.reloadSpeed).toBeCloseTo(stockGauss!.weapon.reloadSpeed ?? 1, 6);
+  });
+
   it('Speed Demon folds +0.3 reload speed into the effective weapon and leaves no reloadSpeed modifier downstream', () => {
     const playerConfig: PlayerConfig = {
       ...createDefaultPlayerConfig(),

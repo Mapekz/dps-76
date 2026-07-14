@@ -15,6 +15,7 @@ import {
   collectConditionGlobalIds,
   parseMagicEffects,
   repairMisattributedPerkEntryFields,
+  resolveConditionForms,
   translateMagicEffect,
   type SpellEffect,
 } from './normalize/mgef';
@@ -247,11 +248,13 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
   const globalIdPool = new Set<string>();
 
   const spellCache = new Map<string, SpellEffect[]>();
+  const allConditionRows: RawCondition[] = [];
   for (const record of cards) {
     for (const raw of getEffects(record)) {
       const parsed = parsePerkEffect(raw);
       collectConditionFormIds(parsed.conditionRows, formIdPool);
       collectConditionGlobalIds(parsed.conditionRows, globalIdPool);
+      allConditionRows.push(...parsed.conditionRows);
       if (parsed.ability) {
         if (!spellCache.has(parsed.ability)) {
           const spellEffects = parseMagicEffects(await client.get(parsed.ability));
@@ -259,6 +262,7 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
           for (const se of spellEffects) {
             collectConditionFormIds(se.conditionRows, formIdPool);
             collectConditionGlobalIds(se.conditionRows, globalIdPool);
+            allConditionRows.push(...se.conditionRows);
           }
         }
       }
@@ -269,6 +273,11 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
   await mapPool([...formIdPool], 8, async id => {
     edidByFormId.set(id, await client.resolveEdid(id));
   });
+
+  // CNDF indirections (IsTrueForConditionForm — Ground Pounder's
+  // SmallGun_Actor_Condition) pre-fetched once for every condition row seen
+  // above; shared by direct translation and translateMagicEffect below.
+  const conditionForms = await resolveConditionForms(client, allConditionRows, edidByFormId);
 
   // Resolve each GLOB's numeric Value (mirrors normalize/mgef.ts's
   // translateGrantedPerk, which does the same for the granted-perk chase).
@@ -343,6 +352,7 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
       const translationCtx: ConditionTranslationContext = {
         edidByFormId,
         globalValues,
+        conditionForms,
         familyFormIds: formIds,
         ownedRanks: rank,
         ...(pairedFamilyFormIds && { pairedFamilyFormIds }),
@@ -426,6 +436,7 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
                   familyFormIds: formIds,
                   ownedRanks: rank,
                   globalValues,
+                  conditionForms,
                   ...(pairedFamilyFormIds && { pairedFamilyFormIds }),
                 }
               );

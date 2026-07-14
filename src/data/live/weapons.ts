@@ -22,6 +22,23 @@ const DAMAGE_TYPE_MAP: Record<GeneratedDamageType, WeaponComponent['damageType']
   unknown: 'ballistic',
 };
 
+/**
+ * WEAP Data."Weapon Type" name → the numeric anim-type enum GetWeaponAnimType()
+ * reads (the esm CLI decodes the value to these names). Verified against the
+ * ESM 2026-07-14 by sweeping all 282 roster weapons' raw Data."Weapon Type"
+ * values; only these six occur in FO76 (no daggers/axes/bows/staves at 2-4,
+ * 7-8 — even Bow/Crossbow WEAPs are 9 "Gun"). Unlisted names map to undefined
+ * → anim-gated conditions fail closed.
+ */
+const ANIM_TYPE_VALUES: Record<string, number> = {
+  HandToHandMelee: 0,
+  OneHandSword: 1,
+  TwoHandSword: 5,
+  TwoHandAxe: 6,
+  Gun: 9,
+  Grenade: 10,
+};
+
 function classifyWeaponClass(gw: GeneratedWeapon): Weapon['weaponClass'] {
   const kw = new Set(gw.keywords);
   if (kw.has('WeaponTypeHeavyGun')) return 'heavy';
@@ -68,6 +85,7 @@ export function adaptWeapon(gw: GeneratedWeapon): Weapon {
     components,
     damageType: primary,
     weaponClass: classifyWeaponClass(gw),
+    animType: ANIM_TYPE_VALUES[gw.weaponTypeName],
     speed: gw.speed,
     isAutomatic: gw.isAutomaticFlag,
     isPhysical: components[0]?.damageType === 'ballistic',

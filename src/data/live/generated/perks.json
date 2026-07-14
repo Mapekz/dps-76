@@ -9936,8 +9936,17 @@
       "value": 0.1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsTrueForConditionForm(SmallGun_Actor_Condition)=1"
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeRifle",
+         "WeaponTypeShotgun",
+         "WeaponTypePistol"
+        ]
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
        }
       ]
      }
@@ -9960,8 +9969,17 @@
       "value": 0.2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsTrueForConditionForm(SmallGun_Actor_Condition)=1"
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeRifle",
+         "WeaponTypeShotgun",
+         "WeaponTypePistol"
+        ]
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
        }
       ]
      }
@@ -9984,8 +10002,17 @@
       "value": 0.3,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsTrueForConditionForm(SmallGun_Actor_Condition)=1"
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeRifle",
+         "WeaponTypeShotgun",
+         "WeaponTypePistol"
+        ]
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
        }
       ]
      }
@@ -10009,9 +10036,7 @@
     3
    ]
   },
-  "notes": [
-   "condition: IsTrueForConditionForm(SmallGun_Actor_Condition)=1"
-  ]
+  "notes": []
  },
  {
   "family": "Guerrilla",
@@ -17213,8 +17238,8 @@
       "value": 0.1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetWeaponAnimType()=6"
+        "kind": "weaponAnimTypeMax",
+        "max": 6
        }
       ]
      }
@@ -17237,8 +17262,8 @@
       "value": 0.2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetWeaponAnimType()=6"
+        "kind": "weaponAnimTypeMax",
+        "max": 6
        }
       ]
      }
@@ -17261,8 +17286,8 @@
       "value": 0.3,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetWeaponAnimType()=6"
+        "kind": "weaponAnimTypeMax",
+        "max": 6
        }
       ]
      }
@@ -17286,9 +17311,7 @@
     3
    ]
   },
-  "notes": [
-   "condition: GetWeaponAnimType()=6"
-  ]
+  "notes": []
  },
  {
   "family": "MeatSweats_DecreasedHungerPerk",
@@ -30154,8 +30177,8 @@
       "value": 0.2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetWeaponAnimType()=6"
+        "kind": "weaponAnimTypeMax",
+        "max": 6
        }
       ]
      }
@@ -30163,9 +30186,7 @@
    }
   ],
   "hasCard": false,
-  "notes": [
-   "condition: GetWeaponAnimType()=6"
-  ]
+  "notes": []
  },
  {
   "family": "ZZZ_SCORE_NukaX_StaggerEnemyChancePerk",

@@ -182,6 +182,45 @@ export function collectConditionFormIds(rows: RawCondition[], into: Set<string>)
 }
 
 /**
+ * Pre-fetch the CNDF condition-form records referenced by
+ * `IsTrueForConditionForm` rows so sync translation can inline-expand them
+ * (translateConditions' `tryExpandConditionForm`): formid → the form's own
+ * flattened rows, with every nested Parameter-1 edid resolved into the shared
+ * map. Mutation_Check_UseNormalVersion/UseSuperVersion are skipped — they
+ * have a dedicated strangeInNumbers translation. Fetch failures simply leave
+ * the row unexpanded (it stays `unresolved`, the pre-existing behavior).
+ */
+export async function resolveConditionForms(
+  client: EsmClient,
+  rows: RawCondition[],
+  edidByFormId: Map<string, string>,
+  into: Map<string, RawCondition[]> = new Map()
+): Promise<Map<string, RawCondition[]>> {
+  for (const row of rows) {
+    if (row.Function !== 'IsTrueForConditionForm') continue;
+    const p = row['Parameter 1'];
+    if (typeof p !== 'string' || !p.startsWith('0x') || into.has(p)) continue;
+    if (!edidByFormId.has(p)) edidByFormId.set(p, await client.resolveEdid(p));
+    const edid = edidByFormId.get(p);
+    if (edid === 'Mutation_Check_UseNormalVersion' || edid === 'Mutation_Check_UseSuperVersion') continue;
+    try {
+      const record = await client.get(p);
+      const nested = flattenConditionRows(record.fields['Conditions']);
+      for (const n of nested) {
+        const np = n['Parameter 1'];
+        if (typeof np === 'string' && np.startsWith('0x') && !edidByFormId.has(np)) {
+          edidByFormId.set(np, await client.resolveEdid(np));
+        }
+      }
+      if (nested.length > 0) into.set(p, nested);
+    } catch {
+      /* stays unresolved in translation */
+    }
+  }
+  return into;
+}
+
+/**
  * Harvest GLOB formids referenced as a condition row's `Comparison Value`
  * (e.g. GHL_MadScientist's `GetValue(Rads) >= 0x007F68B6`), mirroring how
  * `collectConditionFormIds` walks the same rows for `Parameter 1`. Resolved
@@ -642,7 +681,8 @@ export async function translateGrantedPerk(
         }
       }
     }
-    const { conditions, unresolved } = translateConditions(conditionRows, { edidByFormId, globalValues });
+    const conditionForms = await resolveConditionForms(client, conditionRows, edidByFormId);
+    const { conditions, unresolved } = translateConditions(conditionRows, { edidByFormId, globalValues, conditionForms });
     if (conditions === null) continue;
     unresolved.forEach(u => result.notes.push(`perk ${perkEdid}: ${u}`));
 
@@ -723,6 +763,12 @@ export async function translateMagicEffect(
 ): Promise<MgefTranslationResult> {
   const { client, edidByFormId } = deps;
   const mgef = await getMgefInfo(client, effect.mgefFormId);
+
+  // CNDF indirections (IsTrueForConditionForm) pre-fetched for sync inline
+  // expansion — extends the caller's shared map when one is passed
+  // (extract-perks), else builds a local one (buff/consumable extraction).
+  const conditionForms = await resolveConditionForms(client, effect.conditionRows, edidByFormId, conditionCtx?.conditionForms);
+  conditionCtx = { ...conditionCtx, conditionForms };
 
   // Script-archetype effects with a granted perk: the stats live on the PERK
   // record, not the MGEF — chase it (depth-capped against perk→spell→perk loops).

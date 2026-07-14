@@ -25,11 +25,15 @@ reload. See `docs/assumptions.md` "Guerrilla Expert's reload-speed bonus is
 now functionally wired" for the two assumptions (raw-conditions ctx,
 OMOD-only materialization/keywords).
 
-Remainder (extraction, not engine): **GroundPounder**, **MartialArtist**,
-**Swinger** weapon-stat modifiers still carry `unresolved` conditions
-(`IsTrueForConditionForm(SmallGun_Actor_Condition)`, `GetWeaponAnimType()=6`)
-and stay inert until those condition kinds are mapped in
-`scripts/extract/normalize/mgef.ts`.
+Remainder CLOSED 2026-07-14: **Ground Pounder** and **Martial Artist** are
+live too — `GetWeaponAnimType() ≤ 6` mapped to the new `weaponAnimTypeMax`
+condition (WEAP anim enum; all-roster sweep proved ≤6 = melee/unarmed, with
+gun-animated Paddle Ball / War Shrike correctly excluded), and
+`IsTrueForConditionForm(SmallGun_Actor_Condition)` resolved by the new CNDF
+inline-expansion (`resolveConditionForms` + `tryExpandConditionForm`) to
+(Rifle|Shotgun|Pistol) AND NOT HeavyGun. Swinger shares the anim gate but is
+cut content (`hasCard: false`) — ignored by design. See `docs/assumptions.md`
+"Martial Artist & Ground Pounder condition mapping".
 
 ## 2. In-game measurement queue (legendary effects extracting zero modifiers)
 

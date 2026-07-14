@@ -118,6 +118,10 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       return (ctx.weapon.keywords ?? []).includes(cond.keyword) === cond.present ? 1 : null;
     case 'weaponKeywordAny':
       return cond.keywords.some(k => (ctx.weapon.keywords ?? []).includes(k)) ? 1 : null;
+    case 'weaponAnimTypeMax':
+      // GetWeaponAnimType() ≤ max (Martial Artist's melee gate). Unknown anim
+      // type (synthetic test weapons) fails closed like any unmatched gate.
+      return ctx.weapon.animType !== undefined && ctx.weapon.animType <= cond.max ? 1 : null;
     case 'bodyPart':
       return ctx.bodyPart === cond.part ? 1 : null;
     case 'enemyType':

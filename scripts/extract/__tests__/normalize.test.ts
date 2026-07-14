@@ -636,3 +636,93 @@ describe('flattenPerkConditionRows', () => {
     expect(flattenPerkConditionRows(undefined)).toEqual([]);
   });
 });
+
+describe('translateConditions (2026-07-14 anim-type gate + CNDF expansion)', () => {
+  it('translates GetWeaponAnimType() ≤ 6 to weaponAnimTypeMax (Martial Artist melee gate)', () => {
+    const row: RawCondition = {
+      Function: 'GetWeaponAnimType',
+      'Comparison Value': 6,
+      Operator: 'Less Than Or Equal To',
+      'Run On': 'Subject',
+    };
+    const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([{ kind: 'weaponAnimTypeMax', max: 6 }]);
+    expect(unresolved).toEqual([]);
+  });
+
+  it('leaves non-≤ GetWeaponAnimType comparisons unresolved (no real use in data)', () => {
+    const row: RawCondition = {
+      Function: 'GetWeaponAnimType',
+      'Comparison Value': 9,
+      Operator: 'Equal To',
+      'Run On': 'Subject',
+    };
+    const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([{ kind: 'unresolved', raw: 'GetWeaponAnimType() Equal To 9' }]);
+    expect(unresolved).toHaveLength(1);
+  });
+
+  // Ground Pounder's SmallGun_Actor_Condition CNDF, verbatim shape:
+  // (Rifle OR Shotgun OR Pistol) AND NOT HeavyGun.
+  const smallGunRows: RawCondition[] = [
+    { Function: 'WornHasKeyword', 'Parameter 1': '0xRIFLE', 'Comparison Value': 1, Operator: 'Equal To', 'AND/OR': 'OR', 'Run On': 'Subject' },
+    { Function: 'WornHasKeyword', 'Parameter 1': '0xSHOTGUN', 'Comparison Value': 1, Operator: 'Equal To', 'AND/OR': 'OR', 'Run On': 'Subject' },
+    { Function: 'WornHasKeyword', 'Parameter 1': '0xPISTOL', 'Comparison Value': 1, Operator: 'Equal To', 'AND/OR': 'AND', 'Run On': 'Subject' },
+    { Function: 'WornHasKeyword', 'Parameter 1': '0xHEAVY', 'Comparison Value': 0, Operator: 'Equal To', 'AND/OR': 'AND', 'Run On': 'Subject' },
+  ];
+  const smallGunEdids = new Map([
+    ['0xCNDF', 'SmallGun_Actor_Condition'],
+    ['0xRIFLE', 'WeaponTypeRifle'],
+    ['0xSHOTGUN', 'WeaponTypeShotgun'],
+    ['0xPISTOL', 'WeaponTypePistol'],
+    ['0xHEAVY', 'WeaponTypeHeavyGun'],
+  ]);
+  const isTrueRow: RawCondition = {
+    Function: 'IsTrueForConditionForm',
+    'Parameter 1': '0xCNDF',
+    'Comparison Value': 1,
+    Operator: 'Equal To',
+    'Run On': 'Subject',
+  };
+
+  it("expands IsTrueForConditionForm into the CNDF's translated rows (Ground Pounder's small-gun gate)", () => {
+    const { conditions, unresolved } = translateConditions([isTrueRow], {
+      edidByFormId: smallGunEdids,
+      conditionForms: new Map([['0xCNDF', smallGunRows]]),
+    });
+    expect(conditions).toEqual([
+      { kind: 'weaponKeywordAny', keywords: ['WeaponTypeRifle', 'WeaponTypeShotgun', 'WeaponTypePistol'] },
+      { kind: 'weaponKeyword', keyword: 'WeaponTypeHeavyGun', present: false },
+    ]);
+    expect(unresolved).toEqual([]);
+  });
+
+  it('falls back to the unresolved row when the CNDF contents do not FULLY translate (Perk_Day_Condition shape)', () => {
+    const dayRows: RawCondition[] = [
+      { Function: 'GetCurrentTime', 'Comparison Value': 6, Operator: 'Greater Than Or Equal To', 'Run On': 'Subject' },
+    ];
+    const { conditions, unresolved } = translateConditions([isTrueRow], {
+      edidByFormId: new Map([['0xCNDF', 'Perk_Day_Condition']]),
+      conditionForms: new Map([['0xCNDF', dayRows]]),
+    });
+    expect(conditions).toEqual([{ kind: 'unresolved', raw: 'IsTrueForConditionForm(Perk_Day_Condition)=1' }]);
+    expect(unresolved).toHaveLength(1);
+  });
+
+  it('never expands inside an OR-group (GHL feral-rage shape) or without a pre-fetched form', () => {
+    const orGroup: RawCondition[] = [
+      { ...isTrueRow, 'AND/OR': 'OR' },
+      { Function: 'GetValue', 'Parameter 1': '0xRADS', 'Comparison Value': 5, Operator: 'Greater Than Or Equal To', 'Run On': 'Subject' },
+    ];
+    const withForm = translateConditions(orGroup, {
+      edidByFormId: smallGunEdids,
+      conditionForms: new Map([['0xCNDF', smallGunRows]]),
+    });
+    expect(withForm.conditions?.[0]?.kind).toBe('unresolved');
+
+    const noForm = translateConditions([isTrueRow], { edidByFormId: smallGunEdids });
+    expect(noForm.conditions).toEqual([
+      { kind: 'unresolved', raw: 'IsTrueForConditionForm(SmallGun_Actor_Condition)=1' },
+    ]);
+  });
+});

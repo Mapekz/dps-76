@@ -254,6 +254,13 @@ export interface Weapon {
   // ── ESM-extracted metadata (present on generated weapons) ────────────────
   /** Source ESM FormID (e.g. "0x0046D2A1"). */
   formId?: string;
+  /**
+   * WEAP anim-type enum value (Data."Weapon Type" — what GetWeaponAnimType()
+   * returns): 0 HandToHandMelee, 1 OneHandSword, 5 TwoHandSword, 6 TwoHandAxe,
+   * 9 Gun, 10 Grenade (the only values in the FO76 roster). Consumed by the
+   * `weaponAnimTypeMax` condition (Martial Artist ≤6); undefined fails closed.
+   */
+  animType?: number;
   /** Resolved keyword editor_ids (WeaponTypeRifle, WeaponTypeAutomatic, ...). */
   keywords?: string[];
   /** Attach point slot formids — an OMOD fits when its attach point is listed here. */

@@ -40,6 +40,16 @@ export interface ConditionTranslationContext {
    * the paired family's rank mirrors `ownedRanks` (docs/assumptions.md).
    */
   pairedFamilyFormIds?: string[];
+  /**
+   * CNDF formid → its flattened condition rows, pre-fetched async (translation
+   * is sync) by `resolveConditionForms` (normalize/mgef.ts). An
+   * `IsTrueForConditionForm(x)=1` row expands to the form's own rows ONLY when
+   * they translate completely (Ground Pounder's SmallGun_Actor_Condition →
+   * weaponKeywordAny[Rifle,Shotgun,Pistol] + NOT HeavyGun); partially
+   * translatable forms (Perk_Day_Condition's time-of-day rows) fall back to
+   * the unresolved row unchanged.
+   */
+  conditionForms?: Map<string, RawCondition[]>;
 }
 
 export interface TranslationResult {
@@ -225,8 +235,19 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
       // Mutation value-tier CNDFs (base vs Strange-in-Numbers-boosted).
       if (edid === 'Mutation_Check_UseNormalVersion') return { kind: 'strangeInNumbers', value: !wants };
       if (edid === 'Mutation_Check_UseSuperVersion') return { kind: 'strangeInNumbers', value: wants };
+      // Other forms: translateConditions tries a full inline expansion via
+      // ctx.conditionForms before settling for this unresolved fallback.
       return { kind: 'unresolved', raw: `IsTrueForConditionForm(${edid})=${cond['Comparison Value']}` };
     }
+    case 'GetWeaponAnimType':
+      // WEAP Data."Weapon Type" anim enum. Only ≤ occurs in data (Martial
+      // Artist/Swinger ≤6 = melee/unarmed; the FO76 roster has no anim types
+      // between 6 and Gun=9 — 2026-07-14 all-roster sweep). Other operators
+      // stay unresolved until a real use appears.
+      if (/^less than or equal to$/i.test(cond.Operator ?? '') && typeof cmp === 'number') {
+        return { kind: 'weaponAnimTypeMax', max: cmp };
+      }
+      return { kind: 'unresolved', raw: `GetWeaponAnimType() ${cond.Operator} ${rawCmp}` };
     default:
       return { kind: 'unresolved', raw: `${fn}(${edid})=${cond['Comparison Value']}` };
   }
@@ -263,6 +284,26 @@ function resolveHasPerkRankGroup(group: RawCondition[], ctx: ConditionTranslatio
 }
 
 /**
+ * Expand a standalone `IsTrueForConditionForm(x)=1` row into the CNDF's own
+ * translated conditions (Ground Pounder's SmallGun_Actor_Condition — the
+ * pre-fetch lives in normalize/mgef.ts `resolveConditionForms`). Returns null
+ * (caller keeps the unresolved row) unless every nested row translates: a
+ * partial expansion would silently activate a still-gated effect, and an
+ * 'inactive' verdict from nested rank-gate-shaped rows is not trusted either.
+ * `=0` (negated) references never expand — negating a multi-row AND/OR list
+ * has no IR representation.
+ */
+function tryExpandConditionForm(row: RawCondition, ctx: ConditionTranslationContext): Condition[] | null {
+  if (row.Function !== 'IsTrueForConditionForm') return null;
+  if (row['Comparison Value'] !== 1 || !/^equal to$/i.test(row.Operator ?? 'Equal To')) return null;
+  const nested = ctx.conditionForms?.get(row['Parameter 1'] ?? '');
+  if (!nested || nested.length === 0) return null;
+  const result = translateConditions(nested, { ...ctx, conditionForms: undefined });
+  if (result.conditions === null || result.unresolved.length > 0) return null;
+  return result.conditions;
+}
+
+/**
  * Translate an ESM condition list. Returns conditions: null when a rank gate
  * fails under the current simulation (effect inactive).
  */
@@ -287,7 +328,18 @@ export function translateConditions(rows: RawCondition[], ctx: ConditionTranslat
       const translated = translateSingle(group[0], ctx);
       if (translated === 'inactive') return { conditions: null, unresolved };
       if (translated === null) continue; // consumed rank gate
-      if (translated.kind === 'unresolved') unresolved.push(translated.raw);
+      if (translated.kind === 'unresolved') {
+        // IsTrueForConditionForm indirection: inline the referenced CNDF's own
+        // rows when they translate COMPLETELY (recursion depth 1 — nested
+        // forms stay unexpanded). Partial translations and 'inactive' results
+        // fall back to the unresolved row so nothing silently vanishes.
+        const expanded = tryExpandConditionForm(group[0], ctx);
+        if (expanded) {
+          out.push(...expanded);
+          continue;
+        }
+        unresolved.push(translated.raw);
+      }
       out.push(translated);
       continue;
     }

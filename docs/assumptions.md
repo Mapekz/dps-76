@@ -938,6 +938,37 @@ Guerrilla Master's dbm curve and Gunslinger Expert's weakpoint curve were
 never affected (`dbm`/`weakpointBonus` fold from the full modifier list
 regardless of source kind).
 
+**Martial Artist & Ground Pounder condition mapping (2026-07-14)** — the two
+previously-`unresolved` gates were ESM-walked and mapped:
+
+- **`GetWeaponAnimType() ≤ 6`** (Martial Artist's melee gate; the extractor's
+  old raw string "=6" had dropped the operator). The function reads WEAP
+  `Data."Weapon Type"` — the anim-type enum. A sweep of all 282 roster
+  weapons' raw values (2026-07-14) shows FO76 uses ONLY: 0 HandToHandMelee,
+  1 OneHandSword, 5 TwoHandSword, 6 TwoHandAxe, 9 Gun, 10 Grenade. The
+  FO4/GECK-era ranged values 4–5 do NOT apply here — every true ranged weapon
+  (bows and crossbows included) is 9. So ≤6 = melee/unarmed exactly, EXCEPT
+  the gun-animated melee oddities **Paddle Ball** and **War Shrike** (anim 9,
+  melee keywords) which the perk correctly does NOT buff — this is why the
+  condition is modeled as the game-faithful `weaponAnimTypeMax` (new
+  Condition kind, evaluated against `Weapon.animType`) instead of a
+  keyword/class translation. `animType` maps app-side from the extracted
+  `weaponTypeName` via `ANIM_TYPE_VALUES` (`src/data/live/weapons.ts`) —
+  verified-name-only table; unknown names fail closed. Swinger shares the
+  gate but is cut content (`hasCard: false`, user-confirmed) — translated
+  incidentally, still hidden.
+- **`IsTrueForConditionForm(SmallGun_Actor_Condition)`** (Ground Pounder's
+  reload gate). The CNDF decodes to `(WornHasKeyword WeaponTypeRifle OR
+  WeaponTypeShotgun OR WeaponTypePistol) AND NOT WeaponTypeHeavyGun`. The
+  extractor now pre-fetches referenced CNDFs (`resolveConditionForms`,
+  normalize/mgef.ts) and inline-expands a standalone `=1` reference — ONLY
+  when the form's rows translate completely (`tryExpandConditionForm`,
+  normalize/conditions.ts); partially-translatable forms (Perk_Day/
+  Night_Condition's time-of-day rows) and OR-group-embedded references
+  (GHL feral-rage, the STAT_DamagePerk heavy-gun route) keep their
+  unresolved fallback unchanged, and `=0` (negated) references never expand
+  (negating an AND/OR list has no IR representation).
+
 ## SPECIAL & perk budget (2026-07-12 — `src/lib/player-stats.ts`)
 
 Rules (user-confirmed 2026-07-12; second pass superseding the brief
