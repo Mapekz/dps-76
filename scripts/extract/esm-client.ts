@@ -47,7 +47,7 @@ export class EsmClient {
   constructor(private esmPath: string) {}
 
   private async run(args: string[]): Promise<string> {
-    const { stdout } = await execFileAsync('esm', ['-p', ...args], {
+    const { stdout } = await execFileAsync('esm', ['-p', '--esm', this.esmPath, ...args], {
       maxBuffer: 256 * 1024 * 1024,
     });
     return stdout;
@@ -55,7 +55,7 @@ export class EsmClient {
 
   /** All records of a type (named or not). */
   async list(type: string, limit = 99999): Promise<EsmListRow[]> {
-    const out = await this.run(['list', this.esmPath, '--type', type, '--limit', String(limit), '--json']);
+    const out = await this.run(['list', '--type', type, '--limit', String(limit), '--json']);
     return JSON.parse(out);
   }
 
@@ -64,7 +64,7 @@ export class EsmClient {
     pattern: string,
     opts: { type?: string; searchIn?: 'edid' | 'name' | 'both'; limit?: number } = {}
   ): Promise<EsmListRow[]> {
-    const args = ['search', this.esmPath, pattern, '--limit', String(opts.limit ?? 99999), '--json'];
+    const args = ['search', pattern, '--limit', String(opts.limit ?? 99999), '--json'];
     if (opts.type) args.push('--type', opts.type);
     if (opts.searchIn) args.push('--in', opts.searchIn);
     return JSON.parse(await this.run(args));
@@ -74,7 +74,7 @@ export class EsmClient {
   get(target: string): Promise<EsmRecord> {
     let cached = this.getCache.get(target);
     if (!cached) {
-      cached = this.run(['get', this.esmPath, target, '--json']).then(out => JSON.parse(out));
+      cached = this.run(['get', target, '--json']).then(out => JSON.parse(out));
       this.getCache.set(target, cached);
     }
     return cached;
@@ -93,7 +93,7 @@ export class EsmClient {
       // single uncached target just goes through the classic get() path.
       void this.get(uncached[0]);
     } else if (uncached.length > 1) {
-      const bulk = this.run(['get', this.esmPath, ...uncached, '--json']).then(
+      const bulk = this.run(['get', ...uncached, '--json']).then(
         out => JSON.parse(out) as Array<{ sel: string; error?: string } & Partial<EsmRecord>>
       );
       for (const target of uncached) {
@@ -135,7 +135,7 @@ export class EsmClient {
     const key = `${formId}:${depth}:${limit}:${type ?? ''}:${paths}`;
     let cached = this.refsCache.get(key);
     if (!cached) {
-      const args = ['refs', this.esmPath, '--formid', formId, '--depth', String(depth), '--limit', String(limit)];
+      const args = ['refs', '--formid', formId, '--depth', String(depth), '--limit', String(limit)];
       if (type) args.push('--type', type);
       if (paths) args.push('--paths');
       args.push('--json');

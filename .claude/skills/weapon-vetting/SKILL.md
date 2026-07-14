@@ -39,7 +39,7 @@ A fresh extraction only requires reviewing the **delta**, not re-vetting all
    - Genuinely new/removed content → update `VETTED_WEAPON_IDS`.
    - To hand-confirm one weapon's obtainability signal without eyeballing the
      full grouped `--refs` list, filter to one referrer type server-side:
-     `esm -p refs <esm> --formid <weapon-id> --type <SIG> --json` (e.g.
+     `esm -p --esm <esm> refs --formid <weapon-id> --type <SIG> --json` (e.g.
      `--type COBJ` for craftable, `--type LVLI` for loot chains).
 5. `pnpm test` — the pinning test must pass; golden cases catch balance
    regressions (a failing golden case after a patch may mean the weapon was

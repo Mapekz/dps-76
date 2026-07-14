@@ -31,7 +31,7 @@ truncates, a record type it doesn't special-case, or a wider reverse-ref scan
 than `--refs` gives you. One-shot calls need `-p` (otherwise the CLI drops
 into a REPL after printing).
 
-- **Bulk `get`**: `esm -p get <esm> <sel1> <sel2> … --json` fetches many
+- **Bulk `get`**: `esm -p --esm <esm> get <sel1> <sel2> … --json` fetches many
   records in one call. One target → the classic single object; two or more →
   a JSON array, one entry per selector in input order, each tagged with its
   own `sel` (a bad selector becomes `{"sel":…, "error":…}` instead of failing
@@ -59,7 +59,7 @@ into a REPL after printing).
 ## `esm chase` — unique-weapon OMOD effects
 
 ```bash
-esm -p chase <esm> <omod-formid|edid> [--depth N] [--ref-limit N] [--json]
+esm -p --esm <esm> chase <omod-formid|edid> [--depth N] [--ref-limit N] [--json]
 ```
 
 Automates the "chase pattern" for a `mod_Custom_*`-style unique OMOD: it reads

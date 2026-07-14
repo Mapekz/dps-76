@@ -5,7 +5,7 @@ import unstoppableMonsterOmod from './fixtures/omod-unstoppablemonster.json';
 import unstoppableMonsterPerk from './fixtures/perk-unstoppablemonster.json';
 import allRiseOmod from './fixtures/omod-allrise.json';
 
-// Fixtures are verbatim `esm -p get <esmPath> <edid|formid> --json` output
+// Fixtures are verbatim `esm -p --esm <esmPath> get <edid|formid> --json` output
 // (20260710 ESM). These pin the unique-mod rework's two previously-undecoded
 // OMOD property mechanisms (docs: how-do-we-handle-enumerated-feather.md):
 //   omod-unstoppablemonster.json  mod_Custom_UnstoppableMonster  0x008F0DD2
