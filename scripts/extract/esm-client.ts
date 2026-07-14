@@ -104,7 +104,8 @@ export class EsmClient {
             if (!entry || entry.error) {
               throw new Error(`esm get ${target}: ${entry?.error ?? 'missing from bulk response'}`);
             }
-            const { sel: _sel, ...record } = entry;
+            const record: Partial<typeof entry> = { ...entry };
+            delete record.sel;
             return record as EsmRecord;
           })
         );
