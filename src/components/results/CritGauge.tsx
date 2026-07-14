@@ -3,6 +3,21 @@ import type { CritMeterResult } from '@/lib/engine/crit-meter';
 
 const MAX_SEGMENTS = 12;
 
+/** Ordinal suffix for shot counts (crit meter fills in 5–20 shots, so 11th–13th are the only "th" exceptions). */
+function ordinalSuffix(n: number): string {
+  if (n % 100 >= 11 && n % 100 <= 13) return 'th';
+  switch (n % 10) {
+    case 1:
+      return 'st';
+    case 2:
+      return 'nd';
+    case 3:
+      return 'rd';
+    default:
+      return 'th';
+  }
+}
+
 /**
  * Segmented crit-cadence gauge: one segment per shot in the steady-state
  * cycle, the final (crit) shot in gold. Driven by the crit meter the engine
@@ -36,7 +51,8 @@ export function CritGauge({ critMeter }: { critMeter: CritMeterResult }) {
         {truncated && <span className="text-muted-foreground pl-1 text-[10px]">…</span>}
       </div>
       <p className="text-muted-foreground text-xs">
-        Crit every {shotsPerCrit === 2 ? '2nd' : `${shotsPerCrit}th`} shot
+        Crit every {shotsPerCrit}
+        {ordinalSuffix(shotsPerCrit)} shot
       </p>
     </div>
   );
