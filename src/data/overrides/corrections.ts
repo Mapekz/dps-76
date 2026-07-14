@@ -358,6 +358,14 @@ export const hiddenConsumableIds: ReadonlySet<string> = new Set<string>([
   'GHL_GlowingBobbleHead_SmallGuns_Potion',
   'GHL_GlowingBobbleHead_Strength_Potion',
   'GHL_GlowingBobbleHead_Unarmed_Potion',
+
+  // Nuclear Don's Custom Chem Blend (2026-07-14): quest item from "The Ol'
+  // Weston Shuffle" (W05_MQR_203P) — found in Nuclear Don's locker, meant to
+  // be stolen and used mid-arena-fight. Per the Fallout Wiki it's stripped
+  // from inventory on quest completion if unconsumed; the ESM's VMAD data
+  // (script property bindings only, no decompiled Papyrus bytecode) can't
+  // surface that removal itself. Not a persistent chem a build can rely on.
+  'W05_MQR_203P_ChemBlend',
 ]);
 
 /**
