@@ -4,6 +4,17 @@ import { walkWeaponCombinations } from './extract-weapons';
 
 const COSMETIC_SLOT_RE = /appearance|paint|skin|material/i;
 const LEGENDARY_SLOT_RE = /^ap_Legendary(\d+)$/;
+// The game's shared "this star rolls at random" pool selector — e.g.
+// modcol_Legendary_Crafting_Weapon2 (formId 0x007904EB) at ap_Legendary2.
+// `Data.Form Type = None` (not Weapon), so extract-omods.ts's Form-Type
+// filter legitimately excludes it from omods.json — it's never a real
+// equippable mod. Without this, a combo's Includes list still names it at a
+// real ap_LegendaryN attach point, but the per-combo loop below silently
+// drops the formId (not in omodByFormId) and legendaryEffects gets truncated
+// instead of getting a positional `null` — found 2026-07-15 auditing
+// Foundation's Vengeance / Cryptid Jawbone Knife (both fixed ★1 + random
+// ★2/★3, patch-summary.md).
+const RANDOM_LEGENDARY_SLOT_RE = /^modcol_Legendary_Crafting_Weapon(\d+)$/;
 
 function isIdentityOmod(omod: GeneratedOmod): boolean {
   if (omod.attachPointEdid === 'ap_customName' && omod.addedKeywords.includes('ObjectTypeUnique')) return true;
@@ -49,10 +60,18 @@ export async function extractUniques(
       let identityOmod: GeneratedOmod | undefined;
       const mods: Record<string, string> = {};
       const legendaryByIndex = new Map<number, string>();
+      const randomLegendaryIndices = new Set<number>();
 
       for (const formId of combo.modFormIds) {
         const omod = omodByFormId.get(formId);
-        if (!omod) continue;
+        if (!omod) {
+          // Not in the (Weapon-Form-Type-filtered) omods dataset — check if
+          // it's the shared random-legendary-pool selector before giving up.
+          const edid = await client.resolveEdid(formId);
+          const randomMatch = RANDOM_LEGENDARY_SLOT_RE.exec(edid);
+          if (randomMatch) randomLegendaryIndices.add(parseInt(randomMatch[1], 10) - 1);
+          continue;
+        }
 
         const slot = omod.attachPointEdid;
         const legendaryMatch = LEGENDARY_SLOT_RE.exec(slot);
@@ -81,7 +100,11 @@ export async function extractUniques(
         continue;
       }
 
-      const maxLegendaryIndex = legendaryByIndex.size > 0 ? Math.max(...legendaryByIndex.keys()) : -1;
+      // maxLegendaryIndex covers BOTH fixed stars and random-pool slots, so a
+      // combo with e.g. only ★1 fixed + ★2/★3 random emits
+      // [omodId, null, null] — not a truncated length-1 array.
+      const allIndices = [...legendaryByIndex.keys(), ...randomLegendaryIndices];
+      const maxLegendaryIndex = allIndices.length > 0 ? Math.max(...allIndices) : -1;
       const legendaryEffects: (string | null)[] = [];
       for (let i = 0; i <= maxLegendaryIndex; i++) {
         legendaryEffects[i] = legendaryByIndex.get(i) ?? null;

@@ -90,6 +90,13 @@ const PROPERTY_BUCKETS: Record<string, PropertyMapping> = {
   // weapon.fullPowerSeconds/fullPowerDamageMult in effective-weapon.ts.
   FullPowerSeconds: { bucket: 'chargeFullPowerSec' },
   FullPowerDamageMult: { bucket: 'chargeFullPowerDamageMult' },
+  // Semi-auto attack-delay penalty/bonus (Salt of the Earth's July-10-patch
+  // retune, +100%→+50% — 2026-07-15 audit). Was previously in
+  // PROPERTY_IGNORED under a stale "never affects the formula" claim; it
+  // directly scales fire-rate.ts's semi-auto divisor via weapon.animDelaySec.
+  // Folded over Weapon.animDelaySec in effective-weapon.ts, same MUL_ADD
+  // pattern as ReloadSpeed/AttackActionPointCost.
+  AttackDelaySec: { bucket: 'animDelaySec' },
 };
 
 /** Property names that never affect the damage formula — skipped without reporting. */
@@ -103,7 +110,7 @@ const PROPERTY_IGNORED = new Set([
   'AimModelConeSneakMultiplier', 'AimModelConeIncreasePerShot', 'AimModelConeDecreasePerSec',
   'ZoomDataFOVMult', 'ZoomDataOverlay', 'ZoomDataIsModFormID', 'HitBehavior', 'Rank',
   'ColorRemappingIndex', 'MaterialSwaps', 'ModelSection', 'SoundLevel', 'NPCsUseAmmo',
-  'AttackDelaySec', 'OutOfRangeDamageMult', 'ActionPointCost',
+  'OutOfRangeDamageMult', 'ActionPointCost',
   // 'MinPowerPerShot' — stale pre-rename field name: the esm CLI renamed this
   // Data property twice ("Min Power Per Shot" → "Max Power Per Shot" →
   // "Full Power Damage Mult", which IS mapped above), superseded.
@@ -532,6 +539,21 @@ export async function extractOmods(
     '0x0047A264', // ap_customName
     '0x00521926', // ap_Item_Description
   ]);
+  // ESM authoring gap (2026-07-15 audit, uniques-effect sweep): the July-10
+  // patch repurposed formID 0x00849316 — Editor ID/Name/Description/
+  // Data.Properties all rewritten from a bounty-exclusive melee legendary
+  // (zzz_BOUNTY_mod_Legendary_Weapon2_Melee_Pulsating) into the new
+  // "Pyro-Technician's" weapon 2★ (+20% fire dbm, STAT_DmgMultFire — same
+  // shape as sibling Cryologist's/Poisoner's). Attach Point was left null on
+  // the old bounty record and never touched by the patch, so the record fails
+  // classifyOmodRecordExclusion's live checks yet silently drops out at the
+  // `if (!attachPoint) continue` gate below. Confirmed via diff.json
+  // field_changes (Attach Point absent from the changed-fields list) — supply
+  // the real ap_Legendary2 (0x004E89A8, matching Cryologist's/Poisoner's)
+  // until Bethesda fixes the record upstream.
+  const ATTACH_POINT_OVERRIDES: Record<string, string> = {
+    '0x00849316': '0x004E89A8', // mod_Legendary_Weapon2_Fire ("Pyro-Technician's") → ap_Legendary2
+  };
   const unnamedTemplateMembers: ExcludedRecordDetail[] = [];
   const named = records.filter(r => {
     const exclusion = classifyOmodRecordExclusion(r);
@@ -554,7 +576,7 @@ export async function extractOmods(
   const omods: GeneratedOmod[] = [];
   for (const record of named) {
     const data = omodData(record);
-    const attachPoint = (data['Attach Point'] as string) ?? null;
+    const attachPoint = (data['Attach Point'] as string) ?? ATTACH_POINT_OVERRIDES[record.header.form_id] ?? null;
     if (!attachPoint) continue;
 
     const targetKeywords = await Promise.all(

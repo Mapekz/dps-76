@@ -28,7 +28,9 @@
    "ap_gun_Barrel": "mod_44_barrel_veryshort_Base"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_AntiArmor"
+   "mod_Legendary_Weapon1_AntiArmor",
+   null,
+   null
   ]
  },
  {
@@ -43,7 +45,9 @@
    "ap_customName": "mod_Custom_MedicalMalpractice"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_Medic"
+   "mod_Legendary_Weapon1_Medic",
+   null,
+   null
   ]
  },
  {
@@ -58,7 +62,9 @@
    "ap_customName": "mod_Custom_TheActionHero"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_Guns_TwoShot"
+   "mod_Legendary_Weapon1_Guns_TwoShot",
+   null,
+   null
   ]
  },
  {
@@ -74,7 +80,8 @@
   },
   "legendaryEffects": [
    null,
-   "mod_Legendary_Weapon2_Guns_RoF"
+   "mod_Legendary_Weapon2_Guns_RoF",
+   null
   ]
  },
  {
@@ -109,7 +116,9 @@
    "ap_customName": "mod_custom_Suppressed10mmSMG_AnchorageAce"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_Execute"
+   "mod_Legendary_Weapon1_Execute",
+   null,
+   null
   ]
  },
  {
@@ -147,7 +156,8 @@
   },
   "legendaryEffects": [
    null,
-   "mod_Legendary_Weapon2_Guns_Bashing"
+   "mod_Legendary_Weapon2_Guns_Bashing",
+   null
   ]
  },
  {
@@ -161,7 +171,11 @@
    "ap_gun_Scope": "mod_AlienBlaster_Scope_SightsIron",
    "ap_customName": "mod_Custom_TheVATSUnknown"
   },
-  "legendaryEffects": []
+  "legendaryEffects": [
+   null,
+   null,
+   null
+  ]
  },
  {
   "id": "mod_Custom_ZetasRevenge",
@@ -194,7 +208,9 @@
    "ap_gun_Receiver": "mod_AssaultRifle_Receiver_FastTrigger-HipAccuracy"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DamageNight"
+   "mod_Legendary_Weapon1_DamageNight",
+   null,
+   null
   ]
  },
  {
@@ -222,7 +238,9 @@
    "ap_customName": "mod_Custom_TheGutter"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_Vampire"
+   "mod_Legendary_Weapon1_Vampire",
+   null,
+   null
   ]
  },
  {
@@ -252,7 +270,9 @@
    "ap_gun_Grip": "mod_AutoGrenadeLauncher_Grip_Base"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DamageViaHealth"
+   "mod_Legendary_Weapon1_DamageViaHealth",
+   null,
+   null
   ]
  },
  {
@@ -285,7 +305,9 @@
    "ap_customName": "SCORE_S11_mod_Custom_NukaLauncher"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_Guns_TwoShot"
+   "mod_Legendary_Weapon1_Guns_TwoShot",
+   null,
+   null
   ]
  },
  {
@@ -311,7 +333,8 @@
   },
   "legendaryEffects": [
    null,
-   "mod_Legendary_Weapon2_DmgLimbs"
+   "mod_Legendary_Weapon2_DmgLimbs",
+   null
   ]
  },
  {
@@ -323,7 +346,9 @@
    "ap_customName": "mod_Custom_DisorderlyConduct"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DebuffDamage"
+   "mod_Legendary_Weapon1_DebuffDamage",
+   null,
+   null
   ]
  },
  {
@@ -380,7 +405,9 @@
    "ap_customName": "E09A_mod_Custom_GrandFinale"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_Guns_TwoShot"
+   "mod_Legendary_Weapon1_Guns_TwoShot",
+   null,
+   null
   ]
  },
  {
@@ -408,7 +435,9 @@
    "ap_customName": "mod_Custom_MeteoriteSword"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DmgVsPlayers"
+   "mod_Legendary_Weapon1_DmgVsPlayers",
+   null,
+   null
   ]
  },
  {
@@ -420,7 +449,9 @@
    "ap_melee_MeleeMod": "mod_melee_Knife_Null"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_Vampire"
+   "mod_Legendary_Weapon1_Vampire",
+   null,
+   null
   ]
  },
  {
@@ -451,7 +482,9 @@
    "ap_customName": "E08B_mod_Custom_CrowdControl"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DebuffDamage"
+   "mod_Legendary_Weapon1_DebuffDamage",
+   null,
+   null
   ]
  },
  {
@@ -462,7 +495,11 @@
    "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod",
    "ap_customName": "mod_Custom_CamdenWhacker"
   },
-  "legendaryEffects": []
+  "legendaryEffects": [
+   null,
+   null,
+   null
+  ]
  },
  {
   "id": "SCORE_MiniSeason_LoveHurts_mod_Custom_PiercingLove",
@@ -475,7 +512,8 @@
   },
   "legendaryEffects": [
    null,
-   "mod_Legendary_Weapon2_Guns_LastShot"
+   "mod_Legendary_Weapon2_Guns_LastShot",
+   null
   ]
  },
  {
@@ -488,7 +526,9 @@
    "ap_customName": "E09C_mod_Custom_BurningLove"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DmgVsPlayers"
+   "mod_Legendary_Weapon1_DmgVsPlayers",
+   null,
+   null
   ]
  },
  {
@@ -529,7 +569,9 @@
    "ap_customName": "E08B_mod_Custom_ToneDeath"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DebuffDamage"
+   "mod_Legendary_Weapon1_DebuffDamage",
+   null,
+   null
   ]
  },
  {
@@ -541,7 +583,9 @@
    "ap_customName": "mod_Custom_UnstoppableMonster"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DamageInverseHealth"
+   "mod_Legendary_Weapon1_DamageInverseHealth",
+   null,
+   null
   ]
  },
  {
@@ -577,7 +621,9 @@
    "ap_customName": "mod_custom_Coldshoulder_DmgvsCryptid"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_Guns_AmmoCapacity4x"
+   "mod_Legendary_Weapon1_Guns_AmmoCapacity4x",
+   null,
+   null
   ]
  },
  {
@@ -589,7 +635,9 @@
    "ap_customName": "mod_Custom_Overkill"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_Guns_TwoShot"
+   "mod_Legendary_Weapon1_Guns_TwoShot",
+   null,
+   null
   ]
  },
  {
@@ -615,7 +663,9 @@
    "ap_customName": "mod_Custom_TheGuarantee"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DamageFirstBlood"
+   "mod_Legendary_Weapon1_DamageFirstBlood",
+   null,
+   null
   ]
  },
  {
@@ -630,7 +680,9 @@
    "ap_gun_Receiver": "mod_Flamer_Receiver_TankStandard"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DebuffDamage"
+   "mod_Legendary_Weapon1_DebuffDamage",
+   null,
+   null
   ]
  },
  {
@@ -715,7 +767,8 @@
   },
   "legendaryEffects": [
    null,
-   "mod_Legendary_Weapon2_Guns_DmgSights"
+   "mod_Legendary_Weapon2_Guns_DmgSights",
+   null
   ]
  },
  {
@@ -784,7 +837,8 @@
   },
   "legendaryEffects": [
    null,
-   "mod_Legendary_Weapon2_Guns_ExplosiveBullets"
+   "mod_Legendary_Weapon2_Guns_ExplosiveBullets",
+   null
   ]
  },
  {
@@ -811,7 +865,11 @@
    "ap_gun_Mag": "DLC03_mod_HarpoonGun_Magazine_Standard",
    "ap_customName": "SCORE_S21_mod_custom_IceBreaker"
   },
-  "legendaryEffects": []
+  "legendaryEffects": [
+   null,
+   null,
+   null
+  ]
  },
  {
   "id": "mod_Custom_Kingfisher",
@@ -823,7 +881,9 @@
    "ap_customName": "mod_Custom_Kingfisher"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DmgVsBugs"
+   "mod_Legendary_Weapon1_DmgVsBugs",
+   null,
+   null
   ]
  },
  {
@@ -842,7 +902,8 @@
   },
   "legendaryEffects": [
    null,
-   "mod_Legendary_Weapon2_Guns_DmgSights"
+   "mod_Legendary_Weapon2_Guns_DmgSights",
+   null
   ]
  },
  {
@@ -860,7 +921,9 @@
    "ap_customName": "E08B_mod_Custom_HuntingRifle_DoctorsOrders"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_Vampire"
+   "mod_Legendary_Weapon1_Vampire",
+   null,
+   null
   ]
  },
  {
@@ -876,7 +939,9 @@
    "ap_customName": "mod_custom_V63LaserRifle_customName"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_AntiArmor"
+   "mod_Legendary_Weapon1_AntiArmor",
+   null,
+   null
   ]
  },
  {
@@ -892,7 +957,9 @@
    "ap_customName": "mod_Custom_AcceptableOverkill"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_Execute"
+   "mod_Legendary_Weapon1_Execute",
+   null,
+   null
   ]
  },
  {
@@ -909,7 +976,9 @@
    "ap_customName": "mod_Custom_SoleSurvivor"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DmgVsPlayers"
+   "mod_Legendary_Weapon1_DmgVsPlayers",
+   null,
+   null
   ]
  },
  {
@@ -926,7 +995,9 @@
    "ap_customName": "E09D_mod_custom_WesternSpirit"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DmgConsecutiveHits"
+   "mod_Legendary_Weapon1_DmgConsecutiveHits",
+   null,
+   null
   ]
  },
  {
@@ -996,7 +1067,8 @@
   },
   "legendaryEffects": [
    null,
-   "mod_Legendary_Weapon2_DmgLimbs"
+   "mod_Legendary_Weapon2_DmgLimbs",
+   null
   ]
  },
  {
@@ -1010,7 +1082,9 @@
    "ap_customName": "E08B_mod_Custom_FoundationsVengeance"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DamageInverseHealth"
+   "mod_Legendary_Weapon1_DamageInverseHealth",
+   null,
+   null
   ]
  },
  {
@@ -1023,7 +1097,9 @@
    "ap_customName": "mod_Custom_BoomStick"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_Guns_AmmoCapacity4x"
+   "mod_Legendary_Weapon1_Guns_AmmoCapacity4x",
+   null,
+   null
   ]
  },
  {
@@ -1059,7 +1135,9 @@
    "ap_customName": "mod_custom_CultistPiercer_Effect"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DamageInverseHealth"
+   "mod_Legendary_Weapon1_DamageInverseHealth",
+   null,
+   null
   ]
  },
  {
@@ -1071,7 +1149,8 @@
   },
   "legendaryEffects": [
    null,
-   "mod_Legendary_Weapon2_Melee_SwingSpeed"
+   "mod_Legendary_Weapon2_Melee_SwingSpeed",
+   null
   ]
  },
  {
@@ -1083,7 +1162,9 @@
    "ap_customName": "mod_Custom_MechanicsBestFriend"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DmgVsRobots"
+   "mod_Legendary_Weapon1_DmgVsRobots",
+   null,
+   null
   ]
  },
  {
@@ -1117,7 +1198,9 @@
    "ap_customName": "mod_Custom_Plasma_AbraxoGun"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_AntiArmor"
+   "mod_Legendary_Weapon1_AntiArmor",
+   null,
+   null
   ]
  },
  {
@@ -1152,7 +1235,9 @@
    "ap_customName": "mod_Custom_PlasmaGun_MindOverMatter"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DmgVsGhouls"
+   "mod_Legendary_Weapon1_DmgVsGhouls",
+   null,
+   null
   ]
  },
  {
@@ -1165,7 +1250,8 @@
   },
   "legendaryEffects": [
    null,
-   "mod_Legendary_Weapon2_Melee_DamagePowerAttack"
+   "mod_Legendary_Weapon2_Melee_DamagePowerAttack",
+   null
   ]
  },
  {
@@ -1182,7 +1268,9 @@
    "ap_gun_Scope": "mod_PumpActionShotgun_SCOPE_ironsights_Base"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DmgVsPlayers"
+   "mod_Legendary_Weapon1_DmgVsPlayers",
+   null,
+   null
   ]
  },
  {
@@ -1200,7 +1288,8 @@
   },
   "legendaryEffects": [
    null,
-   "mod_Legendary_Weapon2_Guns_ExplosiveBullets"
+   "mod_Legendary_Weapon2_Guns_ExplosiveBullets",
+   null
   ]
  },
  {
@@ -1215,7 +1304,9 @@
    "ap_customName": "mod_custom_TickettoRevenge"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DmgConsecutiveHits"
+   "mod_Legendary_Weapon1_DmgConsecutiveHits",
+   null,
+   null
   ]
  },
  {
@@ -1246,7 +1337,9 @@
    "ap_customName": "mod_Custom_CommandersCharge"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DmgConsecutiveHits"
+   "mod_Legendary_Weapon1_DmgConsecutiveHits",
+   null,
+   null
   ]
  },
  {
@@ -1272,7 +1365,8 @@
   },
   "legendaryEffects": [
    null,
-   "mod_Legendary_Weapon2_Melee_SwingSpeed"
+   "mod_Legendary_Weapon2_Melee_SwingSpeed",
+   null
   ]
  },
  {
@@ -1299,7 +1393,8 @@
   },
   "legendaryEffects": [
    null,
-   "mod_Legendary_Weapon2_Melee_PickPocket"
+   "mod_Legendary_Weapon2_Melee_PickPocket",
+   null
   ]
  },
  {
@@ -1328,7 +1423,8 @@
   },
   "legendaryEffects": [
    null,
-   "mod_Legendary_Weapon2_Guns_RoF"
+   "mod_Legendary_Weapon2_Guns_RoF",
+   null
   ]
  },
  {
@@ -1341,7 +1437,8 @@
   },
   "legendaryEffects": [
    null,
-   "mod_Legendary_Weapon2_Melee_BlockReflects"
+   "mod_Legendary_Weapon2_Melee_BlockReflects",
+   null
   ]
  },
  {
@@ -1352,7 +1449,9 @@
    "ap_customName": "mod_Custom_SuperStimpike"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_Medic"
+   "mod_Legendary_Weapon1_Medic",
+   null,
+   null
   ]
  },
  {
@@ -1368,7 +1467,9 @@
    "ap_customName": "mod_custom_EldersMark_Effect"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DmgConsecutiveHits"
+   "mod_Legendary_Weapon1_DmgConsecutiveHits",
+   null,
+   null
   ]
  },
  {
@@ -1380,7 +1481,9 @@
    "ap_customName": "mod_Custom_AllRise"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DamageViaHealth"
+   "mod_Legendary_Weapon1_DamageViaHealth",
+   null,
+   null
   ]
  },
  {
@@ -1392,7 +1495,9 @@
    "ap_customName": "E08B_mod_Custom_TheDebilitator"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DmgVsSupermutants"
+   "mod_Legendary_Weapon1_DmgVsSupermutants",
+   null,
+   null
   ]
  },
  {
@@ -1419,7 +1524,8 @@
   },
   "legendaryEffects": [
    null,
-   "mod_Legendary_Weapon2_Melee_SwingSpeed"
+   "mod_Legendary_Weapon2_Melee_SwingSpeed",
+   null
   ]
  },
  {
@@ -1444,7 +1550,9 @@
    "ap_customName": "mod_Custom_TheQuickFix"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DamageAddiction"
+   "mod_Legendary_Weapon1_DamageAddiction",
+   null,
+   null
   ]
  },
  {
@@ -1457,7 +1565,9 @@
    "ap_customName": "mod_custom_V63-BERTHA_customName"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_Guns_TwoShot"
+   "mod_Legendary_Weapon1_Guns_TwoShot",
+   null,
+   null
   ]
  },
  {
@@ -1470,7 +1580,9 @@
    "ap_customName": "mod_Custom_NightLight"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DamageNight"
+   "mod_Legendary_Weapon1_DamageNight",
+   null,
+   null
   ]
  },
  {

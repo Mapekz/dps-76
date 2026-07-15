@@ -99,9 +99,22 @@ const weapons: GeneratedWeapon[] = [
   },
 ];
 
+// Real formIds from the live ESM (verified 2026-07-15, Foundation's Vengeance
+// / Cryptid Jawbone Knife audit): the shared "this star rolls at random" pool
+// selectors, which the double-barrel fixture's raw Includes lists also
+// reference (Cold Shoulder's ★2/★3, Salt's ★2) — Form Type "None", so they
+// never appear in the `omods` array above, exactly like the live dataset.
+const RANDOM_POOL_EDIDS: Record<string, string> = {
+  '0x007904EB': 'modcol_Legendary_Crafting_Weapon2',
+  '0x007904EC': 'modcol_Legendary_Crafting_Weapon3',
+};
+
 const stubClient = {
   async get(): Promise<EsmRecord> {
     return doubleBarrel as unknown as EsmRecord;
+  },
+  async resolveEdid(formId: string): Promise<string> {
+    return RANDOM_POOL_EDIDS[formId] ?? `<unresolved:${formId}>`;
   },
 } as unknown as EsmClient;
 
@@ -118,7 +131,11 @@ describe('extractUniques', () => {
       }),
       legendaryEffects: [null, null, 'mod_Legendary_Weapon3_Guns_ReloadSpeed'],
     });
+    // Cold Shoulder: ★1 fixed (Quad), ★2/★3 resolve only via the random-pool
+    // fallback (not in `omods`) — regression guard for the 2026-07-15
+    // legendary-null-truncation bug (Foundation's Vengeance/Cryptid Jawbone
+    // Knife both had their random ★2/★3 silently dropped instead of null'd).
     const cold = uniques.find(u => u.id === 'mod_custom_Coldshoulder_DmgvsCryptid');
-    expect(cold?.legendaryEffects[0]).toBe('mod_Legendary_Weapon1_Guns_AmmoCapacity4x');
+    expect(cold?.legendaryEffects).toEqual(['mod_Legendary_Weapon1_Guns_AmmoCapacity4x', null, null]);
   });
 });

@@ -77,6 +77,16 @@ export type Bucket =
    * Barrels (OMOD-level, `overrides/corrections.ts` omodModifierAdditions).
    */
   | 'animDurationSec'
+  /**
+   * Rewrite of the weapon's semi-auto attack-delay window in seconds (the
+   * divisor `getFireRate` uses for non-automatic weapons; default 0.5 when
+   * unset — `weapon.animDelaySec`, sourced from WEAP "Attack Delay Seconds").
+   * Unlike `animDurationSec`, this IS ESM-provable: OMOD `Data.Properties[]`
+   * `AttackDelaySec` (MUL_ADD, verified 2026-07-15 on Salt of the Earth —
+   * mod_Custom_SaltOfTheEarth's July-10-patch delay-penalty retune, +100%→+50%
+   * of base, i.e. raw value 1.0→0.5).
+   */
+  | 'animDelaySec'
   | 'projectileCount'
   /** Magazine capacity rewrite from OMODs (drum/extended magazines) — feeds sustained DPS. */
   | 'ammoCapacity'
@@ -272,6 +282,7 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   fireRateSpeed: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.speed rewrite)' },
   isAutomatic: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.isAutomatic rewrite)' },
   animDurationSec: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.animDurationSec rewrite)' },
+  animDelaySec: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.animDelaySec rewrite); feeds fire-rate.ts\'s semi-auto/charging-tail divisor' },
   projectileCount: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.projectileCount rewrite); no damage term multiplies per-projectile yet, but Shotgun Champ\'s curve reads the folded value via the projectileCount CurveInput' },
   ammoCapacity: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.capacity rewrite); feeds sustained DPS (sustain.ts)' },
   reloadSpeed: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.reloadSpeed rewrite); feeds sustained DPS (sustain.ts)' },

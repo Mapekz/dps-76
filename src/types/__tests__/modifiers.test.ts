@@ -30,6 +30,7 @@ const ALL_BUCKETS: Bucket[] = [
   'fireRateSpeed',
   'isAutomatic',
   'animDurationSec',
+  'animDelaySec',
   'projectileCount',
   'ammoCapacity',
   'reloadSpeed',
@@ -64,7 +65,7 @@ describe('BUCKET_REGISTRY', () => {
   it('derives WEAPON_STAT_BUCKETS as exactly the weaponStat-regime buckets', () => {
     expect([...WEAPON_STAT_BUCKETS].sort()).toEqual(
       [
-        'fireRateSpeed', 'isAutomatic', 'animDurationSec', 'projectileCount', 'ammoCapacity', 'reloadSpeed',
+        'fireRateSpeed', 'isAutomatic', 'animDurationSec', 'animDelaySec', 'projectileCount', 'ammoCapacity', 'reloadSpeed',
         'vatsApCost', 'chargeFullPowerSec', 'chargeFullPowerDamageMult',
       ].sort()
     );

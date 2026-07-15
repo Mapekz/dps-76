@@ -218,6 +218,15 @@ export function buildEffectiveWeapon(
   // correct signal — do not OR in a keyword check here.
   const isAutomatic = foldWeaponStat(statModifiers, 'isAutomatic', weapon.isAutomatic ? 1 : 0, ctx) > 0;
   const animDurationSec = foldWeaponStat(statModifiers, 'animDurationSec', weapon.animDurationSec ?? 0.11, ctx);
+  // Semi-auto attack-delay rewrite (OMOD AttackDelaySec MUL_ADD — Salt of the
+  // Earth's delay penalty, 2026-07-15 audit). weapon.animDelaySec is
+  // undefined for automatic-only weapons (fire-rate.ts never reads it then),
+  // so fold over 0.5 (fire-rate.ts's own fallback) only when the base weapon
+  // actually carries the stat, same `?? undefined` shape as the base type.
+  const animDelaySec =
+    weapon.animDelaySec !== undefined || statModifiers.some(m => m.bucket === 'animDelaySec')
+      ? foldWeaponStat(statModifiers, 'animDelaySec', weapon.animDelaySec ?? 0.5, ctx)
+      : undefined;
   // NOTE: projectileCount folds into the effective weapon but NO damage term
   // consumes it yet — per-projectile/pellet modeling is deferred (with the
   // DoT engine work). Two Shot's damage today is only its extracted dbm.
@@ -247,6 +256,7 @@ export function buildEffectiveWeapon(
       speed,
       isAutomatic,
       animDurationSec,
+      animDelaySec,
       projectileCount,
       capacity,
       reloadSpeed,

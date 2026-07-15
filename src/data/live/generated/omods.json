@@ -5631,6 +5631,19 @@
     "op": "SET",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x0010F630:11",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0010F630",
+     "edid": "DLC01_mod_LightningGun_Barrel_Automatic",
+     "name": "Automatic Barrel"
+    },
+    "bucket": "animDelaySec",
+    "op": "SET",
+    "value": 0.3,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -9912,6 +9925,19 @@
     "op": "ADD",
     "value": 0.5,
     "conditions": []
+   },
+   {
+    "id": "0x0031B1D9:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0031B1D9",
+     "edid": "DLC04_mod_HandMadeGun_Receiver_CritDMG-FastTrigger",
+     "name": "Fierce Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -10374,6 +10400,19 @@
     "op": "ADD",
     "value": 0.25,
     "conditions": []
+   },
+   {
+    "id": "0x0031B1DF:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0031B1DF",
+     "edid": "DLC04_mod_HandMadeGun_Receiver_Damage-FastTrigger",
+     "name": "Tuned Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -10442,7 +10481,21 @@
   "targetKeywords": [
    "DLC04_ma_HandmadeAssaultRifle"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x001139A0:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x001139A0",
+     "edid": "DLC04_mod_HandmadeGun_Receiver_FastTrigger",
+     "name": "Hair Trigger Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_556",
    "dn_HasReceiver_FastSemiAuto"
@@ -10462,7 +10515,21 @@
   "targetKeywords": [
    "DLC04_ma_HandmadeAssaultRifle"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0031B1E1:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0031B1E1",
+     "edid": "DLC04_mod_HandMadeGun_Receiver_FastTrigger-HipAccuracy",
+     "name": "Speedy Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_556",
    "dn_HasReceiver_Speedy"
@@ -18130,7 +18197,21 @@
   "targetKeywords": [
    "ma_10mm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00148333:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00148333",
+     "edid": "mod_10mm_Receiver_FastTrigger",
+     "name": "Hair Trigger Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_10mm",
    "dn_HasReceiver_FastSemiAuto"
@@ -18159,13 +18240,26 @@
      "edid": "mod_10mm_Receiver_FastTrigger-CritDMG",
      "name": "Fierce Receiver"
     },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   },
+   {
+    "id": "0x0052443E:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0052443E",
+     "edid": "mod_10mm_Receiver_FastTrigger-CritDMG",
+     "name": "Fierce Receiver"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.2,
     "conditions": []
    },
    {
-    "id": "0x0052443E:1",
+    "id": "0x0052443E:2",
     "source": {
      "kind": "omod",
      "formId": "0x0052443E",
@@ -18206,13 +18300,26 @@
      "edid": "mod_10mm_Receiver_FastTrigger-Damage",
      "name": "Vigorous Receiver"
     },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   },
+   {
+    "id": "0x0052443F:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0052443F",
+     "edid": "mod_10mm_Receiver_FastTrigger-Damage",
+     "name": "Vigorous Receiver"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.1,
     "conditions": []
    },
    {
-    "id": "0x0052443F:1",
+    "id": "0x0052443F:2",
     "source": {
      "kind": "omod",
      "formId": "0x0052443F",
@@ -18244,7 +18351,21 @@
   "targetKeywords": [
    "ma_10mm"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00524440:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00524440",
+     "edid": "mod_10mm_Receiver_FastTrigger-HipAccuracy",
+     "name": "Steadfast Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_10mm",
    "dn_HasReceiver_Steadfast"
@@ -24742,7 +24863,21 @@
   "targetKeywords": [
    "ma_AssaultRifle"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00188916:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00188916",
+     "edid": "mod_AssaultRifle_Receiver_FastTrigger",
+     "name": "Hair Trigger Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_556",
    "dn_HasReceiver_FastSemiAuto"
@@ -24771,13 +24906,26 @@
      "edid": "mod_AssaultRifle_Receiver_FastTrigger-CritDMG",
      "name": "Fierce Receiver"
     },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   },
+   {
+    "id": "0x0052501D:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0052501D",
+     "edid": "mod_AssaultRifle_Receiver_FastTrigger-CritDMG",
+     "name": "Fierce Receiver"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.2,
     "conditions": []
    },
    {
-    "id": "0x0052501D:1",
+    "id": "0x0052501D:2",
     "source": {
      "kind": "omod",
      "formId": "0x0052501D",
@@ -24818,13 +24966,26 @@
      "edid": "mod_AssaultRifle_Receiver_FastTrigger-Damage",
      "name": "Vigorous Receiver"
     },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   },
+   {
+    "id": "0x0052501E:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0052501E",
+     "edid": "mod_AssaultRifle_Receiver_FastTrigger-Damage",
+     "name": "Vigorous Receiver"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.1,
     "conditions": []
    },
    {
-    "id": "0x0052501E:1",
+    "id": "0x0052501E:2",
     "source": {
      "kind": "omod",
      "formId": "0x0052501E",
@@ -24856,7 +25017,21 @@
   "targetKeywords": [
    "ma_AssaultRifle"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0052501F:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0052501F",
+     "edid": "mod_AssaultRifle_Receiver_FastTrigger-HipAccuracy",
+     "name": "Steadfast Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_556",
    "dn_HasReceiver_Steadfast"
@@ -26333,6 +26508,19 @@
      "edid": "mod_BOSRocketLauncher_TubeBarrel_Hex",
      "name": "Enhanced Blast Payload"
     },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.166667,
+    "conditions": []
+   },
+   {
+    "id": "0x005E47E6:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x005E47E6",
+     "edid": "mod_BOSRocketLauncher_TubeBarrel_Hex",
+     "name": "Enhanced Blast Payload"
+    },
     "bucket": "baseDamage",
     "op": "MUL_ADD",
     "value": -0.2,
@@ -26346,7 +26534,7 @@
     ]
    },
    {
-    "id": "0x005E47E6:2",
+    "id": "0x005E47E6:3",
     "source": {
      "kind": "omod",
      "formId": "0x005E47E6",
@@ -26499,6 +26687,19 @@
      "edid": "mod_Broadsider_Barrel_Heavy",
      "name": "Heavy Barrel"
     },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": 0.15,
+    "conditions": []
+   },
+   {
+    "id": "0x00167870:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00167870",
+     "edid": "mod_Broadsider_Barrel_Heavy",
+     "name": "Heavy Barrel"
+    },
     "bucket": "dbm",
     "op": "ADD",
     "value": 0.25,
@@ -26603,6 +26804,19 @@
   "modifiers": [
    {
     "id": "0x00167871:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00167871",
+     "edid": "mod_Broadsider_Magazine_Multi",
+     "name": "Multi Shot Canister"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": 0.15,
+    "conditions": []
+   },
+   {
+    "id": "0x00167871:1",
     "source": {
      "kind": "omod",
      "formId": "0x00167871",
@@ -27829,7 +28043,21 @@
   "targetKeywords": [
    "ma_CircuitBreaker"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x006E1309:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x006E1309",
+     "edid": "mod_CircuitBreaker_Receiver_FastTrigger",
+     "name": "Hair Trigger Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_FusionCell",
    "dn_HasReceiver_FastSemiAuto"
@@ -27858,13 +28086,26 @@
      "edid": "mod_CircuitBreaker_Receiver_FastTrigger-CritDMG",
      "name": "Fierce Receiver"
     },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   },
+   {
+    "id": "0x006E130B:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x006E130B",
+     "edid": "mod_CircuitBreaker_Receiver_FastTrigger-CritDMG",
+     "name": "Fierce Receiver"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.2,
     "conditions": []
    },
    {
-    "id": "0x006E130B:1",
+    "id": "0x006E130B:2",
     "source": {
      "kind": "omod",
      "formId": "0x006E130B",
@@ -27896,7 +28137,21 @@
   "targetKeywords": [
    "ma_CircuitBreaker"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x006E1318:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x006E1318",
+     "edid": "mod_CircuitBreaker_Receiver_FastTrigger-HipAccuracy",
+     "name": "Steadfast Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_FusionCell",
    "dn_HasReceiver_Steadfast"
@@ -30373,13 +30628,26 @@
      "edid": "mod_CombatRifle_Receiver_CritDMG-FastTrigger",
      "name": "Snappy Receiver"
     },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   },
+   {
+    "id": "0x0024307B:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0024307B",
+     "edid": "mod_CombatRifle_Receiver_CritDMG-FastTrigger",
+     "name": "Snappy Receiver"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.2,
     "conditions": []
    },
    {
-    "id": "0x0024307B:1",
+    "id": "0x0024307B:2",
     "source": {
      "kind": "omod",
      "formId": "0x0024307B",
@@ -30896,13 +31164,26 @@
      "edid": "mod_CombatRifle_Receiver_Damage-FastTrigger",
      "name": "Vigorous Receiver"
     },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   },
+   {
+    "id": "0x00243034:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00243034",
+     "edid": "mod_CombatRifle_Receiver_Damage-FastTrigger",
+     "name": "Vigorous Receiver"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.1,
     "conditions": []
    },
    {
-    "id": "0x00243034:1",
+    "id": "0x00243034:2",
     "source": {
      "kind": "omod",
      "formId": "0x00243034",
@@ -30981,7 +31262,21 @@
   "targetKeywords": [
    "ma_CombatRifle"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0014837C:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0014837C",
+     "edid": "mod_CombatRifle_Receiver_FastTrigger",
+     "name": "Hair Trigger Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_45Caliber",
    "dn_HasReceiver_FastSemiAuto"
@@ -31004,6 +31299,19 @@
   "modifiers": [
    {
     "id": "0x00243085:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00243085",
+     "edid": "mod_CombatRifle_Receiver_FastTrigger-AmmoConv",
+     "name": "Hasty .38 Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   },
+   {
+    "id": "0x00243085:1",
     "source": {
      "kind": "omod",
      "formId": "0x00243085",
@@ -31036,7 +31344,21 @@
   "targetKeywords": [
    "ma_CombatRifle"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0024307C:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0024307C",
+     "edid": "mod_CombatRifle_Receiver_FastTrigger-HipAccuracy",
+     "name": "Steadfast Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_45Caliber",
    "dn_HasReceiver_Steadfast"
@@ -34261,6 +34583,19 @@
     "op": "SET",
     "value": 2,
     "conditions": []
+   },
+   {
+    "id": "0x00729BE7:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00729BE7",
+     "edid": "mod_Cremator_BarrelHose_DoubleShot",
+     "name": "Double-Shot Barrel"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": 0.3,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -34290,13 +34625,26 @@
      "edid": "mod_Cremator_BarrelHose_Heavy",
      "name": "Heavy Barrel"
     },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": 0.8,
+    "conditions": []
+   },
+   {
+    "id": "0x00729BEA:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00729BEA",
+     "edid": "mod_Cremator_BarrelHose_Heavy",
+     "name": "Heavy Barrel"
+    },
     "bucket": "reloadSpeed",
     "op": "MUL_ADD",
     "value": -0.1428,
     "conditions": []
    },
    {
-    "id": "0x00729BEA:1",
+    "id": "0x00729BEA:2",
     "source": {
      "kind": "omod",
      "formId": "0x00729BEA",
@@ -34363,6 +34711,19 @@
     "bucket": "projectileCount",
     "op": "SET",
     "value": 4,
+    "conditions": []
+   },
+   {
+    "id": "0x00729BEF:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00729BEF",
+     "edid": "mod_Cremator_BarrelHose_MultiShot",
+     "name": "Multi-Shot Barrel"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": 0.6,
     "conditions": []
    }
   ],
@@ -37763,7 +38124,21 @@
   "targetKeywords": [
    "ma_Dragon"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x007CFAAC:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x007CFAAC",
+     "edid": "mod_custom_Doolin",
+     "name": "AttackSpeedUp"
+    },
+    "bucket": "animDelaySec",
+    "op": "SET",
+    "value": 0,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [],
   "hasEnchantments": false,
   "notes": [],
@@ -39851,13 +40226,26 @@
      "edid": "mod_Custom_SaltOfTheEarth",
      "name": "Salt Of The Earth"
     },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x008F0DCD:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F0DCD",
+     "edid": "mod_Custom_SaltOfTheEarth",
+     "name": "Salt Of The Earth"
+    },
     "bucket": "reloadSpeed",
     "op": "MUL_ADD",
     "value": -0.15,
     "conditions": []
    },
    {
-    "id": "0x008F0DCD:2",
+    "id": "0x008F0DCD:3",
     "source": {
      "kind": "omod",
      "formId": "0x008F0DCD",
@@ -39877,7 +40265,7 @@
     ]
    },
    {
-    "id": "0x008F0DCD:3",
+    "id": "0x008F0DCD:4",
     "source": {
      "kind": "omod",
      "formId": "0x008F0DCD",
@@ -42636,7 +43024,21 @@
   "targetKeywords": [
    "ma_DoubleBarrelShotgun"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x001C6F1E:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x001C6F1E",
+     "edid": "mod_DoubleBarrelShotgun_Receiver_FastTrigger",
+     "name": "Hair Trigger Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_ShotgunShell",
    "dn_HasReceiver_FastSemiAuto"
@@ -42665,13 +43067,26 @@
      "edid": "mod_DoubleBarrelShotgun_Receiver_FastTrigger-CritDMG",
      "name": "Fierce Receiver"
     },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   },
+   {
+    "id": "0x002958E6:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x002958E6",
+     "edid": "mod_DoubleBarrelShotgun_Receiver_FastTrigger-CritDMG",
+     "name": "Fierce Receiver"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.2,
     "conditions": []
    },
    {
-    "id": "0x002958E6:1",
+    "id": "0x002958E6:2",
     "source": {
      "kind": "omod",
      "formId": "0x002958E6",
@@ -42712,13 +43127,26 @@
      "edid": "mod_DoubleBarrelShotgun_Receiver_FastTrigger-Damage",
      "name": "Vigorous Receiver"
     },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   },
+   {
+    "id": "0x00298950:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00298950",
+     "edid": "mod_DoubleBarrelShotgun_Receiver_FastTrigger-Damage",
+     "name": "Vigorous Receiver"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.1,
     "conditions": []
    },
    {
-    "id": "0x00298950:1",
+    "id": "0x00298950:2",
     "source": {
      "kind": "omod",
      "formId": "0x00298950",
@@ -42750,7 +43178,21 @@
   "targetKeywords": [
    "ma_DoubleBarrelShotgun"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0029D4C4:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0029D4C4",
+     "edid": "mod_DoubleBarrelShotgun_Receiver_FastTrigger-HipAccuracy",
+     "name": "Steadfast Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_ShotgunShell",
    "dn_HasReceiver_Steadfast"
@@ -60963,6 +61405,46 @@
   "obtainable": true
  },
  {
+  "id": "mod_Legendary_Weapon2_Fire",
+  "formId": "0x00849316",
+  "name": "Pyro-Technician's",
+  "description": "",
+  "attachPointFormId": "0x004E89A8",
+  "attachPointEdid": "ap_Legendary2",
+  "targetKeywords": [
+   "ma_legendarycrafting_weapon"
+  ],
+  "modifiers": [
+   {
+    "id": "0x00849316:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00849316",
+     "edid": "mod_Legendary_Weapon2_Fire",
+     "name": "Pyro-Technician's"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "FeaturedItem"
+  ],
+  "hasEnchantments": false,
+  "hasGrantingCobj": true,
+  "notes": [],
+  "obtainable": true
+ },
+ {
   "id": "mod_Legendary_Weapon2_Guns_Bashing",
   "formId": "0x005299F9",
   "name": "Basher's",
@@ -76270,6 +76752,19 @@
     "op": "MUL_ADD",
     "value": 0.25,
     "conditions": []
+   },
+   {
+    "id": "0x00188C91:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00188C91",
+     "edid": "mod_MissileLauncher_Scope_TargetingBox",
+     "name": "Targeting Computer"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": 0.25,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -76308,6 +76803,19 @@
    },
    {
     "id": "0x00170375:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00170375",
+     "edid": "mod_MissileLauncher_TubeBarrel_Quad",
+     "name": "Quad Barrel"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.166667,
+    "conditions": []
+   },
+   {
+    "id": "0x00170375:2",
     "source": {
      "kind": "omod",
      "formId": "0x00170375",
@@ -76378,6 +76886,19 @@
    },
    {
     "id": "0x001AC257:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x001AC257",
+     "edid": "mod_MissileLauncher_TubeBarrel_Triple",
+     "name": "Triple Barrel"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.12,
+    "conditions": []
+   },
+   {
+    "id": "0x001AC257:2",
     "source": {
      "kind": "omod",
      "formId": "0x001AC257",
@@ -79728,7 +80249,21 @@
   "targetKeywords": [
    "ma_PipeBoltAction"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00148352:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00148352",
+     "edid": "mod_PipeBoltAction_Receiver_FastTrigger",
+     "name": "Hair Trigger Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_308Caliber",
    "dn_HasReceiver_FastBoltAction"
@@ -79751,6 +80286,19 @@
   "modifiers": [
    {
     "id": "0x002D5D6B:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x002D5D6B",
+     "edid": "mod_PipeBoltAction_Receiver_fasttrigger-AmmoConversion",
+     "name": "Hasty .38 Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   },
+   {
+    "id": "0x002D5D6B:1",
     "source": {
      "kind": "omod",
      "formId": "0x002D5D6B",
@@ -79809,6 +80357,19 @@
     "op": "ADD",
     "value": 0.25,
     "conditions": []
+   },
+   {
+    "id": "0x002D5D6D:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x002D5D6D",
+     "edid": "mod_PipeBoltAction_Receiver_fasttrigger-BaseDMG",
+     "name": "Tuned Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -79839,13 +80400,26 @@
      "edid": "mod_PipeBoltAction_Receiver_fasttrigger-CritDMG",
      "name": "Snappy Receiver"
     },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   },
+   {
+    "id": "0x002D5D6E:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x002D5D6E",
+     "edid": "mod_PipeBoltAction_Receiver_fasttrigger-CritDMG",
+     "name": "Snappy Receiver"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.2,
     "conditions": []
    },
    {
-    "id": "0x002D5D6E:1",
+    "id": "0x002D5D6E:2",
     "source": {
      "kind": "omod",
      "formId": "0x002D5D6E",
@@ -79877,7 +80451,21 @@
   "targetKeywords": [
    "ma_PipeBoltAction"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x002D5D6F:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x002D5D6F",
+     "edid": "mod_PipeBoltAction_Receiver_fasttrigger-HipAccuracy",
+     "name": "Speedy Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_308Caliber",
    "dn_HasReceiver_Speedy"
@@ -83409,7 +83997,21 @@
   "targetKeywords": [
    "ma_PipeGun"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0014833F:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0014833F",
+     "edid": "mod_PipeGun_Receiver_FastTrigger",
+     "name": "Hair Trigger Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_38Caliber",
    "dn_HasReceiver_FastSemiAuto"
@@ -83432,6 +84034,19 @@
   "modifiers": [
    {
     "id": "0x002D5E34:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x002D5E34",
+     "edid": "mod_PipeGun_Receiver_FastTrigger-AmmoConversion",
+     "name": "Hasty .45 Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   },
+   {
+    "id": "0x002D5E34:1",
     "source": {
      "kind": "omod",
      "formId": "0x002D5E34",
@@ -83492,6 +84107,19 @@
     "op": "ADD",
     "value": 0.25,
     "conditions": []
+   },
+   {
+    "id": "0x002D5E36:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x002D5E36",
+     "edid": "mod_PipeGun_Receiver_FastTrigger-BaseDMG",
+     "name": "Tuned Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -83539,6 +84167,19 @@
     "op": "ADD",
     "value": 0.5,
     "conditions": []
+   },
+   {
+    "id": "0x002D5E37:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x002D5E37",
+     "edid": "mod_PipeGun_Receiver_FastTrigger-CritDMG",
+     "name": "Snappy Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -83560,7 +84201,21 @@
   "targetKeywords": [
    "ma_PipeGun"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x002D5E38:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x002D5E38",
+     "edid": "mod_PipeGun_Receiver_FastTrigger-HipAccuracy",
+     "name": "Speedy Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_38Caliber",
    "dn_HasReceiver_Speedy"
@@ -94983,6 +95638,19 @@
     "op": "ADD",
     "value": 0.5,
     "conditions": []
+   },
+   {
+    "id": "0x00314FBA:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00314FBA",
+     "edid": "mod_RadiumRifle_Receiver_CritDMG-FastTrigger",
+     "name": "Snappy Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -95459,6 +96127,19 @@
     "op": "ADD",
     "value": 0.25,
     "conditions": []
+   },
+   {
+    "id": "0x00314FCD:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00314FCD",
+     "edid": "mod_RadiumRifle_Receiver_Damage-FastTrigger",
+     "name": "Tuned Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -95527,7 +96208,21 @@
   "targetKeywords": [
    "ma_RadiumRifle"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x001111DA:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x001111DA",
+     "edid": "mod_RadiumRifle_Receiver_FastTrigger",
+     "name": "Hair Trigger Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_45Caliber",
    "dn_HasReceiver_FastSemiAuto"
@@ -95547,7 +96242,21 @@
   "targetKeywords": [
    "ma_RadiumRifle"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00314FCF:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00314FCF",
+     "edid": "mod_RadiumRifle_Receiver_FastTrigger-HipAccuracy",
+     "name": "Speedy Receiver"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_45Caliber",
    "dn_HasReceiver_Speedy"
@@ -109806,6 +110515,19 @@
      "edid": "SCORE_S19_mod_TeslaCannon_Barrel_EdisonI",
      "name": "Edison Series I"
     },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": 0.1,
+    "conditions": []
+   },
+   {
+    "id": "0x0079A630:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A630",
+     "edid": "SCORE_S19_mod_TeslaCannon_Barrel_EdisonI",
+     "name": "Edison Series I"
+    },
     "bucket": "baseDamage",
     "op": "ADD",
     "curve": {
@@ -109902,6 +110624,19 @@
    },
    {
     "id": "0x0079A639:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A639",
+     "edid": "SCORE_S19_mod_TeslaCannon_Barrel_EdisonII",
+     "name": "Edison Series II"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": 0.3,
+    "conditions": []
+   },
+   {
+    "id": "0x0079A639:2",
     "source": {
      "kind": "omod",
      "formId": "0x0079A639",
@@ -110010,6 +110745,19 @@
      "edid": "SCORE_S19_mod_TeslaCannon_Barrel_NikolaI",
      "name": "Nikola Series I"
     },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.2,
+    "conditions": []
+   },
+   {
+    "id": "0x0079A637:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A637",
+     "edid": "SCORE_S19_mod_TeslaCannon_Barrel_NikolaI",
+     "name": "Nikola Series I"
+    },
     "bucket": "baseDamage",
     "op": "ADD",
     "value": -20,
@@ -110057,6 +110805,19 @@
    },
    {
     "id": "0x0079A638:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A638",
+     "edid": "SCORE_S19_mod_TeslaCannon_Barrel_NikolaII",
+     "name": "Nikola Series II"
+    },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": -0.4,
+    "conditions": []
+   },
+   {
+    "id": "0x0079A638:2",
     "source": {
      "kind": "omod",
      "formId": "0x0079A638",
@@ -110247,13 +111008,26 @@
      "edid": "SCORE_S19_mod_TeslaCannon_Receiver_DuoWaveOscillator",
      "name": "Wave Oscillator Double-Resonant"
     },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": 0.3,
+    "conditions": []
+   },
+   {
+    "id": "0x0079A62F:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A62F",
+     "edid": "SCORE_S19_mod_TeslaCannon_Receiver_DuoWaveOscillator",
+     "name": "Wave Oscillator Double-Resonant"
+    },
     "bucket": "reloadSpeed",
     "op": "MUL_ADD",
     "value": -0.05,
     "conditions": []
    },
    {
-    "id": "0x0079A62F:1",
+    "id": "0x0079A62F:2",
     "source": {
      "kind": "omod",
      "formId": "0x0079A62F",
@@ -111016,13 +111790,26 @@
      "edid": "SCORE_S19_mod_TeslaCannon_Receiver_Triple-ResonantWaveOscillator",
      "name": "Wave Oscillator Triple-Resonant"
     },
+    "bucket": "animDelaySec",
+    "op": "MUL_ADD",
+    "value": 0.4,
+    "conditions": []
+   },
+   {
+    "id": "0x0079A636:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A636",
+     "edid": "SCORE_S19_mod_TeslaCannon_Receiver_Triple-ResonantWaveOscillator",
+     "name": "Wave Oscillator Triple-Resonant"
+    },
     "bucket": "reloadSpeed",
     "op": "MUL_ADD",
     "value": -0.1,
     "conditions": []
    },
    {
-    "id": "0x0079A636:1",
+    "id": "0x0079A636:2",
     "source": {
      "kind": "omod",
      "formId": "0x0079A636",

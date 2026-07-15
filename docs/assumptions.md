@@ -1989,10 +1989,45 @@ raw field:
   bucket (All Rise +50). Deliberately note-only (no formula bucket):
   damage-TAKEN perks (Unstoppable Monster's DR-per-killstreak — see
   "Incoming DPS" future stream), `EnableAmmoSpenderOnKill` (Final Word's
-  Bullet Storm enable flag — boolean AV, not a stack cap),
+  Bullet Storm enable flag — boolean AV, not a stack cap; confirmed
+  2026-07-15 this IS the correct, complete mechanism — no ENCH/PERK/SPEL
+  chain exists beyond this one flag, and it's already reachable through the
+  engine's existing manual `bulletStormStacks` slider since the engine never
+  models real-time stack accrual for any source),
   `STAT_DeflectChance` (Old Guard), sneak/detection AVs (Fixer's
   `ArmorShadowHide`, `Mod_StealthMove_AV`). All carry omod `notes` and badge
   `'inert'` in the picker via the notes fallback.
+- **Doctor's Orders** (E08B_mod_Custom_HuntingRifle_DoctorsOrders, audited
+  2026-07-15): grants `CheatDeathResetOnWeakPointChance` (AVIF 0x00924E29,
+  "Revive Effect Cooldown") — 30% chance per weakpoint hit to reset the
+  cooldown of the wearer's active "Cheat Death"-family effect (Life Saver /
+  Power Armor Reboot / E.M.T. / Scout Banner, all read via the same hardcoded
+  AV, no queryable PERK/SPEL chain). Pure self/team revive-cooldown support,
+  never touches outgoing damage/DR/crit — deliberately unmodeled, consistent
+  with `PowerArmorReboot`'s existing "not combat" perk-registry note
+  (`src/data/live/perks.ts`). The July-2→10 patch swapped this unique's prior
+  granted PERK (rank-1 E.M.T., auto-revive teammates) for this AV — a
+  mechanic replacement, not a numeric retune; both old and new are equally
+  non-combat, so `modifiers: []` was correct before and after.
+- **Crowd Control** (E08B_mod_Custom_CrowdControl, audited 2026-07-15 —
+  user report "does bleed now"): confirmed CORRECT as extracted. ENCH
+  `ench_LegendaryWeapon_Bleed` → MGEF `DamageHealthContact`, `Resist Value`
+  AVIF `DamageResist` (generic physical DR, no bleed-specific AVIF exists) —
+  `normalize/mgef.ts`'s `RESIST_AV_DAMAGE_TYPES: DamageResist → 'ballistic'`
+  route is the correct, codebase-wide convention every bleed DoT in this
+  dataset uses (there is no separate `bleed` `DamageType` member; bleed is
+  physically-resisted in FO76, so it's intentionally bucketed under
+  `ballistic`). The user's observation is accurate (the ESM literally names
+  the enchant "Bleed" and tags a "Bleed Damage" tooltip keyword) — it just
+  isn't a distinct engine bucket to route to.
+- **Pyro-Technician's** (mod_Legendary_Weapon2_Fire, 0x00849316): the July-10
+  patch repurposed a formerly-orphaned bounty record without setting `Attach
+  Point` (confirmed via diff.json — every field EXCEPT Attach Point was
+  rewritten). `scripts/extract/extract-omods.ts`'s `ATTACH_POINT_OVERRIDES`
+  supplies the correct `ap_Legendary2` until Bethesda fixes the record
+  upstream — re-check this override on every re-extract in case the gap gets
+  fixed natively (the override would then be harmlessly redundant, not
+  wrong).
 - Xerxo's Gamma Ray Gun is currently unobtainable in-game (user-confirmed)
   and hidden. Base `GammaGun` IS obtainable in-game but is excluded from
   extraction as `noDamage` — its damage lives on the projectile explosion,
@@ -2137,6 +2172,8 @@ yet modeled:
 | Limb-damage DPS | Scattershot, Modern Renegade, Enforcer | `limbDamage` bucket exists but scenarios never target limbs yet |
 | Bash-damage DPS | Bear Arms, Basher | bash attacks unmodeled |
 | Bullet Storm peak DPS | Bringing Out the Big Guns | raises max stacks 10→20 (slider allows 20; auto-raise pending) |
+| Bullet Storm peak DPS (2026-07-15 uniques audit) | Foundation's Vengeance (E08B_mod_Custom_FoundationsVengeance), Valkyrie (RD01_Mod_Custom_Valkyrie_CustomName) | per-weapon `WornHasKeyword` + (Foundation's Vengeance only) `GetHealthPercentage()<=0.25` gate on the shared HeavyGunner "Bullet Storm" SPEL (0x0031BE58) — Foundation's Vengeance raises `AmmoSpenderMaxStacks` +5 while the WEARER (not enemy) is ≤25% HP (`Run On: Subject`); Valkyrie gates a spin-up-speed effect the same way. Neither is extractable as a per-OMOD modifier — `bulletStormStacks` (`src/types/index.ts:22`) is a flat manual field, never UI-exposed, with no `bulletStormMaxStacks`-style bootstrap bucket (unlike `onslaughtMaxStacks`) to hang a keyword+HP-gated cap-raise off of. `src/data/live/generated/perks.json`'s HeavyGunner family already has the raw `WornHasKeyword(...)` condition strings in its `notes` (dropped there, not modeled) — cross-reference if this stream gets built. |
+| Kill Streak accrual rate | Overkill (mod_Custom_Overkill) | grants `KillStreakPerKillCount` AV +5.0/kill (0x00924E31, confirmed ESM-provable, distinct from the AV-less counter itself at hardcoded slot 0x399) — the engine's existing Kill Streak machinery (`adrenalineStacks`, `killStreakCount` condition, `killStreak` CurveInput) only supports a manually-dialed STATIC count for steady-state paper DPS; there's no per-kill accrual-rate axis to plug a rate modifier into. Needs new engine design (how/whether a rate should affect the static-slider model), not a data-layer fix. |
 | Melee via SPECIAL buffs | Radicool (+STR) | SPECIAL buffs are manual inputs for now |
 | DR→unarmed synergy | Barbarian, Bodyguards (+ Iron Fist) | DR increases unarmed/fist damage with Iron Fist; Pain Train counts as unarmed under the hood |
 | Deflect/Reflect return damage | Ricochet, Bullet Shield, Reflective 4★ | scales with DR (ER & other resists reduce incoming but do NOT boost return) |
