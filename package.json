@@ -12,7 +12,7 @@
     "extract": "tsx scripts/extract/run-all.ts",
     "extract:diff": "tsx scripts/extract/diff-report.ts",
     "vet:weapons": "tsx scripts/vet-weapons.ts",
-    "esm:walk": "tsx scripts/esm-walk.ts",
+    "esm:walk": "esm -p walk",
     "preview": "vite preview",
     "build:gh-pages": "NODE_ENV=production pnpm run build"
   },

@@ -1,118 +1,37 @@
 ---
 name: esm-walk
-description: Walk SeventySix.esm records to verify an item/effect is real and player-obtainable, decode what a perk/OMOD/legendary actually does, and decide where a fix belongs. Use when a user questions whether an item/mod exists in game, when reviewing _meta.json unresolved reports, or when chasing a mechanic's ESM footprint.
+description: Walk SeventySix.esm records to verify an item/effect is real and player-obtainable, decode what a perk/OMOD/legendary actually does, and decide where a fix belongs in dps-76. Use when a user questions whether an item/mod exists in game, when reviewing _meta.json unresolved reports, or when chasing a mechanic's ESM footprint.
 ---
 
-# ESM record walking
+# ESM record walking (dps-76)
 
-Run the walker instead of raw `esm` CLI calls — it follows the whole chain
-(OMOD → ENCH → MGEF → "Perk to Apply" → PERK / "Equip Ability" → SPEL entry
-points; SPEL/ALCH effects; curves; GLOBs; conditions) and prints one compact
-digest:
+The walker and the mechanics-chaser are native `esm` subcommands now:
 
 ```bash
-pnpm esm:walk <formid|edid> [--refs] [--depth N] [--esm <path>]
+esm -p walk <formid|edid> [--refs] [--depth N]   # compact digest + chain following
+esm -p chase <selector> [--depth N] [--json]     # OMOD/PERK/SPEL/ALCH/ENCH mechanism taxonomy
 ```
 
-- Accepts editor ids or `0x...` formids; falls back to a search when not found.
-- `--refs` appends reverse references grouped by record type (obtainability).
-- `--depth` caps chain-following (default 2; use 3 for OMOD → granted-perk).
-- ESM path resolves from `--esm`, else the `FO76_ESM_PATH` env var.
-- The script (`scripts/esm-walk.ts`) already applies the known esm-CLI quirks
-  (one-shot `-p --json` mode, the Ability/Entry-Point field misattribution
-  repair) and batches per-record fetches with bulk `get`.
-- Walking a KYWD or AVIF reverse-chases its SPEL/PERK consumers
-  (`refs --type SPEL`/`PERK --paths`) instead of dumping the (mostly empty)
-  record itself — the same reverse-chase hop `esm chase` runs for an OMOD's
-  keyword-hook properties, below.
+`pnpm esm:walk` remains as a thin alias for `esm -p walk`. Generic CLI
+mechanics — path resolution, bulk `get`, `refs` flags, how to read the walk
+digest (GLOB flat-wins rule, curves, conditions), generic obtainability
+guidance, curve-table conventions, field-name churn — live in the `esm-cli`
+skill that ships with the binary: `esm skill` prints it, and it's checked in
+at `../FO76-Tools/.claude/skills/esm-cli/`. Read that first for anything
+about driving the CLI itself. What follows is only the dps-76-specific
+judgment layer.
 
-## Raw CLI power tools (when the digest truncates)
-
-Reach for these directly when the walker's digest isn't enough — a field it
-truncates, a record type it doesn't special-case, or a wider reverse-ref scan
-than `--refs` gives you. One-shot calls need `-p` (otherwise the CLI drops
-into a REPL after printing).
-
-- **Bulk `get`**: `esm -p --esm <esm> get <sel1> <sel2> … --json` fetches many
-  records in one call. One target → the classic single object; two or more →
-  a JSON array, one entry per selector in input order, each tagged with its
-  own `sel` (a bad selector becomes `{"sel":…, "error":…}` instead of failing
-  the whole call). The wrapper exposes this as `client.bulkGet()`.
-- **`get --resolve none|stub|full`**: inlines FormID references instead of
-  leaving them as bare `0x...` strings — `stub` gives
-  `{formid, editor_id, record_type}` (cheap, one extra field per ref); `full`
-  recursively inlines the referenced record itself. A `CURV` record fetched
-  directly already inlines its own curve points regardless of `--resolve`.
-- **`refs --type <SIG>`**: narrows rows to referencing records of one 4-char
-  type (e.g. `--type OMOD`), applied server-side so `--limit`/`--depth`
-  interact correctly with the filter — one type per call, not a list.
-- **`refs --paths`**: annotates each row with the JSON field path(s) from the
-  referrer to the target (e.g. `Effects[2].Conditions[0].Parameter 1`) —
-  decodes every emitted row, so it's off by default; this is how `esm chase`
-  locates the exact `Effects[N]` a keyword/AVIF gates.
-- **`refs --depth N`** (1–6): direct refs only at 1; raise for a reference
-  reached through an intermediary (e.g. a quest alias).
-- **Gotcha**: `refs`'s default `--limit 100` truncates AND appends a
-  non-JSON `note: output capped at N of M results; use --limit 0 to show all`
-  trailer to stdout — that breaks a naive `JSON.parse`. Pass an explicit large
-  limit (or `--limit 0` for everything) and always pass `--formid` (not a bare
-  positional) — the CLI misparses numeric editor_ids when auto-detecting.
-
-## `esm chase` — OMOD & effect-record mechanics
-
-```bash
-esm -p --esm <esm> chase <selector> [--depth N] [--ref-limit N] [--json]
-```
-
-`<selector>` auto-detects an **OMOD, PERK, SPEL, ALCH, or ENCH** formid|edid.
-Dispatch is by record type:
-
-- **OMOD** — reads `Data.Properties[]` rows and classifies each one — a bare
-  number (nothing to chase), an ENCH/SPEL attached directly to the weapon
-  (forward `get`), a PERK grant (`Value 1` is property 116/"Perks"; forward
-  `get`s the granted PERK, whose `Effects` ARE the mechanic), or a KYWD/AVIF
-  hook (reverse `refs --type SPEL` and `refs --type PERK`, each with `--paths`,
-  to find the SPEL/PERK whose Conditions test `WornHasKeyword(<keyword>)`, then
-  slices out just the gated `Effects[N]` via the field path). `--depth` and
-  `--ref-limit` apply here (keyword/AVIF reverse-ref walk).
-- **PERK/SPEL/ALCH/ENCH** — walks the record's own `Effects[]` array directly
-  (no property-row indirection): a PERK-shaped entry forward-fetches its
-  granted Ability/Quest/Spell/Item; a SPEL/ALCH/ENCH-shaped entry forward-
-  fetches its `Base Effect` MGEF. `--depth`/`--ref-limit` are ignored for these
-  roots — there's no reverse-ref walk to bound.
-- **MGEF pass-through (both walks)**: whenever a `Base Effect` resolves to an
-  MGEF carrying `"Perk to Apply"` (→ PERK) or `"Equip Ability"` (→ SPEL), that
-  one extra hop is followed automatically — this is the "Severing's confirmed
-  chase" derivation (`ENCH → MGEF (Perk to Apply) → PERK`), previously chased
-  by hand; `esm chase <ench-formid> --json` now reproduces it in one call.
-
-Either way it prints a compact evidence tree, not full record dumps.
-
-Reach for `esm chase` when decoding a unique weapon's `mod_Custom_*` OMOD, OR
-when starting from a legendary ENCH/PERK/SPEL/ALCH directly — e.g. a PERK found
-via `refs --type PCRD`, or an ENCH whose MGEF proc chain you want resolved in
-one call instead of a manual `Base Effect` → MGEF → `Perk to Apply` walk. Use
-`pnpm esm:walk` for everything else (MGEF archetypes, curves, GLOBs,
-conditions, PERK entry points) — the two share the same underlying reverse-
-chase hop; `esm chase` just automates the property/effect-array taxonomy end
-to end. It implements "the chase pattern" documented in
-`../FO76-Tools/.claude/skills/patch-notes/mechanics-kb.md` — read that first if
-a property doesn't fit its 3-way classification.
-
-## Reading the digest
+## Digest → extractor mapping
 
 - **Entry points**: `"Mod X" fn <Function> value <Float>` — bucket routes live
   in `scripts/extract/normalize/mgef.ts` (`ENTRY_POINT_BUCKETS`). EP 189/190
   are the Onslaught pair.
-- **Curves**: `curve (x,y)…` with `curve INPUT axis: AV <name>` — the input AV
-  maps to a `CurveInput` in `CURVE_INPUT_AVS` (mgef.ts). Low engine AVs
+- **Curve inputs**: the digest's `curve INPUT axis: AV <name>` maps to a
+  `CurveInput` via `CURVE_INPUT_AVS` (mgef.ts). Low engine AVs
   (0x392 healthFraction, 0x395 onslaught…) have no AVIF record.
-- **GLOB magnitudes**: the digest marks each one `← real value (flat is 0)` or
-  `← IGNORE (flat wins)`. Trust those annotations — overriding nonzero flat
-  magnitudes with the sibling GLOB once corrupted every chem.
-- **Conditions**: GLOB comparison values resolve inline
-  (`GetRandomPercent() ≤ 0x…<SomeGlob=50>`). `WornHasKeyword(HasLegendary_*)`
-  is a self-gate the OMOD's own keyword satisfies.
+- **GLOB magnitudes**: trust the digest's `← real value` / `← IGNORE (flat
+  wins)` annotations — overriding nonzero flat magnitudes with the sibling
+  GLOB once corrupted every chem.
 - **PERK with "NO effects"**: the bonus is engine/script-side; only the
   description states it (Lifegiver ranks 2/3) — model via
   `overrides/perk-overrides.ts` with a description-sourced comment.
@@ -121,17 +40,14 @@ a property doesn't fit its 3-way classification.
 
 1. Check the record's `obtainable` flag in the generated JSON first
    (derivation: `scripts/extract/obtainability.ts`).
-2. Read the grouped refs: COBJ/GMRW/LGDI/QUST/CONT/MISC/FLST are
-   player-facing signals; LVLI counts only via player-facing chains
-   (`⚠NONPLAYABLE` referrers are flagged).
-3. **NO refs at all is normal** for script/VMAD quest rewards, gold-bullion
-   vendor items, and account-side (ATX) grants — check the rescue lists
-   before assuming junk.
-4. **The record graph cannot distinguish shipped from unshipped content.**
-   P62/"The Drifter" gear (Splinter, Chaos Engine, Tempest, Combo-Breaker's)
-   looks perfectly obtainable on-record but never released. Confirm against
-   release history or ask the user before rescuing anything unfamiliar —
-   "exists in ESM" ≠ "legit mod players can use".
+2. Signal reading (player-facing referrer types, LVLI chains, NONPLAYABLE) is
+   in the esm-cli skill. dps-76 specifics: script/VMAD quest rewards,
+   gold-bullion vendor items, and account-side (ATX) grants have NO
+   record-level reverse refs — check the rescue lists
+   (`forceVisible*Ids` in `overrides/corrections.ts`) before assuming junk.
+3. **Shipped ≠ on-record.** P62/"The Drifter" gear looks perfectly obtainable
+   on-record but never released. Confirm against release history or ask the
+   user before rescuing anything unfamiliar.
 
 ## Where fixes go
 
