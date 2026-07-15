@@ -147,6 +147,7 @@ export function ConditionsSection() {
     ((conditions.takingOneForTheTeamPct ?? 0) !== (defaults.takingOneForTheTeamPct ?? 0) ? 1 : 0) +
     (conditions.isPowerAttacking !== defaults.isPowerAttacking ? 1 : 0) +
     ((conditions.isLastShot ?? false) !== (defaults.isLastShot ?? false) ? 1 : 0) +
+    ((conditions.hydrated ?? true) !== (defaults.hydrated ?? true) ? 1 : 0) +
     (conditions.limitBreakingPieces !== defaults.limitBreakingPieces ? 1 : 0);
 
   return (
@@ -353,6 +354,20 @@ export function ConditionsSection() {
               />
               <p className="text-muted-foreground text-xs">
                 Manual estimate of the teamed-attacker damage-taken debuff's effective uptime.
+              </p>
+            </div>
+          )}
+
+          {!isGhoul && (
+            <div className="space-y-1.5">
+              <SwitchRow
+                id="char-hydrated"
+                label="Fully hydrated"
+                checked={conditions.hydrated ?? true}
+                onCheckedChange={v => set('hydrated', v)}
+              />
+              <p className="text-muted-foreground text-xs">
+                Fully hydrated grants +35% AP regen (45/60% with Rejuvenated). Ghouls have no hydration.
               </p>
             </div>
           )}

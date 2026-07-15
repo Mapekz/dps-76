@@ -66,6 +66,33 @@ with `armor-mods-incoming.md`.
   once the armor-omod pipeline exists rather than hand-picking beyond the
   above blind — see what else falls out of the same extraction pass for
   free before deciding what's in scope.
+- **Armor-sourced AP effects** (inherited from ap-regen.md's 2026-07-15
+  close-out — the non-armor AP scope shipped; the engine side is DONE, these
+  only need the armor pipeline + a modifier emit): the AV sweep already
+  located the records —
+  - Regen (`apRegenFlat`/`apRegen` buckets exist): "Powered"-style PA misc
+    mods `EnchPowerArmor_KineticServos`/`CoreAssembly`/`PhotovotaicCoating`/
+    `BatteryRegenUp` (flat AV `ActionPointsRate` via MGEF
+    `AbFortifyActionPointRateHidden` 0x0004D899),
+    `ench_LegendaryArmor_IncreaseAPRegen_Self` 0x006337E1 (+regen aura),
+    Vulcan PA torso `RD01_PowerArmor_Torso_EnclaveVulcanEnch` (% AV
+    `ActionPointsRateMult`).
+  - Max AP (`apMax` bucket exists): `ench_LegendaryArmor_MaxAP` 0x0062D85E.
+  - **Rejuvenator's** (4★ armor): its per-tier AP restore curves
+    (`Armor_RejuvenatorRegenT1..T5`, curve input AV `LGND_RejuvenatorTier`)
+    live on the HIDDEN Thirst ability SPEL `SURV_Thirst_Ability` 0x00054DF3
+    effects[15-20], hydration-tier-gated — the same record whose +35%
+    baseline is already modeled app-side (`@/data/player-baseline`); only
+    the armor tier count input is missing.
+  - **Scanner's (4★) — Number Cruncher exemption (user-confirmed
+    2026-07-15)**: Scanner's reduces VATS AP cost through an entry point
+    that is NOT factored into Number Cruncher's damage scaling. Number
+    Cruncher is modeled as the `scaledByWeaponApCost` condition reading the
+    weapon-level effective `apCost` (base WEAP + weapon-OMOD `vatsApCost`
+    fold only). When wiring Scanner's, esm-walk its entry point and keep
+    its reduction OUT of `scaledByWeaponApCost`'s input — it may still
+    reduce the AP-economy drain (`computeApEconomy.apCost`), just not the
+    perk's damage bonus.
 - **Zealot's** (+damage vs Scorched/Scorchbeast, carried over from the
   original scope): needs an `enemyType`/`enemyTypeAny` condition value for
   these two factions — same condition kind `phase-3-enemies.md` plans to

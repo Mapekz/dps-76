@@ -8,6 +8,8 @@ import { CritGauge } from './CritGauge';
 
 const formatDotDps = (value: number) => `+${formatDamage(value)}/s`;
 const formatUptimePct = (uptime: number) => `${Math.round(uptime * 100)}% uptime`;
+const formatApRate = (value: number) => `${value.toFixed(1)}/s`;
+const formatApCost = (value: number) => (Number.isInteger(value) ? `${value}` : value.toFixed(1));
 
 interface ScenarioCardProps {
   scenarioKey: ScenarioKey;
@@ -51,6 +53,16 @@ export function ScenarioCard({ scenarioKey, label, result, emphasized }: Scenari
         <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
           <span>dot</span>
           <DeltaFlash className="text-foreground text-sm" value={result.dotDps} format={formatDotDps} />
+        </div>
+      )}
+      {result.ap && (
+        <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
+          <span>ap</span>
+          <span className="text-foreground text-sm tabular-nums">
+            {Math.round(result.ap.maxAp)} pool · {formatApRate(result.ap.regenPerSec)}
+            {result.ap.apGainPerSec > result.ap.regenPerSec + 0.05 ? ` (+crit ${formatApRate(result.ap.apGainPerSec)})` : ''} ·{' '}
+            {formatApCost(result.ap.apCostPerShot)}/shot
+          </span>
         </div>
       )}
       {result.ap && result.ap.uptime < 1 && (

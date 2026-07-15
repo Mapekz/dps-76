@@ -974,16 +974,22 @@ ESM-proven via two parallel mechanisms (both verified in the 20260710 dump):
   standard OMOD modifies it; the only rewrite is the `vatsApCost` bucket
   (V.A.T.S. Optimized, MUL_ADD −0.35, OMOD property `AttackActionPointCost` —
   previously silently dropped by `PROPERTY_IGNORED`).
-- **Regen — NOT ESM-proven**: `regenPerSec = fActionPointsRestoreRate (4.0) ×
-  (1 + Σ apRegen)`. The GMST is confirmed as a constant, but whether it's a
-  flat AP/sec or itself scaled by the ActorValue `ActionPointsRateMult`
-  (default 100, reads as a percent) is engine-side and cannot be confirmed
-  from static ESM data alone. MODELED here as perk bonuses being a percent
-  multiplier on the flat base rate. **Golden-case TODO**: no `expected` value
-  exists yet — pin this with an in-game stopwatch measurement of AP regen
-  with vs without Action Boy/Girl before trusting the absolute regen number
-  (the relative uptime/apLimitedDps comparisons are unaffected by this
-  ambiguity either way).
+- **Regen — NOT ESM-proven**: `regenPerSec = (fActionPointsRestoreRate (4.0)
+  + Σ apRegenFlat) × (1 + Σ apRegen)`. The GMST is confirmed as a constant,
+  but whether it's a flat AP/sec or itself scaled by the ActorValue
+  `ActionPointsRateMult` (default 100, reads as a percent) is engine-side and
+  cannot be confirmed from static ESM data alone. MODELED as the AV-standard
+  composition (2026-07-15 AP completion): flat sources (`apRegenFlat`, AV
+  `ActionPointsRate` 0x000002D8 — Company Tea +10/3600s via GLOB
+  `SURV_Food_Effect_APRegen_Mag_4_VeryHigh`, Nukashine/Alcohol_APRegen, the
+  Live & Love #4 / Guns and Bullets #4 magazines) ADD to the base-rate AV
+  BEFORE percent sources (`apRegen`, AV `ActionPointsRateMult` — Action
+  Boy/Girl, Lone Wanderer, Packin' Light, hydration) multiply it.
+  **Golden-case TODO**: four `apRegenPerSec` null goldens exist
+  (baseline-hydrated / Lone Wanderer / Company Tea / Number Cruncher damage)
+  — the baseline + Company Tea pair pins both the flat-4.0 question and the
+  flat-before-percent composition (the relative uptime/apLimitedDps
+  comparisons are unaffected by this ambiguity either way).
 - **Action Boy/Girl**: the AV route IS correct — `AbPerkActionBoyGirl` (SPEL
   0x0004D871) is a plain Peak Value Modifier on `ActorValues` AV
   `ActionPointsRateMult` (0x00000359, Default Value 100.0), magnitude
@@ -995,31 +1001,102 @@ ESM-proven via two parallel mechanisms (both verified in the 20260710 dump):
   modifier extracted with the right value but never fired. **FIXED in
   Stage C4** — see "Power attacks & melee cadence" below for the
   `pairedFamilyFormIds` mechanism that resolves it.
-- **On-kill AP restores** (Grim Reaper's Sprint, Conductor's kill-half) are
-  OUT OF SCOPE — need enemy TTK (phase 3 enemy modeling) — not computed.
-- **Conductor's** (hand-supplied, `overrides/legendary-values.ts`): "Critical
-  Hits Restore 10 Health & Action Points instantly and 100 more over 5
-  seconds" = 110 AP per VATS crit (`apPerCrit` bucket, unconditional ADD).
-  Script-computed — verified chain: OMOD `mod_Legendary_Weapon4_Conductors`
-  0x007ACB0B → ENCH 0x007ACB05 → PERK `Legendary_Weapon_Conductors` → PERK
-  `Legendary_Weapon_ConductorsPlayerPerk` ("Apply Combat Hit Spell" entry
-  point, gated `GetLastHitCritical()=1`, not extractor-modeled) → SPEL
-  `Legendary_Weapon_ConductorsPlayerRestoreSpell` 0x007ACB0D. No on-kill
-  component exists on this effect (verified).
+- **Max AP fortifies** (`apMax` bucket, 2026-07-15): Peak Value Modifiers on
+  AV `ActionPoints` 0x000002D5 — food (mirelurk steaks, tato juices, tasty
+  teas via `FortifyActionPointsFood`), alcohol (wine, hard lemonade),
+  magazines (Awesome Tales #7, Live & Love #7), Scaly Skin's −50 penalty
+  (`Mutation_ReduceActionPoints`, Detrimental-negated), and the Civil Unrest
+  unique shotgun's +50 identity mod. `maxAp = 60 + 10×AGI + Σ apMax`. Pool
+  size never changes `uptime` (gain/drain is pool-independent) — it moves
+  `secondsToEmpty` and the burst window only.
+- **Instant AP restores are OUT OF SCOPE by design** (2026-07-15, same rule
+  as instant heals 2026-07-14): Value-Modifier effects on the `ActionPoints`
+  AV (`RestoreActionPoints`, `RestoreActionPointsFood` — Brain Bombs, candy,
+  coffee...) are one-shot events with no steady-state meaning. Skipped
+  silently in `translate()` via `OUT_OF_SCOPE_INSTANT_RESTORE_AVS` so they no
+  longer pollute the unresolved report.
+- **Hydration baseline** (2026-07-15 esm-walk, `@/data/player-baseline`):
+  hidden ability SPEL `SURV_Thirst_Ability` 0x00054DF3 grants MGEF
+  `SURV_ThirstWellHydrated_FortifyActionPointRegen` (+35 on
+  `ActionPointsRateMult`) to every fully-hydrated non-ghoul with NO perk
+  required — a +35% AP-regen baseline the game applies almost always.
+  Modeled as a default-ON `hydrated` toggle (Conditions section), gated
+  `playerIsGhoul: false` (every row carries `GetIsPlayerGhoul()=0`; ghouls
+  have no hydration). ASSUMPTION: lower hydration tiers (25% at 720–1440
+  thirst, 15/15% below, 0 when parched) are NOT modeled — the toggle is
+  all-or-nothing, optimal play = fully hydrated. **Rejuvenated** (PERK
+  records extract empty — the mechanics live on the same hidden ability's
+  `HasPerk(Rejuvenated0N)` tiers): hand-authored DELTAS in
+  `overrides/perk-overrides.ts` (+10% rank 1 → 45% total, +25% rank 2 → 60%
+  total); rank 2's ESM tier also requires Rads ≤ 100 — assumed true (optimal
+  play, human builds manage rads). The parallel Well Fed hunger ability
+  carries no AP effects.
+- **Packin' Light** (`PackinLight` 0x0031E523, +25 `ActionPointsRateMult`):
+  its `IsOverEncumbered()=0` gate is consumed as always-true — the
+  calculator assumes the player is never over encumbered (`conditions.ts`;
+  an `=1`-gated effect would drop entirely). No UI toggle.
+- **Number Cruncher** (`CommandoMaster01` 0x0004A0C5, "+2% damage per AP
+  cost"): Ability SPEL `AbPerkCommandoMaster` → MGEF `abPerkFortifyDmgAP`,
+  Peak VM magnitude 2 on hidden AV `STAT_DmgAP` 0x00801C9F ("Damage per AP
+  Cost"). No plumbing perk — the AV's only other referencer is DFOB
+  `APDamageBonus_DO`, i.e. the scaling is engine-native. Routed as `dbm`
+  0.02 with the `scaledByWeaponApCost` condition: value × the EFFECTIVE
+  (post weapon-OMOD `vatsApCost` fold) per-shot cost, in every scenario —
+  user-confirmed it improves free aim too. Stock Fixer (16 AP) → +32%;
+  V.A.T.S. Optimized drops it to +20.8%. When armor AP-cost modeling lands,
+  Scanner's 4★ entry point must NOT feed this input (user-confirmed; see
+  dps-todos/armor-mods-outgoing.md).
+- **On-kill AP restores** (Grim Reaper's Sprint, Inertial) are OUT OF SCOPE —
+  need enemy TTK (phase 3 enemy modeling) — not computed. **Retribution**
+  (PCRD `LGN_Retribution_Card`, "restore AP by 20% of damage taken") is
+  incoming-damage-triggered — same exclusion as the armor defensive
+  legendaries.
+- **Conductor's** (hand-supplied, `overrides/legendary-values.ts`; HoT split
+  2026-07-15): "Critical Hits Restore 10 Health & Action Points instantly
+  and 100 more over 5 seconds" = `apPerCrit` 10 + `apCritHot` 20 AP/s over
+  5s. Script-computed — verified chain: OMOD
+  `mod_Legendary_Weapon4_Conductors` 0x007ACB0B → ENCH 0x007ACB05 → PERK
+  `Legendary_Weapon_Conductors` → PERK
+  `Legendary_Weapon_ConductorsPlayerPerk` (two "Apply Combat Hit Spell"
+  entry points, gated `GetLastHitCritical()=1`, not extractor-modeled) →
+  SPEL `Legendary_Weapon_ConductorsPlayerRestoreSpell` 0x007ACB0D (instant
+  10 + 20/s×5s; the second entry point's SPEL is the teammate-aura cloak).
+  The HoT is REFRESH-ONLY — a new crit restarts the 5s window instead of
+  stacking (user-confirmed in-game 2026-07-15, mirrors the dotDamage
+  convention): steady-state HoT AP/sec = 20 × min(1, 5 × critsPerSec), so
+  fast crit cadence saturates at +20 AP/s (the retired flat `apPerCrit: 110`
+  model credited 110 per crit at ANY cadence and wrongly saturated uptime).
+  Slow cadence (crit interval ≥ 5s) still recovers the full 110 per crit. No
+  on-kill component exists on this effect (verified).
 - **Steady-state model** (`computeApEconomy`): `apGainPerSec = regenPerSec +
-  apPerCrit × (shotsPerSec / shotsPerCrit)` (crit AP restores scaled by crit
-  cadence from the existing crit meter, `crit-meter.ts`); `drainPerSec =
-  apCost × shotsPerSec`; `uptime = clamp(apGainPerSec / drainPerSec, 0, 1)`
-  when drain exceeds gain, else 1 (AP is not the constraint).
-  `secondsToEmpty = maxAp / (drainPerSec − apGainPerSec)` when uptime < 1.
-  `shotsPerSec` reuses the SAME reload-inclusive cadence that produces
+  apPerCrit × (shotsPerSec / shotsPerCrit) + Σ hot.rate × min(1,
+  hot.durationSec × critsPerSec)` (crit AP restores scaled by crit cadence
+  from the existing crit meter, `crit-meter.ts`); `drainPerSec = apCost ×
+  shotsPerSec`; `uptime = clamp(apGainPerSec / drainPerSec, 0, 1)` when
+  drain exceeds gain, else 1 (AP is not the constraint). `secondsToEmpty =
+  maxAp / (drainPerSec − apGainPerSec)` when uptime < 1. `shotsPerSec`
+  reuses the SAME reload-inclusive cadence that produces
   `SustainResult.sustainedDps` (`shotsPerMag / (magDumpSec + reloadSec)`,
   `effectiveShotsPerSecond`) rather than the raw burst fire rate — AP
   continues regenerating during reload downtime even though no shots are
   draining it.
-- **Display**: VATS scenario card gains an "AP-limited" line + uptime % only
-  when `uptime < 1` (100% uptime means AP was never the bottleneck, so the
-  line is hidden rather than shown as a no-op). Ranged weapons only —
+- **2026-07-15 AV sweep — dead/skipped records** (so nobody re-chases them):
+  `AbPerkUnstoppable` (flat-rate MGEF consumer) and
+  `ench_LegendaryWeapon_OnCritRefillAP` (legacy on-crit AP legendary) have
+  ZERO referencers — dead content. `AbAddictionBuzzBites` (−20 max AP
+  addiction) is orphaned: no Buzz Bites ALCH exists anywhere in the dump, so
+  no consumable can cause it (stays out of the addiction catalog by the
+  existing causedBy rule). `PerkInjector01Spell` hangs off the non-card
+  `Injector01` PERK (not player-buildable). Event curses
+  (`Burn_Bounty_Jazz_APCostUp`) are not build perks. Armor/PA-sourced AP
+  effects (PA misc-mod ENCHs like Kinetic Servos/Core Assembly,
+  `ench_LegendaryArmor_MaxAP`, `ench_LegendaryArmor_IncreaseAPRegen_Self`,
+  the Rejuvenator's-tier armor curves on the Thirst ability, Vulcan torso)
+  are DEFERRED to dps-todos/armor-mods-outgoing.md.
+- **Display**: the VATS scenario card always shows an AP breakdown line
+  (`pool · regen/s (+crit gain) · cost/shot`) when `ScenarioResult.ap`
+  exists, plus the "AP-limited" uptime line only when `uptime < 1` (100%
+  uptime means AP was never the bottleneck). Ranged weapons only —
   melee/VATS-melee AP costs and accuracy are out of scope (uptime is
   undefined for melee, so `ScenarioResult.ap` stays unset).
 - **Manual-aim hit rate**: `PlayerConditions.hitRatePct` (10–100, default

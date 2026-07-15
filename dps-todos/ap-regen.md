@@ -1,92 +1,56 @@
-# TODO: VATS AP Regen (Passive & Active Sources)
+# CLOSED 2026-07-15: VATS AP Regen, AP Cost, Max AP & AP-Scaled Damage
 
-> **Rescoped 2026-07-13** (renamed from `ap-and-accuracy.md`). VATS hit-chance
-> / accuracy modeling is now **permanently out of scope** — not deferred,
-> dropped for good. The underlying formula (spread, ADS multipliers,
-> weapon-specific accuracy curves, VATS-specific to-hit) is a closed box: it
-> isn't exposed as a decodeable magnitude/curve anywhere in the ESM, so there
-> is no data-driven path to modeling it here. VATS accuracy stays hardcoded
-> to 100% (`src/lib/engine/scenarios.ts`) for good. This doc's only remaining
-> scope is AP regen/sec sources — passive (condition-gated, e.g. Lone
-> Wanderer) and active (on-crit, e.g. Conductor's).
+> **Shipped 2026-07-15** (the "AP economy completion" pass). Everything
+> in-scope for this doc is modeled; the two remainders moved out explicitly:
+> armor-sourced AP effects → [armor-mods-outgoing.md](armor-mods-outgoing.md)
+> (records already located, engine buckets ready), on-kill AP restores →
+> phase-3 TTK (README parked list). Full derivations and the ESM chases live
+> in `docs/assumptions.md` "VATS AP economy & manual-aim hit rate".
+>
+> VATS hit-chance / accuracy modeling remains **permanently out of scope**
+> (closed-box engine formula, no decodeable ESM data — rescope note
+> 2026-07-13). VATS accuracy stays hardcoded to 100%
+> (`src/lib/engine/scenarios.ts`).
 
-## What's shipped already (baseline this extends)
+## What shipped
 
-- **AP economy core** (`src/lib/engine/ap-economy.ts`, 2026-07-11):
-  steady-state drain/regen/uptime model, the "AP-limited" VATS DPS line, and
-  the manual-aim `hitRatePct` input. `docs/assumptions.md` "VATS AP economy &
-  manual-aim hit rate".
-- **`apRegen` bucket** (Σ decimal, folds via `foldBucket` in
-  `scenarios.ts:338`) and **`apPerCrit` bucket** (flat AP per VATS crit,
-  `scenarios.ts:339`) both exist and fold correctly into
-  `computeApEconomy`.
-- **Conductor's** — active, on-crit AP regen (+AP per VATS crit) — modeled
-  via `apPerCrit` (`src/data/overrides/legendary-values.ts`, script-computed
-  legendary value with a full ESM chase comment). **DONE**, no further work.
-- **Action Boy/Girl's flat `ActionPointsRateMult` path** — `apRegen` bucket,
-  `scale: 0.01` (`scripts/extract/normalize/mgef.ts:128`). **DONE**.
+- **Lone Wanderer** — already resolved by the teammate-count extraction work
+  + the existing `charisma` curve-input mapping; verified 2026-07-15: the AP
+  regen lives ONLY on rank 1's ability (CHA curve 10→85%, solo-gated); ranks
+  2/3 records carry only the DR effect (their flat "20/30% AP regen"
+  descriptions are stale legacy text). Engine test + null golden added.
+- **New buckets**: `apRegenFlat` (flat AP/sec, AV `ActionPointsRate` —
+  Company Tea +10, Nukashine, alcohols, L&L#4/G&B#4 magazines), `apMax`
+  (Peak fortifies on AV `ActionPoints` — foods, wine, AT#7/L&L#7 magazines,
+  Scaly Skin −50, Civil Unrest +50), `apCritHot` (refresh-only on-crit AP
+  HoT). Composition: `regen = (4.0 + Σflat) × (1 + Σ%)` (AV-standard,
+  assumption pending stopwatch goldens).
+- **Consumable recovery**: routing the two AVs rescued 28 previously-excluded
+  AP-only consumables (Company Tea among them) — the keep-filter needed no
+  change. Instant AP restores are a documented out-of-scope skip (same rule
+  as instant heals).
+- **Hydration baseline discovered & modeled**: hidden `SURV_Thirst_Ability`
+  grants every fully-hydrated non-ghoul +35% AP regen (45/60% with
+  Rejuvenated 1/2 — hand-authored deltas since the PERK records are empty).
+  Default-on `hydrated` toggle in Conditions; ghoul-gated.
+- **Packin' Light**: +25% regen, `IsOverEncumbered()=0` consumed as
+  always-true (optimal-play assumption).
+- **Number Cruncher**: `STAT_DmgAP` route → dbm 0.02 × new
+  `scaledByWeaponApCost` condition (weapon-level EFFECTIVE AP cost, all
+  scenarios incl. free aim). Scanner's-4★ exemption documented in
+  armor-mods-outgoing.md.
+- **Conductor's corrected**: flat `apPerCrit 110` → spike 10 + refresh-only
+  HoT 20 AP/s × 5s (fast crits saturate at +20 AP/s instead of the old
+  110/crit overcount).
+- **UI**: VATS card AP breakdown line (pool · regen/s · cost/shot);
+  hydration toggle.
+- **Sweep verdicts** (dead/skipped/deferred records) recorded in
+  assumptions.md so nothing gets re-chased.
 
-## What's actually missing
+## Verification still owed (user, in-game)
 
-1. **Lone Wanderer's AP regen is dead.** `+20%/+30% AP regen while solo`
-   (ranks 2/3 — `src/data/live/generated/perks.json`, family `LoneWanderer`,
-   formIds `0x001D246B/D/E`) extracts with `modifiers: []` on every rank; the
-   perk's `notes` carry `"AbPerkFortifyActionPointRegen: curve with unmapped
-   input AV 0x000002C5 — needs override"`. This is the highest-value target
-   in this doc — Lone Wanderer is one of the most commonly equipped perks in
-   the game, so every solo build currently understates AP economy. Work:
-   `esm-walk` AV `0x000002C5` (it's the curve's *input* AV, not the affected
-   one — same shape as other STAT_*/AbPerk* curve mappings in
-   `normalize/mgef.ts`) and add a mapping so rank 2/3 resolve to an `apRegen`
-   ADD, gated by the perk's existing `IsMemberOfAPlayerTeam()=0` condition
-   (check whether that condition kind already exists in `resolve.ts`, or
-   needs one).
-2. **Passive armor-sourced AP regen** — no confirmed record yet for a
-   "Powered"-named or equivalent effect. **No armor OMOD/legendary
-   extraction pipeline exists in this codebase at all**:
-   `scripts/extract/extract-omods.ts` hardcodes `formType !== 'Weapon'`
-   (~line 268) to skip everything but WEAP-attached mods, so no armor-only
-   legendary has ever been chased from the ESM. `esm-walk` from scratch:
-   search ENCH/MGEF/PERK records for anything targeting
-   `ActionPointsRateMult`/`FortifyActionPointsRegen` gated on armor-equip
-   conditions instead of weapon-legendary attach points. This is the same
-   missing pipeline `armor-mods-outgoing.md` now depends on for its own
-   scope — build it once, feed both.
-3. **Sweep broadly while chasing #2** — this doc's scope is now "every
-   remaining AP regen source," not just the two named examples. Grep the
-   ESM for other `ActionPointsRateMult`/`FortifyActionPointsRegen`/
-   `ActionPointsRegen` targets while doing the armor-omod chase above.
-
-## Where to implement
-
-- Curve/AV mapping: `scripts/extract/normalize/mgef.ts` (STAT_*/AbPerk*
-  pattern already established — see the existing `ActionPointsRateMult`
-  entry for the shape).
-- If an armor-only source is confirmed: new `extract-armor-omods.ts` (or
-  extend `extract-omods.ts`'s attach-point matching to `ARMO`/`ARMA`
-  records) → `armor.ts` population → armor picker UI (shared with
-  `armor-mods-outgoing.md`).
-- No new `Bucket` expected — reuse `apRegen`/`apPerCrit` unless a source
-  turns out to be a flat AP/sec grant instead of a % or per-crit value (would
-  need a new bucket per the CLAUDE.md new-mechanic checklist).
-- `docs/assumptions.md`: extend "VATS AP economy & manual-aim hit rate" with
-  each newly-modeled source and its ESM chase.
-
-## Verification
-
-- Golden case or in-game measurement: solo vs. teamed AP regen rate with
-  Lone Wanderer rank 3 equipped (stopwatch test — same pattern as the
-  existing `fActionPointsRestoreRate` CAVEAT already flagged in
-  `ap-economy.ts`).
-- Extraction fixture test for the new curve mapping.
-- `pnpm test` + `pnpm build` green; reconcile any golden-case shifts from
-  Lone Wanderer suddenly contributing AP regen.
-
-## Permanently out of scope
-
-VATS accuracy %, recoil/spread, aim-down-sight multipliers, and every
-per-source accuracy bonus previously catalogued here (VATS Enhanced, Vector,
-Photoropter, Eye of the Hunter, Awareness, Orange Mentats, VATS Matrix
-overlay, Conc Fire, Aligned/Glow Sights mods) — see the header note. Not
-revisiting even once enemy mitigation lands; the closed-box nature of the
-underlying formula doesn't change with that dependency.
+Four `expected: null` goldens in `golden/cases.json` (`apRegenPerSec` /
+`perHit` measures): hydrated baseline 5.4 AP/s, Lone Wanderer solo 6.6 AP/s,
+Company Tea 18.9 AP/s, Number Cruncher +32% pip-boy damage. The baseline +
+Company Tea pair pins the flat-4.0 GMST CAVEAT and the flat-before-percent
+composition in one session.
