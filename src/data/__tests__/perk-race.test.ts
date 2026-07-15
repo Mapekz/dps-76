@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { equippedRaceLock, perkRaceRestriction, wrongRacePerks } from '@/data/perk-race';
+import { getGeneratedPerk } from '@/data/perk-modifiers';
+import { legendaryPerkIds } from '@/lib/nukes-dragons';
 
 // Real generated data: race restrictions come from the PCRD "Race
 // Restriction" card field (Perk.raceRestriction), not from playerIsGhoul
@@ -30,6 +32,18 @@ describe('perkRaceRestriction', () => {
 
   it('returns null for unknown perk ids', () => {
     expect(perkRaceRestriction('live', 'NotARealPerk')).toBeNull();
+  });
+
+  // Drift guard: every legendary perk's race restriction must trace back to
+  // its own PCRD card, not an assumption baked into the registry — so a
+  // re-extract that adds/changes a legendary card's Race Restriction (as
+  // WhatRads/ActionDiet/FeralRage already carry) is caught automatically
+  // instead of silently defaulting to unrestricted.
+  it('matches ESM ground truth for every legendary perk', () => {
+    for (const perkId of legendaryPerkIds) {
+      const expected = getGeneratedPerk('live', perkId)?.card?.raceRestriction ?? null;
+      expect(perkRaceRestriction('live', perkId), perkId).toBe(expected);
+    }
   });
 });
 
