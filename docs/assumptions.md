@@ -2030,11 +2030,23 @@ raw field:
 - **Pyro-Technician's** (mod_Legendary_Weapon2_Fire, 0x00849316): the July-10
   patch repurposed a formerly-orphaned bounty record without setting `Attach
   Point` (confirmed via diff.json — every field EXCEPT Attach Point was
-  rewritten). `scripts/extract/extract-omods.ts`'s `ATTACH_POINT_OVERRIDES`
-  supplies the correct `ap_Legendary2` until Bethesda fixes the record
-  upstream — re-check this override on every re-extract in case the gap gets
-  fixed natively (the override would then be harmlessly redundant, not
-  wrong).
+  rewritten). A real, correctly-formed crafting recipe exists (COBJ
+  co_mod_Legendary_Weapon2_Fire, 0x00849303, `Created Object` → 0x00849316,
+  same naming convention as Cryologist's co_mod_Legendary_Weapon2_Cryo) and
+  legendary crafting attaches via a scripted mechanism
+  (`COBJ_Legendary_Attach_Scrip`) that doesn't read Attach Point directly —
+  which initially read as "pure CK metadata gap, not a functional one."
+  **User-confirmed (2026-07-15) this was wrong**: the legendary is NOT
+  actually craftable in-game — the null Attach Point evidently breaks
+  something in the live crafting flow that isn't visible from ESM records
+  alone (same false-positive-obtainability shape as
+  `mod_GaussPistol_Barrel_Energy`, "Overlay & mode conventions" below).
+  `scripts/extract/extract-omods.ts`'s `ATTACH_POINT_OVERRIDES` still
+  supplies the `ap_Legendary2` metadata so the record + its real modifiers
+  stay in the generated dataset, but it's hidden from the player-facing
+  picker via `hiddenOmodIds` (`src/data/overrides/corrections.ts`) —
+  re-check both on every re-extract in case Bethesda backfills the field and
+  it becomes craftable.
 - Xerxo's Gamma Ray Gun is currently unobtainable in-game (user-confirmed)
   and hidden. Base `GammaGun` IS obtainable in-game but is excluded from
   extraction as `noDamage` — its damage lives on the projectile explosion,

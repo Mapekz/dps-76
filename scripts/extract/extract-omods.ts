@@ -545,12 +545,21 @@ export async function extractOmods(
   // (zzz_BOUNTY_mod_Legendary_Weapon2_Melee_Pulsating) into the new
   // "Pyro-Technician's" weapon 2★ (+20% fire dbm, STAT_DmgMultFire — same
   // shape as sibling Cryologist's/Poisoner's). Attach Point was left null on
-  // the old bounty record and never touched by the patch, so the record fails
-  // classifyOmodRecordExclusion's live checks yet silently drops out at the
-  // `if (!attachPoint) continue` gate below. Confirmed via diff.json
-  // field_changes (Attach Point absent from the changed-fields list) — supply
-  // the real ap_Legendary2 (0x004E89A8, matching Cryologist's/Poisoner's)
-  // until Bethesda fixes the record upstream.
+  // the old bounty record and never touched by the patch (confirmed via
+  // diff.json field_changes — Attach Point absent from the changed-fields
+  // list), so the record fails classifyOmodRecordExclusion's live checks yet
+  // silently drops out at the `if (!attachPoint) continue` gate below.
+  // User-confirmed (2026-07-15): this legendary is NOT actually craftable
+  // in-game right now, despite a real, correctly-formed COBJ recipe existing
+  // (co_mod_Legendary_Weapon2_Fire, 0x00849303, `Created Object` →
+  // 0x00849316) and legendary crafting attaching via a scripted mechanism
+  // (COBJ_Legendary_Attach_Scrip) that doesn't read Attach Point directly —
+  // the null Attach Point evidently still breaks something in the live
+  // crafting flow this ESM-only check can't see. So this rescue exists ONLY
+  // to keep the record + its real modifiers in the generated dataset (for
+  // reference/future re-evaluation, e.g. if Bethesda ever backfills the
+  // field) — it's hidden from the player-facing picker via
+  // `hiddenOmodIds` (src/data/overrides/corrections.ts).
   const ATTACH_POINT_OVERRIDES: Record<string, string> = {
     '0x00849316': '0x004E89A8', // mod_Legendary_Weapon2_Fire ("Pyro-Technician's") → ap_Legendary2
   };

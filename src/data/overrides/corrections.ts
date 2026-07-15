@@ -185,6 +185,23 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
   // The Pipe (Pipe Gun): its template-combination keyword 0x0091EE2B has
   // zero external refs — no LVLI/QUST/FLST ever instantiates the config.
   'mod_Custom_ThePipe',
+  // Pyro-Technician's (mod_Legendary_Weapon2_Fire, 0x00849316): the July-10
+  // patch repurposed a formerly-orphaned bounty record (Attach Point left
+  // null) into this weapon 2★. It has a real, correctly-formed crafting
+  // recipe (COBJ co_mod_Legendary_Weapon2_Fire -> Created Object 0x00849316,
+  // matching Cryologist's co_mod_Legendary_Weapon2_Cryo's naming convention)
+  // and legendary crafting attaches via a scripted mechanism
+  // (COBJ_Legendary_Attach_Scrip) rather than reading Attach Point directly
+  // — so obtainability derivation reads `true` (real COBJ reverse-ref) and
+  // this initially looked like a pure CK-metadata gap, not a functional one.
+  // User-confirmed (2026-07-15) this is wrong: it is NOT actually craftable
+  // in-game — the null Attach Point does break something in the live
+  // crafting-bench flow this ESM-only check can't see. Same false-positive
+  // shape as mod_GaussPistol_Barrel_Energy above. `extract-omods.ts`'s
+  // ATTACH_POINT_OVERRIDES rescue still runs (keeps the record + its real
+  // modifiers in the dataset for reference), but it's hidden here from the
+  // player-facing picker until Bethesda fixes the record upstream.
+  'mod_Legendary_Weapon2_Fire',
 ]);
 
 /**
