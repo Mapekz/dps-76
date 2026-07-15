@@ -1075,18 +1075,26 @@ ESM-proven via two parallel mechanisms (both verified in the 20260710 dump):
   model credited 110 per crit at ANY cadence and wrongly saturated uptime).
   Slow cadence (crit interval ≥ 5s) still recovers the full 110 per crit. No
   on-kill component exists on this effect (verified).
-- **Steady-state model** (`computeApEconomy`): `apGainPerSec = regenPerSec +
-  apPerCrit × (shotsPerSec / shotsPerCrit) + Σ hot.rate × min(1,
-  hot.durationSec × critsPerSec)` (crit AP restores scaled by crit cadence
-  from the existing crit meter, `crit-meter.ts`); `drainPerSec = apCost ×
-  shotsPerSec`; `uptime = clamp(apGainPerSec / drainPerSec, 0, 1)` when
-  drain exceeds gain, else 1 (AP is not the constraint). `secondsToEmpty =
-  maxAp / (drainPerSec − apGainPerSec)` when uptime < 1. `shotsPerSec`
-  reuses the SAME reload-inclusive cadence that produces
-  `SustainResult.sustainedDps` (`shotsPerMag / (magDumpSec + reloadSec)`,
-  `effectiveShotsPerSecond`) rather than the raw burst fire rate — AP
-  continues regenerating during reload downtime even though no shots are
-  draining it.
+- **Passive regen does NOT tick during sustained VATS fire** (user-confirmed
+  in-game 2026-07-15, corrected same day as the %-of-max model above): the
+  race-base regen and every passive bonus that feeds it (`apRegenFlat`
+  sources like Company Tea, `apRegen` percent sources like Action
+  Boy/Girl/Ghoul/hydration/Lone Wanderer/Packin' Light) is real for
+  idle/out-of-combat regen — `regenPerSec` is still computed and surfaced in
+  the UI — but contributes NOTHING to the steady-state VATS uptime/drain
+  math. Only in-combat restores that trigger off the firing itself
+  (Conductor's spike + HoT) and AP-cost modifiers move the uptime needle.
+- **Steady-state model** (`computeApEconomy`): `apGainPerSec = apPerCrit ×
+  (shotsPerSec / shotsPerCrit) + Σ hot.rate × min(1, hot.durationSec ×
+  critsPerSec)` — passive regen excluded per above (crit AP restores scaled
+  by crit cadence from the existing crit meter, `crit-meter.ts`);
+  `drainPerSec = apCost × shotsPerSec`; `uptime = clamp(apGainPerSec /
+  drainPerSec, 0, 1)` when drain exceeds gain, else 1 (AP is not the
+  constraint). `secondsToEmpty = maxAp / (drainPerSec − apGainPerSec)` when
+  uptime < 1. `shotsPerSec` reuses the SAME reload-inclusive cadence that
+  produces `SustainResult.sustainedDps` (`shotsPerMag / (magDumpSec +
+  reloadSec)`, `effectiveShotsPerSecond`) rather than the raw burst fire
+  rate — no shots drain AP during reload downtime.
 - **2026-07-15 AV sweep — dead/skipped records** (so nobody re-chases them):
   `AbPerkUnstoppable` (flat-rate MGEF consumer) and
   `ench_LegendaryWeapon_OnCritRefillAP` (legacy on-crit AP legendary) have

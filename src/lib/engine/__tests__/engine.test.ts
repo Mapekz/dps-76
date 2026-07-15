@@ -894,12 +894,15 @@ describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
   it('surfaces an ap-limited uptime for a ranged weapon with a real VATS AP cost', () => {
     const s = computeScenarios(baseInput);
     // shotsPerSec = 20/24; drainPerSec = 16×20/24 = 40/3; regenPerSec =
-    // 210 × 6/100 = 12.6 (race-base %-of-max rate, no apRegen mods);
-    // apGainPerSec = 12.6 (no apPerCrit mods) → uptime = 12.6/(40/3) = 0.945.
+    // 210 × 6/100 = 12.6 (race-base %-of-max rate) is informational only —
+    // passive regen doesn't tick during sustained VATS fire (2026-07-15).
+    // apGainPerSec = 0 (no apPerCrit/apCritHot mods) → uptime = 0.
     expect(s.vats.ap).toBeDefined();
-    expect(s.vats.ap!.uptime).toBeCloseTo(0.945, 10);
-    expect(s.vats.ap!.apLimitedDps).toBeCloseTo(s.vats.sustain.sustainedDps * 0.945, 10);
-    expect(s.vats.ap!.secondsToEmpty).toBeDefined();
+    expect(s.vats.ap!.regenPerSec).toBeCloseTo(12.6, 10);
+    expect(s.vats.ap!.apGainPerSec).toBe(0);
+    expect(s.vats.ap!.uptime).toBe(0);
+    expect(s.vats.ap!.apLimitedDps).toBeCloseTo(0, 10);
+    expect(s.vats.ap!.secondsToEmpty).toBeCloseTo(210 / (40 / 3), 10);
     // AP economy is a VATS-only concept — free aim never carries it.
     expect(s.freeAim.ap).toBeUndefined();
   });
@@ -912,9 +915,17 @@ describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
     expect(computeScenarios({ ...baseInput, weapon: noCostWeapon }).vats.ap).toBeUndefined();
   });
 
-  it('apRegen/apPerCrit modifiers raise the gain rate and can saturate uptime at 1', () => {
+  it("apRegen bonuses raise the informational regenPerSec but don't affect uptime (passive regen doesn't tick during sustained VATS fire, 2026-07-15)", () => {
     const richRegen = [mod({ bucket: 'apRegen', op: 'ADD', value: 10 })]; // absurd but isolates the math
+    const baseline = computeScenarios(baseInput);
     const s = computeScenarios({ ...baseInput, modifiers: richRegen });
+    expect(s.vats.ap!.regenPerSec).toBeGreaterThan(baseline.vats.ap!.regenPerSec);
+    expect(s.vats.ap!.uptime).toBe(baseline.vats.ap!.uptime); // still 0 — passive regen never feeds uptime
+  });
+
+  it('apPerCrit modifiers raise the in-combat gain rate and can saturate uptime at 1', () => {
+    const richCrit = [mod({ bucket: 'apPerCrit', op: 'ADD', value: 1000 })]; // absurd but isolates the math
+    const s = computeScenarios({ ...baseInput, modifiers: richCrit });
     expect(s.vats.ap!.uptime).toBe(1);
     expect(s.vats.ap!.secondsToEmpty).toBeUndefined();
   });

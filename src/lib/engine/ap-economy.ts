@@ -40,6 +40,16 @@ import type { SustainResult } from './sustain';
  * rate, slow crits (interval ≥ duration) recover the full rate × duration
  * per crit.
  *
+ * Passive regen does NOT tick while VATS-firing continuously (user-confirmed
+ * in-game 2026-07-15): the race-base %-of-max regen and every passive bonus
+ * that feeds it (Company Tea's flat +10, Action Boy/Girl/Ghoul, hydration,
+ * Lone Wanderer, Packin' Light, ...) is real for idle/out-of-combat regen
+ * (still reported as `regenPerSec`) but contributes NOTHING to the
+ * steady-state uptime/drain math below. Only in-combat AP restores that
+ * trigger off the firing itself — Conductor's spike + HoT, any future
+ * apPerCrit/apCritHot source — and AP-cost modifiers (folded into
+ * `apCost` upstream) move the uptime needle.
+ *
  * On-kill AP restores (Grim Reaper's Sprint, Inertial) are OUT OF SCOPE
  * (need enemy TTK, phase 3) — not computed here.
  */
@@ -63,14 +73,15 @@ export interface ApEconomyInput {
   /** Steady-state shots/sec while actively firing (reload-inclusive — see `effectiveShotsPerSecond`). */
   shotsPerSec: number;
   agility: number;
-  /** Σ of active `apRegen` modifiers (decimal, 0.45 = +45%). */
+  /** Σ of active `apRegen` modifiers (decimal, 0.45 = +45%). Feeds only the informational `regenPerSec` — passive regen is excluded from the uptime math (module doc). */
   apRegenBonus: number;
   /**
    * Σ of active `apRegenFlat` modifiers — ActionPointsRate AV points, i.e.
    * percent-of-max-AP per second added onto the race base (Company Tea +10).
+   * Feeds only the informational `regenPerSec` — see `apRegenBonus`.
    */
   apRegenFlatBonus?: number;
-  /** Swaps the race base rate to PowerArmorRace's 3.0 (half the human 6.0). */
+  /** Swaps the race base rate to PowerArmorRace's 3.0 (half the human 6.0). Feeds only `regenPerSec`. */
   isInPowerArmor?: boolean;
   /** Σ of active `apMax` modifiers (flat AP pool — food/magazine fortifies, Scaly Skin's penalty). */
   apMaxBonus?: number;
@@ -87,8 +98,9 @@ export interface ApEconomyInput {
 
 export interface ApEconomyResult {
   maxAp: number;
+  /** Passive regen rate (race base + flat/percent bonuses) — informational only; does NOT feed apGainPerSec/uptime (see module doc). */
   regenPerSec: number;
-  /** regenPerSec + AP/sec restored by VATS crits. */
+  /** AP/sec restored by in-combat sources only (VATS crit spike + HoT) — passive regen is excluded. */
   apGainPerSec: number;
   drainPerSec: number;
   /** Steady-state duty cycle, clamped 0–1. 1 when gain ≥ drain (AP is never the constraint). */
@@ -109,7 +121,9 @@ export function computeApEconomy(input: ApEconomyInput): ApEconomyResult {
     (sum, hot) => sum + hot.ratePerSec * Math.min(1, Math.max(0, hot.durationSec) * critsPerSec),
     0
   );
-  const apGainPerSec = regenPerSec + input.apPerCrit * critsPerSec + critHotPerSec;
+  // Passive regen is excluded here — it doesn't tick during sustained VATS
+  // fire (module doc). Only in-combat restores count toward uptime.
+  const apGainPerSec = input.apPerCrit * critsPerSec + critHotPerSec;
   const drainPerSec = Math.max(0, input.apCost) * Math.max(0, input.shotsPerSec);
 
   if (drainPerSec <= apGainPerSec || drainPerSec <= 0) {

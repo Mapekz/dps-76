@@ -180,7 +180,9 @@ describe('AP economy (Stage B, real data)', () => {
     expect(without.vats.ap!.uptime).toBeLessThan(1); // stock Fixer is AP-limited in VATS
     expect(withConductors.vats.ap).toBeDefined();
     expect(withConductors.vats.ap!.uptime).toBeGreaterThan(without.vats.ap!.uptime);
-    const critGain = withConductors.vats.ap!.apGainPerSec - withConductors.vats.ap!.regenPerSec;
+    // apGainPerSec is combat-only (passive regen excluded, 2026-07-15) so it
+    // already IS the crit gain — no need to subtract regenPerSec.
+    const critGain = withConductors.vats.ap!.apGainPerSec;
     // Saturated-HoT ceiling: spike×crits/sec + 20 (crit interval ≪ 5s). Flat-110
     // would put this at 110×crits/sec ≈ 76 — assert we're far below that.
     const critsPerSec = (critGain - 20) / 10;
@@ -263,7 +265,7 @@ describe("Thrill-Seeker's (Stage C3, real data)", () => {
 });
 
 describe('Action Boy/Girl (Stage C4, cross-family rank gate fix)', () => {
-  it('rank 3 (+45% AP regen) raises the stock Fixer\'s VATS AP-limited uptime', () => {
+  it("rank 3 (+45% AP regen) raises the informational regenPerSec but leaves VATS AP-limited uptime unchanged (passive regen doesn't tick during sustained fire, 2026-07-15)", () => {
     const withoutActionBoy = computeScenarios(base());
     const actionBoy3 = getLoadoutModifiers('live', [{ perkId: PerkId.ActionBoyGirl, rank: 3 }]);
     const withActionBoy = computeScenarios(base({ modifiers: actionBoy3 }));
@@ -271,18 +273,20 @@ describe('Action Boy/Girl (Stage C4, cross-family rank gate fix)', () => {
     expect(withoutActionBoy.vats.ap).toBeDefined();
     expect(withoutActionBoy.vats.ap!.uptime).toBeLessThan(1); // stock Fixer is AP-limited in VATS
     expect(withActionBoy.vats.ap).toBeDefined();
-    expect(withActionBoy.vats.ap!.uptime).toBeGreaterThan(withoutActionBoy.vats.ap!.uptime);
+    expect(withActionBoy.vats.ap!.regenPerSec).toBeGreaterThan(withoutActionBoy.vats.ap!.regenPerSec);
+    expect(withActionBoy.vats.ap!.uptime).toBeCloseTo(withoutActionBoy.vats.ap!.uptime, 10);
   });
 
-  it('each rank grants its OWN flat tier, not a cumulative stack (15%/30%/45%, not 15+30+45%)', () => {
+  it('each rank grants its OWN flat tier, not a cumulative stack (15%/30%/45%, not 15+30+45%) — regenPerSec only, uptime untouched', () => {
     const rank1 = computeScenarios(base({ modifiers: getLoadoutModifiers('live', [{ perkId: PerkId.ActionBoyGirl, rank: 1 }]) }));
     const rank2 = computeScenarios(base({ modifiers: getLoadoutModifiers('live', [{ perkId: PerkId.ActionBoyGirl, rank: 2 }]) }));
     const rank3 = computeScenarios(base({ modifiers: getLoadoutModifiers('live', [{ perkId: PerkId.ActionBoyGirl, rank: 3 }]) }));
-    // uptime is monotonic in AP regen bonus (15% < 30% < 45%), all below 1
-    // (still AP-limited) so the comparison is meaningful.
-    expect(rank1.vats.ap!.uptime).toBeLessThan(rank2.vats.ap!.uptime);
-    expect(rank2.vats.ap!.uptime).toBeLessThan(rank3.vats.ap!.uptime);
-    expect(rank3.vats.ap!.uptime).toBeLessThan(1);
+    // regenPerSec (informational-only, 2026-07-15) is monotonic in the AP
+    // regen bonus (15% < 30% < 45%).
+    expect(rank1.vats.ap!.regenPerSec).toBeLessThan(rank2.vats.ap!.regenPerSec);
+    expect(rank2.vats.ap!.regenPerSec).toBeLessThan(rank3.vats.ap!.regenPerSec);
+    // uptime no longer depends on the passive regen bonus.
+    expect(rank1.vats.ap!.uptime).toBeCloseTo(rank3.vats.ap!.uptime, 10);
   });
 });
 
