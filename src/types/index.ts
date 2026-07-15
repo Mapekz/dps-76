@@ -298,6 +298,14 @@ export interface Weapon {
   /** Source ESM FormID (e.g. "0x0046D2A1"). */
   formId?: string;
   /**
+   * Levels the weapon actually drops/crafts at (WEAP Eligible Levels —
+   * Enclave Plasma [25,35,45], Fixer [24,50], ...). Empty on ~44 records;
+   * `weaponLevelStops` (src/data/live/weapons.ts) falls back to the full
+   * 1..50 range then. Drives the item-level slider stops and the
+   * select-time default (`maxEligibleLevel`).
+   */
+  eligibleLevels?: number[];
+  /**
    * WEAP anim-type enum value (Data."Weapon Type" — what GetWeaponAnimType()
    * returns): 0 HandToHandMelee, 1 OneHandSword, 5 TwoHandSword, 6 TwoHandAxe,
    * 9 Gun, 10 Grenade (the only values in the FO76 roster). Consumed by the

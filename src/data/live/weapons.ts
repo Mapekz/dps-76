@@ -97,6 +97,7 @@ export function adaptWeapon(gw: GeneratedWeapon): Weapon {
     animationReloadSec: gw.animationReloadSec,
     apCost: gw.actionPointCost,
     formId: gw.formId,
+    eligibleLevels: gw.eligibleLevels,
     keywords: gw.keywords,
     attachParentSlots: gw.attachParentSlots,
     templateModFormIds: gw.templateModFormIds,
@@ -110,6 +111,26 @@ export function adaptWeapon(gw: GeneratedWeapon): Weapon {
     modifiers: gw.modifiers,
     ...weaponCorrections[gw.id],
   };
+}
+
+/** The classic drop grid — fallback stops for weapons with no Eligible Levels data. */
+export const DEFAULT_LEVEL_STOPS: readonly number[] = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
+
+/**
+ * The item-level slider's stops for a weapon: its real Eligible Levels
+ * (clamped to 1–50, sorted), falling back to the full drop grid when the
+ * record ships none (~44 weapons carry `[]`).
+ */
+export function weaponLevelStops(weapon: Weapon | undefined): readonly number[] {
+  const eligible = (weapon?.eligibleLevels ?? []).filter(l => l >= 1 && l <= 50);
+  if (eligible.length === 0) return DEFAULT_LEVEL_STOPS;
+  return [...new Set(eligible)].sort((a, b) => a - b);
+}
+
+/** Highest obtainable level — the select-time itemLevel default. */
+export function maxEligibleLevel(weapon: Weapon | undefined): number {
+  const stops = weaponLevelStops(weapon);
+  return stops[stops.length - 1];
 }
 
 /**

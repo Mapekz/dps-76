@@ -28,6 +28,9 @@ const DRINK_TIER_NAMES = ['Thirsty', 'Partially Hydrated', 'Hydrated', 'Well Hyd
 /** Follow Through / TOftT uptime tiers — the per-rank 10/20/30/40% magnitudes plus off. */
 const UPTIME_PCT_OPTIONS = [0, 10, 20, 30, 40].map(value => ({ value, label: `${value}%` }));
 
+/** Limit Breaking is a 1★ armor mod — at most one per equipped armor piece. */
+const LIMIT_BREAKING_OPTIONS = [0, 1, 2, 3, 4, 5].map(value => ({ value, label: String(value) }));
+
 /**
  * GHL_SURV_FeralThreshold_Msg_* names banded over the 0–8 GHL_FeralTier AV
  * (5 states over 9 tiers — the exact cutoffs are an inference, tier 8 =
@@ -386,14 +389,15 @@ export function ConditionsSection() {
             onCheckedChange={v => set('isLastShot', v)}
           />
 
-          <NumberField
-            id="char-limit-breaking"
-            label="Limit Breaking armor pieces"
-            value={conditions.limitBreakingPieces}
-            min={0}
-            max={5}
-            onChange={v => set('limitBreakingPieces', v)}
-          />
+          <div className="space-y-1.5">
+            <Label>Limit Breaking armor pieces</Label>
+            <ToggleGroup
+              aria-label="Limit Breaking armor pieces"
+              options={LIMIT_BREAKING_OPTIONS}
+              value={conditions.limitBreakingPieces}
+              onValueChange={v => set('limitBreakingPieces', v)}
+            />
+          </div>
         </div>
       </AccordionContent>
     </AccordionItem>

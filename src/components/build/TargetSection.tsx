@@ -5,6 +5,7 @@ import { ButtonGroup } from '@/components/ui/button-group';
 import { Combobox } from '@/components/ui/combobox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
 import { ToggleGroup } from '@/components/ui/toggle-group';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
@@ -77,12 +78,24 @@ export function TargetSection() {
   const effectiveMult = selectedPart?.dmgMult ?? player.weakpointMult;
   const crippableMax = getCrippablePartCount(mode, conditions.targetRace);
 
+  // Duplicate part names (Mirelurk Queen's two same-mult "Spouts" records,
+  // differing only by partType) render duplicate options + duplicate React
+  // keys — collapse by name. The only same-name group across all 79 races IS
+  // the Spouts pair (verified 2026-07-15), so nothing lossy happens; L/R
+  // limbs have distinct names and stay separate.
+  const uniqueParts = selectedRace ? [...new Map(selectedRace.parts.map(p => [p.name, p])).values()] : [];
+
   const selectRace = (raceId: string | null) => {
     setEnemy('targetRace', raceId);
     // Default to the race's juiciest part — the weakpoint people aim for.
     const race = raceId ? getBodyPartRace(mode, raceId) : undefined;
     const best = race ? [...race.parts].sort((a, b) => b.dmgMult - a.dmgMult)[0] : undefined;
     setEnemy('targetBodyPart', best?.name ?? null);
+    // A stale high crippled count silently over-counts on a smaller enemy:
+    // the engine's perCrippledLimb clamps to each modifier's own cap (Bully's
+    // 6), never the enemy's real limb count — clamp it here on switch.
+    const newMax = getCrippablePartCount(mode, raceId);
+    if (conditions.crippledLimbCount > newMax) setEnemy('crippledLimbCount', newMax);
   };
 
   const tenderizer = player.conditions.tenderizerStacks;
@@ -123,7 +136,7 @@ export function TargetSection() {
             <div className="space-y-1.5">
               <Label>Body part aimed at (×{effectiveMult.toFixed(2)})</Label>
               <Combobox
-                options={selectedRace.parts.map(p => ({
+                options={uniqueParts.map(p => ({
                   value: p.name,
                   label: `${p.name} — ×${p.dmgMult.toFixed(2)}`,
                 }))}
@@ -219,16 +232,18 @@ export function TargetSection() {
                 : `${crippableMax} crippable${selectedRace ? ` on ${selectedRace.name}` : ' max'}`}
               )
             </Label>
-            <Input
+            <Slider
               id="target-crippled"
-              type="number"
               min={0}
-              max={crippableMax}
-              value={conditions.crippledLimbCount}
+              max={Math.max(crippableMax, 1)}
+              step={1}
               disabled={crippableMax === 0}
-              onChange={e =>
-                setEnemy('crippledLimbCount', Math.max(0, Math.min(crippableMax, parseInt(e.target.value, 10) || 0)))
-              }
+              value={[Math.min(conditions.crippledLimbCount, crippableMax)]}
+              onValueChange={([v]) => setEnemy('crippledLimbCount', v)}
+              marks={Array.from({ length: Math.max(crippableMax, 1) + 1 }, (_, i) => ({
+                value: i,
+                label: String(i),
+              }))}
             />
           </div>
 

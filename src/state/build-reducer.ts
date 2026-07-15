@@ -15,7 +15,7 @@ import { perkRaceRestriction } from '@/data/perk-race';
 import { canSlotCardPoints, SPECIAL_ALLOCATION_POOL, SPECIAL_KEYS, SPECIAL_POINTS_CAP } from '@/lib/player-stats';
 import { consumablesById, toggleConsumable } from '@/lib/consumable-rules';
 import { CARNIVORE_MUTATION_ID, HERBIVORE_MUTATION_ID } from '@/lib/diet-mutations';
-import { getPerks } from '@/data';
+import { getPerks, getWeapons, maxEligibleLevel } from '@/data';
 import type { PerkId } from '@/data/perk-ids';
 
 /**
@@ -153,6 +153,10 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
       return withPlayer(state, {
         ...player,
         weapon: action.weaponId ? { weaponId: action.weaponId, mods: {}, legendaryEffects: [] } : null,
+        // Default to the weapon's best obtainable level (Enclave Plasma 45,
+        // Shishkebab 45, most weapons 50) — the slider only offers its real
+        // eligible levels anyway.
+        itemLevel: action.weaponId ? maxEligibleLevel(getWeapons(mode)[action.weaponId]) : player.itemLevel,
       });
 
     case 'weapon/mod': {

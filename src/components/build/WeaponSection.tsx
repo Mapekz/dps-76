@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
-import { getWeapons } from '@/data';
+import { getWeapons, weaponLevelStops } from '@/data';
 import {
   effectiveWeaponName,
   getDefaultOmodId,
@@ -17,13 +17,14 @@ import {
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import { SectionTrigger } from './SectionTrigger';
 
-/** Weapons drop at level 1 then in steps of 5 — the only levels worth dialing. */
-const ITEM_LEVEL_STOPS = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50] as const;
-
-function nearestItemLevelIndex(level: number): number {
+/**
+ * Slider stops come from the selected weapon's real Eligible Levels
+ * (`weaponLevelStops` — Enclave Plasma [25,35,45]; full 1..50 grid fallback).
+ */
+function nearestItemLevelIndex(stops: readonly number[], level: number): number {
   let best = 0;
-  for (let i = 1; i < ITEM_LEVEL_STOPS.length; i++) {
-    if (Math.abs(ITEM_LEVEL_STOPS[i] - level) < Math.abs(ITEM_LEVEL_STOPS[best] - level)) best = i;
+  for (let i = 1; i < stops.length; i++) {
+    if (Math.abs(stops[i] - level) < Math.abs(stops[best] - level)) best = i;
   }
   return best;
 }
@@ -54,6 +55,7 @@ export function WeaponSection() {
   const selectedWeapon = player.weapon ? weapons[player.weapon.weaponId] : undefined;
   const omodSlots = selectedWeapon ? getOmodSlots(mode, selectedWeapon) : [];
   const legendarySlots = selectedWeapon ? getLegendaryOmodSlots(mode, selectedWeapon) : [];
+  const levelStops = weaponLevelStops(selectedWeapon);
 
   // A slot showing its standard part isn't a "mod" — count only deviations.
   const defaultOmodIds = new Map(
@@ -109,7 +111,10 @@ export function WeaponSection() {
                         </Badge>
                       )}
                       <OmodBadgeTag slot={slot} omodId={o.value} />
-                      <ActionDelta action={{ type: 'weapon/mod', slot: slot.slot, omodId: o.value }} />
+                      {/* No ±% on the already-selected option — the delta of a no-op is 0. */}
+                      {o.value !== displayValue && (
+                        <ActionDelta action={{ type: 'weapon/mod', slot: slot.slot, omodId: o.value }} />
+                      )}
                     </>
                   )}
                 />
@@ -130,7 +135,9 @@ export function WeaponSection() {
                 renderOptionExtra={o => (
                   <>
                     <OmodBadgeTag slot={slot} omodId={o.value} />
-                    <ActionDelta action={{ type: 'weapon/legendary', slotIndex: i, omodId: o.value }} />
+                    {o.value !== (player.weapon?.legendaryEffects[i] ?? null) && (
+                      <ActionDelta action={{ type: 'weapon/legendary', slotIndex: i, omodId: o.value }} />
+                    )}
                   </>
                 )}
               />
@@ -142,14 +149,14 @@ export function WeaponSection() {
             <Slider
               id="item-level"
               min={0}
-              max={ITEM_LEVEL_STOPS.length - 1}
+              max={levelStops.length - 1}
               step={1}
-              value={[nearestItemLevelIndex(player.itemLevel)]}
-              onValueChange={([i]) => dispatch({ type: 'weapon/itemLevel', value: ITEM_LEVEL_STOPS[i] })}
-              marks={ITEM_LEVEL_STOPS.map((level, i) => ({ value: i, label: String(level) }))}
+              value={[nearestItemLevelIndex(levelStops, player.itemLevel)]}
+              onValueChange={([i]) => dispatch({ type: 'weapon/itemLevel', value: levelStops[i] })}
+              marks={levelStops.map((level, i) => ({ value: i, label: String(level) }))}
             />
             <p className="text-muted-foreground text-xs">
-              Base damage comes from the level curve. Level-capped weapons clamp at their cap.
+              Only the weapon's real drop levels are offered. Base damage comes from the level curve.
             </p>
           </div>
         </div>
