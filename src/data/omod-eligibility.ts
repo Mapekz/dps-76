@@ -17,7 +17,16 @@
  *   since the attach-point closure, `attachParentSlots` is the fixpoint over
  *   mod-granted slots, not just the WEAP record's own list).
  * Branch 1 — keyword-scoped mods (the overwhelming majority): eligible iff
- *   targetKeywords ⊆ weapon.keywords, the game's own family gate.
+ *   targetKeywords ⊆ weapon.keywords, the game's own family gate — OR the
+ *   weapon's own template whitelists the mod. Many unique identity mods
+ *   (Boiling Point, Drill Fist, Valkyrie, Shattered Grounds, Flatliner, …)
+ *   carry an instance-only second keyword (`RD01_ma_BoilingPoint`,
+ *   `ma_Corrupted`) that the base WEAP never has — the game applies it at
+ *   instance creation via the very template combination that includes the
+ *   mod, so template membership is the same per-weapon ESM whitelist branch
+ *   2 already trusts (verified 2026-07-14: ~24 template-member uniques were
+ *   keyword-blocked; no cross-weapon pollution is possible since templates
+ *   are per-weapon).
  * Branch 2 — EMPTY targetKeywords match nothing by themselves (they used to
  *   match everything sharing the attach point — the source of "Vox Syringe
  *   Barrel on a gauss minigun"-class pollution). Such a mod is eligible only
@@ -57,7 +66,10 @@ export function isOmodEligibleForWeapon(
   if (!slots.includes(omod.attachPointFormId)) return false;
   if (omod.targetKeywords.length > 0) {
     const keywords = weapon.keywords ?? [];
-    return omod.targetKeywords.every(k => keywords.includes(k));
+    return (
+      omod.targetKeywords.every(k => keywords.includes(k)) ||
+      (weapon.templateModFormIds ?? []).includes(omod.formId)
+    );
   }
   return (
     (weapon.templateModFormIds ?? []).includes(omod.formId) ||

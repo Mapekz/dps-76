@@ -1660,6 +1660,61 @@ raw field:
   and hidden. Base `GammaGun` IS obtainable in-game but is excluded from
   extraction as `noDamage` — its damage lives on the projectile explosion,
   which the engine doesn't model (see Known gaps).
+- **Instance-only target keywords** (2026-07-14 slot-completion,
+  dps-todos/unique-cursed-mods.md): ~24 unique `ap_customName` mods (Boiling
+  Point, Drill Fist, Valkyrie, Flatliner =
+  `RD01_Mod_Custom_StrikeBreaker_CustomName`, Shattered Grounds, Meadow
+  Breeze, ABX03, the V63 family, Cauterizer, Lickety-Split, …) carry a
+  second target keyword (`RD01_ma_BoilingPoint`, `ma_Corrupted`) the base
+  WEAP never has — the game applies it at instance creation via the template
+  combination that includes the mod. The shared eligibility predicate
+  (`omod-eligibility.ts`) therefore lets template membership bypass the
+  keyword subset check (per-weapon whitelist ⇒ no cross-weapon pollution).
+  Verified side effect: template-member stat parts blocked the same way
+  (Meadow Breeze's Abraxo sprayer barrel) surface too, correctly. Valkyrie is
+  base `GatlingLaser` only (no Ultracite tie — refs walked); Helga has no
+  effect mod (paint + generic "Vault 63 Gatling Laser" identity only).
+- **Unnamed identity effects** (extract-omods.ts unnamed-template-member
+  rescue): Holy Fire / Cultist Piercer / Elder's Mark / Luca's Switchblade /
+  Ogua Gauntlet effect mods and the Mistress of Mystery description mods
+  have NO ESM Name and were silently dropped by the no-Name filter. Rescued
+  when template-member + has properties + sits on an identity attach point
+  (`ap_customName`/`ap_Item_Description` — the same sweep found authoring
+  noise on regular slots: FakeSheepsquatch assaultron pseudo-slots, null
+  muzzles, all skipped), emitted under their edid with display names in
+  `corrections.ts omodNameOverrides` (their `CustomItemName_*` KYWDs carry
+  no FULL). Every unnamed template member with properties is review-flagged
+  in `_meta.json` (`omodUnnamedTemplateMember`, rescued or skipped).
+  Notable: `mod_Description_MoM_VoiceofSet` is a DEFAULT part carrying Voice
+  of Set's real +20% ballistic — the engine folds it now (it was silently
+  missing before).
+- **Cursed mods** (`ap_Item_Description`, Nuka-World on Tour): real stat
+  payloads on a cosmetic naming slot, no `ObjectTypeUnique` — surfaced by
+  the `modifiers.length > 0` + template-membership cosmetic gate, slot
+  labeled "Cursed" (`SLOT_LABEL_OVERRIDES`; Voice of Set overrides it back
+  to "Unique" per-weapon), exempt from slot hygiene
+  (`NON_HYGIENE_SLOT_RE`), and renaming via `effectiveWeaponName`
+  (`dn_HasCustomMod_Cursed` keyword — their names are the full in-game
+  rename, "Cursed Broadsider").
+- **Display names**: the literal " Custom Mod"/" Custom Name" authoring
+  suffixes are stripped at extraction (`omodDisplayName`); names that are
+  simply wrong in the ESM ("Poison" for The Kabloom, "Paranormal Mod" for
+  Cold Shoulder) are fixed in `omodNameOverrides` at the dataset chokepoint.
+- **Hidden as dev-only** (refs walks 2026-07-14, `hiddenOmodIds`): Minty
+  Breather (only granting LVLI is a zero-ref `zzz_` record) and The Pipe
+  (its combination keyword has zero external refs). Both stay in the data
+  for rescue if they ever ship.
+- **Dom Pedro** (WEAP `Nitro`): its Explosive/Explosive-Penetrating muzzle
+  mods' EXPL payload (`Nitro_Explosive`, Tier24 universal curve, no hazard —
+  note-only under the Cremator anti-double-count rule) is hand-supplied via
+  `omodModifierAdditions` as a ballistic-scoped `baseDamage ADD` curve:
+  right paper number, lands after the mods' own −20 %/−30 % MUL_ADD (so the
+  payload is not reduced), but explosive-only perk interactions are not
+  modeled (the engine has no OMOD-conditional explosive component —
+  `materializeDamageTypeComponents` excludes 'explosive'). The penetration
+  half stays note-only (armor-pen — needs enemy defenses). The weapon itself
+  has NO baseline explosion (projectile carries none; Secondary Damage 20 is
+  electric).
 
 ## Known gaps / deferred
 

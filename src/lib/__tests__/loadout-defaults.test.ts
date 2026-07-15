@@ -56,9 +56,10 @@ describe('default mod folding (assemble-time)', () => {
 
   it('stat-carrying cosmetic-slot unique folds in when selected', () => {
     // DoubleBarrelShotgun_ColdShoulder (the legacy standalone WEAP) is hidden
-    // post unique-weapons-rework — its identity now lives as the Paranormal
-    // Mod (mod_custom_Coldshoulder_DmgvsCryptid), a real ap_customName mod
-    // hosted on base DoubleBarrelShotgun's templateModFormIds. Explicitly
+    // post unique-weapons-rework — its identity now lives as
+    // mod_custom_Coldshoulder_DmgvsCryptid (displayed "Cold Shoulder" via
+    // omodNameOverrides; ESM Name is "Paranormal Mod"), a real ap_customName
+    // mod hosted on base DoubleBarrelShotgun's templateModFormIds. Explicitly
     // selecting it (rather than relying on default-fold, since it isn't the
     // weapon's default part) still folds its modifiers in.
     const input = loadout('DoubleBarrelShotgun', { ap_customName: 'mod_custom_Coldshoulder_DmgvsCryptid' });

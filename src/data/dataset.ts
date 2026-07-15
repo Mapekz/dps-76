@@ -26,6 +26,7 @@ import { legendaryValueOverrides } from './overrides/legendary-values';
 import { buffValueOverrides } from './overrides/buff-overrides';
 import {
   omodModifierAdditions,
+  omodNameOverrides,
   weaponCorrections,
   hiddenWeaponIds,
   forceVisibleWeaponIds,
@@ -96,6 +97,17 @@ export function applyModifierAddition<T extends { id: string; modifiers: Modifie
   });
 }
 
+/** Replace an item's display `.name` when an override is keyed by its id (omods — see omodNameOverrides). */
+export function applyNameOverride<T extends { id: string; name: string }>(
+  items: T[],
+  namesById: Readonly<Record<string, string>>
+): T[] {
+  return items.map(item => {
+    const name = namesById[item.id];
+    return name ? { ...item, name } : item;
+  });
+}
+
 type LegendaryRankModifiers = typeof legendaryRankModifiersLive;
 type BodyArmor = typeof bodyArmorLive;
 type PowerArmor = typeof powerArmorLive;
@@ -131,9 +143,12 @@ interface HandAuthored {
 
 // Generated (ESM-extracted) collections + overlays. Single ESM today, so these
 // are shared across modes; per-mode generated data would be threaded here.
-const mergedOmods = applyModifierAddition(
-  applyModifierOverride(generatedOmodsLive as GeneratedOmod[], legendaryValueOverrides),
-  omodModifierAdditions
+const mergedOmods = applyNameOverride(
+  applyModifierAddition(
+    applyModifierOverride(generatedOmodsLive as GeneratedOmod[], legendaryValueOverrides),
+    omodModifierAdditions
+  ),
+  omodNameOverrides
 );
 const mergedMutations = applyModifierOverride(generatedMutationsLive as GeneratedBuff[], buffValueOverrides);
 const mergedConsumables = applyModifierOverride(generatedConsumablesLive as GeneratedBuff[], buffValueOverrides);
@@ -232,6 +247,7 @@ export function getUnresolvedOverrideKeys(mode: GameMode): UnresolvedOverrideKey
   check('hiddenOmodIds', hiddenOmodIds, omodIds);
   check('forceVisibleOmodIds', forceVisibleOmodIds, omodIds);
   check('omodBadgeOverrides', Object.keys(omodBadgeOverrides), omodIds);
+  check('omodNameOverrides', Object.keys(omodNameOverrides), omodIds);
   check('omodWeaponRestrictions (key)', Object.keys(omodWeaponRestrictions), omodIds);
   for (const [omodId, weaponRefs] of Object.entries(omodWeaponRestrictions)) {
     check(`omodWeaponRestrictions[${omodId}] (weapon ref)`, weaponRefs, weaponIds);

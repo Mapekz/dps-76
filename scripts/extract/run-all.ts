@@ -140,6 +140,7 @@ async function main() {
     obtainableWeaponFormIds ??= new Set(allWeapons.filter(w => w.obtainable !== false).map(w => w.formId));
     explosiveFamilyKeywords ??= explosiveFamilyKeywordsOf(allWeapons);
     const defaultModFormIds = new Set(allWeapons.flatMap(w => w.defaultModFormIds ?? []));
+    const templateModFormIds = new Set(allWeapons.flatMap(w => w.templateModFormIds ?? []));
     console.log('  building COBJ index…');
     const cobjIndex = await buildCobjIndex(client);
     const result = await extractOmods(
@@ -147,7 +148,8 @@ async function main() {
       obtainableWeaponFormIds,
       explosiveFamilyKeywords,
       cobjIndex,
-      defaultModFormIds
+      defaultModFormIds,
+      templateModFormIds
     );
     await writeFile(path.join(outDir, 'omods.json'), JSON.stringify(result.omods, null, 1));
     meta.counts.omods = result.omods.length;

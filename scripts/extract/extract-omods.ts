@@ -219,6 +219,18 @@ function omodData(record: EsmRecord): Record<string, unknown> {
   return (record.fields['Data'] ?? {}) as Record<string, unknown>;
 }
 
+/**
+ * Display name: the record's Name with the literal " Custom Mod" / " Custom
+ * Name" authoring suffix stripped ("Boiling Point Custom Name" → "Boiling
+ * Point" — the in-game rename these identity mods drive never shows the
+ * suffix), falling back to the edid for rescued unnamed records (whose real
+ * display name lives in corrections.ts `omodNameOverrides`).
+ */
+function omodDisplayName(record: EsmRecord): string {
+  const raw = (record.fields['Name'] as string | undefined) ?? record.editor_id;
+  return raw.replace(/\s+Custom (Mod|Name)$/i, '');
+}
+
 function includeFormIds(data: Record<string, unknown>): string[] {
   const includes = data['Includes'];
   if (!Array.isArray(includes)) return [];
@@ -263,7 +275,9 @@ export async function extractOmods(
   /** Forward COBJ index (buildCobjIndex) — learn-method-aware obtainability + hasGrantingCobj. */
   cobjIndex: CobjIndex = emptyCobjIndex(),
   /** Union of every weapon's defaultModFormIds — a default part is never flagged weak-evidence. */
-  defaultModFormIds: ReadonlySet<string> = new Set()
+  defaultModFormIds: ReadonlySet<string> = new Set(),
+  /** Union of every weapon's templateModFormIds — rescues unnamed effect mods a template ships (Holy Fire). */
+  templateModFormIds: ReadonlySet<string> = new Set()
 ): Promise<ExtractOmodsResult> {
   const rows = await client.list('OMOD');
   const records = await mapPool(rows, 8, r => client.get(r.form_id));
@@ -455,9 +469,37 @@ export async function extractOmods(
   }
 
   const excluded: Record<string, string[]> = { omodJunkEdid: [] };
+  // Unnamed IDENTITY records a weapon template ships with real properties
+  // (Holy Fire's effect mod 0x006E06A3 on the Flamer, the Cultist Piercer /
+  // Elder's Mark / Ogua Gauntlet effects, Voice of Set's description mod)
+  // are real player effects the no-Name filter used to drop SILENTLY — kept,
+  // emitted under their edid (display name fixed via corrections.ts
+  // omodNameOverrides). Restricted to the two identity attach points: the
+  // same sweep surfaced unnamed template members on regular slots too
+  // (FakeSheepsquatch assaultron-head pseudo-slots, null muzzles) that are
+  // authoring noise, not player choices. EVERY unnamed template member with
+  // properties lands in _meta.json reviewFlagged.omodUnnamedTemplateMember
+  // (rescued or skipped) so future gaps can't vanish silently again.
+  const IDENTITY_ATTACH_POINTS = new Set([
+    '0x0047A264', // ap_customName
+    '0x00521926', // ap_Item_Description
+  ]);
+  const unnamedTemplateMembers: ExcludedRecordDetail[] = [];
   const named = records.filter(r => {
     const exclusion = classifyOmodRecordExclusion(r);
     if (exclusion === 'junkEdid') excluded.omodJunkEdid.push(r.editor_id);
+    if (exclusion === 'unnamed') {
+      const data = omodData(r);
+      const props = data['Properties'];
+      if (!templateModFormIds.has(r.header.form_id) || !Array.isArray(props) || props.length === 0) return false;
+      const rescued = IDENTITY_ATTACH_POINTS.has(data['Attach Point'] as string);
+      unnamedTemplateMembers.push({
+        id: r.editor_id,
+        name: r.editor_id,
+        signals: [rescued ? 'rescued' : 'skipped:nonIdentityAttachPoint'],
+      });
+      return rescued;
+    }
     return exclusion === null;
   });
 
@@ -488,7 +530,7 @@ export async function extractOmods(
       kind: 'omod',
       formId: record.header.form_id,
       edid: record.editor_id,
-      name: record.fields['Name'] as string,
+      name: omodDisplayName(record),
     };
 
     for (const prop of properties) {
@@ -724,7 +766,7 @@ export async function extractOmods(
     omods.push({
       id: record.editor_id,
       formId: record.header.form_id,
-      name: record.fields['Name'] as string,
+      name: omodDisplayName(record),
       description: (record.fields['Description'] as string) ?? '',
       attachPointFormId: attachPoint,
       attachPointEdid: await client.resolveEdid(attachPoint),
@@ -742,7 +784,10 @@ export async function extractOmods(
   const classifier = new ObtainabilityClassifier(client, obtainableWeaponFormIds, cobjIndex);
   const verdicts = await classifier.classify(omods.map(o => ({ formId: o.formId, edid: o.id })));
   const excludedDetailed: Record<string, ExcludedRecordDetail[]> = { omodUnobtainable: [] };
-  const reviewFlagged: Record<string, ExcludedRecordDetail[]> = { omodWeakEvidence: [] };
+  const reviewFlagged: Record<string, ExcludedRecordDetail[]> = {
+    omodWeakEvidence: [],
+    omodUnnamedTemplateMember: unnamedTemplateMembers,
+  };
   for (const omod of omods) {
     const verdict = verdicts.get(omod.formId);
     omod.obtainable = verdict?.obtainable ?? false;

@@ -4995,6 +4995,22 @@
   "obtainable": false
  },
  {
+  "id": "Burn_Bounty_mod_custom_BleedEffect",
+  "formId": "0x008039AD",
+  "name": "Burn_Bounty_mod_custom_BleedEffect",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": true,
+  "notes": [
+   "DamageHealthContact: DoT curve with unmapped input AV null — needs override"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "Burn_Bounty_mod_Custom_ExtraDamage20Percent",
   "formId": "0x0083BD87",
   "name": "BonusDamage 20%",
@@ -14296,7 +14312,7 @@
  {
   "id": "E08B_mod_Custom_CrowdControl",
   "formId": "0x0064D006",
-  "name": "Crowd Control Custom Mod",
+  "name": "Crowd Control",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -14308,7 +14324,7 @@
      "kind": "omod",
      "formId": "0x0064D006",
      "edid": "E08B_mod_Custom_CrowdControl",
-     "name": "Crowd Control Custom Mod"
+     "name": "Crowd Control"
     },
     "bucket": "dotDamage",
     "op": "ADD",
@@ -14689,7 +14705,7 @@
  {
   "id": "E09C_mod_Custom_BurningLove",
   "formId": "0x0067A475",
-  "name": "Burning Love Custom Mod",
+  "name": "Burning Love",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -14701,7 +14717,7 @@
      "kind": "omod",
      "formId": "0x0067A475",
      "edid": "E09C_mod_Custom_BurningLove",
-     "name": "Burning Love Custom Mod"
+     "name": "Burning Love"
     },
     "bucket": "dotDamage",
     "op": "ADD",
@@ -36305,7 +36321,7 @@
  {
   "id": "mod_Custom_AllRise",
   "formId": "0x0047187E",
-  "name": "All Rise Custom Mod",
+  "name": "All Rise",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -36320,7 +36336,7 @@
      "kind": "omod",
      "formId": "0x0047187E",
      "edid": "mod_Custom_AllRise",
-     "name": "All Rise Custom Mod"
+     "name": "All Rise"
     },
     "bucket": "maxHealth",
     "op": "ADD",
@@ -36361,7 +36377,7 @@
  {
   "id": "mod_Custom_BlackDiamond",
   "formId": "0x0047187F",
-  "name": "Black Diamond Custom Mod",
+  "name": "Black Diamond",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -36373,7 +36389,7 @@
      "kind": "omod",
      "formId": "0x0047187F",
      "edid": "mod_Custom_BlackDiamond",
-     "name": "Black Diamond Custom Mod"
+     "name": "Black Diamond"
     },
     "bucket": "baseDamage",
     "op": "MUL_ADD",
@@ -36393,7 +36409,7 @@
      "kind": "omod",
      "formId": "0x0047187F",
      "edid": "mod_Custom_BlackDiamond",
-     "name": "Black Diamond Custom Mod"
+     "name": "Black Diamond"
     },
     "bucket": "baseDamage",
     "op": "MUL_ADD",
@@ -36928,7 +36944,7 @@
  {
   "id": "mod_Custom_CivilUnrest",
   "formId": "0x00471881",
-  "name": "Civil Unrest Custom Mod",
+  "name": "Civil Unrest",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -37610,6 +37626,27 @@
   "obtainable": true
  },
  {
+  "id": "mod_custom_CultistPiercer_Effect",
+  "formId": "0x006E2247",
+  "name": "mod_custom_CultistPiercer_Effect",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "Moon_dn_Weapon_Melee_CultistPiercer",
+   "CustomItem_SpeciallyNamed",
+   "CustomItemName_CultistPiercer"
+  ],
+  "hasEnchantments": false,
+  "notes": [
+   "perk CultistPiercer_Perk: entry point Mod Target Damage Resistance — not modeled"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "mod_custom_CultistPiercer_Paint",
   "formId": "0x006A009A",
   "name": "Cultist Piercer Paint",
@@ -37629,7 +37666,7 @@
  {
   "id": "mod_Custom_Daisycutter",
   "formId": "0x00471882",
-  "name": "Daisycutter Custom Mod",
+  "name": "Daisycutter",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -37745,6 +37782,26 @@
    "condition: GetValue(<unresolved:0x00000393>)=4000"
   ],
   "obtainable": false
+ },
+ {
+  "id": "mod_custom_EldersMark_Effect",
+  "formId": "0x006E2246",
+  "name": "mod_custom_EldersMark_Effect",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "CustomItemName_EldersMark",
+   "CustomItem_SpeciallyNamed"
+  ],
+  "hasEnchantments": false,
+  "notes": [
+   "perk EldersMark_Perk: entry point Mod My Critical Hit Damage Mult uses Add Actor Value Mult — skipped"
+  ],
+  "obtainable": true
  },
  {
   "id": "mod_custom_EldersMark_Paint",
@@ -37944,6 +38001,49 @@
   "addedKeywords": [],
   "hasEnchantments": false,
   "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "mod_custom_HolyFire_Effect",
+  "formId": "0x006E06A3",
+  "name": "mod_custom_HolyFire_Effect",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [
+   {
+    "id": "0x006E06A3:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x006E06A3",
+     "edid": "mod_custom_HolyFire_Effect",
+     "name": "mod_custom_HolyFire_Effect"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "value": 3,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ],
+    "durationSec": 3
+   }
+  ],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "CustomItem_SpeciallyNamed",
+   "CustomItemName_HolyFire",
+   "Moon_ma_BlueFlamer"
+  ],
+  "hasEnchantments": true,
+  "notes": [
+   "perk HolyFire_Perk: entry point Apply Friendly Hit Spell — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -38180,6 +38280,46 @@
   "notes": [
    "condition: GetInIronSights()=1"
   ],
+  "obtainable": true
+ },
+ {
+  "id": "mod_custom_LucaSwitchblade_Effect",
+  "formId": "0x006E2243",
+  "name": "mod_custom_LucaSwitchblade_Effect",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [
+   {
+    "id": "0x006E2243:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x006E2243",
+     "edid": "mod_custom_LucaSwitchblade_Effect",
+     "name": "mod_custom_LucaSwitchblade_Effect"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "explosive"
+      ]
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "FeaturedItem",
+   "CustomItem_SpeciallyNamed",
+   "CustomItemName_LucaSwitchblade"
+  ],
+  "hasEnchantments": false,
+  "notes": [],
   "obtainable": true
  },
  {
@@ -38702,6 +38842,27 @@
   "hasEnchantments": false,
   "notes": [
    "ActorValues on BloodyMess — unmapped"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "mod_custom_OguaGauntlet_Effect",
+  "formId": "0x006E2245",
+  "name": "mod_custom_OguaGauntlet_Effect",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "FeaturedItem",
+   "CustomItem_SpeciallyNamed",
+   "CustomItemName_OguaGauntlet"
+  ],
+  "hasEnchantments": false,
+  "notes": [
+   "perk OguaGauntlet_Perk: entry point Mod Percent Blocked — not modeled"
   ],
   "obtainable": true
  },
@@ -39405,7 +39566,7 @@
  {
   "id": "mod_Custom_Pyrolyzer",
   "formId": "0x00471885",
-  "name": "Pyrolyzer Custom Mod",
+  "name": "Pyrolyzer",
   "description": "Burning Enemies Burst into a Firey Mess Based on Luck",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -39833,7 +39994,7 @@
  {
   "id": "mod_Custom_SoleSurvivor",
   "formId": "0x00613850",
-  "name": "Sole Survivor Custom Mod",
+  "name": "Sole Survivor",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -39845,7 +40006,7 @@
      "kind": "omod",
      "formId": "0x00613850",
      "edid": "mod_Custom_SoleSurvivor",
-     "name": "Sole Survivor Custom Mod"
+     "name": "Sole Survivor"
     },
     "bucket": "weakpointBonus",
     "op": "ADD",
@@ -41297,7 +41458,7 @@
  {
   "id": "mod_Custom_WhistleInTheDark",
   "formId": "0x005D8D86",
-  "name": "Whistle in the Dark Custom Mod",
+  "name": "Whistle in the Dark",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -41309,7 +41470,7 @@
      "kind": "omod",
      "formId": "0x005D8D86",
      "edid": "mod_Custom_WhistleInTheDark",
-     "name": "Whistle in the Dark Custom Mod"
+     "name": "Whistle in the Dark"
     },
     "bucket": "sneakBonus",
     "op": "ADD",
@@ -41336,7 +41497,7 @@
      "kind": "omod",
      "formId": "0x005D8D86",
      "edid": "mod_Custom_WhistleInTheDark",
-     "name": "Whistle in the Dark Custom Mod"
+     "name": "Whistle in the Dark"
     },
     "bucket": "sneakBonus",
     "op": "ADD",
@@ -41425,6 +41586,64 @@
   "hasEnchantments": false,
   "hasGrantingCobj": true,
   "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "mod_Description_MoM_BladeofBastet",
+  "formId": "0x00522666",
+  "name": "mod_Description_MoM_BladeofBastet",
+  "description": "Upgrades when Eye of Ra is Equipped",
+  "attachPointFormId": "0x00521926",
+  "attachPointEdid": "ap_Item_Description",
+  "targetKeywords": [],
+  "modifiers": [],
+  "addedKeywords": [],
+  "hasEnchantments": true,
+  "notes": [
+   "AbFortifyArmorPenetration: curve with unmapped input AV 0x006DE64A — needs override"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "mod_Description_MoM_VoiceofSet",
+  "formId": "0x00522667",
+  "name": "mod_Description_MoM_VoiceofSet",
+  "description": "Additional Electric Damage vs. Robots.",
+  "attachPointFormId": "0x00521926",
+  "attachPointEdid": "ap_Item_Description",
+  "targetKeywords": [],
+  "modifiers": [
+   {
+    "id": "0x00522667:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00522667",
+     "edid": "mod_Description_MoM_VoiceofSet",
+     "name": "mod_Description_MoM_VoiceofSet"
+    },
+    "bucket": "baseDamage",
+    "op": "MUL_ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [],
+  "hasEnchantments": true,
+  "notes": [
+   "condition: WornHasKeyword(MoMVoiceofSetKeyword)=1",
+   "perk MoM_VoiceofSetPerk: MGEF MoM_VoiceofSet_Base_Desc archetype Script — needs override",
+   "perk MoM_VoiceofSetPerk: MGEF MoM_VoiceofSet_EyeRA_Desc archetype Script — needs override",
+   "perk MoM_VoiceofSetPerk: WornHasKeyword(MoMEyeOfRaItemKeyword)=1",
+   "perk MoM_VoiceofSetPerk: condition: WornHasKeyword(MoMEyeOfRaItemKeyword)=1",
+   "perk MoM_VoiceofSetPerk: entry point Apply Combat Hit Spell — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -103808,7 +104027,7 @@
  {
   "id": "P62_Mod_Custom_ChaosEngine_CustomName",
   "formId": "0x00802185",
-  "name": "Chaos Engine Custom Name",
+  "name": "Chaos Engine",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -103924,7 +104143,7 @@
  {
   "id": "P62_Mod_Custom_Splinter_CustomName",
   "formId": "0x00802188",
-  "name": "Splinter Custom Name",
+  "name": "Splinter",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -104022,7 +104241,7 @@
  {
   "id": "P62_Mod_Custom_Tempest_CustomName",
   "formId": "0x0080218B",
-  "name": "Tempest Custom Name",
+  "name": "Tempest",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -106578,7 +106797,7 @@
  {
   "id": "RD01_Mod_Custom_BoilingPoint_CustomName",
   "formId": "0x007934FC",
-  "name": "Boiling Point Custom Name",
+  "name": "Boiling Point",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -106593,7 +106812,7 @@
      "kind": "omod",
      "formId": "0x007934FC",
      "edid": "RD01_Mod_Custom_BoilingPoint_CustomName",
-     "name": "Boiling Point Custom Name"
+     "name": "Boiling Point"
     },
     "bucket": "dotDamage",
     "op": "ADD",
@@ -106692,7 +106911,7 @@
  {
   "id": "RD01_Mod_Custom_Cauterizer_CustomName",
   "formId": "0x00796EB4",
-  "name": "Cauterizer Custom Name",
+  "name": "Cauterizer",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -106707,7 +106926,7 @@
      "kind": "omod",
      "formId": "0x00796EB4",
      "edid": "RD01_Mod_Custom_Cauterizer_CustomName",
-     "name": "Cauterizer Custom Name"
+     "name": "Cauterizer"
     },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
@@ -106720,7 +106939,7 @@
      "kind": "omod",
      "formId": "0x00796EB4",
      "edid": "RD01_Mod_Custom_Cauterizer_CustomName",
-     "name": "Cauterizer Custom Name"
+     "name": "Cauterizer"
     },
     "bucket": "baseDamage",
     "op": "MUL_ADD",
@@ -106753,7 +106972,7 @@
      "kind": "omod",
      "formId": "0x00796EB4",
      "edid": "RD01_Mod_Custom_Cauterizer_CustomName",
-     "name": "Cauterizer Custom Name"
+     "name": "Cauterizer"
     },
     "bucket": "baseDamage",
     "op": "ADD",
@@ -106854,7 +107073,7 @@
  {
   "id": "RD01_Mod_Custom_DrillFist_CustomName",
   "formId": "0x00796EB6",
-  "name": "Drill Fist Custom Name",
+  "name": "Drill Fist",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -106869,7 +107088,7 @@
      "kind": "omod",
      "formId": "0x00796EB6",
      "edid": "RD01_Mod_Custom_DrillFist_CustomName",
-     "name": "Drill Fist Custom Name"
+     "name": "Drill Fist"
     },
     "bucket": "dotDamage",
     "op": "ADD",
@@ -106970,7 +107189,7 @@
  {
   "id": "RD01_Mod_Custom_LicketySplit_CustomName",
   "formId": "0x00793807",
-  "name": "Lickety-Split Custom Name",
+  "name": "Lickety-Split",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -107017,7 +107236,7 @@
  {
   "id": "RD01_Mod_Custom_ResolveBreaker_CustomName",
   "formId": "0x007934FE",
-  "name": "Resolve Breaker Custom Name",
+  "name": "Resolve Breaker",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -107100,7 +107319,7 @@
  {
   "id": "RD01_Mod_Custom_UltraciteTerrorSword_CustomName",
   "formId": "0x00796644",
-  "name": "Ultracite Terror Sword Custom Name",
+  "name": "Ultracite Terror Sword",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -107114,7 +107333,7 @@
      "kind": "omod",
      "formId": "0x00796644",
      "edid": "RD01_Mod_Custom_UltraciteTerrorSword_CustomName",
-     "name": "Ultracite Terror Sword Custom Name"
+     "name": "Ultracite Terror Sword"
     },
     "bucket": "baseDamage",
     "op": "MUL_ADD",
@@ -107147,7 +107366,7 @@
      "kind": "omod",
      "formId": "0x00796644",
      "edid": "RD01_Mod_Custom_UltraciteTerrorSword_CustomName",
-     "name": "Ultracite Terror Sword Custom Name"
+     "name": "Ultracite Terror Sword"
     },
     "bucket": "baseDamage",
     "op": "MUL_ADD",
@@ -107180,7 +107399,7 @@
      "kind": "omod",
      "formId": "0x00796644",
      "edid": "RD01_Mod_Custom_UltraciteTerrorSword_CustomName",
-     "name": "Ultracite Terror Sword Custom Name"
+     "name": "Ultracite Terror Sword"
     },
     "bucket": "dotDamage",
     "op": "ADD",
@@ -107282,7 +107501,7 @@
  {
   "id": "RD01_Mod_Custom_Valkyrie_CustomName",
   "formId": "0x0079342E",
-  "name": "Valkyrie Custom Name",
+  "name": "Valkyrie",
   "description": "+2% Spin Up Speed per Bullet Storm Stack",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -107724,7 +107943,7 @@
  {
   "id": "SCORE_MiniSeason_LoveHurts_mod_Custom_PiercingLove",
   "formId": "0x008989D9",
-  "name": "Piercing Love Custom Mod",
+  "name": "Piercing Love",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -107736,7 +107955,7 @@
      "kind": "omod",
      "formId": "0x008989D9",
      "edid": "SCORE_MiniSeason_LoveHurts_mod_Custom_PiercingLove",
-     "name": "Piercing Love Custom Mod"
+     "name": "Piercing Love"
     },
     "bucket": "dotDamage",
     "op": "ADD",

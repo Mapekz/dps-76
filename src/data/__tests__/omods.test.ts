@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import type { Weapon } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
 import { getWeapons } from '@/data';
-import { getLegendaryOmodSlots, getOmodSlots, isEligible } from '@/data/omods';
+import { effectiveWeaponName, getLegendaryOmodSlots, getOmodSlots, isEligible } from '@/data/omods';
 
 // 2026-07-13 unique-weapon rework: named uniques collapsed into base weapon +
 // a mod_Custom_* OMOD at ap_customName. Many carry zero extracted modifiers
@@ -73,6 +73,15 @@ describe('isEligible', () => {
     const omod = synthOmod({ targetKeywords: ['ma_HuntingRifle'] });
     expect(isEligible(omod, synthWeapon({ keywords: ['ma_HuntingRifle', 'ObjectTypeWeapon'] }))).toBe(true);
     expect(isEligible(omod, synthWeapon({ keywords: ['ma_GatlingGun'] }))).toBe(false);
+  });
+
+  it('branch 1: template membership bypasses an instance-only keyword (Boiling Point pattern)', () => {
+    // The game applies the second keyword (RD01_ma_*) at instance creation
+    // via the template combination that includes the mod — the base WEAP
+    // never carries it.
+    const omod = synthOmod({ targetKeywords: ['ma_Flamer', 'RD01_ma_BoilingPoint'] });
+    expect(isEligible(omod, synthWeapon({ keywords: ['ma_Flamer'], templateModFormIds: ['0xMOD'] }))).toBe(true);
+    expect(isEligible(omod, synthWeapon({ keywords: ['ma_Flamer'] }))).toBe(false);
   });
 
   it('branch 2a: an empty-keyword mod is eligible where the weapon template whitelists it', () => {
@@ -298,5 +307,65 @@ describe('attach-point closure against live data', () => {
   it('the Plasma Gun barrel slot offers its full barrel family (flamer/sniper/splitter/…)', () => {
     const barrel = slotsOf('PlasmaGun').find(s => s.slot === 'ap_gun_Barrel');
     expect(barrel?.options.length).toBeGreaterThanOrEqual(20);
+  });
+});
+
+// 2026-07-14 unique & cursed slot completion (dps-todos/unique-cursed-mods.md):
+// template membership bypasses instance-only keywords; unnamed identity
+// effects are rescued at extraction (names via omodNameOverrides); cursed
+// mods get their own slot label and rename the weapon.
+
+describe('unique & cursed mods against live data', () => {
+  const uniqueOptions = (weaponId: string, slot = 'ap_customName') => {
+    const weapon = getWeapons('live')[weaponId];
+    expect(weapon, weaponId).toBeDefined();
+    return getOmodSlots('live', weapon).find(s => s.slot === slot)?.options ?? [];
+  };
+
+  it('previously keyword-blocked template uniques surface in their Unique slot', () => {
+    for (const [weaponId, omodId] of [
+      ['Flamer', 'RD01_Mod_Custom_BoilingPoint_CustomName'],
+      ['Gauntlet', 'RD01_Mod_Custom_DrillFist_CustomName'],
+      ['GatlingLaser', 'RD01_Mod_Custom_Valkyrie_CustomName'],
+      ['GaussRifle', 'RD01_Mod_Custom_StrikeBreaker_CustomName'],
+      ['DLC04_HandMadeGun', 'mod_custom_ShatteredGrounds_Custom'],
+      ['PlasmaGun', 'mod_Custom_Plasma_AbraxoGun'],
+      ['PlasmaGun', 'mod_Custom_Plasma_Abraxolator'],
+      ['RailwayRifle', 'RD01_Mod_Custom_LicketySplit_CustomName'],
+    ] as const) {
+      expect(uniqueOptions(weaponId).map(o => o.id), `${weaponId}/${omodId}`).toContain(omodId);
+    }
+  });
+
+  it('rescued unnamed identity effects surface with their corrected names', () => {
+    const flamer = uniqueOptions('Flamer');
+    expect(flamer.find(o => o.id === 'mod_custom_HolyFire_Effect')?.name).toBe('Holy Fire');
+    const pick = uniqueOptions('pickaxe');
+    expect(pick.find(o => o.id === 'mod_custom_CultistPiercer_Effect')?.name).toBe('Cultist Piercer');
+  });
+
+  it('name fixes: The Kabloom (was "Poison"), Cold Shoulder (was "Paranormal Mod"), Flatliner, stripped Custom-Name suffixes', () => {
+    expect(uniqueOptions('PumpActionShotgun').find(o => o.id === 'mod_custom_TheKabloom_Effect')?.name).toBe('The Kabloom');
+    expect(uniqueOptions('DoubleBarrelShotgun').find(o => o.id === 'mod_custom_Coldshoulder_DmgvsCryptid')?.name).toBe('Cold Shoulder');
+    expect(uniqueOptions('GaussRifle').find(o => o.id === 'RD01_Mod_Custom_StrikeBreaker_CustomName')?.name).toBe('Flatliner');
+    expect(uniqueOptions('Flamer').find(o => o.id === 'RD01_Mod_Custom_BoilingPoint_CustomName')?.name).toBe('Boiling Point');
+  });
+
+  it('cursed mods ride a slot labeled "Cursed" and rename the weapon', () => {
+    const broadsider = getWeapons('live')['Broadsider'];
+    const slot = getOmodSlots('live', broadsider).find(s => s.slot === 'ap_Item_Description');
+    expect(slot?.label).toBe('Cursed');
+    expect(slot?.options.map(o => o.id)).toContain('EN06_mod_Ranged_Broadsider_Custom_Cursed');
+    expect(
+      effectiveWeaponName('live', broadsider, { ap_Item_Description: 'EN06_mod_Ranged_Broadsider_Custom_Cursed' })
+    ).toBe('Cursed Broadsider');
+    expect(effectiveWeaponName('live', broadsider, {})).toBe(broadsider.name);
+  });
+
+  it("Voice of Set's identity mod shows under a per-weapon 'Unique' label with its real name", () => {
+    const options = uniqueOptions('MoM_VoiceOfSet_44', 'ap_Item_Description');
+    expect(options.find(o => o.id === 'mod_Description_MoM_VoiceofSet')?.name).toBe('Voice of Set');
+    const weapon = getWeapons('live')['MoM_VoiceOfSet_44'];
+    expect(getOmodSlots('live', weapon).find(s => s.slot === 'ap_Item_Description')?.label).toBe('Unique');
   });
 });

@@ -174,6 +174,19 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
   'mod_Cremator_Chemical_BlueFire',
   'mod_Cremator_Chemical_GreenFire',
   'mod_Cremator_Chemical_PinkFire',
+  // Unique identity mods riding their base weapon's template with NO
+  // player-facing grant chain (2026-07-14 refs walks,
+  // dps-todos/unique-cursed-mods.md "bogus" review; delete the line if one
+  // ever ships):
+  // Minty Breather (Cryolator): only granting LVLI is
+  // zzz_LL_MutatedEvents_Rewards_Weapon_Cryolator (0x0067F601) — zzz_ dev
+  // record with zero external refs. NOT to be confused with
+  // mod_Custom_Overkill_Copy01 (also named "Minty Breather"), an
+  // unobtainable dev dupe that needs no entry here.
+  'mod_Custom_MintyBreather',
+  // The Pipe (Pipe Gun): its template-combination keyword 0x0091EE2B has
+  // zero external refs — no LVLI/QUST/FLST ever instantiates the config.
+  'mod_Custom_ThePipe',
 ]);
 
 /**
@@ -280,6 +293,43 @@ export const omodWeaponRestrictions: Readonly<Record<string, readonly string[]>>
 };
 
 /**
+ * Display-name fixes for generated omods, applied at the dataset chokepoint
+ * (dataset.ts) so every access path sees the corrected name. For unique
+ * identity mods the name IS the weapon rename (`effectiveWeaponName`), so a
+ * wrong one is user-visible twice. The mechanical " Custom Mod"/" Custom
+ * Name" suffixes are already stripped at extraction (omodDisplayName,
+ * extract-omods.ts) — entries here are for names that are simply wrong in
+ * the ESM record.
+ */
+export const omodNameOverrides: Readonly<Record<string, string>> = {
+  // ESM Name is "Poison" (the effect archetype, not the unique). The unique
+  // pump action shotgun is "The Kabloom" (CustomItemName_TheKabloom keyword;
+  // in-game name user-reported 2026-07-14).
+  mod_custom_TheKabloom_Effect: 'The Kabloom',
+  // ESM Name is "Paranormal Mod". The unique double-barrel is "Cold Shoulder"
+  // (WeaponTypeColdShoulder keyword; docs/assumptions.md §Unique weapons).
+  mod_custom_Coldshoulder_DmgvsCryptid: 'Cold Shoulder',
+  // Record has NO Name field (rescued unnamed template member, emitted under
+  // its edid) — the unique flamer is "Holy Fire" (its companion paint record
+  // mod_custom_HolyFire_Paint 0x006A983C is named "Holy Fire"; effect mod
+  // 0x006E06A3 walked 2026-07-14: 6 properties, in Flamer's template).
+  mod_custom_HolyFire_Effect: 'Holy Fire',
+  // The remaining rescued unnamed identity effects (see extract-omods.ts
+  // unnamed-template-member rescue). Each ESM record has no Name and its
+  // CustomItemName_* KYWD carries no FULL (checked 2026-07-14) — names are
+  // the in-game unique item names (event/reward uniques matching the edids).
+  mod_custom_CultistPiercer_Effect: 'Cultist Piercer',
+  mod_custom_EldersMark_Effect: "Elder's Mark",
+  mod_custom_LucaSwitchblade_Effect: "Luca's Switchblade",
+  mod_custom_OguaGauntlet_Effect: 'Ogua Gauntlet',
+  // Mistress of Mystery uniques' description mods (ap_Item_Description).
+  // Voice of Set's carries the weapon's real +20% ballistic modifier and is
+  // a DEFAULT part (engine folds it via getDefaultOmods).
+  mod_Description_MoM_VoiceofSet: 'Voice of Set',
+  mod_Description_MoM_BladeofBastet: 'Blade of Bastet',
+};
+
+/**
  * Per-weapon slot label overrides — (weaponId, attachPointEdid) → label.
  *
  * The game reuses gun attach points on automatic-melee/power-tool weapons, so
@@ -301,6 +351,10 @@ export const perWeaponSlotLabelOverrides: Readonly<Record<string, Readonly<Recor
   Drill: { ap_gun_Barrel: 'Drill Bit' },
   // "Upgrade" options: Standard / Curved BLADE / Extended BLADE.
   Ripper: { ap_melee_MeleeMod: 'Blade' },
+  // Voice of Set's identity rides ap_Item_Description like the Cursed mods
+  // (global label "Cursed") — but it's a Mistress of Mystery unique, not a
+  // cursed item.
+  MoM_VoiceOfSet_44: { ap_Item_Description: 'Unique' },
 };
 
 /**
@@ -402,6 +456,46 @@ export const omodModifierAdditions: Readonly<Record<string, Modifier[]>> = {
         },
       ],
     ])
+  ),
+  // Dom Pedro (WEAP `Nitro`) Explosive muzzle mods: their OverrideProjectile
+  // chase finds EXPL `Nitro_Explosive` (0x0084460A → PROJ → EXPL, walked
+  // 2026-07-14) carrying ONLY a main Damage Curve Table
+  // (CT_Player_Damage_Universal_Tier24) — direct damage with no Placed
+  // Object hazard, which the extractor deliberately leaves note-only (the
+  // Cremator-reskin anti-double-count rule, docs/assumptions.md "OMOD-chased
+  // launcher payloads"). Here the payload is real (it IS the mod's effect,
+  // paired with its extracted −20%/−30% base-damage trade), so it's
+  // hand-supplied. Scoped to 'ballistic': the engine has no OMOD-conditional
+  // explosive component (materializeDamageTypeComponents excludes
+  // 'explosive'), so the explosion folds into the physical hit — right paper
+  // number; explosive-only perk interactions not modeled (noted in
+  // assumptions). ADD lands after the mods' own MUL_ADD reduction in
+  // foldOps, so the payload is correctly NOT reduced by the −20%/−30%.
+  ...Object.fromEntries(
+    ['mod_Nitro_SpecialEffect_Explosive', 'mod_Nitro_SpecialEffect_ExplosivePenetrating'].map(
+      (edid): [string, Modifier[]] => [
+        edid,
+        [
+          {
+            id: `${edid}:explosion`,
+            source: { kind: 'omod', formId: '', edid, name: 'Explosive' },
+            bucket: 'baseDamage',
+            op: 'ADD',
+            curve: {
+              input: 'itemLevel',
+              // EXPL Nitro_Explosive Damage Curve Table (Tier24 universal).
+              points: [
+                { x: 1, y: 31 }, { x: 5, y: 35 }, { x: 10, y: 39 }, { x: 15, y: 44 },
+                { x: 20, y: 50 }, { x: 25, y: 56 }, { x: 30, y: 64 }, { x: 35, y: 72 },
+                { x: 40, y: 81 }, { x: 45, y: 91 }, { x: 50, y: 103 },
+              ],
+            },
+            curveScale: 1,
+            conditions: [{ kind: 'damageTypeScope', types: ['ballistic'] }],
+          },
+        ],
+      ]
+    )
   ),
 };
 

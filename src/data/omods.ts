@@ -175,7 +175,7 @@ export interface OmodSlot {
  * identity slots must stay visible (The Fixer's Unique slot IS its identity);
  * legendary slots are star pickers, not upgrade choices.
  */
-const NON_HYGIENE_SLOT_RE = /legendary|customname/i;
+const NON_HYGIENE_SLOT_RE = /legendary|customname|item_description/i;
 
 /**
  * Slots whose edid-derived label reads worse than a fixed name. Sourced from
@@ -184,6 +184,11 @@ const NON_HYGIENE_SLOT_RE = /legendary|customname/i;
  */
 const SLOT_LABEL_OVERRIDES: Record<string, string> = {
   ap_customName: 'Unique',
+  // Cursed identity mods (Nuka-World on Tour) ride this cosmetic attach
+  // point instead of ap_customName — the raw transform would read "Item
+  // Description". Only modifier-carrying template members pass the cosmetic
+  // gate here, and every such record is a "Cursed X" mod (2026-07-14 sweep).
+  ap_Item_Description: 'Cursed',
   // KYWD 0x0005524C FULL = "Upgrade" (48 melee weapons).
   ap_melee_MeleeMod: 'Upgrade',
   // KYWD 0x0005D4D7 FULL = "Magazine".
@@ -321,16 +326,26 @@ export function getLegendaryOmodSlots(mode: GameMode, weapon: Weapon): OmodSlot[
  * Display name after unique mods: an equipped `ap_customName` mod carrying
  * `ObjectTypeUnique` renames the weapon (e.g. "All Rise" instead of "Super
  * Sledge") — explicit choice, or the weapon's own default fold-in (The
- * Fixer's mod is a default part, never an explicit pick). Falls back to the
- * weapon's own name otherwise. Display-only; no engine/state change.
+ * Fixer's mod is a default part, never an explicit pick). Cursed identity
+ * mods do the same from `ap_Item_Description` via `dn_HasCustomMod_Cursed`
+ * (their names are the full in-game rename, "Cursed Broadsider"). Falls back
+ * to the weapon's own name otherwise. Display-only; no engine/state change.
  */
+const RENAMING_SLOTS: ReadonlyArray<[slot: string, keyword: string]> = [
+  ['ap_customName', 'ObjectTypeUnique'],
+  ['ap_Item_Description', 'dn_HasCustomMod_Cursed'],
+];
+
 export function effectiveWeaponName(
   mode: GameMode,
   weapon: Weapon,
   mods: Record<string, string | null | undefined>
 ): string {
-  const chosen = mods['ap_customName'];
-  const omodId = typeof chosen === 'string' ? chosen : getDefaultOmodId(mode, weapon, 'ap_customName');
-  const omod = omodId ? getOmodById(mode, omodId) : undefined;
-  return omod?.addedKeywords.includes('ObjectTypeUnique') ? omod.name : weapon.name;
+  for (const [slot, keyword] of RENAMING_SLOTS) {
+    const chosen = mods[slot];
+    const omodId = typeof chosen === 'string' ? chosen : getDefaultOmodId(mode, weapon, slot);
+    const omod = omodId ? getOmodById(mode, omodId) : undefined;
+    if (omod?.addedKeywords.includes(keyword)) return omod.name;
+  }
+  return weapon.name;
 }
