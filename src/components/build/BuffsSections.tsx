@@ -533,8 +533,8 @@ export function ChemsSection() {
 
   // Junkie's reads addictionCount off a curve — find it in the data rather than
   // by name, so any future effect on the same axis lights the badge too.
-  const junkies = (player.weapon?.legendaryEffects ?? []).some(id =>
-    getOmodById(mode, id)?.modifiers.some(m => m.curve?.input === 'addictionCount')
+  const junkies = (player.weapon?.legendaryEffects ?? []).some(
+    id => id && getOmodById(mode, id)?.modifiers.some(m => m.curve?.input === 'addictionCount')
   );
 
   const activeChem = chems.find(c => player.consumables.includes(c.id));

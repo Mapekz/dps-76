@@ -409,8 +409,8 @@ export interface WeaponConfig {
   weaponId: string;
   /** Equipped OMOD id per attach-point slot edid (e.g. { ap_gun_Receiver: 'mod_...' }). */
   mods: Record<string, string | null>;
-  /** Equipped legendary-effect OMOD ids (ap_Legendary1–4). */
-  legendaryEffects: string[];
+  /** Equipped legendary-effect OMOD ids by star index (ap_Legendary1 → 0); null = empty slot. */
+  legendaryEffects: (string | null)[];
 }
 
 // Armor types

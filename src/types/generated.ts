@@ -199,6 +199,25 @@ export interface GeneratedPerk {
   notes: string[];
 }
 
+/**
+ * A named Object Template combination on a base weapon that bakes in an
+ * identity mod (ap_customName/ObjectTypeUnique or ap_Item_Description cursed)
+ * plus a fixed mod + legendary loadout. Produced by scripts/extract/
+ * extract-uniques.ts; `id` is the identity mod's editor_id.
+ */
+export interface GeneratedUnique {
+  /** Identity mod editor_id (same id-space as GeneratedOmod.id). */
+  id: string;
+  /** Combination.Name from the ESM — auditing only; picker label uses the identity mod name. */
+  name: string;
+  /** Base weapon editor_id this preset belongs to. */
+  baseWeaponId: string;
+  /** Equipped OMOD ids keyed by attach-point edid (identity + damage-relevant slots). */
+  mods: Record<string, string>;
+  /** Baked-in legendaries by star index (ap_Legendary{N} → N-1); gaps as null. */
+  legendaryEffects: (string | null)[];
+}
+
 export interface GeneratedOmod {
   /** ESM editor_id (e.g. mod_CombatRifle_Receiver_Damage-Auto). */
   id: string;

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { EsmClient, EsmRecord } from '../esm-client';
-import { chaseExplosion, chaseWeaponEnchantment, isExcludedWeaponEdid, toGeneratedWeapon } from '../extract-weapons';
+import { chaseExplosion, chaseWeaponEnchantment, isExcludedWeaponEdid, toGeneratedWeapon, walkWeaponCombinations } from '../extract-weapons';
 import type { AvifRoute } from '../normalize/mgef';
 import { isExcludedOmodEdid } from '../extract-omods';
 import fixer from './fixtures/weap-fixer.json';
@@ -339,5 +339,16 @@ describe('isExcludedOmodEdid', () => {
   it('does not exclude p62_ — a real content prefix (The Drifter boss drops + a real legendary family), not junk (2026-07-12, found chasing Splinter)', () => {
     expect(isExcludedOmodEdid('P62_Mod_Custom_Splinter_SpecialEffect')).toBe(false);
     expect(isExcludedOmodEdid('P62_mod_Legendary_Weapon4_Satiated')).toBe(false);
+  });
+});
+
+describe('walkWeaponCombinations', () => {
+  it('retains per-combo names and unflattened mod formids', () => {
+    const combos = walkWeaponCombinations((gatlingPlasma as unknown as EsmRecord).fields);
+    const named = combos.filter(c => c.name === 'Default' || c.name === 'Simple');
+    expect(named).toHaveLength(2);
+    expect(named[0].modFormIds).toEqual(['0x0001EC4E', '0x0001EC53', '0x0001EC63', '0x0001EC60', '0x00485581']);
+    const unnamed = combos.find(c => c.name === '' && c.modFormIds.includes('0x0019A7F5'));
+    expect(unnamed?.modFormIds).toContain('0x0017E6C9');
   });
 });

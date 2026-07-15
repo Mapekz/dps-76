@@ -15,7 +15,9 @@ import { perkRaceRestriction } from '@/data/perk-race';
 import { canSlotCardPoints, SPECIAL_ALLOCATION_POOL, SPECIAL_KEYS, SPECIAL_POINTS_CAP } from '@/lib/player-stats';
 import { consumablesById, toggleConsumable } from '@/lib/consumable-rules';
 import { CARNIVORE_MUTATION_ID, HERBIVORE_MUTATION_ID } from '@/lib/diet-mutations';
-import { getPerks, getWeapons, maxEligibleLevel } from '@/data';
+import { getPerks, getUniqueById, getEquippedUnique, getWeapons, maxEligibleLevel } from '@/data';
+import { getOmodById } from '@/data/omods';
+import { isOmodEligibleForWeapon } from '@/data/omod-eligibility';
 import type { PerkId } from '@/data/perk-ids';
 
 /**
@@ -61,6 +63,7 @@ export interface BuildState {
 
 export type BuildAction =
   | { type: 'weapon/select'; weaponId: string | null }
+  | { type: 'weapon/selectUnique'; uniqueId: string }
   | { type: 'weapon/mod'; slot: string; omodId: string | null }
   | { type: 'weapon/legendary'; slotIndex: number; omodId: string | null }
   | { type: 'weapon/itemLevel'; value: number }
@@ -148,6 +151,30 @@ export function makeBuildReducer(mode: GameMode): (state: BuildState, action: Bu
   return (state, action) => buildReducer(state, action, mode);
 }
 
+function mergeLegendaryEffects(
+  preset: (string | null)[],
+  prior: (string | null)[],
+  weaponId: string,
+  mode: GameMode
+): (string | null)[] {
+  const weapon = getWeapons(mode)[weaponId];
+  if (!weapon) return [...preset];
+  const maxLen = Math.max(preset.length, prior.length);
+  const merged: (string | null)[] = [];
+  for (let i = 0; i < maxLen; i++) {
+    const priorEntry = prior[i] ?? null;
+    if (priorEntry) {
+      const omod = getOmodById(mode, priorEntry);
+      if (omod && isOmodEligibleForWeapon(omod, weapon)) {
+        merged[i] = priorEntry;
+        continue;
+      }
+    }
+    merged[i] = preset[i] ?? null;
+  }
+  return merged;
+}
+
 function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): BuildState {
   const { player } = state;
   switch (action.type) {
@@ -164,6 +191,55 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
         chargeTimeSec: undefined,
       });
 
+    case 'weapon/selectUnique': {
+      const unique = getUniqueById(mode, action.uniqueId);
+      if (!unique) return state;
+      const baseWeapon = getWeapons(mode)[unique.baseWeaponId];
+      if (!baseWeapon) return state;
+
+      const current = player.weapon;
+      const currentUnique = current ? getEquippedUnique(mode, current) : undefined;
+      if (currentUnique?.id === action.uniqueId) return state;
+
+      const crossBase = !current || current.weaponId !== unique.baseWeaponId;
+      const sameBaseDifferentUnique =
+        !!current &&
+        current.weaponId === unique.baseWeaponId &&
+        !!currentUnique &&
+        currentUnique.id !== action.uniqueId;
+
+      if (crossBase || sameBaseDifferentUnique) {
+        return withPlayer(state, {
+          ...player,
+          weapon: {
+            weaponId: unique.baseWeaponId,
+            mods: { ...unique.mods },
+            legendaryEffects: mergeLegendaryEffects(
+              unique.legendaryEffects,
+              current?.legendaryEffects ?? [],
+              unique.baseWeaponId,
+              mode
+            ),
+          },
+          itemLevel: crossBase ? maxEligibleLevel(baseWeapon) : player.itemLevel,
+          chargeTimeSec: crossBase ? undefined : player.chargeTimeSec,
+        });
+      }
+
+      const identitySlot =
+        Object.entries(unique.mods).find(([, omodId]) => omodId === unique.id)?.[0] ??
+        getOmodById(mode, unique.id)?.attachPointEdid ??
+        'ap_customName';
+
+      return withPlayer(state, {
+        ...player,
+        weapon: {
+          ...current!,
+          mods: { ...current!.mods, [identitySlot]: unique.id },
+        },
+      });
+    }
+
     case 'weapon/mod': {
       if (!player.weapon) return state;
       return withPlayer(state, {
@@ -175,7 +251,7 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
     case 'weapon/legendary': {
       if (!player.weapon) return state;
       const legendaryEffects = [...player.weapon.legendaryEffects];
-      if (action.omodId === null) legendaryEffects.splice(action.slotIndex, 1);
+      if (action.omodId === null) legendaryEffects[action.slotIndex] = null;
       else legendaryEffects[action.slotIndex] = action.omodId;
       return withPlayer(state, { ...player, weapon: { ...player.weapon, legendaryEffects } });
     }

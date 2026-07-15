@@ -32,8 +32,8 @@ const VERSION_PREFIX = '1.';
 
 /** v1 wire shape — every field optional; short keys on purpose. */
 interface SerializedBuild {
-  /** weapon: [weaponId, mods record, legendary effect ids] */
-  w?: [string, Record<string, string | null>, string[]];
+  /** weapon: [weaponId, mods record, legendary effect ids by star index (null = empty slot)] */
+  w?: [string, Record<string, string | null>, (string | null)[]];
   /** itemLevel (default 50) */
   il?: number;
   /** weakpointMult (default 1.5) */
@@ -215,11 +215,15 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
         if (omodId === null || getOmodById(mode, omodId)) keptMods[slot] = omodId;
         else warnings.push(`unknown weapon mod "${omodId}" — removed`);
       }
-      const keptLegendary = (legendaryEffects ?? []).filter(id => {
-        if (getOmodById(mode, id)) return true;
-        warnings.push(`unknown legendary effect "${id}" — removed`);
-        return false;
-      });
+      const keptLegendary: (string | null)[] = [];
+      for (const entry of legendaryEffects ?? []) {
+        if (entry === null) {
+          keptLegendary.push(null);
+          continue;
+        }
+        if (getOmodById(mode, entry)) keptLegendary.push(entry);
+        else warnings.push(`unknown legendary effect "${entry}" — removed`);
+      }
       state.player.weapon = { weaponId, mods: keptMods, legendaryEffects: keptLegendary };
     } else {
       warnings.push(`unknown weapon "${weaponId}" — cleared`);

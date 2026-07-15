@@ -1,5 +1,5 @@
 import type { GameMode, Perk, PerkId, Enemy, EnemyMutation, Weapon } from '@/types';
-import type { GeneratedAddiction, GeneratedBodyPartRace, GeneratedOmod, GeneratedBuff, GeneratedPerk } from '@/types/generated';
+import type { GeneratedAddiction, GeneratedBodyPartRace, GeneratedOmod, GeneratedBuff, GeneratedPerk, GeneratedUnique } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 
 import { weapons as weaponsLive, generatedWeaponsRaw as generatedWeaponsRawLive } from './live/weapons';
@@ -45,6 +45,7 @@ import generatedMutationsLive from './live/generated/mutations.json';
 import generatedConsumablesLive from './live/generated/consumables.json';
 import generatedAddictionsLive from './live/generated/addictions.json';
 import generatedBodyPartsLive from './live/generated/bodyparts.json';
+import generatedUniquesLive from './live/generated/uniques.json';
 
 /**
  * The single merged, mode-resolved view of the game data, and the one home
@@ -115,6 +116,7 @@ type PowerArmor = typeof powerArmorLive;
 export interface Dataset {
   weapons: Record<string, Weapon>;
   omods: GeneratedOmod[];
+  uniques: GeneratedUnique[];
   perks: GeneratedPerk[];
   perkRegistry: Record<PerkId, Perk>;
   mutations: GeneratedBuff[];
@@ -155,12 +157,14 @@ const mergedConsumables = applyModifierOverride(generatedConsumablesLive as Gene
 const generatedPerks = generatedPerksLive as GeneratedPerk[];
 const generatedAddictions = generatedAddictionsLive as GeneratedAddiction[];
 const generatedBodyParts = generatedBodyPartsLive as GeneratedBodyPartRace[];
+const generatedUniques = generatedUniquesLive as unknown as GeneratedUnique[];
 
 function buildDataset(hand: HandAuthored): Dataset {
   const { perkNames, ...rest } = hand;
   return {
     ...rest,
     omods: mergedOmods,
+    uniques: generatedUniques,
     perks: generatedPerks,
     perkRegistry: derivePerkRegistry(perkNames, generatedPerks),
     mutations: mergedMutations,

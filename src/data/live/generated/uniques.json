@@ -1,0 +1,1490 @@
+[
+ {
+  "id": "mod_Custom_TheFactFinder",
+  "name": "",
+  "baseWeaponId": "44",
+  "mods": {
+   "ap_gun_Receiver": "mod_44_receiver_Base",
+   "ap_gun_Grip": "mod_44_Grip_HipAccuracy",
+   "ap_gun_Barrel": "mod_44_Barrel_Bull_Recoil",
+   "ap_gun_Scope": "mod_44_SCOPE_reflex_Base",
+   "ap_customName": "mod_Custom_TheFactFinder"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   "mod_Legendary_Weapon3_VATSCostAP"
+  ]
+ },
+ {
+  "id": "mod_Custom_SomersetSpecial",
+  "name": "",
+  "baseWeaponId": "44",
+  "mods": {
+   "ap_gun_Receiver": "mod_44_receiver_Base",
+   "ap_gun_Scope": "mod_44_SCOPE_ShortScope_Base",
+   "ap_customName": "mod_Custom_SomersetSpecial",
+   "ap_gun_Grip": "mod_44_grip_Base",
+   "ap_gun_Barrel": "mod_44_barrel_veryshort_Base"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_AntiArmor"
+  ]
+ },
+ {
+  "id": "mod_Custom_MedicalMalpractice",
+  "name": "",
+  "baseWeaponId": "44",
+  "mods": {
+   "ap_gun_Receiver": "mod_44_Receiver_FastTrigger",
+   "ap_gun_Grip": "mod_44_Grip_Recoil-SecondaryDMG",
+   "ap_gun_Scope": "mod_44_SCOPE_reflex_Base",
+   "ap_gun_Barrel": "mod_44_Barrel_Long_Recoil",
+   "ap_customName": "mod_Custom_MedicalMalpractice"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Medic"
+  ]
+ },
+ {
+  "id": "mod_Custom_TheActionHero",
+  "name": "The Action Hero",
+  "baseWeaponId": "50CalMachineGun",
+  "mods": {
+   "ap_gun_Barrel": "mod_50CalMachineGun_Barrel_Heavy",
+   "ap_gun_Grip": "mod_50CalMachineGun_Grip",
+   "ap_gun_Sight": "mod_50CalMachineGun_Sight",
+   "ap_gun_Receiver": "mod_50CalMachineGun_Receiver",
+   "ap_customName": "mod_Custom_TheActionHero"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Guns_TwoShot"
+  ]
+ },
+ {
+  "id": "mod_Custom_FinalWord",
+  "name": "Final Word",
+  "baseWeaponId": "50CalMachineGun",
+  "mods": {
+   "ap_gun_Barrel": "mod_50CalMachineGun_Barrel_Heavy",
+   "ap_gun_Grip": "mod_50CalMachineGun_Grip",
+   "ap_gun_Sight": "mod_50CalMachineGun_Sight",
+   "ap_gun_Receiver": "mod_50CalMachineGun_Receiver",
+   "ap_customName": "mod_Custom_FinalWord"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_Guns_RoF"
+  ]
+ },
+ {
+  "id": "mod_Custom_PerfectStorm",
+  "name": "Old Guard",
+  "baseWeaponId": "10mmSMG",
+  "mods": {
+   "ap_gun_Receiver": "mod_10mmSMG_Receiver_Base",
+   "ap_gun_Grip": "mod_10mmSMG_Grip_Base",
+   "ap_gun_Scope": "mod_10mmSMG_rearsight",
+   "ap_gun_Barrel": "mod_10mmSMG_barrel_Short_HipAccuracy",
+   "ap_gun_Mag": "mod_10mmSMG_Magazine_Reload",
+   "ap_customName": "mod_Custom_PerfectStorm"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Guns_AmmoCapacity4x",
+   "mod_Legendary_Weapon2_Guns_DmgSights",
+   "mod_Legendary_Weapon3_Guns_MoveSpeedSights"
+  ]
+ },
+ {
+  "id": "mod_custom_Suppressed10mmSMG_AnchorageAce",
+  "name": "",
+  "baseWeaponId": "10mmSMG",
+  "mods": {
+   "ap_gun_Grip": "mod_10mmSMG_Grip_Recoil-SecondaryDMG",
+   "ap_gun_Barrel": "mod_10mmSMG_barrel_VeryShort_Recoil-Hipaccuracy",
+   "ap_gun_Receiver": "mod_10mmSMG_Receiver_Damage-CritDMG",
+   "ap_gun_Mag": "mod_10mmSMG_Magazine_Reload",
+   "ap_gun_Scope": "mod_10mmSMG_SCOPE_Reflex_Base",
+   "ap_Misc": "mod_10mmSMG_InternalSuppressor",
+   "ap_customName": "mod_custom_Suppressed10mmSMG_AnchorageAce"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Execute"
+  ]
+ },
+ {
+  "id": "P62_Mod_Custom_Splinter_CustomName",
+  "name": "",
+  "baseWeaponId": "10mmSMG",
+  "mods": {
+   "ap_gun_Receiver": "mod_10mmSMG_Receiver_CritDMG-HipAccuracy",
+   "ap_gun_Barrel": "mod_10mmSMG_Barrel_Long_HipAccuracy",
+   "ap_gun_Grip": "mod_10mmSMG_Grip_HipAccuracy",
+   "ap_gun_Mag": "mod_10mmSMG_Magazine_ArmorPen",
+   "ap_gun_Scope": "mod_10mmSMG_SCOPE_Reflex_Base",
+   "ap_customName": "P62_Mod_Custom_Splinter_CustomName",
+   "ap_Misc": "P62_Mod_Custom_Splinter_SpecialEffect"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Vampire",
+   "mod_Legendary_Weapon2_Guns_ExplosiveBullets",
+   "mod_Legendary_Weapon3_Guns_ResistReload",
+   "mod_Legendary_Weapon4_Pyromaniac"
+  ]
+ },
+ {
+  "id": "mod_Custom_OldGuard",
+  "name": "",
+  "baseWeaponId": "10mmSMG",
+  "mods": {
+   "ap_gun_Receiver": "mod_10mmSMG_Receiver_Damage-HipAccuracy",
+   "ap_gun_Barrel": "mod_10mmSMG_barrel_VeryShort_Recoil-Hipaccuracy",
+   "ap_gun_Grip": "mod_10mmSMG_Grip_Recoil-SecondaryDMG",
+   "ap_gun_Mag": "mod_10mmSMG_Magazine_Reload-ArmorPen",
+   "ap_gun_Scope": "mod_10mmSMG_rearsight",
+   "ap_gun_FrontSight": "mod_10mmSMG_frontsight002",
+   "ap_customName": "mod_Custom_OldGuard"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_Guns_Bashing"
+  ]
+ },
+ {
+  "id": "mod_Custom_TheVATSUnknown",
+  "name": "",
+  "baseWeaponId": "AlienBlaster",
+  "mods": {
+   "ap_gun_Grip": "mod_AlienBlaster_Grip_Better",
+   "ap_gun_Mag": "mod_AlienBlaster_AlienMag_AmmoStandard",
+   "ap_gun_Barrel": "mod_AlienBlaster_Barrel_Long",
+   "ap_gun_Scope": "mod_AlienBlaster_Scope_SightsIron",
+   "ap_customName": "mod_Custom_TheVATSUnknown"
+  },
+  "legendaryEffects": []
+ },
+ {
+  "id": "mod_Custom_ZetasRevenge",
+  "name": "",
+  "baseWeaponId": "AlienBlaster",
+  "mods": {
+   "ap_gun_Grip": "mod_AlienBlaster_Grip_Better",
+   "ap_gun_Mag": "mod_AlienBlaster_AlienMag_AmmoStandard",
+   "ap_gun_Barrel": "mod_AlienBlaster_Barrel_Long",
+   "ap_gun_Scope": "mod_AlienBlaster_Scope_ScopeShort",
+   "ap_customName": "mod_Custom_ZetasRevenge"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DmgVsPlayers",
+   "mod_Legendary_Weapon2_Guns_LastShot",
+   "mod_Legendary_Weapon3_VATSCostAP"
+  ]
+ },
+ {
+  "id": "mod_Custom_WhistleInTheDark",
+  "name": "",
+  "baseWeaponId": "AssaultRifle",
+  "mods": {
+   "ap_gun_Grip": "mod_AssaultRifle_Grip_Recoil-HipAccuracy",
+   "ap_gun_Barrel": "mod_AssaultRifle_Barrel_Long_Recoil-HipAccuracy",
+   "ap_gun_Mag": "mod_AssaultRifle_Magazine_Reload-ArmorPen",
+   "ap_gun_Scope": "mod_AssaultRifle_SCOPE_shortscope_NV_Base",
+   "ap_gun_Muzzle": "mod_AssaultRifle_muzzle_suppressor_Base",
+   "ap_customName": "mod_Custom_WhistleInTheDark",
+   "ap_gun_Receiver": "mod_AssaultRifle_Receiver_FastTrigger-HipAccuracy"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DamageNight"
+  ]
+ },
+ {
+  "id": "P62_Mod_Custom_Tempest_CustomName",
+  "name": "",
+  "baseWeaponId": "DLC01_AssaultronBlade",
+  "mods": {
+   "ap_melee_MeleeMod": "dlc01_mod_melee_assaultronblade_Shock",
+   "ap_customName": "P62_Mod_Custom_Tempest_CustomName",
+   "ap_Misc": "P62_Mod_Custom_Tempest_SpecialEffect"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DamageInverseHealth",
+   "mod_Legendary_Weapon2_Melee_SwingSpeed",
+   "mod_Legendary_Weapon3_StatStrength",
+   "mod_Legendary_Weapon4_Melee_Pounders"
+  ]
+ },
+ {
+  "id": "mod_Custom_TheGutter",
+  "name": "",
+  "baseWeaponId": "DLC01_AssaultronBlade",
+  "mods": {
+   "ap_melee_MeleeMod": "dlc01_mod_melee_assaultronblade_Standard",
+   "ap_customName": "mod_Custom_TheGutter"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Vampire"
+  ]
+ },
+ {
+  "id": "SDOW_Mod_Custom_SlasherAxe_CustomName",
+  "name": "Super Slasher",
+  "baseWeaponId": "AutoAxe",
+  "mods": {
+   "ap_customName": "SDOW_Mod_Custom_SlasherAxe_CustomName",
+   "ap_gun_Scope": "mod_melee_AutoAxe_Null"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   null,
+   "SDOW_mod_Legendary_Weapon4_Severing"
+  ]
+ },
+ {
+  "id": "mod_Custom_ThePeacemaker",
+  "name": "Peace Maker",
+  "baseWeaponId": "AutoGrenadeLauncher",
+  "mods": {
+   "ap_gun_Barrel": "mod_AutoGrenadeLauncher_Barrel_Heavy",
+   "ap_gun_Sight": "mod_AutoGrenadeLauncher_Sight",
+   "ap_gun_FeedThroat": "mod_AutoGrenadeLauncher_Feeder_Base",
+   "ap_customName": "mod_Custom_ThePeacemaker",
+   "ap_gun_Grip": "mod_AutoGrenadeLauncher_Grip_Base"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DamageViaHealth"
+  ]
+ },
+ {
+  "id": "RD01_Mod_Custom_ResolveBreaker_CustomName",
+  "name": "Resolve Breaker",
+  "baseWeaponId": "AutoGrenadeLauncher",
+  "mods": {
+   "ap_gun_Barrel": "mod_AutoGrenadeLauncher_Barrel_Heavy",
+   "ap_gun_FeedThroat": "mod_AutoGrenadeLauncher_Feeder_Base",
+   "ap_gun_Grip": "mod_AutoGrenadeLauncher_Grip_Base",
+   "ap_gun_Sight": "mod_AutoGrenadeLauncher_Sight",
+   "ap_customName": "RD01_Mod_Custom_ResolveBreaker_CustomName"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   null,
+   "mod_Legendary_Weapon4_Guns_Electricians"
+  ]
+ },
+ {
+  "id": "SCORE_S11_mod_Custom_NukaLauncher",
+  "name": "",
+  "baseWeaponId": "AutoGrenadeLauncher",
+  "mods": {
+   "ap_gun_Barrel": "mod_AutoGrenadeLauncher_Barrel_Standard",
+   "ap_gun_FeedThroat": "mod_AutoGrenadeLauncher_Feeder_Base",
+   "ap_gun_Grip": "mod_AutoGrenadeLauncher_Grip_Base",
+   "ap_gun_Sight": "mod_AutoGrenadeLauncher_Sight",
+   "ap_customName": "SCORE_S11_mod_Custom_NukaLauncher"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Guns_TwoShot"
+  ]
+ },
+ {
+  "id": "E09A_mod_Custom_RatBat",
+  "name": "",
+  "baseWeaponId": "BaseballBat",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod",
+   "ap_customName": "E09A_mod_Custom_RatBat"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   "mod_Legendary_Weapon3_StatStrength"
+  ]
+ },
+ {
+  "id": "mod_custom_V63ShockBaton_custom",
+  "name": "Disorderly Conduct",
+  "baseWeaponId": "Baton",
+  "mods": {
+   "ap_customName": "mod_custom_V63ShockBaton_custom"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_DmgLimbs"
+  ]
+ },
+ {
+  "id": "mod_Custom_DisorderlyConduct",
+  "name": "",
+  "baseWeaponId": "Baton",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_Baton_Shock",
+   "ap_customName": "mod_Custom_DisorderlyConduct"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DebuffDamage"
+  ]
+ },
+ {
+  "id": "mod_custom_OguaGauntlet_Effect",
+  "name": "",
+  "baseWeaponId": "BearArm",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod",
+   "ap_customName": "mod_custom_OguaGauntlet_Effect"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   "mod_Legendary_Weapon3_Melee_Defenders"
+  ]
+ },
+ {
+  "id": "E08B_mod_Custom_Blackpowder_PiratePunch",
+  "name": "",
+  "baseWeaponId": "Blackpowder_Pistol_Blunderbuss",
+  "mods": {
+   "ap_customName": "E08B_mod_Custom_Blackpowder_PiratePunch"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   "mod_Legendary_Weapon3_Guns_ReloadSpeed"
+  ]
+ },
+ {
+  "id": "EN06_mod_Ranged_Broadsider_Custom_Cursed",
+  "name": "",
+  "baseWeaponId": "Broadsider",
+  "mods": {
+   "ap_gun_Barrel": "mod_Broadsider_Barrel_Standard",
+   "ap_gun_Grip": "mod_Broadsider_Grip_Standard",
+   "ap_gun_Mag": "mod_Broadsider_Mag_Null",
+   "ap_Item_Description": "EN06_mod_Ranged_Broadsider_Custom_Cursed"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_AntiArmor",
+   "mod_Legendary_Weapon2_DmgCrits",
+   "mod_Legendary_Weapon3_VATSCostAP"
+  ]
+ },
+ {
+  "id": "E09A_mod_Custom_GrandFinale",
+  "name": "",
+  "baseWeaponId": "Broadsider",
+  "mods": {
+   "ap_gun_Barrel": "mod_Broadsider_Barrel_Standard",
+   "ap_gun_Grip": "mod_Broadsider_Grip_Standard",
+   "ap_gun_Mag": "mod_Broadsider_Mag_Null",
+   "ap_customName": "E09A_mod_Custom_GrandFinale"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Guns_TwoShot"
+  ]
+ },
+ {
+  "id": "RD01_Mod_Custom_Cauterizer_CustomName",
+  "name": "",
+  "baseWeaponId": "Chainsaw_76",
+  "mods": {
+   "ap_gun_Barrel": "mod_Chainsaw_Bar_Base",
+   "ap_gun_Scope": "mod_Chainsaw_NoMod",
+   "ap_customName": "RD01_Mod_Custom_Cauterizer_CustomName"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   null,
+   "mod_Legendary_Weapon4_Encirclers"
+  ]
+ },
+ {
+  "id": "mod_Custom_MeteoriteSword",
+  "name": "Meteorite Sword",
+  "baseWeaponId": "ChineseOfficerSword",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_ChineseOfficerSword_Null",
+   "ap_customName": "mod_Custom_MeteoriteSword"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DmgVsPlayers"
+  ]
+ },
+ {
+  "id": "mod_custom_CryptidJawboneKnife",
+  "name": "",
+  "baseWeaponId": "Knife",
+  "mods": {
+   "ap_customName": "mod_custom_CryptidJawboneKnife",
+   "ap_melee_MeleeMod": "mod_melee_Knife_Null"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Vampire"
+  ]
+ },
+ {
+  "id": "mod_custom_CosmicKnife",
+  "name": "",
+  "baseWeaponId": "Knife",
+  "mods": {
+   "ap_customName": "mod_custom_CosmicKnife"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_DmgCrits",
+   "mod_Legendary_Weapon3_VATSCostAP"
+  ]
+ },
+ {
+  "id": "E08B_mod_Custom_CrowdControl",
+  "name": "",
+  "baseWeaponId": "CombatShotgun",
+  "mods": {
+   "ap_Gun_UniversalOffset_Range": "mod_UniversalOffset_Range_Shotgun",
+   "ap_gun_Receiver": "mod_CombatShotgun_receiver_Base",
+   "ap_gun_Barrel": "mod_CombatShotgun_barrel_short_Base",
+   "ap_gun_Mag": "mod_CombatShotgun_Magazine_Base",
+   "ap_gun_Scope": "mod_CombatShotgun_SCOPE_ironsights_Base",
+   "ap_gun_Muzzle": "mod_Null_Muzzle",
+   "ap_gun_Grip": "mod_CombatShotgun_Grip_Base",
+   "ap_customName": "E08B_mod_Custom_CrowdControl"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DebuffDamage"
+  ]
+ },
+ {
+  "id": "mod_Custom_CamdenWhacker",
+  "name": "Camden Whacker",
+  "baseWeaponId": "DLC04_CommieWhacker",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod",
+   "ap_customName": "mod_Custom_CamdenWhacker"
+  },
+  "legendaryEffects": []
+ },
+ {
+  "id": "SCORE_MiniSeason_LoveHurts_mod_Custom_PiercingLove",
+  "name": "",
+  "baseWeaponId": "CompoundBow",
+  "mods": {
+   "ap_customName": "SCORE_MiniSeason_LoveHurts_mod_Custom_PiercingLove",
+   "ap_gun_Bolt": "mod_CompoundBow_Bolt_Base",
+   "ap_gun_Scope": "mod_CompoundBow_Scope_Null"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_Guns_LastShot"
+  ]
+ },
+ {
+  "id": "E09C_mod_Custom_BurningLove",
+  "name": "",
+  "baseWeaponId": "CompoundBow",
+  "mods": {
+   "ap_gun_Bolt": "mod_CompoundBow_Bolt_Base",
+   "ap_gun_Scope": "mod_CompoundBow_Scope_Null",
+   "ap_customName": "E09C_mod_Custom_BurningLove"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DmgVsPlayers"
+  ]
+ },
+ {
+  "id": "mod_Custom_MintyBreather",
+  "name": "",
+  "baseWeaponId": "Cryolator",
+  "mods": {
+   "ap_gun_Grip": "mod_Cryolator_Grip_StockRecoil",
+   "ap_gun_Scope": "mod_Cryolator_Scope_SightsGlow",
+   "ap_gun_Barrel": "mod_Cryolator_Barrel_Long",
+   "ap_customName": "mod_Custom_MintyBreather"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Medic",
+   "mod_Legendary_Weapon2_Guns_DmgSights",
+   "mod_Legendary_Weapon3_Guns_ReloadSpeed"
+  ]
+ },
+ {
+  "id": "mod_Custom_Nailer",
+  "name": "Nailer",
+  "baseWeaponId": "CultistBlade",
+  "mods": {
+   "ap_customName": "mod_Custom_Nailer"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DamageInverseHealth",
+   "mod_Legendary_Weapon2_Melee_BlockReflects",
+   "mod_Legendary_Weapon3_Melee_Defenders"
+  ]
+ },
+ {
+  "id": "E08B_mod_Custom_ToneDeath",
+  "name": "",
+  "baseWeaponId": "DeathTambo",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod",
+   "ap_customName": "E08B_mod_Custom_ToneDeath"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DebuffDamage"
+  ]
+ },
+ {
+  "id": "mod_Custom_UnstoppableMonster",
+  "name": "",
+  "baseWeaponId": "DeathclawGauntlet",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_DeathclawGauntlet_Hook",
+   "ap_customName": "mod_Custom_UnstoppableMonster"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DamageInverseHealth"
+  ]
+ },
+ {
+  "id": "mod_Custom_SaltOfTheEarth",
+  "name": "Salt of the Earth",
+  "baseWeaponId": "DoubleBarrelShotgun",
+  "mods": {
+   "ap_Gun_UniversalOffset_Range": "mod_UniversalOffset_Range_Shotgun",
+   "ap_gun_Receiver": "mod_DoubleBarrelShotgun_Receiver_FastTrigger-HipAccuracy",
+   "ap_gun_Barrel": "mod_DoubleBarrelShotgun_Barrel_Short_Recoil-HipAccuracy",
+   "ap_gun_Scope": "mod_DoubleBarrelShotgun_SCOPE_ironsights_Base",
+   "ap_gun_Muzzle": "mod_Null_Muzzle",
+   "ap_gun_Grip": "mod_DoubleBarrelShotgun_grip_HipAccuracy-SecondaryDMG",
+   "ap_customName": "mod_Custom_SaltOfTheEarth"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   "mod_Legendary_Weapon3_Guns_ReloadSpeed"
+  ]
+ },
+ {
+  "id": "mod_custom_Coldshoulder_DmgvsCryptid",
+  "name": "Cold Shoulder",
+  "baseWeaponId": "DoubleBarrelShotgun",
+  "mods": {
+   "ap_Gun_UniversalOffset_Range": "mod_UniversalOffset_Range_Shotgun",
+   "ap_gun_Barrel": "mod_DoubleBarrelShotgun_barrel_long_Base",
+   "ap_gun_Receiver": "mod_DoubleBarrelShotgun_receiver_Base",
+   "ap_gun_Scope": "mod_DoubleBarrelShotgun_SCOPE_ironsights_Base",
+   "ap_gun_Muzzle": "mod_Null_Muzzle",
+   "ap_gun_Grip": "mod_DoubleBarrelShotgun_grip_Recoil",
+   "ap_customName": "mod_custom_Coldshoulder_DmgvsCryptid"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Guns_AmmoCapacity4x"
+  ]
+ },
+ {
+  "id": "mod_Custom_Overkill",
+  "name": "The Guarantee",
+  "baseWeaponId": "Fatman",
+  "mods": {
+   "ap_gun_Barrel": "mod_Fatman_Barrel_MIRV",
+   "ap_customName": "mod_Custom_Overkill"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Guns_TwoShot"
+  ]
+ },
+ {
+  "id": "mod_Custom_Daisycutter",
+  "name": "",
+  "baseWeaponId": "Fatman",
+  "mods": {
+   "ap_gun_Barrel": "mod_Fatman_Barrel_MIRV",
+   "ap_customName": "mod_Custom_Daisycutter"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   "mod_Legendary_Weapon3_Weight"
+  ]
+ },
+ {
+  "id": "mod_Custom_TheGuarantee",
+  "name": "",
+  "baseWeaponId": "Fatman",
+  "mods": {
+   "ap_gun_Barrel": "mod_Fatman_Barrel_MIRV",
+   "ap_customName": "mod_Custom_TheGuarantee"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DamageFirstBlood"
+  ]
+ },
+ {
+  "id": "mod_Custom_Pyrolyzer",
+  "name": "Pyrolyzer",
+  "baseWeaponId": "Flamer",
+  "mods": {
+   "ap_gun_Mag": "mod_Flamer_MagTank_Large",
+   "ap_gun_Barrel": "mod_Flamer_BarrelHose_Long",
+   "ap_customName": "mod_Custom_Pyrolyzer",
+   "ap_gun_Muzzle": "mod_Flamer_HoseMuzzle_Standard",
+   "ap_gun_Receiver": "mod_Flamer_Receiver_TankStandard"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DebuffDamage"
+  ]
+ },
+ {
+  "id": "mod_custom_HolyFire_Effect",
+  "name": "Holy Fire",
+  "baseWeaponId": "Flamer",
+  "mods": {
+   "ap_gun_Receiver": "mod_Flamer_Receiver_TankStandard",
+   "ap_gun_Barrel": "mod_Flamer_BarrelHose_Short",
+   "ap_gun_Mag": "mod_Flamer_MagTank_Large",
+   "ap_customName": "mod_custom_HolyFire_Effect"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   "mod_Legendary_Weapon3_Durability"
+  ]
+ },
+ {
+  "id": "RD01_Mod_Custom_BoilingPoint_CustomName",
+  "name": "Boiling Point",
+  "baseWeaponId": "Flamer",
+  "mods": {
+   "ap_gun_Barrel": "mod_Flamer_BarrelHose_Short",
+   "ap_gun_Muzzle": "mod_Flamer_HoseMuzzle_Standard",
+   "ap_gun_Receiver": "mod_Flamer_Receiver_TankStandard",
+   "ap_gun_Mag": "mod_Flamer_MagTank_Large",
+   "ap_customName": "RD01_Mod_Custom_BoilingPoint_CustomName"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   null,
+   "mod_Legendary_Weapon4_Pyromaniac"
+  ]
+ },
+ {
+  "id": "mod_Custom_Xerxos",
+  "name": "",
+  "baseWeaponId": "GammaGun",
+  "mods": {
+   "ap_gun_Muzzle": "mod_Null_Muzzle",
+   "ap_gun_Barrel": "mod_GammaGun_BarrelDish_Long",
+   "ap_gun_Grip": "mod_Gammagun_Grip_Better2",
+   "ap_customName": "mod_Custom_Xerxos"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_AntiArmor",
+   "mod_Legendary_Weapon2_APViaKill",
+   "mod_Legendary_Weapon3_VATSCostAP"
+  ]
+ },
+ {
+  "id": "mod_Custom_ResoluteVeteran",
+  "name": "",
+  "baseWeaponId": "GatlingGun",
+  "mods": {
+   "ap_gun_Barrel": "mod_GatlingGun_Barrel_Long",
+   "ap_gun_Grip": "mod_GatlingGun_Grip_Better1",
+   "ap_gun_Mag": "mod_GatlingGun_Magazine_Standard",
+   "ap_gun_Receiver": "mod_GatlingGun_Receiver_Speed",
+   "ap_gun_Scope": "mod_GatlingGun_Scope_SightsImprovedIron",
+   "ap_gun_Muzzle": "mod_Null_Muzzle",
+   "ap_customName": "mod_Custom_ResoluteVeteran"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   "mod_Legendary_Weapon3_Guns_ResistSights"
+  ]
+ },
+ {
+  "id": "mod_custom_V63GatlingLaser_customName",
+  "name": "Valkyrie",
+  "baseWeaponId": "GatlingLaser",
+  "mods": {
+   "ap_gun_Scope": "mod_GatlingLaser_SCOPE_reflex_Base",
+   "ap_gun_Receiver": "mod_GatlingLaser_Receiver_CritDMG-HipAccuracy",
+   "ap_gun_Barrel": "mod_GatlingLaser_Barrel_Long_Recoil-HipAccuracy",
+   "ap_gun_Muzzle": "mod_GatlingLaser_muzzle_Focuser_Base",
+   "ap_customName": "mod_custom_V63GatlingLaser_customName"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_Guns_DmgSights"
+  ]
+ },
+ {
+  "id": "RD01_Mod_Custom_Valkyrie_CustomName",
+  "name": "",
+  "baseWeaponId": "GatlingLaser",
+  "mods": {
+   "ap_gun_Receiver": "mod_GatlingLaser_Receiver_CritDMG-HipAccuracy",
+   "ap_gun_Barrel": "mod_GatlingLaser_Barrel_Super_Recoil-HipAccuracy",
+   "ap_gun_Muzzle": "mod_GatlingLaser_muzzle_Focuser_Base",
+   "ap_gun_Scope": "mod_GatlingLaser_SCOPE_reflex_Base",
+   "ap_customName": "RD01_Mod_Custom_Valkyrie_CustomName"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   null,
+   "mod_Legendary_Weapon4_Bully"
+  ]
+ },
+ {
+  "id": "RD01_Mod_Custom_DrillFist_CustomName",
+  "name": "",
+  "baseWeaponId": "Gauntlet",
+  "mods": {
+   "ap_melee_MeleeMod": "RD01_Mod_Melee_Gauntlet_DrillBits",
+   "ap_customName": "RD01_Mod_Custom_DrillFist_CustomName"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   null,
+   "mod_Legendary_Weapon4_Melee_ComboBreaker"
+  ]
+ },
+ {
+  "id": "RD01_Mod_Custom_StrikeBreaker_CustomName",
+  "name": "",
+  "baseWeaponId": "GaussRifle",
+  "mods": {
+   "ap_gun_Barrel": "mod_GaussRifle_Barrel_Shroud_HipAccuracy",
+   "ap_gun_Grip": "mod_GaussRifle_grip_HipAccuracy",
+   "ap_gun_Mag": "mod_GaussRifle_Magazine_Ammo-ArmorPen",
+   "ap_gun_Scope": "mod_GaussRifle_SCOPE_MediumScope_NV_Base",
+   "ap_gun_Muzzle": "mod_GaussRifle_muzzle_compensator_Base",
+   "ap_customName": "RD01_Mod_Custom_StrikeBreaker_CustomName"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   null,
+   "mod_Legendary_Weapon4_Conductors"
+  ]
+ },
+ {
+  "id": "mod_custom_ShatteredGrounds_Custom",
+  "name": "",
+  "baseWeaponId": "DLC04_HandMadeGun",
+  "mods": {
+   "ap_gun_Barrel": "DLC04_mod_HandMadeGun_Barrel_Long_Recoil-HipAccuracy",
+   "ap_gun_Grip": "DLC04_mod_HandMadeGun_Grip_Base",
+   "ap_gun_Mag": "DLC04_mod_HandMadeGun_Magazine_Ammo-Reload",
+   "ap_gun_Receiver": "DLC04_mod_HandMadeGun_Receiver_CritDMG-Auto",
+   "ap_gun_Scope": "DLC04_mod_HandMadeGun_SCOPE_reflex_circle",
+   "ap_customName": "mod_custom_ShatteredGrounds_Custom"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_Guns_ExplosiveBullets"
+  ]
+ },
+ {
+  "id": "EN06_mod_Ranged_HarpoonGun_Custom_Cursed",
+  "name": "Ice Breaker",
+  "baseWeaponId": "DLC03_HarpoonGun",
+  "mods": {
+   "ap_Item_Description": "EN06_mod_Ranged_HarpoonGun_Custom_Cursed",
+   "ap_gun_Mag": "DLC03_mod_HarpoonGun_Magazine_Standard",
+   "ap_gun_Scope": "DLC03_mod_HarpoonGun_Scope_SightsIron"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Execute",
+   "mod_Legendary_Weapon2_Guns_Bashing",
+   "mod_Legendary_Weapon3_Weight"
+  ]
+ },
+ {
+  "id": "SCORE_S21_mod_custom_IceBreaker",
+  "name": "Kingfisher",
+  "baseWeaponId": "DLC03_HarpoonGun",
+  "mods": {
+   "ap_gun_Scope": "DLC03_mod_HarpoonGun_Scope_SightReflex",
+   "ap_gun_Mag": "DLC03_mod_HarpoonGun_Magazine_Standard",
+   "ap_customName": "SCORE_S21_mod_custom_IceBreaker"
+  },
+  "legendaryEffects": []
+ },
+ {
+  "id": "mod_Custom_Kingfisher",
+  "name": "",
+  "baseWeaponId": "DLC03_HarpoonGun",
+  "mods": {
+   "ap_gun_Mag": "DLC03_mod_HarpoonGun_Magazine_Barbed",
+   "ap_gun_Scope": "DLC03_mod_HarpoonGun_Scope_ScopeShort",
+   "ap_customName": "mod_Custom_Kingfisher"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DmgVsBugs"
+  ]
+ },
+ {
+  "id": "mod_Custom_Longshot",
+  "name": "",
+  "baseWeaponId": "HuntingRifle",
+  "mods": {
+   "ap_Gun_UniversalOffset_Range": "mod_UniversalOffset_Range_BoltAction",
+   "ap_gun_Receiver": "mod_HuntingRifle_Receiver_Damage",
+   "ap_gun_Barrel": "mod_HuntingRifle_Barrel_Long_Recoil",
+   "ap_gun_Grip": "mod_HuntingRifle_Grip_Recoil-HipAccuracy",
+   "ap_gun_Mag": "mod_HuntingRifle_Magazine_Ammo-ArmorPen",
+   "ap_gun_Scope": "mod_HuntingRifle_SCOPE_LongScope_Base",
+   "ap_gun_Muzzle": "mod_HuntingRifle_muzzle_suppressor_Base",
+   "ap_customName": "mod_Custom_Longshot"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_Guns_DmgSights"
+  ]
+ },
+ {
+  "id": "E08B_mod_Custom_HuntingRifle_DoctorsOrders",
+  "name": "",
+  "baseWeaponId": "HuntingRifle",
+  "mods": {
+   "ap_Gun_UniversalOffset_Range": "mod_UniversalOffset_Range_BoltAction",
+   "ap_gun_Receiver": "mod_HuntingRifle_Receiver_Damage",
+   "ap_gun_Barrel": "mod_HuntingRifle_barrel_Long_Base",
+   "ap_gun_Grip": "mod_HuntingRifle_Grip_HipAccuracy",
+   "ap_gun_Mag": "mod_HuntingRifle_Magazine_Base",
+   "ap_gun_Scope": "mod_HuntingRifle_SCOPE_LongScope_NV_Base",
+   "ap_gun_Muzzle": "mod_Null_Muzzle",
+   "ap_customName": "E08B_mod_Custom_HuntingRifle_DoctorsOrders"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Vampire"
+  ]
+ },
+ {
+  "id": "mod_custom_V63LaserRifle_customName",
+  "name": "",
+  "baseWeaponId": "LaserGun",
+  "mods": {
+   "ap_gun_Barrel": "mod_LaserGun_Barrel_Spinning_Recoil-HipAccuracy",
+   "ap_gun_Scope": "mod_LaserGun_SCOPE_reflex_Base",
+   "ap_gun_Receiver": "mod_LaserGun_Receiver_CritDMG-HipAccuracy",
+   "ap_gun_Grip": "mod_LaserGun_Grip_Recoil",
+   "ap_gun_Muzzle": "mod_LaserGun_muzzle_Focuser_Base",
+   "ap_customName": "mod_custom_V63LaserRifle_customName"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_AntiArmor"
+  ]
+ },
+ {
+  "id": "mod_Custom_AcceptableOverkill",
+  "name": "",
+  "baseWeaponId": "LaserGun",
+  "mods": {
+   "ap_gun_Receiver": "mod_LaserGun_Receiver_CritDMG",
+   "ap_gun_Barrel": "mod_LaserGun_Barrel_Long_Recoil",
+   "ap_gun_Grip": "mod_LaserGun_Grip_Recoil",
+   "ap_gun_Scope": "mod_LaserGun_SCOPE_longscope_NV_Base",
+   "ap_gun_Muzzle": "mod_LaserGun_muzzle_Focuser_Base",
+   "ap_customName": "mod_Custom_AcceptableOverkill"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Execute"
+  ]
+ },
+ {
+  "id": "mod_Custom_SoleSurvivor",
+  "name": "Sole Survivor",
+  "baseWeaponId": "DLC03_LeverGun",
+  "mods": {
+   "ap_Gun_UniversalOffset_Range": "DLC03_mod_UniversalOffset_Range_LeverGun",
+   "ap_gun_Receiver": "DLC03_mod_LeverGun_Receiver_CritDMG",
+   "ap_gun_Barrel": "DLC03_mod_LeverGun_Barrel_Long_Recoil",
+   "ap_gun_Grip": "DLC03_mod_LeverGun_Grip_Recoil-SecondaryDMG",
+   "ap_gun_Scope": "DLC03_mod_LeverGun_SCOPE_Longscope_NV_Base",
+   "ap_gun_Muzzle": "DLC03_mod_LeverGun_Muzzle_suppressor_Base",
+   "ap_customName": "mod_Custom_SoleSurvivor"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DmgVsPlayers"
+  ]
+ },
+ {
+  "id": "E09D_mod_custom_WesternSpirit",
+  "name": "",
+  "baseWeaponId": "DLC03_LeverGun",
+  "mods": {
+   "ap_Gun_UniversalOffset_Range": "DLC03_mod_UniversalOffset_Range_LeverGun",
+   "ap_gun_Receiver": "DLC03_mod_LeverGun_Receiver_CritDMG-HipAccuracy",
+   "ap_gun_Barrel": "DLC03_mod_LeverGun_Barrel_Long_Recoil-HipAccuracy",
+   "ap_gun_Grip": "DLC03_mod_LeverGun_Grip_Recoil-HipAccuracy",
+   "ap_gun_Scope": "DLC03_mod_LeverGun_SCOPE_Glow_Base",
+   "ap_gun_Muzzle": "DLC03_mod_LeverGun_Muzzle_compensator_Base",
+   "ap_customName": "E09D_mod_custom_WesternSpirit"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DmgConsecutiveHits"
+  ]
+ },
+ {
+  "id": "mod_custom_RedTerror_customName",
+  "name": "",
+  "baseWeaponId": "MG42",
+  "mods": {
+   "ap_gun_Receiver": "mod_MG42_Receiver_AmmoConv308",
+   "ap_gun_Barrel": "mod_MG42_Barrel_Standard",
+   "ap_gun_Grip": "mod_MG42_Grip_Stock_Standard",
+   "ap_gun_Muzzle": "mod_MG42_Muzzle_Standard",
+   "ap_gun_Mag": "mod_MG42_Magazine_Standard",
+   "ap_customName": "mod_custom_RedTerror_customName"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   "mod_Legendary_Weapon3_Guns_ReloadSpeed"
+  ]
+ },
+ {
+  "id": "E09C_mod_Custom_LoveTap",
+  "name": "Default",
+  "baseWeaponId": "E09C_SubmachineGun_LoveTap",
+  "mods": {
+   "ap_gun_Receiver": "mod_SubmachineGun_Receiver_Automatic1",
+   "ap_gun_Grip": "mod_SubmachineGun_Grip_StockShort",
+   "ap_gun_Barrel": "mod_SubmachineGun_Barrel_Short",
+   "ap_gun_Mag": "mod_SubmachineGun_Mag_Medium",
+   "ap_gun_Scope": "mod_SubmachineGun_Scope_SightsIron",
+   "ap_gun_Muzzle": "mod_Null_Muzzle",
+   "ap_customName": "E09C_mod_Custom_LoveTap"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Vampire",
+   "mod_Legendary_Weapon2_Guns_RoF",
+   "mod_Legendary_Weapon3_Durability"
+  ]
+ },
+ {
+  "id": "P62_Mod_Custom_ChaosEngine_CustomName",
+  "name": "Crushing Blow",
+  "baseWeaponId": "M79",
+  "mods": {
+   "ap_gun_Receiver": "mod_M79_Receiver_Standard",
+   "ap_gun_Barrel": "mod_M79_Barrel_Long",
+   "ap_gun_Grip": "mod_M79_StockFull",
+   "ap_customName": "P62_Mod_Custom_ChaosEngine_CustomName",
+   "ap_Misc": "P62_Mod_Custom_ChaosEngine_SpecialEffect"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Guns_TwoShot",
+   "mod_Legendary_Weapon2_DmgLimbs",
+   "mod_Legendary_Weapon3_Guns_ReloadSpeed",
+   "mod_Legendary_Weapon4_Guns_Electricians"
+  ]
+ },
+ {
+  "id": "mod_Custom_CrushingBlow",
+  "name": "",
+  "baseWeaponId": "M79",
+  "mods": {
+   "ap_gun_Barrel": "mod_M79_Barrel_Short",
+   "ap_gun_Receiver": "mod_M79_Receiver_Standard",
+   "ap_gun_Grip": "mod_M79_Stock_Short",
+   "ap_customName": "mod_Custom_CrushingBlow"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_DmgLimbs"
+  ]
+ },
+ {
+  "id": "E08B_mod_Custom_FoundationsVengeance",
+  "name": "",
+  "baseWeaponId": "Minigun",
+  "mods": {
+   "ap_gun_Barrel": "mod_Minigun_Barrel_Standard",
+   "ap_gun_Scope": "mod_Minigun_Scope_SightReflex",
+   "ap_gun_Muzzle": "mod_Minigun_Muzzle_Shredder",
+   "ap_customName": "E08B_mod_Custom_FoundationsVengeance"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DamageInverseHealth"
+  ]
+ },
+ {
+  "id": "mod_Custom_BoomStick",
+  "name": "",
+  "baseWeaponId": "MissileLauncher",
+  "mods": {
+   "ap_gun_Barrel": "mod_MissileLauncher_TubeBarrel_Quad",
+   "ap_gun_Scope": "mod_MissileLauncher_Scope_TargetingBox",
+   "ap_customName": "mod_Custom_BoomStick"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Guns_AmmoCapacity4x"
+  ]
+ },
+ {
+  "id": "mod_Custom_BunkerBuster",
+  "name": "",
+  "baseWeaponId": "MissileLauncher",
+  "mods": {
+   "ap_gun_Barrel": "mod_MissileLauncher_TubeBarrel_Triple",
+   "ap_gun_Scope": "mod_MissileLauncher_Scope_TargetingBox",
+   "ap_customName": "mod_Custom_BunkerBuster"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_AntiArmor",
+   "mod_Legendary_Weapon2_Guns_LastShot",
+   "mod_Legendary_Weapon3_Durability"
+  ]
+ },
+ {
+  "id": "EN06_mod_melee_PickAxe_Custom_Cursed",
+  "name": "",
+  "baseWeaponId": "pickaxe",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_PickAxe_Standard",
+   "ap_Item_Description": "EN06_mod_melee_PickAxe_Custom_Cursed"
+  },
+  "legendaryEffects": []
+ },
+ {
+  "id": "mod_custom_CultistPiercer_Effect",
+  "name": "",
+  "baseWeaponId": "pickaxe",
+  "mods": {
+   "ap_customName": "mod_custom_CultistPiercer_Effect"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DamageInverseHealth"
+  ]
+ },
+ {
+  "id": "mod_custom_HeadHunter_Effect",
+  "name": "",
+  "baseWeaponId": "pickaxe",
+  "mods": {
+   "ap_customName": "mod_custom_HeadHunter_Effect"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_Melee_SwingSpeed"
+  ]
+ },
+ {
+  "id": "mod_Custom_MechanicsBestFriend",
+  "name": "Mechanic's Best Friend",
+  "baseWeaponId": "PipeWrench",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_PipeWrench_ExtraHeavyHead",
+   "ap_customName": "mod_Custom_MechanicsBestFriend"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DmgVsRobots"
+  ]
+ },
+ {
+  "id": "mod_Custom_SlugBuster",
+  "name": "Prototype ABX03",
+  "baseWeaponId": "PlasmaGun",
+  "mods": {
+   "ap_gun_Receiver": "mod_PlasmaGun_Receiver_Burning-HipAccuracy",
+   "ap_gun_Grip": "mod_PlasmaGun_Grip_Recoil-HipAccuracy",
+   "ap_gun_Barrel": "mod_PlasmaGun_Barrel_Sniper_Recoil-HipAccuracy",
+   "ap_gun_Mag": "mod_PlasmaGun_Magazine_Base",
+   "ap_gun_Scope": "mod_PlasmaGun_SCOPE_MediumScope_NV_Base",
+   "ap_customName": "mod_Custom_SlugBuster"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_AntiArmor",
+   "mod_Legendary_Weapon2_DmgCrits",
+   "mod_Legendary_Weapon3_Weight"
+  ]
+ },
+ {
+  "id": "mod_Custom_Plasma_AbraxoGun",
+  "name": "Slug Buster",
+  "baseWeaponId": "PlasmaGun",
+  "mods": {
+   "ap_gun_Barrel": "mod_PlasmaGun_barrel_Flamer_Abraxo",
+   "ap_gun_Grip": "mod_PlasmaGun_Grip_Recoil-HipAccuracy",
+   "ap_gun_Receiver": "mod_PlasmaGun_Receiver_Burning-CritDMG",
+   "ap_gun_Mag": "mod_PlasmaGun_Magazine_Base",
+   "ap_gun_Scope": "mod_PlasmaGun_SCOPE_ironsights_Base",
+   "ap_customName": "mod_Custom_Plasma_AbraxoGun"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_AntiArmor"
+  ]
+ },
+ {
+  "id": "mod_Custom_Plasma_Abraxolator",
+  "name": "",
+  "baseWeaponId": "PlasmaGun",
+  "mods": {
+   "ap_gun_Barrel": "mod_PlasmaGun_barrel_Flamer_Abraxo",
+   "ap_gun_Grip": "mod_PlasmaGun_Grip_Recoil-HipAccuracy",
+   "ap_gun_Receiver": "mod_PlasmaGun_Receiver_Burning-CritDMG",
+   "ap_gun_Mag": "mod_PlasmaGun_Magazine_Base",
+   "ap_gun_Scope": "mod_PlasmaGun_SCOPE_ironsights_Base",
+   "ap_customName": "mod_Custom_Plasma_Abraxolator"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   null,
+   "mod_Legendary_Weapon4_Pyromaniac"
+  ]
+ },
+ {
+  "id": "mod_Custom_PlasmaGun_MindOverMatter",
+  "name": "",
+  "baseWeaponId": "PlasmaGun",
+  "mods": {
+   "ap_gun_Receiver": "mod_PlasmaGun_receiver_Base",
+   "ap_gun_Grip": "mod_PlasmaGun_Grip_Base",
+   "ap_gun_Barrel": "mod_PlasmaGun_barrel_Short_Base",
+   "ap_gun_Mag": "mod_PlasmaGun_Magazine_Base",
+   "ap_gun_Scope": "mod_PlasmaGun_SCOPE_shortscope_Base",
+   "ap_customName": "mod_Custom_PlasmaGun_MindOverMatter"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DmgVsGhouls"
+  ]
+ },
+ {
+  "id": "mod_Custom_FaceBreaker",
+  "name": "Face Breaker",
+  "baseWeaponId": "PowerFist",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod",
+   "ap_customName": "mod_Custom_FaceBreaker"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_Melee_DamagePowerAttack"
+  ]
+ },
+ {
+  "id": "mod_Custom_CivilUnrest",
+  "name": "",
+  "baseWeaponId": "PumpActionShotgun",
+  "mods": {
+   "ap_gun_Barrel": "mod_PumpActionShotgun_Barrel_Medium_Recoil",
+   "ap_gun_Receiver": "mod_PumpActionShotgun_Receiver_FastTrigger",
+   "ap_customName": "mod_Custom_CivilUnrest",
+   "ap_Gun_UniversalOffset_Range": "mod_UniversalOffset_Range_Shotgun",
+   "ap_gun_Muzzle": "mod_Null_Muzzle",
+   "ap_gun_Grip": "mod_PumpActionShotgun_Grip_Base",
+   "ap_gun_Scope": "mod_PumpActionShotgun_SCOPE_ironsights_Base"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DmgVsPlayers"
+  ]
+ },
+ {
+  "id": "mod_custom_TheKabloom_Effect",
+  "name": "",
+  "baseWeaponId": "PumpActionShotgun",
+  "mods": {
+   "ap_Gun_UniversalOffset_Range": "mod_UniversalOffset_Range_Shotgun",
+   "ap_gun_Receiver": "mod_PumpActionShotgun_receiver_Base",
+   "ap_gun_Muzzle": "mod_Null_Muzzle",
+   "ap_gun_Grip": "mod_PumpActionShotgun_Grip_Base",
+   "ap_gun_Barrel": "mod_PumpActionShotgun_barrel_Short_Base",
+   "ap_gun_Scope": "mod_PumpActionShotgun_SCOPE_ironsights_Base",
+   "ap_customName": "mod_custom_TheKabloom_Effect"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_Guns_ExplosiveBullets"
+  ]
+ },
+ {
+  "id": "mod_custom_TickettoRevenge",
+  "name": "Lickety-Split",
+  "baseWeaponId": "RailwayRifle",
+  "mods": {
+   "ap_gun_Barrel": "mod_RailwayRifle_Barrel_Long",
+   "ap_gun_Grip": "mod_RailwayRifle_Grip_StockFull",
+   "ap_gun_Receiver": "mod_RailwayRifle_Receiver_Automatic1",
+   "ap_gun_Scope": "mod_RailwayRifle_Scope_SightReflex",
+   "ap_customName": "mod_custom_TickettoRevenge"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DmgConsecutiveHits"
+  ]
+ },
+ {
+  "id": "RD01_Mod_Custom_LicketySplit_CustomName",
+  "name": "",
+  "baseWeaponId": "RailwayRifle",
+  "mods": {
+   "ap_gun_Receiver": "mod_RailwayRifle_Receiver_Automatic1",
+   "ap_gun_Barrel": "mod_RailwayRifle_Barrel_Short",
+   "ap_gun_Grip": "mod_RailwayRifle_Grip_StockRecoil",
+   "ap_gun_Scope": "mod_RailwayRifle_Scope_SightReflex",
+   "ap_gun_Muzzle": "mod_RailwayRifle_Muzzle_BayonetLarge",
+   "ap_customName": "RD01_Mod_Custom_LicketySplit_CustomName"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   null,
+   "mod_Legendary_Weapon4_Fracturers"
+  ]
+ },
+ {
+  "id": "mod_Custom_CommandersCharge",
+  "name": "Commanders Charge",
+  "baseWeaponId": "RevolutionarySword",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_RevolutionarySword_Shock",
+   "ap_customName": "mod_Custom_CommandersCharge"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DmgConsecutiveHits"
+  ]
+ },
+ {
+  "id": "mod_melee_RollingPin_Custom_Cursed",
+  "name": "",
+  "baseWeaponId": "RollingPin",
+  "mods": {
+   "ap_Item_Description": "mod_melee_RollingPin_Custom_Cursed",
+   "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DamageNight",
+   "mod_Legendary_Weapon2_Melee_DamagePowerAttack",
+   "mod_Legendary_Weapon3_StatStrength"
+  ]
+ },
+ {
+  "id": "mod_custom_BlueRidgeBrandingIron_Custom",
+  "name": "",
+  "baseWeaponId": "Shishkebab",
+  "mods": {
+   "ap_customName": "mod_custom_BlueRidgeBrandingIron_Custom"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_Melee_SwingSpeed"
+  ]
+ },
+ {
+  "id": "EN06_mod_melee_Shovel_Custom_Cursed",
+  "name": "",
+  "baseWeaponId": "Shovel",
+  "mods": {
+   "ap_Item_Description": "EN06_mod_melee_Shovel_Custom_Cursed",
+   "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Execute",
+   "mod_Legendary_Weapon2_Melee_SwingSpeed",
+   "mod_Legendary_Weapon3_Weight"
+  ]
+ },
+ {
+  "id": "SDOW_Mod_Custom_RelicReaper",
+  "name": "",
+  "baseWeaponId": "Shovel",
+  "mods": {
+   "ap_customName": "SDOW_Mod_Custom_RelicReaper",
+   "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_Melee_PickPocket"
+  ]
+ },
+ {
+  "id": "EN06_mod_melee_Sickle_Custom_Cursed",
+  "name": "",
+  "baseWeaponId": "Sickle",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod",
+   "ap_Item_Description": "EN06_mod_melee_Sickle_Custom_Cursed"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Vampire",
+   "mod_Legendary_Weapon2_Melee_SwingSpeed",
+   "mod_Legendary_Weapon3_StatEndurance"
+  ]
+ },
+ {
+  "id": "E09D_mod_custom_GunthersRevolver",
+  "name": "",
+  "baseWeaponId": "SingleActionRevolver",
+  "mods": {
+   "ap_gun_Receiver": "mod_SingleActionRevolver_Receiver_Standard",
+   "ap_gun_Grip": "mod_SingleActionRevolver_Grip_Better1",
+   "ap_gun_Barrel": "mod_SingleActionRevolver_Barrel_Long",
+   "ap_customName": "E09D_mod_custom_GunthersRevolver"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_Guns_RoF"
+  ]
+ },
+ {
+  "id": "mod_Custom_BlackDiamond",
+  "name": "",
+  "baseWeaponId": "SkiSword",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_SkiSword_SkateBlade",
+   "ap_customName": "mod_Custom_BlackDiamond"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_Melee_BlockReflects"
+  ]
+ },
+ {
+  "id": "mod_Custom_SuperStimpike",
+  "name": "Super Stimpike",
+  "baseWeaponId": "Spear",
+  "mods": {
+   "ap_customName": "mod_Custom_SuperStimpike"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Medic"
+  ]
+ },
+ {
+  "id": "mod_custom_EldersMark_Effect",
+  "name": "",
+  "baseWeaponId": "SubmachineGun",
+  "mods": {
+   "ap_gun_Receiver": "mod_SubmachineGun_Receiver_Automatic1",
+   "ap_gun_Grip": "mod_SubmachineGun_Grip_StockShort",
+   "ap_gun_Barrel": "mod_SubmachineGun_Barrel_Short",
+   "ap_gun_Mag": "mod_SubmachineGun_Mag_Medium",
+   "ap_gun_Scope": "mod_SubmachineGun_Scope_SightsIron",
+   "ap_customName": "mod_custom_EldersMark_Effect"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DmgConsecutiveHits"
+  ]
+ },
+ {
+  "id": "mod_Custom_AllRise",
+  "name": "",
+  "baseWeaponId": "SuperSledge",
+  "mods": {
+   "ap_melee_MeleeMod": "DLC04_mod_melee_Sledgehammer_ExtraHeavyHead_Rocket",
+   "ap_customName": "mod_Custom_AllRise"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DamageViaHealth"
+  ]
+ },
+ {
+  "id": "E08B_mod_Custom_TheDebilitator",
+  "name": "",
+  "baseWeaponId": "SuperSledge",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_SuperSledge_Null",
+   "ap_customName": "E08B_mod_Custom_TheDebilitator"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DmgVsSupermutants"
+  ]
+ },
+ {
+  "id": "mod_Custom_SuperSledge_TheFarmhand",
+  "name": "",
+  "baseWeaponId": "SuperSledge",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_SuperSledge_Null",
+   "ap_customName": "mod_Custom_SuperSledge_TheFarmhand"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   "mod_Legendary_Weapon3_StatEndurance"
+  ]
+ },
+ {
+  "id": "E09B_mod_Custom_WhackerSmacker",
+  "name": "",
+  "baseWeaponId": "SuperSledge",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_SuperSledge_Null",
+   "ap_customName": "E09B_mod_Custom_WhackerSmacker"
+  },
+  "legendaryEffects": [
+   null,
+   "mod_Legendary_Weapon2_Melee_SwingSpeed"
+  ]
+ },
+ {
+  "id": "mod_custom_LucaSwitchblade_Effect",
+  "name": "The Quick Fix",
+  "baseWeaponId": "Switchblade",
+  "mods": {
+   "ap_customName": "mod_custom_LucaSwitchblade_Effect"
+  },
+  "legendaryEffects": [
+   null,
+   null,
+   "mod_Legendary_Weapon3_VATSCostAP"
+  ]
+ },
+ {
+  "id": "mod_Custom_TheQuickFix",
+  "name": "",
+  "baseWeaponId": "Switchblade",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_Switchblade_Serrated",
+   "ap_customName": "mod_Custom_TheQuickFix"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DamageAddiction"
+  ]
+ },
+ {
+  "id": "mod_custom_V63-BERTHA_customName",
+  "name": "Night Light",
+  "baseWeaponId": "DLC01LightningGun",
+  "mods": {
+   "ap_gun_Barrel": "DLC01_mod_LightningGun_Barrel_Automatic",
+   "ap_gun_Scope": "DLC01_mod_LightningGun_Scope_SightsReflex",
+   "ap_customName": "mod_custom_V63-BERTHA_customName"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Guns_TwoShot"
+  ]
+ },
+ {
+  "id": "mod_Custom_NightLight",
+  "name": "",
+  "baseWeaponId": "DLC01LightningGun",
+  "mods": {
+   "ap_gun_Barrel": "DLC01_mod_LightningGun_Barrel_Automatic",
+   "ap_gun_Scope": "DLC01_mod_LightningGun_Scope_SightsReflex",
+   "ap_customName": "mod_Custom_NightLight"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DamageNight"
+  ]
+ },
+ {
+  "id": "mod_Custom_Oathbreaker",
+  "name": "Oathbreaker",
+  "baseWeaponId": "WarGlaive",
+  "mods": {
+   "ap_melee_MeleeMod": "mod_melee_WarGlaive_Null",
+   "ap_customName": "mod_Custom_Oathbreaker"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_DebuffDamage",
+   "mod_Legendary_Weapon2_Melee_DamagePowerAttack",
+   "mod_Legendary_Weapon3_Melee_Defenders"
+  ]
+ }
+]

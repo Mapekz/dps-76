@@ -9,10 +9,11 @@ import { buildCrossFamilyRankMap } from './normalize/conditions';
 import { explosiveFamilyKeywordsOf, extractWeapons } from './extract-weapons';
 import { extractPerks } from './extract-perks';
 import { extractOmods } from './extract-omods';
+import { extractUniques } from './extract-uniques';
 import { extractBuffs } from './extract-buffs';
 import { extractBodyParts } from './extract-bodyparts';
 
-const KNOWN_EXTRACTORS = ['weapons', 'perks', 'omods', 'buffs', 'bodyparts'] as const;
+const KNOWN_EXTRACTORS = ['weapons', 'perks', 'omods', 'uniques', 'buffs', 'bodyparts'] as const;
 type ExtractorName = (typeof KNOWN_EXTRACTORS)[number];
 
 async function main() {
@@ -184,6 +185,31 @@ async function main() {
         result.reviewFlagged.omodWeakEvidence.length
       }`
     );
+  }
+
+  if (only.includes('uniques')) {
+    console.log('Extracting unique weapon presets…');
+    if (!allWeapons) {
+      allWeapons = JSON.parse(
+        await readFile(path.join(outDir, 'weapons.json'), 'utf8')
+      ) as GeneratedWeapon[];
+    }
+    const omods = JSON.parse(
+      await readFile(path.join(outDir, 'omods.json'), 'utf8')
+    ) as import('../../src/types/generated').GeneratedOmod[];
+    const result = await extractUniques(client, allWeapons, omods);
+    await writeFile(path.join(outDir, 'uniques.json'), JSON.stringify(result.uniques, null, 1));
+    meta.counts.uniques = result.uniques.length;
+    if (result.skipped.length > 0) {
+      meta.reviewFlagged = {
+        ...meta.reviewFlagged,
+        skippedUniqueCombinations: result.skipped.map(s => ({
+          id: `${s.weaponId}:${s.combinationName}`,
+          name: s.reason,
+        })),
+      };
+    }
+    console.log(`  ${result.uniques.length} unique presets (skipped combinations: ${result.skipped.length})`);
   }
 
   if (only.includes('buffs')) {

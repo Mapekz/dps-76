@@ -2,6 +2,7 @@ import * as React from 'react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Combobox } from '@/components/ui/combobox';
+import { WeaponCombobox } from '@/components/build/WeaponCombobox';
 import { Label } from '@/components/ui/label';
 import { Slider, type SliderMark } from '@/components/ui/slider';
 import { useGameMode } from '@/hooks/useGameMode';
@@ -9,10 +10,11 @@ import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
 import { resolveLoadout } from '@/lib/loadout';
 import { computeScenarios } from '@/lib/engine/scenarios';
-import { getWeapons, weaponLevelStops } from '@/data';
+import { getWeapons, weaponLevelStops, getUniques, getEquippedUnique } from '@/data';
 import {
   effectiveWeaponName,
   getDefaultOmodId,
+  getOmodById,
   getOmodSlots,
   getLegendaryOmodSlots,
   type OmodBadge,
@@ -65,7 +67,18 @@ export function WeaponSection() {
   const { scenarios } = useScenarioResults();
 
   const weapons = getWeapons(mode);
-  const weaponOptions = Object.values(weapons).map(w => ({ value: w.id, label: w.name }));
+  const uniques = getUniques(mode);
+  const uniquesById = React.useMemo(() => new Map(uniques.map(u => [u.id, u])), [uniques]);
+  const equippedUnique = player.weapon ? getEquippedUnique(mode, player.weapon) : undefined;
+  const weaponOptions = [
+    ...uniques.map(u => ({
+      value: u.id,
+      label: getOmodById(mode, u.id)?.name ?? u.name,
+      group: 'Unique weapons' as const,
+      subtitle: weapons[u.baseWeaponId]?.name,
+    })),
+    ...Object.values(weapons).map(w => ({ value: w.id, label: w.name })),
+  ];
   const selectedWeapon = player.weapon ? weapons[player.weapon.weaponId] : undefined;
   const omodSlots = selectedWeapon ? getOmodSlots(mode, selectedWeapon) : [];
   const legendarySlots = selectedWeapon ? getLegendaryOmodSlots(mode, selectedWeapon) : [];
@@ -118,13 +131,22 @@ export function WeaponSection() {
         <div className="space-y-4">
           <div className="space-y-1.5">
             <Label>Weapon</Label>
-            <Combobox
+            <WeaponCombobox
               options={weaponOptions}
-              value={player.weapon?.weaponId ?? null}
-              onValueChange={weaponId => dispatch({ type: 'weapon/select', weaponId })}
+              value={equippedUnique?.id ?? player.weapon?.weaponId ?? null}
+              onValueChange={next => {
+                if (next === null) {
+                  if (equippedUnique) return;
+                  dispatch({ type: 'weapon/select', weaponId: null });
+                  return;
+                }
+                if (uniquesById.has(next)) dispatch({ type: 'weapon/selectUnique', uniqueId: next });
+                else dispatch({ type: 'weapon/select', weaponId: next });
+              }}
               placeholder="Pick a weapon…"
               searchPlaceholder="Search weapons…"
               emptyText="No weapon matches."
+              collapsibleGroup="Unique weapons"
             />
           </div>
 

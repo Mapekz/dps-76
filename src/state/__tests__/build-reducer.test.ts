@@ -42,7 +42,45 @@ describe('buildReducer', () => {
     expect(s.player.weapon?.legendaryEffects).toEqual(['leg_a', 'leg_b']);
 
     const cleared = run([{ type: 'weapon/legendary', slotIndex: 0, omodId: null }], s);
-    expect(cleared.player.weapon?.legendaryEffects).toEqual(['leg_b']);
+    expect(cleared.player.weapon?.legendaryEffects).toEqual([null, 'leg_b']);
+  });
+
+  it('weapon/selectUnique cross-base installs preset with per-slot legendary merge', () => {
+    const fromFixer = run([
+      { type: 'weapon/select', weaponId: 'CombatRifle_Fixer' },
+      { type: 'weapon/legendary', slotIndex: 0, omodId: 'mod_Legendary_Weapon1_Guns_AmmoCapacity4x' },
+    ]);
+    const salt = run([{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }], fromFixer);
+    expect(salt.player.weapon?.weaponId).toBe('DoubleBarrelShotgun');
+    expect(salt.player.weapon?.mods.ap_customName).toBe('mod_Custom_SaltOfTheEarth');
+    expect(salt.player.weapon?.legendaryEffects[0]).toBe('mod_Legendary_Weapon1_Guns_AmmoCapacity4x');
+    expect(salt.player.weapon?.legendaryEffects[2]).toBe('mod_Legendary_Weapon3_Guns_ReloadSpeed');
+  });
+
+  it('weapon/selectUnique on same base without unique only sets identity slot', () => {
+    const bare = run([
+      { type: 'weapon/select', weaponId: 'DoubleBarrelShotgun' },
+      { type: 'weapon/mod', slot: 'ap_gun_Barrel', omodId: 'mod_DoubleBarrelShotgun_barrel_long_Base' },
+      { type: 'weapon/legendary', slotIndex: 0, omodId: 'mod_Legendary_Weapon1_Guns_AmmoCapacity4x' },
+    ]);
+    const salt = run([{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }], bare);
+    expect(salt.player.weapon?.mods.ap_gun_Barrel).toBe('mod_DoubleBarrelShotgun_barrel_long_Base');
+    expect(salt.player.weapon?.mods.ap_customName).toBe('mod_Custom_SaltOfTheEarth');
+    expect(salt.player.weapon?.legendaryEffects[0]).toBe('mod_Legendary_Weapon1_Guns_AmmoCapacity4x');
+  });
+
+  it('weapon/selectUnique same-base different unique applies full preset', () => {
+    const cold = run([{ type: 'weapon/selectUnique', uniqueId: 'mod_custom_Coldshoulder_DmgvsCryptid' }]);
+    const salt = run([{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }], cold);
+    expect(salt.player.weapon?.mods.ap_customName).toBe('mod_Custom_SaltOfTheEarth');
+    expect(salt.player.weapon?.mods.ap_gun_Receiver).toBe('mod_DoubleBarrelShotgun_Receiver_FastTrigger-HipAccuracy');
+    expect(salt.player.weapon?.legendaryEffects[2]).toBe('mod_Legendary_Weapon3_Guns_ReloadSpeed');
+  });
+
+  it('weapon/selectUnique re-select is a no-op', () => {
+    const equipped = run([{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }]);
+    const again = run([{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }], equipped);
+    expect(again).toBe(equipped);
   });
 
   it('clamps itemLevel to 1–50', () => {

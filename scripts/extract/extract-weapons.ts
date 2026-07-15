@@ -238,6 +238,35 @@ export async function chaseWeaponEnchantment(
   return modifiers.map((f, i) => ({ id: `${formId}:weaponEnch:${i}`, source, ...f }));
 }
 
+/** One Object Template combination with its display name and raw include mod formids. */
+export interface WeaponCombinationWalk {
+  name: string;
+  modFormIds: string[];
+}
+
+/** Walk every combination on a WEAP, retaining per-combo grouping (unlike flattenIncludes). */
+export function walkWeaponCombinations(fields: Record<string, unknown>): WeaponCombinationWalk[] {
+  const template = fields['Object Template'] as Record<string, unknown> | undefined;
+  const combinations = template?.['Combinations'];
+  if (!Array.isArray(combinations)) return [];
+  const result: WeaponCombinationWalk[] = [];
+  for (const combo of combinations as Array<Record<string, unknown>>) {
+    const combination = combo['Combination'] as Record<string, unknown> | undefined;
+    const item = combination?.['Object Mod Template Item'] as Record<string, unknown> | undefined;
+    if (!item) continue;
+    const name = typeof combination?.['Name'] === 'string' ? (combination['Name'] as string) : '';
+    const modFormIds: string[] = [];
+    const includes = item['Includes'];
+    if (Array.isArray(includes)) {
+      for (const inc of includes as Array<Record<string, unknown>>) {
+        if (typeof inc['Mod'] === 'string') modFormIds.push(inc['Mod'] as string);
+      }
+    }
+    result.push({ name, modFormIds });
+  }
+  return result;
+}
+
 function templateCombinationItems(fields: Record<string, unknown>): Array<Record<string, unknown>> {
   const template = fields['Object Template'] as Record<string, unknown> | undefined;
   const combinations = template?.['Combinations'];

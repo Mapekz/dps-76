@@ -84,6 +84,21 @@ describe('build codec', () => {
     expect(decoded!.warnings).toEqual([]);
   });
 
+  it('preserves positional legendary gaps for equipped uniques (Salt Swift at ★3)', async () => {
+    const state = stateFrom([{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }]);
+    expect(state.player.weapon?.legendaryEffects).toEqual([
+      null,
+      null,
+      'mod_Legendary_Weapon3_Guns_ReloadSpeed',
+    ]);
+    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    expect(decoded!.state.player.weapon?.legendaryEffects).toEqual([
+      null,
+      null,
+      'mod_Legendary_Weapon3_Guns_ReloadSpeed',
+    ]);
+  });
+
   it('round-trips perks through the N&D key dictionary', async () => {
     const state = stateFrom([
       ...(['strength', 'perception', 'endurance', 'charisma', 'intelligence', 'agility', 'luck'] as const).map(

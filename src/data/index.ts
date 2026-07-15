@@ -27,6 +27,8 @@ export function getWeapons(mode: GameMode): Record<string, Weapon> {
   return getDataset(mode).weapons;
 }
 
+export { getUniques, getUniqueById, getEquippedUnique, getUniquesForWeapon } from './uniques';
+
 export function getBodyArmor(mode: GameMode) {
   return getDataset(mode).bodyArmor;
 }
