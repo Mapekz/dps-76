@@ -690,41 +690,6 @@ export function translate(
 }
 
 /**
- * esm CLI quirk (verified via `esm get --raw` byte inspection on
- * GuerrillaExpert01/GunslingerExpert01 vs GuerrillaMaster01/GunslingerMaster01,
- * 2026-07-12): when a PERK record's Effects list pairs an "Ability" entry
- * with an "Entry Point" entry, the ENTRY POINT's own trailing subrecords
- * (PRKC/CTDA "Perk Conditions" + EPFT/EPFD "Float") are attached by the esm
- * tool's JSON serializer to the PRECEDING Ability entry instead of their true
- * owner. The raw bytes prove ownership: an Ability entry is always a bare
- * `PRKE+DATA+PRKF` triple with no scalar param of its own, so a trailing
- * Float/Perk-Conditions group can ONLY belong to the following Entry Point.
- * (30 PERK records carry this pattern game-wide; Guerrilla/Gunslinger Expert
- * are two of them — Guerrilla/Gunslinger MASTER don't, because their Entry
- * Point effect already comes first in the array and so already owns its own
- * group.) Reassign in place before parsing: Perk Conditions are COPIED (the
- * Ability grant needs its own gate too — it's what the shared PRKC actually
- * gates in-game), Float is MOVED (Ability entries never consume it; only the
- * Entry Point's function reads it).
- */
-export function repairMisattributedPerkEntryFields(effects: Array<Record<string, unknown>>): void {
-  const typeName = (e: Record<string, unknown>): unknown => {
-    const header = e['Effect Header'] as Record<string, unknown> | undefined;
-    const type = header?.['Effect Type'] as Record<string, unknown> | undefined;
-    return type?.['name'];
-  };
-  for (let i = 0; i < effects.length - 1; i++) {
-    const cur = effects[i];
-    const next = effects[i + 1];
-    if (typeName(cur) === 'Ability' && typeName(next) === 'Entry Point' && typeof cur['Float'] === 'number' && typeof next['Float'] !== 'number') {
-      next['Perk Conditions'] = cur['Perk Conditions'];
-      next['Float'] = cur['Float'];
-      delete cur['Float'];
-    }
-  }
-}
-
-/**
  * Granted-perk chase (2026-07-10): Script-archetype legendary MGEFs carry a
  * "Perk to Apply" whose PERK record holds the real stats as entry-point
  * effects (Executioner's: `Mod Weapon DMG Bonus Mult` +0.5, target HP ≤ GLOB
@@ -758,7 +723,6 @@ export async function translateGrantedPerk(
   const perkEffects = (effects as Array<Record<string, unknown>>)
     .map(item => item['Effect'] as Record<string, unknown> | undefined)
     .filter((e): e is Record<string, unknown> => !!e);
-  repairMisattributedPerkEntryFields(perkEffects);
 
   for (const e of perkEffects) {
     const header = (e['Effect Header'] ?? {}) as Record<string, unknown>;

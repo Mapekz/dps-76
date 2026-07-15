@@ -15,7 +15,6 @@ import {
   collectConditionFormIds,
   collectConditionGlobalIds,
   parseMagicEffects,
-  repairMisattributedPerkEntryFields,
   resolveConditionForms,
   translateMagicEffect,
   type SpellEffect,
@@ -166,12 +165,7 @@ export function toGeneratedPerkCard(record: EsmRecord): ToGeneratedPerkCardResul
 function getEffects(record: EsmRecord): Array<Record<string, unknown>> {
   const effects = record.fields['Effects'];
   if (!Array.isArray(effects)) return [];
-  const parsed = effects.map(e => (e as Record<string, unknown>)['Effect'] as Record<string, unknown>);
-  // esm CLI quirk repair (mgef.ts): Ability+EntryPoint combo records
-  // (Guerrilla/Gunslinger Expert among them) have the Entry Point's own
-  // Float/Perk Conditions misattached to the preceding Ability entry.
-  repairMisattributedPerkEntryFields(parsed);
-  return parsed;
+  return effects.map(e => (e as Record<string, unknown>)['Effect'] as Record<string, unknown>);
 }
 
 function parsePerkEffect(effect: Record<string, unknown>): PerkEffect {
@@ -295,11 +289,8 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
     }
   });
 
-  // PCRD (perk-card) join: 401 PCRD records total. `esm list --type PCRD`
-  // has a CLI gap (returns 0), so `search('*', { type: 'PCRD', limit: 0 })`
-  // is used instead — verified to return all 401 rows (search's limit:0 means
-  // "no limit", unlike list's limit:0 CLI bug, which returns []).
-  const pcrdRows = await client.search('*', { type: 'PCRD', limit: 0 });
+  // PCRD (perk-card) join: 401 PCRD records total.
+  const pcrdRows = await client.list('PCRD');
   const formIdToFamily = new Map<string, string>();
   for (const [family, familyRecords] of families) {
     for (const r of familyRecords) formIdToFamily.set(r.header.form_id, family);

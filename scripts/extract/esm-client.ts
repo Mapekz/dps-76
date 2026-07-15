@@ -32,7 +32,8 @@ export interface EsmRefRow {
  * Thin wrapper around the `esm` CLI (one-shot `-p` mode with a warm daemon).
  *
  * Quirks handled here:
- * - `list --limit 0` returns [] (CLI bug) — always pass an explicit large limit.
+ * - `list()` defaults to an explicit large limit rather than `--limit 0`
+ *   (unlimited) — no known reason it needs to now, just an established habit.
  * - `search` requires "*" (not "") to match all records.
  * - `get` results are memo-cached per formid/edid — keyword and damage-type
  *   formids repeat across thousands of records.
@@ -116,9 +117,10 @@ export class EsmClient {
 
   /**
    * Records that reference `target` (reverse lookup). Cached.
-   * Always pass a formid — the CLI misparses numeric editor_ids when it
-   * auto-detects the target kind — and an explicit large limit (the default
-   * of 100 silently truncates popular records like the .44).
+   * Always pass an explicit large limit (the CLI default of 100 silently
+   * truncates popular records like the .44). This wrapper also always passes
+   * `--formid` explicitly, which skips the CLI's target-kind auto-detection
+   * (and the ambiguity checks that come with it) entirely.
    *
    * `type` narrows to one 4-char referrer record type server-side (e.g.
    * `OMOD`); `paths` annotates each row with the JSON field path(s) from the
