@@ -36,11 +36,18 @@ the Team wired to `wholeDamage` via manual uptime inputs
 (toggle groups over sliders for small discrete ranges — also applied to
 teammate count 0–3 and enemy group size 1–5+).
 
-`ap-and-accuracy.md` was renamed to [ap-regen.md](ap-regen.md) and rescoped
-2026-07-13: VATS hit-chance/accuracy is now permanently out of scope (closed
-box, not just deferred), and the doc's remaining scope is VATS AP regen/sec
-sources instead (Conductor's active on-crit regen already ships; Lone
-Wanderer's passive solo regen and any armor-sourced passive regen do not).
+Removed as **completed** on 2026-07-15: `team-mechanics.md` (teammate count
+moved to a dedicated Team section; United Ordeal wired via the
+`GetPlayerTeammateCount ≥ N` extractor branch + condition-aware SPECIAL fold;
+public team bonuses — Casual +INT / Exploration +END — modeled in
+`public-teams.ts`) and `ap-regen.md` (originally `ap-and-accuracy.md`,
+renamed and rescoped 2026-07-13 once VATS hit-chance/accuracy was ruled
+permanently out of scope; VATS AP regen, AP cost, max AP, and AP-scaled
+damage fully shipped — race-based %-of-max regen model, Conductor's, Lone
+Wanderer, Number Cruncher, hydration, and Packin' Light all wired; the five
+remaining in-game golden-case measurements moved to
+[measurement-backlog.md](measurement-backlog.md)) — recover via git history;
+shipped detail lives in `docs/assumptions.md`.
 
 ## Weapon-mod selection sweep (added 2026-07-14, CLOSED 2026-07-14)
 
@@ -65,36 +72,26 @@ One-off deferral: mole-miner-gauntlet Extra Claw damage decrease → noted in
 
 Order re-confirmed by the user 2026-07-14 (wholeDamage perks → measurement
 backlog → team mechanics; wholeDamage shipped same day, see the removal note
-above).
+above). Team mechanics and VATS AP regen — next in that line — both shipped
+2026-07-15 (see the removal note above).
 
 1. **Measurement backlog** — [measurement-backlog.md](measurement-backlog.md).
    Perk weapon-stat fold gap (self-contained engine fix, no blockers) +
    in-game golden-case queue (legendary effects extracting zero modifiers,
-   launcher pip-boy summing verification, Carnivore/Herbivore confirmations).
-2. **Team mechanics** — [team-mechanics.md](team-mechanics.md). Teammate
-   requirement is invisible in the UI, United Ordeal is fully inert
-   (unresolved teammate condition + conditional SPECIAL never folds), and
-   public team bonuses (Casual +INT / Exploration +END) aren't modeled at
-   all. Scoped 2026-07-13; no blockers.
-3. **VATS AP regen** — [ap-regen.md](ap-regen.md). Rescoped 2026-07-13:
-   VATS hit-chance/accuracy dropped permanently (closed-box formula, not
-   worth chasing). Remaining scope is AP regen/sec sources — Conductor's
-   (active, on-crit) already ships; Lone Wanderer's passive solo AP regen
-   is dead on an unmapped curve AV, and passive armor-sourced regen (e.g. a
-   "Powered"-style effect) hasn't been located yet (no armor-omod
-   extraction pipeline exists at all — see the doc).
-4. **Popular builds / presets** — [popular-builds.md](popular-builds.md).
+   launcher pip-boy summing verification, Carnivore/Herbivore confirmations,
+   AP regen goldens).
+2. **Popular builds / presets** — [popular-builds.md](popular-builds.md).
    All dependencies (perk data, VATS crit, sneak) are done; just needs the
    preset-selector UI + 3 canned N&D configs.
-5. **PTS toggle** — [pts-toggle.md](pts-toggle.md). Smallest mechanical win
+3. **PTS toggle** — [pts-toggle.md](pts-toggle.md). Smallest mechanical win
    whenever picked up: un-disable the Header `Switch`, wire it to
    `setMode`. Low value until a genuinely different PTS dump exists (pts
    re-exports live today).
-6. **Melee cadence** — [melee-cadence.md](melee-cadence.md). Real
+4. **Melee cadence** — [melee-cadence.md](melee-cadence.md). Real
    per-weapon `animDelaySec` for melee replacing the 1 swing/sec stub.
    (The old 1h/2h weaponClass split is dropped — no perk or OMOD in the
    current dump gates on handedness; see the doc.)
-7. **Armor mods — outgoing damage** — [armor-mods-outgoing.md](armor-mods-outgoing.md).
+5. **Armor mods — outgoing damage** — [armor-mods-outgoing.md](armor-mods-outgoing.md).
    Narrowed 2026-07-13 to specific mods: Unyielding, Nocturnal (caution — a
    weapon legendary already extracted under this name; confirm it's the
    right target before building an armor one), 2-star SPECIAL armor bonuses,
@@ -103,9 +100,9 @@ above).
    HP-for-AP "blood sacrifice" VATS builds), plus a handful more to be swept
    once the pipeline exists. Not actually unblocked as the doc previously
    claimed — no armor OMOD/legendary extraction pipeline exists yet at all;
-   building one is now a prerequisite, shared with `ap-regen.md`'s "Powered"
-   chase.
-8. **Last, tied — Enemy table & mitigation, and Armor mods — incoming damage**:
+   building one is now a prerequisite, shared with the armor-sourced AP
+   "Powered" chase (moved here from the closed `ap-regen.md`).
+6. **Last, tied — Enemy table & mitigation, and Armor mods — incoming damage**:
    - **Enemy table & mitigation** — [phase-3-enemies.md](phase-3-enemies.md).
      Spike partially done 2026-07-12: BPTD body-part/weakpoint extraction +
      the Target section race/body-part picker already shipped. Remaining:
@@ -116,7 +113,8 @@ above).
      per-enemy `{perHit, sustainedDps, retainedPct, ttk}` → `ui/table.tsx`,
      flip `ENEMY_TABLE_ENABLED`. Unlocks armor incoming-DR, cripple-speed,
      and on-kill AP restores. (No longer motivated by VATS-accuracy
-     relevance — that scope is permanently dropped, see `ap-regen.md`.)
+     relevance — that scope is permanently dropped, see the removal note
+     above.)
    - **Armor mods — incoming damage** — [armor-mods-incoming.md](armor-mods-incoming.md).
      WWR/Bolstering/Overeater's DR — blocked on the mitigation engine above.
 

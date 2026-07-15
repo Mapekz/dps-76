@@ -1109,7 +1109,7 @@ ESM-proven via two parallel mechanisms (both verified in the 20260710 dump):
 - **Manual-aim hit rate**: `PlayerConditions.hitRatePct` (10–100, default
   100) scales free-aim **SUSTAINED** dps only — never per-hit, never burst,
   never VATS (VATS accuracy is assumed 100%; hit-chance modeling is
-  permanently out of scope — closed-box formula, see `dps-todos/ap-regen.md`).
+  permanently out of scope — closed-box formula, rescope note 2026-07-13).
   Models realistic misses (movement, target size): a missed shot still costs
   the time/ammo but deals no damage, so scaling the steady-state dps by the
   landed fraction is equivalent to modeling individual misses without adding

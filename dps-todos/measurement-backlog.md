@@ -45,6 +45,16 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
 - [ ] **Cremator Slow-Burning Tank** (new 2026-07-14) — confirm the tier-17
       curve (53 @ 50) over 12s replaces (not stacks with) the base tier-13/6s
       burn.
+- [ ] **AP regen goldens** (moved from `ap-regen.md`, CLOSED and removed
+      2026-07-15) — five `apRegenPerSec`/`perHit` null goldens in
+      `golden/cases.json`: hydrated baseline 17.0 AP/s, power-armor baseline
+      8.5 AP/s (pins the PowerArmorRace halving), Lone Wanderer solo
+      20.8 AP/s, Company Tea 45.4 AP/s, Number Cruncher +32% pip-boy damage.
+      Measuring the baseline at two different AGI values would also
+      cross-check the %-of-max-AP rate semantics. Note the 2026-07-15
+      correction: passive regen no longer feeds the uptime calc (doesn't
+      tick during sustained VATS fire), but these goldens still pin
+      `regenPerSec` itself.
 - [ ] Negative-MUL netting edge (low priority — zero-base reasoning is solid).
 - [ ] Optional: Carnivore ×2.5 under Strange in Numbers; Rudy's Pozole
       non-scaling exemption; Barbarian's +1 STR/kill clamp-at-10 and decay.
@@ -92,8 +102,9 @@ outgoing-DPS calculator (permanently, unless marked *future*).
 ### Out of scope / no action (values decoded & documented, nothing to model)
 
 - **V.A.T.S. Enhanced** `0x00524153`: +50pp VATS hit chance (`STAT_VATSAccuracy`)
-  — **not an AP effect**; VATS accuracy is permanently out of scope per
-  `ap-regen.md` (engine hardcodes 100%). Drops off the queue entirely.
+  — **not an AP effect**; VATS accuracy is permanently out of scope, closed
+  box, engine hardcodes 100% (rescope note 2026-07-13, formerly tracked in
+  the closed `ap-regen.md`). Drops off the queue entirely.
 - **Vampire's** `0x00527F84`: 2% max-HP over 2s on hit (self-heal).
   **Steadfast** `0x004F5772`: +50 player DR while ADS. **Resilient**
   `0x004F5777`: +500 player resists while reloading. **Blocker**

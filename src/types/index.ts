@@ -94,7 +94,8 @@ export interface PlayerConditions {
    * Manual-aim (free-aim) hit rate %, 10-100, default 100. Models realistic
    * misses (movement, target size) by scaling free-aim SUSTAINED dps only
    * (not per-hit, not burst, not VATS — VATS accuracy is assumed 100%,
-   * hit-chance modeling permanently out of scope, see dps-todos/ap-regen.md).
+   * hit-chance modeling permanently out of scope, see docs/assumptions.md
+   * "Manual-aim hit rate").
    */
   hitRatePct?: number;
   /**

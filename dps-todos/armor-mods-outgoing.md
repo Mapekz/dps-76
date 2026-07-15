@@ -16,8 +16,8 @@ been chased from the ESM — `src/data/live/armor.ts` and
 mod slots modeled at all). Building an armor-omod extraction path (new
 `extract-armor-omods.ts`, or extending `extract-omods.ts`'s attach-point
 matching to `ARMO`/`ARMA` records) is now a prerequisite for most of this
-doc's scope — shared with [ap-regen.md](ap-regen.md)'s "Powered" chase and
-with `armor-mods-incoming.md`.
+doc's scope — shared with the armor-sourced AP "Powered" chase (inherited
+from the closed `ap-regen.md`, see below) and with `armor-mods-incoming.md`.
 
 ## Scope — narrowed to specific mods (user priority call, 2026-07-13)
 
@@ -56,8 +56,9 @@ with `armor-mods-incoming.md`.
 - **Auto-Stim legendary / Medic Pump**: user-named HP-regen sources for a
   "blood sacrifice" VATS build (spends HP instead of AP for VATS shots).
   Not yet located in any generated data — `esm-walk` from scratch to confirm
-  exact names/mechanics. Note this interacts with AP economy
-  ([ap-regen.md](ap-regen.md)) more than pure damage — likely needs an
+  exact names/mechanics. Note this interacts with AP economy (see
+  `docs/assumptions.md` "VATS AP economy") more than pure damage — likely
+  needs an
   HP-regen concept in the engine that doesn't exist yet, not just a `dbm`
   bucket. Scope narrowly to the DPS-relevant angle (does HP-for-AP spending
   change sustained DPS); a full HP-pool/regen model is out of scope unless
