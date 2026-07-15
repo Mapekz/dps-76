@@ -1,5 +1,5 @@
 import type { GameMode } from '@/types';
-import type { GeneratedBodyPartRace } from '@/types/generated';
+import type { GeneratedBodyPart, GeneratedBodyPartRace } from '@/types/generated';
 import { getDataset } from './dataset';
 
 /**
@@ -14,6 +14,26 @@ export function getBodyPartRaces(mode: GameMode): GeneratedBodyPartRace[] {
 
 export function getBodyPartRace(mode: GameMode, raceId: string): GeneratedBodyPartRace | undefined {
   return getDataset(mode).bodyPartRaces.find(r => r.id === raceId);
+}
+
+/**
+ * The neutral "default" body part for a race — the ×1.00 part the Target
+ * picker/chip fall back to when not aiming. Prefer the torso when it's ×1.00
+ * (Human & co.); otherwise the alphabetically-first ×1.00 part (Super Mutant's
+ * limbs, EN06's Ultragenetic Shield System). undefined only for no/unknown race
+ * or a race with no ×1.00 part (none exist in current data — all 83 have one).
+ */
+export function getDefaultBodyPart(
+  mode: GameMode,
+  raceId: string | null | undefined
+): GeneratedBodyPart | undefined {
+  if (!raceId) return undefined;
+  const race = getBodyPartRace(mode, raceId);
+  if (!race) return undefined;
+  const ones = race.parts.filter(p => p.dmgMult === 1.0);
+  const torso = ones.find(p => p.partType === 'Torso');
+  if (torso) return torso;
+  return [...ones].sort((a, b) => a.name.localeCompare(b.name))[0];
 }
 
 export interface ResolvedTargetBodyPart {

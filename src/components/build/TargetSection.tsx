@@ -9,7 +9,13 @@ import { Slider } from '@/components/ui/slider';
 import { ToggleGroup } from '@/components/ui/toggle-group';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
-import { getBodyPartRaces, getBodyPartRace, getCrippablePartCount, resolveTargetBodyPart } from '@/data/bodyparts';
+import {
+  getBodyPartRaces,
+  getBodyPartRace,
+  getCrippablePartCount,
+  getDefaultBodyPart,
+  resolveTargetBodyPart,
+} from '@/data/bodyparts';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions, type EnemyConditions } from '@/types';
 import type { BodyPartRaceCategory } from '@/types/generated';
 import { SectionTrigger } from './SectionTrigger';
@@ -60,9 +66,9 @@ const TARGET_CATEGORY_LABELS: Record<BodyPartRaceCategory, string> = {
 const TARGET_CATEGORY_ORDER: BodyPartRaceCategory[] = ['raid', 'infestation', 'headhunt', 'standard'];
 
 // Sentinel picker value for "no part picked" — disarms aiming, falls back to
-// the torso default. Distinct from any real BPTD part name (verified against
-// the live extraction — see docs/assumptions.md if that ever changes).
-const TORSO_OPTION = '__torso_default__';
+// the race's neutral ×1.00 default part. Distinct from any real BPTD part name
+// (verified against the live extraction — see docs/assumptions.md if that ever changes).
+const DEFAULT_OPTION = '__default_body_part__';
 
 export function TargetSection() {
   const { mode } = useGameMode();
@@ -83,6 +89,7 @@ export function TargetSection() {
       .sort((a, b) => a.label.localeCompare(b.label))
   );
   const selectedRace = conditions.targetRace ? getBodyPartRace(mode, conditions.targetRace) : undefined;
+  const defaultPart = getDefaultBodyPart(mode, conditions.targetRace);
   const isAiming = player.conditions.isAimingAtWeakpoint;
   // The mult that WOULD apply if aiming (single source of truth, shared with
   // the engine input and the results pill) — the picker label shows what's
@@ -95,21 +102,23 @@ export function TargetSection() {
   // differing only by partType) render duplicate options + duplicate React
   // keys — collapse by name. The only same-name group across all 79 races IS
   // the Spouts pair (verified 2026-07-15), so nothing lossy happens; L/R
-  // limbs have distinct names and stay separate. Also drop the part that's
-  // torso-typed AND ×1.00 — that's exactly the TORSO_OPTION default, so
-  // listing it again would be a redundant no-op entry (real armored/weakpoint
-  // torsos with a mult ≠ 1.00, e.g. a Deathclaw's Belly, stay as distinct
-  // aimable options).
+  // limbs have distinct names and stay separate. Fold out the neutral default
+  // part (prefer torso when ×1.00, else alphabetically-first ×1.00) so it
+  // isn't listed twice — guard so a stale share-URL aimed at that exact part
+  // still shows in the combobox.
   const uniqueParts = selectedRace
-    ? [...new Map(selectedRace.parts.map(p => [p.name, p])).values()].filter(
-        p => !(p.partType === 'Torso' && p.dmgMult === 1.0)
-      )
+    ? [...new Map(selectedRace.parts.map(p => [p.name, p])).values()]
+        .filter(
+          p =>
+            p.name !== defaultPart?.name || (isAiming && conditions.targetBodyPart === p.name)
+        )
+        .sort((a, b) => a.name.localeCompare(b.name))
     : [];
   const partOptions = [
-    { value: TORSO_OPTION, label: 'Torso — ×1.00 (default)' },
+    { value: DEFAULT_OPTION, label: `${defaultPart?.name ?? 'Neutral'} — ×1.00 (default)` },
     ...uniqueParts.map(p => ({ value: p.name, label: `${p.name} — ×${p.dmgMult.toFixed(2)}` })),
   ];
-  const pickerValue = isAiming ? (conditions.targetBodyPart ?? TORSO_OPTION) : TORSO_OPTION;
+  const pickerValue = isAiming ? (conditions.targetBodyPart ?? DEFAULT_OPTION) : DEFAULT_OPTION;
 
   const setAiming = (value: boolean) => dispatch({ type: 'condition/set', key: 'isAimingAtWeakpoint', value });
 
@@ -118,7 +127,7 @@ export function TargetSection() {
   // combobox reports as null) disarms it but keeps targetBodyPart as memory,
   // so re-arming (via this picker or the results pill) restores the same part.
   const selectBodyPart = (part: string | null) => {
-    if (!part || part === TORSO_OPTION) {
+    if (!part || part === DEFAULT_OPTION) {
       setAiming(false);
       return;
     }
@@ -216,9 +225,10 @@ export function TargetSection() {
             </div>
           )}
           <p className="text-muted-foreground text-xs">
-            Torso (×1.00) is the default; picking a body part applies its multiplier immediately — no need to flip a
-            separate switch. 1.5 is a standard humanoid headshot (Super Mutants take 1.25); below 1.0 models armored
-            parts like the Mirelurk shell.
+            The neutral default is the race's ×1.00 part (torso when it's ×1.00, otherwise the first alphabetically);
+            picking a body part applies its multiplier immediately — no need to flip a separate switch. 1.5 is a
+            standard humanoid headshot (Super Mutants take 1.25); below 1.0 models armored parts like the Mirelurk
+            shell.
           </p>
 
           <div className="space-y-1.5">

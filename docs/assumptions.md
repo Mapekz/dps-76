@@ -1736,6 +1736,10 @@ ghoul perk effects gate on it with `GetValue(Rads) ≥ N` condition rows.
   Mirelurk shell 0.15×. The Target section's enemy + part picker resolves the
   engine's `weakpointMult` from this; no pick = the custom multiplier input
   (default 1.5, the standard humanoid headshot — was 2.0 pre-2026-07-12).
+  The neutral "not aiming" default in the picker/chip is labeled after a real
+  ×1.00 part (prefer torso when it's ×1.00, else alphabetically-first ×1.00) —
+  not a fabricated torso. Engine behavior is unchanged: not aiming still
+  models a flat ×1.00 torso-location hit regardless of the stored part.
 - **`ctx.bodyPart` location is decoupled from the multiplier** (2026-07-15,
   fixing Center Masochist wrongly firing on limb hits and wrongly not firing
   on armored/weakpoint torsos): `weakpointBonus` still keys purely on
