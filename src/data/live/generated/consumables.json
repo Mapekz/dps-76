@@ -63,8 +63,7 @@
   ],
   "notes": [
    "MirelurkQueenMeatTasty: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "MirelurkQueenMeatTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "MirelurkQueenMeatTasty: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "MirelurkQueenMeatTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -104,8 +103,7 @@
   "notes": [
    "AppalachiliCooked_RSVP02: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "AppalachiliCooked_RSVP02: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "AppalachiliCooked_RSVP02: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "AppalachiliCooked_RSVP02: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "AppalachiliCooked_RSVP02: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -340,6 +338,34 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_AwesomeTales07_Potion",
+  "formId": "0x0043039D",
+  "name": "Astoundingly Awesome Tales 7",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0043039D:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0043039D",
+     "edid": "Magazine_AwesomeTales07_Potion",
+     "name": "Astoundingly Awesome Tales 7"
+    },
+    "bucket": "apMax",
+    "op": "ADD",
+    "value": 25,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "OpossumMeatCooked",
   "formId": "0x004E722B",
   "name": "Awesome Opossum Bacon",
@@ -361,8 +387,7 @@
   ],
   "notes": [
    "OpossumMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "OpossumMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "OpossumMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "OpossumMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -689,7 +714,6 @@
   "notes": [
    "SSE_SusanSoothinCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "SSE_SusanSoothinCooked: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "SSE_SusanSoothinCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
    "SSE_SusanSoothinCooked: MGEF FortifyXPBonusFood: no route for AV STAT_XPMult — needs mapping"
   ],
   "category": "drink",
@@ -703,6 +727,82 @@
   ],
   "foodScalableModifierIds": [
    "0x007B26BB:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "BlackberryHoneyCrispGourmet",
+  "formId": "0x003D5F3E",
+  "name": "Blackberry Honey Crisp",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x003D5F3E:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x003D5F3E",
+     "edid": "BlackberryHoneyCrispGourmet",
+     "name": "Blackberry Honey Crisp"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 5,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "BlackberryHoneyCrispGourmet: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "BlackberryHoneyCrispGourmet: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPointRegen|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypePastry",
+   "MealTypeGourmet",
+   "IngredientTypeFruit",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x003D5F3E:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "BlackberryFruitCookedJuice",
+  "formId": "0x00294521",
+  "name": "Blackberry Juice",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00294521:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00294521",
+     "edid": "BlackberryFruitCookedJuice",
+     "name": "Blackberry Juice"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "BlackberryFruitCookedJuice: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "BlackberryFruitCookedJuice: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
+  ],
+  "category": "drink",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPointRegen|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "MealTypeCooked",
+   "IngredientTypeFruit"
+  ],
+  "foodScalableModifierIds": [
+   "0x00294521:0"
   ],
   "obtainable": true
  },
@@ -836,8 +936,7 @@
   "notes": [
    "BlightVegetableCookedSoup: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "BlightVegetableCookedSoup: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "BlightVegetableCookedSoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "BlightVegetableCookedSoup: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "BlightVegetableCookedSoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -876,8 +975,7 @@
   ],
   "notes": [
    "BloodbugMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "BloodbugMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "BloodbugMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "BloodbugMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -1435,9 +1533,7 @@
   ],
   "notes": [
    "BrainBombsGourmet: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "BrainBombsGourmet: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "BrainBombsGourmet: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
-   "BrainBombsGourmet: MGEF RestoreActionPointsFood: no route for AV ActionPoints — needs mapping"
+   "BrainBombsGourmet: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -1476,8 +1572,7 @@
   "notes": [
    "BrainFungusVegetableCookedSoup: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "BrainFungusVegetableCookedSoup: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "BrainFungusVegetableCookedSoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "BrainFungusVegetableCookedSoup: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "BrainFungusVegetableCookedSoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -1516,8 +1611,7 @@
   ],
   "notes": [
    "ScorchBeastMeatBrainCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "ScorchBeastMeatBrainCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "ScorchBeastMeatBrainCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "ScorchBeastMeatBrainCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -1844,8 +1938,7 @@
   ],
   "notes": [
    "MirelurkQueenMeatTasty_Cannery: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "MirelurkQueenMeatTasty_Cannery: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "MirelurkQueenMeatTasty_Cannery: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "MirelurkQueenMeatTasty_Cannery: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -1885,8 +1978,7 @@
   ],
   "notes": [
    "OpossumMeatCooked_Cannery: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "OpossumMeatCooked_Cannery: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "OpossumMeatCooked_Cannery: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "OpossumMeatCooked_Cannery: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -1925,8 +2017,7 @@
   "notes": [
    "SCORE_S25_BlightVegetableCookedSoup_Cannery_G2: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "SCORE_S25_BlightVegetableCookedSoup_Cannery_G2: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "SCORE_S25_BlightVegetableCookedSoup_Cannery_G2: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "SCORE_S25_BlightVegetableCookedSoup_Cannery_G2: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "SCORE_S25_BlightVegetableCookedSoup_Cannery_G2: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -1966,9 +2057,7 @@
   ],
   "notes": [
    "SCORE_25_BrainBombsGourmet_Cannery_G1: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "SCORE_25_BrainBombsGourmet_Cannery_G1: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "SCORE_25_BrainBombsGourmet_Cannery_G1: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
-   "SCORE_25_BrainBombsGourmet_Cannery_G1: MGEF RestoreActionPointsFood: no route for AV ActionPoints — needs mapping"
+   "SCORE_25_BrainBombsGourmet_Cannery_G1: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -2007,8 +2096,7 @@
   ],
   "notes": [
    "SCORE_25_ScorchBeastMeatBrainCooked_Cannery_G1: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "SCORE_25_ScorchBeastMeatBrainCooked_Cannery_G1: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "SCORE_25_ScorchBeastMeatBrainCooked_Cannery_G1: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "SCORE_25_ScorchBeastMeatBrainCooked_Cannery_G1: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -2021,6 +2109,46 @@
   ],
   "foodScalableModifierIds": [
    "0x008D385A:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "CornVegetableCookedSoup_Cannery",
+  "formId": "0x007FDA65",
+  "name": "Canned Corn Soup",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x007FDA65:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x007FDA65",
+     "edid": "CornVegetableCookedSoup_Cannery",
+     "name": "Canned Corn Soup"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 3,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "CornVegetableCookedSoup_Cannery: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "CornVegetableCookedSoup_Cannery: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
+   "CornVegetableCookedSoup_Cannery: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPointRegen|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeVegetable",
+   "MealTypeCooked",
+   "MealTypeSoup",
+   "MealTypeCanned_Cannery"
+  ],
+  "foodScalableModifierIds": [
+   "0x007FDA65:0"
   ],
   "obtainable": true
  },
@@ -2046,8 +2174,7 @@
   ],
   "notes": [
    "SCORE_S25_DeathclawMeatTastySouffle_Cannery_G2: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "SCORE_S25_DeathclawMeatTastySouffle_Cannery_G2: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "SCORE_S25_DeathclawMeatTastySouffle_Cannery_G2: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "SCORE_S25_DeathclawMeatTastySouffle_Cannery_G2: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -2089,8 +2216,7 @@
   "notes": [
    "GourdVegetableCookedSoup_Cannery: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "GourdVegetableCookedSoup_Cannery: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "GourdVegetableCookedSoup_Cannery: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "GourdVegetableCookedSoup_Cannery: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "GourdVegetableCookedSoup_Cannery: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -2130,8 +2256,7 @@
   "notes": [
    "MegaSlothMushroomVegetableCookedSoup_Cannery: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "MegaSlothMushroomVegetableCookedSoup_Cannery: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "MegaSlothMushroomVegetableCookedSoup_Cannery: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "MegaSlothMushroomVegetableCookedSoup_Cannery: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "MegaSlothMushroomVegetableCookedSoup_Cannery: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -2170,8 +2295,7 @@
   ],
   "notes": [
    "MirelurkQueenMeatCooked_Cannery: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "MirelurkQueenMeatCooked_Cannery: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "MirelurkQueenMeatCooked_Cannery: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "MirelurkQueenMeatCooked_Cannery: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -2185,6 +2309,44 @@
   ],
   "foodScalableModifierIds": [
    "0x007FDA59:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "AnglerMeatCooked_Cannery",
+  "formId": "0x007FDA5B",
+  "name": "Canned Poached Angler",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x007FDA5B:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x007FDA5B",
+     "edid": "AnglerMeatCooked_Cannery",
+     "name": "Canned Poached Angler"
+    },
+    "bucket": "apMax",
+    "op": "ADD",
+    "value": 20,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "AnglerMeatCooked_Cannery: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "AnglerMeatCooked_Cannery: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPoints|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeCooked",
+   "MealTypeCanned_Cannery"
+  ],
+  "foodScalableModifierIds": [
+   "0x007FDA5B:0"
   ],
   "obtainable": true
  },
@@ -2211,8 +2373,7 @@
   "notes": [
    "StingwingMeatTastyStew_Cannery: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "StingwingMeatTastyStew_Cannery: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "StingwingMeatTastyStew_Cannery: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "StingwingMeatTastyStew_Cannery: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "StingwingMeatTastyStew_Cannery: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -2251,8 +2412,7 @@
   ],
   "notes": [
    "SCORE_25_MeatWeek_TatoSaladCooked_Cannery_G1: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "SCORE_25_MeatWeek_TatoSaladCooked_Cannery_G1: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "SCORE_25_MeatWeek_TatoSaladCooked_Cannery_G1: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "SCORE_25_MeatWeek_TatoSaladCooked_Cannery_G1: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -2328,8 +2488,7 @@
   ],
   "notes": [
    "NWOT_CarnivalPie: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "NWOT_CarnivalPie: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "NWOT_CarnivalPie: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "NWOT_CarnivalPie: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -2368,8 +2527,7 @@
   ],
   "notes": [
    "CarrotFlowerHerbCookedNectar: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "CarrotFlowerHerbCookedNectar: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "CarrotFlowerHerbCookedNectar: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "CarrotFlowerHerbCookedNectar: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -2407,8 +2565,7 @@
   "notes": [
    "CarrotVegetableCookedSoup: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "CarrotVegetableCookedSoup: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "CarrotVegetableCookedSoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "CarrotVegetableCookedSoup: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "CarrotVegetableCookedSoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -2446,8 +2603,7 @@
   ],
   "notes": [
    "CatMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "CatMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "CatMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "CatMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -2485,8 +2641,7 @@
   ],
   "notes": [
    "E02A_Meat_ChallysFeed: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "E02A_Meat_ChallysFeed: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "E02A_Meat_ChallysFeed: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "E02A_Meat_ChallysFeed: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -2524,8 +2679,7 @@
   "notes": [
    "Milk_Chally: MGEF RestoreRadsFood: no route for AV Rads — needs mapping",
    "Milk_Chally: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "Milk_Chally: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "Milk_Chally: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "Milk_Chally: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -2559,8 +2713,7 @@
   ],
   "notes": [
    "ScorchBeastMeatLiverCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "ScorchBeastMeatLiverCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "ScorchBeastMeatLiverCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "ScorchBeastMeatLiverCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -2597,8 +2750,7 @@
   ],
   "notes": [
    "AnglerLureWeedVegetableCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "AnglerLureWeedVegetableCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "AnglerLureWeedVegetableCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "AnglerLureWeedVegetableCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -2635,8 +2787,7 @@
   ],
   "notes": [
    "Chitlins_RSVP02: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "Chitlins_RSVP02: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "Chitlins_RSVP02: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "Chitlins_RSVP02: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -2649,6 +2800,85 @@
   ],
   "foodScalableModifierIds": [
    "0x00529DDE:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "CompanyTea_RSVP02",
+  "formId": "0x00120C9B",
+  "name": "Company Tea",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00120C9B:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00120C9B",
+     "edid": "CompanyTea_RSVP02",
+     "name": "Company Tea"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 10,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "CompanyTea_RSVP02: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "CompanyTea_RSVP02: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
+   "CompanyTea_RSVP02: MGEF SURV_IncreaseDiseaseResistance_Food_Effect: no route for AV SURV_DiseaseResistance — needs mapping"
+  ],
+  "category": "drink",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPointRegen|FoodEffect|SURV_EffectTypeFoodBuff",
+   "FoodDispelEffect_ResistDisease|FoodEffect|SURV_EffectTypeDiseaseChanceMult"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeHerb",
+   "MealTypeTasty",
+   "MealTypeDelbertRSVP02"
+  ],
+  "foodScalableModifierIds": [
+   "0x00120C9B:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "MirelurkSoftshellMeatCooked",
+  "formId": "0x00046942",
+  "name": "Cooked Softshell Meat",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00046942:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00046942",
+     "edid": "MirelurkSoftshellMeatCooked",
+     "name": "Cooked Softshell Meat"
+    },
+    "bucket": "apMax",
+    "op": "ADD",
+    "value": 20,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "MirelurkSoftshellMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "MirelurkSoftshellMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPoints|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeCooked",
+   "IngredientTypeIrradiated_New",
+   "IngredientTypeDiseaseRidden_New"
+  ],
+  "foodScalableModifierIds": [
+   "0x00046942:0"
   ],
   "obtainable": true
  },
@@ -2674,8 +2904,7 @@
   ],
   "notes": [
    "CornPoneCooked_RSVP02: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "CornPoneCooked_RSVP02: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "CornPoneCooked_RSVP02: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "CornPoneCooked_RSVP02: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -2688,6 +2917,82 @@
   ],
   "foodScalableModifierIds": [
    "0x003CD0E7:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "CornVegetableCookedSoup",
+  "formId": "0x00294510",
+  "name": "Corn Soup",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00294510:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00294510",
+     "edid": "CornVegetableCookedSoup",
+     "name": "Corn Soup"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 3,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "CornVegetableCookedSoup: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "CornVegetableCookedSoup: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
+   "CornVegetableCookedSoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPointRegen|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeVegetable",
+   "MealTypeCooked",
+   "MealTypeSoup"
+  ],
+  "foodScalableModifierIds": [
+   "0x00294510:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "CorpseFlowerSeedsFruitCookedJuice",
+  "formId": "0x00294522",
+  "name": "Corpse Seed Juice",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00294522:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00294522",
+     "edid": "CorpseFlowerSeedsFruitCookedJuice",
+     "name": "Corpse Seed Juice"
+    },
+    "bucket": "apMax",
+    "op": "ADD",
+    "value": 10,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "CorpseFlowerSeedsFruitCookedJuice: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "CorpseFlowerSeedsFruitCookedJuice: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
+  ],
+  "category": "drink",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPoints|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "MealTypeCooked",
+   "IngredientTypeFruit"
+  ],
+  "foodScalableModifierIds": [
+   "0x00294522:0"
   ],
   "obtainable": true
  },
@@ -2713,8 +3018,7 @@
   ],
   "notes": [
    "CranberryMeatballGrinderGourmet: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "CranberryMeatballGrinderGourmet: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "CranberryMeatballGrinderGourmet: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "CranberryMeatballGrinderGourmet: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -2874,8 +3178,7 @@
   ],
   "notes": [
    "SquirrelMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "SquirrelMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "SquirrelMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "SquirrelMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -3042,8 +3345,7 @@
   ],
   "notes": [
    "DeathclawMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "DeathclawMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "DeathclawMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "DeathclawMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -3082,8 +3384,7 @@
   ],
   "notes": [
    "DeathclawMeatTastySouffle: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "DeathclawMeatTastySouffle: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "DeathclawMeatTastySouffle: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "DeathclawMeatTastySouffle: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -3123,8 +3424,7 @@
   ],
   "notes": [
    "DogMeatTasty: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "DogMeatTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "DogMeatTasty: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "DogMeatTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -3203,7 +3503,6 @@
   "notes": [
    "Brew_DuchessDram: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
    "Brew_DuchessDram: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
-   "Brew_DuchessDram: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
    "Brew_DuchessDram: MGEF Whiskey_Duration archetype Script — needs override"
   ],
   "category": "alcohol",
@@ -3243,8 +3542,7 @@
   ],
   "notes": [
    "Sausage_Fasnacht: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "Sausage_Fasnacht: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "Sausage_Fasnacht: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "Sausage_Fasnacht: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -3281,8 +3579,7 @@
   ],
   "notes": [
    "FirecrackerBerryFruitCookedJuice: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "FirecrackerBerryFruitCookedJuice: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "FirecrackerBerryFruitCookedJuice: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "FirecrackerBerryFruitCookedJuice: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -3620,8 +3917,7 @@
   ],
   "notes": [
    "FoxMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "FoxMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "FoxMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "FoxMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -3633,6 +3929,44 @@
   ],
   "foodScalableModifierIds": [
    "0x004E7228:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "FriedDeerskinsTasty_RSVP02",
+  "formId": "0x003E9FA4",
+  "name": "Fried Deerskins",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x003E9FA4:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x003E9FA4",
+     "edid": "FriedDeerskinsTasty_RSVP02",
+     "name": "Fried Deerskins"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 3,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "FriedDeerskinsTasty_RSVP02: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "FriedDeerskinsTasty_RSVP02: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPointRegen|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeTasty",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x003E9FA4:0"
   ],
   "obtainable": true
  },
@@ -3658,8 +3992,7 @@
   ],
   "notes": [
    "NWOT_RadroachSkewer: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "NWOT_RadroachSkewer: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "NWOT_RadroachSkewer: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "NWOT_RadroachSkewer: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -3697,8 +4030,7 @@
   ],
   "notes": [
    "NWOT_RadroachSkewer2: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "NWOT_RadroachSkewer2: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "NWOT_RadroachSkewer2: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "NWOT_RadroachSkewer2: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -3736,8 +4068,7 @@
   ],
   "notes": [
    "NWOT_RadscorpionSkewer: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "NWOT_RadscorpionSkewer: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "NWOT_RadscorpionSkewer: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "NWOT_RadscorpionSkewer: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -4351,8 +4682,7 @@
   ],
   "notes": [
    "GlowingMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "GlowingMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "GlowingMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "GlowingMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -4391,8 +4721,7 @@
   "notes": [
    "GourdVegetableCookedSoup: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "GourdVegetableCookedSoup: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "GourdVegetableCookedSoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "GourdVegetableCookedSoup: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "GourdVegetableCookedSoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -4469,8 +4798,7 @@
   ],
   "notes": [
    "HermitCrabMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "HermitCrabMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "HermitCrabMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "HermitCrabMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -4507,8 +4835,7 @@
   ],
   "notes": [
    "BURN_RadhogMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "BURN_RadhogMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "BURN_RadhogMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "BURN_RadhogMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -4545,8 +4872,7 @@
   ],
   "notes": [
    "RadroachMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "RadroachMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "RadroachMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "RadroachMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -4694,8 +5020,7 @@
   ],
   "notes": [
    "MoleratMeatTasty: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "MoleratMeatTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "MoleratMeatTasty: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "MoleratMeatTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -4735,8 +5060,7 @@
   ],
   "notes": [
    "NWOT_GulperStuffedFoot: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "NWOT_GulperStuffedFoot: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "NWOT_GulperStuffedFoot: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "NWOT_GulperStuffedFoot: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -4886,6 +5210,34 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_GunsAndBullets04_Potion",
+  "formId": "0x004303FE",
+  "name": "Guns and Bullets 4",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004303FE:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004303FE",
+     "edid": "Magazine_GunsAndBullets04_Potion",
+     "name": "Guns and Bullets 4"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 6,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "Magazine_GunsAndBullets07_Potion",
   "formId": "0x00430407",
   "name": "Guns and Bullets 7",
@@ -4994,13 +5346,39 @@
      "edid": "Brew_LemonadeHard",
      "name": "Hard Lemonade"
     },
+    "bucket": "apMax",
+    "op": "ADD",
+    "value": 30,
+    "conditions": []
+   },
+   {
+    "id": "0x0045DAC2:1",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0045DAC2",
+     "edid": "Brew_LemonadeHard",
+     "name": "Hard Lemonade"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 10,
+    "conditions": []
+   },
+   {
+    "id": "0x0045DAC2:2",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0045DAC2",
+     "edid": "Brew_LemonadeHard",
+     "name": "Hard Lemonade"
+    },
     "bucket": "specialLuck",
     "op": "ADD",
     "value": 3,
     "conditions": []
    },
    {
-    "id": "0x0045DAC2:1",
+    "id": "0x0045DAC2:3",
     "source": {
      "kind": "consumable",
      "formId": "0x0045DAC2",
@@ -5016,8 +5394,6 @@
   "notes": [
    "Brew_LemonadeHard: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "Brew_LemonadeHard: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "Brew_LemonadeHard: MGEF FortifyActionPointsAlcohol: no route for AV ActionPoints — needs mapping",
-   "Brew_LemonadeHard: MGEF Alcohol_APRegen: no route for AV ActionPointsRate — needs mapping",
    "Brew_LemonadeHard: MGEF LemonadeHard_Duration archetype Script — needs override"
   ],
   "category": "alcohol",
@@ -5202,8 +5578,7 @@
   ],
   "notes": [
    "Hotdog: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "Hotdog: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "Hotdog: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "Hotdog: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -5240,8 +5615,7 @@
   ],
   "notes": [
    "IguanaMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "IguanaMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "IguanaMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "IguanaMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -5279,8 +5653,7 @@
   "notes": [
    "IguanaMeatTastySoup: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "IguanaMeatTastySoup: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "IguanaMeatTastySoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "IguanaMeatTastySoup: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "IguanaMeatTastySoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -5294,6 +5667,43 @@
   ],
   "foodScalableModifierIds": [
    "0x00102157:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "SootFlowerHerbTastyTea",
+  "formId": "0x003C60F4",
+  "name": "Infused Soot Flower Tea",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x003C60F4:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x003C60F4",
+     "edid": "SootFlowerHerbTastyTea",
+     "name": "Infused Soot Flower Tea"
+    },
+    "bucket": "apMax",
+    "op": "ADD",
+    "value": 20,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "SootFlowerHerbTastyTea: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "SootFlowerHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
+  ],
+  "category": "drink",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPoints|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeHerb",
+   "MealTypeTasty"
+  ],
+  "foodScalableModifierIds": [
+   "0x003C60F4:0"
   ],
   "obtainable": true
  },
@@ -5329,7 +5739,6 @@
    }
   ],
   "notes": [
-   "SCORE_S22_Consumable_SunsetSarsaparilla_Irradiated: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
    "SCORE_S22_Consumable_SunsetSarsaparilla_Irradiated: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
    "SCORE_S22_Consumable_SunsetSarsaparilla_Irradiated: MGEF NukaColaBottlecapAdder archetype Script — needs override",
    "SCORE_S22_Consumable_SunsetSarsaparilla_Irradiated: MGEF DamageRadiationEating: no route for AV Rads — needs mapping"
@@ -5363,8 +5772,7 @@
   ],
   "notes": [
    "SeasonalFish_Meal_SummerJelliedFish: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "SeasonalFish_Meal_SummerJelliedFish: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "SeasonalFish_Meal_SummerJelliedFish: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "SeasonalFish_Meal_SummerJelliedFish: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -5542,6 +5950,58 @@
   "obtainable": true
  },
  {
+  "id": "Lemonade",
+  "formId": "0x0045CB9F",
+  "name": "Lemonade",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0045CB9F:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0045CB9F",
+     "edid": "Lemonade",
+     "name": "Lemonade"
+    },
+    "bucket": "apMax",
+    "op": "ADD",
+    "value": 4,
+    "conditions": []
+   },
+   {
+    "id": "0x0045CB9F:1",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0045CB9F",
+     "edid": "Lemonade",
+     "name": "Lemonade"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "Lemonade: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "Lemonade: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
+  ],
+  "category": "drink",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPointRegen|FoodEffect|SURV_EffectTypeFoodBuff",
+   "FoodDispelEffect_ActionPoints|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "MealTypeCooked",
+   "IngredientTypeFruit"
+  ],
+  "foodScalableModifierIds": [
+   "0x0045CB9F:0",
+   "0x0045CB9F:1"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "MutantHoundMeatCookedLight",
   "formId": "0x007331D1",
   "name": "Light Mutant Hound Chops",
@@ -5571,8 +6031,7 @@
   ],
   "notes": [
    "MutantHoundMeatCookedLight: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "MutantHoundMeatCookedLight: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "MutantHoundMeatCookedLight: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "MutantHoundMeatCookedLight: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -5618,8 +6077,7 @@
   ],
   "notes": [
    "SheepsquatchMeatCookedLight: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "SheepsquatchMeatCookedLight: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "SheepsquatchMeatCookedLight: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "SheepsquatchMeatCookedLight: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -5664,8 +6122,7 @@
   ],
   "notes": [
    "YaoGuaiMeatCookedLight: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "YaoGuaiMeatCookedLight: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "YaoGuaiMeatCookedLight: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "YaoGuaiMeatCookedLight: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -5831,6 +6288,42 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_LiveAndLove04_Potion",
+  "formId": "0x00432CCA",
+  "name": "Live & Love 4",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00432CCA:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00432CCA",
+     "edid": "Magazine_LiveAndLove04_Potion",
+     "name": "Live & Love 4"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 10,
+    "conditions": [
+     {
+      "kind": "teammateCount",
+      "count": 1,
+      "orMore": true
+     }
+    ]
+   }
+  ],
+  "notes": [
+   "Magazine_LiveAndLove04_Potion: MGEF Magazine_LiveAndLove04_UIDummyEffect archetype Script — needs override"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "Magazine_LiveAndLove05_Potion",
   "formId": "0x00432CCD",
   "name": "Live & Love 5",
@@ -5858,6 +6351,42 @@
   "notes": [
    "Magazine_LiveAndLove05_Potion: condition: HasMagicEffectKeyword(AlcoholEffect)=1",
    "Magazine_LiveAndLove05_Potion: MGEF Magazine_LiveAndLove05_UIDummyEffect archetype Script — needs override"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_LiveAndLove07_Potion",
+  "formId": "0x00432CD3",
+  "name": "Live & Love 7",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00432CD3:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00432CD3",
+     "edid": "Magazine_LiveAndLove07_Potion",
+     "name": "Live & Love 7"
+    },
+    "bucket": "apMax",
+    "op": "ADD",
+    "value": 10,
+    "conditions": [
+     {
+      "kind": "teammateCount",
+      "count": 1,
+      "orMore": true
+     }
+    ]
+   }
+  ],
+  "notes": [
+   "Magazine_LiveAndLove07_Potion: MGEF Magazine_LiveAndLove07_UIDummyEffect archetype Script — needs override"
   ],
   "category": "magazine",
   "dispelKeys": [
@@ -6003,8 +6532,7 @@
   "notes": [
    "MegaSlothMushroomVegetableCookedSoup: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "MegaSlothMushroomVegetableCookedSoup: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "MegaSlothMushroomVegetableCookedSoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "MegaSlothMushroomVegetableCookedSoup: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "MegaSlothMushroomVegetableCookedSoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -6168,6 +6696,44 @@
   "obtainable": true
  },
  {
+  "id": "MirelurkEggCooked",
+  "formId": "0x0004693E",
+  "name": "Mirelurk Egg Omelette",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0004693E:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0004693E",
+     "edid": "MirelurkEggCooked",
+     "name": "Mirelurk Egg Omelette"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "MirelurkEggCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "MirelurkEggCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPointRegen|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeEgg",
+   "MealTypeCooked",
+   "IngredientTypeMeat"
+  ],
+  "foodScalableModifierIds": [
+   "0x0004693E:0"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "MirelurkQueenMeatCooked",
   "formId": "0x0021C00C",
   "name": "Mirelurk Queen Steak",
@@ -6189,8 +6755,7 @@
   ],
   "notes": [
    "MirelurkQueenMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "MirelurkQueenMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "MirelurkQueenMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "MirelurkQueenMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -6228,8 +6793,7 @@
   ],
   "notes": [
    "MirelurkSoftshellMeatTasty: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "MirelurkSoftshellMeatTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "MirelurkSoftshellMeatTasty: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "MirelurkSoftshellMeatTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -6269,8 +6833,7 @@
   ],
   "notes": [
    "MoleratMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "MoleratMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "MoleratMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "MoleratMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -6307,8 +6870,7 @@
   ],
   "notes": [
    "MoleRatJerky: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "MoleRatJerky: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "MoleRatJerky: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "MoleRatJerky: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -6320,6 +6882,44 @@
   ],
   "foodScalableModifierIds": [
    "0x00674BBA:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "MeatWeek_BrahminCurd",
+  "formId": "0x008B73C0",
+  "name": "Moo-Moo Curd",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x008B73C0:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x008B73C0",
+     "edid": "MeatWeek_BrahminCurd",
+     "name": "Moo-Moo Curd"
+    },
+    "bucket": "apMax",
+    "op": "ADD",
+    "value": 10,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "MeatWeek_BrahminCurd: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "MeatWeek_BrahminCurd: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
+   "MeatWeek_BrahminCurd: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPoints|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "MealTypeGourmet",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x008B73C0:0"
   ],
   "obtainable": true
  },
@@ -6345,8 +6945,7 @@
   ],
   "notes": [
    "MothmanEggCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "MothmanEggCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "MothmanEggCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "MothmanEggCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -6513,8 +7112,7 @@
   ],
   "notes": [
    "MutantHoundMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "MutantHoundMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "MutantHoundMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "MutantHoundMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -6552,8 +7150,7 @@
   ],
   "notes": [
    "MutfruitFruitCookedJuice: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "MutfruitFruitCookedJuice: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "MutfruitFruitCookedJuice: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "MutfruitFruitCookedJuice: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -6590,8 +7187,7 @@
   ],
   "notes": [
    "DogMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "DogMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "DogMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "DogMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -6755,8 +7351,7 @@
   ],
   "notes": [
    "SheepsquatchMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "SheepsquatchMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "SheepsquatchMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "SheepsquatchMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -6794,7 +7389,6 @@
   "notes": [
    "P01B_MysteryMeatPieTasty: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "P01B_MysteryMeatPieTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "P01B_MysteryMeatPieTasty: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
    "P01B_MysteryMeatPieTasty: MGEF FortifyCarryWeightFood: no route for AV CarryWeight — needs mapping"
   ],
   "category": "food",
@@ -6987,9 +7581,7 @@
    }
   ],
   "notes": [
-   "NukaVictoryCandyMachine_Candy: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "NukaVictoryCandyMachine_Candy: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
-   "NukaVictoryCandyMachine_Candy: MGEF RestoreActionPointsFood: no route for AV ActionPoints — needs mapping"
+   "NukaVictoryCandyMachine_Candy: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [],
@@ -7020,8 +7612,7 @@
   ],
   "notes": [
    "NWOT_NukaBottleDog: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "NWOT_NukaBottleDog: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "NWOT_NukaBottleDog: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "NWOT_NukaBottleDog: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -7165,9 +7756,7 @@
    }
   ],
   "notes": [
-   "NukaQuantumCandyMachine_Candy: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "NukaQuantumCandyMachine_Candy: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
-   "NukaQuantumCandyMachine_Candy: MGEF RestoreActionPointsFood: no route for AV ActionPoints — needs mapping"
+   "NukaQuantumCandyMachine_Candy: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [],
@@ -7198,8 +7787,7 @@
   ],
   "notes": [
    "NWOT_NukaDog: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "NWOT_NukaDog: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "NWOT_NukaDog: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "NWOT_NukaDog: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -7219,14 +7807,27 @@
   "formId": "0x0047BC14",
   "name": "Nukashine",
   "kind": "consumable",
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0047BC14:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0047BC14",
+     "edid": "Brew_NukashineFresh",
+     "name": "Nukashine"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 50,
+    "conditions": []
+   }
+  ],
   "notes": [
    "Brew_NukashineFresh: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "Brew_NukashineFresh: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "Brew_NukashineFresh: MGEF Nukashine_Duration archetype Script — needs override",
    "Brew_NukashineFresh: MGEF Nukashine_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
    "Brew_NukashineFresh: MGEF Nukashine_FortifySprintAP: no route for AV STAT_SprintAPCost — needs mapping",
-   "Brew_NukashineFresh: MGEF Nukashine_APRegen: no route for AV ActionPointsRate — needs mapping",
    "Brew_NukashineFresh: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -7568,8 +8169,7 @@
   ],
   "notes": [
    "OwletMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "OwletMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "OwletMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "OwletMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -7606,8 +8206,7 @@
   ],
   "notes": [
    "Pemmican: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "Pemmican: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "Pemmican: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "Pemmican: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -7730,6 +8329,43 @@
   "obtainable": true
  },
  {
+  "id": "Burn_Food_SlipperCactusVeg_1",
+  "formId": "0x008468C5",
+  "name": "Pickled Prickeye",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x008468C5:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x008468C5",
+     "edid": "Burn_Food_SlipperCactusVeg_1",
+     "name": "Pickled Prickeye"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "Burn_Food_SlipperCactusVeg_1: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "Burn_Food_SlipperCactusVeg_1: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPointRegen|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeVegetable",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x008468C5:0"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "MeatWeek_PickledPumpkin",
   "formId": "0x008B73C3",
   "name": "Pickled Pumpkin",
@@ -7752,7 +8388,6 @@
   "notes": [
    "MeatWeek_PickledPumpkin: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "MeatWeek_PickledPumpkin: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "MeatWeek_PickledPumpkin: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
    "MeatWeek_PickledPumpkin: MGEF FortifyCarryWeightFood: no route for AV CarryWeight — needs mapping"
   ],
   "category": "food",
@@ -7766,6 +8401,43 @@
   ],
   "foodScalableModifierIds": [
    "0x008B73C3:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "AnglerMeatCooked",
+  "formId": "0x00110BA5",
+  "name": "Poached Angler",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00110BA5:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00110BA5",
+     "edid": "AnglerMeatCooked",
+     "name": "Poached Angler"
+    },
+    "bucket": "apMax",
+    "op": "ADD",
+    "value": 20,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "AnglerMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "AnglerMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPoints|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x00110BA5:0"
   ],
   "obtainable": true
  },
@@ -7965,8 +8637,7 @@
   ],
   "notes": [
    "PumpkinPieTasty: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "PumpkinPieTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "PumpkinPieTasty: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "PumpkinPieTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -8006,8 +8677,7 @@
   "notes": [
    "PumpkinVegetableCookedSoup: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "PumpkinVegetableCookedSoup: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "PumpkinVegetableCookedSoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "PumpkinVegetableCookedSoup: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "PumpkinVegetableCookedSoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -8076,6 +8746,43 @@
   "obtainable": true
  },
  {
+  "id": "BURN_RadhogBurntEndsCooked",
+  "formId": "0x0084B86C",
+  "name": "Radhog Burnt Ends",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0084B86C:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0084B86C",
+     "edid": "BURN_RadhogBurntEndsCooked",
+     "name": "Radhog Burnt Ends"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 10,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "BURN_RadhogBurntEndsCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "BURN_RadhogBurntEndsCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPointRegen|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x0084B86C:0"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "RadratMeatCooked",
   "formId": "0x001142D7",
   "name": "Radrat Steak",
@@ -8097,8 +8804,7 @@
   ],
   "notes": [
    "RadratMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "RadratMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "RadratMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "RadratMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -8136,8 +8842,7 @@
   ],
   "notes": [
    "RadToadEggCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "RadToadEggCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "RadToadEggCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "RadToadEggCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -8176,8 +8881,7 @@
   ],
   "notes": [
    "Storm_SE09_ChickenMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "Storm_SE09_ChickenMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "Storm_SE09_ChickenMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "Storm_SE09_ChickenMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -8192,6 +8896,43 @@
    "0x00783A49:0"
   ],
   "obtainable": false
+ },
+ {
+  "id": "MirelurkMeatCooked",
+  "formId": "0x00046941",
+  "name": "Roasted Mirelurk Meat",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00046941:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00046941",
+     "edid": "MirelurkMeatCooked",
+     "name": "Roasted Mirelurk Meat"
+    },
+    "bucket": "apMax",
+    "op": "ADD",
+    "value": 10,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "MirelurkMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "MirelurkMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPoints|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x00046941:0"
+  ],
+  "obtainable": true
  },
  {
   "id": "ScorchBeastMeatHeartCooked",
@@ -8215,8 +8956,7 @@
   ],
   "notes": [
    "ScorchBeastMeatHeartCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "ScorchBeastMeatHeartCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "ScorchBeastMeatHeartCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "ScorchBeastMeatHeartCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -8372,8 +9112,7 @@
   "notes": [
    "Moon_Rudy_Pozole: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "Moon_Rudy_Pozole: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "Moon_Rudy_Pozole: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "Moon_Rudy_Pozole: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "Moon_Rudy_Pozole: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [],
@@ -8493,6 +9232,44 @@
   "obtainable": true
  },
  {
+  "id": "Smores",
+  "formId": "0x0046D292",
+  "name": "S'mores",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0046D292:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0046D292",
+     "edid": "Smores",
+     "name": "S'mores"
+    },
+    "bucket": "apMax",
+    "op": "ADD",
+    "value": 10,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "Smores: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "Smores: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPoints|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypePastry",
+   "MealTypeTasty",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x0046D292:0"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "ScorchBeastTastyStew",
   "formId": "0x003D749E",
   "name": "Scorchbeast Mixed Meat Stew",
@@ -8553,8 +9330,7 @@
   ],
   "notes": [
    "ScorchBeastTastyStew: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "ScorchBeastTastyStew: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "ScorchBeastTastyStew: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "ScorchBeastTastyStew: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -8598,8 +9374,7 @@
   ],
   "notes": [
    "VenisonWithStarlightBerriesGourmet: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "VenisonWithStarlightBerriesGourmet: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "VenisonWithStarlightBerriesGourmet: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "VenisonWithStarlightBerriesGourmet: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -8638,8 +9413,7 @@
   ],
   "notes": [
    "RabbitMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "RabbitMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "RabbitMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "RabbitMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -8677,8 +9451,7 @@
   "notes": [
    "SiltBeanVegetableCookedSoup: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "SiltBeanVegetableCookedSoup: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "SiltBeanVegetableCookedSoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "SiltBeanVegetableCookedSoup: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "SiltBeanVegetableCookedSoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -8716,8 +9489,7 @@
   ],
   "notes": [
    "AshRoseHerbCookedTea: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "AshRoseHerbCookedTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "AshRoseHerbCookedTea: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "AshRoseHerbCookedTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -8754,8 +9526,7 @@
   ],
   "notes": [
    "AsterHerbCookedTea: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "AsterHerbCookedTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "AsterHerbCookedTea: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "AsterHerbCookedTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -8792,8 +9563,7 @@
   ],
   "notes": [
    "FernFlowerHerbCookedTea: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "FernFlowerHerbCookedTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "FernFlowerHerbCookedTea: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "FernFlowerHerbCookedTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -8830,8 +9600,7 @@
   ],
   "notes": [
    "GutShroomVegetableCookedTea: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "GutShroomVegetableCookedTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "GutShroomVegetableCookedTea: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "GutShroomVegetableCookedTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -8843,6 +9612,43 @@
   ],
   "foodScalableModifierIds": [
    "0x00424B6E:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "SootFlowerHerbCookedTea",
+  "formId": "0x003D7878",
+  "name": "Simple Soot Flower Tea",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x003D7878:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x003D7878",
+     "edid": "SootFlowerHerbCookedTea",
+     "name": "Simple Soot Flower Tea"
+    },
+    "bucket": "apMax",
+    "op": "ADD",
+    "value": 10,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "SootFlowerHerbCookedTea: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "SootFlowerHerbCookedTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
+  ],
+  "category": "drink",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPoints|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "MealTypeCooked",
+   "IngredientTypeHerb"
+  ],
+  "foodScalableModifierIds": [
+   "0x003D7878:0"
   ],
   "obtainable": true
  },
@@ -8899,9 +9705,7 @@
   ],
   "notes": [
    "BirthdayCakeSlice: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "BirthdayCakeSlice: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "BirthdayCakeSlice: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
-   "BirthdayCakeSlice: MGEF RestoreActionPointsFood: no route for AV ActionPoints — needs mapping"
+   "BirthdayCakeSlice: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -8940,9 +9744,7 @@
   ],
   "notes": [
    "PumpkinPieSlice: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "PumpkinPieSlice: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "PumpkinPieSlice: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
-   "PumpkinPieSlice: MGEF RestoreActionPointsFood: no route for AV ActionPoints — needs mapping"
+   "PumpkinPieSlice: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -8981,9 +9783,7 @@
   ],
   "notes": [
    "SlimeCakeSlice: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "SlimeCakeSlice: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "SlimeCakeSlice: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
-   "SlimeCakeSlice: MGEF RestoreActionPointsFood: no route for AV ActionPoints — needs mapping"
+   "SlimeCakeSlice: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -9076,9 +9876,7 @@
   ],
   "notes": [
    "ATX_VaultTecGelatinCake_CakeSlice: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "ATX_VaultTecGelatinCake_CakeSlice: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "ATX_VaultTecGelatinCake_CakeSlice: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
-   "ATX_VaultTecGelatinCake_CakeSlice: MGEF RestoreActionPointsFood: no route for AV ActionPoints — needs mapping"
+   "ATX_VaultTecGelatinCake_CakeSlice: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -9117,8 +9915,7 @@
   ],
   "notes": [
    "ScorchBeastMeatLungCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "ScorchBeastMeatLungCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "ScorchBeastMeatLungCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "ScorchBeastMeatLungCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -9155,8 +9952,7 @@
   ],
   "notes": [
    "PITT_SodaBread_01: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "PITT_SodaBread_01: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "PITT_SodaBread_01: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "PITT_SodaBread_01: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -9194,8 +9990,7 @@
   ],
   "notes": [
    "SeasonalFish_Meal_FallSoup: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "SeasonalFish_Meal_FallSoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "SeasonalFish_Meal_FallSoup: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "SeasonalFish_Meal_FallSoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -9232,8 +10027,7 @@
   ],
   "notes": [
    "VenisonAndTatoStew_Spiced: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "VenisonAndTatoStew_Spiced: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "VenisonAndTatoStew_Spiced: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "VenisonAndTatoStew_Spiced: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -9272,8 +10066,7 @@
   "notes": [
    "VenisonAndTatoStew_Psycho: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
    "VenisonAndTatoStew_Psycho: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "VenisonAndTatoStew_Psycho: MGEF FortifyResistDamageFood: no route for AV DamageResist — needs mapping",
-   "VenisonAndTatoStew_Psycho: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "VenisonAndTatoStew_Psycho: MGEF FortifyResistDamageFood: no route for AV DamageResist — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -9312,8 +10105,7 @@
   ],
   "notes": [
    "SquirrelMeatTasty: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "SquirrelMeatTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "SquirrelMeatTasty: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "SquirrelMeatTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -9361,7 +10153,6 @@
    }
   ],
   "notes": [
-   "SCORE_S22_Consumable_SunsetSarsaparilla_StarSize: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
    "SCORE_S22_Consumable_SunsetSarsaparilla_StarSize: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
    "SCORE_S22_Consumable_SunsetSarsaparilla_StarSize: MGEF NukaColaBottlecapAdder archetype Script — needs override"
   ],
@@ -9394,8 +10185,7 @@
   ],
   "notes": [
    "StarlightBerryCookedCobbler: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "StarlightBerryCookedCobbler: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "StarlightBerryCookedCobbler: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "StarlightBerryCookedCobbler: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -9433,8 +10223,7 @@
   ],
   "notes": [
    "AshRoseHerbTastyTea: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "AshRoseHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "AshRoseHerbTastyTea: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "AshRoseHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -9471,8 +10260,7 @@
   ],
   "notes": [
    "AsterHerbTastyTea: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "AsterHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "AsterHerbTastyTea: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "AsterHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -9509,8 +10297,7 @@
   ],
   "notes": [
    "CarrotFlowerHerbTastyTea: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "CarrotFlowerHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "CarrotFlowerHerbTastyTea: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "CarrotFlowerHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -9547,8 +10334,7 @@
   ],
   "notes": [
    "FernFlowerHerbTastyTea: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "FernFlowerHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "FernFlowerHerbTastyTea: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "FernFlowerHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -9560,6 +10346,43 @@
   ],
   "foodScalableModifierIds": [
    "0x002944D9:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "FeverBlossomHerbTastyTea",
+  "formId": "0x002944DA",
+  "name": "Steeped Fever Blossom Tea",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x002944DA:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x002944DA",
+     "edid": "FeverBlossomHerbTastyTea",
+     "name": "Steeped Fever Blossom Tea"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 5,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "FeverBlossomHerbTastyTea: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "FeverBlossomHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
+  ],
+  "category": "drink",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPointRegen|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "MealTypeTasty",
+   "IngredientTypeHerb"
+  ],
+  "foodScalableModifierIds": [
+   "0x002944DA:0"
   ],
   "obtainable": true
  },
@@ -9585,8 +10408,7 @@
   ],
   "notes": [
    "GourdFlowerHerbTastyTea: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "GourdFlowerHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "GourdFlowerHerbTastyTea: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "GourdFlowerHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -9598,6 +10420,43 @@
   ],
   "foodScalableModifierIds": [
    "0x002944DB:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "MelonBloomHerbTastyTea",
+  "formId": "0x002944DD",
+  "name": "Steeped Melon Bloom Tea",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x002944DD:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x002944DD",
+     "edid": "MelonBloomHerbTastyTea",
+     "name": "Steeped Melon Bloom Tea"
+    },
+    "bucket": "apMax",
+    "op": "ADD",
+    "value": 20,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "MelonBloomHerbTastyTea: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "MelonBloomHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
+  ],
+  "category": "drink",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPoints|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeHerb",
+   "MealTypeTasty"
+  ],
+  "foodScalableModifierIds": [
+   "0x002944DD:0"
   ],
   "obtainable": true
  },
@@ -9623,8 +10482,7 @@
   ],
   "notes": [
    "MelonFlowerHerbTastyTea: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "MelonFlowerHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "MelonFlowerHerbTastyTea: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "MelonFlowerHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -9661,8 +10519,7 @@
   ],
   "notes": [
    "TatoFlowerHerbTastyTea: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "TatoFlowerHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "TatoFlowerHerbTastyTea: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "TatoFlowerHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -9699,8 +10556,7 @@
   ],
   "notes": [
    "ThistleHerbTastyTea: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "ThistleHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "ThistleHerbTastyTea: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "ThistleHerbTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -9737,8 +10593,7 @@
   ],
   "notes": [
    "StingwingMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "StingwingMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "StingwingMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "StingwingMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -9777,8 +10632,7 @@
   "notes": [
    "StingwingMeatTastyStew: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "StingwingMeatTastyStew: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "StingwingMeatTastyStew: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "StingwingMeatTastyStew: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "StingwingMeatTastyStew: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -9818,6 +10672,19 @@
       "present": true
      }
     ]
+   },
+   {
+    "id": "0x005FD9A7:1",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x005FD9A7",
+     "edid": "SCORE_Brew_NukashineVintage_SugarFree",
+     "name": "Sugar-Free Nukashine"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 50,
+    "conditions": []
    }
   ],
   "notes": [
@@ -9827,7 +10694,6 @@
    "SCORE_Brew_NukashineVintage_SugarFree: MGEF Nukashine_DamageResist: no route for AV DamageResist — needs mapping",
    "SCORE_Brew_NukashineVintage_SugarFree: MGEF Nukashine_FortifySprintAP: no route for AV STAT_SprintAPCost — needs mapping",
    "SCORE_Brew_NukashineVintage_SugarFree: MGEF Nukashine_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
-   "SCORE_Brew_NukashineVintage_SugarFree: MGEF Nukashine_APRegen: no route for AV ActionPointsRate — needs mapping",
    "SCORE_Brew_NukashineVintage_SugarFree: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -9993,7 +10859,6 @@
    }
   ],
   "notes": [
-   "SCORE_S22_Consumable_SunsetSarsaparilla: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
    "SCORE_S22_Consumable_SunsetSarsaparilla: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
    "SCORE_S22_Consumable_SunsetSarsaparilla: MGEF NukaColaBottlecapAdder archetype Script — needs override"
   ],
@@ -10416,6 +11281,44 @@
   "obtainable": true
  },
  {
+  "id": "SweetLabradorTea_RSVP02",
+  "formId": "0x003A2020",
+  "name": "Sweet Labrador Tea",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x003A2020:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x003A2020",
+     "edid": "SweetLabradorTea_RSVP02",
+     "name": "Sweet Labrador Tea"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 5,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "SweetLabradorTea_RSVP02: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "SweetLabradorTea_RSVP02: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
+  ],
+  "category": "drink",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPointRegen|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "MealTypeCooked",
+   "MealTypeDelbertRSVP02",
+   "IngredientTypeHerb"
+  ],
+  "foodScalableModifierIds": [
+   "0x003A2020:0"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "MutfruitFruitTastyTea",
   "formId": "0x003C60EE",
   "name": "Sweet Mutfruit Tea",
@@ -10437,8 +11340,7 @@
   ],
   "notes": [
    "MutfruitFruitTastyTea: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "MutfruitFruitTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "MutfruitFruitTastyTea: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "MutfruitFruitTastyTea: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "drink",
   "dispelKeys": [
@@ -10475,9 +11377,7 @@
   ],
   "notes": [
    "SweetRollGourmet: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "SweetRollGourmet: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "SweetRollGourmet: MGEF RestoreHealthFood: no route for AV Health — needs mapping",
-   "SweetRollGourmet: MGEF RestoreActionPointsFood: no route for AV ActionPoints — needs mapping"
+   "SweetRollGourmet: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -10558,8 +11458,7 @@
   ],
   "notes": [
    "SapVegetableCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "SapVegetableCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "SapVegetableCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "SapVegetableCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -10770,8 +11669,7 @@
   "notes": [
    "MutantHoundMeatTastyStew: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "MutantHoundMeatTastyStew: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "MutantHoundMeatTastyStew: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "MutantHoundMeatTastyStew: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "MutantHoundMeatTastyStew: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -10818,8 +11716,7 @@
   ],
   "notes": [
    "SheepsquatchMeatTasty: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "SheepsquatchMeatTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "SheepsquatchMeatTasty: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "SheepsquatchMeatTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -10865,8 +11762,7 @@
   ],
   "notes": [
    "YaoGuaiMeatTasty: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "YaoGuaiMeatTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "YaoGuaiMeatTasty: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "YaoGuaiMeatTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -11002,6 +11898,43 @@
   "obtainable": true
  },
  {
+  "id": "TatoFruitCookedJuice",
+  "formId": "0x0029452C",
+  "name": "Tato Juice",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0029452C:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0029452C",
+     "edid": "TatoFruitCookedJuice",
+     "name": "Tato Juice"
+    },
+    "bucket": "apMax",
+    "op": "ADD",
+    "value": 10,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "TatoFruitCookedJuice: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "TatoFruitCookedJuice: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
+  ],
+  "category": "drink",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPoints|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "MealTypeCooked",
+   "IngredientTypeFruit"
+  ],
+  "foodScalableModifierIds": [
+   "0x0029452C:0"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "MeatWeek_TatoSaladCooked",
   "formId": "0x005527BE",
   "name": "Tato Salad",
@@ -11023,8 +11956,7 @@
   ],
   "notes": [
    "MeatWeek_TatoSaladCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "MeatWeek_TatoSaladCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "MeatWeek_TatoSaladCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "MeatWeek_TatoSaladCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -11037,6 +11969,44 @@
   ],
   "foodScalableModifierIds": [
    "0x005527BE:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "TatoSaladCooked_RSVP02",
+  "formId": "0x00529DDD",
+  "name": "Tato Salad Surprise",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00529DDD:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00529DDD",
+     "edid": "TatoSaladCooked_RSVP02",
+     "name": "Tato Salad Surprise"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 5,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "TatoSaladCooked_RSVP02: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "TatoSaladCooked_RSVP02: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ActionPointRegen|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "MealTypeDelbertRSVP02",
+   "MealTypeCooked",
+   "IngredientTypeFruit"
+  ],
+  "foodScalableModifierIds": [
+   "0x00529DDD:0"
   ],
   "obtainable": true
  },
@@ -11652,6 +12622,19 @@
       "present": true
      }
     ]
+   },
+   {
+    "id": "0x0047BC08:1",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0047BC08",
+     "edid": "Brew_NukashineVintage",
+     "name": "Vintage Nukashine"
+    },
+    "bucket": "apRegenFlat",
+    "op": "ADD",
+    "value": 50,
+    "conditions": []
    }
   ],
   "notes": [
@@ -11661,7 +12644,6 @@
    "Brew_NukashineVintage: MGEF Nukashine_DamageResist: no route for AV DamageResist — needs mapping",
    "Brew_NukashineVintage: MGEF Nukashine_FortifySprintAP: no route for AV STAT_SprintAPCost — needs mapping",
    "Brew_NukashineVintage: MGEF Nukashine_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
-   "Brew_NukashineVintage: MGEF Nukashine_APRegen: no route for AV ActionPointsRate — needs mapping",
    "Brew_NukashineVintage: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
   "category": "alcohol",
@@ -12052,12 +13034,24 @@
     "op": "ADD",
     "value": -1,
     "conditions": []
+   },
+   {
+    "id": "0x000366C2:5",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x000366C2",
+     "edid": "Brew_Wine",
+     "name": "Wine"
+    },
+    "bucket": "apMax",
+    "op": "ADD",
+    "value": 15,
+    "conditions": []
    }
   ],
   "notes": [
    "Brew_Wine: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
    "Brew_Wine: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
-   "Brew_Wine: MGEF FortifyActionPointsAlcohol: no route for AV ActionPoints — needs mapping",
    "Brew_Wine: MGEF Wine_Duration archetype Script — needs override"
   ],
   "category": "alcohol",
@@ -12099,8 +13093,7 @@
   ],
   "notes": [
    "WolfMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "WolfMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "WolfMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "WolfMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -12268,8 +13261,7 @@
   ],
   "notes": [
    "YaoGuaiMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
-   "YaoGuaiMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "YaoGuaiMeatCooked: MGEF RestoreHealthFood: no route for AV Health — needs mapping"
+   "YaoGuaiMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [

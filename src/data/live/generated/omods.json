@@ -36949,7 +36949,21 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00471881:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00471881",
+     "edid": "mod_Custom_CivilUnrest",
+     "name": "Civil Unrest"
+    },
+    "bucket": "apMax",
+    "op": "ADD",
+    "value": 50,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "IsAmmoType_ShotgunShell",
    "ObjectTypeUnique",
@@ -36958,9 +36972,7 @@
    "FeaturedItem"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "ActorValues on ActionPoints — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

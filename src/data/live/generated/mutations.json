@@ -1043,12 +1043,28 @@
   "formId": "0x004DF1CF",
   "name": "Scaly Skin",
   "kind": "mutation",
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x004DF1CF:0",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004DF1CF",
+     "edid": "Mutation_ScalySkin",
+     "name": "Scaly Skin"
+    },
+    "bucket": "apMax",
+    "op": "ADD",
+    "value": -50,
+    "conditions": []
+   }
+  ],
   "notes": [
    "Mutation_ScalySkin: MGEF Mutation_FortifyDamageResist: no route for AV DamageResist — needs mapping",
    "Mutation_ScalySkin: MGEF Mutation_FortifyEnergyResist: no route for AV EnergyResist — needs mapping",
-   "Mutation_ScalySkin: MGEF Mutation_ReduceActionPoints: no route for AV ActionPoints — needs mapping",
    "Mutation_ScalySkin: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
+  ],
+  "penaltyModifierIds": [
+   "0x004DF1CF:0"
   ]
  },
  {

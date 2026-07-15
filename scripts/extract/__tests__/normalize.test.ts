@@ -839,7 +839,53 @@ describe('translate (Health-route archetype scoping, 2026-07-14)', () => {
       { noteUnroutedAvs: true }
     );
     expect(r.modifiers).toHaveLength(0);
-    expect(r.notes.some(n => n.includes('no route for AV Health'))).toBe(true);
+    // Documented out-of-scope skip (2026-07-15): instant restores no longer
+    // pollute the unresolved report with "no route" notes — silence IS the
+    // assertion now, alongside the empty modifier list.
+    expect(r.notes).toHaveLength(0);
+  });
+});
+
+describe('translate (AP actor-value routes, 2026-07-15)', () => {
+  const apEdids = new Map<string, string>([['0xAV', 'ActionPoints']]);
+  const apRateEdids = new Map<string, string>([['0xAV', 'ActionPointsRate']]);
+  const dmgApEdids = new Map<string, string>([['0xAV', 'STAT_DmgAP']]);
+
+  it("routes a Peak Value Modifier on AV ActionPoints to apMax (FortifyActionPointsFood's +AP)", () => {
+    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), effect({ magnitude: 30 }), noRoutes, apEdids);
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0]).toEqual({ bucket: 'apMax', op: 'ADD', value: 30, conditions: [] });
+  });
+
+  it("negates Scaly Skin's Detrimental Mutation_ReduceActionPoints (mag 50 → apMax −50)", () => {
+    const r = translate(mgef({ archetype: 'Peak Value Modifier', detrimental: true }), effect({ magnitude: 50 }), noRoutes, apEdids);
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0]).toEqual({ bucket: 'apMax', op: 'ADD', value: -50, conditions: [] });
+  });
+
+  it('skips a Value Modifier on AV ActionPoints silently (instant restores — RestoreActionPointsFood, Brain Bombs)', () => {
+    const r = translate(mgef({ archetype: 'Value Modifier' }), effect({ magnitude: 45 }), noRoutes, apEdids, {
+      noteUnroutedAvs: true,
+    });
+    expect(r.modifiers).toHaveLength(0);
+    expect(r.notes).toHaveLength(0);
+  });
+
+  it("routes AV ActionPointsRate to apRegenFlat at scale 1 (Company Tea's FortifyActionPointRegenFood +10)", () => {
+    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), effect({ magnitude: 10 }), noRoutes, apRateEdids);
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0]).toEqual({ bucket: 'apRegenFlat', op: 'ADD', value: 10, conditions: [] });
+  });
+
+  it("routes STAT_DmgAP to a scaledByWeaponApCost dbm (Number Cruncher's abPerkFortifyDmgAP, mag 2 → 0.02/AP)", () => {
+    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), effect({ magnitude: 2 }), noRoutes, dmgApEdids);
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0]).toEqual({
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.02,
+      conditions: [{ kind: 'scaledByWeaponApCost' }],
+    });
   });
 });
 

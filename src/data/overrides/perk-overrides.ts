@@ -74,4 +74,45 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
       },
     ],
   ],
+  // Rejuvenated (0x003DE58F/0x003DE590): the PERK records extract empty
+  // because the mechanics live on the hidden survival ability, not the perk —
+  // SPEL SURV_Thirst_Ability 0x00054DF3 tiers its fully-hydrated
+  // ActionPointsRateMult bonus by HasPerk(Rejuvenated0N) rows (2026-07-15
+  // esm-walk): no perk 35%, rank 1 45%, rank 1+2 60% (rank 2's tier also
+  // requires Rads ≤ 100). The +35% baseline every hydrated non-ghoul gets is
+  // hand-authored in @/data/player-baseline; these overrides carry only the
+  // DELTAS (+10% / +25%) so the two sources sum to the ESM tier values.
+  // Rank 2 assumes low rads — optimal play, documented in
+  // docs/assumptions.md "Hydration AP regen". Ghoul-gated like the ability
+  // itself (GetIsPlayerGhoul()=0; the card is human-only anyway). The
+  // parallel Well Fed tiers on SURV_Hunger carry no AP effects (food-buff
+  // scope only), so nothing else routes here.
+  Rejuvenated: [
+    [
+      {
+        id: 'override:Rejuvenated:r1',
+        source: { kind: 'perk', formId: '0x003DE58F', edid: 'Rejuvenated01', name: 'Rejuvenated', rank: 1 },
+        bucket: 'apRegen',
+        op: 'ADD',
+        value: 0.1,
+        conditions: [
+          { kind: 'hydrated', value: true },
+          { kind: 'playerIsGhoul', value: false },
+        ],
+      },
+    ],
+    [
+      {
+        id: 'override:Rejuvenated:r2',
+        source: { kind: 'perk', formId: '0x003DE590', edid: 'Rejuvenated02', name: 'Rejuvenated', rank: 2 },
+        bucket: 'apRegen',
+        op: 'ADD',
+        value: 0.25,
+        conditions: [
+          { kind: 'hydrated', value: true },
+          { kind: 'playerIsGhoul', value: false },
+        ],
+      },
+    ],
+  ],
 };

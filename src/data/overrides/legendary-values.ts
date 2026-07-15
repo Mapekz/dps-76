@@ -67,18 +67,26 @@ export const legendaryValueOverrides: Readonly<Record<string, Modifier[]>> = {
       conditions: [],
     },
   ],
-  // Conductor's (Stage B, AP economy): "Critical Hits Restore 10 Health &
-  // Action Points instantly and 100 more over 5 seconds" = 110 AP per VATS
-  // crit. Script-computed — the entry point isn't extractor-modeled (verified
-  // chain in the 20260702 dump: OMOD mod_Legendary_Weapon4_Conductors
+  // Conductor's (Stage B, AP economy; HoT split 2026-07-15): "Critical Hits
+  // Restore 10 Health & Action Points instantly and 100 more over 5 seconds".
+  // Script-computed — the entry point isn't extractor-modeled (verified chain,
+  // re-walked in the 20260710 dump: OMOD mod_Legendary_Weapon4_Conductors
   // 0x007ACB0B → ENCH 0x007ACB05 → PERK Legendary_Weapon_Conductors → PERK
-  // Legendary_Weapon_ConductorsPlayerPerk "Apply Combat Hit Spell" gated
-  // GetLastHitCritical()=1 → SPEL Legendary_Weapon_ConductorsPlayerRestoreSpell
-  // 0x007ACB0D, whose AP-restore magnitudes (10 instant + 100/5s) don't route
-  // through the STAT_* plumbing). No on-kill component exists on this effect
-  // (verified — out of scope per plan, waits on enemy TTK). Unconditional:
-  // ap-economy.ts already scales its contribution by crit cadence
-  // (apPerCrit × shotsPerSec/shotsPerCrit), so no `crit` gate belongs here.
+  // Legendary_Weapon_ConductorsPlayerPerk, two "Apply Combat Hit Spell" entry
+  // points gated GetLastHitCritical()=1 → SPEL
+  // Legendary_Weapon_ConductorsPlayerRestoreSpell 0x007ACB0D: instant AP 10
+  // (MGEF RestoreActionPoints, magnitude 10, duration 0) + AP HoT 20/s for 5s
+  // (MGEF ...ApplyRestorePlayerAPPerkEffect, magnitude 20, duration 5); the
+  // second entry point's SPEL is the teammate-aura cloak, self-irrelevant).
+  //
+  // TWO modifiers, not one flat 110: the HoT REFRESHES on a new crit instead
+  // of stacking (user-confirmed in-game 2026-07-15), so at fast crit cadence
+  // it saturates at +20 AP/s — the old flat `apPerCrit: 110` overcounted
+  // (crit every 1s would have credited 110 AP/s; real ceiling is 10 + 20).
+  // Slow cadence (crit interval ≥ 5s) still recovers the full 110 per crit.
+  // No on-kill component exists on this effect (verified — out of scope per
+  // plan, waits on enemy TTK). Unconditional: ap-economy.ts scales both
+  // halves by crit cadence itself, so no `crit` gate belongs here.
   mod_Legendary_Weapon4_Conductors: [
     {
       id: 'mod_Legendary_Weapon4_Conductors:override:0',
@@ -90,7 +98,21 @@ export const legendaryValueOverrides: Readonly<Record<string, Modifier[]>> = {
       },
       bucket: 'apPerCrit',
       op: 'ADD',
-      value: 110,
+      value: 10,
+      conditions: [],
+    },
+    {
+      id: 'mod_Legendary_Weapon4_Conductors:override:1',
+      source: {
+        kind: 'omod',
+        formId: '0x007ACB0B',
+        edid: 'mod_Legendary_Weapon4_Conductors',
+        name: "Conductor's",
+      },
+      bucket: 'apCritHot',
+      op: 'ADD',
+      value: 20,
+      durationSec: 5,
       conditions: [],
     },
   ],

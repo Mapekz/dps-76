@@ -7,7 +7,7 @@
   "  - 'engine-snapshot': `expected` is the CURRENT computed resolveLoadout",
   "    -> computeScenarios output for an archetype build, captured to lock the",
   "    assembly seam (OMOD collection order, weapon-stat drop, damage-type",
-  "    materialization, SPECIAL fold order) against regression — it proves",
+  "    materialization, SPECIAL fold order) against regression \u2014 it proves",
   "    stability, not correctness. tolerancePct is tight (0.01) since it's",
   "    exact recomputation, not a fuzzy in-game reading.",
   "  - 'hand-computed': `expected` is derived independently by spec math, a",
@@ -18,7 +18,7 @@
  ],
  "cases": [
   {
-   "name": "Stock Fixer @50, no perks — pip-boy card damage",
+   "name": "Stock Fixer @50, no perks \u2014 pip-boy card damage",
    "weaponId": "CombatRifle_Fixer",
    "itemLevel": 50,
    "mods": {},
@@ -36,7 +36,7 @@
    "source": "in-game (pending)"
   },
   {
-   "name": "Fixer + Powerful Automatic Receiver @50 — pip-boy card damage",
+   "name": "Fixer + Powerful Automatic Receiver @50 \u2014 pip-boy card damage",
    "weaponId": "CombatRifle_Fixer",
    "itemLevel": 50,
    "mods": {
@@ -56,7 +56,7 @@
    "source": "in-game (pending)"
   },
   {
-   "name": "Shishkebab @45 cap, 15 STR — dual-component total (verifies split-damage curve semantics)",
+   "name": "Shishkebab @45 cap, 15 STR \u2014 dual-component total (verifies split-damage curve semantics)",
    "weaponId": "Shishkebab",
    "itemLevel": 50,
    "mods": {},
@@ -73,10 +73,10 @@
    "measure": "perHit",
    "expected": 224,
    "tolerancePct": 2,
-   "source": "user formula (72→64 per component: Shishkebab's max Eligible Level is 45, so (64×1.75)×2 — CONFIRM in-game that no lvl-50 Shishkebab exists; at 50 the curve would give 252)"
+   "source": "user formula (72\u219264 per component: Shishkebab's max Eligible Level is 45, so (64\u00d71.75)\u00d72 \u2014 CONFIRM in-game that no lvl-50 Shishkebab exists; at 50 the curve would give 252)"
   },
   {
-   "name": "Stock Fixer @50 — sustained DPS incl. reload (reload ≈ 3.2s/1.1765 ≈ 2.72s, unverified)",
+   "name": "Stock Fixer @50 \u2014 sustained DPS incl. reload (reload \u2248 3.2s/1.1765 \u2248 2.72s, unverified)",
    "weaponId": "CombatRifle_Fixer",
    "itemLevel": 50,
    "mods": {},
@@ -94,7 +94,7 @@
    "source": "pending in-game stopwatch: time N full mag+reload cycles vs a target dummy (docs/assumptions.md, Sustained DPS)"
   },
   {
-   "name": "Two Shot Fixer @50, no perks — validates extracted dbm 0.75",
+   "name": "Two Shot Fixer @50, no perks \u2014 validates extracted dbm 0.75",
    "weaponId": "CombatRifle_Fixer",
    "itemLevel": 50,
    "mods": {},
@@ -111,10 +111,10 @@
    "measure": "perHit",
    "expected": 180.25,
    "tolerancePct": 2,
-   "source": "user-confirmed 2026-07-10: base Fixer @50 = 103, Two Shot = 103 × 1.75 = 180.25 (pip-boy card rounds to 180/181; hundredths kept for the calc)"
+   "source": "user-confirmed 2026-07-10: base Fixer @50 = 103, Two Shot = 103 \u00d7 1.75 = 180.25 (pip-boy card rounds to 180/181; hundredths kept for the calc)"
   },
   {
-   "name": "Stock Fat Man @50, no perks — EXPL payload chase (engine: 5 impact + 1386 explosion @45 eligible-level cap = 1391; does the pip-boy card show the sum?)",
+   "name": "Stock Fat Man @50, no perks \u2014 EXPL payload chase (engine: 5 impact + 1386 explosion @45 eligible-level cap = 1391; does the pip-boy card show the sum?)",
    "weaponId": "Fatman",
    "itemLevel": 50,
    "mods": {},
@@ -132,7 +132,7 @@
    "source": "pending in-game pip-boy reading (dps-todos/launcher-explosives.md: verifies the WEAP-impact + EXPL-curve summing assumption, docs/assumptions.md 'Launcher explosion damage')"
   },
   {
-   "name": "Stock Missile Launcher @50, no perks — EXPL payload chase (engine: 5 impact + 968 explosion = 973)",
+   "name": "Stock Missile Launcher @50, no perks \u2014 EXPL payload chase (engine: 5 impact + 968 explosion = 973)",
    "weaponId": "MissileLauncher",
    "itemLevel": 50,
    "mods": {},
@@ -150,7 +150,7 @@
    "source": "pending in-game pip-boy reading (dps-todos/launcher-explosives.md)"
   },
   {
-   "name": "Gauss Minigun + Tesla Coil Capacitor @50, no perks — validates the materialized energy component (DamageTypeValues conversion)",
+   "name": "Gauss Minigun + Tesla Coil Capacitor @50, no perks \u2014 validates the materialized energy component (DamageTypeValues conversion)",
    "weaponId": "GaussMinigun",
    "itemLevel": 50,
    "mods": {
@@ -170,7 +170,7 @@
    "source": "pending in-game measurement"
   },
   {
-   "name": "Gauss Minigun + Tesla Coil Capacitor @50 + Science! rank 1 — validates the energy component AND its explosive twin both take the energy-scoped bonus",
+   "name": "Gauss Minigun + Tesla Coil Capacitor @50 + Science! rank 1 \u2014 validates the energy component AND its explosive twin both take the energy-scoped bonus",
    "weaponId": "GaussMinigun",
    "itemLevel": 50,
    "mods": {
@@ -178,7 +178,10 @@
    },
    "legendaryEffects": [],
    "perks": [
-    { "perkId": "Science", "rank": 1 }
+    {
+     "perkId": "Science",
+     "rank": 1
+    }
    ],
    "legendaryPerks": [],
    "mutations": [],
@@ -192,7 +195,7 @@
    "source": "pending in-game measurement"
   },
   {
-   "name": "War Glaive + Plasma Blade @50, no perks — validates the DamageTypeValues-converted energy component on a melee weapon",
+   "name": "War Glaive + Plasma Blade @50, no perks \u2014 validates the DamageTypeValues-converted energy component on a melee weapon",
    "weaponId": "WarGlaive",
    "itemLevel": 50,
    "mods": {
@@ -212,17 +215,41 @@
    "source": "pending in-game measurement"
   },
   {
-   "name": "Bloodied sneak-crit Hunting Rifle (Severe Receiver, Speed Demon, Buffout+Mentats addiction) — engine-snapshot",
+   "name": "Bloodied sneak-crit Hunting Rifle (Severe Receiver, Speed Demon, Buffout+Mentats addiction) \u2014 engine-snapshot",
    "weaponId": "HuntingRifle",
    "itemLevel": 50,
-   "mods": { "ap_gun_Receiver": "mod_HuntingRifle_Receiver_Damage-CritDMG" },
-   "legendaryEffects": ["mod_Legendary_Weapon1_DamageInverseHealth"],
-   "perks": [{ "perkId": "CenterMasochist", "rank": 1 }],
-   "legendaryPerks": [{ "perkId": "FollowThrough", "rank": 1 }],
-   "mutations": ["Mutation_SpeedDemon"],
-   "consumables": ["Buffout"],
-   "addictions": ["AbAddictionMentats"],
-   "conditions": { "isSneaking": true, "healthPercent": 20, "followThroughPct": 20 },
+   "mods": {
+    "ap_gun_Receiver": "mod_HuntingRifle_Receiver_Damage-CritDMG"
+   },
+   "legendaryEffects": [
+    "mod_Legendary_Weapon1_DamageInverseHealth"
+   ],
+   "perks": [
+    {
+     "perkId": "CenterMasochist",
+     "rank": 1
+    }
+   ],
+   "legendaryPerks": [
+    {
+     "perkId": "FollowThrough",
+     "rank": 1
+    }
+   ],
+   "mutations": [
+    "Mutation_SpeedDemon"
+   ],
+   "consumables": [
+    "Buffout"
+   ],
+   "addictions": [
+    "AbAddictionMentats"
+   ],
+   "conditions": {
+    "isSneaking": true,
+    "healthPercent": 20,
+    "followThroughPct": 20
+   },
    "enemyConditions": {},
    "scenario": "vats",
    "measure": "perHit",
@@ -231,17 +258,30 @@
    "source": "engine-snapshot"
   },
   {
-   "name": "Bloodied heavy gunner Minigun (Class Freak 3, dual mutations, teammates, sustained) — engine-snapshot",
+   "name": "Bloodied heavy gunner Minigun (Class Freak 3, dual mutations, teammates, sustained) \u2014 engine-snapshot",
    "weaponId": "Minigun",
    "itemLevel": 50,
    "mods": {},
-   "legendaryEffects": ["mod_Legendary_Weapon1_DamageInverseHealth"],
-   "perks": [{ "perkId": "ClassFreak", "rank": 3 }],
+   "legendaryEffects": [
+    "mod_Legendary_Weapon1_DamageInverseHealth"
+   ],
+   "perks": [
+    {
+     "perkId": "ClassFreak",
+     "rank": 3
+    }
+   ],
    "legendaryPerks": [],
-   "mutations": ["Mutation_SpeedDemon", "Mutation_HerdMentality"],
+   "mutations": [
+    "Mutation_SpeedDemon",
+    "Mutation_HerdMentality"
+   ],
    "consumables": [],
    "addictions": [],
-   "conditions": { "healthPercent": 15, "teammateCount": 2 },
+   "conditions": {
+    "healthPercent": 15,
+    "teammateCount": 2
+   },
    "enemyConditions": {},
    "scenario": "freeAim",
    "measure": "sustainedDps",
@@ -250,17 +290,24 @@
    "source": "engine-snapshot"
   },
   {
-   "name": "Melee power-attack Super Sledge (Science! rank 1, no matching damage type) — engine-snapshot",
+   "name": "Melee power-attack Super Sledge (Science! rank 1, no matching damage type) \u2014 engine-snapshot",
    "weaponId": "SuperSledge",
    "itemLevel": 50,
    "mods": {},
    "legendaryEffects": [],
-   "perks": [{ "perkId": "Science", "rank": 1 }],
+   "perks": [
+    {
+     "perkId": "Science",
+     "rank": 1
+    }
+   ],
    "legendaryPerks": [],
    "mutations": [],
    "consumables": [],
    "addictions": [],
-   "conditions": { "isPowerAttacking": true },
+   "conditions": {
+    "isPowerAttacking": true
+   },
    "enemyConditions": {},
    "scenario": "freeAim",
    "measure": "perHit",
@@ -269,7 +316,7 @@
    "source": "engine-snapshot"
   },
   {
-   "name": "Stock Fixer @50 sneak attack, no perks — hand-computed (base 103 x [dbm 1.0 + sneak(2.75 sneakBase - 1.0 + 0.5 default-Suppressor sneakBonus)] = 103 x 3.25 = 334.75)",
+   "name": "Stock Fixer @50 sneak attack, no perks \u2014 hand-computed (base 103 x [dbm 1.0 + sneak(2.75 sneakBase - 1.0 + 0.5 default-Suppressor sneakBonus)] = 103 x 3.25 = 334.75)",
    "weaponId": "CombatRifle_Fixer",
    "itemLevel": 50,
    "mods": {},
@@ -278,7 +325,9 @@
    "legendaryPerks": [],
    "mutations": [],
    "consumables": [],
-   "conditions": { "isSneaking": true },
+   "conditions": {
+    "isSneaking": true
+   },
    "enemyConditions": {},
    "scenario": "freeAim",
    "measure": "perHit",
@@ -287,7 +336,7 @@
    "source": "hand-computed: PaperDamage = base x (dbmFold + sneakTerm) = 103 x (1.0 + (sneakBase 2.75 + sneakBonus 0.5 - 1.0)) = 103 x 3.25. sneakBase 2.75 is the Fixer's own weapon.sneakAttackMult (weapons.json); sneakBonus 0.5 comes from the Fixer's DEFAULT (undecided-slot) Suppressor barrel, which resolveLoadout folds in even with mods:{} since an undecided slot means the weapon's real stock part, not no part."
   },
   {
-   "name": "Gatling Gun fire rate (hand-authored animDurationSec correction) — engine-snapshot",
+   "name": "Gatling Gun fire rate (hand-authored animDurationSec correction) \u2014 engine-snapshot",
    "weaponId": "GatlingGun",
    "itemLevel": 50,
    "mods": {},
@@ -306,7 +355,7 @@
    "source": "engine-snapshot"
   },
   {
-   "name": "Stock Fixer @50, ghoul in a public Casual team of 3 — United Ordeal + Public team INT bonus",
+   "name": "Stock Fixer @50, ghoul in a public Casual team of 3 \u2014 United Ordeal + Public team INT bonus",
    "weaponId": "CombatRifle_Fixer",
    "itemLevel": 50,
    "mods": {},
@@ -316,13 +365,101 @@
    "mutations": [],
    "consumables": [],
    "addictions": [],
-   "conditions": { "isGhoul": true, "teammateCount": 2, "publicTeamType": "casual" },
+   "conditions": {
+    "isGhoul": true,
+    "teammateCount": 2,
+    "publicTeamType": "casual"
+   },
    "enemyConditions": {},
    "scenario": "freeAim",
    "measure": "perHit",
    "expected": null,
    "tolerancePct": 2,
-   "source": "in-game (pending): validates United Ordeal's ghoul+teammateCount gate and the Public team Casual INT bonus (min(teammateCount+1,4)=3) together — neither moves the Fixer's raw dbm, so this pins the SPECIAL-side wiring pending an in-game pip-boy read once both effects are user-facing"
+   "source": "in-game (pending): validates United Ordeal's ghoul+teammateCount gate and the Public team Casual INT bonus (min(teammateCount+1,4)=3) together \u2014 neither moves the Fixer's raw dbm, so this pins the SPECIAL-side wiring pending an in-game pip-boy read once both effects are user-facing"
+  },
+  {
+   "name": "Baseline AP regen, fully hydrated, no perks \u2014 stopwatch a full AP pool refill (model: 4.0 \u00d7 1.35 hydration = 5.4 AP/s; also pins the flat-4.0 GMST CAVEAT)",
+   "weaponId": "CombatRifle_Fixer",
+   "itemLevel": 50,
+   "mods": {},
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {},
+   "enemyConditions": {},
+   "scenario": "vats",
+   "expected": null,
+   "tolerancePct": 5,
+   "measure": "apRegenPerSec",
+   "source": "in-game (pending) \u2014 time 210 AP from empty: model predicts ~38.9s; measure out of combat, no sprint"
+  },
+  {
+   "name": "Lone Wanderer rank 3 solo AP regen @15 CHA \u2014 stopwatch (model: 4.0 \u00d7 (1 + 0.30 CHA-curve + 0.35 hydration) = 6.6 AP/s)",
+   "weaponId": "CombatRifle_Fixer",
+   "itemLevel": 50,
+   "mods": {},
+   "legendaryEffects": [],
+   "perks": [
+    {
+     "perkId": "LoneWanderer",
+     "rank": 3
+    }
+   ],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {},
+   "enemyConditions": {},
+   "scenario": "vats",
+   "expected": null,
+   "tolerancePct": 5,
+   "measure": "apRegenPerSec",
+   "source": "in-game (pending) \u2014 solo, NOT on any team; 210 AP from empty \u2248 31.8s; also confirms ranks 2/3 use the CHA curve (stale flat 20/30% descriptions)"
+  },
+  {
+   "name": "Company Tea AP regen \u2014 stopwatch (model: (4.0 + 10 flat) \u00d7 1.35 hydration = 18.9 AP/s; pins flat-adds-before-percent composition)",
+   "weaponId": "CombatRifle_Fixer",
+   "itemLevel": 50,
+   "mods": {},
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [
+    "CompanyTea_RSVP02"
+   ],
+   "conditions": {},
+   "enemyConditions": {},
+   "scenario": "vats",
+   "expected": null,
+   "tolerancePct": 5,
+   "measure": "apRegenPerSec",
+   "source": "in-game (pending) \u2014 210 AP from empty \u2248 11.1s; no Carnivore/Herbivore active (tea is food-scalable in data)"
+  },
+  {
+   "name": "Number Cruncher on stock Fixer (16 AP cost) \u2014 pip-boy card damage (model: +32% dbm, works in free aim)",
+   "weaponId": "CombatRifle_Fixer",
+   "itemLevel": 50,
+   "mods": {},
+   "legendaryEffects": [],
+   "perks": [
+    {
+     "perkId": "NumberCruncher",
+     "rank": 1
+    }
+   ],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {},
+   "enemyConditions": {},
+   "scenario": "freeAim",
+   "expected": null,
+   "tolerancePct": 2,
+   "measure": "perHit",
+   "source": "in-game (pending) \u2014 compare pip-boy damage card with/without the card equipped; also spot-check V.A.T.S. Optimized receiver drops the bonus to +20.8%"
   }
  ]
 }

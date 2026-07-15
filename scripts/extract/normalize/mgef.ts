@@ -146,6 +146,37 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   // (conditions.ts) wired from `extract-perks.ts`'s GENDER_TWIN_PAIRS map —
   // each rank now emits one unconditional apRegen modifier (docs/assumptions.md).
   ActionPointsRateMult: { bucket: 'apRegen', scale: 0.01 },
+  // Flat AP/sec on the base regen rate (AV ActionPointsRate 0x000002D8,
+  // default = GMST fActionPointsRestoreRate 4.0): Company Tea's
+  // FortifyActionPointRegenFood (+10 for 3600s, GLOB SURV_Food_Effect_APRegen_
+  // Mag_4_VeryHigh), Nukashine_APRegen, Alcohol_APRegen, the Live & Love #4 /
+  // Guns and Bullets #4 magazine effects (2026-07-15 AV sweep). Composition
+  // with the % route above is AV-standard: (4.0 + Σflat) × (1 + Σ%) —
+  // docs/assumptions.md "VATS AP economy". No archetype restriction: a rate
+  // has no instant-restore semantics, both Peak and plain Value Modifiers on
+  // it are buffs while active.
+  ActionPointsRate: { bucket: 'apRegenFlat', scale: 1 },
+  // Max-AP fortifies (AV ActionPoints 0x000002D5): FortifyActionPointsFood/
+  // Alcohol (mirelurk steaks, wine, hard lemonade), Awesome Tales #7 /
+  // Live & Love #7 magazines, Mutation_ReduceActionPoints (Scaly Skin's
+  // penalty, Detrimental-negated). Peak-only, exactly like the Health route
+  // below: instant Value-Modifier restores (RestoreActionPoints/
+  // RestoreActionPointsFood, Brain Bombs, candy) are one-shot events, out of
+  // scope by design (user decision 2026-07-15, same rule as instant heals) —
+  // they fall through to the silent OUT_OF_SCOPE_INSTANT_RESTORE_AVS skip
+  // instead of polluting the unresolved report.
+  ActionPoints: { bucket: 'apMax', scale: 1, archetypes: ['Peak Value Modifier'] },
+  // Number Cruncher (PERK CommandoMaster01 0x0004A0C5 → Ability SPEL
+  // AbPerkCommandoMaster → MGEF abPerkFortifyDmgAP, Peak VM magnitude 2 on
+  // hidden AV STAT_DmgAP 0x00801C9F "Damage per AP Cost"): +2% damage per
+  // point of the weapon's AP cost. No plumbing perk — the AV's only other
+  // referencer is DFOB APDamageBonus_DO, i.e. the scaling is engine-native.
+  // scale 0.01 turns the magnitude into a per-AP-point dbm fraction; the
+  // scaledByWeaponApCost condition multiplies by the EFFECTIVE (post
+  // weapon-OMOD vatsApCost fold) cost. User-confirmed: applies in free aim
+  // too (no VATS gate), and armor-side AP-cost entry points (Scanner's 4★)
+  // must NOT feed it (dps-todos/armor-mods-outgoing.md).
+  STAT_DmgAP: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'scaledByWeaponApCost' }] },
   // Thrill-Seeker's (Stage C3, RA_mod_Legendary_Weapon4_ThrillSeeker
   // 0x00863AA2): killstreak-scaled reload + melee-attack speed, both plain
   // Peak Value Modifiers gated by GetValue(killStreak) Equal To N tiers
@@ -192,6 +223,15 @@ export interface AvifRoute {
   scale: number;
   rawConditions: RawCondition[];
 }
+
+/**
+ * AVs whose instant (Value Modifier) restores are out of scope by design —
+ * skipped silently in `translate()` instead of surfacing as "no route" notes,
+ * so the unresolved report only shows real gaps. The Peak-Value-Modifier
+ * fortifies on the same AVs DO route (Health → maxHealth, ActionPoints →
+ * apMax above).
+ */
+const OUT_OF_SCOPE_INSTANT_RESTORE_AVS = new Set(['Health', 'ActionPoints']);
 
 const PLUMBING_PERKS = ['STAT_DamagePerk', 'STAT_CritDamagePerk', 'STAT_DamageVsPerk'];
 
@@ -624,6 +664,11 @@ export function translate(
     push(fallback.bucket, fallback.scale, [...allConds, ...(fallback.conditions ?? [])]);
   } else if (avifEdid.startsWith('STAT_Dmg') || avifEdid.startsWith('STAT_Crit') || avifEdid.startsWith('STAT_Sneak')) {
     result.unmappedAvifs.push(avifEdid);
+  } else if (mgef.archetype === 'Value Modifier' && OUT_OF_SCOPE_INSTANT_RESTORE_AVS.has(avifEdid)) {
+    // Documented skip, not a gap: instant one-shot restores (RestoreHealthFood,
+    // RestoreActionPoints/Food, Brain Bombs...) are out of scope by design —
+    // the fortify (Peak Value Modifier) route on the same AV is what's modeled
+    // (user decisions 2026-07-14 health / 2026-07-15 AP).
   } else if (opts.noteUnroutedAvs) {
     // Without this a value-modifier effect vanishes silently and the record
     // looks inexplicably empty in review (the pre-fix Juggernaut's failure mode).

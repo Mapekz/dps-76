@@ -3453,7 +3453,26 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004A0C5:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004A0C5",
+       "edid": "CommandoMaster",
+       "name": "Number Cruncher",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.02,
+      "conditions": [
+       {
+        "kind": "scaledByWeaponApCost"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -5932,7 +5951,6 @@
    ]
   },
   "notes": [
-   "condition: IsOverEncumbered()=0",
    "condition: WornHasKeyword(ArmorTypePower)=0"
   ]
  },
@@ -6567,7 +6585,6 @@
    ]
   },
   "notes": [
-   "condition: IsOverEncumbered()=0",
    "condition: WornHasKeyword(ArmorTypePower)=0",
    "AbPerkFortifyEvadeChance: curve with unmapped input AV 0x000002C7 — needs override"
   ]
@@ -22010,12 +22027,7 @@
       "bucket": "apRegen",
       "op": "ADD",
       "value": 0.25,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsOverEncumbered()=0"
-       }
-      ]
+      "conditions": []
      }
     ]
    }
@@ -22033,9 +22045,7 @@
     1
    ]
   },
-  "notes": [
-   "condition: IsOverEncumbered()=0"
-  ]
+  "notes": []
  },
  {
   "family": "PackRat",
@@ -26926,7 +26936,6 @@
    ]
   },
   "notes": [
-   "condition: IsOverEncumbered()=0",
    "condition: WornHasKeyword(ArmorTypePower)=0",
    "AbPerkFortifyEvadeChance: curve with unmapped input AV 0x000002C8 — needs override"
   ]

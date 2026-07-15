@@ -5,6 +5,7 @@ import { getLoadoutModifiers } from '@/data/perk-modifiers';
 import { getDefaultOmods, getOmodById } from '@/data/omods';
 import { getAddictionModifiers, getBuffModifiers, getSuppressedAddictions } from '@/data/buffs';
 import { getManualUptimeModifiers } from '@/data/manual-uptime';
+import { getPlayerBaselineModifiers } from '@/data/player-baseline';
 import { getPublicTeamModifiers } from '@/data/public-teams';
 import { buildEffectiveWeapon, WEAPON_STAT_BUCKETS } from '@/lib/engine/effective-weapon';
 import { legendaryBonusOf } from '@/data/perk-budget';
@@ -75,6 +76,9 @@ function assemble(
   // (shared with ConditionsSection.tsx so the slider and the fold can't drift).
   loadoutModifiers.push(...getManualUptimeModifiers(playerConfig.legendaryPerks, conditions));
   loadoutModifiers.push(...getPublicTeamModifiers(conditions.publicTeamType, conditions.teammateCount));
+  // Hidden survival-ability baselines (hydration AP regen) — gated by the
+  // hydrated/playerIsGhoul conditions at resolve time, so pushed unconditionally.
+  loadoutModifiers.push(...getPlayerBaselineModifiers());
 
   // Apply equipped OMODs (standard slots + legendary effects) to the weapon.
   let weapon: Weapon | undefined;

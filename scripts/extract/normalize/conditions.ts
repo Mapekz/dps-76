@@ -179,6 +179,12 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
     case 'GetIsPlayerGhoul':
       // Character-type gate: Gourmand's (=0, human-only), Glowing Criticals (=1).
       return { kind: 'playerIsGhoul', value: wants };
+    case 'IsOverEncumbered':
+      // Packin' Light's gate (AbPerkPackinLight: +25% AP regen while not over
+      // encumbered). The calculator assumes optimal play — never over
+      // encumbered — so =0 is always true (consumed) and an =1-gated effect
+      // can never apply (docs/assumptions.md "Encumbrance").
+      return wants ? 'inactive' : null;
     case 'IsSneaking':
       return wants ? { kind: 'sneaking' } : { kind: 'unresolved', raw: 'IsSneaking=0' };
     case 'GetHealthPercentage': {
