@@ -1,11 +1,11 @@
 import type { EnemyConditions, GameMode, PlayerConditions, Weapon } from '@/types';
 import type { Modifier } from '@/types/modifiers';
 import { getFireRate } from '@/lib/fire-rate';
-import { apLimitedDps, computeApEconomy, effectiveShotsPerSecond } from './ap-economy';
+import { AP_REGEN_RATE_PCT, AP_REGEN_RATE_PCT_POWER_ARMOR, apLimitedDps, computeApEconomy, effectiveShotsPerSecond } from './ap-economy';
 import { computeCritMeter, type CritMeterResult } from './crit-meter';
 import { computeDotDps, computePaperDamage, type HitBreakdown } from './paper-damage';
 import { computeSustain, type SustainResult } from './sustain';
-import { createHitTrace, type CritMeterTrace, type HitTrace } from './trace';
+import { createHitTrace, lastTrace, type ApRegenTrace, type BucketTrace, type CritMeterTrace, type HitTrace } from './trace';
 import { effectiveValue, foldBucket, type ResolveContext, type ScenarioFlags } from './resolve';
 
 /**
@@ -25,6 +25,8 @@ export interface ScenarioExplain {
   /** The crit hit's trace (VATS only, when crits fire). */
   crit: HitTrace | null;
   critMeter?: CritMeterTrace;
+  /** Passive AP regen derivation (VATS only, present when `ap` is). */
+  apRegen?: ApRegenTrace | null;
 }
 
 export interface ScenarioResult {
@@ -345,12 +347,26 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // melee AP is out of scope — uptime is undefined without real melee AP
   // costs) and only when the weapon has a real per-shot VATS AP cost.
   let ap: ScenarioResult['ap'];
+  let apRegenTrace: ApRegenTrace | undefined;
   if (!isMelee(input.weapon) && (input.weapon.apCost ?? 0) > 0) {
     const apCtx = scenarioCtx(input, vatsFlags, onslaughtMaxStacks);
-    const apRegenBonus = foldBucket(input.modifiers, 'apRegen', 0, apCtx);
-    const apRegenFlatBonus = foldBucket(input.modifiers, 'apRegenFlat', 0, apCtx);
-    const apMaxBonus = foldBucket(input.modifiers, 'apMax', 0, apCtx);
+    const percentCollect = tracing ? ([] as BucketTrace[]) : undefined;
+    const apRegenBonus = foldBucket(input.modifiers, 'apRegen', 0, apCtx, percentCollect);
+    const flatCollect = tracing ? ([] as BucketTrace[]) : undefined;
+    const apRegenFlatBonus = foldBucket(input.modifiers, 'apRegenFlat', 0, apCtx, flatCollect);
+    const maxApCollect = tracing ? ([] as BucketTrace[]) : undefined;
+    const apMaxBonus = foldBucket(input.modifiers, 'apMax', 0, apCtx, maxApCollect);
     const apPerCrit = foldBucket(input.modifiers, 'apPerCrit', 0, apCtx);
+    if (tracing) {
+      apRegenTrace = {
+        agility: input.player.agility,
+        isInPowerArmor: input.player.isInPowerArmor ?? false,
+        raceBasePct: input.player.isInPowerArmor ? AP_REGEN_RATE_PCT_POWER_ARMOR : AP_REGEN_RATE_PCT,
+        flat: lastTrace(flatCollect!),
+        percent: lastTrace(percentCollect!),
+        maxAp: lastTrace(maxApCollect!),
+      };
+    }
     // apCritHot is collected per-modifier (not bucket-folded): each HoT keeps
     // its own duration window for the refresh-only steady-state term.
     const critHots = input.modifiers.flatMap(mod => {
@@ -405,7 +421,12 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       dotDps: vatsDotDps,
       ...(ap && { ap }),
       ...(tracing && {
-        explain: { nonCrit: vatsTrace!, crit: critRate > 0 ? vatsCritTrace! : null, critMeter: critMeterTrace },
+        explain: {
+          nonCrit: vatsTrace!,
+          crit: critRate > 0 ? vatsCritTrace! : null,
+          critMeter: critMeterTrace,
+          apRegen: apRegenTrace ?? null,
+        },
       }),
     },
   };

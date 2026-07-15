@@ -1,8 +1,11 @@
 import { Fragment } from 'react';
 import { cn } from '@/lib/utils';
+import { AP_POOL_BASE, AP_POOL_PER_AGILITY } from '@/lib/engine/ap-economy';
 import type { ScenarioResult } from '@/lib/engine/scenarios';
 import type { BucketTrace, TraceContribution } from '@/lib/engine/trace';
 import { formatDamage } from '@/lib/format';
+
+const formatSeconds = (value: number) => `${value.toFixed(1)}s`;
 
 /**
  * Renders a HitTrace as the derivation a theorycrafter can check by hand:
@@ -17,7 +20,7 @@ import { formatDamage } from '@/lib/format';
  */
 
 function Num({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <span className={cn('font-mono text-xs tabular-nums', className)}>{children}</span>;
+  return <span className={cn('shrink-0 font-mono text-xs tabular-nums text-right', className)}>{children}</span>;
 }
 
 function Row({ label, value, indent, muted }: { label: React.ReactNode; value: React.ReactNode; indent?: boolean; muted?: boolean }) {
@@ -54,6 +57,18 @@ function contributionRows(trace: BucketTrace, keyPrefix: string) {
   return rows;
 }
 
+/**
+ * `apRegenFlat` sources (Company Tea) are ADD-op but already percentage-points
+ * on the race base's own "% of max/s" scale — shown against the `Σ N% of
+ * max/s` base-rate row they add into, so they need a % suffix rather than
+ * `contributionRows`'s raw-decimal convention.
+ */
+function flatPercentRows(trace: BucketTrace, keyPrefix: string) {
+  return trace.add.map(c => (
+    <Row key={`${keyPrefix}-${c.source.edid}-${c.source.rank ?? 0}`} indent label={c.source.name} value={`${signed(c.value, 1)}%`} />
+  ));
+}
+
 function wholeDamageRows(contributions: TraceContribution[]) {
   return contributions.map(c => (
     <Row key={`wd-${c.source.edid}`} indent label={c.source.name} value={`×${(1 + c.value).toFixed(2)}`} />
@@ -79,7 +94,6 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
     <div className="space-y-1.5">
       {trace.components.map((component, i) => {
         const componentHit = result.perHit.components[i];
-        const poolBase = component.dbm.base;
         return (
           // Index-qualified: a multi-component weapon can spawn more than one
           // explosive twin (one per payload-bearing component, each keeping
@@ -93,7 +107,7 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
             )}
             <Row label="Base damage" value={formatDamage(componentHit.base)} />
             {contributionRows(component.baseDamage, `bd-${i}`)}
-            <Row label={`Bonus pool (weapon base ${poolBase.toFixed(2)})`} value={`Σ ${component.dbm.result.toFixed(2)}`} />
+            <Row label="DMG Bonus Mult" value={`Σ ${component.dbm.result.toFixed(2)}`} />
             {contributionRows(component.dbm, `dbm-${i}`)}
             {component.isExplosion && (
               <Row muted indent label="Explosive — ignores sneak & body part" value="" />
@@ -145,7 +159,7 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
       {explain.crit?.crit && result.critRate !== undefined && result.critRate > 0 && (
         <>
           <Row
-            label={`Critical hits (${Math.round(result.critRate * 100)}% of shots)`}
+            label={`Critical hits (${Math.round(result.critRate * 100)}%)`}
             value={signed(explain.crit.crit.base.result + explain.crit.crit.bonus.result - 1)}
           />
           {contributionRows(explain.crit.crit.base, 'cb')}
@@ -159,15 +173,42 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
         <Row label="Burst DPS" value={formatDamage(result.burstDps)} />
         {result.sustain.reloadSec > 0 && (
           <>
-            <Row
-              muted
-              label={`Mag cycle: ${result.sustain.shotsPerMag} shots / ${result.sustain.magDumpSec.toFixed(1)}s + ${result.sustain.reloadSec.toFixed(1)}s reload`}
-              value=""
-            />
+            <Row label="Mag cycle" value={formatSeconds(result.sustain.magDumpSec + result.sustain.reloadSec)} />
+            <Row indent label={`Mag dump (${result.sustain.shotsPerMag} shots)`} value={formatSeconds(result.sustain.magDumpSec)} />
+            <Row indent label="Reload" value={formatSeconds(result.sustain.reloadSec)} />
             <Row label="Sustained DPS" value={formatDamage(result.sustain.sustainedDps)} />
           </>
         )}
       </div>
+
+      {result.ap && explain.apRegen && (() => {
+        const { agility, isInPowerArmor, raceBasePct, flat, percent } = explain.apRegen;
+        const baseRatePct = raceBasePct + flat.result;
+        const multiplier = 1 + percent.result;
+        return (
+          <div className="border-border/50 mt-1 border-t pt-1">
+            <Row
+              muted
+              label={`Base AP pool (${AP_POOL_BASE} + ${AP_POOL_PER_AGILITY}×${agility} AGI)`}
+              value={AP_POOL_BASE + AP_POOL_PER_AGILITY * agility}
+            />
+            {contributionRows(explain.apRegen.maxAp, 'ap-max')}
+            <Row label="Max AP pool" value={Math.round(result.ap.maxAp)} />
+
+            <Row label="Base regen rate" value={`${baseRatePct.toFixed(1)}%/s`} />
+            <Row indent label={`Race base (${isInPowerArmor ? 'power armor' : 'human'})`} value={`${raceBasePct.toFixed(1)}%`} />
+            {flatPercentRows(flat, 'ap-flat')}
+
+            <Row label="Regen rate multiplier" value={`×${multiplier.toFixed(2)}`} />
+            {contributionRows(percent, 'ap-pct')}
+
+            <Row label="Net passive AP regen" value={`${result.ap.regenPerSec.toFixed(1)}/s`} />
+            {result.ap.regenPerSec > 0 && (
+              <Row muted label="Time to fill from empty" value={formatSeconds(result.ap.maxAp / result.ap.regenPerSec)} />
+            )}
+          </div>
+        );
+      })()}
     </div>
   );
 }

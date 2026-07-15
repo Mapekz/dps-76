@@ -61,6 +61,20 @@ export interface CritMeterTrace {
   consumption: BucketTrace | null;
 }
 
+/** Passive AP regen derivation (VATS only) — race base × flat/percent bonus contributions. */
+export interface ApRegenTrace {
+  agility: number;
+  isInPowerArmor: boolean;
+  /** RACE Properties base of AV ActionPointsRate (% of max AP/sec) — human 6.0, PA 3.0. */
+  raceBasePct: number;
+  /** `apRegenFlat` contributions (ADD, AV points — Company Tea's +10). */
+  flat: BucketTrace;
+  /** `apRegen` contributions (MUL_ADD, decimal — Action Boy/Girl, hydration, Lone Wanderer). */
+  percent: BucketTrace;
+  /** `apMax` contributions (ADD, flat AP points — food fortifies, Scaly Skin's penalty). */
+  maxAp: BucketTrace;
+}
+
 export function createHitTrace(): HitTrace {
   return {
     components: [],
