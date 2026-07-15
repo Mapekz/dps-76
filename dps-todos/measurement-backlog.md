@@ -81,11 +81,17 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
       doesn't yet read Full Power Seconds/Full Power Damage Mult/Minimum
       Charge Time off WEAP.Data or the matching OMOD properties. Once that
       extraction lands, stopwatch/pip-boy:
-  - [ ] **Full-charge Gauss Rifle @50** — pins the `(1 + FPDM) × (t/FPS)`
+  - [ ] **Full-charge Gauss Rifle @50** — pins the `1 + FPDM × (t/FPS)`
         endpoint value (ESM: FPS 1.0, FPDM 2.0 → ×3 at full charge).
   - [ ] **Full-draw Bow** — same endpoint check on a bow (Minimum Charge Time
-        is UI-only; confirm the formula still ramps linearly from 0, not from
-        the minimum draw).
+        now floors both the UI slider AND the engine's `chargeTimeSec`;
+        confirm the formula still ramps linearly above the minimum draw, up
+        to the same full-charge endpoint).
+  - [ ] **Partial-charge ramp shape** — measure a half-charged Gauss Rifle
+        hit: the new formula (`1 + FPDM × t/FPS`) predicts ~2× base damage,
+        while the old shipped formula (`(1 + FPDM) × t/FPS`) predicted ~1.5×
+        — this single measurement distinguishes the two. Also confirm a
+        0-charge (instant-release) shot does full base damage (×1), not 0.
   - [ ] **Tesla + Charging (Hold) Barrel** — confirms an OMOD SET
         FullPowerSeconds/FullPowerDamageMult turns charging ON for a base
         WEAP that has FPDM but FPS 0 (ESM: base FPDM 1.25/FPS 0.0, barrel SETs

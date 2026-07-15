@@ -518,12 +518,21 @@ energy-scoped bonus to land.
   include sets it, unlike the Tesla/Gamma Gun charging OMODs, which DO SET it
   alongside their FPS/FPDM), so a flag-based gate would false-negative them.
 - **Damage formula — USER-CONFIRMED, NOT ESM-proven**: `damage(t) = base ×
-  (1 + FPDM) × (t / FPS)`, linear from 0, clamped to `[0, FPS]`. Despite the
+  (1 + FPDM × t/FPS)`, linear from **base damage (×1) at t=0**, up to `base ×
+  (1 + FPDM)` at `t = FPS`, clamped to `[0, FPS]` (see the `minimumChargeTime`
+  bullet below for the actual lower bound applied). 0% charge = full base
+  damage (×1), not 0 — user-confirmed worked example: 50 base damage, FPDM
+  2.0, FPS 1.0s → 50 dmg at t=0, 100 at t=0.5, 150 at t=1.0. Despite the
   "Mult" name, FPDM is a BONUS added on top of the 1.0× base, not a
   replacement (Gauss Rifle: ESM FPS 1.0 / FPDM 2.0 → 91 base × 3 = 273 at full
   charge, not 182). No in-game stopwatch/damage-meter confirmation exists yet
-  for the *linear* shape of the ramp specifically — only the full-charge
-  endpoint value is derivable from the ESM fields.
+  for the *linear shape* of the ramp or the *base-damage starting point*
+  specifically — only the full-charge endpoint value is derivable from the
+  ESM fields. **Consequence**: because per-hit damage never drops to 0,
+  partial-charge / spamfire play can yield HIGHER burst DPS than a full
+  charge — the per-hit loss from charging less is often smaller than the
+  cadence gain from firing more often. This is expected behavior under the
+  formula, not a bug.
 - **Cadence — `getFireRate`, user-confirmed, speed-immune**:
   `shots/sec = 1 / (chargeSec + animDelaySec / speed)`. The charge-hold
   portion is REAL wall-clock time: Weapon Speed and fire-rate buffs never
@@ -552,11 +561,19 @@ energy-scoped bonus to land.
   Arrows is assumed to tick its burn/poison DoT the same regardless of how
   long the shot was held — unverified in-game
   (`dps-todos/measurement-backlog.md` "charged-shot DoT ticks").
-- `minimumChargeTime` (bows only) is UI-only: it floors the charge-time
-  slider's range (0.9s/1.05s in practice) so the player can't select a draw
-  shorter than the bow can actually fire at. The damage formula never
-  consults it, and the engine never clamps `chargeTimeSec` against it — `t`
-  still scales linearly from 0 in `chargeDamageMultiplier`.
+- `minimumChargeTime` (bows only) is NO LONGER UI-only (superseded
+  2026-07-15): both the UI charge-time slider AND the engine
+  (`resolvedChargeTimeSec` in `src/lib/charge.ts`) floor the charge time at
+  it (0.9s/1.05s in practice for the two RegularBow-family fixtures), so a
+  held charge can never be resolved below it. The multiplier AT the floor is
+  baked into the formula's output — e.g. RegularBow (FPDM 0.3, FPS 1.4s,
+  minimumChargeTime 0.9s) resolves to `1 + 0.3 × 0.9/1.4 ≈ ×1.19` for any
+  `chargeTimeSec` at or below 0.9s, not ×1 (0% charge). The true in-game
+  behavior below `minimumChargeTime` — no projectile fires at all, i.e. 0
+  damage — is deliberately NOT modeled: the UI slider can't select sub-min
+  values during normal play, so the only way `chargeTimeSec` reaches the
+  engine below the floor is stale/URL state, and flooring it there is
+  simpler than special-casing a "misfire" damage-formula branch.
 - **Overheat is a DIFFERENT, deliberately-unmodeled mechanic** (same
   WEAP.Data block as charging, unrelated knob): the "Overheat Rate" struct
   (`Rate Up`/`Rate Down` — e.g. Gauss Rifle 0.1/0.1, Gauss Minigun

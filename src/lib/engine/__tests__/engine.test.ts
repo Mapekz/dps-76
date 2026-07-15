@@ -555,8 +555,8 @@ describe('charging weapons (Gauss family, bows, tesla/gamma/laser barrels)', () 
       expect(chargeDamageMultiplier(gauss, 1.0)).toBeCloseTo(3.0, 10);
     });
 
-    it('half charge: Gauss FPDM 2.0 → ×1.5', () => {
-      expect(chargeDamageMultiplier(gauss, 0.5)).toBeCloseTo(1.5, 10);
+    it('half charge: Gauss FPDM 2.0 → ×2.0', () => {
+      expect(chargeDamageMultiplier(gauss, 0.5)).toBeCloseTo(2.0, 10);
     });
 
     it('bow FPDM 0.3 at full draw → ×1.3', () => {
@@ -571,13 +571,33 @@ describe('charging weapons (Gauss family, bows, tesla/gamma/laser barrels)', () 
       expect(chargeDamageMultiplier(gauss, 5.0)).toBeCloseTo(3.0, 10);
     });
 
-    it('zero charge time → ×0 (nothing charged yet)', () => {
-      expect(chargeDamageMultiplier(gauss, 0)).toBeCloseTo(0, 10);
+    it('zero charge time → ×1 (uncharged shot does full base damage)', () => {
+      expect(chargeDamageMultiplier(gauss, 0)).toBeCloseTo(1, 10);
+    });
+
+    it('worked example: 100 base, FPDM 2.0, FPS 1.0 → ×1 / ×2 / ×3 at t=0 / 0.5 / 1.0', () => {
+      expect(chargeDamageMultiplier(gauss, 0)).toBeCloseTo(1, 10);
+      expect(chargeDamageMultiplier(gauss, 0.5)).toBeCloseTo(2, 10);
+      expect(chargeDamageMultiplier(gauss, 1.0)).toBeCloseTo(3, 10);
     });
 
     it('a non-charging weapon always returns 1 (neutral), any chargeTimeSec', () => {
       expect(chargeDamageMultiplier(nonCharging, 0.5)).toBe(1);
       expect(chargeDamageMultiplier(nonCharging, undefined)).toBe(1);
+    });
+  });
+
+  describe('minimumChargeTime floors resolvedChargeTimeSec (src/lib/charge.ts)', () => {
+    const bowW = makeWeapon({
+      weaponClass: 'bow', fullPowerSeconds: 1.0, fullPowerDamageMult: 2.0, minimumChargeTime: 0.25,
+    });
+
+    it('a sub-min chargeTimeSec floors to minimumChargeTime: ×1.5 (the 50→75 worked example)', () => {
+      expect(chargeDamageMultiplier(bowW, 0.1)).toBeCloseTo(1.5, 10);
+    });
+
+    it('getFireRate treats any sub-min chargeTimeSec identically to minimumChargeTime itself', () => {
+      expect(getFireRate(bowW, 0.1)).toBe(getFireRate(bowW, 0.25));
     });
   });
 
@@ -613,9 +633,9 @@ describe('charging weapons (Gauss family, bows, tesla/gamma/laser barrels)', () 
     it('freeAim and vats report the SAME fireRate and per-hit charge scaling for a fixed chargeTimeSec', () => {
       const s = computeScenarios({ ...baseInput, chargeTimeSec: 0.5 });
       expect(s.freeAim.fireRate).toBeCloseTo(s.vats.fireRate, 10);
-      // half charge: 100 × (1 + 2.0) × (0.5 / 1.0) = 150
-      expect(s.freeAim.perHit.total).toBeCloseTo(150, 6);
-      expect(s.vats.perHit.total).toBeCloseTo(150, 6); // critRate 0 → non-crit hit only
+      // half charge: 100 × (1 + 2.0 × 0.5) = 200
+      expect(s.freeAim.perHit.total).toBeCloseTo(200, 6);
+      expect(s.vats.perHit.total).toBeCloseTo(200, 6); // critRate 0 → non-crit hit only
     });
 
     it('exposes the charging field with the effective weapon\'s charge parameters', () => {
@@ -647,10 +667,12 @@ describe('charging weapons (Gauss family, bows, tesla/gamma/laser barrels)', () 
       // full charge: parent 100 × 3 = 300, twin 300 × 0.15 = 45.
       expect(full.components[0].damage).toBeCloseTo(300, 6);
       expect(full.components[1].damage).toBeCloseTo(45, 6);
-      // half charge: parent 150, twin 22.5 — exactly half of the full-charge twin.
-      expect(half.components[0].damage).toBeCloseTo(150, 6);
-      expect(half.components[1].damage).toBeCloseTo(22.5, 6);
-      expect(half.components[1].damage).toBeCloseTo(full.components[1].damage / 2, 10);
+      // half charge: parent 100 × (1 + 2.0 × 0.5) = 200, twin 200 × 0.15 = 30 —
+      // 2/3 of the full-charge twin (same ratio as the parent, 200/300 = 2/3),
+      // no longer exactly half since the ramp no longer starts at 0.
+      expect(half.components[0].damage).toBeCloseTo(200, 6);
+      expect(half.components[1].damage).toBeCloseTo(30, 6);
+      expect(half.components[1].damage).toBeCloseTo(full.components[1].damage * (2 / 3), 10);
     });
   });
 

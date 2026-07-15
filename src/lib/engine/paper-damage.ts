@@ -109,7 +109,7 @@ function componentBase(
     // Materialized components (effective-weapon.ts) carry scale/flatBonus;
     // absent on ordinary weapon-declared components (1 / 0, neutral).
     // chargeMult (src/lib/charge.ts) is 1 (neutral) for non-charging weapons;
-    // for charging weapons it's the linear ramp `(1 + FPDM) × (t / FPS)` —
+    // for charging weapons it's the linear ramp `1 + FPDM × (t / FPS)` —
     // applying it here, before the dbm parenthesis, means the explosion twin
     // (which derives its base from this component's `scaledBase` further
     // down) inherits it automatically, with no extra code.
@@ -146,7 +146,7 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
 
   // Charging weapons (Gauss family, bows, tesla/gamma/laser via
   // charging-barrel OMODs): 1 (neutral) for weapons that don't charge, else
-  // the linear ramp `(1 + FPDM) × (t / FPS)` — see src/lib/charge.ts. Applies
+  // the linear ramp `1 + FPDM × (t / FPS)` — see src/lib/charge.ts. Applies
   // to every per-hit damage component (including the explosive twin, which
   // inherits it via `scaledBase` below) but NEVER to `computeDotDps`'s
   // steady-state DoT add (user decision — DoT ticks are unaffected by how

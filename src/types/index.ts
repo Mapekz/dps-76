@@ -379,9 +379,10 @@ export interface Weapon {
   fullPowerDamageMult?: number;
   /**
    * Bows only — top-level WEAP "Minimum Charge Time": the minimum draw
-   * before the weapon can fire at all. UI slider floor ONLY (the charge-time
-   * slider's minimum stop) — the damage formula in `src/lib/charge.ts` still
-   * scales linearly from 0 and never consults this field.
+   * before the weapon can fire at all. NOT UI-only: both the charge-time
+   * slider AND the engine (`resolvedChargeTimeSec`, src/lib/charge.ts) floor
+   * the resolved charge time at this value, so the damage/cadence formulas
+   * never see a `t` below it.
    */
   minimumChargeTime?: number;
 
@@ -497,8 +498,9 @@ export interface PlayerConfig {
    * (Gauss family, bows, tesla/gamma/laser via charging-barrel OMODs).
    * Undefined = "always fully charge" (the default — optimal-play
    * assumption). The engine clamps this to the effective weapon's
-   * [0, fullPowerSeconds] (`resolvedChargeTimeSec`, src/lib/charge.ts) —
-   * never negative, never past full charge.
+   * [minimumChargeTime ?? 0, fullPowerSeconds] (`resolvedChargeTimeSec`,
+   * src/lib/charge.ts) — never below the weapon's minimum charge time
+   * (0 if it doesn't have one), never past full charge.
    */
   chargeTimeSec?: number;
 }

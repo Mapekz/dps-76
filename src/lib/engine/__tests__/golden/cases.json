@@ -565,7 +565,7 @@
   "source": "pending in-game pip-boy reading at full charge hold (docs/assumptions.md \"Charging weapons\"); extraction hasn't yet read WEAP Full Power Seconds/Full Power Damage Mult off the Gauss Rifle record, so this is currently a no-op pending the extraction phase \u2014 un-skip once both extraction and the measurement land"
  },
  {
-  "name": "Full-draw Bow @50, no perks \u2014 Phase 2 charging (minimumChargeTime is UI-only, never floors the formula)",
+  "name": "Full-draw Bow @50, no perks \u2014 Phase 2 charging (charge time floors at minimumChargeTime, baking in its multiplier)",
   "weaponId": "RegularBow",
   "itemLevel": 50,
   "mods": {},
