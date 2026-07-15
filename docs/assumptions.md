@@ -628,6 +628,25 @@ energy-scoped bonus to land.
   (RGW3) / Reload Speed (Data)`. Fixer: 3.20 / 1.1765 ≈ 2.72 s. Pinned by a
   `expected: null` golden case until someone stopwatches N full
   mag-dump+reload cycles vs a target dummy.
+- **Fold shape, single bucket vs. independent AV layer — STOPWATCH-LEANING
+  2026-07-15:** the divisor above is one `foldOps` fold across every
+  `reloadSpeed`-bucket modifier regardless of ESM mechanism — OMOD/legendary
+  `Data.Properties[].ReloadSpeed` record rewrites (`MUL_ADD`, scaled against
+  the weapon's own base) and perk/mutation `WeapReloadSpeedMult` AV fortifies
+  (`AbPerkFortifyReloadSpeedMult`/`Mutation_FortifyReloadSpeed`, flat `ADD`)
+  land in the SAME bucket: `base + ΣMUL_ADD×base + ΣADD`. The competing
+  hypothesis — AV fortifies apply as an independent `×(1 + ΣADD)` multiplier
+  on top of the OMOD-scaled base — was in-game stopwatch-tested this session
+  on the Fixer (Ground Pounder R1–3 + Swift 3★ + Speed Demon + Fast Fighter,
+  several stack sizes) and the Gatling Plasma (Swift Core Receptacle + Swift
+  3★ + Gun Tricks + Speed Demon, SIN on/off); the two formulas only diverge
+  once an OMOD/legendary source is mixed with a perk/mutation source
+  (0.1–0.3s apart on the combos tried), and measured reloads tracked the
+  single-fold reading — no code change needed. Not a pinned golden number
+  (no exact stopwatch seconds recorded, just repeated A-vs-B comparison), and
+  orthogonal to the still-open divide-vs-time-scale question below (that one
+  asks whether the fold divides `animationReloadSec` at all, vs. the game
+  reading the same fold as a direct time-scale).
 - **Per-shell reloaders** (2026-07-15): weapons whose WEAP keywords include
   `AnimsSequentialReload` (Lever Action Rifle 1.77s/cap 6, Pump Action
   Shotgun 2.5s/cap 8, Single Action Revolver 3.0s/cap 6 — plus their

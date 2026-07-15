@@ -73,6 +73,19 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
       (2.56s vs 2.33s per shell). Take Gun Tricks as a ghoul for a stacked
       +60% check: divide −37.5% vs time-scale −60% — the gap is unmissable
       at high stacks. Every reloadSpeed source in the calc rides on this.
+- [ ] **Fold shape: single bucket vs. independent AV layer** (resolved
+      2026-07-15, `docs/assumptions.md` "Sustained DPS") — tested whether
+      perk/mutation `WeapReloadSpeedMult` AV fortifies (Ground Pounder, Speed
+      Demon, Gun Tricks, Fast Fighter) fold additively into the SAME
+      `reloadSpeed` bucket as OMOD/legendary record-property rewrites
+      (current engine: `base + ΣMUL_ADD×base + ΣADD`) or apply as an
+      independent `×(1+ΣADD)` layer on top of the OMOD-scaled base. Stopwatch
+      comparisons on Fixer (Ground Pounder R1–3 + Swift 3★ + Speed Demon +
+      Fast Fighter) and Gatling Plasma (Swift Core Receptacle + Swift 3★ +
+      Gun Tricks + Speed Demon, SIN on/off) sided with the single-fold
+      reading — no code change needed. Not a formal golden pin (qualitative
+      A-vs-B call, no recorded seconds); the divide-vs-time-scale question
+      immediately below is separate and still open.
 - [ ] **Fast Fighter conversion** (new 2026-07-15,
       `dps-todos/move-speed-sources.md`) — reload stopwatch with Fast
       Fighter + Speed Demon, standing still: model predicts the same as
