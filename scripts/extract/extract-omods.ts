@@ -136,6 +136,33 @@ export function isExcludedOmodEdid(edid: string): boolean {
   return OMOD_JUNK_EDID_RE.test(edid);
 }
 
+export type OmodRecordExclusion = 'notWeaponMod' | 'authoringTemplate' | 'junkEdid' | 'unnamed';
+
+/**
+ * Structural exclusion classifier shared by the omods pass (`named` filter
+ * below) and the attach-point grant index (ap-grant-index.ts) — ONE list so
+ * shape/prefix rules can't drift between consumers (the p62_/sdow_ incidents
+ * above are exactly that failure mode).
+ * - 'notWeaponMod': Form Type ≠ Weapon (armor/power-armor mods).
+ * - 'authoringTemplate': _PARENT_ records / "TEMPLATE:"-named — carry the
+ *   stats real mods include via their Includes chain; never equippable.
+ * - 'junkEdid': dev/dead-record prefixes (checked BEFORE 'unnamed' so a
+ *   nameless zzz_/cut_ record classifies as junk, never as merely unnamed).
+ * - 'unnamed': no display Name. Not emitted as a picker mod, but a weapon
+ *   template may legitimately include one, so the grant index keeps these
+ *   as seed-only entries.
+ */
+export function classifyOmodRecordExclusion(record: EsmRecord): OmodRecordExclusion | null {
+  const data = omodData(record);
+  const formType = ((data['Form Type'] as Record<string, unknown>)?.['name'] as string) ?? '';
+  if (formType !== 'Weapon') return 'notWeaponMod';
+  if (record.editor_id.startsWith('_PARENT_')) return 'authoringTemplate';
+  if (isExcludedOmodEdid(record.editor_id)) return 'junkEdid';
+  if (!record.fields['Name']) return 'unnamed';
+  if ((record.fields['Name'] as string).startsWith('TEMPLATE')) return 'authoringTemplate';
+  return null;
+}
+
 interface RawProperty {
   functionType: 'SET' | 'MUL_ADD' | 'ADD' | string;
   property: string;
@@ -429,18 +456,9 @@ export async function extractOmods(
 
   const excluded: Record<string, string[]> = { omodJunkEdid: [] };
   const named = records.filter(r => {
-    const data = omodData(r);
-    const formType = ((data['Form Type'] as Record<string, unknown>)?.['name'] as string) ?? '';
-    if (formType !== 'Weapon' || !r.fields['Name']) return false;
-    // Authoring templates (_PARENT_ records, "TEMPLATE:"-named) carry the stats
-    // real mods include via their Includes chain — collectProperties reads them
-    // from byFormId (all records), so they need not be emitted at all.
-    if (r.editor_id.startsWith('_PARENT_') || (r.fields['Name'] as string).startsWith('TEMPLATE')) return false;
-    if (isExcludedOmodEdid(r.editor_id)) {
-      excluded.omodJunkEdid.push(r.editor_id);
-      return false;
-    }
-    return true;
+    const exclusion = classifyOmodRecordExclusion(r);
+    if (exclusion === 'junkEdid') excluded.omodJunkEdid.push(r.editor_id);
+    return exclusion === null;
   });
 
   const omods: GeneratedOmod[] = [];

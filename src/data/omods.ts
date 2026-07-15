@@ -9,6 +9,7 @@ import {
   perWeaponSlotLabelOverrides,
 } from './overrides/corrections';
 import { getDataset } from './dataset';
+import { isOmodEligibleForWeapon } from './omod-eligibility';
 import { isRecordVisible } from './overlay';
 
 // Reads the merged omod list from the dataset chokepoint (legendary-value
@@ -95,34 +96,13 @@ export function getDefaultOmods(
 }
 
 /**
- * May the picker offer this mod on this weapon?
- *
- * Branch 0 — the attach point must exist on the weapon (ESM-authoritative).
- * Branch 1 — keyword-scoped mods (the overwhelming majority): eligible iff
- *   targetKeywords ⊆ weapon.keywords, the game's own family gate.
- * Branch 2 — EMPTY targetKeywords match nothing by themselves (they used to
- *   match everything sharing the attach point — the source of "Vox Syringe
- *   Barrel on a gauss minigun"-class pollution, dps-todos/omod-eligibility).
- *   Such a mod is eligible only when this weapon's own ESM instance template
- *   whitelists it (Object Template Includes → templateModFormIds), or an
- *   explicit omodWeaponRestrictions rescue names the weapon (reward-granted
- *   identity mods with no ESM-derivable weapon tie at all).
- *
- * A crafting recipe existing (hasGrantingCobj) is deliberately NOT an input:
- * COBJs carry no CTDA/BNAM naming a weapon (verified live 2026-07-14), so a
- * recipe can never say WHICH weapon a keyword-less mod belongs to.
+ * May the picker offer this mod on this weapon? Semantics live in the shared
+ * predicate (./omod-eligibility) — the extractor's attach-point closure uses
+ * the exact same gate, so extracted slot lists can't drift from what the
+ * picker offers. This wrapper just supplies the app-layer rescue table.
  */
 export function isEligible(omod: GeneratedOmod, weapon: Weapon): boolean {
-  const slots = weapon.attachParentSlots ?? [];
-  if (!slots.includes(omod.attachPointFormId)) return false;
-  if (omod.targetKeywords.length > 0) {
-    const keywords = weapon.keywords ?? [];
-    return omod.targetKeywords.every(k => keywords.includes(k));
-  }
-  return (
-    (weapon.templateModFormIds ?? []).includes(omod.formId) ||
-    (omodWeaponRestrictions[omod.id]?.includes(weapon.id) ?? false)
-  );
+  return isOmodEligibleForWeapon(omod, weapon, omodWeaponRestrictions);
 }
 
 /**

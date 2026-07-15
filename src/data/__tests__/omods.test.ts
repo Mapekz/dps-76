@@ -250,7 +250,53 @@ describe('slot labels', () => {
   });
 
   it('gun weapons keep their auto-derived labels (no per-weapon leakage)', () => {
-    expect(labelOf('AlienBlaster', 'ap_gun_Scope')).toBe('Scope');
-    expect(labelOf('AlienBlaster', 'ap_gun_Barrel')).toBe('Barrel');
+    // Hunting Rifle again per the original intent — its scope slot only
+    // exists via the attach-point closure (receiver-granted).
+    expect(labelOf('HuntingRifle', 'ap_gun_Scope')).toBe('Scope');
+    expect(labelOf('HuntingRifle', 'ap_gun_Barrel')).toBe('Barrel');
+  });
+});
+
+// 2026-07-14 attach-point closure (docs/assumptions.md "Attach-point
+// closure"): most slots are granted by installed mods (a receiver grants
+// grip/scope/barrel/mag), so weapons.json attachParentSlots is a fixpoint
+// closure over mod-granted slots, not the WEAP record's own list.
+
+describe('attach-point closure against live data', () => {
+  const slotsOf = (weaponId: string) => {
+    const weapon = getWeapons('live')[weaponId];
+    expect(weapon, weaponId).toBeDefined();
+    return getOmodSlots('live', weapon);
+  };
+
+  it('the Hunting Rifle regains its receiver-granted slots; the scope slot lists all twelve scopes', () => {
+    const slots = slotsOf('HuntingRifle');
+    const edids = slots.map(s => s.slot);
+    for (const slot of ['ap_gun_Barrel', 'ap_gun_Grip', 'ap_gun_Mag', 'ap_gun_Muzzle', 'ap_gun_Scope']) {
+      expect(edids, slot).toContain(slot);
+    }
+    const scope = slots.find(s => s.slot === 'ap_gun_Scope');
+    expect(scope?.options).toHaveLength(12);
+    // Zero-stat non-stock scopes surface badged inert (show-all-mods policy).
+    expect(scope?.options.find(o => o.id === 'mod_HuntingRifle_SCOPE_reflex_Base')?.badge).toBe('inert');
+  });
+
+  it('The Fixer offers its full slot set again (was Receiver + Unique only)', () => {
+    const edids = slotsOf('CombatRifle_Fixer').map(s => s.slot);
+    for (const slot of ['ap_gun_Barrel', 'ap_gun_Grip', 'ap_gun_Mag', 'ap_gun_Muzzle', 'ap_gun_Scope', 'ap_customName']) {
+      expect(edids, slot).toContain(slot);
+    }
+  });
+
+  it('tester regression: .44, 10mm, 10mm SMG and assault rifle offer more than a receiver slot', () => {
+    for (const weaponId of ['44', '10mm', '10mmSMG', 'AssaultRifle']) {
+      const edids = slotsOf(weaponId).map(s => s.slot);
+      expect(edids.filter(e => e !== 'ap_gun_Receiver').length, weaponId).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it('the Plasma Gun barrel slot offers its full barrel family (flamer/sniper/splitter/…)', () => {
+    const barrel = slotsOf('PlasmaGun').find(s => s.slot === 'ap_gun_Barrel');
+    expect(barrel?.options.length).toBeGreaterThanOrEqual(20);
   });
 });

@@ -109,16 +109,18 @@ export function resolveRankSources(rankPerkFormIds: string[][], familyFormIds: s
  * Pure PCRD → GeneratedPerkCard normalization (verified against the 20260710
  * dump: TenderizerCard 0x003E2202, CommandoCard 0x0031AEF6, ActionBoyGirlCard
  * 0x00093E84, LGN_WhatRads_Card 0x005A5943). Shape:
- *   fields.Unknown = { Value, "Min Level", Special: {value,name}, "Race Restriction": {value,name} }
+ *   fields["Perk Card Data"] = { Value, "Min Level", Special: {value,name}, "Race Restriction": {value,name} }
+ *   (the esm CLI decoded this node as `Unknown` before 2026-07-14 — kept as a
+ *   fallback so older daemon builds keep working)
  *   fields.Perks = [{ Perk: { "Card Rank Cost", "Male Perk", "Female Perk"? } }, ...] (rank order)
  * The legendary flag lives at the RECORD's top-level `fields["Perk Card Flags"]`
  * (confirmed on LGN_WhatRads_Card: `{"value":"0x1","flags":["Legendary Perk"]}`
- * sits next to `Perks`, not nested under `Unknown`) — `Unknown["Perk Card Flags"]`
- * is also checked defensively in case a differently-versioned record nests it
- * there, though none in the 20260710 dump do.
+ * sits next to `Perks`, not nested under the card-data node) — the nested
+ * variant is also checked defensively in case a differently-versioned record
+ * nests it there, though none in the 20260710 dump do.
  */
 export function toGeneratedPerkCard(record: EsmRecord): ToGeneratedPerkCardResult {
-  const unknown = (record.fields['Unknown'] ?? {}) as Record<string, unknown>;
+  const unknown = (record.fields['Perk Card Data'] ?? record.fields['Unknown'] ?? {}) as Record<string, unknown>;
   const special = ((unknown['Special'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown';
   const raceRestrictionName = (unknown['Race Restriction'] as Record<string, unknown> | undefined)?.['name'] as
     | string

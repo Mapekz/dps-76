@@ -1563,6 +1563,54 @@ content is hand-hidden via `hiddenOmodIds` with a source comment.
 Identity/paint/legendary slots are exempt — inherited-only evidence is normal
 there.
 
+## Attach-point closure (2026-07-14 — `ap-grant-index.ts`, `applyAttachPointClosure`)
+
+A WEAP record's own `"Attach Parent Slots"` lists only the points available on
+the bare frame — the game grants most real slots through *installed mods*: an
+OMOD's `Data."Attach Parent Slots"` lists attach points that open once that
+mod is equipped (walked live, 20260710: `HuntingRifle` 0x0004F46A lists only
+`ap_gun_Receiver` + cosmetic/legendary APs; its receiver 0x002DEB09 grants
+grip/scope/front-sight/casing/mag). Copying the WEAP field verbatim silently
+dropped whole slot families on 136 of 282 weapons (Hunting Rifle scopes, The
+Fixer's Barrel/Grip/Mag/Muzzle/Scope, the tester-reported ".44/10mm/10mm
+SMG/assault rifle have only a receiver slot" class).
+
+`weapons.json.attachParentSlots` is therefore a **fixpoint closure**, not the
+raw field:
+
+- **Seed** = WEAP's own slots ∪ each template/default mod's own attach point
+  (a part the weapon ships with must have a valid slot — the Hunting Rifle's
+  default barrel sits on `ap_gun_Barrel`, absent from its WEAP list) ∪ the
+  slots those mods grant.
+- **Iterate**: every eligible mod whose attach point is currently available
+  contributes its granted slots, until stable (receiver → barrel → muzzle
+  chains). Eligibility is the **shared picker predicate**
+  (`src/data/omod-eligibility.ts`, imported by both `extract-weapons.ts` and
+  `src/data/omods.ts` `isEligible`) so extractor and picker can never drift.
+- The paper model wants the union over all reachable mod configurations —
+  per-configuration availability (does a *specific* barrel gate the muzzle?)
+  is deliberately out of scope; the picker treats all closure slots as always
+  present, same as every other loadout tool.
+- **Contributor gate is structural only** (shared
+  `classifyOmodRecordExclusion`: dev/junk prefixes incl. `zzz`/`cut_`,
+  authoring templates, non-weapon mods; unnamed records seed but never
+  iterate). Full OMOD obtainability *cannot* gate here — it's computed in the
+  omods pass, which itself needs `obtainableWeaponFormIds` from the end of
+  the weapons pass (circular). Accepted residual risk: a real-Name,
+  non-junk-prefix but actually-unreleased donor mod could open a slot.
+- Seed/closure over-generation is structurally inert: several donors grant
+  APs no mod targets (the Fixer's receiver grants
+  `ap_gun_InternalMod*_OBSOLETE`) — harmless because `buildSlots` is
+  OMOD-driven, not AP-driven: an attach point with zero eligible mods never
+  creates a picker slot. No seed restriction needed, and slot-list growth in
+  `weapons.json` is expected to be much broader than the picker-visible diff.
+- Restrictions-rescued mods (`omodWeaponRestrictions`, app-layer) are not
+  consulted by the closure: none grant attach points, and extract scripts
+  must not import override modules.
+- Cost note: the index does one OMOD `list`+`bulkGet` before the weapons
+  pass (so `--only weapons` now touches OMOD records), warming the client
+  cache the omods pass reuses.
+
 ## Unique weapons (2026-07-13 rework — base weapon + `ap_customName` mod)
 
 - The game's registry is the `WeaponsUniqueNamedList` FLST (0x00789213,

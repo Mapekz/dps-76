@@ -3,6 +3,7 @@ import path from 'node:path';
 import { parseArgs } from 'node:util';
 import type { GeneratedMeta, GeneratedWeapon } from '../../src/types/generated';
 import { EsmClient } from './esm-client';
+import { buildApGrantIndex } from './ap-grant-index';
 import { buildCobjIndex } from './cobj-index';
 import { explosiveFamilyKeywordsOf, extractWeapons } from './extract-weapons';
 import { extractPerks } from './extract-perks';
@@ -84,8 +85,13 @@ async function main() {
 
   if (only.includes('weapons')) {
     console.log('Extracting weapons…');
+    // Attach-point closure input (mod-granted slots). Costs one OMOD
+    // list+bulkGet even on --only weapons runs; the warmed record cache
+    // makes the omods pass (full runs) correspondingly cheaper.
+    console.log('  building attach-point grant index…');
+    const apGrantIndex = await buildApGrantIndex(client);
     const { weapons, excluded, excludedDetailed, unresolved, obtainableFormIds, explosiveFamilyKeywords: efk } =
-      await extractWeapons(client);
+      await extractWeapons(client, apGrantIndex);
     obtainableWeaponFormIds = obtainableFormIds;
     explosiveFamilyKeywords = efk;
     allWeapons = weapons;

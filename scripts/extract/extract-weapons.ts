@@ -1,5 +1,7 @@
 import type { ExcludedRecordDetail, GeneratedDamageComponent, GeneratedWeapon } from '../../src/types/generated';
 import type { Modifier } from '../../src/types/modifiers';
+import { isOmodEligibleForWeapon } from '../../src/data/omod-eligibility';
+import { type ApGrantEntry, type ApGrantIndex, emptyApGrantIndex } from './ap-grant-index';
 import { EsmClient, mapPool, type EsmRecord } from './esm-client';
 import { asNumber, DAMAGE_TYPE_EDID_MAP, decodeExplosionDamage, parseCurve, projectileExplosionFormId } from './normalize/explosion';
 import { buildAvifRoutes, translateEnchantment, type AvifRoute } from './normalize/mgef';
@@ -351,7 +353,75 @@ export async function toGeneratedWeapon(
   };
 }
 
-export async function extractWeapons(client: EsmClient): Promise<ExtractWeaponsResult> {
+/**
+ * Attach-point closure (docs/assumptions.md "Attach-point closure"): the WEAP
+ * record's own "Attach Parent Slots" lists only the points available on the
+ * bare frame — most real slots are GRANTED by installed mods (the Hunting
+ * Rifle's receiver grants grip/scope/barrel/front-sight/mag). The paper model
+ * wants the union over all reachable mod configurations, so:
+ *
+ * - Seed: WEAP's own slots ∪ each template/default mod's OWN attach point (a
+ *   part the weapon ships with must have a valid slot — the Hunting Rifle's
+ *   default barrel sits on ap_gun_Barrel, absent from the WEAP list) ∪ the
+ *   slots those mods grant. Junk records aren't in the index, so a cut/dev
+ *   donor never opens slots; unnamed entries DO seed (a template legitimately
+ *   includes them) but never iterate.
+ * - Fixpoint: every named indexed mod eligible per the SHARED picker
+ *   predicate (isOmodEligibleForWeapon — keeping extractor and picker gates
+ *   from drifting) whose attach point is currently available contributes its
+ *   granted slots, until stable (receiver → barrel → muzzle chains).
+ *
+ * Per-configuration slot gating (does a specific barrel close the muzzle?) is
+ * deliberately out of scope — the picker treats all closure slots as always
+ * present, like every other loadout tool. Restrictions-rescued mods
+ * (corrections.ts omodWeaponRestrictions, app-layer) are not consulted: none
+ * grant attach points, and the extractor must not read override modules.
+ */
+export function applyAttachPointClosure(
+  weapon: GeneratedWeapon,
+  index: ApGrantIndex,
+  grantingEntries: readonly ApGrantEntry[]
+): void {
+  const slots = new Set(weapon.attachParentSlots);
+  for (const formId of new Set([...weapon.templateModFormIds, ...weapon.defaultModFormIds])) {
+    const entry = index.get(formId);
+    if (!entry) continue;
+    if (entry.attachPointFormId) slots.add(entry.attachPointFormId);
+    for (const ap of entry.grantedApFormIds) slots.add(ap);
+  }
+  let changed = true;
+  while (changed) {
+    changed = false;
+    const view = {
+      id: weapon.id,
+      attachParentSlots: [...slots],
+      keywords: weapon.keywords,
+      templateModFormIds: weapon.templateModFormIds,
+    };
+    for (const entry of grantingEntries) {
+      if (
+        !isOmodEligibleForWeapon(
+          { id: entry.edid, formId: entry.formId, attachPointFormId: entry.attachPointFormId!, targetKeywords: entry.targetKeywords },
+          view
+        )
+      ) {
+        continue;
+      }
+      for (const ap of entry.grantedApFormIds) {
+        if (!slots.has(ap)) {
+          slots.add(ap);
+          changed = true;
+        }
+      }
+    }
+  }
+  weapon.attachParentSlots = [...slots];
+}
+
+export async function extractWeapons(
+  client: EsmClient,
+  apGrantIndex: ApGrantIndex = emptyApGrantIndex()
+): Promise<ExtractWeaponsResult> {
   const named = await client.search('*', { type: 'WEAP', searchIn: 'name' });
 
   const excluded: Record<string, string[]> = { prefix: [], noDamage: [] };
@@ -376,9 +446,17 @@ export async function extractWeapons(client: EsmClient): Promise<ExtractWeaponsR
   const edidByFormId = new Map<string, string>();
   for (const id of routePool) edidByFormId.set(id, await client.resolveEdid(id));
 
+  // Closure iteration only ever consults named entries that can actually
+  // open a slot — precompute them once (the index holds ~12k records; only a
+  // few hundred grant attach points).
+  const grantingEntries = [...apGrantIndex.values()].filter(
+    e => !e.unnamed && e.attachPointFormId !== null && e.grantedApFormIds.length > 0
+  );
+
   const records = await mapPool(candidates, 8, row => client.get(row.form_id));
   for (const record of records) {
     const weapon = await toGeneratedWeapon(client, record, unresolved);
+    applyAttachPointClosure(weapon, apGrantIndex, grantingEntries);
     // Grenades/mines (thrown, or projectile-override with no WEAP damage)
     // stay out per the 2026-07-12 vetting-scope decision (launchers, not
     // throwables) — this exclusion is evaluated on WEAP-level components
