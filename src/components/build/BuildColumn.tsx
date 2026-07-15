@@ -7,6 +7,7 @@ import { StatSummary } from './StatSummary';
 import { MutationsSection, ChemsSection, FoodDrinkSection, MagazinesSection, BobbleheadsSection } from './BuffsSections';
 import { ConditionsSection } from './ConditionsSection';
 import { TargetSection } from './TargetSection';
+import { TeamSection } from './TeamSection';
 
 export function BuildColumn() {
   return (
@@ -22,6 +23,7 @@ export function BuildColumn() {
         <Accordion type="multiple" defaultValue={['weapon', 'special-loadout']} className="w-full">
           <WeaponSection />
           <SpecialLoadoutSection />
+          <TeamSection />
           <MutationsSection />
           <ConditionsSection />
           <ChemsSection />

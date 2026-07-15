@@ -9269,8 +9269,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -9292,8 +9293,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -9315,8 +9317,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -9338,8 +9341,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -9361,8 +9365,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -9384,8 +9389,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -9407,8 +9413,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      }
@@ -9435,8 +9442,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -9458,8 +9466,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -9481,8 +9490,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -9504,8 +9514,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -9527,8 +9538,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -9550,8 +9562,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -9573,8 +9586,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      }
@@ -9601,8 +9615,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -9624,8 +9639,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -9647,8 +9663,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -9670,8 +9687,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -9693,8 +9711,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -9716,8 +9735,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -9739,8 +9759,9 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "GetPlayerTeammateCount Greater Than Or Equal To 1"
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
        }
       ]
      }
@@ -9765,7 +9786,6 @@
    ]
   },
   "notes": [
-   "condition: GetPlayerTeammateCount Greater Than Or Equal To 1",
    "MGEF AbPerkFortifyAllSPECIAL_Desc archetype Script — needs override"
   ]
  },

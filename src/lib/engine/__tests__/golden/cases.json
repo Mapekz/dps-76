@@ -304,6 +304,25 @@
    "expected": 2,
    "tolerancePct": 0.01,
    "source": "engine-snapshot"
+  },
+  {
+   "name": "Stock Fixer @50, ghoul in a public Casual team of 3 — United Ordeal + Public team INT bonus",
+   "weaponId": "CombatRifle_Fixer",
+   "itemLevel": 50,
+   "mods": {},
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "addictions": [],
+   "conditions": { "isGhoul": true, "teammateCount": 2, "publicTeamType": "casual" },
+   "enemyConditions": {},
+   "scenario": "freeAim",
+   "measure": "perHit",
+   "expected": null,
+   "tolerancePct": 2,
+   "source": "in-game (pending): validates United Ordeal's ghoul+teammateCount gate and the Public team Casual INT bonus (min(teammateCount+1,4)=3) together — neither moves the Fixer's raw dbm, so this pins the SPECIAL-side wiring pending an in-game pip-boy read once both effects are user-facing"
   }
  ]
 }

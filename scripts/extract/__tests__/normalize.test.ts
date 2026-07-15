@@ -443,6 +443,18 @@ describe('translateConditions (2026-07-11 condition kinds)', () => {
     expect(unresolved).toEqual([]);
   });
 
+  it("translates GetPlayerTeammateCount >= N to teammateCount with orMore (United Ordeal's 'in a team of >=1')", () => {
+    const row: RawCondition = {
+      Function: 'GetPlayerTeammateCount',
+      'Comparison Value': 1,
+      Operator: 'Greater Than Or Equal To',
+      'Run On': 'Subject',
+    };
+    const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([{ kind: 'teammateCount', count: 1, orMore: true }]);
+    expect(unresolved).toEqual([]);
+  });
+
   it("consumes target HasPerk(ImmuneToPoison)=0 — a generic target is assumed vulnerable (Viper's)", () => {
     const row: RawCondition = {
       Function: 'HasPerk',

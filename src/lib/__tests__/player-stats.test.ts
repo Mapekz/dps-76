@@ -180,4 +180,54 @@ describe('derivePlayerStats: condition-aware SPECIAL folds (2026-07-14)', () => 
     });
     expect(withSin.special.intelligence).toBe(13); // 5 + 8
   });
+
+  it('United Ordeal shape: SPECIAL modifiers gated on BOTH playerIsGhoul and teammateCount only apply when both hold', () => {
+    // Real shape (GHL_UnitedOrdeal rank 1): each of the 7 SPECIAL ADDs carries
+    // TWO conditions on the same modifier — playerIsGhoul:true AND
+    // teammateCount>=1 — both must resolve for the fold to apply.
+    const unitedOrdealRank1 = [
+      specialMod(
+        'specialStrength',
+        1,
+        [
+          { kind: 'playerIsGhoul', value: true },
+          { kind: 'teammateCount', count: 1, orMore: true },
+        ],
+        'united-ordeal:str'
+      ),
+      specialMod(
+        'specialLuck',
+        1,
+        [
+          { kind: 'playerIsGhoul', value: true },
+          { kind: 'teammateCount', count: 1, orMore: true },
+        ],
+        'united-ordeal:lck'
+      ),
+    ];
+
+    const ghoulInTeam = derivePlayerStats(unitedOrdealRank1, baseSpecial({ strength: 5, luck: 5 }), {
+      ...conditions,
+      isGhoul: true,
+      teammateCount: 1,
+    });
+    expect(ghoulInTeam.special.strength).toBe(6); // 5 + 1
+    expect(ghoulInTeam.special.luck).toBe(6); // 5 + 1
+
+    const ghoulSolo = derivePlayerStats(unitedOrdealRank1, baseSpecial({ strength: 5, luck: 5 }), {
+      ...conditions,
+      isGhoul: true,
+      teammateCount: 0,
+    });
+    expect(ghoulSolo.special.strength).toBe(5); // teammateCount condition fails
+    expect(ghoulSolo.special.luck).toBe(5);
+
+    const humanInTeam = derivePlayerStats(unitedOrdealRank1, baseSpecial({ strength: 5, luck: 5 }), {
+      ...conditions,
+      isGhoul: false,
+      teammateCount: 1,
+    });
+    expect(humanInTeam.special.strength).toBe(5); // playerIsGhoul condition fails
+    expect(humanInTeam.special.luck).toBe(5);
+  });
 });

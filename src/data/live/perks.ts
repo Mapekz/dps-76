@@ -257,7 +257,7 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.ThickSkin]: { name: "Thick Skin" }, // No PA
   [PerkId.BattleGenes]: { name: "Battle Genes" }, // Melee scaling - complex
   [PerkId.FeralPresence]: { name: "Feral Presence" }, // -30% enemy damage while Feral - enemy debuff
-  [PerkId.UnitedOrdeal]: { name: "United Ordeal" }, // Team bonuses - not implemented
+  [PerkId.UnitedOrdeal]: { name: "United Ordeal" }, // Ghoul + teammateCount>=1: +1/+2/+3 all SPECIAL by rank
   [PerkId.FaultySpots]: { name: "Faulty Spots" },
   [PerkId.GlowingGut]: { name: "Glowing Gut" }, // Healing restores Glow - not direct combat
   [PerkId.JaguarSpeed]: { name: "Jaguar Speed" }, // Movement speed - not direct damage

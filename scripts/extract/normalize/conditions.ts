@@ -277,8 +277,12 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
     }
     case 'GetPlayerTeammateCount':
       // Fencer's tiers: exact teammate counts 0..3.
-      if (typeof cmp === 'number' && /^equal to$/i.test(cond.Operator ?? '')) {
-        return { kind: 'teammateCount', count: cmp };
+      if (typeof cmp === 'number') {
+        if (/^equal to$/i.test(cond.Operator ?? '')) return { kind: 'teammateCount', count: cmp };
+        // United Ordeal &c.: "in a team of ≥N".
+        if (/^greater than or equal to$/i.test(cond.Operator ?? '')) {
+          return { kind: 'teammateCount', count: cmp, orMore: true };
+        }
       }
       return { kind: 'unresolved', raw: `GetPlayerTeammateCount ${cond.Operator} ${rawCmp}` };
     case 'GetDistance':

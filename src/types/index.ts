@@ -132,6 +132,14 @@ export interface PlayerConditions {
   // Other
   junkItemCount: number; // for Junk Shield perk
   teammateCount: number; // for Bodyguards perk
+  /**
+   * Public team type, gating the team-size-scaled SPECIAL fortify granted by
+   * PT_PublicTeamBonuses_Perk (0x005B7584): 'casual' → +Intelligence
+   * (PT_CasualTeamBonus), 'exploration' → +Endurance
+   * (PT_ExplorationTeamBonus). 'none' (default) = not in a public team of
+   * that type. See @/data/public-teams.
+   */
+  publicTeamType?: 'none' | 'casual' | 'exploration';
 }
 
 // Enemy conditions for conditional damage calculations
@@ -461,6 +469,7 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     luck: 15,
     junkItemCount: 0,
     teammateCount: 0,
+    publicTeamType: 'none',
   };
 }
 

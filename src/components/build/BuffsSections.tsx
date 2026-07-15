@@ -101,7 +101,7 @@ export function MutationsSection() {
                   title={
                     sinActive
                       ? 'Strange in Numbers: mutation effects +25%'
-                      : 'Strange in Numbers equipped but inactive — needs at least 1 teammate (Character section)'
+                      : 'Strange in Numbers equipped but inactive — needs at least 1 teammate (Team section)'
                   }
                 >
                   {sinActive ? 'SiN +25%' : 'SiN inactive'}

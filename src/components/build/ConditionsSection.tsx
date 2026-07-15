@@ -16,9 +16,9 @@ import { SectionTrigger } from './SectionTrigger';
 
 /**
  * The character's steady state: health, meters, caps, streak/stack counters,
- * team, weapon upkeep, and aim rates. Race lives in the SPECIAL Loadout
- * section (SpecialLoadoutSection.tsx); target state in TargetSection;
- * sneak/weakpoint stay on the headline chips.
+ * weapon upkeep, and aim rates. Race lives in the SPECIAL Loadout section
+ * (SpecialLoadoutSection.tsx); team size/public-team type in TeamSection;
+ * target state in TargetSection; sneak/weakpoint stay on the headline chips.
  */
 
 /** In-game meter state names — SURV_NewHungerThreshold_Msg_* / SURV_NewThirstThreshold_Msg_* (tier 4 = fullest). */
@@ -140,7 +140,6 @@ export function ConditionsSection() {
     (conditions.capsOnHand !== defaults.capsOnHand ? 1 : 0) +
     (conditions.adrenalineStacks !== defaults.adrenalineStacks ? 1 : 0) +
     (onslaughtStored !== -1 ? 1 : 0) +
-    (conditions.teammateCount !== defaults.teammateCount ? 1 : 0) +
     ((conditions.weaponConditionPct ?? 100) !== (defaults.weaponConditionPct ?? 100) ? 1 : 0) +
     ((conditions.hitRatePct ?? 100) !== (defaults.hitRatePct ?? 100) ? 1 : 0) +
     ((conditions.bodyPartHitRatePct ?? 100) !== (defaults.bodyPartHitRatePct ?? 100) ? 1 : 0) +
@@ -291,16 +290,6 @@ export function ConditionsSection() {
               }
             />
             {onslaughtMax === 0 && <p className="text-muted-foreground text-xs">No Onslaught sources equipped</p>}
-          </div>
-
-          <div className="space-y-1.5">
-            <Label>Teammates</Label>
-            <ToggleGroup
-              aria-label="Teammates"
-              options={[0, 1, 2, 3].map(n => ({ value: n, label: String(n) }))}
-              value={conditions.teammateCount}
-              onValueChange={v => set('teammateCount', v)}
-            />
           </div>
 
           <NumberField

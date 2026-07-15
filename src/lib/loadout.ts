@@ -5,6 +5,7 @@ import { getLoadoutModifiers } from '@/data/perk-modifiers';
 import { getDefaultOmods, getOmodById } from '@/data/omods';
 import { getAddictionModifiers, getBuffModifiers, getSuppressedAddictions } from '@/data/buffs';
 import { getManualUptimeModifiers } from '@/data/manual-uptime';
+import { getPublicTeamModifiers } from '@/data/public-teams';
 import { buildEffectiveWeapon, WEAPON_STAT_BUCKETS } from '@/lib/engine/effective-weapon';
 import { legendaryBonusOf } from '@/data/perk-budget';
 import { getBodyPartMult } from '@/data/bodyparts';
@@ -73,6 +74,7 @@ function assemble(
   // @/data/manual-uptime for the equipped-card predicate + modifier shape
   // (shared with ConditionsSection.tsx so the slider and the fold can't drift).
   loadoutModifiers.push(...getManualUptimeModifiers(playerConfig.legendaryPerks, conditions));
+  loadoutModifiers.push(...getPublicTeamModifiers(conditions.publicTeamType, conditions.teammateCount));
 
   // Apply equipped OMODs (standard slots + legendary effects) to the weapon.
   let weapon: Weapon | undefined;
