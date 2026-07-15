@@ -6,8 +6,9 @@ description: Walk SeventySix.esm records to verify an item/effect is real and pl
 # ESM record walking
 
 Run the walker instead of raw `esm` CLI calls — it follows the whole chain
-(OMOD → ENCH → MGEF → "Perk to Apply" → PERK entry points; SPEL/ALCH effects;
-curves; GLOBs; conditions) and prints one compact digest:
+(OMOD → ENCH → MGEF → "Perk to Apply" → PERK / "Equip Ability" → SPEL entry
+points; SPEL/ALCH effects; curves; GLOBs; conditions) and prints one compact
+digest:
 
 ```bash
 pnpm esm:walk <formid|edid> [--refs] [--depth N] [--esm <path>]
@@ -22,7 +23,8 @@ pnpm esm:walk <formid|edid> [--refs] [--depth N] [--esm <path>]
   repair) and batches per-record fetches with bulk `get`.
 - Walking a KYWD or AVIF reverse-chases its SPEL/PERK consumers
   (`refs --type SPEL`/`PERK --paths`) instead of dumping the (mostly empty)
-  record itself — the same hop `esm chase` does from the OMOD side, below.
+  record itself — the same reverse-chase hop `esm chase` runs for an OMOD's
+  keyword-hook properties, below.
 
 ## Raw CLI power tools (when the digest truncates)
 
@@ -56,27 +58,44 @@ into a REPL after printing).
   limit (or `--limit 0` for everything) and always pass `--formid` (not a bare
   positional) — the CLI misparses numeric editor_ids when auto-detecting.
 
-## `esm chase` — unique-weapon OMOD effects
+## `esm chase` — OMOD & effect-record mechanics
 
 ```bash
-esm -p --esm <esm> chase <omod-formid|edid> [--depth N] [--ref-limit N] [--json]
+esm -p --esm <esm> chase <selector> [--depth N] [--ref-limit N] [--json]
 ```
 
-Automates the "chase pattern" for a `mod_Custom_*`-style unique OMOD: it reads
-the OMOD's `Data.Properties[]` rows and classifies each one — a bare number
-(nothing to chase), an ENCH/SPEL attached directly to the weapon (forward
-`get`), a PERK grant (`Value 1` is property 116/"Perks"; forward `get`s the
-granted PERK, whose `Effects` ARE the mechanic), or a KYWD/AVIF hook (reverse
-`refs --type SPEL` and `refs --type PERK`, each with `--paths`, to find the
-SPEL/PERK whose Conditions test `WornHasKeyword(<keyword>)`, then slices out
-just the gated `Effects[N]` via the field path) — and prints a compact
-evidence tree, not full record dumps.
+`<selector>` auto-detects an **OMOD, PERK, SPEL, ALCH, or ENCH** formid|edid.
+Dispatch is by record type:
 
-Reach for `esm chase` specifically when decoding a unique weapon's
-`mod_Custom_*` OMOD; use `pnpm esm:walk` for everything else (MGEF archetypes,
-curves, GLOBs, conditions, PERK entry points) — the two share the same
-underlying reverse-chase hop, `esm chase` just automates the OMOD-property
-taxonomy end to end. It implements "the chase pattern" documented in
+- **OMOD** — reads `Data.Properties[]` rows and classifies each one — a bare
+  number (nothing to chase), an ENCH/SPEL attached directly to the weapon
+  (forward `get`), a PERK grant (`Value 1` is property 116/"Perks"; forward
+  `get`s the granted PERK, whose `Effects` ARE the mechanic), or a KYWD/AVIF
+  hook (reverse `refs --type SPEL` and `refs --type PERK`, each with `--paths`,
+  to find the SPEL/PERK whose Conditions test `WornHasKeyword(<keyword>)`, then
+  slices out just the gated `Effects[N]` via the field path). `--depth` and
+  `--ref-limit` apply here (keyword/AVIF reverse-ref walk).
+- **PERK/SPEL/ALCH/ENCH** — walks the record's own `Effects[]` array directly
+  (no property-row indirection): a PERK-shaped entry forward-fetches its
+  granted Ability/Quest/Spell/Item; a SPEL/ALCH/ENCH-shaped entry forward-
+  fetches its `Base Effect` MGEF. `--depth`/`--ref-limit` are ignored for these
+  roots — there's no reverse-ref walk to bound.
+- **MGEF pass-through (both walks)**: whenever a `Base Effect` resolves to an
+  MGEF carrying `"Perk to Apply"` (→ PERK) or `"Equip Ability"` (→ SPEL), that
+  one extra hop is followed automatically — this is the "Severing's confirmed
+  chase" derivation (`ENCH → MGEF (Perk to Apply) → PERK`), previously chased
+  by hand; `esm chase <ench-formid> --json` now reproduces it in one call.
+
+Either way it prints a compact evidence tree, not full record dumps.
+
+Reach for `esm chase` when decoding a unique weapon's `mod_Custom_*` OMOD, OR
+when starting from a legendary ENCH/PERK/SPEL/ALCH directly — e.g. a PERK found
+via `refs --type PCRD`, or an ENCH whose MGEF proc chain you want resolved in
+one call instead of a manual `Base Effect` → MGEF → `Perk to Apply` walk. Use
+`pnpm esm:walk` for everything else (MGEF archetypes, curves, GLOBs,
+conditions, PERK entry points) — the two share the same underlying reverse-
+chase hop; `esm chase` just automates the property/effect-array taxonomy end
+to end. It implements "the chase pattern" documented in
 `../FO76-Tools/.claude/skills/patch-notes/mechanics-kb.md` — read that first if
 a property doesn't fit its 3-way classification.
 

@@ -5,7 +5,8 @@ import { flattenConditionRows, flattenPerkConditionRows, type RawCondition } fro
 /**
  * ESM record walker — one command, one compact digest, instead of a chain of
  * raw `esm get` dumps. Follows the standard record chains (SPEL/ENCH/ALCH
- * effects → MGEF → "Perk to Apply" → PERK → Ability SPELs), resolves every
+ * effects → MGEF → "Perk to Apply" → PERK / "Equip Ability" → SPEL → Ability
+ * SPELs), resolves every
  * referenced AV/GLOB/keyword to its editor id, prints curve points, and
  * classifies reverse references for obtainability review.
  *
@@ -149,6 +150,11 @@ async function digestMagicItem(rec: EsmRecord, depth: number): Promise<void> {
       emit(2, `Perk to Apply → ${await ref(perkToApply)}`);
       enqueue(perkToApply, depth + 1, 'Perk to Apply');
     }
+    const equipAbility = mgefData['Equip Ability'];
+    if (isFormId(equipAbility)) {
+      emit(2, `Equip Ability → ${await ref(equipAbility)}`);
+      enqueue(equipAbility, depth + 1, 'Equip Ability');
+    }
   }
 }
 
@@ -160,6 +166,10 @@ async function digestMgef(rec: EsmRecord, depth: number): Promise<void> {
   if (isFormId(data['Perk to Apply'])) {
     emit(1, `Perk to Apply → ${await ref(data['Perk to Apply'])}`);
     enqueue(data['Perk to Apply'], depth + 1, 'Perk to Apply');
+  }
+  if (isFormId(data['Equip Ability'])) {
+    emit(1, `Equip Ability → ${await ref(data['Equip Ability'])}`);
+    enqueue(data['Equip Ability'], depth + 1, 'Equip Ability');
   }
   const desc = rec.fields['Magic Item Description'];
   if (desc) emit(1, `description "${desc}"`);
