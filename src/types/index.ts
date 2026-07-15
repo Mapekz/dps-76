@@ -116,18 +116,18 @@ export interface PlayerConditions {
    */
   bodyPartHitRatePct?: number;
   /**
-   * Manual uptime slider (0-40, default 0) for the Follow Through legendary
-   * perk's ranged-sneak damage-taken debuff (10/20/30/40 s window per rank).
-   * Not steady-state-computable, so this represents the player's own
-   * estimate of effective uptime; folds to one `wholeDamage` ADD modifier
-   * (value/100) when Follow Through is equipped. See docs/assumptions.md.
+   * Manual damage-multiplier toggle (0-40, default 0) for the Follow Through
+   * legendary perk's ranged-sneak damage-taken debuff (10/20/30/40 s window
+   * per rank). Not steady-state-computable, so this represents the player's
+   * own estimate of the debuff's active magnitude; folds to one `wholeDamage`
+   * ADD modifier (value/100) UNCONDITIONALLY — any player's Follow Through
+   * can have placed it, not just this build's. See docs/assumptions.md.
    */
   followThroughPct?: number;
   /**
-   * Manual uptime slider (0-40, default 0) for Taking One for the Team's
-   * enemies-take-more-damage-while-teamed proc. Same simplification as
-   * followThroughPct — folds to one `wholeDamage` ADD modifier (value/100)
-   * when the perk is equipped. See docs/assumptions.md.
+   * Manual damage-multiplier toggle (0-40, default 0) for Taking One for the
+   * Team's enemies-take-more-damage-while-teamed proc. Same simplification
+   * and unconditional fold as followThroughPct. See docs/assumptions.md.
    */
   takingOneForTheTeamPct?: number;
 
@@ -535,8 +535,8 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     weaponConditionPct: 100, // full condition (Polished curve input; 200 = over-repaired max)
     hitRatePct: 100, // manual-aim hit rate (100 = every shot lands; VATS is unaffected)
     bodyPartHitRatePct: 100, // aimed shots always land on the targeted body part
-    followThroughPct: 0, // no manual uptime assumed by default
-    takingOneForTheTeamPct: 0, // no manual uptime assumed by default
+    followThroughPct: 0, // no damage multiplier assumed by default
+    takingOneForTheTeamPct: 0, // no damage multiplier assumed by default
     strength: 15,
     perception: 15,
     endurance: 15,

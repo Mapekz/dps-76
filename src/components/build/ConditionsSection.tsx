@@ -10,7 +10,6 @@ import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
 import { resolveStats } from '@/lib/loadout';
-import { activeManualUptimePerks } from '@/data/manual-uptime';
 import { createDefaultPlayerConditions, type PlayerConditions } from '@/types';
 import { SectionTrigger } from './SectionTrigger';
 
@@ -24,9 +23,6 @@ import { SectionTrigger } from './SectionTrigger';
 /** In-game meter state names — SURV_NewHungerThreshold_Msg_* / SURV_NewThirstThreshold_Msg_* (tier 4 = fullest). */
 const FOOD_TIER_NAMES = ['Hungry', 'Partially Fed', 'Fed', 'Well Fed', 'Fully Fed'] as const;
 const DRINK_TIER_NAMES = ['Thirsty', 'Partially Hydrated', 'Hydrated', 'Well Hydrated', 'Fully Hydrated'] as const;
-
-/** Follow Through / TOftT uptime tiers — the per-rank 10/20/30/40% magnitudes plus off. */
-const UPTIME_PCT_OPTIONS = [0, 10, 20, 30, 40].map(value => ({ value, label: `${value}%` }));
 
 /** Limit Breaking is a 1★ armor mod — at most one per equipped armor piece. */
 const LIMIT_BREAKING_OPTIONS = [0, 1, 2, 3, 4, 5].map(value => ({ value, label: String(value) }));
@@ -109,15 +105,6 @@ export function ConditionsSection() {
   const defaults = createDefaultPlayerConditions();
   const isGhoul = conditions.isGhoul ?? false;
 
-  // Follow Through / Taking One for the Team: manual uptime sliders are only
-  // meaningful (and only shown) while the legendary card is actually equipped
-  // — see docs/assumptions.md and dps-todos/wholedamage-perks.md. Shared
-  // predicate with resolveLoadout's fold (@/data/manual-uptime) so a visible
-  // slider can't silently apply nothing, or vice versa.
-  const { FollowThrough: hasFollowThrough, TakingOneForTheTeam: hasTakingOneForTheTeam } = activeManualUptimePerks(
-    player.legendaryPerks
-  );
-
   const stats = React.useMemo(() => resolveStats(player, enemy, mode), [player, enemy, mode]);
 
   // Onslaught: the max folds from equipped sources (ScenarioSet.onslaughtMaxStacks);
@@ -146,8 +133,6 @@ export function ConditionsSection() {
     ((conditions.weaponConditionPct ?? 100) !== (defaults.weaponConditionPct ?? 100) ? 1 : 0) +
     ((conditions.hitRatePct ?? 100) !== (defaults.hitRatePct ?? 100) ? 1 : 0) +
     ((conditions.bodyPartHitRatePct ?? 100) !== (defaults.bodyPartHitRatePct ?? 100) ? 1 : 0) +
-    ((conditions.followThroughPct ?? 0) !== (defaults.followThroughPct ?? 0) ? 1 : 0) +
-    ((conditions.takingOneForTheTeamPct ?? 0) !== (defaults.takingOneForTheTeamPct ?? 0) ? 1 : 0) +
     (conditions.isPowerAttacking !== defaults.isPowerAttacking ? 1 : 0) +
     ((conditions.isLastShot ?? false) !== (defaults.isLastShot ?? false) ? 1 : 0) +
     ((conditions.hydrated ?? true) !== (defaults.hydrated ?? true) ? 1 : 0) +
@@ -330,36 +315,6 @@ export function ConditionsSection() {
               While "Weakpoints" is on: this share of hits lands on the aimed body part, the rest hit the torso.
             </p>
           </div>
-
-          {hasFollowThrough && (
-            <div className="space-y-1.5">
-              <Label>Follow Through uptime</Label>
-              <ToggleGroup
-                aria-label="Follow Through uptime"
-                options={UPTIME_PCT_OPTIONS}
-                value={conditions.followThroughPct ?? 0}
-                onValueChange={v => set('followThroughPct', v)}
-              />
-              <p className="text-muted-foreground text-xs">
-                Manual estimate of the 10s ranged-sneak damage-taken debuff's effective uptime.
-              </p>
-            </div>
-          )}
-
-          {hasTakingOneForTheTeam && (
-            <div className="space-y-1.5">
-              <Label>Taking One for the Team uptime</Label>
-              <ToggleGroup
-                aria-label="Taking One for the Team uptime"
-                options={UPTIME_PCT_OPTIONS}
-                value={conditions.takingOneForTheTeamPct ?? 0}
-                onValueChange={v => set('takingOneForTheTeamPct', v)}
-              />
-              <p className="text-muted-foreground text-xs">
-                Manual estimate of the teamed-attacker damage-taken debuff's effective uptime.
-              </p>
-            </div>
-          )}
 
           {!isGhoul && (
             <div className="space-y-1.5">

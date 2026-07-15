@@ -82,10 +82,10 @@ function assemble(
     ...getAddictionModifiers(mode, countedAddictions),
   ];
 
-  // Follow Through / Taking One for the Team manual uptime sliders — see
-  // @/data/manual-uptime for the equipped-card predicate + modifier shape
-  // (shared with ConditionsSection.tsx so the slider and the fold can't drift).
-  loadoutModifiers.push(...getManualUptimeModifiers(playerConfig.legendaryPerks, conditions));
+  // Follow Through / Taking One for the Team manual damage-multiplier toggles
+  // — driven by the Target panel's inputs, not the player's own cards
+  // (@/data/manual-uptime), so pushed unconditionally like Tenderizer below.
+  loadoutModifiers.push(...getManualUptimeModifiers(conditions));
   loadoutModifiers.push(...getPublicTeamModifiers(conditions.publicTeamType, conditions.teammateCount));
   // Hidden survival-ability baselines (hydration AP regen) — gated by the
   // hydrated/playerIsGhoul conditions at resolve time, so pushed unconditionally.

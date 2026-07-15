@@ -4,9 +4,10 @@ import { createDefaultEnemyConfig, createDefaultPlayerConfig, type PlayerConfig 
 
 /**
  * Follow Through / Taking One for the Team model a conditional 10s-window
- * proc as a manual uptime slider (0-40%) folding to one `wholeDamage` ADD
- * modifier each, gated on the legendary card actually being equipped
- * (dps-todos/wholedamage-perks.md, docs/assumptions.md).
+ * proc as a manual damage-multiplier toggle (0-40%) folding to one
+ * `wholeDamage` ADD modifier each. Applied UNCONDITIONALLY, like Tenderizer —
+ * any player's card can have placed the debuff on the target, so it never
+ * gates on this build's own legendary-perk selection (docs/assumptions.md).
  */
 
 function loadout(overrides: Partial<PlayerConfig> = {}) {
@@ -18,8 +19,8 @@ function loadout(overrides: Partial<PlayerConfig> = {}) {
   return resolveLoadout(playerConfig, createDefaultEnemyConfig(), 'live');
 }
 
-describe('Follow Through / Taking One for the Team wholeDamage sliders', () => {
-  it('Follow Through equipped + slider > 0 emits a wholeDamage modifier scaled by the slider', () => {
+describe('Follow Through / Taking One for the Team wholeDamage toggles', () => {
+  it('a nonzero toggle emits a wholeDamage modifier scaled by it, card equipped', () => {
     const input = loadout({
       legendaryPerks: [{ perkId: 'FollowThrough', rank: 1 }],
       conditions: { ...createDefaultPlayerConfig().conditions, followThroughPct: 20 },
@@ -29,19 +30,7 @@ describe('Follow Through / Taking One for the Team wholeDamage sliders', () => {
     expect(mod).toMatchObject({ value: 0.2, op: 'ADD' });
   });
 
-  it('Taking One for the Team equipped + slider > 0 emits a wholeDamage modifier scaled by the slider', () => {
-    const input = loadout({
-      legendaryPerks: [{ perkId: 'TakingOneForTheTeam', rank: 4 }],
-      conditions: { ...createDefaultPlayerConfig().conditions, takingOneForTheTeamPct: 30 },
-    });
-    const mod = input!.modifiers.find(
-      m => m.bucket === 'wholeDamage' && m.source.name === 'Taking One for the Team'
-    );
-    expect(mod).toBeDefined();
-    expect(mod).toMatchObject({ value: 0.3, op: 'ADD' });
-  });
-
-  it('a nonzero slider is inert when the corresponding card is not equipped', () => {
+  it('a nonzero toggle emits a wholeDamage modifier even without the card equipped — another player can apply the debuff', () => {
     const input = loadout({
       legendaryPerks: [],
       conditions: {
@@ -50,15 +39,20 @@ describe('Follow Through / Taking One for the Team wholeDamage sliders', () => {
         takingOneForTheTeamPct: 30,
       },
     });
-    expect(input!.modifiers.some(m => m.bucket === 'wholeDamage')).toBe(false);
+    const followThrough = input!.modifiers.find(m => m.bucket === 'wholeDamage' && m.source.name === 'Follow Through');
+    const toftt = input!.modifiers.find(
+      m => m.bucket === 'wholeDamage' && m.source.name === 'Taking One for the Team'
+    );
+    expect(followThrough).toMatchObject({ value: 0.2, op: 'ADD' });
+    expect(toftt).toMatchObject({ value: 0.3, op: 'ADD' });
   });
 
-  it('an equipped card with the slider at its 0 default emits nothing', () => {
+  it('the toggle at its 0 default emits nothing, regardless of equip', () => {
     const input = loadout({ legendaryPerks: [{ perkId: 'FollowThrough', rank: 1 }] });
     expect(input!.modifiers.some(m => m.bucket === 'wholeDamage')).toBe(false);
   });
 
-  it('both equipped compose as two independent wholeDamage factors', () => {
+  it('both dialed up compose as two independent wholeDamage factors', () => {
     const input = loadout({
       legendaryPerks: [
         { perkId: 'FollowThrough', rank: 1 },

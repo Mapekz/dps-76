@@ -10,14 +10,15 @@ import { ToggleGroup } from '@/components/ui/toggle-group';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getBodyPartRaces, getBodyPartRace, getCrippablePartCount } from '@/data/bodyparts';
-import { createDefaultEnemyConditions, type EnemyConditions } from '@/types';
+import { createDefaultEnemyConditions, createDefaultPlayerConditions, type EnemyConditions } from '@/types';
 import type { BodyPartRaceCategory } from '@/types/generated';
 import { SectionTrigger } from './SectionTrigger';
 
 /**
  * What's being shot: which enemy and body part (BPTD damage mult), its state
- * (health, distance, statuses, crippled parts) and team-applied debuffs
- * (Tenderizer). Player steady state lives in ConditionsSection.
+ * (health, distance, statuses, crippled parts) and target debuffs applied by
+ * any player, not just this one (Tenderizer, Follow Through, Taking One for
+ * the Team). Player steady state lives in ConditionsSection.
  */
 
 const TARGET_DISTANCE_OPTIONS: Array<{ value: NonNullable<EnemyConditions['targetDistance']>; label: string }> = [
@@ -46,6 +47,9 @@ const GROUP_COUNT_OPTIONS = [1, 2, 3, 4, 5].map(value => ({
   value,
   label: value === 5 ? '5+' : String(value),
 }));
+
+/** Follow Through / TOftT damage-multiplier tiers — the per-rank 10/20/30/40% magnitudes plus off. */
+const DAMAGE_MULT_PCT_OPTIONS = [0, 10, 20, 30, 40].map(value => ({ value, label: `${value}%` }));
 
 const TARGET_CATEGORY_LABELS: Record<BodyPartRaceCategory, string> = {
   raid: 'Raid Enemies',
@@ -99,6 +103,12 @@ export function TargetSection() {
   };
 
   const tenderizer = player.conditions.tenderizerStacks;
+  const playerDefaults = createDefaultPlayerConditions();
+  const followThroughPct = player.conditions.followThroughPct ?? 0;
+  const takingOneForTheTeamPct = player.conditions.takingOneForTheTeamPct ?? 0;
+
+  const setPlayerCondition = (key: 'followThroughPct' | 'takingOneForTheTeamPct', value: number) =>
+    dispatch({ type: 'condition/set', key, value });
 
   const activeCount =
     (conditions.targetRace ? 1 : 0) +
@@ -107,6 +117,8 @@ export function TargetSection() {
     ((conditions.groupTargetCount ?? 1) !== (defaults.groupTargetCount ?? 1) ? 1 : 0) +
     ((conditions.targetDistance ?? 'none') !== (defaults.targetDistance ?? 'none') ? 1 : 0) +
     (tenderizer !== 0 ? 1 : 0) +
+    (followThroughPct !== (playerDefaults.followThroughPct ?? 0) ? 1 : 0) +
+    (takingOneForTheTeamPct !== (playerDefaults.takingOneForTheTeamPct ?? 0) ? 1 : 0) +
     STATUS_TOGGLES.filter(s => (conditions[s.key] as boolean | undefined) ?? false).length;
 
   return (
@@ -266,6 +278,34 @@ export function TargetSection() {
             <p className="text-muted-foreground text-xs">
               +0.1% damage taken per stack, up to +100% at 1000 stacks. Applied by any player's Tenderizer — you
               don't need the card equipped.
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label>Follow Through damage multiplier</Label>
+            <ToggleGroup
+              aria-label="Follow Through damage multiplier"
+              options={DAMAGE_MULT_PCT_OPTIONS}
+              value={followThroughPct}
+              onValueChange={v => setPlayerCondition('followThroughPct', v)}
+            />
+            <p className="text-muted-foreground text-xs">
+              Manual estimate of the 10s ranged-sneak damage-taken debuff's active multiplier. Applied by any
+              player's Follow Through — you don't need the card equipped.
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label>Taking One for the Team damage multiplier</Label>
+            <ToggleGroup
+              aria-label="Taking One for the Team damage multiplier"
+              options={DAMAGE_MULT_PCT_OPTIONS}
+              value={takingOneForTheTeamPct}
+              onValueChange={v => setPlayerCondition('takingOneForTheTeamPct', v)}
+            />
+            <p className="text-muted-foreground text-xs">
+              Manual estimate of the teamed-attacker damage-taken debuff's active multiplier. Applied by any
+              player's Taking One for the Team — you don't need the card equipped.
             </p>
           </div>
         </div>

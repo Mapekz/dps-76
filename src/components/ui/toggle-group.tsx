@@ -5,7 +5,7 @@ import { ButtonGroup } from '@/components/ui/button-group';
  * Single-select segmented control over a small discrete range — the ButtonGroup
  * + active/outline Button idiom (TargetSection's status/distance rows) lifted
  * into one component. Preferred over a Slider for few-valued inputs like
- * uptime tiers (0–40%), teammate count (0–3), or enemy group size.
+ * damage-multiplier tiers (0–40%), teammate count (0–3), or enemy group size.
  */
 
 export interface ToggleGroupOption<T extends string | number> {
