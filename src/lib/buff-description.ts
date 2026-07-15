@@ -37,6 +37,8 @@ const FLAT_POINT_BUCKET_LABELS: Partial<Record<Bucket, string>> = {
   specialAgility: 'Agility',
   specialLuck: 'Luck',
   maxHealth: 'max HP',
+  apMax: 'max AP',
+  apRegenFlat: 'AP regen',
 };
 
 /** Friendly names for curve axes; unmapped axes fall back to the raw CurveInput name. */

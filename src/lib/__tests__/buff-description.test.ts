@@ -291,6 +291,16 @@ describe('describeBuffModifiers: new bucket labels', () => {
     const mod: Modifier = { id: '0x1:0', source, bucket: 'reloadSpeed', op: 'ADD', value: 0.3, conditions: [] };
     expect(describeBuffModifiers(buff([mod]))).toBe('+30% reload speed');
   });
+
+  it('apMax reads as a flat max-AP point add (Poached Angler)', () => {
+    const mod: Modifier = { id: '0x1:0', source, bucket: 'apMax', op: 'ADD', value: 20, conditions: [] };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+20 max AP');
+  });
+
+  it('apRegenFlat reads as a flat AP-regen point add (Corn Soup)', () => {
+    const mod: Modifier = { id: '0x1:0', source, bucket: 'apRegenFlat', op: 'ADD', value: 10, conditions: [] };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+10 AP regen');
+  });
 });
 
 describe('describeBuffModifiers: dotDamage', () => {
