@@ -63,6 +63,22 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
       it carries `animsDoubleBarrelShotgun`, not the sequential keyword).
       Watch for intro/outro animation segments the ×rounds model may
       overstate. `reloadSec` goldens added.
+- [ ] **Reload bonus semantics: divide vs time-scale** (new 2026-07-15,
+      `dps-todos/dps-sensitivity-review.md`) — the engine reads reload
+      bonuses as a rate divisor (`anim / reloadSpeed`); the alternative is
+      direct time scaling (`anim × (1 − bonus)`). Discriminating stopwatch:
+      .44 revolver (per-shell, but full-cycle works: 6 × 3.33s base is long
+      enough to time cleanly) with Speed Demon equipped — +30% bonus →
+      divide predicts −23.1% reload time, time-scale predicts −30%
+      (2.56s vs 2.33s per shell). Take Gun Tricks as a ghoul for a stacked
+      +60% check: divide −37.5% vs time-scale −60% — the gap is unmissable
+      at high stacks. Every reloadSpeed source in the calc rides on this.
+- [ ] **Fast Fighter conversion** (new 2026-07-15,
+      `dps-todos/move-speed-sources.md`) — reload stopwatch with Fast
+      Fighter + Speed Demon, standing still: model predicts the same as
+      Speed Demon + a flat +10% (half of +20% move speed). Also test with a
+      sprint-speed perk (Freight Train) while stationary to settle whether
+      sprint-only bonuses count as "bonus movement speed".
 - [ ] **Lock and Load reload activation** (new 2026-07-15) — .50 Cal at 30
       ammo-spent stacks: 5.0s belt reload without Lock and Load, model
       ≈3.85s with it (+1%/stack via Bullet Storm's hidden curve). Golden
