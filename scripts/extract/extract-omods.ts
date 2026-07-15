@@ -256,6 +256,19 @@ function isWeakEvidence(signals: string[]): boolean {
  *  evidence is normal there, so they stay out of the weak-evidence queue. */
 const NON_CRAFT_SLOT_RE = /appearance|paint|skin|customname|item_description|material|legendary/i;
 
+/**
+ * Legendary-crafting mods (target keyword ma_legendarycrafting_weapon /
+ * _weaponranged / _weaponmelee / ma_Misc_Legendarycrafting_Weapon_*4) are
+ * obtained by crafting/learning a real recipe — a bare weapon-template ride is
+ * NOT a grant path for them. `hasGrantingCobj` is the exact positive signal:
+ * every shipped legendary mod's co_mod_* COBJ has the OMOD as its Created
+ * Object; the unfinished "Locked" (mod_Legendary_Weapon4_Guns_Locked) instead
+ * has a shell COBJ that produces nothing and stays obtainable only by riding
+ * HuntingRifle's template. Gated in the verdict loop below (2026-07-15);
+ * the generic classifier's WEAP-ride rule stays correct for non-legendary mods.
+ */
+const LEGENDARY_CRAFT_KEYWORD_RE = /legendarycrafting_weapon/i;
+
 export interface ExtractOmodsResult {
   omods: GeneratedOmod[];
   excluded: Record<string, string[]>;
@@ -790,10 +803,18 @@ export async function extractOmods(
   };
   for (const omod of omods) {
     const verdict = verdicts.get(omod.formId);
-    omod.obtainable = verdict?.obtainable ?? false;
+    let obtainable = verdict?.obtainable ?? false;
+    let signals = verdict?.signals;
+    // Legendary-crafting mods need a real granting recipe (see
+    // LEGENDARY_CRAFT_KEYWORD_RE) — template/FLST rides alone don't count.
+    if (obtainable && !omod.hasGrantingCobj && omod.targetKeywords.some(k => LEGENDARY_CRAFT_KEYWORD_RE.test(k))) {
+      obtainable = false;
+      signals = [...(signals ?? []), 'legendaryNoGrantCobj'];
+    }
+    omod.obtainable = obtainable;
     if (!omod.obtainable) {
       (excluded.omodUnobtainable ??= []).push(omod.id);
-      excludedDetailed.omodUnobtainable.push({ id: omod.id, name: omod.name, signals: verdict?.signals });
+      excludedDetailed.omodUnobtainable.push({ id: omod.id, name: omod.name, signals });
     } else if (
       isWeakEvidence(verdict?.signals ?? []) &&
       !defaultModFormIds.has(omod.formId) &&

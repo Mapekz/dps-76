@@ -143,11 +143,9 @@ export const forceVisibleWeaponIds: ReadonlySet<string> = new Set<string>([
  * obtainability but are wrong anyway.
  */
 export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
-  // Combo-Breaker's: exists in the ESM as a 4★ melee legendary (granted perk =
-  // GetRandomPercent-gated Set-Value-0 on EP79/EP27 AP costs) but was never
-  // released to players — user-confirmed 2026-07-12, not in the in-game
-  // legendary mod pool. Delete this line if it ever ships.
-  'mod_Legendary_Weapon4_Melee_ComboBreaker',
+  // Combo-Breaker's hide REMOVED 2026-07-15: the earlier "never released" note
+  // (2026-07-12) was wrong — user-confirmed it IS a real, craftable melee-only
+  // 4★ (hasGrantingCobj:true, ma_legendarycrafting_weaponmelee).
   // Gauss Pistol "Energy Barrel": cut content that stays obtainable:true only
   // by riding the Gauss Pistol's template (2026-07-14 weak-evidence sweep,
   // _meta.reviewFlagged.omodWeakEvidence: weap:GaussPistol +
@@ -201,8 +199,10 @@ export const omodBadgeOverrides: Readonly<Record<string, 'inert' | 'pendingMecha
   // on Consecutive Hits" + EP190 "Mod Max Consecutive Hits Allowed") — see
   // dps-todos/onslaught.md and docs/assumptions.md "Onslaught".
   //
-  // Combo-Breaker's badge REMOVED (2026-07-12): the mod is unreleased and now
-  // lives in hiddenOmodIds above (mechanical analysis preserved there).
+  // Combo-Breaker's badge REMOVED (2026-07-12); its hiddenOmodIds entry was
+  // also removed 2026-07-15 (real craftable melee 4★ — see hiddenOmodIds note).
+  // Mechanical analysis: granted perk = GetRandomPercent-gated Set-Value-0 on
+  // EP79/EP27 AP costs — probabilistic, not extractor-modeled.
   // Charged and Thrill-Seeker's badges REMOVED (Stage C2/C3, 2026-07-11): both
   // mechanics now move real numbers — Charged's light-attack/detonation cycle
   // folds into sustained DPS (scenarios.ts), Thrill-Seeker's killstreak-tiered

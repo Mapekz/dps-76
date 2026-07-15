@@ -59076,7 +59076,7 @@
   "addedKeywords": [],
   "hasEnchantments": false,
   "notes": [],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "mod_Legendary_Weapon_Ranged4_HeadHunters",
@@ -62083,7 +62083,7 @@
    "MGEF AbLocked_Description archetype Script — needs override",
    "condition: GetInIronSights()=1"
   ],
-  "obtainable": true
+  "obtainable": false
  },
  {
   "id": "mod_Legendary_Weapon4_Guns_PinPointers",

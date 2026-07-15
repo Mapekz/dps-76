@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { EsmClient, EsmListRow, EsmRecord } from '../esm-client';
+import type { CobjIndex } from '../cobj-index';
 import { extractOmods, isExcludedOmodEdid, propertyName } from '../extract-omods';
 import unstoppableMonsterOmod from './fixtures/omod-unstoppablemonster.json';
 import unstoppableMonsterPerk from './fixtures/perk-unstoppablemonster.json';
@@ -601,5 +602,98 @@ describe('extractOmods (OverrideProjectile REM/SET, 2026-07-14)', () => {
       expect.objectContaining({ bucket: 'dotDamage', op: 'ADD', value: 20 }),
     ]);
     expect((omod!.notes ?? []).some(n => n.includes('removes projectile override TestRemProjectile'))).toBe(true);
+  });
+});
+
+/**
+ * Stub mirroring the "Locked" false positive (2026-07-15,
+ * mod_Legendary_Weapon4_Guns_Locked 0x008B4C3F): two legendary-crafting OMODs
+ * (target keyword ma_legendarycrafting_weapon), both riding an obtainable
+ * WEAP's template (the only reverse reference). One has a real granting COBJ
+ * (Created Object = the OMOD — every shipped 4★'s shape); the other has none
+ * (Locked's shell COBJ creates nothing → no byCreatedObject entry). A plain
+ * non-legendary mod in the same shape keeps the WEAP-ride rule.
+ */
+function makeLegendaryCraftStub(): { client: EsmClient; cobjIndex: CobjIndex; weaponFormId: string } {
+  const withCobjFormId = '0xLEGWITHCOBJ';
+  const noCobjFormId = '0xLEGNOCOBJ';
+  const plainFormId = '0xPLAINRIDE';
+  const weaponFormId = '0xLEGWEAP';
+  const legKeywordFormId = '0xMALEGCRAFT';
+  const omodRecord = (formId: string, edid: string, name: string, legendary: boolean): EsmRecord =>
+    ({
+      header: { signature: 'OMOD', form_id: formId },
+      editor_id: edid,
+      fields: {
+        Name: name,
+        Data: {
+          'Form Type': { name: 'Weapon' },
+          'Attach Point': '0x0002249D',
+          Properties: [],
+        },
+        ...(legendary ? { 'Target OMOD Keywords': [legKeywordFormId] } : {}),
+      },
+    }) as unknown as EsmRecord;
+  const known: Record<string, EsmRecord> = {
+    [withCobjFormId]: omodRecord(withCobjFormId, 'mod_Test_Legendary_WithRecipe', 'With Recipe', true),
+    [noCobjFormId]: omodRecord(noCobjFormId, 'mod_Test_Legendary_LockedLike', 'Locked-Like', true),
+    [plainFormId]: omodRecord(plainFormId, 'mod_Test_PlainTemplateRide', 'Plain Ride', false),
+    [legKeywordFormId]: {
+      header: { signature: 'KYWD', form_id: legKeywordFormId },
+      editor_id: 'ma_legendarycrafting_weapon',
+      fields: {},
+    } as unknown as EsmRecord,
+  };
+  const get = async (target: string): Promise<EsmRecord> => {
+    if (known[target]) return known[target];
+    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+  };
+  const cobjInfo = {
+    formId: '0xCOBJGRANT',
+    edid: 'co_mod_Test_Legendary_WithRecipe',
+    createdObjectFormId: withCobjFormId,
+    learnMethod: 3,
+    repairMethod: null,
+    learnRecipeFrom: null,
+  };
+  const cobjIndex: CobjIndex = {
+    byFormId: new Map([[cobjInfo.formId, cobjInfo]]),
+    byCreatedObject: new Map([[withCobjFormId, [cobjInfo]]]),
+  };
+  const client = {
+    async list(type: string): Promise<EsmListRow[]> {
+      if (type !== 'OMOD') return [];
+      return [
+        { form_id: withCobjFormId, record_type: 'OMOD', editor_id: 'mod_Test_Legendary_WithRecipe', name: 'With Recipe' },
+        { form_id: noCobjFormId, record_type: 'OMOD', editor_id: 'mod_Test_Legendary_LockedLike', name: 'Locked-Like' },
+        { form_id: plainFormId, record_type: 'OMOD', editor_id: 'mod_Test_PlainTemplateRide', name: 'Plain Ride' },
+      ];
+    },
+    get,
+    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+    // Every OMOD's only reverse reference is the obtainable host weapon.
+    refs: async () => [{ form_id: weaponFormId, record_type: 'WEAP', editor_id: 'HostHuntingRifle' }],
+  } as unknown as EsmClient;
+  return { client, cobjIndex, weaponFormId };
+}
+
+describe('extractOmods (legendary-crafting obtainability gate, 2026-07-15)', () => {
+  it('a legendary-crafting mod without a granting COBJ flips obtainable:false with a legendaryNoGrantCobj signal; one with a real recipe stays obtainable; the WEAP-ride rule is untouched for non-legendary mods', async () => {
+    const { client, cobjIndex, weaponFormId } = makeLegendaryCraftStub();
+    const result = await extractOmods(client, new Set([weaponFormId]), new Set(), cobjIndex);
+
+    const withRecipe = result.omods.find(o => o.id === 'mod_Test_Legendary_WithRecipe');
+    expect(withRecipe?.obtainable).toBe(true);
+    expect(withRecipe?.hasGrantingCobj).toBe(true);
+
+    const lockedLike = result.omods.find(o => o.id === 'mod_Test_Legendary_LockedLike');
+    expect(lockedLike?.obtainable).toBe(false);
+    expect(lockedLike?.hasGrantingCobj).toBeUndefined();
+    const detail = result.excludedDetailed.omodUnobtainable.find(d => d.id === 'mod_Test_Legendary_LockedLike');
+    expect(detail?.signals).toContain('legendaryNoGrantCobj');
+    expect(detail?.signals).toContain('weap:HostHuntingRifle');
+
+    const plainRide = result.omods.find(o => o.id === 'mod_Test_PlainTemplateRide');
+    expect(plainRide?.obtainable).toBe(true);
   });
 });
