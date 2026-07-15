@@ -220,6 +220,62 @@
   "noCripple": false
  },
  {
+  "id": "LvlSuperMutantBoss_DailyOps",
+  "formId": "0x0001A009",
+  "raceEdid": "SuperMutantRace",
+  "keywords": [
+   "ActorTypeSuperMutant",
+   "ActorTypeCreature",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeBossType",
+   "ActorTypeHumanlike",
+   "ActorTypeCannotConvertToLost"
+  ],
+  "name": "Super Mutant Firestarter",
+  "bodyPartDataFormId": "0x0002B4C3",
+  "parts": [
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 0.9,
+    "crippable": false
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.25,
+    "crippable": true
+   }
+  ],
+  "category": "standard",
+  "crippableLimbCount": 5,
+  "noCripple": false
+ },
+ {
   "id": "SupermutantBehemothRace",
   "formId": "0x000BB7D9",
   "raceEdid": "SupermutantBehemothRace",
@@ -443,7 +499,7 @@
    "ActorTypeCannotConvertToLost",
    "ActorTypeWeaponsExpertGatheringBuff"
   ],
-  "name": "Wendigo Colossus",
+  "name": "Earle / Wendigo Colossus",
   "bodyPartDataFormId": "0x0055AEC9",
   "parts": [
    {
@@ -934,6 +990,72 @@
    "ActorTypeCannotConvertToLost"
   ],
   "name": "Scorchbeast",
+  "bodyPartDataFormId": "0x00017DD5",
+  "parts": [
+   {
+    "name": "Right Arm",
+    "partType": "RightArm2",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm2",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Wing",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Wing",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": false
+   }
+  ],
+  "category": "standard",
+  "crippableLimbCount": 6,
+  "noCripple": false
+ },
+ {
+  "id": "EncScorchbeastQueen01Template",
+  "formId": "0x00019D95",
+  "raceEdid": "ScorchBeastRace",
+  "keywords": [
+   "ActorTypeCreature",
+   "ActorTypeScorched",
+   "ActorTypeScorchbeast",
+   "ActorTypeHuge",
+   "ActorTypeFlying",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeForButchersBountyPerk",
+   "ActorTypeAnimal",
+   "ActorTypeBossType",
+   "ActorTypeCannotConvertToLost"
+  ],
+  "name": "Scorchbeast Queen",
   "bodyPartDataFormId": "0x00017DD5",
   "parts": [
    {
@@ -2826,6 +2948,59 @@
   "noCripple": false
  },
  {
+  "id": "SDOW_HTO_LvlSlasherShadow_Boss_T5",
+  "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
+  "name": "Pint-Sized Phantom Trespasser",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": false
+   }
+  ],
+  "category": "infestation",
+  "crippableLimbCount": 5,
+  "noCripple": false
+ },
+ {
   "id": "Burn_BountyTarget_BIG_Death",
   "formId": "0x000EAFB6",
   "raceEdid": "GhoulRace",
@@ -4389,6 +4564,58 @@
    "ActorTypeCannotConvertToLost"
   ],
   "name": "Colt the Bolt",
+  "bodyPartDataFormId": "0x00017AD4",
+  "parts": [
+   {
+    "name": "Left Leg",
+    "partType": "LeftLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Leg",
+    "partType": "RightLeg1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Right Arm",
+    "partType": "RightArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Left Arm",
+    "partType": "LeftArm1",
+    "dmgMult": 1,
+    "crippable": true
+   },
+   {
+    "name": "Head",
+    "partType": "Head1",
+    "dmgMult": 1.5,
+    "crippable": true
+   },
+   {
+    "name": "Torso",
+    "partType": "Torso",
+    "dmgMult": 1,
+    "crippable": false
+   }
+  ],
+  "category": "headhunt",
+  "crippableLimbCount": 5,
+  "noCripple": false
+ },
+ {
+  "id": "SDOW_Burn_BountyTarget_BIG_Slasher",
+  "formId": "0x000EAFB6",
+  "raceEdid": "GhoulRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeGhoul"
+  ],
+  "name": "The Reborn Pint-Sized Slasher",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
    {

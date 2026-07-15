@@ -13,9 +13,16 @@ import { isEnemyKeyword } from './normalize/conditions';
  * collide, so notable combat enemies are named explicitly. Rows may name a
  * RACE edid directly or an NPC_ edid (the extractor resolves NPC → Race →
  * BPTD), which lets boss entries that share a race stay distinct in the
- * picker. Labels are in-game FULL names verified against the 20260702 dump.
+ * picker. Labels are in-game FULL names verified against the 20260702 dump
+ * (20260710 for the rows added since).
  * Add a row here and re-run `pnpm extract --only bodyparts` to extend the
  * picker.
+ *
+ * A curated row's `edid` may name an NPC_ whose BPTD is byte-identical to
+ * another row's (a boss reskin with no unique weakpoints) — kept as a
+ * separate row anyway so a future per-enemy resist system has something to
+ * key off (Super Mutant Firestarter, Scorchbeast Queen). Verified against
+ * the 20260710 dump.
  *
  * Two escape hatches for parts/mechanics a BPTD alone can't express:
  * - `conditionPartsOnly` — keep only Actor-Value-tracked parts, dropping any
@@ -42,11 +49,18 @@ const CURATED_TARGETS: Array<{
   { edid: 'FeralGhoulRace', label: 'Feral Ghoul', category: 'standard' },
   { edid: 'ScorchedRace', label: 'Scorched', category: 'standard' },
   { edid: 'SuperMutantRace', label: 'Super Mutant', category: 'standard' },
+  // Daily Ops boss; shares SuperMutantRace (BPTD 0x0002B4C3) with the row
+  // above — see the CURATED_TARGETS header note.
+  { edid: 'LvlSuperMutantBoss_DailyOps', label: 'Super Mutant Firestarter', category: 'standard' },
   { edid: 'SupermutantBehemothRace', label: 'Behemoth', category: 'standard' },
   { edid: 'MoleMinerRace', label: 'Mole Miner', category: 'standard' },
   { edid: 'ViciousDogRace', label: 'Wild Mongrel', category: 'standard' },
   { edid: 'WendigoRace', label: 'Wendigo', category: 'standard' },
-  { edid: 'WendigoColossusRace', label: 'Wendigo Colossus', category: 'standard' },
+  // Earle Williams (the E06 world boss) is a scripted spawn of this same
+  // race with no unique BPTD (NPC_ EN06_LvlWendigoColossus_Nuked resolves to
+  // the same WendigoColossusRace / BPTD 0x0055AEC9) — merged into one row
+  // rather than added as a duplicate.
+  { edid: 'WendigoColossusRace', label: 'Earle / Wendigo Colossus', category: 'standard' },
   { edid: 'YaoGuaiRace', label: 'Yao Guai', category: 'standard' },
   { edid: 'DeathclawRace', label: 'Deathclaw', category: 'standard' },
   { edid: 'MirelurkRace', label: 'Mirelurk', category: 'standard' },
@@ -56,6 +70,9 @@ const CURATED_TARGETS: Array<{
   { edid: 'MothmanRace', label: 'Mothman', category: 'standard' },
   // The Scorchbeast Queen has no separate RACE — she shares ScorchBeastRace.
   { edid: 'ScorchBeastRace', label: 'Scorchbeast', category: 'standard' },
+  // Shares ScorchBeastRace (BPTD 0x00017DD5) with the row above — see the
+  // CURATED_TARGETS header note.
+  { edid: 'EncScorchbeastQueen01Template', label: 'Scorchbeast Queen', category: 'standard' },
   { edid: 'RadScorpionRace', label: 'Radscorpion', category: 'standard' },
   { edid: 'SnallyGasterRace', label: 'Snallygaster', category: 'standard' },
   { edid: 'GraftonMonsterRace', label: 'Grafton Monster', category: 'standard' },
@@ -106,10 +123,18 @@ const CURATED_TARGETS: Array<{
   { edid: 'HTO_LvlSuperMutant_Boss_T5', label: 'Super Mutant Primus', category: 'infestation' },
   { edid: 'HTO_LvlScorched_Boss_T5', label: 'Scorched Exterminator', category: 'infestation' },
   { edid: 'HTO_LvlRobot_Boss_T5', label: 'Assaultron Intimidator', category: 'infestation' },
+  // Slasher season boss (tiers T1–T5 share race/name — T5 listed, per the
+  // convention above). Resolves to HumanRace, like the other humanoid rows.
+  {
+    edid: 'SDOW_HTO_LvlSlasherShadow_Boss_T5',
+    label: 'Pint-Sized Phantom Trespasser',
+    category: 'infestation',
+  },
 
   // Head Hunt bounty bosses (Burning Springs, Burn_BountyTarget_BIG_*): all
-  // 30 named targets; the two _Template rows and zzz*/SDOW_* records are
-  // placeholders/seasonal-test, not listed.
+  // 30 named targets, plus the shipped Slasher-season boss below. The two
+  // _Template rows and remaining zzz*/SDOW_* records are placeholders/
+  // seasonal-test, not listed.
   { edid: 'Burn_BountyTarget_BIG_Death', label: 'The Pale Horseman', category: 'headhunt' },
   { edid: 'Burn_BountyTarget_BIG_War', label: 'The Red Rider', category: 'headhunt' },
   { edid: 'Burn_BountyTarget_BIG_Pestilence', label: 'The White Horseman', category: 'headhunt' },
@@ -140,6 +165,14 @@ const CURATED_TARGETS: Array<{
   { edid: 'Burn_BountyTarget_BIG_Commie', label: 'The Proletariat Punisher', category: 'headhunt' },
   { edid: 'Burn_BountyTarget_BIG_Abraxo', label: 'The Cleaner', category: 'headhunt' },
   { edid: 'Burn_BountyTarget_BIG_Hunter', label: 'Colt the Bolt', category: 'headhunt' },
+  // Slasher season Head Hunt boss (SDOW_ = seasonal — now shipped, unlike
+  // the placeholder/test SDOW_ records excluded above). Resolves to
+  // GhoulRace, like the other Head Hunt bounty bosses.
+  {
+    edid: 'SDOW_Burn_BountyTarget_BIG_Slasher',
+    label: 'The Reborn Pint-Sized Slasher',
+    category: 'headhunt',
+  },
 ];
 
 interface RawPartData {
