@@ -32,7 +32,7 @@ interface GoldenCase {
   conditions: Partial<PlayerConditions>;
   enemyConditions: Partial<EnemyConditions>;
   scenario: 'freeAim' | 'vats';
-  measure: 'perHit' | 'burstDps' | 'sustainedDps' | 'fireRate';
+  measure: 'perHit' | 'burstDps' | 'sustainedDps' | 'fireRate' | 'apRegenPerSec';
   expected: number | null;
   tolerancePct: number;
   source: string;
@@ -76,7 +76,9 @@ describe('golden cases (in-game measurements)', () => {
             ? scenario.burstDps
             : c.measure === 'sustainedDps'
               ? scenario.sustain.sustainedDps
-              : scenario.perHit.total;
+              : c.measure === 'apRegenPerSec'
+                ? (expect(scenario.ap, 'AP economy present for apRegenPerSec measure').toBeDefined(), scenario.ap!.regenPerSec)
+                : scenario.perHit.total;
 
       const tolerance = (c.expected! * c.tolerancePct) / 100;
       expect(Math.abs(actual - c.expected!)).toBeLessThanOrEqual(tolerance);

@@ -45,9 +45,10 @@ describe('computeApEconomy', () => {
     expect(result.secondsToEmpty).toBeCloseTo(3.5, 10);
   });
 
-  it("Conductor's (110 AP/crit) at a crit every 2nd shot pushes gain above drain → uptime saturates at 1", () => {
+  it('a large flat apPerCrit at a crit every 2nd shot pushes gain above drain → uptime saturates at 1', () => {
     // Same weapon/shots as above, but crits fire every 2nd shot: critsPerSec =
     // 4/2 = 2; apGainPerSec = 4 + 110×2 = 224 > drainPerSec 64 → uptime 1, no secondsToEmpty.
+    // (110 was Conductor's retired flat model — kept as a synthetic magnitude here.)
     const result = computeApEconomy({
       apCost: 16,
       shotsPerSec: 4,
@@ -60,6 +61,72 @@ describe('computeApEconomy', () => {
     expect(result.drainPerSec).toBe(64);
     expect(result.uptime).toBe(1);
     expect(result.secondsToEmpty).toBeUndefined();
+  });
+
+  it("crit HoTs saturate at their raw rate when crits refresh inside the window (Conductor's fast cadence)", () => {
+    // Conductor's split model: 10 instant + 20 AP/s over 5s, refresh-only.
+    // Crit every 2nd shot at 4 shots/s → critsPerSec 2, crit interval 0.5s ≪ 5s
+    // → HoT active fraction min(1, 5×2) = 1 → HoT contributes its raw 20 AP/s.
+    // apGainPerSec = 4 + 10×2 + 20 = 44 (vs 224 under the retired flat-110 model).
+    const result = computeApEconomy({
+      apCost: 16,
+      shotsPerSec: 4,
+      agility: 15,
+      apRegenBonus: 0,
+      apPerCrit: 10,
+      critHots: [{ ratePerSec: 20, durationSec: 5 }],
+      shotsPerCrit: 2,
+    });
+    expect(result.apGainPerSec).toBeCloseTo(44, 10);
+    expect(result.uptime).toBeCloseTo(44 / 64, 10);
+  });
+
+  it('crit HoTs pay out in full at slow cadence (crit interval ≥ HoT duration → 110/crit equivalence)', () => {
+    // Crit every 10s (shotsPerCrit 10 at 1 shot/s): HoT active fraction =
+    // min(1, 5×0.1) = 0.5 → HoT AP/sec = 20×0.5 = 10, i.e. the full 100 AP per
+    // crit spread over the 10s interval; spike adds 10×0.1 = 1 → gain = 4+1+10.
+    const result = computeApEconomy({
+      apCost: 16,
+      shotsPerSec: 1,
+      agility: 15,
+      apRegenBonus: 0,
+      apPerCrit: 10,
+      critHots: [{ ratePerSec: 20, durationSec: 5 }],
+      shotsPerCrit: 10,
+    });
+    expect(result.apGainPerSec).toBeCloseTo(15, 10);
+  });
+
+  it('flat AP/sec sources (Company Tea +10 on ActionPointsRate) add to the base rate BEFORE the % multiplier', () => {
+    // AV-standard composition: (4 + 10) × (1 + 0.45) = 20.3 — documented
+    // assumption pending the in-game stopwatch golden (docs/assumptions.md).
+    const result = computeApEconomy({
+      apCost: 0,
+      shotsPerSec: 0,
+      agility: 0,
+      apRegenBonus: 0.45,
+      apRegenFlatBonus: 10,
+      apPerCrit: 0,
+      shotsPerCrit: Infinity,
+    });
+    expect(result.regenPerSec).toBeCloseTo((AP_BASE_REGEN_PER_SEC + 10) * 1.45, 10);
+  });
+
+  it('apMax fortifies and penalties shift the pool (and secondsToEmpty) without touching uptime', () => {
+    // Scaly Skin-shaped −50 max AP: pool 210−50 = 160; uptime = gain/drain is
+    // pool-independent; secondsToEmpty = 160/(64−4) instead of 210/60.
+    const result = computeApEconomy({
+      apCost: 16,
+      shotsPerSec: 4,
+      agility: 15,
+      apRegenBonus: 0,
+      apMaxBonus: -50,
+      apPerCrit: 0,
+      shotsPerCrit: Infinity,
+    });
+    expect(result.maxAp).toBe(160);
+    expect(result.uptime).toBeCloseTo(4 / 64, 10);
+    expect(result.secondsToEmpty).toBeCloseTo(160 / 60, 10);
   });
 
   it('apRegen perk bonuses scale the flat GMST regen rate multiplicatively', () => {

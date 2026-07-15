@@ -102,6 +102,33 @@ export type Bucket =
    */
   | 'apPerCrit'
   /**
+   * Flat AP/sec ADD on the base regen rate (AV ActionPointsRate 0x000002D8 —
+   * Company Tea's FortifyActionPointRegenFood +10, Nukashine_APRegen,
+   * Alcohol_APRegen...). Distinct from `apRegen` (the % AV
+   * ActionPointsRateMult): consumed by `ap-economy.ts` as
+   * `regenPerSec = (4.0 + Σ apRegenFlat) × (1 + Σ apRegen)` — the AV-standard
+   * composition, documented as an assumption (docs/assumptions.md).
+   */
+  | 'apRegenFlat'
+  /**
+   * Flat ADD to the max AP pool (Peak Value Modifiers on AV ActionPoints
+   * 0x000002D5 — FortifyActionPointsFood/Alcohol, magazine fortifies,
+   * Mutation_ReduceActionPoints's Scaly Skin penalty). Instant Value-Modifier
+   * restores on the same AV are out of scope by design (same rule as
+   * RestoreHealthFood on the Health AV). Consumed by `ap-economy.ts`'s
+   * `maxAp = 60 + 10×AGI + Σ apMax`.
+   */
+  | 'apMax'
+  /**
+   * AP-over-time granted per VATS crit (Conductor's: 20 AP/s for
+   * `durationSec` 5 — SPEL Legendary_Weapon_ConductorsPlayerRestoreSpell's
+   * duration-5 Value Modifier, distinct from its instant +10 `apPerCrit`
+   * half). REFRESH-ONLY: a new crit restarts the window, never stacks —
+   * mirrors the dotDamage convention. Steady state in `ap-economy.ts`:
+   * rate × min(1, durationSec × critsPerSec).
+   */
+  | 'apCritHot'
+  /**
    * Flat ADD contributions to the shared Onslaught stack cap (Perk Entry
    * Point 190 "Mod Max Consecutive Hits Allowed" — Guerrilla/Gunslinger
    * Expert+Master, Furious, Pounder's, Splinter's). Base 0 (no AVIF exists
@@ -220,6 +247,9 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   vatsApCost: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.apCost rewrite); feeds ap-economy.ts' },
   apRegen: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy' },
   apPerCrit: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy' },
+  apRegenFlat: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy (flat AP/sec term)' },
+  apMax: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy (AP pool size)' },
+  apCritHot: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts (per-modifier collect — durationSec matters), ap-economy.ts computeApEconomy (refresh-only HoT term)' },
   onslaughtMaxStacks: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'scenarios.ts / effective-weapon.ts — folded once, threaded on ResolveContext.onslaughtMaxStacks; caps the onslaught StackCounter and onslaughtStacks CurveInput' },
   addDamageComponent: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — no reader anywhere in the codebase; likely superseded by explosivePayload/materializeDamageTypeComponents' },
   armorPen: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — extracted but inert until enemy DR lands' },
@@ -322,6 +352,17 @@ export type Condition =
   | { kind: 'scaledByMissingHealth'; cap: number }
   /** value × min(capsOnHand / capsForMax, 1) (Aristocrat's). */
   | { kind: 'scaledByCaps'; capsForMax: number }
+  /**
+   * value × the equipped weapon's EFFECTIVE per-shot VATS AP cost (Number
+   * Cruncher's "2% damage per AP cost" — hidden AV STAT_DmgAP 0x00801C9F,
+   * consumed engine-side via Default Object APDamageBonus_DO, no plumbing
+   * perk). Reads `ctx.weapon.apCost`, i.e. the base WEAP cost after the
+   * weapon-OMOD `vatsApCost` fold — user-confirmed it improves free aim too,
+   * so no VATS gate. Armor-side AP-cost reductions (Scanner's 4★) use an
+   * entry point that does NOT feed this scaling and must stay out of this
+   * input when armor modeling lands (dps-todos/armor-mods-outgoing.md).
+   */
+  | { kind: 'scaledByWeaponApCost' }
   /** value × stackCount (clamped to max) from the matching player-state counter. */
   | { kind: 'stacks'; counter: StackCounter; max: number }
   /** Mutation value tier: false = base values, true = Strange in Numbers boosted (+25%). */
@@ -340,6 +381,15 @@ export type Condition =
   | { kind: 'inPowerArmor'; value: boolean }
   /** Character-type gate (GetIsPlayerGhoul): Gourmand's is human-only, Glowing Criticals ghoul-only. */
   | { kind: 'playerIsGhoul'; value: boolean }
+  /**
+   * Player is fully hydrated (SURV_Thirst below the WellHydrated threshold
+   * 720 — SURV_Thirst_Ability's top tier). Gates the hand-authored hydration
+   * AP-regen baseline (+35%) and Rejuvenated's boosts (player-baseline.ts /
+   * perk-overrides.ts). Default ON (optimal play); lower hydration tiers
+   * (25/15/15%) are not modeled — the toggle is all-or-nothing
+   * (docs/assumptions.md "Hydration AP regen").
+   */
+  | { kind: 'hydrated'; value: boolean }
   /**
    * Target range bucket (Guerrilla: close, Down Ranger / Sniper's: far). The
    * close/far gate is native engine code — no distance condition rows exist

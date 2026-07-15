@@ -185,6 +185,12 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       const scale = Math.max(0, Math.min((ctx.player.capsOnHand ?? 0) / cond.capsForMax, 1));
       return scale > 0 ? scale : null;
     }
+    case 'scaledByWeaponApCost': {
+      // Number Cruncher: value × the effective (post weapon-OMOD fold) per-shot
+      // VATS AP cost. Weapons without an AP cost simply gain nothing.
+      const apCost = ctx.weapon.apCost ?? 0;
+      return apCost > 0 ? apCost : null;
+    }
     case 'stacks': {
       const count = Math.max(0, Math.min(PLAYER_STATE_READERS[cond.counter](ctx.player, ctx), cond.max));
       return count > 0 ? count : null;
@@ -204,6 +210,10 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       return ctx.player.isInPowerArmor === cond.value ? 1 : null;
     case 'playerIsGhoul':
       return (ctx.player.isGhoul ?? false) === cond.value ? 1 : null;
+    case 'hydrated':
+      // Unset = fully hydrated (optimal-play default, same spirit as
+      // enemyHealthAbovePct's full-health default).
+      return (ctx.player.hydrated ?? true) === cond.value ? 1 : null;
     case 'targetDistance':
       // Unset enemy distance = 'none' (neither close nor far perks active).
       return (ctx.enemy.targetDistance ?? 'none') === cond.range ? 1 : null;

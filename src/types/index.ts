@@ -140,6 +140,14 @@ export interface PlayerConditions {
    * that type. See @/data/public-teams.
    */
   publicTeamType?: 'none' | 'casual' | 'exploration';
+  /**
+   * Player is fully hydrated (SURV_Thirst below the WellHydrated threshold
+   * 720). Default true (optimal play). Gates the hidden Thirst ability's
+   * +35% AP regen baseline and Rejuvenated's boosts — non-ghoul only; lower
+   * hydration tiers are not modeled (docs/assumptions.md "Hydration AP
+   * regen").
+   */
+  hydrated?: boolean;
 }
 
 // Enemy conditions for conditional damage calculations
@@ -470,6 +478,7 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     junkItemCount: 0,
     teammateCount: 0,
     publicTeamType: 'none',
+    hydrated: true, // fully hydrated — optimal-play default (hydration AP-regen baseline)
   };
 }
 

@@ -6,7 +6,7 @@ import { computeCritMeter, type CritMeterResult } from './crit-meter';
 import { computeDotDps, computePaperDamage, type HitBreakdown } from './paper-damage';
 import { computeSustain, type SustainResult } from './sustain';
 import { createHitTrace, type CritMeterTrace, type HitTrace } from './trace';
-import { foldBucket, type ResolveContext, type ScenarioFlags } from './resolve';
+import { effectiveValue, foldBucket, type ResolveContext, type ScenarioFlags } from './resolve';
 
 /**
  * The two displayed scenarios, computed from one resolved config:
@@ -55,7 +55,18 @@ export interface ScenarioResult {
    * the constraint (regen + crit restores ≥ drain) — the UI hides the line
    * in that case rather than this field being absent.
    */
-  ap?: { uptime: number; apLimitedDps: number; secondsToEmpty?: number };
+  ap?: {
+    uptime: number;
+    apLimitedDps: number;
+    secondsToEmpty?: number;
+    /** AP economy breakdown for display: pool size, regen and effective cost. */
+    maxAp: number;
+    regenPerSec: number;
+    /** regenPerSec + crit-restore AP/sec (instant apPerCrit + refresh-only HoTs). */
+    apGainPerSec: number;
+    /** Effective per-shot VATS AP cost (post weapon-OMOD vatsApCost fold). */
+    apCostPerShot: number;
+  };
   /** Multiplier-chain attribution (only when input.collectTrace). */
   explain?: ScenarioExplain;
 }
@@ -336,20 +347,36 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   if (!isMelee(input.weapon) && (input.weapon.apCost ?? 0) > 0) {
     const apCtx = scenarioCtx(input, vatsFlags, onslaughtMaxStacks);
     const apRegenBonus = foldBucket(input.modifiers, 'apRegen', 0, apCtx);
+    const apRegenFlatBonus = foldBucket(input.modifiers, 'apRegenFlat', 0, apCtx);
+    const apMaxBonus = foldBucket(input.modifiers, 'apMax', 0, apCtx);
     const apPerCrit = foldBucket(input.modifiers, 'apPerCrit', 0, apCtx);
+    // apCritHot is collected per-modifier (not bucket-folded): each HoT keeps
+    // its own duration window for the refresh-only steady-state term.
+    const critHots = input.modifiers.flatMap(mod => {
+      if (mod.bucket !== 'apCritHot') return [];
+      const ratePerSec = effectiveValue(mod, apCtx);
+      return ratePerSec !== null && ratePerSec > 0 ? [{ ratePerSec, durationSec: mod.durationSec ?? 0 }] : [];
+    });
     const shotsPerSec = effectiveShotsPerSecond(vatsSustain, fireRate);
     const economy = computeApEconomy({
       apCost: input.weapon.apCost!,
       shotsPerSec,
       agility: input.player.agility,
       apRegenBonus,
+      apRegenFlatBonus,
+      apMaxBonus,
       apPerCrit,
+      critHots,
       shotsPerCrit: critMeter.shotsPerCrit,
     });
     ap = {
       uptime: economy.uptime,
       apLimitedDps: apLimitedDps(vatsSustain.sustainedDps, economy.uptime),
       ...(economy.secondsToEmpty !== undefined && { secondsToEmpty: economy.secondsToEmpty }),
+      maxAp: economy.maxAp,
+      regenPerSec: economy.regenPerSec,
+      apGainPerSec: economy.apGainPerSec,
+      apCostPerShot: input.weapon.apCost!,
     };
   }
 

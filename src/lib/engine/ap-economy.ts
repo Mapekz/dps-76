@@ -19,14 +19,24 @@ import type { SustainResult } from './sustain';
  * CAVEAT (not ESM-proven — see docs/assumptions.md): whether
  * `fActionPointsRestoreRate` is a flat AP/sec or itself scaled by the
  * ActorValue `ActionPointsRateMult` (default 100, reads as a percent) is
- * engine-side and unverified from static data alone. MODELED here as
- * `regenPerSec = fActionPointsRestoreRate × (1 + Σ apRegen)`, i.e. perk
- * bonuses (Action Boy/Girl) are a percent bonus on the flat base rate. An
- * in-game measurement (stopwatch AP regen with/without Action Boy) should
- * pin this — tracked as a golden-case TODO, no `expected` value exists yet.
+ * engine-side and unverified from static data alone. MODELED here as the
+ * AV-standard composition
+ * `regenPerSec = (fActionPointsRestoreRate + Σ apRegenFlat) × (1 + Σ apRegen)`
+ * — flat sources (Company Tea's +10 on AV ActionPointsRate) ADD to the base
+ * rate AV, percent sources (Action Boy/Girl, hydration, Lone Wanderer on AV
+ * ActionPointsRateMult) multiply it. An in-game measurement (stopwatch AP
+ * regen with/without Action Boy) should pin this — tracked as a golden-case
+ * TODO, no `expected` value exists yet.
  *
- * On-kill AP restores (Grim Reaper's Sprint, Conductor's kill-half) are OUT
- * OF SCOPE (need enemy TTK, phase 3) — not computed here.
+ * On-crit AP HoTs (Conductor's 20 AP/s over 5s half) are REFRESH-ONLY: a new
+ * crit restarts the window instead of stacking (user-confirmed in-game
+ * behavior, mirrors the dotDamage convention), so the steady-state term is
+ * rate × min(1, durationSec × critsPerSec) — fast crits saturate at the raw
+ * rate, slow crits (interval ≥ duration) recover the full rate × duration
+ * per crit.
+ *
+ * On-kill AP restores (Grim Reaper's Sprint, Inertial) are OUT OF SCOPE
+ * (need enemy TTK, phase 3) — not computed here.
  */
 
 /** GMST fAVDActionPointsBase (20260702 ESM) — flat AP pool floor. */
@@ -44,8 +54,17 @@ export interface ApEconomyInput {
   agility: number;
   /** Σ of active `apRegen` modifiers (decimal, 0.45 = +45%). */
   apRegenBonus: number;
-  /** Σ of active `apPerCrit` modifiers (flat AP per VATS crit, e.g. Conductor's 110). */
+  /** Σ of active `apRegenFlat` modifiers (flat AP/sec on the base rate — Company Tea +10). */
+  apRegenFlatBonus?: number;
+  /** Σ of active `apMax` modifiers (flat AP pool — food/magazine fortifies, Scaly Skin's penalty). */
+  apMaxBonus?: number;
+  /** Σ of active `apPerCrit` modifiers (flat AP per VATS crit, e.g. Conductor's instant 10). */
   apPerCrit: number;
+  /**
+   * Active on-crit AP HoTs (Conductor's 20 AP/s over 5s), each refresh-only —
+   * kept per-source because each carries its own duration window.
+   */
+  critHots?: Array<{ ratePerSec: number; durationSec: number }>;
   /** Shots per crit at steady state from the crit meter (Infinity when crits never fire). */
   shotsPerCrit: number;
 }
@@ -63,12 +82,17 @@ export interface ApEconomyResult {
 }
 
 export function computeApEconomy(input: ApEconomyInput): ApEconomyResult {
-  const maxAp = AP_POOL_BASE + AP_POOL_PER_AGILITY * input.agility;
-  const regenPerSec = AP_BASE_REGEN_PER_SEC * (1 + input.apRegenBonus);
+  const maxAp = Math.max(0, AP_POOL_BASE + AP_POOL_PER_AGILITY * input.agility + (input.apMaxBonus ?? 0));
+  const regenPerSec = (AP_BASE_REGEN_PER_SEC + (input.apRegenFlatBonus ?? 0)) * (1 + input.apRegenBonus);
 
   const critsPerSec =
     Number.isFinite(input.shotsPerCrit) && input.shotsPerCrit > 0 ? input.shotsPerSec / input.shotsPerCrit : 0;
-  const apGainPerSec = regenPerSec + input.apPerCrit * critsPerSec;
+  // Refresh-only crit HoTs: active fraction = min(1, duration × crits/sec).
+  const critHotPerSec = (input.critHots ?? []).reduce(
+    (sum, hot) => sum + hot.ratePerSec * Math.min(1, Math.max(0, hot.durationSec) * critsPerSec),
+    0
+  );
+  const apGainPerSec = regenPerSec + input.apPerCrit * critsPerSec + critHotPerSec;
   const drainPerSec = Math.max(0, input.apCost) * Math.max(0, input.shotsPerSec);
 
   if (drainPerSec <= apGainPerSec || drainPerSec <= 0) {
