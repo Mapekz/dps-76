@@ -30,6 +30,14 @@ interface GoldenCase {
   consumables: string[];
   addictions?: string[];
   conditions: Partial<PlayerConditions>;
+  /**
+   * Player-selected charge hold time in seconds, for weapons that charge
+   * (Gauss family, bows, tesla/gamma/laser via charging-barrel OMODs — see
+   * `PlayerConfig.chargeTimeSec`, src/lib/charge.ts). Omitted/undefined =
+   * "always fully charge" (the default). This is a top-level PlayerConfig
+   * field, not a PlayerConditions one, so `conditions` patches can't reach it.
+   */
+  chargeTimeSec?: number;
   enemyConditions: Partial<EnemyConditions>;
   scenario: 'freeAim' | 'vats';
   measure: 'perHit' | 'burstDps' | 'sustainedDps' | 'fireRate' | 'apRegenPerSec' | 'reloadSec' | 'apUptime';
@@ -57,6 +65,7 @@ describe('golden cases (in-game measurements)', () => {
         addictions: c.addictions ?? [],
         itemLevel: c.itemLevel,
         conditions: { ...createDefaultPlayerConditions(), ...c.conditions },
+        chargeTimeSec: c.chargeTimeSec,
       };
       const enemyConfig: EnemyConfig = {
         ...createDefaultEnemyConfig(),

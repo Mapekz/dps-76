@@ -54,6 +54,8 @@ export interface HitTrace {
   /** Weakpoint bonus fold — only when the hit lands on a weakpoint. */
   weakpointBonus: BucketTrace | null;
   bodyPartMult: number;
+  /** Charging-weapon damage ramp (src/lib/charge.ts) — null for weapons that don't charge. */
+  charge: { chargeTimeSec: number; fullPowerSeconds: number; fullPowerDamageMult: number; mult: number } | null;
 }
 
 export interface CritMeterTrace {
@@ -95,6 +97,7 @@ export function createHitTrace(): HitTrace {
     wholeDamage: [],
     weakpointBonus: null,
     bodyPartMult: 1,
+    charge: null,
   };
 }
 

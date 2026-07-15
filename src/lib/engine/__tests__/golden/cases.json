@@ -545,6 +545,122 @@
    "tolerancePct": 10,
    "measure": "apUptime",
    "source": "in-game (pending) \u2014 sustained VATS fire-and-reload loop; fraction of time able to fire before waiting on AP. Also sanity-checks that regen visibly starts ~1s into the reload"
-  }
+  },
+ {
+  "name": "Full-charge Gauss Rifle @50, no perks \u2014 Phase 2 charging (chargeTimeSec omitted = always fully charge)",
+  "weaponId": "GaussRifle",
+  "itemLevel": 50,
+  "mods": {},
+  "legendaryEffects": [],
+  "perks": [],
+  "legendaryPerks": [],
+  "mutations": [],
+  "consumables": [],
+  "conditions": {},
+  "enemyConditions": {},
+  "scenario": "freeAim",
+  "measure": "perHit",
+  "expected": null,
+  "tolerancePct": 2,
+  "source": "pending in-game pip-boy reading at full charge hold (docs/assumptions.md \"Charging weapons\"); extraction hasn't yet read WEAP Full Power Seconds/Full Power Damage Mult off the Gauss Rifle record, so this is currently a no-op pending the extraction phase \u2014 un-skip once both extraction and the measurement land"
+ },
+ {
+  "name": "Full-draw Bow @50, no perks \u2014 Phase 2 charging (minimumChargeTime is UI-only, never floors the formula)",
+  "weaponId": "RegularBow",
+  "itemLevel": 50,
+  "mods": {},
+  "legendaryEffects": [],
+  "perks": [],
+  "legendaryPerks": [],
+  "mutations": [],
+  "consumables": [],
+  "conditions": {},
+  "enemyConditions": {},
+  "scenario": "freeAim",
+  "measure": "perHit",
+  "expected": null,
+  "tolerancePct": 2,
+  "source": "pending in-game pip-boy reading at full draw; extraction hasn't yet read the bow's Full Power Seconds/Full Power Damage Mult/Minimum Charge Time off WEAP.Data, so this is currently a no-op pending the extraction phase"
+ },
+ {
+  "name": "Tesla + Charging Barrel @50, no perks \u2014 validates a charging-barrel OMOD turning charging ON (chargeFullPowerSec/chargeFullPowerDamageMult SET)",
+  "weaponId": "DLC01LightningGun",
+  "itemLevel": 50,
+  "mods": {
+   "ap_gun_Barrel": "DLC01_mod_LightningGun_Barrel_ChargeHold"
+  },
+  "legendaryEffects": [],
+  "perks": [],
+  "legendaryPerks": [],
+  "mutations": [],
+  "consumables": [],
+  "conditions": {},
+  "enemyConditions": {},
+  "scenario": "freeAim",
+  "measure": "perHit",
+  "expected": null,
+  "tolerancePct": 2,
+  "source": "pending in-game measurement; DLC01_mod_LightningGun_Barrel_ChargeHold is extracted today (vatsApCost only) but the extraction pipeline doesn't yet map its FullPowerSeconds/FullPowerDamageMult OMOD properties to the chargeFullPowerSec/chargeFullPowerDamageMult buckets, so this case is currently a no-op pending the extraction phase"
+ },
+ {
+  "name": "Gamma Gun + Electric Signal Carrier Antennae @50, no perks \u2014 charging-barrel-equivalent muzzle turning charging ON",
+  "weaponId": "GammaGun",
+  "itemLevel": 50,
+  "mods": {
+   "ap_gun_Muzzle": "mod_GammaGun_SpecialMuzzle_Charger"
+  },
+  "legendaryEffects": [],
+  "perks": [],
+  "legendaryPerks": [],
+  "mutations": [],
+  "consumables": [],
+  "conditions": {},
+  "enemyConditions": {},
+  "scenario": "freeAim",
+  "measure": "perHit",
+  "expected": null,
+  "tolerancePct": 2,
+  "source": "pending in-game measurement; mod_GammaGun_SpecialMuzzle_Charger is extracted today (vatsApCost only) but the extraction pipeline doesn't yet map its FullPowerSeconds/FullPowerDamageMult OMOD properties to the chargeFullPowerSec/chargeFullPowerDamageMult buckets, so this case is currently a no-op pending the extraction phase"
+ },
+ {
+  "name": "Laser Gun + Sniper Barrel @50, no perks \u2014 charging-barrel-equivalent barrel turning charging ON",
+  "weaponId": "LaserGun",
+  "itemLevel": 50,
+  "mods": {
+   "ap_gun_Barrel": "mod_LaserGun_barrel_Super_Base"
+  },
+  "legendaryEffects": [],
+  "perks": [],
+  "legendaryPerks": [],
+  "mutations": [],
+  "consumables": [],
+  "conditions": {},
+  "enemyConditions": {},
+  "scenario": "freeAim",
+  "measure": "perHit",
+  "expected": null,
+  "tolerancePct": 2,
+  "source": "pending in-game measurement \u2014 proves laser sniper barrels charge without the HoldInputToPower flag (docs/assumptions.md \"Charging weapons\", the numeric-gate rationale); mod_LaserGun_barrel_Super_Base is extracted today (vatsApCost only) but the extraction pipeline doesn't yet map its FullPowerSeconds/FullPowerDamageMult OMOD properties to the chargeFullPowerSec/chargeFullPowerDamageMult buckets, so this case is currently a no-op pending the extraction phase"
+ },
+ {
+  "name": "Compound Bow + Flaming Arrows @50, no perks \u2014 charged-shot DoT exclusion (dotDps unaffected by chargeMult)",
+  "weaponId": "CompoundBow",
+  "itemLevel": 50,
+  "mods": {
+   "ap_gun_Bolt": "mod_CompoundBow_Bolt_Flaming"
+  },
+  "legendaryEffects": [],
+  "perks": [],
+  "legendaryPerks": [],
+  "mutations": [],
+  "consumables": [],
+  "conditions": {},
+  "enemyConditions": {},
+  "scenario": "freeAim",
+  "measure": "perHit",
+  "expected": null,
+  "tolerancePct": 2,
+  "source": "pending in-game measurement of the charged-shot DoT tick rate (dps-todos/measurement-backlog.md); Flaming Arrows' dotDamage is real and active today, but the bow's own Full Power Seconds/Full Power Damage Mult aren't extracted yet, so the charge multiplier is a no-op until the extraction phase lands \u2014 once it does, this pins that a partial-draw shot's flaming-arrow burn ticks the same as a full-draw shot's (computeDotDps never sees chargeMult)"
+ }
  ]
 }

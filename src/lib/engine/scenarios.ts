@@ -1,5 +1,6 @@
 import type { EnemyConditions, GameMode, PlayerConditions, Weapon } from '@/types';
 import type { Modifier } from '@/types/modifiers';
+import { weaponCharges } from '@/lib/charge';
 import { getFireRate } from '@/lib/fire-rate';
 import { AP_REGEN_DELAY_SEC, AP_REGEN_RATE_PCT, AP_REGEN_RATE_PCT_POWER_ARMOR, apLimitedDps, computeApEconomy, effectiveShotsPerSecond } from './ap-economy';
 import { computeCritMeter, type CritMeterResult } from './crit-meter';
@@ -95,6 +96,15 @@ export interface ScenarioSet {
    * bucket to fold.
    */
   hasKillStreakSources: boolean;
+  /**
+   * The equipped weapon's charge parameters (Gauss family, bows, tesla/
+   * gamma/laser via charging-barrel OMODs — `weaponCharges()`,
+   * src/lib/charge.ts), computed ONCE from the effective `input.weapon` and
+   * exposed here so the UI's charge-time slider doesn't need to re-run
+   * resolveLoadout on every drag — same precedent as `onslaughtMaxStacks`.
+   * Null when the effective weapon doesn't charge (hides the slider).
+   */
+  charging: { fullPowerSeconds: number; fullPowerDamageMult: number; minimumChargeTime: number } | null;
 }
 
 export interface ScenarioInput {
@@ -118,6 +128,14 @@ export interface ScenarioInput {
    * weapon crit charge bonus).
    */
   critRate?: number;
+  /**
+   * Player-selected charge hold time in seconds, for weapons that charge
+   * (`weaponCharges()`, src/lib/charge.ts). Undefined = "always fully
+   * charge" (the default, optimal-play assumption). Identical across Free
+   * Aim and VATS — the same manual charge applies to both scenarios, since
+   * nothing auto-charges in-game.
+   */
+  chargeTimeSec?: number;
   /**
    * Collect per-source attribution traces (ScenarioResult.explain). Off by
    * default — the suggestion engine's speculative evals must never pay for it.
@@ -231,6 +249,7 @@ function hit(
     // >1 = a weakpoint (weakpointBonus perks apply); <1 = an armored limb/part
     // (Mirelurk shell 0.15×) — neither satisfies torso-only gates (Center Masochist).
     bodyPart: bodyPartMult > 1.0 ? 'weakpoint' : bodyPartMult < 1.0 ? 'limb' : 'torso',
+    chargeTimeSec: input.chargeTimeSec,
     trace,
   });
 }
@@ -284,7 +303,7 @@ function critWeighted(nonCrit: HitBreakdown, crit: HitBreakdown, critRate: numbe
 }
 
 export function computeScenarios(input: ScenarioInput): ScenarioSet {
-  const fireRate = getFireRate(input.weapon);
+  const fireRate = getFireRate(input.weapon, input.chargeTimeSec);
   const powerAttack = input.player.isPowerAttacking;
   const sneaking = input.player.isSneaking;
   const bodyPartMult = input.player.isAimingAtWeakpoint ? input.weakpointMult : 1.0;
@@ -416,9 +435,18 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     };
   }
 
+  const charging = weaponCharges(input.weapon)
+    ? {
+        fullPowerSeconds: input.weapon.fullPowerSeconds ?? 0,
+        fullPowerDamageMult: input.weapon.fullPowerDamageMult ?? 0,
+        minimumChargeTime: input.weapon.minimumChargeTime ?? 0,
+      }
+    : null;
+
   return {
     onslaughtMaxStacks,
     hasKillStreakSources,
+    charging,
     freeAim: {
       perHit: freeHit,
       burstDps: freeSustain.burstDps,

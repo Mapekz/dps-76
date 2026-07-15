@@ -1,5 +1,6 @@
 import type { GameMode, Weapon } from '@/types';
 import type { DamageType, Modifier } from '@/types/modifiers';
+import { chargeDamageMultiplier, weaponCharges } from '@/lib/charge';
 import { getBaseDamage, interpolateCurve } from '@/lib/curve-tables';
 import { foldBucket, foldWholeDamage, type ResolveContext } from './resolve';
 import { lastTrace, type BucketTrace, type HitTrace } from './trace';
@@ -81,6 +82,14 @@ export interface PaperDamageInput {
   bodyPartMult: number;
   /** Body part the hit lands on (gates bodyPart-conditioned modifiers). */
   bodyPart: 'torso' | 'weakpoint' | 'limb';
+  /**
+   * Player-held charge time in seconds, for weapons that charge (Gauss
+   * family, bows, tesla/gamma/laser via charging-barrel OMODs — `weapon` must
+   * satisfy `weaponCharges()`, src/lib/charge.ts). Undefined = "always fully
+   * charge" (the default, optimal-play assumption); ignored entirely for
+   * non-charging weapons.
+   */
+  chargeTimeSec?: number;
   /** Caller-allocated attribution sink (createHitTrace()); filled during the SAME computation. */
   trace?: HitTrace;
 }
@@ -88,7 +97,8 @@ export interface PaperDamageInput {
 function componentBase(
   mode: GameMode,
   weapon: Weapon,
-  itemLevel: number
+  itemLevel: number,
+  chargeMult: number
 ): Array<{ type: DamageType; base: number; isExplosion: boolean }> {
   const clamped = Math.max(1, Math.min(itemLevel, 50));
   return (weapon.components ?? []).map(comp => {
@@ -98,7 +108,12 @@ function componentBase(
       : getBaseDamage(mode, comp.tier, level);
     // Materialized components (effective-weapon.ts) carry scale/flatBonus;
     // absent on ordinary weapon-declared components (1 / 0, neutral).
-    const base = Math.max(0, curveBase * (comp.scale ?? 1) + (comp.flatBonus ?? 0));
+    // chargeMult (src/lib/charge.ts) is 1 (neutral) for non-charging weapons;
+    // for charging weapons it's the linear ramp `(1 + FPDM) × (t / FPS)` —
+    // applying it here, before the dbm parenthesis, means the explosion twin
+    // (which derives its base from this component's `scaledBase` further
+    // down) inherits it automatically, with no extra code.
+    const base = Math.max(0, curveBase * (comp.scale ?? 1) + (comp.flatBonus ?? 0)) * chargeMult;
     return { type: comp.damageType, base, isExplosion: comp.fromExplosion ?? false };
   });
 }
@@ -128,6 +143,23 @@ export function totalSneakMult(
 export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
   const { mode, weapon, itemLevel, modifiers, bodyPartMult, trace } = input;
   const ctx = { ...input.ctx, bodyPart: input.bodyPart };
+
+  // Charging weapons (Gauss family, bows, tesla/gamma/laser via
+  // charging-barrel OMODs): 1 (neutral) for weapons that don't charge, else
+  // the linear ramp `(1 + FPDM) × (t / FPS)` — see src/lib/charge.ts. Applies
+  // to every per-hit damage component (including the explosive twin, which
+  // inherits it via `scaledBase` below) but NEVER to `computeDotDps`'s
+  // steady-state DoT add (user decision — DoT ticks are unaffected by how
+  // charged the triggering shot was; pending in-game measurement).
+  const chargeMult = chargeDamageMultiplier(weapon, input.chargeTimeSec);
+  if (trace && weaponCharges(weapon)) {
+    trace.charge = {
+      chargeTimeSec: input.chargeTimeSec ?? weapon.fullPowerSeconds ?? 0,
+      fullPowerSeconds: weapon.fullPowerSeconds ?? 0,
+      fullPowerDamageMult: weapon.fullPowerDamageMult ?? 0,
+      mult: chargeMult,
+    };
+  }
 
   // Weapon-level additive terms (identical across damage components).
   // Crit is a scenario flag (symmetric with sneaking/powerAttack).
@@ -168,7 +200,7 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
   // (user spec: FO76 explosive AoE ignores sneak + body-part mults).
   const explosiveOuterMult = wholeMult * paRaceMult;
 
-  const components: ComponentHit[] = componentBase(mode, weapon, itemLevel).flatMap(({ type, base, isExplosion }) => {
+  const components: ComponentHit[] = componentBase(mode, weapon, itemLevel, chargeMult).flatMap(({ type, base, isExplosion }) => {
     const componentCtx = { ...ctx, componentType: type, componentIsExplosion: isExplosion };
     const collect = trace ? ([] as BucketTrace[]) : undefined;
     // Base-damage scaling (AttackDamage / DamageTypeValues OMOD properties,

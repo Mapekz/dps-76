@@ -233,5 +233,6 @@ export function resolveLoadout(
     weakpointMult: pickedMult ?? playerConfig.weakpointMult,
     // critRate omitted → computed from the crit meter (LCK, Crit Savvy,
     // Limit Breaking, weapon crit charge bonus).
+    chargeTimeSec: playerConfig.chargeTimeSec,
   };
 }

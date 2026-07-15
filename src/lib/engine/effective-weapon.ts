@@ -220,6 +220,15 @@ export function buildEffectiveWeapon(
   // V.A.T.S. Optimized (Stage B): MUL_ADD −0.35 on the weapon's per-shot VATS
   // AP cost, same fold pattern as ammoCapacity/reloadSpeed above.
   const apCost = foldWeaponStat(statModifiers, 'vatsApCost', weapon.apCost ?? 0, ctx);
+  // Charging (tesla/gamma/laser charging-barrel OMODs turn charging ON via a
+  // SET FullPowerSeconds/FullPowerDamageMult; Gauss-family barrels retune an
+  // existing pair) — same fold pattern as ammoCapacity/reloadSpeed/apCost.
+  // weaponCharges() (src/lib/charge.ts) treats 0 as "doesn't charge", so
+  // folding over `?? 0` is neutral for weapons with no charge fields at all.
+  const fullPowerSeconds = foldWeaponStat(statModifiers, 'chargeFullPowerSec', weapon.fullPowerSeconds ?? 0, ctx);
+  const fullPowerDamageMult = foldWeaponStat(
+    statModifiers, 'chargeFullPowerDamageMult', weapon.fullPowerDamageMult ?? 0, ctx
+  );
 
   const modifiers = allOmodModifiers.filter(m => !WEAPON_STAT_BUCKETS.has(m.bucket));
   const { components: materialized, consumedIds } = materializeDamageTypeComponents(weapon, modifiers, ctx);
@@ -235,6 +244,8 @@ export function buildEffectiveWeapon(
       capacity,
       reloadSpeed,
       apCost,
+      fullPowerSeconds,
+      fullPowerDamageMult,
       components: [...weapon.components, ...materialized],
     },
     modifiers: modifiers.filter(m => !consumedIds.has(m.id)),

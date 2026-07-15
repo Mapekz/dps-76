@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { getWeapons } from '@/data';
 import { getOmodById, getOmodSlots } from '@/data/omods';
+import { weaponCharges } from '@/lib/charge';
 import { buildEffectiveWeapon } from '@/lib/engine/effective-weapon';
 import { computeScenarios } from '@/lib/engine/scenarios';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
@@ -406,5 +407,43 @@ describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-
     expect(energy).toBeDefined();
     expect(energy!.scale).toBeCloseTo(0, 10);
     expect(energy!.flatBonus).toBeCloseTo(5, 10);
+  });
+});
+
+describe('charging weapon-stat buckets (chargeFullPowerSec/chargeFullPowerDamageMult)', () => {
+  const fixer = getWeapons('live')['CombatRifle_Fixer'];
+
+  it('an OMOD SET chargeFullPowerSec turns charging ON for a base weapon that has FPDM but FPS 0 (tesla pattern)', () => {
+    // Tesla/gamma/laser charging-barrel shape: the base WEAP already carries
+    // a Full Power Damage Mult, but Full Power Seconds is 0 (charging is OFF)
+    // until a charging-barrel OMOD SETs it.
+    const teslaLikeBase = { ...fixer, fullPowerSeconds: 0, fullPowerDamageMult: 1.25 };
+    expect(weaponCharges(teslaLikeBase)).toBe(false);
+
+    const chargingBarrelLike = {
+      id: 'test_charging_barrel',
+      formId: '0x0',
+      name: 'Test Charging Barrel',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_gun_Barrel',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [
+        {
+          id: '0x0:0',
+          source: { kind: 'omod' as const, formId: '0x0', edid: 'test_charging_barrel', name: 'Test Charging Barrel' },
+          bucket: 'chargeFullPowerSec' as const,
+          op: 'SET' as const,
+          value: 1.0,
+          conditions: [],
+        },
+      ],
+    };
+    const { weapon } = buildEffectiveWeapon(teslaLikeBase, [chargingBarrelLike]);
+    expect(weaponCharges(weapon)).toBe(true);
+    expect(weapon.fullPowerSeconds).toBeCloseTo(1.0, 10);
+    expect(weapon.fullPowerDamageMult).toBeCloseTo(1.25, 10); // untouched — no chargeFullPowerDamageMult modifier equipped
   });
 });

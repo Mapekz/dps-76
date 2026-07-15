@@ -75,6 +75,36 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
 - [ ] Negative-MUL netting edge (low priority — zero-base reasoning is solid).
 - [ ] Optional: Carnivore ×2.5 under Strange in Numbers; Rudy's Pozole
       non-scaling exemption; Barbarian's +1 STR/kill clamp-at-10 and decay.
+- [ ] **Charging weapons, engine phase landed 2026-07-15** (`docs/assumptions.md`
+      "Charging weapons") — six `expected: null` goldens added
+      (`golden/cases.json`), currently no-ops because the extraction pipeline
+      doesn't yet read Full Power Seconds/Full Power Damage Mult/Minimum
+      Charge Time off WEAP.Data or the matching OMOD properties. Once that
+      extraction lands, stopwatch/pip-boy:
+  - [ ] **Full-charge Gauss Rifle @50** — pins the `(1 + FPDM) × (t/FPS)`
+        endpoint value (ESM: FPS 1.0, FPDM 2.0 → ×3 at full charge).
+  - [ ] **Full-draw Bow** — same endpoint check on a bow (Minimum Charge Time
+        is UI-only; confirm the formula still ramps linearly from 0, not from
+        the minimum draw).
+  - [ ] **Tesla + Charging (Hold) Barrel** — confirms an OMOD SET
+        FullPowerSeconds/FullPowerDamageMult turns charging ON for a base
+        WEAP that has FPDM but FPS 0 (ESM: base FPDM 1.25/FPS 0.0, barrel SETs
+        FPS 1.0).
+  - [ ] **Gamma Gun + Electric Signal Carrier Antennae** — same OMOD-grants-
+        charging check on the muzzle slot (ESM: FPS 1.0, FPDM 2.0).
+  - [ ] **Laser Gun + Sniper Barrel** — proves laser sniper barrels charge
+        without the `HoldInputToPower` flag (the numeric-gate rationale; ESM:
+        FPS 1.5, FPDM 2.0, no HoldInputToPower SET anywhere in the OMOD or its
+        include chain).
+  - [ ] **Charged-shot DoT ticks** (Compound Bow + Flaming Arrows) — confirms
+        a partial-draw shot's burn/poison DoT ticks the same as a full-draw
+        shot's (the engine's DoT-exclusion decision: `computeDotDps` never
+        sees the charge multiplier).
+  - [ ] Optional stopwatch: confirm the charge-hold portion of cadence really
+        is speed-immune in-game (only the post-release attack-delay tail
+        should shrink under Speed buffs) — `getFireRate`'s
+        `1/(chargeSec + animDelaySec/speed)` formula is user-confirmed, not
+        yet in-game-timed.
 
 **Resolved off this list 2026-07-14 (no in-game check needed):**
 - ~~Shock & Stun obtainability~~ — its only referencers are `POST_Challenge_*`

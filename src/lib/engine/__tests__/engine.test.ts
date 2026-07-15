@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import type { Weapon } from '@/types';
 import type { Bucket, Condition, ModOp, Modifier } from '@/types/modifiers';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
+import { chargeDamageMultiplier } from '@/lib/charge';
+import { getFireRate } from '@/lib/fire-rate';
 import { foldBucket, foldOps, type ResolveContext } from '@/lib/engine/resolve';
 import { computeDotDps, computePaperDamage, totalCritMult, totalSneakMult } from '@/lib/engine/paper-damage';
 import { computeScenarios } from '@/lib/engine/scenarios';
@@ -535,6 +537,145 @@ describe('Charged cadence (Stage C2, cycle folded into sustained DPS)', () => {
     const plainMelee = makeWeapon({ weaponClass: 'melee' });
     const s = computeScenarios({ ...baseInput, weapon: plainMelee });
     expect(s.freeAim.burstDps).toBeCloseTo(100, 6);
+  });
+});
+
+// Charging weapons (Gauss family, bows, tesla/gamma/laser via
+// charging-barrel OMODs — src/lib/charge.ts). NOT the Charged-melee mechanic
+// above: distinct fields (fullPowerSeconds/fullPowerDamageMult, not the
+// WeaponHasSecondaryCharging keyword), distinct helpers (chargeDamageMultiplier/
+// weaponCharges, not isCharged/CHARGED_*).
+describe('charging weapons (Gauss family, bows, tesla/gamma/laser barrels)', () => {
+  const gauss = makeWeapon({ fullPowerSeconds: 1.0, fullPowerDamageMult: 2.0 }); // 91-style Gauss shape, base 100
+  const bow = makeWeapon({ weaponClass: 'bow', fullPowerSeconds: 1.0, fullPowerDamageMult: 0.3 });
+  const nonCharging = makeWeapon();
+
+  describe('chargeDamageMultiplier (src/lib/charge.ts)', () => {
+    it('full charge: Gauss FPDM 2.0 → ×3', () => {
+      expect(chargeDamageMultiplier(gauss, 1.0)).toBeCloseTo(3.0, 10);
+    });
+
+    it('half charge: Gauss FPDM 2.0 → ×1.5', () => {
+      expect(chargeDamageMultiplier(gauss, 0.5)).toBeCloseTo(1.5, 10);
+    });
+
+    it('bow FPDM 0.3 at full draw → ×1.3', () => {
+      expect(chargeDamageMultiplier(bow, 1.0)).toBeCloseTo(1.3, 10);
+    });
+
+    it('undefined chargeTimeSec means "always fully charge" (optimal-play default)', () => {
+      expect(chargeDamageMultiplier(gauss, undefined)).toBeCloseTo(3.0, 10);
+    });
+
+    it('t is clamped to [0, fullPowerSeconds] — holding past full charge never overshoots', () => {
+      expect(chargeDamageMultiplier(gauss, 5.0)).toBeCloseTo(3.0, 10);
+    });
+
+    it('zero charge time → ×0 (nothing charged yet)', () => {
+      expect(chargeDamageMultiplier(gauss, 0)).toBeCloseTo(0, 10);
+    });
+
+    it('a non-charging weapon always returns 1 (neutral), any chargeTimeSec', () => {
+      expect(chargeDamageMultiplier(nonCharging, 0.5)).toBe(1);
+      expect(chargeDamageMultiplier(nonCharging, undefined)).toBe(1);
+    });
+  });
+
+  describe('getFireRate charging cadence (src/lib/fire-rate.ts)', () => {
+    it('shots/sec = 1 / (chargeSec + animDelaySec / speed) — the charge portion is wall-clock', () => {
+      const w = makeWeapon({ fullPowerSeconds: 1.0, fullPowerDamageMult: 2.0, animDelaySec: 0.15 });
+      expect(getFireRate(w, 1.0)).toBeCloseTo(1 / 1.15, 10); // ≈ 0.8696
+    });
+
+    it('Speed only shrinks the attack-delay tail, never the charge itself', () => {
+      const w = makeWeapon({ fullPowerSeconds: 1.0, fullPowerDamageMult: 2.0, animDelaySec: 0.15, speed: 2.0 });
+      expect(getFireRate(w, 1.0)).toBeCloseTo(1 / 1.075, 10); // charge unchanged, delay halved
+    });
+
+    it('undefined chargeTimeSec resolves to full charge, same as passing fullPowerSeconds', () => {
+      const w = makeWeapon({ fullPowerSeconds: 1.0, fullPowerDamageMult: 2.0, animDelaySec: 0.15 });
+      expect(getFireRate(w, undefined)).toBeCloseTo(getFireRate(w, 1.0), 10);
+    });
+
+    it('non-charging weapons are unaffected by the charging branch (existing semi-auto path)', () => {
+      const w = makeWeapon({ animDelaySec: 0.5 });
+      expect(getFireRate(w)).toBeCloseTo(2.0, 10); // speed(1.0) / animDelaySec(0.5)
+    });
+  });
+
+  describe('computeScenarios integration', () => {
+    const baseInput = {
+      mode: 'live' as const, weapon: gauss, itemLevel: 50, modifiers: [],
+      player: createDefaultPlayerConditions(), enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2.0, critRate: 0,
+    };
+
+    it('freeAim and vats report the SAME fireRate and per-hit charge scaling for a fixed chargeTimeSec', () => {
+      const s = computeScenarios({ ...baseInput, chargeTimeSec: 0.5 });
+      expect(s.freeAim.fireRate).toBeCloseTo(s.vats.fireRate, 10);
+      // half charge: 100 × (1 + 2.0) × (0.5 / 1.0) = 150
+      expect(s.freeAim.perHit.total).toBeCloseTo(150, 6);
+      expect(s.vats.perHit.total).toBeCloseTo(150, 6); // critRate 0 → non-crit hit only
+    });
+
+    it('exposes the charging field with the effective weapon\'s charge parameters', () => {
+      const s = computeScenarios(baseInput);
+      expect(s.charging).toEqual({ fullPowerSeconds: 1.0, fullPowerDamageMult: 2.0, minimumChargeTime: 0 });
+    });
+
+    it('charging is null for a non-charging weapon', () => {
+      const s = computeScenarios({ ...baseInput, weapon: nonCharging });
+      expect(s.charging).toBeNull();
+    });
+  });
+
+  describe('explosion twin inherits the charge multiplier (via scaledBase)', () => {
+    const weapon = makeWeapon({
+      fullPowerSeconds: 1.0, fullPowerDamageMult: 2.0, explosionBaseWeaponDamageMult: 0.15,
+    });
+
+    it('twin damage scales with chargeMult exactly like the parent component', () => {
+      const full = computePaperDamage({
+        mode: 'live', weapon, itemLevel: 50, modifiers: [], ctx: makeCtx(weapon),
+        bodyPartMult: 1.0, bodyPart: 'torso', chargeTimeSec: 1.0,
+      });
+      const half = computePaperDamage({
+        mode: 'live', weapon, itemLevel: 50, modifiers: [], ctx: makeCtx(weapon),
+        bodyPartMult: 1.0, bodyPart: 'torso', chargeTimeSec: 0.5,
+      });
+      expect(full.components).toHaveLength(2);
+      // full charge: parent 100 × 3 = 300, twin 300 × 0.15 = 45.
+      expect(full.components[0].damage).toBeCloseTo(300, 6);
+      expect(full.components[1].damage).toBeCloseTo(45, 6);
+      // half charge: parent 150, twin 22.5 — exactly half of the full-charge twin.
+      expect(half.components[0].damage).toBeCloseTo(150, 6);
+      expect(half.components[1].damage).toBeCloseTo(22.5, 6);
+      expect(half.components[1].damage).toBeCloseTo(full.components[1].damage / 2, 10);
+    });
+  });
+
+  describe('DoT exclusion — computeDotDps never sees chargeMult', () => {
+    const weapon = makeWeapon({ fullPowerSeconds: 1.0, fullPowerDamageMult: 2.0 });
+    const dotMods = [mod({ bucket: 'dotDamage', op: 'ADD', value: 3 })];
+
+    it('computeDotDps has no chargeTimeSec input at all', () => {
+      expect(computeDotDps(dotMods, weapon, makeCtx(weapon))).toBeCloseTo(3, 10);
+    });
+
+    it('computeScenarios: dotDps is identical at full vs partial charge, while perHit is not', () => {
+      const baseInput = {
+        mode: 'live' as const, weapon, itemLevel: 50, modifiers: dotMods,
+        player: createDefaultPlayerConditions(), enemy: createDefaultEnemyConditions(),
+        weakpointMult: 2.0, critRate: 0,
+      };
+      const full = computeScenarios({ ...baseInput, chargeTimeSec: 1.0 });
+      const half = computeScenarios({ ...baseInput, chargeTimeSec: 0.5 });
+      expect(full.freeAim.dotDps).toBeCloseTo(3, 10);
+      expect(half.freeAim.dotDps).toBeCloseTo(3, 10);
+      expect(full.freeAim.dotDps).toBe(half.freeAim.dotDps);
+      // Sanity check: charge DOES change perHit, so the equality above isn't vacuous.
+      expect(full.freeAim.perHit.total).not.toBeCloseTo(half.freeAim.perHit.total, 1);
+    });
   });
 });
 
