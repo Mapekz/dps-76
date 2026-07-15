@@ -272,6 +272,7 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   // Not tied to any SPECIAL (no `special` field). ESM LGN_*_Perk families;
   // N&D "x"-prefixed keys except the two ghoul-exclusive cards (0D/0N).
   // Effects are not yet extracted (empty ESM modifiers) — display/slotting only.
+  [PerkId.ActionDiet]: { name: "Action Diet" }, // Ghoul-exclusive (N&D key 0D): on-kill heal + feral reduction
   [PerkId.AmmoFactory]: { name: "Ammo Factory" }, // Ammo crafting - not combat
   [PerkId.BloodSacrifice]: { name: "Blood Sacrifice!" }, // VATS AP costs HP - not direct damage
   [PerkId.BrawlingChemist]: { name: "Brawling Chemist" }, // Chem generation - not combat
@@ -280,6 +281,7 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.ElectricAbsorption]: { name: "Electric Absorption" }, // Energy damage absorption - defensive
   [PerkId.ExplodingPalm]: { name: "Exploding Palm" }, // Melee explosion proc - not modeled
   [PerkId.FarFlungFireworks]: { name: "Far-Flung Fireworks" }, // Kill explosions - not modeled
+  [PerkId.FeralRage]: { name: "Feral Rage" }, // Ghoul-exclusive (N&D key 0N)
   [PerkId.FollowThrough]: { name: "Follow Through" }, // Ranged sneak → target takes more damage (wholeDamage bucket, pending extraction)
   [PerkId.FunkyDuds]: { name: "Funky Duds" }, // Poison resistance - defensive
   [PerkId.HackAndSlash]: { name: "Hack and Slash" }, // Melee AoE proc - not modeled
@@ -291,8 +293,6 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.SurvivalShortcut]: { name: "Survival Shortcut" }, // Chem generation - not combat
   [PerkId.TakingOneForTheTeam]: { name: "Taking One For The Team" }, // Attackers take more damage (wholeDamage bucket, pending extraction)
   [PerkId.WhatRads]: { name: "What Rads?" }, // Rad immunity - defensive
-  [PerkId.ActionDiet]: { name: "Action Diet" }, // Ghoul-exclusive (N&D key 0D): on-kill heal + feral reduction
-  [PerkId.FeralRage]: { name: "Feral Rage" }, // Ghoul-exclusive (N&D key 0N)
   // Legendary SPECIAL cards: +1/+2/+3/+5 stat and perk points by rank (ESM
   // families LGN_Legendary*_Perk; the bonus is applied via the perk-budget
   // derivation keyed by PerkId in LEGENDARY_SPECIAL_PERKS — no `special`
