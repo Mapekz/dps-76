@@ -7,8 +7,11 @@ import type { Weapon } from '@/types';
  * sustainedDps = magazine damage / (mag-dump time + reload time)
  *
  * reloadSec = animationReloadSec / reloadSpeed is an ASSUMPTION until measured
- * in-game (docs/assumptions.md "Sustained DPS"). Weapons without a magazine
- * (melee/unarmed, capacity 0) sustain their burst DPS.
+ * in-game (docs/assumptions.md "Sustained DPS"). Per-shell reloaders
+ * (Weapon.reloadPerShell, from the AnimsSequentialReload keyword) repeat the
+ * animation once per round: reloadSec × shotsPerMag — also unmeasured.
+ * Weapons without a magazine (melee/unarmed, capacity 0) sustain their burst
+ * DPS.
  */
 
 export interface SustainResult {
@@ -35,7 +38,12 @@ export function computeSustain(perHitAvg: number, fireRate: number, weapon: Weap
     return { burstDps, sustainedDps: burstDps, shotsPerMag: 0, magDumpSec: 0, reloadSec: 0, reloadApproximate: true };
   }
 
-  const reloadSec = (weapon.animationReloadSec ?? 0) / (weapon.reloadSpeed || 1.0);
+  // Per-shell reloaders (AnimsSequentialReload — lever/pump/single-action):
+  // animationReloadSec is the per-round increment, so a full reload repeats
+  // it shotsPerMag times. The whole per-shell-scaled time divides by the same
+  // reloadSpeed fold, so speed bonuses compose identically either way.
+  const perShellMult = weapon.reloadPerShell ? shotsPerMag : 1;
+  const reloadSec = ((weapon.animationReloadSec ?? 0) * perShellMult) / (weapon.reloadSpeed || 1.0);
   // Steady-state cycle: each shot occupies one fire interval, then one reload.
   const magDumpSec = shotsPerMag / fireRate;
   const sustainedDps = (perHitAvg * shotsPerMag) / (magDumpSec + reloadSec);

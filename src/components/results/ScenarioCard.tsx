@@ -47,6 +47,21 @@ export function ScenarioCard({ scenarioKey, label, result, emphasized }: Scenari
           value={hasReloadModel ? result.sustain.sustainedDps : result.perHit.total}
         />
       </div>
+      {hasReloadModel && (
+        <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
+          <span>reload</span>
+          <span
+            className="text-foreground text-sm tabular-nums"
+            title={
+              result.sustain.reloadApproximate
+                ? 'Reload time from the ESM animation length (per-shell weapons: × rounds), divided by the folded reload speed — unverified in-game.'
+                : undefined
+            }
+          >
+            {result.sustain.reloadSec.toFixed(2)}s
+          </span>
+        </div>
+      )}
       {result.dotDps > 0 && (
         <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
           <span>dot</span>
@@ -55,7 +70,9 @@ export function ScenarioCard({ scenarioKey, label, result, emphasized }: Scenari
       )}
       {result.ap && result.ap.uptime < 1 && (
         <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
-          <span>ap-limited ({formatUptimePct(result.ap.uptime)})</span>
+          <span title="Passive AP regen doesn't tick during sustained VATS fire — only in-combat restores (Conductor's, etc.) and passive regen during reload downtime (after a 1s delay) count toward uptime.">
+            ap-limited ({formatUptimePct(result.ap.uptime)})
+          </span>
           <DeltaFlash className="text-foreground text-sm" value={result.ap.apLimitedDps} format={formatDamage} />
         </div>
       )}

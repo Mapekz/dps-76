@@ -64,12 +64,42 @@ export interface ConditionTranslationContext {
    * docs/assumptions.md "Weapon-intrinsic DoT & OMOD replacement".
    */
   subjectIsTarget?: boolean;
+  /**
+   * Every non-junk perk family's rank-chain formids, mapped formid →
+   * {family, rank} (1-based) — built ONCE over ALL families
+   * (buildCrossFamilyRankMap, extract-perks.ts) before any single family
+   * translates. The generalization of the self/paired-family rank gates
+   * above to a DIFFERENT family's HasPerk reference: a hit translates to a
+   * runtime `perkFamilyRank` condition (Lock and Load → Bullet Storm's
+   * reload speed; MakeshiftWarrior → Mechanic's Best Friend's dbm) instead
+   * of `unresolved`. Self/paired-family rows are checked FIRST, so this map
+   * never shadows the simulation-consumed gates. CUT_-prefixed junk families
+   * must stay out of the map (they resolve as permanently-inactive
+   * unresolved rows, as before).
+   */
+  crossFamilyRank?: Map<string, { family: string; rank: number }>;
 }
 
 export interface TranslationResult {
   /** null = the whole effect is inactive under the current rank simulation. */
   conditions: Condition[] | null;
   unresolved: string[];
+}
+
+/**
+ * Builds ConditionTranslationContext.crossFamilyRank from rank-ordered family
+ * chains. Two callers, one join rule: extract-perks.ts (live EsmRecord
+ * families) and run-all.ts (serialized GeneratedPerk {family, formIds} — the
+ * omods pass reads the perks result or the checked-in perks.json).
+ */
+export function buildCrossFamilyRankMap(
+  families: Array<{ family: string; formIds: string[] }>
+): Map<string, { family: string; rank: number }> {
+  const map = new Map<string, { family: string; rank: number }>();
+  for (const { family, formIds } of families) {
+    formIds.forEach((formId, i) => map.set(formId, { family, rank: i + 1 }));
+  }
+  return map;
 }
 
 /**
@@ -137,6 +167,13 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
       const cfRank = CLASS_FREAK_RANK_BY_FORM_ID[param];
       if (cfRank !== undefined) {
         return wants ? { kind: 'classFreakRank', min: cfRank, max: 3 } : { kind: 'classFreakRank', min: 0, max: cfRank - 1 };
+      }
+      // Cross-family gate: a reference into ANOTHER family's rank chain
+      // becomes a runtime perkFamilyRank condition (evaluated against the
+      // selected perk loadout — resolve.ts / PlayerConditions.equippedPerkRanks).
+      const cross = ctx.crossFamilyRank?.get(param);
+      if (cross) {
+        return { kind: 'perkFamilyRank', family: cross.family, minRank: cross.rank, present: wants };
       }
       return { kind: 'unresolved', raw: `HasPerk(${edid})=${cond['Comparison Value']}` };
     }

@@ -206,6 +206,20 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
             {result.ap.regenPerSec > 0 && (
               <Row muted label="Time to fill from empty" value={formatSeconds(result.ap.maxAp / result.ap.regenPerSec)} />
             )}
+
+            {result.ap.reloadRegenPerSec > 0 && (
+              <>
+                <Row label="Regen during reload" value={`+${result.ap.reloadRegenPerSec.toFixed(1)}/s`} />
+                <Row
+                  indent
+                  muted
+                  label={`Reload window (${formatSeconds(explain.apRegen.reloadSec)} − ${explain.apRegen.regenDelaySec.toFixed(0)}s delay, per ${formatSeconds(
+                    explain.apRegen.magDumpSec + explain.apRegen.reloadSec
+                  )} cycle)`}
+                  value=""
+                />
+              </>
+            )}
           </div>
         );
       })()}

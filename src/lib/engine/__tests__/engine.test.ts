@@ -148,6 +148,28 @@ describe('condition evaluation', () => {
     const unset = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), glow: undefined } });
     expect(foldBucket([glowingCrit], 'dbm', 1.0, unset)).toBe(1.0); // glow undefined → treated as 0
   });
+
+  it('perkFamilyRank gates on the derived family→rank map (cross-family HasPerk, Lock and Load → Bullet Storm)', () => {
+    const needsLnL = mod({
+      bucket: 'dbm', op: 'ADD', value: 0.3,
+      conditions: [{ kind: 'perkFamilyRank', family: 'LockAndLoad', minRank: 2, present: true }],
+    });
+    const lacksLnL = mod({
+      bucket: 'dbm', op: 'ADD', value: 0.1,
+      conditions: [{ kind: 'perkFamilyRank', family: 'LockAndLoad', minRank: 2, present: false }],
+    });
+
+    // Owning rank 3 satisfies the ≥2 gate (rank N implies every rank ≤ N).
+    const rank3 = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), equippedPerkRanks: { LockAndLoad: 3 } } });
+    expect(foldBucket([needsLnL, lacksLnL], 'dbm', 1.0, rank3)).toBeCloseTo(1.3, 10);
+
+    const rank1 = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), equippedPerkRanks: { LockAndLoad: 1 } } });
+    expect(foldBucket([needsLnL, lacksLnL], 'dbm', 1.0, rank1)).toBeCloseTo(1.1, 10);
+
+    // Unset map → owns nothing → only the present:false gate passes.
+    const unequipped = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), equippedPerkRanks: undefined } });
+    expect(foldBucket([needsLnL, lacksLnL], 'dbm', 1.0, unequipped)).toBeCloseTo(1.1, 10);
+  });
 });
 
 describe('Grounded (2026-07-14): classFreakRank tier selection on a dbm MUL_ADD', () => {
@@ -894,17 +916,32 @@ describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
   it('surfaces an ap-limited uptime for a ranged weapon with a real VATS AP cost', () => {
     const s = computeScenarios(baseInput);
     // shotsPerSec = 20/24; drainPerSec = 16×20/24 = 40/3; regenPerSec =
-    // 210 × 6/100 = 12.6 (race-base %-of-max rate) is informational only —
-    // passive regen doesn't tick during sustained VATS fire (2026-07-15).
-    // apGainPerSec = 0 (no apPerCrit/apCritHot mods) → uptime = 0.
+    // 210 × 6/100 = 12.6 (race-base %-of-max rate). Passive regen doesn't
+    // tick during the mag dump, but DOES tick during the reload after the 1s
+    // delay (2026-07-15): reloadRegenPerSec = 12.6 × (4−1)/24 = 1.575 — the
+    // only gain here (no apPerCrit/apCritHot mods).
     expect(s.vats.ap).toBeDefined();
     expect(s.vats.ap!.regenPerSec).toBeCloseTo(12.6, 10);
-    expect(s.vats.ap!.apGainPerSec).toBe(0);
-    expect(s.vats.ap!.uptime).toBe(0);
-    expect(s.vats.ap!.apLimitedDps).toBeCloseTo(0, 10);
-    expect(s.vats.ap!.secondsToEmpty).toBeCloseTo(210 / (40 / 3), 10);
+    expect(s.vats.ap!.reloadRegenPerSec).toBeCloseTo(1.575, 10);
+    expect(s.vats.ap!.apGainPerSec).toBeCloseTo(1.575, 10);
+    expect(s.vats.ap!.uptime).toBeCloseTo(1.575 / (40 / 3), 10);
+    expect(s.vats.ap!.apLimitedDps).toBeCloseTo(s.vats.sustain.sustainedDps * (1.575 / (40 / 3)), 10);
+    expect(s.vats.ap!.secondsToEmpty).toBeCloseTo(210 / (40 / 3 - 1.575), 10);
     // AP economy is a VATS-only concept — free aim never carries it.
     expect(s.freeAim.ap).toBeUndefined();
+  });
+
+  it('a reload window at or below the 1s regen delay earns no reload-regen credit', () => {
+    // Same weapon but a 1.0s reload — max(0, 1.0 − 1.0) = 0 credit, so
+    // passive regen contributes nothing and uptime is 0 again.
+    const quickReload = makeWeapon({
+      animDelaySec: 1.0, isPhysical: false, apCost: 16,
+      capacity: 20, ammoPerShot: 1, reloadSpeed: 1.0, animationReloadSec: 1.0,
+    });
+    const s = computeScenarios({ ...baseInput, weapon: quickReload });
+    expect(s.vats.ap!.reloadRegenPerSec).toBe(0);
+    expect(s.vats.ap!.apGainPerSec).toBe(0);
+    expect(s.vats.ap!.uptime).toBe(0);
   });
 
   it('omits ap for melee weapons (AP-limited uptime is undefined for melee) and for zero-cost weapons', () => {
@@ -915,12 +952,23 @@ describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
     expect(computeScenarios({ ...baseInput, weapon: noCostWeapon }).vats.ap).toBeUndefined();
   });
 
-  it("apRegen bonuses raise the informational regenPerSec but don't affect uptime (passive regen doesn't tick during sustained VATS fire, 2026-07-15)", () => {
+  it('apRegen bonuses feed uptime ONLY through the reload window (never the mag dump)', () => {
     const richRegen = [mod({ bucket: 'apRegen', op: 'ADD', value: 10 })]; // absurd but isolates the math
     const baseline = computeScenarios(baseInput);
     const s = computeScenarios({ ...baseInput, modifiers: richRegen });
+    // regenPerSec = 12.6 × 11 = 138.6 → reloadRegenPerSec = 138.6 × 3/24 =
+    // 17.325 > drain 40/3, so uptime saturates purely from reload regen.
     expect(s.vats.ap!.regenPerSec).toBeGreaterThan(baseline.vats.ap!.regenPerSec);
-    expect(s.vats.ap!.uptime).toBe(baseline.vats.ap!.uptime); // still 0 — passive regen never feeds uptime
+    expect(s.vats.ap!.reloadRegenPerSec).toBeCloseTo(17.325, 10);
+    expect(s.vats.ap!.uptime).toBe(1);
+    // The same bonus on a ≤1s-reload weapon moves nothing — the mag dump
+    // itself never earns passive regen.
+    const quickReload = makeWeapon({
+      animDelaySec: 1.0, isPhysical: false, apCost: 16,
+      capacity: 20, ammoPerShot: 1, reloadSpeed: 1.0, animationReloadSec: 1.0,
+    });
+    const quick = computeScenarios({ ...baseInput, weapon: quickReload, modifiers: richRegen });
+    expect(quick.vats.ap!.uptime).toBe(0);
   });
 
   it('apPerCrit modifiers raise the in-combat gain rate and can saturate uptime at 1', () => {

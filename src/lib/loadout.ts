@@ -1,7 +1,7 @@
 import type { PlayerConfig, EnemyConfig, GameMode, PlayerConditions, Weapon } from '@/types';
 import type { Modifier } from '@/types/modifiers';
 import { getWeapons } from '@/data';
-import { getLoadoutModifiers } from '@/data/perk-modifiers';
+import { getEquippedPerkFamilyRanks, getLoadoutModifiers } from '@/data/perk-modifiers';
 import { getDefaultOmods, getOmodById } from '@/data/omods';
 import { getAddictionModifiers, getBuffModifiers, getSuppressedAddictions } from '@/data/buffs';
 import { getManualUptimeModifiers } from '@/data/manual-uptime';
@@ -51,6 +51,10 @@ function assemble(
     ...playerConfig.conditions,
     strangeInNumbers: deriveStrangeInNumbers(playerConfig.perks, playerConfig.conditions),
     classFreakRank: deriveClassFreakRank(playerConfig.perks),
+    // Family → highest owned rank across both loadouts — the perkFamilyRank
+    // condition's input (cross-family HasPerk gates, e.g. Lock and Load →
+    // Bullet Storm's reload speed).
+    equippedPerkRanks: getEquippedPerkFamilyRanks(mode, [...playerConfig.perks, ...playerConfig.legendaryPerks]),
   };
 
   // Withdrawal penalties for counted addictions — selected minus suppressed

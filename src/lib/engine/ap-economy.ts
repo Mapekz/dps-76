@@ -44,11 +44,19 @@ import type { SustainResult } from './sustain';
  * in-game 2026-07-15): the race-base %-of-max regen and every passive bonus
  * that feeds it (Company Tea's flat +10, Action Boy/Girl/Ghoul, hydration,
  * Lone Wanderer, Packin' Light, ...) is real for idle/out-of-combat regen
- * (still reported as `regenPerSec`) but contributes NOTHING to the
- * steady-state uptime/drain math below. Only in-combat AP restores that
- * trigger off the firing itself — Conductor's spike + HoT, any future
- * apPerCrit/apCritHot source — and AP-cost modifiers (folded into
- * `apCost` upstream) move the uptime needle.
+ * (still reported as `regenPerSec`) but does not tick during the mag dump.
+ * It DOES tick during the reload (user-confirmed 2026-07-15), starting
+ * AP_REGEN_DELAY_SEC after firing stops, so each magazine cycle recovers
+ * regenPerSec × max(0, reloadSec − delay) — cycle-averaged into
+ * `apGainPerSec` as `reloadRegenPerSec` alongside the crit-triggered
+ * restores (Conductor's spike + HoT) and AP-cost modifiers (folded into
+ * `apCost` upstream).
+ *
+ * Considered and NOT implemented (user decision 2026-07-15): crediting full
+ * passive regen during the AP-forced pause when uptime < 1, i.e. the
+ * duty-cycle form uptime = regen/(drain − gain + regen). That would change
+ * apLimitedDps for every AP-constrained build, not just reload-heavy ones —
+ * revisit against an in-game uptime measurement before adopting.
  *
  * On-kill AP restores (Grim Reaper's Sprint, Inertial) are OUT OF SCOPE
  * (need enemy TTK, phase 3) — not computed here.
@@ -66,6 +74,14 @@ export const AP_POOL_PER_AGILITY = 10;
 export const AP_REGEN_RATE_PCT = 6.0;
 /** PowerArmorRace's base for the same AV — the player's race swaps in PA, halving regen. */
 export const AP_REGEN_RATE_PCT_POWER_ARMOR = 3.0;
+/**
+ * Seconds after firing stops before passive AP regen starts ticking again.
+ * GMST `fDamagedAVRegenDelay` (0x000DB2AA, 20260710 dump) = 1.0 — the generic
+ * "damaged actor value regen delay"; its applicability to AP specifically is
+ * an INFERENCE (matches the user-observed ~1s in-game delay), pinned by a
+ * golden measurement (docs/assumptions.md "VATS AP economy").
+ */
+export const AP_REGEN_DELAY_SEC = 1.0;
 
 export interface ApEconomyInput {
   /** Effective per-shot VATS AP cost (after the vatsApCost OMOD fold). */
@@ -94,14 +110,28 @@ export interface ApEconomyInput {
   critHots?: Array<{ ratePerSec: number; durationSec: number }>;
   /** Shots per crit at steady state from the crit meter (Infinity when crits never fire). */
   shotsPerCrit: number;
+  /**
+   * Reload window of the magazine cycle (SustainResult.reloadSec — the same
+   * cycle `shotsPerSec` averages over). Passive regen ticks during it after
+   * AP_REGEN_DELAY_SEC. Omitted/0 (melee, no magazine) → no reload credit.
+   */
+  reloadSec?: number;
+  /** Mag-dump half of the same cycle (SustainResult.magDumpSec) — the cycle-averaging denominator with reloadSec. */
+  magDumpSec?: number;
 }
 
 export interface ApEconomyResult {
   maxAp: number;
   /** Passive regen rate (race base + flat/percent bonuses) — informational only; does NOT feed apGainPerSec/uptime (see module doc). */
   regenPerSec: number;
-  /** AP/sec restored by in-combat sources only (VATS crit spike + HoT) — passive regen is excluded. */
+  /** AP/sec restored while cycling: crit spike + HoT + the reload-window regen credit. */
   apGainPerSec: number;
+  /**
+   * Passive regen credited during the reload window, cycle-averaged
+   * (regenPerSec × max(0, reloadSec − AP_REGEN_DELAY_SEC) / cycleSec) —
+   * already folded into apGainPerSec; broken out for display/trace.
+   */
+  reloadRegenPerSec: number;
   drainPerSec: number;
   /** Steady-state duty cycle, clamped 0–1. 1 when gain ≥ drain (AP is never the constraint). */
   uptime: number;
@@ -121,18 +151,22 @@ export function computeApEconomy(input: ApEconomyInput): ApEconomyResult {
     (sum, hot) => sum + hot.ratePerSec * Math.min(1, Math.max(0, hot.durationSec) * critsPerSec),
     0
   );
-  // Passive regen is excluded here — it doesn't tick during sustained VATS
-  // fire (module doc). Only in-combat restores count toward uptime.
-  const apGainPerSec = input.apPerCrit * critsPerSec + critHotPerSec;
+  // Passive regen doesn't tick during the mag dump, but DOES tick during the
+  // reload window after AP_REGEN_DELAY_SEC (module doc) — credit it averaged
+  // over the same magazine cycle shotsPerSec uses.
+  const cycleSec = Math.max(0, input.magDumpSec ?? 0) + Math.max(0, input.reloadSec ?? 0);
+  const reloadRegenPerSec =
+    cycleSec > 0 ? (regenPerSec * Math.max(0, (input.reloadSec ?? 0) - AP_REGEN_DELAY_SEC)) / cycleSec : 0;
+  const apGainPerSec = input.apPerCrit * critsPerSec + critHotPerSec + reloadRegenPerSec;
   const drainPerSec = Math.max(0, input.apCost) * Math.max(0, input.shotsPerSec);
 
   if (drainPerSec <= apGainPerSec || drainPerSec <= 0) {
-    return { maxAp, regenPerSec, apGainPerSec, drainPerSec, uptime: 1 };
+    return { maxAp, regenPerSec, apGainPerSec, reloadRegenPerSec, drainPerSec, uptime: 1 };
   }
 
   const uptime = Math.max(0, Math.min(1, apGainPerSec / drainPerSec));
   const secondsToEmpty = maxAp / (drainPerSec - apGainPerSec);
-  return { maxAp, regenPerSec, apGainPerSec, drainPerSec, uptime, secondsToEmpty };
+  return { maxAp, regenPerSec, apGainPerSec, reloadRegenPerSec, drainPerSec, uptime, secondsToEmpty };
 }
 
 /**

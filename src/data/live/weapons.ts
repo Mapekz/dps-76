@@ -95,6 +95,10 @@ export function adaptWeapon(gw: GeneratedWeapon): Weapon {
     ammoPerShot: gw.ammoPerShot,
     reloadSpeed: gw.reloadSpeed,
     animationReloadSec: gw.animationReloadSec,
+    // Per-shell reload animation (lever/pump/single-action) — sustain.ts
+    // multiplies animationReloadSec by shotsPerMag; weaponCorrections below
+    // can override either direction if measurement disproves the keyword.
+    reloadPerShell: gw.keywords.includes('AnimsSequentialReload'),
     apCost: gw.actionPointCost,
     formId: gw.formId,
     eligibleLevels: gw.eligibleLevels,

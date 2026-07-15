@@ -55,6 +55,23 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
       correction: passive regen no longer feeds the uptime calc (doesn't
       tick during sustained VATS fire), but these goldens still pin
       `regenPerSec` itself.
+- [ ] **Per-shell reload times** (new 2026-07-15, `Weapon.reloadPerShell`
+      from the `AnimsSequentialReload` keyword) — stopwatch a Lever Action
+      Rifle (model: 1.77s × 6 rounds ≈ 10.6s from empty) or Single Action
+      Revolver full reload; ALSO stopwatch a Double-Barrel cycle to confirm
+      it is NOT per-shell (model: one combined 3.07s break-action reload —
+      it carries `animsDoubleBarrelShotgun`, not the sequential keyword).
+      Watch for intro/outro animation segments the ×rounds model may
+      overstate. `reloadSec` goldens added.
+- [ ] **Lock and Load reload activation** (new 2026-07-15) — .50 Cal at 30
+      ammo-spent stacks: 5.0s belt reload without Lock and Load, model
+      ≈3.85s with it (+1%/stack via Bullet Storm's hidden curve). Golden
+      added (`measure: reloadSec`).
+- [ ] **Reload-window AP regen & the 1s delay** (new 2026-07-15) —
+      Double-Barrel steady-state VATS uptime golden (`measure: apUptime`)
+      pins both the reload-regen credit and the `fDamagedAVRegenDelay = 1.0`
+      reading (watch the AP bar during a reload: regen should visibly start
+      ~1s after the last shot).
 - [ ] Negative-MUL netting edge (low priority — zero-base reasoning is solid).
 - [ ] Optional: Carnivore ×2.5 under Strange in Numbers; Rudy's Pozole
       non-scaling exemption; Barbarian's +1 STR/kill clamp-at-10 and decay.

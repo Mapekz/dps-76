@@ -89,6 +89,16 @@ export interface PlayerConditions {
    * conditions (mutation penalty tiers, Grounded's energy-damage tiers).
    */
   classFreakRank?: number;
+  /**
+   * Perk family editor-id (perks.json `family`) → highest owned rank, across
+   * BOTH the regular and legendary perk loadouts (legendary families are
+   * `Legendary*`-namespaced, so one merged map is collision-free). DERIVED in
+   * resolveLoadout/resolveStats (src/data/perk-modifiers.ts
+   * getEquippedPerkFamilyRanks); the stored value only feeds synthetic engine
+   * tests. Gates `perkFamilyRank` conditions — the cross-family HasPerk gates
+   * (Lock and Load → Bullet Storm's reload speed).
+   */
+  equippedPerkRanks?: Record<string, number>;
   weaponConditionPct?: number; // 0-200: equipped weapon condition, 100 = full, 200 = over-repaired max (Polished; default 100)
   /**
    * Manual-aim (free-aim) hit rate %, 10-100, default 100. Models realistic
@@ -288,6 +298,18 @@ export interface Weapon {
   /** Base reload animation length in seconds (RGW3 Animation Reload Seconds). */
   animationReloadSec?: number;
   /**
+   * True when the reload animation repeats once per shell/round rather than
+   * once for the whole magazine — WEAP keyword `AnimsSequentialReload`
+   * (Lever Action Rifle, Pump Action Shotgun, Single Action Revolver;
+   * Double-Barrel does NOT carry it — its break-action reload is one
+   * combined animation). `sustain.ts` multiplies `animationReloadSec` by
+   * shotsPerMag for these weapons. That per-shell-increment reading is an
+   * ASSUMPTION pending in-game stopwatch (docs/assumptions.md "Sustained
+   * DPS", dps-todos/measurement-backlog.md) — the keyword itself is
+   * ESM-proven. Override either direction via weaponCorrections.
+   */
+  reloadPerShell?: boolean;
+  /**
    * Per-shot VATS AP cost (WEAP Data."Action Point Cost"). Fixer 16, Minigun
    * 8, Super Sledge 52. Rewritten by the `vatsApCost` OMOD bucket (V.A.T.S.
    * Optimized) in `effective-weapon.ts`; consumed by `ap-economy.ts` (Stage B).
@@ -472,6 +494,7 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     limitBreakingPieces: 0,
     strangeInNumbers: false, // synthetic-test default; the app derives it in resolveLoadout (perk + teammates)
     classFreakRank: 0, // synthetic-test default; the app derives it in resolveLoadout (equipped ClassFreak rank)
+    equippedPerkRanks: {}, // synthetic-test default; the app derives it in resolveLoadout (selected perk loadout)
     weaponConditionPct: 100, // full condition (Polished curve input; 200 = over-repaired max)
     hitRatePct: 100, // manual-aim hit rate (100 = every shot lands; VATS is unaffected)
     bodyPartHitRatePct: 100, // aimed shots always land on the targeted body part

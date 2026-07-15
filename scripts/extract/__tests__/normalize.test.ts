@@ -653,6 +653,52 @@ describe('translateConditions (Stage C4, gender-twin paired family — Action Bo
   });
 });
 
+describe('translateConditions (cross-family HasPerk → perkFamilyRank, 2026-07-15)', () => {
+  const ownFamily = ['0xBS01', '0xBS02', '0xBS03']; // simulated family (Bullet Storm shape)
+  const crossFamilyRank = new Map([
+    ['0xLNL01', { family: 'LockAndLoad', rank: 1 }],
+    ['0xLNL02', { family: 'LockAndLoad', rank: 2 }],
+    ['0xBS01', { family: 'BulletStorm', rank: 1 }], // own formids may also be in the global map
+  ]);
+
+  it('a HasPerk row on ANOTHER family translates to a typed perkFamilyRank condition', () => {
+    const row: RawCondition = { Function: 'HasPerk', 'Parameter 1': '0xLNL01', 'Comparison Value': 1, Operator: 'Equal To' };
+    const { conditions, unresolved } = translateConditions([row], {
+      edidByFormId: new Map(),
+      familyFormIds: ownFamily,
+      ownedRanks: 1,
+      crossFamilyRank,
+    });
+    expect(conditions).toEqual([{ kind: 'perkFamilyRank', family: 'LockAndLoad', minRank: 1, present: true }]);
+    expect(unresolved).toEqual([]);
+  });
+
+  it('=0 rows carry present:false; higher ranks carry their own minRank', () => {
+    const row: RawCondition = { Function: 'HasPerk', 'Parameter 1': '0xLNL02', 'Comparison Value': 0, Operator: 'Equal To' };
+    const { conditions } = translateConditions([row], { edidByFormId: new Map(), crossFamilyRank });
+    expect(conditions).toEqual([{ kind: 'perkFamilyRank', family: 'LockAndLoad', minRank: 2, present: false }]);
+  });
+
+  it('the SELF-family rank gate wins over the global map (simulation-consumed, never a runtime condition)', () => {
+    const row: RawCondition = { Function: 'HasPerk', 'Parameter 1': '0xBS01', 'Comparison Value': 1, Operator: 'Equal To' };
+    const { conditions, unresolved } = translateConditions([row], {
+      edidByFormId: new Map(),
+      familyFormIds: ownFamily,
+      ownedRanks: 1,
+      crossFamilyRank,
+    });
+    expect(conditions).toEqual([]); // consumed by the rank-1 simulation
+    expect(unresolved).toEqual([]);
+  });
+
+  it('a formid outside the map (cut content, e.g. CUT_Radicool) still falls through to unresolved', () => {
+    const row: RawCondition = { Function: 'HasPerk', 'Parameter 1': '0xCUT01', 'Comparison Value': 1, Operator: 'Equal To' };
+    const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map(), crossFamilyRank });
+    expect(conditions).toEqual([{ kind: 'unresolved', raw: 'HasPerk(0xCUT01)=1' }]);
+    expect(unresolved).toHaveLength(1);
+  });
+});
+
 describe('flattenPerkConditionRows', () => {
   it('flattens tabbed perk conditions and forces Run On=Target for tab index 2', () => {
     const rows = flattenPerkConditionRows([

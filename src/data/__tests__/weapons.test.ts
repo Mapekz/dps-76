@@ -39,4 +39,12 @@ describe('vetted weapon roster', () => {
       expect(weapons[id], id).toBeDefined();
     }
   });
+
+  it('flags per-shell reloaders from the AnimsSequentialReload keyword (Double-Barrel is NOT one — break-action)', () => {
+    for (const id of ['DLC03_LeverGun', 'PumpActionShotgun', 'SingleActionRevolver']) {
+      expect(weapons[id]?.reloadPerShell, id).toBe(true);
+    }
+    expect(weapons['DoubleBarrelShotgun']?.reloadPerShell).toBe(false);
+    expect(weapons['CombatRifle_Fixer']?.reloadPerShell).toBe(false);
+  });
 });

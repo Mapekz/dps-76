@@ -379,6 +379,22 @@ export type Condition =
    * together into exact tiers.
    */
   | { kind: 'classFreakRank'; min: number; max: number }
+  /**
+   * The player owns (present:true) or lacks (present:false) rank ≥ minRank of
+   * a DIFFERENT perk family than the one carrying this modifier — the
+   * cross-family HasPerk gate (Bullet Storm's hidden reload-speed curves
+   * gated on HasPerk(LockAndLoad01); Mechanic's Best Friend's dbm on
+   * MakeshiftWarrior0N). Resolved at EXTRACTION time
+   * (ConditionTranslationContext.crossFamilyRank,
+   * scripts/extract/normalize/conditions.ts) into the family editor-id +
+   * rank; evaluated at RUNTIME against PlayerConditions.equippedPerkRanks
+   * (derived from the selected perk loadout in src/lib/loadout.ts) —
+   * contrast the SELF/paired-family rank gates, which the extractor resolves
+   * by simulation and never emits as runtime conditions. Owning rank N
+   * satisfies gates on every rank ≤ N (mirrors the extractor's
+   * rankIndex < ownedRanks rule).
+   */
+  | { kind: 'perkFamilyRank'; family: string; minRank: number; present: boolean }
   | { kind: 'perAddiction'; max: number }
   | { kind: 'inPowerArmor'; value: boolean }
   /** Character-type gate (GetIsPlayerGhoul): Gourmand's is human-only, Glowing Criticals ghoul-only. */

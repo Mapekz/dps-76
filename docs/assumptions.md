@@ -501,6 +501,18 @@ energy-scoped bonus to land.
   (RGW3) / Reload Speed (Data)`. Fixer: 3.20 / 1.1765 ≈ 2.72 s. Pinned by a
   `expected: null` golden case until someone stopwatches N full
   mag-dump+reload cycles vs a target dummy.
+- **Per-shell reloaders** (2026-07-15): weapons whose WEAP keywords include
+  `AnimsSequentialReload` (Lever Action Rifle 1.77s/cap 6, Pump Action
+  Shotgun 2.5s/cap 8, Single Action Revolver 3.0s/cap 6 — plus their
+  unobtainable variants) repeat the reload animation once per round:
+  `reloadSec = animationReloadSec × shotsPerMag / reloadSpeed`
+  (`Weapon.reloadPerShell`, derived in `src/data/live/weapons.ts`;
+  `weaponCorrections` overrides either direction). The keyword is ESM-proven;
+  reading `animationReloadSec` as the PER-SHELL increment is an ASSUMPTION
+  pending stopwatch (golden + `dps-todos/measurement-backlog.md`).
+  **Double-Barrel Shotgun is deliberately NOT per-shell**: it carries
+  `animsDoubleBarrelShotgun` (a single combined break-action animation), so
+  its 3.07s is read as the full 2-shell reload.
 - Magazine OMODs: `AmmoCapacity`/`ReloadSpeed` properties map to the
   `ammoCapacity`/`reloadSpeed` buckets and rewrite the effective weapon's
   capacity/reload speed (`effective-weapon.ts`), same fold as Speed.
@@ -573,9 +585,27 @@ field; a separate CurveInput entry is needed only because `ValueCurve.input`
 is typed as `CurveInput`, not `StackCounter`). Restores Bullet Storm's `dbm`
 curve (+3/6/9%/stack ×10 stacks, verified: curve Y 90/180/270 at X=30,
 interpolated at X=10 × route scale 0.01 = 30/60/90%) plus sibling
-reload-speed/bash-damage/charge-up-speed curves on the same AV (though those
-are further gated on `HasPerk(...)` conditions the extractor doesn't resolve,
-so they stay inactive — only the ungated `dbm` curve currently applies).
+reload-speed/bash-damage/charge-up-speed curves on the same AV.
+
+**Cross-family HasPerk gates → `perkFamilyRank` (2026-07-15)**: `HasPerk`
+rows referencing ANOTHER family's rank chain (Bullet Storm's reload curve
+gated on `HasPerk(LockAndLoad01)`, Bear Arms' bash gate) now translate to a
+runtime `perkFamilyRank` condition instead of `unresolved`:
+`ConditionTranslationContext.crossFamilyRank` maps every non-junk family's
+rank-chain formids (built once in `extract-perks.ts`; the omods pass rebuilds
+it from `perks.json` via `MgefTranslationDeps.crossFamilyRank`), and
+`resolve.ts` evaluates against `PlayerConditions.equippedPerkRanks` — derived
+from the selected perk loadout in `loadout.ts`
+(`getEquippedPerkFamilyRanks`, regular + legendary merged). So Lock and
+Load's +1%/ammo-stack reload speed activates when the card is equipped
+(bash stays inert — `bashDamage` has no engine effect). The same mechanism
+un-parked the unique-mod OMOD gates: Mechanic's Best Friend
+(MakeshiftWarrior), The Pipe (LicensedPlumber), The Guarantee
+(DemolitionExpert), Whistle in the Dark (MisterSandman), The V.A.T.S.
+Unknown crit-perk exclusions. Simulation convention: owning rank N satisfies
+HasPerk on every rank ≤ N of that family (mirrors the self-family
+`rankIndex < ownedRanks` rule). CUT_-prefixed junk families stay out of the
+map, so cut-content gates (Radicool) remain unresolved/inactive.
 
 **Shotgun Champ's projectile-count axis + the `STAT_DmgVsCrippled` route**
 (2026-07-13, user-confirmed mechanic): `abPerkFortifyDmgCrippled`
@@ -1075,26 +1105,38 @@ ESM-proven via two parallel mechanisms (both verified in the 20260710 dump):
   model credited 110 per crit at ANY cadence and wrongly saturated uptime).
   Slow cadence (crit interval ≥ 5s) still recovers the full 110 per crit. No
   on-kill component exists on this effect (verified).
-- **Passive regen does NOT tick during sustained VATS fire** (user-confirmed
-  in-game 2026-07-15, corrected same day as the %-of-max model above): the
+- **Passive regen does NOT tick during sustained VATS fire, but DOES tick
+  during the reload** (user-confirmed in-game 2026-07-15, both halves): the
   race-base regen and every passive bonus that feeds it (`apRegenFlat`
   sources like Company Tea, `apRegen` percent sources like Action
-  Boy/Girl/Ghoul/hydration/Lone Wanderer/Packin' Light) is real for
-  idle/out-of-combat regen — `regenPerSec` is still computed and surfaced in
-  the UI — but contributes NOTHING to the steady-state VATS uptime/drain
-  math. Only in-combat restores that trigger off the firing itself
-  (Conductor's spike + HoT) and AP-cost modifiers move the uptime needle.
+  Boy/Girl/Ghoul/hydration/Lone Wanderer/Packin' Light) contributes nothing
+  while shots are actually firing, but starts ticking `AP_REGEN_DELAY_SEC`
+  after firing stops — i.e. during the reload window of every magazine
+  cycle. **Delay = 1.0s from GMST `fDamagedAVRegenDelay` (0x000DB2AA,
+  20260710 dump)** — the generic damaged-AV regen delay; its AP-specificity
+  is an INFERENCE matching the user-observed ~1s, pinned by the Double-Barrel
+  uptime golden.
 - **Steady-state model** (`computeApEconomy`): `apGainPerSec = apPerCrit ×
   (shotsPerSec / shotsPerCrit) + Σ hot.rate × min(1, hot.durationSec ×
-  critsPerSec)` — passive regen excluded per above (crit AP restores scaled
-  by crit cadence from the existing crit meter, `crit-meter.ts`);
-  `drainPerSec = apCost × shotsPerSec`; `uptime = clamp(apGainPerSec /
-  drainPerSec, 0, 1)` when drain exceeds gain, else 1 (AP is not the
-  constraint). `secondsToEmpty = maxAp / (drainPerSec − apGainPerSec)` when
-  uptime < 1. `shotsPerSec` reuses the SAME reload-inclusive cadence that
-  produces `SustainResult.sustainedDps` (`shotsPerMag / (magDumpSec +
-  reloadSec)`, `effectiveShotsPerSecond`) rather than the raw burst fire
-  rate — no shots drain AP during reload downtime.
+  critsPerSec) + reloadRegenPerSec`, where `reloadRegenPerSec = regenPerSec ×
+  max(0, reloadSec − AP_REGEN_DELAY_SEC) / (magDumpSec + reloadSec)` — the
+  reload-window regen credit, cycle-averaged over the same magazine cycle as
+  everything else (crit AP restores scaled by crit cadence from the existing
+  crit meter, `crit-meter.ts`); `drainPerSec = apCost × shotsPerSec`;
+  `uptime = clamp(apGainPerSec / drainPerSec, 0, 1)` when drain exceeds
+  gain, else 1 (AP is not the constraint). `secondsToEmpty = maxAp /
+  (drainPerSec − apGainPerSec)` when uptime < 1. `shotsPerSec` reuses the
+  SAME reload-inclusive cadence that produces `SustainResult.sustainedDps`
+  (`shotsPerMag / (magDumpSec + reloadSec)`, `effectiveShotsPerSecond`)
+  rather than the raw burst fire rate — no shots drain AP during reload
+  downtime.
+- **Considered and NOT implemented** (user decision 2026-07-15): crediting
+  full passive regen during the AP-forced pause when uptime < 1, i.e. the
+  duty-cycle form `uptime = regenPerSec / (drainPerSec − apGainPerSec +
+  regenPerSec)`. Physically defensible (the pause is idle time outside
+  VATS), but it would raise `apLimitedDps` for EVERY AP-constrained build,
+  not just reload-heavy ones — revisit against an in-game uptime measurement
+  before adopting.
 - **2026-07-15 AV sweep — dead/skipped records** (so nobody re-chases them):
   `AbPerkUnstoppable` (flat-rate MGEF consumer) and
   `ench_LegendaryWeapon_OnCritRefillAP` (legacy on-crit AP legendary) have

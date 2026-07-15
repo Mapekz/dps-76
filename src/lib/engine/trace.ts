@@ -73,6 +73,16 @@ export interface ApRegenTrace {
   percent: BucketTrace;
   /** `apMax` contributions (ADD, flat AP points — food fortifies, Scaly Skin's penalty). */
   maxAp: BucketTrace;
+  /**
+   * Reload-window regen credit (plain formula numbers, not a bucket fold):
+   * passive regen ticks during the reload after `regenDelaySec`
+   * (AP_REGEN_DELAY_SEC — GMST fDamagedAVRegenDelay), cycle-averaged into
+   * apGainPerSec as `reloadRegenPerSec`. All 0 on no-magazine weapons.
+   */
+  reloadSec: number;
+  magDumpSec: number;
+  regenDelaySec: number;
+  reloadRegenPerSec: number;
 }
 
 export function createHitTrace(): HitTrace {

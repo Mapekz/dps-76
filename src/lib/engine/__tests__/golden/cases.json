@@ -480,6 +480,71 @@
    "tolerancePct": 2,
    "measure": "perHit",
    "source": "in-game (pending) \u2014 compare pip-boy damage card with/without the card equipped; also spot-check V.A.T.S. Optimized receiver drops the bonus to +20.8%"
+  },
+  {
+   "name": "Lock and Load activates Bullet Storm's reload curve on .50 Cal \u2014 stopwatch (model: 5.0s / (1 + 0.30 @30 stacks) \u2248 3.85s)",
+   "weaponId": "50CalMachineGun",
+   "itemLevel": 50,
+   "mods": {},
+   "legendaryEffects": [],
+   "perks": [
+    {
+     "perkId": "BulletStorm",
+     "rank": 1
+    },
+    {
+     "perkId": "LockAndLoad",
+     "rank": 1
+    }
+   ],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {
+    "bulletStormStacks": 30
+   },
+   "enemyConditions": {},
+   "scenario": "freeAim",
+   "expected": null,
+   "tolerancePct": 5,
+   "measure": "reloadSec",
+   "source": "in-game (pending) \u2014 stopwatch a full 250-round belt reload at 30 ammo-spent stacks with vs without Lock and Load equipped (without: 5.0s)"
+  },
+  {
+   "name": "Lever Action full 6-round reload \u2014 stopwatch (model: per-shell 1.77s \u00d7 6 = 10.6s; AnimsSequentialReload keyword)",
+   "weaponId": "DLC03_LeverGun",
+   "itemLevel": 50,
+   "mods": {},
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {},
+   "enemyConditions": {},
+   "scenario": "freeAim",
+   "expected": null,
+   "tolerancePct": 10,
+   "measure": "reloadSec",
+   "source": "in-game (pending) \u2014 stopwatch reload from a fully empty tube; ALSO stopwatch a Double-Barrel cycle to confirm it is NOT per-shell (model: one combined 3.07s break-action reload)"
+  },
+  {
+   "name": "Double-Barrel steady-state VATS uptime \u2014 reload-regen pin (model: gain = 13.02 regen \u00d7 (3.07\u22121)/cycle; pins the 1s fDamagedAVRegenDelay reading)",
+   "weaponId": "DoubleBarrelShotgun",
+   "itemLevel": 50,
+   "mods": {},
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {},
+   "enemyConditions": {},
+   "scenario": "vats",
+   "expected": null,
+   "tolerancePct": 10,
+   "measure": "apUptime",
+   "source": "in-game (pending) \u2014 sustained VATS fire-and-reload loop; fraction of time able to fire before waiting on AP. Also sanity-checks that regen visibly starts ~1s into the reload"
   }
  ]
 }

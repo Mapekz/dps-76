@@ -202,6 +202,13 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       const rank = ctx.player.classFreakRank ?? 0;
       return rank >= cond.min && rank <= cond.max ? 1 : null;
     }
+    case 'perkFamilyRank': {
+      // Cross-family HasPerk gate (Lock and Load → Bullet Storm's reload
+      // speed): owning rank N satisfies gates on every rank ≤ N, from the
+      // derived family→rank map (getEquippedPerkFamilyRanks).
+      const owns = (ctx.player.equippedPerkRanks?.[cond.family] ?? 0) >= cond.minRank;
+      return owns === cond.present ? 1 : null;
+    }
     case 'perAddiction': {
       const count = Math.max(0, Math.min(ctx.player.addictionCount ?? 0, cond.max));
       return count > 0 ? count : null;

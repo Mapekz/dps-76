@@ -1,10 +1,11 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
-import type { GeneratedMeta, GeneratedWeapon } from '../../src/types/generated';
+import type { GeneratedMeta, GeneratedPerk, GeneratedWeapon } from '../../src/types/generated';
 import { EsmClient } from './esm-client';
 import { buildApGrantIndex } from './ap-grant-index';
 import { buildCobjIndex } from './cobj-index';
+import { buildCrossFamilyRankMap } from './normalize/conditions';
 import { explosiveFamilyKeywordsOf, extractWeapons } from './extract-weapons';
 import { extractPerks } from './extract-perks';
 import { extractOmods } from './extract-omods';
@@ -82,6 +83,9 @@ async function main() {
   // feeds the OverrideProjectile chase's launcher-family guard (see
   // ExtractWeaponsResult.explosiveFamilyKeywords).
   let explosiveFamilyKeywords: Set<string> | undefined;
+  // Full perk-family list — the OMOD pass builds its cross-family HasPerk
+  // rank map (perkFamilyRank conditions) from it.
+  let allPerks: GeneratedPerk[] | undefined;
 
   if (only.includes('weapons')) {
     console.log('Extracting weapons…');
@@ -110,6 +114,7 @@ async function main() {
   if (only.includes('perks')) {
     console.log('Extracting perks…');
     const result = await extractPerks(client);
+    allPerks = result.perks;
     await writeFile(path.join(outDir, 'perks.json'), JSON.stringify(result.perks, null, 1));
     meta.counts.perks = result.perks.length;
     meta.excluded = { ...meta.excluded, perkJunkEdid: result.excluded.junkEdid, perkNoCard: result.excluded.noNameOrCard };
@@ -141,6 +146,19 @@ async function main() {
     explosiveFamilyKeywords ??= explosiveFamilyKeywordsOf(allWeapons);
     const defaultModFormIds = new Set(allWeapons.flatMap(w => w.defaultModFormIds ?? []));
     const templateModFormIds = new Set(allWeapons.flatMap(w => w.templateModFormIds ?? []));
+    if (!allPerks) {
+      // `--only omods` without a perks pass: read the checked-in generated
+      // set (mirrors the allWeapons fallback above). Missing perks.json is
+      // survivable — cross-family HasPerk gates just stay unresolved.
+      try {
+        allPerks = JSON.parse(await readFile(path.join(outDir, 'perks.json'), 'utf8')) as GeneratedPerk[];
+      } catch {
+        console.warn('  no perks.json found — cross-family HasPerk gates will stay unresolved');
+      }
+    }
+    const crossFamilyRank = allPerks
+      ? buildCrossFamilyRankMap(allPerks.map(p => ({ family: p.family, formIds: p.formIds })))
+      : undefined;
     console.log('  building COBJ index…');
     const cobjIndex = await buildCobjIndex(client);
     const result = await extractOmods(
@@ -149,7 +167,8 @@ async function main() {
       explosiveFamilyKeywords,
       cobjIndex,
       defaultModFormIds,
-      templateModFormIds
+      templateModFormIds,
+      crossFamilyRank
     );
     await writeFile(path.join(outDir, 'omods.json'), JSON.stringify(result.omods, null, 1));
     meta.counts.omods = result.omods.length;

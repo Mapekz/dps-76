@@ -495,6 +495,15 @@ export interface MgefTranslationDeps {
   timedIsActive?: boolean;
   /** See TranslateOptions.noteUnroutedAvs. */
   noteUnroutedAvs?: boolean;
+  /**
+   * Perk formid → {family, rank} over all non-junk families
+   * (buildCrossFamilyRankMap) — resolves cross-family HasPerk gates into
+   * runtime perkFamilyRank conditions on every translation path sharing
+   * these deps (granted-perk chase, enchantment walks). The omods pass sets
+   * it; callers that build their own per-call conditionCtx (extract-perks)
+   * pass it there instead.
+   */
+  crossFamilyRank?: Map<string, { family: string; rank: number }>;
   /** Add-Perk chase recursion guard (perk → ability SPEL → MGEF → perk ...). Internal. */
   grantDepth?: number;
 }
@@ -775,7 +784,12 @@ export async function translateGrantedPerk(
       }
     }
     const conditionForms = await resolveConditionForms(client, conditionRows, edidByFormId);
-    const { conditions, unresolved } = translateConditions(conditionRows, { edidByFormId, globalValues, conditionForms });
+    const { conditions, unresolved } = translateConditions(conditionRows, {
+      edidByFormId,
+      globalValues,
+      conditionForms,
+      crossFamilyRank: deps.crossFamilyRank,
+    });
     if (conditions === null) continue;
     unresolved.forEach(u => result.notes.push(`perk ${perkEdid}: ${u}`));
 
@@ -882,7 +896,9 @@ export async function translateMagicEffect(
   // expansion — extends the caller's shared map when one is passed
   // (extract-perks), else builds a local one (buff/consumable extraction).
   const conditionForms = await resolveConditionForms(client, effect.conditionRows, edidByFormId, conditionCtx?.conditionForms);
-  conditionCtx = { ...conditionCtx, conditionForms };
+  // deps.crossFamilyRank is the fallback — a caller's own conditionCtx (the
+  // perks pass) wins when it carries one.
+  conditionCtx = { crossFamilyRank: deps.crossFamilyRank, ...conditionCtx, conditionForms };
 
   // Script-archetype effects with a granted perk: the stats live on the PERK
   // record, not the MGEF — chase it (depth-capped against perk→spell→perk loops).
@@ -1014,6 +1030,7 @@ export async function translateEnchantment(
     return { modifiers: [], notes: [`enchantment ${enchOrSpelFormId} not found`], targetType: null };
   }
   const targetType = recordTargetType(record);
+  // deps.crossFamilyRank flows via translateMagicEffect's conditionCtx default.
   const conditionCtx = targetType === 'Contact' ? { subjectIsTarget: true } : undefined;
   const modifiers: ModifierFragment[] = [];
   const notes: string[] = [];

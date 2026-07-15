@@ -31,25 +31,56 @@ export function getGeneratedPerk(mode: GameMode, perkId: string): GeneratedPerk 
   return resolveFamily(perkId, entry.name, getJoinMaps(mode));
 }
 
+/**
+ * The generated family + effective family rank behind one loadout entry.
+ * The PCRD card is the live shape: its entry count caps the rank, and
+ * rankSources maps each card rank to the family PERK rank backing it
+ * (identity for all but compressed cards — StarchedGenes' one live rank
+ * is the family's rank-2 record). Card-less families read ranks directly.
+ */
+function resolveLoadoutRank(
+  mode: GameMode,
+  loadout: PerkLoadout
+): { generated: GeneratedPerk; familyRank: number } | undefined {
+  const generated = getGeneratedPerk(mode, loadout.perkId);
+  if (!generated) return undefined;
+  const card = generated.card;
+  const maxRank = card ? card.rankSources.length : generated.maxRank;
+  const rank = Math.max(1, Math.min(loadout.rank, maxRank));
+  const familyRank = card ? card.rankSources[rank - 1] : rank;
+  return { generated, familyRank };
+}
+
 /** All engine modifiers contributed by a perk loadout (regular or legendary). */
 export function getLoadoutModifiers(mode: GameMode, loadouts: PerkLoadout[]): Modifier[] {
   const modifiers: Modifier[] = [];
   for (const loadout of loadouts) {
-    const generated = getGeneratedPerk(mode, loadout.perkId);
-    if (!generated) continue;
-    // The PCRD card is the live shape: its entry count caps the rank, and
-    // rankSources maps each card rank to the family PERK rank backing it
-    // (identity for all but compressed cards — StarchedGenes' one live rank
-    // is the family's rank-2 record). Card-less families read ranks directly.
-    const card = generated.card;
-    const maxRank = card ? card.rankSources.length : generated.maxRank;
-    const rank = Math.max(1, Math.min(loadout.rank, maxRank));
-    const familyRank = card ? card.rankSources[rank - 1] : rank;
+    const resolved = resolveLoadoutRank(mode, loadout);
+    if (!resolved) continue;
+    const { generated, familyRank } = resolved;
     modifiers.push(...generated.ranks[familyRank - 1].modifiers);
     const extra = extraPerkModifiers[generated.family]?.[familyRank - 1];
     if (extra) modifiers.push(...extra);
   }
   return modifiers;
+}
+
+/**
+ * Family editor-id → highest owned rank across a merged regular+legendary
+ * loadout (legendary families are `Legendary*`-namespaced, so one map is
+ * collision-free). Feeds PlayerConditions.equippedPerkRanks — the runtime
+ * input of `perkFamilyRank` conditions (cross-family HasPerk gates, e.g.
+ * Lock and Load → Bullet Storm's reload speed).
+ */
+export function getEquippedPerkFamilyRanks(mode: GameMode, loadouts: PerkLoadout[]): Record<string, number> {
+  const ranks: Record<string, number> = {};
+  for (const loadout of loadouts) {
+    const resolved = resolveLoadoutRank(mode, loadout);
+    if (!resolved) continue;
+    const { generated, familyRank } = resolved;
+    ranks[generated.family] = Math.max(ranks[generated.family] ?? 0, familyRank);
+  }
+  return ranks;
 }
 
 /** Registry PerkIds with no generated family — review after each extraction run. */

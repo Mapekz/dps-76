@@ -265,7 +265,7 @@ describe("Thrill-Seeker's (Stage C3, real data)", () => {
 });
 
 describe('Action Boy/Girl (Stage C4, cross-family rank gate fix)', () => {
-  it("rank 3 (+45% AP regen) raises the informational regenPerSec but leaves VATS AP-limited uptime unchanged (passive regen doesn't tick during sustained fire, 2026-07-15)", () => {
+  it('rank 3 (+45% AP regen) raises regenPerSec, and feeds uptime ONLY through the reload window (2026-07-15 reload-regen model)', () => {
     const withoutActionBoy = computeScenarios(base());
     const actionBoy3 = getLoadoutModifiers('live', [{ perkId: PerkId.ActionBoyGirl, rank: 3 }]);
     const withActionBoy = computeScenarios(base({ modifiers: actionBoy3 }));
@@ -274,19 +274,67 @@ describe('Action Boy/Girl (Stage C4, cross-family rank gate fix)', () => {
     expect(withoutActionBoy.vats.ap!.uptime).toBeLessThan(1); // stock Fixer is AP-limited in VATS
     expect(withActionBoy.vats.ap).toBeDefined();
     expect(withActionBoy.vats.ap!.regenPerSec).toBeGreaterThan(withoutActionBoy.vats.ap!.regenPerSec);
-    expect(withActionBoy.vats.ap!.uptime).toBeCloseTo(withoutActionBoy.vats.ap!.uptime, 10);
+    // The Fixer's ~2.7s reload exceeds the 1s regen delay, so the bigger
+    // passive rate earns a bigger reload-window credit — and that credit is
+    // the ONLY way passive regen moves uptime: apGainPerSec here is exactly
+    // the reloadRegenPerSec breakout (no crit-restore sources equipped).
+    expect(withActionBoy.vats.ap!.reloadRegenPerSec).toBeGreaterThan(withoutActionBoy.vats.ap!.reloadRegenPerSec);
+    expect(withActionBoy.vats.ap!.apGainPerSec).toBeCloseTo(withActionBoy.vats.ap!.reloadRegenPerSec, 10);
+    expect(withActionBoy.vats.ap!.uptime).toBeGreaterThan(withoutActionBoy.vats.ap!.uptime);
   });
 
-  it('each rank grants its OWN flat tier, not a cumulative stack (15%/30%/45%, not 15+30+45%) — regenPerSec only, uptime untouched', () => {
+  it('each rank grants its OWN flat tier, not a cumulative stack (15%/30%/45%) — regenPerSec and the reload-regen credit both monotonic', () => {
     const rank1 = computeScenarios(base({ modifiers: getLoadoutModifiers('live', [{ perkId: PerkId.ActionBoyGirl, rank: 1 }]) }));
     const rank2 = computeScenarios(base({ modifiers: getLoadoutModifiers('live', [{ perkId: PerkId.ActionBoyGirl, rank: 2 }]) }));
     const rank3 = computeScenarios(base({ modifiers: getLoadoutModifiers('live', [{ perkId: PerkId.ActionBoyGirl, rank: 3 }]) }));
-    // regenPerSec (informational-only, 2026-07-15) is monotonic in the AP
-    // regen bonus (15% < 30% < 45%).
+    // regenPerSec is monotonic in the AP regen bonus (15% < 30% < 45%) —
+    // were the tiers cumulative, the gaps would compound instead.
     expect(rank1.vats.ap!.regenPerSec).toBeLessThan(rank2.vats.ap!.regenPerSec);
     expect(rank2.vats.ap!.regenPerSec).toBeLessThan(rank3.vats.ap!.regenPerSec);
-    // uptime no longer depends on the passive regen bonus.
-    expect(rank1.vats.ap!.uptime).toBeCloseTo(rank3.vats.ap!.uptime, 10);
+    // Passive regen reaches uptime only via the reload window, proportionally.
+    expect(rank1.vats.ap!.uptime).toBeLessThan(rank3.vats.ap!.uptime);
+    expect(rank3.vats.ap!.reloadRegenPerSec / rank1.vats.ap!.reloadRegenPerSec).toBeCloseTo(
+      rank3.vats.ap!.regenPerSec / rank1.vats.ap!.regenPerSec,
+      10
+    );
+  });
+});
+
+describe('Lock and Load → Bullet Storm reload speed (cross-family perkFamilyRank gate, 2026-07-15)', () => {
+  // Bullet Storm's hidden reload-speed curve (+1%/ammo-spent stack, 0→30) is
+  // gated HasPerk(LockAndLoad01) — extracted as a perkFamilyRank condition,
+  // evaluated against PlayerConditions.equippedPerkRanks.
+  const fiftyCal = getWeapons('live')['50CalMachineGun'];
+  const bulletStorm = getLoadoutModifiers('live', [{ perkId: PerkId.BulletStorm, rank: 1 }]);
+  const at30 = { ...createDefaultPlayerConditions(), bulletStormStacks: 30 };
+
+  it('Bullet Storm alone leaves reload speed unmodified; owning Lock and Load activates the +1%/stack curve', () => {
+    const without = buildEffectiveWeapon(fiftyCal, [], 50, at30, undefined, bulletStorm).weapon;
+    expect(without.reloadSpeed).toBeCloseTo(fiftyCal.reloadSpeed ?? 1.0, 6);
+
+    const owning = { ...at30, equippedPerkRanks: { LockAndLoad: 1 } };
+    const withLnL = buildEffectiveWeapon(fiftyCal, [], 50, owning, undefined, bulletStorm).weapon;
+    expect(withLnL.reloadSpeed).toBeCloseTo((fiftyCal.reloadSpeed ?? 1.0) + 0.3, 6); // 30 stacks × 1%
+
+    const sWithout = computeScenarios(base({ weapon: without, player: at30 }));
+    const sWith = computeScenarios(base({ weapon: withLnL, player: owning }));
+    expect(sWith.vats.sustain.reloadSec).toBeLessThan(sWithout.vats.sustain.reloadSec);
+  });
+
+  it('resolveLoadout derives equippedPerkRanks from the selected cards end-to-end', () => {
+    const playerConfig: PlayerConfig = {
+      ...createDefaultPlayerConfig(),
+      weapon: { weaponId: '50CalMachineGun', mods: {}, legendaryEffects: [] },
+      perks: [{ perkId: PerkId.BulletStorm, rank: 1 }],
+    };
+    const withoutLnL = resolveLoadout(playerConfig, createDefaultEnemyConfig(), 'live')!;
+    const withLnL = resolveLoadout(
+      { ...playerConfig, perks: [...playerConfig.perks, { perkId: PerkId.LockAndLoad, rank: 1 }] },
+      createDefaultEnemyConfig(),
+      'live'
+    )!;
+    expect(withLnL.player.equippedPerkRanks).toMatchObject({ LockAndLoad: 1, HeavyGunner: 1 });
+    expect(withLnL.weapon.reloadSpeed!).toBeGreaterThan(withoutLnL.weapon.reloadSpeed!);
   });
 });
 

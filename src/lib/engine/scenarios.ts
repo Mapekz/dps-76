@@ -1,7 +1,7 @@
 import type { EnemyConditions, GameMode, PlayerConditions, Weapon } from '@/types';
 import type { Modifier } from '@/types/modifiers';
 import { getFireRate } from '@/lib/fire-rate';
-import { AP_REGEN_RATE_PCT, AP_REGEN_RATE_PCT_POWER_ARMOR, apLimitedDps, computeApEconomy, effectiveShotsPerSecond } from './ap-economy';
+import { AP_REGEN_DELAY_SEC, AP_REGEN_RATE_PCT, AP_REGEN_RATE_PCT_POWER_ARMOR, apLimitedDps, computeApEconomy, effectiveShotsPerSecond } from './ap-economy';
 import { computeCritMeter, type CritMeterResult } from './crit-meter';
 import { computeDotDps, computePaperDamage, type HitBreakdown } from './paper-damage';
 import { computeSustain, type SustainResult } from './sustain';
@@ -64,8 +64,10 @@ export interface ScenarioResult {
     /** AP economy breakdown for display: pool size, regen and effective cost. */
     maxAp: number;
     regenPerSec: number;
-    /** regenPerSec + crit-restore AP/sec (instant apPerCrit + refresh-only HoTs). */
+    /** Crit-restore AP/sec (instant apPerCrit + refresh-only HoTs) + the reload-window regen credit. */
     apGainPerSec: number;
+    /** Passive regen credited during the reload window, cycle-averaged (already inside apGainPerSec). */
+    reloadRegenPerSec: number;
     /** Effective per-shot VATS AP cost (post weapon-OMOD vatsApCost fold). */
     apCostPerShot: number;
   };
@@ -357,16 +359,6 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     const maxApCollect = tracing ? ([] as BucketTrace[]) : undefined;
     const apMaxBonus = foldBucket(input.modifiers, 'apMax', 0, apCtx, maxApCollect);
     const apPerCrit = foldBucket(input.modifiers, 'apPerCrit', 0, apCtx);
-    if (tracing) {
-      apRegenTrace = {
-        agility: input.player.agility,
-        isInPowerArmor: input.player.isInPowerArmor ?? false,
-        raceBasePct: input.player.isInPowerArmor ? AP_REGEN_RATE_PCT_POWER_ARMOR : AP_REGEN_RATE_PCT,
-        flat: lastTrace(flatCollect!),
-        percent: lastTrace(percentCollect!),
-        maxAp: lastTrace(maxApCollect!),
-      };
-    }
     // apCritHot is collected per-modifier (not bucket-folded): each HoT keeps
     // its own duration window for the refresh-only steady-state term.
     const critHots = input.modifiers.flatMap(mod => {
@@ -386,7 +378,25 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       apPerCrit,
       critHots,
       shotsPerCrit: critMeter.shotsPerCrit,
+      // Passive regen ticks during the reload window (same cycle shotsPerSec
+      // averages over) — the reload-regen credit's inputs.
+      reloadSec: vatsSustain.reloadSec,
+      magDumpSec: vatsSustain.magDumpSec,
     });
+    if (tracing) {
+      apRegenTrace = {
+        agility: input.player.agility,
+        isInPowerArmor: input.player.isInPowerArmor ?? false,
+        raceBasePct: input.player.isInPowerArmor ? AP_REGEN_RATE_PCT_POWER_ARMOR : AP_REGEN_RATE_PCT,
+        flat: lastTrace(flatCollect!),
+        percent: lastTrace(percentCollect!),
+        maxAp: lastTrace(maxApCollect!),
+        reloadSec: vatsSustain.reloadSec,
+        magDumpSec: vatsSustain.magDumpSec,
+        regenDelaySec: AP_REGEN_DELAY_SEC,
+        reloadRegenPerSec: economy.reloadRegenPerSec,
+      };
+    }
     ap = {
       uptime: economy.uptime,
       apLimitedDps: apLimitedDps(vatsSustain.sustainedDps, economy.uptime),
@@ -394,6 +404,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       maxAp: economy.maxAp,
       regenPerSec: economy.regenPerSec,
       apGainPerSec: economy.apGainPerSec,
+      reloadRegenPerSec: economy.reloadRegenPerSec,
       apCostPerShot: input.weapon.apCost!,
     };
   }

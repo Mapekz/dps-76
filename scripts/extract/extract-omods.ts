@@ -290,7 +290,15 @@ export async function extractOmods(
   /** Union of every weapon's defaultModFormIds — a default part is never flagged weak-evidence. */
   defaultModFormIds: ReadonlySet<string> = new Set(),
   /** Union of every weapon's templateModFormIds — rescues unnamed effect mods a template ships (Holy Fire). */
-  templateModFormIds: ReadonlySet<string> = new Set()
+  templateModFormIds: ReadonlySet<string> = new Set(),
+  /**
+   * Perk formid → {family, rank} over all non-junk perk families
+   * (buildCrossFamilyRankMap — run-all.ts builds it from the perks pass or
+   * the checked-in perks.json). Resolves unique-mod HasPerk gates
+   * (Mechanic's Best Friend on MakeshiftWarrior0N) into runtime
+   * perkFamilyRank conditions instead of unresolved.
+   */
+  crossFamilyRank?: Map<string, { family: string; rank: number }>
 ): Promise<ExtractOmodsResult> {
   const rows = await client.list('OMOD');
   const records = await mapPool(rows, 8, r => client.get(r.form_id));
@@ -305,7 +313,17 @@ export async function extractOmods(
   const edidByFormId = new Map<string, string>();
   for (const id of routePool) edidByFormId.set(id, await client.resolveEdid(id));
 
-  const mgefDeps: MgefTranslationDeps = { client, routes: avifRoutes, edidByFormId, timedIsActive: true, noteUnroutedAvs: true };
+  const mgefDeps: MgefTranslationDeps = {
+    client,
+    routes: avifRoutes,
+    edidByFormId,
+    timedIsActive: true,
+    noteUnroutedAvs: true,
+    // Cross-family HasPerk gates on unique-mod chains (Mechanic's Best
+    // Friend's granted perk on MakeshiftWarrior0N) resolve to runtime
+    // perkFamilyRank conditions via every path sharing these deps.
+    crossFamilyRank,
+  };
 
   async function enchantmentModifiers(
     enchFormId: string,
@@ -600,11 +618,7 @@ export async function extractOmods(
         // Incoming Weapon Damage" — damage TAKEN, out of scope) become a
         // note, never a silent drop.
         if (typeof prop.value1 === 'string') {
-          const result = await translateGrantedPerk(
-            { client, routes: avifRoutes, edidByFormId, timedIsActive: true, noteUnroutedAvs: true },
-            record.editor_id,
-            prop.value1
-          );
+          const result = await translateGrantedPerk(mgefDeps, record.editor_id, prop.value1);
           result.notes.forEach(n => modNotes.add(n));
           for (const fragment of result.modifiers) {
             modifiers.push({ id: `${record.header.form_id}:perk:${modifiers.length}`, source, ...fragment });
@@ -642,7 +656,7 @@ export async function extractOmods(
           const avMapping = ACTOR_VALUE_BUCKETS[avEdid];
           if (plumbed) {
             for (const route of plumbed) {
-              const { conditions, unresolved } = translateConditions(route.rawConditions, { edidByFormId });
+              const { conditions, unresolved } = translateConditions(route.rawConditions, { edidByFormId, crossFamilyRank });
               if (conditions === null) continue;
               unresolved.forEach(u => modNotes.add(`route(${avEdid}): ${u}`));
               pushAv(route.bucket, route.scale, conditions);

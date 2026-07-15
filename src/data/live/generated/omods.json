@@ -38373,8 +38373,10 @@
     "value": 0.4,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(MakeshiftWarrior01)=1"
+      "kind": "perkFamilyRank",
+      "family": "MakeshiftWarrior",
+      "minRank": 1,
+      "present": true
      }
     ]
    },
@@ -38391,8 +38393,10 @@
     "value": 0.2,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(MakeshiftWarrior02)=1"
+      "kind": "perkFamilyRank",
+      "family": "MakeshiftWarrior",
+      "minRank": 2,
+      "present": true
      }
     ]
    },
@@ -38409,8 +38413,10 @@
     "value": 0.2,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(MakeshiftWarrior03)=1"
+      "kind": "perkFamilyRank",
+      "family": "MakeshiftWarrior",
+      "minRank": 3,
+      "present": true
      }
     ]
    }
@@ -38421,11 +38427,7 @@
    "CustomItemName_MechanicsBestFriend"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "perk MechanicsBestFriend_Perk: HasPerk(MakeshiftWarrior01)=1",
-   "perk MechanicsBestFriend_Perk: HasPerk(MakeshiftWarrior02)=1",
-   "perk MechanicsBestFriend_Perk: HasPerk(MakeshiftWarrior03)=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -40299,8 +40301,10 @@
     "value": 0.2,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(DemolitionExpert02)=0"
+      "kind": "perkFamilyRank",
+      "family": "DemolitionExpert",
+      "minRank": 2,
+      "present": false
      },
      {
       "kind": "damageTypeScope",
@@ -40323,12 +40327,16 @@
     "value": 0.4,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(DemolitionExpert02)=1"
+      "kind": "perkFamilyRank",
+      "family": "DemolitionExpert",
+      "minRank": 2,
+      "present": true
      },
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(DemolitionExpert03)=0"
+      "kind": "perkFamilyRank",
+      "family": "DemolitionExpert",
+      "minRank": 3,
+      "present": false
      },
      {
       "kind": "damageTypeScope",
@@ -40351,8 +40359,10 @@
     "value": 0.6,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(DemolitionExpert03)=1"
+      "kind": "perkFamilyRank",
+      "family": "DemolitionExpert",
+      "minRank": 3,
+      "present": true
      },
      {
       "kind": "damageTypeScope",
@@ -40368,12 +40378,7 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "perk DemolitionExpert01: condition: HasPerk(DemolitionExpert02)=0",
-   "perk DemolitionExpert01: condition: HasPerk(DemolitionExpert02)=1",
-   "perk DemolitionExpert01: condition: HasPerk(DemolitionExpert03)=0",
-   "perk DemolitionExpert01: condition: HasPerk(DemolitionExpert03)=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -40771,8 +40776,10 @@
     "value": 0.2,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(LicensedPlumber01)=1"
+      "kind": "perkFamilyRank",
+      "family": "LicensedPlumber",
+      "minRank": 1,
+      "present": true
      }
     ]
    },
@@ -40789,8 +40796,10 @@
     "value": 0.2,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(LicensedPlumber02)=1"
+      "kind": "perkFamilyRank",
+      "family": "LicensedPlumber",
+      "minRank": 2,
+      "present": true
      }
     ]
    },
@@ -40807,8 +40816,10 @@
     "value": 0.2,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(LicensedPlumber03)=1"
+      "kind": "perkFamilyRank",
+      "family": "LicensedPlumber",
+      "minRank": 3,
+      "present": true
      }
     ]
    },
@@ -40834,10 +40845,7 @@
   "addedKeywords": [],
   "hasEnchantments": false,
   "notes": [
-   "perk ThePipe_Perk: HasCompletedChallenge(Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe)=1",
-   "perk ThePipe_Perk: HasPerk(LicensedPlumber01)=1",
-   "perk ThePipe_Perk: HasPerk(LicensedPlumber02)=1",
-   "perk ThePipe_Perk: HasPerk(LicensedPlumber03)=1"
+   "perk ThePipe_Perk: HasCompletedChallenge(Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe)=1"
   ],
   "obtainable": true
  },
@@ -40931,8 +40939,10 @@
     "value": 0.5,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(BetterCriticals02)=0"
+      "kind": "perkFamilyRank",
+      "family": "BetterCriticals",
+      "minRank": 2,
+      "present": false
      }
     ]
    },
@@ -40949,8 +40959,10 @@
     "value": 0.75,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(BetterCriticals03)=0"
+      "kind": "perkFamilyRank",
+      "family": "BetterCriticals",
+      "minRank": 3,
+      "present": false
      }
     ]
    },
@@ -40973,10 +40985,7 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "perk BetterCriticals01: HasPerk(BetterCriticals02)=0",
-   "perk BetterCriticals02: HasPerk(BetterCriticals03)=0"
-  ],
+  "notes": [],
   "obtainable": false
  },
  {
@@ -41001,8 +41010,10 @@
     "value": 85,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(CriticalSavvy02)=0"
+      "kind": "perkFamilyRank",
+      "family": "CriticalSavvy",
+      "minRank": 2,
+      "present": false
      }
     ]
    },
@@ -41019,8 +41030,10 @@
     "value": 70,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(CriticalSavvy03)=0"
+      "kind": "perkFamilyRank",
+      "family": "CriticalSavvy",
+      "minRank": 3,
+      "present": false
      }
     ]
    },
@@ -41043,10 +41056,7 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "perk CriticalSavvy01: HasPerk(CriticalSavvy02)=0",
-   "perk CriticalSavvy02: HasPerk(CriticalSavvy03)=0"
-  ],
+  "notes": [],
   "obtainable": false
  },
  {
@@ -41079,8 +41089,10 @@
       "min": 180
      },
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(GHL_GlowingCriticals02)=0"
+      "kind": "perkFamilyRank",
+      "family": "GHL_GlowingCriticals",
+      "minRank": 2,
+      "present": false
      }
     ]
    },
@@ -41105,12 +41117,16 @@
       "min": 180
      },
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(GHL_GlowingCriticals02)=1"
+      "kind": "perkFamilyRank",
+      "family": "GHL_GlowingCriticals",
+      "minRank": 2,
+      "present": true
      },
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(GHL_GlowingCriticals03)=0"
+      "kind": "perkFamilyRank",
+      "family": "GHL_GlowingCriticals",
+      "minRank": 3,
+      "present": false
      }
     ]
    },
@@ -41135,8 +41151,10 @@
       "min": 180
      },
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(GHL_GlowingCriticals03)=1"
+      "kind": "perkFamilyRank",
+      "family": "GHL_GlowingCriticals",
+      "minRank": 3,
+      "present": true
      }
     ]
    }
@@ -41146,12 +41164,7 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "perk GHL_GlowingCriticals01: HasPerk(GHL_GlowingCriticals02)=0",
-   "perk GHL_GlowingCriticals02: HasPerk(GHL_GlowingCriticals02)=1",
-   "perk GHL_GlowingCriticals02: HasPerk(GHL_GlowingCriticals03)=0",
-   "perk GHL_GlowingCriticals03: HasPerk(GHL_GlowingCriticals03)=1"
-  ],
+  "notes": [],
   "obtainable": false
  },
  {
@@ -41195,8 +41208,10 @@
     "value": -0.9,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(Psychopath01)=1"
+      "kind": "perkFamilyRank",
+      "family": "Psychopath",
+      "minRank": 1,
+      "present": true
      },
      {
       "kind": "unresolved",
@@ -41211,8 +41226,7 @@
   ],
   "hasEnchantments": false,
   "notes": [
-   "perk Psychopath01: GetIsInVATS()=0",
-   "perk Psychopath01: HasPerk(Psychopath01)=1"
+   "perk Psychopath01: GetIsInVATS()=0"
   ],
   "obtainable": false
  },
@@ -41494,12 +41508,16 @@
       "present": true
      },
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(MisterSandman02)=0"
+      "kind": "perkFamilyRank",
+      "family": "MisterSandman",
+      "minRank": 2,
+      "present": false
      },
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(MisterSandman01)=1"
+      "kind": "perkFamilyRank",
+      "family": "MisterSandman",
+      "minRank": 1,
+      "present": true
      }
     ]
    },
@@ -41521,12 +41539,16 @@
       "present": true
      },
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(MisterSandman02)=1"
+      "kind": "perkFamilyRank",
+      "family": "MisterSandman",
+      "minRank": 2,
+      "present": true
      },
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(MisterSandman01)=1"
+      "kind": "perkFamilyRank",
+      "family": "MisterSandman",
+      "minRank": 1,
+      "present": true
      }
     ]
    }
@@ -41538,11 +41560,7 @@
    "ma_WhistleInTheDark"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "perk MisterSandman01: condition: HasPerk(MisterSandman01)=1",
-   "perk MisterSandman01: condition: HasPerk(MisterSandman02)=0",
-   "perk MisterSandman01: condition: HasPerk(MisterSandman02)=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

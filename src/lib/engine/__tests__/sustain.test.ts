@@ -59,4 +59,18 @@ describe('computeSustain', () => {
     const s = computeSustain(100, 5, gun({ animationReloadSec: undefined }));
     expect(s.sustainedDps).toBeCloseTo(s.burstDps, 10);
   });
+
+  it('per-shell reloaders repeat the animation once per round (Lever Action shape: 1.77s × 6)', () => {
+    const s = computeSustain(100, 2, gun({ capacity: 6, animationReloadSec: 1.77, reloadPerShell: true }));
+    expect(s.reloadSec).toBeCloseTo(1.77 * 6, 10);
+    // Control at the same capacity: a whole-magazine reload stays 1.77s.
+    const control = computeSustain(100, 2, gun({ capacity: 6, animationReloadSec: 1.77 }));
+    expect(control.reloadSec).toBeCloseTo(1.77, 10);
+    expect(s.sustainedDps).toBeLessThan(control.sustainedDps);
+  });
+
+  it('per-shell reload time divides by the folded reload speed like any other', () => {
+    const s = computeSustain(100, 2, gun({ capacity: 6, animationReloadSec: 1.77, reloadPerShell: true, reloadSpeed: 1.3 }));
+    expect(s.reloadSec).toBeCloseTo((1.77 * 6) / 1.3, 10);
+  });
 });

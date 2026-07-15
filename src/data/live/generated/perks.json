@@ -11539,8 +11539,10 @@
       "curveScale": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasPerk(LockAndLoad01)=1"
+        "kind": "perkFamilyRank",
+        "family": "LockAndLoad",
+        "minRank": 1,
+        "present": true
        }
       ]
      },
@@ -11571,8 +11573,10 @@
       "curveScale": 0.01,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasPerk(BearArms01)=1"
+        "kind": "perkFamilyRank",
+        "family": "BearArms",
+        "minRank": 1,
+        "present": true
        }
       ]
      }
@@ -11635,8 +11639,10 @@
       "curveScale": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasPerk(LockAndLoad01)=1"
+        "kind": "perkFamilyRank",
+        "family": "LockAndLoad",
+        "minRank": 1,
+        "present": true
        }
       ]
      },
@@ -11667,8 +11673,10 @@
       "curveScale": 0.01,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasPerk(BearArms01)=1"
+        "kind": "perkFamilyRank",
+        "family": "BearArms",
+        "minRank": 1,
+        "present": true
        }
       ]
      }
@@ -11731,8 +11739,10 @@
       "curveScale": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasPerk(LockAndLoad01)=1"
+        "kind": "perkFamilyRank",
+        "family": "LockAndLoad",
+        "minRank": 1,
+        "present": true
        }
       ]
      },
@@ -11763,8 +11773,10 @@
       "curveScale": 0.01,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasPerk(BearArms01)=1"
+        "kind": "perkFamilyRank",
+        "family": "BearArms",
+        "minRank": 1,
+        "present": true
        }
       ]
      }
@@ -11789,12 +11801,9 @@
    ]
   },
   "notes": [
-   "condition: HasPerk(HeavyGunnerMaster01)=1",
    "condition: WornHasKeyword(CustomItemName_FoundationsVengeance)=1",
-   "condition: HasPerk(LockAndLoad01)=1",
    "condition: WornHasKeyword(dn_TheActionHero)=1",
    "MGEF AbPerkFortifyDeflectChance: zero magnitude, no curve — script/scaled, needs override",
-   "condition: HasPerk(BearArms01)=1",
    "condition: WornHasKeyword(RD01_CustomItemName_Valkyrie)=1",
    "MGEF abAmmoSpenderFortifyStacks_Desc archetype Script — needs override"
   ]
@@ -18666,8 +18675,10 @@
       "value": 0.4,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasPerk(MakeshiftWarrior01)=1"
+        "kind": "perkFamilyRank",
+        "family": "MakeshiftWarrior",
+        "minRank": 1,
+        "present": true
        }
       ]
      },
@@ -18685,8 +18696,10 @@
       "value": 0.2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasPerk(MakeshiftWarrior02)=1"
+        "kind": "perkFamilyRank",
+        "family": "MakeshiftWarrior",
+        "minRank": 2,
+        "present": true
        }
       ]
      },
@@ -18704,8 +18717,10 @@
       "value": 0.2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasPerk(MakeshiftWarrior03)=1"
+        "kind": "perkFamilyRank",
+        "family": "MakeshiftWarrior",
+        "minRank": 3,
+        "present": true
        }
       ]
      }
@@ -22761,8 +22776,10 @@
         "raw": "GetInFaction(CurrentCompanionFaction)=1"
        },
        {
-        "kind": "unresolved",
-        "raw": "HasPerk(PerkMagLiveNLove03)=1"
+        "kind": "perkFamilyRank",
+        "family": "PerkMagLiveNLove",
+        "minRank": 3,
+        "present": true
        }
       ]
      }
@@ -28956,8 +28973,10 @@
       "value": 0.2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasPerk(LicensedPlumber01)=1"
+        "kind": "perkFamilyRank",
+        "family": "LicensedPlumber",
+        "minRank": 1,
+        "present": true
        }
       ]
      },
@@ -28975,8 +28994,10 @@
       "value": 0.2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasPerk(LicensedPlumber02)=1"
+        "kind": "perkFamilyRank",
+        "family": "LicensedPlumber",
+        "minRank": 2,
+        "present": true
        }
       ]
      },
@@ -28994,8 +29015,10 @@
       "value": 0.2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasPerk(LicensedPlumber03)=1"
+        "kind": "perkFamilyRank",
+        "family": "LicensedPlumber",
+        "minRank": 3,
+        "present": true
        }
       ]
      },

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { PerkId } from '@/data/perk-ids';
-import { getGeneratedPerk, getLoadoutModifiers, getUnjoinedPerkIds } from '@/data/perk-modifiers';
+import { getEquippedPerkFamilyRanks, getGeneratedPerk, getLoadoutModifiers, getUnjoinedPerkIds } from '@/data/perk-modifiers';
 import { getWeapons } from '@/data';
 import { computeScenarios } from '@/lib/engine/scenarios';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
@@ -29,6 +29,20 @@ describe('perk registry ↔ generated family join', () => {
     const unjoined = getUnjoinedPerkIds('live');
     // Sanity ceiling: the bulk of the registry must join.
     expect(unjoined.length).toBeLessThan(60);
+  });
+
+  it('getEquippedPerkFamilyRanks maps a mixed loadout to family → highest owned rank (perkFamilyRank input)', () => {
+    const ranks = getEquippedPerkFamilyRanks('live', [
+      { perkId: PerkId.LockAndLoad, rank: 1 },
+      { perkId: PerkId.BulletStorm, rank: 2 },
+      // Duplicate family at a lower rank must not downgrade the map.
+      { perkId: PerkId.BulletStorm, rank: 1 },
+    ]);
+    expect(ranks['LockAndLoad']).toBe(1);
+    // Bullet Storm's registry entry joins the HeavyGunner ESM family.
+    expect(ranks['HeavyGunner']).toBe(2);
+    // Unjoined/absent families simply don't appear.
+    expect(ranks['MakeshiftWarrior']).toBeUndefined();
   });
 
   it('joins the reclassified legendary perks to their LGN_ families', () => {

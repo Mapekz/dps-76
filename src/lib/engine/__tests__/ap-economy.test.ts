@@ -190,6 +190,62 @@ describe('computeApEconomy', () => {
     });
     expect(negativeCost.uptime).toBe(1);
   });
+
+  describe('reload-window regen credit (2026-07-15, AP_REGEN_DELAY_SEC)', () => {
+    // Common shape: 210 max AP → regenPerSec 12.6; drain 16 AP × shotsPerSec.
+    const base = {
+      apCost: 16,
+      agility: 15,
+      apRegenBonus: 0,
+      apPerCrit: 0,
+      shotsPerCrit: Infinity,
+    };
+
+    it('credits regenPerSec × (reloadSec − delay), averaged over the magazine cycle', () => {
+      // 20s dump + 4s reload cycle at 20/24 shots/s: credit = 12.6 × (4−1)/24
+      // = 1.575; uptime = 1.575 / (16 × 20/24).
+      const result = computeApEconomy({ ...base, shotsPerSec: 20 / 24, magDumpSec: 20, reloadSec: 4 });
+      expect(result.reloadRegenPerSec).toBeCloseTo(1.575, 10);
+      expect(result.apGainPerSec).toBeCloseTo(1.575, 10);
+      expect(result.uptime).toBeCloseTo(1.575 / (16 * (20 / 24)), 10);
+    });
+
+    it('a reload at or below the 1s delay earns nothing', () => {
+      const atDelay = computeApEconomy({ ...base, shotsPerSec: 1, magDumpSec: 20, reloadSec: 1 });
+      expect(atDelay.reloadRegenPerSec).toBe(0);
+      const below = computeApEconomy({ ...base, shotsPerSec: 1, magDumpSec: 20, reloadSec: 0.5 });
+      expect(below.reloadRegenPerSec).toBe(0);
+    });
+
+    it('no magazine cycle (reloadSec/magDumpSec omitted) earns nothing — melee/degenerate weapons', () => {
+      const result = computeApEconomy({ ...base, shotsPerSec: 1 });
+      expect(result.reloadRegenPerSec).toBe(0);
+      expect(result.apGainPerSec).toBe(0);
+    });
+
+    it('a long reload can saturate uptime at 1 purely from passive regen (apPerCrit 0)', () => {
+      // 2s dump + 8s reload at 2/10 shots/s: credit = 12.6 × 7/10 = 8.82 >
+      // drain 16 × 0.2 = 3.2 → AP never constrains.
+      const result = computeApEconomy({ ...base, shotsPerSec: 0.2, magDumpSec: 2, reloadSec: 8 });
+      expect(result.reloadRegenPerSec).toBeCloseTo(8.82, 10);
+      expect(result.uptime).toBe(1);
+      expect(result.secondsToEmpty).toBeUndefined();
+    });
+
+    it('stacks with crit restores into one apGainPerSec (breakout stays separate)', () => {
+      // Crit every 2nd shot at 20/24 shots/s: spike = 10 × (20/24)/2 = 25/6.
+      const result = computeApEconomy({
+        ...base,
+        apPerCrit: 10,
+        shotsPerCrit: 2,
+        shotsPerSec: 20 / 24,
+        magDumpSec: 20,
+        reloadSec: 4,
+      });
+      expect(result.reloadRegenPerSec).toBeCloseTo(1.575, 10);
+      expect(result.apGainPerSec).toBeCloseTo(1.575 + (10 * 20) / 24 / 2, 10);
+    });
+  });
 });
 
 describe('effectiveShotsPerSecond', () => {

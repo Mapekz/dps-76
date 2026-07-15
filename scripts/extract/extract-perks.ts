@@ -2,6 +2,7 @@ import type { GeneratedPerk, GeneratedPerkCard } from '../../src/types/generated
 import type { Bucket, Condition, Modifier, ModifierValue } from '../../src/types/modifiers';
 import { EsmClient, mapPool, type EsmRecord } from './esm-client';
 import {
+  buildCrossFamilyRankMap,
   flattenPerkConditionRows,
   translateConditions,
   type ConditionTranslationContext,
@@ -303,6 +304,16 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
   for (const [family, familyRecords] of families) {
     for (const r of familyRecords) formIdToFamily.set(r.header.form_id, family);
   }
+  // Rank-indexed variant of the same join — resolves cross-family HasPerk
+  // gates (Lock and Load → Bullet Storm's reload speed) into runtime
+  // `perkFamilyRank` conditions. `families` already excludes junk (CUT_ etc.),
+  // so cut-content gates keep falling through to unresolved/inactive.
+  const crossFamilyRank = buildCrossFamilyRankMap(
+    [...families].map(([family, familyRecords]) => ({
+      family,
+      formIds: familyRecords.map(r => r.header.form_id),
+    }))
+  );
   const cardByFamily = new Map<string, GeneratedPerkCard>();
   const unresolvedCards: string[] = [];
   await mapPool(
@@ -357,6 +368,7 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
         conditionForms,
         familyFormIds: formIds,
         ownedRanks: rank,
+        crossFamilyRank,
         ...(pairedFamilyFormIds && { pairedFamilyFormIds }),
       };
 
@@ -439,6 +451,7 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
                   ownedRanks: rank,
                   globalValues,
                   conditionForms,
+                  crossFamilyRank,
                   ...(pairedFamilyFormIds && { pairedFamilyFormIds }),
                 }
               );
