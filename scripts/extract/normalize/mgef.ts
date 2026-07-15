@@ -146,15 +146,17 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   // (conditions.ts) wired from `extract-perks.ts`'s GENDER_TWIN_PAIRS map —
   // each rank now emits one unconditional apRegen modifier (docs/assumptions.md).
   ActionPointsRateMult: { bucket: 'apRegen', scale: 0.01 },
-  // Flat AP/sec on the base regen rate (AV ActionPointsRate 0x000002D8,
-  // default = GMST fActionPointsRestoreRate 4.0): Company Tea's
-  // FortifyActionPointRegenFood (+10 for 3600s, GLOB SURV_Food_Effect_APRegen_
-  // Mag_4_VeryHigh), Nukashine_APRegen, Alcohol_APRegen, the Live & Love #4 /
-  // Guns and Bullets #4 magazine effects (2026-07-15 AV sweep). Composition
-  // with the % route above is AV-standard: (4.0 + Σflat) × (1 + Σ%) —
-  // docs/assumptions.md "VATS AP economy". No archetype restriction: a rate
-  // has no instant-restore semantics, both Peak and plain Value Modifiers on
-  // it are buffs while active.
+  // ADDs onto the race base of AV ActionPointsRate (0x000002D8 — RACE
+  // `Properties` rows: HumanRace 6.0, PowerArmorRace 3.0; the value reads as
+  // percent-of-max-AP regenerated per second, user-confirmed 2026-07-15):
+  // Company Tea's FortifyActionPointRegenFood (+10 for 3600s, GLOB
+  // SURV_Food_Effect_APRegen_Mag_4_VeryHigh), Nukashine_APRegen,
+  // Alcohol_APRegen, the Live & Love #4 / Guns and Bullets #4 magazine
+  // effects (2026-07-15 AV sweep). Composition with the % route above:
+  // maxAp × (raceBase + Σflat)/100 × (1 + Σ%) — docs/assumptions.md "VATS AP
+  // economy". No archetype restriction: a rate has no instant-restore
+  // semantics, both Peak and plain Value Modifiers on it are buffs while
+  // active.
   ActionPointsRate: { bucket: 'apRegenFlat', scale: 1 },
   // Max-AP fortifies (AV ActionPoints 0x000002D5): FortifyActionPointsFood/
   // Alcohol (mirelurk steaks, wine, hard lemonade), Awesome Tales #7 /

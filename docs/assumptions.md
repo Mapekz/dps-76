@@ -974,22 +974,29 @@ ESM-proven via two parallel mechanisms (both verified in the 20260710 dump):
   standard OMOD modifies it; the only rewrite is the `vatsApCost` bucket
   (V.A.T.S. Optimized, MUL_ADD −0.35, OMOD property `AttackActionPointCost` —
   previously silently dropped by `PROPERTY_IGNORED`).
-- **Regen — NOT ESM-proven**: `regenPerSec = (fActionPointsRestoreRate (4.0)
-  + Σ apRegenFlat) × (1 + Σ apRegen)`. The GMST is confirmed as a constant,
-  but whether it's a flat AP/sec or itself scaled by the ActorValue
-  `ActionPointsRateMult` (default 100, reads as a percent) is engine-side and
-  cannot be confirmed from static ESM data alone. MODELED as the AV-standard
-  composition (2026-07-15 AP completion): flat sources (`apRegenFlat`, AV
-  `ActionPointsRate` 0x000002D8 — Company Tea +10/3600s via GLOB
+- **Regen — race-based %-of-max model** (corrected 2026-07-15, superseding
+  the earlier flat-GMST model): the base rate lives on RACE `Properties`
+  rows setting AV `ActionPointsRate` (0x000002D8) — **HumanRace 6.0,
+  PowerArmorRace 3.0** (ESM-proven; the player's race swaps in power armor,
+  halving regen — `computeApEconomy.isInPowerArmor`). The value reads as
+  **percent of Max AP regenerated per second** (user-confirmed semantics,
+  not record-typed):
+  `regenPerSec = maxAp × (raceBase + Σ apRegenFlat)/100 × (1 + Σ apRegen)`.
+  Flat sources (`apRegenFlat` — Company Tea +10/3600s via GLOB
   `SURV_Food_Effect_APRegen_Mag_4_VeryHigh`, Nukashine/Alcohol_APRegen, the
-  Live & Love #4 / Guns and Bullets #4 magazines) ADD to the base-rate AV
-  BEFORE percent sources (`apRegen`, AV `ActionPointsRateMult` — Action
-  Boy/Girl, Lone Wanderer, Packin' Light, hydration) multiply it.
-  **Golden-case TODO**: four `apRegenPerSec` null goldens exist
-  (baseline-hydrated / Lone Wanderer / Company Tea / Number Cruncher damage)
-  — the baseline + Company Tea pair pins both the flat-4.0 question and the
-  flat-before-percent composition (the relative uptime/apLimitedDps
-  comparisons are unaffected by this ambiguity either way).
+  Live & Love #4 / Guns and Bullets #4 magazines) ADD onto the race base of
+  the same AV; percent sources (`apRegen`, AV `ActionPointsRateMult` —
+  Action Boy/Girl/Ghoul, Lone Wanderer, Packin' Light, hydration) stack
+  additively into ONE multiplier on that base. Consequences: regen is
+  pool-proportional (AGI and `apMax` fortifies raise absolute regen; Scaly
+  Skin's −50 lowers it), and Company Tea reads as +10pp of max AP per
+  second — genuinely enormous, matching its in-game reputation. GMST
+  `fActionPointsRestoreRate` = 4.0 exists but is NOT the operative base
+  (engine use unknown). **Golden-case TODO**: five `apRegenPerSec`/`perHit`
+  null goldens (baseline-hydrated 17.0 AP/s, PA baseline 8.5, Lone Wanderer
+  20.8, Company Tea 45.4, Number Cruncher +32% damage) — the baseline case
+  measured at two different AGI values would also distinguish %-of-max from
+  flat if any doubt remains.
 - **Action Boy/Girl**: the AV route IS correct — `AbPerkActionBoyGirl` (SPEL
   0x0004D871) is a plain Peak Value Modifier on `ActorValues` AV
   `ActionPointsRateMult` (0x00000359, Default Value 100.0), magnitude

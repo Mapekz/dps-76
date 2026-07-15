@@ -90,9 +90,11 @@ export type Bucket =
    */
   | 'vatsApCost'
   /**
-   * Additive % on the base AP regen rate (perks — Action Boy/Girl's
-   * ActorValue ActionPointsRateMult). Decimals: 0.45 = +45%. Consumed by
-   * `ap-economy.ts`'s `regenPerSec = 4.0 × (1 + Σ apRegen)`.
+   * Additive % multiplier on the base AP regen rate (Action Boy/Girl/Ghoul's
+   * ActorValue ActionPointsRateMult, hydration, Lone Wanderer). Decimals:
+   * 0.45 = +45%. All active sources stack additively into ONE multiplier on
+   * the race-base rate — `ap-economy.ts`'s
+   * `regenPerSec = maxAp × (raceBase + Σ apRegenFlat)/100 × (1 + Σ apRegen)`.
    */
   | 'apRegen'
   /**
@@ -102,12 +104,12 @@ export type Bucket =
    */
   | 'apPerCrit'
   /**
-   * Flat AP/sec ADD on the base regen rate (AV ActionPointsRate 0x000002D8 —
-   * Company Tea's FortifyActionPointRegenFood +10, Nukashine_APRegen,
-   * Alcohol_APRegen...). Distinct from `apRegen` (the % AV
-   * ActionPointsRateMult): consumed by `ap-economy.ts` as
-   * `regenPerSec = (4.0 + Σ apRegenFlat) × (1 + Σ apRegen)` — the AV-standard
-   * composition, documented as an assumption (docs/assumptions.md).
+   * ADD onto the race base of AV ActionPointsRate 0x000002D8 (Company Tea's
+   * FortifyActionPointRegenFood +10, Nukashine_APRegen, Alcohol_APRegen...).
+   * UNITS: AV points = percent of Max AP regenerated per second, stacking
+   * additively with the race `Properties` base (HumanRace 6.0,
+   * PowerArmorRace 3.0) BEFORE the `apRegen` multiplier applies — see
+   * `ap-economy.ts` and docs/assumptions.md "VATS AP economy".
    */
   | 'apRegenFlat'
   /**

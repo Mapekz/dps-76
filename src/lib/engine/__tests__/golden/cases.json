@@ -378,7 +378,7 @@
    "source": "in-game (pending): validates United Ordeal's ghoul+teammateCount gate and the Public team Casual INT bonus (min(teammateCount+1,4)=3) together \u2014 neither moves the Fixer's raw dbm, so this pins the SPECIAL-side wiring pending an in-game pip-boy read once both effects are user-facing"
   },
   {
-   "name": "Baseline AP regen, fully hydrated, no perks \u2014 stopwatch a full AP pool refill (model: 4.0 \u00d7 1.35 hydration = 5.4 AP/s; also pins the flat-4.0 GMST CAVEAT)",
+   "name": "Baseline AP regen, fully hydrated, no perks \u2014 stopwatch a full AP pool refill (model: 210 pool \u00d7 6%/s race base \u00d7 1.35 hydration = 17.0 AP/s)",
    "weaponId": "CombatRifle_Fixer",
    "itemLevel": 50,
    "mods": {},
@@ -393,10 +393,30 @@
    "expected": null,
    "tolerancePct": 5,
    "measure": "apRegenPerSec",
-   "source": "in-game (pending) \u2014 time 210 AP from empty: model predicts ~38.9s; measure out of combat, no sprint"
+   "source": "in-game (pending) \u2014 time 210 AP from empty: model predicts ~12.3s; out of combat, no sprint, no PA. Repeating at a different AGI also cross-checks the %-of-max-AP rate semantics"
   },
   {
-   "name": "Lone Wanderer rank 3 solo AP regen @15 CHA \u2014 stopwatch (model: 4.0 \u00d7 (1 + 0.30 CHA-curve + 0.35 hydration) = 6.6 AP/s)",
+   "name": "Baseline AP regen in Power Armor, fully hydrated \u2014 stopwatch (model: 210 \u00d7 3%/s PowerArmorRace base \u00d7 1.35 = 8.5 AP/s, half the human rate)",
+   "weaponId": "CombatRifle_Fixer",
+   "itemLevel": 50,
+   "mods": {},
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {
+    "isInPowerArmor": true
+   },
+   "enemyConditions": {},
+   "scenario": "vats",
+   "expected": null,
+   "tolerancePct": 5,
+   "measure": "apRegenPerSec",
+   "source": "in-game (pending) \u2014 210 AP from empty \u2248 24.7s in PA; pins the PowerArmorRace ActionPointsRate=3.0 halving"
+  },
+  {
+   "name": "Lone Wanderer rank 3 solo AP regen @15 CHA \u2014 stopwatch (model: 210 \u00d7 6%/s \u00d7 (1 + 0.30 CHA-curve + 0.35 hydration) = 20.8 AP/s)",
    "weaponId": "CombatRifle_Fixer",
    "itemLevel": 50,
    "mods": {},
@@ -416,10 +436,10 @@
    "expected": null,
    "tolerancePct": 5,
    "measure": "apRegenPerSec",
-   "source": "in-game (pending) \u2014 solo, NOT on any team; 210 AP from empty \u2248 31.8s; also confirms ranks 2/3 use the CHA curve (stale flat 20/30% descriptions)"
+   "source": "in-game (pending) \u2014 solo, NOT on any team; 210 AP from empty \u2248 10.1s; also confirms ranks 2/3 use the CHA curve (stale flat 20/30% descriptions)"
   },
   {
-   "name": "Company Tea AP regen \u2014 stopwatch (model: (4.0 + 10 flat) \u00d7 1.35 hydration = 18.9 AP/s; pins flat-adds-before-percent composition)",
+   "name": "Company Tea AP regen \u2014 stopwatch (model: 210 \u00d7 (6+10)%/s \u00d7 1.35 hydration = 45.4 AP/s; pins the flat-adds-to-race-base composition)",
    "weaponId": "CombatRifle_Fixer",
    "itemLevel": 50,
    "mods": {},
@@ -436,7 +456,7 @@
    "expected": null,
    "tolerancePct": 5,
    "measure": "apRegenPerSec",
-   "source": "in-game (pending) \u2014 210 AP from empty \u2248 11.1s; no Carnivore/Herbivore active (tea is food-scalable in data)"
+   "source": "in-game (pending) \u2014 210 AP from empty \u2248 4.6s; no Carnivore/Herbivore active (tea is food-scalable in data)"
   },
   {
    "name": "Number Cruncher on stock Fixer (16 AP cost) \u2014 pip-boy card damage (model: +32% dbm, works in free aim)",

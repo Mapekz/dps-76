@@ -19,12 +19,15 @@
   regen lives ONLY on rank 1's ability (CHA curve 10→85%, solo-gated); ranks
   2/3 records carry only the DR effect (their flat "20/30% AP regen"
   descriptions are stale legacy text). Engine test + null golden added.
-- **New buckets**: `apRegenFlat` (flat AP/sec, AV `ActionPointsRate` —
-  Company Tea +10, Nukashine, alcohols, L&L#4/G&B#4 magazines), `apMax`
-  (Peak fortifies on AV `ActionPoints` — foods, wine, AT#7/L&L#7 magazines,
-  Scaly Skin −50, Civil Unrest +50), `apCritHot` (refresh-only on-crit AP
-  HoT). Composition: `regen = (4.0 + Σflat) × (1 + Σ%)` (AV-standard,
-  assumption pending stopwatch goldens).
+- **New buckets**: `apRegenFlat` (adds to the race-base `ActionPointsRate`
+  stat — Company Tea +10, Nukashine, alcohols, L&L#4/G&B#4 magazines),
+  `apMax` (Peak fortifies on AV `ActionPoints` — foods, wine, AT#7/L&L#7
+  magazines, Scaly Skin −50, Civil Unrest +50), `apCritHot` (refresh-only
+  on-crit AP HoT). Regen model (corrected same day): the base rate is the
+  RACE `Properties` value of AV `ActionPointsRate` — HumanRace 6.0,
+  PowerArmorRace 3.0 — read as **% of Max AP per second**:
+  `regen = maxAp × (raceBase + Σflat)/100 × (1 + Σ%)`. Regen is therefore
+  pool-proportional and halves in power armor.
 - **Consumable recovery**: routing the two AVs rescued 28 previously-excluded
   AP-only consumables (Company Tea among them) — the keep-filter needed no
   change. Instant AP restores are a documented out-of-scope skip (same rule
@@ -49,8 +52,9 @@
 
 ## Verification still owed (user, in-game)
 
-Four `expected: null` goldens in `golden/cases.json` (`apRegenPerSec` /
-`perHit` measures): hydrated baseline 5.4 AP/s, Lone Wanderer solo 6.6 AP/s,
-Company Tea 18.9 AP/s, Number Cruncher +32% pip-boy damage. The baseline +
-Company Tea pair pins the flat-4.0 GMST CAVEAT and the flat-before-percent
-composition in one session.
+Five `expected: null` goldens in `golden/cases.json` (`apRegenPerSec` /
+`perHit` measures): hydrated baseline 17.0 AP/s, PA baseline 8.5 AP/s
+(pins the PowerArmorRace halving), Lone Wanderer solo 20.8 AP/s, Company
+Tea 45.4 AP/s, Number Cruncher +32% pip-boy damage. Measuring the baseline
+at two different AGI values would also cross-check the %-of-max-AP rate
+semantics.

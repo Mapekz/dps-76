@@ -893,11 +893,12 @@ describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
 
   it('surfaces an ap-limited uptime for a ranged weapon with a real VATS AP cost', () => {
     const s = computeScenarios(baseInput);
-    // shotsPerSec = 20/24; drainPerSec = 16×20/24 = 40/3; regenPerSec = 4
-    // (no apRegen mods); apGainPerSec = 4 (no apPerCrit mods) → uptime = 4/(40/3) = 0.3.
+    // shotsPerSec = 20/24; drainPerSec = 16×20/24 = 40/3; regenPerSec =
+    // 210 × 6/100 = 12.6 (race-base %-of-max rate, no apRegen mods);
+    // apGainPerSec = 12.6 (no apPerCrit mods) → uptime = 12.6/(40/3) = 0.945.
     expect(s.vats.ap).toBeDefined();
-    expect(s.vats.ap!.uptime).toBeCloseTo(0.3, 10);
-    expect(s.vats.ap!.apLimitedDps).toBeCloseTo(s.vats.sustain.sustainedDps * 0.3, 10);
+    expect(s.vats.ap!.uptime).toBeCloseTo(0.945, 10);
+    expect(s.vats.ap!.apLimitedDps).toBeCloseTo(s.vats.sustain.sustainedDps * 0.945, 10);
     expect(s.vats.ap!.secondsToEmpty).toBeDefined();
     // AP economy is a VATS-only concept — free aim never carries it.
     expect(s.freeAim.ap).toBeUndefined();

@@ -365,6 +365,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       apRegenBonus,
       apRegenFlatBonus,
       apMaxBonus,
+      isInPowerArmor: input.player.isInPowerArmor,
       apPerCrit,
       critHots,
       shotsPerCrit: critMeter.shotsPerCrit,

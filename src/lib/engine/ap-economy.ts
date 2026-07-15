@@ -12,21 +12,26 @@ import type { SustainResult } from './sustain';
  * regen must catch back up), and `apLimitedDps` is the sustained VATS DPS
  * scaled by that duty cycle.
  *
- * GMST sources (20260702 ESM, recorded in the same assumptions.md section):
- * - `fAVDActionPointsBase` = 60, `fAVDActionPointsMult` = 10 → MaxAP = 60 + 10×AGI.
- * - `fActionPointsRestoreRate` = 4.0 AP/s base regen.
+ * ESM sources (20260710 dump, recorded in the same assumptions.md section):
+ * - GMSTs `fAVDActionPointsBase` = 60, `fAVDActionPointsMult` = 10 →
+ *   MaxAP = 60 + 10×AGI.
+ * - RACE `Properties` rows set the base of AV `ActionPointsRate`
+ *   (0x000002D8): HumanRace 6.0, PowerArmorRace 3.0 (the player's race
+ *   swaps in power armor — regen is HALVED in PA).
  *
- * CAVEAT (not ESM-proven — see docs/assumptions.md): whether
- * `fActionPointsRestoreRate` is a flat AP/sec or itself scaled by the
- * ActorValue `ActionPointsRateMult` (default 100, reads as a percent) is
- * engine-side and unverified from static data alone. MODELED here as the
- * AV-standard composition
- * `regenPerSec = (fActionPointsRestoreRate + Σ apRegenFlat) × (1 + Σ apRegen)`
- * — flat sources (Company Tea's +10 on AV ActionPointsRate) ADD to the base
- * rate AV, percent sources (Action Boy/Girl, hydration, Lone Wanderer on AV
- * ActionPointsRateMult) multiply it. An in-game measurement (stopwatch AP
- * regen with/without Action Boy) should pin this — tracked as a golden-case
- * TODO, no `expected` value exists yet.
+ * Regen model (rate semantics user-confirmed 2026-07-15, not record-typed):
+ * the race value is a PERCENT OF MAX AP regenerated per second, so
+ * `regenPerSec = maxAp × (raceBase + Σ apRegenFlat)/100 × (1 + Σ apRegen)`.
+ * Flat sources (Company Tea's +10) ADD onto the race base of the same AV;
+ * percent sources (Action Boy/Girl/Ghoul, hydration, Lone Wanderer — AV
+ * ActionPointsRateMult) stack additively into one multiplier on that base.
+ * Notable consequence: bigger pools regenerate proportionally faster, so
+ * `apMax` fortifies and AGI raise absolute regen too. (GMST
+ * `fActionPointsRestoreRate` = 4.0 exists but is NOT the operative base —
+ * engine use unknown; superseded by the race Properties row.) The
+ * stopwatch goldens pin the absolute numbers — measuring at two different
+ * AGI values would also distinguish %-of-max from flat if any doubt
+ * remains.
  *
  * On-crit AP HoTs (Conductor's 20 AP/s over 5s half) are REFRESH-ONLY: a new
  * crit restarts the window instead of stacking (user-confirmed in-game
@@ -43,8 +48,14 @@ import type { SustainResult } from './sustain';
 export const AP_POOL_BASE = 60;
 /** GMST fAVDActionPointsMult (20260702 ESM) — AP pool gained per point of AGI. */
 export const AP_POOL_PER_AGILITY = 10;
-/** GMST fActionPointsRestoreRate (20260702 ESM) — base AP/sec regen (see CAVEAT above). */
-export const AP_BASE_REGEN_PER_SEC = 4.0;
+/**
+ * HumanRace `Properties` base of AV ActionPointsRate (0x000002D8, 20260710
+ * dump) — percent of Max AP regenerated per second (semantics
+ * user-confirmed; see the module comment).
+ */
+export const AP_REGEN_RATE_PCT = 6.0;
+/** PowerArmorRace's base for the same AV — the player's race swaps in PA, halving regen. */
+export const AP_REGEN_RATE_PCT_POWER_ARMOR = 3.0;
 
 export interface ApEconomyInput {
   /** Effective per-shot VATS AP cost (after the vatsApCost OMOD fold). */
@@ -54,8 +65,13 @@ export interface ApEconomyInput {
   agility: number;
   /** Σ of active `apRegen` modifiers (decimal, 0.45 = +45%). */
   apRegenBonus: number;
-  /** Σ of active `apRegenFlat` modifiers (flat AP/sec on the base rate — Company Tea +10). */
+  /**
+   * Σ of active `apRegenFlat` modifiers — ActionPointsRate AV points, i.e.
+   * percent-of-max-AP per second added onto the race base (Company Tea +10).
+   */
   apRegenFlatBonus?: number;
+  /** Swaps the race base rate to PowerArmorRace's 3.0 (half the human 6.0). */
+  isInPowerArmor?: boolean;
   /** Σ of active `apMax` modifiers (flat AP pool — food/magazine fortifies, Scaly Skin's penalty). */
   apMaxBonus?: number;
   /** Σ of active `apPerCrit` modifiers (flat AP per VATS crit, e.g. Conductor's instant 10). */
@@ -83,7 +99,8 @@ export interface ApEconomyResult {
 
 export function computeApEconomy(input: ApEconomyInput): ApEconomyResult {
   const maxAp = Math.max(0, AP_POOL_BASE + AP_POOL_PER_AGILITY * input.agility + (input.apMaxBonus ?? 0));
-  const regenPerSec = (AP_BASE_REGEN_PER_SEC + (input.apRegenFlatBonus ?? 0)) * (1 + input.apRegenBonus);
+  const baseRatePct = input.isInPowerArmor ? AP_REGEN_RATE_PCT_POWER_ARMOR : AP_REGEN_RATE_PCT;
+  const regenPerSec = (maxAp * (baseRatePct + (input.apRegenFlatBonus ?? 0))) / 100 * (1 + input.apRegenBonus);
 
   const critsPerSec =
     Number.isFinite(input.shotsPerCrit) && input.shotsPerCrit > 0 ? input.shotsPerSec / input.shotsPerCrit : 0;

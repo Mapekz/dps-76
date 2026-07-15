@@ -164,13 +164,13 @@ describe('AP economy (Stage B, real data)', () => {
     expect(fixer.apCost).toBe(16); // WEAP Data."Action Point Cost" — extractor-verified
   });
 
-  it("Conductor's spike + refresh-only HoT lifts the Fixer's uptime without the old flat-110 overcount", () => {
+  it("Conductor's spike + refresh-only HoT: crit gain caps at spike×crits/sec + 20, not the flat-110 overcount", () => {
     // ESM chain hand-supplied in overrides/legendary-values.ts (script-driven
     // entry point, not extractor-modeled): 10 instant per crit + 20 AP/s over
     // 5s. The HoT REFRESHES on a new crit instead of stacking (user-confirmed
     // 2026-07-15), so at the Fixer's fast crit cadence it saturates at
-    // +20 AP/s — the retired flat `apPerCrit: 110` credited 110 AP per crit
-    // regardless of cadence and wrongly saturated uptime at 1.
+    // +20 AP/s. The retired flat `apPerCrit: 110` credited 110 AP per crit
+    // regardless of cadence (~76 AP/s of crit gain here vs the real ~27).
     const conductors = getOmodById('live', 'mod_Legendary_Weapon4_Conductors')!;
     const { weapon, modifiers } = buildEffectiveWeapon(fixer, [conductors]);
     const withConductors = computeScenarios(base({ weapon, modifiers }));
@@ -180,11 +180,12 @@ describe('AP economy (Stage B, real data)', () => {
     expect(without.vats.ap!.uptime).toBeLessThan(1); // stock Fixer is AP-limited in VATS
     expect(withConductors.vats.ap).toBeDefined();
     expect(withConductors.vats.ap!.uptime).toBeGreaterThan(without.vats.ap!.uptime);
-    expect(withConductors.vats.ap!.uptime).toBeLessThan(1); // no longer saturates
-    // Crit AP gain is capped by the saturated HoT ceiling: spike×crits/sec + 20.
-    const critsPerSec =
-      (withConductors.vats.ap!.apGainPerSec - withConductors.vats.ap!.regenPerSec - 20) / 10;
+    const critGain = withConductors.vats.ap!.apGainPerSec - withConductors.vats.ap!.regenPerSec;
+    // Saturated-HoT ceiling: spike×crits/sec + 20 (crit interval ≪ 5s). Flat-110
+    // would put this at 110×crits/sec ≈ 76 — assert we're far below that.
+    const critsPerSec = (critGain - 20) / 10;
     expect(critsPerSec).toBeGreaterThan(0.2); // Fixer crits well inside the 5s HoT window → HoT saturated
+    expect(critGain).toBeLessThan(110 * critsPerSec * 0.75);
   });
 });
 
@@ -456,14 +457,14 @@ describe('AP economy completion (2026-07-15, real extracted data)', () => {
     // Rank 1's ability (shared by every rank — ranks 2/3 carry only the DR
     // effect, their flat "20/30% AP regen" descriptions are stale legacy
     // text): CHA curve (1,10)(15,30)(30,45)(60,70)(100,85), teammateCount 0
-    // gate. Default CHA 15 → +30%: regen 4 × 1.30 = 5.2.
+    // gate. Default CHA 15 → +30% on the race base: 210 × 6/100 × 1.30 = 16.38.
     const lw = getLoadoutModifiers('live', [{ perkId: PerkId.LoneWanderer, rank: 3 }]);
     const solo = computeScenarios(base({ modifiers: lw }));
-    expect(solo.vats.ap!.regenPerSec).toBeCloseTo(5.2, 6);
+    expect(solo.vats.ap!.regenPerSec).toBeCloseTo(16.38, 6);
     const teamed = computeScenarios(
       base({ modifiers: lw, player: { ...createDefaultPlayerConditions(), teammateCount: 2 } })
     );
-    expect(teamed.vats.ap!.regenPerSec).toBeCloseTo(4.0, 6);
+    expect(teamed.vats.ap!.regenPerSec).toBeCloseTo(12.6, 6);
   });
 
   it('Number Cruncher scales dbm by the EFFECTIVE weapon AP cost, in free aim too', () => {
@@ -480,24 +481,25 @@ describe('AP economy completion (2026-07-15, real extracted data)', () => {
     expect(optimized.freeAim.perHit.total / stockOptimized.freeAim.perHit.total).toBeCloseTo(1 + 0.02 * 16 * 0.65, 6);
   });
 
-  it('Company Tea adds +10 flat AP/sec to the base rate (AV-standard composition with % sources)', () => {
+  it('Company Tea adds +10 onto the race-base rate stat (percent of max AP per second)', () => {
+    // 210 pool × (6 + 10)/100 = 33.6 AP/s.
     const tea = getBuffModifiers('live', [], ['CompanyTea_RSVP02']);
     const result = computeScenarios(base({ modifiers: tea }));
-    expect(result.vats.ap!.regenPerSec).toBeCloseTo(14, 6); // (4 + 10) × 1.0
+    expect(result.vats.ap!.regenPerSec).toBeCloseTo(33.6, 6);
 
     // Stacked with Packin' Light (+25% ActionPointsRateMult, always-on under
-    // the never-over-encumbered assumption): (4 + 10) × 1.25 = 17.5.
+    // the never-over-encumbered assumption): 33.6 × 1.25 = 42.
     const pl = getLoadoutModifiers('live', [{ perkId: PerkId.PackinLight, rank: 1 }]);
     const stacked = computeScenarios(base({ modifiers: [...tea, ...pl] }));
-    expect(stacked.vats.ap!.regenPerSec).toBeCloseTo(17.5, 6);
+    expect(stacked.vats.ap!.regenPerSec).toBeCloseTo(42, 6);
   });
 
-  it("Scaly Skin's −50 max AP penalty shrinks the pool without touching uptime", () => {
+  it("Scaly Skin's −50 max AP penalty shrinks the pool AND its regen proportionally (%-of-max rate)", () => {
     const ss = getBuffModifiers('live', ['Mutation_ScalySkin'], []);
     const withMutation = computeScenarios(base({ modifiers: ss }));
     const without = computeScenarios(base());
     expect(withMutation.vats.ap!.maxAp).toBe(without.vats.ap!.maxAp - 50);
-    expect(withMutation.vats.ap!.uptime).toBeCloseTo(without.vats.ap!.uptime, 10);
+    expect(withMutation.vats.ap!.regenPerSec / without.vats.ap!.regenPerSec).toBeCloseTo(160 / 210, 10);
   });
 
   it('hydration baseline (+35% AP regen) applies through resolveLoadout, gated by the toggle and ghoul', () => {
@@ -511,9 +513,9 @@ describe('AP economy completion (2026-07-15, real extracted data)', () => {
         createDefaultEnemyConfig(),
         'live'
       )!;
-    expect(computeScenarios(resolve({})).vats.ap!.regenPerSec).toBeCloseTo(4 * 1.35, 6);
-    expect(computeScenarios(resolve({ hydrated: false })).vats.ap!.regenPerSec).toBeCloseTo(4, 6);
-    expect(computeScenarios(resolve({ isGhoul: true })).vats.ap!.regenPerSec).toBeCloseTo(4, 6);
+    expect(computeScenarios(resolve({})).vats.ap!.regenPerSec).toBeCloseTo(12.6 * 1.35, 6);
+    expect(computeScenarios(resolve({ hydrated: false })).vats.ap!.regenPerSec).toBeCloseTo(12.6, 6);
+    expect(computeScenarios(resolve({ isGhoul: true })).vats.ap!.regenPerSec).toBeCloseTo(12.6, 6);
   });
 
   it('Rejuvenated deltas stack on the hydration baseline to the ESM tier values (45%/60%)', () => {
@@ -527,8 +529,8 @@ describe('AP economy completion (2026-07-15, real extracted data)', () => {
         createDefaultEnemyConfig(),
         'live'
       )!;
-    expect(computeScenarios(resolve(1)).vats.ap!.regenPerSec).toBeCloseTo(4 * 1.45, 6);
-    expect(computeScenarios(resolve(2)).vats.ap!.regenPerSec).toBeCloseTo(4 * 1.6, 6);
+    expect(computeScenarios(resolve(1)).vats.ap!.regenPerSec).toBeCloseTo(12.6 * 1.45, 6);
+    expect(computeScenarios(resolve(2)).vats.ap!.regenPerSec).toBeCloseTo(12.6 * 1.6, 6);
   });
 });
 
