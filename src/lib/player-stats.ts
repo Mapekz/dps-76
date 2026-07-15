@@ -177,7 +177,11 @@ export function derivePlayerStats(
   player: PlayerConditions,
   enemy?: EnemyConditions,
   weapon?: Weapon,
-  itemLevel?: number
+  itemLevel?: number,
+  // Enemy-type identifiers of the selected target (see ResolveContext). No
+  // SPECIAL/maxHealth-bucket modifier is enemy-type-gated today; threaded for
+  // root-context consistency (same trade-off as onslaughtMaxStacks: 0 below).
+  enemyTypeIds: readonly string[] = []
 ): DerivedPlayerStats {
   const scenario = { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false };
   const enemyCtx = enemy ?? createDefaultEnemyConditions();
@@ -193,6 +197,7 @@ export function derivePlayerStats(
     enemy: enemyCtx,
     scenario,
     itemLevel: itemLevel ?? 50,
+    enemyTypeIds,
     onslaughtMaxStacks: 0,
   };
   const special = Object.fromEntries(

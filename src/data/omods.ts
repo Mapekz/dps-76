@@ -141,16 +141,17 @@ export function classifyOmodDisplay(omod: GeneratedOmod, weapon?: Weapon): { sho
   if (!hasModifiers && !overrideBadge && !isStock) return { show: true, badge: 'inert' };
   if (overrideBadge) return { show: true, badge: overrideBadge };
   if (hasModifiers) {
+    // enemyType/enemyTypeAny gates are NOT inert: they resolve against the
+    // Target picker's selected race (resolve.ts enemyTypeIds), so Zealot's/
+    // Assassin's/Prime receivers are ordinary conditional mods — unbadged,
+    // like Instigating. Only enemy-DEFENSE inputs still wait on DR modeling.
     const isInert = (m: GeneratedOmod['modifiers'][number]) =>
       INERT_ENGINE_BUCKETS.has(m.bucket) ||
       m.curve?.input === 'enemyDamageResist' ||
-      m.conditions.some(c => c.kind === 'enemyType' || c.kind === 'enemyTypeAny' || c.kind === 'unresolved');
+      m.conditions.some(c => c.kind === 'unresolved');
     if (omod.modifiers.every(isInert)) {
       const enemyFacing = omod.modifiers.every(
-        m =>
-          m.bucket === 'armorPen' ||
-          m.curve?.input === 'enemyDamageResist' ||
-          m.conditions.some(c => c.kind === 'enemyType' || c.kind === 'enemyTypeAny')
+        m => m.bucket === 'armorPen' || m.curve?.input === 'enemyDamageResist'
       );
       return { show: true, badge: enemyFacing ? 'needsEnemyDefenses' : 'inert' };
     }

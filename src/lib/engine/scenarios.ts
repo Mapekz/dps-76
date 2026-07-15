@@ -104,6 +104,12 @@ export interface ScenarioInput {
   modifiers: Modifier[];
   player: PlayerConditions;
   enemy: EnemyConditions;
+  /**
+   * Enemy-type identifiers of the selected target (race edid + ActorType*
+   * keywords) — derived from `enemy.targetRace` in resolveLoadout; drives
+   * `enemyType`/`enemyTypeAny` gates (Assassin's, Zealot's, Prime receivers).
+   */
+  enemyTypeIds?: readonly string[];
   /** Body-part multiplier used for weakpoint hits (user-configurable, default 2.0). */
   weakpointMult: number;
   /**
@@ -126,6 +132,7 @@ function scenarioCtx(input: ScenarioInput, flags: ScenarioFlags, onslaughtMaxSta
     enemy: input.enemy,
     scenario: { ...flags, isPowerAttack: flags.isPowerAttack && isMelee(input.weapon) },
     itemLevel: input.itemLevel,
+    enemyTypeIds: input.enemyTypeIds,
     onslaughtMaxStacks,
   };
 }

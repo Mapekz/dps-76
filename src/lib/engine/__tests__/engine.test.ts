@@ -104,6 +104,41 @@ describe('condition evaluation', () => {
     expect(foldBucket([rifleOnly, heavyOnly], 'dbm', 1.0, makeCtx(weapon))).toBeCloseTo(1.2, 10);
   });
 
+  it('enemyType gates on the selected target\'s type ids; no target → inactive', () => {
+    const zealotsLike = mod({
+      bucket: 'dbm', op: 'ADD', value: 0.5,
+      conditions: [{ kind: 'enemyType', keywordOrRace: 'ActorTypeScorched' }],
+    });
+    // No target selected (enemyTypeIds unset) → inactive.
+    expect(foldBucket([zealotsLike], 'dbm', 1.0, makeCtx(weapon))).toBe(1.0);
+    // Selected target carries the keyword → active.
+    const scorched = makeCtx(weapon, { enemyTypeIds: ['ScorchedRace', 'ActorTypeScorched', 'ActorTypeHuman'] });
+    expect(foldBucket([zealotsLike], 'dbm', 1.0, scorched)).toBeCloseTo(1.5, 10);
+    // Mismatched target → inactive.
+    const robot = makeCtx(weapon, { enemyTypeIds: ['AssaultronRace', 'ActorTypeRobot'] });
+    expect(foldBucket([zealotsLike], 'dbm', 1.0, robot)).toBe(1.0);
+    // Race-edid gates (GetIsRace — Assassin's "HumanRace") match the same set.
+    const assassinsLike = mod({
+      bucket: 'dbm', op: 'ADD', value: 0.5,
+      conditions: [{ kind: 'enemyType', keywordOrRace: 'HumanRace' }],
+    });
+    const human = makeCtx(weapon, { enemyTypeIds: ['HumanRace', 'ActorTypeHuman'] });
+    expect(foldBucket([assassinsLike], 'dbm', 1.0, human)).toBeCloseTo(1.5, 10);
+    expect(foldBucket([assassinsLike], 'dbm', 1.0, robot)).toBe(1.0);
+  });
+
+  it('enemyTypeAny matches when ANY listed id is on the target', () => {
+    const ghoulSlayersLike = mod({
+      bucket: 'dbm', op: 'ADD', value: 0.5,
+      conditions: [{ kind: 'enemyTypeAny', keywordsOrRaces: ['ActorTypeFeralGhoul', 'ActorTypeGhoul'] }],
+    });
+    const ghoul = makeCtx(weapon, { enemyTypeIds: ['FeralGhoulRace', 'ActorTypeGhoul'] });
+    expect(foldBucket([ghoulSlayersLike], 'dbm', 1.0, ghoul)).toBeCloseTo(1.5, 10);
+    const human = makeCtx(weapon, { enemyTypeIds: ['HumanRace', 'ActorTypeHuman'] });
+    expect(foldBucket([ghoulSlayersLike], 'dbm', 1.0, human)).toBe(1.0);
+    expect(foldBucket([ghoulSlayersLike], 'dbm', 1.0, makeCtx(weapon))).toBe(1.0);
+  });
+
   it('stacks conditions scale the value by the clamped counter', () => {
     const tenderizer = mod({
       bucket: 'dbm', op: 'ADD', value: 0.1,

@@ -10,7 +10,7 @@ import { getTargetDebuffModifiers } from '@/data/target-debuffs';
 import { getPublicTeamModifiers } from '@/data/public-teams';
 import { buildEffectiveWeapon, WEAPON_STAT_BUCKETS } from '@/lib/engine/effective-weapon';
 import { legendaryBonusOf } from '@/data/perk-budget';
-import { getBodyPartMult } from '@/data/bodyparts';
+import { getBodyPartMult, getEnemyTypeIds } from '@/data/bodyparts';
 import {
   deriveAddictionCount,
   deriveClassFreakRank,
@@ -40,8 +40,14 @@ function assemble(
   playerConfig: PlayerConfig,
   enemyConfig: EnemyConfig,
   mode: GameMode
-): { weapon: Weapon | undefined; modifiers: Modifier[]; conditions: PlayerConditions } {
+): { weapon: Weapon | undefined; modifiers: Modifier[]; conditions: PlayerConditions; enemyTypeIds: readonly string[] } {
   const baseWeapon = playerConfig.weapon ? getWeapons(mode)[playerConfig.weapon.weaponId] : undefined;
+
+  // Enemy-type identity of the selected target (race edid + ActorType*
+  // keywords) — resolved ONCE from bodyparts data and threaded to every
+  // ResolveContext, so enemyType/enemyTypeAny gates (Assassin's, Zealot's,
+  // Prime receivers, Paranormal Mod) see the same match set everywhere.
+  const enemyTypeIds = getEnemyTypeIds(mode, enemyConfig.conditions.targetRace);
 
   // Derived gates resolved ONCE over the stored conditions: strangeInNumbers
   // (SiN card + teammate) and classFreakRank (equipped ClassFreak rank) both
@@ -109,7 +115,8 @@ function assemble(
       playerConfig.itemLevel,
       conditions,
       enemyConfig.conditions,
-      loadoutModifiers
+      loadoutModifiers,
+      enemyTypeIds
     );
     weapon = built.weapon;
     omodModifiers = built.modifiers;
@@ -132,6 +139,7 @@ function assemble(
       ...loadoutModifiers.filter(m => !WEAPON_STAT_BUCKETS.has(m.bucket)),
     ],
     conditions,
+    enemyTypeIds,
   };
 }
 
@@ -141,8 +149,16 @@ function assemble(
  * without an equipped weapon (weapon-gated stat modifiers just don't match).
  */
 export function resolveStats(playerConfig: PlayerConfig, enemyConfig: EnemyConfig, mode: GameMode): DerivedPlayerStats {
-  const { weapon, modifiers, conditions } = assemble(playerConfig, enemyConfig, mode);
-  return derivePlayerStats(modifiers, baseSpecialOf(playerConfig), conditions, enemyConfig.conditions, weapon, playerConfig.itemLevel);
+  const { weapon, modifiers, conditions, enemyTypeIds } = assemble(playerConfig, enemyConfig, mode);
+  return derivePlayerStats(
+    modifiers,
+    baseSpecialOf(playerConfig),
+    conditions,
+    enemyConfig.conditions,
+    weapon,
+    playerConfig.itemLevel,
+    enemyTypeIds
+  );
 }
 
 /**
@@ -162,7 +178,7 @@ export function resolveLoadout(
   enemyConfig: EnemyConfig,
   mode: GameMode
 ): ScenarioInput | null {
-  const { weapon, modifiers, conditions } = assemble(playerConfig, enemyConfig, mode);
+  const { weapon, modifiers, conditions, enemyTypeIds } = assemble(playerConfig, enemyConfig, mode);
   if (!weapon) return null;
 
   // Effective SPECIAL (base + SPECIAL-bucket buffs: Buffout +2 STR...) and
@@ -178,7 +194,8 @@ export function resolveLoadout(
     conditions,
     enemyConfig.conditions,
     weapon,
-    playerConfig.itemLevel
+    playerConfig.itemLevel,
+    enemyTypeIds
   );
   const player = {
     // Derived-gate view of the stored conditions (strangeInNumbers,
@@ -212,6 +229,7 @@ export function resolveLoadout(
     modifiers,
     player,
     enemy: enemyConfig.conditions,
+    enemyTypeIds,
     weakpointMult: pickedMult ?? playerConfig.weakpointMult,
     // critRate omitted → computed from the crit meter (LCK, Crit Savvy,
     // Limit Breaking, weapon crit charge bonus).

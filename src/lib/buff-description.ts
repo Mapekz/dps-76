@@ -80,6 +80,11 @@ const ENEMY_KEYWORD_LABELS: Record<string, string> = {
   ActorTypeSnallygaster: 'the Snallygaster',
   ActorTypeScorchbeast: 'Scorchbeasts',
   ActorTypeLiberator: 'Liberators',
+  ActorTypeCryptid: 'cryptids',
+  ActorTypeBug: 'bugs',
+  ActorTypeRadScorpion: 'radscorpions',
+  ActorTypeMolerat: 'mole rats',
+  ActorTypeMoleMiner: 'mole miners',
   HumanRace: 'humans',
 };
 

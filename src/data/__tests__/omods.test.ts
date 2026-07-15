@@ -165,6 +165,28 @@ describe('show-all-mods display policy against live data', () => {
     expect(gunnerSights?.badge).toBe('inert');
   });
 
+  it('enemy-type-gated mods are unbadged conditionals, not "needs enemy DR"', () => {
+    // Assassin's (1★ legendary, GetIsRace HumanRace) — legendary picker path.
+    const fixer = getWeapons('live')['CombatRifle_Fixer'];
+    const star1 = getLegendaryOmodSlots('live', fixer).find(s => /Weapon1/i.test(s.slot) || s.options.some(o => o.id.includes('Weapon1')));
+    const assassins = star1?.options.find(o => o.id === 'mod_Legendary_Weapon1_DmgVsPlayers');
+    expect(assassins).toBeDefined();
+    expect(assassins?.badge).toBeUndefined();
+
+    // Cold Shoulder's Paranormal Mod (ActorTypeCryptid) — standard picker path.
+    const doubleBarrel = getWeapons('live')['DoubleBarrelShotgun'];
+    const unique = getOmodSlots('live', doubleBarrel).find(s => s.slot === 'ap_customName');
+    const paranormal = unique?.options.find(o => o.id === 'mod_custom_Coldshoulder_DmgvsCryptid');
+    expect(paranormal).toBeDefined();
+    expect(paranormal?.badge).toBeUndefined();
+
+    // Prime Receiver (anti-Scorched dbm) — receiver slot.
+    const receiver = slotsOf('CombatRifle_Fixer').find(s => s.slot === 'ap_gun_Receiver');
+    const prime = receiver?.options.find(o => o.id === 'mod_CombatRifle_receiver_AntiScorchBeast');
+    expect(prime).toBeDefined();
+    expect(prime?.badge).toBeUndefined();
+  });
+
   it('dead-mechanic slots and legendary-reroll placeholders never surface anywhere in the roster', () => {
     for (const weapon of Object.values(getWeapons('live'))) {
       const slots = [...getOmodSlots('live', weapon), ...getLegendaryOmodSlots('live', weapon)];

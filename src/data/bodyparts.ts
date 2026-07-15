@@ -21,6 +21,20 @@ export function getBodyPartMult(mode: GameMode, raceId: string, partName: string
   return getBodyPartRace(mode, raceId)?.parts.find(p => p.name === partName)?.dmgMult;
 }
 
+/**
+ * Enemy-type identifiers the selected target matches for `enemyType`/
+ * `enemyTypeAny` conditions: the RACE edid (GetIsRace gates — Assassin's
+ * "HumanRace") plus the race's ActorType* keywords (HasKeyword gates —
+ * Zealot's "ActorTypeScorched"). Empty when no/unknown race is selected —
+ * enemy-type-gated modifiers stay inactive, like every other enemy gate.
+ */
+export function getEnemyTypeIds(mode: GameMode, raceId: string | null | undefined): readonly string[] {
+  if (!raceId) return [];
+  const race = getBodyPartRace(mode, raceId);
+  if (!race) return [];
+  return [race.raceEdid, ...race.keywords];
+}
+
 /** Crippable-limb count for a race — the Target section's crippled-limbs input max (0 when `noCripple`; fallback 10 for no/unknown race). */
 export function getCrippablePartCount(mode: GameMode, raceId: string | null | undefined): number {
   if (!raceId) return 10;

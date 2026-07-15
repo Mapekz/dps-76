@@ -36,6 +36,15 @@ export interface ResolveContext {
    */
   componentIsExplosion?: boolean;
   /**
+   * Every enemy-type identifier the selected target matches: its RACE edid
+   * (GetIsRace gates — Assassin's "HumanRace") plus the race's ActorType*
+   * keywords (HasKeyword gates — Zealot's "ActorTypeScorched"). Derived from
+   * `enemy.targetRace` in resolveLoadout via bodyparts data (the engine stays
+   * data-adapter-free). Unset/empty = no target selected → enemy-type-gated
+   * modifiers are inactive.
+   */
+  enemyTypeIds?: readonly string[];
+  /**
    * The shared Onslaught stack cap, folded ONCE per scenario input from every
    * equipped source's `onslaughtMaxStacks` modifier (`scenarios.ts`) and
    * threaded onto every ResolveContext built after that fold. Defaults to 0
@@ -125,9 +134,11 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
     case 'bodyPart':
       return ctx.bodyPart === cond.part ? 1 : null;
     case 'enemyType':
+      // Matched against the selected target's race edid + ActorType* keywords
+      // (ctx.enemyTypeIds). No target selected → inactive, like other enemy gates.
+      return (ctx.enemyTypeIds ?? []).includes(cond.keywordOrRace) ? 1 : null;
     case 'enemyTypeAny':
-      // Enemy modeling is deferred — a generic target never matches a race gate.
-      return null;
+      return cond.keywordsOrRaces.some(id => (ctx.enemyTypeIds ?? []).includes(id)) ? 1 : null;
     case 'damageTypeScope':
       // Whole-weapon folds skip component-scoped modifiers; per-component
       // folds require a matching component type. 'explosive' scope also

@@ -168,7 +168,11 @@ export function buildEffectiveWeapon(
   // keeps ownership of the list: `assemble` (src/lib/loadout.ts) drops the
   // weapon-stat buckets from the downstream modifier list, mirroring the
   // OMOD filter below.
-  loadoutModifiers: Modifier[] = []
+  loadoutModifiers: Modifier[] = [],
+  // Enemy-type identifiers of the selected target (see ResolveContext) — lets
+  // enemy-type-gated weapon-stat modifiers resolve, and keeps every root
+  // context builder consistent.
+  enemyTypeIds: readonly string[] = []
 ): EffectiveWeapon {
   const loadoutStatModifiers = loadoutModifiers.filter(m => WEAPON_STAT_BUCKETS.has(m.bucket));
   if (equippedOmods.length === 0 && loadoutStatModifiers.length === 0) return { weapon, modifiers: [] };
@@ -185,6 +189,7 @@ export function buildEffectiveWeapon(
     enemy,
     scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
     itemLevel,
+    enemyTypeIds,
   };
   // Onslaught-stack curves on weapon-stat buckets (Guerrilla Expert's reload)
   // read the equipped stack cap — bootstrap-fold it exactly like scenarios.ts

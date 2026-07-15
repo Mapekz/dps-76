@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { resolveLoadout } from '@/lib/loadout';
+import { computeScenarios } from '@/lib/engine/scenarios';
 import { getDefaultOmodId, getOmodById } from '@/data/omods';
 import { getWeapons } from '@/data';
 import { PerkId } from '@/data/perk-ids';
@@ -72,6 +73,43 @@ describe('default mod folding (assemble-time)', () => {
     const untouched = loadout('CombatRifle_Fixer');
     const explicit = loadout('CombatRifle_Fixer', { ap_gun_Receiver: 'mod_CombatRifle_Receiver_CritDMG' });
     expect(explicit!.modifiers.map(m => m.id).sort()).toEqual(untouched!.modifiers.map(m => m.id).sort());
+  });
+});
+
+describe('enemy-type-gated modifiers activate on a matching target (data → loadout → engine)', () => {
+  function dpsVsTarget(weapon: PlayerConfig['weapon'], targetRace: string | null) {
+    const playerConfig: PlayerConfig = { ...createDefaultPlayerConfig(), weapon };
+    const enemyConfig = createDefaultEnemyConfig();
+    enemyConfig.conditions.targetRace = targetRace;
+    const input = resolveLoadout(playerConfig, enemyConfig, 'live');
+    expect(input).not.toBeNull();
+    return computeScenarios(input!).freeAim.burstDps;
+  }
+
+  it("Assassin's (GetIsRace HumanRace) applies vs Human, not vs a robot or no target", () => {
+    const weapon = {
+      weaponId: 'CombatRifle_Fixer',
+      mods: {},
+      legendaryEffects: ['mod_Legendary_Weapon1_DmgVsPlayers'],
+    };
+    const noTarget = dpsVsTarget(weapon, null);
+    const vsHuman = dpsVsTarget(weapon, 'HumanRace');
+    const vsRobot = dpsVsTarget(weapon, 'AssaultronRace');
+    expect(vsHuman).toBeGreaterThan(noTarget);
+    expect(vsRobot).toBeCloseTo(noTarget, 10);
+  });
+
+  it("Cold Shoulder's Paranormal Mod (ActorTypeCryptid keyword) applies vs Mothman only", () => {
+    const weapon = {
+      weaponId: 'DoubleBarrelShotgun',
+      mods: { ap_customName: 'mod_custom_Coldshoulder_DmgvsCryptid' },
+      legendaryEffects: [],
+    };
+    const noTarget = dpsVsTarget(weapon, null);
+    const vsMothman = dpsVsTarget(weapon, 'MothmanRace');
+    const vsHuman = dpsVsTarget(weapon, 'HumanRace');
+    expect(vsMothman).toBeGreaterThan(noTarget);
+    expect(vsHuman).toBeCloseTo(noTarget, 10);
   });
 });
 
