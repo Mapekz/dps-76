@@ -325,6 +325,19 @@ export interface GeneratedBodyPartRace {
   id: string;
   /** formId of the RACE record whose BPTD was used (for NPC_ entries, the resolved race). */
   formId: string;
+  /**
+   * The RACE record's own edid (equals `id` for RACE rows; the resolved race
+   * for NPC_ boss rows). Matches GetIsRace-sourced enemyType conditions
+   * ("HumanRace" — Assassin's).
+   */
+  raceEdid: string;
+  /**
+   * The RACE record's ActorType* keywords (KWDA resolved to edids, filtered by
+   * the same `isEnemyKeyword` predicate that classifies enemyType conditions
+   * at extraction). Matches HasKeyword-sourced enemyType conditions
+   * ("ActorTypeScorched" — Zealot's, "ActorTypeCryptid" — Paranormal Mod).
+   */
+  keywords: readonly string[];
   /** Curated display label (RACE names collide — three "Human" races). */
   name: string;
   /** BPTD record the parts came from. */

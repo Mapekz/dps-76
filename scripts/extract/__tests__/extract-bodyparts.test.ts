@@ -105,41 +105,69 @@ describe('bptdToParts', () => {
 });
 
 describe('extractBodyParts NPC_ → RACE resolution', () => {
-  // Fake EsmClient: only .get() is exercised. Records mimic the wire shape
-  // (header.signature/form_id + fields); BPTDs reuse the fixtures above.
-  const records: Record<string, { header: { signature: string; form_id: string }; fields: Record<string, unknown> }> = {
+  // Fake EsmClient: .get() plus a real-shaped .resolveEdid (get → editor_id).
+  // Records mimic the wire shape (header.signature/form_id + editor_id +
+  // fields); BPTDs reuse the fixtures above.
+  const records: Record<
+    string,
+    { header: { signature: string; form_id: string }; editor_id: string; fields: Record<string, unknown> }
+  > = {
     HumanRace: {
       header: { signature: 'RACE', form_id: '0x00013746' },
-      fields: { 'Body Part Data': '0x00017AD4' },
+      editor_id: 'HumanRace',
+      // Mixed KWDA: only the ActorType* entries survive into `keywords`.
+      fields: { 'Body Part Data': '0x00017AD4', Keywords: { Keywords: ['0x0002CB72', '0x00013794', '0x00249612'] } },
+    },
+    '0x0002CB72': {
+      header: { signature: 'KYWD', form_id: '0x0002CB72' },
+      editor_id: 'ActorTypeHuman',
+      fields: {},
+    },
+    '0x00013794': {
+      header: { signature: 'KYWD', form_id: '0x00013794' },
+      editor_id: 'ActorTypeNPC',
+      fields: {},
+    },
+    '0x00249612': {
+      header: { signature: 'KYWD', form_id: '0x00249612' },
+      editor_id: 'NoPowerArmorUse',
+      fields: {},
     },
     Burn_BountyTarget_BIG_Death: {
       header: { signature: 'NPC_', form_id: '0x007CFAA9' },
+      editor_id: 'Burn_BountyTarget_BIG_Death',
       fields: { Race: '0x00013746' },
     },
     '0x00013746': {
       header: { signature: 'RACE', form_id: '0x00013746' },
-      fields: { 'Body Part Data': '0x00017AD4' },
+      editor_id: 'HumanRace',
+      fields: { 'Body Part Data': '0x00017AD4', Keywords: { Keywords: ['0x0002CB72', '0x00013794', '0x00249612'] } },
     },
     '0x00017AD4': {
       header: { signature: 'BPTD', form_id: '0x00017AD4' },
+      editor_id: 'HumanBodyPartData',
       fields: (human as { fields: unknown }).fields as Record<string, unknown>,
     },
     // Guardian: NPC_ → RACE → BPTD, exercises `conditionPartsOnly` end to end.
     RD01_Enc01_GuardianBot: {
       header: { signature: 'NPC_', form_id: '0x00771D8C' },
+      editor_id: 'RD01_Enc01_GuardianBot',
       fields: { Race: '0x00774595' },
     },
     '0x00774595': {
       header: { signature: 'RACE', form_id: '0x00774595' },
+      editor_id: 'RD01_GuardianRace',
       fields: { 'Body Part Data': '0x0077B596' },
     },
     '0x0077B596': {
       header: { signature: 'BPTD', form_id: '0x0077B596' },
+      editor_id: 'GuardianBodyPartData',
       fields: (guardian as { fields: unknown }).fields as Record<string, unknown>,
     },
     // Blue Devil: RACE directly, exercises `crippleImmune` forcing every part non-crippable.
     BlueDevilRace: {
       header: { signature: 'RACE', form_id: '0x00847623' },
+      editor_id: 'BlueDevilRace',
       fields: { 'Body Part Data': '0x00017AD4' },
     },
   };
@@ -149,6 +177,7 @@ describe('extractBodyParts NPC_ → RACE resolution', () => {
       if (!record) throw new Error(`not found: ${target}`);
       return record;
     },
+    resolveEdid: async (formId: string) => records[formId]?.editor_id ?? `<unresolved:${formId}>`,
   } as unknown as EsmClient;
 
   it('resolves NPC_ rows through fields.Race and RACE rows directly', async () => {
@@ -165,6 +194,22 @@ describe('extractBodyParts NPC_ → RACE resolution', () => {
     // Standard rows keep taking the direct RACE path.
     expect(race!.category).toBe('standard');
     expect(race!.formId).toBe('0x00013746');
+  });
+
+  it('records the resolved RACE edid and its ActorType* keywords for enemy-type matching', async () => {
+    const { races } = await extractBodyParts(fakeClient);
+    const race = races.find(r => r.id === 'HumanRace');
+    const boss = races.find(r => r.id === 'Burn_BountyTarget_BIG_Death');
+    const guardianBoss = races.find(r => r.id === 'RD01_Enc01_GuardianBot');
+    // RACE rows: raceEdid equals the row id; KWDA filtered to ActorType* only.
+    expect(race!.raceEdid).toBe('HumanRace');
+    expect(race!.keywords).toEqual(['ActorTypeHuman', 'ActorTypeNPC']);
+    // NPC_ rows: raceEdid is the resolved race's edid, not the boss's own id.
+    expect(boss!.raceEdid).toBe('HumanRace');
+    expect(boss!.keywords).toEqual(['ActorTypeHuman', 'ActorTypeNPC']);
+    // A race with no Keywords block yields an empty list, not a crash.
+    expect(guardianBoss!.raceEdid).toBe('RD01_GuardianRace');
+    expect(guardianBoss!.keywords).toEqual([]);
   });
 
   it('applies conditionPartsOnly through the full NPC_ → RACE → BPTD resolution', async () => {

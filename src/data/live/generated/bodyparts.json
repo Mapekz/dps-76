@@ -2,6 +2,12 @@
  {
   "id": "HumanRace",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Human",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -49,6 +55,13 @@
  {
   "id": "FeralGhoulRace",
   "formId": "0x0006B4EC",
+  "raceEdid": "FeralGhoulRace",
+  "keywords": [
+   "ActorTypeCreature",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeHumanlike",
+   "ActorTypeFeralGhoul"
+  ],
   "name": "Feral Ghoul",
   "bodyPartDataFormId": "0x0006B4F1",
   "parts": [
@@ -96,6 +109,16 @@
  {
   "id": "ScorchedRace",
   "formId": "0x0010CA5F",
+  "raceEdid": "ScorchedRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeScorched",
+   "ActorTypeCreature",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeHumanlike",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Scorched",
   "bodyPartDataFormId": "0x0010CA60",
   "parts": [
@@ -143,6 +166,15 @@
  {
   "id": "SuperMutantRace",
   "formId": "0x0001A009",
+  "raceEdid": "SuperMutantRace",
+  "keywords": [
+   "ActorTypeSuperMutant",
+   "ActorTypeCreature",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeBossType",
+   "ActorTypeHumanlike",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Super Mutant",
   "bodyPartDataFormId": "0x0002B4C3",
   "parts": [
@@ -190,6 +222,16 @@
  {
   "id": "SupermutantBehemothRace",
   "formId": "0x000BB7D9",
+  "raceEdid": "SupermutantBehemothRace",
+  "keywords": [
+   "ActorTypeSuperMutantBehemoth",
+   "ActorTypeSuperMutant",
+   "ActorTypeHuge",
+   "ActorTypeCreature",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeBossType",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Behemoth",
   "bodyPartDataFormId": "0x000BB7DC",
   "parts": [
@@ -237,6 +279,14 @@
  {
   "id": "MoleMinerRace",
   "formId": "0x00012E6B",
+  "raceEdid": "MoleMinerRace",
+  "keywords": [
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeCreature",
+   "ActorTypeMoleMiner",
+   "ActorTypeHumanlike",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Mole Miner",
   "bodyPartDataFormId": "0x00012E6E",
   "parts": [
@@ -284,6 +334,15 @@
  {
   "id": "ViciousDogRace",
   "formId": "0x0003578A",
+  "raceEdid": "ViciousDogRace",
+  "keywords": [
+   "ActorTypeDog",
+   "ActorTypeFeralDog",
+   "ActorTypeCreature",
+   "ActorTypeAnimal",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeForButchersBountyPerk"
+  ],
   "name": "Wild Mongrel",
   "bodyPartDataFormId": "0x000429BE",
   "parts": [
@@ -319,6 +378,14 @@
  {
   "id": "WendigoRace",
   "formId": "0x0001554D",
+  "raceEdid": "WendigoRace",
+  "keywords": [
+   "ActorTypeWendigo",
+   "ActorTypeCryptid",
+   "ActorTypeCreature",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeWeaponsExpertGatheringBuff"
+  ],
   "name": "Wendigo",
   "bodyPartDataFormId": "0x00015550",
   "parts": [
@@ -366,6 +433,16 @@
  {
   "id": "WendigoColossusRace",
   "formId": "0x00547992",
+  "raceEdid": "WendigoColossusRace",
+  "keywords": [
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeCryptid",
+   "ActorTypeWendigoColossus",
+   "ActorTypeCreature",
+   "ActorTypeBossType",
+   "ActorTypeCannotConvertToLost",
+   "ActorTypeWeaponsExpertGatheringBuff"
+  ],
   "name": "Wendigo Colossus",
   "bodyPartDataFormId": "0x0055AEC9",
   "parts": [
@@ -401,6 +478,15 @@
  {
   "id": "YaoGuaiRace",
   "formId": "0x000A0F2F",
+  "raceEdid": "YaoGuaiRace",
+  "keywords": [
+   "ActorTypeCreature",
+   "ActorTypeAnimal",
+   "ActorTypeYaoGuai",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeForButchersBountyPerk",
+   "ActorTypeBossType"
+  ],
   "name": "Yao Guai",
   "bodyPartDataFormId": "0x000A0F32",
   "parts": [
@@ -436,6 +522,16 @@
  {
   "id": "DeathclawRace",
   "formId": "0x0001DB4A",
+  "raceEdid": "DeathclawRace",
+  "keywords": [
+   "ActorTypeCreature",
+   "ActorTypeDeathclaw",
+   "ActorTypeReptile",
+   "ActorTypeHuge",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeForButchersBountyPerk",
+   "ActorTypeBossType"
+  ],
   "name": "Deathclaw",
   "bodyPartDataFormId": "0x0001DB4D",
   "parts": [
@@ -507,6 +603,15 @@
  {
   "id": "MirelurkRace",
   "formId": "0x00023FFC",
+  "raceEdid": "MirelurkRace",
+  "keywords": [
+   "ActorTypeCreature",
+   "ActorTypeMirelurk",
+   "ActorTypeArthropods",
+   "ActorTypeForButchersBountyPerk",
+   "ActorTypeAquatic",
+   "ActorTypeCreatureNoPrey"
+  ],
   "name": "Mirelurk",
   "bodyPartDataFormId": "0x00023FFF",
   "parts": [
@@ -560,6 +665,16 @@
  {
   "id": "MirelurkHunterRace",
   "formId": "0x00064C60",
+  "raceEdid": "MirelurkHunterRace",
+  "keywords": [
+   "ActorTypeCreature",
+   "ActorTypeMirelurk",
+   "ActorTypeArthropods",
+   "ActorTypeAquatic",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeMirelurkHunter",
+   "ActorTypeForButchersBountyPerk"
+  ],
   "name": "Mirelurk Hunter",
   "bodyPartDataFormId": "0x00064C61",
   "parts": [
@@ -613,6 +728,16 @@
  {
   "id": "MirelurkKingRace",
   "formId": "0x000B7F91",
+  "raceEdid": "MirelurkKingRace",
+  "keywords": [
+   "ActorTypeCreature",
+   "ActorTypeMirelurkKing",
+   "ActorTypeArthropods",
+   "ActorTypeForButchersBountyPerk",
+   "ActorTypeAquatic",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeMirelurk"
+  ],
   "name": "Mirelurk King",
   "bodyPartDataFormId": "0x000B7F94",
   "parts": [
@@ -660,6 +785,18 @@
  {
   "id": "MirelurkQueenRace",
   "formId": "0x000E12A6",
+  "raceEdid": "MirelurkQueenRace",
+  "keywords": [
+   "ActorTypeCreature",
+   "ActorTypeMirelurkQueen",
+   "ActorTypeArthropods",
+   "ActorTypeForButchersBountyPerk",
+   "ActorTypeAquatic",
+   "ActorTypeHuge",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeMirelurk",
+   "ActorTypeBossType"
+  ],
   "name": "Mirelurk Queen",
   "bodyPartDataFormId": "0x000E12AA",
   "parts": [
@@ -725,6 +862,17 @@
  {
   "id": "MothmanRace",
   "formId": "0x0000D233",
+  "raceEdid": "MothmanRace",
+  "keywords": [
+   "ActorTypeCryptid",
+   "ActorTypeBug",
+   "ActorTypeMothman",
+   "ActorTypeCreature",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeBossType",
+   "ActorTypeCannotConvertToLost",
+   "ActorTypeWeaponsExpertGatheringBuff"
+  ],
   "name": "Mothman",
   "bodyPartDataFormId": "0x0000DAFE",
   "parts": [
@@ -772,6 +920,19 @@
  {
   "id": "ScorchBeastRace",
   "formId": "0x00019D95",
+  "raceEdid": "ScorchBeastRace",
+  "keywords": [
+   "ActorTypeCreature",
+   "ActorTypeScorched",
+   "ActorTypeScorchbeast",
+   "ActorTypeHuge",
+   "ActorTypeFlying",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeForButchersBountyPerk",
+   "ActorTypeAnimal",
+   "ActorTypeBossType",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Scorchbeast",
   "bodyPartDataFormId": "0x00017DD5",
   "parts": [
@@ -825,6 +986,16 @@
  {
   "id": "RadScorpionRace",
   "formId": "0x000636AB",
+  "raceEdid": "RadScorpionRace",
+  "keywords": [
+   "ActorTypeCreature",
+   "ActorTypeRadScorpion",
+   "ActorTypeArthropods",
+   "ActorTypeRadBeasts",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeForButchersBountyPerk",
+   "ActorTypeBug"
+  ],
   "name": "Radscorpion",
   "bodyPartDataFormId": "0x000636A8",
   "parts": [
@@ -878,6 +1049,14 @@
  {
   "id": "SnallyGasterRace",
   "formId": "0x0000D191",
+  "raceEdid": "SnallyGasterRace",
+  "keywords": [
+   "ActorTypeSnallygaster",
+   "ActorTypeCryptid",
+   "ActorTypeCreature",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeWeaponsExpertGatheringBuff"
+  ],
   "name": "Snallygaster",
   "bodyPartDataFormId": "0x00012A88",
   "parts": [
@@ -913,6 +1092,17 @@
  {
   "id": "GraftonMonsterRace",
   "formId": "0x0000E889",
+  "raceEdid": "GraftonMonsterRace",
+  "keywords": [
+   "ActorTypeGraftonMonster",
+   "ActorTypeCryptid",
+   "ActorTypeHuge",
+   "ActorTypeCreature",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeBossType",
+   "ActorTypeHumanlike",
+   "ActorTypeWeaponsExpertGatheringBuff"
+  ],
   "name": "Grafton Monster",
   "bodyPartDataFormId": "0x0000E88D",
   "parts": [
@@ -960,6 +1150,16 @@
  {
   "id": "SheepsquatchRace",
   "formId": "0x00479D50",
+  "raceEdid": "SheepsquatchRace",
+  "keywords": [
+   "ActorTypeCreature",
+   "ActorTypeSheepsquatch",
+   "ActorTypeForButchersBountyPerk",
+   "ActorTypeHuge",
+   "ActorTypeCryptid",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeWeaponsExpertGatheringBuff"
+  ],
   "name": "Sheepsquatch",
   "bodyPartDataFormId": "0x00479D3B",
   "parts": [
@@ -1007,6 +1207,17 @@
  {
   "id": "MegaSlothRace",
   "formId": "0x0013BA06",
+  "raceEdid": "MegaSlothRace",
+  "keywords": [
+   "ActorTypeMegaSloth",
+   "ActorTypeCreature",
+   "ActorTypeAnimal",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeCryptid",
+   "ActorTypeForButchersBountyPerk",
+   "ActorTypeBossType",
+   "ActorTypeWeaponsExpertGatheringBuff"
+  ],
   "name": "Megasloth",
   "bodyPartDataFormId": "0x0013BA05",
   "parts": [
@@ -1060,6 +1271,13 @@
  {
   "id": "HoneyBeastRace",
   "formId": "0x0000E7D3",
+  "raceEdid": "HoneyBeastRace",
+  "keywords": [
+   "ActorTypeCreature",
+   "ActorTypeBug",
+   "ActorTypeHoneyBeast",
+   "ActorTypeCreatureNoPrey"
+  ],
   "name": "Honey Beast",
   "bodyPartDataFormId": "0x0000E7D4",
   "parts": [
@@ -1101,6 +1319,16 @@
  {
   "id": "DLC03_AnglerRace",
   "formId": "0x0011092F",
+  "raceEdid": "DLC03_AnglerRace",
+  "keywords": [
+   "ActorTypeCreature",
+   "ActorTypeAngler",
+   "ActorTypeAquatic",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeCryptid",
+   "ActorTypeForButchersBountyPerk",
+   "ActorTypeWeaponsExpertGatheringBuff"
+  ],
   "name": "Angler",
   "bodyPartDataFormId": "0x00110932",
   "parts": [
@@ -1148,6 +1376,17 @@
  {
   "id": "DLC03_FogCrawlerRace",
   "formId": "0x00110A4E",
+  "raceEdid": "DLC03_FogCrawlerRace",
+  "keywords": [
+   "ActorTypeForButchersBountyPerk",
+   "ActorTypeCreature",
+   "ActorTypeAquatic",
+   "ActorTypeArthropods",
+   "ActorTypeHuge",
+   "ActorTypeFogCrawler",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeBug"
+  ],
   "name": "Fog Crawler",
   "bodyPartDataFormId": "0x00110B34",
   "parts": [
@@ -1195,6 +1434,14 @@
  {
   "id": "DLC03_GulperRace",
   "formId": "0x00110D23",
+  "raceEdid": "DLC03_GulperRace",
+  "keywords": [
+   "ActorTypeCreature",
+   "ActorTypeGulper",
+   "ActorTypeAquatic",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeForButchersBountyPerk"
+  ],
   "name": "Gulper",
   "bodyPartDataFormId": "0x0011105E",
   "parts": [
@@ -1254,6 +1501,17 @@
  {
   "id": "FlatwoodsMonsterRace",
   "formId": "0x00110E0A",
+  "raceEdid": "FlatwoodsMonsterRace",
+  "keywords": [
+   "ActorTypeFlatwoodsMonster",
+   "ActorTypeCryptid",
+   "ActorTypeAlien",
+   "ActorTypeFlying",
+   "ActorTypeCreature",
+   "ActorTypeHumanlike",
+   "ActorTypeCannotConvertToLost",
+   "ActorTypeWeaponsExpertGatheringBuff"
+  ],
   "name": "Flatwoods Monster",
   "bodyPartDataFormId": "0x0011CF06",
   "parts": [
@@ -1289,6 +1547,18 @@
  {
   "id": "BlueDevilRace",
   "formId": "0x006A0649",
+  "raceEdid": "BlueDevilRace",
+  "keywords": [
+   "ActorTypeCreature",
+   "ActorTypeHuge",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeForButchersBountyPerk",
+   "ActorTypeBossType",
+   "ActorTypeCryptid",
+   "ActorTypeBlueDevil",
+   "ActorTypeFeralDog",
+   "ActorTypeWeaponsExpertGatheringBuff"
+  ],
   "name": "Blue Devil",
   "bodyPartDataFormId": "0x006CA373",
   "parts": [
@@ -1342,6 +1612,17 @@
  {
   "id": "OguaRace",
   "formId": "0x0068EC56",
+  "raceEdid": "OguaRace",
+  "keywords": [
+   "ActorTypeCreature",
+   "ActorTypeAnimal",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeCryptid",
+   "ActorTypeForButchersBountyPerk",
+   "ActorTypeBossType",
+   "ActorTypeOgua",
+   "ActorTypeWeaponsExpertGatheringBuff"
+  ],
   "name": "Ogua",
   "bodyPartDataFormId": "0x0068EC52",
   "parts": [
@@ -1401,6 +1682,15 @@
  {
   "id": "UltraciteAbominationRace",
   "formId": "0x00656CD6",
+  "raceEdid": "UltraciteAbominationRace",
+  "keywords": [
+   "ActorTypeCreature",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeBossType",
+   "ActorTypeHuge",
+   "ActorTypeUltraciteAbomination",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Ultracite Titan",
   "bodyPartDataFormId": "0x00656CD4",
   "parts": [
@@ -1448,6 +1738,12 @@
  {
   "id": "AssaultronRace",
   "formId": "0x000D8417",
+  "raceEdid": "AssaultronRace",
+  "keywords": [
+   "ActorTypeRobot",
+   "ActorTypeRobotNoTurret",
+   "ActorTypeAssaultron"
+  ],
   "name": "Assaultron",
   "bodyPartDataFormId": "0x000DF255",
   "parts": [
@@ -1501,6 +1797,12 @@
  {
   "id": "ProtectronRace",
   "formId": "0x000DFB33",
+  "raceEdid": "ProtectronRace",
+  "keywords": [
+   "ActorTypeRobot",
+   "ActorTypeProtectron",
+   "ActorTypeRobotNoTurret"
+  ],
   "name": "Protectron",
   "bodyPartDataFormId": "0x00181B3A",
   "parts": [
@@ -1554,6 +1856,13 @@
  {
   "id": "SentryBotRace",
   "formId": "0x000AE0B7",
+  "raceEdid": "SentryBotRace",
+  "keywords": [
+   "ActorTypeRobot",
+   "ActorTypeSentryBot",
+   "ActorTypeRobotNoTurret",
+   "ActorTypeBossType"
+  ],
   "name": "Sentry Bot",
   "bodyPartDataFormId": "0x000AE0BA",
   "parts": [
@@ -1625,6 +1934,12 @@
  {
   "id": "LiberatorRace",
   "formId": "0x00002ECF",
+  "raceEdid": "LiberatorRace",
+  "keywords": [
+   "ActorTypeRobot",
+   "ActorTypeLiberator",
+   "ActorTypeRobotNoTurret"
+  ],
   "name": "Liberator",
   "bodyPartDataFormId": "0x00002ED2",
   "parts": [
@@ -1654,6 +1969,11 @@
  {
   "id": "StormBossRace",
   "formId": "0x006D65BB",
+  "raceEdid": "StormBossRace",
+  "keywords": [
+   "ActorTypeRobot",
+   "ActorTypeBossType"
+  ],
   "name": "Storm Goliath",
   "bodyPartDataFormId": "0x006D79FF",
   "parts": [
@@ -1719,6 +2039,17 @@
  {
   "id": "BigfootRace",
   "formId": "0x00868BBC",
+  "raceEdid": "BigfootRace",
+  "keywords": [
+   "ActorTypeHuge",
+   "ActorTypeCreature",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeBossType",
+   "ActorTypeCannotConvertToLost",
+   "ActorTypeCryptid",
+   "ActorTypeBigfoot",
+   "ActorTypeWeaponsExpertGatheringBuff"
+  ],
   "name": "Bigfoot",
   "bodyPartDataFormId": "0x00868BAA",
   "parts": [
@@ -1766,6 +2097,16 @@
  {
   "id": "Burn_E01_EncDeathclawMatriarch",
   "formId": "0x0001DB4A",
+  "raceEdid": "DeathclawRace",
+  "keywords": [
+   "ActorTypeCreature",
+   "ActorTypeDeathclaw",
+   "ActorTypeReptile",
+   "ActorTypeHuge",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeForButchersBountyPerk",
+   "ActorTypeBossType"
+  ],
   "name": "Deathclaw Matriarch",
   "bodyPartDataFormId": "0x0001DB4D",
   "parts": [
@@ -1837,6 +2178,13 @@
  {
   "id": "RD01_Enc01_GuardianBot",
   "formId": "0x00774595",
+  "raceEdid": "GuardianBotRace",
+  "keywords": [
+   "ActorTypeRobot",
+   "ActorTypeSentryBot",
+   "ActorTypeRobotNoTurret",
+   "ActorTypeBossType"
+  ],
   "name": "EN06 Guardian",
   "bodyPartDataFormId": "0x0077B596",
   "parts": [
@@ -1860,6 +2208,12 @@
  {
   "id": "RD01_Enc04_Grenadier",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Epsilon Squad - Lynx",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -1907,6 +2261,12 @@
  {
   "id": "RD01_Enc04_Assassin",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Epsilon Squad - Vulture",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -1954,6 +2314,12 @@
  {
   "id": "RD01_Enc04_Brute",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Epsilon Squad - Bloodhound",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -2001,6 +2367,11 @@
  {
   "id": "RD01_Enc06_ScorchtongueHead",
   "formId": "0x00786D48",
+  "raceEdid": "ScorchtongueHeadRace",
+  "keywords": [
+   "ActorTypeBossType",
+   "ActorTypeScorchTongue"
+  ],
   "name": "Ultracite Terror",
   "bodyPartDataFormId": "0x00786D45",
   "parts": [
@@ -2072,6 +2443,12 @@
  {
   "id": "HTO_LvlBloodEagle_Boss_T5",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Blood Eagle Destroyer",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -2119,6 +2496,11 @@
  {
   "id": "HTO_LvlPRCGhoul_Boss_T5",
   "formId": "0x000EAFB6",
+  "raceEdid": "GhoulRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeGhoul"
+  ],
   "name": "Communist Commissar",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -2166,6 +2548,12 @@
  {
   "id": "HTO_LvlCultist_Boss_T5",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Cultist Prophet",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -2213,6 +2601,14 @@
  {
   "id": "HTO_LvlMoleMiner_Boss_T5",
   "formId": "0x00012E6B",
+  "raceEdid": "MoleMinerRace",
+  "keywords": [
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeCreature",
+   "ActorTypeMoleMiner",
+   "ActorTypeHumanlike",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Mole Miner Juggernaut",
   "bodyPartDataFormId": "0x00012E6E",
   "parts": [
@@ -2260,6 +2656,15 @@
  {
   "id": "HTO_LvlSuperMutant_Boss_T5",
   "formId": "0x0001A009",
+  "raceEdid": "SuperMutantRace",
+  "keywords": [
+   "ActorTypeSuperMutant",
+   "ActorTypeCreature",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeBossType",
+   "ActorTypeHumanlike",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Super Mutant Primus",
   "bodyPartDataFormId": "0x0002B4C3",
   "parts": [
@@ -2307,6 +2712,16 @@
  {
   "id": "HTO_LvlScorched_Boss_T5",
   "formId": "0x0010CA5F",
+  "raceEdid": "ScorchedRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeScorched",
+   "ActorTypeCreature",
+   "ActorTypeCreatureNoPrey",
+   "ActorTypeHumanlike",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Scorched Exterminator",
   "bodyPartDataFormId": "0x0010CA60",
   "parts": [
@@ -2354,6 +2769,12 @@
  {
   "id": "HTO_LvlRobot_Boss_T5",
   "formId": "0x000D8417",
+  "raceEdid": "AssaultronRace",
+  "keywords": [
+   "ActorTypeRobot",
+   "ActorTypeRobotNoTurret",
+   "ActorTypeAssaultron"
+  ],
   "name": "Assaultron Intimidator",
   "bodyPartDataFormId": "0x000DF255",
   "parts": [
@@ -2407,6 +2828,11 @@
  {
   "id": "Burn_BountyTarget_BIG_Death",
   "formId": "0x000EAFB6",
+  "raceEdid": "GhoulRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeGhoul"
+  ],
   "name": "The Pale Horseman",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -2454,6 +2880,12 @@
  {
   "id": "Burn_BountyTarget_BIG_War",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "The Red Rider",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -2501,6 +2933,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Pestilence",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "The White Horseman",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -2548,6 +2986,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Famine",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "The Black Horseman",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -2595,6 +3039,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Granny",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Granny Dolores",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -2642,6 +3092,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Astronaut",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "The Space Ranger",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -2689,6 +3145,12 @@
  {
   "id": "Burn_BountyTarget_BIG_AntiGhoul",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Cletus Brimstone",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -2736,6 +3198,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Irradiated",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Irene The Irradiated",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -2783,6 +3251,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Pilot",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "The Ace",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -2830,6 +3304,12 @@
  {
   "id": "Burn_BountyTarget_BIG_NukaQueen",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Anna The Nuka-Queen",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -2877,6 +3357,12 @@
  {
   "id": "Burn_BountyTarget_BIG_QuackDoctor",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "The Malpractitioner",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -2924,6 +3410,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Patriot",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Corporal Jane",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -2971,6 +3463,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Foreman",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "The Foreman",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -3018,6 +3516,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Researcher",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "The Chief Researcher",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -3065,6 +3569,12 @@
  {
   "id": "Burn_BountyTarget_BIG_ScoutLeader",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Scout Leader Karen",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -3112,6 +3622,12 @@
  {
   "id": "Burn_BountyTarget_BIG_BarryTone",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Ragtime Randy",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -3159,6 +3675,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Devil",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "The Devil of Defiance",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -3206,6 +3728,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Rich",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Baron Boris Wazie",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -3253,6 +3781,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Gambler",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Vito \"The Vic\" Bronco",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -3300,6 +3834,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Mechanist",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Tincan Toni",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -3347,6 +3887,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Fisherman",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Amadi the Piranha",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -3394,6 +3940,12 @@
  {
   "id": "Burn_BountyTarget_BIG_RoboBrain",
   "formId": "0x0010EAE9",
+  "raceEdid": "DLC01RoboBrainRace",
+  "keywords": [
+   "ActorTypeRobot",
+   "ActorTypeRobobrain",
+   "ActorTypeRobotNoTurret"
+  ],
   "name": "Chief Engineer Lewis",
   "bodyPartDataFormId": "0x0010F0E3",
   "parts": [
@@ -3459,6 +4011,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Sniper",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Charlie Half-Cocked",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -3506,6 +4064,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Boxer",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Becca The Heavyweight",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -3553,6 +4117,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Gunslinger",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Cowgirl Janine",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -3600,6 +4170,12 @@
  {
   "id": "Burn_BountyTarget_BIG_BigGun",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Richie Finesse",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -3647,6 +4223,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Crusher",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Gentle Gary",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -3694,6 +4276,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Commie",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "The Proletariat Punisher",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -3741,6 +4329,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Abraxo",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "The Cleaner",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [
@@ -3788,6 +4382,12 @@
  {
   "id": "Burn_BountyTarget_BIG_Hunter",
   "formId": "0x00013746",
+  "raceEdid": "HumanRace",
+  "keywords": [
+   "ActorTypeNPC",
+   "ActorTypeHuman",
+   "ActorTypeCannotConvertToLost"
+  ],
   "name": "Colt the Bolt",
   "bodyPartDataFormId": "0x00017AD4",
   "parts": [

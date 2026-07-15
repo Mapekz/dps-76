@@ -1,5 +1,6 @@
 import type { BodyPartRaceCategory, GeneratedBodyPart, GeneratedBodyPartRace } from '../../src/types/generated';
 import { EsmClient, mapPool } from './esm-client';
+import { isEnemyKeyword } from './normalize/conditions';
 
 /**
  * Enemy body-part damage multipliers: RACE → "Body Part Data" BPTD → per-part
@@ -271,6 +272,18 @@ export async function extractBodyParts(client: EsmClient): Promise<BodyPartsResu
           return null;
         }
       }
+      // Enemy-type identity for damage-vs conditions: the RACE's ActorType*
+      // keywords (Zealot's/Paranormal HasKeyword gates) — same predicate that
+      // classifies enemyType conditions in normalize/conditions.ts. The race
+      // edid itself (GetIsRace gates, Assassin's "HumanRace") is stored
+      // separately as raceEdid below. Boss NPC_ records are never consulted:
+      // no extracted condition references a boss-only keyword.
+      const keywordsNode = (raceRecord.fields['Keywords'] ?? {}) as Record<string, unknown>;
+      const keywordFormIds: string[] = Array.isArray(keywordsNode['Keywords'])
+        ? (keywordsNode['Keywords'] as string[])
+        : [];
+      const keywords = (await Promise.all(keywordFormIds.map(id => client.resolveEdid(id)))).filter(isEnemyKeyword);
+
       const bptdFormId = raceRecord.fields['Body Part Data'] as string | null;
       if (!bptdFormId) {
         unresolved.push(`bodyparts: RACE for ${edid} has no Body Part Data`);
@@ -288,6 +301,8 @@ export async function extractBodyParts(client: EsmClient): Promise<BodyPartsResu
       return {
         id: edid,
         formId: raceRecord.header.form_id,
+        raceEdid: raceRecord.editor_id,
+        keywords,
         name: label,
         bodyPartDataFormId: bptdFormId,
         parts,

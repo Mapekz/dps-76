@@ -130,7 +130,13 @@ function isWeaponTypeKeyword(edid: string): boolean {
   );
 }
 
-function isEnemyKeyword(edid: string): boolean {
+/**
+ * The enemy-type classification boundary, shared with extract-bodyparts: a
+ * HasKeyword on one of these becomes an `enemyType` condition here, and the
+ * bodyparts extractor stores exactly this keyword subset per curated race so
+ * the engine's target matching can never under-cover what conditions reference.
+ */
+export function isEnemyKeyword(edid: string): boolean {
   return edid.startsWith('ActorType');
 }
 
