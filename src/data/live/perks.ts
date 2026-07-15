@@ -15,7 +15,7 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.TightlyWound]: { name: "Tightly Wound" },
   [PerkId.Slugger]: { name: "Slugger" },
   [PerkId.WoundSalter]: { name: "Wound Salter" },
-  [PerkId.ThruHiker]: { name: "Thru Hiker" },
+  [PerkId.ThruHiker]: { name: "Thru-Hiker" }, // ESM casing "Thru-hiker", corrected
   [PerkId.BulletShield]: { name: "Bullet Shield" },
   [PerkId.IronFist]: { name: "Iron Fist" },
   [PerkId.PackRat]: { name: "Pack Rat" },
@@ -27,18 +27,18 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.Blocker]: { name: "Blocker" },
   [PerkId.NaturalStance]: { name: "Natural Stance" }, // -25% stagger - not implemented
   [PerkId.BloodLuster]: { name: "Blood Luster" }, // Team buff - not implemented
-  [PerkId.Kneecapper]: { name: "Knee-capper" },
+  [PerkId.Kneecapper]: { name: "Knee-Capper" },
   [PerkId.HeavyHitter]: { name: "Heavy Hitter" },
   [PerkId.LoveTheSpread]: { name: "Love the Spread" }, // +30% range - not damage
   [PerkId.ShotgunChamp]: { name: "Shotgun Champ" }, // Per projectile
   [PerkId.BulletStorm]: { name: "Bullet Storm" },
-  [PerkId.BringingOutTheBigGuns]: { name: "Bringing Out the Big Guns" }, // Doubles Bullet Storm max stacks - special handling
+  [PerkId.BringingOutTheBigGuns]: { name: "Bringing the Big Guns" }, // Doubles Bullet Storm max stacks - special handling
   [PerkId.MartialArtist]: { name: "Martial Artist" }, // +30% swing speed - not direct damage
   [PerkId.FullCharge]: { name: "Full Charge" },
   [PerkId.Scattershot]: { name: "Scattershot" }, // Shotgun-specific - need to verify
   [PerkId.StrongBack]: { name: "Strong Back" }, // Carry weight - not combat
   [PerkId.OrdnanceExpress]: { name: "Ordnance Express" }, // Weight reduction - not combat
-  [PerkId.LockAndLoad]: { name: "Lock And Load" }, // Reload speed - indirect combat
+  [PerkId.LockAndLoad]: { name: "Lock and Load" }, // Reload speed - indirect combat
   [PerkId.PainTrain]: { name: "Pain Train" }, // Sprint damage - not implemented
   [PerkId.ArmsKeeper]: { name: "Arms Keeper" }, // Durability - not combat
   [PerkId.PortablePower]: { name: "Portable Power" },
@@ -49,7 +49,7 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.GreenThumb]: { name: "Green Thumb" }, // Harvesting - not combat
   [PerkId.NightPerson]: { name: "Night Person" }, // Night time bonus - not implemented
   [PerkId.Pannapictagraphist]: { name: "Pannapictagraphist" }, // Photo mode - not combat
-  [PerkId.Perceptibobble]: { name: "Perceptibobble" }, // Bobblehead duration - not combat
+  [PerkId.Perceptibobble]: { name: "Percepti-Bobble" }, // Bobblehead duration - not combat
   [PerkId.Refractor]: { name: "Refractor" }, // SPECIAL-scaled: ER = PER value
   [PerkId.Sniper]: { name: "Sniper" }, // Scoped rifle damage - need weapon mod check
   [PerkId.ButchersBounty]: { name: "Butcher's Bounty" }, // Meat harvest - not combat
@@ -65,8 +65,8 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.FastFighter]: { name: "Fast Fighter" }, // Fire rate - not direct damage
   [PerkId.NumberCruncher]: { name: "Number Cruncher" }, // Damage numbers display - not combat
   [PerkId.StrongArm]: { name: "Strong Arm" }, // Throwing range - not direct damage
-  [PerkId.RiflemanExpert]: { name: "Rifleman Expert" }, // Old weapon-type perk - reworked
-  [PerkId.RiflemanMaster]: { name: "Rifleman Master" }, // Old weapon-type perk - reworked
+  [PerkId.RiflemanExpert]: { name: "Scoped-Up" }, // Combat-overhaul rename of Rifleman Expert; ESM casing "Scoped-up", corrected
+  [PerkId.RiflemanMaster]: { name: "Smart Shot" }, // Combat-overhaul rename of Rifleman Master
   [PerkId.Exterminator]: { name: "Exterminator" },
   [PerkId.BowBeforeMe]: { name: "Bow Before Me" }, // Bow/crossbow only
   [PerkId.GroundPounder]: { name: "Ground Pounder" }, // Reload speed & accuracy - not direct damage
@@ -74,9 +74,9 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.Grenadier]: { name: "Grenadier" }, // 2x explosion radius - area effect not damage
   [PerkId.LongShot]: { name: "Long Shot" }, // Range/accuracy - not direct damage
   [PerkId.NightEyes]: { name: "Night Eyes" }, // Night vision - not combat
-  [PerkId.Archer]: { name: "Archer" },
-  [PerkId.ArcherExpert]: { name: "Archer Expert" },
-  [PerkId.ArcherMaster]: { name: "Archer Master" },
+  [PerkId.Archer]: { name: "Hat Trick" }, // Combat-overhaul rename of Archer
+  [PerkId.ArcherExpert]: { name: "Deal Sealer" }, // Combat-overhaul rename of Archer Expert
+  [PerkId.ArcherMaster]: { name: "Master Archer" }, // Combat-overhaul rename of Archer Master
 
   // ============ ENDURANCE ============
   [PerkId.AquaBoyGirl]: { name: "Aqua Boy/Girl" },
@@ -92,10 +92,10 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.HydroFix]: { name: "Hydro Fix" },
   [PerkId.NaturalResistance]: { name: "Natural Resistance" },
   [PerkId.RadResistant]: { name: "Rad Resistant" },
-  [PerkId.LifeGiver]: { name: "Life Giver" },
+  [PerkId.LifeGiver]: { name: "LifeGiver" },
   [PerkId.AllNightLong]: { name: "All Night Long" },
   [PerkId.ChemResistant]: { name: "Chem Resistant" },
-  [PerkId.Fireproof]: { name: "Fireproof" },
+  [PerkId.Fireproof]: { name: "Hardy" }, // Combat-overhaul rename of Fireproof
   [PerkId.Ghoulish]: { name: "Ghoulish" }, // Rad healing - special mechanic
   [PerkId.Ironclad]: { name: "Ironclad" }, // +50% with matching armor set
   [PerkId.Rejuvenated]: { name: "Rejuvenated" }, // Well fed/hydrated bonuses - not direct combat
@@ -129,7 +129,7 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.StrangeInNumbers]: { name: "Strange In Numbers" },
   [PerkId.TeamMedic]: { name: "Team Medic" },
   [PerkId.Bloodsucker]: { name: "Bloodsucker" },
-  [PerkId.EMT]: { name: "EMT" },
+  [PerkId.EMT]: { name: "E.M.T." },
   [PerkId.MagneticPersonality]: { name: "Magnetic Personality" },
   [PerkId.FieldSurgeon]: { name: "Field Surgeon" },
   [PerkId.Injector]: { name: "Injector" },
@@ -138,7 +138,7 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.HealingHands]: { name: "Healing Hands" },
   [PerkId.TravelAgent]: { name: "Travel Agent" },
   [PerkId.OverlyGenerous]: { name: "Overly Generous" },
-  [PerkId.AntiEpidemic]: { name: "Anti Epidemic" },
+  [PerkId.AntiEpidemic]: { name: "Anti-Epidemic" },
   [PerkId.Tenderizer]: { name: "Tenderizer" }, // Enemy debuff - stacking damage taken
   [PerkId.WastelandWhisperer]: { name: "Wasteland Whisperer" },
 
@@ -167,7 +167,7 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.WreckingBall]: { name: "Wrecking Ball" }, // +100% damage to objects - not enemy combat
   [PerkId.Stabilized]: { name: "Stabilized" }, // Big guns, doubled in PA
   [PerkId.WeaponArtisan]: { name: "Weapon Artisan" },
-  [PerkId.NerdRage]: { name: "Nerd Rage" }, // Low health damage boost - conditional
+  [PerkId.NerdRage]: { name: "Nerd Rage!" }, // Low health damage boost - conditional
   [PerkId.StableTools]: { name: "Stable Tools" },
 
   // ============ AGILITY ============
@@ -205,7 +205,7 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   // ============ LUCK ============
   [PerkId.CanDo]: { name: "Can Do!" },
   [PerkId.GrimReapersSprint]: { name: "Grim Reaper's Sprint" },
-  [PerkId.LuckOfTheDraw]: { name: "Luck Of The Draw" },
+  [PerkId.LuckOfTheDraw]: { name: "Luck of the Draw" },
   [PerkId.MysteriousSavior]: { name: "Mysterious Savior" },
   [PerkId.MysteriousStranger]: { name: "Mysterious Stranger" },
   [PerkId.MysteryMeat]: { name: "Mystery Meat" },
@@ -217,7 +217,7 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.JunkShield]: { name: "Junk Shield" }, // SPECIAL-scaled DR/ER based on junk
   [PerkId.Psychopath]: { name: "Psychopath" },
   [PerkId.QuickHands]: { name: "Quick Hands" },
-  [PerkId.WoodChucker]: { name: "Wood Chucker" },
+  [PerkId.WoodChucker]: { name: "WoodChucker" },
   [PerkId.Ricochet]: { name: "Ricochet" }, // SPECIAL-scaled deflect chance
   [PerkId.StormChaser]: { name: "Storm Chaser" },
   [PerkId.Tormentor]: { name: "Tormentor" },
@@ -243,19 +243,19 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.RadioactiveStrength]: { name: "Radioactive Strength" }, // Assumes high Glow
   [PerkId.ArmsOfSteel]: { name: "Arms of Steel" }, // Unarmed/melee AP - not direct damage
   [PerkId.MadScientist]: { name: "Mad Scientist" }, // Assumes high Glow
-  [PerkId.EyeOfTheHunter]: { name: "Eye Of The Hunter" }, // +30% VATS accuracy at long range - not direct damage
+  [PerkId.EyeOfTheHunter]: { name: "Eye of the Hunter" }, // +30% VATS accuracy at long range - not direct damage
   [PerkId.BrickWall]: { name: "Brick Wall" }, // Stagger immunity when Glow high - not damage
   [PerkId.ChemDiet]: { name: "Chem Diet" }, // Chem weight reduction - not combat
   [PerkId.ScienceMonster]: { name: "Science Monster" }, // +15% damage for 10s when hit with Glow
   [PerkId.BombScientist]: { name: "Bomb Scientist" }, // Assumes high Glow
   [PerkId.MoralSupport]: { name: "Moral Support" }, // Team damage/resistances - not implemented
-  [PerkId.RadReaver]: { name: "Rad Reaver" }, // Rad heal & damage - complex
+  [PerkId.RadReaver]: { name: "Rad-Reaver" }, // Rad heal & damage - complex
   [PerkId.GunTricks]: { name: "Gun Tricks" }, // 30% reload speed - not direct damage
   [PerkId.HyperReflexes]: { name: "Hyper Reflexes" }, // Assumes high Glow, no PA
   [PerkId.GlowingOne]: { name: "Glowing One" }, // SPECIAL-scaled HP & resistances when Glow high
   [PerkId.GlowingHunter]: { name: "Glowing Hunter" }, // Additional bonus vs Glowing
   [PerkId.ThickSkin]: { name: "Thick Skin" }, // No PA
-  [PerkId.BattleGenes]: { name: "Battle Genes" }, // Melee scaling - complex
+  [PerkId.BattleGenes]: { name: "Battle-Genes" }, // Melee scaling - complex
   [PerkId.FeralPresence]: { name: "Feral Presence" }, // -30% enemy damage while Feral - enemy debuff
   [PerkId.UnitedOrdeal]: { name: "United Ordeal" }, // Ghoul + teammateCount>=1: +1/+2/+3 all SPECIAL by rank
   [PerkId.FaultySpots]: { name: "Faulty Spots" },
@@ -266,7 +266,7 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.RadiationPower]: { name: "Radiation Power" }, // Assumes high Glow
   [PerkId.WildWestHands]: { name: "Wild West Hands" }, // 36% instant reload chance - not direct damage
   [PerkId.BreathItIn]: { name: "Breathe It In" }, // Rad immunity - not direct combat
-  [PerkId.BoneShatterer]: { name: "Bone Shatterer" },
+  [PerkId.BoneShatterer]: { name: "Bone Shatterer" }, // ESM casing "Bone shatterer", corrected
 
   // ============ LEGENDARY PERKS ============
   // Not tied to any SPECIAL (no `special` field). ESM LGN_*_Perk families;

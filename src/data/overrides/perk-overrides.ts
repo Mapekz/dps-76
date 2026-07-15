@@ -12,14 +12,6 @@ import type { Special } from '@/data/special';
  * by normalized display name).
  */
 export const perkFamilyOverrides: Readonly<Record<string, string>> = {
-  // Combat-overhaul renames: registry keeps the legacy N&D id, the ESM family
-  // kept its legacy edid but the card was renamed (source: 20260702 ESM).
-  RiflemanExpert: 'RiflemanExpert', // card now "Scoped-up"
-  RiflemanMaster: 'RiflemanMaster', // card now "Smart Shot"
-  Archer: 'Archer', // card now "Hat Trick"
-  ArcherExpert: 'ArcherExpert', // card now "Deal Sealer"
-  ArcherMaster: 'ArcherMaster', // card now "Master Archer"
-  Fireproof: 'Fireproof', // card now "Hardy"
   // Gender-twin cards: registry uses a combined id, ESM has per-gender
   // families with identical effects — join to the Boy variant.
   ActionBoyGirl: 'ActionBoy',
@@ -31,11 +23,12 @@ export const perkFamilyOverrides: Readonly<Record<string, string>> = {
   // tiebreak is extraction-order dependent — pin the leveled card
   // (source: 20260702 ESM).
   BloodSacrifice: 'LGN_BloodSacrifice_Perk',
-  // The registry kept the pre-overhaul name "Bringing Out the Big Guns"; the
-  // card was renamed "Bringing the Big Guns" and its ESM family is the old
-  // standalone "HeavyGunnerMaster" perk repurposed as the card's home (source:
-  // 20260710 ESM — the old standalone HeavyGunnerMaster perk was removed).
-  BringingOutTheBigGuns: 'HeavyGunnerMaster',
+  // NOTE: combat-overhaul renames (Hat Trick, Deal Sealer, Master Archer,
+  // Scoped-Up, Smart Shot, Hardy, Bringing the Big Guns) used to be pinned
+  // here while the registry kept the legacy names; the registry now carries
+  // the current card names, so they join by normalized display name like
+  // everything else (source: 20260710 ESM). The name-drift test in
+  // perk-cards.test.ts fails loudly if a future extraction renames a card.
 };
 
 /**

@@ -46,6 +46,21 @@ describe('perk card registry — join coverage', () => {
     expect(orphans).toEqual(['ActionGirl', 'Antibiotic', 'Aquagirl', 'Conductor', 'LightMeal', 'PartyGirl']);
   });
 
+  it('every registry display name matches its joined family card name, except the combined gender-twin names', () => {
+    const registry = getPerks('live');
+    // Combined "Boy/Girl" PerkIds intentionally diverge from the per-gender
+    // ESM card names ("Action Boy", "Aquaboy", "Party Boy") they join.
+    const combinedGenderTwins = new Set<string>([PerkId.ActionBoyGirl, PerkId.AquaBoyGirl, PerkId.PartyBoyGirl]);
+    // Case-insensitive: the registry corrects ESM casing quirks ("Scoped-up",
+    // "Thru-hiker", "Bone shatterer") but must track renames punctuation-exact.
+    const mismatches = Object.entries(registry)
+      .filter(([perkId]) => !combinedGenderTwins.has(perkId))
+      .map(([perkId, perk]) => ({ perkId, name: perk.name, generated: getGeneratedPerk('live', perkId) }))
+      .filter(({ name, generated }) => generated && name.toLowerCase() !== generated.name.toLowerCase())
+      .map(({ perkId, name, generated }) => `${perkId}: registry "${name}" vs ESM card "${generated!.name}"`);
+    expect(mismatches).toEqual([]);
+  });
+
   it('every perkCardOverrides entry is for a PerkId that cannot otherwise derive a card (no stale overrides)', () => {
     const staleOverrides = Object.keys(perkCardOverrides).filter(perkId => !!getGeneratedPerk('live', perkId)?.card);
     expect(staleOverrides).toEqual([]);
@@ -94,11 +109,11 @@ describe('perk card registry — pinned real values (20260710 ESM)', () => {
     expect(registry[PerkId.StrongBack]).toMatchObject({ special: Special.Strength, maxRank: 1, costs: [2] });
   });
 
-  it('Rifleman Expert ("Scoped-up"): single rank costing 2 Perception points', () => {
+  it('Scoped-Up (ex Rifleman Expert): single rank costing 2 Perception points', () => {
     expect(registry[PerkId.RiflemanExpert]).toMatchObject({ special: Special.Perception, maxRank: 1, costs: [2] });
   });
 
-  it('Rifleman Master ("Smart Shot"): single rank costing 3 Perception points', () => {
+  it('Smart Shot (ex Rifleman Master): single rank costing 3 Perception points', () => {
     expect(registry[PerkId.RiflemanMaster]).toMatchObject({ special: Special.Perception, maxRank: 1, costs: [3] });
   });
 
@@ -110,7 +125,7 @@ describe('perk card registry — pinned real values (20260710 ESM)', () => {
     expect(registry[PerkId.CenterMasochist]).toMatchObject({ special: Special.Perception, maxRank: 3, costs: [1, 2, 3] });
   });
 
-  it('Bringing the Big Guns (renamed from "Bringing Out the Big Guns", joins HeavyGunnerMaster): single rank costing 3 Strength points', () => {
+  it('Bringing the Big Guns (ex "Bringing Out the Big Guns", joins the repurposed HeavyGunnerMaster family): single rank costing 3 Strength points', () => {
     expect(registry[PerkId.BringingOutTheBigGuns]).toMatchObject({ special: Special.Strength, maxRank: 1, costs: [3] });
   });
 
