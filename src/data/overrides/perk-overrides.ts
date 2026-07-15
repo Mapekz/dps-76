@@ -125,4 +125,76 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
       },
     ],
   ],
+  // Quick Hands (PERK QuickHands01-03 0x000221FC/0x001D2478/0x003E862D): EP-182
+  // "Auto Fill Weapon Clip" — 6/12/18% chance to instantly reload on empty
+  // clip. Procedural; the PERK records extract empty. op is nominal —
+  // foldChanceUnion reads value only. Human-locked (card race gate + defensive
+  // playerIsGhoul condition for URL-imported builds).
+  QuickHands: [
+    [
+      {
+        id: 'override:QuickHands:r1',
+        source: { kind: 'perk', formId: '0x000221FC', edid: 'QuickHands01', name: 'Quick Hands', rank: 1 },
+        bucket: 'reloadSkipChance',
+        op: 'ADD',
+        value: 0.06,
+        conditions: [{ kind: 'playerIsGhoul', value: false }],
+      },
+    ],
+    [
+      {
+        id: 'override:QuickHands:r2',
+        source: { kind: 'perk', formId: '0x001D2478', edid: 'QuickHands02', name: 'Quick Hands', rank: 2 },
+        bucket: 'reloadSkipChance',
+        op: 'ADD',
+        value: 0.12,
+        conditions: [{ kind: 'playerIsGhoul', value: false }],
+      },
+    ],
+    [
+      {
+        id: 'override:QuickHands:r3',
+        source: { kind: 'perk', formId: '0x003E862D', edid: 'QuickHands03', name: 'Quick Hands', rank: 3 },
+        bucket: 'reloadSkipChance',
+        op: 'ADD',
+        value: 0.18,
+        conditions: [{ kind: 'playerIsGhoul', value: false }],
+      },
+    ],
+  ],
+  // Wild West Hands (PERK GHL_WildWestHands01-03 0x00797E20/0x00797E30/
+  // 0x00797E2D): same EP-182 instant-reload family, ghoul-exclusive —
+  // 12/24/36%. Procedural; foldChanceUnion reads value only.
+  GHL_WildWestHands: [
+    [
+      {
+        id: 'override:GHL_WildWestHands:r1',
+        source: { kind: 'perk', formId: '0x00797E20', edid: 'GHL_WildWestHands01', name: 'Wild West Hands', rank: 1 },
+        bucket: 'reloadSkipChance',
+        op: 'ADD',
+        value: 0.12,
+        conditions: [{ kind: 'playerIsGhoul', value: true }],
+      },
+    ],
+    [
+      {
+        id: 'override:GHL_WildWestHands:r2',
+        source: { kind: 'perk', formId: '0x00797E30', edid: 'GHL_WildWestHands02', name: 'Wild West Hands', rank: 2 },
+        bucket: 'reloadSkipChance',
+        op: 'ADD',
+        value: 0.24,
+        conditions: [{ kind: 'playerIsGhoul', value: true }],
+      },
+    ],
+    [
+      {
+        id: 'override:GHL_WildWestHands:r3',
+        source: { kind: 'perk', formId: '0x00797E2D', edid: 'GHL_WildWestHands03', name: 'Wild West Hands', rank: 3 },
+        bucket: 'reloadSkipChance',
+        op: 'ADD',
+        value: 0.36,
+        conditions: [{ kind: 'playerIsGhoul', value: true }],
+      },
+    ],
+  ],
 };
