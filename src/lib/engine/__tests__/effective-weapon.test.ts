@@ -269,6 +269,48 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, measur
     );
     expect(withCap.weapon.reloadSpeed).toBeCloseTo(base + 0.1, 6);
   });
+
+  it('Fast Fighter shape: a moveSpeedBonus reload curve reads the bootstrap-folded move-speed sources', () => {
+    // The real override: identity curve × 0.5 — half the bonus move speed.
+    const fastFighterLike = {
+      id: '0x1:0',
+      source: perkSource,
+      bucket: 'reloadSpeed' as const,
+      op: 'ADD' as const,
+      curve: {
+        input: 'moveSpeedBonus' as const,
+        points: [{ x: 0, y: 0 }, { x: 1, y: 1 }],
+      },
+      curveScale: 0.5,
+      conditions: [],
+    };
+    const speedDemonLike = (value: number) => ({
+      id: '0x3:0',
+      source: { kind: 'mutation' as const, formId: '0x3', edid: 'test_move_speed', name: 'Test Move Speed' },
+      bucket: 'moveSpeedBonus' as const,
+      op: 'ADD' as const,
+      value,
+      conditions: [],
+    });
+    const player = createDefaultPlayerConditions();
+
+    // No move-speed source equipped → curve reads 0 → inert.
+    const alone = buildEffectiveWeapon(fixer, [], 50, player, createDefaultEnemyConditions(), [fastFighterLike]);
+    expect(alone.weapon.reloadSpeed).toBeCloseTo(base, 6);
+
+    // Speed Demon's +20% move speed → +10% reload speed.
+    const withSpeedDemon = buildEffectiveWeapon(
+      fixer, [], 50, player, createDefaultEnemyConditions(), [fastFighterLike, speedDemonLike(0.2)]
+    );
+    expect(withSpeedDemon.weapon.reloadSpeed).toBeCloseTo(base + 0.1, 6);
+
+    // A net move-speed PENALTY clamps at the curve's (0,0) endpoint — never
+    // slows reload.
+    const withPenalty = buildEffectiveWeapon(
+      fixer, [], 50, player, createDefaultEnemyConditions(), [fastFighterLike, speedDemonLike(-0.4)]
+    );
+    expect(withPenalty.weapon.reloadSpeed).toBeCloseTo(base, 6);
+  });
 });
 
 describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-13)', () => {

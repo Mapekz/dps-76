@@ -195,6 +195,17 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   // gate correctly instead of summing unconditionally).
   weaponSpeedMult: { bucket: 'fireRateSpeed', scale: 1 }, // AbPerkFortifyMeleeSpeedEffect
   WeapReloadSpeedMult: { bucket: 'reloadSpeed', scale: 1 }, // AbPerkFortifyReloadSpeedMult
+  // Bonus movement speed (AV SpeedMult 0x000002DA): Speed Demon's
+  // Mutation_FortifyMoveSpeed carries magnitudes 20/25 (normal/super tier,
+  // 2026-07-15 esm chase) — POINTS, unlike WeapReloadSpeedMult's decimal
+  // fractions on the same SPEL, hence scale 0.01. Feeds ONLY the
+  // moveSpeedBonus curve input (Fast Fighter's reload conversion,
+  // overrides/perk-overrides.ts) — no movement model exists. Route applies to
+  // every translate() caller: other SpeedMult sources (chems, food) landing
+  // here after a regeneration is expected and correct (they should feed Fast
+  // Fighter too); review the diff against
+  // dps-todos/move-speed-sources.md.
+  SpeedMult: { bucket: 'moveSpeedBonus', scale: 0.01 },
   // SPECIAL stat bonuses (Buffout +2 STR, Mentats +2 INT, legendary +SPECIAL
   // stars...). Flat points, scale 1. Strength/Luck fold into player state in
   // resolveLoadout; the rest are stored for perk-SPECIAL scaling. NOTE: these

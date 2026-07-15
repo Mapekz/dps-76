@@ -1081,6 +1081,42 @@
      "edid": "Mutation_SpeedDemon",
      "name": "Speed Demon"
     },
+    "bucket": "moveSpeedBonus",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": false
+     }
+    ]
+   },
+   {
+    "id": "0x004DF1E0:1",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004DF1E0",
+     "edid": "Mutation_SpeedDemon",
+     "name": "Speed Demon"
+    },
+    "bucket": "moveSpeedBonus",
+    "op": "ADD",
+    "value": 0.25,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x004DF1E0:2",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004DF1E0",
+     "edid": "Mutation_SpeedDemon",
+     "name": "Speed Demon"
+    },
     "bucket": "reloadSpeed",
     "op": "ADD",
     "value": 0.3,
@@ -1092,7 +1128,7 @@
     ]
    },
    {
-    "id": "0x004DF1E0:1",
+    "id": "0x004DF1E0:3",
     "source": {
      "kind": "mutation",
      "formId": "0x004DF1E0",
@@ -1117,7 +1153,6 @@
    "Mutation_SpeedDemon: condition: IsMoving()=1",
    "Mutation_SpeedDemon: perk GHL_Mutation_IncreasedFeral_Perk: EPAlchemyEffectHasKeyword(GHL_SURV_EffectTypeFeral)=1",
    "Mutation_SpeedDemon: perk GHL_Mutation_IncreasedFeral_Perk: entry point Mod Spell Magnitude — not modeled",
-   "Mutation_SpeedDemon: MGEF Mutation_FortifyMoveSpeed: no route for AV SpeedMult — needs mapping",
    "Mutation_SpeedDemon: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },

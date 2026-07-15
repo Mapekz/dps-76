@@ -12820,6 +12820,43 @@
   "obtainable": true
  },
  {
+  "id": "SeasonalFish_Meal_SummerWastelandFishSandwich",
+  "formId": "0x008B33D5",
+  "name": "Wasteland Fish Sandwich",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x008B33D5:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x008B33D5",
+     "edid": "SeasonalFish_Meal_SummerWastelandFishSandwich",
+     "name": "Wasteland Fish Sandwich"
+    },
+    "bucket": "moveSpeedBonus",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "SeasonalFish_Meal_SummerWastelandFishSandwich: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "SeasonalFish_Meal_SummerWastelandFishSandwich: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_MoveSpeed|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x008B33D5:0"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "Brew_Whiskey",
   "formId": "0x000366C1",
   "name": "Whiskey",

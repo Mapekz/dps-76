@@ -647,6 +647,31 @@ energy-scoped bonus to land.
 - Weapons extracted before the reload field landed lack `animationReloadSec`
   → treated as zero-cost reload (sustained = burst) rather than guessing.
 
+### Fast Fighter & the `moveSpeedBonus` bucket (2026-07-15)
+
+- Fast Fighter (PERK `CommandoExpert01` 0x0031AEF2, "Gain 50% of your bonus
+  movement speed as reload speed") carries **no effects on-record** (esm
+  chase) — the conversion is engine-native. Modeled as a hand-authored
+  override (`overrides/perk-overrides.ts`): `reloadSpeed` ADD, identity curve
+  on the `moveSpeedBonus` CurveInput × `curveScale 0.5`. The 50% factor and
+  the "bonus = Σ SpeedMult fortifies" reading are DESCRIPTION-sourced, not
+  ESM-proven.
+- `moveSpeedBonus` bucket: AV `SpeedMult` 0x000002DA routes here at scale
+  0.01 (`normalize/mgef.ts`) — Speed Demon's `Mutation_FortifyMoveSpeed`
+  magnitudes are POINTS (20 normal / 25 Strange-in-Numbers), unlike the
+  decimal fractions on `WeapReloadSpeedMult` in the same SPEL. Bootstrap-
+  folded once per `buildEffectiveWeapon` from the full modifier list and
+  threaded on `ResolveContext.moveSpeedBonus` (the onslaughtMaxStacks
+  pattern); NOT a movement model — nothing else consumes it.
+- Sprint-gated SpeedMult sources (Freight Train, Dead Man Sprinting, Gun
+  Runner, Squad Maneuvers, ...) extract with `unresolved` IsSprinting-style
+  conditions and are therefore skipped by the engine — deliberately: whether
+  sprint-only speed counts as "bonus movement speed" for Fast Fighter is
+  unmeasured. Unconditional sources (Wasteland Fish Sandwich +20%) DO feed
+  it. Full source sweep tracked in `dps-todos/move-speed-sources.md`.
+- A net move-speed penalty grants nothing (curve clamps at (0,0)) — never
+  slows reload. Direction unverified in-game.
+
 ## Crit meter (`src/lib/engine/crit-meter.ts`)
 
 - `fillPerHit% = (5 + 1.5 × LCK) × weaponCritChargeBonus` from GMSTs

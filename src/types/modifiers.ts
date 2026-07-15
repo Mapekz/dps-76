@@ -158,6 +158,17 @@ export type Bucket =
    * counter and the `onslaughtStacks` curve input clamp against.
    */
   | 'onslaughtMaxStacks'
+  /**
+   * Additive bonus-movement-speed fraction (AV SpeedMult 0x000002DA, points
+   * ×0.01 — Speed Demon's Mutation_FortifyMoveSpeed 20/25). Not a movement
+   * model: the fold exists solely to feed the `moveSpeedBonus` CurveInput
+   * (Fast Fighter's "50% of bonus movement speed as reload speed",
+   * overrides/perk-overrides.ts). Folded once per buildEffectiveWeapon and
+   * threaded on `ResolveContext.moveSpeedBonus` — the onslaughtMaxStacks
+   * bootstrap pattern. Sources beyond Speed Demon are tracked in
+   * dps-todos/move-speed-sources.md.
+   */
+  | 'moveSpeedBonus'
   | 'addDamageComponent'
   /** Armor penetration (Anti-Armor's ActorValues property) — extracted but inert until enemy DR lands. */
   | 'armorPen'
@@ -273,6 +284,7 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   apMax: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy (AP pool size)' },
   apCritHot: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts (per-modifier collect — durationSec matters), ap-economy.ts computeApEconomy (refresh-only HoT term)' },
   onslaughtMaxStacks: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'scenarios.ts / effective-weapon.ts — folded once, threaded on ResolveContext.onslaughtMaxStacks; caps the onslaught StackCounter and onslaughtStacks CurveInput' },
+  moveSpeedBonus: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon — folded once, threaded on ResolveContext.moveSpeedBonus; feeds the moveSpeedBonus CurveInput (Fast Fighter). Threaded in the weapon-stat fold ONLY — a damage-bucket curve on this input would read 0 until scenarios.ts also threads it' },
   addDamageComponent: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — no reader anywhere in the codebase; likely superseded by explosivePayload/materializeDamageTypeComponents' },
   armorPen: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — extracted but inert until enemy DR lands' },
   dotDamage: { regime: 'dot', hasEngineEffect: true, foldedBy: 'paper-damage.ts computeDotDps' },
@@ -534,6 +546,17 @@ export type CurveInput =
    * per-limb-count scale like Tormentor's).
    */
   | 'projectileCount'
+  /**
+   * The player's folded bonus-movement-speed fraction (Σ `moveSpeedBonus`
+   * bucket, threaded on `ResolveContext.moveSpeedBonus` by
+   * buildEffectiveWeapon) — no AVIF-driven curve reads this in the ESM; it
+   * exists for the hand-authored Fast Fighter override (perk-overrides.ts),
+   * whose "50% of bonus movement speed as reload speed" has no ESM effects
+   * at all (2026-07-15 esm chase: PERK 0x0031AEF2 carries nothing).
+   * Clamped-at-0 by its curve endpoints: a net move-speed PENALTY never
+   * slows reload.
+   */
+  | 'moveSpeedBonus'
   /**
    * Equipped weapon condition as a fraction (Polished): 1.0 = 100% (full
    * condition), 2.0 = 200% (over-repaired max). No AVIF exists for this axis —

@@ -1105,7 +1105,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x008D3853:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008D3853",
+       "edid": "ATX_Backpack_FreightTrain_Perk",
+       "name": "Freight Train",
+       "rank": 1
+      },
+      "bucket": "moveSpeedBonus",
+      "op": "ADD",
+      "value": 0.1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsSprinting()=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -5166,11 +5186,59 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003896EE:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003896EE",
+       "edid": "DeadManSprinting",
+       "name": "Dead Man Sprinting",
+       "rank": 1
+      },
+      "bucket": "moveSpeedBonus",
+      "op": "ADD",
+      "value": 0.1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsSprinting()=1"
+       },
+       {
+        "kind": "healthBelowPct",
+        "pct": 40
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003896EE:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003896EE",
+       "edid": "DeadManSprinting",
+       "name": "Dead Man Sprinting",
+       "rank": 2
+      },
+      "bucket": "moveSpeedBonus",
+      "op": "ADD",
+      "value": 0.2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsSprinting()=1"
+       },
+       {
+        "kind": "healthBelowPct",
+        "pct": 50
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -8299,11 +8367,67 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00797E29:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E29",
+       "edid": "GHL_JaguarSpeed",
+       "name": "Jaguar Speed",
+       "rank": 1
+      },
+      "bucket": "moveSpeedBonus",
+      "op": "ADD",
+      "value": 0.1,
+      "conditions": [
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       },
+       {
+        "kind": "glowAtLeast",
+        "min": 200
+       },
+       {
+        "kind": "unresolved",
+        "raw": "IsSprinting()=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00797E29:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E29",
+       "edid": "GHL_JaguarSpeed",
+       "name": "Jaguar Speed",
+       "rank": 2
+      },
+      "bucket": "moveSpeedBonus",
+      "op": "ADD",
+      "value": 0.2,
+      "conditions": [
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       },
+       {
+        "kind": "glowAtLeast",
+        "min": 200
+       },
+       {
+        "kind": "unresolved",
+        "raw": "IsSprinting()=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -10872,11 +10996,61 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0025A7A9:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0025A7A9",
+       "edid": "GunRunner",
+       "name": "Gun Runner",
+       "rank": 1
+      },
+      "bucket": "moveSpeedBonus",
+      "op": "ADD",
+      "value": 0.1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsSprinting()=0"
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0025A7A9:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0025A7A9",
+       "edid": "GunRunner",
+       "name": "Gun Runner",
+       "rank": 2
+      },
+      "bucket": "moveSpeedBonus",
+      "op": "ADD",
+      "value": 0.2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsSprinting()=0"
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -20707,7 +20881,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00661FDF:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00661FDF",
+       "edid": "NukaSwiftPerk",
+       "name": "Nuka Swift Perk",
+       "rank": 1
+      },
+      "bucket": "moveSpeedBonus",
+      "op": "ADD",
+      "value": 2,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -23260,15 +23449,75 @@
    },
    {
     "rank": 7,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001C63E6:r7:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001C63E6",
+       "edid": "PerkMagWastelandSurvival",
+       "name": "Wasteland Survival 1",
+       "rank": 7
+      },
+      "bucket": "moveSpeedBonus",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsSwimming()=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 8,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001C63E6:r8:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001C63E6",
+       "edid": "PerkMagWastelandSurvival",
+       "name": "Wasteland Survival 1",
+       "rank": 8
+      },
+      "bucket": "moveSpeedBonus",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsSwimming()=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 9,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001C63E6:r9:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001C63E6",
+       "edid": "PerkMagWastelandSurvival",
+       "name": "Wasteland Survival 1",
+       "rank": 9
+      },
+      "bucket": "moveSpeedBonus",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsSwimming()=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -23909,6 +24158,39 @@
         "raw": "OR-group[WornHasKeyword(isUnstoppable_Grognak)=1 | WornHasKeyword(isUnstoppable_Inspector)=1 | WornHasKeyword(isUnstoppable_MantaMan)=1 | WornHasKeyword(isUnstoppable_MistressOfMystery)=1 | WornHasKeyword(isUnstoppable_SilverShroud)=1]"
        }
       ]
+     },
+     {
+      "id": "0x0046C7CF:r1:10:9",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0046C7CF",
+       "edid": "PlayerPerk_Spotlight",
+       "name": "Spotlight Player Perk",
+       "rank": 1
+      },
+      "bucket": "moveSpeedBonus",
+      "op": "ADD",
+      "value": 0.15,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_HeavyMetal)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "IsSprinting()=1"
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypePistol",
+        "present": false
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": true
+       }
+      ]
      }
     ]
    }
@@ -23995,15 +24277,87 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00310BF9:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00310BF9",
+       "edid": "PortablePower",
+       "name": "Portable Power",
+       "rank": 1
+      },
+      "bucket": "moveSpeedBonus",
+      "op": "ADD",
+      "value": 0.1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsSprinting()=0"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(ArmorTypePower)=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00310BF9:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00310BF9",
+       "edid": "PortablePower",
+       "name": "Portable Power",
+       "rank": 2
+      },
+      "bucket": "moveSpeedBonus",
+      "op": "ADD",
+      "value": 0.2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsSprinting()=0"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(ArmorTypePower)=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00310BF9:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00310BF9",
+       "edid": "PortablePower",
+       "name": "Portable Power",
+       "rank": 3
+      },
+      "bucket": "moveSpeedBonus",
+      "op": "ADD",
+      "value": 0.3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsSprinting()=0"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "WornHasKeyword(ArmorTypePower)=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -27996,11 +28350,61 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0038AB94:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0038AB94",
+       "edid": "SquadManeuvers",
+       "name": "Squad Maneuvers",
+       "rank": 1
+      },
+      "bucket": "moveSpeedBonus",
+      "op": "ADD",
+      "value": 0.1,
+      "conditions": [
+       {
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
+       },
+       {
+        "kind": "unresolved",
+        "raw": "IsSprinting()=0"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0038AB94:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0038AB94",
+       "edid": "SquadManeuvers",
+       "name": "Squad Maneuvers",
+       "rank": 2
+      },
+      "bucket": "moveSpeedBonus",
+      "op": "ADD",
+      "value": 0.2,
+      "conditions": [
+       {
+        "kind": "teammateCount",
+        "count": 1,
+        "orMore": true
+       },
+       {
+        "kind": "unresolved",
+        "raw": "IsSprinting()=0"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -31830,7 +32234,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005A2637:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A2637",
+       "edid": "WL006_SentryBotMovementSpeedPerk",
+       "name": "WL006_SentryBotMovementSpeedPerk",
+       "rank": 1
+      },
+      "bucket": "moveSpeedBonus",
+      "op": "ADD",
+      "value": -0.4,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,

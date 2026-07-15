@@ -53,6 +53,14 @@ export interface ResolveContext {
    * inactive). See docs/assumptions.md "Onslaught".
    */
   onslaughtMaxStacks?: number;
+  /**
+   * The player's folded bonus-movement-speed fraction (Σ `moveSpeedBonus`
+   * bucket — Speed Demon +0.20/+0.25), bootstrap-folded and threaded by
+   * buildEffectiveWeapon exactly like onslaughtMaxStacks. Read by the
+   * `moveSpeedBonus` CurveInput (Fast Fighter's reload-speed conversion).
+   * Defaults to 0 (no move-speed sources equipped → the curve clamps to 0).
+   */
+  moveSpeedBonus?: number;
 }
 
 /**
@@ -110,6 +118,9 @@ const PLAYER_STATE_READERS: Record<StackCounter | CurveInput, (p: PlayerConditio
   projectileCount: (_, ctx) => ctx.weapon.projectileCount ?? 1,
   hungerThirstTier: p => p.hungerThirstTier ?? 0,
   feralTier: p => p.feralTier ?? 0,
+  // Fast Fighter's curve X — the bootstrap-folded bonus-move-speed fraction
+  // (ResolveContext.moveSpeedBonus, threaded by buildEffectiveWeapon).
+  moveSpeedBonus: (_, ctx) => ctx.moveSpeedBonus ?? 0,
   // Polished's curve X = GetEquippedWeaponHealthPercent (0.0-2.0 fraction; no AVIF).
   weaponCondition: p => (p.weaponConditionPct ?? 100) / 100,
 };

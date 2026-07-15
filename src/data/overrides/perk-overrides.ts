@@ -97,4 +97,32 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
       },
     ],
   ],
+  // Fast Fighter (PERK CommandoExpert01 0x0031AEF2): "Gain 50% of your bonus
+  // movement speed as reload speed." The PERK record carries NO effects at
+  // all (2026-07-15 esm chase) — the conversion is engine-native, so this
+  // override is description-sourced. Modeled as a reloadSpeed ADD driven by
+  // the moveSpeedBonus curve input (the bootstrap-folded Σ of the
+  // moveSpeedBonus bucket — Speed Demon +0.20/+0.25 today; future sources
+  // tracked in dps-todos/move-speed-sources.md). Identity curve × scale 0.5 =
+  // half the bonus; the (0,0) endpoint clamp means a net move-speed PENALTY
+  // grants nothing rather than slowing reload.
+  CommandoExpert: [
+    [
+      {
+        id: 'override:CommandoExpert:r1',
+        source: { kind: 'perk', formId: '0x0031AEF2', edid: 'CommandoExpert01', name: 'Fast Fighter', rank: 1 },
+        bucket: 'reloadSpeed',
+        op: 'ADD',
+        curve: {
+          input: 'moveSpeedBonus',
+          points: [
+            { x: 0, y: 0 },
+            { x: 1, y: 1 },
+          ],
+        },
+        curveScale: 0.5,
+        conditions: [],
+      },
+    ],
+  ],
 };

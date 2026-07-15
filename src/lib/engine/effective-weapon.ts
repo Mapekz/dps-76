@@ -198,7 +198,14 @@ export function buildEffectiveWeapon(
   const onslaughtMaxStacks = foldWeaponStat(
     [...allOmodModifiers, ...loadoutModifiers], 'onslaughtMaxStacks', 0, baseCtx
   );
-  const ctx: ResolveContext = { ...baseCtx, onslaughtMaxStacks };
+  // Bonus-move-speed fraction for the moveSpeedBonus curve input (Fast
+  // Fighter's reload conversion) — same bootstrap pattern: fold once from the
+  // FULL modifier list (Speed Demon's source is a mutation, not a weapon-stat
+  // modifier), thread on the ctx every weapon-stat fold below sees.
+  const moveSpeedBonus = foldWeaponStat(
+    [...allOmodModifiers, ...loadoutModifiers], 'moveSpeedBonus', 0, baseCtx
+  );
+  const ctx: ResolveContext = { ...baseCtx, onslaughtMaxStacks, moveSpeedBonus };
 
   const statModifiers = [...allOmodModifiers, ...loadoutStatModifiers];
   const speed = foldWeaponStat(statModifiers, 'fireRateSpeed', weapon.speed ?? 1.0, ctx);
