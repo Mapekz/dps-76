@@ -12011,6 +12011,41 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_TeslaScience05_Potion",
+  "formId": "0x00432D07",
+  "name": "Tesla Science 5",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00432D07:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00432D07",
+     "edid": "Magazine_TeslaScience05_Potion",
+     "name": "Tesla Science 5"
+    },
+    "bucket": "ammoFreeChance",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetRandomPercent()=20"
+     }
+    ]
+   }
+  ],
+  "notes": [
+   "Magazine_TeslaScience05_Potion: perk Magazine_TeslaScience05Perk: GetRandomPercent()=20"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "Magazine_TeslaScience07_Potion",
   "formId": "0x00432D0D",
   "name": "Tesla Science 7",

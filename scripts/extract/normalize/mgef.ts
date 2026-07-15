@@ -700,6 +700,37 @@ export function translate(
   return result;
 }
 
+/** True when a perk-effect condition tab includes a GetRandomPercent gate. */
+function hasGetRandomPercentCondition(rows: RawCondition[]): boolean {
+  return rows.some(row => row.Function === 'GetRandomPercent');
+}
+
+/**
+ * Read the percent bound from a GetRandomPercent row (e.g. `<= 20` → 0.20).
+ * GLOB-valued Comparison Values resolve via `globalValues` when present.
+ */
+function parseGetRandomPercentChance(
+  rows: RawCondition[],
+  globalValues?: Map<string, number>,
+): number | null {
+  for (const row of rows) {
+    if (row.Function !== 'GetRandomPercent') continue;
+    const rawCmp = row['Comparison Value'];
+    const cmp =
+      typeof rawCmp === 'string' && rawCmp.startsWith('0x')
+        ? globalValues?.get(rawCmp)
+        : typeof rawCmp === 'number'
+          ? rawCmp
+          : undefined;
+    if (typeof cmp !== 'number') continue;
+    const op = row.Operator ?? 'Equal To';
+    if (/^less than or equal to$/i.test(op) || /^equal to$/i.test(op)) {
+      return cmp / 100;
+    }
+  }
+  return null;
+}
+
 /**
  * Granted-perk chase (2026-07-10): Script-archetype legendary MGEFs carry a
  * "Perk to Apply" whose PERK record holds the real stats as entry-point
@@ -773,6 +804,23 @@ export async function translateGrantedPerk(
       const name = ((ep['Entry Point'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown';
       const functionName = ((ep['Function'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown';
       const float = typeof e['Float'] === 'number' ? (e['Float'] as number) : 0;
+
+      // EP-172 "Mod Ammo Used Count": narrowly map GetRandomPercent-gated zero-
+      // ammo to ammoFreeChance (Tesla Science 5). Timed/keyword infinite-ammo
+      // variants (HeadHunter's, Thirst Zapper) lack GetRandomPercent — stay
+      // note-only. NOT in ENTRY_POINT_BUCKETS — would catch those variants.
+      if (
+        name === 'Mod Ammo Used Count'
+        && (functionName === 'Multiply Value' || functionName === 'Set Value')
+        && float === 0
+        && hasGetRandomPercentCondition(conditionRows)
+      ) {
+        const value = parseGetRandomPercentChance(conditionRows, globalValues) ?? 0.2;
+        const epConditions = [...conditions, ...(ENTRY_POINT_EXTRA_CONDITIONS[name] ?? [])];
+        result.modifiers.push({ bucket: 'ammoFreeChance', op: 'ADD', value, conditions: epConditions });
+        continue;
+      }
+
       const bucket = ENTRY_POINT_BUCKETS[name];
       if (!bucket) {
         result.notes.push(`perk ${perkEdid}: entry point ${name} — not modeled`);
