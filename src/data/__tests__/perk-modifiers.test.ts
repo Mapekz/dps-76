@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { PerkId } from '@/data/perk-ids';
 import { getEquippedPerkFamilyRanks, getGeneratedPerk, getLoadoutModifiers, getUnjoinedPerkIds } from '@/data/perk-modifiers';
 import { getWeapons } from '@/data';
+import { getTargetDebuffModifiers } from '@/data/target-debuffs';
 import { computeScenarios } from '@/lib/engine/scenarios';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
 import { parseSpecialFromUrl } from '@/lib/nukes-dragons';
@@ -18,11 +19,13 @@ describe('perk registry ↔ generated family join', () => {
     expect(perk?.ranks[2].modifiers.some(m => m.bucket === 'dbm' && !m.curve && m.value === 0.75)).toBe(true);
   });
 
-  it('supplies the Tenderizer override modifier (stacking dbm)', () => {
-    const mods = getLoadoutModifiers('live', [{ perkId: PerkId.Tenderizer, rank: 1 }]);
+  it('Tenderizer is target-side: no player modifier from the card, 0.001/stack from target-debuffs', () => {
+    // Equipping the card contributes nothing — the debuff lives on the target.
+    expect(getLoadoutModifiers('live', [{ perkId: PerkId.Tenderizer, rank: 1 }])).toHaveLength(0);
+    const mods = getTargetDebuffModifiers();
     expect(mods).toHaveLength(1);
-    expect(mods[0]).toMatchObject({ bucket: 'dbm', op: 'ADD', value: 0.1 });
-    expect(mods[0].conditions[0]).toMatchObject({ kind: 'stacks', counter: 'tenderizer' });
+    expect(mods[0]).toMatchObject({ bucket: 'dbm', op: 'ADD', value: 0.001 });
+    expect(mods[0].conditions[0]).toMatchObject({ kind: 'stacks', counter: 'tenderizer', max: 1000 });
   });
 
   it('reports unjoined PerkIds without crashing (review list, not a failure)', () => {
@@ -94,14 +97,15 @@ describe('perk effects through the engine (real data)', () => {
     expect(sledgeNinja.vats.perHit.total).toBeGreaterThan(sledgeBase.vats.perHit.total);
   });
 
-  it('Tenderizer stacks scale dbm through player conditions', () => {
+  it('Tenderizer stacks scale dbm through player conditions (no card equipped)', () => {
     const weapon = getWeapons('live')['CombatRifle_Fixer'];
-    const mods = getLoadoutModifiers('live', [{ perkId: PerkId.Tenderizer, rank: 1 }]);
+    const mods = getTargetDebuffModifiers();
     const stacked = computeScenarios({
       ...base,
       weapon,
       modifiers: mods,
-      player: { ...createDefaultPlayerConditions(), tenderizerStacks: 10 },
+      // 1000 stacks × 0.001 = +1.0 dbm → exactly double the per-hit damage.
+      player: { ...createDefaultPlayerConditions(), tenderizerStacks: 1000 },
     });
     const unstacked = computeScenarios({ ...base, weapon, modifiers: mods });
     expect(stacked.freeAim.perHit.total).toBeCloseTo(unstacked.freeAim.perHit.total * 2.0, 6);

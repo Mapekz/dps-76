@@ -33,7 +33,7 @@ export interface PlayerConditions {
    */
   onslaughtStacks: number;
   adrenalineStacks: number; // 0-10 (default 0 per user preference)
-  tenderizerStacks: number; // 0-1000, 0.1 dbm per stack (manual team-scenario input)
+  tenderizerStacks: number; // 0–1000, +0.001 dbm (0.1%) per stack, cap +100%; target state, works without the card equipped
 
   // Other steady-state inputs for conditional sources
   /**

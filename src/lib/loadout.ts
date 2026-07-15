@@ -6,6 +6,7 @@ import { getDefaultOmods, getOmodById } from '@/data/omods';
 import { getAddictionModifiers, getBuffModifiers, getSuppressedAddictions } from '@/data/buffs';
 import { getManualUptimeModifiers } from '@/data/manual-uptime';
 import { getPlayerBaselineModifiers } from '@/data/player-baseline';
+import { getTargetDebuffModifiers } from '@/data/target-debuffs';
 import { getPublicTeamModifiers } from '@/data/public-teams';
 import { buildEffectiveWeapon, WEAPON_STAT_BUCKETS } from '@/lib/engine/effective-weapon';
 import { legendaryBonusOf } from '@/data/perk-budget';
@@ -83,6 +84,9 @@ function assemble(
   // Hidden survival-ability baselines (hydration AP regen) — gated by the
   // hydrated/playerIsGhoul conditions at resolve time, so pushed unconditionally.
   loadoutModifiers.push(...getPlayerBaselineModifiers());
+  // Target-side debuffs (Tenderizer stacks) — driven by the Target panel's
+  // stack inputs, not the player's own cards, so pushed unconditionally too.
+  loadoutModifiers.push(...getTargetDebuffModifiers());
 
   // Apply equipped OMODs (standard slots + legendary effects) to the weapon.
   let weapon: Weapon | undefined;

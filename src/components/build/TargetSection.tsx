@@ -263,6 +263,10 @@ export function TargetSection() {
                 })
               }
             />
+            <p className="text-muted-foreground text-xs">
+              +0.1% damage taken per stack, up to +100% at 1000 stacks. Applied by any player's Tenderizer — you
+              don't need the card equipped.
+            </p>
           </div>
         </div>
       </AccordionContent>

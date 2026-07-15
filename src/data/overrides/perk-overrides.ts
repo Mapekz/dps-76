@@ -52,21 +52,10 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
   // LifegiverCard PCRD (0x0000BB40) records a single rank, so those PERK
   // records are unreachable (card.rankSources caps the rank). Rank 1's
   // END-keyed max-HP curve extracts from the ESM directly.
-  // Tenderizer applies PerkTenderizer01Spell on hit: a stacking +10% damage
-  // taken debuff on the target (MGEF 0x003E21F7, magnitude 0.1). Stack count
-  // is a manual scenario input (0–1000 per user spec, team-dependent).
-  Tenderizer: [
-    [
-      {
-        id: 'override:Tenderizer:r1',
-        source: { kind: 'perk', formId: '0x003E21F4', edid: 'Tenderizer', name: 'Tenderizer', rank: 1 },
-        bucket: 'dbm',
-        op: 'ADD',
-        value: 0.1,
-        conditions: [{ kind: 'stacks', counter: 'tenderizer', max: 1000 }],
-      },
-    ],
-  ],
+  // Tenderizer carries no player-side modifier: its stacking damage-taken
+  // debuff lives on the TARGET (anyone's card can have applied it), so it is
+  // modeled in @/data/target-debuffs and driven by the Target panel's stack
+  // input, never by equipping the card.
   // Rejuvenated (0x003DE58F/0x003DE590): the PERK records extract empty
   // because the mechanics live on the hidden survival ability, not the perk —
   // SPEL SURV_Thirst_Ability 0x00054DF3 tiers its fully-hydrated
