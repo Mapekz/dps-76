@@ -194,6 +194,19 @@ describe('derived condition fields', () => {
     expect(decoded!.state.enemy.conditions.targetBodyPart).toBe('Head');
   });
 
+  it('round-trips the public team type selection (casual/exploration)', async () => {
+    for (const publicTeamType of ['casual', 'exploration'] as const) {
+      const state = stateFrom([
+        { type: 'condition/set', key: 'teammateCount', value: 2 },
+        { type: 'condition/set', key: 'publicTeamType', value: publicTeamType },
+      ]);
+      const decoded = await decodeBuild(await encodeBuild(state), 'live');
+      expect(decoded!.state.player.conditions.publicTeamType).toBe(publicTeamType);
+      expect(decoded!.state.player.conditions.teammateCount).toBe(2);
+      expect(decoded!.warnings).toEqual([]);
+    }
+  });
+
   it('reclassifies a legacy build that stored a ghoul card under legendaryPerks', async () => {
     // Pre-classification-fix builds filed ghoul cards (e.g. RadSpecialist) as
     // legendary. encodePerks serializes whatever is in the array, so this
