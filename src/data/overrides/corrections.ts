@@ -514,6 +514,39 @@ export const omodModifierAdditions: Readonly<Record<string, Modifier[]>> = {
       ]
     )
   ),
+  // Dom Pedro (Nitro) Fortunate magazine mods: EP-211 "add a bullet to clip"
+  // chance is note-only in extraction — hand-supplied as ammoFreeChance EV
+  // (same magazine-amortization as no-consume; see docs/assumptions.md).
+  mod_Nitro_Magazine_Fortunate4: [
+    {
+      id: 'mod_Nitro_Magazine_Fortunate4:ammoFreeChance',
+      source: {
+        kind: 'omod',
+        formId: '0x008445DA',
+        edid: 'mod_Nitro_Magazine_Fortunate4',
+        name: 'Fortunate Four Magazine',
+      },
+      bucket: 'ammoFreeChance',
+      op: 'ADD',
+      value: 0.21,
+      conditions: [],
+    },
+  ],
+  mod_Nitro_Magazine_Fortunate6: [
+    {
+      id: 'mod_Nitro_Magazine_Fortunate6:ammoFreeChance',
+      source: {
+        kind: 'omod',
+        formId: '0x00844605',
+        edid: 'mod_Nitro_Magazine_Fortunate6',
+        name: 'Fortunate Six Magazine',
+      },
+      bucket: 'ammoFreeChance',
+      op: 'ADD',
+      value: 0.14,
+      conditions: [],
+    },
+  ],
 };
 
 /**
