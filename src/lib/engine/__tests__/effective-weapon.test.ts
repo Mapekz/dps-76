@@ -509,3 +509,110 @@ describe('charging weapon-stat buckets (chargeFullPowerSec/chargeFullPowerDamage
     expect(weapon.fullPowerDamageMult).toBeCloseTo(1.25, 10); // untouched — no chargeFullPowerDamageMult modifier equipped
   });
 });
+
+describe('sustain chance buckets (foldChanceUnion)', () => {
+  const fixer = getWeapons('live')['CombatRifle_Fixer'];
+  const baseCapacity = fixer.capacity ?? 0;
+  const omodSource = { kind: 'omod' as const, formId: '0x0', edid: 'test_sustain', name: 'Test Sustain Mod' };
+  const perkSource = { kind: 'perk' as const, formId: '0x1', edid: 'test_perk', name: 'Test Perk' };
+
+  it('two reload-skip sources compose as 1 − (1 − c1)(1 − c2)', () => {
+    const c1 = 0.06;
+    const c2 = 0.12;
+    const reloadSkipOmod = {
+      id: 'test_reload_skip',
+      formId: '0x0',
+      name: 'Test Reload Skip',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_Legendary3',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [c1, c2].map((value, i) => ({
+        id: `0x0:${i}`,
+        source: omodSource,
+        bucket: 'reloadSkipChance' as const,
+        op: 'ADD' as const,
+        value,
+        conditions: [],
+      })),
+    };
+    const { weapon } = buildEffectiveWeapon(fixer, [reloadSkipOmod]);
+    expect(weapon.reloadSkipChance).toBeCloseTo(1 - (1 - c1) * (1 - c2), 10);
+  });
+
+  it('ammoFreeChance stacks with Quad multiplicatively, not additively', () => {
+    const quadLike = {
+      id: 'test_quad',
+      formId: '0x0',
+      name: 'Test Quad',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_Legendary1',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: true,
+      modifiers: [
+        {
+          id: '0x0:0',
+          source: omodSource,
+          bucket: 'ammoCapacity' as const,
+          op: 'MUL_ADD' as const,
+          value: 3.0,
+          conditions: [],
+        },
+      ],
+    };
+    const fortunateLike = {
+      id: 'test_fortunate',
+      formId: '0x1',
+      name: 'Test Fortunate',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_gun_Magazine',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [
+        {
+          id: '0x1:0',
+          source: omodSource,
+          bucket: 'ammoFreeChance' as const,
+          op: 'ADD' as const,
+          value: 0.2,
+          conditions: [],
+        },
+      ],
+    };
+    const quadOnly = buildEffectiveWeapon(fixer, [quadLike]);
+    const both = buildEffectiveWeapon(fixer, [quadLike, fortunateLike]);
+
+    expect(quadOnly.weapon.capacity).toBeCloseTo(baseCapacity * 4, 6);
+    expect(both.weapon.capacity).toBeCloseTo(baseCapacity * 4, 6);
+    expect(both.weapon.ammoFreeChance).toBeCloseTo(0.2, 10);
+    // Wrong additive model would fold chance into capacity or sum chances with capacity bonus.
+    expect(both.weapon.capacity).not.toBeCloseTo(baseCapacity * 4 * 1.2, 6);
+    expect(both.weapon.ammoFreeChance).not.toBeCloseTo(0.2 + 3.0, 6);
+  });
+
+  it('evaluates reloadSkipChance condition gates (playerIsGhoul)', () => {
+    const ghoulReloadSkip = {
+      id: '0x1:0',
+      source: perkSource,
+      bucket: 'reloadSkipChance' as const,
+      op: 'ADD' as const,
+      value: 0.36,
+      conditions: [{ kind: 'playerIsGhoul' as const, value: true }],
+    };
+    const asHuman = buildEffectiveWeapon(
+      fixer, [], 50, createDefaultPlayerConditions(), createDefaultEnemyConditions(), [ghoulReloadSkip]
+    );
+    expect(asHuman.weapon.reloadSkipChance).toBeCloseTo(0, 10);
+
+    const asGhoul = buildEffectiveWeapon(
+      fixer, [], 50, { ...createDefaultPlayerConditions(), isGhoul: true }, createDefaultEnemyConditions(), [ghoulReloadSkip]
+    );
+    expect(asGhoul.weapon.reloadSkipChance).toBeCloseTo(0.36, 10);
+  });
+});

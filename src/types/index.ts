@@ -293,6 +293,16 @@ export interface Weapon {
   capacity?: number;
   /** Ammo consumed per shot (Gauss Minigun 2, most weapons 1). */
   ammoPerShot?: number;
+  /**
+   * Engine-derived reload-skip probability (folded from `reloadSkipChance`
+   * sustainChance bucket modifiers in effective-weapon.ts; consumed by sustain.ts).
+   */
+  reloadSkipChance?: number;
+  /**
+   * Engine-derived free-ammo probability (folded from `ammoFreeChance`
+   * sustainChance bucket modifiers in effective-weapon.ts; consumed by sustain.ts).
+   */
+  ammoFreeChance?: number;
   /** Reload speed multiplier (Data.Reload Speed; higher = faster). */
   reloadSpeed?: number;
   /** Base reload animation length in seconds (RGW3 Animation Reload Seconds). */

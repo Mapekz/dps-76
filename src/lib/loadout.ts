@@ -8,7 +8,7 @@ import { getManualUptimeModifiers } from '@/data/manual-uptime';
 import { getPlayerBaselineModifiers } from '@/data/player-baseline';
 import { getTargetDebuffModifiers } from '@/data/target-debuffs';
 import { getPublicTeamModifiers } from '@/data/public-teams';
-import { buildEffectiveWeapon, WEAPON_STAT_BUCKETS } from '@/lib/engine/effective-weapon';
+import { buildEffectiveWeapon, SUSTAIN_CHANCE_BUCKETS, WEAPON_STAT_BUCKETS } from '@/lib/engine/effective-weapon';
 import { legendaryBonusOf } from '@/data/perk-budget';
 import { resolveTargetBodyPart, getEnemyTypeIds } from '@/data/bodyparts';
 import {
@@ -136,7 +136,9 @@ function assemble(
       // Weapon-stat buckets were consumed by the effective-weapon fold above —
       // dropping them mirrors what buildEffectiveWeapon does to OMOD modifiers
       // and keeps them from double-counting if a damage term ever folds them.
-      ...loadoutModifiers.filter(m => !WEAPON_STAT_BUCKETS.has(m.bucket)),
+      ...loadoutModifiers.filter(
+        m => !WEAPON_STAT_BUCKETS.has(m.bucket) && !SUSTAIN_CHANCE_BUCKETS.has(m.bucket)
+      ),
     ],
     conditions,
     enemyTypeIds,

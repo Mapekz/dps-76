@@ -31,7 +31,9 @@ export function computeSustain(perHitAvg: number, fireRate: number, weapon: Weap
 
   const capacity = weapon.capacity ?? 0;
   const ammoPerShot = weapon.ammoPerShot ?? 1;
-  const shotsPerMag = ammoPerShot > 0 ? Math.floor(capacity / ammoPerShot) : 0;
+  const ammoFreeChance = weapon.ammoFreeChance ?? 0;
+  const effCapacity = ammoFreeChance > 0 ? capacity / (1 - ammoFreeChance) : capacity;
+  const shotsPerMag = ammoPerShot > 0 ? Math.floor(effCapacity / ammoPerShot) : 0;
 
   if (shotsPerMag <= 0 || fireRate <= 0) {
     // No magazine (melee, thrown) or degenerate fire rate: nothing to reload.
@@ -43,7 +45,9 @@ export function computeSustain(perHitAvg: number, fireRate: number, weapon: Weap
   // it shotsPerMag times. The whole per-shell-scaled time divides by the same
   // reloadSpeed fold, so speed bonuses compose identically either way.
   const perShellMult = weapon.reloadPerShell ? shotsPerMag : 1;
-  const reloadSec = ((weapon.animationReloadSec ?? 0) * perShellMult) / (weapon.reloadSpeed || 1.0);
+  const reloadSkip = weapon.reloadSkipChance ?? 0;
+  const reloadSec =
+    ((weapon.animationReloadSec ?? 0) * perShellMult) / (weapon.reloadSpeed || 1.0) * (1 - reloadSkip);
   // Steady-state cycle: each shot occupies one fire interval, then one reload.
   const magDumpSec = shotsPerMag / fireRate;
   const sustainedDps = (perHitAvg * shotsPerMag) / (magDumpSec + reloadSec);

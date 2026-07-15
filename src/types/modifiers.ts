@@ -93,6 +93,18 @@ export type Bucket =
   /** Reload speed multiplier rewrite from OMODs (quick-eject magazines) — feeds sustained DPS. */
   | 'reloadSpeed'
   /**
+   * Probability the reload is skipped entirely (Quick Hands, Wild West Hands).
+   * Folded via independent-probability union in effective-weapon.ts; consumed by
+   * sustain.ts as a multiplicative reload-time cut, separate from reloadSpeed.
+   */
+  | 'reloadSkipChance'
+  /**
+   * Probability a shot does not net-consume ammo (Tesla Science 5, Fortunate
+   * magazine mods). Folded via independent-probability union in
+   * effective-weapon.ts; consumed by sustain.ts as effective-capacity stretch.
+   */
+  | 'ammoFreeChance'
+  /**
    * Rewrite on the weapon's per-shot VATS AP cost (WEAP "Action Point Cost").
    * V.A.T.S. Optimized MUL_ADD −0.35 (OMOD property AttackActionPointCost).
    * Folded over the weapon base the same way as ammoCapacity/reloadSpeed
@@ -230,6 +242,8 @@ export type BucketRegime =
   | 'dot'
   /** Rewrites an effective-weapon field, then is dropped from the modifier list — effective-weapon.ts `buildEffectiveWeapon`. */
   | 'weaponStat'
+  /** Sustain expected-value chance levers — effective-weapon.ts `foldChanceUnion`, then sustain.ts. */
+  | 'sustainChance'
   /** VATS crit-meter fill/consumption — crit-meter.ts `computeCritMeter`. */
   | 'critEconomy'
   /** VATS AP pool/regen/drain — scenarios.ts, folded into ap-economy.ts `computeApEconomy`. */
@@ -286,6 +300,8 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   projectileCount: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.projectileCount rewrite); no damage term multiplies per-projectile yet, but Shotgun Champ\'s curve reads the folded value via the projectileCount CurveInput' },
   ammoCapacity: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.capacity rewrite); feeds sustained DPS (sustain.ts)' },
   reloadSpeed: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.reloadSpeed rewrite); feeds sustained DPS (sustain.ts)' },
+  reloadSkipChance: { regime: 'sustainChance', hasEngineEffect: true, foldedBy: 'effective-weapon.ts (weapon.reloadSkipChance rewrite); feeds sustain.ts reloadSec' },
+  ammoFreeChance: { regime: 'sustainChance', hasEngineEffect: true, foldedBy: 'effective-weapon.ts (weapon.ammoFreeChance rewrite); feeds sustain.ts effective capacity' },
   vatsApCost: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.apCost rewrite); feeds ap-economy.ts' },
   chargeFullPowerSec: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.fullPowerSeconds rewrite); gates weaponCharges() and feeds resolvedChargeTimeSec (src/lib/charge.ts), consumed by fire-rate.ts' },
   chargeFullPowerDamageMult: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.fullPowerDamageMult rewrite); feeds chargeDamageMultiplier (src/lib/charge.ts)' },
@@ -313,6 +329,13 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
 export const WEAPON_STAT_BUCKETS: ReadonlySet<Bucket> = new Set(
   (Object.entries(BUCKET_REGISTRY) as Array<[Bucket, BucketRegimeEntry]>)
     .filter(([, entry]) => entry.regime === 'weaponStat')
+    .map(([bucket]) => bucket)
+);
+
+/** Sustain expected-value chance buckets — folded in effective-weapon.ts, consumed by sustain.ts. */
+export const SUSTAIN_CHANCE_BUCKETS: ReadonlySet<Bucket> = new Set(
+  (Object.entries(BUCKET_REGISTRY) as Array<[Bucket, BucketRegimeEntry]>)
+    .filter(([, entry]) => entry.regime === 'sustainChance')
     .map(([bucket]) => bucket)
 );
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { BUCKET_REGISTRY, WEAPON_STAT_BUCKETS, INERT_ENGINE_BUCKETS, type Bucket } from '@/types/modifiers';
+import { BUCKET_REGISTRY, SUSTAIN_CHANCE_BUCKETS, WEAPON_STAT_BUCKETS, INERT_ENGINE_BUCKETS, type Bucket } from '@/types/modifiers';
 
 /**
  * Every Bucket union member listed here — kept in sync by hand since a TS
@@ -34,6 +34,8 @@ const ALL_BUCKETS: Bucket[] = [
   'projectileCount',
   'ammoCapacity',
   'reloadSpeed',
+  'reloadSkipChance',
+  'ammoFreeChance',
   'vatsApCost',
   'chargeFullPowerSec',
   'chargeFullPowerDamageMult',
@@ -69,6 +71,10 @@ describe('BUCKET_REGISTRY', () => {
         'vatsApCost', 'chargeFullPowerSec', 'chargeFullPowerDamageMult',
       ].sort()
     );
+  });
+
+  it('derives SUSTAIN_CHANCE_BUCKETS as exactly the sustainChance-regime buckets', () => {
+    expect([...SUSTAIN_CHANCE_BUCKETS].sort()).toEqual(['reloadSkipChance', 'ammoFreeChance'].sort());
   });
 
   it('derives INERT_ENGINE_BUCKETS as exactly the no-engine-effect buckets', () => {

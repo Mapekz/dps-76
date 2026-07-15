@@ -2,10 +2,10 @@ import type { EnemyConditions, PlayerConditions, Weapon, WeaponComponent } from 
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
 import type { Bucket, DamageType, ModOp, Modifier } from '@/types/modifiers';
-import { WEAPON_STAT_BUCKETS } from '@/types/modifiers';
+import { SUSTAIN_CHANCE_BUCKETS, WEAPON_STAT_BUCKETS } from '@/types/modifiers';
 import { effectiveValue, foldOps, type ResolveContext } from './resolve';
 
-export { WEAPON_STAT_BUCKETS };
+export { SUSTAIN_CHANCE_BUCKETS, WEAPON_STAT_BUCKETS };
 
 /**
  * Applies equipped OMODs to a weapon before the engine runs:
@@ -54,6 +54,16 @@ function foldWeaponStat(modifiers: Modifier[], bucket: Bucket, base: number, ctx
     if (value !== null) entries.push({ op: m.op, value });
   }
   return foldOps(entries, base);
+}
+
+function foldChanceUnion(modifiers: Modifier[], bucket: Bucket, ctx: ResolveContext): number {
+  let survive = 1;
+  for (const m of modifiers) {
+    if (m.bucket !== bucket) continue;
+    const v = effectiveValue(m, ctx);
+    if (v !== null) survive *= 1 - Math.min(Math.max(v, 0), 1);
+  }
+  return Math.min(1 - survive, 0.99);
 }
 
 /**
@@ -174,7 +184,9 @@ export function buildEffectiveWeapon(
   // context builder consistent.
   enemyTypeIds: readonly string[] = []
 ): EffectiveWeapon {
-  const loadoutStatModifiers = loadoutModifiers.filter(m => WEAPON_STAT_BUCKETS.has(m.bucket));
+  const loadoutStatModifiers = loadoutModifiers.filter(
+    m => WEAPON_STAT_BUCKETS.has(m.bucket) || SUSTAIN_CHANCE_BUCKETS.has(m.bucket)
+  );
   if (equippedOmods.length === 0 && loadoutStatModifiers.length === 0) return { weapon, modifiers: [] };
 
   const allOmodModifiers = equippedOmods.flatMap(o => o.modifiers);
@@ -233,6 +245,8 @@ export function buildEffectiveWeapon(
   const projectileCount = foldWeaponStat(statModifiers, 'projectileCount', weapon.projectileCount ?? 1, ctx);
   const capacity = foldWeaponStat(statModifiers, 'ammoCapacity', weapon.capacity ?? 0, ctx);
   const reloadSpeed = foldWeaponStat(statModifiers, 'reloadSpeed', weapon.reloadSpeed ?? 1.0, ctx);
+  const reloadSkipChance = foldChanceUnion(statModifiers, 'reloadSkipChance', ctx);
+  const ammoFreeChance = foldChanceUnion(statModifiers, 'ammoFreeChance', ctx);
   // V.A.T.S. Optimized (Stage B): MUL_ADD −0.35 on the weapon's per-shot VATS
   // AP cost, same fold pattern as ammoCapacity/reloadSpeed above.
   const apCost = foldWeaponStat(statModifiers, 'vatsApCost', weapon.apCost ?? 0, ctx);
@@ -246,7 +260,9 @@ export function buildEffectiveWeapon(
     statModifiers, 'chargeFullPowerDamageMult', weapon.fullPowerDamageMult ?? 0, ctx
   );
 
-  const modifiers = allOmodModifiers.filter(m => !WEAPON_STAT_BUCKETS.has(m.bucket));
+  const modifiers = allOmodModifiers.filter(
+    m => !WEAPON_STAT_BUCKETS.has(m.bucket) && !SUSTAIN_CHANCE_BUCKETS.has(m.bucket)
+  );
   const { components: materialized, consumedIds } = materializeDamageTypeComponents(weapon, modifiers, ctx);
 
   return {
@@ -260,6 +276,8 @@ export function buildEffectiveWeapon(
       projectileCount,
       capacity,
       reloadSpeed,
+      reloadSkipChance,
+      ammoFreeChance,
       apCost,
       fullPowerSeconds,
       fullPowerDamageMult,

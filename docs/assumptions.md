@@ -666,6 +666,34 @@ energy-scoped bonus to land.
 - Weapons extracted before the reload field landed lack `animationReloadSec`
   → treated as zero-cost reload (sustained = burst) rather than guessing.
 
+### Reload-skip & free-ammo expected value (2026-07-15)
+
+Two **sustain-chance** buckets (`reloadSkipChance`, `ammoFreeChance` —
+`src/types/modifiers.ts`, regime `sustainChance`) fold via independent-
+probability union in `effective-weapon.ts` (`foldChanceUnion`) and apply as
+a **separate multiplicative stage** on the already-folded reload time and
+magazine capacity — not inside the additive `reloadSpeed`/`ammoCapacity`
+folds (which would stack additively with Quad / reload-speed mods instead of
+composing correctly).
+
+- **EV reload-skip:** `reloadSec_eff = reloadSec × (1 − reloadSkipChance)`.
+  Sources: Quick Hands, Wild West Hands (hand-supplied in
+  `perk-overrides.ts` — EP-182 "Auto Fill Weapon Clip" is procedural).
+- **EV free-ammo:** `capacity_eff = capacity / (1 − ammoFreeChance)`. Each
+  shot net-consumes `(1 − chance)` rounds on average. Sources: Tesla Science
+  5 (consumable buff), Dom Pedro "Fortunate" magazine mods
+  (`corrections.ts` `omodModifierAdditions`).
+- **Multiple sources of the same lever** compose as independent probabilities:
+  combined chance `= 1 − Π(1 − chanceᵢ)` (`foldChanceUnion` in
+  `effective-weapon.ts`).
+- **Fortunate "add bullet" edge case:** EP-211 adds a round past max clip
+  when the proc fires; that wasted round is ignored for the EV amortization
+  above (same formula as "don't consume ammo" for sustained-DPS purposes).
+- **Tesla Science 5 heavy-gun gate** is **description-sourced** — the perk
+  effect carries only `GetRandomPercent<=20`, no weapon-class keyword
+  condition on-record. The authoritative `weaponClass: ['heavy']` condition
+  is hand-supplied in `buff-overrides.ts` (not ESM-proven).
+
 ### Fast Fighter & the `moveSpeedBonus` bucket (2026-07-15)
 
 - Fast Fighter (PERK `CommandoExpert01` 0x0031AEF2, "Gain 50% of your bonus

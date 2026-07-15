@@ -73,4 +73,26 @@ describe('computeSustain', () => {
     const s = computeSustain(100, 2, gun({ capacity: 6, animationReloadSec: 1.77, reloadPerShell: true, reloadSpeed: 1.3 }));
     expect(s.reloadSec).toBeCloseTo((1.77 * 6) / 1.3, 10);
   });
+
+  it('reloadSkipChance shortens reloadSec by (1 − chance)', () => {
+    const base = computeSustain(100, 5, gun({ animationReloadSec: 2.0 }));
+    const withSkip = computeSustain(100, 5, gun({ animationReloadSec: 2.0, reloadSkipChance: 0.18 }));
+    expect(withSkip.reloadSec).toBeCloseTo(base.reloadSec * 0.82, 10);
+    expect(withSkip.sustainedDps).toBeGreaterThan(base.sustainedDps);
+  });
+
+  it('ammoFreeChance stretches effective capacity and raises sustained DPS', () => {
+    const base = computeSustain(100, 5, gun({ capacity: 20 }));
+    const withFree = computeSustain(100, 5, gun({ capacity: 20, ammoFreeChance: 0.2 }));
+    expect(withFree.shotsPerMag).toBe(25); // 20 / (1 − 0.2)
+    expect(withFree.sustainedDps).toBeGreaterThan(base.sustainedDps);
+  });
+
+  it('melee/no-mag weapons ignore sustain chance fields', () => {
+    const base = computeSustain(100, 2, gun({ capacity: 0, weaponClass: 'melee' }));
+    const withChances = computeSustain(
+      100, 2, gun({ capacity: 0, weaponClass: 'melee', reloadSkipChance: 0.5, ammoFreeChance: 0.5 })
+    );
+    expect(withChances).toEqual(base);
+  });
 });
