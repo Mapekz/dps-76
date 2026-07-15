@@ -48,7 +48,7 @@ function contributionRows(trace: BucketTrace, keyPrefix: string) {
   }
   for (const c of trace.mulAdd) {
     rows.push(
-      <Row key={`${keyPrefix}-mul-${c.source.edid}-${c.source.rank ?? 0}`} indent label={c.source.name} value={`${signed(c.value * 100, 0)}% of base`} />
+      <Row key={`${keyPrefix}-mul-${c.source.edid}-${c.source.rank ?? 0}`} indent label={c.source.name} value={`${signed(c.value * 100, 0)}%`} />
     );
   }
   for (const c of trace.add) {
@@ -107,7 +107,7 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
             )}
             <Row label="Base damage" value={formatDamage(componentHit.base)} />
             {contributionRows(component.baseDamage, `bd-${i}`)}
-            <Row label="DMG Bonus Mult" value={`Σ ${component.dbm.result.toFixed(2)}`} />
+            <Row label="DMG Bonus Mult" value={`×${component.dbm.result.toFixed(2)}`} />
             {contributionRows(component.dbm, `dbm-${i}`)}
             {component.isExplosion && (
               <Row muted indent label="Explosive — ignores sneak & body part" value="" />
