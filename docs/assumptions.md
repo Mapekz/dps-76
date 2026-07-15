@@ -1692,11 +1692,27 @@ ghoul perk effects gate on it with `GetValue(Rads) ≥ N` condition rows.
   Mirelurk shell 0.15×. The Target section's enemy + part picker resolves the
   engine's `weakpointMult` from this; no pick = the custom multiplier input
   (default 1.5, the standard humanoid headshot — was 2.0 pre-2026-07-12).
-- `ctx.bodyPart` now discriminates by direction: mult > 1 → `weakpoint`
-  (weakpointBonus applies), mult < 1 → `limb`, exactly 1 → `torso`. Weakpoint-
-  ness and location are still ONE axis — torso-weakpoint enemies (UC
-  Abomination belly) remain a future refinement so torso-scoped bonuses
-  (Center Masochist) can stack with weakpoint multipliers there.
+- **`ctx.bodyPart` location is decoupled from the multiplier** (2026-07-15,
+  fixing Center Masochist wrongly firing on limb hits and wrongly not firing
+  on armored/weakpoint torsos): `weakpointBonus` still keys purely on
+  `bodyPartMult > 1.0` (`paper-damage.ts`, unchanged), but the `bodyPart`
+  condition location (`resolve.ts` — `'torso' | 'weakpoint' | 'limb'`, gates
+  Center Masochist) is derived from the picked part's BPTD `partType` instead
+  of the mult's sign: not aiming, or the picked part's `partType === 'Torso'`
+  → `'torso'`; otherwise `'weakpoint'`/`'limb'` by the mult's direction. A
+  custom multiplier input with no BPTD part picked keeps the old mult-derived
+  category (mult exactly 1.0 → `'torso'`) since there's no location data to
+  consult. This lets torso-weakpoint/armored-torso enemies stack correctly:
+  Deathclaw belly (×1.35, `partType: 'Torso'`) and the EN06 Guardian's torso
+  (×3, `partType: 'Torso'`) now both count as torso AND weakpoint, so Center
+  Masochist stacks with the weakpoint multiplier there, while an armored
+  torso (Super Mutant ×0.9) keeps applying Center Masochist despite the sub-1
+  mult. **Not ESM-proven, still an assumption**: `Pelvis`-slot center/belly
+  parts (the UC Abomination's Belly ×1.15, Deathclaw's plain "Body" ×1.0) are
+  a *different* BPTD slot from `Torso` and are deliberately NOT counted as
+  torso under this rule — matching the "connects back to the Torso" BPTD
+  slot linkage literally, at the cost of leaving those specific parts
+  torso-gate-inactive until measured in-game.
 - **Body-part hit rate** (`bodyPartHitRatePct`, default 100): while aiming at
   a body part, each hit blends `rate × aimed-part + (1−rate) × torso`
   (`scenarios.ts bodyPartBlendedHit`, all scenarios incl. the Charged cycle).

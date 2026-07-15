@@ -10,7 +10,7 @@ import { getTargetDebuffModifiers } from '@/data/target-debuffs';
 import { getPublicTeamModifiers } from '@/data/public-teams';
 import { buildEffectiveWeapon, WEAPON_STAT_BUCKETS } from '@/lib/engine/effective-weapon';
 import { legendaryBonusOf } from '@/data/perk-budget';
-import { getBodyPartMult, getEnemyTypeIds } from '@/data/bodyparts';
+import { getBodyPartMult, getEnemyTypeIds, isTorsoBodyPart } from '@/data/bodyparts';
 import {
   deriveAddictionCount,
   deriveClassFreakRank,
@@ -221,6 +221,10 @@ export function resolveLoadout(
   // BPTD data; without one the custom multiplier applies.
   const { targetRace, targetBodyPart } = enemyConfig.conditions;
   const pickedMult = targetRace && targetBodyPart ? getBodyPartMult(mode, targetRace, targetBodyPart) : undefined;
+  // Location axis for torso-gated perks (Center Masochist) — independent of
+  // the multiplier above; undefined (no BPTD part picked) falls back to the
+  // engine's legacy mult-derived category.
+  const pickedIsTorso = targetRace && targetBodyPart ? isTorsoBodyPart(mode, targetRace, targetBodyPart) : undefined;
 
   return {
     mode,
@@ -231,6 +235,7 @@ export function resolveLoadout(
     enemy: enemyConfig.conditions,
     enemyTypeIds,
     weakpointMult: pickedMult ?? playerConfig.weakpointMult,
+    targetIsTorso: pickedIsTorso,
     // critRate omitted → computed from the crit meter (LCK, Crit Savvy,
     // Limit Breaking, weapon crit charge bonus).
     chargeTimeSec: playerConfig.chargeTimeSec,

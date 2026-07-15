@@ -9,6 +9,9 @@ import { computeSustain, type SustainResult } from './sustain';
 import { createHitTrace, lastTrace, type ApRegenTrace, type BucketTrace, type CritMeterTrace, type HitTrace } from './trace';
 import { effectiveValue, foldBucket, type ResolveContext, type ScenarioFlags } from './resolve';
 
+/** Which body part a hit lands on — the location axis for torso-gated perks (Center Masochist). */
+type BodyPartLocation = NonNullable<ResolveContext['bodyPart']>;
+
 /**
  * The two displayed scenarios, computed from one resolved config:
  * - freeAim: no VATS, no crits (crits are VATS-only).
@@ -123,6 +126,15 @@ export interface ScenarioInput {
   /** Body-part multiplier used for weakpoint hits (user-configurable, default 2.0). */
   weakpointMult: number;
   /**
+   * Whether the picked enemy body part is BPTD-Torso (the location axis
+   * torso-gated perks like Center Masochist key off), independent of
+   * `weakpointMult`'s magnitude — an armored torso can be <1.0, a
+   * torso-weakpoint (Deathclaw Belly) can be >1.0. `undefined` when no BPTD
+   * part was picked (custom multiplier input): the engine falls back to the
+   * legacy mult-derived category (mult 1.0 → torso).
+   */
+  targetIsTorso?: boolean;
+  /**
    * Steady-state crit fraction override for the VATS scenario. When omitted,
    * it is computed from the crit meter (LCK, Crit Savvy, Limit Breaking,
    * weapon crit charge bonus).
@@ -207,18 +219,19 @@ function chargedCycleHit(
   input: ScenarioInput,
   flags: ScenarioFlags,
   bodyPartMult: number,
+  bodyPart: BodyPartLocation,
   critRate: number,
   onslaughtMaxStacks: number
 ): HitBreakdown {
   const normal = critWeighted(
-    bodyPartBlendedHit(input, { ...flags, isPowerAttack: false, isCrit: false }, bodyPartMult, onslaughtMaxStacks),
-    bodyPartBlendedHit(input, { ...flags, isPowerAttack: false, isCrit: true }, bodyPartMult, onslaughtMaxStacks),
+    bodyPartBlendedHit(input, { ...flags, isPowerAttack: false, isCrit: false }, bodyPartMult, bodyPart, onslaughtMaxStacks),
+    bodyPartBlendedHit(input, { ...flags, isPowerAttack: false, isCrit: true }, bodyPartMult, bodyPart, onslaughtMaxStacks),
     critRate
   );
   const detonation = scaleHit(
     critWeighted(
-      bodyPartBlendedHit(input, { ...flags, isPowerAttack: true, isCrit: false }, bodyPartMult, onslaughtMaxStacks),
-      bodyPartBlendedHit(input, { ...flags, isPowerAttack: true, isCrit: true }, bodyPartMult, onslaughtMaxStacks),
+      bodyPartBlendedHit(input, { ...flags, isPowerAttack: true, isCrit: false }, bodyPartMult, bodyPart, onslaughtMaxStacks),
+      bodyPartBlendedHit(input, { ...flags, isPowerAttack: true, isCrit: true }, bodyPartMult, bodyPart, onslaughtMaxStacks),
       critRate
     ),
     1 + CHARGED_FULL_BONUS
@@ -236,6 +249,7 @@ function hit(
   input: ScenarioInput,
   flags: ScenarioFlags,
   bodyPartMult: number,
+  bodyPart: BodyPartLocation,
   onslaughtMaxStacks: number,
   trace?: HitTrace
 ): HitBreakdown {
@@ -246,9 +260,11 @@ function hit(
     modifiers: input.modifiers,
     ctx: scenarioCtx(input, flags, onslaughtMaxStacks),
     bodyPartMult,
-    // >1 = a weakpoint (weakpointBonus perks apply); <1 = an armored limb/part
-    // (Mirelurk shell 0.15×) — neither satisfies torso-only gates (Center Masochist).
-    bodyPart: bodyPartMult > 1.0 ? 'weakpoint' : bodyPartMult < 1.0 ? 'limb' : 'torso',
+    // Location axis, independent of the mult above: >1 doesn't imply
+    // weakpoint and 1.0 doesn't imply torso (an armored torso can be <1.0, a
+    // torso-weakpoint like a Deathclaw's Belly can be >1.0) — see the
+    // `targetBodyPart` derivation in computeScenarios.
+    bodyPart,
     chargeTimeSec: input.chargeTimeSec,
     trace,
   });
@@ -268,24 +284,27 @@ function bodyPartWeighted(atTarget: HitBreakdown, atTorso: HitBreakdown, rate: n
 
 /**
  * A hit while aiming at a body part: bodyPartHitRatePct of shots land on the
- * aimed part (bodyPartMult), the rest hit the torso (×1.0). Short-circuits to
- * a plain hit at 100% (the default) so the common path does zero extra work.
- * Only the on-target leg carries the trace — `explain` shows the landed-hit
- * chain, the same simplest-defensible split as the Charged cycle's perHit.
+ * aimed part (bodyPartMult/bodyPart), the rest hit the torso (×1.0, 'torso').
+ * Short-circuits to a plain hit when the two legs are identical — at 100%
+ * hit rate, or when the aimed part's mult AND location both already match
+ * the torso fallback — so the common path does zero extra work. Only the
+ * on-target leg carries the trace — `explain` shows the landed-hit chain,
+ * the same simplest-defensible split as the Charged cycle's perHit.
  */
 function bodyPartBlendedHit(
   input: ScenarioInput,
   flags: ScenarioFlags,
   bodyPartMult: number,
+  bodyPart: BodyPartLocation,
   onslaughtMaxStacks: number,
   trace?: HitTrace
 ): HitBreakdown {
   const rate = (input.player.bodyPartHitRatePct ?? 100) / 100;
-  if (!input.player.isAimingAtWeakpoint || rate >= 1 || bodyPartMult === 1.0) {
-    return hit(input, flags, bodyPartMult, onslaughtMaxStacks, trace);
+  if (rate >= 1 || (bodyPartMult === 1.0 && bodyPart === 'torso')) {
+    return hit(input, flags, bodyPartMult, bodyPart, onslaughtMaxStacks, trace);
   }
-  const atTarget = hit(input, flags, bodyPartMult, onslaughtMaxStacks, trace);
-  const atTorso = hit(input, flags, 1.0, onslaughtMaxStacks);
+  const atTarget = hit(input, flags, bodyPartMult, bodyPart, onslaughtMaxStacks, trace);
+  const atTorso = hit(input, flags, 1.0, 'torso', onslaughtMaxStacks);
   return bodyPartWeighted(atTarget, atTorso, rate);
 }
 
@@ -307,6 +326,26 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   const powerAttack = input.player.isPowerAttacking;
   const sneaking = input.player.isSneaking;
   const bodyPartMult = input.player.isAimingAtWeakpoint ? input.weakpointMult : 1.0;
+  // Location axis for torso-gated perks (Center Masochist), independent of
+  // the mult above — an armored torso can be <1.0, a torso-weakpoint
+  // (Deathclaw Belly) can be >1.0. Order matters: not-aiming is a default
+  // torso hit regardless of any picked part; only override torso-ness when
+  // real BPTD location data is available (`targetIsTorso` defined) — a
+  // custom multiplier with no picked part keeps the legacy mult-derived
+  // category (mult 1.0 → torso).
+  const targetBodyPart: BodyPartLocation = !input.player.isAimingAtWeakpoint
+    ? 'torso'
+    : input.targetIsTorso === true
+      ? 'torso'
+      : input.targetIsTorso === false
+        ? bodyPartMult > 1.0
+          ? 'weakpoint'
+          : 'limb'
+        : bodyPartMult > 1.0
+          ? 'weakpoint'
+          : bodyPartMult < 1.0
+            ? 'limb'
+            : 'torso';
   const tracing = input.collectTrace === true;
 
   // Onslaught max stacks (folded ONCE, threaded onto every ResolveContext
@@ -328,7 +367,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // Free aim: crits are VATS-only, so never crit here.
   const freeFlags: ScenarioFlags = { isVats: false, isSneaking: sneaking, isPowerAttack: powerAttack, isCrit: false };
   const freeTrace = tracing ? createHitTrace() : undefined;
-  const freeHit = bodyPartBlendedHit(input, freeFlags, bodyPartMult, onslaughtMaxStacks, freeTrace);
+  const freeHit = bodyPartBlendedHit(input, freeFlags, bodyPartMult, targetBodyPart, onslaughtMaxStacks, freeTrace);
 
   // VATS: crit cadence blends a non-crit and a crit hit.
   const vatsFlags: ScenarioFlags = { isVats: true, isSneaking: sneaking, isPowerAttack: powerAttack, isCrit: false };
@@ -338,8 +377,8 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   const vatsTrace = tracing ? createHitTrace() : undefined;
   const vatsCritTrace = tracing ? createHitTrace() : undefined;
   const vatsAvg = critWeighted(
-    bodyPartBlendedHit(input, vatsFlags, bodyPartMult, onslaughtMaxStacks, vatsTrace),
-    bodyPartBlendedHit(input, { ...vatsFlags, isCrit: true }, bodyPartMult, onslaughtMaxStacks, vatsCritTrace),
+    bodyPartBlendedHit(input, vatsFlags, bodyPartMult, targetBodyPart, onslaughtMaxStacks, vatsTrace),
+    bodyPartBlendedHit(input, { ...vatsFlags, isCrit: true }, bodyPartMult, targetBodyPart, onslaughtMaxStacks, vatsCritTrace),
     critRate
   );
 
@@ -347,9 +386,11 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // ×3 + detonation cycle; perHit display stays the plain hit above (decided
   // simplest-defensible split, docs/assumptions.md).
   const charged = isCharged(input.weapon);
-  const freeCycleTotal = charged ? chargedCycleHit(input, freeFlags, bodyPartMult, 0, onslaughtMaxStacks).total : freeHit.total;
+  const freeCycleTotal = charged
+    ? chargedCycleHit(input, freeFlags, bodyPartMult, targetBodyPart, 0, onslaughtMaxStacks).total
+    : freeHit.total;
   const vatsCycleTotal = charged
-    ? chargedCycleHit(input, vatsFlags, bodyPartMult, critRate, onslaughtMaxStacks).total
+    ? chargedCycleHit(input, vatsFlags, bodyPartMult, targetBodyPart, critRate, onslaughtMaxStacks).total
     : vatsAvg.total;
 
   const freeSustainRaw = computeSustain(freeCycleTotal, fireRate, input.weapon);

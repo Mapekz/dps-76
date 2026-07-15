@@ -82,6 +82,25 @@ describe('perk effects through the engine (real data)', () => {
     expect(withPerkWeak.freeAim.perHit.total).toBeCloseTo(noPerkWeak.freeAim.perHit.total, 6);
   });
 
+  it('Center Masochist location is decoupled from the body-part mult (BPTD partType, not mult sign)', () => {
+    const weapon = getWeapons('live')['CombatRifle_Fixer'];
+    const perk = getLoadoutModifiers('live', [{ perkId: PerkId.CenterMasochist, rank: 3 }]);
+    const weakpoint = { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true };
+
+    // A non-torso part at mult 1.0 (e.g. an arm) must NOT trigger Center
+    // Masochist — this was the bug: bodyPart was derived from the mult's
+    // sign (1.0 → 'torso') rather than the picked part's identity.
+    const noPerkLimb = computeScenarios({ ...base, weapon, modifiers: [], player: weakpoint, weakpointMult: 1.0, targetIsTorso: false });
+    const withPerkLimb = computeScenarios({ ...base, weapon, modifiers: perk, player: weakpoint, weakpointMult: 1.0, targetIsTorso: false });
+    expect(withPerkLimb.freeAim.perHit.total).toBeCloseTo(noPerkLimb.freeAim.perHit.total, 6);
+
+    // A torso-weakpoint part (mult > 1, e.g. a Deathclaw's belly) must
+    // trigger Center Masochist AND stack with the weakpoint bonus mult.
+    const noPerkTorsoWeak = computeScenarios({ ...base, weapon, modifiers: [], player: weakpoint, weakpointMult: 3.0, targetIsTorso: true });
+    const withPerkTorsoWeak = computeScenarios({ ...base, weapon, modifiers: perk, player: weakpoint, weakpointMult: 3.0, targetIsTorso: true });
+    expect(withPerkTorsoWeak.freeAim.perHit.total).toBeCloseTo(noPerkTorsoWeak.freeAim.perHit.total * 1.75, 6);
+  });
+
   it('Ninja boosts sneak damage for melee but not for the Fixer', () => {
     const fixer = getWeapons('live')['CombatRifle_Fixer'];
     const sledge = getWeapons('live')['SuperSledge'];

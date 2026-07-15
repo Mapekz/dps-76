@@ -22,6 +22,20 @@ export function getBodyPartMult(mode: GameMode, raceId: string, partName: string
 }
 
 /**
+ * True when the picked part is wired to the BPTD Torso slot — the location axis
+ * Center Masochist's DmgVsTorso keys off, independent of the damage multiplier
+ * (an armored torso can be <1.0, a torso-weakpoint like a Deathclaw's Belly can
+ * be >1.0). `undefined` for an unknown race/part (stale URL) so the caller falls
+ * back to the legacy mult-derived category, same as `getBodyPartMult`. Pelvis-
+ * slot bellies/bodies (UC Abomination, Deathclaw "Body") are a separate BPTD
+ * slot and are NOT torso — an unmeasured assumption, see docs/assumptions.md.
+ */
+export function isTorsoBodyPart(mode: GameMode, raceId: string, partName: string): boolean | undefined {
+  const part = getBodyPartRace(mode, raceId)?.parts.find(p => p.name === partName);
+  return part ? part.partType === 'Torso' : undefined;
+}
+
+/**
  * Enemy-type identifiers the selected target matches for `enemyType`/
  * `enemyTypeAny` conditions: the RACE edid (GetIsRace gates — Assassin's
  * "HumanRace") plus the race's ActorType* keywords (HasKeyword gates —
