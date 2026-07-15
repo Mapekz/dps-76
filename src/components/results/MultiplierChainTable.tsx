@@ -23,10 +23,26 @@ function Num({ children, className }: { children: React.ReactNode; className?: s
   return <span className={cn('shrink-0 font-mono text-xs tabular-nums text-right', className)}>{children}</span>;
 }
 
-function Row({ label, value, indent, muted }: { label: React.ReactNode; value: React.ReactNode; indent?: boolean; muted?: boolean }) {
+function Row({
+  label,
+  value,
+  indent,
+  muted,
+  title,
+}: {
+  label: React.ReactNode;
+  value: React.ReactNode;
+  indent?: boolean;
+  muted?: boolean;
+  /** Falls back to `label` when it's a plain string; pass explicitly when `label` is JSX. */
+  title?: string;
+}) {
+  const titleText = title ?? (typeof label === 'string' ? label : undefined);
   return (
     <div className={cn('flex items-baseline justify-between gap-2 py-px', indent && 'pl-3', muted && 'text-muted-foreground')}>
-      <span className="min-w-0 truncate text-xs">{label}</span>
+      <span className="min-w-0 truncate text-xs" title={titleText}>
+        {label}
+      </span>
       <Num>{value}</Num>
     </div>
   );
@@ -39,9 +55,8 @@ function signed(v: number, digits = 2): string {
 function contributionRows(trace: BucketTrace, keyPrefix: string) {
   const rows: React.ReactNode[] = [];
   for (const c of trace.overriddenSets) {
-    rows.push(
-      <Row key={`${keyPrefix}-ov-${c.source.edid}`} indent muted label={<s>{c.source.name} = {c.value.toFixed(2)} (overridden)</s>} value="" />
-    );
+    const text = `${c.source.name} = ${c.value.toFixed(2)} (overridden)`;
+    rows.push(<Row key={`${keyPrefix}-ov-${c.source.edid}`} indent muted label={<s>{text}</s>} value="" title={text} />);
   }
   if (trace.set) {
     rows.push(<Row key={`${keyPrefix}-set`} indent label={`${trace.set.source.name} (sets base)`} value={trace.set.value.toFixed(2)} />);
@@ -119,10 +134,7 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
       {trace.strTerm > 0 && <Row indent label="Strength (melee)" value={signed(trace.strTerm)} />}
       {trace.sneak && anyNonExplosive && (
         <>
-          <Row
-            label={mixed ? 'Sneak attack (non-explosive)' : 'Sneak attack'}
-            value={signed(trace.sneak.base.result + trace.sneak.bonus.result - 1)}
-          />
+          <Row label="Sneak attack" value={signed(trace.sneak.base.result + trace.sneak.bonus.result - 1)} />
           {contributionRows(trace.sneak.base, 'sb')}
           {contributionRows(trace.sneak.bonus, 'sn')}
         </>
@@ -136,13 +148,13 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
 
       {trace.wholeDamage.length > 0 && (
         <>
-          <Row label="Whole-damage multipliers" value="" />
+          <Row label="Damage Multipliers" value="" />
           {wholeDamageRows(trace.wholeDamage)}
         </>
       )}
       {trace.bodyPartMult !== 1 && anyNonExplosive && (
         <Row
-          label={`${trace.bodyPartMult > 1 ? 'Body part (weakpoint)' : 'Body part (limb)'}${mixed ? ' (non-explosive)' : ''}`}
+          label={trace.bodyPartMult > 1 ? 'Body part (weakpoint)' : 'Body part (limb)'}
           value={`×${trace.bodyPartMult.toFixed(2)}`}
         />
       )}
@@ -159,7 +171,7 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
       {explain.crit?.crit && result.critRate !== undefined && result.critRate > 0 && (
         <>
           <Row
-            label={`Critical hits (${Math.round(result.critRate * 100)}%)`}
+            label={`Crits (${Math.round(result.critRate * 100)}% of hits)`}
             value={signed(explain.crit.crit.base.result + explain.crit.crit.bonus.result - 1)}
           />
           {contributionRows(explain.crit.crit.base, 'cb')}
@@ -169,12 +181,7 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
 
       <div className="border-border/50 mt-1 border-t pt-1">
         <Row label="Average per hit" value={formatDamage(result.perHit.total)} />
-        {trace.charge && (
-          <Row
-            label="Charge"
-            value={`${trace.charge.chargeTimeSec.toFixed(2)}s / ${trace.charge.fullPowerSeconds.toFixed(2)}s → ×${trace.charge.mult.toFixed(2)}`}
-          />
-        )}
+        {trace.charge && <Row label="Charge dmg mult" value={`×${trace.charge.mult.toFixed(1)}`} />}
         <Row label="Fire rate (approx.)" value={`×${result.fireRate.toFixed(2)}/s`} />
         <Row label="Burst DPS" value={formatDamage(result.burstDps)} />
         {result.sustain.reloadSec > 0 && (
@@ -201,8 +208,8 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
             {contributionRows(explain.apRegen.maxAp, 'ap-max')}
             <Row label="Max AP pool" value={Math.round(result.ap.maxAp)} />
 
-            <Row label="Base regen rate" value={`${baseRatePct.toFixed(1)}%/s`} />
-            <Row indent label={`Race base (${isInPowerArmor ? 'power armor' : 'human'})`} value={`${raceBasePct.toFixed(1)}%`} />
+            <Row label="Base AP regen" value={`${baseRatePct.toFixed(1)}%/s`} />
+            <Row indent label={`Base (${isInPowerArmor ? 'power armor' : 'human'})`} value={`${raceBasePct.toFixed(1)}%`} />
             {flatPercentRows(flat, 'ap-flat')}
 
             <Row label="Regen rate multiplier" value={`×${multiplier.toFixed(2)}`} />
