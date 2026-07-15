@@ -71,8 +71,15 @@ The engine lives in `src/lib/engine/`:
 - `effective-weapon.ts` - applies equipped OMODs (keywords, speed, auto state) before the engine runs
 
 `src/lib/damage-formulas.ts` retains only the dormant enemy DR/ER scaffolding
-(paper damage v1 has no enemy mitigation). `docs/assumptions.md` documents
-every value the engine asserts that isn't proven by ESM data — keep it current.
+(paper damage v1 has no enemy mitigation). `docs/assumptions.md` is a terse
+registry of every value the engine asserts that isn't proven by ESM data —
+one claim per bullet with a status tag and a code pointer. Keep entries terse:
+investigation narrative belongs in the commit message, in-game measurement
+TODOs go in `dps-todos/measurement-backlog.md`, and an explanation of how a
+mechanic works (even an ESM-proven one) belongs in the implementing
+function's doc-comment, not in the registry. Section names are cited
+verbatim across the codebase (including generated `omods.json`) — don't
+rename or merge one without updating its citations.
 
 ### Damage Calculation Flow
 
@@ -134,6 +141,7 @@ import { useGameMode } from '@/hooks/useGameMode';
 2. Wrong or missing values go in `src/data/overrides/*` with a source comment.
 3. New damage mechanics usually need: a `Bucket` or `Condition` in
    `src/types/modifiers.ts`, evaluation in `src/lib/engine/resolve.ts`, a
-   mapping in the extractor (`normalize/mgef.ts` or `extract-omods.ts`), and an
-   entry in `docs/assumptions.md` if any value is not ESM-proven.
+   mapping in the extractor (`normalize/mgef.ts` or `extract-omods.ts`), and —
+   if any value isn't ESM-proven — a terse entry in `docs/assumptions.md`
+   (one claim, a status tag, a code pointer; not a narrated writeup).
 4. Check `_meta.json` unresolved reports after extraction — silent gaps are bugs.

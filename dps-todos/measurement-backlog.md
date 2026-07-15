@@ -3,10 +3,13 @@
 Split out of this folder's README ("Known gaps & measurement backlog") on
 2026-07-13; absorbed the measurement remainders of the shipped
 launcher-explosives and carnivore-herbivore work plus the mixed-damage
-(DamageTypeValues) conversion. Full derivations live in `docs/assumptions.md`;
-this file is the actionable queue. The "parked by explicit design decision"
-items (Basher's, Combo-Breaker's, cripple-speed, on-kill AP restores,
-Gunslinger Master stacks, N&D Slugger/IronFist keys) stay in the README.
+(DamageTypeValues) conversion. `docs/assumptions.md` holds the terse
+decision/status registry (2026-07-15 streamlined — one claim per bullet, a
+status tag, a code pointer); this file is the actionable in-game-measurement
+queue. Investigation history for any item below lives in git, not in either
+doc. The "parked by explicit design decision" items (Basher's,
+Combo-Breaker's, cripple-speed, on-kill AP restores, Gunslinger Master
+stacks, N&D Slugger/IronFist keys) stay in the README.
 
 **2026-07-14: the full zero-modifier legendary sweep ran** — every
 zero-modifier legendary OMOD (38 records, 37 names) esm-walked to its true
