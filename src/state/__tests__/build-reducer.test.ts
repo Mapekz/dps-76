@@ -252,6 +252,24 @@ describe('body-part mult and race forcing', () => {
     expect(s2.player.weakpointMult).toBe(0.15);
   });
 
+  it('weapon/chargeTime sets the value, floors at 0, and is not upper-clamped (OMODs can extend the window)', () => {
+    expect(createDefaultBuildState().player.chargeTimeSec).toBeUndefined();
+    const s = run([{ type: 'weapon/chargeTime', value: 1.5 }]);
+    expect(s.player.chargeTimeSec).toBe(1.5);
+    const negative = run([{ type: 'weapon/chargeTime', value: -1 }]);
+    expect(negative.player.chargeTimeSec).toBe(0);
+    // No upper bound in the reducer — the engine clamps against the
+    // effective (OMOD-extended) fullPowerSeconds instead.
+    const huge = run([{ type: 'weapon/chargeTime', value: 999 }]);
+    expect(huge.player.chargeTimeSec).toBe(999);
+  });
+
+  it('weapon/select resets chargeTimeSec to undefined (new weapon defaults to full charge)', () => {
+    const charged = run([{ type: 'weapon/chargeTime', value: 1.5 }]);
+    const reselected = run([{ type: 'weapon/select', weaponId: 'w' }], charged);
+    expect(reselected.player.chargeTimeSec).toBeUndefined();
+  });
+
   it('rejects adding a ghoul-only perk while Human is selected (state unchanged)', () => {
     // Fresh builds start Human. Ghoul cards are regular SPECIAL-slotted perks (not legendary).
     const s = run([{ type: 'perk/add', perkId: 'GlowingCriticals', rank: 1, legendary: false }]);

@@ -169,6 +169,12 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
 
       <div className="border-border/50 mt-1 border-t pt-1">
         <Row label="Average per hit" value={formatDamage(result.perHit.total)} />
+        {trace.charge && (
+          <Row
+            label="Charge"
+            value={`${trace.charge.chargeTimeSec.toFixed(2)}s / ${trace.charge.fullPowerSeconds.toFixed(2)}s → ×${trace.charge.mult.toFixed(2)}`}
+          />
+        )}
         <Row label="Fire rate (approx.)" value={`×${result.fireRate.toFixed(2)}/s`} />
         <Row label="Burst DPS" value={formatDamage(result.burstDps)} />
         {result.sustain.reloadSec > 0 && (

@@ -1,10 +1,14 @@
+import * as React from 'react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Combobox } from '@/components/ui/combobox';
 import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
+import { Slider, type SliderMark } from '@/components/ui/slider';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
+import { useScenarioResults } from '@/state/useScenarioResults';
+import { resolveLoadout } from '@/lib/loadout';
+import { computeScenarios } from '@/lib/engine/scenarios';
 import { getWeapons, weaponLevelStops } from '@/data';
 import {
   effectiveWeaponName,
@@ -15,6 +19,7 @@ import {
   type OmodSlot,
 } from '@/data/omods';
 import { ActionDelta } from '@/components/diff/ActionDelta';
+import { DeltaText } from '@/components/diff/DiffTooltip';
 import { SectionTrigger } from './SectionTrigger';
 
 /**
@@ -27,6 +32,14 @@ function nearestItemLevelIndex(stops: readonly number[], level: number): number 
     if (Math.abs(stops[i] - level) < Math.abs(stops[best] - level)) best = i;
   }
   return best;
+}
+
+/** Quarter-charge tick marks (25/50/75/100% of full power), dropping any point below the weapon's min-charge floor. */
+function chargeQuarterMarks(fullPowerSeconds: number, minimumChargeTime: number): SliderMark[] {
+  return [0.25, 0.5, 0.75, 1].flatMap(frac => {
+    const seconds = fullPowerSeconds * frac;
+    return seconds >= minimumChargeTime ? [{ value: seconds, label: `${Math.round(frac * 100)}%` }] : [];
+  });
 }
 
 const BADGE_LABELS: Record<OmodBadge, string> = {
@@ -47,8 +60,9 @@ function OmodBadgeTag({ slot, omodId }: { slot: OmodSlot; omodId: string }) {
 
 export function WeaponSection() {
   const { mode } = useGameMode();
-  const { player } = useBuild();
+  const { player, enemy } = useBuild();
   const dispatch = useBuildDispatch();
+  const { scenarios } = useScenarioResults();
 
   const weapons = getWeapons(mode);
   const weaponOptions = Object.values(weapons).map(w => ({ value: w.id, label: w.name }));
@@ -56,6 +70,33 @@ export function WeaponSection() {
   const omodSlots = selectedWeapon ? getOmodSlots(mode, selectedWeapon) : [];
   const legendarySlots = selectedWeapon ? getLegendaryOmodSlots(mode, selectedWeapon) : [];
   const levelStops = weaponLevelStops(selectedWeapon);
+
+  // Charging weapons (Gauss family, bows, tesla/gamma/laser via charging-barrel
+  // OMODs) — null when the effective weapon (base + equipped OMODs) doesn't
+  // charge, per ScenarioSet.charging (src/lib/engine/scenarios.ts). Clamp the
+  // stored hold time defensively: an OMOD swap (not just a weapon/select,
+  // which already resets it) can shrink the effective charge window, and a
+  // carried-over value could otherwise overshoot the new bounds — mirrors
+  // resolvedChargeTimeSec's own clamp (src/lib/charge.ts).
+  const charging = scenarios?.charging ?? null;
+  const chargeTimeSec = charging
+    ? Math.min(Math.max(player.chargeTimeSec ?? charging.fullPowerSeconds, charging.minimumChargeTime), charging.fullPowerSeconds)
+    : 0;
+  const chargePercent = charging ? Math.round((chargeTimeSec / charging.fullPowerSeconds) * 100) : 0;
+  const isFullCharge = charging ? charging.fullPowerSeconds - chargeTimeSec < 1e-6 : true;
+
+  // Free Aim burst DPS at full charge, for the "vs full" delta label —
+  // re-runs the engine once more on the SAME resolved input with
+  // chargeTimeSec forced to fullPowerSeconds (both per-hit damage AND fire
+  // rate shift with hold time, src/lib/fire-rate.ts's charging branch, so a
+  // linear estimate from the multiplier alone wouldn't be exact). Burst DPS
+  // (not sustained) is the metric ScenarioCard renders as the headline number.
+  const fullChargeBurstDps = React.useMemo(() => {
+    if (!charging) return null;
+    const input = resolveLoadout(player, enemy, mode);
+    if (!input) return null;
+    return computeScenarios({ ...input, chargeTimeSec: charging.fullPowerSeconds }).freeAim.burstDps;
+  }, [player, enemy, mode, charging]);
 
   // A slot showing its standard part isn't a "mod" — count only deviations.
   const defaultOmodIds = new Map(
@@ -159,6 +200,38 @@ export function WeaponSection() {
               Only the weapon's real drop levels are offered. Base damage comes from the level curve.
             </p>
           </div>
+
+          {charging && scenarios && (
+            <div className="space-y-1.5">
+              <Label htmlFor="charge-time" className="flex flex-wrap items-baseline justify-between gap-x-2">
+                <span>
+                  Charge time: {chargeTimeSec.toFixed(2)}s — {chargePercent}% charge
+                </span>
+                {isFullCharge ? (
+                  <span className="text-muted-foreground text-xs font-normal">full charge</span>
+                ) : (
+                  fullChargeBurstDps !== null && (
+                    <span className="text-xs font-normal">
+                      <DeltaText base={fullChargeBurstDps} delta={scenarios.freeAim.burstDps - fullChargeBurstDps} /> DPS vs full
+                    </span>
+                  )
+                )}
+              </Label>
+              <Slider
+                id="charge-time"
+                min={charging.minimumChargeTime}
+                max={charging.fullPowerSeconds}
+                step={charging.fullPowerSeconds / 100}
+                value={[chargeTimeSec]}
+                onValueChange={([v]) => dispatch({ type: 'weapon/chargeTime', value: v })}
+                marks={chargeQuarterMarks(charging.fullPowerSeconds, charging.minimumChargeTime)}
+              />
+              <p className="text-muted-foreground text-xs">
+                Hold time before the shot fires. Defaults to a full charge (optimal play) — shorter holds fire faster
+                but hit softer.
+              </p>
+            </div>
+          )}
         </div>
       </AccordionContent>
     </AccordionItem>

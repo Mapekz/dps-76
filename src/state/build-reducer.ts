@@ -65,6 +65,8 @@ export type BuildAction =
   | { type: 'weapon/legendary'; slotIndex: number; omodId: string | null }
   | { type: 'weapon/itemLevel'; value: number }
   | { type: 'weapon/weakpointMult'; value: number }
+  /** Charge hold time in seconds, for weapons that charge (Gauss/bows/tesla-with-barrel/etc.). */
+  | { type: 'weapon/chargeTime'; value: number }
   | { type: 'perk/add'; perkId: string; rank: number; legendary: boolean }
   | { type: 'perk/setRank'; perkId: string; rank: number }
   | { type: 'perk/remove'; perkId: string }
@@ -157,6 +159,9 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
         // Shishkebab 45, most weapons 50) — the slider only offers its real
         // eligible levels anyway.
         itemLevel: action.weaponId ? maxEligibleLevel(getWeapons(mode)[action.weaponId]) : player.itemLevel,
+        // A new weapon resets to "always fully charge" — the old hold time
+        // was relative to the previous weapon's charge window.
+        chargeTimeSec: undefined,
       });
 
     case 'weapon/mod': {
@@ -181,6 +186,13 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
     case 'weapon/weakpointMult':
       // Floor 0.1: sub-1 values model armored parts (Mirelurk shell 0.15×), 0 would zero the scenario.
       return withPlayer(state, { ...player, weakpointMult: Math.max(0.1, action.value) });
+
+    case 'weapon/chargeTime':
+      // Only a lower bound belongs here: the reducer only sees the base
+      // weapon, but OMODs can grant/extend the charge window (tesla only
+      // gets fullPowerSeconds from its barrel OMOD) — the engine clamps the
+      // upper bound to the effective weapon's fullPowerSeconds itself.
+      return withPlayer(state, { ...player, chargeTimeSec: Math.max(0, action.value) });
 
     case 'perk/add': {
       const list = action.legendary ? 'legendaryPerks' : 'perks';

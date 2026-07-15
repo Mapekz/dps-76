@@ -146,6 +146,29 @@ describe('build codec', () => {
     // Unknown condition keys are dropped rather than crashing.
   });
 
+  it('round-trips chargeTimeSec when set, and omits "ct" from the wire when undefined', async () => {
+    const state = stateFrom([{ type: 'weapon/chargeTime', value: 1.5 }]);
+    const encoded = await encodeBuild(state);
+    const decoded = await decodeBuild(encoded, 'live');
+    expect(decoded!.state.player.chargeTimeSec).toBe(1.5);
+
+    const defaultEncoded = await encodeBuild(createDefaultBuildState());
+    const defaultDecoded = await decodeBuild(defaultEncoded, 'live');
+    expect(defaultDecoded!.state.player.chargeTimeSec).toBeUndefined();
+  });
+
+  it('decodes a wire without "ct" to undefined chargeTimeSec (backward compat)', async () => {
+    const encoded = await encodeRawWire({});
+    const decoded = await decodeBuild(encoded, 'live');
+    expect(decoded!.state.player.chargeTimeSec).toBeUndefined();
+  });
+
+  it('clamps a negative decoded chargeTimeSec to 0', async () => {
+    const encoded = await encodeRawWire({ ct: -5 });
+    const decoded = await decodeBuild(encoded, 'live');
+    expect(decoded!.state.player.chargeTimeSec).toBe(0);
+  });
+
   it('non-default conditions survive while defaults are not serialized', async () => {
     const state = stateFrom([{ type: 'condition/set', key: 'tenderizerStacks', value: 500 }]);
     const encoded = await encodeBuild(state);

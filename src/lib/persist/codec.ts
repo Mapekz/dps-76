@@ -38,6 +38,8 @@ interface SerializedBuild {
   il?: number;
   /** weakpointMult (default 1.5) */
   wm?: number;
+  /** chargeTimeSec — absent means undefined (always fully charge) */
+  ct?: number;
   /** perks as concatenated N&D-style 3-char chunks (key + base36 rank) */
   p?: string;
   /** legendary perks, same encoding */
@@ -161,6 +163,7 @@ export async function encodeBuild(state: BuildState): Promise<string> {
     ...(player.weapon && { w: [player.weapon.weaponId, player.weapon.mods, player.weapon.legendaryEffects] }),
     ...(player.itemLevel !== defaults.player.itemLevel && { il: player.itemLevel }),
     ...(player.weakpointMult !== defaults.player.weakpointMult && { wm: player.weakpointMult }),
+    ...(player.chargeTimeSec !== undefined && { ct: player.chargeTimeSec }),
     ...(perks.chunks && { p: perks.chunks }),
     ...(legendaryPerks.chunks && { lp: legendaryPerks.chunks }),
     ...(perks.fallback.length > 0 && { px: perks.fallback }),
@@ -225,6 +228,9 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
 
   if (typeof wire.il === 'number') state.player.itemLevel = Math.max(1, Math.min(50, wire.il));
   if (typeof wire.wm === 'number') state.player.weakpointMult = Math.max(0.1, wire.wm);
+  // No upper clamp here either (see the reducer's weapon/chargeTime case) —
+  // absent wire.ct decodes as undefined (backward compat: full charge).
+  if (typeof wire.ct === 'number') state.player.chargeTimeSec = Math.max(0, wire.ct);
 
   const keepKnown = (loadout: PerkLoadout[]) =>
     loadout
