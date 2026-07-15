@@ -5,6 +5,7 @@ import { ButtonGroup } from '@/components/ui/button-group';
 import { Combobox } from '@/components/ui/combobox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ToggleGroup } from '@/components/ui/toggle-group';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getBodyPartRaces, getBodyPartRace, getCrippablePartCount } from '@/data/bodyparts';
@@ -36,10 +37,14 @@ const ENEMY_NUMBER_FIELDS: Array<{
   label: string;
   min: number;
   max: number;
-}> = [
-  { key: 'healthPercent', label: 'Target health %', min: 1, max: 100 },
-  { key: 'groupTargetCount', label: 'Enemies in the group', min: 1, max: 99 },
-];
+}> = [{ key: 'healthPercent', label: 'Target health %', min: 1, max: 100 }];
+
+// Encircler's top tier is GetGroupTargetCount ≥5 (buffs-legendary.test.ts) —
+// nothing distinguishes larger groups, so the control caps at "5+".
+const GROUP_COUNT_OPTIONS = [1, 2, 3, 4, 5].map(value => ({
+  value,
+  label: value === 5 ? '5+' : String(value),
+}));
 
 const TARGET_CATEGORY_LABELS: Record<BodyPartRaceCategory, string> = {
   raid: 'Raid Enemies',
@@ -170,19 +175,12 @@ export function TargetSection() {
 
           <div className="space-y-1.5">
             <Label>Target distance</Label>
-            <ButtonGroup>
-              {TARGET_DISTANCE_OPTIONS.map(opt => (
-                <Button
-                  key={opt.value}
-                  type="button"
-                  size="sm"
-                  variant={(conditions.targetDistance ?? defaults.targetDistance) === opt.value ? 'default' : 'outline'}
-                  onClick={() => setEnemy('targetDistance', opt.value)}
-                >
-                  {opt.label}
-                </Button>
-              ))}
-            </ButtonGroup>
+            <ToggleGroup
+              aria-label="Target distance"
+              options={TARGET_DISTANCE_OPTIONS}
+              value={conditions.targetDistance ?? defaults.targetDistance ?? 'none'}
+              onValueChange={v => setEnemy('targetDistance', v)}
+            />
           </div>
 
           {ENEMY_NUMBER_FIELDS.map(field => (
@@ -200,6 +198,16 @@ export function TargetSection() {
               />
             </div>
           ))}
+
+          <div className="space-y-1.5">
+            <Label>Enemies in the group (incl. target)</Label>
+            <ToggleGroup
+              aria-label="Enemies in the group"
+              options={GROUP_COUNT_OPTIONS}
+              value={Math.min(conditions.groupTargetCount ?? 1, 5)}
+              onValueChange={v => setEnemy('groupTargetCount', v)}
+            />
+          </div>
 
           <div className="space-y-1.5">
             <Label htmlFor="target-crippled">

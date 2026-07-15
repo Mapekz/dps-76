@@ -27,7 +27,14 @@ Removed as **completed** on 2026-07-14: `omod-eligibility.md` (COBJ-anchored
 `isEligible`; empty-`targetKeywords` mods gated by template membership /
 explicit rescue) and `omod-obtainability-chains.md` (`cobj-index.ts` forward
 index, plan-BOOK + scrap-to-learn chases, weak-evidence review queue) — full
-spec in `docs/assumptions.md` "OMOD eligibility & recipe chains".
+spec in `docs/assumptions.md` "OMOD eligibility & recipe chains". Also
+removed 2026-07-14: `wholedamage-perks.md` — Follow Through & Taking One for
+the Team wired to `wholeDamage` via manual uptime inputs
+(`src/data/manual-uptime.ts`; esm-walk chase + modeling spec in
+`docs/assumptions.md` "Follow Through / Taking One for the Team"), UI as
+0/10/20/30/40% toggle groups per the 2026-07-14 control-style decision
+(toggle groups over sliders for small discrete ranges — also applied to
+teammate count 0–3 and enemy group size 1–5+).
 
 `ap-and-accuracy.md` was renamed to [ap-regen.md](ap-regen.md) and rescoped
 2026-07-13: VATS hit-chance/accuracy is now permanently out of scope (closed
@@ -35,72 +42,59 @@ box, not just deferred), and the doc's remaining scope is VATS AP regen/sec
 sources instead (Conductor's active on-crit regen already ships; Lone
 Wanderer's passive solo regen and any armor-sourced passive regen do not).
 
-## Weapon-mod selection sweep (added 2026-07-14, unprioritized)
+## Weapon-mod selection sweep (added 2026-07-14, CLOSED 2026-07-14)
 
 Six barebones spikes carved from the 2026-07-14 tester bug sweep (~50 mod
-picker issues), grouped by root cause. Five of the six completed 2026-07-14
-and were removed: `omod-eligibility.md` (COBJ-anchored mod↔weapon matching),
+picker issues), grouped by root cause. All six completed 2026-07-14 and were
+removed: `omod-eligibility.md` (COBJ-anchored mod↔weapon matching),
 `omod-obtainability-chains.md` (plan/recipe/vendor chases),
 `omod-nondps-stats.md` (show-all-mods display policy, inert badges),
-`omod-slot-hygiene.md` (dedupe + no-decision slot hiding), and
-`omod-slot-naming.md` (KYWD-FULL/global + per-weapon power-tool labels) —
-recover via git history; shipped detail in `docs/assumptions.md`. Only one
-remains:
-
-- **[unique-cursed-mods.md](unique-cursed-mods.md)** — unique-slot
-  completion: missing uniques (Cold Shoulder, Holy Fire, Flatliner, …),
-  cursed mods under "Item Description", bogus entries ("The Pipe", Minty
-  Breather), Kabloom naming.
-- **[weapon-attach-point-closure.md](weapon-attach-point-closure.md)** —
-  NEW 2026-07-14 (found post-sweep, user-flagged via the Hunting Rifle's
-  missing scope slot): the extractor ignores mod-granted attach points
-  (OMOD `Data."Attach Parent Slots"`), so **96 of 282 weapons** are missing
-  real slots — The Fixer shows only Receiver+Unique; pipe guns, plasma,
-  radium, railway, SMG, lever guns likewise. Root cause of the old hygiene
-  checklist's mis-routed ".44/10mm/SMG/AR only have a receiver slot" tester
-  report. Extraction fixpoint + re-extract; the highest-impact open item in
-  this group.
+`omod-slot-hygiene.md` (dedupe + no-decision slot hiding),
+`omod-slot-naming.md` (KYWD-FULL/global + per-weapon power-tool labels),
+`unique-cursed-mods.md` (30+ identity mods restored: instance-only keywords,
+unnamed template members, cursed "Item Description" slot, Kabloom/Cold
+Shoulder naming, Dom Pedro payload), and the post-sweep addition
+`weapon-attach-point-closure.md` (attach-point fixpoint closure — mod-granted
+slots restored on 136 weapons) — recover via git history; shipped detail in
+`docs/assumptions.md`.
 
 One-off deferral: mole-miner-gauntlet Extra Claw damage decrease → noted in
 [melee-cadence.md](melee-cadence.md) (likely correct; DoT-refresh math).
 
 ## Remaining implementable work, in priority order
 
-1. **wholeDamage legendary perks** — [wholedamage-perks.md](wholedamage-perks.md).
-   Follow Through and Taking One for the Team both select in the UI but fold
-   to nothing — real ESM perks, zero decoded modifiers, engine's
-   `wholeDamage` bucket exists and is tested but has no real data source.
-   Model as manual 0-40% sliders → 1.0x-1.4x damage-taken multiplier on the
-   enemy. Tenderizer (already correctly modeled as a stacking `dbm` ADD, not
-   `wholeDamage`) is NOT part of this gap.
-2. **Measurement backlog** — [measurement-backlog.md](measurement-backlog.md).
+Order re-confirmed by the user 2026-07-14 (wholeDamage perks → measurement
+backlog → team mechanics; wholeDamage shipped same day, see the removal note
+above).
+
+1. **Measurement backlog** — [measurement-backlog.md](measurement-backlog.md).
    Perk weapon-stat fold gap (self-contained engine fix, no blockers) +
    in-game golden-case queue (legendary effects extracting zero modifiers,
    launcher pip-boy summing verification, Carnivore/Herbivore confirmations).
-3. **Team mechanics** — [team-mechanics.md](team-mechanics.md). Teammate
+2. **Team mechanics** — [team-mechanics.md](team-mechanics.md). Teammate
    requirement is invisible in the UI, United Ordeal is fully inert
    (unresolved teammate condition + conditional SPECIAL never folds), and
    public team bonuses (Casual +INT / Exploration +END) aren't modeled at
    all. Scoped 2026-07-13; no blockers.
-4. **VATS AP regen** — [ap-regen.md](ap-regen.md). Rescoped 2026-07-13:
+3. **VATS AP regen** — [ap-regen.md](ap-regen.md). Rescoped 2026-07-13:
    VATS hit-chance/accuracy dropped permanently (closed-box formula, not
    worth chasing). Remaining scope is AP regen/sec sources — Conductor's
    (active, on-crit) already ships; Lone Wanderer's passive solo AP regen
    is dead on an unmapped curve AV, and passive armor-sourced regen (e.g. a
    "Powered"-style effect) hasn't been located yet (no armor-omod
    extraction pipeline exists at all — see the doc).
-5. **Popular builds / presets** — [popular-builds.md](popular-builds.md).
+4. **Popular builds / presets** — [popular-builds.md](popular-builds.md).
    All dependencies (perk data, VATS crit, sneak) are done; just needs the
    preset-selector UI + 3 canned N&D configs.
-6. **PTS toggle** — [pts-toggle.md](pts-toggle.md). Smallest mechanical win
+5. **PTS toggle** — [pts-toggle.md](pts-toggle.md). Smallest mechanical win
    whenever picked up: un-disable the Header `Switch`, wire it to
    `setMode`. Low value until a genuinely different PTS dump exists (pts
    re-exports live today).
-7. **Melee cadence** — [melee-cadence.md](melee-cadence.md). Real
+6. **Melee cadence** — [melee-cadence.md](melee-cadence.md). Real
    per-weapon `animDelaySec` for melee replacing the 1 swing/sec stub.
    (The old 1h/2h weaponClass split is dropped — no perk or OMOD in the
    current dump gates on handedness; see the doc.)
-8. **Armor mods — outgoing damage** — [armor-mods-outgoing.md](armor-mods-outgoing.md).
+7. **Armor mods — outgoing damage** — [armor-mods-outgoing.md](armor-mods-outgoing.md).
    Narrowed 2026-07-13 to specific mods: Unyielding, Nocturnal (caution — a
    weapon legendary already extracted under this name; confirm it's the
    right target before building an armor one), 2-star SPECIAL armor bonuses,
@@ -111,7 +105,7 @@ One-off deferral: mole-miner-gauntlet Extra Claw damage decrease → noted in
    claimed — no armor OMOD/legendary extraction pipeline exists yet at all;
    building one is now a prerequisite, shared with `ap-regen.md`'s "Powered"
    chase.
-9. **Last, tied — Enemy table & mitigation, and Armor mods — incoming damage**:
+8. **Last, tied — Enemy table & mitigation, and Armor mods — incoming damage**:
    - **Enemy table & mitigation** — [phase-3-enemies.md](phase-3-enemies.md).
      Spike partially done 2026-07-12: BPTD body-part/weakpoint extraction +
      the Target section race/body-part picker already shipped. Remaining:

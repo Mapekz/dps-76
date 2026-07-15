@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
+import { ToggleGroup } from '@/components/ui/toggle-group';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
@@ -23,6 +24,9 @@ import { SectionTrigger } from './SectionTrigger';
 /** In-game meter state names — SURV_NewHungerThreshold_Msg_* / SURV_NewThirstThreshold_Msg_* (tier 4 = fullest). */
 const FOOD_TIER_NAMES = ['Hungry', 'Partially Fed', 'Fed', 'Well Fed', 'Fully Fed'] as const;
 const DRINK_TIER_NAMES = ['Thirsty', 'Partially Hydrated', 'Hydrated', 'Well Hydrated', 'Fully Hydrated'] as const;
+
+/** Follow Through / TOftT uptime tiers — the per-rank 10/20/30/40% magnitudes plus off. */
+const UPTIME_PCT_OPTIONS = [0, 10, 20, 30, 40].map(value => ({ value, label: `${value}%` }));
 
 /**
  * GHL_SURV_FeralThreshold_Msg_* names banded over the 0–8 GHL_FeralTier AV
@@ -290,15 +294,12 @@ export function ConditionsSection() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="char-teammates">Teammates: {conditions.teammateCount}</Label>
-            <Slider
-              id="char-teammates"
-              min={0}
-              max={3}
-              step={1}
-              value={[conditions.teammateCount]}
-              onValueChange={([v]) => set('teammateCount', v)}
-              marks={Array.from({ length: 4 }, (_, i) => ({ value: i, label: String(i) }))}
+            <Label>Teammates</Label>
+            <ToggleGroup
+              aria-label="Teammates"
+              options={[0, 1, 2, 3].map(n => ({ value: n, label: String(n) }))}
+              value={conditions.teammateCount}
+              onValueChange={v => set('teammateCount', v)}
             />
           </div>
 
@@ -339,15 +340,12 @@ export function ConditionsSection() {
 
           {hasFollowThrough && (
             <div className="space-y-1.5">
-              <Label htmlFor="char-follow-through">Follow Through uptime: {conditions.followThroughPct ?? 0}%</Label>
-              <Slider
-                id="char-follow-through"
-                min={0}
-                max={40}
-                step={5}
-                value={[conditions.followThroughPct ?? 0]}
-                onValueChange={([v]) => set('followThroughPct', v)}
-                marks={[0, 10, 20, 30, 40].map(value => ({ value, label: String(value) }))}
+              <Label>Follow Through uptime</Label>
+              <ToggleGroup
+                aria-label="Follow Through uptime"
+                options={UPTIME_PCT_OPTIONS}
+                value={conditions.followThroughPct ?? 0}
+                onValueChange={v => set('followThroughPct', v)}
               />
               <p className="text-muted-foreground text-xs">
                 Manual estimate of the 10s ranged-sneak damage-taken debuff's effective uptime.
@@ -357,17 +355,12 @@ export function ConditionsSection() {
 
           {hasTakingOneForTheTeam && (
             <div className="space-y-1.5">
-              <Label htmlFor="char-toftt">
-                Taking One for the Team uptime: {conditions.takingOneForTheTeamPct ?? 0}%
-              </Label>
-              <Slider
-                id="char-toftt"
-                min={0}
-                max={40}
-                step={5}
-                value={[conditions.takingOneForTheTeamPct ?? 0]}
-                onValueChange={([v]) => set('takingOneForTheTeamPct', v)}
-                marks={[0, 10, 20, 30, 40].map(value => ({ value, label: String(value) }))}
+              <Label>Taking One for the Team uptime</Label>
+              <ToggleGroup
+                aria-label="Taking One for the Team uptime"
+                options={UPTIME_PCT_OPTIONS}
+                value={conditions.takingOneForTheTeamPct ?? 0}
+                onValueChange={v => set('takingOneForTheTeamPct', v)}
               />
               <p className="text-muted-foreground text-xs">
                 Manual estimate of the teamed-attacker damage-taken debuff's effective uptime.
