@@ -9,7 +9,7 @@ import { Slider } from '@/components/ui/slider';
 import { ToggleGroup } from '@/components/ui/toggle-group';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
-import { getBodyPartRaces, getBodyPartRace, getCrippablePartCount } from '@/data/bodyparts';
+import { getBodyPartRaces, getBodyPartRace, getCrippablePartCount, resolveTargetBodyPart } from '@/data/bodyparts';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions, type EnemyConditions } from '@/types';
 import type { BodyPartRaceCategory } from '@/types/generated';
 import { SectionTrigger } from './SectionTrigger';
@@ -59,6 +59,11 @@ const TARGET_CATEGORY_LABELS: Record<BodyPartRaceCategory, string> = {
 };
 const TARGET_CATEGORY_ORDER: BodyPartRaceCategory[] = ['raid', 'infestation', 'headhunt', 'standard'];
 
+// Sentinel picker value for "no part picked" — disarms aiming, falls back to
+// the torso default. Distinct from any real BPTD part name (verified against
+// the live extraction — see docs/assumptions.md if that ever changes).
+const TORSO_OPTION = '__torso_default__';
+
 export function TargetSection() {
   const { mode } = useGameMode();
   const { player, enemy } = useBuild();
@@ -78,16 +83,48 @@ export function TargetSection() {
       .sort((a, b) => a.label.localeCompare(b.label))
   );
   const selectedRace = conditions.targetRace ? getBodyPartRace(mode, conditions.targetRace) : undefined;
-  const selectedPart = selectedRace?.parts.find(p => p.name === conditions.targetBodyPart);
-  const effectiveMult = selectedPart?.dmgMult ?? player.weakpointMult;
+  const isAiming = player.conditions.isAimingAtWeakpoint;
+  // The mult that WOULD apply if aiming (single source of truth, shared with
+  // the engine input and the results pill) — the picker label shows what's
+  // actually applied right now, which is torso ×1.00 whenever disarmed.
+  const resolvedTarget = resolveTargetBodyPart(mode, conditions.targetRace, conditions.targetBodyPart, player.weakpointMult);
+  const effectiveMult = isAiming ? resolvedTarget.mult : 1.0;
   const crippableMax = getCrippablePartCount(mode, conditions.targetRace);
 
   // Duplicate part names (Mirelurk Queen's two same-mult "Spouts" records,
   // differing only by partType) render duplicate options + duplicate React
   // keys — collapse by name. The only same-name group across all 79 races IS
   // the Spouts pair (verified 2026-07-15), so nothing lossy happens; L/R
-  // limbs have distinct names and stay separate.
-  const uniqueParts = selectedRace ? [...new Map(selectedRace.parts.map(p => [p.name, p])).values()] : [];
+  // limbs have distinct names and stay separate. Also drop the part that's
+  // torso-typed AND ×1.00 — that's exactly the TORSO_OPTION default, so
+  // listing it again would be a redundant no-op entry (real armored/weakpoint
+  // torsos with a mult ≠ 1.00, e.g. a Deathclaw's Belly, stay as distinct
+  // aimable options).
+  const uniqueParts = selectedRace
+    ? [...new Map(selectedRace.parts.map(p => [p.name, p])).values()].filter(
+        p => !(p.partType === 'Torso' && p.dmgMult === 1.0)
+      )
+    : [];
+  const partOptions = [
+    { value: TORSO_OPTION, label: 'Torso — ×1.00 (default)' },
+    ...uniqueParts.map(p => ({ value: p.name, label: `${p.name} — ×${p.dmgMult.toFixed(2)}` })),
+  ];
+  const pickerValue = isAiming ? (conditions.targetBodyPart ?? TORSO_OPTION) : TORSO_OPTION;
+
+  const setAiming = (value: boolean) => dispatch({ type: 'condition/set', key: 'isAimingAtWeakpoint', value });
+
+  // Picking a real part arms aiming immediately — no separate step to
+  // remember. Picking Torso (or re-clicking the current selection, which the
+  // combobox reports as null) disarms it but keeps targetBodyPart as memory,
+  // so re-arming (via this picker or the results pill) restores the same part.
+  const selectBodyPart = (part: string | null) => {
+    if (!part || part === TORSO_OPTION) {
+      setAiming(false);
+      return;
+    }
+    setEnemy('targetBodyPart', part);
+    setAiming(true);
+  };
 
   const selectRace = (raceId: string | null) => {
     setEnemy('targetRace', raceId);
@@ -95,6 +132,10 @@ export function TargetSection() {
     const race = raceId ? getBodyPartRace(mode, raceId) : undefined;
     const best = race ? [...race.parts].sort((a, b) => b.dmgMult - a.dmgMult)[0] : undefined;
     setEnemy('targetBodyPart', best?.name ?? null);
+    // Only auto-arm when the best part is an actual weak point (>1.00) — for
+    // an all-armored race (no part above torso's ×1.00) default to Torso
+    // rather than silently applying a damage-reducing strongpoint.
+    setAiming((best?.dmgMult ?? 1.0) > 1.0);
     // A stale high crippled count silently over-counts on a smaller enemy:
     // the engine's perCrippledLimb clamps to each modifier's own cap (Bully's
     // 6), never the enemy's real limb count — clamp it here on switch.
@@ -112,6 +153,7 @@ export function TargetSection() {
 
   const activeCount =
     (conditions.targetRace ? 1 : 0) +
+    (isAiming ? 1 : 0) +
     ((conditions.healthPercent ?? 100) !== (defaults.healthPercent ?? 100) ? 1 : 0) +
     (conditions.crippledLimbCount !== defaults.crippledLimbCount ? 1 : 0) +
     ((conditions.groupTargetCount ?? 1) !== (defaults.groupTargetCount ?? 1) ? 1 : 0) +
@@ -146,14 +188,11 @@ export function TargetSection() {
 
           {selectedRace ? (
             <div className="space-y-1.5">
-              <Label>Body part aimed at (×{effectiveMult.toFixed(2)})</Label>
+              <Label>Target body part (×{effectiveMult.toFixed(2)})</Label>
               <Combobox
-                options={uniqueParts.map(p => ({
-                  value: p.name,
-                  label: `${p.name} — ×${p.dmgMult.toFixed(2)}`,
-                }))}
-                value={conditions.targetBodyPart ?? null}
-                onValueChange={part => setEnemy('targetBodyPart', part)}
+                options={partOptions}
+                value={pickerValue}
+                onValueChange={selectBodyPart}
                 placeholder="Pick a body part…"
                 searchPlaceholder="Search body parts…"
                 emptyText="No part matches."
@@ -161,20 +200,25 @@ export function TargetSection() {
             </div>
           ) : (
             <div className="space-y-1.5">
-              <Label htmlFor="target-mult">Enemy body part mult</Label>
+              <Label htmlFor="target-mult">Custom body-part multiplier (×{effectiveMult.toFixed(2)})</Label>
               <Input
                 id="target-mult"
                 type="number"
                 min={0.1}
                 step={0.05}
                 value={player.weakpointMult}
-                onChange={e => dispatch({ type: 'weapon/weakpointMult', value: parseFloat(e.target.value) || 1.5 })}
+                onChange={e => {
+                  const value = parseFloat(e.target.value) || 1.5;
+                  dispatch({ type: 'weapon/weakpointMult', value });
+                  setAiming(value !== 1.0);
+                }}
               />
             </div>
           )}
           <p className="text-muted-foreground text-xs">
-            Applied when "Weakpoints" is on. 1.5 is a standard humanoid headshot (Super Mutants take 1.25); below
-            1.0 models armored parts like the Mirelurk shell.
+            Torso (×1.00) is the default; picking a body part applies its multiplier immediately — no need to flip a
+            separate switch. 1.5 is a standard humanoid headshot (Super Mutants take 1.25); below 1.0 models armored
+            parts like the Mirelurk shell.
           </p>
 
           <div className="space-y-1.5">

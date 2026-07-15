@@ -312,7 +312,8 @@ export function ConditionsSection() {
               onChange={v => set('bodyPartHitRatePct', v)}
             />
             <p className="text-muted-foreground text-xs">
-              While "Weakpoints" is on: this share of hits lands on the aimed body part, the rest hit the torso.
+              Once the Target section has a non-torso body part selected: this share of hits lands on it, the rest
+              hit the torso.
             </p>
           </div>
 

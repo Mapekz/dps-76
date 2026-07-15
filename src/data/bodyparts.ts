@@ -16,23 +16,43 @@ export function getBodyPartRace(mode: GameMode, raceId: string): GeneratedBodyPa
   return getDataset(mode).bodyPartRaces.find(r => r.id === raceId);
 }
 
-/** The BPTD damage mult for a picked race + part, or undefined when either id is unknown (stale URL). */
-export function getBodyPartMult(mode: GameMode, raceId: string, partName: string): number | undefined {
-  return getBodyPartRace(mode, raceId)?.parts.find(p => p.name === partName)?.dmgMult;
+export interface ResolvedTargetBodyPart {
+  /** BPTD part name (e.g. "Head"), or 'Custom' when no race/part is picked. */
+  name: string;
+  /** Effective body-part damage multiplier: the picked part's dmgMult, or the custom fallback. */
+  mult: number;
+  /**
+   * True when the picked part is wired to the BPTD Torso slot — the location
+   * axis Center Masochist's DmgVsTorso keys off, independent of `mult` (an
+   * armored torso can be <1.0, a torso-weakpoint like a Deathclaw's Belly can
+   * be >1.0). `undefined` when no race/part is picked (or the id is stale —
+   * unknown race/part), so the caller falls back to the legacy mult-derived
+   * category. Pelvis-slot bellies/bodies (UC Abomination, Deathclaw "Body")
+   * are a separate BPTD slot and are NOT torso — an unmeasured assumption,
+   * see docs/assumptions.md.
+   */
+  isTorso: boolean | undefined;
+  /** True when falling back to `customMult` — no race+part was resolved. */
+  isCustom: boolean;
 }
 
 /**
- * True when the picked part is wired to the BPTD Torso slot — the location axis
- * Center Masochist's DmgVsTorso keys off, independent of the damage multiplier
- * (an armored torso can be <1.0, a torso-weakpoint like a Deathclaw's Belly can
- * be >1.0). `undefined` for an unknown race/part (stale URL) so the caller falls
- * back to the legacy mult-derived category, same as `getBodyPartMult`. Pelvis-
- * slot bellies/bodies (UC Abomination, Deathclaw "Body") are a separate BPTD
- * slot and are NOT torso — an unmeasured assumption, see docs/assumptions.md.
+ * Resolves the Target section's race+part pick (or the custom fallback
+ * multiplier) to one effective mult + location axis. Single source of truth
+ * for this precedence — consumed by `resolveLoadout` and every UI readout of
+ * the current target body part.
  */
-export function isTorsoBodyPart(mode: GameMode, raceId: string, partName: string): boolean | undefined {
-  const part = getBodyPartRace(mode, raceId)?.parts.find(p => p.name === partName);
-  return part ? part.partType === 'Torso' : undefined;
+export function resolveTargetBodyPart(
+  mode: GameMode,
+  raceId: string | null | undefined,
+  partName: string | null | undefined,
+  customMult: number
+): ResolvedTargetBodyPart {
+  const part = raceId && partName ? getBodyPartRace(mode, raceId)?.parts.find(p => p.name === partName) : undefined;
+  if (part) {
+    return { name: part.name, mult: part.dmgMult, isTorso: part.partType === 'Torso', isCustom: false };
+  }
+  return { name: 'Custom', mult: customMult, isTorso: undefined, isCustom: true };
 }
 
 /**
