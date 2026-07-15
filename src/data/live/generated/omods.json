@@ -5691,13 +5691,26 @@
      "edid": "DLC01_mod_LightningGun_Barrel_ChargeHold",
      "name": "Charging Barrel"
     },
+    "bucket": "chargeFullPowerSec",
+    "op": "SET",
+    "value": 1,
+    "conditions": []
+   },
+   {
+    "id": "0x0010EAAE:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0010EAAE",
+     "edid": "DLC01_mod_LightningGun_Barrel_ChargeHold",
+     "name": "Charging Barrel"
+    },
     "bucket": "fireRateSpeed",
     "op": "MUL_ADD",
     "value": -0.2,
     "conditions": []
    },
    {
-    "id": "0x0010EAAE:3",
+    "id": "0x0010EAAE:4",
     "source": {
      "kind": "omod",
      "formId": "0x0010EAAE",
@@ -5761,13 +5774,26 @@
      "edid": "DLC01_mod_LightningGun_Barrel_ChargeShotgun",
      "name": "Charging Shotgun Barrel"
     },
+    "bucket": "chargeFullPowerSec",
+    "op": "SET",
+    "value": 1,
+    "conditions": []
+   },
+   {
+    "id": "0x0010EAAC:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0010EAAC",
+     "edid": "DLC01_mod_LightningGun_Barrel_ChargeShotgun",
+     "name": "Charging Shotgun Barrel"
+    },
     "bucket": "fireRateSpeed",
     "op": "MUL_ADD",
     "value": -0.25,
     "conditions": []
    },
    {
-    "id": "0x0010EAAC:2",
+    "id": "0x0010EAAC:3",
     "source": {
      "kind": "omod",
      "formId": "0x0010EAAC",
@@ -5780,7 +5806,7 @@
     "conditions": []
    },
    {
-    "id": "0x0010EAAC:3",
+    "id": "0x0010EAAC:4",
     "source": {
      "kind": "omod",
      "formId": "0x0010EAAC",
@@ -5800,7 +5826,7 @@
     ]
    },
    {
-    "id": "0x0010EAAC:4",
+    "id": "0x0010EAAC:5",
     "source": {
      "kind": "omod",
      "formId": "0x0010EAAC",
@@ -47635,6 +47661,32 @@
      "edid": "mod_GammaGun_SpecialMuzzle_Charger",
      "name": "Electric Signal Carrier Antennae"
     },
+    "bucket": "chargeFullPowerDamageMult",
+    "op": "SET",
+    "value": 2,
+    "conditions": []
+   },
+   {
+    "id": "0x0014F6EA:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0014F6EA",
+     "edid": "mod_GammaGun_SpecialMuzzle_Charger",
+     "name": "Electric Signal Carrier Antennae"
+    },
+    "bucket": "chargeFullPowerSec",
+    "op": "SET",
+    "value": 1,
+    "conditions": []
+   },
+   {
+    "id": "0x0014F6EA:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0014F6EA",
+     "edid": "mod_GammaGun_SpecialMuzzle_Charger",
+     "name": "Electric Signal Carrier Antennae"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.15,
@@ -56645,13 +56697,39 @@
      "edid": "mod_LaserGun_barrel_Super_Base",
      "name": "Sniper Barrel"
     },
+    "bucket": "chargeFullPowerDamageMult",
+    "op": "SET",
+    "value": 2,
+    "conditions": []
+   },
+   {
+    "id": "0x00312993:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312993",
+     "edid": "mod_LaserGun_barrel_Super_Base",
+     "name": "Sniper Barrel"
+    },
+    "bucket": "chargeFullPowerSec",
+    "op": "SET",
+    "value": 1.5,
+    "conditions": []
+   },
+   {
+    "id": "0x00312993:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312993",
+     "edid": "mod_LaserGun_barrel_Super_Base",
+     "name": "Sniper Barrel"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.55,
     "conditions": []
    },
    {
-    "id": "0x00312993:2",
+    "id": "0x00312993:4",
     "source": {
      "kind": "omod",
      "formId": "0x00312993",
@@ -56664,7 +56742,7 @@
     "conditions": []
    },
    {
-    "id": "0x00312993:3",
+    "id": "0x00312993:5",
     "source": {
      "kind": "omod",
      "formId": "0x00312993",
@@ -56677,7 +56755,7 @@
     "conditions": []
    },
    {
-    "id": "0x00312993:4",
+    "id": "0x00312993:6",
     "source": {
      "kind": "omod",
      "formId": "0x00312993",
@@ -56739,13 +56817,39 @@
      "edid": "mod_LaserGun_Barrel_Super_HipAccuracy",
      "name": "True Sniper Barrel"
     },
+    "bucket": "chargeFullPowerDamageMult",
+    "op": "SET",
+    "value": 2,
+    "conditions": []
+   },
+   {
+    "id": "0x00312996:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312996",
+     "edid": "mod_LaserGun_Barrel_Super_HipAccuracy",
+     "name": "True Sniper Barrel"
+    },
+    "bucket": "chargeFullPowerSec",
+    "op": "SET",
+    "value": 1.5,
+    "conditions": []
+   },
+   {
+    "id": "0x00312996:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312996",
+     "edid": "mod_LaserGun_Barrel_Super_HipAccuracy",
+     "name": "True Sniper Barrel"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.55,
     "conditions": []
    },
    {
-    "id": "0x00312996:2",
+    "id": "0x00312996:4",
     "source": {
      "kind": "omod",
      "formId": "0x00312996",
@@ -56758,7 +56862,7 @@
     "conditions": []
    },
    {
-    "id": "0x00312996:3",
+    "id": "0x00312996:5",
     "source": {
      "kind": "omod",
      "formId": "0x00312996",
@@ -56771,7 +56875,7 @@
     "conditions": []
    },
    {
-    "id": "0x00312996:4",
+    "id": "0x00312996:6",
     "source": {
      "kind": "omod",
      "formId": "0x00312996",
@@ -56833,13 +56937,39 @@
      "edid": "mod_LaserGun_Barrel_Super_Recoil",
      "name": "Stabilized Sniper Barrel"
     },
+    "bucket": "chargeFullPowerDamageMult",
+    "op": "SET",
+    "value": 2,
+    "conditions": []
+   },
+   {
+    "id": "0x00312998:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312998",
+     "edid": "mod_LaserGun_Barrel_Super_Recoil",
+     "name": "Stabilized Sniper Barrel"
+    },
+    "bucket": "chargeFullPowerSec",
+    "op": "SET",
+    "value": 1.5,
+    "conditions": []
+   },
+   {
+    "id": "0x00312998:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312998",
+     "edid": "mod_LaserGun_Barrel_Super_Recoil",
+     "name": "Stabilized Sniper Barrel"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.55,
     "conditions": []
    },
    {
-    "id": "0x00312998:2",
+    "id": "0x00312998:4",
     "source": {
      "kind": "omod",
      "formId": "0x00312998",
@@ -56852,7 +56982,7 @@
     "conditions": []
    },
    {
-    "id": "0x00312998:3",
+    "id": "0x00312998:5",
     "source": {
      "kind": "omod",
      "formId": "0x00312998",
@@ -56865,7 +56995,7 @@
     "conditions": []
    },
    {
-    "id": "0x00312998:4",
+    "id": "0x00312998:6",
     "source": {
      "kind": "omod",
      "formId": "0x00312998",
@@ -56927,13 +57057,39 @@
      "edid": "mod_LaserGun_Barrel_Super_Recoil-HipAccuracy",
      "name": "Aligned Sniper Barrel"
     },
+    "bucket": "chargeFullPowerDamageMult",
+    "op": "SET",
+    "value": 2,
+    "conditions": []
+   },
+   {
+    "id": "0x00312999:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312999",
+     "edid": "mod_LaserGun_Barrel_Super_Recoil-HipAccuracy",
+     "name": "Aligned Sniper Barrel"
+    },
+    "bucket": "chargeFullPowerSec",
+    "op": "SET",
+    "value": 1.5,
+    "conditions": []
+   },
+   {
+    "id": "0x00312999:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312999",
+     "edid": "mod_LaserGun_Barrel_Super_Recoil-HipAccuracy",
+     "name": "Aligned Sniper Barrel"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.55,
     "conditions": []
    },
    {
-    "id": "0x00312999:2",
+    "id": "0x00312999:4",
     "source": {
      "kind": "omod",
      "formId": "0x00312999",
@@ -56946,7 +57102,7 @@
     "conditions": []
    },
    {
-    "id": "0x00312999:3",
+    "id": "0x00312999:5",
     "source": {
      "kind": "omod",
      "formId": "0x00312999",
@@ -56959,7 +57115,7 @@
     "conditions": []
    },
    {
-    "id": "0x00312999:4",
+    "id": "0x00312999:6",
     "source": {
      "kind": "omod",
      "formId": "0x00312999",
@@ -56979,7 +57135,7 @@
     ]
    },
    {
-    "id": "0x00312999:5",
+    "id": "0x00312999:7",
     "source": {
      "kind": "omod",
      "formId": "0x00312999",
@@ -101436,13 +101592,39 @@
      "edid": "mod_UltraciteLaserGun_barrel_Super_Base",
      "name": "Standard Sniper Barrel"
     },
+    "bucket": "chargeFullPowerDamageMult",
+    "op": "SET",
+    "value": 2,
+    "conditions": []
+   },
+   {
+    "id": "0x00312A8D:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312A8D",
+     "edid": "mod_UltraciteLaserGun_barrel_Super_Base",
+     "name": "Standard Sniper Barrel"
+    },
+    "bucket": "chargeFullPowerSec",
+    "op": "SET",
+    "value": 1.5,
+    "conditions": []
+   },
+   {
+    "id": "0x00312A8D:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312A8D",
+     "edid": "mod_UltraciteLaserGun_barrel_Super_Base",
+     "name": "Standard Sniper Barrel"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.55,
     "conditions": []
    },
    {
-    "id": "0x00312A8D:2",
+    "id": "0x00312A8D:4",
     "source": {
      "kind": "omod",
      "formId": "0x00312A8D",
@@ -101455,7 +101637,7 @@
     "conditions": []
    },
    {
-    "id": "0x00312A8D:3",
+    "id": "0x00312A8D:5",
     "source": {
      "kind": "omod",
      "formId": "0x00312A8D",
@@ -101468,7 +101650,7 @@
     "conditions": []
    },
    {
-    "id": "0x00312A8D:4",
+    "id": "0x00312A8D:6",
     "source": {
      "kind": "omod",
      "formId": "0x00312A8D",
@@ -101530,13 +101712,39 @@
      "edid": "mod_UltraciteLaserGun_Barrel_Super_HipAccuracy",
      "name": "True Sniper Barrel"
     },
+    "bucket": "chargeFullPowerDamageMult",
+    "op": "SET",
+    "value": 2,
+    "conditions": []
+   },
+   {
+    "id": "0x00312A8E:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312A8E",
+     "edid": "mod_UltraciteLaserGun_Barrel_Super_HipAccuracy",
+     "name": "True Sniper Barrel"
+    },
+    "bucket": "chargeFullPowerSec",
+    "op": "SET",
+    "value": 1.5,
+    "conditions": []
+   },
+   {
+    "id": "0x00312A8E:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312A8E",
+     "edid": "mod_UltraciteLaserGun_Barrel_Super_HipAccuracy",
+     "name": "True Sniper Barrel"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.55,
     "conditions": []
    },
    {
-    "id": "0x00312A8E:2",
+    "id": "0x00312A8E:4",
     "source": {
      "kind": "omod",
      "formId": "0x00312A8E",
@@ -101549,7 +101757,7 @@
     "conditions": []
    },
    {
-    "id": "0x00312A8E:3",
+    "id": "0x00312A8E:5",
     "source": {
      "kind": "omod",
      "formId": "0x00312A8E",
@@ -101562,7 +101770,7 @@
     "conditions": []
    },
    {
-    "id": "0x00312A8E:4",
+    "id": "0x00312A8E:6",
     "source": {
      "kind": "omod",
      "formId": "0x00312A8E",
@@ -101624,13 +101832,39 @@
      "edid": "mod_UltraciteLaserGun_Barrel_Super_Recoil",
      "name": "Stabilized Sniper Barrel"
     },
+    "bucket": "chargeFullPowerDamageMult",
+    "op": "SET",
+    "value": 2,
+    "conditions": []
+   },
+   {
+    "id": "0x00312A90:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312A90",
+     "edid": "mod_UltraciteLaserGun_Barrel_Super_Recoil",
+     "name": "Stabilized Sniper Barrel"
+    },
+    "bucket": "chargeFullPowerSec",
+    "op": "SET",
+    "value": 1.5,
+    "conditions": []
+   },
+   {
+    "id": "0x00312A90:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312A90",
+     "edid": "mod_UltraciteLaserGun_Barrel_Super_Recoil",
+     "name": "Stabilized Sniper Barrel"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.55,
     "conditions": []
    },
    {
-    "id": "0x00312A90:2",
+    "id": "0x00312A90:4",
     "source": {
      "kind": "omod",
      "formId": "0x00312A90",
@@ -101643,7 +101877,7 @@
     "conditions": []
    },
    {
-    "id": "0x00312A90:3",
+    "id": "0x00312A90:5",
     "source": {
      "kind": "omod",
      "formId": "0x00312A90",
@@ -101656,7 +101890,7 @@
     "conditions": []
    },
    {
-    "id": "0x00312A90:4",
+    "id": "0x00312A90:6",
     "source": {
      "kind": "omod",
      "formId": "0x00312A90",
@@ -101718,13 +101952,39 @@
      "edid": "mod_UltraciteLaserGun_Barrel_Super_Recoil-HipAccuracy",
      "name": "Aligned Sniper Barrel"
     },
+    "bucket": "chargeFullPowerDamageMult",
+    "op": "SET",
+    "value": 2,
+    "conditions": []
+   },
+   {
+    "id": "0x00312A91:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312A91",
+     "edid": "mod_UltraciteLaserGun_Barrel_Super_Recoil-HipAccuracy",
+     "name": "Aligned Sniper Barrel"
+    },
+    "bucket": "chargeFullPowerSec",
+    "op": "SET",
+    "value": 1.5,
+    "conditions": []
+   },
+   {
+    "id": "0x00312A91:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00312A91",
+     "edid": "mod_UltraciteLaserGun_Barrel_Super_Recoil-HipAccuracy",
+     "name": "Aligned Sniper Barrel"
+    },
     "bucket": "vatsApCost",
     "op": "MUL_ADD",
     "value": 0.55,
     "conditions": []
    },
    {
-    "id": "0x00312A91:2",
+    "id": "0x00312A91:4",
     "source": {
      "kind": "omod",
      "formId": "0x00312A91",
@@ -101737,7 +101997,7 @@
     "conditions": []
    },
    {
-    "id": "0x00312A91:3",
+    "id": "0x00312A91:5",
     "source": {
      "kind": "omod",
      "formId": "0x00312A91",
@@ -101750,7 +102010,7 @@
     "conditions": []
    },
    {
-    "id": "0x00312A91:4",
+    "id": "0x00312A91:6",
     "source": {
      "kind": "omod",
      "formId": "0x00312A91",
@@ -101770,7 +102030,7 @@
     ]
    },
    {
-    "id": "0x00312A91:5",
+    "id": "0x00312A91:7",
     "source": {
      "kind": "omod",
      "formId": "0x00312A91",
@@ -107318,7 +107578,34 @@
    "ma_GaussRifle",
    "RD01_ma_StrikeBreaker"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00793512:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00793512",
+     "edid": "RD01_Mod_Custom_StrikeBreaker_CustomName",
+     "name": "Flatliner"
+    },
+    "bucket": "chargeFullPowerDamageMult",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
+   },
+   {
+    "id": "0x00793512:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00793512",
+     "edid": "RD01_Mod_Custom_StrikeBreaker_CustomName",
+     "name": "Flatliner"
+    },
+    "bucket": "chargeFullPowerSec",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed",

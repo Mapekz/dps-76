@@ -8,6 +8,7 @@ import gatlingPlasma from './fixtures/weap-gatling-plasma.json';
 import mg42 from './fixtures/weap-mg42.json';
 import shishkebab from './fixtures/weap-shishkebab.json';
 import weapFatman from './fixtures/weap-fatman.json';
+import weapRegularBow from './fixtures/weap-regularbow.json';
 import ammoFatmanMiniNuke from './fixtures/ammo-fatman-mininuke.json';
 import projFatman from './fixtures/proj-fatman.json';
 import explFatman from './fixtures/expl-fatman.json';
@@ -111,6 +112,17 @@ describe('toGeneratedWeapon', () => {
     expect(w.components.map(c => c.damageType)).toEqual(['ballistic', 'fire']);
     expect(w.components[0].tier).toBe(20);
     expect(w.components[1].tier).toBe(20);
+  });
+
+  it('RegularBow: charging fields (Full Power Seconds/Damage Mult from Data, Minimum Charge Time top-level)', async () => {
+    // Fixture is verbatim `esm -p get RegularBow` output (20260715 ESM,
+    // captured while implementing charging weapons phase 2). "Minimum
+    // Charge Time" is a TOP-LEVEL WEAP field (sibling of Data/RGW3), NOT
+    // nested inside Data — this pins that distinction.
+    const w = await toGeneratedWeapon(stubClient, weapRegularBow as unknown as EsmRecord, []);
+    expect(w.fullPowerSeconds).toBeCloseTo(1.4, 5);
+    expect(w.fullPowerDamageMult).toBeCloseTo(0.3, 5);
+    expect(w.minimumChargeTime).toBeCloseTo(0.9, 5);
   });
 
   it('flags unrecognized damage types as unresolved instead of dropping them', async () => {

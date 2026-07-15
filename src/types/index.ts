@@ -359,6 +359,32 @@ export interface Weapon {
    * legendary ADDs on top of it).
    */
   explosionBaseWeaponDamageMult?: number;
+
+  // ── Charging (Gauss family, bows, tesla/gamma/laser via charging-barrel OMODs) ──
+  /**
+   * WEAP Data "Full Power Seconds" (FPS) — seconds of holding the
+   * trigger/draw to reach full charge. 0/undefined = the weapon doesn't
+   * charge at all; `weaponCharges()` (src/lib/charge.ts) is the single gate
+   * on this pair of fields (numeric, NOT the `HoldInputToPower` flag — laser
+   * sniper barrels charge without carrying it).
+   */
+  fullPowerSeconds?: number;
+  /**
+   * WEAP Data "Full Power Damage Mult" (FPDM) — despite the "Mult" name, a
+   * damage BONUS added on top of the 1.0× base at full charge (2.0 ⇒ ×3 —
+   * Gauss Rifle's 91 base → 273 at full charge). User-confirmed formula, NOT
+   * ESM-proven (docs/assumptions.md "Charging weapons"): see
+   * `chargeDamageMultiplier` in `src/lib/charge.ts`.
+   */
+  fullPowerDamageMult?: number;
+  /**
+   * Bows only — top-level WEAP "Minimum Charge Time": the minimum draw
+   * before the weapon can fire at all. UI slider floor ONLY (the charge-time
+   * slider's minimum stop) — the damage formula in `src/lib/charge.ts` still
+   * scales linearly from 0 and never consults this field.
+   */
+  minimumChargeTime?: number;
+
   /**
    * Weapon-intrinsic modifiers (GeneratedWeapon.modifiers — the WEAP's own
    * Contact-delivery Enchantment chase, e.g. Cremator's built-in fire DoT).
@@ -466,6 +492,15 @@ export interface PlayerConfig {
    * race + body-part picker when one is selected (resolveLoadout).
    */
   weakpointMult: number;
+  /**
+   * User-selected charge hold time in seconds, for weapons that charge
+   * (Gauss family, bows, tesla/gamma/laser via charging-barrel OMODs).
+   * Undefined = "always fully charge" (the default — optimal-play
+   * assumption). The engine clamps this to the effective weapon's
+   * [0, fullPowerSeconds] (`resolvedChargeTimeSec`, src/lib/charge.ts) —
+   * never negative, never past full charge.
+   */
+  chargeTimeSec?: number;
 }
 
 // Default values factory

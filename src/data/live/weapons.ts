@@ -112,6 +112,13 @@ export function adaptWeapon(gw: GeneratedWeapon): Weapon {
     projectileCount: gw.projectileCount,
     damageBonusMult: gw.damageBonusMult,
     explosionBaseWeaponDamageMult: gw.explosionBaseWeaponDamageMult,
+    // Charging (Gauss family, bows, tesla/gamma/laser barrels): 0/absent in
+    // the generated data ⇒ the weapon doesn't charge — Weapon's "0/undefined
+    // = doesn't charge" convention (src/types/index.ts, gated by
+    // weaponCharges() in src/lib/charge.ts).
+    fullPowerSeconds: (gw.fullPowerSeconds ?? 0) > 0 ? gw.fullPowerSeconds : undefined,
+    fullPowerDamageMult: (gw.fullPowerDamageMult ?? 0) > 0 ? gw.fullPowerDamageMult : undefined,
+    minimumChargeTime: (gw.minimumChargeTime ?? 0) > 0 ? gw.minimumChargeTime : undefined,
     modifiers: gw.modifiers,
     ...weaponCorrections[gw.id],
   };

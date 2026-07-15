@@ -83,6 +83,13 @@ const PROPERTY_BUCKETS: Record<string, PropertyMapping> = {
   // 2026-07-02 dump). Folded over Weapon.apCost in effective-weapon.ts, same
   // pattern as ammoCapacity/reloadSpeed; consumed by ap-economy.ts (Stage B).
   AttackActionPointCost: { bucket: 'vatsApCost' },
+  // Charging-barrel OMODs (mod_GammaGun_SpecialMuzzle_Charger; tesla's
+  // DLC01_mod_LightningGun_Barrel_ChargeHold/_ChargeShotgun — FullPowerSeconds
+  // only; the laser/ultracite sniper-barrel parent templates — both). Plain
+  // SET numerics, same shape as AmmoCapacity — folded over
+  // weapon.fullPowerSeconds/fullPowerDamageMult in effective-weapon.ts.
+  FullPowerSeconds: { bucket: 'chargeFullPowerSec' },
+  FullPowerDamageMult: { bucket: 'chargeFullPowerDamageMult' },
 };
 
 /** Property names that never affect the damage formula — skipped without reporting. */
@@ -96,7 +103,10 @@ const PROPERTY_IGNORED = new Set([
   'AimModelConeSneakMultiplier', 'AimModelConeIncreasePerShot', 'AimModelConeDecreasePerSec',
   'ZoomDataFOVMult', 'ZoomDataOverlay', 'ZoomDataIsModFormID', 'HitBehavior', 'Rank',
   'ColorRemappingIndex', 'MaterialSwaps', 'ModelSection', 'SoundLevel', 'NPCsUseAmmo',
-  'AttackDelaySec', 'OutOfRangeDamageMult', 'ActionPointCost', 'FullPowerSeconds',
+  'AttackDelaySec', 'OutOfRangeDamageMult', 'ActionPointCost',
+  // 'MinPowerPerShot' — stale pre-rename field name: the esm CLI renamed this
+  // Data property twice ("Min Power Per Shot" → "Max Power Per Shot" →
+  // "Full Power Damage Mult", which IS mapped above), superseded.
   'MinPowerPerShot', 'Stagger', 'SightedTransitionSeconds', 'AccuracyBonus',
   'HasScope', 'BoltAction', 'BashImpactDataSet', 'BlockMaterial', 'EnableMarts',
   'VerticalRecoilMult', 'HorizontalRecoilMult', 'ConditionDamageScale', 'DisableSighted',
@@ -104,8 +114,15 @@ const PROPERTY_IGNORED = new Set([
   'AimModelRecoilDiminishSightsMult', 'AimModelRecoilDiminishSpringForce', 'AimModelRecoilHipMult',
   'AimModelRecoilShotsForRunaway', 'AmmoConsumption', 'AttackSound', 'CritEffect', 'Durability',
   'EquipSlot', 'EquipSound', 'FastEquipSound', 'HasAlternateRumble', 'HasRepeatableSingleFire',
-  'HitBehaviour', 'HoldInputToPower', 'IdleSound', 'ImpactDataSet', 'MinWeaponDrawTime',
-  'ModelSwap', 'NPCAmmoList', 'OverheatRateDown', 'OverheatRateUp',
+  'HitBehaviour',
+  // 'HoldInputToPower' — the app's charging gate is numeric (effective
+  // FullPowerSeconds/FullPowerDamageMult > 0, see src/lib/charge.ts), not this
+  // flag: laser sniper barrels set charge values WITHOUT carrying it.
+  'HoldInputToPower', 'IdleSound', 'ImpactDataSet', 'MinWeaponDrawTime',
+  'ModelSwap', 'NPCAmmoList',
+  // 'OverheatRateDown'/'OverheatRateUp' — overheat is broken in-game (V63
+  // carbine / gauss minigun), deliberately unmodeled.
+  'OverheatRateDown', 'OverheatRateUp',
   // NOTE: 'OverrideProjectile' is handled explicitly below (Lobber Barrel /
   // Polar Lobber launcher-hazard chase), not ignored.
   'SecondaryDamage', 'SoundTagSet', 'UnEquipSound', 'Unknown', 'UnsightedTransitionSeconds',

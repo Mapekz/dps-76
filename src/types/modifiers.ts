@@ -90,6 +90,24 @@ export type Bucket =
    */
   | 'vatsApCost'
   /**
+   * Rewrite/grant of the weapon's charge-time window (OMOD `FullPowerSeconds`
+   * SET — tesla/gamma/laser charging barrels turn ON charging that the base
+   * WEAP doesn't have; Gauss-family barrels retune an existing one). Folded
+   * over `weapon.fullPowerSeconds` the same way as ammoCapacity/reloadSpeed
+   * (`effective-weapon.ts`); gates `weaponCharges()` and feeds
+   * `resolvedChargeTimeSec` (src/lib/charge.ts), consumed by fire-rate.ts.
+   */
+  | 'chargeFullPowerSec'
+  /**
+   * Rewrite/grant of the weapon's full-charge damage bonus (OMOD
+   * `FullPowerDamageMult` SET — a bonus ADDED over 1.0×, not a replacement;
+   * see `fullPowerDamageMult` on Weapon). Folded over
+   * `weapon.fullPowerDamageMult` the same way as ammoCapacity/reloadSpeed
+   * (`effective-weapon.ts`); consumed by `chargeDamageMultiplier`
+   * (src/lib/charge.ts).
+   */
+  | 'chargeFullPowerDamageMult'
+  /**
    * Additive % multiplier on the base AP regen rate (Action Boy/Girl/Ghoul's
    * ActorValue ActionPointsRateMult, hydration, Lone Wanderer). Decimals:
    * 0.45 = +45%. All active sources stack additively into ONE multiplier on
@@ -247,6 +265,8 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   ammoCapacity: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.capacity rewrite); feeds sustained DPS (sustain.ts)' },
   reloadSpeed: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.reloadSpeed rewrite); feeds sustained DPS (sustain.ts)' },
   vatsApCost: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.apCost rewrite); feeds ap-economy.ts' },
+  chargeFullPowerSec: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.fullPowerSeconds rewrite); gates weaponCharges() and feeds resolvedChargeTimeSec (src/lib/charge.ts), consumed by fire-rate.ts' },
+  chargeFullPowerDamageMult: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.fullPowerDamageMult rewrite); feeds chargeDamageMultiplier (src/lib/charge.ts)' },
   apRegen: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy' },
   apPerCrit: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy' },
   apRegenFlat: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy (flat AP/sec term)' },

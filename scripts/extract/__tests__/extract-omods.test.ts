@@ -206,6 +206,80 @@ describe('extractOmods (DamageTypeValues ADD/SET, Task A 2026-07-13)', () => {
   });
 });
 
+/**
+ * Stub client for a synthetic OMOD carrying FullPowerSeconds/FullPowerDamageMult
+ * SET properties (charging weapons phase 2, 2026-07-15). Verified raw ESM
+ * shape on mod_GammaGun_SpecialMuzzle_Charger: both properties arrive as
+ * plain SET numerics (Value 1 = the number, no curve table) — same shape as
+ * AmmoCapacity, so no special-casing is needed in the generic property loop.
+ */
+function makeChargingBarrelStubClient(): EsmClient {
+  const omodFormId = '0x00DEC002';
+  const known: Record<string, EsmRecord> = {
+    [omodFormId]: {
+      header: { signature: 'OMOD', form_id: omodFormId },
+      editor_id: 'mod_Test_ChargingBarrel',
+      fields: {
+        Name: 'Test Charging Barrel',
+        Data: {
+          'Form Type': { name: 'Weapon' },
+          'Attach Point': '0x0047A264',
+          Properties: [
+            {
+              'Function Type': { name: 'SET' },
+              Property: { name: 'FullPowerSeconds' },
+              'Value 1': 1.0,
+              'Value 2': 1.0,
+            },
+            {
+              'Function Type': { name: 'SET' },
+              Property: { name: 'FullPowerDamageMult' },
+              'Value 1': 2.0,
+              'Value 2': 0.0,
+            },
+          ],
+        },
+      },
+    } as unknown as EsmRecord,
+  };
+  const get = async (target: string): Promise<EsmRecord> => {
+    if (known[target]) return known[target];
+    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+  };
+  return {
+    async list(type: string): Promise<EsmListRow[]> {
+      if (type !== 'OMOD') return [];
+      return [
+        {
+          form_id: omodFormId,
+          record_type: 'OMOD',
+          editor_id: 'mod_Test_ChargingBarrel',
+          name: 'Test Charging Barrel',
+        },
+      ];
+    },
+    get,
+    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+    refs: async () => [],
+  } as unknown as EsmClient;
+}
+
+describe('extractOmods (charging-barrel FullPowerSeconds/FullPowerDamageMult, charging weapons phase 2 2026-07-15)', () => {
+  it('emits chargeFullPowerSec/chargeFullPowerDamageMult SET modifiers, no unknown-property report', async () => {
+    const result = await extractOmods(makeChargingBarrelStubClient(), new Set());
+    const omod = result.omods.find(o => o.id === 'mod_Test_ChargingBarrel');
+    expect(omod).toBeDefined();
+    expect(omod!.modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'chargeFullPowerSec', op: 'SET', value: 1.0 })
+    );
+    expect(omod!.modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'chargeFullPowerDamageMult', op: 'SET', value: 2.0 })
+    );
+    expect(result.unknownProperties).not.toContain('FullPowerSeconds');
+    expect(result.unknownProperties).not.toContain('FullPowerDamageMult');
+  });
+});
+
 describe('isExcludedOmodEdid (regression, unrelated pre-filter)', () => {
   it('still drops dev/test-prefixed edids', () => {
     expect(isExcludedOmodEdid('zzzDeprecatedMod')).toBe(true);

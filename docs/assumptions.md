@@ -491,6 +491,116 @@ energy-scoped bonus to land.
   choice at all (Submachine Gun above); in that case its "Standard" receiver
   option may still carry a real Speed override and must be walked, not assumed.
 
+## Charging weapons (`src/lib/charge.ts`; engine-wired 2026-07-15)
+
+- Gauss rifle/pistol/shotgun, bows, and tesla/gamma/laser (via
+  charging-barrel OMODs) ramp damage from 0 up to a bonus multiplier as the
+  trigger/draw is held. ESM encodes this on WEAP.Data as "Full Power Seconds"
+  (FPS) and "Full Power Damage Mult" (FPDM); bows additionally carry a
+  top-level "Minimum Charge Time". OMODs grant/override the pair via
+  `FullPowerSeconds`/`FullPowerDamageMult` SET properties (the
+  `chargeFullPowerSec`/`chargeFullPowerDamageMult` buckets,
+  `src/types/modifiers.ts`) — this is how tesla/gamma/laser charging barrels
+  turn charging ON for a base WEAP that doesn't have it. Confirmed real
+  example (esm-walked 2026-07-15): the Tesla's base WEAP (`DLC01LightningGun`)
+  already carries FPDM 1.25 but FPS 0.0 (charging OFF) until the Charging
+  Hold barrel OMOD SETs FPS 1.0 — exactly the "tesla pattern"
+  `effective-weapon.test.ts` pins with a synthetic OMOD. Gamma Gun's Electric
+  Signal Carrier Antennae muzzle and the Laser Gun's Sniper Barrel (via its
+  `_PARENT_mod_WEAPON_Lasergun_Sniper` include) work the same way: SET
+  FullPowerSeconds/FullPowerDamageMult (1.0/2.0 and 1.5/2.0 respectively) on a
+  base weapon that doesn't otherwise charge.
+- **Gate**: a weapon charges iff `fullPowerSeconds > 0 && fullPowerDamageMult
+  > 0` (numeric, ESM-proven fields) — `weaponCharges()`. The `HoldInputToPower`
+  WEAP flag is deliberately NOT used as the gate: laser sniper barrels charge
+  without carrying that flag (confirmed — neither
+  `mod_LaserGun_barrel_Super_Base` nor its `_PARENT_mod_WEAPON_Lasergun_Sniper`
+  include sets it, unlike the Tesla/Gamma Gun charging OMODs, which DO SET it
+  alongside their FPS/FPDM), so a flag-based gate would false-negative them.
+- **Damage formula — USER-CONFIRMED, NOT ESM-proven**: `damage(t) = base ×
+  (1 + FPDM) × (t / FPS)`, linear from 0, clamped to `[0, FPS]`. Despite the
+  "Mult" name, FPDM is a BONUS added on top of the 1.0× base, not a
+  replacement (Gauss Rifle: ESM FPS 1.0 / FPDM 2.0 → 91 base × 3 = 273 at full
+  charge, not 182). No in-game stopwatch/damage-meter confirmation exists yet
+  for the *linear* shape of the ramp specifically — only the full-charge
+  endpoint value is derivable from the ESM fields.
+- **Cadence — `getFireRate`, user-confirmed, speed-immune**:
+  `shots/sec = 1 / (chargeSec + animDelaySec / speed)`. The charge-hold
+  portion is REAL wall-clock time: Weapon Speed and fire-rate buffs never
+  make the trigger-hold itself faster — nothing in ESM ties Speed to the
+  charge timer, and the user confirmed this matches in-game feel. Only the
+  attack-delay tail AFTER release — the same `animDelaySec` semi-auto weapons
+  use between shots — divides by the effective `speed`, mirroring the
+  ordinary semi-auto formula (`speed / animDelaySec`). The identical
+  `chargeTimeSec` (and therefore identical cadence and per-hit charge
+  scaling) applies to BOTH Free Aim and VATS — nothing auto-charges a shot
+  in-game, so there is no separate VATS assumption to make;
+  `ScenarioInput.chargeTimeSec` is a single scenario-wide input, not a
+  per-scenario one.
+- **Explosion-twin inheritance**: the charge multiplier is folded into
+  `componentBase()`'s returned `base` (`paper-damage.ts`), BEFORE the
+  `baseDamage` bucket fold produces `scaledBase`. The Gauss family's intrinsic
+  explosive-twin payload (`explosionBaseWeaponDamageMult`) derives its base
+  from `scaledBase × payloadFraction`, so it inherits the charge scaling with
+  zero extra code — pinned by an engine test (half charge ⇒ exactly half the
+  full-charge twin damage, the same ratio as the parent component).
+- **DoT exclusion (user decision, pending in-game measurement)**: charge
+  scaling does NOT apply to `computeDotDps`'s steady-state DoT add —
+  `chargeMult` is threaded only through `computePaperDamage`'s
+  `PaperDamageInput.chargeTimeSec`; `computeDotDps` has no `chargeTimeSec`
+  parameter at all, by construction. A charged bow shot with Flaming/Poison
+  Arrows is assumed to tick its burn/poison DoT the same regardless of how
+  long the shot was held — unverified in-game
+  (`dps-todos/measurement-backlog.md` "charged-shot DoT ticks").
+- `minimumChargeTime` (bows only) is UI-only: it floors the charge-time
+  slider's range (0.9s/1.05s in practice) so the player can't select a draw
+  shorter than the bow can actually fire at. The damage formula never
+  consults it, and the engine never clamps `chargeTimeSec` against it — `t`
+  still scales linearly from 0 in `chargeDamageMultiplier`.
+- **Overheat is a DIFFERENT, deliberately-unmodeled mechanic** (same
+  WEAP.Data block as charging, unrelated knob): the "Overheat Rate" struct
+  (`Rate Up`/`Rate Down` — e.g. Gauss Rifle 0.1/0.1, Gauss Minigun
+  0.0074/0.15) and the OMOD `OverheatRateUp`/`OverheatRateDown` properties
+  exist on many weapons (including the V63 Carbine and Gauss Minigun,
+  neither of which charges) but the mechanic is broken in live FO76 — it's a
+  hard no-op, deliberately excluded from extraction
+  (`scripts/extract/extract-omods.ts` `PROPERTY_IGNORED`) with no engine
+  bucket. Don't confuse it with the charging fields above.
+- **Naming collision — Gatling Laser "Charging Barrels" are NOT this
+  mechanic**: `mod_GatlingLaser_barrel_Super_Base` et al. are an unrelated
+  spin-up/rev-up mechanic — a real `animDurationSec` override (1/6s ≈
+  0.1667s, `overrides/corrections.ts` `omodModifierAdditions`, confirmed by
+  two independent Pip-Boy Speed readings — see "Fire-rate parameters" above),
+  not a `FullPowerSeconds`/`FullPowerDamageMult` charge-hold weapon. Neither
+  the Gatling Laser nor the Gatling Gun sets FPS/FPDM at all
+  (`weaponCharges()` is false for both) — the two "Charging Barrel"-named
+  OMOD families are unrelated mechanics that happen to share a name.
+- **Engine wiring (2026-07-15)**: `effective-weapon.ts buildEffectiveWeapon`
+  folds `chargeFullPowerSec`/`chargeFullPowerDamageMult` into the effective
+  weapon (same fold pattern as `ammoCapacity`/`reloadSpeed`/`vatsApCost`);
+  `fire-rate.ts getFireRate` and `paper-damage.ts computePaperDamage` both
+  call `weaponCharges`/`resolvedChargeTimeSec`/`chargeDamageMultiplier`;
+  `scenarios.ts ScenarioInput.chargeTimeSec` threads the player's selection
+  through `hit()` and `getFireRate`, and `ScenarioSet.charging` exposes the
+  equipped weapon's charge parameters (mirroring `onslaughtMaxStacks`) so a
+  future UI charge-time slider doesn't need to re-run `resolveLoadout`.
+  `PlayerConfig.chargeTimeSec` → `resolveLoadout` → `ScenarioInput.chargeTimeSec`
+  is the full plumbing chokepoint (`src/lib/loadout.ts`).
+- **Still outstanding — the extraction pipeline** does not yet read "Full
+  Power Seconds"/"Full Power Damage Mult"/"Minimum Charge Time" off
+  WEAP.Data (`extract-weapons.ts`), nor map the OMOD
+  `FullPowerSeconds`/`FullPowerDamageMult` properties to the new buckets
+  (`extract-omods.ts` — `FullPowerSeconds` is currently in
+  `PROPERTY_IGNORED`; `FullPowerDamageMult` isn't listed at all yet). Every
+  real weapon/OMOD in `generated/` therefore still reads as non-charging
+  today, even though the numbers above are real ESM values pulled by hand via
+  the `esm` CLI. The `expected: null` golden cases (`golden/cases.json`) for
+  full-charge Gauss Rifle, full-draw Bow, Tesla + Charging Barrel, Gamma Gun +
+  Electric Signal Carrier Antennae, Laser Gun + Sniper Barrel, and Compound
+  Bow + Flaming Arrows (DoT exclusion) are no-ops until that extraction phase
+  lands, and additionally need real in-game measurements before they can be
+  un-skipped.
+
 ## Sustained DPS (`src/lib/engine/sustain.ts`)
 
 - `burstDps = perHitAvg × fireRate` (mag-dump, no reload) — the old "sustained

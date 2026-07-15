@@ -83,6 +83,27 @@ export interface GeneratedWeapon {
   /** RGW3 Damage Bonus Multiplier (baseline 1.0). */
   damageBonusMult: number;
 
+  // ── Charging (Gauss family, bows, tesla/gamma/laser via barrel OMODs) ────
+  /**
+   * WEAP Data "Full Power Seconds" — seconds of holding the trigger/draw to
+   * reach full charge; 0 = doesn't charge (see Weapon.fullPowerSeconds,
+   * src/types/index.ts). Optional: absent from pre-charging extractions.
+   */
+  fullPowerSeconds?: number;
+  /**
+   * WEAP Data "Full Power Damage Mult" — despite the "Mult" name, a damage
+   * BONUS added on top of the 1.0× base at full charge (docs/assumptions.md
+   * "Charging weapons"). Optional: absent from pre-charging extractions.
+   */
+  fullPowerDamageMult?: number;
+  /**
+   * Bows only — top-level WEAP "Minimum Charge Time" (a sibling of Data, NOT
+   * nested inside it): the minimum draw before the weapon can fire at all.
+   * Optional: absent from pre-charging extractions (and from every non-bow
+   * weapon, which never carries this field).
+   */
+  minimumChargeTime?: number;
+
   eligibleLevels: number[];
   /** OMOD formids flattened from ALL Object Template combinations (phase 5). */
   templateModFormIds: string[];

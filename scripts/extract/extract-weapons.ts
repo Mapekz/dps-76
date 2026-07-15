@@ -343,6 +343,18 @@ export async function toGeneratedWeapon(
     reach: asNumber(data['Reach'], 1.0),
     secondaryDamage: asNumber(data['Secondary Damage']),
     damageBonusMult: asNumber(rgw3['Damage Bonus Multiplier'], 1.0),
+    // Charging (Gauss family, bows, tesla/gamma/laser via barrel OMODs):
+    // "Full Power Seconds"/"Full Power Damage Mult" live on Data. "Minimum
+    // Charge Time" (bows only) is a TOP-LEVEL WEAP field — a sibling of
+    // Data/RGW3, NOT nested inside Data (verified live 2026-07-15:
+    // RegularBow 0.9 / CompoundBow 1.05 sit alongside "Zoom"/"Damage Curve").
+    // CAUTION: the Data field has been renamed twice by the esm CLI
+    // ("Min Power Per Shot" → "Max Power Per Shot" → "Full Power Damage
+    // Mult") — the checked-in weap-gammagun.json fixture still has the OLD
+    // name; re-verify against a fresh `esm get` before trusting fixture shape.
+    fullPowerSeconds: asNumber(data['Full Power Seconds']),
+    fullPowerDamageMult: asNumber(data['Full Power Damage Mult']),
+    minimumChargeTime: asNumber(fields['Minimum Charge Time']),
     eligibleLevels: Array.isArray(fields['Eligible Levels']) ? (fields['Eligible Levels'] as number[]) : [],
     templateModFormIds: extractTemplateModFormIds(fields),
     defaultModFormIds: extractDefaultModFormIds(fields, record.editor_id, unresolved),
