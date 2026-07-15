@@ -339,6 +339,49 @@ describe('translateConditions (subjectIsTarget — Contact-delivery GetIsPlayer 
   });
 });
 
+describe('translateConditions (non-sprint combat model — IsSprinting/IsSwimming/ArmorTypePower, 2026-07-15)', () => {
+  it('consumes IsSprinting()=0 (not sprinting) instead of leaving it unresolved', () => {
+    const row: RawCondition = { Function: 'IsSprinting', 'Comparison Value': 0, Operator: 'Equal To' };
+    const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([]);
+    expect(unresolved).toEqual([]);
+  });
+
+  it('marks IsSprinting()=1 (sprint-only) inactive', () => {
+    const row: RawCondition = { Function: 'IsSprinting', 'Comparison Value': 1, Operator: 'Equal To' };
+    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toBeNull();
+  });
+
+  it('consumes IsSwimming()=0 (not swimming) instead of leaving it unresolved', () => {
+    const row: RawCondition = { Function: 'IsSwimming', 'Comparison Value': 0, Operator: 'Equal To' };
+    const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([]);
+    expect(unresolved).toEqual([]);
+  });
+
+  it('marks IsSwimming()=1 (swim-only) inactive', () => {
+    const row: RawCondition = { Function: 'IsSwimming', 'Comparison Value': 1, Operator: 'Equal To' };
+    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toBeNull();
+  });
+
+  it('maps WornHasKeyword(ArmorTypePower)=1 to inPowerArmor', () => {
+    const row: RawCondition = {
+      Function: 'WornHasKeyword',
+      'Parameter 1': '0xPA',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+      'Run On': 'Subject',
+    };
+    const { conditions, unresolved } = translateConditions([row], {
+      edidByFormId: new Map([['0xPA', 'ArmorTypePower']]),
+    });
+    expect(conditions).toEqual([{ kind: 'inPowerArmor', value: true }]);
+    expect(unresolved).toEqual([]);
+  });
+});
+
 describe('translateConditions (2026-07-11 condition kinds)', () => {
   it("dedupes Last Shot's GetLoadedAmmoCount()=0 + IsNextClipLastShot pair into ONE lastRound gate", () => {
     const rows: RawCondition[] = [

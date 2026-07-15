@@ -742,9 +742,7 @@
     1
    ]
   },
-  "notes": [
-   "condition: IsSwimming()=1"
-  ]
+  "notes": []
  },
  {
   "family": "Aquagirl",
@@ -775,9 +773,7 @@
     1
    ]
   },
-  "notes": [
-   "condition: IsSwimming()=1"
-  ]
+  "notes": []
  },
  {
   "family": "Archer",
@@ -1105,33 +1101,11 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": [
-     {
-      "id": "0x008D3853:r1:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x008D3853",
-       "edid": "ATX_Backpack_FreightTrain_Perk",
-       "name": "Freight Train",
-       "rank": 1
-      },
-      "bucket": "moveSpeedBonus",
-      "op": "ADD",
-      "value": 0.1,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsSprinting()=1"
-       }
-      ]
-     }
-    ]
+    "modifiers": []
    }
   ],
   "hasCard": false,
-  "notes": [
-   "condition: IsSprinting()=1"
-  ]
+  "notes": []
  },
  {
   "family": "ATX_Buff_SharpeningStoneBloodpack",
@@ -5186,59 +5160,11 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": [
-     {
-      "id": "0x003896EE:r1:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x003896EE",
-       "edid": "DeadManSprinting",
-       "name": "Dead Man Sprinting",
-       "rank": 1
-      },
-      "bucket": "moveSpeedBonus",
-      "op": "ADD",
-      "value": 0.1,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsSprinting()=1"
-       },
-       {
-        "kind": "healthBelowPct",
-        "pct": 40
-       }
-      ]
-     }
-    ]
+    "modifiers": []
    },
    {
     "rank": 2,
-    "modifiers": [
-     {
-      "id": "0x003896EE:r2:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x003896EE",
-       "edid": "DeadManSprinting",
-       "name": "Dead Man Sprinting",
-       "rank": 2
-      },
-      "bucket": "moveSpeedBonus",
-      "op": "ADD",
-      "value": 0.2,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsSprinting()=1"
-       },
-       {
-        "kind": "healthBelowPct",
-        "pct": 50
-       }
-      ]
-     }
-    ]
+    "modifiers": []
    }
   ],
   "hasCard": true,
@@ -5256,9 +5182,7 @@
     2
    ]
   },
-  "notes": [
-   "condition: IsSprinting()=1"
-  ]
+  "notes": []
  },
  {
   "family": "DemolitionExpert",
@@ -6018,9 +5942,7 @@
     1
    ]
   },
-  "notes": [
-   "condition: WornHasKeyword(ArmorTypePower)=0"
-  ]
+  "notes": []
  },
  {
   "family": "Dromedary",
@@ -6653,7 +6575,6 @@
    ]
   },
   "notes": [
-   "condition: WornHasKeyword(ArmorTypePower)=0",
    "AbPerkFortifyEvadeChance: curve with unmapped input AV 0x000002C7 — needs override"
   ]
  },
@@ -8348,9 +8269,7 @@
     3
    ]
   },
-  "notes": [
-   "condition: WornHasKeyword(ArmorTypePower)=0"
-  ]
+  "notes": []
  },
  {
   "family": "GHL_JaguarSpeed",
@@ -8367,67 +8286,11 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": [
-     {
-      "id": "0x00797E29:r1:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x00797E29",
-       "edid": "GHL_JaguarSpeed",
-       "name": "Jaguar Speed",
-       "rank": 1
-      },
-      "bucket": "moveSpeedBonus",
-      "op": "ADD",
-      "value": 0.1,
-      "conditions": [
-       {
-        "kind": "playerIsGhoul",
-        "value": true
-       },
-       {
-        "kind": "glowAtLeast",
-        "min": 200
-       },
-       {
-        "kind": "unresolved",
-        "raw": "IsSprinting()=1"
-       }
-      ]
-     }
-    ]
+    "modifiers": []
    },
    {
     "rank": 2,
-    "modifiers": [
-     {
-      "id": "0x00797E29:r2:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x00797E29",
-       "edid": "GHL_JaguarSpeed",
-       "name": "Jaguar Speed",
-       "rank": 2
-      },
-      "bucket": "moveSpeedBonus",
-      "op": "ADD",
-      "value": 0.2,
-      "conditions": [
-       {
-        "kind": "playerIsGhoul",
-        "value": true
-       },
-       {
-        "kind": "glowAtLeast",
-        "min": 200
-       },
-       {
-        "kind": "unresolved",
-        "raw": "IsSprinting()=1"
-       }
-      ]
-     }
-    ]
+    "modifiers": []
    }
   ],
   "hasCard": true,
@@ -8445,9 +8308,7 @@
     2
    ]
   },
-  "notes": [
-   "condition: IsSprinting()=1"
-  ]
+  "notes": []
  },
  {
   "family": "GHL_LGN_ActionDiet",
@@ -11011,10 +10872,6 @@
       "value": 0.1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsSprinting()=0"
-       },
-       {
         "kind": "weaponKeyword",
         "keyword": "WeaponTypeRanged",
         "present": true
@@ -11040,10 +10897,6 @@
       "value": 0.2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsSprinting()=0"
-       },
-       {
         "kind": "weaponKeyword",
         "keyword": "WeaponTypeRanged",
         "present": true
@@ -11068,9 +10921,7 @@
     2
    ]
   },
-  "notes": [
-   "condition: IsSprinting()=0"
-  ]
+  "notes": []
  },
  {
   "family": "Gunslinger",
@@ -14194,20 +14045,7 @@
    }
   ],
   "hasCard": false,
-  "notes": [
-   "condition: IsSprinting()=1",
-   "condition: WornApparelHasKeywordCount(HasLegendary_PowerArmor_ChooChoo)=1",
-   "condition: GetRandomPercent()=10",
-   "MGEF Legendary_PowerArmor_ChooChooAddCloakPerkEffect archetype Cloak — needs override",
-   "condition: WornApparelHasKeywordCount(HasLegendary_PowerArmor_ChooChoo)=2",
-   "condition: GetRandomPercent()=20",
-   "condition: WornApparelHasKeywordCount(HasLegendary_PowerArmor_ChooChoo)=3",
-   "condition: GetRandomPercent()=30",
-   "condition: WornApparelHasKeywordCount(HasLegendary_PowerArmor_ChooChoo)=4",
-   "condition: GetRandomPercent()=40",
-   "condition: WornApparelHasKeywordCount(HasLegendary_PowerArmor_ChooChoo)=5",
-   "condition: GetRandomPercent()=50"
-  ]
+  "notes": []
  },
  {
   "family": "Legendary_PowerArmor_ReflectivePerk",
@@ -19728,10 +19566,7 @@
     3
    ]
   },
-  "notes": [
-   "condition: IsSprinting()=1",
-   "condition: WornHasKeyword(ArmorTypePower)=0"
-  ]
+  "notes": []
  },
  {
   "family": "MunchyResistance",
@@ -23449,81 +23284,19 @@
    },
    {
     "rank": 7,
-    "modifiers": [
-     {
-      "id": "0x001C63E6:r7:3:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x001C63E6",
-       "edid": "PerkMagWastelandSurvival",
-       "name": "Wasteland Survival 1",
-       "rank": 7
-      },
-      "bucket": "moveSpeedBonus",
-      "op": "ADD",
-      "value": 1,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsSwimming()=1"
-       }
-      ]
-     }
-    ]
+    "modifiers": []
    },
    {
     "rank": 8,
-    "modifiers": [
-     {
-      "id": "0x001C63E6:r8:3:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x001C63E6",
-       "edid": "PerkMagWastelandSurvival",
-       "name": "Wasteland Survival 1",
-       "rank": 8
-      },
-      "bucket": "moveSpeedBonus",
-      "op": "ADD",
-      "value": 1,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsSwimming()=1"
-       }
-      ]
-     }
-    ]
+    "modifiers": []
    },
    {
     "rank": 9,
-    "modifiers": [
-     {
-      "id": "0x001C63E6:r9:3:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x001C63E6",
-       "edid": "PerkMagWastelandSurvival",
-       "name": "Wasteland Survival 1",
-       "rank": 9
-      },
-      "bucket": "moveSpeedBonus",
-      "op": "ADD",
-      "value": 1,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsSwimming()=1"
-       }
-      ]
-     }
-    ]
+    "modifiers": []
    }
   ],
   "hasCard": false,
-  "notes": [
-   "condition: IsSwimming()=1"
-  ]
+  "notes": []
  },
  {
   "family": "PerkPopcornSlowHungerThirstPerkHalloween",
@@ -24158,39 +23931,6 @@
         "raw": "OR-group[WornHasKeyword(isUnstoppable_Grognak)=1 | WornHasKeyword(isUnstoppable_Inspector)=1 | WornHasKeyword(isUnstoppable_MantaMan)=1 | WornHasKeyword(isUnstoppable_MistressOfMystery)=1 | WornHasKeyword(isUnstoppable_SilverShroud)=1]"
        }
       ]
-     },
-     {
-      "id": "0x0046C7CF:r1:10:9",
-      "source": {
-       "kind": "perk",
-       "formId": "0x0046C7CF",
-       "edid": "PlayerPerk_Spotlight",
-       "name": "Spotlight Player Perk",
-       "rank": 1
-      },
-      "bucket": "moveSpeedBonus",
-      "op": "ADD",
-      "value": 0.15,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetGlobalValue(Spotlight_HeavyMetal)=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "IsSprinting()=1"
-       },
-       {
-        "kind": "weaponKeyword",
-        "keyword": "WeaponTypePistol",
-        "present": false
-       },
-       {
-        "kind": "weaponKeyword",
-        "keyword": "WeaponTypeHeavyGun",
-        "present": true
-       }
-      ]
      }
     ]
    }
@@ -24206,7 +23946,6 @@
    "condition: GetWorldType()=2",
    "condition: GetGlobalValue(Spotlight_DoubleXPSurvival)=1",
    "condition: GetGlobalValue(Spotlight_ChildsPlay)=1",
-   "condition: WornHasKeyword(ArmorTypePower)=0",
    "condition: GetKeywordItemCount(ObjectTypeToy)=10",
    "condition: GetKeywordItemCount(ObjectTypeToy)=9",
    "condition: GetKeywordItemCount(ObjectTypeToy)=8",
@@ -24231,9 +23970,7 @@
    "condition: GetGlobalValue(Spotlight_SpringCleaning)=1",
    "MGEF Spotlight_SpringCleaning_Desc archetype Script — needs override",
    "condition: GetGlobalValue(Spotlight_LegendOfTheMothman)=1",
-   "MGEF Spotlight_LegendOfTheMothmanEffect archetype Script — needs override",
-   "condition: GetGlobalValue(Spotlight_HeavyMetal)=1",
-   "condition: IsSprinting()=1"
+   "MGEF Spotlight_LegendOfTheMothmanEffect archetype Script — needs override"
   ]
  },
  {
@@ -24292,12 +24029,8 @@
       "value": 0.1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsSprinting()=0"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "WornHasKeyword(ArmorTypePower)=1"
+        "kind": "inPowerArmor",
+        "value": true
        }
       ]
      }
@@ -24320,12 +24053,8 @@
       "value": 0.2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsSprinting()=0"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "WornHasKeyword(ArmorTypePower)=1"
+        "kind": "inPowerArmor",
+        "value": true
        }
       ]
      }
@@ -24348,12 +24077,8 @@
       "value": 0.3,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "IsSprinting()=0"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "WornHasKeyword(ArmorTypePower)=1"
+        "kind": "inPowerArmor",
+        "value": true
        }
       ]
      }
@@ -24377,10 +24102,7 @@
     3
    ]
   },
-  "notes": [
-   "condition: IsSprinting()=0",
-   "condition: WornHasKeyword(ArmorTypePower)=1"
-  ]
+  "notes": []
  },
  {
   "family": "POST-DLC04_PerkSmartGrenade",
@@ -27307,7 +27029,6 @@
    ]
   },
   "notes": [
-   "condition: WornHasKeyword(ArmorTypePower)=0",
    "AbPerkFortifyEvadeChance: curve with unmapped input AV 0x000002C8 — needs override"
   ]
  },
@@ -28368,10 +28089,6 @@
         "kind": "teammateCount",
         "count": 1,
         "orMore": true
-       },
-       {
-        "kind": "unresolved",
-        "raw": "IsSprinting()=0"
        }
       ]
      }
@@ -28397,10 +28114,6 @@
         "kind": "teammateCount",
         "count": 1,
         "orMore": true
-       },
-       {
-        "kind": "unresolved",
-        "raw": "IsSprinting()=0"
        }
       ]
      }
@@ -28422,9 +28135,7 @@
     2
    ]
   },
-  "notes": [
-   "condition: IsSprinting()=0"
-  ]
+  "notes": []
  },
  {
   "family": "SSE_HarvestFlowers",

@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { getWeapons } from '@/data';
 import { getOmodById, getOmodSlots } from '@/data/omods';
+import { getLoadoutModifiers } from '@/data/perk-modifiers';
+import { PerkId } from '@/data/perk-ids';
 import { weaponCharges } from '@/lib/charge';
 import { buildEffectiveWeapon } from '@/lib/engine/effective-weapon';
 import { computeScenarios } from '@/lib/engine/scenarios';
@@ -310,6 +312,24 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, measur
       fixer, [], 50, player, createDefaultEnemyConditions(), [fastFighterLike, speedDemonLike(-0.4)]
     );
     expect(withPenalty.weapon.reloadSpeed).toBeCloseTo(base, 6);
+  });
+
+  it('Gun Runner moveSpeedBonus feeds Fast Fighter on ranged weapons only', () => {
+    const fastFighter = getLoadoutModifiers('live', [{ perkId: PerkId.FastFighter, rank: 1 }]);
+    const gunRunner = getLoadoutModifiers('live', [{ perkId: PerkId.GunRunner, rank: 2 }]);
+    const player = createDefaultPlayerConditions();
+
+    const ranged = buildEffectiveWeapon(
+      fixer, [], 50, player, createDefaultEnemyConditions(), [...fastFighter, ...gunRunner]
+    );
+    expect(ranged.weapon.reloadSpeed).toBeCloseTo(base + 0.1, 6); // +20% move → +10% reload
+
+    const melee = getWeapons('live')['DeathclawGauntlet'];
+    const meleeBase = melee.reloadSpeed ?? 1.0;
+    const onMelee = buildEffectiveWeapon(
+      melee, [], 50, player, createDefaultEnemyConditions(), [...fastFighter, ...gunRunner]
+    );
+    expect(onMelee.weapon.reloadSpeed).toBeCloseTo(meleeBase, 6);
   });
 });
 

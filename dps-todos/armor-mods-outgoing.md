@@ -21,6 +21,19 @@ from the closed `ap-regen.md`, see below) and with `armor-mods-incoming.md`.
 
 ## Scope — narrowed to specific mods (user priority call, 2026-07-13)
 
+### Movement speed (Fast Fighter input)
+
+Blocked on the armor-OMOD extraction pipeline (same prerequisite as the rest of
+this doc). These are `SpeedMult` sources on armor mods that would feed the
+`moveSpeedBonus` bucket once extracted — cross-link:
+[dps-todos/move-speed-sources.md](move-speed-sources.md).
+
+- **Emergency Protocols** — power-armor torso mod (+move speed while sprinting
+  in PA; needs sprint/non-sprint gate decision once the mod is in data).
+- **Shrouded** — body-armor mod (sneak/move-speed shape; confirm AV route via
+  `esm-walk` when the pipeline lands).
+- **Sleek** — body-armor mod (general move-speed; same blocker).
+
 - **Unyielding**: +1 to all SPECIAL except Endurance when below ~20% HP.
   Feeds the existing STR melee-scaling term (`strengthTerm()` in
   `paper-damage.ts`) and the SPECIAL fold (`derivePlayerStats`,

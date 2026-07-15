@@ -205,6 +205,9 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
       if (isWeaponTypeKeyword(edid)) {
         return { kind: 'weaponKeyword', keyword: edid, present: wants };
       }
+      if (edid === 'ArmorTypePower') {
+        return { kind: 'inPowerArmor', value: wants };
+      }
       return { kind: 'unresolved', raw: `${fn}(${edid})=${cond['Comparison Value']}` };
     }
     case 'GetIsRace':
@@ -227,6 +230,13 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
       // encumbered). The calculator assumes optimal play — never over
       // encumbered — so =0 is always true (consumed) and an =1-gated effect
       // can never apply (docs/assumptions.md "Encumbrance").
+      return wants ? 'inactive' : null;
+    case 'IsSprinting':
+    case 'IsSwimming':
+      // The calculator models grounded, non-sprint combat (aiming/firing) — never
+      // sprinting or swimming. So a "not sprinting/swimming" gate (=0) is always
+      // true (consumed) and a sprint-/swim-only gate (=1) can never apply
+      // (inactive). Same shape as IsOverEncumbered. (docs/assumptions.md)
       return wants ? 'inactive' : null;
     case 'IsSneaking':
       return wants ? { kind: 'sneaking' } : { kind: 'unresolved', raw: 'IsSneaking=0' };

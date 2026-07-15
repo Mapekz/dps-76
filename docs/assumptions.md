@@ -682,12 +682,15 @@ energy-scoped bonus to land.
   folded once per `buildEffectiveWeapon` from the full modifier list and
   threaded on `ResolveContext.moveSpeedBonus` (the onslaughtMaxStacks
   pattern); NOT a movement model — nothing else consumes it.
-- Sprint-gated SpeedMult sources (Freight Train, Dead Man Sprinting, Gun
-  Runner, Squad Maneuvers, ...) extract with `unresolved` IsSprinting-style
-  conditions and are therefore skipped by the engine — deliberately: whether
-  sprint-only speed counts as "bonus movement speed" for Fast Fighter is
-  unmeasured. Unconditional sources (Wasteland Fish Sandwich +20%) DO feed
-  it. Full source sweep tracked in `dps-todos/move-speed-sources.md`.
+- Sprint-gated SpeedMult sources (Freight Train, Dead Man Sprinting, Jaguar
+  Speed, Wasteland Survival swimming tiers, ...) extract with `IsSprinting()=1`
+  or `IsSwimming()=1` gates that are marked inactive at extraction — the
+  calculator models grounded, non-sprint/non-swim combat, so sprint-only and
+  swimming move-speed never feed Fast Fighter. Non-sprint bonuses (Gun Runner,
+  Squad Maneuvers, Portable Power with the power-armor toggle) DO feed it once
+  their other gates resolve. Whether in-game Fast Fighter counts sprint-only
+  bonuses while standing still is unmeasured — see
+  `dps-todos/move-speed-sources.md`.
 - A net move-speed penalty grants nothing (curve clamps at (0,0)) — never
   slows reload. Direction unverified in-game.
 
