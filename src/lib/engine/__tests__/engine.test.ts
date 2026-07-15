@@ -207,7 +207,7 @@ describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp
     expect(foldBucket([perStack], 'dbm', 1.0, atDefault)).toBeCloseTo(1.09, 10);
   });
 
-  it('an explicit stack selection scales the per-stack bonus (Furious Fixer-style: 4 stacks → +4%)', () => {
+  it('an explicit stack selection scales the per-stack bonus (synthetic 1%/stack: 4 stacks → +4%)', () => {
     const perStack = mod({
       bucket: 'dbm', op: 'ADD', value: 0.01,
       conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],

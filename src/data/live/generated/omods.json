@@ -59656,7 +59656,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.01,
+    "value": 0.05,
     "conditions": [
      {
       "kind": "stacks",
@@ -62391,7 +62391,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.01,
+    "value": 0.1,
     "conditions": [
      {
       "kind": "weaponKeyword",
@@ -104213,7 +104213,7 @@
     },
     "bucket": "dbm",
     "op": "ADD",
-    "value": 0.01,
+    "value": 0.1,
     "conditions": [
      {
       "kind": "stacks",

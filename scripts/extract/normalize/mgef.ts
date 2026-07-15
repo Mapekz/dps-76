@@ -798,20 +798,41 @@ export async function translateGrantedPerk(
         result.modifiers.push({ bucket, op: 'MUL_ADD', value: float - 1, conditions: epConditions });
       } else if (functionName === 'Add Actor Value Mult' && name === 'Mod Damage on Consecutive Hits') {
         // Onslaught per-stack dbm (Furious/Pounder's/Splinter's EP189): the
-        // function reads a PRIVATE per-effect AV (LGND_Furious 0x006C3172,
-        // Legendary_Pounders_ConsecutiveHits 0x007ACB37, P62_..._MaxConsecutiveHits
-        // 0x0080219A) that we ASSUME ticks in lockstep with the shared
-        // Onslaught counter (0x00000395) — every one of these MGEFs'
-        // descriptions says "per Onslaught stack", and there is no way to
-        // prove the private-AV update cadence from static ESM data (engine-
-        // opaque, docs/assumptions.md "Onslaught"). Modeled as dbm scaled by
-        // the SHARED stack count via the existing `stacks` condition, max 99
-        // (a value the shared counter can never reach — the real clamp is
-        // the equipped cap, applied by the `onslaught` reader in resolve.ts).
+        // function ADDs Float × value(referencedAV), where the referenced AV
+        // (Function Parameter 3) is a PRIVATE damage-accumulator — NOT the
+        // shared Onslaught counter (0x00000395), and not the private raw hit
+        // counter either (e.g. Furious's own LGND_WeaponConsecutiveHits
+        // 0x001EF483, 0→9). The accumulator's AVIF Default Value IS the
+        // per-stack step (Furious LGND_Furious 0x006C3172: Default 5.0, Max
+        // 45.0 = 5×9; Pounder's Legendary_Pounders_ConsecutiveHits 0x007ACB37
+        // and Splinter's P62_..._MaxConsecutiveHits 0x0080219A: Default 10.0,
+        // Max 100.0) — confirmed via `esm get` 2026-07-15, replacing the prior
+        // (wrong) assumption that the raw Float alone was the per-stack value
+        // (docs/assumptions.md "Onslaught"). Modeled as dbm scaled by the
+        // SHARED stack count via the existing `stacks` condition, max 99 (a
+        // value the shared counter can never reach — the real clamp is the
+        // equipped cap, applied by the `onslaught` reader in resolve.ts).
+        const avId = e['Function Parameter 3 (Actor Value)'];
+        let perStack = float;
+        if (typeof avId === 'string' && avId.startsWith('0x')) {
+          try {
+            const av = await client.get(avId);
+            const def = av.fields['Default Value'];
+            if (typeof def === 'number') {
+              perStack = float * def;
+            } else {
+              result.notes.push(`perk ${perkEdid}: ${name} AV ${avId} has no Default Value — used raw float`);
+            }
+          } catch {
+            result.notes.push(`perk ${perkEdid}: ${name} AV ${avId} unresolved — used raw float`);
+          }
+        } else {
+          result.notes.push(`perk ${perkEdid}: ${name} — no referenced Actor Value found, used raw float`);
+        }
         result.modifiers.push({
           bucket,
           op: 'ADD',
-          value: float,
+          value: perStack,
           conditions: [...conditions, { kind: 'stacks', counter: 'onslaught', max: 99 }],
         });
       } else {

@@ -624,7 +624,7 @@ inert with a picker badge (`corrections.ts omodBadgeOverrides`).
 
 | Effect | Model | Source |
 |---|---|---|
-| Furious | RESOLVED 2026-07-12 (was: INERT, badged 'pendingMechanic') — real mechanic is the shared Onslaught stack counter: +9 max stacks, +1%/stack dbm. See "Onslaught" below. Old wiki override (+5%/hit, max 9) stays deleted — the ESM value is +1%/stack, not +5% | ESM granted-perk chase: PERK `Legendary_Weapon_DmgConsecutiveHits`, EP190 +9 / EP189 +0.01 |
+| Furious | RESOLVED 2026-07-12, corrected 2026-07-15 — real mechanic is the shared Onslaught stack counter: +9 max stacks, +5%/stack dbm. See "Onslaught" below. The 2026-07-12 pass misread EP189 and shipped +1%/stack (Float alone, ignoring the referenced AV's magnitude) — user-confirmed in-game as +5%/stack, which matches the old wiki override (+5%/hit, max 9) that had been deleted as "wrong"; it was right all along | ESM granted-perk chase: PERK `Legendary_Weapon_DmgConsecutiveHits`, EP190 +9 / EP189 Float 0.01 × referenced AV `LGND_Furious` Default 5.0 = 0.05 |
 | Instigating | +50% dbm while enemy HP ≥ 60% (override DELETED 2026-07-10 — the old +100%-at-full-health value came from description text and is stale post-rework) | ESM granted-perk chase: PERK Legendary_Weapon_DamageFirstBlood, dbm +0.5, target GetHealthPercentage ≥ 0.6 |
 | Executioner's | +50% dbm while enemy HP ≤ 40% (`enemyHealthBelowPct`; enemy HP defaults to 100 → inactive until set) | ESM granted-perk chase: LegendaryExecutePerk +0.5, threshold GLOB LGND_ExecuteHealthThreshold = 0.4 |
 | DmgVs* family (Hunter's, Exterminator's, Ghoul Slayer's, Assassin's, Troubleshooter's, Zealot's, Mutant Slayer's) | +50% dbm vs matching enemy types via `enemyTypeAny` conditions — INERT until enemy typing lands, badged 'needsEnemyDefenses'. Values ride flat itemLevel curves (1→50, 100→50) on `ActorValues` OMOD properties routed through the STAT_DamageVsPerk plumbing | ESM (extracted 2026-07-10) |
@@ -1221,24 +1221,38 @@ for the UI slider. All ten contributors, verified against the 20260702 dump:
 | Guerrilla Master (PERK `GuerrillaMaster01` 0x0031AF08 → SPEL `AbPerkGuerrillaMaster` 0x0031BE57) | +5 | curve (0,0)(1,5)(100,500) on 0x395 → +5%/stack dbm at close range (`abPerkFortifyDmgClose` → `STAT_DmgVsClose` → `dbm` + `targetDistance:'close'`); gated `WeaponTypeRanged`. Previously left **unresolved** in `_meta.json` ("curve with unmapped input AV 0x00000395") — resolved by the new `onslaughtStacks` CurveInput |
 | Gunslinger Expert (PERK `GunslingerExpert01` 0x0031AEFD → SPEL `AbPerkGunslingerExpert` 0x0031BE53) | +3 | curve (0,0)(1,1.0)(100,100.0) on 0x395 → +1%/stack weak-spot damage (`AbPerkFortifyDmgWeakSpot` 0x007C92C6 → AV `STAT_DmgVsWeakSpot` 0x007C92C5, already routed to `weakpointBonus` scale 0.01 for Pin-Pointer's — no new route needed); gated `WeaponTypeRanged` |
 | Gunslinger Master (PERK `GunslingerMaster01` 0x0004A09F) | +10 | NONE — EP190 is its ONLY effect. Its "gain stacks over time / spend on attack" behavior (per its own in-game description) is engine-opaque script logic with no other ESM footprint — max contribution only |
-| Furious (OMOD `mod_Legendary_Weapon1_DmgConsecutiveHits` 0x004F577D → ENCH 0x006C3173 → Script MGEF 0x006C3174 "Perk to Apply" → PERK 0x006C3175) | +9 (EP190 Add Value 9.0) | EP189 "Mod Damage on Consecutive Hits" (function "Add Actor Value Mult") 0.01 → +1%/stack dbm |
-| Pounder's (OMOD `mod_Legendary_Weapon4_Melee_Pounders` 0x007ACB3E → ENCH 0x007ACB3A → MGEF 0x007ACB3C → PERK 0x007ACB3F; EP190/EP189 both gated `GetIsPlayer=1` (consumed — always true for a player-granted perk) + `HasKeyword HasLegendary_Weapon_Pounders` self-check, added by the OMOD's own Keywords property) | +10 | EP189 0.01 → +1%/stack dbm |
-| Splinter's Special Effect (OMOD `P62_Mod_Custom_Splinter_SpecialEffect` 0x00802189, built into the unique weapon `P62_crTheDrifter10mmSMG` "Splinter" → ENCH 0x0080219B → MGEF 0x00802198 → PERK 0x00802199; both effects carry NO Perk Conditions — unconditional once equipped) | +10 | EP189 0.01 → +1%/stack dbm |
+| Furious (OMOD `mod_Legendary_Weapon1_DmgConsecutiveHits` 0x004F577D → ENCH 0x006C3173 → Script MGEF 0x006C3174 "Perk to Apply" → PERK 0x006C3175) | +9 (EP190 Add Value 9.0) | EP189 "Mod Damage on Consecutive Hits" (function "Add Actor Value Mult") Float 0.01 × referenced AV `LGND_Furious` 0x006C3172 Default 5.0 → +5%/stack dbm |
+| Pounder's (OMOD `mod_Legendary_Weapon4_Melee_Pounders` 0x007ACB3E → ENCH 0x007ACB3A → MGEF 0x007ACB3C → PERK 0x007ACB3F; EP190/EP189 both gated `GetIsPlayer=1` (consumed — always true for a player-granted perk) + `HasKeyword HasLegendary_Weapon_Pounders` self-check, added by the OMOD's own Keywords property) | +10 | EP189 Float 0.01 × referenced AV `Legendary_Pounders_ConsecutiveHits` 0x007ACB37 Default 10.0 → +10%/stack dbm |
+| Splinter's Special Effect (OMOD `P62_Mod_Custom_Splinter_SpecialEffect` 0x00802189, built into the unique weapon `P62_crTheDrifter10mmSMG` "Splinter" → ENCH 0x0080219B → MGEF 0x00802198 → PERK 0x00802199; both effects carry NO Perk Conditions — unconditional once equipped) | +10 | EP189 Float 0.01 × referenced AV `P62_Weapon_Splinter_MaxConsecutiveHits` 0x0080219A Default 10.0 → +10%/stack dbm |
 | Whacker Smacker (OMOD `E09B_mod_Custom_WhackerSmacker` 0x0068311F → ENCH 0x00914F55, effect `AbFortifyPowerAttack` reads the shared AV 0x395 DIRECTLY as its curve input — no EP190 at all) | +0 (grants none) | curve (0,0)(1,5)(100,500) → +5%/stack power-attack damage (AV `STAT_DmgPowerAttack`, already routed to `powerAttackBonus` scale 0.01); needs an EXTERNAL max-stack source to do anything (verified: equipped alone, `onslaughtMaxStacks` stays 0 and the curve reads 0) |
 
-**Route B nuance** (Furious/Pounder's/Splinter's EP189): the function reads a
-PRIVATE per-effect AV, not the shared 0x395 — `LGND_Furious` 0x006C3172
-(Furious), `Legendary_Pounders_ConsecutiveHits` 0x007ACB37 (Pounder's),
-`P62_Weapon_Splinter_MaxConsecutiveHits` 0x0080219A (Splinter's). Every one of
-these MGEFs' descriptions says "per Onslaught stack", and there is no way to
-prove the private counter's update cadence from static ESM data (it's engine
-script logic) — so we **ASSUME the private counters tick in lockstep with the
-shared one** and model EP189 as reading the shared counter via the existing
+**Route B nuance** (Furious/Pounder's/Splinter's EP189): the function reads
+`Float × value(referencedAV)`, and that referenced AV (Function Parameter 3) is
+a PRIVATE damage-accumulator, not the shared 0x395 and not the private raw hit
+counter either — `LGND_Furious` 0x006C3172 (Furious; its own hit counter is a
+SEPARATE AV, `LGND_WeaponConsecutiveHits` 0x001EF483, Default 0 / Max 9),
+`Legendary_Pounders_ConsecutiveHits` 0x007ACB37 (Pounder's),
+`P62_Weapon_Splinter_MaxConsecutiveHits` 0x0080219A (Splinter's).
+
+**CORRECTED 2026-07-15** (was: modeled as `Float` alone, +1%/stack — user
+reported Furious was only granting +9% at full stacks when it should be +45%).
+There is no way to prove the private accumulator's per-hit update cadence from
+static ESM data (it's engine script logic), but its **AVIF Default Value IS the
+per-stack step**: Furious's `LGND_Furious` has Default 5.0 / Max 45.0 (= 5×9,
+the EP190 cap) — so each stack adds 5 to the accumulator, and EP189's
+`Float 0.01 × 5 = 0.05` is the real per-stack dbm (+5%, confirmed in-game).
+Pounder's/Splinter's private AVs both carry Default 10.0 / Max 100.0 (= 10×10)
+→ +10%/stack. The 2026-07-12 pass had this backwards: it read `Float` alone as
+the per-stack value and dismissed the AVIF Default/Maximum as "template
+authoring boilerplate" — the Maximum is real (Default × EP190's max-stack
+count) and the Default is the load-bearing per-stack multiplier. Modeled as dbm
+scaled by the SHARED stack count via the existing
 `{ kind: 'stacks', counter: 'onslaught', max: 99 }` condition (max 99 is a
 value the shared counter can never reach; the REAL clamp is the equipped cap,
-applied by the `onslaught` reader in `resolve.ts`). Their AVIF Maximum Values
-(45/100/100 on the private AVs) look like template authoring boilerplate —
-ignored; the shared max governs everywhere.
+applied by the `onslaught` reader in `resolve.ts`) — extractor resolves each
+referenced AV's Default Value via `client.get` and multiplies it into `Float`
+before pushing the modifier (`normalize/mgef.ts`, "Add Actor Value Mult"
+branch).
 
 **Sentinel default**: `PlayerConditions.onslaughtStacks` uses `-1` to mean
 "follow the computed max" (assume full stacks — the app's existing
