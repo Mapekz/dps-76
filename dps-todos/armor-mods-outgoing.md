@@ -107,6 +107,20 @@ this doc). These are `SpeedMult` sources on armor mods that would feed the
     its reduction OUT of `scaledByWeaponApCost`'s input — it may still
     reduce the AP-economy drain (`computeApEconomy.apCost`), just not the
     perk's damage bonus.
+- **Battle-Loader's** (4★ legendary armor mod): `mod_Legendary_Armor4_BattleLoaders`
+  (0x00792A28); PA variant `mod_Legendary_PowerArmor4_BattleLoaders`
+  (0x007A74C2). Chain: OMOD → ENCH `ench_LegendaryArmor_BattleLoaders`
+  (0x00792948) → MGEF (0x0079B51F) → PERK `Legendary_Armor_BattleLoadersPerk`
+  (0x0079B522). Mechanic: "**Instant Reload Clip On Bash**", Set Value 1.0,
+  gated `IsPowerAttacking==1`; chance scales by number of Battle-Loader's
+  pieces worn (`WornApparelHasKeywordCount`): 1/2/3/4/5 → **15/30/45/60/75%**.
+  For sustained DPS: same reload-skip family as Quick Hands — reuse the
+  `reloadSkipChance` bucket built in the sustain-chance pass
+  (`src/types/modifiers.ts` `sustainChance` regime) — **but** the trigger is
+  per-**power-attack/bash**, not per-empty-clip, so it needs a bash-into-
+  rotation model rather than a plain per-reload skip, **and** a new
+  "worn-piece-count" condition. **Blocked on the armor-omod extraction
+  pipeline** (prerequisite at the top of this file).
 - **Zealot's** (+damage vs Scorched/Scorchbeast, carried over from the
   original scope): needs an `enemyType`/`enemyTypeAny` condition value for
   these two factions — same condition kind `phase-3-enemies.md` plans to
