@@ -367,8 +367,10 @@ export function PerkEditor() {
       .map(p => ({ perkId: p.perkId, rank: p.rank, perk: registry[p.perkId as keyof typeof registry] }))
       .filter((e): e is PerkEntry => e.perk !== undefined);
 
+  // Equipped perks list/group by display name, not raw loadout/import order.
+  const byName = (a: PerkEntry, b: PerkEntry) => a.perk.name.localeCompare(b.perk.name);
   const regularEntries = resolve(player.perks);
-  const legendaryEntries = resolve(player.legendaryPerks);
+  const legendaryEntries = resolve(player.legendaryPerks).sort(byName);
   const { budget } = usePerkStatus();
 
   const legendaryOver = legendaryEntries.length > LEGENDARY_SLOTS;
@@ -378,9 +380,8 @@ export function PerkEditor() {
       ? !canSlotCardPoints(budget, SPECIAL_TO_KEY[entry.perk.special], costDelta(entry.perk, entry.rank, entry.rank + 1))
       : false;
 
-  // Equipped perks grouped by SPECIAL (SPECIAL order, alpha within) so the
+  // Regular perks grouped by SPECIAL (SPECIAL order, alpha within) so the
   // list mirrors the budget bar's taxonomy instead of raw loadout/import order.
-  const byName = (a: PerkEntry, b: PerkEntry) => a.perk.name.localeCompare(b.perk.name);
   const regularGroups = SPECIAL_ORDER.map(({ key, special, letter }) => ({
     key,
     special,
