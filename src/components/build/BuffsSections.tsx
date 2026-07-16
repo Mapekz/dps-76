@@ -31,7 +31,22 @@ import { ActionDelta } from '@/components/diff/ActionDelta';
 import type { BuildAction } from '@/state/build-reducer';
 import type { GameMode } from '@/types';
 import type { GeneratedAddiction, GeneratedBuff } from '@/types/generated';
+import { hasAnyEngineEffect } from '@/types/modifiers';
 import { SectionTrigger } from './SectionTrigger';
+
+/**
+ * Same 'no effect yet' predicate and visual language as the OMOD/perk
+ * pickers (modifierHasEngineEffect, @/types/modifiers) — a buff whose every
+ * modifier is inert (extraction gap, unmodeled bucket) reads honestly here
+ * instead of silently doing nothing.
+ */
+function NoEffectBadge() {
+  return (
+    <Badge variant="outline" className="text-muted-foreground ml-1 px-1 py-0 text-[10px] font-normal">
+      no effect yet
+    </Badge>
+  );
+}
 
 function CheckboxRow({
   id,
@@ -41,6 +56,7 @@ function CheckboxRow({
   action,
   description,
   penaltyDescription,
+  noEffect,
 }: {
   id: string;
   label: string;
@@ -52,6 +68,7 @@ function CheckboxRow({
   description?: string | null;
   /** Same, styled as a penalty — a mutation's Class-Freak-scaled downside. */
   penaltyDescription?: string | null;
+  noEffect?: boolean;
 }) {
   const hasDescription = Boolean(description) || Boolean(penaltyDescription);
   return (
@@ -65,6 +82,7 @@ function CheckboxRow({
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <span className="min-w-0 flex-1 truncate">{label}</span>
+          {noEffect && <NoEffectBadge />}
           {action && <ActionDelta action={action} />}
         </div>
         {description && <p className="text-muted-foreground text-xs">{description}</p>}
@@ -137,6 +155,7 @@ export function MutationsSection() {
                 action={{ type: 'mutation/toggle', id: m.id }}
                 description={description}
                 penaltyDescription={penaltyDescription}
+                noEffect={!hasAnyEngineEffect(m.modifiers)}
               />
             );
           })}
@@ -243,6 +262,7 @@ function ConsumableRadioRow({
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <span className="min-w-0 flex-1 truncate">{item.name}</span>
+          {!hasAnyEngineEffect(item.modifiers) && <NoEffectBadge />}
           <ActionDelta action={{ type: 'consumable/toggle', id: item.id }} />
         </div>
         {description && <p className="text-muted-foreground text-xs">{description}</p>}
@@ -263,6 +283,7 @@ function CausePicker({ items, placeholder }: { items: GeneratedBuff[]; placehold
   const { player } = useBuild();
   const dispatch = useBuildDispatch();
   const active = items.find(i => player.consumables.includes(i.id));
+  const itemsById = new Map(items.map(i => [i.id, i]));
   const options: ComboboxOption[] = [
     { value: NONE, label: placeholder },
     ...items.map(i => ({ value: i.id, label: i.name })),
@@ -286,9 +307,16 @@ function CausePicker({ items, placeholder }: { items: GeneratedBuff[]; placehold
         searchPlaceholder="Search brews…"
         emptyText="No brew found."
         className="h-8 text-sm font-normal"
-        renderOptionExtra={option =>
-          option.value !== NONE && <ActionDelta action={{ type: 'consumable/toggle', id: option.value }} />
-        }
+        renderOptionExtra={option => {
+          if (option.value === NONE) return null;
+          const item = itemsById.get(option.value);
+          return (
+            <>
+              {item && !hasAnyEngineEffect(item.modifiers) && <NoEffectBadge />}
+              <ActionDelta action={{ type: 'consumable/toggle', id: option.value }} />
+            </>
+          );
+        }}
       />
       {description && <p className="text-muted-foreground px-1 pt-1 text-xs">{description}</p>}
     </div>
@@ -639,7 +667,10 @@ function FoodDrinkAddCombobox({
           <CommandItem key={item.id} value={item.id} keywords={[item.name]} onSelect={() => select(item.id)}>
             <CheckIcon className={cn('mr-2 size-4', selected ? 'opacity-100' : 'opacity-0')} />
             <div className="min-w-0 flex-1">
-              <span className="block truncate">{item.name}</span>
+              <div className="flex items-center gap-1">
+                <span className="min-w-0 flex-1 truncate">{item.name}</span>
+                {!hasAnyEngineEffect(item.modifiers) && <NoEffectBadge />}
+              </div>
               {description && <p className="text-muted-foreground truncate text-xs">{description}</p>}
             </div>
             {replacedNames.length > 0 && (
@@ -684,6 +715,9 @@ function FoodDrinkRow({ item, diet }: { item: GeneratedBuff; diet: DietVerdict }
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1">
           <span className="min-w-0 flex-1 truncate">{item.name}</span>
+          {/* Diet-zeroed already reads "no effect" for a runtime (mutation-dependent)
+              reason — skip the static badge rather than show two "no effect"s. */}
+          {diet !== 'zeroed' && !hasAnyEngineEffect(item.modifiers) && <NoEffectBadge />}
           {diet === 'doubled' && <span className="text-emerald-500 shrink-0 text-xs">×2 diet</span>}
           {diet === 'zeroed' && <span className="text-muted-foreground shrink-0 text-xs line-through">no effect</span>}
         </div>
