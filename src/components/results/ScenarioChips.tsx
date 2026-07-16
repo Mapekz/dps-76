@@ -2,7 +2,7 @@ import { CrosshairIcon, EyeOffIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useGameMode } from '@/hooks/useGameMode';
-import { getBodyPartRace, getDefaultBodyPart, resolveTargetBodyPart } from '@/data/bodyparts';
+import { getDefaultBodyPart, resolveTargetBodyPart } from '@/data/bodyparts';
 
 /**
  * Sneak / target-body-part toggles live on the strip, not in Conditions:
@@ -21,9 +21,6 @@ export function ScenarioChips({ compact = false }: { compact?: boolean }) {
   const dispatch = useBuildDispatch();
 
   const isAiming = player.conditions.isAimingAtWeakpoint;
-  const raceName = enemy.conditions.targetRace
-    ? getBodyPartRace(mode, enemy.conditions.targetRace)?.name
-    : undefined;
   const defaultPart = getDefaultBodyPart(mode, enemy.conditions.targetRace);
   const target = resolveTargetBodyPart(mode, enemy.conditions.targetRace, enemy.conditions.targetBodyPart, player.weakpointMult);
   const defaultName = defaultPart?.name ?? 'Torso';
@@ -53,11 +50,6 @@ export function ScenarioChips({ compact = false }: { compact?: boolean }) {
 
   return (
     <div className="flex items-center gap-1.5">
-      {!compact && raceName && (
-        <span className="text-muted-foreground text-xs">
-          vs {raceName} ·
-        </span>
-      )}
       {chips.map(chip => (
         <button
           key={chip.key}
