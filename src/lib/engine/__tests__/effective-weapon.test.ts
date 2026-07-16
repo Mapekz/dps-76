@@ -36,16 +36,17 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
     const customSlot = smgSlots.find(s => s.slot === 'ap_customName');
     expect(customSlot?.options.some(o => o.id === 'mod_Custom_PerfectStorm')).toBe(true);
 
-    // The V.A.T.S. Unknown crit-perk variants: badge-rescued + restricted to
-    // the unique alien blaster. Re-homed 2026-07-13 (unique-weapons rework)
-    // from the now-hidden legacy W05_COMP_Astronaut_AlienBlaster_QuestReward
-    // WEAP to base 'AlienBlaster', which already lists ap_customName in its
-    // own attachParentSlots.
+    // The V.A.T.S. Unknown: base 'AlienBlaster' lists ap_customName in its own
+    // attachParentSlots and hosts mod_Custom_TheVATSUnknown in its
+    // templateModFormIds. Its five sibling "variant" OMODs (BetterCriticals/
+    // CritSavvy/GlowingCriticals/GrimReapersSprint/Psychopath) turned out to
+    // be unreferenced legacy/cut records (2026-07-16) — the base mod is the
+    // unique's sole real effect (see corrections.ts omodModifierAdditions).
     const vatsUnknown = getWeapons('live')['AlienBlaster'];
     const vatsSlots = getOmodSlots('live', vatsUnknown);
     const vatsCustom = vatsSlots.find(s => s.slot === 'ap_customName');
-    expect(vatsCustom?.options.map(o => o.id)).toContain('mod_Custom_TheVATSUnknown_BetterCriticals');
-    expect(vatsCustom?.options.filter(o => o.id.startsWith('mod_Custom_TheVATSUnknown_'))).toHaveLength(5);
+    expect(vatsCustom?.options.map(o => o.id)).toContain('mod_Custom_TheVATSUnknown');
+    expect(vatsCustom?.options.filter(o => o.id.startsWith('mod_Custom_TheVATSUnknown_'))).toHaveLength(0);
   });
 
   it('equipping Perfect Storm on the 10mm SMG changes freeAim.perHit.total vs stock', () => {

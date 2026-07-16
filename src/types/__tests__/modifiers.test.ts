@@ -26,6 +26,7 @@ const ALL_BUCKETS: Bucket[] = [
   'dbm',
   'critDmgBase',
   'critDmgBonus',
+  'critDmgBonusScale',
   'sneakBase',
   'sneakBonus',
   'powerAttackBonus',

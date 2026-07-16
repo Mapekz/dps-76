@@ -147,6 +147,15 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
         `1/(chargeSec + animDelaySec/speed)` formula is user-confirmed, not
         yet in-game-timed.
 
+- [ ] **The V.A.T.S. Unknown crit-bonus roll** (new 2026-07-16) — confirm the
+      base OMOD's random ×0.2–×2.0 roll (`VATSCriticalMultAdjustMin/Max`)
+      scales only the additive crit-damage BONUS (perk/legendary ADDs), not
+      the base weapon crit mult, and that modeling it at its mean (×1.1,
+      `critDmgBonusScale`) is a fair expected-DPS stand-in. Equip a crit-damage
+      perk (Better Criticals) on the Alien Blaster and compare VATS crit
+      damage against an identical build on a stock (non-V.A.T.S.-Unknown)
+      weapon.
+
 **Resolved off this list 2026-07-14 (no in-game check needed):**
 - ~~Shock & Stun obtainability~~ — its only referencers are `POST_Challenge_*`
   records, the same unshipped POST bucket as the Stun Pack mods (already

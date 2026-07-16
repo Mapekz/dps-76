@@ -3,6 +3,7 @@ import type { Weapon } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
 import { getWeapons } from '@/data';
 import { effectiveWeaponName, getLegendaryOmodSlots, getOmodSlots, isEligible } from '@/data/omods';
+import { isOmodEligibleForWeapon } from '@/data/omod-eligibility';
 
 // 2026-07-13 unique-weapon rework: named uniques collapsed into base weapon +
 // a mod_Custom_* OMOD at ap_customName. Many carry zero extracted modifiers
@@ -90,11 +91,15 @@ describe('isEligible', () => {
   });
 
   it('branch 2b: omodWeaponRestrictions rescues reward-granted mods with no template seat', () => {
-    // Real rescue-table entry — the V.A.T.S. Unknown variants exist in no
-    // weapon's templateModFormIds (only their generic parent does).
-    const omod = synthOmod({ id: 'mod_Custom_TheVATSUnknown_BetterCriticals' });
-    expect(isEligible(omod, synthWeapon({ id: 'AlienBlaster' }))).toBe(true);
-    expect(isEligible(omod, synthWeapon({ id: 'GaussMinigun' }))).toBe(false);
+    // Exercises isOmodEligibleForWeapon's restrictions param directly (rather
+    // than a specific live omodWeaponRestrictions entry, which may be empty
+    // at any given time) — reward-granted identity mods with no ESM-derivable
+    // weapon tie at all still need this rescue path (see omod-eligibility.ts
+    // branch 2 doc-comment).
+    const omod = synthOmod({ id: 'mod_Custom_RewardMod' });
+    const restrictions = { mod_Custom_RewardMod: ['AlienBlaster'] };
+    expect(isOmodEligibleForWeapon(omod, synthWeapon({ id: 'AlienBlaster' }), restrictions)).toBe(true);
+    expect(isOmodEligibleForWeapon(omod, synthWeapon({ id: 'GaussMinigun' }), restrictions)).toBe(false);
   });
 
   it('branch 2c: an empty-keyword mod with no template seat and no rescue is not eligible anywhere', () => {
@@ -126,8 +131,9 @@ describe('COBJ-anchored eligibility against live data (regression cases from the
     }
   });
 
-  it('the Alien Blaster keeps all five V.A.T.S. Unknown variants (rescue-table regression guard)', () => {
+  it("the Alien Blaster offers only the base V.A.T.S. Unknown mod, not its five unreferenced legacy siblings (2026-07-16 regression guard)", () => {
     const ids = optionIds('AlienBlaster');
+    expect(ids).toContain('mod_Custom_TheVATSUnknown');
     for (const id of [
       'mod_Custom_TheVATSUnknown_BetterCriticals',
       'mod_Custom_TheVATSUnknown_CritSavvy',
@@ -135,7 +141,7 @@ describe('COBJ-anchored eligibility against live data (regression cases from the
       'mod_Custom_TheVATSUnknown_GrimReapersSprint',
       'mod_Custom_TheVATSUnknown_Psychopath',
     ]) {
-      expect(ids, id).toContain(id);
+      expect(ids, id).not.toContain(id);
     }
   });
 });

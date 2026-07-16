@@ -1039,6 +1039,16 @@ auto-converted); their stats are stale and must not be shown.
   via `omodModifierAdditions` as a ballistic-scoped ADD curve (right paper
   number, but explosive-only perk interactions aren't modeled — the engine
   has no OMOD-conditional explosive component).
+- **The V.A.T.S. Unknown**: base OMOD SETs `VATSCriticalMultAdjustMin/Max` =
+  0.2/2.0 (unmapped AVs, zero extracted modifiers) — **USER-CONFIRMED** this
+  is a random ×0.2–×2.0 roll on the additive crit-damage BONUS only (not the
+  base weapon crit mult). Hand-supplied via `omodModifierAdditions` as a
+  `critDmgBonusScale` MUL_ADD 0.1 (mean of the roll, ×1.1), folded in
+  `paper-damage.ts totalCritMult`. **ASSUMPTION**: modeled at the roll's mean
+  (exact for expected DPS since the fold is linear); exact scaling target
+  still wants an in-game measurement (`measurement-backlog.md`). Its five
+  `mod_Custom_TheVATSUnknown_*` siblings are unreferenced legacy/cut records,
+  not real variants — removed from the picker.
 
 ## Known gaps / deferred
 - **Follow Through / Taking One for the Team** extract with empty

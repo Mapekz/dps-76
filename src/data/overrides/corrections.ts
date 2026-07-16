@@ -224,15 +224,15 @@ export const omodBadgeOverrides: Readonly<Record<string, 'inert' | 'pendingMecha
   // mechanics now move real numbers — Charged's light-attack/detonation cycle
   // folds into sustained DPS (scenarios.ts), Thrill-Seeker's killstreak-tiered
   // reload/melee speed folds into the effective weapon (effective-weapon.ts).
-  // The V.A.T.S. Unknown effect variants: each grants real crit-perk ranks via
-  // OMOD property 116 (verified in the 2026-07-02 dump: BetterCriticals01-03,
-  // CriticalSavvy01-03, GHL_GlowingCriticals01-03, GrimReapersSprint01,
-  // Psychopath01). Inert until the perk-grant route lands in the extractor.
-  mod_Custom_TheVATSUnknown_BetterCriticals: 'inert',
-  mod_Custom_TheVATSUnknown_CritSavvy: 'inert',
-  mod_Custom_TheVATSUnknown_GlowingCriticals: 'inert',
-  mod_Custom_TheVATSUnknown_GrimReapersSprint: 'inert',
-  mod_Custom_TheVATSUnknown_Psychopath: 'inert',
+  // The V.A.T.S. Unknown effect variants' badges + rescue REMOVED (2026-07-16):
+  // these five sibling OMODs (BetterCriticals/CritSavvy/GlowingCriticals/
+  // GrimReapersSprint/Psychopath, 0x008F1647-B) have zero ESM reverse refs and
+  // are unreferenced legacy/cut records, not real selectable variants — the
+  // unique's actual shipped effect is the base `mod_Custom_TheVATSUnknown`
+  // record (0x008F1646, SETs VATSCriticalMultAdjustMin/Max = 0.2/2.0, card
+  // text "V.A.T.S. Criticals Deal Between 20% to 200% Damage"), now modeled
+  // via omodModifierAdditions below. See forceVisibleOmodIds / removed
+  // omodWeaponRestrictions entries (same rationale).
 };
 
 /** Omod counterpart of forceVisibleWeaponIds (rescues obtainable:false records). */
@@ -255,17 +255,12 @@ export const forceVisibleOmodIds: ReadonlySet<string> = new Set<string>([
   'MTNL01_mod_SingleActionRevolver_Barrel_Fancy',
   'MTNL01_mod_SingleActionRevolver_Grip_Fancy',
   'MTNL01_mod_SingleActionRevolver_Receiver_Fancy',
-  // The V.A.T.S. Unknown effect variants (2026-07-13: re-homed from the now-
-  // hidden legacy W05_COMP_Astronaut_AlienBlaster_QuestReward record — base
-  // AlienBlaster hosts mod_Custom_TheVATSUnknown in its templateModFormIds
-  // and has always had the ap_customName attach slot): attached by the
-  // reward flow (no record-level reverse refs), each grants crit-perk ranks
-  // — see omodBadgeOverrides (2026-07-10 walk).
-  'mod_Custom_TheVATSUnknown_BetterCriticals',
-  'mod_Custom_TheVATSUnknown_CritSavvy',
-  'mod_Custom_TheVATSUnknown_GlowingCriticals',
-  'mod_Custom_TheVATSUnknown_GrimReapersSprint',
-  'mod_Custom_TheVATSUnknown_Psychopath',
+  // The V.A.T.S. Unknown effect variants' rescue REMOVED (2026-07-16): these
+  // five sibling OMODs turned out to be unreferenced legacy/cut records, not
+  // real selectable variants — see omodBadgeOverrides for the corrected
+  // mechanical read (the unique's real effect lives on the base
+  // mod_Custom_TheVATSUnknown record, which is obtainable:true on its own and
+  // needs no rescue).
   // Terminal/script-sold plan books (2026-07-14 book-chain rework): these
   // mods' recipes are Learn-Method-4 with a real BOOK, but the BOOK's only
   // referencer is the recipe itself — the plans are sold by script-driven
@@ -296,17 +291,11 @@ export const forceVisibleOmodIds: ReadonlySet<string> = new Set<string>([
  * that appear in NO weapon's template (no record-level reverse refs at all).
  */
 export const omodWeaponRestrictions: Readonly<Record<string, readonly string[]>> = {
-  // The V.A.T.S. Unknown effect variants belong to the unique alien blaster
-  // only (attached by the reward flow; 2026-07-10 walk). Re-homed 2026-07-13
-  // from the legacy W05_COMP_Astronaut_AlienBlaster_QuestReward WEAP (now
-  // hidden — unique-weapons rework) to base 'AlienBlaster', which has always
-  // had the ap_customName attach slot (0x0047A264, verified) and hosts
-  // mod_Custom_TheVATSUnknown in its templateModFormIds.
-  mod_Custom_TheVATSUnknown_BetterCriticals: ['AlienBlaster'],
-  mod_Custom_TheVATSUnknown_CritSavvy: ['AlienBlaster'],
-  mod_Custom_TheVATSUnknown_GlowingCriticals: ['AlienBlaster'],
-  mod_Custom_TheVATSUnknown_GrimReapersSprint: ['AlienBlaster'],
-  mod_Custom_TheVATSUnknown_Psychopath: ['AlienBlaster'],
+  // The V.A.T.S. Unknown effect-variant entries REMOVED (2026-07-16): those
+  // five sibling OMODs turned out to be unreferenced legacy/cut records (see
+  // omodBadgeOverrides). The real effect is the base mod_Custom_TheVATSUnknown
+  // record, which is already correctly scoped to AlienBlaster via its own
+  // templateModFormIds — no restriction entry needed.
 };
 
 /**
@@ -544,6 +533,36 @@ export const omodModifierAdditions: Readonly<Record<string, Modifier[]>> = {
       bucket: 'ammoFreeChance',
       op: 'ADD',
       value: 0.14,
+      conditions: [],
+    },
+  ],
+  // The V.A.T.S. Unknown (Alien Blaster quest reward) base OMOD
+  // mod_Custom_TheVATSUnknown (0x008F1646, walked 2026-07-16): SETs actor
+  // values VATSCriticalMultAdjustMin/Max = 0.2/2.0 — a uniform-random ×0.2 to
+  // ×2.0 roll each VATS crit, card text "V.A.T.S. Criticals Deal Between 20%
+  // to 200% Damage". Both AVs are unmapped in the extractor (no bucket route)
+  // so the record extracts with zero modifiers; hand-supplied here.
+  // User-confirmed (2026-07-16): the roll scales the additive crit-damage
+  // BONUS (perks/legendary ADDs on critDmgBonus), not the base weapon crit
+  // mult — Max 2.0 matching the default base crit mult is coincidental, not a
+  // second roll on the base. Modeled at the roll's expected value (mean of
+  // uniform[0.2, 2.0] = 1.1) via the critDmgBonusScale bucket (MUL_ADD 0.1
+  // over base 1.0 → ×1.1), which is linear so the mean is exact for expected
+  // DPS even though any single crit's roll isn't. Exact scaling target only
+  // (not the base mult) still wants an in-game measurement — see
+  // dps-todos/measurement-backlog.md.
+  mod_Custom_TheVATSUnknown: [
+    {
+      id: 'mod_Custom_TheVATSUnknown:critDmgBonusScale',
+      source: {
+        kind: 'omod',
+        formId: '0x008F1646',
+        edid: 'mod_Custom_TheVATSUnknown',
+        name: 'The V.A.T.S. Unknown',
+      },
+      bucket: 'critDmgBonusScale',
+      op: 'MUL_ADD',
+      value: 0.1,
       conditions: [],
     },
   ],

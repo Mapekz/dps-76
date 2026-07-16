@@ -118,7 +118,13 @@ function componentBase(
   });
 }
 
-/** Total crit multiplier: weapon base adjusted by MUL_ADD/SET OMODs, then additive bonuses. */
+/**
+ * Total crit multiplier: weapon base adjusted by MUL_ADD/SET OMODs, then
+ * additive bonuses (perks, ADD OMODs), then a scale on just that additive
+ * bonus — The V.A.T.S. Unknown's random per-crit roll (folded over base 1.0,
+ * modeled at its expected value; see docs/assumptions.md). Base crit mult is
+ * untouched by the scale.
+ */
 export function totalCritMult(
   modifiers: Modifier[],
   weapon: Weapon,
@@ -126,7 +132,9 @@ export function totalCritMult(
   collect?: BucketTrace[]
 ): number {
   const adjustedBase = foldBucket(modifiers, 'critDmgBase', weapon.critDamageMult ?? DEFAULT_CRIT_MULT, ctx, collect);
-  return adjustedBase + foldBucket(modifiers, 'critDmgBonus', 0, ctx, collect);
+  const bonus = foldBucket(modifiers, 'critDmgBonus', 0, ctx, collect);
+  const bonusScale = foldBucket(modifiers, 'critDmgBonusScale', 1, ctx, collect);
+  return adjustedBase + bonus * bonusScale;
 }
 
 /** Total sneak-attack multiplier, same composition rule as crit. */

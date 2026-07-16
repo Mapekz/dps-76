@@ -24,6 +24,9 @@ export type ModOp = 'SET' | 'MUL_ADD' | 'ADD';
  * - critDmgBase / sneakBase: MUL_ADD/SET against BaseWeaponCritMult /
  *   BaseWeaponSneakAttackMult (OMODs). critDmgBonus / sneakBonus: additive
  *   bonuses stacked after (perks, ADD OMODs).
+ * - critDmgBonusScale: multiplier folded over base 1.0 and applied to the
+ *   folded critDmgBonus total (not the base crit mult) — The V.A.T.S.
+ *   Unknown's random per-crit roll only.
  * - powerAttackBonus: additive inside the dbm parenthesis (Heavy Hitter's).
  * - weakpointBonus: additive over a 1.0 base; whole-damage multiplier that
  *   only activates when the body-part multiplier exceeds 1.0.
@@ -45,6 +48,7 @@ export type Bucket =
   | 'dbm'
   | 'critDmgBase'
   | 'critDmgBonus'
+  | 'critDmgBonusScale'
   | 'sneakBase'
   | 'sneakBonus'
   | 'powerAttackBonus'
@@ -290,6 +294,7 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   dbm: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts computePaperDamage (dbm parenthesis)' },
   critDmgBase: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts totalCritMult' },
   critDmgBonus: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts totalCritMult' },
+  critDmgBonusScale: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts totalCritMult' },
   sneakBase: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts totalSneakMult' },
   sneakBonus: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts totalSneakMult' },
   powerAttackBonus: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts computePaperDamage (dbm parenthesis)' },

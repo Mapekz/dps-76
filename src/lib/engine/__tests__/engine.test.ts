@@ -340,6 +340,21 @@ describe('crit and sneak composition (MUL_ADD before ADD)', () => {
     ];
     expect(totalSneakMult(mods, weapon, makeCtx(weapon))).toBeCloseTo(3.75, 10);
   });
+
+  it('critDmgBonusScale (The V.A.T.S. Unknown) scales only the folded crit bonus, not the base', () => {
+    const mods = [
+      mod({ bucket: 'critDmgBase', op: 'MUL_ADD', value: -0.25 }),    // 2.0 → 1.5, untouched by the scale
+      mod({ bucket: 'critDmgBonus', op: 'ADD', value: 0.65 }),        // Better Criticals-ish
+      mod({ bucket: 'critDmgBonusScale', op: 'MUL_ADD', value: 0.1 }), // ×1.1 (mean of the 0.2x-2.0x roll)
+    ];
+    // adjustedBase 1.5 + (0.65 × 1.1) = 2.215
+    expect(totalCritMult(mods, weapon, makeCtx(weapon))).toBeCloseTo(2.215, 10);
+  });
+
+  it('critDmgBonusScale is a no-op when there is no crit bonus to scale', () => {
+    const mods = [mod({ bucket: 'critDmgBonusScale', op: 'MUL_ADD', value: 0.1 })];
+    expect(totalCritMult(mods, weapon, makeCtx(weapon))).toBeCloseTo(2.0, 10);
+  });
 });
 
 describe('computePaperDamage', () => {

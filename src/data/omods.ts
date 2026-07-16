@@ -169,8 +169,8 @@ export interface OmodSlot {
 
 /**
  * Slots exempt from the hygiene rules below (dedupe, hide-standard-only):
- * unique-identity slots legitimately hold same-named variants (the six
- * "The V.A.T.S. Unknown" records differ only in modifiers) and single-option
+ * unique-identity slots legitimately hold same-named variants ("Relic
+ * Reaper"'s seven records differ only in modifiers) and single-option
  * identity slots must stay visible (The Fixer's Unique slot IS its identity);
  * legendary slots are star pickers, not upgrade choices.
  */
@@ -293,10 +293,11 @@ export function getOmodSlots(mode: GameMode, weapon: Weapon): OmodSlot[] {
     // Cosmetic slots (paint/customName/...) are skipped UNLESS the mod carries
     // a real stat payload AND belongs to this weapon: unique-weapon effects
     // ride cosmetic attach points (Perfect Storm, Cold Shoulder's cryptid
-    // bonus, Cursed melee mods, ...). templateModFormIds lists a weapon's
-    // possible instance templates, so it gates which uniques' mods belong;
-    // badge-override rescues (V.A.T.S. Unknown variants) pass explicitly and
-    // are weapon-gated by omodWeaponRestrictions instead.
+    // bonus, Cursed melee mods, The V.A.T.S. Unknown, ...). templateModFormIds
+    // lists a weapon's possible instance templates, so it gates which uniques'
+    // mods belong; badge-override rescues pass explicitly for the rare
+    // template-less case, weapon-gated by omodWeaponRestrictions instead (no
+    // live entries as of 2026-07-16, but the mechanism stays for the next one).
     (edid, omod) =>
       (!COSMETIC_SLOT_RE.test(edid) ||
         (omod.modifiers.length > 0 && (weapon.templateModFormIds ?? []).includes(omod.formId)) ||
