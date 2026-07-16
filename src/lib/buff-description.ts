@@ -25,6 +25,7 @@ const PERCENT_BUCKET_LABELS: Partial<Record<Bucket, string>> = {
   powerAttackBonus: 'power attack damage',
   limbDamage: 'limb damage',
   reloadSpeed: 'reload speed',
+  moveSpeedBonus: 'movement speed',
 };
 
 /** Buckets whose Modifier.value is a flat point add, not a percentage. */

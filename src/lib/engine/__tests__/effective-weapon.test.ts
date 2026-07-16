@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { getWeapons } from '@/data';
+import { getBuffModifiers } from '@/data/buffs';
 import { getOmodById, getOmodSlots } from '@/data/omods';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
 import { PerkId } from '@/data/perk-ids';
@@ -330,6 +331,19 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, measur
       melee, [], 50, player, createDefaultEnemyConditions(), [...fastFighter, ...gunRunner]
     );
     expect(onMelee.weapon.reloadSpeed).toBeCloseTo(meleeBase, 6);
+  });
+
+  it('Wasteland Fish Sandwich (real consumable data) feeds Fast Fighter reload speed', () => {
+    const mods = getBuffModifiers('live', [], ['SeasonalFish_Meal_SummerWastelandFishSandwich']);
+    expect(mods).toEqual(
+      expect.arrayContaining([expect.objectContaining({ bucket: 'moveSpeedBonus', value: 0.2 })])
+    );
+    const fastFighter = getLoadoutModifiers('live', [{ perkId: PerkId.FastFighter, rank: 1 }]);
+    const player = createDefaultPlayerConditions();
+    const result = buildEffectiveWeapon(
+      fixer, [], 50, player, createDefaultEnemyConditions(), [...fastFighter, ...mods]
+    );
+    expect(result.weapon.reloadSpeed).toBeCloseTo(base + 0.1, 6);
   });
 });
 

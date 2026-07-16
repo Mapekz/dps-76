@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { hasAnyEngineEffect } from '@/types/modifiers';
+import { consumablesById } from '@/lib/consumable-rules';
 import { getConsumables } from '../buffs';
 
 describe('consumable picker', () => {
@@ -13,6 +14,14 @@ describe('consumable picker', () => {
     ]) {
       expect(ids, id).not.toContain(id);
     }
+  });
+
+  it('the Wasteland Fish Sandwich is visible as a selectable food', () => {
+    const sandwich = getConsumables('live').find(c => c.id === 'SeasonalFish_Meal_SummerWastelandFishSandwich');
+    expect(sandwich).toBeDefined();
+    expect(consumablesById('live').has('SeasonalFish_Meal_SummerWastelandFishSandwich')).toBe(true);
+    expect(sandwich!.category).toBe('food');
+    expect(sandwich!.obtainable).not.toBe(false);
   });
 });
 
