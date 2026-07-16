@@ -70,6 +70,11 @@ export function WeaponSection() {
   const uniques = getUniques(mode);
   const uniquesById = React.useMemo(() => new Map(uniques.map(u => [u.id, u])), [uniques]);
   const equippedUnique = player.weapon ? getEquippedUnique(mode, player.weapon) : undefined;
+  const equippedIdentitySlot = equippedUnique
+    ? (Object.entries(equippedUnique.mods).find(([, omodId]) => omodId === equippedUnique.id)?.[0] ??
+      getOmodById(mode, equippedUnique.id)?.attachPointEdid ??
+      'ap_customName')
+    : undefined;
   const weaponOptions = [
     ...uniques.map(u => ({
       value: u.id,
@@ -156,13 +161,24 @@ export function WeaponSection() {
             // An undecided slot carries its real standard part (folded into the
             // damage engine by assemble()) — show it as genuinely selected.
             const displayValue = typeof chosen === 'string' ? chosen : (defaultOmodId ?? null);
+            const showUniqueStandard = slot.slot === equippedIdentitySlot && !!equippedUnique;
+            const modOptions = [
+              ...(showUniqueStandard ? [{ value: '__standard__', label: 'Standard' }] : []),
+              ...slot.options.map(o => ({ value: o.id, label: o.name })),
+            ];
             return (
               <div key={slot.slot} className="space-y-1.5">
                 <Label>{slot.label}</Label>
                 <Combobox
-                  options={slot.options.map(o => ({ value: o.id, label: o.name }))}
+                  options={modOptions}
                   value={displayValue}
-                  onValueChange={omodId => dispatch({ type: 'weapon/mod', slot: slot.slot, omodId })}
+                  onValueChange={omodId => {
+                    if (omodId === '__standard__') {
+                      dispatch({ type: 'weapon/mod', slot: slot.slot, omodId: null });
+                      return;
+                    }
+                    dispatch({ type: 'weapon/mod', slot: slot.slot, omodId });
+                  }}
                   placeholder="Standard"
                   searchPlaceholder="Search mods…"
                   emptyText="No mod matches."
@@ -173,10 +189,16 @@ export function WeaponSection() {
                           standard
                         </Badge>
                       )}
-                      <OmodBadgeTag slot={slot} omodId={o.value} />
+                      {o.value !== '__standard__' && <OmodBadgeTag slot={slot} omodId={o.value} />}
                       {/* No ±% on the already-selected option — the delta of a no-op is 0. */}
                       {o.value !== displayValue && (
-                        <ActionDelta action={{ type: 'weapon/mod', slot: slot.slot, omodId: o.value }} />
+                        <ActionDelta
+                          action={{
+                            type: 'weapon/mod',
+                            slot: slot.slot,
+                            omodId: o.value === '__standard__' ? null : o.value,
+                          }}
+                        />
                       )}
                     </>
                   )}
