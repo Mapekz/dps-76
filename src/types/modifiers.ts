@@ -411,9 +411,9 @@ export type Condition =
   | { kind: 'damageTypeScope'; types: DamageType[] }
   /** Which body part the hit lands on (Center Masochist → torso only). */
   | { kind: 'bodyPart'; part: 'torso' | 'weakpoint' | 'limb' }
-  /** Enemy race/type gating (Exterminator etc.) — inert until enemy modeling lands. */
+  /** Enemy race/type gating (Exterminator etc.) — resolves against the Target picker's selected race (`ctx.enemyTypeIds`). */
   | { kind: 'enemyType'; keywordOrRace: string }
-  /** OR-group of enemy race/type gates (Ghoul Slayer's: FeralGhoul OR Ghoul) — inert until enemy modeling lands. */
+  /** OR-group of enemy race/type gates (Ghoul Slayer's: FeralGhoul OR Ghoul) — resolves against `ctx.enemyTypeIds`. */
   | { kind: 'enemyTypeAny'; keywordsOrRaces: string[] }
   | { kind: 'sneaking' }
   | { kind: 'powerAttack' }
