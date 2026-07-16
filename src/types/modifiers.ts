@@ -428,6 +428,10 @@ export type Condition =
   | { kind: 'perCrippledLimb'; max: number }
   /** The fired round is the magazine's last (Last Shot — GetLoadedAmmoCount()=0 + IsNextClipLastShot). */
   | { kind: 'lastRound' }
+  /** Player is aiming down sights (GetInIronSights) — override-produced gate for scoped-damage magazines. */
+  | { kind: 'aimingDownSights'; value: boolean }
+  /** Active alcohol consumable selected (HasMagicEffectKeyword(AlcoholEffect)) — derived in resolveLoadout. */
+  | { kind: 'underAlcoholEffect'; value: boolean }
   /** Target carries ≥1 active effect with this keyword (Pyromaniac's: DamageTypeFire; Viper's: DamageTypePoison). */
   | { kind: 'enemyHasActiveEffect'; keyword: string }
   /** Enemies in the engaged group == count, or ≥ count for the top tier (Encircler's — GetGroupTargetCount). */

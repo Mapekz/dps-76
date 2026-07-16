@@ -139,6 +139,12 @@ function describeConditions(conditions: readonly Condition[]): { clause: string;
       case 'unresolved':
         inactive = true;
         break;
+      case 'aimingDownSights':
+        clauses.push(c.value ? 'while aiming' : 'while not aiming');
+        break;
+      case 'underAlcoholEffect':
+        clauses.push(c.value ? 'under alcohol' : 'while sober');
+        break;
       default:
         // Other condition kinds aren't produced by the buff sources this
         // module describes today (see docs/assumptions.md). strangeInNumbers

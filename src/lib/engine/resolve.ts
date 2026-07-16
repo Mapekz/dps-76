@@ -249,6 +249,10 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       return ctx.player.isInPowerArmor === cond.value ? 1 : null;
     case 'playerIsGhoul':
       return (ctx.player.isGhoul ?? false) === cond.value ? 1 : null;
+    case 'aimingDownSights':
+      return (ctx.player.isAimingDownSights ?? false) === cond.value ? 1 : null;
+    case 'underAlcoholEffect':
+      return (ctx.player.underAlcoholEffect ?? false) === cond.value ? 1 : null;
     case 'hydrated':
       // Unset = fully hydrated (optimal-play default, same spirit as
       // enemyHealthAbovePct's full-health default).

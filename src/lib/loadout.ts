@@ -4,6 +4,7 @@ import { getWeapons } from '@/data';
 import { getEquippedPerkFamilyRanks, getLoadoutModifiers } from '@/data/perk-modifiers';
 import { getDefaultOmods, getOmodById } from '@/data/omods';
 import { getAddictionModifiers, getBuffModifiers, getSuppressedAddictions } from '@/data/buffs';
+import { consumablesById } from '@/lib/consumable-rules';
 import { getManualUptimeModifiers } from '@/data/manual-uptime';
 import { getPlayerBaselineModifiers } from '@/data/player-baseline';
 import { getTargetDebuffModifiers } from '@/data/target-debuffs';
@@ -66,6 +67,7 @@ function assemble(
     ...playerConfig.conditions,
     strangeInNumbers: deriveStrangeInNumbers(playerConfig.perks, playerConfig.conditions),
     classFreakRank: deriveClassFreakRank(playerConfig.perks),
+    underAlcoholEffect: playerConfig.consumables.some(id => consumablesById(mode).get(id)?.category === 'alcohol'),
     // Family → highest owned rank across both loadouts — the perkFamilyRank
     // condition's input (cross-family HasPerk gates, e.g. Lock and Load →
     // Bullet Storm's reload speed).

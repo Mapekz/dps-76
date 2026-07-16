@@ -15,6 +15,7 @@ export interface PlayerConditions {
   isSolo: boolean;
   isPowerAttacking: boolean; // melee power attacks (toggle; applies across scenarios)
   isLastShot?: boolean; // firing the magazine's last round (Last Shot legendary; default false)
+  isAimingDownSights?: boolean; // iron sights / ADS (gates scoped-damage buffs; default false)
   isGhoul?: boolean; // playing a ghoul character (gates Gourmand's off, feral-meter effects on; default false)
   healthPercent: number; // 0-100 for perks like Nerd Rage, Serendipity
 
@@ -80,6 +81,12 @@ export interface PlayerConditions {
    */
   glow?: number;
   limitBreakingPieces: number; // 0-5 armor pieces with Limit Breaking (−10% crit cost each)
+  /**
+   * True when any active consumable is category alcohol (Live & Love 5's
+   * HasMagicEffectKeyword(AlcoholEffect) gate). DERIVED in resolveLoadout;
+   * the stored default only feeds synthetic engine tests.
+   */
+  underAlcoholEffect?: boolean;
   /**
    * Strange in Numbers gate → mutation values ×1.25. DERIVED in resolveLoadout
    * (StrangeInNumbers perk equipped AND teammateCount ≥ 1 — the card needs a
@@ -530,6 +537,7 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     isSolo: true,
     isPowerAttacking: false,
     isLastShot: false,
+    isAimingDownSights: false,
     isGhoul: false,
     healthPercent: 100,
     bulletStormStacks: 10, // Assume max stacks by default
@@ -546,6 +554,7 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     feralTier: 0, // Lucid/Feral's curve input (0–8; human default)
     glow: 0, // ghoul Glow meter, absolute (0..maxHealth; human/no-Glow default)
     limitBreakingPieces: 0,
+    underAlcoholEffect: false, // synthetic-test default; the app derives it in resolveLoadout (active alcohol consumable)
     strangeInNumbers: false, // synthetic-test default; the app derives it in resolveLoadout (perk + teammates)
     classFreakRank: 0, // synthetic-test default; the app derives it in resolveLoadout (equipped ClassFreak rank)
     equippedPerkRanks: {}, // synthetic-test default; the app derives it in resolveLoadout (selected perk loadout)

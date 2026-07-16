@@ -34,6 +34,13 @@ import type { Modifier } from '@/types/modifiers';
 export const CARNIVORE_MUTATION_ID = 'Mutation_Carnivore';
 export const HERBIVORE_MUTATION_ID = 'Mutation_Herbivore';
 
+/** The two diet mutations realize their effect on OTHER consumables (applyDietScaling),
+ *  so they carry no modifiers of their own — the generic hasAnyEngineEffect badge
+ *  can't see their effect. Callers use this to exempt them. */
+export function isDietMutation(mutationId: string): boolean {
+  return mutationId === CARNIVORE_MUTATION_ID || mutationId === HERBIVORE_MUTATION_ID;
+}
+
 const MEAT_KEYWORD = 'IngredientTypeMeat';
 const HERBIVORE_KEYWORDS = ['IngredientTypeVegetable', 'IngredientTypeHerb', 'IngredientTypeFruit'];
 const CARNIVORE_ZEROED_KEYWORD = 'IngredientTypeVegetable';

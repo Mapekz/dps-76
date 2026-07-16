@@ -121,12 +121,14 @@ export function TeamSection() {
                 {sinEquipped ? (sinActive ? 'active' : 'inactive') : 'not equipped'}
               </span>
             </div>
-            <div className="flex items-center justify-between">
-              <span>United Ordeal</span>
-              <span className={unitedOrdealActive ? 'font-medium' : 'text-muted-foreground'}>
-                {unitedOrdealEquipped ? (unitedOrdealActive ? 'active' : 'inactive') : 'not equipped'}
-              </span>
-            </div>
+            {(conditions.isGhoul ?? false) && (
+              <div className="flex items-center justify-between">
+                <span>United Ordeal</span>
+                <span className={unitedOrdealActive ? 'font-medium' : 'text-muted-foreground'}>
+                  {unitedOrdealEquipped ? (unitedOrdealActive ? 'active' : 'inactive') : 'not equipped'}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </AccordionContent>

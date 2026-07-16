@@ -142,6 +142,7 @@ export function ConditionsSection() {
     ((conditions.bodyPartHitRatePct ?? 100) !== (defaults.bodyPartHitRatePct ?? 100) ? 1 : 0) +
     (conditions.isPowerAttacking !== defaults.isPowerAttacking ? 1 : 0) +
     ((conditions.isLastShot ?? false) !== (defaults.isLastShot ?? false) ? 1 : 0) +
+    ((conditions.isAimingDownSights ?? false) !== (defaults.isAimingDownSights ?? false) ? 1 : 0) +
     (conditions.isInPowerArmor !== defaults.isInPowerArmor ? 1 : 0) +
     ((conditions.hydrated ?? true) !== (defaults.hydrated ?? true) ? 1 : 0) +
     (conditions.limitBreakingPieces !== defaults.limitBreakingPieces ? 1 : 0);
@@ -371,6 +372,13 @@ export function ConditionsSection() {
             label="Firing the magazine's last round"
             checked={conditions.isLastShot ?? false}
             onCheckedChange={v => set('isLastShot', v)}
+          />
+
+          <SwitchRow
+            id="char-ads"
+            label="Aiming down sights"
+            checked={conditions.isAimingDownSights ?? false}
+            onCheckedChange={v => set('isAimingDownSights', v)}
           />
 
           <SwitchRow

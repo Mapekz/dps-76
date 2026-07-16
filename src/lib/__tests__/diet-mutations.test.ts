@@ -7,6 +7,7 @@ import {
   dietSuppressionLabel,
   dietVerdict,
   HERBIVORE_MUTATION_ID,
+  isDietMutation,
 } from '@/lib/diet-mutations';
 import { getBuffModifiers, getConsumables } from '@/data/buffs';
 
@@ -35,6 +36,14 @@ function food(overrides: Partial<GeneratedBuff> = {}): GeneratedBuff {
     ...overrides,
   };
 }
+
+describe('isDietMutation', () => {
+  it('is true for Carnivore and Herbivore, false for other mutations', () => {
+    expect(isDietMutation(CARNIVORE_MUTATION_ID)).toBe(true);
+    expect(isDietMutation(HERBIVORE_MUTATION_ID)).toBe(true);
+    expect(isDietMutation('Mutation_SpeedDemon')).toBe(false);
+  });
+});
 
 describe('dietVerdict (ESM perk-condition keyword sets)', () => {
   it('Carnivore doubles meat, zeroes vegetable', () => {

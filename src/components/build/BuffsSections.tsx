@@ -22,7 +22,7 @@ import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getAddictions, getConsumables, getMutations, getSuppressedAddictions } from '@/data/buffs';
 import { getOmodById } from '@/data/omods';
 import { applySelection, consumablesById } from '@/lib/consumable-rules';
-import { dietVerdict, dietSuppressionLabel, type DietVerdict } from '@/lib/diet-mutations';
+import { dietVerdict, dietSuppressionLabel, isDietMutation, type DietVerdict } from '@/lib/diet-mutations';
 import { deriveClassFreakRank, deriveStrangeInNumbers } from '@/lib/player-stats';
 import { describeBuffModifiers } from '@/lib/buff-description';
 import { CLASS_FREAK_TIER_FACTORS } from '@/lib/class-freak-mutations';
@@ -155,7 +155,7 @@ export function MutationsSection() {
                 action={{ type: 'mutation/toggle', id: m.id }}
                 description={description}
                 penaltyDescription={penaltyDescription}
-                noEffect={!hasAnyEngineEffect(m.modifiers)}
+                noEffect={!hasAnyEngineEffect(m.modifiers) && !isDietMutation(m.id)}
               />
             );
           })}

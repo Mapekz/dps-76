@@ -554,13 +554,17 @@ of the chem/food/drink/alcohol classification.
   Known-inert entries say so inline.
 - **Stacking**: one magazine and one bobblehead active at a time, independent
   of each other and of chem/alcohol/food/drink.
-- **Known-inert entries** (extracted, selectable, 0% ΔDPS — pre-existing
-  `conditions.ts` gaps): U.S. Covert Ops 8 (`ma_*` weapon-archetype keywords
-  aren't recognized by the `WeaponType*`-only prefix match), Big Guns
-  bobblehead (mixed HasKeyword/IsTrueForConditionForm OR-group), Awesome
-  Tales 10 (`GetInIronSights()`), Live & Love 2/5
-  (`IsMemberOfAPlayerTeam`/`HasMagicEffectKeyword`). See **Known gaps /
-  deferred**.
+- **Aim-down-sights toggle** (`PlayerConditions.isAimingDownSights`, default
+  false): gates override-wired scoped-damage magazines (Awesome Tales 10's
+  `GetInIronSights()` row). User-editable in Conditions.
+- **Under-alcohol derived flag** (`PlayerConditions.underAlcoholEffect`,
+  derived in `resolveLoadout` from any active alcohol-category consumable):
+  gates Live & Love 5's `HasMagicEffectKeyword(AlcoholEffect)` row.
+- **Live & Love 5 magnitude (+2 LCK)**: **INFERENCE** — the MGEF is
+  Script-archetype with no extractable Peak Value Modifier; magnitude taken
+  from the card description (`buff-overrides.ts`).
+- **Known-inert entries** (still extracted, selectable, 0% ΔDPS): Live & Love
+  2 (`IsMemberOfAPlayerTeam`). See **Known gaps / deferred**.
 
 ## Carnivore's / Herbivore's food scaling
 Engine: `src/lib/diet-mutations.ts`.
@@ -1059,9 +1063,8 @@ auto-converted); their stats are stale and must not be shown.
   Infiltrator's actual per-rank grant needs ESM verification** before
   implementing — its card text conflicts with a "+1/rank" recollection;
   don't trust either without walking the ESM.
-- A handful of magazine/bobblehead buffs are extracted but currently inert —
-  pre-existing `conditions.ts` translation gaps, see **Magazines &
-  bobbleheads**.
+- A handful of magazine/bobblehead buffs remain inert — see **Magazines &
+  bobbleheads** (Live & Love 2).
 
 ## Future DPS streams
 User-supplied rationale, 2026-07-07. Perks that look "unjoined/inert" today

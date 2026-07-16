@@ -45,4 +45,17 @@ describe('consumable "no effect yet" badge (hasAnyEngineEffect over item.modifie
     expect(sandwich).toBeDefined();
     expect(hasAnyEngineEffect(sandwich!.modifiers)).toBe(true);
   });
+
+  it('does not flag wired magazines/bobbleheads — overrides replace unresolved conditions', () => {
+    for (const id of [
+      'BobbleHead_BigGuns_Potion',
+      'Magazine_USCovertOps08_Potion',
+      'Magazine_AwesomeTales10_Potion',
+      'Magazine_LiveAndLove05_Potion',
+    ]) {
+      const item = byId(id);
+      expect(item, id).toBeDefined();
+      expect(hasAnyEngineEffect(item!.modifiers), id).toBe(true);
+    }
+  });
 });
