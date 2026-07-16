@@ -39,4 +39,10 @@ describe('consumable "no effect yet" badge (hasAnyEngineEffect over item.modifie
     expect(teslaScience5).toBeDefined();
     expect(hasAnyEngineEffect(teslaScience5!.modifiers)).toBe(true);
   });
+
+  it('does not flag the Wasteland Fish Sandwich, whose only modifier feeds Fast Fighter conditionally', () => {
+    const sandwich = byId('SeasonalFish_Meal_SummerWastelandFishSandwich');
+    expect(sandwich).toBeDefined();
+    expect(hasAnyEngineEffect(sandwich!.modifiers)).toBe(true);
+  });
 });

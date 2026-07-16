@@ -1,5 +1,5 @@
 import type { PlayerConfig, EnemyConfig, GameMode, PlayerConditions, Weapon } from '@/types';
-import type { Modifier } from '@/types/modifiers';
+import type { Bucket, Modifier } from '@/types/modifiers';
 import { getWeapons } from '@/data';
 import { getEquippedPerkFamilyRanks, getLoadoutModifiers } from '@/data/perk-modifiers';
 import { getDefaultOmods, getOmodById } from '@/data/omods';
@@ -22,6 +22,14 @@ import {
   type SpecialKey,
 } from '@/lib/player-stats';
 import type { ScenarioInput } from '@/lib/engine/scenarios';
+
+const EFFECTIVE_WEAPON_BOOTSTRAP_BUCKETS: ReadonlySet<Bucket> = new Set([
+  // Folded by buildEffectiveWeapon into ResolveContext.moveSpeedBonus so
+  // Fast Fighter's reload-speed curve can see Speed Demon / fish sandwich.
+  // Onslaught bootstrap buckets must stay in ScenarioInput.modifiers:
+  // computeScenarios folds and exposes them there.
+  'moveSpeedBonus',
+]);
 
 /**
  * Base SPECIAL fed to the stat folds: the user-defined allocation stored in
@@ -137,7 +145,10 @@ function assemble(
       // dropping them mirrors what buildEffectiveWeapon does to OMOD modifiers
       // and keeps them from double-counting if a damage term ever folds them.
       ...loadoutModifiers.filter(
-        m => !WEAPON_STAT_BUCKETS.has(m.bucket) && !SUSTAIN_CHANCE_BUCKETS.has(m.bucket)
+        m =>
+          !WEAPON_STAT_BUCKETS.has(m.bucket) &&
+          !SUSTAIN_CHANCE_BUCKETS.has(m.bucket) &&
+          !EFFECTIVE_WEAPON_BOOTSTRAP_BUCKETS.has(m.bucket)
       ),
     ],
     conditions,

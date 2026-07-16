@@ -163,6 +163,45 @@ describe('loadout weapon-stat folding (perk weapon-stat fold gap)', () => {
     // Consumed by the effective-weapon fold — never left in the resolver list.
     expect(withMutation!.modifiers.some(m => m.bucket === 'reloadSpeed')).toBe(false);
   });
+
+  it('Wasteland Fish Sandwich feeds Fast Fighter through the full resolveLoadout assembly path', () => {
+    const stock = loadoutWithPerks('CombatRifle_Fixer', [{ perkId: PerkId.FastFighter, rank: 1 }]);
+    const withFish = resolveLoadout(
+      {
+        ...createDefaultPlayerConfig(),
+        weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [] },
+        perks: [{ perkId: PerkId.FastFighter, rank: 1 }],
+        consumables: ['SeasonalFish_Meal_SummerWastelandFishSandwich'],
+      },
+      createDefaultEnemyConfig(),
+      'live'
+    );
+    expect(withFish!.weapon.reloadSpeed).toBeGreaterThan(stock!.weapon.reloadSpeed!);
+  });
+
+  it('a bootstrap-only bucket (moveSpeedBonus) drops from ScenarioInput.modifiers without stripping unrelated bootstrap buckets (onslaught)', () => {
+    const input = resolveLoadout(
+      {
+        ...createDefaultPlayerConfig(),
+        weapon: { weaponId: '10mm', mods: {}, legendaryEffects: [] },
+        perks: [
+          { perkId: PerkId.FastFighter, rank: 1 },
+          { perkId: PerkId.GunslingerMaster, rank: 1 },
+        ],
+        consumables: ['SeasonalFish_Meal_SummerWastelandFishSandwich'],
+      },
+      createDefaultEnemyConfig(),
+      'live'
+    )!;
+
+    expect(input.modifiers.some(m => m.bucket === 'moveSpeedBonus')).toBe(false);
+    expect(input.modifiers.some(m => m.bucket === 'onslaughtMaxStacks')).toBe(true);
+    expect(input.modifiers.some(m => m.bucket === 'onslaughtReverse')).toBe(true);
+
+    const scenarios = computeScenarios(input);
+    expect(scenarios.onslaughtMaxStacks).toBe(10);
+    expect(scenarios.onslaughtReverse).toBe(true);
+  });
 });
 
 describe('getDefaultOmodId', () => {

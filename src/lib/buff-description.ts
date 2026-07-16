@@ -210,6 +210,7 @@ function describeModifier(m: Modifier, scale: number): string | null {
 
   const { clause, inactive } = describeConditions(m.conditions);
   if (clause) extraClauses.push(clause);
+  if (m.bucket === 'moveSpeedBonus') extraClauses.push('feeds Fast Fighter reload');
   let base = magnitude;
   if (extraClauses.length > 0) base += ` (${extraClauses.join(', ')})`;
   if (inactive) base += ' — not modeled yet, no effect';
