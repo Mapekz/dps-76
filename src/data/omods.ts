@@ -1,6 +1,6 @@
 import type { GameMode, Weapon } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
-import { INERT_ENGINE_BUCKETS } from '@/types/modifiers';
+import { modifierHasEngineEffect } from '@/types/modifiers';
 import {
   forceVisibleOmodIds,
   hiddenOmodIds,
@@ -145,11 +145,9 @@ export function classifyOmodDisplay(omod: GeneratedOmod, weapon?: Weapon): { sho
     // Target picker's selected race (resolve.ts enemyTypeIds), so Zealot's/
     // Assassin's/Prime receivers are ordinary conditional mods — unbadged,
     // like Instigating. Only enemy-DEFENSE inputs still wait on DR modeling.
-    const isInert = (m: GeneratedOmod['modifiers'][number]) =>
-      INERT_ENGINE_BUCKETS.has(m.bucket) ||
-      m.curve?.input === 'enemyDamageResist' ||
-      m.conditions.some(c => c.kind === 'unresolved');
-    if (omod.modifiers.every(isInert)) {
+    // (modifierHasEngineEffect covers exactly this — shared with the perk
+    // and consumable 'no effect yet' badges, @/types/modifiers.)
+    if (omod.modifiers.every(m => !modifierHasEngineEffect(m))) {
       const enemyFacing = omod.modifiers.every(
         m => m.bucket === 'armorPen' || m.curve?.input === 'enemyDamageResist'
       );

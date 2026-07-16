@@ -1,5 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { BUCKET_REGISTRY, SUSTAIN_CHANCE_BUCKETS, WEAPON_STAT_BUCKETS, INERT_ENGINE_BUCKETS, type Bucket } from '@/types/modifiers';
+import {
+  BUCKET_REGISTRY,
+  SUSTAIN_CHANCE_BUCKETS,
+  WEAPON_STAT_BUCKETS,
+  INERT_ENGINE_BUCKETS,
+  hasAnyEngineEffect,
+  modifierHasEngineEffect,
+  type Bucket,
+  type Modifier,
+} from '@/types/modifiers';
 
 /**
  * Every Bucket union member listed here — kept in sync by hand since a TS
@@ -86,5 +95,48 @@ describe('BUCKET_REGISTRY', () => {
     expect([...INERT_ENGINE_BUCKETS].sort()).toEqual(
       ['limbDamage', 'bashDamage', 'addDamageComponent', 'armorPen'].sort()
     );
+  });
+});
+
+const SOURCE = { kind: 'omod', formId: '0x0', edid: 'test', name: 'Test' } as const;
+
+/** Minimal plain-value Modifier fixture — only the fields modifierHasEngineEffect reads. */
+function plainMod(bucket: Bucket, conditions: Modifier['conditions'] = []): Modifier {
+  return { id: 'test', source: SOURCE, bucket, op: 'ADD', value: 1, conditions };
+}
+
+/** Minimal curve-driven Modifier fixture, for the enemyDamageResist-input case. */
+function curveMod(bucket: Bucket, input: Modifier['curve'] extends undefined ? never : NonNullable<Modifier['curve']>['input']): Modifier {
+  return {
+    id: 'test',
+    source: SOURCE,
+    bucket,
+    op: 'ADD',
+    conditions: [],
+    curve: { input, points: [{ x: 0, y: 0 }] },
+    curveScale: 1,
+  };
+}
+
+describe('modifierHasEngineEffect / hasAnyEngineEffect', () => {
+  it('is false for a bucket the engine never folds (INERT_ENGINE_BUCKETS)', () => {
+    expect(modifierHasEngineEffect(plainMod('armorPen'))).toBe(false);
+  });
+
+  it('is false for an enemyDamageResist-scaled curve, regardless of bucket', () => {
+    expect(modifierHasEngineEffect(curveMod('dbm', 'enemyDamageResist'))).toBe(false);
+  });
+
+  it('is false when the modifier carries an unresolved condition', () => {
+    expect(modifierHasEngineEffect(plainMod('dbm', [{ kind: 'unresolved', raw: 'GetRandomPercent()=20' }]))).toBe(false);
+  });
+
+  it('is true for an ordinary effective bucket with no gating issues', () => {
+    expect(modifierHasEngineEffect(plainMod('dbm'))).toBe(true);
+  });
+
+  it('hasAnyEngineEffect is false for an empty list and true if any modifier is effective', () => {
+    expect(hasAnyEngineEffect([])).toBe(false);
+    expect(hasAnyEngineEffect([plainMod('armorPen'), plainMod('dbm')])).toBe(true);
   });
 });

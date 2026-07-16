@@ -346,6 +346,30 @@ export const INERT_ENGINE_BUCKETS: ReadonlySet<Bucket> = new Set(
     .map(([bucket]) => bucket)
 );
 
+/**
+ * The single "does this modifier move a number today" predicate — shared by
+ * every picker's 'no effect yet' badge (OMODs, perks, consumables). A
+ * modifier is inert when its bucket is in `INERT_ENGINE_BUCKETS`, OR it reads
+ * an enemy-defense curve input nothing folds yet (enemyDamageResist, waiting
+ * on enemy DR modeling — distinct from the enemyType/enemyTypeAny CONDITION
+ * kinds, which DO resolve against the Target picker's selected race and are
+ * NOT inert), OR extraction left a condition it couldn't translate
+ * (`unresolved`). Kept here, next to the bucket registry it reads, so no
+ * caller can drift from what the engine actually folds.
+ */
+export function modifierHasEngineEffect(m: Modifier): boolean {
+  return !(
+    INERT_ENGINE_BUCKETS.has(m.bucket) ||
+    m.curve?.input === 'enemyDamageResist' ||
+    m.conditions.some(c => c.kind === 'unresolved')
+  );
+}
+
+/** True iff at least one modifier in the list moves a number today (empty list → false). */
+export function hasAnyEngineEffect(modifiers: readonly Modifier[]): boolean {
+  return modifiers.some(modifierHasEngineEffect);
+}
+
 export type WeaponClass = Weapon['weaponClass'];
 export type DamageType = Weapon['components'][number]['damageType'];
 
