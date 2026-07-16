@@ -6,6 +6,10 @@ only auto-derives from AV `SpeedMult` routes that extract cleanly
 (`normalize/mgef.ts`, 2026-07-15). The user wants **every non-sprinting
 movement-speed bonus** modeled so Fast Fighter's input is complete.
 
+**Registry enforcement:** `src/data/__tests__/move-speed-census.test.ts` pins
+every extracted `moveSpeedBonus` modifier against a hand-maintained allowlist.
+A new `SpeedMult` source after `pnpm extract` fails CI until dispositioned here.
+
 ## Modeled today
 
 - Speed Demon (mutation): +20% / +25% with Strange in Numbers
@@ -32,6 +36,22 @@ movement-speed bonus** modeled so Fast Fighter's input is complete.
 - **Spotlight Player Perk** (+15%, event-global gated): left inert (event-only,
   not a standard build card).
 
+## Discovered, not player-facing
+
+Perks that emit `moveSpeedBonus` in extracted data but must never reach the
+player loadout fold (census test marks them `excluded:*`).
+
+- **NukaSwiftPerk** (`0x00661FDF`, +200%, `hasCard:false`): esm-walk
+  2026-07-15 — `NukaSwiftSpell` (`0x00661FE2`) carries
+  `AbPerkFortifyActorSpeedMult` magnitude 200, **duration 0** (instant burst,
+  not a sustained buff). No reverse refs on the PERK (script/VMAD grant pattern;
+  no ALCH/SPEL/VMAD player-facing path found). Not UI-selectable; excluded as
+  `excluded:not-reachable`.
+- **WL006_SentryBotMovementSpeedPerk** (`0x005A2637`, −40%, `hasCard:false`):
+  NPC sentry-bot speed modifier ("Modifies the speed of the sentry bot.").
+  Negative `SpeedMult` would wrongly penalize Fast Fighter if it ever reached
+  the fold; excluded as `excluded:non-player`.
+
 ## Deliberately unmapped (needs measurement or different AV)
 
 - **The Fixer** custom mod (`P01B_mod_Custom_Fixer` `0x0046D29E`): grants
@@ -42,17 +62,25 @@ movement-speed bonus** modeled so Fast Fighter's input is complete.
   count sneak speed? Stopwatch with Fast Fighter + Fixer while sneaking would
   settle it.
 
-## Not yet swept (no SpeedMult MGEF extracted, or outside current extractors)
+## Verified empty / blocked (2026-07-15)
 
-- Armor / power-armor OMODs with move-speed properties (Emergency Protocols,
-  Shrouded, Sleek — see dps-todos/armor-mods-outgoing.md) — blocked on the
-  armor-OMOD extraction pipeline.
-- Food/drink buffs beyond the fish sandwich (speed-themed foods, events).
-- Chems (e.g. any Speed-branded variants) and their addiction penalties
-  (negative SpeedMult — penalties currently clamp out of Fast Fighter via
-  the curve's (0,0) endpoint; revisit if the game says otherwise).
-- Weight-class / encumbrance movement modifiers (engine-native, likely no
-  MGEF — probably out of scope, document if so).
+Categories that previously read as "not yet swept" but are now dispositioned:
+
+- **Foods beyond Fish Sandwich** — none in extracted data. No other ALCH in
+  `consumables.json` carries `SpeedMult`; the fish sandwich is the sole
+  food/drink speed buff today.
+- **Chems + addiction penalties** — none in extracted data. No chem carries
+  `SpeedMult`; `addictions.json` has no speed-penalty withdrawal modifier. The
+  Fast Fighter curve's `(0,0)` endpoint clamp for negative `SpeedMult` is
+  documented but **moot until data appears**.
+- **Armor / power-armor OMODs** — **blocked** on the armor-OMOD extraction
+  pipeline. `extract-omods.ts:182` hard-skips non-`Weapon` form types; see
+  `dps-todos/armor-mods-outgoing.md` (Emergency Protocols, Shrouded, Sleek,
+  … would route to `moveSpeedBonus` once extracted).
+- **Weight-class / encumbrance** — **out of scope**. Engine-native movement
+  penalty with no MGEF; `conditions.ts:228-233` only consumes
+  `IsOverEncumbered` as a gate on other effects, not as a `moveSpeedBonus`
+  source.
 
 ## Open question (measurement)
 

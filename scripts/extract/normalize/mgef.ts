@@ -203,8 +203,9 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   // overrides/perk-overrides.ts) — no movement model exists. Route applies to
   // every translate() caller: other SpeedMult sources (chems, food) landing
   // here after a regeneration is expected and correct (they should feed Fast
-  // Fighter too); review the diff against
-  // dps-todos/move-speed-sources.md.
+  // Fighter too); disposition new sources in
+  // dps-todos/move-speed-sources.md and the allowlist in
+  // src/data/__tests__/move-speed-census.test.ts (CI fails on drift).
   SpeedMult: { bucket: 'moveSpeedBonus', scale: 0.01 },
   // SPECIAL stat bonuses (Buffout +2 STR, Mentats +2 INT, legendary +SPECIAL
   // stars...). Flat points, scale 1. Strength/Luck fold into player state in
