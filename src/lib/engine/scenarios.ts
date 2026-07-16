@@ -5,6 +5,7 @@ import { getFireRate } from '@/lib/fire-rate';
 import { AP_REGEN_DELAY_SEC, AP_REGEN_RATE_PCT, AP_REGEN_RATE_PCT_POWER_ARMOR, apLimitedDps, computeApEconomy, effectiveShotsPerSecond } from './ap-economy';
 import { computeCritMeter, type CritMeterResult } from './crit-meter';
 import { computeDotDps, computePaperDamage, type HitBreakdown } from './paper-damage';
+import { perShotOnslaughtConsume, reverseOnslaughtAvgStacks } from './onslaught';
 import { computeSustain, type SustainResult } from './sustain';
 import { createHitTrace, lastTrace, type ApRegenTrace, type BucketTrace, type CritMeterTrace, type HitTrace } from './trace';
 import { effectiveValue, foldBucket, type ResolveContext, type ScenarioFlags } from './resolve';
@@ -91,6 +92,17 @@ export interface ScenarioSet {
    */
   onslaughtMaxStacks: number;
   /**
+   * True when Gunslinger Master (or any `onslaughtReverse` source) is equipped
+   * — the shared counter runs in reverse mode and the UI shows a read-only
+   * engine-computed average instead of the manual stacks slider.
+   */
+  onslaughtReverse: boolean;
+  /**
+   * Steady-state average stack count under reverse mode (undefined when
+   * `onslaughtReverse` is false).
+   */
+  onslaughtReverseAvgStacks?: number;
+  /**
    * True when any equipped source reads the kill-streak counter (Adrenaline,
    * Crowd Control, Sole Survivor; Lawbringer, Adrenal, Thrill-Seeker's) — the
    * UI's kill-streak slider disables without one. Unlike onslaughtMaxStacks
@@ -155,7 +167,13 @@ export interface ScenarioInput {
   collectTrace?: boolean;
 }
 
-function scenarioCtx(input: ScenarioInput, flags: ScenarioFlags, onslaughtMaxStacks: number): ResolveContext {
+/** Onslaught cap + optional reverse-mode average, threaded on every ResolveContext. */
+interface OnslaughtThread {
+  maxStacks: number;
+  reverseAvg?: number;
+}
+
+function scenarioCtx(input: ScenarioInput, flags: ScenarioFlags, onslaught: OnslaughtThread): ResolveContext {
   return {
     weapon: input.weapon,
     player: input.player,
@@ -163,7 +181,8 @@ function scenarioCtx(input: ScenarioInput, flags: ScenarioFlags, onslaughtMaxSta
     scenario: { ...flags, isPowerAttack: flags.isPowerAttack && isMelee(input.weapon) },
     itemLevel: input.itemLevel,
     enemyTypeIds: input.enemyTypeIds,
-    onslaughtMaxStacks,
+    onslaughtMaxStacks: onslaught.maxStacks,
+    ...(onslaught.reverseAvg !== undefined && { onslaughtReverseStacks: onslaught.reverseAvg }),
   };
 }
 
@@ -221,17 +240,17 @@ function chargedCycleHit(
   bodyPartMult: number,
   bodyPart: BodyPartLocation,
   critRate: number,
-  onslaughtMaxStacks: number
+  onslaught: OnslaughtThread
 ): HitBreakdown {
   const normal = critWeighted(
-    bodyPartBlendedHit(input, { ...flags, isPowerAttack: false, isCrit: false }, bodyPartMult, bodyPart, onslaughtMaxStacks),
-    bodyPartBlendedHit(input, { ...flags, isPowerAttack: false, isCrit: true }, bodyPartMult, bodyPart, onslaughtMaxStacks),
+    bodyPartBlendedHit(input, { ...flags, isPowerAttack: false, isCrit: false }, bodyPartMult, bodyPart, onslaught),
+    bodyPartBlendedHit(input, { ...flags, isPowerAttack: false, isCrit: true }, bodyPartMult, bodyPart, onslaught),
     critRate
   );
   const detonation = scaleHit(
     critWeighted(
-      bodyPartBlendedHit(input, { ...flags, isPowerAttack: true, isCrit: false }, bodyPartMult, bodyPart, onslaughtMaxStacks),
-      bodyPartBlendedHit(input, { ...flags, isPowerAttack: true, isCrit: true }, bodyPartMult, bodyPart, onslaughtMaxStacks),
+      bodyPartBlendedHit(input, { ...flags, isPowerAttack: true, isCrit: false }, bodyPartMult, bodyPart, onslaught),
+      bodyPartBlendedHit(input, { ...flags, isPowerAttack: true, isCrit: true }, bodyPartMult, bodyPart, onslaught),
       critRate
     ),
     1 + CHARGED_FULL_BONUS
@@ -250,7 +269,7 @@ function hit(
   flags: ScenarioFlags,
   bodyPartMult: number,
   bodyPart: BodyPartLocation,
-  onslaughtMaxStacks: number,
+  onslaught: OnslaughtThread,
   trace?: HitTrace
 ): HitBreakdown {
   return computePaperDamage({
@@ -258,7 +277,7 @@ function hit(
     weapon: input.weapon,
     itemLevel: input.itemLevel,
     modifiers: input.modifiers,
-    ctx: scenarioCtx(input, flags, onslaughtMaxStacks),
+    ctx: scenarioCtx(input, flags, onslaught),
     bodyPartMult,
     // Location axis, independent of the mult above: >1 doesn't imply
     // weakpoint and 1.0 doesn't imply torso (an armored torso can be <1.0, a
@@ -296,15 +315,15 @@ function bodyPartBlendedHit(
   flags: ScenarioFlags,
   bodyPartMult: number,
   bodyPart: BodyPartLocation,
-  onslaughtMaxStacks: number,
+  onslaught: OnslaughtThread,
   trace?: HitTrace
 ): HitBreakdown {
   const rate = (input.player.bodyPartHitRatePct ?? 100) / 100;
   if (rate >= 1 || (bodyPartMult === 1.0 && bodyPart === 'torso')) {
-    return hit(input, flags, bodyPartMult, bodyPart, onslaughtMaxStacks, trace);
+    return hit(input, flags, bodyPartMult, bodyPart, onslaught, trace);
   }
-  const atTarget = hit(input, flags, bodyPartMult, bodyPart, onslaughtMaxStacks, trace);
-  const atTorso = hit(input, flags, 1.0, 'torso', onslaughtMaxStacks);
+  const atTarget = hit(input, flags, bodyPartMult, bodyPart, onslaught, trace);
+  const atTorso = hit(input, flags, 1.0, 'torso', onslaught);
   return bodyPartWeighted(atTarget, atTorso, rate);
 }
 
@@ -355,7 +374,30 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // evaluate them. With no Onslaught sources equipped this is 0, so every
   // `stacks:onslaught` / `onslaughtStacks`-curve modifier reads 0 below.
   const bootstrapFlags: ScenarioFlags = { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false };
-  const onslaughtMaxStacks = foldBucket(input.modifiers, 'onslaughtMaxStacks', 0, scenarioCtx(input, bootstrapFlags, 0));
+  const bootstrapCtx = scenarioCtx(input, bootstrapFlags, { maxStacks: 0 });
+  const onslaughtMaxStacks = foldBucket(input.modifiers, 'onslaughtMaxStacks', 0, bootstrapCtx);
+  const onslaughtReverse = foldBucket(input.modifiers, 'onslaughtReverse', 0, bootstrapCtx) > 0;
+
+  let onslaughtReverseAvg: number | undefined;
+  if (onslaughtReverse && onslaughtMaxStacks > 0) {
+    const consume = perShotOnslaughtConsume(
+      input.weapon,
+      input.modifiers,
+      bootstrapCtx,
+      input.player.targetsHit ?? 1
+    );
+    onslaughtReverseAvg = reverseOnslaughtAvgStacks({
+      max: onslaughtMaxStacks,
+      perShotConsume: consume,
+      fireRate,
+      weapon: input.weapon,
+    });
+  }
+
+  const onslaught: OnslaughtThread = {
+    maxStacks: onslaughtMaxStacks,
+    ...(onslaughtReverseAvg !== undefined && { reverseAvg: onslaughtReverseAvg }),
+  };
 
   // Kill-streak sources (existence scan — see ScenarioSet.hasKillStreakSources).
   const hasKillStreakSources = input.modifiers.some(
@@ -367,18 +409,18 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // Free aim: crits are VATS-only, so never crit here.
   const freeFlags: ScenarioFlags = { isVats: false, isSneaking: sneaking, isPowerAttack: powerAttack, isCrit: false };
   const freeTrace = tracing ? createHitTrace() : undefined;
-  const freeHit = bodyPartBlendedHit(input, freeFlags, bodyPartMult, targetBodyPart, onslaughtMaxStacks, freeTrace);
+  const freeHit = bodyPartBlendedHit(input, freeFlags, bodyPartMult, targetBodyPart, onslaught, freeTrace);
 
   // VATS: crit cadence blends a non-crit and a crit hit.
   const vatsFlags: ScenarioFlags = { isVats: true, isSneaking: sneaking, isPowerAttack: powerAttack, isCrit: false };
   const critMeterTrace = tracing ? ({ fill: null, consumption: null } as CritMeterTrace) : undefined;
-  const critMeter = computeCritMeter(input.modifiers, input.weapon, scenarioCtx(input, vatsFlags, onslaughtMaxStacks), critMeterTrace);
+  const critMeter = computeCritMeter(input.modifiers, input.weapon, scenarioCtx(input, vatsFlags, onslaught), critMeterTrace);
   const critRate = input.critRate ?? critMeter.critRate;
   const vatsTrace = tracing ? createHitTrace() : undefined;
   const vatsCritTrace = tracing ? createHitTrace() : undefined;
   const vatsAvg = critWeighted(
-    bodyPartBlendedHit(input, vatsFlags, bodyPartMult, targetBodyPart, onslaughtMaxStacks, vatsTrace),
-    bodyPartBlendedHit(input, { ...vatsFlags, isCrit: true }, bodyPartMult, targetBodyPart, onslaughtMaxStacks, vatsCritTrace),
+    bodyPartBlendedHit(input, vatsFlags, bodyPartMult, targetBodyPart, onslaught, vatsTrace),
+    bodyPartBlendedHit(input, { ...vatsFlags, isCrit: true }, bodyPartMult, targetBodyPart, onslaught, vatsCritTrace),
     critRate
   );
 
@@ -387,10 +429,10 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // simplest-defensible split, docs/assumptions.md).
   const charged = isCharged(input.weapon);
   const freeCycleTotal = charged
-    ? chargedCycleHit(input, freeFlags, bodyPartMult, targetBodyPart, 0, onslaughtMaxStacks).total
+    ? chargedCycleHit(input, freeFlags, bodyPartMult, targetBodyPart, 0, onslaught).total
     : freeHit.total;
   const vatsCycleTotal = charged
-    ? chargedCycleHit(input, vatsFlags, bodyPartMult, targetBodyPart, critRate, onslaughtMaxStacks).total
+    ? chargedCycleHit(input, vatsFlags, bodyPartMult, targetBodyPart, critRate, onslaught).total
     : vatsAvg.total;
 
   const freeSustainRaw = computeSustain(freeCycleTotal, fireRate, input.weapon);
@@ -409,8 +451,8 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // DoT is a separate steady-state add (refresh-only, not crit/vats-scaled by
   // any extracted data today) — evaluated with each scenario's own non-crit
   // context so a future sneaking/powerAttack-gated DoT mod still resolves correctly.
-  const freeDotDps = computeDotDps(input.modifiers, input.weapon, scenarioCtx(input, freeFlags, onslaughtMaxStacks));
-  const vatsDotDps = computeDotDps(input.modifiers, input.weapon, scenarioCtx(input, vatsFlags, onslaughtMaxStacks));
+  const freeDotDps = computeDotDps(input.modifiers, input.weapon, scenarioCtx(input, freeFlags, onslaught));
+  const vatsDotDps = computeDotDps(input.modifiers, input.weapon, scenarioCtx(input, vatsFlags, onslaught));
 
   // Steady-state VATS AP economy (Stage B): ranged weapons only (melee/VATS-
   // melee AP is out of scope — uptime is undefined without real melee AP
@@ -418,7 +460,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   let ap: ScenarioResult['ap'];
   let apRegenTrace: ApRegenTrace | undefined;
   if (!isMelee(input.weapon) && (input.weapon.apCost ?? 0) > 0) {
-    const apCtx = scenarioCtx(input, vatsFlags, onslaughtMaxStacks);
+    const apCtx = scenarioCtx(input, vatsFlags, onslaught);
     const percentCollect = tracing ? ([] as BucketTrace[]) : undefined;
     const apRegenBonus = foldBucket(input.modifiers, 'apRegen', 0, apCtx, percentCollect);
     const flatCollect = tracing ? ([] as BucketTrace[]) : undefined;
@@ -486,6 +528,8 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
 
   return {
     onslaughtMaxStacks,
+    onslaughtReverse,
+    ...(onslaughtReverseAvg !== undefined && { onslaughtReverseAvgStacks: onslaughtReverseAvg }),
     hasKillStreakSources,
     charging,
     freeAim: {

@@ -197,4 +197,36 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
       },
     ],
   ],
+  // Gunslinger Master (PERK GunslingerMaster 0x0004A09F): EP190 "+10 max
+  // stacks" extracts; the reverse behavior (regen ~1 stack/sec, consume per
+  // hit-event) is engine-native and not in ESM — hand-authored marker only.
+  // scenarios.ts folds this bucket and threads the sawtooth average from
+  // onslaught.ts onto ResolveContext.onslaughtReverseStacks.
+  GunslingerMaster: [
+    [
+      {
+        id: 'override:GunslingerMaster:r1:reverse',
+        source: { kind: 'perk', formId: '0x0004A09F', edid: 'GunslingerMaster', name: 'Gunslinger Master', rank: 1 },
+        bucket: 'onslaughtReverse',
+        op: 'ADD',
+        value: 1,
+        conditions: [
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeRanged', present: true },
+        ],
+      },
+    ],
+  ],
 };
+
+/**
+ * PerkIds that must never show the picker's "no effect yet" badge. Prefer
+ * wiring real modifiers via `extraPerkModifiers` so `perkHasEngineEffect`
+ * discovers them automatically; pin here only as a regression guard when a
+ * perk's effect is engine-native/hand-authored (see docs/assumptions.md).
+ */
+export const perkForceEffectivePerkIds: ReadonlySet<string> = new Set([
+  // Gunslinger Master: EP190 max stacks extract + reverse-onslaught hand-authored
+  // in extraPerkModifiers above (onslaught.ts). Was badged while the family
+  // extracted empty (pre-2026-07-12 Onslaught pass).
+  'GunslingerMaster',
+]);

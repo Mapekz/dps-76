@@ -54,6 +54,7 @@ const ALL_BUCKETS: Bucket[] = [
   'apCritHot',
   'apPerCrit',
   'onslaughtMaxStacks',
+  'onslaughtReverse',
   'moveSpeedBonus',
   'addDamageComponent',
   'armorPen',

@@ -181,6 +181,13 @@ export type Bucket =
    */
   | 'onslaughtMaxStacks'
   /**
+   * Reverse-onslaught marker (Gunslinger Master: regen stacks over time,
+   * consume per hit-event instead of build-on-hit). Folded once in
+   * `scenarios.ts`; `folded > 0` activates reverse mode for the shared
+   * counter (engine hardcode — not in ESM, docs/assumptions.md "Onslaught").
+   */
+  | 'onslaughtReverse'
+  /**
    * Additive bonus-movement-speed fraction (AV SpeedMult 0x000002DA, points
    * ×0.01 — Speed Demon's Mutation_FortifyMoveSpeed 20/25). Not a movement
    * model: the fold exists solely to feed the `moveSpeedBonus` CurveInput
@@ -311,6 +318,7 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   apMax: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy (AP pool size)' },
   apCritHot: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts (per-modifier collect — durationSec matters), ap-economy.ts computeApEconomy (refresh-only HoT term)' },
   onslaughtMaxStacks: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'scenarios.ts / effective-weapon.ts — folded once, threaded on ResolveContext.onslaughtMaxStacks; caps the onslaught StackCounter and onslaughtStacks CurveInput' },
+  onslaughtReverse: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'scenarios.ts — folded once; folded > 0 activates reverse-onslaught stack averaging (onslaught.ts) threaded on ResolveContext.onslaughtReverseStacks' },
   moveSpeedBonus: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon — folded once, threaded on ResolveContext.moveSpeedBonus; feeds the moveSpeedBonus CurveInput (Fast Fighter). Threaded in the weapon-stat fold ONLY — a damage-bucket curve on this input would read 0 until scenarios.ts also threads it' },
   addDamageComponent: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — no reader anywhere in the codebase; likely superseded by explosivePayload/materializeDamageTypeComponents' },
   armorPen: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — extracted but inert until enemy DR lands' },

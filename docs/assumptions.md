@@ -744,7 +744,7 @@ to the UI slider):
 | Guerrilla Expert | +3 | +1%/stack reload speed (ranged) |
 | Guerrilla Master | +5 | +5%/stack dbm at close range (ranged) |
 | Gunslinger Expert | +3 | +1%/stack weak-spot damage (ranged) |
-| Gunslinger Master | +10 | none — EP190 is its only effect |
+| Gunslinger Master | +10 | none — EP190 is its only extracted effect; **reverse** behavior (regen/consume flip) is engine-native, hand-authored via `onslaughtReverse` bucket (`perk-overrides.ts`) |
 | Furious | +9 | +5%/stack dbm |
 | Pounder's | +10 | +10%/stack dbm |
 | Splinter's Special Effect | +10 | +10%/stack dbm (P62 content — see below) |
@@ -779,6 +779,28 @@ to the UI slider):
   **except** the gun-animated melee oddities Paddle Ball and War Shrike (anim
   9, melee keywords) — correctly NOT buffed, modeled as a dedicated
   `weaponAnimTypeMax` condition rather than a keyword/class translation.
+- **Reverse Onslaught (Gunslinger Master)** — **GAME FACT** (engine hardcode,
+  not ESM-proven): equipping GSM inverts the shared counter — **+1 stack/sec
+  regen continuously** (during fire and reload) and **−1 stack per hit-event**
+  (per physical projectile + per explosion per target + per melee swing).
+  Modeled as a bootstrap `onslaughtReverse` bucket fold (`scenarios.ts`) plus
+  a steady-state sawtooth simulation (`onslaught.ts`'s
+  `reverseOnslaughtAvgStacks`) threaded on
+  `ResolveContext.onslaughtReverseStacks`; the UI slider becomes a read-only
+  average when reverse mode is active (`ConditionsSection.tsx`).
+- **Reverse regen rate** — **ASSUMPTION**: +1 stack/sec, never interrupted
+  (`onslaught.ts` `ONSLAUGHT_REGEN_PER_SEC`).
+- **Reverse consumption** — **ASSUMPTION**: `physicalHits + explosionHits ×
+  targetsHit` where `physicalHits = projectileCount` when any non-`fromExplosion`
+  component exists (else 0), `explosionHits = projectileCount` when the weapon
+  has a `fromExplosion` payload, intrinsic `explosionBaseWeaponDamageMult`, or
+  folded `explosivePayload` (`onslaught.ts` `perShotOnslaughtConsume`).
+- **Reverse averaging** — **ASSUMPTION**: faithful mag+reload sawtooth fixed-
+  point (`onslaught.ts`); first mag starts at max; mean of per-shot stack
+  levels at convergence.
+- **`targetsHit` input** — **ASSUMPTION**: default 1 (single-target DPS);
+  user-set for AoE/cleave fan-out under reverse mode only today
+  (`PlayerConditions.targetsHit`).
 - **`SmallGun_Actor_Condition` gate mapped** (Ground Pounder's reload gate):
   decodes to `(Rifle OR Shotgun OR Pistol) AND NOT HeavyGun` — the extractor
   now inline-expands standalone condition-form references when they

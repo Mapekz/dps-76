@@ -110,8 +110,14 @@ export function ConditionsSection() {
   // Onslaught: the max folds from equipped sources (ScenarioSet.onslaughtMaxStacks);
   // sentinel -1 = follow max (see the PlayerConditions.onslaughtStacks comment).
   const onslaughtMax = scenarios?.onslaughtMaxStacks ?? 0;
+  const onslaughtReverse = scenarios?.onslaughtReverse ?? false;
+  const onslaughtReverseAvg = scenarios?.onslaughtReverseAvgStacks;
   const onslaughtStored = conditions.onslaughtStacks;
-  const onslaughtValue = onslaughtStored === -1 ? onslaughtMax : Math.min(onslaughtStored, onslaughtMax);
+  const onslaughtValue = onslaughtReverse
+    ? (onslaughtReverseAvg ?? 0)
+    : onslaughtStored === -1
+      ? onslaughtMax
+      : Math.min(onslaughtStored, onslaughtMax);
   const hasKillStreak = scenarios?.hasKillStreakSources ?? false;
 
   const foodTier = conditions.foodTier ?? 0;
@@ -129,7 +135,8 @@ export function ConditionsSection() {
     (glow !== (defaults.glow ?? 0) ? 1 : 0) +
     (conditions.capsOnHand !== defaults.capsOnHand ? 1 : 0) +
     (conditions.adrenalineStacks !== defaults.adrenalineStacks ? 1 : 0) +
-    (onslaughtStored !== -1 ? 1 : 0) +
+    (onslaughtStored !== -1 && !onslaughtReverse ? 1 : 0) +
+    ((conditions.targetsHit ?? 1) !== (defaults.targetsHit ?? 1) ? 1 : 0) +
     ((conditions.weaponConditionPct ?? 100) !== (defaults.weaponConditionPct ?? 100) ? 1 : 0) +
     ((conditions.hitRatePct ?? 100) !== (defaults.hitRatePct ?? 100) ? 1 : 0) +
     ((conditions.bodyPartHitRatePct ?? 100) !== (defaults.bodyPartHitRatePct ?? 100) ? 1 : 0) +
@@ -260,27 +267,47 @@ export function ConditionsSection() {
 
           <div className="space-y-1.5">
             <Label htmlFor="char-onslaught">
-              Onslaught stacks ({onslaughtValue} / max {onslaughtMax})
+              {onslaughtReverse
+                ? `Reverse Onslaught — avg ~${Math.round(onslaughtValue)} / max ${onslaughtMax}`
+                : `Onslaught stacks (${onslaughtValue} / max ${onslaughtMax})`}
             </Label>
-            <Slider
-              id="char-onslaught"
-              min={0}
-              max={Math.max(onslaughtMax, 1)}
-              step={1}
-              disabled={onslaughtMax === 0}
-              value={[onslaughtValue]}
-              onValueChange={([v]) => set('onslaughtStacks', v)}
-              marks={
-                onslaughtMax > 0
-                  ? Array.from({ length: onslaughtMax + 1 }, (_, i) => ({
-                      value: i,
-                      label: i % 5 === 0 || i === onslaughtMax ? String(i) : undefined,
-                    }))
-                  : undefined
-              }
-            />
+            {onslaughtReverse ? (
+              <p className="text-muted-foreground text-xs">
+                Engine-computed average during sustained fire (Gunslinger Master). Consumption scales with
+                fire rate, projectiles, and targets hit below.
+              </p>
+            ) : (
+              <Slider
+                id="char-onslaught"
+                min={0}
+                max={Math.max(onslaughtMax, 1)}
+                step={1}
+                disabled={onslaughtMax === 0}
+                value={[onslaughtValue]}
+                onValueChange={([v]) => set('onslaughtStacks', v)}
+                marks={
+                  onslaughtMax > 0
+                    ? Array.from({ length: onslaughtMax + 1 }, (_, i) => ({
+                        value: i,
+                        label: i % 5 === 0 || i === onslaughtMax ? String(i) : undefined,
+                      }))
+                    : undefined
+                }
+              />
+            )}
             {onslaughtMax === 0 && <p className="text-muted-foreground text-xs">No Onslaught sources equipped</p>}
           </div>
+
+          {onslaughtReverse && (
+            <NumberField
+              id="char-targets-hit"
+              label="Targets hit per attack"
+              value={conditions.targetsHit ?? 1}
+              min={1}
+              max={20}
+              onChange={v => set('targetsHit', v)}
+            />
+          )}
 
           <NumberField
             id="char-weapon-condition"

@@ -32,6 +32,12 @@ export interface PlayerConditions {
    * "Onslaught").
    */
   onslaughtStacks: number;
+  /**
+   * Enemies hit per attack event (primary target + AoE/cleave fan-out).
+   * Feeds reverse-onslaught per-shot consumption when Gunslinger Master is
+   * equipped (docs/assumptions.md "Onslaught"); default 1 (single target).
+   */
+  targetsHit?: number;
   adrenalineStacks: number; // 0-10 (default 0 per user preference)
   tenderizerStacks: number; // 0–1000, +0.001 dbm (0.1%) per stack, cap +100%; target state, works without the card equipped
 
@@ -528,6 +534,7 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     healthPercent: 100,
     bulletStormStacks: 10, // Assume max stacks by default
     onslaughtStacks: -1, // Follow the computed max (sentinel; see field comment)
+    targetsHit: 1,
     adrenalineStacks: 0, // Default per user preference
     tenderizerStacks: 0, // Solo default — no other players hitting the target
     addictionCount: 0,

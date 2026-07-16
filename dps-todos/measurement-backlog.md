@@ -8,8 +8,7 @@ decision/status registry (2026-07-15 streamlined — one claim per bullet, a
 status tag, a code pointer); this file is the actionable in-game-measurement
 queue. Investigation history for any item below lives in git, not in either
 doc. The "parked by explicit design decision" items (Basher's,
-Combo-Breaker's, cripple-speed, on-kill AP restores, Gunslinger Master
-stacks, N&D Slugger/IronFist keys) stay in the README.
+Combo-Breaker's, cripple-speed, on-kill AP restores, N&D Slugger/IronFist keys) stay in the README.
 
 **2026-07-14: the full zero-modifier legendary sweep ran** — every
 zero-modifier legendary OMOD (38 records, 37 names) esm-walked to its true
@@ -24,6 +23,10 @@ verdicts; section 1 the user-only measurement checklist that remains.
 Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
 (un-skip automatically) or pin `docs/assumptions.md` entries:
 
+- [ ] **Reverse Onslaught (Gunslinger Master)** — verify +1 stack/sec regen
+      rate and per-hit-event consumption (physical projectile + explosion per
+      target) match in-game; pin `ONSLAUGHT_REGEN_PER_SEC` and the
+      `perShotOnslaughtConsume` formula in `onslaught.ts`.
 - [ ] **Tesla Gauss @50** — Gauss Minigun + Tesla Coil Capacitor, no perks
       (mixed phys+energy per-hit golden).
 - [ ] **Same + Science! rank 1** — validates the energy-scoped dbm hitting the

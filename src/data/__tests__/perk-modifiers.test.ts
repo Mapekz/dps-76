@@ -158,6 +158,10 @@ describe('perkHasEngineEffect (drives the perk picker\'s "no effect yet" badge)'
     expect(perkHasEngineEffect('live', PerkId.WildWestHands)).toBe(true);
   });
 
+  it('is true for Gunslinger Master (reverse onslaught — pinned in perkForceEffectivePerkIds)', () => {
+    expect(perkHasEngineEffect('live', PerkId.GunslingerMaster)).toBe(true);
+  });
+
   it('is false for an unjoined/unknown PerkId', () => {
     expect(perkHasEngineEffect('live', 'NotARealPerkId')).toBe(false);
   });

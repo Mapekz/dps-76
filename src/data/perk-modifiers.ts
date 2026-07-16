@@ -3,7 +3,7 @@ import type { GeneratedPerk } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 import { hasAnyEngineEffect } from '@/types/modifiers';
 import { getDataset } from './dataset';
-import { extraPerkModifiers } from './overrides/perk-overrides';
+import { extraPerkModifiers, perkForceEffectivePerkIds } from './overrides/perk-overrides';
 import { buildPerkJoinMaps, resolveFamily, type JoinMaps } from './perk-join';
 
 /**
@@ -100,6 +100,7 @@ export function getUnjoinedPerkIds(mode: GameMode): string[] {
  * have nothing to check and read as no-effect.
  */
 export function perkHasEngineEffect(mode: GameMode, perkId: string): boolean {
+  if (perkForceEffectivePerkIds.has(perkId)) return true;
   const generated = getGeneratedPerk(mode, perkId);
   if (!generated) return false;
   const maxRank = generated.card ? generated.card.rankSources.length : generated.maxRank;

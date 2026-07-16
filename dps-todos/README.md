@@ -143,8 +143,6 @@ the parked-by-design list — full derivations for everything live in
     HP term); waits on enemy limb HP (phase-3-enemies.md).
   - On-kill AP restores (Grim Reaper's Sprint, Conductor's kill-half) — wait
     on enemy TTK (phase-3-enemies.md).
-  - Gunslinger Master's per-stack "gain over time / spend on attack" — engine
-    -opaque, no further ESM footprint to chase (max-stack contribution only).
   - N&D Slugger/IronFist Expert/Master import keys are missing from
     `perk-ids.ts`; relevance unclear post-combat-overhaul (base Rifleman/
     Commando/HeavyGunner/Gladiator no longer exist as damage perks either) —

@@ -14,21 +14,23 @@ import type { Weapon } from '@/types';
  * DPS.
  */
 
-export interface SustainResult {
+export interface SustainTiming {
+  shotsPerMag: number;
+  magDumpSec: number;
+  reloadSec: number;
+}
+
+export interface SustainResult extends SustainTiming {
   /** Per-hit average × fire rate (no reloads). */
   burstDps: number;
   /** DPS over full magazine cycles including the reload. */
   sustainedDps: number;
-  shotsPerMag: number;
-  magDumpSec: number;
-  reloadSec: number;
   /** The reload formula is unverified in-game. */
   reloadApproximate: true;
 }
 
-export function computeSustain(perHitAvg: number, fireRate: number, weapon: Weapon): SustainResult {
-  const burstDps = perHitAvg * fireRate;
-
+/** Magazine/reload timing shared by sustain DPS and reverse-onslaught simulation. */
+export function sustainTiming(weapon: Weapon, fireRate: number): SustainTiming {
   const capacity = weapon.capacity ?? 0;
   const ammoPerShot = weapon.ammoPerShot ?? 1;
   const ammoFreeChance = weapon.ammoFreeChance ?? 0;
@@ -36,21 +38,27 @@ export function computeSustain(perHitAvg: number, fireRate: number, weapon: Weap
   const shotsPerMag = ammoPerShot > 0 ? Math.floor(effCapacity / ammoPerShot) : 0;
 
   if (shotsPerMag <= 0 || fireRate <= 0) {
-    // No magazine (melee, thrown) or degenerate fire rate: nothing to reload.
-    return { burstDps, sustainedDps: burstDps, shotsPerMag: 0, magDumpSec: 0, reloadSec: 0, reloadApproximate: true };
+    return { shotsPerMag: 0, magDumpSec: 0, reloadSec: 0 };
   }
 
-  // Per-shell reloaders (AnimsSequentialReload — lever/pump/single-action):
-  // animationReloadSec is the per-round increment, so a full reload repeats
-  // it shotsPerMag times. The whole per-shell-scaled time divides by the same
-  // reloadSpeed fold, so speed bonuses compose identically either way.
   const perShellMult = weapon.reloadPerShell ? shotsPerMag : 1;
   const reloadSkip = weapon.reloadSkipChance ?? 0;
   const reloadSec =
     ((weapon.animationReloadSec ?? 0) * perShellMult) / (weapon.reloadSpeed || 1.0) * (1 - reloadSkip);
-  // Steady-state cycle: each shot occupies one fire interval, then one reload.
   const magDumpSec = shotsPerMag / fireRate;
-  const sustainedDps = (perHitAvg * shotsPerMag) / (magDumpSec + reloadSec);
 
-  return { burstDps, sustainedDps, shotsPerMag, magDumpSec, reloadSec, reloadApproximate: true };
+  return { shotsPerMag, magDumpSec, reloadSec };
+}
+
+export function computeSustain(perHitAvg: number, fireRate: number, weapon: Weapon): SustainResult {
+  const burstDps = perHitAvg * fireRate;
+  const timing = sustainTiming(weapon, fireRate);
+
+  if (timing.shotsPerMag <= 0 || fireRate <= 0) {
+    return { burstDps, sustainedDps: burstDps, ...timing, reloadApproximate: true };
+  }
+
+  const sustainedDps = (perHitAvg * timing.shotsPerMag) / (timing.magDumpSec + timing.reloadSec);
+
+  return { burstDps, sustainedDps, ...timing, reloadApproximate: true };
 }

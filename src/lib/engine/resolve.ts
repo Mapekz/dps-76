@@ -54,6 +54,13 @@ export interface ResolveContext {
    */
   onslaughtMaxStacks?: number;
   /**
+   * Engine-computed average Onslaught stack count under reverse mode
+   * (Gunslinger Master). When set, `effectiveOnslaughtStacks` returns this
+   * value (clamped to `onslaughtMaxStacks`) and ignores the player's slider.
+   * See `onslaught.ts` and docs/assumptions.md "Onslaught".
+   */
+  onslaughtReverseStacks?: number;
+  /**
    * The player's folded bonus-movement-speed fraction (Σ `moveSpeedBonus`
    * bucket — Speed Demon +0.20/+0.25), bootstrap-folded and threaded by
    * buildEffectiveWeapon exactly like onslaughtMaxStacks. Read by the
@@ -72,6 +79,9 @@ export interface ResolveContext {
  */
 function effectiveOnslaughtStacks(p: PlayerConditions, ctx: ResolveContext): number {
   const max = ctx.onslaughtMaxStacks ?? 0;
+  if (ctx.onslaughtReverseStacks !== undefined) {
+    return Math.min(ctx.onslaughtReverseStacks, max);
+  }
   const raw = p.onslaughtStacks === -1 ? max : p.onslaughtStacks;
   return Math.min(raw, max);
 }
