@@ -563,8 +563,11 @@ of the chem/food/drink/alcohol classification.
 - **Live & Love 5 magnitude (+2 LCK)**: **INFERENCE** — the MGEF is
   Script-archetype with no extractable Peak Value Modifier; magnitude taken
   from the card description (`buff-overrides.ts`).
-- **Known-inert entries** (still extracted, selectable, 0% ΔDPS): Live & Love
-  2 (`IsMemberOfAPlayerTeam`). See **Known gaps / deferred**.
+- **No inert entries remain** — every extracted magazine/bobblehead resolves
+  to a real, conditionally-active modifier. Live & Love 2 (`dbm` +5%) gates on
+  `teammateCount` ≥ 1 (`IsMemberOfAPlayerTeam` translated the same way Herd
+  Mentality's condition is) — 0% ΔDPS solo is correct team-buff behavior, not
+  an extraction gap.
 
 ## Carnivore's / Herbivore's food scaling
 Engine: `src/lib/diet-mutations.ts`.
@@ -1063,8 +1066,7 @@ auto-converted); their stats are stale and must not be shown.
   Infiltrator's actual per-rank grant needs ESM verification** before
   implementing — its card text conflicts with a "+1/rank" recollection;
   don't trust either without walking the ESM.
-- A handful of magazine/bobblehead buffs remain inert — see **Magazines &
-  bobbleheads** (Live & Love 2).
+- No magazine/bobblehead buffs remain inert — see **Magazines & bobbleheads**.
 
 ## Future DPS streams
 User-supplied rationale, 2026-07-07. Perks that look "unjoined/inert" today
