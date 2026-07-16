@@ -1,6 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { PerkId } from '@/data/perk-ids';
-import { getEquippedPerkFamilyRanks, getGeneratedPerk, getLoadoutModifiers, getUnjoinedPerkIds } from '@/data/perk-modifiers';
+import {
+  getEquippedPerkFamilyRanks,
+  getGeneratedPerk,
+  getLoadoutModifiers,
+  getUnjoinedPerkIds,
+  perkHasEngineEffect,
+} from '@/data/perk-modifiers';
 import { getWeapons } from '@/data';
 import { getTargetDebuffModifiers } from '@/data/target-debuffs';
 import { computeScenarios } from '@/lib/engine/scenarios';
@@ -128,6 +134,32 @@ describe('perk effects through the engine (real data)', () => {
     });
     const unstacked = computeScenarios({ ...base, weapon, modifiers: mods });
     expect(stacked.freeAim.perHit.total).toBeCloseTo(unstacked.freeAim.perHit.total * 2.0, 6);
+  });
+});
+
+describe('perkHasEngineEffect (drives the perk picker\'s "no effect yet" badge)', () => {
+  it('is true for a perk that moves paper damage (Gunslinger)', () => {
+    expect(perkHasEngineEffect('live', PerkId.Gunslinger)).toBe(true);
+  });
+
+  it('is false for a perk that only affects a non-combat mechanic (Picklock)', () => {
+    expect(perkHasEngineEffect('live', PerkId.Picklock)).toBe(false);
+  });
+
+  it('is false for a perk whose damage bucket the engine has no fold for yet (Iron Fist, DR-scaled)', () => {
+    expect(perkHasEngineEffect('live', PerkId.IronFist)).toBe(false);
+  });
+
+  // Quick Hands / Wild West Hands were the subject of concurrent work
+  // (perk-overrides.ts's extraPerkModifiers, reloadSkipChance) — guard that
+  // they read as effective so the picker never badges them inert.
+  it('is true for perks whose effect is hand-authored via extraPerkModifiers (Quick Hands, Wild West Hands)', () => {
+    expect(perkHasEngineEffect('live', PerkId.QuickHands)).toBe(true);
+    expect(perkHasEngineEffect('live', PerkId.WildWestHands)).toBe(true);
+  });
+
+  it('is false for an unjoined/unknown PerkId', () => {
+    expect(perkHasEngineEffect('live', 'NotARealPerkId')).toBe(false);
   });
 });
 

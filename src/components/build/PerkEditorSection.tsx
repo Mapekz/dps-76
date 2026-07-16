@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { CheckIcon, LockIcon, MinusIcon, PlusIcon, XIcon } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
@@ -15,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getPerks } from '@/data';
+import { perkHasEngineEffect } from '@/data/perk-modifiers';
 import { usePerkStatus } from './usePerkStatus';
 import { Special } from '@/data/special';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';
@@ -23,6 +25,15 @@ import type { Perk, PerkLoadout } from '@/types';
 import { LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS, type SpecialKey } from '@/state/build-reducer';
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import { DiffTooltip } from '@/components/diff/DiffTooltip';
+
+/** Shared with the OMOD/legendary-effect picker's badge (WeaponSection.tsx) — same visual language across the Build panel. */
+function NoEffectBadge() {
+  return (
+    <Badge variant="outline" className="text-muted-foreground ml-1 px-1 py-0 text-[10px] font-normal">
+      no effect yet
+    </Badge>
+  );
+}
 
 const SPECIAL_ORDER: Array<{ key: SpecialKey; special: Special; letter: string }> = [
   { key: 'strength', special: Special.Strength, letter: 'S' },
@@ -52,14 +63,20 @@ function usePerkRegistry() {
     const registry = getPerks(mode);
     const regular: Array<{ perkId: string; perk: Perk }> = [];
     const legendary: Array<{ perkId: string; perk: Perk }> = [];
+    // Same 'no effect yet' predicate as the OMOD/legendary-effect picker
+    // (modifierHasEngineEffect, @/types/modifiers) — most FO76 perks don't
+    // move paper DPS (utility/defensive cards) or extract into a bucket the
+    // engine doesn't fold yet; this flags both honestly instead of silently.
+    const noEffect = new Set<string>();
     for (const [perkId, perk] of Object.entries(registry)) {
       (legendaryPerkIds.has(perkId) ? legendary : regular).push({ perkId, perk });
+      if (!perkHasEngineEffect(mode, perkId)) noEffect.add(perkId);
     }
     // Pickers list by display name, not registry (edid) order.
     const byName = (a: { perk: Perk }, b: { perk: Perk }) => a.perk.name.localeCompare(b.perk.name);
     regular.sort(byName);
     legendary.sort(byName);
-    return { registry, regular, legendary };
+    return { registry, regular, legendary, noEffect };
   }, [mode]);
 }
 
@@ -97,13 +114,24 @@ function SpecialBudgetBar({ budget, onSelectSpecial }: { budget: PerkBudget; onS
   );
 }
 
-function PerkRow({ entry, maxRank, raiseBlocked }: { entry: PerkEntry; maxRank: number; raiseBlocked?: boolean }) {
+function PerkRow({
+  entry,
+  maxRank,
+  raiseBlocked,
+  noEffect,
+}: {
+  entry: PerkEntry;
+  maxRank: number;
+  raiseBlocked?: boolean;
+  noEffect?: boolean;
+}) {
   const dispatch = useBuildDispatch();
   // Legendary cards (no `special`) never consume SPECIAL perk points.
   const cost = entry.perk.special ? perkCardCostAtRank(entry.perk, entry.rank) : null;
   return (
     <div className="bg-muted/40 flex items-center gap-1 rounded px-2 py-1 text-sm">
       <span className="min-w-0 flex-1 truncate">{entry.perk.name}</span>
+      {noEffect && <NoEffectBadge />}
       {cost !== null && (
         <span className="text-muted-foreground text-[10px] tabular-nums" title={`Costs ${cost} perk point${cost === 1 ? '' : 's'} at rank ${entry.rank}`}>
           {cost} pt
@@ -182,7 +210,7 @@ function PerkAddCombobox({
     (onOpenChange ?? setOpenState)(next);
     if (!next) setFilterSpecial(null); // a fresh open starts unfiltered
   };
-  const { regular, legendary } = usePerkRegistry();
+  const { regular, legendary, noEffect } = usePerkRegistry();
   const { player } = useBuild();
   const dispatch = useBuildDispatch();
 
@@ -256,6 +284,7 @@ function PerkAddCombobox({
             <CheckIcon className={cn('mr-2 size-4', rank !== undefined ? 'opacity-100' : 'opacity-0')} />
             {raceLocked && <LockIcon className="text-muted-foreground mr-1 size-3 shrink-0" />}
             <span className="min-w-0 flex-1 truncate">{perk.name}</span>
+            {noEffect.has(perkId) && <NoEffectBadge />}
             {!blocked &&
               (rank === undefined ? (
                 <ActionDelta action={{ type: 'perk/add', perkId, rank: 1, legendary: isLegendary }} />
@@ -356,7 +385,7 @@ function PerkAddCombobox({
  * (SpecialLoadoutSection.tsx), not its own accordion item.
  */
 export function PerkEditor() {
-  const { registry } = usePerkRegistry();
+  const { registry, noEffect } = usePerkRegistry();
   const { player } = useBuild();
   // Main picker state lives here so the SpecialBudgetBar can open it pre-filtered.
   const [pickerOpen, setPickerOpen] = React.useState(false);
@@ -437,6 +466,7 @@ export function PerkEditor() {
                           entry={entry}
                           maxRank={entry.perk.maxRank}
                           raiseBlocked={raiseBlockedFor(entry)}
+                          noEffect={noEffect.has(entry.perkId)}
                         />
                       ))}
                     </div>
@@ -455,6 +485,7 @@ export function PerkEditor() {
                         entry={entry}
                         maxRank={entry.perk.maxRank}
                         raiseBlocked={raiseBlockedFor(entry)}
+                        noEffect={noEffect.has(entry.perkId)}
                       />
                     ))}
                   </div>
@@ -480,7 +511,12 @@ export function PerkEditor() {
           {legendaryEntries.length > 0 ? (
             <div className="grid gap-1">
               {legendaryEntries.map(entry => (
-                <PerkRow key={entry.perkId} entry={entry} maxRank={entry.perk.maxRank} />
+                <PerkRow
+                  key={entry.perkId}
+                  entry={entry}
+                  maxRank={entry.perk.maxRank}
+                  noEffect={noEffect.has(entry.perkId)}
+                />
               ))}
             </div>
           ) : (

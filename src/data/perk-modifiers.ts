@@ -1,6 +1,7 @@
 import type { GameMode, PerkId, PerkLoadout } from '@/types';
 import type { GeneratedPerk } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
+import { hasAnyEngineEffect } from '@/types/modifiers';
 import { getDataset } from './dataset';
 import { extraPerkModifiers } from './overrides/perk-overrides';
 import { buildPerkJoinMaps, resolveFamily, type JoinMaps } from './perk-join';
@@ -87,4 +88,28 @@ export function getEquippedPerkFamilyRanks(mode: GameMode, loadouts: PerkLoadout
 export function getUnjoinedPerkIds(mode: GameMode): string[] {
   const registry = getDataset(mode).perkRegistry;
   return Object.keys(registry).filter(perkId => !getGeneratedPerk(mode, perkId));
+}
+
+/**
+ * True iff any rank of this perk contributes at least one engine-effective
+ * modifier — the perk-picker analogue of the OMOD picker's 'no effect yet'
+ * badge (`modifierHasEngineEffect`, @/types/modifiers). Unions across every
+ * card rank (not just rank 1) so a perk whose effect only appears at a higher
+ * rank isn't badged inert; a card-less family reads its own ranks directly,
+ * matching `resolveLoadoutRank`'s clamp. Unjoined perks (no generated family)
+ * have nothing to check and read as no-effect.
+ */
+export function perkHasEngineEffect(mode: GameMode, perkId: string): boolean {
+  const generated = getGeneratedPerk(mode, perkId);
+  if (!generated) return false;
+  const maxRank = generated.card ? generated.card.rankSources.length : generated.maxRank;
+  for (let rank = 1; rank <= maxRank; rank++) {
+    const resolved = resolveLoadoutRank(mode, { perkId, rank });
+    if (!resolved) continue;
+    const { generated: family, familyRank } = resolved;
+    const modifiers = family.ranks[familyRank - 1].modifiers;
+    const extra = extraPerkModifiers[family.family]?.[familyRank - 1] ?? [];
+    if (hasAnyEngineEffect(modifiers) || hasAnyEngineEffect(extra)) return true;
+  }
+  return false;
 }
