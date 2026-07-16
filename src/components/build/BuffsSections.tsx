@@ -22,7 +22,7 @@ import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getAddictions, getConsumables, getMutations, getSuppressedAddictions } from '@/data/buffs';
 import { getOmodById } from '@/data/omods';
 import { applySelection, consumablesById } from '@/lib/consumable-rules';
-import { dietVerdict, type DietVerdict } from '@/lib/diet-mutations';
+import { dietVerdict, dietSuppressionLabel, type DietVerdict } from '@/lib/diet-mutations';
 import { deriveClassFreakRank, deriveStrangeInNumbers } from '@/lib/player-stats';
 import { describeBuffModifiers } from '@/lib/buff-description';
 import { CLASS_FREAK_TIER_FACTORS } from '@/lib/class-freak-mutations';
@@ -639,12 +639,14 @@ function FoodDrinkAddCombobox({
   mode,
   open,
   onOpenChange,
+  mutations,
 }: {
   items: GeneratedBuff[];
   active: readonly string[];
   mode: GameMode;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  mutations: readonly string[];
 }) {
   const dispatch = useBuildDispatch();
   const byId = consumablesById(mode);
@@ -663,15 +665,21 @@ function FoodDrinkAddCombobox({
         const replaced = selected ? [] : applySelection(byId, active, item.id).replaced;
         const replacedNames = replaced.map(id => byId.get(id)?.name ?? id);
         const description = describeBuffModifiers(item);
+        const suppression = dietSuppressionLabel(item, mutations);
         return (
           <CommandItem key={item.id} value={item.id} keywords={[item.name]} onSelect={() => select(item.id)}>
             <CheckIcon className={cn('mr-2 size-4', selected ? 'opacity-100' : 'opacity-0')} />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1">
                 <span className="min-w-0 flex-1 truncate">{item.name}</span>
-                {!hasAnyEngineEffect(item.modifiers) && <NoEffectBadge />}
+                {!suppression && !hasAnyEngineEffect(item.modifiers) && <NoEffectBadge />}
+                {suppression && <DietSuppressionBadge mutation={suppression} />}
               </div>
-              {description && <p className="text-muted-foreground truncate text-xs">{description}</p>}
+              {description && (
+                <p className={cn('text-muted-foreground truncate text-xs', suppression && 'line-through')}>
+                  {description}
+                </p>
+              )}
             </div>
             {replacedNames.length > 0 && (
               <span className="text-muted-foreground ml-2 truncate text-xs">replaces {replacedNames.join(', ')}</span>
@@ -707,21 +715,41 @@ function FoodDrinkAddCombobox({
   );
 }
 
-function FoodDrinkRow({ item, diet }: { item: GeneratedBuff; diet: DietVerdict }) {
+function DietSuppressionBadge({ mutation }: { mutation: 'Herbivore' | 'Carnivore' }) {
+  return (
+    <span
+      className="text-muted-foreground shrink-0 text-xs"
+      title={`${mutation} zeros this food's scalable buffs`}
+    >
+      suppressed by {mutation}
+    </span>
+  );
+}
+
+function FoodDrinkRow({
+  item,
+  diet,
+  mutations,
+}: {
+  item: GeneratedBuff;
+  diet: DietVerdict;
+  mutations: readonly string[];
+}) {
   const dispatch = useBuildDispatch();
   const description = describeBuffModifiers(item);
+  const suppression = dietSuppressionLabel(item, mutations);
   return (
     <div className={cn('bg-muted/40 flex gap-1 rounded px-2 py-1 text-sm', description ? 'items-start' : 'items-center')}>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1">
           <span className="min-w-0 flex-1 truncate">{item.name}</span>
-          {/* Diet-zeroed already reads "no effect" for a runtime (mutation-dependent)
-              reason — skip the static badge rather than show two "no effect"s. */}
-          {diet !== 'zeroed' && !hasAnyEngineEffect(item.modifiers) && <NoEffectBadge />}
+          {!suppression && !hasAnyEngineEffect(item.modifiers) && <NoEffectBadge />}
           {diet === 'doubled' && <span className="text-emerald-500 shrink-0 text-xs">×2 diet</span>}
-          {diet === 'zeroed' && <span className="text-muted-foreground shrink-0 text-xs line-through">no effect</span>}
+          {suppression && <DietSuppressionBadge mutation={suppression} />}
         </div>
-        {description && <p className="text-muted-foreground text-xs">{description}</p>}
+        {description && (
+          <p className={cn('text-muted-foreground text-xs', suppression && 'line-through')}>{description}</p>
+        )}
       </div>
       <div className={cn('flex items-center gap-1', description && 'pt-0.5')}>
         <ActionDelta action={{ type: 'consumable/toggle', id: item.id }} />
@@ -760,13 +788,23 @@ export function FoodDrinkSection() {
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-2">
-          <FoodDrinkAddCombobox items={items} active={player.consumables} mode={mode} open={open} onOpenChange={setOpen} />
+          <FoodDrinkAddCombobox
+            items={items}
+            active={player.consumables}
+            mode={mode}
+            open={open}
+            onOpenChange={setOpen}
+            mutations={player.mutations}
+          />
           {activeItems.length > 0 ? (
             <div className="grid gap-1">
               {activeItems.map(item => (
-                // Carnivore's/Herbivore's verdict badge: ×2 (doubled) or
-                // struck-through (zeroed) — src/lib/diet-mutations.ts.
-                <FoodDrinkRow key={item.id} item={item} diet={dietVerdict(item, player.mutations)} />
+                <FoodDrinkRow
+                  key={item.id}
+                  item={item}
+                  diet={dietVerdict(item, player.mutations)}
+                  mutations={player.mutations}
+                />
               ))}
             </div>
           ) : (

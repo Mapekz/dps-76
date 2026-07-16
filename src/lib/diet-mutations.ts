@@ -40,17 +40,37 @@ const CARNIVORE_ZEROED_KEYWORD = 'IngredientTypeVegetable';
 
 export type DietVerdict = 'doubled' | 'zeroed' | null;
 
-/** How the active diet mutation (if any) treats this consumable's scalable effects. */
-export function dietVerdict(buff: GeneratedBuff, mutationIds: readonly string[]): DietVerdict {
+/** Diet-relevant flags for a scalable food; null when the food never scales. */
+function activeDiet(buff: GeneratedBuff, mutationIds: readonly string[]) {
   if (!buff.foodScalableModifierIds?.length) return null;
   const kw = new Set(buff.ingredientKeywords ?? []);
-  const carnivore = mutationIds.includes(CARNIVORE_MUTATION_ID);
-  const herbivore = mutationIds.includes(HERBIVORE_MUTATION_ID);
+  return {
+    kw,
+    carnivore: mutationIds.includes(CARNIVORE_MUTATION_ID),
+    herbivore: mutationIds.includes(HERBIVORE_MUTATION_ID),
+  };
+}
+
+/** How the active diet mutation (if any) treats this consumable's scalable effects. */
+export function dietVerdict(buff: GeneratedBuff, mutationIds: readonly string[]): DietVerdict {
+  const d = activeDiet(buff, mutationIds);
+  if (!d) return null;
+  const { kw, carnivore, herbivore } = d;
   // Zeroing wins over doubling (entry points compose multiplicatively: 2×0).
   if ((carnivore && kw.has(CARNIVORE_ZEROED_KEYWORD)) || (herbivore && kw.has(MEAT_KEYWORD))) return 'zeroed';
-  if ((carnivore && kw.has(MEAT_KEYWORD)) || (herbivore && HERBIVORE_KEYWORDS.some(k => kw.has(k)))) {
-    return 'doubled';
-  }
+  if ((carnivore && kw.has(MEAT_KEYWORD)) || (herbivore && HERBIVORE_KEYWORDS.some(k => kw.has(k)))) return 'doubled';
+  return null;
+}
+
+/** Which diet mutation zeroes this food's scalable effects, if any. */
+export function dietSuppressionLabel(
+  buff: GeneratedBuff,
+  mutationIds: readonly string[]
+): 'Herbivore' | 'Carnivore' | null {
+  const d = activeDiet(buff, mutationIds);
+  if (!d) return null;
+  if (d.carnivore && d.kw.has(CARNIVORE_ZEROED_KEYWORD)) return 'Carnivore';
+  if (d.herbivore && d.kw.has(MEAT_KEYWORD)) return 'Herbivore';
   return null;
 }
 

@@ -4,6 +4,7 @@ import type { Modifier } from '@/types/modifiers';
 import {
   applyDietScaling,
   CARNIVORE_MUTATION_ID,
+  dietSuppressionLabel,
   dietVerdict,
   HERBIVORE_MUTATION_ID,
 } from '@/lib/diet-mutations';
@@ -65,6 +66,17 @@ describe('dietVerdict (ESM perk-condition keyword sets)', () => {
     const mixed = food({ ingredientKeywords: ['IngredientTypeMeat', 'IngredientTypeVegetable'] });
     expect(dietVerdict(mixed, [CARNIVORE_MUTATION_ID])).toBe('zeroed');
     expect(dietVerdict(mixed, [HERBIVORE_MUTATION_ID])).toBe('zeroed');
+  });
+});
+
+describe('dietSuppressionLabel', () => {
+  it('names the mutation that zeroes scalable food', () => {
+    expect(dietSuppressionLabel(food(), [HERBIVORE_MUTATION_ID])).toBe('Herbivore');
+    expect(dietSuppressionLabel(food({ ingredientKeywords: ['IngredientTypeVegetable'] }), [CARNIVORE_MUTATION_ID])).toBe(
+      'Carnivore'
+    );
+    expect(dietSuppressionLabel(food(), [CARNIVORE_MUTATION_ID])).toBe(null);
+    expect(dietSuppressionLabel(food(), [])).toBe(null);
   });
 });
 
@@ -134,6 +146,15 @@ describe('real extracted data (pins the 2026-07-13 ESM audit)', () => {
     expect(dietVerdict(soup!, [CARNIVORE_MUTATION_ID])).toBe('zeroed');
     expect(dietVerdict(soup!, [HERBIVORE_MUTATION_ID])).toBe('doubled');
     expect(getBuffModifiers('live', [CARNIVORE_MUTATION_ID], ['CarrotVegetableCookedSoup'])).toEqual([]);
+  });
+
+  it('Wasteland Fish Sandwich (meat): zeroed under Herbivore, with an explicit suppression label', () => {
+    const sandwich = byId.get('SeasonalFish_Meal_SummerWastelandFishSandwich');
+    expect(sandwich).toBeDefined();
+    expect(dietVerdict(sandwich!, [HERBIVORE_MUTATION_ID])).toBe('zeroed');
+    expect(dietSuppressionLabel(sandwich!, [HERBIVORE_MUTATION_ID])).toBe('Herbivore');
+    const mods = getBuffModifiers('live', [HERBIVORE_MUTATION_ID], ['SeasonalFish_Meal_SummerWastelandFishSandwich']);
+    expect(mods.some(m => m.bucket === 'moveSpeedBonus')).toBe(false);
   });
 
   it('no damage-relevant food carries both meat and vegetable tags (composition rule stays theoretical)', () => {
