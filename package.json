@@ -17,6 +17,7 @@
     "build:gh-pages": "NODE_ENV=production pnpm run build"
   },
   "dependencies": {
+    "@base-ui/react": "^1.6.0",
     "@fontsource-variable/spline-sans-mono": "^5.2.8",
     "@fontsource/barlow": "^5.2.8",
     "@fontsource/barlow-condensed": "^5.2.8",
