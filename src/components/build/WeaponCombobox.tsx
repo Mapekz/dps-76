@@ -1,16 +1,9 @@
 import * as React from 'react';
-import { CheckIcon, ChevronDownIcon, ChevronsUpDownIcon } from 'lucide-react';
+import { Combobox as ComboboxPrimitive } from '@base-ui/react/combobox';
+import { CheckIcon, ChevronDownIcon, ChevronsUpDownIcon, SearchIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 export interface WeaponComboboxOption {
@@ -50,25 +43,41 @@ function WeaponCombobox({
   const [collapsed, setCollapsed] = React.useState(true);
 
   const selectedOption = React.useMemo(
-    () => options.find(option => option.value === value),
+    () => options.find(option => option.value === value) ?? null,
     [options, value]
   );
 
+  // Base UI's own items/filter/Collection auto-filtering doesn't narrow
+  // results in this inline (Popover-hosted) configuration - filter and
+  // group ourselves instead, same substring match as the FilterList
+  // primitive. Also matches the subtitle (e.g. a unique's base weapon name),
+  // which the default label-only filter wouldn't catch.
   const groups = React.useMemo(() => {
+    const q = search.trim().toLowerCase();
+    const filtered = q
+      ? options.filter(o => o.label.toLowerCase().includes(q) || (o.subtitle?.toLowerCase().includes(q) ?? false))
+      : options;
     const map = new Map<string | undefined, WeaponComboboxOption[]>();
-    for (const option of options) {
+    for (const option of filtered) {
       const bucket = map.get(option.group);
       if (bucket) bucket.push(option);
       else map.set(option.group, [option]);
     }
     return [...map.entries()];
-  }, [options]);
+  }, [options, search]);
 
   const searchActive = search.trim().length > 0;
   const uniqueGroupExpanded = !collapsed || searchActive;
+  const hasAny = groups.some(([, groupOptions]) => groupOptions.length > 0);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={next => {
+        setOpen(next);
+        if (!next) setSearch('');
+      }}
+    >
       <PopoverTrigger
         render={
           <Button
@@ -84,19 +93,34 @@ function WeaponCombobox({
         <ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
       </PopoverTrigger>
       <PopoverContent className="w-[--anchor-width] p-0">
-        <Command shouldFilter>
-          <CommandInput
-            placeholder={searchPlaceholder}
-            value={search}
-            onValueChange={setSearch}
-          />
-          <CommandList>
-            <CommandEmpty>{emptyText}</CommandEmpty>
+        <ComboboxPrimitive.Root
+          value={selectedOption}
+          isItemEqualToValue={(a: WeaponComboboxOption, b: WeaponComboboxOption) => a.value === b.value}
+          inputValue={search}
+          onInputValueChange={next => setSearch(next)}
+          onValueChange={(next: WeaponComboboxOption | null) => {
+            onValueChange(next && next.value === value ? null : (next?.value ?? null));
+            setOpen(false);
+            setSearch('');
+          }}
+          inline
+          open
+        >
+          <div data-slot="combobox-input-wrapper" className="flex h-9 items-center gap-2 border-b px-3">
+            <SearchIcon className="size-4 shrink-0 opacity-50" />
+            <ComboboxPrimitive.Input
+              placeholder={searchPlaceholder}
+              className="placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
+            />
+          </div>
+          <ComboboxPrimitive.List className="max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto">
+            {!hasAny && <div className="py-6 text-center text-sm">{emptyText}</div>}
             {groups.map(([group, groupOptions]) => {
               const isCollapsible = collapsibleGroup !== undefined && group === collapsibleGroup;
+              const groupExpanded = !isCollapsible || uniqueGroupExpanded;
               return (
-                <CommandGroup key={group ?? ''} heading={isCollapsible ? undefined : group}>
-                  {isCollapsible && (
+                <ComboboxPrimitive.Group key={group ?? ''} className="text-foreground overflow-hidden p-1">
+                  {isCollapsible ? (
                     <button
                       type="button"
                       className="text-muted-foreground hover:text-foreground flex w-full items-center justify-between px-2 py-1.5 text-xs font-medium"
@@ -109,35 +133,34 @@ function WeaponCombobox({
                         className={cn('size-4 transition-transform', uniqueGroupExpanded && 'rotate-180')}
                       />
                     </button>
+                  ) : (
+                    group && (
+                      <ComboboxPrimitive.GroupLabel className="text-muted-foreground px-2 py-1.5 text-xs font-medium">
+                        {group}
+                      </ComboboxPrimitive.GroupLabel>
+                    )
                   )}
-                  {(!isCollapsible || uniqueGroupExpanded) &&
+                  {groupExpanded &&
                     groupOptions.map(option => (
-                      <CommandItem
+                      <ComboboxPrimitive.Item
                         key={option.value}
-                        value={option.value}
-                        keywords={[option.label, option.subtitle ?? ''].filter(Boolean)}
-                        onSelect={currentValue => {
-                          onValueChange(currentValue === value ? null : currentValue);
-                          setOpen(false);
-                          setSearch('');
-                        }}
+                        value={option}
+                        className="data-highlighted:bg-accent data-highlighted:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none"
                       >
-                        <CheckIcon
-                          className={cn('mr-2 size-4', value === option.value ? 'opacity-100' : 'opacity-0')}
-                        />
+                        <CheckIcon className={cn('mr-2 size-4 shrink-0', value === option.value ? 'opacity-100' : 'opacity-0')} />
                         <span className="min-w-0 flex-1">
                           <span className="block truncate">{option.label}</span>
                           {option.subtitle && (
                             <span className="text-muted-foreground block truncate text-xs">{option.subtitle}</span>
                           )}
                         </span>
-                      </CommandItem>
+                      </ComboboxPrimitive.Item>
                     ))}
-                </CommandGroup>
+                </ComboboxPrimitive.Group>
               );
             })}
-          </CommandList>
-        </Command>
+          </ComboboxPrimitive.List>
+        </ComboboxPrimitive.Root>
       </PopoverContent>
     </Popover>
   );
