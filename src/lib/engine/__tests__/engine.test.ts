@@ -170,6 +170,21 @@ describe('condition evaluation', () => {
     expect(foldBucket([bloodied, paOnly, broken], 'dbm', 1.0, lowHpInPa)).toBeCloseTo(1.75, 10);
   });
 
+  it('healthBelowPct gates inclusively (Foundation\'s Vengeance: GetHealthPercentage ≤ 0.25)', () => {
+    const foundationsVengeance = mod({
+      bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'healthBelowPct', pct: 25 }],
+    });
+
+    const atThreshold = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), healthPercent: 25 } });
+    expect(foldBucket([foundationsVengeance], 'dbm', 1.0, atThreshold)).toBeCloseTo(1.5, 10);
+
+    const belowThreshold = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), healthPercent: 24 } });
+    expect(foldBucket([foundationsVengeance], 'dbm', 1.0, belowThreshold)).toBeCloseTo(1.5, 10);
+
+    const aboveThreshold = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), healthPercent: 26 } });
+    expect(foldBucket([foundationsVengeance], 'dbm', 1.0, aboveThreshold)).toBe(1.0);
+  });
+
   it('glowAtLeast gates on the ghoul Glow meter (Glowing Criticals-style ≥180 threshold)', () => {
     const glowingCrit = mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'glowAtLeast', min: 180 }] });
 

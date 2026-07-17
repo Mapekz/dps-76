@@ -474,6 +474,7 @@ export type Condition =
   | { kind: 'powerAttack' }
   /** The hit is a VATS critical (symmetric with sneaking/powerAttack). */
   | { kind: 'crit' }
+  /** PLAYER health at or below pct (Foundation's Vengeance: ≤25 — GetHealthPercentage ≤ 0.25). */
   | { kind: 'healthBelowPct'; pct: number }
   /** ENEMY health at or below pct (Executioner's: ≤40, threshold from GLOB LGND_ExecuteHealthThreshold). */
   | { kind: 'enemyHealthBelowPct'; pct: number }

@@ -273,6 +273,10 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
       if (/^less than( or equal to)?$/i.test(cond.Operator ?? '')) {
         // Tab-index-2 perk conditions run on the target: that's the ENEMY's health
         // (Executioner's ≤40%), not the player's (Bloodied-style gates).
+        // The regex intentionally collapses strict "<" and "≤" into one IR kind
+        // with no stored operator — the engine evaluates both belowPct kinds
+        // inclusively (resolve.ts), matching every current ESM source
+        // (Foundation's Vengeance's player gate is ≤; docs/assumptions.md "Bullet Storm").
         return onTarget ? { kind: 'enemyHealthBelowPct', pct } : { kind: 'healthBelowPct', pct };
       }
       if (onTarget && /^greater than( or equal to)?$/i.test(cond.Operator ?? '')) {

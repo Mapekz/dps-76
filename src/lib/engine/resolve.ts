@@ -219,7 +219,10 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
     case 'crit':
       return ctx.scenario.isCrit ? 1 : null;
     case 'healthBelowPct':
-      return ctx.player.healthPercent < cond.pct ? 1 : null;
+      // PLAYER health at or below pct. ESM uses ≤ (Foundation's Vengeance:
+      // GetHealthPercentage() ≤ 0.25); extraction collapses </≤ into this
+      // kind, and no player gate uses strict <, so evaluate inclusively.
+      return ctx.player.healthPercent <= cond.pct ? 1 : null;
     case 'enemyHealthBelowPct':
       // Unset enemy health = full (Executioner's inactive by default).
       return (ctx.enemy.healthPercent ?? 100) <= cond.pct ? 1 : null;
