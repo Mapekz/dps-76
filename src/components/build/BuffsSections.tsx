@@ -266,7 +266,7 @@ function ConsumableRadioRow({
   );
 }
 
-/** Sentinel for the picker's "nothing selected" option — cmdk needs a real value. */
+/** Sentinel for the picker's "nothing selected" option — Combobox needs a real, non-null value. */
 const NONE = '__none__';
 
 /**
