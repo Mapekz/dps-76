@@ -3,16 +3,11 @@ import { CheckIcon, LockIcon, MinusIcon, PlusIcon, XIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
+import { FilterListRoot, FilterInput, FilterList, FilterEmpty, FilterGroup, FilterItem } from '@/components/ui/filter-list';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import { matchesQuery } from '@/lib/filter-query';
+import { useFilterQuery } from '@/hooks/useFilterQuery';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getPerks } from '@/data';
@@ -260,58 +255,6 @@ function PerkAddCombobox({
     // Popover stays open for multi-adjust.
   };
 
-  const renderGroup = (heading: string | undefined, items: Array<{ perkId: string; perk: Perk }>, isLegendary: boolean) => (
-    <CommandGroup heading={heading}>
-      {items.map(({ perkId, perk }) => {
-        const rank = equipped.get(perkId);
-        // An equipped perk always matches the current race (the reducer keeps
-        // that invariant), so raceLocked only ever fires for unequipped cards.
-        const raceLocked = rank === undefined && raceBlocked(perk);
-        const blocked = raceLocked || slotBlocked(perkId, isLegendary, perk);
-        return (
-          <CommandItem
-            key={perkId}
-            value={perkId}
-            keywords={[perk.name]}
-            disabled={blocked}
-            onSelect={() => select(perkId, isLegendary, perk)}
-            onContextMenu={e => {
-              e.preventDefault();
-              decrement(perkId);
-            }}
-            title={rank === undefined ? undefined : rank > 1 ? 'Right-click to lower' : 'Right-click to remove'}
-          >
-            <CheckIcon className={cn('mr-2 size-4', rank !== undefined ? 'opacity-100' : 'opacity-0')} />
-            {raceLocked && <LockIcon className="text-muted-foreground mr-1 size-3 shrink-0" />}
-            <span className="min-w-0 flex-1 truncate">{perk.name}</span>
-            {noEffect.has(perkId) && <NoEffectBadge />}
-            {!blocked &&
-              (rank === undefined ? (
-                <ActionDelta action={{ type: 'perk/add', perkId, rank: 1, legendary: isLegendary }} />
-              ) : rank < perk.maxRank ? (
-                <ActionDelta action={{ type: 'perk/setRank', perkId, rank: rank + 1 }} />
-              ) : null)}
-            <span className="text-muted-foreground ml-2 text-xs">
-              {raceLocked
-                ? `${perk.raceRestriction} only`
-                : blocked
-                  ? isLegendary
-                    ? 'slots full'
-                    : 'budget full'
-                  : rank !== undefined
-                    ? rank < perk.maxRank && perk.special
-                      ? `rank ${rank}/${perk.maxRank} · +${costDelta(perk, rank, rank + 1)} pt`
-                      : `rank ${rank}/${perk.maxRank}`
-                    : perk.special
-                      ? `max ${perk.maxRank} · ${perkCardCostAtRank(perk, 1)} pt`
-                      : `max ${perk.maxRank}`}
-            </span>
-          </CommandItem>
-        );
-      })}
-    </CommandGroup>
-  );
-
   const bySpecial = (special: Special) => regular.filter(r => r.perk.special === special);
   const visibleSpecials = SPECIAL_ORDER.filter(({ special }) => filterSpecial === null || special === filterSpecial);
 
@@ -321,8 +264,8 @@ function PerkAddCombobox({
         <PlusIcon className="mr-1 size-3.5" /> {triggerLabel}
       </PopoverTrigger>
       <PopoverContent className="w-[--anchor-width] p-0" align="start">
-        <Command>
-          <CommandInput placeholder={scope === 'legendary' ? 'Search legendary perks…' : 'Search perks…'} />
+        <FilterListRoot>
+          <FilterInput placeholder={scope === 'legendary' ? 'Search legendary perks…' : 'Search perks…'} />
           {scope !== 'legendary' && (
             <div className="flex items-center gap-0.5 border-b px-2 py-1">
               {SPECIAL_ORDER.map(({ special, letter }) => (
@@ -352,29 +295,127 @@ function PerkAddCombobox({
               )}
             </div>
           )}
-          <CommandList className="max-h-72">
-            <CommandEmpty>No perk matches.</CommandEmpty>
-            {scope === 'legendary' ? (
-              // Legendary perks aren't SPECIAL-tied — one flat, name-sorted list.
-              renderGroup(undefined, legendary, true)
-            ) : (
-              <>
-                {visibleSpecials.map(({ special }) => {
-                  const items = bySpecial(special);
-                  return items.length > 0 ? (
-                    <React.Fragment key={special}>{renderGroup(special, items, false)}</React.Fragment>
-                  ) : null;
-                })}
-                {filterSpecial === null && legendary.length > 0 && renderGroup('Legendary', legendary, true)}
-              </>
-            )}
-          </CommandList>
+          <PerkList
+            scope={scope}
+            visibleSpecials={visibleSpecials}
+            bySpecial={bySpecial}
+            legendary={legendary}
+            filterSpecial={filterSpecial}
+            equipped={equipped}
+            noEffect={noEffect}
+            raceBlocked={raceBlocked}
+            slotBlocked={slotBlocked}
+            select={select}
+            decrement={decrement}
+          />
           <p className="text-muted-foreground border-t px-2 py-1 text-[11px]">
             Left-click to add or raise a rank · right-click to lower or remove.
           </p>
-        </Command>
+        </FilterListRoot>
       </PopoverContent>
     </Popover>
+  );
+}
+
+/**
+ * The filterable perk list. Split out from PerkAddCombobox because
+ * useFilterQuery() must be called from a descendant of FilterListRoot, not
+ * the component that renders it.
+ */
+function PerkList({
+  scope,
+  visibleSpecials,
+  bySpecial,
+  legendary,
+  filterSpecial,
+  equipped,
+  noEffect,
+  raceBlocked,
+  slotBlocked,
+  select,
+  decrement,
+}: {
+  scope: 'all' | 'legendary';
+  visibleSpecials: typeof SPECIAL_ORDER;
+  bySpecial: (special: Special) => Array<{ perkId: string; perk: Perk }>;
+  legendary: Array<{ perkId: string; perk: Perk }>;
+  filterSpecial: Special | null;
+  equipped: Map<string, number>;
+  noEffect: Set<string>;
+  raceBlocked: (perk: Perk) => boolean;
+  slotBlocked: (perkId: string, isLegendary: boolean, perk: Perk) => boolean;
+  select: (perkId: string, isLegendary: boolean, perk: Perk) => void;
+  decrement: (perkId: string) => void;
+}) {
+  const { query } = useFilterQuery();
+
+  const renderGroup = (heading: string | undefined, items: Array<{ perkId: string; perk: Perk }>, isLegendary: boolean) => {
+    const filtered = items.filter(({ perk }) => matchesQuery([perk.name], query));
+    if (filtered.length === 0) return null;
+    return (
+      <FilterGroup key={heading ?? '__flat__'} heading={heading}>
+        {filtered.map(({ perkId, perk }) => {
+          const rank = equipped.get(perkId);
+          // An equipped perk always matches the current race (the reducer keeps
+          // that invariant), so raceLocked only ever fires for unequipped cards.
+          const raceLocked = rank === undefined && raceBlocked(perk);
+          const blocked = raceLocked || slotBlocked(perkId, isLegendary, perk);
+          return (
+            <FilterItem
+              key={perkId}
+              disabled={blocked}
+              onClick={() => select(perkId, isLegendary, perk)}
+              onContextMenu={e => {
+                e.preventDefault();
+                decrement(perkId);
+              }}
+              title={rank === undefined ? undefined : rank > 1 ? 'Right-click to lower' : 'Right-click to remove'}
+            >
+              <CheckIcon className={cn('mr-2 size-4', rank !== undefined ? 'opacity-100' : 'opacity-0')} />
+              {raceLocked && <LockIcon className="text-muted-foreground mr-1 size-3 shrink-0" />}
+              <span className="min-w-0 flex-1 truncate">{perk.name}</span>
+              {noEffect.has(perkId) && <NoEffectBadge />}
+              {!blocked &&
+                (rank === undefined ? (
+                  <ActionDelta action={{ type: 'perk/add', perkId, rank: 1, legendary: isLegendary }} />
+                ) : rank < perk.maxRank ? (
+                  <ActionDelta action={{ type: 'perk/setRank', perkId, rank: rank + 1 }} />
+                ) : null)}
+              <span className="text-muted-foreground ml-2 text-xs">
+                {raceLocked
+                  ? `${perk.raceRestriction} only`
+                  : blocked
+                    ? isLegendary
+                      ? 'slots full'
+                      : 'budget full'
+                    : rank !== undefined
+                      ? rank < perk.maxRank && perk.special
+                        ? `rank ${rank}/${perk.maxRank} · +${costDelta(perk, rank, rank + 1)} pt`
+                        : `rank ${rank}/${perk.maxRank}`
+                      : perk.special
+                        ? `max ${perk.maxRank} · ${perkCardCostAtRank(perk, 1)} pt`
+                        : `max ${perk.maxRank}`}
+              </span>
+            </FilterItem>
+          );
+        })}
+      </FilterGroup>
+    );
+  };
+
+  const groups =
+    scope === 'legendary'
+      ? [renderGroup(undefined, legendary, true)]
+      : [
+          ...visibleSpecials.map(({ special }) => renderGroup(special, bySpecial(special), false)),
+          filterSpecial === null && legendary.length > 0 ? renderGroup('Legendary', legendary, true) : null,
+        ];
+
+  return (
+    <FilterList className="max-h-72">
+      <FilterEmpty show={groups.every(g => g === null)}>No perk matches.</FilterEmpty>
+      {groups}
+    </FilterList>
   );
 }
 

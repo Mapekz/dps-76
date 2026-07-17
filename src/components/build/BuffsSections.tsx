@@ -7,16 +7,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import { Radio } from '@/components/ui/radio';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
+import { FilterListRoot, FilterInput, FilterList, FilterEmpty, FilterGroup, FilterItem } from '@/components/ui/filter-list';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import { matchesQuery } from '@/lib/filter-query';
+import { useFilterQuery } from '@/hooks/useFilterQuery';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getAddictions, getConsumables, getMutations, getSuppressedAddictions } from '@/data/buffs';
@@ -660,39 +655,6 @@ function FoodDrinkAddCombobox({
     // Popover stays open for multi-add.
   };
 
-  const renderGroup = (heading: string, groupItems: GeneratedBuff[]) => (
-    <CommandGroup heading={heading}>
-      {groupItems.map(item => {
-        const selected = activeSet.has(item.id);
-        const replaced = selected ? [] : applySelection(byId, active, item.id).replaced;
-        const replacedNames = replaced.map(id => byId.get(id)?.name ?? id);
-        const description = describeBuffModifiers(item);
-        const suppression = dietSuppressionLabel(item, mutations);
-        return (
-          <CommandItem key={item.id} value={item.id} keywords={[item.name]} onSelect={() => select(item.id)}>
-            <CheckIcon className={cn('mr-2 size-4', selected ? 'opacity-100' : 'opacity-0')} />
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1">
-                <span className="min-w-0 flex-1 truncate">{item.name}</span>
-                {!suppression && !hasAnyEngineEffect(item.modifiers) && <NoEffectBadge />}
-                {suppression && <DietSuppressionBadge mutation={suppression} />}
-              </div>
-              {description && (
-                <p className={cn('text-muted-foreground truncate text-xs', suppression && 'line-through')}>
-                  {description}
-                </p>
-              )}
-            </div>
-            {replacedNames.length > 0 && (
-              <span className="text-muted-foreground ml-2 truncate text-xs">replaces {replacedNames.join(', ')}</span>
-            )}
-            {!selected && <ActionDelta action={{ type: 'consumable/toggle', id: item.id }} />}
-          </CommandItem>
-        );
-      })}
-    </CommandGroup>
-  );
-
   const foodItems = items.filter(i => i.category === 'food');
   const drinkItems = items.filter(i => i.category === 'drink');
 
@@ -702,16 +664,91 @@ function FoodDrinkAddCombobox({
         <PlusIcon className="mr-1 size-3.5" /> Add food or drink…
       </PopoverTrigger>
       <PopoverContent className="w-[--anchor-width] p-0" align="start">
-        <Command>
-          <CommandInput placeholder="Search food & drink…" />
-          <CommandList className="max-h-72">
-            <CommandEmpty>No match.</CommandEmpty>
-            {renderGroup('Food', foodItems)}
-            {renderGroup('Drink', drinkItems)}
-          </CommandList>
-        </Command>
+        <FilterListRoot>
+          <FilterInput placeholder="Search food & drink…" />
+          <FoodDrinkList
+            foodItems={foodItems}
+            drinkItems={drinkItems}
+            activeSet={activeSet}
+            active={active}
+            byId={byId}
+            mutations={mutations}
+            select={select}
+          />
+        </FilterListRoot>
       </PopoverContent>
     </Popover>
+  );
+}
+
+/**
+ * The filterable food/drink list. Split out from FoodDrinkAddCombobox
+ * because useFilterQuery() must be called from a descendant of
+ * FilterListRoot, not the component that renders it.
+ */
+function FoodDrinkList({
+  foodItems,
+  drinkItems,
+  activeSet,
+  active,
+  byId,
+  mutations,
+  select,
+}: {
+  foodItems: GeneratedBuff[];
+  drinkItems: GeneratedBuff[];
+  activeSet: Set<string>;
+  active: readonly string[];
+  byId: Map<string, GeneratedBuff>;
+  mutations: readonly string[];
+  select: (id: string) => void;
+}) {
+  const { query } = useFilterQuery();
+
+  const renderGroup = (heading: string, groupItems: GeneratedBuff[]) => {
+    const filtered = groupItems.filter(item => matchesQuery([item.name], query));
+    if (filtered.length === 0) return null;
+    return (
+      <FilterGroup key={heading} heading={heading}>
+        {filtered.map(item => {
+          const selected = activeSet.has(item.id);
+          const replaced = selected ? [] : applySelection(byId, active, item.id).replaced;
+          const replacedNames = replaced.map(id => byId.get(id)?.name ?? id);
+          const description = describeBuffModifiers(item);
+          const suppression = dietSuppressionLabel(item, mutations);
+          return (
+            <FilterItem key={item.id} onClick={() => select(item.id)}>
+              <CheckIcon className={cn('mr-2 size-4', selected ? 'opacity-100' : 'opacity-0')} />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1">
+                  <span className="min-w-0 flex-1 truncate">{item.name}</span>
+                  {!suppression && !hasAnyEngineEffect(item.modifiers) && <NoEffectBadge />}
+                  {suppression && <DietSuppressionBadge mutation={suppression} />}
+                </div>
+                {description && (
+                  <p className={cn('text-muted-foreground truncate text-xs', suppression && 'line-through')}>
+                    {description}
+                  </p>
+                )}
+              </div>
+              {replacedNames.length > 0 && (
+                <span className="text-muted-foreground ml-2 truncate text-xs">replaces {replacedNames.join(', ')}</span>
+              )}
+              {!selected && <ActionDelta action={{ type: 'consumable/toggle', id: item.id }} />}
+            </FilterItem>
+          );
+        })}
+      </FilterGroup>
+    );
+  };
+
+  const groups = [renderGroup('Food', foodItems), renderGroup('Drink', drinkItems)];
+
+  return (
+    <FilterList className="max-h-72">
+      <FilterEmpty show={groups.every(g => g === null)}>No match.</FilterEmpty>
+      {groups}
+    </FilterList>
   );
 }
 
