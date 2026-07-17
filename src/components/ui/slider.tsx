@@ -1,5 +1,5 @@
 import * as React from "react"
-import * as SliderPrimitive from "@radix-ui/react-slider"
+import { Slider as SliderPrimitive } from "@base-ui/react/slider"
 
 import { cn } from "@/lib/utils"
 
@@ -18,9 +18,9 @@ function Slider({
   max = 100,
   marks,
   ...props
-}: React.ComponentProps<typeof SliderPrimitive.Root> & { marks?: SliderMark[] }) {
+}: SliderPrimitive.Root.Props & { marks?: SliderMark[] }) {
   const _values = React.useMemo(
-    () => value ?? defaultValue ?? [min, max],
+    () => (Array.isArray(value) ? value : Array.isArray(defaultValue) ? defaultValue : [min, max]),
     [value, defaultValue, min, max]
   )
 
@@ -32,28 +32,31 @@ function Slider({
         value={value}
         min={min}
         max={max}
-        className={cn(
-          "relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50",
-          className
-        )}
+        // Radix always behaved edge-ish at min/max; Base UI defaults to
+        // centering the thumb on the track's endpoint, which lets it
+        // overflow past the track. edge keeps the prior look.
+        thumbAlignment="edge"
+        className={className}
         {...props}
       >
-        <SliderPrimitive.Track
-          data-slot="slider-track"
-          className="bg-muted relative h-1.5 w-full grow overflow-hidden rounded-full"
-        >
-          <SliderPrimitive.Range
-            data-slot="slider-range"
-            className="bg-primary absolute h-full"
-          />
-        </SliderPrimitive.Track>
-        {Array.from({ length: _values.length }, (_, index) => (
-          <SliderPrimitive.Thumb
-            data-slot="slider-thumb"
-            key={index}
-            className="border-primary bg-background focus-visible:ring-ring/50 block size-4 rounded-full border shadow-sm transition-colors focus-visible:ring-[3px] focus-visible:outline-hidden disabled:pointer-events-none"
-          />
-        ))}
+        <SliderPrimitive.Control className="relative flex w-full touch-none items-center select-none data-disabled:opacity-50">
+          <SliderPrimitive.Track
+            data-slot="slider-track"
+            className="bg-muted relative h-1.5 w-full grow overflow-hidden rounded-full"
+          >
+            <SliderPrimitive.Indicator
+              data-slot="slider-range"
+              className="bg-primary absolute h-full"
+            />
+          </SliderPrimitive.Track>
+          {Array.from({ length: _values.length }, (_, index) => (
+            <SliderPrimitive.Thumb
+              data-slot="slider-thumb"
+              key={index}
+              className="border-primary bg-background focus-visible:ring-ring/50 block size-4 rounded-full border shadow-sm transition-colors focus-visible:ring-[3px] focus-visible:outline-hidden disabled:pointer-events-none"
+            />
+          ))}
+        </SliderPrimitive.Control>
       </SliderPrimitive.Root>
       {marks && max > min && (
         // top-4 = directly under the 16px slider row (top-full would land past the wrapper's label padding).

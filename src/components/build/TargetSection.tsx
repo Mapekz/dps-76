@@ -4,6 +4,7 @@ import { Combobox } from '@/components/ui/combobox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
+import { firstSliderValue } from '@/lib/slider-value';
 import { ToggleChips } from '@/components/ui/toggle-chips';
 import { ToggleGroup } from '@/components/ui/toggle-group';
 import { useGameMode } from '@/hooks/useGameMode';
@@ -297,7 +298,7 @@ export function TargetSection() {
               step={1}
               disabled={crippableMax === 0}
               value={[Math.min(conditions.crippledLimbCount, crippableMax)]}
-              onValueChange={([v]) => setEnemy('crippledLimbCount', v)}
+              onValueChange={v => setEnemy('crippledLimbCount', firstSliderValue(v))}
               marks={Array.from({ length: Math.max(crippableMax, 1) + 1 }, (_, i) => ({
                 value: i,
                 label: String(i),

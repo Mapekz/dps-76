@@ -5,6 +5,7 @@ import { Combobox } from '@/components/ui/combobox';
 import { WeaponCombobox } from '@/components/build/WeaponCombobox';
 import { Label } from '@/components/ui/label';
 import { Slider, type SliderMark } from '@/components/ui/slider';
+import { firstSliderValue } from '@/lib/slider-value';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
@@ -237,7 +238,7 @@ export function WeaponSection() {
               max={levelStops.length - 1}
               step={1}
               value={[nearestItemLevelIndex(levelStops, player.itemLevel)]}
-              onValueChange={([i]) => dispatch({ type: 'weapon/itemLevel', value: levelStops[i] })}
+              onValueChange={v => dispatch({ type: 'weapon/itemLevel', value: levelStops[firstSliderValue(v)] })}
               marks={levelStops.map((level, i) => ({ value: i, label: String(level) }))}
             />
             <p className="text-muted-foreground text-xs">
@@ -267,7 +268,7 @@ export function WeaponSection() {
                 max={charging.fullPowerSeconds}
                 step={charging.fullPowerSeconds / 100}
                 value={[chargeTimeSec]}
-                onValueChange={([v]) => dispatch({ type: 'weapon/chargeTime', value: v })}
+                onValueChange={v => dispatch({ type: 'weapon/chargeTime', value: firstSliderValue(v) })}
                 marks={chargeQuarterMarks(charging.fullPowerSeconds, charging.minimumChargeTime)}
               />
               <p className="text-muted-foreground text-xs">

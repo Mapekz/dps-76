@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
+import { firstSliderValue } from '@/lib/slider-value';
 import { Switch } from '@/components/ui/switch';
 import { ToggleGroup } from '@/components/ui/toggle-group';
 import { useGameMode } from '@/hooks/useGameMode';
@@ -102,7 +103,7 @@ function SliderField({
         max={max}
         step={step}
         value={[value]}
-        onValueChange={([v]) => onChange(v)}
+        onValueChange={v => onChange(firstSliderValue(v))}
         marks={[
           { value: min, label: `${min}%` },
           { value: max, label: `${max}%` },
@@ -246,7 +247,7 @@ export function ConditionsSection() {
                   max={4}
                   step={1}
                   value={[foodTier]}
-                  onValueChange={([v]) => set('foodTier', v)}
+                  onValueChange={v => set('foodTier', firstSliderValue(v))}
                   marks={FOOD_TIER_NAMES.map((_, i) => ({ value: i }))}
                 />
               </div>
@@ -259,7 +260,7 @@ export function ConditionsSection() {
                   max={4}
                   step={1}
                   value={[drinkTier]}
-                  onValueChange={([v]) => set('drinkTier', v)}
+                  onValueChange={v => set('drinkTier', firstSliderValue(v))}
                   marks={DRINK_TIER_NAMES.map((_, i) => ({ value: i }))}
                 />
               </div>
@@ -275,7 +276,7 @@ export function ConditionsSection() {
                 max={8}
                 step={1}
                 value={[feralTier]}
-                onValueChange={([v]) => set('feralTier', v)}
+                onValueChange={v => set('feralTier', firstSliderValue(v))}
                 marks={Array.from({ length: 9 }, (_, i) => ({ value: i, label: i % 2 === 0 ? String(i) : undefined }))}
               />
             </div>
@@ -292,7 +293,7 @@ export function ConditionsSection() {
                 max={stats.maxHealth}
                 step={5}
                 value={[glow]}
-                onValueChange={([v]) => set('glow', v)}
+                onValueChange={v => set('glow', firstSliderValue(v))}
                 marks={[
                   { value: 0, label: '0' },
                   { value: 180, label: '180' },
@@ -310,7 +311,7 @@ export function ConditionsSection() {
               max={40000}
               step={1000}
               value={[Math.min(conditions.capsOnHand, 40000)]}
-              onValueChange={([v]) => set('capsOnHand', v)}
+              onValueChange={v => set('capsOnHand', firstSliderValue(v))}
               marks={[0, 10000, 20000, 29000, 40000].map(v => ({ value: v, label: v === 0 ? '0' : `${v / 1000}k` }))}
             />
           </div>
@@ -324,7 +325,7 @@ export function ConditionsSection() {
               step={1}
               disabled={!hasKillStreak}
               value={[conditions.adrenalineStacks]}
-              onValueChange={([v]) => set('adrenalineStacks', v)}
+              onValueChange={v => set('adrenalineStacks', firstSliderValue(v))}
               marks={Array.from({ length: 11 }, (_, i) => ({ value: i, label: i % 2 === 0 ? String(i) : undefined }))}
             />
             {!hasKillStreak && <p className="text-muted-foreground text-xs">No kill-streak sources equipped</p>}
@@ -349,7 +350,7 @@ export function ConditionsSection() {
                 step={1}
                 disabled={onslaughtMax === 0}
                 value={[onslaughtValue]}
-                onValueChange={([v]) => set('onslaughtStacks', v)}
+                onValueChange={v => set('onslaughtStacks', firstSliderValue(v))}
                 marks={
                   onslaughtMax > 0
                     ? Array.from({ length: onslaughtMax + 1 }, (_, i) => ({
@@ -389,7 +390,7 @@ export function ConditionsSection() {
                 step={1}
                 disabled={bulletStormMax === 0}
                 value={[bulletStormValue]}
-                onValueChange={([v]) => set('bulletStormStacks', v)}
+                onValueChange={v => set('bulletStormStacks', firstSliderValue(v))}
                 marks={
                   bulletStormMax > 0
                     ? Array.from({ length: bulletStormMax - bulletStormMin + 1 }, (_, i) => {
