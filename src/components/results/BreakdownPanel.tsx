@@ -15,10 +15,8 @@ export function BreakdownPanel() {
 
   return (
     <Accordion
-      type="single"
-      collapsible
-      value={view.breakdownOpen ? 'breakdown' : ''}
-      onValueChange={value => dispatch({ type: 'view/set', view: { breakdownOpen: value === 'breakdown' } })}
+      value={view.breakdownOpen ? ['breakdown'] : []}
+      onValueChange={value => dispatch({ type: 'view/set', view: { breakdownOpen: value.includes('breakdown') } })}
     >
       <AccordionItem value="breakdown" className="border-b-0">
         <AccordionTrigger className="py-2">

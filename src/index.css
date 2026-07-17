@@ -119,17 +119,6 @@
   }
 }
 
-/* Accordion animations */
-@keyframes accordion-down {
-  from { height: 0; }
-  to { height: var(--radix-accordion-content-height); }
-}
-
-@keyframes accordion-up {
-  from { height: var(--radix-accordion-content-height); }
-  to { height: 0; }
-}
-
 /* Delta flashes: the changed number pulses from positive/negative back to ink. */
 @keyframes flash-positive {
   from { color: var(--positive); }
@@ -150,8 +139,6 @@
 }
 
 @theme inline {
-  --animate-accordion-down: accordion-down 0.2s ease-out;
-  --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-flash-positive: flash-positive 0.9s ease-out;
   --animate-flash-negative: flash-negative 0.9s ease-out;
   --animate-ghost-rise: ghost-rise 0.9s ease-out forwards;

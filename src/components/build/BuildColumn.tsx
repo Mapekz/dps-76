@@ -21,7 +21,7 @@ export function BuildColumn() {
       </CardHeader>
       <CardContent>
         <StatSummary />
-        <Accordion type="multiple" defaultValue={['weapon', 'special-loadout']} className="w-full">
+        <Accordion multiple defaultValue={['weapon', 'special-loadout']} className="w-full">
           <WeaponSection />
           <ArmorSection />
           <SpecialLoadoutSection />
