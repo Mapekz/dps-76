@@ -170,11 +170,17 @@ export interface GeneratedPerkCard {
   /**
    * 1-based family rank backing each card rank (index 0 = card rank 1).
    * The card's `Perks[]` list is the LIVE shape of the perk — 28 rebalanced
-   * ("compressed") cards record fewer entries than the family has PERK ranks,
-   * and the surplus ranks are dead content (their zzz/CUT-era records stay in
-   * `ranks` for fidelity but must never be reachable in the app). Almost
-   * always [1..n]; the one exception in the 20260710 dump is StarchedGenes,
-   * whose single live rank is the family's old rank-2 record → [2].
+   * ("compressed") cards record fewer entries than the family has PERK ranks.
+   * `GeneratedPerk.ranks`/`formIds`/`maxRank` are truncated at
+   * `Math.max(...rankSources)` (`extract-perks.ts`'s `effectiveFamilyMaxRank`):
+   * chain records ABOVE the card's reach are cut content and dropped entirely
+   * (e.g. Lock and Load's r2/r3 — both `Effects: null` and referenced by
+   * nothing else, family becomes `maxRank: 1`). Records AT OR BELOW the max
+   * stay even when the card's own entries skip over them, since they're
+   * needed as positional filler for `ranks[rankSources[i] - 1]` to resolve.
+   * Almost always [1..n]; the one exception in the 20260710 dump is
+   * StarchedGenes, whose single live rank is the family's old rank-2 record →
+   * [2] (rank 1 stays in `ranks` purely as that filler).
    */
   rankSources: number[];
 }

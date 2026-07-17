@@ -115,6 +115,27 @@ const CLASS_FREAK_RANK_BY_FORM_ID: Record<string, number> = {
   '0x00391F12': 3, // ClassFreak03
 };
 
+/**
+ * Unique-mod self-name keyword gates (`CustomItemName_*`/`RD01_CustomItemName_*`
+ * — WornHasKeyword rows a legendary/unique effect uses to check "is the
+ * wielder actually holding THIS specific unique weapon", verified via `esm
+ * get` 2026-07-16). Not a weapon-TYPE keyword (`isWeaponTypeKeyword`), so
+ * these fell through to `{kind:'unresolved'}` (permanently false) before this
+ * allowlist — a real bug for the two entries below:
+ * - `CustomItemName_FoundationsVengeance` (0x0064781E): gates the +5
+ *   max-stack tier of the Bullet Storm/Heavy Gunner SPEL's abAmmoSpenderFortifyStacks
+ *   effect (AND'd with GetHealthPercentage ≤0.25).
+ * - `RD01_CustomItemName_Valkyrie` (0x00793434): gates Bullet Storm's
+ *   Valkyrie spin-up curve (AbPerkFortifyActorWeaponChargeUpSpeedMult).
+ * `dn_TheActionHero` (0x00918E50, The Action Hero's deflect-chance gate) is
+ * DELIBERATELY NOT added — the effect it gates carries magnitude 0 with no
+ * curve table (data-broken), so it stays a "needs override" note either way.
+ * A broader CustomItemName_* rule would un-gate every other unique's
+ * self-check (Cold Shoulder etc.) — that's separate, un-scoped work; this
+ * allowlist only covers the two Bullet Storm gates verified above.
+ */
+const UNIQUE_SELF_GATE_KEYWORDS = new Set(['CustomItemName_FoundationsVengeance', 'RD01_CustomItemName_Valkyrie']);
+
 function isWeaponTypeKeyword(edid: string): boolean {
   // HasLegendary_* keywords are ADDed by the legendary OMOD itself, so a
   // HasKeyword self-gate on one auto-passes once the mod is equipped
@@ -207,6 +228,9 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
       }
       if (edid === 'ArmorTypePower') {
         return { kind: 'inPowerArmor', value: wants };
+      }
+      if (UNIQUE_SELF_GATE_KEYWORDS.has(edid)) {
+        return { kind: 'weaponKeyword', keyword: edid, present: wants };
       }
       return { kind: 'unresolved', raw: `${fn}(${edid})=${cond['Comparison Value']}` };
     }

@@ -36,14 +36,25 @@ interface PropertyMapping {
  * OMOD property, NOT its enchantment. Unmapped AVs are reported so the map
  * grows deliberately.
  *
- * Unique-mod rework AVs resolved but deliberately left OUT of this map
- * (2026-07-13 — they fall through to the "ActorValues on X — unmapped" note
- * below instead):
- * - Final Word's 0x00924DB9 → `EnableAmmoSpenderOnKill`, an AVIF flagged
- *   "Boolean" (a plain enable flag), not a stack counter — doesn't fit
- *   `bulletStorm`'s StackCounter semantics.
- * - Old Guard's 0x007ACE76 → `STAT_DeflectChance` ("Deflect Chance") — a
- *   defensive/dodge stat; no formula bucket models deflect chance.
+ * Bullet Storm buckets landed 2026-07-16 (verified via `esm get`):
+ * - Resolute Veteran's OMOD (mod_Custom_ResoluteVeteran 0x008F0DCE) carries
+ *   `ActorValues ADD AmmoSpenderMinStacks 5.0` (AVIF 0x00919957, "Minimum
+ *   Bullet Storm Stack Count", no percentage flag — scale 1).
+ * - Final Word's OMOD (mod_Custom_FinalWord 0x008F1037) carries
+ *   `ActorValues SET EnableAmmoSpenderOnKill 1.0` (AVIF 0x00924DB9, flagged
+ *   "Boolean" — a plain enable flag, but `bulletStormOnKill` is a stored-inert
+ *   bucket today, same shape as `bulletStormSpinUp`/`deflectChance`
+ *   — docs/assumptions.md "Bullet Storm"). The SET must land as op:'SET', not
+ *   'ADD' — see the pushAv three-way op mapping below (bug fix, 2026-07-16:
+ *   every non-MUL_ADD function used to collapse to 'ADD', silently
+ *   downgrading this SET).
+ *
+ * Old Guard's 0x007ACE76 → `STAT_DeflectChance` now routes via
+ * mgef.ts's shared FALLBACK_AVIF_ROUTES fallback (no entry needed here —
+ * see the `fallback` branch in the ActorValues handler below).
+ *
+ * Still deliberately OUT of this map (fall through to the "ActorValues on
+ * X — unmapped" note below):
  * - The Fixer's 0x00183312 / 0x00245BEB → `ArmorShadowHide` ("Stealth in
  *   Shadows") / `Mod_StealthMove_AV` ("Sneaking Speed") — sneak-detection
  *   stats, non-damage.
@@ -55,6 +66,11 @@ const ACTOR_VALUE_BUCKETS: Record<string, { bucket: Bucket; scale: number }> = {
   // carries the value directly on this property instead of an MGEF Peak
   // Value Modifier, but the semantics (flat max-HP points) are identical.
   Health: { bucket: 'maxHealth', scale: 1 },
+  // Resolute Veteran: flat Bullet Storm floor ADD +5 (see doc comment above).
+  AmmoSpenderMinStacks: { bucket: 'bulletStormMinStacks', scale: 1 },
+  // Final Word: enable on-kill stack grant (SET 1.0 — Boolean AV, see doc
+  // comment above). Stored-inert until a kill-aware model exists.
+  EnableAmmoSpenderOnKill: { bucket: 'bulletStormOnKill', scale: 1 },
 };
 
 /**
@@ -682,7 +698,15 @@ export async function extractOmods(
           const avEdid = await client.resolveEdid(prop.value1);
           const flatValue = prop.value2;
           const curvePoints = prop.curvePoints;
-          const op = prop.functionType === 'MUL_ADD' ? ('MUL_ADD' as const) : ('ADD' as const);
+          // Bug fix (2026-07-16): this used to collapse every non-MUL_ADD
+          // function to 'ADD', silently downgrading SET (Final Word's
+          // `ActorValues SET EnableAmmoSpenderOnKill 1.0` — see
+          // ACTOR_VALUE_BUCKETS' doc comment). Same three-way mapping the
+          // DamageTypeValues handler below already uses.
+          const op =
+            prop.functionType === 'SET' ? ('SET' as const) :
+            prop.functionType === 'MUL_ADD' ? ('MUL_ADD' as const) :
+            ('ADD' as const);
           const pushAv = (bucket: Bucket, scale: number, conditions: Modifier['conditions']) => {
             modifiers.push(
               curvePoints

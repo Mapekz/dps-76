@@ -228,6 +228,15 @@ describe('translate (Onslaught, 2026-07-12)', () => {
   });
 });
 
+describe('translate (Bullet Storm, 2026-07-16)', () => {
+  it("routes a Peak Value Modifier on AmmoSpenderMaxStacks to bulletStormMaxStacks (Heavy Gunner's abAmmoSpenderFortifyStacks-style flat magnitude)", () => {
+    const bulletStormEdids = new Map<string, string>([['0xAV', 'AmmoSpenderMaxStacks']]);
+    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), effect({ magnitude: 10 }), noRoutes, bulletStormEdids);
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0]).toEqual({ bucket: 'bulletStormMaxStacks', op: 'ADD', value: 10, conditions: [] });
+  });
+});
+
 describe('getMgefInfo (consumables overhaul, 2026-07-13)', () => {
   // Fixture is verbatim `esm -p get FortifyStrengthChemEffect --json` output
   // (20260710 ESM), formid 0x002466E6 — the "Chem: Fortify Strength" MGEF
@@ -314,6 +323,49 @@ describe('translateConditions (2026-07-10 review)', () => {
     };
     const { conditions } = translateConditions([row], { edidByFormId: new Map() });
     expect(conditions).toEqual([{ kind: 'enemyHealthAbovePct', pct: 60 }]);
+  });
+});
+
+describe('translateConditions (WornHasKeyword unique self-gate allowlist — Bullet Storm, 2026-07-16)', () => {
+  it("translates WornHasKeyword(CustomItemName_FoundationsVengeance) to a weaponKeyword condition instead of unresolved (Foundation's Vengeance +5 max-stack tier)", () => {
+    const row: RawCondition = {
+      Function: 'WornHasKeyword',
+      'Parameter 1': '0xFV',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+      'Run On': 'Subject',
+    };
+    const edidMap = new Map([['0xFV', 'CustomItemName_FoundationsVengeance']]);
+    const { conditions, unresolved } = translateConditions([row], { edidByFormId: edidMap });
+    expect(conditions).toEqual([{ kind: 'weaponKeyword', keyword: 'CustomItemName_FoundationsVengeance', present: true }]);
+    expect(unresolved).toEqual([]);
+  });
+
+  it("translates WornHasKeyword(RD01_CustomItemName_Valkyrie) to a weaponKeyword condition (Valkyrie's spin-up curve gate)", () => {
+    const row: RawCondition = {
+      Function: 'WornHasKeyword',
+      'Parameter 1': '0xVLK',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+      'Run On': 'Subject',
+    };
+    const edidMap = new Map([['0xVLK', 'RD01_CustomItemName_Valkyrie']]);
+    const { conditions } = translateConditions([row], { edidByFormId: edidMap });
+    expect(conditions).toEqual([{ kind: 'weaponKeyword', keyword: 'RD01_CustomItemName_Valkyrie', present: true }]);
+  });
+
+  it('leaves an off-allowlist CustomItemName_* keyword (dn_TheActionHero) unresolved — deliberately not added, its gated effect is data-broken either way', () => {
+    const row: RawCondition = {
+      Function: 'WornHasKeyword',
+      'Parameter 1': '0xTAH',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+      'Run On': 'Subject',
+    };
+    const edidMap = new Map([['0xTAH', 'dn_TheActionHero']]);
+    const { conditions, unresolved } = translateConditions([row], { edidByFormId: edidMap });
+    expect(conditions).toEqual([{ kind: 'unresolved', raw: 'WornHasKeyword(dn_TheActionHero)=1' }]);
+    expect(unresolved).toEqual(['WornHasKeyword(dn_TheActionHero)=1']);
   });
 });
 
@@ -991,6 +1043,12 @@ describe('translateConditions (IsMemberOfAPlayerTeam, 2026-07-14)', () => {
 describe('ENTRY_POINT_BUCKETS (Mod Weapon Attack Damage, 2026-07-14)', () => {
   it("maps 'Mod Weapon Attack Damage' to the dbm bucket (Grounded's Charged Penalty)", () => {
     expect(ENTRY_POINT_BUCKETS['Mod Weapon Attack Damage']).toBe('dbm');
+  });
+});
+
+describe('ENTRY_POINT_BUCKETS (Bullet Storm, 2026-07-16)', () => {
+  it("maps 'Mod Ammo Spender Max Reload Stack Mult' to bulletStormRetention (Lock and Load r1's EP210)", () => {
+    expect(ENTRY_POINT_BUCKETS['Mod Ammo Spender Max Reload Stack Mult']).toBe('bulletStormRetention');
   });
 });
 

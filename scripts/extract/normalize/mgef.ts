@@ -43,6 +43,12 @@ export const ENTRY_POINT_BUCKETS: Record<string, Bucket> = {
   // cases this entry point's function to append the `stacks:onslaught`
   // condition (the value alone would otherwise apply unconditionally).
   'Mod Damage on Consecutive Hits': 'dbm',
+  // Bullet Storm / Lock and Load r1 (2026-07-16, verified via `esm get`):
+  // PERK LockAndLoad01 0x00320168 carries this entry point directly (EP210,
+  // Function "Add Value", Float 0.5, no perk conditions) — no plumbing perk
+  // carries it, so buildAvifRoutes never sees it; wired here like every other
+  // direct-PERK entry point (docs/assumptions.md "Bullet Storm").
+  'Mod Ammo Spender Max Reload Stack Mult': 'bulletStormRetention',
   // Grounded's Charged Penalty (Mutation_ReduceEnergyDamage_Perk): Multiply
   // Value 0.5/0.63/0.75/0.88 by Class Freak tier, scoped WeaponTypeEnergy OR
   // WeaponTypeAlienBlaster. Folded as dbm MUL_ADD (float−1) — additive in the
@@ -207,6 +213,39 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   // dps-todos/move-speed-sources.md and the allowlist in
   // src/data/__tests__/move-speed-census.test.ts (CI fails on drift).
   SpeedMult: { bucket: 'moveSpeedBonus', scale: 0.01 },
+  // Bullet Storm's stack cap (2026-07-16, verified via `esm get`): AVIF
+  // AmmoSpenderMaxStacks 0x0083C3CB, Default 0 / Min 0, no percentage flag —
+  // raw stack-count points, scale 1. Fed by MGEF abAmmoSpenderFortifyStacks
+  // 0x0083C3D1 (Peak Value Modifier) inside SPEL AbPerkHeavyGunner
+  // 0x0031BE58: unconditional +10, +10 more with HasPerk(HeavyGunnerMaster01
+  // 0x0004A0D6), +5 more with WornHasKeyword(CustomItemName_
+  // FoundationsVengeance) AND GetHealthPercentage ≤0.25 — the FV tier
+  // resolves via the UNIQUE_SELF_GATE_KEYWORDS allowlist (conditions.ts)
+  // instead of falling through to unresolved (docs/assumptions.md "Bullet Storm").
+  AmmoSpenderMaxStacks: { bucket: 'bulletStormMaxStacks', scale: 1 },
+  // Deflect Chance (2026-07-16, verified via `esm get`): AVIF
+  // STAT_DeflectChance 0x007ACE76, "Percentage (Scale By 100 In UI)" flag →
+  // scale 0.01. Old Guard's OMOD (mod_Custom_OldGuard 0x008EC5A9) carries a
+  // clean flat `ActorValues ADD STAT_DeflectChance 10.0` — routes here via
+  // extract-omods.ts's shared FALLBACK_AVIF_ROUTES fallback (no
+  // ACTOR_VALUE_BUCKETS entry needed). Heavy Gunner's OWN deflect-chance
+  // effect (AbPerkFortifyDeflectChance inside AbPerkHeavyGunner, gated
+  // WornHasKeyword(dn_TheActionHero)) carries magnitude 0 with no curve
+  // table — data-broken, stays a "needs override" note regardless of this
+  // route (docs/assumptions.md "Bullet Storm" — deflectChance is a stored-
+  // inert bucket, no engine consumption yet either way).
+  STAT_DeflectChance: { bucket: 'deflectChance', scale: 0.01 },
+  // Bullet Storm's Valkyrie spin-up ramp (2026-07-16, verified via `esm
+  // get`): AVIF WeaponChargeUpSpeedMult 0x0000039C ("Spin Up Speed"),
+  // Default Value 1.0 — a 1.0-baseline multiplier like weaponSpeedMult/
+  // WeapReloadSpeedMult above, scale 1 (curve Y values are already decimal
+  // fractions). MGEF AbPerkFortifyActorWeaponChargeUpSpeedMult
+  // 0x00852F5C (Value Modifier, inside AbPerkHeavyGunner) carries curve
+  // "Bonus_Valkyrie" (x=bulletStormStacks 0→30, y 0→0.6) gated
+  // WornHasKeyword(RD01_CustomItemName_Valkyrie) — resolves via the
+  // UNIQUE_SELF_GATE_KEYWORDS allowlist (conditions.ts). Stored-inert:
+  // no engine consumer yet (docs/assumptions.md "Bullet Storm").
+  WeaponChargeUpSpeedMult: { bucket: 'bulletStormSpinUp', scale: 1 },
   // SPECIAL stat bonuses (Buffout +2 STR, Mentats +2 INT, legendary +SPECIAL
   // stars...). Flat points, scale 1. Strength/Luck fold into player state in
   // resolveLoadout; the rest are stored for perk-SPECIAL scaling. NOTE: these

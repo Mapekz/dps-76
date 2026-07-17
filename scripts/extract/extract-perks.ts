@@ -106,6 +106,35 @@ export function resolveRankSources(rankPerkFormIds: string[][], familyFormIds: s
 }
 
 /**
+ * Cut-rank fix (2026-07-16): cap a family's rank list at the HIGHEST rank a
+ * joined card's `rankSources` actually references, dropping trailing chain
+ * records the card never reaches. Verified example — Lock and Load: PCRD
+ * LockAndLoadCard 0x0032016B lists exactly one rank entry (Male Perk
+ * 0x00320168 = LockAndLoad01), so `rankSources = [1]` and this returns 1,
+ * even though the edid chain has 3 records (LockAndLoad01-03). LockAndLoad02/
+ * 03 (0x0032016A/0x0032016C) are dead: both carry `Effects: null` in the raw
+ * ESM data, and the only thing that ever references their formids is the
+ * orphaned SPEL AbPerkLockAndLoad 0x00320169 (itself referenced by nothing —
+ * `esm refs` returns []) — cut content that used to inflate the family to
+ * `maxRank: 3` with two redundant duplicate-looking rank tiers.
+ *
+ * Always an upper truncation, NEVER a re-index: `family.ranks[rankSources[i]
+ * - 1]` (perk-modifiers.ts's `resolveLoadoutRank` read path) stays a valid
+ * index for every rank a card can select, because `Math.max` never drops an
+ * index any `rankSources` entry actually points at. This is what keeps
+ * StarchedGenes-shaped compressed cards (a single card rank backed by the
+ * family's OLD rank-2 record, `rankSources = [2]`) working unchanged: rank
+ * 1's record stays in the array purely as positional filler so index 1
+ * resolves, and `Math.max([2]) === 2` equals the full original chain length
+ * there anyway. Families with no joined card (`rankSources` undefined) keep
+ * the full chain length, unchanged.
+ */
+export function effectiveFamilyMaxRank(chainLength: number, rankSources: number[] | undefined): number {
+  if (!rankSources || rankSources.length === 0) return chainLength;
+  return Math.max(...rankSources);
+}
+
+/**
  * Pure PCRD → GeneratedPerkCard normalization (verified against the 20260710
  * dump: TenderizerCard 0x003E2202, CommandoCard 0x0031AEF6, ActionBoyGirlCard
  * 0x00093E84, LGN_WhatRads_Card 0x005A5943). Shape:
@@ -345,13 +374,23 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
   const perks: GeneratedPerk[] = [];
 
   for (const [family, familyRecords] of families) {
+    const card = cardByFamily.get(family);
+    // Cut-rank fix (see effectiveFamilyMaxRank's doc comment): caps the
+    // simulation at the highest rank the joined card can actually reach,
+    // dropping cut-content chain records (Lock and Load's r2/r3) from
+    // `ranks`/`formIds`/`descriptions`/`maxRank` below. `formIds` here stays
+    // the FULL original chain — translationCtx.familyFormIds/ownedRanks below
+    // still need the untruncated chain for self-family HasPerk rank gates
+    // (a record's own conditions can reference a rank above the card's
+    // reach, e.g. StarchedGenes' filler rank 1 vs. its live rank 2).
+    const effectiveMaxRank = effectiveFamilyMaxRank(familyRecords.length, card?.rankSources);
     const formIds = familyRecords.map(r => r.header.form_id);
     const pairedFamily = GENDER_TWIN_PAIRS[family];
     const pairedFamilyFormIds = pairedFamily ? families.get(pairedFamily)?.map(r => r.header.form_id) : undefined;
     const notes = new Set<string>();
     const ranks: GeneratedPerk['ranks'] = [];
 
-    for (let rank = 1; rank <= familyRecords.length; rank++) {
+    for (let rank = 1; rank <= effectiveMaxRank; rank++) {
       const modifiers: Modifier[] = [];
       const translationCtx: ConditionTranslationContext = {
         edidByFormId,
@@ -465,17 +504,20 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
     perks.push({
       family,
       name: (familyRecords[0].fields['Name'] as string) ?? family,
-      formIds,
-      maxRank: familyRecords.length,
-      descriptions: familyRecords.map(r => (r.fields['Description'] as string) ?? ''),
+      // Output formIds/descriptions/maxRank are truncated to effectiveMaxRank
+      // (cut-rank fix) — formIds above stays the full chain for
+      // translationCtx's own use inside the loop, unaffected.
+      formIds: formIds.slice(0, effectiveMaxRank),
+      maxRank: effectiveMaxRank,
+      descriptions: familyRecords.slice(0, effectiveMaxRank).map(r => (r.fields['Description'] as string) ?? ''),
       ranks,
       // hasCard ⇔ a PCRD record actually joined this family (see the PCRD
       // join above) — NOT SWF-sprite presence, which was true for ~218
       // non-card families (vendor/ATX/abEpic perks with no player-facing
       // card). Kept as a field: src/data/perk-modifiers.ts's name-collision
       // tiebreak prefers carded entries.
-      hasCard: cardByFamily.has(family),
-      ...(cardByFamily.has(family) && { card: cardByFamily.get(family)! }),
+      hasCard: !!card,
+      ...(card && { card }),
       notes: [...notes],
     });
   }

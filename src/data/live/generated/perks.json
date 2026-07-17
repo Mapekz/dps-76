@@ -505,27 +505,15 @@
   "family": "AllNightLong",
   "name": "All Night Long",
   "formIds": [
-   "0x00393F51",
-   "0x00393F52",
-   "0x00393F53"
+   "0x00393F51"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "The positive effects of pre-war alcohol last twice as long.",
-   "Hunger and thirst grow 40% slower at night.",
-   "Hunger and thirst grow 60% slower at night."
+   "The positive effects of pre-war alcohol last twice as long."
   ],
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
-   },
-   {
-    "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
     "modifiers": []
    }
   ],
@@ -1576,27 +1564,15 @@
   "family": "Barbarian",
   "name": "Barbarian",
   "formIds": [
-   "0x00242E59",
-   "0x00242E5B",
-   "0x00242E5C"
+   "0x00242E59"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "Gain Damage Resistance based on your STR. Doubled when not wearing armor.",
-   "Every point of Strength adds +3 Damage Resist (max 60). (No Power Armor)",
-   "Every point of Strength adds +4 Damage Resist (max 80). (No Power Armor)"
+   "Gain Damage Resistance based on your STR. Doubled when not wearing armor."
   ],
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
-   },
-   {
-    "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
     "modifiers": []
    }
   ],
@@ -1697,27 +1673,15 @@
   "family": "BearArms",
   "name": "Bear Arms",
   "formIds": [
-   "0x0016AF72",
-   "0x0016AF73",
-   "0x0032016E"
+   "0x0016AF72"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "Each stack of Bullet Storm increases your bash damage by 5%.",
-   "Heavy guns weigh 60% less.",
-   "Heavy guns weigh 90% less."
+   "Each stack of Bullet Storm increases your bash damage by 5%."
   ],
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
-   },
-   {
-    "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
     "modifiers": []
    }
   ],
@@ -2038,27 +2002,15 @@
   "family": "BloodyMess",
   "name": "Bloody Mess",
   "formIds": [
-   "0x0004A0BB",
-   "0x001D2453",
-   "0x001D2454"
+   "0x0004A0BB"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "Bleeding enemies you kill have a chance to explode based on your LCK.",
-   "Bleeding enemies you kill have a chance to explode for more damage based on your LCK.",
-   "Bleeding enemies you kill have a chance to explode for even more damage based on your LCK."
+   "Bleeding enemies you kill have a chance to explode based on your LCK."
   ],
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
-   },
-   {
-    "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
     "modifiers": []
    }
   ],
@@ -2197,33 +2149,15 @@
   "family": "Bodyguards",
   "name": "Bodyguards",
   "formIds": [
-   "0x00310BF5",
-   "0x00310BF6",
-   "0x00310BF7",
-   "0x00310BF4"
+   "0x00310BF5"
   ],
-  "maxRank": 4,
+  "maxRank": 1,
   "descriptions": [
-   "Gain Damage & Energy Resistance based on your CHA and number of teammates.",
-   "Gain +8 Resistance to Damage & Energy (max 24) for each teammate, excluding you.",
-   "Gain +10 Resistance to Damage & Energy (max 30) for each teammate, excluding you.",
-   "Gain +12 Resistance to Damage & Energy (max 36) for each teammate, excluding you."
+   "Gain Damage & Energy Resistance based on your CHA and number of teammates."
   ],
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
-   },
-   {
-    "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
-    "modifiers": []
-   },
-   {
-    "rank": 4,
     "modifiers": []
    }
   ],
@@ -2474,14 +2408,12 @@
   "name": "Bow Before Me",
   "formIds": [
    "0x00563B87",
-   "0x00563B99",
-   "0x00563B9A"
+   "0x00563B99"
   ],
-  "maxRank": 3,
+  "maxRank": 2,
   "descriptions": [
    "Your bows and crossbows ignore 20% armor and have a 5% chance to stagger.",
-   "Your bows and crossbows ignore 40% armor and have a 10% chance to stagger.",
-   "Your bows and crossbows ignore 36% armor and have a 9% chance to stagger."
+   "Your bows and crossbows ignore 40% armor and have a 10% chance to stagger."
   ],
   "ranks": [
    {
@@ -2490,10 +2422,6 @@
    },
    {
     "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
     "modifiers": []
    }
   ],
@@ -2874,27 +2802,15 @@
   "family": "Cannibal",
   "name": "Cannibal",
   "formIds": [
-   "0x0004B259",
-   "0x001D1A62",
-   "0x001D1A63"
+   "0x0004B259"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "Eating human, Ghoul, Super Mutant, Scorched, or Mole Miner corpses restores Health and hunger.",
-   "Eating human, Ghoul, Super Mutant, Scorched, or Mole Miner corpses restores more Health and hunger.",
-   "Eating human, Ghoul, Super Mutant, Scorched, or Mole Miner corpses restores even more Health and hunger."
+   "Eating human, Ghoul, Super Mutant, Scorched, or Mole Miner corpses restores Health and hunger."
   ],
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
-   },
-   {
-    "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
     "modifiers": []
    }
   ],
@@ -5190,16 +5106,12 @@
   "formIds": [
    "0x003440B0",
    "0x003440B3",
-   "0x003440B4",
-   "0x003440B5",
-   "0x003440B6"
+   "0x003440B4"
   ],
-  "maxRank": 5,
+  "maxRank": 3,
   "descriptions": [
    "Your explosives do +20% damage.",
    "Your explosives do +40% damage.",
-   "Your explosives do +60% damage.",
-   "Your explosives do +50% damage.",
    "Your explosives do +60% damage."
   ],
   "ranks": [
@@ -5266,58 +5178,6 @@
        "edid": "DemolitionExpert",
        "name": "Demolition Expert",
        "rank": 3
-      },
-      "bucket": "dbm",
-      "op": "ADD",
-      "value": 0.6,
-      "conditions": [
-       {
-        "kind": "damageTypeScope",
-        "types": [
-         "explosive"
-        ]
-       }
-      ]
-     }
-    ]
-   },
-   {
-    "rank": 4,
-    "modifiers": [
-     {
-      "id": "0x003440B0:r4:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x003440B0",
-       "edid": "DemolitionExpert",
-       "name": "Demolition Expert",
-       "rank": 4
-      },
-      "bucket": "dbm",
-      "op": "ADD",
-      "value": 0.6,
-      "conditions": [
-       {
-        "kind": "damageTypeScope",
-        "types": [
-         "explosive"
-        ]
-       }
-      ]
-     }
-    ]
-   },
-   {
-    "rank": 5,
-    "modifiers": [
-     {
-      "id": "0x003440B0:r5:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x003440B0",
-       "edid": "DemolitionExpert",
-       "name": "Demolition Expert",
-       "rank": 5
       },
       "bucket": "dbm",
       "op": "ADD",
@@ -6206,27 +6066,15 @@
   "family": "EMT",
   "name": "E.M.T.",
   "formIds": [
-   "0x00029285",
-   "0x001872C5",
-   "0x00187319"
+   "0x00029285"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "Automatically revive downed teammates once every 3 minutes and grant them increased healing for 1 minute.",
-   "Players you revive come back with improved health regen for 30 seconds.",
-   "Players you revive come back with high health regen for 60 seconds."
+   "Automatically revive downed teammates once every 3 minutes and grant them increased healing for 1 minute."
   ],
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
-   },
-   {
-    "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
     "modifiers": []
    }
   ],
@@ -6698,27 +6546,15 @@
   "family": "FireInTheHole",
   "name": "Strong Arm",
   "formIds": [
-   "0x003701BC",
-   "0x003701C1",
-   "0x003701C2"
+   "0x003701BC"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "50% increased throwing range.",
-   "See a throwing arc when tossing thrown weapons, and they fly 30% further.",
-   "See a throwing arc when tossing thrown weapons, and they fly 50% further."
+   "50% increased throwing range."
   ],
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
-   },
-   {
-    "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
     "modifiers": []
    }
   ],
@@ -11519,6 +11355,65 @@
        "name": "Bullet Storm",
        "rank": 1
       },
+      "bucket": "bulletStormMaxStacks",
+      "op": "ADD",
+      "value": 10,
+      "conditions": []
+     },
+     {
+      "id": "0x0031AF14:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 1
+      },
+      "bucket": "bulletStormMaxStacks",
+      "op": "ADD",
+      "value": 10,
+      "conditions": [
+       {
+        "kind": "perkFamilyRank",
+        "family": "HeavyGunnerMaster",
+        "minRank": 1,
+        "present": true
+       }
+      ]
+     },
+     {
+      "id": "0x0031AF14:r1:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 1
+      },
+      "bucket": "bulletStormMaxStacks",
+      "op": "ADD",
+      "value": 5,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "CustomItemName_FoundationsVengeance",
+        "present": true
+       },
+       {
+        "kind": "healthBelowPct",
+        "pct": 25
+       }
+      ]
+     },
+     {
+      "id": "0x0031AF14:r1:1:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 1
+      },
       "bucket": "dbm",
       "op": "ADD",
       "curve": {
@@ -11538,7 +11433,7 @@
       "conditions": []
      },
      {
-      "id": "0x0031AF14:r1:1:1",
+      "id": "0x0031AF14:r1:1:4",
       "source": {
        "kind": "perk",
        "formId": "0x0031AF14",
@@ -11572,7 +11467,7 @@
       ]
      },
      {
-      "id": "0x0031AF14:r1:1:2",
+      "id": "0x0031AF14:r1:1:5",
       "source": {
        "kind": "perk",
        "formId": "0x0031AF14",
@@ -11604,6 +11499,43 @@
         "present": true
        }
       ]
+     },
+     {
+      "id": "0x0031AF14:r1:1:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 1
+      },
+      "bucket": "bulletStormSpinUp",
+      "op": "ADD",
+      "curve": {
+       "input": "bulletStormStacks",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 1,
+         "y": 0.02
+        },
+        {
+         "x": 30,
+         "y": 0.6
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "RD01_CustomItemName_Valkyrie",
+        "present": true
+       }
+      ]
      }
     ]
    },
@@ -11612,6 +11544,65 @@
     "modifiers": [
      {
       "id": "0x0031AF14:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 2
+      },
+      "bucket": "bulletStormMaxStacks",
+      "op": "ADD",
+      "value": 10,
+      "conditions": []
+     },
+     {
+      "id": "0x0031AF14:r2:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 2
+      },
+      "bucket": "bulletStormMaxStacks",
+      "op": "ADD",
+      "value": 10,
+      "conditions": [
+       {
+        "kind": "perkFamilyRank",
+        "family": "HeavyGunnerMaster",
+        "minRank": 1,
+        "present": true
+       }
+      ]
+     },
+     {
+      "id": "0x0031AF14:r2:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 2
+      },
+      "bucket": "bulletStormMaxStacks",
+      "op": "ADD",
+      "value": 5,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "CustomItemName_FoundationsVengeance",
+        "present": true
+       },
+       {
+        "kind": "healthBelowPct",
+        "pct": 25
+       }
+      ]
+     },
+     {
+      "id": "0x0031AF14:r2:1:3",
       "source": {
        "kind": "perk",
        "formId": "0x0031AF14",
@@ -11638,7 +11629,7 @@
       "conditions": []
      },
      {
-      "id": "0x0031AF14:r2:1:1",
+      "id": "0x0031AF14:r2:1:4",
       "source": {
        "kind": "perk",
        "formId": "0x0031AF14",
@@ -11672,7 +11663,7 @@
       ]
      },
      {
-      "id": "0x0031AF14:r2:1:2",
+      "id": "0x0031AF14:r2:1:5",
       "source": {
        "kind": "perk",
        "formId": "0x0031AF14",
@@ -11704,6 +11695,43 @@
         "present": true
        }
       ]
+     },
+     {
+      "id": "0x0031AF14:r2:1:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 2
+      },
+      "bucket": "bulletStormSpinUp",
+      "op": "ADD",
+      "curve": {
+       "input": "bulletStormStacks",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 1,
+         "y": 0.02
+        },
+        {
+         "x": 30,
+         "y": 0.6
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "RD01_CustomItemName_Valkyrie",
+        "present": true
+       }
+      ]
      }
     ]
    },
@@ -11712,6 +11740,65 @@
     "modifiers": [
      {
       "id": "0x0031AF14:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 3
+      },
+      "bucket": "bulletStormMaxStacks",
+      "op": "ADD",
+      "value": 10,
+      "conditions": []
+     },
+     {
+      "id": "0x0031AF14:r3:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 3
+      },
+      "bucket": "bulletStormMaxStacks",
+      "op": "ADD",
+      "value": 10,
+      "conditions": [
+       {
+        "kind": "perkFamilyRank",
+        "family": "HeavyGunnerMaster",
+        "minRank": 1,
+        "present": true
+       }
+      ]
+     },
+     {
+      "id": "0x0031AF14:r3:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 3
+      },
+      "bucket": "bulletStormMaxStacks",
+      "op": "ADD",
+      "value": 5,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "CustomItemName_FoundationsVengeance",
+        "present": true
+       },
+       {
+        "kind": "healthBelowPct",
+        "pct": 25
+       }
+      ]
+     },
+     {
+      "id": "0x0031AF14:r3:1:3",
       "source": {
        "kind": "perk",
        "formId": "0x0031AF14",
@@ -11738,7 +11825,7 @@
       "conditions": []
      },
      {
-      "id": "0x0031AF14:r3:1:1",
+      "id": "0x0031AF14:r3:1:4",
       "source": {
        "kind": "perk",
        "formId": "0x0031AF14",
@@ -11772,7 +11859,7 @@
       ]
      },
      {
-      "id": "0x0031AF14:r3:1:2",
+      "id": "0x0031AF14:r3:1:5",
       "source": {
        "kind": "perk",
        "formId": "0x0031AF14",
@@ -11804,6 +11891,43 @@
         "present": true
        }
       ]
+     },
+     {
+      "id": "0x0031AF14:r3:1:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF14",
+       "edid": "HeavyGunner",
+       "name": "Bullet Storm",
+       "rank": 3
+      },
+      "bucket": "bulletStormSpinUp",
+      "op": "ADD",
+      "curve": {
+       "input": "bulletStormStacks",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 1,
+         "y": 0.02
+        },
+        {
+         "x": 30,
+         "y": 0.6
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "RD01_CustomItemName_Valkyrie",
+        "present": true
+       }
+      ]
      }
     ]
    }
@@ -11826,10 +11950,8 @@
    ]
   },
   "notes": [
-   "condition: WornHasKeyword(CustomItemName_FoundationsVengeance)=1",
    "condition: WornHasKeyword(dn_TheActionHero)=1",
    "MGEF AbPerkFortifyDeflectChance: zero magnitude, no curve — script/scaled, needs override",
-   "condition: WornHasKeyword(RD01_CustomItemName_Valkyrie)=1",
    "MGEF abAmmoSpenderFortifyStacks_Desc archetype Script — needs override"
   ]
  },
@@ -11846,7 +11968,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0031AF10:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031AF10",
+       "edid": "HeavyGunnerExpert",
+       "name": "Tightly Wound",
+       "rank": 1
+      },
+      "bucket": "bulletStormSpinUp",
+      "op": "ADD",
+      "value": 0.6,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -13119,27 +13256,15 @@
   "family": "Inspirational",
   "name": "Inspirational",
   "formIds": [
-   "0x001D2461",
-   "0x001D2462",
-   "0x001D2463"
+   "0x001D2461"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "Gain more XP while on a team based on your CHA.",
-   "You and Players within 150ft gain more XP based on your CHA.",
-   "You and Players within 250ft gain more XP based on your CHA."
+   "Gain more XP while on a team based on your CHA."
   ],
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
-   },
-   {
-    "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
     "modifiers": []
    }
   ],
@@ -13214,15 +13339,11 @@
   "formIds": [
    "0x003440D0",
    "0x003440D2",
-   "0x003440D3",
-   "0x003440D4",
-   "0x003440D5"
+   "0x003440D3"
   ],
-  "maxRank": 5,
+  "maxRank": 3,
   "descriptions": [
    "Armor provides 15% more protection. Double if wearing a matching set.",
-   "Armor provides 20% more protection. Double if wearing a matching set.",
-   "Armor provides 25% more protection. Double if wearing a matching set.",
    "Armor provides 20% more protection. Double if wearing a matching set.",
    "Armor provides 25% more protection. Double if wearing a matching set."
   ],
@@ -13237,14 +13358,6 @@
    },
    {
     "rank": 3,
-    "modifiers": []
-   },
-   {
-    "rank": 4,
-    "modifiers": []
-   },
-   {
-    "rank": 5,
     "modifiers": []
    }
   ],
@@ -13271,15 +13384,11 @@
   "family": "IronFist",
   "name": "Iron Fist",
   "formIds": [
-   "0x0001DAFE",
-   "0x0001DAFF",
-   "0x0001DB00"
+   "0x0001DAFE"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "Your Fists deal more damage based on your DR.",
-   "Your Fists attacks now do +15% damage.",
-   "Your Fists attacks now do +20% damage."
+   "Your Fists deal more damage based on your DR."
   ],
   "ranks": [
    {
@@ -13293,82 +13402,6 @@
        "edid": "IronFist",
        "name": "Iron Fist",
        "rank": 1
-      },
-      "bucket": "dbm",
-      "op": "ADD",
-      "curve": {
-       "input": "enemyDamageResist",
-       "points": [
-        {
-         "x": 0,
-         "y": 0
-        },
-        {
-         "x": 1000,
-         "y": 100
-        }
-       ]
-      },
-      "curveScale": 0.01,
-      "conditions": [
-       {
-        "kind": "weaponKeyword",
-        "keyword": "WeaponTypeUnarmed",
-        "present": true
-       }
-      ]
-     }
-    ]
-   },
-   {
-    "rank": 2,
-    "modifiers": [
-     {
-      "id": "0x0001DAFE:r2:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x0001DAFE",
-       "edid": "IronFist",
-       "name": "Iron Fist",
-       "rank": 2
-      },
-      "bucket": "dbm",
-      "op": "ADD",
-      "curve": {
-       "input": "enemyDamageResist",
-       "points": [
-        {
-         "x": 0,
-         "y": 0
-        },
-        {
-         "x": 1000,
-         "y": 100
-        }
-       ]
-      },
-      "curveScale": 0.01,
-      "conditions": [
-       {
-        "kind": "weaponKeyword",
-        "keyword": "WeaponTypeUnarmed",
-        "present": true
-       }
-      ]
-     }
-    ]
-   },
-   {
-    "rank": 3,
-    "modifiers": [
-     {
-      "id": "0x0001DAFE:r3:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x0001DAFE",
-       "edid": "IronFist",
-       "name": "Iron Fist",
-       "rank": 3
       },
       "bucket": "dbm",
       "op": "ADD",
@@ -13416,27 +13449,15 @@
   "family": "IronStomach",
   "name": "Iron Stomach",
   "formIds": [
-   "0x00185A2D",
-   "0x00185A4A",
-   "0x00185A4C"
+   "0x00185A2D"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "Increased Damage and Energy Resistance based on END while not diseased.",
-   "Your chance to catch a disease from food is reduced by 60%.",
-   "Your chance to catch a disease from food is reduced by 90%."
+   "Increased Damage and Energy Resistance based on END while not diseased."
   ],
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
-   },
-   {
-    "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
     "modifiers": []
    }
   ],
@@ -16425,15 +16446,11 @@
   "family": "LifeGiver",
   "name": "LifeGiver",
   "formIds": [
-   "0x0004A0CF",
-   "0x001D2465",
-   "0x001D2467"
+   "0x0004A0CF"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "Gain more max HP per point in END.",
-   "Gain a total of +30 to your maximum Health.",
-   "Gain a total of +45 to your maximum Health."
+   "Gain more max HP per point in END."
   ],
   "ranks": [
    {
@@ -16447,94 +16464,6 @@
        "edid": "LifeGiver",
        "name": "LifeGiver",
        "rank": 1
-      },
-      "bucket": "maxHealth",
-      "op": "ADD",
-      "curve": {
-       "input": "endurance",
-       "points": [
-        {
-         "x": 1,
-         "y": 10
-        },
-        {
-         "x": 15,
-         "y": 120
-        },
-        {
-         "x": 30,
-         "y": 180
-        },
-        {
-         "x": 60,
-         "y": 230
-        },
-        {
-         "x": 100,
-         "y": 250
-        }
-       ]
-      },
-      "curveScale": 1,
-      "conditions": []
-     }
-    ]
-   },
-   {
-    "rank": 2,
-    "modifiers": [
-     {
-      "id": "0x0004A0CF:r2:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x0004A0CF",
-       "edid": "LifeGiver",
-       "name": "LifeGiver",
-       "rank": 2
-      },
-      "bucket": "maxHealth",
-      "op": "ADD",
-      "curve": {
-       "input": "endurance",
-       "points": [
-        {
-         "x": 1,
-         "y": 10
-        },
-        {
-         "x": 15,
-         "y": 120
-        },
-        {
-         "x": 30,
-         "y": 180
-        },
-        {
-         "x": 60,
-         "y": 230
-        },
-        {
-         "x": 100,
-         "y": 250
-        }
-       ]
-      },
-      "curveScale": 1,
-      "conditions": []
-     }
-    ]
-   },
-   {
-    "rank": 3,
-    "modifiers": [
-     {
-      "id": "0x0004A0CF:r3:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x0004A0CF",
-       "edid": "LifeGiver",
-       "name": "LifeGiver",
-       "rank": 3
       },
       "bucket": "maxHealth",
       "op": "ADD",
@@ -16683,28 +16612,31 @@
   "family": "LockAndLoad",
   "name": "Lock and Load",
   "formIds": [
-   "0x00320168",
-   "0x0032016A",
-   "0x0032016C"
+   "0x00320168"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "You keep half of your Bullet Storm stacks when you reload. +1% reload speed per stack.",
-   "Heavy guns reload 40% faster.",
-   "Heavy guns reload 60% faster."
+   "You keep half of your Bullet Storm stacks when you reload. +1% reload speed per stack."
   ],
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
-   },
-   {
-    "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00320168:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00320168",
+       "edid": "LockAndLoad",
+       "name": "Lock and Load",
+       "rank": 1
+      },
+      "bucket": "bulletStormRetention",
+      "op": "ADD",
+      "value": 0.5,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -16757,15 +16689,11 @@
   "family": "LoneWanderer",
   "name": "Lone Wanderer",
   "formIds": [
-   "0x001D246B",
-   "0x001D246D",
-   "0x001D246E"
+   "0x001D246B"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "Gain Resistances and AP Regen based on your CHA while not on a team.",
-   "When adventuring alone, take 15% less damage and gain 20% AP regen.",
-   "When adventuring alone, take 20% less damage and gain 30% AP regen."
+   "Gain Resistances and AP Regen based on your CHA while not on a team."
   ],
   "ranks": [
    {
@@ -16779,104 +16707,6 @@
        "edid": "LoneWanderer",
        "name": "Lone Wanderer",
        "rank": 1
-      },
-      "bucket": "apRegen",
-      "op": "ADD",
-      "curve": {
-       "input": "charisma",
-       "points": [
-        {
-         "x": 1,
-         "y": 10
-        },
-        {
-         "x": 15,
-         "y": 30
-        },
-        {
-         "x": 30,
-         "y": 45
-        },
-        {
-         "x": 60,
-         "y": 70
-        },
-        {
-         "x": 100,
-         "y": 85
-        }
-       ]
-      },
-      "curveScale": 0.01,
-      "conditions": [
-       {
-        "kind": "teammateCount",
-        "count": 0
-       }
-      ]
-     }
-    ]
-   },
-   {
-    "rank": 2,
-    "modifiers": [
-     {
-      "id": "0x001D246B:r2:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x001D246B",
-       "edid": "LoneWanderer",
-       "name": "Lone Wanderer",
-       "rank": 2
-      },
-      "bucket": "apRegen",
-      "op": "ADD",
-      "curve": {
-       "input": "charisma",
-       "points": [
-        {
-         "x": 1,
-         "y": 10
-        },
-        {
-         "x": 15,
-         "y": 30
-        },
-        {
-         "x": 30,
-         "y": 45
-        },
-        {
-         "x": 60,
-         "y": 70
-        },
-        {
-         "x": 100,
-         "y": 85
-        }
-       ]
-      },
-      "curveScale": 0.01,
-      "conditions": [
-       {
-        "kind": "teammateCount",
-        "count": 0
-       }
-      ]
-     }
-    ]
-   },
-   {
-    "rank": 3,
-    "modifiers": [
-     {
-      "id": "0x001D246B:r3:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x001D246B",
-       "edid": "LoneWanderer",
-       "name": "Lone Wanderer",
-       "rank": 3
       },
       "bucket": "apRegen",
       "op": "ADD",
@@ -20215,27 +20045,15 @@
   "family": "NaturalResistance",
   "name": "Natural Resistance",
   "formIds": [
-   "0x0018712E",
-   "0x001A257C",
-   "0x002BA544"
+   "0x0018712E"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "Increased Elemental Resistances based on END while not diseased.",
-   "You are 60% less likely to catch a disease from the environment.",
-   "You are 90% less likely to catch a disease from the environment."
+   "Increased Elemental Resistances based on END while not diseased."
   ],
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
-   },
-   {
-    "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
     "modifiers": []
    }
   ],
@@ -20468,14 +20286,12 @@
   "name": "Ninja",
   "formIds": [
    "0x0004D8A6",
-   "0x000E3704",
-   "0x000E3705"
+   "0x000E3704"
   ],
-  "maxRank": 3,
+  "maxRank": 2,
   "descriptions": [
    "Bows, throwing, and melee weapons do +50% sneak attack damage.",
-   "Bows, throwing, and melee weapons do +100% sneak attack damage.",
-   "Sneak attacks with melee weapons do an additional 90% sneak attack damage."
+   "Bows, throwing, and melee weapons do +100% sneak attack damage."
   ],
   "ranks": [
    {
@@ -20532,34 +20348,6 @@
          "WeaponTypeUnarmed",
          "WeaponTypeThrowingKnife",
          "WeaponTypeBow"
-        ]
-       }
-      ]
-     }
-    ]
-   },
-   {
-    "rank": 3,
-    "modifiers": [
-     {
-      "id": "0x0004D8A6:r3:3:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x0004D8A6",
-       "edid": "Ninja",
-       "name": "Ninja",
-       "rank": 3
-      },
-      "bucket": "sneakBonus",
-      "op": "ADD",
-      "value": 0.9,
-      "conditions": [
-       {
-        "kind": "weaponKeywordAny",
-        "keywords": [
-         "WeaponTypeMelee1H",
-         "WeaponTypeMelee2H",
-         "WeaponTypeUnarmed"
         ]
        }
       ]
@@ -24321,15 +24109,11 @@
   "family": "Psychopath",
   "name": "Psychopath",
   "formIds": [
-   "0x0027A86F",
-   "0x0027A872",
-   "0x003701AD"
+   "0x0027A86F"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "Hits outside V.A.T.S. refill your Critical Meter at 10% contribution.",
-   "Hits outside V.A.T.S. refill your Critical Meter at 10% contribution.",
-   "Hits outside V.A.T.S. refill your Critical Meter at 15% contribution."
+   "Hits outside V.A.T.S. refill your Critical Meter at 10% contribution."
   ],
   "ranks": [
    {
@@ -24343,54 +24127,6 @@
        "edid": "Psychopath",
        "name": "Psychopath",
        "rank": 1
-      },
-      "bucket": "critFill",
-      "op": "MUL_ADD",
-      "value": -0.9,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetIsInVATS()=0"
-       }
-      ]
-     }
-    ]
-   },
-   {
-    "rank": 2,
-    "modifiers": [
-     {
-      "id": "0x0027A86F:r2:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x0027A86F",
-       "edid": "Psychopath",
-       "name": "Psychopath",
-       "rank": 2
-      },
-      "bucket": "critFill",
-      "op": "MUL_ADD",
-      "value": -0.9,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetIsInVATS()=0"
-       }
-      ]
-     }
-    ]
-   },
-   {
-    "rank": 3,
-    "modifiers": [
-     {
-      "id": "0x0027A86F:r3:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x0027A86F",
-       "edid": "Psychopath",
-       "name": "Psychopath",
-       "rank": 3
       },
       "bucket": "critFill",
       "op": "MUL_ADD",
@@ -25352,33 +25088,15 @@
   "family": "RadResistant",
   "name": "Rad Resistant",
   "formIds": [
-   "0x001D2479",
-   "0x001D247A",
-   "0x001D247B",
-   "0x003777F7"
+   "0x001D2479"
   ],
-  "maxRank": 4,
+  "maxRank": 1,
   "descriptions": [
-   "Gain Radiation Resistance based on your END.",
-   "You now have +20 Radiation Resistance.",
-   "You now have +30 Radiation Resistance.",
-   "You now have +40 Radiation Resistance."
+   "Gain Radiation Resistance based on your END."
   ],
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
-   },
-   {
-    "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
-    "modifiers": []
-   },
-   {
-    "rank": 4,
     "modifiers": []
    }
   ],
@@ -25401,27 +25119,15 @@
   "family": "RadSponge",
   "name": "Rad Sponge",
   "formIds": [
-   "0x003808A9",
-   "0x003808AC",
-   "0x003808AD"
+   "0x003808A9"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "Absorb 20% of RADs taken and restore Hunger and Thirst.",
-   "Absorb 20% of RADs taken and restore Hunger and Thirst.",
-   "Absorb 30% of RADs taken and restore Hunger and Thirst."
+   "Absorb 20% of RADs taken and restore Hunger and Thirst."
   ],
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
-   },
-   {
-    "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
     "modifiers": []
    }
   ],
@@ -28017,27 +27723,15 @@
   "family": "SpiritualHealer",
   "name": "Spiritual Healer",
   "formIds": [
-   "0x003896E8",
-   "0x003896EA",
-   "0x003896EB"
+   "0x003896E8"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "Regenerate HP while on a team based on your CHA.",
-   "You and Players within 150ft regenerate HP based on your CHA.",
-   "You and Players within 250ft regenerate HP based on your CHA."
+   "Regenerate HP while on a team based on your CHA."
   ],
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
-   },
-   {
-    "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
     "modifiers": []
    }
   ],
@@ -28160,27 +27854,15 @@
   "family": "Stabilized",
   "name": "Stabilized",
   "formIds": [
-   "0x00320163",
-   "0x00320164",
-   "0x00320165"
+   "0x00320163"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "Big guns gain 30% accuracy. Double in Power Armor.",
-   "In Power Armor, heavy guns gain even more accuracy and ignore 30% armor.",
-   "In Power Armor, heavy guns gain excellent accuracy and ignore 45% armor."
+   "Big guns gain 30% accuracy. Double in Power Armor."
   ],
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
-   },
-   {
-    "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
     "modifiers": []
    }
   ],
@@ -28902,14 +28584,12 @@
   "name": "Tank Killer",
   "formIds": [
    "0x0031D4BC",
-   "0x001D61E3",
-   "0x001D61E8"
+   "0x001D61E3"
   ],
-  "maxRank": 3,
+  "maxRank": 2,
   "descriptions": [
    "Your ranged weapons ignore 20% armor.",
-   "Your ranged weapons ignore 40% armor.",
-   "Your small guns ignore 36% armor and have a 9% chance to stagger."
+   "Your ranged weapons ignore 40% armor."
   ],
   "ranks": [
    {
@@ -28918,10 +28598,6 @@
    },
    {
     "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
     "modifiers": []
    }
   ],
@@ -29200,27 +28876,15 @@
   "family": "ThirstQuencher",
   "name": "Thirst Quencher",
   "formIds": [
-   "0x002BA547",
-   "0x002BA561",
-   "0x002BA562"
+   "0x002BA547"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "Increased Max AP based on END while not diseased.",
-   "Drinking any liquid has a 60% reduced chance to cause Disease.",
-   "Drinking any liquid has a 90% reduced chance to cause Disease."
+   "Increased Max AP based on END while not diseased."
   ],
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
-   },
-   {
-    "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
     "modifiers": []
    }
   ],
@@ -31504,27 +31168,15 @@
   "family": "Vaccinated",
   "name": "Vaccinated",
   "formIds": [
-   "0x00323F91",
-   "0x003264E0",
-   "0x003264E1"
+   "0x00323F91"
   ],
-  "maxRank": 3,
+  "maxRank": 1,
   "descriptions": [
-   "Increased Disease Resistance based on END.",
-   "",
-   "."
+   "Increased Disease Resistance based on END."
   ],
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
-   },
-   {
-    "rank": 2,
-    "modifiers": []
-   },
-   {
-    "rank": 3,
     "modifiers": []
    }
   ],

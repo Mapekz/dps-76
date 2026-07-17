@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import type { EsmRecord } from '../esm-client';
-import { resolveRankSources, toGeneratedPerkCard } from '../extract-perks';
+import type { EsmClient, EsmListRow, EsmRecord } from '../esm-client';
+import { effectiveFamilyMaxRank, extractPerks, resolveRankSources, toGeneratedPerkCard } from '../extract-perks';
 import { flattenPerkConditionRows, translateConditions } from '../normalize/conditions';
 import tenderizerCard from './fixtures/pcrd-tenderizercard.json';
 import commandoCard from './fixtures/pcrd-commandocard.json';
@@ -99,6 +99,28 @@ describe('resolveRankSources', () => {
   });
 });
 
+describe('effectiveFamilyMaxRank (cut-rank fix, 2026-07-16)', () => {
+  it('caps a compressed card at the highest referenced rank (Lock and Load: 3-record chain, card references only rank 1 → maxRank 1)', () => {
+    expect(effectiveFamilyMaxRank(3, [1])).toBe(1);
+  });
+
+  it("keeps a StarchedGenes-shaped card's full reach (single entry at family rank 2, out of a 2-record chain → maxRank 2, not 1)", () => {
+    expect(effectiveFamilyMaxRank(2, [2])).toBe(2);
+  });
+
+  it('is the identity for a full-length card ([1..n])', () => {
+    expect(effectiveFamilyMaxRank(3, [1, 2, 3])).toBe(3);
+  });
+
+  it('keeps the full chain length for a card-less family (rankSources undefined)', () => {
+    expect(effectiveFamilyMaxRank(3, undefined)).toBe(3);
+  });
+
+  it('keeps the full chain length when rankSources is empty (defensive — should not occur in practice)', () => {
+    expect(effectiveFamilyMaxRank(3, [])).toBe(3);
+  });
+});
+
 describe('translateConditions (glowAtLeast — Rads AV 0x000002E1, 2026-07-13)', () => {
   it("translates a literal GetValue(Rads) >= 180 row to glowAtLeast (GHL_GlowingCriticals01's entry-point gate)", () => {
     const effects = (ghlGlowingCriticals01 as unknown as EsmRecord).fields['Effects'] as Array<Record<string, unknown>>;
@@ -143,5 +165,106 @@ describe('translateConditions (glowAtLeast — Rads AV 0x000002E1, 2026-07-13)',
     expect(conditions).toEqual([
       { kind: 'unresolved', raw: 'GetValue(0x000002E1) Greater Than Or Equal To 0x007F68B6' },
     ]);
+  });
+});
+
+/**
+ * Stub client mirroring Lock and Load's real 20260710 ESM shape (verified via
+ * `esm get`/`esm refs`, 2026-07-16): a 3-record edid chain (LockAndLoad01-03)
+ * where rank 1 (0x00320168) carries the real EP210 "Mod Ammo Spender Max
+ * Reload Stack Mult" entry point (Add Value, Float 0.5, no perk conditions),
+ * ranks 2/3 (0x0032016A/0x0032016C) carry `Effects: null` in the raw ESM data
+ * (genuinely no effects of their own), and the PCRD (LockAndLoadCard
+ * 0x0032016B) lists exactly ONE rank entry pointing at rank 1's formid — the
+ * cut-rank fix's motivating example (extract-perks.ts's effectiveFamilyMaxRank).
+ */
+function makeLockAndLoadStubClient(): EsmClient {
+  const rank1FormId = '0x00320168';
+  const rank2FormId = '0x0032016A';
+  const rank3FormId = '0x0032016C';
+  const cardFormId = '0x0032016B';
+  const known: Record<string, EsmRecord> = {
+    [rank1FormId]: {
+      header: { signature: 'PERK', form_id: rank1FormId },
+      editor_id: 'LockAndLoad01',
+      fields: {
+        Name: 'Lock and Load',
+        Description: 'Reloading a weapon retains half of its Bullet Storm stacks.',
+        Effects: [
+          {
+            Effect: {
+              'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+              'Entry Point': {
+                'Entry Point': { name: 'Mod Ammo Spender Max Reload Stack Mult' },
+                Function: { name: 'Add Value' },
+              },
+              Float: 0.5,
+            },
+          },
+        ],
+      },
+    } as unknown as EsmRecord,
+    // Cut content: real ESM data has `Effects: null` on both — no effects to
+    // parse, but their formids still exist in the edid chain.
+    [rank2FormId]: {
+      header: { signature: 'PERK', form_id: rank2FormId },
+      editor_id: 'LockAndLoad02',
+      fields: { Name: 'Lock and Load', Description: '', Effects: null },
+    } as unknown as EsmRecord,
+    [rank3FormId]: {
+      header: { signature: 'PERK', form_id: rank3FormId },
+      editor_id: 'LockAndLoad03',
+      fields: { Name: 'Lock and Load', Description: '', Effects: null },
+    } as unknown as EsmRecord,
+    [cardFormId]: {
+      header: { signature: 'PCRD', form_id: cardFormId },
+      editor_id: 'LockAndLoadCard',
+      fields: {
+        Perks: [{ Perk: { 'Card Rank Cost': 2, 'Male Perk': rank1FormId } }],
+        'Perk Card Data': { Special: { name: 'Endurance' }, 'Min Level': 25 },
+      },
+    } as unknown as EsmRecord,
+  };
+  const get = async (target: string): Promise<EsmRecord> => {
+    if (known[target]) return known[target];
+    // The STAT_Damage*Perk plumbing perks (buildAvifRoutes) and any other
+    // stray edid lookup — no Effects, so downstream parsing no-ops on them.
+    return { header: { signature: 'PERK', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+  };
+  return {
+    async list(type: string): Promise<EsmListRow[]> {
+      if (type === 'PERK') {
+        return [
+          { form_id: rank1FormId, record_type: 'PERK', editor_id: 'LockAndLoad01', name: 'Lock and Load' },
+          { form_id: rank2FormId, record_type: 'PERK', editor_id: 'LockAndLoad02', name: 'Lock and Load' },
+          { form_id: rank3FormId, record_type: 'PERK', editor_id: 'LockAndLoad03', name: 'Lock and Load' },
+        ];
+      }
+      if (type === 'PCRD') {
+        return [{ form_id: cardFormId, record_type: 'PCRD', editor_id: 'LockAndLoadCard', name: null }];
+      }
+      return [];
+    },
+    get,
+    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+    refs: async () => [],
+  } as unknown as EsmClient;
+}
+
+describe('extractPerks (cut-rank fix — Lock and Load, 2026-07-16)', () => {
+  it('a 3-record edid chain with a PCRD listing only rank 1 extracts maxRank 1 and one rank entry, dropping the dead r2/r3 chain records', async () => {
+    const result = await extractPerks(makeLockAndLoadStubClient());
+    const family = result.perks.find(p => p.family === 'LockAndLoad');
+    expect(family).toBeDefined();
+    expect(family!.maxRank).toBe(1);
+    expect(family!.ranks).toHaveLength(1);
+    expect(family!.formIds).toEqual(['0x00320168']);
+    expect(family!.hasCard).toBe(true);
+    expect(family!.card?.rankSources).toEqual([1]);
+    // Rank 1's real entry point still extracts correctly (proves the mgef.ts
+    // EP210 → bulletStormRetention wiring alongside the cut-rank fix).
+    expect(family!.ranks[0].modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'bulletStormRetention', op: 'ADD', value: 0.5 })
+    );
   });
 });

@@ -38275,15 +38275,27 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x008F1037:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F1037",
+     "edid": "mod_Custom_FinalWord",
+     "name": "Final Word"
+    },
+    "bucket": "bulletStormOnKill",
+    "op": "SET",
+    "value": 1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "ActorValues on EnableAmmoSpenderOnKill — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -39306,16 +39318,28 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x008EC5A9:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008EC5A9",
+     "edid": "mod_Custom_OldGuard",
+     "name": "Old Guard"
+    },
+    "bucket": "deflectChance",
+    "op": "ADD",
+    "value": 0.1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItemName_OldGuard",
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "ActorValues on STAT_DeflectChance — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -40185,15 +40209,27 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x008F0DCE:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F0DCE",
+     "edid": "mod_Custom_ResoluteVeteran",
+     "name": "Resolute Veteran"
+    },
+    "bucket": "bulletStormMinStacks",
+    "op": "ADD",
+    "value": 5,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "ActorValues on AmmoSpenderMinStacks — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

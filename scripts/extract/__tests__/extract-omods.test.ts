@@ -771,3 +771,111 @@ describe('extractOmods (legendary-crafting obtainability gate, 2026-07-15)', () 
     expect(plainRide?.obtainable).toBe(true);
   });
 });
+
+/**
+ * Stub client for a synthetic OMOD carrying the two Bullet Storm ActorValues
+ * properties (unique-mod rework, 2026-07-16). Verified raw ESM shape:
+ * Resolute Veteran (mod_Custom_ResoluteVeteran 0x008F0DCE) carries
+ * `ActorValues ADD AmmoSpenderMinStacks 5.0`; Final Word
+ * (mod_Custom_FinalWord 0x008F1037) carries
+ * `ActorValues SET EnableAmmoSpenderOnKill 1.0` — mirrors
+ * makeDamageTypeValuesStubClient's pattern above, one property per mod so
+ * each op is pinned independently. The SET assertion is the regression test
+ * for the pushAv op-mapping bug fix (every non-MUL_ADD function used to
+ * collapse to 'ADD', silently downgrading SET).
+ */
+function makeBulletStormStubClient(): EsmClient {
+  const minStacksAvFormId = '0x00919957';
+  const onKillAvFormId = '0x00924DB9';
+  const minStacksOmodFormId = '0x00DEC003';
+  const onKillOmodFormId = '0x00DEC004';
+  const known: Record<string, EsmRecord> = {
+    [minStacksOmodFormId]: {
+      header: { signature: 'OMOD', form_id: minStacksOmodFormId },
+      editor_id: 'mod_Test_ResoluteVeteran',
+      fields: {
+        Name: 'Test Resolute Veteran',
+        Data: {
+          'Form Type': { name: 'Weapon' },
+          'Attach Point': '0x0047A264',
+          Properties: [
+            {
+              'Function Type': { name: 'ADD' },
+              Property: { name: 'ActorValues' },
+              'Value 1': minStacksAvFormId,
+              'Value 2': 5.0,
+            },
+          ],
+        },
+      },
+    } as unknown as EsmRecord,
+    [onKillOmodFormId]: {
+      header: { signature: 'OMOD', form_id: onKillOmodFormId },
+      editor_id: 'mod_Test_FinalWord',
+      fields: {
+        Name: 'Test Final Word',
+        Data: {
+          'Form Type': { name: 'Weapon' },
+          'Attach Point': '0x0047A264',
+          Properties: [
+            {
+              'Function Type': { name: 'SET' },
+              Property: { name: 'ActorValues' },
+              'Value 1': onKillAvFormId,
+              'Value 2': 1.0,
+            },
+          ],
+        },
+      },
+    } as unknown as EsmRecord,
+    [minStacksAvFormId]: {
+      header: { signature: 'AVIF', form_id: minStacksAvFormId },
+      editor_id: 'AmmoSpenderMinStacks',
+      fields: {},
+    } as unknown as EsmRecord,
+    [onKillAvFormId]: {
+      header: { signature: 'AVIF', form_id: onKillAvFormId },
+      editor_id: 'EnableAmmoSpenderOnKill',
+      fields: {},
+    } as unknown as EsmRecord,
+  };
+  const get = async (target: string): Promise<EsmRecord> => {
+    if (known[target]) return known[target];
+    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+  };
+  return {
+    async list(type: string): Promise<EsmListRow[]> {
+      if (type !== 'OMOD') return [];
+      return [
+        { form_id: minStacksOmodFormId, record_type: 'OMOD', editor_id: 'mod_Test_ResoluteVeteran', name: 'Test Resolute Veteran' },
+        { form_id: onKillOmodFormId, record_type: 'OMOD', editor_id: 'mod_Test_FinalWord', name: 'Test Final Word' },
+      ];
+    },
+    get,
+    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+    refs: async () => [],
+  } as unknown as EsmClient;
+}
+
+describe('extractOmods (Bullet Storm ActorValues — AmmoSpenderMinStacks/EnableAmmoSpenderOnKill, 2026-07-16)', () => {
+  it('ActorValues ADD 5.0 on AmmoSpenderMinStacks decodes to a bulletStormMinStacks ADD modifier of value 5', async () => {
+    const result = await extractOmods(makeBulletStormStubClient(), new Set());
+    const omod = result.omods.find(o => o.id === 'mod_Test_ResoluteVeteran');
+    expect(omod).toBeDefined();
+    expect(omod!.modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'bulletStormMinStacks', op: 'ADD', value: 5 })
+    );
+    expect(omod!.notes).not.toContain('ActorValues on AmmoSpenderMinStacks — unmapped');
+  });
+
+  it("ActorValues SET 1.0 on EnableAmmoSpenderOnKill decodes to a bulletStormOnKill SET modifier (regression: SET must not downgrade to ADD)", async () => {
+    const result = await extractOmods(makeBulletStormStubClient(), new Set());
+    const omod = result.omods.find(o => o.id === 'mod_Test_FinalWord');
+    expect(omod).toBeDefined();
+    expect(omod!.modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'bulletStormOnKill', op: 'SET', value: 1 })
+    );
+    expect(omod!.modifiers.find(m => m.bucket === 'bulletStormOnKill')?.op).not.toBe('ADD');
+    expect(omod!.notes).not.toContain('ActorValues on EnableAmmoSpenderOnKill — unmapped');
+  });
+});
