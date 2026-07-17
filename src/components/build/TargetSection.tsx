@@ -242,6 +242,7 @@ export function TargetSection() {
                     type="button"
                     size="sm"
                     variant={active ? 'default' : 'outline'}
+                    className={active ? 'border border-primary hover:border-primary/90' : undefined}
                     title={s.title}
                     onClick={() => setEnemy(s.key, !active)}
                   >

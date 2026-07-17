@@ -56,6 +56,7 @@ function RaceControl() {
               type="button"
               size="sm"
               variant={selected ? 'default' : 'outline'}
+              className={selected ? 'border border-primary hover:border-primary/90' : undefined}
               title={
                 race === 'ghoul'
                   ? 'Ghoul: feral meter applies; food/drink meters do not'
