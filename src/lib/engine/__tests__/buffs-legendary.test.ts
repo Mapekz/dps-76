@@ -4,6 +4,7 @@ import { adaptWeapon } from '@/data/live/weapons';
 import generatedWeapons from '@/data/live/generated/weapons.json';
 import type { GeneratedWeapon } from '@/types/generated';
 import { getBuffModifiers } from '@/data/buffs';
+import type { Modifier } from '@/types/modifiers';
 import { getOmodById } from '@/data/omods';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
 import { PerkId } from '@/data/perk-ids';
@@ -304,19 +305,35 @@ describe('Lock and Load → Bullet Storm reload speed (cross-family perkFamilyRa
   // Bullet Storm's hidden reload-speed curve (+1%/ammo-spent stack, 0→30) is
   // gated HasPerk(LockAndLoad01) — extracted as a perkFamilyRank condition,
   // evaluated against PlayerConditions.equippedPerkRanks.
+  //
+  // 2026-07-16 (Bullet Storm engine core): the generated Bullet Storm perk
+  // doesn't carry its own `bulletStormMaxStacks` modifier yet (pending
+  // extraction — docs/assumptions.md "Bullet Storm"), so the folded cap is 0
+  // and `effectiveBulletStormStacks` now clamps the reload curve's input to
+  // 0 with it. These tests splice in a synthetic ADD 10 cap alongside the
+  // real perk-derived modifiers instead of depending on regenerated JSON.
   const fiftyCal = getWeapons('live')['50CalMachineGun'];
   const bulletStorm = getLoadoutModifiers('live', [{ perkId: PerkId.BulletStorm, rank: 1 }]);
-  const at30 = { ...createDefaultPlayerConditions(), bulletStormStacks: 30 };
+  const syntheticMax: Modifier = {
+    id: 'synthetic-bulletstorm-max',
+    source: { kind: 'perk', formId: '0x0031AF14', edid: 'HeavyGunner', name: 'Bullet Storm', rank: 1 },
+    bucket: 'bulletStormMaxStacks',
+    op: 'ADD',
+    value: 10,
+    conditions: [],
+  };
+  const bulletStormWithMax = [...bulletStorm, syntheticMax];
+  const at10 = { ...createDefaultPlayerConditions(), bulletStormStacks: 10 };
 
   it('Bullet Storm alone leaves reload speed unmodified; owning Lock and Load activates the +1%/stack curve', () => {
-    const without = buildEffectiveWeapon(fiftyCal, [], 50, at30, undefined, bulletStorm).weapon;
+    const without = buildEffectiveWeapon(fiftyCal, [], 50, at10, undefined, bulletStormWithMax).weapon;
     expect(without.reloadSpeed).toBeCloseTo(fiftyCal.reloadSpeed ?? 1.0, 6);
 
-    const owning = { ...at30, equippedPerkRanks: { LockAndLoad: 1 } };
-    const withLnL = buildEffectiveWeapon(fiftyCal, [], 50, owning, undefined, bulletStorm).weapon;
-    expect(withLnL.reloadSpeed).toBeCloseTo((fiftyCal.reloadSpeed ?? 1.0) + 0.3, 6); // 30 stacks × 1%
+    const owning = { ...at10, equippedPerkRanks: { LockAndLoad: 1 } };
+    const withLnL = buildEffectiveWeapon(fiftyCal, [], 50, owning, undefined, bulletStormWithMax).weapon;
+    expect(withLnL.reloadSpeed).toBeCloseTo((fiftyCal.reloadSpeed ?? 1.0) + 0.1, 6); // 10/30 stacks × 30% max = +10%
 
-    const sWithout = computeScenarios(base({ weapon: without, player: at30 }));
+    const sWithout = computeScenarios(base({ weapon: without, player: at10 }));
     const sWith = computeScenarios(base({ weapon: withLnL, player: owning }));
     expect(sWith.vats.sustain.reloadSec).toBeLessThan(sWithout.vats.sustain.reloadSec);
   });
@@ -327,14 +344,30 @@ describe('Lock and Load → Bullet Storm reload speed (cross-family perkFamilyRa
       weapon: { weaponId: '50CalMachineGun', mods: {}, legendaryEffects: [] },
       perks: [{ perkId: PerkId.BulletStorm, rank: 1 }],
     };
+    const withoutLnLPerks = playerConfig.perks;
+    const withLnLPerks = [...playerConfig.perks, { perkId: PerkId.LockAndLoad, rank: 1 }];
     const withoutLnL = resolveLoadout(playerConfig, createDefaultEnemyConfig(), 'live')!;
     const withLnL = resolveLoadout(
-      { ...playerConfig, perks: [...playerConfig.perks, { perkId: PerkId.LockAndLoad, rank: 1 }] },
+      { ...playerConfig, perks: withLnLPerks },
       createDefaultEnemyConfig(),
       'live'
     )!;
     expect(withLnL.player.equippedPerkRanks).toMatchObject({ LockAndLoad: 1, HeavyGunner: 1 });
-    expect(withLnL.weapon.reloadSpeed!).toBeGreaterThan(withoutLnL.weapon.reloadSpeed!);
+
+    // weapon.reloadSpeed itself needs a real bulletStormMaxStacks source to
+    // be nonzero (same extraction gap as above) — replay the SAME
+    // real perk-derived modifiers resolveLoadout assembled, with the
+    // synthetic cap spliced in, to confirm the cross-family gate still
+    // activates the curve end-to-end once real data supplies the cap.
+    const reloadWithout = buildEffectiveWeapon(
+      fiftyCal, [], 50, { ...withoutLnL.player, bulletStormStacks: 10 }, undefined,
+      [...getLoadoutModifiers('live', withoutLnLPerks), syntheticMax]
+    ).weapon.reloadSpeed!;
+    const reloadWith = buildEffectiveWeapon(
+      fiftyCal, [], 50, { ...withLnL.player, bulletStormStacks: 10 }, undefined,
+      [...getLoadoutModifiers('live', withLnLPerks), syntheticMax]
+    ).weapon.reloadSpeed!;
+    expect(reloadWith).toBeGreaterThan(reloadWithout);
   });
 });
 

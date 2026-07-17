@@ -6,6 +6,7 @@ import { AP_REGEN_DELAY_SEC, AP_REGEN_RATE_PCT, AP_REGEN_RATE_PCT_POWER_ARMOR, a
 import { computeCritMeter, type CritMeterResult } from './crit-meter';
 import { computeDotDps, computePaperDamage, type HitBreakdown } from './paper-damage';
 import { perShotOnslaughtConsume, reverseOnslaughtAvgStacks } from './onslaught';
+import { bulletStormAvgStacks } from './bulletstorm';
 import { computeSustain, type SustainResult } from './sustain';
 import { createHitTrace, lastTrace, type ApRegenTrace, type BucketTrace, type CritMeterTrace, type HitTrace } from './trace';
 import { effectiveValue, foldBucket, type ResolveContext, type ScenarioFlags } from './resolve';
@@ -103,6 +104,26 @@ export interface ScenarioSet {
    */
   onslaughtReverseAvgStacks?: number;
   /**
+   * The shared Bullet Storm stack cap folded from every equipped source's
+   * `bulletStormMaxStacks` modifier (0 when none are equipped) — same
+   * precedent as `onslaughtMaxStacks`. Exposed here so the UI's Bullet Storm
+   * stacks slider can read the bound without re-running `resolveLoadout`.
+   * See docs/assumptions.md "Bullet Storm".
+   */
+  bulletStormMaxStacks: number;
+  /**
+   * The shared Bullet Storm stack FLOOR folded from every equipped source's
+   * `bulletStormMinStacks` modifier (0 when none are equipped — Resolute
+   * Veteran's +5).
+   */
+  bulletStormMinStacks: number;
+  /**
+   * Steady-state average Bullet Storm stack count under
+   * `PlayerConditions.bulletStormAverageMode` (undefined when the toggle is
+   * off, or no Bullet Storm sources are equipped).
+   */
+  bulletStormAvgStacks?: number;
+  /**
    * True when any equipped source reads the kill-streak counter (Adrenaline,
    * Crowd Control, Sole Survivor; Lawbringer, Adrenal, Thrill-Seeker's) — the
    * UI's kill-streak slider disables without one. Unlike onslaughtMaxStacks
@@ -173,7 +194,19 @@ interface OnslaughtThread {
   reverseAvg?: number;
 }
 
-function scenarioCtx(input: ScenarioInput, flags: ScenarioFlags, onslaught: OnslaughtThread): ResolveContext {
+/** Bullet Storm cap/floor + optional sustained-fire average, threaded on every ResolveContext. */
+interface BulletStormThread {
+  maxStacks: number;
+  minStacks: number;
+  avg?: number;
+}
+
+function scenarioCtx(
+  input: ScenarioInput,
+  flags: ScenarioFlags,
+  onslaught: OnslaughtThread,
+  bulletStorm: BulletStormThread
+): ResolveContext {
   return {
     weapon: input.weapon,
     player: input.player,
@@ -183,6 +216,9 @@ function scenarioCtx(input: ScenarioInput, flags: ScenarioFlags, onslaught: Onsl
     enemyTypeIds: input.enemyTypeIds,
     onslaughtMaxStacks: onslaught.maxStacks,
     ...(onslaught.reverseAvg !== undefined && { onslaughtReverseStacks: onslaught.reverseAvg }),
+    bulletStormMaxStacks: bulletStorm.maxStacks,
+    bulletStormMinStacks: bulletStorm.minStacks,
+    ...(bulletStorm.avg !== undefined && { bulletStormAvgStacks: bulletStorm.avg }),
   };
 }
 
@@ -240,17 +276,18 @@ function chargedCycleHit(
   bodyPartMult: number,
   bodyPart: BodyPartLocation,
   critRate: number,
-  onslaught: OnslaughtThread
+  onslaught: OnslaughtThread,
+  bulletStorm: BulletStormThread
 ): HitBreakdown {
   const normal = critWeighted(
-    bodyPartBlendedHit(input, { ...flags, isPowerAttack: false, isCrit: false }, bodyPartMult, bodyPart, onslaught),
-    bodyPartBlendedHit(input, { ...flags, isPowerAttack: false, isCrit: true }, bodyPartMult, bodyPart, onslaught),
+    bodyPartBlendedHit(input, { ...flags, isPowerAttack: false, isCrit: false }, bodyPartMult, bodyPart, onslaught, bulletStorm),
+    bodyPartBlendedHit(input, { ...flags, isPowerAttack: false, isCrit: true }, bodyPartMult, bodyPart, onslaught, bulletStorm),
     critRate
   );
   const detonation = scaleHit(
     critWeighted(
-      bodyPartBlendedHit(input, { ...flags, isPowerAttack: true, isCrit: false }, bodyPartMult, bodyPart, onslaught),
-      bodyPartBlendedHit(input, { ...flags, isPowerAttack: true, isCrit: true }, bodyPartMult, bodyPart, onslaught),
+      bodyPartBlendedHit(input, { ...flags, isPowerAttack: true, isCrit: false }, bodyPartMult, bodyPart, onslaught, bulletStorm),
+      bodyPartBlendedHit(input, { ...flags, isPowerAttack: true, isCrit: true }, bodyPartMult, bodyPart, onslaught, bulletStorm),
       critRate
     ),
     1 + CHARGED_FULL_BONUS
@@ -270,6 +307,7 @@ function hit(
   bodyPartMult: number,
   bodyPart: BodyPartLocation,
   onslaught: OnslaughtThread,
+  bulletStorm: BulletStormThread,
   trace?: HitTrace
 ): HitBreakdown {
   return computePaperDamage({
@@ -277,7 +315,7 @@ function hit(
     weapon: input.weapon,
     itemLevel: input.itemLevel,
     modifiers: input.modifiers,
-    ctx: scenarioCtx(input, flags, onslaught),
+    ctx: scenarioCtx(input, flags, onslaught, bulletStorm),
     bodyPartMult,
     // Location axis, independent of the mult above: >1 doesn't imply
     // weakpoint and 1.0 doesn't imply torso (an armored torso can be <1.0, a
@@ -316,14 +354,15 @@ function bodyPartBlendedHit(
   bodyPartMult: number,
   bodyPart: BodyPartLocation,
   onslaught: OnslaughtThread,
+  bulletStorm: BulletStormThread,
   trace?: HitTrace
 ): HitBreakdown {
   const rate = (input.player.bodyPartHitRatePct ?? 100) / 100;
   if (rate >= 1 || (bodyPartMult === 1.0 && bodyPart === 'torso')) {
-    return hit(input, flags, bodyPartMult, bodyPart, onslaught, trace);
+    return hit(input, flags, bodyPartMult, bodyPart, onslaught, bulletStorm, trace);
   }
-  const atTarget = hit(input, flags, bodyPartMult, bodyPart, onslaught, trace);
-  const atTorso = hit(input, flags, 1.0, 'torso', onslaught);
+  const atTarget = hit(input, flags, bodyPartMult, bodyPart, onslaught, bulletStorm, trace);
+  const atTorso = hit(input, flags, 1.0, 'torso', onslaught, bulletStorm);
   return bodyPartWeighted(atTarget, atTorso, rate);
 }
 
@@ -374,7 +413,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // evaluate them. With no Onslaught sources equipped this is 0, so every
   // `stacks:onslaught` / `onslaughtStacks`-curve modifier reads 0 below.
   const bootstrapFlags: ScenarioFlags = { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false };
-  const bootstrapCtx = scenarioCtx(input, bootstrapFlags, { maxStacks: 0 });
+  const bootstrapCtx = scenarioCtx(input, bootstrapFlags, { maxStacks: 0 }, { maxStacks: 0, minStacks: 0 });
   const onslaughtMaxStacks = foldBucket(input.modifiers, 'onslaughtMaxStacks', 0, bootstrapCtx);
   const onslaughtReverse = foldBucket(input.modifiers, 'onslaughtReverse', 0, bootstrapCtx) > 0;
 
@@ -399,6 +438,31 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     ...(onslaughtReverseAvg !== undefined && { reverseAvg: onslaughtReverseAvg }),
   };
 
+  // Bullet Storm max/min/retention (folded ONCE, threaded onto every
+  // ResolveContext below) — same bootstrap precedent as Onslaught above:
+  // cap/floor/retention modifiers only gate on weapon keyword/class, never on
+  // scenario flags, so the flag-agnostic bootstrap context is enough.
+  const bulletStormMaxStacks = foldBucket(input.modifiers, 'bulletStormMaxStacks', 0, bootstrapCtx);
+  const bulletStormMinStacks = foldBucket(input.modifiers, 'bulletStormMinStacks', 0, bootstrapCtx);
+  const bulletStormRetention = foldBucket(input.modifiers, 'bulletStormRetention', 0, bootstrapCtx);
+
+  let bulletStormAvg: number | undefined;
+  if (input.player.bulletStormAverageMode && bulletStormMaxStacks > 0) {
+    bulletStormAvg = bulletStormAvgStacks({
+      max: bulletStormMaxStacks,
+      min: bulletStormMinStacks,
+      retention: bulletStormRetention,
+      weapon: input.weapon,
+      fireRate,
+    });
+  }
+
+  const bulletStorm: BulletStormThread = {
+    maxStacks: bulletStormMaxStacks,
+    minStacks: bulletStormMinStacks,
+    ...(bulletStormAvg !== undefined && { avg: bulletStormAvg }),
+  };
+
   // Kill-streak sources (existence scan — see ScenarioSet.hasKillStreakSources).
   const hasKillStreakSources = input.modifiers.some(
     m =>
@@ -409,18 +473,18 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // Free aim: crits are VATS-only, so never crit here.
   const freeFlags: ScenarioFlags = { isVats: false, isSneaking: sneaking, isPowerAttack: powerAttack, isCrit: false };
   const freeTrace = tracing ? createHitTrace() : undefined;
-  const freeHit = bodyPartBlendedHit(input, freeFlags, bodyPartMult, targetBodyPart, onslaught, freeTrace);
+  const freeHit = bodyPartBlendedHit(input, freeFlags, bodyPartMult, targetBodyPart, onslaught, bulletStorm, freeTrace);
 
   // VATS: crit cadence blends a non-crit and a crit hit.
   const vatsFlags: ScenarioFlags = { isVats: true, isSneaking: sneaking, isPowerAttack: powerAttack, isCrit: false };
   const critMeterTrace = tracing ? ({ fill: null, consumption: null } as CritMeterTrace) : undefined;
-  const critMeter = computeCritMeter(input.modifiers, input.weapon, scenarioCtx(input, vatsFlags, onslaught), critMeterTrace);
+  const critMeter = computeCritMeter(input.modifiers, input.weapon, scenarioCtx(input, vatsFlags, onslaught, bulletStorm), critMeterTrace);
   const critRate = input.critRate ?? critMeter.critRate;
   const vatsTrace = tracing ? createHitTrace() : undefined;
   const vatsCritTrace = tracing ? createHitTrace() : undefined;
   const vatsAvg = critWeighted(
-    bodyPartBlendedHit(input, vatsFlags, bodyPartMult, targetBodyPart, onslaught, vatsTrace),
-    bodyPartBlendedHit(input, { ...vatsFlags, isCrit: true }, bodyPartMult, targetBodyPart, onslaught, vatsCritTrace),
+    bodyPartBlendedHit(input, vatsFlags, bodyPartMult, targetBodyPart, onslaught, bulletStorm, vatsTrace),
+    bodyPartBlendedHit(input, { ...vatsFlags, isCrit: true }, bodyPartMult, targetBodyPart, onslaught, bulletStorm, vatsCritTrace),
     critRate
   );
 
@@ -429,10 +493,10 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // simplest-defensible split, docs/assumptions.md).
   const charged = isCharged(input.weapon);
   const freeCycleTotal = charged
-    ? chargedCycleHit(input, freeFlags, bodyPartMult, targetBodyPart, 0, onslaught).total
+    ? chargedCycleHit(input, freeFlags, bodyPartMult, targetBodyPart, 0, onslaught, bulletStorm).total
     : freeHit.total;
   const vatsCycleTotal = charged
-    ? chargedCycleHit(input, vatsFlags, bodyPartMult, targetBodyPart, critRate, onslaught).total
+    ? chargedCycleHit(input, vatsFlags, bodyPartMult, targetBodyPart, critRate, onslaught, bulletStorm).total
     : vatsAvg.total;
 
   const freeSustainRaw = computeSustain(freeCycleTotal, fireRate, input.weapon);
@@ -451,8 +515,8 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // DoT is a separate steady-state add (refresh-only, not crit/vats-scaled by
   // any extracted data today) — evaluated with each scenario's own non-crit
   // context so a future sneaking/powerAttack-gated DoT mod still resolves correctly.
-  const freeDotDps = computeDotDps(input.modifiers, input.weapon, scenarioCtx(input, freeFlags, onslaught));
-  const vatsDotDps = computeDotDps(input.modifiers, input.weapon, scenarioCtx(input, vatsFlags, onslaught));
+  const freeDotDps = computeDotDps(input.modifiers, input.weapon, scenarioCtx(input, freeFlags, onslaught, bulletStorm));
+  const vatsDotDps = computeDotDps(input.modifiers, input.weapon, scenarioCtx(input, vatsFlags, onslaught, bulletStorm));
 
   // Steady-state VATS AP economy (Stage B): ranged weapons only (melee/VATS-
   // melee AP is out of scope — uptime is undefined without real melee AP
@@ -460,7 +524,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   let ap: ScenarioResult['ap'];
   let apRegenTrace: ApRegenTrace | undefined;
   if (!isMelee(input.weapon) && (input.weapon.apCost ?? 0) > 0) {
-    const apCtx = scenarioCtx(input, vatsFlags, onslaught);
+    const apCtx = scenarioCtx(input, vatsFlags, onslaught, bulletStorm);
     const percentCollect = tracing ? ([] as BucketTrace[]) : undefined;
     const apRegenBonus = foldBucket(input.modifiers, 'apRegen', 0, apCtx, percentCollect);
     const flatCollect = tracing ? ([] as BucketTrace[]) : undefined;
@@ -530,6 +594,9 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     onslaughtMaxStacks,
     onslaughtReverse,
     ...(onslaughtReverseAvg !== undefined && { onslaughtReverseAvgStacks: onslaughtReverseAvg }),
+    bulletStormMaxStacks,
+    bulletStormMinStacks,
+    ...(bulletStormAvg !== undefined && { bulletStormAvgStacks: bulletStormAvg }),
     hasKillStreakSources,
     charging,
     freeAim: {

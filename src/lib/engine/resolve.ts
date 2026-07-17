@@ -61,6 +61,29 @@ export interface ResolveContext {
    */
   onslaughtReverseStacks?: number;
   /**
+   * The shared Bullet Storm stack cap, folded ONCE per scenario input from
+   * every equipped source's `bulletStormMaxStacks` modifier (`scenarios.ts`)
+   * — and separately bootstrap-folded by `buildEffectiveWeapon` so
+   * weapon-stat curves (Bullet Storm's own reload-speed curve) see it too.
+   * Defaults to 0 (no Bullet Storm sources equipped → the `bulletStorm`
+   * reader and the `bulletStormStacks` curve input both clamp to 0). See
+   * docs/assumptions.md "Bullet Storm".
+   */
+  bulletStormMaxStacks?: number;
+  /**
+   * The shared Bullet Storm stack FLOOR, folded at the same two sites as
+   * `bulletStormMaxStacks` (Resolute Veteran's +5). Defaults to 0.
+   */
+  bulletStormMinStacks?: number;
+  /**
+   * Engine-computed average Bullet Storm stack count under
+   * `PlayerConditions.bulletStormAverageMode`. When set,
+   * `effectiveBulletStormStacks` returns this value (clamped to
+   * `[bulletStormMinStacks, bulletStormMaxStacks]`) and ignores the player's
+   * slider. See `bulletstorm.ts` and docs/assumptions.md "Bullet Storm".
+   */
+  bulletStormAvgStacks?: number;
+  /**
    * The player's folded bonus-movement-speed fraction (Σ `moveSpeedBonus`
    * bucket — Speed Demon +0.20/+0.25), bootstrap-folded and threaded by
    * buildEffectiveWeapon exactly like onslaughtMaxStacks. Read by the
@@ -87,6 +110,26 @@ function effectiveOnslaughtStacks(p: PlayerConditions, ctx: ResolveContext): num
 }
 
 /**
+ * Effective Bullet Storm stack count: the player's stored value with the
+ * "follow max" sentinel (`-1`) resolved to the computed cap, then clamped to
+ * `[min, max]` (an explicit user selection can't exceed the equipped max, nor
+ * fall below the equipped floor — min > max degrades to max, never a floor
+ * above the cap). When the engine has computed a sustained-fire average
+ * (`ctx.bulletStormAvgStacks`, the average-mode toggle), it wins over the
+ * player's slider — same override precedent as `onslaughtReverseStacks`.
+ * Shared by the `bulletStorm` StackCounter reader and the `bulletStormStacks`
+ * CurveInput reader.
+ */
+function effectiveBulletStormStacks(p: PlayerConditions, ctx: ResolveContext): number {
+  const max = ctx.bulletStormMaxStacks ?? 0;
+  const min = ctx.bulletStormMinStacks ?? 0;
+  const clamp = (v: number) => Math.max(0, Math.min(Math.max(v, min), max));
+  if (ctx.bulletStormAvgStacks !== undefined) return clamp(ctx.bulletStormAvgStacks);
+  const raw = p.bulletStormStacks === -1 ? max : p.bulletStormStacks;
+  return clamp(raw);
+}
+
+/**
  * Reads one scalar from resolve state for a stack counter or a curve input.
  * Single source of truth for what game state each modifier axis consumes —
  * add a row here when adding a StackCounter or CurveInput.
@@ -95,7 +138,7 @@ const PLAYER_STATE_READERS: Record<StackCounter | CurveInput, (p: PlayerConditio
   // Stack counters (modifier value × count).
   tenderizer: p => p.tenderizerStacks ?? 0,
   onslaught: (p, ctx) => effectiveOnslaughtStacks(p, ctx),
-  bulletStorm: p => p.bulletStormStacks,
+  bulletStorm: (p, ctx) => effectiveBulletStormStacks(p, ctx),
   adrenaline: p => p.adrenalineStacks,
   // Curve inputs (X value fed into a value curve).
   healthFraction: p => p.healthPercent / 100,
@@ -121,8 +164,9 @@ const PLAYER_STATE_READERS: Record<StackCounter | CurveInput, (p: PlayerConditio
   // The Peace Maker's explosive-damage-vs-CHA curve X.
   charisma: p => p.charisma,
   // Bullet Storm / Heavy Gunner's ammo-spent stack curve X (shared field with
-  // the `bulletStorm` StackCounter reader above).
-  bulletStormStacks: p => p.bulletStormStacks,
+  // the `bulletStorm` StackCounter reader above — both clamp through
+  // effectiveBulletStormStacks).
+  bulletStormStacks: (p, ctx) => effectiveBulletStormStacks(p, ctx),
   // Shotgun Champ's damage-vs-crippled curve X — the effective (OMOD-folded)
   // weapon's projectile count.
   projectileCount: (_, ctx) => ctx.weapon.projectileCount ?? 1,

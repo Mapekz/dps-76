@@ -20,7 +20,25 @@ export interface PlayerConditions {
   healthPercent: number; // 0-100 for perks like Nerd Rage, Serendipity
 
   // Stack counts
-  bulletStormStacks: number; // 0-20 (10 base, 20 with Bringing the Big Guns)
+  /**
+   * Bullet Storm stacks (shared engine counter, AV 0x0000039B — Bullet
+   * Storm, Bringing Out the Big Guns, Foundation's Vengeance). Sentinel `-1`
+   * = "follow the computed max" (assume full stacks, the app's existing
+   * assume-max convention for adrenaline/onslaught); non-negative = an
+   * explicit user selection, clamped to `[min, max]` at read time
+   * (`resolve.ts`'s `effectiveBulletStormStacks`). The computed max/min
+   * themselves come from equipped Bullet Storm sources, not from this field
+   * — see `ScenarioSet.bulletStormMaxStacks`/`bulletStormMinStacks`
+   * (docs/assumptions.md "Bullet Storm").
+   */
+  bulletStormStacks: number;
+  /**
+   * Engine-computed sustained-fire average stack count instead of the manual
+   * `bulletStormStacks` value (mirrors the read-only Onslaught-reverse
+   * average — `bulletstorm.ts` `bulletStormAvgStacks`). Default false (user
+   * manual slider).
+   */
+  bulletStormAverageMode?: boolean;
   /**
    * Onslaught stacks (shared engine counter, AV 0x00000395 — Guerrilla/
    * Gunslinger Expert+Master, Furious, Pounder's, Splinter's, Whacker
@@ -540,7 +558,8 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     isAimingDownSights: false,
     isGhoul: false,
     healthPercent: 100,
-    bulletStormStacks: 10, // Assume max stacks by default
+    bulletStormStacks: -1, // Follow the computed max (sentinel; see field comment)
+    bulletStormAverageMode: false, // manual slider by default
     onslaughtStacks: -1, // Follow the computed max (sentinel; see field comment)
     targetsHit: 1,
     adrenalineStacks: 0, // Default per user preference

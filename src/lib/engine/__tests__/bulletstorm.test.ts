@@ -1,0 +1,185 @@
+import { describe, it, expect } from 'vitest';
+import type { Weapon } from '@/types';
+import type { Modifier } from '@/types/modifiers';
+import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
+import { BULLET_STORM_AMMO_PER_STACK, bulletStormAvgStacks } from '@/lib/engine/bulletstorm';
+import { computeScenarios } from '@/lib/engine/scenarios';
+
+const FLAT_100 = [{ x: 1, y: 100 }, { x: 50, y: 100 }];
+
+function makeWeapon(overrides: Partial<Weapon> = {}): Weapon {
+  return {
+    id: 'test_weapon',
+    name: 'Test Weapon',
+    components: [{ damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: FLAT_100 }],
+    damageType: 'ballistic',
+    weaponClass: 'rifle',
+    isAutomatic: false,
+    isPhysical: true,
+    critDamageMult: 2.0,
+    critChargeBonus: 1.0,
+    sneakAttackMult: 2.0,
+    damageBonusMult: 1.0,
+    ...overrides,
+  };
+}
+
+describe('bulletStormAvgStacks — accrual pinning (2-shot magazine, retention 0)', () => {
+  // With retention 0 and a 2-shot magazine, the converged per-shot average is
+  // exactly accrual/2 (see doc comment in bulletstorm.ts): shot 1 always
+  // lands at post-reload 0 (the mag reset from the prior cycle), shot 2 lands
+  // at accrual. Choosing max/min far outside the accrual range means neither
+  // clamp interferes, so this isolates the accrual formula itself.
+  it('projectileCount 8 + ammoPerShot 5 → 12/30 accrual/shot', () => {
+    const weapon = makeWeapon({ projectileCount: 8, ammoPerShot: 5, capacity: 10, animDelaySec: 0.5 });
+    const accrual = (8 + 5 - 1) / BULLET_STORM_AMMO_PER_STACK;
+    expect(accrual).toBeCloseTo(12 / 30, 10);
+    const avg = bulletStormAvgStacks({ max: 1000, min: 0, retention: 0, weapon, fireRate: 2 });
+    expect(avg).toBeCloseTo(accrual / 2, 6);
+  });
+
+  it('projectileCount 9 + ammoPerShot 5 → 13/30 accrual/shot (+1 projectile, e.g. Two Shot)', () => {
+    const weapon = makeWeapon({ projectileCount: 9, ammoPerShot: 5, capacity: 10, animDelaySec: 0.5 });
+    const accrual = (9 + 5 - 1) / BULLET_STORM_AMMO_PER_STACK;
+    expect(accrual).toBeCloseTo(13 / 30, 10);
+    const avg = bulletStormAvgStacks({ max: 1000, min: 0, retention: 0, weapon, fireRate: 2 });
+    expect(avg).toBeCloseTo(accrual / 2, 6);
+  });
+});
+
+describe('bulletStormAvgStacks — retention, floor, no-magazine', () => {
+  const twoShotWeapon = makeWeapon({ projectileCount: 1, ammoPerShot: 1, capacity: 2, animDelaySec: 0.5 });
+  const accrual = 1 / BULLET_STORM_AMMO_PER_STACK; // (1+1-1)/30
+
+  it('Lock and Load retention (0.5) yields a strictly higher average than no retention', () => {
+    const avg0 = bulletStormAvgStacks({ max: 1000, min: 0, retention: 0, weapon: twoShotWeapon, fireRate: 2 });
+    const avg50 = bulletStormAvgStacks({ max: 1000, min: 0, retention: 0.5, weapon: twoShotWeapon, fireRate: 2 });
+    expect(avg0).toBeCloseTo(accrual / 2, 6);
+    // Converged post-mag floor s = 2·accrual·retention/(1−retention) = 2·accrual
+    // at retention 0.5; per-shot average = s + accrual/2 = 2.5·accrual. Loose
+    // precision: the fixed-point loop stops within its own 1e-4 tolerance,
+    // and that residual compounds slightly across iterations.
+    expect(avg50).toBeCloseTo(2.5 * accrual, 3);
+    expect(avg50).toBeGreaterThan(avg0);
+  });
+
+  it('Resolute Veteran-style floor (min 5) keeps the average at or above the floor, every reload', () => {
+    const avg = bulletStormAvgStacks({ max: 1000, min: 5, retention: 0, weapon: twoShotWeapon, fireRate: 2 });
+    // Post-retention level clamps up to the floor every cycle (0 < 5), so the
+    // converged post-reload level IS the floor, and the per-shot average is
+    // floor + accrual/2.
+    expect(avg).toBeCloseTo(5 + accrual / 2, 6);
+    expect(avg).toBeGreaterThanOrEqual(5);
+  });
+
+  it('a weapon with no magazine (capacity 0) never reloads — returns the max directly', () => {
+    const meleeShaped = makeWeapon({ weaponClass: 'melee', capacity: undefined });
+    const avg = bulletStormAvgStacks({ max: 10, min: 0, retention: 0, weapon: meleeShaped, fireRate: 5 });
+    expect(avg).toBe(10);
+  });
+
+  it('guards: max <= 0 or fireRate <= 0 both return 0', () => {
+    expect(bulletStormAvgStacks({ max: 0, min: 0, retention: 0, weapon: twoShotWeapon, fireRate: 2 })).toBe(0);
+    expect(bulletStormAvgStacks({ max: 10, min: 0, retention: 0, weapon: twoShotWeapon, fireRate: 0 })).toBe(0);
+  });
+});
+
+describe('effectiveBulletStormStacks (via computeScenarios) — sentinel, clamp, average override', () => {
+  const weapon = makeWeapon({ projectileCount: 8, ammoPerShot: 5, capacity: 10, animDelaySec: 0.5 });
+
+  const maxMod = (value: number): Modifier => ({
+    id: 'bs-max',
+    source: { kind: 'omod', formId: '0x0', edid: 'test', name: 'Test Max' },
+    bucket: 'bulletStormMaxStacks',
+    op: 'ADD',
+    value,
+    conditions: [],
+  });
+  const minMod = (value: number): Modifier => ({
+    id: 'bs-min',
+    source: { kind: 'omod', formId: '0x0', edid: 'test', name: 'Test Min' },
+    bucket: 'bulletStormMinStacks',
+    op: 'ADD',
+    value,
+    conditions: [],
+  });
+  const retentionMod = (value: number): Modifier => ({
+    id: 'bs-retention',
+    source: { kind: 'omod', formId: '0x0', edid: 'test', name: 'Test Retention' },
+    bucket: 'bulletStormRetention',
+    op: 'ADD',
+    value,
+    conditions: [],
+  });
+  // +1% dbm per Bullet Storm stack, uncapped by the modifier's own `max` (the
+  // engine cap comes from bulletStormMaxStacks instead) — mirrors how
+  // onslaught.test.ts's furiousDbm pins the shared-counter clamp via a
+  // stack-scaled dbm modifier.
+  const stackDbm: Modifier = {
+    id: 'bs-stack-dbm',
+    source: { kind: 'omod', formId: '0x0', edid: 'test', name: 'Test Stack Dbm' },
+    bucket: 'dbm',
+    op: 'ADD',
+    value: 0.01,
+    conditions: [{ kind: 'stacks', counter: 'bulletStorm', max: 999 }],
+  };
+
+  function ratioFor(modifiers: Modifier[], bulletStormStacks: number, bulletStormAverageMode = false) {
+    const base = computeScenarios({
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: [],
+      player: createDefaultPlayerConditions(),
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2,
+    });
+    const withMods = computeScenarios({
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers,
+      player: { ...createDefaultPlayerConditions(), bulletStormStacks, bulletStormAverageMode },
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2,
+    });
+    return withMods.freeAim.perHit.total / base.freeAim.perHit.total;
+  }
+
+  it('sentinel -1 follows the computed max', () => {
+    expect(ratioFor([maxMod(10), stackDbm], -1)).toBeCloseTo(1.1, 6); // 10 stacks × 1%
+  });
+
+  it('an explicit value above max clamps down to max', () => {
+    expect(ratioFor([maxMod(10), stackDbm], 50)).toBeCloseTo(1.1, 6);
+  });
+
+  it('an explicit value below the floor clamps up to min', () => {
+    expect(ratioFor([maxMod(10), minMod(3), stackDbm], 1)).toBeCloseTo(1.03, 6); // floors to 3 stacks
+  });
+
+  it('exposes the fold on ScenarioSet', () => {
+    const result = computeScenarios({
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: [maxMod(10), minMod(3)],
+      player: createDefaultPlayerConditions(),
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2,
+    });
+    expect(result.bulletStormMaxStacks).toBe(10);
+    expect(result.bulletStormMinStacks).toBe(3);
+  });
+
+  it('bulletStormAverageMode overrides the manual slider with the engine-computed average', () => {
+    // max huge (no cap clamp), retention 0 → converged average = accrual/2
+    // (2-shot magazine, projectileCount 8 + ammoPerShot 5 → 12/30 accrual).
+    const accrual = (8 + 5 - 1) / BULLET_STORM_AMMO_PER_STACK;
+    const expectedAvg = accrual / 2;
+    // The manual slider (999) is nowhere near expectedAvg — proves the
+    // average mode wins, not the stored value.
+    const ratio = ratioFor([maxMod(1000), retentionMod(0), stackDbm], 999, true);
+    expect(ratio).toBeCloseTo(1 + 0.01 * expectedAvg, 6);
+  });
+});

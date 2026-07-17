@@ -210,6 +210,17 @@ export function buildEffectiveWeapon(
   const onslaughtMaxStacks = foldWeaponStat(
     [...allOmodModifiers, ...loadoutModifiers], 'onslaughtMaxStacks', 0, baseCtx
   );
+  // Bullet-Storm-stack curves on weapon-stat buckets (Bullet Storm's own
+  // reload-speed curve, cross-family-gated on Lock and Load) read the
+  // equipped stack cap/floor — bootstrap-fold both exactly like Onslaught
+  // above (cap/floor modifiers are themselves never Bullet-Storm-gated, so
+  // folding with cap/floor 0 is exact).
+  const bulletStormMaxStacks = foldWeaponStat(
+    [...allOmodModifiers, ...loadoutModifiers], 'bulletStormMaxStacks', 0, baseCtx
+  );
+  const bulletStormMinStacks = foldWeaponStat(
+    [...allOmodModifiers, ...loadoutModifiers], 'bulletStormMinStacks', 0, baseCtx
+  );
   // Bonus-move-speed fraction for the moveSpeedBonus curve input (Fast
   // Fighter's reload conversion) — same bootstrap pattern: fold once from the
   // FULL modifier list (Speed Demon's source is a mutation, not a weapon-stat
@@ -217,7 +228,13 @@ export function buildEffectiveWeapon(
   const moveSpeedBonus = foldWeaponStat(
     [...allOmodModifiers, ...loadoutModifiers], 'moveSpeedBonus', 0, baseCtx
   );
-  const ctx: ResolveContext = { ...baseCtx, onslaughtMaxStacks, moveSpeedBonus };
+  const ctx: ResolveContext = {
+    ...baseCtx,
+    onslaughtMaxStacks,
+    moveSpeedBonus,
+    bulletStormMaxStacks,
+    bulletStormMinStacks,
+  };
 
   const statModifiers = [...allOmodModifiers, ...loadoutStatModifiers];
   const speed = foldWeaponStat(statModifiers, 'fireRateSpeed', weapon.speed ?? 1.0, ctx);

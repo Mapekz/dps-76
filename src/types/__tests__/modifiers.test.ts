@@ -56,6 +56,12 @@ const ALL_BUCKETS: Bucket[] = [
   'apPerCrit',
   'onslaughtMaxStacks',
   'onslaughtReverse',
+  'bulletStormMaxStacks',
+  'bulletStormMinStacks',
+  'bulletStormRetention',
+  'bulletStormOnKill',
+  'bulletStormSpinUp',
+  'deflectChance',
   'moveSpeedBonus',
   'addDamageComponent',
   'armorPen',
@@ -95,7 +101,10 @@ describe('BUCKET_REGISTRY', () => {
     // folded value is what StatSummary renders. limbDamage/bashDamage/
     // addDamageComponent/armorPen have no fold consumer at all.
     expect([...INERT_ENGINE_BUCKETS].sort()).toEqual(
-      ['limbDamage', 'bashDamage', 'addDamageComponent', 'armorPen'].sort()
+      [
+        'limbDamage', 'bashDamage', 'addDamageComponent', 'armorPen',
+        'bulletStormOnKill', 'bulletStormSpinUp', 'deflectChance',
+      ].sort()
     );
   });
 });

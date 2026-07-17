@@ -192,6 +192,50 @@ export type Bucket =
    */
   | 'onslaughtReverse'
   /**
+   * Flat ADD contributions to the shared Bullet Storm stack cap (Bullet
+   * Storm perk +10, Bringing Out the Big Guns +10, Foundation's Vengeance +5
+   * at ≤25% HP). Base 0 (no AVIF exists for the raw counter — inferred,
+   * docs/assumptions.md "Bullet Storm"). Folded ONCE per scenario input
+   * (`scenarios.ts`) AND once in the weapon-stat bootstrap fold
+   * (`effective-weapon.ts`, so Bullet Storm's own reload-speed curve sees the
+   * cap) and carried on `ResolveContext.bulletStormMaxStacks`, which both the
+   * `bulletStorm` stack counter and the `bulletStormStacks` curve input
+   * clamp against.
+   */
+  | 'bulletStormMaxStacks'
+  /**
+   * Flat ADD contributions to the shared Bullet Storm stack FLOOR (Resolute
+   * Veteran +5). Base 0. Folded at the same two sites as
+   * `bulletStormMaxStacks` and carried on `ResolveContext.bulletStormMinStacks`
+   * — `effectiveBulletStormStacks` clamps to `[min, max]`
+   * (docs/assumptions.md "Bullet Storm").
+   */
+  | 'bulletStormMinStacks'
+  /**
+   * Fraction of Bullet Storm stacks kept on reload (default 0 — stacks are
+   * fully lost; Lock and Load r1 sets 0.5). Folded ONCE per scenario input
+   * (`scenarios.ts`) and consumed only by the sustained-fire average model
+   * (`bulletstorm.ts` `bulletStormAvgStacks`) — the manual stacks slider
+   * ignores it (docs/assumptions.md "Bullet Storm").
+   */
+  | 'bulletStormRetention'
+  /**
+   * Final Word's +1 Bullet Storm stack on kill (on-kill entry point) —
+   * inert: kills are unknowable in steady-state paper DPS.
+   */
+  | 'bulletStormOnKill'
+  /**
+   * Valkyrie's per-Bullet-Storm-stack spin-up ramp — inert: spin-up/rampup
+   * timing isn't modeled.
+   */
+  | 'bulletStormSpinUp'
+  /**
+   * Chance to deflect/reflect an incoming attack (The Action Hero) — inert:
+   * defensive, no incoming-damage model exists. Deliberately generic (not
+   * Bullet-Storm-scoped) — future deflect/reflect sources land here too.
+   */
+  | 'deflectChance'
+  /**
    * Additive bonus-movement-speed fraction (AV SpeedMult 0x000002DA, points
    * ×0.01 — Speed Demon's Mutation_FortifyMoveSpeed 20/25). Not a movement
    * model: the fold exists solely to feed the `moveSpeedBonus` CurveInput
@@ -324,6 +368,12 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   apCritHot: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts (per-modifier collect — durationSec matters), ap-economy.ts computeApEconomy (refresh-only HoT term)' },
   onslaughtMaxStacks: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'scenarios.ts / effective-weapon.ts — folded once, threaded on ResolveContext.onslaughtMaxStacks; caps the onslaught StackCounter and onslaughtStacks CurveInput' },
   onslaughtReverse: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'scenarios.ts — folded once; folded > 0 activates reverse-onslaught stack averaging (onslaught.ts) threaded on ResolveContext.onslaughtReverseStacks' },
+  bulletStormMaxStacks: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'scenarios.ts / effective-weapon.ts — folded once at each site, threaded on ResolveContext.bulletStormMaxStacks; caps the bulletStorm StackCounter and bulletStormStacks CurveInput' },
+  bulletStormMinStacks: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'scenarios.ts / effective-weapon.ts — folded once at each site, threaded on ResolveContext.bulletStormMinStacks; floors the bulletStorm StackCounter and bulletStormStacks CurveInput' },
+  bulletStormRetention: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'scenarios.ts — folded once; consumed by bulletstorm.ts bulletStormAvgStacks (sustained-fire average model) when PlayerConditions.bulletStormAverageMode is on' },
+  bulletStormOnKill: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — kills are unknowable in steady-state paper DPS (Final Word\'s on-kill stack grant)' },
+  bulletStormSpinUp: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — spin-up/ramp timing not modeled (Valkyrie\'s)' },
+  deflectChance: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — defensive, no incoming-damage model exists (The Action Hero)' },
   moveSpeedBonus: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon — folded once, threaded on ResolveContext.moveSpeedBonus; feeds the moveSpeedBonus CurveInput (Fast Fighter). Threaded in the weapon-stat fold ONLY — a damage-bucket curve on this input would read 0 until scenarios.ts also threads it' },
   addDamageComponent: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — no reader anywhere in the codebase; likely superseded by explosivePayload/materializeDamageTypeComponents' },
   armorPen: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — extracted but inert until enemy DR lands' },
