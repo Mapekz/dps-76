@@ -1,11 +1,10 @@
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { ButtonGroup } from '@/components/ui/button-group';
 import { Combobox } from '@/components/ui/combobox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
+import { ToggleChips } from '@/components/ui/toggle-chips';
 import { ToggleGroup } from '@/components/ui/toggle-group';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
@@ -233,24 +232,16 @@ export function TargetSection() {
 
           <div className="space-y-1.5">
             <Label>Target status effects</Label>
-            <ButtonGroup>
-              {STATUS_TOGGLES.map(s => {
-                const active = (conditions[s.key] as boolean | undefined) ?? false;
-                return (
-                  <Button
-                    key={s.key}
-                    type="button"
-                    size="sm"
-                    variant={active ? 'default' : 'outline'}
-                    className={active ? 'border border-primary hover:border-primary/90' : undefined}
-                    title={s.title}
-                    onClick={() => setEnemy(s.key, !active)}
-                  >
-                    {s.label}
-                  </Button>
-                );
-              })}
-            </ButtonGroup>
+            <ToggleChips
+              aria-label="Target status effects"
+              options={STATUS_TOGGLES.map(s => ({
+                value: s.key,
+                label: s.label,
+                title: s.title,
+                active: (conditions[s.key] as boolean | undefined) ?? false,
+              }))}
+              onToggle={(key, wasActive) => setEnemy(key, !wasActive)}
+            />
           </div>
 
           <div className="space-y-1.5">
