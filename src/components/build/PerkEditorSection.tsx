@@ -317,12 +317,10 @@ function PerkAddCombobox({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="w-full justify-start">
-          <PlusIcon className="mr-1 size-3.5" /> {triggerLabel}
-        </Button>
+      <PopoverTrigger render={<Button variant="outline" size="sm" className="w-full justify-start" />}>
+        <PlusIcon className="mr-1 size-3.5" /> {triggerLabel}
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+      <PopoverContent className="w-[--anchor-width] p-0" align="start">
         <Command>
           <CommandInput placeholder={scope === 'legendary' ? 'Search legendary perks…' : 'Search perks…'} />
           {scope !== 'legendary' && (

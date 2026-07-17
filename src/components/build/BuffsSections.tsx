@@ -696,12 +696,10 @@ function FoodDrinkAddCombobox({
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
-      <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="w-full justify-start">
-          <PlusIcon className="mr-1 size-3.5" /> Add food or drink…
-        </Button>
+      <PopoverTrigger render={<Button variant="outline" size="sm" className="w-full justify-start" />}>
+        <PlusIcon className="mr-1 size-3.5" /> Add food or drink…
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+      <PopoverContent className="w-[--anchor-width] p-0" align="start">
         <Command>
           <CommandInput placeholder="Search food & drink…" />
           <CommandList className="max-h-72">
