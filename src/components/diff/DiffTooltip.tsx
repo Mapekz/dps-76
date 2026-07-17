@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactElement } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { formatPercentDelta } from '@/lib/format';
@@ -30,12 +30,12 @@ export function DiffRows({ delta, baseline }: { delta: DpsSnapshot; baseline: Dp
 
 interface DiffTooltipProps {
   action: BuildAction;
-  children: ReactNode;
+  children: ReactElement;
 }
 
 /**
  * Wraps any control with a what-would-this-do tooltip showing the ΔDPS of
- * dispatching `action`. Opens on hover AND keyboard focus (Radix handles
+ * dispatching `action`. Opens on hover AND keyboard focus (Base UI handles
  * both); on touch, the suggestions panel is the discovery surface instead.
  */
 export function DiffTooltip({ action, children }: DiffTooltipProps) {
@@ -45,8 +45,8 @@ export function DiffTooltip({ action, children }: DiffTooltipProps) {
   if (!delta) return <>{children}</>;
 
   return (
-    <Tooltip delayDuration={200}>
-      <TooltipTrigger asChild>{children}</TooltipTrigger>
+    <Tooltip>
+      <TooltipTrigger delay={200} render={children} />
       <TooltipContent side="right" className="px-2.5 py-1.5">
         <DiffRows delta={delta} baseline={baseline} />
       </TooltipContent>

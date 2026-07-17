@@ -32,12 +32,12 @@ export function Header() {
 
         <div className="ml-auto flex items-center gap-3">
           <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="hidden cursor-not-allowed items-center gap-2 opacity-60 sm:flex">
-                <Label htmlFor="game-mode-toggle" className={`text-sm ${isLive ? 'text-foreground' : 'text-muted-foreground'}`}>Live</Label>
-                <Switch id="game-mode-toggle" checked={true} disabled aria-label="Toggle between Live and PTS" />
-                <Label htmlFor="game-mode-toggle" className={`text-sm ${!isLive ? 'text-foreground' : 'text-muted-foreground'}`}>PTS</Label>
-              </div>
+            <TooltipTrigger
+              render={<div className="hidden cursor-not-allowed items-center gap-2 opacity-60 sm:flex" />}
+            >
+              <Label htmlFor="game-mode-toggle" className={`text-sm ${isLive ? 'text-foreground' : 'text-muted-foreground'}`}>Live</Label>
+              <Switch id="game-mode-toggle" checked={true} disabled aria-label="Toggle between Live and PTS" />
+              <Label htmlFor="game-mode-toggle" className={`text-sm ${!isLive ? 'text-foreground' : 'text-muted-foreground'}`}>PTS</Label>
             </TooltipTrigger>
             <TooltipContent>
               <p>PTS data lands with the next extraction</p>

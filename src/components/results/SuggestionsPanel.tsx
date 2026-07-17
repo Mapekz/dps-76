@@ -81,10 +81,10 @@ export function SuggestionsPanel() {
           <div className="flex items-center gap-2 pt-1">
             <Separator className="flex-1" />
             <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="text-muted-foreground cursor-default text-[10px] uppercase tracking-wide">
-                  effectively tied
-                </span>
+              <TooltipTrigger
+                render={<span className="text-muted-foreground cursor-default text-[10px] uppercase tracking-wide" />}
+              >
+                effectively tied
               </TooltipTrigger>
               <TooltipContent>Gains under 1% — within the noise of the fire-rate approximation.</TooltipContent>
             </Tooltip>

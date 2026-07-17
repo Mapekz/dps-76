@@ -390,17 +390,19 @@ function AddictionCell({
           </span>
           {suppressedBy ? (
             <Tooltip>
-              <TooltipTrigger asChild>
-                <span
-                  className={cn(
-                    'text-muted-foreground flex shrink-0 items-center gap-1 text-[10px] uppercase tracking-wide',
-                    !addicted && 'opacity-50'
-                  )}
-                >
-                  <BanIcon className="size-3" />
-                  {/* Narrow columns can't spare the word — the icon and its tooltip still say it. */}
-                  <span className="hidden sm:inline">suppressed</span>
-                </span>
+              <TooltipTrigger
+                render={
+                  <span
+                    className={cn(
+                      'text-muted-foreground flex shrink-0 items-center gap-1 text-[10px] uppercase tracking-wide',
+                      !addicted && 'opacity-50'
+                    )}
+                  />
+                }
+              >
+                <BanIcon className="size-3" />
+                {/* Narrow columns can't spare the word — the icon and its tooltip still say it. */}
+                <span className="hidden sm:inline">suppressed</span>
               </TooltipTrigger>
               <TooltipContent>
                 {suppressedBy.name} is active, so {addiction.name} doesn't count toward Junkie's.
