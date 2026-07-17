@@ -270,17 +270,20 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
       }
       const pct = cmp * 100;
       const onTarget = cond['Run On'] === 'Target';
-      if (/^less than( or equal to)?$/i.test(cond.Operator ?? '')) {
-        // Tab-index-2 perk conditions run on the target: that's the ENEMY's health
-        // (Executioner's ≤40%), not the player's (Bloodied-style gates).
-        // The regex intentionally collapses strict "<" and "≤" into one IR kind
-        // with no stored operator — the engine evaluates both belowPct kinds
-        // inclusively (resolve.ts), matching every current ESM source
-        // (Foundation's Vengeance's player gate is ≤; docs/assumptions.md "Bullet Storm").
-        return onTarget ? { kind: 'enemyHealthBelowPct', pct } : { kind: 'healthBelowPct', pct };
+      // Tab-index-2 perk conditions run on the target: that's the ENEMY's health
+      // (Executioner's ≤40%), not the player's (Bloodied-style gates). The ESM's
+      // strict "<"/">" vs inclusive "≤"/"≥" is preserved via `inclusive` (absent
+      // ⇒ inclusive, the shape of every current ESM source — Foundation's
+      // Vengeance's player gate is ≤; docs/assumptions.md "Bullet Storm") so a
+      // future strict-comparison perk isn't silently mis-modeled as inclusive.
+      const below = /^less than( or equal to)?$/i.exec(cond.Operator ?? '');
+      if (below) {
+        const extra = below[1] ? {} : { inclusive: false };
+        return onTarget ? { kind: 'enemyHealthBelowPct', pct, ...extra } : { kind: 'healthBelowPct', pct, ...extra };
       }
-      if (onTarget && /^greater than( or equal to)?$/i.test(cond.Operator ?? '')) {
-        return { kind: 'enemyHealthAbovePct', pct }; // Instigating: enemy ≥60%
+      const above = onTarget ? /^greater than( or equal to)?$/i.exec(cond.Operator ?? '') : null;
+      if (above) {
+        return { kind: 'enemyHealthAbovePct', pct, ...(above[1] ? {} : { inclusive: false }) }; // Instigating: enemy ≥60%
       }
       return { kind: 'unresolved', raw: `GetHealthPercentage ${cond.Operator} ${cmp}` };
     }

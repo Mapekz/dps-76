@@ -218,17 +218,23 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       return ctx.scenario.isPowerAttack ? 1 : null;
     case 'crit':
       return ctx.scenario.isCrit ? 1 : null;
-    case 'healthBelowPct':
-      // PLAYER health at or below pct. ESM uses ≤ (Foundation's Vengeance:
-      // GetHealthPercentage() ≤ 0.25); extraction collapses </≤ into this
-      // kind, and no player gate uses strict <, so evaluate inclusively.
-      return ctx.player.healthPercent <= cond.pct ? 1 : null;
-    case 'enemyHealthBelowPct':
+    case 'healthBelowPct': {
+      // PLAYER health below pct. Operator is data-driven from the ESM
+      // (`inclusive` — absent ⇒ ≤, matching Foundation's Vengeance's
+      // GetHealthPercentage() ≤ 0.25, the only current source).
+      const h = ctx.player.healthPercent;
+      return ((cond.inclusive ?? true) ? h <= cond.pct : h < cond.pct) ? 1 : null;
+    }
+    case 'enemyHealthBelowPct': {
       // Unset enemy health = full (Executioner's inactive by default).
-      return (ctx.enemy.healthPercent ?? 100) <= cond.pct ? 1 : null;
-    case 'enemyHealthAbovePct':
+      const h = ctx.enemy.healthPercent ?? 100;
+      return ((cond.inclusive ?? true) ? h <= cond.pct : h < cond.pct) ? 1 : null;
+    }
+    case 'enemyHealthAbovePct': {
       // Unset enemy health = full (Instigating active by default).
-      return (ctx.enemy.healthPercent ?? 100) >= cond.pct ? 1 : null;
+      const h = ctx.enemy.healthPercent ?? 100;
+      return ((cond.inclusive ?? true) ? h >= cond.pct : h > cond.pct) ? 1 : null;
+    }
     case 'perCrippledLimb': {
       const count = Math.max(0, Math.min(ctx.enemy.crippledLimbCount ?? 0, cond.max));
       return count > 0 ? count : null;

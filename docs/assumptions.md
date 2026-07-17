@@ -831,12 +831,15 @@ same shape as a floor instead of a cap.
 
 - **`healthBelowPct` is inclusive — ESM-PROVEN**: Foundation's Vengeance's
   `GetHealthPercentage() Less Than Or Equal To 0.25` gate evaluates `≤`, not
-  strict `<` (`resolve.ts`'s `healthBelowPct` case) — at exactly 25% health the
-  +5 cap now applies. Extraction collapses ESM `<`/`≤` into one condition kind
-  with no stored operator; a sweep of generated data confirms Foundation's
-  Vengeance is the only player-side `healthBelowPct` source (all 3 perk-rank
-  entries, `pct: 25`), so evaluating inclusively mis-models nothing. Enemy
-  health gates (Executioner's/Instigating) were already inclusive.
+  strict `<` — at exactly 25% health the +5 cap applies. Extraction preserves
+  the ESM's strict-vs-inclusive operator via an `inclusive` flag on
+  `healthBelowPct`/`enemyHealthBelowPct`/`enemyHealthAbovePct` (absent ⇒
+  inclusive; `false` ⇒ strict — `conditions.ts`'s `GetHealthPercentage`
+  handler, evaluated in `resolve.ts`), so a future strict-`<` source isn't
+  silently mis-modeled as inclusive. Foundation's Vengeance is the only
+  player-side `healthBelowPct` source today (all 3 perk-rank entries, `pct:
+  25`, no flag — it's `≤`). Enemy health gates (Executioner's/Instigating)
+  were already inclusive and also emit no flag.
 - **Accrual formula — USER-MEASURED**: `(projectileCount + ammoPerShot − 1) /
   30` stacks per shot, using POST-MOD effective-weapon numbers (e.g. 8
   projectiles + 5 ammo/shot → 12/30/shot; +1 projectile from Two Shot →

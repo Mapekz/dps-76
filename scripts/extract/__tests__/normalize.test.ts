@@ -324,6 +324,48 @@ describe('translateConditions (2026-07-10 review)', () => {
     const { conditions } = translateConditions([row], { edidByFormId: new Map() });
     expect(conditions).toEqual([{ kind: 'enemyHealthAbovePct', pct: 60 }]);
   });
+
+  it("translates player GetHealthPercentage ≤ to healthBelowPct with no inclusive flag (Foundation's Vengeance ≤0.25)", () => {
+    const row: RawCondition = {
+      Function: 'GetHealthPercentage',
+      'Comparison Value': 0.25,
+      Operator: 'Less Than Or Equal To',
+    };
+    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([{ kind: 'healthBelowPct', pct: 25 }]);
+  });
+
+  it('translates player GetHealthPercentage strict < to healthBelowPct with inclusive: false', () => {
+    const row: RawCondition = {
+      Function: 'GetHealthPercentage',
+      'Comparison Value': 0.25,
+      Operator: 'Less Than',
+    };
+    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([{ kind: 'healthBelowPct', pct: 25, inclusive: false }]);
+  });
+
+  it('translates target GetHealthPercentage strict < to enemyHealthBelowPct with inclusive: false', () => {
+    const row: RawCondition = {
+      Function: 'GetHealthPercentage',
+      'Comparison Value': 0.4,
+      Operator: 'Less Than',
+      'Run On': 'Target',
+    };
+    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([{ kind: 'enemyHealthBelowPct', pct: 40, inclusive: false }]);
+  });
+
+  it('translates target GetHealthPercentage strict > to enemyHealthAbovePct with inclusive: false', () => {
+    const row: RawCondition = {
+      Function: 'GetHealthPercentage',
+      'Comparison Value': 0.6,
+      Operator: 'Greater Than',
+      'Run On': 'Target',
+    };
+    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([{ kind: 'enemyHealthAbovePct', pct: 60, inclusive: false }]);
+  });
 });
 
 describe('translateConditions (WornHasKeyword unique self-gate allowlist — Bullet Storm, 2026-07-16)', () => {

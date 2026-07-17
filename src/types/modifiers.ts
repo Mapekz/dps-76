@@ -474,12 +474,12 @@ export type Condition =
   | { kind: 'powerAttack' }
   /** The hit is a VATS critical (symmetric with sneaking/powerAttack). */
   | { kind: 'crit' }
-  /** PLAYER health at or below pct (Foundation's Vengeance: ≤25 — GetHealthPercentage ≤ 0.25). */
-  | { kind: 'healthBelowPct'; pct: number }
-  /** ENEMY health at or below pct (Executioner's: ≤40, threshold from GLOB LGND_ExecuteHealthThreshold). */
-  | { kind: 'enemyHealthBelowPct'; pct: number }
-  /** ENEMY health at or above pct (Instigating: ≥60 — the ESM's post-rework gate). */
-  | { kind: 'enemyHealthAbovePct'; pct: number }
+  /** PLAYER health below pct. Absent/true ⇒ ≤ (Foundation's Vengeance: GetHealthPercentage ≤ 0.25); false ⇒ strict <. */
+  | { kind: 'healthBelowPct'; pct: number; inclusive?: boolean }
+  /** ENEMY health below pct (Executioner's: ≤40, threshold from GLOB LGND_ExecuteHealthThreshold). Absent/true ⇒ ≤; false ⇒ strict <. */
+  | { kind: 'enemyHealthBelowPct'; pct: number; inclusive?: boolean }
+  /** ENEMY health above pct (Instigating: ≥60 — the ESM's post-rework gate). Absent/true ⇒ ≥; false ⇒ strict >. */
+  | { kind: 'enemyHealthAbovePct'; pct: number; inclusive?: boolean }
   /** value × enemy crippled-limb count, clamped (Bully's — STAT_DmgPerCrippled). */
   | { kind: 'perCrippledLimb'; max: number }
   /** The fired round is the magazine's last (Last Shot — GetLoadedAmmoCount()=0 + IsNextClipLastShot). */
