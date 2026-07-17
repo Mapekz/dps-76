@@ -10,6 +10,7 @@ import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
 import { resolveStats } from '@/lib/loadout';
+import { cn } from '@/lib/utils';
 import { createDefaultPlayerConditions, type PlayerConditions } from '@/types';
 import { SectionTrigger } from './SectionTrigger';
 
@@ -78,16 +79,24 @@ function SwitchRow({
   label,
   checked,
   onCheckedChange,
+  disabled,
 }: {
   id: string;
   label: string;
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
+  disabled?: boolean;
 }) {
   return (
-    <label htmlFor={id} className="flex cursor-pointer items-center justify-between gap-2 text-sm">
+    <label
+      htmlFor={id}
+      className={cn(
+        'flex items-center justify-between gap-2 text-sm',
+        disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+      )}
+    >
       <span>{label}</span>
-      <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />
+      <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} disabled={disabled} />
     </label>
   );
 }
@@ -120,6 +129,22 @@ export function ConditionsSection() {
       : Math.min(onslaughtStored, onslaughtMax);
   const hasKillStreak = scenarios?.hasKillStreakSources ?? false;
 
+  // Bullet Storm: the max/min fold from equipped sources
+  // (ScenarioSet.bulletStormMaxStacks/bulletStormMinStacks); sentinel -1 =
+  // follow max (see the PlayerConditions.bulletStormStacks comment). Unlike
+  // Onslaught's auto-detected reverse mode, average mode here is a manual
+  // user toggle (PlayerConditions.bulletStormAverageMode).
+  const bulletStormMax = scenarios?.bulletStormMaxStacks ?? 0;
+  const bulletStormMin = scenarios?.bulletStormMinStacks ?? 0;
+  const bulletStormAvg = scenarios?.bulletStormAvgStacks;
+  const bulletStormAverageMode = conditions.bulletStormAverageMode ?? false;
+  const bulletStormStored = conditions.bulletStormStacks;
+  const bulletStormValue = bulletStormAverageMode
+    ? (bulletStormAvg ?? 0)
+    : bulletStormStored === -1
+      ? bulletStormMax
+      : Math.min(Math.max(bulletStormStored, bulletStormMin), bulletStormMax);
+
   const foodTier = conditions.foodTier ?? 0;
   const drinkTier = conditions.drinkTier ?? 0;
   const feralTier = conditions.feralTier ?? 0;
@@ -136,6 +161,7 @@ export function ConditionsSection() {
     (conditions.capsOnHand !== defaults.capsOnHand ? 1 : 0) +
     (conditions.adrenalineStacks !== defaults.adrenalineStacks ? 1 : 0) +
     (onslaughtStored !== -1 && !onslaughtReverse ? 1 : 0) +
+    (bulletStormStored !== -1 && !bulletStormAverageMode ? 1 : 0) +
     ((conditions.targetsHit ?? 1) !== (defaults.targetsHit ?? 1) ? 1 : 0) +
     ((conditions.weaponConditionPct ?? 100) !== (defaults.weaponConditionPct ?? 100) ? 1 : 0) +
     ((conditions.hitRatePct ?? 100) !== (defaults.hitRatePct ?? 100) ? 1 : 0) +
@@ -297,6 +323,48 @@ export function ConditionsSection() {
               />
             )}
             {onslaughtMax === 0 && <p className="text-muted-foreground text-xs">No Onslaught sources equipped</p>}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="char-bulletstorm">
+              {bulletStormAverageMode
+                ? `Bullet Storm — avg ~${Math.round(bulletStormValue)} / max ${bulletStormMax}`
+                : `Bullet Storm stacks (${bulletStormValue} / max ${bulletStormMax})`}
+            </Label>
+            <SwitchRow
+              id="char-bulletstorm-average"
+              label="Use sustained-fire average"
+              checked={bulletStormAverageMode}
+              onCheckedChange={v => set('bulletStormAverageMode', v)}
+              disabled={bulletStormMax === 0}
+            />
+            {bulletStormAverageMode ? (
+              <p className="text-muted-foreground text-xs">
+                Engine-computed average during sustained fire — builds with ammo spent, resets on reload (Lock and
+                Load keeps half).
+              </p>
+            ) : (
+              <Slider
+                id="char-bulletstorm"
+                min={bulletStormMin}
+                max={Math.max(bulletStormMax, bulletStormMin, 1)}
+                step={1}
+                disabled={bulletStormMax === 0}
+                value={[bulletStormValue]}
+                onValueChange={([v]) => set('bulletStormStacks', v)}
+                marks={
+                  bulletStormMax > 0
+                    ? Array.from({ length: bulletStormMax - bulletStormMin + 1 }, (_, i) => {
+                        const v = bulletStormMin + i;
+                        return { value: v, label: v % 5 === 0 || v === bulletStormMax ? String(v) : undefined };
+                      })
+                    : undefined
+                }
+              />
+            )}
+            {bulletStormMax === 0 && (
+              <p className="text-muted-foreground text-xs">No Bullet Storm sources equipped</p>
+            )}
           </div>
 
           {onslaughtReverse && (

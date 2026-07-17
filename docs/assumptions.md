@@ -42,6 +42,7 @@ sub-anchor without updating every citation.
 - **VATS AP economy & manual-aim hit rate** — regen model, hydration baseline, Number Cruncher, Conductor's
 - **Power attacks & melee cadence** — power-attack race mult, Charged, Thrill-Seeker's
 - **Onslaught** — stack counter, max-stack table, the Route-B correction
+- **Bullet Storm** — stack counter, accrual formula, reload retention, average mode
 - **SPECIAL & perk budget**
 - **Max HP (derived)**
 - **Ghoul Glow**
@@ -813,6 +814,66 @@ to the UI slider):
   now inline-expands standalone condition-form references when they
   translate completely.
 
+## Bullet Storm
+Buckets: `bulletStormMaxStacks`, `bulletStormMinStacks`, `bulletStormRetention`;
+engine: `resolve.ts`'s `effectiveBulletStormStacks`, `bulletstorm.ts`'s
+`bulletStormAvgStacks`.
+
+The Bullet Storm stack counter is engine-hardcoded (raw AV `0x0000039B`, no
+AVIF record) — same shape as Onslaught's counter. **Base max = 0 is an
+INFERENCE** — no record defines a starting cap; `bulletStormMaxStacks`
+sources are all landed from extraction: Bullet Storm perk +10 (unconditional),
+Bringing Out the Big Guns +10 more (gated `perkFamilyRank(HeavyGunnerMaster,
+minRank: 1)`), Foundation's Vengeance +5 more (gated on its weapon keyword AND
+`healthBelowPct: 25`) — cap ranges 10/20/25 depending on loadout.
+`bulletStormMinStacks` (Resolute Veteran +5, landed on the omod side) is the
+same shape as a floor instead of a cap.
+
+- **Accrual formula — USER-MEASURED**: `(projectileCount + ammoPerShot − 1) /
+  30` stacks per shot, using POST-MOD effective-weapon numbers (e.g. 8
+  projectiles + 5 ammo/shot → 12/30/shot; +1 projectile from Two Shot →
+  13/30). The divisor **IS ESM-PROVEN**: GMST `uAmmoSpenderAmmoUsePerStack`
+  (`0x0083C3D0`) = 30 (`bulletstorm.ts` `BULLET_STORM_AMMO_PER_STACK`).
+- **Reload loss — GAME FACT**: 100% of stacks are lost on reload by default;
+  no passive decay/regen otherwise. Lock and Load r1 sets retention to 0.5
+  (keep half) via its own entry point (EP210, `Mod Ammo Spender Max Reload
+  Stack Mult`) — `bulletStormRetention` bucket, folded once per scenario
+  input and consumed only by the sustained-fire average model (the manual
+  stacks slider ignores it).
+- **Sentinel default**: `bulletStormStacks = -1` means "follow the computed
+  max" — same convention as `onslaughtStacks`. A non-negative value is an
+  explicit user selection, clamped to `[min, max]` at read time
+  (`effectiveBulletStormStacks`; `min > max` degrades to `max`, never a floor
+  above the cap).
+- **Average mode (`PlayerConditions.bulletStormAverageMode`, default false —
+  user-chosen opt-in)** — engine-computed sustained-fire average instead of
+  the manual slider, mirroring Onslaught-reverse's read-only average:
+  `bulletStormAvgStacks` fixed-point-iterates mag+reload cycles (accrue every
+  shot, apply retention once per reload) until the starting stack level
+  converges, then averages the per-shot levels of the converged cycle. A
+  weapon with no magazine (melee/unarmed, capacity 0) never reloads, so it
+  simplifies to a flat `max` (**ASSUMPTION**, doesn't model an initial
+  ramp-up from 0). **ASSUMPTION, unproven**: the simulation carries a
+  possibly-fractional running stack total across reloads (retention scales
+  the exact float, not a rounded whole-stack count) — whether the hidden AV
+  itself tracks fractional progress this way, vs. truncating to whole stacks
+  before a reload can apply retention, has no in-game confirmation.
+- **Cross-family reload-speed curve**: Bullet Storm's own reload-speed curve
+  (+1%/ammo-spent stack) is gated `HasPerk(LockAndLoad01)` — see **Value
+  curves**' cross-family HasPerk gates, `perkFamilyRank` condition kind.
+- **Bootstrap fold, twice**: like `onslaughtMaxStacks`/`moveSpeedBonus`,
+  `bulletStormMaxStacks`/`bulletStormMinStacks` are folded once per scenario
+  input (`scenarios.ts`, feeds paper-damage) AND once in the weapon-stat
+  bootstrap fold (`effective-weapon.ts`, so the reload-speed curve above sees
+  the cap/floor too) — `bulletStormRetention`/the sustained-fire average are
+  NOT folded in `effective-weapon.ts` (weapon-stat pass only, same accepted
+  boundary as `onslaughtReverseStacks`).
+- **Inert siblings**: `bulletStormOnKill` (Final Word's +1 stack on kill —
+  kills are unknowable in steady-state paper DPS), `bulletStormSpinUp`
+  (Valkyrie's per-stack spin-up ramp — not modeled), `deflectChance` (The
+  Action Hero — defensive, no incoming-damage model; deliberately generic,
+  not Bullet-Storm-scoped, for future deflect/reflect sources).
+
 ## SPECIAL & perk budget
 Engine: `src/lib/player-stats.ts`.
 
@@ -1086,7 +1147,6 @@ but belong to calculation streams not yet modeled:
 |---|---|---|
 | Limb-damage DPS | Scattershot, Modern Renegade, Enforcer | `limbDamage` bucket exists but scenarios never target limbs yet |
 | Bash-damage DPS | Bear Arms, Basher | bash attacks unmodeled |
-| Bullet Storm peak DPS | Bringing Out the Big Guns, Foundation's Vengeance, Valkyrie | raises max stacks 10→20; per-OMOD keyword+HP-gated cap-raises aren't extractable yet (no `bulletStormMaxStacks` bootstrap bucket) |
 | Kill Streak accrual rate | Overkill | grants a per-kill accrual-RATE AV, distinct from the existing static-slider model — needs new engine design |
 | Melee via SPECIAL buffs | Radicool (+STR) | SPECIAL buffs are manual inputs for now |
 | DR→unarmed synergy | Barbarian, Bodyguards, Iron Fist | DR increases unarmed/fist damage |

@@ -98,10 +98,11 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
       Speed Demon + a flat +10% (half of +20% move speed). Also test with a
       sprint-speed perk (Freight Train) while stationary to settle whether
       sprint-only bonuses count as "bonus movement speed".
-- [ ] **Lock and Load reload activation** (new 2026-07-15) — .50 Cal at 30
-      ammo-spent stacks: 5.0s belt reload without Lock and Load, model
-      ≈3.85s with it (+1%/stack via Bullet Storm's hidden curve). Golden
-      added (`measure: reloadSec`).
+- [ ] **Lock and Load reload activation** (new 2026-07-15) — .50 Cal at 10
+      ammo-spent stacks (Bullet Storm's base cap alone — no Bringing Out the
+      Big Guns/Foundation's Vengeance): 5.0s belt reload without Lock and
+      Load, model ≈4.55s with it (+1%/stack via Bullet Storm's hidden curve,
+      5.0s / 1.10). Golden added (`measure: reloadSec`).
 - [ ] **Reload-window AP regen & the 1s delay** (new 2026-07-15) —
       Double-Barrel steady-state VATS uptime golden (`measure: apUptime`)
       pins both the reload-regen credit and the `fDamagedAVRegenDelay = 1.0`

@@ -482,7 +482,7 @@
    "source": "in-game (pending) \u2014 compare pip-boy damage card with/without the card equipped; also spot-check V.A.T.S. Optimized receiver drops the bonus to +20.8%"
   },
   {
-   "name": "Lock and Load activates Bullet Storm's reload curve on .50 Cal \u2014 stopwatch (model: 5.0s / (1 + 0.30 @30 stacks) \u2248 3.85s)",
+   "name": "Lock and Load activates Bullet Storm's reload curve on .50 Cal \u2014 stopwatch (model: 5.0s / (1 + 0.10 @10 stacks, Bullet Storm's base cap) \u2248 4.55s)",
    "weaponId": "50CalMachineGun",
    "itemLevel": 50,
    "mods": {},
@@ -501,7 +501,7 @@
    "mutations": [],
    "consumables": [],
    "conditions": {
-    "bulletStormStacks": 30
+    "bulletStormStacks": 10
    },
    "enemyConditions": {},
    "scenario": "freeAim",

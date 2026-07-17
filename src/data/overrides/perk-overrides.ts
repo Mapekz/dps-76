@@ -229,4 +229,9 @@ export const perkForceEffectivePerkIds: ReadonlySet<string> = new Set([
   // in extraPerkModifiers above (onslaught.ts). Was badged while the family
   // extracted empty (pre-2026-07-12 Onslaught pass).
   'GunslingerMaster',
+  // Bringing Out the Big Guns: its +10 Bullet Storm cap lives on the HeavyGunner
+  // family's modifiers (AbPerkHeavyGunner SPEL 0x0031BE58, effect gated
+  // HasPerk 0x0004A0D6 → perkFamilyRank HeavyGunnerMaster), so its own family
+  // extracts with zero modifiers and perkHasEngineEffect can't see the effect.
+  'BringingOutTheBigGuns',
 ]);
