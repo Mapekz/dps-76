@@ -48,7 +48,7 @@ export function HeadlineStrip({ variant = 'full' }: HeadlineStripProps) {
               >
                 {LABELS[key]}
               </span>
-              <DeltaFlash className="text-sm font-semibold" value={scenarios[key].burstDps} format={formatDamage} />
+              <DeltaFlash className="text-sm font-semibold" value={scenarios[key].sustain.sustainedDps} format={formatDamage} />
             </span>
           ))}
         </div>
@@ -85,7 +85,8 @@ export function HeadlineStrip({ variant = 'full' }: HeadlineStripProps) {
         ))}
       </div>
       <p className="text-muted-foreground text-[11px] leading-relaxed">
-        Assumes every shot hits. Fire rate is approximate; the reload model is unverified in-game.
+        Effective DPS folds in reload and your hit chance; burst is the every-shot-hits ceiling. Fire rate and the
+        reload model are approximate/unverified in-game.
       </p>
     </div>
   );

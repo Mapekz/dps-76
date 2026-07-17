@@ -183,15 +183,33 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
         <Row label="Average per hit" value={formatDamage(result.perHit.total)} />
         {trace.charge && <Row label="Charge dmg mult" value={`×${trace.charge.mult.toFixed(1)}`} />}
         <Row label="Fire rate (approx.)" value={`×${result.fireRate.toFixed(2)}/s`} />
-        <Row label="Burst DPS" value={formatDamage(result.burstDps)} />
+        <Row
+          label="Burst DPS"
+          title="Theoretical ceiling: per-hit × fire rate, trigger held down continuously with no reload and every shot landing."
+          value={formatDamage(result.burstDps)}
+        />
         {result.sustain.reloadSec > 0 && (
           <>
             <Row label="Mag cycle" value={formatSeconds(result.sustain.magDumpSec + result.sustain.reloadSec)} />
             <Row indent label={`Mag dump (${result.sustain.shotsPerMag} shots)`} value={formatSeconds(result.sustain.magDumpSec)} />
             <Row indent label="Reload" value={formatSeconds(result.sustain.reloadSec)} />
-            <Row label="Sustained DPS" value={formatDamage(result.sustain.sustainedDps)} />
+            {/* result.sustain.sustainedDps already has hit chance folded in (scenarios.ts) — back out the
+                reload-only figure so this row reconciles with Mag cycle/Mag dump/Reload above it. */}
+            <Row label="Sustained DPS" value={formatDamage(result.sustain.sustainedDps / (result.hitRatePct / 100))} />
           </>
         )}
+        {result.hitRatePct < 100 && (
+          <Row
+            label="Hit chance"
+            title="Your Free-aim/VATS hit-rate setting — a miss still costs the shot but deals no damage."
+            value={`×${(result.hitRatePct / 100).toFixed(2)}`}
+          />
+        )}
+        <Row
+          label="Effective DPS"
+          title="Reload-aware sustained DPS × your hit chance — the realistic damage you deal over time."
+          value={formatDamage(result.sustain.sustainedDps)}
+        />
       </div>
 
       {result.ap && explain.apRegen && (() => {

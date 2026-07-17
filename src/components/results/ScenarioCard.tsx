@@ -8,6 +8,14 @@ import { CritGauge } from './CritGauge';
 
 const formatDotDps = (value: number) => `+${formatDamage(value)}/s`;
 const formatUptimePct = (uptime: number) => `${Math.round(uptime * 100)}% uptime`;
+const formatHitRatePct = (value: number) => `${Math.round(value)}%`;
+
+const EFFECTIVE_DPS_DEFINITION =
+  'Reload-aware sustained DPS × your hit chance — the realistic damage you deal over time.';
+const BURST_DPS_DEFINITION =
+  'Theoretical ceiling: per-hit × fire rate, trigger held down continuously with no reload and every shot landing.';
+const HIT_CHANCE_DEFINITION =
+  'Share of shots that land — your Free-aim/VATS hit-rate setting. A miss still costs the shot but deals no damage.';
 
 interface ScenarioCardProps {
   scenarioKey: ScenarioKey;
@@ -37,15 +45,18 @@ export function ScenarioCard({ scenarioKey, label, result, emphasized }: Scenari
         {label}
       </p>
       <p className="text-2xl font-semibold leading-none">
-        <DeltaFlash value={result.burstDps} />
+        <DeltaFlash value={result.sustain.sustainedDps} />
       </p>
-      <p className="text-muted-foreground text-[11px] uppercase tracking-wide">burst dps</p>
+      <p className="text-muted-foreground text-[11px] uppercase tracking-wide" title={EFFECTIVE_DPS_DEFINITION}>
+        effective dps
+      </p>
       <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
-        <span>{hasReloadModel ? 'sustained' : 'per hit'}</span>
-        <DeltaFlash
-          className="text-foreground text-sm"
-          value={hasReloadModel ? result.sustain.sustainedDps : result.perHit.total}
-        />
+        <span title={BURST_DPS_DEFINITION}>burst</span>
+        <DeltaFlash className="text-foreground text-sm" value={result.burstDps} />
+      </div>
+      <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
+        <span title={HIT_CHANCE_DEFINITION}>hit chance</span>
+        <DeltaFlash className="text-foreground text-sm" value={result.hitRatePct} format={formatHitRatePct} />
       </div>
       {hasReloadModel && (
         <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">

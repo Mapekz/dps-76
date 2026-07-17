@@ -133,12 +133,22 @@ export interface PlayerConditions {
   weaponConditionPct?: number; // 0-200: equipped weapon condition, 100 = full, 200 = over-repaired max (Polished; default 100)
   /**
    * Manual-aim (free-aim) hit rate %, 10-100, default 100. Models realistic
-   * misses (movement, target size) by scaling free-aim SUSTAINED dps only
-   * (not per-hit, not burst, not VATS — VATS accuracy is assumed 100%,
-   * hit-chance modeling permanently out of scope, see docs/assumptions.md
-   * "Manual-aim hit rate").
+   * misses (movement, target size) by scaling free-aim SUSTAINED dps (and
+   * thus the free-aim headline "effective" DPS) — never per-hit, never burst
+   * (those stay the every-shot-hits ceiling). Independent of VATS, which has
+   * its own `vatsHitRatePct` knob — see docs/assumptions.md "Manual-aim hit
+   * rate".
    */
   hitRatePct?: number;
+  /**
+   * Manual VATS hit rate %, 10-100, default 100. Mirrors `hitRatePct` but for
+   * the VATS scenario: scales VATS sustained/effective dps and the VATS
+   * AP-limited figure (a miss still costs AP), never per-hit or burst. This
+   * is a user-supplied estimate, not computed accuracy — auto-modeling VATS
+   * hit chance from distance/Perception/perks stays out of scope, see
+   * docs/assumptions.md "Manual-aim hit rate".
+   */
+  vatsHitRatePct?: number;
   /**
    * Chance (10–100, default 100) that an aimed shot actually lands on the
    * targeted body part instead of the torso. Only applies while
@@ -578,7 +588,8 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     classFreakRank: 0, // synthetic-test default; the app derives it in resolveLoadout (equipped ClassFreak rank)
     equippedPerkRanks: {}, // synthetic-test default; the app derives it in resolveLoadout (selected perk loadout)
     weaponConditionPct: 100, // full condition (Polished curve input; 200 = over-repaired max)
-    hitRatePct: 100, // manual-aim hit rate (100 = every shot lands; VATS is unaffected)
+    hitRatePct: 100, // manual-aim hit rate (100 = every shot lands; VATS has its own knob)
+    vatsHitRatePct: 100, // manual VATS hit rate (100 = every shot lands)
     bodyPartHitRatePct: 100, // aimed shots always land on the targeted body part
     followThroughPct: 0, // no damage multiplier assumed by default
     takingOneForTheTeamPct: 0, // no damage multiplier assumed by default

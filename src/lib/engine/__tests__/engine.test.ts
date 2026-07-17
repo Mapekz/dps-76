@@ -1219,7 +1219,7 @@ describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
   });
 });
 
-describe('computeScenarios hit rate (Stage B, manual-aim only)', () => {
+describe('computeScenarios hit rate (Stage B/C, manual free-aim + VATS)', () => {
   const weapon = makeWeapon({
     animDelaySec: 1.0, isPhysical: false, capacity: 20, ammoPerShot: 1, reloadSpeed: 1.0, animationReloadSec: 4.0,
   });
@@ -1240,12 +1240,45 @@ describe('computeScenarios hit rate (Stage B, manual-aim only)', () => {
     expect(half.vats.burstDps).toBeCloseTo(full.vats.burstDps, 10);
   });
 
-  it('defaults to unscaled (100%) when hitRatePct is entirely omitted from player state', () => {
+  it('scales VATS SUSTAINED dps only — burst, per-hit, and free-aim stay unchanged', () => {
+    const full = computeScenarios(input);
+    const half = computeScenarios({ ...input, player: { ...input.player, vatsHitRatePct: 50 } });
+
+    expect(half.vats.sustain.sustainedDps).toBeCloseTo(full.vats.sustain.sustainedDps * 0.5, 10);
+    expect(half.vats.burstDps).toBeCloseTo(full.vats.burstDps, 10);
+    expect(half.vats.perHit.total).toBeCloseTo(full.vats.perHit.total, 10);
+    expect(half.freeAim.sustain.sustainedDps).toBeCloseTo(full.freeAim.sustain.sustainedDps, 10);
+    expect(half.freeAim.burstDps).toBeCloseTo(full.freeAim.burstDps, 10);
+  });
+
+  it('surfaces the applied hit rate on ScenarioResult.hitRatePct', () => {
+    const s = computeScenarios({ ...input, player: { ...input.player, hitRatePct: 70, vatsHitRatePct: 40 } });
+    expect(s.freeAim.hitRatePct).toBe(70);
+    expect(s.vats.hitRatePct).toBe(40);
+  });
+
+  it('defaults to unscaled (100%) when hitRatePct/vatsHitRatePct are entirely omitted from player state', () => {
     const playerWithoutHitRate = createDefaultPlayerConditions();
     delete playerWithoutHitRate.hitRatePct;
-    const withField = computeScenarios(input); // default factory sets hitRatePct: 100
+    delete playerWithoutHitRate.vatsHitRatePct;
+    const withField = computeScenarios(input); // default factory sets both to 100
     const withoutField = computeScenarios({ ...input, player: playerWithoutHitRate });
     expect(withoutField.freeAim.sustain.sustainedDps).toBeCloseTo(withField.freeAim.sustain.sustainedDps, 10);
+    expect(withoutField.vats.sustain.sustainedDps).toBeCloseTo(withField.vats.sustain.sustainedDps, 10);
+  });
+
+  it('vatsHitRatePct scales ap.apLimitedDps proportionally — a miss still costs AP, so uptime itself is unaffected', () => {
+    const apWeapon = makeWeapon({
+      animDelaySec: 1.0, isPhysical: false, capacity: 20, ammoPerShot: 1, reloadSpeed: 1.0, animationReloadSec: 4.0,
+      apCost: 10,
+    });
+    const apInput = { ...input, weapon: apWeapon };
+    const full = computeScenarios(apInput);
+    const half = computeScenarios({ ...apInput, player: { ...apInput.player, vatsHitRatePct: 50 } });
+
+    expect(full.vats.ap).toBeDefined();
+    expect(half.vats.ap!.uptime).toBeCloseTo(full.vats.ap!.uptime, 10);
+    expect(half.vats.ap!.apLimitedDps).toBeCloseTo(full.vats.ap!.apLimitedDps * 0.5, 10);
   });
 });
 

@@ -42,6 +42,12 @@ export interface ScenarioResult {
   burstDps: number;
   /** Magazine/reload cycle model — sustained DPS and its inputs. */
   sustain: SustainResult;
+  /**
+   * Hit-rate % applied to this scenario's `sustain.sustainedDps` (free-aim ←
+   * `hitRatePct`, VATS ← `vatsHitRatePct`; both default 100). Surfaced so the
+   * card can show "hit chance" without re-reading player conditions.
+   */
+  hitRatePct: number;
   fireRate: number;
   /** Extracted fire-rate data is approximate until animation timing lands. */
   fireRateApproximate: true;
@@ -500,17 +506,19 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     : vatsAvg.total;
 
   const freeSustainRaw = computeSustain(freeCycleTotal, fireRate, input.weapon);
-  const vatsSustain = computeSustain(vatsCycleTotal, fireRate, input.weapon);
+  const vatsSustainRaw = computeSustain(vatsCycleTotal, fireRate, input.weapon);
 
-  // Manual-aim hit rate (Stage B): free-aim SUSTAINED dps only — never burst,
-  // never per-hit, never VATS (VATS accuracy is assumed 100%; hit-chance
-  // modeling is permanently out of scope, see docs/assumptions.md "Manual-aim
-  // hit rate"). Models
-  // realistic misses (movement, target size); a miss still costs the shot
-  // but deals no damage, so scaling the steady-state dps by the landed
-  // fraction is equivalent to (and simpler than) modeling individual misses.
+  // Manual hit rate (Stage B/C): scales each scenario's SUSTAINED dps only —
+  // never burst, never per-hit (those stay the every-shot-hits ceiling).
+  // Models realistic misses (movement, target size, VATS target lock); a
+  // miss still costs the shot but deals no damage, so scaling the
+  // steady-state dps by the landed fraction is equivalent to (and simpler
+  // than) modeling individual misses. Free aim and VATS have independent
+  // manual knobs — see docs/assumptions.md "Manual-aim hit rate".
   const hitRateFraction = (input.player.hitRatePct ?? 100) / 100;
   const freeSustain: SustainResult = { ...freeSustainRaw, sustainedDps: freeSustainRaw.sustainedDps * hitRateFraction };
+  const vatsHitRateFraction = (input.player.vatsHitRatePct ?? 100) / 100;
+  const vatsSustain: SustainResult = { ...vatsSustainRaw, sustainedDps: vatsSustainRaw.sustainedDps * vatsHitRateFraction };
 
   // DoT is a separate steady-state add (refresh-only, not crit/vats-scaled by
   // any extracted data today) — evaluated with each scenario's own non-crit
@@ -603,6 +611,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       perHit: freeHit,
       burstDps: freeSustain.burstDps,
       sustain: freeSustain,
+      hitRatePct: input.player.hitRatePct ?? 100,
       fireRate,
       fireRateApproximate: true,
       dotDps: freeDotDps,
@@ -612,6 +621,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       perHit: vatsAvg,
       burstDps: vatsSustain.burstDps,
       sustain: vatsSustain,
+      hitRatePct: input.player.vatsHitRatePct ?? 100,
       fireRate,
       fireRateApproximate: true,
       critRate,

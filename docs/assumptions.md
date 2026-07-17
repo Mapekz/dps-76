@@ -699,8 +699,14 @@ Engine: `src/lib/engine/ap-economy.ts`.
 - Display: AP breakdown always shown when `ScenarioResult.ap` exists; ranged
   weapons only (melee/VATS-melee AP costs are out of scope).
 - **Manual-aim hit rate** (`hitRatePct`, 10–100, default 100): scales
-  free-aim **SUSTAINED** dps only — never per-hit, burst, or VATS (VATS
-  accuracy is assumed 100%, permanently out of scope).
+  free-aim **SUSTAINED** dps (the headline "effective" number, `ScenarioCard.tsx`)
+  only — never per-hit or burst.
+- **Manual VATS hit rate** (`vatsHitRatePct`, 10–100, default 100): same
+  mechanic as `hitRatePct` but for the VATS scenario — a user-supplied
+  estimate, not computed accuracy. Also scales `ap.apLimitedDps` (a miss
+  still costs AP). Auto-computing VATS hit chance from distance/Perception/
+  perks stays **permanently out of scope**; `scenarios.ts` (Stage B/C hit-rate
+  block).
 
 ## Power attacks & melee cadence
 Engine: `paper-damage.ts`, `scenarios.ts`, `fire-rate.ts`.

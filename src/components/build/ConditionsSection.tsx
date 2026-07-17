@@ -74,6 +74,44 @@ function NumberField({
   );
 }
 
+function SliderField({
+  id,
+  label,
+  value,
+  min,
+  max,
+  step,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step?: number;
+  onChange: (value: number) => void;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor={id}>
+        {label}: {value}%
+      </Label>
+      <Slider
+        id={id}
+        min={min}
+        max={max}
+        step={step}
+        value={[value]}
+        onValueChange={([v]) => onChange(v)}
+        marks={[
+          { value: min, label: `${min}%` },
+          { value: max, label: `${max}%` },
+        ]}
+      />
+    </div>
+  );
+}
+
 function SwitchRow({
   id,
   label,
@@ -388,20 +426,36 @@ export function ConditionsSection() {
             onChange={v => set('weaponConditionPct', v)}
           />
 
-          <NumberField
-            id="char-hit-rate"
-            label="Free-aim hit rate %"
-            value={conditions.hitRatePct ?? 100}
+          <div className="space-y-1.5">
+            <SliderField
+              id="char-hit-rate"
+              label="Free-aim hit rate"
+              value={conditions.hitRatePct ?? 100}
+              min={10}
+              max={100}
+              step={5}
+              onChange={v => set('hitRatePct', v)}
+            />
+            <p className="text-muted-foreground text-xs">
+              Share of free-aim shots that land (movement, target size). Scales the Free Aim effective DPS; VATS has
+              its own hit-rate setting below.
+            </p>
+          </div>
+
+          <SliderField
+            id="char-vats-hit-rate"
+            label="VATS hit rate"
+            value={conditions.vatsHitRatePct ?? 100}
             min={10}
             max={100}
             step={5}
-            onChange={v => set('hitRatePct', v)}
+            onChange={v => set('vatsHitRatePct', v)}
           />
 
           <div className="space-y-1.5">
-            <NumberField
+            <SliderField
               id="char-bodypart-rate"
-              label="Body part hit rate %"
+              label="Body part hit rate"
               value={conditions.bodyPartHitRatePct ?? 100}
               min={10}
               max={100}
