@@ -38,7 +38,7 @@ sub-anchor without updating every citation.
 - **Magazines & bobbleheads**
 - **Carnivore's / Herbivore's food scaling**
 - **Mutation penalties & Class Freak**
-- **Target distance (Close / Far)**
+- **Target distance (Close / Far)** — continuous distance slider, composite range-falloff model
 - **VATS AP economy & manual-aim hit rate** — regen model, hydration baseline, Number Cruncher, Conductor's
 - **Power attacks & melee cadence** — power-attack race mult, Charged, Thrill-Seeker's
 - **Onslaught** — stack counter, max-stack table, the Route-B correction
@@ -48,6 +48,7 @@ sub-anchor without updating every citation.
 - **Ghoul Glow**
 - **Elemental 2★ effects & enemy-status 4★ rework**
 - **Resist mitigation** (dormant scaffolding)
+- **Creature stat curves & NPC extraction (Phase 2 data)** — effectiveLevel X-axis, RACE/NPC_ Properties merge, flat-wins, SBQ HP OPEN
 - **Body parts (BPTD-extracted)**
 - **CAMP resource generators & consumable chains**
 - **OMOD eligibility & recipe chains**
@@ -63,7 +64,7 @@ Engine: `src/lib/engine/paper-damage.ts`, `resolve.ts`.
 PaperDamage = Σ_components base(c) × ( dbmFold(c) + Tenderizer + (CritMult−1)[crit]
               + (SneakMult−1)[sneak, non-explosive] + PowerAttackBonus + STR term[melee] )
               × Π wholeDamage × BodyPartMult[non-explosive] × (1 + weakpointBonus)[BodyPartMult>1, non-explosive]
-              × PowerAttackRaceMult[melee power attack]
+              × PowerAttackRaceMult[melee power attack] × RangeFalloffMult[non-melee]
 ```
 
 - **Bucket fold** — `result = (last SET ?? base) + (Σ MUL_ADD) × base + Σ ADD`;
@@ -101,6 +102,10 @@ PaperDamage = Σ_components base(c) × ( dbmFold(c) + Tenderizer + (CritMult−1
 - **Body-part multiplier** — resolves from BPTD-extracted per-enemy data when
   a target/part is picked (see **Body parts (BPTD-extracted)**); the manual
   input is a fallback only, default 1.5 (a standard humanoid headshot).
+- **Range falloff** — folded into `outerMult`/`explosiveOuterMult` as a flat
+  multiplier alongside `wholeDamage`/`bodyPartMult`/`weakpointBonus`/
+  `paRaceMult` (Phase 1 — Range + falloff). See **Target distance (Close /
+  Far)**.
 
 ## Base damage & components
 
@@ -622,20 +627,71 @@ ESM-proven via two mechanisms:
 
 ## Target distance (Close / Far)
 
-- **Native-code gate**: `STAT_DmgVsClose`/`STAT_DmgVsFar` carry NO distance
-  condition rows anywhere in ESM — the actual range check happens in native
-  engine code, not data. Only GMST `fDistanceForCloseDamage` = 850 units
-  (≈12m, not cross-checked in-game) exists on record; the far threshold has
-  no record at all.
-- Modeled as a manual three-way `targetDistance` input (`'close'|'none'|
-  'far'`, default none) — **deliberately a player judgment call**, not
-  derived/measured, since the real check is opaque.
-- Consumers: Guerrilla family (close), Down Ranger/Rifleman family (far),
-  Sniper's legendary (+100%, far).
+Engine: `src/lib/distance.ts` (constants, `rangeFalloffMult`), `resolve.ts`
+(`targetDistance` condition case), `effective-weapon.ts` (range-bucket fold),
+`scenarios.ts` (bootstrap fold → `rangeFalloffMult`/`ScenarioSet.range`),
+`paper-damage.ts` (`outerMult`/`explosiveOuterMult`).
+
+- **Close gate = 850 raw units** — GMST `fDistanceForCloseDamage`.
+  **ESM-PROVEN.** `STAT_DmgVsClose`/`STAT_DmgVsFar` themselves carry NO
+  distance-condition rows anywhere in ESM — the actual range check happens in
+  native engine code, not data.
+- **Far gate = 1000 raw units.** **MEASURED** (user, 2026-07-18): no ESM
+  record gives a number (DFOB `DamageVsFar_DO` 0x00815EE7 only confirms the
+  entry point exists) — measured in-game via the CAMP-foundation method
+  (~3.9 foundation pieces × 12 Pip-Boy units each × `PIP_BOY_UNIT_DIVISOR`
+  64/3 ≈ 1000).
+- `EnemyConditions.targetDistance` is now a **continuous number** (raw game
+  units), replacing the old manual three-way `'close'|'none'|'far'` toggle —
+  a single continuous slider now drives both the Close/Far perk gates
+  (threshold comparison: `d ≤ 850` / `d ≥ 1000`, boundary-inclusive both
+  ways) AND the range-falloff multiplier below. Default
+  `DEFAULT_DISTANCE_UNITS` = 900 — strictly between the two gates, preserving
+  the old default's "neither fires" behavior. Consumers of the gates:
+  Guerrilla family (close), Down Ranger/Rifleman family (far), Sniper's
+  legendary (+100%, far).
+- **Composite range-falloff model.** **USER-CONFIRMED** mechanism (the
+  reconciliation of the two ESM-proven pieces below); the curve and field
+  names themselves are ESM-proven.
+  - `d ≤ minRange` → ×1.0.
+  - `minRange < d ≤ maxRange` → linear interpolation from ×1.0 to
+    `outOfRangeDamageMult` (WEAP Data — Hunting Rifle: minRange 2612, maxRange
+    5225, outOfRangeDamageMult 0.5).
+  - `d > maxRange` → `outOfRangeDamageMult × curveY(X)`, where
+    `X = (d − minRange) / (maxRange − minRange)` — **NOT** `d / maxRange`.
+    The curve is `CT_Player_PercentOfMinToMaxRangeDMGMult` (0x008407AC, DFOB
+    `CombatFormulaPercentOfMinToMaxRangeDMGMult_DO` 0x008407AD; ESM-PROVEN,
+    byte-identical across every live/pts dump sampled through 2026-07-18):
+    points (1.0, 1.0), (1.5, 0.75), (1.75, 0.55), (2.0, 0.2), clamped flat to
+    its own endpoints outside its domain (game-accurate — same convention as
+    every other curve table). X = 1.0 exactly at `d = maxRange`, so the curve
+    segment is continuous with the linear segment's endpoint there. With the
+    sampled-weapon norm `maxRange = 2 × minRange`, X reaches 2.0 (the curve's
+    floor, 0.2) at `d = 1.5 × maxRange`, not `2 × maxRange`.
+  - Guard: a non-positive or degenerate `[minRange, maxRange]` span returns
+    ×1.0 (`rangeFalloffMult`'s own doc comment).
+- **Melee exemption**: melee weapons never reach `rangeFalloffMult` — gated by
+  the caller (`scenarios.ts`'s `isMelee` check), not a field-value guard,
+  because melee `outOfRangeDamageMult` values are sentinel-ish (Shishkebab
+  0.0, Machete −1.0) and must never be read.
+- **Explosive-component inclusion**: range falloff is folded into
+  `explosiveOuterMult` alongside `outerMult` — explosive components (launcher
+  payloads, Explosive-legendary twins) fall off with distance same as any
+  other hit. **ASSUMPTION** — no ESM or user evidence either way; the
+  existing explosive carve-outs (sneak, body-part mult) are explicitly
+  user-confirmed exemptions and range falloff isn't one of them, so the
+  default reading is "no exemption" rather than a silent third carve-out.
 - **Sniper's magnitude rides a Global reference**, not the effect's own
   Magnitude field (which reads 0) — a narrow, field-shape-specific
   resolution, confirmed absent from other zero-magnitude effects (which are
   genuinely script-driven).
+- Range OMODs (`weaponMinRange`/`weaponMaxRange`/`weaponOutOfRangeMult`
+  buckets): mostly barrels (`_PARENT_mod_WEAPON_Barrel_Long_Range`
+  0x0027ABFA-shaped, MUL_ADD 0.5 on both range fields), one SET
+  (`mod_PlasmaGun_barrel_Flamer_Abraxo`, `weaponOutOfRangeMult` → 0.7);
+  scopes carry none. Folded in `effective-weapon.ts` over the base weapon's
+  `minRange`/`maxRange`/`outOfRangeDamageMult` (same pattern as
+  `ammoCapacity`/`reloadSpeed`).
 
 ## VATS AP economy & manual-aim hit rate
 Engine: `src/lib/engine/ap-economy.ts`.
@@ -965,6 +1021,69 @@ effects gate on `GetValue(Rads) ≥ N`.
   is never fully realized nor fully negated. Dormant — paper damage v1 has
   no enemy mitigation.
 
+## Creature stat curves & NPC extraction (Phase 2 data)
+Engine: `scripts/extract/extract-curvetables.ts`, `scripts/extract/extract-npcs.ts`,
+`src/lib/creature-curves.ts`. Spike: `scratchpad/phase2-curve-spike.md` (2026-07-18).
+
+- **Curve X-axis = the target's own effective level**: `effectiveLevel =
+  clamp(nearbyPlayerLevel + levelOffsetGlobal, levelMinGlobal,
+  levelMaxGlobal)`, fed directly into the matching
+  `CT_Creatures_{Health,Armor}_Universal_Tier<N>` curve. **ESM-proven**: the
+  `Renorm_*` GLOB family, `NPC_.Actor Scaling Info.{Level Min/Max/Offset
+  Global}` wiring, and `Properties[].Curve Table` per-AV attachment are all
+  directly observed. **INFERENCE** (high confidence, not literally labeled in
+  any record): the curve's implicit input axis is "Level" specifically (no
+  `Level` AVIF record exists in the ESM), and "nearbyPlayerLevel" is the
+  requesting player's raw character level — standard Bethesda auto-calc-stats
+  semantics, not provable from the plugin alone. `levelOffsetGlobal` is 0 in
+  every sample to date; kept as a real field since it's structurally present.
+  Curve-tier numbering (`CT_..._Tier<N>`, ~1-59) and Renorm-window numbering
+  (`Renorm_*_Tier<N>`, 00-31) are unrelated schemes that share the word
+  "Tier" — don't conflate them.
+- **Resist Properties fall back RACE → NPC_, per-AV** (found building
+  extract-npcs.ts, not covered by the spike's boss-only sample): Health
+  (0x2D4) is NPC_-only and never appears on a RACE record; the 6 resist AVs
+  frequently live on the RACE record instead of repeating on every NPC_ of
+  that race (e.g. `EncMirelurkCrab_Template` carries zero resist Properties
+  of its own — all 6 come from `MirelurkRace`). `extract-npcs.ts` merges
+  NPC_ Properties over RACE Properties, per AV — verified against ~40 sampled
+  records, zero exceptions found. **INFERENCE** (established
+  "more-specific-record-wins" convention; not documented anywhere Bethesda-side).
+- **Flat-wins tie-break**: when a Properties row carries both a nonzero flat
+  `Value` AND a `Curve Table` (rare), the flat value is authoritative and the
+  curve is ignored — mirrors the MGEF GLOB-magnitude flat-wins convention
+  (esm-cli skill doc). **ESM-proven example**: `RD01_Enc06_ScorchtongueHead`
+  (Ultracite Terror raid head) has flat Health 500000 alongside a
+  `CT_Creatures_Health_Universal_Tier59` ref, and flat 300 physical/energy/
+  fire/cryo/poison resist alongside Tier34-50 curve refs — only its
+  radiation resist (flat 0) actually curve-scales.
+- **`zzz`-prefix CURV rename**: `zzzCT_Creatures_Armor_Universal_Tier49`
+  (formerly `CT_Creatures_Armor_Universal_Tier49`) is Bethesda's
+  "hide-from-CK-browser" convention for a retired-from-new-authoring record —
+  it's still FormID-live. A prefix-only search pattern silently drops it (49
+  files instead of 50); `extract-curvetables.ts` uses a leading `*` wildcard
+  to catch it. **ESM-proven** (ships in the 20260710 dump).
+- **Curvetable staleness (CLOSED 2026-07-18)**: the checked-in
+  `creatures/{health,armor}` and `player/armor` curve JSON were Dec-2025
+  hand-copies that had drifted from the live ESM — e.g. `armor_universal_
+  tier22.json` was 50 points/domain 2–100 vs. the live dump's 50 points/
+  domain 1–540. `pnpm extract --only curvetables` now re-extracts all 4
+  Universal-Tier families via the `esm` CLI (never touches the dump's
+  sibling `misc/` folder directly) and replaces the old manual-copy process.
+  2026-07-18 re-extraction: creatures/health 60/60 and creatures/armor 50/50
+  files changed materially; **`player/armor` was ALSO stale** (99/100 tiers
+  differ — not just the creature tables the spike flagged); `player/damage`
+  alone was confirmed fresh (0/100 changed), matching the spike's claim for
+  that one family specifically.
+- **OPEN — Scorchbeast Queen HP ~10× the community figure**: the curve-only
+  estimate for `EncScorchbeastQueen01Template` (world-spawn template, level
+  window 60–100) is ~237k–408k HP; a commonly cited in-game figure is ~32k.
+  Plausible explanations (none confirmed): a per-nearby-player boss-HP
+  multiplier applied outside the Renorm/curve system (a well-known FO76
+  mechanic, structurally separate), a misremembered figure, or a
+  post-mitigation "effective HP" being recalled instead of base HP. Needs
+  in-game measurement — see `dps-todos/measurement-backlog.md`.
+
 ## Body parts (BPTD-extracted)
 Engine: `scripts/extract/extract-bodyparts.ts`.
 
@@ -1140,9 +1259,10 @@ auto-converted); their stats are stale and must not be shown.
   DR debuff to the attacker (**-6/-10/-15/-50** at ranks 1-4,
   esm-walk-confirmed, a non-arithmetic progression) — not modeled (no enemy
   DR/ER mitigation exists yet; scoped to `dps-todos/phase-3-enemies.md`).
-- Enemy DR/ER, armor pen, range falloff, limb targeting: deferred by plan.
-  Race-gated damage (`enemyType`) is **no longer** deferred — see
-  **Hand-supplied values**' DmgVs* row.
+- Enemy DR/ER, armor pen, limb targeting: deferred by plan. Race-gated damage
+  (`enemyType`) is **no longer** deferred — see **Hand-supplied values**'
+  DmgVs* row. Range falloff is **no longer** deferred — see **Target
+  distance (Close / Far)**.
 - SPECIAL-scaled perk entry points ("Add Actor Value Mult") are skipped and
   noted per-perk.
 - A handful of `cr`-prefixed creature/event DoT curves (non-level domain, X

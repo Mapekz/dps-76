@@ -80,6 +80,16 @@ export interface PaperDamageInput {
   ctx: ResolveContext;
   /** 1.0 torso, >1 weakpoint, <1 strongpoint. */
   bodyPartMult: number;
+  /**
+   * Range-falloff multiplier (Phase 1 — Range + falloff; `rangeFalloffMult`,
+   * src/lib/distance.ts), computed once in scenarios.ts from the target
+   * distance and the effective weapon's min/max range + out-of-range mult.
+   * Folded into BOTH `outerMult` and `explosiveOuterMult` below (no evidence
+   * exists that explosive components are exempt — ASSUMPTION,
+   * docs/assumptions.md "Target distance (Close / Far)"). Undefined/1.0 =
+   * neutral (melee weapons, or no range data).
+   */
+  rangeFalloffMult?: number;
   /** Body part the hit lands on (gates bodyPart-conditioned modifiers). */
   bodyPart: 'torso' | 'weakpoint' | 'limb';
   /**
@@ -200,13 +210,18 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
     if (trace && collect) trace.weakpointBonus = lastTrace(collect);
   }
   const paRaceMult = ctx.scenario.isPowerAttack ? powerAttackRaceMult(weapon, ctx.player.isInPowerArmor) : 1.0;
-  const outerMult = wholeMult * bodyPartMult * weakpointMult * paRaceMult;
+  // Range falloff (Phase 1 — Range + falloff): a flat multiplier on the
+  // whole hit, same "outer" tier as wholeDamage/bodyPartMult/paRaceMult —
+  // see the field doc comment on PaperDamageInput.rangeFalloffMult.
+  const rangeMult = input.rangeFalloffMult ?? 1.0;
+  const outerMult = wholeMult * bodyPartMult * weakpointMult * paRaceMult * rangeMult;
   // Explosive damage (launcher payloads AND Explosive-legendary twins) lands
   // its flat payload on whatever part it strikes: it is unaffected by
   // body-part multipliers (weakpoint AND strongpoint) and gains no sneak
-  // bonus, while still scaling with whole-damage, crit, and power-attack
-  // (user spec: FO76 explosive AoE ignores sneak + body-part mults).
-  const explosiveOuterMult = wholeMult * paRaceMult;
+  // bonus, while still scaling with whole-damage, crit, power-attack, AND
+  // range falloff (no evidence explosive components are exempt from range
+  // falloff — ASSUMPTION, docs/assumptions.md).
+  const explosiveOuterMult = wholeMult * paRaceMult * rangeMult;
 
   const components: ComponentHit[] = componentBase(mode, weapon, itemLevel, chargeMult).flatMap(({ type, base, isExplosion }) => {
     const componentCtx = { ...ctx, componentType: type, componentIsExplosion: isExplosion };

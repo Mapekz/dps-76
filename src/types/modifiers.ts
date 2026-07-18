@@ -139,23 +139,23 @@ export type Bucket =
    * 20260710 dump (verified live 2026-07-18): mostly barrels
    * (`_PARENT_mod_WEAPON_Barrel_Long_Range` 0x0027ABFA: MUL_ADD 0.5 on both
    * MinRange/MaxRange), but also muzzles/receivers with small +/- tweaks;
-   * scopes carry none. Extracted but inert until the falloff engine step
-   * lands (Phase 1 engine half — go-through-every-single-silly-whistle.md).
+   * scopes carry none. Folded over `weapon.minRange` in `effective-weapon.ts`
+   * `buildEffectiveWeapon` (same pattern as `ammoCapacity`/`reloadSpeed`);
+   * feeds `rangeFalloffMult` (`src/lib/distance.ts`), folded into
+   * `outerMult`/`explosiveOuterMult` in `paper-damage.ts`.
    */
   | 'weaponMinRange'
   /**
    * Rewrite of the weapon's maximum effective range in raw game units (WEAP
    * Data "Max Range" — Hunting Rifle 5225). Same OMOD sources as
-   * `weaponMinRange`. Extracted but inert until the falloff engine step lands
-   * (Phase 1 engine half).
+   * `weaponMinRange`; same fold/consumer.
    */
   | 'weaponMaxRange'
   /**
    * Rewrite of the damage multiplier applied beyond `weaponMaxRange` (WEAP
    * Data "Damage - OutOfRangeMult" — Hunting Rifle 0.5). Rare on OMODs: only
    * one in the 20260710 dump (`mod_PlasmaGun_barrel_Flamer_Abraxo`, SET 0.7),
-   * verified live 2026-07-18. Extracted but inert until the falloff engine
-   * step lands (Phase 1 engine half).
+   * verified live 2026-07-18. Same fold/consumer as `weaponMinRange`.
    */
   | 'weaponOutOfRangeMult'
   /**
@@ -386,9 +386,9 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   vatsApCost: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.apCost rewrite); feeds ap-economy.ts' },
   chargeFullPowerSec: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.fullPowerSeconds rewrite); gates weaponCharges() and feeds resolvedChargeTimeSec (src/lib/charge.ts), consumed by fire-rate.ts' },
   chargeFullPowerDamageMult: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.fullPowerDamageMult rewrite); feeds chargeDamageMultiplier (src/lib/charge.ts)' },
-  weaponMinRange: { regime: 'weaponStat', hasEngineEffect: false, foldedBy: 'extracted but inert until the falloff engine step lands (Phase 1 engine half)' },
-  weaponMaxRange: { regime: 'weaponStat', hasEngineEffect: false, foldedBy: 'extracted but inert until the falloff engine step lands (Phase 1 engine half)' },
-  weaponOutOfRangeMult: { regime: 'weaponStat', hasEngineEffect: false, foldedBy: 'extracted but inert until the falloff engine step lands (Phase 1 engine half)' },
+  weaponMinRange: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.minRange rewrite); feeds lib/distance.ts rangeFalloffMult, folded into paper-damage.ts outerMult/explosiveOuterMult via scenarios.ts' },
+  weaponMaxRange: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.maxRange rewrite); feeds lib/distance.ts rangeFalloffMult, folded into paper-damage.ts outerMult/explosiveOuterMult via scenarios.ts' },
+  weaponOutOfRangeMult: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.outOfRangeDamageMult rewrite); feeds lib/distance.ts rangeFalloffMult, folded into paper-damage.ts outerMult/explosiveOuterMult via scenarios.ts' },
   apRegen: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy' },
   apPerCrit: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy' },
   apRegenFlat: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy (flat AP/sec term)' },

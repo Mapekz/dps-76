@@ -308,6 +308,21 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
     }
   }
   for (const [key, value] of Object.entries(wire.ec ?? {})) {
+    if (key === 'targetDistance' && typeof value === 'string') {
+      // Pre-Phase-1 URLs stored a three-way bucket ('close'|'none'|'far');
+      // targetDistance is now a continuous raw-game-units number. Map to a
+      // representative distance inside each old bucket (pattern: the
+      // addictionCount special case above) rather than dropping it outright
+      // — the perk gates it drove (Guerrilla, Sniper's) still resolve
+      // sensibly from a representative number.
+      const legacyDistance: Record<string, number> = { close: 400, none: 900, far: 1500 };
+      if (value in legacyDistance) {
+        state.enemy.conditions.targetDistance = legacyDistance[value];
+      } else {
+        warnings.push(`unknown "targetDistance" value "${value}" — using default`);
+      }
+      continue;
+    }
     if (key in state.enemy.conditions) {
       (state.enemy.conditions as unknown as Record<string, unknown>)[key] = value;
     }

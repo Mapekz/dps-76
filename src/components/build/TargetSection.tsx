@@ -10,6 +10,7 @@ import { ToggleChips } from '@/components/ui/toggle-chips';
 import { ToggleGroup } from '@/components/ui/toggle-group';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
+import { useScenarioResults } from '@/state/useScenarioResults';
 import {
   getBodyPartRaces,
   getBodyPartRace,
@@ -18,6 +19,13 @@ import {
   resolveTargetBodyPart,
 } from '@/data/bodyparts';
 import { TENDERIZER_MAX_STACKS } from '@/data/target-debuffs';
+import {
+  CLOSE_THRESHOLD_UNITS,
+  DEFAULT_DISTANCE_UNITS,
+  FAR_THRESHOLD_UNITS,
+  gameUnitsToPipBoy,
+  pipBoyToGameUnits,
+} from '@/lib/distance';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions, type EnemyConditions } from '@/types';
 import type { BodyPartRaceCategory } from '@/types/generated';
 import { SectionTrigger } from './SectionTrigger';
@@ -29,10 +37,20 @@ import { SectionTrigger } from './SectionTrigger';
  * the Team). Player steady state lives in ConditionsSection.
  */
 
-const TARGET_DISTANCE_OPTIONS: Array<{ value: NonNullable<EnemyConditions['targetDistance']>; label: string }> = [
-  { value: 'none', label: 'None' },
-  { value: 'close', label: 'Close' },
-  { value: 'far', label: 'Far' },
+// Distance slider (Phase 1 — Range + falloff): displayed in Pip-Boy units,
+// storage stays raw game units (EnemyConditions.targetDistance,
+// src/lib/distance.ts). Max is a round 300 Pip-Boy (≈6400 raw units) —
+// comfortably beyond 1.5×maxRange for every sampled ranged weapon (the point
+// past which the falloff curve is already flat), so the slider always covers
+// the full falloff shape.
+const DISTANCE_SLIDER_MAX_PIPBOY = 300;
+const CLOSE_GATE_PIPBOY = gameUnitsToPipBoy(CLOSE_THRESHOLD_UNITS);
+const FAR_GATE_PIPBOY = gameUnitsToPipBoy(FAR_THRESHOLD_UNITS);
+const DISTANCE_SLIDER_MARKS = [
+  { value: 0, label: '0' },
+  { value: CLOSE_GATE_PIPBOY, label: 'Close' },
+  { value: FAR_GATE_PIPBOY, label: 'Far' },
+  { value: DISTANCE_SLIDER_MAX_PIPBOY, label: String(DISTANCE_SLIDER_MAX_PIPBOY) },
 ];
 
 const STATUS_TOGGLES: Array<{ key: keyof EnemyConditions; label: string; title: string }> = [
@@ -76,6 +94,13 @@ export function TargetSection() {
   const { mode } = useGameMode();
   const { player, enemy } = useBuild();
   const dispatch = useBuildDispatch();
+  // Effective weapon's range fields (Phase 1 — Range + falloff), for the
+  // distance slider's "weapon range" context — computed once in
+  // computeScenarios (ScenarioSet.range), same precedent as WeaponSection's
+  // charge-time slider reading ScenarioSet.charging. Null for melee weapons
+  // or weapons with no usable range span.
+  const { scenarios } = useScenarioResults();
+  const weaponRange = scenarios?.range ?? null;
 
   const conditions = enemy.conditions;
   const defaults = createDefaultEnemyConditions();
@@ -154,6 +179,11 @@ export function TargetSection() {
     if (conditions.crippledLimbCount > newMax) setEnemy('crippledLimbCount', newMax);
   };
 
+  const targetDistanceUnits = conditions.targetDistance ?? DEFAULT_DISTANCE_UNITS;
+  const distancePipBoy = gameUnitsToPipBoy(targetDistanceUnits);
+  const isCloseRange = targetDistanceUnits <= CLOSE_THRESHOLD_UNITS;
+  const isFarRange = targetDistanceUnits >= FAR_THRESHOLD_UNITS;
+
   const tenderizer = player.conditions.tenderizerStacks;
   const playerDefaults = createDefaultPlayerConditions();
   const followThroughPct = player.conditions.followThroughPct ?? 0;
@@ -168,7 +198,7 @@ export function TargetSection() {
     ((conditions.healthPercent ?? 100) !== (defaults.healthPercent ?? 100) ? 1 : 0) +
     (conditions.crippledLimbCount !== defaults.crippledLimbCount ? 1 : 0) +
     ((conditions.groupTargetCount ?? 1) !== (defaults.groupTargetCount ?? 1) ? 1 : 0) +
-    ((conditions.targetDistance ?? 'none') !== (defaults.targetDistance ?? 'none') ? 1 : 0) +
+    ((conditions.targetDistance ?? DEFAULT_DISTANCE_UNITS) !== (defaults.targetDistance ?? DEFAULT_DISTANCE_UNITS) ? 1 : 0) +
     (tenderizer !== 0 ? 1 : 0) +
     (followThroughPct !== (playerDefaults.followThroughPct ?? 0) ? 1 : 0) +
     (takingOneForTheTeamPct !== (playerDefaults.takingOneForTheTeamPct ?? 0) ? 1 : 0) +
@@ -248,13 +278,27 @@ export function TargetSection() {
           </div>
 
           <div className="space-y-1.5">
-            <Label>Target distance</Label>
-            <ToggleGroup
-              aria-label="Target distance"
-              options={TARGET_DISTANCE_OPTIONS}
-              value={conditions.targetDistance ?? defaults.targetDistance ?? 'none'}
-              onValueChange={v => setEnemy('targetDistance', v)}
+            <Label htmlFor="target-distance" className="flex flex-wrap items-center gap-1.5">
+              <span>Target distance: {distancePipBoy.toFixed(1)} Pip-Boy units</span>
+              {isCloseRange && <Badge variant="secondary">Close</Badge>}
+              {isFarRange && <Badge variant="secondary">Far</Badge>}
+            </Label>
+            <Slider
+              id="target-distance"
+              min={0}
+              max={DISTANCE_SLIDER_MAX_PIPBOY}
+              step={0.1}
+              value={[distancePipBoy]}
+              onValueChange={v => setEnemy('targetDistance', Math.round(pipBoyToGameUnits(firstSliderValue(v))))}
+              marks={DISTANCE_SLIDER_MARKS}
             />
+            <p className="text-muted-foreground text-xs">
+              Close (≤{CLOSE_GATE_PIPBOY.toFixed(1)}) and Far (≥{FAR_GATE_PIPBOY.toFixed(1)}) gate Guerrilla/Down
+              Ranger/Sniper's-style perks; damage also falls off gradually past the equipped weapon's max range.
+              {weaponRange
+                ? ` Equipped weapon range: ${gameUnitsToPipBoy(weaponRange.minRange).toFixed(1)}–${gameUnitsToPipBoy(weaponRange.maxRange).toFixed(1)} Pip-Boy units (×${weaponRange.outOfRangeMult} beyond max).`
+                : ''}
+            </p>
           </div>
 
           {ENEMY_NUMBER_FIELDS.map(field => (

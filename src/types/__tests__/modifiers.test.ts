@@ -103,15 +103,14 @@ describe('BUCKET_REGISTRY', () => {
     // Endurance/Charisma/Intelligence/Agility feed max HP, a curve input, or
     // the VATS AP pool; Perception has no paper-damage consumer but its
     // folded value is what StatSummary renders. limbDamage/bashDamage/
-    // addDamageComponent/armorPen have no fold consumer at all. The three
-    // weaponMinRange/weaponMaxRange/weaponOutOfRangeMult buckets are
-    // extracted (Phase 1 extraction half) but stay inert until the falloff
-    // engine step folds them.
+    // addDamageComponent/armorPen have no fold consumer at all.
+    // weaponMinRange/weaponMaxRange/weaponOutOfRangeMult are no longer inert
+    // (Phase 1 engine half — effective-weapon.ts folds them, scenarios.ts
+    // threads rangeFalloffMult into paper-damage.ts).
     expect([...INERT_ENGINE_BUCKETS].sort()).toEqual(
       [
         'limbDamage', 'bashDamage', 'addDamageComponent', 'armorPen',
         'bulletStormOnKill', 'bulletStormSpinUp', 'deflectChance',
-        'weaponMinRange', 'weaponMaxRange', 'weaponOutOfRangeMult',
       ].sort()
     );
   });

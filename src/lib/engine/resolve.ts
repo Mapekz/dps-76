@@ -1,6 +1,7 @@
 import type { PlayerConditions, EnemyConditions, Weapon } from '@/types';
 import type { Bucket, Condition, CurveInput, DamageType, Modifier, ModOp, StackCounter } from '@/types/modifiers';
 import { interpolateCurve } from '@/lib/curve-tables';
+import { CLOSE_THRESHOLD_UNITS, DEFAULT_DISTANCE_UNITS, FAR_THRESHOLD_UNITS } from '@/lib/distance';
 import type { BucketTrace, TraceContribution } from './trace';
 
 /** Per-attack flags that differ between the displayed scenarios. */
@@ -310,9 +311,15 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       // Unset = fully hydrated (optimal-play default, same spirit as
       // enemyHealthAbovePct's full-health default).
       return (ctx.player.hydrated ?? true) === cond.value ? 1 : null;
-    case 'targetDistance':
-      // Unset enemy distance = 'none' (neither close nor far perks active).
-      return (ctx.enemy.targetDistance ?? 'none') === cond.range ? 1 : null;
+    case 'targetDistance': {
+      // Continuous distance (raw game units) vs the Close/Far perk-gate
+      // thresholds (src/lib/distance.ts) — unset = DEFAULT_DISTANCE_UNITS,
+      // strictly between the two gates, so neither fires (the old 'none'
+      // default's behavior). Boundary-inclusive both ways.
+      const d = ctx.enemy.targetDistance ?? DEFAULT_DISTANCE_UNITS;
+      const active = cond.range === 'close' ? d <= CLOSE_THRESHOLD_UNITS : d >= FAR_THRESHOLD_UNITS;
+      return active ? 1 : null;
+    }
     case 'glowAtLeast':
       // Ghoul Glow meter (Rads AV) at or above the threshold — a plain gate,
       // not a stack scale (Glowing Criticals ≥180, Glow-spend ≥5/≥50).

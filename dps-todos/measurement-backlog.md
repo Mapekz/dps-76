@@ -23,6 +23,35 @@ verdicts; section 1 the user-only measurement checklist that remains.
 Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
 (un-skip automatically) or pin `docs/assumptions.md` entries:
 
+- [ ] **Composite range-falloff shape** (new 2026-07-18, Phase 1 — Range +
+      falloff) — the model itself is USER-CONFIRMED, not in-game-measured:
+      verify the Pip-Boy damage card at a few points past a weapon's max
+      range (e.g. ~1.2×max and ~1.4×max on a weapon with `maxRange = 2 ×
+      minRange`, predicting `outOfRangeMult × curveY(X)` at
+      `X = (d − minRange)/(maxRange − minRange)` — NOT `d/maxRange`) to
+      confirm the reconciliation between `CT_Player_PercentOfMinToMaxRangeDMGMult`
+      and `outOfRangeDamageMult` matches real damage numbers. A golden case
+      placeholder exists in `golden/cases.json` (`expected: null`).
+- [ ] **Far-gate threshold precision** (new 2026-07-18) — 1000 raw units is a
+      CAMP-foundation-derived estimate (~3.9 foundations × 12 Pip-Boy units ×
+      64/3); a cleaner in-game method (e.g. a measured tape/marker) would
+      pin it more precisely than the ~2.5% margin the foundation method
+      carries. Not the same question as Phase 2's SBQ/per-player boss-HP
+      multiplier open item (`scratchpad/phase2-curve-spike.md`) — that one
+      belongs to enemy-defenses work, not this range/falloff phase.
+- [ ] **Scorchbeast Queen HP ~10× the community figure** (new 2026-07-18,
+      Phase 2 — Enemy defenses data slice; `docs/assumptions.md` "Creature
+      stat curves & NPC extraction") — the ESM curve-only estimate for
+      `EncScorchbeastQueen01Template` (world-spawn template, level window
+      60–100, `CT_Creatures_Health_Universal_Tier55`) is ~237k–408k HP vs. a
+      commonly cited in-game figure of ~32k. Needs an in-game HP-bar or
+      combat-log reading at a known player count (solo vs. full team) to
+      settle whether a per-nearby-player boss-HP multiplier applies on top of
+      the base curve value (a well-known FO76 mechanic, structurally separate
+      from the Renorm/curve system and not modeled here) — see
+      `scratchpad/phase2-curve-spike.md` "Validation" section for the full
+      reasoning and the predicted numbers for other bosses (Earle, generic
+      SBQ world spawn) to cross-check against.
 - [ ] **Reverse Onslaught (Gunslinger Master)** — verify +1 stack/sec regen
       rate and per-hit-event consumption (physical projectile + explosion per
       target) match in-game; pin `ONSLAUGHT_REGEN_PER_SEC` and the

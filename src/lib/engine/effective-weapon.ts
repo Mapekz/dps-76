@@ -276,6 +276,19 @@ export function buildEffectiveWeapon(
   const fullPowerDamageMult = foldWeaponStat(
     statModifiers, 'chargeFullPowerDamageMult', weapon.fullPowerDamageMult ?? 0, ctx
   );
+  // Range/falloff (Phase 1 engine half): barrels mostly (long-range barrels
+  // MUL_ADD 0.5 on both min/max; one SET on weaponOutOfRangeMult, the Abraxo
+  // Barrel). Same fold pattern as ammoCapacity/reloadSpeed above — 0 is a
+  // real value (melee weapons carry minRange/maxRange 0), so fold over
+  // `?? 0` exactly like the base Weapon fields' own "0 is real" convention
+  // (src/types/index.ts). outOfRangeDamageMult falls back to 1.0 (neutral —
+  // no falloff) only when the base weapon field itself is absent, which
+  // extraction never leaves unset for a real ranged weapon.
+  const minRange = foldWeaponStat(statModifiers, 'weaponMinRange', weapon.minRange ?? 0, ctx);
+  const maxRange = foldWeaponStat(statModifiers, 'weaponMaxRange', weapon.maxRange ?? 0, ctx);
+  const outOfRangeDamageMult = foldWeaponStat(
+    statModifiers, 'weaponOutOfRangeMult', weapon.outOfRangeDamageMult ?? 1.0, ctx
+  );
 
   const modifiers = allOmodModifiers.filter(
     m => !WEAPON_STAT_BUCKETS.has(m.bucket) && !SUSTAIN_CHANCE_BUCKETS.has(m.bucket)
@@ -298,6 +311,9 @@ export function buildEffectiveWeapon(
       apCost,
       fullPowerSeconds,
       fullPowerDamageMult,
+      minRange,
+      maxRange,
+      outOfRangeDamageMult,
       components: [...weapon.components, ...materialized],
     },
     modifiers: modifiers.filter(m => !consumedIds.has(m.id)),

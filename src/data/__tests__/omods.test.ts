@@ -157,11 +157,17 @@ describe('show-all-mods display policy against live data', () => {
     return getOmodSlots('live', weapon);
   };
 
-  it("the Black Powder Rifle's muzzle slot offers the Large Bayonet, badged inert", () => {
+  it("the Black Powder Rifle's muzzle slot offers the Large Bayonet, unbadged now that range folds (Phase 1)", () => {
+    // Pre-Phase-1 this was badged 'inert' (its only two modifiers were
+    // weaponMinRange/weaponMaxRange MUL_ADD -12%, extracted but not yet
+    // folded). effective-weapon.ts now folds both buckets into
+    // rangeFalloffMult's inputs (scenarios.ts), so modifierHasEngineEffect
+    // sees a real effect and the badge clears — same predicate, new ground
+    // truth (src/types/modifiers.ts BUCKET_REGISTRY).
     const muzzle = slotsOf('BlackPowder_Rifle').find(s => s.slot === 'ap_gun_Muzzle');
     const bayonet = muzzle?.options.find(o => o.id === 'mod_BlackPowder_Rifle_Bayonet');
     expect(bayonet).toBeDefined();
-    expect(bayonet?.badge).toBe('inert');
+    expect(bayonet?.badge).toBeUndefined();
   });
 
   it("the Gauss Minigun's sight slot offers the Gunner Sights, badged inert", () => {

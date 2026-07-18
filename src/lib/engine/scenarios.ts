@@ -1,6 +1,7 @@
 import type { EnemyConditions, GameMode, PlayerConditions, Weapon } from '@/types';
 import type { Modifier } from '@/types/modifiers';
 import { weaponCharges } from '@/lib/charge';
+import { DEFAULT_DISTANCE_UNITS, rangeFalloffMult } from '@/lib/distance';
 import { getFireRate } from '@/lib/fire-rate';
 import { AP_REGEN_DELAY_SEC, AP_REGEN_RATE_PCT, AP_REGEN_RATE_PCT_POWER_ARMOR, apLimitedDps, computeApEconomy, effectiveShotsPerSecond } from './ap-economy';
 import { computeCritMeter, type CritMeterResult } from './crit-meter';
@@ -147,6 +148,16 @@ export interface ScenarioSet {
    * Null when the effective weapon doesn't charge (hides the slider).
    */
   charging: { fullPowerSeconds: number; fullPowerDamageMult: number; minimumChargeTime: number } | null;
+  /**
+   * The equipped weapon's effective range fields (Phase 1 — Range +
+   * falloff), computed ONCE from the effective `input.weapon` — same
+   * precedent as `charging`, so the UI's distance slider can show weapon
+   * range context (TargetSection.tsx) without re-running resolveLoadout.
+   * Raw game units — the UI divides by PIP_BOY_UNIT_DIVISOR (src/lib/distance.ts)
+   * to display Pip-Boy units. Null for melee weapons or weapons with no
+   * usable range span (maxRange ≤ 0) — see `isMelee`/`rangeFalloffMult`.
+   */
+  range: { minRange: number; maxRange: number; outOfRangeMult: number } | null;
 }
 
 export interface ScenarioInput {
@@ -283,17 +294,18 @@ function chargedCycleHit(
   bodyPart: BodyPartLocation,
   critRate: number,
   onslaught: OnslaughtThread,
-  bulletStorm: BulletStormThread
+  bulletStorm: BulletStormThread,
+  rangeMult: number
 ): HitBreakdown {
   const normal = critWeighted(
-    bodyPartBlendedHit(input, { ...flags, isPowerAttack: false, isCrit: false }, bodyPartMult, bodyPart, onslaught, bulletStorm),
-    bodyPartBlendedHit(input, { ...flags, isPowerAttack: false, isCrit: true }, bodyPartMult, bodyPart, onslaught, bulletStorm),
+    bodyPartBlendedHit(input, { ...flags, isPowerAttack: false, isCrit: false }, bodyPartMult, bodyPart, onslaught, bulletStorm, rangeMult),
+    bodyPartBlendedHit(input, { ...flags, isPowerAttack: false, isCrit: true }, bodyPartMult, bodyPart, onslaught, bulletStorm, rangeMult),
     critRate
   );
   const detonation = scaleHit(
     critWeighted(
-      bodyPartBlendedHit(input, { ...flags, isPowerAttack: true, isCrit: false }, bodyPartMult, bodyPart, onslaught, bulletStorm),
-      bodyPartBlendedHit(input, { ...flags, isPowerAttack: true, isCrit: true }, bodyPartMult, bodyPart, onslaught, bulletStorm),
+      bodyPartBlendedHit(input, { ...flags, isPowerAttack: true, isCrit: false }, bodyPartMult, bodyPart, onslaught, bulletStorm, rangeMult),
+      bodyPartBlendedHit(input, { ...flags, isPowerAttack: true, isCrit: true }, bodyPartMult, bodyPart, onslaught, bulletStorm, rangeMult),
       critRate
     ),
     1 + CHARGED_FULL_BONUS
@@ -314,6 +326,7 @@ function hit(
   bodyPart: BodyPartLocation,
   onslaught: OnslaughtThread,
   bulletStorm: BulletStormThread,
+  rangeMult: number,
   trace?: HitTrace
 ): HitBreakdown {
   return computePaperDamage({
@@ -329,6 +342,7 @@ function hit(
     // `targetBodyPart` derivation in computeScenarios.
     bodyPart,
     chargeTimeSec: input.chargeTimeSec,
+    rangeFalloffMult: rangeMult,
     trace,
   });
 }
@@ -361,14 +375,15 @@ function bodyPartBlendedHit(
   bodyPart: BodyPartLocation,
   onslaught: OnslaughtThread,
   bulletStorm: BulletStormThread,
+  rangeMult: number,
   trace?: HitTrace
 ): HitBreakdown {
   const rate = (input.player.bodyPartHitRatePct ?? 100) / 100;
   if (rate >= 1 || (bodyPartMult === 1.0 && bodyPart === 'torso')) {
-    return hit(input, flags, bodyPartMult, bodyPart, onslaught, bulletStorm, trace);
+    return hit(input, flags, bodyPartMult, bodyPart, onslaught, bulletStorm, rangeMult, trace);
   }
-  const atTarget = hit(input, flags, bodyPartMult, bodyPart, onslaught, bulletStorm, trace);
-  const atTorso = hit(input, flags, 1.0, 'torso', onslaught, bulletStorm);
+  const atTarget = hit(input, flags, bodyPartMult, bodyPart, onslaught, bulletStorm, rangeMult, trace);
+  const atTorso = hit(input, flags, 1.0, 'torso', onslaught, bulletStorm, rangeMult);
   return bodyPartWeighted(atTarget, atTorso, rate);
 }
 
@@ -411,6 +426,33 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
             ? 'limb'
             : 'torso';
   const tracing = input.collectTrace === true;
+
+  // Range falloff (Phase 1 — Range + falloff): computed ONCE — neither the
+  // target distance nor the effective weapon's range fields vary by scenario
+  // flags — and threaded through every hit() call below alongside
+  // bodyPartMult (same "computed once per input" precedent as
+  // onslaughtMaxStacks further down). Melee weapons are exempt: their
+  // outOfRangeDamageMult values are sentinel-ish (Shishkebab 0.0, Machete
+  // −1.0) and must never reach rangeFalloffMult — see its own guard doc.
+  const rangeMult = isMelee(input.weapon)
+    ? 1.0
+    : rangeFalloffMult(
+        input.enemy.targetDistance ?? DEFAULT_DISTANCE_UNITS,
+        input.weapon.minRange ?? 0,
+        input.weapon.maxRange ?? 0,
+        input.weapon.outOfRangeDamageMult ?? 1.0
+      );
+  // Effective weapon range, exposed for the UI's distance-slider context
+  // (TargetSection.tsx) — same precedent as `charging` below. Null when
+  // there's no usable range span to show (melee, or maxRange <= 0).
+  const range =
+    !isMelee(input.weapon) && (input.weapon.maxRange ?? 0) > 0
+      ? {
+          minRange: input.weapon.minRange ?? 0,
+          maxRange: input.weapon.maxRange ?? 0,
+          outOfRangeMult: input.weapon.outOfRangeDamageMult ?? 1.0,
+        }
+      : null;
 
   // Onslaught max stacks (folded ONCE, threaded onto every ResolveContext
   // below): onslaughtMaxStacks modifiers only gate on weapon keyword/class,
@@ -479,7 +521,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // Free aim: crits are VATS-only, so never crit here.
   const freeFlags: ScenarioFlags = { isVats: false, isSneaking: sneaking, isPowerAttack: powerAttack, isCrit: false };
   const freeTrace = tracing ? createHitTrace() : undefined;
-  const freeHit = bodyPartBlendedHit(input, freeFlags, bodyPartMult, targetBodyPart, onslaught, bulletStorm, freeTrace);
+  const freeHit = bodyPartBlendedHit(input, freeFlags, bodyPartMult, targetBodyPart, onslaught, bulletStorm, rangeMult, freeTrace);
 
   // VATS: crit cadence blends a non-crit and a crit hit.
   const vatsFlags: ScenarioFlags = { isVats: true, isSneaking: sneaking, isPowerAttack: powerAttack, isCrit: false };
@@ -489,8 +531,8 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   const vatsTrace = tracing ? createHitTrace() : undefined;
   const vatsCritTrace = tracing ? createHitTrace() : undefined;
   const vatsAvg = critWeighted(
-    bodyPartBlendedHit(input, vatsFlags, bodyPartMult, targetBodyPart, onslaught, bulletStorm, vatsTrace),
-    bodyPartBlendedHit(input, { ...vatsFlags, isCrit: true }, bodyPartMult, targetBodyPart, onslaught, bulletStorm, vatsCritTrace),
+    bodyPartBlendedHit(input, vatsFlags, bodyPartMult, targetBodyPart, onslaught, bulletStorm, rangeMult, vatsTrace),
+    bodyPartBlendedHit(input, { ...vatsFlags, isCrit: true }, bodyPartMult, targetBodyPart, onslaught, bulletStorm, rangeMult, vatsCritTrace),
     critRate
   );
 
@@ -499,10 +541,10 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // simplest-defensible split, docs/assumptions.md).
   const charged = isCharged(input.weapon);
   const freeCycleTotal = charged
-    ? chargedCycleHit(input, freeFlags, bodyPartMult, targetBodyPart, 0, onslaught, bulletStorm).total
+    ? chargedCycleHit(input, freeFlags, bodyPartMult, targetBodyPart, 0, onslaught, bulletStorm, rangeMult).total
     : freeHit.total;
   const vatsCycleTotal = charged
-    ? chargedCycleHit(input, vatsFlags, bodyPartMult, targetBodyPart, critRate, onslaught, bulletStorm).total
+    ? chargedCycleHit(input, vatsFlags, bodyPartMult, targetBodyPart, critRate, onslaught, bulletStorm, rangeMult).total
     : vatsAvg.total;
 
   const freeSustainRaw = computeSustain(freeCycleTotal, fireRate, input.weapon);
@@ -607,6 +649,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     ...(bulletStormAvg !== undefined && { bulletStormAvgStacks: bulletStormAvg }),
     hasKillStreakSources,
     charging,
+    range,
     freeAim: {
       perHit: freeHit,
       burstDps: freeSustain.burstDps,

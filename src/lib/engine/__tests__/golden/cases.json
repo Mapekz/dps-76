@@ -661,6 +661,26 @@
   "expected": null,
   "tolerancePct": 2,
   "source": "pending in-game measurement of the charged-shot DoT tick rate (dps-todos/measurement-backlog.md); Flaming Arrows' dotDamage is real and active today, but the bow's own Full Power Seconds/Full Power Damage Mult aren't extracted yet, so the charge multiplier is a no-op until the extraction phase lands \u2014 once it does, this pins that a partial-draw shot's flaming-arrow burn ticks the same as a full-draw shot's (computeDotDps never sees chargeMult)"
+ },
+ {
+  "name": "Hunting Rifle @50, no perks \u2014 range falloff at 1.25\u00d7maxRange (X=1.5, composite model)",
+  "weaponId": "HuntingRifle",
+  "itemLevel": 50,
+  "mods": {},
+  "legendaryEffects": [],
+  "perks": [],
+  "legendaryPerks": [],
+  "mutations": [],
+  "consumables": [],
+  "conditions": {},
+  "enemyConditions": {
+   "targetDistance": 6531
+  },
+  "scenario": "freeAim",
+  "measure": "perHit",
+  "expected": null,
+  "tolerancePct": 3,
+  "source": "pending in-game measurement (dps-todos/measurement-backlog.md \"Composite range-falloff shape\"); Hunting Rifle minRange 2612 / maxRange 5225 / outOfRangeDamageMult 0.5, distance 6531 raw units \u2248 1.25\u00d7maxRange \u2192 X = (d\u2212minRange)/(maxRange\u2212minRange) \u2248 1.5 \u2192 curveY(1.5) = 0.75 \u2192 predicted rangeFalloffMult \u2248 0.375 (0.5\u00d70.75), i.e. perHit \u2248 stock \u00d7 0.375; pins the composite model's USER-CONFIRMED X = (d\u2212minRange)/(maxRange\u2212minRange) reading against real damage numbers"
  }
  ]
 }

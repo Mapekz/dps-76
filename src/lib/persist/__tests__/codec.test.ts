@@ -302,4 +302,34 @@ describe('consumables & addictions (2026-07-13 overhaul, hermetic fixtures)', ()
     expect(decoded!.state.player.conditions.addictionCount).toBe(createDefaultBuildState().player.conditions.addictionCount);
     expect(decoded!.warnings.some(w => w.includes('addictionCount'))).toBe(true);
   });
+
+  it('migrates a legacy string targetDistance bucket to a representative raw-unit number', async () => {
+    // Simulates a pre-Phase-1 URL that stored the old 'close'|'none'|'far' bucket.
+    const close = await decodeBuild(await encodeRawWire({ ec: { targetDistance: 'close' } }), 'live');
+    expect(close!.state.enemy.conditions.targetDistance).toBe(400);
+    expect(close!.warnings).toEqual([]);
+
+    const none = await decodeBuild(await encodeRawWire({ ec: { targetDistance: 'none' } }), 'live');
+    expect(none!.state.enemy.conditions.targetDistance).toBe(900);
+
+    const far = await decodeBuild(await encodeRawWire({ ec: { targetDistance: 'far' } }), 'live');
+    expect(far!.state.enemy.conditions.targetDistance).toBe(1500);
+  });
+
+  it('warns and falls back to default on an unrecognized legacy targetDistance string', async () => {
+    const decoded = await decodeBuild(await encodeRawWire({ ec: { targetDistance: 'medium' } }), 'live');
+    expect(decoded).not.toBeNull();
+    expect(decoded!.state.enemy.conditions.targetDistance).toBe(
+      createDefaultBuildState().enemy.conditions.targetDistance
+    );
+    expect(decoded!.warnings.some(w => w.includes('targetDistance'))).toBe(true);
+  });
+
+  it('round-trips a real numeric targetDistance value written by the current app', async () => {
+    const state = createDefaultBuildState();
+    state.enemy.conditions.targetDistance = 3200;
+    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    expect(decoded!.state.enemy.conditions.targetDistance).toBe(3200);
+    expect(decoded!.warnings).toEqual([]);
+  });
 });

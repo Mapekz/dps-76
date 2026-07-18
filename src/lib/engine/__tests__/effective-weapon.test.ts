@@ -525,6 +525,46 @@ describe('charging weapon-stat buckets (chargeFullPowerSec/chargeFullPowerDamage
   });
 });
 
+describe('range weapon-stat buckets (weaponMinRange/weaponMaxRange/weaponOutOfRangeMult, Phase 1 engine half)', () => {
+  it('a Long Barrel MUL_ADDs +50% onto Hunting Rifle\'s base min/max range', () => {
+    // ESM: Hunting Rifle minRange 2612, maxRange 5225, outOfRangeDamageMult
+    // 0.5; mod_HuntingRifle_barrel_Long_Base MUL_ADD +0.5 on both range
+    // fields, no OutOfRangeMult property (unchanged).
+    const huntingRifle = getWeapons('live')['HuntingRifle'];
+    expect(huntingRifle.minRange).toBe(2612);
+    expect(huntingRifle.maxRange).toBe(5225);
+    expect(huntingRifle.outOfRangeDamageMult).toBe(0.5);
+
+    const longBarrel = getOmodById('live', 'mod_HuntingRifle_barrel_Long_Base')!;
+    const { weapon } = buildEffectiveWeapon(huntingRifle, [longBarrel]);
+    expect(weapon.minRange).toBeCloseTo(2612 * 1.5, 6);
+    expect(weapon.maxRange).toBeCloseTo(5225 * 1.5, 6);
+    expect(weapon.outOfRangeDamageMult).toBeCloseTo(0.5, 6); // untouched — no weaponOutOfRangeMult modifier on this OMOD
+  });
+
+  it('the Abraxo Barrel SETs weaponOutOfRangeMult to 0.7 (the one OMOD in the dump that touches it)', () => {
+    const plasmaGun = getWeapons('live')['PlasmaGun'];
+    expect(plasmaGun.outOfRangeDamageMult).toBe(0.5);
+
+    const abraxoBarrel = getOmodById('live', 'mod_PlasmaGun_barrel_Flamer_Abraxo')!;
+    const { weapon } = buildEffectiveWeapon(plasmaGun, [abraxoBarrel]);
+    expect(weapon.outOfRangeDamageMult).toBeCloseTo(0.7, 6);
+  });
+
+  it('an equipped OMOD with no range buckets leaves the base weapon\'s range fields untouched', () => {
+    // Forces the non-early-return fold path (a real equipped OMOD) while
+    // exercising a bucket unrelated to range — the base ?? fallback in the
+    // weaponMinRange/weaponMaxRange/weaponOutOfRangeMult folds should be a
+    // no-op when nothing targets those buckets.
+    const huntingRifle = getWeapons('live')['HuntingRifle'];
+    const unrelatedMod = getOmodById('live', 'mod_HuntingRifle_Barrel_Short_Recoil')!; // real equipped OMOD, zero modifiers of its own
+    const { weapon } = buildEffectiveWeapon(huntingRifle, [unrelatedMod]);
+    expect(weapon.minRange).toBe(2612);
+    expect(weapon.maxRange).toBe(5225);
+    expect(weapon.outOfRangeDamageMult).toBe(0.5);
+  });
+});
+
 describe('sustain chance buckets (foldChanceUnion)', () => {
   const fixer = getWeapons('live')['CombatRifle_Fixer'];
   const baseCapacity = fixer.capacity ?? 0;

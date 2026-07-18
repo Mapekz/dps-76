@@ -202,6 +202,14 @@ describe('explosive payload (Stage A1, real data)', () => {
 });
 
 describe('target distance & weapon condition (Stage A3/A4, real data)', () => {
+  // TEST_CLOSE_DISTANCE/TEST_FAR_DISTANCE (Phase 1 — Range + falloff): both
+  // sit well below the Fixer's own minRange (2116 raw units), so
+  // rangeFalloffMult stays neutral (1.0) and these cases isolate the
+  // Close/Far PERK gate from the separate range-falloff mechanic (which has
+  // its own dedicated tests, src/lib/__tests__/distance.test.ts).
+  const TEST_CLOSE_DISTANCE = 400; // <= CLOSE_THRESHOLD_UNITS (850)
+  const TEST_FAR_DISTANCE = 1500; // >= FAR_THRESHOLD_UNITS (1000)
+
   it("Sniper's adds +100% dbm only against far-range targets (targetDistance condition, GLOB-valued magnitude)", () => {
     // ESM: ENCH BOUNTY_ench_LegendaryWeapon_Snipers → MGEF abPerkFortifyDmgFar
     // on STAT_DmgVsFar, magnitude via GLOB BOUNTY_SnipersBonus = 100.
@@ -209,9 +217,9 @@ describe('target distance & weapon condition (Stage A3/A4, real data)', () => {
     const { weapon, modifiers } = buildEffectiveWeapon(fixer, [snipers]);
     const none = computeScenarios(base({ weapon, modifiers }));
     expect(none.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
-    const close = computeScenarios(base({ weapon, modifiers, enemy: { ...createDefaultEnemyConditions(), targetDistance: 'close' } }));
+    const close = computeScenarios(base({ weapon, modifiers, enemy: { ...createDefaultEnemyConditions(), targetDistance: TEST_CLOSE_DISTANCE } }));
     expect(close.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
-    const far = computeScenarios(base({ weapon, modifiers, enemy: { ...createDefaultEnemyConditions(), targetDistance: 'far' } }));
+    const far = computeScenarios(base({ weapon, modifiers, enemy: { ...createDefaultEnemyConditions(), targetDistance: TEST_FAR_DISTANCE } }));
     expect(far.freeAim.perHit.total / stockTotal).toBeCloseTo(2.0, 6);
   });
 
@@ -219,9 +227,9 @@ describe('target distance & weapon condition (Stage A3/A4, real data)', () => {
     const guerrilla3 = getLoadoutModifiers('live', [{ perkId: PerkId.Guerrilla, rank: 3 }]);
     const none = computeScenarios(base({ modifiers: guerrilla3 }));
     expect(none.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
-    const close = computeScenarios(base({ modifiers: guerrilla3, enemy: { ...createDefaultEnemyConditions(), targetDistance: 'close' } }));
+    const close = computeScenarios(base({ modifiers: guerrilla3, enemy: { ...createDefaultEnemyConditions(), targetDistance: TEST_CLOSE_DISTANCE } }));
     expect(close.freeAim.perHit.total / stockTotal).toBeCloseTo(1.2, 6);
-    const far = computeScenarios(base({ modifiers: guerrilla3, enemy: { ...createDefaultEnemyConditions(), targetDistance: 'far' } }));
+    const far = computeScenarios(base({ modifiers: guerrilla3, enemy: { ...createDefaultEnemyConditions(), targetDistance: TEST_FAR_DISTANCE } }));
     expect(far.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
   });
 
@@ -446,7 +454,10 @@ describe('Onslaught (2026-07-12, real data)', () => {
     const none = computeScenarios(base({ modifiers: guerrillaMaster }));
     expect(none.onslaughtMaxStacks).toBe(5);
     expect(none.freeAim.perHit.total).toBeCloseTo(stockTotal, 6); // not close-range: inactive
-    const close = computeScenarios(base({ modifiers: guerrillaMaster, enemy: { ...createDefaultEnemyConditions(), targetDistance: 'close' } }));
+    // 400 raw units: <= CLOSE_THRESHOLD_UNITS (850), well below the Fixer's
+    // own minRange (2116) so rangeFalloffMult stays neutral (1.0) — isolates
+    // the Close perk gate from range falloff (own tests, distance.test.ts).
+    const close = computeScenarios(base({ modifiers: guerrillaMaster, enemy: { ...createDefaultEnemyConditions(), targetDistance: 400 } }));
     // curve (0,0)(1,5)(100,500) at x=5 (its own max, sentinel default) → y=25, ×0.01 = +25%.
     expect(close.freeAim.perHit.total / stockTotal).toBeCloseTo(1.25, 6);
   });

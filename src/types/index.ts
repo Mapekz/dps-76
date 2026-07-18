@@ -1,5 +1,6 @@
 import type { Special } from '@/data/special';
 import type { Modifier } from '@/types/modifiers';
+import { DEFAULT_DISTANCE_UNITS } from '@/lib/distance';
 
 // Re-export for convenience
 export type { Special } from '@/data/special';
@@ -215,8 +216,17 @@ export interface EnemyConditions {
   isPoisoned?: boolean; // active poison effect on the target (Viper's; default false)
   isBleeding?: boolean; // active bleed effect on the target (Severing's 4★; default false)
   isFrozen?: boolean; // active cryo effect on the target (no data consumers yet — forward-looking; default false)
-  /** Target range bucket for Close/Far damage perks (Guerrilla, Down Ranger, Sniper's; default 'none'). */
-  targetDistance?: 'close' | 'none' | 'far';
+  /**
+   * Raw game units to the target (Phase 1 — Range + falloff). Drives BOTH
+   * the Close/Far perk gates (Guerrilla, Down Ranger, Sniper's — threshold
+   * comparison in resolve.ts's `targetDistance` case, `src/lib/distance.ts`'s
+   * CLOSE_THRESHOLD_UNITS/FAR_THRESHOLD_UNITS) and the continuous weapon
+   * range-falloff multiplier (`rangeFalloffMult`, folded in scenarios.ts).
+   * Default DEFAULT_DISTANCE_UNITS — strictly between the two gates, so
+   * neither fires (the old default's 'none' behavior). UI: TargetSection's
+   * distance slider, displayed in Pip-Boy units (÷ PIP_BOY_UNIT_DIVISOR).
+   */
+  targetDistance?: number;
   /** Selected target race id (bodyparts.json `id`) driving the body-part mult picker; null = custom multiplier. */
   targetRace?: string | null;
   /** Selected body part name on targetRace; null = custom multiplier. */
@@ -629,7 +639,7 @@ export function createDefaultEnemyConditions(): EnemyConditions {
     isPoisoned: false,
     isBleeding: false,
     isFrozen: false,
-    targetDistance: 'none',
+    targetDistance: DEFAULT_DISTANCE_UNITS,
     targetRace: null,
     targetBodyPart: null,
   };
