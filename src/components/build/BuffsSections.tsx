@@ -177,7 +177,7 @@ function familyLabel(name: string): string {
  * cause the single Alcohol addiction and nearly none of them move damage — as
  * rows they'd be a wall of ±0%, so that family's causes collapse into one
  * combobox (`picker`) on its row instead. Med-X has neither: no modeled chem
- * causes it, but the family still gets a row so the Junkie's count is complete.
+ * causes it, but the family still gets a row so the addiction count is complete.
  */
 interface LedgerGroup {
   addiction: GeneratedAddiction | null;
@@ -356,7 +356,7 @@ function AddictionCell({
   const { addiction } = group;
   const addicted = player.addictions.includes(addiction.id);
   const id = `addiction-${addiction.id}`;
-  // Counted = actually dragging Junkie's/damage down right now; suppressed or
+  // Counted = actually dragging damage down right now; suppressed or
   // unselected addictions still get a preview line, just in the quiet tone.
   const counted = addicted && !suppressedBy;
   const description = addiction.modifiers?.length ? describeBuffModifiers(addiction) : null;
@@ -400,7 +400,7 @@ function AddictionCell({
                 <span className="hidden sm:inline">suppressed</span>
               </TooltipTrigger>
               <TooltipContent>
-                {suppressedBy.name} is active, so {addiction.name} doesn't count toward Junkie's.
+                {suppressedBy.name} is active, so {addiction.name} doesn't count.
               </TooltipContent>
             </Tooltip>
           ) : (
@@ -556,9 +556,9 @@ export function ChemsSection() {
     if (c.addiction && player.consumables.includes(c.id)) suppressorOf.set(c.addiction.id, c);
   }
 
-  // Junkie's reads addictionCount off a curve — find it in the data rather than
-  // by name, so any future effect on the same axis lights the badge too.
-  const junkies = (player.weapon?.legendaryEffects ?? []).some(
+  // Something equipped reads addictionCount off a curve — find it in the data
+  // rather than by name, so any future effect on the same axis gates ΔDPS too.
+  const readsAddictionCount = (player.weapon?.legendaryEffects ?? []).some(
     id => id && getOmodById(mode, id)?.modifiers.some(m => m.curve?.input === 'addictionCount')
   );
 
@@ -566,37 +566,22 @@ export function ChemsSection() {
   const activeAlcohol = alcohols.find(c => player.consumables.includes(c.id));
   const counted = player.addictions.filter(id => !suppressed.has(id)).length;
 
-  const taking = [activeChem?.name, activeAlcohol?.name].filter(Boolean).join(' + ');
+  // Presence-only summary — names and running totals don't fit a mobile-width
+  // header, so this just says what's active and how many addictions count.
   const summary =
-    player.addictions.length > 0
-      ? `${taking || 'nothing'} · ${counted} of ${player.addictions.length} addictions counted`
-      : taking || 'none';
+    [activeChem && 'Chem', activeAlcohol && 'Alcohol', counted > 0 && `${counted} addiction${counted === 1 ? '' : 's'}`]
+      .filter(Boolean)
+      .join(' · ') || 'none';
 
   return (
     <AccordionItem value="chems">
       <AccordionTrigger>
-        <SectionTrigger
-          label="Chems & Alcohol"
-          summary={summary}
-          badge={
-            junkies ? (
-              <Badge title={`Junkie's is scaling off ${counted} counted addiction${counted === 1 ? '' : 's'}`}>
-                Junkie's ×{counted}
-              </Badge>
-            ) : (
-              player.addictions.length > 0 && (
-                <Badge variant="outline" title="Nothing equipped reads your addiction count, so these addictions change no damage">
-                  no Junkie's
-                </Badge>
-              )
-            )
-          }
-        />
+        <SectionTrigger label="Chems & Alcohol" summary={summary} />
       </AccordionTrigger>
       <AccordionContent>
         <div className="font-condensed text-muted-foreground flex items-stretch pb-1 text-[10px] font-semibold uppercase tracking-[0.1em]">
           <span className="flex-1 px-2">Active — one alcohol, one chem</span>
-          <span className={cn(RAIL, 'px-2 pl-3')}>Addicted — Junkie's stacks</span>
+          <span className={cn(RAIL, 'px-2 pl-3')}>Addicted</span>
         </div>
 
         {/* Alcohol first: it's one control, and it's the only row whose chem cell
@@ -604,7 +589,7 @@ export function ChemsSection() {
             as the first option of that group. */}
         <div className="divide-border/50 divide-y">
           {alcoholGroups.map(group => (
-            <LedgerRow key={group.addiction!.id} group={group} suppressorOf={suppressorOf} showDelta={junkies} />
+            <LedgerRow key={group.addiction!.id} group={group} suppressorOf={suppressorOf} showDelta={readsAddictionCount} />
           ))}
         </div>
 
@@ -621,7 +606,7 @@ export function ChemsSection() {
               key={group.addiction?.id ?? group.chems[0].id}
               group={group}
               suppressorOf={suppressorOf}
-              showDelta={junkies}
+              showDelta={readsAddictionCount}
             />
           ))}
         </div>
