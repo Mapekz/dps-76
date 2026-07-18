@@ -372,6 +372,13 @@ export async function toGeneratedWeapon(
     reach: asNumber(data['Reach'], 1.0),
     secondaryDamage: asNumber(data['Secondary Damage']),
     damageBonusMult: asNumber(rgw3['Damage Bonus Multiplier'], 1.0),
+    // Range & falloff (Phase 1 extraction half, verified live 2026-07-18:
+    // Hunting Rifle 2612/5225/0.5). 0 is a real value (melee weapons carry
+    // e.g. 0/10/-1) — asNumber's default only applies when the field is
+    // literally absent, never overwriting a real 0.
+    minRange: asNumber(data['Min Range']),
+    maxRange: asNumber(data['Max Range']),
+    outOfRangeDamageMult: asNumber(data['Damage - OutOfRangeMult']),
     // Charging (Gauss family, bows, tesla/gamma/laser via barrel OMODs):
     // "Full Power Seconds"/"Full Power Damage Mult" live on Data. "Minimum
     // Charge Time" (bows only) is a TOP-LEVEL WEAP field — a sibling of

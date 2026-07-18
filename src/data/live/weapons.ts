@@ -119,6 +119,12 @@ export function adaptWeapon(gw: GeneratedWeapon): Weapon {
     fullPowerSeconds: (gw.fullPowerSeconds ?? 0) > 0 ? gw.fullPowerSeconds : undefined,
     fullPowerDamageMult: (gw.fullPowerDamageMult ?? 0) > 0 ? gw.fullPowerDamageMult : undefined,
     minimumChargeTime: (gw.minimumChargeTime ?? 0) > 0 ? gw.minimumChargeTime : undefined,
+    // Range/falloff (Phase 1 extraction half): 0 is a real value (melee
+    // weapons), so map unconditionally — NOT the charging fields' "0/absent
+    // = doesn't apply" convention above.
+    minRange: gw.minRange,
+    maxRange: gw.maxRange,
+    outOfRangeDamageMult: gw.outOfRangeDamageMult,
     modifiers: gw.modifiers,
     ...weaponCorrections[gw.id],
   };

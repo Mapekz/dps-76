@@ -104,6 +104,27 @@ export interface GeneratedWeapon {
    */
   minimumChargeTime?: number;
 
+  // ── Range & falloff (Phase 1 extraction half) ────────────────────────────
+  /**
+   * WEAP Data "Min Range" — raw game units below which damage falls off
+   * toward `outOfRangeDamageMult` (Hunting Rifle: 2612). 0 is a real value
+   * (melee weapons), not "absent" — always present once extracted; optional
+   * only for pre-Phase-1 generated data.
+   */
+  minRange?: number;
+  /**
+   * WEAP Data "Max Range" — raw game units beyond which damage falls off
+   * toward `outOfRangeDamageMult` (Hunting Rifle: 5225). Same 0-is-real
+   * convention as `minRange`.
+   */
+  maxRange?: number;
+  /**
+   * WEAP Data "Damage - OutOfRangeMult" — damage multiplier applied outside
+   * [minRange, maxRange] (Hunting Rifle: 0.5). Same 0-is-real convention as
+   * `minRange`.
+   */
+  outOfRangeDamageMult?: number;
+
   eligibleLevels: number[];
   /** OMOD formids flattened from ALL Object Template combinations (phase 5). */
   templateModFormIds: string[];

@@ -4,6 +4,7 @@ import { chaseExplosion, chaseWeaponEnchantment, isExcludedWeaponEdid, toGenerat
 import type { AvifRoute } from '../normalize/mgef';
 import { isExcludedOmodEdid } from '../extract-omods';
 import fixer from './fixtures/weap-fixer.json';
+import huntingRifle from './fixtures/weap-huntingrifle.json';
 import gatlingPlasma from './fixtures/weap-gatling-plasma.json';
 import mg42 from './fixtures/weap-mg42.json';
 import shishkebab from './fixtures/weap-shishkebab.json';
@@ -114,6 +115,13 @@ describe('toGeneratedWeapon', () => {
     expect(w.components[1].tier).toBe(20);
   });
 
+  it('Shishkebab: real melee minRange 0 / outOfRangeDamageMult 0 stay 0, not coerced to undefined (Phase 1 "0 is meaningful" rule)', async () => {
+    const w = await toGeneratedWeapon(stubClient, shishkebab as unknown as EsmRecord, []);
+    expect(w.minRange).toBe(0);
+    expect(w.maxRange).toBe(10);
+    expect(w.outOfRangeDamageMult).toBe(0);
+  });
+
   it('RegularBow: charging fields (Full Power Seconds/Damage Mult from Data, Minimum Charge Time top-level)', async () => {
     // Fixture is verbatim `esm -p get RegularBow` output (20260715 ESM,
     // captured while implementing charging weapons phase 2). "Minimum
@@ -123,6 +131,13 @@ describe('toGeneratedWeapon', () => {
     expect(w.fullPowerSeconds).toBeCloseTo(1.4, 5);
     expect(w.fullPowerDamageMult).toBeCloseTo(0.3, 5);
     expect(w.minimumChargeTime).toBeCloseTo(0.9, 5);
+  });
+
+  it('Hunting Rifle: minRange/maxRange/outOfRangeDamageMult from WEAP Data (Phase 1 extraction, verified live 2026-07-18)', async () => {
+    const w = await toGeneratedWeapon(stubClient, huntingRifle as unknown as EsmRecord, []);
+    expect(w.minRange).toBe(2612);
+    expect(w.maxRange).toBe(5225);
+    expect(w.outOfRangeDamageMult).toBe(0.5);
   });
 
   it('flags unrecognized damage types as unresolved instead of dropping them', async () => {

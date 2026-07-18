@@ -450,10 +450,19 @@ export interface Weapon {
   /** Flat base damage override (used by enemy weapon scaffolding). Derived
    *  weapons set this to 0; prefer `components` for player weapons. */
   baseDamage?: number;
-  /** Accuracy (for future aim model). */
-  accuracy?: number;
-  /** Range (for future falloff model). */
-  range?: number;
+
+  // ── Range & falloff (Phase 1 extraction half) ────────────────────────────
+  // Storage is raw game units (WEAP Data "Min Range"/"Max Range"/
+  // "Damage - OutOfRangeMult" — Hunting Rifle: 2612/5225/0.5). UI display
+  // divides by PIP_BOY_UNIT_DIVISOR (64/3, src/lib/distance.ts, Phase 1
+  // engine half) to render Pip-Boy units — these fields are NOT pre-divided.
+  // 0 is a real value (melee weapons), not "absent".
+  /** WEAP Data "Min Range", raw game units. */
+  minRange?: number;
+  /** WEAP Data "Max Range", raw game units. */
+  maxRange?: number;
+  /** WEAP Data "Damage - OutOfRangeMult". */
+  outOfRangeDamageMult?: number;
 }
 
 export interface WeaponConfig {

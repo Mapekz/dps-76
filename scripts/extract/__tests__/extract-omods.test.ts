@@ -5,6 +5,7 @@ import { extractOmods, isExcludedOmodEdid, propertyName } from '../extract-omods
 import unstoppableMonsterOmod from './fixtures/omod-unstoppablemonster.json';
 import unstoppableMonsterPerk from './fixtures/perk-unstoppablemonster.json';
 import allRiseOmod from './fixtures/omod-allrise.json';
+import barrelLongRangeParent from './fixtures/omod-barrel-long-range-parent.json';
 
 // Fixtures are verbatim `esm -p --esm <esmPath> get <edid|formid> --json` output
 // (20260710 ESM). These pin the unique-mod rework's two previously-undecoded
@@ -877,5 +878,111 @@ describe('extractOmods (Bullet Storm ActorValues — AmmoSpenderMinStacks/Enable
     );
     expect(omod!.modifiers.find(m => m.bucket === 'bulletStormOnKill')?.op).not.toBe('ADD');
     expect(omod!.notes).not.toContain('ActorValues on EnableAmmoSpenderOnKill — unmapped');
+  });
+});
+
+/**
+ * Stub client for the range-barrel bucket wiring (Phase 1 extraction half,
+ * go-through-every-single-silly-whistle.md). The REAL parent template fixture
+ * (omod-barrel-long-range-parent.json, verbatim `esm get 0x0027ABFA` output —
+ * `_PARENT_mod_WEAPON_Barrel_Long_Range`, carrying MaxRange/MinRange MUL+ADD
+ * 0.5) is wired in via a synthetic named child mod's `Data.Includes`, exactly
+ * how real range-barrel OMODs attach it in-game (e.g. mod_10mm_Barrel_Long_Base
+ * 0x0000469C) — `client.list('OMOD')` must return BOTH rows so the parent
+ * lands in extractOmods' internal byFormId map even though
+ * classifyOmodRecordExclusion drops it from the picker-facing `named` list
+ * (authoringTemplate, `_PARENT_` prefix).
+ */
+function makeRangeBarrelStubClient(): EsmClient {
+  const childFormId = '0x00DEC005';
+  const parentFormId = '0x0027ABFA';
+  const known: Record<string, EsmRecord> = {
+    [childFormId]: {
+      header: { signature: 'OMOD', form_id: childFormId },
+      editor_id: 'mod_Test_LongRangeBarrel',
+      fields: {
+        Name: 'Test Long Range Barrel',
+        Data: {
+          'Form Type': { name: 'Weapon' },
+          'Attach Point': '0x0002249D',
+          Includes: [{ Mod: parentFormId }],
+          Properties: [],
+        },
+      },
+    } as unknown as EsmRecord,
+    [parentFormId]: barrelLongRangeParent as unknown as EsmRecord,
+  };
+  const get = async (target: string): Promise<EsmRecord> => {
+    if (known[target]) return known[target];
+    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+  };
+  return {
+    async list(type: string): Promise<EsmListRow[]> {
+      if (type !== 'OMOD') return [];
+      return [
+        { form_id: childFormId, record_type: 'OMOD', editor_id: 'mod_Test_LongRangeBarrel', name: 'Test Long Range Barrel' },
+        { form_id: parentFormId, record_type: 'OMOD', editor_id: '_PARENT_mod_WEAPON_Barrel_Long_Range', name: null },
+      ];
+    },
+    get,
+    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+    refs: async () => [],
+  } as unknown as EsmClient;
+}
+
+describe('extractOmods (range barrel MinRange/MaxRange, Phase 1 extraction half)', () => {
+  it('flattens the real _PARENT_mod_WEAPON_Barrel_Long_Range template into weaponMinRange/weaponMaxRange MUL_ADD 0.5 modifiers on the including child mod', async () => {
+    const result = await extractOmods(makeRangeBarrelStubClient(), new Set());
+    const omod = result.omods.find(o => o.id === 'mod_Test_LongRangeBarrel');
+    expect(omod).toBeDefined();
+    expect(omod!.modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'weaponMinRange', op: 'MUL_ADD', value: 0.5 })
+    );
+    expect(omod!.modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'weaponMaxRange', op: 'MUL_ADD', value: 0.5 })
+    );
+    expect(result.unknownProperties).not.toContain('MinRange');
+    expect(result.unknownProperties).not.toContain('MaxRange');
+    // The template itself is never emitted as a player-facing mod.
+    expect(result.omods.find(o => o.id === '_PARENT_mod_WEAPON_Barrel_Long_Range')).toBeUndefined();
+  });
+
+  it('maps a synthetic OutOfRangeDamageMult property to weaponOutOfRangeMult (no real OMOD carries this property in the sampled range barrels — synthetic pin for completeness)', async () => {
+    const omodFormId = '0x00DEC006';
+    const client = {
+      async list(type: string): Promise<EsmListRow[]> {
+        if (type !== 'OMOD') return [];
+        return [{ form_id: omodFormId, record_type: 'OMOD', editor_id: 'mod_Test_OutOfRangeMult', name: 'Test Out Of Range Mult' }];
+      },
+      async get(target: string): Promise<EsmRecord> {
+        if (target === omodFormId) {
+          return {
+            header: { signature: 'OMOD', form_id: omodFormId },
+            editor_id: 'mod_Test_OutOfRangeMult',
+            fields: {
+              Name: 'Test Out Of Range Mult',
+              Data: {
+                'Form Type': { name: 'Weapon' },
+                'Attach Point': '0x0002249D',
+                Properties: [
+                  { 'Function Type': { name: 'SET' }, Property: { name: 'OutOfRangeDamageMult' }, 'Value 1': 0.75, 'Value 2': 0.0 },
+                ],
+              },
+            },
+          } as unknown as EsmRecord;
+        }
+        return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+      },
+      resolveEdid: async (formId: string) => formId,
+      refs: async () => [],
+    } as unknown as EsmClient;
+
+    const result = await extractOmods(client, new Set());
+    const omod = result.omods.find(o => o.id === 'mod_Test_OutOfRangeMult');
+    expect(omod).toBeDefined();
+    expect(omod!.modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'weaponOutOfRangeMult', op: 'SET', value: 0.75 })
+    );
+    expect(result.unknownProperties).not.toContain('OutOfRangeDamageMult');
   });
 });

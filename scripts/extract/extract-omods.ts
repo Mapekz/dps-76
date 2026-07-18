@@ -113,11 +113,24 @@ const PROPERTY_BUCKETS: Record<string, PropertyMapping> = {
   // Folded over Weapon.animDelaySec in effective-weapon.ts, same MUL_ADD
   // pattern as ReloadSpeed/AttackActionPointCost.
   AttackDelaySec: { bucket: 'animDelaySec' },
+  // Range/falloff (Phase 1 extraction half, go-through-every-single-silly-
+  // whistle.md): mostly barrels (_PARENT_mod_WEAPON_Barrel_Long_Range
+  // 0x0027ABFA carries MaxRange/MinRange MUL_ADD 0.5) but also muzzles/
+  // receivers with small +/- tweaks — 435 OMODs total in the 20260710 dump,
+  // scopes carry none; OutOfRangeDamageMult is rare (one OMOD:
+  // mod_PlasmaGun_barrel_Flamer_Abraxo SET 0.7). Verified live 2026-07-18.
+  // Folded over weapon.minRange/maxRange/outOfRangeDamageMult the same way as
+  // ammoCapacity/reloadSpeed once the falloff engine step lands
+  // (effective-weapon.ts) — extraction-only for now, buckets are
+  // `hasEngineEffect: false` (src/types/modifiers.ts).
+  MinRange: { bucket: 'weaponMinRange' },
+  MaxRange: { bucket: 'weaponMaxRange' },
+  OutOfRangeDamageMult: { bucket: 'weaponOutOfRangeMult' },
 };
 
 /** Property names that never affect the damage formula — skipped without reporting. */
 const PROPERTY_IGNORED = new Set([
-  'Weight', 'Value', 'Health', 'Ammo', 'Reach', 'MinRange', 'MaxRange',
+  'Weight', 'Value', 'Health', 'Ammo', 'Reach',
   'AimModelBaseStability', 'AimModelRecoilMaxDegPerShot',
   // NOTE: 'AttackDamage' and 'DamageTypeValues' are handled explicitly below
   // (they scale component base damage), not ignored.
@@ -126,7 +139,7 @@ const PROPERTY_IGNORED = new Set([
   'AimModelConeSneakMultiplier', 'AimModelConeIncreasePerShot', 'AimModelConeDecreasePerSec',
   'ZoomDataFOVMult', 'ZoomDataOverlay', 'ZoomDataIsModFormID', 'HitBehavior', 'Rank',
   'ColorRemappingIndex', 'MaterialSwaps', 'ModelSection', 'SoundLevel', 'NPCsUseAmmo',
-  'OutOfRangeDamageMult', 'ActionPointCost',
+  'ActionPointCost',
   // 'MinPowerPerShot' — stale pre-rename field name: the esm CLI renamed this
   // Data property twice ("Min Power Per Shot" → "Max Power Per Shot" →
   // "Full Power Damage Mult", which IS mapped above), superseded.
