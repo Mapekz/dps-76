@@ -31,6 +31,32 @@ import type { GeneratedNpc, GeneratedNpcDamageType, GeneratedNpcResist } from '.
  * convention documented in the esm-cli skill.
  */
 
+/**
+ * FLST "Actor having any of these will never spawn epic" (esm-walk
+ * 2026-07-18, coordinator follow-up — see docs/assumptions.md "Creature stat
+ * curves & NPC extraction"). Resolved once per run, not hardcoded, so a
+ * future ESM update to the member list is picked up automatically.
+ */
+const EPIC_CREATURE_DISALLOWED_KEYWORDS_FLST = '0x004FC5B7';
+
+/** `record.fields['Keywords']` → the raw keyword formIds (pattern shared with extract-weapons.ts/extract-bodyparts.ts). */
+function keywordFormIds(fields: Record<string, unknown>): string[] {
+  const node = (fields['Keywords'] ?? {}) as Record<string, unknown>;
+  return Array.isArray(node['Keywords']) ? (node['Keywords'] as string[]) : [];
+}
+
+/** Resolve the epic-creature disallow-keyword FLST to a formId set; empty (fail-open to `epicAllowed: true`) on any error. */
+async function resolveEpicDisallowedKeywords(client: EsmClient, unresolved: string[]): Promise<Set<string>> {
+  try {
+    const flst = await client.get(EPIC_CREATURE_DISALLOWED_KEYWORDS_FLST);
+    const ids = (flst.fields['FormIDs'] as Array<{ FormID?: string }> | undefined) ?? [];
+    return new Set(ids.map(f => f.FormID).filter((id): id is string => !!id));
+  } catch (err) {
+    unresolved.push(`npcs: EpicCreatureDisallowedKeywords FLST ${EPIC_CREATURE_DISALLOWED_KEYWORDS_FLST} failed to resolve: ${(err as Error).message} — epicAllowed defaults to true for every row`);
+    return new Set();
+  }
+}
+
 const HEALTH_AV = 0x2d4;
 /** Exported for tests. */
 export const RESIST_AVS: Record<number, GeneratedNpcDamageType> = {
@@ -177,6 +203,7 @@ export interface NpcsResult {
 export async function extractNpcs(client: EsmClient): Promise<NpcsResult> {
   const unresolved: string[] = [];
   const npcs: GeneratedNpc[] = [];
+  const epicDisallowedKeywords = await resolveEpicDisallowedKeywords(client, unresolved);
 
   for (const target of CURATED_TARGETS) {
     let record: EsmRecord;
@@ -214,15 +241,25 @@ export async function extractNpcs(client: EsmClient): Promise<NpcsResult> {
     const npcProps = (npcRecord.fields['Properties'] as RawProperty[] | undefined) ?? [];
 
     let raceProps: RawProperty[] = [];
+    let raceKeywords: string[] = [];
     const raceFormId = npcRecord.fields['Race'] as string | null | undefined;
     if (raceFormId) {
       try {
         const raceRecord = await client.get(raceFormId);
         raceProps = (raceRecord.fields['Properties'] as RawProperty[] | undefined) ?? [];
+        raceKeywords = keywordFormIds(raceRecord.fields);
       } catch {
         unresolved.push(`npcs: ${target.edid} (${npcRecord.editor_id})'s Race ${raceFormId} not found — resist fallback skipped`);
       }
     }
+
+    // Epic-creature eligibility (coordinator follow-up, 2026-07-18): checks
+    // the NPC_'s own keywords AND its RACE's (one hop, matching the resist
+    // fallback depth above — no deeper template-inheritance chase). Neither
+    // hop is exhaustive of every possible indirection Bethesda might use, but
+    // it matches every other keyword-gate depth this extractor already uses.
+    const npcKeywords = keywordFormIds(npcRecord.fields);
+    const epicAllowed = ![...npcKeywords, ...raceKeywords].some(id => epicDisallowedKeywords.has(id));
 
     const merged = mergeProperties(raceProps, npcProps);
 
@@ -256,6 +293,7 @@ export async function extractNpcs(client: EsmClient): Promise<NpcsResult> {
       levelMinGlobal,
       levelMaxGlobal,
       levelOffsetGlobal,
+      epicAllowed,
     });
   }
 

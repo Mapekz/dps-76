@@ -272,8 +272,32 @@ export type Bucket =
    */
   | 'moveSpeedBonus'
   | 'addDamageComponent'
-  /** Armor penetration (Anti-Armor's ActorValues property) — extracted but inert until enemy DR lands. */
+  /**
+   * Armor penetration (Anti-Armor's ActorValues property) — a fraction
+   * (0.50 = 50% penetration) folded ONCE per scenario input (`scenarios.ts`
+   * bootstrap spot, `onslaughtMaxStacks` precedent) into a single
+   * `armorPenTotal`, consumed by `src/lib/engine/mitigation.ts`'s
+   * `applyMitigation`: `Resist = max(0, base − flatDebuff) × (1 −
+   * clamp01(armorPenTotal))`. All 76 extracted `armorPen` modifiers
+   * (Incisor/Stabilized/Tank Killer/Anti-Armor legendary families) are
+   * unconditioned flat ADDs. See docs/assumptions.md "Resist mitigation".
+   */
   | 'armorPen'
+  /**
+   * Flat enemy-DR debuff in resist points (NOT a fraction — distinct units
+   * from `armorPen`), folded once per scenario input the same way. Today's
+   * only source is Taking One for the Team's hidden companion perk
+   * (`LGN_TakingOneForTheTeam_DamageIncrease_Perk`, magnitudes 6/10/15/50 at
+   * ranks 1-4 — `src/data/target-debuffs.ts`), which the ESM shows debuffing
+   * DamageResist only (no EnergyResist component) — `mitigation.ts` applies
+   * this total ONLY when a component's resolved resist type is `'physical'`,
+   * a consumer-side convention rather than a per-modifier damageTypeScope
+   * condition (the bootstrap fold context has no `componentType`, so a
+   * `damageTypeScope` condition would just always fail there — see
+   * `mitigation.ts` header comment). See docs/assumptions.md "Resist
+   * mitigation".
+   */
+  | 'armorPenFlat'
   /** Damage-over-time from Damage-archetype MGEFs (bleed/burn/shock mods) — refresh-only steady-state dmg/sec, summed into `ScenarioResult.dotDps`. */
   | 'dotDamage'
   /**
@@ -332,6 +356,15 @@ export type BucketRegime =
   | 'playerStat'
   /** Folded once per scenario input and threaded on `ResolveContext.onslaughtMaxStacks` rather than re-folded per damage term. */
   | 'bootstrap'
+  /**
+   * Folded once per scenario input (`scenarios.ts` bootstrap spot — same
+   * "fold once" precedent as `bootstrap`) but consumed by
+   * `src/lib/engine/mitigation.ts` directly against the scenario's finished
+   * `HitBreakdown` (Option A — see mitigation.ts header), not threaded on
+   * `ResolveContext`. Distinct regime name because its consumer sits outside
+   * the condition-resolution pipeline entirely.
+   */
+  | 'mitigation'
   /** No fold consumes this bucket at all (as opposed to a fold whose result nothing reads — see `hasEngineEffect`). */
   | 'unfolded';
 
@@ -404,7 +437,8 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   deflectChance: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — defensive, no incoming-damage model exists (The Action Hero)' },
   moveSpeedBonus: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon — folded once, threaded on ResolveContext.moveSpeedBonus; feeds the moveSpeedBonus CurveInput (Fast Fighter). Threaded in the weapon-stat fold ONLY — a damage-bucket curve on this input would read 0 until scenarios.ts also threads it' },
   addDamageComponent: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — no reader anywhere in the codebase; likely superseded by explosivePayload/materializeDamageTypeComponents' },
-  armorPen: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — extracted but inert until enemy DR lands' },
+  armorPen: { regime: 'mitigation', hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold → armorPenTotal; consumed by mitigation.ts applyMitigation (per-component Resist fraction)' },
+  armorPenFlat: { regime: 'mitigation', hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold → flat resist-point total; consumed by mitigation.ts applyMitigation (physical-resist-only, see bucket doc comment)' },
   dotDamage: { regime: 'dot', hasEngineEffect: true, foldedBy: 'paper-damage.ts computeDotDps' },
   maxHealth: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats (245 + 5xEND + this fold)' },
   specialStrength: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds paper-damage.ts strengthTerm + the strength CurveInput (Debilitator\'s)' },
@@ -440,20 +474,23 @@ export const INERT_ENGINE_BUCKETS: ReadonlySet<Bucket> = new Set(
 /**
  * The single "does this modifier move a number today" predicate — shared by
  * every picker's 'no effect yet' badge (OMODs, perks, consumables). A
- * modifier is inert when its bucket is in `INERT_ENGINE_BUCKETS`, OR it reads
- * an enemy-defense curve input nothing folds yet (enemyDamageResist, waiting
- * on enemy DR modeling — distinct from the enemyType/enemyTypeAny CONDITION
- * kinds, which DO resolve against the Target picker's selected race and are
- * NOT inert), OR extraction left a condition it couldn't translate
- * (`unresolved`). Kept here, next to the bucket registry it reads, so no
- * caller can drift from what the engine actually folds.
+ * modifier is inert when its bucket is in `INERT_ENGINE_BUCKETS`, OR
+ * extraction left a condition it couldn't translate (`unresolved`). Kept
+ * here, next to the bucket registry it reads, so no caller can drift from
+ * what the engine actually folds.
+ *
+ * The `curve?.input === 'enemyDamageResist'` carve-out (Phase 2 — Enemy
+ * defenses, removed 2026-07-18) is GONE: that curve input was renamed
+ * `playerDamageResist` (Berserker's reads the WIELDER's own DR, not the
+ * enemy's — see the `CurveInput` doc comment) and is wired to a real manual
+ * knob (`PlayerConditions.playerDamageResist`), so it's engine-effective like
+ * any other curve input now. `armorPen` also left `INERT_ENGINE_BUCKETS` this
+ * phase (mitigation.ts). Distinct from the enemyType/enemyTypeAny CONDITION
+ * kinds, which have always resolved against the Target picker's selected
+ * race and were never inert.
  */
 export function modifierHasEngineEffect(m: Modifier): boolean {
-  return !(
-    INERT_ENGINE_BUCKETS.has(m.bucket) ||
-    m.curve?.input === 'enemyDamageResist' ||
-    m.conditions.some(c => c.kind === 'unresolved')
-  );
+  return !(INERT_ENGINE_BUCKETS.has(m.bucket) || m.conditions.some(c => c.kind === 'unresolved'));
 }
 
 /** True iff at least one modifier in the list moves a number today (empty list → false). */
@@ -650,7 +687,23 @@ export type CurveInput =
   | 'killStreak' // Adrenal Reaction — AV 0x00000399
   | 'addictionCount' // Junkie's — AV 0x001EB998
   | 'healthCurrent' // ABSOLUTE current HP (Juggernaut's: x 0→1000) — AV 0x000002D4
-  | 'enemyDamageResist' // enemy DR (DamageUnarmored) — AV 0x000002E3; reads 0 until enemy defenses land
+  /**
+   * The WIELDER's OWN DamageResist AV (0x000002E3) — NOT the enemy's,
+   * despite the AV's shared name with `RESIST_AVS` in extract-npcs.ts
+   * (that mapping is for NPC_ records; this one is the SPEL's self-buff
+   * curve). Renamed from `enemyDamageResist` 2026-07-18 (Phase 2 — Enemy
+   * defenses): the only consumer, Berserker's
+   * (`mod_Legendary_Weapon1_DamageUnarmored`, curve points
+   * (0,50)→(20,30)→(40,17)→(60,5), scale 0.01), is FO76's real "deals more
+   * damage the LESS armored you are" effect — USER-CONFIRMED 2026-07-18. No
+   * armor-mitigation model exists yet to derive this from equipped armor
+   * (Phase 3 is slim and won't add one either), so it's a manual knob
+   * (`PlayerConditions.playerDamageResist`, default 0 — "naked", the curve's
+   * max-bonus end, which was this input's ALWAYS-0 hardcoded behavior before
+   * this rename; see `resolve.ts` PLAYER_STATE_READERS and
+   * docs/assumptions.md "Berserker's (Damage Unarmored)").
+   */
+  | 'playerDamageResist'
   | 'itemLevel' // weapon item level — level-scaled OMOD properties (heated melee mods' AttackDamage curves)
   | 'mutationCount' // owned mutations (Mutant's) — AV MutationCount 0x006C2DBA; derived from the selected mutation list
   | 'hungerThirstTier' // food/drink fullness tier (Gourmand's) — AV HungerThirstTier 0x006D37DC

@@ -47,8 +47,9 @@ sub-anchor without updating every citation.
 - **Max HP (derived)**
 - **Ghoul Glow**
 - **Elemental 2★ effects & enemy-status 4★ rework**
-- **Resist mitigation** (dormant scaffolding)
-- **Creature stat curves & NPC extraction (Phase 2 data)** — effectiveLevel X-axis, RACE/NPC_ Properties merge, flat-wins, SBQ HP OPEN
+- **Resist mitigation** — formula, Option A + measured divergence, per-type mapping, TOFTT flat debuff, level-slider default
+- **Berserker's (Damage Unarmored)** — wielder's-own-DR curve rename from `enemyDamageResist`, manual knob
+- **Creature stat curves & NPC extraction (Phase 2 data)** — effectiveLevel X-axis, RACE/NPC_ Properties merge, flat-wins, SBQ HP OPEN, epic-creature eligibility
 - **Body parts (BPTD-extracted)**
 - **CAMP resource generators & consumable chains**
 - **OMOD eligibility & recipe chains**
@@ -1015,11 +1016,110 @@ effects gate on `GetValue(Rads) ≥ N`.
   Icemen's is a REAL balance change: pre-patch was +20% cryo-scoped damage;
   now +50% vs frozen targets.
 
-## Resist mitigation (dormant scaffolding)
-- `DamageResistMult = clamp((dmg × 0.15 / resist)^0.365, 0.01, 0.99)` —
-  clamps to [1%, 99%] of paper damage (**user-confirmed**), so paper damage
-  is never fully realized nor fully negated. Dormant — paper damage v1 has
-  no enemy mitigation.
+## Resist mitigation
+Engine: `src/lib/engine/mitigation.ts` (`applyMitigation`), `src/lib/enemy-defenses.ts`
+(`getEnemyDefenses`, `resolveTargetLevel`), `scenarios.ts` (bootstrap fold →
+`armorPenTotal`/`armorPenFlatTotal`, `effectiveAgainstEnemy`). Shipped Phase 2
+— Enemy defenses (2026-07-18); supersedes the removed dormant
+`src/lib/damage-formulas.ts` scaffolding.
+
+- **Formula**: `Resist = max(0, base − flatDebuff) × (1 − clamp01(armorPenTotal))`;
+  `mult = clamp((damage × 0.15 / Resist)^0.365, 0.01, 0.99)`; `Resist ≤ 0` →
+  `mult = 1` (full penetration, not the 0.99 clamp ceiling — a deliberate
+  upgrade over the old dormant scaffold, which returned 0.99 for that case).
+  **USER-CONFIRMED** formula + clamps.
+- **Per-damage-type mapping**: `ballistic`/`explosive` → `physical`;
+  `energy`/`radiation`/`poison`/`cryo`/`fire` map 1:1 to their own NPC resist
+  AV. Total map (every `DamageType` has an entry) — explosive is
+  conventionally physical elsewhere in this codebase and NPCs carry no
+  separate explosive-resist AV. **ASSUMPTION** (project convention, not a
+  distinct ESM-provable claim).
+- **Pipeline position — Option A** (plan-decided): mitigation applies ONCE to
+  each scenario's already-blended `HitBreakdown` (crit-weighted,
+  body-part-blended; for charged weapons, the charge-cycle-blended hit that
+  actually feeds `sustainedDps`), not per raw hit before blending.
+  **MEASURED (synthetic, `mitigation.test.ts` "Option A divergence")**: since
+  `damage × mult(damage)` is convex in `damage` (mult's exponent 0.365 < 1
+  makes the retained-damage function's effective exponent 1.365 > 1),
+  Jensen's inequality means Option A always slightly UNDER-states retained
+  damage vs. true per-hit-then-blend. Magnitude is a pure function of crit
+  rate and the crit multiplier (resist/armorPen/flat-debuff terms cancel out
+  of the ratio algebraically) — at a 2× crit mult and 15–45% steady-state
+  VATS crit rates, divergence is **−2.1% to −2.9%**: small, so Option A ships
+  as specified rather than upgrading to per-hit (the plan's own bar).
+- **`armorPen`** (fraction, e.g. 0.50 = 50% penetration): Incisor/
+  Stabilized/Tank Killer/Anti-Armor legendary families, 76 extracted
+  modifiers, all unconditioned flat ADDs. Folded ONCE per scenario input
+  (`scenarios.ts` bootstrap spot, `onslaughtMaxStacks` precedent) into
+  `armorPenTotal`.
+- **`armorPenFlat`** (resist points, NOT a fraction — distinct bucket/units
+  from `armorPen`): today's only source is Taking One for the Team's flat DR
+  debuff. **ESM-PROVEN** (esm-walk 2026-07-14, `dps-todos/phase-3-enemies.md`
+  §3.3): the hidden companion perk
+  `LGN_TakingOneForTheTeam_DamageIncrease_Perk` bundles a Peak Value Modifier
+  DamageResist debuff (Detrimental, 10s, no Energy Resist component) onto the
+  target — MGEF `..._DamageIncrease_Effect01-04` (formIds 0x005A5DEF,
+  0x005B01AB, 0x005B01AC, 0x005B01AD), magnitudes **6 / 10 / 15 / 50** at
+  ranks 1–4. The rank-4 jump (15→50, not the ~20 an even progression
+  predicts) is flagged as a **possible ESM data-entry anomaly**, modeled
+  as-is (not "corrected"). Emitted via `PlayerConditions.takingOneForTheTeamDrRank`
+  (`src/data/target-debuffs.ts`, unconditional — any player's card can have
+  applied it), a SEPARATE field/mechanism from `takingOneForTheTeamPct`
+  (`manual-uptime.ts`'s wholeDamage %-multiplier, a different ESM effect
+  bundled on the same perk).
+  - **Physical-only mechanism** (the ESM's own scope — no Energy Resist
+    component): rather than a per-modifier `damageTypeScope` condition (the
+    bootstrap fold context has no `componentType` to gate against — it would
+    just always fail there), the restriction is enforced CONSUMER-side in
+    `mitigation.ts`: `flatResistDebuffPhysical` is only subtracted from a
+    component whose resolved resist type is `'physical'`. Documented as a
+    deliberate mechanism choice, not an oversight.
+- **DoT is NOT mitigated in v1** — `ScenarioResult.dotDps` stays a separate,
+  unmitigated steady-state add; no resist model wired for DoT ticks. Deferred
+  (matches the plan).
+- **Level-slider default = max** (`TargetSection.tsx`, `resolveTargetLevel`):
+  an unset `EnemyConditions.targetLevel` resolves to the race's
+  `levelMaxGlobal` — **ASSUMPTION** ("endgame" use case: sizing a build
+  against the toughest version of a target a player will actually meet).
+  Fallback bounds 1–100 when a race has no Renorm window at all — also
+  **ASSUMPTION**, no ESM signal pins this specific pair.
+- Golden placeholder: `golden/cases.json` "Combat Rifle (Fixer) @50 ... vs
+  Scorchbeast Queen (Lv 100)" (`measure: 'effectiveSustainedDps'`, `expected:
+  null`) — pending an in-game DPS/TTK reading to cross-check the formula
+  end-to-end, not just the extracted resist curve.
+
+## Berserker's (Damage Unarmored)
+Engine: `resolve.ts` (`playerDamageResist` `CurveInput` reader), `src/types/modifiers.ts`
+(`CurveInput` doc comment). Renamed from `enemyDamageResist` 2026-07-18
+(coordinator correction, Phase 2 session) — the AV (`DamageResist`,
+0x000002E3) was always the WIELDER's own value, never the enemy's, despite
+the misleading original name.
+
+- **USER-CONFIRMED**: Berserker's (`mod_Legendary_Weapon1_DamageUnarmored`,
+  curve points (0,50)→(20,30)→(40,17)→(60,5), scale 0.01) is FO76's real
+  "deals more damage the LESS armored you are" effect — a self-buff curve
+  keyed on the caster's own DR, not a target-facing one. Confirmed by a
+  SECOND independent perk reading the same AV with the SAME "your own DR"
+  semantics: Iron Fist's description is literally "Your Fists deal more
+  damage based on your DR" (curve (0,0)→(1000,100), scale 0.01 — the opposite
+  slope from Berserker's, but the same AV/axis).
+- Pre-rename, `resolve.ts` hardcoded this reader to always return 0
+  (`enemyDamageResist: () => 0`) — meaning Berserker's/Iron Fist ALREADY
+  evaluated their curves at a fixed x=0 unconditionally whenever equipped
+  (not gated on anything real), just badged `'inert'` in the picker via a
+  `modifierHasEngineEffect` carve-out. The rename replaces that hardcode with
+  a real manual knob, `PlayerConditions.playerDamageResist` (default **0 =
+  naked**, matching the old hardcoded behavior exactly — no default-driven
+  regression for existing builds).
+- **No armor-mitigation model exists** to derive this automatically from
+  equipped gear (Phase 3 — Armor pipeline is scoped "slim" and won't add
+  one either), so it stays a manual numeric input
+  (`ConditionsSection.tsx` "Your damage resist").
+- Extractor mapping: `scripts/extract/normalize/mgef.ts` `CURVE_INPUT_AVS['0x000002E3']`
+  renamed `'enemyDamageResist'` → `'playerDamageResist'`; re-ran
+  `pnpm extract --only perks,omods` (the only two generated files embedding
+  the string) — diff was exactly the two renamed string literals (Iron Fist,
+  Berserker's), no other value shifted.
 
 ## Creature stat curves & NPC extraction (Phase 2 data)
 Engine: `scripts/extract/extract-curvetables.ts`, `scripts/extract/extract-npcs.ts`,
@@ -1083,6 +1183,29 @@ Engine: `scripts/extract/extract-curvetables.ts`, `scripts/extract/extract-npcs.
   mechanic, structurally separate), a misremembered figure, or a
   post-mitigation "effective HP" being recalled instead of base HP. Needs
   in-game measurement — see `dps-todos/measurement-backlog.md`.
+  - **Epic-creature HP multiplier investigated (2026-07-18, coordinator
+    follow-up) — does NOT explain the gap.** `QUST SQ_EpicCreatures`
+    (0x0001C339) VMAD property `EpicRankData` gives the real per-rank
+    multiplier table — **ESM-PROVEN** (esm-walk, `esm -p get
+    SQ_EpicCreatures --json`): `HealthMult` **2.0 / 2.4 / 3.2 / 4.0 / 4.8**
+    at ranks 1–5 (`outgoingDamageMult` 1.1/1.15/1.2/1.25/1.3 also present but
+    OUT OF SCOPE — this app doesn't model incoming/enemy damage). Even at
+    max rank 5, 4.8× is far short of the observed ~10× gap. Eligibility
+    (`GeneratedNpc.epicAllowed`, `scripts/extract/extract-npcs.ts`) checks
+    both the NPC_'s own Keywords and its RACE's Keywords against FLST
+    `EpicCreatureDisallowedKeywords` (0x004FC5B7, 4 members) — **ESM-PROVEN**
+    both SBQ (`EncScorchbeastQueen01Template`) and Earle
+    (`EN06_LvlWendigoColossus_Nuked`, id `WendigoColossusRace`) are
+    `epicAllowed: true` (not structurally excluded); the 4 curated targets
+    that ARE excluded are all Ultracite Terror raid-boss components
+    (`RD01_Enc04_{Grenadier,Assassin,Brute}`, `RD01_Enc06_ScorchtongueHead`).
+    `epicAllowed: true` is NOT a claim that SBQ/Earle actually spawn epic in
+    a given encounter — that's a runtime chance roll (region/level-gated
+    Papyrus script) with no static ESM signal, and the app applies no epic
+    multiplier by default (`getEnemyDefenses`'s `epicRank` parameter is
+    unused by any current caller — see `src/data/overrides/epic-creature.ts`).
+    Net: epic-creature scaling is a real, now-extracted mechanism, but it is
+    RULED OUT as the explanation for the SBQ HP discrepancy specifically.
 
 ## Body parts (BPTD-extracted)
 Engine: `scripts/extract/extract-bodyparts.ts`.

@@ -172,6 +172,29 @@ export interface PlayerConditions {
    * and unconditional fold as followThroughPct. See docs/assumptions.md.
    */
   takingOneForTheTeamPct?: number;
+  /**
+   * Taking One for the Team's hidden companion perk also debuffs the
+   * ATTACKER's target with a FLAT DamageResist reduction (Detrimental, 10s,
+   * no Energy Resist component) alongside the damage-taken % above — a
+   * separate ESM effect with separate units (resist points, not a
+   * percentage), esm-walk-confirmed 2026-07-14 (MGEF
+   * `..._DamageIncrease_Effect01-04`, formIds 0x005A5DEF/0x005B01AB-AD).
+   * Rank 0 = off; ranks 1-4 → magnitudes 6/10/15/50 (the rank-4 jump is
+   * flagged as a possible ESM data-entry anomaly, not confirmed intentional
+   * — docs/assumptions.md "Resist mitigation"). Folds into the `armorPenFlat`
+   * bucket via `src/data/target-debuffs.ts` (same unconditional-emission
+   * pattern as `tenderizerStacks`/`followThroughPct` — any player's card can
+   * have applied it, not just this build's).
+   */
+  takingOneForTheTeamDrRank?: 0 | 1 | 2 | 3 | 4;
+  /**
+   * Manual knob (default 0 = naked) for curve inputs keyed on the WIELDER's
+   * own DamageResist AV (0x000002E3) — today only Berserker's
+   * (`playerDamageResist` CurveInput, `resolve.ts`). No armor-mitigation
+   * model exists to derive this from equipped gear, so it's user-supplied;
+   * see docs/assumptions.md "Berserker's (Damage Unarmored)".
+   */
+  playerDamageResist?: number;
 
   // SPECIAL stats
   strength: number; // 1-15 (can exceed with legendary perks)
@@ -231,6 +254,17 @@ export interface EnemyConditions {
   targetRace?: string | null;
   /** Selected body part name on targetRace; null = custom multiplier. */
   targetBodyPart?: string | null;
+  /**
+   * Selected target's level (Phase 2 — Enemy defenses), driving its HP/DR/ER
+   * via the creature curve tables (`src/lib/enemy-defenses.ts`). `null` =
+   * not explicitly set — resolves to the race's `levelMaxGlobal` (endgame
+   * assumption, docs/assumptions.md) at read time
+   * (`resolveTargetLevel`), so this field only needs a stored value once the
+   * user drags the slider off its default. Bounds come from the selected
+   * race's `levelMinGlobal`/`levelMaxGlobal` (npcs accessor); 1-100 when
+   * absent. Inert without a `targetRace` selected (mirrors `targetBodyPart`).
+   */
+  targetLevel?: number | null;
 }
 
 // Game mode types
@@ -612,6 +646,8 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     bodyPartHitRatePct: 100, // aimed shots always land on the targeted body part
     followThroughPct: 0, // no damage multiplier assumed by default
     takingOneForTheTeamPct: 0, // no damage multiplier assumed by default
+    takingOneForTheTeamDrRank: 0, // no flat DR debuff assumed by default
+    playerDamageResist: 0, // naked (Berserker's curve max-bonus end) — matches this input's prior always-0 hardcoded behavior
     strength: 15,
     perception: 15,
     endurance: 15,
@@ -642,6 +678,7 @@ export function createDefaultEnemyConditions(): EnemyConditions {
     targetDistance: DEFAULT_DISTANCE_UNITS,
     targetRace: null,
     targetBodyPart: null,
+    targetLevel: null,
   };
 }
 

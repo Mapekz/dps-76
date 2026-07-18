@@ -28,7 +28,7 @@ describe('perk registry ↔ generated family join', () => {
   it('Tenderizer is target-side: no player modifier from the card, 0.001/stack from target-debuffs', () => {
     // Equipping the card contributes nothing — the debuff lives on the target.
     expect(getLoadoutModifiers('live', [{ perkId: PerkId.Tenderizer, rank: 1 }])).toHaveLength(0);
-    const mods = getTargetDebuffModifiers();
+    const mods = getTargetDebuffModifiers({});
     expect(mods).toHaveLength(1);
     expect(mods[0]).toMatchObject({ bucket: 'dbm', op: 'ADD', value: 0.001 });
     expect(mods[0].conditions[0]).toMatchObject({ kind: 'stacks', counter: 'tenderizer', max: 1000 });
@@ -124,7 +124,7 @@ describe('perk effects through the engine (real data)', () => {
 
   it('Tenderizer stacks scale dbm through player conditions (no card equipped)', () => {
     const weapon = getWeapons('live')['CombatRifle_Fixer'];
-    const mods = getTargetDebuffModifiers();
+    const mods = getTargetDebuffModifiers({});
     const stacked = computeScenarios({
       ...base,
       weapon,
@@ -146,8 +146,13 @@ describe('perkHasEngineEffect (drives the perk picker\'s "no effect yet" badge)'
     expect(perkHasEngineEffect('live', PerkId.Picklock)).toBe(false);
   });
 
-  it('is false for a perk whose damage bucket the engine has no fold for yet (Iron Fist, DR-scaled)', () => {
-    expect(perkHasEngineEffect('live', PerkId.IronFist)).toBe(false);
+  it('is true for Iron Fist (DR-scaled dbm curve, wired to the playerDamageResist manual knob — Phase 2)', () => {
+    // "Your Fists deal more damage based on your DR" reads the WIELDER's own
+    // DamageResist AV (0x000002E3, same AV Berserker's reads) — was
+    // `enemyDamageResist` (hardcoded to always evaluate at 0) pre-rename;
+    // now a real, badge-clearing curve input (docs/assumptions.md
+    // "Berserker's (Damage Unarmored)").
+    expect(perkHasEngineEffect('live', PerkId.IronFist)).toBe(true);
   });
 
   // Quick Hands / Wild West Hands were the subject of concurrent work

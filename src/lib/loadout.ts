@@ -12,6 +12,8 @@ import { getPublicTeamModifiers } from '@/data/public-teams';
 import { buildEffectiveWeapon, SUSTAIN_CHANCE_BUCKETS, WEAPON_STAT_BUCKETS } from '@/lib/engine/effective-weapon';
 import { legendaryBonusOf } from '@/data/perk-budget';
 import { resolveTargetBodyPart, getEnemyTypeIds } from '@/data/bodyparts';
+import { getNpc } from '@/data/npcs';
+import { getEnemyDefenses, resolveTargetLevel } from '@/lib/enemy-defenses';
 import {
   deriveAddictionCount,
   deriveClassFreakRank,
@@ -100,9 +102,10 @@ function assemble(
   // Hidden survival-ability baselines (hydration AP regen) — gated by the
   // hydrated/playerIsGhoul conditions at resolve time, so pushed unconditionally.
   loadoutModifiers.push(...getPlayerBaselineModifiers());
-  // Target-side debuffs (Tenderizer stacks) — driven by the Target panel's
-  // stack inputs, not the player's own cards, so pushed unconditionally too.
-  loadoutModifiers.push(...getTargetDebuffModifiers());
+  // Target-side debuffs (Tenderizer stacks, Taking One for the Team's flat DR
+  // debuff) — driven by the Target panel's inputs, not the player's own
+  // cards, so pushed unconditionally too.
+  loadoutModifiers.push(...getTargetDebuffModifiers(conditions));
 
   // Apply equipped OMODs (standard slots + legendary effects) to the weapon.
   let weapon: Weapon | undefined;
@@ -237,8 +240,17 @@ export function resolveLoadout(
   // and the location axis falls back to the engine's legacy mult-derived
   // category (resolveTargetBodyPart — single source of truth, also used by
   // the aim-point UI readouts).
-  const { targetRace, targetBodyPart } = enemyConfig.conditions;
+  const { targetRace, targetBodyPart, targetLevel } = enemyConfig.conditions;
   const resolvedTarget = resolveTargetBodyPart(mode, targetRace, targetBodyPart, playerConfig.weakpointMult);
+
+  // Enemy defenses (Phase 2 — Enemy defenses): resolves the same npc row the
+  // body-part picker already joins via `targetRace`, at the stored (or
+  // default-to-max) level. `getEnemyDefenses` returns null without a race
+  // selected or a race with no npc data, which threads through as `undefined`
+  // on ScenarioInput — scenarios.ts's `effective` field just stays absent.
+  const targetNpc = targetRace ? getNpc(mode, targetRace) : undefined;
+  const resolvedLevel = resolveTargetLevel(targetNpc, targetLevel);
+  const enemyDefenses = getEnemyDefenses(mode, targetRace, resolvedLevel) ?? undefined;
 
   return {
     mode,
@@ -253,5 +265,6 @@ export function resolveLoadout(
     // critRate omitted → computed from the crit meter (LCK, Crit Savvy,
     // Limit Breaking, weapon crit charge bonus).
     chargeTimeSec: playerConfig.chargeTimeSec,
+    enemyDefenses,
   };
 }

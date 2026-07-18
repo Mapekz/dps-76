@@ -4,6 +4,8 @@ import { useGameMode } from '@/hooks/useGameMode';
 import { getWeapons } from '@/data';
 import { effectiveWeaponName } from '@/data/omods';
 import { getBodyPartRace } from '@/data/bodyparts';
+import { getNpc } from '@/data/npcs';
+import { resolveTargetLevel } from '@/lib/enemy-defenses';
 import { cn } from '@/lib/utils';
 import { formatDamage } from '@/lib/format';
 import { DeltaFlash } from './DeltaFlash';
@@ -31,6 +33,11 @@ export function HeadlineStrip({ variant = 'full' }: HeadlineStripProps) {
   const raceName = enemy.conditions.targetRace
     ? getBodyPartRace(mode, enemy.conditions.targetRace)?.name
     : undefined;
+  // Level context for ScenarioCard's "vs {race} (Lv N)" block — same
+  // resolution (stored value or race-max default) TargetSection's slider and
+  // resolveLoadout use, so the number shown always matches what fed the engine.
+  const targetNpc = enemy.conditions.targetRace ? getNpc(mode, enemy.conditions.targetRace) : undefined;
+  const targetLevel = resolveTargetLevel(targetNpc, enemy.conditions.targetLevel);
 
   if (variant === 'condensed') {
     if (!scenarios) return <p className="text-muted-foreground text-sm">Pick a weapon to see DPS.</p>;
@@ -81,6 +88,8 @@ export function HeadlineStrip({ variant = 'full' }: HeadlineStripProps) {
             label={LABELS[key]}
             result={scenarios[key]}
             emphasized={emphasized === key}
+            targetName={raceName}
+            targetLevel={targetLevel}
           />
         ))}
       </div>

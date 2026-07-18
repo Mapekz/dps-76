@@ -48,7 +48,6 @@ function chargeQuarterMarks(fullPowerSeconds: number, minimumChargeTime: number)
 const BADGE_LABELS: Record<OmodBadge, string> = {
   inert: 'no effect yet',
   pendingMechanic: 'pending rework',
-  needsEnemyDefenses: 'needs enemy DR',
 };
 
 function OmodBadgeTag({ slot, omodId }: { slot: OmodSlot; omodId: string }) {

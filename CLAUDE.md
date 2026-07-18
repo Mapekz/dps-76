@@ -69,9 +69,9 @@ The engine lives in `src/lib/engine/`:
 - `crit-meter.ts` - steady-state VATS crit cadence from LCK/Crit Savvy/Limit Breaking
 - `scenarios.ts` - one config → Manual Aim / VATS / VATS+Sneak results
 - `effective-weapon.ts` - applies equipped OMODs (keywords, speed, auto state) before the engine runs
+- `mitigation.ts` - enemy DR/ER mitigation (Phase 2 — Enemy defenses), applied once per scenario to the blended `HitBreakdown` (Option A)
 
-`src/lib/damage-formulas.ts` retains only the dormant enemy DR/ER scaffolding
-(paper damage v1 has no enemy mitigation). `docs/assumptions.md` is a terse
+`docs/assumptions.md` is a terse
 registry of every value the engine asserts that isn't proven by ESM data —
 one claim per bullet with a status tag and a code pointer. Keep entries terse:
 investigation narrative belongs in the commit message, in-game measurement

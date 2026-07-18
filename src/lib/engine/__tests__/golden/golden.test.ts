@@ -40,7 +40,21 @@ interface GoldenCase {
   chargeTimeSec?: number;
   enemyConditions: Partial<EnemyConditions>;
   scenario: 'freeAim' | 'vats';
-  measure: 'perHit' | 'burstDps' | 'sustainedDps' | 'fireRate' | 'apRegenPerSec' | 'reloadSec' | 'apUptime';
+  measure:
+    | 'perHit'
+    | 'burstDps'
+    | 'sustainedDps'
+    | 'fireRate'
+    | 'apRegenPerSec'
+    | 'reloadSec'
+    | 'apUptime'
+    // Phase 2 — Enemy defenses: `ScenarioResult.effective.*`, present only
+    // when `enemyConditions.targetRace` (+ optional `targetLevel`) resolves
+    // to real npc stats.
+    | 'effectivePerHit'
+    | 'effectiveSustainedDps'
+    | 'effectiveRetainedPct'
+    | 'effectiveTtk';
   expected: number | null;
   tolerancePct: number;
   source: string;
@@ -91,7 +105,15 @@ describe('golden cases (in-game measurements)', () => {
                   ? scenario.sustain.reloadSec
                   : c.measure === 'apUptime'
                     ? (expect(scenario.ap, 'AP economy present for apUptime measure').toBeDefined(), scenario.ap!.uptime)
-                    : scenario.perHit.total;
+                    : c.measure === 'effectivePerHit'
+                      ? (expect(scenario.effective, 'target resolved for an effective* measure').toBeDefined(), scenario.effective!.perHit.total)
+                      : c.measure === 'effectiveSustainedDps'
+                        ? (expect(scenario.effective, 'target resolved for an effective* measure').toBeDefined(), scenario.effective!.sustainedDps)
+                        : c.measure === 'effectiveRetainedPct'
+                          ? (expect(scenario.effective, 'target resolved for an effective* measure').toBeDefined(), scenario.effective!.retainedPct)
+                          : c.measure === 'effectiveTtk'
+                            ? (expect(scenario.effective, 'target resolved for an effective* measure').toBeDefined(), scenario.effective!.ttk)
+                            : scenario.perHit.total;
 
       const tolerance = (c.expected! * c.tolerancePct) / 100;
       expect(Math.abs(actual - c.expected!)).toBeLessThanOrEqual(tolerance);

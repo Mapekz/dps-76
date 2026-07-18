@@ -49,7 +49,17 @@ Open item carried to the measurement backlog: Scorchbeast Queen's ESM-derived
 HP is ~10× a commonly cited community figure — see
 `dps-todos/measurement-backlog.md`.
 
-## 3.2 Extractor + curated overlay
+## 3.2 Extractor + curated overlay — SUPERSEDED + SHIPPED 2026-07-18
+Scoping changed from this section's original ~15-20 curated
+`notable-enemies.ts` overlay to the newer plan's "every race already in the
+target picker" decision (`~/.claude/plans/go-through-every-single-silly-whistle.md`
+"Phase 2 — Enemy defenses"): `scripts/extract/extract-npcs.ts` → all 83
+`CURATED_TARGETS` rows (shared with `bodyparts.ts`), `src/data/npcs.ts`
+accessor, threaded through `dataset.ts`. `src/data/overrides/npc-overrides.ts`
+is the REPLACES-not-patches override layer (not the `notable-enemies.ts` this
+section originally proposed). Epic-creature eligibility
+(`GeneratedNpc.epicAllowed`) added the same session as a coordinator
+follow-up — see docs/assumptions.md "Creature stat curves & NPC extraction".
 - `scripts/extract/extract-npcs.ts` + registration in `run-all.ts` + checked-in
   fixtures (`scripts/extract/__tests__/fixtures/`) → `generated/npcs.json`.
 - Curated `src/data/overrides/notable-enemies.ts` (~15–20 entries, source
@@ -58,8 +68,24 @@ HP is ~10× a commonly cited community figure — see
 - Review `_meta.json` unresolved report after the run.
 - Ask the user which enemies matter to them before finalizing the curated list.
 
-## 3.3 Engine: mitigation
-- New `src/lib/engine/mitigation.ts` applying the dormant
+## 3.3 Engine: mitigation — DONE 2026-07-18
+Shipped as `src/lib/engine/mitigation.ts` (`applyMitigation`) + `src/lib/enemy-defenses.ts`
+(`getEnemyDefenses`); `armorPen`/new `armorPenFlat` buckets (regime
+`mitigation`, `hasEngineEffect: true`); `armorPen` badge clears in the OMOD
+picker (`classifyOmodDisplay`'s dead `needsEnemyDefenses`/`enemyFacing`
+branch removed, `OmodBadge` type variant retired). Taking One for the Team's
+flat DR debuff shipped exactly as scoped below. `enemyDamageResist` was
+renamed `playerDamageResist` mid-session (coordinator correction — Berserker's/
+Iron Fist read the WIELDER's own DR, not the enemy's; see
+docs/assumptions.md "Berserker's (Damage Unarmored)") — the enemy's resists
+are consumed ONLY by mitigation.ts, never by a curve input. Details + measured
+Option-A divergence: docs/assumptions.md "Resist mitigation". Original scoping
+notes below kept for the record (Bully's-style `Resist = BaseResistance ×
+(1 − ArmorPenTotal)` single-line formula was extended per the shipped spec to
+add the flat-debuff term, and `enemyType` activation referenced below was
+already live before this phase, as the note says).
+
+- Old: New `src/lib/engine/mitigation.ts` applying the dormant
   `calculateDamageResistMult` (`src/lib/damage-formulas.ts`) **per damage
   component** (physical vs energy vs elemental use the matching resist):
   `DamageResistMult = (IncomingDamage × 0.15 / Resist)^0.365`,

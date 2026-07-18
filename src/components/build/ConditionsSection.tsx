@@ -170,6 +170,7 @@ export function ConditionsSection() {
     (bulletStormStored !== -1 && !bulletStormAverageMode ? 1 : 0) +
     ((conditions.targetsHit ?? 1) !== (defaults.targetsHit ?? 1) ? 1 : 0) +
     ((conditions.weaponConditionPct ?? 100) !== (defaults.weaponConditionPct ?? 100) ? 1 : 0) +
+    ((conditions.playerDamageResist ?? 0) !== (defaults.playerDamageResist ?? 0) ? 1 : 0) +
     ((conditions.hitRatePct ?? 100) !== (defaults.hitRatePct ?? 100) ? 1 : 0) +
     ((conditions.bodyPartHitRatePct ?? 100) !== (defaults.bodyPartHitRatePct ?? 100) ? 1 : 0) +
     (conditions.isPowerAttacking !== defaults.isPowerAttacking ? 1 : 0) +
@@ -393,6 +394,22 @@ export function ConditionsSection() {
             step={10}
             onChange={v => set('weaponConditionPct', v)}
           />
+
+          <div className="space-y-1.5">
+            <NumberField
+              id="char-player-dr"
+              label="Your damage resist"
+              value={conditions.playerDamageResist ?? 0}
+              min={0}
+              max={2000}
+              step={10}
+              onChange={v => set('playerDamageResist', v)}
+            />
+            <p className="text-muted-foreground text-xs">
+              No armor model exists yet — this is a manual stand-in for Berserker's-style effects that scale off
+              your OWN damage resist (0 = naked, the curve's max-bonus end).
+            </p>
+          </div>
 
           <div className="space-y-1.5">
             <SliderField

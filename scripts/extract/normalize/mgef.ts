@@ -386,7 +386,10 @@ const CURVE_INPUT_AVS: Record<string, CurveInput> = {
   '0x00000399': 'killStreak', // Adrenal Reaction
   '0x001EB998': 'addictionCount', // Junkie's
   '0x000002D4': 'healthCurrent', // Health (absolute) — Juggernaut's (x 0→1000, y 0→100)
-  '0x000002E3': 'enemyDamageResist', // DamageResist — DamageUnarmored (inert until enemy defenses)
+  // DamageResist — Berserker's ("DamageUnarmored"): the WIELDER's own DR, not
+  // the enemy's (renamed from `enemyDamageResist` 2026-07-18, user-confirmed —
+  // see the CurveInput doc comment in src/types/modifiers.ts).
+  '0x000002E3': 'playerDamageResist',
   '0x006C2DBA': 'mutationCount', // MutationCount — Mutant's
   '0x006D37DC': 'hungerThirstTier', // HungerThirstTier — Gourmand's
   '0x007A767A': 'feralTier', // GHL_FeralTier — Lucid / ghoul effects

@@ -19,6 +19,8 @@ import {
   resolveTargetBodyPart,
 } from '@/data/bodyparts';
 import { TENDERIZER_MAX_STACKS } from '@/data/target-debuffs';
+import { getNpc } from '@/data/npcs';
+import { getEnemyDefenses, resolveTargetLevel, resolveTargetLevelBounds } from '@/lib/enemy-defenses';
 import {
   CLOSE_THRESHOLD_UNITS,
   DEFAULT_DISTANCE_UNITS,
@@ -76,6 +78,20 @@ const GROUP_COUNT_OPTIONS = [1, 2, 3, 4, 5].map(value => ({
 
 /** Follow Through / TOftT damage-multiplier tiers — the per-rank 10/20/30/40% magnitudes plus off. */
 const DAMAGE_MULT_PCT_OPTIONS = [0, 10, 20, 30, 40].map(value => ({ value, label: `${value}%` }));
+
+/**
+ * Taking One for the Team's flat DR-debuff ranks (esm-walk-confirmed
+ * magnitudes 6/10/15/50 — src/data/target-debuffs.ts). Separate control from
+ * the damage-taken-% ToggleGroup above: two different ESM effects bundled on
+ * the same hidden companion perk.
+ */
+const TAKING_ONE_FOR_THE_TEAM_DR_RANK_OPTIONS = [
+  { value: 0, label: 'Off' },
+  { value: 1, label: 'R1 (−6)' },
+  { value: 2, label: 'R2 (−10)' },
+  { value: 3, label: 'R3 (−15)' },
+  { value: 4, label: 'R4 (−50)' },
+];
 
 const TARGET_CATEGORY_LABELS: Record<BodyPartRaceCategory, string> = {
   raid: 'Raid Enemies',
@@ -184,13 +200,25 @@ export function TargetSection() {
   const isCloseRange = targetDistanceUnits <= CLOSE_THRESHOLD_UNITS;
   const isFarRange = targetDistanceUnits >= FAR_THRESHOLD_UNITS;
 
+  // Target level (Phase 2 — Enemy defenses): bounds from the race's Renorm
+  // window, default = max (endgame assumption — docs/assumptions.md); HP/DR/ER
+  // summary reads the same accessor `resolveLoadout` uses, so the number
+  // shown here always matches what the engine actually computes.
+  const targetNpc = conditions.targetRace ? getNpc(mode, conditions.targetRace) : undefined;
+  const levelBounds = resolveTargetLevelBounds(targetNpc);
+  const targetLevel = resolveTargetLevel(targetNpc, conditions.targetLevel);
+  const targetDefenses = selectedRace ? getEnemyDefenses(mode, conditions.targetRace, targetLevel) : null;
+
   const tenderizer = player.conditions.tenderizerStacks;
   const playerDefaults = createDefaultPlayerConditions();
   const followThroughPct = player.conditions.followThroughPct ?? 0;
   const takingOneForTheTeamPct = player.conditions.takingOneForTheTeamPct ?? 0;
+  const takingOneForTheTeamDrRank = player.conditions.takingOneForTheTeamDrRank ?? 0;
 
-  const setPlayerCondition = (key: 'followThroughPct' | 'takingOneForTheTeamPct', value: number) =>
-    dispatch({ type: 'condition/set', key, value });
+  const setPlayerCondition = (
+    key: 'followThroughPct' | 'takingOneForTheTeamPct' | 'takingOneForTheTeamDrRank',
+    value: number
+  ) => dispatch({ type: 'condition/set', key, value });
 
   const activeCount =
     (conditions.targetRace ? 1 : 0) +
@@ -199,9 +227,11 @@ export function TargetSection() {
     (conditions.crippledLimbCount !== defaults.crippledLimbCount ? 1 : 0) +
     ((conditions.groupTargetCount ?? 1) !== (defaults.groupTargetCount ?? 1) ? 1 : 0) +
     ((conditions.targetDistance ?? DEFAULT_DISTANCE_UNITS) !== (defaults.targetDistance ?? DEFAULT_DISTANCE_UNITS) ? 1 : 0) +
+    (conditions.targetLevel != null ? 1 : 0) +
     (tenderizer !== 0 ? 1 : 0) +
     (followThroughPct !== (playerDefaults.followThroughPct ?? 0) ? 1 : 0) +
     (takingOneForTheTeamPct !== (playerDefaults.takingOneForTheTeamPct ?? 0) ? 1 : 0) +
+    (takingOneForTheTeamDrRank !== (playerDefaults.takingOneForTheTeamDrRank ?? 0) ? 1 : 0) +
     STATUS_TOGGLES.filter(s => (conditions[s.key] as boolean | undefined) ?? false).length;
 
   return (
@@ -262,6 +292,35 @@ export function TargetSection() {
             standard humanoid headshot (Super Mutants take 1.25); below 1.0 models armored parts like the Mirelurk
             shell.
           </p>
+
+          {selectedRace && (
+            <div className="space-y-1.5">
+              <Label htmlFor="target-level">Target level: {targetLevel}</Label>
+              <Slider
+                id="target-level"
+                min={levelBounds.min}
+                max={levelBounds.max}
+                step={1}
+                value={[targetLevel]}
+                onValueChange={v => setEnemy('targetLevel', firstSliderValue(v))}
+                marks={[
+                  { value: levelBounds.min, label: String(levelBounds.min) },
+                  { value: levelBounds.max, label: String(levelBounds.max) },
+                ]}
+              />
+              {targetDefenses && (
+                <p className="text-muted-foreground font-mono text-xs tabular-nums">
+                  HP {Math.round(targetDefenses.hp).toLocaleString()} · DR{' '}
+                  {Math.round(targetDefenses.resists.physical ?? 0).toLocaleString()} · ER{' '}
+                  {Math.round(targetDefenses.resists.energy ?? 0).toLocaleString()}
+                </p>
+              )}
+              <p className="text-muted-foreground text-xs">
+                Defaults to the race's max level (endgame assumption) — HP and resists scale with level via the
+                creature curve tables.
+              </p>
+            </div>
+          )}
 
           <div className="space-y-1.5">
             <Label>Target status effects</Label>
@@ -389,6 +448,21 @@ export function TargetSection() {
             <p className="text-muted-foreground text-xs">
               Manual estimate of the teamed-attacker damage-taken debuff's active multiplier. Applied by any
               player's Taking One for the Team — you don't need the card equipped.
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label>Taking One for the Team flat DR debuff</Label>
+            <ToggleGroup
+              aria-label="Taking One for the Team flat DR debuff"
+              options={TAKING_ONE_FOR_THE_TEAM_DR_RANK_OPTIONS}
+              value={takingOneForTheTeamDrRank}
+              onValueChange={v => setPlayerCondition('takingOneForTheTeamDrRank', v)}
+            />
+            <p className="text-muted-foreground text-xs">
+              Separate ESM effect bundled on the same hidden perk: a flat Damage Resist reduction (physical only —
+              no Energy Resist component), not the %-damage-taken multiplier above. Rank 4's jump to −50 (vs. the
+              ~−20 an even progression would predict) is a possible ESM data-entry anomaly, modeled as-is.
             </p>
           </div>
         </div>

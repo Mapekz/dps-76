@@ -109,9 +109,13 @@ export function isEligible(omod: GeneratedOmod, weapon: Weapon): boolean {
  * Picker badge for effects whose data can't move numbers yet:
  * - 'inert': no engine effect (extraction gap, limb/bash targeting not modeled)
  * - 'pendingMechanic': the underlying game mechanic is a deferred rework (Onslaught)
- * - 'needsEnemyDefenses': value extracted, waiting on enemy DR/ER modeling
+ *
+ * 'needsEnemyDefenses' (value extracted, waiting on enemy DR/ER modeling)
+ * REMOVED Phase 2 — Enemy defenses shipped (mitigation.ts); armorPen mods
+ * show unbadged (or plain 'inert' if genuinely no-effect) like any other
+ * conditional modifier now.
  */
-export type OmodBadge = 'inert' | 'pendingMechanic' | 'needsEnemyDefenses';
+export type OmodBadge = 'inert' | 'pendingMechanic';
 
 export type OmodOption = GeneratedOmod & { badge?: OmodBadge };
 
@@ -144,14 +148,15 @@ export function classifyOmodDisplay(omod: GeneratedOmod, weapon?: Weapon): { sho
     // enemyType/enemyTypeAny gates are NOT inert: they resolve against the
     // Target picker's selected race (resolve.ts enemyTypeIds), so Zealot's/
     // Assassin's/Prime receivers are ordinary conditional mods — unbadged,
-    // like Instigating. Only enemy-DEFENSE inputs still wait on DR modeling.
-    // (modifierHasEngineEffect covers exactly this — shared with the perk
-    // and consumable 'no effect yet' badges, @/types/modifiers.)
+    // like Instigating. (modifierHasEngineEffect covers exactly this —
+    // shared with the perk and consumable 'no effect yet' badges,
+    // @/types/modifiers.) The `needsEnemyDefenses` badge (armorPen /
+    // enemyDamageResist waiting on enemy DR modeling) is DEAD as of Phase 2
+    // — both left INERT_ENGINE_BUCKETS (mitigation.ts, the Berserker's
+    // playerDamageResist rename) — so every remaining all-inert case is a
+    // plain 'inert' badge now (Anti-Armor-style mods show unbadged instead).
     if (omod.modifiers.every(m => !modifierHasEngineEffect(m))) {
-      const enemyFacing = omod.modifiers.every(
-        m => m.bucket === 'armorPen' || m.curve?.input === 'enemyDamageResist'
-      );
-      return { show: true, badge: enemyFacing ? 'needsEnemyDefenses' : 'inert' };
+      return { show: true, badge: 'inert' };
     }
     return { show: true };
   }

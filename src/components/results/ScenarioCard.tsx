@@ -9,6 +9,8 @@ import { CritGauge } from './CritGauge';
 const formatDotDps = (value: number) => `+${formatDamage(value)}/s`;
 const formatUptimePct = (uptime: number) => `${Math.round(uptime * 100)}% uptime`;
 const formatHitRatePct = (value: number) => `${Math.round(value)}%`;
+const formatRetainedPct = (value: number) => `${Math.round(value)}%`;
+const formatTtk = (ttkSec: number) => (Number.isFinite(ttkSec) ? `${ttkSec.toFixed(1)}s` : '∞');
 
 const EFFECTIVE_DPS_DEFINITION =
   'Reload-aware sustained DPS × your hit chance — the realistic damage you deal over time.';
@@ -16,12 +18,19 @@ const BURST_DPS_DEFINITION =
   'Theoretical ceiling: per-hit × fire rate, trigger held down continuously with no reload and every shot landing.';
 const HIT_CHANCE_DEFINITION =
   'Share of shots that land — your Free-aim/VATS hit-rate setting. A miss still costs the shot but deals no damage.';
+const MITIGATED_DPS_DEFINITION =
+  'Sustained DPS after the target\'s resists (Phase 2 mitigation): (damage × 0.15 / Resist)^0.365, applied once to the crit-weighted blended hit (Option A) — see docs/assumptions.md "Resist mitigation".';
+const RETAINED_DEFINITION = 'Share of paper damage that gets through the target\'s resists (100% = fully penetrated).';
+const TTK_DEFINITION = "Target HP ÷ mitigated sustained DPS for this scenario.";
 
 interface ScenarioCardProps {
   scenarioKey: ScenarioKey;
   label: string;
   result: ScenarioResult;
   emphasized: boolean;
+  /** Selected target's display name, for the "vs {name} (Lv N)" block below — undefined hides it even if `result.effective` is somehow set. */
+  targetName?: string;
+  targetLevel?: number;
 }
 
 /**
@@ -29,7 +38,7 @@ interface ScenarioCardProps {
  * move, and that selection becomes the suggestions metric and the lead
  * number on the condensed mobile bar.
  */
-export function ScenarioCard({ scenarioKey, label, result, emphasized }: ScenarioCardProps) {
+export function ScenarioCard({ scenarioKey, label, result, emphasized, targetName, targetLevel }: ScenarioCardProps) {
   const dispatch = useBuildDispatch();
   const hasReloadModel = result.sustain.reloadSec > 0;
 
@@ -90,6 +99,25 @@ export function ScenarioCard({ scenarioKey, label, result, emphasized }: Scenari
       {result.critMeter && (
         <div className="pt-1">
           <CritGauge critMeter={result.critMeter} />
+        </div>
+      )}
+      {result.effective && targetName && (
+        <div className="border-border/60 mt-1 space-y-1 border-t pt-1.5">
+          <p className="text-muted-foreground truncate text-[11px] uppercase tracking-wide">
+            vs {targetName} (Lv {targetLevel ?? '?'})
+          </p>
+          <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
+            <span title={MITIGATED_DPS_DEFINITION}>mitigated dps</span>
+            <DeltaFlash className="text-foreground text-sm" value={result.effective.sustainedDps} format={formatDamage} />
+          </div>
+          <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
+            <span title={RETAINED_DEFINITION}>retained</span>
+            <DeltaFlash className="text-foreground text-sm" value={result.effective.retainedPct} format={formatRetainedPct} />
+          </div>
+          <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
+            <span title={TTK_DEFINITION}>ttk</span>
+            <span className="text-foreground text-sm tabular-nums">{formatTtk(result.effective.ttk)}</span>
+          </div>
         </div>
       )}
     </button>

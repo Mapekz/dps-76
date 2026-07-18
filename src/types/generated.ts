@@ -456,6 +456,22 @@ export interface GeneratedNpc {
   levelMaxGlobal: number | null;
   /** Actor Scaling Info "Level Offset Global" GLOB, resolved to its numeric Value; null when absent (0 in every sample seen so far — Phase 2 spike). */
   levelOffsetGlobal: number | null;
+  /**
+   * True when neither the stats-bearing NPC_ record's own Keywords NOR its
+   * Race's Keywords carry any member of `EpicCreatureDisallowedKeywords`
+   * (FLST 0x004FC5B7 — "Actor having any of these will never spawn epic"),
+   * i.e. nothing in the ESM record chain blocks the runtime "Epic Levels"
+   * random-spawn upgrade (QUST `SQ_EpicCreatures` 0x0001C339) from applying
+   * to this actor. NOT a claim that a specific curated target ACTUALLY
+   * spawns epic — that's a runtime chance roll (region/level-gated Papyrus
+   * script), invisible to static record data; `epicAllowed: true` only means
+   * "not structurally excluded". See `src/data/overrides/epic-creature.ts`
+   * for the rank→multiplier table and docs/assumptions.md "Creature stat
+   * curves & NPC extraction" for the eligibility check's role in the SBQ-HP
+   * open question (spoiler: it doesn't explain the gap — max rank-5 HP mult
+   * is 4.8×, far short of the observed ~10×).
+   */
+  epicAllowed: boolean;
 }
 
 export interface ExcludedRecordDetail {

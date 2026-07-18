@@ -151,8 +151,10 @@ const PLAYER_STATE_READERS: Record<StackCounter | CurveInput, (p: PlayerConditio
   // resolveLoadout (245 + 5×END + maxHealth bucket — docs/assumptions.md
   // "Max HP"); the 300 fallback only serves synthetic engine tests.
   healthCurrent: p => (p.healthPercent / 100) * (p.maxHealth ?? 300),
-  // Enemy defenses are not modeled yet — curve evaluates at DR 0.
-  enemyDamageResist: () => 0,
+  // The WIELDER's own DR (Berserker's — see the CurveInput doc comment for
+  // the 2026-07-18 rename/correction from the misleading `enemyDamageResist`
+  // name). Manual knob, default 0 (naked).
+  playerDamageResist: p => p.playerDamageResist ?? 0,
   itemLevel: (_, ctx) => ctx.itemLevel ?? 50,
   mutationCount: p => p.mutationCount ?? 0,
   // Lifegiver's max-HP curve X — the buff-folded END stat (resolveLoadout).

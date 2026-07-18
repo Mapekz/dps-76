@@ -681,6 +681,27 @@
   "expected": null,
   "tolerancePct": 3,
   "source": "pending in-game measurement (dps-todos/measurement-backlog.md \"Composite range-falloff shape\"); Hunting Rifle minRange 2612 / maxRange 5225 / outOfRangeDamageMult 0.5, distance 6531 raw units \u2248 1.25\u00d7maxRange \u2192 X = (d\u2212minRange)/(maxRange\u2212minRange) \u2248 1.5 \u2192 curveY(1.5) = 0.75 \u2192 predicted rangeFalloffMult \u2248 0.375 (0.5\u00d70.75), i.e. perHit \u2248 stock \u00d7 0.375; pins the composite model's USER-CONFIRMED X = (d\u2212minRange)/(maxRange\u2212minRange) reading against real damage numbers"
+ },
+ {
+  "name": "Combat Rifle (Fixer) @50, no perks vs Scorchbeast Queen (Lv 100) \u2014 mitigated sustained DPS",
+  "weaponId": "CombatRifle_Fixer",
+  "itemLevel": 50,
+  "mods": {},
+  "legendaryEffects": [],
+  "perks": [],
+  "legendaryPerks": [],
+  "mutations": [],
+  "consumables": [],
+  "conditions": {},
+  "enemyConditions": {
+   "targetRace": "EncScorchbeastQueen01Template",
+   "targetLevel": 100
+  },
+  "scenario": "freeAim",
+  "measure": "effectiveSustainedDps",
+  "expected": null,
+  "tolerancePct": 15,
+  "source": "pending in-game measurement (dps-todos/measurement-backlog.md \"Phase 2 mitigation formula\") \u2014 Phase 2, Resist mitigation Option A; SBQ Lv100 physical resist from CT_Creatures_Armor_Universal_Tier33 (curve-only, unmeasured), no armorPen/flat-debuff sources equipped; cross-checks the (damage\u00d70.15/Resist)^0.365 formula end-to-end against a real Pip-Boy DPS reading, not just the extracted resist curve"
  }
  ]
 }

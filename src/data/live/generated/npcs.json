@@ -39,7 +39,8 @@
   ],
   "levelMinGlobal": 1,
   "levelMaxGlobal": 50,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "FeralGhoulRace",
@@ -81,7 +82,8 @@
   ],
   "levelMinGlobal": 1,
   "levelMaxGlobal": 50,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "ScorchedRace",
@@ -123,7 +125,8 @@
   ],
   "levelMinGlobal": 1,
   "levelMaxGlobal": 50,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "SuperMutantRace",
@@ -165,7 +168,8 @@
   ],
   "levelMinGlobal": 5,
   "levelMaxGlobal": 50,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "LvlSuperMutantBoss_DailyOps",
@@ -207,7 +211,8 @@
   ],
   "levelMinGlobal": 40,
   "levelMaxGlobal": 100,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "SupermutantBehemothRace",
@@ -249,7 +254,8 @@
   ],
   "levelMinGlobal": 30,
   "levelMaxGlobal": 60,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "MoleMinerRace",
@@ -291,7 +297,8 @@
   ],
   "levelMinGlobal": 1,
   "levelMaxGlobal": 50,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "ViciousDogRace",
@@ -333,7 +340,8 @@
   ],
   "levelMinGlobal": 1,
   "levelMaxGlobal": 50,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "WendigoRace",
@@ -375,7 +383,8 @@
   ],
   "levelMinGlobal": 10,
   "levelMaxGlobal": 50,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "WendigoColossusRace",
@@ -417,7 +426,8 @@
   ],
   "levelMinGlobal": 80,
   "levelMaxGlobal": 100,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "YaoGuaiRace",
@@ -459,7 +469,8 @@
   ],
   "levelMinGlobal": 15,
   "levelMaxGlobal": 60,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "DeathclawRace",
@@ -501,7 +512,8 @@
   ],
   "levelMinGlobal": 10,
   "levelMaxGlobal": 50,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "MirelurkRace",
@@ -543,7 +555,8 @@
   ],
   "levelMinGlobal": 5,
   "levelMaxGlobal": 50,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "MirelurkHunterRace",
@@ -585,7 +598,8 @@
   ],
   "levelMinGlobal": 10,
   "levelMaxGlobal": 50,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "MirelurkKingRace",
@@ -627,7 +641,8 @@
   ],
   "levelMinGlobal": 20,
   "levelMaxGlobal": 60,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "MirelurkQueenRace",
@@ -669,7 +684,8 @@
   ],
   "levelMinGlobal": 5,
   "levelMaxGlobal": 50,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "MothmanRace",
@@ -711,7 +727,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 60,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "ScorchBeastRace",
@@ -753,7 +770,8 @@
   ],
   "levelMinGlobal": 30,
   "levelMaxGlobal": 100,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "EncScorchbeastQueen01Template",
@@ -795,7 +813,8 @@
   ],
   "levelMinGlobal": 60,
   "levelMaxGlobal": 100,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "RadScorpionRace",
@@ -837,7 +856,8 @@
   ],
   "levelMinGlobal": 5,
   "levelMaxGlobal": 50,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "SnallyGasterRace",
@@ -879,7 +899,8 @@
   ],
   "levelMinGlobal": 5,
   "levelMaxGlobal": 50,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "GraftonMonsterRace",
@@ -921,7 +942,8 @@
   ],
   "levelMinGlobal": 20,
   "levelMaxGlobal": 60,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "SheepsquatchRace",
@@ -963,7 +985,8 @@
   ],
   "levelMinGlobal": 30,
   "levelMaxGlobal": 60,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "MegaSlothRace",
@@ -1005,7 +1028,8 @@
   ],
   "levelMinGlobal": 5,
   "levelMaxGlobal": 100,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "HoneyBeastRace",
@@ -1047,7 +1071,8 @@
   ],
   "levelMinGlobal": 5,
   "levelMaxGlobal": 50,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "DLC03_AnglerRace",
@@ -1089,7 +1114,8 @@
   ],
   "levelMinGlobal": 5,
   "levelMaxGlobal": 50,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "DLC03_FogCrawlerRace",
@@ -1131,7 +1157,8 @@
   ],
   "levelMinGlobal": 15,
   "levelMaxGlobal": 60,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "DLC03_GulperRace",
@@ -1173,7 +1200,8 @@
   ],
   "levelMinGlobal": 20,
   "levelMaxGlobal": 60,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "FlatwoodsMonsterRace",
@@ -1215,7 +1243,8 @@
   ],
   "levelMinGlobal": 20,
   "levelMaxGlobal": 60,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "BlueDevilRace",
@@ -1257,7 +1286,8 @@
   ],
   "levelMinGlobal": 50,
   "levelMaxGlobal": 100,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "OguaRace",
@@ -1299,7 +1329,8 @@
   ],
   "levelMinGlobal": 50,
   "levelMaxGlobal": 100,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "UltraciteAbominationRace",
@@ -1341,7 +1372,8 @@
   ],
   "levelMinGlobal": 80,
   "levelMaxGlobal": 100,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "AssaultronRace",
@@ -1383,7 +1415,8 @@
   ],
   "levelMinGlobal": 10,
   "levelMaxGlobal": 75,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "ProtectronRace",
@@ -1425,7 +1458,8 @@
   ],
   "levelMinGlobal": 1,
   "levelMaxGlobal": 50,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "SentryBotRace",
@@ -1467,7 +1501,8 @@
   ],
   "levelMinGlobal": 20,
   "levelMaxGlobal": 60,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "LiberatorRace",
@@ -1509,7 +1544,8 @@
   ],
   "levelMinGlobal": 1,
   "levelMaxGlobal": 50,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "StormBossRace",
@@ -1551,7 +1587,8 @@
   ],
   "levelMinGlobal": 50,
   "levelMaxGlobal": 100,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "BigfootRace",
@@ -1593,7 +1630,8 @@
   ],
   "levelMinGlobal": 75,
   "levelMaxGlobal": 150,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_E01_EncDeathclawMatriarch",
@@ -1635,7 +1673,8 @@
   ],
   "levelMinGlobal": null,
   "levelMaxGlobal": null,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "RD01_Enc01_GuardianBot",
@@ -1677,7 +1716,8 @@
   ],
   "levelMinGlobal": 100,
   "levelMaxGlobal": 100,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "RD01_Enc04_Grenadier",
@@ -1719,7 +1759,8 @@
   ],
   "levelMinGlobal": 100,
   "levelMaxGlobal": 100,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": false
  },
  {
   "id": "RD01_Enc04_Assassin",
@@ -1761,7 +1802,8 @@
   ],
   "levelMinGlobal": 100,
   "levelMaxGlobal": 100,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": false
  },
  {
   "id": "RD01_Enc04_Brute",
@@ -1803,7 +1845,8 @@
   ],
   "levelMinGlobal": 100,
   "levelMaxGlobal": 100,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": false
  },
  {
   "id": "RD01_Enc06_ScorchtongueHead",
@@ -1845,7 +1888,8 @@
   ],
   "levelMinGlobal": 100,
   "levelMaxGlobal": 100,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": false
  },
  {
   "id": "HTO_LvlBloodEagle_Boss_T5",
@@ -1887,7 +1931,8 @@
   ],
   "levelMinGlobal": 150,
   "levelMaxGlobal": 200,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "HTO_LvlPRCGhoul_Boss_T5",
@@ -1929,7 +1974,8 @@
   ],
   "levelMinGlobal": 150,
   "levelMaxGlobal": 200,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "HTO_LvlCultist_Boss_T5",
@@ -1971,7 +2017,8 @@
   ],
   "levelMinGlobal": 150,
   "levelMaxGlobal": 200,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "HTO_LvlMoleMiner_Boss_T5",
@@ -2013,7 +2060,8 @@
   ],
   "levelMinGlobal": 150,
   "levelMaxGlobal": 200,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "HTO_LvlSuperMutant_Boss_T5",
@@ -2055,7 +2103,8 @@
   ],
   "levelMinGlobal": 150,
   "levelMaxGlobal": 200,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "HTO_LvlScorched_Boss_T5",
@@ -2097,7 +2146,8 @@
   ],
   "levelMinGlobal": 150,
   "levelMaxGlobal": 200,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "HTO_LvlRobot_Boss_T5",
@@ -2139,7 +2189,8 @@
   ],
   "levelMinGlobal": 150,
   "levelMaxGlobal": 200,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "SDOW_HTO_LvlSlasherShadow_Boss_T5",
@@ -2181,7 +2232,8 @@
   ],
   "levelMinGlobal": 150,
   "levelMaxGlobal": 200,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Death",
@@ -2223,7 +2275,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_War",
@@ -2265,7 +2318,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Pestilence",
@@ -2307,7 +2361,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Famine",
@@ -2349,7 +2404,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Granny",
@@ -2391,7 +2447,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 150,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Astronaut",
@@ -2433,7 +2490,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_AntiGhoul",
@@ -2475,7 +2533,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Irradiated",
@@ -2517,7 +2576,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Pilot",
@@ -2559,7 +2619,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_NukaQueen",
@@ -2601,7 +2662,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_QuackDoctor",
@@ -2643,7 +2705,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Patriot",
@@ -2685,7 +2748,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Foreman",
@@ -2727,7 +2791,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Researcher",
@@ -2769,7 +2834,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_ScoutLeader",
@@ -2811,7 +2877,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_BarryTone",
@@ -2853,7 +2920,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 150,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Devil",
@@ -2895,7 +2963,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Rich",
@@ -2937,7 +3006,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Gambler",
@@ -2979,7 +3049,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 150,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Mechanist",
@@ -3021,7 +3092,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Fisherman",
@@ -3063,7 +3135,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_RoboBrain",
@@ -3105,7 +3178,8 @@
   ],
   "levelMinGlobal": 100,
   "levelMaxGlobal": 100,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Sniper",
@@ -3147,7 +3221,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 150,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Boxer",
@@ -3189,7 +3264,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 150,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Gunslinger",
@@ -3231,7 +3307,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 150,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_BigGun",
@@ -3273,7 +3350,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Crusher",
@@ -3315,7 +3393,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 150,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Commie",
@@ -3357,7 +3436,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 150,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Abraxo",
@@ -3399,7 +3479,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "Burn_BountyTarget_BIG_Hunter",
@@ -3441,7 +3522,8 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  },
  {
   "id": "SDOW_Burn_BountyTarget_BIG_Slasher",
@@ -3483,6 +3565,7 @@
   ],
   "levelMinGlobal": 25,
   "levelMaxGlobal": 175,
-  "levelOffsetGlobal": null
+  "levelOffsetGlobal": null,
+  "epicAllowed": true
  }
 ]

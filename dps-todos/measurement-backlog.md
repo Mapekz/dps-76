@@ -52,6 +52,31 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
       `scratchpad/phase2-curve-spike.md` "Validation" section for the full
       reasoning and the predicted numbers for other bosses (Earle, generic
       SBQ world spawn) to cross-check against.
+      **UPDATE 2026-07-18 (coordinator follow-up, epic-creature
+      investigation):** the "Epic Levels" system (`QUST SQ_EpicCreatures`
+      0x0001C339) was esm-walked as a candidate explanation and RULED OUT —
+      its `EpicRankData` HealthMult table tops out at 4.8× (rank 5), far
+      short of the observed ~10×, even though SBQ and Earle both pass the
+      eligibility check (`GeneratedNpc.epicAllowed: true` — see
+      docs/assumptions.md "Creature stat curves & NPC extraction" for the
+      full table + eligibility mechanics). The per-nearby-player boss-HP
+      multiplier remains the leading unconfirmed explanation.
+- [ ] **Phase 2 mitigation formula end-to-end** (new 2026-07-18) — golden
+      placeholder `golden/cases.json` "Combat Rifle (Fixer) @50 ... vs
+      Scorchbeast Queen (Lv 100)" (`measure: 'effectiveSustainedDps'`,
+      `expected: null`, `tolerancePct: 15`). The `(damage × 0.15 /
+      Resist)^0.365` formula and the Option A blended-hit approximation are
+      unit-tested against synthetic numbers (`mitigation.test.ts`), but
+      nothing cross-checks the WHOLE pipeline (real resist curve → real
+      mitigated DPS) against an actual Pip-Boy/combat-log reading yet. Needs
+      a known build (stock Combat Rifle Fixer, no perks, free aim) vs. SBQ at
+      level 100 with a measured sustained DPS.
+- [ ] **Taking One for the Team flat-DR rank-4 anomaly** — the 6/10/15/50
+      magnitude table (docs/assumptions.md "Resist mitigation") jumps
+      non-arithmetically at rank 4; confirm whether this is intentional
+      game balance or an ESM data-entry error (compare against the in-game
+      card description/tooltip at rank 4, and/or a measured before/after
+      damage-taken reading).
 - [ ] **Reverse Onslaught (Gunslinger Master)** — verify +1 stack/sec regen
       rate and per-hit-event consumption (physical projectile + explosion per
       target) match in-game; pin `ONSLAUGHT_REGEN_PER_SEC` and the

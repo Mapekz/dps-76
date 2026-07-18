@@ -206,11 +206,11 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
 
 /**
  * Effects whose data cannot move numbers yet: 'pendingMechanic' = the game
- * mechanic behind it is a deferred rework; 'needsEnemyDefenses' = the value
- * is extracted but the engine has no enemy DR/ER to apply it to. Drives the
- * picker badges (src/data/omods.ts classifyOmodDisplay).
+ * mechanic behind it is a deferred rework. ('needsEnemyDefenses' REMOVED
+ * Phase 2 — Enemy defenses shipped, src/data/omods.ts.) Drives the picker
+ * badges (src/data/omods.ts classifyOmodDisplay).
  */
-export const omodBadgeOverrides: Readonly<Record<string, 'inert' | 'pendingMechanic' | 'needsEnemyDefenses'>> = {
+export const omodBadgeOverrides: Readonly<Record<string, 'inert' | 'pendingMechanic'>> = {
   // Furious / Pounder's badges REMOVED (Onslaught, 2026-07-12): both now emit
   // real dbm+stacks modifiers via the granted-perk chase (EP189 "Mod Damage
   // on Consecutive Hits" + EP190 "Mod Max Consecutive Hits Allowed") — see

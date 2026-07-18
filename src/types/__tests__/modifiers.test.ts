@@ -68,6 +68,7 @@ const ALL_BUCKETS: Bucket[] = [
   'moveSpeedBonus',
   'addDamageComponent',
   'armorPen',
+  'armorPenFlat',
   'dotDamage',
   'maxHealth',
   'specialStrength',
@@ -103,13 +104,14 @@ describe('BUCKET_REGISTRY', () => {
     // Endurance/Charisma/Intelligence/Agility feed max HP, a curve input, or
     // the VATS AP pool; Perception has no paper-damage consumer but its
     // folded value is what StatSummary renders. limbDamage/bashDamage/
-    // addDamageComponent/armorPen have no fold consumer at all.
+    // addDamageComponent have no fold consumer at all.
     // weaponMinRange/weaponMaxRange/weaponOutOfRangeMult are no longer inert
     // (Phase 1 engine half — effective-weapon.ts folds them, scenarios.ts
-    // threads rangeFalloffMult into paper-damage.ts).
+    // threads rangeFalloffMult into paper-damage.ts). armorPen/armorPenFlat
+    // are no longer inert either (Phase 2 — mitigation.ts consumes both).
     expect([...INERT_ENGINE_BUCKETS].sort()).toEqual(
       [
-        'limbDamage', 'bashDamage', 'addDamageComponent', 'armorPen',
+        'limbDamage', 'bashDamage', 'addDamageComponent',
         'bulletStormOnKill', 'bulletStormSpinUp', 'deflectChance',
       ].sort()
     );
@@ -123,7 +125,7 @@ function plainMod(bucket: Bucket, conditions: Modifier['conditions'] = []): Modi
   return { id: 'test', source: SOURCE, bucket, op: 'ADD', value: 1, conditions };
 }
 
-/** Minimal curve-driven Modifier fixture, for the enemyDamageResist-input case. */
+/** Minimal curve-driven Modifier fixture, for the playerDamageResist-input case. */
 function curveMod(bucket: Bucket, input: Modifier['curve'] extends undefined ? never : NonNullable<Modifier['curve']>['input']): Modifier {
   return {
     id: 'test',
@@ -138,11 +140,16 @@ function curveMod(bucket: Bucket, input: Modifier['curve'] extends undefined ? n
 
 describe('modifierHasEngineEffect / hasAnyEngineEffect', () => {
   it('is false for a bucket the engine never folds (INERT_ENGINE_BUCKETS)', () => {
-    expect(modifierHasEngineEffect(plainMod('armorPen'))).toBe(false);
+    expect(modifierHasEngineEffect(plainMod('limbDamage'))).toBe(false);
   });
 
-  it('is false for an enemyDamageResist-scaled curve, regardless of bucket', () => {
-    expect(modifierHasEngineEffect(curveMod('dbm', 'enemyDamageResist'))).toBe(false);
+  it('is true for armorPen/armorPenFlat now that mitigation.ts folds them (Phase 2)', () => {
+    expect(modifierHasEngineEffect(plainMod('armorPen'))).toBe(true);
+    expect(modifierHasEngineEffect(plainMod('armorPenFlat'))).toBe(true);
+  });
+
+  it('is true for a playerDamageResist-scaled curve (Berserker\'s wielder-DR wiring, renamed from enemyDamageResist)', () => {
+    expect(modifierHasEngineEffect(curveMod('dbm', 'playerDamageResist'))).toBe(true);
   });
 
   it('is false when the modifier carries an unresolved condition', () => {
@@ -155,6 +162,6 @@ describe('modifierHasEngineEffect / hasAnyEngineEffect', () => {
 
   it('hasAnyEngineEffect is false for an empty list and true if any modifier is effective', () => {
     expect(hasAnyEngineEffect([])).toBe(false);
-    expect(hasAnyEngineEffect([plainMod('armorPen'), plainMod('dbm')])).toBe(true);
+    expect(hasAnyEngineEffect([plainMod('limbDamage'), plainMod('dbm')])).toBe(true);
   });
 });

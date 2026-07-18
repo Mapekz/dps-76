@@ -13406,7 +13406,7 @@
       "bucket": "dbm",
       "op": "ADD",
       "curve": {
-       "input": "enemyDamageResist",
+       "input": "playerDamageResist",
        "points": [
         {
          "x": 0,

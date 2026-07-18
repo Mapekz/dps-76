@@ -1,0 +1,112 @@
+import type { GeneratedNpcDamageType } from '@/types/generated';
+import type { DamageType } from '@/types/modifiers';
+import type { ComponentHit, HitBreakdown } from './paper-damage';
+
+/**
+ * Enemy-defense mitigation (Phase 2 — Enemy defenses). Promotes the dormant
+ * `calculateDamageResistMult` (formerly `src/lib/damage-formulas.ts`, now
+ * removed — that file's whole purpose was this scaffolding) into a real,
+ * wired formula:
+ *
+ *   Resist = max(0, base − flatDebuff) × (1 − clamp01(armorPenTotal))
+ *   mult   = Resist ≤ 0 ? 1 : clamp((damage × 0.15 / Resist)^0.365, 0.01, 0.99)
+ *
+ * `base` is the enemy's resist for THAT component's damage type (`resists`
+ * from `src/lib/enemy-defenses.ts`); `flatDebuff` is Taking One for the
+ * Team's flat DR reduction, which the ESM shows debuffing DamageResist only
+ * (no EnergyResist component) — see the module-level mapping/gating note
+ * below. `armorPenTotal` is the folded `armorPen` bucket (a fraction,
+ * 0.50 = 50% penetration).
+ *
+ * Pipeline position — Option A (plan-decided, `docs/assumptions.md` "Resist
+ * mitigation"): applied ONCE to each scenario's already-blended
+ * `HitBreakdown` (crit-weighted, body-part-blended — `scenarios.ts`), not
+ * per raw hit before blending. This is a Jensen's-inequality approximation
+ * (mitigation is a concave function of damage, so mitigating an average
+ * under-mitigates relative to averaging per-hit-mitigated results) — see
+ * `mitigation.test.ts` "Option A divergence" for the measured magnitude
+ * against a realistic crit mix, and docs/assumptions.md for the number.
+ *
+ * DoT is NOT mitigated in v1 (`ScenarioResult.dotDps` stays a separate,
+ * unmitigated steady-state add — no resist model exists for DoT ticks in the
+ * FO76 formula this app targets, and wiring it in is deferred, plan-documented).
+ */
+
+export interface EnemyDefenses {
+  hp: number;
+  resists: Partial<Record<GeneratedNpcDamageType, number>>;
+}
+
+/**
+ * Weapon `DamageType` → the enemy-resist type it draws from. `ballistic` and
+ * `explosive` both map to `physical` — NPCs carry no separate "explosive
+ * resist" AV (DamageResist is the only physical-family resist extracted;
+ * `extract-npcs.ts` RESIST_AVS), and explosive damage is conventionally
+ * treated as physical elsewhere in this codebase (paper-damage.ts's
+ * explosive carve-outs never introduce a new elemental type). Total map —
+ * every `DamageType` union member has an entry, so there is no runtime
+ * "unmapped" case today; kept as an explicit Record (not a fallback) so a
+ * future `DamageType` addition fails type-checking here instead of silently
+ * falling through.
+ */
+const DAMAGE_TYPE_TO_RESIST_TYPE: Record<DamageType, GeneratedNpcDamageType> = {
+  ballistic: 'physical',
+  explosive: 'physical',
+  energy: 'energy',
+  radiation: 'radiation',
+  poison: 'poison',
+  cryo: 'cryo',
+  fire: 'fire',
+};
+
+function clamp01(x: number): number {
+  return Math.max(0, Math.min(1, x));
+}
+
+/**
+ * One component's post-mitigation multiplier. `Resist ≤ 0` (no base resist,
+ * or the flat debuff/armor-pen fully strips it) fully penetrates — mult 1,
+ * the formula's own documented edge case, not a clamp artifact.
+ */
+function componentMitigationMult(damage: number, resist: number): number {
+  if (resist <= 0) return 1;
+  const factor = Math.pow((damage * 0.15) / resist, 0.365);
+  return Math.min(0.99, Math.max(0.01, factor));
+}
+
+/**
+ * Mitigate a finished `HitBreakdown` against one enemy's defenses. Returns
+ * the SAME breakdown unchanged (identity, no clamping surprises) when
+ * `defenses` is undefined (no target selected) — every component's `base`
+ * resist would resolve to 0 anyway, which the formula already treats as full
+ * penetration (mult 1), so skipping is a pure short-circuit, not a
+ * behavioral branch.
+ *
+ * `flatResistDebuffPhysical` (Taking One for the Team, `armorPenFlat` bucket)
+ * applies ONLY to components whose resist type resolves to `'physical'` —
+ * the mechanism note in the `armorPenFlat` Bucket doc comment
+ * (src/types/modifiers.ts): the modifier itself is unconditioned (folded
+ * once per scenario, no per-component `damageTypeScope` gate — the bootstrap
+ * fold context has no `componentType` to gate against), so the physical-only
+ * restriction is enforced HERE, consumer-side, rather than on the modifier.
+ */
+export function applyMitigation(
+  hit: HitBreakdown,
+  defenses: EnemyDefenses | undefined,
+  armorPenTotal: number,
+  flatResistDebuffPhysical: number
+): HitBreakdown {
+  if (!defenses) return hit;
+
+  const armorPenFactor = 1 - clamp01(armorPenTotal);
+  const components: ComponentHit[] = hit.components.map(c => {
+    const resistType = DAMAGE_TYPE_TO_RESIST_TYPE[c.damageType];
+    const base = defenses.resists[resistType] ?? 0;
+    const flatDebuff = resistType === 'physical' ? flatResistDebuffPhysical : 0;
+    const resist = Math.max(0, base - flatDebuff) * armorPenFactor;
+    const mult = componentMitigationMult(c.damage, resist);
+    return { ...c, damage: c.damage * mult };
+  });
+
+  return { components, total: components.reduce((sum, c) => sum + c.damage, 0) };
+}

@@ -6,6 +6,7 @@ import { getFireRate } from '@/lib/fire-rate';
 import { AP_REGEN_DELAY_SEC, AP_REGEN_RATE_PCT, AP_REGEN_RATE_PCT_POWER_ARMOR, apLimitedDps, computeApEconomy, effectiveShotsPerSecond } from './ap-economy';
 import { computeCritMeter, type CritMeterResult } from './crit-meter';
 import { computeDotDps, computePaperDamage, type HitBreakdown } from './paper-damage';
+import { applyMitigation, type EnemyDefenses } from './mitigation';
 import { perShotOnslaughtConsume, reverseOnslaughtAvgStacks } from './onslaught';
 import { bulletStormAvgStacks } from './bulletstorm';
 import { computeSustain, type SustainResult } from './sustain';
@@ -86,6 +87,26 @@ export interface ScenarioResult {
   };
   /** Multiplier-chain attribution (only when input.collectTrace). */
   explain?: ScenarioExplain;
+  /**
+   * Post-mitigation figures against the selected target (Phase 2 — Enemy
+   * defenses), present only when `ScenarioInput.enemyDefenses` was supplied
+   * (a target race resolved to real npc stats). `perHit`/`sustainedDps` are
+   * mitigated versions of this scenario's own `perHit`/`sustain.sustainedDps`
+   * (for charged weapons, of the charge-cycle-blended hit that actually feeds
+   * `sustain` — NOT the plain `perHit` field, which stays the un-cycled
+   * display hit per the existing Charged split). `retainedPct` is
+   * `mitigated / unmitigated × 100` on that same total (0-100, matching the
+   * `*Pct` convention elsewhere on this type). `ttk` is enemy HP ÷
+   * `sustainedDps` here (`Infinity` when `sustainedDps` is 0 — no damage
+   * ever lands). DoT (`dotDps`) is NOT included — mitigation doesn't apply to
+   * it in v1 (docs/assumptions.md "Resist mitigation").
+   */
+  effective?: {
+    perHit: HitBreakdown;
+    sustainedDps: number;
+    retainedPct: number;
+    ttk: number;
+  };
 }
 
 export interface ScenarioSet {
@@ -203,6 +224,17 @@ export interface ScenarioInput {
    * default — the suggestion engine's speculative evals must never pay for it.
    */
   collectTrace?: boolean;
+  /**
+   * The selected target's HP + per-damage-type resists (Phase 2 — Enemy
+   * defenses, `src/lib/enemy-defenses.ts` — resolved in `resolveLoadout` from
+   * `enemy.conditions.targetRace`/`targetLevel`). Undefined = no target
+   * selected (or one with no npc data) — `ScenarioResult.effective` stays
+   * absent in that case. `armorPen`/`armorPenFlat` bucket modifiers are
+   * folded and consumed by `mitigation.ts` regardless of whether this is
+   * set (the bootstrap fold below always runs); only the presence of a
+   * usable target gates whether mitigation is actually APPLIED.
+   */
+  enemyDefenses?: EnemyDefenses;
 }
 
 /** Onslaught cap + optional reverse-mode average, threaded on every ResolveContext. */
@@ -387,6 +419,35 @@ function bodyPartBlendedHit(
   return bodyPartWeighted(atTarget, atTorso, rate);
 }
 
+/**
+ * Post-mitigation `ScenarioResult.effective` (Phase 2 — Enemy defenses),
+ * undefined when no target is selected. `cycleHit` is whichever HitBreakdown
+ * actually feeds `sustainedDps` (the charged-cycle blend for charged
+ * weapons, the plain scenario hit otherwise — see the `freeCycleHit`/
+ * `vatsCycleHit` comment in `computeScenarios`). `retainedFraction` is
+ * derived from the SAME total mitigation scales `sustainedDps` by, so
+ * `effective.sustainedDps / sustainedDps === effective.perHit.total /
+ * cycleHit.total` always holds.
+ */
+function effectiveAgainstEnemy(
+  cycleHit: HitBreakdown,
+  sustainedDps: number,
+  defenses: EnemyDefenses | undefined,
+  armorPenTotal: number,
+  armorPenFlatTotal: number
+): ScenarioResult['effective'] {
+  if (!defenses) return undefined;
+  const mitigated = applyMitigation(cycleHit, defenses, armorPenTotal, armorPenFlatTotal);
+  const retainedFraction = cycleHit.total > 0 ? mitigated.total / cycleHit.total : 1;
+  const mitigatedSustainedDps = sustainedDps * retainedFraction;
+  return {
+    perHit: mitigated,
+    sustainedDps: mitigatedSustainedDps,
+    retainedPct: retainedFraction * 100,
+    ttk: mitigatedSustainedDps > 0 ? defenses.hp / mitigatedSustainedDps : Infinity,
+  };
+}
+
 /** Weight two hit breakdowns (non-crit vs crit) by the steady-state crit rate. */
 function critWeighted(nonCrit: HitBreakdown, crit: HitBreakdown, critRate: number): HitBreakdown {
   if (critRate <= 0) return nonCrit;
@@ -511,6 +572,17 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     ...(bulletStormAvg !== undefined && { avg: bulletStormAvg }),
   };
 
+  // Enemy-defense mitigation inputs (Phase 2 — Enemy defenses), folded ONCE
+  // per scenario input — same bootstrap precedent as Onslaught/Bullet Storm
+  // above: both extracted `armorPen`/`armorPenFlat` sources only gate on
+  // weapon keyword/class (never scenario flags), so the flag-agnostic
+  // bootstrap context is enough. Consumed by `applyMitigation` below
+  // regardless of whether a target is selected — with no target,
+  // `effectiveAgainstEnemy` just never runs, so the fold result goes unread,
+  // exactly like any other bootstrap fold with nothing equipped.
+  const armorPenTotal = foldBucket(input.modifiers, 'armorPen', 0, bootstrapCtx);
+  const armorPenFlatTotal = foldBucket(input.modifiers, 'armorPenFlat', 0, bootstrapCtx);
+
   // Kill-streak sources (existence scan — see ScenarioSet.hasKillStreakSources).
   const hasKillStreakSources = input.modifiers.some(
     m =>
@@ -538,14 +610,20 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
 
   // Charged (Stage C2): the sustained/average DPS reflects the light-attack
   // ×3 + detonation cycle; perHit display stays the plain hit above (decided
-  // simplest-defensible split, docs/assumptions.md).
+  // simplest-defensible split, docs/assumptions.md). The full cycle
+  // HitBreakdown (not just its total) is kept for mitigation below —
+  // `effective` needs real per-component damage types to mitigate against,
+  // and for a charged weapon that's the CYCLE's breakdown, not the plain
+  // `freeHit`/`vatsAvg` one (whose total sustain no longer reflects).
   const charged = isCharged(input.weapon);
-  const freeCycleTotal = charged
-    ? chargedCycleHit(input, freeFlags, bodyPartMult, targetBodyPart, 0, onslaught, bulletStorm, rangeMult).total
-    : freeHit.total;
-  const vatsCycleTotal = charged
-    ? chargedCycleHit(input, vatsFlags, bodyPartMult, targetBodyPart, critRate, onslaught, bulletStorm, rangeMult).total
-    : vatsAvg.total;
+  const freeCycleHit = charged
+    ? chargedCycleHit(input, freeFlags, bodyPartMult, targetBodyPart, 0, onslaught, bulletStorm, rangeMult)
+    : freeHit;
+  const vatsCycleHit = charged
+    ? chargedCycleHit(input, vatsFlags, bodyPartMult, targetBodyPart, critRate, onslaught, bulletStorm, rangeMult)
+    : vatsAvg;
+  const freeCycleTotal = freeCycleHit.total;
+  const vatsCycleTotal = vatsCycleHit.total;
 
   const freeSustainRaw = computeSustain(freeCycleTotal, fireRate, input.weapon);
   const vatsSustainRaw = computeSustain(vatsCycleTotal, fireRate, input.weapon);
@@ -640,6 +718,14 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       }
     : null;
 
+  // Post-mitigation vs-target figures (Phase 2 — Enemy defenses): absent
+  // when no target is selected. Uses the SAME cycle hit that produced
+  // freeSustain/vatsSustain (freeCycleHit/vatsCycleHit — the charged-cycle
+  // blend for charged weapons) so the mitigated sustainedDps stays
+  // consistent with the mitigated perHit's retained fraction.
+  const freeEffective = effectiveAgainstEnemy(freeCycleHit, freeSustain.sustainedDps, input.enemyDefenses, armorPenTotal, armorPenFlatTotal);
+  const vatsEffective = effectiveAgainstEnemy(vatsCycleHit, vatsSustain.sustainedDps, input.enemyDefenses, armorPenTotal, armorPenFlatTotal);
+
   return {
     onslaughtMaxStacks,
     onslaughtReverse,
@@ -658,6 +744,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       fireRate,
       fireRateApproximate: true,
       dotDps: freeDotDps,
+      ...(freeEffective && { effective: freeEffective }),
       ...(tracing && { explain: { nonCrit: freeTrace!, crit: null } }),
     },
     vats: {
@@ -671,6 +758,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       critMeter,
       dotDps: vatsDotDps,
       ...(ap && { ap }),
+      ...(vatsEffective && { effective: vatsEffective }),
       ...(tracing && {
         explain: {
           nonCrit: vatsTrace!,
