@@ -29,6 +29,13 @@ import type { EsmClient, EsmListRow } from './esm-client';
  * (the pre-existing `curvetables/creatures/weapon/` dir, creature attack
  * damage — unrelated to Phase 2's target-defense work) are intentionally
  * NOT re-extracted here; out of this slice's stated scope.
+ *
+ * Also owns a handful of one-off ("singleton") CURV records that have no
+ * tier family at all — just a single editor_id with no numeric suffix, so
+ * `CURVE_TABLE_GROUPS`' search+tier-sort machinery doesn't apply. First
+ * addition: `CT_Player_PercentOfMinToMaxRangeDMGMult` (0x008407AC,
+ * `src/lib/distance.ts`'s range-falloff curve), previously a hand-copy
+ * (commit 6dbfc80) — see `CURVE_TABLE_SINGLETONS` below.
  */
 
 export interface CurveTablePoint {
@@ -63,6 +70,29 @@ export const CURVE_TABLE_GROUPS: CurveTableGroup[] = [
   { pattern: '*Creatures_Armor_Universal_Tier*', outSubdir: 'creatures/armor', filePrefix: 'armor_universal_tier' },
   { pattern: '*Player_Damage_Universal_Tier*', outSubdir: 'player/damage', filePrefix: 'damage_universal_tier' },
   { pattern: '*Player_Armor_Universal_Tier*', outSubdir: 'player/armor', filePrefix: 'armor_universal_tier' },
+];
+
+export interface CurveTableSingleton {
+  /** Exact editor_id of the one-off CURV record (fetched via `client.get`, not `search` — no tier family to match). */
+  editorId: string;
+  /** Output subdirectory under src/data/<mode>/curvetables/. */
+  outSubdir: string;
+  /** Output filename, including the .json extension. */
+  filename: string;
+}
+
+/**
+ * One-off CURV records with no tier suffix — a plain `client.get(editorId)`
+ * per entry rather than `CURVE_TABLE_GROUPS`' search+tier-sort. The
+ * zzz-prefix tolerance `CURVE_TABLE_GROUPS` needs for its `*`-prefixed
+ * search patterns doesn't apply here: each entry names its exact editor_id.
+ */
+export const CURVE_TABLE_SINGLETONS: CurveTableSingleton[] = [
+  {
+    editorId: 'CT_Player_PercentOfMinToMaxRangeDMGMult',
+    outSubdir: 'player/range',
+    filename: 'percentofmintomaxrangedamagemult.json',
+  },
 ];
 
 /** Extract the trailing tier number from an editor_id, tolerant of the zzz-prefix and zero-padding (…Tier01 → 1). */
@@ -142,6 +172,27 @@ export async function extractCurveTables(client: EsmClient): Promise<CurveTables
         content,
       });
     }
+  }
+
+  for (const singleton of CURVE_TABLE_SINGLETONS) {
+    let record;
+    try {
+      record = await client.get(singleton.editorId);
+    } catch (err) {
+      unresolved.push(`curvetables: get ${singleton.editorId} failed: ${(err as Error).message}`);
+      continue;
+    }
+    const content = toCurveTableFile(record.fields['Curve']);
+    if (!content || content.curve.length === 0) {
+      unresolved.push(`curvetables: ${singleton.editorId} (${record.header.form_id}) has no curve points`);
+      continue;
+    }
+    files.push({
+      relativePath: `${singleton.outSubdir}/${singleton.filename}`,
+      editorId: singleton.editorId,
+      formId: record.header.form_id,
+      content,
+    });
   }
 
   return { files, unresolved };

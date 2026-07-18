@@ -1,15 +1,25 @@
 import { describe, it, expect } from 'vitest';
 import type { EsmClient, EsmRecord } from '../esm-client';
-import { CURVE_TABLE_GROUPS, extractCurveTables, tierFromEdid, toCurveTableFile } from '../extract-curvetables';
+import {
+  CURVE_TABLE_GROUPS,
+  CURVE_TABLE_SINGLETONS,
+  extractCurveTables,
+  tierFromEdid,
+  toCurveTableFile,
+} from '../extract-curvetables';
 import armorTier22 from './fixtures/curv-creatures-armor-tier22.json';
 import armorTier49Zzz from './fixtures/curv-creatures-armor-tier49-zzz.json';
+import percentOfMinToMaxRange from './fixtures/curv-player-range-percentofmintomaxrangedamagemult.json';
 
 // Fixtures are verbatim `esm -p get <formid|edid> --json` output (20260710
 // ESM): CT_Creatures_Armor_Universal_Tier22 (0x0076E999, the record proven
 // stale in the Phase 2 spike — 50 points, domain 1-540, vs. the checked-in
 // hand-copy's 50 points/domain 2-100) and the zzz-renamed Tier49
 // (0x0076E9B4, `zzzCT_Creatures_Armor_Universal_Tier49` — still FormID-live,
-// just hidden from CK's "new record" browser by convention).
+// just hidden from CK's "new record" browser by convention). The singleton
+// fixture is `CT_Player_PercentOfMinToMaxRangeDMGMult` (0x008407AC), the
+// range-falloff curve `src/lib/distance.ts` consumes — previously a
+// hand-copy, now owned by `CURVE_TABLE_SINGLETONS`.
 
 describe('tierFromEdid', () => {
   it('parses a plain tier suffix', () => {
@@ -53,12 +63,30 @@ describe('toCurveTableFile', () => {
   it('returns an empty curve (not null) for an empty array', () => {
     expect(toCurveTableFile([])).toEqual({ curve: [] });
   });
+
+  it('normalizes the singleton range-falloff curve (CT_Player_PercentOfMinToMaxRangeDMGMult), matching the previously hand-copied file', () => {
+    const file = toCurveTableFile((percentOfMinToMaxRange as { fields: { Curve: unknown } }).fields.Curve);
+    expect(file).toEqual({
+      curve: [
+        { x: 1, y: 1 },
+        { x: 1.5, y: 0.75 },
+        { x: 1.75, y: 0.55 },
+        { x: 2, y: 0.2 },
+      ],
+    });
+  });
 });
 
 describe('extractCurveTables', () => {
+  // Every test's fake client resolves the singleton's get() (keyed by its
+  // editor_id, same as the extractor's own `client.get(singleton.editorId)`
+  // call) so group-focused tests aren't forced to special-case the extra
+  // file the singleton loop always appends — see the dedicated singleton
+  // tests below for its own success/failure paths.
   const records: Record<string, EsmRecord> = {
     '0x0076E999': armorTier22 as unknown as EsmRecord,
     '0x0076E9B4': armorTier49Zzz as unknown as EsmRecord,
+    CT_Player_PercentOfMinToMaxRangeDMGMult: percentOfMinToMaxRange as unknown as EsmRecord,
   };
 
   function makeClient(searchRows: Array<{ form_id: string; editor_id: string }>): EsmClient {
@@ -80,17 +108,20 @@ describe('extractCurveTables', () => {
     } as unknown as EsmClient;
   }
 
-  it('writes one file per tier, sorted ascending, including a zzz-renamed record', async () => {
+  const singletonRelativePath = 'player/range/percentofmintomaxrangedamagemult.json';
+
+  it('writes one file per tier, sorted ascending, including a zzz-renamed record, plus the singleton', async () => {
     const client = makeClient([
       { form_id: '0x0076E999', editor_id: 'CT_Creatures_Armor_Universal_Tier22' },
       { form_id: '0x0076E9B4', editor_id: 'zzzCT_Creatures_Armor_Universal_Tier49' },
     ]);
     const { files, unresolved } = await extractCurveTables(client);
     expect(unresolved).toEqual([]);
-    expect(files).toHaveLength(2);
+    expect(files).toHaveLength(3);
     expect(files.map(f => f.relativePath)).toEqual([
       'creatures/armor/armor_universal_tier22.json',
       'creatures/armor/armor_universal_tier49.json',
+      singletonRelativePath,
     ]);
     expect(files[0].content.curve).toHaveLength(50);
   });
@@ -101,7 +132,7 @@ describe('extractCurveTables', () => {
       { form_id: '0x00999999', editor_id: 'CT_Creatures_Armor_NotATierRecord' },
     ]);
     const { files, unresolved } = await extractCurveTables(client);
-    expect(files).toHaveLength(1);
+    expect(files).toHaveLength(2);
     expect(unresolved).toHaveLength(1);
     expect(unresolved[0]).toContain('CT_Creatures_Armor_NotATierRecord');
   });
@@ -109,7 +140,7 @@ describe('extractCurveTables', () => {
   it('reports unresolved when get() fails for a matched record', async () => {
     const client = makeClient([{ form_id: '0xDEADBEEF', editor_id: 'CT_Creatures_Armor_Universal_Tier1' }]);
     const { files, unresolved } = await extractCurveTables(client);
-    expect(files).toEqual([]);
+    expect(files.map(f => f.relativePath)).toEqual([singletonRelativePath]);
     expect(unresolved).toHaveLength(1);
     expect(unresolved[0]).toContain('CT_Creatures_Armor_Universal_Tier1');
   });
@@ -118,5 +149,54 @@ describe('extractCurveTables', () => {
     expect(CURVE_TABLE_GROUPS.map(g => g.outSubdir).sort()).toEqual(
       ['creatures/armor', 'creatures/health', 'player/armor', 'player/damage'].sort()
     );
+  });
+
+  describe('singleton curve tables', () => {
+    it('lists exactly the range-falloff singleton today', () => {
+      expect(CURVE_TABLE_SINGLETONS).toEqual([
+        {
+          editorId: 'CT_Player_PercentOfMinToMaxRangeDMGMult',
+          outSubdir: 'player/range',
+          filename: 'percentofmintomaxrangedamagemult.json',
+        },
+      ]);
+    });
+
+    it('fetches the singleton by editor_id (not search+tier) and writes it alongside the group files', async () => {
+      // No group search hits at all — the singleton doesn't depend on any
+      // CURVE_TABLE_GROUPS match.
+      const client = makeClient([]);
+      const { files, unresolved } = await extractCurveTables(client);
+      expect(unresolved).toEqual([]);
+      expect(files).toHaveLength(1);
+      const [file] = files;
+      expect(file.relativePath).toBe(singletonRelativePath);
+      expect(file.editorId).toBe('CT_Player_PercentOfMinToMaxRangeDMGMult');
+      expect(file.formId).toBe('0x008407AC');
+      // Matches the previously hand-copied src/data/*/curvetables/player/range/percentofmintomaxrangedamagemult.json exactly.
+      expect(file.content).toEqual({
+        curve: [
+          { x: 1, y: 1 },
+          { x: 1.5, y: 0.75 },
+          { x: 1.75, y: 0.55 },
+          { x: 2, y: 0.2 },
+        ],
+      });
+    });
+
+    it('reports unresolved when get() fails for the singleton (not a crash)', async () => {
+      const client: EsmClient = {
+        async search() {
+          return [];
+        },
+        async get(target: string) {
+          throw new Error(`stub: no record for ${target}`);
+        },
+      } as unknown as EsmClient;
+      const { files, unresolved } = await extractCurveTables(client);
+      expect(files).toEqual([]);
+      expect(unresolved).toHaveLength(1);
+      expect(unresolved[0]).toContain('CT_Player_PercentOfMinToMaxRangeDMGMult');
+    });
   });
 });

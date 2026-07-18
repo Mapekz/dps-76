@@ -1,0 +1,34 @@
+{
+  "header": {
+    "signature": "CURV",
+    "form_id": "0x008407AC",
+    "flags": 0,
+    "form_version": 204,
+    "data_size": 97,
+    "offset": 14562696
+  },
+  "editor_id": "CT_Player_PercentOfMinToMaxRangeDMGMult",
+  "fields": {
+    "_record_type": "Curve Table",
+    "Editor ID": "CT_Player_PercentOfMinToMaxRangeDMGMult",
+    "JSON File Path 2": "Player\\PercentOfMinToMaxRangeDamageMult.json",
+    "Curve": [
+      {
+        "x": 1.0,
+        "y": 1.0
+      },
+      {
+        "x": 1.5,
+        "y": 0.75
+      },
+      {
+        "x": 1.75,
+        "y": 0.55
+      },
+      {
+        "x": 2.0,
+        "y": 0.2
+      }
+    ]
+  }
+}
