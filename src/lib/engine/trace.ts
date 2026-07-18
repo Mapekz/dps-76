@@ -46,7 +46,7 @@ export interface HitTrace {
   components: ComponentTrace[];
   /** STR melee term added inside the dbm parenthesis (0 for guns). */
   strTerm: number;
-  crit: { base: BucketTrace; bonus: BucketTrace } | null;
+  crit: { base: BucketTrace; bonus: BucketTrace; bonusScale: BucketTrace } | null;
   sneak: { base: BucketTrace; bonus: BucketTrace } | null;
   powerAttack: BucketTrace | null;
   /** Each active whole-damage ×(1 + value) factor (TOFTT, Follow Through). */

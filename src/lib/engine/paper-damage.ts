@@ -175,7 +175,7 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
   if (ctx.scenario.isCrit) {
     const collect = trace ? ([] as BucketTrace[]) : undefined;
     critTerm = totalCritMult(modifiers, weapon, ctx, collect) - 1.0;
-    if (trace && collect) trace.crit = { base: collect[0], bonus: collect[1] };
+    if (trace && collect) trace.crit = { base: collect[0], bonus: collect[1], bonusScale: collect[2] };
   }
   let sneakTerm = 0;
   if (ctx.scenario.isSneaking) {

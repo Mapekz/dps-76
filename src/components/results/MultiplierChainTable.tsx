@@ -52,22 +52,38 @@ function signed(v: number, digits = 2): string {
   return `${v >= 0 ? '+' : ''}${v.toFixed(digits)}`;
 }
 
-function contributionRows(trace: BucketTrace, keyPrefix: string) {
+/**
+ * `labelSuffix` distinguishes contributors that don't act like ordinary
+ * peers of the bucket's other rows (e.g. critDmgBonusScale, which scales the
+ * crit-bonus rows above it rather than adding to the total directly) without
+ * touching `source.name` itself — that name is shared with other UI (e.g. an
+ * equipped-mods list) and shouldn't carry a breakdown-specific caveat.
+ */
+function contributionRows(trace: BucketTrace, keyPrefix: string, labelSuffix = '') {
   const rows: React.ReactNode[] = [];
   for (const c of trace.overriddenSets) {
-    const text = `${c.source.name} = ${c.value.toFixed(2)} (overridden)`;
+    const text = `${c.source.name}${labelSuffix} = ${c.value.toFixed(2)} (overridden)`;
     rows.push(<Row key={`${keyPrefix}-ov-${c.source.edid}`} indent muted label={<s>{text}</s>} value="" title={text} />);
   }
   if (trace.set) {
-    rows.push(<Row key={`${keyPrefix}-set`} indent label={`${trace.set.source.name} (sets base)`} value={trace.set.value.toFixed(2)} />);
+    rows.push(
+      <Row key={`${keyPrefix}-set`} indent label={`${trace.set.source.name}${labelSuffix} (sets base)`} value={trace.set.value.toFixed(2)} />
+    );
   }
   for (const c of trace.mulAdd) {
     rows.push(
-      <Row key={`${keyPrefix}-mul-${c.source.edid}-${c.source.rank ?? 0}`} indent label={c.source.name} value={`${signed(c.value * 100, 0)}%`} />
+      <Row
+        key={`${keyPrefix}-mul-${c.source.edid}-${c.source.rank ?? 0}`}
+        indent
+        label={`${c.source.name}${labelSuffix}`}
+        value={`${signed(c.value * 100, 0)}%`}
+      />
     );
   }
   for (const c of trace.add) {
-    rows.push(<Row key={`${keyPrefix}-add-${c.source.edid}-${c.source.rank ?? 0}`} indent label={c.source.name} value={signed(c.value)} />);
+    rows.push(
+      <Row key={`${keyPrefix}-add-${c.source.edid}-${c.source.rank ?? 0}`} indent label={`${c.source.name}${labelSuffix}`} value={signed(c.value)} />
+    );
   }
   return rows;
 }
@@ -132,13 +148,23 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
       })}
 
       {trace.strTerm > 0 && <Row indent label="Strength (melee)" value={signed(trace.strTerm)} />}
-      {trace.sneak && anyNonExplosive && (
-        <>
-          <Row label="Sneak attack" value={signed(trace.sneak.base.result + trace.sneak.bonus.result - 1)} />
-          {contributionRows(trace.sneak.base, 'sb')}
-          {contributionRows(trace.sneak.bonus, 'sn')}
-        </>
-      )}
+      {trace.sneak &&
+        anyNonExplosive &&
+        (() => {
+          const { base, bonus } = trace.sneak!;
+          const baseRows = contributionRows(base, 'sb');
+          const bonusRows = contributionRows(bonus, 'sn');
+          return (
+            <>
+              <Row label="Sneak attack" value={signed(base.result + bonus.result - 1)} />
+              {(baseRows.length > 0 || bonusRows.length > 0) && (
+                <Row indent muted label="Weapon Base" value={`×${base.base.toFixed(2)}`} />
+              )}
+              {baseRows}
+              {bonusRows}
+            </>
+          );
+        })()}
       {trace.powerAttack && (
         <>
           <Row label="Power attack" value={signed(trace.powerAttack.result)} />
@@ -168,16 +194,28 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
         </>
       )}
 
-      {explain.crit?.crit && result.critRate !== undefined && result.critRate > 0 && (
-        <>
-          <Row
-            label={`Crits (${Math.round(result.critRate * 100)}% of hits)`}
-            value={signed(explain.crit.crit.base.result + explain.crit.crit.bonus.result - 1)}
-          />
-          {contributionRows(explain.crit.crit.base, 'cb')}
-          {contributionRows(explain.crit.crit.bonus, 'cn')}
-        </>
-      )}
+      {explain.crit?.crit &&
+        result.critRate !== undefined &&
+        result.critRate > 0 &&
+        (() => {
+          const { base, bonus, bonusScale } = explain.crit!.crit!;
+          const baseRows = contributionRows(base, 'cb');
+          const bonusRows = contributionRows(bonus, 'cn');
+          return (
+            <>
+              <Row
+                label={`Crits (${Math.round(result.critRate * 100)}% of hits)`}
+                value={signed(base.result + bonus.result * bonusScale.result - 1)}
+              />
+              {(baseRows.length > 0 || bonusRows.length > 0) && (
+                <Row indent muted label="Weapon Base" value={`×${base.base.toFixed(2)}`} />
+              )}
+              {baseRows}
+              {bonusRows}
+              {contributionRows(bonusScale, 'cs', ' (avg.)')}
+            </>
+          );
+        })()}
 
       <div className="border-border/50 mt-1 border-t pt-1">
         <Row label="Average per hit" value={formatDamage(result.perHit.total)} />
