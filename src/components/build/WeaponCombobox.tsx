@@ -85,7 +85,11 @@ function WeaponCombobox({
             role="combobox"
             aria-expanded={open}
             disabled={disabled}
-            className={cn('w-full justify-between', className)}
+            // The popup's option rows are normal-case; the trigger inherits
+            // Button's uppercase/tracking-widest base, so override both here
+            // to match — mirrors real stock base-sera, whose combobox
+            // trigger never wraps a Button at all.
+            className={cn('w-full justify-between normal-case tracking-normal', className)}
           />
         }
       >

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { NumberField } from '@/components/ui/number-field';
 import { Slider } from '@/components/ui/slider';
 import { firstSliderValue } from '@/lib/slider-value';
 import { Switch } from '@/components/ui/switch';
@@ -40,39 +40,6 @@ function feralStateName(tier: number): string {
   if (tier >= 4) return 'Odd';
   if (tier >= 2) return 'Losing it';
   return 'Feral';
-}
-
-function NumberField({
-  id,
-  label,
-  value,
-  min,
-  max,
-  step,
-  onChange,
-}: {
-  id: string;
-  label: string;
-  value: number;
-  min: number;
-  max: number;
-  step?: number;
-  onChange: (value: number) => void;
-}) {
-  return (
-    <div className="space-y-1.5">
-      <Label htmlFor={id}>{label}</Label>
-      <Input
-        id={id}
-        type="number"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={e => onChange(Math.max(min, Math.min(max, parseInt(e.target.value, 10) || min)))}
-      />
-    </div>
-  );
 }
 
 function SliderField({

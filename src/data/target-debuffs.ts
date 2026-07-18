@@ -17,6 +17,8 @@ import type { Modifier } from '@/types/modifiers';
  * 0.1% per stack. The +100% cap (1000 stacks) is user-spec/community, not
  * ESM-visible — docs/assumptions.md "Tenderizer".
  */
+export const TENDERIZER_MAX_STACKS = 1000;
+
 export function getTargetDebuffModifiers(): Modifier[] {
   return [
     {
@@ -25,7 +27,7 @@ export function getTargetDebuffModifiers(): Modifier[] {
       bucket: 'dbm',
       op: 'ADD',
       value: 0.001,
-      conditions: [{ kind: 'stacks', counter: 'tenderizer', max: 1000 }],
+      conditions: [{ kind: 'stacks', counter: 'tenderizer', max: TENDERIZER_MAX_STACKS }],
     },
   ];
 }

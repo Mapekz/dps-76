@@ -2,10 +2,10 @@ import * as React from 'react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ButtonGroup } from '@/components/ui/button-group';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { ToggleGroup } from '@/components/ui/toggle-group';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { wrongRacePerks } from '@/data/perk-race';
@@ -47,28 +47,15 @@ function RaceControl() {
   return (
     <div className="space-y-1.5">
       <Label>Race</Label>
-      <ButtonGroup>
-        {(['human', 'ghoul'] as const).map(race => {
-          const selected = (race === 'ghoul') === isGhoul;
-          return (
-            <Button
-              key={race}
-              type="button"
-              size="sm"
-              variant={selected ? 'default' : 'outline'}
-              className={selected ? 'border border-primary hover:border-primary/90' : undefined}
-              title={
-                race === 'ghoul'
-                  ? 'Ghoul: feral meter applies; food/drink meters do not'
-                  : 'Human: food/drink meters apply; feral meter does not'
-              }
-              onClick={() => handleClick(race)}
-            >
-              {race === 'human' ? 'Human' : 'Ghoul'}
-            </Button>
-          );
-        })}
-      </ButtonGroup>
+      <ToggleGroup
+        aria-label="Race"
+        options={[
+          { value: 'human', label: 'Human', title: 'Human: food/drink meters apply; feral meter does not' },
+          { value: 'ghoul', label: 'Ghoul', title: 'Ghoul: feral meter applies; food/drink meters do not' },
+        ]}
+        value={isGhoul ? 'ghoul' : 'human'}
+        onValueChange={handleClick}
+      />
 
       <Dialog open={pending !== null} onOpenChange={open => !open && setPending(null)}>
         <DialogContent>

@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Combobox } from '@/components/ui/combobox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { NumberField } from '@/components/ui/number-field';
 import { Slider } from '@/components/ui/slider';
 import { firstSliderValue } from '@/lib/slider-value';
 import { ToggleChips } from '@/components/ui/toggle-chips';
@@ -16,6 +17,7 @@ import {
   getDefaultBodyPart,
   resolveTargetBodyPart,
 } from '@/data/bodyparts';
+import { TENDERIZER_MAX_STACKS } from '@/data/target-debuffs';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions, type EnemyConditions } from '@/types';
 import type { BodyPartRaceCategory } from '@/types/generated';
 import { SectionTrigger } from './SectionTrigger';
@@ -258,15 +260,12 @@ export function TargetSection() {
           {ENEMY_NUMBER_FIELDS.map(field => (
             <div key={field.key} className="space-y-1.5">
               <Label htmlFor={`target-${field.key}`}>{field.label}</Label>
-              <Input
+              <NumberField
                 id={`target-${field.key}`}
-                type="number"
                 min={field.min}
                 max={field.max}
                 value={(conditions[field.key] as number | undefined) ?? (defaults[field.key] as number)}
-                onChange={e =>
-                  setEnemy(field.key, Math.max(field.min, Math.min(field.max, parseInt(e.target.value, 10) || field.min)))
-                }
+                onChange={v => setEnemy(field.key, v)}
               />
             </div>
           ))}
@@ -308,23 +307,16 @@ export function TargetSection() {
 
           <div className="space-y-1.5">
             <Label htmlFor="target-tenderizer">Tenderizer stacks on the target</Label>
-            <Input
+            <NumberField
               id="target-tenderizer"
-              type="number"
               min={0}
-              max={1000}
+              max={TENDERIZER_MAX_STACKS}
               value={tenderizer}
-              onChange={e =>
-                dispatch({
-                  type: 'condition/set',
-                  key: 'tenderizerStacks',
-                  value: Math.max(0, Math.min(1000, parseInt(e.target.value, 10) || 0)),
-                })
-              }
+              onChange={v => dispatch({ type: 'condition/set', key: 'tenderizerStacks', value: v })}
             />
             <p className="text-muted-foreground text-xs">
-              +0.1% damage taken per stack, up to +100% at 1000 stacks. Applied by any player's Tenderizer — you
-              don't need the card equipped.
+              +0.1% damage taken per stack, up to +100% at {TENDERIZER_MAX_STACKS} stacks. Applied by any player's
+              Tenderizer — you don't need the card equipped.
             </p>
           </div>
 

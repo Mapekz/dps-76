@@ -1,8 +1,6 @@
 import * as React from "react"
 import { Slider as SliderPrimitive } from "@base-ui/react/slider"
 
-import { cn } from "@/lib/utils"
-
 export interface SliderMark {
   /** Position in the slider's own min/max coordinate space. */
   value: number
@@ -25,7 +23,7 @@ function Slider({
   )
 
   return (
-    <div className={cn("relative w-full", marks && marks.some(m => m.label !== undefined) && "pb-4")}>
+    <div className="w-full">
       <SliderPrimitive.Root
         data-slot="slider"
         defaultValue={defaultValue}
@@ -53,14 +51,24 @@ function Slider({
             <SliderPrimitive.Thumb
               data-slot="slider-thumb"
               key={index}
-              className="bg-primary focus-visible:ring-ring/30 hover:ring-ring/30 block size-3 shrink-0 border-none transition-colors select-none hover:ring-2 focus-visible:ring-2 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
-            />
+              className="bg-primary focus-visible:ring-ring/30 hover:ring-ring/30 relative block size-3 shrink-0 border-none transition-colors select-none hover:ring-2 focus-visible:ring-2 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
+            >
+              {/* Invisible padded hit-area, not a bigger visible dot — grows the
+                  real touch target for mobile without resizing what's drawn.
+                  Pointer/touch handling lives on the thumb's own node and just
+                  reads clientX/clientY off the event, so a pointerdown that
+                  starts on this child bubbles up and behaves identically. */}
+              <span className="absolute -inset-2" />
+            </SliderPrimitive.Thumb>
           ))}
         </SliderPrimitive.Control>
       </SliderPrimitive.Root>
+      {/* Normal document flow, not absolutely positioned over the slider —
+          its own height always pushes whatever comes next down for real, so
+          it can't silently overlap a sibling (in this file or a caller's) the
+          way an absolutely-positioned overlay with a guessed clearance can. */}
       {marks && max > min && (
-        // top-4 = directly under the 16px slider row (top-full would land past the wrapper's label padding).
-        <div data-slot="slider-marks" className="pointer-events-none absolute inset-x-2 top-4">
+        <div data-slot="slider-marks" className="pointer-events-none relative mt-1.5 h-5 px-2">
           {marks.map(m => (
             <div
               key={m.value}
