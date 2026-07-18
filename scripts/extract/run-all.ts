@@ -12,8 +12,10 @@ import { extractOmods } from './extract-omods';
 import { extractUniques } from './extract-uniques';
 import { extractBuffs } from './extract-buffs';
 import { extractBodyParts } from './extract-bodyparts';
+import { extractCurveTables } from './extract-curvetables';
+import { extractNpcs } from './extract-npcs';
 
-const KNOWN_EXTRACTORS = ['weapons', 'perks', 'omods', 'uniques', 'buffs', 'bodyparts'] as const;
+const KNOWN_EXTRACTORS = ['weapons', 'perks', 'omods', 'uniques', 'buffs', 'bodyparts', 'curvetables', 'npcs'] as const;
 type ExtractorName = (typeof KNOWN_EXTRACTORS)[number];
 
 async function main() {
@@ -241,6 +243,31 @@ async function main() {
     meta.counts.bodypartRaces = result.races.length;
     meta.unresolved.push(...result.unresolved);
     console.log(`  ${result.races.length} races (unresolved: ${result.unresolved.length})`);
+  }
+
+  if (only.includes('curvetables')) {
+    console.log('Extracting creature/player universal curve tables…');
+    // Different output root than every other extractor: curvetables live at
+    // src/data/<mode>/curvetables/, not .../generated/ (see extract-curvetables.ts).
+    const curveDir = path.join(import.meta.dirname, '../../src/data', mode, 'curvetables');
+    const result = await extractCurveTables(client);
+    for (const file of result.files) {
+      const filePath = path.join(curveDir, file.relativePath);
+      await mkdir(path.dirname(filePath), { recursive: true });
+      await writeFile(filePath, JSON.stringify(file.content, null, 1));
+    }
+    meta.counts.curvetables = result.files.length;
+    meta.unresolved.push(...result.unresolved);
+    console.log(`  ${result.files.length} curve table files written → ${curveDir} (unresolved: ${result.unresolved.length})`);
+  }
+
+  if (only.includes('npcs')) {
+    console.log('Extracting curated-target NPC stats…');
+    const result = await extractNpcs(client);
+    await writeFile(path.join(outDir, 'npcs.json'), JSON.stringify(result.npcs, null, 1));
+    meta.counts.npcs = result.npcs.length;
+    meta.unresolved.push(...result.unresolved);
+    console.log(`  ${result.npcs.length} npcs (unresolved: ${result.unresolved.length})`);
   }
 
   await writeFile(path.join(outDir, '_meta.json'), JSON.stringify(meta, null, 2));

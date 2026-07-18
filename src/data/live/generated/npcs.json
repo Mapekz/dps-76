@@ -1,0 +1,3488 @@
+[
+ {
+  "id": "HumanRace",
+  "formId": "0x0003183A",
+  "name": "Human",
+  "healthCurveTier": 18,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 13
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 10
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 13
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 10
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 10
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 13
+   }
+  ],
+  "levelMinGlobal": 1,
+  "levelMaxGlobal": 50,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "FeralGhoulRace",
+  "formId": "0x000758AD",
+  "name": "Feral Ghoul",
+  "healthCurveTier": 17,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 7
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 10
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 9
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 6
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 10
+   }
+  ],
+  "levelMinGlobal": 1,
+  "levelMaxGlobal": 50,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "ScorchedRace",
+  "formId": "0x00036473",
+  "name": "Scorched",
+  "healthCurveTier": 18,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 10
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 11
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 10
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 7
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 8
+   }
+  ],
+  "levelMinGlobal": 1,
+  "levelMaxGlobal": 50,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "SuperMutantRace",
+  "formId": "0x0001A00C",
+  "name": "Super Mutant",
+  "healthCurveTier": 23,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 22
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 24
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 19
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 19
+   }
+  ],
+  "levelMinGlobal": 5,
+  "levelMaxGlobal": 50,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "LvlSuperMutantBoss_DailyOps",
+  "formId": "0x005CB906",
+  "name": "Super Mutant Firestarter",
+  "healthCurveTier": 40,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 29
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 28
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 24
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 23
+   }
+  ],
+  "levelMinGlobal": 40,
+  "levelMaxGlobal": 100,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "SupermutantBehemothRace",
+  "formId": "0x000BB7DD",
+  "name": "Behemoth",
+  "healthCurveTier": 37,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 32
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 37
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 26
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 21
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 21
+   }
+  ],
+  "levelMinGlobal": 30,
+  "levelMaxGlobal": 60,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "MoleMinerRace",
+  "formId": "0x0031FA77",
+  "name": "Mole Miner",
+  "healthCurveTier": 23,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 24
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 32
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 36
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 16
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 36
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 26
+   }
+  ],
+  "levelMinGlobal": 1,
+  "levelMaxGlobal": 50,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "ViciousDogRace",
+  "formId": "0x0001D15A",
+  "name": "Wild Mongrel",
+  "healthCurveTier": 16,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 7
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 8
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 3
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 10
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 8
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 11
+   }
+  ],
+  "levelMinGlobal": 1,
+  "levelMaxGlobal": 50,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "WendigoRace",
+  "formId": "0x00015583",
+  "name": "Wendigo",
+  "healthCurveTier": 23,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 16
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 11
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 14
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 16
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 12
+   }
+  ],
+  "levelMinGlobal": 10,
+  "levelMaxGlobal": 50,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "WendigoColossusRace",
+  "formId": "0x0059E02F",
+  "name": "Earle / Wendigo Colossus",
+  "healthCurveTier": 55,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 22
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 21
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 18
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 16
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 17
+   }
+  ],
+  "levelMinGlobal": 80,
+  "levelMaxGlobal": 100,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "YaoGuaiRace",
+  "formId": "0x000A0F33",
+  "name": "Yao Guai",
+  "healthCurveTier": 25,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 16
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 17
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 8
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 22
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 15
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 14
+   }
+  ],
+  "levelMinGlobal": 15,
+  "levelMaxGlobal": 60,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "DeathclawRace",
+  "formId": "0x0001DB4C",
+  "name": "Deathclaw",
+  "healthCurveTier": 33,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 32
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 20
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 14
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 44
+   }
+  ],
+  "levelMinGlobal": 10,
+  "levelMaxGlobal": 50,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "MirelurkRace",
+  "formId": "0x00024002",
+  "name": "Mirelurk",
+  "healthCurveTier": 17,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 22
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 15
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 13
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 7
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 25
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 17
+   }
+  ],
+  "levelMinGlobal": 5,
+  "levelMaxGlobal": 50,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "MirelurkHunterRace",
+  "formId": "0x00064C5E",
+  "name": "Mirelurk Hunter",
+  "healthCurveTier": 23,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 17
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 19
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 14
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 6
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 30
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 14
+   }
+  ],
+  "levelMinGlobal": 10,
+  "levelMaxGlobal": 50,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "MirelurkKingRace",
+  "formId": "0x000B7F95",
+  "name": "Mirelurk King",
+  "healthCurveTier": 27,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 20
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 31
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 22
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 15
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 32
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 24
+   }
+  ],
+  "levelMinGlobal": 20,
+  "levelMaxGlobal": 60,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "MirelurkQueenRace",
+  "formId": "0x000E12AB",
+  "name": "Mirelurk Queen",
+  "healthCurveTier": 37,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 44
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 44
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 18
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 26
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 28
+   }
+  ],
+  "levelMinGlobal": 5,
+  "levelMaxGlobal": 50,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "MothmanRace",
+  "formId": "0x00490770",
+  "name": "Mothman",
+  "healthCurveTier": 28,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 15
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 13
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 8
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 7
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 27
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 22
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 60,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "ScorchBeastRace",
+  "formId": "0x00011C80",
+  "name": "Scorchbeast",
+  "healthCurveTier": 37,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 30
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 42
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 30
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 20
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 22
+   }
+  ],
+  "levelMinGlobal": 30,
+  "levelMaxGlobal": 100,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "EncScorchbeastQueen01Template",
+  "formId": "0x00043C75",
+  "name": "Scorchbeast Queen",
+  "healthCurveTier": 55,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 28
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 31
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 22
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 27
+   }
+  ],
+  "levelMinGlobal": 60,
+  "levelMaxGlobal": 100,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "RadScorpionRace",
+  "formId": "0x000636AA",
+  "name": "Radscorpion",
+  "healthCurveTier": 26,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 16
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 30
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 21
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 14
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 19
+   }
+  ],
+  "levelMinGlobal": 5,
+  "levelMaxGlobal": 50,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "SnallyGasterRace",
+  "formId": "0x0000D194",
+  "name": "Snallygaster",
+  "healthCurveTier": 25,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 15
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 13
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 10
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 21
+   }
+  ],
+  "levelMinGlobal": 5,
+  "levelMaxGlobal": 50,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "GraftonMonsterRace",
+  "formId": "0x0000E8D6",
+  "name": "Grafton Monster",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 31
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 25
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 18
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 23
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 23
+   }
+  ],
+  "levelMinGlobal": 20,
+  "levelMaxGlobal": 60,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "SheepsquatchRace",
+  "formId": "0x00479D4D",
+  "name": "Sheepsquatch",
+  "healthCurveTier": 33,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 18
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 17
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 13
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 14
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 15
+   }
+  ],
+  "levelMinGlobal": 30,
+  "levelMaxGlobal": 60,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "MegaSlothRace",
+  "formId": "0x0013BA15",
+  "name": "Megasloth",
+  "healthCurveTier": 30,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 18
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 21
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 14
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 21
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 16
+   }
+  ],
+  "levelMinGlobal": 5,
+  "levelMaxGlobal": 100,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "HoneyBeastRace",
+  "formId": "0x0000E7D7",
+  "name": "Honey Beast",
+  "healthCurveTier": 24,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 22
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 13
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 8
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 10
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 17
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 13
+   }
+  ],
+  "levelMinGlobal": 5,
+  "levelMaxGlobal": 50,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "DLC03_AnglerRace",
+  "formId": "0x00110772",
+  "name": "Angler",
+  "healthCurveTier": 25,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 13
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 20
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 24
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 8
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 14
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 14
+   }
+  ],
+  "levelMinGlobal": 5,
+  "levelMaxGlobal": 50,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "DLC03_FogCrawlerRace",
+  "formId": "0x001107BD",
+  "name": "Fog Crawler",
+  "healthCurveTier": 29,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 28
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 23
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 23
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 14
+   }
+  ],
+  "levelMinGlobal": 15,
+  "levelMaxGlobal": 60,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "DLC03_GulperRace",
+  "formId": "0x00110D7C",
+  "name": "Gulper",
+  "healthCurveTier": 27,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 17
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 34
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 14
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 9
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 27
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 20
+   }
+  ],
+  "levelMinGlobal": 20,
+  "levelMaxGlobal": 60,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "FlatwoodsMonsterRace",
+  "formId": "0x00524C6B",
+  "name": "Flatwoods Monster",
+  "healthCurveTier": 30,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 13
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 22
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 13
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 19
+   }
+  ],
+  "levelMinGlobal": 20,
+  "levelMaxGlobal": 60,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "BlueDevilRace",
+  "formId": "0x006A063D",
+  "name": "Blue Devil",
+  "healthCurveTier": 38,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 23
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 16
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 10
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 27
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 23
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 21
+   }
+  ],
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 100,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "OguaRace",
+  "formId": "0x0068EC55",
+  "name": "Ogua",
+  "healthCurveTier": 38,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 27
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 15
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 19
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 16
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 25
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 25
+   }
+  ],
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 100,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "UltraciteAbominationRace",
+  "formId": "0x00661EBF",
+  "name": "Ultracite Titan",
+  "healthCurveTier": 54,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 32
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 22
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 24
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 25
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 29
+   }
+  ],
+  "levelMinGlobal": 80,
+  "levelMaxGlobal": 100,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "AssaultronRace",
+  "formId": "0x00121D52",
+  "name": "Assaultron",
+  "healthCurveTier": 29,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 21
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 31
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 19
+   }
+  ],
+  "levelMinGlobal": 10,
+  "levelMaxGlobal": 75,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "ProtectronRace",
+  "formId": "0x00106B09",
+  "name": "Protectron",
+  "healthCurveTier": 22,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 24
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 10
+   }
+  ],
+  "levelMinGlobal": 1,
+  "levelMaxGlobal": 50,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "SentryBotRace",
+  "formId": "0x000AE0BB",
+  "name": "Sentry Bot",
+  "healthCurveTier": 36,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 29
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 20
+   }
+  ],
+  "levelMinGlobal": 20,
+  "levelMaxGlobal": 60,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "LiberatorRace",
+  "formId": "0x0031E625",
+  "name": "Liberator",
+  "healthCurveTier": 16,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 30,
+    "curveTier": null
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 13
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 17
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 22
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 30,
+    "curveTier": null
+   }
+  ],
+  "levelMinGlobal": 1,
+  "levelMaxGlobal": 50,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "StormBossRace",
+  "formId": "0x006D65BA",
+  "name": "Storm Goliath",
+  "healthCurveTier": 49,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 42
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 39
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 43
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 33
+   }
+  ],
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 100,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "BigfootRace",
+  "formId": "0x00868BB8",
+  "name": "Bigfoot",
+  "healthCurveTier": 53,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 20
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 20
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 5
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 47
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 36
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 20
+   }
+  ],
+  "levelMinGlobal": 75,
+  "levelMaxGlobal": 150,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_E01_EncDeathclawMatriarch",
+  "formId": "0x00854526",
+  "name": "Deathclaw Matriarch",
+  "healthCurveTier": null,
+  "healthFlatValue": 34000,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 32
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 20
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 14
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 44
+   }
+  ],
+  "levelMinGlobal": null,
+  "levelMaxGlobal": null,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "RD01_Enc01_GuardianBot",
+  "formId": "0x00771D8C",
+  "name": "EN06 Guardian",
+  "healthCurveTier": 58,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 37
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 31
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 28
+   }
+  ],
+  "levelMinGlobal": 100,
+  "levelMaxGlobal": 100,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "RD01_Enc04_Grenadier",
+  "formId": "0x0078BD9A",
+  "name": "Epsilon Squad - Lynx",
+  "healthCurveTier": 45,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 27
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 23
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 18
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 22
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 18
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 29
+   }
+  ],
+  "levelMinGlobal": 100,
+  "levelMaxGlobal": 100,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "RD01_Enc04_Assassin",
+  "formId": "0x0078BD9B",
+  "name": "Epsilon Squad - Vulture",
+  "healthCurveTier": 43,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 27
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 25
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 20
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 17
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 18
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 29
+   }
+  ],
+  "levelMinGlobal": 100,
+  "levelMaxGlobal": 100,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "RD01_Enc04_Brute",
+  "formId": "0x0078BD9C",
+  "name": "Epsilon Squad - Bloodhound",
+  "healthCurveTier": 47,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 29
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 21
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 19
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 16
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 18
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 28
+   }
+  ],
+  "levelMinGlobal": 100,
+  "levelMaxGlobal": 100,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "RD01_Enc06_ScorchtongueHead",
+  "formId": "0x00786D47",
+  "name": "Ultracite Terror",
+  "healthCurveTier": null,
+  "healthFlatValue": 500000,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 300,
+    "curveTier": null
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 300,
+    "curveTier": null
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 300,
+    "curveTier": null
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 300,
+    "curveTier": null
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 50
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 300,
+    "curveTier": null
+   }
+  ],
+  "levelMinGlobal": 100,
+  "levelMaxGlobal": 100,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "HTO_LvlBloodEagle_Boss_T5",
+  "formId": "0x0085A3B4",
+  "name": "Blood Eagle Destroyer",
+  "healthCurveTier": 54,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 44
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 38
+   }
+  ],
+  "levelMinGlobal": 150,
+  "levelMaxGlobal": 200,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "HTO_LvlPRCGhoul_Boss_T5",
+  "formId": "0x0085B67B",
+  "name": "Communist Commissar",
+  "healthCurveTier": 54,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 44
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 38
+   }
+  ],
+  "levelMinGlobal": 150,
+  "levelMaxGlobal": 200,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "HTO_LvlCultist_Boss_T5",
+  "formId": "0x0085CDA5",
+  "name": "Cultist Prophet",
+  "healthCurveTier": 54,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 44
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 38
+   }
+  ],
+  "levelMinGlobal": 150,
+  "levelMaxGlobal": 200,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "HTO_LvlMoleMiner_Boss_T5",
+  "formId": "0x0085DC79",
+  "name": "Mole Miner Juggernaut",
+  "healthCurveTier": 54,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 42
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 48
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 38
+   }
+  ],
+  "levelMinGlobal": 150,
+  "levelMaxGlobal": 200,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "HTO_LvlSuperMutant_Boss_T5",
+  "formId": "0x0086244F",
+  "name": "Super Mutant Primus",
+  "healthCurveTier": 54,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 42
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 48
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 38
+   }
+  ],
+  "levelMinGlobal": 150,
+  "levelMaxGlobal": 200,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "HTO_LvlScorched_Boss_T5",
+  "formId": "0x00863244",
+  "name": "Scorched Exterminator",
+  "healthCurveTier": 54,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 48
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 38
+   }
+  ],
+  "levelMinGlobal": 150,
+  "levelMaxGlobal": 200,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "HTO_LvlRobot_Boss_T5",
+  "formId": "0x00865B27",
+  "name": "Assaultron Intimidator",
+  "healthCurveTier": 54,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 48
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 48
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 38
+   }
+  ],
+  "levelMinGlobal": 150,
+  "levelMaxGlobal": 200,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "SDOW_HTO_LvlSlasherShadow_Boss_T5",
+  "formId": "0x008E06B5",
+  "name": "Pint-Sized Phantom Trespasser",
+  "healthCurveTier": 54,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 44
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 38
+   }
+  ],
+  "levelMinGlobal": 150,
+  "levelMaxGlobal": 200,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Death",
+  "formId": "0x007CFAA9",
+  "name": "The Pale Horseman",
+  "healthCurveTier": 34,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 44
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 42
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 42
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 42
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 42
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 39
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_War",
+  "formId": "0x007D2B32",
+  "name": "The Red Rider",
+  "healthCurveTier": 34,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 44
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 31
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 45
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 41
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 31
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 37
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Pestilence",
+  "formId": "0x007D2B35",
+  "name": "The White Horseman",
+  "healthCurveTier": 34,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 41
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 45
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 41
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 41
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 45
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 39
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Famine",
+  "formId": "0x007D2B37",
+  "name": "The Black Horseman",
+  "healthCurveTier": 34,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 43
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 43
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 41
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 41
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 43
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 39
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Granny",
+  "formId": "0x007D2B3C",
+  "name": "Granny Dolores",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 40
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 150,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Astronaut",
+  "formId": "0x00820734",
+  "name": "The Space Ranger",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 41
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 42
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 42
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_AntiGhoul",
+  "formId": "0x00820735",
+  "name": "Cletus Brimstone",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 47
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 32
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 28
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 40
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Irradiated",
+  "formId": "0x00820736",
+  "name": "Irene The Irradiated",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 37
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 48
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 40
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Pilot",
+  "formId": "0x00820739",
+  "name": "The Ace",
+  "healthCurveTier": 36,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 40
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_NukaQueen",
+  "formId": "0x0082073C",
+  "name": "Anna The Nuka-Queen",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 36
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 35
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_QuackDoctor",
+  "formId": "0x0082073D",
+  "name": "The Malpractitioner",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 37
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 42
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 42
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 37
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Patriot",
+  "formId": "0x00824449",
+  "name": "Corporal Jane",
+  "healthCurveTier": 34,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 43
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 31
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 41
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 41
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 31
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 39
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Foreman",
+  "formId": "0x0082444A",
+  "name": "The Foreman",
+  "healthCurveTier": 34,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 43
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 31
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 43
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 41
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 31
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 39
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Researcher",
+  "formId": "0x0082444B",
+  "name": "The Chief Researcher",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 37
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 41
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 42
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_ScoutLeader",
+  "formId": "0x0082444D",
+  "name": "Scout Leader Karen",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 25
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 37
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_BarryTone",
+  "formId": "0x0082444E",
+  "name": "Ragtime Randy",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 40
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 150,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Devil",
+  "formId": "0x00824450",
+  "name": "The Devil of Defiance",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 37
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 32
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 31
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 40
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Rich",
+  "formId": "0x00824452",
+  "name": "Baron Boris Wazie",
+  "healthCurveTier": 34,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 44
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 28
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 41
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 41
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 28
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 44
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Gambler",
+  "formId": "0x00825A9F",
+  "name": "Vito \"The Vic\" Bronco",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 40
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 150,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Mechanist",
+  "formId": "0x00825CC6",
+  "name": "Tincan Toni",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 37
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 31
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 45
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Fisherman",
+  "formId": "0x00833083",
+  "name": "Amadi the Piranha",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 37
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 31
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 42
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 42
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_RoboBrain",
+  "formId": "0x008349D3",
+  "name": "Chief Engineer Lewis",
+  "healthCurveTier": 34,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 38
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 31
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 41
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 41
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 31
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 44
+   }
+  ],
+  "levelMinGlobal": 100,
+  "levelMaxGlobal": 100,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Sniper",
+  "formId": "0x00839C07",
+  "name": "Charlie Half-Cocked",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 40
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 150,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Boxer",
+  "formId": "0x00839C0A",
+  "name": "Becca The Heavyweight",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 40
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 150,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Gunslinger",
+  "formId": "0x00839C0B",
+  "name": "Cowgirl Janine",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 40
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 150,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_BigGun",
+  "formId": "0x00839C0D",
+  "name": "Richie Finesse",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 42
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 37
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Crusher",
+  "formId": "0x0083A26F",
+  "name": "Gentle Gary",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 40
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 150,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Commie",
+  "formId": "0x0083AE9D",
+  "name": "The Proletariat Punisher",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 40
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 150,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Abraxo",
+  "formId": "0x0083AE9F",
+  "name": "The Cleaner",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 42
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 39
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 40
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 35
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "Burn_BountyTarget_BIG_Hunter",
+  "formId": "0x0083D598",
+  "name": "Colt the Bolt",
+  "healthCurveTier": 35,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 37
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 35
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 33
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 43
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ },
+ {
+  "id": "SDOW_Burn_BountyTarget_BIG_Slasher",
+  "formId": "0x008E06C5",
+  "name": "The Reborn Pint-Sized Slasher",
+  "healthCurveTier": 49,
+  "healthFlatValue": 0,
+  "resists": [
+   {
+    "damageType": "physical",
+    "flatValue": 0,
+    "curveTier": 42
+   },
+   {
+    "damageType": "poison",
+    "flatValue": 0,
+    "curveTier": 42
+   },
+   {
+    "damageType": "fire",
+    "flatValue": 0,
+    "curveTier": 42
+   },
+   {
+    "damageType": "cryo",
+    "flatValue": 0,
+    "curveTier": 45
+   },
+   {
+    "damageType": "radiation",
+    "flatValue": 0,
+    "curveTier": 42
+   },
+   {
+    "damageType": "energy",
+    "flatValue": 0,
+    "curveTier": 39
+   }
+  ],
+  "levelMinGlobal": 25,
+  "levelMaxGlobal": 175,
+  "levelOffsetGlobal": null
+ }
+]

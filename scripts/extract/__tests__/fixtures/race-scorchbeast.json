@@ -1,0 +1,35 @@
+{
+  "header": {
+    "signature": "RACE",
+    "form_id": "0x00019D95",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 6452,
+    "offset": 7936707
+  },
+  "editor_id": "ScorchBeastRace",
+  "fields": {
+    "Properties": [
+      {
+        "Actor Value": "0x000002D9",
+        "Value": 2.0,
+        "Curve Table": null
+      },
+      {
+        "Actor Value": "0x000002E0",
+        "Value": 1.0,
+        "Curve Table": null
+      },
+      {
+        "Actor Value": "0x000002D8",
+        "Value": 3.0,
+        "Curve Table": null
+      },
+      {
+        "Actor Value": "0x000002D5",
+        "Value": 100.0,
+        "Curve Table": null
+      }
+    ]
+  }
+}

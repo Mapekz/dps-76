@@ -417,6 +417,47 @@ export interface GeneratedBodyPartRace {
   noCripple: boolean;
 }
 
+/** The 6 damage types an NPC_'s resist Properties cover (Phase 2 spike — AVs 0x2E3/0x2EB/0x2E5/0x2E7/0x2E4/0x2EA). */
+export type GeneratedNpcDamageType = 'physical' | 'energy' | 'fire' | 'cryo' | 'poison' | 'radiation';
+
+export interface GeneratedNpcResist {
+  damageType: GeneratedNpcDamageType;
+  /** Authoritative only when `curveTier` is null (flat-wins convention — see extract-npcs.ts). */
+  flatValue: number;
+  /** CT_Creatures_Armor_Universal_Tier<N> this resist curve-scales from by the NPC's effective level; null when `flatValue` is authoritative instead. */
+  curveTier: number | null;
+}
+
+/**
+ * Per-curated-enemy stats (Health + 6 resists + level-scaling window),
+ * produced by scripts/extract/extract-npcs.ts. Joins GeneratedBodyPartRace
+ * by `id` (the shared CURATED_TARGETS edid — scripts/extract/curated-targets.ts).
+ * `formId` is the stats-bearing NPC_ record's own formId, which for
+ * RACE-keyed curated rows is a resolved representative "template" NPC_, NOT
+ * the RACE formId GeneratedBodyPartRace.formId points at for the same `id` —
+ * the two generated files answer different questions (weakpoints vs. stats)
+ * and intentionally don't share formId semantics.
+ */
+export interface GeneratedNpc {
+  /** Stable id — the curated target's edid; joins GeneratedBodyPartRace.id. */
+  id: string;
+  /** formId of the NPC_ record stats were actually read from — see header note. */
+  formId: string;
+  /** Curated display label — mirrors GeneratedBodyPartRace.name for the same id. */
+  name: string;
+  /** CT_Creatures_Health_Universal_Tier<N> the Health AV (0x2D4) curve-scales from; null when `healthFlatValue` is authoritative instead. */
+  healthCurveTier: number | null;
+  /** Authoritative only when `healthCurveTier` is null (flat-wins convention — see extract-npcs.ts). */
+  healthFlatValue: number;
+  resists: GeneratedNpcResist[];
+  /** Actor Scaling Info "Level Min Global" GLOB, resolved to its numeric Value; null when absent (e.g. a fixed-level unique boss — no scaling at all). */
+  levelMinGlobal: number | null;
+  /** Actor Scaling Info "Level Max Global" GLOB, resolved to its numeric Value; null when absent. */
+  levelMaxGlobal: number | null;
+  /** Actor Scaling Info "Level Offset Global" GLOB, resolved to its numeric Value; null when absent (0 in every sample seen so far — Phase 2 spike). */
+  levelOffsetGlobal: number | null;
+}
+
 export interface ExcludedRecordDetail {
   id: string;
   name?: string;

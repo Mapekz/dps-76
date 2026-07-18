@@ -1,0 +1,263 @@
+import type { EsmClient, EsmRecord } from './esm-client';
+import { CURATED_TARGETS } from './curated-targets';
+import { tierFromEdid } from './extract-curvetables';
+import type { GeneratedNpc, GeneratedNpcDamageType, GeneratedNpcResist } from '../../src/types/generated';
+
+/**
+ * Per-curated-target NPC stats (Health + 6 resists + level-scaling window),
+ * joined to CURATED_TARGETS/GeneratedBodyPartRace by `id`. Phase 2 spike
+ * (scratchpad/phase2-curve-spike.md, 2026-07-18) proved the shape:
+ * `NPC_.Properties[]` rows are `{Actor Value, Value, Curve Table?}`; the flat
+ * `Value` is the real number when no Curve Table is set, otherwise it's a
+ * curve-scaled stat evaluated at the actor's own effective level (clamp of
+ * the nearby player's level to `Actor Scaling Info.{Level Min/Max
+ * Global}`).
+ *
+ * NOT proven by the spike (found during this extractor's build, verified
+ * against ~40 sampled records): resist AVs (DamageResist/EnergyResist/
+ * Fire/Frost/Poison/RadResist) frequently live on the RACE record instead of
+ * repeating on every NPC_ of that race (e.g. `EncMirelurkCrab_Template` has
+ * zero resist Properties of its own — they're all on `MirelurkRace`), while
+ * Health (0x2D4) is NPC_-only and never appears on a RACE record in any
+ * sample. This extractor therefore merges RACE Properties as the fallback
+ * layer, NPC_ Properties as the override, per AV — the general
+ * "more-specific-record-wins" Bethesda convention, not previously documented
+ * for this record pair. `docs/assumptions.md` carries a terse citation.
+ *
+ * Flat-wins tie-break: when a Properties row has BOTH a nonzero flat `Value`
+ * AND a Curve Table (rare — `RD01_Enc06_ScorchtongueHead`'s Health is a flat
+ * 500000 despite carrying a Tier59 Curve Table ref), the flat value wins and
+ * the curve is ignored, mirroring the MGEF "flat-wins" GLOB-magnitude
+ * convention documented in the esm-cli skill.
+ */
+
+const HEALTH_AV = 0x2d4;
+/** Exported for tests. */
+export const RESIST_AVS: Record<number, GeneratedNpcDamageType> = {
+  0x2e3: 'physical', // DamageResist
+  0x2eb: 'energy', // EnergyResist
+  0x2e5: 'fire', // FireResist
+  0x2e7: 'cryo', // FrostResist
+  0x2e4: 'poison', // PoisonResist
+  0x2ea: 'radiation', // RadResistExposure
+};
+
+/**
+ * ~36 of the 83 curated rows key off a RACE (no stats of their own — see
+ * CuratedTarget). This maps each such RACE edid to a representative,
+ * stats-bearing NPC_ "template" record: the generic world-spawn actor for
+ * that race, verified via `esm search "*<race>*Template*" --type NPC_`
+ * (falling back to the bare `Enc<Race>NN` numbering when no `_Template`
+ * variant exists — Mirelurk King/Hunter/Queen, Mothman, Blue Devil, Storm
+ * Goliath, Ultracite Titan, Ogua) and confirmed each candidate's own `Race`
+ * field resolves back to the RACE formId (scripted verification,
+ * 2026-07-18 — every entry below passed; no row was picked on naming alone).
+ *
+ * `WendigoColossusRace` is the one deliberate exception: rather than the
+ * generic `EncWendigoColossus01Template`, it maps to Earle
+ * (`EN06_LvlWendigoColossus_Nuked`) per the spike's explicit "known-good
+ * NPCs" list — the merged bodyparts row is labeled "Earle / Wendigo
+ * Colossus" and Earle is the more interesting of the two for a DPS
+ * calculator (a farmable world boss vs. a rare wild spawn).
+ *
+ * `DLC03_GulperRace` needed one extra disambiguation step:
+ * `DLC03_EncGulper01Template`'s own `Race` field does NOT point at
+ * `DLC03_GulperRace` (it's `Attack Race`-only there) — `DLC03_EncGulper03`
+ * is the first candidate whose `Race` field actually matches.
+ */
+export const RACE_NPC_TEMPLATES: Readonly<Record<string, string>> = {
+  HumanRace: 'EncRaider01Template',
+  FeralGhoulRace: 'encFeralGhoul00Template',
+  ScorchedRace: 'EncScorched_Template',
+  SuperMutantRace: 'EncSuperMutant_Template',
+  SupermutantBehemothRace: 'EncSMBehemoth01Template',
+  MoleMinerRace: 'EncMoleMiner_Template',
+  ViciousDogRace: 'EncViciousDog01Template',
+  WendigoRace: 'EncWendigo01Template',
+  WendigoColossusRace: 'EN06_LvlWendigoColossus_Nuked', // Earle — see header note.
+  YaoGuaiRace: 'EncYaoGuai02Template',
+  DeathclawRace: 'EncDeathclaw01Template',
+  MirelurkRace: 'EncMirelurkCrab_Template',
+  MirelurkHunterRace: 'EncMirelurkHunter01',
+  MirelurkKingRace: 'EncMirelurkKing01',
+  MirelurkQueenRace: 'EncMirelurkQueen01',
+  MothmanRace: 'EncMothman02',
+  ScorchBeastRace: 'EncScorchbeast01Template',
+  RadScorpionRace: 'EncRadscorpion01Template',
+  SnallyGasterRace: 'EncSnallygaster01Template',
+  GraftonMonsterRace: 'EncGrafton01Template',
+  SheepsquatchRace: 'EncSheepsquatch01Template',
+  MegaSlothRace: 'EncMegaSloth01Template',
+  HoneyBeastRace: 'EncHoneyBeast01Template',
+  DLC03_AnglerRace: 'DLC03_EncAngler01Template',
+  DLC03_FogCrawlerRace: 'DLC03_EncFogCrawler01Template',
+  DLC03_GulperRace: 'DLC03_EncGulper03', // see header note — 01Template's own Race field doesn't match.
+  FlatwoodsMonsterRace: 'EncFlatwoodsMonster01Template',
+  BlueDevilRace: 'EncBlueDevil',
+  OguaRace: 'EncOgua',
+  UltraciteAbominationRace: 'EncUltraciteAbomination',
+  AssaultronRace: 'EncAssaultron01Template',
+  ProtectronRace: 'EncProtectron01Template',
+  SentryBotRace: 'EncSentryBot01Template',
+  LiberatorRace: 'EncLiberator01Template',
+  StormBossRace: 'EncStormBoss',
+  BigfootRace: 'EncBigfootTemplate',
+};
+
+export interface RawProperty {
+  'Actor Value'?: string | null;
+  Value?: number;
+  'Curve Table'?: { formid?: string; editor_id?: string } | null;
+}
+
+export interface MergedEntry {
+  value: number;
+  curveTableEdid: string | null;
+}
+
+/** Normalize an esm-emitted AV hex string ("0x000002D4") to a plain number, tolerant of padding/case. Exported for tests. */
+export function avToNumber(av: string | null | undefined): number | null {
+  if (!av) return null;
+  const n = parseInt(av, 16);
+  return Number.isFinite(n) ? n : null;
+}
+
+/** RACE Properties as the base layer, NPC_ Properties overriding per-AV — see header note. Exported for tests. */
+export function mergeProperties(raceProps: RawProperty[], npcProps: RawProperty[]): Map<number, MergedEntry> {
+  const merged = new Map<number, MergedEntry>();
+  for (const [props] of [[raceProps], [npcProps]] as const) {
+    for (const p of props) {
+      const av = avToNumber(p['Actor Value']);
+      if (av == null) continue;
+      merged.set(av, { value: p.Value ?? 0, curveTableEdid: p['Curve Table']?.editor_id ?? null });
+    }
+  }
+  return merged;
+}
+
+/** Resolve one merged Properties entry to {flatValue, curveTier} with the flat-wins tie-break. Pushes to `unresolved` on a non-Tier curve table. Exported for tests. */
+export function resolveStat(
+  entry: MergedEntry | undefined,
+  label: string,
+  unresolved: string[]
+): { flatValue: number; curveTier: number | null } {
+  if (!entry) return { flatValue: 0, curveTier: null };
+  if (entry.curveTableEdid == null || entry.value !== 0) {
+    // No curve, or flat-wins (nonzero flat alongside a curve — see header note).
+    return { flatValue: entry.value, curveTier: null };
+  }
+  const tier = tierFromEdid(entry.curveTableEdid);
+  if (tier == null) {
+    unresolved.push(`npcs: ${label} references non-Universal-Tier curve table "${entry.curveTableEdid}" — not representable, dropped`);
+    return { flatValue: 0, curveTier: null };
+  }
+  return { flatValue: 0, curveTier: tier };
+}
+
+/** Resolve a GLOB formId reference to its numeric Value; null (+ unresolved note) on any failure. */
+async function resolveGlobal(client: EsmClient, formId: string | undefined, label: string, unresolved: string[]): Promise<number | null> {
+  if (!formId) return null;
+  try {
+    const rec = await client.get(formId);
+    const value = rec.fields['Value'];
+    if (typeof value === 'number') return value;
+    unresolved.push(`npcs: ${label} GLOB ${formId} has no numeric Value field`);
+    return null;
+  } catch (err) {
+    unresolved.push(`npcs: ${label} GLOB ${formId} failed to resolve: ${(err as Error).message}`);
+    return null;
+  }
+}
+
+export interface NpcsResult {
+  npcs: GeneratedNpc[];
+  unresolved: string[];
+}
+
+export async function extractNpcs(client: EsmClient): Promise<NpcsResult> {
+  const unresolved: string[] = [];
+  const npcs: GeneratedNpc[] = [];
+
+  for (const target of CURATED_TARGETS) {
+    let record: EsmRecord;
+    try {
+      record = await client.get(target.edid);
+    } catch {
+      unresolved.push(`npcs: record ${target.edid} not found`);
+      continue;
+    }
+
+    let npcRecord: EsmRecord;
+    if (record.header.signature === 'NPC_') {
+      npcRecord = record;
+    } else if (record.header.signature === 'RACE') {
+      const templateEdid = RACE_NPC_TEMPLATES[target.edid];
+      if (!templateEdid) {
+        unresolved.push(`npcs: ${target.edid} is a RACE with no representative NPC_ template mapped — see RACE_NPC_TEMPLATES`);
+        continue;
+      }
+      try {
+        npcRecord = await client.get(templateEdid);
+      } catch {
+        unresolved.push(`npcs: ${target.edid}'s mapped template ${templateEdid} not found`);
+        continue;
+      }
+      if (npcRecord.header.signature !== 'NPC_') {
+        unresolved.push(`npcs: ${target.edid}'s mapped template ${templateEdid} is not an NPC_ record (got ${npcRecord.header.signature})`);
+        continue;
+      }
+    } else {
+      unresolved.push(`npcs: ${target.edid} is neither RACE nor NPC_ (got ${record.header.signature})`);
+      continue;
+    }
+
+    const npcProps = (npcRecord.fields['Properties'] as RawProperty[] | undefined) ?? [];
+
+    let raceProps: RawProperty[] = [];
+    const raceFormId = npcRecord.fields['Race'] as string | null | undefined;
+    if (raceFormId) {
+      try {
+        const raceRecord = await client.get(raceFormId);
+        raceProps = (raceRecord.fields['Properties'] as RawProperty[] | undefined) ?? [];
+      } catch {
+        unresolved.push(`npcs: ${target.edid} (${npcRecord.editor_id})'s Race ${raceFormId} not found — resist fallback skipped`);
+      }
+    }
+
+    const merged = mergeProperties(raceProps, npcProps);
+
+    const health = resolveStat(merged.get(HEALTH_AV), `${target.edid} health`, unresolved);
+    if (!merged.has(HEALTH_AV)) {
+      unresolved.push(`npcs: ${target.edid} (${npcRecord.editor_id}) has no Health Property (NPC_ nor RACE fallback)`);
+    }
+
+    const resists: GeneratedNpcResist[] = [];
+    for (const [avNum, damageType] of Object.entries(RESIST_AVS).map(([k, v]) => [Number(k), v] as const)) {
+      const entry = merged.get(avNum);
+      if (!entry) {
+        unresolved.push(`npcs: ${target.edid} (${npcRecord.editor_id}) has no ${damageType} resist Property (NPC_ nor RACE fallback)`);
+      }
+      const resolved = resolveStat(entry, `${target.edid} ${damageType} resist`, unresolved);
+      resists.push({ damageType, flatValue: resolved.flatValue, curveTier: resolved.curveTier });
+    }
+
+    const scaling = (npcRecord.fields['Actor Scaling Info'] as Record<string, string> | undefined) ?? {};
+    const levelMinGlobal = await resolveGlobal(client, scaling['Level Min Global'], `${target.edid} Level Min Global`, unresolved);
+    const levelMaxGlobal = await resolveGlobal(client, scaling['Level Max Global'], `${target.edid} Level Max Global`, unresolved);
+    const levelOffsetGlobal = await resolveGlobal(client, scaling['Level Offset Global'], `${target.edid} Level Offset Global`, unresolved);
+
+    npcs.push({
+      id: target.edid,
+      formId: npcRecord.header.form_id,
+      name: target.label,
+      healthCurveTier: health.curveTier,
+      healthFlatValue: health.flatValue,
+      resists,
+      levelMinGlobal,
+      levelMaxGlobal,
+      levelOffsetGlobal,
+    });
+  }
+
+  return { npcs, unresolved };
+}

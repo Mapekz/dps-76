@@ -17,7 +17,7 @@ panes, showing per-enemy **effective DPS, % damage retained, and TTK** for the
 emphasized scenario. Plus a pinned-enemy chip in the results pane
 ("vs SBQ · 94s") as the above-the-fold ambassador.
 
-## 3.1 Spike first (gate for everything else) — PARTIALLY DONE 2026-07-12
+## 3.1 Spike first (gate for everything else) — DONE 2026-07-18
 
 **Already shipped** (2026-07-12 sessions, ahead of the rest of this phase):
 - **BPTD body-part / weakpoint data**: `scripts/extract/extract-bodyparts.ts`
@@ -31,17 +31,23 @@ emphasized scenario. Plus a pinned-enemy chip in the results pane
   Location and weakpoint-ness are modeled separately (torso CAN be the
   weakpoint, user-confirmed).
 
-**Still to spike** — run the `esm` CLI (`~/.local/bin/esm`; dump path comes
-from `FO76_ESM_PATH`, currently `~/dev/fo76/Data/20260710/SeventySix.esm`)
-against known NPCs — Earle, Scorchbeast Queen, Super Mutant — to pin down:
-- Where HP/DR/ER actually live: `NPC_` record vs `RACE` vs leveled/template
-  chains (TPLT). Expect template indirection.
-- How enemy level maps to the already-extracted
-  `armor_universal_tier*.json` curvetables.
-
-Findings → `docs/assumptions.md`. CLI quirks to remember: `list --limit 0`
-returns `[]` (use `--limit 99999`), `search` needs `"*"` not `""`, `list`
-never returns names.
+**Spike resolved 2026-07-18** (full report: `scratchpad/phase2-curve-spike.md`,
+terse registry: `docs/assumptions.md` "Creature stat curves & NPC
+extraction"): HP/DR/ER live directly on `NPC_.Properties[]` (no template
+indirection on the sampled bosses), with resist AVs frequently falling back
+to the RACE record instead (found during extractor-build, not the spike
+itself). Enemy level maps to the curvetables via
+`effectiveLevel = clamp(nearbyPlayerLevel + levelOffsetGlobal,
+levelMinGlobal, levelMaxGlobal)`, `curveX = effectiveLevel` — the
+`Renorm_*` GLOB family sourced from `NPC_.Actor Scaling Info`. Data slice
+SHIPPED same session: `scripts/extract/extract-curvetables.ts` re-extracted
+all 4 Universal-Tier curve families (creature health/armor + player
+damage/armor were the previously-stale hand-copies — see assumptions.md for
+the materiality breakdown), and `scripts/extract/extract-npcs.ts` resolved
+all 83 curated targets to a stats-bearing NPC_ record with zero unresolved.
+Open item carried to the measurement backlog: Scorchbeast Queen's ESM-derived
+HP is ~10× a commonly cited community figure — see
+`dps-todos/measurement-backlog.md`.
 
 ## 3.2 Extractor + curated overlay
 - `scripts/extract/extract-npcs.ts` + registration in `run-all.ts` + checked-in

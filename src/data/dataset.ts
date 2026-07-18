@@ -1,5 +1,5 @@
 import type { GameMode, Perk, PerkId, Enemy, EnemyMutation, Weapon } from '@/types';
-import type { GeneratedAddiction, GeneratedBodyPartRace, GeneratedOmod, GeneratedBuff, GeneratedPerk, GeneratedUnique } from '@/types/generated';
+import type { GeneratedAddiction, GeneratedBodyPartRace, GeneratedNpc, GeneratedOmod, GeneratedBuff, GeneratedPerk, GeneratedUnique } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 
 import { weapons as weaponsLive, generatedWeaponsRaw as generatedWeaponsRawLive } from './live/weapons';
@@ -11,6 +11,7 @@ import {
 } from './live/enemies';
 import { bodyArmor as bodyArmorLive } from './live/armor';
 import { powerArmor as powerArmorLive } from './live/power-armor';
+import { generatedNpcsRaw as generatedNpcsRawLive } from './live/npcs';
 
 import { weapons as weaponsPts, generatedWeaponsRaw as generatedWeaponsRawPts } from './pts/weapons';
 import { perks as perkNamesPts } from './pts/perks';
@@ -38,6 +39,7 @@ import {
   forceVisibleConsumableIds,
 } from './overrides/corrections';
 import { perkFamilyOverrides, extraPerkModifiers } from './overrides/perk-overrides';
+import { npcOverrides } from './overrides/npc-overrides';
 import { derivePerkRegistry, type PerkNameEntry } from './perk-cards';
 import generatedOmodsLive from './live/generated/omods.json';
 import generatedPerksLive from './live/generated/perks.json';
@@ -109,6 +111,11 @@ export function applyNameOverride<T extends { id: string; name: string }>(
   });
 }
 
+/** Replace an npc record wholesale when an override targets its id (npc-overrides.ts REPLACES, not patches — see that file's header). */
+export function applyNpcOverrides(items: GeneratedNpc[], overridesById: Readonly<Record<string, GeneratedNpc>>): GeneratedNpc[] {
+  return items.map(item => overridesById[item.id] ?? item);
+}
+
 type LegendaryRankModifiers = typeof legendaryRankModifiersLive;
 type BodyArmor = typeof bodyArmorLive;
 type PowerArmor = typeof powerArmorLive;
@@ -124,6 +131,7 @@ export interface Dataset {
   /** Mode-wide addiction catalog (obtainable-only, see extract-buffs.ts) — mode-shared like mutations today. */
   addictions: GeneratedAddiction[];
   bodyPartRaces: GeneratedBodyPartRace[];
+  npcs: GeneratedNpc[];
   enemies: Record<string, Enemy>;
   enemyMutations: Record<string, EnemyMutation>;
   legendaryRankModifiers: LegendaryRankModifiers;
@@ -158,6 +166,7 @@ const generatedPerks = generatedPerksLive as GeneratedPerk[];
 const generatedAddictions = generatedAddictionsLive as GeneratedAddiction[];
 const generatedBodyParts = generatedBodyPartsLive as GeneratedBodyPartRace[];
 const generatedUniques = generatedUniquesLive as unknown as GeneratedUnique[];
+const mergedNpcs = applyNpcOverrides(generatedNpcsRawLive, npcOverrides);
 
 function buildDataset(hand: HandAuthored): Dataset {
   const { perkNames, ...rest } = hand;
@@ -171,6 +180,7 @@ function buildDataset(hand: HandAuthored): Dataset {
     consumables: mergedConsumables,
     addictions: generatedAddictions,
     bodyPartRaces: generatedBodyParts,
+    npcs: mergedNpcs,
   };
 }
 
@@ -265,6 +275,9 @@ export function getUnresolvedOverrideKeys(mode: GameMode): UnresolvedOverrideKey
   const familyIds = new Set(generatedPerksLive.map(p => p.family));
   check('perkFamilyOverrides (target family)', Object.values(perkFamilyOverrides), familyIds);
   check('extraPerkModifiers', Object.keys(extraPerkModifiers), familyIds);
+
+  const npcIds = new Set(generatedNpcsRawLive.map(n => n.id));
+  check('npcOverrides', Object.keys(npcOverrides), npcIds);
 
   return out;
 }
