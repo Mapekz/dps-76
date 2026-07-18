@@ -42,7 +42,7 @@ export function CritGauge({ critMeter }: { critMeter: CritMeterResult }) {
             <span
               key={i}
               className={cn(
-                'h-1.5 flex-1 rounded-[1px] transition-colors',
+                'h-1.5 flex-1 rounded-none transition-colors',
                 isCritShot ? 'bg-primary' : 'bg-muted-foreground/30'
               )}
             />

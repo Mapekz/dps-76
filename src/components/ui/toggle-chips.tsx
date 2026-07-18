@@ -39,7 +39,7 @@ export function ToggleChips<T extends string>({
           title={opt.title}
           onClick={() => onToggle(opt.value, opt.active)}
           className={cn(
-            'focus-visible:ring-ring inline-flex items-center gap-1 rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2',
+            'focus-visible:ring-ring inline-flex items-center gap-1 rounded-none border tracking-wide uppercase transition-colors focus-visible:outline-none focus-visible:ring-2',
             size === 'xs' ? 'px-2 py-0.5 text-xs' : 'h-8 px-3 text-sm font-medium',
             opt.active
               ? 'border-primary text-foreground bg-primary/15'

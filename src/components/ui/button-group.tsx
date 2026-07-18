@@ -50,7 +50,7 @@ function ButtonGroupText({
     props: mergeProps<"div">(
       {
         className: cn(
-          "bg-muted flex items-center gap-2 rounded-md border px-4 text-sm font-medium shadow-xs [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4",
+          "flex items-center gap-2 border border-transparent border-b-input bg-transparent px-2.5 text-xs font-semibold uppercase [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-3.5",
           className
         ),
       } as React.ComponentProps<"div">,

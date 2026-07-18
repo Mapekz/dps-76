@@ -1,5 +1,5 @@
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion"
-import { ChevronDownIcon } from "lucide-react"
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -34,13 +34,14 @@ function AccordionTrigger({
         className={cn(
           // min-w-0 so a wide trigger row (long section name + badge + summary) can
           // shrink and let its children truncate, instead of spilling out of the card.
-          "focus-visible:border-ring focus-visible:ring-ring/50 flex min-w-0 flex-1 items-center justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] aria-disabled:pointer-events-none aria-disabled:opacity-50 [&[data-panel-open]>svg]:rotate-180",
+          "group/accordion-trigger focus-visible:border-ring focus-visible:ring-ring/30 relative flex min-w-0 flex-1 items-center justify-between gap-4 rounded-none border border-transparent py-4 text-left text-sm font-semibold transition-all outline-none hover:underline focus-visible:ring-2 aria-disabled:pointer-events-none aria-disabled:opacity-50",
           className
         )}
         {...props}
       >
         {children}
-        <ChevronDownIcon className="text-muted-foreground pointer-events-none size-4 shrink-0 transition-transform duration-200" />
+        <ChevronDownIcon className="text-muted-foreground pointer-events-none size-3.5 shrink-0 group-aria-expanded/accordion-trigger:hidden" />
+        <ChevronUpIcon className="text-muted-foreground pointer-events-none hidden size-3.5 shrink-0 group-aria-expanded/accordion-trigger:inline" />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   )

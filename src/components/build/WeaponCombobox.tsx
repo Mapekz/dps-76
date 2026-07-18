@@ -106,11 +106,11 @@ function WeaponCombobox({
           inline
           open
         >
-          <div data-slot="combobox-input-wrapper" className="flex h-9 items-center gap-2 border-b px-3">
-            <SearchIcon className="size-4 shrink-0 opacity-50" />
+          <div data-slot="combobox-input-wrapper" className="flex h-10 items-center gap-2 border-b border-input px-3">
+            <SearchIcon className="size-3.5 shrink-0 opacity-50" />
             <ComboboxPrimitive.Input
               placeholder={searchPlaceholder}
-              className="placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
+              className="placeholder:text-muted-foreground flex h-10 w-full bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
           <ComboboxPrimitive.List className="max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto">
@@ -123,7 +123,7 @@ function WeaponCombobox({
                   {isCollapsible ? (
                     <button
                       type="button"
-                      className="text-muted-foreground hover:text-foreground flex w-full items-center justify-between px-2 py-1.5 text-xs font-medium"
+                      className="text-muted-foreground hover:text-foreground flex w-full items-center justify-between px-3 py-2 text-xs font-semibold tracking-wider uppercase"
                       onClick={() => setCollapsed(c => !c)}
                     >
                       <span>
@@ -135,7 +135,7 @@ function WeaponCombobox({
                     </button>
                   ) : (
                     group && (
-                      <ComboboxPrimitive.GroupLabel className="text-muted-foreground px-2 py-1.5 text-xs font-medium">
+                      <ComboboxPrimitive.GroupLabel className="px-3 py-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                         {group}
                       </ComboboxPrimitive.GroupLabel>
                     )
@@ -145,7 +145,7 @@ function WeaponCombobox({
                       <ComboboxPrimitive.Item
                         key={option.value}
                         value={option}
-                        className="data-highlighted:bg-accent data-highlighted:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none"
+                        className="data-highlighted:bg-accent data-highlighted:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-none px-2 py-1.5 text-sm outline-hidden select-none"
                       >
                         <CheckIcon className={cn('mr-2 size-4 shrink-0', value === option.value ? 'opacity-100' : 'opacity-0')} />
                         <span className="min-w-0 flex-1">

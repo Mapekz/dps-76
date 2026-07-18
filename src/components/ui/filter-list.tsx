@@ -22,7 +22,7 @@ function FilterListRoot({ children }: { children: React.ReactNode }) {
     <FilterQueryContext.Provider value={value}>
       <div
         data-slot="filter-list"
-        className="bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md"
+        className="bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-none"
       >
         {children}
       </div>
@@ -33,14 +33,14 @@ function FilterListRoot({ children }: { children: React.ReactNode }) {
 function FilterInput({ placeholder }: { placeholder?: string }) {
   const { query, setQuery } = useFilterQuery()
   return (
-    <div data-slot="filter-input-wrapper" className="flex h-9 items-center gap-2 border-b px-3">
-      <SearchIcon className="size-4 shrink-0 opacity-50" />
+    <div data-slot="filter-input-wrapper" className="flex h-10 items-center gap-2 border-b border-input px-3">
+      <SearchIcon className="size-3.5 shrink-0 opacity-50" />
       <input
         data-slot="filter-input"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder={placeholder}
-        className="placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
+        className="placeholder:text-muted-foreground flex h-10 w-full bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
       />
     </div>
   )
@@ -70,7 +70,7 @@ function FilterGroup({ heading, children }: { heading?: React.ReactNode; childre
   return (
     <div data-slot="filter-group" className="text-foreground overflow-hidden p-1">
       {heading !== undefined && (
-        <div className="text-muted-foreground px-2 py-1.5 text-xs font-medium">{heading}</div>
+        <div className="px-3 py-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">{heading}</div>
       )}
       {children}
     </div>
@@ -88,7 +88,7 @@ function FilterItem({
       data-slot="filter-item"
       disabled={disabled}
       className={cn(
-        "hover:bg-accent hover:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex w-full cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm outline-hidden select-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "hover:bg-accent hover:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex w-full cursor-default items-center gap-2 rounded-none px-2 py-1.5 text-left text-sm outline-hidden select-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}

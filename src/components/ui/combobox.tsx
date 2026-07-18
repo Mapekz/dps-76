@@ -104,11 +104,11 @@ function Combobox({
           inline
           open
         >
-          <div data-slot="combobox-input-wrapper" className="flex h-9 items-center gap-2 border-b px-3">
-            <SearchIcon className="size-4 shrink-0 opacity-50" />
+          <div data-slot="combobox-input-wrapper" className="flex h-10 items-center gap-2 border-b border-input px-3">
+            <SearchIcon className="size-3.5 shrink-0 opacity-50" />
             <ComboboxPrimitive.Input
               placeholder={searchPlaceholder}
-              className="placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
+              className="placeholder:text-muted-foreground flex h-10 w-full bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
           <ComboboxPrimitive.List className="max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto">
@@ -117,7 +117,7 @@ function Combobox({
               groupOptions.length > 0 ? (
                 <ComboboxPrimitive.Group key={group ?? ""} className="text-foreground overflow-hidden p-1">
                   {group && (
-                    <ComboboxPrimitive.GroupLabel className="text-muted-foreground px-2 py-1.5 text-xs font-medium">
+                    <ComboboxPrimitive.GroupLabel className="px-3 py-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                       {group}
                     </ComboboxPrimitive.GroupLabel>
                   )}
@@ -125,7 +125,7 @@ function Combobox({
                     <ComboboxPrimitive.Item
                       key={option.value}
                       value={option}
-                      className="data-highlighted:bg-accent data-highlighted:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+                      className="data-highlighted:bg-accent data-highlighted:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-none px-2 py-1.5 text-sm outline-hidden select-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
                     >
                       <CheckIcon
                         className={cn(

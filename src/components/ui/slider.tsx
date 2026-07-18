@@ -42,18 +42,18 @@ function Slider({
         <SliderPrimitive.Control className="relative flex w-full touch-none items-center select-none data-disabled:opacity-50">
           <SliderPrimitive.Track
             data-slot="slider-track"
-            className="bg-muted relative h-1.5 w-full grow overflow-hidden rounded-full"
+            className="bg-input/50 relative h-0.5 w-full grow overflow-hidden select-none"
           >
             <SliderPrimitive.Indicator
               data-slot="slider-range"
-              className="bg-primary absolute h-full"
+              className="bg-primary absolute h-full select-none"
             />
           </SliderPrimitive.Track>
           {Array.from({ length: _values.length }, (_, index) => (
             <SliderPrimitive.Thumb
               data-slot="slider-thumb"
               key={index}
-              className="border-primary bg-background focus-visible:ring-ring/50 block size-4 rounded-full border shadow-sm transition-colors focus-visible:ring-[3px] focus-visible:outline-hidden disabled:pointer-events-none"
+              className="bg-primary focus-visible:ring-ring/30 hover:ring-ring/30 block size-3 shrink-0 border-none transition-colors select-none hover:ring-2 focus-visible:ring-2 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
             />
           ))}
         </SliderPrimitive.Control>

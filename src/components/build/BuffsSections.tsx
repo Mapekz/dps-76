@@ -242,7 +242,7 @@ function ConsumableRadioRow({
   return (
     <label
       className={cn(
-        'hover:bg-muted/40 flex cursor-pointer gap-2 rounded-sm px-2 py-1 text-sm',
+        'hover:bg-muted/40 flex cursor-pointer gap-2 rounded-none px-2 py-1 text-sm',
         description ? 'items-start' : 'items-center',
         active && 'bg-muted/50'
       )}
@@ -322,7 +322,7 @@ function CausePicker({ items, placeholder }: { items: GeneratedBuff[]; placehold
 function NoneRadioRow({ label, groupName, activeId }: { label: string; groupName: string; activeId?: string }) {
   const dispatch = useBuildDispatch();
   return (
-    <label className="hover:bg-muted/40 text-muted-foreground flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1 text-sm">
+    <label className="hover:bg-muted/40 text-muted-foreground flex cursor-pointer items-center gap-2 rounded-none px-2 py-1 text-sm">
       <Radio
         name={groupName}
         checked={activeId === undefined}
@@ -365,7 +365,7 @@ function AddictionCell({
     <label
       htmlFor={id}
       className={cn(
-        'hover:bg-muted/40 flex w-full cursor-pointer gap-2 rounded-sm px-2 py-1 text-sm',
+        'hover:bg-muted/40 flex w-full cursor-pointer gap-2 rounded-none px-2 py-1 text-sm',
         description ? 'items-start' : 'items-center'
       )}
     >
