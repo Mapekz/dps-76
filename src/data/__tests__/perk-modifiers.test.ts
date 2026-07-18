@@ -162,6 +162,24 @@ describe('perkHasEngineEffect (drives the perk picker\'s "no effect yet" badge)'
     expect(perkHasEngineEffect('live', PerkId.GunslingerMaster)).toBe(true);
   });
 
+  it('is true for the Legendary SPECIAL cards (baseSpecial pathway, no modifiers by design)', () => {
+    expect(perkHasEngineEffect('live', PerkId.LegendaryStrength)).toBe(true);
+    expect(perkHasEngineEffect('live', PerkId.LegendaryLuck)).toBe(true);
+  });
+
+  // Cross-family audit (Phase 0): these families extract with zero modifiers
+  // of their own, but are named by another family's perkFamilyRank condition
+  // — the BringingOutTheBigGuns-shaped hole. Both gate real `dbm` modifiers
+  // (Mechanic's Best Friend / The Pipe, perk + legendary OMOD), so they're
+  // pinned in perkForceEffectivePerkIds.
+  it('is true for Makeshift Warrior (gates Mechanic\'s Best Friend\'s dbm modifiers)', () => {
+    expect(perkHasEngineEffect('live', PerkId.MakeshiftWarrior)).toBe(true);
+  });
+
+  it('is true for Licensed Plumber (gates The Pipe\'s dbm modifiers)', () => {
+    expect(perkHasEngineEffect('live', PerkId.LicensedPlumber)).toBe(true);
+  });
+
   it('is false for an unjoined/unknown PerkId', () => {
     expect(perkHasEngineEffect('live', 'NotARealPerkId')).toBe(false);
   });

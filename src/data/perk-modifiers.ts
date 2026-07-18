@@ -4,6 +4,7 @@ import type { Modifier } from '@/types/modifiers';
 import { hasAnyEngineEffect } from '@/types/modifiers';
 import { getDataset } from './dataset';
 import { extraPerkModifiers, perkForceEffectivePerkIds } from './overrides/perk-overrides';
+import { LEGENDARY_SPECIAL_PERKS } from './perk-budget';
 import { buildPerkJoinMaps, resolveFamily, type JoinMaps } from './perk-join';
 
 /**
@@ -101,6 +102,11 @@ export function getUnjoinedPerkIds(mode: GameMode): string[] {
  */
 export function perkHasEngineEffect(mode: GameMode, perkId: string): boolean {
   if (perkForceEffectivePerkIds.has(perkId)) return true;
+  // Legendary SPECIAL cards act through the perk-budget baseSpecial pathway
+  // (derivePerkBudget → derivePlayerStats), not the modifier IR — their PERK
+  // records extract with zero modifiers by design (docs/assumptions.md
+  // "SPECIAL & perk budget").
+  if (perkId in LEGENDARY_SPECIAL_PERKS) return true;
   const generated = getGeneratedPerk(mode, perkId);
   if (!generated) return false;
   const maxRank = generated.card ? generated.card.rankSources.length : generated.maxRank;

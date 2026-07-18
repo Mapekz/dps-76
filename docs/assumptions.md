@@ -922,6 +922,10 @@ derive-from-perks experiment):
   `playerIsGhoul` modifier conditions. Switching race prunes whatever no
   longer fits, after a confirm dialog — the user's choice is never silently
   overridden.
+- **ESM-proven**: `perkHasEngineEffect` recognizes `LEGENDARY_SPECIAL_PERKS`
+  structurally (membership check, not a modifier scan) — their PERK records
+  extract with zero modifiers by design, since the bonus is the baseSpecial
+  pathway above (`src/data/perk-modifiers.ts` `perkHasEngineEffect`).
 
 ## Max HP (derived)
 Engine: `src/lib/player-stats.ts`.

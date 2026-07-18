@@ -234,4 +234,16 @@ export const perkForceEffectivePerkIds: ReadonlySet<string> = new Set([
   // HasPerk 0x0004A0D6 → perkFamilyRank HeavyGunnerMaster), so its own family
   // extracts with zero modifiers and perkHasEngineEffect can't see the effect.
   'BringingOutTheBigGuns',
+  // Makeshift Warrior: its own family extracts with zero modifiers — the
+  // damage bonus lives on Mechanic's Best Friend (perk MechanicsBestFriend_Perk
+  // 0x00928015 r1) AND the Mechanic's Best Friend legendary OMOD, both with
+  // three `dbm` (+40%/+20%/+20%) modifiers gated
+  // `perkFamilyRank MakeshiftWarrior` minRank 1/2/3 — real, engine-effective.
+  'MakeshiftWarrior',
+  // Licensed Plumber: its own family extracts with zero modifiers — the
+  // damage bonus lives on The Pipe (perk ThePipe_Perk 0x0091EE2D r1) AND the
+  // The Pipe legendary OMOD, both with three `dbm` (+20% each) modifiers
+  // gated `perkFamilyRank LicensedPlumber` minRank 1/2/3 — real,
+  // engine-effective.
+  'LicensedPlumber',
 ]);
