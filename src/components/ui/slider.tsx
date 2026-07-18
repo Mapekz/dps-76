@@ -68,7 +68,13 @@ function Slider({
           it can't silently overlap a sibling (in this file or a caller's) the
           way an absolutely-positioned overlay with a guessed clearance can. */}
       {marks && max > min && (
-        <div data-slot="slider-marks" className="pointer-events-none relative mt-1.5 h-5 px-2">
+        // mx-2 (not px-2): percentages on the absolutely-positioned mark
+        // children resolve against this row's padding box, which already
+        // spans edge-to-edge — padding doesn't narrow that reference frame,
+        // only a real inset (margin, here) does. Without it the 0%/100%
+        // marks sit flush with the true edge and half their label bleeds
+        // past it into the Card's overflow-hidden.
+        <div data-slot="slider-marks" className="pointer-events-none relative mt-1.5 h-5 mx-2">
           {marks.map(m => (
             <div
               key={m.value}
