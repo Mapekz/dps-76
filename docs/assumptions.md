@@ -356,12 +356,11 @@ Engine: `src/lib/engine/sustain.ts`.
 - `burstDps = perHitAvg × fireRate` (mag-dump, no reload).
 - `sustainedDps = (perHitAvg × shotsPerMag) / (shotsPerMag/fireRate +
   reloadSec)`, `shotsPerMag = floor(Capacity / ammoPerShot)`.
-- **CONFIRMED (stopwatch, 2026-07-15)**: `reloadSec = Animation Reload
-  Seconds (RGW3) / Reload Speed (Data)` — measured reload times tracked this
-  rate-divisor reading over the time-scale alternative (`anim × (1 −
-  bonus)`), see `dps-todos/measurement-backlog.md`. Fixer: 3.20/1.1765 ≈
-  2.72s. Golden `expected: null` still open (no exact seconds pinned, only
-  the qualitative A-vs-B call).
+- **ASSUMPTION, unverified**: `reloadSec = Animation Reload Seconds (RGW3) /
+  Reload Speed (Data)`. Fixer: 3.20/1.1765 ≈ 2.72s. Golden `expected: null`
+  pending a stopwatched mag-dump+reload cycle (the discriminating divide-vs-
+  time-scale protocol is in `dps-todos/measurement-backlog.md` — only the
+  fold-shape question below was settled on 2026-07-15).
 - **Fold shape RESOLVED (stopwatch-leaning, 2026-07-15)**: OMOD/legendary
   `ReloadSpeed` record rewrites and perk/mutation `WeapReloadSpeedMult` AV
   fortifies land in the SAME `reloadSpeed` bucket (`base + ΣMUL_ADD×base +

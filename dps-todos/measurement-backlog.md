@@ -157,6 +157,19 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
       it carries `animsDoubleBarrelShotgun`, not the sequential keyword).
       Watch for intro/outro animation segments the ×rounds model may
       overstate. `reloadSec` goldens added.
+- [ ] **Reload bonus semantics: divide vs time-scale** (new 2026-07-15,
+      `dps-todos/dps-sensitivity-review.md`) — the engine reads reload
+      bonuses as a rate divisor (`anim / reloadSpeed`); the alternative is
+      direct time scaling (`anim × (1 − bonus)`). STILL OPEN — the
+      2026-07-15 stopwatch session resolved only the fold-shape question
+      above (its writeup said so explicitly); this one was never measured.
+      Discriminating stopwatch: .44 revolver (per-shell, but full-cycle
+      works: 6 × 3.33s base is long enough to time cleanly) with Speed
+      Demon equipped — +30% bonus → divide predicts −23.1% reload time,
+      time-scale predicts −30% (2.56s vs 2.33s per shell). Take Gun Tricks
+      as a ghoul for a stacked +60% check: divide −37.5% vs time-scale −60%
+      — the gap is unmissable at high stacks. Every reloadSpeed source in
+      the calc rides on this.
 - [ ] **Fast Fighter conversion** (new 2026-07-15,
       `dps-todos/move-speed-sources.md`) — reload stopwatch with Fast
       Fighter + Speed Demon, standing still: model predicts the same as
@@ -238,10 +251,6 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
   user-measured 2026-07-18 via the CAMP-foundation method (~3.9 foundations
   × 12 Pip-Boy units × 64/3), re-confirmed 2026-07-19. See
   `docs/assumptions.md` "Target distance (Close / Far)".
-- ~~Reload bonus semantics: divide vs time-scale~~ — stopwatch-confirmed
-  2026-07-15: measured reload times tracked the engine's rate-divisor
-  reading (`anim / reloadSpeed`), not the time-scale alternative
-  (`anim × (1 − bonus)`). No code change needed.
 - ~~Fold shape: single bucket vs. independent AV layer~~ — resolved
   2026-07-15 (`docs/assumptions.md` "Sustained DPS"): perk/mutation AV
   fortifies and OMOD/legendary record rewrites fold into the SAME
