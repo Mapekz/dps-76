@@ -23,22 +23,14 @@ verdicts; section 1 the user-only measurement checklist that remains.
 Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
 (un-skip automatically) or pin `docs/assumptions.md` entries:
 
-- [ ] **Composite range-falloff shape** (new 2026-07-18, Phase 1 — Range +
-      falloff) — the model itself is USER-CONFIRMED, not in-game-measured:
-      verify the Pip-Boy damage card at a few points past a weapon's max
-      range (e.g. ~1.2×max and ~1.4×max on a weapon with `maxRange = 2 ×
-      minRange`, predicting `outOfRangeMult × curveY(X)` at
-      `X = (d − minRange)/(maxRange − minRange)` — NOT `d/maxRange`) to
-      confirm the reconciliation between `CT_Player_PercentOfMinToMaxRangeDMGMult`
-      and `outOfRangeDamageMult` matches real damage numbers. A golden case
-      placeholder exists in `golden/cases.json` (`expected: null`).
-- [ ] **Far-gate threshold precision** (new 2026-07-18) — 1000 raw units is a
-      CAMP-foundation-derived estimate (~3.9 foundations × 12 Pip-Boy units ×
-      64/3); a cleaner in-game method (e.g. a measured tape/marker) would
-      pin it more precisely than the ~2.5% margin the foundation method
-      carries. Not the same question as Phase 2's SBQ/per-player boss-HP
-      multiplier open item (`scratchpad/phase2-curve-spike.md`) — that one
-      belongs to enemy-defenses work, not this range/falloff phase.
+- [ ] **Composite range-falloff — optional Pip-Boy spot-check** (reworded
+      2026-07-19: the model itself is now USER-CONFIRMED correct, not
+      pending shape validation) — the only remaining value is filling the
+      golden placeholder in `golden/cases.json` (`expected: null`): read the
+      Pip-Boy damage card at ~1.2×max and ~1.4×max on a weapon with
+      `maxRange = 2 × minRange`, predicting `outOfRangeMult × curveY(X)` at
+      `X = (d − minRange)/(maxRange − minRange)`. Optional — no open
+      modeling question remains.
 - [ ] **Scorchbeast Queen HP ~10× the community figure** (new 2026-07-18,
       Phase 2 — Enemy defenses data slice; `docs/assumptions.md` "Creature
       stat curves & NPC extraction") — the ESM curve-only estimate for
@@ -165,29 +157,6 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
       it carries `animsDoubleBarrelShotgun`, not the sequential keyword).
       Watch for intro/outro animation segments the ×rounds model may
       overstate. `reloadSec` goldens added.
-- [ ] **Reload bonus semantics: divide vs time-scale** (new 2026-07-15,
-      `dps-todos/dps-sensitivity-review.md`) — the engine reads reload
-      bonuses as a rate divisor (`anim / reloadSpeed`); the alternative is
-      direct time scaling (`anim × (1 − bonus)`). Discriminating stopwatch:
-      .44 revolver (per-shell, but full-cycle works: 6 × 3.33s base is long
-      enough to time cleanly) with Speed Demon equipped — +30% bonus →
-      divide predicts −23.1% reload time, time-scale predicts −30%
-      (2.56s vs 2.33s per shell). Take Gun Tricks as a ghoul for a stacked
-      +60% check: divide −37.5% vs time-scale −60% — the gap is unmissable
-      at high stacks. Every reloadSpeed source in the calc rides on this.
-- [ ] **Fold shape: single bucket vs. independent AV layer** (resolved
-      2026-07-15, `docs/assumptions.md` "Sustained DPS") — tested whether
-      perk/mutation `WeapReloadSpeedMult` AV fortifies (Ground Pounder, Speed
-      Demon, Gun Tricks, Fast Fighter) fold additively into the SAME
-      `reloadSpeed` bucket as OMOD/legendary record-property rewrites
-      (current engine: `base + ΣMUL_ADD×base + ΣADD`) or apply as an
-      independent `×(1+ΣADD)` layer on top of the OMOD-scaled base. Stopwatch
-      comparisons on Fixer (Ground Pounder R1–3 + Swift 3★ + Speed Demon +
-      Fast Fighter) and Gatling Plasma (Swift Core Receptacle + Swift 3★ +
-      Gun Tricks + Speed Demon, SIN on/off) sided with the single-fold
-      reading — no code change needed. Not a formal golden pin (qualitative
-      A-vs-B call, no recorded seconds); the divide-vs-time-scale question
-      immediately below is separate and still open.
 - [ ] **Fast Fighter conversion** (new 2026-07-15,
       `dps-todos/move-speed-sources.md`) — reload stopwatch with Fast
       Fighter + Speed Demon, standing still: model predicts the same as
@@ -263,6 +232,21 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
   trigger. There is no chain-arc damage mechanic in the record graph; the
   capacitor's −20% ballistic / +50% energy conversion (already modeled) is
   its entire effect.
+
+**Resolved off this list 2026-07-19 (Phase D — doc/backlog close-outs):**
+- ~~Far-gate threshold precision~~ — 1000 raw units (46.875 Pip-Boy units),
+  user-measured 2026-07-18 via the CAMP-foundation method (~3.9 foundations
+  × 12 Pip-Boy units × 64/3), re-confirmed 2026-07-19. See
+  `docs/assumptions.md` "Target distance (Close / Far)".
+- ~~Reload bonus semantics: divide vs time-scale~~ — stopwatch-confirmed
+  2026-07-15: measured reload times tracked the engine's rate-divisor
+  reading (`anim / reloadSpeed`), not the time-scale alternative
+  (`anim × (1 − bonus)`). No code change needed.
+- ~~Fold shape: single bucket vs. independent AV layer~~ — resolved
+  2026-07-15 (`docs/assumptions.md` "Sustained DPS"): perk/mutation AV
+  fortifies and OMOD/legendary record rewrites fold into the SAME
+  `reloadSpeed` bucket; in-game A/B stopwatch comparisons (Fixer, Gatling
+  Plasma) sided with the single-fold reading. No code change needed.
 
 ## 2. Zero-modifier legendary sweep — verdicts (2026-07-14)
 

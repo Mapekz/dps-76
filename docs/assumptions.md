@@ -356,9 +356,12 @@ Engine: `src/lib/engine/sustain.ts`.
 - `burstDps = perHitAvg × fireRate` (mag-dump, no reload).
 - `sustainedDps = (perHitAvg × shotsPerMag) / (shotsPerMag/fireRate +
   reloadSec)`, `shotsPerMag = floor(Capacity / ammoPerShot)`.
-- **ASSUMPTION, unverified**: `reloadSec = Animation Reload Seconds (RGW3) /
-  Reload Speed (Data)`. Fixer: 3.20/1.1765 ≈ 2.72s. Golden `expected: null`
-  pending a stopwatched mag-dump+reload cycle.
+- **CONFIRMED (stopwatch, 2026-07-15)**: `reloadSec = Animation Reload
+  Seconds (RGW3) / Reload Speed (Data)` — measured reload times tracked this
+  rate-divisor reading over the time-scale alternative (`anim × (1 −
+  bonus)`), see `dps-todos/measurement-backlog.md`. Fixer: 3.20/1.1765 ≈
+  2.72s. Golden `expected: null` still open (no exact seconds pinned, only
+  the qualitative A-vs-B call).
 - **Fold shape RESOLVED (stopwatch-leaning, 2026-07-15)**: OMOD/legendary
   `ReloadSpeed` record rewrites and perk/mutation `WeapReloadSpeedMult` AV
   fortifies land in the SAME `reloadSpeed` bucket (`base + ΣMUL_ADD×base +
@@ -663,11 +666,11 @@ Engine: `src/lib/distance.ts` (constants, `rangeFalloffMult`), `resolve.ts`
   **ESM-PROVEN.** `STAT_DmgVsClose`/`STAT_DmgVsFar` themselves carry NO
   distance-condition rows anywhere in ESM — the actual range check happens in
   native engine code, not data.
-- **Far gate = 1000 raw units.** **MEASURED** (user, 2026-07-18): no ESM
-  record gives a number (DFOB `DamageVsFar_DO` 0x00815EE7 only confirms the
-  entry point exists) — measured in-game via the CAMP-foundation method
-  (~3.9 foundation pieces × 12 Pip-Boy units each × `PIP_BOY_UNIT_DIVISOR`
-  64/3 ≈ 1000).
+- **Far gate = 1000 raw units (46.875 Pip-Boy units).** **MEASURED** (user,
+  2026-07-18; re-confirmed 2026-07-19): no ESM record gives a number (DFOB
+  `DamageVsFar_DO` 0x00815EE7 only confirms the entry point exists) —
+  measured in-game via the CAMP-foundation method (~3.9 foundation pieces ×
+  12 Pip-Boy units each × `PIP_BOY_UNIT_DIVISOR` 64/3 ≈ 1000).
 - `EnemyConditions.targetDistance` is now a **continuous number** (raw game
   units), replacing the old manual three-way `'close'|'none'|'far'` toggle —
   a single continuous slider now drives both the Close/Far perk gates
@@ -678,8 +681,9 @@ Engine: `src/lib/distance.ts` (constants, `rangeFalloffMult`), `resolve.ts`
   Guerrilla family (close), Down Ranger/Rifleman family (far), Sniper's
   legendary (+100%, far).
 - **Composite range-falloff model.** **USER-CONFIRMED** mechanism (the
-  reconciliation of the two ESM-proven pieces below); the curve and field
-  names themselves are ESM-proven.
+  reconciliation of the two ESM-proven pieces below, re-confirmed
+  2026-07-19 — no shape validation pending); the curve and field names
+  themselves are ESM-proven.
   - `d ≤ minRange` → ×1.0.
   - `minRange < d ≤ maxRange` → linear interpolation from ×1.0 to
     `outOfRangeDamageMult` (WEAP Data — Hunting Rifle: minRange 2612, maxRange
@@ -1653,6 +1657,15 @@ auto-converted); their stats are stale and must not be shown.
     pre-tiered modifiers; the checklist count feeds
     `PlayerConditions.wornPieceCounts` instead and the modifiers pass through
     unscaled, letting the condition eval pick the one active tier.
+- **Unyielding threshold semantics — GAME-CHANGE-PENDING** (user-confirmed
+  2026-07-19): the extracted curve's near-vertical step points (e.g.
+  x=0.1999→y=3, x=0.2→y=2 at the 20% break, same shape at 40%/60%) make
+  `interpolateCurve`'s linear interpolation (`src/lib/curve-tables.ts`)
+  evaluate the +3/+2/+1 SPECIAL tiers on a strict-`<` boundary — exactly
+  20%/40%/60% HP reads the LOWER tier, matching the CURRENT game build. An
+  announced future patch flips the comparison to `<=` at all three
+  thresholds; when it ships, the stepped-curve breakpoints (or the
+  step-eval convention itself) need revisiting, not just a data refresh.
 - **BUG FIX (ESM-derived, not wiki)**: Battle-Loader's extracted modifiers
   carry `unresolved` conditions (`GetRandomPercent`, `IsPowerAttacking`,
   `GetDead`) that permanently deactivate them regardless of `wornPieceCount`
