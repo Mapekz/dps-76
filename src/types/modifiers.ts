@@ -534,7 +534,7 @@ export function hasAnyEngineEffect(modifiers: readonly Modifier[]): boolean {
 export type WeaponClass = Weapon['weaponClass'];
 export type DamageType = Weapon['components'][number]['damageType'];
 
-export type StackCounter = 'tenderizer' | 'onslaught' | 'bulletStorm' | 'adrenaline';
+export type StackCounter = 'tenderizer' | 'onslaught' | 'bulletStorm' | 'adrenaline' | 'concentratedFire';
 
 /**
  * Gating/scaling conditions attached to a modifier. All conditions must pass
@@ -572,6 +572,13 @@ export type Condition =
   | { kind: 'powerAttack' }
   /** The hit is a VATS critical (symmetric with sneaking/powerAttack). */
   | { kind: 'crit' }
+  /**
+   * The attack is fired in VATS (symmetric with sneaking/powerAttack/crit) —
+   * active for both the VATS and VATS+Sneak scenarios, inactive for Manual
+   * Aim (`ctx.scenario.isVats`). Concentrated Fire's per-stack damage bonus
+   * only applies in VATS (docs/assumptions.md "Concentrated Fire stacks").
+   */
+  | { kind: 'vatsOnly' }
   /** PLAYER health below pct. Absent/true ⇒ ≤ (Foundation's Vengeance: GetHealthPercentage ≤ 0.25); false ⇒ strict <. */
   | { kind: 'healthBelowPct'; pct: number; inclusive?: boolean }
   /** ENEMY health below pct (Executioner's: ≤40, threshold from GLOB LGND_ExecuteHealthThreshold). Absent/true ⇒ ≤; false ⇒ strict <. */

@@ -1402,6 +1402,112 @@ describe('crit condition (first-class, symmetric with sneaking/powerAttack)', ()
   });
 });
 
+describe('vatsOnly condition (Phase B — Concentrated Fire stacks; symmetric with sneaking/powerAttack/crit)', () => {
+  const weapon = makeWeapon();
+  const vatsOnlyMod = mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'vatsOnly' }] });
+
+  it('applies in VATS and VATS+Sneak, not in Manual Aim', () => {
+    const vatsCtx = makeCtx(weapon, {
+      scenario: { isVats: true, isSneaking: false, isPowerAttack: false, isCrit: false },
+    });
+    expect(foldBucket([vatsOnlyMod], 'dbm', 1.0, vatsCtx)).toBeCloseTo(1.5, 10);
+
+    // Sneaking is a global flag layered on top of isVats, not a separate
+    // scenario — the VATS+Sneak column is just isVats:true, isSneaking:true.
+    const vatsSneakCtx = makeCtx(weapon, {
+      scenario: { isVats: true, isSneaking: true, isPowerAttack: false, isCrit: false },
+    });
+    expect(foldBucket([vatsOnlyMod], 'dbm', 1.0, vatsSneakCtx)).toBeCloseTo(1.5, 10);
+
+    // makeCtx default is isVats: false (Manual Aim) → the modifier is inactive.
+    expect(foldBucket([vatsOnlyMod], 'dbm', 1.0, makeCtx(weapon))).toBeCloseTo(1.0, 10);
+  });
+});
+
+describe('concentratedFire stack counter (Phase B — Concentrated Fire stacks)', () => {
+  const weapon = makeWeapon();
+  const vatsFlags = { isVats: true, isSneaking: false, isPowerAttack: false, isCrit: false };
+  const stackMod = mod({
+    bucket: 'dbm',
+    op: 'ADD',
+    value: 0.01,
+    conditions: [{ kind: 'vatsOnly' }, { kind: 'stacks', counter: 'concentratedFire', max: 20 }],
+  });
+
+  it('clamps a stored value above the GMST max down to 20', () => {
+    const player = { ...createDefaultPlayerConditions(), concentratedFireStacks: 25 };
+    const ctx = makeCtx(weapon, { player, scenario: vatsFlags });
+    // 25 clamps to 20 stacks × 0.01 = +0.20 → dbm fold 1.0 + 0.20 = 1.20.
+    expect(foldBucket([stackMod], 'dbm', 1.0, ctx)).toBeCloseTo(1.2, 10);
+  });
+
+  it('is inert at the default (0 stacks)', () => {
+    const ctx = makeCtx(weapon, { scenario: vatsFlags });
+    expect(foldBucket([stackMod], 'dbm', 1.0, ctx)).toBeCloseTo(1.0, 10);
+  });
+});
+
+describe('Concentrated Fire stacks — rank × stacks table (computeScenarios)', () => {
+  const weapon = makeWeapon({ animDelaySec: 1.0 });
+  const base = {
+    mode: 'live' as const,
+    weapon,
+    itemLevel: 50,
+    player: createDefaultPlayerConditions(),
+    enemy: createDefaultEnemyConditions(),
+    weakpointMult: 2.0,
+    critRate: 0,
+  };
+
+  it.each([
+    [1, 0.01],
+    [2, 0.02],
+    [3, 0.03],
+  ])('rank %i × 10 stacks adds exactly +%s×10 dbm in VATS, freeAim unchanged', (rank, perStack) => {
+    const modifiers = [
+      mod({
+        id: `cf-r${rank}`,
+        bucket: 'dbm',
+        op: 'ADD',
+        value: perStack,
+        conditions: [{ kind: 'vatsOnly' }, { kind: 'stacks', counter: 'concentratedFire', max: 20 }],
+      }),
+    ];
+    const noStacks = computeScenarios({ ...base, modifiers });
+    const stacked = computeScenarios({
+      ...base,
+      modifiers,
+      player: { ...createDefaultPlayerConditions(), concentratedFireStacks: 10 },
+    });
+    const expectedMult = 1 + perStack * 10;
+    expect(stacked.vats.perHit.total).toBeCloseTo(noStacks.vats.perHit.total * expectedMult, 6);
+    expect(stacked.freeAim.perHit.total).toBeCloseTo(noStacks.freeAim.perHit.total, 10);
+  });
+});
+
+describe('hasConcentratedFireSources detection', () => {
+  const weapon = makeWeapon({ animDelaySec: 1.0 });
+  const base = {
+    mode: 'live' as const, weapon, itemLevel: 50, modifiers: [] as Modifier[],
+    player: createDefaultPlayerConditions(), enemy: createDefaultEnemyConditions(),
+    weakpointMult: 2.0, critRate: 0,
+  };
+
+  it('is false with no Concentrated Fire source equipped', () => {
+    expect(computeScenarios(base).hasConcentratedFireSources).toBe(false);
+  });
+
+  it('detects a concentratedFire stacks condition', () => {
+    const cfMod = mod({
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.02,
+      conditions: [{ kind: 'vatsOnly' }, { kind: 'stacks', counter: 'concentratedFire', max: 20 }],
+    });
+    expect(computeScenarios({ ...base, modifiers: [cfMod] }).hasConcentratedFireSources).toBe(true);
+  });
+});
+
 describe('body-part damage direction (sub-1 multipliers = limb hits)', () => {
   it("a <1 body-part mult scales damage down and doesn't trigger weakpoint bonuses via scenarios", () => {
     const weapon = makeWeapon({ animDelaySec: 1.0 });

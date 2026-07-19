@@ -60,6 +60,19 @@ export interface PlayerConditions {
   targetsHit?: number;
   adrenalineStacks: number; // 0-10 (default 0 per user preference)
   tenderizerStacks: number; // 0–1000, +0.001 dbm (0.1%) per stack, cap +100%; target state, works without the card equipped
+  /**
+   * Concentrated Fire's per-VATS-shot stacking damage bonus (0–20, default
+   * 0 — user-approved). The game tracks this as a HIDDEN native counter
+   * (AV `ConcentratedFireRank`-scaled EP135 "Mod VATS Concentrated Fire
+   * Damage Mult") that builds per VATS shot landed on the SAME body part and
+   * resets on switching body part/target; GMST `iVATSConcentratedFireBonus`
+   * caps it at 20. This field is the player's manual stand-in for that
+   * counter — the calculator assumes a steady stream of hits on one body
+   * part, so the reset-on-switch behavior itself isn't modeled. See
+   * `overrides/perk-overrides.ts` `ConcentratedFire` and
+   * docs/assumptions.md "Concentrated Fire stacks".
+   */
+  concentratedFireStacks: number;
 
   // Other steady-state inputs for conditional sources
   /**
@@ -630,6 +643,7 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     targetsHit: 1,
     adrenalineStacks: 0, // Default per user preference
     tenderizerStacks: 0, // Solo default — no other players hitting the target
+    concentratedFireStacks: 0, // Slider default (user-approved) — stands in for the hidden native stack counter
     addictionCount: 0,
     capsOnHand: 0,
     maxHealth: 300, // synthetic-test default; the app derives it in resolveLoadout (245 + 5×END + buffs)

@@ -217,26 +217,37 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
     ],
   ],
   // Concentrated Fire (PERK ConcentratedFire01-03 0x0004D890/0x001D2459/
-  // 0x001D245A): description "+1%/+2%/+3% accuracy and damage per shot"
-  // (Phase 4 — VATS hit-chance aggregate, display-only). ESM-proven but NOT
-  // cleanly extractable: the real mechanic lives on the STAT_DamagePerk
-  // plumbing perk (0x0023A0EB) as two bespoke entry points — "Mod VATS
-  // Concentrated Fire Chance Bonus" (Float 4.0 non-automatic / 1.0
-  // automatic weapons, `HasKeyword(WeaponTypeAutomatic)`-gated) and "Mod
-  // VATS Concentrated Fire Damage Mult" (Float 0.01) — both "Add Actor
-  // Value Mult" against AV ConcentratedFireRank (0x00900A59, = the owned
-  // rank number 1/2/3). Neither entry point is in ENTRY_POINT_BUCKETS: the
-  // native engine multiplies Float × rank by a HIDDEN per-target
-  // consecutive-shots-fired counter this calculator has no access to and no
-  // static "value at shot 1" is encoded anywhere in the ESM (the 4.0/1.0
-  // weapon-type split doesn't reduce to the description's flat rank%
-  // either) — reproducing the ramp would be fabrication, not extraction.
-  // Modeled here as the DESCRIPTION-sourced flat magnitude only (0.01×rank
-  // — i.e., "the bonus after landing one shot"), vatsHitChance bucket;
-  // stacking beyond shot 1, and the DAMAGE half of the perk, stay
-  // unmodeled (docs/assumptions.md "VATS hit-chance aggregate
-  // (display-only)"). No weapon-automatic-type gate: the description gives
-  // one flat number per rank, not a per-weapon-type split.
+  // 0x001D245A): the OLD "hidden counter — can't model" narrative here is
+  // OBSOLETE (2026-07-19 follow-up session, user correction) — the stacking
+  // mechanic IS static ESM data, just not a plain stat bump. It lives on the
+  // STAT_DamagePerk plumbing perk (0x0023A0EB) as two entry points against
+  // AV ConcentratedFireRank (0x00900A59, = the owned rank number 1/2/3):
+  // EP135 "Mod VATS Concentrated Fire Damage Mult" (float 0.01 × rank AV, no
+  // weapon gate) and EP109 "Mod VATS Concentrated Fire Chance Bonus" (float
+  // 4.0 non-automatic / 1.0 automatic weapons × rank AV). Max stacks is GMST
+  // iVATSConcentratedFireBonus (0x007CF698) = 20. Both entry points are
+  // still ENTRY_POINT_IGNORED in extract-perks.ts (lines 63-71) pending an
+  // esm-walk of how ConcentratedFire01-03 actually write the AV — this is a
+  // hand-authored override standing in for that extraction, NOT a
+  // description guess.
+  //
+  // Damage half (EP135, modeled below as a `dbm` ADD): value 0.01/0.02/0.03
+  // × rank, reproducing `Float × rank` exactly; gated `vatsOnly` +
+  // `stacks(counter: 'concentratedFire', max: 20)` so it scales with the
+  // player-driven stacks slider (PlayerConditions.concentratedFireStacks,
+  // ConditionsSection.tsx), which stands in for the game's hidden native
+  // per-target consecutive-shots-fired counter this calculator has no
+  // access to (docs/assumptions.md "Concentrated Fire stacks").
+  //
+  // Hit-chance half (EP109, the `vatsHitChance` entries below, UNCHANGED):
+  // stays the flat description-sourced rank% (0.01/0.02/0.03, "the bonus
+  // after landing one shot") — user-approved defer, since the 4.0/1.0
+  // weapon-type split's unit is unverified (accuracy points vs. a direct %
+  // add) and doesn't cleanly reduce to a per-stack scale yet
+  // (docs/assumptions.md "VATS hit-chance aggregate (display-only)").
+  //
+  // If EP135/EP109 extraction lands later (buildAvifRoutes), this override
+  // must be removed in the SAME commit — double-stack hazard.
   ConcentratedFire: [
     [
       {
@@ -246,6 +257,14 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
         op: 'ADD',
         value: 0.01,
         conditions: [],
+      },
+      {
+        id: 'override:ConcentratedFire:r1:stacking',
+        source: { kind: 'perk', formId: '0x0004D890', edid: 'ConcentratedFire01', name: 'Concentrated Fire', rank: 1 },
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.01,
+        conditions: [{ kind: 'vatsOnly' }, { kind: 'stacks', counter: 'concentratedFire', max: 20 }],
       },
     ],
     [
@@ -257,6 +276,14 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
         value: 0.02,
         conditions: [],
       },
+      {
+        id: 'override:ConcentratedFire:r2:stacking',
+        source: { kind: 'perk', formId: '0x001D2459', edid: 'ConcentratedFire02', name: 'Concentrated Fire', rank: 2 },
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.02,
+        conditions: [{ kind: 'vatsOnly' }, { kind: 'stacks', counter: 'concentratedFire', max: 20 }],
+      },
     ],
     [
       {
@@ -266,6 +293,14 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
         op: 'ADD',
         value: 0.03,
         conditions: [],
+      },
+      {
+        id: 'override:ConcentratedFire:r3:stacking',
+        source: { kind: 'perk', formId: '0x001D245A', edid: 'ConcentratedFire03', name: 'Concentrated Fire', rank: 3 },
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.03,
+        conditions: [{ kind: 'vatsOnly' }, { kind: 'stacks', counter: 'concentratedFire', max: 20 }],
       },
     ],
   ],

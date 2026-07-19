@@ -161,6 +161,15 @@ export interface ScenarioSet {
    */
   hasKillStreakSources: boolean;
   /**
+   * True when any equipped source reads the `concentratedFire` stack counter
+   * (Concentrated Fire's per-VATS-shot `dbm` bonus) — the UI's Concentrated
+   * Fire stacks slider disables without one. Existence scan (mirrors
+   * `hasKillStreakSources`), not a bucket fold: Concentrated Fire's
+   * modifier carries the `stacks` condition directly rather than a
+   * dedicated bucket.
+   */
+  hasConcentratedFireSources: boolean;
+  /**
    * The equipped weapon's charge parameters (Gauss family, bows, tesla/
    * gamma/laser via charging-barrel OMODs — `weaponCharges()`,
    * src/lib/charge.ts), computed ONCE from the effective `input.weapon` and
@@ -603,6 +612,11 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       m.conditions.some(c => c.kind === 'killStreakCount' || (c.kind === 'stacks' && c.counter === 'adrenaline'))
   );
 
+  // Concentrated Fire sources (existence scan — see ScenarioSet.hasConcentratedFireSources).
+  const hasConcentratedFireSources = input.modifiers.some(m =>
+    m.conditions.some(c => c.kind === 'stacks' && c.counter === 'concentratedFire')
+  );
+
   // Free aim: crits are VATS-only, so never crit here.
   const freeFlags: ScenarioFlags = { isVats: false, isSneaking: sneaking, isPowerAttack: powerAttack, isCrit: false };
   const freeTrace = tracing ? createHitTrace() : undefined;
@@ -773,6 +787,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     bulletStormMinStacks,
     ...(bulletStormAvg !== undefined && { bulletStormAvgStacks: bulletStormAvg }),
     hasKillStreakSources,
+    hasConcentratedFireSources,
     charging,
     range,
     vatsHitChanceBonus,

@@ -135,6 +135,21 @@ describe('perk effects through the engine (real data)', () => {
     const unstacked = computeScenarios({ ...base, weapon, modifiers: mods });
     expect(stacked.freeAim.perHit.total).toBeCloseTo(unstacked.freeAim.perHit.total * 2.0, 6);
   });
+
+  it('Concentrated Fire stacks scale VATS dbm only (rank 2 x 10 stacks = +20%, freeAim untouched)', () => {
+    const weapon = getWeapons('live')['CombatRifle_Fixer'];
+    const perk = getLoadoutModifiers('live', [{ perkId: PerkId.ConcentratedFire, rank: 2 }]);
+    const unstacked = computeScenarios({ ...base, weapon, modifiers: perk });
+    const stacked = computeScenarios({
+      ...base,
+      weapon,
+      modifiers: perk,
+      player: { ...createDefaultPlayerConditions(), concentratedFireStacks: 10 },
+    });
+    // Rank 2 -> 0.02 dbm/stack x 10 stacks = +0.20 -> x1.2 VATS damage.
+    expect(stacked.vats.perHit.total).toBeCloseTo(unstacked.vats.perHit.total * 1.2, 6);
+    expect(stacked.freeAim.perHit.total).toBeCloseTo(unstacked.freeAim.perHit.total, 6);
+  });
 });
 
 describe('perkHasEngineEffect (drives the perk picker\'s "no effect yet" badge)', () => {

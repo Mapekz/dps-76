@@ -70,6 +70,17 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
       figure (up from the curve-only ~7×/~13×), the opposite of narrowing
       it. Stays OPEN: the per-nearby-player scaling hypothesis is now the
       only remaining unconfirmed explanation.
+- [ ] **Concentrated Fire — EP109 hit-chance unit + damage-half golden** (new
+      2026-07-19, Phase B — Concentrated Fire stacks) — the damage half
+      (EP135, `0.01 × rank × stacks`) is ESM-derived and modeled via the
+      manual stacks slider (`PlayerConditions.concentratedFireStacks`); a
+      golden placeholder pins rank 3 @ 20 stacks in `golden/cases.json`
+      (`expected: null`). Separately, EP109's hit-chance bonus (float 4.0
+      non-automatic / 1.0 automatic × rank AV) has an UNVERIFIED unit —
+      confirm via esm-walk or an in-game VATS-accuracy reading whether it's
+      accuracy points or a direct % add before stack-scaling the
+      `vatsHitChance` pill entries (docs/assumptions.md "Concentrated Fire
+      stacks").
 - [ ] **Phase 2 mitigation formula end-to-end** (new 2026-07-18) — golden
       placeholder `golden/cases.json` "Combat Rifle (Fixer) @50 ... vs
       Scorchbeast Queen (Lv 100)" (`measure: 'effectiveSustainedDps'`,

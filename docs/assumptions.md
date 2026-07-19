@@ -834,22 +834,39 @@ UI: `ConditionsSection.tsx` pill next to the VATS hit-rate slider.
   - **Concentrated Fire** (perk `ConcentratedFire01-03` `0x0004D890`/
     `0x001D2459`/`0x001D245A`, description "+1%/+2%/+3% accuracy and damage
     per shot"): hand-authored flat ADD 0.01/0.02/0.03 by rank
-    (`overrides/perk-overrides.ts` `extraPerkModifiers`), **DESCRIPTION-
-    sourced, not ESM-derived** — see the STACKING SIMPLIFICATION note below.
-- **Concentrated Fire's stacking simplification**: the real mechanic lives
-  on the `STAT_DamagePerk` plumbing perk (`0x0023A0EB`) as two entry points
-  — `Mod VATS Concentrated Fire Chance Bonus` (Float 4.0 non-automatic /
-  1.0 automatic weapons, `HasKeyword(WeaponTypeAutomatic)`-gated) and `Mod
-  VATS Concentrated Fire Damage Mult` (Float 0.01) — both `Add Actor Value
-  Mult` against AV `ConcentratedFireRank` (`0x00900A59`, = the owned rank
-  number 1/2/3). Neither is in `ENTRY_POINT_BUCKETS`: the native engine
-  multiplies `Float × rank` by a HIDDEN per-target consecutive-shots-fired
-  counter this calculator cannot read, and no static "value at shot 1" is
-  encoded anywhere (the 4.0/1.0 weapon-type split doesn't reduce to the
-  description's flat rank% either) — reproducing the ramp would be
-  fabrication. Modeled as the description's flat rank% only ("the bonus
-  after landing one shot"); stacking beyond shot 1, AND the perk's DAMAGE
-  half (a real dbm ramp, out of scope), stay unmodeled.
+    (`overrides/perk-overrides.ts` `extraPerkModifiers`) feeds this pill's
+    `vatsHitChance` aggregate — flat per rank, **NOT stack-scaled**
+    (EP109's per-shot ramp unit is unverified, user-approved defer — see
+    "Concentrated Fire stacks" below, where the DAMAGE half now does stack).
+- **Concentrated Fire stacks** (2026-07-19 follow-up — supersedes the prior
+  "hidden counter, can't model" verdict, which was WRONG): `STAT_DamagePerk`
+  plumbing perk (`0x0023A0EB`) carries EP135 "Mod VATS Concentrated Fire
+  Damage Mult" (float **0.01** × AV `ConcentratedFireRank` `0x00900A59`, no
+  weapon gate) and EP109 "Mod VATS Concentrated Fire Chance Bonus" (float
+  **4.0** non-automatic / **1.0** automatic × the same AV); max stacks is
+  GMST `iVATSConcentratedFireBonus` `0x007CF698` = **20**. **ESM-PROVEN**
+  facts; both entry points stay `ENTRY_POINT_IGNORED` in `extract-perks.ts`
+  (lines 63-71) pending an esm-walk of how `ConcentratedFire01-03` write the
+  AV — the override below is a stand-in for that extraction, not shipped
+  through it, and must be removed in the same commit if it lands
+  (double-stack hazard).
+  - **Damage half — modeled, ESM-derived magnitude**: each rank adds a
+    `dbm` ADD of 0.01/0.02/0.03 (`overrides/perk-overrides.ts`
+    `ConcentratedFire`), gated `vatsOnly` + `stacks(counter:
+    'concentratedFire', max: 20)`, reproducing EP135's `0.01 × rank ×
+    stacks` exactly. The stack COUNT is a manual slider
+    (`PlayerConditions.concentratedFireStacks`, `ConditionsSection.tsx`,
+    default 0 — user-approved) standing in for the native per-target
+    consecutive-shots-fired counter, which resets on body-part/target
+    switch (the calculator assumes a steady stream of hits on one body
+    part). **ASSUMPTION**: the slider's value each session, not the
+    ESM-proven per-stack magnitude/cap above.
+  - **Hit-chance half — flat, unmodeled beyond rank%**: the `vatsHitChance`
+    pill entries stay UNCHANGED (see the "Modeled sources" bullet above) —
+    EP109's 4.0 non-automatic/1.0 automatic × rank unit is unverified
+    (accuracy points vs. a direct % add), so it isn't stack-scaled either.
+    **PENDING** an esm-walk/in-game check —
+    `dps-todos/measurement-backlog.md`.
 - **Badges**: every source above loses the picker's "no effect yet" badge
   automatically via `modifierHasEngineEffect` (`vatsHitChance` is
   `hasEngineEffect: true`, `specialPerception` precedent — "the folded

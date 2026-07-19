@@ -141,6 +141,10 @@ const PLAYER_STATE_READERS: Record<StackCounter | CurveInput, (p: PlayerConditio
   onslaught: (p, ctx) => effectiveOnslaughtStacks(p, ctx),
   bulletStorm: (p, ctx) => effectiveBulletStormStacks(p, ctx),
   adrenaline: p => p.adrenalineStacks,
+  // Concentrated Fire's per-VATS-shot stack counter — manual slider standing
+  // in for the game's hidden native counter (docs/assumptions.md
+  // "Concentrated Fire stacks").
+  concentratedFire: p => p.concentratedFireStacks ?? 0,
   // Curve inputs (X value fed into a value curve).
   healthFraction: p => p.healthPercent / 100,
   capsOnHand: p => p.capsOnHand,
@@ -225,6 +229,11 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       return ctx.scenario.isPowerAttack ? 1 : null;
     case 'crit':
       return ctx.scenario.isCrit ? 1 : null;
+    case 'vatsOnly':
+      // Active for both the VATS and VATS+Sneak scenarios (sneaking is a
+      // global flag layered on top of isVats, not a separate scenario flag);
+      // inactive for Manual Aim.
+      return ctx.scenario.isVats ? 1 : null;
     case 'healthBelowPct': {
       // PLAYER health below pct. Operator is data-driven from the ESM
       // (`inclusive` — absent ⇒ ≤, matching Foundation's Vengeance's

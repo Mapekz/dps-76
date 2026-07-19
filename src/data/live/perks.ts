@@ -45,7 +45,7 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.SturdyFrame]: { name: "Sturdy Frame" },
 
   // ============ PERCEPTION ============
-  [PerkId.ConcentratedFire]: { name: "Concentrated Fire" }, // +3% accuracy & damage per shot - stacking mechanic not implemented
+  [PerkId.ConcentratedFire]: { name: "Concentrated Fire" }, // +3% accuracy & damage per shot - stacking damage modeled via the manual stacks slider (overrides/perk-overrides.ts)
   [PerkId.GreenThumb]: { name: "Green Thumb" }, // Harvesting - not combat
   [PerkId.NightPerson]: { name: "Night Person" }, // Night time bonus - not implemented
   [PerkId.Pannapictagraphist]: { name: "Pannapictagraphist" }, // Photo mode - not combat

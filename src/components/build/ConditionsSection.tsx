@@ -132,6 +132,15 @@ export function ConditionsSection() {
       : Math.min(onslaughtStored, onslaughtMax);
   const hasKillStreak = scenarios?.hasKillStreakSources ?? false;
 
+  // Concentrated Fire: manual 0–20 stacks slider standing in for the game's
+  // hidden native per-target consecutive-shots-fired counter (see the
+  // PlayerConditions.concentratedFireStacks doc comment and
+  // docs/assumptions.md "Concentrated Fire stacks"). Unlike Onslaught/Bullet
+  // Storm there is no equipped-source-derived max: the cap is the fixed GMST
+  // 20, so this only needs an existence gate, not a fold.
+  const hasConcentratedFire = scenarios?.hasConcentratedFireSources ?? false;
+  const concentratedFireStacks = conditions.concentratedFireStacks;
+
   // VATS hit-chance aggregate (Phase 4, display-only): the folded total from
   // ScenarioSet.vatsHitChanceBonus (V.A.T.S. Enhanced, Awareness, Eye of the
   // Hunter, V.A.T.S. Matrix Overlay...). Purely informational — the VATS hit
@@ -172,6 +181,7 @@ export function ConditionsSection() {
     (conditions.adrenalineStacks !== defaults.adrenalineStacks ? 1 : 0) +
     (onslaughtStored !== -1 && !onslaughtReverse ? 1 : 0) +
     (bulletStormStored !== -1 && !bulletStormAverageMode ? 1 : 0) +
+    (concentratedFireStacks !== defaults.concentratedFireStacks ? 1 : 0) +
     ((conditions.targetsHit ?? 1) !== (defaults.targetsHit ?? 1) ? 1 : 0) +
     ((conditions.weaponConditionPct ?? 100) !== (defaults.weaponConditionPct ?? 100) ? 1 : 0) +
     ((conditions.playerDamageResist ?? 0) !== (defaults.playerDamageResist ?? 0) ? 1 : 0) +
@@ -374,6 +384,29 @@ export function ConditionsSection() {
             )}
             {bulletStormMax === 0 && (
               <p className="text-muted-foreground text-xs">No Bullet Storm sources equipped</p>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="char-concentrated-fire">
+              Concentrated Fire stacks ({concentratedFireStacks} / max 20)
+            </Label>
+            <Slider
+              id="char-concentrated-fire"
+              min={0}
+              max={20}
+              step={1}
+              disabled={!hasConcentratedFire}
+              value={[concentratedFireStacks]}
+              onValueChange={v => set('concentratedFireStacks', firstSliderValue(v))}
+              marks={Array.from({ length: 21 }, (_, i) => ({ value: i, label: i % 5 === 0 ? String(i) : undefined }))}
+            />
+            <p className="text-muted-foreground text-xs">
+              Stacks build per VATS shot landed on the same body part and reset when you switch body part or target
+              — a manual stand-in for the game's hidden counter (each rank adds +1/2/3% VATS damage per stack).
+            </p>
+            {!hasConcentratedFire && (
+              <p className="text-muted-foreground text-xs">No Concentrated Fire sources equipped</p>
             )}
           </div>
 

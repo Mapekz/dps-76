@@ -192,6 +192,12 @@ describe('build codec', () => {
     // Sanity: encoding stays compact (deflate of a sparse diff).
     expect(encoded.length).toBeLessThan(200);
   });
+
+  it('round-trips concentratedFireStacks (Phase B — Concentrated Fire stacks)', async () => {
+    const state = stateFrom([{ type: 'condition/set', key: 'concentratedFireStacks', value: 15 }]);
+    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    expect(decoded!.state.player.conditions.concentratedFireStacks).toBe(15);
+  });
 });
 
 describe('derived condition fields', () => {

@@ -746,6 +746,31 @@
    "expected": null,
    "tolerancePct": 2,
    "source": "pending in-game measurement (Phase 3 armor pipeline, UI + state) \u2014 Battle-Loader's 3-piece tier (45% reloadSkipChance, wornPieceCount==3), modeled as a Quick-Hands-equivalent per-reload skip chance (bash-cadence trigger simplification, docs/assumptions.md \"Armor effects\"); pins the sustain-chance fold end-to-end once a real Pip-Boy sustained-DPS reading with the mod equipped exists"
+  },
+  {
+   "name": "Combat Rifle (Fixer) @50, Concentrated Fire rank 3 @ 20 stacks \u2014 VATS per-hit with the stacking damage bonus maxed",
+   "weaponId": "CombatRifle_Fixer",
+   "itemLevel": 50,
+   "mods": {},
+   "legendaryEffects": [],
+   "perks": [
+    {
+     "perkId": "ConcentratedFire",
+     "rank": 3
+    }
+   ],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {
+    "concentratedFireStacks": 20
+   },
+   "enemyConditions": {},
+   "scenario": "vats",
+   "measure": "perHit",
+   "expected": null,
+   "tolerancePct": 2,
+   "source": "pending in-game measurement (Phase B \u2014 Concentrated Fire stacks) \u2014 rank 3's EP135-derived dbm ADD (0.03/stack) at the GMST max of 20 stacks should read +60% VATS damage over the no-stacks baseline; needs a real Pip-Boy VATS damage-card reading after building up stacks on one body part to confirm the per-stack magnitude in practice, not just the engine fold"
   }
  ]
 }
