@@ -159,6 +159,16 @@ already live before this phase, as the note says).
     loot-list pattern, no epic-disallowed keyword, and (per the extractor's
     keyword check) no `BOSS_EPIC_RANK_QUESTS` entry either — Bigfoot has no
     summon-quest analogue among the curated bosses at all.
+  - **Earle / Wendigo Colossus** (added 2026-07-19): the user knows him as
+    3★ in-game, but NO ESM proof exists — `E06_Colossus` 0x00583D14 carries
+    neither VMAD rank shape (checked exhaustively: all 3 EncounterWaves, all
+    4 alias scripts), and `SQ_WendigoColossusSummonAllies`, `RB_Master`,
+    `E06_PocketWatch`, and the NPC_'s own Keywords/Perks are all empty too.
+    The extractor keeps him in `BOSS_EPIC_RANK_QUESTS` so every run emits an
+    unresolved note. To close: an in-game HP reading vs. the un-multiplied
+    curve prediction (~237–408k over his 80–100 window) would discriminate —
+    ×3.2 on top is unmissable — and would justify a USER-MEASURED rank
+    entry; alternatively a future dump/deeper mechanism find.
   - **Takeaway**: a boss's drop-list star rating is NOT the same ESM signal
     as a forced epic rank — don't infer one from the other. If a future
     in-game measurement pins a real fixed rank for any of these three, add

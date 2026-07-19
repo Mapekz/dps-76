@@ -60,6 +60,13 @@ wiring, the same shape as their WEAPON legendary counterparts. Extraction
 `armor-mods-incoming.md`, which now owns this finding.
 
 ## Remaining deferred (not this pass — user-scoped, unchanged)
+- **Unyielding `<` → `<=` threshold flip (game-patch watch, 2026-07-19)** —
+  an announced future game build changes the HP-threshold comparison to
+  inclusive (`<=`) at 20/40/60%; the current implementation matches the
+  CURRENT build (strict `<` for the higher tier — exactly 20% HP yields +2,
+  not +3). When the patch lands, revisit the stepped-curve boundary handling
+  in `src/lib/curve-tables.ts` (see `docs/assumptions.md` "Unyielding
+  threshold semantics — GAME-CHANGE-PENDING").
 - **Optimized Bracers** — power-armor intrinsic perk (`PA_OptimizedBracers`,
   "Power attacks cost 25% less"), `modifiers: []`, no OMOD grant path found +
   melee AP isn't modeled (`scenarios.ts` gates AP economy to `!isMelee`).
