@@ -216,6 +216,59 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
       },
     ],
   ],
+  // Concentrated Fire (PERK ConcentratedFire01-03 0x0004D890/0x001D2459/
+  // 0x001D245A): description "+1%/+2%/+3% accuracy and damage per shot"
+  // (Phase 4 — VATS hit-chance aggregate, display-only). ESM-proven but NOT
+  // cleanly extractable: the real mechanic lives on the STAT_DamagePerk
+  // plumbing perk (0x0023A0EB) as two bespoke entry points — "Mod VATS
+  // Concentrated Fire Chance Bonus" (Float 4.0 non-automatic / 1.0
+  // automatic weapons, `HasKeyword(WeaponTypeAutomatic)`-gated) and "Mod
+  // VATS Concentrated Fire Damage Mult" (Float 0.01) — both "Add Actor
+  // Value Mult" against AV ConcentratedFireRank (0x00900A59, = the owned
+  // rank number 1/2/3). Neither entry point is in ENTRY_POINT_BUCKETS: the
+  // native engine multiplies Float × rank by a HIDDEN per-target
+  // consecutive-shots-fired counter this calculator has no access to and no
+  // static "value at shot 1" is encoded anywhere in the ESM (the 4.0/1.0
+  // weapon-type split doesn't reduce to the description's flat rank%
+  // either) — reproducing the ramp would be fabrication, not extraction.
+  // Modeled here as the DESCRIPTION-sourced flat magnitude only (0.01×rank
+  // — i.e., "the bonus after landing one shot"), vatsHitChance bucket;
+  // stacking beyond shot 1, and the DAMAGE half of the perk, stay
+  // unmodeled (docs/assumptions.md "VATS hit-chance aggregate
+  // (display-only)"). No weapon-automatic-type gate: the description gives
+  // one flat number per rank, not a per-weapon-type split.
+  ConcentratedFire: [
+    [
+      {
+        id: 'override:ConcentratedFire:r1',
+        source: { kind: 'perk', formId: '0x0004D890', edid: 'ConcentratedFire01', name: 'Concentrated Fire', rank: 1 },
+        bucket: 'vatsHitChance',
+        op: 'ADD',
+        value: 0.01,
+        conditions: [],
+      },
+    ],
+    [
+      {
+        id: 'override:ConcentratedFire:r2',
+        source: { kind: 'perk', formId: '0x001D2459', edid: 'ConcentratedFire02', name: 'Concentrated Fire', rank: 2 },
+        bucket: 'vatsHitChance',
+        op: 'ADD',
+        value: 0.02,
+        conditions: [],
+      },
+    ],
+    [
+      {
+        id: 'override:ConcentratedFire:r3',
+        source: { kind: 'perk', formId: '0x001D245A', edid: 'ConcentratedFire03', name: 'Concentrated Fire', rank: 3 },
+        bucket: 'vatsHitChance',
+        op: 'ADD',
+        value: 0.03,
+        conditions: [],
+      },
+    ],
+  ],
 };
 
 /**

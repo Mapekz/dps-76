@@ -263,10 +263,16 @@ outgoing-DPS calculator (permanently, unless marked *future*).
 
 ### Out of scope / no action (values decoded & documented, nothing to model)
 
-- **V.A.T.S. Enhanced** `0x00524153`: +50pp VATS hit chance (`STAT_VATSAccuracy`)
-  — **not an AP effect**; VATS accuracy is permanently out of scope, closed
-  box, engine hardcodes 100% (rescope note 2026-07-13, formerly tracked in
-  the closed `ap-regen.md`). Drops off the queue entirely.
+- ~~**V.A.T.S. Enhanced** `0x00524153`: +50pp VATS hit chance
+  (`STAT_VATSAccuracy`)~~ — **SUPERSEDED 2026-07-18 (Phase 4 — VATS
+  hit-chance aggregate)**: computing VATS hit chance is still permanently
+  out of scope, but aggregating already-known ESM bonus magnitudes for
+  DISPLAY is not the same thing (user decision). This value (and Awareness,
+  Eye of the Hunter, the V.A.T.S. Matrix Overlay armor mods, Orange
+  Mentats, Hoppy Hunter IPA, Twisted Muscles) now feeds the informational
+  `ScenarioSet.vatsHitChanceBonus` pill — see docs/assumptions.md "VATS
+  hit-chance aggregate (display-only)". Status changed from "no action" to
+  "informational display"; no DPS number is affected.
 - **Vampire's** `0x00527F84`: 2% max-HP over 2s on hit (self-heal).
   **Steadfast** `0x004F5772`: +50 player DR while ADS. **Resilient**
   `0x004F5777`: +500 player resists while reloading. **Blocker**

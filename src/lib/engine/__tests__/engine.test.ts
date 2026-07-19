@@ -1516,3 +1516,93 @@ describe('hasKillStreakSources detection', () => {
     expect(computeScenarios({ ...base, modifiers: [stackMod] }).hasKillStreakSources).toBe(true);
   });
 });
+
+describe('vatsHitChanceBonus (Phase 4 — VATS hit-chance aggregate, display-only, 2026-07-18)', () => {
+  // apCost > 0 on a non-melee weapon so ap.apLimitedDps is populated too —
+  // the regression guard below checks it stays untouched alongside sustainedDps.
+  const weapon = makeWeapon({ animDelaySec: 1.0, apCost: 20 });
+  const base = {
+    mode: 'live' as const, weapon, itemLevel: 50, modifiers: [] as Modifier[],
+    player: createDefaultPlayerConditions(), enemy: createDefaultEnemyConditions(),
+    weakpointMult: 2.0, critRate: 0,
+  };
+
+  it('is 0 with no vatsHitChance sources equipped', () => {
+    expect(computeScenarios(base).vatsHitChanceBonus).toBe(0);
+  });
+
+  it('folds a synthetic vatsHitChance modifier into vatsHitChanceBonus (V.A.T.S. Enhanced-style flat ADD)', () => {
+    const m = mod({ bucket: 'vatsHitChance', op: 'ADD', value: 0.5 });
+    expect(computeScenarios({ ...base, modifiers: [m] }).vatsHitChanceBonus).toBeCloseTo(0.5, 10);
+  });
+
+  it('sums multiple vatsHitChance ADD sources additively', () => {
+    const a = mod({ id: 'a', bucket: 'vatsHitChance', op: 'ADD', value: 0.5 });
+    const b = mod({ id: 'b', bucket: 'vatsHitChance', op: 'ADD', value: 0.1 });
+    expect(computeScenarios({ ...base, modifiers: [a, b] }).vatsHitChanceBonus).toBeCloseTo(0.6, 10);
+  });
+
+  it('folds a MUL_ADD-only vatsHitChance source correctly (V.A.T.S. Matrix Overlay/Hoppy Hunter/Twisted Muscles-style — REGRESSION: the base-0 fold every other bootstrap bucket uses would silently zero this out, since foldOps scales MUL_ADD by the base)', () => {
+    const armorHelmet = mod({ bucket: 'vatsHitChance', op: 'MUL_ADD', value: 0.1 }); // Multiply Value 1.1 → float-1
+    expect(computeScenarios({ ...base, modifiers: [armorHelmet] }).vatsHitChanceBonus).toBeCloseTo(0.1, 10);
+
+    const hoppyHunterPenalty = mod({ bucket: 'vatsHitChance', op: 'MUL_ADD', value: -0.2 }); // Multiply Value 0.8 → float-1
+    expect(computeScenarios({ ...base, modifiers: [hoppyHunterPenalty] }).vatsHitChanceBonus).toBeCloseTo(-0.2, 10);
+  });
+
+  it('sums a mix of ADD and MUL_ADD vatsHitChance sources as independent additive contributions', () => {
+    const vatsEnhanced = mod({ id: 'a', bucket: 'vatsHitChance', op: 'ADD', value: 0.5 });
+    const armorHelmet = mod({ id: 'b', bucket: 'vatsHitChance', op: 'MUL_ADD', value: 0.1 });
+    expect(computeScenarios({ ...base, modifiers: [vatsEnhanced, armorHelmet] }).vatsHitChanceBonus).toBeCloseTo(0.6, 10);
+  });
+
+  it('REGRESSION GUARD: a vatsHitChance modifier never changes perHit/sustainedDps/apLimitedDps in ANY scenario (display-only, must never feed the damage formula)', () => {
+    const bonusMod = mod({ bucket: 'vatsHitChance', op: 'ADD', value: 0.5 });
+    const withBonus = computeScenarios({ ...base, modifiers: [bonusMod] });
+    const without = computeScenarios(base);
+
+    // The aggregate itself DOES differ...
+    expect(withBonus.vatsHitChanceBonus).toBeCloseTo(0.5, 10);
+    expect(without.vatsHitChanceBonus).toBe(0);
+
+    // ...but nothing downstream of it does. Free aim:
+    expect(withBonus.freeAim.perHit.total).toBe(without.freeAim.perHit.total);
+    expect(withBonus.freeAim.burstDps).toBe(without.freeAim.burstDps);
+    expect(withBonus.freeAim.sustain.sustainedDps).toBe(without.freeAim.sustain.sustainedDps);
+
+    // VATS:
+    expect(withBonus.vats.perHit.total).toBe(without.vats.perHit.total);
+    expect(withBonus.vats.burstDps).toBe(without.vats.burstDps);
+    expect(withBonus.vats.sustain.sustainedDps).toBe(without.vats.sustain.sustainedDps);
+
+    // VATS AP economy (apLimitedDps is the other headline DPS number):
+    expect(withBonus.vats.ap).toBeDefined();
+    expect(without.vats.ap).toBeDefined();
+    expect(withBonus.vats.ap!.apLimitedDps).toBe(without.vats.ap!.apLimitedDps);
+    expect(withBonus.vats.ap!.uptime).toBe(without.vats.ap!.uptime);
+  });
+
+  it("a targetDistance 'far'-gated vatsHitChance source only counts when the target is far (Eye of the Hunter-style)", () => {
+    const m = mod({
+      bucket: 'vatsHitChance',
+      op: 'ADD',
+      value: 0.2,
+      conditions: [{ kind: 'targetDistance', range: 'far' }],
+    });
+    const near = computeScenarios({
+      ...base,
+      modifiers: [m],
+      enemy: { ...createDefaultEnemyConditions(), targetDistance: 500 },
+    });
+    const far = computeScenarios({
+      ...base,
+      modifiers: [m],
+      enemy: { ...createDefaultEnemyConditions(), targetDistance: 1000 },
+    });
+    expect(near.vatsHitChanceBonus).toBe(0);
+    expect(far.vatsHitChanceBonus).toBeCloseTo(0.2, 10);
+    // Same guard as above, restated at the condition-gated boundary: even
+    // when the source IS active (far), the damage numbers don't move.
+    expect(far.vats.sustain.sustainedDps).toBe(near.vats.sustain.sustainedDps);
+  });
+});

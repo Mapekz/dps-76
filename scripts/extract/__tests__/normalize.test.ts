@@ -1247,3 +1247,57 @@ describe('translateEnchantment (Contact-delivery weapon/OMOD on-hit procs, 2026-
     expect(result.modifiers).toEqual([]);
   });
 });
+
+describe('translate (Phase 4 — VATS hit-chance aggregate, display-only, 2026-07-18)', () => {
+  const vatsAccuracyEdids = new Map<string, string>([['0xAV', 'STAT_VATSAccuracy']]);
+
+  it('routes a flat Peak Value Modifier on STAT_VATSAccuracy to vatsHitChance (V.A.T.S. Enhanced-style: magnitude 50 → 0.50)', () => {
+    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), effect({ magnitude: 50 }), noRoutes, vatsAccuracyEdids);
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0]).toEqual({ bucket: 'vatsHitChance', op: 'ADD', value: 0.5, conditions: [] });
+  });
+
+  it("carries curve.input 'perception' for a Peak Value Modifier on STAT_VATSAccuracy (Awareness perk)", () => {
+    const curved = effect({
+      curvePoints: [{ x: 1, y: 5 }, { x: 15, y: 18 }, { x: 30, y: 30 }, { x: 60, y: 45 }, { x: 100, y: 50 }],
+      curveInputAv: '0x000002C3',
+    });
+    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), curved, noRoutes, vatsAccuracyEdids);
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0].bucket).toBe('vatsHitChance');
+    expect(r.modifiers[0].curve?.input).toBe('perception');
+    expect(r.modifiers[0].curve ? r.modifiers[0].curveScale : null).toBeCloseTo(0.01, 10);
+  });
+
+  it("routes the 'Mod VATS Hit Chance' entry point through ENTRY_POINT_BUCKETS (armor/chem/mutation Multiply-Value sources)", () => {
+    expect(ENTRY_POINT_BUCKETS['Mod VATS Hit Chance']).toBe('vatsHitChance');
+  });
+});
+
+describe('translateConditions (Phase 4 — GetDistanceToClosestHostileActor, 2026-07-18)', () => {
+  it("translates GetDistanceToClosestHostileActor() >= N to targetDistance 'far' (Eye of the Hunter's 10/20/30-by-rank gates)", () => {
+    for (const cmp of [10, 20, 30]) {
+      const row: RawCondition = {
+        Function: 'GetDistanceToClosestHostileActor',
+        'Comparison Value': cmp,
+        Operator: 'Greater Than Or Equal To',
+        'Run On': 'Subject',
+      };
+      const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
+      expect(conditions).toEqual([{ kind: 'targetDistance', range: 'far' }]);
+      expect(unresolved).toEqual([]);
+    }
+  });
+
+  it('leaves other operators unresolved (no other shape observed in data)', () => {
+    const row: RawCondition = {
+      Function: 'GetDistanceToClosestHostileActor',
+      'Comparison Value': 10,
+      Operator: 'Less Than',
+      'Run On': 'Subject',
+    };
+    const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([{ kind: 'unresolved', raw: 'GetDistanceToClosestHostileActor Less Than 10' }]);
+    expect(unresolved).toEqual(['GetDistanceToClosestHostileActor Less Than 10']);
+  });
+});

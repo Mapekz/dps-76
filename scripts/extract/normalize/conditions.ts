@@ -399,6 +399,20 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
       // consumed — teammates are assumed in range (docs/assumptions.md).
       if (cond['Run On'] === 'Potential Players' && /^less than/i.test(cond.Operator ?? '')) return null;
       return { kind: 'unresolved', raw: `GetDistance ${cond.Operator} ${rawCmp} on ${cond['Run On']}` };
+    case 'GetDistanceToClosestHostileActor':
+      // Eye of the Hunter (Ghoul-exclusive, GHL_EyeOfTheHunter01-03): the
+      // ONLY numeric distance-threshold condition rows found anywhere in the
+      // ESM (>= 10/20/30 by rank — contrast the close/far damage gates,
+      // which are native-code-only with NO condition rows at all,
+      // docs/assumptions.md "Target distance (Close / Far)"). Approximated
+      // onto the app's existing far-range bucket rather than adding a third
+      // distance tier just for this one perk (Phase 4 — VATS hit-chance
+      // aggregate, display-only; docs/assumptions.md "VATS hit-chance
+      // aggregate (display-only)").
+      if (/^greater than or equal to$/i.test(cond.Operator ?? '') && typeof cmp === 'number' && cmp > 0) {
+        return { kind: 'targetDistance', range: 'far' };
+      }
+      return { kind: 'unresolved', raw: `GetDistanceToClosestHostileActor ${cond.Operator} ${rawCmp}` };
     case 'IsTrueForConditionForm': {
       // Mutation value-tier CNDFs (base vs Strange-in-Numbers-boosted).
       if (edid === 'Mutation_Check_UseNormalVersion') return { kind: 'strangeInNumbers', value: !wants };

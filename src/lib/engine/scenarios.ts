@@ -179,6 +179,19 @@ export interface ScenarioSet {
    * usable range span (maxRange ≤ 0) — see `isMelee`/`rangeFalloffMult`.
    */
   range: { minRange: number; maxRange: number; outOfRangeMult: number } | null;
+  /**
+   * Display-only aggregate of every equipped `vatsHitChance`-bucket
+   * modifier's decimal value (0.10 = +10%), folded ONCE against the VATS
+   * scenario's resolve context (weapon-keyword/perk-rank/targetDistance/
+   * playerIsGhoul conditions all evaluate against the real VATS flags) —
+   * same "fold once" bootstrap precedent as `onslaughtMaxStacks`/`armorPen`.
+   * NEVER consumed by `sustainedDps`/`apLimitedDps`/any damage term — the
+   * manual `vatsHitRatePct` slider (`ConditionsSection.tsx`) stays the sole
+   * authoritative VATS hit-rate input. This field's only consumer is that
+   * same section's informational pill. See docs/assumptions.md "VATS
+   * hit-chance aggregate (display-only)".
+   */
+  vatsHitChanceBonus: number;
 }
 
 export interface ScenarioInput {
@@ -595,11 +608,37 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   const freeTrace = tracing ? createHitTrace() : undefined;
   const freeHit = bodyPartBlendedHit(input, freeFlags, bodyPartMult, targetBodyPart, onslaught, bulletStorm, rangeMult, freeTrace);
 
-  // VATS: crit cadence blends a non-crit and a crit hit.
+  // VATS: crit cadence blends a non-crit and a crit hit. `vatsCtx` is the
+  // one full (onslaught/bulletStorm-threaded) VATS-flavored resolve context
+  // for this input — reused below by the crit meter, the AP economy fold,
+  // the VATS DoT fold, and the vatsHitChance aggregate, so weapon-keyword/
+  // perk-rank/targetDistance/playerIsGhoul conditions on every VATS-scoped
+  // fold evaluate against the same real VATS state instead of each call
+  // rebuilding an equivalent context.
   const vatsFlags: ScenarioFlags = { isVats: true, isSneaking: sneaking, isPowerAttack: powerAttack, isCrit: false };
+  const vatsCtx = scenarioCtx(input, vatsFlags, onslaught, bulletStorm);
   const critMeterTrace = tracing ? ({ fill: null, consumption: null } as CritMeterTrace) : undefined;
-  const critMeter = computeCritMeter(input.modifiers, input.weapon, scenarioCtx(input, vatsFlags, onslaught, bulletStorm), critMeterTrace);
+  const critMeter = computeCritMeter(input.modifiers, input.weapon, vatsCtx, critMeterTrace);
   const critRate = input.critRate ?? critMeter.critRate;
+  // VATS hit-chance aggregate (Phase 4 — display-only): folded ONCE against
+  // the VATS resolve context (same "fold once" bootstrap precedent as
+  // armorPen/onslaughtMaxStacks), NEVER consumed by any damage/sustain/AP
+  // term below — see the `vatsHitChance` bucket doc comment
+  // (src/types/modifiers.ts) and docs/assumptions.md "VATS hit-chance
+  // aggregate (display-only)". Surfaced on `ScenarioSet.vatsHitChanceBonus`
+  // purely for the ConditionsSection.tsx pill.
+  //
+  // Folded against base 1 (then de-based by subtracting 1) rather than base
+  // 0 like armorPen: real sources here are a MIX of ADD (V.A.T.S. Enhanced's
+  // flat +0.50, Awareness'/Orange Mentats' curve/flat ADDs) AND MUL_ADD (the
+  // V.A.T.S. Matrix Overlay armor mods, Hoppy Hunter IPA, Twisted Muscles —
+  // all extracted from ESM "Multiply Value" entry points as `float − 1`, the
+  // SAME transform `translateGrantedPerk` uses everywhere else). `foldOps`
+  // scales every MUL_ADD term by `base`, so a base of 0 would silently zero
+  // out all six MUL_ADD sources; base 1 lets MUL_ADD's `× base` recover its
+  // `float − 1` contribution, and subtracting 1 back out gives the same
+  // "0 = no sources equipped" convention as every other bootstrap fold.
+  const vatsHitChanceBonus = foldBucket(input.modifiers, 'vatsHitChance', 1, vatsCtx) - 1;
   const vatsTrace = tracing ? createHitTrace() : undefined;
   const vatsCritTrace = tracing ? createHitTrace() : undefined;
   const vatsAvg = critWeighted(
@@ -644,7 +683,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // any extracted data today) — evaluated with each scenario's own non-crit
   // context so a future sneaking/powerAttack-gated DoT mod still resolves correctly.
   const freeDotDps = computeDotDps(input.modifiers, input.weapon, scenarioCtx(input, freeFlags, onslaught, bulletStorm));
-  const vatsDotDps = computeDotDps(input.modifiers, input.weapon, scenarioCtx(input, vatsFlags, onslaught, bulletStorm));
+  const vatsDotDps = computeDotDps(input.modifiers, input.weapon, vatsCtx);
 
   // Steady-state VATS AP economy (Stage B): ranged weapons only (melee/VATS-
   // melee AP is out of scope — uptime is undefined without real melee AP
@@ -652,7 +691,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   let ap: ScenarioResult['ap'];
   let apRegenTrace: ApRegenTrace | undefined;
   if (!isMelee(input.weapon) && (input.weapon.apCost ?? 0) > 0) {
-    const apCtx = scenarioCtx(input, vatsFlags, onslaught, bulletStorm);
+    const apCtx = vatsCtx;
     const percentCollect = tracing ? ([] as BucketTrace[]) : undefined;
     const apRegenBonus = foldBucket(input.modifiers, 'apRegen', 0, apCtx, percentCollect);
     const flatCollect = tracing ? ([] as BucketTrace[]) : undefined;
@@ -736,6 +775,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     hasKillStreakSources,
     charging,
     range,
+    vatsHitChanceBonus,
     freeAim: {
       perHit: freeHit,
       burstDps: freeSustain.burstDps,

@@ -69,6 +69,7 @@ const ALL_BUCKETS: Bucket[] = [
   'addDamageComponent',
   'armorPen',
   'armorPenFlat',
+  'vatsHitChance',
   'dotDamage',
   'maxHealth',
   'specialStrength',
@@ -150,6 +151,10 @@ describe('modifierHasEngineEffect / hasAnyEngineEffect', () => {
 
   it('is true for a playerDamageResist-scaled curve (Berserker\'s wielder-DR wiring, renamed from enemyDamageResist)', () => {
     expect(modifierHasEngineEffect(curveMod('dbm', 'playerDamageResist'))).toBe(true);
+  });
+
+  it('is true for vatsHitChance — display regime still counts as "moves a number" (Phase 4, V.A.T.S. Enhanced &c.)', () => {
+    expect(modifierHasEngineEffect(plainMod('vatsHitChance'))).toBe(true);
   });
 
   it('is false when the modifier carries an unresolved condition', () => {

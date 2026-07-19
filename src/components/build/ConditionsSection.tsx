@@ -6,6 +6,7 @@ import { NumberField } from '@/components/ui/number-field';
 import { Slider } from '@/components/ui/slider';
 import { firstSliderValue } from '@/lib/slider-value';
 import { Switch } from '@/components/ui/switch';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
@@ -130,6 +131,13 @@ export function ConditionsSection() {
       ? onslaughtMax
       : Math.min(onslaughtStored, onslaughtMax);
   const hasKillStreak = scenarios?.hasKillStreakSources ?? false;
+
+  // VATS hit-chance aggregate (Phase 4, display-only): the folded total from
+  // ScenarioSet.vatsHitChanceBonus (V.A.T.S. Enhanced, Awareness, Eye of the
+  // Hunter, V.A.T.S. Matrix Overlay...). Purely informational — the VATS hit
+  // rate slider below stays the sole authoritative hit-rate input for every
+  // DPS number (docs/assumptions.md "VATS hit-chance aggregate (display-only)").
+  const vatsHitChanceBonus = scenarios?.vatsHitChanceBonus ?? 0;
 
   // Bullet Storm: the max/min fold from equipped sources
   // (ScenarioSet.bulletStormMaxStacks/bulletStormMinStacks); sentinel -1 =
@@ -422,15 +430,29 @@ export function ConditionsSection() {
             </p>
           </div>
 
-          <SliderField
-            id="char-vats-hit-rate"
-            label="VATS hit rate"
-            value={conditions.vatsHitRatePct ?? 100}
-            min={10}
-            max={100}
-            step={5}
-            onChange={v => set('vatsHitRatePct', v)}
-          />
+          <div className="space-y-1.5">
+            <SliderField
+              id="char-vats-hit-rate"
+              label="VATS hit rate"
+              value={conditions.vatsHitRatePct ?? 100}
+              min={10}
+              max={100}
+              step={5}
+              onChange={v => set('vatsHitRatePct', v)}
+            />
+            {vatsHitChanceBonus > 0 && (
+              <Tooltip>
+                <TooltipTrigger render={<Badge variant="secondary" className="cursor-help" />}>
+                  +{Math.round(vatsHitChanceBonus * 100)}% VATS hit bonus
+                </TooltipTrigger>
+                <TooltipContent>
+                  Informational total of equipped VATS-accuracy sources (V.A.T.S. Enhanced, Awareness, Eye of the
+                  Hunter, V.A.T.S. Matrix Overlay...). The slider above stays authoritative — this never changes any
+                  DPS number.
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
 
           <div className="space-y-1.5">
             <SliderField

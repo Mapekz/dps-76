@@ -766,6 +766,103 @@ Engine: `src/lib/engine/ap-economy.ts`.
   perks stays **permanently out of scope**; `scenarios.ts` (Stage B/C hit-rate
   block).
 
+## VATS hit-chance aggregate (display-only)
+Engine: `scenarios.ts` (bootstrap fold → `ScenarioSet.vatsHitChanceBonus`).
+UI: `ConditionsSection.tsx` pill next to the VATS hit-rate slider.
+
+- **Aggregation ≠ computation** (Phase 4, user decision): the standing
+  "auto-computing VATS hit chance from distance/Perception/perks is
+  permanently out of scope" ruling above is about DERIVING a hit-chance
+  NUMBER from game state — it does not cover summing already-known ESM
+  bonus MAGNITUDES for display. `vatsHitChance` (new bucket, `regime:
+  'display'`) is folded ONCE per scenario input against the VATS resolve
+  context (`onslaughtMaxStacks`/`armorPen` "fold once" precedent) into
+  `ScenarioSet.vatsHitChanceBonus` and consumed ONLY by the UI pill —
+  **never** threaded into `sustainedDps`/`apLimitedDps`/any damage term
+  (regression-tested, `engine.test.ts` "vatsHitChanceBonus"). The manual
+  `vatsHitRatePct` slider stays the sole authoritative VATS hit-rate input.
+- **Fold base is 1, not 0** (unlike `armorPen`/`onslaughtMaxStacks`):
+  `foldBucket(mods, 'vatsHitChance', 1, ctx) - 1`. Real sources split
+  ADD (V.A.T.S. Enhanced, Awareness, Orange Mentats) and MUL_ADD (the
+  V.A.T.S. Matrix Overlay armor mods, Hoppy Hunter IPA, Twisted Muscles —
+  all extracted from ESM "Multiply Value" entry points as `float − 1`, same
+  as every other Multiply-Value route). `foldOps` scales MUL_ADD terms by
+  the base, so base 0 would silently zero out every MUL_ADD source; folding
+  against 1 and subtracting 1 back out recovers each source's intended
+  contribution while keeping "0 = nothing equipped" for the pill's
+  `> 0` visibility check.
+- **Modeled sources** (all ESM-proven 2026-07-18 unless noted):
+  - **V.A.T.S. Enhanced** (OMOD `mod_Legendary_Weapon2_Guns_VATSAccuracy`
+    `0x00524153`): flat `ActorValues ADD STAT_VATSAccuracy 50.0` → +0.50.
+    Status changed this phase from "no action" (permanently-out-of-scope
+    no-op, `dps-todos/measurement-backlog.md`) to informational display.
+  - **Awareness** perk (`0x000D2287`, hasCard, Perception-gated card):
+    curve vs the player's Perception AV (`0x000002C3`) on `STAT_VATSAccuracy`
+    — points (1,5)→(15,18)→(30,30)→(60,45)→(100,50), scale 0.01. New
+    `CurveInput` `'perception'` (mirrors strength/endurance/charisma/
+    intelligence).
+  - **Eye of the Hunter** (Ghoul-exclusive perk, `GHL_EyeOfTheHunter01-03`
+    `0x00797E2F`/`0x00797E5B`/`0x00797E2B`): +0.20/+0.25/+0.30 by rank,
+    gated `playerIsGhoul(true)` + `targetDistance('far')`. The ESM's own
+    gate is `GetDistanceToClosestHostileActor() >= 10/20/30` (by rank) — the
+    **only** numeric distance-THRESHOLD condition rows found anywhere in
+    the dump (contrast the close/far damage gates, which are native-code
+    with zero condition rows). **APPROXIMATION**: collapsed onto the app's
+    existing far-range bucket rather than adding a third distance tier for
+    one perk (`normalize/conditions.ts`'s new
+    `GetDistanceToClosestHostileActor` case).
+  - **V.A.T.S. Matrix Overlay** — 7 power-armor helmet OMODs (Hellcat
+    `0x0060DB3A`, T45 `0x0020374D`, T51 `0x0017A5AE`, T60 `0x0020374C`, T65
+    `0x00585929`, X01 `0x0020374B`, Enclave Vulcan `0x00788D8D`), each
+    granting `FortifyVATSAccuracyChemPerk` (`0x001CC775`, `Mod VATS Hit
+    Chance`/Multiply Value ×1.1) → MUL_ADD +0.10. New `ENTRY_POINT_BUCKETS`
+    row `'Mod VATS Hit Chance': 'vatsHitChance'` (generic Multiply-Value
+    branch in `translateGrantedPerk`, no special-casing needed) — this is
+    the Phase 3 armor-effects source the sweep surfaced.
+  - **Orange Mentats** (ALCH `0x000518C5`): flat Peak Value Modifier +10 for
+    300s on `STAT_VATSAccuracy` → +0.10.
+  - **Hoppy Hunter IPA** (ALCH `0x00454128`, via granted perk
+    `HoppyHunter_ScopeStability` `0x0045412A`, description "Decreases
+    V.A.T.S. Accuracy"): `Mod VATS Hit Chance` ×0.8 → MUL_ADD **−0.20** (a
+    genuine penalty chem — the aggregate can go negative; the UI pill hides
+    itself at ≤0).
+  - **Twisted Muscles** mutation penalty (SPEL `0x003C402F`, via granted
+    perk `Mutation_ReduceAccuracy_Perk` `0x003C4035`): `Mod VATS Hit Chance`
+    ×0.7/0.77/0.85/0.93 by Class Freak tier → MUL_ADD −0.30/−0.23/−0.15/
+    −0.07 (mirrors the perk's existing Cone-of-fire penalty shape, which
+    stays unmapped — free-aim spread accuracy has no bucket).
+  - **Concentrated Fire** (perk `ConcentratedFire01-03` `0x0004D890`/
+    `0x001D2459`/`0x001D245A`, description "+1%/+2%/+3% accuracy and damage
+    per shot"): hand-authored flat ADD 0.01/0.02/0.03 by rank
+    (`overrides/perk-overrides.ts` `extraPerkModifiers`), **DESCRIPTION-
+    sourced, not ESM-derived** — see the STACKING SIMPLIFICATION note below.
+- **Concentrated Fire's stacking simplification**: the real mechanic lives
+  on the `STAT_DamagePerk` plumbing perk (`0x0023A0EB`) as two entry points
+  — `Mod VATS Concentrated Fire Chance Bonus` (Float 4.0 non-automatic /
+  1.0 automatic weapons, `HasKeyword(WeaponTypeAutomatic)`-gated) and `Mod
+  VATS Concentrated Fire Damage Mult` (Float 0.01) — both `Add Actor Value
+  Mult` against AV `ConcentratedFireRank` (`0x00900A59`, = the owned rank
+  number 1/2/3). Neither is in `ENTRY_POINT_BUCKETS`: the native engine
+  multiplies `Float × rank` by a HIDDEN per-target consecutive-shots-fired
+  counter this calculator cannot read, and no static "value at shot 1" is
+  encoded anywhere (the 4.0/1.0 weapon-type split doesn't reduce to the
+  description's flat rank% either) — reproducing the ramp would be
+  fabrication. Modeled as the description's flat rank% only ("the bonus
+  after landing one shot"); stacking beyond shot 1, AND the perk's DAMAGE
+  half (a real dbm ramp, out of scope), stay unmodeled.
+- **Badges**: every source above loses the picker's "no effect yet" badge
+  automatically via `modifierHasEngineEffect` (`vatsHitChance` is
+  `hasEngineEffect: true`, `specialPerception` precedent — "the folded
+  value is what the UI renders" counts as an effect).
+- **Sweep, nothing else found**: `perks.json`/`omods.json`/
+  `armor-omods.json`/`consumables.json`/`mutations.json` carry no other
+  unresolved VATS-accuracy-flavored AV/entry-point after this pass (the two
+  hidden non-card perks the wiring incidentally surfaced —
+  `GHL_SURV_FeralPerk`'s Feral-state penalty and the engine-internal
+  `PlayerPerk`'s `PerceptionCondition` gate — both land behind `unresolved`
+  GLOB-comparison conditions and are permanently inert; neither is
+  card-joined to any PerkId).
+
 ## Power attacks & melee cadence
 Engine: `paper-damage.ts`, `scenarios.ts`, `fire-rate.ts`.
 

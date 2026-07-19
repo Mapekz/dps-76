@@ -11,6 +11,7 @@ import battleLoadersOmod from './fixtures/omod-battleloaders.json';
 import battleLoadersEnch from './fixtures/ench-battleloaders.json';
 import battleLoadersMgef from './fixtures/mgef-battleloaders.json';
 import battleLoadersPerk from './fixtures/perk-battleloaders.json';
+import vatsEnhancedOmod from './fixtures/omod-vatsenhanced.json';
 
 // Fixtures are verbatim `esm -p --esm <esmPath> get <edid|formid> --json` output
 // (20260710 ESM). These pin the unique-mod rework's two previously-undecoded
@@ -1114,5 +1115,58 @@ describe('extractOmods (Phase 3 armor pipeline, 2026-07-18)', () => {
       const worn = m.conditions.find(c => c.kind === 'wornPieceCount');
       expect(worn).toMatchObject({ keyword: 'HasLegendary_Armor_BattleLoaders' });
     }
+  });
+});
+
+/**
+ * Stub client for V.A.T.S. Enhanced (Phase 4 — VATS hit-chance aggregate,
+ * display-only, 2026-07-18). Fixture is verbatim `esm -p get 0x00524153
+ * --json` output: mod_Legendary_Weapon2_Guns_VATSAccuracy carries a direct
+ * `ActorValues ADD STAT_VATSAccuracy 50.0` property (no ENCH/PERK chain) —
+ * the simplest of the three real sources this phase wires (the other two,
+ * the Awareness perk's curve and the armor helmets' granted-perk
+ * Multiply-Value entry point, are pinned at the pure-`translate()` level in
+ * normalize.test.ts).
+ */
+function makeVatsEnhancedStubClient(): EsmClient {
+  const known: Record<string, EsmRecord> = {
+    '0x00524153': vatsEnhancedOmod as unknown as EsmRecord,
+    '0x006C2035': {
+      header: { signature: 'AVIF', form_id: '0x006C2035' },
+      editor_id: 'STAT_VATSAccuracy',
+      fields: {},
+    } as unknown as EsmRecord,
+  };
+  const get = async (target: string): Promise<EsmRecord> => {
+    if (known[target]) return known[target];
+    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+  };
+  return {
+    async list(type: string): Promise<EsmListRow[]> {
+      if (type !== 'OMOD') return [];
+      return [
+        {
+          form_id: '0x00524153',
+          record_type: 'OMOD',
+          editor_id: 'mod_Legendary_Weapon2_Guns_VATSAccuracy',
+          name: 'V.A.T.S. Enhanced',
+        },
+      ];
+    },
+    get,
+    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+    refs: async () => [],
+  } as unknown as EsmClient;
+}
+
+describe('extractOmods (V.A.T.S. Enhanced — STAT_VATSAccuracy fallback route, Phase 4 2026-07-18)', () => {
+  it('ActorValues ADD 50.0 on STAT_VATSAccuracy decodes to a vatsHitChance ADD modifier of value 0.5', async () => {
+    const result = await extractOmods(makeVatsEnhancedStubClient(), new Set());
+    const omod = result.omods.find(o => o.id === 'mod_Legendary_Weapon2_Guns_VATSAccuracy');
+    expect(omod).toBeDefined();
+    expect(omod!.modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'vatsHitChance', op: 'ADD', value: 0.5 })
+    );
+    expect(omod!.notes).not.toContain('ActorValues on STAT_VATSAccuracy — unmapped');
   });
 });

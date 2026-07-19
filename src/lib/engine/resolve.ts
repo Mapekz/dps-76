@@ -166,6 +166,10 @@ const PLAYER_STATE_READERS: Record<StackCounter | CurveInput, (p: PlayerConditio
   strength: p => p.strength,
   // The Peace Maker's explosive-damage-vs-CHA curve X.
   charisma: p => p.charisma,
+  // Awareness perk's VATS-accuracy-vs-PER curve X (Phase 4 — VATS
+  // hit-chance aggregate, display-only) — mirrors the strength/endurance/
+  // charisma readers above.
+  perception: p => p.perception,
   // Bullet Storm / Heavy Gunner's ammo-spent stack curve X (shared field with
   // the `bulletStorm` StackCounter reader above — both clamp through
   // effectiveBulletStormStacks).

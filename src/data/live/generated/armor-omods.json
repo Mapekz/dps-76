@@ -77049,15 +77049,27 @@
    "ma_PA_Hellcat",
    "ma_PA_Helmet"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0060DB3A:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0060DB3A",
+     "edid": "mod_PowerArmor_Hellcat_Helmet_Misc_VATSChance",
+     "name": "V.A.T.S. Matrix Overlay"
+    },
+    "bucket": "vatsHitChance",
+    "op": "MUL_ADD",
+    "value": 0.10000000000000009,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_VATSChance"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk FortifyVATSAccuracyChemPerk: entry point Mod VATS Hit Chance — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -79375,14 +79387,26 @@
    "ma_T45_Helmet",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0020374D:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0020374D",
+     "edid": "mod_PowerArmor_T45_Helmet_Misc_VATSChance",
+     "name": "V.A.T.S. Matrix Overlay"
+    },
+    "bucket": "vatsHitChance",
+    "op": "MUL_ADD",
+    "value": 0.10000000000000009,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_VATSChance"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "perk FortifyVATSAccuracyChemPerk: entry point Mod VATS Hit Chance — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -81216,14 +81240,26 @@
    "ma_T51_Helmet",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0017A5AE:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0017A5AE",
+     "edid": "mod_PowerArmor_T51_Helmet_Misc_VATSChance",
+     "name": "V.A.T.S. Matrix Overlay"
+    },
+    "bucket": "vatsHitChance",
+    "op": "MUL_ADD",
+    "value": 0.10000000000000009,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_VATSChance"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "perk FortifyVATSAccuracyChemPerk: entry point Mod VATS Hit Chance — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -83896,14 +83932,26 @@
    "ma_T60_Helmet",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0020374C:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0020374C",
+     "edid": "mod_PowerArmor_T60_Helmet_Misc_VATSChance",
+     "name": "V.A.T.S. Matrix Overlay"
+    },
+    "bucket": "vatsHitChance",
+    "op": "MUL_ADD",
+    "value": 0.10000000000000009,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_VATSChance"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "perk FortifyVATSAccuracyChemPerk: entry point Mod VATS Hit Chance — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -86591,15 +86639,27 @@
    "ma_PA_T65",
    "ma_PowerArmor_T65_Helmet"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00585929:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00585929",
+     "edid": "mod_PowerArmor_T65_Helmet_Misc_VATSChance",
+     "name": "V.A.T.S. Matrix Overlay"
+    },
+    "bucket": "vatsHitChance",
+    "op": "MUL_ADD",
+    "value": 0.10000000000000009,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_VATSChance"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk FortifyVATSAccuracyChemPerk: entry point Mod VATS Hit Chance — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -89232,15 +89292,27 @@
    "ma_X01_Helmet",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0020374B:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0020374B",
+     "edid": "mod_PowerArmor_X01_Helmet_Misc_VATSChance",
+     "name": "V.A.T.S. Matrix Overlay"
+    },
+    "bucket": "vatsHitChance",
+    "op": "MUL_ADD",
+    "value": 0.10000000000000009,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_VATSChance"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk FortifyVATSAccuracyChemPerk: entry point Mod VATS Hit Chance — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -93023,15 +93095,27 @@
    "ma_PA_Helmet",
    "RD01_ma_PA_EnclaveVulcan"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00788D8D:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00788D8D",
+     "edid": "RD01_Mod_PowerArmor_EnclaveVulcan_Helmet_Misc_VATSChance",
+     "name": "V.A.T.S. Matrix Overlay"
+    },
+    "bucket": "vatsHitChance",
+    "op": "MUL_ADD",
+    "value": 0.10000000000000009,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "dn_HasMisc_VATSChance"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk FortifyVATSAccuracyChemPerk: entry point Mod VATS Hit Chance — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

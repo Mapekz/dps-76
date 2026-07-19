@@ -65,6 +65,18 @@ export const ENTRY_POINT_BUCKETS: Record<string, Bucket> = {
   // this generic mapping for that exact shape). Kept here too as a fallback
   // for a hypothetical un-gated future use of the entry point.
   'Instant Reload Clip On Bash': 'reloadSkipChance',
+  // VATS hit-chance aggregate (Phase 4, display-only — see the
+  // `vatsHitChance` bucket doc comment, src/types/modifiers.ts). Multiply
+  // Value entries verified via `esm get` 2026-07-18: FortifyVATSAccuracyChemPerk
+  // 0x001CC775 (Float 1.1 — the 7 "V.A.T.S. Matrix Overlay" power-armor
+  // helmet mods, granted via AttachedPerk); HoppyHunter_ScopeStability
+  // 0x0045412A (Float 0.8 — Hoppy Hunter IPA's VATS-accuracy PENALTY, via
+  // "Perk to Apply"); Mutation_ReduceAccuracy_Perk 0x003C4035 (Float
+  // 0.7/0.77/0.85/0.93 by Class Freak tier — Twisted Muscles' penalty, via
+  // "Perk to Apply"). The generic Multiply-Value branch in
+  // `translateGrantedPerk` below (`MUL_ADD (float − 1)`) handles all three
+  // with no special-casing.
+  'Mod VATS Hit Chance': 'vatsHitChance',
 };
 
 /**
@@ -192,6 +204,19 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   // too (no VATS gate), and armor-side AP-cost entry points (Scanner's 4★)
   // must NOT feed it (dps-todos/armor-mods-outgoing.md).
   STAT_DmgAP: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'scaledByWeaponApCost' }] },
+  // VATS hit-chance aggregate (Phase 4, display-only — vatsHitChance bucket
+  // doc comment). AVIF STAT_VATSAccuracy 0x006C2035 — no plumbing perk maps
+  // it in PLUMBING_PERKS (its only PERK-side consumer, STAT_BeneficialPerk
+  // 0x0018ADAD, uses "Multiply 1 + Actor Value Mult" and isn't a
+  // damage-formula plumbing perk); the AV's real consumers are Peak Value
+  // Modifiers reached via ordinary MGEF/OMOD chains. Verified 2026-07-18:
+  // V.A.T.S. Enhanced (OMOD mod_Legendary_Weapon2_Guns_VATSAccuracy
+  // 0x00524153, `ActorValues ADD` flat 50.0 → +0.50); Awareness perk (PERK
+  // Awareness01 0x000D2287, curve vs Perception — see CURVE_INPUT_AVS
+  // 0x000002C3 below); Orange Mentats (ALCH 0x000518C5, Peak VM flat +10 for
+  // 300s). Scale 0.01 turns the AV's percentage-points magnitude into the
+  // bucket's decimal-fraction convention.
+  STAT_VATSAccuracy: { bucket: 'vatsHitChance', scale: 0.01 },
   // Thrill-Seeker's (Stage C3, RA_mod_Legendary_Weapon4_ThrillSeeker
   // 0x00863AA2): killstreak-scaled reload + melee-attack speed, both plain
   // Peak Value Modifiers gated by GetValue(killStreak) Equal To N tiers
@@ -388,6 +413,7 @@ const CURVE_INPUT_AVS: Record<string, CurveInput> = {
   '0x000002C4': 'endurance', // Endurance — Lifegiver's END-keyed max-HP curve (docs/assumptions.md "Max HP")
   '0x000002C5': 'charisma', // Charisma — The Peace Maker's explosive-damage-vs-CHA curve
   '0x000002C6': 'intelligence', // Intelligence — Science!/Pyro-Technician's/Cryologist's damage-vs-INT curves
+  '0x000002C3': 'perception', // Perception — Awareness perk's VATS-accuracy-vs-PER curve (Phase 4, display-only)
   '0x00000392': 'healthFraction', // current HP / max HP (Bloodied, Nerd Rage)
   '0x00000393': 'capsOnHand', // Aristocrat's
   '0x00000399': 'killStreak', // Adrenal Reaction

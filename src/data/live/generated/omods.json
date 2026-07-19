@@ -68941,16 +68941,28 @@
   "targetKeywords": [
    "ma_legendarycrafting_weaponranged"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00524153:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00524153",
+     "edid": "mod_Legendary_Weapon2_Guns_VATSAccuracy",
+     "name": "V.A.T.S. Enhanced"
+    },
+    "bucket": "vatsHitChance",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Weapon_VATSAccuracy"
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "ActorValues on STAT_VATSAccuracy — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

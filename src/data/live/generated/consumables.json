@@ -5518,13 +5518,26 @@
      "edid": "Brew_HoppyHunter",
      "name": "Hoppy Hunter IPA"
     },
+    "bucket": "vatsHitChance",
+    "op": "MUL_ADD",
+    "value": -0.19999999999999996,
+    "conditions": []
+   },
+   {
+    "id": "0x00454128:2",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00454128",
+     "edid": "Brew_HoppyHunter",
+     "name": "Hoppy Hunter IPA"
+    },
     "bucket": "specialLuck",
     "op": "ADD",
     "value": 3,
     "conditions": []
    },
    {
-    "id": "0x00454128:2",
+    "id": "0x00454128:3",
     "source": {
      "kind": "consumable",
      "formId": "0x00454128",
@@ -5540,7 +5553,6 @@
   "notes": [
    "Brew_HoppyHunter: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
    "Brew_HoppyHunter: perk HoppyHunter_ScopeStability: entry point Mod Actor Scope Stability — not modeled",
-   "Brew_HoppyHunter: perk HoppyHunter_ScopeStability: entry point Mod VATS Hit Chance — not modeled",
    "Brew_HoppyHunter: MGEF HoppyHunter_Duration archetype Script — needs override"
   ],
   "category": "alcohol",
@@ -8074,12 +8086,24 @@
     "op": "ADD",
     "value": 5,
     "conditions": []
+   },
+   {
+    "id": "0x000518C5:1",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x000518C5",
+     "edid": "OrangeMentats",
+     "name": "Orange Mentats"
+    },
+    "bucket": "vatsHitChance",
+    "op": "ADD",
+    "value": 0.1,
+    "conditions": []
    }
   ],
   "notes": [
    "OrangeMentats: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "OrangeMentats: MGEF AddictionOddsMentats: no route for AV AddictionMentats — needs mapping",
-   "OrangeMentats: MGEF FortifyVATSAccuracyChem: no route for AV STAT_VATSAccuracy — needs mapping",
    "OrangeMentats: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",

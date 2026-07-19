@@ -298,6 +298,30 @@ export type Bucket =
    * mitigation".
    */
   | 'armorPenFlat'
+  /**
+   * VATS hit-chance bonus (V.A.T.S. Enhanced, Awareness, Eye of the Hunter,
+   * the V.A.T.S. Matrix Overlay power-armor helmet mods, Orange Mentats,
+   * Hoppy Hunter IPA's penalty, Twisted Muscles' mutation penalty...) — a
+   * decimal fraction (0.10 = +10%), folded ONCE per scenario input
+   * (`scenarios.ts` bootstrap spot, `armorPen` precedent) into
+   * `ScenarioSet.vatsHitChanceBonus`. UNUSUALLY among bootstrap-fold
+   * buckets, this one is folded against base **1** (then de-based by
+   * subtracting 1), not 0: half the real sources are MUL_ADD (ESM "Multiply
+   * Value" entry points, extracted as `float − 1` the same way every other
+   * Multiply-Value entry point is) whose `foldOps` contribution is scaled by
+   * the base — base 0 would silently zero them out. See the `foldOps` call
+   * site in `scenarios.ts` for the full explanation. DISPLAY-ONLY (`regime:
+   * 'display'`):
+   * the fold result feeds an informational UI pill (`ConditionsSection.tsx`,
+   * next to the manual VATS hit-rate slider) and NOTHING else — it must
+   * never be threaded into `sustainedDps`/`apLimitedDps`/any damage term.
+   * The manual `vatsHitRatePct` slider stays the sole authoritative hit-rate
+   * input. Aggregating already-known ESM bonus magnitudes here is distinct
+   * from — and does not reopen — the standing "computing VATS hit chance
+   * from distance/Perception/perks is out of scope" ruling (see
+   * docs/assumptions.md "VATS hit-chance aggregate (display-only)").
+   */
+  | 'vatsHitChance'
   /** Damage-over-time from Damage-archetype MGEFs (bleed/burn/shock mods) — refresh-only steady-state dmg/sec, summed into `ScenarioResult.dotDps`. */
   | 'dotDamage'
   /**
@@ -365,6 +389,14 @@ export type BucketRegime =
    * the condition-resolution pipeline entirely.
    */
   | 'mitigation'
+  /**
+   * Folded once per scenario input (`scenarios.ts` bootstrap spot — same
+   * "fold once" precedent as `bootstrap`/`mitigation`), but the result feeds
+   * an informational UI display ONLY, never a formula term — distinct regime
+   * name so `hasEngineEffect: true` here can never be mistaken for "reaches
+   * a damage/sustain/AP term". See the `vatsHitChance` bucket doc comment.
+   */
+  | 'display'
   /** No fold consumes this bucket at all (as opposed to a fold whose result nothing reads — see `hasEngineEffect`). */
   | 'unfolded';
 
@@ -439,6 +471,7 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   addDamageComponent: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — no reader anywhere in the codebase; likely superseded by explosivePayload/materializeDamageTypeComponents' },
   armorPen: { regime: 'mitigation', hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold → armorPenTotal; consumed by mitigation.ts applyMitigation (per-component Resist fraction)' },
   armorPenFlat: { regime: 'mitigation', hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold → flat resist-point total; consumed by mitigation.ts applyMitigation (physical-resist-only, see bucket doc comment)' },
+  vatsHitChance: { regime: 'display', hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold (base 1, de-based) → ScenarioSet.vatsHitChanceBonus, rendered by ConditionsSection.tsx\'s pill — NEVER consumed by sustainedDps/apLimitedDps/any formula (Phase 4 — VATS hit-chance aggregate, display-only)' },
   dotDamage: { regime: 'dot', hasEngineEffect: true, foldedBy: 'paper-damage.ts computeDotDps' },
   maxHealth: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats (245 + 5xEND + this fold)' },
   specialStrength: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds paper-damage.ts strengthTerm + the strength CurveInput (Debilitator\'s)' },
@@ -744,6 +777,14 @@ export type CurveInput =
    * Peace Maker's explosive-damage-vs-CHA curve reads it.
    */
   | 'charisma'
+  /**
+   * The player's (buff-folded) Perception stat — AV 0x000002C3. The
+   * Awareness perk's VATS-accuracy-vs-PER curve reads it (mirrors
+   * strength/endurance/charisma/intelligence above; points (1,5)→(15,18)→
+   * (30,30)→(60,45)→(100,50), scale 0.01). Feeds only the `vatsHitChance`
+   * bucket today (Phase 4 — VATS hit-chance aggregate, display-only).
+   */
+  | 'perception'
   /**
    * The shared Bullet Storm / Heavy Gunner stack counter (ammo-spent stacks,
    * max 10) — AV 0x0000039B, no AVIF record (hardcoded slot, mirrors
