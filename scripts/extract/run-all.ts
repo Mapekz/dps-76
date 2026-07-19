@@ -1,13 +1,14 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
-import type { GeneratedMeta, GeneratedPerk, GeneratedWeapon } from '../../src/types/generated';
+import type { GeneratedArmor, GeneratedMeta, GeneratedPerk, GeneratedWeapon } from '../../src/types/generated';
 import { EsmClient } from './esm-client';
 import { buildApGrantIndex } from './ap-grant-index';
 import { buildCobjIndex } from './cobj-index';
 import { buildCrossFamilyRankMap } from './normalize/conditions';
 import { explosiveFamilyKeywordsOf, extractWeapons } from './extract-weapons';
 import { extractPerks } from './extract-perks';
+import { extractArmor } from './extract-armor';
 import { extractOmods } from './extract-omods';
 import { extractUniques } from './extract-uniques';
 import { extractBuffs } from './extract-buffs';
@@ -15,7 +16,7 @@ import { extractBodyParts } from './extract-bodyparts';
 import { extractCurveTables } from './extract-curvetables';
 import { extractNpcs } from './extract-npcs';
 
-const KNOWN_EXTRACTORS = ['weapons', 'perks', 'omods', 'uniques', 'buffs', 'bodyparts', 'curvetables', 'npcs'] as const;
+const KNOWN_EXTRACTORS = ['weapons', 'perks', 'armor', 'omods', 'uniques', 'buffs', 'bodyparts', 'curvetables', 'npcs'] as const;
 type ExtractorName = (typeof KNOWN_EXTRACTORS)[number];
 
 async function main() {
@@ -89,6 +90,9 @@ async function main() {
   // Full perk-family list — the OMOD pass builds its cross-family HasPerk
   // rank map (perkFamilyRank conditions) from it.
   let allPerks: GeneratedPerk[] | undefined;
+  // Obtainable armor formids feed the armor-OMOD obtainability pass (Phase 3
+  // armor pipeline), the ARMO-record parallel of obtainableWeaponFormIds.
+  let obtainableArmorFormIds: Set<string> | undefined;
 
   if (only.includes('weapons')) {
     console.log('Extracting weapons…');
@@ -137,6 +141,17 @@ async function main() {
     console.log(`  unknown entry points: ${result.unknownEntryPoints.length}, unmapped AVIFs: ${result.unmappedAvifs.length}, unresolved conds: ${result.unresolved.length}, unresolved cards: ${result.unresolvedCards.length}`);
   }
 
+  if (only.includes('armor')) {
+    console.log('Extracting armor (obtainability grounding)…');
+    const result = await extractArmor(client);
+    obtainableArmorFormIds = result.obtainableFormIds;
+    await writeFile(path.join(outDir, 'armor.json'), JSON.stringify(result.armors, null, 1));
+    meta.counts.armor = result.armors.length;
+    console.log(
+      `  ${result.armors.length} armor pieces (obtainable: ${result.obtainableFormIds.size})`
+    );
+  }
+
   if (only.includes('omods')) {
     console.log('Extracting OMODs…');
     if (!allWeapons) {
@@ -159,6 +174,18 @@ async function main() {
         console.warn('  no perks.json found — cross-family HasPerk gates will stay unresolved');
       }
     }
+    if (!obtainableArmorFormIds) {
+      // `--only omods` without an armor pass: read the checked-in generated
+      // set (mirrors the allWeapons fallback above). Missing armor.json is
+      // survivable — armor-riding obtainability signals just stay absent.
+      try {
+        const allArmor = JSON.parse(await readFile(path.join(outDir, 'armor.json'), 'utf8')) as GeneratedArmor[];
+        obtainableArmorFormIds = new Set(allArmor.filter(a => a.obtainable !== false).map(a => a.formId));
+      } catch {
+        console.warn('  no armor.json found — armor-riding obtainability signals will stay absent');
+        obtainableArmorFormIds = new Set();
+      }
+    }
     const crossFamilyRank = allPerks
       ? buildCrossFamilyRankMap(allPerks.map(p => ({ family: p.family, formIds: p.formIds })))
       : undefined;
@@ -171,17 +198,20 @@ async function main() {
       cobjIndex,
       defaultModFormIds,
       templateModFormIds,
-      crossFamilyRank
+      crossFamilyRank,
+      obtainableArmorFormIds
     );
     await writeFile(path.join(outDir, 'omods.json'), JSON.stringify(result.omods, null, 1));
+    await writeFile(path.join(outDir, 'armor-omods.json'), JSON.stringify(result.armorOmods, null, 1));
     meta.counts.omods = result.omods.length;
+    meta.counts.armorOmods = result.armorOmods.length;
     meta.excluded = { ...meta.excluded, ...result.excluded };
     meta.excludedDetailed = { ...meta.excludedDetailed, ...result.excludedDetailed };
     meta.reviewFlagged = { ...meta.reviewFlagged, ...result.reviewFlagged };
     meta.unresolved.push(...result.unknownProperties.map(p => `unknown OMOD property: ${p}`));
     meta.unresolved.push(...result.notes);
     console.log(
-      `  ${result.omods.length} named weapon OMODs (excluded: ${Object.entries(result.excluded)
+      `  ${result.omods.length} named weapon OMODs, ${result.armorOmods.length} named armor OMODs (excluded: ${Object.entries(result.excluded)
         .map(([k, v]) => `${v.length} ${k}`)
         .join(', ')}); unknown properties: ${result.unknownProperties.length}; weak-evidence review: ${
         result.reviewFlagged.omodWeakEvidence.length

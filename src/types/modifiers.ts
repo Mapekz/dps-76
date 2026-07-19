@@ -558,6 +558,14 @@ export type Condition =
   /** Enemies in the engaged group == count, or ≥ count for the top tier (Encircler's — GetGroupTargetCount). */
   | { kind: 'enemyGroupCount'; count: number; orMore?: boolean }
   /**
+   * Number of currently-worn armor pieces carrying `keyword` == count, or ≥
+   * count with orMore (Battle-Loader's 1/2/3/4/≥5-piece tiers —
+   * WornApparelHasKeywordCount). Phase 3 armor pipeline (extraction half,
+   * go-through-every-single-silly-whistle.md): INERT until the engine half
+   * wires `PlayerConditions.wornPieceCounts` — see resolve.ts's stub case.
+   */
+  | { kind: 'wornPieceCount'; keyword: string; count: number; orMore?: boolean }
+  /**
    * Player teammate count == count, or ≥ count with orMore (Fencer's exact
    * tiers — GetPlayerTeammateCount; teammates assumed in range. Herd
    * Mentality's IsMemberOfAPlayerTeam gate translates to count 0 (solo) /

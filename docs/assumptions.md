@@ -55,6 +55,7 @@ sub-anchor without updating every citation.
 - **OMOD eligibility & recipe chains**
 - **Attach-point closure**
 - **Unique weapons**
+- **Armor pipeline (Phase 3 extraction)** — dual weapon/armor OMOD output, `GetIsPlayer(Target)` tab-index-2 fix, `wornPieceCount` inert-until-engine
 - **Known gaps / deferred**
 - **Future DPS streams**
 
@@ -1373,6 +1374,74 @@ auto-converted); their stats are stale and must not be shown.
   still wants an in-game measurement (`measurement-backlog.md`). Its five
   `mod_Custom_TheVATSUnknown_*` siblings are unreferenced legacy/cut records,
   not real variants — removed from the picker.
+
+## Armor pipeline (Phase 3 extraction)
+
+- **ESM-PROVEN**: armor/power-armor OMODs (`Data."Form Type" = "Armor"`, not a
+  distinct "PowerArmor" value — verified on Battle-Loader's PA variant
+  `mod_Legendary_PowerArmor4_BattleLoaders`) share the same OMOD record type
+  as weapon mods, gated only by that field. `extract-omods.ts` now emits both
+  `omods.json` (Weapon) and `armor-omods.json` (Armor) from one shared
+  list+get pass (`classifyOmodRecordExclusion(record, allowedFormTypes)`).
+  Weapon output is byte-identical to pre-armor-pipeline extraction (verified
+  via `pnpm extract:diff`).
+- **ESM-PROVEN**: the OMOD `Properties[].Property` enum differs between
+  weapon and armor mods for at least one entry — `ActorValues` (weapon,
+  numeric value 94) vs `Actor Values` with a space (armor, value 10),
+  otherwise semantically identical. `propertyName()`'s `PROPERTY_NAME_ALIASES`
+  normalizes this; `Enchantments`/`Keywords` carry different numeric values
+  too but the same string name in both enums (no alias needed there). A real
+  weapon/armor spelling split for a different property would surface as an
+  `unknownProperties` entry, same safety net as always.
+- **ESM-PROVEN, bug fix**: `GetIsPlayer` condition rows at PERK tab-index 2
+  (`flattenPerkConditionRows` forces their `Run On` to `'Target'`) mean "is
+  the entry point's target the player" — the OPPOSITE reading from a
+  tab-0/self-gate `GetIsPlayer` row, and previously unhandled (fell through to
+  the self-gate branch). Fixed in `conditions.ts`'s `GetIsPlayer` case
+  (checks `cond['Run On'] === 'Target'`, same inversion the Contact-delivery
+  `subjectIsTarget` flag already applies — see **Weapon-intrinsic DoT & OMOD
+  replacement**). Discovered chasing Battle-Loader's
+  (`Legendary_Armor_BattleLoadersPerk` 0x0079B522's tab-2 "target isn't a
+  player, target isn't dead" sanity gate, which used to read as PVP-only and
+  silently drop the whole effect). **Side effect** (2026-07-18 full
+  extraction diff): `Wanted_DebtorsDisease_Perk` ("Bankruptcy Penalty",
+  0x00437FF0) carries EXACTLY one condition, tab-2 `GetIsPlayer Equal To
+  1.0` — "the struck target is a player", i.e. a PVP-only −50% dbm penalty.
+  Before this fix it was misread as a self-gate and applied
+  **unconditionally in PvE** (`conditions: []`, always active); it now
+  correctly resolves `inactive` (dropped, `modifiers: []`). This was always a
+  live-data bug in this PvE calculator, not a regression from this change.
+  Two other already-shipped families gained correctly-typed conditions as a
+  byproduct of the sibling `WornApparelHasKeywordCount` fix below rather than
+  this one: `Legendary_Armor_LimitBreakPerk` ("Limit-Breaking Armor", 5-tier
+  `critConsumption` MUL_ADD) and `P62_Legendary_Armor_CrusadersPerk`
+  (Drifter-boss-exclusive 5-tier SPECIAL ADD).
+- **ESM-PROVEN**: `WornApparelHasKeywordCount` (worn-piece-count tiers —
+  Battle-Loader's 1/2/3/4/≥5, Limit-Breaking Armor, Crusaders S.P.E.C.I.A.L.)
+  translates to a new `{kind: 'wornPieceCount', keyword, count, orMore?}`
+  condition (`conditions.ts`, pattern: `GetGroupTargetCount`). **INERT by
+  design until the Phase 3 engine half lands**: `resolve.ts`'s case always
+  returns `null` (no `PlayerConditions.wornPieceCounts` input exists yet) —
+  every modifier carrying this condition folds to zero regardless of loadout,
+  same "stored, not yet wired" status as `bulletStormOnKill`/`deflectChance`.
+- **ESM-PROVEN**: Battle-Loader's PERK entry point 199 ("Instant Reload Clip
+  On Bash") emits `Function Type: Float, Function: Set Value, Float: 1.0` on
+  all 5 tiers — a boolean trigger placeholder, NOT the 15/30/45/60/75% chance
+  (that value lives in each tier's own `GetRandomPercent` condition row).
+  `mgef.ts` narrowly special-cases this exact shape (pattern: the existing
+  EP-172/`Mod Ammo Used Count` case) to emit the real chance into
+  `reloadSkipChance`, leaving `GetRandomPercent`/`IsPowerAttacking` as
+  `unresolved` conditions on the modifier (same precedent as EP-172's Tesla
+  Science 5 — those conditions are redundant with the baked-in value and
+  inert either way once folded, since `wornPieceCount` above already keeps
+  the whole modifier inert pending the engine half). Bash-cadence modeling
+  (the trigger is per-power-attack, not per-empty-clip) is out of scope for
+  this pass — see `dps-todos/armor-mods-outgoing.md`.
+- `extract-armor.ts` is grounding-only: `{id, formId, name, obtainable}` per
+  ARMO record, feeding armor-OMOD obtainability the same way
+  `obtainableWeaponFormIds` feeds weapon-OMOD obtainability (`ObtainabilityClassifier`'s
+  new ARMO branch, parallel to its WEAP one). No resistances, no mod slots,
+  no UI consumer — that's later Phase 3 scope.
 
 ## Known gaps / deferred
 - **Follow Through / Taking One for the Team** extract with empty

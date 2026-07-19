@@ -322,6 +322,13 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       const active = cond.range === 'close' ? d <= CLOSE_THRESHOLD_UNITS : d >= FAR_THRESHOLD_UNITS;
       return active ? 1 : null;
     }
+    case 'wornPieceCount':
+      // Phase 3 armor pipeline (extraction half only, 2026-07-18): no
+      // PlayerConditions.wornPieceCounts input exists yet — real evaluation
+      // is the engine half. Always inactive in the meantime (exhaustive
+      // switch requires a case; Battle-Loader's reloadSkipChance modifiers
+      // stay stored-inert until then, same convention as bulletStormOnKill).
+      return null;
     case 'glowAtLeast':
       // Ghoul Glow meter (Rads AV) at or above the threshold — a plain gate,
       // not a stack scale (Glowing Criticals ≥180, Glow-spend ≥5/≥50).

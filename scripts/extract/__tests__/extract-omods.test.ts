@@ -6,6 +6,11 @@ import unstoppableMonsterOmod from './fixtures/omod-unstoppablemonster.json';
 import unstoppableMonsterPerk from './fixtures/perk-unstoppablemonster.json';
 import allRiseOmod from './fixtures/omod-allrise.json';
 import barrelLongRangeParent from './fixtures/omod-barrel-long-range-parent.json';
+import armor2StatStrengthOmod from './fixtures/omod-armor2-statstrength.json';
+import battleLoadersOmod from './fixtures/omod-battleloaders.json';
+import battleLoadersEnch from './fixtures/ench-battleloaders.json';
+import battleLoadersMgef from './fixtures/mgef-battleloaders.json';
+import battleLoadersPerk from './fixtures/perk-battleloaders.json';
 
 // Fixtures are verbatim `esm -p --esm <esmPath> get <edid|formid> --json` output
 // (20260710 ESM). These pin the unique-mod rework's two previously-undecoded
@@ -984,5 +989,130 @@ describe('extractOmods (range barrel MinRange/MaxRange, Phase 1 extraction half)
       expect.objectContaining({ bucket: 'weaponOutOfRangeMult', op: 'SET', value: 0.75 })
     );
     expect(result.unknownProperties).not.toContain('OutOfRangeDamageMult');
+  });
+});
+
+/**
+ * Phase 3 armor pipeline (go-through-every-single-silly-whistle.md, extraction
+ * half): classifyOmodRecordExclusion now gates on Form Type ∈ {'Weapon',
+ * 'Armor'} instead of Weapon-only, and extractOmods emits a SECOND array
+ * (armorOmods) alongside the unchanged weapon `omods` array from one shared
+ * OMOD list+get pass. Fixtures are verbatim `esm -p get <formid> --json`
+ * output (20260710 ESM):
+ *   omod-armor2-statstrength.json  mod_Legendary_Armor2_StatStrength  0x004EE54E
+ *     — 2★ SPECIAL armor mod: `ActorValues ADD Strength 2.0` routes through
+ *     the EXISTING ActorValues handler's FALLBACK_AVIF_ROUTES (Strength →
+ *     specialStrength, scale 1) with zero new mapping code.
+ *   omod-battleloaders.json + ench-battleloaders.json +
+ *   mgef-battleloaders.json + perk-battleloaders.json — the full
+ *   Battle-Loader's chain: OMOD → ENCH ench_LegendaryArmor_BattleLoaders →
+ *   MGEF (Script archetype, Perk to Apply) → PERK Legendary_Armor_
+ *   BattleLoadersPerk, whose 5 EP199 "Instant Reload Clip On Bash" effects
+ *   are each Set Value 1.0 (a boolean placeholder) gated
+ *   WornApparelHasKeywordCount({==1..==4,>=5}) × IsPowerAttacking ×
+ *   GetRandomPercent(<=15..<=75) × two tab-index-2 sanity rows (GetIsPlayer
+ *   Equal To 0.0 / GetDead Equal To 0.0, both Run On forced to 'Target' by
+ *   flattenPerkConditionRows).
+ */
+function makeArmorStubClient(): EsmClient {
+  const known: Record<string, EsmRecord> = {
+    '0x004EE54E': armor2StatStrengthOmod as unknown as EsmRecord,
+    '0x00792A28': battleLoadersOmod as unknown as EsmRecord,
+    '0x00792948': battleLoadersEnch as unknown as EsmRecord,
+    '0x0079B51F': battleLoadersMgef as unknown as EsmRecord,
+    '0x0079B522': battleLoadersPerk as unknown as EsmRecord,
+    // AVIF the 2★ SPECIAL mod's ActorValues property targets directly (the
+    // raw SPECIAL AVIF, not a STAT_* plumbing stat) — must resolve to the
+    // exact edid FALLBACK_AVIF_ROUTES keys on.
+    '0x000002C2': { header: { signature: 'AVIF', form_id: '0x000002C2' }, editor_id: 'Strength', fields: {} } as unknown as EsmRecord,
+    // The worn-keyword Battle-Loader's WornApparelHasKeywordCount conditions
+    // gate on — must resolve to the exact edid the wornPieceCount condition
+    // carries.
+    '0x00792A12': {
+      header: { signature: 'KYWD', form_id: '0x00792A12' },
+      editor_id: 'HasLegendary_Armor_BattleLoaders',
+      fields: {},
+    } as unknown as EsmRecord,
+  };
+  const get = async (target: string): Promise<EsmRecord> => {
+    if (known[target]) return known[target];
+    // Placeholder for the _PARENT_ Includes templates, other keywords, and
+    // the STAT_Damage*Perk plumbing perks buildAvifRoutes always fetches —
+    // none of these carry Effects/Properties, so downstream parsing no-ops
+    // on them (same convention as makeStubClient() above).
+    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+  };
+  return {
+    async list(type: string): Promise<EsmListRow[]> {
+      if (type !== 'OMOD') return [];
+      return [
+        { form_id: '0x004EE54E', record_type: 'OMOD', editor_id: 'mod_Legendary_Armor2_StatStrength', name: 'Strength' },
+        { form_id: '0x00792A28', record_type: 'OMOD', editor_id: 'mod_Legendary_Armor4_BattleLoaders', name: "Battle-Loader's" },
+      ];
+    },
+    get,
+    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+    refs: async () => [],
+  } as unknown as EsmClient;
+}
+
+describe('extractOmods (Phase 3 armor pipeline, 2026-07-18)', () => {
+  it('routes both armor OMODs into armorOmods, and neither into the weapon omods array', async () => {
+    const result = await extractOmods(makeArmorStubClient(), new Set());
+    expect(result.armorOmods.map(o => o.id).sort()).toEqual(
+      ['mod_Legendary_Armor2_StatStrength', 'mod_Legendary_Armor4_BattleLoaders'].sort()
+    );
+    expect(result.omods.find(o => o.id === 'mod_Legendary_Armor2_StatStrength')).toBeUndefined();
+    expect(result.omods.find(o => o.id === 'mod_Legendary_Armor4_BattleLoaders')).toBeUndefined();
+  });
+
+  it("2★ SPECIAL (Strength): ActorValues ADD Strength 2.0 decodes to a specialStrength modifier via the existing fallback route", async () => {
+    const result = await extractOmods(makeArmorStubClient(), new Set());
+    const omod = result.armorOmods.find(o => o.id === 'mod_Legendary_Armor2_StatStrength');
+    expect(omod).toBeDefined();
+    expect(omod!.modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'specialStrength', op: 'ADD', value: 2 })
+    );
+    expect(omod!.notes ?? []).not.toContain('ActorValues on Strength — unmapped');
+  });
+
+  it("Battle-Loader's: 5 reloadSkipChance modifiers at the right per-worn-piece chances, each carrying the matching wornPieceCount condition", async () => {
+    const result = await extractOmods(makeArmorStubClient(), new Set());
+    const omod = result.armorOmods.find(o => o.id === 'mod_Legendary_Armor4_BattleLoaders');
+    expect(omod).toBeDefined();
+
+    const reloadMods = omod!.modifiers.filter(m => m.bucket === 'reloadSkipChance');
+    expect(reloadMods).toHaveLength(5);
+    // Every emitted modifier is flat-valued (GetRandomPercent chance, not a
+    // curve) — narrow accordingly instead of widening to `unknown`.
+    const flatValue = (m: (typeof reloadMods)[number]): number => {
+      if (!('value' in m)) throw new Error(`expected a flat-value modifier, got a curve one: ${JSON.stringify(m)}`);
+      return m.value;
+    };
+    // NOT the raw Set Value 1.0 placeholder — the real per-tier chance.
+    expect(reloadMods.every(m => flatValue(m) !== 1)).toBe(true);
+
+    const byWornCondition = new Map(
+      reloadMods.map(m => {
+        const worn = m.conditions.find(
+          (c): c is Extract<typeof c, { kind: 'wornPieceCount' }> => c.kind === 'wornPieceCount'
+        );
+        return [worn ? `${worn.count}${worn.orMore ? '+' : ''}` : 'MISSING', flatValue(m)];
+      })
+    );
+    expect(byWornCondition).toEqual(
+      new Map([
+        ['1', 0.15],
+        ['2', 0.30],
+        ['3', 0.45],
+        ['4', 0.60],
+        ['5+', 0.75],
+      ])
+    );
+    // Every wornPieceCount condition names the Battle-Loader's keyword.
+    for (const m of reloadMods) {
+      const worn = m.conditions.find(c => c.kind === 'wornPieceCount');
+      expect(worn).toMatchObject({ keyword: 'HasLegendary_Armor_BattleLoaders' });
+    }
   });
 });

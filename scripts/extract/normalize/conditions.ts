@@ -237,11 +237,17 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
     case 'GetIsRace':
       return { kind: 'enemyType', keywordOrRace: edid };
     case 'GetIsPlayer':
-      if (ctx.subjectIsTarget) {
-        // Contact-delivery on-hit effect: Subject = the struck target, which
-        // in a PvE damage calculator is never the player. The =1 (PVP-only)
-        // branch is inactive; the =0 (NPC) branch is the one this calculator
-        // models, so it's consumed.
+      // Two ways a GetIsPlayer row can mean "run against a target other than
+      // the wielder": a Contact-delivery on-hit effect (ctx.subjectIsTarget —
+      // Subject IS the struck target), or a granted-PERK tab-index-2 row
+      // (flattenPerkConditionRows forces Run On: 'Target' — Battle-Loader's
+      // Legendary_Armor_BattleLoadersPerk 0x0079B522, verified 2026-07-18:
+      // tab 2 carries "GetIsPlayer Equal To 0.0" meaning "the bashed target
+      // isn't a player", always true in PvE). Either way the =1 (PVP-only)
+      // branch is inactive; the =0 (NPC target) branch is what this
+      // calculator models, so it's consumed — the OPPOSITE of the Subject
+      // reading below.
+      if (ctx.subjectIsTarget || cond['Run On'] === 'Target') {
         return wants ? 'inactive' : null;
       }
       // Perk effects granted to the player: always true — consumed.
@@ -364,6 +370,19 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
         }
       }
       return { kind: 'unresolved', raw: `GetGroupTargetCount ${cond.Operator} ${rawCmp}` };
+    }
+    case 'WornApparelHasKeywordCount': {
+      // Battle-Loader's per-piece tiers: == 1..4, ≥ 5 for the top (same
+      // equal-to/or-more shape as GetGroupTargetCount/GetPlayerTeammateCount
+      // above). `edid` here is the worn-keyword itself (e.g.
+      // HasLegendary_Armor_BattleLoaders), not an enemy/weapon keyword.
+      if (typeof cmp === 'number') {
+        if (/^equal to$/i.test(cond.Operator ?? '')) return { kind: 'wornPieceCount', keyword: edid, count: cmp };
+        if (/^greater than or equal to$/i.test(cond.Operator ?? '')) {
+          return { kind: 'wornPieceCount', keyword: edid, count: cmp, orMore: true };
+        }
+      }
+      return { kind: 'unresolved', raw: `WornApparelHasKeywordCount(${edid}) ${cond.Operator} ${rawCmp}` };
     }
     case 'GetPlayerTeammateCount':
       // Fencer's tiers: exact teammate counts 0..3.

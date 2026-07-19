@@ -27,6 +27,9 @@ import { classifyOmodRecordExclusion } from './extract-omods';
  * that follows re-reads these records for free.
  */
 
+/** Attach-point closure is weapon-only (extract-weapons.ts) — armor carries no equivalent slot-granting model yet. */
+const WEAPON_FORM_TYPE = new Set(['Weapon']);
+
 export interface ApGrantEntry {
   formId: string;
   edid: string;
@@ -52,7 +55,7 @@ export async function buildApGrantIndex(client: EsmClient): Promise<ApGrantIndex
 
   const index = new Map<string, ApGrantEntry>();
   for (const record of records) {
-    const exclusion = classifyOmodRecordExclusion(record);
+    const exclusion = classifyOmodRecordExclusion(record, WEAPON_FORM_TYPE);
     if (exclusion !== null && exclusion !== 'unnamed') continue;
     const data = (record.fields['Data'] ?? {}) as Record<string, unknown>;
     const rawTargets = Array.isArray(record.fields['Target OMOD Keywords'])

@@ -433,6 +433,30 @@ describe('translateConditions (subjectIsTarget — Contact-delivery GetIsPlayer 
   });
 });
 
+describe("translateConditions (GetIsPlayer Run On: Target — granted-PERK tab-index-2 gate, Battle-Loader's 2026-07-18)", () => {
+  // flattenPerkConditionRows (normalize/conditions.ts) forces tab-index-2 rows'
+  // Run On to 'Target' regardless of the raw ESM field — verified on
+  // Legendary_Armor_BattleLoadersPerk 0x0079B522, whose tab 2 carries
+  // "GetIsPlayer Equal To 0.0" meaning "the bashed target isn't a player"
+  // (always true in PvE). Without this fix the row read as the SELF-gate
+  // shape (wants=false → 'inactive'), silently killing the whole effect —
+  // this is the same inversion `subjectIsTarget` already applies for
+  // Contact-delivery ENCH/SPEL walks, driven here by the row's own Run On
+  // field instead of a walk-scoped context flag.
+  it("consumes GetIsPlayer(Target)=0 (the NPC-bashed-target branch) instead of marking it inactive", () => {
+    const row: RawCondition = { Function: 'GetIsPlayer', 'Comparison Value': 0, Operator: 'Equal To', 'Run On': 'Target' };
+    const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([]);
+    expect(unresolved).toEqual([]);
+  });
+
+  it('marks GetIsPlayer(Target)=1 (the PVP-only branch) inactive', () => {
+    const row: RawCondition = { Function: 'GetIsPlayer', 'Comparison Value': 1, Operator: 'Equal To', 'Run On': 'Target' };
+    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toBeNull();
+  });
+});
+
 describe('translateConditions (non-sprint combat model — IsSprinting/IsSwimming/ArmorTypePower, 2026-07-15)', () => {
   it('consumes IsSprinting()=0 (not sprinting) instead of leaving it unresolved', () => {
     const row: RawCondition = { Function: 'IsSprinting', 'Comparison Value': 0, Operator: 'Equal To' };
@@ -506,6 +530,22 @@ describe('translateConditions (2026-07-11 condition kinds)', () => {
       .toEqual([{ kind: 'enemyGroupCount', count: 3 }]);
     expect(translateConditions([ge], { edidByFormId: new Map() }).conditions)
       .toEqual([{ kind: 'enemyGroupCount', count: 5, orMore: true }]);
+  });
+
+  it("translates WornApparelHasKeywordCount == N and ≥ N to wornPieceCount tiers (Battle-Loader's, Phase 3 armor pipeline)", () => {
+    const edidByFormId = new Map([['0x00792A12', 'HasLegendary_Armor_BattleLoaders']]);
+    const eq: RawCondition = {
+      Function: 'WornApparelHasKeywordCount', 'Parameter 1': '0x00792A12',
+      'Comparison Value': 4, Operator: 'Equal To', 'Run On': 'Subject',
+    };
+    const ge: RawCondition = {
+      Function: 'WornApparelHasKeywordCount', 'Parameter 1': '0x00792A12',
+      'Comparison Value': 5, Operator: 'Greater Than Or Equal To', 'Run On': 'Subject',
+    };
+    expect(translateConditions([eq], { edidByFormId }).conditions)
+      .toEqual([{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 4 }]);
+    expect(translateConditions([ge], { edidByFormId }).conditions)
+      .toEqual([{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 5, orMore: true }]);
   });
 
   it("translates GetPlayerTeammateCount == N to teammateCount and consumes the teammate GetDistance row (Fencer's)", () => {

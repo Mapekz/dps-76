@@ -13736,7 +13736,169 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0079B522:r1:1:0",
+      "source": {
+       "kind": "legendaryPerk",
+       "formId": "0x0079B522",
+       "edid": "Legendary_Armor_BattleLoadersPerk",
+       "name": "Battle-Loader's Armor Perk",
+       "rank": 1
+      },
+      "bucket": "reloadSkipChance",
+      "op": "SET",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "wornPieceCount",
+        "keyword": "HasLegendary_Armor_BattleLoaders",
+        "count": 5,
+        "orMore": true
+       },
+       {
+        "kind": "unresolved",
+        "raw": "IsPowerAttacking()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=75"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=0"
+       }
+      ]
+     },
+     {
+      "id": "0x0079B522:r1:2:1",
+      "source": {
+       "kind": "legendaryPerk",
+       "formId": "0x0079B522",
+       "edid": "Legendary_Armor_BattleLoadersPerk",
+       "name": "Battle-Loader's Armor Perk",
+       "rank": 1
+      },
+      "bucket": "reloadSkipChance",
+      "op": "SET",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "wornPieceCount",
+        "keyword": "HasLegendary_Armor_BattleLoaders",
+        "count": 4
+       },
+       {
+        "kind": "unresolved",
+        "raw": "IsPowerAttacking()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=60"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=0"
+       }
+      ]
+     },
+     {
+      "id": "0x0079B522:r1:3:2",
+      "source": {
+       "kind": "legendaryPerk",
+       "formId": "0x0079B522",
+       "edid": "Legendary_Armor_BattleLoadersPerk",
+       "name": "Battle-Loader's Armor Perk",
+       "rank": 1
+      },
+      "bucket": "reloadSkipChance",
+      "op": "SET",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "wornPieceCount",
+        "keyword": "HasLegendary_Armor_BattleLoaders",
+        "count": 3
+       },
+       {
+        "kind": "unresolved",
+        "raw": "IsPowerAttacking()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=45"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=0"
+       }
+      ]
+     },
+     {
+      "id": "0x0079B522:r1:4:3",
+      "source": {
+       "kind": "legendaryPerk",
+       "formId": "0x0079B522",
+       "edid": "Legendary_Armor_BattleLoadersPerk",
+       "name": "Battle-Loader's Armor Perk",
+       "rank": 1
+      },
+      "bucket": "reloadSkipChance",
+      "op": "SET",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "wornPieceCount",
+        "keyword": "HasLegendary_Armor_BattleLoaders",
+        "count": 2
+       },
+       {
+        "kind": "unresolved",
+        "raw": "IsPowerAttacking()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=30"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=0"
+       }
+      ]
+     },
+     {
+      "id": "0x0079B522:r1:5:4",
+      "source": {
+       "kind": "legendaryPerk",
+       "formId": "0x0079B522",
+       "edid": "Legendary_Armor_BattleLoadersPerk",
+       "name": "Battle-Loader's Armor Perk",
+       "rank": 1
+      },
+      "bucket": "reloadSkipChance",
+      "op": "SET",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "wornPieceCount",
+        "keyword": "HasLegendary_Armor_BattleLoaders",
+        "count": 1
+       },
+       {
+        "kind": "unresolved",
+        "raw": "IsPowerAttacking()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=15"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetDead()=0"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -13770,8 +13932,9 @@
       "value": -0.09999999999999998,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "WornApparelHasKeywordCount(HasLegendary_Armor_LimitBreak)=1"
+        "kind": "wornPieceCount",
+        "keyword": "HasLegendary_Armor_LimitBreak",
+        "count": 1
        }
       ]
      },
@@ -13789,8 +13952,9 @@
       "value": -0.19999999999999996,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "WornApparelHasKeywordCount(HasLegendary_Armor_LimitBreak)=2"
+        "kind": "wornPieceCount",
+        "keyword": "HasLegendary_Armor_LimitBreak",
+        "count": 2
        }
       ]
      },
@@ -13808,8 +13972,9 @@
       "value": -0.30000000000000004,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "WornApparelHasKeywordCount(HasLegendary_Armor_LimitBreak)=3"
+        "kind": "wornPieceCount",
+        "keyword": "HasLegendary_Armor_LimitBreak",
+        "count": 3
        }
       ]
      },
@@ -13827,8 +13992,9 @@
       "value": -0.4,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "WornApparelHasKeywordCount(HasLegendary_Armor_LimitBreak)=4"
+        "kind": "wornPieceCount",
+        "keyword": "HasLegendary_Armor_LimitBreak",
+        "count": 4
        }
       ]
      },
@@ -13846,8 +14012,10 @@
       "value": -0.5,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "WornApparelHasKeywordCount(HasLegendary_Armor_LimitBreak)=5"
+        "kind": "wornPieceCount",
+        "keyword": "HasLegendary_Armor_LimitBreak",
+        "count": 5,
+        "orMore": true
        }
       ]
      }
@@ -14571,7 +14739,7 @@
   ],
   "hasCard": false,
   "notes": [
-   "MGEF Legendary_Weapon_PinPointersApplyPerkEffect archetype Script — needs override"
+   "perk Legendary_Weapon_PinPointersApplyPerk: entry point Mod Attack Damage On Striking Appendage — not modeled"
   ]
  },
  {
@@ -20874,8 +21042,10 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=1"
+        "kind": "wornPieceCount",
+        "keyword": "P62_HasLegendary_Armor_Crusaders",
+        "count": 1,
+        "orMore": true
        }
       ]
      },
@@ -20893,8 +21063,10 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=2"
+        "kind": "wornPieceCount",
+        "keyword": "P62_HasLegendary_Armor_Crusaders",
+        "count": 2,
+        "orMore": true
        }
       ]
      },
@@ -20912,8 +21084,10 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=3"
+        "kind": "wornPieceCount",
+        "keyword": "P62_HasLegendary_Armor_Crusaders",
+        "count": 3,
+        "orMore": true
        }
       ]
      },
@@ -20931,8 +21105,10 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=4"
+        "kind": "wornPieceCount",
+        "keyword": "P62_HasLegendary_Armor_Crusaders",
+        "count": 4,
+        "orMore": true
        }
       ]
      },
@@ -20950,8 +21126,10 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=5"
+        "kind": "wornPieceCount",
+        "keyword": "P62_HasLegendary_Armor_Crusaders",
+        "count": 5,
+        "orMore": true
        }
       ]
      },
@@ -20969,8 +21147,10 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=5"
+        "kind": "wornPieceCount",
+        "keyword": "P62_HasLegendary_Armor_Crusaders",
+        "count": 5,
+        "orMore": true
        }
       ]
      },
@@ -20988,8 +21168,10 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=5"
+        "kind": "wornPieceCount",
+        "keyword": "P62_HasLegendary_Armor_Crusaders",
+        "count": 5,
+        "orMore": true
        }
       ]
      }
@@ -20997,13 +21179,7 @@
    }
   ],
   "hasCard": false,
-  "notes": [
-   "condition: WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=1",
-   "condition: WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=2",
-   "condition: WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=3",
-   "condition: WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=4",
-   "condition: WornApparelHasKeywordCount(P62_HasLegendary_Armor_Crusaders)=5"
-  ]
+  "notes": []
  },
  {
   "family": "P62_Legendary_Armor_MetabolicPerk",
@@ -31359,22 +31535,7 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": [
-     {
-      "id": "0x00437FF0:r1:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x00437FF0",
-       "edid": "Wanted_DebtorsDisease_Perk",
-       "name": "Bankruptcy Penalty",
-       "rank": 1
-      },
-      "bucket": "dbm",
-      "op": "MUL_ADD",
-      "value": -0.5,
-      "conditions": []
-     }
-    ]
+    "modifiers": []
    }
   ],
   "hasCard": false,

@@ -10,8 +10,9 @@ import { CobjIndex, CobjInfo, isNonGrantingCobj } from './cobj-index';
  * cobj-index.ts), a game reward (GMRW), a legendary item mod
  * (LGDI), a quest (QUST — quest-alias rewards), a non-QA container (CONT), a
  * loose-mod item (MISC), a form list (FLST — legendary crafting pools), a
- * player-facing leveled list, or — for OMODs — an obtainable weapon's
- * template/attach chain (WEAP referencer).
+ * player-facing leveled list, or — for OMODs — an obtainable weapon's or
+ * armor's template/attach chain (WEAP/ARMO referencer — the ARMO branch is
+ * the Phase 3 armor-pipeline parallel of the WEAP one, 2026-07-18).
  *
  * LVLI referencers are ambiguous: NPC loadout lists also reference weapons
  * (RD01_crAssaultRifle's only referencer is a MoleMiner loadout list), so a
@@ -127,7 +128,11 @@ export class ObtainabilityClassifier {
      *  gated by their Learn Method: plan-taught recipes must have an obtainable
      *  BOOK, scrap-taught ones an obtainable scrap source. Absent (the
      *  weapons/buffs passes) every non-stub COBJ grants, as before. */
-    private cobjIndex?: CobjIndex
+    private cobjIndex?: CobjIndex,
+    /** Armor pieces already ruled obtainable (extract-armor.ts) — an OMOD
+     *  referenced by one rides along, the ARMO-record parallel of
+     *  `obtainableWeaponFormIds` (Phase 3 armor pipeline, 2026-07-18). */
+    private obtainableArmorFormIds: ReadonlySet<string> = new Set()
   ) {}
 
   async classify(candidates: ObtainabilityCandidate[], concurrency = 8): Promise<Map<string, ObtainabilityVerdict>> {
@@ -192,6 +197,11 @@ export class ObtainabilityClassifier {
         if (this.obtainableWeaponFormIds.has(ref.form_id)) {
           obtainable = true;
           signals.push(`weap:${ref.editor_id}`);
+        }
+      } else if (ref.record_type === 'ARMO') {
+        if (this.obtainableArmorFormIds.has(ref.form_id)) {
+          obtainable = true;
+          signals.push(`armo:${ref.editor_id}`);
         }
       } else if (ref.record_type === 'OMOD') {
         omods.push(ref);
@@ -406,7 +416,8 @@ export class ObtainabilityClassifier {
         !JUNK_REFERRER_RE.test(ref.editor_id) &&
         !(ref.record_type === 'COBJ' && isNonGrantingCobj(this.cobjIndex?.byFormId.get(ref.form_id), ref.editor_id)) &&
         (OBTAINABLE_REF_TYPES[ref.record_type] !== undefined ||
-          (ref.record_type === 'WEAP' && this.obtainableWeaponFormIds.has(ref.form_id)))
+          (ref.record_type === 'WEAP' && this.obtainableWeaponFormIds.has(ref.form_id)) ||
+          (ref.record_type === 'ARMO' && this.obtainableArmorFormIds.has(ref.form_id)))
     );
     if (!result) {
       for (const ref of refs) {

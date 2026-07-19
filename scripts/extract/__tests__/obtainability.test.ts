@@ -187,6 +187,22 @@ describe('ObtainabilityClassifier', () => {
     expect(verdicts.get('0xOMOD_BAD')!.obtainable).toBe(false);
   });
 
+  it('synthetic: an ARMO referencer rides along only when that armor piece is already obtainable (Phase 3 armor pipeline, 2026-07-18)', async () => {
+    const client = stubClient({
+      '0xOMOD_OK': [{ form_id: '0xARMO_OK', record_type: 'ARMO', editor_id: 'SomeArmorEdid', name: null, depth: 1 }],
+      '0xOMOD_BAD': [{ form_id: '0xARMO_BAD', record_type: 'ARMO', editor_id: 'OtherArmorEdid', name: null, depth: 1 }],
+    });
+    const classifier = new ObtainabilityClassifier(client, new Set(), undefined, new Set(['0xARMO_OK']));
+    const verdicts = await classifier.classify([
+      { formId: '0xOMOD_OK', edid: 'OmodOk' },
+      { formId: '0xOMOD_BAD', edid: 'OmodBad' },
+    ]);
+    const ok = verdicts.get('0xOMOD_OK')!;
+    expect(ok.obtainable).toBe(true);
+    expect(ok.signals).toContain('armo:SomeArmorEdid');
+    expect(verdicts.get('0xOMOD_BAD')!.obtainable).toBe(false);
+  });
+
   it('RESO chain: a CAMP resource generator produce list makes its LVLI player-facing → obtainable', async () => {
     // Nuka-Cola Candy: ALCH <- LVLI ATX_Resources_* <- RESO ATX_Resource_*.
     // The RESO is a buildable machine's produce list (COBJ

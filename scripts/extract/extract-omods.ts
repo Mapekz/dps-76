@@ -163,6 +163,14 @@ const PROPERTY_IGNORED = new Set([
   // Polar Lobber launcher-hazard chase), not ignored.
   'SecondaryDamage', 'SoundTagSet', 'UnEquipSound', 'Unknown', 'UnsightedTransitionSeconds',
   'WeightMult', 'ZoomData', 'ZoomDataCameraOffsetX', 'ZoomDataCameraOffsetY', 'ZoomDataCameraOffsetZ',
+  // Armor-only cosmetic properties (Phase 3 armor pipeline, 2026-07-18 full-
+  // extraction sweep — no weapon-side equivalent to alias, unlike the
+  // PROPERTY_NAME_ALIASES set above): 'Addon Index' picks a material/size
+  // model variant, 'Biped World Model' swaps the equipped model per body
+  // slot, 'Body Part' scopes a paint/material SET to one biped part — all
+  // three are cosmetic-only (paint sets, material swaps), never damage-
+  // relevant.
+  'Addon Index', 'Biped World Model', 'Body Part',
 ]);
 
 // Dev/dead-record prefixes that never reach players (case-insensitive; the
@@ -189,14 +197,20 @@ export function isExcludedOmodEdid(edid: string): boolean {
   return OMOD_JUNK_EDID_RE.test(edid);
 }
 
-export type OmodRecordExclusion = 'notWeaponMod' | 'authoringTemplate' | 'junkEdid' | 'unnamed';
+export type OmodRecordExclusion = 'wrongFormType' | 'authoringTemplate' | 'junkEdid' | 'unnamed';
 
 /**
  * Structural exclusion classifier shared by the omods pass (`named` filter
  * below) and the attach-point grant index (ap-grant-index.ts) — ONE list so
  * shape/prefix rules can't drift between consumers (the p62_/sdow_ incidents
  * above are exactly that failure mode).
- * - 'notWeaponMod': Form Type ≠ Weapon (armor/power-armor mods).
+ * - 'wrongFormType': Form Type ∉ `allowedFormTypes`. Weapon and Armor mods
+ *   both use this same OMOD record type, gated only by this field (verified
+ *   2026-07-18: power-armor legendary/misc mods carry Form Type "Armor" too,
+ *   NOT a distinct "PowerArmor" value — one `{'Armor'}` set covers both).
+ *   `extractOmods` below classifies `named` against `OMOD_ALLOWED_FORM_TYPES`
+ *   (`{'Weapon','Armor'}`) in one shared OMOD list+bulkGet, then buckets each
+ *   surviving record by this same field into `omods` (weapon) / `armorOmods`.
  * - 'authoringTemplate': _PARENT_ records / "TEMPLATE:"-named — carry the
  *   stats real mods include via their Includes chain; never equippable.
  * - 'junkEdid': dev/dead-record prefixes (checked BEFORE 'unnamed' so a
@@ -205,16 +219,19 @@ export type OmodRecordExclusion = 'notWeaponMod' | 'authoringTemplate' | 'junkEd
  *   template may legitimately include one, so the grant index keeps these
  *   as seed-only entries.
  */
-export function classifyOmodRecordExclusion(record: EsmRecord): OmodRecordExclusion | null {
+export function classifyOmodRecordExclusion(record: EsmRecord, allowedFormTypes: ReadonlySet<string>): OmodRecordExclusion | null {
   const data = omodData(record);
   const formType = ((data['Form Type'] as Record<string, unknown>)?.['name'] as string) ?? '';
-  if (formType !== 'Weapon') return 'notWeaponMod';
+  if (!allowedFormTypes.has(formType)) return 'wrongFormType';
   if (record.editor_id.startsWith('_PARENT_')) return 'authoringTemplate';
   if (isExcludedOmodEdid(record.editor_id)) return 'junkEdid';
   if (!record.fields['Name']) return 'unnamed';
   if ((record.fields['Name'] as string).startsWith('TEMPLATE')) return 'authoringTemplate';
   return null;
 }
+
+/** Form types the omods pass processes in its one shared OMOD list+get pass (see classifyOmodRecordExclusion). */
+const OMOD_ALLOWED_FORM_TYPES = new Set(['Weapon', 'Armor']);
 
 interface RawProperty {
   functionType: 'SET' | 'MUL_ADD' | 'ADD' | string;
@@ -246,10 +263,33 @@ const RAW_NUMERIC_PROPERTIES: Record<number, string> = {
  * collapsing into the 'Unknown' bucket (which used to also catch genuinely
  * nameless properties — see PROPERTY_IGNORED).
  */
+/**
+ * Property-name spellings that differ between the WEAPON and ARMOR OMOD
+ * property enums despite meaning the same thing (verified 2026-07-18, Phase
+ * 3 armor pipeline full-extraction sweep: armor's enum consistently spells
+ * out multi-word names the weapon enum concatenates — "Actor Values" vs
+ * "ActorValues", "Color Remapping Index" vs "ColorRemappingIndex", "Material
+ * Swaps" vs "MaterialSwaps", "Model Swap" vs "ModelSwap"; "Enchantments"/
+ * "Keywords" carry different numeric `value`s too but the SAME string name
+ * across both enums, so no alias needed there). Normalized here so every
+ * downstream `prop.property === 'ActorValues'`-style check (and
+ * PROPERTY_BUCKETS/PROPERTY_IGNORED lookups) works uniformly regardless of
+ * which enum the record used — a real, not-yet-seen weapon/armor spelling
+ * split would otherwise surface silently as an `unknownProperties` entry
+ * needing its own aliasing.
+ */
+const PROPERTY_NAME_ALIASES: Record<string, string> = {
+  'Actor Values': 'ActorValues',
+  'Color Remapping Index': 'ColorRemappingIndex',
+  'Material Swaps': 'MaterialSwaps',
+  'Model Swap': 'ModelSwap',
+};
+
 export function propertyName(raw: unknown): string {
   if (typeof raw === 'number') return RAW_NUMERIC_PROPERTIES[raw] ?? `Property#${raw}`;
   const named = (raw as Record<string, unknown> | null | undefined)?.['name'];
-  return typeof named === 'string' ? named : 'Unknown';
+  if (typeof named !== 'string') return 'Unknown';
+  return PROPERTY_NAME_ALIASES[named] ?? named;
 }
 
 function parseProperties(data: Record<string, unknown>): RawProperty[] {
@@ -293,11 +333,13 @@ function includeFormIds(data: Record<string, unknown>): string[] {
 }
 
 /** Obtainability signals that PROVE access (vs informational ones like
- *  npcOnly/noGrantCobj/cobjScrapUnproven) — see obtainability.ts classifyOne. */
-const PROVING_SIGNAL_RE = /^(cobj|cobjBook|cobjScrap|gmrw|lgdi|qust|cont|misc|flst|reso|lvli|alch|weap|omod):/;
-/** The inherited subset of proofs: the record rides along on its weapon (or a
- *  mod collection) without any recipe/drop/reward of its own. */
-const INHERITED_SIGNAL_RE = /^(weap|omod):/;
+ *  npcOnly/noGrantCobj/cobjScrapUnproven) — see obtainability.ts classifyOne.
+ *  `armo` (2026-07-18, Phase 3 armor pipeline) is the ARMO-record parallel of
+ *  `weap`. */
+const PROVING_SIGNAL_RE = /^(cobj|cobjBook|cobjScrap|gmrw|lgdi|qust|cont|misc|flst|reso|lvli|alch|weap|armo|omod):/;
+/** The inherited subset of proofs: the record rides along on its weapon/armor
+ *  (or a mod collection) without any recipe/drop/reward of its own. */
+const INHERITED_SIGNAL_RE = /^(weap|armo|omod):/;
 
 function isWeakEvidence(signals: string[]): boolean {
   const proofs = signals.filter(s => PROVING_SIGNAL_RE.test(s));
@@ -311,19 +353,25 @@ const NON_CRAFT_SLOT_RE = /appearance|paint|skin|customname|item_description|mat
 
 /**
  * Legendary-crafting mods (target keyword ma_legendarycrafting_weapon /
- * _weaponranged / _weaponmelee / ma_Misc_Legendarycrafting_Weapon_*4) are
- * obtained by crafting/learning a real recipe — a bare weapon-template ride is
+ * _weaponranged / _weaponmelee / ma_Misc_Legendarycrafting_Weapon_*4, or the
+ * armor-side ma_legendarycrafting_armor / ma_Misc_Legendarycrafting_Armor*
+ * — verified 2026-07-18 on Combat Armor Chest Piece's Keywords) are obtained
+ * by crafting/learning a real recipe — a bare weapon/armor-template ride is
  * NOT a grant path for them. `hasGrantingCobj` is the exact positive signal:
  * every shipped legendary mod's co_mod_* COBJ has the OMOD as its Created
  * Object; the unfinished "Locked" (mod_Legendary_Weapon4_Guns_Locked) instead
  * has a shell COBJ that produces nothing and stays obtainable only by riding
  * HuntingRifle's template. Gated in the verdict loop below (2026-07-15);
- * the generic classifier's WEAP-ride rule stays correct for non-legendary mods.
+ * the generic classifier's WEAP/ARMO-ride rule stays correct for non-legendary
+ * mods.
  */
-const LEGENDARY_CRAFT_KEYWORD_RE = /legendarycrafting_weapon/i;
+const LEGENDARY_CRAFT_KEYWORD_RE = /legendarycrafting_(weapon|armor)/i;
 
 export interface ExtractOmodsResult {
+  /** Weapon-attached OMODs (Form Type "Weapon") — byte-identical to the pre-armor-pipeline output. */
   omods: GeneratedOmod[];
+  /** Armor/power-armor-attached OMODs (Form Type "Armor") — Phase 3 armor pipeline. */
+  armorOmods: GeneratedOmod[];
   excluded: Record<string, string[]>;
   excludedDetailed: Record<string, ExcludedRecordDetail[]>;
   /** Kept-but-weakly-evidenced records (see GeneratedMeta.reviewFlagged). */
@@ -351,7 +399,15 @@ export async function extractOmods(
    * (Mechanic's Best Friend on MakeshiftWarrior0N) into runtime
    * perkFamilyRank conditions instead of unresolved.
    */
-  crossFamilyRank?: Map<string, { family: string; rank: number }>
+  crossFamilyRank?: Map<string, { family: string; rank: number }>,
+  /**
+   * Formids of obtainable armor pieces (from the armor pass,
+   * extract-armor.ts) — an armor OMOD referenced by one rides along, the
+   * same WEAP-riding rule the weapon pass already gets. Armor-only; appended
+   * last so every existing weapon-focused call site (tests included) stays
+   * unchanged.
+   */
+  obtainableArmorFormIds: ReadonlySet<string> = new Set()
 ): Promise<ExtractOmodsResult> {
   const rows = await client.list('OMOD');
   const records = await mapPool(rows, 8, r => client.get(r.form_id));
@@ -594,7 +650,7 @@ export async function extractOmods(
   };
   const unnamedTemplateMembers: ExcludedRecordDetail[] = [];
   const named = records.filter(r => {
-    const exclusion = classifyOmodRecordExclusion(r);
+    const exclusion = classifyOmodRecordExclusion(r, OMOD_ALLOWED_FORM_TYPES);
     if (exclusion === 'junkEdid') excluded.omodJunkEdid.push(r.editor_id);
     if (exclusion === 'unnamed') {
       const data = omodData(r);
@@ -612,8 +668,14 @@ export async function extractOmods(
   });
 
   const omods: GeneratedOmod[] = [];
+  const armorOmods: GeneratedOmod[] = [];
   for (const record of named) {
     const data = omodData(record);
+    // Form Type buckets this record into the weapon or armor output array —
+    // OMOD_ALLOWED_FORM_TYPES already restricted `named` to exactly these two
+    // values (see classifyOmodRecordExclusion's doc comment).
+    const formType = ((data['Form Type'] as Record<string, unknown>)?.['name'] as string) ?? '';
+    const targetList = formType === 'Armor' ? armorOmods : omods;
     const attachPoint = (data['Attach Point'] as string) ?? ATTACH_POINT_OVERRIDES[record.header.form_id] ?? null;
     if (!attachPoint) continue;
 
@@ -875,7 +937,7 @@ export async function extractOmods(
     const hasGrantingCobj = (cobjIndex.byCreatedObject.get(record.header.form_id) ?? []).some(
       c => !isNonGrantingCobj(c, c.edid)
     );
-    omods.push({
+    targetList.push({
       id: record.editor_id,
       formId: record.header.form_id,
       name: omodDisplayName(record),
@@ -893,14 +955,18 @@ export async function extractOmods(
 
   // Obtainability derivation (see extract-weapons.ts for the flag semantics:
   // failures stay in the data as obtainable:false for app-side hiding/rescue).
-  const classifier = new ObtainabilityClassifier(client, obtainableWeaponFormIds, cobjIndex);
-  const verdicts = await classifier.classify(omods.map(o => ({ formId: o.formId, edid: o.id })));
+  // One classifier + one classify() call over BOTH weapon and armor OMODs
+  // together (armor OMODs additionally ride on obtainableArmorFormIds via the
+  // ARMO branch in obtainability.ts, parallel to the WEAP branch).
+  const classifier = new ObtainabilityClassifier(client, obtainableWeaponFormIds, cobjIndex, obtainableArmorFormIds);
+  const allOmods = [...omods, ...armorOmods];
+  const verdicts = await classifier.classify(allOmods.map(o => ({ formId: o.formId, edid: o.id })));
   const excludedDetailed: Record<string, ExcludedRecordDetail[]> = { omodUnobtainable: [] };
   const reviewFlagged: Record<string, ExcludedRecordDetail[]> = {
     omodWeakEvidence: [],
     omodUnnamedTemplateMember: unnamedTemplateMembers,
   };
-  for (const omod of omods) {
+  for (const omod of allOmods) {
     const verdict = verdicts.get(omod.formId);
     let obtainable = verdict?.obtainable ?? false;
     let signals = verdict?.signals;
@@ -924,5 +990,14 @@ export async function extractOmods(
   }
 
   omods.sort((a, b) => a.id.localeCompare(b.id));
-  return { omods, excluded, excludedDetailed, reviewFlagged, unknownProperties: [...unknownProperties].sort(), notes: [...notes] };
+  armorOmods.sort((a, b) => a.id.localeCompare(b.id));
+  return {
+    omods,
+    armorOmods,
+    excluded,
+    excludedDetailed,
+    reviewFlagged,
+    unknownProperties: [...unknownProperties].sort(),
+    notes: [...notes],
+  };
 }

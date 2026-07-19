@@ -245,6 +245,23 @@ export interface GeneratedUnique {
   legendaryEffects: (string | null)[];
 }
 
+/**
+ * Minimal ARMO grounding row (scripts/extract/extract-armor.ts, Phase 3 armor
+ * pipeline) — NOT a full armor dataset (no resistances, no mod slots; no UI
+ * consumer exists yet). Its only job is obtainability grounding for armor
+ * OMODs: an armor-attached OMOD referenced by an obtainable ARMO's own
+ * attach/template chain rides along, the ARMO-record parallel of
+ * GeneratedWeapon's `obtainableFormIds` output (obtainability.ts).
+ */
+export interface GeneratedArmor {
+  /** Stable id = ESM editor_id. */
+  id: string;
+  formId: string;
+  name: string;
+  /** See GeneratedWeapon.obtainable — false = no player-reachable reference found. */
+  obtainable?: boolean;
+}
+
 export interface GeneratedOmod {
   /** ESM editor_id (e.g. mod_CombatRifle_Receiver_Damage-Auto). */
   id: string;

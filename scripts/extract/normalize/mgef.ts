@@ -58,6 +58,13 @@ export const ENTRY_POINT_BUCKETS: Record<string, Bucket> = {
   // activates LegendaryCommonWeaponPerk and P62_..._RuinersPerk, both of
   // which stay inert behind `unresolved` gates (verified 2026-07-14).
   'Mod Weapon Attack Damage': 'dbm',
+  // Battle-Loader's (armor legendary, Phase 3 armor pipeline): granted PERK
+  // Legendary_Armor_BattleLoadersPerk carries 5 of these effects, each
+  // "Set Value 1.0" — a boolean trigger placeholder, NOT the real chance (see
+  // the narrow special case in translateGrantedPerk below, which overrides
+  // this generic mapping for that exact shape). Kept here too as a fallback
+  // for a hypothetical un-gated future use of the entry point.
+  'Instant Reload Clip On Bash': 'reloadSkipChance',
 };
 
 /**
@@ -861,6 +868,30 @@ export async function translateGrantedPerk(
         const value = parseGetRandomPercentChance(conditionRows, globalValues) ?? 0.2;
         const epConditions = [...conditions, ...(ENTRY_POINT_EXTRA_CONDITIONS[name] ?? [])];
         result.modifiers.push({ bucket: 'ammoFreeChance', op: 'ADD', value, conditions: epConditions });
+        continue;
+      }
+
+      // EP-199 "Instant Reload Clip On Bash" (Battle-Loader's 4★ armor mod,
+      // verified via `esm chase`/`esm get` 2026-07-18): all 5 effects carry
+      // Function "Set Value" Float=1.0 — a boolean trigger placeholder. The
+      // REAL per-worn-piece chance (15/30/45/60/75%) lives in each effect's
+      // own GetRandomPercent gate, same shape as the EP-172 case above.
+      // Narrowed to the exact Set Value 1.0 + GetRandomPercent combination so
+      // a hypothetical un-gated future use of this entry point still falls
+      // through to the generic ENTRY_POINT_BUCKETS mapping (SET 1.0 =
+      // unconditional 100% skip) instead of being silently swallowed.
+      if (
+        name === 'Instant Reload Clip On Bash'
+        && functionName === 'Set Value'
+        && float === 1
+        && hasGetRandomPercentCondition(conditionRows)
+      ) {
+        const value = parseGetRandomPercentChance(conditionRows, globalValues);
+        if (value !== null) {
+          result.modifiers.push({ bucket: 'reloadSkipChance', op: 'ADD', value, conditions });
+        } else {
+          result.notes.push(`perk ${perkEdid}: ${name} — GetRandomPercent present but chance unparsed, skipped`);
+        }
         continue;
       }
 
