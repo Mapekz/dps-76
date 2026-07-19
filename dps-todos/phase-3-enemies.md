@@ -140,3 +140,28 @@ already live before this phase, as the note says).
   4★ enemy-status AV rework may have superseded these records.
 - Some magazine omods (10mm, Gatling Gun) do capacity via script MGEF
   (unresolved report).
+- **Deferred — UC Titan / Head Hunt bosses / Bigfoot epic ranks** (Phase A —
+  epic boss HP mult, 2026-07-19): only SBQ and Storm Goliath got a fixed
+  `GeneratedNpc.epicRank` this phase (both rank 3, ESM-proven via their
+  summon quest VMAD — see `docs/assumptions.md` "Creature stat curves & NPC
+  extraction"). These three were probed and came back rank-less — record the
+  findings here so a future session doesn't re-walk the same ground:
+  - **UC Titan**: summon quest `E09A_Launcher` 0x0063461B ("Event: Seismic
+    Activity") — all 5 `EncounterWaves` entries carry only a `Difficulty`
+    field, no `BossEpicLevel`/`BossEpicChance` anywhere, and no
+    `defaultforcelegendaryalias` alias script either.
+  - **Head Hunt bosses**: 3★ drops come from LVLI
+    `Burn_LL_BountyHunt_LegendaryTemplate_3Star_HeadHunt` 0x00833A16 (quest
+    `Burn_BountyHunt_Headhunt` 0x007EBDF4) — a loot-list assignment, not an
+    epic-rank upgrade. No epic-rank signal anywhere in the quest.
+  - **Bigfoot**: 4★ drops come from LGDI
+    `RA_LegendaryItems_Weapons_BigfootOnly_Rank4` 0x008833D6 — same
+    loot-list pattern, no epic-disallowed keyword, and (per the extractor's
+    keyword check) no `BOSS_EPIC_RANK_QUESTS` entry either — Bigfoot has no
+    summon-quest analogue among the curated bosses at all.
+  - **Takeaway**: a boss's drop-list star rating is NOT the same ESM signal
+    as a forced epic rank — don't infer one from the other. If a future
+    in-game measurement pins a real fixed rank for any of these three, add
+    it to `BOSS_EPIC_RANK_QUESTS` (`scripts/extract/extract-npcs.ts`) with a
+    source comment citing the actual quest/mechanism found, not the loot
+    list.

@@ -814,7 +814,8 @@
   "levelMinGlobal": 60,
   "levelMaxGlobal": 100,
   "levelOffsetGlobal": null,
-  "epicAllowed": true
+  "epicAllowed": true,
+  "epicRank": 3
  },
  {
   "id": "RadScorpionRace",
@@ -1588,7 +1589,8 @@
   "levelMinGlobal": 50,
   "levelMaxGlobal": 100,
   "levelOffsetGlobal": null,
-  "epicAllowed": true
+  "epicAllowed": true,
+  "epicRank": 3
  },
  {
   "id": "BigfootRace",

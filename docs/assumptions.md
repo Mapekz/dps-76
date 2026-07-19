@@ -49,7 +49,7 @@ sub-anchor without updating every citation.
 - **Elemental 2★ effects & enemy-status 4★ rework**
 - **Resist mitigation** — formula, Option A + measured divergence, per-type mapping, TOFTT flat debuff, level-slider default
 - **Berserker's (Damage Unarmored)** — wielder's-own-DR curve rename from `enemyDamageResist`, manual knob
-- **Creature stat curves & NPC extraction (Phase 2 data)** — effectiveLevel X-axis, RACE/NPC_ Properties merge, flat-wins, SBQ HP OPEN, epic-creature eligibility
+- **Creature stat curves & NPC extraction (Phase 2 data)** — effectiveLevel X-axis, RACE/NPC_ Properties merge, flat-wins, SBQ HP OPEN, epic-creature eligibility + fixed-rank (SBQ/Storm Goliath, NOT Earle)
 - **Body parts (BPTD-extracted)**
 - **CAMP resource generators & consumable chains**
 - **OMOD eligibility & recipe chains**
@@ -1287,8 +1287,7 @@ Engine: `scripts/extract/extract-curvetables.ts`, `scripts/extract/extract-npcs.
     multiplier table — **ESM-PROVEN** (esm-walk, `esm -p get
     SQ_EpicCreatures --json`): `HealthMult` **2.0 / 2.4 / 3.2 / 4.0 / 4.8**
     at ranks 1–5 (`outgoingDamageMult` 1.1/1.15/1.2/1.25/1.3 also present but
-    OUT OF SCOPE — this app doesn't model incoming/enemy damage). Even at
-    max rank 5, 4.8× is far short of the observed ~10× gap. Eligibility
+    OUT OF SCOPE — this app doesn't model incoming/enemy damage). Eligibility
     (`GeneratedNpc.epicAllowed`, `scripts/extract/extract-npcs.ts`) checks
     both the NPC_'s own Keywords and its RACE's Keywords against FLST
     `EpicCreatureDisallowedKeywords` (0x004FC5B7, 4 members) — **ESM-PROVEN**
@@ -1297,13 +1296,55 @@ Engine: `scripts/extract/extract-curvetables.ts`, `scripts/extract/extract-npcs.
     `epicAllowed: true` (not structurally excluded); the 4 curated targets
     that ARE excluded are all Ultracite Terror raid-boss components
     (`RD01_Enc04_{Grenadier,Assassin,Brute}`, `RD01_Enc06_ScorchtongueHead`).
-    `epicAllowed: true` is NOT a claim that SBQ/Earle actually spawn epic in
-    a given encounter — that's a runtime chance roll (region/level-gated
-    Papyrus script) with no static ESM signal, and the app applies no epic
-    multiplier by default (`getEnemyDefenses`'s `epicRank` parameter is
-    unused by any current caller — see `src/data/overrides/epic-creature.ts`).
-    Net: epic-creature scaling is a real, now-extracted mechanism, but it is
-    RULED OUT as the explanation for the SBQ HP discrepancy specifically.
+    `epicAllowed: true` alone is NOT a claim that a race actually spawns epic
+    in a given encounter — for MOST creatures that's still a runtime chance
+    roll with no static ESM signal.
+  - **Fixed epic rank IS ESM-provable for specific bosses (Phase A —
+    2026-07-19)**, via the summon quest's Virtual Machine Adapter, in one of
+    two shapes (`scripts/extract/extract-npcs.ts`'s `BOSS_EPIC_RANK_QUESTS` +
+    `resolveEpicRankFromVmad`): (a) a `scripts[].properties` `EncounterWaves`
+    struct-array property whose boss wave carries `BossEpicLevel` alongside
+    `BossEpicChance: 100` — `CB15_ScorchedEarth` 0x003E271D (SBQ's summon
+    quest): rank 3. (b) A boss-alias `defaultforcelegendaryalias` script's
+    `minRank` property — `Storm_RegionBoss` 0x006AD506 (Storm Goliath's, 3
+    boss aliases for the Plasma/Frag/Cryo variants, all `minRank: 3`): rank
+    3. Both verified live (`esm -p get <questEdid> --json`, 20260710 dump).
+    **Earle/Wendigo Colossus does NOT get a rank**: `E06_Colossus`
+    0x00583D14 (its summon quest) was checked exhaustively — its own
+    3-wave EncounterWaves carries no BossEpicLevel/BossEpicChance on any
+    wave, and none of its 4 alias VMAD entries carry a
+    defaultforcelegendaryalias script. Also checked and empty:
+    `SQ_WendigoColossusSummonAllies` (the wild-spawn version of the same
+    race), `RB_Master` 0x004DF720 (the "Region Boss Master Quest" hub —
+    confirms Scorched Earth/Colossus/Nuka Launcher/Storm Region Boss are the
+    4 sibling region-boss events), `E06_PocketWatch`, and the boss NPC_'s own
+    Keywords/Perks. This directly contradicts an earlier informal
+    investigation note (not checked in) that claimed E06_Colossus matched
+    shape (a) at rank 3 — that claim does not reproduce against a live query.
+    `getEnemyDefenses` (`src/lib/enemy-defenses.ts`) reads `epicRank` off the
+    npc row directly (data-driven, no caller-supplied override) and scales
+    `hp` only — DR/ER untouched.
+  - **Recomputed with the now-proven rank 3 (×3.2) — WIDENS the gap, doesn't
+    close it**: SBQ HP @ L60/L100 becomes ~759,562 / ~1,305,734 (vs. ~32k
+    community figure: ~24×/~41×, up from the curve-only ~7×/~13×). Storm
+    Goliath (level window 50–100, Tier49 curve, also rank 3): HP @ L50/L100
+    becomes ~227,161 / ~472,390 (no community figure on record for
+    comparison). Net: epic-creature scaling is a real, now-extracted, now
+    partially-wired mechanism, but it is RULED OUT as the explanation for the
+    SBQ HP discrepancy — the per-nearby-player scaling hypothesis remains the
+    open suspect (`dps-todos/measurement-backlog.md`, still OPEN).
+  - **Loot-list rank ≠ epic creature rank** (2026-07-19 probes): a boss
+    dropping N-star gear does not mean it's a fixed epic rank N — the drop
+    list and the epic-rank system are unrelated ESM mechanisms. UC Titan's
+    summon quest `E09A_Launcher` 0x0063461B ("Event: Seismic Activity") —
+    verified live: all 5 waves carry only a `Difficulty` field, no
+    BossEpicLevel/BossEpicChance anywhere. Head Hunt's 3★ drop comes from
+    LVLI `Burn_LL_BountyHunt_LegendaryTemplate_3Star_HeadHunt` 0x00833A16
+    (quest `Burn_BountyHunt_Headhunt` 0x007EBDF4) — a loot list, not an epic
+    upgrade. Bigfoot's 4★ drop comes from LGDI
+    `RA_LegendaryItems_Weapons_BigfootOnly_Rank4` 0x008833D6 — same pattern,
+    no epic-disallowed keyword, no rank anywhere. All three stay rank-less;
+    deferred entry in `dps-todos/phase-3-enemies.md`.
 
 ## Body parts (BPTD-extracted)
 Engine: `scripts/extract/extract-bodyparts.ts`.

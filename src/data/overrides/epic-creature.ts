@@ -10,23 +10,33 @@
  * Eligibility (does a given actor even qualify for the random epic-rank
  * roll) is a REAL per-NPC extracted field instead —
  * `GeneratedNpc.epicAllowed` (scripts/extract/extract-npcs.ts, checked
- * against FLST `EpicCreatureDisallowedKeywords` 0x004FC5B7). Whether a
- * SPECIFIC curated target (SBQ, Earle, ...) actually spawns at a given epic
- * rank in a given encounter is a runtime chance roll (region/level-gated
- * Papyrus script) with NO static ESM signal — `epicAllowed: true` only means
- * "not structurally excluded", not "always epic" or "always this rank". See
- * docs/assumptions.md "Creature stat curves & NPC extraction" for how this
- * bears on the open Scorchbeast Queen HP question (short answer: it doesn't
- * explain the ~10× gap — max HealthMult here is 4.8×).
+ * against FLST `EpicCreatureDisallowedKeywords` 0x004FC5B7). For MOST
+ * creatures, whether a given encounter actually rolls epic (and at what
+ * rank) is a runtime chance roll (region/level-gated Papyrus script) with NO
+ * static ESM signal — `epicAllowed: true` only means "not structurally
+ * excluded". Three curated bosses are the exception: their summon quest's
+ * Virtual Machine Adapter FORCES a specific rank at spawn (100% chance, not
+ * a roll) — see `GeneratedNpc.epicRank`'s doc comment and
+ * `BOSS_EPIC_RANK_QUESTS` (extract-npcs.ts) for the two ESM-proven VMAD
+ * shapes and exactly which bosses qualify (SBQ, Storm Goliath — NOT Earle,
+ * despite being a same-family curated boss; its quest was checked and
+ * proves no forced rank). See docs/assumptions.md "Creature stat curves &
+ * NPC extraction" for how this bears on the open Scorchbeast Queen HP
+ * question (short answer: applying the now-proven rank 3 WIDENS the ~10×
+ * gap to ~24–41×, not narrows it).
  *
- * Not wired into any UI control (out of scope for Phase 2 — Enemy defenses,
- * which only ships a level slider): `src/lib/enemy-defenses.ts`'s
- * `getEnemyDefenses` accepts an optional `epicRank` so a future picker can
- * slot in without another data-layer change, but nothing calls it with a
- * non-undefined rank today. Enemy OUTGOING damage (the `outgoingDamageMult`
- * column) is out of scope entirely for this DPS calculator (incoming damage
- * to the player isn't modeled) — kept here for completeness/documentation
- * only, no consumer reads it.
+ * Wired into HP (Phase A — epic boss HP mult, 2026-07-19): `src/lib/
+ * enemy-defenses.ts`'s `getEnemyDefenses` reads `GeneratedNpc.epicRank`
+ * (ESM-proven fixed rank on a curated boss's summon quest —
+ * `scripts/extract/extract-npcs.ts`'s `BOSS_EPIC_RANK_QUESTS`) directly —
+ * fully data-driven, no caller-supplied rank. Today that's exactly
+ * Scorchbeast Queen and Storm Goliath (both rank 3); every other race,
+ * including Earle/Wendigo Colossus (checked — its summon quest proves no
+ * rank), has no `epicRank` and reads plain curve HP. No manual rank picker
+ * ships this phase — extracted ranks only. Enemy OUTGOING damage (the
+ * `outgoingDamageMult` column) is out of scope entirely for this DPS
+ * calculator (incoming damage to the player isn't modeled) — kept here for
+ * completeness/documentation only, no consumer reads it.
  */
 export type EpicCreatureRank = 1 | 2 | 3 | 4 | 5;
 

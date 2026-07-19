@@ -1,0 +1,173 @@
+{
+  "header": {
+    "signature": "QUST",
+    "form_id": "0x006AD506",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 13422,
+    "offset": 891679022
+  },
+  "editor_id": "Storm_RegionBoss",
+  "fields": {
+    "Virtual Machine Adapter": {
+      "version": 6,
+      "scripts": [],
+      "aliases": [
+        {
+          "alias_id": 0,
+          "form_id": "0x006AD506",
+          "alias_scripts": [
+            {
+              "name": "defaultaliasonlockstatechanged",
+              "status": 0,
+              "properties": [
+                {
+                  "name": "StageToSet",
+                  "type": 3,
+                  "value": 105
+                },
+                {
+                  "name": "TurnOffStage",
+                  "type": 3,
+                  "value": 110
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "alias_id": 0,
+          "form_id": "0x006AD506",
+          "alias_scripts": [
+            {
+              "name": "quests:_default:aliashealthbarscript",
+              "status": 0,
+              "properties": [
+                {
+                  "name": "ObjectiveIndex",
+                  "type": 3,
+                  "value": 21
+                }
+              ]
+            },
+            {
+              "name": "Quests:Storm:RegionBoss:StormBossAliasScript",
+              "status": 0,
+              "properties": [
+                {
+                  "name": "RobotSelfDestructSpell",
+                  "type": 1,
+                  "value": "0x006BECAA"
+                },
+                {
+                  "name": "iObjectiveToCompleteOnDeath",
+                  "type": 3,
+                  "value": 21
+                }
+              ]
+            },
+            {
+              "name": "defaultforcelegendaryalias",
+              "status": 0,
+              "properties": [
+                {
+                  "name": "minRank",
+                  "type": 3,
+                  "value": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "alias_id": 0,
+          "form_id": "0x006AD506",
+          "alias_scripts": [
+            {
+              "name": "quests:_default:aliashealthbarscript",
+              "status": 0,
+              "properties": [
+                {
+                  "name": "ObjectiveIndex",
+                  "type": 3,
+                  "value": 22
+                }
+              ]
+            },
+            {
+              "name": "Quests:Storm:RegionBoss:StormBossAliasScript",
+              "status": 0,
+              "properties": [
+                {
+                  "name": "RobotSelfDestructSpell",
+                  "type": 1,
+                  "value": "0x006BECAA"
+                },
+                {
+                  "name": "iObjectiveToCompleteOnDeath",
+                  "type": 3,
+                  "value": 22
+                }
+              ]
+            },
+            {
+              "name": "defaultforcelegendaryalias",
+              "status": 0,
+              "properties": [
+                {
+                  "name": "minRank",
+                  "type": 3,
+                  "value": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "alias_id": 0,
+          "form_id": "0x006AD506",
+          "alias_scripts": [
+            {
+              "name": "quests:_default:aliashealthbarscript",
+              "status": 0,
+              "properties": [
+                {
+                  "name": "ObjectiveIndex",
+                  "type": 3,
+                  "value": 23
+                }
+              ]
+            },
+            {
+              "name": "Quests:Storm:RegionBoss:StormBossAliasScript",
+              "status": 0,
+              "properties": [
+                {
+                  "name": "RobotSelfDestructSpell",
+                  "type": 1,
+                  "value": "0x006BECAA"
+                },
+                {
+                  "name": "iObjectiveToCompleteOnDeath",
+                  "type": 3,
+                  "value": 23
+                }
+              ]
+            },
+            {
+              "name": "defaultforcelegendaryalias",
+              "status": 0,
+              "properties": [
+                {
+                  "name": "minRank",
+                  "type": 3,
+                  "value": 3
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

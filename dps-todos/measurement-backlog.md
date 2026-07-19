@@ -61,6 +61,15 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
       docs/assumptions.md "Creature stat curves & NPC extraction" for the
       full table + eligibility mechanics). The per-nearby-player boss-HP
       multiplier remains the leading unconfirmed explanation.
+      **UPDATE 2026-07-19 (Phase A — epic boss HP mult):** SBQ's epic rank is
+      now ESM-PROVEN (not just eligible) — `CB15_ScorchedEarth` 0x003E271D's
+      summon-quest VMAD forces rank 3 (`BossEpicLevel: 3` @
+      `BossEpicChance: 100`) — and `getEnemyDefenses` now applies it
+      automatically. Recomputed SBQ HP @ L60/L100 with ×3.2: ~759,562 /
+      ~1,305,734 — **WIDENS** the gap to ~24×/~41× vs. the ~32k community
+      figure (up from the curve-only ~7×/~13×), the opposite of narrowing
+      it. Stays OPEN: the per-nearby-player scaling hypothesis is now the
+      only remaining unconfirmed explanation.
 - [ ] **Phase 2 mitigation formula end-to-end** (new 2026-07-18) — golden
       placeholder `golden/cases.json` "Combat Rifle (Fixer) @50 ... vs
       Scorchbeast Queen (Lv 100)" (`measure: 'effectiveSustainedDps'`,

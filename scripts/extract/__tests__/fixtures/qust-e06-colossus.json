@@ -1,0 +1,396 @@
+{
+  "header": {
+    "signature": "QUST",
+    "form_id": "0x00583D14",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 10370,
+    "offset": 881432685
+  },
+  "editor_id": "E06_Colossus",
+  "fields": {
+    "Virtual Machine Adapter": {
+      "version": 6,
+      "scripts": [
+        {
+          "name": "defaultquestencounterwavescript",
+          "status": 0,
+          "properties": [
+            {
+              "name": "EMS",
+              "type": 1,
+              "value": "0x0012D5B8"
+            },
+            {
+              "name": "EncounterWaves",
+              "type": 17,
+              "value": [
+                [
+                  {
+                    "name": "ActorSkew",
+                    "type": 3,
+                    "value": 3
+                  },
+                  {
+                    "name": "MaxWaveActorsOverride",
+                    "type": 3,
+                    "value": 20
+                  },
+                  {
+                    "name": "SubwaveTimer_Speed",
+                    "type": 3,
+                    "value": 3
+                  },
+                  {
+                    "name": "EncounterTypeKeyword",
+                    "type": 1,
+                    "value": "0x005751A2"
+                  },
+                  {
+                    "name": "WaveType",
+                    "type": 3,
+                    "value": 2
+                  },
+                  {
+                    "name": "Difficulty",
+                    "type": 3,
+                    "value": 2
+                  },
+                  {
+                    "name": "WaveRefCollection",
+                    "type": 1,
+                    "value": "0x00583D14"
+                  },
+                  {
+                    "name": "SpawnArea",
+                    "type": 1,
+                    "value": "0x00583D14"
+                  },
+                  {
+                    "name": "PreferFurniture",
+                    "type": 5,
+                    "value": true
+                  },
+                  {
+                    "name": "IDString",
+                    "type": 2,
+                    "value": "Littlego Ambush - 75%"
+                  },
+                  {
+                    "name": "WaveDuration",
+                    "type": 3,
+                    "value": 3
+                  }
+                ],
+                [
+                  {
+                    "name": "ActorSkew",
+                    "type": 3,
+                    "value": 3
+                  },
+                  {
+                    "name": "EncounterTypeKeyword",
+                    "type": 1,
+                    "value": "0x005751A2"
+                  },
+                  {
+                    "name": "SubwaveTimer_Speed",
+                    "type": 3,
+                    "value": 4
+                  },
+                  {
+                    "name": "MaxWaveActorsOverride",
+                    "type": 3,
+                    "value": 20
+                  },
+                  {
+                    "name": "WaveType",
+                    "type": 3,
+                    "value": 2
+                  },
+                  {
+                    "name": "Difficulty",
+                    "type": 3,
+                    "value": 3
+                  },
+                  {
+                    "name": "WaveRefCollection",
+                    "type": 1,
+                    "value": "0x00583D14"
+                  },
+                  {
+                    "name": "SpawnArea",
+                    "type": 1,
+                    "value": "0x00583D14"
+                  },
+                  {
+                    "name": "PreferFurniture",
+                    "type": 5,
+                    "value": true
+                  },
+                  {
+                    "name": "IDString",
+                    "type": 2,
+                    "value": "Littlego Ambush - 50%"
+                  },
+                  {
+                    "name": "WaveDuration",
+                    "type": 3,
+                    "value": 3
+                  }
+                ],
+                [
+                  {
+                    "name": "ActorSkew",
+                    "type": 3,
+                    "value": 3
+                  },
+                  {
+                    "name": "EncounterTypeKeyword",
+                    "type": 1,
+                    "value": "0x005751A2"
+                  },
+                  {
+                    "name": "MaxWaveActorsOverride",
+                    "type": 3,
+                    "value": 20
+                  },
+                  {
+                    "name": "SubwaveTimer_Speed",
+                    "type": 3,
+                    "value": 5
+                  },
+                  {
+                    "name": "WaveType",
+                    "type": 3,
+                    "value": 2
+                  },
+                  {
+                    "name": "Difficulty",
+                    "type": 3,
+                    "value": 4
+                  },
+                  {
+                    "name": "WaveRefCollection",
+                    "type": 1,
+                    "value": "0x00583D14"
+                  },
+                  {
+                    "name": "SpawnArea",
+                    "type": 1,
+                    "value": "0x00583D14"
+                  },
+                  {
+                    "name": "PreferFurniture",
+                    "type": 5,
+                    "value": true
+                  },
+                  {
+                    "name": "IDString",
+                    "type": 2,
+                    "value": "Littlego Ambush - 25%"
+                  },
+                  {
+                    "name": "WaveDuration",
+                    "type": 3,
+                    "value": 5
+                  }
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "aliases": [
+        {
+          "alias_id": 0,
+          "form_id": "0x00583D14",
+          "alias_scripts": [
+            {
+              "name": "DefaultAliasOnDeath",
+              "status": 0,
+              "properties": [
+                {
+                  "name": "preReqStage",
+                  "type": 3,
+                  "value": 200
+                },
+                {
+                  "name": "UseOnDyingInstead",
+                  "type": 5,
+                  "value": true
+                },
+                {
+                  "name": "StageToSet",
+                  "type": 3,
+                  "value": 700
+                }
+              ]
+            },
+            {
+              "name": "defaultaliasoncombatstatechanged",
+              "status": 0,
+              "properties": [
+                {
+                  "name": "preReqStage",
+                  "type": 3,
+                  "value": 200
+                },
+                {
+                  "name": "TurnOffWhenDead",
+                  "type": 5,
+                  "value": true
+                },
+                {
+                  "name": "StageToSet",
+                  "type": 3,
+                  "value": 205
+                }
+              ]
+            },
+            {
+              "name": "Quests:_Default:SetStageOnHealthPercent",
+              "status": 0,
+              "properties": [
+                {
+                  "name": "StageData",
+                  "type": 17,
+                  "value": [
+                    [
+                      {
+                        "name": "StageToSet",
+                        "type": 3,
+                        "value": 300
+                      },
+                      {
+                        "name": "HealthPercent",
+                        "type": 4,
+                        "value": 0.75
+                      }
+                    ],
+                    [
+                      {
+                        "name": "StageToSet",
+                        "type": 3,
+                        "value": 350
+                      },
+                      {
+                        "name": "HealthPercent",
+                        "type": 4,
+                        "value": 0.5
+                      }
+                    ],
+                    [
+                      {
+                        "name": "StageToSet",
+                        "type": 3,
+                        "value": 400
+                      },
+                      {
+                        "name": "HealthPercent",
+                        "type": 4,
+                        "value": 0.25
+                      }
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "DefaultAliasProgressBarScript",
+              "status": 0,
+              "properties": [
+                {
+                  "name": "preReqStage",
+                  "type": 3,
+                  "value": 200
+                },
+                {
+                  "name": "ObjectiveIndex",
+                  "type": 3,
+                  "value": 20
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "alias_id": 0,
+          "form_id": "0x00583D14",
+          "alias_scripts": [
+            {
+              "name": "DefaultAliasOnTriggerEnter",
+              "status": 0,
+              "properties": [
+                {
+                  "name": "StageToSet",
+                  "type": 3,
+                  "value": 200
+                },
+                {
+                  "name": "TurnOffStage",
+                  "type": 3,
+                  "value": 200
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "alias_id": 0,
+          "form_id": "0x00583D14",
+          "alias_scripts": [
+            {
+              "name": "DefaultAliasOnTriggerEnter",
+              "status": 0,
+              "properties": [
+                {
+                  "name": "StageToSet",
+                  "type": 3,
+                  "value": 400
+                },
+                {
+                  "name": "preReqStage",
+                  "type": 3,
+                  "value": 300
+                },
+                {
+                  "name": "TurnOffStage",
+                  "type": 3,
+                  "value": 400
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "alias_id": 0,
+          "form_id": "0x00583D14",
+          "alias_scripts": [
+            {
+              "name": "DefaultAliasOnTriggerEnter",
+              "status": 0,
+              "properties": [
+                {
+                  "name": "StageToSet",
+                  "type": 3,
+                  "value": 202
+                },
+                {
+                  "name": "preReqStage",
+                  "type": 3,
+                  "value": 200
+                },
+                {
+                  "name": "TurnOffStage",
+                  "type": 3,
+                  "value": 205
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

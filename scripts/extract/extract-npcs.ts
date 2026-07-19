@@ -57,6 +57,138 @@ async function resolveEpicDisallowedKeywords(client: EsmClient, unresolved: stri
   }
 }
 
+// ── Epic boss rank (Phase A — epic boss HP mult, esm-walk 2026-07-19) ──────
+//
+// Unlike `epicAllowed` (a real per-NPC/RACE keyword check), a curated boss's
+// FIXED epic rank has no per-NPC ESM field — it lives on the summon QUEST's
+// Virtual Machine Adapter, in one of two shapes verified directly against
+// the 20260710 dump (`esm -p get <questEdid> --json`):
+//
+//  (a) `scripts[].properties` carries an `EncounterWaves` struct-array
+//      property (VMAD property type 17); the boss wave (`BossWave: true`)
+//      has a `BossEpicLevel` entry alongside `BossEpicChance` — trust it
+//      only when the chance is exactly 100 (a <100 chance is a roll, not a
+//      fixed rank). `CB15_ScorchedEarth` (SBQ): wave 0 = `BossEpicLevel: 3`,
+//      `BossEpicChance: 100.0`.
+//  (b) A boss-alias VMAD entry carries a `defaultforcelegendaryalias`
+//      script with a `minRank` property. `Storm_RegionBoss` (Storm
+//      Goliath): 3 boss aliases (Boss_01_Plasma/02_Frag/03_Cryo, one per
+//      elemental variant) each carry `minRank: 3`.
+//
+// `E06_Colossus` (Earle / Wendigo Colossus) was checked exhaustively and
+// carries NEITHER shape: its own 3-wave EncounterWaves has no
+// BossEpicLevel/BossEpicChance field on any wave, and none of its 4 alias
+// VMAD entries carry a defaultforcelegendaryalias script. Also checked and
+// empty: `SQ_WendigoColossusSummonAllies` (the wild-spawn version of the
+// same race), `RB_Master` (0x004DF720, the "Region Boss Master Quest" hub
+// listing all 4 region-boss events — confirms Scorched Earth/Colossus/Nuka
+// Launcher/Storm Region Boss are siblings), `E06_PocketWatch`, and the boss
+// NPC_'s own Keywords/Perks. This directly contradicts an earlier informal
+// investigation note (scratchpad, not checked in) that claimed E06_Colossus
+// matched shape (a) at rank 3 — that claim does not reproduce against a live
+// query and was NOT carried into this map. Earle is kept in
+// `BOSS_EPIC_RANK_QUESTS` anyway so a run still emits a specific unresolved
+// note (rather than silently having no row at all) and `epicRank` stays
+// unset for this race. See `dps-todos/phase-3-enemies.md`.
+export const BOSS_EPIC_RANK_QUESTS: Readonly<Record<string, { questEdid: string; questFormId: string }>> = {
+  EncScorchbeastQueen01Template: { questEdid: 'CB15_ScorchedEarth', questFormId: '0x003E271D' },
+  WendigoColossusRace: { questEdid: 'E06_Colossus', questFormId: '0x00583D14' },
+  StormBossRace: { questEdid: 'Storm_RegionBoss', questFormId: '0x006AD506' },
+};
+
+/** One VMAD `{name, type, value}` property entry (type 17 = nested struct/struct-array; scalar types otherwise). */
+interface VmadProperty {
+  name: string;
+  type: number;
+  value: unknown;
+}
+
+interface VmadScript {
+  name: string;
+  status: number;
+  properties: VmadProperty[];
+}
+
+/** One VMAD alias-script binding. `alias_id`/`form_id` are unreliable for "Create Reference to Object" aliases (the esm CLI reports the quest's own formid for all of them) — matched by script name only, never by these fields. */
+interface VmadAliasEntry {
+  alias_id: number;
+  form_id: string;
+  alias_scripts: VmadScript[];
+}
+
+interface VirtualMachineAdapter {
+  version: number;
+  scripts: VmadScript[];
+  aliases?: VmadAliasEntry[];
+}
+
+/** Exact-name lookup within a VMAD struct-entry array (VMAD property names come straight from the compiled script, not normalized by the CLI). */
+function vmadProp(props: VmadProperty[], name: string): VmadProperty | undefined {
+  return props.find(p => p.name === name);
+}
+
+/** Shape (a) — see header note above. Exported for tests. */
+export function epicRankFromEncounterWaves(vmad: VirtualMachineAdapter): number | null {
+  for (const script of vmad.scripts) {
+    const wavesProp = vmadProp(script.properties, 'EncounterWaves');
+    if (!wavesProp || !Array.isArray(wavesProp.value)) continue;
+    for (const wave of wavesProp.value as VmadProperty[][]) {
+      const level = vmadProp(wave, 'BossEpicLevel');
+      const chance = vmadProp(wave, 'BossEpicChance');
+      if (level && typeof level.value === 'number' && chance && Number(chance.value) === 100) {
+        return level.value;
+      }
+    }
+  }
+  return null;
+}
+
+/** Shape (b) — see header note above. Exported for tests. */
+export function epicRankFromForceLegendaryAlias(vmad: VirtualMachineAdapter): number | null {
+  for (const alias of vmad.aliases ?? []) {
+    for (const script of alias.alias_scripts) {
+      if (script.name !== 'defaultforcelegendaryalias') continue;
+      const rank = vmadProp(script.properties, 'minRank');
+      if (rank && typeof rank.value === 'number') return rank.value;
+    }
+  }
+  return null;
+}
+
+/** Tries shape (a) then shape (b); null when a quest's VMAD carries neither (Earle — see header note). Exported for tests. */
+export function resolveEpicRankFromVmad(vmad: VirtualMachineAdapter): number | null {
+  return epicRankFromEncounterWaves(vmad) ?? epicRankFromForceLegendaryAlias(vmad);
+}
+
+/** Looks up `targetEdid` in `BOSS_EPIC_RANK_QUESTS`, fetches its summon quest, and resolves epic rank via both VMAD shapes. Returns `undefined` (+ an unresolved note) for every non-curated-boss row and for a curated boss whose quest carries neither shape. */
+async function resolveBossEpicRank(client: EsmClient, targetEdid: string, unresolved: string[]): Promise<number | undefined> {
+  const boss = BOSS_EPIC_RANK_QUESTS[targetEdid];
+  if (!boss) return undefined;
+
+  let quest: EsmRecord;
+  try {
+    quest = await client.get(boss.questEdid);
+  } catch (err) {
+    unresolved.push(`npcs: ${targetEdid} epic-rank quest ${boss.questEdid} (${boss.questFormId}) not found: ${(err as Error).message}`);
+    return undefined;
+  }
+
+  const vmad = quest.fields['Virtual Machine Adapter'] as VirtualMachineAdapter | undefined;
+  if (!vmad) {
+    unresolved.push(`npcs: ${targetEdid} epic-rank quest ${boss.questEdid} (${boss.questFormId}) has no Virtual Machine Adapter`);
+    return undefined;
+  }
+
+  const rank = resolveEpicRankFromVmad(vmad);
+  if (rank == null) {
+    unresolved.push(
+      `npcs: ${targetEdid} epic-rank quest ${boss.questEdid} (${boss.questFormId}) carries neither an EncounterWaves BossEpicLevel@100%-chance wave nor a defaultforcelegendaryalias.minRank alias — epicRank left unset`
+    );
+    return undefined;
+  }
+  return rank;
+}
+
 const HEALTH_AV = 0x2d4;
 /** Exported for tests. */
 export const RESIST_AVS: Record<number, GeneratedNpcDamageType> = {
@@ -283,6 +415,8 @@ export async function extractNpcs(client: EsmClient): Promise<NpcsResult> {
     const levelMaxGlobal = await resolveGlobal(client, scaling['Level Max Global'], `${target.edid} Level Max Global`, unresolved);
     const levelOffsetGlobal = await resolveGlobal(client, scaling['Level Offset Global'], `${target.edid} Level Offset Global`, unresolved);
 
+    const epicRank = await resolveBossEpicRank(client, target.edid, unresolved);
+
     npcs.push({
       id: target.edid,
       formId: npcRecord.header.form_id,
@@ -294,6 +428,7 @@ export async function extractNpcs(client: EsmClient): Promise<NpcsResult> {
       levelMaxGlobal,
       levelOffsetGlobal,
       epicAllowed,
+      epicRank,
     });
   }
 

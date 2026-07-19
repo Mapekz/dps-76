@@ -1,0 +1,103 @@
+{
+  "header": {
+    "signature": "QUST",
+    "form_id": "0x003E271D",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 6737,
+    "offset": 868589818
+  },
+  "editor_id": "CB15_ScorchedEarth",
+  "fields": {
+    "Virtual Machine Adapter": {
+      "version": 6,
+      "scripts": [
+        {
+          "name": "defaultquestencounterwavescript",
+          "status": 0,
+          "properties": [
+            {
+              "name": "EncounterWaves",
+              "type": 17,
+              "value": [
+                [
+                  {
+                    "name": "BossWave",
+                    "type": 5,
+                    "value": true
+                  },
+                  {
+                    "name": "BossWaveAllowLackeys",
+                    "type": 5,
+                    "value": false
+                  },
+                  {
+                    "name": "IDString",
+                    "type": 2,
+                    "value": "Alpha Creation Wave"
+                  },
+                  {
+                    "name": "Difficulty",
+                    "type": 3,
+                    "value": 4
+                  },
+                  {
+                    "name": "SpawnArea",
+                    "type": 1,
+                    "value": "0x003E271D"
+                  },
+                  {
+                    "name": "IgnoreDeathForSwarm",
+                    "type": 5,
+                    "value": true
+                  },
+                  {
+                    "name": "PreferFurniture",
+                    "type": 5,
+                    "value": true
+                  },
+                  {
+                    "name": "WaveTimeSeconds",
+                    "type": 4,
+                    "value": 10800.0
+                  },
+                  {
+                    "name": "MaxWaveActorsOverride",
+                    "type": 3,
+                    "value": 1
+                  },
+                  {
+                    "name": "BossEpicLevel",
+                    "type": 3,
+                    "value": 3
+                  },
+                  {
+                    "name": "BossEpicChance",
+                    "type": 4,
+                    "value": 100.0
+                  },
+                  {
+                    "name": "BossRefCollection",
+                    "type": 1,
+                    "value": "0x003E271D"
+                  },
+                  {
+                    "name": "EncounterTypeKeyword",
+                    "type": 1,
+                    "value": "0x004FC07F"
+                  },
+                  {
+                    "name": "RemoveActorsFromRefCollectionsOnDeath",
+                    "type": 5,
+                    "value": false
+                  }
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "aliases": []
+    }
+  }
+}

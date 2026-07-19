@@ -3,9 +3,13 @@ import type { EsmClient, EsmRecord } from '../esm-client';
 import { CURATED_TARGETS } from '../curated-targets';
 import {
   RACE_NPC_TEMPLATES,
+  BOSS_EPIC_RANK_QUESTS,
   avToNumber,
   mergeProperties,
   resolveStat,
+  epicRankFromEncounterWaves,
+  epicRankFromForceLegendaryAlias,
+  resolveEpicRankFromVmad,
   extractNpcs,
   type RawProperty,
 } from '../extract-npcs';
@@ -15,6 +19,9 @@ import npcSuperMutantTemplate from './fixtures/npc-supermutant-template.json';
 import raceSuperMutant from './fixtures/race-supermutant.json';
 import raceWendigoColossus from './fixtures/race-wendigocolossus.json';
 import raceScorchbeast from './fixtures/race-scorchbeast.json';
+import questCb15 from './fixtures/qust-cb15-scorchedearth.json';
+import questStormRegionBoss from './fixtures/qust-storm-regionboss.json';
+import questE06Colossus from './fixtures/qust-e06-colossus.json';
 
 // npc-*.json fixtures are verbatim `esm -p get <edid> --json` output
 // (20260710 ESM): EN06_LvlWendigoColossus_Nuked (Earle, 0x0059E02F),
@@ -24,6 +31,15 @@ import raceScorchbeast from './fixtures/race-scorchbeast.json';
 // fields.Properties} — a RACE record carries ~50-200KB of unrelated
 // morph/head-part/outfit data no code path here reads; keeping the full dump
 // would 5-10x these fixtures' size for zero test value.
+//
+// qust-*.json fixtures are TRIMMED (2026-07-19, `esm -p get <questEdid>
+// --json`, live-queried — not inherited from any earlier informal
+// investigation) to {header, editor_id, fields.'Virtual Machine Adapter'}:
+// CB15_ScorchedEarth (0x003E271D, SBQ's summon quest — shape a, the
+// 'defaultquestencounterwavescript' EncounterWaves boss wave), Storm_RegionBoss
+// (0x006AD506, Storm Goliath's — shape b, 3 boss-alias
+// defaultforcelegendaryalias scripts), and E06_Colossus (0x00583D14, Earle's
+// — carries NEITHER shape; locks in the "epicRank left unset" fallback).
 
 describe('avToNumber', () => {
   it('parses a padded hex AV string', () => {
@@ -105,6 +121,88 @@ describe('RACE_NPC_TEMPLATES', () => {
   });
 });
 
+describe('BOSS_EPIC_RANK_QUESTS', () => {
+  it('has an entry for every mapped boss, keyed by a real curated target edid', () => {
+    const curatedEdids = new Set(CURATED_TARGETS.map(t => t.edid));
+    for (const key of Object.keys(BOSS_EPIC_RANK_QUESTS)) {
+      expect(curatedEdids.has(key), `BOSS_EPIC_RANK_QUESTS key "${key}" is not a curated target edid`).toBe(true);
+    }
+  });
+
+  it('covers exactly the 3 ESM-proven bosses (SBQ, Earle, Storm Goliath) — Earle stays mapped despite resolving to no rank (see extract-npcs.ts header note)', () => {
+    expect(Object.keys(BOSS_EPIC_RANK_QUESTS).sort()).toEqual(
+      ['EncScorchbeastQueen01Template', 'StormBossRace', 'WendigoColossusRace'].sort()
+    );
+  });
+});
+
+type Vmad = Parameters<typeof resolveEpicRankFromVmad>[0];
+const vmadOf = (quest: { fields: Record<string, unknown> }): Vmad => quest.fields['Virtual Machine Adapter'] as Vmad;
+
+describe('epicRankFromEncounterWaves (shape a — CB15_ScorchedEarth, SBQ)', () => {
+  it('reads BossEpicLevel from the boss wave when BossEpicChance is 100', () => {
+    expect(epicRankFromEncounterWaves(vmadOf(questCb15))).toBe(3);
+  });
+
+  it('returns null when no EncounterWaves property exists', () => {
+    expect(epicRankFromEncounterWaves({ version: 6, scripts: [], aliases: [] })).toBeNull();
+  });
+
+  it('ignores a wave with BossEpicLevel but a sub-100 BossEpicChance (a roll, not a forced rank)', () => {
+    const vmad = {
+      version: 6,
+      scripts: [
+        {
+          name: 'defaultquestencounterwavescript',
+          status: 0,
+          properties: [
+            {
+              name: 'EncounterWaves',
+              type: 17,
+              value: [[
+                { name: 'BossEpicLevel', type: 3, value: 3 },
+                { name: 'BossEpicChance', type: 4, value: 50.0 },
+              ]],
+            },
+          ],
+        },
+      ],
+    };
+    expect(epicRankFromEncounterWaves(vmad)).toBeNull();
+  });
+});
+
+describe('epicRankFromForceLegendaryAlias (shape b — Storm_RegionBoss, Storm Goliath)', () => {
+  it('reads minRank from a defaultforcelegendaryalias boss-alias script', () => {
+    expect(epicRankFromForceLegendaryAlias(vmadOf(questStormRegionBoss))).toBe(3);
+  });
+
+  it('skips alias entries whose scripts are not defaultforcelegendaryalias', () => {
+    const vmad = {
+      version: 6,
+      scripts: [],
+      aliases: [
+        { alias_id: 0, form_id: '0x1', alias_scripts: [{ name: 'someOtherAliasScript', status: 0, properties: [{ name: 'minRank', type: 3, value: 5 }] }] },
+      ],
+    };
+    expect(epicRankFromForceLegendaryAlias(vmad)).toBeNull();
+  });
+});
+
+describe('resolveEpicRankFromVmad (both shapes combined)', () => {
+  it('CB15_ScorchedEarth resolves via shape a', () => {
+    expect(resolveEpicRankFromVmad(vmadOf(questCb15))).toBe(3);
+  });
+
+  it('Storm_RegionBoss resolves via shape b', () => {
+    expect(resolveEpicRankFromVmad(vmadOf(questStormRegionBoss))).toBe(3);
+  });
+
+  it('E06_Colossus (Earle) matches NEITHER shape — real 20260710 ESM data, not a synthetic gap', () => {
+    expect(resolveEpicRankFromVmad(vmadOf(questE06Colossus))).toBeNull();
+  });
+});
+
 describe('extractNpcs (fake client — full RACE→NPC_ resolution + GLOB level windows)', () => {
   const GLOBS: Record<string, number> = {
     '0x005CFA59': 80, // Renorm_MinLVL_Boss_EN06WendigoColossus
@@ -129,6 +227,10 @@ describe('extractNpcs (fake client — full RACE→NPC_ resolution + GLOB level 
     [(raceSuperMutant as { header: { form_id: string } }).header.form_id]: raceSuperMutant as unknown as EsmRecord,
     EncSuperMutant_Template: npcSuperMutantTemplate as unknown as EsmRecord,
     [(npcSuperMutantTemplate as { header: { form_id: string } }).header.form_id]: npcSuperMutantTemplate as unknown as EsmRecord,
+    // Epic-rank summon quests (Phase A) — keyed by questEdid, exactly how
+    // `resolveBossEpicRank` fetches them (BOSS_EPIC_RANK_QUESTS).
+    CB15_ScorchedEarth: questCb15 as unknown as EsmRecord,
+    E06_Colossus: questE06Colossus as unknown as EsmRecord,
   };
   for (const [formId, value] of Object.entries(GLOBS)) {
     records[formId] = { header: { signature: 'GLOB', form_id: formId }, editor_id: `glob_${formId}`, fields: { Value: value } } as unknown as EsmRecord;
@@ -146,8 +248,8 @@ describe('extractNpcs (fake client — full RACE→NPC_ resolution + GLOB level 
     },
   } as unknown as EsmClient;
 
-  it('resolves Earle (WendigoColossusRace → the Earle override, not the generic template)', async () => {
-    const { npcs } = await extractNpcs(fakeClient);
+  it('resolves Earle (WendigoColossusRace → the Earle override, not the generic template); its epic rank stays unset (E06_Colossus proves neither VMAD shape)', async () => {
+    const { npcs, unresolved } = await extractNpcs(fakeClient);
     const earle = npcs.find(n => n.id === 'WendigoColossusRace');
     expect(earle).toBeDefined();
     expect(earle!.formId).toBe('0x0059E02F');
@@ -157,9 +259,11 @@ describe('extractNpcs (fake client — full RACE→NPC_ resolution + GLOB level 
     expect(earle!.levelOffsetGlobal).toBeNull();
     expect(earle!.healthCurveTier).toBe(55);
     expect(earle!.resists).toHaveLength(6);
+    expect(earle!.epicRank).toBeUndefined();
+    expect(unresolved.some(u => u.includes('WendigoColossusRace epic-rank quest E06_Colossus'))).toBe(true);
   });
 
-  it('resolves the Scorchbeast Queen curated row (EncScorchbeastQueen01Template, already NPC_-keyed)', async () => {
+  it('resolves the Scorchbeast Queen curated row (EncScorchbeastQueen01Template, already NPC_-keyed); epicRank 3 from CB15_ScorchedEarth', async () => {
     const { npcs } = await extractNpcs(fakeClient);
     const sbq = npcs.find(n => n.id === 'EncScorchbeastQueen01Template');
     expect(sbq).toBeDefined();
@@ -167,6 +271,13 @@ describe('extractNpcs (fake client — full RACE→NPC_ resolution + GLOB level 
     expect(sbq!.healthCurveTier).toBe(55);
     expect(sbq!.levelMinGlobal).toBe(80);
     expect(sbq!.levelMaxGlobal).toBe(100);
+    expect(sbq!.epicRank).toBe(3);
+  });
+
+  it('a curated row with no BOSS_EPIC_RANK_QUESTS entry (SuperMutantRace) never gets an epicRank', async () => {
+    const { npcs } = await extractNpcs(fakeClient);
+    const sm = npcs.find(n => n.id === 'SuperMutantRace');
+    expect(sm!.epicRank).toBeUndefined();
   });
 
   it('resolves SuperMutantRace through its mapped template, and the RACE fallback layer never clobbers the NPC_-carried Health curve', async () => {

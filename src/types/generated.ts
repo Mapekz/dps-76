@@ -489,6 +489,21 @@ export interface GeneratedNpc {
    * is 4.8×, far short of the observed ~10×).
    */
   epicAllowed: boolean;
+  /**
+   * Fixed epic rank the summon quest forces on this boss (esm-walk
+   * 2026-07-19 — `scripts/extract/extract-npcs.ts`'s `BOSS_EPIC_RANK_QUESTS`
+   * + `resolveEpicRankFromVmad`, two VMAD shapes). Present for EXACTLY the
+   * curated bosses whose quest VMAD proves it: Scorchbeast Queen and Storm
+   * Goliath in the 20260710 dump (both rank 3). Absent everywhere else,
+   * including Earle/Wendigo Colossus — its summon quest was checked and
+   * carries neither shape (see the `BOSS_EPIC_RANK_QUESTS` header note) —
+   * and every non-curated-boss race, which was never a candidate. NOT the
+   * same claim as `epicAllowed`: this is a forced/guaranteed rank on a
+   * specific scripted encounter, not "structurally eligible for a random
+   * roll". `src/lib/enemy-defenses.ts`'s `getEnemyDefenses` reads this
+   * directly (data-driven — no caller-supplied rank).
+   */
+  epicRank?: number;
 }
 
 export interface ExcludedRecordDetail {

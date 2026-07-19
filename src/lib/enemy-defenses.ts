@@ -49,26 +49,25 @@ export function resolveTargetLevel(npc: GeneratedNpc | undefined, storedLevel: n
  * `raceId` is unset or doesn't join to a curated NPC row (no target
  * selected, or a race with no stats-bearing template — see npcs.ts).
  *
- * `epicRank`: OPTIONAL, unused by any current caller — see
- * `src/data/overrides/epic-creature.ts` for why (no UI control ships this
- * phase; the parameter exists so one can slot in later without another
- * data-layer change). When passed AND the npc's `epicAllowed` is true, scales
- * `hp` by the rank's `healthMult`; a rank passed against an `epicAllowed:
- * false` npc is silently ignored (defensive — that npc is structurally
- * excluded from ever rolling epic in-game).
+ * Epic HP mult (Phase A — epic boss HP mult, 2026-07-19): fully data-driven,
+ * no caller input. When the joined npc carries a `epicRank` (ESM-proven
+ * fixed rank on its summon quest — `scripts/extract/extract-npcs.ts`) AND
+ * `epicAllowed` is true, `hp` is scaled by `EPIC_CREATURE_RANK_MULTS[epicRank]
+ * .healthMult`. Today that's exactly Scorchbeast Queen and Storm Goliath
+ * (both rank 3, ×3.2) — every other race (including Earle/Wendigo Colossus,
+ * whose summon quest has no provable rank) falls through to plain curve HP.
+ * DR/ER are never scaled — the epic-rank system does not affect resists.
  */
-export function getEnemyDefenses(
-  mode: GameMode,
-  raceId: string | null | undefined,
-  level: number,
-  epicRank?: EpicCreatureRank
-): EnemyDefenses | null {
+export function getEnemyDefenses(mode: GameMode, raceId: string | null | undefined, level: number): EnemyDefenses | null {
   if (!raceId) return null;
   const npc = getNpc(mode, raceId);
   if (!npc) return null;
 
   const baseHp = npc.healthCurveTier != null ? getCreatureHealth(mode, npc.healthCurveTier, level) : npc.healthFlatValue;
-  const hp = epicRank && npc.epicAllowed ? baseHp * EPIC_CREATURE_RANK_MULTS[epicRank].healthMult : baseHp;
+  // Fail open on an out-of-table rank (defensive — every ESM-extracted rank
+  // seen so far is 3) rather than throwing.
+  const rankMult = npc.epicRank != null ? EPIC_CREATURE_RANK_MULTS[npc.epicRank as EpicCreatureRank] : undefined;
+  const hp = rankMult && npc.epicAllowed ? baseHp * rankMult.healthMult : baseHp;
 
   const resists: EnemyDefenses['resists'] = {};
   for (const r of npc.resists) {

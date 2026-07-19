@@ -309,10 +309,17 @@ export function TargetSection() {
                 ]}
               />
               {targetDefenses && (
-                <p className="text-muted-foreground font-mono text-xs tabular-nums">
-                  HP {Math.round(targetDefenses.hp).toLocaleString()} · DR{' '}
-                  {Math.round(targetDefenses.resists.physical ?? 0).toLocaleString()} · ER{' '}
-                  {Math.round(targetDefenses.resists.energy ?? 0).toLocaleString()}
+                <p className="text-muted-foreground flex flex-wrap items-center gap-1.5 font-mono text-xs tabular-nums">
+                  <span>
+                    HP {Math.round(targetDefenses.hp).toLocaleString()} · DR{' '}
+                    {Math.round(targetDefenses.resists.physical ?? 0).toLocaleString()} · ER{' '}
+                    {Math.round(targetDefenses.resists.energy ?? 0).toLocaleString()}
+                  </span>
+                  {targetNpc?.epicRank != null && (
+                    <Badge variant="secondary" className="font-sans" title="Epic boss — ESM-forced rank on this encounter's summon quest">
+                      ★{targetNpc.epicRank} epic
+                    </Badge>
+                  )}
                 </p>
               )}
               <p className="text-muted-foreground text-xs">
