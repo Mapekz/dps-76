@@ -31,37 +31,6 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
       `maxRange = 2 × minRange`, predicting `outOfRangeMult × curveY(X)` at
       `X = (d − minRange)/(maxRange − minRange)`. Optional — no open
       modeling question remains.
-- [ ] **Scorchbeast Queen HP ~10× the community figure** (new 2026-07-18,
-      Phase 2 — Enemy defenses data slice; `docs/assumptions.md` "Creature
-      stat curves & NPC extraction") — the ESM curve-only estimate for
-      `EncScorchbeastQueen01Template` (world-spawn template, level window
-      60–100, `CT_Creatures_Health_Universal_Tier55`) is ~237k–408k HP vs. a
-      commonly cited in-game figure of ~32k. Needs an in-game HP-bar or
-      combat-log reading at a known player count (solo vs. full team) to
-      settle whether a per-nearby-player boss-HP multiplier applies on top of
-      the base curve value (a well-known FO76 mechanic, structurally separate
-      from the Renorm/curve system and not modeled here) — see
-      `scratchpad/phase2-curve-spike.md` "Validation" section for the full
-      reasoning and the predicted numbers for other bosses (Earle, generic
-      SBQ world spawn) to cross-check against.
-      **UPDATE 2026-07-18 (coordinator follow-up, epic-creature
-      investigation):** the "Epic Levels" system (`QUST SQ_EpicCreatures`
-      0x0001C339) was esm-walked as a candidate explanation and RULED OUT —
-      its `EpicRankData` HealthMult table tops out at 4.8× (rank 5), far
-      short of the observed ~10×, even though SBQ and Earle both pass the
-      eligibility check (`GeneratedNpc.epicAllowed: true` — see
-      docs/assumptions.md "Creature stat curves & NPC extraction" for the
-      full table + eligibility mechanics). The per-nearby-player boss-HP
-      multiplier remains the leading unconfirmed explanation.
-      **UPDATE 2026-07-19 (Phase A — epic boss HP mult):** SBQ's epic rank is
-      now ESM-PROVEN (not just eligible) — `CB15_ScorchedEarth` 0x003E271D's
-      summon-quest VMAD forces rank 3 (`BossEpicLevel: 3` @
-      `BossEpicChance: 100`) — and `getEnemyDefenses` now applies it
-      automatically. Recomputed SBQ HP @ L60/L100 with ×3.2: ~759,562 /
-      ~1,305,734 — **WIDENS** the gap to ~24×/~41× vs. the ~32k community
-      figure (up from the curve-only ~7×/~13×), the opposite of narrowing
-      it. Stays OPEN: the per-nearby-player scaling hypothesis is now the
-      only remaining unconfirmed explanation.
 - [ ] **Concentrated Fire — EP109 hit-chance unit + damage-half golden** (new
       2026-07-19, Phase B — Concentrated Fire stacks) — the damage half
       (EP135, `0.01 × rank × stacks`) is ESM-derived and modeled via the
@@ -256,6 +225,14 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
   fortifies and OMOD/legendary record rewrites fold into the SAME
   `reloadSpeed` bucket; in-game A/B stopwatch comparisons (Fixer, Gatling
   Plasma) sided with the single-fold reading. No code change needed.
+- ~~Scorchbeast Queen HP ~10×/~24–41× the community figure~~ — RESOLVED
+  (user, 2026-07-19): the ~32k "community figure" is the game's OLD HP cap
+  (32767, the signed-integer limit boss HP clamped to until the cap was
+  widened ~2023) — a historical artifact, not an observed live HP. There is
+  NO per-nearby-player boss-HP scaling (myth). The ESM-derived value (curve
+  HP × epic HealthMult — SBQ ~1,305,734 @ L100) is authoritative as-is; no
+  in-game measurement needed. Full epic-rank mechanics remain documented in
+  `docs/assumptions.md` "Creature stat curves & NPC extraction".
 
 ## 2. Zero-modifier legendary sweep — verdicts (2026-07-14)
 

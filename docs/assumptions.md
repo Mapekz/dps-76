@@ -1329,14 +1329,12 @@ Engine: `scripts/extract/extract-curvetables.ts`, `scripts/extract/extract-npcs.
   differ — not just the creature tables the spike flagged); `player/damage`
   alone was confirmed fresh (0/100 changed), matching the spike's claim for
   that one family specifically.
-- **OPEN — Scorchbeast Queen HP ~10× the community figure**: the curve-only
-  estimate for `EncScorchbeastQueen01Template` (world-spawn template, level
-  window 60–100) is ~237k–408k HP; a commonly cited in-game figure is ~32k.
-  Plausible explanations (none confirmed): a per-nearby-player boss-HP
-  multiplier applied outside the Renorm/curve system (a well-known FO76
-  mechanic, structurally separate), a misremembered figure, or a
-  post-mitigation "effective HP" being recalled instead of base HP. Needs
-  in-game measurement — see `dps-todos/measurement-backlog.md`.
+- **RESOLVED (user, 2026-07-19) — Scorchbeast Queen HP vs the ~32k community
+  figure**: the ~32k figure is the game's OLD HP cap (32767 — the
+  signed-integer clamp boss HP hit until the cap was widened ~2023), a
+  historical artifact rather than an observed live HP. There is NO
+  per-nearby-player boss-HP scaling (myth). The ESM-derived value (curve HP
+  × epic HealthMult) is authoritative as computed; no measurement pending.
   - **Epic-creature HP multiplier investigated (2026-07-18, coordinator
     follow-up) — does NOT explain the gap.** `QUST SQ_EpicCreatures`
     (0x0001C339) VMAD property `EpicRankData` gives the real per-rank
@@ -1385,10 +1383,8 @@ Engine: `scripts/extract/extract-curvetables.ts`, `scripts/extract/extract-npcs.
     community figure: ~24×/~41×, up from the curve-only ~7×/~13×). Storm
     Goliath (level window 50–100, Tier49 curve, also rank 3): HP @ L50/L100
     becomes ~227,161 / ~472,390 (no community figure on record for
-    comparison). Net: epic-creature scaling is a real, now-extracted, now
-    partially-wired mechanism, but it is RULED OUT as the explanation for the
-    SBQ HP discrepancy — the per-nearby-player scaling hypothesis remains the
-    open suspect (`dps-todos/measurement-backlog.md`, still OPEN).
+    comparison). The "gap" these numbers seemed to widen was resolved by the
+    parent bullet's cap explanation — they are simply correct.
   - **Loot-list rank ≠ epic creature rank** (2026-07-19 probes): a boss
     dropping N-star gear does not mean it's a fixed epic rank N — the drop
     list and the epic-rank system are unrelated ESM mechanisms. UC Titan's
