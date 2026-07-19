@@ -216,6 +216,19 @@ export interface ScenarioSet {
    * hit-chance aggregate (display-only)".
    */
   vatsHitChanceBonus: number;
+  /**
+   * Display-only Concentrated Fire hit-chance MULTIPLIER (EP109,
+   * USER-RESOLVED 2026-07-19) — folded the same way as `vatsHitChanceBonus`
+   * above (once, against the VATS scenario's resolve context) but exposed
+   * AS-IS rather than de-based: 1 = neutral (no Concentrated Fire stacks, or
+   * no source equipped), 1.80 = a ×1.80 multiplier on the game's own
+   * computed VATS hit chance. NEVER consumed by `sustainedDps`/
+   * `apLimitedDps`/any damage term — the manual `vatsHitRatePct` slider
+   * stays the sole authoritative VATS hit-rate input. This field's only
+   * consumer is `ConditionsSection.tsx`'s informational pill. See
+   * docs/assumptions.md "Concentrated Fire stacks".
+   */
+  vatsHitChanceMult: number;
 }
 
 export interface ScenarioInput {
@@ -683,6 +696,17 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // `float − 1` contribution, and subtracting 1 back out gives the same
   // "0 = no sources equipped" convention as every other bootstrap fold.
   const vatsHitChanceBonus = foldBucket(input.modifiers, 'vatsHitChance', 1, vatsCtx) - 1;
+  // Concentrated Fire's hit-chance MULTIPLIER (EP109, USER-RESOLVED
+  // 2026-07-19) — same "fold once against the VATS context" bootstrap
+  // precedent as vatsHitChanceBonus immediately above, and the same base-1
+  // reasoning (every source is MUL_ADD, `foldOps` scales MUL_ADD by the
+  // base), but NOT de-based: the exposed value IS the multiplier itself
+  // (1 = neutral), not a bonus fraction, so subtracting 1 back out would be
+  // wrong here. See the `vatsHitChanceMult` bucket doc comment
+  // (src/types/modifiers.ts) and docs/assumptions.md "Concentrated Fire
+  // stacks". Surfaced on `ScenarioSet.vatsHitChanceMult`, never consumed by
+  // any damage/sustain/AP term below.
+  const vatsHitChanceMult = foldBucket(input.modifiers, 'vatsHitChanceMult', 1, vatsCtx);
   const vatsTrace = tracing ? createHitTrace() : undefined;
   const vatsCritTrace = tracing ? createHitTrace() : undefined;
   const vatsAvg = critWeighted(
@@ -822,6 +846,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     charging,
     range,
     vatsHitChanceBonus,
+    vatsHitChanceMult,
     freeAim: {
       perHit: freeHit,
       burstDps: freeSustain.burstDps,

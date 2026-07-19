@@ -338,6 +338,28 @@ export type Bucket =
    * docs/assumptions.md "VATS hit-chance aggregate (display-only)").
    */
   | 'vatsHitChance'
+  /**
+   * Concentrated Fire's per-stack VATS hit-chance MULTIPLIER (EP109 "Mod
+   * VATS Concentrated Fire Chance Bonus", **USER-RESOLVED 2026-07-19**):
+   * unlike `vatsHitChance` above, this is NOT an additive-percent bonus — it
+   * multiplies the game's own computed VATS hit chance directly. Per stack,
+   * semi-auto weapons multiply by `(1 + 0.04×rank)` and automatic weapons by
+   * `(1 + 0.01×rank)` — a game rework roughly a year before this reading
+   * (~2025) replaced what used to be a flat additive bonus (the 4.0/1.0 ESM
+   * float split reads as accuracy points pre-rework). Folded ONCE per
+   * scenario input (`scenarios.ts` bootstrap spot, same "fold once"
+   * precedent as `vatsHitChance`) against base **1** — but UNLIKE
+   * `vatsHitChance`, the fold result is exposed AS-IS (1 = neutral), not
+   * de-based by subtracting 1, since "×1.00" is the natural display shape
+   * for a multiplier and every source here is `MUL_ADD` (no ADD sources
+   * exist for this bucket). DISPLAY-ONLY (`regime: 'display'`): feeds
+   * `ScenarioSet.vatsHitChanceMult`, rendered by `ConditionsSection.tsx`'s
+   * pill next to the `vatsHitChance` one, and NOTHING else — never threaded
+   * into `sustainedDps`/`apLimitedDps`/any damage term. The manual
+   * `vatsHitRatePct` slider stays the sole authoritative hit-rate input. See
+   * docs/assumptions.md "Concentrated Fire stacks".
+   */
+  | 'vatsHitChanceMult'
   /** Damage-over-time from Damage-archetype MGEFs (bleed/burn/shock mods) — refresh-only steady-state dmg/sec, summed into `ScenarioResult.dotDps`. */
   | 'dotDamage'
   /**
@@ -489,6 +511,7 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   armorPen: { regime: 'mitigation', hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold → armorPenTotal; consumed by mitigation.ts applyMitigation (per-component Resist fraction)' },
   armorPenFlat: { regime: 'mitigation', hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold → flat resist-point total; consumed by mitigation.ts applyMitigation (physical-resist-only, see bucket doc comment)' },
   vatsHitChance: { regime: 'display', hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold (base 1, de-based) → ScenarioSet.vatsHitChanceBonus, rendered by ConditionsSection.tsx\'s pill — NEVER consumed by sustainedDps/apLimitedDps/any formula (Phase 4 — VATS hit-chance aggregate, display-only)' },
+  vatsHitChanceMult: { regime: 'display', hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold (base 1, NOT de-based — exposed as-is, 1 = neutral) → ScenarioSet.vatsHitChanceMult, rendered by ConditionsSection.tsx\'s pill — NEVER consumed by sustainedDps/apLimitedDps/any formula (Concentrated Fire EP109 multiplier, USER-RESOLVED 2026-07-19, display-only)' },
   dotDamage: { regime: 'dot', hasEngineEffect: true, foldedBy: 'paper-damage.ts computeDotDps' },
   maxHealth: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats (245 + 5xEND + this fold)' },
   specialStrength: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds paper-damage.ts strengthTerm + the strength CurveInput (Debilitator\'s)' },

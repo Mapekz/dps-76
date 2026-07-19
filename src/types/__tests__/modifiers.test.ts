@@ -71,6 +71,7 @@ const ALL_BUCKETS: Bucket[] = [
   'armorPen',
   'armorPenFlat',
   'vatsHitChance',
+  'vatsHitChanceMult',
   'dotDamage',
   'maxHealth',
   'specialStrength',
@@ -156,6 +157,10 @@ describe('modifierHasEngineEffect / hasAnyEngineEffect', () => {
 
   it('is true for vatsHitChance — display regime still counts as "moves a number" (Phase 4, V.A.T.S. Enhanced &c.)', () => {
     expect(modifierHasEngineEffect(plainMod('vatsHitChance'))).toBe(true);
+  });
+
+  it('is true for vatsHitChanceMult — display regime, Concentrated Fire\'s EP109 multiplier (USER-RESOLVED 2026-07-19)', () => {
+    expect(modifierHasEngineEffect(plainMod('vatsHitChanceMult'))).toBe(true);
   });
 
   it('is false when the modifier carries an unresolved condition', () => {

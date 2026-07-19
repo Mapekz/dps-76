@@ -156,6 +156,12 @@ export function ConditionsSection() {
   // DPS number (docs/assumptions.md "VATS hit-chance aggregate (display-only)").
   const vatsHitChanceBonus = scenarios?.vatsHitChanceBonus ?? 0;
 
+  // Concentrated Fire's hit-chance MULTIPLIER (EP109, USER-RESOLVED
+  // 2026-07-19, display-only): ScenarioSet.vatsHitChanceMult, 1 = neutral.
+  // Same authoritative-slider caveat as the aggregate above — this never
+  // changes any DPS number (docs/assumptions.md "Concentrated Fire stacks").
+  const vatsHitChanceMult = scenarios?.vatsHitChanceMult ?? 1;
+
   // Bullet Storm: the max/min fold from equipped sources
   // (ScenarioSet.bulletStormMaxStacks/bulletStormMinStacks); sentinel -1 =
   // follow max (see the PlayerConditions.bulletStormStacks comment). Unlike
@@ -519,6 +525,18 @@ export function ConditionsSection() {
                   Informational total of equipped VATS-accuracy sources (V.A.T.S. Enhanced, Awareness, Eye of the
                   Hunter, V.A.T.S. Matrix Overlay...). The slider above stays authoritative — this never changes any
                   DPS number.
+                </TooltipContent>
+              </Tooltip>
+            )}
+            {vatsHitChanceMult !== 1 && (
+              <Tooltip>
+                <TooltipTrigger render={<Badge variant="secondary" className="cursor-help" />}>
+                  hit chance × {vatsHitChanceMult.toFixed(2)}
+                </TooltipTrigger>
+                <TooltipContent>
+                  Concentrated Fire multiplies the game's computed VATS hit chance directly (not a flat % add), per
+                  the Concentrated Fire stacks slider below. Informational only — the slider above stays
+                  authoritative and this never changes any DPS number.
                 </TooltipContent>
               </Tooltip>
             )}

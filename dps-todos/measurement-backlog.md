@@ -31,17 +31,18 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
       `maxRange = 2 × minRange`, predicting `outOfRangeMult × curveY(X)` at
       `X = (d − minRange)/(maxRange − minRange)`. Optional — no open
       modeling question remains.
-- [ ] **Concentrated Fire — EP109 hit-chance unit + damage-half golden** (new
-      2026-07-19, Phase B — Concentrated Fire stacks) — the damage half
-      (EP135, `0.01 × rank × stacks`) is ESM-derived and modeled via the
-      manual stacks slider (`PlayerConditions.concentratedFireStacks`); a
-      golden placeholder pins rank 3 @ 20 stacks in `golden/cases.json`
-      (`expected: null`). Separately, EP109's hit-chance bonus (float 4.0
-      non-automatic / 1.0 automatic × rank AV) has an UNVERIFIED unit —
-      confirm via esm-walk or an in-game VATS-accuracy reading whether it's
-      accuracy points or a direct % add before stack-scaling the
-      `vatsHitChance` pill entries (docs/assumptions.md "Concentrated Fire
-      stacks").
+- [ ] **Concentrated Fire — damage-half golden** (new 2026-07-19, Phase B —
+      Concentrated Fire stacks) — the damage half (EP135, `0.01 × rank ×
+      stacks`) is ESM-derived and modeled via the manual stacks slider
+      (`PlayerConditions.concentratedFireStacks`); a golden placeholder pins
+      rank 3 @ 20 stacks in `golden/cases.json` (`expected: null`).
+      ~~EP109's hit-chance-bonus unit~~ — **RESOLVED** (user, 2026-07-19):
+      it's a MULTIPLIER on the game's own computed VATS hit chance, not a
+      flat additive % — per stack, `(1 + 0.04×rank)` semi-auto /
+      `(1 + 0.01×rank)` automatic (a game rework ~2025 replaced what used to
+      be a flat additive bonus). Modeled as the display-only
+      `vatsHitChanceMult` pill (see docs/assumptions.md "Concentrated Fire
+      stacks"); no further measurement needed on this half.
 - [ ] **Phase 2 mitigation formula end-to-end** (new 2026-07-18) — golden
       placeholder `golden/cases.json` "Combat Rifle (Fixer) @50 ... vs
       Scorchbeast Queen (Lv 100)" (`measure: 'effectiveSustainedDps'`,

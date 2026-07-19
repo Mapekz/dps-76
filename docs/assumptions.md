@@ -859,13 +859,10 @@ UI: `ConditionsSection.tsx` pill next to the VATS hit-rate slider.
     ×0.7/0.77/0.85/0.93 by Class Freak tier → MUL_ADD −0.30/−0.23/−0.15/
     −0.07 (mirrors the perk's existing Cone-of-fire penalty shape, which
     stays unmapped — free-aim spread accuracy has no bucket).
-  - **Concentrated Fire** (perk `ConcentratedFire01-03` `0x0004D890`/
-    `0x001D2459`/`0x001D245A`, description "+1%/+2%/+3% accuracy and damage
-    per shot"): hand-authored flat ADD 0.01/0.02/0.03 by rank
-    (`overrides/perk-overrides.ts` `extraPerkModifiers`) feeds this pill's
-    `vatsHitChance` aggregate — flat per rank, **NOT stack-scaled**
-    (EP109's per-shot ramp unit is unverified, user-approved defer — see
-    "Concentrated Fire stacks" below, where the DAMAGE half now does stack).
+  - **Concentrated Fire** — no longer feeds this `vatsHitChance` aggregate;
+    its hit-chance half is a MULTIPLIER, not an additive %, so it feeds a
+    separate `vatsHitChanceMult` pill instead. See "Concentrated Fire
+    stacks" below.
 - **Concentrated Fire stacks** (2026-07-19 follow-up — supersedes the prior
   "hidden counter, can't model" verdict, which was WRONG): `STAT_DamagePerk`
   plumbing perk (`0x0023A0EB`) carries EP135 "Mod VATS Concentrated Fire
@@ -889,12 +886,28 @@ UI: `ConditionsSection.tsx` pill next to the VATS hit-rate slider.
     switch (the calculator assumes a steady stream of hits on one body
     part). **ASSUMPTION**: the slider's value each session, not the
     ESM-proven per-stack magnitude/cap above.
-  - **Hit-chance half — flat, unmodeled beyond rank%**: the `vatsHitChance`
-    pill entries stay UNCHANGED (see the "Modeled sources" bullet above) —
-    EP109's 4.0 non-automatic/1.0 automatic × rank unit is unverified
-    (accuracy points vs. a direct % add), so it isn't stack-scaled either.
-    **PENDING** an esm-walk/in-game check —
-    `dps-todos/measurement-backlog.md`.
+  - **Hit-chance half — EP109 unit USER-RESOLVED 2026-07-19**: EP109 is a
+    MULTIPLIER on the game's own computed VATS hit chance, not a flat
+    additive % — per stack, semi-auto weapons multiply hit chance by
+    `(1 + 0.04×rank)` and automatic weapons by `(1 + 0.01×rank)`. A game
+    rework roughly a year before this reading (~2025) replaced what used to
+    be a flat additive bonus (the earlier "4.0 non-automatic / 1.0
+    automatic" float split read as accuracy points pre-rework). Modeled as
+    two `vatsHitChanceMult` (new bucket, `regime: 'display'`, same
+    display-only contract as `vatsHitChance`) `MUL_ADD` entries per rank in
+    `overrides/perk-overrides.ts` `ConcentratedFire` — one gated
+    `weaponKeyword WeaponTypeAutomatic present:false` (semi), one
+    `present:true` (auto), the exact keyword the ESM's own
+    `HasKeyword(WeaponTypeAutomatic)==1/==0` conditions read — both also
+    gated `stacks(counter: 'concentratedFire', max: 20)` so they scale with
+    the same manual slider as the damage half. Folded once per scenario
+    input (`scenarios.ts` bootstrap spot, alongside `vatsHitChance`) against
+    base 1, exposed AS-IS (1 = neutral) rather than de-based, into
+    `ScenarioSet.vatsHitChanceMult` — rendered by `ConditionsSection.tsx`'s
+    "hit chance × 1.xx" pill, hidden at exactly 1. **NEVER** consumed by
+    `sustainedDps`/`apLimitedDps`/any damage term, same display-only
+    contract as `vatsHitChance` — the manual `vatsHitRatePct` slider stays
+    the sole authoritative VATS hit-rate input.
 - **Badges**: every source above loses the picker's "no effect yet" badge
   automatically via `modifierHasEngineEffect` (`vatsHitChance` is
   `hasEngineEffect: true`, `specialPerception` precedent — "the folded

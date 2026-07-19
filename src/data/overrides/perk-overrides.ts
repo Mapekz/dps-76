@@ -239,25 +239,30 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
   // per-target consecutive-shots-fired counter this calculator has no
   // access to (docs/assumptions.md "Concentrated Fire stacks").
   //
-  // Hit-chance half (EP109, the `vatsHitChance` entries below, UNCHANGED):
-  // stays the flat description-sourced rank% (0.01/0.02/0.03, "the bonus
-  // after landing one shot") — user-approved defer, since the 4.0/1.0
-  // weapon-type split's unit is unverified (accuracy points vs. a direct %
-  // add) and doesn't cleanly reduce to a per-stack scale yet
-  // (docs/assumptions.md "VATS hit-chance aggregate (display-only)").
+  // Hit-chance half (EP109, USER-RESOLVED 2026-07-19 — supersedes the old
+  // flat-ADD `vatsHitChance` entries this override used to carry): EP109 is
+  // a MULTIPLIER on the game's own computed VATS hit chance, not a flat
+  // additive %. Per stack, semi-auto weapons multiply hit chance by
+  // (1 + 0.04×rank) and automatic weapons by (1 + 0.01×rank) — the 4.0/1.0
+  // float split from the ESM read as "accuracy points" pre-rework; a game
+  // rework roughly a year before this reading (~2025) turned it into a pure
+  // multiplier, which is what the 0.04/0.01-per-rank figures above already
+  // reflect. Modeled below as two `vatsHitChanceMult` MUL_ADD entries per
+  // rank (one gated non-automatic, one automatic — `weaponKeyword`
+  // `WeaponTypeAutomatic present:false/true`, the same keyword the ESM's own
+  // `HasKeyword(WeaponTypeAutomatic)==1/==0` conditions read), each also
+  // gated `stacks(counter: 'concentratedFire', max: 20)` so it scales with
+  // the same manual slider as the damage half. Deliberately NOT
+  // `vatsOnly`-gated (matches every other `vatsHitChance`/`vatsHitChanceMult`
+  // source — the pill is a global display, not a per-scenario term) and feeds
+  // a SEPARATE display-only `vatsHitChanceMult` pill/bucket rather than the
+  // `vatsHitChance` aggregate, since a multiplier can't be summed into an
+  // additive aggregate. See docs/assumptions.md "Concentrated Fire stacks".
   //
   // If EP135/EP109 extraction lands later (buildAvifRoutes), this override
   // must be removed in the SAME commit — double-stack hazard.
   ConcentratedFire: [
     [
-      {
-        id: 'override:ConcentratedFire:r1',
-        source: { kind: 'perk', formId: '0x0004D890', edid: 'ConcentratedFire01', name: 'Concentrated Fire', rank: 1 },
-        bucket: 'vatsHitChance',
-        op: 'ADD',
-        value: 0.01,
-        conditions: [],
-      },
       {
         id: 'override:ConcentratedFire:r1:stacking',
         source: { kind: 'perk', formId: '0x0004D890', edid: 'ConcentratedFire01', name: 'Concentrated Fire', rank: 1 },
@@ -266,16 +271,30 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
         value: 0.01,
         conditions: [{ kind: 'vatsOnly' }, { kind: 'stacks', counter: 'concentratedFire', max: 20 }],
       },
+      {
+        id: 'override:ConcentratedFire:r1:hitChanceMultSemi',
+        source: { kind: 'perk', formId: '0x0004D890', edid: 'ConcentratedFire01', name: 'Concentrated Fire', rank: 1 },
+        bucket: 'vatsHitChanceMult',
+        op: 'MUL_ADD',
+        value: 0.04,
+        conditions: [
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeAutomatic', present: false },
+          { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+        ],
+      },
+      {
+        id: 'override:ConcentratedFire:r1:hitChanceMultAuto',
+        source: { kind: 'perk', formId: '0x0004D890', edid: 'ConcentratedFire01', name: 'Concentrated Fire', rank: 1 },
+        bucket: 'vatsHitChanceMult',
+        op: 'MUL_ADD',
+        value: 0.01,
+        conditions: [
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeAutomatic', present: true },
+          { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+        ],
+      },
     ],
     [
-      {
-        id: 'override:ConcentratedFire:r2',
-        source: { kind: 'perk', formId: '0x001D2459', edid: 'ConcentratedFire02', name: 'Concentrated Fire', rank: 2 },
-        bucket: 'vatsHitChance',
-        op: 'ADD',
-        value: 0.02,
-        conditions: [],
-      },
       {
         id: 'override:ConcentratedFire:r2:stacking',
         source: { kind: 'perk', formId: '0x001D2459', edid: 'ConcentratedFire02', name: 'Concentrated Fire', rank: 2 },
@@ -284,16 +303,30 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
         value: 0.02,
         conditions: [{ kind: 'vatsOnly' }, { kind: 'stacks', counter: 'concentratedFire', max: 20 }],
       },
+      {
+        id: 'override:ConcentratedFire:r2:hitChanceMultSemi',
+        source: { kind: 'perk', formId: '0x001D2459', edid: 'ConcentratedFire02', name: 'Concentrated Fire', rank: 2 },
+        bucket: 'vatsHitChanceMult',
+        op: 'MUL_ADD',
+        value: 0.08,
+        conditions: [
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeAutomatic', present: false },
+          { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+        ],
+      },
+      {
+        id: 'override:ConcentratedFire:r2:hitChanceMultAuto',
+        source: { kind: 'perk', formId: '0x001D2459', edid: 'ConcentratedFire02', name: 'Concentrated Fire', rank: 2 },
+        bucket: 'vatsHitChanceMult',
+        op: 'MUL_ADD',
+        value: 0.02,
+        conditions: [
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeAutomatic', present: true },
+          { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+        ],
+      },
     ],
     [
-      {
-        id: 'override:ConcentratedFire:r3',
-        source: { kind: 'perk', formId: '0x001D245A', edid: 'ConcentratedFire03', name: 'Concentrated Fire', rank: 3 },
-        bucket: 'vatsHitChance',
-        op: 'ADD',
-        value: 0.03,
-        conditions: [],
-      },
       {
         id: 'override:ConcentratedFire:r3:stacking',
         source: { kind: 'perk', formId: '0x001D245A', edid: 'ConcentratedFire03', name: 'Concentrated Fire', rank: 3 },
@@ -301,6 +334,28 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
         op: 'ADD',
         value: 0.03,
         conditions: [{ kind: 'vatsOnly' }, { kind: 'stacks', counter: 'concentratedFire', max: 20 }],
+      },
+      {
+        id: 'override:ConcentratedFire:r3:hitChanceMultSemi',
+        source: { kind: 'perk', formId: '0x001D245A', edid: 'ConcentratedFire03', name: 'Concentrated Fire', rank: 3 },
+        bucket: 'vatsHitChanceMult',
+        op: 'MUL_ADD',
+        value: 0.12,
+        conditions: [
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeAutomatic', present: false },
+          { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+        ],
+      },
+      {
+        id: 'override:ConcentratedFire:r3:hitChanceMultAuto',
+        source: { kind: 'perk', formId: '0x001D245A', edid: 'ConcentratedFire03', name: 'Concentrated Fire', rank: 3 },
+        bucket: 'vatsHitChanceMult',
+        op: 'MUL_ADD',
+        value: 0.03,
+        conditions: [
+          { kind: 'weaponKeyword', keyword: 'WeaponTypeAutomatic', present: true },
+          { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+        ],
       },
     ],
   ],

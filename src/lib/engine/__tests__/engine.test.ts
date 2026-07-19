@@ -1739,3 +1739,104 @@ describe('vatsHitChanceBonus (Phase 4 — VATS hit-chance aggregate, display-onl
     expect(far.vats.sustain.sustainedDps).toBe(near.vats.sustain.sustainedDps);
   });
 });
+
+describe('vatsHitChanceMult (Concentrated Fire EP109 multiplier, USER-RESOLVED 2026-07-19, display-only)', () => {
+  // apCost > 0 on a non-melee weapon so ap.apLimitedDps is populated too —
+  // the DPS-neutrality guard below checks it stays untouched alongside
+  // sustainedDps, mirroring the vatsHitChanceBonus suite above.
+  const semiWeapon = makeWeapon({ animDelaySec: 1.0, apCost: 20 });
+  const autoWeapon = makeWeapon({ animDelaySec: 1.0, apCost: 20, keywords: ['WeaponTypeAutomatic'] });
+  const baseFor = (weapon: Weapon, concentratedFireStacks = 0) => ({
+    mode: 'live' as const,
+    weapon,
+    itemLevel: 50,
+    modifiers: [] as Modifier[],
+    player: { ...createDefaultPlayerConditions(), concentratedFireStacks },
+    enemy: createDefaultEnemyConditions(),
+    weakpointMult: 2.0,
+    critRate: 0,
+  });
+
+  // Concentrated Fire rank 2 magnitudes (overrides/perk-overrides.ts
+  // ConcentratedFire: rank × 0.04 semi-auto, rank × 0.01 automatic).
+  const semiMult = mod({
+    id: 'cf-r2-semi',
+    bucket: 'vatsHitChanceMult',
+    op: 'MUL_ADD',
+    value: 0.08,
+    conditions: [
+      { kind: 'weaponKeyword', keyword: 'WeaponTypeAutomatic', present: false },
+      { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+    ],
+  });
+  const autoMult = mod({
+    id: 'cf-r2-auto',
+    bucket: 'vatsHitChanceMult',
+    op: 'MUL_ADD',
+    value: 0.02,
+    conditions: [
+      { kind: 'weaponKeyword', keyword: 'WeaponTypeAutomatic', present: true },
+      { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+    ],
+  });
+
+  it('is 1 (neutral) with no vatsHitChanceMult sources equipped', () => {
+    expect(computeScenarios(baseFor(semiWeapon)).vatsHitChanceMult).toBe(1);
+  });
+
+  it('rank 2 semi-auto × 10 stacks folds to exactly 1.80 on a non-automatic weapon', () => {
+    const result = computeScenarios({ ...baseFor(semiWeapon, 10), modifiers: [semiMult, autoMult] });
+    expect(result.vatsHitChanceMult).toBeCloseTo(1.8, 10);
+  });
+
+  it('rank 2 × 10 stacks folds to exactly 1.20 on an automatic weapon', () => {
+    const result = computeScenarios({ ...baseFor(autoWeapon, 10), modifiers: [semiMult, autoMult] });
+    expect(result.vatsHitChanceMult).toBeCloseTo(1.2, 10);
+  });
+
+  it('0 stacks folds to exactly 1.0 (neutral) even with sources equipped', () => {
+    const result = computeScenarios({ ...baseFor(semiWeapon, 0), modifiers: [semiMult, autoMult] });
+    expect(result.vatsHitChanceMult).toBe(1);
+  });
+
+  it('auto vs semi gating picks the right value for the equipped weapon\'s effective auto state (both sources equipped simultaneously, mutually exclusive by weaponKeyword)', () => {
+    const semiResult = computeScenarios({ ...baseFor(semiWeapon, 10), modifiers: [semiMult, autoMult] });
+    const autoResult = computeScenarios({ ...baseFor(autoWeapon, 10), modifiers: [semiMult, autoMult] });
+    // The semi-auto weapon never sees the automatic-gated 0.02 contribution,
+    // and vice versa — only ONE of the two mutually exclusive weaponKeyword
+    // branches is ever active for a given effective weapon.
+    expect(semiResult.vatsHitChanceMult).toBeCloseTo(1.8, 10);
+    expect(autoResult.vatsHitChanceMult).toBeCloseTo(1.2, 10);
+  });
+
+  it('folds a MUL_ADD-only vatsHitChanceMult source correctly against base 1 (REGRESSION: the base-0 fold every other bootstrap bucket uses would silently zero this out, since foldOps scales MUL_ADD by the base — same lesson as vatsHitChanceBonus)', () => {
+    const m = mod({ bucket: 'vatsHitChanceMult', op: 'MUL_ADD', value: 0.1 });
+    expect(computeScenarios({ ...baseFor(semiWeapon), modifiers: [m] }).vatsHitChanceMult).toBeCloseTo(1.1, 10);
+  });
+
+  it('REGRESSION GUARD: a vatsHitChanceMult modifier never changes perHit/sustainedDps/apLimitedDps in ANY scenario (display-only, must never feed the damage formula)', () => {
+    const b = baseFor(semiWeapon, 10);
+    const withMult = computeScenarios({ ...b, modifiers: [semiMult, autoMult] });
+    const without = computeScenarios(b);
+
+    // The multiplier itself DOES differ...
+    expect(withMult.vatsHitChanceMult).toBeCloseTo(1.8, 10);
+    expect(without.vatsHitChanceMult).toBe(1);
+
+    // ...but nothing downstream of it does. Free aim:
+    expect(withMult.freeAim.perHit.total).toBe(without.freeAim.perHit.total);
+    expect(withMult.freeAim.burstDps).toBe(without.freeAim.burstDps);
+    expect(withMult.freeAim.sustain.sustainedDps).toBe(without.freeAim.sustain.sustainedDps);
+
+    // VATS:
+    expect(withMult.vats.perHit.total).toBe(without.vats.perHit.total);
+    expect(withMult.vats.burstDps).toBe(without.vats.burstDps);
+    expect(withMult.vats.sustain.sustainedDps).toBe(without.vats.sustain.sustainedDps);
+
+    // VATS AP economy (apLimitedDps is the other headline DPS number):
+    expect(withMult.vats.ap).toBeDefined();
+    expect(without.vats.ap).toBeDefined();
+    expect(withMult.vats.ap!.apLimitedDps).toBe(without.vats.ap!.apLimitedDps);
+    expect(withMult.vats.ap!.uptime).toBe(without.vats.ap!.uptime);
+  });
+});
