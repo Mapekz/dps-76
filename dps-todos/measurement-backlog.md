@@ -96,11 +96,23 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
       placeholders in `golden/cases.json` (`expected: null`): Unyielding ×5
       at 10% HP (`measure: 'perHit'`, Combat Rifle Fixer, no melee STR term
       so mostly an assembly-seam pin) and Battle-Loader's ×3
-      (`measure: 'sustainedDps'`, 45% reloadSkipChance tier). Per-piece
+      (`measure: 'sustainedDps'`, 45% `reloadSkipChanceBash` tier, Phase C
+      two-channel model with the 0.75s bash-time default). Per-piece
       scaling math is hand-verified against the extracted curve/flat values
       in `armor-modifiers.test.ts`; what's unmeasured is the real in-game
       Pip-Boy/DPS reading with the mods actually equipped. See
       docs/assumptions.md "Armor effects".
+- [ ] **Battle-Loader's bash swing time** (new 2026-07-19, Phase C — go-
+      through-every-single-silly-whistle.md) — `DEFAULT_BATTLE_LOADERS_BASH_SEC`
+      (`sustain.ts`) is a placeholder 0.75s, not an in-game measurement.
+      Stopwatch a real bash swing (the animation that triggers Battle-
+      Loader's instant reload) from swing start to ready-to-fire; note that
+      timing likely depends on the specific weapon's bash/melee animation
+      (heavy two-handed vs. light one-handed), so more than one weapon may
+      be worth timing before picking a single default (or promoting this to
+      a per-weapon value later). Feeds `PlayerConditions.battleLoadersBashSec`'s
+      default and the `DEFAULT_BATTLE_LOADERS_BASH_SEC` constant (kept in
+      sync by a regression test, `sustain.test.ts`).
 - [ ] **Taking One for the Team flat-DR rank-4 anomaly** — the 6/10/15/50
       magnitude table (docs/assumptions.md "Resist mitigation") jumps
       non-arithmetically at rank 4; confirm whether this is intentional

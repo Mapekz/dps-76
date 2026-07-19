@@ -115,8 +115,8 @@ function assemble(
   // Armor Effects checklist selections (Unyielding, 2★ SPECIAL, Battle-
   // Loader's, ...) — pushed BEFORE buildEffectiveWeapon like every other
   // source above so their weapon-stat/sustain-chance buckets (Battle-
-  // Loader's reloadSkipChance, Propelling's moveSpeedBonus) get folded the
-  // same way OMOD/perk modifiers do.
+  // Loader's reloadSkipChanceBash, Propelling's moveSpeedBonus) get folded
+  // the same way OMOD/perk modifiers do.
   loadoutModifiers.push(...getArmorEffectModifiers(mode, playerConfig.armorEffects));
 
   // Apply equipped OMODs (standard slots + legendary effects) to the weapon.

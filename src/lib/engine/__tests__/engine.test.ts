@@ -1623,6 +1623,33 @@ describe('hasKillStreakSources detection', () => {
   });
 });
 
+describe('hasBattleLoadersSource detection (Phase C — bash-tier reload skip)', () => {
+  const weapon = makeWeapon({ animDelaySec: 1.0 });
+  const base = {
+    mode: 'live' as const, weapon, itemLevel: 50, modifiers: [] as Modifier[],
+    player: createDefaultPlayerConditions(), enemy: createDefaultEnemyConditions(),
+    weakpointMult: 2.0, critRate: 0,
+  };
+
+  it('is false with no reloadSkipChanceBash folded onto the effective weapon', () => {
+    expect(computeScenarios(base).hasBattleLoadersSource).toBe(false);
+  });
+
+  it('is true once buildEffectiveWeapon has folded a reloadSkipChanceBash source onto the weapon (Battle-Loader\'s)', () => {
+    // reloadSkipChanceBash is a sustainChance bucket, folded and stripped
+    // from the modifier list upstream (buildEffectiveWeapon/assemble) — the
+    // ONLY way it reaches computeScenarios is already-folded onto the
+    // effective weapon, exactly as resolveLoadout would hand it here.
+    const withBash = { ...weapon, reloadSkipChanceBash: 0.45 };
+    expect(computeScenarios({ ...base, weapon: withBash }).hasBattleLoadersSource).toBe(true);
+  });
+
+  it('a zero reloadSkipChanceBash (present but folded to 0) still reads false', () => {
+    const zeroBash = { ...weapon, reloadSkipChanceBash: 0 };
+    expect(computeScenarios({ ...base, weapon: zeroBash }).hasBattleLoadersSource).toBe(false);
+  });
+});
+
 describe('vatsHitChanceBonus (Phase 4 — VATS hit-chance aggregate, display-only, 2026-07-18)', () => {
   // apCost > 0 on a non-melee weapon so ap.apLimitedDps is populated too —
   // the regression guard below checks it stays untouched alongside sustainedDps.

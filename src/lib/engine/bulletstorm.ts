@@ -34,6 +34,15 @@ function accrualPerShot(weapon: Weapon): number {
  * `reverseOnslaughtAvgStacks`), simulated the same way: fixed-point-iterate
  * mag cycles until the starting stack level converges, then average the
  * per-shot levels of the converged cycle.
+ *
+ * Instant reloads — free-tier (`reloadSkipChance`: Quick Hands, Wild West
+ * Wind) or bash-tier (`reloadSkipChanceBash`: Battle-Loader's) — do NOT lose
+ * stacks (user-confirmed game fact, docs/assumptions.md "Bullet Storm"):
+ * there's no real reload for Lock and Load's retention to apply to. Both
+ * channels compose as independent probabilities into one `skip` fraction,
+ * the same way `effective-weapon.ts`'s `foldChanceUnion` composes multiple
+ * sources within a single channel; `retention` only affects the remaining
+ * non-skipped fraction of reloads.
  */
 export function bulletStormAvgStacks(params: {
   max: number;
@@ -41,20 +50,32 @@ export function bulletStormAvgStacks(params: {
   retention?: number;
   weapon: Weapon;
   fireRate: number;
+  /** Seconds per Battle-Loader's bash, threaded to `sustainTiming` for API consistency with `computeSustain`/`reverseOnslaughtAvgStacks` (defaults inside it — see sustain.ts `DEFAULT_BATTLE_LOADERS_BASH_SEC`). Doesn't affect stack retention itself, only the mag-timing this function otherwise ignores. */
+  bashAnimationSec?: number;
 }): number {
-  const { max, weapon, fireRate } = params;
+  const { max, weapon, fireRate, bashAnimationSec } = params;
   const min = params.min ?? 0;
   const retention = Math.max(0, Math.min(params.retention ?? 0, 1));
 
   if (max <= 0 || fireRate <= 0) return 0;
 
   const accrual = accrualPerShot(weapon);
-  const timing = sustainTiming(weapon, fireRate);
+  const timing = sustainTiming(weapon, fireRate, bashAnimationSec);
 
   // No magazine (melee/unarmed, capacity 0) — there's no reload to lose
   // stacks to, so steady state is simply the cap (simplification: doesn't
   // model an initial ramp-up from 0).
   if (timing.shotsPerMag <= 0) return max;
+
+  // skip = 1 − (1 − pFree)(1 − pBash): the combined chance ANY reload this
+  // cycle never happens (free skip or bash skip). effectiveRetention blends
+  // Lock and Load's retention over only the non-skipped fraction — skip=1
+  // makes retention irrelevant (100% of stacks always kept), skip=0
+  // reproduces the old always-apply-retention behavior exactly.
+  const pFree = Math.max(0, Math.min(weapon.reloadSkipChance ?? 0, 1));
+  const pBash = Math.max(0, Math.min(weapon.reloadSkipChanceBash ?? 0, 1));
+  const skip = 1 - (1 - pFree) * (1 - pBash);
+  const effectiveRetention = skip + (1 - skip) * retention;
 
   let startStacks = max;
 
@@ -67,7 +88,7 @@ export function bulletStormAvgStacks(params: {
       stacks = clampStacks(stacks + accrual, min, max);
     }
 
-    stacks = clampStacks(stacks * retention, min, max);
+    stacks = clampStacks(stacks * effectiveRetention, min, max);
 
     if (Math.abs(stacks - startStacks) < 1e-4) {
       return shotLevels.reduce((a, b) => a + b, 0) / shotLevels.length;

@@ -17,31 +17,37 @@ import type { Modifier } from '@/types/modifiers';
  */
 export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> = {
   // Battle-Loader's (armor + PA): the extracted modifiers carry the correct
-  // wornPieceCount tier (1/2/3/4/≥5 → 15/30/45/60/75% reloadSkipChance) PLUS
-  // three `unresolved` conditions (IsPowerAttacking()=1, GetRandomPercent()=N,
-  // GetDead()=0) — see docs/assumptions.md "Armor pipeline (Phase 3
-  // extraction)". `evalCondition`'s `unresolved` case always returns null,
-  // so ANY unresolved condition permanently deactivates a modifier
-  // regardless of its other conditions — wiring wornPieceCount alone can't
-  // make these fire. All three are safe to drop:
+  // wornPieceCount tier (1/2/3/4/≥5 → 15/30/45/60/75% reloadSkipChanceBash)
+  // PLUS three `unresolved` conditions (IsPowerAttacking()=1,
+  // GetRandomPercent()=N, GetDead()=0) — see docs/assumptions.md "Armor
+  // pipeline (Phase 3 extraction)". `evalCondition`'s `unresolved` case
+  // always returns null, so ANY unresolved condition permanently
+  // deactivates a modifier regardless of its other conditions — wiring
+  // wornPieceCount alone can't make these fire. All three are safe to drop:
   //   - GetRandomPercent()=N is the SAME chance already baked into `value`
   //     (0.15/0.30/0.45/0.60/0.75) — keeping it as a gate would be double-
   //     applying the same probability, not an independent condition.
   //   - GetDead()=0 is a target-alive sanity check with no UI input and no
   //     failure mode this calculator models (a dead target has no DPS to
   //     compute in the first place).
-  //   - IsPowerAttacking()=1 is the real per-bash trigger; modeling bash
-  //     cadence is out of scope for this pass (ASSUMPTION, ships as a
-  //     Quick-Hands-equivalent "treat the chance as sustained" simplification
-  //     — ranged reloadSkipChance modifiers get the same treatment for
-  //     ordinary reloads). Dropping it means the checklist shows Battle-
-  //     Loader's steady-state reload-skip chance as if every reload
-  //     coincided with a bash; documented, not silently assumed.
+  //   - IsPowerAttacking()=1 is the real per-bash trigger — DROPPED as a
+  //     CONDITION (bash cadence, i.e. how often a bash happens vs. an
+  //     ordinary reload, is still unmodeled), but its bash-ness is preserved
+  //     STRUCTURALLY instead: Battle-Loader's uses the `reloadSkipChanceBash`
+  //     bucket (EP199 "Instant Reload Clip On Bash"), not the plain
+  //     `reloadSkipChance` channel Quick Hands / Wild West Wind use (EP182
+  //     "Auto Fill Weapon Clip", passive on the reload itself, never
+  //     bash-taxed). That split (2026-07-19, Phase C — go-through-every-
+  //     single-silly-whistle.md) is what lets `sustain.ts` charge a real
+  //     time cost (`PlayerConditions.battleLoadersBashSec`) for Battle-
+  //     Loader's specifically instead of treating it as Quick-Hands-style
+  //     free/sustained skip — see docs/assumptions.md "Reload-skip &
+  //     free-ammo expected value".
   mod_Legendary_Armor4_BattleLoaders: [
     {
       id: 'mod_Legendary_Armor4_BattleLoaders:override:0',
       source: { kind: 'omod', formId: '0x00792A28', edid: 'mod_Legendary_Armor4_BattleLoaders', name: "Battle-Loader's" },
-      bucket: 'reloadSkipChance',
+      bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.15,
       conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 1 }],
@@ -49,7 +55,7 @@ export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> 
     {
       id: 'mod_Legendary_Armor4_BattleLoaders:override:1',
       source: { kind: 'omod', formId: '0x00792A28', edid: 'mod_Legendary_Armor4_BattleLoaders', name: "Battle-Loader's" },
-      bucket: 'reloadSkipChance',
+      bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.3,
       conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 2 }],
@@ -57,7 +63,7 @@ export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> 
     {
       id: 'mod_Legendary_Armor4_BattleLoaders:override:2',
       source: { kind: 'omod', formId: '0x00792A28', edid: 'mod_Legendary_Armor4_BattleLoaders', name: "Battle-Loader's" },
-      bucket: 'reloadSkipChance',
+      bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.45,
       conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 3 }],
@@ -65,7 +71,7 @@ export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> 
     {
       id: 'mod_Legendary_Armor4_BattleLoaders:override:3',
       source: { kind: 'omod', formId: '0x00792A28', edid: 'mod_Legendary_Armor4_BattleLoaders', name: "Battle-Loader's" },
-      bucket: 'reloadSkipChance',
+      bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.6,
       conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 4 }],
@@ -73,7 +79,7 @@ export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> 
     {
       id: 'mod_Legendary_Armor4_BattleLoaders:override:4',
       source: { kind: 'omod', formId: '0x00792A28', edid: 'mod_Legendary_Armor4_BattleLoaders', name: "Battle-Loader's" },
-      bucket: 'reloadSkipChance',
+      bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.75,
       conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 5, orMore: true }],
@@ -83,7 +89,7 @@ export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> 
     {
       id: 'mod_Legendary_PowerArmor4_BattleLoaders:override:0',
       source: { kind: 'omod', formId: '0x007A74C2', edid: 'mod_Legendary_PowerArmor4_BattleLoaders', name: "Battle-Loader's" },
-      bucket: 'reloadSkipChance',
+      bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.15,
       conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 1 }],
@@ -91,7 +97,7 @@ export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> 
     {
       id: 'mod_Legendary_PowerArmor4_BattleLoaders:override:1',
       source: { kind: 'omod', formId: '0x007A74C2', edid: 'mod_Legendary_PowerArmor4_BattleLoaders', name: "Battle-Loader's" },
-      bucket: 'reloadSkipChance',
+      bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.3,
       conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 2 }],
@@ -99,7 +105,7 @@ export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> 
     {
       id: 'mod_Legendary_PowerArmor4_BattleLoaders:override:2',
       source: { kind: 'omod', formId: '0x007A74C2', edid: 'mod_Legendary_PowerArmor4_BattleLoaders', name: "Battle-Loader's" },
-      bucket: 'reloadSkipChance',
+      bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.45,
       conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 3 }],
@@ -107,7 +113,7 @@ export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> 
     {
       id: 'mod_Legendary_PowerArmor4_BattleLoaders:override:3',
       source: { kind: 'omod', formId: '0x007A74C2', edid: 'mod_Legendary_PowerArmor4_BattleLoaders', name: "Battle-Loader's" },
-      bucket: 'reloadSkipChance',
+      bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.6,
       conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 4 }],
@@ -115,7 +121,7 @@ export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> 
     {
       id: 'mod_Legendary_PowerArmor4_BattleLoaders:override:4',
       source: { kind: 'omod', formId: '0x007A74C2', edid: 'mod_Legendary_PowerArmor4_BattleLoaders', name: "Battle-Loader's" },
-      bucket: 'reloadSkipChance',
+      bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.75,
       conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 5, orMore: true }],

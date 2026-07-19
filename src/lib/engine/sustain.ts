@@ -29,8 +29,32 @@ export interface SustainResult extends SustainTiming {
   reloadApproximate: true;
 }
 
-/** Magazine/reload timing shared by sustain DPS and reverse-onslaught simulation. */
-export function sustainTiming(weapon: Weapon, fireRate: number): SustainTiming {
+/**
+ * Seconds spent bashing in place of a real reload when a
+ * `reloadSkipChanceBash` source (Battle-Loader's) triggers instead of a
+ * genuine reload — **ASSUMPTION**, a user-approved placeholder pending an
+ * in-game stopwatch measurement of a real bash swing (per-weapon animation
+ * timing likely varies, `dps-todos/measurement-backlog.md`). Overridable
+ * per scenario via `PlayerConditions.battleLoadersBashSec`, which literally
+ * duplicates this value as its default (types/ stays a leaf — no engine
+ * import; `sustain.test.ts` regression-tests the two stay in sync).
+ */
+export const DEFAULT_BATTLE_LOADERS_BASH_SEC = 0.75;
+
+/**
+ * Magazine/reload timing shared by sustain DPS and reverse-onslaught/Bullet
+ * Storm simulation.
+ *
+ * `bashAnimationSec` (default `DEFAULT_BATTLE_LOADERS_BASH_SEC`) is the time
+ * cost of a Battle-Loader's bash-triggered reload skip — see the two-channel
+ * reload-skip model below and docs/assumptions.md "Reload-skip & free-ammo
+ * expected value".
+ */
+export function sustainTiming(
+  weapon: Weapon,
+  fireRate: number,
+  bashAnimationSec: number = DEFAULT_BATTLE_LOADERS_BASH_SEC
+): SustainTiming {
   const capacity = weapon.capacity ?? 0;
   const ammoPerShot = weapon.ammoPerShot ?? 1;
   const ammoFreeChance = weapon.ammoFreeChance ?? 0;
@@ -42,17 +66,35 @@ export function sustainTiming(weapon: Weapon, fireRate: number): SustainTiming {
   }
 
   const perShellMult = weapon.reloadPerShell ? shotsPerMag : 1;
-  const reloadSkip = weapon.reloadSkipChance ?? 0;
-  const reloadSec =
-    ((weapon.animationReloadSec ?? 0) * perShellMult) / (weapon.reloadSpeed || 1.0) * (1 - reloadSkip);
+  const realReloadSec = ((weapon.animationReloadSec ?? 0) * perShellMult) / (weapon.reloadSpeed || 1.0);
+  // Two independent reload-skip channels (docs/assumptions.md "Reload-skip &
+  // free-ammo expected value"): `reloadSkipChance` (Quick Hands/Wild West
+  // Wind — passive on the reload itself, free) and `reloadSkipChanceBash`
+  // (Battle-Loader's — bash-triggered, costs `bashAnimationSec` in place of
+  // the real reload instead of being free). FREE SKIP WINS FIRST — a
+  // modeling choice, not ESM-proven: when a reload would be skipped both
+  // ways, the passive skip fires (no bash swing needed at all), so the free
+  // channel gates the whole expression. At `bashAnimationSec = 0` this
+  // degenerates to `(1 − pFree) × (1 − pBash) × realReloadSec` — IDENTICAL
+  // to the old single-channel `realReloadSec × (1 − union(pFree, pBash))`
+  // formula, so this two-channel model is a strict generalization of the
+  // one it replaces (regression-tested, sustain.test.ts).
+  const pFree = Math.max(0, Math.min(weapon.reloadSkipChance ?? 0, 1));
+  const pBash = Math.max(0, Math.min(weapon.reloadSkipChanceBash ?? 0, 1));
+  const reloadSec = (1 - pFree) * ((1 - pBash) * realReloadSec + pBash * bashAnimationSec);
   const magDumpSec = shotsPerMag / fireRate;
 
   return { shotsPerMag, magDumpSec, reloadSec };
 }
 
-export function computeSustain(perHitAvg: number, fireRate: number, weapon: Weapon): SustainResult {
+export function computeSustain(
+  perHitAvg: number,
+  fireRate: number,
+  weapon: Weapon,
+  bashAnimationSec?: number
+): SustainResult {
   const burstDps = perHitAvg * fireRate;
-  const timing = sustainTiming(weapon, fireRate);
+  const timing = sustainTiming(weapon, fireRate, bashAnimationSec);
 
   if (timing.shotsPerMag <= 0 || fireRate <= 0) {
     return { burstDps, sustainedDps: burstDps, ...timing, reloadApproximate: true };

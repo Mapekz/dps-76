@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import type { Weapon } from '@/types';
-import { computeSustain } from '@/lib/engine/sustain';
+import { createDefaultPlayerConditions } from '@/types';
+import { computeSustain, DEFAULT_BATTLE_LOADERS_BASH_SEC, sustainTiming } from '@/lib/engine/sustain';
 
 function gun(overrides: Partial<Weapon> = {}): Weapon {
   return {
@@ -94,5 +95,62 @@ describe('computeSustain', () => {
       100, 2, gun({ capacity: 0, weaponClass: 'melee', reloadSkipChance: 0.5, ammoFreeChance: 0.5 })
     );
     expect(withChances).toEqual(base);
+  });
+});
+
+describe('reloadSkipChanceBash — two-channel reload-skip model (Phase C)', () => {
+  it('bash-only: costs bashAnimationSec instead of the real reload', () => {
+    // reloadSec = (1-0) * ((1-0.5)*2.0 + 0.5*1.0) = 1.0 + 0.5 = 1.5
+    const timing = sustainTiming(gun({ animationReloadSec: 2.0, reloadSkipChanceBash: 0.5 }), 5, 1.0);
+    expect(timing.reloadSec).toBeCloseTo(1.5, 10);
+  });
+
+  it('bash-only at bashAnimationSec=0 acts as a free instant skip, same shape as reloadSkipChance', () => {
+    const bash = sustainTiming(gun({ animationReloadSec: 2.0, reloadSkipChanceBash: 0.4 }), 5, 0);
+    const free = sustainTiming(gun({ animationReloadSec: 2.0, reloadSkipChance: 0.4 }), 5);
+    expect(bash.reloadSec).toBeCloseTo(free.reloadSec, 10);
+    expect(bash.reloadSec).toBeCloseTo(2.0 * 0.6, 10);
+  });
+
+  it('combines reloadSkipChance and reloadSkipChanceBash — free skip wins first', () => {
+    // reloadSec = (1-0.2) * ((1-0.5)*2.0 + 0.5*1.0) = 0.8 * 1.5 = 1.2
+    const timing = sustainTiming(
+      gun({ animationReloadSec: 2.0, reloadSkipChance: 0.2, reloadSkipChanceBash: 0.5 }), 5, 1.0
+    );
+    expect(timing.reloadSec).toBeCloseTo(1.2, 10);
+  });
+
+  it('bashAnimationSec=0 reproduces the old single-channel union formula EXACTLY', () => {
+    const pFree = 0.2;
+    const pBash = 0.5;
+    const twoChannel = sustainTiming(
+      gun({ animationReloadSec: 2.0, reloadSkipChance: pFree, reloadSkipChanceBash: pBash }), 5, 0
+    );
+    // Old formula (pre-Phase-C): reloadSec = realReloadSec * (1 - union),
+    // union = 1 - (1-pFree)(1-pBash).
+    const union = 1 - (1 - pFree) * (1 - pBash);
+    const oldFormula = 2.0 * (1 - union);
+    expect(twoChannel.reloadSec).toBeCloseTo(oldFormula, 10);
+    expect(twoChannel.reloadSec).toBeCloseTo(2.0 * (1 - pFree) * (1 - pBash), 10);
+  });
+
+  it('sustainTiming defaults bashAnimationSec to DEFAULT_BATTLE_LOADERS_BASH_SEC when omitted', () => {
+    const omitted = sustainTiming(gun({ animationReloadSec: 2.0, reloadSkipChanceBash: 0.5 }), 5);
+    const explicit = sustainTiming(
+      gun({ animationReloadSec: 2.0, reloadSkipChanceBash: 0.5 }), 5, DEFAULT_BATTLE_LOADERS_BASH_SEC
+    );
+    expect(omitted.reloadSec).toBeCloseTo(explicit.reloadSec, 10);
+  });
+
+  it('computeSustain threads bashAnimationSec through to sustainTiming', () => {
+    const s = computeSustain(100, 5, gun({ animationReloadSec: 2.0, reloadSkipChanceBash: 0.5 }), 1.0);
+    expect(s.reloadSec).toBeCloseTo(1.5, 10);
+    expect(s.sustainedDps).toBeGreaterThan(0);
+  });
+});
+
+describe('DEFAULT_BATTLE_LOADERS_BASH_SEC default-sync regression', () => {
+  it('createDefaultPlayerConditions().battleLoadersBashSec stays in sync with DEFAULT_BATTLE_LOADERS_BASH_SEC (deliberate literal duplication — types/ stays a leaf)', () => {
+    expect(createDefaultPlayerConditions().battleLoadersBashSec).toBe(DEFAULT_BATTLE_LOADERS_BASH_SEC);
   });
 });

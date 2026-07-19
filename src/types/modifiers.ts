@@ -97,11 +97,27 @@ export type Bucket =
   /** Reload speed multiplier rewrite from OMODs (quick-eject magazines) — feeds sustained DPS. */
   | 'reloadSpeed'
   /**
-   * Probability the reload is skipped entirely (Quick Hands, Wild West Hands).
+   * Probability the reload is skipped entirely, PASSIVELY on the reload
+   * itself (Quick Hands, Wild West Hands — EP182 "Auto Fill Weapon Clip").
    * Folded via independent-probability union in effective-weapon.ts; consumed by
    * sustain.ts as a multiplicative reload-time cut, separate from reloadSpeed.
    */
   | 'reloadSkipChance'
+  /**
+   * Probability the reload is skipped via a BASH swing instead
+   * (Battle-Loader's — EP199 "Instant Reload Clip On Bash", gated
+   * `IsPowerAttacking` in its own extracted conditions), as opposed to
+   * `reloadSkipChance`'s passive-on-reload trigger. Split into its own
+   * channel (2026-07-19, Phase C — go-through-every-single-silly-
+   * whistle.md) because a bash swing carries a real time cost a passive
+   * skip doesn't: `sustain.ts` composes both channels (free-tier skip wins
+   * first, then the bash tier either skips instantly at
+   * `PlayerConditions.battleLoadersBashSec = 0` or costs that many seconds
+   * in place of the real reload). Folded via the same `foldChanceUnion` as
+   * `reloadSkipChance` in effective-weapon.ts; consumed by sustain.ts's
+   * `reloadSec` fold.
+   */
+  | 'reloadSkipChanceBash'
   /**
    * Probability a shot does not net-consume ammo (Tesla Science 5, Fortunate
    * magazine mods). Folded via independent-probability union in
@@ -447,6 +463,7 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   ammoCapacity: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.capacity rewrite); feeds sustained DPS (sustain.ts)' },
   reloadSpeed: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.reloadSpeed rewrite); feeds sustained DPS (sustain.ts)' },
   reloadSkipChance: { regime: 'sustainChance', hasEngineEffect: true, foldedBy: 'effective-weapon.ts (weapon.reloadSkipChance rewrite); feeds sustain.ts reloadSec' },
+  reloadSkipChanceBash: { regime: 'sustainChance', hasEngineEffect: true, foldedBy: 'effective-weapon.ts (weapon.reloadSkipChanceBash rewrite); feeds sustain.ts reloadSec — bash-triggered channel (Battle-Loader\'s EP199), separate from reloadSkipChance\'s passive-on-reload channel (Quick Hands/Wild West Wind EP182)' },
   ammoFreeChance: { regime: 'sustainChance', hasEngineEffect: true, foldedBy: 'effective-weapon.ts (weapon.ammoFreeChance rewrite); feeds sustain.ts effective capacity' },
   vatsApCost: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.apCost rewrite); feeds ap-economy.ts' },
   chargeFullPowerSec: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.fullPowerSeconds rewrite); gates weaponCharges() and feeds resolvedChargeTimeSec (src/lib/charge.ts), consumed by fire-rate.ts' },

@@ -378,18 +378,43 @@ Engine: `src/lib/engine/sustain.ts`.
   (melee/unarmed) ⇒ sustained = burst, reload 0. Weapons extracted before
   the reload field landed are treated as zero-cost reload.
 
-### Reload-skip & free-ammo expected value (2026-07-15)
-Two **sustain-chance** buckets (`reloadSkipChance`, `ammoFreeChance`) fold via
-independent-probability union (`foldChanceUnion`, `effective-weapon.ts`) and
-apply as a SEPARATE multiplicative stage on the already-folded reload
-time/capacity — not inside the additive folds (would wrongly stack with
-Quad/reload-speed mods).
+### Reload-skip & free-ammo expected value (2026-07-15; two-channel bash model 2026-07-19)
+Three **sustain-chance** buckets (`reloadSkipChance`, `reloadSkipChanceBash`,
+`ammoFreeChance`) fold via independent-probability union (`foldChanceUnion`,
+`effective-weapon.ts`) and apply as a SEPARATE multiplicative stage on the
+already-folded reload time/capacity — not inside the additive folds (would
+wrongly stack with Quad/reload-speed mods).
 
 - `reloadSec_eff = reloadSec × (1 − reloadSkipChance)`. Sources: Quick Hands,
-  Wild West Hands.
+  Wild West Hands — both proc PASSIVELY on the reload itself (EP182 "Auto
+  Fill Weapon Clip"), so the skip is free (no time cost).
+- **Battle-Loader's gets its OWN channel (`reloadSkipChanceBash`), split from
+  `reloadSkipChance` 2026-07-19 (Phase C — go-through-every-single-silly-
+  whistle.md)**: its ESM trigger is EP199 "Instant Reload Clip On Bash",
+  gated `IsPowerAttacking` in its own extracted conditions (dropped as a
+  CONDITION per "Armor effects" below, but preserved structurally via the
+  bucket split) — a bash swing is a real action with a time cost, unlike a
+  passive reload skip. `sustain.ts`'s `sustainTiming` composes both
+  channels: `pFree = reloadSkipChance`, `pBash = reloadSkipChanceBash` (both
+  clamped to [0,1]); `realReloadSec = animationReloadSec × perShellMult /
+  reloadSpeed`; `reloadSec = (1 − pFree) × ((1 − pBash) × realReloadSec +
+  pBash × bashSec)`. **Free skip wins first — a modeling choice, not
+  ESM-proven**: when both would otherwise apply on the same reload, the free
+  channel takes priority (no bash swing needed at all). `bashSec` is
+  `PlayerConditions.battleLoadersBashSec` (UI slider, default
+  `DEFAULT_BATTLE_LOADERS_BASH_SEC` = 0.75s — **ASSUMPTION, user-approved
+  placeholder pending an in-game stopwatch measurement**,
+  `dps-todos/measurement-backlog.md`). At `bashSec = 0` the formula
+  degenerates to `(1 − pFree) × (1 − pBash) × realReloadSec` — IDENTICAL to
+  the old single-channel `realReloadSec × (1 − union(pFree, pBash))`
+  formula, so the two-channel model is a strict generalization of the one it
+  replaces (regression-tested, `sustain.test.ts`). `reverseOnslaughtAvgStacks`
+  (a Gunslinger Master build's mag-cycle regen term reads `timing.reloadSec`
+  directly) and `bulletStormAvgStacks` both thread the same `bashSec`
+  through their own `sustainTiming` calls.
 - `capacity_eff = capacity / (1 − ammoFreeChance)`. Sources: Tesla Science 5,
   Dom Pedro Fortunate magazine mods.
-- Multiple sources on the same lever compose as independent probabilities:
+- Multiple sources on the SAME channel compose as independent probabilities:
   `1 − Π(1 − chanceᵢ)`.
 - Fortunate's "add a round past max clip" proc is ignored in the EV
   amortization (same treatment as "don't consume ammo").
@@ -1023,12 +1048,23 @@ same shape as a floor instead of a cap.
   projectiles + 5 ammo/shot → 12/30/shot; +1 projectile from Two Shot →
   13/30). The divisor **IS ESM-PROVEN**: GMST `uAmmoSpenderAmmoUsePerStack`
   (`0x0083C3D0`) = 30 (`bulletstorm.ts` `BULLET_STORM_AMMO_PER_STACK`).
-- **Reload loss — GAME FACT**: 100% of stacks are lost on reload by default;
-  no passive decay/regen otherwise. Lock and Load r1 sets retention to 0.5
-  (keep half) via its own entry point (EP210, `Mod Ammo Spender Max Reload
-  Stack Mult`) — `bulletStormRetention` bucket, folded once per scenario
-  input and consumed only by the sustained-fire average model (the manual
-  stacks slider ignores it).
+- **Reload loss — GAME FACT**: 100% of stacks are lost on a REAL reload by
+  default; no passive decay/regen otherwise. Lock and Load r1 sets retention
+  to 0.5 (keep half) via its own entry point (EP210, `Mod Ammo Spender Max
+  Reload Stack Mult`) — `bulletStormRetention` bucket, folded once per
+  scenario input and consumed only by the sustained-fire average model (the
+  manual stacks slider ignores it).
+- **Instant reloads keep 100% of stacks — GAME FACT (user-confirmed
+  2026-07-19, Phase C)**: neither the free-tier skip (`reloadSkipChance` —
+  Quick Hands, Wild West Wind) nor the bash-tier skip (`reloadSkipChanceBash`
+  — Battle-Loader's; see "Reload-skip & free-ammo expected value") loses
+  Bullet Storm stacks — there's no real reload for Lock and Load's retention
+  to apply to. `bulletStormAvgStacks` composes both channels as independent
+  probabilities the same way `foldChanceUnion` does within a single channel
+  (`skip = 1 − (1 − pFree)(1 − pBash)`) and blends retention only over the
+  non-skipped fraction: `effectiveRetention = skip + (1 − skip) × retention`
+  — `skip = 1` makes retention irrelevant (stacks never reset), `skip = 0`
+  reproduces the old always-apply-retention behavior exactly.
 - **Sentinel default**: `bulletStormStacks = -1` means "follow the computed
   max" — same convention as `onslaughtStacks`. A non-negative value is an
   explicit user selection, clamped to `[min, max]` at read time
@@ -1625,10 +1661,13 @@ auto-converted); their stats are stale and must not be shown.
   `wornPieceCount` tier — the baked-in value already IS the
   `GetRandomPercent` chance (keeping it as a gate would double-apply the same
   probability); `GetDead` has no failure mode this calculator models;
-  `IsPowerAttacking` (the real per-bash trigger) is dropped as an
-  **ASSUMPTION**: bash cadence is unmodeled, so the reload-skip chance is
-  treated as sustained/per-reload, the same simplification Quick Hands
-  already ships with for its own `reloadSkipChance` sources.
+  `IsPowerAttacking` (the real per-bash trigger) is dropped as a CONDITION
+  (bash cadence — how often a bash happens vs. an ordinary reload — is still
+  unmodeled), but its bash-ness is preserved via a dedicated bucket
+  (`reloadSkipChanceBash`, split from `reloadSkipChance` 2026-07-19 — Phase
+  C, see "Reload-skip & free-ammo expected value") that carries its own time
+  cost (`PlayerConditions.battleLoadersBashSec`) instead of Quick Hands'
+  free-skip treatment.
 - **BUG FIX (ESM-derived)**: Bruiser's/Ranger's ("Melee/Ranged Weapons Deal
   +5% Bonus Damage, up to +25% on Full Stack" — both fields ESM-extracted)
   wrongly typed their worn-piece gate as a `weaponKeyword` check on

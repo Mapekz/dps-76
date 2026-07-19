@@ -198,6 +198,12 @@ describe('build codec', () => {
     const decoded = await decodeBuild(await encodeBuild(state), 'live');
     expect(decoded!.state.player.conditions.concentratedFireStacks).toBe(15);
   });
+
+  it("round-trips battleLoadersBashSec (Phase C — Battle-Loader's bash cost)", async () => {
+    const state = stateFrom([{ type: 'condition/set', key: 'battleLoadersBashSec', value: 1.5 }]);
+    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    expect(decoded!.state.player.conditions.battleLoadersBashSec).toBe(1.5);
+  });
 });
 
 describe('derived condition fields', () => {

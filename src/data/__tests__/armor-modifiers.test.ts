@@ -118,6 +118,13 @@ describe('getArmorEffectModifiers + getArmorEffectWornPieceCounts: self-scaling 
     expect(activeValues).toEqual([0.45]);
   });
 
+  it("Battle-Loader's: modifiers carry the bash-triggered reloadSkipChanceBash bucket, not the passive reloadSkipChance channel (Phase C)", () => {
+    const modifiers = getArmorEffectModifiers('live', { [BATTLE_LOADERS]: 3 });
+    expect(modifiers.length).toBeGreaterThan(0);
+    expect(modifiers.every(m => m.bucket === 'reloadSkipChanceBash')).toBe(true);
+    expect(modifiers.some(m => m.bucket === 'reloadSkipChance')).toBe(false);
+  });
+
   it("Battle-Loader's: 0 selected pieces activates nothing", () => {
     const modifiers = getArmorEffectModifiers('live', {});
     expect(modifiers).toHaveLength(0); // count 0 → not even emitted

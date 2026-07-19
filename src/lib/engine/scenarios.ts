@@ -9,7 +9,7 @@ import { computeDotDps, computePaperDamage, type HitBreakdown } from './paper-da
 import { applyMitigation, type EnemyDefenses } from './mitigation';
 import { perShotOnslaughtConsume, reverseOnslaughtAvgStacks } from './onslaught';
 import { bulletStormAvgStacks } from './bulletstorm';
-import { computeSustain, type SustainResult } from './sustain';
+import { computeSustain, DEFAULT_BATTLE_LOADERS_BASH_SEC, type SustainResult } from './sustain';
 import { createHitTrace, lastTrace, type ApRegenTrace, type BucketTrace, type CritMeterTrace, type HitTrace } from './trace';
 import { effectiveValue, foldBucket, type ResolveContext, type ScenarioFlags } from './resolve';
 
@@ -169,6 +169,21 @@ export interface ScenarioSet {
    * dedicated bucket.
    */
   hasConcentratedFireSources: boolean;
+  /**
+   * True when the effective weapon carries a nonzero `reloadSkipChanceBash`
+   * (Battle-Loader's — the bash-triggered reload-skip channel, Phase C, go-
+   * through-every-single-silly-whistle.md) — gates the UI's bash-time
+   * slider (`ConditionsSection.tsx`, `PlayerConditions.battleLoadersBashSec`).
+   * Unlike `hasKillStreakSources`/`hasConcentratedFireSources` (existence
+   * scans over `ScenarioInput.modifiers`), this reads the FOLDED weapon
+   * field instead: `reloadSkipChanceBash` is a `sustainChance`-regime
+   * bucket, consumed and stripped from the modifier list before it reaches
+   * `computeScenarios` (same fold-then-drop shape as every other
+   * `SUSTAIN_CHANCE_BUCKETS`/`WEAPON_STAT_BUCKETS` bucket — see
+   * `effective-weapon.ts`/`loadout.ts`'s `assemble`), so a raw modifier-list
+   * scan would always read false.
+   */
+  hasBattleLoadersSource: boolean;
   /**
    * The equipped weapon's charge parameters (Gauss family, bows, tesla/
    * gamma/laser via charging-barrel OMODs — `weaponCharges()`,
@@ -548,6 +563,13 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   const onslaughtMaxStacks = foldBucket(input.modifiers, 'onslaughtMaxStacks', 0, bootstrapCtx);
   const onslaughtReverse = foldBucket(input.modifiers, 'onslaughtReverse', 0, bootstrapCtx) > 0;
 
+  // Battle-Loader's bash time (Phase C — go-through-every-single-silly-
+  // whistle.md): folded ONCE here, threaded into every reload-timing call
+  // below (reverseOnslaughtAvgStacks, bulletStormAvgStacks, both
+  // computeSustain calls) — same "fold once, thread everywhere" precedent as
+  // onslaughtMaxStacks/rangeMult above.
+  const bashAnimationSec = input.player.battleLoadersBashSec ?? DEFAULT_BATTLE_LOADERS_BASH_SEC;
+
   let onslaughtReverseAvg: number | undefined;
   if (onslaughtReverse && onslaughtMaxStacks > 0) {
     const consume = perShotOnslaughtConsume(
@@ -561,6 +583,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       perShotConsume: consume,
       fireRate,
       weapon: input.weapon,
+      bashAnimationSec,
     });
   }
 
@@ -585,6 +608,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       retention: bulletStormRetention,
       weapon: input.weapon,
       fireRate,
+      bashAnimationSec,
     });
   }
 
@@ -616,6 +640,12 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   const hasConcentratedFireSources = input.modifiers.some(m =>
     m.conditions.some(c => c.kind === 'stacks' && c.counter === 'concentratedFire')
   );
+
+  // Battle-Loader's bash source (see ScenarioSet.hasBattleLoadersSource doc
+  // comment for why this reads the folded weapon field instead of an
+  // input.modifiers scan — reloadSkipChanceBash is stripped from the
+  // modifier list before it reaches this function).
+  const hasBattleLoadersSource = (input.weapon.reloadSkipChanceBash ?? 0) > 0;
 
   // Free aim: crits are VATS-only, so never crit here.
   const freeFlags: ScenarioFlags = { isVats: false, isSneaking: sneaking, isPowerAttack: powerAttack, isCrit: false };
@@ -678,8 +708,8 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   const freeCycleTotal = freeCycleHit.total;
   const vatsCycleTotal = vatsCycleHit.total;
 
-  const freeSustainRaw = computeSustain(freeCycleTotal, fireRate, input.weapon);
-  const vatsSustainRaw = computeSustain(vatsCycleTotal, fireRate, input.weapon);
+  const freeSustainRaw = computeSustain(freeCycleTotal, fireRate, input.weapon, bashAnimationSec);
+  const vatsSustainRaw = computeSustain(vatsCycleTotal, fireRate, input.weapon, bashAnimationSec);
 
   // Manual hit rate (Stage B/C): scales each scenario's SUSTAINED dps only —
   // never burst, never per-hit (those stay the every-shot-hits ceiling).
@@ -788,6 +818,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     ...(bulletStormAvg !== undefined && { bulletStormAvgStacks: bulletStormAvg }),
     hasKillStreakSources,
     hasConcentratedFireSources,
+    hasBattleLoadersSource,
     charging,
     range,
     vatsHitChanceBonus,

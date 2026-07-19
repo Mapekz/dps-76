@@ -84,6 +84,53 @@ describe('bulletStormAvgStacks — retention, floor, no-magazine', () => {
   });
 });
 
+describe('bulletStormAvgStacks — expected-retention fix (Phase C, instant reloads keep stacks)', () => {
+  const twoShotWeapon = makeWeapon({ projectileCount: 1, ammoPerShot: 1, capacity: 2, animDelaySec: 0.5 });
+
+  it('skip=1 via a 100% free-tier reload skip keeps stacks at max regardless of retention (retention irrelevant)', () => {
+    const weapon = { ...twoShotWeapon, reloadSkipChance: 1 };
+    const avgRetention0 = bulletStormAvgStacks({ max: 10, min: 0, retention: 0, weapon, fireRate: 2 });
+    const avgRetention1 = bulletStormAvgStacks({ max: 10, min: 0, retention: 1, weapon, fireRate: 2 });
+    expect(avgRetention0).toBeCloseTo(10, 6);
+    expect(avgRetention1).toBeCloseTo(10, 6);
+  });
+
+  it('the bash-tier channel (reloadSkipChanceBash=1) counts as instant for stacks too, same as the free tier', () => {
+    const weapon = { ...twoShotWeapon, reloadSkipChanceBash: 1 };
+    const avg = bulletStormAvgStacks({ max: 10, min: 0, retention: 0, weapon, fireRate: 2 });
+    expect(avg).toBeCloseTo(10, 6);
+  });
+
+  it('skip=0 (no reload-skip sources) reproduces the old always-apply-retention behavior exactly', () => {
+    const withExplicitZeroes = bulletStormAvgStacks({
+      max: 1000, min: 0, retention: 0.5,
+      weapon: { ...twoShotWeapon, reloadSkipChance: 0, reloadSkipChanceBash: 0 },
+      fireRate: 2,
+    });
+    const withFieldsOmitted = bulletStormAvgStacks({
+      max: 1000, min: 0, retention: 0.5, weapon: twoShotWeapon, fireRate: 2,
+    });
+    expect(withExplicitZeroes).toBeCloseTo(withFieldsOmitted, 10);
+  });
+
+  it('combined free+bash sources compose into one effectiveRetention exactly like foldChanceUnion', () => {
+    const pFree = 0.6;
+    const pBash = 0.5;
+    const skip = 1 - (1 - pFree) * (1 - pBash);
+    const combined = bulletStormAvgStacks({
+      max: 1000, min: 0, retention: 0,
+      weapon: { ...twoShotWeapon, reloadSkipChance: pFree, reloadSkipChanceBash: pBash },
+      fireRate: 2,
+    });
+    // Same effectiveRetention (= skip, since retention=0) reproduced directly
+    // via a no-skip weapon with retention set to `skip`.
+    const equivalent = bulletStormAvgStacks({
+      max: 1000, min: 0, retention: skip, weapon: twoShotWeapon, fireRate: 2,
+    });
+    expect(combined).toBeCloseTo(equivalent, 6);
+  });
+});
+
 describe('effectiveBulletStormStacks (via computeScenarios) — sentinel, clamp, average override', () => {
   const weapon = makeWeapon({ projectileCount: 8, ammoPerShot: 5, capacity: 10, animDelaySec: 0.5 });
 

@@ -108,6 +108,32 @@ describe('reverseOnslaughtAvgStacks', () => {
     expect(weaponHasExplosion(launcher, [], makeCtx(launcher))).toBe(true);
     expect(perShotOnslaughtConsume(launcher, [], makeCtx(launcher), 3)).toBe(3);
   });
+
+  it('the average changes with bashAnimationSec when a Battle-Loader\'s bash source is present (Phase C — a Gunslinger Master build must see the bash-time correction)', () => {
+    const weapon = makeWeapon({
+      animDelaySec: 0.5,
+      capacity: 5,
+      ammoPerShot: 1,
+      animationReloadSec: 3,
+      reloadSpeed: 1,
+      reloadSkipChanceBash: 0.5, // mid Battle-Loader's tier: half of reloads are a bash instead
+    });
+    const fastBash = reverseOnslaughtAvgStacks({ max: 10, perShotConsume: 1, fireRate: 2, weapon, bashAnimationSec: 0 });
+    const slowBash = reverseOnslaughtAvgStacks({ max: 10, perShotConsume: 1, fireRate: 2, weapon, bashAnimationSec: 3 });
+    // A longer bash time means a longer effective reload window, so more
+    // passive regen accrues before the next mag starts — a strictly higher
+    // average stack level.
+    expect(slowBash).toBeGreaterThan(fastBash);
+  });
+
+  it('bashAnimationSec has no effect when no bash source is equipped (reloadSkipChanceBash absent)', () => {
+    const weapon = makeWeapon({
+      animDelaySec: 0.5, capacity: 5, ammoPerShot: 1, animationReloadSec: 3, reloadSpeed: 1,
+    });
+    const zero = reverseOnslaughtAvgStacks({ max: 10, perShotConsume: 1, fireRate: 2, weapon, bashAnimationSec: 0 });
+    const large = reverseOnslaughtAvgStacks({ max: 10, perShotConsume: 1, fireRate: 2, weapon, bashAnimationSec: 3 });
+    expect(zero).toBeCloseTo(large, 10);
+  });
 });
 
 describe('reverse onslaught scenarios (GSM + Furious)', () => {

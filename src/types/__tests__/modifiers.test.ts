@@ -45,6 +45,7 @@ const ALL_BUCKETS: Bucket[] = [
   'ammoCapacity',
   'reloadSpeed',
   'reloadSkipChance',
+  'reloadSkipChanceBash',
   'ammoFreeChance',
   'vatsApCost',
   'chargeFullPowerSec',
@@ -97,7 +98,7 @@ describe('BUCKET_REGISTRY', () => {
   });
 
   it('derives SUSTAIN_CHANCE_BUCKETS as exactly the sustainChance-regime buckets', () => {
-    expect([...SUSTAIN_CHANCE_BUCKETS].sort()).toEqual(['reloadSkipChance', 'ammoFreeChance'].sort());
+    expect([...SUSTAIN_CHANCE_BUCKETS].sort()).toEqual(['reloadSkipChance', 'reloadSkipChanceBash', 'ammoFreeChance'].sort());
   });
 
   it('derives INERT_ENGINE_BUCKETS as exactly the no-engine-effect buckets', () => {

@@ -218,6 +218,18 @@ export interface PlayerConditions {
    * engine tests. See docs/assumptions.md "Armor effects".
    */
   wornPieceCounts?: Record<string, number>;
+  /**
+   * Seconds spent on the bash swing that triggers Battle-Loader's instant
+   * reload, used IN PLACE OF the real reload it skips (the
+   * `reloadSkipChanceBash` bucket — Phase C, go-through-every-single-silly-
+   * whistle.md; see docs/assumptions.md "Reload-skip & free-ammo expected
+   * value"). Default `DEFAULT_BATTLE_LOADERS_BASH_SEC` (0.75s) —
+   * **ASSUMPTION**, a user-approved placeholder pending an in-game
+   * stopwatch measurement of a real bash swing (per-weapon animation timing
+   * likely varies; `dps-todos/measurement-backlog.md`). `0` treats the bash
+   * as instant, matching Quick Hands' free-skip treatment.
+   */
+  battleLoadersBashSec?: number;
 
   // SPECIAL stats
   strength: number; // 1-15 (can exceed with legendary perks)
@@ -404,8 +416,19 @@ export interface Weapon {
   /**
    * Engine-derived reload-skip probability (folded from `reloadSkipChance`
    * sustainChance bucket modifiers in effective-weapon.ts; consumed by sustain.ts).
+   * Passive-on-reload channel (Quick Hands, Wild West Hands) — see
+   * `reloadSkipChanceBash` for the bash-triggered channel (Battle-Loader's).
    */
   reloadSkipChance?: number;
+  /**
+   * Engine-derived bash-triggered reload-skip probability (folded from
+   * `reloadSkipChanceBash` sustainChance bucket modifiers in
+   * effective-weapon.ts; consumed by sustain.ts). Battle-Loader's only
+   * (EP199 "Instant Reload Clip On Bash") — split from `reloadSkipChance`
+   * because a bash swing costs real time
+   * (`PlayerConditions.battleLoadersBashSec`), unlike a passive reload skip.
+   */
+  reloadSkipChanceBash?: number;
   /**
    * Engine-derived free-ammo probability (folded from `ammoFreeChance`
    * sustainChance bucket modifiers in effective-weapon.ts; consumed by sustain.ts).
@@ -656,6 +679,11 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     strangeInNumbers: false, // synthetic-test default; the app derives it in resolveLoadout (perk + teammates)
     classFreakRank: 0, // synthetic-test default; the app derives it in resolveLoadout (equipped ClassFreak rank)
     equippedPerkRanks: {}, // synthetic-test default; the app derives it in resolveLoadout (selected perk loadout)
+    // ASSUMPTION default — keep in sync with sustain.ts's
+    // DEFAULT_BATTLE_LOADERS_BASH_SEC (deliberate literal duplication:
+    // types/ stays a leaf, no engine import; regression-tested in
+    // sustain.test.ts).
+    battleLoadersBashSec: 0.75,
     weaponConditionPct: 100, // full condition (Polished curve input; 200 = over-repaired max)
     hitRatePct: 100, // manual-aim hit rate (100 = every shot lands; VATS has its own knob)
     vatsHitRatePct: 100, // manual VATS hit rate (100 = every shot lands)

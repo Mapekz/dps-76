@@ -53,13 +53,21 @@ export function reverseOnslaughtAvgStacks(params: {
   perShotConsume: number;
   fireRate: number;
   weapon: Weapon;
+  /**
+   * Seconds per Battle-Loader's bash, threaded to `sustainTiming` (defaults
+   * inside it — sustain.ts `DEFAULT_BATTLE_LOADERS_BASH_SEC`). REQUIRED
+   * thread, not just API consistency: the mag-cycle regen term below reads
+   * `timing.reloadSec` directly, so a Gunslinger Master + Battle-Loader's
+   * build would silently miss the bash-time correction without it.
+   */
+  bashAnimationSec?: number;
 }): number {
-  const { max, perShotConsume, fireRate, weapon } = params;
+  const { max, perShotConsume, fireRate, weapon, bashAnimationSec } = params;
   const regen = params.regen ?? ONSLAUGHT_REGEN_PER_SEC;
 
   if (max <= 0 || fireRate <= 0) return 0;
 
-  const timing = sustainTiming(weapon, fireRate);
+  const timing = sustainTiming(weapon, fireRate, bashAnimationSec);
 
   if (timing.shotsPerMag <= 0) {
     return reverseOnslaughtContinuousAvg(max, regen, perShotConsume, fireRate);

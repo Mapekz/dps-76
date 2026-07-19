@@ -263,6 +263,10 @@ export function buildEffectiveWeapon(
   const capacity = foldWeaponStat(statModifiers, 'ammoCapacity', weapon.capacity ?? 0, ctx);
   const reloadSpeed = foldWeaponStat(statModifiers, 'reloadSpeed', weapon.reloadSpeed ?? 1.0, ctx);
   const reloadSkipChance = foldChanceUnion(statModifiers, 'reloadSkipChance', ctx);
+  // Bash-triggered channel (Battle-Loader's), separate from the passive
+  // reloadSkipChance above — same foldChanceUnion fold, distinct bucket
+  // (docs/assumptions.md "Reload-skip & free-ammo expected value").
+  const reloadSkipChanceBash = foldChanceUnion(statModifiers, 'reloadSkipChanceBash', ctx);
   const ammoFreeChance = foldChanceUnion(statModifiers, 'ammoFreeChance', ctx);
   // V.A.T.S. Optimized (Stage B): MUL_ADD −0.35 on the weapon's per-shot VATS
   // AP cost, same fold pattern as ammoCapacity/reloadSpeed above.
@@ -307,6 +311,7 @@ export function buildEffectiveWeapon(
       capacity,
       reloadSpeed,
       reloadSkipChance,
+      reloadSkipChanceBash,
       ammoFreeChance,
       apCost,
       fullPowerSeconds,

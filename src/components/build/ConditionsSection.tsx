@@ -141,6 +141,14 @@ export function ConditionsSection() {
   const hasConcentratedFire = scenarios?.hasConcentratedFireSources ?? false;
   const concentratedFireStacks = conditions.concentratedFireStacks;
 
+  // Battle-Loader's bash time (Phase C — go-through-every-single-silly-
+  // whistle.md): a manual slider standing in for the time cost of a bash
+  // swing that triggers Battle-Loader's instant reload, gated on whether the
+  // effective weapon actually carries a reloadSkipChanceBash source
+  // (mirrors the kill-streak/Concentrated Fire existence-gate pattern).
+  const hasBattleLoaders = scenarios?.hasBattleLoadersSource ?? false;
+  const battleLoadersBashSec = conditions.battleLoadersBashSec ?? defaults.battleLoadersBashSec ?? 0;
+
   // VATS hit-chance aggregate (Phase 4, display-only): the folded total from
   // ScenarioSet.vatsHitChanceBonus (V.A.T.S. Enhanced, Awareness, Eye of the
   // Hunter, V.A.T.S. Matrix Overlay...). Purely informational — the VATS hit
@@ -182,6 +190,7 @@ export function ConditionsSection() {
     (onslaughtStored !== -1 && !onslaughtReverse ? 1 : 0) +
     (bulletStormStored !== -1 && !bulletStormAverageMode ? 1 : 0) +
     (concentratedFireStacks !== defaults.concentratedFireStacks ? 1 : 0) +
+    (battleLoadersBashSec !== (defaults.battleLoadersBashSec ?? 0) ? 1 : 0) +
     ((conditions.targetsHit ?? 1) !== (defaults.targetsHit ?? 1) ? 1 : 0) +
     ((conditions.weaponConditionPct ?? 100) !== (defaults.weaponConditionPct ?? 100) ? 1 : 0) +
     ((conditions.playerDamageResist ?? 0) !== (defaults.playerDamageResist ?? 0) ? 1 : 0) +
@@ -407,6 +416,34 @@ export function ConditionsSection() {
             </p>
             {!hasConcentratedFire && (
               <p className="text-muted-foreground text-xs">No Concentrated Fire sources equipped</p>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="char-battle-loaders-bash">
+              Bash time (Battle-Loader's): {battleLoadersBashSec.toFixed(2)}s
+            </Label>
+            <Slider
+              id="char-battle-loaders-bash"
+              min={0}
+              max={2}
+              step={0.25}
+              disabled={!hasBattleLoaders}
+              value={[battleLoadersBashSec]}
+              onValueChange={v => set('battleLoadersBashSec', firstSliderValue(v))}
+              marks={[
+                { value: 0, label: '0s' },
+                { value: 0.75, label: '0.75s' },
+                { value: 2, label: '2s' },
+              ]}
+            />
+            <p className="text-muted-foreground text-xs">
+              Seconds spent on the bash swing that triggers Battle-Loader's instant reload, used in place of a real
+              reload. The 0.75s default is an unmeasured placeholder pending in-game stopwatch testing — actual
+              timing likely depends on the weapon's bash animation.
+            </p>
+            {!hasBattleLoaders && (
+              <p className="text-muted-foreground text-xs">No Battle-Loader's sources equipped</p>
             )}
           </div>
 

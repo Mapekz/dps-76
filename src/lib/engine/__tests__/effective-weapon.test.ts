@@ -651,6 +651,58 @@ describe('sustain chance buckets (foldChanceUnion)', () => {
     expect(both.weapon.ammoFreeChance).not.toBeCloseTo(0.2 + 3.0, 6);
   });
 
+  it('reloadSkipChanceBash folds independently of reloadSkipChance (separate bash-tier channel, Phase C)', () => {
+    const cFree = 0.2;
+    const cBash = 0.45;
+    const splitChannels = {
+      id: 'test_reload_skip_split',
+      formId: '0x0',
+      name: 'Test Reload Skip Split',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_Legendary3',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [
+        { id: '0x0:0', source: omodSource, bucket: 'reloadSkipChance' as const, op: 'ADD' as const, value: cFree, conditions: [] },
+        { id: '0x0:1', source: omodSource, bucket: 'reloadSkipChanceBash' as const, op: 'ADD' as const, value: cBash, conditions: [] },
+      ],
+    };
+    const { weapon } = buildEffectiveWeapon(fixer, [splitChannels]);
+    expect(weapon.reloadSkipChance).toBeCloseTo(cFree, 10);
+    expect(weapon.reloadSkipChanceBash).toBeCloseTo(cBash, 10);
+  });
+
+  it('two reloadSkipChanceBash sources compose as 1 − (1 − c1)(1 − c2), same union as reloadSkipChance', () => {
+    const c1 = 0.15;
+    const c2 = 0.3;
+    const bashOmod = {
+      id: 'test_bash_skip',
+      formId: '0x0',
+      name: 'Test Bash Skip',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_Legendary3',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [c1, c2].map((value, i) => ({
+        id: `0x0:${i}`,
+        source: omodSource,
+        bucket: 'reloadSkipChanceBash' as const,
+        op: 'ADD' as const,
+        value,
+        conditions: [],
+      })),
+    };
+    const { weapon } = buildEffectiveWeapon(fixer, [bashOmod]);
+    expect(weapon.reloadSkipChanceBash).toBeCloseTo(1 - (1 - c1) * (1 - c2), 10);
+    // Folded from a DISJOINT source list, so the passive channel reads 0 — no
+    // cross-channel bleed.
+    expect(weapon.reloadSkipChance).toBeCloseTo(0, 10);
+  });
+
   it('evaluates reloadSkipChance condition gates (playerIsGhoul)', () => {
     const ghoulReloadSkip = {
       id: '0x1:0',
