@@ -73,10 +73,17 @@ Categories that previously read as "not yet swept" but are now dispositioned:
   `SpeedMult`; `addictions.json` has no speed-penalty withdrawal modifier. The
   Fast Fighter curve's `(0,0)` endpoint clamp for negative `SpeedMult` is
   documented but **moot until data appears**.
-- **Armor / power-armor OMODs** — **blocked** on the armor-OMOD extraction
-  pipeline. `extract-omods.ts:182` hard-skips non-`Weapon` form types; see
-  `dps-todos/armor-mods-outgoing.md` (Emergency Protocols, Shrouded, Sleek,
-  … would route to `moveSpeedBonus` once extracted).
+- **Armor / power-armor OMODs** — pipeline SHIPPED 2026-07-18
+  (`armor-omods.json`, commit 66870c6). Swept: **Propelling** (4★ PA legendary,
+  `moveSpeedBonus` +5%/piece, clean `SpeedMult` route) shipped in the Armor
+  Effects checklist (`dps-todos/armor-mods-outgoing.md`). **Emergency
+  Protocols / Shrouded** — not found in the curated inventory (either
+  non-obtainable or not carrying a `SpeedMult`-routed property; not chased
+  further this pass). **Sleek** — found, but its AV is
+  `Mod_StealthMove_AV` (sneak-locomotion), the SAME non-`SpeedMult` axis as
+  The Fixer's `Mod_StealthMove_AV` grant above — it would NOT feed
+  `moveSpeedBonus` even if mapped; moved into that "deliberately unmapped"
+  bucket, same open question about whether Fast Fighter counts sneak speed.
 - **Weight-class / encumbrance** — **out of scope**. Engine-native movement
   penalty with no MGEF; `conditions.ts:228-233` only consumes
   `IsOverEncumbered` as a gate on other effects, not as a `moveSpeedBonus`

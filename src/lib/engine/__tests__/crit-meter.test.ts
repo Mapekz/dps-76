@@ -1,10 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { getWeapons } from '@/data';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
+import { getArmorEffectModifiers, getArmorEffectWornPieceCounts } from '@/data/armor-modifiers';
 import { PerkId } from '@/data/perk-ids';
 import { computeCritMeter } from '@/lib/engine/crit-meter';
 import type { ResolveContext } from '@/lib/engine/resolve';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
+
+/** Limit-Breaking Armor's checklist id (5-tier critConsumption, wornPieceCount-gated). */
+const LIMIT_BREAKING_ID = 'mod_Legendary_Armor4_LimitBreak';
 
 function ctx(overrides: Partial<ResolveContext['player']> = {}): ResolveContext {
   return {
@@ -27,9 +31,16 @@ describe('computeCritMeter', () => {
   });
 
   it('user anchor: 16 LCK + Crit Savvy 3 + 5× Limit Breaking → crit every 2nd shot', () => {
-    // Critical Savvy rank 3 SETs consumption to 55.
-    const mods = getLoadoutModifiers('live', [{ perkId: PerkId.CriticalSavvy, rank: 3 }]);
-    const result = computeCritMeter(mods, fixer, ctx({ luck: 16, limitBreakingPieces: 5 }));
+    // Critical Savvy rank 3 SETs consumption to 55. Limit-Breaking Armor at
+    // 5 worn pieces (Armor Effects checklist, self-scaling — its modifiers
+    // carry their own wornPieceCount tiers) MUL_ADDs −50%.
+    const selections = { [LIMIT_BREAKING_ID]: 5 };
+    const mods = [
+      ...getLoadoutModifiers('live', [{ perkId: PerkId.CriticalSavvy, rank: 3 }]),
+      ...getArmorEffectModifiers('live', selections),
+    ];
+    const wornPieceCounts = getArmorEffectWornPieceCounts('live', selections);
+    const result = computeCritMeter(mods, fixer, ctx({ luck: 16, wornPieceCounts }));
     expect(result.fillPerHit).toBeCloseTo(29, 6);
     expect(result.consumption).toBeCloseTo(27.5, 6);
     expect(result.shotsPerCrit).toBe(2);
@@ -37,7 +48,9 @@ describe('computeCritMeter', () => {
   });
 
   it('crit rate never exceeds every-other-shot', () => {
-    const result = computeCritMeter([], fixer, ctx({ luck: 100, limitBreakingPieces: 5 }));
+    const selections = { [LIMIT_BREAKING_ID]: 5 };
+    const wornPieceCounts = getArmorEffectWornPieceCounts('live', selections);
+    const result = computeCritMeter(getArmorEffectModifiers('live', selections), fixer, ctx({ luck: 100, wornPieceCounts }));
     expect(result.critRate).toBeLessThanOrEqual(0.5);
   });
 });

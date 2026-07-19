@@ -546,162 +546,206 @@
    "measure": "apUptime",
    "source": "in-game (pending) \u2014 sustained VATS fire-and-reload loop; fraction of time able to fire before waiting on AP. Also sanity-checks that regen visibly starts ~1s into the reload"
   },
- {
-  "name": "Full-charge Gauss Rifle @50, no perks \u2014 Phase 2 charging (chargeTimeSec omitted = always fully charge)",
-  "weaponId": "GaussRifle",
-  "itemLevel": 50,
-  "mods": {},
-  "legendaryEffects": [],
-  "perks": [],
-  "legendaryPerks": [],
-  "mutations": [],
-  "consumables": [],
-  "conditions": {},
-  "enemyConditions": {},
-  "scenario": "freeAim",
-  "measure": "perHit",
-  "expected": null,
-  "tolerancePct": 2,
-  "source": "pending in-game pip-boy reading at full charge hold (docs/assumptions.md \"Charging weapons\"); extraction hasn't yet read WEAP Full Power Seconds/Full Power Damage Mult off the Gauss Rifle record, so this is currently a no-op pending the extraction phase \u2014 un-skip once both extraction and the measurement land"
- },
- {
-  "name": "Full-draw Bow @50, no perks \u2014 Phase 2 charging (charge time floors at minimumChargeTime, baking in its multiplier)",
-  "weaponId": "RegularBow",
-  "itemLevel": 50,
-  "mods": {},
-  "legendaryEffects": [],
-  "perks": [],
-  "legendaryPerks": [],
-  "mutations": [],
-  "consumables": [],
-  "conditions": {},
-  "enemyConditions": {},
-  "scenario": "freeAim",
-  "measure": "perHit",
-  "expected": null,
-  "tolerancePct": 2,
-  "source": "pending in-game pip-boy reading at full draw; extraction hasn't yet read the bow's Full Power Seconds/Full Power Damage Mult/Minimum Charge Time off WEAP.Data, so this is currently a no-op pending the extraction phase"
- },
- {
-  "name": "Tesla + Charging Barrel @50, no perks \u2014 validates a charging-barrel OMOD turning charging ON (chargeFullPowerSec/chargeFullPowerDamageMult SET)",
-  "weaponId": "DLC01LightningGun",
-  "itemLevel": 50,
-  "mods": {
-   "ap_gun_Barrel": "DLC01_mod_LightningGun_Barrel_ChargeHold"
+  {
+   "name": "Full-charge Gauss Rifle @50, no perks \u2014 Phase 2 charging (chargeTimeSec omitted = always fully charge)",
+   "weaponId": "GaussRifle",
+   "itemLevel": 50,
+   "mods": {},
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {},
+   "enemyConditions": {},
+   "scenario": "freeAim",
+   "measure": "perHit",
+   "expected": null,
+   "tolerancePct": 2,
+   "source": "pending in-game pip-boy reading at full charge hold (docs/assumptions.md \"Charging weapons\"); extraction hasn't yet read WEAP Full Power Seconds/Full Power Damage Mult off the Gauss Rifle record, so this is currently a no-op pending the extraction phase \u2014 un-skip once both extraction and the measurement land"
   },
-  "legendaryEffects": [],
-  "perks": [],
-  "legendaryPerks": [],
-  "mutations": [],
-  "consumables": [],
-  "conditions": {},
-  "enemyConditions": {},
-  "scenario": "freeAim",
-  "measure": "perHit",
-  "expected": null,
-  "tolerancePct": 2,
-  "source": "pending in-game measurement; DLC01_mod_LightningGun_Barrel_ChargeHold is extracted today (vatsApCost only) but the extraction pipeline doesn't yet map its FullPowerSeconds/FullPowerDamageMult OMOD properties to the chargeFullPowerSec/chargeFullPowerDamageMult buckets, so this case is currently a no-op pending the extraction phase"
- },
- {
-  "name": "Gamma Gun + Electric Signal Carrier Antennae @50, no perks \u2014 charging-barrel-equivalent muzzle turning charging ON",
-  "weaponId": "GammaGun",
-  "itemLevel": 50,
-  "mods": {
-   "ap_gun_Muzzle": "mod_GammaGun_SpecialMuzzle_Charger"
+  {
+   "name": "Full-draw Bow @50, no perks \u2014 Phase 2 charging (charge time floors at minimumChargeTime, baking in its multiplier)",
+   "weaponId": "RegularBow",
+   "itemLevel": 50,
+   "mods": {},
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {},
+   "enemyConditions": {},
+   "scenario": "freeAim",
+   "measure": "perHit",
+   "expected": null,
+   "tolerancePct": 2,
+   "source": "pending in-game pip-boy reading at full draw; extraction hasn't yet read the bow's Full Power Seconds/Full Power Damage Mult/Minimum Charge Time off WEAP.Data, so this is currently a no-op pending the extraction phase"
   },
-  "legendaryEffects": [],
-  "perks": [],
-  "legendaryPerks": [],
-  "mutations": [],
-  "consumables": [],
-  "conditions": {},
-  "enemyConditions": {},
-  "scenario": "freeAim",
-  "measure": "perHit",
-  "expected": null,
-  "tolerancePct": 2,
-  "source": "pending in-game measurement; mod_GammaGun_SpecialMuzzle_Charger is extracted today (vatsApCost only) but the extraction pipeline doesn't yet map its FullPowerSeconds/FullPowerDamageMult OMOD properties to the chargeFullPowerSec/chargeFullPowerDamageMult buckets, so this case is currently a no-op pending the extraction phase"
- },
- {
-  "name": "Laser Gun + Sniper Barrel @50, no perks \u2014 charging-barrel-equivalent barrel turning charging ON",
-  "weaponId": "LaserGun",
-  "itemLevel": 50,
-  "mods": {
-   "ap_gun_Barrel": "mod_LaserGun_barrel_Super_Base"
+  {
+   "name": "Tesla + Charging Barrel @50, no perks \u2014 validates a charging-barrel OMOD turning charging ON (chargeFullPowerSec/chargeFullPowerDamageMult SET)",
+   "weaponId": "DLC01LightningGun",
+   "itemLevel": 50,
+   "mods": {
+    "ap_gun_Barrel": "DLC01_mod_LightningGun_Barrel_ChargeHold"
+   },
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {},
+   "enemyConditions": {},
+   "scenario": "freeAim",
+   "measure": "perHit",
+   "expected": null,
+   "tolerancePct": 2,
+   "source": "pending in-game measurement; DLC01_mod_LightningGun_Barrel_ChargeHold is extracted today (vatsApCost only) but the extraction pipeline doesn't yet map its FullPowerSeconds/FullPowerDamageMult OMOD properties to the chargeFullPowerSec/chargeFullPowerDamageMult buckets, so this case is currently a no-op pending the extraction phase"
   },
-  "legendaryEffects": [],
-  "perks": [],
-  "legendaryPerks": [],
-  "mutations": [],
-  "consumables": [],
-  "conditions": {},
-  "enemyConditions": {},
-  "scenario": "freeAim",
-  "measure": "perHit",
-  "expected": null,
-  "tolerancePct": 2,
-  "source": "pending in-game measurement \u2014 proves laser sniper barrels charge without the HoldInputToPower flag (docs/assumptions.md \"Charging weapons\", the numeric-gate rationale); mod_LaserGun_barrel_Super_Base is extracted today (vatsApCost only) but the extraction pipeline doesn't yet map its FullPowerSeconds/FullPowerDamageMult OMOD properties to the chargeFullPowerSec/chargeFullPowerDamageMult buckets, so this case is currently a no-op pending the extraction phase"
- },
- {
-  "name": "Compound Bow + Flaming Arrows @50, no perks \u2014 charged-shot DoT exclusion (dotDps unaffected by chargeMult)",
-  "weaponId": "CompoundBow",
-  "itemLevel": 50,
-  "mods": {
-   "ap_gun_Bolt": "mod_CompoundBow_Bolt_Flaming"
+  {
+   "name": "Gamma Gun + Electric Signal Carrier Antennae @50, no perks \u2014 charging-barrel-equivalent muzzle turning charging ON",
+   "weaponId": "GammaGun",
+   "itemLevel": 50,
+   "mods": {
+    "ap_gun_Muzzle": "mod_GammaGun_SpecialMuzzle_Charger"
+   },
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {},
+   "enemyConditions": {},
+   "scenario": "freeAim",
+   "measure": "perHit",
+   "expected": null,
+   "tolerancePct": 2,
+   "source": "pending in-game measurement; mod_GammaGun_SpecialMuzzle_Charger is extracted today (vatsApCost only) but the extraction pipeline doesn't yet map its FullPowerSeconds/FullPowerDamageMult OMOD properties to the chargeFullPowerSec/chargeFullPowerDamageMult buckets, so this case is currently a no-op pending the extraction phase"
   },
-  "legendaryEffects": [],
-  "perks": [],
-  "legendaryPerks": [],
-  "mutations": [],
-  "consumables": [],
-  "conditions": {},
-  "enemyConditions": {},
-  "scenario": "freeAim",
-  "measure": "perHit",
-  "expected": null,
-  "tolerancePct": 2,
-  "source": "pending in-game measurement of the charged-shot DoT tick rate (dps-todos/measurement-backlog.md); Flaming Arrows' dotDamage is real and active today, but the bow's own Full Power Seconds/Full Power Damage Mult aren't extracted yet, so the charge multiplier is a no-op until the extraction phase lands \u2014 once it does, this pins that a partial-draw shot's flaming-arrow burn ticks the same as a full-draw shot's (computeDotDps never sees chargeMult)"
- },
- {
-  "name": "Hunting Rifle @50, no perks \u2014 range falloff at 1.25\u00d7maxRange (X=1.5, composite model)",
-  "weaponId": "HuntingRifle",
-  "itemLevel": 50,
-  "mods": {},
-  "legendaryEffects": [],
-  "perks": [],
-  "legendaryPerks": [],
-  "mutations": [],
-  "consumables": [],
-  "conditions": {},
-  "enemyConditions": {
-   "targetDistance": 6531
+  {
+   "name": "Laser Gun + Sniper Barrel @50, no perks \u2014 charging-barrel-equivalent barrel turning charging ON",
+   "weaponId": "LaserGun",
+   "itemLevel": 50,
+   "mods": {
+    "ap_gun_Barrel": "mod_LaserGun_barrel_Super_Base"
+   },
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {},
+   "enemyConditions": {},
+   "scenario": "freeAim",
+   "measure": "perHit",
+   "expected": null,
+   "tolerancePct": 2,
+   "source": "pending in-game measurement \u2014 proves laser sniper barrels charge without the HoldInputToPower flag (docs/assumptions.md \"Charging weapons\", the numeric-gate rationale); mod_LaserGun_barrel_Super_Base is extracted today (vatsApCost only) but the extraction pipeline doesn't yet map its FullPowerSeconds/FullPowerDamageMult OMOD properties to the chargeFullPowerSec/chargeFullPowerDamageMult buckets, so this case is currently a no-op pending the extraction phase"
   },
-  "scenario": "freeAim",
-  "measure": "perHit",
-  "expected": null,
-  "tolerancePct": 3,
-  "source": "pending in-game measurement (dps-todos/measurement-backlog.md \"Composite range-falloff shape\"); Hunting Rifle minRange 2612 / maxRange 5225 / outOfRangeDamageMult 0.5, distance 6531 raw units \u2248 1.25\u00d7maxRange \u2192 X = (d\u2212minRange)/(maxRange\u2212minRange) \u2248 1.5 \u2192 curveY(1.5) = 0.75 \u2192 predicted rangeFalloffMult \u2248 0.375 (0.5\u00d70.75), i.e. perHit \u2248 stock \u00d7 0.375; pins the composite model's USER-CONFIRMED X = (d\u2212minRange)/(maxRange\u2212minRange) reading against real damage numbers"
- },
- {
-  "name": "Combat Rifle (Fixer) @50, no perks vs Scorchbeast Queen (Lv 100) \u2014 mitigated sustained DPS",
-  "weaponId": "CombatRifle_Fixer",
-  "itemLevel": 50,
-  "mods": {},
-  "legendaryEffects": [],
-  "perks": [],
-  "legendaryPerks": [],
-  "mutations": [],
-  "consumables": [],
-  "conditions": {},
-  "enemyConditions": {
-   "targetRace": "EncScorchbeastQueen01Template",
-   "targetLevel": 100
+  {
+   "name": "Compound Bow + Flaming Arrows @50, no perks \u2014 charged-shot DoT exclusion (dotDps unaffected by chargeMult)",
+   "weaponId": "CompoundBow",
+   "itemLevel": 50,
+   "mods": {
+    "ap_gun_Bolt": "mod_CompoundBow_Bolt_Flaming"
+   },
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {},
+   "enemyConditions": {},
+   "scenario": "freeAim",
+   "measure": "perHit",
+   "expected": null,
+   "tolerancePct": 2,
+   "source": "pending in-game measurement of the charged-shot DoT tick rate (dps-todos/measurement-backlog.md); Flaming Arrows' dotDamage is real and active today, but the bow's own Full Power Seconds/Full Power Damage Mult aren't extracted yet, so the charge multiplier is a no-op until the extraction phase lands \u2014 once it does, this pins that a partial-draw shot's flaming-arrow burn ticks the same as a full-draw shot's (computeDotDps never sees chargeMult)"
   },
-  "scenario": "freeAim",
-  "measure": "effectiveSustainedDps",
-  "expected": null,
-  "tolerancePct": 15,
-  "source": "pending in-game measurement (dps-todos/measurement-backlog.md \"Phase 2 mitigation formula\") \u2014 Phase 2, Resist mitigation Option A; SBQ Lv100 physical resist from CT_Creatures_Armor_Universal_Tier33 (curve-only, unmeasured), no armorPen/flat-debuff sources equipped; cross-checks the (damage\u00d70.15/Resist)^0.365 formula end-to-end against a real Pip-Boy DPS reading, not just the extracted resist curve"
- }
+  {
+   "name": "Hunting Rifle @50, no perks \u2014 range falloff at 1.25\u00d7maxRange (X=1.5, composite model)",
+   "weaponId": "HuntingRifle",
+   "itemLevel": 50,
+   "mods": {},
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {},
+   "enemyConditions": {
+    "targetDistance": 6531
+   },
+   "scenario": "freeAim",
+   "measure": "perHit",
+   "expected": null,
+   "tolerancePct": 3,
+   "source": "pending in-game measurement (dps-todos/measurement-backlog.md \"Composite range-falloff shape\"); Hunting Rifle minRange 2612 / maxRange 5225 / outOfRangeDamageMult 0.5, distance 6531 raw units \u2248 1.25\u00d7maxRange \u2192 X = (d\u2212minRange)/(maxRange\u2212minRange) \u2248 1.5 \u2192 curveY(1.5) = 0.75 \u2192 predicted rangeFalloffMult \u2248 0.375 (0.5\u00d70.75), i.e. perHit \u2248 stock \u00d7 0.375; pins the composite model's USER-CONFIRMED X = (d\u2212minRange)/(maxRange\u2212minRange) reading against real damage numbers"
+  },
+  {
+   "name": "Combat Rifle (Fixer) @50, no perks vs Scorchbeast Queen (Lv 100) \u2014 mitigated sustained DPS",
+   "weaponId": "CombatRifle_Fixer",
+   "itemLevel": 50,
+   "mods": {},
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "conditions": {},
+   "enemyConditions": {
+    "targetRace": "EncScorchbeastQueen01Template",
+    "targetLevel": 100
+   },
+   "scenario": "freeAim",
+   "measure": "effectiveSustainedDps",
+   "expected": null,
+   "tolerancePct": 15,
+   "source": "pending in-game measurement (dps-todos/measurement-backlog.md \"Phase 2 mitigation formula\") \u2014 Phase 2, Resist mitigation Option A; SBQ Lv100 physical resist from CT_Creatures_Armor_Universal_Tier33 (curve-only, unmeasured), no armorPen/flat-debuff sources equipped; cross-checks the (damage\u00d70.15/Resist)^0.365 formula end-to-end against a real Pip-Boy DPS reading, not just the extracted resist curve"
+  },
+  {
+   "name": "Combat Rifle (Fixer) @50, Unyielding x5 at 10% HP \u2014 STR-boosted melee-term-neutral perHit sanity (SPECIAL-driven, ranged weapon)",
+   "weaponId": "CombatRifle_Fixer",
+   "itemLevel": 50,
+   "mods": {},
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "armorEffects": {
+    "mod_Legendary_Armor1_LowHealthIncreasesStats": 5
+   },
+   "conditions": {
+    "healthPercent": 10
+   },
+   "enemyConditions": {},
+   "scenario": "freeAim",
+   "measure": "perHit",
+   "expected": null,
+   "tolerancePct": 2,
+   "source": "pending in-game measurement (Phase 3 armor pipeline, UI + state) \u2014 Unyielding 5-piece stack below the 20% HP threshold (+15 to all SPECIAL but Endurance, engine-side hand-verified against the extracted curve in src/data/__tests__/armor-modifiers.test.ts); a ranged weapon has no melee STR term so this mostly pins the assembly seam (per-piece scaling, wornPieceCount-free curveScale x5), not a STR-sensitive damage delta \u2014 see docs/assumptions.md \"Armor effects\""
+  },
+  {
+   "name": "Combat Rifle (Fixer) @50, Battle-Loader's x3 \u2014 sustained DPS with the 45% reload-skip chance folded in",
+   "weaponId": "CombatRifle_Fixer",
+   "itemLevel": 50,
+   "mods": {},
+   "legendaryEffects": [],
+   "perks": [],
+   "legendaryPerks": [],
+   "mutations": [],
+   "consumables": [],
+   "armorEffects": {
+    "mod_Legendary_Armor4_BattleLoaders": 3
+   },
+   "conditions": {},
+   "enemyConditions": {},
+   "scenario": "freeAim",
+   "measure": "sustainedDps",
+   "expected": null,
+   "tolerancePct": 2,
+   "source": "pending in-game measurement (Phase 3 armor pipeline, UI + state) \u2014 Battle-Loader's 3-piece tier (45% reloadSkipChance, wornPieceCount==3), modeled as a Quick-Hands-equivalent per-reload skip chance (bash-cadence trigger simplification, docs/assumptions.md \"Armor effects\"); pins the sustain-chance fold end-to-end once a real Pip-Boy sustained-DPS reading with the mod equipped exists"
+  }
  ]
 }

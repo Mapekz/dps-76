@@ -6,7 +6,6 @@ import { NumberField } from '@/components/ui/number-field';
 import { Slider } from '@/components/ui/slider';
 import { firstSliderValue } from '@/lib/slider-value';
 import { Switch } from '@/components/ui/switch';
-import { ToggleGroup } from '@/components/ui/toggle-group';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
@@ -25,9 +24,6 @@ import { SectionTrigger } from './SectionTrigger';
 /** In-game meter state names — SURV_NewHungerThreshold_Msg_* / SURV_NewThirstThreshold_Msg_* (tier 4 = fullest). */
 const FOOD_TIER_NAMES = ['Hungry', 'Partially Fed', 'Fed', 'Well Fed', 'Fully Fed'] as const;
 const DRINK_TIER_NAMES = ['Thirsty', 'Partially Hydrated', 'Hydrated', 'Well Hydrated', 'Fully Hydrated'] as const;
-
-/** Limit Breaking is a 1★ armor mod — at most one per equipped armor piece. */
-const LIMIT_BREAKING_OPTIONS = [0, 1, 2, 3, 4, 5].map(value => ({ value, label: String(value) }));
 
 /**
  * GHL_SURV_FeralThreshold_Msg_* names banded over the 0–8 GHL_FeralTier AV
@@ -177,8 +173,7 @@ export function ConditionsSection() {
     ((conditions.isLastShot ?? false) !== (defaults.isLastShot ?? false) ? 1 : 0) +
     ((conditions.isAimingDownSights ?? false) !== (defaults.isAimingDownSights ?? false) ? 1 : 0) +
     (conditions.isInPowerArmor !== defaults.isInPowerArmor ? 1 : 0) +
-    ((conditions.hydrated ?? true) !== (defaults.hydrated ?? true) ? 1 : 0) +
-    (conditions.limitBreakingPieces !== defaults.limitBreakingPieces ? 1 : 0);
+    ((conditions.hydrated ?? true) !== (defaults.hydrated ?? true) ? 1 : 0);
 
   return (
     <AccordionItem value="conditions">
@@ -494,16 +489,6 @@ export function ConditionsSection() {
             checked={conditions.isInPowerArmor}
             onCheckedChange={v => set('isInPowerArmor', v)}
           />
-
-          <div className="space-y-1.5">
-            <Label>Limit Breaking armor pieces</Label>
-            <ToggleGroup
-              aria-label="Limit Breaking armor pieces"
-              options={LIMIT_BREAKING_OPTIONS}
-              value={conditions.limitBreakingPieces}
-              onValueChange={v => set('limitBreakingPieces', v)}
-            />
-          </div>
         </div>
       </AccordionContent>
     </AccordionItem>

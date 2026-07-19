@@ -258,6 +258,61 @@ describe('derived condition fields', () => {
   });
 });
 
+describe('Armor Effects checklist (Phase 3 armor pipeline, UI + state)', () => {
+  it('round-trips a mix of stackable and single-slot selections, omitting zero counts', async () => {
+    const state = stateFrom([
+      { type: 'armorEffect/setCount', id: 'mod_Legendary_Armor4_BattleLoaders', count: 3 },
+      { type: 'armorEffect/setCount', id: 'mod_Legendary_Armor2_StatStrength', count: 5 },
+      { type: 'armorEffect/setCount', id: 'mod_armor_UnderArmor_style_standard', count: 1 },
+    ]);
+    const encoded = await encodeBuild(state);
+    const decoded = await decodeBuild(encoded, 'live');
+    expect(decoded!.state.player.armorEffects).toEqual({
+      mod_Legendary_Armor4_BattleLoaders: 3,
+      mod_Legendary_Armor2_StatStrength: 5,
+      mod_armor_UnderArmor_style_standard: 1,
+    });
+    expect(decoded!.warnings).toEqual([]);
+  });
+
+  it('setting a count back to 0 removes the entry rather than serializing a 0', async () => {
+    const withEffect = stateFrom([{ type: 'armorEffect/setCount', id: 'mod_Legendary_Armor3_Healthy', count: 4 }]);
+    const cleared = buildReducer(withEffect, { type: 'armorEffect/setCount', id: 'mod_Legendary_Armor3_Healthy', count: 0 });
+    expect(cleared.player.armorEffects).toEqual({});
+    const decoded = await decodeBuild(await encodeBuild(cleared), 'live');
+    expect(decoded!.state.player.armorEffects).toEqual({});
+  });
+
+  it('clamps a count to the effect\'s maxCount and drops unknown ids with a warning', async () => {
+    const encoded = await encodeRawWire({
+      ae: [
+        ['mod_Legendary_Armor2_StatStrength', 99], // stackable, max 5
+        ['mod_armor_UnderArmor_style_standard', 5], // single-slot, max 1
+        ['NotARealArmorEffect', 3],
+      ],
+    });
+    const decoded = await decodeBuild(encoded, 'live');
+    expect(decoded!.state.player.armorEffects).toEqual({
+      mod_Legendary_Armor2_StatStrength: 5,
+      mod_armor_UnderArmor_style_standard: 1,
+    });
+    expect(decoded!.warnings.some(w => w.includes('NotARealArmorEffect'))).toBe(true);
+  });
+
+  it('migrates a legacy "limitBreakingPieces" condition into the checklist selection', async () => {
+    const encoded = await encodeRawWire({ pc: { limitBreakingPieces: 5 } });
+    const decoded = await decodeBuild(encoded, 'live');
+    expect(decoded!.state.player.armorEffects).toEqual({ mod_Legendary_Armor4_LimitBreak: 5 });
+    expect(decoded!.warnings.some(w => w.includes('Armor Effects checklist'))).toBe(true);
+  });
+
+  it('a legacy "limitBreakingPieces: 0" migrates to no selection at all (not a stored zero)', async () => {
+    const encoded = await encodeRawWire({ pc: { limitBreakingPieces: 0 } });
+    const decoded = await decodeBuild(encoded, 'live');
+    expect(decoded!.state.player.armorEffects).toEqual({});
+  });
+});
+
 describe('consumables & addictions (2026-07-13 overhaul, hermetic fixtures)', () => {
   it('round-trips selected addictions', async () => {
     const state = createDefaultBuildState();

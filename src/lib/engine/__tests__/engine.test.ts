@@ -234,6 +234,45 @@ describe('condition evaluation', () => {
     const unequipped = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), equippedPerkRanks: undefined } });
     expect(foldBucket([needsLnL, lacksLnL], 'dbm', 1.0, unequipped)).toBeCloseTo(1.1, 10);
   });
+
+  it('wornPieceCount gates exact-match tiers and orMore tiers (Phase 3 armor pipeline, engine half)', () => {
+    const exactTier3 = mod({
+      bucket: 'dbm', op: 'ADD', value: 0.3,
+      conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_Test', count: 3 }],
+    });
+    const orMoreTier5 = mod({
+      bucket: 'dbm', op: 'ADD', value: 0.75,
+      conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_Test', count: 5, orMore: true }],
+    });
+
+    // No wornPieceCounts input at all → both inactive (default 0).
+    expect(foldBucket([exactTier3, orMoreTier5], 'dbm', 1.0, makeCtx(weapon))).toBe(1.0);
+
+    // Below the exact tier → inactive.
+    const two = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), wornPieceCounts: { HasLegendary_Armor_Test: 2 } } });
+    expect(foldBucket([exactTier3, orMoreTier5], 'dbm', 1.0, two)).toBe(1.0);
+
+    // Exact match → the exact-tier modifier fires, the orMore one doesn't.
+    const three = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), wornPieceCounts: { HasLegendary_Armor_Test: 3 } } });
+    expect(foldBucket([exactTier3, orMoreTier5], 'dbm', 1.0, three)).toBeCloseTo(1.3, 10);
+
+    // Above the exact tier but below the orMore threshold → both inactive
+    // (exact tiers don't cascade — Battle-Loader's/Limit-Breaking's real shape).
+    const four = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), wornPieceCounts: { HasLegendary_Armor_Test: 4 } } });
+    expect(foldBucket([exactTier3, orMoreTier5], 'dbm', 1.0, four)).toBe(1.0);
+
+    // At the orMore threshold → the top tier fires.
+    const five = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), wornPieceCounts: { HasLegendary_Armor_Test: 5 } } });
+    expect(foldBucket([exactTier3, orMoreTier5], 'dbm', 1.0, five)).toBeCloseTo(1.75, 10);
+
+    // Above the orMore threshold → still fires (≥, not ==).
+    const six = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), wornPieceCounts: { HasLegendary_Armor_Test: 6 } } });
+    expect(foldBucket([exactTier3, orMoreTier5], 'dbm', 1.0, six)).toBeCloseTo(1.75, 10);
+
+    // A different keyword's count doesn't leak into this one.
+    const otherKeyword = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), wornPieceCounts: { SomeOtherKeyword: 5 } } });
+    expect(foldBucket([exactTier3, orMoreTier5], 'dbm', 1.0, otherKeyword)).toBe(1.0);
+  });
 });
 
 describe('Grounded (2026-07-14): classFreakRank tier selection on a dbm MUL_ADD', () => {

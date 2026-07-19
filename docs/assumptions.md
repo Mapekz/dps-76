@@ -1419,29 +1419,104 @@ auto-converted); their stats are stale and must not be shown.
 - **ESM-PROVEN**: `WornApparelHasKeywordCount` (worn-piece-count tiers —
   Battle-Loader's 1/2/3/4/≥5, Limit-Breaking Armor, Crusaders S.P.E.C.I.A.L.)
   translates to a new `{kind: 'wornPieceCount', keyword, count, orMore?}`
-  condition (`conditions.ts`, pattern: `GetGroupTargetCount`). **INERT by
-  design until the Phase 3 engine half lands**: `resolve.ts`'s case always
-  returns `null` (no `PlayerConditions.wornPieceCounts` input exists yet) —
-  every modifier carrying this condition folds to zero regardless of loadout,
-  same "stored, not yet wired" status as `bulletStormOnKill`/`deflectChance`.
+  condition (`conditions.ts`, pattern: `GetGroupTargetCount`). Engine half
+  SHIPPED — see "Armor effects" below.
 - **ESM-PROVEN**: Battle-Loader's PERK entry point 199 ("Instant Reload Clip
   On Bash") emits `Function Type: Float, Function: Set Value, Float: 1.0` on
   all 5 tiers — a boolean trigger placeholder, NOT the 15/30/45/60/75% chance
   (that value lives in each tier's own `GetRandomPercent` condition row).
   `mgef.ts` narrowly special-cases this exact shape (pattern: the existing
   EP-172/`Mod Ammo Used Count` case) to emit the real chance into
-  `reloadSkipChance`, leaving `GetRandomPercent`/`IsPowerAttacking` as
-  `unresolved` conditions on the modifier (same precedent as EP-172's Tesla
-  Science 5 — those conditions are redundant with the baked-in value and
-  inert either way once folded, since `wornPieceCount` above already keeps
-  the whole modifier inert pending the engine half). Bash-cadence modeling
-  (the trigger is per-power-attack, not per-empty-clip) is out of scope for
-  this pass — see `dps-todos/armor-mods-outgoing.md`.
+  `reloadSkipChance`, leaving `GetRandomPercent`/`IsPowerAttacking`/`GetDead`
+  as `unresolved` conditions on the extracted modifier. **CORRECTION**: these
+  are NOT harmless — `evalCondition`'s `unresolved` case always returns
+  `null`, so any one of them permanently deactivates the modifier regardless
+  of `wornPieceCount`. See "Armor effects" below for the override that drops
+  them.
 - `extract-armor.ts` is grounding-only: `{id, formId, name, obtainable}` per
   ARMO record, feeding armor-OMOD obtainability the same way
   `obtainableWeaponFormIds` feeds weapon-OMOD obtainability (`ObtainabilityClassifier`'s
   new ARMO branch, parallel to its WEAP one). No resistances, no mod slots,
   no UI consumer — that's later Phase 3 scope.
+
+## Armor effects (Phase 3 engine + UI, 2026-07-18)
+
+- **DESIGN**: the Armor Effects checklist (`ArmorEffectsSection.tsx`) is
+  deliberately slim (worn-piece COUNT per effect, not a per-piece armor/mod
+  picker — user decision). `PlayerConfig.armorEffects: Record<effectId,
+  count>` is the single source of truth; `resolveLoadout` derives both the
+  folded `Modifier[]` list AND `PlayerConditions.wornPieceCounts` from it
+  (`src/data/armor-modifiers.ts`) — the UI never sets either downstream field.
+  This retired the pre-existing hand-authored `ArmorConfig`/`ArmorSlotConfig`
+  per-piece scaffold (`PlayerConfig.armor`), which had zero engine/UI
+  consumers since it was added — dead code from an earlier plan revision.
+- **DESIGN**: per-piece scaling has two shapes, detected structurally (not by
+  source name) in `getArmorEffects`/`getArmorEffectModifiers`:
+  - Most effects (Unyielding, 2★ SPECIAL, Powered, Active, Healthy,
+    Bruiser's/Ranger's, Propelling, PA Misc/Lining/underarmor mods) extract
+    as ONE flat per-piece modifier with no `wornPieceCount` condition of its
+    own — the checklist count multiplies `value` (or `curveScale` for
+    curve-driven ones, e.g. Unyielding's stepped SPECIAL curves) directly.
+  - "Self-scaling" effects (any modifier carrying its own `wornPieceCount`
+    condition — Battle-Loader's, Limit-Breaking Armor) already extract as N
+    pre-tiered modifiers; the checklist count feeds
+    `PlayerConditions.wornPieceCounts` instead and the modifiers pass through
+    unscaled, letting the condition eval pick the one active tier.
+- **BUG FIX (ESM-derived, not wiki)**: Battle-Loader's extracted modifiers
+  carry `unresolved` conditions (`GetRandomPercent`, `IsPowerAttacking`,
+  `GetDead`) that permanently deactivate them regardless of `wornPieceCount`
+  (see the correction above). `src/data/overrides/armor-values.ts`
+  (`armorLegendaryValueOverrides`) REPLACES the modifiers, keeping only the
+  `wornPieceCount` tier — the baked-in value already IS the
+  `GetRandomPercent` chance (keeping it as a gate would double-apply the same
+  probability); `GetDead` has no failure mode this calculator models;
+  `IsPowerAttacking` (the real per-bash trigger) is dropped as an
+  **ASSUMPTION**: bash cadence is unmodeled, so the reload-skip chance is
+  treated as sustained/per-reload, the same simplification Quick Hands
+  already ships with for its own `reloadSkipChance` sources.
+- **BUG FIX (ESM-derived)**: Bruiser's/Ranger's ("Melee/Ranged Weapons Deal
+  +5% Bonus Damage, up to +25% on Full Stack" — both fields ESM-extracted)
+  wrongly typed their worn-piece gate as a `weaponKeyword` check on
+  `HasLegendary_Armor_{Bruiser,Ranger}` — a keyword the OMOD adds to the
+  ARMOR piece, never to a weapon, so the condition can never pass as
+  extracted. `armor-values.ts` drops the broken keyword condition (keeping
+  the real weapon-class gate) and lets the generic per-piece value×count
+  scaling reconstruct the 5/10/15/20/25% ladder from the single 5%-per-piece
+  value.
+- **EXCLUDED (data-quality, `hiddenArmorOmodIds`)**: Overeater's (its only
+  modifier is a `maxHealth` curve the ESM itself flags zero-magnitude/
+  script-scaled; its real DR/ER-per-buff mechanic is incoming-scope,
+  unextracted — `dps-todos/armor-mods-incoming.md`) and Punishing (its two
+  modifiers are `HasLegendary_Weapon_HealAllies`-gated noise from a shared
+  `LegendaryCommonWeaponPerk` chase — same collision class documented under
+  Crippling in `legendary-values.ts` — not a real effect; its actual reflect-
+  damage mechanic, `ActorValues` on `ReflectMeleeDamage`, never extracted).
+- **CORRECTION**: Limit-Breaking Armor's 5-tier `critConsumption` MUL_ADD
+  (−10%..−50%) does NOT fold through the generic `foldOps` bucket arithmetic
+  with Critical Savvy's SET — `foldOps`' "MUL_ADD always scales the ORIGINAL
+  base, even past a SET" rule (verified for OMOD stat properties) reads
+  Limit-Breaking's own "reduces the cost by X%" wording as a percentage OFF
+  the bucket's abstract 100 base (55 + (−0.5×100) = 5) instead of off
+  whatever Critical Savvy already set the cost to (55 × (1−0.5) = 27.5, the
+  pre-armor-pipeline hand-verified anchor). `crit-meter.ts` detects self-
+  scaling `critConsumption` modifiers generically (MUL_ADD + a
+  `wornPieceCount` condition) and applies them as a separate sequential
+  multiplier, same "independent stacking multiplier" shape as
+  `foldWholeDamage` — preserves the original verified 16 LCK + Crit Savvy 3 +
+  5× Limit Breaking → crit-every-2nd-shot anchor exactly. This ALSO retired
+  the pre-existing hand-authored `PlayerConditions.limitBreakingPieces`
+  manual toggle (ConditionsSection.tsx) — Limit-Breaking is now sourced from
+  real OMOD data via the Armor Effects checklist instead; `codec.ts` migrates
+  legacy `pc.limitBreakingPieces` payloads into the equivalent checklist
+  selection.
+- **ASSUMPTION**: worn-piece maxCount for non-legendary effects (PA Misc,
+  armor Lining, underarmor styles) is derived from body-slot tags observed in
+  the dedup group's OMOD ids (`Torso`/`Limb`/`Helmet`) rather than real armor-
+  slot topology data (none exists in this dataset) — Lining mods (Torso +
+  Limb variants) get max 2, single-slot PA Misc/underarmor mods get max 1.
+  Legendary-slot effects (`ap_Legendary1-4`) always get max 5 (5 armor
+  pieces), including Battle-Loader's/Limit-Breaking (self-scaling — the max
+  bounds the checklist count, not a value multiplier).
 
 ## Known gaps / deferred
 - **Follow Through / Taking One for the Team** extract with empty

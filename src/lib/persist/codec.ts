@@ -9,6 +9,7 @@ import {
 import { getPerks, getWeapons } from '@/data';
 import { getAddictions, getConsumables, getMutations } from '@/data/buffs';
 import { getOmodById } from '@/data/omods';
+import { getArmorEffectById } from '@/data/armor-modifiers';
 import { nukesDragonsPerks, reclassifyPerkLoadouts } from '@/lib/nukes-dragons';
 import { consumablesById, sanitizeConsumables } from '@/lib/consumable-rules';
 import { createDefaultBuildState, type BuildState } from '@/state/build-reducer';
@@ -51,6 +52,8 @@ interface SerializedBuild {
   c?: string[];
   /** selected addiction ids (GeneratedAddiction.id) */
   ad?: string[];
+  /** Armor Effects checklist selections: [effectId, count][], count>0 only */
+  ae?: Array<[string, number]>;
   /** non-default player conditions */
   pc?: Partial<PlayerConditions>;
   /** non-default enemy conditions */
@@ -171,6 +174,9 @@ export async function encodeBuild(state: BuildState): Promise<string> {
     ...(player.mutations.length > 0 && { m: player.mutations }),
     ...(player.consumables.length > 0 && { c: player.consumables }),
     ...(player.addictions.length > 0 && { ad: player.addictions }),
+    ...(Object.keys(player.armorEffects).length > 0 && {
+      ae: Object.entries(player.armorEffects).filter(([, count]) => count > 0),
+    }),
     ...(buildName && { n: buildName }),
     ...(view.emphasized && { ve: view.emphasized }),
     ...(view.breakdownOpen && { vb: true }),
@@ -293,8 +299,30 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
     return false;
   });
 
+  for (const [id, count] of wire.ae ?? []) {
+    const effect = getArmorEffectById(mode, id);
+    if (!effect || typeof count !== 'number') {
+      warnings.push(`unknown armor effect "${id}" — removed`);
+      continue;
+    }
+    state.player.armorEffects[id] = Math.max(0, Math.min(effect.maxCount, count));
+  }
+
   // Conditions: only keys that exist in the current schema survive.
   for (const [key, value] of Object.entries(wire.pc ?? {})) {
+    if (key === 'limitBreakingPieces' && typeof value === 'number') {
+      // Pre-Phase-3 URLs stored Limit Breaking as a standalone manual
+      // condition; it's now the "Limit-Breaking" Armor Effects checklist row
+      // (mod_Legendary_Armor4_LimitBreak — same 0-5 worn-piece count, just
+      // sourced from real OMOD data instead of a hand-authored crit-meter
+      // term — see docs/assumptions.md "Armor effects").
+      const effect = getArmorEffectById(mode, 'mod_Legendary_Armor4_LimitBreak');
+      if (effect && value > 0) {
+        state.player.armorEffects[effect.id] = Math.max(0, Math.min(effect.maxCount, value));
+        warnings.push('"Limit Breaking armor pieces" moved into the Armor Effects checklist');
+      }
+      continue;
+    }
     if (key === 'addictionCount') {
       // Pre-overhaul URLs stored a manual count; there's no way to map a
       // bare number back to specific addiction ids, so it's dropped rather

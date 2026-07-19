@@ -45,6 +45,7 @@ const FLAT_POINT_BUCKET_LABELS: Partial<Record<Bucket, string>> = {
 /** Friendly names for curve axes; unmapped axes fall back to the raw CurveInput name. */
 const CURVE_AXIS_LABELS: Partial<Record<CurveInput, string>> = {
   killStreak: 'kill streak',
+  healthFraction: 'missing health',
 };
 
 const WEAPON_KEYWORD_LABELS: Record<string, string> = {
@@ -164,6 +165,12 @@ function formatPercentRange(lo: number, hi: number): string {
   return `${loStr}–${hiStr}`;
 }
 
+/** "+1–3" — flat-point analogue of formatPercentRange (Unyielding's stepped SPECIAL curves, Lining's apMax curves). */
+function formatFlatRange(lo: number, hi: number): string {
+  const fmt = (v: number) => `${v > 0 ? '+' : ''}${v}`;
+  return lo === hi ? fmt(lo) : `${fmt(lo)}–${fmt(hi)}`;
+}
+
 /**
  * dotDamage is a special case: the flat value is damage/second, `durationSec`
  * carries the tick window, and the modifier's own `damageTypeScope` condition
@@ -198,11 +205,11 @@ function describeModifier(m: Modifier, scale: number): string | null {
   let magnitude: string;
 
   if (m.curve) {
-    if (!percentLabel) return null; // only percent buckets describe as a curve range
+    if (!percentLabel && !flatLabel) return null; // unmodeled bucket — omit rather than show something unverified
     const ys = m.curve.points.map(p => p.y * m.curveScale * scale);
     const lo = Math.min(...ys);
     const hi = Math.max(...ys);
-    magnitude = `${formatPercentRange(lo, hi)} ${percentLabel}`;
+    magnitude = percentLabel ? `${formatPercentRange(lo, hi)} ${percentLabel}` : `${formatFlatRange(lo, hi)} ${flatLabel}`;
     const axisLabel = CURVE_AXIS_LABELS[m.curve.input] ?? m.curve.input;
     extraClauses.push(`scales with ${axisLabel}`);
   } else if (percentLabel) {

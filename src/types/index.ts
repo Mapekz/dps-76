@@ -99,7 +99,6 @@ export interface PlayerConditions {
    * the stored default only feeds synthetic engine tests.
    */
   glow?: number;
-  limitBreakingPieces: number; // 0-5 armor pieces with Limit Breaking (−10% crit cost each)
   /**
    * True when any active consumable is category alcohol (Live & Love 5's
    * HasMagicEffectKeyword(AlcoholEffect) gate). DERIVED in resolveLoadout;
@@ -195,6 +194,17 @@ export interface PlayerConditions {
    * see docs/assumptions.md "Berserker's (Damage Unarmored)".
    */
   playerDamageResist?: number;
+  /**
+   * Worn-piece counts keyed by the armor-added keyword a `wornPieceCount`
+   * condition tests (e.g. `HasLegendary_Armor_BattleLoaders`) — Battle-
+   * Loader's 1-5 reload-skip tiers, Limit-Breaking's 1-5 crit-cost tiers.
+   * DERIVED in resolveLoadout from `PlayerConfig.armorEffects` (the Armor
+   * Effects checklist's selections are the single source of truth —
+   * `src/data/armor-modifiers.ts` `getArmorEffectWornPieceCounts`); the UI
+   * never sets this directly, and the stored default only feeds synthetic
+   * engine tests. See docs/assumptions.md "Armor effects".
+   */
+  wornPieceCounts?: Record<string, number>;
 
   // SPECIAL stats
   strength: number; // 1-15 (can exceed with legendary perks)
@@ -534,21 +544,6 @@ export interface ArmorMod {
   statModifiers: Record<string, number>;
 }
 
-export interface ArmorSlotConfig {
-  armorId: string | null;
-  mods: [string | null, string | null, string | null, string | null];
-  legendaryEffects: string[];
-}
-
-export interface ArmorConfig {
-  head: ArmorSlotConfig;
-  chest: ArmorSlotConfig;
-  leftArm: ArmorSlotConfig;
-  rightArm: ArmorSlotConfig;
-  leftLeg: ArmorSlotConfig;
-  rightLeg: ArmorSlotConfig;
-}
-
 // Enemy types
 export interface Enemy {
   id: string;
@@ -579,7 +574,15 @@ export interface PlayerConfig {
   perks: PerkLoadout[];
   legendaryPerks: PerkLoadout[];
   weapon: WeaponConfig | null;
-  armor: ArmorConfig;
+  /**
+   * Armor Effects checklist selections — effectId (a stable representative
+   * OMOD edid, `src/data/armor-modifiers.ts` `ArmorEffectEntry.id`) → worn
+   * count (0-`maxCount`; single-slot effects use 0/1). Authoritative source
+   * for both the folded `Modifier[]` list and `PlayerConditions.wornPieceCounts`
+   * — resolveLoadout derives both, the UI never sets either downstream field
+   * directly (docs/assumptions.md "Armor effects").
+   */
+  armorEffects: Record<string, number>;
   mutations: string[];
   consumables: string[];
   /**
@@ -635,7 +638,6 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     drinkTier: 0, // drink meter empty (Thirsty)
     feralTier: 0, // Lucid/Feral's curve input (0–8; human default)
     glow: 0, // ghoul Glow meter, absolute (0..maxHealth; human/no-Glow default)
-    limitBreakingPieces: 0,
     underAlcoholEffect: false, // synthetic-test default; the app derives it in resolveLoadout (active alcohol consumable)
     strangeInNumbers: false, // synthetic-test default; the app derives it in resolveLoadout (perk + teammates)
     classFreakRank: 0, // synthetic-test default; the app derives it in resolveLoadout (equipped ClassFreak rank)
@@ -682,29 +684,12 @@ export function createDefaultEnemyConditions(): EnemyConditions {
   };
 }
 
-export function createDefaultArmorConfig(): ArmorConfig {
-  const defaultSlot: ArmorSlotConfig = {
-    armorId: null,
-    mods: [null, null, null, null],
-    legendaryEffects: [],
-  };
-
-  return {
-    head: { ...defaultSlot },
-    chest: { ...defaultSlot },
-    leftArm: { ...defaultSlot },
-    rightArm: { ...defaultSlot },
-    leftLeg: { ...defaultSlot },
-    rightLeg: { ...defaultSlot },
-  };
-}
-
 export function createDefaultPlayerConfig(): PlayerConfig {
   return {
     perks: [],
     legendaryPerks: [],
     weapon: null,
-    armor: createDefaultArmorConfig(),
+    armorEffects: {},
     mutations: [],
     consumables: [],
     addictions: [],

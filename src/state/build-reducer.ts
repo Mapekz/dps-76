@@ -17,6 +17,7 @@ import { consumablesById, toggleConsumable } from '@/lib/consumable-rules';
 import { CARNIVORE_MUTATION_ID, HERBIVORE_MUTATION_ID } from '@/lib/diet-mutations';
 import { getPerks, getUniqueById, getEquippedUnique, getWeapons, maxEligibleLevel } from '@/data';
 import { getOmodById } from '@/data/omods';
+import { getArmorEffectById } from '@/data/armor-modifiers';
 import { isOmodEligibleForWeapon } from '@/data/omod-eligibility';
 import type { PerkId } from '@/data/perk-ids';
 
@@ -78,6 +79,7 @@ export type BuildAction =
   | { type: 'consumable/toggle'; id: string }
   | { type: 'addiction/toggle'; id: string }
   | { type: 'condition/set'; key: keyof PlayerConditions; value: PlayerConditions[keyof PlayerConditions] }
+  | { type: 'armorEffect/setCount'; id: string; count: number }
   | { type: 'race/set'; isGhoul: boolean }
   | { type: 'enemy/condition'; key: keyof EnemyConditions; value: EnemyConditions[keyof EnemyConditions] }
   | { type: 'view/set'; view: Partial<ViewState> }
@@ -354,6 +356,16 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
 
     case 'condition/set':
       return withPlayer(state, { ...player, conditions: { ...player.conditions, [action.key]: action.value } });
+
+    case 'armorEffect/setCount': {
+      const effect = getArmorEffectById(mode, action.id);
+      const maxCount = effect?.maxCount ?? 5;
+      const count = Math.max(0, Math.min(maxCount, action.count));
+      const armorEffects = { ...player.armorEffects };
+      if (count > 0) armorEffects[action.id] = count;
+      else delete armorEffects[action.id];
+      return withPlayer(state, { ...player, armorEffects });
+    }
 
     case 'race/set':
       // The user's choice, not a side effect of adding a perk — prune whatever

@@ -261,7 +261,26 @@ describe('describeBuffModifiers: curve support', () => {
     expect(describeBuffModifiers(buff([mod]))).toBe('0–20% damage (scales with capsOnHand)');
   });
 
-  it('a curve on a non-percent bucket is omitted, not guessed at', () => {
+  it('a curve on a bucket with neither a percent nor a flat-point label is omitted, not guessed at', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'armorPen',
+      op: 'ADD',
+      curve: {
+        input: 'endurance',
+        points: [
+          { x: 0, y: 0 },
+          { x: 10, y: 20 },
+        ],
+      },
+      curveScale: 1,
+      conditions: [],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBeNull();
+  });
+
+  it('a curve on a flat-point bucket describes as a flat range (Unyielding-shaped)', () => {
     const mod: Modifier = {
       id: '0x1:0',
       source,
@@ -277,7 +296,7 @@ describe('describeBuffModifiers: curve support', () => {
       curveScale: 1,
       conditions: [],
     };
-    expect(describeBuffModifiers(buff([mod]))).toBeNull();
+    expect(describeBuffModifiers(buff([mod]))).toBe('0–+20 max HP (scales with endurance)');
   });
 });
 

@@ -1,6 +1,6 @@
 import type { Weapon } from '@/types';
 import type { Modifier } from '@/types/modifiers';
-import { foldBucket, type ResolveContext } from './resolve';
+import { effectiveValue, foldBucket, type ResolveContext } from './resolve';
 import { lastTrace, type BucketTrace, type CritMeterTrace } from './trace';
 
 /**
@@ -12,8 +12,20 @@ import { lastTrace, type BucketTrace, type CritMeterTrace } from './trace';
  * fVATSCriticalChargeMult = 1.5 (0x0023AEC0).
  *
  * Consumption per crit (percent of meter):
- *   cost = fold(critConsumption over base 100)          // Critical Savvy SETs 85/70/55
- *          × (1 − 0.10 × limitBreakingPieces)           // Limit Breaking armor mod, up to −50%
+ *   cost = fold(critConsumption over base 100) × Π(1 + selfScalingMult)
+ *   // Critical Savvy SETs 85/70/55 folds normally.
+ *   // Limit-Breaking Armor (Armor Effects checklist,
+ *   // src/data/armor-modifiers.ts) is handled SEPARATELY as a sequential
+ *   // multiplier, not folded through foldOps: its 5-tier MUL_ADD values
+ *   // (−10%..−50%, wornPieceCount-gated) mean "reduce the cost by X%" —
+ *   // a percentage OFF whatever the cost already is, not off the bucket's
+ *   // abstract 100 base. foldOps' "MUL_ADD always scales the ORIGINAL
+ *   // base, even past a SET" rule (verified for OMOD stat properties) would
+ *   // otherwise compute 55 + (−0.5×100) = 5 instead of the correct
+ *   // 55 × (1−0.5) = 27.5. Detected generically — any critConsumption
+ *   // MUL_ADD modifier carrying a wornPieceCount condition — not by source
+ *   // name, so any future effect in the same shape is handled for free
+ *   // (same "separate stacking multiplier" pattern as foldWholeDamage).
  *
  * Steady state: a crit fires at a full meter and drops it by `cost`; each
  * following hit adds `fill` (capped at 100). Crit every ceil(cost/fill)+1
@@ -21,6 +33,11 @@ import { lastTrace, type BucketTrace, type CritMeterTrace } from './trace';
  * Anchor (user-verified): 16 LCK (fill 29) + Crit Savvy 3 + 5× Limit Breaking
  * (cost 27.5) → crit every 2nd shot.
  */
+
+/** True for Limit-Breaking-shaped critConsumption modifiers — see the module doc comment above. */
+function isSelfScalingCritConsumption(m: Modifier): boolean {
+  return m.bucket === 'critConsumption' && m.op === 'MUL_ADD' && m.conditions.some(c => c.kind === 'wornPieceCount');
+}
 
 const VATS_CRITICAL_CHARGE_BASE = 5.0;
 const VATS_CRITICAL_CHARGE_MULT = 1.5;
@@ -49,10 +66,18 @@ export function computeCritMeter(
   if (trace && fillCollect) trace.fill = lastTrace(fillCollect);
 
   const costCollect = trace ? ([] as BucketTrace[]) : undefined;
-  const costFromPerks = foldBucket(modifiers, 'critConsumption', 100, ctx, costCollect);
+  const restModifiers = modifiers.filter(m => !isSelfScalingCritConsumption(m));
+  const consumptionBase = foldBucket(restModifiers, 'critConsumption', 100, ctx, costCollect);
   if (trace && costCollect) trace.consumption = lastTrace(costCollect);
-  const limitBreaking = 1 - 0.1 * Math.max(0, Math.min(5, ctx.player.limitBreakingPieces));
-  const consumption = costFromPerks * limitBreaking;
+
+  let selfScalingMult = 1;
+  for (const m of modifiers) {
+    if (!isSelfScalingCritConsumption(m)) continue;
+    const value = effectiveValue(m, ctx);
+    if (value === null) continue;
+    selfScalingMult *= 1 + value;
+  }
+  const consumption = consumptionBase * selfScalingMult;
 
   if (fillPerHit <= 0) {
     return { fillPerHit, consumption, critRate: 0, shotsPerCrit: Infinity };

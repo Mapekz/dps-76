@@ -205,6 +205,32 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
 ]);
 
 /**
+ * Armor-OMOD ids hidden from the Armor Effects checklist (src/data/armor-
+ * modifiers.ts) — data-quality exclusions, not deferred-mechanic badges
+ * (that's the incoming-scope todo, dps-todos/armor-mods-incoming.md).
+ */
+export const hiddenArmorOmodIds: ReadonlySet<string> = new Set<string>([
+  // Overeater's: its only extracted modifier is a `maxHealth` curve whose
+  // MGEF is script/scaled with zero baked magnitude (extraction note:
+  // "Legendary_Armor_OvereaterAddValue: zero magnitude, no curve — script/
+  // scaled, needs override") — always interpolates to 0, no real bonus. The
+  // mod's actual mechanic (+DR/ER per active food/drink buff) is incoming-
+  // scope and unextracted; see dps-todos/armor-mods-incoming.md.
+  'mod_Legendary_Armor1_Overeater',
+  'mod_Legendary_PowerArmor1_Overeater',
+  // Punishing: its two extracted modifiers (limbDamage/dbm MUL_ADD −1, i.e.
+  // zero damage) are gated on `HasLegendary_Weapon_HealAllies` — the SAME
+  // ally-heal-blocking clause `legendary-values.ts`'s Crippling override
+  // already documents colliding with other legendary common-perk chases.
+  // Nothing about "Punishing" relates to ally healing; this is extraction
+  // noise from a shared `LegendaryCommonWeaponPerk` entry point, not a real
+  // effect (extraction note: "ActorValues on ReflectMeleeDamage —
+  // unmapped" — the actual reflect-damage mechanic never extracted). See
+  // dps-todos/armor-mods-incoming.md.
+  'mod_Legendary_Armor_ReflectDamage',
+]);
+
+/**
  * Effects whose data cannot move numbers yet: 'pendingMechanic' = the game
  * mechanic behind it is a deferred rework. ('needsEnemyDefenses' REMOVED
  * Phase 2 — Enemy defenses shipped, src/data/omods.ts.) Drives the picker

@@ -71,6 +71,16 @@ Fill `expected: null` goldens in `src/lib/engine/__tests__/golden/cases.json`
       mitigated DPS) against an actual Pip-Boy/combat-log reading yet. Needs
       a known build (stock Combat Rifle Fixer, no perks, free aim) vs. SBQ at
       level 100 with a measured sustained DPS.
+- [ ] **Armor Effects checklist: Unyielding + Battle-Loader's** (new
+      2026-07-18, Phase 3 — Armor pipeline engine/UI) — two golden
+      placeholders in `golden/cases.json` (`expected: null`): Unyielding ×5
+      at 10% HP (`measure: 'perHit'`, Combat Rifle Fixer, no melee STR term
+      so mostly an assembly-seam pin) and Battle-Loader's ×3
+      (`measure: 'sustainedDps'`, 45% reloadSkipChance tier). Per-piece
+      scaling math is hand-verified against the extracted curve/flat values
+      in `armor-modifiers.test.ts`; what's unmeasured is the real in-game
+      Pip-Boy/DPS reading with the mods actually equipped. See
+      docs/assumptions.md "Armor effects".
 - [ ] **Taking One for the Team flat-DR rank-4 anomaly** — the 6/10/15/50
       magnitude table (docs/assumptions.md "Resist mitigation") jumps
       non-arithmetically at rank 4; confirm whether this is intentional

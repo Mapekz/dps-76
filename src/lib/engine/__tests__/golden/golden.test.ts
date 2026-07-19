@@ -29,6 +29,8 @@ interface GoldenCase {
   mutations: string[];
   consumables: string[];
   addictions?: string[];
+  /** Armor Effects checklist selections (Phase 3 armor pipeline): effectId → worn count. */
+  armorEffects?: Record<string, number>;
   conditions: Partial<PlayerConditions>;
   /**
    * Player-selected charge hold time in seconds, for weapons that charge
@@ -77,6 +79,7 @@ describe('golden cases (in-game measurements)', () => {
         mutations: c.mutations,
         consumables: c.consumables,
         addictions: c.addictions ?? [],
+        armorEffects: c.armorEffects ?? {},
         itemLevel: c.itemLevel,
         conditions: { ...createDefaultPlayerConditions(), ...c.conditions },
         chargeTimeSec: c.chargeTimeSec,

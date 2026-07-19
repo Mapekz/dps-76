@@ -24,6 +24,7 @@ import { bodyArmor as bodyArmorPts } from './pts/armor';
 import { powerArmor as powerArmorPts } from './pts/power-armor';
 
 import { legendaryValueOverrides } from './overrides/legendary-values';
+import { armorLegendaryValueOverrides } from './overrides/armor-values';
 import { buffValueOverrides } from './overrides/buff-overrides';
 import {
   omodModifierAdditions,
@@ -33,6 +34,7 @@ import {
   forceVisibleWeaponIds,
   hiddenOmodIds,
   forceVisibleOmodIds,
+  hiddenArmorOmodIds,
   omodBadgeOverrides,
   omodWeaponRestrictions,
   hiddenConsumableIds,
@@ -42,6 +44,7 @@ import { perkFamilyOverrides, extraPerkModifiers } from './overrides/perk-overri
 import { npcOverrides } from './overrides/npc-overrides';
 import { derivePerkRegistry, type PerkNameEntry } from './perk-cards';
 import generatedOmodsLive from './live/generated/omods.json';
+import generatedArmorOmodsLive from './live/generated/armor-omods.json';
 import generatedPerksLive from './live/generated/perks.json';
 import generatedMutationsLive from './live/generated/mutations.json';
 import generatedConsumablesLive from './live/generated/consumables.json';
@@ -123,6 +126,8 @@ type PowerArmor = typeof powerArmorLive;
 export interface Dataset {
   weapons: Record<string, Weapon>;
   omods: GeneratedOmod[];
+  /** Armor/power-armor OMODs (Phase 3 armor pipeline) — feeds src/data/armor-modifiers.ts, not the weapon mod pickers. */
+  armorOmods: GeneratedOmod[];
   uniques: GeneratedUnique[];
   perks: GeneratedPerk[];
   perkRegistry: Record<PerkId, Perk>;
@@ -160,6 +165,13 @@ const mergedOmods = applyNameOverride(
   ),
   omodNameOverrides
 );
+// Armor/PA OMODs get the same value-override treatment as weapon omods
+// (armorLegendaryValueOverrides — condition-shape fixes, see that file's
+// header) but no name/addition overlays exist for this collection yet.
+const mergedArmorOmods = applyModifierOverride(
+  generatedArmorOmodsLive as GeneratedOmod[],
+  armorLegendaryValueOverrides
+);
 const mergedMutations = applyModifierOverride(generatedMutationsLive as GeneratedBuff[], buffValueOverrides);
 const mergedConsumables = applyModifierOverride(generatedConsumablesLive as GeneratedBuff[], buffValueOverrides);
 const generatedPerks = generatedPerksLive as GeneratedPerk[];
@@ -173,6 +185,7 @@ function buildDataset(hand: HandAuthored): Dataset {
   return {
     ...rest,
     omods: mergedOmods,
+    armorOmods: mergedArmorOmods,
     uniques: generatedUniques,
     perks: generatedPerks,
     perkRegistry: derivePerkRegistry(perkNames, generatedPerks),
@@ -266,6 +279,10 @@ export function getUnresolvedOverrideKeys(mode: GameMode): UnresolvedOverrideKey
   for (const [omodId, weaponRefs] of Object.entries(omodWeaponRestrictions)) {
     check(`omodWeaponRestrictions[${omodId}] (weapon ref)`, weaponRefs, weaponIds);
   }
+
+  const armorOmodIds = new Set((generatedArmorOmodsLive as GeneratedOmod[]).map(o => o.id));
+  check('armorLegendaryValueOverrides', Object.keys(armorLegendaryValueOverrides), armorOmodIds);
+  check('hiddenArmorOmodIds', hiddenArmorOmodIds, armorOmodIds);
 
   const buffIds = new Set([...generatedMutationsLive, ...generatedConsumablesLive].map(b => b.id));
   check('buffValueOverrides', Object.keys(buffValueOverrides), buffIds);
