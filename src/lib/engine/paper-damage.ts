@@ -84,10 +84,13 @@ export interface PaperDamageInput {
    * Range-falloff multiplier (Phase 1 — Range + falloff; `rangeFalloffMult`,
    * src/lib/distance.ts), computed once in scenarios.ts from the target
    * distance and the effective weapon's min/max range + out-of-range mult.
-   * Folded into BOTH `outerMult` and `explosiveOuterMult` below (no evidence
-   * exists that explosive components are exempt — ASSUMPTION,
-   * docs/assumptions.md "Target distance (Close / Far)"). Undefined/1.0 =
-   * neutral (melee weapons, or no range data).
+   * Folded into `outerMult` only, NOT `explosiveOuterMult` below —
+   * USER-CONFIRMED: explosive damage is not subject to the engagement-range
+   * falloff curve at all (that curve models a projectile's own flight/spread
+   * degrading with distance); an explosion's payload instead falls off by
+   * distance from its OWN blast center within its radius, a wholly separate,
+   * unmodeled mechanic — docs/assumptions.md "Composite range-falloff model".
+   * Undefined/1.0 = neutral (melee weapons, or no range data).
    */
   rangeFalloffMult?: number;
   /** Body part the hit lands on (gates bodyPart-conditioned modifiers). */
@@ -218,10 +221,12 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
   // Explosive damage (launcher payloads AND Explosive-legendary twins) lands
   // its flat payload on whatever part it strikes: it is unaffected by
   // body-part multipliers (weakpoint AND strongpoint) and gains no sneak
-  // bonus, while still scaling with whole-damage, crit, power-attack, AND
-  // range falloff (no evidence explosive components are exempt from range
-  // falloff — ASSUMPTION, docs/assumptions.md).
-  const explosiveOuterMult = wholeMult * paRaceMult * rangeMult;
+  // bonus, while still scaling with whole-damage AND crit/power-attack — but
+  // NOT engagement-range falloff. USER-CONFIRMED: explosive damage isn't
+  // subject to the minRange/maxRange curve at all (that's a projectile
+  // flight/spread mechanic); an explosion's own blast-radius falloff is a
+  // separate, unmodeled mechanic. See the rangeFalloffMult doc comment above.
+  const explosiveOuterMult = wholeMult * paRaceMult;
 
   const components: ComponentHit[] = componentBase(mode, weapon, itemLevel, chargeMult).flatMap(({ type, base, isExplosion }) => {
     const componentCtx = { ...ctx, componentType: type, componentIsExplosion: isExplosion };

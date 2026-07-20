@@ -1013,6 +1013,39 @@ describe('explosive damage ignores sneak & body-part multipliers', () => {
     });
     expect(twinCrit.components[1].damage).toBeCloseTo(twinNoCrit.components[1].damage * 2, 6);
   });
+
+  it('range falloff multiplies the ballistic impact but NOT the explosive payload (explosions are exempt)', () => {
+    const noFalloff = computePaperDamage({
+      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: [], ctx: makeCtx(launcher), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    const withFalloff = computePaperDamage({
+      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: [], ctx: makeCtx(launcher), bodyPartMult: 1.0, bodyPart: 'torso',
+      rangeFalloffMult: 0.5,
+    });
+    // Ballistic impact: falloff halves it — 5 × 0.5 = 2.5.
+    expect(withFalloff.components[0].damage).toBeCloseTo(noFalloff.components[0].damage * 0.5, 6);
+    expect(withFalloff.components[0].damage).toBeCloseTo(2.5, 6);
+    // Explosive payload: unaffected by range falloff — stays at its full value.
+    expect(withFalloff.components[1].damage).toBeCloseTo(noFalloff.components[1].damage, 6);
+    expect(withFalloff.components[1].damage).toBeCloseTo(100, 6);
+  });
+
+  it('an Explosive-legendary twin is likewise exempt from range falloff, unlike its parent component', () => {
+    const weapon = makeWeapon(); // 1 ballistic component, base 100
+    const mods = [mod({ bucket: 'explosivePayload', op: 'ADD', value: 0.2 })];
+    const noFalloff = computePaperDamage({
+      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+    });
+    const withFalloff = computePaperDamage({
+      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+      rangeFalloffMult: 0.5,
+    });
+    // Parent ballistic: falloff halves it — 100 × 0.5 = 50.
+    expect(withFalloff.components[0].damage).toBeCloseTo(50, 6);
+    // Twin: flat 100 × 0.2 = 20, unaffected by range falloff.
+    expect(withFalloff.components[1].damage).toBeCloseTo(noFalloff.components[1].damage, 6);
+    expect(withFalloff.components[1].damage).toBeCloseTo(20, 6);
+  });
 });
 
 describe('computeDotDps (Stage A2, DoT line)', () => {

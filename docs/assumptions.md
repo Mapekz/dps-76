@@ -38,7 +38,7 @@ sub-anchor without updating every citation.
 - **Magazines & bobbleheads**
 - **Carnivore's / Herbivore's food scaling**
 - **Mutation penalties & Class Freak**
-- **Target distance (Close / Far)** — continuous distance slider, composite range-falloff model
+- **Target distance (Close / Far)** — continuous distance slider, composite range-falloff model, explosive-component exemption
 - **VATS AP economy & manual-aim hit rate** — regen model, hydration baseline, Number Cruncher, Conductor's
 - **Power attacks & melee cadence** — power-attack race mult, Charged, Thrill-Seeker's
 - **Onslaught** — stack counter, max-stack table, the Route-B correction
@@ -704,13 +704,16 @@ Engine: `src/lib/distance.ts` (constants, `rangeFalloffMult`), `resolve.ts`
   the caller (`scenarios.ts`'s `isMelee` check), not a field-value guard,
   because melee `outOfRangeDamageMult` values are sentinel-ish (Shishkebab
   0.0, Machete −1.0) and must never be read.
-- **Explosive-component inclusion**: range falloff is folded into
-  `explosiveOuterMult` alongside `outerMult` — explosive components (launcher
-  payloads, Explosive-legendary twins) fall off with distance same as any
-  other hit. **ASSUMPTION** — no ESM or user evidence either way; the
-  existing explosive carve-outs (sneak, body-part mult) are explicitly
-  user-confirmed exemptions and range falloff isn't one of them, so the
-  default reading is "no exemption" rather than a silent third carve-out.
+- **Explosive-component EXEMPTION** (supersedes the prior "inclusion"
+  reading, **USER-CONFIRMED** 2026-07-19): `rangeFalloffMult` is folded into
+  `outerMult` only — explosive components (launcher payloads, Explosive-
+  legendary twins) do NOT fall off with engagement distance at all via this
+  curve. `minRange`/`maxRange`/`outOfRangeDamageMult` model a projectile's own
+  flight/spread degrading with distance; an explosion's payload instead falls
+  off by distance from its OWN blast center within its `Inner Radius`/
+  `Outer Radius` (EXPL `Data`) — a spatial-precision mechanic, unmodeled and
+  distinct from engagement range. Joins the sneak/body-part-mult carve-outs as
+  a third confirmed explosive exemption.
 - **Sniper's magnitude rides a Global reference**, not the effect's own
   Magnitude field (which reads 0) — a narrow, field-shape-specific
   resolution, confirmed absent from other zero-magnitude effects (which are
