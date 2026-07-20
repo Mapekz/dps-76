@@ -36,6 +36,25 @@ judgment layer.
   description states it (Lifegiver ranks 2/3) — model via
   `overrides/perk-overrides.ts` with a description-sourced comment.
 
+## Perk rank verification (PCRD)
+
+Before modeling a perk rank or an orphaned ability spell, check the PCRD
+card's `Perks` array, not just the EditorID rank chain. FO76 rank chains and
+ability spells linger in the ESM after cuts — a chain can have 3 PERK
+records and an "engine-attached-looking" spell while the live PCRD card
+lists only 1 rank (Lock and Load, 2026-07-16: r2/r3 and
+`AbPerkLockAndLoad`'s flat 20/40/60% reload were both cut content the record
+graph alone couldn't distinguish from live).
+
+1. Find the PCRD, use its `Perks` array (rank-ordered Male Perk formids) as
+   the ground-truth rank list — not the EditorID-numbered chain.
+2. `esm refs` any orphaned spell before treating it as engine-attached:
+   "orphaned + matches the card's description text" is live-ish, "orphaned +
+   referenced only by cut ranks" is dead.
+3. Model only description-backed effects; leave undocumented record tiers
+   out pending in-game measurement rather than assuming the record graph is
+   complete.
+
 ## Obtainability verdicts (`--refs`)
 
 1. Check the record's `obtainable` flag in the generated JSON first
