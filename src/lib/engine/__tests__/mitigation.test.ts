@@ -109,12 +109,21 @@ describe('applyMitigation — per-damage-type routing', () => {
     expect(mitigated.components[0].damage).toBeLessThan(mitigated.components[1].damage);
   });
 
-  it('radiation and poison and cryo and fire each read their own named resist', () => {
-    for (const damageType of ['radiation', 'poison', 'cryo', 'fire'] as const) {
+  it('poison, cryo, and fire each read their own named resist, at the standard 0.365 exponent', () => {
+    for (const damageType of ['poison', 'cryo', 'fire'] as const) {
       const h = hit([{ damageType, damage: 100 }]);
       const mitigated = applyMitigation(h, defenses({ [damageType]: 300 }), 0, 0);
       expect(mitigated.components[0].damage).toBeCloseTo(100 * Math.pow((100 * 0.15) / 300, 0.365), 10);
     }
+  });
+
+  it('radiation reads its own named resist but at DOUBLE the standard exponent (0.730, not 0.365)', () => {
+    const h = hit([{ damageType: 'radiation', damage: 100 }]);
+    const mitigated = applyMitigation(h, defenses({ radiation: 300 }), 0, 0);
+    expect(mitigated.components[0].damage).toBeCloseTo(100 * Math.pow((100 * 0.15) / 300, 0.73), 10);
+    // Sanity: the 0.365 formula would retain noticeably MORE damage — proves
+    // the two exponents actually diverge for this input, not just algebra.
+    expect(mitigated.components[0].damage).toBeLessThan(100 * Math.pow((100 * 0.15) / 300, 0.365));
   });
 
   it('an unset resist on the defenses object defaults to 0 (full penetration for that type)', () => {

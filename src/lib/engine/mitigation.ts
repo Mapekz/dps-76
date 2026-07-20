@@ -9,7 +9,12 @@ import type { ComponentHit, HitBreakdown } from './paper-damage';
  * wired formula:
  *
  *   Resist = max(0, base − flatDebuff) × (1 − clamp01(armorPenTotal))
- *   mult   = Resist ≤ 0 ? 1 : clamp((damage × 0.15 / Resist)^0.365, 0.01, 0.99)
+ *   mult   = Resist ≤ 0 ? 1 : clamp((damage × 0.15 / Resist)^exponent, 0.01, 0.99)
+ *
+ * `exponent` is 0.365 for every resist type EXCEPT radiation, which uses
+ * 0.730 (double) — USER-CONFIRMED, docs/assumptions.md "Resist mitigation".
+ * Diminishing returns bite roughly twice as hard against RadResistExposure
+ * as against every other resist AV.
  *
  * `base` is the enemy's resist for THAT component's damage type (`resists`
  * from `src/lib/enemy-defenses.ts`); `flatDebuff` is Taking One for the
@@ -59,6 +64,10 @@ const DAMAGE_TYPE_TO_RESIST_TYPE: Record<DamageType, GeneratedNpcDamageType> = {
   fire: 'fire',
 };
 
+const RESIST_EXPONENT = 0.365;
+/** Radiation's diminishing-returns curve is the standard exponent doubled. */
+const RADIATION_RESIST_EXPONENT = RESIST_EXPONENT * 2;
+
 function clamp01(x: number): number {
   return Math.max(0, Math.min(1, x));
 }
@@ -68,9 +77,10 @@ function clamp01(x: number): number {
  * or the flat debuff/armor-pen fully strips it) fully penetrates — mult 1,
  * the formula's own documented edge case, not a clamp artifact.
  */
-function componentMitigationMult(damage: number, resist: number): number {
+function componentMitigationMult(damage: number, resist: number, resistType: GeneratedNpcDamageType): number {
   if (resist <= 0) return 1;
-  const factor = Math.pow((damage * 0.15) / resist, 0.365);
+  const exponent = resistType === 'radiation' ? RADIATION_RESIST_EXPONENT : RESIST_EXPONENT;
+  const factor = Math.pow((damage * 0.15) / resist, exponent);
   return Math.min(0.99, Math.max(0.01, factor));
 }
 
@@ -104,7 +114,7 @@ export function applyMitigation(
     const base = defenses.resists[resistType] ?? 0;
     const flatDebuff = resistType === 'physical' ? flatResistDebuffPhysical : 0;
     const resist = Math.max(0, base - flatDebuff) * armorPenFactor;
-    const mult = componentMitigationMult(c.damage, resist);
+    const mult = componentMitigationMult(c.damage, resist, resistType);
     return { ...c, damage: c.damage * mult };
   });
 

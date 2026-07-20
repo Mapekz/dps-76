@@ -47,7 +47,7 @@ sub-anchor without updating every citation.
 - **Max HP (derived)**
 - **Ghoul Glow**
 - **Elemental 2★ effects & enemy-status 4★ rework**
-- **Resist mitigation** — formula, Option A + measured divergence, per-type mapping, TOFTT flat debuff, level-slider default
+- **Resist mitigation** — formula, doubled radiation exponent, Option A + measured divergence, per-type mapping, TOFTT flat debuff, level-slider default
 - **Berserker's (Damage Unarmored)** — wielder's-own-DR curve rename from `enemyDamageResist`, manual knob
 - **Creature stat curves & NPC extraction (Phase 2 data)** — effectiveLevel X-axis, RACE/NPC_ Properties merge, flat-wins, SBQ HP OPEN, epic-creature eligibility + fixed-rank (SBQ/Storm Goliath, NOT Earle)
 - **Body parts (BPTD-extracted)**
@@ -1191,10 +1191,20 @@ Engine: `src/lib/engine/mitigation.ts` (`applyMitigation`), `src/lib/enemy-defen
 `src/lib/damage-formulas.ts` scaffolding.
 
 - **Formula**: `Resist = max(0, base − flatDebuff) × (1 − clamp01(armorPenTotal))`;
-  `mult = clamp((damage × 0.15 / Resist)^0.365, 0.01, 0.99)`; `Resist ≤ 0` →
+  `mult = clamp((damage × 0.15 / Resist)^exponent, 0.01, 0.99)`; `Resist ≤ 0` →
   `mult = 1` (full penetration, not the 0.99 clamp ceiling — a deliberate
   upgrade over the old dormant scaffold, which returned 0.99 for that case).
   **USER-CONFIRMED** formula + clamps.
+- **Radiation exponent is doubled**: `exponent` is 0.365 for every resist type
+  EXCEPT `radiation`, which uses 0.730 — **USER-CONFIRMED** 2026-07-19.
+  Diminishing returns bite roughly twice as hard against RadResistExposure as
+  against DamageResist/EnergyResist/etc. (`mitigation.ts`'s
+  `RADIATION_RESIST_EXPONENT`). Surfaced while diagnosing why the Radium Rifle
+  (mostly ballistic) dramatically outperforms the Gamma Gun (half radiation,
+  half energy) against high-RadResist targets — the resist-tier gap alone
+  (RadResistExposure runs a materially higher curve tier than DamageResist/
+  EnergyResist on at least one sampled NPC) was too small to explain the
+  observed gap; the steeper radiation exponent is the mechanism.
 - **Per-damage-type mapping**: `ballistic`/`explosive` → `physical`;
   `energy`/`radiation`/`poison`/`cryo`/`fire` map 1:1 to their own NPC resist
   AV. Total map (every `DamageType` has an entry) — explosive is
