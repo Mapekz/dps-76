@@ -10,6 +10,8 @@ import {
   epicRankFromEncounterWaves,
   epicRankFromForceLegendaryAlias,
   resolveEpicRankFromVmad,
+  resolveNormalizedLevelAdjustment,
+  applyNormalizedLevelAdjustment,
   extractNpcs,
   type RawProperty,
 } from '../extract-npcs';
@@ -200,6 +202,139 @@ describe('resolveEpicRankFromVmad (both shapes combined)', () => {
 
   it('E06_Colossus (Earle) matches NEITHER shape — real 20260710 ESM data, not a synthetic gap', () => {
     expect(resolveEpicRankFromVmad(vmadOf(questE06Colossus))).toBeNull();
+  });
+});
+
+describe('applyNormalizedLevelAdjustment', () => {
+  it('a null base stays null regardless of adjustment (no window to fabricate)', () => {
+    expect(applyNormalizedLevelAdjustment(null, { op: 'add', delta: 25 })).toBeNull();
+    expect(applyNormalizedLevelAdjustment(null, { op: 'set', value: 150 })).toBeNull();
+    expect(applyNormalizedLevelAdjustment(null, null)).toBeNull();
+  });
+
+  it('a null adjustment leaves the base untouched', () => {
+    expect(applyNormalizedLevelAdjustment(25, null)).toBe(25);
+  });
+
+  it('Add accumulates onto the base', () => {
+    expect(applyNormalizedLevelAdjustment(25, { op: 'add', delta: 25 })).toBe(50);
+  });
+
+  it('Set replaces the base outright', () => {
+    expect(applyNormalizedLevelAdjustment(25, { op: 'set', value: 150 })).toBe(150);
+  });
+});
+
+describe('resolveNormalizedLevelAdjustment', () => {
+  /** Builds a fake PERK record's `Effects` array in the exact shape esm emits (verified live against crModNormalizedLevelPerk_25/HTO_crModNormalizedLevelPerk_Boss, 20260717 dump). */
+  function entryPointEffect(entryPoint: string, functionName: string, float: number) {
+    return {
+      Effect: {
+        'Effect Header': { 'Effect Type': { value: 2, name: 'Entry Point' } },
+        'Entry Point': { 'Entry Point': { name: entryPoint }, Function: { name: functionName } },
+        Float: float,
+      },
+    };
+  }
+  const nonEntryPointEffect = { Effect: { 'Effect Header': { 'Effect Type': { value: 1, name: 'Ability' } } } };
+
+  function fakeClientWith(records: Record<string, EsmRecord>): EsmClient {
+    return {
+      async get(target: string): Promise<EsmRecord> {
+        const record = records[target];
+        if (!record) throw new Error(`not found: ${target}`);
+        return record;
+      },
+    } as unknown as EsmClient;
+  }
+
+  const npcWithPerks = (perkFormIds: string[]) =>
+    ({ fields: { Perks: perkFormIds.map(id => ({ Perk: { Perk: id } })) } }) as unknown as EsmRecord;
+
+  it('an NPC with no Perks field resolves to {min: null, max: null}', async () => {
+    const npc = { fields: {} } as unknown as EsmRecord;
+    const result = await resolveNormalizedLevelAdjustment(fakeClientWith({}), npc, 'x', []);
+    expect(result).toEqual({ min: null, max: null });
+  });
+
+  it('crModNormalizedLevelPerk_25-shaped perk (Add +25/+25 on both entry points)', async () => {
+    const client = fakeClientWith({
+      '0x0089ECDB': {
+        fields: {
+          Effects: [
+            entryPointEffect('Mod NPC Normalized Min Level', 'Add Value', 25),
+            entryPointEffect('Mod NPC Normalized Max level', 'Add Value', 25),
+            entryPointEffect('Mod NPC Normalized Level', 'Add Value', 25), // irrelevant 3rd entry point — ignored
+          ],
+        },
+      } as unknown as EsmRecord,
+    });
+    const npc = npcWithPerks(['0x0089ECDB']);
+    const result = await resolveNormalizedLevelAdjustment(client, npc, 'x', []);
+    expect(result).toEqual({ min: { op: 'add', delta: 25 }, max: { op: 'add', delta: 25 } });
+  });
+
+  it('HTO_crModNormalizedLevelPerk_Boss-shaped perk (Set 150/200)', async () => {
+    const client = fakeClientWith({
+      '0x00862421': {
+        fields: {
+          Effects: [
+            entryPointEffect('Mod NPC Normalized Min Level', 'Set Value', 150),
+            entryPointEffect('Mod NPC Normalized Max level', 'Set Value', 200),
+          ],
+        },
+      } as unknown as EsmRecord,
+    });
+    const npc = npcWithPerks(['0x00862421']);
+    const result = await resolveNormalizedLevelAdjustment(client, npc, 'x', []);
+    expect(result).toEqual({ min: { op: 'set', value: 150 }, max: { op: 'set', value: 200 } });
+  });
+
+  it('two Add perks accumulate cumulatively per bound', async () => {
+    const client = fakeClientWith({
+      '0xAAA': { fields: { Effects: [entryPointEffect('Mod NPC Normalized Min Level', 'Add Value', 10)] } } as unknown as EsmRecord,
+      '0xBBB': { fields: { Effects: [entryPointEffect('Mod NPC Normalized Min Level', 'Add Value', 25)] } } as unknown as EsmRecord,
+    });
+    const npc = npcWithPerks(['0xAAA', '0xBBB']);
+    const result = await resolveNormalizedLevelAdjustment(client, npc, 'x', []);
+    expect(result.min).toEqual({ op: 'add', delta: 35 });
+  });
+
+  it('two Set perks: last one (in Perks array order) wins', async () => {
+    const client = fakeClientWith({
+      '0xAAA': { fields: { Effects: [entryPointEffect('Mod NPC Normalized Min Level', 'Set Value', 15)] } } as unknown as EsmRecord,
+      '0xBBB': { fields: { Effects: [entryPointEffect('Mod NPC Normalized Min Level', 'Set Value', 40)] } } as unknown as EsmRecord,
+    });
+    const npc = npcWithPerks(['0xAAA', '0xBBB']);
+    const result = await resolveNormalizedLevelAdjustment(client, npc, 'x', []);
+    expect(result.min).toEqual({ op: 'set', value: 40 });
+  });
+
+  it('an unresolvable Perks entry pushes an unresolved note and is skipped, not a crash', async () => {
+    const unresolved: string[] = [];
+    const npc = npcWithPerks(['0xDEAD']);
+    const result = await resolveNormalizedLevelAdjustment(fakeClientWith({}), npc, 'SomeNpc', unresolved);
+    expect(result).toEqual({ min: null, max: null });
+    expect(unresolved).toHaveLength(1);
+    expect(unresolved[0]).toContain('SomeNpc');
+    expect(unresolved[0]).toContain('0xDEAD');
+  });
+
+  it('ignores non-Entry-Point effects and unrelated entry points on the same perk', async () => {
+    const client = fakeClientWith({
+      '0xCCC': {
+        fields: {
+          Effects: [
+            nonEntryPointEffect,
+            entryPointEffect('Mod Weapon Attack Damage', 'Multiply Value', 1.5),
+            entryPointEffect('Mod NPC Normalized Max level', 'Add Value', 25),
+          ],
+        },
+      } as unknown as EsmRecord,
+    });
+    const npc = npcWithPerks(['0xCCC']);
+    const result = await resolveNormalizedLevelAdjustment(client, npc, 'x', []);
+    expect(result).toEqual({ min: null, max: { op: 'add', delta: 25 } });
   });
 });
 

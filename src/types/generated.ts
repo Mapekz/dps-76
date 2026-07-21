@@ -467,9 +467,23 @@ export interface GeneratedNpc {
   /** Authoritative only when `healthCurveTier` is null (flat-wins convention — see extract-npcs.ts). */
   healthFlatValue: number;
   resists: GeneratedNpcResist[];
-  /** Actor Scaling Info "Level Min Global" GLOB, resolved to its numeric Value; null when absent (e.g. a fixed-level unique boss — no scaling at all). */
+  /**
+   * Actor Scaling Info "Level Min Global" GLOB, resolved to its numeric
+   * Value; null when absent (e.g. a fixed-level unique boss — no scaling at
+   * all). Includes any NPC-perk-based adjustment: a `crModNormalizedLevel*`
+   * PERK on the NPC's own `Perks` array can further Add-onto or Set-replace
+   * this bound via its "Mod NPC Normalized Min Level" Entry Point effect
+   * (`extract-npcs.ts`'s `resolveNormalizedLevelAdjustment` — Head Hunt
+   * bounty bosses' `crModNormalizedLevelPerk_25` Adds +25, e.g.
+   * `Burn_BountyTarget_BIG_Death` 25→50).
+   */
   levelMinGlobal: number | null;
-  /** Actor Scaling Info "Level Max Global" GLOB, resolved to its numeric Value; null when absent. */
+  /**
+   * Actor Scaling Info "Level Max Global" GLOB, resolved to its numeric
+   * Value; null when absent. Same NPC-perk adjustment as `levelMinGlobal`
+   * above, via the sibling "Mod NPC Normalized Max level" Entry Point
+   * (lowercase "level" — ESM-verified).
+   */
   levelMaxGlobal: number | null;
   /** Actor Scaling Info "Level Offset Global" GLOB, resolved to its numeric Value; null when absent (0 in every sample seen so far — Phase 2 spike). */
   levelOffsetGlobal: number | null;

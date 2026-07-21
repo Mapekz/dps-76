@@ -2275,8 +2275,8 @@
     "curveTier": 39
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -2318,8 +2318,8 @@
     "curveTier": 37
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -2361,8 +2361,8 @@
     "curveTier": 39
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -2404,8 +2404,8 @@
     "curveTier": 39
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -2447,8 +2447,8 @@
     "curveTier": 40
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 150,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 175,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -2490,8 +2490,8 @@
     "curveTier": 42
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -2533,8 +2533,8 @@
     "curveTier": 40
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -2576,8 +2576,8 @@
     "curveTier": 40
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -2662,8 +2662,8 @@
     "curveTier": 35
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -2705,8 +2705,8 @@
     "curveTier": 37
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -2748,8 +2748,8 @@
     "curveTier": 39
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -2791,8 +2791,8 @@
     "curveTier": 39
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -2834,8 +2834,8 @@
     "curveTier": 42
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -2877,8 +2877,8 @@
     "curveTier": 37
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -2920,8 +2920,8 @@
     "curveTier": 40
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 150,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 175,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -2963,8 +2963,8 @@
     "curveTier": 40
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -3006,8 +3006,8 @@
     "curveTier": 44
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -3049,8 +3049,8 @@
     "curveTier": 40
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 150,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 175,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -3092,8 +3092,8 @@
     "curveTier": 45
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -3135,8 +3135,8 @@
     "curveTier": 42
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -3221,8 +3221,8 @@
     "curveTier": 40
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 150,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 175,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -3264,8 +3264,8 @@
     "curveTier": 40
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 150,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 175,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -3307,8 +3307,8 @@
     "curveTier": 40
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 150,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 175,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -3350,8 +3350,8 @@
     "curveTier": 37
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -3393,8 +3393,8 @@
     "curveTier": 40
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 150,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 175,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -3436,8 +3436,8 @@
     "curveTier": 40
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 150,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 175,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -3522,8 +3522,8 @@
     "curveTier": 43
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  },
@@ -3565,8 +3565,8 @@
     "curveTier": 39
    }
   ],
-  "levelMinGlobal": 25,
-  "levelMaxGlobal": 175,
+  "levelMinGlobal": 50,
+  "levelMaxGlobal": 200,
   "levelOffsetGlobal": null,
   "epicAllowed": true
  }

@@ -1527,6 +1527,16 @@ Engine: `scripts/extract/extract-curvetables.ts`, `scripts/extract/extract-npcs.
     `RA_LegendaryItems_Weapons_BigfootOnly_Rank4` 0x008833D6 — same pattern,
     no epic-disallowed keyword, no rank anywhere. All three stay rank-less;
     deferred entry in `dps-todos/phase-3-enemies.md`.
+  - **CONFIRMED (2026-07-21) — NPC-perk normalized-level adjustment now
+    baked into `levelMinGlobal`/`levelMaxGlobal`**: a `crModNormalizedLevel*`
+    PERK on an NPC's own `Perks` array (not just the RACE/NPC_ GLOBs) can
+    Add-onto or Set-replace the level-scaling window via "Mod NPC Normalized
+    Min Level"/"Mod NPC Normalized Max level" Entry Points —
+    `extract-npcs.ts`'s `resolveNormalizedLevelAdjustment`. Head Hunt bounty
+    bosses (`Burn_BountyTarget_BIG_*`) mostly carry `crModNormalizedLevelPerk_25`
+    (Add +25/+25); Infestation-event bosses carry
+    `HTO_crModNormalizedLevelPerk_Boss` (Set 150/200, happens to match their
+    base GLOBs — a no-op in practice).
 
 ## Body parts (BPTD-extracted)
 Engine: `scripts/extract/extract-bodyparts.ts`.

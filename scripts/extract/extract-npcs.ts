@@ -189,6 +189,120 @@ async function resolveBossEpicRank(client: EsmClient, targetEdid: string, unreso
   return rank;
 }
 
+// ── Normalized-level perk adjustment (esm-walk 2026-07-21) ─────────────────
+//
+// A curated boss's level-scaling window isn't always just the raw
+// `Actor Scaling Info.{Level Min/Max Global}` GLOBs: ~65+ NPCs (Head Hunt
+// bounty bosses among them) additionally carry a `crModNormalizedLevel*`
+// PERK whose Entry Point effects further modify that window. Verified
+// directly against the 20260717 dump (`esm -p get crModNormalizedLevelPerk_25
+// --json`, `crModNormalizedLevelRangePerk_15_to_100`,
+// `HTO_crModNormalizedLevelPerk_Boss`): the two relevant entry points are
+// "Mod NPC Normalized Min Level" (206) and "Mod NPC Normalized Max level"
+// (207 — note the lowercase "level", not a typo), each via one of two
+// Functions — "Add Value" (accumulate onto the base — Head Hunt's
+// `crModNormalizedLevelPerk_25`, +25/+25) or "Set Value" (replace the base
+// outright — e.g. `HTO_crModNormalizedLevelPerk_Boss`, Infestation-event
+// bosses, Set 150/200). A third entry point on the same perks, "Mod NPC
+// Normalized Level" (208), is irrelevant here — no consumer reads a single
+// "normalized level", only min/max.
+//
+// `Burn_BountyTarget_BIG_Death`: base 25/175 (Renorm_MinLVL_Tier06/
+// Renorm_MaxLVL_Tier07 GLOBs) + `crModNormalizedLevelPerk_25` (Add +25/+25)
+// → 50/200. `Burn_BountyTarget_BIG_Pilot`/`_Abraxo` carry no such perk
+// (unchanged); `_RoboBrain` carries unrelated perks (ImmuneToRadiation/
+// ImmuneToPoison — no matching entry point, unchanged).
+//
+// `NPC_.Perks` is a flat `[{Perk: {Perk: formid}}]` array — NOT the PCRD
+// "Perks" shape (`{Perk: {Male Perk, Female Perk, Card Rank Cost}}`, see
+// extract-perks.ts); don't confuse the two when reading this field
+// elsewhere.
+const NORMALIZED_MIN_LEVEL_ENTRY_POINT = 'Mod NPC Normalized Min Level';
+const NORMALIZED_MAX_LEVEL_ENTRY_POINT = 'Mod NPC Normalized Max level'; // lowercase "level" — ESM-verified, not a typo
+const ADD_VALUE_FUNCTION = 'Add Value';
+const SET_VALUE_FUNCTION = 'Set Value';
+
+/** `{op: 'add', delta}` accumulates onto the base GLOB value; `{op: 'set', value}` replaces it outright. */
+type NormalizedLevelBoundOp = { op: 'add'; delta: number } | { op: 'set'; value: number };
+
+/** One entry-point effect's contribution to one bound (min or max), folded onto `acc`. Add accumulates onto a prior Add; Set replaces whatever came before (last-wins across perks, in `Perks` array order). */
+function foldNormalizedLevelBound(acc: NormalizedLevelBoundOp | null, functionName: string, float: number): NormalizedLevelBoundOp | null {
+  if (functionName === SET_VALUE_FUNCTION) {
+    return { op: 'set', value: float };
+  }
+  if (functionName === ADD_VALUE_FUNCTION) {
+    return { op: 'add', delta: (acc?.op === 'add' ? acc.delta : 0) + float };
+  }
+  return acc;
+}
+
+/**
+ * Reads an NPC_'s `Perks` array, fetches each referenced PERK, and folds any
+ * "Mod NPC Normalized Min/Max Level" Entry Point effects into a net
+ * adjustment per bound (see header note for the exact strings and Add/Set
+ * duality). Multiple matching perks: Add accumulates, Set replaces
+ * (last-wins) — actual curated NPCs are expected to carry at most one, but
+ * this doesn't crash on more. An unresolvable perk ref pushes an unresolved
+ * note and is skipped (fail-open — the base GLOB window still applies).
+ * Exported for tests.
+ */
+export async function resolveNormalizedLevelAdjustment(
+  client: EsmClient,
+  npcRecord: EsmRecord,
+  label: string,
+  unresolved: string[]
+): Promise<{ min: NormalizedLevelBoundOp | null; max: NormalizedLevelBoundOp | null }> {
+  const perksNode = npcRecord.fields['Perks'];
+  const perkEntries = Array.isArray(perksNode) ? (perksNode as Array<Record<string, unknown>>) : [];
+
+  let min: NormalizedLevelBoundOp | null = null;
+  let max: NormalizedLevelBoundOp | null = null;
+
+  for (const entry of perkEntries) {
+    const perkFormId = (entry['Perk'] as Record<string, unknown> | undefined)?.['Perk'] as string | undefined;
+    if (!perkFormId) continue;
+
+    let perkRecord: EsmRecord;
+    try {
+      perkRecord = await client.get(perkFormId);
+    } catch (err) {
+      unresolved.push(
+        `npcs: ${label} Perks entry ${perkFormId} failed to resolve: ${(err as Error).message} — normalized-level adjustment skipped for this perk`
+      );
+      continue;
+    }
+
+    const effects = perkRecord.fields['Effects'];
+    if (!Array.isArray(effects)) continue;
+    for (const item of effects) {
+      const effect = (item as Record<string, unknown>)['Effect'] as Record<string, unknown> | undefined;
+      if (!effect) continue;
+      const header = (effect['Effect Header'] ?? {}) as Record<string, unknown>;
+      const effectType = (header['Effect Type'] as Record<string, unknown> | undefined)?.['name'] as string | undefined;
+      if (effectType !== 'Entry Point') continue;
+
+      const ep = (effect['Entry Point'] ?? {}) as Record<string, unknown>;
+      const entryPointName = (ep['Entry Point'] as Record<string, unknown> | undefined)?.['name'] as string | undefined;
+      const functionName = (ep['Function'] as Record<string, unknown> | undefined)?.['name'] as string | undefined;
+      const float = typeof effect['Float'] === 'number' ? (effect['Float'] as number) : 0;
+
+      if (entryPointName === NORMALIZED_MIN_LEVEL_ENTRY_POINT) {
+        min = foldNormalizedLevelBound(min, functionName ?? '', float);
+      } else if (entryPointName === NORMALIZED_MAX_LEVEL_ENTRY_POINT) {
+        max = foldNormalizedLevelBound(max, functionName ?? '', float);
+      }
+    }
+  }
+
+  return { min, max };
+}
+
+/** Applies a resolved bound adjustment to a base GLOB value. A null base (fixed-level unique with no scaling window at all) stays null — the adjustment doesn't fabricate a window that doesn't exist. Exported for tests. */
+export function applyNormalizedLevelAdjustment(base: number | null, adjustment: NormalizedLevelBoundOp | null): number | null {
+  if (base == null || adjustment == null) return base;
+  return adjustment.op === 'set' ? adjustment.value : base + adjustment.delta;
+}
+
 const HEALTH_AV = 0x2d4;
 /** Exported for tests. */
 export const RESIST_AVS: Record<number, GeneratedNpcDamageType> = {
@@ -411,9 +525,16 @@ export async function extractNpcs(client: EsmClient): Promise<NpcsResult> {
     }
 
     const scaling = (npcRecord.fields['Actor Scaling Info'] as Record<string, string> | undefined) ?? {};
-    const levelMinGlobal = await resolveGlobal(client, scaling['Level Min Global'], `${target.edid} Level Min Global`, unresolved);
-    const levelMaxGlobal = await resolveGlobal(client, scaling['Level Max Global'], `${target.edid} Level Max Global`, unresolved);
+    const baseLevelMinGlobal = await resolveGlobal(client, scaling['Level Min Global'], `${target.edid} Level Min Global`, unresolved);
+    const baseLevelMaxGlobal = await resolveGlobal(client, scaling['Level Max Global'], `${target.edid} Level Max Global`, unresolved);
     const levelOffsetGlobal = await resolveGlobal(client, scaling['Level Offset Global'], `${target.edid} Level Offset Global`, unresolved);
+
+    // Bake any NPC-perk-based normalized-level adjustment directly into the
+    // stored min/max (see `resolveNormalizedLevelAdjustment` header note) —
+    // no new field, no runtime consumer changes needed.
+    const normalizedLevelAdjustment = await resolveNormalizedLevelAdjustment(client, npcRecord, target.edid, unresolved);
+    const levelMinGlobal = applyNormalizedLevelAdjustment(baseLevelMinGlobal, normalizedLevelAdjustment.min);
+    const levelMaxGlobal = applyNormalizedLevelAdjustment(baseLevelMaxGlobal, normalizedLevelAdjustment.max);
 
     const epicRank = await resolveBossEpicRank(client, target.edid, unresolved);
 
