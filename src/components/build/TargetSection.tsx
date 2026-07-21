@@ -36,11 +36,13 @@ import { SectionTrigger } from './SectionTrigger';
 
 // Distance slider (Phase 1 — Range + falloff): displayed in Pip-Boy units,
 // storage stays raw game units (EnemyConditions.targetDistance,
-// src/lib/distance.ts). Max is a round 300 Pip-Boy (≈6400 raw units) —
-// comfortably beyond 1.5×maxRange for every sampled ranged weapon (the point
-// past which the falloff curve is already flat), so the slider always covers
-// the full falloff shape.
-const DISTANCE_SLIDER_MAX_PIPBOY = 300;
+// src/lib/distance.ts). Max clamps to 1.5×the equipped weapon's max range —
+// the point where `rangeFalloffMult`'s curve already flattens — floored past
+// the Far gate (below) so both slider marks always stay on-track even for a
+// short-range weapon. Computed per-render (component body) since it depends
+// on the equipped weapon; melee/unarmed weapons have no range at all, so the
+// whole control is hidden for them instead (see `weaponRange` below).
+const DISTANCE_SLIDER_MAX_MARGIN_PIPBOY = 5;
 const FAR_GATE_PIPBOY = gameUnitsToPipBoy(FAR_THRESHOLD_UNITS);
 
 const STATUS_TOGGLES: Array<{ key: keyof EnemyConditions; label: string; title: string }> = [
@@ -205,11 +207,14 @@ export function TargetSection() {
   // own `ScenarioInput.engineConstants.distance` (src/lib/loadout.ts).
   const closeThresholdUnits = getDistanceConstants(mode).closeThresholdUnits;
   const closeGatePipBoy = gameUnitsToPipBoy(closeThresholdUnits);
+  const distanceSliderMaxPipBoy = weaponRange
+    ? Math.max(gameUnitsToPipBoy(weaponRange.maxRange) * 1.5, FAR_GATE_PIPBOY + DISTANCE_SLIDER_MAX_MARGIN_PIPBOY)
+    : FAR_GATE_PIPBOY + DISTANCE_SLIDER_MAX_MARGIN_PIPBOY;
   const distanceSliderMarks = [
     { value: 0, label: '0' },
     { value: closeGatePipBoy, label: 'Close' },
     { value: FAR_GATE_PIPBOY, label: 'Far' },
-    { value: DISTANCE_SLIDER_MAX_PIPBOY, label: String(DISTANCE_SLIDER_MAX_PIPBOY) },
+    { value: distanceSliderMaxPipBoy, label: distanceSliderMaxPipBoy.toFixed(0) },
   ];
   const isCloseRange = targetDistanceUnits <= closeThresholdUnits;
   const isFarRange = targetDistanceUnits >= FAR_THRESHOLD_UNITS;
@@ -373,29 +378,40 @@ export function TargetSection() {
             />
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="target-distance" className="flex flex-wrap items-center gap-1.5">
-              <span>Distance: {distancePipBoy.toFixed(1)} Pip-Boy units</span>
-              {isCloseRange && <Badge variant="secondary">Close</Badge>}
-              {isFarRange && <Badge variant="secondary">Far</Badge>}
-            </Label>
-            <Slider
-              id="target-distance"
-              min={0}
-              max={DISTANCE_SLIDER_MAX_PIPBOY}
-              step={0.1}
-              value={[distancePipBoy]}
-              onValueChange={v => setEnemy('targetDistance', Math.round(pipBoyToGameUnits(firstSliderValue(v))))}
-              marks={distanceSliderMarks}
-            />
-            <p className="text-muted-foreground text-xs">
-              Close (≤{closeGatePipBoy.toFixed(1)}) and Far (≥{FAR_GATE_PIPBOY.toFixed(1)}) gate Guerrilla/Down
-              Ranger/Sniper's-style perks; damage also falls off gradually past the equipped weapon's max range.
-              {weaponRange
-                ? ` Equipped weapon range: ${gameUnitsToPipBoy(weaponRange.minRange).toFixed(1)}–${gameUnitsToPipBoy(weaponRange.maxRange).toFixed(1)} Pip-Boy units (×${weaponRange.outOfRangeMult} beyond max).`
-                : ''}
-            </p>
-          </div>
+          {weaponRange && (
+            <div className="space-y-1.5">
+              <Label htmlFor="target-distance">Distance: {distancePipBoy.toFixed(1)} Pip-Boy units</Label>
+              <div className="flex items-center gap-2">
+                <div className="min-w-0 flex-1">
+                  <Slider
+                    id="target-distance"
+                    min={0}
+                    max={distanceSliderMaxPipBoy}
+                    step={0.1}
+                    value={[distancePipBoy]}
+                    onValueChange={v => setEnemy('targetDistance', Math.round(pipBoyToGameUnits(firstSliderValue(v))))}
+                    marks={distanceSliderMarks}
+                  />
+                </div>
+                {/* Fixed-size slot regardless of content — Close/Far toggling on and off
+                    must never change this row's height (the badge used to live inline in
+                    the flex-wrap label above, where its appearance/disappearance shifted
+                    the label onto/off a second line and jumped the whole page). */}
+                <div className="flex h-5 w-14 shrink-0 items-center justify-center">
+                  {isCloseRange && <Badge variant="default">Close</Badge>}
+                  {isFarRange && <Badge variant="default">Far</Badge>}
+                </div>
+              </div>
+              <p className="text-muted-foreground text-xs">
+                Close (≤{closeGatePipBoy.toFixed(1)}) gates Guerrilla; Far (≥{FAR_GATE_PIPBOY.toFixed(1)}) gates Down
+                Ranger/Rifleman and Sniper's — both independent of range falloff. Falloff: ×1.00 out to the weapon's
+                own min range ({gameUnitsToPipBoy(weaponRange.minRange).toFixed(1)}), linear down to ×
+                {weaponRange.outOfRangeMult} by its max range ({gameUnitsToPipBoy(weaponRange.maxRange).toFixed(1)}),
+                then curving further to ×{(weaponRange.outOfRangeMult * 0.2).toFixed(2)} by roughly 1.5× max range
+                (exact point depends on the weapon's min/max ratio), flat beyond. All units above are Pip-Boy.
+              </p>
+            </div>
+          )}
 
           {ENEMY_NUMBER_FIELDS.map(field => (
             <div key={field.key} className="space-y-1.5">
