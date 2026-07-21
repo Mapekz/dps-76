@@ -317,7 +317,7 @@
      "edid": "Magazine_AwesomeTales05_Potion",
      "name": "Astoundingly Awesome Tales 5"
     },
-    "bucket": "dbm",
+    "bucket": "wholeDamage",
     "op": "MUL_ADD",
     "value": 0.25,
     "conditions": [

@@ -2999,8 +2999,8 @@
   "formId": "0x00404464",
   "name": "Wiffle Bat",
   "description": "Wiffle Bat.",
-  "attachPointFormId": "0x0032CD06",
-  "attachPointEdid": "ap_Weapon_Model_Replacement",
+  "attachPointFormId": "0x001A001E",
+  "attachPointEdid": "ap_melee_Appearance",
   "targetKeywords": [
    "ma_BaseballBat"
   ],
@@ -30509,7 +30509,7 @@
  {
   "id": "mod_ChineseOfficerSword_Melee_Paint_MeteoriteSword",
   "formId": "0x008F20B7",
-  "name": "Meteorite Sword",
+  "name": "Meteorite Sword Paint",
   "description": "",
   "attachPointFormId": "0x001A001E",
   "attachPointEdid": "ap_melee_Appearance",
@@ -40342,9 +40342,48 @@
      "edid": "mod_Cryolator_Barrel_Long",
      "name": "Crystallizing Barrel"
     },
+    "bucket": "vatsApCost",
+    "op": "MUL_ADD",
+    "value": 0.2,
+    "conditions": []
+   },
+   {
+    "id": "0x00172359:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00172359",
+     "edid": "mod_Cryolator_Barrel_Long",
+     "name": "Crystallizing Barrel"
+    },
+    "bucket": "weaponMaxRange",
+    "op": "MUL_ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x00172359:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00172359",
+     "edid": "mod_Cryolator_Barrel_Long",
+     "name": "Crystallizing Barrel"
+    },
+    "bucket": "weaponMinRange",
+    "op": "MUL_ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x00172359:5",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00172359",
+     "edid": "mod_Cryolator_Barrel_Long",
+     "name": "Crystallizing Barrel"
+    },
     "bucket": "baseDamage",
     "op": "MUL_ADD",
-    "value": -0.25,
+    "value": -0.1,
     "conditions": [
      {
       "kind": "damageTypeScope",
@@ -41112,7 +41151,6 @@
   "attachPointFormId": "0x001A001E",
   "attachPointEdid": "ap_melee_Appearance",
   "targetKeywords": [
-   "ma_Melee_Appearance",
    "ma_BlueRidgeBrandingIron"
   ],
   "modifiers": [],
@@ -42335,8 +42373,7 @@
   "attachPointFormId": "0x001A001E",
   "attachPointEdid": "ap_melee_Appearance",
   "targetKeywords": [
-   "ma_PickAxe",
-   "ma_Melee_Appearance"
+   "ma_PickAxe"
   ],
   "modifiers": [],
   "addedKeywords": [],
@@ -42700,7 +42737,7 @@
   "id": "mod_custom_HeadHunter_Paint",
   "formId": "0x008F8636",
   "name": "Head Hunter Paint",
-  "description": "Hungry for the Hunt",
+  "description": "",
   "attachPointFormId": "0x001A001E",
   "attachPointEdid": "ap_melee_Appearance",
   "targetKeywords": [],
@@ -42756,7 +42793,7 @@
  {
   "id": "mod_custom_HolyFire_Paint",
   "formId": "0x006A983C",
-  "name": "Holy Fire",
+  "name": "Holy Fire Paint",
   "description": "",
   "attachPointFormId": "0x00114364",
   "attachPointEdid": "ap_gun_Appearance",
@@ -43493,7 +43530,9 @@
    "CustomItemName_MintyBreather"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk MintyBreather_Perk: entry point Apply Friendly Hit Spell — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -44079,7 +44118,6 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": true,
-  "hasGrantingCobj": true,
   "notes": [],
   "obtainable": true
  },
@@ -46129,7 +46167,7 @@
   "id": "mod_custom_V63LaserRifle_customName",
   "formId": "0x0075C3BA",
   "name": "Vault 63 Laser Rifle",
-  "description": "+1 INT per Hacking Skill",
+  "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [
@@ -46143,9 +46181,9 @@
    "CustomItemName_V63LaserRifle",
    "ma_v63LaserRifle"
   ],
-  "hasEnchantments": true,
+  "hasEnchantments": false,
   "notes": [
-   "MGEF AbPerkFortifyIntelligence: zero magnitude, no curve — script/scaled, needs override"
+   "ActorValues on RefractingProjectileChance — unmapped"
   ],
   "obtainable": true
  },
@@ -46196,7 +46234,7 @@
  {
   "id": "mod_custom_V63ShockBaton_Paint",
   "formId": "0x0072DF09",
-  "name": "V63 Shock Baton",
+  "name": "V63 Shock Baton Paint",
   "description": "",
   "attachPointFormId": "0x001A001E",
   "attachPointEdid": "ap_melee_Appearance",
@@ -46299,7 +46337,7 @@
   "id": "mod_Custom_Xerxos",
   "formId": "0x008F173D",
   "name": "Xerxos",
-  "description": "",
+  "description": "Emits Radiation",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
@@ -46310,8 +46348,10 @@
    "isSCORE_S7_GammaGun_XerxosGammaGun",
    "NonPlayerTradable"
   ],
-  "hasEnchantments": false,
-  "notes": [],
+  "hasEnchantments": true,
+  "notes": [
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
+  ],
   "obtainable": true
  },
  {
@@ -66900,8 +66940,8 @@
  {
   "id": "mod_Legendary_Crafting_Weapon1",
   "formId": "0x005FF602",
-  "name": "Random �",
-  "description": "Generate a random � Legendary Mod. This will replace any existing �, ��, and ��� Legendary Mods.",
+  "name": "Random ¬",
+  "description": "Generate a random ¬ Legendary Mod. This will replace any existing ¬, ¬¬, and ¬¬¬ Legendary Mods.",
   "attachPointFormId": "0x006F0475",
   "attachPointEdid": "ap_Legendary_Reroll",
   "targetKeywords": [
@@ -66917,8 +66957,8 @@
  {
   "id": "mod_Legendary_Crafting_Weapon2",
   "formId": "0x005FF601",
-  "name": "Random ��",
-  "description": "Generate random � and ��  Legendary Mods. This will replace any existing �, ��, and ��� Legendary Mods.",
+  "name": "Random ¬¬",
+  "description": "Generate random ¬ and ¬¬  Legendary Mods. This will replace any existing ¬, ¬¬, and ¬¬¬ Legendary Mods.",
   "attachPointFormId": "0x006F0475",
   "attachPointEdid": "ap_Legendary_Reroll",
   "targetKeywords": [
@@ -66934,8 +66974,8 @@
  {
   "id": "mod_Legendary_Crafting_Weapon3",
   "formId": "0x005FF609",
-  "name": "Random ���",
-  "description": "Generate random �, ��, and ���  Legendary Mods. This will replace any existing �, ��, and ��� Legendary Mods.",
+  "name": "Random ¬¬¬",
+  "description": "Generate random ¬, ¬¬, and ¬¬¬  Legendary Mods. This will replace any existing ¬, ¬¬, and ¬¬¬ Legendary Mods.",
   "attachPointFormId": "0x006F0475",
   "attachPointEdid": "ap_Legendary_Reroll",
   "targetKeywords": [
@@ -66951,8 +66991,8 @@
  {
   "id": "mod_Legendary_Crafting_Weapon4",
   "formId": "0x0079298B",
-  "name": "Random ����",
-  "description": "Generate random �, ��, ���, and ����  Legendary Mods. This will replace any existing �, ��, ���, and ���� Legendary Mods.",
+  "name": "Random ¬¬¬¬",
+  "description": "Generate random ¬, ¬¬, ¬¬¬, and ¬¬¬¬  Legendary Mods. This will replace any existing ¬, ¬¬, ¬¬¬, and ¬¬¬¬ Legendary Mods.",
   "attachPointFormId": "0x006F0475",
   "attachPointEdid": "ap_Legendary_Reroll",
   "targetKeywords": [
@@ -68510,46 +68550,6 @@
   "obtainable": true
  },
  {
-  "id": "mod_Legendary_Weapon2_Cryo",
-  "formId": "0x0083DA6D",
-  "name": "Cryologist's",
-  "description": "",
-  "attachPointFormId": "0x004E89A8",
-  "attachPointEdid": "ap_Legendary2",
-  "targetKeywords": [
-   "ma_legendarycrafting_weapon"
-  ],
-  "modifiers": [
-   {
-    "id": "0x0083DA6D:0",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0083DA6D",
-     "edid": "mod_Legendary_Weapon2_Cryo",
-     "name": "Cryologist's"
-    },
-    "bucket": "dbm",
-    "op": "ADD",
-    "value": 0.2,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "cryo"
-      ]
-     }
-    ]
-   }
-  ],
-  "addedKeywords": [
-   "FeaturedItem"
-  ],
-  "hasEnchantments": false,
-  "hasGrantingCobj": true,
-  "notes": [],
-  "obtainable": true
- },
- {
   "id": "mod_Legendary_Weapon2_DmgCrits",
   "formId": "0x0052414B",
   "name": "Vital",
@@ -68625,7 +68625,7 @@
      "edid": "mod_Legendary_Weapon2_DmgLimbs",
      "name": "Crippling"
     },
-    "bucket": "dbm",
+    "bucket": "wholeDamage",
     "op": "MUL_ADD",
     "value": -1,
     "conditions": [
@@ -68672,46 +68672,6 @@
   "notes": [
    "perk LegendaryCommonWeaponPerk: entry point Mod Outgoing Limb Bash Damage — not modeled"
   ],
-  "obtainable": true
- },
- {
-  "id": "mod_Legendary_Weapon2_Fire",
-  "formId": "0x00849316",
-  "name": "Pyro-Technician's",
-  "description": "",
-  "attachPointFormId": "0x004E89A8",
-  "attachPointEdid": "ap_Legendary2",
-  "targetKeywords": [
-   "ma_legendarycrafting_weapon"
-  ],
-  "modifiers": [
-   {
-    "id": "0x00849316:0",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00849316",
-     "edid": "mod_Legendary_Weapon2_Fire",
-     "name": "Pyro-Technician's"
-    },
-    "bucket": "dbm",
-    "op": "ADD",
-    "value": 0.2,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ]
-   }
-  ],
-  "addedKeywords": [
-   "FeaturedItem"
-  ],
-  "hasEnchantments": false,
-  "hasGrantingCobj": true,
-  "notes": [],
   "obtainable": true
  },
  {
@@ -69128,46 +69088,6 @@
     },
     "curveScale": 1,
     "conditions": []
-   }
-  ],
-  "addedKeywords": [
-   "FeaturedItem"
-  ],
-  "hasEnchantments": false,
-  "hasGrantingCobj": true,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "mod_Legendary_Weapon2_Poison",
-  "formId": "0x00849317",
-  "name": "Poisoner's",
-  "description": "",
-  "attachPointFormId": "0x004E89A8",
-  "attachPointEdid": "ap_Legendary2",
-  "targetKeywords": [
-   "ma_legendarycrafting_weapon"
-  ],
-  "modifiers": [
-   {
-    "id": "0x00849317:0",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00849317",
-     "edid": "mod_Legendary_Weapon2_Poison",
-     "name": "Poisoner's"
-    },
-    "bucket": "dbm",
-    "op": "ADD",
-    "value": 0.2,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "poison"
-      ]
-     }
-    ]
    }
   ],
   "addedKeywords": [
@@ -70087,7 +70007,7 @@
   "attachPointFormId": "0x004E89AA",
   "attachPointEdid": "ap_Legendary4",
   "targetKeywords": [
-   "ma_legendarycrafting_weapon"
+   "ma_legendarycrafting_weaponmelee"
   ],
   "modifiers": [
    {
@@ -70098,13 +70018,15 @@
      "edid": "mod_Legendary_Weapon4_Icemens",
      "name": "Icemen's"
     },
-    "bucket": "dbm",
-    "op": "ADD",
-    "value": 0.5,
+    "bucket": "baseDamage",
+    "op": "MUL_ADD",
+    "value": 0.2,
     "conditions": [
      {
-      "kind": "enemyHasActiveEffect",
-      "keyword": "DamageTypeCryo"
+      "kind": "damageTypeScope",
+      "types": [
+       "cryo"
+      ]
      }
     ]
    }
@@ -71822,23 +71744,6 @@
   "obtainable": true
  },
  {
-  "id": "mod_melee_BaseballBat_Model_Null",
-  "formId": "0x00405CF8",
-  "name": "Default Appearance",
-  "description": "",
-  "attachPointFormId": "0x0032CD06",
-  "attachPointEdid": "ap_Weapon_Model_Replacement",
-  "targetKeywords": [
-   "ma_BaseballBat"
-  ],
-  "modifiers": [],
-  "addedKeywords": [],
-  "hasEnchantments": false,
-  "hasGrantingCobj": true,
-  "notes": [],
-  "obtainable": true
- },
- {
   "id": "mod_melee_BaseballBat_Spikes",
   "formId": "0x00182CCF",
   "name": "Spiked",
@@ -72776,7 +72681,7 @@
  {
   "id": "mod_melee_ChineseOfficerSword_Null",
   "formId": "0x00176DF8",
-  "name": "No Upgrade",
+  "name": "Standard Blade",
   "description": "",
   "attachPointFormId": "0x0005524C",
   "attachPointEdid": "ap_melee_MeleeMod",
@@ -73033,6 +72938,76 @@
       ]
      }
     ]
+   },
+   {
+    "id": "0x0014A0F1:ench:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0014A0F1",
+     "edid": "mod_melee_ChineseOfficerSword_ShockAndSerrated",
+     "name": "Electrified Serrated Blade"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 10
+      },
+      {
+       "x": 5,
+       "y": 11
+      },
+      {
+       "x": 10,
+       "y": 12
+      },
+      {
+       "x": 15,
+       "y": 14
+      },
+      {
+       "x": 20,
+       "y": 16
+      },
+      {
+       "x": 25,
+       "y": 18
+      },
+      {
+       "x": 30,
+       "y": 20
+      },
+      {
+       "x": 35,
+       "y": 22
+      },
+      {
+       "x": 40,
+       "y": 25
+      },
+      {
+       "x": 45,
+       "y": 29
+      },
+      {
+       "x": 50,
+       "y": 32
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     }
+    ],
+    "durationSec": 12
    }
   ],
   "addedKeywords": [
@@ -76652,8 +76627,8 @@
   "formId": "0x005FB446",
   "name": "No Customization",
   "description": "",
-  "attachPointFormId": "0x0032CD06",
-  "attachPointEdid": "ap_Weapon_Model_Replacement",
+  "attachPointFormId": "0x001A001E",
+  "attachPointEdid": "ap_melee_Appearance",
   "targetKeywords": [
    "ma_PipeWrench"
   ],
@@ -118395,7 +118370,7 @@
      "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
      "name": "Ruiner's"
     },
-    "bucket": "dbm",
+    "bucket": "wholeDamage",
     "op": "ADD",
     "value": 500,
     "conditions": [
@@ -118425,7 +118400,7 @@
      "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
      "name": "Ruiner's"
     },
-    "bucket": "dbm",
+    "bucket": "wholeDamage",
     "op": "ADD",
     "value": 500,
     "conditions": [
@@ -118459,7 +118434,7 @@
      "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
      "name": "Ruiner's"
     },
-    "bucket": "dbm",
+    "bucket": "wholeDamage",
     "op": "ADD",
     "value": 500,
     "conditions": [
@@ -118493,7 +118468,7 @@
      "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
      "name": "Ruiner's"
     },
-    "bucket": "dbm",
+    "bucket": "wholeDamage",
     "op": "ADD",
     "value": 500,
     "conditions": [
@@ -118527,7 +118502,7 @@
      "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
      "name": "Ruiner's"
     },
-    "bucket": "dbm",
+    "bucket": "wholeDamage",
     "op": "ADD",
     "value": 500,
     "conditions": [
@@ -118561,7 +118536,7 @@
      "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
      "name": "Ruiner's"
     },
-    "bucket": "dbm",
+    "bucket": "wholeDamage",
     "op": "ADD",
     "value": 500,
     "conditions": [
@@ -118595,7 +118570,7 @@
      "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
      "name": "Ruiner's"
     },
-    "bucket": "dbm",
+    "bucket": "wholeDamage",
     "op": "ADD",
     "value": 500,
     "conditions": [
@@ -118629,7 +118604,7 @@
      "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
      "name": "Ruiner's"
     },
-    "bucket": "dbm",
+    "bucket": "wholeDamage",
     "op": "ADD",
     "value": 500,
     "conditions": [
@@ -118663,7 +118638,7 @@
      "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
      "name": "Ruiner's"
     },
-    "bucket": "dbm",
+    "bucket": "wholeDamage",
     "op": "ADD",
     "value": 500,
     "conditions": [
@@ -118697,7 +118672,7 @@
      "edid": "P62_mod_Legendary_Weapon4_Guns_Ruiners",
      "name": "Ruiner's"
     },
-    "bucket": "dbm",
+    "bucket": "wholeDamage",
     "op": "ADD",
     "value": 500,
     "conditions": [
@@ -120904,11 +120879,13 @@
   "attachPointEdid": "ap_gun_Appearance",
   "targetKeywords": [
    "ma_Gun_Appearance",
-   "ma_Flamer"
+   "ma_Flamer",
+   "RD01_ma_BoilingPoint"
   ],
   "modifiers": [],
   "addedKeywords": [],
   "hasEnchantments": false,
+  "hasGrantingCobj": true,
   "notes": [],
   "obtainable": true
  },
@@ -121017,8 +120994,7 @@
   "attachPointFormId": "0x00114364",
   "attachPointEdid": "ap_gun_Appearance",
   "targetKeywords": [
-   "ma_Gun_Appearance",
-   "ma_Chainsaw"
+   "RD01_ma_Cauterizer"
   ],
   "modifiers": [],
   "addedKeywords": [],
@@ -121034,8 +121010,7 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [
-   "ma_Chainsaw",
-   "RD01_ma_Cauterizer"
+   "ma_Chainsaw"
   ],
   "modifiers": [
    {
@@ -121093,62 +121068,13 @@
      "name": "Cauterizer"
     },
     "bucket": "baseDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 5,
-       "y": 3
-      },
-      {
-       "x": 10,
-       "y": 3
-      },
-      {
-       "x": 15,
-       "y": 3
-      },
-      {
-       "x": 20,
-       "y": 4
-      },
-      {
-       "x": 25,
-       "y": 4
-      },
-      {
-       "x": 30,
-       "y": 5
-      },
-      {
-       "x": 35,
-       "y": 5
-      },
-      {
-       "x": 40,
-       "y": 6
-      },
-      {
-       "x": 45,
-       "y": 7
-      },
-      {
-       "x": 50,
-       "y": 7
-      }
-     ]
-    },
-    "curveScale": 1,
+    "op": "MUL_ADD",
+    "value": 0.6,
     "conditions": [
      {
       "kind": "damageTypeScope",
       "types": [
-       "fire"
+       "energy"
       ]
      }
     ]
@@ -121162,13 +121088,11 @@
    "NonDroppable",
    "NonPlayerTradable",
    "UnsellableObject",
-   "WeaponTypeFireDamage",
-   "dn_UniqueEffectFireDamage"
+   "WeaponTypeEnergy",
+   "dn_UniqueEffectEnergyDamage"
   ],
-  "hasEnchantments": true,
-  "notes": [
-   "RD01_Weapon_Cauterizer_FireDamageEffect: DoT curve with unmapped input AV 0x007875B5 — needs override"
-  ],
+  "hasEnchantments": false,
+  "notes": [],
   "obtainable": true
  },
  {
@@ -121179,8 +121103,7 @@
   "attachPointFormId": "0x001A001E",
   "attachPointEdid": "ap_melee_Appearance",
   "targetKeywords": [
-   "ma_Melee_Appearance",
-   "ma_Gauntlet"
+   "RD01_ma_DrillFist"
   ],
   "modifiers": [],
   "addedKeywords": [],
@@ -126586,53 +126509,7 @@
   ],
   "modifiers": [
    {
-    "id": "0x008E076F:0",
-    "source": {
-     "kind": "omod",
-     "formId": "0x008E076F",
-     "edid": "SDOW_Mod_Custom_SlasherAxe_CustomName",
-     "name": "Super Slasher"
-    },
-    "bucket": "vatsApCost",
-    "op": "MUL_ADD",
-    "value": 0.05,
-    "conditions": []
-   },
-   {
-    "id": "0x008E076F:1",
-    "source": {
-     "kind": "omod",
-     "formId": "0x008E076F",
-     "edid": "SDOW_Mod_Custom_SlasherAxe_CustomName",
-     "name": "Super Slasher"
-    },
-    "bucket": "baseDamage",
-    "op": "MUL_ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": -0.4
-      },
-      {
-       "x": 50,
-       "y": -0.4
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "ballistic"
-      ]
-     }
-    ]
-   },
-   {
-    "id": "0x008E076F:ench:2",
+    "id": "0x008E076F:ench:0",
     "source": {
      "kind": "omod",
      "formId": "0x008E076F",
@@ -126707,9 +126584,6 @@
    "CustomItem_SpeciallyNamed",
    "SDOW_CustomItemName_SlasherAxe",
    "FeaturedItem",
-   "NonDroppable",
-   "NonPlayerTradable",
-   "UnsellableObject",
    "dn_UniqueEffectBleedDamage",
    "WeaponTypeBleedDamage"
   ],
@@ -126751,591 +126625,6 @@
    "SDOW_HasLegendary_Weapon_Severing",
    "HasLegendary_Mod",
    "FeaturedItem"
-  ],
-  "hasEnchantments": false,
-  "hasGrantingCobj": true,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "SDOW_mod_melee_SlasherAxe_Burning",
-  "formId": "0x0091E6A9",
-  "name": "Slasher Burning",
-  "description": "",
-  "attachPointFormId": "0x00022499",
-  "attachPointEdid": "ap_gun_Scope",
-  "targetKeywords": [
-   "ma_AutoAxe",
-   "SDOW_ma_SlasherAxe"
-  ],
-  "modifiers": [
-   {
-    "id": "0x0091E6A9:0",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0091E6A9",
-     "edid": "SDOW_mod_melee_SlasherAxe_Burning",
-     "name": "Slasher Burning"
-    },
-    "bucket": "baseDamage",
-    "op": "MUL_ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": -0.4
-      },
-      {
-       "x": 100,
-       "y": -0.4
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "ballistic"
-      ]
-     }
-    ]
-   },
-   {
-    "id": "0x0091E6A9:1",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0091E6A9",
-     "edid": "SDOW_mod_melee_SlasherAxe_Burning",
-     "name": "Slasher Burning"
-    },
-    "bucket": "baseDamage",
-    "op": "MUL_ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 0.36
-      },
-      {
-       "x": 100,
-       "y": 0.36
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ]
-   },
-   {
-    "id": "0x0091E6A9:ench:2",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0091E6A9",
-     "edid": "SDOW_mod_melee_SlasherAxe_Burning",
-     "name": "Slasher Burning"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 14
-      },
-      {
-       "x": 5,
-       "y": 16
-      },
-      {
-       "x": 10,
-       "y": 18
-      },
-      {
-       "x": 15,
-       "y": 20
-      },
-      {
-       "x": 20,
-       "y": 23
-      },
-      {
-       "x": 25,
-       "y": 26
-      },
-      {
-       "x": 30,
-       "y": 29
-      },
-      {
-       "x": 35,
-       "y": 33
-      },
-      {
-       "x": 40,
-       "y": 37
-      },
-      {
-       "x": 45,
-       "y": 42
-      },
-      {
-       "x": 50,
-       "y": 47
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x0091E6A9:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0091E6A9",
-     "edid": "SDOW_mod_melee_SlasherAxe_Burning",
-     "name": "Slasher Burning"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 14
-      },
-      {
-       "x": 5,
-       "y": 16
-      },
-      {
-       "x": 10,
-       "y": 18
-      },
-      {
-       "x": 15,
-       "y": 20
-      },
-      {
-       "x": 20,
-       "y": 23
-      },
-      {
-       "x": 25,
-       "y": 26
-      },
-      {
-       "x": 30,
-       "y": 29
-      },
-      {
-       "x": 35,
-       "y": 33
-      },
-      {
-       "x": 40,
-       "y": 37
-      },
-      {
-       "x": 45,
-       "y": 42
-      },
-      {
-       "x": 50,
-       "y": 47
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   }
-  ],
-  "addedKeywords": [
-   "WeaponTypeFireDamage",
-   "s_20_AutoAxeFlame",
-   "dn_HasAutoAxe_Burning",
-   "WeaponTypeFireDamage",
-   "dn_HasMeleeMod_Burning"
-  ],
-  "hasEnchantments": true,
-  "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
-  "obtainable": true
- },
- {
-  "id": "SDOW_mod_melee_SlasherAxe_Electrified",
-  "formId": "0x0091E6AA",
-  "name": "Slasher Electrified",
-  "description": "",
-  "attachPointFormId": "0x00022499",
-  "attachPointEdid": "ap_gun_Scope",
-  "targetKeywords": [
-   "ma_AutoAxe",
-   "SDOW_ma_SlasherAxe"
-  ],
-  "modifiers": [
-   {
-    "id": "0x0091E6AA:0",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0091E6AA",
-     "edid": "SDOW_mod_melee_SlasherAxe_Electrified",
-     "name": "Slasher Electrified"
-    },
-    "bucket": "baseDamage",
-    "op": "MUL_ADD",
-    "value": -0.4,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "ballistic"
-      ]
-     }
-    ]
-   },
-   {
-    "id": "0x0091E6AA:1",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0091E6AA",
-     "edid": "SDOW_mod_melee_SlasherAxe_Electrified",
-     "name": "Slasher Electrified"
-    },
-    "bucket": "baseDamage",
-    "op": "MUL_ADD",
-    "value": 0.6,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "energy"
-      ]
-     }
-    ]
-   }
-  ],
-  "addedKeywords": [
-   "dn_HasMeleeMod_Shock",
-   "WeaponTypeEnergy",
-   "s_20_AutoAxeElectric",
-   "dn_HasAutoAxe_Electrified"
-  ],
-  "hasEnchantments": true,
-  "hasGrantingCobj": true,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "SDOW_mod_melee_SlasherAxe_Null",
-  "formId": "0x0091E6AD",
-  "name": "Slasher No Mod",
-  "description": "",
-  "attachPointFormId": "0x00022499",
-  "attachPointEdid": "ap_gun_Scope",
-  "targetKeywords": [
-   "ma_AutoAxe",
-   "SDOW_ma_SlasherAxe"
-  ],
-  "modifiers": [],
-  "addedKeywords": [],
-  "hasEnchantments": false,
-  "hasGrantingCobj": true,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "SDOW_mod_melee_SlasherAxe_Poison",
-  "formId": "0x0091E6AC",
-  "name": "Slasher Poisoned",
-  "description": "",
-  "attachPointFormId": "0x00022499",
-  "attachPointEdid": "ap_gun_Scope",
-  "targetKeywords": [
-   "ma_AutoAxe",
-   "SDOW_ma_SlasherAxe"
-  ],
-  "modifiers": [
-   {
-    "id": "0x0091E6AC:0",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0091E6AC",
-     "edid": "SDOW_mod_melee_SlasherAxe_Poison",
-     "name": "Slasher Poisoned"
-    },
-    "bucket": "baseDamage",
-    "op": "MUL_ADD",
-    "value": -0.4,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "ballistic"
-      ]
-     }
-    ]
-   },
-   {
-    "id": "0x0091E6AC:1",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0091E6AC",
-     "edid": "SDOW_mod_melee_SlasherAxe_Poison",
-     "name": "Slasher Poisoned"
-    },
-    "bucket": "baseDamage",
-    "op": "MUL_ADD",
-    "value": 0.6,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "poison"
-      ]
-     }
-    ]
-   },
-   {
-    "id": "0x0091E6AC:ench:2",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0091E6AC",
-     "edid": "SDOW_mod_melee_SlasherAxe_Poison",
-     "name": "Slasher Poisoned"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 7
-      },
-      {
-       "x": 5,
-       "y": 8
-      },
-      {
-       "x": 10,
-       "y": 9
-      },
-      {
-       "x": 15,
-       "y": 10
-      },
-      {
-       "x": 20,
-       "y": 12
-      },
-      {
-       "x": 25,
-       "y": 13
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 35,
-       "y": 17
-      },
-      {
-       "x": 40,
-       "y": 19
-      },
-      {
-       "x": 45,
-       "y": 21
-      },
-      {
-       "x": 50,
-       "y": 24
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "HasPerk(ImmuneToPoison)=0"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "poison"
-      ]
-     }
-    ],
-    "durationSec": 15
-   },
-   {
-    "id": "0x0091E6AC:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0091E6AC",
-     "edid": "SDOW_mod_melee_SlasherAxe_Poison",
-     "name": "Slasher Poisoned"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 7
-      },
-      {
-       "x": 5,
-       "y": 8
-      },
-      {
-       "x": 10,
-       "y": 9
-      },
-      {
-       "x": 15,
-       "y": 10
-      },
-      {
-       "x": 20,
-       "y": 12
-      },
-      {
-       "x": 25,
-       "y": 13
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 35,
-       "y": 17
-      },
-      {
-       "x": 40,
-       "y": 19
-      },
-      {
-       "x": 45,
-       "y": 21
-      },
-      {
-       "x": 50,
-       "y": 24
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "HasPerk(ImmuneToPoison)=0"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "poison"
-      ]
-     }
-    ],
-    "durationSec": 15
-   }
-  ],
-  "addedKeywords": [
-   "dn_HasMeleeMod_Poisoned",
-   "WeaponTypeDmgPoison",
-   "DamageTypePoison",
-   "s_20_AutoAxePoison",
-   "dn_HasAutoAxe_Poisoned"
-  ],
-  "hasEnchantments": true,
-  "hasGrantingCobj": true,
-  "notes": [
-   "condition: HasPerk(ImmuneToPoison)=0",
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
-  "obtainable": true
- },
- {
-  "id": "SDOW_mod_melee_SlasherAxe_Turbo",
-  "formId": "0x0091E6AB",
-  "name": "Slasher Turbo",
-  "description": "",
-  "attachPointFormId": "0x00022499",
-  "attachPointEdid": "ap_gun_Scope",
-  "targetKeywords": [
-   "ma_AutoAxe",
-   "SDOW_ma_SlasherAxe"
-  ],
-  "modifiers": [
-   {
-    "id": "0x0091E6AB:0",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0091E6AB",
-     "edid": "SDOW_mod_melee_SlasherAxe_Turbo",
-     "name": "Slasher Turbo"
-    },
-    "bucket": "fireRateSpeed",
-    "op": "MUL_ADD",
-    "value": 0.25,
-    "conditions": []
-   }
-  ],
-  "addedKeywords": [
-   "s_20_AutoAxeTurbo",
-   "dn_HasAutoAxe_Turbo",
-   "dn_HasMeleeMod_Turbo"
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,

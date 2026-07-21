@@ -54153,36 +54153,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 5,
     "conditions": []
    }
   ],
@@ -54215,36 +54186,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -54631,36 +54573,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -54693,36 +54606,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 20,
     "conditions": []
    }
   ],
@@ -55790,36 +55674,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 5,
     "conditions": []
    }
   ],
@@ -55852,36 +55707,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -56268,36 +56094,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -56330,36 +56127,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 20,
     "conditions": []
    }
   ],
@@ -57035,36 +56803,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 5,
     "conditions": []
    }
   ],
@@ -57097,36 +56836,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -57513,36 +57223,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -57575,36 +57256,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 20,
     "conditions": []
    }
   ],
@@ -58145,36 +57797,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 5,
     "conditions": []
    }
   ],
@@ -58206,36 +57829,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -58604,36 +58198,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -58665,36 +58230,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 20,
     "conditions": []
    }
   ],
@@ -59303,36 +58839,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 5,
     "conditions": []
    }
   ],
@@ -59365,36 +58872,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -59781,36 +59259,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -59843,36 +59292,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 20,
     "conditions": []
    }
   ],
@@ -60774,36 +60194,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 5,
     "conditions": []
    }
   ],
@@ -60836,36 +60227,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -61252,36 +60614,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -61314,36 +60647,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 20,
     "conditions": []
    }
   ],
@@ -61960,36 +61264,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 5,
     "conditions": []
    }
   ],
@@ -62022,36 +61297,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -62438,36 +61684,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -62500,36 +61717,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 20,
     "conditions": []
    }
   ],
@@ -63387,36 +62575,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 5,
     "conditions": []
    }
   ],
@@ -63449,36 +62608,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -63865,36 +62995,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -63927,36 +63028,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 20,
     "conditions": []
    }
   ],
@@ -64448,36 +63520,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 5,
     "conditions": []
    }
   ],
@@ -64510,36 +63553,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -64865,36 +63879,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -64927,36 +63912,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 20,
     "conditions": []
    }
   ],
@@ -65386,36 +64342,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 5,
     "conditions": []
    }
   ],
@@ -65448,36 +64375,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -65864,36 +64762,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -65926,36 +64795,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 20,
     "conditions": []
    }
   ],
@@ -67679,36 +66519,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 5,
     "conditions": []
    }
   ],
@@ -67741,36 +66552,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -68157,36 +66939,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 10,
-       "y": 2
-      },
-      {
-       "x": 20,
-       "y": 5
-      },
-      {
-       "x": 30,
-       "y": 8
-      },
-      {
-       "x": 40,
-       "y": 10
-      },
-      {
-       "x": 50,
-       "y": 15
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 10,
     "conditions": []
    }
   ],
@@ -68219,36 +66972,7 @@
     },
     "bucket": "apMax",
     "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 10,
-       "y": 5
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 40,
-       "y": 20
-      },
-      {
-       "x": 50,
-       "y": 25
-      }
-     ]
-    },
-    "curveScale": 1,
+    "value": 20,
     "conditions": []
    }
   ],
@@ -70116,7 +68840,7 @@
      "edid": "mod_Legendary_Armor_ReflectDamage",
      "name": "Punishing"
     },
-    "bucket": "dbm",
+    "bucket": "wholeDamage",
     "op": "MUL_ADD",
     "value": -1,
     "conditions": [
@@ -70472,27 +69196,19 @@
        "y": 3
       },
       {
-       "x": 0.1999,
+       "x": 0.2,
        "y": 3
       },
       {
-       "x": 0.2,
-       "y": 2
-      },
-      {
-       "x": 0.3999,
-       "y": 2
-      },
-      {
        "x": 0.4,
-       "y": 1
-      },
-      {
-       "x": 0.5999,
-       "y": 1
+       "y": 2
       },
       {
        "x": 0.6,
+       "y": 1
+      },
+      {
+       "x": 0.61,
        "y": 0
       }
      ]
@@ -70518,27 +69234,19 @@
        "y": 3
       },
       {
-       "x": 0.1999,
+       "x": 0.2,
        "y": 3
       },
       {
-       "x": 0.2,
-       "y": 2
-      },
-      {
-       "x": 0.3999,
-       "y": 2
-      },
-      {
        "x": 0.4,
-       "y": 1
-      },
-      {
-       "x": 0.5999,
-       "y": 1
+       "y": 2
       },
       {
        "x": 0.6,
+       "y": 1
+      },
+      {
+       "x": 0.61,
        "y": 0
       }
      ]
@@ -70564,27 +69272,19 @@
        "y": 3
       },
       {
-       "x": 0.1999,
+       "x": 0.2,
        "y": 3
       },
       {
-       "x": 0.2,
-       "y": 2
-      },
-      {
-       "x": 0.3999,
-       "y": 2
-      },
-      {
        "x": 0.4,
-       "y": 1
-      },
-      {
-       "x": 0.5999,
-       "y": 1
+       "y": 2
       },
       {
        "x": 0.6,
+       "y": 1
+      },
+      {
+       "x": 0.61,
        "y": 0
       }
      ]
@@ -70610,27 +69310,19 @@
        "y": 3
       },
       {
-       "x": 0.1999,
+       "x": 0.2,
        "y": 3
       },
       {
-       "x": 0.2,
-       "y": 2
-      },
-      {
-       "x": 0.3999,
-       "y": 2
-      },
-      {
        "x": 0.4,
-       "y": 1
-      },
-      {
-       "x": 0.5999,
-       "y": 1
+       "y": 2
       },
       {
        "x": 0.6,
+       "y": 1
+      },
+      {
+       "x": 0.61,
        "y": 0
       }
      ]
@@ -70656,27 +69348,19 @@
        "y": 3
       },
       {
-       "x": 0.1999,
+       "x": 0.2,
        "y": 3
       },
       {
-       "x": 0.2,
-       "y": 2
-      },
-      {
-       "x": 0.3999,
-       "y": 2
-      },
-      {
        "x": 0.4,
-       "y": 1
-      },
-      {
-       "x": 0.5999,
-       "y": 1
+       "y": 2
       },
       {
        "x": 0.6,
+       "y": 1
+      },
+      {
+       "x": 0.61,
        "y": 0
       }
      ]
@@ -70702,27 +69386,19 @@
        "y": 3
       },
       {
-       "x": 0.1999,
+       "x": 0.2,
        "y": 3
       },
       {
-       "x": 0.2,
-       "y": 2
-      },
-      {
-       "x": 0.3999,
-       "y": 2
-      },
-      {
        "x": 0.4,
-       "y": 1
-      },
-      {
-       "x": 0.5999,
-       "y": 1
+       "y": 2
       },
       {
        "x": 0.6,
+       "y": 1
+      },
+      {
+       "x": 0.61,
        "y": 0
       }
      ]
@@ -72625,8 +71301,8 @@
  {
   "id": "mod_Legendary_Crafting_Armor1",
   "formId": "0x0060D1A7",
-  "name": "Random �",
-  "description": "Generate a random � Legendary Mod. This will replace any existing �, ��, and ��� Legendary Mods.",
+  "name": "Random ¬",
+  "description": "Generate a random ¬ Legendary Mod. This will replace any existing ¬, ¬¬, and ¬¬¬ Legendary Mods.",
   "attachPointFormId": "0x006F0475",
   "attachPointEdid": "ap_Legendary_Reroll",
   "targetKeywords": [
@@ -72642,8 +71318,8 @@
  {
   "id": "mod_Legendary_Crafting_Armor2",
   "formId": "0x0060D1A8",
-  "name": "Random ��",
-  "description": "Generate random � and ��  Legendary Mods. This will replace any existing �, ��, and ��� Legendary Mods.",
+  "name": "Random ¬¬",
+  "description": "Generate random ¬ and ¬¬  Legendary Mods. This will replace any existing ¬, ¬¬, and ¬¬¬ Legendary Mods.",
   "attachPointFormId": "0x006F0475",
   "attachPointEdid": "ap_Legendary_Reroll",
   "targetKeywords": [
@@ -72659,8 +71335,8 @@
  {
   "id": "mod_Legendary_Crafting_Armor3",
   "formId": "0x0060D1A9",
-  "name": "Random ���",
-  "description": "Generate random �, ��, and ���  Legendary Mods. This will replace any existing �, ��, and ��� Legendary Mods.",
+  "name": "Random ¬¬¬",
+  "description": "Generate random ¬, ¬¬, and ¬¬¬  Legendary Mods. This will replace any existing ¬, ¬¬, and ¬¬¬ Legendary Mods.",
   "attachPointFormId": "0x006F0475",
   "attachPointEdid": "ap_Legendary_Reroll",
   "targetKeywords": [
@@ -72676,8 +71352,8 @@
  {
   "id": "mod_Legendary_Crafting_Armor4",
   "formId": "0x00792A31",
-  "name": "Random ����",
-  "description": "Generate random �, ��, ��� and ����  Legendary Mods. This will replace any existing �, ��, ��� and ���� Legendary Mods.",
+  "name": "Random ¬¬¬¬",
+  "description": "Generate random ¬, ¬¬, ¬¬¬ and ¬¬¬¬  Legendary Mods. This will replace any existing ¬, ¬¬, ¬¬¬ and ¬¬¬¬ Legendary Mods.",
   "attachPointFormId": "0x006F0475",
   "attachPointEdid": "ap_Legendary_Reroll",
   "targetKeywords": [
@@ -72692,8 +71368,8 @@
  {
   "id": "mod_Legendary_Crafting_PowerArmor1",
   "formId": "0x005FF607",
-  "name": "Random �",
-  "description": "Generate a random � Legendary Mod. This will replace any existing �, ��, and ��� Legendary Mods.",
+  "name": "Random ¬",
+  "description": "Generate a random ¬ Legendary Mod. This will replace any existing ¬, ¬¬, and ¬¬¬ Legendary Mods.",
   "attachPointFormId": "0x006F0475",
   "attachPointEdid": "ap_Legendary_Reroll",
   "targetKeywords": [
@@ -72709,8 +71385,8 @@
  {
   "id": "mod_Legendary_Crafting_PowerArmor2",
   "formId": "0x005FF60A",
-  "name": "Random ��",
-  "description": "Generate random � and ��  Legendary Mods. This will replace any existing �, ��, and ��� Legendary Mods.",
+  "name": "Random ¬¬",
+  "description": "Generate random ¬ and ¬¬  Legendary Mods. This will replace any existing ¬, ¬¬, and ¬¬¬ Legendary Mods.",
   "attachPointFormId": "0x006F0475",
   "attachPointEdid": "ap_Legendary_Reroll",
   "targetKeywords": [
@@ -72726,8 +71402,8 @@
  {
   "id": "mod_Legendary_Crafting_PowerArmor3",
   "formId": "0x005FF5FF",
-  "name": "Random ���",
-  "description": "Generate random �, ��, and ���  Legendary Mods. This will replace any existing �, ��, and ��� Legendary Mods.",
+  "name": "Random ¬¬¬",
+  "description": "Generate random ¬, ¬¬, and ¬¬¬  Legendary Mods. This will replace any existing ¬, ¬¬, and ¬¬¬ Legendary Mods.",
   "attachPointFormId": "0x006F0475",
   "attachPointEdid": "ap_Legendary_Reroll",
   "targetKeywords": [
@@ -72743,8 +71419,8 @@
  {
   "id": "mod_Legendary_Crafting_PowerArmor4",
   "formId": "0x00792A30",
-  "name": "Random ����",
-  "description": "Generate random �, ��, ��� and ����  Legendary Mods. This will replace any existing �, ��, ��� and ���� Legendary Mods.",
+  "name": "Random ¬¬¬¬",
+  "description": "Generate random ¬, ¬¬, ¬¬¬ and ¬¬¬¬  Legendary Mods. This will replace any existing ¬, ¬¬, ¬¬¬ and ¬¬¬¬ Legendary Mods.",
   "attachPointFormId": "0x006F0475",
   "attachPointEdid": "ap_Legendary_Reroll",
   "targetKeywords": [
@@ -74599,7 +73275,7 @@
      "edid": "mod_Legendary_PowerArmor4_ChooChoo",
      "name": "Choo-Choo's"
     },
-    "bucket": "dbm",
+    "bucket": "wholeDamage",
     "op": "ADD",
     "value": 0.05,
     "conditions": [
@@ -121341,7 +120017,7 @@
  {
   "id": "SDOW_mod_PowerArmor_Hellcat_Torso_Misc_JetPack_SlasherPAJetpack",
   "formId": "0x008E0763",
-  "name": "Pint-Sized Slasher Power Armor Jetpack",
+  "name": "Pint-Sized Slasher Jet Pack",
   "description": "Enables jet-assisted boost while jumping.",
   "attachPointFormId": "0x0017DAA7",
   "attachPointEdid": "ap_PowerArmor_Misc",
@@ -121366,7 +120042,7 @@
  {
   "id": "SDOW_mod_PowerArmor_Raider_Torso_Misc_JetPack_SlasherPAJetpack",
   "formId": "0x008E075A",
-  "name": "Pint-Sized Slasher Power Armor Jetpack",
+  "name": "Pint-Sized Slasher Jet Pack",
   "description": "Enables jet-assisted boost while jumping.",
   "attachPointFormId": "0x0017DAA7",
   "attachPointEdid": "ap_PowerArmor_Misc",
@@ -121493,7 +120169,7 @@
  {
   "id": "SDOW_mod_PowerArmor_T45_Torso_Misc_JetPack_SlasherPAJetpack",
   "formId": "0x008E076A",
-  "name": "Pint-Sized Slasher Power Armor Jetpack",
+  "name": "Pint-Sized Slasher Jet Pack",
   "description": "Enables jet-assisted boost while jumping.",
   "attachPointFormId": "0x0017DAA7",
   "attachPointEdid": "ap_PowerArmor_Misc",
@@ -121518,7 +120194,7 @@
  {
   "id": "SDOW_mod_PowerArmor_T51_Torso_Misc_JetPack_SlasherPAJetpack",
   "formId": "0x008E0761",
-  "name": "Pint-Sized Slasher Power Armor Jetpack",
+  "name": "Pint-Sized Slasher Jet Pack",
   "description": "Enables jet-assisted boost while jumping.",
   "attachPointFormId": "0x0017DAA7",
   "attachPointEdid": "ap_PowerArmor_Misc",
@@ -121543,7 +120219,7 @@
  {
   "id": "SDOW_mod_PowerArmor_T60_Torso_Misc_JetPack_SlasherPAJetpack",
   "formId": "0x008E076D",
-  "name": "Pint-Sized Slasher Power Armor Jetpack",
+  "name": "Pint-Sized Slasher Jet Pack",
   "description": "Enables jet-assisted boost while jumping.",
   "attachPointFormId": "0x0017DAA7",
   "attachPointEdid": "ap_PowerArmor_Misc",
@@ -121568,7 +120244,7 @@
  {
   "id": "SDOW_mod_PowerArmor_T65_Torso_Misc_JetPack_SlasherPAJetpack",
   "formId": "0x008E0769",
-  "name": "Pint-Sized Slasher Power Armor Jetpack",
+  "name": "Pint-Sized Slasher Jet Pack",
   "description": "Enables jet-assisted boost while jumping.",
   "attachPointFormId": "0x0017DAA7",
   "attachPointEdid": "ap_PowerArmor_Misc",
@@ -121593,7 +120269,7 @@
  {
   "id": "SDOW_mod_PowerArmor_Ultracite_Torso_Misc_JetPack_SlasherPAJetpack",
   "formId": "0x008E0760",
-  "name": "Pint-Sized Slasher Power Armor Jetpack",
+  "name": "Pint-Sized Slasher Jet Pack",
   "description": "Enables jet-assisted boost while jumping.",
   "attachPointFormId": "0x0017DAA7",
   "attachPointEdid": "ap_PowerArmor_Misc",
@@ -121618,7 +120294,7 @@
  {
   "id": "SDOW_mod_PowerArmor_Union_Torso_Misc_JetPack_SlasherPAJetpack",
   "formId": "0x008E075C",
-  "name": "Pint-Sized Slasher Power Armor Jetpack",
+  "name": "Pint-Sized Slasher Jet Pack",
   "description": "Enables jet-assisted boost while jumping.",
   "attachPointFormId": "0x0017DAA7",
   "attachPointEdid": "ap_PowerArmor_Misc",
@@ -121643,7 +120319,7 @@
  {
   "id": "SDOW_mod_PowerArmor_Vulcan_Torso_Misc_JetPack_SlasherPAJetpack",
   "formId": "0x008E0767",
-  "name": "Pint-Sized Slasher Power Armor Jetpack",
+  "name": "Pint-Sized Slasher Jet Pack",
   "description": "Enables jet-assisted boost while jumping.",
   "attachPointFormId": "0x0017DAA7",
   "attachPointEdid": "ap_PowerArmor_Misc",
@@ -121668,7 +120344,7 @@
  {
   "id": "SDOW_mod_PowerArmor_X01_Torso_Misc_JetPack_SlasherPAJetpack",
   "formId": "0x008E0762",
-  "name": "Pint-Sized Slasher Power Armor Jetpack",
+  "name": "Pint-Sized Slasher Jet Pack",
   "description": "Enables jet-assisted boost while jumping.",
   "attachPointFormId": "0x0017DAA7",
   "attachPointEdid": "ap_PowerArmor_Misc",
@@ -121693,7 +120369,7 @@
  {
   "id": "SDOW_PARENT_mod_PowerArmor_SlasherPAJetpack_Jetpack",
   "formId": "0x008E076B",
-  "name": "Pint-Sized Slasher Power Armor Jetpack",
+  "name": "Pint-Sized Slasher Jet Pack",
   "description": "Enables jet-assisted boost while jumping.",
   "attachPointFormId": "0x0017DAA7",
   "attachPointEdid": "ap_PowerArmor_Misc",

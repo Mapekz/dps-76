@@ -86,7 +86,7 @@
  },
  {
   "id": "mod_Custom_PerfectStorm",
-  "name": "Old Guard",
+  "name": "",
   "baseWeaponId": "10mmSMG",
   "mods": {
    "ap_gun_Receiver": "mod_10mmSMG_Receiver_Base",
@@ -533,7 +533,7 @@
  },
  {
   "id": "mod_Custom_MintyBreather",
-  "name": "",
+  "name": "Minty Breather",
   "baseWeaponId": "Cryolator",
   "mods": {
    "ap_gun_Grip": "mod_Cryolator_Grip_StockRecoil",
@@ -543,8 +543,8 @@
   },
   "legendaryEffects": [
    "mod_Legendary_Weapon1_Medic",
-   "mod_Legendary_Weapon2_Guns_DmgSights",
-   "mod_Legendary_Weapon3_Guns_ReloadSpeed"
+   null,
+   null
   ]
  },
  {
@@ -730,8 +730,8 @@
    "ap_customName": "mod_Custom_Xerxos"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_AntiArmor",
-   "mod_Legendary_Weapon2_APViaKill",
+   null,
+   null,
    "mod_Legendary_Weapon3_VATSCostAP"
   ]
  },
@@ -756,7 +756,7 @@
  },
  {
   "id": "mod_custom_V63GatlingLaser_customName",
-  "name": "Valkyrie",
+  "name": "",
   "baseWeaponId": "GatlingLaser",
   "mods": {
    "ap_gun_Scope": "mod_GatlingLaser_SCOPE_reflex_Base",
@@ -1039,7 +1039,7 @@
  },
  {
   "id": "P62_Mod_Custom_ChaosEngine_CustomName",
-  "name": "Crushing Blow",
+  "name": "",
   "baseWeaponId": "M79",
   "mods": {
    "ap_gun_Receiver": "mod_M79_Receiver_Standard",
@@ -1120,7 +1120,7 @@
  {
   "id": "EN06_mod_melee_PickAxe_Custom_Cursed",
   "name": "",
-  "baseWeaponId": "pickaxe",
+  "baseWeaponId": "Pickaxe",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_PickAxe_Standard",
    "ap_Item_Description": "EN06_mod_melee_PickAxe_Custom_Cursed"
@@ -1130,7 +1130,7 @@
  {
   "id": "mod_custom_CultistPiercer_Effect",
   "name": "",
-  "baseWeaponId": "pickaxe",
+  "baseWeaponId": "Pickaxe",
   "mods": {
    "ap_customName": "mod_custom_CultistPiercer_Effect"
   },
@@ -1143,7 +1143,7 @@
  {
   "id": "mod_custom_HeadHunter_Effect",
   "name": "",
-  "baseWeaponId": "pickaxe",
+  "baseWeaponId": "Pickaxe",
   "mods": {
    "ap_customName": "mod_custom_HeadHunter_Effect"
   },
@@ -1294,7 +1294,7 @@
  },
  {
   "id": "mod_custom_TickettoRevenge",
-  "name": "Lickety-Split",
+  "name": "",
   "baseWeaponId": "RailwayRifle",
   "mods": {
    "ap_gun_Barrel": "mod_RailwayRifle_Barrel_Long",
@@ -1533,7 +1533,8 @@
   "name": "The Quick Fix",
   "baseWeaponId": "Switchblade",
   "mods": {
-   "ap_customName": "mod_custom_LucaSwitchblade_Effect"
+   "ap_customName": "mod_custom_LucaSwitchblade_Effect",
+   "ap_melee_MeleeMod": "mod_melee_Switchblade_Null"
   },
   "legendaryEffects": [
    null,
@@ -1594,9 +1595,9 @@
    "ap_customName": "mod_Custom_Oathbreaker"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_DebuffDamage",
+   null,
    "mod_Legendary_Weapon2_Melee_DamagePowerAttack",
-   "mod_Legendary_Weapon3_Melee_Defenders"
+   null
   ]
  }
 ]

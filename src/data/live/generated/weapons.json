@@ -640,11 +640,11 @@
    "0x0002D345",
    "0x0072AECB",
    "0x0072AECC",
-   "0x00751EC6",
    "0x004F6AA1",
    "0x007904EB",
    "0x007904EC",
    "0x00759B4A",
+   "0x0072AECA",
    "0x0002D344",
    "0x002FD904",
    "0x0010D8B3",
@@ -4583,7 +4583,7 @@
   ],
   "templateModFormIds": [
    "0x001A0352",
-   "0x00405CF8",
+   "0x005117BF",
    "0x000B9734",
    "0x002302FD",
    "0x00182CCF",
@@ -4597,7 +4597,7 @@
   ],
   "defaultModFormIds": [
    "0x001A0352",
-   "0x00405CF8"
+   "0x005117BF"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -4608,7 +4608,6 @@
    "0x004E89A9",
    "0x004E89AA",
    "0x004E89AB",
-   "0x0032CD06",
    "0x006214D8",
    "0x0047A264"
   ],
@@ -10552,7 +10551,7 @@
   "obtainable": true
  },
  {
-  "id": "crossbow",
+  "id": "Crossbow",
   "formId": "0x00055463",
   "name": "Crossbow",
   "weaponTypeName": "Gun",
@@ -11399,8 +11398,8 @@
    "0x0017235B",
    "0x00172359",
    "0x0075EAC6",
-   "0x0052414E",
-   "0x00524150",
+   "0x007904EB",
+   "0x007904EC",
    "0x00680831"
   ],
   "defaultModFormIds": [
@@ -16255,8 +16254,8 @@
    "0x0036FB47",
    "0x0036FB48",
    "0x0036FB49",
-   "0x005281B4",
-   "0x00606B72",
+   "0x007904EA",
+   "0x007904EB",
    "0x00524154",
    "0x008F173D"
   ],
@@ -22791,7 +22790,8 @@
    "0x004E89AA",
    "0x004E89AB",
    "0x0032CD06",
-   "0x0047A264"
+   "0x0047A264",
+   "0x001A001E"
   ],
   "modifiers": [],
   "obtainable": false
@@ -33494,7 +33494,7 @@
   "obtainable": true
  },
  {
-  "id": "pickaxe",
+  "id": "Pickaxe",
   "formId": "0x00002840",
   "name": "Pickaxe",
   "weaponTypeName": "TwoHandSword",
@@ -34253,8 +34253,9 @@
   ],
   "templateModFormIds": [
    "0x001843E3",
-   "0x005FB446",
+   "0x005117BF",
    "0x00230304",
+   "0x005FB446",
    "0x000975D3",
    "0x004F577C",
    "0x007904EB",
@@ -34264,7 +34265,7 @@
   ],
   "defaultModFormIds": [
    "0x001843E3",
-   "0x005FB446"
+   "0x005117BF"
   ],
   "attachParentSlots": [
    "0x0005524C",
@@ -34275,8 +34276,7 @@
    "0x004E89AB",
    "0x006214D8",
    "0x001A001E",
-   "0x0047A264",
-   "0x0032CD06"
+   "0x0047A264"
   ],
   "modifiers": [],
   "obtainable": true
@@ -40033,7 +40033,8 @@
    "ma_legendarycrafting_weaponmelee",
    "ma_Misc_Legendarycrafting_Weapon_Melee4",
    "WeaponTypeBlunt",
-   "ma_legendarycrafting_weapon"
+   "ma_legendarycrafting_weapon",
+   "WeaponTypeShovel"
   ],
   "isAutomaticFlag": false,
   "components": [
@@ -41217,7 +41218,7 @@
   "obtainable": false
  },
  {
-  "id": "sledgehammer",
+  "id": "Sledgehammer",
   "formId": "0x000E7AB9",
   "name": "Sledgehammer",
   "weaponTypeName": "TwoHandSword",
@@ -47342,7 +47343,8 @@
    "ma_Gun_Appearance",
    "ma_Misc_Legendarycrafting_Weapon_Ranged4",
    "ma_legendarycrafting_weapon",
-   "WeaponTypeUltracite"
+   "WeaponTypeUltracite",
+   "WeaponTypeLaser"
   ],
   "isAutomaticFlag": true,
   "components": [
@@ -49979,9 +49981,9 @@
   "templateModFormIds": [
    "0x005D7F2C",
    "0x005117BF",
-   "0x005281B8",
+   "0x007904EA",
    "0x001A7BE2",
-   "0x001A7BD3",
+   "0x007904EC",
    "0x008F16B1"
   ],
   "defaultModFormIds": [

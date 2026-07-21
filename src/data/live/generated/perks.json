@@ -1857,7 +1857,7 @@
        "name": "Black Widow",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.050000000000000044,
       "conditions": [
@@ -1877,7 +1877,7 @@
     "rank": 2,
     "modifiers": [
      {
-      "id": "0x0004A0D4:r2:4:0",
+      "id": "0x0004A0D4:r2:3:0",
       "source": {
        "kind": "perk",
        "formId": "0x0004A0D4",
@@ -1885,7 +1885,7 @@
        "name": "Black Widow",
        "rank": 2
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -1913,7 +1913,7 @@
        "name": "Black Widow",
        "rank": 3
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.1499999999999999,
       "conditions": [
@@ -3872,7 +3872,7 @@
        "name": "Deathclaw Exploit",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 1,
       "conditions": [
@@ -3911,7 +3911,7 @@
        "name": "Deathclaw Rage",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.25,
       "conditions": [
@@ -3934,7 +3934,7 @@
        "name": "Deathclaw Rage",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.5,
       "conditions": [
@@ -3957,7 +3957,7 @@
        "name": "Deathclaw Rage",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 1,
       "conditions": [
@@ -3980,7 +3980,7 @@
        "name": "Deathclaw Rage",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 1.5,
       "conditions": [
@@ -4003,7 +4003,7 @@
        "name": "Deathclaw Rage",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 2,
       "conditions": [
@@ -4408,7 +4408,7 @@
        "name": "Radhog Fury",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.25,
       "conditions": [
@@ -4749,7 +4749,7 @@
        "name": "Combat Zone Damage Reduction",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "SET",
       "value": 0.01,
       "conditions": [
@@ -4953,7 +4953,7 @@
        "name": "Savage Strike Perk",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.5,
       "conditions": []
@@ -5293,7 +5293,7 @@
        "name": "Destroyer of Acadia",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 3,
       "conditions": []
@@ -5419,7 +5419,7 @@
        "name": "SCAV! - Villainous Virtuosity",
        "rank": 2
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.25,
       "conditions": [
@@ -5443,7 +5443,7 @@
        "name": "SCAV! - Villainous Virtuosity",
        "rank": 3
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.25,
       "conditions": [
@@ -5462,7 +5462,7 @@
        "name": "SCAV! - Villainous Virtuosity",
        "rank": 3
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -5487,7 +5487,7 @@
        "name": "SCAV! - Villainous Virtuosity",
        "rank": 4
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.25,
       "conditions": [
@@ -5506,7 +5506,7 @@
        "name": "SCAV! - Villainous Virtuosity",
        "rank": 4
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -5526,7 +5526,7 @@
        "name": "SCAV! - Villainous Virtuosity",
        "rank": 4
       },
-      "bucket": "dbm",
+      "bucket": "baseDamage",
       "op": "MUL_ADD",
       "value": 0.050000000000000044,
       "conditions": [
@@ -5552,7 +5552,7 @@
        "name": "SCAV! - Villainous Virtuosity",
        "rank": 5
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.25,
       "conditions": [
@@ -5571,7 +5571,7 @@
        "name": "SCAV! - Villainous Virtuosity",
        "rank": 5
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -5591,7 +5591,7 @@
        "name": "SCAV! - Villainous Virtuosity",
        "rank": 5
       },
-      "bucket": "dbm",
+      "bucket": "baseDamage",
       "op": "MUL_ADD",
       "value": 0.050000000000000044,
       "conditions": [
@@ -6778,7 +6778,7 @@
        "name": "Zetan Boost Spell",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.25,
       "conditions": []
@@ -12348,7 +12348,7 @@
        "name": "Fortify Damage For Infestation Boss",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0,
       "conditions": [
@@ -12371,7 +12371,7 @@
        "name": "Fortify Damage For Infestation Boss",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -12394,7 +12394,7 @@
        "name": "Fortify Damage For Infestation Boss",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.19999999999999996,
       "conditions": [
@@ -12417,7 +12417,7 @@
        "name": "Fortify Damage For Infestation Boss",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.30000000000000004,
       "conditions": [
@@ -12440,7 +12440,7 @@
        "name": "Fortify Damage For Infestation Boss",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.3999999999999999,
       "conditions": [
@@ -12463,7 +12463,7 @@
        "name": "Fortify Damage For Infestation Boss",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.5,
       "conditions": [
@@ -12486,7 +12486,7 @@
        "name": "Fortify Damage For Infestation Boss",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.6000000000000001,
       "conditions": [
@@ -12509,7 +12509,7 @@
        "name": "Fortify Damage For Infestation Boss",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.7,
       "conditions": [
@@ -12532,7 +12532,7 @@
        "name": "Fortify Damage For Infestation Boss",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.8,
       "conditions": [
@@ -12555,7 +12555,7 @@
        "name": "Fortify Damage For Infestation Boss",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 1,
       "conditions": [
@@ -12598,7 +12598,7 @@
        "name": "Fortify Damage For Infestation Mob",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.19999999999999996,
       "conditions": [
@@ -12621,7 +12621,7 @@
        "name": "Fortify Damage For Infestation Mob",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.30000000000000004,
       "conditions": [
@@ -12644,7 +12644,7 @@
        "name": "Fortify Damage For Infestation Mob",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.3999999999999999,
       "conditions": [
@@ -12667,7 +12667,7 @@
        "name": "Fortify Damage For Infestation Mob",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.5,
       "conditions": [
@@ -12690,7 +12690,7 @@
        "name": "Fortify Damage For Infestation Mob",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.6000000000000001,
       "conditions": [
@@ -12713,7 +12713,7 @@
        "name": "Fortify Damage For Infestation Mob",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.7,
       "conditions": [
@@ -12736,7 +12736,7 @@
        "name": "Fortify Damage For Infestation Mob",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.8,
       "conditions": [
@@ -12759,7 +12759,7 @@
        "name": "Fortify Damage For Infestation Mob",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.8999999999999999,
       "conditions": [
@@ -12782,7 +12782,7 @@
        "name": "Fortify Damage For Infestation Mob",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 1,
       "conditions": [
@@ -12805,7 +12805,7 @@
        "name": "Fortify Damage For Infestation Mob",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 1.1,
       "conditions": [
@@ -12828,7 +12828,7 @@
        "name": "Fortify Damage For Infestation Mob",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 1.2000000000000002,
       "conditions": [
@@ -12871,7 +12871,7 @@
        "name": "Fortify Damage For Infestation Support",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.5,
       "conditions": [
@@ -12894,7 +12894,7 @@
        "name": "Fortify Damage For Infestation Support",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.6000000000000001,
       "conditions": [
@@ -12917,7 +12917,7 @@
        "name": "Fortify Damage For Infestation Support",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.7,
       "conditions": [
@@ -12940,7 +12940,7 @@
        "name": "Fortify Damage For Infestation Support",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.8,
       "conditions": [
@@ -12963,7 +12963,7 @@
        "name": "Fortify Damage For Infestation Support",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.8999999999999999,
       "conditions": [
@@ -12986,7 +12986,7 @@
        "name": "Fortify Damage For Infestation Support",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 1,
       "conditions": [
@@ -13009,7 +13009,7 @@
        "name": "Fortify Damage For Infestation Support",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 1.1,
       "conditions": [
@@ -13032,7 +13032,7 @@
        "name": "Fortify Damage For Infestation Support",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 1.2000000000000002,
       "conditions": [
@@ -13055,7 +13055,7 @@
        "name": "Fortify Damage For Infestation Support",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 1.2999999999999998,
       "conditions": [
@@ -13078,7 +13078,7 @@
        "name": "Fortify Damage For Infestation Support",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 1.4,
       "conditions": [
@@ -13101,7 +13101,7 @@
        "name": "Fortify Damage For Infestation Support",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 1.5,
       "conditions": [
@@ -13695,7 +13695,7 @@
        "name": "Lady Killer",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.050000000000000044,
       "conditions": [
@@ -13711,7 +13711,7 @@
     "rank": 2,
     "modifiers": [
      {
-      "id": "0x00019AA3:r2:3:0",
+      "id": "0x00019AA3:r2:4:0",
       "source": {
        "kind": "perk",
        "formId": "0x00019AA3",
@@ -13719,7 +13719,7 @@
        "name": "Lady Killer",
        "rank": 2
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -13735,7 +13735,7 @@
     "rank": 3,
     "modifiers": [
      {
-      "id": "0x00019AA3:r3:5:0",
+      "id": "0x00019AA3:r3:6:0",
       "source": {
        "kind": "perk",
        "formId": "0x00019AA3",
@@ -13743,7 +13743,7 @@
        "name": "Lady Killer",
        "rank": 3
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.1499999999999999,
       "conditions": [
@@ -15035,7 +15035,7 @@
        "name": "Suppressor legendary effect",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": -0.25,
       "conditions": []
@@ -15322,7 +15322,7 @@
    "Generate 1 combat enhancing chem every hour. Up to a max of 3.",
    "Generate 1 combat enhancing chem every 50 minutes. Up to a max of 4.",
    "Generate 1 combat enhancing chem every 40 minutes. Up to a max of 5.",
-   "Generate 2 combat enhancing chems every 40 minutes.�Up to a max of 5."
+   "Generate 2 combat enhancing chems every 40 minutes. Up to a max of 5."
   ],
   "ranks": [
    {
@@ -17527,7 +17527,7 @@
        "name": "Astoundingly Awesome 5",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.25,
       "conditions": [
@@ -19365,7 +19365,7 @@
        "name": "Anti-Scorchbeast",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.3500000000000001,
       "conditions": [
@@ -20124,7 +20124,7 @@
        "name": "Charged Penalty",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": -0.5,
       "conditions": [
@@ -20151,7 +20151,7 @@
        "name": "Charged Penalty",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": -0.37,
       "conditions": [
@@ -20183,7 +20183,7 @@
        "name": "Charged Penalty",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": -0.25,
       "conditions": [
@@ -20215,7 +20215,7 @@
        "name": "Charged Penalty",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": -0.12,
       "conditions": [
@@ -21546,7 +21546,7 @@
        "name": "Ruiner's Weapon Perk",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "ADD",
       "value": 500,
       "conditions": [
@@ -21577,7 +21577,7 @@
        "name": "Ruiner's Weapon Perk",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "ADD",
       "value": 500,
       "conditions": [
@@ -21612,7 +21612,7 @@
        "name": "Ruiner's Weapon Perk",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "ADD",
       "value": 500,
       "conditions": [
@@ -21647,7 +21647,7 @@
        "name": "Ruiner's Weapon Perk",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "ADD",
       "value": 500,
       "conditions": [
@@ -21682,7 +21682,7 @@
        "name": "Ruiner's Weapon Perk",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "ADD",
       "value": 500,
       "conditions": [
@@ -21717,7 +21717,7 @@
        "name": "Ruiner's Weapon Perk",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "ADD",
       "value": 500,
       "conditions": [
@@ -21752,7 +21752,7 @@
        "name": "Ruiner's Weapon Perk",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "ADD",
       "value": 500,
       "conditions": [
@@ -21787,7 +21787,7 @@
        "name": "Ruiner's Weapon Perk",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "ADD",
       "value": 500,
       "conditions": [
@@ -21822,7 +21822,7 @@
        "name": "Ruiner's Weapon Perk",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "ADD",
       "value": 500,
       "conditions": [
@@ -21857,7 +21857,7 @@
        "name": "Ruiner's Weapon Perk",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "ADD",
       "value": 500,
       "conditions": [
@@ -22363,7 +22363,7 @@
        "name": "Pain Train",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "ADD",
       "value": 0.05,
       "conditions": [
@@ -22387,7 +22387,7 @@
        "name": "Pain Train",
        "rank": 2
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "ADD",
       "value": 0.1,
       "conditions": [
@@ -22411,7 +22411,7 @@
        "name": "Pain Train",
        "rank": 3
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "ADD",
       "value": 0.15000000000000002,
       "conditions": [
@@ -23002,7 +23002,7 @@
        "name": "Live & Love 10",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.050000000000000044,
       "conditions": [
@@ -23832,7 +23832,7 @@
     "rank": 3,
     "modifiers": [
      {
-      "id": "0x0004D88A:r3:4:0",
+      "id": "0x0004D88A:r3:5:0",
       "source": {
        "kind": "perk",
        "formId": "0x0004D88A",
@@ -23851,7 +23851,7 @@
     "rank": 4,
     "modifiers": [
      {
-      "id": "0x0004D88A:r4:6:0",
+      "id": "0x0004D88A:r4:7:0",
       "source": {
        "kind": "perk",
        "formId": "0x0004D88A",
@@ -23928,10 +23928,6 @@
   "hasCard": false,
   "notes": [
    "entry point Mod Sneak Attack Mult uses Add Actor Value Mult — skipped",
-   "condition: GetValue(GHL_SURV_Feral)=0x007A7680",
-   "condition: GetValue(GHL_SURV_Feral)=0x007A7698",
-   "condition: GetValue(GHL_SURV_Feral)=0x007A7681",
-   "condition: GetValue(GHL_SURV_Feral)=0x007A7689",
    "condition: GetValue(SURV_Hunger)=0x005DC6ED",
    "condition: GetValue(SURV_Hunger)=0x005DC6EE",
    "condition: GetValue(SURV_Hunger)=0x005DC6EF",
@@ -23939,7 +23935,11 @@
    "condition: GetValue(SURV_Thirst)=0x005DC8EB",
    "condition: GetValue(SURV_Thirst)=0x005DC8EC",
    "condition: GetValue(SURV_Thirst)=0x005DC8ED",
-   "condition: GetValue(SURV_Thirst)=0x005DC8EE"
+   "condition: GetValue(SURV_Thirst)=0x005DC8EE",
+   "condition: GetValue(GHL_SURV_Feral)=0x007A7680",
+   "condition: GetValue(GHL_SURV_Feral)=0x007A7698",
+   "condition: GetValue(GHL_SURV_Feral)=0x007A7681",
+   "condition: GetValue(GHL_SURV_Feral)=0x007A7689"
   ]
  },
  {
@@ -23957,76 +23957,7 @@
     "rank": 1,
     "modifiers": [
      {
-      "id": "0x0046C7CF:r1:6:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x0046C7CF",
-       "edid": "PlayerPerk_Spotlight",
-       "name": "Spotlight Player Perk",
-       "rank": 1
-      },
-      "bucket": "maxHealth",
-      "op": "ADD",
-      "value": 15,
-      "conditions": [
-       {
-        "kind": "teammateCount",
-        "count": 1
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetGlobalValue(Spotlight_ShareTheLove)=1"
-       }
-      ]
-     },
-     {
-      "id": "0x0046C7CF:r1:6:1",
-      "source": {
-       "kind": "perk",
-       "formId": "0x0046C7CF",
-       "edid": "PlayerPerk_Spotlight",
-       "name": "Spotlight Player Perk",
-       "rank": 1
-      },
-      "bucket": "maxHealth",
-      "op": "ADD",
-      "value": 45,
-      "conditions": [
-       {
-        "kind": "teammateCount",
-        "count": 3
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetGlobalValue(Spotlight_ShareTheLove)=1"
-       }
-      ]
-     },
-     {
-      "id": "0x0046C7CF:r1:6:2",
-      "source": {
-       "kind": "perk",
-       "formId": "0x0046C7CF",
-       "edid": "PlayerPerk_Spotlight",
-       "name": "Spotlight Player Perk",
-       "rank": 1
-      },
-      "bucket": "maxHealth",
-      "op": "ADD",
-      "value": 30,
-      "conditions": [
-       {
-        "kind": "teammateCount",
-        "count": 2
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetGlobalValue(Spotlight_ShareTheLove)=1"
-       }
-      ]
-     },
-     {
-      "id": "0x0046C7CF:r1:7:3",
+      "id": "0x0046C7CF:r1:3:0",
       "source": {
        "kind": "perk",
        "formId": "0x0046C7CF",
@@ -24049,7 +23980,7 @@
       ]
      },
      {
-      "id": "0x0046C7CF:r1:7:4",
+      "id": "0x0046C7CF:r1:3:1",
       "source": {
        "kind": "perk",
        "formId": "0x0046C7CF",
@@ -24072,7 +24003,7 @@
       ]
      },
      {
-      "id": "0x0046C7CF:r1:7:5",
+      "id": "0x0046C7CF:r1:3:2",
       "source": {
        "kind": "perk",
        "formId": "0x0046C7CF",
@@ -24095,7 +24026,7 @@
       ]
      },
      {
-      "id": "0x0046C7CF:r1:7:6",
+      "id": "0x0046C7CF:r1:3:3",
       "source": {
        "kind": "perk",
        "formId": "0x0046C7CF",
@@ -24118,7 +24049,7 @@
       ]
      },
      {
-      "id": "0x0046C7CF:r1:7:7",
+      "id": "0x0046C7CF:r1:3:4",
       "source": {
        "kind": "perk",
        "formId": "0x0046C7CF",
@@ -24141,7 +24072,7 @@
       ]
      },
      {
-      "id": "0x0046C7CF:r1:7:8",
+      "id": "0x0046C7CF:r1:3:5",
       "source": {
        "kind": "perk",
        "formId": "0x0046C7CF",
@@ -24162,20 +24093,83 @@
         "raw": "OR-group[WornHasKeyword(isUnstoppable_Grognak)=1 | WornHasKeyword(isUnstoppable_Inspector)=1 | WornHasKeyword(isUnstoppable_MantaMan)=1 | WornHasKeyword(isUnstoppable_MistressOfMystery)=1 | WornHasKeyword(isUnstoppable_SilverShroud)=1]"
        }
       ]
+     },
+     {
+      "id": "0x0046C7CF:r1:7:6",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0046C7CF",
+       "edid": "PlayerPerk_Spotlight",
+       "name": "Spotlight Player Perk",
+       "rank": 1
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "value": 15,
+      "conditions": [
+       {
+        "kind": "teammateCount",
+        "count": 1
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_ShareTheLove)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0046C7CF:r1:7:7",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0046C7CF",
+       "edid": "PlayerPerk_Spotlight",
+       "name": "Spotlight Player Perk",
+       "rank": 1
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "value": 45,
+      "conditions": [
+       {
+        "kind": "teammateCount",
+        "count": 3
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_ShareTheLove)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0046C7CF:r1:7:8",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0046C7CF",
+       "edid": "PlayerPerk_Spotlight",
+       "name": "Spotlight Player Perk",
+       "rank": 1
+      },
+      "bucket": "maxHealth",
+      "op": "ADD",
+      "value": 30,
+      "conditions": [
+       {
+        "kind": "teammateCount",
+        "count": 2
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(Spotlight_ShareTheLove)=1"
+       }
+      ]
      }
     ]
    }
   ],
   "hasCard": false,
   "notes": [
-   "condition: GetGlobalValue(Spotlight_TerrorInTheNight)=1",
-   "condition: OR-group[GetGlobalValue(GameHour)=18 | GetGlobalValue(GameHour)=6]",
-   "condition: GetGlobalValue(Spotlight_TripleXP)=1",
-   "MGEF Spotlight_TripleXPEffect archetype Script — needs override",
    "condition: GetGlobalValue(Spotlight_DoubleXP)=1",
    "MGEF Spotlight_DoubleXPEffect archetype Script — needs override",
-   "condition: GetWorldType()=2",
-   "condition: GetGlobalValue(Spotlight_DoubleXPSurvival)=1",
    "condition: GetGlobalValue(Spotlight_ChildsPlay)=1",
    "condition: GetKeywordItemCount(ObjectTypeToy)=10",
    "condition: GetKeywordItemCount(ObjectTypeToy)=9",
@@ -24187,10 +24181,6 @@
    "condition: GetKeywordItemCount(ObjectTypeToy)=3",
    "condition: GetKeywordItemCount(ObjectTypeToy)=2",
    "condition: GetKeywordItemCount(ObjectTypeToy)=1",
-   "condition: GetGlobalValue(Spotlight_ShareTheLove)=1",
-   "MGEF Spotlight_ShareTheLove_15_Desc archetype Script — needs override",
-   "MGEF Spotlight_ShareTheLove_30_Desc archetype Script — needs override",
-   "MGEF Spotlight_ShareTheLove_45_Desc archetype Script — needs override",
    "condition: WornHasKeyword(isUnstoppable_Grognak)=1",
    "condition: GetGlobalValue(Spotlight_Unstoppable)=1",
    "condition: WornHasKeyword(isUnstoppable_Inspector)=1",
@@ -24198,10 +24188,20 @@
    "condition: WornHasKeyword(isUnstoppable_MistressOfMystery)=1",
    "condition: WornHasKeyword(isUnstoppable_SilverShroud)=1",
    "condition: OR-group[WornHasKeyword(isUnstoppable_Grognak)=1 | WornHasKeyword(isUnstoppable_Inspector)=1 | WornHasKeyword(isUnstoppable_MantaMan)=1 | WornHasKeyword(isUnstoppable_MistressOfMystery)=1 | WornHasKeyword(isUnstoppable_SilverShroud)=1]",
+   "condition: GetGlobalValue(Spotlight_LegendOfTheMothman)=1",
+   "MGEF Spotlight_LegendOfTheMothmanEffect archetype Script — needs override",
    "condition: GetGlobalValue(Spotlight_SpringCleaning)=1",
    "MGEF Spotlight_SpringCleaning_Desc archetype Script — needs override",
-   "condition: GetGlobalValue(Spotlight_LegendOfTheMothman)=1",
-   "MGEF Spotlight_LegendOfTheMothmanEffect archetype Script — needs override"
+   "condition: GetGlobalValue(Spotlight_ShareTheLove)=1",
+   "MGEF Spotlight_ShareTheLove_15_Desc archetype Script — needs override",
+   "MGEF Spotlight_ShareTheLove_30_Desc archetype Script — needs override",
+   "MGEF Spotlight_ShareTheLove_45_Desc archetype Script — needs override",
+   "condition: GetWorldType()=2",
+   "condition: GetGlobalValue(Spotlight_DoubleXPSurvival)=1",
+   "condition: GetGlobalValue(Spotlight_TripleXP)=1",
+   "MGEF Spotlight_TripleXPEffect archetype Script — needs override",
+   "condition: GetGlobalValue(Spotlight_TerrorInTheNight)=1",
+   "condition: OR-group[GetGlobalValue(GameHour)=18 | GetGlobalValue(GameHour)=6]"
   ]
  },
  {
@@ -24690,7 +24690,7 @@
     "rank": 1,
     "modifiers": [
      {
-      "id": "0x005B7584:r1:5:0",
+      "id": "0x005B7584:r1:2:0",
       "source": {
        "kind": "perk",
        "formId": "0x005B7584",
@@ -24713,7 +24713,7 @@
       ]
      },
      {
-      "id": "0x005B7584:r1:5:1",
+      "id": "0x005B7584:r1:2:1",
       "source": {
        "kind": "perk",
        "formId": "0x005B7584",
@@ -24736,7 +24736,7 @@
       ]
      },
      {
-      "id": "0x005B7584:r1:5:2",
+      "id": "0x005B7584:r1:2:2",
       "source": {
        "kind": "perk",
        "formId": "0x005B7584",
@@ -24759,7 +24759,7 @@
       ]
      },
      {
-      "id": "0x005B7584:r1:5:3",
+      "id": "0x005B7584:r1:2:3",
       "source": {
        "kind": "perk",
        "formId": "0x005B7584",
@@ -24782,99 +24782,7 @@
       ]
      },
      {
-      "id": "0x005B7584:r1:6:4",
-      "source": {
-       "kind": "perk",
-       "formId": "0x005B7584",
-       "edid": "PT_PublicTeamBonuses_Perk",
-       "name": "Public Team Perk",
-       "rank": 1
-      },
-      "bucket": "specialEndurance",
-      "op": "ADD",
-      "value": 1,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetTeammateBondScore()=1"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetTeamType()=4"
-       }
-      ]
-     },
-     {
-      "id": "0x005B7584:r1:6:5",
-      "source": {
-       "kind": "perk",
-       "formId": "0x005B7584",
-       "edid": "PT_PublicTeamBonuses_Perk",
-       "name": "Public Team Perk",
-       "rank": 1
-      },
-      "bucket": "specialEndurance",
-      "op": "ADD",
-      "value": 2,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetTeammateBondScore()=2"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetTeamType()=4"
-       }
-      ]
-     },
-     {
-      "id": "0x005B7584:r1:6:6",
-      "source": {
-       "kind": "perk",
-       "formId": "0x005B7584",
-       "edid": "PT_PublicTeamBonuses_Perk",
-       "name": "Public Team Perk",
-       "rank": 1
-      },
-      "bucket": "specialEndurance",
-      "op": "ADD",
-      "value": 3,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetTeammateBondScore()=3"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetTeamType()=4"
-       }
-      ]
-     },
-     {
-      "id": "0x005B7584:r1:6:7",
-      "source": {
-       "kind": "perk",
-       "formId": "0x005B7584",
-       "edid": "PT_PublicTeamBonuses_Perk",
-       "name": "Public Team Perk",
-       "rank": 1
-      },
-      "bucket": "specialEndurance",
-      "op": "ADD",
-      "value": 4,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetTeammateBondScore()=4"
-       },
-       {
-        "kind": "unresolved",
-        "raw": "GetTeamType()=4"
-       }
-      ]
-     },
-     {
-      "id": "0x005B7584:r1:7:8",
+      "id": "0x005B7584:r1:3:4",
       "source": {
        "kind": "perk",
        "formId": "0x005B7584",
@@ -24897,7 +24805,7 @@
       ]
      },
      {
-      "id": "0x005B7584:r1:7:9",
+      "id": "0x005B7584:r1:3:5",
       "source": {
        "kind": "perk",
        "formId": "0x005B7584",
@@ -24920,7 +24828,7 @@
       ]
      },
      {
-      "id": "0x005B7584:r1:7:10",
+      "id": "0x005B7584:r1:3:6",
       "source": {
        "kind": "perk",
        "formId": "0x005B7584",
@@ -24943,7 +24851,7 @@
       ]
      },
      {
-      "id": "0x005B7584:r1:7:11",
+      "id": "0x005B7584:r1:3:7",
       "source": {
        "kind": "perk",
        "formId": "0x005B7584",
@@ -24962,6 +24870,98 @@
        {
         "kind": "unresolved",
         "raw": "GetTeamType()=5"
+       }
+      ]
+     },
+     {
+      "id": "0x005B7584:r1:5:8",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B7584",
+       "edid": "PT_PublicTeamBonuses_Perk",
+       "name": "Public Team Perk",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetTeammateBondScore()=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetTeamType()=4"
+       }
+      ]
+     },
+     {
+      "id": "0x005B7584:r1:5:9",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B7584",
+       "edid": "PT_PublicTeamBonuses_Perk",
+       "name": "Public Team Perk",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 2,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetTeammateBondScore()=2"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetTeamType()=4"
+       }
+      ]
+     },
+     {
+      "id": "0x005B7584:r1:5:10",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B7584",
+       "edid": "PT_PublicTeamBonuses_Perk",
+       "name": "Public Team Perk",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetTeammateBondScore()=3"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetTeamType()=4"
+       }
+      ]
+     },
+     {
+      "id": "0x005B7584:r1:5:11",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B7584",
+       "edid": "PT_PublicTeamBonuses_Perk",
+       "name": "Public Team Perk",
+       "rank": 1
+      },
+      "bucket": "specialEndurance",
+      "op": "ADD",
+      "value": 4,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetTeammateBondScore()=4"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetTeamType()=4"
        }
       ]
      }
@@ -24970,18 +24970,37 @@
   ],
   "hasCard": false,
   "notes": [
-   "perk PT_DailyOpsTeamBonusPerk: GetTeammateBondScore()=1",
-   "perk PT_DailyOpsTeamBonusPerk: GetTeamType()=12",
-   "perk PT_DailyOpsTeamBonusPerk: GetQuestFormType()=9",
-   "perk PT_DailyOpsTeamBonusPerk: entry point Mod Exp — not modeled",
-   "perk PT_DailyOpsTeamBonusPerk: GetTeammateBondScore()=2",
-   "perk PT_DailyOpsTeamBonusPerk: GetTeammateBondScore()=3",
-   "perk PT_DailyOpsTeamBonusPerk: GetTeammateBondScore()=4",
-   "condition: GetTeamType()=12",
+   "perk PT_HuntingTeamBonusPerk: GetTeammateBondScore()=1",
+   "perk PT_HuntingTeamBonusPerk: GetTeamType()=1",
+   "perk PT_HuntingTeamBonusPerk: HasPerk(EpicCreaturePerk)=1",
+   "perk PT_HuntingTeamBonusPerk: entry point Mod Exp — not modeled",
+   "perk PT_HuntingTeamBonusPerk: GetTeammateBondScore()=2",
+   "perk PT_HuntingTeamBonusPerk: GetTeammateBondScore()=3",
+   "perk PT_HuntingTeamBonusPerk: GetTeammateBondScore()=4",
    "condition: GetTeammateBondScore()=1",
+   "condition: GetTeamType()=1",
    "condition: GetTeammateBondScore()=2",
    "condition: GetTeammateBondScore()=3",
    "condition: GetTeammateBondScore()=4",
+   "condition: GetTeamType()=6",
+   "condition: GetTeamType()=5",
+   "perk PT_Expediton_TeamBonusPerk: GetTeammateBondScore()=1",
+   "perk PT_Expediton_TeamBonusPerk: GetTeamType()=13",
+   "perk PT_Expediton_TeamBonusPerk: GetQuestFormType()=10",
+   "perk PT_Expediton_TeamBonusPerk: entry point Mod Exp — not modeled",
+   "perk PT_Expediton_TeamBonusPerk: GetTeammateBondScore()=2",
+   "perk PT_Expediton_TeamBonusPerk: GetTeammateBondScore()=3",
+   "perk PT_Expediton_TeamBonusPerk: GetTeammateBondScore()=4",
+   "condition: GetTeamType()=13",
+   "condition: GetTeamType()=4",
+   "perk PT_EventTeamBonusPerk: GetTeammateBondScore()=1",
+   "perk PT_EventTeamBonusPerk: GetTeamType()=3",
+   "perk PT_EventTeamBonusPerk: GetVATSValue(0)=1",
+   "perk PT_EventTeamBonusPerk: entry point Mod Exp — not modeled",
+   "perk PT_EventTeamBonusPerk: GetTeammateBondScore()=2",
+   "perk PT_EventTeamBonusPerk: GetTeammateBondScore()=3",
+   "perk PT_EventTeamBonusPerk: GetTeammateBondScore()=4",
+   "condition: GetTeamType()=3",
    "perk PT_RaidTeamBonusPerk: GetInCurrentLocationFormList(PT_RaidTeamBonusLocationCheck)=1",
    "perk PT_RaidTeamBonusPerk: GetTeammateBondScore()=1",
    "perk PT_RaidTeamBonusPerk: GetTeamType()=14",
@@ -24991,33 +25010,14 @@
    "perk PT_RaidTeamBonusPerk: GetTeammateBondScore()=3",
    "perk PT_RaidTeamBonusPerk: GetTeammateBondScore()=4",
    "condition: GetTeamType()=14",
-   "perk PT_HuntingTeamBonusPerk: GetTeammateBondScore()=1",
-   "perk PT_HuntingTeamBonusPerk: GetTeamType()=1",
-   "perk PT_HuntingTeamBonusPerk: HasPerk(EpicCreaturePerk)=1",
-   "perk PT_HuntingTeamBonusPerk: entry point Mod Exp — not modeled",
-   "perk PT_HuntingTeamBonusPerk: GetTeammateBondScore()=2",
-   "perk PT_HuntingTeamBonusPerk: GetTeammateBondScore()=3",
-   "perk PT_HuntingTeamBonusPerk: GetTeammateBondScore()=4",
-   "condition: GetTeamType()=1",
-   "perk PT_EventTeamBonusPerk: GetTeammateBondScore()=1",
-   "perk PT_EventTeamBonusPerk: GetTeamType()=3",
-   "perk PT_EventTeamBonusPerk: GetVATSValue(0)=1",
-   "perk PT_EventTeamBonusPerk: entry point Mod Exp — not modeled",
-   "perk PT_EventTeamBonusPerk: GetTeammateBondScore()=2",
-   "perk PT_EventTeamBonusPerk: GetTeammateBondScore()=3",
-   "perk PT_EventTeamBonusPerk: GetTeammateBondScore()=4",
-   "condition: GetTeamType()=3",
-   "condition: GetTeamType()=6",
-   "condition: GetTeamType()=4",
-   "condition: GetTeamType()=5",
-   "perk PT_Expediton_TeamBonusPerk: GetTeammateBondScore()=1",
-   "perk PT_Expediton_TeamBonusPerk: GetTeamType()=13",
-   "perk PT_Expediton_TeamBonusPerk: GetQuestFormType()=10",
-   "perk PT_Expediton_TeamBonusPerk: entry point Mod Exp — not modeled",
-   "perk PT_Expediton_TeamBonusPerk: GetTeammateBondScore()=2",
-   "perk PT_Expediton_TeamBonusPerk: GetTeammateBondScore()=3",
-   "perk PT_Expediton_TeamBonusPerk: GetTeammateBondScore()=4",
-   "condition: GetTeamType()=13"
+   "perk PT_DailyOpsTeamBonusPerk: GetTeammateBondScore()=1",
+   "perk PT_DailyOpsTeamBonusPerk: GetTeamType()=12",
+   "perk PT_DailyOpsTeamBonusPerk: GetQuestFormType()=9",
+   "perk PT_DailyOpsTeamBonusPerk: entry point Mod Exp — not modeled",
+   "perk PT_DailyOpsTeamBonusPerk: GetTeammateBondScore()=2",
+   "perk PT_DailyOpsTeamBonusPerk: GetTeammateBondScore()=3",
+   "perk PT_DailyOpsTeamBonusPerk: GetTeammateBondScore()=4",
+   "condition: GetTeamType()=12"
   ]
  },
  {
@@ -26231,7 +26231,7 @@
        "name": "Rooted",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.25,
       "conditions": [
@@ -26263,7 +26263,7 @@
        "name": "Rooted",
        "rank": 2
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.5,
       "conditions": [
@@ -26295,7 +26295,7 @@
        "name": "Rooted",
        "rank": 3
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.5,
       "conditions": [
@@ -27240,7 +27240,7 @@
        "name": "Flatwoods Monster Insight",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -27279,7 +27279,7 @@
        "name": "Grafton Monster Insight",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -27318,7 +27318,7 @@
        "name": "Mothman Insight",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -27357,7 +27357,7 @@
        "name": "Snallygaster Insight",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -27396,7 +27396,7 @@
        "name": "Wendigo Insight",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -28561,7 +28561,7 @@
        "name": "Empowered Lost Perk",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.5,
       "conditions": []
@@ -29838,7 +29838,7 @@
        "name": "Angler Hunter",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -29877,7 +29877,7 @@
        "name": "Bloodbug Hunter",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -29916,7 +29916,7 @@
        "name": "Angler Hunter",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -29955,7 +29955,7 @@
        "name": "Mirelurk Hunter",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -29994,7 +29994,7 @@
        "name": "Mongrel Hunter",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -30033,7 +30033,7 @@
        "name": "Radscorpion Hunter",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -30072,7 +30072,7 @@
        "name": "Radstag Hunter",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -30111,7 +30111,7 @@
        "name": "Radtoad Hunter",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -30150,7 +30150,7 @@
        "name": "Snallygaster Hunter",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -30189,7 +30189,7 @@
        "name": "Stingwing Hunter",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -30228,7 +30228,7 @@
        "name": "Super Mutant Hunter",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -30267,7 +30267,7 @@
        "name": "Yao Guai Hunter",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.10000000000000009,
       "conditions": [
@@ -30306,7 +30306,7 @@
        "name": "Scorched Hunter",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 0.5,
       "conditions": [
@@ -32607,7 +32607,7 @@
        "name": "Wrecking Ball",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 1,
       "conditions": [
@@ -32772,7 +32772,7 @@
        "name": "Warmonger Fortify Damage",
        "rank": 1
       },
-      "bucket": "dbm",
+      "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 1.5,
       "conditions": [
