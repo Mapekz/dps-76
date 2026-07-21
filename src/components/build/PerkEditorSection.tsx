@@ -300,7 +300,6 @@ function PerkAddCombobox({
             visibleSpecials={visibleSpecials}
             bySpecial={bySpecial}
             legendary={legendary}
-            filterSpecial={filterSpecial}
             equipped={equipped}
             noEffect={noEffect}
             raceBlocked={raceBlocked}
@@ -327,7 +326,6 @@ function PerkList({
   visibleSpecials,
   bySpecial,
   legendary,
-  filterSpecial,
   equipped,
   noEffect,
   raceBlocked,
@@ -339,7 +337,6 @@ function PerkList({
   visibleSpecials: typeof SPECIAL_ORDER;
   bySpecial: (special: Special) => Array<{ perkId: string; perk: Perk }>;
   legendary: Array<{ perkId: string; perk: Perk }>;
-  filterSpecial: Special | null;
   equipped: Map<string, number>;
   noEffect: Set<string>;
   raceBlocked: (perk: Perk) => boolean;
@@ -406,10 +403,7 @@ function PerkList({
   const groups =
     scope === 'legendary'
       ? [renderGroup(undefined, legendary, true)]
-      : [
-          ...visibleSpecials.map(({ special }) => renderGroup(special, bySpecial(special), false)),
-          filterSpecial === null && legendary.length > 0 ? renderGroup('Legendary', legendary, true) : null,
-        ];
+      : visibleSpecials.map(({ special }) => renderGroup(special, bySpecial(special), false));
 
   return (
     <FilterList className="max-h-72">
