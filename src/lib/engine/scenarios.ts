@@ -4,7 +4,7 @@ import { weaponCharges } from '@/lib/charge';
 import { DEFAULT_DISTANCE_UNITS, rangeFalloffMult } from '@/lib/distance';
 import { getFireRate } from '@/lib/fire-rate';
 import { apLimitedDps, computeApEconomy, DEFAULT_ACTION_POINT_CONSTANTS, effectiveShotsPerSecond, type ActionPointConstants } from './ap-economy';
-import { computeCritMeter, type CritMeterResult } from './crit-meter';
+import { computeCritMeter, DEFAULT_VATS_CRIT_CONSTANTS, type CritMeterResult, type VatsCritConstants } from './crit-meter';
 import { computeDotDps, computePaperDamage, type HitBreakdown } from './paper-damage';
 import { applyMitigation, type EnemyDefenses, type MitigationConstants } from './mitigation';
 import { perShotOnslaughtConsume, reverseOnslaughtAvgStacks } from './onslaught';
@@ -295,14 +295,15 @@ export interface ScenarioInput {
    */
   mitigationConstants?: MitigationConstants;
   /**
-   * ESM-extracted scalars for the AP-economy/Bullet-Storm formulas (`@/data`'s
-   * `getActionPointConstants`/`getBulletStormConstants`, resolved in
-   * `resolveLoadout`) — same "threaded in, not looked up here" rule as
-   * `mitigationConstants` above. Each field is undefined-safe: a missing
-   * sub-object falls back to that consumer's own `DEFAULT_*` constant (tests
-   * and any caller without a mode).
+   * ESM-extracted scalars for the crit-meter/AP-economy/Bullet-Storm
+   * formulas (`@/data`'s `getVatsCritConstants`/`getActionPointConstants`/
+   * `getBulletStormConstants`, resolved in `resolveLoadout`) — same
+   * "threaded in, not looked up here" rule as `mitigationConstants` above.
+   * Each field is undefined-safe: a missing sub-object falls back to that
+   * consumer's own `DEFAULT_*` constant (tests and any caller without a mode).
    */
   engineConstants?: {
+    vatsCrit?: VatsCritConstants;
     actionPoints?: ActionPointConstants;
     bulletStorm?: { ammoPerStack: number };
     distance?: { closeThresholdUnits: number };
@@ -700,7 +701,13 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   const vatsFlags: ScenarioFlags = { isVats: true, isSneaking: sneaking, isPowerAttack: powerAttack, isCrit: false };
   const vatsCtx = scenarioCtx(input, vatsFlags, onslaught, bulletStorm);
   const critMeterTrace = tracing ? ({ fill: null, consumption: null } as CritMeterTrace) : undefined;
-  const critMeter = computeCritMeter(input.modifiers, input.weapon, vatsCtx, critMeterTrace);
+  const critMeter = computeCritMeter(
+    input.modifiers,
+    input.weapon,
+    vatsCtx,
+    critMeterTrace,
+    input.engineConstants?.vatsCrit ?? DEFAULT_VATS_CRIT_CONSTANTS
+  );
   const critRate = input.critRate ?? critMeter.critRate;
   // VATS hit-chance aggregate (Phase 4 — display-only): folded ONCE against
   // the VATS resolve context (same "fold once" bootstrap precedent as

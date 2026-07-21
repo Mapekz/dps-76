@@ -35,7 +35,12 @@ import type { EsmClient, EsmListRow } from './esm-client';
  * `CURVE_TABLE_GROUPS`' search+tier-sort machinery doesn't apply. First
  * addition: `CT_Player_PercentOfMinToMaxRangeDMGMult` (0x008407AC,
  * `src/lib/distance.ts`'s range-falloff curve), previously a hand-copy
- * (commit 6dbfc80) — see `CURVE_TABLE_SINGLETONS` below.
+ * (commit 6dbfc80). Second addition: `CT_LuckVATSCriticalCharge`
+ * (0x00655629, `src/lib/engine/crit-meter.ts`'s per-LCK VATS crit-meter fill
+ * term) — reached via DFOB `LuckVATSCriticalChargeCurve_DO` (0x0065562A,
+ * user-identified 2026-07-21; the old hardcoded `fVATSCriticalChargeMult`
+ * linear term it replaces is no longer the live mechanic). See
+ * `CURVE_TABLE_SINGLETONS` below.
  */
 
 export interface CurveTablePoint {
@@ -92,6 +97,11 @@ export const CURVE_TABLE_SINGLETONS: CurveTableSingleton[] = [
     editorId: 'CT_Player_PercentOfMinToMaxRangeDMGMult',
     outSubdir: 'player/range',
     filename: 'percentofmintomaxrangedamagemult.json',
+  },
+  {
+    editorId: 'CT_LuckVATSCriticalCharge',
+    outSubdir: 'player/vats',
+    filename: 'luckvatscriticalcharge.json',
   },
 ];
 

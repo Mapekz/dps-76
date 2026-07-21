@@ -322,6 +322,7 @@ async function main() {
       `  special clamp [${result.constants.special.min}, ${result.constants.special.max}], ` +
         `mitigation exp=${result.constants.mitigation.resistExponent} factor=${result.constants.mitigation.damageFactor} ` +
         `clamp=[${result.constants.mitigation.minReduction}, ${result.constants.mitigation.maxReduction}], ` +
+        `vatsCritBase=${result.constants.vatsCrit.chargeBase}, ` +
         `apPool=${result.constants.actionPoints.poolBase}+${result.constants.actionPoints.poolPerAgility}×AGI ` +
         `regenDelay=${result.constants.actionPoints.regenDelaySec}s regen=${result.constants.actionPoints.regenRatePct}%/` +
         `${result.constants.actionPoints.regenRatePctPowerArmor}%PA, ` +

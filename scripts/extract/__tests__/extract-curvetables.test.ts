@@ -10,6 +10,7 @@ import {
 import armorTier22 from './fixtures/curv-creatures-armor-tier22.json';
 import armorTier49Zzz from './fixtures/curv-creatures-armor-tier49-zzz.json';
 import percentOfMinToMaxRange from './fixtures/curv-player-range-percentofmintomaxrangedamagemult.json';
+import luckVatsCriticalCharge from './fixtures/curv-player-vats-luckvatscriticalcharge.json';
 
 // Fixtures are verbatim `esm -p get <formid|edid> --json` output (20260710
 // ESM): CT_Creatures_Armor_Universal_Tier22 (0x0076E999, the record proven
@@ -17,9 +18,11 @@ import percentOfMinToMaxRange from './fixtures/curv-player-range-percentofmintom
 // hand-copy's 50 points/domain 2-100) and the zzz-renamed Tier49
 // (0x0076E9B4, `zzzCT_Creatures_Armor_Universal_Tier49` — still FormID-live,
 // just hidden from CK's "new record" browser by convention). The singleton
-// fixture is `CT_Player_PercentOfMinToMaxRangeDMGMult` (0x008407AC), the
+// fixtures are `CT_Player_PercentOfMinToMaxRangeDMGMult` (0x008407AC), the
 // range-falloff curve `src/lib/distance.ts` consumes — previously a
-// hand-copy, now owned by `CURVE_TABLE_SINGLETONS`.
+// hand-copy, now owned by `CURVE_TABLE_SINGLETONS` — and
+// `CT_LuckVATSCriticalCharge` (0x00655629, 20260717 ESM), the per-LCK VATS
+// crit-meter fill curve `src/lib/engine/crit-meter.ts` consumes.
 
 describe('tierFromEdid', () => {
   it('parses a plain tier suffix', () => {
@@ -87,6 +90,7 @@ describe('extractCurveTables', () => {
     '0x0076E999': armorTier22 as unknown as EsmRecord,
     '0x0076E9B4': armorTier49Zzz as unknown as EsmRecord,
     CT_Player_PercentOfMinToMaxRangeDMGMult: percentOfMinToMaxRange as unknown as EsmRecord,
+    CT_LuckVATSCriticalCharge: luckVatsCriticalCharge as unknown as EsmRecord,
   };
 
   function makeClient(searchRows: Array<{ form_id: string; editor_id: string }>): EsmClient {
@@ -109,19 +113,21 @@ describe('extractCurveTables', () => {
   }
 
   const singletonRelativePath = 'player/range/percentofmintomaxrangedamagemult.json';
+  const luckSingletonRelativePath = 'player/vats/luckvatscriticalcharge.json';
 
-  it('writes one file per tier, sorted ascending, including a zzz-renamed record, plus the singleton', async () => {
+  it('writes one file per tier, sorted ascending, including a zzz-renamed record, plus both singletons', async () => {
     const client = makeClient([
       { form_id: '0x0076E999', editor_id: 'CT_Creatures_Armor_Universal_Tier22' },
       { form_id: '0x0076E9B4', editor_id: 'zzzCT_Creatures_Armor_Universal_Tier49' },
     ]);
     const { files, unresolved } = await extractCurveTables(client);
     expect(unresolved).toEqual([]);
-    expect(files).toHaveLength(3);
+    expect(files).toHaveLength(4);
     expect(files.map(f => f.relativePath)).toEqual([
       'creatures/armor/armor_universal_tier22.json',
       'creatures/armor/armor_universal_tier49.json',
       singletonRelativePath,
+      luckSingletonRelativePath,
     ]);
     expect(files[0].content.curve).toHaveLength(50);
   });
@@ -132,7 +138,7 @@ describe('extractCurveTables', () => {
       { form_id: '0x00999999', editor_id: 'CT_Creatures_Armor_NotATierRecord' },
     ]);
     const { files, unresolved } = await extractCurveTables(client);
-    expect(files).toHaveLength(2);
+    expect(files).toHaveLength(3); // 1 tier + both singletons
     expect(unresolved).toHaveLength(1);
     expect(unresolved[0]).toContain('CT_Creatures_Armor_NotATierRecord');
   });
@@ -140,7 +146,7 @@ describe('extractCurveTables', () => {
   it('reports unresolved when get() fails for a matched record', async () => {
     const client = makeClient([{ form_id: '0xDEADBEEF', editor_id: 'CT_Creatures_Armor_Universal_Tier1' }]);
     const { files, unresolved } = await extractCurveTables(client);
-    expect(files.map(f => f.relativePath)).toEqual([singletonRelativePath]);
+    expect(files.map(f => f.relativePath)).toEqual([singletonRelativePath, luckSingletonRelativePath]);
     expect(unresolved).toHaveLength(1);
     expect(unresolved[0]).toContain('CT_Creatures_Armor_Universal_Tier1');
   });
@@ -152,29 +158,34 @@ describe('extractCurveTables', () => {
   });
 
   describe('singleton curve tables', () => {
-    it('lists exactly the range-falloff singleton today', () => {
+    it('lists exactly the range-falloff and luck-crit-charge singletons today', () => {
       expect(CURVE_TABLE_SINGLETONS).toEqual([
         {
           editorId: 'CT_Player_PercentOfMinToMaxRangeDMGMult',
           outSubdir: 'player/range',
           filename: 'percentofmintomaxrangedamagemult.json',
         },
+        {
+          editorId: 'CT_LuckVATSCriticalCharge',
+          outSubdir: 'player/vats',
+          filename: 'luckvatscriticalcharge.json',
+        },
       ]);
     });
 
-    it('fetches the singleton by editor_id (not search+tier) and writes it alongside the group files', async () => {
-      // No group search hits at all — the singleton doesn't depend on any
+    it('fetches each singleton by editor_id (not search+tier) and writes it alongside the group files', async () => {
+      // No group search hits at all — the singletons don't depend on any
       // CURVE_TABLE_GROUPS match.
       const client = makeClient([]);
       const { files, unresolved } = await extractCurveTables(client);
       expect(unresolved).toEqual([]);
-      expect(files).toHaveLength(1);
-      const [file] = files;
-      expect(file.relativePath).toBe(singletonRelativePath);
-      expect(file.editorId).toBe('CT_Player_PercentOfMinToMaxRangeDMGMult');
-      expect(file.formId).toBe('0x008407AC');
+      expect(files).toHaveLength(2);
+      const [rangeFile, luckFile] = files;
+      expect(rangeFile.relativePath).toBe(singletonRelativePath);
+      expect(rangeFile.editorId).toBe('CT_Player_PercentOfMinToMaxRangeDMGMult');
+      expect(rangeFile.formId).toBe('0x008407AC');
       // Matches the previously hand-copied src/data/*/curvetables/player/range/percentofmintomaxrangedamagemult.json exactly.
-      expect(file.content).toEqual({
+      expect(rangeFile.content).toEqual({
         curve: [
           { x: 1, y: 1 },
           { x: 1.5, y: 0.75 },
@@ -182,9 +193,16 @@ describe('extractCurveTables', () => {
           { x: 2, y: 0.2 },
         ],
       });
+      expect(luckFile.relativePath).toBe(luckSingletonRelativePath);
+      expect(luckFile.editorId).toBe('CT_LuckVATSCriticalCharge');
+      expect(luckFile.formId).toBe('0x00655629');
+      // Domain 1–100 matches the SPECIAL clamp exactly (docs/assumptions.md).
+      expect(luckFile.content.curve).toHaveLength(22);
+      expect(luckFile.content.curve[0]).toEqual({ x: 1, y: 3 });
+      expect(luckFile.content.curve.at(-1)).toEqual({ x: 100, y: 45 });
     });
 
-    it('reports unresolved when get() fails for the singleton (not a crash)', async () => {
+    it('reports unresolved when get() fails for a singleton (not a crash)', async () => {
       const client: EsmClient = {
         async search() {
           return [];
@@ -195,8 +213,9 @@ describe('extractCurveTables', () => {
       } as unknown as EsmClient;
       const { files, unresolved } = await extractCurveTables(client);
       expect(files).toEqual([]);
-      expect(unresolved).toHaveLength(1);
+      expect(unresolved).toHaveLength(2);
       expect(unresolved[0]).toContain('CT_Player_PercentOfMinToMaxRangeDMGMult');
+      expect(unresolved[1]).toContain('CT_LuckVATSCriticalCharge');
     });
   });
 });

@@ -24,7 +24,9 @@ const fixer = getWeapons('live')['CombatRifle_Fixer'];
 describe('computeCritMeter', () => {
   it('baseline: 15 LCK, no perks → crit every 5th shot', () => {
     const result = computeCritMeter([], fixer, ctx());
-    expect(result.fillPerHit).toBeCloseTo(27.5, 6); // 5 + 1.5×15
+    // 5 (base) + 1 (Fixer's Crit Charge Bonus) + 21 (CT_LuckVATSCriticalCharge
+    // Y at X=15, an exact curve point) — see crit-meter.ts's module doc.
+    expect(result.fillPerHit).toBeCloseTo(27, 6);
     expect(result.consumption).toBe(100);
     expect(result.shotsPerCrit).toBe(5);
     expect(result.critRate).toBeCloseTo(0.2, 10);
@@ -41,7 +43,8 @@ describe('computeCritMeter', () => {
     ];
     const wornPieceCounts = getArmorEffectWornPieceCounts('live', selections);
     const result = computeCritMeter(mods, fixer, ctx({ luck: 16, wornPieceCounts }));
-    expect(result.fillPerHit).toBeCloseTo(29, 6);
+    // 5 + 1 + curveY(16) = 5 + 1 + 21.8 (linear interp between (15,21)/(20,25)).
+    expect(result.fillPerHit).toBeCloseTo(27.8, 6);
     expect(result.consumption).toBeCloseTo(27.5, 6);
     expect(result.shotsPerCrit).toBe(2);
     expect(result.critRate).toBeCloseTo(0.5, 10);

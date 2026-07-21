@@ -1,0 +1,16 @@
+{
+  "header": {
+    "signature": "GMST",
+    "form_id": "0x00249662",
+    "flags": 0,
+    "form_version": 131,
+    "data_size": 40,
+    "offset": 87096
+  },
+  "editor_id": "fVATSCriticalChargeBase",
+  "fields": {
+    "_record_type": "Game Setting",
+    "Editor ID": "fVATSCriticalChargeBase",
+    "Float": 5.0
+  }
+}

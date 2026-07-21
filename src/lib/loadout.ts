@@ -6,6 +6,7 @@ import {
   getDistanceConstants,
   getMitigationConstants,
   getSpecialClamp,
+  getVatsCritConstants,
   getWeapons,
 } from '@/data';
 import { getEquippedPerkFamilyRanks, getLoadoutModifiers } from '@/data/perk-modifiers';
@@ -289,6 +290,7 @@ export function resolveLoadout(
     enemyDefenses,
     mitigationConstants: getMitigationConstants(mode),
     engineConstants: {
+      vatsCrit: getVatsCritConstants(mode),
       actionPoints: getActionPointConstants(mode),
       bulletStorm: getBulletStormConstants(mode),
       distance: getDistanceConstants(mode),

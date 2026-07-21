@@ -9,6 +9,9 @@
   "minReduction": 0.01,
   "maxReduction": 0.99
  },
+ "vatsCrit": {
+  "chargeBase": 5
+ },
  "actionPoints": {
   "poolBase": 60,
   "poolPerAgility": 10,

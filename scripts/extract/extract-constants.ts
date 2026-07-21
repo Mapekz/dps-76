@@ -17,6 +17,11 @@ import { EsmClient } from './esm-client';
  * uniform across every type it has a member for — read all members and flag
  * divergence instead of trusting one.
  *
+ * VATS crit-meter base: `src/lib/engine/crit-meter.ts`'s per-LCK fill term
+ * now comes from a curve table (`extract-curvetables.ts`'s
+ * `CURVE_TABLE_SINGLETONS` — `CT_LuckVATSCriticalCharge`); only the flat
+ * `fVATSCriticalChargeBase` addend is a bare scalar and belongs here.
+ *
  * AP economy: `src/lib/engine/ap-economy.ts`'s pool/regen-delay scalars —
  * `fAVDActionPointsBase`/`Mult` (pool size) and `fDamagedAVRegenDelay`
  * (regen-resume delay, a generic post-any-AV-drain delay reused here for AP —
@@ -110,6 +115,11 @@ const MAX_DAMAGE_REDUCTION_GMSTS: ReadonlyArray<{ label: string; formId: string 
 
 /** Fallback mitigation scalars if a GMST family fails to resolve entirely — matches the pre-extraction hardcodes in `mitigation.ts`. */
 const FALLBACK_MITIGATION = { resistExponent: 0.365, damageFactor: 0.15, minReduction: 0.01, maxReduction: 0.99 };
+
+/** `fVATSCriticalChargeBase` (0x00249662) — crit-meter.ts's flat per-hit fill addend. */
+const VATS_CRIT_CHARGE_BASE_GMST = '0x00249662';
+/** Fallback matching crit-meter.ts's pre-extraction hardcode. */
+const FALLBACK_VATS_CRIT = { chargeBase: 5.0 };
 
 /** `fAVDActionPointsBase` (0x0004D878) — ap-economy.ts's flat AP pool floor. */
 const AP_POOL_BASE_GMST = '0x0004D878';
@@ -296,6 +306,11 @@ async function resolveMitigation(client: EsmClient, unresolved: string[]): Promi
   return { resistExponent, damageFactor, minReduction, maxReduction };
 }
 
+async function resolveVatsCrit(client: EsmClient, unresolved: string[]): Promise<GeneratedConstants['vatsCrit']> {
+  const chargeBase = await resolveGmstFloat(client, VATS_CRIT_CHARGE_BASE_GMST, 'VATSCriticalChargeBase', unresolved);
+  return { chargeBase: chargeBase ?? FALLBACK_VATS_CRIT.chargeBase };
+}
+
 async function resolveActionPoints(client: EsmClient, unresolved: string[]): Promise<GeneratedConstants['actionPoints']> {
   const [poolBase, poolPerAgility, regenDelaySec, regenRatePct, regenRatePctPowerArmor] = await Promise.all([
     resolveGmstFloat(client, AP_POOL_BASE_GMST, 'ActionPointsBase', unresolved),
@@ -330,12 +345,13 @@ export interface ConstantsResult {
 
 export async function extractConstants(client: EsmClient): Promise<ConstantsResult> {
   const unresolved: string[] = [];
-  const [special, mitigation, actionPoints, bulletStorm, distance] = await Promise.all([
+  const [special, mitigation, vatsCrit, actionPoints, bulletStorm, distance] = await Promise.all([
     resolveSpecial(client, unresolved),
     resolveMitigation(client, unresolved),
+    resolveVatsCrit(client, unresolved),
     resolveActionPoints(client, unresolved),
     resolveBulletStorm(client, unresolved),
     resolveDistance(client, unresolved),
   ]);
-  return { constants: { special, mitigation, actionPoints, bulletStorm, distance }, unresolved };
+  return { constants: { special, mitigation, vatsCrit, actionPoints, bulletStorm, distance }, unresolved };
 }

@@ -49,6 +49,11 @@ export function getMitigationConstants(
   return getDataset(mode).constants.mitigation;
 }
 
+/** ESM-extracted `fVATSCriticalChargeBase` GMST — see GeneratedConstants. */
+export function getVatsCritConstants(mode: GameMode): { chargeBase: number } {
+  return getDataset(mode).constants.vatsCrit;
+}
+
 /** ESM-extracted AP pool/regen-delay GMSTs + RACE regen-rate scalars — see GeneratedConstants. */
 export function getActionPointConstants(mode: GameMode): {
   poolBase: number;

@@ -526,6 +526,14 @@ export interface GeneratedConstants {
   /** `f<Type>ArmorDmgReductionExp`/`f<Type>DamageFactor`/`f<Type>Min|MaxDamageReduction` GMSTs — resist-mitigation formula scalars, src/lib/engine/mitigation.ts `applyMitigation`. */
   mitigation: { resistExponent: number; damageFactor: number; minReduction: number; maxReduction: number };
   /**
+   * `fVATSCriticalChargeBase` GMST — flat per-hit VATS crit-meter fill addend,
+   * src/lib/engine/crit-meter.ts `computeCritMeter`. The per-LCK term is a
+   * curve table (`CT_LuckVATSCriticalCharge`), not a bare scalar — it lives
+   * under `src/data/<mode>/curvetables/player/vats/`, extracted separately by
+   * `extract-curvetables.ts`'s `CURVE_TABLE_SINGLETONS`.
+   */
+  vatsCrit: { chargeBase: number };
+  /**
    * `fAVDActionPointsBase`/`Mult` (pool), `fDamagedAVRegenDelay` (regen-resume
    * delay), RACE `Properties` AV ActionPointsRate (Human/PowerArmor regen
    * rate %) — src/lib/engine/ap-economy.ts `computeApEconomy`.

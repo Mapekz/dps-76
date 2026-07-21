@@ -3,6 +3,7 @@ import type { EsmClient, EsmRecord } from '../esm-client';
 import { extractConstants } from '../extract-constants';
 import avifStrength from './fixtures/avif-strength.json';
 import gmstResistExponent from './fixtures/gmst-resist-exponent.json';
+import gmstVatsCritBase from './fixtures/gmst-vats-critical-charge-base.json';
 import gmstAmmoPerStack from './fixtures/gmst-ammo-spender-ammo-use-per-stack.json';
 import gmstCloseDistance from './fixtures/gmst-distance-for-close-damage.json';
 import raceHuman from './fixtures/race-human.json';
@@ -48,7 +49,8 @@ function uniformMitigationRecords(): Record<string, EsmRecord> {
   return records;
 }
 
-/** Mirrors extract-constants.ts's own actionPoints/bulletStorm FormIDs (duplicated, same convention as the lists above). */
+/** Mirrors extract-constants.ts's own vatsCrit/actionPoints/bulletStorm FormIDs (duplicated, same convention as the lists above). */
+const VATS_CRIT_CHARGE_BASE_FORM_ID = '0x00249662';
 const AP_POOL_BASE_FORM_ID = '0x0004D878';
 const AP_POOL_PER_AGILITY_FORM_ID = '0x0004D879';
 const AP_REGEN_DELAY_FORM_ID = '0x000DB2AA';
@@ -65,9 +67,10 @@ function gmstUIntStub(formId: string, editorId: string, value: number): EsmRecor
   };
 }
 
-/** A full set of valid actionPoints/bulletStorm records (uniform, real values) — merged into SPECIAL/mitigation-focused fixtures so they don't spuriously flag these new families as unresolved. */
+/** A full set of valid vatsCrit/actionPoints/bulletStorm records (uniform, real values) — merged into SPECIAL/mitigation-focused fixtures so they don't spuriously flag these new families as unresolved. */
 function uniformNewConstantsRecords(): Record<string, EsmRecord> {
   return {
+    [VATS_CRIT_CHARGE_BASE_FORM_ID]: gmstVatsCritBase as unknown as EsmRecord,
     [AP_POOL_BASE_FORM_ID]: gmstStub(AP_POOL_BASE_FORM_ID, 'fAVDActionPointsBase', 60),
     [AP_POOL_PER_AGILITY_FORM_ID]: gmstStub(AP_POOL_PER_AGILITY_FORM_ID, 'fAVDActionPointsMult', 10),
     [AP_REGEN_DELAY_FORM_ID]: gmstStub(AP_REGEN_DELAY_FORM_ID, 'fDamagedAVRegenDelay', 1.0),
@@ -187,6 +190,23 @@ describe('extractConstants — mitigation GMST families', () => {
     const { constants, unresolved } = await extractConstants(clientFrom(records));
     expect(constants.mitigation).toEqual({ resistExponent: 0.365, damageFactor: 0.15, minReduction: 0.01, maxReduction: 0.99 });
     expect(unresolved.some(u => u.includes('no MaxDamageReduction GMST resolved'))).toBe(true);
+  });
+});
+
+describe('extractConstants — VATS crit-meter base', () => {
+  it('reads fVATSCriticalChargeBase as 5.0 (real fixture)', async () => {
+    const records: Record<string, EsmRecord> = { ...uniformSpecialRecords(), ...uniformMitigationRecords(), ...uniformNewConstantsRecords() };
+    const { constants, unresolved } = await extractConstants(clientFrom(records));
+    expect(constants.vatsCrit).toEqual({ chargeBase: 5.0 });
+    expect(unresolved).toHaveLength(0);
+  });
+
+  it('falls back to 5.0 and notes it when the GMST fails to resolve', async () => {
+    const records: Record<string, EsmRecord> = { ...uniformSpecialRecords(), ...uniformMitigationRecords(), ...uniformNewConstantsRecords() };
+    delete records[VATS_CRIT_CHARGE_BASE_FORM_ID];
+    const { constants, unresolved } = await extractConstants(clientFrom(records));
+    expect(constants.vatsCrit).toEqual({ chargeBase: 5.0 });
+    expect(unresolved.some(u => u.includes('VATSCriticalChargeBase'))).toBe(true);
   });
 });
 

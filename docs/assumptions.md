@@ -454,14 +454,26 @@ wrongly stack with Quad/reload-speed mods).
 ## Crit meter
 Engine: `src/lib/engine/crit-meter.ts`.
 
-- `fillPerHit% = (5 + 1.5×LCK) × weaponCritChargeBonus` (GMSTs
-  `fVATSCriticalChargeBase`/`Mult`).
+- `fillPerHit% = fVATSCriticalChargeBase + weapon's own Crit Charge Bonus +
+  curveY(LCK)`. **USER-IDENTIFIED, ESM-CONFIRMED 2026-07-21** — corrects the
+  prior `(5 + 1.5×LCK) × weaponCritChargeBonus` linear-multiplier model:
+  `fVATSCriticalChargeMult` is DEAD (not read by the live mechanic); the real
+  per-LCK term is curve table `CT_LuckVATSCriticalCharge` (0x00655629, domain
+  LCK 1–100 — matches the SPECIAL clamp exactly — reached via DFOB
+  `LuckVATSCriticalChargeCurve_DO` 0x0065562A), extracted via
+  `extract-curvetables.ts`'s `CURVE_TABLE_SINGLETONS` →
+  `player/vats/luckvatscriticalcharge.json`.
+  `fVATSCriticalChargeBase` = 5.0 (0x00249662) is unchanged. The weapon's own
+  "Crit Charge Bonus" WEAP field is ADDITIVE (not multiplicative as
+  previously modeled) — ESM-raw and literally 1.0 for 280/282 obtainable
+  weapons (the two SnapMatic/disposable cameras read 0).
 - Consumption: `fold(critConsumption over 100)` — Critical Savvy SETs 85/70/55
   — × `(1 − 0.10×limitBreakingPieces)` (hand-modeled).
 - Steady state: crit every `ceil(cost/fill)+1` shots, max every 2nd.
   **User-verified anchor**: 16 LCK + Crit Savvy 3 + 5× Limit Breaking → every
-  2nd shot.
-- Per-weapon Crit Charge Bonus semantics and rounding unverified in-game.
+  2nd shot (holds under both the old and corrected fill formula — see
+  `crit-meter.ts`'s module doc comment).
+- Per-weapon Crit Charge Bonus rounding unverified in-game.
 
 ## Value curves
 
