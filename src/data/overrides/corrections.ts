@@ -205,7 +205,7 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
 ]);
 
 /**
- * Armor-OMOD ids hidden from the Armor Effects checklist (src/data/armor-
+ * Armor-OMOD ids hidden from the Armor checklist (src/data/armor-
  * modifiers.ts) — data-quality exclusions, not deferred-mechanic badges
  * (that's the incoming-scope todo, dps-todos/armor-mods-incoming.md).
  */

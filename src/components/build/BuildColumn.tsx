@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion } from '@/components/ui/accordion';
 import { UserIcon } from 'lucide-react';
 import { WeaponSection } from './WeaponSection';
-import { ArmorEffectsSection } from './ArmorEffectsSection';
+import { ArmorSection } from './ArmorSection';
 import { SpecialLoadoutSection } from './SpecialLoadoutSection';
 import { StatSummary } from './StatSummary';
 import { MutationsSection, ChemsSection, FoodDrinkSection, MagazinesSection, BobbleheadsSection } from './BuffsSections';
@@ -23,7 +23,7 @@ export function BuildColumn() {
         <StatSummary />
         <Accordion multiple defaultValue={['weapon', 'special-loadout']} className="w-full">
           <WeaponSection />
-          <ArmorEffectsSection />
+          <ArmorSection />
           <SpecialLoadoutSection />
           <TeamSection />
           <MutationsSection />

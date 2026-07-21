@@ -270,7 +270,7 @@ describe('derived condition fields', () => {
   });
 });
 
-describe('Armor Effects checklist (Phase 3 armor pipeline, UI + state)', () => {
+describe('Armor checklist (Phase 3 armor pipeline, UI + state)', () => {
   it('round-trips a mix of stackable and single-slot selections, omitting zero counts', async () => {
     const state = stateFrom([
       { type: 'armorEffect/setCount', id: 'mod_Legendary_Armor4_BattleLoaders', count: 3 },
@@ -315,7 +315,7 @@ describe('Armor Effects checklist (Phase 3 armor pipeline, UI + state)', () => {
     const encoded = await encodeRawWire({ pc: { limitBreakingPieces: 5 } });
     const decoded = await decodeBuild(encoded, 'live');
     expect(decoded!.state.player.armorEffects).toEqual({ mod_Legendary_Armor4_LimitBreak: 5 });
-    expect(decoded!.warnings.some(w => w.includes('Armor Effects checklist'))).toBe(true);
+    expect(decoded!.warnings.some(w => w.includes('Armor checklist'))).toBe(true);
   });
 
   it('a legacy "limitBreakingPieces: 0" migrates to no selection at all (not a stored zero)', async () => {

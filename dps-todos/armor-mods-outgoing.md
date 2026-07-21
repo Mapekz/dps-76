@@ -8,7 +8,7 @@ distinct from incoming-damage mitigation ([armor-mods-incoming.md](armor-mods-in
 The extraction pipeline (`armor-omods.json`, commit 66870c6) plus the engine
 and UI half (this pass) closed almost all of this doc's original scope. Slim
 checklist, not a per-piece picker (user decision) — see `docs/assumptions.md`
-"Armor effects" for the engine-side design/fixes and
+"Armor" for the engine-side design/fixes and
 `src/data/armor-modifiers.ts` for the curated inventory (filter-derived, not
 hand-listed — whatever qualifies from data shows up).
 

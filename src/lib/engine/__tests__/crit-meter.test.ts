@@ -32,7 +32,7 @@ describe('computeCritMeter', () => {
 
   it('user anchor: 16 LCK + Crit Savvy 3 + 5× Limit Breaking → crit every 2nd shot', () => {
     // Critical Savvy rank 3 SETs consumption to 55. Limit-Breaking Armor at
-    // 5 worn pieces (Armor Effects checklist, self-scaling — its modifiers
+    // 5 worn pieces (Armor checklist, self-scaling — its modifiers
     // carry their own wornPieceCount tiers) MUL_ADDs −50%.
     const selections = { [LIMIT_BREAKING_ID]: 5 };
     const mods = [

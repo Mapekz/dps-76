@@ -7,7 +7,7 @@ import { hiddenArmorOmodIds } from './overrides/corrections';
 import { describeBuffModifiers } from '@/lib/buff-description';
 
 /**
- * Armor Effects checklist inventory (Phase 3 armor pipeline, UI + state half)
+ * Armor checklist inventory (Phase 3 armor pipeline, UI + state half)
  * — the armor-omod analogue of `perk-modifiers.ts`. Deliberately
  * CURATED-BY-FILTER, not hand-listed: every armor/PA legendary or craftable
  * mod with at least one engine-effective modifier (`hasAnyEngineEffect`,
@@ -18,7 +18,7 @@ import { describeBuffModifiers } from '@/lib/buff-description';
  * excluded via `hiddenArmorOmodIds` (data-quality issues, source-commented
  * there) rather than by hand-picking what stays IN.
  *
- * Per-piece scaling model (docs/assumptions.md "Armor effects"):
+ * Per-piece scaling model (docs/assumptions.md "Armor"):
  * - Most effects (Unyielding, 2★ SPECIAL, Powered, Active, Healthy,
  *   Bruiser's/Ranger's, Propelling, the PA Misc/Lining/underarmor mods) are
  *   flat per-piece bonuses with NO wornPieceCount condition of their own —

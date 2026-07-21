@@ -394,7 +394,7 @@ wrongly stack with Quad/reload-speed mods).
   `reloadSkipChance` 2026-07-19 (Phase C — go-through-every-single-silly-
   whistle.md)**: its ESM trigger is EP199 "Instant Reload Clip On Bash",
   gated `IsPowerAttacking` in its own extracted conditions (dropped as a
-  CONDITION per "Armor effects" below, but preserved structurally via the
+  CONDITION per "Armor" below, but preserved structurally via the
   bucket split) — a bash swing is a real action with a time cost, unlike a
   passive reload skip. `sustain.ts`'s `sustainTiming` composes both
   channels: `pFree = reloadSkipChance`, `pBash = reloadSkipChanceBash` (both
@@ -1636,7 +1636,7 @@ auto-converted); their stats are stale and must not be shown.
   Battle-Loader's 1/2/3/4/≥5, Limit-Breaking Armor, Crusaders S.P.E.C.I.A.L.)
   translates to a new `{kind: 'wornPieceCount', keyword, count, orMore?}`
   condition (`conditions.ts`, pattern: `GetGroupTargetCount`). Engine half
-  SHIPPED — see "Armor effects" below.
+  SHIPPED — see "Armor" below.
 - **ESM-PROVEN**: Battle-Loader's PERK entry point 199 ("Instant Reload Clip
   On Bash") emits `Function Type: Float, Function: Set Value, Float: 1.0` on
   all 5 tiers — a boolean trigger placeholder, NOT the 15/30/45/60/75% chance
@@ -1647,7 +1647,7 @@ auto-converted); their stats are stale and must not be shown.
   as `unresolved` conditions on the extracted modifier. **CORRECTION**: these
   are NOT harmless — `evalCondition`'s `unresolved` case always returns
   `null`, so any one of them permanently deactivates the modifier regardless
-  of `wornPieceCount`. See "Armor effects" below for the override that drops
+  of `wornPieceCount`. See "Armor" below for the override that drops
   them.
 - `extract-armor.ts` is grounding-only: `{id, formId, name, obtainable}` per
   ARMO record, feeding armor-OMOD obtainability the same way
@@ -1655,9 +1655,9 @@ auto-converted); their stats are stale and must not be shown.
   new ARMO branch, parallel to its WEAP one). No resistances, no mod slots,
   no UI consumer — that's later Phase 3 scope.
 
-## Armor effects (Phase 3 engine + UI, 2026-07-18)
+## Armor (Phase 3 engine + UI, 2026-07-18)
 
-- **DESIGN**: the Armor Effects checklist (`ArmorEffectsSection.tsx`) is
+- **DESIGN**: the Armor checklist (`ArmorSection.tsx`) is
   deliberately slim (worn-piece COUNT per effect, not a per-piece armor/mod
   picker — user decision). `PlayerConfig.armorEffects: Record<effectId,
   count>` is the single source of truth; `resolveLoadout` derives both the
@@ -1734,7 +1734,7 @@ auto-converted); their stats are stale and must not be shown.
   5× Limit Breaking → crit-every-2nd-shot anchor exactly. This ALSO retired
   the pre-existing hand-authored `PlayerConditions.limitBreakingPieces`
   manual toggle (ConditionsSection.tsx) — Limit-Breaking is now sourced from
-  real OMOD data via the Armor Effects checklist instead; `codec.ts` migrates
+  real OMOD data via the Armor checklist instead; `codec.ts` migrates
   legacy `pc.limitBreakingPieces` payloads into the equivalent checklist
   selection.
 - **ASSUMPTION**: worn-piece maxCount for non-legendary effects (PA Misc,

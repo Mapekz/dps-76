@@ -212,10 +212,10 @@ export interface PlayerConditions {
    * condition tests (e.g. `HasLegendary_Armor_BattleLoaders`) — Battle-
    * Loader's 1-5 reload-skip tiers, Limit-Breaking's 1-5 crit-cost tiers.
    * DERIVED in resolveLoadout from `PlayerConfig.armorEffects` (the Armor
-   * Effects checklist's selections are the single source of truth —
+   * checklist's selections are the single source of truth —
    * `src/data/armor-modifiers.ts` `getArmorEffectWornPieceCounts`); the UI
    * never sets this directly, and the stored default only feeds synthetic
-   * engine tests. See docs/assumptions.md "Armor effects".
+   * engine tests. See docs/assumptions.md "Armor".
    */
   wornPieceCounts?: Record<string, number>;
   /**
@@ -611,12 +611,12 @@ export interface PlayerConfig {
   legendaryPerks: PerkLoadout[];
   weapon: WeaponConfig | null;
   /**
-   * Armor Effects checklist selections — effectId (a stable representative
+   * Armor checklist selections — effectId (a stable representative
    * OMOD edid, `src/data/armor-modifiers.ts` `ArmorEffectEntry.id`) → worn
    * count (0-`maxCount`; single-slot effects use 0/1). Authoritative source
    * for both the folded `Modifier[]` list and `PlayerConditions.wornPieceCounts`
    * — resolveLoadout derives both, the UI never sets either downstream field
-   * directly (docs/assumptions.md "Armor effects").
+   * directly (docs/assumptions.md "Armor").
    */
   armorEffects: Record<string, number>;
   mutations: string[];

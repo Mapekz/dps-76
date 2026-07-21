@@ -52,7 +52,7 @@ interface SerializedBuild {
   c?: string[];
   /** selected addiction ids (GeneratedAddiction.id) */
   ad?: string[];
-  /** Armor Effects checklist selections: [effectId, count][], count>0 only */
+  /** Armor checklist selections: [effectId, count][], count>0 only */
   ae?: Array<[string, number]>;
   /** non-default player conditions */
   pc?: Partial<PlayerConditions>;
@@ -312,14 +312,14 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
   for (const [key, value] of Object.entries(wire.pc ?? {})) {
     if (key === 'limitBreakingPieces' && typeof value === 'number') {
       // Pre-Phase-3 URLs stored Limit Breaking as a standalone manual
-      // condition; it's now the "Limit-Breaking" Armor Effects checklist row
+      // condition; it's now the "Limit-Breaking" Armor checklist row
       // (mod_Legendary_Armor4_LimitBreak — same 0-5 worn-piece count, just
       // sourced from real OMOD data instead of a hand-authored crit-meter
-      // term — see docs/assumptions.md "Armor effects").
+      // term — see docs/assumptions.md "Armor").
       const effect = getArmorEffectById(mode, 'mod_Legendary_Armor4_LimitBreak');
       if (effect && value > 0) {
         state.player.armorEffects[effect.id] = Math.max(0, Math.min(effect.maxCount, value));
-        warnings.push('"Limit Breaking armor pieces" moved into the Armor Effects checklist');
+        warnings.push('"Limit Breaking armor pieces" moved into the Armor checklist');
       }
       continue;
     }

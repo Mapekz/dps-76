@@ -29,7 +29,7 @@ interface GoldenCase {
   mutations: string[];
   consumables: string[];
   addictions?: string[];
-  /** Armor Effects checklist selections (Phase 3 armor pipeline): effectId → worn count. */
+  /** Armor checklist selections (Phase 3 armor pipeline): effectId → worn count. */
   armorEffects?: Record<string, number>;
   conditions: Partial<PlayerConditions>;
   /**

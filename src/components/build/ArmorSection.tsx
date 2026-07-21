@@ -8,15 +8,16 @@ import { getArmorEffects, type ArmorEffectEntry } from '@/data/armor-modifiers';
 import { SectionTrigger } from './SectionTrigger';
 
 /**
- * Slim armor-effects checklist (Phase 3 armor pipeline, UI half) — replaces
- * the old "coming soon" ArmorSection. Deliberately NOT a per-piece armor
- * picker (user decision, go-through-every-single-silly-whistle.md "Armor:
- * slim effect checklist"): every row is a curated, engine-effective legendary
- * or craftable armor/PA effect (`src/data/armor-modifiers.ts`
- * `getArmorEffects`, filter-derived — nothing here can be badged inert by
- * construction), toggled by worn-piece count rather than by picking specific
- * armor items. Single-slot effects (underarmor styles, PA Misc mods) get a
- * checkbox; multi-piece legendary effects get a 0-5 stepper.
+ * Armor section (Phase 3 armor pipeline, UI half) — for now, a slim
+ * armor checklist; replaces the old "coming soon" placeholder.
+ * Deliberately NOT a per-piece armor picker (user decision,
+ * go-through-every-single-silly-whistle.md "Armor: slim effect checklist"):
+ * every row is a curated, engine-effective legendary or craftable armor/PA
+ * effect (`src/data/armor-modifiers.ts` `getArmorEffects`, filter-derived —
+ * nothing here can be badged inert by construction), toggled by worn-piece
+ * count rather than by picking specific armor items. Single-slot effects
+ * (underarmor styles, PA Misc mods) get a checkbox; multi-piece legendary
+ * effects get a 0-5 stepper. Will grow to model the full player armor set.
  */
 
 const STEP_OPTIONS = [0, 1, 2, 3, 4, 5].map(value => ({ value, label: String(value) }));
@@ -88,7 +89,7 @@ function EffectGroup({ title, effects }: { title: string; effects: ArmorEffectEn
   );
 }
 
-export function ArmorEffectsSection() {
+export function ArmorSection() {
   const { mode } = useGameMode();
   const { player } = useBuild();
   const effects = getArmorEffects(mode);
@@ -97,9 +98,9 @@ export function ArmorEffectsSection() {
   const activeCount = Object.values(player.armorEffects).filter(count => count > 0).length;
 
   return (
-    <AccordionItem value="armor-effects">
+    <AccordionItem value="armor">
       <AccordionTrigger>
-        <SectionTrigger label="Armor Effects" summary={activeCount > 0 ? `${activeCount} active` : 'none'} />
+        <SectionTrigger label="Armor" summary={activeCount > 0 ? `${activeCount} active` : 'none'} />
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-3">

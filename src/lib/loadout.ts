@@ -75,8 +75,8 @@ function assemble(
     // condition's input (cross-family HasPerk gates, e.g. Lock and Load →
     // Bullet Storm's reload speed).
     equippedPerkRanks: getEquippedPerkFamilyRanks(mode, [...playerConfig.perks, ...playerConfig.legendaryPerks]),
-    // Armor Effects checklist selections are the single source of truth
-    // (docs/assumptions.md "Armor effects") — derived here, never set by the
+    // Armor checklist selections are the single source of truth
+    // (docs/assumptions.md "Armor") — derived here, never set by the
     // UI directly, for the self-scaling effects' wornPieceCount conditions
     // (Battle-Loader's, Limit-Breaking Armor).
     wornPieceCounts: getArmorEffectWornPieceCounts(mode, playerConfig.armorEffects),
@@ -112,7 +112,7 @@ function assemble(
   // debuff) — driven by the Target panel's inputs, not the player's own
   // cards, so pushed unconditionally too.
   loadoutModifiers.push(...getTargetDebuffModifiers(conditions));
-  // Armor Effects checklist selections (Unyielding, 2★ SPECIAL, Battle-
+  // Armor checklist selections (Unyielding, 2★ SPECIAL, Battle-
   // Loader's, ...) — pushed BEFORE buildEffectiveWeapon like every other
   // source above so their weapon-stat/sustain-chance buckets (Battle-
   // Loader's reloadSkipChanceBash, Propelling's moveSpeedBonus) get folded

@@ -724,7 +724,7 @@
    "measure": "perHit",
    "expected": null,
    "tolerancePct": 2,
-   "source": "pending in-game measurement (Phase 3 armor pipeline, UI + state) \u2014 Unyielding 5-piece stack below the 20% HP threshold (+15 to all SPECIAL but Endurance, engine-side hand-verified against the extracted curve in src/data/__tests__/armor-modifiers.test.ts); a ranged weapon has no melee STR term so this mostly pins the assembly seam (per-piece scaling, wornPieceCount-free curveScale x5), not a STR-sensitive damage delta \u2014 see docs/assumptions.md \"Armor effects\""
+   "source": "pending in-game measurement (Phase 3 armor pipeline, UI + state) \u2014 Unyielding 5-piece stack below the 20% HP threshold (+15 to all SPECIAL but Endurance, engine-side hand-verified against the extracted curve in src/data/__tests__/armor-modifiers.test.ts); a ranged weapon has no melee STR term so this mostly pins the assembly seam (per-piece scaling, wornPieceCount-free curveScale x5), not a STR-sensitive damage delta \u2014 see docs/assumptions.md \"Armor\""
   },
   {
    "name": "Combat Rifle (Fixer) @50, Battle-Loader's x3 \u2014 sustained DPS with the 45% reload-skip chance folded in",
@@ -745,7 +745,7 @@
    "measure": "sustainedDps",
    "expected": null,
    "tolerancePct": 2,
-   "source": "pending in-game measurement (Phase 3 armor pipeline, UI + state; Phase C bash-cost model) \u2014 Battle-Loader's 3-piece tier (45% reloadSkipChanceBash, wornPieceCount==3), modeled via the two-channel reload-skip formula with the 0.75s DEFAULT_BATTLE_LOADERS_BASH_SEC placeholder (bash cadence itself still unmodeled \u2014 the chance is treated as sustained/per-reload, docs/assumptions.md \"Armor effects\" + \"Reload-skip & free-ammo expected value\"); pins the sustain-chance fold end-to-end once a real Pip-Boy sustained-DPS reading with the mod equipped exists"
+   "source": "pending in-game measurement (Phase 3 armor pipeline, UI + state; Phase C bash-cost model) \u2014 Battle-Loader's 3-piece tier (45% reloadSkipChanceBash, wornPieceCount==3), modeled via the two-channel reload-skip formula with the 0.75s DEFAULT_BATTLE_LOADERS_BASH_SEC placeholder (bash cadence itself still unmodeled \u2014 the chance is treated as sustained/per-reload, docs/assumptions.md \"Armor\" + \"Reload-skip & free-ammo expected value\"); pins the sustain-chance fold end-to-end once a real Pip-Boy sustained-DPS reading with the mod equipped exists"
   },
   {
    "name": "Combat Rifle (Fixer) @50, Concentrated Fire rank 3 @ 20 stacks \u2014 VATS per-hit with the stacking damage bonus maxed",

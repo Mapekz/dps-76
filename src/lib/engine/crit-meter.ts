@@ -14,7 +14,7 @@ import { lastTrace, type BucketTrace, type CritMeterTrace } from './trace';
  * Consumption per crit (percent of meter):
  *   cost = fold(critConsumption over base 100) × Π(1 + selfScalingMult)
  *   // Critical Savvy SETs 85/70/55 folds normally.
- *   // Limit-Breaking Armor (Armor Effects checklist,
+ *   // Limit-Breaking Armor (Armor checklist,
  *   // src/data/armor-modifiers.ts) is handled SEPARATELY as a sequential
  *   // multiplier, not folded through foldOps: its 5-tier MUL_ADD values
  *   // (−10%..−50%, wornPieceCount-gated) mean "reduce the cost by X%" —

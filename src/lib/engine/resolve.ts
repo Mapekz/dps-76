@@ -337,7 +337,7 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
     }
     case 'wornPieceCount': {
       // Phase 3 armor pipeline (engine half, 2026-07-18): count of equipped
-      // armor pieces carrying `cond.keyword`, derived from the Armor Effects
+      // armor pieces carrying `cond.keyword`, derived from the Armor
       // checklist selections (resolveLoadout → getArmorEffectWornPieceCounts,
       // src/data/armor-modifiers.ts) — never set by the UI directly. Battle-
       // Loader's/Limit-Breaking Armor's tiers are exact-match (count ===
