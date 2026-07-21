@@ -1,4 +1,5 @@
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { ToggleGroup } from '@/components/ui/toggle-group';
@@ -100,7 +101,11 @@ export function ArmorSection() {
   return (
     <AccordionItem value="armor">
       <AccordionTrigger>
-        <SectionTrigger label="Armor" summary={activeCount > 0 ? `${activeCount} active` : 'none'} />
+        <SectionTrigger
+          label="Armor"
+          summary={activeCount === 0 ? 'none' : undefined}
+          badge={activeCount > 0 && <Badge variant="secondary">{activeCount} active</Badge>}
+        />
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-3">

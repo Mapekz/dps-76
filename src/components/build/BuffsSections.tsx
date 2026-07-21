@@ -106,9 +106,10 @@ export function MutationsSection() {
       <AccordionTrigger>
         <SectionTrigger
           label="Mutations"
-          summary={player.mutations.length > 0 ? `${player.mutations.length} active` : 'none'}
+          summary={player.mutations.length === 0 ? 'none' : undefined}
           badge={
             <>
+              {player.mutations.length > 0 && <Badge variant="secondary">{player.mutations.length} active</Badge>}
               {sinEquipped && (
                 <Badge
                   variant={sinActive ? 'default' : 'outline'}
@@ -825,7 +826,11 @@ export function FoodDrinkSection() {
   return (
     <AccordionItem value="food-drink">
       <AccordionTrigger>
-        <SectionTrigger label="Food & Drink" summary={activeItems.length > 0 ? `${activeItems.length} active` : 'none'} />
+        <SectionTrigger
+          label="Food & Drink"
+          summary={activeItems.length === 0 ? 'none' : undefined}
+          badge={activeItems.length > 0 && <Badge variant="secondary">{activeItems.length} active</Badge>}
+        />
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-2">
