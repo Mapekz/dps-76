@@ -262,7 +262,7 @@ export function resolveLoadout(
   // and the location axis falls back to the engine's legacy mult-derived
   // category (resolveTargetBodyPart — single source of truth, also used by
   // the aim-point UI readouts).
-  const { targetRace, targetBodyPart, targetLevel } = enemyConfig.conditions;
+  const { targetRace, targetBodyPart, targetLevel, epicRank } = enemyConfig.conditions;
   const resolvedTarget = resolveTargetBodyPart(mode, targetRace, targetBodyPart, playerConfig.weakpointMult);
 
   // Enemy defenses (Phase 2 — Enemy defenses): resolves the same npc row the
@@ -270,9 +270,11 @@ export function resolveLoadout(
   // default-to-max) level. `getEnemyDefenses` returns null without a race
   // selected or a race with no npc data, which threads through as `undefined`
   // on ScenarioInput — scenarios.ts's `effective` field just stays absent.
+  // `epicRank` is the Target section's ★ toggle (ignored by getEnemyDefenses
+  // for races with a forced rank, and for non-epicAllowed races).
   const targetNpc = targetRace ? getNpc(mode, targetRace) : undefined;
   const resolvedLevel = resolveTargetLevel(targetNpc, targetLevel);
-  const enemyDefenses = getEnemyDefenses(mode, targetRace, resolvedLevel) ?? undefined;
+  const enemyDefenses = getEnemyDefenses(mode, targetRace, resolvedLevel, epicRank) ?? undefined;
 
   return {
     mode,

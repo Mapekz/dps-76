@@ -300,6 +300,17 @@ export interface EnemyConditions {
    * absent. Inert without a `targetRace` selected (mirrors `targetBodyPart`).
    */
   targetLevel?: number | null;
+  /**
+   * User-selected "Epic Levels" rank (0 = off, 1-3) for the target's HP mult
+   * (Phase A — epic boss HP mult, `src/data/overrides/epic-creature.ts`'s
+   * `EPIC_CREATURE_RANK_MULTS`). Only meaningful when the selected race's
+   * `GeneratedNpc.epicAllowed` is true (UI hides the toggle otherwise) and
+   * ignored entirely when the race carries a forced `epicRank` (SBQ, Storm
+   * Goliath) — the forced rank always wins in `getEnemyDefenses`. Ranks 4-5
+   * exist in the multiplier table but have no ESM-observed spawn path (every
+   * curated/forced rank seen is ≤3), so the toggle caps at ★3.
+   */
+  epicRank?: number;
 }
 
 // Game mode types
@@ -723,6 +734,7 @@ export function createDefaultEnemyConditions(): EnemyConditions {
     targetRace: null,
     targetBodyPart: null,
     targetLevel: null,
+    epicRank: 0,
   };
 }
 

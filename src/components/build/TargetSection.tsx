@@ -81,6 +81,21 @@ const TAKING_ONE_FOR_THE_TEAM_DR_RANK_OPTIONS = [
   { value: 4, label: 'R4 (−50)' },
 ];
 
+/**
+ * "Epic Levels" rank toggle (Off/★1-3) — the user's estimate of a runtime
+ * chance-rolled HP-mult upgrade the ESM can't statically confirm for any
+ * given encounter (see `EnemyConditions.epicRank` doc comment). Caps at ★3:
+ * every ESM-observed forced rank (SBQ, Storm Goliath) and every curated
+ * boss's own random-roll ceiling seen so far is ≤3, and ranks 4-5 have no
+ * ESM-proven spawn path despite existing in the multiplier table.
+ */
+const EPIC_RANK_OPTIONS = [
+  { value: 0, label: 'Off' },
+  { value: 1, label: '★1' },
+  { value: 2, label: '★2' },
+  { value: 3, label: '★3' },
+];
+
 const TARGET_CATEGORY_LABELS: Record<BodyPartRaceCategory, string> = {
   raid: 'Raid Enemies',
   infestation: 'Infestation Bosses',
@@ -206,7 +221,15 @@ export function TargetSection() {
   const targetNpc = conditions.targetRace ? getNpc(mode, conditions.targetRace) : undefined;
   const levelBounds = resolveTargetLevelBounds(targetNpc);
   const targetLevel = resolveTargetLevel(targetNpc, conditions.targetLevel);
-  const targetDefenses = selectedRace ? getEnemyDefenses(mode, conditions.targetRace, targetLevel) : null;
+  // Epic Levels rank (Phase A cont'd): a forced rank (SBQ/Storm) always wins
+  // over the user's toggle — resolved inside getEnemyDefenses itself, this
+  // is just what the toggle DISPLAYS. Hidden entirely for a non-epicAllowed
+  // race; locked to the forced rank when the race carries one.
+  const epicAllowed = targetNpc?.epicAllowed ?? false;
+  const forcedEpicRank = targetNpc?.epicRank;
+  const userEpicRank = conditions.epicRank ?? 0;
+  const displayedEpicRank = forcedEpicRank ?? userEpicRank;
+  const targetDefenses = selectedRace ? getEnemyDefenses(mode, conditions.targetRace, targetLevel, userEpicRank) : null;
 
   const tenderizer = player.conditions.tenderizerStacks;
   const playerDefaults = createDefaultPlayerConditions();
@@ -227,6 +250,7 @@ export function TargetSection() {
     ((conditions.groupTargetCount ?? 1) !== (defaults.groupTargetCount ?? 1) ? 1 : 0) +
     ((conditions.targetDistance ?? DEFAULT_DISTANCE_UNITS) !== (defaults.targetDistance ?? DEFAULT_DISTANCE_UNITS) ? 1 : 0) +
     (conditions.targetLevel != null ? 1 : 0) +
+    (forcedEpicRank == null && userEpicRank !== 0 ? 1 : 0) +
     (tenderizer !== 0 ? 1 : 0) +
     (followThroughPct !== (playerDefaults.followThroughPct ?? 0) ? 1 : 0) +
     (takingOneForTheTeamPct !== (playerDefaults.takingOneForTheTeamPct ?? 0) ? 1 : 0) +
@@ -292,6 +316,24 @@ export function TargetSection() {
             shell.
           </p>
 
+          {selectedRace && epicAllowed && (
+            <div className="space-y-1.5">
+              <Label>Legendary</Label>
+              <ToggleGroup
+                aria-label="Legendary rank"
+                options={EPIC_RANK_OPTIONS}
+                value={displayedEpicRank}
+                disabled={forcedEpicRank != null}
+                onValueChange={v => setEnemy('epicRank', v)}
+              />
+              {forcedEpicRank != null && (
+                <p className="text-muted-foreground text-xs">
+                  Locked — this boss's summon quest forces ★{forcedEpicRank} every spawn.
+                </p>
+              )}
+            </div>
+          )}
+
           {selectedRace && (
             <div className="space-y-1.5">
               <Label htmlFor="target-level">Level: {targetLevel}</Label>
@@ -308,17 +350,10 @@ export function TargetSection() {
                 ]}
               />
               {targetDefenses && (
-                <p className="text-muted-foreground flex flex-wrap items-center gap-1.5 font-mono text-xs tabular-nums">
-                  <span>
-                    HP {Math.round(targetDefenses.hp).toLocaleString()} · DR{' '}
-                    {Math.round(targetDefenses.resists.physical ?? 0).toLocaleString()} · ER{' '}
-                    {Math.round(targetDefenses.resists.energy ?? 0).toLocaleString()}
-                  </span>
-                  {targetNpc?.epicRank != null && (
-                    <Badge variant="secondary" className="font-sans" title="Epic boss — ESM-forced rank on this encounter's summon quest">
-                      ★{targetNpc.epicRank} epic
-                    </Badge>
-                  )}
+                <p className="text-muted-foreground font-mono text-xs tabular-nums">
+                  HP {Math.round(targetDefenses.hp).toLocaleString()} · DR{' '}
+                  {Math.round(targetDefenses.resists.physical ?? 0).toLocaleString()} · ER{' '}
+                  {Math.round(targetDefenses.resists.energy ?? 0).toLocaleString()}
                 </p>
               )}
             </div>

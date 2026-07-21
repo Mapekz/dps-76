@@ -49,24 +49,35 @@ export function resolveTargetLevel(npc: GeneratedNpc | undefined, storedLevel: n
  * `raceId` is unset or doesn't join to a curated NPC row (no target
  * selected, or a race with no stats-bearing template — see npcs.ts).
  *
- * Epic HP mult (Phase A — epic boss HP mult, 2026-07-19): fully data-driven,
- * no caller input. When the joined npc carries a `epicRank` (ESM-proven
- * fixed rank on its summon quest — `scripts/extract/extract-npcs.ts`) AND
- * `epicAllowed` is true, `hp` is scaled by `EPIC_CREATURE_RANK_MULTS[epicRank]
- * .healthMult`. Today that's exactly Scorchbeast Queen and Storm Goliath
- * (both rank 3, ×3.2) — every other race (including Earle/Wendigo Colossus,
- * whose summon quest has no provable rank) falls through to plain curve HP.
- * DR/ER are never scaled — the epic-rank system does not affect resists.
+ * Epic HP mult (Phase A — epic boss HP mult, 2026-07-19; user-toggle layer
+ * added 2026-07-21): a forced `npc.epicRank` (ESM-proven fixed rank on its
+ * summon quest — `scripts/extract/extract-npcs.ts`) always wins when
+ * present — that's exactly Scorchbeast Queen and Storm Goliath (both rank
+ * 3, ×3.2) today. Otherwise, when the race is `epicAllowed`, the caller's
+ * `userEpicRank` (the Target section's ★ toggle, `EnemyConditions.epicRank`)
+ * applies instead — modeling the runtime chance-rolled Epic Levels upgrade
+ * the ESM can't statically confirm for any given encounter. A race that
+ * isn't `epicAllowed` never scales, regardless of `userEpicRank` (the UI
+ * also hides the toggle in that case, but this function doesn't trust the
+ * caller to have done so). DR/ER are never scaled — the epic-rank system
+ * does not affect resists.
  */
-export function getEnemyDefenses(mode: GameMode, raceId: string | null | undefined, level: number): EnemyDefenses | null {
+export function getEnemyDefenses(
+  mode: GameMode,
+  raceId: string | null | undefined,
+  level: number,
+  userEpicRank?: number
+): EnemyDefenses | null {
   if (!raceId) return null;
   const npc = getNpc(mode, raceId);
   if (!npc) return null;
 
   const baseHp = npc.healthCurveTier != null ? getCreatureHealth(mode, npc.healthCurveTier, level) : npc.healthFlatValue;
-  // Fail open on an out-of-table rank (defensive — every ESM-extracted rank
-  // seen so far is 3) rather than throwing.
-  const rankMult = npc.epicRank != null ? EPIC_CREATURE_RANK_MULTS[npc.epicRank as EpicCreatureRank] : undefined;
+  // Forced rank (SBQ/Storm) always wins; otherwise fall back to the user's
+  // toggle when the race is epic-eligible. Fail open on an out-of-table rank
+  // (defensive — every ESM-extracted/user-facing rank is ≤3) rather than throwing.
+  const effectiveRank = npc.epicRank ?? (userEpicRank || undefined);
+  const rankMult = effectiveRank != null ? EPIC_CREATURE_RANK_MULTS[effectiveRank as EpicCreatureRank] : undefined;
   const hp = rankMult && npc.epicAllowed ? baseHp * rankMult.healthMult : baseHp;
 
   const resists: EnemyDefenses['resists'] = {};
