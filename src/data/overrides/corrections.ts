@@ -176,12 +176,12 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
   // player-facing grant chain (2026-07-14 refs walks,
   // dps-todos/unique-cursed-mods.md "bogus" review; delete the line if one
   // ever ships):
-  // Minty Breather (Cryolator): only granting LVLI is
-  // zzz_LL_MutatedEvents_Rewards_Weapon_Cryolator (0x0067F601) — zzz_ dev
-  // record with zero external refs. NOT to be confused with
-  // mod_Custom_Overkill_Copy01 (also named "Minty Breather"), an
-  // unobtainable dev dupe that needs no entry here.
-  'mod_Custom_MintyBreather',
+  // Minty Breather: hidden 2026-07-14 (its only granting LVLI was the
+  // zzz_-prefixed dev record 0x0067F601 with zero external refs) — UNHIDDEN
+  // 2026-07-21: the 20260717 dump renamed that same record to
+  // LL_MutatedEvents_Rewards_Weapon_Cryolator_MintyBreather and wired it
+  // into WeaponsUniqueNamedList (mutated-events reward, user-confirmed live).
+  // The delete-the-line instruction above executed as designed.
   // The Pipe (Pipe Gun): its template-combination keyword 0x0091EE2B has
   // zero external refs — no LVLI/QUST/FLST ever instantiates the config.
   'mod_Custom_ThePipe',
@@ -197,11 +197,15 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
   // User-confirmed (2026-07-15) this is wrong: it is NOT actually craftable
   // in-game — the null Attach Point does break something in the live
   // crafting-bench flow this ESM-only check can't see. Same false-positive
-  // shape as mod_GaussPistol_Barrel_Energy above. `extract-omods.ts`'s
-  // ATTACH_POINT_OVERRIDES rescue still runs (keeps the record + its real
-  // modifiers in the dataset for reference), but it's hidden here from the
-  // player-facing picker until Bethesda fixes the record upstream.
-  'mod_Legendary_Weapon2_Fire',
+  // shape as mod_GaussPistol_Barrel_Energy above.
+  // RESOLVED 2026-07-21: the 20260717 dump renamed the record to
+  // POST_mod_Legendary_Weapon2_Fire (POST_ staging prefix, alongside
+  // Cryologist's POST_mod_Legendary_Weapon2_Cryo and Toxicologist's
+  // POST_mod_Legendary_Weapon2_Poison) — Bethesda pulled the whole trio back
+  // out of the shipping data, vindicating the 2026-07-15 verdict. The
+  // records now drop at the extraction root, so the hide entry became a
+  // stale overlay key and was removed; re-adjudicate when a future dump
+  // drops the POST_ prefix.
 ]);
 
 /**

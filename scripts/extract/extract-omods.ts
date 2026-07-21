@@ -58,6 +58,11 @@ interface PropertyMapping {
  * - The Fixer's 0x00183312 / 0x00245BEB → `ArmorShadowHide` ("Stealth in
  *   Shadows") / `Mod_StealthMove_AV` ("Sneaking Speed") — sneak-detection
  *   stats, non-damage.
+ * - V63 Laser Rifle's 0x0092B20A → `RefractingProjectileChance` (new AVIF,
+ *   20260717): chance for the beam to refract, consumed natively via
+ *   RefractingProjectileChance_DO — no ESM-visible damage semantics, so the
+ *   note drives the 'inert' badge and nothing else (user decision
+ *   2026-07-21: badges + notes only, no expected-value modeling).
  */
 const ACTOR_VALUE_BUCKETS: Record<string, { bucket: Bucket; scale: number }> = {
   ArmorPenetration: { bucket: 'armorPen', scale: 0.01 }, // 50.0 ⇒ 0.5 (inert until enemy DR lands)
@@ -440,9 +445,20 @@ export async function extractOmods(
     into: Modifier[],
     modNotes: Set<string>
   ): Promise<void> {
-    const { modifiers, notes } = await translateEnchantment(mgefDeps, enchFormId);
+    const { modifiers, notes, targetType } = await translateEnchantment(mgefDeps, enchFormId);
     notes.forEach(n => modNotes.add(n));
     for (const fragment of modifiers) {
+      // A Self-delivery ENCH applies to the WIELDER, so a damage-dealing
+      // fragment there is self-damage — never weapon output. Xerxos
+      // (EnchXerxos → SelfRadDamage, "Emits Radiation", 20260717) is the
+      // first such case: without this gate its 3 rad/s self-irradiation
+      // lands as a +3 radiation DoT dealt to enemies. Buff-shaped fragments
+      // (dbm MUL_ADDs like Voice of Set's +20% ballistic) stay — Self
+      // delivery is the NORMAL shape for granted legendary buffs.
+      if (targetType === 'Self' && fragment.bucket === 'dotDamage' && fragment.op === 'ADD') {
+        modNotes.add(`self-targeted damage (hits the wielder, not enemies) — note-only`);
+        continue;
+      }
       into.push({ id: `${source.formId}:ench:${into.length}`, source, ...fragment });
     }
   }

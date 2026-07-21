@@ -174,7 +174,27 @@ describe('translate (2026-07-11 A3/A4 routes)', () => {
     expect(parsed.magnitudeGlobal).toBeNull();
   });
 
-  it("carries curve.input 'weaponCondition' for Polished via its edid-keyed null-curve-input override", () => {
+  it("carries curve.input 'weaponCondition' for Polished via the 0x0000039F engine-AV mapping (20260717 wired a real input AV; the old edid-keyed null-input override is retired)", () => {
+    const routedAv = new Map<string, AvifRoute[]>([['0xAV', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]]]);
+    const curved = effect({
+      curvePoints: [
+        { x: 1.0, y: 0 },
+        { x: 2.0, y: 60 },
+      ],
+      curveInputAv: '0x0000039F',
+    });
+    const r = translate(
+      mgef({ edid: 'Legendary_Weapon_PolishedPerkApplyEffect', archetype: 'Peak Value Modifier' }),
+      curved,
+      routedAv,
+      edids
+    );
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0].curve?.input).toBe('weaponCondition');
+    expect(r.modifiers[0].curve ? r.modifiers[0].curveScale : null).toBeCloseTo(0.01, 10);
+  });
+
+  it('drops a Polished-shaped effect whose input AV went back to null (no blanket edid fallback anymore)', () => {
     const routedAv = new Map<string, AvifRoute[]>([['0xAV', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]]]);
     const curved = effect({
       curvePoints: [
@@ -189,9 +209,8 @@ describe('translate (2026-07-11 A3/A4 routes)', () => {
       routedAv,
       edids
     );
-    expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0].curve?.input).toBe('weaponCondition');
-    expect(r.modifiers[0].curve ? r.modifiers[0].curveScale : null).toBeCloseTo(0.01, 10);
+    expect(r.modifiers).toHaveLength(0);
+    expect(r.notes.some(n => n.includes('unmapped input AV null'))).toBe(true);
   });
 
   it('leaves an UNMATCHED null curve input at a different edid unresolved (not a blanket rule)', () => {

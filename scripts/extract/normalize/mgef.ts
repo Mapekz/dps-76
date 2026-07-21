@@ -464,6 +464,14 @@ const CURVE_INPUT_AVS: Record<string, CurveInput> = {
   // slot). Feeds abPerkFortifyDmgCrippled via the STAT_DmgVsCrippled route
   // (FALLBACK_AVIF_ROUTES above).
   '0x00000398': 'projectileCount',
+  // Equipped-weapon condition fraction (0.0–2.0), no AVIF record (hardcoded
+  // slot, same pattern as Onslaught above). The 20260717 dump wired this AV
+  // onto Legendary_Weapon_PolishedPerkApplyEffect's curve, which previously
+  // had a NULL input and rode an edid-keyed NULL_CURVE_INPUT_BY_MGEF entry
+  // (retired with this mapping). Semantics provenance unchanged: the cut
+  // DEL_Legendary_Weapon_PolishedPerk gated the same base effect on a
+  // GetEquippedWeaponHealthPercent condition row.
+  '0x0000039F': 'weaponCondition',
 };
 
 /**
@@ -473,11 +481,9 @@ const CURVE_INPUT_AVS: Record<string, CurveInput> = {
  * unmodeled and should keep surfacing their "needs override" note).
  */
 const NULL_CURVE_INPUT_BY_MGEF: Record<string, CurveInput> = {
-  // Polished: curve input is GetEquippedWeaponHealthPercent (0.0-2.0 fraction,
-  // no AVIF). Proven by the cut DEL_Legendary_Weapon_PolishedPerk → SPEL
-  // DEL_Legendary_Weapon_PolishedSpell predecessor, which gates the same base
-  // effect (0x007B9459) with a GetEquippedWeaponHealthPercent condition row.
-  Legendary_Weapon_PolishedPerkApplyEffect: 'weaponCondition',
+  // (empty since 20260717 — Polished's effect gained a real curve-input AV,
+  // 0x0000039F 'weaponCondition' in CURVE_INPUT_AVS above. The mechanism
+  // stays for the next null-input curve that proves decodable.)
 };
 
 /** Resolve a curve's input axis: named AV first, else an edid-keyed null-input override. */

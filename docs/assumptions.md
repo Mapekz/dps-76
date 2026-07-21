@@ -1245,7 +1245,9 @@ effects gate on `GetValue(Rads) ≥ N`.
 - **Cryologist's/Poisoner's** (2★): **user-confirmed** — additive into the
   dbm parenthesis, scoped to the matching damage type only. Weapon-side
   Pyro-Technician's OMOD has no attach point yet — correctly doesn't
-  extract.
+  extract. STAGED OUT 2026-07-21: the 20260717 dump renamed the weapon-side
+  trio to `POST_*` (see the Pyro-Technician's bullet under **Unique
+  weapons**) — none of the three extract anymore.
 - **Pyromaniac's/Viper's/Icemen's/Severing** (4★) reworked from ENCH
   properties to plumbing AVs (+50% dbm gated on the enemy's active status).
   Icemen's is a REAL balance change: pre-patch was +20% cryo-scoped damage;
@@ -1636,7 +1638,12 @@ auto-converted); their stats are stale and must not be shown.
 - **Deliberately note-only, no formula bucket** (extracted, badged `inert`,
   never wired): damage-TAKEN perks, `EnableAmmoSpenderOnKill` (boolean flag,
   already reachable via the manual `bulletStormStacks` slider),
-  `STAT_DeflectChance`, sneak/detection AVs.
+  `STAT_DeflectChance`, sneak/detection AVs, `RefractingProjectileChance`
+  (V63 Laser Rifle beam-refract chance, native-consumed via its DFOB — no
+  ESM-visible damage semantics; user decision 2026-07-21), and Self-delivery
+  ENCH damage (Xerxos's `SelfRadDamage` wielder irradiation — the
+  `enchantmentModifiers` gate in `scripts/extract/extract-omods.ts` keeps
+  self-damage out of weapon output).
 - **Doctor's Orders** (audited 2026-07-15): grants a revive-cooldown-reset
   chance — pure self/team support, never touches outgoing damage/DR/crit.
   Deliberately unmodeled, consistent with the existing non-combat
@@ -1645,15 +1652,19 @@ auto-converted); their stats are stale and must not be shown.
   confirmed CORRECT as extracted — bleed routes through the generic
   physical-DR bucket (there's no separate bleed `DamageType` in FO76); the
   user's observation is accurate, it just isn't a distinct engine bucket.
-- **Pyro-Technician's**: looks craftable from static ESM data (a real recipe
-  + scripted attach mechanism exist) but **user-confirmed 2026-07-15 it is
-  NOT actually craftable in-game** — hidden from the picker; re-check on
-  every re-extract in case Bethesda backfills the missing Attach Point
-  field.
+- **Pyro-Technician's**: looked craftable from static ESM data but
+  **user-confirmed 2026-07-15 NOT actually craftable in-game** — was hidden
+  from the picker. RESOLVED 2026-07-21: the 20260717 dump renamed the whole
+  2★ trio to `POST_mod_Legendary_Weapon2_{Fire,Cryo,Poison}` (staging
+  prefix, junk-filtered at the extraction root), pulling Pyro-Technician's,
+  Cryologist's, and Toxicologist's out of the shipping data entirely;
+  re-adjudicate when a dump drops the `POST_` prefix.
 - **Gamma Gun**: its own weapon-level explosion IS now modeled
   (`fromExplosion`, graduated out of `noDamage` 2026-07-13 — see **Launcher
-  explosion damage**). Xerxo's Gamma Ray Gun variant is separately
-  unobtainable in-game and hidden.
+  explosion damage**). Xerxos (Season 7 reward, user-confirmed live
+  2026-07-21) ships as an identity-mod preset on the base Gamma Gun
+  (`mod_Custom_Xerxos`); the standalone `SCORE_S7_GammaGun_Xerxos` WEAP is
+  the usual dead REPAIRONLY legacy record and stays excluded.
 - **Instance-only target keywords** (~24 unique `ap_customName` mods): the
   game applies a second target keyword at instance-creation via template
   combination, which the base WEAP never has — the shared eligibility
