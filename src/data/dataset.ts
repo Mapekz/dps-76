@@ -1,5 +1,5 @@
 import type { GameMode, Perk, PerkId, Enemy, EnemyMutation, Weapon } from '@/types';
-import type { GeneratedAddiction, GeneratedBodyPartRace, GeneratedNpc, GeneratedOmod, GeneratedBuff, GeneratedPerk, GeneratedUnique } from '@/types/generated';
+import type { GeneratedAddiction, GeneratedBodyPartRace, GeneratedConstants, GeneratedNpc, GeneratedOmod, GeneratedBuff, GeneratedPerk, GeneratedUnique } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 
 import { weapons as weaponsLive, generatedWeaponsRaw as generatedWeaponsRawLive } from './live/weapons';
@@ -51,6 +51,7 @@ import generatedConsumablesLive from './live/generated/consumables.json';
 import generatedAddictionsLive from './live/generated/addictions.json';
 import generatedBodyPartsLive from './live/generated/bodyparts.json';
 import generatedUniquesLive from './live/generated/uniques.json';
+import generatedConstantsLive from './live/generated/constants.json';
 
 /**
  * The single merged, mode-resolved view of the game data, and the one home
@@ -142,6 +143,8 @@ export interface Dataset {
   legendaryRankModifiers: LegendaryRankModifiers;
   bodyArmor: BodyArmor;
   powerArmor: PowerArmor;
+  /** Game-wide scalar constants (extract-constants.ts) — e.g. the SPECIAL clamp read via `getSpecialClamp`. */
+  constants: GeneratedConstants;
 }
 
 /** Hand-authored collections that would diverge per mode once a PTS dump exists. */
@@ -194,6 +197,7 @@ function buildDataset(hand: HandAuthored): Dataset {
     addictions: generatedAddictions,
     bodyPartRaces: generatedBodyParts,
     npcs: mergedNpcs,
+    constants: generatedConstantsLive as GeneratedConstants,
   };
 }
 

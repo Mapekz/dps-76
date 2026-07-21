@@ -1153,6 +1153,15 @@ derive-from-perks experiment):
   structurally (membership check, not a modifier scan) — their PERK records
   extract with zero modifiers by design, since the bonus is the baseSpecial
   pathway above (`src/data/perk-modifiers.ts` `perkHasEngineEffect`).
+- **ESM-proven**: Effective (post-buff) SPECIAL clamps to [1, 100] — each of
+  the 7 SPECIAL AVIF records (`Strength` 0x000002C2 through `Luck`
+  0x000002C8) declares `Minimum Value 1.0` / `Maximum Value 100.0`. Applied
+  after the `specialX` bucket fold (`derivePlayerStats`), so debuff stacking
+  (e.g. mutation penalties) can't drive a stat below the AVIF floor and buff
+  stacking can't push it past the AVIF ceiling. Extracted (not hand-copied) —
+  `scripts/extract/extract-constants.ts` → `constants.json` →
+  `getSpecialClamp` (`@/data`) — so re-extraction re-derives the clamp
+  instead of it silently drifting.
 
 ## Max HP (derived)
 Engine: `src/lib/player-stats.ts`.

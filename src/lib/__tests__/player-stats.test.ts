@@ -73,6 +73,31 @@ describe('derivePlayerStats', () => {
   });
 });
 
+describe('derivePlayerStats: effective SPECIAL clamp', () => {
+  it('defaults to [1, 100] (the SPECIAL AVIF floor/ceiling) when no clamp is passed', () => {
+    const debuff = specialMod('specialStrength', -50);
+    const buff = specialMod('specialLuck', 500);
+    const { special } = derivePlayerStats([debuff, buff], baseSpecial({ strength: 5, luck: 5 }), conditions);
+    expect(special.strength).toBe(1); // 5 - 50 floors at the default min
+    expect(special.luck).toBe(100); // 5 + 500 ceils at the default max
+  });
+
+  it('honors a caller-supplied clamp (the live ESM-extracted value) over the fallback default', () => {
+    const buff = specialMod('specialLuck', 500);
+    const { special } = derivePlayerStats(
+      [buff],
+      baseSpecial({ luck: 5 }),
+      conditions,
+      undefined,
+      undefined,
+      undefined,
+      [],
+      { min: 1, max: 120 }
+    );
+    expect(special.luck).toBe(120); // custom ceiling, not the [1,100] fallback
+  });
+});
+
 describe('computePerkBudget (real card costs, not rank)', () => {
   it('Tenderizer rank 1 costs 2 Charisma points (its real PCRD cost, not rank 1)', () => {
     const budget = computePerkBudget(

@@ -66,6 +66,17 @@ const NO_WEAPON: Weapon = {
  */
 export const SPECIAL_ALLOCATION_POOL = 56;
 export const SPECIAL_POINTS_CAP = 15;
+/**
+ * Fallback clamp on the effective (post-buff) SPECIAL stat, per the SPECIAL
+ * AVIFs' own Minimum/Maximum Value fields (all 7 declare 1.0 / 100.0). The
+ * live values are ESM-extracted (`extract-constants.ts` → `constants.json`,
+ * read via `getSpecialClamp` in `@/data`) and threaded into
+ * `derivePlayerStats`'s `clamp` param by every real caller; these constants
+ * are only the default for callers that don't pass one (tests, stray
+ * 3-arg calls) and the extractor's own dump-too-old fallback.
+ */
+export const SPECIAL_EFFECTIVE_MIN = 1;
+export const SPECIAL_EFFECTIVE_MAX = 100;
 /** Legendary SPECIAL card bonus by rank (index = rank − 1) — per the cards' own descriptions. */
 export const LEGENDARY_SPECIAL_BONUS_BY_RANK = [1, 2, 3, 5] as const;
 
@@ -181,7 +192,11 @@ export function derivePlayerStats(
   // Enemy-type identifiers of the selected target (see ResolveContext). No
   // SPECIAL/maxHealth-bucket modifier is enemy-type-gated today; threaded for
   // root-context consistency (same trade-off as onslaughtMaxStacks: 0 below).
-  enemyTypeIds: readonly string[] = []
+  enemyTypeIds: readonly string[] = [],
+  // ESM-extracted SPECIAL clamp (`getSpecialClamp`) — real callers pass the
+  // dataset's live value; defaults to the hardcoded fallback for callers that
+  // don't have a `mode` in scope (tests).
+  clamp: { min: number; max: number } = { min: SPECIAL_EFFECTIVE_MIN, max: SPECIAL_EFFECTIVE_MAX }
 ): DerivedPlayerStats {
   const scenario = { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false };
   const enemyCtx = enemy ?? createDefaultEnemyConditions();
@@ -201,7 +216,10 @@ export function derivePlayerStats(
     onslaughtMaxStacks: 0,
   };
   const special = Object.fromEntries(
-    SPECIAL_KEYS.map(key => [key, foldBucket(modifiers, SPECIAL_BUCKETS[key], baseSpecial[key], earlyCtx)])
+    SPECIAL_KEYS.map(key => {
+      const folded = foldBucket(modifiers, SPECIAL_BUCKETS[key], baseSpecial[key], earlyCtx);
+      return [key, Math.max(clamp.min, Math.min(clamp.max, folded))];
+    })
   ) as Record<SpecialKey, number>;
 
   // The maxHealth fold resolves real curves/conditions (Lifegiver's curve X

@@ -1,0 +1,15 @@
+{
+  "header": { "signature": "AVIF", "form_id": "0x000002C2", "flags": 0, "form_version": 209, "data_size": 88, "offset": 896801507 },
+  "editor_id": "Strength",
+  "fields": {
+    "_record_type": "Actor Value Information",
+    "Editor ID": "Strength",
+    "DURL": "1.0000",
+    "Name": "Strength",
+    "Description": "Strength is a measure of your raw physical power. It affects how much you can carry, and the damage of all melee attacks.",
+    "Abbreviation": "STR",
+    "Default Value": 0.0,
+    "Minimum Value": 1.0,
+    "Maximum Value": 100.0
+  }
+}

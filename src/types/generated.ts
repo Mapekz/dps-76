@@ -513,6 +513,18 @@ export interface ExcludedRecordDetail {
   signals?: string[];
 }
 
+/**
+ * Game-wide scalar constants read directly off ESM records (`extract-constants.ts`)
+ * — the one extractor that emits bare numbers instead of an item list. Kept
+ * deliberately narrow: add a field here only when a hardcoded engine scalar
+ * needs ESM-drift detection on re-extraction, not as a general catch-all (see
+ * docs/assumptions.md's ESM-proven-scalar convention for everything else).
+ */
+export interface GeneratedConstants {
+  /** SPECIAL AVIF Minimum/Maximum Value — clamp on effective (post-buff) SPECIAL, src/lib/player-stats.ts `derivePlayerStats`. */
+  special: { min: number; max: number };
+}
+
 export interface GeneratedMeta {
   esmPath: string;
   esmDate: string | null;

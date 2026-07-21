@@ -15,8 +15,20 @@ import { extractBuffs } from './extract-buffs';
 import { extractBodyParts } from './extract-bodyparts';
 import { extractCurveTables } from './extract-curvetables';
 import { extractNpcs } from './extract-npcs';
+import { extractConstants } from './extract-constants';
 
-const KNOWN_EXTRACTORS = ['weapons', 'perks', 'armor', 'omods', 'uniques', 'buffs', 'bodyparts', 'curvetables', 'npcs'] as const;
+const KNOWN_EXTRACTORS = [
+  'weapons',
+  'perks',
+  'armor',
+  'omods',
+  'uniques',
+  'buffs',
+  'bodyparts',
+  'curvetables',
+  'npcs',
+  'constants',
+] as const;
 type ExtractorName = (typeof KNOWN_EXTRACTORS)[number];
 
 async function main() {
@@ -298,6 +310,15 @@ async function main() {
     meta.counts.npcs = result.npcs.length;
     meta.unresolved.push(...result.unresolved);
     console.log(`  ${result.npcs.length} npcs (unresolved: ${result.unresolved.length})`);
+  }
+
+  if (only.includes('constants')) {
+    console.log('Extracting game-wide scalar constants…');
+    const result = await extractConstants(client);
+    await writeFile(path.join(outDir, 'constants.json'), JSON.stringify(result.constants, null, 1));
+    meta.counts.constants = 1;
+    meta.unresolved.push(...result.unresolved);
+    console.log(`  special clamp [${result.constants.special.min}, ${result.constants.special.max}] (unresolved: ${result.unresolved.length})`);
   }
 
   await writeFile(path.join(outDir, '_meta.json'), JSON.stringify(meta, null, 2));

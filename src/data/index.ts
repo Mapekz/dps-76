@@ -37,6 +37,11 @@ export function getPowerArmor(mode: GameMode) {
   return getDataset(mode).powerArmor;
 }
 
+/** ESM-extracted clamp on effective (post-buff) SPECIAL — see GeneratedConstants. */
+export function getSpecialClamp(mode: GameMode): { min: number; max: number } {
+  return getDataset(mode).constants.special;
+}
+
 export function getPerkById(mode: GameMode, perkId: PerkId): Perk | undefined {
   return getPerks(mode)[perkId];
 }
