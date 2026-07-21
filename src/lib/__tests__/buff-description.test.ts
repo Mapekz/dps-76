@@ -313,7 +313,7 @@ describe('describeBuffModifiers: new bucket labels', () => {
 
   it('moveSpeedBonus reads as a percentage (Wasteland Fish Sandwich)', () => {
     const mod: Modifier = { id: '0x1:0', source, bucket: 'moveSpeedBonus', op: 'ADD', value: 0.2, conditions: [] };
-    expect(describeBuffModifiers(buff([mod]))).toBe('+20% movement speed (feeds Fast Fighter reload)');
+    expect(describeBuffModifiers(buff([mod]))).toBe('+20% movement speed');
   });
 
   it('apMax reads as a flat max-AP point add (Poached Angler)', () => {
