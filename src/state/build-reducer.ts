@@ -114,6 +114,29 @@ function withPlayer(state: BuildState, player: PlayerConfig): BuildState {
   return { ...state, player };
 }
 
+/**
+ * Follow Through / Taking One for the Team both apply a TARGET debuff any
+ * player's card can proc (the equipped rank isn't self-facing) — modeled as
+ * manual Target-section knobs (`manual-uptime.ts`/`target-debuffs.ts`) since
+ * uptime isn't steady-state-computable. Rather than leave those knobs at 0
+ * with a rank-4 card equipped (reading as "no effect"), equipping/re-ranking/
+ * removing the card seeds them to match the card's own rank — 10%/rank for
+ * the damage-taken multiplier, 1:1 for the flat-DR rank (ESM ranks pair
+ * exactly: rank 1 = 10%/−6, rank 4 = 40%/−50). The knob stays a free dial
+ * afterward: a later `condition/set` isn't touched by this, it only re-syncs
+ * on the next perk add/rank-change/remove.
+ */
+function syncTargetDebuffConditions(conditions: PlayerConditions, perkId: string, rank: number): PlayerConditions {
+  const clamped = Math.max(0, Math.min(4, rank)) as 0 | 1 | 2 | 3 | 4;
+  if (perkId === 'FollowThrough') {
+    return { ...conditions, followThroughPct: clamped * 10 };
+  }
+  if (perkId === 'TakingOneForTheTeam') {
+    return { ...conditions, takingOneForTheTeamPct: clamped * 10, takingOneForTheTeamDrRank: clamped };
+  }
+  return conditions;
+}
+
 /** Drop equipped perks locked to the race being left behind. */
 function keepForRace(list: PerkLoadout[], isGhoul: boolean, mode: GameMode): PerkLoadout[] {
   const target = isGhoul ? 'ghoul' : 'human';
@@ -300,6 +323,7 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
       return withPlayer(state, {
         ...player,
         [list]: [...player[list], { perkId: action.perkId, rank }],
+        conditions: syncTargetDebuffConditions(player.conditions, action.perkId, rank),
       });
     }
 
@@ -320,6 +344,7 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
         ...player,
         perks: bump(player.perks),
         legendaryPerks: bump(player.legendaryPerks),
+        conditions: syncTargetDebuffConditions(player.conditions, action.perkId, rank),
       });
     }
 
@@ -328,6 +353,7 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
         ...player,
         perks: player.perks.filter(p => p.perkId !== action.perkId),
         legendaryPerks: player.legendaryPerks.filter(p => p.perkId !== action.perkId),
+        conditions: syncTargetDebuffConditions(player.conditions, action.perkId, 0),
       });
 
     case 'special/set': {
