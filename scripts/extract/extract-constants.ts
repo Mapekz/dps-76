@@ -16,6 +16,34 @@ import { EsmClient } from './esm-client';
  * families of `f<Type>*` GMSTs, one member per damage type. Each family is
  * uniform across every type it has a member for — read all members and flag
  * divergence instead of trusting one.
+ *
+ * AP economy: `src/lib/engine/ap-economy.ts`'s pool/regen-delay scalars —
+ * `fAVDActionPointsBase`/`Mult` (pool size) and `fDamagedAVRegenDelay`
+ * (regen-resume delay, a generic post-any-AV-drain delay reused here for AP —
+ * USER-CONFIRMED 2026-07-21, docs/assumptions.md "VATS AP economy"). The
+ * race-based %-of-max regen RATE (`AP_REGEN_RATE_PCT`/`_POWER_ARMOR`) is a
+ * RACE `Properties` row, not a GMST — read via `resolveRaceActionPointsRate`.
+ *
+ * Bullet Storm: `src/lib/engine/bulletstorm.ts`'s ammo-per-stack divisor is a
+ * single `u`-prefixed (unsigned int) GMST — `resolveGmstUInt` reads its
+ * `UInt` field (the `u`-prefix analog of `resolveGmstFloat`'s `Float`).
+ *
+ * Distance gate: `src/lib/distance.ts`'s `CLOSE_THRESHOLD_UNITS` (the
+ * "Close" perk-gate threshold, Guerrilla/Down Ranger) is a single GMST,
+ * `fDistanceForCloseDamage`. `FAR_THRESHOLD_UNITS` (the "Far" gate) is
+ * DELIBERATELY NOT extracted here — it has no backing GMST (native-code
+ * check, user-measured in-game; see `distance.ts`'s own doc-comment).
+ *
+ * Power-attack race multiplier (`src/lib/engine/paper-damage.ts`'s
+ * `POWER_ATTACK_RACE_MULT_NORMAL`/`_POWER_ARMOR`) is DELIBERATELY NOT
+ * extracted here: RACE `Attacks[]` is a 32-entry table of named attack
+ * events, each with its own `Attack Data.Damage Mult` — 6 read 1.5, 26 read
+ * 1.0 (HumanRace, 20260717 dump), including Power-Attack-flagged carve-outs
+ * (e.g. `meleeAttackShredder`, the automatic-power-tool exemption) that
+ * legitimately keep 1.0. There is no single scalar to read; picking "the"
+ * generic-melee entry by event name would risk silently extracting a
+ * carve-out's value instead. Stays hardcoded — see `paper-damage.ts`'s
+ * own doc-comment for the carve-out reasoning.
  */
 const SPECIAL_AVIFS: ReadonlyArray<{ label: string; formId: string }> = [
   { label: 'Strength', formId: '0x000002C2' },
@@ -83,6 +111,35 @@ const MAX_DAMAGE_REDUCTION_GMSTS: ReadonlyArray<{ label: string; formId: string 
 /** Fallback mitigation scalars if a GMST family fails to resolve entirely — matches the pre-extraction hardcodes in `mitigation.ts`. */
 const FALLBACK_MITIGATION = { resistExponent: 0.365, damageFactor: 0.15, minReduction: 0.01, maxReduction: 0.99 };
 
+/** `fAVDActionPointsBase` (0x0004D878) — ap-economy.ts's flat AP pool floor. */
+const AP_POOL_BASE_GMST = '0x0004D878';
+/** `fAVDActionPointsMult` (0x0004D879) — ap-economy.ts's AP pool per AGI point. */
+const AP_POOL_PER_AGILITY_GMST = '0x0004D879';
+/** `fDamagedAVRegenDelay` (0x000DB2AA) — generic post-any-AV-drain regen-resume delay, reused for AP (see module doc). */
+const AP_REGEN_DELAY_GMST = '0x000DB2AA';
+/** RACE `Properties` row for AV ActionPointsRate (0x000002D8) — percent-of-max-AP regen/sec. */
+const ACTION_POINTS_RATE_AV = '0x000002D8';
+const HUMAN_RACE_FORMID = '0x00013746';
+const POWER_ARMOR_RACE_FORMID = '0x0001D31E';
+/** Fallback matching ap-economy.ts's pre-extraction hardcodes. */
+const FALLBACK_ACTION_POINTS = {
+  poolBase: 60,
+  poolPerAgility: 10,
+  regenDelaySec: 1.0,
+  regenRatePct: 6.0,
+  regenRatePctPowerArmor: 3.0,
+};
+
+/** `uAmmoSpenderAmmoUsePerStack` (0x0083C3D0) — bulletstorm.ts's ammo-per-stack divisor. */
+const BULLET_STORM_AMMO_PER_STACK_GMST = '0x0083C3D0';
+/** Fallback matching bulletstorm.ts's pre-extraction hardcode. */
+const FALLBACK_BULLET_STORM = { ammoPerStack: 30 };
+
+/** `fDistanceForCloseDamage` (0x007D2391) — distance.ts's "Close" perk-gate threshold. */
+const CLOSE_THRESHOLD_GMST = '0x007D2391';
+/** Fallback matching distance.ts's pre-extraction hardcode. */
+const FALLBACK_DISTANCE = { closeThresholdUnits: 850 };
+
 /** Resolve one AVIF's Minimum/Maximum Value; null (+ unresolved note) on any failure, mirroring extract-npcs.ts's resolveGlobal. */
 async function resolveSpecialAvif(
   client: EsmClient,
@@ -147,6 +204,51 @@ async function resolveGmstFloat(client: EsmClient, formId: string, label: string
   }
 }
 
+/** Resolve one `u`-prefixed GMST's UInt field; null (+ unresolved note) on any failure — the unsigned-int analog of `resolveGmstFloat`. */
+async function resolveGmstUInt(client: EsmClient, formId: string, label: string, unresolved: string[]): Promise<number | null> {
+  try {
+    const rec = await client.get(formId);
+    const value = rec.fields['UInt'];
+    if (typeof value === 'number') return value;
+    unresolved.push(`constants: ${label} GMST ${formId} missing numeric UInt`);
+    return null;
+  } catch (err) {
+    unresolved.push(`constants: ${label} GMST ${formId} failed to resolve: ${(err as Error).message}`);
+    return null;
+  }
+}
+
+/**
+ * Resolve one RACE record's flat `Properties[]` value for a given Actor
+ * Value formid (e.g. ActionPointsRate) — the same `{Actor Value, Value}` row
+ * shape `extract-npcs.ts`'s `mergeProperties` reads, narrowed here to a
+ * single race/AV pair with no NPC-override merge.
+ */
+async function resolveRacePropertyValue(
+  client: EsmClient,
+  raceFormId: string,
+  avFormId: string,
+  label: string,
+  unresolved: string[]
+): Promise<number | null> {
+  try {
+    const rec = await client.get(raceFormId);
+    const props = rec.fields['Properties'];
+    if (!Array.isArray(props)) {
+      unresolved.push(`constants: ${label} RACE ${raceFormId} has no Properties array`);
+      return null;
+    }
+    const row = props.find(p => p && typeof p === 'object' && (p as { 'Actor Value'?: string })['Actor Value'] === avFormId);
+    const value = (row as { Value?: unknown } | undefined)?.Value;
+    if (typeof value === 'number') return value;
+    unresolved.push(`constants: ${label} RACE ${raceFormId} has no numeric Properties row for AV ${avFormId}`);
+    return null;
+  } catch (err) {
+    unresolved.push(`constants: ${label} RACE ${raceFormId} failed to resolve: ${(err as Error).message}`);
+    return null;
+  }
+}
+
 /**
  * Resolve a family of same-valued `f<Type>*` GMSTs (e.g. the 7
  * `f<Type>ArmorDmgReductionExp` records) to one representative value,
@@ -194,6 +296,33 @@ async function resolveMitigation(client: EsmClient, unresolved: string[]): Promi
   return { resistExponent, damageFactor, minReduction, maxReduction };
 }
 
+async function resolveActionPoints(client: EsmClient, unresolved: string[]): Promise<GeneratedConstants['actionPoints']> {
+  const [poolBase, poolPerAgility, regenDelaySec, regenRatePct, regenRatePctPowerArmor] = await Promise.all([
+    resolveGmstFloat(client, AP_POOL_BASE_GMST, 'ActionPointsBase', unresolved),
+    resolveGmstFloat(client, AP_POOL_PER_AGILITY_GMST, 'ActionPointsMult', unresolved),
+    resolveGmstFloat(client, AP_REGEN_DELAY_GMST, 'DamagedAVRegenDelay', unresolved),
+    resolveRacePropertyValue(client, HUMAN_RACE_FORMID, ACTION_POINTS_RATE_AV, 'HumanRace ActionPointsRate', unresolved),
+    resolveRacePropertyValue(client, POWER_ARMOR_RACE_FORMID, ACTION_POINTS_RATE_AV, 'PowerArmorRace ActionPointsRate', unresolved),
+  ]);
+  return {
+    poolBase: poolBase ?? FALLBACK_ACTION_POINTS.poolBase,
+    poolPerAgility: poolPerAgility ?? FALLBACK_ACTION_POINTS.poolPerAgility,
+    regenDelaySec: regenDelaySec ?? FALLBACK_ACTION_POINTS.regenDelaySec,
+    regenRatePct: regenRatePct ?? FALLBACK_ACTION_POINTS.regenRatePct,
+    regenRatePctPowerArmor: regenRatePctPowerArmor ?? FALLBACK_ACTION_POINTS.regenRatePctPowerArmor,
+  };
+}
+
+async function resolveBulletStorm(client: EsmClient, unresolved: string[]): Promise<GeneratedConstants['bulletStorm']> {
+  const ammoPerStack = await resolveGmstUInt(client, BULLET_STORM_AMMO_PER_STACK_GMST, 'AmmoSpenderAmmoUsePerStack', unresolved);
+  return { ammoPerStack: ammoPerStack ?? FALLBACK_BULLET_STORM.ammoPerStack };
+}
+
+async function resolveDistance(client: EsmClient, unresolved: string[]): Promise<GeneratedConstants['distance']> {
+  const closeThresholdUnits = await resolveGmstFloat(client, CLOSE_THRESHOLD_GMST, 'DistanceForCloseDamage', unresolved);
+  return { closeThresholdUnits: closeThresholdUnits ?? FALLBACK_DISTANCE.closeThresholdUnits };
+}
+
 export interface ConstantsResult {
   constants: GeneratedConstants;
   unresolved: string[];
@@ -201,6 +330,12 @@ export interface ConstantsResult {
 
 export async function extractConstants(client: EsmClient): Promise<ConstantsResult> {
   const unresolved: string[] = [];
-  const [special, mitigation] = await Promise.all([resolveSpecial(client, unresolved), resolveMitigation(client, unresolved)]);
-  return { constants: { special, mitigation }, unresolved };
+  const [special, mitigation, actionPoints, bulletStorm, distance] = await Promise.all([
+    resolveSpecial(client, unresolved),
+    resolveMitigation(client, unresolved),
+    resolveActionPoints(client, unresolved),
+    resolveBulletStorm(client, unresolved),
+    resolveDistance(client, unresolved),
+  ]);
+  return { constants: { special, mitigation, actionPoints, bulletStorm, distance }, unresolved };
 }

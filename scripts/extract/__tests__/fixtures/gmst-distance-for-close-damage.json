@@ -1,0 +1,16 @@
+{
+  "header": {
+    "signature": "GMST",
+    "form_id": "0x007D2391",
+    "flags": 0,
+    "form_version": 202,
+    "data_size": 40,
+    "offset": 24048
+  },
+  "editor_id": "fDistanceForCloseDamage",
+  "fields": {
+    "_record_type": "Game Setting",
+    "Editor ID": "fDistanceForCloseDamage",
+    "Float": 850.0
+  }
+}

@@ -3,12 +3,12 @@ import type { Modifier } from '@/types/modifiers';
 import { weaponCharges } from '@/lib/charge';
 import { DEFAULT_DISTANCE_UNITS, rangeFalloffMult } from '@/lib/distance';
 import { getFireRate } from '@/lib/fire-rate';
-import { AP_REGEN_DELAY_SEC, AP_REGEN_RATE_PCT, AP_REGEN_RATE_PCT_POWER_ARMOR, apLimitedDps, computeApEconomy, effectiveShotsPerSecond } from './ap-economy';
+import { apLimitedDps, computeApEconomy, DEFAULT_ACTION_POINT_CONSTANTS, effectiveShotsPerSecond, type ActionPointConstants } from './ap-economy';
 import { computeCritMeter, type CritMeterResult } from './crit-meter';
 import { computeDotDps, computePaperDamage, type HitBreakdown } from './paper-damage';
 import { applyMitigation, type EnemyDefenses, type MitigationConstants } from './mitigation';
 import { perShotOnslaughtConsume, reverseOnslaughtAvgStacks } from './onslaught';
-import { bulletStormAvgStacks } from './bulletstorm';
+import { BULLET_STORM_AMMO_PER_STACK, bulletStormAvgStacks } from './bulletstorm';
 import { computeSustain, DEFAULT_BATTLE_LOADERS_BASH_SEC, type SustainResult } from './sustain';
 import { createHitTrace, lastTrace, type ApRegenTrace, type BucketTrace, type CritMeterTrace, type HitTrace } from './trace';
 import { effectiveValue, foldBucket, type ResolveContext, type ScenarioFlags } from './resolve';
@@ -294,6 +294,19 @@ export interface ScenarioInput {
    * any caller without a mode).
    */
   mitigationConstants?: MitigationConstants;
+  /**
+   * ESM-extracted scalars for the AP-economy/Bullet-Storm formulas (`@/data`'s
+   * `getActionPointConstants`/`getBulletStormConstants`, resolved in
+   * `resolveLoadout`) — same "threaded in, not looked up here" rule as
+   * `mitigationConstants` above. Each field is undefined-safe: a missing
+   * sub-object falls back to that consumer's own `DEFAULT_*` constant (tests
+   * and any caller without a mode).
+   */
+  engineConstants?: {
+    actionPoints?: ActionPointConstants;
+    bulletStorm?: { ammoPerStack: number };
+    distance?: { closeThresholdUnits: number };
+  };
 }
 
 /** Onslaught cap + optional reverse-mode average, threaded on every ResolveContext. */
@@ -327,6 +340,7 @@ function scenarioCtx(
     bulletStormMaxStacks: bulletStorm.maxStacks,
     bulletStormMinStacks: bulletStorm.minStacks,
     ...(bulletStorm.avg !== undefined && { bulletStormAvgStacks: bulletStorm.avg }),
+    ...(input.engineConstants?.distance && { closeThresholdUnits: input.engineConstants.distance.closeThresholdUnits }),
   };
 }
 
@@ -632,6 +646,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       weapon: input.weapon,
       fireRate,
       bashAnimationSec,
+      ammoPerStack: input.engineConstants?.bulletStorm?.ammoPerStack ?? BULLET_STORM_AMMO_PER_STACK,
     });
   }
 
@@ -785,6 +800,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       return ratePerSec !== null && ratePerSec > 0 ? [{ ratePerSec, durationSec: mod.durationSec ?? 0 }] : [];
     });
     const shotsPerSec = effectiveShotsPerSecond(vatsSustain, fireRate);
+    const apConstants = input.engineConstants?.actionPoints ?? DEFAULT_ACTION_POINT_CONSTANTS;
     const economy = computeApEconomy({
       apCost: input.weapon.apCost!,
       shotsPerSec,
@@ -800,18 +816,21 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       // averages over) — the reload-regen credit's inputs.
       reloadSec: vatsSustain.reloadSec,
       magDumpSec: vatsSustain.magDumpSec,
+      constants: apConstants,
     });
     if (tracing) {
       apRegenTrace = {
         agility: input.player.agility,
         isInPowerArmor: input.player.isInPowerArmor ?? false,
-        raceBasePct: input.player.isInPowerArmor ? AP_REGEN_RATE_PCT_POWER_ARMOR : AP_REGEN_RATE_PCT,
+        poolBase: apConstants.poolBase,
+        poolPerAgility: apConstants.poolPerAgility,
+        raceBasePct: input.player.isInPowerArmor ? apConstants.regenRatePctPowerArmor : apConstants.regenRatePct,
         flat: lastTrace(flatCollect!),
         percent: lastTrace(percentCollect!),
         maxAp: lastTrace(maxApCollect!),
         reloadSec: vatsSustain.reloadSec,
         magDumpSec: vatsSustain.magDumpSec,
-        regenDelaySec: AP_REGEN_DELAY_SEC,
+        regenDelaySec: apConstants.regenDelaySec,
         reloadRegenPerSec: economy.reloadRegenPerSec,
       };
     }

@@ -101,6 +101,15 @@ PaperDamage = Σ_components base(c) × ( dbmFold(c) + Tenderizer + (CritMult−1
 - **Weakpoint bonus** multiplies whole damage, only active when body-part
   mult > 1.0. ESM-confirmed (`STAT_DamagePerk`).
 - **STR melee scaling** — STR/20 (1h/2h melee), STR/10 (unarmed). **USER spec.**
+  Investigated 2026-07-21 for ESM backing: GMSTs `fAVDMeleeDamageMult` (0.05)
+  and `fDamageStrengthMult` (0.1) match the two coefficients exactly, but the
+  mapping is **NOT confirmed** — the name-obvious unarmed candidates
+  (`fHandDamageStrengthMult`, `fAVDUnarmedDamageMult`) both read 0.0 (dead/
+  vestigial), and `fDamageStrengthMult`'s generic name doesn't self-evidently
+  point to "unarmed" the way `fAVDMeleeDamageMult` points to "melee". No DFOB
+  bridge or reverse reference confirms either wiring (GMSTs are read by
+  native code, not cross-referenced in ESM). Left un-extracted — a value
+  match alone isn't proof, per this repo's speculative-facts convention.
 - **Body-part multiplier** — resolves from BPTD-extracted per-enemy data when
   a target/part is picked (see **Body parts (BPTD-extracted)**); the manual
   input is a fallback only, default 1.5 (a standard humanoid headshot).
@@ -791,8 +800,11 @@ Engine: `src/lib/engine/ap-economy.ts`.
 - **Passive regen does NOT tick during sustained VATS fire, but DOES tick
   during the reload window** (**user-confirmed**, both halves, 2026-07-15) —
   starts `AP_REGEN_DELAY_SEC` (1.0s, from GMST `fDamagedAVRegenDelay`) after
-  firing stops. The AP-specificity of that GMST is an **INFERENCE** matching
-  the user-observed ~1s.
+  firing stops. **CONFIRMED 2026-07-21**: `fDamagedAVRegenDelay` is the
+  generic post-any-AV-drain regen-resume delay — the same delay that applies
+  after VATS shooting, jumping, power attacking, sprinting, Dodgy's AP drain,
+  etc., not something VATS/AP-specific — and its use here for AP specifically
+  is correct.
 - **Steady-state model**: `apGainPerSec = apPerCrit×(shotsPerSec/
   shotsPerCrit) + Σ hot.rate×min(1, hot.durationSec×critsPerSec) +
   reloadRegenPerSec`; `drainPerSec = apCost×shotsPerSec`; `uptime =
@@ -949,7 +961,14 @@ Engine: `paper-damage.ts`, `scenarios.ts`, `fire-rate.ts`.
   (the PA race swap IS the multiplier). Multiplies the whole melee hit
   outside the dbm parenthesis. **Carve-outs proven in the same RACE records**
   (stays 1.0): automatic "power tool" melee (Ripper/Auto Axe), gun bashes
-  (unmodeled), and UNARMED (not even Power-Attack-flagged).
+  (unmodeled), and UNARMED (not even Power-Attack-flagged). **Deliberately
+  NOT re-extracted as an ESM-derived constant** (investigated 2026-07-21,
+  `extract-constants.ts`'s module doc comment): RACE `Attacks[]` is a 32-entry
+  table of named attack events, each with its own Damage Mult — 6 read 1.5,
+  26 read 1.0 (HumanRace), including Power-Attack-flagged carve-outs (e.g.
+  `meleeAttackShredder`) that legitimately keep 1.0. There is no single
+  scalar to read; picking "the" generic-melee entry by event name would risk
+  silently extracting a carve-out's value instead of the intended one.
 - **Melee speed applies relatively** (`1.0 × weapon.speed` instead of a flat
   1.0) — so `fireRateSpeed` OMOD/AV rewrites have an effect on melee.
   Absolute swing timings remain unmeasured (`dps-todos/melee-cadence.md`).

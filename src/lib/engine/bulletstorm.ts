@@ -5,7 +5,12 @@ import { sustainTiming } from './sustain';
  * Ammo-per-stack divisor (GMST `uAmmoSpenderAmmoUsePerStack`, `0x0083C3D0`):
  * Bullet Storm accrues one stack per 30 "ammo spent" units per shot, where a
  * shot's units are `projectiles + ammoPerShot − 1` (user-measured in-game —
- * docs/assumptions.md "Bullet Storm").
+ * docs/assumptions.md "Bullet Storm"). ESM-extracted — `getBulletStormConstants`
+ * (`@/data`) resolves the live value via `extract-constants.ts`; real callers
+ * (`scenarios.ts`, threaded from `resolveLoadout`) pass it through
+ * `bulletStormAvgStacks`' `ammoPerStack` param. This const is the fallback for
+ * callers without a mode (tests) — mirrors `mitigation.ts`'s
+ * `DEFAULT_MITIGATION_CONSTANTS`.
  */
 export const BULLET_STORM_AMMO_PER_STACK = 30;
 
@@ -20,10 +25,10 @@ function clampStacks(stacks: number, min: number, max: number): number {
  * Storm" — e.g. 8 projectiles + 5 ammo/shot → 12/30 stack/shot; +1
  * projectile from Two Shot → 13/30).
  */
-function accrualPerShot(weapon: Weapon): number {
+function accrualPerShot(weapon: Weapon, ammoPerStack: number): number {
   const projectiles = weapon.projectileCount ?? 1;
   const ammoPerShot = weapon.ammoPerShot ?? 1;
-  return (projectiles + ammoPerShot - 1) / BULLET_STORM_AMMO_PER_STACK;
+  return (projectiles + ammoPerShot - 1) / ammoPerStack;
 }
 
 /**
@@ -52,14 +57,17 @@ export function bulletStormAvgStacks(params: {
   fireRate: number;
   /** Seconds per Battle-Loader's bash, threaded to `sustainTiming` for API consistency with `computeSustain`/`reverseOnslaughtAvgStacks` (defaults inside it — see sustain.ts `DEFAULT_BATTLE_LOADERS_BASH_SEC`). Doesn't affect stack retention itself, only the mag-timing this function otherwise ignores. */
   bashAnimationSec?: number;
+  /** ESM-extracted `uAmmoSpenderAmmoUsePerStack` — defaults to `BULLET_STORM_AMMO_PER_STACK` (tests, no-mode callers); see that const's doc comment. */
+  ammoPerStack?: number;
 }): number {
   const { max, weapon, fireRate, bashAnimationSec } = params;
   const min = params.min ?? 0;
   const retention = Math.max(0, Math.min(params.retention ?? 0, 1));
+  const ammoPerStack = params.ammoPerStack ?? BULLET_STORM_AMMO_PER_STACK;
 
   if (max <= 0 || fireRate <= 0) return 0;
 
-  const accrual = accrualPerShot(weapon);
+  const accrual = accrualPerShot(weapon, ammoPerStack);
   const timing = sustainTiming(weapon, fireRate, bashAnimationSec);
 
   // No magazine (melee/unarmed, capacity 0) — there's no reload to lose

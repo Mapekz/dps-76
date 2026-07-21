@@ -50,7 +50,12 @@ function powerAttackRaceMult(weapon: Weapon, isInPowerArmor: boolean): number {
   return isInPowerArmor ? POWER_ATTACK_RACE_MULT_POWER_ARMOR : POWER_ATTACK_RACE_MULT_NORMAL;
 }
 
-/** STR melee scaling: STR/20 for 1h/2h melee, STR/10 for unarmed/gauntlets. */
+/**
+ * STR melee scaling: STR/20 for 1h/2h melee, STR/10 for unarmed/gauntlets —
+ * USER spec, not ESM-extracted. Candidate GMSTs `fAVDMeleeDamageMult` (0.05)/
+ * `fDamageStrengthMult` (0.1) match these coefficients but the mapping isn't
+ * confirmed (docs/assumptions.md "STR melee scaling") — left hardcoded.
+ */
 function strengthTerm(weapon: Weapon, strength: number): number {
   if (weapon.weaponClass === 'unarmed') return strength * 0.10;
   if (weapon.weaponClass === 'melee') return strength * 0.05;

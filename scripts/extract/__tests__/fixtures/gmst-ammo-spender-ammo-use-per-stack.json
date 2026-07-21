@@ -1,0 +1,16 @@
+{
+  "header": {
+    "signature": "GMST",
+    "form_id": "0x0083C3D0",
+    "flags": 0,
+    "form_version": 205,
+    "data_size": 44,
+    "offset": 23373
+  },
+  "editor_id": "uAmmoSpenderAmmoUsePerStack",
+  "fields": {
+    "_record_type": "Game Setting",
+    "Editor ID": "uAmmoSpenderAmmoUsePerStack",
+    "UInt": 30
+  }
+}

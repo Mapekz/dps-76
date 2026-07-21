@@ -321,7 +321,12 @@ async function main() {
     console.log(
       `  special clamp [${result.constants.special.min}, ${result.constants.special.max}], ` +
         `mitigation exp=${result.constants.mitigation.resistExponent} factor=${result.constants.mitigation.damageFactor} ` +
-        `clamp=[${result.constants.mitigation.minReduction}, ${result.constants.mitigation.maxReduction}] ` +
+        `clamp=[${result.constants.mitigation.minReduction}, ${result.constants.mitigation.maxReduction}], ` +
+        `apPool=${result.constants.actionPoints.poolBase}+${result.constants.actionPoints.poolPerAgility}×AGI ` +
+        `regenDelay=${result.constants.actionPoints.regenDelaySec}s regen=${result.constants.actionPoints.regenRatePct}%/` +
+        `${result.constants.actionPoints.regenRatePctPowerArmor}%PA, ` +
+        `bulletStormAmmoPerStack=${result.constants.bulletStorm.ammoPerStack}, ` +
+        `closeThreshold=${result.constants.distance.closeThresholdUnits} ` +
         `(unresolved: ${result.unresolved.length})`
     );
   }

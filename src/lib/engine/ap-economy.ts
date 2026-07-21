@@ -77,11 +77,38 @@ export const AP_REGEN_RATE_PCT_POWER_ARMOR = 3.0;
 /**
  * Seconds after firing stops before passive AP regen starts ticking again.
  * GMST `fDamagedAVRegenDelay` (0x000DB2AA, 20260710 dump) = 1.0 — the generic
- * "damaged actor value regen delay"; its applicability to AP specifically is
- * an INFERENCE (matches the user-observed ~1s in-game delay), pinned by a
- * golden measurement (docs/assumptions.md "VATS AP economy").
+ * post-any-AV-drain regen-resume delay: the SAME delay that applies after
+ * VATS shooting, jumping, power attacking, sprinting, Dodgy's AP drain, etc.
+ * (USER-CONFIRMED 2026-07-21, not exclusively a firing/AP-specific field);
+ * its use here for AP specifically is correct, pinned by a golden measurement
+ * (docs/assumptions.md "VATS AP economy").
  */
 export const AP_REGEN_DELAY_SEC = 1.0;
+
+/**
+ * ESM-extracted AP economy scalars — `getActionPointConstants` (`@/data`)
+ * resolves the live value via `extract-constants.ts`; real callers
+ * (`scenarios.ts`, threaded from `resolveLoadout`) pass it through
+ * `ApEconomyInput.constants`. `DEFAULT_ACTION_POINT_CONSTANTS` is the fallback
+ * for callers without a mode (tests) — mirrors `mitigation.ts`'s
+ * `DEFAULT_MITIGATION_CONSTANTS`.
+ */
+export interface ActionPointConstants {
+  poolBase: number;
+  poolPerAgility: number;
+  regenDelaySec: number;
+  regenRatePct: number;
+  regenRatePctPowerArmor: number;
+}
+
+/** Pre-extraction hardcodes — see the individual `AP_*` consts' own doc comments above. */
+export const DEFAULT_ACTION_POINT_CONSTANTS: ActionPointConstants = {
+  poolBase: AP_POOL_BASE,
+  poolPerAgility: AP_POOL_PER_AGILITY,
+  regenDelaySec: AP_REGEN_DELAY_SEC,
+  regenRatePct: AP_REGEN_RATE_PCT,
+  regenRatePctPowerArmor: AP_REGEN_RATE_PCT_POWER_ARMOR,
+};
 
 export interface ApEconomyInput {
   /** Effective per-shot VATS AP cost (after the vatsApCost OMOD fold). */
@@ -118,6 +145,8 @@ export interface ApEconomyInput {
   reloadSec?: number;
   /** Mag-dump half of the same cycle (SustainResult.magDumpSec) — the cycle-averaging denominator with reloadSec. */
   magDumpSec?: number;
+  /** ESM-extracted AP economy scalars — defaults to `DEFAULT_ACTION_POINT_CONSTANTS` (tests, no-mode callers); see that const's doc comment. */
+  constants?: ActionPointConstants;
 }
 
 export interface ApEconomyResult {
@@ -140,8 +169,9 @@ export interface ApEconomyResult {
 }
 
 export function computeApEconomy(input: ApEconomyInput): ApEconomyResult {
-  const maxAp = Math.max(0, AP_POOL_BASE + AP_POOL_PER_AGILITY * input.agility + (input.apMaxBonus ?? 0));
-  const baseRatePct = input.isInPowerArmor ? AP_REGEN_RATE_PCT_POWER_ARMOR : AP_REGEN_RATE_PCT;
+  const constants = input.constants ?? DEFAULT_ACTION_POINT_CONSTANTS;
+  const maxAp = Math.max(0, constants.poolBase + constants.poolPerAgility * input.agility + (input.apMaxBonus ?? 0));
+  const baseRatePct = input.isInPowerArmor ? constants.regenRatePctPowerArmor : constants.regenRatePct;
   const regenPerSec = (maxAp * (baseRatePct + (input.apRegenFlatBonus ?? 0))) / 100 * (1 + input.apRegenBonus);
 
   const critsPerSec =
@@ -156,7 +186,7 @@ export function computeApEconomy(input: ApEconomyInput): ApEconomyResult {
   // over the same magazine cycle shotsPerSec uses.
   const cycleSec = Math.max(0, input.magDumpSec ?? 0) + Math.max(0, input.reloadSec ?? 0);
   const reloadRegenPerSec =
-    cycleSec > 0 ? (regenPerSec * Math.max(0, (input.reloadSec ?? 0) - AP_REGEN_DELAY_SEC)) / cycleSec : 0;
+    cycleSec > 0 ? (regenPerSec * Math.max(0, (input.reloadSec ?? 0) - constants.regenDelaySec)) / cycleSec : 0;
   const apGainPerSec = input.apPerCrit * critsPerSec + critHotPerSec + reloadRegenPerSec;
   const drainPerSec = Math.max(0, input.apCost) * Math.max(0, input.shotsPerSec);
 

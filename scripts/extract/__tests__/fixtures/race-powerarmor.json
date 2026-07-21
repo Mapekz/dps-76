@@ -1,0 +1,50 @@
+{
+  "header": {
+    "signature": "RACE",
+    "form_id": "0x0001D31E",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 83447,
+    "offset": 7507939
+  },
+  "editor_id": "PowerArmorRace",
+  "fields": {
+    "Properties": [
+      {
+        "Actor Value": "0x000002D8",
+        "Value": 3.0,
+        "Curve Table": null
+      },
+      {
+        "Actor Value": "0x000002D9",
+        "Value": 0.0,
+        "Curve Table": null
+      },
+      {
+        "Actor Value": "0x000002D7",
+        "Value": 0.0,
+        "Curve Table": null
+      },
+      {
+        "Actor Value": "0x000002DC",
+        "Value": 200.0,
+        "Curve Table": null
+      },
+      {
+        "Actor Value": "0x000002E0",
+        "Value": 1.0,
+        "Curve Table": null
+      },
+      {
+        "Actor Value": "0x000002D5",
+        "Value": 50.0,
+        "Curve Table": null
+      },
+      {
+        "Actor Value": "0x000002D4",
+        "Value": 50.0,
+        "Curve Table": null
+      }
+    ]
+  }
+}

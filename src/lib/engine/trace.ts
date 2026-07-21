@@ -67,6 +67,10 @@ export interface CritMeterTrace {
 export interface ApRegenTrace {
   agility: number;
   isInPowerArmor: boolean;
+  /** GMST fAVDActionPointsBase — flat AP pool floor (resolved, mode-aware). */
+  poolBase: number;
+  /** GMST fAVDActionPointsMult — AP pool gained per point of AGI (resolved, mode-aware). */
+  poolPerAgility: number;
   /** RACE Properties base of AV ActionPointsRate (% of max AP/sec) — human 6.0, PA 3.0. */
   raceBasePct: number;
   /** `apRegenFlat` contributions (ADD, AV points — Company Tea's +10). */

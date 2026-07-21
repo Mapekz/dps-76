@@ -525,6 +525,27 @@ export interface GeneratedConstants {
   special: { min: number; max: number };
   /** `f<Type>ArmorDmgReductionExp`/`f<Type>DamageFactor`/`f<Type>Min|MaxDamageReduction` GMSTs — resist-mitigation formula scalars, src/lib/engine/mitigation.ts `applyMitigation`. */
   mitigation: { resistExponent: number; damageFactor: number; minReduction: number; maxReduction: number };
+  /**
+   * `fAVDActionPointsBase`/`Mult` (pool), `fDamagedAVRegenDelay` (regen-resume
+   * delay), RACE `Properties` AV ActionPointsRate (Human/PowerArmor regen
+   * rate %) — src/lib/engine/ap-economy.ts `computeApEconomy`.
+   */
+  actionPoints: {
+    poolBase: number;
+    poolPerAgility: number;
+    regenDelaySec: number;
+    regenRatePct: number;
+    regenRatePctPowerArmor: number;
+  };
+  /** `uAmmoSpenderAmmoUsePerStack` GMST — src/lib/engine/bulletstorm.ts `accrualPerShot`. */
+  bulletStorm: { ammoPerStack: number };
+  /**
+   * `fDistanceForCloseDamage` GMST — the "Close" perk-gate threshold,
+   * src/lib/distance.ts `CLOSE_THRESHOLD_UNITS` / src/lib/engine/resolve.ts's
+   * `targetDistance` condition. The "Far" gate has no GMST (native-code
+   * check, user-measured) and stays hardcoded — see `distance.ts`.
+   */
+  distance: { closeThresholdUnits: number };
 }
 
 export interface GeneratedMeta {

@@ -1,6 +1,5 @@
 import { Fragment } from 'react';
 import { cn } from '@/lib/utils';
-import { AP_POOL_BASE, AP_POOL_PER_AGILITY } from '@/lib/engine/ap-economy';
 import type { ScenarioResult } from '@/lib/engine/scenarios';
 import type { BucketTrace, TraceContribution } from '@/lib/engine/trace';
 import { formatDamage } from '@/lib/format';
@@ -251,15 +250,15 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
       </div>
 
       {result.ap && explain.apRegen && (() => {
-        const { agility, isInPowerArmor, raceBasePct, flat, percent } = explain.apRegen;
+        const { agility, isInPowerArmor, poolBase, poolPerAgility, raceBasePct, flat, percent } = explain.apRegen;
         const baseRatePct = raceBasePct + flat.result;
         const multiplier = 1 + percent.result;
         return (
           <div className="border-border/50 mt-1 border-t pt-1">
             <Row
               muted
-              label={`Base AP pool (${AP_POOL_BASE} + ${AP_POOL_PER_AGILITY}×${agility} AGI)`}
-              value={AP_POOL_BASE + AP_POOL_PER_AGILITY * agility}
+              label={`Base AP pool (${poolBase} + ${poolPerAgility}×${agility} AGI)`}
+              value={poolBase + poolPerAgility * agility}
             />
             {contributionRows(explain.apRegen.maxAp, 'ap-max')}
             <Row label="Max AP pool" value={Math.round(result.ap.maxAp)} />

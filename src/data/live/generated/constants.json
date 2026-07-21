@@ -8,5 +8,18 @@
   "damageFactor": 0.15,
   "minReduction": 0.01,
   "maxReduction": 0.99
+ },
+ "actionPoints": {
+  "poolBase": 60,
+  "poolPerAgility": 10,
+  "regenDelaySec": 1,
+  "regenRatePct": 6,
+  "regenRatePctPowerArmor": 3
+ },
+ "bulletStorm": {
+  "ammoPerStack": 30
+ },
+ "distance": {
+  "closeThresholdUnits": 850
  }
 }

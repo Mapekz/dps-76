@@ -92,6 +92,16 @@ export interface ResolveContext {
    * Defaults to 0 (no move-speed sources equipped → the curve clamps to 0).
    */
   moveSpeedBonus?: number;
+  /**
+   * ESM-extracted `fDistanceForCloseDamage` GMST (the "Close" perk-gate
+   * threshold — Guerrilla, Down Ranger's near-range half), threaded from
+   * `ScenarioInput.engineConstants` via `scenarios.ts`'s `scenarioCtx`.
+   * Undefined = `distance.ts`'s `CLOSE_THRESHOLD_UNITS` (tests and any
+   * caller without a mode) — same "threaded in, not looked up here" rule as
+   * `onslaughtMaxStacks` above. The "Far" gate has no GMST and stays a plain
+   * constant (`FAR_THRESHOLD_UNITS`) — see `distance.ts`.
+   */
+  closeThresholdUnits?: number;
 }
 
 /**
@@ -332,7 +342,8 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       // strictly between the two gates, so neither fires (the old 'none'
       // default's behavior). Boundary-inclusive both ways.
       const d = ctx.enemy.targetDistance ?? DEFAULT_DISTANCE_UNITS;
-      const active = cond.range === 'close' ? d <= CLOSE_THRESHOLD_UNITS : d >= FAR_THRESHOLD_UNITS;
+      const closeThreshold = ctx.closeThresholdUnits ?? CLOSE_THRESHOLD_UNITS;
+      const active = cond.range === 'close' ? d <= closeThreshold : d >= FAR_THRESHOLD_UNITS;
       return active ? 1 : null;
     }
     case 'wornPieceCount': {

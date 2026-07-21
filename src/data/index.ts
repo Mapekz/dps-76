@@ -49,6 +49,27 @@ export function getMitigationConstants(
   return getDataset(mode).constants.mitigation;
 }
 
+/** ESM-extracted AP pool/regen-delay GMSTs + RACE regen-rate scalars — see GeneratedConstants. */
+export function getActionPointConstants(mode: GameMode): {
+  poolBase: number;
+  poolPerAgility: number;
+  regenDelaySec: number;
+  regenRatePct: number;
+  regenRatePctPowerArmor: number;
+} {
+  return getDataset(mode).constants.actionPoints;
+}
+
+/** ESM-extracted `uAmmoSpenderAmmoUsePerStack` GMST — see GeneratedConstants. */
+export function getBulletStormConstants(mode: GameMode): { ammoPerStack: number } {
+  return getDataset(mode).constants.bulletStorm;
+}
+
+/** ESM-extracted `fDistanceForCloseDamage` GMST (the "Close" perk-gate threshold) — see GeneratedConstants. */
+export function getDistanceConstants(mode: GameMode): { closeThresholdUnits: number } {
+  return getDataset(mode).constants.distance;
+}
+
 export function getPerkById(mode: GameMode, perkId: PerkId): Perk | undefined {
   return getPerks(mode)[perkId];
 }

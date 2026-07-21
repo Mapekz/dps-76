@@ -18,16 +18,11 @@ import {
   getDefaultBodyPart,
   resolveTargetBodyPart,
 } from '@/data/bodyparts';
+import { getDistanceConstants } from '@/data';
 import { TENDERIZER_MAX_STACKS } from '@/data/target-debuffs';
 import { getNpc } from '@/data/npcs';
 import { getEnemyDefenses, resolveTargetLevel, resolveTargetLevelBounds } from '@/lib/enemy-defenses';
-import {
-  CLOSE_THRESHOLD_UNITS,
-  DEFAULT_DISTANCE_UNITS,
-  FAR_THRESHOLD_UNITS,
-  gameUnitsToPipBoy,
-  pipBoyToGameUnits,
-} from '@/lib/distance';
+import { DEFAULT_DISTANCE_UNITS, FAR_THRESHOLD_UNITS, gameUnitsToPipBoy, pipBoyToGameUnits } from '@/lib/distance';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions, type EnemyConditions } from '@/types';
 import type { BodyPartRaceCategory } from '@/types/generated';
 import { SectionTrigger } from './SectionTrigger';
@@ -46,14 +41,7 @@ import { SectionTrigger } from './SectionTrigger';
 // past which the falloff curve is already flat), so the slider always covers
 // the full falloff shape.
 const DISTANCE_SLIDER_MAX_PIPBOY = 300;
-const CLOSE_GATE_PIPBOY = gameUnitsToPipBoy(CLOSE_THRESHOLD_UNITS);
 const FAR_GATE_PIPBOY = gameUnitsToPipBoy(FAR_THRESHOLD_UNITS);
-const DISTANCE_SLIDER_MARKS = [
-  { value: 0, label: '0' },
-  { value: CLOSE_GATE_PIPBOY, label: 'Close' },
-  { value: FAR_GATE_PIPBOY, label: 'Far' },
-  { value: DISTANCE_SLIDER_MAX_PIPBOY, label: String(DISTANCE_SLIDER_MAX_PIPBOY) },
-];
 
 const STATUS_TOGGLES: Array<{ key: keyof EnemyConditions; label: string; title: string }> = [
   { key: 'isBleeding', label: 'Bleeding', title: "Active bleed effect (Severing's 4★)" },
@@ -197,7 +185,18 @@ export function TargetSection() {
 
   const targetDistanceUnits = conditions.targetDistance ?? DEFAULT_DISTANCE_UNITS;
   const distancePipBoy = gameUnitsToPipBoy(targetDistanceUnits);
-  const isCloseRange = targetDistanceUnits <= CLOSE_THRESHOLD_UNITS;
+  // ESM-extracted (fDistanceForCloseDamage) — mode-aware so the slider marks
+  // and gate badges track ESM changes on re-extraction, same as the engine's
+  // own `ScenarioInput.engineConstants.distance` (src/lib/loadout.ts).
+  const closeThresholdUnits = getDistanceConstants(mode).closeThresholdUnits;
+  const closeGatePipBoy = gameUnitsToPipBoy(closeThresholdUnits);
+  const distanceSliderMarks = [
+    { value: 0, label: '0' },
+    { value: closeGatePipBoy, label: 'Close' },
+    { value: FAR_GATE_PIPBOY, label: 'Far' },
+    { value: DISTANCE_SLIDER_MAX_PIPBOY, label: String(DISTANCE_SLIDER_MAX_PIPBOY) },
+  ];
+  const isCloseRange = targetDistanceUnits <= closeThresholdUnits;
   const isFarRange = targetDistanceUnits >= FAR_THRESHOLD_UNITS;
 
   // Target level (Phase 2 — Enemy defenses): bounds from the race's Renorm
@@ -356,10 +355,10 @@ export function TargetSection() {
               step={0.1}
               value={[distancePipBoy]}
               onValueChange={v => setEnemy('targetDistance', Math.round(pipBoyToGameUnits(firstSliderValue(v))))}
-              marks={DISTANCE_SLIDER_MARKS}
+              marks={distanceSliderMarks}
             />
             <p className="text-muted-foreground text-xs">
-              Close (≤{CLOSE_GATE_PIPBOY.toFixed(1)}) and Far (≥{FAR_GATE_PIPBOY.toFixed(1)}) gate Guerrilla/Down
+              Close (≤{closeGatePipBoy.toFixed(1)}) and Far (≥{FAR_GATE_PIPBOY.toFixed(1)}) gate Guerrilla/Down
               Ranger/Sniper's-style perks; damage also falls off gradually past the equipped weapon's max range.
               {weaponRange
                 ? ` Equipped weapon range: ${gameUnitsToPipBoy(weaponRange.minRange).toFixed(1)}–${gameUnitsToPipBoy(weaponRange.maxRange).toFixed(1)} Pip-Boy units (×${weaponRange.outOfRangeMult} beyond max).`
