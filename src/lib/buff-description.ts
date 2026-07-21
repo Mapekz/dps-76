@@ -60,6 +60,7 @@ const WEAPON_KEYWORD_LABELS: Record<string, string> = {
   WeaponTypeMeleeGeneral: 'melee weapons',
   WeaponTypeMelee1H: 'one-handed melee weapons',
   WeaponTypeMelee2H: 'two-handed melee weapons',
+  WeaponTypeAutomaticMelee: 'automatic melee weapons',
   WeaponTypeUnarmed: 'unarmed',
   WeaponTypeThrowingKnife: 'throwing weapons',
 };
@@ -140,10 +141,22 @@ function describeConditions(conditions: readonly Condition[]): { clause: string;
         clauses.push(`${c.types.join('/')} damage only`);
         break;
       case 'enemyType':
-        clauses.push(`vs ${enemyLabel(c.keywordOrRace)}`);
+        // Twisted Muscles' limbDamage modifiers carry WeaponType* keywords in
+        // an enemyType condition (an extraction miscategorization — these
+        // name the WIELDED weapon, not the target) — render as a weapon "with
+        // X" clause instead of an enemy "vs X" one when that's what it is.
+        clauses.push(
+          c.keywordOrRace.startsWith('WeaponType')
+            ? `with ${weaponLabel(c.keywordOrRace)}`
+            : `vs ${enemyLabel(c.keywordOrRace)}`
+        );
         break;
       case 'enemyTypeAny':
-        clauses.push(`vs ${c.keywordsOrRaces.map(enemyLabel).join(' or ')}`);
+        clauses.push(
+          c.keywordsOrRaces.every(k => k.startsWith('WeaponType'))
+            ? `with ${c.keywordsOrRaces.map(weaponLabel).join(' or ')}`
+            : `vs ${c.keywordsOrRaces.map(enemyLabel).join(' or ')}`
+        );
         break;
       case 'teammateCount':
         if (c.count === 0) clauses.push('while solo');
