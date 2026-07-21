@@ -319,6 +319,23 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   // Value Modifiers on the same AV and must stay unrouted (they're not
   // longer-term buffs — user scope rule, 2026-07-14).
   Health: { bucket: 'maxHealth', scale: 1, archetypes: ['Peak Value Modifier'] },
+  // Scaly Skin's positive side (2026-07-21, verified via `esm get`): MGEF
+  // Mutation_FortifyDamageResist 0x004DF1D2 / Mutation_FortifyEnergyResist
+  // 0x004DF1D4, both Archetype "Peak Value Modifier" on AVIF DamageResist
+  // 0x000002E3 / EnergyResist 0x000002EB — flat resist POINTS (no percentage
+  // flag on either AVIF), scale 1. Mutation_ScalySkin (SPEL 0x004DF1CF)
+  // carries magnitude 50 (normal) and 62 (Class-Freak-boosted "super"
+  // version, gated by Mutation_Check_UseSuperVersion — same strangeInNumbers
+  // duality as Mutation_FortifyMoveSpeed above) for each. Archetype-restricted
+  // like Health/ActionPoints above: both AVs are reused by thousands of other
+  // records, including at least one instant Value-Modifier effect on the
+  // same AV (DamageDamageResistEffect 0x0018C35D, a hostile on-hit DR
+  // reduction) that must NOT be swept in as an ongoing fortify. Engine-inert
+  // buckets (`damageResistGain`/`energyResistGain`, src/types/modifiers.ts) —
+  // no wearer-side resist-mitigation math exists yet; see
+  // docs/assumptions.md.
+  DamageResist: { bucket: 'damageResistGain', scale: 1, archetypes: ['Peak Value Modifier'] },
+  EnergyResist: { bucket: 'energyResistGain', scale: 1, archetypes: ['Peak Value Modifier'] },
   Strength: { bucket: 'specialStrength', scale: 1 },
   Perception: { bucket: 'specialPerception', scale: 1 },
   Endurance: { bucket: 'specialEndurance', scale: 1 },

@@ -183,7 +183,42 @@
   "formId": "0x004E4006",
   "name": "Chameleon",
   "kind": "mutation",
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x004E4006:0",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E4006",
+     "edid": "Mutation_Chameleon",
+     "name": "Chameleon"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 40,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "WornHasKeyword(ChameleonBlockingArmor)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsAttacking()=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "IsMoving()=0"
+     },
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     },
+     {
+      "kind": "unresolved",
+      "raw": "OR-group[IsWeaponOut(undefined)=1 | IsWeaponOut(undefined)=2]"
+     }
+    ]
+   }
+  ],
   "notes": [
    "Mutation_Chameleon: condition: WornHasKeyword(ChameleonBlockingArmor)=0",
    "Mutation_Chameleon: condition: HasMagicEffectKeyword(MutationChameleonIsAttacking)=0",
@@ -197,7 +232,6 @@
    "Mutation_Chameleon: MGEF Mutation_Chameleon_UIDummy archetype Script — needs override",
    "Mutation_Chameleon: MGEF Mutation_Chameleon_UIDummySerum archetype Script — needs override",
    "Mutation_Chameleon: perk Mutation_ChameleonStealthIcon_Perk: MGEF Mutation_Chameleon_UIDummyStealthIcon archetype Script — needs override",
-   "Mutation_Chameleon: MGEF Mutation_FortifyDamageResist_Hidden: no route for AV DamageResist — needs mapping",
    "Mutation_Chameleon: perk Mutation_ChameleonOnAttack_Perk: entry point Apply Weapon Attack Spell — not modeled",
    "Mutation_Chameleon: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
@@ -419,6 +453,42 @@
      "edid": "Mutation_Grounded",
      "name": "Grounded"
     },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": 100,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": false
+     }
+    ]
+   },
+   {
+    "id": "0x004E4002:1",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E4002",
+     "edid": "Mutation_Grounded",
+     "name": "Grounded"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": 125,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x004E4002:2",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004E4002",
+     "edid": "Mutation_Grounded",
+     "name": "Grounded"
+    },
     "bucket": "wholeDamage",
     "op": "MUL_ADD",
     "value": -0.5,
@@ -438,7 +508,7 @@
     ]
    },
    {
-    "id": "0x004E4002:1",
+    "id": "0x004E4002:3",
     "source": {
      "kind": "mutation",
      "formId": "0x004E4002",
@@ -469,7 +539,7 @@
     ]
    },
    {
-    "id": "0x004E4002:2",
+    "id": "0x004E4002:4",
     "source": {
      "kind": "mutation",
      "formId": "0x004E4002",
@@ -500,7 +570,7 @@
     ]
    },
    {
-    "id": "0x004E4002:3",
+    "id": "0x004E4002:5",
     "source": {
      "kind": "mutation",
      "formId": "0x004E4002",
@@ -527,7 +597,6 @@
    }
   ],
   "notes": [
-   "Mutation_Grounded: MGEF Mutation_FortifyEnergyResist: no route for AV EnergyResist — needs mapping",
    "Mutation_Grounded: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
@@ -1052,6 +1121,78 @@
      "edid": "Mutation_ScalySkin",
      "name": "Scaly Skin"
     },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 50,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": false
+     }
+    ]
+   },
+   {
+    "id": "0x004DF1CF:1",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004DF1CF",
+     "edid": "Mutation_ScalySkin",
+     "name": "Scaly Skin"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": 50,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": false
+     }
+    ]
+   },
+   {
+    "id": "0x004DF1CF:2",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004DF1CF",
+     "edid": "Mutation_ScalySkin",
+     "name": "Scaly Skin"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 62,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x004DF1CF:3",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004DF1CF",
+     "edid": "Mutation_ScalySkin",
+     "name": "Scaly Skin"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": 62,
+    "conditions": [
+     {
+      "kind": "strangeInNumbers",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x004DF1CF:4",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004DF1CF",
+     "edid": "Mutation_ScalySkin",
+     "name": "Scaly Skin"
+    },
     "bucket": "apMax",
     "op": "ADD",
     "value": -50,
@@ -1059,12 +1200,10 @@
    }
   ],
   "notes": [
-   "Mutation_ScalySkin: MGEF Mutation_FortifyDamageResist: no route for AV DamageResist — needs mapping",
-   "Mutation_ScalySkin: MGEF Mutation_FortifyEnergyResist: no route for AV EnergyResist — needs mapping",
    "Mutation_ScalySkin: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ],
   "penaltyModifierIds": [
-   "0x004DF1CF:0"
+   "0x004DF1CF:4"
   ]
  },
  {

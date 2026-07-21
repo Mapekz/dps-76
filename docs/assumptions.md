@@ -536,6 +536,7 @@ picker badge.
 | Bully's / Tormentor | dbm per crippled limb (+25%/+20%), cap **6** | ESM value; cap is ours |
 | Explosive (2★) | `explosivePayload` spawns an explosive twin per component; folds dbm/crit/PA/wholeDamage but NOT sneak/body-part (see **Formula structure**) | ESM property |
 | Crippling / Basher's | extracted to `limbDamage`/`bashDamage` — INERT until limb-targeting/bash is modeled | ESM |
+| Scaly Skin (+ Chameleon/Grounded ripple, same AV route) | +DamageResist/+EnergyResist extracted to `damageResistGain`/`energyResistGain` (flat points, 50/62 normal/Class-Freak-boosted) — INERT until wearer-side resist mitigation is modeled | ESM-confirmed |
 | Pyromaniac's / Viper's / Severing's | +50% dbm while target has an active fire/poison/bleed status (toggle, default off); Viper's `ImmuneToPoison` gate CONSUMED (target assumed vulnerable) | ESM granted-perk chase |
 | Last Shot | +100% dbm on the magazine's last round (toggle, default off); steady-state doesn't model the once-per-mag cadence | ESM |
 | Encircler's | +10%×N from `enemyGroupCount` tiers; default count **1** (target itself) | ESM |

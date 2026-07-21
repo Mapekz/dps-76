@@ -322,11 +322,22 @@
     "op": "ADD",
     "value": -1,
     "conditions": []
+   },
+   {
+    "id": "0x0004BAE4:1",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x0004BAE4",
+     "edid": "AbAddictionMedX",
+     "name": "Med-X Addiction"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": -10,
+    "conditions": []
    }
   ],
-  "notes": [
-   "AbAddictionMedX: MGEF abReduceDamageResistAddiction: no route for AV DamageResist — needs mapping"
-  ]
+  "notes": []
  },
  {
   "id": "AbAddictionMentats",
@@ -414,11 +425,22 @@
     "op": "ADD",
     "value": -1,
     "conditions": []
+   },
+   {
+    "id": "0x0004BAE3:1",
+    "source": {
+     "kind": "addiction",
+     "formId": "0x0004BAE3",
+     "edid": "AbAddictionPsycho",
+     "name": "Psycho Addiction"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": -10,
+    "conditions": []
    }
   ],
-  "notes": [
-   "AbAddictionPsycho: MGEF abReduceDamageResistAddiction: no route for AV DamageResist — needs mapping"
-  ]
+  "notes": []
  },
  {
   "id": "AbAddictionXCell",

@@ -40,6 +40,8 @@ const FLAT_POINT_BUCKET_LABELS: Partial<Record<Bucket, string>> = {
   maxHealth: 'max HP',
   apMax: 'max AP',
   apRegenFlat: 'AP regen',
+  damageResistGain: 'Damage Resist',
+  energyResistGain: 'Energy Resist',
 };
 
 /** Friendly names for curve axes; unmapped axes fall back to the raw CurveInput name. */

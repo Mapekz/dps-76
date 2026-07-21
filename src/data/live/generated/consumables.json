@@ -2194,6 +2194,49 @@
   "obtainable": true
  },
  {
+  "id": "GlowingFungusVegetableTastySoup_Cannery",
+  "formId": "0x007FDA5E",
+  "name": "Canned Glowing Fungus Puree",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x007FDA5E:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x007FDA5E",
+     "edid": "GlowingFungusVegetableTastySoup_Cannery",
+     "name": "Canned Glowing Fungus Puree"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": 35,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "GlowingFungusVegetableTastySoup_Cannery: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "GlowingFungusVegetableTastySoup_Cannery: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
+   "GlowingFungusVegetableTastySoup_Cannery: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistEnergy|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeVegetable",
+   "MealTypeTasty",
+   "IngredientTypeIrradiated_New",
+   "MealTypeSoup",
+   "IngredientTypeFungus",
+   "MealTypeCooked",
+   "MealTypeCanned_Cannery"
+  ],
+  "foodScalableModifierIds": [
+   "0x007FDA5E:0"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "GourdVegetableCookedSoup_Cannery",
   "formId": "0x007FDA64",
   "name": "Canned Gourd Soup",
@@ -2997,6 +3040,44 @@
   "obtainable": true
  },
  {
+  "id": "CranberryTastyJam",
+  "formId": "0x003D5F2F",
+  "name": "Cranberry Jam",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x003D5F2F:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x003D5F2F",
+     "edid": "CranberryTastyJam",
+     "name": "Cranberry Jam"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 10,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "CranberryTastyJam: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "CranberryTastyJam: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistDamage|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeFruit",
+   "MealTypeTasty",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x003D5F2F:0"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "CranberryMeatballGrinderGourmet",
   "formId": "0x0012D42C",
   "name": "Cranberry Meatball Grinder",
@@ -3154,6 +3235,43 @@
    "name": "Alcohol Addiction"
   },
   "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "CaveCricketMeatCooked",
+  "formId": "0x001142FA",
+  "name": "Crispy Cave Cricket",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x001142FA:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x001142FA",
+     "edid": "CaveCricketMeatCooked",
+     "name": "Crispy Cave Cricket"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": 10,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "CaveCricketMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "CaveCricketMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistEnergy|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x001142FA:0"
+  ],
   "obtainable": true
  },
  {
@@ -3554,6 +3672,85 @@
   ],
   "foodScalableModifierIds": [
    "0x003EEA45:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "FirecapCookedSoup",
+  "formId": "0x003787C4",
+  "name": "Firecap Soup",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x003787C4:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x003787C4",
+     "edid": "FirecapCookedSoup",
+     "name": "Firecap Soup"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": 25,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "FirecapCookedSoup: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "FirecapCookedSoup: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
+   "FirecapCookedSoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistEnergy|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeVegetable",
+   "MealTypeCooked",
+   "MealTypeSoup"
+  ],
+  "foodScalableModifierIds": [
+   "0x003787C4:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "FirecapVegetableTastySouffle",
+  "formId": "0x003787C7",
+  "name": "Firecap Tasty Souffle",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x003787C7:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x003787C7",
+     "edid": "FirecapVegetableTastySouffle",
+     "name": "Firecap Tasty Souffle"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": 35,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "FirecapVegetableTastySouffle: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "FirecapVegetableTastySouffle: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistEnergy|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "MealTypeTasty",
+   "IngredientTypeIrradiated_New",
+   "IngredientTypeDiseaseRidden_New",
+   "IngredientTypeVegetable",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x003787C7:0"
   ],
   "obtainable": true
  },
@@ -3971,6 +4168,45 @@
   "obtainable": true
  },
  {
+  "id": "FogCrawlerMeatCooked",
+  "formId": "0x001113E0",
+  "name": "Fried Fog Crawler",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x001113E0:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x001113E0",
+     "edid": "FogCrawlerMeatCooked",
+     "name": "Fried Fog Crawler"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 20,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "OR-group[IsInWeather(NewWeatherFoggy)=1 | IsInWeather(NewWeatherMisty)=1 | IsInWeather(NewWeatherMistyRainy)=1 | IsInWeather(NewWeatherRain)=1]"
+     }
+    ]
+   }
+  ],
+  "notes": [
+   "FogCrawlerMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "FogCrawlerMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
+   "FogCrawlerMeatCooked: MGEF DLC03_SteakPrawnText archetype Script — needs override",
+   "FogCrawlerMeatCooked: condition: OR-group[IsInWeather(NewWeatherFoggy)=1 | IsInWeather(NewWeatherMisty)=1 | IsInWeather(NewWeatherMistyRainy)=1 | IsInWeather(NewWeatherRain)=1]"
+  ],
+  "category": "food",
+  "dispelKeys": [],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeCooked"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "NWOT_RadroachSkewer",
   "formId": "0x0066D3EF",
   "name": "Fried Radroach On A Stick",
@@ -4111,6 +4347,19 @@
      "edid": "Fury",
      "name": "Fury"
     },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 25,
+    "conditions": []
+   },
+   {
+    "id": "0x000628CA:2",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x000628CA",
+     "edid": "Fury",
+     "name": "Fury"
+    },
     "bucket": "dbm",
     "op": "ADD",
     "value": 0.3,
@@ -4128,7 +4377,6 @@
   "notes": [
    "Fury: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
    "Fury: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
-   "Fury: MGEF FortifyDamageResistFury: no route for AV DamageResist — needs mapping",
    "Fury: MGEF AddictionOddsFury: no route for AV AddictionFury — needs mapping",
    "Fury: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
@@ -4653,6 +4901,48 @@
   "obtainable": true
  },
  {
+  "id": "GlowingFungusVegetableTastySoup",
+  "formId": "0x003C60E6",
+  "name": "Glowing Fungus Puree",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x003C60E6:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x003C60E6",
+     "edid": "GlowingFungusVegetableTastySoup",
+     "name": "Glowing Fungus Puree"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": 35,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "GlowingFungusVegetableTastySoup: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "GlowingFungusVegetableTastySoup: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
+   "GlowingFungusVegetableTastySoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistEnergy|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeVegetable",
+   "MealTypeTasty",
+   "IngredientTypeIrradiated_New",
+   "MealTypeSoup",
+   "IngredientTypeFungus",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x003C60E6:0"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "GlowingMeatCooked",
   "formId": "0x003B9424",
   "name": "Glowing Meat Steak",
@@ -4915,6 +5205,34 @@
       ]
      }
     ]
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_GrognakTheBarbarian10_Potion",
+  "formId": "0x004303E8",
+  "name": "Grognak the Barbarian 10",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x004303E8:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x004303E8",
+     "edid": "Magazine_GrognakTheBarbarian10_Potion",
+     "name": "Grognak the Barbarian 10"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": 25,
+    "conditions": []
    }
   ],
   "notes": [],
@@ -5238,6 +5556,42 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_GunsAndBullets06_Potion",
+  "formId": "0x00430404",
+  "name": "Guns and Bullets 6",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00430404:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00430404",
+     "edid": "Magazine_GunsAndBullets06_Potion",
+     "name": "Guns and Bullets 6"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 75,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "OR-group[GetGlobalValue(GameHour)=21 | GetGlobalValue(GameHour)=6]"
+     }
+    ]
+   }
+  ],
+  "notes": [
+   "Magazine_GunsAndBullets06_Potion: condition: OR-group[GetGlobalValue(GameHour)=21 | GetGlobalValue(GameHour)=6]",
+   "Magazine_GunsAndBullets06_Potion: MGEF Magazine_GunsAndBullets06_UIDummyEffect archetype Script — needs override"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "Magazine_GunsAndBullets07_Potion",
   "formId": "0x00430407",
   "name": "Guns and Bullets 7",
@@ -5408,6 +5762,45 @@
    "name": "Alcohol Addiction"
   },
   "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "WL046_HeadhuntersHeadcheese_Pot_DoNotUse",
+  "formId": "0x005543B4",
+  "name": "Headhunter's Headcheese",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x005543B4:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x005543B4",
+     "edid": "WL046_HeadhuntersHeadcheese_Pot_DoNotUse",
+     "name": "Headhunter's Headcheese"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 10,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "WL046_HeadhuntersHeadcheese_Pot_DoNotUse: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
+   "WL046_HeadhuntersHeadcheese_Pot_DoNotUse: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "WL046_HeadhuntersHeadcheese_Pot_DoNotUse: MGEF SURV_AddThirst_Potion_Effect_NotChem: no route for AV SURV_Thirst — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistDamage|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeCooked",
+   "MealTypeDelbertRSVP02"
+  ],
+  "foodScalableModifierIds": [
+   "0x005543B4:0"
+  ],
   "obtainable": true
  },
  {
@@ -5867,13 +6260,26 @@
      "edid": "Brew_LeadChampagneBellini",
      "name": "Lead Champagne Bellini"
     },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 15,
+    "conditions": []
+   },
+   {
+    "id": "0x003EC2BD:1",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x003EC2BD",
+     "edid": "Brew_LeadChampagneBellini",
+     "name": "Lead Champagne Bellini"
+    },
     "bucket": "specialLuck",
     "op": "ADD",
     "value": 2,
     "conditions": []
    },
    {
-    "id": "0x003EC2BD:1",
+    "id": "0x003EC2BD:2",
     "source": {
      "kind": "consumable",
      "formId": "0x003EC2BD",
@@ -5890,7 +6296,6 @@
    "Brew_LeadChampagneBellini: MGEF LeadChampagne_Duration archetype Script — needs override",
    "Brew_LeadChampagneBellini: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "Brew_LeadChampagneBellini: MGEF LeadChampagne_IncreaseSprintAP: no route for AV STAT_SprintAPCost — needs mapping",
-   "Brew_LeadChampagneBellini: MGEF Alcohol_DamageResist: no route for AV DamageResist — needs mapping",
    "Brew_LeadChampagneBellini: MGEF LeadChampagne_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
    "Brew_LeadChampagneBellini: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
   ],
@@ -6372,6 +6777,42 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_LiveAndLove06_Potion",
+  "formId": "0x00432CD0",
+  "name": "Live & Love 6",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00432CD0:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00432CD0",
+     "edid": "Magazine_LiveAndLove06_Potion",
+     "name": "Live & Love 6"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 25,
+    "conditions": [
+     {
+      "kind": "teammateCount",
+      "count": 1,
+      "orMore": true
+     }
+    ]
+   }
+  ],
+  "notes": [
+   "Magazine_LiveAndLove06_Potion: MGEF Magazine_LiveAndLove06_UIDummyEffect archetype Script — needs override"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "Magazine_LiveAndLove07_Potion",
   "formId": "0x00432CD3",
   "name": "Live & Love 7",
@@ -6501,11 +6942,24 @@
   "formId": "0x00033779",
   "name": "Med-X",
   "kind": "consumable",
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00033779:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00033779",
+     "edid": "MedX",
+     "name": "Med-X"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 125,
+    "conditions": []
+   }
+  ],
   "notes": [
    "MedX: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "MedX: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
-   "MedX: MGEF FortifyDamageResistMedX: no route for AV DamageResist — needs mapping",
    "MedX: MGEF AddictionOddsMedX: no route for AV AddictionMedX — needs mapping",
    "MedX: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
@@ -6557,6 +7011,45 @@
   ],
   "foodScalableModifierIds": [
    "0x00294519:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "MegaslothMeatTasty",
+  "formId": "0x003D749C",
+  "name": "Megasloth Tenderloin",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x003D749C:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x003D749C",
+     "edid": "MegaslothMeatTasty",
+     "name": "Megasloth Tenderloin"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": 35,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "MegaslothMeatTasty: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "MegaslothMeatTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistEnergy|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeTasty",
+   "MealTypeCooked",
+   "MealTypeSteak"
+  ],
+  "foodScalableModifierIds": [
+   "0x003D749C:0"
   ],
   "obtainable": true
  },
@@ -6708,6 +7201,45 @@
   "obtainable": true
  },
  {
+  "id": "WL046_MirelurkBoil_Pot_DoNotUse",
+  "formId": "0x005543B7",
+  "name": "Mirelurk Boil",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x005543B7:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x005543B7",
+     "edid": "WL046_MirelurkBoil_Pot_DoNotUse",
+     "name": "Mirelurk Boil"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 10,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "WL046_MirelurkBoil_Pot_DoNotUse: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
+   "WL046_MirelurkBoil_Pot_DoNotUse: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "WL046_MirelurkBoil_Pot_DoNotUse: MGEF SURV_AddThirst_Potion_Effect_NotChem: no route for AV SURV_Thirst — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistDamage|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeCooked",
+   "MealTypeDelbertRSVP02"
+  ],
+  "foodScalableModifierIds": [
+   "0x005543B7:0"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "MirelurkEggCooked",
   "formId": "0x0004693E",
   "name": "Mirelurk Egg Omelette",
@@ -6742,6 +7274,44 @@
   ],
   "foodScalableModifierIds": [
    "0x0004693E:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "MirelurkMeatTastyJerky",
+  "formId": "0x00110F7D",
+  "name": "Mirelurk Jerky",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00110F7D:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00110F7D",
+     "edid": "MirelurkMeatTastyJerky",
+     "name": "Mirelurk Jerky"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 15,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "MirelurkMeatTastyJerky: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "MirelurkMeatTastyJerky: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistDamage|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeTasty",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x00110F7D:0"
   ],
   "obtainable": true
  },
@@ -7552,6 +8122,19 @@
      "edid": "W05_MQR_203P_ChemBlend",
      "name": "Nuclear Don's Custom Chem Blend"
     },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 100,
+    "conditions": []
+   },
+   {
+    "id": "0x005955A5:2",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x005955A5",
+     "edid": "W05_MQR_203P_ChemBlend",
+     "name": "Nuclear Don's Custom Chem Blend"
+    },
     "bucket": "maxHealth",
     "op": "ADD",
     "value": 100,
@@ -7559,7 +8142,6 @@
    }
   ],
   "notes": [
-   "W05_MQR_203P_ChemBlend: MGEF FortifyDamageResistPsycho: no route for AV DamageResist — needs mapping",
    "W05_MQR_203P_ChemBlend: MGEF StimpakRestoreHealth archetype Stimpak — needs override",
    "W05_MQR_203P_ChemBlend: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
@@ -8466,6 +9048,82 @@
   "obtainable": true
  },
  {
+  "id": "PotholePotpie_RSVP02",
+  "formId": "0x003EAA34",
+  "name": "Pothole Potpie",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x003EAA34:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x003EAA34",
+     "edid": "PotholePotpie_RSVP02",
+     "name": "Pothole Potpie"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 10,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "PotholePotpie_RSVP02: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "PotholePotpie_RSVP02: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
+   "PotholePotpie_RSVP02: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistDamage|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeCooked",
+   "MealTypeDelbertRSVP02"
+  ],
+  "foodScalableModifierIds": [
+   "0x003EAA34:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "Burn_Food_SlipperCactusVeg_2",
+  "formId": "0x008468C6",
+  "name": "Prickeye Salad",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x008468C6:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x008468C6",
+     "edid": "Burn_Food_SlipperCactusVeg_2",
+     "name": "Prickeye Salad"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 10,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "Burn_Food_SlipperCactusVeg_2: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "Burn_Food_SlipperCactusVeg_2: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistDamage|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeVegetable",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x008468C6:0"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "Psycho",
   "formId": "0x0003377D",
   "name": "Psycho",
@@ -8483,12 +9141,24 @@
     "op": "ADD",
     "value": 0.15,
     "conditions": []
+   },
+   {
+    "id": "0x0003377D:1",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0003377D",
+     "edid": "Psycho",
+     "name": "Psycho"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 100,
+    "conditions": []
    }
   ],
   "notes": [
    "Psycho: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "Psycho: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
-   "Psycho: MGEF FortifyDamageResistPsycho: no route for AV DamageResist — needs mapping",
    "Psycho: MGEF AddictionOddsPsycho: no route for AV AddictionPsycho — needs mapping",
    "Psycho: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
@@ -8612,6 +9282,19 @@
      "edid": "Psychotats",
      "name": "Psychotats"
     },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 75,
+    "conditions": []
+   },
+   {
+    "id": "0x00058AAA:2",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00058AAA",
+     "edid": "Psychotats",
+     "name": "Psychotats"
+    },
     "bucket": "specialPerception",
     "op": "ADD",
     "value": 3,
@@ -8622,7 +9305,6 @@
    "Psychotats: MGEF SURV_AddThirst_Potion_Effect_Chem: no route for AV SURV_Thirst — needs mapping",
    "Psychotats: MGEF SURV_AddHunger_Potion_Effect: no route for AV SURV_Hunger — needs mapping",
    "Psychotats: MGEF AddictionOddsPsycho: no route for AV AddictionPsycho — needs mapping",
-   "Psychotats: MGEF FortifyDamageResistPsycho: no route for AV DamageResist — needs mapping",
    "Psychotats: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
@@ -8845,6 +9527,163 @@
   "obtainable": true
  },
  {
+  "id": "RadscorpionMeatTasty",
+  "formId": "0x003D7498",
+  "name": "Radscorpion Fillet",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x003D7498:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x003D7498",
+     "edid": "RadscorpionMeatTasty",
+     "name": "Radscorpion Fillet"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": 35,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "RadscorpionMeatTasty: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "RadscorpionMeatTasty: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistEnergy|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeTasty",
+   "IngredientTypeIrradiated_New",
+   "MealTypeCooked",
+   "MealTypeSteak"
+  ],
+  "foodScalableModifierIds": [
+   "0x003D7498:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "NWOT_RadscorpionKebab",
+  "formId": "0x0066DFC2",
+  "name": "Radscorpion Kebab",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0066DFC2:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0066DFC2",
+     "edid": "NWOT_RadscorpionKebab",
+     "name": "Radscorpion Kebab"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": 35,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "NWOT_RadscorpionKebab: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "NWOT_RadscorpionKebab: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistEnergy|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeTasty",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x0066DFC2:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "WL046_RadstagRedemption_Pot_DoNotUse",
+  "formId": "0x005543B9",
+  "name": "Radstag Redemption",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x005543B9:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x005543B9",
+     "edid": "WL046_RadstagRedemption_Pot_DoNotUse",
+     "name": "Radstag Redemption"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 10,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "WL046_RadstagRedemption_Pot_DoNotUse: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
+   "WL046_RadstagRedemption_Pot_DoNotUse: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "WL046_RadstagRedemption_Pot_DoNotUse: MGEF SURV_AddThirst_Potion_Effect_NotChem: no route for AV SURV_Thirst — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistDamage|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeCooked",
+   "MealTypeDelbertRSVP02"
+  ],
+  "foodScalableModifierIds": [
+   "0x005543B9:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "RadStagMeatTastyStew",
+  "formId": "0x0004696A",
+  "name": "Radstag Stew",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0004696A:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0004696A",
+     "edid": "RadStagMeatTastyStew",
+     "name": "Radstag Stew"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": 35,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "RadStagMeatTastyStew: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "RadStagMeatTastyStew: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
+   "RadStagMeatTastyStew: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistEnergy|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeTasty",
+   "IngredientTypeIrradiated_New",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x0004696A:0"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "RadToadEggCooked",
   "formId": "0x0003E053",
   "name": "Radtoad Omelette",
@@ -8920,6 +9759,43 @@
    "0x00783A49:0"
   ],
   "obtainable": false
+ },
+ {
+  "id": "MegaslothMeatCooked",
+  "formId": "0x001C71A8",
+  "name": "Roast Megasloth",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x001C71A8:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x001C71A8",
+     "edid": "MegaslothMeatCooked",
+     "name": "Roast Megasloth"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": 25,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "MegaslothMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "MegaslothMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistEnergy|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x001C71A8:0"
+  ],
+  "obtainable": true
  },
  {
   "id": "MirelurkMeatCooked",
@@ -9377,6 +10253,44 @@
   "obtainable": true
  },
  {
+  "id": "ScorchBeastMeatCooked",
+  "formId": "0x0019C225",
+  "name": "Scorchbeast Steak",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0019C225:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0019C225",
+     "edid": "ScorchBeastMeatCooked",
+     "name": "Scorchbeast Steak"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 15,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "ScorchBeastMeatCooked: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "ScorchBeastMeatCooked: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistDamage|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeMeat",
+   "MealTypeCooked",
+   "MealTypeSteak"
+  ],
+  "foodScalableModifierIds": [
+   "0x0019C225:0"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "VenisonWithStarlightBerriesGourmet",
   "formId": "0x003D5F37",
   "name": "Seared Venison With Berries",
@@ -9449,6 +10363,46 @@
   ],
   "foodScalableModifierIds": [
    "0x001119D8:0"
+  ],
+  "obtainable": true
+ },
+ {
+  "id": "SiltBeanVegetableTastySoup",
+  "formId": "0x003C60E9",
+  "name": "Silt Bean Puree",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x003C60E9:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x003C60E9",
+     "edid": "SiltBeanVegetableTastySoup",
+     "name": "Silt Bean Puree"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 15,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "SiltBeanVegetableTastySoup: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
+   "SiltBeanVegetableTastySoup: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
+   "SiltBeanVegetableTastySoup: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
+  ],
+  "category": "food",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistDamage|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeVegetable",
+   "MealTypeTasty",
+   "MealTypeSoup",
+   "MealTypeCooked"
+  ],
+  "foodScalableModifierIds": [
+   "0x003C60E9:0"
   ],
   "obtainable": true
  },
@@ -10085,12 +11039,24 @@
     "op": "ADD",
     "value": 0.15,
     "conditions": []
+   },
+   {
+    "id": "0x006406DE:1",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x006406DE",
+     "edid": "VenisonAndTatoStew_Psycho",
+     "name": "Spiked Venison and Tato Stew"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 10,
+    "conditions": []
    }
   ],
   "notes": [
    "VenisonAndTatoStew_Psycho: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
-   "VenisonAndTatoStew_Psycho: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping",
-   "VenisonAndTatoStew_Psycho: MGEF FortifyResistDamageFood: no route for AV DamageResist — needs mapping"
+   "VenisonAndTatoStew_Psycho: MGEF SURV_Food_Effect: no route for AV SURV_Hunger — needs mapping"
   ],
   "category": "food",
   "dispelKeys": [
@@ -10103,7 +11069,8 @@
    "IngredientTypeMeat"
   ],
   "foodScalableModifierIds": [
-   "0x006406DE:0"
+   "0x006406DE:0",
+   "0x006406DE:1"
   ],
   "obtainable": true
  },
@@ -10673,6 +11640,37 @@
   "obtainable": true
  },
  {
+  "id": "PerkBubblegumStrawberry",
+  "formId": "0x0037E0C0",
+  "name": "Strawberry Perk Bubblegum",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0037E0C0:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0037E0C0",
+     "edid": "PerkBubblegumStrawberry",
+     "name": "Strawberry Perk Bubblegum"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "PerkBubblegumStrawberry: perk PerkBubblegumSlowHungerThirstPerk: OR-group[EPAlchemyEffectHasKeyword(SURV_EffectTypeHunger)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeThirst)=1]",
+   "PerkBubblegumStrawberry: perk PerkBubblegumSlowHungerThirstPerk: entry point Mod Spell Magnitude — not modeled"
+  ],
+  "category": "food",
+  "dispelKeys": [],
+  "ingredientKeywords": [
+   "MealTypePackaged"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "SCORE_Brew_NukashineVintage_SugarFree",
   "formId": "0x005FD9A7",
   "name": "Sugar-Free Nukashine",
@@ -10705,6 +11703,19 @@
      "edid": "SCORE_Brew_NukashineVintage_SugarFree",
      "name": "Sugar-Free Nukashine"
     },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 25,
+    "conditions": []
+   },
+   {
+    "id": "0x005FD9A7:2",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x005FD9A7",
+     "edid": "SCORE_Brew_NukashineVintage_SugarFree",
+     "name": "Sugar-Free Nukashine"
+    },
     "bucket": "apRegenFlat",
     "op": "ADD",
     "value": 50,
@@ -10715,7 +11726,6 @@
    "SCORE_Brew_NukashineVintage_SugarFree: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "SCORE_Brew_NukashineVintage_SugarFree: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "SCORE_Brew_NukashineVintage_SugarFree: MGEF SCORE_Nukashine_Duration_SugarFree archetype Script — needs override",
-   "SCORE_Brew_NukashineVintage_SugarFree: MGEF Nukashine_DamageResist: no route for AV DamageResist — needs mapping",
    "SCORE_Brew_NukashineVintage_SugarFree: MGEF Nukashine_FortifySprintAP: no route for AV STAT_SprintAPCost — needs mapping",
    "SCORE_Brew_NukashineVintage_SugarFree: MGEF Nukashine_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
    "SCORE_Brew_NukashineVintage_SugarFree: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
@@ -10894,6 +11904,43 @@
   "obtainable": true
  },
  {
+  "id": "SunshineOil_RSVP02",
+  "formId": "0x00529DE0",
+  "name": "Sunshine Oil",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00529DE0:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00529DE0",
+     "edid": "SunshineOil_RSVP02",
+     "name": "Sunshine Oil"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 15,
+    "conditions": []
+   }
+  ],
+  "notes": [
+   "SunshineOil_RSVP02: MGEF DamageRadiationEating: no route for AV Rads — needs mapping"
+  ],
+  "category": "drink",
+  "dispelKeys": [
+   "FoodDispelEffect_ResistDamage|FoodEffect|SURV_EffectTypeFoodBuff"
+  ],
+  "ingredientKeywords": [
+   "IngredientTypeHerb",
+   "MealTypeDelbertRSVP02",
+   "MealTypeTasty"
+  ],
+  "foodScalableModifierIds": [
+   "0x00529DE0:0"
+  ],
+  "obtainable": true
+ },
+ {
   "id": "LGN_BrawlingChemist_Chem01",
   "formId": "0x005A5DB3",
   "name": "Super Chem MK I",
@@ -10907,13 +11954,26 @@
      "edid": "LGN_BrawlingChemist_Chem01",
      "name": "Super Chem MK I"
     },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 125,
+    "conditions": []
+   },
+   {
+    "id": "0x005A5DB3:1",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x005A5DB3",
+     "edid": "LGN_BrawlingChemist_Chem01",
+     "name": "Super Chem MK I"
+    },
     "bucket": "specialStrength",
     "op": "ADD",
     "value": 2,
     "conditions": []
    },
    {
-    "id": "0x005A5DB3:1",
+    "id": "0x005A5DB3:2",
     "source": {
      "kind": "consumable",
      "formId": "0x005A5DB3",
@@ -10935,7 +11995,6 @@
    }
   ],
   "notes": [
-   "LGN_BrawlingChemist_Chem01: MGEF FortifyDamageResistPsycho: no route for AV DamageResist — needs mapping",
    "LGN_BrawlingChemist_Chem01: MGEF GHL_SURV_Chem_Effect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "category": "chem",
@@ -10961,13 +12020,39 @@
      "edid": "LGN_BrawlingChemist_Chem02",
      "name": "Super Chem MK II"
     },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 25,
+    "conditions": []
+   },
+   {
+    "id": "0x005A5DB4:1",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x005A5DB4",
+     "edid": "LGN_BrawlingChemist_Chem02",
+     "name": "Super Chem MK II"
+    },
     "bucket": "dbm",
     "op": "ADD",
     "value": 0.15,
     "conditions": []
    },
    {
-    "id": "0x005A5DB4:1",
+    "id": "0x005A5DB4:2",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x005A5DB4",
+     "edid": "LGN_BrawlingChemist_Chem02",
+     "name": "Super Chem MK II"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 25,
+    "conditions": []
+   },
+   {
+    "id": "0x005A5DB4:3",
     "source": {
      "kind": "consumable",
      "formId": "0x005A5DB4",
@@ -10980,7 +12065,7 @@
     "conditions": []
    },
    {
-    "id": "0x005A5DB4:2",
+    "id": "0x005A5DB4:4",
     "source": {
      "kind": "consumable",
      "formId": "0x005A5DB4",
@@ -10993,7 +12078,7 @@
     "conditions": []
    },
    {
-    "id": "0x005A5DB4:3",
+    "id": "0x005A5DB4:5",
     "source": {
      "kind": "consumable",
      "formId": "0x005A5DB4",
@@ -11014,7 +12099,7 @@
     ]
    },
    {
-    "id": "0x005A5DB4:4",
+    "id": "0x005A5DB4:6",
     "source": {
      "kind": "consumable",
      "formId": "0x005A5DB4",
@@ -11027,10 +12112,7 @@
     "conditions": []
    }
   ],
-  "notes": [
-   "LGN_BrawlingChemist_Chem02: MGEF FortifyDamageResistPsycho: no route for AV DamageResist — needs mapping",
-   "LGN_BrawlingChemist_Chem02: MGEF FortifyDamageResistMedX: no route for AV DamageResist — needs mapping"
-  ],
+  "notes": [],
   "category": "chem",
   "dispelKeys": [
    "ChemDispelEffects|ChemEffect|StackBuffEndurance",
@@ -11058,13 +12140,39 @@
      "edid": "LGN_BrawlingChemist_Chem03",
      "name": "Super Chem MK III"
     },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 25,
+    "conditions": []
+   },
+   {
+    "id": "0x005A5DB5:1",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x005A5DB5",
+     "edid": "LGN_BrawlingChemist_Chem03",
+     "name": "Super Chem MK III"
+    },
     "bucket": "dbm",
     "op": "ADD",
     "value": 0.15,
     "conditions": []
    },
    {
-    "id": "0x005A5DB5:1",
+    "id": "0x005A5DB5:2",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x005A5DB5",
+     "edid": "LGN_BrawlingChemist_Chem03",
+     "name": "Super Chem MK III"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 25,
+    "conditions": []
+   },
+   {
+    "id": "0x005A5DB5:3",
     "source": {
      "kind": "consumable",
      "formId": "0x005A5DB5",
@@ -11077,7 +12185,7 @@
     "conditions": []
    },
    {
-    "id": "0x005A5DB5:2",
+    "id": "0x005A5DB5:4",
     "source": {
      "kind": "consumable",
      "formId": "0x005A5DB5",
@@ -11090,7 +12198,7 @@
     "conditions": []
    },
    {
-    "id": "0x005A5DB5:3",
+    "id": "0x005A5DB5:5",
     "source": {
      "kind": "consumable",
      "formId": "0x005A5DB5",
@@ -11111,7 +12219,7 @@
     ]
    },
    {
-    "id": "0x005A5DB5:4",
+    "id": "0x005A5DB5:6",
     "source": {
      "kind": "consumable",
      "formId": "0x005A5DB5",
@@ -11124,10 +12232,7 @@
     "conditions": []
    }
   ],
-  "notes": [
-   "LGN_BrawlingChemist_Chem03: MGEF FortifyDamageResistPsycho: no route for AV DamageResist — needs mapping",
-   "LGN_BrawlingChemist_Chem03: MGEF FortifyDamageResistMedX: no route for AV DamageResist — needs mapping"
-  ],
+  "notes": [],
   "category": "chem",
   "dispelKeys": [
    "ChemDispelEffects|ChemEffect|StackBuffEndurance",
@@ -11155,13 +12260,39 @@
      "edid": "LGN_BrawlingChemist_Chem04",
      "name": "SuperChem"
     },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 25,
+    "conditions": []
+   },
+   {
+    "id": "0x005A5DB6:1",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x005A5DB6",
+     "edid": "LGN_BrawlingChemist_Chem04",
+     "name": "SuperChem"
+    },
     "bucket": "dbm",
     "op": "ADD",
     "value": 0.15,
     "conditions": []
    },
    {
-    "id": "0x005A5DB6:1",
+    "id": "0x005A5DB6:2",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x005A5DB6",
+     "edid": "LGN_BrawlingChemist_Chem04",
+     "name": "SuperChem"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 25,
+    "conditions": []
+   },
+   {
+    "id": "0x005A5DB6:3",
     "source": {
      "kind": "consumable",
      "formId": "0x005A5DB6",
@@ -11174,7 +12305,7 @@
     "conditions": []
    },
    {
-    "id": "0x005A5DB6:2",
+    "id": "0x005A5DB6:4",
     "source": {
      "kind": "consumable",
      "formId": "0x005A5DB6",
@@ -11187,7 +12318,7 @@
     "conditions": []
    },
    {
-    "id": "0x005A5DB6:3",
+    "id": "0x005A5DB6:5",
     "source": {
      "kind": "consumable",
      "formId": "0x005A5DB6",
@@ -11208,7 +12339,7 @@
     ]
    },
    {
-    "id": "0x005A5DB6:4",
+    "id": "0x005A5DB6:6",
     "source": {
      "kind": "consumable",
      "formId": "0x005A5DB6",
@@ -11221,10 +12352,7 @@
     "conditions": []
    }
   ],
-  "notes": [
-   "LGN_BrawlingChemist_Chem04: MGEF FortifyDamageResistPsycho: no route for AV DamageResist — needs mapping",
-   "LGN_BrawlingChemist_Chem04: MGEF FortifyDamageResistMedX: no route for AV DamageResist — needs mapping"
-  ],
+  "notes": [],
   "category": "chem",
   "dispelKeys": [
    "ChemDispelEffects|ChemEffect|StackBuffEndurance",
@@ -12327,6 +13455,40 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_USCovertOps01_Potion",
+  "formId": "0x00432D39",
+  "name": "U.S. Covert Operations Manual 1",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00432D39:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00432D39",
+     "edid": "Magazine_USCovertOps01_Potion",
+     "name": "U.S. Covert Operations Manual 1"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 50,
+    "conditions": [
+     {
+      "kind": "sneaking"
+     }
+    ]
+   }
+  ],
+  "notes": [
+   "Magazine_USCovertOps01_Potion: MGEF Magazine_USCovertOps01Effect_UIDummy archetype Script — needs override"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "Magazine_USCovertOps10_Potion",
   "formId": "0x00432D54",
   "name": "U.S. Covert Operations Manual 10",
@@ -12519,13 +13681,26 @@
      "edid": "Brew_LeadChampagneVintage",
      "name": "Vintage Lead Champagne"
     },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 15,
+    "conditions": []
+   },
+   {
+    "id": "0x0045411B:1",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0045411B",
+     "edid": "Brew_LeadChampagneVintage",
+     "name": "Vintage Lead Champagne"
+    },
     "bucket": "specialLuck",
     "op": "ADD",
     "value": 2,
     "conditions": []
    },
    {
-    "id": "0x0045411B:1",
+    "id": "0x0045411B:2",
     "source": {
      "kind": "consumable",
      "formId": "0x0045411B",
@@ -12542,7 +13717,6 @@
    "Brew_LeadChampagneVintage: MGEF LeadChampagne_Duration archetype Script — needs override",
    "Brew_LeadChampagneVintage: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "Brew_LeadChampagneVintage: MGEF Alcohol_ResistRadiationExpose: no route for AV RadResistExposure — needs mapping",
-   "Brew_LeadChampagneVintage: MGEF Alcohol_DamageResist: no route for AV DamageResist — needs mapping",
    "Brew_LeadChampagneVintage: MGEF LeadChampagne_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
    "Brew_LeadChampagneVintage: MGEF LeadChampagne_IncreaseSprintAP: no route for AV STAT_SprintAPCost — needs mapping",
    "Brew_LeadChampagneVintage: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"
@@ -12599,13 +13773,26 @@
      "edid": "E08A_Brew_GulpershineVintage",
      "name": "Vintage Mire Magic Moonshine"
     },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 25,
+    "conditions": []
+   },
+   {
+    "id": "0x00655D13:2",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00655D13",
+     "edid": "E08A_Brew_GulpershineVintage",
+     "name": "Vintage Mire Magic Moonshine"
+    },
     "bucket": "specialStrength",
     "op": "ADD",
     "value": 4,
     "conditions": []
    },
    {
-    "id": "0x00655D13:2",
+    "id": "0x00655D13:3",
     "source": {
      "kind": "consumable",
      "formId": "0x00655D13",
@@ -12618,7 +13805,7 @@
     "conditions": []
    },
    {
-    "id": "0x00655D13:3",
+    "id": "0x00655D13:4",
     "source": {
      "kind": "consumable",
      "formId": "0x00655D13",
@@ -12636,7 +13823,6 @@
    "E08A_Brew_GulpershineVintage: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "E08A_Brew_GulpershineVintage: MGEF E08A_GulperShine_ME archetype Script — needs override",
    "E08A_Brew_GulpershineVintage: condition: HasActiveMagicEffect(E08A_GulperSmacker_GulpershineBuff_ME)=1",
-   "E08A_Brew_GulpershineVintage: MGEF E08A_Gulpershine_DamageResist: no route for AV DamageResist — needs mapping",
    "E08A_Brew_GulpershineVintage: perk ToxicGin_PoisonEnemies: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | IsSpellTarget(ToxicGin_PoisonsOnHit)=0]",
    "E08A_Brew_GulpershineVintage: perk ToxicGin_PoisonEnemies: entry point Apply Combat Hit Spell — not modeled",
    "E08A_Brew_GulpershineVintage: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
@@ -12690,6 +13876,19 @@
      "edid": "Brew_NukashineVintage",
      "name": "Vintage Nukashine"
     },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 25,
+    "conditions": []
+   },
+   {
+    "id": "0x0047BC08:2",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0047BC08",
+     "edid": "Brew_NukashineVintage",
+     "name": "Vintage Nukashine"
+    },
     "bucket": "apRegenFlat",
     "op": "ADD",
     "value": 50,
@@ -12700,7 +13899,6 @@
    "Brew_NukashineVintage: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "Brew_NukashineVintage: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "Brew_NukashineVintage: MGEF Nukashine_Duration archetype Script — needs override",
-   "Brew_NukashineVintage: MGEF Nukashine_DamageResist: no route for AV DamageResist — needs mapping",
    "Brew_NukashineVintage: MGEF Nukashine_FortifySprintAP: no route for AV STAT_SprintAPCost — needs mapping",
    "Brew_NukashineVintage: MGEF Nukashine_AdjustFallSpeed: no route for AV FallSpeedMult — needs mapping",
    "Brew_NukashineVintage: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping"

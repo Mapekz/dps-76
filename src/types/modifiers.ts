@@ -410,7 +410,20 @@ export type Bucket =
   | 'specialCharisma'
   | 'specialIntelligence'
   | 'specialAgility'
-  | 'specialLuck';
+  | 'specialLuck'
+  /**
+   * Flat Damage Resist points the WEARER gains (AV DamageResist 0x000002E3,
+   * Peak Value Modifier fortifies — Scaly Skin's positive side, magnitudes
+   * 50/62 normal/Class-Freak-boosted). Inert until player/enemy resist
+   * mitigation for the wearer's OWN defenses is modeled (today's
+   * `armorPen`/`armorPenFlat` only model attacker-side DAMAGE, not a
+   * defender's resist pool) — this bucket exists so the value displays
+   * honestly instead of being silently dropped, same status as
+   * `limbDamage`/`bashDamage` above.
+   */
+  | 'damageResistGain'
+  /** Flat Energy Resist points the WEARER gains (AV EnergyResist 0x000002EB) — mirrors `damageResistGain`, same inert status. */
+  | 'energyResistGain';
 
 /**
  * Which fold mechanism consumes a Bucket, and whether that fold's result
@@ -546,6 +559,8 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   specialIntelligence: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds the intelligence CurveInput (Science!, Pyro-Technician\'s, Cryologist\'s)' },
   specialAgility: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds ap-economy.ts computeApEconomy\'s AP pool size' },
   specialLuck: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds crit-meter.ts computeCritMeter\'s fill rate' },
+  damageResistGain: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — wearer-side resist mitigation not modeled (AV DamageResist extracted via FALLBACK_AVIF_ROUTES, e.g. Scaly Skin, but no consumer yet)' },
+  energyResistGain: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — wearer-side resist mitigation not modeled (AV EnergyResist extracted via FALLBACK_AVIF_ROUTES, e.g. Scaly Skin, but no consumer yet)' },
 };
 
 /** Buckets whose fold rewrites an effective-weapon field rather than feeding a damage term — derived from BUCKET_REGISTRY. */

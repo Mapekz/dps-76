@@ -81,6 +81,8 @@ const ALL_BUCKETS: Bucket[] = [
   'specialIntelligence',
   'specialAgility',
   'specialLuck',
+  'damageResistGain',
+  'energyResistGain',
 ];
 
 describe('BUCKET_REGISTRY', () => {
@@ -112,10 +114,14 @@ describe('BUCKET_REGISTRY', () => {
     // (Phase 1 engine half — effective-weapon.ts folds them, scenarios.ts
     // threads rangeFalloffMult into paper-damage.ts). armorPen/armorPenFlat
     // are no longer inert either (Phase 2 — mitigation.ts consumes both).
+    // damageResistGain/energyResistGain (2026-07-21, Scaly Skin's positive
+    // side): wearer-side resist mitigation isn't modeled — same inert status
+    // as limbDamage/bashDamage.
     expect([...INERT_ENGINE_BUCKETS].sort()).toEqual(
       [
         'limbDamage', 'bashDamage', 'addDamageComponent',
         'bulletStormOnKill', 'bulletStormSpinUp', 'deflectChance',
+        'damageResistGain', 'energyResistGain',
       ].sort()
     );
   });
