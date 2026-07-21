@@ -9,12 +9,26 @@ import type { ComponentHit, HitBreakdown } from './paper-damage';
  * wired formula:
  *
  *   Resist = max(0, base − flatDebuff) × (1 − clamp01(armorPenTotal))
- *   mult   = Resist ≤ 0 ? 1 : clamp((damage × 0.15 / Resist)^exponent, 0.01, 0.99)
+ *   mult   = Resist ≤ 0 ? 1 : clamp((damage × 0.15 / Resist)^0.365, 0.01, 0.99)
+ *           (radiation: square the whole factor before clamping)
  *
- * `exponent` is 0.365 for every resist type EXCEPT radiation, which uses
- * 0.730 (double) — USER-CONFIRMED, docs/assumptions.md "Resist mitigation".
- * Diminishing returns bite roughly twice as hard against RadResistExposure
- * as against every other resist AV.
+ * `0.365` is the ESM-extracted `f<Type>ArmorDmgReductionExp` GMST value —
+ * IDENTICAL for every resist type, including radiation
+ * (`fRadsArmorDmgReductionExp` 0x0017D8AB = 0.365, same as
+ * `fPhysicalArmorDmgReductionExp` 0x0017D8A9, `fEnergyArmorDmgReductionExp`
+ * 0x0017D8A6, etc. — ESM-PROVEN). The sibling `_NORM`-suffixed GMST set
+ * (e.g. `fPhysicalArmorDmgReductionExp_NORM` 0x005CF073 = 0.6377,
+ * `...ArmorBase_NORM` = 51.0) is a distinct, unused formula variant — not
+ * the one this engine draws from.
+ *
+ * Radiation still bites roughly twice as hard as every other resist type —
+ * USER-CONFIRMED, docs/assumptions.md "Resist mitigation" — but that has no
+ * GMST backing (the exponent GMST reads 0.365 for radiation too), so it's
+ * modeled as squaring the WHOLE mitigation factor for radiation only, after
+ * computing it with the shared ESM exponent: `(x^0.365)^2 = x^0.730`, so the
+ * observed numbers are unchanged, but the ESM-provable exponent and the
+ * empirical radiation correction stay visibly separate instead of being
+ * folded into one hardcoded 0.730.
  *
  * `base` is the enemy's resist for THAT component's damage type (`resists`
  * from `src/lib/enemy-defenses.ts`); `flatDebuff` is Taking One for the
@@ -64,9 +78,18 @@ const DAMAGE_TYPE_TO_RESIST_TYPE: Record<DamageType, GeneratedNpcDamageType> = {
   fire: 'fire',
 };
 
+/**
+ * ESM-extracted `f<Type>ArmorDmgReductionExp` GMST value — 0.365 for every
+ * resist type (`fPhysicalArmorDmgReductionExp` 0x0017D8A9,
+ * `fRadsArmorDmgReductionExp` 0x0017D8AB, `fEnergyArmorDmgReductionExp`
+ * 0x0017D8A6, `fFireArmorDmgReductionExp` 0x0017D8A7,
+ * `fFrostArmorDmgReductionExp` 0x0017D8A8, `fPoisonArmorDmgReductionExp`
+ * 0x0017D8AA, `fShockArmorDmgReductionExp` 0x0017D8AC all read 0.365 in the
+ * 20260717 dump). The sibling `_NORM` set (e.g.
+ * `fPhysicalArmorDmgReductionExp_NORM` 0x005CF073 = 0.6377) is a distinct,
+ * unused formula variant — not this one.
+ */
 const RESIST_EXPONENT = 0.365;
-/** Radiation's diminishing-returns curve is the standard exponent doubled. */
-const RADIATION_RESIST_EXPONENT = RESIST_EXPONENT * 2;
 
 function clamp01(x: number): number {
   return Math.max(0, Math.min(1, x));
@@ -79,9 +102,9 @@ function clamp01(x: number): number {
  */
 function componentMitigationMult(damage: number, resist: number, resistType: GeneratedNpcDamageType): number {
   if (resist <= 0) return 1;
-  const exponent = resistType === 'radiation' ? RADIATION_RESIST_EXPONENT : RESIST_EXPONENT;
-  const factor = Math.pow((damage * 0.15) / resist, exponent);
-  return Math.min(0.99, Math.max(0.01, factor));
+  const factor = Math.pow((damage * 0.15) / resist, RESIST_EXPONENT);
+  const mitigated = resistType === 'radiation' ? factor * factor : factor;
+  return Math.min(0.99, Math.max(0.01, mitigated));
 }
 
 /**

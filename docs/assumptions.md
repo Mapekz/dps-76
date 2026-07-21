@@ -1194,20 +1194,37 @@ Engine: `src/lib/engine/mitigation.ts` (`applyMitigation`), `src/lib/enemy-defen
 `src/lib/damage-formulas.ts` scaffolding.
 
 - **Formula**: `Resist = max(0, base − flatDebuff) × (1 − clamp01(armorPenTotal))`;
-  `mult = clamp((damage × 0.15 / Resist)^exponent, 0.01, 0.99)`; `Resist ≤ 0` →
+  `mult = clamp((damage × 0.15 / Resist)^0.365, 0.01, 0.99)`; `Resist ≤ 0` →
   `mult = 1` (full penetration, not the 0.99 clamp ceiling — a deliberate
   upgrade over the old dormant scaffold, which returned 0.99 for that case).
-  **USER-CONFIRMED** formula + clamps.
-- **Radiation exponent is doubled**: `exponent` is 0.365 for every resist type
-  EXCEPT `radiation`, which uses 0.730 — **USER-CONFIRMED** 2026-07-19.
-  Diminishing returns bite roughly twice as hard against RadResistExposure as
-  against DamageResist/EnergyResist/etc. (`mitigation.ts`'s
-  `RADIATION_RESIST_EXPONENT`). Surfaced while diagnosing why the Radium Rifle
-  (mostly ballistic) dramatically outperforms the Gamma Gun (half radiation,
-  half energy) against high-RadResist targets — the resist-tier gap alone
-  (RadResistExposure runs a materially higher curve tier than DamageResist/
-  EnergyResist on at least one sampled NPC) was too small to explain the
-  observed gap; the steeper radiation exponent is the mechanism.
+  `0.365` is the `f<Type>ArmorDmgReductionExp` GMST — **ESM-PROVEN**,
+  identical (0.365) for every resist type: `fPhysicalArmorDmgReductionExp`
+  0x0017D8A9, `fEnergyArmorDmgReductionExp` 0x0017D8A6,
+  `fRadsArmorDmgReductionExp` 0x0017D8AB, `fFireArmorDmgReductionExp`
+  0x0017D8A7, `fFrostArmorDmgReductionExp` 0x0017D8A8,
+  `fPoisonArmorDmgReductionExp` 0x0017D8AA, `fShockArmorDmgReductionExp`
+  0x0017D8AC (20260717 dump). `0.15` is likewise the `f<Type>DamageFactor`
+  GMST, uniform across types; the `0.01`/`0.99` clamp bounds match
+  `f<Type>MinDamageReduction`/`f<Type>MaxDamageReduction`. The sibling
+  `_NORM`-suffixed GMST set (e.g. `fPhysicalArmorDmgReductionExp_NORM`
+  0x005CF073 = 0.6377, `...ArmorBase_NORM` = 51.0) is a distinct, unused
+  formula variant — not the one this formula or engine draws from.
+- **Radiation squares the whole mitigation factor**: every resist type
+  (including radiation) shares the same 0.365 exponent GMST — there is no
+  ESM-provable "radiation exponent". Radiation still bites roughly twice as
+  hard as every other resist type in observed play — **USER-CONFIRMED**
+  2026-07-19 — so `mitigation.ts` models it as squaring the factor computed
+  from the shared 0.365 exponent, for radiation only, before the clamp:
+  `(x^0.365)^2 = x^0.730`, so the observed numbers are unchanged from the
+  prior "doubled exponent" implementation, but the ESM-provable exponent and
+  the empirical radiation correction now stay visibly separate instead of
+  being folded into one hardcoded 0.730. Surfaced while diagnosing why the
+  Radium Rifle (mostly ballistic) dramatically outperforms the Gamma Gun
+  (half radiation, half energy) against high-RadResist targets — the
+  resist-tier gap alone (RadResistExposure runs a materially higher curve
+  tier than DamageResist/EnergyResist on at least one sampled NPC) was too
+  small to explain the observed gap; the steeper radiation falloff is the
+  mechanism.
 - **Per-damage-type mapping**: `ballistic`/`explosive` → `physical`;
   `energy`/`radiation`/`poison`/`cryo`/`fire` map 1:1 to their own NPC resist
   AV. Total map (every `DamageType` has an entry) — explosive is
