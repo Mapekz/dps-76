@@ -66,21 +66,23 @@ const GROUP_COUNT_OPTIONS = [1, 2, 3, 4, 5].map(value => ({
   label: value === 5 ? '5+' : String(value),
 }));
 
-/** Follow Through / TOftT damage-multiplier tiers — the per-rank 10/20/30/40% magnitudes plus off. */
+/** Follow Through's damage-multiplier tiers — the per-rank 10/20/30/40% magnitudes plus off. */
 const DAMAGE_MULT_PCT_OPTIONS = [0, 10, 20, 30, 40].map(value => ({ value, label: `${value}%` }));
 
 /**
- * Taking One for the Team's flat DR-debuff ranks (esm-walk-confirmed
- * magnitudes 6/10/15/50 — src/data/target-debuffs.ts). Separate control from
- * the damage-taken-% ToggleGroup above: two different ESM effects bundled on
- * the same hidden companion perk.
+ * Taking One for the Team's single rank control — consolidates what used to
+ * be two separate ToggleGroups (a %-damage-taken multiplier and a flat-DR
+ * debuff) into one, since the ESM ranks pair up 1:1: rank 1 = 10%/−6, rank 4
+ * = 40%/−50 (esm-walk-confirmed DR magnitudes — src/data/target-debuffs.ts).
+ * Picking a rank here sets BOTH `takingOneForTheTeamPct` (rank×10) and
+ * `takingOneForTheTeamDrRank` (the rank itself) in one go.
  */
-const TAKING_ONE_FOR_THE_TEAM_DR_RANK_OPTIONS = [
+const TAKING_ONE_FOR_THE_TEAM_RANK_OPTIONS = [
   { value: 0, label: 'Off' },
-  { value: 1, label: 'R1 (−6)' },
-  { value: 2, label: 'R2 (−10)' },
-  { value: 3, label: 'R3 (−15)' },
-  { value: 4, label: 'R4 (−50)' },
+  { value: 1, label: 'R1 (10%/−6)' },
+  { value: 2, label: 'R2 (20%/−10)' },
+  { value: 3, label: 'R3 (30%/−15)' },
+  { value: 4, label: 'R4 (40%/−50)' },
 ];
 
 /**
@@ -239,13 +241,14 @@ export function TargetSection() {
   const tenderizer = player.conditions.tenderizerStacks;
   const playerDefaults = createDefaultPlayerConditions();
   const followThroughPct = player.conditions.followThroughPct ?? 0;
-  const takingOneForTheTeamPct = player.conditions.takingOneForTheTeamPct ?? 0;
   const takingOneForTheTeamDrRank = player.conditions.takingOneForTheTeamDrRank ?? 0;
 
-  const setPlayerCondition = (
-    key: 'followThroughPct' | 'takingOneForTheTeamPct' | 'takingOneForTheTeamDrRank',
-    value: number
-  ) => dispatch({ type: 'condition/set', key, value });
+  const setPlayerCondition = (key: 'followThroughPct', value: number) => dispatch({ type: 'condition/set', key, value });
+
+  const setTakingOneForTheTeamRank = (rank: number) => {
+    dispatch({ type: 'condition/set', key: 'takingOneForTheTeamPct', value: rank * 10 });
+    dispatch({ type: 'condition/set', key: 'takingOneForTheTeamDrRank', value: rank as 0 | 1 | 2 | 3 | 4 });
+  };
 
   const activeCount =
     (conditions.targetRace ? 1 : 0) +
@@ -258,7 +261,7 @@ export function TargetSection() {
     (forcedEpicRank == null && userEpicRank !== 0 ? 1 : 0) +
     (tenderizer !== 0 ? 1 : 0) +
     (followThroughPct !== (playerDefaults.followThroughPct ?? 0) ? 1 : 0) +
-    (takingOneForTheTeamPct !== (playerDefaults.takingOneForTheTeamPct ?? 0) ? 1 : 0) +
+    // One control now (rank drives both pct/DR fields together) — count once, not twice.
     (takingOneForTheTeamDrRank !== (playerDefaults.takingOneForTheTeamDrRank ?? 0) ? 1 : 0) +
     STATUS_TOGGLES.filter(s => (conditions[s.key] as boolean | undefined) ?? false).length;
 
@@ -491,31 +494,18 @@ export function TargetSection() {
           </div>
 
           <div className="space-y-1.5">
-            <Label>Taking One for the Team damage multiplier</Label>
+            <Label>Taking One for the Team</Label>
             <ToggleGroup
-              aria-label="Taking One for the Team damage multiplier"
-              options={DAMAGE_MULT_PCT_OPTIONS}
-              value={takingOneForTheTeamPct}
-              onValueChange={v => setPlayerCondition('takingOneForTheTeamPct', v)}
-            />
-            <p className="text-muted-foreground text-xs">
-              Manual estimate of the teamed-attacker damage-taken debuff's active multiplier. Applied by any
-              player's Taking One for the Team — you don't need the card equipped.
-            </p>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label>Taking One for the Team flat DR debuff</Label>
-            <ToggleGroup
-              aria-label="Taking One for the Team flat DR debuff"
-              options={TAKING_ONE_FOR_THE_TEAM_DR_RANK_OPTIONS}
+              aria-label="Taking One for the Team rank"
+              options={TAKING_ONE_FOR_THE_TEAM_RANK_OPTIONS}
               value={takingOneForTheTeamDrRank}
-              onValueChange={v => setPlayerCondition('takingOneForTheTeamDrRank', v)}
+              onValueChange={setTakingOneForTheTeamRank}
             />
             <p className="text-muted-foreground text-xs">
-              Separate ESM effect bundled on the same hidden perk: a flat Damage Resist reduction (physical only —
-              no Energy Resist component), not the %-damage-taken multiplier above. Rank 4's jump to −50 (vs. the
-              ~−20 an even progression would predict) is a possible ESM data-entry anomaly, modeled as-is.
+              Any player's Taking One for the Team can proc both a %-damage-taken multiplier and a flat Damage
+              Resist reduction (physical only) on the target — you don't need the card equipped yourself. Rank 4's
+              jump to −50 DR (vs. the ~−20 an even progression would predict) is a possible ESM data-entry anomaly,
+              modeled as-is.
             </p>
           </div>
         </div>
