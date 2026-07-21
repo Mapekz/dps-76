@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { BanIcon, CheckIcon, PlusIcon, XIcon } from 'lucide-react';
+import { BanIcon, CheckIcon, PillIcon, PlusIcon, SkullIcon, WineIcon, XIcon } from 'lucide-react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -583,18 +583,34 @@ export function ChemsSection() {
   const activeChem = chems.find(c => player.consumables.includes(c.id));
   const activeAlcohol = alcohols.find(c => player.consumables.includes(c.id));
   const counted = player.addictions.filter(id => !suppressed.has(id)).length;
-
-  // Presence-only summary — names and running totals don't fit a mobile-width
-  // header, so this just says what's active and how many addictions count.
-  const summary =
-    [activeChem && 'Chem', activeAlcohol && 'Alcohol', counted > 0 && `${counted} addiction${counted === 1 ? '' : 's'}`]
-      .filter(Boolean)
-      .join(' · ') || 'none';
+  const nothingActive = !activeChem && !activeAlcohol && counted === 0;
 
   return (
     <AccordionItem value="chems">
       <AccordionTrigger>
-        <SectionTrigger label="Chems & Alcohol" summary={summary} />
+        <SectionTrigger
+          label="Chems & Alcohol"
+          summary={nothingActive ? 'none' : undefined}
+          badge={
+            <>
+              {activeChem && (
+                <Badge variant="default" title={activeChem.name}>
+                  <PillIcon /> Chem
+                </Badge>
+              )}
+              {activeAlcohol && (
+                <Badge variant="default" title={activeAlcohol.name}>
+                  <WineIcon /> Alcohol
+                </Badge>
+              )}
+              {counted > 0 && (
+                <Badge variant="destructive" title={`${counted} addiction${counted === 1 ? '' : 's'} counted against DPS`}>
+                  <SkullIcon /> {counted} addiction{counted === 1 ? '' : 's'}
+                </Badge>
+              )}
+            </>
+          }
+        />
       </AccordionTrigger>
       <AccordionContent>
         <div className="font-condensed text-muted-foreground flex items-stretch pb-1 text-[10px] font-semibold uppercase tracking-[0.1em]">
