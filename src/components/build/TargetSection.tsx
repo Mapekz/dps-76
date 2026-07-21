@@ -55,7 +55,7 @@ const ENEMY_NUMBER_FIELDS: Array<{
   label: string;
   min: number;
   max: number;
-}> = [{ key: 'healthPercent', label: 'Target health %', min: 1, max: 100 }];
+}> = [{ key: 'healthPercent', label: 'Health %', min: 1, max: 100 }];
 
 // Encircler's top tier is GetGroupTargetCount ≥5 (buffs-legendary.test.ts) —
 // nothing distinguishes larger groups, so the control caps at "5+".
@@ -245,7 +245,7 @@ export function TargetSection() {
       <AccordionContent>
         <div className="space-y-3">
           <div className="space-y-1.5">
-            <Label>Target enemy</Label>
+            <Label>Enemy</Label>
             <Combobox
               options={raceOptions}
               value={conditions.targetRace ?? null}
@@ -258,7 +258,7 @@ export function TargetSection() {
 
           {selectedRace ? (
             <div className="space-y-1.5">
-              <Label>Target body part (×{effectiveMult.toFixed(2)})</Label>
+              <Label>Body part (×{effectiveMult.toFixed(2)})</Label>
               <Combobox
                 options={partOptions}
                 value={pickerValue}
@@ -294,7 +294,7 @@ export function TargetSection() {
 
           {selectedRace && (
             <div className="space-y-1.5">
-              <Label htmlFor="target-level">Target level: {targetLevel}</Label>
+              <Label htmlFor="target-level">Level: {targetLevel}</Label>
               <Slider
                 id="target-level"
                 min={levelBounds.min}
@@ -321,17 +321,13 @@ export function TargetSection() {
                   )}
                 </p>
               )}
-              <p className="text-muted-foreground text-xs">
-                Defaults to the race's max level (endgame assumption) — HP and resists scale with level via the
-                creature curve tables.
-              </p>
             </div>
           )}
 
           <div className="space-y-1.5">
-            <Label>Target status effects</Label>
+            <Label>Status effects</Label>
             <ToggleChips
-              aria-label="Target status effects"
+              aria-label="Status effects"
               options={STATUS_TOGGLES.map(s => ({
                 value: s.key,
                 label: s.label,
@@ -344,7 +340,7 @@ export function TargetSection() {
 
           <div className="space-y-1.5">
             <Label htmlFor="target-distance" className="flex flex-wrap items-center gap-1.5">
-              <span>Target distance: {distancePipBoy.toFixed(1)} Pip-Boy units</span>
+              <span>Distance: {distancePipBoy.toFixed(1)} Pip-Boy units</span>
               {isCloseRange && <Badge variant="secondary">Close</Badge>}
               {isFarRange && <Badge variant="secondary">Far</Badge>}
             </Label>
@@ -415,7 +411,7 @@ export function TargetSection() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="target-tenderizer">Tenderizer stacks on the target</Label>
+            <Label htmlFor="target-tenderizer">Tenderizer stacks</Label>
             <NumberField
               id="target-tenderizer"
               min={0}
