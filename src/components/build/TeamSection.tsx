@@ -1,3 +1,4 @@
+import { UsersIcon } from 'lucide-react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
@@ -55,8 +56,6 @@ export function TeamSection() {
   const unitedOrdealEquipped = player.perks.some(p => p.perkId === 'UnitedOrdeal');
   const unitedOrdealActive = unitedOrdealEquipped && (conditions.isGhoul ?? false) && conditions.teammateCount >= 1;
 
-  const anyTeamEffectActive = sinActive || unitedOrdealActive || teamBonusText !== null;
-
   const summary =
     conditions.teammateCount === 0 && publicTeamType === 'none'
       ? 'solo'
@@ -71,16 +70,22 @@ export function TeamSection() {
           label="Team"
           summary={summary}
           badge={
-            <Badge
-              variant={anyTeamEffectActive ? 'default' : 'outline'}
-              title={
-                anyTeamEffectActive
-                  ? 'A teammate-gated bonus is active right now (Strange in Numbers, United Ordeal, or the public-team SPECIAL fortify)'
-                  : 'No teammate-gated bonuses are currently active'
-              }
-            >
-              {anyTeamEffectActive ? 'bonus active' : 'no bonus'}
-            </Badge>
+            <>
+              {conditions.teammateCount > 0 && (
+                <Badge
+                  variant="secondary"
+                  title={`${conditions.teammateCount} teammate${conditions.teammateCount === 1 ? '' : 's'}`}
+                >
+                  <UsersIcon />
+                  {conditions.teammateCount}
+                </Badge>
+              )}
+              {teamBonusText && (
+                <Badge variant="default" title="Public-team SPECIAL fortify is active">
+                  {teamBonusText}
+                </Badge>
+              )}
+            </>
           }
         />
       </AccordionTrigger>
