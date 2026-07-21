@@ -95,6 +95,17 @@ const ENEMY_KEYWORD_LABELS: Record<string, string> = {
 const weaponLabel = (edid: string): string => WEAPON_KEYWORD_LABELS[edid] ?? edid;
 const enemyLabel = (edid: string): string => ENEMY_KEYWORD_LABELS[edid] ?? edid;
 
+/** The 7 SPECIAL flat-point buckets, canonical S-P-E-C-I-A-L order — see `groupSpecialModifiers`. */
+const SPECIAL_BUCKETS: readonly Bucket[] = [
+  'specialStrength',
+  'specialPerception',
+  'specialEndurance',
+  'specialCharisma',
+  'specialIntelligence',
+  'specialAgility',
+  'specialLuck',
+];
+
 /**
  * Context a caller resolves once (from player state) and passes down so a
  * single raw `Modifier[]` describes correctly for the situation on screen:
@@ -174,6 +185,36 @@ function formatFlatRange(lo: number, hi: number): string {
 }
 
 /**
+ * `healthFraction` is CURRENT HP / max HP (resolve.ts), not missing HP — but
+ * a multi-point curve on it (today, only Unyielding) is a STAIRCASE, not a
+ * smooth ramp: the bonus holds flat, then jumps at specific HP thresholds. A
+ * bare lo–hi range hides that shape; this reads it back out as "+N at ≤X%
+ * HP" breakpoints instead. Dedupes consecutive same-value points (Unyielding's
+ * flat (0,3)-(0.2,3) plateau collapses to one "+3 at ≤20% HP" line) and drops
+ * the terminal zero-bonus point(s) — "no bonus above the last threshold" is
+ * implied by the list simply stopping, same as `curve-endpoint-clamping`'s
+ * outside-domain convention.
+ */
+function describeHealthFractionStaircase(
+  points: readonly { x: number; y: number }[],
+  curveScale: number,
+  scale: number
+): string {
+  const steps: Array<{ x: number; y: number }> = [];
+  for (const p of points) {
+    const y = p.y * curveScale * scale;
+    const last = steps[steps.length - 1];
+    if (last && last.y === y) last.x = p.x; // extend the plateau's upper x bound
+    else steps.push({ x: p.x, y });
+  }
+  return steps
+    .filter(s => s.y !== 0)
+    .sort((a, b) => b.x - a.x)
+    .map(s => `${formatFlatRange(s.y, s.y)} at ≤${Math.round(s.x * 100)}% HP`)
+    .join(', ');
+}
+
+/**
  * dotDamage is a special case: the flat value is damage/second, `durationSec`
  * carries the tick window, and the modifier's own `damageTypeScope` condition
  * names the DoT's element — consumed into the label rather than rendered as
@@ -198,22 +239,41 @@ function describeDotDamage(m: Modifier, scale: number): string | null {
   return base;
 }
 
-function describeModifier(m: Modifier, scale: number): string | null {
+/**
+ * `labelOverride` swaps in a combined label ("all SPECIAL except Endurance")
+ * for a `groupSpecialModifiers` group — it replaces whichever ONE of
+ * percent/flat this bucket actually uses (SPECIAL buckets are always flat),
+ * so the percent-vs-flat magnitude formatting stays correct either way.
+ */
+function describeModifier(m: Modifier, scale: number, labelOverride?: string): string | null {
   if (m.bucket === 'dotDamage') return describeDotDamage(m, scale);
 
-  const percentLabel = PERCENT_BUCKET_LABELS[m.bucket];
-  const flatLabel = FLAT_POINT_BUCKET_LABELS[m.bucket];
+  let percentLabel = PERCENT_BUCKET_LABELS[m.bucket];
+  let flatLabel = FLAT_POINT_BUCKET_LABELS[m.bucket];
+  if (labelOverride) {
+    if (percentLabel) percentLabel = labelOverride;
+    else if (flatLabel) flatLabel = labelOverride;
+  }
   const extraClauses: string[] = [];
   let magnitude: string;
 
   if (m.curve) {
     if (!percentLabel && !flatLabel) return null; // unmodeled bucket — omit rather than show something unverified
-    const ys = m.curve.points.map(p => p.y * m.curveScale * scale);
-    const lo = Math.min(...ys);
-    const hi = Math.max(...ys);
-    magnitude = percentLabel ? `${formatPercentRange(lo, hi)} ${percentLabel}` : `${formatFlatRange(lo, hi)} ${flatLabel}`;
-    const axisLabel = CURVE_AXIS_LABELS[m.curve.input] ?? m.curve.input;
-    extraClauses.push(`scales with ${axisLabel}`);
+    const label = percentLabel ?? flatLabel!;
+    if (m.curve.input === 'healthFraction' && m.curve.points.length > 2) {
+      // A staircase, not a smooth ramp (see describeHealthFractionStaircase) —
+      // the breakpoints ARE the magnitude; the label moves to the trailing
+      // qualifier clause instead of "scales with X".
+      magnitude = describeHealthFractionStaircase(m.curve.points, m.curveScale, scale);
+      extraClauses.push(label);
+    } else {
+      const ys = m.curve.points.map(p => p.y * m.curveScale * scale);
+      const lo = Math.min(...ys);
+      const hi = Math.max(...ys);
+      magnitude = percentLabel ? `${formatPercentRange(lo, hi)} ${percentLabel}` : `${formatFlatRange(lo, hi)} ${flatLabel}`;
+      const axisLabel = CURVE_AXIS_LABELS[m.curve.input] ?? m.curve.input;
+      extraClauses.push(`scales with ${axisLabel}`);
+    }
   } else if (percentLabel) {
     magnitude = `${formatPercent(m.value * scale)} ${percentLabel}`;
   } else if (flatLabel) {
@@ -230,6 +290,62 @@ function describeModifier(m: Modifier, scale: number): string | null {
   if (extraClauses.length > 0) base += ` (${extraClauses.join(', ')})`;
   if (inactive) base += ' — not modeled yet, no effect';
   return base;
+}
+
+/** Signature two modifiers must share to be treated as "the same bonus, different SPECIAL" — everything except the bucket itself. */
+function specialGroupSignature(m: Modifier): string {
+  return JSON.stringify({
+    op: m.op,
+    value: m.curve ? undefined : m.value,
+    curve: m.curve,
+    curveScale: m.curve ? m.curveScale : undefined,
+    conditions: m.conditions,
+  });
+}
+
+/**
+ * Collapses N identical per-SPECIAL modifiers (same value/curve/conditions,
+ * differing only by which stat) into one combined clause — without this,
+ * Unyielding's 6 SPECIAL curves and Herd Mentality's 14 (7 stats × 2
+ * teammate states) each read as a wall of near-duplicate clauses. Only
+ * collapses a FULL group — all 7 SPECIAL, or all 7 minus exactly one (e.g.
+ * Unyielding's Endurance exclusion) — a partial/coincidental subset is left
+ * as individual clauses rather than risk a misleading "all SPECIAL" label.
+ */
+function groupSpecialModifiers(modifiers: readonly Modifier[]): {
+  groups: Array<{ label: string; representative: Modifier }>;
+  rest: Modifier[];
+} {
+  const bySignature = new Map<string, Modifier[]>();
+  const rest: Modifier[] = [];
+  for (const m of modifiers) {
+    if (!SPECIAL_BUCKETS.includes(m.bucket)) {
+      rest.push(m);
+      continue;
+    }
+    const sig = specialGroupSignature(m);
+    const list = bySignature.get(sig);
+    if (list) list.push(m);
+    else bySignature.set(sig, [m]);
+  }
+
+  const groups: Array<{ label: string; representative: Modifier }> = [];
+  for (const list of bySignature.values()) {
+    const buckets = new Set(list.map(m => m.bucket));
+    if (buckets.size === SPECIAL_BUCKETS.length) {
+      groups.push({ label: 'all SPECIAL', representative: list[0] });
+    } else if (buckets.size === SPECIAL_BUCKETS.length - 1) {
+      const missing = SPECIAL_BUCKETS.find(b => !buckets.has(b));
+      const missingLabel = missing ? FLAT_POINT_BUCKET_LABELS[missing] : undefined;
+      groups.push({
+        label: missingLabel ? `all SPECIAL except ${missingLabel}` : 'all SPECIAL',
+        representative: list[0],
+      });
+    } else {
+      rest.push(...list);
+    }
+  }
+  return { groups, rest };
 }
 
 /** True when every strangeInNumbers/classFreakRank gate on `m` matches ctx (the resolved-fact filter). */
@@ -251,6 +367,10 @@ export function describeBuffModifiers(
   const scale = ctx.penaltyScale ?? 1;
 
   const relevant = buff.modifiers.filter(m => passesResolvedGates(m, strangeInNumbers, classFreakRank));
-  const parts = relevant.map(m => describeModifier(m, scale)).filter((s): s is string => s !== null);
+  const { groups, rest } = groupSpecialModifiers(relevant);
+  const parts = [
+    ...groups.map(g => describeModifier(g.representative, scale, g.label)),
+    ...rest.map(m => describeModifier(m, scale)),
+  ].filter((s): s is string => s !== null);
   return parts.length > 0 ? parts.join('; ') : null;
 }
