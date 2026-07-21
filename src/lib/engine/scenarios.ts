@@ -1,6 +1,8 @@
 import type { EnemyConditions, GameMode, PlayerConditions, Weapon } from '@/types';
 import type { Modifier } from '@/types/modifiers';
 import { weaponCharges } from '@/lib/charge';
+import { interpolateCurve } from '@/lib/curve-tables';
+import chargedMeleeCurveFile from '@/data/live/curvetables/legendarymods/weapon_chargedmeleeattack.json';
 import { DEFAULT_DISTANCE_UNITS, rangeFalloffMult } from '@/lib/distance';
 import { getFireRate } from '@/lib/fire-rate';
 import { apLimitedDps, computeApEconomy, DEFAULT_ACTION_POINT_CONSTANTS, effectiveShotsPerSecond, type ActionPointConstants } from './ap-economy';
@@ -357,23 +359,33 @@ function isMelee(weapon: Weapon): boolean {
  * enchantment — its whole payload is 4 ADDed keywords, the mechanic trigger
  * being WeaponHasSecondaryCharging (KYWD 0x0089A83D); engine-native via
  * Default Objects (no extractor change needed — effective-weapon.ts already
- * merges OMOD addedKeywords onto weapon.keywords). Damage curve CURV
- * 0x008A3B85 (misc/curvetables/json/legendarymods/weapon_chargedmeleeattack.json):
- * charges 1/2/3 → +0.5/+1.5/+3.0 damage bonus (multiply the releasing power
- * attack by (1 + y)); max 3 charges. The detonation VFX itself deals 0
- * damage (docs/assumptions.md).
+ * merges OMOD addedKeywords onto weapon.keywords). Damage curve
+ * ESM-EXTRACTED (user-identified 2026-07-21): DFOB
+ * `WeaponSecondaryChargeUpDamageBonusCurve_DO` (0x0089A83C) → CURV
+ * `CT_Legendary_Weapon_ChargedUpWeapon` (0x008A3B85,
+ * `extract-curvetables.ts`'s `CURVE_TABLE_SINGLETONS` →
+ * `legendarymods/weapon_chargedmeleeattack.json`): charges 1/2/3 →
+ * +0.5/+1.5/+3.0 damage bonus (multiply the releasing power attack by
+ * `(1 + y)`); max charges = the curve's own X domain (3 today), read off the
+ * curve rather than hardcoded so a future ESM revision (more charge tiers,
+ * a re-tuned bonus) is picked up on re-extraction. The detonation VFX itself
+ * deals 0 damage (docs/assumptions.md).
  *
  * 1-charge-per-light-attack is an INFERENCE — no rate field exists in ESM
- * data (docs/assumptions.md). Modeled cycle: 3 light (non-power-attack)
- * attacks bank charges, the 4th is a full-charge power attack (race mult +
- * powerAttackBonus bucket, C1) further multiplied by (1 + CHARGED_FULL_BONUS).
- * Applies regardless of the isPowerAttacking toggle — the cadence IS the
- * optimal play pattern for a Charged weapon (docs/assumptions.md).
+ * data (docs/assumptions.md). Modeled cycle: `CHARGED_MAX_CHARGES` light
+ * (non-power-attack) attacks bank charges, the next is a full-charge power
+ * attack (race mult + powerAttackBonus bucket, C1) further multiplied by
+ * `(1 + CHARGED_FULL_BONUS)`. Applies regardless of the isPowerAttacking
+ * toggle — the cadence IS the optimal play pattern for a Charged weapon
+ * (docs/assumptions.md).
  */
 const CHARGED_KEYWORD = 'WeaponHasSecondaryCharging';
-const CHARGED_MAX_CHARGES = 3; // curve X domain
-const CHARGED_FULL_BONUS = 3.0; // curve Y at x=3 (points: 1→0.5, 2→1.5, 3→3.0)
-const CHARGED_CYCLE_LENGTH = CHARGED_MAX_CHARGES + 1; // 3 light attacks + 1 detonation
+const CHARGED_MELEE_CURVE = chargedMeleeCurveFile.curve;
+/** The curve's own X domain ceiling — the game's max chargeable stack count (3 in the 20260717 dump). */
+const CHARGED_MAX_CHARGES = CHARGED_MELEE_CURVE[CHARGED_MELEE_CURVE.length - 1].x;
+/** Curve Y at `CHARGED_MAX_CHARGES` — the full-charge damage bonus (3.0 in the 20260717 dump). */
+const CHARGED_FULL_BONUS = interpolateCurve(CHARGED_MELEE_CURVE, CHARGED_MAX_CHARGES);
+const CHARGED_CYCLE_LENGTH = CHARGED_MAX_CHARGES + 1; // CHARGED_MAX_CHARGES light attacks + 1 detonation
 
 function isCharged(weapon: Weapon): boolean {
   return (weapon.keywords ?? []).includes(CHARGED_KEYWORD);

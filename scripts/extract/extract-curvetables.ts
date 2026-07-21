@@ -39,8 +39,12 @@ import type { EsmClient, EsmListRow } from './esm-client';
  * (0x00655629, `src/lib/engine/crit-meter.ts`'s per-LCK VATS crit-meter fill
  * term) — reached via DFOB `LuckVATSCriticalChargeCurve_DO` (0x0065562A,
  * user-identified 2026-07-21; the old hardcoded `fVATSCriticalChargeMult`
- * linear term it replaces is no longer the live mechanic). See
- * `CURVE_TABLE_SINGLETONS` below.
+ * linear term it replaces is no longer the live mechanic). Third addition:
+ * `CT_Legendary_Weapon_ChargedUpWeapon` (0x008A3B85,
+ * `src/lib/engine/scenarios.ts`'s Charged 4★ melee full-charge damage bonus)
+ * — reached via DFOB `WeaponSecondaryChargeUpDamageBonusCurve_DO`
+ * (0x0089A83C, user-identified 2026-07-21). See `CURVE_TABLE_SINGLETONS`
+ * below.
  */
 
 export interface CurveTablePoint {
@@ -102,6 +106,11 @@ export const CURVE_TABLE_SINGLETONS: CurveTableSingleton[] = [
     editorId: 'CT_LuckVATSCriticalCharge',
     outSubdir: 'player/vats',
     filename: 'luckvatscriticalcharge.json',
+  },
+  {
+    editorId: 'CT_Legendary_Weapon_ChargedUpWeapon',
+    outSubdir: 'legendarymods',
+    filename: 'weapon_chargedmeleeattack.json',
   },
 ];
 

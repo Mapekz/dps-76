@@ -1,0 +1,30 @@
+{
+  "header": {
+    "signature": "CURV",
+    "form_id": "0x008A3B85",
+    "flags": 0,
+    "form_version": 207,
+    "data_size": 93,
+    "offset": 12847903
+  },
+  "editor_id": "CT_Legendary_Weapon_ChargedUpWeapon",
+  "fields": {
+    "_record_type": "Curve Table",
+    "Editor ID": "CT_Legendary_Weapon_ChargedUpWeapon",
+    "JSON File Path 2": "LegendaryMods\\Weapon_ChargedMeleeAttack.json",
+    "Curve": [
+      {
+        "x": 1.0,
+        "y": 0.5
+      },
+      {
+        "x": 2.0,
+        "y": 1.5
+      },
+      {
+        "x": 3.0,
+        "y": 3.0
+      }
+    ]
+  }
+}

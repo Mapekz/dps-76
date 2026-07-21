@@ -11,6 +11,7 @@ import armorTier22 from './fixtures/curv-creatures-armor-tier22.json';
 import armorTier49Zzz from './fixtures/curv-creatures-armor-tier49-zzz.json';
 import percentOfMinToMaxRange from './fixtures/curv-player-range-percentofmintomaxrangedamagemult.json';
 import luckVatsCriticalCharge from './fixtures/curv-player-vats-luckvatscriticalcharge.json';
+import chargedMeleeAttack from './fixtures/curv-legendarymods-weapon-chargedmeleeattack.json';
 
 // Fixtures are verbatim `esm -p get <formid|edid> --json` output (20260710
 // ESM): CT_Creatures_Armor_Universal_Tier22 (0x0076E999, the record proven
@@ -20,9 +21,12 @@ import luckVatsCriticalCharge from './fixtures/curv-player-vats-luckvatscritical
 // just hidden from CK's "new record" browser by convention). The singleton
 // fixtures are `CT_Player_PercentOfMinToMaxRangeDMGMult` (0x008407AC), the
 // range-falloff curve `src/lib/distance.ts` consumes — previously a
-// hand-copy, now owned by `CURVE_TABLE_SINGLETONS` — and
-// `CT_LuckVATSCriticalCharge` (0x00655629, 20260717 ESM), the per-LCK VATS
-// crit-meter fill curve `src/lib/engine/crit-meter.ts` consumes.
+// hand-copy, now owned by `CURVE_TABLE_SINGLETONS` — `CT_LuckVATSCriticalCharge`
+// (0x00655629, 20260717 ESM), the per-LCK VATS crit-meter fill curve
+// `src/lib/engine/crit-meter.ts` consumes — and
+// `CT_Legendary_Weapon_ChargedUpWeapon` (0x008A3B85, 20260717 ESM), the
+// Charged 4★ melee full-charge damage bonus curve `src/lib/engine/scenarios.ts`
+// consumes.
 
 describe('tierFromEdid', () => {
   it('parses a plain tier suffix', () => {
@@ -91,6 +95,7 @@ describe('extractCurveTables', () => {
     '0x0076E9B4': armorTier49Zzz as unknown as EsmRecord,
     CT_Player_PercentOfMinToMaxRangeDMGMult: percentOfMinToMaxRange as unknown as EsmRecord,
     CT_LuckVATSCriticalCharge: luckVatsCriticalCharge as unknown as EsmRecord,
+    CT_Legendary_Weapon_ChargedUpWeapon: chargedMeleeAttack as unknown as EsmRecord,
   };
 
   function makeClient(searchRows: Array<{ form_id: string; editor_id: string }>): EsmClient {
@@ -114,20 +119,22 @@ describe('extractCurveTables', () => {
 
   const singletonRelativePath = 'player/range/percentofmintomaxrangedamagemult.json';
   const luckSingletonRelativePath = 'player/vats/luckvatscriticalcharge.json';
+  const chargedMeleeSingletonRelativePath = 'legendarymods/weapon_chargedmeleeattack.json';
 
-  it('writes one file per tier, sorted ascending, including a zzz-renamed record, plus both singletons', async () => {
+  it('writes one file per tier, sorted ascending, including a zzz-renamed record, plus all 3 singletons', async () => {
     const client = makeClient([
       { form_id: '0x0076E999', editor_id: 'CT_Creatures_Armor_Universal_Tier22' },
       { form_id: '0x0076E9B4', editor_id: 'zzzCT_Creatures_Armor_Universal_Tier49' },
     ]);
     const { files, unresolved } = await extractCurveTables(client);
     expect(unresolved).toEqual([]);
-    expect(files).toHaveLength(4);
+    expect(files).toHaveLength(5);
     expect(files.map(f => f.relativePath)).toEqual([
       'creatures/armor/armor_universal_tier22.json',
       'creatures/armor/armor_universal_tier49.json',
       singletonRelativePath,
       luckSingletonRelativePath,
+      chargedMeleeSingletonRelativePath,
     ]);
     expect(files[0].content.curve).toHaveLength(50);
   });
@@ -138,7 +145,7 @@ describe('extractCurveTables', () => {
       { form_id: '0x00999999', editor_id: 'CT_Creatures_Armor_NotATierRecord' },
     ]);
     const { files, unresolved } = await extractCurveTables(client);
-    expect(files).toHaveLength(3); // 1 tier + both singletons
+    expect(files).toHaveLength(4); // 1 tier + all 3 singletons
     expect(unresolved).toHaveLength(1);
     expect(unresolved[0]).toContain('CT_Creatures_Armor_NotATierRecord');
   });
@@ -146,7 +153,11 @@ describe('extractCurveTables', () => {
   it('reports unresolved when get() fails for a matched record', async () => {
     const client = makeClient([{ form_id: '0xDEADBEEF', editor_id: 'CT_Creatures_Armor_Universal_Tier1' }]);
     const { files, unresolved } = await extractCurveTables(client);
-    expect(files.map(f => f.relativePath)).toEqual([singletonRelativePath, luckSingletonRelativePath]);
+    expect(files.map(f => f.relativePath)).toEqual([
+      singletonRelativePath,
+      luckSingletonRelativePath,
+      chargedMeleeSingletonRelativePath,
+    ]);
     expect(unresolved).toHaveLength(1);
     expect(unresolved[0]).toContain('CT_Creatures_Armor_Universal_Tier1');
   });
@@ -158,7 +169,7 @@ describe('extractCurveTables', () => {
   });
 
   describe('singleton curve tables', () => {
-    it('lists exactly the range-falloff and luck-crit-charge singletons today', () => {
+    it('lists exactly the range-falloff, luck-crit-charge, and charged-melee singletons today', () => {
       expect(CURVE_TABLE_SINGLETONS).toEqual([
         {
           editorId: 'CT_Player_PercentOfMinToMaxRangeDMGMult',
@@ -170,6 +181,11 @@ describe('extractCurveTables', () => {
           outSubdir: 'player/vats',
           filename: 'luckvatscriticalcharge.json',
         },
+        {
+          editorId: 'CT_Legendary_Weapon_ChargedUpWeapon',
+          outSubdir: 'legendarymods',
+          filename: 'weapon_chargedmeleeattack.json',
+        },
       ]);
     });
 
@@ -179,8 +195,8 @@ describe('extractCurveTables', () => {
       const client = makeClient([]);
       const { files, unresolved } = await extractCurveTables(client);
       expect(unresolved).toEqual([]);
-      expect(files).toHaveLength(2);
-      const [rangeFile, luckFile] = files;
+      expect(files).toHaveLength(3);
+      const [rangeFile, luckFile, chargedFile] = files;
       expect(rangeFile.relativePath).toBe(singletonRelativePath);
       expect(rangeFile.editorId).toBe('CT_Player_PercentOfMinToMaxRangeDMGMult');
       expect(rangeFile.formId).toBe('0x008407AC');
@@ -200,6 +216,17 @@ describe('extractCurveTables', () => {
       expect(luckFile.content.curve).toHaveLength(22);
       expect(luckFile.content.curve[0]).toEqual({ x: 1, y: 3 });
       expect(luckFile.content.curve.at(-1)).toEqual({ x: 100, y: 45 });
+      expect(chargedFile.relativePath).toBe(chargedMeleeSingletonRelativePath);
+      expect(chargedFile.editorId).toBe('CT_Legendary_Weapon_ChargedUpWeapon');
+      expect(chargedFile.formId).toBe('0x008A3B85');
+      // Matches src/lib/engine/scenarios.ts's previously-hardcoded CHARGED_MAX_CHARGES/CHARGED_FULL_BONUS exactly.
+      expect(chargedFile.content).toEqual({
+        curve: [
+          { x: 1, y: 0.5 },
+          { x: 2, y: 1.5 },
+          { x: 3, y: 3 },
+        ],
+      });
     });
 
     it('reports unresolved when get() fails for a singleton (not a crash)', async () => {
@@ -213,9 +240,10 @@ describe('extractCurveTables', () => {
       } as unknown as EsmClient;
       const { files, unresolved } = await extractCurveTables(client);
       expect(files).toEqual([]);
-      expect(unresolved).toHaveLength(2);
+      expect(unresolved).toHaveLength(3);
       expect(unresolved[0]).toContain('CT_Player_PercentOfMinToMaxRangeDMGMult');
       expect(unresolved[1]).toContain('CT_LuckVATSCriticalCharge');
+      expect(unresolved[2]).toContain('CT_Legendary_Weapon_ChargedUpWeapon');
     });
   });
 });

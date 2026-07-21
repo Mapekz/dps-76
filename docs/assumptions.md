@@ -986,11 +986,19 @@ Engine: `paper-damage.ts`, `scenarios.ts`, `fire-rate.ts`.
   Absolute swing timings remain unmeasured (`dps-todos/melee-cadence.md`).
 - **Charged (4★ melee)**: damage curve gives **+0.5/+1.5/+3.0** at 1/2/3
   charges (max 3), multiplying the releasing power attack by `(1+y)`.
-  **1-charge-per-light-attack is an INFERENCE** — no rate field exists in
-  ESM for this mechanic. Modeled as a steady-state cycle: 3 normal hits + 1
-  full-charge detonation, averaged into `burstDps`/`sustainedDps`. **Applies
-  regardless of the `isPowerAttacking` toggle** — a deliberate choice so DPS
-  reflects real steady-state play (**not derived from data**).
+  **Extracted (not hand-copied), user-identified 2026-07-21** — DFOB
+  `WeaponSecondaryChargeUpDamageBonusCurve_DO` (0x0089A83C) → CURV
+  `CT_Legendary_Weapon_ChargedUpWeapon` (0x008A3B85) →
+  `extract-curvetables.ts`'s `CURVE_TABLE_SINGLETONS` →
+  `legendarymods/weapon_chargedmeleeattack.json`; `scenarios.ts` reads both
+  the max-charge count and the full-charge bonus off the curve's own domain/
+  endpoint rather than hardcoding them, so a future re-tuning is picked up on
+  re-extraction. **1-charge-per-light-attack is an INFERENCE** — no rate
+  field exists in ESM for this mechanic. Modeled as a steady-state cycle: N
+  normal hits (N = the curve's max charge count) + 1 full-charge detonation,
+  averaged into `burstDps`/`sustainedDps`. **Applies regardless of the
+  `isPowerAttacking` toggle** — a deliberate choice so DPS reflects real
+  steady-state play (**not derived from data**).
 - **Thrill-Seeker's**: 10 exact kill-streak tiers, `0.03×N` on melee speed
   AND reload speed. Required `foldWeaponStat` to become condition-aware
   (previously summed all 10 tiers unconditionally — a bug this fixed before
