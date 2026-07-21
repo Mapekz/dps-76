@@ -2,6 +2,10 @@ import type { EnemyConditions, Perk, PerkLoadout, PlayerConditions, Weapon } fro
 import { createDefaultEnemyConditions } from '@/types';
 import type { Bucket, Modifier } from '@/types/modifiers';
 import { foldBucket, type ResolveContext } from '@/lib/engine/resolve';
+import { interpolateCurve } from '@/lib/curve-tables';
+import levelRewardCurveFile from '@/data/live/curvetables/player/special/levelrewardcurve.json';
+import legendarySlotCurveFile from '@/data/live/curvetables/player/perks/legendaryperkslotcount.json';
+import constantsFile from '@/data/live/generated/constants.json';
 
 /**
  * Derived player stats: effective SPECIAL (base + buff-bucket folds) and max
@@ -54,9 +58,32 @@ const NO_WEAPON: Weapon = {
 };
 
 /**
- * SPECIAL allocation rules (user-confirmed 2026-07-12):
- * - The player DEFINES base allocation per stat: 1–15, from a pool of 7 base
- *   points (1/stat) + 49 level-ups = 56 total.
+ * The player level every level-indexed curve is evaluated at. Hardcoded to
+ * the endgame value for now (300 — past every unlock threshold in either
+ * curve below); a future player-level selector only has to replace reads of
+ * this constant with a UI-threaded variable. Same "size against the endgame"
+ * convention as the enemy level-slider default (docs/assumptions.md "Resist
+ * mitigation", level-slider bullet).
+ */
+export const PLAYER_LEVEL = 300;
+
+/**
+ * `SPECIAL_LevelRewardCurve` (CURV 0x004F473F, reached via DFOB
+ * `SpecialPointCurve_DO` 0x004F4740 — `extract-curvetables.ts`
+ * `CURVE_TABLE_SINGLETONS`): X = player level, Y = cumulative level-up
+ * SPECIAL points, (1,0)…(50,49); the shared curve-clamp convention flattens
+ * X > 50 at 49.
+ */
+const SPECIAL_LEVEL_REWARD_CURVE = levelRewardCurveFile.curve;
+
+/**
+ * SPECIAL allocation rules (user-confirmed 2026-07-12; pool ESM-derived
+ * 2026-07-21):
+ * - The player DEFINES base allocation per stat: 1–15, from a pool of
+ *   `specialAllocationPool(PLAYER_LEVEL)` = 56 points — 7 starting points
+ *   (one per stat, the SPECIAL AVIFs' own Minimum Value, extracted into
+ *   `constants.json.special.min`) + the `SPECIAL_LevelRewardCurve` value at
+ *   the player level (49 at level ≥ 50).
  * - Legendary SPECIAL perk cards add +1/+2/+3/+5 by rank ON TOP of base (the
  *   stat can exceed 15) AND grant that many extra perk points — but the
  *   perk-point budget still hard-caps at 15 per stat. Other SPECIAL boosts
@@ -64,7 +91,26 @@ const NO_WEAPON: Weapon = {
  * - Card slotting past a stat's budget (min(15, base + legendary bonus)) is
  *   blocked in-app; imported builds that violate it are flagged instead.
  */
-export const SPECIAL_ALLOCATION_POOL = 56;
+export function specialAllocationPool(playerLevel: number): number {
+  return SPECIAL_KEYS.length * constantsFile.special.min + interpolateCurve(SPECIAL_LEVEL_REWARD_CURVE, playerLevel);
+}
+
+export const SPECIAL_ALLOCATION_POOL = specialAllocationPool(PLAYER_LEVEL);
+
+/**
+ * `LegendaryPerkSlotCount` (CURV 0x005B67A0, reached via DFOB
+ * `LegendaryPerkSlotCurve_DO` 0x005B67A1 — `extract-curvetables.ts`
+ * `CURVE_TABLE_SINGLETONS`): X = slot number, Y = the player level that
+ * unlocks it — (1,50)(2,75)(3,100)(4,150)(5,200)(6,300). Slots-at-level is
+ * therefore a count of points with y ≤ level (an inverse lookup, not an
+ * interpolation). Consumed by `build-reducer.ts`'s `LEGENDARY_PERK_SLOTS`
+ * (evaluated at `PLAYER_LEVEL`).
+ */
+const LEGENDARY_SLOT_UNLOCK_CURVE = legendarySlotCurveFile.curve;
+
+export function legendarySlotsAtLevel(playerLevel: number): number {
+  return LEGENDARY_SLOT_UNLOCK_CURVE.filter(p => p.y <= playerLevel).length;
+}
 export const SPECIAL_POINTS_CAP = 15;
 /**
  * Fallback clamp on the effective (post-buff) SPECIAL stat, per the SPECIAL

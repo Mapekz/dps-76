@@ -12,7 +12,14 @@ import {
 import { isLegendaryPerkKey, parsedPerksToLoadout, type ParsedSpecial } from '@/lib/nukes-dragons';
 import { computePerkBudget, perkCardCostDelta, perkSpecialKey } from '@/data/perk-budget';
 import { perkRaceRestriction } from '@/data/perk-race';
-import { canSlotCardPoints, SPECIAL_ALLOCATION_POOL, SPECIAL_KEYS, SPECIAL_POINTS_CAP } from '@/lib/player-stats';
+import {
+  canSlotCardPoints,
+  legendarySlotsAtLevel,
+  PLAYER_LEVEL,
+  SPECIAL_ALLOCATION_POOL,
+  SPECIAL_KEYS,
+  SPECIAL_POINTS_CAP,
+} from '@/lib/player-stats';
 import { consumablesById, toggleConsumable } from '@/lib/consumable-rules';
 import { CARNIVORE_MUTATION_ID, HERBIVORE_MUTATION_ID } from '@/lib/diet-mutations';
 import { getPerks, getUniqueById, getEquippedUnique, getWeapons, maxEligibleLevel } from '@/data';
@@ -116,8 +123,12 @@ function keepForRace(list: PerkLoadout[], isGhoul: boolean, mode: GameMode): Per
   });
 }
 
-/** Legendary perk card slots (game rule: unlocked at level 50/75/100/150/200/300). */
-export const LEGENDARY_PERK_SLOTS = 6;
+/**
+ * Legendary perk card slots unlocked at `PLAYER_LEVEL` (6 at the hardcoded
+ * endgame 300 — unlock levels 50/75/100/150/200/300 per the ESM's
+ * `LegendaryPerkSlotCount` curve; see `legendarySlotsAtLevel`).
+ */
+export const LEGENDARY_PERK_SLOTS = legendarySlotsAtLevel(PLAYER_LEVEL);
 
 /** The user-defined base SPECIAL allocation stored in conditions, as a plain record. */
 function allocationOf(player: PlayerConfig): Record<SpecialKey, number> {
@@ -276,7 +287,8 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
       const list = action.legendary ? 'legendaryPerks' : 'perks';
       if (player[list].some(p => p.perkId === action.perkId)) return state;
       const rank = Math.max(1, action.rank);
-      // Enforce the game's limits: 4 legendary slots; regular cards must fit
+      // Enforce the game's limits: LEGENDARY_PERK_SLOTS legendary slots (6 at
+      // endgame); regular cards must fit
       // the stat's perk-point budget (min(15, base + Legendary SPECIAL bonus)).
       if (action.legendary && player.legendaryPerks.length >= LEGENDARY_PERK_SLOTS) return state;
       if (!action.legendary && regularSlotBlocked(player, action.perkId, 0, rank, mode)) return state;

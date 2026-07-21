@@ -1,0 +1,42 @@
+{
+  "header": {
+    "signature": "CURV",
+    "form_id": "0x005B67A0",
+    "flags": 0,
+    "form_version": 195,
+    "data_size": 76,
+    "offset": 13076416
+  },
+  "editor_id": "LegendaryPerkSlotCount",
+  "fields": {
+    "_record_type": "Curve Table",
+    "Editor ID": "LegendaryPerkSlotCount",
+    "JSON File Path 2": "LegendaryPerks\\LegendaryPerks_Ranks.json",
+    "Curve": [
+      {
+        "x": 1.0,
+        "y": 50.0
+      },
+      {
+        "x": 2.0,
+        "y": 75.0
+      },
+      {
+        "x": 3.0,
+        "y": 100.0
+      },
+      {
+        "x": 4.0,
+        "y": 150.0
+      },
+      {
+        "x": 5.0,
+        "y": 200.0
+      },
+      {
+        "x": 6.0,
+        "y": 300.0
+      }
+    ]
+  }
+}

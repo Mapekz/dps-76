@@ -1181,7 +1181,21 @@ Rules (**user-confirmed** 2026-07-12, superseding an earlier
 derive-from-perks experiment):
 
 - **Base allocation is user-defined**: 1–15/stat, from a pool of 7 base + 49
-  level-ups = **56**.
+  level-ups = **56**. Pool size **ESM-PROVEN 2026-07-21** (was
+  user-confirmed): `specialAllocationPool(level)` = 7 × the SPECIAL AVIF
+  Minimum Value (`constants.json.special.min`) + curve
+  `SPECIAL_LevelRewardCurve` (0x004F473F, via DFOB `SpecialPointCurve_DO`
+  0x004F4740) at the player level — extracted, not hand-copied
+  (`extract-curvetables.ts` singletons → `player/special/levelrewardcurve.json`).
+- **Player level is a fixed input**: `PLAYER_LEVEL = 300`
+  (`src/lib/player-stats.ts`) — every level-indexed curve (SPECIAL pool,
+  legendary slots) evaluates at endgame; a future level selector threads a
+  variable through the same functions. **Modeling choice**, same
+  size-against-endgame convention as the enemy level-slider default.
+- **Legendary perk slots are curve-derived**: `legendarySlotsAtLevel(level)`
+  counts `LegendaryPerkSlotCount` (0x005B67A0, via DFOB
+  `LegendaryPerkSlotCurve_DO` 0x005B67A1) points with unlock-level ≤ player
+  level — 6 at `PLAYER_LEVEL` (unlocks 50/75/100/150/200/300).
 - **Legendary SPECIAL cards** (+1/+2/+3/+5 by rank) add ON TOP of base (may
   exceed 15) AND grant that many extra perk points — budget per stat is
   `min(15, base + legendary bonus)`. Their PERK records carry no effects; the

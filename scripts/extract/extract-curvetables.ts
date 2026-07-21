@@ -1,4 +1,4 @@
-import type { EsmClient, EsmListRow } from './esm-client';
+import type { EsmClient, EsmListRow, EsmRecord } from './esm-client';
 
 /**
  * Re-extraction of the generic "Universal Tier" creature/player curve
@@ -43,8 +43,13 @@ import type { EsmClient, EsmListRow } from './esm-client';
  * `CT_Legendary_Weapon_ChargedUpWeapon` (0x008A3B85,
  * `src/lib/engine/scenarios.ts`'s Charged 4★ melee full-charge damage bonus)
  * — reached via DFOB `WeaponSecondaryChargeUpDamageBonusCurve_DO`
- * (0x0089A83C, user-identified 2026-07-21). See `CURVE_TABLE_SINGLETONS`
- * below.
+ * (0x0089A83C, user-identified 2026-07-21). Fourth/fifth additions
+ * (2026-07-21, DFOB sweep): `SPECIAL_LevelRewardCurve` (0x004F473F, the
+ * level→SPECIAL-points curve behind `player-stats.ts`'s allocation pool) and
+ * `LegendaryPerkSlotCount` (0x005B67A0, slot→unlock-level behind
+ * `build-reducer.ts`'s legendary slot count). Since that sweep, every
+ * singleton resolves DFOB-first (`resolveSingletonRecord`) — the same
+ * indirection the game exe uses. See `CURVE_TABLE_SINGLETONS` below.
  */
 
 export interface CurveTablePoint {
@@ -82,35 +87,72 @@ export const CURVE_TABLE_GROUPS: CurveTableGroup[] = [
 ];
 
 export interface CurveTableSingleton {
-  /** Exact editor_id of the one-off CURV record (fetched via `client.get`, not `search` — no tier family to match). */
+  /**
+   * Expected editor_id of the one-off CURV record. With a `dfob` bridge this
+   * is a cross-check + fallback lookup key; without one it's the primary
+   * `client.get` key.
+   */
   editorId: string;
   /** Output subdirectory under src/data/<mode>/curvetables/. */
   outSubdir: string;
   /** Output filename, including the .json extension. */
   filename: string;
+  /**
+   * The DFOB ("Default Object") record the game exe itself reads to find this
+   * curve — its single `Object` field holds the target CURV formid. When
+   * present, resolution goes DFOB → Object → CURV (the exe's own indirection,
+   * robust to CURV edid renames; a repoint to a *different* record surfaces
+   * as an unresolved note instead of silently extracting a stale curve —
+   * exactly how the retired `fVATSCriticalChargeMult` mechanic died
+   * unnoticed). Direct `client.get(editorId)` remains the fallback if the
+   * DFOB itself fails to resolve.
+   */
+  dfob?: { formId: string; editorId: string };
 }
 
 /**
- * One-off CURV records with no tier suffix — a plain `client.get(editorId)`
- * per entry rather than `CURVE_TABLE_GROUPS`' search+tier-sort. The
- * zzz-prefix tolerance `CURVE_TABLE_GROUPS` needs for its `*`-prefixed
- * search patterns doesn't apply here: each entry names its exact editor_id.
+ * One-off CURV records with no tier suffix — resolved via their DFOB bridge
+ * (see `CurveTableSingleton.dfob`) rather than `CURVE_TABLE_GROUPS`'
+ * search+tier-sort. The zzz-prefix tolerance `CURVE_TABLE_GROUPS` needs for
+ * its `*`-prefixed search patterns doesn't apply here: each entry names its
+ * exact expected editor_id.
  */
 export const CURVE_TABLE_SINGLETONS: CurveTableSingleton[] = [
   {
     editorId: 'CT_Player_PercentOfMinToMaxRangeDMGMult',
     outSubdir: 'player/range',
     filename: 'percentofmintomaxrangedamagemult.json',
+    dfob: { formId: '0x008407AD', editorId: 'CombatFormulaPercentOfMinToMaxRangeDMGMult_DO' },
   },
   {
     editorId: 'CT_LuckVATSCriticalCharge',
     outSubdir: 'player/vats',
     filename: 'luckvatscriticalcharge.json',
+    dfob: { formId: '0x0065562A', editorId: 'LuckVATSCriticalChargeCurve_DO' },
   },
   {
     editorId: 'CT_Legendary_Weapon_ChargedUpWeapon',
     outSubdir: 'legendarymods',
     filename: 'weapon_chargedmeleeattack.json',
+    dfob: { formId: '0x0089A83C', editorId: 'WeaponSecondaryChargeUpDamageBonusCurve_DO' },
+  },
+  {
+    // X = player level (1–50), Y = cumulative level-up SPECIAL points (0–49).
+    // src/lib/player-stats.ts derives the 56-point allocation pool from this
+    // plus 7 × the SPECIAL AVIF Minimum Value (constants.json.special.min).
+    editorId: 'SPECIAL_LevelRewardCurve',
+    outSubdir: 'player/special',
+    filename: 'levelrewardcurve.json',
+    dfob: { formId: '0x004F4740', editorId: 'SpecialPointCurve_DO' },
+  },
+  {
+    // X = legendary perk slot number (1–6), Y = the player level that unlocks
+    // it (50/75/100/150/200/300). src/state/build-reducer.ts counts points
+    // with y ≤ playerLevel — an inverse lookup, not an interpolation.
+    editorId: 'LegendaryPerkSlotCount',
+    outSubdir: 'player/perks',
+    filename: 'legendaryperkslotcount.json',
+    dfob: { formId: '0x005B67A1', editorId: 'LegendaryPerkSlotCurve_DO' },
   },
 ];
 
@@ -145,6 +187,53 @@ export interface ExtractedCurveTableFile {
 export interface CurveTablesResult {
   files: ExtractedCurveTableFile[];
   unresolved: string[];
+}
+
+/**
+ * Resolve a singleton's CURV record the way the game exe does: DFOB →
+ * `Object` field → target record. The DFOB-resolved record wins even when
+ * its editor_id differs from the expected one (the exe's truth — but the
+ * mismatch is flagged for review). Direct `client.get(editorId)` is the
+ * fallback when the DFOB chain fails, and the whole path for entries with no
+ * `dfob` bridge.
+ */
+async function resolveSingletonRecord(
+  client: EsmClient,
+  singleton: CurveTableSingleton,
+  unresolved: string[]
+): Promise<EsmRecord | null> {
+  if (singleton.dfob) {
+    const { formId, editorId } = singleton.dfob;
+    try {
+      const dfobRecord = await client.get(formId);
+      const target = dfobRecord.fields['Object'];
+      if (typeof target !== 'string') {
+        unresolved.push(`curvetables: DFOB ${editorId} (${formId}) has no Object formid — falling back to ${singleton.editorId}`);
+      } else {
+        const record = await client.get(target);
+        if (record.header.signature !== 'CURV') {
+          unresolved.push(
+            `curvetables: DFOB ${editorId} points at ${record.header.signature} ${record.editor_id} (${target}), not a CURV — falling back to ${singleton.editorId}`
+          );
+        } else {
+          if (record.editor_id !== singleton.editorId) {
+            unresolved.push(
+              `curvetables: DFOB ${editorId} repointed — expected CURV ${singleton.editorId}, got ${record.editor_id} (${target}); using the DFOB target, review the rename/repoint`
+            );
+          }
+          return record;
+        }
+      }
+    } catch (err) {
+      unresolved.push(`curvetables: DFOB ${editorId} (${formId}) failed to resolve: ${(err as Error).message} — falling back to ${singleton.editorId}`);
+    }
+  }
+  try {
+    return await client.get(singleton.editorId);
+  } catch (err) {
+    unresolved.push(`curvetables: get ${singleton.editorId} failed: ${(err as Error).message}`);
+    return null;
+  }
 }
 
 export async function extractCurveTables(client: EsmClient): Promise<CurveTablesResult> {
@@ -194,21 +283,19 @@ export async function extractCurveTables(client: EsmClient): Promise<CurveTables
   }
 
   for (const singleton of CURVE_TABLE_SINGLETONS) {
-    let record;
-    try {
-      record = await client.get(singleton.editorId);
-    } catch (err) {
-      unresolved.push(`curvetables: get ${singleton.editorId} failed: ${(err as Error).message}`);
-      continue;
-    }
+    const record = await resolveSingletonRecord(client, singleton, unresolved);
+    if (!record) continue;
     const content = toCurveTableFile(record.fields['Curve']);
     if (!content || content.curve.length === 0) {
-      unresolved.push(`curvetables: ${singleton.editorId} (${record.header.form_id}) has no curve points`);
+      unresolved.push(`curvetables: ${record.editor_id} (${record.header.form_id}) has no curve points`);
       continue;
     }
     files.push({
       relativePath: `${singleton.outSubdir}/${singleton.filename}`,
-      editorId: singleton.editorId,
+      // The RESOLVED record's identity, not the expected one — under a
+      // repointed DFOB these differ, and the metadata must not mislabel
+      // what was actually extracted.
+      editorId: record.editor_id,
       formId: record.header.form_id,
       content,
     });

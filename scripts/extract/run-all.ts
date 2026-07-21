@@ -16,6 +16,7 @@ import { extractBodyParts } from './extract-bodyparts';
 import { extractCurveTables } from './extract-curvetables';
 import { extractNpcs } from './extract-npcs';
 import { extractConstants } from './extract-constants';
+import { verifyDfobs } from './verify-dfobs';
 
 const KNOWN_EXTRACTORS = [
   'weapons',
@@ -28,6 +29,7 @@ const KNOWN_EXTRACTORS = [
   'curvetables',
   'npcs',
   'constants',
+  'dfobs',
 ] as const;
 type ExtractorName = (typeof KNOWN_EXTRACTORS)[number];
 
@@ -330,6 +332,14 @@ async function main() {
         `closeThreshold=${result.constants.distance.closeThresholdUnits} ` +
         `(unresolved: ${result.unresolved.length})`
     );
+  }
+
+  if (only.includes('dfobs')) {
+    console.log('Verifying DFOB bridges (hardcoded record identities vs the exe indirection layer)…');
+    const result = await verifyDfobs(client);
+    meta.counts.dfobs = result.verified;
+    meta.unresolved.push(...result.unresolved);
+    console.log(`  ${result.verified} bridges verified (unresolved: ${result.unresolved.length})`);
   }
 
   await writeFile(path.join(outDir, '_meta.json'), JSON.stringify(meta, null, 2));
