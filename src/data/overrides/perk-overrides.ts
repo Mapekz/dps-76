@@ -389,4 +389,18 @@ export const perkForceEffectivePerkIds: ReadonlySet<string> = new Set([
   // gated `perkFamilyRank LicensedPlumber` minRank 1/2/3 — real,
   // engine-effective.
   'LicensedPlumber',
+  // Strange in Numbers / Class Freak: both extract with zero modifiers (SiN
+  // has no ESM-attached modifier at all; Class Freak's own is a mutation-
+  // penalty SCALE, not a Bucket) — both are modeled via dedicated
+  // player-stats.ts derive paths (deriveStrangeInNumbers/deriveClassFreakRank)
+  // instead of the modifier IR, so perkHasEngineEffect can't see either.
+  'StrangeInNumbers',
+  'ClassFreak',
+  // Follow Through / Taking One for the Team: legendary perks whose effect is
+  // a TARGET debuff any player's card can proc, not a self-facing modifier —
+  // both extract with zero modifiers and are modeled as manual Target-section
+  // knobs instead (manual-uptime.ts's wholeDamage toggle, target-debuffs.ts's
+  // flat-DR rank; build-reducer.ts auto-seeds both from the equipped rank).
+  'FollowThrough',
+  'TakingOneForTheTeam',
 ]);
