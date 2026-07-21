@@ -18,6 +18,7 @@ import { getAddictions, getConsumables, getMutations, getSuppressedAddictions } 
 import { getOmodById } from '@/data/omods';
 import { applySelection, consumablesById } from '@/lib/consumable-rules';
 import { dietVerdict, dietSuppressionLabel, isDietMutation, type DietVerdict } from '@/lib/diet-mutations';
+import { mutationDescriptionOverrides } from '@/data/overrides/mutation-descriptions';
 import { deriveClassFreakRank, deriveStrangeInNumbers } from '@/lib/player-stats';
 import { describeBuffModifiers } from '@/lib/buff-description';
 import { CLASS_FREAK_TIER_FACTORS } from '@/lib/class-freak-mutations';
@@ -135,7 +136,13 @@ export function MutationsSection() {
             const penaltySet = new Set(m.penaltyModifierIds ?? []);
             const positives = m.modifiers.filter(mod => !penaltySet.has(mod.id));
             const penalties = m.modifiers.filter(mod => penaltySet.has(mod.id));
-            const description = describeBuffModifiers({ modifiers: positives }, { strangeInNumbers: sinActive, classFreakRank });
+            // Herb/Carnivore realize their whole effect on OTHER consumables'
+            // modifiers (diet-mutations.ts), so they carry none of their own —
+            // describeBuffModifiers has nothing to derive from without this override.
+            const description =
+              describeBuffModifiers({ modifiers: positives }, { strangeInNumbers: sinActive, classFreakRank }) ??
+              mutationDescriptionOverrides[m.id] ??
+              null;
             const penaltyDescription = describeBuffModifiers(
               { modifiers: penalties },
               { strangeInNumbers: sinActive, classFreakRank, penaltyScale: CLASS_FREAK_TIER_FACTORS[classFreakRank] }
