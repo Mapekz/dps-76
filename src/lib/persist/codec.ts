@@ -214,7 +214,14 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
   const perkRegistry = getPerks(mode);
 
   if (wire.w) {
-    const [weaponId, mods, legendaryEffects] = wire.w;
+    const [rawWeaponId, mods, legendaryEffects] = wire.w;
+    // Weapon ids are ESM editor ids, whose casing Bethesda occasionally fixes
+    // (20260717: pickaxe→Pickaxe, crossbow→Crossbow, sledgehammer→Sledgehammer)
+    // — resolve stored ids case-insensitively so old share URLs keep working.
+    const weaponId =
+      getWeapons(mode)[rawWeaponId] !== undefined
+        ? rawWeaponId
+        : (Object.keys(getWeapons(mode)).find(id => id.toLowerCase() === rawWeaponId.toLowerCase()) ?? rawWeaponId);
     if (getWeapons(mode)[weaponId]) {
       const keptMods: Record<string, string | null> = {};
       for (const [slot, omodId] of Object.entries(mods ?? {})) {

@@ -151,9 +151,9 @@ export const VETTED_WEAPON_IDS: readonly string[] = [
   'WarGlaive',
   'WoodCuttingAxe',
   'bospistol',
-  'crossbow',
+  'Crossbow',
   'gaussshotgun',
   'meltdown',
-  'pickaxe',
-  'sledgehammer',
+  'Pickaxe',
+  'Sledgehammer',
 ];

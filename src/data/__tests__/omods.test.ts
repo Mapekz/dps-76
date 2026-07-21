@@ -374,7 +374,7 @@ describe('unique & cursed mods against live data', () => {
   it('rescued unnamed identity effects surface with their corrected names', () => {
     const flamer = uniqueOptions('Flamer');
     expect(flamer.find(o => o.id === 'mod_custom_HolyFire_Effect')?.name).toBe('Holy Fire');
-    const pick = uniqueOptions('pickaxe');
+    const pick = uniqueOptions('Pickaxe');
     expect(pick.find(o => o.id === 'mod_custom_CultistPiercer_Effect')?.name).toBe('Cultist Piercer');
   });
 
