@@ -1214,10 +1214,16 @@ Engine: `src/lib/engine/mitigation.ts` (`applyMitigation`), `src/lib/enemy-defen
   `fPoisonArmorDmgReductionExp` 0x0017D8AA, `fShockArmorDmgReductionExp`
   0x0017D8AC (20260717 dump). `0.15` is likewise the `f<Type>DamageFactor`
   GMST, uniform across types; the `0.01`/`0.99` clamp bounds match
-  `f<Type>MinDamageReduction`/`f<Type>MaxDamageReduction`. The sibling
-  `_NORM`-suffixed GMST set (e.g. `fPhysicalArmorDmgReductionExp_NORM`
-  0x005CF073 = 0.6377, `...ArmorBase_NORM` = 51.0) is a distinct, unused
-  formula variant — not the one this formula or engine draws from.
+  `f<Type>MinDamageReduction`/`f<Type>MaxDamageReduction` (the Min family has
+  only 5 members — `fRadsMinDamageReduction`/`fPoisonMinDamageReduction` don't
+  exist in the ESM, harmless since the clamp floor is one shared scalar, not
+  dispatched per resist type). The sibling `_NORM`-suffixed GMST set (e.g.
+  `fPhysicalArmorDmgReductionExp_NORM` 0x005CF073 = 0.6377, `...ArmorBase_NORM`
+  = 51.0) is a distinct, unused formula variant — not the one this formula or
+  engine draws from. Extracted (not hand-copied) —
+  `scripts/extract/extract-constants.ts` → `constants.json` →
+  `getMitigationConstants` (`@/data`) — so re-extraction re-derives all 4
+  scalars instead of them silently drifting.
 - **Radiation squares the whole mitigation factor**: every resist type
   (including radiation) shares the same 0.365 exponent GMST — there is no
   ESM-provable "radiation exponent". Radiation still bites roughly twice as

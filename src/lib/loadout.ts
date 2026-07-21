@@ -1,6 +1,6 @@
 import type { PlayerConfig, EnemyConfig, GameMode, PlayerConditions, Weapon } from '@/types';
 import type { Bucket, Modifier } from '@/types/modifiers';
-import { getSpecialClamp, getWeapons } from '@/data';
+import { getMitigationConstants, getSpecialClamp, getWeapons } from '@/data';
 import { getEquippedPerkFamilyRanks, getLoadoutModifiers } from '@/data/perk-modifiers';
 import { getArmorEffectModifiers, getArmorEffectWornPieceCounts } from '@/data/armor-modifiers';
 import { getDefaultOmods, getOmodById } from '@/data/omods';
@@ -280,5 +280,6 @@ export function resolveLoadout(
     // Limit Breaking, weapon crit charge bonus).
     chargeTimeSec: playerConfig.chargeTimeSec,
     enemyDefenses,
+    mitigationConstants: getMitigationConstants(mode),
   };
 }

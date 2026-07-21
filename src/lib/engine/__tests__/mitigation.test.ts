@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import type { Weapon } from '@/types';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
-import { applyMitigation, type EnemyDefenses } from '@/lib/engine/mitigation';
+import { applyMitigation, DEFAULT_MITIGATION_CONSTANTS, type EnemyDefenses } from '@/lib/engine/mitigation';
 import type { HitBreakdown } from '@/lib/engine/paper-damage';
 import { computeScenarios, type ScenarioInput } from '@/lib/engine/scenarios';
 
@@ -42,6 +42,34 @@ describe('applyMitigation — formula + clamps', () => {
   it('returns the hit unchanged (identity) when no defenses are supplied', () => {
     const h = hit([{ damageType: 'ballistic', damage: 500 }]);
     expect(applyMitigation(h, undefined, 0.5, 10)).toBe(h);
+  });
+});
+
+describe('applyMitigation — ESM-extracted constants param', () => {
+  it('DEFAULT_MITIGATION_CONSTANTS matches the formula every other test in this file hand-computes against', () => {
+    expect(DEFAULT_MITIGATION_CONSTANTS).toEqual({ resistExponent: 0.365, damageFactor: 0.15, minReduction: 0.01, maxReduction: 0.99 });
+  });
+
+  it('an explicit constants arg overrides the default — a different exponent/factor changes the retained damage', () => {
+    const h = hit([{ damageType: 'ballistic', damage: 100 }]);
+    const withDefault = applyMitigation(h, defenses({ physical: 300 }), 0, 0);
+    const withCustom = applyMitigation(h, defenses({ physical: 300 }), 0, 0, {
+      resistExponent: 0.5,
+      damageFactor: 0.2,
+      minReduction: 0.01,
+      maxReduction: 0.99,
+    });
+    expect(withCustom.components[0].damage).toBeCloseTo(100 * Math.pow((100 * 0.2) / 300, 0.5), 10);
+    expect(withCustom.components[0].damage).not.toBeCloseTo(withDefault.components[0].damage, 6);
+  });
+
+  it('a custom maxReduction narrows the clamp ceiling', () => {
+    const tinyResist = hit([{ damageType: 'ballistic', damage: 100000 }]);
+    const withCustomMax = applyMitigation(tinyResist, defenses({ physical: 1 }), 0, 0, {
+      ...DEFAULT_MITIGATION_CONSTANTS,
+      maxReduction: 0.5,
+    });
+    expect(withCustomMax.components[0].damage).toBeCloseTo(100000 * 0.5, 6);
   });
 });
 
@@ -255,6 +283,22 @@ describe('computeScenarios — ScenarioInput.enemyDefenses (synthetic enemy)', (
     expect(s.freeAim.effective?.sustainedDps).toBeCloseTo(s.freeAim.sustain.sustainedDps * retainedFraction, 6);
     // TTK = enemy HP ÷ mitigated sustained DPS.
     expect(s.freeAim.effective?.ttk).toBeCloseTo(1000 / s.freeAim.effective!.sustainedDps, 6);
+  });
+
+  it('ScenarioInput.mitigationConstants threads through to the applyMitigation call (end-to-end)', () => {
+    const enemyDefenses = { hp: 1000, resists: { physical: 300 } };
+    const withDefault = computeScenarios({ ...baseInput, enemyDefenses });
+    // A lower resistExponent than the default 0.365 retains MORE damage
+    // (the mitigation multiplier is (damage×factor/resist)^exponent < 1, so
+    // a smaller exponent pushes it closer to 1) — an easy-to-pin lever that
+    // proves the field actually reaches applyMitigation, not just accepted
+    // and ignored.
+    const withLowerExponent = computeScenarios({
+      ...baseInput,
+      enemyDefenses,
+      mitigationConstants: { resistExponent: 0.1, damageFactor: 0.15, minReduction: 0.01, maxReduction: 0.99 },
+    });
+    expect(withLowerExponent.freeAim.effective!.perHit.total).toBeGreaterThan(withDefault.freeAim.effective!.perHit.total);
   });
 
   it('armorPen and armorPenFlat bucket modifiers fold into the mitigation call (end-to-end)', () => {

@@ -6,7 +6,7 @@ import { getFireRate } from '@/lib/fire-rate';
 import { AP_REGEN_DELAY_SEC, AP_REGEN_RATE_PCT, AP_REGEN_RATE_PCT_POWER_ARMOR, apLimitedDps, computeApEconomy, effectiveShotsPerSecond } from './ap-economy';
 import { computeCritMeter, type CritMeterResult } from './crit-meter';
 import { computeDotDps, computePaperDamage, type HitBreakdown } from './paper-damage';
-import { applyMitigation, type EnemyDefenses } from './mitigation';
+import { applyMitigation, type EnemyDefenses, type MitigationConstants } from './mitigation';
 import { perShotOnslaughtConsume, reverseOnslaughtAvgStacks } from './onslaught';
 import { bulletStormAvgStacks } from './bulletstorm';
 import { computeSustain, DEFAULT_BATTLE_LOADERS_BASH_SEC, type SustainResult } from './sustain';
@@ -285,6 +285,15 @@ export interface ScenarioInput {
    * usable target gates whether mitigation is actually APPLIED.
    */
   enemyDefenses?: EnemyDefenses;
+  /**
+   * ESM-extracted GMST scalars for the mitigation formula (`@/data`
+   * `getMitigationConstants`, resolved in `resolveLoadout`) — engine files
+   * stay data-adapter-free (`loadout.ts`'s "one sanctioned bridge"
+   * doc-comment), so this is threaded in rather than looked up here.
+   * Undefined = `mitigation.ts`'s `DEFAULT_MITIGATION_CONSTANTS` (tests and
+   * any caller without a mode).
+   */
+  mitigationConstants?: MitigationConstants;
 }
 
 /** Onslaught cap + optional reverse-mode average, threaded on every ResolveContext. */
@@ -484,10 +493,11 @@ function effectiveAgainstEnemy(
   sustainedDps: number,
   defenses: EnemyDefenses | undefined,
   armorPenTotal: number,
-  armorPenFlatTotal: number
+  armorPenFlatTotal: number,
+  mitigationConstants: MitigationConstants | undefined
 ): ScenarioResult['effective'] {
   if (!defenses) return undefined;
-  const mitigated = applyMitigation(cycleHit, defenses, armorPenTotal, armorPenFlatTotal);
+  const mitigated = applyMitigation(cycleHit, defenses, armorPenTotal, armorPenFlatTotal, mitigationConstants);
   const retainedFraction = cycleHit.total > 0 ? mitigated.total / cycleHit.total : 1;
   const mitigatedSustainedDps = sustainedDps * retainedFraction;
   return {
@@ -830,8 +840,22 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // freeSustain/vatsSustain (freeCycleHit/vatsCycleHit — the charged-cycle
   // blend for charged weapons) so the mitigated sustainedDps stays
   // consistent with the mitigated perHit's retained fraction.
-  const freeEffective = effectiveAgainstEnemy(freeCycleHit, freeSustain.sustainedDps, input.enemyDefenses, armorPenTotal, armorPenFlatTotal);
-  const vatsEffective = effectiveAgainstEnemy(vatsCycleHit, vatsSustain.sustainedDps, input.enemyDefenses, armorPenTotal, armorPenFlatTotal);
+  const freeEffective = effectiveAgainstEnemy(
+    freeCycleHit,
+    freeSustain.sustainedDps,
+    input.enemyDefenses,
+    armorPenTotal,
+    armorPenFlatTotal,
+    input.mitigationConstants
+  );
+  const vatsEffective = effectiveAgainstEnemy(
+    vatsCycleHit,
+    vatsSustain.sustainedDps,
+    input.enemyDefenses,
+    armorPenTotal,
+    armorPenFlatTotal,
+    input.mitigationConstants
+  );
 
   return {
     onslaughtMaxStacks,

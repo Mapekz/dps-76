@@ -79,17 +79,44 @@ const DAMAGE_TYPE_TO_RESIST_TYPE: Record<DamageType, GeneratedNpcDamageType> = {
 };
 
 /**
- * ESM-extracted `f<Type>ArmorDmgReductionExp` GMST value — 0.365 for every
- * resist type (`fPhysicalArmorDmgReductionExp` 0x0017D8A9,
- * `fRadsArmorDmgReductionExp` 0x0017D8AB, `fEnergyArmorDmgReductionExp`
- * 0x0017D8A6, `fFireArmorDmgReductionExp` 0x0017D8A7,
- * `fFrostArmorDmgReductionExp` 0x0017D8A8, `fPoisonArmorDmgReductionExp`
- * 0x0017D8AA, `fShockArmorDmgReductionExp` 0x0017D8AC all read 0.365 in the
- * 20260717 dump). The sibling `_NORM` set (e.g.
- * `fPhysicalArmorDmgReductionExp_NORM` 0x005CF073 = 0.6377) is a distinct,
- * unused formula variant — not this one.
+ * ESM-extracted GMST scalars for the mitigation formula — `getMitigationConstants`
+ * (`@/data`) resolves the live value via `extract-constants.ts`; real callers
+ * (`scenarios.ts`, threaded from `resolveLoadout`) pass it through
+ * `ScenarioInput.mitigationConstants`. `DEFAULT_MITIGATION_CONSTANTS` is the
+ * fallback for callers without a mode (tests) and the extractor's own
+ * dump-too-old case — mirrors `derivePlayerStats`'s `clamp` param
+ * (`src/lib/player-stats.ts`).
  */
-const RESIST_EXPONENT = 0.365;
+export interface MitigationConstants {
+  /** `f<Type>ArmorDmgReductionExp` GMST — 0.365 for every resist type. */
+  resistExponent: number;
+  /** `f<Type>DamageFactor` GMST — 0.15 for every resist type. */
+  damageFactor: number;
+  /** `f<Type>MinDamageReduction` GMST — 0.01 (Rads/Poison have no dedicated GMST; the clamp floor is one shared scalar, not per-type). */
+  minReduction: number;
+  /** `f<Type>MaxDamageReduction` GMST — 0.99 for every resist type. */
+  maxReduction: number;
+}
+
+/**
+ * Pre-extraction hardcodes, verified against the 20260717 dump:
+ * `fPhysicalArmorDmgReductionExp` 0x0017D8A9, `fRadsArmorDmgReductionExp`
+ * 0x0017D8AB, `fEnergyArmorDmgReductionExp` 0x0017D8A6,
+ * `fFireArmorDmgReductionExp` 0x0017D8A7, `fFrostArmorDmgReductionExp`
+ * 0x0017D8A8, `fPoisonArmorDmgReductionExp` 0x0017D8AA,
+ * `fShockArmorDmgReductionExp` 0x0017D8AC all read 0.365; the 7
+ * `f<Type>DamageFactor` GMSTs all read 0.15; the 7 `f<Type>MaxDamageReduction`
+ * GMSTs all read 0.99; the 5 `f<Type>MinDamageReduction` GMSTs that exist
+ * (Rads/Poison have none) all read 0.01. The sibling `_NORM` exponent set
+ * (e.g. `fPhysicalArmorDmgReductionExp_NORM` 0x005CF073 = 0.6377) is a
+ * distinct, unused formula variant — not this one.
+ */
+export const DEFAULT_MITIGATION_CONSTANTS: MitigationConstants = {
+  resistExponent: 0.365,
+  damageFactor: 0.15,
+  minReduction: 0.01,
+  maxReduction: 0.99,
+};
 
 function clamp01(x: number): number {
   return Math.max(0, Math.min(1, x));
@@ -100,11 +127,16 @@ function clamp01(x: number): number {
  * or the flat debuff/armor-pen fully strips it) fully penetrates — mult 1,
  * the formula's own documented edge case, not a clamp artifact.
  */
-function componentMitigationMult(damage: number, resist: number, resistType: GeneratedNpcDamageType): number {
+function componentMitigationMult(
+  damage: number,
+  resist: number,
+  resistType: GeneratedNpcDamageType,
+  constants: MitigationConstants
+): number {
   if (resist <= 0) return 1;
-  const factor = Math.pow((damage * 0.15) / resist, RESIST_EXPONENT);
+  const factor = Math.pow((damage * constants.damageFactor) / resist, constants.resistExponent);
   const mitigated = resistType === 'radiation' ? factor * factor : factor;
-  return Math.min(0.99, Math.max(0.01, mitigated));
+  return Math.min(constants.maxReduction, Math.max(constants.minReduction, mitigated));
 }
 
 /**
@@ -122,12 +154,17 @@ function componentMitigationMult(damage: number, resist: number, resistType: Gen
  * once per scenario, no per-component `damageTypeScope` gate — the bootstrap
  * fold context has no `componentType` to gate against), so the physical-only
  * restriction is enforced HERE, consumer-side, rather than on the modifier.
+ *
+ * `constants` defaults to `DEFAULT_MITIGATION_CONSTANTS` — real callers pass
+ * the ESM-extracted live value (`getMitigationConstants`, threaded via
+ * `ScenarioInput.mitigationConstants`); see `MitigationConstants`'s doc-comment.
  */
 export function applyMitigation(
   hit: HitBreakdown,
   defenses: EnemyDefenses | undefined,
   armorPenTotal: number,
-  flatResistDebuffPhysical: number
+  flatResistDebuffPhysical: number,
+  constants: MitigationConstants = DEFAULT_MITIGATION_CONSTANTS
 ): HitBreakdown {
   if (!defenses) return hit;
 
@@ -137,7 +174,7 @@ export function applyMitigation(
     const base = defenses.resists[resistType] ?? 0;
     const flatDebuff = resistType === 'physical' ? flatResistDebuffPhysical : 0;
     const resist = Math.max(0, base - flatDebuff) * armorPenFactor;
-    const mult = componentMitigationMult(c.damage, resist, resistType);
+    const mult = componentMitigationMult(c.damage, resist, resistType, constants);
     return { ...c, damage: c.damage * mult };
   });
 

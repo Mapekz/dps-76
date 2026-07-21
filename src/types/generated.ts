@@ -523,6 +523,8 @@ export interface ExcludedRecordDetail {
 export interface GeneratedConstants {
   /** SPECIAL AVIF Minimum/Maximum Value — clamp on effective (post-buff) SPECIAL, src/lib/player-stats.ts `derivePlayerStats`. */
   special: { min: number; max: number };
+  /** `f<Type>ArmorDmgReductionExp`/`f<Type>DamageFactor`/`f<Type>Min|MaxDamageReduction` GMSTs — resist-mitigation formula scalars, src/lib/engine/mitigation.ts `applyMitigation`. */
+  mitigation: { resistExponent: number; damageFactor: number; minReduction: number; maxReduction: number };
 }
 
 export interface GeneratedMeta {

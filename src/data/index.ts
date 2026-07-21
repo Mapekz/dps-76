@@ -42,6 +42,13 @@ export function getSpecialClamp(mode: GameMode): { min: number; max: number } {
   return getDataset(mode).constants.special;
 }
 
+/** ESM-extracted GMST scalars for the resist-mitigation formula — see GeneratedConstants. */
+export function getMitigationConstants(
+  mode: GameMode
+): { resistExponent: number; damageFactor: number; minReduction: number; maxReduction: number } {
+  return getDataset(mode).constants.mitigation;
+}
+
 export function getPerkById(mode: GameMode, perkId: PerkId): Perk | undefined {
   return getPerks(mode)[perkId];
 }

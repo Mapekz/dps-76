@@ -318,7 +318,12 @@ async function main() {
     await writeFile(path.join(outDir, 'constants.json'), JSON.stringify(result.constants, null, 1));
     meta.counts.constants = 1;
     meta.unresolved.push(...result.unresolved);
-    console.log(`  special clamp [${result.constants.special.min}, ${result.constants.special.max}] (unresolved: ${result.unresolved.length})`);
+    console.log(
+      `  special clamp [${result.constants.special.min}, ${result.constants.special.max}], ` +
+        `mitigation exp=${result.constants.mitigation.resistExponent} factor=${result.constants.mitigation.damageFactor} ` +
+        `clamp=[${result.constants.mitigation.minReduction}, ${result.constants.mitigation.maxReduction}] ` +
+        `(unresolved: ${result.unresolved.length})`
+    );
   }
 
   await writeFile(path.join(outDir, '_meta.json'), JSON.stringify(meta, null, 2));
