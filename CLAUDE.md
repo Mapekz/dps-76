@@ -61,7 +61,10 @@ from recursively flattened `Includes` chains.
 Every damage source normalizes to one shape (`src/types/modifiers.ts`):
 `{ bucket, op: SET|MUL_ADD|ADD, conditions[] }` plus a value discriminated on
 `curve` — either `value` (raw decimal, 0.25 = +25%) or `{ curve, curveScale }`
-where `curveScale` multiplies the interpolated curve Y.
+where `curveScale` multiplies the interpolated curve Y. Shorthand: **DBM**
+(Damage Bonus Mult) and its flavors — CritDBM, SneakDBM, PowerAttackDBM,
+WeakptDBM — are defined once in that file's `Bucket` doc-comment; reuse those
+terms rather than re-deriving them.
 
 The engine lives in `src/lib/engine/`:
 - `resolve.ts` - condition evaluation + bucket folds via the shared `foldOps` primitive (SET → ×Π(1+MUL_ADD) → +ΣADD)

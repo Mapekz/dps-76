@@ -184,19 +184,19 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
 
   // Weapon-level additive terms (identical across damage components).
   // Crit is a scenario flag (symmetric with sneaking/powerAttack).
-  let critTerm = 0;
+  let critTerm = 0; // CritDBM
   if (ctx.scenario.isCrit) {
     const collect = trace ? ([] as BucketTrace[]) : undefined;
     critTerm = totalCritMult(modifiers, weapon, ctx, collect) - 1.0;
     if (trace && collect) trace.crit = { base: collect[0], bonus: collect[1], bonusScale: collect[2] };
   }
-  let sneakTerm = 0;
+  let sneakTerm = 0; // SneakDBM
   if (ctx.scenario.isSneaking) {
     const collect = trace ? ([] as BucketTrace[]) : undefined;
     sneakTerm = totalSneakMult(modifiers, weapon, ctx, collect) - 1.0;
     if (trace && collect) trace.sneak = { base: collect[0], bonus: collect[1] };
   }
-  let powerAttackTerm = 0;
+  let powerAttackTerm = 0; // PowerAttackDBM
   if (ctx.scenario.isPowerAttack) {
     const collect = trace ? ([] as BucketTrace[]) : undefined;
     powerAttackTerm = foldBucket(modifiers, 'powerAttackBonus', 0, ctx, collect);
@@ -206,7 +206,7 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
 
   // Whole-damage multipliers.
   const wholeMult = foldWholeDamage(modifiers, ctx, trace?.wholeDamage);
-  let weakpointMult = 1.0;
+  let weakpointMult = 1.0; // WeakptDBM, folded as an outer multiplier (see Bucket doc-comment)
   if (bodyPartMult > 1.0) {
     const collect = trace ? ([] as BucketTrace[]) : undefined;
     weakpointMult = 1.0 + foldBucket(modifiers, 'weakpointBonus', 0, ctx, collect);

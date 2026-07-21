@@ -18,17 +18,34 @@ export type ModOp = 'SET' | 'MUL_ADD' | 'ADD';
  *   PaperDamage = Σ_c base(c) × (dbm(c) + tenderizer + (crit−1)[crit] + (sneak−1)[sneak] + powerAttackBonus)
  *                 × Π wholeDamage × bodyPartMult × (1 + weakpointBonus)[bodyPart>1] × powerAttackRaceMult
  *
- * - dbm: the big additive pool. Its intrinsic base is the weapon's
- *   Damage Bonus Multiplier (1.0), so the "1 +" in the spec formula falls out
- *   of the fold. ADD contributes; MUL_ADD scales the weapon base first.
+ * Shorthand: "DBM" (Damage Bonus Mult) names this family of additively-
+ * stacked bonus modifiers — plain DBM plus its per-mechanic flavors
+ * CritDBM/SneakDBM/PowerAttackDBM/WeakptDBM below. A conditioned DBM entry
+ * (Down Ranger's Far-range bonus, Deal Sealer's per-status-effect bonus) is
+ * just an ordinary 'dbm' ADD gated by a condition, not a separate bucket.
+ *
+ * - dbm: the big additive pool (plain DBM). Its intrinsic base is the
+ *   weapon's Damage Bonus Multiplier (1.0), so the "1 +" in the spec formula
+ *   falls out of the fold. ADD contributes; MUL_ADD scales the weapon base
+ *   first.
  * - critDmgBase / sneakBase: MUL_ADD/SET against BaseWeaponCritMult /
  *   BaseWeaponSneakAttackMult (OMODs). critDmgBonus / sneakBonus: additive
- *   bonuses stacked after (perks, ADD OMODs).
+ *   bonuses stacked after (perks, ADD OMODs). totalCritMult/totalSneakMult
+ *   fold these to the full weapon multiplier; CritDBM/SneakDBM is that total
+ *   minus 1.0 (paper-damage.ts's critTerm/sneakTerm) — the base here is a
+ *   multiplier (~2×), not an additive pool like dbm's 1.0, so it needs the
+ *   -1 before joining the dbm parenthesis.
  * - critDmgBonusScale: multiplier folded over base 1.0 and applied to the
  *   folded critDmgBonus total (not the base crit mult) — The V.A.T.S.
  *   Unknown's random per-crit roll only.
- * - powerAttackBonus: additive inside the dbm parenthesis (Heavy Hitter's).
- * - weakpointBonus: additive over a 1.0 base; whole-damage multiplier that
+ * - powerAttackBonus: PowerAttackDBM — additive inside the dbm parenthesis
+ *   (Heavy Hitter's), i.e. "DBM active only while power attacking". Distinct
+ *   from the race's flat PowerAttackMult (1.5×/2.0× melee,
+ *   powerAttackRaceMult()), which stays a straight outer multiplier and is
+ *   not a DBM at all.
+ * - weakpointBonus: WeakptDBM — additive over a 1.0 base, but unlike the
+ *   other DBM flavors it does not fold into the dbm parenthesis: it
+ *   multiplies total damage by proxy of entering bodyPartMult/outerMult, and
  *   only activates when the body-part multiplier exceeds 1.0.
  * - wholeDamage: separate stacking whole-damage multipliers (TOFTT, Follow Through).
  * - critFill / critConsumption: crit-meter economy (Crit Savvy, Limit Breaking).
