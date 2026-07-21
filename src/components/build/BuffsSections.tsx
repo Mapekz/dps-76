@@ -265,7 +265,11 @@ function ConsumableRadioRow({
         <div className="flex items-center gap-2">
           <span className="min-w-0 flex-1 truncate">{item.name}</span>
           {!hasAnyEngineEffect(item.modifiers) && <NoEffectBadge />}
-          <ActionDelta action={{ type: 'consumable/toggle', id: item.id }} />
+          {/* Only the removal delta means anything here — the currently
+              active item's own ΔDPS (toggling itself off) lives on the
+              None row below instead, since that's the actual way to
+              remove it (a radio can't un-select itself). */}
+          {!active && <ActionDelta action={{ type: 'consumable/toggle', id: item.id }} />}
         </div>
         {description && <p className="text-muted-foreground text-xs">{description}</p>}
       </div>
@@ -325,17 +329,23 @@ function CausePicker({ items, placeholder }: { items: GeneratedBuff[]; placehold
   );
 }
 
-/** The deselect option a radio group needs — you can't un-pick a radio. */
+/**
+ * The deselect option a radio group needs — you can't un-pick a radio.
+ * Carries the ΔDPS of leaving the group empty: for the currently-active
+ * item, this row (not the item's own row) is the only way to remove it, so
+ * the delta belongs here.
+ */
 function NoneRadioRow({ label, groupName, activeId }: { label: string; groupName: string; activeId?: string }) {
   const dispatch = useBuildDispatch();
   return (
-    <label className="hover:bg-muted/40 text-muted-foreground flex cursor-pointer items-center gap-2 rounded-none px-2 py-1 text-sm">
+    <label className="hover:bg-muted/40 flex cursor-pointer items-center gap-2 rounded-none px-2 py-1 text-sm">
       <Radio
         name={groupName}
         checked={activeId === undefined}
         onChange={() => activeId && dispatch({ type: 'consumable/toggle', id: activeId })}
       />
       <span className="min-w-0 flex-1 truncate">{label}</span>
+      {activeId && <ActionDelta action={{ type: 'consumable/toggle', id: activeId }} />}
     </label>
   );
 }
@@ -523,7 +533,7 @@ export function MagazinesSection() {
       label="Magazines"
       category="magazine"
       groupName="active-magazine"
-      noneLabel="No magazine"
+      noneLabel="None"
       emptyText="No modeled magazine issue found."
     />
   );
@@ -536,7 +546,7 @@ export function BobbleheadsSection() {
       label="Bobbleheads"
       category="bobblehead"
       groupName="active-bobblehead"
-      noneLabel="No bobblehead"
+      noneLabel="None"
       emptyText="No modeled bobblehead found."
     />
   );
@@ -553,7 +563,7 @@ export function ChemsSection() {
 
   // Families whose causes collapse to a picker (alcohol) sit above the chem
   // radio group; everything the radios cover — plus cause-less families like
-  // Med-X — sits below it, under the "No chem" deselect.
+  // Med-X — sits below it, under the "None" deselect.
   const alcoholGroups = ledger.filter(g => g.picker.length > 0);
   const chemGroups = ledger.filter(g => g.picker.length === 0);
 
@@ -603,7 +613,7 @@ export function ChemsSection() {
         <div className="mt-4 divide-border/50 divide-y">
           <div className="flex items-stretch">
             <div className="min-w-0 flex-1 py-0.5">
-              <NoneRadioRow label="No chem" groupName="active-chem" activeId={activeChem?.id} />
+              <NoneRadioRow label="None" groupName="active-chem" activeId={activeChem?.id} />
             </div>
             <div className={RAIL} />
           </div>
