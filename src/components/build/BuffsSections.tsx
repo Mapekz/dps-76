@@ -790,8 +790,10 @@ function FoodDrinkRow({
           <p className={cn('text-muted-foreground text-xs', suppression && 'line-through')}>{description}</p>
         )}
       </div>
+      {/* No ΔDPS here — food/drink is multi-select with no single "None" row
+          to carry a removal delta the way bobblehead/magazine/chem do; the
+          add-picker's gain deltas are the only ones shown. */}
       <div className={cn('flex items-center gap-1', description && 'pt-0.5')}>
-        <ActionDelta action={{ type: 'consumable/toggle', id: item.id }} />
         <Button
           variant="ghost"
           size="icon"
