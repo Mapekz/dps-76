@@ -282,7 +282,7 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.ExplodingPalm]: { name: "Exploding Palm" }, // Melee explosion proc - not modeled
   [PerkId.FarFlungFireworks]: { name: "Far-Flung Fireworks" }, // Kill explosions - not modeled
   [PerkId.FeralRage]: { name: "Feral Rage" }, // Ghoul-exclusive (N&D key 0N)
-  [PerkId.FollowThrough]: { name: "Follow Through" }, // Ranged sneak → target takes more damage (wholeDamage bucket, pending extraction)
+  [PerkId.FollowThrough]: { name: "Follow Through" }, // Ranged sneak → target takes more damage; modeled via manual-uptime.ts wholeDamage toggle (ESM-confirmed 2026-07-21, entry point Mod Incoming Weapon Damage), not perk-selection extraction
   [PerkId.FunkyDuds]: { name: "Funky Duds" }, // Poison resistance - defensive
   [PerkId.HackAndSlash]: { name: "Hack and Slash" }, // Melee AoE proc - not modeled
   [PerkId.MasterInfiltrator]: { name: "Master Infiltrator" }, // Lockpick/hack - not combat
@@ -291,7 +291,7 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.Retribution]: { name: "Retribution" }, // Counterattack proc - not modeled
   [PerkId.SizzlingStyle]: { name: "Sizzling Style" }, // Fire resistance - defensive
   [PerkId.SurvivalShortcut]: { name: "Survival Shortcut" }, // Chem generation - not combat
-  [PerkId.TakingOneForTheTeam]: { name: "Taking One For The Team" }, // Attackers take more damage (wholeDamage bucket, pending extraction)
+  [PerkId.TakingOneForTheTeam]: { name: "Taking One For The Team" }, // Attackers take more damage; modeled via manual-uptime.ts wholeDamage toggle (ESM-confirmed 2026-07-21, entry point Mod Incoming Weapon Damage), not perk-selection extraction
   [PerkId.WhatRads]: { name: "What Rads?" }, // Rad immunity - defensive
   // Legendary SPECIAL cards: +1/+2/+3/+5 stat and perk points by rank (ESM
   // families LGN_Legendary*_Perk; the bonus is applied via the perk-budget

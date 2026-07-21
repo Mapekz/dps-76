@@ -47,7 +47,8 @@ export type ModOp = 'SET' | 'MUL_ADD' | 'ADD';
  *   other DBM flavors it does not fold into the dbm parenthesis: it
  *   multiplies total damage by proxy of entering bodyPartMult/outerMult, and
  *   only activates when the body-part multiplier exceeds 1.0.
- * - wholeDamage: separate stacking whole-damage multipliers (TOFTT, Follow Through).
+ * - wholeDamage: separate stacking whole-damage multipliers (TOFTT, Follow
+ *   Through, Grounded's Charged Penalty).
  * - critFill / critConsumption: crit-meter economy (Crit Savvy, Limit Breaking).
  * - fireRateSpeed / isAutomatic / projectileCount / vatsApCost / addDamageComponent:
  *   weapon-stat rewrites from OMODs (receiver speed, Two Shot, Explosive
@@ -73,13 +74,20 @@ export type Bucket =
   | 'wholeDamage'
   /** Multiplier on limb hits (STAT_DmgLimbs plumbing) — inert until limb targeting exists. */
   | 'limbDamage'
-  // NOTE: no explosion-damage bucket exists — the June 2026 patch made
-  // explosion bonuses (Demolition Expert's STAT_DmgExplosive, the
-  // 'Mod Player Explosion Damage' entry point) ADDITIVE inside the general
-  // dbm parenthesis, scoped via damageTypeScope ['explosive'] (matches
-  // fromExplosion components and explosive twins). The old `explosionMult`
-  // bucket (a separate multiplier on finished explosion damage) modeled the
-  // pre-patch formula and was removed 2026-07-13.
+  // NOTE: no explosion-damage bucket exists — two distinct mechanisms share
+  // damageTypeScope ['explosive'] scoping instead (matches fromExplosion
+  // components and explosive twins):
+  //   - Demolition Expert's STAT_DmgExplosive AV (FALLBACK_AVIF_ROUTES,
+  //     mgef.ts) is ADDITIVE inside the general dbm parenthesis — the June
+  //     2026 patch, in-game proven (docs/assumptions.md "Launcher explosion
+  //     damage"). The old `explosionMult` bucket (a separate multiplier on
+  //     finished explosion damage) modeled the pre-patch formula and was
+  //     removed 2026-07-13.
+  //   - The 'Mod Player Explosion Damage' ENTRY POINT (a different
+  //     mechanism, ENTRY_POINT_BUCKETS, mgef.ts) is a standalone multiplier,
+  //     USER-RESOLVED 2026-07-21, routed to `baseDamage` — NOT the same
+  //     route as STAT_DmgExplosive above, and currently inert (no live
+  //     consumer; see the mgef.ts comment for why).
   /** Bash-attack damage (STAT_DmgBash — Basher's) — inert until bash attacks are modeled. */
   | 'bashDamage'
   /** Fraction of a component's damage that spawns an explosive twin (LGND_ExplosivePayload — Explosive), folded per-component in paper-damage.ts. */

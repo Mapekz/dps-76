@@ -1122,9 +1122,13 @@ describe('translateConditions (IsMemberOfAPlayerTeam, 2026-07-14)', () => {
   });
 });
 
-describe('ENTRY_POINT_BUCKETS (Mod Weapon Attack Damage, 2026-07-14)', () => {
-  it("maps 'Mod Weapon Attack Damage' to the dbm bucket (Grounded's Charged Penalty)", () => {
-    expect(ENTRY_POINT_BUCKETS['Mod Weapon Attack Damage']).toBe('dbm');
+describe('ENTRY_POINT_BUCKETS (Mod Weapon Attack Damage, 2026-07-21)', () => {
+  it("maps 'Mod Weapon Attack Damage' to the wholeDamage bucket (Grounded's Charged Penalty, USER-RESOLVED)", () => {
+    expect(ENTRY_POINT_BUCKETS['Mod Weapon Attack Damage']).toBe('wholeDamage');
+  });
+
+  it("maps 'Mod Player Explosion Damage' to the baseDamage bucket (component-scoped standalone multiplier, currently inert)", () => {
+    expect(ENTRY_POINT_BUCKETS['Mod Player Explosion Damage']).toBe('baseDamage');
   });
 });
 

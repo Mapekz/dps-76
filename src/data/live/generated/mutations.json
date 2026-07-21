@@ -419,7 +419,7 @@
      "edid": "Mutation_Grounded",
      "name": "Grounded"
     },
-    "bucket": "dbm",
+    "bucket": "wholeDamage",
     "op": "MUL_ADD",
     "value": -0.5,
     "conditions": [
@@ -445,7 +445,7 @@
      "edid": "Mutation_Grounded",
      "name": "Grounded"
     },
-    "bucket": "dbm",
+    "bucket": "wholeDamage",
     "op": "MUL_ADD",
     "value": -0.37,
     "conditions": [
@@ -476,7 +476,7 @@
      "edid": "Mutation_Grounded",
      "name": "Grounded"
     },
-    "bucket": "dbm",
+    "bucket": "wholeDamage",
     "op": "MUL_ADD",
     "value": -0.25,
     "conditions": [
@@ -507,7 +507,7 @@
      "edid": "Mutation_Grounded",
      "name": "Grounded"
     },
-    "bucket": "dbm",
+    "bucket": "wholeDamage",
     "op": "MUL_ADD",
     "value": -0.12,
     "conditions": [

@@ -4,7 +4,7 @@ import type { Bucket, Condition, ModOp, Modifier } from '@/types/modifiers';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
 import { chargeDamageMultiplier } from '@/lib/charge';
 import { getFireRate } from '@/lib/fire-rate';
-import { foldBucket, foldOps, type ResolveContext } from '@/lib/engine/resolve';
+import { foldBucket, foldOps, foldWholeDamage, type ResolveContext } from '@/lib/engine/resolve';
 import { computeDotDps, computePaperDamage, totalCritMult, totalSneakMult } from '@/lib/engine/paper-damage';
 import { computeScenarios } from '@/lib/engine/scenarios';
 
@@ -275,15 +275,18 @@ describe('condition evaluation', () => {
   });
 });
 
-describe('Grounded (2026-07-14): classFreakRank tier selection on a dbm MUL_ADD', () => {
+describe('Grounded (2026-07-21): classFreakRank tier selection on a wholeDamage standalone multiplier', () => {
   const energyWeapon = makeWeapon({ keywords: ['WeaponTypeEnergy'] });
   const ballisticWeapon = makeWeapon(); // no WeaponTypeEnergy keyword
 
   // Shape mirrors the extractor's Grounded output: one exact-tier
   // classFreakRank condition per rank, plus a weaponKeywordAny energy gate.
+  // Bucket is `wholeDamage`, not `dbm` — USER-RESOLVED 2026-07-21 (see
+  // docs/assumptions.md "Mutation penalties & Class Freak"): Grounded is a
+  // standalone multiplier, not a dbm-pool contributor.
   const groundedTiers = [-0.5, -0.37, -0.25, -0.12].map((value, rank) =>
     mod({
-      bucket: 'dbm',
+      bucket: 'wholeDamage',
       op: 'MUL_ADD',
       value,
       id: `grounded:${rank}`,
@@ -301,12 +304,12 @@ describe('Grounded (2026-07-14): classFreakRank tier selection on a dbm MUL_ADD'
     [3, 0.88],
   ])('classFreakRank %i selects exactly its own tier (base 1.0 → %f)', (rank, expected) => {
     const ctx = makeCtx(energyWeapon, { player: { ...createDefaultPlayerConditions(), classFreakRank: rank } });
-    expect(foldBucket(groundedTiers, 'dbm', 1.0, ctx)).toBeCloseTo(expected, 10);
+    expect(foldWholeDamage(groundedTiers, ctx)).toBeCloseTo(expected, 10);
   });
 
   it('the weaponKeywordAny energy gate keeps Grounded off a ballistic weapon', () => {
     const ctx = makeCtx(ballisticWeapon, { player: { ...createDefaultPlayerConditions(), classFreakRank: 0 } });
-    expect(foldBucket(groundedTiers, 'dbm', 1.0, ctx)).toBe(1.0);
+    expect(foldWholeDamage(groundedTiers, ctx)).toBe(1.0);
   });
 });
 

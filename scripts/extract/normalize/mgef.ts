@@ -22,12 +22,30 @@ export const ENTRY_POINT_BUCKETS: Record<string, Bucket> = {
   'Mod Sneak Attack Mult': 'sneakBonus',
   'Mod Weak Body Part Damage Mult': 'weakpointBonus',
   'Mod Outgoing Limb Damage': 'limbDamage',
-  // June 2026 patch (user-reported 2026-07-13): explosion-damage bonuses no
-  // longer multiply the finished damage — they fold ADDITIVELY into the
-  // general dbm parenthesis, scoped to explosion components/twins via the
-  // ENTRY_POINT_EXTRA_CONDITIONS row below (Bloodied 0.9 + Adrenal 0.5 +
-  // Demo Expert 0.6 → ×3.0, not (1+0.9+0.5)×(1+0.6)=×3.84).
-  'Mod Player Explosion Damage': 'dbm',
+  // USER-RESOLVED 2026-07-21: this Entry Point (function "Multiply 1 +
+  // Actor Value Mult" on STAT_DamagePerk, against STAT_DmgExplosive_Formula/
+  // STAT_DmgGrenade_Formula) is a standalone multiplier, NOT a dbm-pool
+  // contributor — sibling of 'Mod Weapon Attack Damage' below, scoped to
+  // explosive damage instead of the whole weapon. Routed to `baseDamage`
+  // (NOT `wholeDamage`): it needs `damageTypeScope: ['explosive']` (below,
+  // ENTRY_POINT_EXTRA_CONDITIONS) to stay off a mixed weapon's non-explosive
+  // components, and `wholeDamage` folds once for the whole hit before
+  // `componentType`/`componentIsExplosion` exist on the resolve context
+  // (paper-damage.ts computePaperDamage) — a damageTypeScope condition on a
+  // wholeDamage modifier can never match there. `baseDamage` folds
+  // per-component and is the only standalone-multiplier bucket that scoping
+  // works in.
+  // Currently INERT: no live consumer flows through this route today — the
+  // AV-scaled "Multiply 1 + Actor Value Mult" shape isn't handled by the
+  // entry-point-value extraction path (pre-existing gap, separate issue;
+  // shows up as a "skipped" note on STAT_DamagePerk in perks.json). This is
+  // a forward-looking correctness fix, not an observable data change.
+  // Distinct from, and does NOT change, Demolition Expert's STAT_DmgExplosive
+  // AV route (FALLBACK_AVIF_ROUTES below) — that one is a different
+  // mechanism, deliberately additive-dbm per the June 2026 patch
+  // (user-reported 2026-07-13, in-game proven: Bloodied 0.9 + Adrenal 0.5 +
+  // Demo Expert 0.6 → ×3.0, not (1+0.9+0.5)×(1+0.6)=×3.84), untouched here.
+  'Mod Player Explosion Damage': 'baseDamage',
   'Mod Power Attack Damage': 'powerAttackBonus',
   // Percent-of-meter semantics (Critical Savvy SETs 85/70/55); see crit-meter.ts.
   'Mod VATS Critical Cost': 'critConsumption',
@@ -51,13 +69,20 @@ export const ENTRY_POINT_BUCKETS: Record<string, Bucket> = {
   'Mod Ammo Spender Max Reload Stack Mult': 'bulletStormRetention',
   // Grounded's Charged Penalty (Mutation_ReduceEnergyDamage_Perk): Multiply
   // Value 0.5/0.63/0.75/0.88 by Class Freak tier, scoped WeaponTypeEnergy OR
-  // WeaponTypeAlienBlaster. Folded as dbm MUL_ADD (float−1) — additive in the
-  // dbm parenthesis like every other fold; whether the engine multiplies the
-  // finished damage instead is unprovable from static data
-  // (docs/assumptions.md "Mutation penalties & Class Freak"). Ripple: also
-  // activates LegendaryCommonWeaponPerk and P62_..._RuinersPerk, both of
-  // which stay inert behind `unresolved` gates (verified 2026-07-14).
-  'Mod Weapon Attack Damage': 'dbm',
+  // WeaponTypeAlienBlaster. USER-RESOLVED 2026-07-21: this is a standalone
+  // multiplier, NOT a dbm-pool contributor — it's a genuinely different
+  // Entry Point from 'Mod Weapon DMG Bonus Mult' (the real dbm source, fn
+  // "Add Actor Value Mult" on STAT_DamagePerk), with a different Function
+  // Type ("Multiply Value", a bare scalar). Routed to `wholeDamage`
+  // (mathematically equivalent to `baseDamage` here since the gate is
+  // weapon-level, not per-component — see docs/assumptions.md "Mutation
+  // penalties & Class Freak"), matching its true sibling entry point 'Mod
+  // Incoming Weapon Damage' (Follow Through / Taking One For The Team,
+  // already confirmed `wholeDamage`-shaped — src/data/manual-uptime.ts).
+  // Ripple: also activates LegendaryCommonWeaponPerk and
+  // P62_..._RuinersPerk, both of which stay inert behind `unresolved` gates
+  // (verified 2026-07-14).
+  'Mod Weapon Attack Damage': 'wholeDamage',
   // Battle-Loader's (armor legendary, Phase 3 armor pipeline): granted PERK
   // Legendary_Armor_BattleLoadersPerk carries 5 of these effects, each
   // "Set Value 1.0" — a boolean trigger placeholder, NOT the real chance (see
@@ -87,8 +112,8 @@ export const ENTRY_POINT_BUCKETS: Record<string, Bucket> = {
  * these entry points, so `buildAvifRoutes` needs no wiring.
  */
 export const ENTRY_POINT_EXTRA_CONDITIONS: Record<string, Condition[]> = {
-  // Explosion-scoped dbm (see the ENTRY_POINT_BUCKETS note): applies to
-  // `fromExplosion` components and explosive twins only —
+  // Explosion-scoped baseDamage (see the ENTRY_POINT_BUCKETS note): applies
+  // to `fromExplosion` components and explosive twins only —
   // `damageTypeScope ['explosive']` matches both via
   // `ResolveContext.componentIsExplosion` (resolve.ts).
   'Mod Player Explosion Damage': [{ kind: 'damageTypeScope', types: ['explosive'] }],

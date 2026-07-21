@@ -527,7 +527,7 @@ picker badge.
 | Bleed/burn/shock mod DoTs | `dotDamage`, **refresh-only model** (re-applying resets the timer; steady-state = summed magnitude). **INTERPRETED as dmg/sec, NOT ESM-proven** (ESM only proves total-over-duration). Exempt from sneak/crit/body-part (**Formula structure**) | ESM magnitude; rate reading ours |
 | Adrenal Reaction (mutation) | +5%/stack (+6.25% SiN); below x=1 the curve clamps to its lowest point, same convention as the game's own curve tables (not a zero-floor special case) | ESM curve |
 | **Tenderizer** | +0.1% dbm/stack, manual 0–1000 (cap +100%), target-side, applied UNCONDITIONALLY | ESM (2026-07-15); cap is ours |
-| **Follow Through / Taking One for the Team** | Both `wholeDamage` ×(1+value) target-side debuffs, exact card-description match (10/20/30/40%/rank). Both are conditional 10s-window procs, so each is a manual 0/10/20/30/40% toggle (default 0), applied UNCONDITIONALLY, composing multiplicatively | esm-walk-confirmed |
+| **Follow Through / Taking One for the Team** | Both `wholeDamage` ×(1+value) target-side debuffs, exact card-description match (10/20/30/40%/rank). Both are conditional 10s-window procs, so each is a manual 0/10/20/30/40% toggle (default 0), applied UNCONDITIONALLY, composing multiplicatively. 2026-07-21 re-walk: both grant a PERK to the struck/attacking actor via `Apply Combat Hit Spell`/`Apply Combat Hit Spell Taken` → SPEL → MGEF "Perk to Apply" (`FollowThroughDamageDebuffPerk01` 0x005A5D6D / `LGN_TakingOneForTheTeam_DamageIncrease_Perk01` 0x005B01AE), each carrying Entry Point "Mod Incoming Weapon Damage", function "Multiply Value", value 1.1/1.2/1.3/1.4 by rank — confirms the `wholeDamage` shape directly rather than by card-description inference alone | esm-walk-confirmed |
 | SPECIAL buffs (Buffout, Bufftats, Mentats, Berry Mentats) | flat unconditional ADDs into STR/LCK; other stats stored-inert until perk-SPECIAL scaling. Stacking in **Consumable stacking & addictions** | ESM |
 | Juggernaut's max-HP input | `maxHealth` is DERIVED (**Max HP (derived)**), read-only | — |
 | **Strange in Numbers** | DERIVED: active iff card equipped AND `teammateCount≥1` (teammate mutation status not modeled — **user decision**) | card text + user decision |
@@ -638,10 +638,27 @@ ESM-proven via two mechanisms:
   Bones, Herd Mentality, Adrenal Reaction.
 - **Mechanism B (per-tier granted perks)**: Grounded's energy-DR-reduction
   perk bakes 4 discrete tiers via `HasPerk(ClassFreak0N)` gates directly (no
-  app-side expansion needed). **Fold-shape ASSUMPTION**: "Mod Weapon Attack
-  Damage" routes to `dbm` as MUL_ADD (float−1), additive inside the
-  parenthesis like every other fold — whether the engine instead multiplies
-  finished damage is unprovable from static data.
+  app-side expansion needed). **Fold-shape USER-RESOLVED 2026-07-21**: "Mod
+  Weapon Attack Damage" routes to `wholeDamage` (a standalone multiplier), NOT
+  `dbm` — it is a genuinely different Perk Entry Point from "Mod Weapon DMG
+  Bonus Mult" (the real `dbm` source, function "Add Actor Value Mult" on
+  `STAT_DamagePerk`), with a different Function Type of its own ("Multiply
+  Value", a bare scalar, verified via `esm -p walk
+  Mutation_ReduceEnergyDamage_Perk`). This can't be proven from static ESM
+  data alone (same conclusion the prior assumption reached), but it's
+  corroborated by its true sibling entry point, "Mod Incoming Weapon Damage"
+  — used by Follow Through / Taking One For The Team's target-applied
+  damage debuffs, independently confirmed `wholeDamage`-shaped (see the
+  **Hand-supplied values** row below) with the same "Multiply Value"
+  function type. `wholeDamage` and `baseDamage` are mathematically
+  equivalent here (Grounded's gate is weapon-level, not per-component), so
+  this is a bucket-family-consistency choice, not a correctness fork — see
+  the `wholeDamage`/`baseDamage` doc comments in `src/types/modifiers.ts`
+  and the `ENTRY_POINT_BUCKETS` comments in
+  `scripts/extract/normalize/mgef.ts` for the full reasoning. Practical
+  effect: Grounded's penalty no longer gets diluted inside a large dbm/crit/
+  sneak/tenderizer sum — it now always cuts the total by the full fraction,
+  independent of what else is stacked.
 - `classFreakRank` is DERIVED, never stored (reads the equipped card's rank).
 - **The MGEF `Detrimental` flag now negates flat value-modifier magnitudes
   globally** — before this fix every extracted "Reduce" effect shipped
@@ -1790,6 +1807,20 @@ auto-converted); their stats are stale and must not be shown.
   (`enemyType`) is **no longer** deferred — see **Hand-supplied values**'
   DmgVs* row. Range falloff is **no longer** deferred — see **Target
   distance (Close / Far)**.
+- **"Mod Incoming Weapon Damage" self-targeted sources** (2026-07-21 sweep,
+  triggered by the Grounded fold-shape fix above): `Mutation_EmpathPenalty_Perk`
+  (Empath), `UnstoppableMonster_Perk`, `Legendary_Armor_Heavyweight`,
+  `BOUNTY_Legendary_Armor_LucidPerk`, `PA_EmergencyProtocols` all fire this
+  Entry Point directly on the perk holder (no target redirect) — genuinely
+  incoming/defensive, correctly stay "not modeled" (no player-defense model
+  exists). Distinct from Follow Through / Taking One for the Team above,
+  which redirect the same Entry Point to the struck/attacking actor via a
+  spell chain — that's the offensive, `wholeDamage`-modeled half. "Mod
+  Incoming Explosion Damage" (the explosion-scoped sibling) has zero
+  occurrences in the current ESM dump — nothing to model yet; if one shows
+  up, apply the same self-vs-target split, and route a target-applied one to
+  `baseDamage` (not `wholeDamage`) for the same component-scoping reason as
+  "Mod Player Explosion Damage" (**Mutation penalties & Class Freak**).
 - SPECIAL-scaled perk entry points ("Add Actor Value Mult") are skipped and
   noted per-perk.
 - A handful of `cr`-prefixed creature/event DoT curves (non-level domain, X
