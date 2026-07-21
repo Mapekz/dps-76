@@ -631,6 +631,27 @@ export const hiddenConsumableIds: ReadonlySet<string> = new Set<string>([
   // (script property bindings only, no decompiled Papyrus bytecode) can't
   // surface that removal itself. Not a persistent chem a build can rely on.
   'W05_MQR_203P_ChemBlend',
+
+  // Cannery-canned foods (2026-07-21): ALCH records carrying the
+  // MealTypeCanned_Cannery keyword re-craft an existing food at a Cannery for
+  // shelf-stability only — verified identical modifiers/category/addiction to
+  // their base ALCH record for all 13 (same precedent as the GHL_Glowing
+  // bobbleheads above). Rudy's Canned Pozole (Moon_Rudy_Pozole) is NOT one of
+  // these — "Canned" is part of its actual name, no Cannery keyword, no base
+  // counterpart — so it stays.
+  'MirelurkQueenMeatTasty_Cannery', // Canned Aged Mirelurk Queen Steak → Aged Mirelurk Queen Steak
+  'OpossumMeatCooked_Cannery', // Canned Awesome Opossum Bacon → Awesome Opossum Bacon
+  'SCORE_S25_BlightVegetableCookedSoup_Cannery_G2', // Canned Blight Soup → Blight Soup
+  'SCORE_25_BrainBombsGourmet_Cannery_G1', // Canned Brain Bombs → Brain Bombs
+  'SCORE_25_ScorchBeastMeatBrainCooked_Cannery_G1', // Canned Broiled Scorchbeast Brain → Broiled Scorchbeast Brain
+  'CornVegetableCookedSoup_Cannery', // Canned Corn Soup → Corn Soup
+  'SCORE_S25_DeathclawMeatTastySouffle_Cannery_G2', // Canned Deathclaw Wellington → Deathclaw Wellington
+  'GourdVegetableCookedSoup_Cannery', // Canned Gourd Soup → Gourd Soup
+  'MegaSlothMushroomVegetableCookedSoup_Cannery', // Canned Megasloth Mushroom Soup → Megasloth Mushroom Soup
+  'MirelurkQueenMeatCooked_Cannery', // Canned Mirelurk Queen Steak → Mirelurk Queen Steak
+  'AnglerMeatCooked_Cannery', // Canned Poached Angler → Poached Angler
+  'StingwingMeatTastyStew_Cannery', // Canned Stingwing Stew → Stingwing Stew
+  'SCORE_25_MeatWeek_TatoSaladCooked_Cannery_G1', // Canned Tato Salad → Tato Salad
 ]);
 
 /**
