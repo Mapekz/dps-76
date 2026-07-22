@@ -3,7 +3,7 @@ import type { GeneratedOmod } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 import { hasAnyEngineEffect } from '@/types/modifiers';
 import { getDataset } from './dataset';
-import { hiddenArmorOmodIds } from './overrides/corrections';
+import { isRecordVisible } from './overlay';
 import { describeBuffModifiers } from '@/lib/buff-description';
 
 /**
@@ -103,11 +103,14 @@ export function getArmorEffects(mode: GameMode): ArmorEffectEntry[] {
   const cached = effectsCache.get(mode);
   if (cached) return cached;
 
+  const dataset = getDataset(mode);
   const groups = new Map<string, GeneratedOmod[]>();
-  for (const omod of getDataset(mode).armorOmods) {
+  for (const omod of dataset.armorOmods) {
     if (omod.id.startsWith('_PARENT_') || omod.name.startsWith('TEMPLATE')) continue;
-    if (omod.obtainable === false) continue;
-    if (hiddenArmorOmodIds.has(omod.id)) continue;
+    if (!isRecordVisible(omod, {
+      hidden: dataset.hiddenArmorOmodIds,
+      forceVisible: dataset.forceVisibleArmorOmodIds,
+    })) continue;
     if (!hasAnyEngineEffect(omod.modifiers)) continue;
     (groups.get(omod.name) ?? groups.set(omod.name, []).get(omod.name)!).push(omod);
   }

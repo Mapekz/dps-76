@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { weapons } from '../live/weapons';
+import { getWeapons } from '@/data';
 import { VETTED_WEAPON_IDS } from '../vetted-weapons';
 
 /**
@@ -12,6 +12,8 @@ import { VETTED_WEAPON_IDS } from '../vetted-weapons';
  */
 
 describe('vetted weapon roster', () => {
+  const weapons = getWeapons('live');
+
   it('has no unreviewed additions or removals', () => {
     expect(Object.keys(weapons).sort()).toEqual([...VETTED_WEAPON_IDS].sort());
   });

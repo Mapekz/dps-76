@@ -1,7 +1,6 @@
 import type { Weapon, WeaponComponent } from '@/types';
 import type { GeneratedWeapon, GeneratedDamageType } from '@/types/generated';
-import { forceVisibleWeaponIds, hiddenWeaponIds, weaponCorrections } from '../overrides/corrections';
-import { isRecordVisible } from '../overlay';
+import { isRecordVisible, type VisibilityOverlay } from '../overlay';
 import generatedWeapons from './generated/weapons.json';
 
 /**
@@ -61,7 +60,10 @@ function classifyWeaponClass(gw: GeneratedWeapon): Weapon['weaponClass'] {
  * the app (e.g. the unreleased P62 "Splinter" and its built-in Onslaught
  * effect) — the visibility filter below strips them from `weapons`.
  */
-export function adaptWeapon(gw: GeneratedWeapon): Weapon {
+export function adaptWeapon(
+  gw: GeneratedWeapon,
+  corrections: Readonly<Record<string, Partial<Weapon>>> = {}
+): Weapon {
   const levelCap = gw.eligibleLevels.length > 0 ? Math.min(50, Math.max(...gw.eligibleLevels)) : 50;
   const components = gw.components.map(c => ({
     damageType: DAMAGE_TYPE_MAP[c.damageType],
@@ -126,7 +128,7 @@ export function adaptWeapon(gw: GeneratedWeapon): Weapon {
     maxRange: gw.maxRange,
     outOfRangeDamageMult: gw.outOfRangeDamageMult,
     modifiers: gw.modifiers,
-    ...weaponCorrections[gw.id],
+    ...corrections[gw.id],
   };
 }
 
@@ -159,8 +161,13 @@ export function maxEligibleLevel(weapon: Weapon | undefined): number {
  */
 export const generatedWeaponsRaw = generatedWeapons as GeneratedWeapon[];
 
-export const weapons: Record<string, Weapon> = Object.fromEntries(
-  generatedWeaponsRaw
+export function buildWeapons(
+  generated: GeneratedWeapon[],
+  visibility: VisibilityOverlay,
+  corrections: Readonly<Record<string, Partial<Weapon>>>
+): Record<string, Weapon> {
+  return Object.fromEntries(
+    generated
     // Obtainability verdicts ride the generated data (obtainable: false =
     // no player-reachable ESM reference); corrections.ts rescues false
     // negatives and hides false positives. Unlike omods/consumables, hidden
@@ -168,6 +175,7 @@ export const weapons: Record<string, Weapon> = Object.fromEntries(
     // picker) — hiddenWeaponIds targets records that were never real player
     // weapons in the first place (dev items, workshop objects, NPC
     // duplicates), not real content a stale build might still reference.
-    .filter(gw => isRecordVisible(gw, { hidden: hiddenWeaponIds, forceVisible: forceVisibleWeaponIds }))
-    .map(gw => [gw.id, adaptWeapon(gw)])
-);
+      .filter(gw => isRecordVisible(gw, visibility))
+      .map(gw => [gw.id, adaptWeapon(gw, corrections)])
+  );
+}

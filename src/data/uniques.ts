@@ -1,14 +1,8 @@
 import type { GameMode, WeaponConfig } from '@/types';
 import type { GeneratedUnique } from '@/types/generated';
-import { forceVisibleOmodIds, hiddenOmodIds } from './overrides/corrections';
 import { getDataset } from './dataset';
 import { getOmodById } from './omods';
 import { isRecordVisible } from './overlay';
-
-const omodVisibility = {
-  hidden: new Set(hiddenOmodIds),
-  forceVisible: new Set(forceVisibleOmodIds),
-};
 
 const byIdCache = new Map<GameMode, Map<string, GeneratedUnique>>();
 
@@ -17,9 +11,13 @@ function allUniques(mode: GameMode): GeneratedUnique[] {
 }
 
 export function getUniques(mode: GameMode): GeneratedUnique[] {
+  const dataset = getDataset(mode);
   return allUniques(mode).filter(u => {
     const identity = getOmodById(mode, u.id);
-    return identity && isRecordVisible(identity, omodVisibility);
+    return identity && isRecordVisible(identity, {
+      hidden: dataset.hiddenOmodIds,
+      forceVisible: dataset.forceVisibleOmodIds,
+    });
   });
 }
 

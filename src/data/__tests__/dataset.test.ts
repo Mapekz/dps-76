@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { getUnresolvedOverrideKeys } from '@/data/dataset';
+import { getDataset, getUnresolvedOverrideKeys } from '@/data/dataset';
 import generatedUniquesLive from '@/data/live/generated/uniques.json';
 import { generatedWeaponsRaw as generatedWeaponsRawLive } from '@/data/live/weapons';
 import { getOmodById } from '@/data/omods';
+import { legendaryValueOverrides } from '@/data/overrides/legendary-values';
 import type { GeneratedUnique } from '@/types/generated';
 
 /**
@@ -19,6 +20,15 @@ describe('getUnresolvedOverrideKeys', () => {
 
   it('has no stale overlay keys on pts', () => {
     expect(getUnresolvedOverrideKeys('pts')).toEqual([]);
+  });
+});
+
+describe('getDataset value overlays', () => {
+  it('folds a real legendary modifier override into the live Merged Dataset', () => {
+    const id = 'mod_Legendary_Weapon2_DmgLimbs';
+    expect(getDataset('live').omods.find(omod => omod.id === id)?.modifiers).toEqual(
+      legendaryValueOverrides[id]
+    );
   });
 });
 

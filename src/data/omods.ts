@@ -1,13 +1,6 @@
 import type { GameMode, Weapon } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
 import { modifierHasEngineEffect } from '@/types/modifiers';
-import {
-  forceVisibleOmodIds,
-  hiddenOmodIds,
-  omodBadgeOverrides,
-  omodWeaponRestrictions,
-  perWeaponSlotLabelOverrides,
-} from './overrides/corrections';
 import { getDataset } from './dataset';
 import { isOmodEligibleForWeapon } from './omod-eligibility';
 import { isRecordVisible } from './overlay';
@@ -101,8 +94,8 @@ export function getDefaultOmods(
  * the exact same gate, so extracted slot lists can't drift from what the
  * picker offers. This wrapper just supplies the app-layer rescue table.
  */
-export function isEligible(omod: GeneratedOmod, weapon: Weapon): boolean {
-  return isOmodEligibleForWeapon(omod, weapon, omodWeaponRestrictions);
+export function isEligible(omod: GeneratedOmod, weapon: Weapon, mode: GameMode = 'live'): boolean {
+  return isOmodEligibleForWeapon(omod, weapon, getDataset(mode).omodWeaponRestrictions);
 }
 
 /**
@@ -138,8 +131,12 @@ const STOCK_NAME_RE = /^(standard|no |stock)/i;
  * AP-cost / armor-pen wiring is coming (ap-regen.md, phase-3-enemies.md).
  * Zero-modifier non-stock mods show badged 'inert' instead of vanishing.
  */
-export function classifyOmodDisplay(omod: GeneratedOmod, weapon?: Weapon): { show: boolean; badge?: OmodBadge } {
-  const overrideBadge = omodBadgeOverrides[omod.id];
+export function classifyOmodDisplay(
+  omod: GeneratedOmod,
+  weapon?: Weapon,
+  mode: GameMode = 'live'
+): { show: boolean; badge?: OmodBadge } {
+  const overrideBadge = getDataset(mode).omodBadgeOverrides[omod.id];
   const isStock = (weapon?.templateModFormIds ?? []).includes(omod.formId) || STOCK_NAME_RE.test(omod.name);
   const hasModifiers = omod.modifiers.length > 0;
   if (!hasModifiers && !overrideBadge && !isStock) return { show: true, badge: 'inert' };
@@ -203,8 +200,8 @@ const SLOT_LABEL_OVERRIDES: Record<string, string> = {
   ap_gun_ChemicalType: 'Tank',
 };
 
-function slotLabel(weaponId: string, attachPointEdid: string): string {
-  const perWeapon = perWeaponSlotLabelOverrides[weaponId]?.[attachPointEdid];
+function slotLabel(mode: GameMode, weaponId: string, attachPointEdid: string): string {
+  const perWeapon = getDataset(mode).perWeaponSlotLabelOverrides[weaponId]?.[attachPointEdid];
   if (perWeapon) return perWeapon;
   if (SLOT_LABEL_OVERRIDES[attachPointEdid]) return SLOT_LABEL_OVERRIDES[attachPointEdid];
   const raw = attachPointEdid.replace(/^ap_(gun_|melee_|Gun|Melee)?/i, '').replace(/[_-]+/g, ' ').trim();
@@ -222,8 +219,9 @@ function buildSlots(
   includeSlot: (attachPointEdid: string, omod: GeneratedOmod) => boolean,
   sortSlots: (a: OmodSlot, b: OmodSlot) => number
 ): OmodSlot[] {
+  const dataset = getDataset(mode);
   const groups = new Map<string, OmodOption[]>();
-  for (const omod of getDataset(mode).omods) {
+  for (const omod of dataset.omods) {
     // Authoring templates (_PARENT_ records, "TEMPLATE:"-named) carry the stats
     // real mods include via their Includes chain — not equippable themselves.
     // (The extractor stopped emitting them; this guards pre-derivation data.)
@@ -235,10 +233,14 @@ function buildSlots(
     // rescue is weapon-contextual (needs the weapon being modded), so it
     // stays here rather than folding into the shared visibility predicate.
     const isWeaponDefault = (weapon.defaultModFormIds ?? []).includes(omod.formId);
-    if (!isRecordVisible(omod, { hidden: hiddenOmodIds, forceVisible: forceVisibleOmodIds }, isWeaponDefault)) continue;
+    if (!isRecordVisible(
+      omod,
+      { hidden: dataset.hiddenOmodIds, forceVisible: dataset.forceVisibleOmodIds },
+      isWeaponDefault
+    )) continue;
     if (!includeSlot(omod.attachPointEdid, omod)) continue;
-    if (!isEligible(omod, weapon)) continue;
-    const { show, badge } = classifyOmodDisplay(omod, weapon);
+    if (!isEligible(omod, weapon, mode)) continue;
+    const { show, badge } = classifyOmodDisplay(omod, weapon, mode);
     if (!show) continue;
     const option: OmodOption = badge ? { ...omod, badge } : omod;
     (groups.get(omod.attachPointEdid) ?? groups.set(omod.attachPointEdid, []).get(omod.attachPointEdid)!).push(option);
@@ -263,7 +265,7 @@ function buildSlots(
     [...groups.entries()]
       .map(([slot, options]) => ({
         slot,
-        label: slotLabel(weapon.id, slot),
+        label: slotLabel(mode, weapon.id, slot),
         options: (NON_HYGIENE_SLOT_RE.test(slot) ? options : dedupe(options)).sort(
           (a, b) =>
             // The weapon's standard part first, then alphabetical.
@@ -311,7 +313,7 @@ export function getOmodSlots(mode: GameMode, weapon: Weapon): OmodSlot[] {
         (edid === 'ap_customName' &&
           omod.addedKeywords.includes('ObjectTypeUnique') &&
           (weapon.templateModFormIds ?? []).includes(omod.formId)) ||
-        omodBadgeOverrides[omod.id] !== undefined) &&
+        getDataset(mode).omodBadgeOverrides[omod.id] !== undefined) &&
       !LEGENDARY_SLOT_RE.test(edid),
     (a, b) => a.label.localeCompare(b.label)
   );

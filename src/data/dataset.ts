@@ -1,8 +1,8 @@
 import type { GameMode, Perk, PerkId, Enemy, EnemyMutation, Weapon } from '@/types';
-import type { GeneratedAddiction, GeneratedBodyPartRace, GeneratedConstants, GeneratedNpc, GeneratedOmod, GeneratedBuff, GeneratedPerk, GeneratedUnique } from '@/types/generated';
+import type { GeneratedAddiction, GeneratedBodyPartRace, GeneratedConstants, GeneratedNpc, GeneratedOmod, GeneratedBuff, GeneratedPerk, GeneratedUnique, GeneratedWeapon } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 
-import { weapons as weaponsLive, generatedWeaponsRaw as generatedWeaponsRawLive } from './live/weapons';
+import { buildWeapons, generatedWeaponsRaw as generatedWeaponsRawLive } from './live/weapons';
 import { perks as perkNamesLive } from './live/perks';
 import {
   enemies as enemiesLive,
@@ -13,7 +13,7 @@ import { bodyArmor as bodyArmorLive } from './live/armor';
 import { powerArmor as powerArmorLive } from './live/power-armor';
 import { generatedNpcsRaw as generatedNpcsRawLive } from './live/npcs';
 
-import { weapons as weaponsPts, generatedWeaponsRaw as generatedWeaponsRawPts } from './pts/weapons';
+import { generatedWeaponsRaw as generatedWeaponsRawPts } from './pts/weapons';
 import { perks as perkNamesPts } from './pts/perks';
 import {
   enemies as enemiesPts,
@@ -35,8 +35,10 @@ import {
   hiddenOmodIds,
   forceVisibleOmodIds,
   hiddenArmorOmodIds,
+  forceVisibleArmorOmodIds,
   omodBadgeOverrides,
   omodWeaponRestrictions,
+  perWeaponSlotLabelOverrides,
   hiddenConsumableIds,
   forceVisibleConsumableIds,
 } from './overrides/corrections';
@@ -61,8 +63,9 @@ import generatedConstantsLive from './live/generated/constants.json';
  * - VALUE overlays (`legendaryValueOverrides`, `buffValueOverrides`,
  *   `omodModifierAdditions`) are folded into `.modifiers` right here in
  *   `buildDataset`, so every accessor reads already-merged modifiers.
- * - VISIBILITY overlays (`hidden*`/`forceVisible*`) are NOT folded here —
- *   they're applied downstream, in the mode-aware accessor for each
+ * - VISIBILITY overlay sets (`hidden*`/`forceVisible*`) are mode-resolved
+ *   fields on the Dataset but are NOT folded into records here — they're
+ *   applied downstream, in the mode-aware accessor for each
  *   collection (`live/weapons.ts`, `buffs.ts`, `omods.ts`), by design: hidden
  *   omods/consumables must stay fully computable for a build that already
  *   selected one (only the picker should stop offering them), while hidden
@@ -145,11 +148,23 @@ export interface Dataset {
   powerArmor: PowerArmor;
   /** Game-wide scalar constants (extract-constants.ts) — e.g. the SPECIAL clamp read via `getSpecialClamp`. */
   constants: GeneratedConstants;
+  hiddenWeaponIds: ReadonlySet<string>;
+  forceVisibleWeaponIds: ReadonlySet<string>;
+  hiddenOmodIds: ReadonlySet<string>;
+  forceVisibleOmodIds: ReadonlySet<string>;
+  hiddenArmorOmodIds: ReadonlySet<string>;
+  forceVisibleArmorOmodIds: ReadonlySet<string>;
+  hiddenConsumableIds: ReadonlySet<string>;
+  forceVisibleConsumableIds: ReadonlySet<string>;
+  omodBadgeOverrides: Readonly<Record<string, 'inert' | 'pendingMechanic'>>;
+  omodWeaponRestrictions: Readonly<Record<string, readonly string[]>>;
+  omodNameOverrides: Readonly<Record<string, string>>;
+  perWeaponSlotLabelOverrides: Readonly<Record<string, Readonly<Record<string, string>>>>;
+  omodModifierAdditions: Readonly<Record<string, Modifier[]>>;
 }
 
 /** Hand-authored collections that would diverge per mode once a PTS dump exists. */
-interface HandAuthored {
-  weapons: Record<string, Weapon>;
+export interface HandAuthored {
   /** Name-only PerkId registry; `perkRegistry` (special/maxRank/costs) is DERIVED below (perk-cards.ts). */
   perkNames: Record<PerkId, PerkNameEntry>;
   enemies: Record<string, Enemy>;
@@ -159,67 +174,135 @@ interface HandAuthored {
   powerArmor: PowerArmor;
 }
 
-// Generated (ESM-extracted) collections + overlays. Single ESM today, so these
-// are shared across modes; per-mode generated data would be threaded here.
-const mergedOmods = applyNameOverride(
-  applyModifierAddition(
-    applyModifierOverride(generatedOmodsLive as GeneratedOmod[], legendaryValueOverrides),
-    omodModifierAdditions
-  ),
-  omodNameOverrides
-);
-// Armor/PA OMODs get the same value-override treatment as weapon omods
-// (armorLegendaryValueOverrides — condition-shape fixes, see that file's
-// header) but no name/addition overlays exist for this collection yet.
-const mergedArmorOmods = applyModifierOverride(
-  generatedArmorOmodsLive as GeneratedOmod[],
-  armorLegendaryValueOverrides
-);
-const mergedMutations = applyModifierOverride(generatedMutationsLive as GeneratedBuff[], buffValueOverrides);
-const mergedConsumables = applyModifierOverride(generatedConsumablesLive as GeneratedBuff[], buffValueOverrides);
-const generatedPerks = generatedPerksLive as GeneratedPerk[];
-const generatedAddictions = generatedAddictionsLive as GeneratedAddiction[];
-const generatedBodyParts = generatedBodyPartsLive as GeneratedBodyPartRace[];
-const generatedUniques = generatedUniquesLive as unknown as GeneratedUnique[];
-const mergedNpcs = applyNpcOverrides(generatedNpcsRawLive, npcOverrides);
+export interface DatasetSource {
+  generatedWeapons: GeneratedWeapon[];
+  generatedOmods: GeneratedOmod[];
+  generatedArmorOmods: GeneratedOmod[];
+  generatedPerks: GeneratedPerk[];
+  generatedMutations: GeneratedBuff[];
+  generatedConsumables: GeneratedBuff[];
+  generatedAddictions: GeneratedAddiction[];
+  generatedBodyParts: GeneratedBodyPartRace[];
+  generatedUniques: GeneratedUnique[];
+  generatedNpcs: GeneratedNpc[];
+  constants: GeneratedConstants;
+  legendaryValueOverrides: Readonly<Record<string, Modifier[]>>;
+  armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>>;
+  buffValueOverrides: Readonly<Record<string, Modifier[]>>;
+  npcOverrides: Readonly<Record<string, GeneratedNpc>>;
+  weaponCorrections: Readonly<Record<string, Partial<Weapon>>>;
+  hiddenWeaponIds: ReadonlySet<string>;
+  forceVisibleWeaponIds: ReadonlySet<string>;
+  hiddenOmodIds: ReadonlySet<string>;
+  forceVisibleOmodIds: ReadonlySet<string>;
+  hiddenArmorOmodIds: ReadonlySet<string>;
+  forceVisibleArmorOmodIds: ReadonlySet<string>;
+  hiddenConsumableIds: ReadonlySet<string>;
+  forceVisibleConsumableIds: ReadonlySet<string>;
+  omodBadgeOverrides: Readonly<Record<string, 'inert' | 'pendingMechanic'>>;
+  omodWeaponRestrictions: Readonly<Record<string, readonly string[]>>;
+  omodNameOverrides: Readonly<Record<string, string>>;
+  perWeaponSlotLabelOverrides: Readonly<Record<string, Readonly<Record<string, string>>>>;
+  omodModifierAdditions: Readonly<Record<string, Modifier[]>>;
+}
 
-function buildDataset(hand: HandAuthored): Dataset {
+/** Build one Merged Dataset from explicit generated, hand-authored, and Overlay inputs. */
+export function buildDataset(hand: HandAuthored, source: DatasetSource): Dataset {
   const { perkNames, ...rest } = hand;
+  const mergedOmods = applyNameOverride(
+    applyModifierAddition(
+      applyModifierOverride(source.generatedOmods, source.legendaryValueOverrides),
+      source.omodModifierAdditions
+    ),
+    source.omodNameOverrides
+  );
+  const mergedArmorOmods = applyModifierOverride(
+    source.generatedArmorOmods,
+    source.armorLegendaryValueOverrides
+  );
   return {
     ...rest,
+    weapons: buildWeapons(
+      source.generatedWeapons,
+      { hidden: source.hiddenWeaponIds, forceVisible: source.forceVisibleWeaponIds },
+      source.weaponCorrections
+    ),
     omods: mergedOmods,
     armorOmods: mergedArmorOmods,
-    uniques: generatedUniques,
-    perks: generatedPerks,
-    perkRegistry: derivePerkRegistry(perkNames, generatedPerks),
-    mutations: mergedMutations,
-    consumables: mergedConsumables,
-    addictions: generatedAddictions,
-    bodyPartRaces: generatedBodyParts,
-    npcs: mergedNpcs,
-    constants: generatedConstantsLive as GeneratedConstants,
+    uniques: source.generatedUniques,
+    perks: source.generatedPerks,
+    perkRegistry: derivePerkRegistry(perkNames, source.generatedPerks),
+    mutations: applyModifierOverride(source.generatedMutations, source.buffValueOverrides),
+    consumables: applyModifierOverride(source.generatedConsumables, source.buffValueOverrides),
+    addictions: source.generatedAddictions,
+    bodyPartRaces: source.generatedBodyParts,
+    npcs: applyNpcOverrides(source.generatedNpcs, source.npcOverrides),
+    constants: source.constants,
+    hiddenWeaponIds: source.hiddenWeaponIds,
+    forceVisibleWeaponIds: source.forceVisibleWeaponIds,
+    hiddenOmodIds: source.hiddenOmodIds,
+    forceVisibleOmodIds: source.forceVisibleOmodIds,
+    hiddenArmorOmodIds: source.hiddenArmorOmodIds,
+    forceVisibleArmorOmodIds: source.forceVisibleArmorOmodIds,
+    hiddenConsumableIds: source.hiddenConsumableIds,
+    forceVisibleConsumableIds: source.forceVisibleConsumableIds,
+    omodBadgeOverrides: source.omodBadgeOverrides,
+    omodWeaponRestrictions: source.omodWeaponRestrictions,
+    omodNameOverrides: source.omodNameOverrides,
+    perWeaponSlotLabelOverrides: source.perWeaponSlotLabelOverrides,
+    omodModifierAdditions: source.omodModifierAdditions,
   };
 }
 
+const liveSource: DatasetSource = {
+  generatedWeapons: generatedWeaponsRawLive,
+  generatedOmods: generatedOmodsLive as GeneratedOmod[],
+  generatedArmorOmods: generatedArmorOmodsLive as GeneratedOmod[],
+  generatedPerks: generatedPerksLive as GeneratedPerk[],
+  generatedMutations: generatedMutationsLive as GeneratedBuff[],
+  generatedConsumables: generatedConsumablesLive as GeneratedBuff[],
+  generatedAddictions: generatedAddictionsLive as GeneratedAddiction[],
+  generatedBodyParts: generatedBodyPartsLive as GeneratedBodyPartRace[],
+  generatedUniques: generatedUniquesLive as unknown as GeneratedUnique[],
+  generatedNpcs: generatedNpcsRawLive,
+  constants: generatedConstantsLive as GeneratedConstants,
+  legendaryValueOverrides,
+  armorLegendaryValueOverrides,
+  buffValueOverrides,
+  npcOverrides,
+  weaponCorrections,
+  hiddenWeaponIds,
+  forceVisibleWeaponIds,
+  hiddenOmodIds,
+  forceVisibleOmodIds,
+  hiddenArmorOmodIds,
+  forceVisibleArmorOmodIds,
+  hiddenConsumableIds,
+  forceVisibleConsumableIds,
+  omodBadgeOverrides,
+  omodWeaponRestrictions,
+  omodNameOverrides,
+  perWeaponSlotLabelOverrides,
+  omodModifierAdditions,
+};
+
 const datasets: Record<GameMode, Dataset> = {
   live: buildDataset({
-    weapons: weaponsLive,
     perkNames: perkNamesLive,
     enemies: enemiesLive,
     enemyMutations: enemyMutationsLive,
     legendaryRankModifiers: legendaryRankModifiersLive,
     bodyArmor: bodyArmorLive,
     powerArmor: powerArmorLive,
-  }),
+  }, liveSource),
   pts: buildDataset({
-    weapons: weaponsPts,
     perkNames: perkNamesPts,
     enemies: enemiesPts,
     enemyMutations: enemyMutationsPts,
     legendaryRankModifiers: legendaryRankModifiersPts,
     bodyArmor: bodyArmorPts,
     powerArmor: powerArmorPts,
-  }),
+  }, { ...liveSource, generatedWeapons: generatedWeaponsRawPts }),
 };
 
 export function getDataset(mode: GameMode): Dataset {
@@ -287,6 +370,7 @@ export function getUnresolvedOverrideKeys(mode: GameMode): UnresolvedOverrideKey
   const armorOmodIds = new Set((generatedArmorOmodsLive as GeneratedOmod[]).map(o => o.id));
   check('armorLegendaryValueOverrides', Object.keys(armorLegendaryValueOverrides), armorOmodIds);
   check('hiddenArmorOmodIds', hiddenArmorOmodIds, armorOmodIds);
+  check('forceVisibleArmorOmodIds', forceVisibleArmorOmodIds, armorOmodIds);
 
   const buffIds = new Set([...generatedMutationsLive, ...generatedConsumablesLive].map(b => b.id));
   check('buffValueOverrides', Object.keys(buffValueOverrides), buffIds);

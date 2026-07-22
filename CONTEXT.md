@@ -89,12 +89,13 @@ _Avoid_: patch, fixup, corrections (that's one specific overlay file).
 The single mode-resolved view of all game data, produced by `getDataset(mode)`
 (`src/data/dataset.ts`). VALUE overlays (legendary/buff/omod modifier
 overrides) are folded in right there, so every accessor reads already-merged
-modifiers. VISIBILITY overlays (hidden/forceVisible) apply downstream, in each
-collection's own accessor — by design: a build that already selected a
-since-hidden omod/consumable must keep computing, only the picker should stop
-offering it, while a hidden weapon record (never real player content) is
-dropped from the dataset entirely. `dataset.ts` stays the one home for the
-Overlay *contract* even where it isn't the one applying it.
+modifiers. VISIBILITY overlay sets (hidden/forceVisible) are also reachable
+through `getDataset(mode)`, but apply downstream, in each collection's own
+accessor — by design: a build that already selected a since-hidden
+omod/consumable must keep computing, only the picker should stop offering it,
+while a hidden weapon record (never real player content) is dropped from the
+dataset entirely. `dataset.ts` stays the one home for the Overlay *contract*
+even where it isn't the one applying it.
 _Avoid_: combined data, resolved data.
 
 ## Relationships
