@@ -11,6 +11,7 @@ import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
 import { resolveStats } from '@/lib/loadout';
+import { resolveBulletStormStacks, resolveOnslaughtStacks } from '@/lib/engine/stacks';
 import { cn } from '@/lib/utils';
 import { createDefaultPlayerConditions, type PlayerConditions } from '@/types';
 import { SectionTrigger } from './SectionTrigger';
@@ -125,11 +126,11 @@ export function ConditionsSection() {
   const onslaughtReverse = scenarios?.onslaughtReverse ?? false;
   const onslaughtReverseAvg = scenarios?.onslaughtReverseAvgStacks;
   const onslaughtStored = conditions.onslaughtStacks;
-  const onslaughtValue = onslaughtReverse
-    ? (onslaughtReverseAvg ?? 0)
-    : onslaughtStored === -1
-      ? onslaughtMax
-      : Math.min(onslaughtStored, onslaughtMax);
+  const onslaughtValue = resolveOnslaughtStacks(
+    onslaughtStored,
+    onslaughtMax,
+    onslaughtReverse ? (onslaughtReverseAvg ?? 0) : undefined
+  );
   const hasKillStreak = scenarios?.hasKillStreakSources ?? false;
 
   // Concentrated Fire: manual 0–20 stacks slider standing in for the game's
@@ -172,11 +173,12 @@ export function ConditionsSection() {
   const bulletStormAvg = scenarios?.bulletStormAvgStacks;
   const bulletStormAverageMode = conditions.bulletStormAverageMode ?? false;
   const bulletStormStored = conditions.bulletStormStacks;
-  const bulletStormValue = bulletStormAverageMode
-    ? (bulletStormAvg ?? 0)
-    : bulletStormStored === -1
-      ? bulletStormMax
-      : Math.min(Math.max(bulletStormStored, bulletStormMin), bulletStormMax);
+  const bulletStormValue = resolveBulletStormStacks(
+    bulletStormStored,
+    bulletStormMin,
+    bulletStormMax,
+    bulletStormAverageMode ? (bulletStormAvg ?? 0) : undefined
+  );
 
   const foodTier = conditions.foodTier ?? 0;
   const drinkTier = conditions.drinkTier ?? 0;

@@ -51,6 +51,12 @@ A weapon with its equipped OMODs applied (merged keywords, rewritten speed/auto
 state) — the shape the engine actually reads.
 _Avoid_: modded weapon, final weapon.
 
+**Effective Stacks**:
+The resolved, clamped Onslaught or Bullet Storm count shared by the engine's
+`PLAYER_STATE_READERS` and the ConditionsSection display via
+`src/lib/engine/stacks.ts`.
+_Avoid_: displayed stacks, raw stacks.
+
 **Loadout**:
 The resolved, engine-ready view of a player build — weapon + OMODs + perks +
 legendary perks + mutations + consumables assembled into the engine's

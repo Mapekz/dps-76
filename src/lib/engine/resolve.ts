@@ -2,6 +2,7 @@ import type { PlayerConditions, EnemyConditions, Weapon } from '@/types';
 import type { Bucket, Condition, CurveInput, DamageType, Modifier, ModOp, StackCounter } from '@/types/modifiers';
 import { interpolateCurve } from '@/lib/curve-tables';
 import { CLOSE_THRESHOLD_UNITS, DEFAULT_DISTANCE_UNITS, FAR_THRESHOLD_UNITS } from '@/lib/distance';
+import { resolveBulletStormStacks, resolveOnslaughtStacks } from './stacks';
 import type { BucketTrace, TraceContribution } from './trace';
 
 /** Per-attack flags that differ between the displayed scenarios. */
@@ -112,12 +113,7 @@ export interface ResolveContext {
  * CurveInput reader — both consumers read the identical clamped count.
  */
 function effectiveOnslaughtStacks(p: PlayerConditions, ctx: ResolveContext): number {
-  const max = ctx.onslaughtMaxStacks ?? 0;
-  if (ctx.onslaughtReverseStacks !== undefined) {
-    return Math.min(ctx.onslaughtReverseStacks, max);
-  }
-  const raw = p.onslaughtStacks === -1 ? max : p.onslaughtStacks;
-  return Math.min(raw, max);
+  return resolveOnslaughtStacks(p.onslaughtStacks, ctx.onslaughtMaxStacks ?? 0, ctx.onslaughtReverseStacks);
 }
 
 /**
@@ -132,12 +128,12 @@ function effectiveOnslaughtStacks(p: PlayerConditions, ctx: ResolveContext): num
  * CurveInput reader.
  */
 function effectiveBulletStormStacks(p: PlayerConditions, ctx: ResolveContext): number {
-  const max = ctx.bulletStormMaxStacks ?? 0;
-  const min = ctx.bulletStormMinStacks ?? 0;
-  const clamp = (v: number) => Math.max(0, Math.min(Math.max(v, min), max));
-  if (ctx.bulletStormAvgStacks !== undefined) return clamp(ctx.bulletStormAvgStacks);
-  const raw = p.bulletStormStacks === -1 ? max : p.bulletStormStacks;
-  return clamp(raw);
+  return resolveBulletStormStacks(
+    p.bulletStormStacks,
+    ctx.bulletStormMinStacks ?? 0,
+    ctx.bulletStormMaxStacks ?? 0,
+    ctx.bulletStormAvgStacks
+  );
 }
 
 /**
