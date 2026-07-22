@@ -148,3 +148,20 @@ import { useGameMode } from '@/hooks/useGameMode';
    if any value isn't ESM-proven — a terse entry in `docs/assumptions.md`
    (one claim, a status tag, a code pointer; not a narrated writeup).
 4. Check `_meta.json` unresolved reports after extraction — silent gaps are bugs.
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues on `Mapekz/dps-76`, via the `gh` CLI.
+See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Canonical vocabulary — `needs-triage`, `needs-info`, `ready-for-agent`,
+`ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `CONTEXT.md` + `docs/adr/` at the repo root, plus
+`docs/assumptions.md` for engine claims. See `docs/agents/domain.md`.
