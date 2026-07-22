@@ -11,6 +11,7 @@ import { getAddictions, getConsumables, getMutations } from '@/data/buffs';
 import { getOmodById } from '@/data/omods';
 import { getArmorEffectById } from '@/data/armor-modifiers';
 import { nukesDragonsPerks, reclassifyPerkLoadouts } from '@/lib/nukes-dragons';
+import { buildDelta } from '@/lib/build-delta';
 import { consumablesById, sanitizeConsumables } from '@/lib/consumable-rules';
 import { createDefaultBuildState, type BuildState } from '@/state/build-reducer';
 import type { PerkId } from '@/data/perk-ids';
@@ -121,13 +122,7 @@ function decodePerks(chunks: string | undefined, fallback: Array<[string, number
 
 // ── non-default diffing ─────────────────────────────────────────────────────
 
-function diffAgainstDefaults<T extends object>(value: T, defaults: T): Partial<T> {
-  const out: Partial<T> = {};
-  for (const key of Object.keys(defaults) as Array<keyof T>) {
-    if (value[key] !== defaults[key]) out[key] = value[key];
-  }
-  return out;
-}
+const diffAgainstDefaults = buildDelta;
 
 /**
  * Derived player-condition fields (resolveLoadout recomputes them from the

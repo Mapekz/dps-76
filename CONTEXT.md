@@ -57,6 +57,12 @@ The resolved, clamped Onslaught or Bullet Storm count shared by the engine's
 `src/lib/engine/stacks.ts`.
 _Avoid_: displayed stacks, raw stacks.
 
+**Build Delta**:
+The set of non-default fields in a config object, shared by serialization
+(`src/lib/persist/codec.ts`) and the "N active" badges (ConditionsSection,
+TargetSection), computed by `src/lib/build-delta.ts`.
+_Avoid_: diff, delta count (say Build Delta).
+
 **Loadout**:
 The resolved, engine-ready view of a player build — weapon + OMODs + perks +
 legendary perks + mutations + consumables assembled into the engine's

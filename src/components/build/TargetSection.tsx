@@ -22,6 +22,7 @@ import { getDistanceConstants } from '@/data';
 import { TENDERIZER_MAX_STACKS } from '@/data/target-debuffs';
 import { getNpc } from '@/data/npcs';
 import { getEnemyDefenses, resolveTargetLevel, resolveTargetLevelBounds } from '@/lib/enemy-defenses';
+import { buildDeltaCount } from '@/lib/build-delta';
 import { DEFAULT_DISTANCE_UNITS, FAR_THRESHOLD_UNITS, gameUnitsToPipBoy, pipBoyToGameUnits } from '@/lib/distance';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions, type EnemyConditions } from '@/types';
 import type { BodyPartRaceCategory } from '@/types/generated';
@@ -251,19 +252,40 @@ export function TargetSection() {
   };
 
   const activeCount =
-    (conditions.targetRace ? 1 : 0) +
-    (isAiming ? 1 : 0) +
-    ((conditions.healthPercent ?? 100) !== (defaults.healthPercent ?? 100) ? 1 : 0) +
-    (conditions.crippledLimbCount !== defaults.crippledLimbCount ? 1 : 0) +
-    ((conditions.groupTargetCount ?? 1) !== (defaults.groupTargetCount ?? 1) ? 1 : 0) +
-    ((conditions.targetDistance ?? DEFAULT_DISTANCE_UNITS) !== (defaults.targetDistance ?? DEFAULT_DISTANCE_UNITS) ? 1 : 0) +
+    buildDeltaCount(
+      {
+        targetRace: conditions.targetRace,
+        isAimingAtWeakpoint: isAiming ?? false,
+        healthPercent: conditions.healthPercent ?? 100,
+        crippledLimbCount: conditions.crippledLimbCount,
+        groupTargetCount: conditions.groupTargetCount ?? 1,
+        targetDistance: conditions.targetDistance ?? DEFAULT_DISTANCE_UNITS,
+        tenderizerStacks: tenderizer,
+        followThroughPct,
+        takingOneForTheTeamDrRank,
+        isBleeding: conditions.isBleeding ?? false,
+        isBurning: conditions.isBurning ?? false,
+        isPoisoned: conditions.isPoisoned ?? false,
+        isFrozen: conditions.isFrozen ?? false,
+      },
+      {
+        targetRace: defaults.targetRace,
+        isAimingAtWeakpoint: playerDefaults.isAimingAtWeakpoint,
+        healthPercent: defaults.healthPercent ?? 100,
+        crippledLimbCount: defaults.crippledLimbCount,
+        groupTargetCount: defaults.groupTargetCount ?? 1,
+        targetDistance: defaults.targetDistance ?? DEFAULT_DISTANCE_UNITS,
+        tenderizerStacks: playerDefaults.tenderizerStacks,
+        followThroughPct: playerDefaults.followThroughPct ?? 0,
+        takingOneForTheTeamDrRank: playerDefaults.takingOneForTheTeamDrRank ?? 0,
+        isBleeding: defaults.isBleeding ?? false,
+        isBurning: defaults.isBurning ?? false,
+        isPoisoned: defaults.isPoisoned ?? false,
+        isFrozen: defaults.isFrozen ?? false,
+      }
+    ) +
     (conditions.targetLevel != null ? 1 : 0) +
-    (forcedEpicRank == null && userEpicRank !== 0 ? 1 : 0) +
-    (tenderizer !== 0 ? 1 : 0) +
-    (followThroughPct !== (playerDefaults.followThroughPct ?? 0) ? 1 : 0) +
-    // One control now (rank drives both pct/DR fields together) — count once, not twice.
-    (takingOneForTheTeamDrRank !== (playerDefaults.takingOneForTheTeamDrRank ?? 0) ? 1 : 0) +
-    STATUS_TOGGLES.filter(s => (conditions[s.key] as boolean | undefined) ?? false).length;
+    (forcedEpicRank == null && userEpicRank !== 0 ? 1 : 0);
 
   return (
     <AccordionItem value="target">

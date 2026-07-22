@@ -11,7 +11,8 @@ import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
 import { resolveStats } from '@/lib/loadout';
-import { resolveBulletStormStacks, resolveOnslaughtStacks } from '@/lib/engine/stacks';
+import { resolveBulletStormStacks, isBulletStormStacksActive, isOnslaughtStacksActive, resolveOnslaughtStacks } from '@/lib/engine/stacks';
+import { buildDeltaCount } from '@/lib/build-delta';
 import { cn } from '@/lib/utils';
 import { createDefaultPlayerConditions, type PlayerConditions } from '@/types';
 import { SectionTrigger } from './SectionTrigger';
@@ -188,27 +189,52 @@ export function ConditionsSection() {
   const glow = Math.min(conditions.glow ?? 0, stats.maxHealth);
 
   const activeCount =
-    (conditions.healthPercent !== defaults.healthPercent ? 1 : 0) +
-    (foodTier !== (defaults.foodTier ?? 0) ? 1 : 0) +
-    (drinkTier !== (defaults.drinkTier ?? 0) ? 1 : 0) +
-    (feralTier !== (defaults.feralTier ?? 0) ? 1 : 0) +
-    (glow !== (defaults.glow ?? 0) ? 1 : 0) +
-    (conditions.capsOnHand !== defaults.capsOnHand ? 1 : 0) +
-    (conditions.adrenalineStacks !== defaults.adrenalineStacks ? 1 : 0) +
-    (onslaughtStored !== -1 && !onslaughtReverse ? 1 : 0) +
-    (bulletStormStored !== -1 && !bulletStormAverageMode ? 1 : 0) +
-    (concentratedFireStacks !== defaults.concentratedFireStacks ? 1 : 0) +
-    (battleLoadersBashSec !== (defaults.battleLoadersBashSec ?? 0) ? 1 : 0) +
-    ((conditions.targetsHit ?? 1) !== (defaults.targetsHit ?? 1) ? 1 : 0) +
-    ((conditions.weaponConditionPct ?? 100) !== (defaults.weaponConditionPct ?? 100) ? 1 : 0) +
-    ((conditions.playerDamageResist ?? 0) !== (defaults.playerDamageResist ?? 0) ? 1 : 0) +
-    ((conditions.hitRatePct ?? 100) !== (defaults.hitRatePct ?? 100) ? 1 : 0) +
-    ((conditions.bodyPartHitRatePct ?? 100) !== (defaults.bodyPartHitRatePct ?? 100) ? 1 : 0) +
-    (conditions.isPowerAttacking !== defaults.isPowerAttacking ? 1 : 0) +
-    ((conditions.isLastShot ?? false) !== (defaults.isLastShot ?? false) ? 1 : 0) +
-    ((conditions.isAimingDownSights ?? false) !== (defaults.isAimingDownSights ?? false) ? 1 : 0) +
-    (conditions.isInPowerArmor !== defaults.isInPowerArmor ? 1 : 0) +
-    ((conditions.hydrated ?? true) !== (defaults.hydrated ?? true) ? 1 : 0);
+    buildDeltaCount(
+      {
+        healthPercent: conditions.healthPercent,
+        foodTier,
+        drinkTier,
+        feralTier,
+        glow,
+        capsOnHand: conditions.capsOnHand,
+        adrenalineStacks: conditions.adrenalineStacks,
+        concentratedFireStacks,
+        battleLoadersBashSec,
+        targetsHit: conditions.targetsHit ?? 1,
+        weaponConditionPct: conditions.weaponConditionPct ?? 100,
+        playerDamageResist: conditions.playerDamageResist ?? 0,
+        hitRatePct: conditions.hitRatePct ?? 100,
+        bodyPartHitRatePct: conditions.bodyPartHitRatePct ?? 100,
+        isPowerAttacking: conditions.isPowerAttacking,
+        isLastShot: conditions.isLastShot ?? false,
+        isAimingDownSights: conditions.isAimingDownSights ?? false,
+        isInPowerArmor: conditions.isInPowerArmor,
+        hydrated: conditions.hydrated ?? true,
+      },
+      {
+        healthPercent: defaults.healthPercent,
+        foodTier: defaults.foodTier ?? 0,
+        drinkTier: defaults.drinkTier ?? 0,
+        feralTier: defaults.feralTier ?? 0,
+        glow: defaults.glow ?? 0,
+        capsOnHand: defaults.capsOnHand,
+        adrenalineStacks: defaults.adrenalineStacks,
+        concentratedFireStacks: defaults.concentratedFireStacks,
+        battleLoadersBashSec: defaults.battleLoadersBashSec ?? 0,
+        targetsHit: defaults.targetsHit ?? 1,
+        weaponConditionPct: defaults.weaponConditionPct ?? 100,
+        playerDamageResist: defaults.playerDamageResist ?? 0,
+        hitRatePct: defaults.hitRatePct ?? 100,
+        bodyPartHitRatePct: defaults.bodyPartHitRatePct ?? 100,
+        isPowerAttacking: defaults.isPowerAttacking,
+        isLastShot: defaults.isLastShot ?? false,
+        isAimingDownSights: defaults.isAimingDownSights ?? false,
+        isInPowerArmor: defaults.isInPowerArmor,
+        hydrated: defaults.hydrated ?? true,
+      }
+    ) +
+    (isOnslaughtStacksActive(onslaughtStored, onslaughtReverse) ? 1 : 0) +
+    (isBulletStormStacksActive(bulletStormStored, bulletStormAverageMode) ? 1 : 0);
 
   return (
     <AccordionItem value="conditions">
