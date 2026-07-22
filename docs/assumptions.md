@@ -982,6 +982,14 @@ Engine: `paper-damage.ts`, `scenarios.ts`, `fire-rate.ts`.
   `meleeAttackShredder`) that legitimately keep 1.0. There is no single
   scalar to read; picking "the" generic-melee entry by event name would risk
   silently extracting a carve-out's value instead of the intended one.
+- **Race-mult vs PowerAttackDBM split — USER-CONFIRMED 2026-07-22**: the base
+  power-attack multiplier is the race-defined Attacks[] mult above (native,
+  hardcoded by design); DFOB `PowerAttackDamage_DO` (0x00837DFB) is unrelated
+  to it — it names the PowerAttackDBM entry point, AV `STAT_DmgPowerAttack`,
+  already routed `powerAttackBonus` (`normalize/mgef.ts`) and folded
+  additively in the dbm parenthesis (Heavy Hitter, Radioactive Strength,
+  Heavy Hitter's, Whacker Smacker). Bridge pinned each extraction
+  (`verify-dfobs.ts`).
 - **Melee speed applies relatively** (`1.0 × weapon.speed` instead of a flat
   1.0) — so `fireRateSpeed` OMOD/AV rewrites have an effect on melee.
   Absolute swing timings remain unmeasured (`dps-todos/melee-cadence.md`).
