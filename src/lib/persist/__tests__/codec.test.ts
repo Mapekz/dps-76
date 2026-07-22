@@ -147,7 +147,7 @@ describe('build codec', () => {
     const state = stateFrom([{ type: 'weapon/select', weaponId: 'RemovedByPatch' }]);
     const decoded = await decodeBuild(await encodeBuild(state), 'live');
     expect(decoded!.state.player.weapon).toBeNull();
-    expect(decoded!.warnings.join()).toMatch(/unknown weapon/);
+    expect(decoded!.warnings).toContain('unknown weapon "RemovedByPatch" — cleared');
   });
 
   it('tolerates future fields (forward compatibility)', async () => {
@@ -350,7 +350,9 @@ describe('consumables & addictions (2026-07-13 overhaul, hermetic fixtures)', ()
     state.player.consumables = ['TestChemA', 'TestChemB'];
     const decoded = await decodeBuild(await encodeBuild(state), 'live');
     expect(decoded!.state.player.consumables).toEqual(['TestChemB']);
-    expect(decoded!.warnings.some(w => w.includes('stacking rules'))).toBe(true);
+    expect(decoded!.warnings).toContain(
+      "removed to satisfy stacking rules (one chem/alcohol at a time; same-bonus food/drink don't stack)"
+    );
   });
 
   it('a legal single-consumable payload round-trips without a stacking warning', async () => {
