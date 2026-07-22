@@ -90,6 +90,17 @@ describe('BUCKET_REGISTRY', () => {
     expect(Object.keys(BUCKET_REGISTRY).sort()).toEqual([...ALL_BUCKETS].sort());
   });
 
+  it('records only the two non-default bootstrap fold conventions', () => {
+    const entriesWithConventions = Object.entries(BUCKET_REGISTRY)
+      .filter(([, entry]) => entry.foldBase !== undefined || entry.deBased !== undefined)
+      .map(([bucket, entry]) => [bucket, { foldBase: entry.foldBase, deBased: entry.deBased }]);
+
+    expect(entriesWithConventions).toEqual([
+      ['vatsHitChance', { foldBase: 1, deBased: true }],
+      ['vatsHitChanceMult', { foldBase: 1, deBased: false }],
+    ]);
+  });
+
   it('derives WEAPON_STAT_BUCKETS as exactly the weaponStat-regime buckets', () => {
     expect([...WEAPON_STAT_BUCKETS].sort()).toEqual(
       [

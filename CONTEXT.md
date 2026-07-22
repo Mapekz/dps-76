@@ -28,11 +28,12 @@ _Avoid_: category, slot (slot means an OMOD attach point).
 Which fold mechanism consumes a Bucket (`damageFold`, `dot`, `weaponStat`,
 `critEconomy`, `apEconomy`, `playerStat`, `bootstrap`, or `unfolded`), and
 whether the fold's result reaches anything (`hasEngineEffect`) — one table,
-`BUCKET_REGISTRY` (`src/types/modifiers.ts`), answering both. `WEAPON_STAT_BUCKETS`
-(`effective-weapon.ts`) and `INERT_ENGINE_BUCKETS` (the OMOD/consumable
-picker's "no engine effect" badge, `omods.ts`) are derived from it, not
-hand-maintained, so the picker can't silently drift from what the engine
-actually wires.
+`BUCKET_REGISTRY` (`src/types/modifiers.ts`), answering both. Its optional
+`foldBase` and `deBased` fields also own non-default fold-output conventions
+(defaults: 0 and false). `WEAPON_STAT_BUCKETS` (`effective-weapon.ts`) and
+`INERT_ENGINE_BUCKETS` (the OMOD/consumable picker's "no engine effect" badge,
+`omods.ts`) are derived from it, not hand-maintained, so the picker can't
+silently drift from what the engine actually wires.
 _Avoid_: routing, dispatch.
 
 **Fold**:

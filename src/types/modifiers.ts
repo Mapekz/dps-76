@@ -432,12 +432,14 @@ export type Bucket =
  * function folds a given bucket (and whether the result does anything) is
  * otherwise only discoverable by grepping resolve.ts/paper-damage.ts/
  * crit-meter.ts/ap-economy.ts/player-stats.ts/effective-weapon.ts by hand.
- * This is the one table that answers both questions; `WEAPON_STAT_BUCKETS`
- * (effective-weapon.ts) and `INERT_ENGINE_BUCKETS` (omods.ts, the picker's
- * "no engine effect" badge) are DERIVED from it below instead of hand-
- * maintained, so neither can silently drift from what the engine actually
- * wires. Add a row here whenever a new Bucket is added to the union above —
- * `assertBucketRegistryIsExhaustive` (modifiers.test.ts) enforces it.
+ * This is the one table that answers both questions and records non-default
+ * fold-base/de-basing conventions; absent `foldBase`/`deBased` mean 0/false.
+ * `WEAPON_STAT_BUCKETS` (effective-weapon.ts) and `INERT_ENGINE_BUCKETS`
+ * (omods.ts, the picker's "no engine effect" badge) are DERIVED from it below
+ * instead of hand-maintained, so neither can silently drift from what the
+ * engine actually wires. Add a row here whenever a new Bucket is added to the
+ * union above — `assertBucketRegistryIsExhaustive` (modifiers.test.ts)
+ * enforces it.
  */
 export type BucketRegime =
   /** Per-hit paper damage — paper-damage.ts `computePaperDamage`. */
@@ -478,6 +480,10 @@ export type BucketRegime =
 
 export interface BucketRegimeEntry {
   regime: BucketRegime;
+  /** Intrinsic base for registry-driven folds; defaults to 0 when absent. */
+  foldBase?: number;
+  /** Whether the registry-driven result excludes its intrinsic base; defaults to false. */
+  deBased?: boolean;
   /**
    * False when the fold happens but its result reaches nothing further
    * (specialPerception: folded into `special.perception`, never read again)
@@ -548,8 +554,8 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   addDamageComponent: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — no reader anywhere in the codebase; likely superseded by explosivePayload/materializeDamageTypeComponents' },
   armorPen: { regime: 'mitigation', hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold → armorPenTotal; consumed by mitigation.ts applyMitigation (per-component Resist fraction)' },
   armorPenFlat: { regime: 'mitigation', hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold → flat resist-point total; consumed by mitigation.ts applyMitigation (physical-resist-only, see bucket doc comment)' },
-  vatsHitChance: { regime: 'display', hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold (base 1, de-based) → ScenarioSet.vatsHitChanceBonus, rendered by ConditionsSection.tsx\'s pill — NEVER consumed by sustainedDps/apLimitedDps/any formula (Phase 4 — VATS hit-chance aggregate, display-only)' },
-  vatsHitChanceMult: { regime: 'display', hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold (base 1, NOT de-based — exposed as-is, 1 = neutral) → ScenarioSet.vatsHitChanceMult, rendered by ConditionsSection.tsx\'s pill — NEVER consumed by sustainedDps/apLimitedDps/any formula (Concentrated Fire EP109 multiplier, USER-RESOLVED 2026-07-19, display-only)' },
+  vatsHitChance: { regime: 'display', foldBase: 1, deBased: true, hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold (base 1, de-based) → ScenarioSet.vatsHitChanceBonus, rendered by ConditionsSection.tsx\'s pill — NEVER consumed by sustainedDps/apLimitedDps/any formula (Phase 4 — VATS hit-chance aggregate, display-only)' },
+  vatsHitChanceMult: { regime: 'display', foldBase: 1, deBased: false, hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold (base 1, NOT de-based — exposed as-is, 1 = neutral) → ScenarioSet.vatsHitChanceMult, rendered by ConditionsSection.tsx\'s pill — NEVER consumed by sustainedDps/apLimitedDps/any formula (Concentrated Fire EP109 multiplier, USER-RESOLVED 2026-07-19, display-only)' },
   dotDamage: { regime: 'dot', hasEngineEffect: true, foldedBy: 'paper-damage.ts computeDotDps' },
   maxHealth: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats (245 + 5xEND + this fold)' },
   specialStrength: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds paper-damage.ts strengthTerm + the strength CurveInput (Debilitator\'s)' },

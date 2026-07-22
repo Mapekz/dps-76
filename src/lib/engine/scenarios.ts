@@ -1,5 +1,5 @@
 import type { EnemyConditions, GameMode, PlayerConditions, Weapon } from '@/types';
-import type { Modifier } from '@/types/modifiers';
+import { BUCKET_REGISTRY, type Bucket, type Modifier } from '@/types/modifiers';
 import { weaponCharges } from '@/lib/charge';
 import { interpolateCurve } from '@/lib/curve-tables';
 import chargedMeleeCurveFile from '@/data/live/curvetables/legendarymods/weapon_chargedmeleeattack.json';
@@ -347,6 +347,18 @@ function scenarioCtx(
   };
 }
 
+/** Fold using the bucket's registry-owned base and output convention. */
+function foldRegisteredBucket(
+  modifiers: Modifier[],
+  bucket: Bucket,
+  ctx: ResolveContext,
+  collect?: BucketTrace[]
+): number {
+  const { foldBase = 0, deBased = false } = BUCKET_REGISTRY[bucket];
+  const result = foldBucket(modifiers, bucket, foldBase, ctx, collect);
+  return deBased ? result - foldBase : result;
+}
+
 function isMelee(weapon: Weapon): boolean {
   return weapon.weaponClass === 'melee' || weapon.weaponClass === 'unarmed';
 }
@@ -610,8 +622,8 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // `stacks:onslaught` / `onslaughtStacks`-curve modifier reads 0 below.
   const bootstrapFlags: ScenarioFlags = { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false };
   const bootstrapCtx = scenarioCtx(input, bootstrapFlags, { maxStacks: 0 }, { maxStacks: 0, minStacks: 0 });
-  const onslaughtMaxStacks = foldBucket(input.modifiers, 'onslaughtMaxStacks', 0, bootstrapCtx);
-  const onslaughtReverse = foldBucket(input.modifiers, 'onslaughtReverse', 0, bootstrapCtx) > 0;
+  const onslaughtMaxStacks = foldRegisteredBucket(input.modifiers, 'onslaughtMaxStacks', bootstrapCtx);
+  const onslaughtReverse = foldRegisteredBucket(input.modifiers, 'onslaughtReverse', bootstrapCtx) > 0;
 
   // Battle-Loader's bash time (Phase C — go-through-every-single-silly-
   // whistle.md): folded ONCE here, threaded into every reload-timing call
@@ -646,9 +658,9 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // ResolveContext below) — same bootstrap precedent as Onslaught above:
   // cap/floor/retention modifiers only gate on weapon keyword/class, never on
   // scenario flags, so the flag-agnostic bootstrap context is enough.
-  const bulletStormMaxStacks = foldBucket(input.modifiers, 'bulletStormMaxStacks', 0, bootstrapCtx);
-  const bulletStormMinStacks = foldBucket(input.modifiers, 'bulletStormMinStacks', 0, bootstrapCtx);
-  const bulletStormRetention = foldBucket(input.modifiers, 'bulletStormRetention', 0, bootstrapCtx);
+  const bulletStormMaxStacks = foldRegisteredBucket(input.modifiers, 'bulletStormMaxStacks', bootstrapCtx);
+  const bulletStormMinStacks = foldRegisteredBucket(input.modifiers, 'bulletStormMinStacks', bootstrapCtx);
+  const bulletStormRetention = foldRegisteredBucket(input.modifiers, 'bulletStormRetention', bootstrapCtx);
 
   let bulletStormAvg: number | undefined;
   if (input.player.bulletStormAverageMode && bulletStormMaxStacks > 0) {
@@ -677,8 +689,8 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // regardless of whether a target is selected — with no target,
   // `effectiveAgainstEnemy` just never runs, so the fold result goes unread,
   // exactly like any other bootstrap fold with nothing equipped.
-  const armorPenTotal = foldBucket(input.modifiers, 'armorPen', 0, bootstrapCtx);
-  const armorPenFlatTotal = foldBucket(input.modifiers, 'armorPenFlat', 0, bootstrapCtx);
+  const armorPenTotal = foldRegisteredBucket(input.modifiers, 'armorPen', bootstrapCtx);
+  const armorPenFlatTotal = foldRegisteredBucket(input.modifiers, 'armorPenFlat', bootstrapCtx);
 
   // Kill-streak sources (existence scan — see ScenarioSet.hasKillStreakSources).
   const hasKillStreakSources = input.modifiers.some(
@@ -729,28 +741,19 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // aggregate (display-only)". Surfaced on `ScenarioSet.vatsHitChanceBonus`
   // purely for the ConditionsSection.tsx pill.
   //
-  // Folded against base 1 (then de-based by subtracting 1) rather than base
-  // 0 like armorPen: real sources here are a MIX of ADD (V.A.T.S. Enhanced's
-  // flat +0.50, Awareness'/Orange Mentats' curve/flat ADDs) AND MUL_ADD (the
-  // V.A.T.S. Matrix Overlay armor mods, Hoppy Hunter IPA, Twisted Muscles —
-  // all extracted from ESM "Multiply Value" entry points as `float − 1`, the
-  // SAME transform `translateGrantedPerk` uses everywhere else). `foldOps`
-  // scales every MUL_ADD term by `base`, so a base of 0 would silently zero
-  // out all six MUL_ADD sources; base 1 lets MUL_ADD's `× base` recover its
-  // `float − 1` contribution, and subtracting 1 back out gives the same
-  // "0 = no sources equipped" convention as every other bootstrap fold.
-  const vatsHitChanceBonus = foldBucket(input.modifiers, 'vatsHitChance', 1, vatsCtx) - 1;
+  // Its unusual base-1/de-based convention is registry-owned; see the bucket
+  // doc comment for why mixed ADD/MUL_ADD sources require it.
+  const vatsHitChanceBonus = foldRegisteredBucket(input.modifiers, 'vatsHitChance', vatsCtx);
   // Concentrated Fire's hit-chance MULTIPLIER (EP109, USER-RESOLVED
   // 2026-07-19) — same "fold once against the VATS context" bootstrap
   // precedent as vatsHitChanceBonus immediately above, and the same base-1
-  // reasoning (every source is MUL_ADD, `foldOps` scales MUL_ADD by the
-  // base), but NOT de-based: the exposed value IS the multiplier itself
-  // (1 = neutral), not a bonus fraction, so subtracting 1 back out would be
-  // wrong here. See the `vatsHitChanceMult` bucket doc comment
+  // reasoning, but NOT de-based: the exposed value IS the multiplier itself
+  // (1 = neutral). Both conventions are registry-owned. See the
+  // `vatsHitChanceMult` bucket doc comment
   // (src/types/modifiers.ts) and docs/assumptions.md "Concentrated Fire
   // stacks". Surfaced on `ScenarioSet.vatsHitChanceMult`, never consumed by
   // any damage/sustain/AP term below.
-  const vatsHitChanceMult = foldBucket(input.modifiers, 'vatsHitChanceMult', 1, vatsCtx);
+  const vatsHitChanceMult = foldRegisteredBucket(input.modifiers, 'vatsHitChanceMult', vatsCtx);
   const vatsTrace = tracing ? createHitTrace() : undefined;
   const vatsCritTrace = tracing ? createHitTrace() : undefined;
   const vatsAvg = critWeighted(
@@ -805,12 +808,12 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   if (!isMelee(input.weapon) && (input.weapon.apCost ?? 0) > 0) {
     const apCtx = vatsCtx;
     const percentCollect = tracing ? ([] as BucketTrace[]) : undefined;
-    const apRegenBonus = foldBucket(input.modifiers, 'apRegen', 0, apCtx, percentCollect);
+    const apRegenBonus = foldRegisteredBucket(input.modifiers, 'apRegen', apCtx, percentCollect);
     const flatCollect = tracing ? ([] as BucketTrace[]) : undefined;
-    const apRegenFlatBonus = foldBucket(input.modifiers, 'apRegenFlat', 0, apCtx, flatCollect);
+    const apRegenFlatBonus = foldRegisteredBucket(input.modifiers, 'apRegenFlat', apCtx, flatCollect);
     const maxApCollect = tracing ? ([] as BucketTrace[]) : undefined;
-    const apMaxBonus = foldBucket(input.modifiers, 'apMax', 0, apCtx, maxApCollect);
-    const apPerCrit = foldBucket(input.modifiers, 'apPerCrit', 0, apCtx);
+    const apMaxBonus = foldRegisteredBucket(input.modifiers, 'apMax', apCtx, maxApCollect);
+    const apPerCrit = foldRegisteredBucket(input.modifiers, 'apPerCrit', apCtx);
     // apCritHot is collected per-modifier (not bucket-folded): each HoT keeps
     // its own duration window for the refresh-only steady-state term.
     const critHots = input.modifiers.flatMap(mod => {

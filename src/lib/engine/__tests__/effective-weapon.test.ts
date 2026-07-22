@@ -8,6 +8,7 @@ import { weaponCharges } from '@/lib/charge';
 import { buildEffectiveWeapon } from '@/lib/engine/effective-weapon';
 import { computeScenarios } from '@/lib/engine/scenarios';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
+import type { Bucket, CurveInput, Modifier } from '@/types/modifiers';
 
 // Phase 5 milestone: Powerful Automatic Receiver on The Fixer gives
 // +0.25 dbm, SET Speed 0.8248, automatic fire, and MUL_ADD −20% crit/sneak base.
@@ -136,7 +137,7 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
 
   it('folds weapon-stat modifiers ONLY when their condition matches (synthetic, Stage C3 killStreakCount)', () => {
     // Thrill-Seeker's shape: 3 mutually-exclusive killStreakCount tiers on
-    // reloadSpeed. Before Stage C3, foldWeaponStat ignored conditions
+    // reloadSpeed. Before Stage C3, the weapon-stat fold ignored conditions
     // entirely and would have summed all 3 unconditionally (0.03+0.06+0.09).
     const thrillSeekerLike = {
       id: 'test_thrill_seeker',
@@ -345,6 +346,78 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, measur
       fixer, [], 50, player, createDefaultEnemyConditions(), [...fastFighter, ...mods]
     );
     expect(result.weapon.reloadSpeed).toBeCloseTo(base + 0.1, 6);
+  });
+});
+
+describe('dual-site bootstrap folds', () => {
+  const fixer = getWeapons('live')['CombatRifle_Fixer'];
+  const source = { kind: 'perk' as const, formId: '0xB00', edid: 'test_bootstrap', name: 'Test Bootstrap' };
+
+  function add(bucket: Bucket, value: number, id: string = bucket): Modifier {
+    return { id, source, bucket, op: 'ADD', value, conditions: [] };
+  }
+
+  function observer(input: CurveInput): Modifier {
+    return {
+      id: `observe:${input}`,
+      source,
+      bucket: 'reloadSpeed',
+      op: 'ADD',
+      curve: { input, points: [{ x: 0, y: 0 }, { x: 100, y: 100 }] },
+      curveScale: 1,
+      conditions: [],
+    };
+  }
+
+  it.each([
+    {
+      bucket: 'onslaughtMaxStacks' as const,
+      input: 'onslaughtStacks' as const,
+      modifiers: [add('onslaughtMaxStacks', 7)],
+      expected: 7,
+      scenarioValue: (result: ReturnType<typeof computeScenarios>) => result.onslaughtMaxStacks,
+      player: createDefaultPlayerConditions(),
+    },
+    {
+      bucket: 'bulletStormMaxStacks' as const,
+      input: 'bulletStormStacks' as const,
+      modifiers: [add('bulletStormMaxStacks', 9)],
+      expected: 9,
+      scenarioValue: (result: ReturnType<typeof computeScenarios>) => result.bulletStormMaxStacks,
+      player: createDefaultPlayerConditions(),
+    },
+    {
+      bucket: 'bulletStormMinStacks' as const,
+      input: 'bulletStormStacks' as const,
+      modifiers: [add('bulletStormMaxStacks', 10, 'max-for-min'), add('bulletStormMinStacks', 4)],
+      expected: 4,
+      scenarioValue: (result: ReturnType<typeof computeScenarios>) => result.bulletStormMinStacks,
+      player: { ...createDefaultPlayerConditions(), bulletStormStacks: 0 },
+    },
+  ])('$bucket produces the same value in effective-weapon and scenarios', ({ input, modifiers, expected, scenarioValue, player }) => {
+    const identicalModifiers = [...modifiers, observer(input)];
+    const effective = buildEffectiveWeapon(
+      fixer,
+      [],
+      50,
+      player,
+      createDefaultEnemyConditions(),
+      identicalModifiers
+    );
+    const effectiveSiteValue = effective.weapon.reloadSpeed! - (fixer.reloadSpeed ?? 1);
+    const scenarios = computeScenarios({
+      mode: 'live',
+      weapon: fixer,
+      itemLevel: 50,
+      modifiers: identicalModifiers,
+      player,
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2,
+      critRate: 0,
+    });
+
+    expect(effectiveSiteValue).toBeCloseTo(expected, 10);
+    expect(scenarioValue(scenarios)).toBeCloseTo(effectiveSiteValue, 10);
   });
 });
 

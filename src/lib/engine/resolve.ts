@@ -392,7 +392,7 @@ export function effectiveValue(mod: Modifier, ctx: ResolveContext): number | nul
  *   → 0.8248 + 0.3×2.0 + 0.5 = 1.9248.
  *
  * This is the one home for the rule; `foldBucket` feeds it condition-evaluated
- * values, `effective-weapon.foldWeaponStat` feeds it raw values.
+ * values for every ordinary bucket fold, including effective-weapon rewrites.
  */
 export function foldOps(entries: Array<{ op: ModOp; value: number }>, base: number): number {
   let setValue: number | null = null;
