@@ -21,9 +21,9 @@ import type { PerkId } from '@/data/perk-ids';
  * Format: `1.` + base64url(deflate-raw(compact JSON)). The JSON stores only
  * non-default values (diffed against the default factories), so old links keep
  * decoding as the schema grows — unknown keys are dropped, missing keys fall
- * back to defaults. Perk loadouts reuse the N&D 2-char key dictionary +
- * 1-char base-36 rank (same 3-char chunk convention as N&D `p=`); perks
- * without an N&D key travel in a fallback array.
+ * back to defaults. Perk chunks reuse the N&D 2-char key dictionary with our
+ * own base-36 rank wire format (see encodePerks); perks without an N&D key
+ * travel in a fallback array.
  *
  * decode() never throws on user input: corrupt payloads return null, unknown
  * ids (weapon renamed by a patch, removed omod, ...) are skipped with a warning.
@@ -64,7 +64,16 @@ interface SerializedBuild {
   vb?: boolean;
 }
 
-// ── perk chunk coding (N&D key dictionary) ─────────────────────────────────
+// ── perk chunk coding (our internal wire format) ────────────────────────────
+//
+// encodePerks/decodePerks implement OUR OWN #b=… share-link perk
+// encoding: 2-char key + 1-char base-36 rank (ranks 1–35), plus a fallback
+// array (px/lpx) for perks outside the 2-char dictionary. Deliberately
+// distinct from src/lib/nukes-dragons.ts parsePerkString, which decodes
+// nukesdragons.com's externally-fixed build-share URL scheme (base-10 rank,
+// capped at 5) — a format we do not control and cannot extend. The one shared
+// seam is the nukesDragonsPerks dictionary (key → PerkId), imported above and
+// reversed via perkIdToKey below; it is not duplicated.
 
 let reverseKeyCache: Map<string, string> | null = null;
 function perkIdToKey(): Map<string, string> {

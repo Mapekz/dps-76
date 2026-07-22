@@ -351,6 +351,12 @@ export function parseBuildUrl(url: string): ParsedPerk[] {
   }
 }
 
+// Decodes nukesdragons.com's own build-share URL perk chunks (externally
+// fixed: base-10 rank, capped at 5 — not ours to change). Deliberately kept
+// separate from src/lib/persist/codec.ts encodePerks/decodePerks, our richer
+// internal wire format (base-36, rank capped at 35, plus fallback array).
+// The shared nukesDragonsPerks dictionary (key → PerkId) is the one genuine
+// shared seam between the two files.
 export function parsePerkString(perkString: string): ParsedPerk[] {
   const perks: ParsedPerk[] = [];
   for (let i = 0; i + 2 < perkString.length; i += 3) {
