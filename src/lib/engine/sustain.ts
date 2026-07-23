@@ -34,7 +34,7 @@ export interface SustainResult extends SustainTiming {
  * `reloadSkipChanceBash` source (Battle-Loader's) triggers instead of a
  * genuine reload — **ASSUMPTION**, a user-approved placeholder pending an
  * in-game stopwatch measurement of a real bash swing (per-weapon animation
- * timing likely varies, `#27`). Overridable
+ * timing likely varies, `#61`). Overridable
  * per scenario via `PlayerConditions.battleLoadersBashSec`, which literally
  * duplicates this value as its default (types/ stays a leaf — no engine
  * import; `sustain.test.ts` regression-tests the two stay in sync).

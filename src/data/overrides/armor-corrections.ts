@@ -7,7 +7,7 @@
 /**
  * Armor-OMOD ids hidden from the Armor checklist (src/data/armor-
  * modifiers.ts) — data-quality exclusions, not deferred-mechanic badges
- * (that's the incoming-scope todo, #15).
+ * (that's the incoming-scope todo, #49).
  */
 export const hiddenArmorOmodIds: ReadonlySet<string> = new Set<string>([
   // Overeater's: its only extracted modifier is a `maxHealth` curve whose
@@ -15,7 +15,7 @@ export const hiddenArmorOmodIds: ReadonlySet<string> = new Set<string>([
   // "Legendary_Armor_OvereaterAddValue: zero magnitude, no curve — script/
   // scaled, needs override") — always interpolates to 0, no real bonus. The
   // mod's actual mechanic (+DR/ER per active food/drink buff) is incoming-
-  // scope and unextracted; see #15.
+  // scope and unextracted; see #49.
   'mod_Legendary_Armor1_Overeater',
   'mod_Legendary_PowerArmor1_Overeater',
   // Punishing: its two extracted modifiers (limbDamage/dbm MUL_ADD −1, i.e.
@@ -26,7 +26,7 @@ export const hiddenArmorOmodIds: ReadonlySet<string> = new Set<string>([
   // noise from a shared `LegendaryCommonWeaponPerk` entry point, not a real
   // effect (extraction note: "ActorValues on ReflectMeleeDamage —
   // unmapped" — the actual reflect-damage mechanic never extracted). See
-  // #15.
+  // #49.
   'mod_Legendary_Armor_ReflectDamage',
 ]);
 

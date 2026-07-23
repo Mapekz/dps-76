@@ -357,7 +357,7 @@ export const omodModifierAdditions: Readonly<Record<string, Modifier[]>> = {
   // over base 1.0 → ×1.1), which is linear so the mean is exact for expected
   // DPS even though any single crit's roll isn't. Exact scaling target only
   // (not the base mult) still wants an in-game measurement — see
-  // #38.
+  // #72.
   mod_Custom_TheVATSUnknown: [
     {
       id: 'mod_Custom_TheVATSUnknown:critDmgBonusScale',

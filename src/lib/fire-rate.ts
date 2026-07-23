@@ -3,13 +3,13 @@ import { resolvedChargeTimeSec, weaponCharges } from '@/lib/charge';
 
 /**
  * Derives the weapon's fire rate in shots-per-second (melee approximate until
- * animation-derived timing lands — #11).
+ * animation-derived timing lands — #45).
  *
  * Formula:
  *   fireRate_charging = 1 / (t + animDelaySec / speed)   (t = resolved charge hold, wall-clock)
  *   fireRate_auto     = speed / animDurationSec   (most autos ≈ 0.11 s)
  *   fireRate_semi     = speed / attackDelaySec    (extracted WEAP "Attack Delay Seconds")
- *   fireRate_melee    = 1.0  (stub — real timings tracked in #11)
+ *   fireRate_melee    = 1.0  (stub — real timings tracked in #45)
  *
  * Notes:
  * - `speed` is the EFFECTIVE weapon speed. The historical 0.8248× "physical"

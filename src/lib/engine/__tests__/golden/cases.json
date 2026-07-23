@@ -129,7 +129,7 @@
    "measure": "perHit",
    "expected": null,
    "tolerancePct": 2,
-   "source": "pending in-game pip-boy reading (#31: verifies the WEAP-impact + EXPL-curve summing assumption, docs/assumptions.md 'Launcher explosion damage')"
+   "source": "pending in-game pip-boy reading (#65: verifies the WEAP-impact + EXPL-curve summing assumption, docs/assumptions.md 'Launcher explosion damage')"
   },
   {
    "name": "Stock Missile Launcher @50, no perks \u2014 EXPL payload chase (engine: 5 impact + 968 explosion = 973)",
@@ -147,7 +147,7 @@
    "measure": "perHit",
    "expected": null,
    "tolerancePct": 2,
-   "source": "pending in-game pip-boy reading (#31)"
+   "source": "pending in-game pip-boy reading (#65)"
   },
   {
    "name": "Gauss Minigun + Tesla Coil Capacitor @50, no perks \u2014 validates the materialized energy component (DamageTypeValues conversion)",
@@ -660,7 +660,7 @@
    "measure": "perHit",
    "expected": null,
    "tolerancePct": 2,
-   "source": "pending in-game measurement of the charged-shot DoT tick rate (#19); Flaming Arrows' dotDamage is real and active today, but the bow's own Full Power Seconds/Full Power Damage Mult aren't extracted yet, so the charge multiplier is a no-op until the extraction phase lands \u2014 once it does, this pins that a partial-draw shot's flaming-arrow burn ticks the same as a full-draw shot's (computeDotDps never sees chargeMult)"
+   "source": "pending in-game measurement of the charged-shot DoT tick rate (#53); Flaming Arrows' dotDamage is real and active today, but the bow's own Full Power Seconds/Full Power Damage Mult aren't extracted yet, so the charge multiplier is a no-op until the extraction phase lands \u2014 once it does, this pins that a partial-draw shot's flaming-arrow burn ticks the same as a full-draw shot's (computeDotDps never sees chargeMult)"
   },
   {
    "name": "Hunting Rifle @50, no perks \u2014 range falloff at 1.25\u00d7maxRange (X=1.5, composite model)",
@@ -680,7 +680,7 @@
    "measure": "perHit",
    "expected": null,
    "tolerancePct": 3,
-   "source": "pending in-game measurement (#23 \"Composite range-falloff shape\"); Hunting Rifle minRange 2612 / maxRange 5225 / outOfRangeDamageMult 0.5, distance 6531 raw units \u2248 1.25\u00d7maxRange \u2192 X = (d\u2212minRange)/(maxRange\u2212minRange) \u2248 1.5 \u2192 curveY(1.5) = 0.75 \u2192 predicted rangeFalloffMult \u2248 0.375 (0.5\u00d70.75), i.e. perHit \u2248 stock \u00d7 0.375; pins the composite model's USER-CONFIRMED X = (d\u2212minRange)/(maxRange\u2212minRange) reading against real damage numbers"
+   "source": "pending in-game measurement (#57 \"Composite range-falloff shape\"); Hunting Rifle minRange 2612 / maxRange 5225 / outOfRangeDamageMult 0.5, distance 6531 raw units \u2248 1.25\u00d7maxRange \u2192 X = (d\u2212minRange)/(maxRange\u2212minRange) \u2248 1.5 \u2192 curveY(1.5) = 0.75 \u2192 predicted rangeFalloffMult \u2248 0.375 (0.5\u00d70.75), i.e. perHit \u2248 stock \u00d7 0.375; pins the composite model's USER-CONFIRMED X = (d\u2212minRange)/(maxRange\u2212minRange) reading against real damage numbers"
   },
   {
    "name": "Combat Rifle (Fixer) @50, no perks vs Scorchbeast Queen (Lv 100) \u2014 mitigated sustained DPS",
@@ -701,7 +701,7 @@
    "measure": "effectiveSustainedDps",
    "expected": null,
    "tolerancePct": 15,
-   "source": "pending in-game measurement (#25 \"Phase 2 mitigation formula\") \u2014 Phase 2, Resist mitigation Option A; SBQ Lv100 physical resist from CT_Creatures_Armor_Universal_Tier33 (curve-only, unmeasured), no armorPen/flat-debuff sources equipped; cross-checks the (damage\u00d70.15/Resist)^0.365 formula end-to-end against a real Pip-Boy DPS reading, not just the extracted resist curve"
+   "source": "pending in-game measurement (#59 \"Phase 2 mitigation formula\") \u2014 Phase 2, Resist mitigation Option A; SBQ Lv100 physical resist from CT_Creatures_Armor_Universal_Tier33 (curve-only, unmeasured), no armorPen/flat-debuff sources equipped; cross-checks the (damage\u00d70.15/Resist)^0.365 formula end-to-end against a real Pip-Boy DPS reading, not just the extracted resist curve"
   },
   {
    "name": "Combat Rifle (Fixer) @50, Unyielding x5 at 10% HP \u2014 STR-boosted melee-term-neutral perHit sanity (SPECIAL-driven, ranged weapon)",
