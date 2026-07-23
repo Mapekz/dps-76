@@ -76,7 +76,7 @@ Categories that previously read as "not yet swept" but are now dispositioned:
 - **Armor / power-armor OMODs** — pipeline SHIPPED 2026-07-18
   (`armor-omods.json`, commit 66870c6). Swept: **Propelling** (4★ PA legendary,
   `moveSpeedBonus` +5%/piece, clean `SpeedMult` route) shipped in the Armor
-  Effects checklist (`dps-todos/armor-mods-outgoing.md`). **Emergency
+  Effects checklist (`#16`). **Emergency
   Protocols / Shrouded** — not found in the curated inventory (either
   non-obtainable or not carrying a `SpeedMult`-routed property; not chased
   further this pass). **Sleek** — found, but its AV is

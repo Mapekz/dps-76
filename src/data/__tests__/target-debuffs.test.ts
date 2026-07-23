@@ -7,7 +7,7 @@ describe('getTargetDebuffModifiers — Taking One for the Team flat DR debuff', 
     expect(getTargetDebuffModifiers({ takingOneForTheTeamDrRank: 0 })).toHaveLength(1);
   });
 
-  // Magnitude table, esm-walk-confirmed (dps-todos/phase-3-enemies.md §3.3):
+  // Magnitude table, esm-walk-confirmed (docs/assumptions.md "Resist mitigation" §3.3):
   // ranks 1-4 → 6/10/15/50 flat DamageResist points. Rank 4's jump to 50 (not
   // ~20, the arithmetic extrapolation) is a flagged possible ESM anomaly —
   // modeled as-is, not "corrected".

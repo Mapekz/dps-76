@@ -2,7 +2,7 @@ import type { Enemy, EnemyMutation } from '@/types';
 
 // Placeholder enemy stats (health/DR/ER) pending ESM extraction — enemy
 // modeling is dormant (no enemy-config UI is mounted yet — see
-// dps-todos/phase-3-enemies.md).
+// docs/assumptions.md "Creature stat curves & NPC extraction").
 // This is the canonical list for both modes; pts re-exports it.
 export const enemies: Record<string, Enemy> = {
   super_mutant: { id: 'super_mutant', name: 'Super Mutant', level: 100, health: 850, damageResist: 100, energyResist: 100 },

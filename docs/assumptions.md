@@ -11,7 +11,7 @@ and — where open — a verify link.
 
 **Where things go**: investigation history (how a bug was found, rejected
 alternatives, dated narrative) belongs in the **commit message**, not here.
-In-game measurement TODOs live in `dps-todos/measurement-backlog.md`. A full
+In-game measurement TODOs are tracked as GitHub issues (label `needs-measurement`). A full
 explanation of how a mechanic works — even an ESM-proven one, not an
 assumption — belongs in the implementing function's doc-comment, not here.
 
@@ -272,7 +272,7 @@ Engine: `src/lib/fire-rate.ts`.
 
 - **Formula**: auto = `speed / 0.11`; semi = `speed / Attack Delay Seconds`;
   melee = 1.0/s stub (melee timing is the one open scope —
-  `dps-todos/melee-cadence.md`).
+  `#11`).
 - **CONFIRMED** against 30+ in-game Pip-Boy readings (live + PTS dumps):
   `Pip-Boy Fire Rate = (effectiveSpeed / cycleConstant) × 10`, rounded —
   `cycleConstant` = 0.11 (auto) or the weapon's own Attack Delay Seconds
@@ -368,7 +368,7 @@ Engine: `src/lib/engine/sustain.ts`.
 - **ASSUMPTION, unverified**: `reloadSec = Animation Reload Seconds (RGW3) /
   Reload Speed (Data)`. Fixer: 3.20/1.1765 ≈ 2.72s. Golden `expected: null`
   pending a stopwatched mag-dump+reload cycle (the discriminating divide-vs-
-  time-scale protocol is in `dps-todos/measurement-backlog.md` — only the
+  time-scale protocol is in `#2` — only the
   fold-shape question below was settled on 2026-07-15).
 - **Fold shape RESOLVED (stopwatch-leaning, 2026-07-15)**: OMOD/legendary
   `ReloadSpeed` record rewrites and perk/mutation `WeapReloadSpeedMult` AV
@@ -415,7 +415,7 @@ wrongly stack with Quad/reload-speed mods).
   `PlayerConditions.battleLoadersBashSec` (UI slider, default
   `DEFAULT_BATTLE_LOADERS_BASH_SEC` = 0.75s — **ASSUMPTION, user-approved
   placeholder pending an in-game stopwatch measurement**,
-  `dps-todos/measurement-backlog.md`). At `bashSec = 0` the formula
+  `#27`). At `bashSec = 0` the formula
   degenerates to `(1 − pFree) × (1 − pBash) × realReloadSec` — IDENTICAL to
   the old single-channel `realReloadSec × (1 − union(pFree, pBash))`
   formula, so the two-channel model is a strict generalization of the one it
@@ -447,7 +447,7 @@ wrongly stack with Quad/reload-speed mods).
   gates marked inactive — the calc models grounded, non-sprint combat);
   non-sprint sources (Gun Runner, Squad Maneuvers, Portable Power) DO feed
   it. Whether in-game Fast Fighter counts sprint-only bonuses while standing
-  still is **UNMEASURED** (`dps-todos/move-speed-sources.md`).
+  still is **UNMEASURED** (`#35`).
 - A net move-speed penalty grants nothing (curve clamps at 0,0) — direction
   unverified in-game.
 
@@ -868,7 +868,7 @@ UI: `ConditionsSection.tsx` pill next to the VATS hit-rate slider.
   - **V.A.T.S. Enhanced** (OMOD `mod_Legendary_Weapon2_Guns_VATSAccuracy`
     `0x00524153`): flat `ActorValues ADD STAT_VATSAccuracy 50.0` → +0.50.
     Status changed this phase from "no action" (permanently-out-of-scope
-    no-op, `dps-todos/measurement-backlog.md`) to informational display.
+    no-op) to informational display.
   - **Awareness** perk (`0x000D2287`, hasCard, Perception-gated card):
     curve vs the player's Perception AV (`0x000002C3`) on `STAT_VATSAccuracy`
     — points (1,5)→(15,18)→(30,30)→(60,45)→(100,50), scale 0.01. New
@@ -992,7 +992,7 @@ Engine: `paper-damage.ts`, `scenarios.ts`, `fire-rate.ts`.
   (`verify-dfobs.ts`).
 - **Melee speed applies relatively** (`1.0 × weapon.speed` instead of a flat
   1.0) — so `fireRateSpeed` OMOD/AV rewrites have an effect on melee.
-  Absolute swing timings remain unmeasured (`dps-todos/melee-cadence.md`).
+  Absolute swing timings remain unmeasured (`#11`).
 - **Charged (4★ melee)**: damage curve gives **+0.5/+1.5/+3.0** at 1/2/3
   charges (max 3), multiplying the releasing power attack by `(1+y)`.
   **Extracted (not hand-copied), user-identified 2026-07-21** — DFOB
@@ -1347,7 +1347,7 @@ Engine: `src/lib/engine/mitigation.ts` (`applyMitigation`), `src/lib/enemy-defen
   `armorPenTotal`.
 - **`armorPenFlat`** (resist points, NOT a fraction — distinct bucket/units
   from `armorPen`): today's only source is Taking One for the Team's flat DR
-  debuff. **ESM-PROVEN** (esm-walk 2026-07-14, `dps-todos/phase-3-enemies.md`
+  debuff. **ESM-PROVEN** (esm-walk 2026-07-14, `#28`
   §3.3): the hidden companion perk
   `LGN_TakingOneForTheTeam_DamageIncrease_Perk` bundles a Peak Value Modifier
   DamageResist debuff (Detrimental, 10s, no Energy Resist component) onto the
@@ -1535,7 +1535,7 @@ Engine: `scripts/extract/extract-curvetables.ts`, `scripts/extract/extract-npcs.
     upgrade. Bigfoot's 4★ drop comes from LGDI
     `RA_LegendaryItems_Weapons_BigfootOnly_Rank4` 0x008833D6 — same pattern,
     no epic-disallowed keyword, no rank anywhere. All three stay rank-less;
-    deferred entry in `dps-todos/phase-3-enemies.md`.
+    deferred entry in `#18`.
   - **CONFIRMED (2026-07-21) — NPC-perk normalized-level adjustment now
     baked into `levelMinGlobal`/`levelMaxGlobal`**: a `crModNormalizedLevel*`
     PERK on an NPC's own `Perks` array (not just the RACE/NPC_ GLOBs) can
@@ -1846,7 +1846,7 @@ auto-converted); their stats are stale and must not be shown.
 - **EXCLUDED (data-quality, `hiddenArmorOmodIds`)**: Overeater's (its only
   modifier is a `maxHealth` curve the ESM itself flags zero-magnitude/
   script-scaled; its real DR/ER-per-buff mechanic is incoming-scope,
-  unextracted — `dps-todos/armor-mods-incoming.md`) and Punishing (its two
+  unextracted — `#15`) and Punishing (its two
   modifiers are `HasLegendary_Weapon_HealAllies`-gated noise from a shared
   `LegendaryCommonWeaponPerk` chase — same collision class documented under
   Crippling in `legendary-values.ts` — not a real effect; its actual reflect-
@@ -1885,7 +1885,7 @@ auto-converted); their stats are stale and must not be shown.
   values**. Taking One for the Team's companion perk ALSO applies an enemy
   DR debuff to the attacker (**-6/-10/-15/-50** at ranks 1-4,
   esm-walk-confirmed, a non-arithmetic progression) — not modeled (no enemy
-  DR/ER mitigation exists yet; scoped to `dps-todos/phase-3-enemies.md`).
+  DR/ER mitigation exists yet; scoped to `#5`).
 - Enemy DR/ER, armor pen, limb targeting: deferred by plan. Race-gated damage
   (`enemyType`) is **no longer** deferred — see **Hand-supplied values**'
   DmgVs* row. Range falloff is **no longer** deferred — see **Target

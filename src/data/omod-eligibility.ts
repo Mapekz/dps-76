@@ -11,7 +11,7 @@
  * checked-in generation (stale and circular). Every input is threaded by the
  * caller, including the restrictions rescue table.
  *
- * Semantics (history in dps-todos/omod-eligibility → docs/assumptions.md):
+ * Semantics (history in git; see docs/assumptions.md "OMOD eligibility & recipe chains"):
  *
  * Branch 0 — the attach point must exist on the weapon (ESM-authoritative;
  *   since the attach-point closure, `attachParentSlots` is the fixpoint over

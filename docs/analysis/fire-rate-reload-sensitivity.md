@@ -249,7 +249,7 @@ as the intended semantics; bucket keeps the name `weakpointBonus`.
 - Sprint-gated SpeedMult perks (Freight Train, Dead Man Sprinting, Gun
   Runner…) extract with unresolved IsSprinting-style gates and stay inert
   by design; unconditional sources (Wasteland Fish Sandwich +20%) feed Fast
-  Fighter automatically. Follow-up sweep: `dps-todos/move-speed-sources.md`.
+  Fighter automatically. Follow-up sweep: `docs/move-speed-census.md`.
 - New measurement-backlog entries: divide-vs-time-scale reload stopwatch,
   Fast Fighter conversion check.
 - `docs/assumptions.md`: "Fast Fighter & the moveSpeedBonus bucket" section.

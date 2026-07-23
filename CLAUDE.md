@@ -78,7 +78,7 @@ The engine lives in `src/lib/engine/`:
 registry of every value the engine asserts that isn't proven by ESM data —
 one claim per bullet with a status tag and a code pointer. Keep entries terse:
 investigation narrative belongs in the commit message, in-game measurement
-TODOs go in `dps-todos/measurement-backlog.md`, and an explanation of how a
+TODOs are tracked as GitHub issues (label `needs-measurement`), and an explanation of how a
 mechanic works (even an ESM-proven one) belongs in the implementing
 function's doc-comment, not in the registry. Section names are cited
 verbatim across the codebase (including generated `omods.json`) — don't

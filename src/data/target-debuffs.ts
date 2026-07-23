@@ -19,7 +19,7 @@ import type { Modifier } from '@/types/modifiers';
  * ESM-visible — docs/assumptions.md "Tenderizer".
  *
  * Taking One for the Team's flat DR debuff (esm-walk-confirmed 2026-07-14,
- * dps-todos/phase-3-enemies.md §3.3): the hidden companion perk
+ * docs/assumptions.md "Resist mitigation" §3.3): the hidden companion perk
  * `LGN_TakingOneForTheTeam_DamageIncrease_Perk` bundles a Peak Value Modifier
  * DamageResist debuff (Detrimental, 10s, no Energy Resist component) onto the
  * target alongside its damage-taken-% bonus (`manual-uptime.ts`'s

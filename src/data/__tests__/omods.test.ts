@@ -39,7 +39,7 @@ describe('Unique mod slot (ap_customName)', () => {
   });
 });
 
-// 2026-07-14 COBJ-anchored eligibility (dps-todos/omod-eligibility.md): empty
+// 2026-07-14 COBJ-anchored eligibility (docs/assumptions.md "OMOD eligibility & recipe chains"): empty
 // targetKeywords no longer match every weapon sharing the attach point.
 
 describe('isEligible', () => {
@@ -146,7 +146,7 @@ describe('COBJ-anchored eligibility against live data (regression cases from the
   });
 });
 
-// 2026-07-14 show-all-mods display policy (dps-todos/omod-nondps-stats.md):
+// 2026-07-14 show-all-mods display policy (docs/assumptions.md "OMOD eligibility & recipe chains"):
 // valid + obtainable zero-modifier mods surface badged 'inert' instead of
 // vanishing; dead-mechanic slots and reroll placeholders stay out.
 
@@ -213,7 +213,7 @@ describe('show-all-mods display policy against live data', () => {
   });
 });
 
-// 2026-07-14 slot hygiene (dps-todos/omod-slot-hygiene.md): dedupe
+// 2026-07-14 slot hygiene (docs/assumptions.md "OMOD eligibility & recipe chains"): dedupe
 // same-name/same-payload options; hide slots that offer no decision.
 // ap_customName and legendary slots are exempt from both rules.
 
@@ -267,7 +267,7 @@ describe('slot hygiene against live data', () => {
   });
 });
 
-// 2026-07-14 slot naming (dps-todos/omod-slot-naming.md): global overrides
+// 2026-07-14 slot naming (docs/assumptions.md "OMOD eligibility & recipe chains"): global overrides
 // (KYWD FULL-sourced where one exists) + a per-weapon layer for power tools
 // whose gun attach points hold non-gun parts.
 
@@ -344,7 +344,7 @@ describe('attach-point closure against live data', () => {
   });
 });
 
-// 2026-07-14 unique & cursed slot completion (dps-todos/unique-cursed-mods.md):
+// 2026-07-14 unique & cursed slot completion (docs/assumptions.md "Unique weapons"):
 // template membership bypasses instance-only keywords; unnamed identity
 // effects are rescued at extraction (names via omodNameOverrides); cursed
 // mods get their own slot label and rename the weapon.

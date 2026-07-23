@@ -89,7 +89,7 @@ async function resolveEpicDisallowedKeywords(client: EsmClient, unresolved: stri
 // query and was NOT carried into this map. Earle is kept in
 // `BOSS_EPIC_RANK_QUESTS` anyway so a run still emits a specific unresolved
 // note (rather than silently having no row at all) and `epicRank` stays
-// unset for this race. See `dps-todos/phase-3-enemies.md`.
+// unset for this race. See `docs/assumptions.md "Creature stat curves & NPC extraction"`.
 export const BOSS_EPIC_RANK_QUESTS: Readonly<Record<string, { questEdid: string; questFormId: string }>> = {
   EncScorchbeastQueen01Template: { questEdid: 'CB15_ScorchedEarth', questFormId: '0x003E271D' },
   WendigoColossusRace: { questEdid: 'E06_Colossus', questFormId: '0x00583D14' },

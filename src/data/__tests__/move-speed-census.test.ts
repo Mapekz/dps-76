@@ -7,7 +7,7 @@ import type { PerkId } from '@/types';
 /**
  * Census guard for the `moveSpeedBonus` bucket (AV SpeedMult → Fast Fighter's
  * reload-speed curve input). Any new SpeedMult source after a `pnpm extract`
- * must be dispositioned here and in dps-todos/move-speed-sources.md — see
+ * must be dispositioned here and in docs/move-speed-census.md — see
  * scripts/extract/normalize/mgef.ts SpeedMult route comment.
  */
 

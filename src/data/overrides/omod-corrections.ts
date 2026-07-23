@@ -19,12 +19,12 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
   // _meta.reviewFlagged.omodWeakEvidence: weap:GaussPistol +
   // noGrantCobj:co_mod_GaussPistol_Barrel_Energy — its only recipe learns
   // from recipe_Dummy_Uncraftable_Item_NOCRAFT). Tester-confirmed not
-  // craftable/obtainable in game (dps-todos/omod-obtainability-chains.md).
+  // craftable/obtainable in game (docs/assumptions.md "OMOD eligibility & recipe chains").
   'mod_GaussPistol_Barrel_Energy',
   // Legendary-crafting reroll placeholders (ap_Legendary_Reroll): workbench
   // UI machinery, not equippable effects — their FULL names are mojibake
   // star glyphs ("Random �..."). Surfaced by the 2026-07-14 show-all-mods
-  // display policy (dps-todos/omod-nondps-stats.md); nothing else lives on
+  // display policy (docs/assumptions.md "OMOD eligibility & recipe chains"); nothing else lives on
   // that attach point.
   'mod_Legendary_Crafting_Weapon1',
   'mod_Legendary_Crafting_Weapon2',
@@ -33,7 +33,7 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
   // Cremator flame-color chems: pure cosmetics (zero modifiers) riding the
   // stat-bearing ap_gun_Receiver attach point instead of a COSMETIC_SLOT_RE
   // slot, so the cosmetic-slot exclusion can't catch them (tester report,
-  // dps-todos/omod-slot-hygiene.md). Hiding all four empties the Cremator's
+  // docs/assumptions.md "OMOD eligibility & recipe chains"). Hiding all four empties the Cremator's
   // bogus "Receiver" slot; its real stat slots (Barrel/Tank/Magazine) are
   // unaffected.
   'mod_Cremator_Chemical_RedFire',
@@ -42,7 +42,7 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
   'mod_Cremator_Chemical_PinkFire',
   // Unique identity mods riding their base weapon's template with NO
   // player-facing grant chain (2026-07-14 refs walks,
-  // dps-todos/unique-cursed-mods.md "bogus" review; delete the line if one
+  // docs/assumptions.md "Unique weapons" "bogus" review; delete the line if one
   // ever ships):
   // Minty Breather: hidden 2026-07-14 (its only granting LVLI was the
   // zzz_-prefixed dev record 0x0067F601 with zero external refs) — UNHIDDEN
@@ -115,7 +115,7 @@ export const forceVisibleOmodIds: ReadonlySet<string> = new Set<string>([
   // three Thirst Zapper magazine conversions. NOTE: still invisible in the
   // picker today — they extract with zero modifiers (payload is a projectile
   // swap) and the no-modifier display rule hides them; this rescue records
-  // obtainability so they surface once dps-todos/omod-nondps-stats.md lands.
+  // obtainability so they surface once docs/assumptions.md "OMOD eligibility & recipe chains" lands.
   'mod_ThirstZapper_Mag_NukaCola',
   'mod_ThirstZapper_Mag_Cherry',
   'mod_ThirstZapper_Mag_Quantum',
@@ -130,7 +130,7 @@ export const omodBadgeOverrides: Readonly<Record<string, 'inert' | 'pendingMecha
   // Furious / Pounder's badges REMOVED (Onslaught, 2026-07-12): both now emit
   // real dbm+stacks modifiers via the granted-perk chase (EP189 "Mod Damage
   // on Consecutive Hits" + EP190 "Mod Max Consecutive Hits Allowed") — see
-  // dps-todos/onslaught.md and docs/assumptions.md "Onslaught".
+  // docs/assumptions.md "Onslaught".
   //
   // Combo-Breaker's badge REMOVED (2026-07-12); its hiddenOmodIds entry was
   // also removed 2026-07-15 (real craftable melee 4★ — see hiddenOmodIds note).
@@ -209,7 +209,7 @@ export const omodNameOverrides: Readonly<Record<string, string>> = {
  * their slots inherit nonsense gun names ("Scope" holding blades). None of
  * these attach-point KYWDs carries a FULL name to source, so each label is
  * derived from the slot's actual eligible mods (2026-07-14 sweep,
- * dps-todos/omod-slot-naming.md). Power tools NOT listed need nothing: the
+ * docs/assumptions.md "OMOD eligibility & recipe chains"). Power tools NOT listed need nothing: the
  * Mr. Handy Buzz Blade's sole shock mod rides ap_melee_MeleeMod, which
  * already reads "Upgrade" (its real KYWD FULL) via SLOT_LABEL_OVERRIDES.
  */
@@ -357,7 +357,7 @@ export const omodModifierAdditions: Readonly<Record<string, Modifier[]>> = {
   // over base 1.0 → ×1.1), which is linear so the mean is exact for expected
   // DPS even though any single crit's roll isn't. Exact scaling target only
   // (not the base mult) still wants an in-game measurement — see
-  // dps-todos/measurement-backlog.md.
+  // #38.
   mod_Custom_TheVATSUnknown: [
     {
       id: 'mod_Custom_TheVATSUnknown:critDmgBonusScale',

@@ -103,7 +103,7 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
   // override is description-sourced. Modeled as a reloadSpeed ADD driven by
   // the moveSpeedBonus curve input (the bootstrap-folded Σ of the
   // moveSpeedBonus bucket — Speed Demon +0.20/+0.25 today; future sources
-  // tracked in dps-todos/move-speed-sources.md). Identity curve × scale 0.5 =
+  // tracked in docs/move-speed-census.md). Identity curve × scale 0.5 =
   // half the bonus; the (0,0) endpoint clamp means a net move-speed PENALTY
   // grants nothing rather than slowing reload.
   CommandoExpert: [

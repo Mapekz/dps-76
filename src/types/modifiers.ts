@@ -309,7 +309,7 @@ export type Bucket =
    * overrides/perk-overrides.ts). Folded once per buildEffectiveWeapon and
    * threaded on `ResolveContext.moveSpeedBonus` — the onslaughtMaxStacks
    * bootstrap pattern. Sources beyond Speed Demon are tracked in
-   * dps-todos/move-speed-sources.md.
+   * docs/move-speed-census.md.
    */
   | 'moveSpeedBonus'
   | 'addDamageComponent'
@@ -719,7 +719,7 @@ export type Condition =
    * weapon-OMOD `vatsApCost` fold — user-confirmed it improves free aim too,
    * so no VATS gate. Armor-side AP-cost reductions (Scanner's 4★) use an
    * entry point that does NOT feed this scaling and must stay out of this
-   * input when armor modeling lands (dps-todos/armor-mods-outgoing.md).
+   * input when armor modeling lands (docs/assumptions.md "Armor (Phase 3 engine + UI, 2026-07-18)").
    */
   | { kind: 'scaledByWeaponApCost' }
   /** value × stackCount (clamped to max) from the matching player-state counter. */

@@ -189,7 +189,7 @@ const PROPERTY_IGNORED = new Set([
 // Satiated, SightSeers, Ruiners, OverLoaders, Voltaic, StaggerProof — all
 // verified present in the 20260702 dump with real Names), not a dev/test
 // prefix. It was silently dropping all of them pre-obtainability; found while
-// chasing Splinter's Onslaught contribution (dps-todos/onslaught.md).
+// chasing Splinter's Onslaught contribution (docs/assumptions.md "Onslaught").
 //
 // NOTE (2026-07-12): `sdow_` was REMOVED for the same reason as `p62_` — it's
 // a real content prefix (the Severing 4★ legendary, fishing-rod mods, Slasher

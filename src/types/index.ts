@@ -226,7 +226,7 @@ export interface PlayerConditions {
    * value"). Default `DEFAULT_BATTLE_LOADERS_BASH_SEC` (0.75s) —
    * **ASSUMPTION**, a user-approved placeholder pending an in-game
    * stopwatch measurement of a real bash swing (per-weapon animation timing
-   * likely varies; `dps-todos/measurement-backlog.md`). `0` treats the bash
+   * likely varies; `#27`). `0` treats the bash
    * as instant, matching Quick Hands' free-skip treatment.
    */
   battleLoadersBashSec?: number;
@@ -457,7 +457,7 @@ export interface Weapon {
    * combined animation). `sustain.ts` multiplies `animationReloadSec` by
    * shotsPerMag for these weapons. That per-shell-increment reading is an
    * ASSUMPTION pending in-game stopwatch (docs/assumptions.md "Sustained
-   * DPS", dps-todos/measurement-backlog.md) — the keyword itself is
+   * DPS", #34) — the keyword itself is
    * ESM-proven. Override either direction via weaponCorrections.
    */
   reloadPerShell?: boolean;

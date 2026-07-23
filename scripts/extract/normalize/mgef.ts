@@ -227,7 +227,7 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   // scaledByWeaponApCost condition multiplies by the EFFECTIVE (post
   // weapon-OMOD vatsApCost fold) cost. User-confirmed: applies in free aim
   // too (no VATS gate), and armor-side AP-cost entry points (Scanner's 4★)
-  // must NOT feed it (dps-todos/armor-mods-outgoing.md).
+  // must NOT feed it (docs/assumptions.md "Armor (Phase 3 engine + UI, 2026-07-18)").
   STAT_DmgAP: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'scaledByWeaponApCost' }] },
   // VATS hit-chance aggregate (Phase 4, display-only — vatsHitChance bucket
   // doc comment). AVIF STAT_VATSAccuracy 0x006C2035 — no plumbing perk maps
@@ -267,7 +267,7 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   // every translate() caller: other SpeedMult sources (chems, food) landing
   // here after a regeneration is expected and correct (they should feed Fast
   // Fighter too); disposition new sources in
-  // dps-todos/move-speed-sources.md and the allowlist in
+  // docs/move-speed-census.md and the allowlist in
   // src/data/__tests__/move-speed-census.test.ts (CI fails on drift).
   SpeedMult: { bucket: 'moveSpeedBonus', scale: 0.01 },
   // Bullet Storm's stack cap (2026-07-16, verified via `esm get`): AVIF

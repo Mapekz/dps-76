@@ -35,7 +35,7 @@ import { CobjIndex, CobjInfo, isNonGrantingCobj } from './cobj-index';
  * access when ITS chain reaches a player-facing type.
  *
  * When a CobjIndex is supplied (the OMOD pass), a COBJ referencer is further
- * gated by its Learn Method (2026-07-14, dps-todos/omod-obtainability-chains):
+ * gated by its Learn Method (2026-07-14, docs/assumptions.md "OMOD eligibility & recipe chains"):
  * plan-taught recipes (method 4) grant only when their `Learn Recipe From`
  * BOOK is itself player-reachable (isPlayerFacingBook — vendor recipe pools
  * run ~8 LVLIs deep, hence BOOK_LVLI_DEPTH_CAP); scrap-taught recipes
