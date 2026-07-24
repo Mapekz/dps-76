@@ -586,7 +586,7 @@ describe('Charged cadence (Stage C2, cycle folded into sustained DPS)', () => {
   // (no enchantment); CURV weapon_chargedmeleeattack.json: charges 1/2/3 →
   // +0.5/+1.5/+3.0 damage bonus, max 3. Modeled cycle: 3 light (normal) hits
   // + 1 full-charge detonation (full power-attack treatment × (1 + 3.0)).
-  const chargedWeapon = makeWeapon({ weaponClass: 'melee', keywords: ['WeaponHasSecondaryCharging'] });
+  const chargedWeapon = makeWeapon({ weaponClass: 'melee', animDelaySec: 1.0, keywords: ['WeaponHasSecondaryCharging'] });
   const zeroStr = { ...createDefaultPlayerConditions(), strength: 0 };
   const baseInput = {
     mode: 'live' as const, weapon: chargedWeapon, itemLevel: 50, modifiers: [],
@@ -618,7 +618,7 @@ describe('Charged cadence (Stage C2, cycle folded into sustained DPS)', () => {
   });
 
   it('a non-Charged melee weapon is unaffected (plain hit × fire rate, no cycle)', () => {
-    const plainMelee = makeWeapon({ weaponClass: 'melee' });
+    const plainMelee = makeWeapon({ weaponClass: 'melee', animDelaySec: 1.0 });
     const s = computeScenarios({ ...baseInput, weapon: plainMelee });
     expect(s.freeAim.burstDps).toBeCloseTo(100, 6);
   });

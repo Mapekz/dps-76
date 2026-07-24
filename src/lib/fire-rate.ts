@@ -2,14 +2,13 @@ import type { Weapon } from '@/types';
 import { resolvedChargeTimeSec, weaponCharges } from '@/lib/charge';
 
 /**
- * Derives the weapon's fire rate in shots-per-second (melee approximate until
- * animation-derived timing lands — #45).
+ * Derives the weapon's fire rate in shots-per-second.
  *
  * Formula:
  *   fireRate_charging = 1 / (t + animDelaySec / speed)   (t = resolved charge hold, wall-clock)
  *   fireRate_auto     = speed / animDurationSec   (most autos ≈ 0.11 s)
  *   fireRate_semi     = speed / attackDelaySec    (extracted WEAP "Attack Delay Seconds")
- *   fireRate_melee    = 1.0  (stub — real timings tracked in #45)
+ *   fireRate_melee    = speed / animationAttackSec  (extracted WEAP "Animation Attack Seconds")
  *
  * Notes:
  * - `speed` is the EFFECTIVE weapon speed. The historical 0.8248× "physical"
@@ -27,16 +26,6 @@ import { resolvedChargeTimeSec, weaponCharges } from '@/lib/charge';
  * - Returns shots/sec (multiply by perHit to get DPS — do NOT divide by 60).
  */
 export function getFireRate(weapon: Weapon, chargeTimeSec?: number): number {
-  // Melee/unarmed: 1 swing/sec stub until real animation timings are
-  // confirmed (docs/assumptions.md "Power attacks & melee cadence"). Speed-affecting mods
-  // (Thrill-Seeker's melee-speed AV, Cursed melee event mods) apply RELATIVELY
-  // on top of the stub — `weapon.speed` already carries a 1.0 baseline (WEAP
-  // Data.Speed) through the same fireRateSpeed OMOD fold ranged weapons use
-  // (docs/assumptions.md "Power attacks & melee cadence").
-  if (weapon.weaponClass === 'melee' || weapon.weaponClass === 'unarmed') {
-    return 1.0 * (weapon.speed ?? 1.0);
-  }
-
   const speed = weapon.speed ?? 1.0;
 
   if (weaponCharges(weapon)) {

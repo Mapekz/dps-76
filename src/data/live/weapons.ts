@@ -81,18 +81,24 @@ export function adaptWeapon(
   // ballistic; the fromExplosion flag carries the explosion semantics).
   const first = components[0]?.damageType ?? 'ballistic';
   const primary: Weapon['damageType'] = first === 'explosive' ? 'ballistic' : first;
+  const weaponClass = classifyWeaponClass(gw);
+  const animDelaySec =
+    weaponClass === 'melee' || weaponClass === 'unarmed'
+      ? gw.animationAttackSec
+      : gw.attackDelaySec > 0 ? gw.attackDelaySec : undefined;
+
 
   return {
     id: gw.id,
     name: gw.name,
     components,
     damageType: primary,
-    weaponClass: classifyWeaponClass(gw),
+    weaponClass,
     animType: ANIM_TYPE_VALUES[gw.weaponTypeName],
     speed: gw.speed,
     isAutomatic: gw.isAutomaticFlag,
     isPhysical: components[0]?.damageType === 'ballistic',
-    animDelaySec: gw.attackDelaySec > 0 ? gw.attackDelaySec : undefined,
+    animDelaySec,
     capacity: gw.capacity,
     ammoPerShot: gw.ammoPerShot,
     reloadSpeed: gw.reloadSpeed,
