@@ -8,6 +8,14 @@ import { effectiveValue, foldBucket, type ResolveContext } from './resolve';
 export { SUSTAIN_CHANCE_BUCKETS, WEAPON_STAT_BUCKETS };
 
 /**
+ * Floor for folded animDelaySec. Deliberately far below any real weapon's
+ * cadence (not the auto-cycle default ~0.11s) so a `SET animDelaySec 0`
+ * OMOD bug (e.g. mod_custom_Doolin / The Dragon) produces an obviously-wrong
+ * ~1000/sec fire rate instead of silently passing as a plausible number.
+ */
+const MIN_ANIM_DELAY_SEC = 0.001;
+
+/**
  * Applies equipped OMODs to a weapon before the engine runs:
  * - keyword ADDs merge into weapon.keywords (WeaponTypeAutomatic, HasSilencer, …
  *   drive perk conditions ONLY — WeaponTypeAutomatic is not a fire-rate signal,
@@ -236,7 +244,7 @@ export function buildEffectiveWeapon(
   // actually carries the stat, same `?? undefined` shape as the base type.
   const animDelaySec =
     weapon.animDelaySec !== undefined || statModifiers.some(m => m.bucket === 'animDelaySec')
-      ? foldBucket(statModifiers, 'animDelaySec', weapon.animDelaySec ?? 0.5, ctx)
+      ? Math.max(MIN_ANIM_DELAY_SEC, foldBucket(statModifiers, 'animDelaySec', weapon.animDelaySec ?? 0.5, ctx))
       : undefined;
   // NOTE: projectileCount folds into the effective weapon but NO damage term
   // consumes it yet — per-projectile/pellet modeling is deferred (with the

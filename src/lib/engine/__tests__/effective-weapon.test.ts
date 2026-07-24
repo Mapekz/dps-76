@@ -135,6 +135,44 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
     expect(modifiers).toHaveLength(0);
   });
 
+  it('clamps animDelaySec to MIN_ANIM_DELAY_SEC when SET to zero by OMOD (issue #43)', () => {
+    // mod_custom_Doolin (The Dragon's ap_Legendary3) carries a real
+    // `SET animDelaySec 0` that would produce Infinity fire rate without
+    // clamping. The 0.001s floor is deliberately absurd (far below realistic
+    // 0.11s) to make the bug obvious. buildEffectiveWeapon doesn't validate
+    // OMOD/weapon slot compatibility (getOmodSlots does), so this reuses
+    // `fixer` like every other synthetic-OMOD test in this file rather than
+    // depending on The Dragon's exact generated-data id.
+    const doolin = {
+      id: 'mod_custom_Doolin',
+      formId: '0x007CFAAC',
+      name: 'The Dragon Doolin',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_Legendary3',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [
+        {
+          id: '0x007CFAAC:0',
+          source: { kind: 'omod' as const, formId: '0x007CFAAC', edid: 'mod_custom_Doolin', name: 'The Dragon Doolin' },
+          bucket: 'animDelaySec' as const,
+          op: 'SET' as const,
+          value: 0,
+          conditions: [],
+        },
+      ],
+    };
+    const { weapon } = buildEffectiveWeapon(fixer, [doolin]);
+    // animDelaySec should be clamped to 0.001, not 0.
+    expect(weapon.animDelaySec).toBe(0.001);
+    // Fire rate must be finite and not absurdly high.
+    const fireRate = (weapon.speed ?? 1.0) / weapon.animDelaySec!;
+    expect(isFinite(fireRate)).toBe(true);
+    expect(fireRate).toBeLessThan(2000); // ~1000/sec (1.0 speed / 0.001), not Infinity
+  });
+
   it('folds weapon-stat modifiers ONLY when their condition matches (synthetic, Stage C3 killStreakCount)', () => {
     // Thrill-Seeker's shape: 3 mutually-exclusive killStreakCount tiers on
     // reloadSpeed. Before Stage C3, the weapon-stat fold ignored conditions
