@@ -40,11 +40,11 @@ judgment layer.
 
 The generic fact — PCRD is the perk-card source of truth, `Perks[]` reflects
 the live/rebalanced rank count, and rank chains/ability spells linger as cut
-content after a compression — is now documented upstream in the esm-cli
-repo's `.claude/skills/patch-notes/kb/mechanics.md` ("PCRD is the perk-card
-source of truth" section, FO76 generic knowledge for any esm consumer). What
-follows is dps-76's own judgment layer on top of that fact: how to apply it
-before writing an extractor override.
+content after a compression — is documented in the `esm-cli` skill ("Perk
+rank verification (PCRD)" section; `esm skill` prints it), same as the other
+generic ESM mechanics referenced above. What follows is dps-76's own judgment
+layer on top of that fact: how to apply it before writing an extractor
+override.
 
 Before modeling a perk rank or an orphaned ability spell, check the PCRD
 card's `Perks` array, not just the EditorID rank chain. FO76 rank chains and
