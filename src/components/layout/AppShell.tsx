@@ -2,7 +2,6 @@ import { Header } from './Header';
 import { BuildColumn } from '@/components/build/BuildColumn';
 import { ResultsPane } from '@/components/results/ResultsPane';
 import { HeadlineStrip } from '@/components/results/HeadlineStrip';
-import { EnemyTableSection } from '@/components/enemies/EnemyTableSection';
 
 export function AppShell() {
   return (
@@ -31,8 +30,6 @@ export function AppShell() {
           <ResultsPane />
         </div>
       </main>
-
-      <EnemyTableSection />
     </div>
   );
 }

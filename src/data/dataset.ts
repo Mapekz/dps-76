@@ -1,25 +1,15 @@
-import type { GameMode, Perk, PerkId, Enemy, EnemyMutation, Weapon } from '@/types';
+import type { GameMode, Perk, PerkId, Weapon } from '@/types';
 import type { GeneratedAddiction, GeneratedBodyPartRace, GeneratedConstants, GeneratedNpc, GeneratedOmod, GeneratedBuff, GeneratedPerk, GeneratedUnique, GeneratedWeapon } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 
 import { buildWeapons, generatedWeaponsRaw as generatedWeaponsRawLive } from './live/weapons';
 import { perks as perkNamesLive } from './live/perks';
-import {
-  enemies as enemiesLive,
-  enemyMutations as enemyMutationsLive,
-  legendaryRankModifiers as legendaryRankModifiersLive,
-} from './live/enemies';
 import { bodyArmor as bodyArmorLive } from './live/armor';
 import { powerArmor as powerArmorLive } from './live/power-armor';
 import { generatedNpcsRaw as generatedNpcsRawLive } from './live/npcs';
 
 import { generatedWeaponsRaw as generatedWeaponsRawPts } from './pts/weapons';
 import { perks as perkNamesPts } from './pts/perks';
-import {
-  enemies as enemiesPts,
-  enemyMutations as enemyMutationsPts,
-  legendaryRankModifiers as legendaryRankModifiersPts,
-} from './pts/enemies';
 import { bodyArmor as bodyArmorPts } from './pts/armor';
 import { powerArmor as powerArmorPts } from './pts/power-armor';
 
@@ -123,7 +113,6 @@ export function applyNpcOverrides(items: GeneratedNpc[], overridesById: Readonly
   return items.map(item => overridesById[item.id] ?? item);
 }
 
-type LegendaryRankModifiers = typeof legendaryRankModifiersLive;
 type BodyArmor = typeof bodyArmorLive;
 type PowerArmor = typeof powerArmorLive;
 
@@ -141,9 +130,6 @@ export interface Dataset {
   addictions: GeneratedAddiction[];
   bodyPartRaces: GeneratedBodyPartRace[];
   npcs: GeneratedNpc[];
-  enemies: Record<string, Enemy>;
-  enemyMutations: Record<string, EnemyMutation>;
-  legendaryRankModifiers: LegendaryRankModifiers;
   bodyArmor: BodyArmor;
   powerArmor: PowerArmor;
   /** Game-wide scalar constants (extract-constants.ts) — e.g. the SPECIAL clamp read via `getSpecialClamp`. */
@@ -167,9 +153,6 @@ export interface Dataset {
 export interface HandAuthored {
   /** Name-only PerkId registry; `perkRegistry` (special/maxRank/costs) is DERIVED below (perk-cards.ts). */
   perkNames: Record<PerkId, PerkNameEntry>;
-  enemies: Record<string, Enemy>;
-  enemyMutations: Record<string, EnemyMutation>;
-  legendaryRankModifiers: LegendaryRankModifiers;
   bodyArmor: BodyArmor;
   powerArmor: PowerArmor;
 }
@@ -208,7 +191,7 @@ export interface DatasetSource {
 
 /** Build one Merged Dataset from explicit generated, hand-authored, and Overlay inputs. */
 export function buildDataset(hand: HandAuthored, source: DatasetSource): Dataset {
-  const { perkNames, ...rest } = hand;
+  const { perkNames, bodyArmor, powerArmor } = hand;
   const mergedOmods = applyNameOverride(
     applyModifierAddition(
       applyModifierOverride(source.generatedOmods, source.legendaryValueOverrides),
@@ -221,7 +204,6 @@ export function buildDataset(hand: HandAuthored, source: DatasetSource): Dataset
     source.armorLegendaryValueOverrides
   );
   return {
-    ...rest,
     weapons: buildWeapons(
       source.generatedWeapons,
       { hidden: source.hiddenWeaponIds, forceVisible: source.forceVisibleWeaponIds },
@@ -237,6 +219,8 @@ export function buildDataset(hand: HandAuthored, source: DatasetSource): Dataset
     addictions: source.generatedAddictions,
     bodyPartRaces: source.generatedBodyParts,
     npcs: applyNpcOverrides(source.generatedNpcs, source.npcOverrides),
+    bodyArmor,
+    powerArmor,
     constants: source.constants,
     hiddenWeaponIds: source.hiddenWeaponIds,
     forceVisibleWeaponIds: source.forceVisibleWeaponIds,
@@ -289,17 +273,11 @@ const liveSource: DatasetSource = {
 const datasets: Record<GameMode, Dataset> = {
   live: buildDataset({
     perkNames: perkNamesLive,
-    enemies: enemiesLive,
-    enemyMutations: enemyMutationsLive,
-    legendaryRankModifiers: legendaryRankModifiersLive,
     bodyArmor: bodyArmorLive,
     powerArmor: powerArmorLive,
   }, liveSource),
   pts: buildDataset({
     perkNames: perkNamesPts,
-    enemies: enemiesPts,
-    enemyMutations: enemyMutationsPts,
-    legendaryRankModifiers: legendaryRankModifiersPts,
     bodyArmor: bodyArmorPts,
     powerArmor: powerArmorPts,
   }, { ...liveSource, generatedWeapons: generatedWeaponsRawPts }),

@@ -591,22 +591,6 @@ export interface ArmorMod {
   statModifiers: Record<string, number>;
 }
 
-// Enemy types
-export interface Enemy {
-  id: string;
-  name: string;
-  level: number;
-  health: number;
-  damageResist: number;
-  energyResist: number;
-}
-
-export interface EnemyMutation {
-  id: string;
-  name: string;
-  statModifiers: Record<string, number>;
-}
-
 export interface EnemyConfig {
   enemyId: string;
   legendaryRank: 0 | 1 | 2 | 3;
