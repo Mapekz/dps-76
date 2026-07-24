@@ -25,7 +25,8 @@ function PersistenceGate({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
-  // Default to Live mode for MVP. PTS toggle re-enabled in todos/pts-toggle.md.
+  // Default to Live mode for MVP. PTS toggle wiring tracked as issue #40
+  // (Mapekz/dps-76) — the Header switch stays disabled until it ships.
   return (
     <ThemeProvider>
       <GameModeProvider defaultMode="live">

@@ -86,12 +86,19 @@ rename or merge one without updating its citations.
 
 ### Damage Calculation Flow
 
-1. **Configuration:** Player and Enemy configs are managed in `App.tsx` state
+1. **Configuration:** Player and Enemy configs live in `BuildState` (`src/state/build-reducer.ts`),
+   held by a `useReducer` + split context (`src/state/BuildProvider.tsx`, split into
+   `BuildStateContext`/`BuildDispatchContext` so state reads and the dispatch
+   function don't force unrelated re-renders). `App.tsx` holds no build state
+   itself — it only wires up the provider tree and the hydration/warnings banner.
 2. **Calculation:** `resolveLoadout` (`src/lib/loadout.ts`) assembles the
    effective weapon + modifier list (perks, legendary perks, OMODs, legendary
-   effects, mutations, consumables) into a `ScenarioInput`; the `useDamageCalc`
-   hook is a thin wrapper that feeds it to `computeScenarios()`
-3. **Display:** `DamageStatsColumn` renders the three scenario columns
+   effects, mutations, consumables) into a `ScenarioInput`; `useScenarioResults`
+   (`src/state/useScenarioResults.ts`) is a thin `useMemo` wrapper that feeds
+   it to `computeScenarios()` and resolves which scenario is emphasized.
+3. **Display:** `ResultsPane` (`src/components/results/`) renders the two
+   scenario cards (Free Aim / VATS — see `ScenarioKey` in `build-reducer.ts`;
+   sneak is a player condition, not a third scenario).
 
 ### Game Mode System
 
@@ -101,11 +108,11 @@ extracted today — pts re-exports live until a PTS dump is dropped in and
 
 ### Component Structure
 
-- `src/components/layout/` - Page layout (Header, ThreeColumnLayout, BuildUrlInput)
-- `src/components/player/` - Player configuration UI (PlayerColumn: weapon/mods/legendary pickers, SPECIAL, conditions)
-- `src/components/enemy/` - Enemy configuration UI (EnemyColumn — built but unmounted until enemy defenses land)
-- `src/components/stats/` - Damage statistics display (DamageStatsColumn)
-- `src/components/ui/` - Reusable UI components (Radix UI wrappers with Tailwind styling)
+- `src/components/layout/` - Page shell (`AppShell` mounts `Header` + `BuildColumn` + `ResultsPane`), `BuildUrlInput` (N&D import), `ThemeToggle`
+- `src/components/build/` - Player/enemy configuration UI, mounted as `BuildColumn`'s accordion sections: `WeaponSection`, `ArmorSection`, `SpecialLoadoutSection`/`SpecialSection`, `PerkEditorSection`, `TeamSection`, `BuffsSections` (mutations/magazines/bobbleheads/chems/food-drink), `ConditionsSection`, `TargetSection` (enemy/target + body-part selection — the one place enemy config lives; there is no separate enemy column), `StatSummary`
+- `src/components/results/` - Damage statistics display: `ResultsPane` renders `HeadlineStrip` + one `ScenarioCard` per scenario (Free Aim / VATS), plus `CritGauge`, `DeltaFlash`, `BreakdownPanel`, `MultiplierChainTable`, `SuggestionsPanel`
+- `src/components/diff/` - N&D-import delta annotations (`ActionDelta`, `DiffTooltip`)
+- `src/components/ui/` - Reusable UI components (Base UI wrappers with Tailwind styling — not Radix)
 
 ### Nukes & Dragons Integration
 

@@ -47,7 +47,10 @@ export function usePersistence(mode: GameMode): { warnings: string[]; hydrated: 
     return () => {
       cancelled = true;
     };
-    // Boot-only by design; mode is fixed for the session today (live).
+    // Boot-only by design; mode is fixed for the session today — the Header
+    // Live/PTS switch is disabled (issue #40). If #40 ever wires setMode,
+    // revisit this empty dep array: re-hydrating on a live mode flip would
+    // clobber in-progress edits, so it can't just add `mode` as-is.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
