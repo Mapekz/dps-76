@@ -39,6 +39,27 @@ export interface ScenarioExplain {
   apRegen?: ApRegenTrace | null;
 }
 
+/**
+ * Post-mitigation figures against the selected target (Phase 2 — Enemy
+ * defenses), present only when `ScenarioInput.enemyDefenses` was supplied
+ * (a target race resolved to real npc stats). `perHit`/`sustainedDps` are
+ * mitigated versions of this scenario's own `perHit`/`sustain.sustainedDps`
+ * (for charged weapons, of the charge-cycle-blended hit that actually feeds
+ * `sustain` — NOT the plain `perHit` field, which stays the un-cycled
+ * display hit per the existing Charged split). `retainedPct` is
+ * `mitigated / unmitigated × 100` on that same total (0-100, matching the
+ * `*Pct` convention elsewhere on this type). `ttk` is enemy HP ÷
+ * `sustainedDps` here (`Infinity` when `sustainedDps` is 0 — no damage
+ * ever lands). DoT (`dotDps`) is NOT included — mitigation doesn't apply to
+ * it in v1 (docs/assumptions.md "Resist mitigation").
+ */
+export interface EffectiveResult {
+  perHit: HitBreakdown;
+  sustainedDps: number;
+  retainedPct: number;
+  ttk: number;
+}
+
 export interface ScenarioResult {
   /** Steady-state average per hit (crit-cadence-weighted for VATS). */
   perHit: HitBreakdown;
@@ -89,26 +110,7 @@ export interface ScenarioResult {
   };
   /** Multiplier-chain attribution (only when input.collectTrace). */
   explain?: ScenarioExplain;
-  /**
-   * Post-mitigation figures against the selected target (Phase 2 — Enemy
-   * defenses), present only when `ScenarioInput.enemyDefenses` was supplied
-   * (a target race resolved to real npc stats). `perHit`/`sustainedDps` are
-   * mitigated versions of this scenario's own `perHit`/`sustain.sustainedDps`
-   * (for charged weapons, of the charge-cycle-blended hit that actually feeds
-   * `sustain` — NOT the plain `perHit` field, which stays the un-cycled
-   * display hit per the existing Charged split). `retainedPct` is
-   * `mitigated / unmitigated × 100` on that same total (0-100, matching the
-   * `*Pct` convention elsewhere on this type). `ttk` is enemy HP ÷
-   * `sustainedDps` here (`Infinity` when `sustainedDps` is 0 — no damage
-   * ever lands). DoT (`dotDps`) is NOT included — mitigation doesn't apply to
-   * it in v1 (docs/assumptions.md "Resist mitigation").
-   */
-  effective?: {
-    perHit: HitBreakdown;
-    sustainedDps: number;
-    retainedPct: number;
-    ttk: number;
-  };
+  effective?: EffectiveResult;
 }
 
 export interface ScenarioSet {

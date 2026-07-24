@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { formatDamage } from '@/lib/format';
+import { formatDamage, formatRetainedPct, formatTtk } from '@/lib/format';
 import type { ScenarioResult } from '@/lib/engine/scenarios';
 import type { ScenarioKey } from '@/state/build-reducer';
 import { useBuildDispatch } from '@/state/BuildProvider';
@@ -9,8 +9,6 @@ import { CritGauge } from './CritGauge';
 const formatDotDps = (value: number) => `+${formatDamage(value)}/s`;
 const formatUptimePct = (uptime: number) => `${Math.round(uptime * 100)}% uptime`;
 const formatHitRatePct = (value: number) => `${Math.round(value)}%`;
-const formatRetainedPct = (value: number) => `${Math.round(value)}%`;
-const formatTtk = (ttkSec: number) => (Number.isFinite(ttkSec) ? `${ttkSec.toFixed(1)}s` : '∞');
 
 const EFFECTIVE_DPS_DEFINITION =
   'Reload-aware sustained DPS × your hit chance — the realistic damage you deal over time.';

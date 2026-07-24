@@ -17,3 +17,13 @@ export function formatPercent(fraction: number): string {
   const magnitude = Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(1);
   return `${pct > 0 ? '+' : ''}${magnitude}%`;
 }
+
+/** Percentage with rounded integer — "75%". */
+export function formatRetainedPct(value: number): string {
+  return `${Math.round(value)}%`;
+}
+
+/** Time-to-kill in seconds or infinity symbol. */
+export function formatTtk(ttkSec: number): string {
+  return Number.isFinite(ttkSec) ? `${ttkSec.toFixed(1)}s` : '∞';
+}
