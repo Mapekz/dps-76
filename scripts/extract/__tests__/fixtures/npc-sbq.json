@@ -27,10 +27,7 @@
     "Configuration": {
       "Flags": {
         "value": "0x18",
-        "flags": [
-          "Respawn",
-          "Auto-calc stats"
-        ]
+        "flags": ["Respawn", "Auto-calc stats"]
       },
       "XP Value Offset": 0,
       "Level": 100,
@@ -1647,9 +1644,7 @@
         "0x004ECFD7"
       ]
     },
-    "Attach Parent Slots": [
-      "0x003D0353"
-    ],
+    "Attach Parent Slots": ["0x003D0353"],
     "Object Template": {
       "Combinations": [
         {

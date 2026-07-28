@@ -1,1 +1,60 @@
-{"header":{"signature":"MGEF","form_id":"0x001EB997","flags":0,"form_version":127,"data_size":230,"offset":10407231},"editor_id":"abAddictionCount","fields":{"_record_type":"Magic Effect","Editor ID":"abAddictionCount","Name":"abAddictionCount","Magic Effect Data":{"Data":{"Flags":{"value":"0x8A02","flags":["Recover","No Duration","No Area","Hide in UI"]},"Base Cost":0.0,"Assoc. Item":null,"Magic Skill (unused)":{"hex":"00000000"},"Resist Value":null,"Counter Effect Count":0,"Casting Light":null,"Taper Weight":0.0,"Hit Shader":null,"Enchant Shader":null,"Minimum Skill Level":0,"Spellmaking":{"Area":0,"Casting Time":0.0},"Taper Curve":0.0,"Taper Duration":0.0,"Second AV Weight":0.0,"Archetype":{"value":0,"name":"Value Modifier"},"Actor Value":"0x001EB998","Projectile":null,"Explosion":null,"Casting Type":{"value":0,"name":"Constant Effect"},"Delivery":{"value":0,"name":"Self"},"Actor Value 2":null,"Casting Art":null,"Hit Effect Art":null,"Impact Data":null,"Skill Usage Multiplier":0.0,"Dual Casting":{"Art":null,"Scale":1.0},"Enchant Art":null,"Hit Visuals":null,"Enchant Visuals":null,"Equip Ability":null,"Image Space Modifier":null,"Perk to Apply":null,"Casting Sound Level":{"value":1,"name":"Normal"},"Script Effect AI":{"Score":0.0,"Delay Time":0.0}}},"Sounds":[{}],"Magic Item Description":""}}
+{
+  "header": {
+    "signature": "MGEF",
+    "form_id": "0x001EB997",
+    "flags": 0,
+    "form_version": 127,
+    "data_size": 230,
+    "offset": 10407231
+  },
+  "editor_id": "abAddictionCount",
+  "fields": {
+    "_record_type": "Magic Effect",
+    "Editor ID": "abAddictionCount",
+    "Name": "abAddictionCount",
+    "Magic Effect Data": {
+      "Data": {
+        "Flags": {
+          "value": "0x8A02",
+          "flags": ["Recover", "No Duration", "No Area", "Hide in UI"]
+        },
+        "Base Cost": 0.0,
+        "Assoc. Item": null,
+        "Magic Skill (unused)": { "hex": "00000000" },
+        "Resist Value": null,
+        "Counter Effect Count": 0,
+        "Casting Light": null,
+        "Taper Weight": 0.0,
+        "Hit Shader": null,
+        "Enchant Shader": null,
+        "Minimum Skill Level": 0,
+        "Spellmaking": { "Area": 0, "Casting Time": 0.0 },
+        "Taper Curve": 0.0,
+        "Taper Duration": 0.0,
+        "Second AV Weight": 0.0,
+        "Archetype": { "value": 0, "name": "Value Modifier" },
+        "Actor Value": "0x001EB998",
+        "Projectile": null,
+        "Explosion": null,
+        "Casting Type": { "value": 0, "name": "Constant Effect" },
+        "Delivery": { "value": 0, "name": "Self" },
+        "Actor Value 2": null,
+        "Casting Art": null,
+        "Hit Effect Art": null,
+        "Impact Data": null,
+        "Skill Usage Multiplier": 0.0,
+        "Dual Casting": { "Art": null, "Scale": 1.0 },
+        "Enchant Art": null,
+        "Hit Visuals": null,
+        "Enchant Visuals": null,
+        "Equip Ability": null,
+        "Image Space Modifier": null,
+        "Perk to Apply": null,
+        "Casting Sound Level": { "value": 1, "name": "Normal" },
+        "Script Effect AI": { "Score": 0.0, "Delay Time": 0.0 }
+      }
+    },
+    "Sounds": [{}],
+    "Magic Item Description": ""
+  }
+}

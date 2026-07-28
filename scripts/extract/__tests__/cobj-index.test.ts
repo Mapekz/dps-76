@@ -34,15 +34,31 @@ const FIXTURES = [
 /** Learn-from targets referenced by the fixtures — minimal records, only the
  *  header/editor_id fields buildCobjIndex reads. */
 const LEARN_FROM_RECORDS: EsmRecord[] = [
-  { header: { signature: 'WEAP', form_id: '0x001128F2' }, editor_id: 'NWOT_ThirstZapper', fields: {} },
-  { header: { signature: 'MISC', form_id: '0x00054A1F' }, editor_id: 'recipe_Dummy_Uncraftable_Item_NOCRAFT', fields: {} },
-  { header: { signature: 'BOOK', form_id: '0x00000871' }, editor_id: 'recipe_mod_AssaultRifle_Receiver_FastTrigger-CritDMG', fields: {} },
-  { header: { signature: 'WEAP', form_id: '0x00091BB4' }, editor_id: 'BlackPowder_Rifle', fields: {} },
+  {
+    header: { signature: 'WEAP', form_id: '0x001128F2' },
+    editor_id: 'NWOT_ThirstZapper',
+    fields: {},
+  },
+  {
+    header: { signature: 'MISC', form_id: '0x00054A1F' },
+    editor_id: 'recipe_Dummy_Uncraftable_Item_NOCRAFT',
+    fields: {},
+  },
+  {
+    header: { signature: 'BOOK', form_id: '0x00000871' },
+    editor_id: 'recipe_mod_AssaultRifle_Receiver_FastTrigger-CritDMG',
+    fields: {},
+  },
+  {
+    header: { signature: 'WEAP', form_id: '0x00091BB4' },
+    editor_id: 'BlackPowder_Rifle',
+    fields: {},
+  },
 ];
 
 function makeStubClient(): EsmClient {
   const known = new Map<string, EsmRecord>(
-    [...FIXTURES, ...LEARN_FROM_RECORDS].map(r => [r.header.form_id, r])
+    [...FIXTURES, ...LEARN_FROM_RECORDS].map((r) => [r.header.form_id, r]),
   );
   const get = async (target: string): Promise<EsmRecord> => {
     const record = known.get(target);
@@ -52,7 +68,7 @@ function makeStubClient(): EsmClient {
   return {
     async list(type: string): Promise<EsmListRow[]> {
       expect(type).toBe('COBJ');
-      return FIXTURES.map(r => ({
+      return FIXTURES.map((r) => ({
         form_id: r.header.form_id,
         record_type: 'COBJ',
         editor_id: r.editor_id,
@@ -94,12 +110,17 @@ describe('buildCobjIndex', () => {
 
     const bayonet = index.byFormId.get('0x0032E23F')!;
     expect(bayonet.learnMethod).toBe(1);
-    expect(bayonet.learnRecipeFrom).toMatchObject({ recordType: 'WEAP', edid: 'BlackPowder_Rifle' });
+    expect(bayonet.learnRecipeFrom).toMatchObject({
+      recordType: 'WEAP',
+      edid: 'BlackPowder_Rifle',
+    });
   });
 
   it('groups by created object', async () => {
     const index = await buildCobjIndex(makeStubClient());
-    expect(index.byCreatedObject.get('0x00080DF5')?.map(c => c.edid)).toEqual(['co_mod_BlackPowder_Rifle_Bayonet']);
+    expect(index.byCreatedObject.get('0x00080DF5')?.map((c) => c.edid)).toEqual([
+      'co_mod_BlackPowder_Rifle_Bayonet',
+    ]);
     // Every fixture has a distinct created object → six groups.
     expect(index.byCreatedObject.size).toBe(6);
   });
@@ -125,7 +146,11 @@ describe('isNonGrantingCobj', () => {
   it('the dummy uncraftable learn-from marks a recipe non-granting even when the edid lacks the suffix', () => {
     const dummy = info({
       edid: 'co_Weapon_SomethingRealSounding',
-      learnRecipeFrom: { formId: '0x00054A1F', recordType: 'MISC', edid: 'recipe_Dummy_Uncraftable_Item_NOCRAFT' },
+      learnRecipeFrom: {
+        formId: '0x00054A1F',
+        recordType: 'MISC',
+        edid: 'recipe_Dummy_Uncraftable_Item_NOCRAFT',
+      },
     });
     expect(isNonGrantingCobj(dummy, dummy.edid)).toBe(true);
   });

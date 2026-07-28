@@ -1,1 +1,18 @@
-[{"form_id":"0x001E7DA4","record_type":"CONT","editor_id":"QAWeaponChest","name":null,"offset":20770527,"depth":1},{"form_id":"0x00237D7B","record_type":"NPC_","editor_id":"DO_NOT_PLACE_FillAttackSecondsFromAnimation_WeaponHolder_Human","name":null,"offset":75978884,"depth":1}]
+[
+  {
+    "form_id": "0x001E7DA4",
+    "record_type": "CONT",
+    "editor_id": "QAWeaponChest",
+    "name": null,
+    "offset": 20770527,
+    "depth": 1
+  },
+  {
+    "form_id": "0x00237D7B",
+    "record_type": "NPC_",
+    "editor_id": "DO_NOT_PLACE_FillAttackSecondsFromAnimation_WeaponHolder_Human",
+    "name": null,
+    "offset": 75978884,
+    "depth": 1
+  }
+]

@@ -1,8 +1,8 @@
-import * as React from "react"
-import { SearchIcon } from "lucide-react"
+import * as React from 'react';
+import { SearchIcon } from 'lucide-react';
 
-import { cn } from "@/lib/utils"
-import { FilterQueryContext, useFilterQuery } from "@/hooks/useFilterQuery"
+import { cn } from '@/lib/utils';
+import { FilterQueryContext, useFilterQuery } from '@/hooks/useFilterQuery';
 
 /**
  * Lightweight, non-cmdk replacement for the "searchable action list" pattern
@@ -16,8 +16,8 @@ import { FilterQueryContext, useFilterQuery } from "@/hooks/useFilterQuery"
  */
 
 function FilterListRoot({ children }: { children: React.ReactNode }) {
-  const [query, setQuery] = React.useState("")
-  const value = React.useMemo(() => ({ query, setQuery }), [query])
+  const [query, setQuery] = React.useState('');
+  const value = React.useMemo(() => ({ query, setQuery }), [query]);
   return (
     <FilterQueryContext.Provider value={value}>
       <div
@@ -27,13 +27,16 @@ function FilterListRoot({ children }: { children: React.ReactNode }) {
         {children}
       </div>
     </FilterQueryContext.Provider>
-  )
+  );
 }
 
 function FilterInput({ placeholder }: { placeholder?: string }) {
-  const { query, setQuery } = useFilterQuery()
+  const { query, setQuery } = useFilterQuery();
   return (
-    <div data-slot="filter-input-wrapper" className="flex h-10 items-center gap-2 border-b border-input px-3">
+    <div
+      data-slot="filter-input-wrapper"
+      className="flex h-10 items-center gap-2 border-b border-input px-3"
+    >
       <SearchIcon className="size-3.5 shrink-0 opacity-50" />
       <input
         data-slot="filter-input"
@@ -43,45 +46,49 @@ function FilterInput({ placeholder }: { placeholder?: string }) {
         className="placeholder:text-muted-foreground flex h-10 w-full bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
       />
     </div>
-  )
+  );
 }
 
-function FilterList({ className, ...props }: React.ComponentProps<"div">) {
+function FilterList({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="filter-list-scroll"
-      className={cn("max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto", className)}
+      className={cn('max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto', className)}
       {...props}
     />
-  )
+  );
 }
 
 /** Caller computes `show` (e.g. every group's filtered items ended up empty). */
 function FilterEmpty({ show, children }: { show: boolean; children: React.ReactNode }) {
-  if (!show) return null
+  if (!show) return null;
   return (
     <div data-slot="filter-empty" className="py-6 text-center text-sm">
       {children}
     </div>
-  )
+  );
 }
 
-function FilterGroup({ heading, children }: { heading?: React.ReactNode; children: React.ReactNode }) {
+function FilterGroup({
+  heading,
+  children,
+}: {
+  heading?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <div data-slot="filter-group" className="text-foreground overflow-hidden p-1">
       {heading !== undefined && (
-        <div className="px-3 py-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">{heading}</div>
+        <div className="px-3 py-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+          {heading}
+        </div>
       )}
       {children}
     </div>
-  )
+  );
 }
 
-function FilterItem({
-  className,
-  disabled,
-  ...props
-}: React.ComponentProps<"button">) {
+function FilterItem({ className, disabled, ...props }: React.ComponentProps<'button'>) {
   return (
     <button
       type="button"
@@ -89,11 +96,11 @@ function FilterItem({
       disabled={disabled}
       className={cn(
         "hover:bg-accent hover:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex w-full cursor-default items-center gap-2 rounded-none px-2 py-1.5 text-left text-sm outline-hidden select-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
-export { FilterListRoot, FilterInput, FilterList, FilterEmpty, FilterGroup, FilterItem }
+export { FilterListRoot, FilterInput, FilterList, FilterEmpty, FilterGroup, FilterItem };

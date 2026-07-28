@@ -54,7 +54,7 @@ function ActiveEffectRow({
   const min = effect.group === 'legendary' ? 0 : 1;
   const countFieldId = `armor-effect-count-${effect.id}`;
 
-  const comboOptions: ComboboxOption[] = options.map(e => ({ value: e.id, label: e.name }));
+  const comboOptions: ComboboxOption[] = options.map((e) => ({ value: e.id, label: e.name }));
 
   return (
     <div className="space-y-1 py-1.5">
@@ -62,7 +62,7 @@ function ActiveEffectRow({
         <Combobox
           options={comboOptions}
           value={effect.id}
-          onValueChange={nextId => {
+          onValueChange={(nextId) => {
             if (!nextId || nextId === effect.id) return;
             const nextEffect = getArmorEffectById(mode, nextId);
             const nextCount = Math.max(1, Math.min(nextEffect?.maxCount ?? 5, count));
@@ -82,7 +82,7 @@ function ActiveEffectRow({
           value={count}
           min={min}
           max={effect.maxCount}
-          onChange={v => dispatch({ type: 'armorEffect/setCount', id: effect.id, count: v })}
+          onChange={(v) => dispatch({ type: 'armorEffect/setCount', id: effect.id, count: v })}
           className="w-16 shrink-0"
         />
         <Button
@@ -112,13 +112,13 @@ function DraftEffectRow({
   onPick: (id: string) => void;
   onCancel: () => void;
 }) {
-  const comboOptions: ComboboxOption[] = options.map(e => ({ value: e.id, label: e.name }));
+  const comboOptions: ComboboxOption[] = options.map((e) => ({ value: e.id, label: e.name }));
   return (
     <div className="flex items-center gap-2 py-1.5">
       <Combobox
         options={comboOptions}
         value={null}
-        onValueChange={id => {
+        onValueChange={(id) => {
           if (id) onPick(id);
         }}
         placeholder={placeholder}
@@ -157,16 +157,16 @@ function EffectGroup({
 
   if (effects.length === 0) return null;
 
-  const activeEffects = effects.filter(e => (player.armorEffects[e.id] ?? 0) > 0);
-  const activeIds = new Set(activeEffects.map(e => e.id));
-  const availableEffects = effects.filter(e => !activeIds.has(e.id));
-  const everyEffectActive = effects.every(e => (player.armorEffects[e.id] ?? 0) > 0);
+  const activeEffects = effects.filter((e) => (player.armorEffects[e.id] ?? 0) > 0);
+  const activeIds = new Set(activeEffects.map((e) => e.id));
+  const availableEffects = effects.filter((e) => !activeIds.has(e.id));
+  const everyEffectActive = effects.every((e) => (player.armorEffects[e.id] ?? 0) > 0);
 
   const addDraft = () => {
     nextDraftKey.current += 1;
-    setDrafts(prev => [...prev, nextDraftKey.current]);
+    setDrafts((prev) => [...prev, nextDraftKey.current]);
   };
-  const removeDraft = (key: number) => setDrafts(prev => prev.filter(k => k !== key));
+  const removeDraft = (key: number) => setDrafts((prev) => prev.filter((k) => k !== key));
 
   return (
     <div>
@@ -174,19 +174,19 @@ function EffectGroup({
         {title}
       </p>
       <div className="divide-border/50 divide-y">
-        {activeEffects.map(effect => (
+        {activeEffects.map((effect) => (
           <ActiveEffectRow
             key={effect.id}
             effect={effect}
-            options={effects.filter(e => e.id === effect.id || !activeIds.has(e.id))}
+            options={effects.filter((e) => e.id === effect.id || !activeIds.has(e.id))}
           />
         ))}
-        {drafts.map(key => (
+        {drafts.map((key) => (
           <DraftEffectRow
             key={key}
             options={availableEffects}
             placeholder={addPlaceholder}
-            onPick={id => {
+            onPick={(id) => {
               dispatch({ type: 'armorEffect/setCount', id, count: 1 });
               removeDraft(key);
             }}
@@ -195,7 +195,12 @@ function EffectGroup({
         ))}
       </div>
       {!everyEffectActive && (
-        <Button variant="outline" size="sm" className="mt-2 w-full justify-start" onClick={addDraft}>
+        <Button
+          variant="outline"
+          size="sm"
+          className="mt-2 w-full justify-start"
+          onClick={addDraft}
+        >
           <PlusIcon className="mr-1 size-3.5" /> {addLabel}
         </Button>
       )}
@@ -207,9 +212,9 @@ export function ArmorSection() {
   const { mode } = useGameMode();
   const { player } = useBuild();
   const effects = getArmorEffects(mode);
-  const legendary = effects.filter(e => e.group === 'legendary');
-  const misc = effects.filter(e => e.group === 'misc');
-  const activeCount = Object.values(player.armorEffects).filter(count => count > 0).length;
+  const legendary = effects.filter((e) => e.group === 'legendary');
+  const misc = effects.filter((e) => e.group === 'misc');
+  const activeCount = Object.values(player.armorEffects).filter((count) => count > 0).length;
 
   return (
     <AccordionItem value="armor">
@@ -228,7 +233,12 @@ export function ArmorSection() {
             addLabel="Add legendary mod"
             addPlaceholder="Pick a legendary effect…"
           />
-          <EffectGroup title="Misc & PA mods" effects={misc} addLabel="Add normal mod" addPlaceholder="Pick a normal mod…" />
+          <EffectGroup
+            title="Misc & PA mods"
+            effects={misc}
+            addLabel="Add normal mod"
+            addPlaceholder="Pick a normal mod…"
+          />
         </div>
       </AccordionContent>
     </AccordionItem>

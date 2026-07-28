@@ -7,11 +7,28 @@ import type { BuildAction } from '@/state/build-reducer';
 import type { DpsSnapshot } from '@/lib/suggest/types';
 
 /** One "+4.2%"-style delta, colored by sign, muted when ~zero. */
-export function DeltaText({ base, delta, className }: { base: number; delta: number; className?: string }) {
+export function DeltaText({
+  base,
+  delta,
+  className,
+}: {
+  base: number;
+  delta: number;
+  className?: string;
+}) {
   const pct = base > 0 ? delta / base : 0;
-  if (Math.abs(pct) < 0.0005) return <span className={cn('text-muted-foreground font-mono tabular-nums', className)}>±0%</span>;
+  if (Math.abs(pct) < 0.0005)
+    return (
+      <span className={cn('text-muted-foreground font-mono tabular-nums', className)}>±0%</span>
+    );
   return (
-    <span className={cn(pct > 0 ? 'text-positive' : 'text-negative', 'font-mono tabular-nums', className)}>
+    <span
+      className={cn(
+        pct > 0 ? 'text-positive' : 'text-negative',
+        'font-mono tabular-nums',
+        className,
+      )}
+    >
       {formatPercentDelta(pct)}
     </span>
   );

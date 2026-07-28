@@ -18,7 +18,11 @@ import { getManualUptimeModifiers } from '@/data/manual-uptime';
 import { getPlayerBaselineModifiers } from '@/data/player-baseline';
 import { getTargetDebuffModifiers } from '@/data/target-debuffs';
 import { getPublicTeamModifiers } from '@/data/public-teams';
-import { buildEffectiveWeapon, SUSTAIN_CHANCE_BUCKETS, WEAPON_STAT_BUCKETS } from '@/lib/engine/effective-weapon';
+import {
+  buildEffectiveWeapon,
+  SUSTAIN_CHANCE_BUCKETS,
+  WEAPON_STAT_BUCKETS,
+} from '@/lib/engine/effective-weapon';
 import { legendaryBonusOf } from '@/data/perk-budget';
 import { resolveTargetBodyPart, getEnemyTypeIds } from '@/data/bodyparts';
 import { getNpc } from '@/data/npcs';
@@ -51,7 +55,7 @@ const EFFECTIVE_WEAPON_BOOTSTRAP_BUCKETS: ReadonlySet<Bucket> = new Set([
 function baseSpecialOf(playerConfig: PlayerConfig): Record<SpecialKey, number> {
   const legendaryBonus = legendaryBonusOf(playerConfig.legendaryPerks);
   return Object.fromEntries(
-    SPECIAL_KEYS.map(key => [key, playerConfig.conditions[key] + legendaryBonus[key]])
+    SPECIAL_KEYS.map((key) => [key, playerConfig.conditions[key] + legendaryBonus[key]]),
   ) as Record<SpecialKey, number>;
 }
 
@@ -59,9 +63,16 @@ function baseSpecialOf(playerConfig: PlayerConfig): Record<SpecialKey, number> {
 function assemble(
   playerConfig: PlayerConfig,
   enemyConfig: EnemyConfig,
-  mode: GameMode
-): { weapon: Weapon | undefined; modifiers: Modifier[]; conditions: PlayerConditions; enemyTypeIds: readonly string[] } {
-  const baseWeapon = playerConfig.weapon ? getWeapons(mode)[playerConfig.weapon.weaponId] : undefined;
+  mode: GameMode,
+): {
+  weapon: Weapon | undefined;
+  modifiers: Modifier[];
+  conditions: PlayerConditions;
+  enemyTypeIds: readonly string[];
+} {
+  const baseWeapon = playerConfig.weapon
+    ? getWeapons(mode)[playerConfig.weapon.weaponId]
+    : undefined;
 
   // Enemy-type identity of the selected target (race edid + ActorType*
   // keywords) — resolved ONCE from bodyparts data and threaded to every
@@ -78,11 +89,16 @@ function assemble(
     ...playerConfig.conditions,
     strangeInNumbers: deriveStrangeInNumbers(playerConfig.perks, playerConfig.conditions),
     classFreakRank: deriveClassFreakRank(playerConfig.perks),
-    underAlcoholEffect: playerConfig.consumables.some(id => consumablesById(mode).get(id)?.category === 'alcohol'),
+    underAlcoholEffect: playerConfig.consumables.some(
+      (id) => consumablesById(mode).get(id)?.category === 'alcohol',
+    ),
     // Family → highest owned rank across both loadouts — the perkFamilyRank
     // condition's input (cross-family HasPerk gates, e.g. Lock and Load →
     // Bullet Storm's reload speed).
-    equippedPerkRanks: getEquippedPerkFamilyRanks(mode, [...playerConfig.perks, ...playerConfig.legendaryPerks]),
+    equippedPerkRanks: getEquippedPerkFamilyRanks(mode, [
+      ...playerConfig.perks,
+      ...playerConfig.legendaryPerks,
+    ]),
     // Armor checklist selections are the single source of truth
     // (docs/assumptions.md "Armor") — derived here, never set by the
     // UI directly, for the self-scaling effects' wornPieceCount conditions
@@ -95,7 +111,7 @@ function assemble(
   // rule Junkie's addictionCount uses; docs/assumptions.md "Consumable
   // stacking & addictions").
   const suppressed = getSuppressedAddictions(mode, playerConfig.consumables);
-  const countedAddictions = playerConfig.addictions.filter(id => !suppressed.has(id));
+  const countedAddictions = playerConfig.addictions.filter((id) => !suppressed.has(id));
 
   // Perk/legendary-perk/buff modifiers, gathered BEFORE the effective weapon
   // is built so their weapon-stat buckets (reloadSpeed, fireRateSpeed, …)
@@ -112,7 +128,9 @@ function assemble(
   // — driven by the Target panel's inputs, not the player's own cards
   // (@/data/manual-uptime), so pushed unconditionally like Tenderizer below.
   loadoutModifiers.push(...getManualUptimeModifiers(conditions));
-  loadoutModifiers.push(...getPublicTeamModifiers(conditions.publicTeamType, conditions.teammateCount));
+  loadoutModifiers.push(
+    ...getPublicTeamModifiers(conditions.publicTeamType, conditions.teammateCount),
+  );
   // Hidden survival-ability baselines (hydration AP regen) — gated by the
   // hydrated/playerIsGhoul conditions at resolve time, so pushed unconditionally.
   loadoutModifiers.push(...getPlayerBaselineModifiers());
@@ -132,11 +150,12 @@ function assemble(
   let omodModifiers: Modifier[] = [];
   if (baseWeapon) {
     const chosenMods = playerConfig.weapon?.mods ?? {};
-    const equippedOmodIds = [...Object.values(chosenMods), ...(playerConfig.weapon?.legendaryEffects ?? [])].filter(
-      (id): id is string => !!id
-    );
+    const equippedOmodIds = [
+      ...Object.values(chosenMods),
+      ...(playerConfig.weapon?.legendaryEffects ?? []),
+    ].filter((id): id is string => !!id);
     const equippedOmods = [
-      ...equippedOmodIds.map(id => getOmodById(mode, id)).filter(o => o !== undefined),
+      ...equippedOmodIds.map((id) => getOmodById(mode, id)).filter((o) => o !== undefined),
       // Undecided slots carry the weapon's real standard parts (no weapon
       // instance has an empty slot) — getDefaultOmods skips decided slots,
       // so an explicitly chosen mod is never double-counted.
@@ -149,7 +168,7 @@ function assemble(
       conditions,
       enemyConfig.conditions,
       loadoutModifiers,
-      enemyTypeIds
+      enemyTypeIds,
     );
     weapon = built.weapon;
     omodModifiers = built.modifiers;
@@ -170,10 +189,10 @@ function assemble(
       // dropping them mirrors what buildEffectiveWeapon does to OMOD modifiers
       // and keeps them from double-counting if a damage term ever folds them.
       ...loadoutModifiers.filter(
-        m =>
+        (m) =>
           !WEAPON_STAT_BUCKETS.has(m.bucket) &&
           !SUSTAIN_CHANCE_BUCKETS.has(m.bucket) &&
-          !EFFECTIVE_WEAPON_BOOTSTRAP_BUCKETS.has(m.bucket)
+          !EFFECTIVE_WEAPON_BOOTSTRAP_BUCKETS.has(m.bucket),
       ),
     ],
     conditions,
@@ -186,7 +205,11 @@ function assemble(
  * summary — same assembly and derivation as `resolveLoadout`, but works
  * without an equipped weapon (weapon-gated stat modifiers just don't match).
  */
-export function resolveStats(playerConfig: PlayerConfig, enemyConfig: EnemyConfig, mode: GameMode): DerivedPlayerStats {
+export function resolveStats(
+  playerConfig: PlayerConfig,
+  enemyConfig: EnemyConfig,
+  mode: GameMode,
+): DerivedPlayerStats {
   const { weapon, modifiers, conditions, enemyTypeIds } = assemble(playerConfig, enemyConfig, mode);
   return derivePlayerStats(
     modifiers,
@@ -196,7 +219,7 @@ export function resolveStats(playerConfig: PlayerConfig, enemyConfig: EnemyConfi
     weapon,
     playerConfig.itemLevel,
     enemyTypeIds,
-    getSpecialClamp(mode)
+    getSpecialClamp(mode),
   );
 }
 
@@ -215,7 +238,7 @@ export function resolveStats(playerConfig: PlayerConfig, enemyConfig: EnemyConfi
 export function resolveLoadout(
   playerConfig: PlayerConfig,
   enemyConfig: EnemyConfig,
-  mode: GameMode
+  mode: GameMode,
 ): ScenarioInput | null {
   const { weapon, modifiers, conditions, enemyTypeIds } = assemble(playerConfig, enemyConfig, mode);
   if (!weapon) return null;
@@ -235,7 +258,7 @@ export function resolveLoadout(
     weapon,
     playerConfig.itemLevel,
     enemyTypeIds,
-    getSpecialClamp(mode)
+    getSpecialClamp(mode),
   );
   const player = {
     // Derived-gate view of the stored conditions (strangeInNumbers,
@@ -254,7 +277,10 @@ export function resolveLoadout(
     // active addictive consumable (any category — docs/assumptions.md
     // "Consumable stacking & addictions"). Unconditional override: the
     // stored conditions value only feeds synthetic engine tests.
-    addictionCount: deriveAddictionCount(playerConfig.addictions, getSuppressedAddictions(mode, playerConfig.consumables)),
+    addictionCount: deriveAddictionCount(
+      playerConfig.addictions,
+      getSuppressedAddictions(mode, playerConfig.consumables),
+    ),
   };
 
   // Body-part mult + location axis: the Target section's race + part pick
@@ -263,7 +289,12 @@ export function resolveLoadout(
   // category (resolveTargetBodyPart — single source of truth, also used by
   // the aim-point UI readouts).
   const { targetRace, targetBodyPart, targetLevel, epicRank } = enemyConfig.conditions;
-  const resolvedTarget = resolveTargetBodyPart(mode, targetRace, targetBodyPart, playerConfig.weakpointMult);
+  const resolvedTarget = resolveTargetBodyPart(
+    mode,
+    targetRace,
+    targetBodyPart,
+    playerConfig.weakpointMult,
+  );
 
   // Enemy defenses (Phase 2 — Enemy defenses): resolves the same npc row the
   // body-part picker already joins via `targetRace`, at the stored (or

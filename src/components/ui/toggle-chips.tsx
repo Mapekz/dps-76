@@ -33,7 +33,7 @@ export function ToggleChips<T extends string>({
 }) {
   return (
     <div role="group" aria-label={ariaLabel} className="flex flex-wrap items-center gap-1.5">
-      {options.map(opt => (
+      {options.map((opt) => (
         <Button
           key={opt.value}
           type="button"

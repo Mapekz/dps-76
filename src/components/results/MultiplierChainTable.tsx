@@ -19,7 +19,11 @@ const formatSeconds = (value: number) => `${value.toFixed(1)}s`;
  */
 
 function Num({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <span className={cn('shrink-0 font-mono text-xs tabular-nums text-right', className)}>{children}</span>;
+  return (
+    <span className={cn('shrink-0 font-mono text-xs tabular-nums text-right', className)}>
+      {children}
+    </span>
+  );
 }
 
 function Row({
@@ -38,7 +42,13 @@ function Row({
 }) {
   const titleText = title ?? (typeof label === 'string' ? label : undefined);
   return (
-    <div className={cn('flex items-baseline justify-between gap-2 py-px', indent && 'pl-3', muted && 'text-muted-foreground')}>
+    <div
+      className={cn(
+        'flex items-baseline justify-between gap-2 py-px',
+        indent && 'pl-3',
+        muted && 'text-muted-foreground',
+      )}
+    >
       <span className="min-w-0 truncate text-xs" title={titleText}>
         {label}
       </span>
@@ -62,11 +72,25 @@ function contributionRows(trace: BucketTrace, keyPrefix: string, labelSuffix = '
   const rows: React.ReactNode[] = [];
   for (const c of trace.overriddenSets) {
     const text = `${c.source.name}${labelSuffix} = ${c.value.toFixed(2)} (overridden)`;
-    rows.push(<Row key={`${keyPrefix}-ov-${c.source.edid}`} indent muted label={<s>{text}</s>} value="" title={text} />);
+    rows.push(
+      <Row
+        key={`${keyPrefix}-ov-${c.source.edid}`}
+        indent
+        muted
+        label={<s>{text}</s>}
+        value=""
+        title={text}
+      />,
+    );
   }
   if (trace.set) {
     rows.push(
-      <Row key={`${keyPrefix}-set`} indent label={`${trace.set.source.name}${labelSuffix} (sets base)`} value={trace.set.value.toFixed(2)} />
+      <Row
+        key={`${keyPrefix}-set`}
+        indent
+        label={`${trace.set.source.name}${labelSuffix} (sets base)`}
+        value={trace.set.value.toFixed(2)}
+      />,
     );
   }
   for (const c of trace.mulAdd) {
@@ -76,12 +100,17 @@ function contributionRows(trace: BucketTrace, keyPrefix: string, labelSuffix = '
         indent
         label={`${c.source.name}${labelSuffix}`}
         value={`${signed(c.value * 100, 0)}%`}
-      />
+      />,
     );
   }
   for (const c of trace.add) {
     rows.push(
-      <Row key={`${keyPrefix}-add-${c.source.edid}-${c.source.rank ?? 0}`} indent label={`${c.source.name}${labelSuffix}`} value={signed(c.value)} />
+      <Row
+        key={`${keyPrefix}-add-${c.source.edid}-${c.source.rank ?? 0}`}
+        indent
+        label={`${c.source.name}${labelSuffix}`}
+        value={signed(c.value)}
+      />,
     );
   }
   return rows;
@@ -94,14 +123,24 @@ function contributionRows(trace: BucketTrace, keyPrefix: string, labelSuffix = '
  * `contributionRows`'s raw-decimal convention.
  */
 function flatPercentRows(trace: BucketTrace, keyPrefix: string) {
-  return trace.add.map(c => (
-    <Row key={`${keyPrefix}-${c.source.edid}-${c.source.rank ?? 0}`} indent label={c.source.name} value={`${signed(c.value, 1)}%`} />
+  return trace.add.map((c) => (
+    <Row
+      key={`${keyPrefix}-${c.source.edid}-${c.source.rank ?? 0}`}
+      indent
+      label={c.source.name}
+      value={`${signed(c.value, 1)}%`}
+    />
   ));
 }
 
 function wholeDamageRows(contributions: TraceContribution[]) {
-  return contributions.map(c => (
-    <Row key={`wd-${c.source.edid}`} indent label={c.source.name} value={`×${(1 + c.value).toFixed(2)}`} />
+  return contributions.map((c) => (
+    <Row
+      key={`wd-${c.source.edid}`}
+      indent
+      label={c.source.name}
+      value={`×${(1 + c.value).toFixed(2)}`}
+    />
   ));
 }
 
@@ -116,8 +155,8 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
   // stealth attack). Only show those shared rows when at least one component
   // actually received them, and qualify the label on a mixed weapon so the
   // rows keep reconciling with the per-component totals above.
-  const anyExplosive = trace.components.some(c => c.isExplosion);
-  const anyNonExplosive = trace.components.some(c => !c.isExplosion);
+  const anyExplosive = trace.components.some((c) => c.isExplosion);
+  const anyNonExplosive = trace.components.some((c) => !c.isExplosion);
   const mixed = anyExplosive && anyNonExplosive;
 
   return (
@@ -227,12 +266,22 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
         />
         {result.sustain.reloadSec > 0 && (
           <>
-            <Row label="Mag cycle" value={formatSeconds(result.sustain.magDumpSec + result.sustain.reloadSec)} />
-            <Row indent label={`Mag dump (${result.sustain.shotsPerMag} shots)`} value={formatSeconds(result.sustain.magDumpSec)} />
+            <Row
+              label="Mag cycle"
+              value={formatSeconds(result.sustain.magDumpSec + result.sustain.reloadSec)}
+            />
+            <Row
+              indent
+              label={`Mag dump (${result.sustain.shotsPerMag} shots)`}
+              value={formatSeconds(result.sustain.magDumpSec)}
+            />
             <Row indent label="Reload" value={formatSeconds(result.sustain.reloadSec)} />
             {/* result.sustain.sustainedDps already has hit chance folded in (scenarios.ts) — back out the
                 reload-only figure so this row reconciles with Mag cycle/Mag dump/Reload above it. */}
-            <Row label="Sustained DPS" value={formatDamage(result.sustain.sustainedDps / (result.hitRatePct / 100))} />
+            <Row
+              label="Sustained DPS"
+              value={formatDamage(result.sustain.sustainedDps / (result.hitRatePct / 100))}
+            />
           </>
         )}
         {result.hitRatePct < 100 && (
@@ -249,48 +298,62 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
         />
       </div>
 
-      {result.ap && explain.apRegen && (() => {
-        const { agility, isInPowerArmor, poolBase, poolPerAgility, raceBasePct, flat, percent } = explain.apRegen;
-        const baseRatePct = raceBasePct + flat.result;
-        const multiplier = 1 + percent.result;
-        return (
-          <div className="border-border/50 mt-1 border-t pt-1">
-            <Row
-              muted
-              label={`Base AP pool (${poolBase} + ${poolPerAgility}×${agility} AGI)`}
-              value={poolBase + poolPerAgility * agility}
-            />
-            {contributionRows(explain.apRegen.maxAp, 'ap-max')}
-            <Row label="Max AP pool" value={Math.round(result.ap.maxAp)} />
+      {result.ap &&
+        explain.apRegen &&
+        (() => {
+          const { agility, isInPowerArmor, poolBase, poolPerAgility, raceBasePct, flat, percent } =
+            explain.apRegen;
+          const baseRatePct = raceBasePct + flat.result;
+          const multiplier = 1 + percent.result;
+          return (
+            <div className="border-border/50 mt-1 border-t pt-1">
+              <Row
+                muted
+                label={`Base AP pool (${poolBase} + ${poolPerAgility}×${agility} AGI)`}
+                value={poolBase + poolPerAgility * agility}
+              />
+              {contributionRows(explain.apRegen.maxAp, 'ap-max')}
+              <Row label="Max AP pool" value={Math.round(result.ap.maxAp)} />
 
-            <Row label="Base AP regen" value={`${baseRatePct.toFixed(1)}%/s`} />
-            <Row indent label={`Base (${isInPowerArmor ? 'power armor' : 'human'})`} value={`${raceBasePct.toFixed(1)}%`} />
-            {flatPercentRows(flat, 'ap-flat')}
+              <Row label="Base AP regen" value={`${baseRatePct.toFixed(1)}%/s`} />
+              <Row
+                indent
+                label={`Base (${isInPowerArmor ? 'power armor' : 'human'})`}
+                value={`${raceBasePct.toFixed(1)}%`}
+              />
+              {flatPercentRows(flat, 'ap-flat')}
 
-            <Row label="Regen rate multiplier" value={`×${multiplier.toFixed(2)}`} />
-            {contributionRows(percent, 'ap-pct')}
+              <Row label="Regen rate multiplier" value={`×${multiplier.toFixed(2)}`} />
+              {contributionRows(percent, 'ap-pct')}
 
-            <Row label="Net passive AP regen" value={`${result.ap.regenPerSec.toFixed(1)}/s`} />
-            {result.ap.regenPerSec > 0 && (
-              <Row muted label="Time to fill from empty" value={formatSeconds(result.ap.maxAp / result.ap.regenPerSec)} />
-            )}
-
-            {result.ap.reloadRegenPerSec > 0 && (
-              <>
-                <Row label="Regen during reload" value={`+${result.ap.reloadRegenPerSec.toFixed(1)}/s`} />
+              <Row label="Net passive AP regen" value={`${result.ap.regenPerSec.toFixed(1)}/s`} />
+              {result.ap.regenPerSec > 0 && (
                 <Row
-                  indent
                   muted
-                  label={`Reload window (${formatSeconds(explain.apRegen.reloadSec)} − ${explain.apRegen.regenDelaySec.toFixed(0)}s delay, per ${formatSeconds(
-                    explain.apRegen.magDumpSec + explain.apRegen.reloadSec
-                  )} cycle)`}
-                  value=""
+                  label="Time to fill from empty"
+                  value={formatSeconds(result.ap.maxAp / result.ap.regenPerSec)}
                 />
-              </>
-            )}
-          </div>
-        );
-      })()}
+              )}
+
+              {result.ap.reloadRegenPerSec > 0 && (
+                <>
+                  <Row
+                    label="Regen during reload"
+                    value={`+${result.ap.reloadRegenPerSec.toFixed(1)}/s`}
+                  />
+                  <Row
+                    indent
+                    muted
+                    label={`Reload window (${formatSeconds(explain.apRegen.reloadSec)} − ${explain.apRegen.regenDelaySec.toFixed(0)}s delay, per ${formatSeconds(
+                      explain.apRegen.magDumpSec + explain.apRegen.reloadSec,
+                    )} cycle)`}
+                    value=""
+                  />
+                </>
+              )}
+            </div>
+          );
+        })()}
     </div>
   );
 }

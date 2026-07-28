@@ -1,1 +1,507 @@
-{"header":{"signature":"WEAP","form_id":"0x000DDB7C","flags":1073741824,"form_version":208,"data_size":1603,"offset":70907558},"editor_id":"GammaGun","fields":{"_record_type":"Weapon","Editor ID":"GammaGun","Object Bounds":{"X1":-3,"Y1":-3,"Z1":-5,"X2":3,"Y2":10,"Z2":9},"Preview Transform":"0x00071DDD","Name":"Gamma Gun","Model":{"Model FileName":"Weapons\\GammaGun\\GammaGun.nif","Model Information":{"Counters":{"Textures":17,"Addon Nodes":1,"SRGB":13,"Materials":1},"Textures":[{"File Hash":"0x5699BF6F","Extension":"dds","Folder Hash":"0x1DFD4865"},{"File Hash":"0xAC96820C","Extension":"dds","Folder Hash":"0x1DFD4865"},{"File Hash":"0xDB91B29A","Extension":"dds","Folder Hash":"0x1DFD4865"},{"File Hash":"0xB897DE43","Extension":"dds","Folder Hash":"0x1DFD4865"},{"File Hash":"0x5842375D","Extension":"dds","Folder Hash":"0x1DFD4865"},{"File Hash":"0xD96DC3FD","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xCA800DFF","Extension":"dds","Folder Hash":"0x33552C58"},{"File Hash":"0xBB0260FB","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x3826F40C","Extension":"dds","Folder Hash":"0x33552C58"},{"File Hash":"0xCCD5561A","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x0537A194","Extension":"dds","Folder Hash":"0x33552C58"},{"File Hash":"0xA8ADCC53","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xB058A997","Extension":"dds","Folder Hash":"0x33552C58"},{"File Hash":"0xEDF9D00C","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x48183DB0","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xE0422165","Extension":"dds","Folder Hash":"0x33552C58"},{"File Hash":"0xDC309C83","Extension":"dds","Folder Hash":"0xEA3C9738"}],"Addon Nodes":[195],"Materials":[{"File Hash":"0x1467CDA4","Extension":"bgsm","Folder Hash":"0x33EBD53D"}]},"Enlighten Transparency Color":{"r":255,"g":255,"b":255,"a":255},"Enlighten Simplified Shape Scale":1.0,"Enlighten Auto UV":{"Unknown":1,"Padding?":{"hex":"000000"},"Max DIstance":50.0,"Max Initial Normal Deviation":30.0,"Max General Normal Deviation":78.0,"Expansion Factor":0.6000000238418579,"Significant Area Ratio":0.10000000149011612,"Unknown 2":0,"Padding? 2":{"hex":"000000"}}},"Equipment Type":"0x00013F42","Block Bash Impact Data Set":"0x000183FF","Sound - Pickup":"0x00034923","Sound - Putdown":"0x0001F5C3","Keywords":{"Keyword Count":17,"Keywords":["0x000DDB7D","0x0001F948","0x001C9E78","0x001889D4","0x00787E6E","0x005FF5F5","0x006214D7","0x000F4AEA","0x0010C485","0x000E0F40","0x0003ADB3","0x003CFD72","0x001A7B79","0x0033A7C9","0x00225762","0x0004A0A0","0x0033A7C8"]},"Description":"","Instance Naming":"0x002377CF","Eligible Levels":[15,25,35,45],"Break Sound":"0x004ED233","Attach Parent Slots":["0x0002249D","0x0002249F","0x001E32C8","0x004E89A8","0x004E89A9","0x004E89AA","0x004E89AB","0x006214D8","0x0047A264"],"Object Template":{"Count":8,"Combinations":[{"Combination":{"Editor Only":null,"Name":"Standard","Object Mod Template Item":{"Include Count":3,"Property Count":0,"Level Min":0,"Level Max":0,"Parent Combination Index":-1,"Default":{"value":1,"name":"True"},"Min Level For Ranks":0,"Alt Levels Per Tier":0,"Includes":[{"Mod":"0x0014F6E6","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}},{"Mod":"0x001889D3","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}},{"Mod":"0x0004F21D","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}}]}}},{"Combination":{"Editor Only":null,"Name":"Standard Epic - Dish Long","Object Mod Template Item":{"Include Count":3,"Property Count":0,"Level Min":0,"Level Max":0,"Parent Combination Index":-1,"Default":{"value":0,"name":"False"},"Min Level For Ranks":0,"Alt Levels Per Tier":0,"Includes":[{"Mod":"0x0014F6E6","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}},{"Mod":"0x001889D3","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}},{"Mod":"0x0004F21D","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}}]}}},{"Combination":{"Editor Only":null,"Name":"Standard Epic - Grip Better","Object Mod Template Item":{"Include Count":1,"Property Count":0,"Level Min":0,"Level Max":0,"Parent Combination Index":1,"Default":{"value":0,"name":"False"},"Keywords":["0x0005F42D"],"Min Level For Ranks":0,"Alt Levels Per Tier":0,"Includes":[{"Mod":"0x0014F6E7","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}}]}}},{"Combination":{"Editor Only":null,"Name":"Simple","Object Mod Template Item":{"Include Count":1,"Property Count":0,"Level Min":0,"Level Max":0,"Parent Combination Index":1,"Default":{"value":0,"name":"False"},"Keywords":["0x0005F42D"],"Min Level For Ranks":0,"Alt Levels Per Tier":0,"Includes":[{"Mod":"0x0014F6E8","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}}]}}},{"Combination":{"Editor Only":null,"Name":"Simple Epic","Object Mod Template Item":{"Include Count":3,"Property Count":0,"Level Min":0,"Level Max":0,"Parent Combination Index":-1,"Default":{"value":0,"name":"False"},"Keywords":["0x00160404"],"Min Level For Ranks":0,"Alt Levels Per Tier":0,"Includes":[{"Mod":"0x0014F6E6","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}},{"Mod":"0x001889D3","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}},{"Mod":"0x0004F21D","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}}]}}},{"Combination":{"Name":"Xerxo's Gamma Ray Gun","Object Mod Template Item":{"Include Count":0,"Property Count":0,"Level Min":0,"Level Max":0,"Parent Combination Index":4,"Default":{"value":0,"name":"False"},"Keywords":["0x0005F42D"],"Min Level For Ranks":0,"Alt Levels Per Tier":0}}},{"Combination":{"Object Mod Template Item":{"Include Count":3,"Property Count":0,"Level Min":0,"Level Max":0,"Parent Combination Index":-1,"Default":{"value":0,"name":"False"},"Keywords":["0x0036B5DC"],"Min Level For Ranks":0,"Alt Levels Per Tier":0,"Includes":[{"Mod":"0x0036FB47","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}},{"Mod":"0x0036FB48","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}},{"Mod":"0x0036FB49","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}}]}}},{"Combination":{"Object Mod Template Item":{"Include Count":7,"Property Count":0,"Level Min":0,"Level Max":0,"Parent Combination Index":-1,"Default":{"value":0,"name":"False"},"Keywords":["0x008F173B"],"Min Level For Ranks":0,"Alt Levels Per Tier":0,"Includes":[{"Mod":"0x0004F21D","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}},{"Mod":"0x0014F6E7","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}},{"Mod":"0x0014F6E8","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}},{"Mod":"0x005281B4","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}},{"Mod":"0x00606B72","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}},{"Mod":"0x00524154","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}},{"Mod":"0x008F173D","Attach Point Index":0,"Optional":{"value":0,"name":"False"},"Don't Use All":{"value":1,"name":"True"}}]}}}],"Marker":null},"Data":{"Ammo":"0x000DF279","Speed":1.0,"Reload Speed":1.0,"NPC Reload Delay":0.0,"Reach":1.0,"Reach Engagement Mult":1.0,"Min Range":1466.0,"Max Range":2933.0,"Unknown":0.0,"Attack Delay Seconds":0.15000000596046448,"Unused":0.0,"Damage - OutOfRangeMult":0.5,"On Hit":{"value":2,"name":"Explode only"},"Skill":null,"Resist":null,"Flags":{"value":"0x100","flags":["Crit Effect - on Death"]},"Capacity":8,"Ammo used per shot":1,"Weapon Type":{"value":9,"name":"Gun"},"Secondary Damage":16.0,"Weight":3.0,"Value":90,"Base Damage":0,"Sound Data":{"Sound Level":{"value":1,"name":"Normal"},"Sound - Attack":null,"Sound - Throwable Primed":null,"Sound - Attack Loop":null,"Sound - Attack Fail":"0x0001DACD","Sound - Idle":null,"Sound - Equip Sound":null,"Sound - UnEquip Sound":"0x001526AC","Sound - Fast Equip Sound":null},"Accuracy Bonus":0,"Animation Attack Seconds":0.6666666865348816,"Rank":0,"Action Point Cost":18.0,"Full Power Seconds":0.0,"Min Power Per Shot":0.0,"Stagger":{"value":1,"name":"Small"},"Color Remapping Index":3.402823466385289e+38,"Health":100,"Unknown 2":{"hex":"0000000000000000"},"Overheat Rate":{"Rate Up":0.0,"Rate Down":0.0},"Unknown 3":{"hex":"00000000","_raw":true}},"RGW3":{"Override Projectile":null,"Animation Fire Seconds":9.999999747378752e-6,"Rumble - Left Motor Strength":0.30000001192092896,"Rumble - Right Motor Strength":0.6000000238418579,"Rumble - Duration":0.20000000298023224,"Animation Reload Seconds":4.333343505859375,"Bolt Draw Speed":1.8333330154418943,"Sighted Transition Seconds":0.119999997317791,"Unsighted Transition Seconds":0.15000000596046448,"Min Weapon Draw Time":0.25,"Damage Bonus Multiplier":1.0,"Rumble - Period (ms)":0,"Rumble Pattern":{"value":0,"name":"Constant"},"# Projectiles":1},"Critical Data":{"Crit Damage Mult":2.5,"Crit Charge Bonus":1.0,"Crit Effect":null},"Impact Data Set":"0x00004B37","NPC Add Ammo List":"0x0039EE4D","Aim Model":"0x0019E14F","Aim Assist Model":"0x005EEAF6","Min Durability Curve":{"formid":"0x001FAB9A","curve_path":"ItemCondition\\Durability_Weapons_Energy_Min.json","curve":[{"x":1.0,"y":20.0},{"x":5.0,"y":24.0},{"x":10.0,"y":28.0},{"x":15.0,"y":32.0},{"x":20.0,"y":36.0},{"x":25.0,"y":40.0},{"x":30.0,"y":44.0},{"x":35.0,"y":48.0},{"x":40.0,"y":52.0},{"x":45.0,"y":56.0},{"x":50.0,"y":60.0}]},"Condition Loss Scale":{"formid":"0x0003490E","curve_path":"ItemCondition\\ConditionDamageScaleFactor_Weapons_Energy.json","curve":[{"x":1.0,"y":0.014999999664723871},{"x":10.0,"y":0.014750000089406967},{"x":20.0,"y":0.013749999925494194},{"x":30.0,"y":0.012600000016391276},{"x":40.0,"y":0.011350000277161598},{"x":50.0,"y":0.009999999776482582},{"x":60.0,"y":0.008999999612569809},{"x":100.0,"y":0.006500000134110451}]},"Bash Condition Loss Scale":{"formid":"0x001FABBA","curve_path":"ItemCondition\\SecondaryScaleFactor_Weapons_Ranged_Bash.json","curve":[{"x":1.0,"y":0.25},{"x":7.0,"y":0.27000001072883606},{"x":15.0,"y":0.30000001192092896},{"x":20.0,"y":0.3499999940395355},{"x":30.0,"y":0.5},{"x":40.0,"y":0.699999988079071}]},"Max Durability Curve":{"formid":"0x00345A4D","curve_path":"ItemCondition\\Durability_Weapons_Energy_Max.json","curve":[{"x":1.0,"y":30.0},{"x":5.0,"y":34.0},{"x":10.0,"y":38.0},{"x":15.0,"y":42.0},{"x":20.0,"y":46.0},{"x":25.0,"y":50.0},{"x":30.0,"y":54.0},{"x":35.0,"y":58.0},{"x":40.0,"y":62.0},{"x":45.0,"y":66.0},{"x":50.0,"y":70.0}]},"Telegraph Data":{"Time":0.0},"Sneak Attack Multiplier":2.5}}
+{
+  "header": {
+    "signature": "WEAP",
+    "form_id": "0x000DDB7C",
+    "flags": 1073741824,
+    "form_version": 208,
+    "data_size": 1603,
+    "offset": 70907558
+  },
+  "editor_id": "GammaGun",
+  "fields": {
+    "_record_type": "Weapon",
+    "Editor ID": "GammaGun",
+    "Object Bounds": { "X1": -3, "Y1": -3, "Z1": -5, "X2": 3, "Y2": 10, "Z2": 9 },
+    "Preview Transform": "0x00071DDD",
+    "Name": "Gamma Gun",
+    "Model": {
+      "Model FileName": "Weapons\\GammaGun\\GammaGun.nif",
+      "Model Information": {
+        "Counters": { "Textures": 17, "Addon Nodes": 1, "SRGB": 13, "Materials": 1 },
+        "Textures": [
+          { "File Hash": "0x5699BF6F", "Extension": "dds", "Folder Hash": "0x1DFD4865" },
+          { "File Hash": "0xAC96820C", "Extension": "dds", "Folder Hash": "0x1DFD4865" },
+          { "File Hash": "0xDB91B29A", "Extension": "dds", "Folder Hash": "0x1DFD4865" },
+          { "File Hash": "0xB897DE43", "Extension": "dds", "Folder Hash": "0x1DFD4865" },
+          { "File Hash": "0x5842375D", "Extension": "dds", "Folder Hash": "0x1DFD4865" },
+          { "File Hash": "0xD96DC3FD", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xCA800DFF", "Extension": "dds", "Folder Hash": "0x33552C58" },
+          { "File Hash": "0xBB0260FB", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x3826F40C", "Extension": "dds", "Folder Hash": "0x33552C58" },
+          { "File Hash": "0xCCD5561A", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x0537A194", "Extension": "dds", "Folder Hash": "0x33552C58" },
+          { "File Hash": "0xA8ADCC53", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xB058A997", "Extension": "dds", "Folder Hash": "0x33552C58" },
+          { "File Hash": "0xEDF9D00C", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x48183DB0", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xE0422165", "Extension": "dds", "Folder Hash": "0x33552C58" },
+          { "File Hash": "0xDC309C83", "Extension": "dds", "Folder Hash": "0xEA3C9738" }
+        ],
+        "Addon Nodes": [195],
+        "Materials": [
+          { "File Hash": "0x1467CDA4", "Extension": "bgsm", "Folder Hash": "0x33EBD53D" }
+        ]
+      },
+      "Enlighten Transparency Color": { "r": 255, "g": 255, "b": 255, "a": 255 },
+      "Enlighten Simplified Shape Scale": 1.0,
+      "Enlighten Auto UV": {
+        "Unknown": 1,
+        "Padding?": { "hex": "000000" },
+        "Max DIstance": 50.0,
+        "Max Initial Normal Deviation": 30.0,
+        "Max General Normal Deviation": 78.0,
+        "Expansion Factor": 0.6000000238418579,
+        "Significant Area Ratio": 0.10000000149011612,
+        "Unknown 2": 0,
+        "Padding? 2": { "hex": "000000" }
+      }
+    },
+    "Equipment Type": "0x00013F42",
+    "Block Bash Impact Data Set": "0x000183FF",
+    "Sound - Pickup": "0x00034923",
+    "Sound - Putdown": "0x0001F5C3",
+    "Keywords": {
+      "Keyword Count": 17,
+      "Keywords": [
+        "0x000DDB7D",
+        "0x0001F948",
+        "0x001C9E78",
+        "0x001889D4",
+        "0x00787E6E",
+        "0x005FF5F5",
+        "0x006214D7",
+        "0x000F4AEA",
+        "0x0010C485",
+        "0x000E0F40",
+        "0x0003ADB3",
+        "0x003CFD72",
+        "0x001A7B79",
+        "0x0033A7C9",
+        "0x00225762",
+        "0x0004A0A0",
+        "0x0033A7C8"
+      ]
+    },
+    "Description": "",
+    "Instance Naming": "0x002377CF",
+    "Eligible Levels": [15, 25, 35, 45],
+    "Break Sound": "0x004ED233",
+    "Attach Parent Slots": [
+      "0x0002249D",
+      "0x0002249F",
+      "0x001E32C8",
+      "0x004E89A8",
+      "0x004E89A9",
+      "0x004E89AA",
+      "0x004E89AB",
+      "0x006214D8",
+      "0x0047A264"
+    ],
+    "Object Template": {
+      "Count": 8,
+      "Combinations": [
+        {
+          "Combination": {
+            "Editor Only": null,
+            "Name": "Standard",
+            "Object Mod Template Item": {
+              "Include Count": 3,
+              "Property Count": 0,
+              "Level Min": 0,
+              "Level Max": 0,
+              "Parent Combination Index": -1,
+              "Default": { "value": 1, "name": "True" },
+              "Min Level For Ranks": 0,
+              "Alt Levels Per Tier": 0,
+              "Includes": [
+                {
+                  "Mod": "0x0014F6E6",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                },
+                {
+                  "Mod": "0x001889D3",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                },
+                {
+                  "Mod": "0x0004F21D",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Combination": {
+            "Editor Only": null,
+            "Name": "Standard Epic - Dish Long",
+            "Object Mod Template Item": {
+              "Include Count": 3,
+              "Property Count": 0,
+              "Level Min": 0,
+              "Level Max": 0,
+              "Parent Combination Index": -1,
+              "Default": { "value": 0, "name": "False" },
+              "Min Level For Ranks": 0,
+              "Alt Levels Per Tier": 0,
+              "Includes": [
+                {
+                  "Mod": "0x0014F6E6",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                },
+                {
+                  "Mod": "0x001889D3",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                },
+                {
+                  "Mod": "0x0004F21D",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Combination": {
+            "Editor Only": null,
+            "Name": "Standard Epic - Grip Better",
+            "Object Mod Template Item": {
+              "Include Count": 1,
+              "Property Count": 0,
+              "Level Min": 0,
+              "Level Max": 0,
+              "Parent Combination Index": 1,
+              "Default": { "value": 0, "name": "False" },
+              "Keywords": ["0x0005F42D"],
+              "Min Level For Ranks": 0,
+              "Alt Levels Per Tier": 0,
+              "Includes": [
+                {
+                  "Mod": "0x0014F6E7",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Combination": {
+            "Editor Only": null,
+            "Name": "Simple",
+            "Object Mod Template Item": {
+              "Include Count": 1,
+              "Property Count": 0,
+              "Level Min": 0,
+              "Level Max": 0,
+              "Parent Combination Index": 1,
+              "Default": { "value": 0, "name": "False" },
+              "Keywords": ["0x0005F42D"],
+              "Min Level For Ranks": 0,
+              "Alt Levels Per Tier": 0,
+              "Includes": [
+                {
+                  "Mod": "0x0014F6E8",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Combination": {
+            "Editor Only": null,
+            "Name": "Simple Epic",
+            "Object Mod Template Item": {
+              "Include Count": 3,
+              "Property Count": 0,
+              "Level Min": 0,
+              "Level Max": 0,
+              "Parent Combination Index": -1,
+              "Default": { "value": 0, "name": "False" },
+              "Keywords": ["0x00160404"],
+              "Min Level For Ranks": 0,
+              "Alt Levels Per Tier": 0,
+              "Includes": [
+                {
+                  "Mod": "0x0014F6E6",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                },
+                {
+                  "Mod": "0x001889D3",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                },
+                {
+                  "Mod": "0x0004F21D",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Combination": {
+            "Name": "Xerxo's Gamma Ray Gun",
+            "Object Mod Template Item": {
+              "Include Count": 0,
+              "Property Count": 0,
+              "Level Min": 0,
+              "Level Max": 0,
+              "Parent Combination Index": 4,
+              "Default": { "value": 0, "name": "False" },
+              "Keywords": ["0x0005F42D"],
+              "Min Level For Ranks": 0,
+              "Alt Levels Per Tier": 0
+            }
+          }
+        },
+        {
+          "Combination": {
+            "Object Mod Template Item": {
+              "Include Count": 3,
+              "Property Count": 0,
+              "Level Min": 0,
+              "Level Max": 0,
+              "Parent Combination Index": -1,
+              "Default": { "value": 0, "name": "False" },
+              "Keywords": ["0x0036B5DC"],
+              "Min Level For Ranks": 0,
+              "Alt Levels Per Tier": 0,
+              "Includes": [
+                {
+                  "Mod": "0x0036FB47",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                },
+                {
+                  "Mod": "0x0036FB48",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                },
+                {
+                  "Mod": "0x0036FB49",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Combination": {
+            "Object Mod Template Item": {
+              "Include Count": 7,
+              "Property Count": 0,
+              "Level Min": 0,
+              "Level Max": 0,
+              "Parent Combination Index": -1,
+              "Default": { "value": 0, "name": "False" },
+              "Keywords": ["0x008F173B"],
+              "Min Level For Ranks": 0,
+              "Alt Levels Per Tier": 0,
+              "Includes": [
+                {
+                  "Mod": "0x0004F21D",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                },
+                {
+                  "Mod": "0x0014F6E7",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                },
+                {
+                  "Mod": "0x0014F6E8",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                },
+                {
+                  "Mod": "0x005281B4",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                },
+                {
+                  "Mod": "0x00606B72",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                },
+                {
+                  "Mod": "0x00524154",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                },
+                {
+                  "Mod": "0x008F173D",
+                  "Attach Point Index": 0,
+                  "Optional": { "value": 0, "name": "False" },
+                  "Don't Use All": { "value": 1, "name": "True" }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "Marker": null
+    },
+    "Data": {
+      "Ammo": "0x000DF279",
+      "Speed": 1.0,
+      "Reload Speed": 1.0,
+      "NPC Reload Delay": 0.0,
+      "Reach": 1.0,
+      "Reach Engagement Mult": 1.0,
+      "Min Range": 1466.0,
+      "Max Range": 2933.0,
+      "Unknown": 0.0,
+      "Attack Delay Seconds": 0.15000000596046448,
+      "Unused": 0.0,
+      "Damage - OutOfRangeMult": 0.5,
+      "On Hit": { "value": 2, "name": "Explode only" },
+      "Skill": null,
+      "Resist": null,
+      "Flags": { "value": "0x100", "flags": ["Crit Effect - on Death"] },
+      "Capacity": 8,
+      "Ammo used per shot": 1,
+      "Weapon Type": { "value": 9, "name": "Gun" },
+      "Secondary Damage": 16.0,
+      "Weight": 3.0,
+      "Value": 90,
+      "Base Damage": 0,
+      "Sound Data": {
+        "Sound Level": { "value": 1, "name": "Normal" },
+        "Sound - Attack": null,
+        "Sound - Throwable Primed": null,
+        "Sound - Attack Loop": null,
+        "Sound - Attack Fail": "0x0001DACD",
+        "Sound - Idle": null,
+        "Sound - Equip Sound": null,
+        "Sound - UnEquip Sound": "0x001526AC",
+        "Sound - Fast Equip Sound": null
+      },
+      "Accuracy Bonus": 0,
+      "Animation Attack Seconds": 0.6666666865348816,
+      "Rank": 0,
+      "Action Point Cost": 18.0,
+      "Full Power Seconds": 0.0,
+      "Min Power Per Shot": 0.0,
+      "Stagger": { "value": 1, "name": "Small" },
+      "Color Remapping Index": 3.402823466385289e38,
+      "Health": 100,
+      "Unknown 2": { "hex": "0000000000000000" },
+      "Overheat Rate": { "Rate Up": 0.0, "Rate Down": 0.0 },
+      "Unknown 3": { "hex": "00000000", "_raw": true }
+    },
+    "RGW3": {
+      "Override Projectile": null,
+      "Animation Fire Seconds": 9.999999747378752e-6,
+      "Rumble - Left Motor Strength": 0.30000001192092896,
+      "Rumble - Right Motor Strength": 0.6000000238418579,
+      "Rumble - Duration": 0.20000000298023224,
+      "Animation Reload Seconds": 4.333343505859375,
+      "Bolt Draw Speed": 1.8333330154418943,
+      "Sighted Transition Seconds": 0.119999997317791,
+      "Unsighted Transition Seconds": 0.15000000596046448,
+      "Min Weapon Draw Time": 0.25,
+      "Damage Bonus Multiplier": 1.0,
+      "Rumble - Period (ms)": 0,
+      "Rumble Pattern": { "value": 0, "name": "Constant" },
+      "# Projectiles": 1
+    },
+    "Critical Data": { "Crit Damage Mult": 2.5, "Crit Charge Bonus": 1.0, "Crit Effect": null },
+    "Impact Data Set": "0x00004B37",
+    "NPC Add Ammo List": "0x0039EE4D",
+    "Aim Model": "0x0019E14F",
+    "Aim Assist Model": "0x005EEAF6",
+    "Min Durability Curve": {
+      "formid": "0x001FAB9A",
+      "curve_path": "ItemCondition\\Durability_Weapons_Energy_Min.json",
+      "curve": [
+        { "x": 1.0, "y": 20.0 },
+        { "x": 5.0, "y": 24.0 },
+        { "x": 10.0, "y": 28.0 },
+        { "x": 15.0, "y": 32.0 },
+        { "x": 20.0, "y": 36.0 },
+        { "x": 25.0, "y": 40.0 },
+        { "x": 30.0, "y": 44.0 },
+        { "x": 35.0, "y": 48.0 },
+        { "x": 40.0, "y": 52.0 },
+        { "x": 45.0, "y": 56.0 },
+        { "x": 50.0, "y": 60.0 }
+      ]
+    },
+    "Condition Loss Scale": {
+      "formid": "0x0003490E",
+      "curve_path": "ItemCondition\\ConditionDamageScaleFactor_Weapons_Energy.json",
+      "curve": [
+        { "x": 1.0, "y": 0.014999999664723871 },
+        { "x": 10.0, "y": 0.014750000089406967 },
+        { "x": 20.0, "y": 0.013749999925494194 },
+        { "x": 30.0, "y": 0.012600000016391276 },
+        { "x": 40.0, "y": 0.011350000277161598 },
+        { "x": 50.0, "y": 0.009999999776482582 },
+        { "x": 60.0, "y": 0.008999999612569809 },
+        { "x": 100.0, "y": 0.006500000134110451 }
+      ]
+    },
+    "Bash Condition Loss Scale": {
+      "formid": "0x001FABBA",
+      "curve_path": "ItemCondition\\SecondaryScaleFactor_Weapons_Ranged_Bash.json",
+      "curve": [
+        { "x": 1.0, "y": 0.25 },
+        { "x": 7.0, "y": 0.27000001072883606 },
+        { "x": 15.0, "y": 0.30000001192092896 },
+        { "x": 20.0, "y": 0.3499999940395355 },
+        { "x": 30.0, "y": 0.5 },
+        { "x": 40.0, "y": 0.699999988079071 }
+      ]
+    },
+    "Max Durability Curve": {
+      "formid": "0x00345A4D",
+      "curve_path": "ItemCondition\\Durability_Weapons_Energy_Max.json",
+      "curve": [
+        { "x": 1.0, "y": 30.0 },
+        { "x": 5.0, "y": 34.0 },
+        { "x": 10.0, "y": 38.0 },
+        { "x": 15.0, "y": 42.0 },
+        { "x": 20.0, "y": 46.0 },
+        { "x": 25.0, "y": 50.0 },
+        { "x": 30.0, "y": 54.0 },
+        { "x": 35.0, "y": 58.0 },
+        { "x": 40.0, "y": 62.0 },
+        { "x": 45.0, "y": 66.0 },
+        { "x": 50.0, "y": 70.0 }
+      ]
+    },
+    "Telegraph Data": { "Time": 0.0 },
+    "Sneak Attack Multiplier": 2.5
+  }
+}

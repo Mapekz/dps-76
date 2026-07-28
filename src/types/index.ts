@@ -747,4 +747,3 @@ export function createDefaultEnemyConfig(): EnemyConfig {
     conditions: createDefaultEnemyConditions(),
   };
 }
-

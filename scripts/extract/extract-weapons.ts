@@ -1,9 +1,19 @@
-import type { ExcludedRecordDetail, GeneratedDamageComponent, GeneratedWeapon } from '../../src/types/generated';
+import type {
+  ExcludedRecordDetail,
+  GeneratedDamageComponent,
+  GeneratedWeapon,
+} from '../../src/types/generated';
 import type { Modifier } from '../../src/types/modifiers';
 import { isOmodEligibleForWeapon } from '../../src/data/omod-eligibility';
 import { type ApGrantEntry, type ApGrantIndex, emptyApGrantIndex } from './ap-grant-index';
 import { EsmClient, mapPool, type EsmRecord } from './esm-client';
-import { asNumber, DAMAGE_TYPE_EDID_MAP, decodeExplosionDamage, parseCurve, projectileExplosionFormId } from './normalize/explosion';
+import {
+  asNumber,
+  DAMAGE_TYPE_EDID_MAP,
+  decodeExplosionDamage,
+  parseCurve,
+  projectileExplosionFormId,
+} from './normalize/explosion';
 import { buildAvifRoutes, translateEnchantment, type AvifRoute } from './normalize/mgef';
 import { ObtainabilityClassifier } from './obtainability';
 
@@ -19,14 +29,27 @@ export { DAMAGE_TYPE_EDID_MAP };
 // own are real picker entries — obtainability derivation gates them
 // per-record instead (user decision, 2026-07-10 review).
 const EXCLUDED_EDID_PATTERNS = [
-  /^zzz/i, /^del_/i, /^deleted/i, /^deprecated/i, /^cr[^a-z]/, /^hto_/i, /^xpd_/i,
-  /^post_/i, /^test/i, /^debug/i, /^gastrap/i, /^workshopturret/i,
-  /^trapturret/i, /^mtnm/i, /^survival_/i, /NONPLAYABLE/i,
+  /^zzz/i,
+  /^del_/i,
+  /^deleted/i,
+  /^deprecated/i,
+  /^cr[^a-z]/,
+  /^hto_/i,
+  /^xpd_/i,
+  /^post_/i,
+  /^test/i,
+  /^debug/i,
+  /^gastrap/i,
+  /^workshopturret/i,
+  /^trapturret/i,
+  /^mtnm/i,
+  /^survival_/i,
+  /NONPLAYABLE/i,
 ];
 
 /** Exposed for tests: does the pre-filter drop this editor_id? */
 export function isExcludedWeaponEdid(edid: string): boolean {
-  return EXCLUDED_EDID_PATTERNS.some(p => p.test(edid));
+  return EXCLUDED_EDID_PATTERNS.some((p) => p.test(edid));
 }
 
 interface ExtractWeaponsResult {
@@ -56,10 +79,12 @@ interface ExtractWeaponsResult {
 }
 
 /** Shared by extractWeapons() and run-all.ts's `--only omods`-without-weapons fallback. */
-export function explosiveFamilyKeywordsOf(weapons: Pick<GeneratedWeapon, 'keywords' | 'components'>[]): Set<string> {
+export function explosiveFamilyKeywordsOf(
+  weapons: Pick<GeneratedWeapon, 'keywords' | 'components'>[],
+): Set<string> {
   const keywords = new Set<string>();
   for (const w of weapons) {
-    if (w.components.some(c => c.fromExplosion)) {
+    if (w.components.some((c) => c.fromExplosion)) {
       for (const kw of w.keywords) keywords.add(kw);
     }
   }
@@ -69,13 +94,15 @@ export function explosiveFamilyKeywordsOf(weapons: Pick<GeneratedWeapon, 'keywor
 async function buildComponents(
   client: EsmClient,
   fields: Record<string, unknown>,
-  unresolved: string[]
+  unresolved: string[],
 ): Promise<GeneratedDamageComponent[]> {
   const components: GeneratedDamageComponent[] = [];
   const data = (fields['Data'] ?? {}) as Record<string, unknown>;
   const baseDamage = asNumber(data['Base Damage']);
   const damageTypes = fields['Damage Types'];
-  const typedEntries = Array.isArray(damageTypes) ? (damageTypes as Array<Record<string, unknown>>) : [];
+  const typedEntries = Array.isArray(damageTypes)
+    ? (damageTypes as Array<Record<string, unknown>>)
+    : [];
 
   // Physical component semantics (user-confirmed against Fixer/MG42/Shishkebab/
   // plasma vs laser records): each component's damage = its own curve evaluated
@@ -88,10 +115,21 @@ async function buildComponents(
   //   Laser Gun / Gatling Laser / Flamer: NO main curve → typed damage only.
   const mainCurve = parseCurve(fields['Damage Curve']);
   if (mainCurve.curve) {
-    components.push({ damageType: 'ballistic', damageTypeEdid: null, amount: baseDamage, ...mainCurve });
+    components.push({
+      damageType: 'ballistic',
+      damageTypeEdid: null,
+      amount: baseDamage,
+      ...mainCurve,
+    });
   } else if (typedEntries.length === 0 && baseDamage > 0) {
     // Legacy flat-damage record with neither curve nor typed entries.
-    components.push({ damageType: 'ballistic', damageTypeEdid: null, amount: baseDamage, tier: null, curve: null });
+    components.push({
+      damageType: 'ballistic',
+      damageTypeEdid: null,
+      amount: baseDamage,
+      tier: null,
+      curve: null,
+    });
   }
 
   // Typed components (energy/fire/...): each entry carries its own curve.
@@ -145,7 +183,7 @@ export async function chaseExplosion(
   client: EsmClient,
   fields: Record<string, unknown>,
   edid: string,
-  unresolved: string[]
+  unresolved: string[],
 ): Promise<ExplosionChaseResult> {
   const none: ExplosionChaseResult = { components: [], baseWeaponDamageMult: 0 };
   const rgw3 = (fields['RGW3'] ?? {}) as Record<string, unknown>;
@@ -157,7 +195,9 @@ export async function chaseExplosion(
       const ammoFormId = data['Ammo'] as string | null;
       if (!ammoFormId || ammoFormId === '0x00000000') return none;
       const ammo = await client.get(ammoFormId);
-      projFormId = ((ammo.fields['DNAM'] ?? {}) as Record<string, unknown>)['Projectile'] as string | null;
+      projFormId = ((ammo.fields['DNAM'] ?? {}) as Record<string, unknown>)['Projectile'] as
+        | string
+        | null;
     }
     if (!projFormId || projFormId === '0x00000000') return none;
 
@@ -194,7 +234,9 @@ export async function chaseExplosion(
 
     return { components, baseWeaponDamageMult: decoded.baseWeaponDamageMult };
   } catch (err) {
-    unresolved.push(`explosion chase failed for ${edid}: ${err instanceof Error ? err.message : String(err)}`);
+    unresolved.push(
+      `explosion chase failed for ${edid}: ${err instanceof Error ? err.message : String(err)}`,
+    );
     return none;
   }
 }
@@ -222,16 +264,16 @@ export async function chaseWeaponEnchantment(
   name: string,
   avifRoutes: Map<string, AvifRoute[]>,
   edidByFormId: Map<string, string>,
-  unresolved: string[]
+  unresolved: string[],
 ): Promise<Modifier[]> {
   const enchFormId = fields['Enchantment'] as string | null;
   if (!enchFormId || enchFormId === '0x00000000') return [];
 
   const { modifiers, notes, targetType } = await translateEnchantment(
     { client, routes: avifRoutes, edidByFormId, timedIsActive: true, noteUnroutedAvs: true },
-    enchFormId
+    enchFormId,
   );
-  notes.forEach(n => unresolved.push(`${edid}: weapon enchantment: ${n}`));
+  notes.forEach((n) => unresolved.push(`${edid}: weapon enchantment: ${n}`));
   if (targetType !== 'Contact') return []; // Self/other-delivery weapon enchantments: out of scope (see doc comment above).
 
   const source: Modifier['source'] = { kind: 'weapon', formId, edid, name };
@@ -273,10 +315,10 @@ function templateCombinationItems(fields: Record<string, unknown>): Array<Record
   if (!Array.isArray(combinations)) return [];
   return (combinations as Array<Record<string, unknown>>)
     .map(
-      combo =>
-        (combo['Combination'] as Record<string, unknown> | undefined)?.['Object Mod Template Item'] as
-          | Record<string, unknown>
-          | undefined
+      (combo) =>
+        (combo['Combination'] as Record<string, unknown> | undefined)?.[
+          'Object Mod Template Item'
+        ] as Record<string, unknown> | undefined,
     )
     .filter((item): item is Record<string, unknown> => item !== undefined);
 }
@@ -307,22 +349,29 @@ function extractTemplateModFormIds(fields: Record<string, unknown>): string[] {
 function extractDefaultModFormIds(
   fields: Record<string, unknown>,
   edid: string,
-  unresolved: string[]
+  unresolved: string[],
 ): string[] {
   const template = fields['Object Template'] as Record<string, unknown> | undefined;
   const combinations = template?.['Combinations'];
-  const combos = Array.isArray(combinations) ? (combinations as Array<Record<string, unknown>>) : [];
+  const combos = Array.isArray(combinations)
+    ? (combinations as Array<Record<string, unknown>>)
+    : [];
   if (combos.length === 0) return [];
   const itemOf = (combo: Record<string, unknown>) =>
     (combo['Combination'] as Record<string, unknown> | undefined)?.['Object Mod Template Item'] as
       | Record<string, unknown>
       | undefined;
   const items = (predicate: (combo: Record<string, unknown>) => boolean) =>
-    combos.filter(predicate).map(itemOf).filter((i): i is Record<string, unknown> => i !== undefined);
+    combos
+      .filter(predicate)
+      .map(itemOf)
+      .filter((i): i is Record<string, unknown> => i !== undefined);
 
-  const flagged = items(c => (itemOf(c)?.['Default'] as Record<string, unknown> | undefined)?.['value'] === 1);
+  const flagged = items(
+    (c) => (itemOf(c)?.['Default'] as Record<string, unknown> | undefined)?.['value'] === 1,
+  );
   if (flagged.length > 0) return flattenIncludes(flagged);
-  const named = items(c => (c['Combination'] as Record<string, unknown>)?.['Name'] === 'Default');
+  const named = items((c) => (c['Combination'] as Record<string, unknown>)?.['Name'] === 'Default');
   if (named.length > 0) return flattenIncludes(named);
   if (combos.length === 1) return flattenIncludes(items(() => true));
   unresolved.push(`no Default combination for ${edid} (${combos.length} combos)`);
@@ -332,7 +381,7 @@ function extractDefaultModFormIds(
 export async function toGeneratedWeapon(
   client: EsmClient,
   record: EsmRecord,
-  unresolved: string[]
+  unresolved: string[],
 ): Promise<GeneratedWeapon> {
   const fields = record.fields;
   const data = (fields['Data'] ?? {}) as Record<string, unknown>;
@@ -344,7 +393,7 @@ export async function toGeneratedWeapon(
   const keywordFormIds: string[] = Array.isArray(keywordsNode['Keywords'])
     ? (keywordsNode['Keywords'] as string[])
     : [];
-  const keywords = await Promise.all(keywordFormIds.map(id => client.resolveEdid(id)));
+  const keywords = await Promise.all(keywordFormIds.map((id) => client.resolveEdid(id)));
   const weaponTypeName =
     ((data['Weapon Type'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown';
 
@@ -391,7 +440,9 @@ export async function toGeneratedWeapon(
     fullPowerSeconds: asNumber(data['Full Power Seconds']),
     fullPowerDamageMult: asNumber(data['Full Power Damage Mult']),
     minimumChargeTime: asNumber(fields['Minimum Charge Time']),
-    eligibleLevels: Array.isArray(fields['Eligible Levels']) ? (fields['Eligible Levels'] as number[]) : [],
+    eligibleLevels: Array.isArray(fields['Eligible Levels'])
+      ? (fields['Eligible Levels'] as number[])
+      : [],
     templateModFormIds: extractTemplateModFormIds(fields),
     defaultModFormIds: extractDefaultModFormIds(fields, record.editor_id, unresolved),
     attachParentSlots: Array.isArray(fields['Attach Parent Slots'])
@@ -428,7 +479,7 @@ export async function toGeneratedWeapon(
 export function applyAttachPointClosure(
   weapon: GeneratedWeapon,
   index: ApGrantIndex,
-  grantingEntries: readonly ApGrantEntry[]
+  grantingEntries: readonly ApGrantEntry[],
 ): void {
   const slots = new Set(weapon.attachParentSlots);
   for (const formId of new Set([...weapon.templateModFormIds, ...weapon.defaultModFormIds])) {
@@ -449,8 +500,13 @@ export function applyAttachPointClosure(
     for (const entry of grantingEntries) {
       if (
         !isOmodEligibleForWeapon(
-          { id: entry.edid, formId: entry.formId, attachPointFormId: entry.attachPointFormId!, targetKeywords: entry.targetKeywords },
-          view
+          {
+            id: entry.edid,
+            formId: entry.formId,
+            attachPointFormId: entry.attachPointFormId!,
+            targetKeywords: entry.targetKeywords,
+          },
+          view,
         )
       ) {
         continue;
@@ -468,12 +524,12 @@ export function applyAttachPointClosure(
 
 export async function extractWeapons(
   client: EsmClient,
-  apGrantIndex: ApGrantIndex = emptyApGrantIndex()
+  apGrantIndex: ApGrantIndex = emptyApGrantIndex(),
 ): Promise<ExtractWeaponsResult> {
   const named = await client.search('*', { type: 'WEAP', searchIn: 'name' });
 
   const excluded: Record<string, string[]> = { prefix: [], noDamage: [] };
-  const candidates = named.filter(row => {
+  const candidates = named.filter((row) => {
     if (isExcludedWeaponEdid(row.editor_id)) {
       excluded.prefix.push(row.editor_id);
       return false;
@@ -498,10 +554,10 @@ export async function extractWeapons(
   // open a slot — precompute them once (the index holds ~12k records; only a
   // few hundred grant attach points).
   const grantingEntries = [...apGrantIndex.values()].filter(
-    e => !e.unnamed && e.attachPointFormId !== null && e.grantedApFormIds.length > 0
+    (e) => !e.unnamed && e.attachPointFormId !== null && e.grantedApFormIds.length > 0,
   );
 
-  const records = await mapPool(candidates, 8, row => client.get(row.form_id));
+  const records = await mapPool(candidates, 8, (row) => client.get(row.form_id));
   for (const record of records) {
     const weapon = await toGeneratedWeapon(client, record, unresolved);
     applyAttachPointClosure(weapon, apGrantIndex, grantingEntries);
@@ -530,7 +586,14 @@ export async function extractWeapons(
     // Weapon-intrinsic on-hit Enchantment chase (Cremator's built-in fire
     // DoT, bladed melee weapons' innate bleed, ...) — see chaseWeaponEnchantment.
     weapon.modifiers = await chaseWeaponEnchantment(
-      client, record.fields, weapon.formId, weapon.id, weapon.name, avifRoutes, edidByFormId, unresolved
+      client,
+      record.fields,
+      weapon.formId,
+      weapon.id,
+      weapon.name,
+      avifRoutes,
+      edidByFormId,
+      unresolved,
     );
     weapons.push(weapon);
   }
@@ -541,7 +604,9 @@ export async function extractWeapons(
   // without a re-extract), and every failure lands in excludedDetailed with
   // its evidence for post-run review.
   const classifier = new ObtainabilityClassifier(client);
-  const verdicts = await classifier.classify(weapons.map(w => ({ formId: w.formId, edid: w.id })));
+  const verdicts = await classifier.classify(
+    weapons.map((w) => ({ formId: w.formId, edid: w.id })),
+  );
   const excludedDetailed: Record<string, ExcludedRecordDetail[]> = { weaponUnobtainable: [] };
   const obtainableFormIds = new Set<string>();
   for (const weapon of weapons) {
@@ -551,7 +616,11 @@ export async function extractWeapons(
       obtainableFormIds.add(weapon.formId);
     } else {
       (excluded.unobtainable ??= []).push(weapon.id);
-      excludedDetailed.weaponUnobtainable.push({ id: weapon.id, name: weapon.name, signals: verdict?.signals });
+      excludedDetailed.weaponUnobtainable.push({
+        id: weapon.id,
+        name: weapon.name,
+        signals: verdict?.signals,
+      });
     }
   }
 

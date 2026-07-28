@@ -23,11 +23,21 @@ import { ObtainabilityClassifier } from './obtainability';
 // extract-weapons.ts's EXCLUDED_EDID_PATTERNS / extract-omods.ts's
 // OMOD_JUNK_EDID_RE dev-prefix set, plus armor-specific non-equippable kinds.
 const EXCLUDED_EDID_PATTERNS = [
-  /^zzz/i, /^del_/i, /^deleted/i, /^deprecated/i, /^hto_/i, /^xpd_/i,
-  /^post_/i, /^test/i, /^debug/i, /^mtnm/i, /^cut_/i,
+  /^zzz/i,
+  /^del_/i,
+  /^deleted/i,
+  /^deprecated/i,
+  /^hto_/i,
+  /^xpd_/i,
+  /^post_/i,
+  /^test/i,
+  /^debug/i,
+  /^mtnm/i,
+  /^cut_/i,
   // Creature/actor skins and NPC-only worn clothes — never a player armor
   // piece (no Attach Parent Slots / legendary mod slots either).
-  /^skin/i, /^creatureclothes_/i,
+  /^skin/i,
+  /^creatureclothes_/i,
   // Camera/UI visual-effect overlays reusing the ARMO record type.
   /^fx/i,
   /NONPLAYABLE/i,
@@ -35,7 +45,7 @@ const EXCLUDED_EDID_PATTERNS = [
 
 /** Exposed for tests: does the pre-filter drop this editor_id? */
 export function isExcludedArmorEdid(edid: string): boolean {
-  return EXCLUDED_EDID_PATTERNS.some(p => p.test(edid));
+  return EXCLUDED_EDID_PATTERNS.some((p) => p.test(edid));
 }
 
 export interface ExtractArmorResult {
@@ -46,12 +56,12 @@ export interface ExtractArmorResult {
 
 export async function extractArmor(client: EsmClient): Promise<ExtractArmorResult> {
   const rows = await client.list('ARMO');
-  const candidateRows = rows.filter(r => !isExcludedArmorEdid(r.editor_id));
-  const records = await mapPool(candidateRows, 8, r => client.get(r.form_id));
+  const candidateRows = rows.filter((r) => !isExcludedArmorEdid(r.editor_id));
+  const records = await mapPool(candidateRows, 8, (r) => client.get(r.form_id));
 
   const armors: GeneratedArmor[] = records
-    .filter(r => !!r.fields['Name'])
-    .map(r => ({
+    .filter((r) => !!r.fields['Name'])
+    .map((r) => ({
       id: r.editor_id,
       formId: r.header.form_id,
       name: r.fields['Name'] as string,
@@ -62,7 +72,7 @@ export async function extractArmor(client: EsmClient): Promise<ExtractArmorResul
   // rescue). No obtainableWeaponFormIds/cobjIndex needed — real armor pieces
   // are directly referenced by COBJ/LVLI/GMRW/CONT, not riding on anything.
   const classifier = new ObtainabilityClassifier(client);
-  const verdicts = await classifier.classify(armors.map(a => ({ formId: a.formId, edid: a.id })));
+  const verdicts = await classifier.classify(armors.map((a) => ({ formId: a.formId, edid: a.id })));
   const obtainableFormIds = new Set<string>();
   for (const armor of armors) {
     const verdict = verdicts.get(armor.formId);

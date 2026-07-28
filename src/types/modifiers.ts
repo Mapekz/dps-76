@@ -506,88 +506,366 @@ export interface BucketRegimeEntry {
  */
 
 export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
-  baseDamage: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts computePaperDamage (per-component base scaling, before the dbm parenthesis)' },
-  dbm: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts computePaperDamage (dbm parenthesis)' },
-  critDmgBase: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts totalCritMult' },
-  critDmgBonus: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts totalCritMult' },
-  critDmgBonusScale: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts totalCritMult' },
-  sneakBase: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts totalSneakMult' },
-  sneakBonus: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts totalSneakMult' },
-  powerAttackBonus: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts computePaperDamage (dbm parenthesis)' },
-  weakpointBonus: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts computePaperDamage (outer multiplier)' },
-  wholeDamage: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'resolve.ts foldWholeDamage (outer multiplier)' },
-  limbDamage: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — limb targeting not modeled (STAT_DmgLimbs plumbing extracted, e.g. Crippling\'s override, but no consumer yet)' },
-  bashDamage: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — bash attacks not modeled (STAT_DmgBash extracted, no consumer yet)' },
-  explosivePayload: { regime: 'damageFold', hasEngineEffect: true, foldedBy: 'paper-damage.ts computePaperDamage (explosive-twin branch)' },
-  critFill: { regime: 'critEconomy', hasEngineEffect: true, foldedBy: 'crit-meter.ts computeCritMeter' },
-  critConsumption: { regime: 'critEconomy', hasEngineEffect: true, foldedBy: 'crit-meter.ts computeCritMeter' },
-  fireRateSpeed: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.speed rewrite)' },
-  isAutomatic: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.isAutomatic rewrite)' },
-  animDurationSec: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.animDurationSec rewrite)' },
-  animDelaySec: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.animDelaySec rewrite); feeds fire-rate.ts\'s semi-auto/charging-tail divisor' },
-  projectileCount: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.projectileCount rewrite); no damage term multiplies per-projectile yet, but Shotgun Champ\'s curve reads the folded value via the projectileCount CurveInput' },
-  ammoCapacity: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.capacity rewrite); feeds sustained DPS (sustain.ts)' },
-  reloadSpeed: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.reloadSpeed rewrite); feeds sustained DPS (sustain.ts)' },
-  reloadSkipChance: { regime: 'sustainChance', hasEngineEffect: true, foldedBy: 'effective-weapon.ts (weapon.reloadSkipChance rewrite); feeds sustain.ts reloadSec' },
-  reloadSkipChanceBash: { regime: 'sustainChance', hasEngineEffect: true, foldedBy: 'effective-weapon.ts (weapon.reloadSkipChanceBash rewrite); feeds sustain.ts reloadSec — bash-triggered channel (Battle-Loader\'s EP199), separate from reloadSkipChance\'s passive-on-reload channel (Quick Hands/Wild West Wind EP182)' },
-  ammoFreeChance: { regime: 'sustainChance', hasEngineEffect: true, foldedBy: 'effective-weapon.ts (weapon.ammoFreeChance rewrite); feeds sustain.ts effective capacity' },
-  vatsApCost: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.apCost rewrite); feeds ap-economy.ts' },
-  chargeFullPowerSec: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.fullPowerSeconds rewrite); gates weaponCharges() and feeds resolvedChargeTimeSec (src/lib/charge.ts), consumed by fire-rate.ts' },
-  chargeFullPowerDamageMult: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.fullPowerDamageMult rewrite); feeds chargeDamageMultiplier (src/lib/charge.ts)' },
-  weaponMinRange: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.minRange rewrite); feeds lib/distance.ts rangeFalloffMult, folded into paper-damage.ts outerMult/explosiveOuterMult via scenarios.ts' },
-  weaponMaxRange: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.maxRange rewrite); feeds lib/distance.ts rangeFalloffMult, folded into paper-damage.ts outerMult/explosiveOuterMult via scenarios.ts' },
-  weaponOutOfRangeMult: { regime: 'weaponStat', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.outOfRangeDamageMult rewrite); feeds lib/distance.ts rangeFalloffMult, folded into paper-damage.ts outerMult/explosiveOuterMult via scenarios.ts' },
-  apRegen: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy' },
-  apPerCrit: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy' },
-  apRegenFlat: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy (flat AP/sec term)' },
-  apMax: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy (AP pool size)' },
-  apCritHot: { regime: 'apEconomy', hasEngineEffect: true, foldedBy: 'scenarios.ts (per-modifier collect — durationSec matters), ap-economy.ts computeApEconomy (refresh-only HoT term)' },
-  onslaughtMaxStacks: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'scenarios.ts / effective-weapon.ts — folded once, threaded on ResolveContext.onslaughtMaxStacks; caps the onslaught StackCounter and onslaughtStacks CurveInput' },
-  onslaughtReverse: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'scenarios.ts — folded once; folded > 0 activates reverse-onslaught stack averaging (onslaught.ts) threaded on ResolveContext.onslaughtReverseStacks' },
-  bulletStormMaxStacks: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'scenarios.ts / effective-weapon.ts — folded once at each site, threaded on ResolveContext.bulletStormMaxStacks; caps the bulletStorm StackCounter and bulletStormStacks CurveInput' },
-  bulletStormMinStacks: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'scenarios.ts / effective-weapon.ts — folded once at each site, threaded on ResolveContext.bulletStormMinStacks; floors the bulletStorm StackCounter and bulletStormStacks CurveInput' },
-  bulletStormRetention: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'scenarios.ts — folded once; consumed by bulletstorm.ts bulletStormAvgStacks (sustained-fire average model) when PlayerConditions.bulletStormAverageMode is on' },
-  bulletStormOnKill: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — kills are unknowable in steady-state paper DPS (Final Word\'s on-kill stack grant)' },
-  bulletStormSpinUp: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — spin-up/ramp timing not modeled (Valkyrie\'s)' },
-  deflectChance: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — defensive, no incoming-damage model exists (The Action Hero)' },
-  moveSpeedBonus: { regime: 'bootstrap', hasEngineEffect: true, foldedBy: 'effective-weapon.ts buildEffectiveWeapon — folded once, threaded on ResolveContext.moveSpeedBonus; feeds the moveSpeedBonus CurveInput (Fast Fighter). Threaded in the weapon-stat fold ONLY — a damage-bucket curve on this input would read 0 until scenarios.ts also threads it' },
-  addDamageComponent: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — no reader anywhere in the codebase; likely superseded by explosivePayload/materializeDamageTypeComponents' },
-  armorPen: { regime: 'mitigation', hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold → armorPenTotal; consumed by mitigation.ts applyMitigation (per-component Resist fraction)' },
-  armorPenFlat: { regime: 'mitigation', hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold → flat resist-point total; consumed by mitigation.ts applyMitigation (physical-resist-only, see bucket doc comment)' },
-  vatsHitChance: { regime: 'display', foldBase: 1, deBased: true, hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold (base 1, de-based) → ScenarioSet.vatsHitChanceBonus, rendered by ConditionsSection.tsx\'s pill — NEVER consumed by sustainedDps/apLimitedDps/any formula (Phase 4 — VATS hit-chance aggregate, display-only)' },
-  vatsHitChanceMult: { regime: 'display', foldBase: 1, deBased: false, hasEngineEffect: true, foldedBy: 'scenarios.ts bootstrap fold (base 1, NOT de-based — exposed as-is, 1 = neutral) → ScenarioSet.vatsHitChanceMult, rendered by ConditionsSection.tsx\'s pill — NEVER consumed by sustainedDps/apLimitedDps/any formula (Concentrated Fire EP109 multiplier, USER-RESOLVED 2026-07-19, display-only)' },
+  baseDamage: {
+    regime: 'damageFold',
+    hasEngineEffect: true,
+    foldedBy:
+      'paper-damage.ts computePaperDamage (per-component base scaling, before the dbm parenthesis)',
+  },
+  dbm: {
+    regime: 'damageFold',
+    hasEngineEffect: true,
+    foldedBy: 'paper-damage.ts computePaperDamage (dbm parenthesis)',
+  },
+  critDmgBase: {
+    regime: 'damageFold',
+    hasEngineEffect: true,
+    foldedBy: 'paper-damage.ts totalCritMult',
+  },
+  critDmgBonus: {
+    regime: 'damageFold',
+    hasEngineEffect: true,
+    foldedBy: 'paper-damage.ts totalCritMult',
+  },
+  critDmgBonusScale: {
+    regime: 'damageFold',
+    hasEngineEffect: true,
+    foldedBy: 'paper-damage.ts totalCritMult',
+  },
+  sneakBase: {
+    regime: 'damageFold',
+    hasEngineEffect: true,
+    foldedBy: 'paper-damage.ts totalSneakMult',
+  },
+  sneakBonus: {
+    regime: 'damageFold',
+    hasEngineEffect: true,
+    foldedBy: 'paper-damage.ts totalSneakMult',
+  },
+  powerAttackBonus: {
+    regime: 'damageFold',
+    hasEngineEffect: true,
+    foldedBy: 'paper-damage.ts computePaperDamage (dbm parenthesis)',
+  },
+  weakpointBonus: {
+    regime: 'damageFold',
+    hasEngineEffect: true,
+    foldedBy: 'paper-damage.ts computePaperDamage (outer multiplier)',
+  },
+  wholeDamage: {
+    regime: 'damageFold',
+    hasEngineEffect: true,
+    foldedBy: 'resolve.ts foldWholeDamage (outer multiplier)',
+  },
+  limbDamage: {
+    regime: 'unfolded',
+    hasEngineEffect: false,
+    foldedBy:
+      "none — limb targeting not modeled (STAT_DmgLimbs plumbing extracted, e.g. Crippling's override, but no consumer yet)",
+  },
+  bashDamage: {
+    regime: 'unfolded',
+    hasEngineEffect: false,
+    foldedBy: 'none — bash attacks not modeled (STAT_DmgBash extracted, no consumer yet)',
+  },
+  explosivePayload: {
+    regime: 'damageFold',
+    hasEngineEffect: true,
+    foldedBy: 'paper-damage.ts computePaperDamage (explosive-twin branch)',
+  },
+  critFill: {
+    regime: 'critEconomy',
+    hasEngineEffect: true,
+    foldedBy: 'crit-meter.ts computeCritMeter',
+  },
+  critConsumption: {
+    regime: 'critEconomy',
+    hasEngineEffect: true,
+    foldedBy: 'crit-meter.ts computeCritMeter',
+  },
+  fireRateSpeed: {
+    regime: 'weaponStat',
+    hasEngineEffect: true,
+    foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.speed rewrite)',
+  },
+  isAutomatic: {
+    regime: 'weaponStat',
+    hasEngineEffect: true,
+    foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.isAutomatic rewrite)',
+  },
+  animDurationSec: {
+    regime: 'weaponStat',
+    hasEngineEffect: true,
+    foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.animDurationSec rewrite)',
+  },
+  animDelaySec: {
+    regime: 'weaponStat',
+    hasEngineEffect: true,
+    foldedBy:
+      "effective-weapon.ts buildEffectiveWeapon (weapon.animDelaySec rewrite); feeds fire-rate.ts's semi-auto/charging-tail divisor",
+  },
+  projectileCount: {
+    regime: 'weaponStat',
+    hasEngineEffect: true,
+    foldedBy:
+      "effective-weapon.ts buildEffectiveWeapon (weapon.projectileCount rewrite); no damage term multiplies per-projectile yet, but Shotgun Champ's curve reads the folded value via the projectileCount CurveInput",
+  },
+  ammoCapacity: {
+    regime: 'weaponStat',
+    hasEngineEffect: true,
+    foldedBy:
+      'effective-weapon.ts buildEffectiveWeapon (weapon.capacity rewrite); feeds sustained DPS (sustain.ts)',
+  },
+  reloadSpeed: {
+    regime: 'weaponStat',
+    hasEngineEffect: true,
+    foldedBy:
+      'effective-weapon.ts buildEffectiveWeapon (weapon.reloadSpeed rewrite); feeds sustained DPS (sustain.ts)',
+  },
+  reloadSkipChance: {
+    regime: 'sustainChance',
+    hasEngineEffect: true,
+    foldedBy: 'effective-weapon.ts (weapon.reloadSkipChance rewrite); feeds sustain.ts reloadSec',
+  },
+  reloadSkipChanceBash: {
+    regime: 'sustainChance',
+    hasEngineEffect: true,
+    foldedBy:
+      "effective-weapon.ts (weapon.reloadSkipChanceBash rewrite); feeds sustain.ts reloadSec — bash-triggered channel (Battle-Loader's EP199), separate from reloadSkipChance's passive-on-reload channel (Quick Hands/Wild West Wind EP182)",
+  },
+  ammoFreeChance: {
+    regime: 'sustainChance',
+    hasEngineEffect: true,
+    foldedBy:
+      'effective-weapon.ts (weapon.ammoFreeChance rewrite); feeds sustain.ts effective capacity',
+  },
+  vatsApCost: {
+    regime: 'weaponStat',
+    hasEngineEffect: true,
+    foldedBy:
+      'effective-weapon.ts buildEffectiveWeapon (weapon.apCost rewrite); feeds ap-economy.ts',
+  },
+  chargeFullPowerSec: {
+    regime: 'weaponStat',
+    hasEngineEffect: true,
+    foldedBy:
+      'effective-weapon.ts buildEffectiveWeapon (weapon.fullPowerSeconds rewrite); gates weaponCharges() and feeds resolvedChargeTimeSec (src/lib/charge.ts), consumed by fire-rate.ts',
+  },
+  chargeFullPowerDamageMult: {
+    regime: 'weaponStat',
+    hasEngineEffect: true,
+    foldedBy:
+      'effective-weapon.ts buildEffectiveWeapon (weapon.fullPowerDamageMult rewrite); feeds chargeDamageMultiplier (src/lib/charge.ts)',
+  },
+  weaponMinRange: {
+    regime: 'weaponStat',
+    hasEngineEffect: true,
+    foldedBy:
+      'effective-weapon.ts buildEffectiveWeapon (weapon.minRange rewrite); feeds lib/distance.ts rangeFalloffMult, folded into paper-damage.ts outerMult/explosiveOuterMult via scenarios.ts',
+  },
+  weaponMaxRange: {
+    regime: 'weaponStat',
+    hasEngineEffect: true,
+    foldedBy:
+      'effective-weapon.ts buildEffectiveWeapon (weapon.maxRange rewrite); feeds lib/distance.ts rangeFalloffMult, folded into paper-damage.ts outerMult/explosiveOuterMult via scenarios.ts',
+  },
+  weaponOutOfRangeMult: {
+    regime: 'weaponStat',
+    hasEngineEffect: true,
+    foldedBy:
+      'effective-weapon.ts buildEffectiveWeapon (weapon.outOfRangeDamageMult rewrite); feeds lib/distance.ts rangeFalloffMult, folded into paper-damage.ts outerMult/explosiveOuterMult via scenarios.ts',
+  },
+  apRegen: {
+    regime: 'apEconomy',
+    hasEngineEffect: true,
+    foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy',
+  },
+  apPerCrit: {
+    regime: 'apEconomy',
+    hasEngineEffect: true,
+    foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy',
+  },
+  apRegenFlat: {
+    regime: 'apEconomy',
+    hasEngineEffect: true,
+    foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy (flat AP/sec term)',
+  },
+  apMax: {
+    regime: 'apEconomy',
+    hasEngineEffect: true,
+    foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy (AP pool size)',
+  },
+  apCritHot: {
+    regime: 'apEconomy',
+    hasEngineEffect: true,
+    foldedBy:
+      'scenarios.ts (per-modifier collect — durationSec matters), ap-economy.ts computeApEconomy (refresh-only HoT term)',
+  },
+  onslaughtMaxStacks: {
+    regime: 'bootstrap',
+    hasEngineEffect: true,
+    foldedBy:
+      'scenarios.ts / effective-weapon.ts — folded once, threaded on ResolveContext.onslaughtMaxStacks; caps the onslaught StackCounter and onslaughtStacks CurveInput',
+  },
+  onslaughtReverse: {
+    regime: 'bootstrap',
+    hasEngineEffect: true,
+    foldedBy:
+      'scenarios.ts — folded once; folded > 0 activates reverse-onslaught stack averaging (onslaught.ts) threaded on ResolveContext.onslaughtReverseStacks',
+  },
+  bulletStormMaxStacks: {
+    regime: 'bootstrap',
+    hasEngineEffect: true,
+    foldedBy:
+      'scenarios.ts / effective-weapon.ts — folded once at each site, threaded on ResolveContext.bulletStormMaxStacks; caps the bulletStorm StackCounter and bulletStormStacks CurveInput',
+  },
+  bulletStormMinStacks: {
+    regime: 'bootstrap',
+    hasEngineEffect: true,
+    foldedBy:
+      'scenarios.ts / effective-weapon.ts — folded once at each site, threaded on ResolveContext.bulletStormMinStacks; floors the bulletStorm StackCounter and bulletStormStacks CurveInput',
+  },
+  bulletStormRetention: {
+    regime: 'bootstrap',
+    hasEngineEffect: true,
+    foldedBy:
+      'scenarios.ts — folded once; consumed by bulletstorm.ts bulletStormAvgStacks (sustained-fire average model) when PlayerConditions.bulletStormAverageMode is on',
+  },
+  bulletStormOnKill: {
+    regime: 'unfolded',
+    hasEngineEffect: false,
+    foldedBy:
+      "none — kills are unknowable in steady-state paper DPS (Final Word's on-kill stack grant)",
+  },
+  bulletStormSpinUp: {
+    regime: 'unfolded',
+    hasEngineEffect: false,
+    foldedBy: "none — spin-up/ramp timing not modeled (Valkyrie's)",
+  },
+  deflectChance: {
+    regime: 'unfolded',
+    hasEngineEffect: false,
+    foldedBy: 'none — defensive, no incoming-damage model exists (The Action Hero)',
+  },
+  moveSpeedBonus: {
+    regime: 'bootstrap',
+    hasEngineEffect: true,
+    foldedBy:
+      'effective-weapon.ts buildEffectiveWeapon — folded once, threaded on ResolveContext.moveSpeedBonus; feeds the moveSpeedBonus CurveInput (Fast Fighter). Threaded in the weapon-stat fold ONLY — a damage-bucket curve on this input would read 0 until scenarios.ts also threads it',
+  },
+  addDamageComponent: {
+    regime: 'unfolded',
+    hasEngineEffect: false,
+    foldedBy:
+      'none — no reader anywhere in the codebase; likely superseded by explosivePayload/materializeDamageTypeComponents',
+  },
+  armorPen: {
+    regime: 'mitigation',
+    hasEngineEffect: true,
+    foldedBy:
+      'scenarios.ts bootstrap fold → armorPenTotal; consumed by mitigation.ts applyMitigation (per-component Resist fraction)',
+  },
+  armorPenFlat: {
+    regime: 'mitigation',
+    hasEngineEffect: true,
+    foldedBy:
+      'scenarios.ts bootstrap fold → flat resist-point total; consumed by mitigation.ts applyMitigation (physical-resist-only, see bucket doc comment)',
+  },
+  vatsHitChance: {
+    regime: 'display',
+    foldBase: 1,
+    deBased: true,
+    hasEngineEffect: true,
+    foldedBy:
+      "scenarios.ts bootstrap fold (base 1, de-based) → ScenarioSet.vatsHitChanceBonus, rendered by ConditionsSection.tsx's pill — NEVER consumed by sustainedDps/apLimitedDps/any formula (Phase 4 — VATS hit-chance aggregate, display-only)",
+  },
+  vatsHitChanceMult: {
+    regime: 'display',
+    foldBase: 1,
+    deBased: false,
+    hasEngineEffect: true,
+    foldedBy:
+      "scenarios.ts bootstrap fold (base 1, NOT de-based — exposed as-is, 1 = neutral) → ScenarioSet.vatsHitChanceMult, rendered by ConditionsSection.tsx's pill — NEVER consumed by sustainedDps/apLimitedDps/any formula (Concentrated Fire EP109 multiplier, USER-RESOLVED 2026-07-19, display-only)",
+  },
   dotDamage: { regime: 'dot', hasEngineEffect: true, foldedBy: 'paper-damage.ts computeDotDps' },
-  maxHealth: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats (245 + 5xEND + this fold)' },
-  specialStrength: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds paper-damage.ts strengthTerm + the strength CurveInput (Debilitator\'s)' },
-  specialPerception: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; no CurveInput/formula reads it, but the folded value is what StatSummary renders (and highlights when buffed) — same as the other six SPECIALs' },
-  specialEndurance: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds the maxHealth formula + the endurance CurveInput (Lifegiver\'s)' },
-  specialCharisma: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds the charisma CurveInput (Peace Maker\'s)' },
-  specialIntelligence: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds the intelligence CurveInput (Science!, Pyro-Technician\'s, Cryologist\'s)' },
-  specialAgility: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds ap-economy.ts computeApEconomy\'s AP pool size' },
-  specialLuck: { regime: 'playerStat', hasEngineEffect: true, foldedBy: 'player-stats.ts derivePlayerStats; feeds crit-meter.ts computeCritMeter\'s fill rate' },
-  damageResistGain: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — wearer-side resist mitigation not modeled (AV DamageResist extracted via FALLBACK_AVIF_ROUTES, e.g. Scaly Skin, but no consumer yet)' },
-  energyResistGain: { regime: 'unfolded', hasEngineEffect: false, foldedBy: 'none — wearer-side resist mitigation not modeled (AV EnergyResist extracted via FALLBACK_AVIF_ROUTES, e.g. Scaly Skin, but no consumer yet)' },
+  maxHealth: {
+    regime: 'playerStat',
+    hasEngineEffect: true,
+    foldedBy: 'player-stats.ts derivePlayerStats (245 + 5xEND + this fold)',
+  },
+  specialStrength: {
+    regime: 'playerStat',
+    hasEngineEffect: true,
+    foldedBy:
+      "player-stats.ts derivePlayerStats; feeds paper-damage.ts strengthTerm + the strength CurveInput (Debilitator's)",
+  },
+  specialPerception: {
+    regime: 'playerStat',
+    hasEngineEffect: true,
+    foldedBy:
+      'player-stats.ts derivePlayerStats; no CurveInput/formula reads it, but the folded value is what StatSummary renders (and highlights when buffed) — same as the other six SPECIALs',
+  },
+  specialEndurance: {
+    regime: 'playerStat',
+    hasEngineEffect: true,
+    foldedBy:
+      "player-stats.ts derivePlayerStats; feeds the maxHealth formula + the endurance CurveInput (Lifegiver's)",
+  },
+  specialCharisma: {
+    regime: 'playerStat',
+    hasEngineEffect: true,
+    foldedBy: "player-stats.ts derivePlayerStats; feeds the charisma CurveInput (Peace Maker's)",
+  },
+  specialIntelligence: {
+    regime: 'playerStat',
+    hasEngineEffect: true,
+    foldedBy:
+      "player-stats.ts derivePlayerStats; feeds the intelligence CurveInput (Science!, Pyro-Technician's, Cryologist's)",
+  },
+  specialAgility: {
+    regime: 'playerStat',
+    hasEngineEffect: true,
+    foldedBy:
+      "player-stats.ts derivePlayerStats; feeds ap-economy.ts computeApEconomy's AP pool size",
+  },
+  specialLuck: {
+    regime: 'playerStat',
+    hasEngineEffect: true,
+    foldedBy: "player-stats.ts derivePlayerStats; feeds crit-meter.ts computeCritMeter's fill rate",
+  },
+  damageResistGain: {
+    regime: 'unfolded',
+    hasEngineEffect: false,
+    foldedBy:
+      'none — wearer-side resist mitigation not modeled (AV DamageResist extracted via FALLBACK_AVIF_ROUTES, e.g. Scaly Skin, but no consumer yet)',
+  },
+  energyResistGain: {
+    regime: 'unfolded',
+    hasEngineEffect: false,
+    foldedBy:
+      'none — wearer-side resist mitigation not modeled (AV EnergyResist extracted via FALLBACK_AVIF_ROUTES, e.g. Scaly Skin, but no consumer yet)',
+  },
 };
 
 /** Buckets whose fold rewrites an effective-weapon field rather than feeding a damage term — derived from BUCKET_REGISTRY. */
 export const WEAPON_STAT_BUCKETS: ReadonlySet<Bucket> = new Set(
   (Object.entries(BUCKET_REGISTRY) as Array<[Bucket, BucketRegimeEntry]>)
     .filter(([, entry]) => entry.regime === 'weaponStat')
-    .map(([bucket]) => bucket)
+    .map(([bucket]) => bucket),
 );
 
 /** Sustain expected-value chance buckets — folded in effective-weapon.ts, consumed by sustain.ts. */
 export const SUSTAIN_CHANCE_BUCKETS: ReadonlySet<Bucket> = new Set(
   (Object.entries(BUCKET_REGISTRY) as Array<[Bucket, BucketRegimeEntry]>)
     .filter(([, entry]) => entry.regime === 'sustainChance')
-    .map(([bucket]) => bucket)
+    .map(([bucket]) => bucket),
 );
 
 /** Buckets with no engine effect today — derived from BUCKET_REGISTRY; drives the OMOD/consumable picker's 'inert' badge. */
 export const INERT_ENGINE_BUCKETS: ReadonlySet<Bucket> = new Set(
   (Object.entries(BUCKET_REGISTRY) as Array<[Bucket, BucketRegimeEntry]>)
     .filter(([, entry]) => !entry.hasEngineEffect)
-    .map(([bucket]) => bucket)
+    .map(([bucket]) => bucket),
 );
 
 /**
@@ -609,7 +887,7 @@ export const INERT_ENGINE_BUCKETS: ReadonlySet<Bucket> = new Set(
  * race and were never inert.
  */
 export function modifierHasEngineEffect(m: Modifier): boolean {
-  return !(INERT_ENGINE_BUCKETS.has(m.bucket) || m.conditions.some(c => c.kind === 'unresolved'));
+  return !(INERT_ENGINE_BUCKETS.has(m.bucket) || m.conditions.some((c) => c.kind === 'unresolved'));
 }
 
 /** True iff at least one modifier in the list moves a number today (empty list → false). */
@@ -620,7 +898,12 @@ export function hasAnyEngineEffect(modifiers: readonly Modifier[]): boolean {
 export type WeaponClass = Weapon['weaponClass'];
 export type DamageType = Weapon['components'][number]['damageType'];
 
-export type StackCounter = 'tenderizer' | 'onslaught' | 'bulletStorm' | 'adrenaline' | 'concentratedFire';
+export type StackCounter =
+  | 'tenderizer'
+  | 'onslaught'
+  | 'bulletStorm'
+  | 'adrenaline'
+  | 'concentratedFire';
 
 /**
  * Gating/scaling conditions attached to a modifier. All conditions must pass

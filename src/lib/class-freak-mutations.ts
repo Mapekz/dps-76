@@ -44,7 +44,7 @@ export function applyClassFreakPenaltyScaling(buff: GeneratedBuff): Modifier[] {
   if (!buff.penaltyModifierIds?.length) return buff.modifiers;
 
   const penalties = new Set(buff.penaltyModifierIds);
-  return buff.modifiers.flatMap(m => {
+  return buff.modifiers.flatMap((m) => {
     if (!penalties.has(m.id)) return [m];
     return CLASS_FREAK_TIER_FACTORS.map((factor, rank) => ({
       ...scaled(m, factor, `:cf${rank}`),

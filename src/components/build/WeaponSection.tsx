@@ -39,9 +39,11 @@ function nearestItemLevelIndex(stops: readonly number[], level: number): number 
 
 /** Quarter-charge tick marks (25/50/75/100% of full power), dropping any point below the weapon's min-charge floor. */
 function chargeQuarterMarks(fullPowerSeconds: number, minimumChargeTime: number): SliderMark[] {
-  return [0.25, 0.5, 0.75, 1].flatMap(frac => {
+  return [0.25, 0.5, 0.75, 1].flatMap((frac) => {
     const seconds = fullPowerSeconds * frac;
-    return seconds >= minimumChargeTime ? [{ value: seconds, label: `${Math.round(frac * 100)}%` }] : [];
+    return seconds >= minimumChargeTime
+      ? [{ value: seconds, label: `${Math.round(frac * 100)}%` }]
+      : [];
   });
 }
 
@@ -51,10 +53,13 @@ const BADGE_LABELS: Record<OmodBadge, string> = {
 };
 
 function OmodBadgeTag({ slot, omodId }: { slot: OmodSlot; omodId: string }) {
-  const badge = slot.options.find(o => o.id === omodId)?.badge;
+  const badge = slot.options.find((o) => o.id === omodId)?.badge;
   if (!badge) return null;
   return (
-    <Badge variant="outline" className="text-muted-foreground ml-1 px-1 py-0 text-[10px] font-normal">
+    <Badge
+      variant="outline"
+      className="text-muted-foreground ml-1 px-1 py-0 text-[10px] font-normal"
+    >
       {BADGE_LABELS[badge]}
     </Badge>
   );
@@ -68,21 +73,23 @@ export function WeaponSection() {
 
   const weapons = getWeapons(mode);
   const uniques = getUniques(mode);
-  const uniquesById = React.useMemo(() => new Map(uniques.map(u => [u.id, u])), [uniques]);
+  const uniquesById = React.useMemo(() => new Map(uniques.map((u) => [u.id, u])), [uniques]);
   const equippedUnique = player.weapon ? getEquippedUnique(mode, player.weapon) : undefined;
   const equippedIdentitySlot = equippedUnique
-    ? (Object.entries(equippedUnique.mods).find(([, omodId]) => omodId === equippedUnique.id)?.[0] ??
+    ? (Object.entries(equippedUnique.mods).find(
+        ([, omodId]) => omodId === equippedUnique.id,
+      )?.[0] ??
       getOmodById(mode, equippedUnique.id)?.attachPointEdid ??
       'ap_customName')
     : undefined;
   const weaponOptions = [
-    ...uniques.map(u => ({
+    ...uniques.map((u) => ({
       value: u.id,
       label: getOmodById(mode, u.id)?.name ?? u.name,
       group: 'Unique weapons' as const,
       subtitle: weapons[u.baseWeaponId]?.name,
     })),
-    ...Object.values(weapons).map(w => ({ value: w.id, label: w.name })),
+    ...Object.values(weapons).map((w) => ({ value: w.id, label: w.name })),
   ];
   const selectedWeapon = player.weapon ? weapons[player.weapon.weaponId] : undefined;
   const omodSlots = selectedWeapon ? getOmodSlots(mode, selectedWeapon) : [];
@@ -98,9 +105,14 @@ export function WeaponSection() {
   // resolvedChargeTimeSec's own clamp (src/lib/charge.ts).
   const charging = scenarios?.charging ?? null;
   const chargeTimeSec = charging
-    ? Math.min(Math.max(player.chargeTimeSec ?? charging.fullPowerSeconds, charging.minimumChargeTime), charging.fullPowerSeconds)
+    ? Math.min(
+        Math.max(player.chargeTimeSec ?? charging.fullPowerSeconds, charging.minimumChargeTime),
+        charging.fullPowerSeconds,
+      )
     : 0;
-  const chargePercent = charging ? Math.round((chargeTimeSec / charging.fullPowerSeconds) * 100) : 0;
+  const chargePercent = charging
+    ? Math.round((chargeTimeSec / charging.fullPowerSeconds) * 100)
+    : 0;
   const isFullCharge = charging ? charging.fullPowerSeconds - chargeTimeSec < 1e-6 : true;
 
   // Free Aim burst DPS at full charge, for the "vs full" delta label —
@@ -113,16 +125,20 @@ export function WeaponSection() {
     if (!charging) return null;
     const input = resolveLoadout(player, enemy, mode);
     if (!input) return null;
-    return computeScenarios({ ...input, chargeTimeSec: charging.fullPowerSeconds }).freeAim.burstDps;
+    return computeScenarios({ ...input, chargeTimeSec: charging.fullPowerSeconds }).freeAim
+      .burstDps;
   }, [player, enemy, mode, charging]);
 
   // A slot showing its standard part isn't a "mod" — count only deviations.
   const defaultOmodIds = new Map(
-    selectedWeapon ? omodSlots.map(slot => [slot.slot, getDefaultOmodId(mode, selectedWeapon, slot.slot)]) : []
+    selectedWeapon
+      ? omodSlots.map((slot) => [slot.slot, getDefaultOmodId(mode, selectedWeapon, slot.slot)])
+      : [],
   );
   const equippedModCount =
-    Object.entries(player.weapon?.mods ?? {}).filter(([slot, id]) => id && id !== defaultOmodIds.get(slot)).length +
-    (player.weapon?.legendaryEffects.length ?? 0);
+    Object.entries(player.weapon?.mods ?? {}).filter(
+      ([slot, id]) => id && id !== defaultOmodIds.get(slot),
+    ).length + (player.weapon?.legendaryEffects.length ?? 0);
   const summary = selectedWeapon
     ? `${effectiveWeaponName(mode, selectedWeapon, player.weapon?.mods ?? {})}${equippedModCount > 0 ? ` · ${equippedModCount} mods` : ''}`
     : 'none equipped';
@@ -139,13 +155,14 @@ export function WeaponSection() {
             <WeaponCombobox
               options={weaponOptions}
               value={equippedUnique?.id ?? player.weapon?.weaponId ?? null}
-              onValueChange={next => {
+              onValueChange={(next) => {
                 if (next === null) {
                   if (equippedUnique) return;
                   dispatch({ type: 'weapon/select', weaponId: null });
                   return;
                 }
-                if (uniquesById.has(next)) dispatch({ type: 'weapon/selectUnique', uniqueId: next });
+                if (uniquesById.has(next))
+                  dispatch({ type: 'weapon/selectUnique', uniqueId: next });
                 else dispatch({ type: 'weapon/select', weaponId: next });
               }}
               placeholder="Pick a weapon…"
@@ -155,7 +172,7 @@ export function WeaponSection() {
             />
           </div>
 
-          {omodSlots.map(slot => {
+          {omodSlots.map((slot) => {
             const defaultOmodId = defaultOmodIds.get(slot.slot);
             const chosen = player.weapon?.mods[slot.slot];
             // An undecided slot carries its real standard part (folded into the
@@ -164,7 +181,7 @@ export function WeaponSection() {
             const showUniqueStandard = slot.slot === equippedIdentitySlot && !!equippedUnique;
             const modOptions = [
               ...(showUniqueStandard ? [{ value: '__standard__', label: 'Standard' }] : []),
-              ...slot.options.map(o => ({ value: o.id, label: o.name })),
+              ...slot.options.map((o) => ({ value: o.id, label: o.name })),
             ];
             return (
               <div key={slot.slot} className="space-y-1.5">
@@ -172,7 +189,7 @@ export function WeaponSection() {
                 <Combobox
                   options={modOptions}
                   value={displayValue}
-                  onValueChange={omodId => {
+                  onValueChange={(omodId) => {
                     if (omodId === '__standard__') {
                       dispatch({ type: 'weapon/mod', slot: slot.slot, omodId: null });
                       return;
@@ -182,10 +199,13 @@ export function WeaponSection() {
                   placeholder="Standard"
                   searchPlaceholder="Search mods…"
                   emptyText="No mod matches."
-                  renderOptionExtra={o => (
+                  renderOptionExtra={(o) => (
                     <>
                       {o.value === defaultOmodId && (
-                        <Badge variant="outline" className="text-muted-foreground ml-1 px-1 py-0 text-[10px] font-normal">
+                        <Badge
+                          variant="outline"
+                          className="text-muted-foreground ml-1 px-1 py-0 text-[10px] font-normal"
+                        >
                           standard
                         </Badge>
                       )}
@@ -211,17 +231,21 @@ export function WeaponSection() {
             <div key={slot.slot} className="space-y-1.5">
               <Label>Legendary ★{i + 1}</Label>
               <Combobox
-                options={slot.options.map(o => ({ value: o.id, label: o.name }))}
+                options={slot.options.map((o) => ({ value: o.id, label: o.name }))}
                 value={player.weapon?.legendaryEffects[i] ?? null}
-                onValueChange={omodId => dispatch({ type: 'weapon/legendary', slotIndex: i, omodId })}
+                onValueChange={(omodId) =>
+                  dispatch({ type: 'weapon/legendary', slotIndex: i, omodId })
+                }
                 placeholder="None"
                 searchPlaceholder="Search effects…"
                 emptyText="No effect matches."
-                renderOptionExtra={o => (
+                renderOptionExtra={(o) => (
                   <>
                     <OmodBadgeTag slot={slot} omodId={o.value} />
                     {o.value !== (player.weapon?.legendaryEffects[i] ?? null) && (
-                      <ActionDelta action={{ type: 'weapon/legendary', slotIndex: i, omodId: o.value }} />
+                      <ActionDelta
+                        action={{ type: 'weapon/legendary', slotIndex: i, omodId: o.value }}
+                      />
                     )}
                   </>
                 )}
@@ -237,17 +261,23 @@ export function WeaponSection() {
               max={levelStops.length - 1}
               step={1}
               value={[nearestItemLevelIndex(levelStops, player.itemLevel)]}
-              onValueChange={v => dispatch({ type: 'weapon/itemLevel', value: levelStops[firstSliderValue(v)] })}
+              onValueChange={(v) =>
+                dispatch({ type: 'weapon/itemLevel', value: levelStops[firstSliderValue(v)] })
+              }
               marks={levelStops.map((level, i) => ({ value: i, label: String(level) }))}
             />
             <p className="text-muted-foreground text-xs">
-              Only the weapon's real drop levels are offered. Base damage comes from the level curve.
+              Only the weapon's real drop levels are offered. Base damage comes from the level
+              curve.
             </p>
           </div>
 
           {charging && scenarios && (
             <div className="space-y-1.5">
-              <Label htmlFor="charge-time" className="flex flex-wrap items-baseline justify-between gap-x-2">
+              <Label
+                htmlFor="charge-time"
+                className="flex flex-wrap items-baseline justify-between gap-x-2"
+              >
                 <span>
                   Charge time: {chargeTimeSec.toFixed(2)}s — {chargePercent}% charge
                 </span>
@@ -256,7 +286,11 @@ export function WeaponSection() {
                 ) : (
                   fullChargeBurstDps !== null && (
                     <span className="text-xs font-normal">
-                      <DeltaText base={fullChargeBurstDps} delta={scenarios.freeAim.burstDps - fullChargeBurstDps} /> DPS vs full
+                      <DeltaText
+                        base={fullChargeBurstDps}
+                        delta={scenarios.freeAim.burstDps - fullChargeBurstDps}
+                      />{' '}
+                      DPS vs full
                     </span>
                   )
                 )}
@@ -267,12 +301,14 @@ export function WeaponSection() {
                 max={charging.fullPowerSeconds}
                 step={charging.fullPowerSeconds / 100}
                 value={[chargeTimeSec]}
-                onValueChange={v => dispatch({ type: 'weapon/chargeTime', value: firstSliderValue(v) })}
+                onValueChange={(v) =>
+                  dispatch({ type: 'weapon/chargeTime', value: firstSliderValue(v) })
+                }
                 marks={chargeQuarterMarks(charging.fullPowerSeconds, charging.minimumChargeTime)}
               />
               <p className="text-muted-foreground text-xs">
-                Hold time before the shot fires. Defaults to a full charge (optimal play) — shorter holds fire faster
-                but hit softer.
+                Hold time before the shot fires. Defaults to a full charge (optimal play) — shorter
+                holds fire faster but hit softer.
               </p>
             </div>
           )}

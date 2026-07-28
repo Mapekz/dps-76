@@ -1,7 +1,12 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
-import type { GeneratedArmor, GeneratedMeta, GeneratedPerk, GeneratedWeapon } from '../../src/types/generated';
+import type {
+  GeneratedArmor,
+  GeneratedMeta,
+  GeneratedPerk,
+  GeneratedWeapon,
+} from '../../src/types/generated';
 import { EsmClient } from './esm-client';
 import { buildApGrantIndex } from './ap-grant-index';
 import { buildCobjIndex } from './cobj-index';
@@ -44,7 +49,9 @@ async function main() {
 
   const esmPath = values.esm ?? process.env.FO76_ESM_PATH;
   if (!esmPath) {
-    console.error('Usage: pnpm extract --esm <path-to-SeventySix.esm> [--mode live|pts] [--only weapons,...]');
+    console.error(
+      'Usage: pnpm extract --esm <path-to-SeventySix.esm> [--mode live|pts] [--only weapons,...]',
+    );
     console.error('(or set the FO76_ESM_PATH env var to omit --esm)');
     process.exit(1);
   }
@@ -54,7 +61,7 @@ async function main() {
     process.exit(1);
   }
   const only = values.only
-    ? (values.only.split(',').map(s => s.trim()) as ExtractorName[])
+    ? (values.only.split(',').map((s) => s.trim()) as ExtractorName[])
     : [...KNOWN_EXTRACTORS];
   for (const name of only) {
     if (!KNOWN_EXTRACTORS.includes(name)) {
@@ -74,7 +81,9 @@ async function main() {
   let previousMeta: Partial<GeneratedMeta> = {};
   if (only.length < KNOWN_EXTRACTORS.length) {
     try {
-      previousMeta = JSON.parse(await readFile(path.join(outDir, '_meta.json'), 'utf8')) as GeneratedMeta;
+      previousMeta = JSON.parse(
+        await readFile(path.join(outDir, '_meta.json'), 'utf8'),
+      ) as GeneratedMeta;
     } catch {
       // No previous meta — fresh start.
     }
@@ -115,8 +124,14 @@ async function main() {
     // makes the omods pass (full runs) correspondingly cheaper.
     console.log('  building attach-point grant index…');
     const apGrantIndex = await buildApGrantIndex(client);
-    const { weapons, excluded, excludedDetailed, unresolved, obtainableFormIds, explosiveFamilyKeywords: efk } =
-      await extractWeapons(client, apGrantIndex);
+    const {
+      weapons,
+      excluded,
+      excludedDetailed,
+      unresolved,
+      obtainableFormIds,
+      explosiveFamilyKeywords: efk,
+    } = await extractWeapons(client, apGrantIndex);
     obtainableWeaponFormIds = obtainableFormIds;
     explosiveFamilyKeywords = efk;
     allWeapons = weapons;
@@ -128,7 +143,7 @@ async function main() {
     console.log(
       `  ${weapons.length} weapons (excluded: ${Object.entries(excluded)
         .map(([k, v]) => `${v.length} ${k}`)
-        .join(', ')})`
+        .join(', ')})`,
     );
   }
 
@@ -138,21 +153,27 @@ async function main() {
     allPerks = result.perks;
     await writeFile(path.join(outDir, 'perks.json'), JSON.stringify(result.perks, null, 1));
     meta.counts.perks = result.perks.length;
-    meta.excluded = { ...meta.excluded, perkJunkEdid: result.excluded.junkEdid, perkNoCard: result.excluded.noNameOrCard };
+    meta.excluded = {
+      ...meta.excluded,
+      perkJunkEdid: result.excluded.junkEdid,
+      perkNoCard: result.excluded.noNameOrCard,
+    };
     meta.unresolved.push(...result.unresolved);
     if (result.unknownEntryPoints.length > 0) {
-      meta.unresolved.push(...result.unknownEntryPoints.map(n => `unknown entry point: ${n}`));
+      meta.unresolved.push(...result.unknownEntryPoints.map((n) => `unknown entry point: ${n}`));
     }
     if (result.unmappedAvifs.length > 0) {
-      meta.unresolved.push(...result.unmappedAvifs.map(a => `unmapped damage AVIF: ${a}`));
+      meta.unresolved.push(...result.unmappedAvifs.map((a) => `unmapped damage AVIF: ${a}`));
     }
     if (result.unresolvedCards.length > 0) {
-      meta.unresolved.push(...result.unresolvedCards.map(c => `unresolved perk card: ${c}`));
+      meta.unresolved.push(...result.unresolvedCards.map((c) => `unresolved perk card: ${c}`));
     }
     console.log(
-      `  ${result.perks.length} perk families (junk: ${result.excluded.junkEdid.length}, non-card: ${result.excluded.noNameOrCard.length})`
+      `  ${result.perks.length} perk families (junk: ${result.excluded.junkEdid.length}, non-card: ${result.excluded.noNameOrCard.length})`,
     );
-    console.log(`  unknown entry points: ${result.unknownEntryPoints.length}, unmapped AVIFs: ${result.unmappedAvifs.length}, unresolved conds: ${result.unresolved.length}, unresolved cards: ${result.unresolvedCards.length}`);
+    console.log(
+      `  unknown entry points: ${result.unknownEntryPoints.length}, unmapped AVIFs: ${result.unmappedAvifs.length}, unresolved conds: ${result.unresolved.length}, unresolved cards: ${result.unresolvedCards.length}`,
+    );
   }
 
   if (only.includes('armor')) {
@@ -162,7 +183,7 @@ async function main() {
     await writeFile(path.join(outDir, 'armor.json'), JSON.stringify(result.armors, null, 1));
     meta.counts.armor = result.armors.length;
     console.log(
-      `  ${result.armors.length} armor pieces (obtainable: ${result.obtainableFormIds.size})`
+      `  ${result.armors.length} armor pieces (obtainable: ${result.obtainableFormIds.size})`,
     );
   }
 
@@ -171,19 +192,23 @@ async function main() {
     if (!allWeapons) {
       // `--only omods` without a weapons pass: read the checked-in generated set.
       allWeapons = JSON.parse(
-        await readFile(path.join(outDir, 'weapons.json'), 'utf8')
+        await readFile(path.join(outDir, 'weapons.json'), 'utf8'),
       ) as GeneratedWeapon[];
     }
-    obtainableWeaponFormIds ??= new Set(allWeapons.filter(w => w.obtainable !== false).map(w => w.formId));
+    obtainableWeaponFormIds ??= new Set(
+      allWeapons.filter((w) => w.obtainable !== false).map((w) => w.formId),
+    );
     explosiveFamilyKeywords ??= explosiveFamilyKeywordsOf(allWeapons);
-    const defaultModFormIds = new Set(allWeapons.flatMap(w => w.defaultModFormIds ?? []));
-    const templateModFormIds = new Set(allWeapons.flatMap(w => w.templateModFormIds ?? []));
+    const defaultModFormIds = new Set(allWeapons.flatMap((w) => w.defaultModFormIds ?? []));
+    const templateModFormIds = new Set(allWeapons.flatMap((w) => w.templateModFormIds ?? []));
     if (!allPerks) {
       // `--only omods` without a perks pass: read the checked-in generated
       // set (mirrors the allWeapons fallback above). Missing perks.json is
       // survivable — cross-family HasPerk gates just stay unresolved.
       try {
-        allPerks = JSON.parse(await readFile(path.join(outDir, 'perks.json'), 'utf8')) as GeneratedPerk[];
+        allPerks = JSON.parse(
+          await readFile(path.join(outDir, 'perks.json'), 'utf8'),
+        ) as GeneratedPerk[];
       } catch {
         console.warn('  no perks.json found — cross-family HasPerk gates will stay unresolved');
       }
@@ -193,15 +218,19 @@ async function main() {
       // set (mirrors the allWeapons fallback above). Missing armor.json is
       // survivable — armor-riding obtainability signals just stay absent.
       try {
-        const allArmor = JSON.parse(await readFile(path.join(outDir, 'armor.json'), 'utf8')) as GeneratedArmor[];
-        obtainableArmorFormIds = new Set(allArmor.filter(a => a.obtainable !== false).map(a => a.formId));
+        const allArmor = JSON.parse(
+          await readFile(path.join(outDir, 'armor.json'), 'utf8'),
+        ) as GeneratedArmor[];
+        obtainableArmorFormIds = new Set(
+          allArmor.filter((a) => a.obtainable !== false).map((a) => a.formId),
+        );
       } catch {
         console.warn('  no armor.json found — armor-riding obtainability signals will stay absent');
         obtainableArmorFormIds = new Set();
       }
     }
     const crossFamilyRank = allPerks
-      ? buildCrossFamilyRankMap(allPerks.map(p => ({ family: p.family, formIds: p.formIds })))
+      ? buildCrossFamilyRankMap(allPerks.map((p) => ({ family: p.family, formIds: p.formIds })))
       : undefined;
     console.log('  building COBJ index…');
     const cobjIndex = await buildCobjIndex(client);
@@ -213,23 +242,30 @@ async function main() {
       defaultModFormIds,
       templateModFormIds,
       crossFamilyRank,
-      obtainableArmorFormIds
+      obtainableArmorFormIds,
     );
     await writeFile(path.join(outDir, 'omods.json'), JSON.stringify(result.omods, null, 1));
-    await writeFile(path.join(outDir, 'armor-omods.json'), JSON.stringify(result.armorOmods, null, 1));
+    await writeFile(
+      path.join(outDir, 'armor-omods.json'),
+      JSON.stringify(result.armorOmods, null, 1),
+    );
     meta.counts.omods = result.omods.length;
     meta.counts.armorOmods = result.armorOmods.length;
     meta.excluded = { ...meta.excluded, ...result.excluded };
     meta.excludedDetailed = { ...meta.excludedDetailed, ...result.excludedDetailed };
     meta.reviewFlagged = { ...meta.reviewFlagged, ...result.reviewFlagged };
-    meta.unresolved.push(...result.unknownProperties.map(p => `unknown OMOD property: ${p}`));
+    meta.unresolved.push(...result.unknownProperties.map((p) => `unknown OMOD property: ${p}`));
     meta.unresolved.push(...result.notes);
     console.log(
-      `  ${result.omods.length} named weapon OMODs, ${result.armorOmods.length} named armor OMODs (excluded: ${Object.entries(result.excluded)
+      `  ${result.omods.length} named weapon OMODs, ${result.armorOmods.length} named armor OMODs (excluded: ${Object.entries(
+        result.excluded,
+      )
         .map(([k, v]) => `${v.length} ${k}`)
-        .join(', ')}); unknown properties: ${result.unknownProperties.length}; weak-evidence review: ${
+        .join(
+          ', ',
+        )}); unknown properties: ${result.unknownProperties.length}; weak-evidence review: ${
         result.reviewFlagged.omodWeakEvidence.length
-      }`
+      }`,
     );
   }
 
@@ -237,11 +273,11 @@ async function main() {
     console.log('Extracting unique weapon presets…');
     if (!allWeapons) {
       allWeapons = JSON.parse(
-        await readFile(path.join(outDir, 'weapons.json'), 'utf8')
+        await readFile(path.join(outDir, 'weapons.json'), 'utf8'),
       ) as GeneratedWeapon[];
     }
     const omods = JSON.parse(
-      await readFile(path.join(outDir, 'omods.json'), 'utf8')
+      await readFile(path.join(outDir, 'omods.json'), 'utf8'),
     ) as import('../../src/types/generated').GeneratedOmod[];
     const result = await extractUniques(client, allWeapons, omods);
     await writeFile(path.join(outDir, 'uniques.json'), JSON.stringify(result.uniques, null, 1));
@@ -249,34 +285,42 @@ async function main() {
     if (result.skipped.length > 0) {
       meta.reviewFlagged = {
         ...meta.reviewFlagged,
-        skippedUniqueCombinations: result.skipped.map(s => ({
+        skippedUniqueCombinations: result.skipped.map((s) => ({
           id: `${s.weaponId}:${s.combinationName}`,
           name: s.reason,
         })),
       };
     }
-    console.log(`  ${result.uniques.length} unique presets (skipped combinations: ${result.skipped.length})`);
+    console.log(
+      `  ${result.uniques.length} unique presets (skipped combinations: ${result.skipped.length})`,
+    );
   }
 
   if (only.includes('buffs')) {
     console.log('Extracting mutations & consumables…');
     const result = await extractBuffs(client);
     await writeFile(path.join(outDir, 'mutations.json'), JSON.stringify(result.mutations, null, 1));
-    await writeFile(path.join(outDir, 'consumables.json'), JSON.stringify(result.consumables, null, 1));
-    await writeFile(path.join(outDir, 'addictions.json'), JSON.stringify(result.addictions, null, 1));
+    await writeFile(
+      path.join(outDir, 'consumables.json'),
+      JSON.stringify(result.consumables, null, 1),
+    );
+    await writeFile(
+      path.join(outDir, 'addictions.json'),
+      JSON.stringify(result.addictions, null, 1),
+    );
     meta.counts.mutations = result.mutations.length;
     meta.counts.consumables = result.consumables.length;
     meta.counts.addictions = result.addictions.length;
     meta.excluded = { ...meta.excluded, ...result.excluded };
     meta.excludedDetailed = { ...meta.excludedDetailed, ...result.excludedDetailed };
     meta.unresolved.push(...result.notes);
-    meta.unresolved.push(...result.unmappedAvifs.map(a => `unmapped buff AVIF: ${a}`));
+    meta.unresolved.push(...result.unmappedAvifs.map((a) => `unmapped buff AVIF: ${a}`));
     console.log(
       `  ${result.mutations.length} mutations, ${result.consumables.length} consumables, ${result.addictions.length} addictions (excluded: ${Object.entries(
-        result.excluded
+        result.excluded,
       )
         .map(([k, v]) => `${v.length} ${k}`)
-        .join(', ')}; notes: ${result.notes.length})`
+        .join(', ')}; notes: ${result.notes.length})`,
     );
   }
 
@@ -302,7 +346,9 @@ async function main() {
     }
     meta.counts.curvetables = result.files.length;
     meta.unresolved.push(...result.unresolved);
-    console.log(`  ${result.files.length} curve table files written → ${curveDir} (unresolved: ${result.unresolved.length})`);
+    console.log(
+      `  ${result.files.length} curve table files written → ${curveDir} (unresolved: ${result.unresolved.length})`,
+    );
   }
 
   if (only.includes('npcs')) {
@@ -330,12 +376,14 @@ async function main() {
         `${result.constants.actionPoints.regenRatePctPowerArmor}%PA, ` +
         `bulletStormAmmoPerStack=${result.constants.bulletStorm.ammoPerStack}, ` +
         `closeThreshold=${result.constants.distance.closeThresholdUnits} ` +
-        `(unresolved: ${result.unresolved.length})`
+        `(unresolved: ${result.unresolved.length})`,
     );
   }
 
   if (only.includes('dfobs')) {
-    console.log('Verifying DFOB bridges (hardcoded record identities vs the exe indirection layer)…');
+    console.log(
+      'Verifying DFOB bridges (hardcoded record identities vs the exe indirection layer)…',
+    );
     const result = await verifyDfobs(client);
     meta.counts.dfobs = result.verified;
     meta.unresolved.push(...result.unresolved);
@@ -350,7 +398,7 @@ async function main() {
   console.log(`Done → ${outDir}`);
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error(err);
   process.exit(1);
 });

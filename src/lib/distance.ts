@@ -86,7 +86,7 @@ export function rangeFalloffMult(
   distanceUnits: number,
   minRange: number,
   maxRange: number,
-  outOfRangeMult: number
+  outOfRangeMult: number,
 ): number {
   if (maxRange <= 0 || maxRange <= minRange) return 1.0;
   if (distanceUnits <= minRange) return 1.0;

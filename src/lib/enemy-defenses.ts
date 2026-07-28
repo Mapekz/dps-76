@@ -21,8 +21,14 @@ import type { EnemyDefenses } from '@/lib/engine/mitigation';
 const FALLBACK_LEVEL_MIN = 1;
 const FALLBACK_LEVEL_MAX = 100;
 
-export function resolveTargetLevelBounds(npc: GeneratedNpc | undefined): { min: number; max: number } {
-  return { min: npc?.levelMinGlobal ?? FALLBACK_LEVEL_MIN, max: npc?.levelMaxGlobal ?? FALLBACK_LEVEL_MAX };
+export function resolveTargetLevelBounds(npc: GeneratedNpc | undefined): {
+  min: number;
+  max: number;
+} {
+  return {
+    min: npc?.levelMinGlobal ?? FALLBACK_LEVEL_MIN,
+    max: npc?.levelMaxGlobal ?? FALLBACK_LEVEL_MAX,
+  };
 }
 
 /**
@@ -34,7 +40,10 @@ export function resolveTargetLevelBounds(npc: GeneratedNpc | undefined): { min: 
  * extraction"). Shared by `getEnemyDefenses` and the level slider
  * (`TargetSection.tsx`) so both read the identical default/clamp.
  */
-export function resolveTargetLevel(npc: GeneratedNpc | undefined, storedLevel: number | null | undefined): number {
+export function resolveTargetLevel(
+  npc: GeneratedNpc | undefined,
+  storedLevel: number | null | undefined,
+): number {
   const { min, max } = resolveTargetLevelBounds(npc);
   if (storedLevel == null) return max;
   return Math.max(min, Math.min(storedLevel, max));
@@ -66,23 +75,28 @@ export function getEnemyDefenses(
   mode: GameMode,
   raceId: string | null | undefined,
   level: number,
-  userEpicRank?: number
+  userEpicRank?: number,
 ): EnemyDefenses | null {
   if (!raceId) return null;
   const npc = getNpc(mode, raceId);
   if (!npc) return null;
 
-  const baseHp = npc.healthCurveTier != null ? getCreatureHealth(mode, npc.healthCurveTier, level) : npc.healthFlatValue;
+  const baseHp =
+    npc.healthCurveTier != null
+      ? getCreatureHealth(mode, npc.healthCurveTier, level)
+      : npc.healthFlatValue;
   // Forced rank (SBQ/Storm) always wins; otherwise fall back to the user's
   // toggle when the race is epic-eligible. Fail open on an out-of-table rank
   // (defensive — every ESM-extracted/user-facing rank is ≤3) rather than throwing.
   const effectiveRank = npc.epicRank ?? (userEpicRank || undefined);
-  const rankMult = effectiveRank != null ? EPIC_CREATURE_RANK_MULTS[effectiveRank as EpicCreatureRank] : undefined;
+  const rankMult =
+    effectiveRank != null ? EPIC_CREATURE_RANK_MULTS[effectiveRank as EpicCreatureRank] : undefined;
   const hp = rankMult && npc.epicAllowed ? baseHp * rankMult.healthMult : baseHp;
 
   const resists: EnemyDefenses['resists'] = {};
   for (const r of npc.resists) {
-    resists[r.damageType] = r.curveTier != null ? getCreatureResist(mode, r.curveTier, level) : r.flatValue;
+    resists[r.damageType] =
+      r.curveTier != null ? getCreatureResist(mode, r.curveTier, level) : r.flatValue;
   }
 
   return { hp, resists };

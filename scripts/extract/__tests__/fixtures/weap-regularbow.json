@@ -37,9 +37,7 @@
       },
       "Flags": {
         "value": "0x10",
-        "flags": [
-          "Has Hand Tagged Enlighten Mode"
-        ]
+        "flags": ["Has Hand Tagged Enlighten Mode"]
       },
       "Enlighten Transparency Color": {
         "r": 255,
@@ -65,9 +63,7 @@
       },
       "Flags 2": {
         "value": "0x10",
-        "flags": [
-          "Has Hand Tagged Enlighten Mode"
-        ]
+        "flags": ["Has Hand Tagged Enlighten Mode"]
       }
     },
     "Destructible": {
@@ -136,19 +132,7 @@
     },
     "Description": "",
     "Instance Naming": "0x002377CF",
-    "Eligible Levels": [
-      1,
-      5,
-      10,
-      15,
-      20,
-      25,
-      30,
-      35,
-      40,
-      45,
-      50
-    ],
+    "Eligible Levels": [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50],
     "Attach Parent Slots": [
       "0x00024004",
       "0x001E32C8",
@@ -259,11 +243,7 @@
       "Resist": null,
       "Flags": {
         "value": "0x901",
-        "flags": [
-          "Player Only",
-          "Crit Effect - on Death",
-          "Hold Input To Power"
-        ]
+        "flags": ["Player Only", "Crit Effect - on Death", "Hold Input To Power"]
       },
       "Capacity": 1,
       "Ammo used per shot": 1,
@@ -299,7 +279,7 @@
         "value": 1,
         "name": "Small"
       },
-      "Color Remapping Index": 3.4028235e+38,
+      "Color Remapping Index": 3.4028235e38,
       "Health": 100,
       "Unknown 2": {
         "hex": "0000000000000000"

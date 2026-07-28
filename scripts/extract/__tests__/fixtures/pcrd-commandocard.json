@@ -1,1 +1,51 @@
-{"header":{"signature":"PCRD","form_id":"0x0031AEF6","flags":0,"form_version":205,"data_size":161,"offset":906500385},"editor_id":"CommandoCard","fields":{"_record_type":"Perk Card","Editor ID":"CommandoCard","Description":"","Unknown":{"Value":0.0,"Min Level":5,"Special":{"value":1,"name":"Perception"},"Race Restriction":{"value":0,"name":"None"}},"Perk Card Value":"0x001179F3","Sound":"0x001A7633","Male Name":"Commando","Perks":[{"Perk":{"Start Marker":null,"Card Rank Cost":1,"Male Perk":"0x0031AEEF","End Marker":null}},{"Perk":{"Start Marker":null,"Card Rank Cost":2,"Male Perk":"0x0031AEF0","End Marker":null}},{"Perk":{"Start Marker":null,"Card Rank Cost":3,"Male Perk":"0x0031AEF1","End Marker":null}}]}}
+{
+  "header": {
+    "signature": "PCRD",
+    "form_id": "0x0031AEF6",
+    "flags": 0,
+    "form_version": 205,
+    "data_size": 161,
+    "offset": 906500385
+  },
+  "editor_id": "CommandoCard",
+  "fields": {
+    "_record_type": "Perk Card",
+    "Editor ID": "CommandoCard",
+    "Description": "",
+    "Unknown": {
+      "Value": 0.0,
+      "Min Level": 5,
+      "Special": { "value": 1, "name": "Perception" },
+      "Race Restriction": { "value": 0, "name": "None" }
+    },
+    "Perk Card Value": "0x001179F3",
+    "Sound": "0x001A7633",
+    "Male Name": "Commando",
+    "Perks": [
+      {
+        "Perk": {
+          "Start Marker": null,
+          "Card Rank Cost": 1,
+          "Male Perk": "0x0031AEEF",
+          "End Marker": null
+        }
+      },
+      {
+        "Perk": {
+          "Start Marker": null,
+          "Card Rank Cost": 2,
+          "Male Perk": "0x0031AEF0",
+          "End Marker": null
+        }
+      },
+      {
+        "Perk": {
+          "Start Marker": null,
+          "Card Rank Cost": 3,
+          "Male Perk": "0x0031AEF1",
+          "End Marker": null
+        }
+      }
+    ]
+  }
+}

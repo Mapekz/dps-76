@@ -1,4 +1,13 @@
-import type { Bucket, Condition, CurveInput, DamageType, Modifier, ModifierFragment, ModifierSource, ValueCurve } from '../../../src/types/modifiers';
+import type {
+  Bucket,
+  Condition,
+  CurveInput,
+  DamageType,
+  Modifier,
+  ModifierFragment,
+  ModifierSource,
+  ValueCurve,
+} from '../../../src/types/modifiers';
 import type { EsmClient, EsmRecord } from '../esm-client';
 import {
   flattenConditionRows,
@@ -126,11 +135,18 @@ export const ENTRY_POINT_EXTRA_CONDITIONS: Record<string, Condition[]> = {
  * Reaction's permanent max-HP cut) but never Value Modifiers (every cooked
  * food's instant RestoreHealthFood heal sits on the same AV).
  */
-export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: number; conditions?: Condition[]; archetypes?: string[] }> = {
+export const FALLBACK_AVIF_ROUTES: Record<
+  string,
+  { bucket: Bucket; scale: number; conditions?: Condition[]; archetypes?: string[] }
+> = {
   STAT_SneakAttackBonus: { bucket: 'sneakBonus', scale: 0.01 },
   STAT_DmgPowerAttack: { bucket: 'powerAttackBonus', scale: 0.01 },
   // Read directly by DamageVsNonWeakpoint_DO in the damage formula.
-  STAT_DmgVsTorso: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'bodyPart', part: 'torso' }] },
+  STAT_DmgVsTorso: {
+    bucket: 'dbm',
+    scale: 0.01,
+    conditions: [{ kind: 'bodyPart', part: 'torso' }],
+  },
   // Legendary-effect AVs carried as OMOD ActorValues properties (2026-07-10
   // review). Consumers: weakpoint/limb read by the damage formula directly;
   // bash/explosive-payload buckets are stored-inert until their mechanics land.
@@ -145,24 +161,52 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   // parenthesis (with Bloodied, Adrenal...), scoped to explosion
   // components/twins — no longer a separate multiplier on the finished
   // explosion damage.
-  STAT_DmgExplosive: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }] },
+  STAT_DmgExplosive: {
+    bucket: 'dbm',
+    scale: 0.01,
+    conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }],
+  },
   // Bully's: +X% per crippled enemy limb (6 limbs max — docs/assumptions.md).
-  STAT_DmgPerCrippled: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'perCrippledLimb', max: 6 }] },
+  STAT_DmgPerCrippled: {
+    bucket: 'dbm',
+    scale: 0.01,
+    conditions: [{ kind: 'perCrippledLimb', max: 6 }],
+  },
   // Shotgun Champ: +10%/projectile fired (curve, AV 0x00000398 — see
   // CURVE_INPUT_AVS 'projectileCount'), gated boolean-style on the target
   // having a crippled limb (`perCrippledLimb` with max: 1 clamps the scale
   // factor to 0 or 1, unlike Bully's count-scaled max: 6 above).
-  STAT_DmgVsCrippled: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'perCrippledLimb', max: 1 }] },
+  STAT_DmgVsCrippled: {
+    bucket: 'dbm',
+    scale: 0.01,
+    conditions: [{ kind: 'perCrippledLimb', max: 1 }],
+  },
   // Enemy-status 4★ effects, reworked by the 2026-07-10 patch from ENCH
   // properties to these new plumbing AVs (Pyromaniac's / Viper's / Icemen's /
   // Severing, each ADD 50 = +50%). Conditions mirror the pre-patch ENCH
   // translation — resolve.ts maps the keyword to isBurning/isPoisoned/
   // isFrozen/isBleeding. Icemen's is a REAL rework: it was +20% cryo-scoped
   // baseDamage, now +50% vs Freezing targets.
-  STAT_DmgVsBurning: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'enemyHasActiveEffect', keyword: 'DamageTypeFire' }] },
-  STAT_DmgVsPoisoned: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'enemyHasActiveEffect', keyword: 'DamageTypePoison' }] },
-  STAT_DmgVsFreezing: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'enemyHasActiveEffect', keyword: 'DamageTypeCryo' }] },
-  STAT_DmgVsBleeding: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'enemyHasActiveEffect', keyword: 'DamageTypeBleed' }] },
+  STAT_DmgVsBurning: {
+    bucket: 'dbm',
+    scale: 0.01,
+    conditions: [{ kind: 'enemyHasActiveEffect', keyword: 'DamageTypeFire' }],
+  },
+  STAT_DmgVsPoisoned: {
+    bucket: 'dbm',
+    scale: 0.01,
+    conditions: [{ kind: 'enemyHasActiveEffect', keyword: 'DamageTypePoison' }],
+  },
+  STAT_DmgVsFreezing: {
+    bucket: 'dbm',
+    scale: 0.01,
+    conditions: [{ kind: 'enemyHasActiveEffect', keyword: 'DamageTypeCryo' }],
+  },
+  STAT_DmgVsBleeding: {
+    bucket: 'dbm',
+    scale: 0.01,
+    conditions: [{ kind: 'enemyHasActiveEffect', keyword: 'DamageTypeBleed' }],
+  },
   // The new 2★ elemental effects (Pyro-Technician's / Cryologist's /
   // Poisoner's, 2026-07-10 patch): ADD 0.2 on these AVs. User-confirmed
   // semantics (2026-07-12): additive into the general dbm parenthesis but
@@ -170,10 +214,26 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   // Pyro-Technician's on the fire portion and fire DoT, not the energy
   // portion) — same per-component damageTypeScope fold as Demolition Expert.
   // Values are already decimal fractions → scale 1.
-  STAT_DmgMultEnergy: { bucket: 'dbm', scale: 1, conditions: [{ kind: 'damageTypeScope', types: ['energy'] }] },
-  STAT_DmgMultFire: { bucket: 'dbm', scale: 1, conditions: [{ kind: 'damageTypeScope', types: ['fire'] }] },
-  STAT_DmgMultCryo: { bucket: 'dbm', scale: 1, conditions: [{ kind: 'damageTypeScope', types: ['cryo'] }] },
-  STAT_DmgMultPoison: { bucket: 'dbm', scale: 1, conditions: [{ kind: 'damageTypeScope', types: ['poison'] }] },
+  STAT_DmgMultEnergy: {
+    bucket: 'dbm',
+    scale: 1,
+    conditions: [{ kind: 'damageTypeScope', types: ['energy'] }],
+  },
+  STAT_DmgMultFire: {
+    bucket: 'dbm',
+    scale: 1,
+    conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
+  },
+  STAT_DmgMultCryo: {
+    bucket: 'dbm',
+    scale: 1,
+    conditions: [{ kind: 'damageTypeScope', types: ['cryo'] }],
+  },
+  STAT_DmgMultPoison: {
+    bucket: 'dbm',
+    scale: 1,
+    conditions: [{ kind: 'damageTypeScope', types: ['poison'] }],
+  },
   // Target-distance perks (2026-07-11 review): abPerkFortifyDmgClose /
   // abPerkFortifyDmgFar are Peak Value Modifier MGEFs on these AVIFs with NO
   // distance condition rows in data — the close/far range gate is native
@@ -181,8 +241,16 @@ export const FALLBACK_AVIF_ROUTES: Record<string, { bucket: Bucket; scale: numbe
   // Bake the gate as a targetDistance condition instead. Consumers: Guerrilla
   // family (close), Down Ranger / Sniper's (far). Guerrilla Master's
   // Onslaught-stack curve routes separately and stays unresolved (Onslaught plan).
-  STAT_DmgVsClose: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'targetDistance', range: 'close' }] },
-  STAT_DmgVsFar: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'targetDistance', range: 'far' }] },
+  STAT_DmgVsClose: {
+    bucket: 'dbm',
+    scale: 0.01,
+    conditions: [{ kind: 'targetDistance', range: 'close' }],
+  },
+  STAT_DmgVsFar: {
+    bucket: 'dbm',
+    scale: 0.01,
+    conditions: [{ kind: 'targetDistance', range: 'far' }],
+  },
   // AP-regen perks (Action Boy/Girl): a plain Peak Value Modifier on
   // ActorValues AV ActionPointsRateMult (0x00000359, Default Value 100.0 —
   // reads as a percent multiplier), magnitude 15/30/45 per rank (verified
@@ -382,7 +450,7 @@ export async function resolveConditionForms(
   client: EsmClient,
   rows: RawCondition[],
   edidByFormId: Map<string, string>,
-  into: Map<string, RawCondition[]> = new Map()
+  into: Map<string, RawCondition[]> = new Map(),
 ): Promise<Map<string, RawCondition[]>> {
   for (const row of rows) {
     if (row.Function !== 'IsTrueForConditionForm') continue;
@@ -390,7 +458,8 @@ export async function resolveConditionForms(
     if (typeof p !== 'string' || !p.startsWith('0x') || into.has(p)) continue;
     if (!edidByFormId.has(p)) edidByFormId.set(p, await client.resolveEdid(p));
     const edid = edidByFormId.get(p);
-    if (edid === 'Mutation_Check_UseNormalVersion' || edid === 'Mutation_Check_UseSuperVersion') continue;
+    if (edid === 'Mutation_Check_UseNormalVersion' || edid === 'Mutation_Check_UseSuperVersion')
+      continue;
     try {
       const record = await client.get(p);
       const nested = flattenConditionRows(record.fields['Conditions']);
@@ -421,7 +490,10 @@ export function collectConditionGlobalIds(rows: RawCondition[], into: Set<string
   }
 }
 
-export async function buildAvifRoutes(client: EsmClient, formIdPool: Set<string>): Promise<Map<string, AvifRoute[]>> {
+export async function buildAvifRoutes(
+  client: EsmClient,
+  formIdPool: Set<string>,
+): Promise<Map<string, AvifRoute[]>> {
   const routes = new Map<string, AvifRoute[]>();
   for (const edid of PLUMBING_PERKS) {
     const record = await client.get(edid);
@@ -430,7 +502,8 @@ export async function buildAvifRoutes(client: EsmClient, formIdPool: Set<string>
     for (const item of effects as Array<Record<string, unknown>>) {
       const e = item['Effect'] as Record<string, unknown>;
       const ep = (e['Entry Point'] ?? {}) as Record<string, unknown>;
-      const name = ((ep['Entry Point'] as Record<string, unknown> | undefined)?.['name'] as string) ?? '';
+      const name =
+        ((ep['Entry Point'] as Record<string, unknown> | undefined)?.['name'] as string) ?? '';
       const bucket = ENTRY_POINT_BUCKETS[name];
       const actorValue = e['Function Parameter 3 (Actor Value)'] as string | undefined;
       if (!bucket || !actorValue) continue;
@@ -438,7 +511,11 @@ export async function buildAvifRoutes(client: EsmClient, formIdPool: Set<string>
       const rawConditions = flattenPerkConditionRows(e['Perk Conditions']);
       collectConditionFormIds(rawConditions, formIdPool);
       const list = routes.get(actorValue) ?? [];
-      list.push({ bucket, scale: typeof e['Float'] === 'number' ? (e['Float'] as number) : 0.01, rawConditions });
+      list.push({
+        bucket,
+        scale: typeof e['Float'] === 'number' ? (e['Float'] as number) : 0.01,
+        rawConditions,
+      });
       routes.set(actorValue, list);
     }
   }
@@ -557,7 +634,8 @@ export function parseMagicEffects(record: EsmRecord): SpellEffect[] {
       magnitude: (data['Magnitude'] as number) ?? 0,
       duration: (data['Duration'] as number) ?? 0,
       conditionRows: flattenConditionRows(e['Conditions']),
-      curvePoints: Array.isArray(curveTable?.curve) && curveTable.curve.length > 0 ? curveTable.curve : null,
+      curvePoints:
+        Array.isArray(curveTable?.curve) && curveTable.curve.length > 0 ? curveTable.curve : null,
       curveInputAv: (e['Actor Value'] as string) ?? null,
       magnitudeGlobal,
     });
@@ -599,16 +677,21 @@ export interface MgefInfo {
 
 export async function getMgefInfo(client: EsmClient, formId: string): Promise<MgefInfo> {
   const record = await client.get(formId);
-  const data = ((record.fields['Magic Effect Data'] as Record<string, unknown> | undefined)?.['Data'] ?? {}) as Record<string, unknown>;
+  const data = ((record.fields['Magic Effect Data'] as Record<string, unknown> | undefined)?.[
+    'Data'
+  ] ?? {}) as Record<string, unknown>;
   const perkToApply = (data['Perk to Apply'] as string) || null;
   const keywordsNode = (record.fields['Keywords'] ?? {}) as Record<string, unknown>;
-  const keywords = Array.isArray(keywordsNode['Keywords']) ? (keywordsNode['Keywords'] as string[]) : [];
+  const keywords = Array.isArray(keywordsNode['Keywords'])
+    ? (keywordsNode['Keywords'] as string[])
+    : [];
   const flagsNode = (data['Flags'] ?? {}) as Record<string, unknown>;
   const flagNames = Array.isArray(flagsNode['flags']) ? (flagsNode['flags'] as string[]) : [];
   return {
     edid: record.editor_id,
     name: (record.fields['Name'] as string) ?? record.editor_id,
-    archetype: ((data['Archetype'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown',
+    archetype:
+      ((data['Archetype'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown',
     actorValue: (data['Actor Value'] as string) ?? null,
     resistValue: (data['Resist Value'] as string) ?? null,
     perkToApply: perkToApply === '0x00000000' ? null : perkToApply,
@@ -674,7 +757,7 @@ export function translate(
   effect: SpellEffect,
   routes: Map<string, AvifRoute[]>,
   edidByFormId: Map<string, string>,
-  opts: TranslateOptions = {}
+  opts: TranslateOptions = {},
 ): MgefTranslationResult {
   const result: MgefTranslationResult = { modifiers: [], notes: [], unmappedAvifs: [] };
 
@@ -683,7 +766,7 @@ export function translate(
     ...opts.conditionCtx,
   });
   if (effectConds === null) return result;
-  unresolved.forEach(u => result.notes.push(`condition: ${u}`));
+  unresolved.forEach((u) => result.notes.push(`condition: ${u}`));
 
   // Damage-archetype effects are DoTs (bleed/burn/shock weapon mods): extract
   // value + duration + element into the dotDamage bucket, folded into
@@ -691,12 +774,18 @@ export function translate(
   // The element lives on the MGEF's Resist Value AV; the damageTypeScope
   // condition here denotes the DoT's OWN element.
   if (mgef.archetype === 'Damage' && (effect.magnitude > 0 || effect.curvePoints)) {
-    const resistEdid = mgef.resistValue ? (edidByFormId.get(mgef.resistValue) ?? mgef.resistValue) : null;
+    const resistEdid = mgef.resistValue
+      ? (edidByFormId.get(mgef.resistValue) ?? mgef.resistValue)
+      : null;
     const damageType = resistEdid ? RESIST_AV_DAMAGE_TYPES[resistEdid] : undefined;
     if (resistEdid && !damageType) {
-      result.notes.push(`MGEF ${mgef.edid}: unmapped Resist Value ${resistEdid} — DoT element unknown`);
+      result.notes.push(
+        `MGEF ${mgef.edid}: unmapped Resist Value ${resistEdid} — DoT element unknown`,
+      );
     }
-    const dotConds: Condition[] = damageType ? [...effectConds, { kind: 'damageTypeScope', types: [damageType] }] : effectConds;
+    const dotConds: Condition[] = damageType
+      ? [...effectConds, { kind: 'damageTypeScope', types: [damageType] }]
+      : effectConds;
     let dotCurve: ValueCurve | undefined;
     let dotMagnitude = effect.magnitude;
     if (effect.curvePoints && effect.curvePoints.length === 1) {
@@ -709,7 +798,10 @@ export function translate(
       const input = resolveCurveInput(effect.curveInputAv, mgef.edid);
       if (input) {
         dotCurve = { input, points: effect.curvePoints };
-      } else if (effect.curveInputAv === null && effect.curvePoints[effect.curvePoints.length - 1].x <= 100) {
+      } else if (
+        effect.curveInputAv === null &&
+        effect.curvePoints[effect.curvePoints.length - 1].x <= 100
+      ) {
         // No Actor Value at all (curveInputAv null) AND the curve's X domain
         // looks level-shaped (≤100, matching the 1-50 item-level range OMOD
         // properties use). Weapon-mod bleed/burn/poison DoTs are exactly this:
@@ -721,14 +813,29 @@ export function translate(
         // NOT item level and correctly falls through to the drop below.
         dotCurve = { input: 'itemLevel', points: effect.curvePoints };
       } else {
-        result.notes.push(`${mgef.edid}: DoT curve with unmapped input AV ${effect.curveInputAv} — needs override`);
+        result.notes.push(
+          `${mgef.edid}: DoT curve with unmapped input AV ${effect.curveInputAv} — needs override`,
+        );
         return result;
       }
     }
     result.modifiers.push(
       dotCurve
-        ? { bucket: 'dotDamage', op: 'ADD', curve: dotCurve, curveScale: 1, conditions: dotConds, durationSec: effect.duration }
-        : { bucket: 'dotDamage', op: 'ADD', value: dotMagnitude, conditions: dotConds, durationSec: effect.duration }
+        ? {
+            bucket: 'dotDamage',
+            op: 'ADD',
+            curve: dotCurve,
+            curveScale: 1,
+            conditions: dotConds,
+            durationSec: effect.duration,
+          }
+        : {
+            bucket: 'dotDamage',
+            op: 'ADD',
+            value: dotMagnitude,
+            conditions: dotConds,
+            durationSec: effect.duration,
+          },
     );
     return result;
   }
@@ -755,11 +862,15 @@ export function translate(
     if (input) {
       curve = { input, points: effect.curvePoints };
     } else {
-      result.notes.push(`${mgef.edid}: curve with unmapped input AV ${effect.curveInputAv} — needs override`);
+      result.notes.push(
+        `${mgef.edid}: curve with unmapped input AV ${effect.curveInputAv} — needs override`,
+      );
       return result;
     }
   } else if (effect.magnitude === 0) {
-    result.notes.push(`MGEF ${mgef.edid}: zero magnitude, no curve — script/scaled, needs override`);
+    result.notes.push(
+      `MGEF ${mgef.edid}: zero magnitude, no curve — script/scaled, needs override`,
+    );
     return result;
   }
 
@@ -769,7 +880,9 @@ export function translate(
   // surface it as a note rather than silently mis-signing the curve Y.
   if (mgef.detrimental) {
     if (curve) {
-      result.notes.push(`MGEF ${mgef.edid}: Detrimental + value curve — sign semantics unverified, needs override`);
+      result.notes.push(
+        `MGEF ${mgef.edid}: Detrimental + value curve — sign semantics unverified, needs override`,
+      );
       return result;
     }
     effectiveMagnitude = -effectiveMagnitude;
@@ -790,7 +903,7 @@ export function translate(
     result.modifiers.push(
       curve
         ? { bucket, op: 'ADD', curve, curveScale: scale, conditions }
-        : { bucket, op: 'ADD', value: effectiveMagnitude * scale, conditions }
+        : { bucket, op: 'ADD', value: effectiveMagnitude * scale, conditions },
     );
   };
 
@@ -798,19 +911,33 @@ export function translate(
   const fallbackEntry = FALLBACK_AVIF_ROUTES[avifEdid];
   // Archetype-restricted routes (Health → maxHealth is Peak-only) fall
   // through to the unrouted paths below when the archetype doesn't match.
-  const fallback = fallbackEntry && (!fallbackEntry.archetypes || fallbackEntry.archetypes.includes(mgef.archetype)) ? fallbackEntry : undefined;
+  const fallback =
+    fallbackEntry &&
+    (!fallbackEntry.archetypes || fallbackEntry.archetypes.includes(mgef.archetype))
+      ? fallbackEntry
+      : undefined;
   if (avifRoutes) {
     for (const route of avifRoutes) {
-      const { conditions: routeConds, unresolved: routeUnresolved } = translateConditions(route.rawConditions, { edidByFormId });
+      const { conditions: routeConds, unresolved: routeUnresolved } = translateConditions(
+        route.rawConditions,
+        { edidByFormId },
+      );
       if (routeConds === null) continue;
-      routeUnresolved.forEach(u => result.notes.push(`route(${avifEdid}): ${u}`));
+      routeUnresolved.forEach((u) => result.notes.push(`route(${avifEdid}): ${u}`));
       push(route.bucket, route.scale, [...allConds, ...routeConds]);
     }
   } else if (fallback) {
     push(fallback.bucket, fallback.scale, [...allConds, ...(fallback.conditions ?? [])]);
-  } else if (avifEdid.startsWith('STAT_Dmg') || avifEdid.startsWith('STAT_Crit') || avifEdid.startsWith('STAT_Sneak')) {
+  } else if (
+    avifEdid.startsWith('STAT_Dmg') ||
+    avifEdid.startsWith('STAT_Crit') ||
+    avifEdid.startsWith('STAT_Sneak')
+  ) {
     result.unmappedAvifs.push(avifEdid);
-  } else if (mgef.archetype === 'Value Modifier' && OUT_OF_SCOPE_INSTANT_RESTORE_AVS.has(avifEdid)) {
+  } else if (
+    mgef.archetype === 'Value Modifier' &&
+    OUT_OF_SCOPE_INSTANT_RESTORE_AVS.has(avifEdid)
+  ) {
     // Documented skip, not a gap: instant one-shot restores (RestoreHealthFood,
     // RestoreActionPoints/Food, Brain Bombs...) are out of scope by design —
     // the fortify (Peak Value Modifier) route on the same AV is what's modeled
@@ -826,7 +953,7 @@ export function translate(
 
 /** True when a perk-effect condition tab includes a GetRandomPercent gate. */
 function hasGetRandomPercentCondition(rows: RawCondition[]): boolean {
-  return rows.some(row => row.Function === 'GetRandomPercent');
+  return rows.some((row) => row.Function === 'GetRandomPercent');
 }
 
 /**
@@ -871,7 +998,7 @@ function parseGetRandomPercentChance(
 export async function translateGrantedPerk(
   deps: MgefTranslationDeps,
   contextEdid: string,
-  perkFormId: string
+  perkFormId: string,
 ): Promise<MgefTranslationResult> {
   const { client, edidByFormId } = deps;
   const result: MgefTranslationResult = { modifiers: [], notes: [], unmappedAvifs: [] };
@@ -887,12 +1014,14 @@ export async function translateGrantedPerk(
   const effects = perk.fields['Effects'];
   if (!Array.isArray(effects)) return result;
   const perkEffects = (effects as Array<Record<string, unknown>>)
-    .map(item => item['Effect'] as Record<string, unknown> | undefined)
+    .map((item) => item['Effect'] as Record<string, unknown> | undefined)
     .filter((e): e is Record<string, unknown> => !!e);
 
   for (const e of perkEffects) {
     const header = (e['Effect Header'] ?? {}) as Record<string, unknown>;
-    const effectType = ((header['Effect Type'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown';
+    const effectType =
+      ((header['Effect Type'] as Record<string, unknown> | undefined)?.['name'] as string) ??
+      'Unknown';
     const conditionRows = flattenPerkConditionRows(e['Perk Conditions']);
 
     // Pre-resolve condition params + GLOB comparison values for sync translation.
@@ -921,12 +1050,15 @@ export async function translateGrantedPerk(
       crossFamilyRank: deps.crossFamilyRank,
     });
     if (conditions === null) continue;
-    unresolved.forEach(u => result.notes.push(`perk ${perkEdid}: ${u}`));
+    unresolved.forEach((u) => result.notes.push(`perk ${perkEdid}: ${u}`));
 
     if (effectType === 'Entry Point') {
       const ep = (e['Entry Point'] ?? {}) as Record<string, unknown>;
-      const name = ((ep['Entry Point'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown';
-      const functionName = ((ep['Function'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown';
+      const name =
+        ((ep['Entry Point'] as Record<string, unknown> | undefined)?.['name'] as string) ??
+        'Unknown';
+      const functionName =
+        ((ep['Function'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown';
       const float = typeof e['Float'] === 'number' ? (e['Float'] as number) : 0;
 
       // EP-172 "Mod Ammo Used Count": narrowly map GetRandomPercent-gated zero-
@@ -934,14 +1066,19 @@ export async function translateGrantedPerk(
       // variants (HeadHunter's, Thirst Zapper) lack GetRandomPercent — stay
       // note-only. NOT in ENTRY_POINT_BUCKETS — would catch those variants.
       if (
-        name === 'Mod Ammo Used Count'
-        && (functionName === 'Multiply Value' || functionName === 'Set Value')
-        && float === 0
-        && hasGetRandomPercentCondition(conditionRows)
+        name === 'Mod Ammo Used Count' &&
+        (functionName === 'Multiply Value' || functionName === 'Set Value') &&
+        float === 0 &&
+        hasGetRandomPercentCondition(conditionRows)
       ) {
         const value = parseGetRandomPercentChance(conditionRows, globalValues) ?? 0.2;
         const epConditions = [...conditions, ...(ENTRY_POINT_EXTRA_CONDITIONS[name] ?? [])];
-        result.modifiers.push({ bucket: 'ammoFreeChance', op: 'ADD', value, conditions: epConditions });
+        result.modifiers.push({
+          bucket: 'ammoFreeChance',
+          op: 'ADD',
+          value,
+          conditions: epConditions,
+        });
         continue;
       }
 
@@ -955,16 +1092,18 @@ export async function translateGrantedPerk(
       // through to the generic ENTRY_POINT_BUCKETS mapping (SET 1.0 =
       // unconditional 100% skip) instead of being silently swallowed.
       if (
-        name === 'Instant Reload Clip On Bash'
-        && functionName === 'Set Value'
-        && float === 1
-        && hasGetRandomPercentCondition(conditionRows)
+        name === 'Instant Reload Clip On Bash' &&
+        functionName === 'Set Value' &&
+        float === 1 &&
+        hasGetRandomPercentCondition(conditionRows)
       ) {
         const value = parseGetRandomPercentChance(conditionRows, globalValues);
         if (value !== null) {
           result.modifiers.push({ bucket: 'reloadSkipChance', op: 'ADD', value, conditions });
         } else {
-          result.notes.push(`perk ${perkEdid}: ${name} — GetRandomPercent present but chance unparsed, skipped`);
+          result.notes.push(
+            `perk ${perkEdid}: ${name} — GetRandomPercent present but chance unparsed, skipped`,
+          );
         }
         continue;
       }
@@ -980,8 +1119,16 @@ export async function translateGrantedPerk(
       } else if (functionName === 'Set Value') {
         result.modifiers.push({ bucket, op: 'SET', value: float, conditions: epConditions });
       } else if (functionName === 'Multiply Value') {
-        result.modifiers.push({ bucket, op: 'MUL_ADD', value: float - 1, conditions: epConditions });
-      } else if (functionName === 'Add Actor Value Mult' && name === 'Mod Damage on Consecutive Hits') {
+        result.modifiers.push({
+          bucket,
+          op: 'MUL_ADD',
+          value: float - 1,
+          conditions: epConditions,
+        });
+      } else if (
+        functionName === 'Add Actor Value Mult' &&
+        name === 'Mod Damage on Consecutive Hits'
+      ) {
         // Onslaught per-stack dbm (Furious/Pounder's/Splinter's EP189): the
         // function ADDs Float × value(referencedAV), where the referenced AV
         // (Function Parameter 3) is a PRIVATE damage-accumulator — NOT the
@@ -1006,13 +1153,17 @@ export async function translateGrantedPerk(
             if (typeof def === 'number') {
               perStack = float * def;
             } else {
-              result.notes.push(`perk ${perkEdid}: ${name} AV ${avId} has no Default Value — used raw float`);
+              result.notes.push(
+                `perk ${perkEdid}: ${name} AV ${avId} has no Default Value — used raw float`,
+              );
             }
           } catch {
             result.notes.push(`perk ${perkEdid}: ${name} AV ${avId} unresolved — used raw float`);
           }
         } else {
-          result.notes.push(`perk ${perkEdid}: ${name} — no referenced Actor Value found, used raw float`);
+          result.notes.push(
+            `perk ${perkEdid}: ${name} — no referenced Actor Value found, used raw float`,
+          );
         }
         result.modifiers.push({
           bucket,
@@ -1036,10 +1187,13 @@ export async function translateGrantedPerk(
       }
       for (const se of parseMagicEffects(spell)) {
         const sub = await translateMagicEffect(deps, se);
-        sub.notes.forEach(n => result.notes.push(`perk ${perkEdid}: ${n}`));
-        sub.unmappedAvifs.forEach(a => result.unmappedAvifs.push(a));
+        sub.notes.forEach((n) => result.notes.push(`perk ${perkEdid}: ${n}`));
+        sub.unmappedAvifs.forEach((a) => result.unmappedAvifs.push(a));
         for (const fragment of sub.modifiers) {
-          result.modifiers.push({ ...fragment, conditions: [...conditions, ...fragment.conditions] });
+          result.modifiers.push({
+            ...fragment,
+            conditions: [...conditions, ...fragment.conditions],
+          });
         }
       }
       continue;
@@ -1058,7 +1212,7 @@ export async function translateGrantedPerk(
 export async function translateMagicEffect(
   deps: MgefTranslationDeps,
   effect: SpellEffect,
-  conditionCtx?: Partial<ConditionTranslationContext>
+  conditionCtx?: Partial<ConditionTranslationContext>,
 ): Promise<MgefTranslationResult> {
   const { client, edidByFormId } = deps;
   const mgef = await getMgefInfo(client, effect.mgefFormId);
@@ -1066,7 +1220,12 @@ export async function translateMagicEffect(
   // CNDF indirections (IsTrueForConditionForm) pre-fetched for sync inline
   // expansion — extends the caller's shared map when one is passed
   // (extract-perks), else builds a local one (buff/consumable extraction).
-  const conditionForms = await resolveConditionForms(client, effect.conditionRows, edidByFormId, conditionCtx?.conditionForms);
+  const conditionForms = await resolveConditionForms(
+    client,
+    effect.conditionRows,
+    edidByFormId,
+    conditionCtx?.conditionForms,
+  );
   // deps.crossFamilyRank is the fallback — a caller's own conditionCtx (the
   // perks pass) wins when it carries one.
   conditionCtx = { crossFamilyRank: deps.crossFamilyRank, ...conditionCtx, conditionForms };
@@ -1074,7 +1233,11 @@ export async function translateMagicEffect(
   // Script-archetype effects with a granted perk: the stats live on the PERK
   // record, not the MGEF — chase it (depth-capped against perk→spell→perk loops).
   if (mgef.archetype === 'Script' && mgef.perkToApply && (deps.grantDepth ?? 0) < 2) {
-    const granted = await translateGrantedPerk({ ...deps, grantDepth: (deps.grantDepth ?? 0) + 1 }, mgef.edid, mgef.perkToApply);
+    const granted = await translateGrantedPerk(
+      { ...deps, grantDepth: (deps.grantDepth ?? 0) + 1 },
+      mgef.edid,
+      mgef.perkToApply,
+    );
     if (granted.modifiers.length > 0 || granted.notes.length > 0) {
       // The effect's own condition rows still gate the grant.
       for (const row of effect.conditionRows) {
@@ -1087,9 +1250,13 @@ export async function translateMagicEffect(
         edidByFormId,
         ...conditionCtx,
       });
-      if (grantConds === null) return { modifiers: [], notes: granted.notes, unmappedAvifs: granted.unmappedAvifs };
-      unresolved.forEach(u => granted.notes.push(`condition: ${u}`));
-      granted.modifiers = granted.modifiers.map(m => ({ ...m, conditions: [...grantConds, ...m.conditions] }));
+      if (grantConds === null)
+        return { modifiers: [], notes: granted.notes, unmappedAvifs: granted.unmappedAvifs };
+      unresolved.forEach((u) => granted.notes.push(`condition: ${u}`));
+      granted.modifiers = granted.modifiers.map((m) => ({
+        ...m,
+        conditions: [...grantConds, ...m.conditions],
+      }));
       return granted;
     }
   }
@@ -1102,7 +1269,8 @@ export async function translateMagicEffect(
   }
   // Only value-modifier archetypes read the actor value; skip the resolve for
   // the archetypes translate() discards (matches the old lazy resolution).
-  const isValueArchetype = mgef.archetype === 'Peak Value Modifier' || mgef.archetype === 'Value Modifier';
+  const isValueArchetype =
+    mgef.archetype === 'Peak Value Modifier' || mgef.archetype === 'Value Modifier';
   if (isValueArchetype && mgef.actorValue && !edidByFormId.has(mgef.actorValue)) {
     edidByFormId.set(mgef.actorValue, await client.resolveEdid(mgef.actorValue));
   }
@@ -1157,7 +1325,11 @@ export async function translateMagicEffect(
 }
 
 /** Attach source identity + ids to bucket-level modifier fragments. */
-export function withSource(fragments: ModifierFragment[], source: ModifierSource, idPrefix: string): Modifier[] {
+export function withSource(
+  fragments: ModifierFragment[],
+  source: ModifierSource,
+  idPrefix: string,
+): Modifier[] {
   return fragments.map((f, i) => ({ id: `${idPrefix}:${i}`, source, ...f }));
 }
 
@@ -1174,8 +1346,13 @@ export interface EnchantmentTranslation {
  * different parent key).
  */
 function recordTargetType(record: EsmRecord): string {
-  const effectData = (record.fields['Effect Data'] ?? record.fields['Data'] ?? {}) as Record<string, unknown>;
-  return ((effectData['Target Type'] as Record<string, unknown> | undefined)?.['name'] as string) ?? '';
+  const effectData = (record.fields['Effect Data'] ?? record.fields['Data'] ?? {}) as Record<
+    string,
+    unknown
+  >;
+  return (
+    ((effectData['Target Type'] as Record<string, unknown> | undefined)?.['name'] as string) ?? ''
+  );
 }
 
 /**
@@ -1192,13 +1369,17 @@ function recordTargetType(record: EsmRecord): string {
  */
 export async function translateEnchantment(
   deps: MgefTranslationDeps,
-  enchOrSpelFormId: string
+  enchOrSpelFormId: string,
 ): Promise<EnchantmentTranslation> {
   let record: EsmRecord;
   try {
     record = await deps.client.get(enchOrSpelFormId);
   } catch {
-    return { modifiers: [], notes: [`enchantment ${enchOrSpelFormId} not found`], targetType: null };
+    return {
+      modifiers: [],
+      notes: [`enchantment ${enchOrSpelFormId} not found`],
+      targetType: null,
+    };
   }
   const targetType = recordTargetType(record);
   // deps.crossFamilyRank flows via translateMagicEffect's conditionCtx default.
@@ -1207,7 +1388,7 @@ export async function translateEnchantment(
   const notes: string[] = [];
   for (const effect of parseMagicEffects(record)) {
     const result = await translateMagicEffect(deps, effect, conditionCtx);
-    result.notes.forEach(n => notes.push(n));
+    result.notes.forEach((n) => notes.push(n));
     modifiers.push(...result.modifiers);
   }
   return { modifiers, notes, targetType };

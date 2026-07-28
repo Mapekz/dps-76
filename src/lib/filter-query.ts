@@ -2,5 +2,5 @@
 export function matchesQuery(keywords: string[], query: string): boolean {
   const q = query.trim().toLowerCase();
   if (!q) return true;
-  return keywords.some(k => k.toLowerCase().includes(q));
+  return keywords.some((k) => k.toLowerCase().includes(q));
 }

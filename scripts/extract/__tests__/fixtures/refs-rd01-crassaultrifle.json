@@ -1,1 +1,10 @@
-[{"form_id":"0x007BC5BA","record_type":"LVLI","editor_id":"LLI_RD01_MoleMiner_Ranged_Weapons","name":null,"offset":86870964,"depth":1}]
+[
+  {
+    "form_id": "0x007BC5BA",
+    "record_type": "LVLI",
+    "editor_id": "LLI_RD01_MoleMiner_Ranged_Weapons",
+    "name": null,
+    "offset": 86870964,
+    "depth": 1
+  }
+]

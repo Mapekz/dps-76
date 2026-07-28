@@ -13,7 +13,7 @@ export function getBodyPartRaces(mode: GameMode): GeneratedBodyPartRace[] {
 }
 
 export function getBodyPartRace(mode: GameMode, raceId: string): GeneratedBodyPartRace | undefined {
-  return getDataset(mode).bodyPartRaces.find(r => r.id === raceId);
+  return getDataset(mode).bodyPartRaces.find((r) => r.id === raceId);
 }
 
 /**
@@ -25,13 +25,13 @@ export function getBodyPartRace(mode: GameMode, raceId: string): GeneratedBodyPa
  */
 export function getDefaultBodyPart(
   mode: GameMode,
-  raceId: string | null | undefined
+  raceId: string | null | undefined,
 ): GeneratedBodyPart | undefined {
   if (!raceId) return undefined;
   const race = getBodyPartRace(mode, raceId);
   if (!race) return undefined;
-  const ones = race.parts.filter(p => p.dmgMult === 1.0);
-  const torso = ones.find(p => p.partType === 'Torso');
+  const ones = race.parts.filter((p) => p.dmgMult === 1.0);
+  const torso = ones.find((p) => p.partType === 'Torso');
   if (torso) return torso;
   return [...ones].sort((a, b) => a.name.localeCompare(b.name))[0];
 }
@@ -66,11 +66,19 @@ export function resolveTargetBodyPart(
   mode: GameMode,
   raceId: string | null | undefined,
   partName: string | null | undefined,
-  customMult: number
+  customMult: number,
 ): ResolvedTargetBodyPart {
-  const part = raceId && partName ? getBodyPartRace(mode, raceId)?.parts.find(p => p.name === partName) : undefined;
+  const part =
+    raceId && partName
+      ? getBodyPartRace(mode, raceId)?.parts.find((p) => p.name === partName)
+      : undefined;
   if (part) {
-    return { name: part.name, mult: part.dmgMult, isTorso: part.partType === 'Torso', isCustom: false };
+    return {
+      name: part.name,
+      mult: part.dmgMult,
+      isTorso: part.partType === 'Torso',
+      isCustom: false,
+    };
   }
   return { name: 'Custom', mult: customMult, isTorso: undefined, isCustom: true };
 }
@@ -82,7 +90,10 @@ export function resolveTargetBodyPart(
  * Zealot's "ActorTypeScorched"). Empty when no/unknown race is selected —
  * enemy-type-gated modifiers stay inactive, like every other enemy gate.
  */
-export function getEnemyTypeIds(mode: GameMode, raceId: string | null | undefined): readonly string[] {
+export function getEnemyTypeIds(
+  mode: GameMode,
+  raceId: string | null | undefined,
+): readonly string[] {
   if (!raceId) return [];
   const race = getBodyPartRace(mode, raceId);
   if (!race) return [];

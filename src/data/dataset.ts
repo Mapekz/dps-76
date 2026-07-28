@@ -1,5 +1,15 @@
 import type { GameMode, Perk, PerkId, Weapon } from '@/types';
-import type { GeneratedAddiction, GeneratedBodyPartRace, GeneratedConstants, GeneratedNpc, GeneratedOmod, GeneratedBuff, GeneratedPerk, GeneratedUnique, GeneratedWeapon } from '@/types/generated';
+import type {
+  GeneratedAddiction,
+  GeneratedBodyPartRace,
+  GeneratedConstants,
+  GeneratedNpc,
+  GeneratedOmod,
+  GeneratedBuff,
+  GeneratedPerk,
+  GeneratedUnique,
+  GeneratedWeapon,
+} from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 
 import { buildWeapons, generatedWeaponsRaw as generatedWeaponsRawLive } from './live/weapons';
@@ -78,9 +88,9 @@ import generatedConstantsLive from './live/generated/constants.json';
 /** Replace an item's `.modifiers` when an override is keyed by its id (omods, buffs). */
 export function applyModifierOverride<T extends { id: string; modifiers: Modifier[] }>(
   items: T[],
-  overridesById: Readonly<Record<string, Modifier[]>>
+  overridesById: Readonly<Record<string, Modifier[]>>,
 ): T[] {
-  return items.map(item => {
+  return items.map((item) => {
     const override = overridesById[item.id];
     return override ? { ...item, modifiers: override } : item;
   });
@@ -89,9 +99,9 @@ export function applyModifierOverride<T extends { id: string; modifiers: Modifie
 /** Concatenate additional modifiers onto an item's `.modifiers` when keyed by its id (omods). */
 export function applyModifierAddition<T extends { id: string; modifiers: Modifier[] }>(
   items: T[],
-  additionsById: Readonly<Record<string, Modifier[]>>
+  additionsById: Readonly<Record<string, Modifier[]>>,
 ): T[] {
-  return items.map(item => {
+  return items.map((item) => {
     const addition = additionsById[item.id];
     return addition ? { ...item, modifiers: [...item.modifiers, ...addition] } : item;
   });
@@ -100,17 +110,20 @@ export function applyModifierAddition<T extends { id: string; modifiers: Modifie
 /** Replace an item's display `.name` when an override is keyed by its id (omods — see omodNameOverrides). */
 export function applyNameOverride<T extends { id: string; name: string }>(
   items: T[],
-  namesById: Readonly<Record<string, string>>
+  namesById: Readonly<Record<string, string>>,
 ): T[] {
-  return items.map(item => {
+  return items.map((item) => {
     const name = namesById[item.id];
     return name ? { ...item, name } : item;
   });
 }
 
 /** Replace an npc record wholesale when an override targets its id (npc-overrides.ts REPLACES, not patches — see that file's header). */
-export function applyNpcOverrides(items: GeneratedNpc[], overridesById: Readonly<Record<string, GeneratedNpc>>): GeneratedNpc[] {
-  return items.map(item => overridesById[item.id] ?? item);
+export function applyNpcOverrides(
+  items: GeneratedNpc[],
+  overridesById: Readonly<Record<string, GeneratedNpc>>,
+): GeneratedNpc[] {
+  return items.map((item) => overridesById[item.id] ?? item);
 }
 
 type BodyArmor = typeof bodyArmorLive;
@@ -195,19 +208,19 @@ export function buildDataset(hand: HandAuthored, source: DatasetSource): Dataset
   const mergedOmods = applyNameOverride(
     applyModifierAddition(
       applyModifierOverride(source.generatedOmods, source.legendaryValueOverrides),
-      source.omodModifierAdditions
+      source.omodModifierAdditions,
     ),
-    source.omodNameOverrides
+    source.omodNameOverrides,
   );
   const mergedArmorOmods = applyModifierOverride(
     source.generatedArmorOmods,
-    source.armorLegendaryValueOverrides
+    source.armorLegendaryValueOverrides,
   );
   return {
     weapons: buildWeapons(
       source.generatedWeapons,
       { hidden: source.hiddenWeaponIds, forceVisible: source.forceVisibleWeaponIds },
-      source.weaponCorrections
+      source.weaponCorrections,
     ),
     omods: mergedOmods,
     armorOmods: mergedArmorOmods,
@@ -271,16 +284,22 @@ const liveSource: DatasetSource = {
 };
 
 const datasets: Record<GameMode, Dataset> = {
-  live: buildDataset({
-    perkNames: perkNamesLive,
-    bodyArmor: bodyArmorLive,
-    powerArmor: powerArmorLive,
-  }, liveSource),
-  pts: buildDataset({
-    perkNames: perkNamesPts,
-    bodyArmor: bodyArmorPts,
-    powerArmor: powerArmorPts,
-  }, { ...liveSource, generatedWeapons: generatedWeaponsRawPts }),
+  live: buildDataset(
+    {
+      perkNames: perkNamesLive,
+      bodyArmor: bodyArmorLive,
+      powerArmor: powerArmorLive,
+    },
+    liveSource,
+  ),
+  pts: buildDataset(
+    {
+      perkNames: perkNamesPts,
+      bodyArmor: bodyArmorPts,
+      powerArmor: powerArmorPts,
+    },
+    { ...liveSource, generatedWeapons: generatedWeaponsRawPts },
+  ),
 };
 
 export function getDataset(mode: GameMode): Dataset {
@@ -309,7 +328,7 @@ export interface UnresolvedOverrideKey {
 /** Raw (pre-visibility-filter) generated weapon ids for `mode` — see live/weapons.ts's `generatedWeaponsRaw`. */
 function generatedWeaponIdsFor(mode: GameMode): ReadonlySet<string> {
   const raw = mode === 'live' ? generatedWeaponsRawLive : generatedWeaponsRawPts;
-  return new Set(raw.map(w => w.id));
+  return new Set(raw.map((w) => w.id));
 }
 
 /**
@@ -333,7 +352,7 @@ export function getUnresolvedOverrideKeys(mode: GameMode): UnresolvedOverrideKey
   // omods/perks/mutations/consumables have no live/pts split yet (single ESM
   // — see the HandAuthored comment above); read straight off the shared
   // generated collections, same as buildDataset does.
-  const omodIds = new Set(generatedOmodsLive.map(o => o.id));
+  const omodIds = new Set(generatedOmodsLive.map((o) => o.id));
   check('legendaryValueOverrides', Object.keys(legendaryValueOverrides), omodIds);
   check('omodModifierAdditions', Object.keys(omodModifierAdditions), omodIds);
   check('hiddenOmodIds', hiddenOmodIds, omodIds);
@@ -345,21 +364,23 @@ export function getUnresolvedOverrideKeys(mode: GameMode): UnresolvedOverrideKey
     check(`omodWeaponRestrictions[${omodId}] (weapon ref)`, weaponRefs, weaponIds);
   }
 
-  const armorOmodIds = new Set((generatedArmorOmodsLive as GeneratedOmod[]).map(o => o.id));
+  const armorOmodIds = new Set((generatedArmorOmodsLive as GeneratedOmod[]).map((o) => o.id));
   check('armorLegendaryValueOverrides', Object.keys(armorLegendaryValueOverrides), armorOmodIds);
   check('hiddenArmorOmodIds', hiddenArmorOmodIds, armorOmodIds);
   check('forceVisibleArmorOmodIds', forceVisibleArmorOmodIds, armorOmodIds);
 
-  const buffIds = new Set([...generatedMutationsLive, ...generatedConsumablesLive].map(b => b.id));
+  const buffIds = new Set(
+    [...generatedMutationsLive, ...generatedConsumablesLive].map((b) => b.id),
+  );
   check('buffValueOverrides', Object.keys(buffValueOverrides), buffIds);
   check('hiddenConsumableIds', hiddenConsumableIds, buffIds);
   check('forceVisibleConsumableIds', forceVisibleConsumableIds, buffIds);
 
-  const familyIds = new Set(generatedPerksLive.map(p => p.family));
+  const familyIds = new Set(generatedPerksLive.map((p) => p.family));
   check('perkFamilyOverrides (target family)', Object.values(perkFamilyOverrides), familyIds);
   check('extraPerkModifiers', Object.keys(extraPerkModifiers), familyIds);
 
-  const npcIds = new Set(generatedNpcsRawLive.map(n => n.id));
+  const npcIds = new Set(generatedNpcsRawLive.map((n) => n.id));
   check('npcOverrides', Object.keys(npcOverrides), npcIds);
 
   return out;
@@ -371,7 +392,7 @@ if (import.meta.env?.DEV) {
     if (unresolved.length > 0) {
       console.warn(
         `[dataset] ${unresolved.length} stale Overlay key(s) for mode "${mode}" — an extraction rename likely ` +
-          `orphaned these (they're silently inert): ${unresolved.map(u => `${u.overlay}:${u.key}`).join(', ')}`
+          `orphaned these (they're silently inert): ${unresolved.map((u) => `${u.overlay}:${u.key}`).join(', ')}`,
       );
     }
   }

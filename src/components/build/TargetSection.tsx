@@ -21,10 +21,23 @@ import {
 import { getDistanceConstants } from '@/data';
 import { TENDERIZER_MAX_STACKS } from '@/data/target-debuffs';
 import { getNpc } from '@/data/npcs';
-import { getEnemyDefenses, resolveTargetLevel, resolveTargetLevelBounds } from '@/lib/enemy-defenses';
+import {
+  getEnemyDefenses,
+  resolveTargetLevel,
+  resolveTargetLevelBounds,
+} from '@/lib/enemy-defenses';
 import { buildDeltaCount } from '@/lib/build-delta';
-import { DEFAULT_DISTANCE_UNITS, FAR_THRESHOLD_UNITS, gameUnitsToPipBoy, pipBoyToGameUnits } from '@/lib/distance';
-import { createDefaultEnemyConditions, createDefaultPlayerConditions, type EnemyConditions } from '@/types';
+import {
+  DEFAULT_DISTANCE_UNITS,
+  FAR_THRESHOLD_UNITS,
+  gameUnitsToPipBoy,
+  pipBoyToGameUnits,
+} from '@/lib/distance';
+import {
+  createDefaultEnemyConditions,
+  createDefaultPlayerConditions,
+  type EnemyConditions,
+} from '@/types';
 import type { BodyPartRaceCategory } from '@/types/generated';
 import { SectionTrigger } from './SectionTrigger';
 
@@ -50,7 +63,11 @@ const STATUS_TOGGLES: Array<{ key: keyof EnemyConditions; label: string; title: 
   { key: 'isBleeding', label: 'Bleeding', title: "Active bleed effect (Severing's 4★)" },
   { key: 'isBurning', label: 'Burning', title: "Active fire effect (Pyromaniac's)" },
   { key: 'isPoisoned', label: 'Poisoned', title: "Active poison effect (Viper's)" },
-  { key: 'isFrozen', label: 'Frozen', title: 'Active cryo effect — no equipped effect consumes this yet' },
+  {
+    key: 'isFrozen',
+    label: 'Frozen',
+    title: 'Active cryo effect — no equipped effect consumes this yet',
+  },
 ];
 
 const ENEMY_NUMBER_FIELDS: Array<{
@@ -62,13 +79,13 @@ const ENEMY_NUMBER_FIELDS: Array<{
 
 // Encircler's top tier is GetGroupTargetCount ≥5 (buffs-legendary.test.ts) —
 // nothing distinguishes larger groups, so the control caps at "5+".
-const GROUP_COUNT_OPTIONS = [1, 2, 3, 4, 5].map(value => ({
+const GROUP_COUNT_OPTIONS = [1, 2, 3, 4, 5].map((value) => ({
   value,
   label: value === 5 ? '5+' : String(value),
 }));
 
 /** Follow Through's damage-multiplier tiers — the per-rank 10/20/30/40% magnitudes plus off. */
-const DAMAGE_MULT_PCT_OPTIONS = [0, 10, 20, 30, 40].map(value => ({ value, label: `${value}%` }));
+const DAMAGE_MULT_PCT_OPTIONS = [0, 10, 20, 30, 40].map((value) => ({ value, label: `${value}%` }));
 
 /**
  * Taking One for the Team's single rank control — consolidates what used to
@@ -107,7 +124,12 @@ const TARGET_CATEGORY_LABELS: Record<BodyPartRaceCategory, string> = {
   headhunt: 'Head Hunt Bosses',
   standard: 'Enemies',
 };
-const TARGET_CATEGORY_ORDER: BodyPartRaceCategory[] = ['raid', 'infestation', 'headhunt', 'standard'];
+const TARGET_CATEGORY_ORDER: BodyPartRaceCategory[] = [
+  'raid',
+  'infestation',
+  'headhunt',
+  'standard',
+];
 
 // Sentinel picker value for "no part picked" — disarms aiming, falls back to
 // the race's neutral ×1.00 default part. Distinct from any real BPTD part name
@@ -133,19 +155,26 @@ export function TargetSection() {
 
   const races = getBodyPartRaces(mode);
   // Category groups in a fixed order, alphabetized within each.
-  const raceOptions = TARGET_CATEGORY_ORDER.flatMap(category =>
+  const raceOptions = TARGET_CATEGORY_ORDER.flatMap((category) =>
     races
-      .filter(r => r.category === category)
-      .map(r => ({ value: r.id, label: r.name, group: TARGET_CATEGORY_LABELS[category] }))
-      .sort((a, b) => a.label.localeCompare(b.label))
+      .filter((r) => r.category === category)
+      .map((r) => ({ value: r.id, label: r.name, group: TARGET_CATEGORY_LABELS[category] }))
+      .sort((a, b) => a.label.localeCompare(b.label)),
   );
-  const selectedRace = conditions.targetRace ? getBodyPartRace(mode, conditions.targetRace) : undefined;
+  const selectedRace = conditions.targetRace
+    ? getBodyPartRace(mode, conditions.targetRace)
+    : undefined;
   const defaultPart = getDefaultBodyPart(mode, conditions.targetRace);
   const isAiming = player.conditions.isAimingAtWeakpoint;
   // The mult that WOULD apply if aiming (single source of truth, shared with
   // the engine input and the results pill) — the picker label shows what's
   // actually applied right now, which is torso ×1.00 whenever disarmed.
-  const resolvedTarget = resolveTargetBodyPart(mode, conditions.targetRace, conditions.targetBodyPart, player.weakpointMult);
+  const resolvedTarget = resolveTargetBodyPart(
+    mode,
+    conditions.targetRace,
+    conditions.targetBodyPart,
+    player.weakpointMult,
+  );
   const effectiveMult = isAiming ? resolvedTarget.mult : 1.0;
   const crippableMax = getCrippablePartCount(mode, conditions.targetRace);
 
@@ -158,20 +187,20 @@ export function TargetSection() {
   // isn't listed twice — guard so a stale share-URL aimed at that exact part
   // still shows in the combobox.
   const uniqueParts = selectedRace
-    ? [...new Map(selectedRace.parts.map(p => [p.name, p])).values()]
+    ? [...new Map(selectedRace.parts.map((p) => [p.name, p])).values()]
         .filter(
-          p =>
-            p.name !== defaultPart?.name || (isAiming && conditions.targetBodyPart === p.name)
+          (p) => p.name !== defaultPart?.name || (isAiming && conditions.targetBodyPart === p.name),
         )
         .sort((a, b) => a.name.localeCompare(b.name))
     : [];
   const partOptions = [
     { value: DEFAULT_OPTION, label: `${defaultPart?.name ?? 'Neutral'} — ×1.00 (default)` },
-    ...uniqueParts.map(p => ({ value: p.name, label: `${p.name} — ×${p.dmgMult.toFixed(2)}` })),
+    ...uniqueParts.map((p) => ({ value: p.name, label: `${p.name} — ×${p.dmgMult.toFixed(2)}` })),
   ];
   const pickerValue = isAiming ? (conditions.targetBodyPart ?? DEFAULT_OPTION) : DEFAULT_OPTION;
 
-  const setAiming = (value: boolean) => dispatch({ type: 'condition/set', key: 'isAimingAtWeakpoint', value });
+  const setAiming = (value: boolean) =>
+    dispatch({ type: 'condition/set', key: 'isAimingAtWeakpoint', value });
 
   // Picking a real part arms aiming immediately — no separate step to
   // remember. Picking Torso (or re-clicking the current selection, which the
@@ -211,7 +240,10 @@ export function TargetSection() {
   const closeThresholdUnits = getDistanceConstants(mode).closeThresholdUnits;
   const closeGatePipBoy = gameUnitsToPipBoy(closeThresholdUnits);
   const distanceSliderMaxPipBoy = weaponRange
-    ? Math.max(gameUnitsToPipBoy(weaponRange.maxRange) * 1.5, FAR_GATE_PIPBOY + DISTANCE_SLIDER_MAX_MARGIN_PIPBOY)
+    ? Math.max(
+        gameUnitsToPipBoy(weaponRange.maxRange) * 1.5,
+        FAR_GATE_PIPBOY + DISTANCE_SLIDER_MAX_MARGIN_PIPBOY,
+      )
     : FAR_GATE_PIPBOY + DISTANCE_SLIDER_MAX_MARGIN_PIPBOY;
   const distanceSliderMarks = [
     { value: 0, label: '0' },
@@ -237,18 +269,25 @@ export function TargetSection() {
   const forcedEpicRank = targetNpc?.epicRank;
   const userEpicRank = conditions.epicRank ?? 0;
   const displayedEpicRank = forcedEpicRank ?? userEpicRank;
-  const targetDefenses = selectedRace ? getEnemyDefenses(mode, conditions.targetRace, targetLevel, userEpicRank) : null;
+  const targetDefenses = selectedRace
+    ? getEnemyDefenses(mode, conditions.targetRace, targetLevel, userEpicRank)
+    : null;
 
   const tenderizer = player.conditions.tenderizerStacks;
   const playerDefaults = createDefaultPlayerConditions();
   const followThroughPct = player.conditions.followThroughPct ?? 0;
   const takingOneForTheTeamDrRank = player.conditions.takingOneForTheTeamDrRank ?? 0;
 
-  const setPlayerCondition = (key: 'followThroughPct', value: number) => dispatch({ type: 'condition/set', key, value });
+  const setPlayerCondition = (key: 'followThroughPct', value: number) =>
+    dispatch({ type: 'condition/set', key, value });
 
   const setTakingOneForTheTeamRank = (rank: number) => {
     dispatch({ type: 'condition/set', key: 'takingOneForTheTeamPct', value: rank * 10 });
-    dispatch({ type: 'condition/set', key: 'takingOneForTheTeamDrRank', value: rank as 0 | 1 | 2 | 3 | 4 });
+    dispatch({
+      type: 'condition/set',
+      key: 'takingOneForTheTeamDrRank',
+      value: rank as 0 | 1 | 2 | 3 | 4,
+    });
   };
 
   const activeCount =
@@ -282,7 +321,7 @@ export function TargetSection() {
         isBurning: defaults.isBurning ?? false,
         isPoisoned: defaults.isPoisoned ?? false,
         isFrozen: defaults.isFrozen ?? false,
-      }
+      },
     ) +
     (conditions.targetLevel != null ? 1 : 0) +
     (forcedEpicRank == null && userEpicRank !== 0 ? 1 : 0);
@@ -324,14 +363,16 @@ export function TargetSection() {
             </div>
           ) : (
             <div className="space-y-1.5">
-              <Label htmlFor="target-mult">Custom body-part multiplier (×{effectiveMult.toFixed(2)})</Label>
+              <Label htmlFor="target-mult">
+                Custom body-part multiplier (×{effectiveMult.toFixed(2)})
+              </Label>
               <Input
                 id="target-mult"
                 type="number"
                 min={0.1}
                 step={0.05}
                 value={player.weakpointMult}
-                onChange={e => {
+                onChange={(e) => {
                   const value = parseFloat(e.target.value) || 1.5;
                   dispatch({ type: 'weapon/weakpointMult', value });
                   setAiming(value !== 1.0);
@@ -340,10 +381,10 @@ export function TargetSection() {
             </div>
           )}
           <p className="text-muted-foreground text-xs">
-            The neutral default is the race's ×1.00 part (torso when it's ×1.00, otherwise the first alphabetically);
-            picking a body part applies its multiplier immediately — no need to flip a separate switch. 1.5 is a
-            standard humanoid headshot (Super Mutants take 1.25); below 1.0 models armored parts like the Mirelurk
-            shell.
+            The neutral default is the race's ×1.00 part (torso when it's ×1.00, otherwise the first
+            alphabetically); picking a body part applies its multiplier immediately — no need to
+            flip a separate switch. 1.5 is a standard humanoid headshot (Super Mutants take 1.25);
+            below 1.0 models armored parts like the Mirelurk shell.
           </p>
 
           {selectedRace && epicAllowed && (
@@ -354,7 +395,7 @@ export function TargetSection() {
                 options={EPIC_RANK_OPTIONS}
                 value={displayedEpicRank}
                 disabled={forcedEpicRank != null}
-                onValueChange={v => setEnemy('epicRank', v)}
+                onValueChange={(v) => setEnemy('epicRank', v)}
               />
               {forcedEpicRank != null && (
                 <p className="text-muted-foreground text-xs">
@@ -373,7 +414,7 @@ export function TargetSection() {
                 max={levelBounds.max}
                 step={1}
                 value={[targetLevel]}
-                onValueChange={v => setEnemy('targetLevel', firstSliderValue(v))}
+                onValueChange={(v) => setEnemy('targetLevel', firstSliderValue(v))}
                 marks={[
                   { value: levelBounds.min, label: String(levelBounds.min) },
                   { value: levelBounds.max, label: String(levelBounds.max) },
@@ -393,7 +434,7 @@ export function TargetSection() {
             <Label>Status effects</Label>
             <ToggleChips
               aria-label="Status effects"
-              options={STATUS_TOGGLES.map(s => ({
+              options={STATUS_TOGGLES.map((s) => ({
                 value: s.key,
                 label: s.label,
                 title: s.title,
@@ -405,7 +446,9 @@ export function TargetSection() {
 
           {weaponRange && (
             <div className="space-y-1.5">
-              <Label htmlFor="target-distance">Distance: {distancePipBoy.toFixed(1)} Pip-Boy units</Label>
+              <Label htmlFor="target-distance">
+                Distance: {distancePipBoy.toFixed(1)} Pip-Boy units
+              </Label>
               <div className="flex items-center gap-2">
                 <div className="min-w-0 flex-1">
                   <Slider
@@ -414,7 +457,9 @@ export function TargetSection() {
                     max={distanceSliderMaxPipBoy}
                     step={0.1}
                     value={[distancePipBoy]}
-                    onValueChange={v => setEnemy('targetDistance', Math.round(pipBoyToGameUnits(firstSliderValue(v))))}
+                    onValueChange={(v) =>
+                      setEnemy('targetDistance', Math.round(pipBoyToGameUnits(firstSliderValue(v))))
+                    }
                     marks={distanceSliderMarks}
                   />
                 </div>
@@ -428,25 +473,30 @@ export function TargetSection() {
                 </div>
               </div>
               <p className="text-muted-foreground text-xs">
-                Close (≤{closeGatePipBoy.toFixed(1)}) gates Guerrilla; Far (≥{FAR_GATE_PIPBOY.toFixed(1)}) gates Down
-                Ranger/Rifleman and Sniper's — both independent of range falloff. Falloff: ×1.00 out to the weapon's
-                own min range ({gameUnitsToPipBoy(weaponRange.minRange).toFixed(1)}), linear down to ×
-                {weaponRange.outOfRangeMult} by its max range ({gameUnitsToPipBoy(weaponRange.maxRange).toFixed(1)}),
-                then curving further to ×{(weaponRange.outOfRangeMult * 0.2).toFixed(2)} by roughly 1.5× max range
-                (exact point depends on the weapon's min/max ratio), flat beyond. All units above are Pip-Boy.
+                Close (≤{closeGatePipBoy.toFixed(1)}) gates Guerrilla; Far (≥
+                {FAR_GATE_PIPBOY.toFixed(1)}) gates Down Ranger/Rifleman and Sniper's — both
+                independent of range falloff. Falloff: ×1.00 out to the weapon's own min range (
+                {gameUnitsToPipBoy(weaponRange.minRange).toFixed(1)}), linear down to ×
+                {weaponRange.outOfRangeMult} by its max range (
+                {gameUnitsToPipBoy(weaponRange.maxRange).toFixed(1)}), then curving further to ×
+                {(weaponRange.outOfRangeMult * 0.2).toFixed(2)} by roughly 1.5× max range (exact
+                point depends on the weapon's min/max ratio), flat beyond. All units above are
+                Pip-Boy.
               </p>
             </div>
           )}
 
-          {ENEMY_NUMBER_FIELDS.map(field => (
+          {ENEMY_NUMBER_FIELDS.map((field) => (
             <div key={field.key} className="space-y-1.5">
               <Label htmlFor={`target-${field.key}`}>{field.label}</Label>
               <NumberField
                 id={`target-${field.key}`}
                 min={field.min}
                 max={field.max}
-                value={(conditions[field.key] as number | undefined) ?? (defaults[field.key] as number)}
-                onChange={v => setEnemy(field.key, v)}
+                value={
+                  (conditions[field.key] as number | undefined) ?? (defaults[field.key] as number)
+                }
+                onChange={(v) => setEnemy(field.key, v)}
               />
             </div>
           ))}
@@ -457,7 +507,7 @@ export function TargetSection() {
               aria-label="Enemies in the group"
               options={GROUP_COUNT_OPTIONS}
               value={Math.min(conditions.groupTargetCount ?? 1, 5)}
-              onValueChange={v => setEnemy('groupTargetCount', v)}
+              onValueChange={(v) => setEnemy('groupTargetCount', v)}
             />
           </div>
 
@@ -478,7 +528,7 @@ export function TargetSection() {
               step={1}
               disabled={crippableMax === 0}
               value={[Math.min(conditions.crippledLimbCount, crippableMax)]}
-              onValueChange={v => setEnemy('crippledLimbCount', firstSliderValue(v))}
+              onValueChange={(v) => setEnemy('crippledLimbCount', firstSliderValue(v))}
               marks={Array.from({ length: Math.max(crippableMax, 1) + 1 }, (_, i) => ({
                 value: i,
                 label: String(i),
@@ -493,11 +543,13 @@ export function TargetSection() {
               min={0}
               max={TENDERIZER_MAX_STACKS}
               value={tenderizer}
-              onChange={v => dispatch({ type: 'condition/set', key: 'tenderizerStacks', value: v })}
+              onChange={(v) =>
+                dispatch({ type: 'condition/set', key: 'tenderizerStacks', value: v })
+              }
             />
             <p className="text-muted-foreground text-xs">
-              +0.1% damage taken per stack, up to +100% at {TENDERIZER_MAX_STACKS} stacks. Applied by any player's
-              Tenderizer — you don't need the card equipped.
+              +0.1% damage taken per stack, up to +100% at {TENDERIZER_MAX_STACKS} stacks. Applied
+              by any player's Tenderizer — you don't need the card equipped.
             </p>
           </div>
 
@@ -507,11 +559,11 @@ export function TargetSection() {
               aria-label="Follow Through damage multiplier"
               options={DAMAGE_MULT_PCT_OPTIONS}
               value={followThroughPct}
-              onValueChange={v => setPlayerCondition('followThroughPct', v)}
+              onValueChange={(v) => setPlayerCondition('followThroughPct', v)}
             />
             <p className="text-muted-foreground text-xs">
-              Manual estimate of the 10s ranged-sneak damage-taken debuff's active multiplier. Applied by any
-              player's Follow Through — you don't need the card equipped.
+              Manual estimate of the 10s ranged-sneak damage-taken debuff's active multiplier.
+              Applied by any player's Follow Through — you don't need the card equipped.
             </p>
           </div>
 
@@ -524,10 +576,10 @@ export function TargetSection() {
               onValueChange={setTakingOneForTheTeamRank}
             />
             <p className="text-muted-foreground text-xs">
-              Any player's Taking One for the Team can proc both a %-damage-taken multiplier and a flat Damage
-              Resist reduction (physical only) on the target — you don't need the card equipped yourself. Rank 4's
-              jump to −50 DR (vs. the ~−20 an even progression would predict) is a possible ESM data-entry anomaly,
-              modeled as-is.
+              Any player's Taking One for the Team can proc both a %-damage-taken multiplier and a
+              flat Damage Resist reduction (physical only) on the target — you don't need the card
+              equipped yourself. Rank 4's jump to −50 DR (vs. the ~−20 an even progression would
+              predict) is a possible ESM data-entry anomaly, modeled as-is.
             </p>
           </div>
         </div>

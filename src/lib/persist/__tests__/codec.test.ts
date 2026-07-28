@@ -20,16 +20,33 @@ void ndKey;
 // also makes src/lib/consumable-rules.ts's consumablesById() (which reads
 // getConsumables from this same module) resolve against these fixtures.
 const testChemA: GeneratedBuff = {
-  id: 'TestChemA', formId: '0xC1', name: 'Test Chem A', kind: 'consumable', modifiers: [], notes: [], category: 'chem',
+  id: 'TestChemA',
+  formId: '0xC1',
+  name: 'Test Chem A',
+  kind: 'consumable',
+  modifiers: [],
+  notes: [],
+  category: 'chem',
 };
 const testChemB: GeneratedBuff = {
-  id: 'TestChemB', formId: '0xC2', name: 'Test Chem B', kind: 'consumable', modifiers: [], notes: [], category: 'chem',
+  id: 'TestChemB',
+  formId: '0xC2',
+  name: 'Test Chem B',
+  kind: 'consumable',
+  modifiers: [],
+  notes: [],
+  category: 'chem',
 };
 const testAddiction: GeneratedAddiction = {
-  id: 'TestAddictionX', formId: '0xA1', name: 'Test Addiction X', causedBy: ['TestChemA'], modifiers: [], notes: [],
+  id: 'TestAddictionX',
+  formId: '0xA1',
+  name: 'Test Addiction X',
+  causedBy: ['TestChemA'],
+  modifiers: [],
+  notes: [],
 };
 
-vi.mock('@/data/buffs', async importOriginal => {
+vi.mock('@/data/buffs', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/data/buffs')>();
   return {
     ...actual,
@@ -44,7 +61,9 @@ vi.mock('@/data/buffs', async importOriginal => {
 async function encodeRawWire(wire: Record<string, unknown>): Promise<string> {
   const bytes = new TextEncoder().encode(JSON.stringify(wire));
   const deflated = new Uint8Array(
-    await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer()
+    await new Response(
+      new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw')),
+    ).arrayBuffer(),
   );
   let bin = '';
   for (const b of deflated) bin += String.fromCharCode(b);
@@ -63,19 +82,37 @@ describe('build codec', () => {
   it('round-trips a maxed realistic build', async () => {
     const state = stateFrom([
       { type: 'weapon/select', weaponId: 'CombatRifle_Fixer' },
-      { type: 'weapon/mod', slot: 'ap_gun_Receiver', omodId: 'mod_CombatRifle_Receiver_Damage-Auto' },
+      {
+        type: 'weapon/mod',
+        slot: 'ap_gun_Receiver',
+        omodId: 'mod_CombatRifle_Receiver_Damage-Auto',
+      },
       { type: 'weapon/itemLevel', value: 45 },
       { type: 'weapon/weakpointMult', value: 2.5 },
       // Raise every stat to 8 (56 = exactly the pool) so any rank-3 card fits its stat's budget.
-      ...(['strength', 'perception', 'endurance', 'charisma', 'intelligence', 'agility', 'luck'] as const).map(
-        stat => ({ type: 'special/set' as const, stat, value: 8 })
-      ),
+      ...(
+        [
+          'strength',
+          'perception',
+          'endurance',
+          'charisma',
+          'intelligence',
+          'agility',
+          'luck',
+        ] as const
+      ).map((stat) => ({ type: 'special/set' as const, stat, value: 8 })),
       { type: 'perk/add', perkId: ndPerkId, rank: 3, legendary: false },
       { type: 'condition/set', key: 'isSneaking', value: true },
       { type: 'condition/set', key: 'healthPercent', value: 20 },
       { type: 'enemy/condition', key: 'isBurning', value: true },
       { type: 'view/set', view: { emphasized: 'vats', breakdownOpen: true } },
-      { type: 'build/importNd', perks: [], name: 'Bloodied Commando', special: null, isGhoul: false },
+      {
+        type: 'build/importNd',
+        perks: [],
+        name: 'Bloodied Commando',
+        special: null,
+        isGhoul: false,
+      },
     ]);
     const decoded = await decodeBuild(await encodeBuild(state), 'live');
     expect(decoded).not.toBeNull();
@@ -85,7 +122,9 @@ describe('build codec', () => {
   });
 
   it('preserves positional legendary gaps for equipped uniques (Salt Swift at ★3)', async () => {
-    const state = stateFrom([{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }]);
+    const state = stateFrom([
+      { type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' },
+    ]);
     expect(state.player.weapon?.legendaryEffects).toEqual([
       null,
       null,
@@ -101,9 +140,17 @@ describe('build codec', () => {
 
   it('round-trips perks through the N&D key dictionary', async () => {
     const state = stateFrom([
-      ...(['strength', 'perception', 'endurance', 'charisma', 'intelligence', 'agility', 'luck'] as const).map(
-        stat => ({ type: 'special/set' as const, stat, value: 8 })
-      ),
+      ...(
+        [
+          'strength',
+          'perception',
+          'endurance',
+          'charisma',
+          'intelligence',
+          'agility',
+          'luck',
+        ] as const
+      ).map((stat) => ({ type: 'special/set' as const, stat, value: 8 })),
       { type: 'perk/add', perkId: ndPerkId, rank: 2, legendary: false },
     ]);
     const encoded = await encodeBuild(state);
@@ -266,7 +313,7 @@ describe('derived condition fields', () => {
     const decoded = await decodeBuild(await encodeBuild(legacy), 'live');
     expect(decoded!.state.player.legendaryPerks).toEqual([]);
     expect(decoded!.state.player.perks).toEqual([{ perkId: 'RadSpecialist', rank: 1 }]);
-    expect(decoded!.warnings.some(w => w.includes('classification'))).toBe(true);
+    expect(decoded!.warnings.some((w) => w.includes('classification'))).toBe(true);
   });
 });
 
@@ -288,14 +335,20 @@ describe('Armor checklist (Phase 3 armor pipeline, UI + state)', () => {
   });
 
   it('setting a count back to 0 removes the entry rather than serializing a 0', async () => {
-    const withEffect = stateFrom([{ type: 'armorEffect/setCount', id: 'mod_Legendary_Armor3_Healthy', count: 4 }]);
-    const cleared = buildReducer(withEffect, { type: 'armorEffect/setCount', id: 'mod_Legendary_Armor3_Healthy', count: 0 });
+    const withEffect = stateFrom([
+      { type: 'armorEffect/setCount', id: 'mod_Legendary_Armor3_Healthy', count: 4 },
+    ]);
+    const cleared = buildReducer(withEffect, {
+      type: 'armorEffect/setCount',
+      id: 'mod_Legendary_Armor3_Healthy',
+      count: 0,
+    });
     expect(cleared.player.armorEffects).toEqual({});
     const decoded = await decodeBuild(await encodeBuild(cleared), 'live');
     expect(decoded!.state.player.armorEffects).toEqual({});
   });
 
-  it('clamps a count to the effect\'s maxCount and drops unknown ids with a warning', async () => {
+  it("clamps a count to the effect's maxCount and drops unknown ids with a warning", async () => {
     const encoded = await encodeRawWire({
       ae: [
         ['mod_Legendary_Armor2_StatStrength', 99], // stackable, max 5
@@ -308,14 +361,14 @@ describe('Armor checklist (Phase 3 armor pipeline, UI + state)', () => {
       mod_Legendary_Armor2_StatStrength: 5,
       mod_armor_UnderArmor_style_standard: 1,
     });
-    expect(decoded!.warnings.some(w => w.includes('NotARealArmorEffect'))).toBe(true);
+    expect(decoded!.warnings.some((w) => w.includes('NotARealArmorEffect'))).toBe(true);
   });
 
   it('migrates a legacy "limitBreakingPieces" condition into the checklist selection', async () => {
     const encoded = await encodeRawWire({ pc: { limitBreakingPieces: 5 } });
     const decoded = await decodeBuild(encoded, 'live');
     expect(decoded!.state.player.armorEffects).toEqual({ mod_Legendary_Armor4_LimitBreak: 5 });
-    expect(decoded!.warnings.some(w => w.includes('Armor checklist'))).toBe(true);
+    expect(decoded!.warnings.some((w) => w.includes('Armor checklist'))).toBe(true);
   });
 
   it('a legacy "limitBreakingPieces: 0" migrates to no selection at all (not a stored zero)', async () => {
@@ -340,7 +393,7 @@ describe('consumables & addictions (2026-07-13 overhaul, hermetic fixtures)', ()
     state.player.addictions = ['NotARealAddiction'];
     const decoded = await decodeBuild(await encodeBuild(state), 'live');
     expect(decoded!.state.player.addictions).toEqual([]);
-    expect(decoded!.warnings.some(w => w.includes('unknown addiction'))).toBe(true);
+    expect(decoded!.warnings.some((w) => w.includes('unknown addiction'))).toBe(true);
   });
 
   it('sanitizes a legacy two-chem payload down to one, with a warning', async () => {
@@ -351,7 +404,7 @@ describe('consumables & addictions (2026-07-13 overhaul, hermetic fixtures)', ()
     const decoded = await decodeBuild(await encodeBuild(state), 'live');
     expect(decoded!.state.player.consumables).toEqual(['TestChemB']);
     expect(decoded!.warnings).toContain(
-      "removed to satisfy stacking rules (one chem/alcohol at a time; same-bonus food/drink don't stack)"
+      "removed to satisfy stacking rules (one chem/alcohol at a time; same-bonus food/drink don't stack)",
     );
   });
 
@@ -368,13 +421,18 @@ describe('consumables & addictions (2026-07-13 overhaul, hermetic fixtures)', ()
     const encoded = await encodeRawWire({ pc: { addictionCount: 7 } });
     const decoded = await decodeBuild(encoded, 'live');
     expect(decoded).not.toBeNull();
-    expect(decoded!.state.player.conditions.addictionCount).toBe(createDefaultBuildState().player.conditions.addictionCount);
-    expect(decoded!.warnings.some(w => w.includes('addictionCount'))).toBe(true);
+    expect(decoded!.state.player.conditions.addictionCount).toBe(
+      createDefaultBuildState().player.conditions.addictionCount,
+    );
+    expect(decoded!.warnings.some((w) => w.includes('addictionCount'))).toBe(true);
   });
 
   it('migrates a legacy string targetDistance bucket to a representative raw-unit number', async () => {
     // Simulates a pre-Phase-1 URL that stored the old 'close'|'none'|'far' bucket.
-    const close = await decodeBuild(await encodeRawWire({ ec: { targetDistance: 'close' } }), 'live');
+    const close = await decodeBuild(
+      await encodeRawWire({ ec: { targetDistance: 'close' } }),
+      'live',
+    );
     expect(close!.state.enemy.conditions.targetDistance).toBe(400);
     expect(close!.warnings).toEqual([]);
 
@@ -386,12 +444,15 @@ describe('consumables & addictions (2026-07-13 overhaul, hermetic fixtures)', ()
   });
 
   it('warns and falls back to default on an unrecognized legacy targetDistance string', async () => {
-    const decoded = await decodeBuild(await encodeRawWire({ ec: { targetDistance: 'medium' } }), 'live');
+    const decoded = await decodeBuild(
+      await encodeRawWire({ ec: { targetDistance: 'medium' } }),
+      'live',
+    );
     expect(decoded).not.toBeNull();
     expect(decoded!.state.enemy.conditions.targetDistance).toBe(
-      createDefaultBuildState().enemy.conditions.targetDistance
+      createDefaultBuildState().enemy.conditions.targetDistance,
     );
-    expect(decoded!.warnings.some(w => w.includes('targetDistance'))).toBe(true);
+    expect(decoded!.warnings.some((w) => w.includes('targetDistance'))).toBe(true);
   });
 
   it('round-trips a real numeric targetDistance value written by the current app', async () => {

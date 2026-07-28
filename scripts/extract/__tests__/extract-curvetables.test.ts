@@ -76,7 +76,9 @@ describe('toCurveTableFile', () => {
   });
 
   it('normalizes the singleton range-falloff curve (CT_Player_PercentOfMinToMaxRangeDMGMult), matching the previously hand-copied file', () => {
-    const file = toCurveTableFile((percentOfMinToMaxRange as { fields: { Curve: unknown } }).fields.Curve);
+    const file = toCurveTableFile(
+      (percentOfMinToMaxRange as { fields: { Curve: unknown } }).fields.Curve,
+    );
     expect(file).toEqual({
       curve: [
         { x: 1, y: 1 },
@@ -108,9 +110,17 @@ describe('extractCurveTables', () => {
     '0x0076E999': armorTier22 as unknown as EsmRecord,
     '0x0076E9B4': armorTier49Zzz as unknown as EsmRecord,
     // DFOB bridges (formid → Object → CURV formid).
-    '0x008407AD': dfobRecord('0x008407AD', 'CombatFormulaPercentOfMinToMaxRangeDMGMult_DO', '0x008407AC'),
+    '0x008407AD': dfobRecord(
+      '0x008407AD',
+      'CombatFormulaPercentOfMinToMaxRangeDMGMult_DO',
+      '0x008407AC',
+    ),
     '0x0065562A': dfobRecord('0x0065562A', 'LuckVATSCriticalChargeCurve_DO', '0x00655629'),
-    '0x0089A83C': dfobRecord('0x0089A83C', 'WeaponSecondaryChargeUpDamageBonusCurve_DO', '0x008A3B85'),
+    '0x0089A83C': dfobRecord(
+      '0x0089A83C',
+      'WeaponSecondaryChargeUpDamageBonusCurve_DO',
+      '0x008A3B85',
+    ),
     '0x004F4740': dfobRecord('0x004F4740', 'SpecialPointCurve_DO', '0x004F473F'),
     '0x005B67A1': dfobRecord('0x005B67A1', 'LegendaryPerkSlotCurve_DO', '0x005B67A0'),
     // Singleton CURVs by formid (the DFOB target hop)…
@@ -129,7 +139,7 @@ describe('extractCurveTables', () => {
 
   function makeClient(
     searchRows: Array<{ form_id: string; editor_id: string }>,
-    recordSet: Record<string, EsmRecord> = records
+    recordSet: Record<string, EsmRecord> = records,
   ): EsmClient {
     return {
       async search(pattern: string, opts: { type?: string }) {
@@ -137,7 +147,7 @@ describe('extractCurveTables', () => {
         // client — the other 3 groups return empty (landing in `files: []`,
         // not `unresolved`).
         if (pattern.includes('Creatures_Armor') && opts.type === 'CURV') {
-          return searchRows.map(r => ({ ...r, record_type: 'CURV', name: null }));
+          return searchRows.map((r) => ({ ...r, record_type: 'CURV', name: null }));
         }
         return [];
       },
@@ -165,7 +175,7 @@ describe('extractCurveTables', () => {
     const { files, unresolved } = await extractCurveTables(client);
     expect(unresolved).toEqual([]);
     expect(files).toHaveLength(7);
-    expect(files.map(f => f.relativePath)).toEqual([
+    expect(files.map((f) => f.relativePath)).toEqual([
       'creatures/armor/armor_universal_tier22.json',
       'creatures/armor/armor_universal_tier49.json',
       ...singletonRelativePaths,
@@ -185,27 +195,38 @@ describe('extractCurveTables', () => {
   });
 
   it('reports unresolved when get() fails for a matched record', async () => {
-    const client = makeClient([{ form_id: '0xDEADBEEF', editor_id: 'CT_Creatures_Armor_Universal_Tier1' }]);
+    const client = makeClient([
+      { form_id: '0xDEADBEEF', editor_id: 'CT_Creatures_Armor_Universal_Tier1' },
+    ]);
     const { files, unresolved } = await extractCurveTables(client);
-    expect(files.map(f => f.relativePath)).toEqual(singletonRelativePaths);
+    expect(files.map((f) => f.relativePath)).toEqual(singletonRelativePaths);
     expect(unresolved).toHaveLength(1);
     expect(unresolved[0]).toContain('CT_Creatures_Armor_Universal_Tier1');
   });
 
   it('covers all 4 Universal Tier families, none other', () => {
-    expect(CURVE_TABLE_GROUPS.map(g => g.outSubdir).sort()).toEqual(
-      ['creatures/armor', 'creatures/health', 'player/armor', 'player/damage'].sort()
+    expect(CURVE_TABLE_GROUPS.map((g) => g.outSubdir).sort()).toEqual(
+      ['creatures/armor', 'creatures/health', 'player/armor', 'player/damage'].sort(),
     );
   });
 
   describe('singleton curve tables', () => {
     it('lists exactly the 5 DFOB-bridged singletons today', () => {
       expect(
-        CURVE_TABLE_SINGLETONS.map(s => ({ editorId: s.editorId, dfobEditorId: s.dfob?.editorId }))
+        CURVE_TABLE_SINGLETONS.map((s) => ({
+          editorId: s.editorId,
+          dfobEditorId: s.dfob?.editorId,
+        })),
       ).toEqual([
-        { editorId: 'CT_Player_PercentOfMinToMaxRangeDMGMult', dfobEditorId: 'CombatFormulaPercentOfMinToMaxRangeDMGMult_DO' },
+        {
+          editorId: 'CT_Player_PercentOfMinToMaxRangeDMGMult',
+          dfobEditorId: 'CombatFormulaPercentOfMinToMaxRangeDMGMult_DO',
+        },
         { editorId: 'CT_LuckVATSCriticalCharge', dfobEditorId: 'LuckVATSCriticalChargeCurve_DO' },
-        { editorId: 'CT_Legendary_Weapon_ChargedUpWeapon', dfobEditorId: 'WeaponSecondaryChargeUpDamageBonusCurve_DO' },
+        {
+          editorId: 'CT_Legendary_Weapon_ChargedUpWeapon',
+          dfobEditorId: 'WeaponSecondaryChargeUpDamageBonusCurve_DO',
+        },
         { editorId: 'SPECIAL_LevelRewardCurve', dfobEditorId: 'SpecialPointCurve_DO' },
         { editorId: 'LegendaryPerkSlotCount', dfobEditorId: 'LegendaryPerkSlotCurve_DO' },
       ]);
@@ -274,12 +295,12 @@ describe('extractCurveTables', () => {
     it('falls back to the editor_id get (with an unresolved note) when a DFOB fails to resolve', async () => {
       // Strip the DFOB records — every singleton takes the fallback path.
       const noDfobs = Object.fromEntries(
-        Object.entries(records).filter(([, rec]) => rec.header.signature !== 'DFOB')
+        Object.entries(records).filter(([, rec]) => rec.header.signature !== 'DFOB'),
       );
       const client = makeClient([], noDfobs);
       const { files, unresolved } = await extractCurveTables(client);
       expect(files).toHaveLength(5);
-      expect(files.map(f => f.relativePath)).toEqual(singletonRelativePaths);
+      expect(files.map((f) => f.relativePath)).toEqual(singletonRelativePaths);
       expect(unresolved).toHaveLength(5);
       for (const note of unresolved) expect(note).toContain('falling back');
     });
@@ -288,7 +309,11 @@ describe('extractCurveTables', () => {
       // Repoint the range-falloff DFOB at the luck curve.
       const repointed = {
         ...records,
-        '0x008407AD': dfobRecord('0x008407AD', 'CombatFormulaPercentOfMinToMaxRangeDMGMult_DO', '0x00655629'),
+        '0x008407AD': dfobRecord(
+          '0x008407AD',
+          'CombatFormulaPercentOfMinToMaxRangeDMGMult_DO',
+          '0x00655629',
+        ),
       };
       const client = makeClient([], repointed);
       const { files, unresolved } = await extractCurveTables(client);
@@ -305,7 +330,11 @@ describe('extractCurveTables', () => {
       const misdirected = {
         ...records,
         // Point the charged-melee DFOB at another DFOB record (not a CURV).
-        '0x0089A83C': dfobRecord('0x0089A83C', 'WeaponSecondaryChargeUpDamageBonusCurve_DO', '0x0065562A'),
+        '0x0089A83C': dfobRecord(
+          '0x0089A83C',
+          'WeaponSecondaryChargeUpDamageBonusCurve_DO',
+          '0x0065562A',
+        ),
       };
       const client = makeClient([], misdirected);
       const { files, unresolved } = await extractCurveTables(client);

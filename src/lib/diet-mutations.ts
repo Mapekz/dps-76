@@ -64,15 +64,20 @@ export function dietVerdict(buff: GeneratedBuff, mutationIds: readonly string[])
   if (!d) return null;
   const { kw, carnivore, herbivore } = d;
   // Zeroing wins over doubling (entry points compose multiplicatively: 2×0).
-  if ((carnivore && kw.has(CARNIVORE_ZEROED_KEYWORD)) || (herbivore && kw.has(MEAT_KEYWORD))) return 'zeroed';
-  if ((carnivore && kw.has(MEAT_KEYWORD)) || (herbivore && HERBIVORE_KEYWORDS.some(k => kw.has(k)))) return 'doubled';
+  if ((carnivore && kw.has(CARNIVORE_ZEROED_KEYWORD)) || (herbivore && kw.has(MEAT_KEYWORD)))
+    return 'zeroed';
+  if (
+    (carnivore && kw.has(MEAT_KEYWORD)) ||
+    (herbivore && HERBIVORE_KEYWORDS.some((k) => kw.has(k)))
+  )
+    return 'doubled';
   return null;
 }
 
 /** Which diet mutation zeroes this food's scalable effects, if any. */
 export function dietSuppressionLabel(
   buff: GeneratedBuff,
-  mutationIds: readonly string[]
+  mutationIds: readonly string[],
 ): 'Herbivore' | 'Carnivore' | null {
   const d = activeDiet(buff, mutationIds);
   if (!d) return null;
@@ -100,12 +105,18 @@ export function applyDietScaling(buff: GeneratedBuff, mutationIds: readonly stri
   if (verdict === null) return buff.modifiers;
 
   const scalable = new Set(buff.foodScalableModifierIds);
-  return buff.modifiers.flatMap(m => {
+  return buff.modifiers.flatMap((m) => {
     if (!scalable.has(m.id)) return [m];
     if (verdict === 'zeroed') return [];
     return [
-      { ...scaled(m, 2.0, ':diet'), conditions: [...m.conditions, { kind: 'strangeInNumbers' as const, value: false }] },
-      { ...scaled(m, 2.5, ':dietSin'), conditions: [...m.conditions, { kind: 'strangeInNumbers' as const, value: true }] },
+      {
+        ...scaled(m, 2.0, ':diet'),
+        conditions: [...m.conditions, { kind: 'strangeInNumbers' as const, value: false }],
+      },
+      {
+        ...scaled(m, 2.5, ':dietSin'),
+        conditions: [...m.conditions, { kind: 'strangeInNumbers' as const, value: true }],
+      },
     ];
   });
 }

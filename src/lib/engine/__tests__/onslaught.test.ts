@@ -11,7 +11,10 @@ import {
 } from '@/lib/engine/onslaught';
 import { computeScenarios } from '@/lib/engine/scenarios';
 
-const FLAT_100 = [{ x: 1, y: 100 }, { x: 50, y: 100 }];
+const FLAT_100 = [
+  { x: 1, y: 100 },
+  { x: 50, y: 100 },
+];
 
 function makeWeapon(overrides: Partial<Weapon> = {}): Weapon {
   return {
@@ -52,7 +55,13 @@ describe('reverseOnslaughtAvgStacks', () => {
       animDurationSec: 0.25,
       components: [
         { damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: FLAT_100 },
-        { damageType: 'explosive', tier: -1, levelCap: 50, curvePoints: FLAT_100, fromExplosion: true },
+        {
+          damageType: 'explosive',
+          tier: -1,
+          levelCap: 50,
+          curvePoints: FLAT_100,
+          fromExplosion: true,
+        },
       ],
     });
     const consume = 4 + 4 * 1; // physical + explosion × 1 target
@@ -95,21 +104,39 @@ describe('reverseOnslaughtAvgStacks', () => {
     const consume3 = perShotOnslaughtConsume(weapon, [], ctx, 3);
     expect(consume3).toBeGreaterThan(consume1);
 
-    const avg1 = reverseOnslaughtAvgStacks({ max: 10, perShotConsume: consume1, fireRate: 2, weapon });
-    const avg3 = reverseOnslaughtAvgStacks({ max: 10, perShotConsume: consume3, fireRate: 2, weapon });
+    const avg1 = reverseOnslaughtAvgStacks({
+      max: 10,
+      perShotConsume: consume1,
+      fireRate: 2,
+      weapon,
+    });
+    const avg3 = reverseOnslaughtAvgStacks({
+      max: 10,
+      perShotConsume: consume3,
+      fireRate: 2,
+      weapon,
+    });
     expect(avg3).toBeLessThan(avg1);
   });
 
   it('pure-explosive launcher counts only explosion hits (no physical)', () => {
     const launcher = makeWeapon({
-      components: [{ damageType: 'explosive', tier: -1, levelCap: 50, curvePoints: FLAT_100, fromExplosion: true }],
+      components: [
+        {
+          damageType: 'explosive',
+          tier: -1,
+          levelCap: 50,
+          curvePoints: FLAT_100,
+          fromExplosion: true,
+        },
+      ],
     });
     expect(weaponHasNonExplosionPhysical(launcher)).toBe(false);
     expect(weaponHasExplosion(launcher, [], makeCtx(launcher))).toBe(true);
     expect(perShotOnslaughtConsume(launcher, [], makeCtx(launcher), 3)).toBe(3);
   });
 
-  it('the average changes with bashAnimationSec when a Battle-Loader\'s bash source is present (Phase C — a Gunslinger Master build must see the bash-time correction)', () => {
+  it("the average changes with bashAnimationSec when a Battle-Loader's bash source is present (Phase C — a Gunslinger Master build must see the bash-time correction)", () => {
     const weapon = makeWeapon({
       animDelaySec: 0.5,
       capacity: 5,
@@ -118,8 +145,20 @@ describe('reverseOnslaughtAvgStacks', () => {
       reloadSpeed: 1,
       reloadSkipChanceBash: 0.5, // mid Battle-Loader's tier: half of reloads are a bash instead
     });
-    const fastBash = reverseOnslaughtAvgStacks({ max: 10, perShotConsume: 1, fireRate: 2, weapon, bashAnimationSec: 0 });
-    const slowBash = reverseOnslaughtAvgStacks({ max: 10, perShotConsume: 1, fireRate: 2, weapon, bashAnimationSec: 3 });
+    const fastBash = reverseOnslaughtAvgStacks({
+      max: 10,
+      perShotConsume: 1,
+      fireRate: 2,
+      weapon,
+      bashAnimationSec: 0,
+    });
+    const slowBash = reverseOnslaughtAvgStacks({
+      max: 10,
+      perShotConsume: 1,
+      fireRate: 2,
+      weapon,
+      bashAnimationSec: 3,
+    });
     // A longer bash time means a longer effective reload window, so more
     // passive regen accrues before the next mag starts — a strictly higher
     // average stack level.
@@ -128,10 +167,26 @@ describe('reverseOnslaughtAvgStacks', () => {
 
   it('bashAnimationSec has no effect when no bash source is equipped (reloadSkipChanceBash absent)', () => {
     const weapon = makeWeapon({
-      animDelaySec: 0.5, capacity: 5, ammoPerShot: 1, animationReloadSec: 3, reloadSpeed: 1,
+      animDelaySec: 0.5,
+      capacity: 5,
+      ammoPerShot: 1,
+      animationReloadSec: 3,
+      reloadSpeed: 1,
     });
-    const zero = reverseOnslaughtAvgStacks({ max: 10, perShotConsume: 1, fireRate: 2, weapon, bashAnimationSec: 0 });
-    const large = reverseOnslaughtAvgStacks({ max: 10, perShotConsume: 1, fireRate: 2, weapon, bashAnimationSec: 3 });
+    const zero = reverseOnslaughtAvgStacks({
+      max: 10,
+      perShotConsume: 1,
+      fireRate: 2,
+      weapon,
+      bashAnimationSec: 0,
+    });
+    const large = reverseOnslaughtAvgStacks({
+      max: 10,
+      perShotConsume: 1,
+      fireRate: 2,
+      weapon,
+      bashAnimationSec: 3,
+    });
     expect(zero).toBeCloseTo(large, 10);
   });
 });
@@ -147,7 +202,13 @@ describe('reverse onslaught scenarios (GSM + Furious)', () => {
   };
   const gsmReverse: Modifier = {
     id: 'gsm-reverse',
-    source: { kind: 'perk', formId: '0x0004A09F', edid: 'GunslingerMaster', name: 'Gunslinger Master', rank: 1 },
+    source: {
+      kind: 'perk',
+      formId: '0x0004A09F',
+      edid: 'GunslingerMaster',
+      name: 'Gunslinger Master',
+      rank: 1,
+    },
     bucket: 'onslaughtReverse',
     op: 'ADD',
     value: 1,
@@ -155,7 +216,13 @@ describe('reverse onslaught scenarios (GSM + Furious)', () => {
   };
   const gsmMax: Modifier = {
     id: 'gsm-max',
-    source: { kind: 'perk', formId: '0x0004A09F', edid: 'GunslingerMaster', name: 'Gunslinger Master', rank: 1 },
+    source: {
+      kind: 'perk',
+      formId: '0x0004A09F',
+      edid: 'GunslingerMaster',
+      name: 'Gunslinger Master',
+      rank: 1,
+    },
     bucket: 'onslaughtMaxStacks',
     op: 'ADD',
     value: 10,
@@ -198,7 +265,13 @@ describe('reverse onslaught scenarios (GSM + Furious)', () => {
       animDurationSec: 0.25,
       components: [
         { damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: FLAT_100 },
-        { damageType: 'explosive', tier: -1, levelCap: 50, curvePoints: FLAT_100, fromExplosion: true },
+        {
+          damageType: 'explosive',
+          tier: -1,
+          levelCap: 50,
+          curvePoints: FLAT_100,
+          fromExplosion: true,
+        },
       ],
     });
     const ratio = furiousBonusRatio(scattergun);

@@ -19,7 +19,9 @@ export function DeltaFlash({ value, format = formatDamage, className }: DeltaFla
     <span className={cn('relative inline-block font-mono tabular-nums', className)}>
       <span
         key={flash?.id ?? 'idle'}
-        className={cn(flash && (flash.dir === 'up' ? 'animate-flash-positive' : 'animate-flash-negative'))}
+        className={cn(
+          flash && (flash.dir === 'up' ? 'animate-flash-positive' : 'animate-flash-negative'),
+        )}
       >
         {value === null || value === undefined ? '—' : format(value)}
       </span>
@@ -29,7 +31,7 @@ export function DeltaFlash({ value, format = formatDamage, className }: DeltaFla
           aria-hidden
           className={cn(
             'animate-ghost-rise absolute -right-1 -top-3 translate-x-full text-[10px] font-medium',
-            flash.dir === 'up' ? 'text-positive' : 'text-negative'
+            flash.dir === 'up' ? 'text-positive' : 'text-negative',
           )}
         >
           {formatPercentDelta(flash.pct)}

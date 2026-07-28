@@ -1,1 +1,138 @@
-[{"form_id":"0x0062A5B6","record_type":"CONT","editor_id":"E08A_GulpershineBox","name":null,"offset":20349772,"depth":1},{"form_id":"0x0064ACAA","record_type":"CONT","editor_id":"DEL_E08A_GulperSmackerInventory","name":null,"offset":20348071,"depth":1},{"form_id":"0x0064B9CF","record_type":"CONT","editor_id":"DEL_E08A_GulpershineBottle","name":null,"offset":20347647,"depth":1},{"form_id":"0x0064B9D0","record_type":"REFR","editor_id":null,"name":null,"offset":469563520,"depth":1},{"form_id":"0x0064B9D1","record_type":"REFR","editor_id":null,"name":null,"offset":470005506,"depth":1},{"form_id":"0x0064B9D2","record_type":"REFR","editor_id":null,"name":null,"offset":470005570,"depth":1},{"form_id":"0x0064B9D3","record_type":"REFR","editor_id":null,"name":null,"offset":470005634,"depth":1},{"form_id":"0x0064C148","record_type":"REFR","editor_id":null,"name":null,"offset":544956917,"depth":1},{"form_id":"0x0064C149","record_type":"REFR","editor_id":null,"name":null,"offset":544956853,"depth":1},{"form_id":"0x0064C14A","record_type":"REFR","editor_id":null,"name":null,"offset":544956981,"depth":1},{"form_id":"0x0064C14B","record_type":"REFR","editor_id":null,"name":null,"offset":544957045,"depth":1},{"form_id":"0x0064C14C","record_type":"REFR","editor_id":null,"name":null,"offset":469563328,"depth":1},{"form_id":"0x00650A1A","record_type":"REFR","editor_id":null,"name":null,"offset":470000260,"depth":1},{"form_id":"0x00655D12","record_type":"ALCH","editor_id":"E08A_Brew_GulpershineFerm","name":null,"offset":76991651,"depth":1},{"form_id":"0x0065C448","record_type":"REFR","editor_id":null,"name":null,"offset":469987317,"depth":1},{"form_id":"0x0065C449","record_type":"REFR","editor_id":null,"name":null,"offset":469987381,"depth":1},{"form_id":"0x0065C44A","record_type":"REFR","editor_id":null,"name":null,"offset":469987445,"depth":1}]
+[
+  {
+    "form_id": "0x0062A5B6",
+    "record_type": "CONT",
+    "editor_id": "E08A_GulpershineBox",
+    "name": null,
+    "offset": 20349772,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0064ACAA",
+    "record_type": "CONT",
+    "editor_id": "DEL_E08A_GulperSmackerInventory",
+    "name": null,
+    "offset": 20348071,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0064B9CF",
+    "record_type": "CONT",
+    "editor_id": "DEL_E08A_GulpershineBottle",
+    "name": null,
+    "offset": 20347647,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0064B9D0",
+    "record_type": "REFR",
+    "editor_id": null,
+    "name": null,
+    "offset": 469563520,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0064B9D1",
+    "record_type": "REFR",
+    "editor_id": null,
+    "name": null,
+    "offset": 470005506,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0064B9D2",
+    "record_type": "REFR",
+    "editor_id": null,
+    "name": null,
+    "offset": 470005570,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0064B9D3",
+    "record_type": "REFR",
+    "editor_id": null,
+    "name": null,
+    "offset": 470005634,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0064C148",
+    "record_type": "REFR",
+    "editor_id": null,
+    "name": null,
+    "offset": 544956917,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0064C149",
+    "record_type": "REFR",
+    "editor_id": null,
+    "name": null,
+    "offset": 544956853,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0064C14A",
+    "record_type": "REFR",
+    "editor_id": null,
+    "name": null,
+    "offset": 544956981,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0064C14B",
+    "record_type": "REFR",
+    "editor_id": null,
+    "name": null,
+    "offset": 544957045,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0064C14C",
+    "record_type": "REFR",
+    "editor_id": null,
+    "name": null,
+    "offset": 469563328,
+    "depth": 1
+  },
+  {
+    "form_id": "0x00650A1A",
+    "record_type": "REFR",
+    "editor_id": null,
+    "name": null,
+    "offset": 470000260,
+    "depth": 1
+  },
+  {
+    "form_id": "0x00655D12",
+    "record_type": "ALCH",
+    "editor_id": "E08A_Brew_GulpershineFerm",
+    "name": null,
+    "offset": 76991651,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0065C448",
+    "record_type": "REFR",
+    "editor_id": null,
+    "name": null,
+    "offset": 469987317,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0065C449",
+    "record_type": "REFR",
+    "editor_id": null,
+    "name": null,
+    "offset": 469987381,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0065C44A",
+    "record_type": "REFR",
+    "editor_id": null,
+    "name": null,
+    "offset": 469987445,
+    "depth": 1
+  }
+]

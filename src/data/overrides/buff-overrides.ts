@@ -42,7 +42,9 @@ export const buffValueOverrides: Readonly<Record<string, Modifier[]>> = {
       bucket: 'dbm',
       op: 'ADD',
       value: 0.2,
-      conditions: [{ kind: 'weaponKeywordAny', keywords: ['WeaponTypeHeavyGun', 'WeaponTypeExplosiveHybrid'] }],
+      conditions: [
+        { kind: 'weaponKeywordAny', keywords: ['WeaponTypeHeavyGun', 'WeaponTypeExplosiveHybrid'] },
+      ],
     },
   ],
   // Glowing ghoul twin — same gate/magnitude (GHL_GlowingBobbleHead_BigGuns_Potion 0x007A2F8F).
@@ -58,7 +60,9 @@ export const buffValueOverrides: Readonly<Record<string, Modifier[]>> = {
       bucket: 'dbm',
       op: 'ADD',
       value: 0.2,
-      conditions: [{ kind: 'weaponKeywordAny', keywords: ['WeaponTypeHeavyGun', 'WeaponTypeExplosiveHybrid'] }],
+      conditions: [
+        { kind: 'weaponKeywordAny', keywords: ['WeaponTypeHeavyGun', 'WeaponTypeExplosiveHybrid'] },
+      ],
     },
   ],
 
@@ -76,7 +80,9 @@ export const buffValueOverrides: Readonly<Record<string, Modifier[]>> = {
       bucket: 'dbm',
       op: 'ADD',
       value: 0.5,
-      conditions: [{ kind: 'weaponKeywordAny', keywords: ['WeaponTypeUnarmed', 'ma_Knife', 'ma_Switchblade'] }],
+      conditions: [
+        { kind: 'weaponKeywordAny', keywords: ['WeaponTypeUnarmed', 'ma_Knife', 'ma_Switchblade'] },
+      ],
     },
   ],
 

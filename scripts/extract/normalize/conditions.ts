@@ -93,7 +93,7 @@ export interface TranslationResult {
  * omods pass reads the perks result or the checked-in perks.json).
  */
 export function buildCrossFamilyRankMap(
-  families: Array<{ family: string; formIds: string[] }>
+  families: Array<{ family: string; formIds: string[] }>,
 ): Map<string, { family: string; rank: number }> {
   const map = new Map<string, { family: string; rank: number }>();
   for (const { family, formIds } of families) {
@@ -134,7 +134,10 @@ const CLASS_FREAK_RANK_BY_FORM_ID: Record<string, number> = {
  * self-check (Cold Shoulder etc.) — that's separate, un-scoped work; this
  * allowlist only covers the two Bullet Storm gates verified above.
  */
-const UNIQUE_SELF_GATE_KEYWORDS = new Set(['CustomItemName_FoundationsVengeance', 'RD01_CustomItemName_Valkyrie']);
+const UNIQUE_SELF_GATE_KEYWORDS = new Set([
+  'CustomItemName_FoundationsVengeance',
+  'RD01_CustomItemName_Valkyrie',
+]);
 
 function isWeaponTypeKeyword(edid: string): boolean {
   // HasLegendary_* keywords are ADDed by the legendary OMOD itself, so a
@@ -161,7 +164,10 @@ export function isEnemyKeyword(edid: string): boolean {
   return edid.startsWith('ActorType');
 }
 
-function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): Condition | 'inactive' | null {
+function translateSingle(
+  cond: RawCondition,
+  ctx: ConditionTranslationContext,
+): Condition | 'inactive' | null {
   const fn = cond.Function;
   const param = cond['Parameter 1'] ?? '';
   // Comparison Values can reference a GLOB (Executioner's ≤ LGND_ExecuteHealthThreshold).
@@ -193,14 +199,21 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
       // AND together into exact-tier ranges — no OR-group handling needed.
       const cfRank = CLASS_FREAK_RANK_BY_FORM_ID[param];
       if (cfRank !== undefined) {
-        return wants ? { kind: 'classFreakRank', min: cfRank, max: 3 } : { kind: 'classFreakRank', min: 0, max: cfRank - 1 };
+        return wants
+          ? { kind: 'classFreakRank', min: cfRank, max: 3 }
+          : { kind: 'classFreakRank', min: 0, max: cfRank - 1 };
       }
       // Cross-family gate: a reference into ANOTHER family's rank chain
       // becomes a runtime perkFamilyRank condition (evaluated against the
       // selected perk loadout — resolve.ts / PlayerConditions.equippedPerkRanks).
       const cross = ctx.crossFamilyRank?.get(param);
       if (cross) {
-        return { kind: 'perkFamilyRank', family: cross.family, minRank: cross.rank, present: wants };
+        return {
+          kind: 'perkFamilyRank',
+          family: cross.family,
+          minRank: cross.rank,
+          present: wants,
+        };
       }
       return { kind: 'unresolved', raw: `HasPerk(${edid})=${cond['Comparison Value']}` };
     }
@@ -217,7 +230,9 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
       // Herd Mentality's solo penalty / team bonus gate. "In a team" is
       // approximated as ≥1 teammate (consistent with Strange in Numbers'
       // derivation — docs/assumptions.md "Mutation penalties & Class Freak").
-      return wants ? { kind: 'teammateCount', count: 1, orMore: true } : { kind: 'teammateCount', count: 0 };
+      return wants
+        ? { kind: 'teammateCount', count: 1, orMore: true }
+        : { kind: 'teammateCount', count: 0 };
     case 'HasKeyword':
     case 'WornHasKeyword': {
       if (cond['Run On'] === 'Target' || isEnemyKeyword(edid)) {
@@ -272,7 +287,10 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
       return wants ? { kind: 'sneaking' } : { kind: 'unresolved', raw: 'IsSneaking=0' };
     case 'GetHealthPercentage': {
       if (typeof cmp !== 'number') {
-        return { kind: 'unresolved', raw: `GetHealthPercentage ${cond.Operator} ${rawCmp} (unresolved global)` };
+        return {
+          kind: 'unresolved',
+          raw: `GetHealthPercentage ${cond.Operator} ${rawCmp} (unresolved global)`,
+        };
       }
       const pct = cmp * 100;
       const onTarget = cond['Run On'] === 'Target';
@@ -285,7 +303,9 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
       const below = /^less than( or equal to)?$/i.exec(cond.Operator ?? '');
       if (below) {
         const extra = below[1] ? {} : { inclusive: false };
-        return onTarget ? { kind: 'enemyHealthBelowPct', pct, ...extra } : { kind: 'healthBelowPct', pct, ...extra };
+        return onTarget
+          ? { kind: 'enemyHealthBelowPct', pct, ...extra }
+          : { kind: 'healthBelowPct', pct, ...extra };
       }
       const above = onTarget ? /^greater than( or equal to)?$/i.exec(cond.Operator ?? '') : null;
       if (above) {
@@ -351,15 +371,20 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
     case 'IsNextClipLastShot':
       // Companion row to GetLoadedAmmoCount()=0 — the same last-round gate
       // (translateConditions dedupes the pair to one lastRound condition).
-      if ((/^greater than$/i.test(cond.Operator ?? '') && cmp === 0) || wants) return { kind: 'lastRound' };
+      if ((/^greater than$/i.test(cond.Operator ?? '') && cmp === 0) || wants)
+        return { kind: 'lastRound' };
       return { kind: 'unresolved', raw: `IsNextClipLastShot ${cond.Operator} ${rawCmp}` };
     case 'GetNumActiveEffectsWithKeyword': {
       // "Target is burning/poisoned" gates (Pyromaniac's fire, Viper's poison).
       const atLeastOne =
         (/^greater than or equal to$/i.test(cond.Operator ?? '') && cmp === 1) ||
         (/^greater than$/i.test(cond.Operator ?? '') && cmp === 0);
-      if (cond['Run On'] === 'Target' && atLeastOne) return { kind: 'enemyHasActiveEffect', keyword: edid };
-      return { kind: 'unresolved', raw: `GetNumActiveEffectsWithKeyword(${edid}) ${cond.Operator} ${rawCmp}` };
+      if (cond['Run On'] === 'Target' && atLeastOne)
+        return { kind: 'enemyHasActiveEffect', keyword: edid };
+      return {
+        kind: 'unresolved',
+        raw: `GetNumActiveEffectsWithKeyword(${edid}) ${cond.Operator} ${rawCmp}`,
+      };
     }
     case 'GetGroupTargetCount': {
       // Encircler's tiers: == 1..4, ≥ 5 for the top.
@@ -377,12 +402,16 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
       // above). `edid` here is the worn-keyword itself (e.g.
       // HasLegendary_Armor_BattleLoaders), not an enemy/weapon keyword.
       if (typeof cmp === 'number') {
-        if (/^equal to$/i.test(cond.Operator ?? '')) return { kind: 'wornPieceCount', keyword: edid, count: cmp };
+        if (/^equal to$/i.test(cond.Operator ?? ''))
+          return { kind: 'wornPieceCount', keyword: edid, count: cmp };
         if (/^greater than or equal to$/i.test(cond.Operator ?? '')) {
           return { kind: 'wornPieceCount', keyword: edid, count: cmp, orMore: true };
         }
       }
-      return { kind: 'unresolved', raw: `WornApparelHasKeywordCount(${edid}) ${cond.Operator} ${rawCmp}` };
+      return {
+        kind: 'unresolved',
+        raw: `WornApparelHasKeywordCount(${edid}) ${cond.Operator} ${rawCmp}`,
+      };
     }
     case 'GetPlayerTeammateCount':
       // Fencer's tiers: exact teammate counts 0..3.
@@ -397,8 +426,12 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
     case 'GetDistance':
       // Fencer's teammate-range rows (< 2500 units on Potential Players):
       // consumed — teammates are assumed in range (docs/assumptions.md).
-      if (cond['Run On'] === 'Potential Players' && /^less than/i.test(cond.Operator ?? '')) return null;
-      return { kind: 'unresolved', raw: `GetDistance ${cond.Operator} ${rawCmp} on ${cond['Run On']}` };
+      if (cond['Run On'] === 'Potential Players' && /^less than/i.test(cond.Operator ?? ''))
+        return null;
+      return {
+        kind: 'unresolved',
+        raw: `GetDistance ${cond.Operator} ${rawCmp} on ${cond['Run On']}`,
+      };
     case 'GetDistanceToClosestHostileActor':
       // Eye of the Hunter (Ghoul-exclusive, GHL_EyeOfTheHunter01-03): the
       // ONLY numeric distance-threshold condition rows found anywhere in the
@@ -409,17 +442,29 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
       // distance tier just for this one perk (Phase 4 — VATS hit-chance
       // aggregate, display-only; docs/assumptions.md "VATS hit-chance
       // aggregate (display-only)").
-      if (/^greater than or equal to$/i.test(cond.Operator ?? '') && typeof cmp === 'number' && cmp > 0) {
+      if (
+        /^greater than or equal to$/i.test(cond.Operator ?? '') &&
+        typeof cmp === 'number' &&
+        cmp > 0
+      ) {
         return { kind: 'targetDistance', range: 'far' };
       }
-      return { kind: 'unresolved', raw: `GetDistanceToClosestHostileActor ${cond.Operator} ${rawCmp}` };
+      return {
+        kind: 'unresolved',
+        raw: `GetDistanceToClosestHostileActor ${cond.Operator} ${rawCmp}`,
+      };
     case 'IsTrueForConditionForm': {
       // Mutation value-tier CNDFs (base vs Strange-in-Numbers-boosted).
-      if (edid === 'Mutation_Check_UseNormalVersion') return { kind: 'strangeInNumbers', value: !wants };
-      if (edid === 'Mutation_Check_UseSuperVersion') return { kind: 'strangeInNumbers', value: wants };
+      if (edid === 'Mutation_Check_UseNormalVersion')
+        return { kind: 'strangeInNumbers', value: !wants };
+      if (edid === 'Mutation_Check_UseSuperVersion')
+        return { kind: 'strangeInNumbers', value: wants };
       // Other forms: translateConditions tries a full inline expansion via
       // ctx.conditionForms before settling for this unresolved fallback.
-      return { kind: 'unresolved', raw: `IsTrueForConditionForm(${edid})=${cond['Comparison Value']}` };
+      return {
+        kind: 'unresolved',
+        raw: `IsTrueForConditionForm(${edid})=${cond['Comparison Value']}`,
+      };
     }
     case 'GetWeaponAnimType':
       // WEAP Data."Weapon Type" anim enum. Only ≤ occurs in data (Martial
@@ -447,7 +492,10 @@ function translateSingle(cond: RawCondition, ctx: ConditionTranslationContext): 
  * families) — the caller falls through to the existing weaponKeywordAny /
  * enemyTypeAny handling.
  */
-function resolveHasPerkRankGroup(group: RawCondition[], ctx: ConditionTranslationContext): 'consumed' | 'inactive' | undefined {
+function resolveHasPerkRankGroup(
+  group: RawCondition[],
+  ctx: ConditionTranslationContext,
+): 'consumed' | 'inactive' | undefined {
   if (ctx.ownedRanks === undefined) return undefined;
   let anySatisfied = false;
   for (const row of group) {
@@ -475,7 +523,10 @@ function resolveHasPerkRankGroup(group: RawCondition[], ctx: ConditionTranslatio
  * `=0` (negated) references never expand — negating a multi-row AND/OR list
  * has no IR representation.
  */
-function tryExpandConditionForm(row: RawCondition, ctx: ConditionTranslationContext): Condition[] | null {
+function tryExpandConditionForm(
+  row: RawCondition,
+  ctx: ConditionTranslationContext,
+): Condition[] | null {
   if (row.Function !== 'IsTrueForConditionForm') return null;
   if (row['Comparison Value'] !== 1 || !/^equal to$/i.test(row.Operator ?? 'Equal To')) return null;
   const nested = ctx.conditionForms?.get(row['Parameter 1'] ?? '');
@@ -489,7 +540,10 @@ function tryExpandConditionForm(row: RawCondition, ctx: ConditionTranslationCont
  * Translate an ESM condition list. Returns conditions: null when a rank gate
  * fails under the current simulation (effect inactive).
  */
-export function translateConditions(rows: RawCondition[], ctx: ConditionTranslationContext): TranslationResult {
+export function translateConditions(
+  rows: RawCondition[],
+  ctx: ConditionTranslationContext,
+): TranslationResult {
   const out: Condition[] = [];
   const unresolved: string[] = [];
 
@@ -548,7 +602,8 @@ export function translateConditions(rows: RawCondition[], ctx: ConditionTranslat
         supported = false;
       }
       const isEnemyCheck =
-        (isKeywordFn && (row['Run On'] === 'Target' || isEnemyKeyword(edid))) || row.Function === 'GetIsRace';
+        (isKeywordFn && (row['Run On'] === 'Target' || isEnemyKeyword(edid))) ||
+        row.Function === 'GetIsRace';
       if (!(isEnemyCheck && positive)) {
         enemySupported = false;
       }
@@ -560,7 +615,7 @@ export function translateConditions(rows: RawCondition[], ctx: ConditionTranslat
     } else if (enemySupported) {
       out.push({ kind: 'enemyTypeAny', keywordsOrRaces: enemyTypes });
     } else {
-      const raw = `OR-group[${group.map(r => `${r.Function}(${ctx.edidByFormId.get(r['Parameter 1'] ?? '') ?? r['Parameter 1']})=${r['Comparison Value']}`).join(' | ')}]`;
+      const raw = `OR-group[${group.map((r) => `${r.Function}(${ctx.edidByFormId.get(r['Parameter 1'] ?? '') ?? r['Parameter 1']})=${r['Comparison Value']}`).join(' | ')}]`;
       unresolved.push(raw);
       out.push({ kind: 'unresolved', raw });
     }
@@ -569,7 +624,7 @@ export function translateConditions(rows: RawCondition[], ctx: ConditionTranslat
   // Distinct ESM rows can translate to the same IR condition (Last Shot's
   // GetLoadedAmmoCount()=0 + IsNextClipLastShot pair → one lastRound gate).
   const seen = new Set<string>();
-  const deduped = out.filter(c => {
+  const deduped = out.filter((c) => {
     const key = JSON.stringify(c);
     if (seen.has(key)) return false;
     seen.add(key);
@@ -593,9 +648,9 @@ export function flattenPerkConditionRows(perkConditions: unknown): RawCondition[
     const conditions = pc?.['Conditions'];
     if (!Array.isArray(conditions)) continue;
     for (const item of conditions as Array<Record<string, unknown>>) {
-      const data = (item['Condition'] as Record<string, unknown> | undefined)?.['Condition Data'] as
-        | RawCondition
-        | undefined;
+      const data = (item['Condition'] as Record<string, unknown> | undefined)?.[
+        'Condition Data'
+      ] as RawCondition | undefined;
       if (data) rows.push(tabIndex === 2 ? { ...data, 'Run On': 'Target' } : data);
     }
   }
@@ -609,9 +664,9 @@ export function flattenConditionRows(node: unknown): RawCondition[] {
   const conditions = (node as Record<string, unknown>)['Conditions'];
   if (Array.isArray(conditions)) {
     for (const item of conditions as Array<Record<string, unknown>>) {
-      const data = (item['Condition'] as Record<string, unknown> | undefined)?.['Condition Data'] as
-        | RawCondition
-        | undefined;
+      const data = (item['Condition'] as Record<string, unknown> | undefined)?.[
+        'Condition Data'
+      ] as RawCondition | undefined;
       if (data) rows.push(data);
     }
   }

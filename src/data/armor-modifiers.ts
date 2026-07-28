@@ -70,7 +70,7 @@ function countPieceTags(ids: readonly string[]): number {
 
 function findWornPieceKeyword(modifiers: readonly Modifier[]): string | undefined {
   for (const m of modifiers) {
-    const cond = m.conditions.find(c => c.kind === 'wornPieceCount');
+    const cond = m.conditions.find((c) => c.kind === 'wornPieceCount');
     if (cond && cond.kind === 'wornPieceCount') return cond.keyword;
   }
   return undefined;
@@ -79,11 +79,17 @@ function findWornPieceKeyword(modifiers: readonly Modifier[]): string | undefine
 function buildEntry(name: string, records: GeneratedOmod[]): ArmorEffectEntry {
   const sorted = [...records].sort((a, b) => a.id.localeCompare(b.id));
   const representative = sorted[0];
-  const ids = sorted.map(r => r.id);
+  const ids = sorted.map((r) => r.id);
   const isLegendary = LEGENDARY_ATTACH_POINT_RE.test(representative.attachPointEdid);
-  const selfScaling = representative.modifiers.some(m => m.conditions.some(c => c.kind === 'wornPieceCount'));
-  const maxCount = isLegendary ? MAX_LEGENDARY_COUNT : Math.max(1, Math.min(MAX_LEGENDARY_COUNT, countPieceTags(ids)));
-  const description = representative.description?.trim() || describeBuffModifiers({ modifiers: representative.modifiers });
+  const selfScaling = representative.modifiers.some((m) =>
+    m.conditions.some((c) => c.kind === 'wornPieceCount'),
+  );
+  const maxCount = isLegendary
+    ? MAX_LEGENDARY_COUNT
+    : Math.max(1, Math.min(MAX_LEGENDARY_COUNT, countPieceTags(ids)));
+  const description =
+    representative.description?.trim() ||
+    describeBuffModifiers({ modifiers: representative.modifiers });
   return {
     id: representative.id,
     name,
@@ -107,22 +113,30 @@ export function getArmorEffects(mode: GameMode): ArmorEffectEntry[] {
   const groups = new Map<string, GeneratedOmod[]>();
   for (const omod of dataset.armorOmods) {
     if (omod.id.startsWith('_PARENT_') || omod.name.startsWith('TEMPLATE')) continue;
-    if (!isRecordVisible(omod, {
-      hidden: dataset.hiddenArmorOmodIds,
-      forceVisible: dataset.forceVisibleArmorOmodIds,
-    })) continue;
+    if (
+      !isRecordVisible(omod, {
+        hidden: dataset.hiddenArmorOmodIds,
+        forceVisible: dataset.forceVisibleArmorOmodIds,
+      })
+    )
+      continue;
     if (!hasAnyEngineEffect(omod.modifiers)) continue;
     (groups.get(omod.name) ?? groups.set(omod.name, []).get(omod.name)!).push(omod);
   }
 
   const entries = [...groups.entries()].map(([name, records]) => buildEntry(name, records));
-  entries.sort((a, b) => (a.group === b.group ? a.name.localeCompare(b.name) : a.group === 'legendary' ? -1 : 1));
+  entries.sort((a, b) =>
+    a.group === b.group ? a.name.localeCompare(b.name) : a.group === 'legendary' ? -1 : 1,
+  );
 
   effectsCache.set(mode, entries);
   return entries;
 }
 
-function selectedCount(effect: ArmorEffectEntry, selections: Readonly<Record<string, number>>): number {
+function selectedCount(
+  effect: ArmorEffectEntry,
+  selections: Readonly<Record<string, number>>,
+): number {
   return Math.max(0, Math.min(effect.maxCount, selections[effect.id] ?? 0));
 }
 
@@ -138,13 +152,16 @@ function scaleModifier(m: Modifier, count: number): Modifier {
  * through unscaled — their own wornPieceCount conditions (paired with
  * `getArmorEffectWornPieceCounts` below) pick the one active tier.
  */
-export function getArmorEffectModifiers(mode: GameMode, selections: Readonly<Record<string, number>>): Modifier[] {
+export function getArmorEffectModifiers(
+  mode: GameMode,
+  selections: Readonly<Record<string, number>>,
+): Modifier[] {
   const out: Modifier[] = [];
   for (const effect of getArmorEffects(mode)) {
     const count = selectedCount(effect, selections);
     if (count <= 0) continue;
     if (effect.selfScaling) out.push(...effect.modifiers);
-    else out.push(...effect.modifiers.map(m => scaleModifier(m, count)));
+    else out.push(...effect.modifiers.map((m) => scaleModifier(m, count)));
   }
   return out;
 }
@@ -158,7 +175,7 @@ export function getArmorEffectModifiers(mode: GameMode, selections: Readonly<Rec
  */
 export function getArmorEffectWornPieceCounts(
   mode: GameMode,
-  selections: Readonly<Record<string, number>>
+  selections: Readonly<Record<string, number>>,
 ): Record<string, number> {
   const out: Record<string, number> = {};
   for (const effect of getArmorEffects(mode)) {
@@ -170,5 +187,5 @@ export function getArmorEffectWornPieceCounts(
 
 /** Looks up one checklist entry by id — build-reducer's clamp, codec's validation. */
 export function getArmorEffectById(mode: GameMode, id: string): ArmorEffectEntry | undefined {
-  return getArmorEffects(mode).find(e => e.id === id);
+  return getArmorEffects(mode).find((e) => e.id === id);
 }

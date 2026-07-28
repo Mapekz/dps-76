@@ -1,5 +1,12 @@
 {
-  "header": { "signature": "GMST", "form_id": "0x0017D8A9", "flags": 0, "form_version": 187, "data_size": 46, "offset": 114766 },
+  "header": {
+    "signature": "GMST",
+    "form_id": "0x0017D8A9",
+    "flags": 0,
+    "form_version": 187,
+    "data_size": 46,
+    "offset": 114766
+  },
   "editor_id": "fPhysicalArmorDmgReductionExp",
   "fields": {
     "_record_type": "Game Setting",

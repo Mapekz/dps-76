@@ -3,7 +3,14 @@ import { CheckIcon, LockIcon, MinusIcon, PlusIcon, XIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { FilterListRoot, FilterInput, FilterList, FilterEmpty, FilterGroup, FilterItem } from '@/components/ui/filter-list';
+import {
+  FilterListRoot,
+  FilterInput,
+  FilterList,
+  FilterEmpty,
+  FilterGroup,
+  FilterItem,
+} from '@/components/ui/filter-list';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { matchesQuery } from '@/lib/filter-query';
@@ -24,7 +31,10 @@ import { DiffTooltip } from '@/components/diff/DiffTooltip';
 /** Shared with the OMOD/legendary-effect picker's badge (WeaponSection.tsx) — same visual language across the Build panel. */
 function NoEffectBadge() {
   return (
-    <Badge variant="outline" className="text-muted-foreground ml-1 px-1 py-0 text-[10px] font-normal">
+    <Badge
+      variant="outline"
+      className="text-muted-foreground ml-1 px-1 py-0 text-[10px] font-normal"
+    >
       no effect yet
     </Badge>
   );
@@ -39,7 +49,6 @@ const SPECIAL_ORDER: Array<{ key: SpecialKey; special: Special; letter: string }
   { key: 'agility', special: Special.Agility, letter: 'A' },
   { key: 'luck', special: Special.Luck, letter: 'L' },
 ];
-
 
 interface PerkEntry {
   perkId: string;
@@ -82,7 +91,13 @@ function usePerkRegistry() {
  * — src/lib/player-stats.ts. Base allocation is set in the SPECIAL section
  * above.
  */
-function SpecialBudgetBar({ budget, onSelectSpecial }: { budget: PerkBudget; onSelectSpecial?: (s: Special) => void }) {
+function SpecialBudgetBar({
+  budget,
+  onSelectSpecial,
+}: {
+  budget: PerkBudget;
+  onSelectSpecial?: (s: Special) => void;
+}) {
   return (
     <div className="grid grid-cols-7 gap-1">
       {SPECIAL_ORDER.map(({ key, special, letter }) => {
@@ -96,7 +111,7 @@ function SpecialBudgetBar({ budget, onSelectSpecial }: { budget: PerkBudget; onS
             key={key}
             className={cn(
               'hover:bg-muted/60 cursor-pointer rounded border px-1 py-0.5 text-center font-mono text-[11px] tabular-nums',
-              over ? 'border-negative text-negative' : 'text-muted-foreground'
+              over ? 'border-negative text-negative' : 'text-muted-foreground',
             )}
             title={`${special}: ${used} of ${cap} card points (${budget.allocation[key]} allocated${leggo > 0 ? ` + ${leggo} from Legendary ${special}` : ''})${over ? ' — over budget' : ''} — click to browse ${special} perks`}
             onClick={() => onSelectSpecial?.(special)}
@@ -128,7 +143,10 @@ function PerkRow({
       <span className="min-w-0 flex-1 truncate">{entry.perk.name}</span>
       {noEffect && <NoEffectBadge />}
       {cost !== null && (
-        <span className="text-muted-foreground text-[10px] tabular-nums" title={`Costs ${cost} perk point${cost === 1 ? '' : 's'} at rank ${entry.rank}`}>
+        <span
+          className="text-muted-foreground text-[10px] tabular-nums"
+          title={`Costs ${cost} perk point${cost === 1 ? '' : 's'} at rank ${entry.rank}`}
+        >
           {cost} pt
         </span>
       )}
@@ -139,7 +157,9 @@ function PerkRow({
           className="size-6"
           disabled={entry.rank <= 1}
           aria-label={`Lower ${entry.perk.name} rank`}
-          onClick={() => dispatch({ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank - 1 })}
+          onClick={() =>
+            dispatch({ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank - 1 })
+          }
         >
           <MinusIcon className="size-3" />
         </Button>
@@ -152,8 +172,14 @@ function PerkRow({
           className="size-6"
           disabled={entry.rank >= maxRank || raiseBlocked}
           aria-label={`Raise ${entry.perk.name} rank`}
-          title={raiseBlocked && entry.rank < maxRank ? 'SPECIAL budget exhausted (15/stat, 56 total)' : undefined}
-          onClick={() => dispatch({ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank + 1 })}
+          title={
+            raiseBlocked && entry.rank < maxRank
+              ? 'SPECIAL budget exhausted (15/stat, 56 total)'
+              : undefined
+          }
+          onClick={() =>
+            dispatch({ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank + 1 })
+          }
         >
           <PlusIcon className="size-3" />
         </Button>
@@ -171,10 +197,9 @@ function PerkRow({
   );
 }
 
-const SPECIAL_TO_KEY = Object.fromEntries(SPECIAL_ORDER.map(({ special, key }) => [special, key])) as Record<
-  Special,
-  SpecialKey
->;
+const SPECIAL_TO_KEY = Object.fromEntries(
+  SPECIAL_ORDER.map(({ special, key }) => [special, key]),
+) as Record<Special, SpecialKey>;
 
 function PerkAddCombobox({
   budget,
@@ -209,14 +234,17 @@ function PerkAddCombobox({
   const { player } = useBuild();
   const dispatch = useBuildDispatch();
 
-  const equipped = new Map([...player.perks, ...player.legendaryPerks].map(p => [p.perkId, p.rank]));
+  const equipped = new Map(
+    [...player.perks, ...player.legendaryPerks].map((p) => [p.perkId, p.rank]),
+  );
   const legendarySlotsFull = player.legendaryPerks.length >= LEGENDARY_SLOTS;
   const currentRace = (player.conditions.isGhoul ?? false) ? 'ghoul' : 'human';
 
   // A card locked to the other race can't be added (mirrors the reducer's
   // perk/add rejection) — the picker greys it out with a lock instead of
   // silently doing nothing. Race itself only changes via the Race toggle.
-  const raceBlocked = (perk: Perk): boolean => perk.raceRestriction !== null && perk.raceRestriction !== currentRace;
+  const raceBlocked = (perk: Perk): boolean =>
+    perk.raceRestriction !== null && perk.raceRestriction !== currentRace;
 
   // Mirrors the reducer's blocking rules so blocked picks read as disabled
   // instead of silently doing nothing.
@@ -255,17 +283,23 @@ function PerkAddCombobox({
     // Popover stays open for multi-adjust.
   };
 
-  const bySpecial = (special: Special) => regular.filter(r => r.perk.special === special);
-  const visibleSpecials = SPECIAL_ORDER.filter(({ special }) => filterSpecial === null || special === filterSpecial);
+  const bySpecial = (special: Special) => regular.filter((r) => r.perk.special === special);
+  const visibleSpecials = SPECIAL_ORDER.filter(
+    ({ special }) => filterSpecial === null || special === filterSpecial,
+  );
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger render={<Button variant="outline" size="sm" className="w-full justify-start" />}>
+      <PopoverTrigger
+        render={<Button variant="outline" size="sm" className="w-full justify-start" />}
+      >
         <PlusIcon className="mr-1 size-3.5" /> {triggerLabel}
       </PopoverTrigger>
       <PopoverContent className="w-[--anchor-width] p-0" align="start">
         <FilterListRoot>
-          <FilterInput placeholder={scope === 'legendary' ? 'Search legendary perks…' : 'Search perks…'} />
+          <FilterInput
+            placeholder={scope === 'legendary' ? 'Search legendary perks…' : 'Search perks…'}
+          />
           {scope !== 'legendary' && (
             <div className="flex items-center gap-0.5 border-b px-2 py-1">
               {SPECIAL_ORDER.map(({ special, letter }) => (
@@ -346,7 +380,11 @@ function PerkList({
 }) {
   const { query } = useFilterQuery();
 
-  const renderGroup = (heading: string | undefined, items: Array<{ perkId: string; perk: Perk }>, isLegendary: boolean) => {
+  const renderGroup = (
+    heading: string | undefined,
+    items: Array<{ perkId: string; perk: Perk }>,
+    isLegendary: boolean,
+  ) => {
     const filtered = items.filter(({ perk }) => matchesQuery([perk.name], query));
     if (filtered.length === 0) return null;
     return (
@@ -362,19 +400,29 @@ function PerkList({
               key={perkId}
               disabled={blocked}
               onClick={() => select(perkId, isLegendary, perk)}
-              onContextMenu={e => {
+              onContextMenu={(e) => {
                 e.preventDefault();
                 decrement(perkId);
               }}
-              title={rank === undefined ? undefined : rank > 1 ? 'Right-click to lower' : 'Right-click to remove'}
+              title={
+                rank === undefined
+                  ? undefined
+                  : rank > 1
+                    ? 'Right-click to lower'
+                    : 'Right-click to remove'
+              }
             >
-              <CheckIcon className={cn('mr-2 size-4', rank !== undefined ? 'opacity-100' : 'opacity-0')} />
+              <CheckIcon
+                className={cn('mr-2 size-4', rank !== undefined ? 'opacity-100' : 'opacity-0')}
+              />
               {raceLocked && <LockIcon className="text-muted-foreground mr-1 size-3 shrink-0" />}
               <span className="min-w-0 flex-1 truncate">{perk.name}</span>
               {noEffect.has(perkId) && <NoEffectBadge />}
               {!blocked &&
                 (rank === undefined ? (
-                  <ActionDelta action={{ type: 'perk/add', perkId, rank: 1, legendary: isLegendary }} />
+                  <ActionDelta
+                    action={{ type: 'perk/add', perkId, rank: 1, legendary: isLegendary }}
+                  />
                 ) : rank < perk.maxRank ? (
                   <ActionDelta action={{ type: 'perk/setRank', perkId, rank: rank + 1 }} />
                 ) : null)}
@@ -407,7 +455,7 @@ function PerkList({
 
   return (
     <FilterList className="max-h-72">
-      <FilterEmpty show={groups.every(g => g === null)}>No perk matches.</FilterEmpty>
+      <FilterEmpty show={groups.every((g) => g === null)}>No perk matches.</FilterEmpty>
       {groups}
     </FilterList>
   );
@@ -426,7 +474,11 @@ export function PerkEditor() {
 
   const resolve = (loadout: PerkLoadout[]): PerkEntry[] =>
     loadout
-      .map(p => ({ perkId: p.perkId, rank: p.rank, perk: registry[p.perkId as keyof typeof registry] }))
+      .map((p) => ({
+        perkId: p.perkId,
+        rank: p.rank,
+        perk: registry[p.perkId as keyof typeof registry],
+      }))
       .filter((e): e is PerkEntry => e.perk !== undefined);
 
   // Equipped perks list/group by display name, not raw loadout/import order.
@@ -439,7 +491,11 @@ export function PerkEditor() {
 
   const raiseBlockedFor = (entry: PerkEntry) =>
     entry.perk.special
-      ? !canSlotCardPoints(budget, SPECIAL_TO_KEY[entry.perk.special], costDelta(entry.perk, entry.rank, entry.rank + 1))
+      ? !canSlotCardPoints(
+          budget,
+          SPECIAL_TO_KEY[entry.perk.special],
+          costDelta(entry.perk, entry.rank, entry.rank + 1),
+        )
       : false;
 
   // Regular perks grouped by SPECIAL (SPECIAL order, alpha within) so the
@@ -448,119 +504,126 @@ export function PerkEditor() {
     key,
     special,
     letter,
-    entries: regularEntries.filter(e => e.perk.special === special).sort(byName),
-  })).filter(g => g.entries.length > 0);
+    entries: regularEntries.filter((e) => e.perk.special === special).sort(byName),
+  })).filter((g) => g.entries.length > 0);
   // Safety net: a perk with no (or unrecognized) `.special` would otherwise vanish silently.
-  const claimed = new Set(regularGroups.flatMap(g => g.entries.map(e => e.perkId)));
-  const ungroupedEntries = regularEntries.filter(e => !claimed.has(e.perkId)).sort(byName);
+  const claimed = new Set(regularGroups.flatMap((g) => g.entries.map((e) => e.perkId)));
+  const ungroupedEntries = regularEntries.filter((e) => !claimed.has(e.perkId)).sort(byName);
 
   return (
     <div className="space-y-3">
-          <SpecialBudgetBar
-            budget={budget}
-            onSelectSpecial={special => {
-              setPickerFilter(special);
-              setPickerOpen(true);
-            }}
-          />
+      <SpecialBudgetBar
+        budget={budget}
+        onSelectSpecial={(special) => {
+          setPickerFilter(special);
+          setPickerOpen(true);
+        }}
+      />
 
-          <PerkAddCombobox
-            budget={budget}
-            open={pickerOpen}
-            onOpenChange={setPickerOpen}
-            filterSpecial={pickerFilter}
-            onFilterSpecialChange={setPickerFilter}
-          />
+      <PerkAddCombobox
+        budget={budget}
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        filterSpecial={pickerFilter}
+        onFilterSpecialChange={setPickerFilter}
+      />
 
-          {regularEntries.length > 0 ? (
-            <div className="space-y-2">
-              {regularGroups.map(group => {
-                const used = budget.cardPoints[group.key];
-                const cap = budget.budgetPerStat[group.key];
-                return (
-                  <div key={group.key} className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.1em]">
-                        {group.letter} · {group.special}
-                      </p>
-                      <span
-                        className={cn(
-                          'font-mono text-[11px] tabular-nums',
-                          used > cap ? 'text-negative' : 'text-muted-foreground'
-                        )}
-                      >
-                        {used}/{cap} pt
-                      </span>
-                    </div>
-                    <div className="grid gap-1">
-                      {group.entries.map(entry => (
-                        <PerkRow
-                          key={entry.perkId}
-                          entry={entry}
-                          maxRank={entry.perk.maxRank}
-                          raiseBlocked={raiseBlockedFor(entry)}
-                          noEffect={noEffect.has(entry.perkId)}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-              {ungroupedEntries.length > 0 && (
-                <div className="space-y-1">
+      {regularEntries.length > 0 ? (
+        <div className="space-y-2">
+          {regularGroups.map((group) => {
+            const used = budget.cardPoints[group.key];
+            const cap = budget.budgetPerStat[group.key];
+            return (
+              <div key={group.key} className="space-y-1">
+                <div className="flex items-center justify-between">
                   <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.1em]">
-                    Other
+                    {group.letter} · {group.special}
                   </p>
-                  <div className="grid gap-1">
-                    {ungroupedEntries.map(entry => (
-                      <PerkRow
-                        key={entry.perkId}
-                        entry={entry}
-                        maxRank={entry.perk.maxRank}
-                        raiseBlocked={raiseBlockedFor(entry)}
-                        noEffect={noEffect.has(entry.perkId)}
-                      />
-                    ))}
-                  </div>
+                  <span
+                    className={cn(
+                      'font-mono text-[11px] tabular-nums',
+                      used > cap ? 'text-negative' : 'text-muted-foreground',
+                    )}
+                  >
+                    {used}/{cap} pt
+                  </span>
                 </div>
-              )}
+                <div className="grid gap-1">
+                  {group.entries.map((entry) => (
+                    <PerkRow
+                      key={entry.perkId}
+                      entry={entry}
+                      maxRank={entry.perk.maxRank}
+                      raiseBlocked={raiseBlockedFor(entry)}
+                      noEffect={noEffect.has(entry.perkId)}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+          {ungroupedEntries.length > 0 && (
+            <div className="space-y-1">
+              <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.1em]">
+                Other
+              </p>
+              <div className="grid gap-1">
+                {ungroupedEntries.map((entry) => (
+                  <PerkRow
+                    key={entry.perkId}
+                    entry={entry}
+                    maxRank={entry.perk.maxRank}
+                    raiseBlocked={raiseBlockedFor(entry)}
+                    noEffect={noEffect.has(entry.perkId)}
+                  />
+                ))}
+              </div>
             </div>
-          ) : (
-            <p className="text-muted-foreground text-sm">
-              No perks equipped. Import a Nukes &amp; Dragons build or add perks above. Importing replaces this list.
-            </p>
           )}
+        </div>
+      ) : (
+        <p className="text-muted-foreground text-sm">
+          No perks equipped. Import a Nukes &amp; Dragons build or add perks above. Importing
+          replaces this list.
+        </p>
+      )}
 
-          <Separator />
-          <div className="flex items-center justify-between">
-            <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.1em]">
-              Legendary perks
-            </p>
-            <span className={cn('text-xs font-mono', legendaryOver ? 'text-negative' : 'text-muted-foreground')}>
-              {legendaryEntries.length}/{LEGENDARY_SLOTS} slots
-            </span>
-          </div>
-          <PerkAddCombobox budget={budget} scope="legendary" triggerLabel="Add legendary perk…" />
-          {legendaryEntries.length > 0 ? (
-            <div className="grid gap-1">
-              {legendaryEntries.map(entry => (
-                <PerkRow
-                  key={entry.perkId}
-                  entry={entry}
-                  maxRank={entry.perk.maxRank}
-                  noEffect={noEffect.has(entry.perkId)}
-                />
-              ))}
-            </div>
-          ) : (
-            <p className="text-muted-foreground text-sm">No legendary perks equipped.</p>
+      <Separator />
+      <div className="flex items-center justify-between">
+        <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.1em]">
+          Legendary perks
+        </p>
+        <span
+          className={cn(
+            'text-xs font-mono',
+            legendaryOver ? 'text-negative' : 'text-muted-foreground',
           )}
+        >
+          {legendaryEntries.length}/{LEGENDARY_SLOTS} slots
+        </span>
+      </div>
+      <PerkAddCombobox budget={budget} scope="legendary" triggerLabel="Add legendary perk…" />
+      {legendaryEntries.length > 0 ? (
+        <div className="grid gap-1">
+          {legendaryEntries.map((entry) => (
+            <PerkRow
+              key={entry.perkId}
+              entry={entry}
+              maxRank={entry.perk.maxRank}
+              noEffect={noEffect.has(entry.perkId)}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="text-muted-foreground text-sm">No legendary perks equipped.</p>
+      )}
 
-          <p className="text-muted-foreground text-xs">
-            Card cost is the card's own per-rank point cost (not always equal to rank). Each stat's budget is its base
-            allocation (SPECIAL section) plus Legendary SPECIAL card bonuses, capped at 15. Adding past the budget is
-            blocked — imported or re-allocated builds that exceed it are flagged instead.
-          </p>
+      <p className="text-muted-foreground text-xs">
+        Card cost is the card's own per-rank point cost (not always equal to rank). Each stat's
+        budget is its base allocation (SPECIAL section) plus Legendary SPECIAL card bonuses, capped
+        at 15. Adding past the budget is blocked — imported or re-allocated builds that exceed it
+        are flagged instead.
+      </p>
     </div>
   );
 }

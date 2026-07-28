@@ -26,7 +26,9 @@ function makeWeapon(overrides: Partial<Weapon> = {}): Weapon {
   };
 }
 
-function mod(partial: Partial<Modifier> & Pick<Modifier, 'bucket' | 'op'> & { value: number }): Modifier {
+function mod(
+  partial: Partial<Modifier> & Pick<Modifier, 'bucket' | 'op'> & { value: number },
+): Modifier {
   return {
     id: partial.id ?? 'm0',
     source: partial.source ?? { kind: 'perk', formId: '0x1', edid: 'TestPerk', name: 'Test Perk' },
@@ -50,11 +52,41 @@ function input(modifiers: Modifier[], overrides: Partial<ScenarioInput> = {}): S
 
 describe('attribution trace', () => {
   const synthetic = [
-    mod({ id: 'a', bucket: 'dbm', op: 'SET', value: 1.5, source: { kind: 'omod', formId: '0xa', edid: 'setA', name: 'Set A' } }),
-    mod({ id: 'b', bucket: 'dbm', op: 'SET', value: 2.0, source: { kind: 'omod', formId: '0xb', edid: 'setB', name: 'Set B' } }),
-    mod({ id: 'c', bucket: 'dbm', op: 'MUL_ADD', value: 0.25, source: { kind: 'perk', formId: '0xc', edid: 'mulC', name: 'Mul C' } }),
-    mod({ id: 'd', bucket: 'dbm', op: 'MUL_ADD', value: 0.15, source: { kind: 'mutation', formId: '0xd', edid: 'mulD', name: 'Mul D' } }),
-    mod({ id: 'e', bucket: 'dbm', op: 'ADD', value: 0.5, source: { kind: 'consumable', formId: '0xe', edid: 'addE', name: 'Add E' } }),
+    mod({
+      id: 'a',
+      bucket: 'dbm',
+      op: 'SET',
+      value: 1.5,
+      source: { kind: 'omod', formId: '0xa', edid: 'setA', name: 'Set A' },
+    }),
+    mod({
+      id: 'b',
+      bucket: 'dbm',
+      op: 'SET',
+      value: 2.0,
+      source: { kind: 'omod', formId: '0xb', edid: 'setB', name: 'Set B' },
+    }),
+    mod({
+      id: 'c',
+      bucket: 'dbm',
+      op: 'MUL_ADD',
+      value: 0.25,
+      source: { kind: 'perk', formId: '0xc', edid: 'mulC', name: 'Mul C' },
+    }),
+    mod({
+      id: 'd',
+      bucket: 'dbm',
+      op: 'MUL_ADD',
+      value: 0.15,
+      source: { kind: 'mutation', formId: '0xd', edid: 'mulD', name: 'Mul D' },
+    }),
+    mod({
+      id: 'e',
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.5,
+      source: { kind: 'consumable', formId: '0xe', edid: 'addE', name: 'Add E' },
+    }),
   ];
 
   it('traced result equals untraced result exactly (invariant)', () => {
@@ -73,9 +105,12 @@ describe('attribution trace', () => {
     // (last SET 2.0) + (0.25+0.15)×1.0 + 0.5 = 2.9
     expect(dbm.result).toBeCloseTo(2.9, 10);
     expect(dbm.set?.source.name).toBe('Set B');
-    expect(dbm.overriddenSets.map(c => c.source.name)).toEqual(['Set A']);
-    expect(dbm.mulAdd.map(c => [c.source.name, c.value])).toEqual([['Mul C', 0.25], ['Mul D', 0.15]]);
-    expect(dbm.add.map(c => c.source.name)).toEqual(['Add E']);
+    expect(dbm.overriddenSets.map((c) => c.source.name)).toEqual(['Set A']);
+    expect(dbm.mulAdd.map((c) => [c.source.name, c.value])).toEqual([
+      ['Mul C', 0.25],
+      ['Mul D', 0.15],
+    ]);
+    expect(dbm.add.map((c) => c.source.name)).toEqual(['Add E']);
   });
 
   it('captures crit and crit-meter traces on VATS and none on free aim', () => {
@@ -94,7 +129,12 @@ describe('attribution trace', () => {
   });
 
   it('gates sneak/weakpoint sections on the active conditions', () => {
-    const player = { ...createDefaultPlayerConditions(), strength: 0, isSneaking: true, isAimingAtWeakpoint: true };
+    const player = {
+      ...createDefaultPlayerConditions(),
+      strength: 0,
+      isSneaking: true,
+      isAimingAtWeakpoint: true,
+    };
     const s = computeScenarios(input(synthetic, { collectTrace: true, player }));
     const t = s.freeAim.explain!.nonCrit;
     expect(t.sneak?.base.bucket).toBe('sneakBase');
@@ -110,7 +150,13 @@ describe('attribution trace', () => {
     const weapon = makeWeapon({
       components: [
         { damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: FLAT_100 },
-        { damageType: 'explosive', tier: -1, levelCap: 50, curvePoints: FLAT_100, fromExplosion: true },
+        {
+          damageType: 'explosive',
+          tier: -1,
+          levelCap: 50,
+          curvePoints: FLAT_100,
+          fromExplosion: true,
+        },
       ],
     });
     const s = computeScenarios(input([], { weapon, collectTrace: true }));
@@ -132,7 +178,9 @@ describe('attribution trace', () => {
     expect(traced.vats.perHit.total).toBe(untraced.vats.perHit.total);
     // Center Masochist (torso-gated dbm) must appear as a named contributor on a torso hit.
     const dbm = traced.freeAim.explain!.nonCrit.components[0].dbm;
-    const names = [...dbm.add, ...dbm.mulAdd, ...(dbm.set ? [dbm.set] : [])].map(c => c.source.name);
+    const names = [...dbm.add, ...dbm.mulAdd, ...(dbm.set ? [dbm.set] : [])].map(
+      (c) => c.source.name,
+    );
     expect(names.join()).toMatch(/Masochist/i);
   });
 });

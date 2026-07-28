@@ -20,7 +20,7 @@ function omod(modifiers: Modifier[], name = 'Extracted'): GeneratedOmod {
 
 function source(
   generatedOmods: GeneratedOmod[],
-  overrides: Partial<DatasetSource> = {}
+  overrides: Partial<DatasetSource> = {},
 ): DatasetSource {
   return {
     generatedWeapons: [],

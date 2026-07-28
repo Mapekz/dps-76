@@ -5,7 +5,10 @@ import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/t
 import { BULLET_STORM_AMMO_PER_STACK, bulletStormAvgStacks } from '@/lib/engine/bulletstorm';
 import { computeScenarios } from '@/lib/engine/scenarios';
 
-const FLAT_100 = [{ x: 1, y: 100 }, { x: 50, y: 100 }];
+const FLAT_100 = [
+  { x: 1, y: 100 },
+  { x: 50, y: 100 },
+];
 
 function makeWeapon(overrides: Partial<Weapon> = {}): Weapon {
   return {
@@ -31,7 +34,12 @@ describe('bulletStormAvgStacks — accrual pinning (2-shot magazine, retention 0
   // at accrual. Choosing max/min far outside the accrual range means neither
   // clamp interferes, so this isolates the accrual formula itself.
   it('projectileCount 8 + ammoPerShot 5 → 12/30 accrual/shot', () => {
-    const weapon = makeWeapon({ projectileCount: 8, ammoPerShot: 5, capacity: 10, animDelaySec: 0.5 });
+    const weapon = makeWeapon({
+      projectileCount: 8,
+      ammoPerShot: 5,
+      capacity: 10,
+      animDelaySec: 0.5,
+    });
     const accrual = (8 + 5 - 1) / BULLET_STORM_AMMO_PER_STACK;
     expect(accrual).toBeCloseTo(12 / 30, 10);
     const avg = bulletStormAvgStacks({ max: 1000, min: 0, retention: 0, weapon, fireRate: 2 });
@@ -39,7 +47,12 @@ describe('bulletStormAvgStacks — accrual pinning (2-shot magazine, retention 0
   });
 
   it('projectileCount 9 + ammoPerShot 5 → 13/30 accrual/shot (+1 projectile, e.g. Two Shot)', () => {
-    const weapon = makeWeapon({ projectileCount: 9, ammoPerShot: 5, capacity: 10, animDelaySec: 0.5 });
+    const weapon = makeWeapon({
+      projectileCount: 9,
+      ammoPerShot: 5,
+      capacity: 10,
+      animDelaySec: 0.5,
+    });
     const accrual = (9 + 5 - 1) / BULLET_STORM_AMMO_PER_STACK;
     expect(accrual).toBeCloseTo(13 / 30, 10);
     const avg = bulletStormAvgStacks({ max: 1000, min: 0, retention: 0, weapon, fireRate: 2 });
@@ -48,12 +61,29 @@ describe('bulletStormAvgStacks — accrual pinning (2-shot magazine, retention 0
 });
 
 describe('bulletStormAvgStacks — retention, floor, no-magazine', () => {
-  const twoShotWeapon = makeWeapon({ projectileCount: 1, ammoPerShot: 1, capacity: 2, animDelaySec: 0.5 });
+  const twoShotWeapon = makeWeapon({
+    projectileCount: 1,
+    ammoPerShot: 1,
+    capacity: 2,
+    animDelaySec: 0.5,
+  });
   const accrual = 1 / BULLET_STORM_AMMO_PER_STACK; // (1+1-1)/30
 
   it('Lock and Load retention (0.5) yields a strictly higher average than no retention', () => {
-    const avg0 = bulletStormAvgStacks({ max: 1000, min: 0, retention: 0, weapon: twoShotWeapon, fireRate: 2 });
-    const avg50 = bulletStormAvgStacks({ max: 1000, min: 0, retention: 0.5, weapon: twoShotWeapon, fireRate: 2 });
+    const avg0 = bulletStormAvgStacks({
+      max: 1000,
+      min: 0,
+      retention: 0,
+      weapon: twoShotWeapon,
+      fireRate: 2,
+    });
+    const avg50 = bulletStormAvgStacks({
+      max: 1000,
+      min: 0,
+      retention: 0.5,
+      weapon: twoShotWeapon,
+      fireRate: 2,
+    });
     expect(avg0).toBeCloseTo(accrual / 2, 6);
     // Converged post-mag floor s = 2·accrual·retention/(1−retention) = 2·accrual
     // at retention 0.5; per-shot average = s + accrual/2 = 2.5·accrual. Loose
@@ -64,7 +94,13 @@ describe('bulletStormAvgStacks — retention, floor, no-magazine', () => {
   });
 
   it('Resolute Veteran-style floor (min 5) keeps the average at or above the floor, every reload', () => {
-    const avg = bulletStormAvgStacks({ max: 1000, min: 5, retention: 0, weapon: twoShotWeapon, fireRate: 2 });
+    const avg = bulletStormAvgStacks({
+      max: 1000,
+      min: 5,
+      retention: 0,
+      weapon: twoShotWeapon,
+      fireRate: 2,
+    });
     // Post-retention level clamps up to the floor every cycle (0 < 5), so the
     // converged post-reload level IS the floor, and the per-shot average is
     // floor + accrual/2.
@@ -74,23 +110,50 @@ describe('bulletStormAvgStacks — retention, floor, no-magazine', () => {
 
   it('a weapon with no magazine (capacity 0) never reloads — returns the max directly', () => {
     const meleeShaped = makeWeapon({ weaponClass: 'melee', capacity: undefined });
-    const avg = bulletStormAvgStacks({ max: 10, min: 0, retention: 0, weapon: meleeShaped, fireRate: 5 });
+    const avg = bulletStormAvgStacks({
+      max: 10,
+      min: 0,
+      retention: 0,
+      weapon: meleeShaped,
+      fireRate: 5,
+    });
     expect(avg).toBe(10);
   });
 
   it('guards: max <= 0 or fireRate <= 0 both return 0', () => {
-    expect(bulletStormAvgStacks({ max: 0, min: 0, retention: 0, weapon: twoShotWeapon, fireRate: 2 })).toBe(0);
-    expect(bulletStormAvgStacks({ max: 10, min: 0, retention: 0, weapon: twoShotWeapon, fireRate: 0 })).toBe(0);
+    expect(
+      bulletStormAvgStacks({ max: 0, min: 0, retention: 0, weapon: twoShotWeapon, fireRate: 2 }),
+    ).toBe(0);
+    expect(
+      bulletStormAvgStacks({ max: 10, min: 0, retention: 0, weapon: twoShotWeapon, fireRate: 0 }),
+    ).toBe(0);
   });
 });
 
 describe('bulletStormAvgStacks — expected-retention fix (Phase C, instant reloads keep stacks)', () => {
-  const twoShotWeapon = makeWeapon({ projectileCount: 1, ammoPerShot: 1, capacity: 2, animDelaySec: 0.5 });
+  const twoShotWeapon = makeWeapon({
+    projectileCount: 1,
+    ammoPerShot: 1,
+    capacity: 2,
+    animDelaySec: 0.5,
+  });
 
   it('skip=1 via a 100% free-tier reload skip keeps stacks at max regardless of retention (retention irrelevant)', () => {
     const weapon = { ...twoShotWeapon, reloadSkipChance: 1 };
-    const avgRetention0 = bulletStormAvgStacks({ max: 10, min: 0, retention: 0, weapon, fireRate: 2 });
-    const avgRetention1 = bulletStormAvgStacks({ max: 10, min: 0, retention: 1, weapon, fireRate: 2 });
+    const avgRetention0 = bulletStormAvgStacks({
+      max: 10,
+      min: 0,
+      retention: 0,
+      weapon,
+      fireRate: 2,
+    });
+    const avgRetention1 = bulletStormAvgStacks({
+      max: 10,
+      min: 0,
+      retention: 1,
+      weapon,
+      fireRate: 2,
+    });
     expect(avgRetention0).toBeCloseTo(10, 6);
     expect(avgRetention1).toBeCloseTo(10, 6);
   });
@@ -103,12 +166,18 @@ describe('bulletStormAvgStacks — expected-retention fix (Phase C, instant relo
 
   it('skip=0 (no reload-skip sources) reproduces the old always-apply-retention behavior exactly', () => {
     const withExplicitZeroes = bulletStormAvgStacks({
-      max: 1000, min: 0, retention: 0.5,
+      max: 1000,
+      min: 0,
+      retention: 0.5,
       weapon: { ...twoShotWeapon, reloadSkipChance: 0, reloadSkipChanceBash: 0 },
       fireRate: 2,
     });
     const withFieldsOmitted = bulletStormAvgStacks({
-      max: 1000, min: 0, retention: 0.5, weapon: twoShotWeapon, fireRate: 2,
+      max: 1000,
+      min: 0,
+      retention: 0.5,
+      weapon: twoShotWeapon,
+      fireRate: 2,
     });
     expect(withExplicitZeroes).toBeCloseTo(withFieldsOmitted, 10);
   });
@@ -118,21 +187,32 @@ describe('bulletStormAvgStacks — expected-retention fix (Phase C, instant relo
     const pBash = 0.5;
     const skip = 1 - (1 - pFree) * (1 - pBash);
     const combined = bulletStormAvgStacks({
-      max: 1000, min: 0, retention: 0,
+      max: 1000,
+      min: 0,
+      retention: 0,
       weapon: { ...twoShotWeapon, reloadSkipChance: pFree, reloadSkipChanceBash: pBash },
       fireRate: 2,
     });
     // Same effectiveRetention (= skip, since retention=0) reproduced directly
     // via a no-skip weapon with retention set to `skip`.
     const equivalent = bulletStormAvgStacks({
-      max: 1000, min: 0, retention: skip, weapon: twoShotWeapon, fireRate: 2,
+      max: 1000,
+      min: 0,
+      retention: skip,
+      weapon: twoShotWeapon,
+      fireRate: 2,
     });
     expect(combined).toBeCloseTo(equivalent, 6);
   });
 });
 
 describe('effectiveBulletStormStacks (via computeScenarios) — sentinel, clamp, average override', () => {
-  const weapon = makeWeapon({ projectileCount: 8, ammoPerShot: 5, capacity: 10, animDelaySec: 0.5 });
+  const weapon = makeWeapon({
+    projectileCount: 8,
+    ammoPerShot: 5,
+    capacity: 10,
+    animDelaySec: 0.5,
+  });
 
   const maxMod = (value: number): Modifier => ({
     id: 'bs-max',
@@ -171,7 +251,11 @@ describe('effectiveBulletStormStacks (via computeScenarios) — sentinel, clamp,
     conditions: [{ kind: 'stacks', counter: 'bulletStorm', max: 999 }],
   };
 
-  function ratioFor(modifiers: Modifier[], bulletStormStacks: number, bulletStormAverageMode = false) {
+  function ratioFor(
+    modifiers: Modifier[],
+    bulletStormStacks: number,
+    bulletStormAverageMode = false,
+  ) {
     const base = computeScenarios({
       mode: 'live',
       weapon,

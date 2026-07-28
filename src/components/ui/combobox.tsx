@@ -1,74 +1,74 @@
-import * as React from "react"
-import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox"
-import { CheckIcon, ChevronsUpDownIcon, SearchIcon } from "lucide-react"
+import * as React from 'react';
+import { Combobox as ComboboxPrimitive } from '@base-ui/react/combobox';
+import { CheckIcon, ChevronsUpDownIcon, SearchIcon } from 'lucide-react';
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 export interface ComboboxOption {
-  value: string
-  label: string
+  value: string;
+  label: string;
   /** Group heading this option renders under; ungrouped options share one headingless group. */
-  group?: string
+  group?: string;
 }
 
 interface ComboboxProps {
-  options: ComboboxOption[]
-  value: string | null
-  onValueChange: (value: string | null) => void
-  placeholder?: string
-  searchPlaceholder?: string
-  emptyText?: string
-  className?: string
-  disabled?: boolean
+  options: ComboboxOption[];
+  value: string | null;
+  onValueChange: (value: string | null) => void;
+  placeholder?: string;
+  searchPlaceholder?: string;
+  emptyText?: string;
+  className?: string;
+  disabled?: boolean;
   /** Extra right-aligned content per option row (e.g. a ΔDPS preview). */
-  renderOptionExtra?: (option: ComboboxOption) => React.ReactNode
+  renderOptionExtra?: (option: ComboboxOption) => React.ReactNode;
 }
 
 function Combobox({
   options,
   value,
   onValueChange,
-  placeholder = "Select option...",
-  searchPlaceholder = "Search...",
-  emptyText = "No option found.",
+  placeholder = 'Select option...',
+  searchPlaceholder = 'Search...',
+  emptyText = 'No option found.',
   className,
   disabled = false,
   renderOptionExtra,
 }: ComboboxProps) {
-  const [open, setOpen] = React.useState(false)
-  const [search, setSearch] = React.useState("")
+  const [open, setOpen] = React.useState(false);
+  const [search, setSearch] = React.useState('');
 
   const selectedOption = React.useMemo(
     () => options.find((option) => option.value === value) ?? null,
-    [options, value]
-  )
+    [options, value],
+  );
 
   // Base UI's own items/filter/Collection auto-filtering doesn't narrow
   // results in this inline (Popover-hosted) configuration - filter and
   // group ourselves instead, same substring match as the FilterList
   // primitive. One group per group in first-seen order (callers pre-sort).
   const groups = React.useMemo(() => {
-    const q = search.trim().toLowerCase()
-    const filtered = q ? options.filter((o) => o.label.toLowerCase().includes(q)) : options
-    const map = new Map<string | undefined, ComboboxOption[]>()
+    const q = search.trim().toLowerCase();
+    const filtered = q ? options.filter((o) => o.label.toLowerCase().includes(q)) : options;
+    const map = new Map<string | undefined, ComboboxOption[]>();
     for (const option of filtered) {
-      const bucket = map.get(option.group)
-      if (bucket) bucket.push(option)
-      else map.set(option.group, [option])
+      const bucket = map.get(option.group);
+      if (bucket) bucket.push(option);
+      else map.set(option.group, [option]);
     }
-    return [...map.entries()]
-  }, [options, search])
+    return [...map.entries()];
+  }, [options, search]);
 
-  const hasAny = groups.some(([, groupOptions]) => groupOptions.length > 0)
+  const hasAny = groups.some(([, groupOptions]) => groupOptions.length > 0);
 
   return (
     <Popover
       open={open}
       onOpenChange={(next) => {
-        setOpen(next)
-        if (!next) setSearch("")
+        setOpen(next);
+        if (!next) setSearch('');
       }}
     >
       <PopoverTrigger
@@ -82,13 +82,11 @@ function Combobox({
             // Button's uppercase/tracking-widest base, so override both here
             // to match — mirrors real stock base-sera, whose combobox
             // trigger never wraps a Button at all.
-            className={cn("w-full justify-between normal-case tracking-normal", className)}
+            className={cn('w-full justify-between normal-case tracking-normal', className)}
           />
         }
       >
-        <span className="truncate">
-          {selectedOption ? selectedOption.label : placeholder}
-        </span>
+        <span className="truncate">{selectedOption ? selectedOption.label : placeholder}</span>
         <ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
       </PopoverTrigger>
       <PopoverContent className="w-[--anchor-width] p-0">
@@ -102,13 +100,16 @@ function Combobox({
           onInputValueChange={(next) => setSearch(next)}
           onValueChange={(next: ComboboxOption | null) => {
             // Re-picking the selected option clears it, matching the old cmdk onSelect toggle.
-            onValueChange(next && next.value === value ? null : (next?.value ?? null))
-            setOpen(false)
+            onValueChange(next && next.value === value ? null : (next?.value ?? null));
+            setOpen(false);
           }}
           inline
           open
         >
-          <div data-slot="combobox-input-wrapper" className="flex h-10 items-center gap-2 border-b border-input px-3">
+          <div
+            data-slot="combobox-input-wrapper"
+            className="flex h-10 items-center gap-2 border-b border-input px-3"
+          >
             <SearchIcon className="size-3.5 shrink-0 opacity-50" />
             <ComboboxPrimitive.Input
               placeholder={searchPlaceholder}
@@ -119,7 +120,10 @@ function Combobox({
             {!hasAny && <div className="py-6 text-center text-sm">{emptyText}</div>}
             {groups.map(([group, groupOptions]) =>
               groupOptions.length > 0 ? (
-                <ComboboxPrimitive.Group key={group ?? ""} className="text-foreground overflow-hidden p-1">
+                <ComboboxPrimitive.Group
+                  key={group ?? ''}
+                  className="text-foreground overflow-hidden p-1"
+                >
                   {group && (
                     <ComboboxPrimitive.GroupLabel className="px-3 py-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                       {group}
@@ -133,8 +137,8 @@ function Combobox({
                     >
                       <CheckIcon
                         className={cn(
-                          "mr-2 size-4",
-                          value === option.value ? "opacity-100" : "opacity-0"
+                          'mr-2 size-4',
+                          value === option.value ? 'opacity-100' : 'opacity-0',
                         )}
                       />
                       <span className="min-w-0 flex-1 truncate">{option.label}</span>
@@ -142,13 +146,13 @@ function Combobox({
                     </ComboboxPrimitive.Item>
                   ))}
                 </ComboboxPrimitive.Group>
-              ) : null
+              ) : null,
             )}
           </ComboboxPrimitive.List>
         </ComboboxPrimitive.Root>
       </PopoverContent>
     </Popover>
-  )
+  );
 }
 
-export { Combobox }
+export { Combobox };

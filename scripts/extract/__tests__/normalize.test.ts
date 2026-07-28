@@ -9,7 +9,11 @@ import {
   type SpellEffect,
   type AvifRoute,
 } from '../normalize/mgef';
-import { flattenPerkConditionRows, translateConditions, type RawCondition } from '../normalize/conditions';
+import {
+  flattenPerkConditionRows,
+  translateConditions,
+  type RawCondition,
+} from '../normalize/conditions';
 import type { EsmClient, EsmRecord } from '../esm-client';
 import fortifyStrengthChemEffect from './fixtures/mgef-fortifystrengthchemeffect.json';
 
@@ -57,7 +61,13 @@ describe('translate (pure MGEF → IR)', () => {
   });
 
   it('emits a curve modifier carrying curveScale (not value) when the effect has a curve', () => {
-    const curved = effect({ curvePoints: [{ x: 0.05, y: 130 }, { x: 1.0, y: 0 }], curveInputAv: '0x00000392' });
+    const curved = effect({
+      curvePoints: [
+        { x: 0.05, y: 130 },
+        { x: 1.0, y: 0 },
+      ],
+      curveInputAv: '0x00000392',
+    });
     const r = translate(mgef(), curved, noRoutes, edids);
     expect(r.modifiers).toHaveLength(1);
     const m = r.modifiers[0];
@@ -70,12 +80,20 @@ describe('translate (pure MGEF → IR)', () => {
   it('skips non-value archetypes and reports an override note', () => {
     const r = translate(mgef({ archetype: 'Script' }), effect({ magnitude: 5 }), noRoutes, edids);
     expect(r.modifiers).toHaveLength(0);
-    expect(r.notes.some(n => n.includes('needs override'))).toBe(true);
+    expect(r.notes.some((n) => n.includes('needs override'))).toBe(true);
   });
 
   it("carries curve.input 'healthCurrent' for a Peak Value Modifier effect on a routed AV (Juggernaut's-style)", () => {
-    const routedAv = new Map<string, AvifRoute[]>([['0xAV', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]]]);
-    const curved = effect({ curvePoints: [{ x: 0, y: 0 }, { x: 1000, y: 100 }], curveInputAv: '0x000002D4' });
+    const routedAv = new Map<string, AvifRoute[]>([
+      ['0xAV', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]],
+    ]);
+    const curved = effect({
+      curvePoints: [
+        { x: 0, y: 0 },
+        { x: 1000, y: 100 },
+      ],
+      curveInputAv: '0x000002D4',
+    });
     const r = translate(mgef({ archetype: 'Peak Value Modifier' }), curved, routedAv, edids);
     expect(r.modifiers).toHaveLength(1);
     expect(r.modifiers[0].curve?.input).toBe('healthCurrent');
@@ -83,7 +101,13 @@ describe('translate (pure MGEF → IR)', () => {
 
   it("carries curve.input 'intelligence' for a Peak Value Modifier effect on STAT_DmgMultEnergy (Science!-style)", () => {
     const scienceEdids = new Map<string, string>([['0xAV', 'STAT_DmgMultEnergy']]);
-    const curved = effect({ curvePoints: [{ x: 0, y: 0 }, { x: 15, y: 0.3 }], curveInputAv: '0x000002C6' });
+    const curved = effect({
+      curvePoints: [
+        { x: 0, y: 0 },
+        { x: 15, y: 0.3 },
+      ],
+      curveInputAv: '0x000002C6',
+    });
     const r = translate(mgef({ archetype: 'Peak Value Modifier' }), curved, noRoutes, scienceEdids);
     expect(r.modifiers).toHaveLength(1);
     expect(r.modifiers[0].bucket).toBe('dbm');
@@ -97,7 +121,12 @@ describe('translate (2026-07-10 review routes)', () => {
     const strEdids = new Map<string, string>([['0xAV', 'Strength']]);
     const r = translate(mgef(), effect({ magnitude: 3 }), noRoutes, strEdids);
     expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({ bucket: 'specialStrength', op: 'ADD', value: 3, conditions: [] });
+    expect(r.modifiers[0]).toEqual({
+      bucket: 'specialStrength',
+      op: 'ADD',
+      value: 3,
+      conditions: [],
+    });
   });
 
   it("routes STAT_DmgPerCrippled to dbm with a perCrippledLimb condition (Bully's)", () => {
@@ -165,7 +194,12 @@ describe('translate (2026-07-11 A3/A4 routes)', () => {
       editor_id: 'ench_LegendaryWeapon_Pyromaniac',
       fields: {
         Effects: [
-          { Effect: { 'Base Effect': '0x007954D1', 'Effect Item Data': { 'Effect ID': 0, Magnitude: 50.0, Area: 0, Duration: 0 } } },
+          {
+            Effect: {
+              'Base Effect': '0x007954D1',
+              'Effect Item Data': { 'Effect ID': 0, Magnitude: 50.0, Area: 0, Duration: 0 },
+            },
+          },
         ],
       },
     } as unknown as EsmRecord;
@@ -175,7 +209,9 @@ describe('translate (2026-07-11 A3/A4 routes)', () => {
   });
 
   it("carries curve.input 'weaponCondition' for Polished via the 0x0000039F engine-AV mapping (20260717 wired a real input AV; the old edid-keyed null-input override is retired)", () => {
-    const routedAv = new Map<string, AvifRoute[]>([['0xAV', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]]]);
+    const routedAv = new Map<string, AvifRoute[]>([
+      ['0xAV', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]],
+    ]);
     const curved = effect({
       curvePoints: [
         { x: 1.0, y: 0 },
@@ -187,7 +223,7 @@ describe('translate (2026-07-11 A3/A4 routes)', () => {
       mgef({ edid: 'Legendary_Weapon_PolishedPerkApplyEffect', archetype: 'Peak Value Modifier' }),
       curved,
       routedAv,
-      edids
+      edids,
     );
     expect(r.modifiers).toHaveLength(1);
     expect(r.modifiers[0].curve?.input).toBe('weaponCondition');
@@ -195,7 +231,9 @@ describe('translate (2026-07-11 A3/A4 routes)', () => {
   });
 
   it('drops a Polished-shaped effect whose input AV went back to null (no blanket edid fallback anymore)', () => {
-    const routedAv = new Map<string, AvifRoute[]>([['0xAV', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]]]);
+    const routedAv = new Map<string, AvifRoute[]>([
+      ['0xAV', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]],
+    ]);
     const curved = effect({
       curvePoints: [
         { x: 1.0, y: 0 },
@@ -207,14 +245,16 @@ describe('translate (2026-07-11 A3/A4 routes)', () => {
       mgef({ edid: 'Legendary_Weapon_PolishedPerkApplyEffect', archetype: 'Peak Value Modifier' }),
       curved,
       routedAv,
-      edids
+      edids,
     );
     expect(r.modifiers).toHaveLength(0);
-    expect(r.notes.some(n => n.includes('unmapped input AV null'))).toBe(true);
+    expect(r.notes.some((n) => n.includes('unmapped input AV null'))).toBe(true);
   });
 
   it('leaves an UNMATCHED null curve input at a different edid unresolved (not a blanket rule)', () => {
-    const routedAv = new Map<string, AvifRoute[]>([['0xAV', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]]]);
+    const routedAv = new Map<string, AvifRoute[]>([
+      ['0xAV', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]],
+    ]);
     const curved = effect({
       curvePoints: [
         { x: 0, y: 0 },
@@ -222,15 +262,22 @@ describe('translate (2026-07-11 A3/A4 routes)', () => {
       ],
       curveInputAv: null,
     });
-    const r = translate(mgef({ edid: 'SomeOtherLegendaryEffect', archetype: 'Peak Value Modifier' }), curved, routedAv, edids);
+    const r = translate(
+      mgef({ edid: 'SomeOtherLegendaryEffect', archetype: 'Peak Value Modifier' }),
+      curved,
+      routedAv,
+      edids,
+    );
     expect(r.modifiers).toHaveLength(0);
-    expect(r.notes.some(n => n.includes('unmapped input AV null'))).toBe(true);
+    expect(r.notes.some((n) => n.includes('unmapped input AV null'))).toBe(true);
   });
 });
 
 describe('translate (Onslaught, 2026-07-12)', () => {
   it("carries curve.input 'onslaughtStacks' for a Peak Value Modifier on a routed AV (Whacker Smacker-style)", () => {
-    const routedAv = new Map<string, AvifRoute[]>([['0xAV', [{ bucket: 'powerAttackBonus', scale: 0.01, rawConditions: [] }]]]);
+    const routedAv = new Map<string, AvifRoute[]>([
+      ['0xAV', [{ bucket: 'powerAttackBonus', scale: 0.01, rawConditions: [] }]],
+    ]);
     const curved = effect({
       curvePoints: [
         { x: 0, y: 0 },
@@ -250,9 +297,19 @@ describe('translate (Onslaught, 2026-07-12)', () => {
 describe('translate (Bullet Storm, 2026-07-16)', () => {
   it("routes a Peak Value Modifier on AmmoSpenderMaxStacks to bulletStormMaxStacks (Heavy Gunner's abAmmoSpenderFortifyStacks-style flat magnitude)", () => {
     const bulletStormEdids = new Map<string, string>([['0xAV', 'AmmoSpenderMaxStacks']]);
-    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), effect({ magnitude: 10 }), noRoutes, bulletStormEdids);
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier' }),
+      effect({ magnitude: 10 }),
+      noRoutes,
+      bulletStormEdids,
+    );
     expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({ bucket: 'bulletStormMaxStacks', op: 'ADD', value: 10, conditions: [] });
+    expect(r.modifiers[0]).toEqual({
+      bucket: 'bulletStormMaxStacks',
+      op: 'ADD',
+      value: 10,
+      conditions: [],
+    });
   });
 });
 
@@ -286,7 +343,9 @@ describe('getMgefInfo (consumables overhaul, 2026-07-13)', () => {
           header: { signature: 'MGEF', form_id: '0xBARE' },
           editor_id: 'BareMgef',
           fields: {
-            'Magic Effect Data': { Data: { Archetype: { name: 'Value Modifier' }, Flags: { value: '0x0', flags: [] } } },
+            'Magic Effect Data': {
+              Data: { Archetype: { name: 'Value Modifier' }, Flags: { value: '0x0', flags: [] } },
+            },
           },
         } as unknown as EsmRecord;
       },
@@ -307,13 +366,24 @@ describe('translateConditions (2026-07-10 review)', () => {
   });
 
   it("translates an enemy-type OR-group to enemyTypeAny (Ghoul Slayer's route conditions)", () => {
-    const edidMap = new Map([['0xFERAL', 'ActorTypeFeralGhoul'], ['0xGHOUL', 'ActorTypeGhoul']]);
-    const { conditions } = translateConditions([kw('0xFERAL', 'OR'), kw('0xGHOUL')], { edidByFormId: edidMap });
-    expect(conditions).toEqual([{ kind: 'enemyTypeAny', keywordsOrRaces: ['ActorTypeFeralGhoul', 'ActorTypeGhoul'] }]);
+    const edidMap = new Map([
+      ['0xFERAL', 'ActorTypeFeralGhoul'],
+      ['0xGHOUL', 'ActorTypeGhoul'],
+    ]);
+    const { conditions } = translateConditions([kw('0xFERAL', 'OR'), kw('0xGHOUL')], {
+      edidByFormId: edidMap,
+    });
+    expect(conditions).toEqual([
+      { kind: 'enemyTypeAny', keywordsOrRaces: ['ActorTypeFeralGhoul', 'ActorTypeGhoul'] },
+    ]);
   });
 
   it('consumes GetIsPlayer()=1 (granted-perk self-gate) instead of leaving it unresolved', () => {
-    const row: RawCondition = { Function: 'GetIsPlayer', 'Comparison Value': 1, Operator: 'Equal To' };
+    const row: RawCondition = {
+      Function: 'GetIsPlayer',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+    };
     const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
     expect(conditions).toEqual([]);
     expect(unresolved).toEqual([]);
@@ -398,7 +468,9 @@ describe('translateConditions (WornHasKeyword unique self-gate allowlist — Bul
     };
     const edidMap = new Map([['0xFV', 'CustomItemName_FoundationsVengeance']]);
     const { conditions, unresolved } = translateConditions([row], { edidByFormId: edidMap });
-    expect(conditions).toEqual([{ kind: 'weaponKeyword', keyword: 'CustomItemName_FoundationsVengeance', present: true }]);
+    expect(conditions).toEqual([
+      { kind: 'weaponKeyword', keyword: 'CustomItemName_FoundationsVengeance', present: true },
+    ]);
     expect(unresolved).toEqual([]);
   });
 
@@ -412,7 +484,9 @@ describe('translateConditions (WornHasKeyword unique self-gate allowlist — Bul
     };
     const edidMap = new Map([['0xVLK', 'RD01_CustomItemName_Valkyrie']]);
     const { conditions } = translateConditions([row], { edidByFormId: edidMap });
-    expect(conditions).toEqual([{ kind: 'weaponKeyword', keyword: 'RD01_CustomItemName_Valkyrie', present: true }]);
+    expect(conditions).toEqual([
+      { kind: 'weaponKeyword', keyword: 'RD01_CustomItemName_Valkyrie', present: true },
+    ]);
   });
 
   it('leaves an off-allowlist CustomItemName_* keyword (dn_TheActionHero) unresolved — deliberately not added, its gated effect is data-broken either way', () => {
@@ -432,22 +506,46 @@ describe('translateConditions (WornHasKeyword unique self-gate allowlist — Bul
 
 describe('translateConditions (subjectIsTarget — Contact-delivery GetIsPlayer inversion, 2026-07-14)', () => {
   it('consumes GetIsPlayer()=0 (the NPC branch) instead of marking it inactive, when subjectIsTarget is set', () => {
-    const row: RawCondition = { Function: 'GetIsPlayer', 'Comparison Value': 0, Operator: 'Equal To', 'Run On': 'Subject' };
-    const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map(), subjectIsTarget: true });
+    const row: RawCondition = {
+      Function: 'GetIsPlayer',
+      'Comparison Value': 0,
+      Operator: 'Equal To',
+      'Run On': 'Subject',
+    };
+    const { conditions, unresolved } = translateConditions([row], {
+      edidByFormId: new Map(),
+      subjectIsTarget: true,
+    });
     expect(conditions).toEqual([]);
     expect(unresolved).toEqual([]);
   });
 
   it('marks GetIsPlayer()=1 (the PVP-only branch) inactive when subjectIsTarget is set', () => {
-    const row: RawCondition = { Function: 'GetIsPlayer', 'Comparison Value': 1, Operator: 'Equal To', 'Run On': 'Subject' };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map(), subjectIsTarget: true });
+    const row: RawCondition = {
+      Function: 'GetIsPlayer',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+      'Run On': 'Subject',
+    };
+    const { conditions } = translateConditions([row], {
+      edidByFormId: new Map(),
+      subjectIsTarget: true,
+    });
     expect(conditions).toBeNull();
   });
 
   it('leaves the default (granted-to-player) GetIsPlayer reading unchanged when subjectIsTarget is unset', () => {
-    const grantedRow: RawCondition = { Function: 'GetIsPlayer', 'Comparison Value': 1, Operator: 'Equal To' };
+    const grantedRow: RawCondition = {
+      Function: 'GetIsPlayer',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+    };
     expect(translateConditions([grantedRow], { edidByFormId: new Map() }).conditions).toEqual([]);
-    const inactiveRow: RawCondition = { Function: 'GetIsPlayer', 'Comparison Value': 0, Operator: 'Equal To' };
+    const inactiveRow: RawCondition = {
+      Function: 'GetIsPlayer',
+      'Comparison Value': 0,
+      Operator: 'Equal To',
+    };
     expect(translateConditions([inactiveRow], { edidByFormId: new Map() }).conditions).toBeNull();
   });
 });
@@ -462,15 +560,25 @@ describe("translateConditions (GetIsPlayer Run On: Target — granted-PERK tab-i
   // this is the same inversion `subjectIsTarget` already applies for
   // Contact-delivery ENCH/SPEL walks, driven here by the row's own Run On
   // field instead of a walk-scoped context flag.
-  it("consumes GetIsPlayer(Target)=0 (the NPC-bashed-target branch) instead of marking it inactive", () => {
-    const row: RawCondition = { Function: 'GetIsPlayer', 'Comparison Value': 0, Operator: 'Equal To', 'Run On': 'Target' };
+  it('consumes GetIsPlayer(Target)=0 (the NPC-bashed-target branch) instead of marking it inactive', () => {
+    const row: RawCondition = {
+      Function: 'GetIsPlayer',
+      'Comparison Value': 0,
+      Operator: 'Equal To',
+      'Run On': 'Target',
+    };
     const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
     expect(conditions).toEqual([]);
     expect(unresolved).toEqual([]);
   });
 
   it('marks GetIsPlayer(Target)=1 (the PVP-only branch) inactive', () => {
-    const row: RawCondition = { Function: 'GetIsPlayer', 'Comparison Value': 1, Operator: 'Equal To', 'Run On': 'Target' };
+    const row: RawCondition = {
+      Function: 'GetIsPlayer',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+      'Run On': 'Target',
+    };
     const { conditions } = translateConditions([row], { edidByFormId: new Map() });
     expect(conditions).toBeNull();
   });
@@ -478,27 +586,43 @@ describe("translateConditions (GetIsPlayer Run On: Target — granted-PERK tab-i
 
 describe('translateConditions (non-sprint combat model — IsSprinting/IsSwimming/ArmorTypePower, 2026-07-15)', () => {
   it('consumes IsSprinting()=0 (not sprinting) instead of leaving it unresolved', () => {
-    const row: RawCondition = { Function: 'IsSprinting', 'Comparison Value': 0, Operator: 'Equal To' };
+    const row: RawCondition = {
+      Function: 'IsSprinting',
+      'Comparison Value': 0,
+      Operator: 'Equal To',
+    };
     const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
     expect(conditions).toEqual([]);
     expect(unresolved).toEqual([]);
   });
 
   it('marks IsSprinting()=1 (sprint-only) inactive', () => {
-    const row: RawCondition = { Function: 'IsSprinting', 'Comparison Value': 1, Operator: 'Equal To' };
+    const row: RawCondition = {
+      Function: 'IsSprinting',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+    };
     const { conditions } = translateConditions([row], { edidByFormId: new Map() });
     expect(conditions).toBeNull();
   });
 
   it('consumes IsSwimming()=0 (not swimming) instead of leaving it unresolved', () => {
-    const row: RawCondition = { Function: 'IsSwimming', 'Comparison Value': 0, Operator: 'Equal To' };
+    const row: RawCondition = {
+      Function: 'IsSwimming',
+      'Comparison Value': 0,
+      Operator: 'Equal To',
+    };
     const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
     expect(conditions).toEqual([]);
     expect(unresolved).toEqual([]);
   });
 
   it('marks IsSwimming()=1 (swim-only) inactive', () => {
-    const row: RawCondition = { Function: 'IsSwimming', 'Comparison Value': 1, Operator: 'Equal To' };
+    const row: RawCondition = {
+      Function: 'IsSwimming',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+    };
     const { conditions } = translateConditions([row], { edidByFormId: new Map() });
     expect(conditions).toBeNull();
   });
@@ -522,8 +646,18 @@ describe('translateConditions (non-sprint combat model — IsSprinting/IsSwimmin
 describe('translateConditions (2026-07-11 condition kinds)', () => {
   it("dedupes Last Shot's GetLoadedAmmoCount()=0 + IsNextClipLastShot pair into ONE lastRound gate", () => {
     const rows: RawCondition[] = [
-      { Function: 'GetLoadedAmmoCount', 'Comparison Value': 0, Operator: 'Equal To', 'Run On': 'Subject' },
-      { Function: 'IsNextClipLastShot', 'Comparison Value': 0, Operator: 'Greater Than', 'Run On': 'Subject' },
+      {
+        Function: 'GetLoadedAmmoCount',
+        'Comparison Value': 0,
+        Operator: 'Equal To',
+        'Run On': 'Subject',
+      },
+      {
+        Function: 'IsNextClipLastShot',
+        'Comparison Value': 0,
+        Operator: 'Greater Than',
+        'Run On': 'Subject',
+      },
     ];
     const { conditions, unresolved } = translateConditions(rows, { edidByFormId: new Map() });
     expect(conditions).toEqual([{ kind: 'lastRound' }]);
@@ -538,39 +672,77 @@ describe('translateConditions (2026-07-11 condition kinds)', () => {
       Operator: 'Greater Than Or Equal To',
       'Run On': 'Target',
     };
-    const { conditions } = translateConditions([row], { edidByFormId: new Map([['0xFIRE', 'DamageTypeFire']]) });
+    const { conditions } = translateConditions([row], {
+      edidByFormId: new Map([['0xFIRE', 'DamageTypeFire']]),
+    });
     expect(conditions).toEqual([{ kind: 'enemyHasActiveEffect', keyword: 'DamageTypeFire' }]);
   });
 
   it("translates GetGroupTargetCount == N and ≥ N to enemyGroupCount tiers (Encircler's)", () => {
-    const eq: RawCondition = { Function: 'GetGroupTargetCount', 'Comparison Value': 3, Operator: 'Equal To', 'Run On': 'Subject' };
-    const ge: RawCondition = { Function: 'GetGroupTargetCount', 'Comparison Value': 5, Operator: 'Greater Than Or Equal To', 'Run On': 'Subject' };
-    expect(translateConditions([eq], { edidByFormId: new Map() }).conditions)
-      .toEqual([{ kind: 'enemyGroupCount', count: 3 }]);
-    expect(translateConditions([ge], { edidByFormId: new Map() }).conditions)
-      .toEqual([{ kind: 'enemyGroupCount', count: 5, orMore: true }]);
+    const eq: RawCondition = {
+      Function: 'GetGroupTargetCount',
+      'Comparison Value': 3,
+      Operator: 'Equal To',
+      'Run On': 'Subject',
+    };
+    const ge: RawCondition = {
+      Function: 'GetGroupTargetCount',
+      'Comparison Value': 5,
+      Operator: 'Greater Than Or Equal To',
+      'Run On': 'Subject',
+    };
+    expect(translateConditions([eq], { edidByFormId: new Map() }).conditions).toEqual([
+      { kind: 'enemyGroupCount', count: 3 },
+    ]);
+    expect(translateConditions([ge], { edidByFormId: new Map() }).conditions).toEqual([
+      { kind: 'enemyGroupCount', count: 5, orMore: true },
+    ]);
   });
 
   it("translates WornApparelHasKeywordCount == N and ≥ N to wornPieceCount tiers (Battle-Loader's, Phase 3 armor pipeline)", () => {
     const edidByFormId = new Map([['0x00792A12', 'HasLegendary_Armor_BattleLoaders']]);
     const eq: RawCondition = {
-      Function: 'WornApparelHasKeywordCount', 'Parameter 1': '0x00792A12',
-      'Comparison Value': 4, Operator: 'Equal To', 'Run On': 'Subject',
+      Function: 'WornApparelHasKeywordCount',
+      'Parameter 1': '0x00792A12',
+      'Comparison Value': 4,
+      Operator: 'Equal To',
+      'Run On': 'Subject',
     };
     const ge: RawCondition = {
-      Function: 'WornApparelHasKeywordCount', 'Parameter 1': '0x00792A12',
-      'Comparison Value': 5, Operator: 'Greater Than Or Equal To', 'Run On': 'Subject',
+      Function: 'WornApparelHasKeywordCount',
+      'Parameter 1': '0x00792A12',
+      'Comparison Value': 5,
+      Operator: 'Greater Than Or Equal To',
+      'Run On': 'Subject',
     };
-    expect(translateConditions([eq], { edidByFormId }).conditions)
-      .toEqual([{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 4 }]);
-    expect(translateConditions([ge], { edidByFormId }).conditions)
-      .toEqual([{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 5, orMore: true }]);
+    expect(translateConditions([eq], { edidByFormId }).conditions).toEqual([
+      { kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 4 },
+    ]);
+    expect(translateConditions([ge], { edidByFormId }).conditions).toEqual([
+      {
+        kind: 'wornPieceCount',
+        keyword: 'HasLegendary_Armor_BattleLoaders',
+        count: 5,
+        orMore: true,
+      },
+    ]);
   });
 
   it("translates GetPlayerTeammateCount == N to teammateCount and consumes the teammate GetDistance row (Fencer's)", () => {
     const rows: RawCondition[] = [
-      { Function: 'GetPlayerTeammateCount', 'Comparison Value': 2, Operator: 'Equal To', 'Run On': 'Subject' },
-      { Function: 'GetDistance', 'Parameter 1': null, 'Comparison Value': 2500, Operator: 'Less Than', 'Run On': 'Potential Players' },
+      {
+        Function: 'GetPlayerTeammateCount',
+        'Comparison Value': 2,
+        Operator: 'Equal To',
+        'Run On': 'Subject',
+      },
+      {
+        Function: 'GetDistance',
+        'Parameter 1': null,
+        'Comparison Value': 2500,
+        Operator: 'Less Than',
+        'Run On': 'Potential Players',
+      },
     ];
     const { conditions, unresolved } = translateConditions(rows, { edidByFormId: new Map() });
     expect(conditions).toEqual([{ kind: 'teammateCount', count: 2 }]);
@@ -597,24 +769,43 @@ describe('translateConditions (2026-07-11 condition kinds)', () => {
       Operator: 'Equal To',
       'Run On': 'Target',
     };
-    const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map([['0xIMMUNE', 'ImmuneToPoison']]) });
+    const { conditions, unresolved } = translateConditions([row], {
+      edidByFormId: new Map([['0xIMMUNE', 'ImmuneToPoison']]),
+    });
     expect(conditions).toEqual([]);
     expect(unresolved).toEqual([]);
   });
 
   it("translates GetIsPlayerGhoul to a playerIsGhoul gate (Gourmand's =0, Glowing Criticals =1)", () => {
-    const human: RawCondition = { Function: 'GetIsPlayerGhoul', 'Comparison Value': 0, Operator: 'Equal To' };
-    const ghoul: RawCondition = { Function: 'GetIsPlayerGhoul', 'Comparison Value': 1, Operator: 'Equal To' };
-    expect(translateConditions([human], { edidByFormId: new Map() }).conditions)
-      .toEqual([{ kind: 'playerIsGhoul', value: false }]);
-    expect(translateConditions([ghoul], { edidByFormId: new Map() }).conditions)
-      .toEqual([{ kind: 'playerIsGhoul', value: true }]);
+    const human: RawCondition = {
+      Function: 'GetIsPlayerGhoul',
+      'Comparison Value': 0,
+      Operator: 'Equal To',
+    };
+    const ghoul: RawCondition = {
+      Function: 'GetIsPlayerGhoul',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+    };
+    expect(translateConditions([human], { edidByFormId: new Map() }).conditions).toEqual([
+      { kind: 'playerIsGhoul', value: false },
+    ]);
+    expect(translateConditions([ghoul], { edidByFormId: new Map() }).conditions).toEqual([
+      { kind: 'playerIsGhoul', value: true },
+    ]);
   });
 
   it('leaves an off-pattern GetDistance row unresolved instead of silently consuming it', () => {
-    const row: RawCondition = { Function: 'GetDistance', 'Comparison Value': 500, Operator: 'Less Than', 'Run On': 'Target' };
+    const row: RawCondition = {
+      Function: 'GetDistance',
+      'Comparison Value': 500,
+      Operator: 'Less Than',
+      'Run On': 'Target',
+    };
     const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([{ kind: 'unresolved', raw: 'GetDistance Less Than 500 on Target' }]);
+    expect(conditions).toEqual([
+      { kind: 'unresolved', raw: 'GetDistance Less Than 500 on Target' },
+    ]);
   });
 });
 
@@ -625,7 +816,7 @@ describe('translate (Damage-archetype DoT effects)', () => {
       mgef({ archetype: 'Damage', resistValue: '0xResist' }),
       effect({ magnitude: 12, duration: 5 }),
       noRoutes,
-      dotEdids
+      dotEdids,
     );
     expect(r.modifiers).toHaveLength(1);
     expect(r.modifiers[0]).toEqual({
@@ -643,11 +834,17 @@ describe('translate (Damage-archetype DoT effects)', () => {
       mgef({ archetype: 'Damage', resistValue: '0xResist' }),
       effect({ magnitude: 12, duration: 5 }),
       noRoutes,
-      dotEdids
+      dotEdids,
     );
     expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({ bucket: 'dotDamage', op: 'ADD', value: 12, durationSec: 5, conditions: [] });
-    expect(r.notes.some(n => n.includes('unmapped Resist Value'))).toBe(true);
+    expect(r.modifiers[0]).toEqual({
+      bucket: 'dotDamage',
+      op: 'ADD',
+      value: 12,
+      durationSec: 5,
+      conditions: [],
+    });
+    expect(r.notes.some((n) => n.includes('unmapped Resist Value'))).toBe(true);
   });
 });
 
@@ -660,16 +857,21 @@ describe('translate (silent-drop guard for unrouted AVs)', () => {
       effect({ magnitude: 10 }),
       noRoutes,
       leftAttackEdids,
-      { noteUnroutedAvs: true }
+      { noteUnroutedAvs: true },
     );
     expect(r.modifiers).toHaveLength(0);
-    expect(r.notes.some(n => n.includes('no route for AV'))).toBe(true);
+    expect(r.notes.some((n) => n.includes('no route for AV'))).toBe(true);
   });
 
   it('without noteUnroutedAvs: emits zero modifiers and NO such note (perk path unchanged)', () => {
-    const r = translate(mgef({ actorValue: '0xLAC' }), effect({ magnitude: 10 }), noRoutes, leftAttackEdids);
+    const r = translate(
+      mgef({ actorValue: '0xLAC' }),
+      effect({ magnitude: 10 }),
+      noRoutes,
+      leftAttackEdids,
+    );
     expect(r.modifiers).toHaveLength(0);
-    expect(r.notes.some(n => n.includes('no route for AV'))).toBe(false);
+    expect(r.notes.some((n) => n.includes('no route for AV'))).toBe(false);
   });
 });
 
@@ -706,7 +908,9 @@ describe('translateConditions (Stage C3, killstreak GetValue tiers)', () => {
       Operator: 'Greater Than Or Equal To',
     };
     const { conditions } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([{ kind: 'unresolved', raw: 'GetValue(0x00000399) Greater Than Or Equal To 3' }]);
+    expect(conditions).toEqual([
+      { kind: 'unresolved', raw: 'GetValue(0x00000399) Greater Than Or Equal To 3' },
+    ]);
   });
 });
 
@@ -717,7 +921,12 @@ describe('translateConditions (Stage C4, gender-twin paired family — Action Bo
   it('a single-row HasPerk on the paired family is consumed when the mirrored rank matches', () => {
     // Rank-1 simulation: mirrored paired rank is also 1, so paired rank-2
     // (index 1) is NOT owned — HasPerk(...)=0 wants "not owned" → satisfied.
-    const row: RawCondition = { Function: 'HasPerk', 'Parameter 1': '0xAG02', 'Comparison Value': 0, Operator: 'Equal To' };
+    const row: RawCondition = {
+      Function: 'HasPerk',
+      'Parameter 1': '0xAG02',
+      'Comparison Value': 0,
+      Operator: 'Equal To',
+    };
     const { conditions, unresolved } = translateConditions([row], {
       edidByFormId: new Map(),
       familyFormIds: ownFamily,
@@ -731,7 +940,12 @@ describe('translateConditions (Stage C4, gender-twin paired family — Action Bo
   it('a single-row HasPerk on the paired family kills the effect when the mirrored rank mismatches', () => {
     // Rank-2 simulation: mirrored paired rank-2 IS owned, but the row wants
     // "not owned" (=0) → mismatch → the whole effect is inactive.
-    const row: RawCondition = { Function: 'HasPerk', 'Parameter 1': '0xAG02', 'Comparison Value': 0, Operator: 'Equal To' };
+    const row: RawCondition = {
+      Function: 'HasPerk',
+      'Parameter 1': '0xAG02',
+      'Comparison Value': 0,
+      Operator: 'Equal To',
+    };
     const { conditions } = translateConditions([row], {
       edidByFormId: new Map(),
       familyFormIds: ownFamily,
@@ -743,7 +957,13 @@ describe('translateConditions (Stage C4, gender-twin paired family — Action Bo
 
   it('an OR-group of own+paired HasPerk rows is consumed when ANY member is satisfied', () => {
     const rows: RawCondition[] = [
-      { Function: 'HasPerk', 'Parameter 1': '0xAB02', 'Comparison Value': 1, Operator: 'Equal To', 'AND/OR': 'OR' },
+      {
+        Function: 'HasPerk',
+        'Parameter 1': '0xAB02',
+        'Comparison Value': 1,
+        Operator: 'Equal To',
+        'AND/OR': 'OR',
+      },
       { Function: 'HasPerk', 'Parameter 1': '0xAG02', 'Comparison Value': 1, Operator: 'Equal To' },
     ];
     // Rank-2 simulation: own rank-2 (index 1) IS owned → wants=1 → satisfied.
@@ -759,7 +979,13 @@ describe('translateConditions (Stage C4, gender-twin paired family — Action Bo
 
   it('an OR-group of own+paired HasPerk rows kills the effect when NEITHER member is satisfied', () => {
     const rows: RawCondition[] = [
-      { Function: 'HasPerk', 'Parameter 1': '0xAB02', 'Comparison Value': 1, Operator: 'Equal To', 'AND/OR': 'OR' },
+      {
+        Function: 'HasPerk',
+        'Parameter 1': '0xAB02',
+        'Comparison Value': 1,
+        Operator: 'Equal To',
+        'AND/OR': 'OR',
+      },
       { Function: 'HasPerk', 'Parameter 1': '0xAG02', 'Comparison Value': 1, Operator: 'Equal To' },
     ];
     // Rank-1 simulation: neither own nor paired rank-2 is owned → both fail.
@@ -774,7 +1000,13 @@ describe('translateConditions (Stage C4, gender-twin paired family — Action Bo
 
   it('an all-HasPerk OR-group with NO pairedFamilyFormIds falls through to unresolved (pre-Stage-C4 behavior preserved)', () => {
     const rows: RawCondition[] = [
-      { Function: 'HasPerk', 'Parameter 1': '0xAB02', 'Comparison Value': 1, Operator: 'Equal To', 'AND/OR': 'OR' },
+      {
+        Function: 'HasPerk',
+        'Parameter 1': '0xAB02',
+        'Comparison Value': 1,
+        Operator: 'Equal To',
+        'AND/OR': 'OR',
+      },
       { Function: 'HasPerk', 'Parameter 1': '0xAG02', 'Comparison Value': 1, Operator: 'Equal To' },
     ];
     const { conditions, unresolved } = translateConditions(rows, {
@@ -796,25 +1028,44 @@ describe('translateConditions (cross-family HasPerk → perkFamilyRank, 2026-07-
   ]);
 
   it('a HasPerk row on ANOTHER family translates to a typed perkFamilyRank condition', () => {
-    const row: RawCondition = { Function: 'HasPerk', 'Parameter 1': '0xLNL01', 'Comparison Value': 1, Operator: 'Equal To' };
+    const row: RawCondition = {
+      Function: 'HasPerk',
+      'Parameter 1': '0xLNL01',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+    };
     const { conditions, unresolved } = translateConditions([row], {
       edidByFormId: new Map(),
       familyFormIds: ownFamily,
       ownedRanks: 1,
       crossFamilyRank,
     });
-    expect(conditions).toEqual([{ kind: 'perkFamilyRank', family: 'LockAndLoad', minRank: 1, present: true }]);
+    expect(conditions).toEqual([
+      { kind: 'perkFamilyRank', family: 'LockAndLoad', minRank: 1, present: true },
+    ]);
     expect(unresolved).toEqual([]);
   });
 
   it('=0 rows carry present:false; higher ranks carry their own minRank', () => {
-    const row: RawCondition = { Function: 'HasPerk', 'Parameter 1': '0xLNL02', 'Comparison Value': 0, Operator: 'Equal To' };
+    const row: RawCondition = {
+      Function: 'HasPerk',
+      'Parameter 1': '0xLNL02',
+      'Comparison Value': 0,
+      Operator: 'Equal To',
+    };
     const { conditions } = translateConditions([row], { edidByFormId: new Map(), crossFamilyRank });
-    expect(conditions).toEqual([{ kind: 'perkFamilyRank', family: 'LockAndLoad', minRank: 2, present: false }]);
+    expect(conditions).toEqual([
+      { kind: 'perkFamilyRank', family: 'LockAndLoad', minRank: 2, present: false },
+    ]);
   });
 
   it('the SELF-family rank gate wins over the global map (simulation-consumed, never a runtime condition)', () => {
-    const row: RawCondition = { Function: 'HasPerk', 'Parameter 1': '0xBS01', 'Comparison Value': 1, Operator: 'Equal To' };
+    const row: RawCondition = {
+      Function: 'HasPerk',
+      'Parameter 1': '0xBS01',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+    };
     const { conditions, unresolved } = translateConditions([row], {
       edidByFormId: new Map(),
       familyFormIds: ownFamily,
@@ -826,8 +1077,16 @@ describe('translateConditions (cross-family HasPerk → perkFamilyRank, 2026-07-
   });
 
   it('a formid outside the map (cut content, e.g. CUT_Radicool) still falls through to unresolved', () => {
-    const row: RawCondition = { Function: 'HasPerk', 'Parameter 1': '0xCUT01', 'Comparison Value': 1, Operator: 'Equal To' };
-    const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map(), crossFamilyRank });
+    const row: RawCondition = {
+      Function: 'HasPerk',
+      'Parameter 1': '0xCUT01',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+    };
+    const { conditions, unresolved } = translateConditions([row], {
+      edidByFormId: new Map(),
+      crossFamilyRank,
+    });
     expect(conditions).toEqual([{ kind: 'unresolved', raw: 'HasPerk(0xCUT01)=1' }]);
     expect(unresolved).toHaveLength(1);
   });
@@ -840,13 +1099,25 @@ describe('flattenPerkConditionRows', () => {
         'Perk Condition': {
           'Run On (Tab Index)': 2,
           Conditions: [
-            { Condition: { 'Condition Data': { Function: 'HasKeyword', 'Parameter 1': '0xKW', 'Comparison Value': 1 } } },
+            {
+              Condition: {
+                'Condition Data': {
+                  Function: 'HasKeyword',
+                  'Parameter 1': '0xKW',
+                  'Comparison Value': 1,
+                },
+              },
+            },
           ],
         },
       },
     ]);
     expect(rows).toHaveLength(1);
-    expect(rows[0]).toMatchObject({ Function: 'HasKeyword', 'Parameter 1': '0xKW', 'Run On': 'Target' });
+    expect(rows[0]).toMatchObject({
+      Function: 'HasKeyword',
+      'Parameter 1': '0xKW',
+      'Run On': 'Target',
+    });
   });
 
   it('returns [] for a non-array node', () => {
@@ -882,10 +1153,38 @@ describe('translateConditions (2026-07-14 anim-type gate + CNDF expansion)', () 
   // Ground Pounder's SmallGun_Actor_Condition CNDF, verbatim shape:
   // (Rifle OR Shotgun OR Pistol) AND NOT HeavyGun.
   const smallGunRows: RawCondition[] = [
-    { Function: 'WornHasKeyword', 'Parameter 1': '0xRIFLE', 'Comparison Value': 1, Operator: 'Equal To', 'AND/OR': 'OR', 'Run On': 'Subject' },
-    { Function: 'WornHasKeyword', 'Parameter 1': '0xSHOTGUN', 'Comparison Value': 1, Operator: 'Equal To', 'AND/OR': 'OR', 'Run On': 'Subject' },
-    { Function: 'WornHasKeyword', 'Parameter 1': '0xPISTOL', 'Comparison Value': 1, Operator: 'Equal To', 'AND/OR': 'AND', 'Run On': 'Subject' },
-    { Function: 'WornHasKeyword', 'Parameter 1': '0xHEAVY', 'Comparison Value': 0, Operator: 'Equal To', 'AND/OR': 'AND', 'Run On': 'Subject' },
+    {
+      Function: 'WornHasKeyword',
+      'Parameter 1': '0xRIFLE',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+      'AND/OR': 'OR',
+      'Run On': 'Subject',
+    },
+    {
+      Function: 'WornHasKeyword',
+      'Parameter 1': '0xSHOTGUN',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+      'AND/OR': 'OR',
+      'Run On': 'Subject',
+    },
+    {
+      Function: 'WornHasKeyword',
+      'Parameter 1': '0xPISTOL',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+      'AND/OR': 'AND',
+      'Run On': 'Subject',
+    },
+    {
+      Function: 'WornHasKeyword',
+      'Parameter 1': '0xHEAVY',
+      'Comparison Value': 0,
+      Operator: 'Equal To',
+      'AND/OR': 'AND',
+      'Run On': 'Subject',
+    },
   ];
   const smallGunEdids = new Map([
     ['0xCNDF', 'SmallGun_Actor_Condition'],
@@ -908,7 +1207,10 @@ describe('translateConditions (2026-07-14 anim-type gate + CNDF expansion)', () 
       conditionForms: new Map([['0xCNDF', smallGunRows]]),
     });
     expect(conditions).toEqual([
-      { kind: 'weaponKeywordAny', keywords: ['WeaponTypeRifle', 'WeaponTypeShotgun', 'WeaponTypePistol'] },
+      {
+        kind: 'weaponKeywordAny',
+        keywords: ['WeaponTypeRifle', 'WeaponTypeShotgun', 'WeaponTypePistol'],
+      },
       { kind: 'weaponKeyword', keyword: 'WeaponTypeHeavyGun', present: false },
     ]);
     expect(unresolved).toEqual([]);
@@ -916,20 +1218,33 @@ describe('translateConditions (2026-07-14 anim-type gate + CNDF expansion)', () 
 
   it('falls back to the unresolved row when the CNDF contents do not FULLY translate (Perk_Day_Condition shape)', () => {
     const dayRows: RawCondition[] = [
-      { Function: 'GetCurrentTime', 'Comparison Value': 6, Operator: 'Greater Than Or Equal To', 'Run On': 'Subject' },
+      {
+        Function: 'GetCurrentTime',
+        'Comparison Value': 6,
+        Operator: 'Greater Than Or Equal To',
+        'Run On': 'Subject',
+      },
     ];
     const { conditions, unresolved } = translateConditions([isTrueRow], {
       edidByFormId: new Map([['0xCNDF', 'Perk_Day_Condition']]),
       conditionForms: new Map([['0xCNDF', dayRows]]),
     });
-    expect(conditions).toEqual([{ kind: 'unresolved', raw: 'IsTrueForConditionForm(Perk_Day_Condition)=1' }]);
+    expect(conditions).toEqual([
+      { kind: 'unresolved', raw: 'IsTrueForConditionForm(Perk_Day_Condition)=1' },
+    ]);
     expect(unresolved).toHaveLength(1);
   });
 
   it('never expands inside an OR-group (GHL feral-rage shape) or without a pre-fetched form', () => {
     const orGroup: RawCondition[] = [
       { ...isTrueRow, 'AND/OR': 'OR' },
-      { Function: 'GetValue', 'Parameter 1': '0xRADS', 'Comparison Value': 5, Operator: 'Greater Than Or Equal To', 'Run On': 'Subject' },
+      {
+        Function: 'GetValue',
+        'Parameter 1': '0xRADS',
+        'Comparison Value': 5,
+        Operator: 'Greater Than Or Equal To',
+        'Run On': 'Subject',
+      },
     ];
     const withForm = translateConditions(orGroup, {
       edidByFormId: smallGunEdids,
@@ -952,19 +1267,29 @@ describe('getMgefInfo (Detrimental flag, 2026-07-14)', () => {
       header: { signature: 'MGEF', form_id: '0xFLAGS' },
       editor_id: 'FlagsMgef',
       fields: {
-        'Magic Effect Data': { Data: { Archetype: { name: 'Peak Value Modifier' }, Flags: { value: '0x0', flags } } },
+        'Magic Effect Data': {
+          Data: { Archetype: { name: 'Peak Value Modifier' }, Flags: { value: '0x0', flags } },
+        },
       },
     } as unknown as EsmRecord;
   }
 
   it('is true for a Detrimental-flagged MGEF (Mutation_ReduceStrength-style)', async () => {
-    const client = { async get() { return flagRecord(['Recover', 'Detrimental', 'No Duration', 'No Area']); } } as unknown as EsmClient;
+    const client = {
+      async get() {
+        return flagRecord(['Recover', 'Detrimental', 'No Duration', 'No Area']);
+      },
+    } as unknown as EsmClient;
     const info = await getMgefInfo(client, '0xFLAGS');
     expect(info.detrimental).toBe(true);
   });
 
   it('is false when the flag is absent (FortifyStrengthChemEffect-style)', async () => {
-    const client = { async get() { return flagRecord(['Recover', 'Dispel with Keywords', 'No Area']); } } as unknown as EsmClient;
+    const client = {
+      async get() {
+        return flagRecord(['Recover', 'Dispel with Keywords', 'No Area']);
+      },
+    } as unknown as EsmClient;
     const info = await getMgefInfo(client, '0xFLAGS');
     expect(info.detrimental).toBe(false);
   });
@@ -976,28 +1301,70 @@ describe('translate (Detrimental sign handling, 2026-07-14)', () => {
   const strEdids = new Map<string, string>([['0xAV', 'Strength']]);
 
   it('negates a flat Peak Value Modifier magnitude when detrimental (Mutation_ReduceStrength-style: mag 3 → −3)', () => {
-    const r = translate(mgef({ archetype: 'Peak Value Modifier', detrimental: true }), effect({ magnitude: 3 }), noRoutes, strEdids);
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier', detrimental: true }),
+      effect({ magnitude: 3 }),
+      noRoutes,
+      strEdids,
+    );
     expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({ bucket: 'specialStrength', op: 'ADD', value: -3, conditions: [] });
+    expect(r.modifiers[0]).toEqual({
+      bucket: 'specialStrength',
+      op: 'ADD',
+      value: -3,
+      conditions: [],
+    });
   });
 
   it('does NOT negate when detrimental is false (guard against over-negation)', () => {
-    const r = translate(mgef({ archetype: 'Peak Value Modifier', detrimental: false }), effect({ magnitude: 3 }), noRoutes, strEdids);
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier', detrimental: false }),
+      effect({ magnitude: 3 }),
+      noRoutes,
+      strEdids,
+    );
     expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({ bucket: 'specialStrength', op: 'ADD', value: 3, conditions: [] });
+    expect(r.modifiers[0]).toEqual({
+      bucket: 'specialStrength',
+      op: 'ADD',
+      value: 3,
+      conditions: [],
+    });
   });
 
   it('leaves a Damage-archetype DoT magnitude positive despite detrimental (DoT magnitude is damage, not a stat delta)', () => {
-    const r = translate(mgef({ archetype: 'Damage', detrimental: true }), effect({ magnitude: 10, duration: 5 }), noRoutes, edids);
+    const r = translate(
+      mgef({ archetype: 'Damage', detrimental: true }),
+      effect({ magnitude: 10, duration: 5 }),
+      noRoutes,
+      edids,
+    );
     expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({ bucket: 'dotDamage', op: 'ADD', value: 10, durationSec: 5, conditions: [] });
+    expect(r.modifiers[0]).toEqual({
+      bucket: 'dotDamage',
+      op: 'ADD',
+      value: 10,
+      durationSec: 5,
+      conditions: [],
+    });
   });
 
   it('drops a Detrimental multi-point curve and notes the sign ambiguity instead of guessing', () => {
-    const curved = effect({ curvePoints: [{ x: 0.05, y: 130 }, { x: 1.0, y: 0 }], curveInputAv: '0x00000392' });
-    const r = translate(mgef({ archetype: 'Peak Value Modifier', detrimental: true }), curved, noRoutes, edids);
+    const curved = effect({
+      curvePoints: [
+        { x: 0.05, y: 130 },
+        { x: 1.0, y: 0 },
+      ],
+      curveInputAv: '0x00000392',
+    });
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier', detrimental: true }),
+      curved,
+      noRoutes,
+      edids,
+    );
     expect(r.modifiers).toHaveLength(0);
-    expect(r.notes.some(n => /Detrimental.*curve/.test(n))).toBe(true);
+    expect(r.notes.some((n) => /Detrimental.*curve/.test(n))).toBe(true);
   });
 });
 
@@ -1005,7 +1372,12 @@ describe('translate (Health-route archetype scoping, 2026-07-14)', () => {
   const healthEdids = new Map<string, string>([['0xAV', 'Health']]);
 
   it("routes a Peak Value Modifier on AV Health to maxHealth (Adrenal Reaction's permanent max-HP cut)", () => {
-    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), effect({ magnitude: 25 }), noRoutes, healthEdids);
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier' }),
+      effect({ magnitude: 25 }),
+      noRoutes,
+      healthEdids,
+    );
     expect(r.modifiers).toHaveLength(1);
     expect(r.modifiers[0]).toEqual({ bucket: 'maxHealth', op: 'ADD', value: 25, conditions: [] });
   });
@@ -1016,7 +1388,7 @@ describe('translate (Health-route archetype scoping, 2026-07-14)', () => {
       effect({ magnitude: 25 }),
       noRoutes,
       healthEdids,
-      { noteUnroutedAvs: true }
+      { noteUnroutedAvs: true },
     );
     expect(r.modifiers).toHaveLength(0);
     // Documented out-of-scope skip (2026-07-15): instant restores no longer
@@ -1032,33 +1404,59 @@ describe('translate (AP actor-value routes, 2026-07-15)', () => {
   const dmgApEdids = new Map<string, string>([['0xAV', 'STAT_DmgAP']]);
 
   it("routes a Peak Value Modifier on AV ActionPoints to apMax (FortifyActionPointsFood's +AP)", () => {
-    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), effect({ magnitude: 30 }), noRoutes, apEdids);
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier' }),
+      effect({ magnitude: 30 }),
+      noRoutes,
+      apEdids,
+    );
     expect(r.modifiers).toHaveLength(1);
     expect(r.modifiers[0]).toEqual({ bucket: 'apMax', op: 'ADD', value: 30, conditions: [] });
   });
 
   it("negates Scaly Skin's Detrimental Mutation_ReduceActionPoints (mag 50 → apMax −50)", () => {
-    const r = translate(mgef({ archetype: 'Peak Value Modifier', detrimental: true }), effect({ magnitude: 50 }), noRoutes, apEdids);
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier', detrimental: true }),
+      effect({ magnitude: 50 }),
+      noRoutes,
+      apEdids,
+    );
     expect(r.modifiers).toHaveLength(1);
     expect(r.modifiers[0]).toEqual({ bucket: 'apMax', op: 'ADD', value: -50, conditions: [] });
   });
 
   it('skips a Value Modifier on AV ActionPoints silently (instant restores — RestoreActionPointsFood, Brain Bombs)', () => {
-    const r = translate(mgef({ archetype: 'Value Modifier' }), effect({ magnitude: 45 }), noRoutes, apEdids, {
-      noteUnroutedAvs: true,
-    });
+    const r = translate(
+      mgef({ archetype: 'Value Modifier' }),
+      effect({ magnitude: 45 }),
+      noRoutes,
+      apEdids,
+      {
+        noteUnroutedAvs: true,
+      },
+    );
     expect(r.modifiers).toHaveLength(0);
     expect(r.notes).toHaveLength(0);
   });
 
   it("routes AV ActionPointsRate to apRegenFlat at scale 1 (Company Tea's FortifyActionPointRegenFood +10)", () => {
-    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), effect({ magnitude: 10 }), noRoutes, apRateEdids);
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier' }),
+      effect({ magnitude: 10 }),
+      noRoutes,
+      apRateEdids,
+    );
     expect(r.modifiers).toHaveLength(1);
     expect(r.modifiers[0]).toEqual({ bucket: 'apRegenFlat', op: 'ADD', value: 10, conditions: [] });
   });
 
   it("routes STAT_DmgAP to a scaledByWeaponApCost dbm (Number Cruncher's abPerkFortifyDmgAP, mag 2 → 0.02/AP)", () => {
-    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), effect({ magnitude: 2 }), noRoutes, dmgApEdids);
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier' }),
+      effect({ magnitude: 2 }),
+      noRoutes,
+      dmgApEdids,
+    );
     expect(r.modifiers).toHaveLength(1);
     expect(r.modifiers[0]).toEqual({
       bucket: 'dbm',
@@ -1079,7 +1477,9 @@ describe('translateConditions (Class Freak rank tiers, 2026-07-14)', () => {
   });
 
   it('tier 0 (below ClassFreak01): [HasPerk(01)=0] → [{min:0,max:0}]', () => {
-    const { conditions } = translateConditions([rank('0x00391F0E', 0)], { edidByFormId: new Map() });
+    const { conditions } = translateConditions([rank('0x00391F0E', 0)], {
+      edidByFormId: new Map(),
+    });
     expect(conditions).toEqual([{ kind: 'classFreakRank', min: 0, max: 0 }]);
   });
 
@@ -1102,26 +1502,48 @@ describe('translateConditions (Class Freak rank tiers, 2026-07-14)', () => {
   });
 
   it('tier 3 (ClassFreak03): [HasPerk(03)=1] → [{3,3}]', () => {
-    const { conditions } = translateConditions([rank('0x00391F12', 1)], { edidByFormId: new Map() });
+    const { conditions } = translateConditions([rank('0x00391F12', 1)], {
+      edidByFormId: new Map(),
+    });
     expect(conditions).toEqual([{ kind: 'classFreakRank', min: 3, max: 3 }]);
   });
 });
 
 describe('translateConditions (IsSpellTarget RadX/Serum suppression, 2026-07-14)', () => {
-  const suppressionEdids = new Map([['0x00024057', 'RadX'], ['0x0050A5CB', 'Serum_EggHead']]);
+  const suppressionEdids = new Map([
+    ['0x00024057', 'RadX'],
+    ['0x0050A5CB', 'Serum_EggHead'],
+  ]);
 
   it('consumes both RadX=0 and Serum_EggHead=0 (effect active while unsuppressed)', () => {
     const rows: RawCondition[] = [
-      { Function: 'IsSpellTarget', 'Parameter 1': '0x00024057', 'Comparison Value': 0, Operator: 'Equal To' },
-      { Function: 'IsSpellTarget', 'Parameter 1': '0x0050A5CB', 'Comparison Value': 0, Operator: 'Equal To' },
+      {
+        Function: 'IsSpellTarget',
+        'Parameter 1': '0x00024057',
+        'Comparison Value': 0,
+        Operator: 'Equal To',
+      },
+      {
+        Function: 'IsSpellTarget',
+        'Parameter 1': '0x0050A5CB',
+        'Comparison Value': 0,
+        Operator: 'Equal To',
+      },
     ];
-    const { conditions, unresolved } = translateConditions(rows, { edidByFormId: suppressionEdids });
+    const { conditions, unresolved } = translateConditions(rows, {
+      edidByFormId: suppressionEdids,
+    });
     expect(conditions).toEqual([]);
     expect(unresolved).toEqual([]);
   });
 
   it('kills the effect for RadX=1 (the treated/suppressed variant we never model)', () => {
-    const row: RawCondition = { Function: 'IsSpellTarget', 'Parameter 1': '0x00024057', 'Comparison Value': 1, Operator: 'Equal To' };
+    const row: RawCondition = {
+      Function: 'IsSpellTarget',
+      'Parameter 1': '0x00024057',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+    };
     const { conditions } = translateConditions([row], { edidByFormId: suppressionEdids });
     expect(conditions).toBeNull();
   });
@@ -1129,13 +1551,21 @@ describe('translateConditions (IsSpellTarget RadX/Serum suppression, 2026-07-14)
 
 describe('translateConditions (IsMemberOfAPlayerTeam, 2026-07-14)', () => {
   it('=1 → teammateCount ≥1 (Herd Mentality team bonus)', () => {
-    const row: RawCondition = { Function: 'IsMemberOfAPlayerTeam', 'Comparison Value': 1, Operator: 'Equal To' };
+    const row: RawCondition = {
+      Function: 'IsMemberOfAPlayerTeam',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+    };
     const { conditions } = translateConditions([row], { edidByFormId: new Map() });
     expect(conditions).toEqual([{ kind: 'teammateCount', count: 1, orMore: true }]);
   });
 
   it('=0 → teammateCount 0 (Herd Mentality solo penalty)', () => {
-    const row: RawCondition = { Function: 'IsMemberOfAPlayerTeam', 'Comparison Value': 0, Operator: 'Equal To' };
+    const row: RawCondition = {
+      Function: 'IsMemberOfAPlayerTeam',
+      'Comparison Value': 0,
+      Operator: 'Equal To',
+    };
     const { conditions } = translateConditions([row], { edidByFormId: new Map() });
     expect(conditions).toEqual([{ kind: 'teammateCount', count: 0 }]);
   });
@@ -1153,7 +1583,9 @@ describe('ENTRY_POINT_BUCKETS (Mod Weapon Attack Damage, 2026-07-21)', () => {
 
 describe('ENTRY_POINT_BUCKETS (Bullet Storm, 2026-07-16)', () => {
   it("maps 'Mod Ammo Spender Max Reload Stack Mult' to bulletStormRetention (Lock and Load r1's EP210)", () => {
-    expect(ENTRY_POINT_BUCKETS['Mod Ammo Spender Max Reload Stack Mult']).toBe('bulletStormRetention');
+    expect(ENTRY_POINT_BUCKETS['Mod Ammo Spender Max Reload Stack Mult']).toBe(
+      'bulletStormRetention',
+    );
   });
 });
 
@@ -1168,7 +1600,11 @@ describe('translateEnchantment (Contact-delivery weapon/OMOD on-hit procs, 2026-
       editor_id: `Mgef${formId}`,
       fields: {
         'Magic Effect Data': {
-          Data: { Archetype: { name: 'Damage' }, 'Resist Value': resistValue, Flags: { value: '0x0', flags: [] } },
+          Data: {
+            Archetype: { name: 'Damage' },
+            'Resist Value': resistValue,
+            Flags: { value: '0x0', flags: [] },
+          },
         },
       },
     }) as unknown as EsmRecord;
@@ -1181,7 +1617,10 @@ describe('translateEnchantment (Contact-delivery weapon/OMOD on-hit procs, 2026-
         header: { signature: 'ENCH', form_id: enchFormId },
         editor_id: 'TestFireHitEnch',
         fields: {
-          'Effect Data': { 'Target Type': { name: 'Contact' }, 'Cast Type': { name: 'Fire and Forget' } },
+          'Effect Data': {
+            'Target Type': { name: 'Contact' },
+            'Cast Type': { name: 'Fire and Forget' },
+          },
           Effects: [
             {
               Effect: {
@@ -1189,7 +1628,16 @@ describe('translateEnchantment (Contact-delivery weapon/OMOD on-hit procs, 2026-
                 'Effect Item Data': { Magnitude: 10, Duration: 6 },
                 Conditions: {
                   Conditions: [
-                    { Condition: { 'Condition Data': { Function: 'GetIsPlayer', 'Comparison Value': 0, Operator: 'Equal To', 'Run On': 'Subject' } } },
+                    {
+                      Condition: {
+                        'Condition Data': {
+                          Function: 'GetIsPlayer',
+                          'Comparison Value': 0,
+                          Operator: 'Equal To',
+                          'Run On': 'Subject',
+                        },
+                      },
+                    },
                   ],
                 },
               },
@@ -1200,7 +1648,16 @@ describe('translateEnchantment (Contact-delivery weapon/OMOD on-hit procs, 2026-
                 'Effect Item Data': { Magnitude: 3, Duration: 6 },
                 Conditions: {
                   Conditions: [
-                    { Condition: { 'Condition Data': { Function: 'GetIsPlayer', 'Comparison Value': 1, Operator: 'Equal To', 'Run On': 'Subject' } } },
+                    {
+                      Condition: {
+                        'Condition Data': {
+                          Function: 'GetIsPlayer',
+                          'Comparison Value': 1,
+                          Operator: 'Equal To',
+                          'Run On': 'Subject',
+                        },
+                      },
+                    },
                   ],
                 },
               },
@@ -1210,12 +1667,24 @@ describe('translateEnchantment (Contact-delivery weapon/OMOD on-hit procs, 2026-
       } as unknown as EsmRecord;
     }
     if (formId === mgefFormId) return damageMgef(mgefFormId, '0xRESIST_FIRE');
-    if (formId === '0xRESIST_FIRE') return { header: { signature: 'AVIF', form_id: '0xRESIST_FIRE' }, editor_id: 'FireResist', fields: {} } as unknown as EsmRecord;
+    if (formId === '0xRESIST_FIRE')
+      return {
+        header: { signature: 'AVIF', form_id: '0xRESIST_FIRE' },
+        editor_id: 'FireResist',
+        fields: {},
+      } as unknown as EsmRecord;
     throw new Error(`unexpected get(${formId})`);
   };
-  const stubClient = { get, resolveEdid: async (formId: string) => (await get(formId)).editor_id } as unknown as EsmClient;
+  const stubClient = {
+    get,
+    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+  } as unknown as EsmClient;
 
-  const deps = { client: stubClient, routes: new Map<string, AvifRoute[]>(), edidByFormId: new Map<string, string>() };
+  const deps = {
+    client: stubClient,
+    routes: new Map<string, AvifRoute[]>(),
+    edidByFormId: new Map<string, string>(),
+  };
 
   it('keeps the NPC branch (=0) as a fire-scoped dotDamage modifier and drops the PVP-only branch (=1)', async () => {
     const result = await translateEnchantment(deps, enchFormId);
@@ -1235,7 +1704,7 @@ describe('translateEnchantment (Contact-delivery weapon/OMOD on-hit procs, 2026-
     const result = await translateEnchantment(deps, '0xMISSING');
     expect(result.targetType).toBeNull();
     expect(result.modifiers).toEqual([]);
-    expect(result.notes.some(n => n.includes('not found'))).toBe(true);
+    expect(result.notes.some((n) => n.includes('not found'))).toBe(true);
   });
 
   it('does NOT invert GetIsPlayer for a Self-delivery record (ordinary granted effect)', async () => {
@@ -1246,8 +1715,18 @@ describe('translateEnchantment (Contact-delivery weapon/OMOD on-hit procs, 2026-
           header: { signature: 'ENCH', form_id: selfEnchFormId },
           editor_id: 'TestSelfEnch',
           fields: {
-            'Effect Data': { 'Target Type': { name: 'Self' }, 'Cast Type': { name: 'Constant Effect' } },
-            Effects: [{ Effect: { 'Base Effect': '0xMGEF2', 'Effect Item Data': { Magnitude: 0, Duration: 0 } } }],
+            'Effect Data': {
+              'Target Type': { name: 'Self' },
+              'Cast Type': { name: 'Constant Effect' },
+            },
+            Effects: [
+              {
+                Effect: {
+                  'Base Effect': '0xMGEF2',
+                  'Effect Item Data': { Magnitude: 0, Duration: 0 },
+                },
+              },
+            ],
           },
         } as unknown as EsmRecord;
       }
@@ -1255,15 +1734,26 @@ describe('translateEnchantment (Contact-delivery weapon/OMOD on-hit procs, 2026-
         return {
           header: { signature: 'MGEF', form_id: '0xMGEF2' },
           editor_id: 'TestSelfMgef',
-          fields: { 'Magic Effect Data': { Data: { Archetype: { name: 'Script' }, Flags: { value: '0x0', flags: [] } } } },
+          fields: {
+            'Magic Effect Data': {
+              Data: { Archetype: { name: 'Script' }, Flags: { value: '0x0', flags: [] } },
+            },
+          },
         } as unknown as EsmRecord;
       }
       throw new Error(`unexpected get(${formId})`);
     };
-    const selfClient = { get: getSelf, resolveEdid: async (formId: string) => (await getSelf(formId)).editor_id } as unknown as EsmClient;
+    const selfClient = {
+      get: getSelf,
+      resolveEdid: async (formId: string) => (await getSelf(formId)).editor_id,
+    } as unknown as EsmClient;
     const result = await translateEnchantment(
-      { client: selfClient, routes: new Map<string, AvifRoute[]>(), edidByFormId: new Map<string, string>() },
-      selfEnchFormId
+      {
+        client: selfClient,
+        routes: new Map<string, AvifRoute[]>(),
+        edidByFormId: new Map<string, string>(),
+      },
+      selfEnchFormId,
     );
     expect(result.targetType).toBe('Self');
     // Script archetype with no Perk to Apply and zero magnitude: no note, no modifier.
@@ -1275,17 +1765,38 @@ describe('translate (Phase 4 — VATS hit-chance aggregate, display-only, 2026-0
   const vatsAccuracyEdids = new Map<string, string>([['0xAV', 'STAT_VATSAccuracy']]);
 
   it('routes a flat Peak Value Modifier on STAT_VATSAccuracy to vatsHitChance (V.A.T.S. Enhanced-style: magnitude 50 → 0.50)', () => {
-    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), effect({ magnitude: 50 }), noRoutes, vatsAccuracyEdids);
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier' }),
+      effect({ magnitude: 50 }),
+      noRoutes,
+      vatsAccuracyEdids,
+    );
     expect(r.modifiers).toHaveLength(1);
-    expect(r.modifiers[0]).toEqual({ bucket: 'vatsHitChance', op: 'ADD', value: 0.5, conditions: [] });
+    expect(r.modifiers[0]).toEqual({
+      bucket: 'vatsHitChance',
+      op: 'ADD',
+      value: 0.5,
+      conditions: [],
+    });
   });
 
   it("carries curve.input 'perception' for a Peak Value Modifier on STAT_VATSAccuracy (Awareness perk)", () => {
     const curved = effect({
-      curvePoints: [{ x: 1, y: 5 }, { x: 15, y: 18 }, { x: 30, y: 30 }, { x: 60, y: 45 }, { x: 100, y: 50 }],
+      curvePoints: [
+        { x: 1, y: 5 },
+        { x: 15, y: 18 },
+        { x: 30, y: 30 },
+        { x: 60, y: 45 },
+        { x: 100, y: 50 },
+      ],
       curveInputAv: '0x000002C3',
     });
-    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), curved, noRoutes, vatsAccuracyEdids);
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier' }),
+      curved,
+      noRoutes,
+      vatsAccuracyEdids,
+    );
     expect(r.modifiers).toHaveLength(1);
     expect(r.modifiers[0].bucket).toBe('vatsHitChance');
     expect(r.modifiers[0].curve?.input).toBe('perception');
@@ -1320,7 +1831,9 @@ describe('translateConditions (Phase 4 — GetDistanceToClosestHostileActor, 202
       'Run On': 'Subject',
     };
     const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
-    expect(conditions).toEqual([{ kind: 'unresolved', raw: 'GetDistanceToClosestHostileActor Less Than 10' }]);
+    expect(conditions).toEqual([
+      { kind: 'unresolved', raw: 'GetDistanceToClosestHostileActor Less Than 10' },
+    ]);
     expect(unresolved).toEqual(['GetDistanceToClosestHostileActor Less Than 10']);
   });
 });

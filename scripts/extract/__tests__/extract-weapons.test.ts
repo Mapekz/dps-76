@@ -1,6 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import type { EsmClient, EsmRecord } from '../esm-client';
-import { chaseExplosion, chaseWeaponEnchantment, isExcludedWeaponEdid, toGeneratedWeapon, walkWeaponCombinations } from '../extract-weapons';
+import {
+  chaseExplosion,
+  chaseWeaponEnchantment,
+  isExcludedWeaponEdid,
+  toGeneratedWeapon,
+  walkWeaponCombinations,
+} from '../extract-weapons';
 import type { AvifRoute } from '../normalize/mgef';
 import { isExcludedOmodEdid } from '../extract-omods';
 import fixer from './fixtures/weap-fixer.json';
@@ -86,12 +92,18 @@ describe('toGeneratedWeapon', () => {
 
   it('Gatling Plasma: main curve present → phys + energy (all plasma weapons deal both)', async () => {
     const w = await toGeneratedWeapon(stubClient, gatlingPlasma as unknown as EsmRecord, []);
-    expect(w.components.map(c => c.damageType)).toEqual(['ballistic', 'energy']);
+    expect(w.components.map((c) => c.damageType)).toEqual(['ballistic', 'energy']);
     expect(w.components[0].tier).toBe(12);
     expect(w.components[1].tier).toBe(12);
     // Default=True combination only — the unnamed "None" combo swaps in
     // 0x0019A7F5/0x0017E6C9, which must NOT leak into the standard parts.
-    expect(w.defaultModFormIds).toEqual(['0x0001EC4E', '0x0001EC53', '0x0001EC63', '0x0001EC60', '0x00485581']);
+    expect(w.defaultModFormIds).toEqual([
+      '0x0001EC4E',
+      '0x0001EC53',
+      '0x0001EC63',
+      '0x0001EC60',
+      '0x00485581',
+    ]);
     expect(w.defaultModFormIds).not.toContain('0x0019A7F5');
     expect(w.defaultModFormIds).not.toContain('0x0017E6C9');
   });
@@ -104,13 +116,19 @@ describe('toGeneratedWeapon', () => {
     expect(w.animationReloadSec).toBeCloseTo(3.6667, 3);
     // Flagged-Default path with 6 combos: the 5-part Default set, not the
     // 10-part "None" combo's union.
-    expect(w.defaultModFormIds).toEqual(['0x0007C200', '0x0007C20C', '0x0007C793', '0x0007BE00', '0x0084CCA1']);
+    expect(w.defaultModFormIds).toEqual([
+      '0x0007C200',
+      '0x0007C20C',
+      '0x0007C793',
+      '0x0007BE00',
+      '0x0084CCA1',
+    ]);
     expect(w.defaultModFormIds).not.toContain('0x0007AD6E');
   });
 
   it('Shishkebab: Base Damage > 0 plus typed fire entry → two components sharing the tier-20 curve', async () => {
     const w = await toGeneratedWeapon(stubClient, shishkebab as unknown as EsmRecord, []);
-    expect(w.components.map(c => c.damageType)).toEqual(['ballistic', 'fire']);
+    expect(w.components.map((c) => c.damageType)).toEqual(['ballistic', 'fire']);
     expect(w.components[0].tier).toBe(20);
     expect(w.components[1].tier).toBe(20);
   });
@@ -146,7 +164,7 @@ describe('toGeneratedWeapon', () => {
     const unresolved: string[] = [];
     const w = await toGeneratedWeapon(stubClient, record, unresolved);
     expect(w.components[1].damageType).toBe('unknown');
-    expect(unresolved.some(u => u.includes('0x0BADF00D'))).toBe(true);
+    expect(unresolved.some((u) => u.includes('0x0BADF00D'))).toBe(true);
   });
 });
 
@@ -178,7 +196,11 @@ describe('chaseExplosion', () => {
       tier: 18,
       fromExplosion: true,
     });
-    expect(result.components[1]).toMatchObject({ damageType: 'energy', tier: 18, fromExplosion: true });
+    expect(result.components[1]).toMatchObject({
+      damageType: 'energy',
+      tier: 18,
+      fromExplosion: true,
+    });
   });
 
   it('Plasma Gun: PROJ without the Explosion flag is inert even though it carries an EXPL formid', async () => {
@@ -203,7 +225,7 @@ describe('chaseExplosion', () => {
     const unresolved: string[] = [];
     const result = await chaseExplosion(stubClient, fields, 'BrokenWeapon', unresolved);
     expect(result.components).toEqual([]);
-    expect(unresolved.some(u => u.includes('BrokenWeapon'))).toBe(true);
+    expect(unresolved.some((u) => u.includes('BrokenWeapon'))).toBe(true);
   });
 });
 
@@ -223,7 +245,10 @@ function makeWeaponEnchantmentStubClient(): EsmClient {
       header: { signature: 'ENCH', form_id: enchFormId },
       editor_id: 'TestWeaponFireHitEnch',
       fields: {
-        'Effect Data': { 'Target Type': { name: 'Contact' }, 'Cast Type': { name: 'Fire and Forget' } },
+        'Effect Data': {
+          'Target Type': { name: 'Contact' },
+          'Cast Type': { name: 'Fire and Forget' },
+        },
         Effects: [
           {
             Effect: {
@@ -241,7 +266,16 @@ function makeWeaponEnchantmentStubClient(): EsmClient {
               },
               Conditions: {
                 Conditions: [
-                  { Condition: { 'Condition Data': { Function: 'GetIsPlayer', 'Comparison Value': 0, Operator: 'Equal To', 'Run On': 'Subject' } } },
+                  {
+                    Condition: {
+                      'Condition Data': {
+                        Function: 'GetIsPlayer',
+                        'Comparison Value': 0,
+                        Operator: 'Equal To',
+                        'Run On': 'Subject',
+                      },
+                    },
+                  },
                 ],
               },
             },
@@ -252,7 +286,16 @@ function makeWeaponEnchantmentStubClient(): EsmClient {
               'Effect Item Data': { Magnitude: 3, Duration: 6 },
               Conditions: {
                 Conditions: [
-                  { Condition: { 'Condition Data': { Function: 'GetIsPlayer', 'Comparison Value': 1, Operator: 'Equal To', 'Run On': 'Subject' } } },
+                  {
+                    Condition: {
+                      'Condition Data': {
+                        Function: 'GetIsPlayer',
+                        'Comparison Value': 1,
+                        Operator: 'Equal To',
+                        'Run On': 'Subject',
+                      },
+                    },
+                  },
                 ],
               },
             },
@@ -264,16 +307,33 @@ function makeWeaponEnchantmentStubClient(): EsmClient {
       header: { signature: 'MGEF', form_id: mgefFormId },
       editor_id: 'TestWeaponFireHitMgef',
       fields: {
-        'Magic Effect Data': { Data: { Archetype: { name: 'Damage' }, 'Resist Value': fireResistFormId, Flags: { value: '0x0', flags: [] } } },
+        'Magic Effect Data': {
+          Data: {
+            Archetype: { name: 'Damage' },
+            'Resist Value': fireResistFormId,
+            Flags: { value: '0x0', flags: [] },
+          },
+        },
       },
     } as unknown as EsmRecord,
-    [fireResistFormId]: { header: { signature: 'AVIF', form_id: fireResistFormId }, editor_id: 'FireResist', fields: {} } as unknown as EsmRecord,
+    [fireResistFormId]: {
+      header: { signature: 'AVIF', form_id: fireResistFormId },
+      editor_id: 'FireResist',
+      fields: {},
+    } as unknown as EsmRecord,
   };
   const get = async (target: string): Promise<EsmRecord> => {
     if (known[target]) return known[target];
-    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+    return {
+      header: { signature: 'KYWD', form_id: target },
+      editor_id: target,
+      fields: {},
+    } as unknown as EsmRecord;
   };
-  return { get, resolveEdid: async (formId: string) => (await get(formId)).editor_id } as unknown as EsmClient;
+  return {
+    get,
+    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+  } as unknown as EsmClient;
 }
 
 describe('chaseWeaponEnchantment (weapon-intrinsic on-hit DoT, 2026-07-14)', () => {
@@ -284,7 +344,14 @@ describe('chaseWeaponEnchantment (weapon-intrinsic on-hit DoT, 2026-07-14)', () 
   it("keeps the NPC branch (fire-scoped dotDamage, curve) and drops the PVP-only branch, sourced kind 'weapon'", async () => {
     const unresolved: string[] = [];
     const modifiers = await chaseWeaponEnchantment(
-      client, { Enchantment: '0xWEAPENCH' }, '0xCREMATOR', 'Cremator', 'Cremator', routes, edidByFormId, unresolved
+      client,
+      { Enchantment: '0xWEAPENCH' },
+      '0xCREMATOR',
+      'Cremator',
+      'Cremator',
+      routes,
+      edidByFormId,
+      unresolved,
     );
     expect(modifiers).toHaveLength(1);
     expect(modifiers[0]).toMatchObject({
@@ -294,11 +361,23 @@ describe('chaseWeaponEnchantment (weapon-intrinsic on-hit DoT, 2026-07-14)', () 
       durationSec: 6,
       conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
     });
-    expect(modifiers[0].curve?.points).toEqual([{ x: 1, y: 10 }, { x: 50, y: 32 }]);
+    expect(modifiers[0].curve?.points).toEqual([
+      { x: 1, y: 10 },
+      { x: 50, y: 32 },
+    ]);
   });
 
   it('returns [] when the weapon has no Enchantment field', async () => {
-    const modifiers = await chaseWeaponEnchantment(client, {}, '0xCREMATOR', 'Cremator', 'Cremator', routes, edidByFormId, []);
+    const modifiers = await chaseWeaponEnchantment(
+      client,
+      {},
+      '0xCREMATOR',
+      'Cremator',
+      'Cremator',
+      routes,
+      edidByFormId,
+      [],
+    );
     expect(modifiers).toEqual([]);
   });
 
@@ -313,9 +392,19 @@ describe('chaseWeaponEnchantment (weapon-intrinsic on-hit DoT, 2026-07-14)', () 
       }
       throw new Error(`unexpected get(${formId})`);
     };
-    const selfClient = { get, resolveEdid: async (formId: string) => (await get(formId)).editor_id } as unknown as EsmClient;
+    const selfClient = {
+      get,
+      resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+    } as unknown as EsmClient;
     const modifiers = await chaseWeaponEnchantment(
-      selfClient, { Enchantment: '0xSELFENCH' }, '0xW', 'TestWeapon', 'Test Weapon', routes, edidByFormId, []
+      selfClient,
+      { Enchantment: '0xSELFENCH' },
+      '0xW',
+      'TestWeapon',
+      'Test Weapon',
+      routes,
+      edidByFormId,
+      [],
     );
     expect(modifiers).toEqual([]);
   });
@@ -360,10 +449,16 @@ describe('isExcludedOmodEdid', () => {
 describe('walkWeaponCombinations', () => {
   it('retains per-combo names and unflattened mod formids', () => {
     const combos = walkWeaponCombinations((gatlingPlasma as unknown as EsmRecord).fields);
-    const named = combos.filter(c => c.name === 'Default' || c.name === 'Simple');
+    const named = combos.filter((c) => c.name === 'Default' || c.name === 'Simple');
     expect(named).toHaveLength(2);
-    expect(named[0].modFormIds).toEqual(['0x0001EC4E', '0x0001EC53', '0x0001EC63', '0x0001EC60', '0x00485581']);
-    const unnamed = combos.find(c => c.name === '' && c.modFormIds.includes('0x0019A7F5'));
+    expect(named[0].modFormIds).toEqual([
+      '0x0001EC4E',
+      '0x0001EC53',
+      '0x0001EC63',
+      '0x0001EC60',
+      '0x00485581',
+    ]);
+    const unnamed = combos.find((c) => c.name === '' && c.modFormIds.includes('0x0019A7F5'));
     expect(unnamed?.modFormIds).toContain('0x0017E6C9');
   });
 });

@@ -53,7 +53,11 @@ export function buildPerkJoinMaps(perks: GeneratedPerk[]): JoinMaps {
  * which READS the already-built `perkRegistry` (perk-modifiers.ts's
  * `getGeneratedPerk`) — can't drift out of lockstep with each other.
  */
-export function resolveFamily(perkId: string, name: string, joinMaps: JoinMaps): GeneratedPerk | undefined {
+export function resolveFamily(
+  perkId: string,
+  name: string,
+  joinMaps: JoinMaps,
+): GeneratedPerk | undefined {
   const familyOverride = perkFamilyOverrides[perkId];
   if (familyOverride) return joinMaps.byFamily.get(familyOverride);
   return joinMaps.byName.get(normalizeName(name));

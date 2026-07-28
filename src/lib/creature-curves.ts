@@ -33,19 +33,19 @@ interface CurveFile {
 
 const liveHealthCurves = import.meta.glob<{ default: CurveFile }>(
   '../data/live/curvetables/creatures/health/health_universal_tier*.json',
-  { eager: true }
+  { eager: true },
 );
 const ptsHealthCurves = import.meta.glob<{ default: CurveFile }>(
   '../data/pts/curvetables/creatures/health/health_universal_tier*.json',
-  { eager: true }
+  { eager: true },
 );
 const liveArmorCurves = import.meta.glob<{ default: CurveFile }>(
   '../data/live/curvetables/creatures/armor/armor_universal_tier*.json',
-  { eager: true }
+  { eager: true },
 );
 const ptsArmorCurves = import.meta.glob<{ default: CurveFile }>(
   '../data/pts/curvetables/creatures/armor/armor_universal_tier*.json',
-  { eager: true }
+  { eager: true },
 );
 
 function tierFromPath(path: string): number {
@@ -53,7 +53,10 @@ function tierFromPath(path: string): number {
   return m ? parseInt(m[1], 10) : -1;
 }
 
-function getCurve(curves: Record<string, { default: CurveFile }>, tier: number): CurvePoint[] | null {
+function getCurve(
+  curves: Record<string, { default: CurveFile }>,
+  tier: number,
+): CurvePoint[] | null {
   for (const [path, mod] of Object.entries(curves)) {
     if (tierFromPath(path) === tier) return mod.default.curve;
   }

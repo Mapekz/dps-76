@@ -147,12 +147,7 @@ const EXPECTED_MOVE_SPEED_SOURCES: MoveSpeedCensusEntry[] = [
 type CollectedEntry = Omit<MoveSpeedCensusEntry, 'disposition'>;
 
 function censusSortKey(e: CollectedEntry): string {
-  return [
-    e.formId,
-    e.rank ?? 0,
-    e.value,
-    JSON.stringify(e.conditions),
-  ].join('\0');
+  return [e.formId, e.rank ?? 0, e.value, JSON.stringify(e.conditions)].join('\0');
 }
 
 function collectMoveSpeedSources(): CollectedEntry[] {
@@ -206,8 +201,8 @@ function collectMoveSpeedSources(): CollectedEntry[] {
 }
 
 function expectedCollected(): CollectedEntry[] {
-  return EXPECTED_MOVE_SPEED_SOURCES
-    .map((e): CollectedEntry => ({
+  return EXPECTED_MOVE_SPEED_SOURCES.map(
+    (e): CollectedEntry => ({
       formId: e.formId,
       kind: e.kind,
       name: e.name,
@@ -215,8 +210,8 @@ function expectedCollected(): CollectedEntry[] {
       value: e.value,
       conditions: e.conditions,
       hasCard: e.hasCard,
-    }))
-    .sort((a, b) => censusSortKey(a).localeCompare(censusSortKey(b)));
+    }),
+  ).sort((a, b) => censusSortKey(a).localeCompare(censusSortKey(b)));
 }
 
 describe('moveSpeedBonus census (live dataset)', () => {
@@ -226,9 +221,9 @@ describe('moveSpeedBonus census (live dataset)', () => {
 
   it('keeps excluded perk formIds out of the selectable PerkId registry', () => {
     const excludedFormIds = new Set(
-      EXPECTED_MOVE_SPEED_SOURCES
-        .filter(e => e.disposition.startsWith('excluded:'))
-        .map(e => e.formId)
+      EXPECTED_MOVE_SPEED_SOURCES.filter((e) => e.disposition.startsWith('excluded:')).map(
+        (e) => e.formId,
+      ),
     );
     const registry = getDataset('live').perkRegistry;
     for (const perkId of Object.keys(registry) as PerkId[]) {

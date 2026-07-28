@@ -52,7 +52,11 @@ import { lastTrace, type BucketTrace, type CritMeterTrace } from './trace';
 
 /** True for Limit-Breaking-shaped critConsumption modifiers — see the module doc comment above. */
 function isSelfScalingCritConsumption(m: Modifier): boolean {
-  return m.bucket === 'critConsumption' && m.op === 'MUL_ADD' && m.conditions.some(c => c.kind === 'wornPieceCount');
+  return (
+    m.bucket === 'critConsumption' &&
+    m.op === 'MUL_ADD' &&
+    m.conditions.some((c) => c.kind === 'wornPieceCount')
+  );
 }
 
 const LUCK_CRIT_CHARGE_CURVE = luckCritChargeCurveFile.curve;
@@ -89,16 +93,19 @@ export function computeCritMeter(
   weapon: Weapon,
   ctx: ResolveContext,
   trace?: CritMeterTrace,
-  constants: VatsCritConstants = DEFAULT_VATS_CRIT_CONSTANTS
+  constants: VatsCritConstants = DEFAULT_VATS_CRIT_CONSTANTS,
 ): CritMeterResult {
   const luck = ctx.player.luck;
-  const fillBase = constants.chargeBase + (weapon.critChargeBonus ?? 1.0) + interpolateCurve(LUCK_CRIT_CHARGE_CURVE, luck);
+  const fillBase =
+    constants.chargeBase +
+    (weapon.critChargeBonus ?? 1.0) +
+    interpolateCurve(LUCK_CRIT_CHARGE_CURVE, luck);
   const fillCollect = trace ? ([] as BucketTrace[]) : undefined;
   const fillPerHit = foldBucket(modifiers, 'critFill', fillBase, ctx, fillCollect);
   if (trace && fillCollect) trace.fill = lastTrace(fillCollect);
 
   const costCollect = trace ? ([] as BucketTrace[]) : undefined;
-  const restModifiers = modifiers.filter(m => !isSelfScalingCritConsumption(m));
+  const restModifiers = modifiers.filter((m) => !isSelfScalingCritConsumption(m));
   const consumptionBase = foldBucket(restModifiers, 'critConsumption', 100, ctx, costCollect);
   if (trace && costCollect) trace.consumption = lastTrace(costCollect);
 

@@ -19,11 +19,21 @@ import { createDefaultPlayerConditions } from '@/types';
 import type { GeneratedBuff } from '@/types/generated';
 import type { Bucket, Condition, Modifier } from '@/types/modifiers';
 
-function baseSpecial(overrides: Partial<Record<SpecialKey, number>> = {}): Record<SpecialKey, number> {
-  return { ...(Object.fromEntries(SPECIAL_KEYS.map(k => [k, 1])) as Record<SpecialKey, number>), ...overrides };
+function baseSpecial(
+  overrides: Partial<Record<SpecialKey, number>> = {},
+): Record<SpecialKey, number> {
+  return {
+    ...(Object.fromEntries(SPECIAL_KEYS.map((k) => [k, 1])) as Record<SpecialKey, number>),
+    ...overrides,
+  };
 }
 
-function specialMod(bucket: Bucket, value: number, conditions: Condition[] = [], id = 'test-special-mod'): Modifier {
+function specialMod(
+  bucket: Bucket,
+  value: number,
+  conditions: Condition[] = [],
+  id = 'test-special-mod',
+): Modifier {
   return {
     id,
     source: { kind: 'mutation', formId: '0xC1A55', edid: 'TestMutation', name: 'Test Mutation' },
@@ -51,12 +61,16 @@ describe('derivePlayerStats', () => {
       value: 3,
       conditions: [],
     };
-    const { special, maxHealth } = derivePlayerStats([endBuff], baseSpecial({ endurance: 7 }), conditions);
+    const { special, maxHealth } = derivePlayerStats(
+      [endBuff],
+      baseSpecial({ endurance: 7 }),
+      conditions,
+    );
     expect(special.endurance).toBe(10);
     expect(maxHealth).toBe(BASE_MAX_HP + MAX_HP_PER_ENDURANCE * 10);
   });
 
-  it("Lifegiver rank 1 adds its END-keyed curve (real extracted data)", () => {
+  it('Lifegiver rank 1 adds its END-keyed curve (real extracted data)', () => {
     const lifegiver = getLoadoutModifiers('live', [{ perkId: PerkId.LifeGiver, rank: 1 }]);
     const { maxHealth } = derivePlayerStats(lifegiver, baseSpecial({ endurance: 15 }), conditions);
     // Curve (15, 120): END 15 → +120 HP over the base formula.
@@ -81,7 +95,11 @@ describe('derivePlayerStats: effective SPECIAL clamp', () => {
   it('defaults to [1, 100] (the SPECIAL AVIF floor/ceiling) when no clamp is passed', () => {
     const debuff = specialMod('specialStrength', -50);
     const buff = specialMod('specialLuck', 500);
-    const { special } = derivePlayerStats([debuff, buff], baseSpecial({ strength: 5, luck: 5 }), conditions);
+    const { special } = derivePlayerStats(
+      [debuff, buff],
+      baseSpecial({ strength: 5, luck: 5 }),
+      conditions,
+    );
     expect(special.strength).toBe(1); // 5 - 50 floors at the default min
     expect(special.luck).toBe(100); // 5 + 500 ceils at the default max
   });
@@ -96,7 +114,7 @@ describe('derivePlayerStats: effective SPECIAL clamp', () => {
       undefined,
       undefined,
       [],
-      { min: 1, max: 120 }
+      { min: 1, max: 120 },
     );
     expect(special.luck).toBe(120); // custom ceiling, not the [1,100] fallback
   });
@@ -108,7 +126,7 @@ describe('computePerkBudget (real card costs, not rank)', () => {
       'live',
       [{ perkId: PerkId.Tenderizer, rank: 1 }],
       [],
-      baseSpecial()
+      baseSpecial(),
     );
     expect(budget.cardPoints.charisma).toBe(2);
   });
@@ -118,7 +136,7 @@ describe('computePerkBudget (real card costs, not rank)', () => {
       'live',
       [{ perkId: PerkId.PartyBoyGirl, rank: 2 }],
       [],
-      baseSpecial()
+      baseSpecial(),
     );
     expect(budget.cardPoints.charisma).toBe(3);
   });
@@ -171,29 +189,51 @@ describe('derivePlayerStats: condition-aware SPECIAL folds (2026-07-14)', () => 
     const variants = applyClassFreakPenaltyScaling(strengthPenalty);
     expect(variants).toHaveLength(4);
 
-    const rank0 = derivePlayerStats(variants, baseSpecial({ strength: 10 }), { ...conditions, classFreakRank: 0 });
+    const rank0 = derivePlayerStats(variants, baseSpecial({ strength: 10 }), {
+      ...conditions,
+      classFreakRank: 0,
+    });
     expect(rank0.special.strength).toBe(7); // 10 + (−3 × 1)
 
-    const rank2 = derivePlayerStats(variants, baseSpecial({ strength: 10 }), { ...conditions, classFreakRank: 2 });
+    const rank2 = derivePlayerStats(variants, baseSpecial({ strength: 10 }), {
+      ...conditions,
+      classFreakRank: 2,
+    });
     expect(rank2.special.strength).toBe(8.5); // 10 + (−3 × 0.5)
   });
 
   it('teammateCount-gated SPECIAL modifiers pick by team state (Herd Mentality shape)', () => {
     const herdMentality = [
       specialMod('specialLuck', -2, [{ kind: 'teammateCount', count: 0 }], 'herd:solo'),
-      specialMod('specialLuck', 2, [{ kind: 'teammateCount', count: 1, orMore: true }], 'herd:team'),
+      specialMod(
+        'specialLuck',
+        2,
+        [{ kind: 'teammateCount', count: 1, orMore: true }],
+        'herd:team',
+      ),
     ];
 
-    const solo = derivePlayerStats(herdMentality, baseSpecial({ luck: 5 }), { ...conditions, teammateCount: 0 });
+    const solo = derivePlayerStats(herdMentality, baseSpecial({ luck: 5 }), {
+      ...conditions,
+      teammateCount: 0,
+    });
     expect(solo.special.luck).toBe(3); // 5 − 2
 
-    const inTeam = derivePlayerStats(herdMentality, baseSpecial({ luck: 5 }), { ...conditions, teammateCount: 2 });
+    const inTeam = derivePlayerStats(herdMentality, baseSpecial({ luck: 5 }), {
+      ...conditions,
+      teammateCount: 2,
+    });
     expect(inTeam.special.luck).toBe(7); // 5 + 2
   });
 
   it('strangeInNumbers-gated SPECIAL modifiers pick by SIN state (Egg Head INT shape)', () => {
     const eggHeadInt = [
-      specialMod('specialIntelligence', 6, [{ kind: 'strangeInNumbers', value: false }], 'sin:false'),
+      specialMod(
+        'specialIntelligence',
+        6,
+        [{ kind: 'strangeInNumbers', value: false }],
+        'sin:false',
+      ),
       specialMod('specialIntelligence', 8, [{ kind: 'strangeInNumbers', value: true }], 'sin:true'),
     ];
 
@@ -222,7 +262,7 @@ describe('derivePlayerStats: condition-aware SPECIAL folds (2026-07-14)', () => 
           { kind: 'playerIsGhoul', value: true },
           { kind: 'teammateCount', count: 1, orMore: true },
         ],
-        'united-ordeal:str'
+        'united-ordeal:str',
       ),
       specialMod(
         'specialLuck',
@@ -231,15 +271,19 @@ describe('derivePlayerStats: condition-aware SPECIAL folds (2026-07-14)', () => 
           { kind: 'playerIsGhoul', value: true },
           { kind: 'teammateCount', count: 1, orMore: true },
         ],
-        'united-ordeal:lck'
+        'united-ordeal:lck',
       ),
     ];
 
-    const ghoulInTeam = derivePlayerStats(unitedOrdealRank1, baseSpecial({ strength: 5, luck: 5 }), {
-      ...conditions,
-      isGhoul: true,
-      teammateCount: 1,
-    });
+    const ghoulInTeam = derivePlayerStats(
+      unitedOrdealRank1,
+      baseSpecial({ strength: 5, luck: 5 }),
+      {
+        ...conditions,
+        isGhoul: true,
+        teammateCount: 1,
+      },
+    );
     expect(ghoulInTeam.special.strength).toBe(6); // 5 + 1
     expect(ghoulInTeam.special.luck).toBe(6); // 5 + 1
 
@@ -251,11 +295,15 @@ describe('derivePlayerStats: condition-aware SPECIAL folds (2026-07-14)', () => 
     expect(ghoulSolo.special.strength).toBe(5); // teammateCount condition fails
     expect(ghoulSolo.special.luck).toBe(5);
 
-    const humanInTeam = derivePlayerStats(unitedOrdealRank1, baseSpecial({ strength: 5, luck: 5 }), {
-      ...conditions,
-      isGhoul: false,
-      teammateCount: 1,
-    });
+    const humanInTeam = derivePlayerStats(
+      unitedOrdealRank1,
+      baseSpecial({ strength: 5, luck: 5 }),
+      {
+        ...conditions,
+        isGhoul: false,
+        teammateCount: 1,
+      },
+    );
     expect(humanInTeam.special.strength).toBe(5); // playerIsGhoul condition fails
     expect(humanInTeam.special.luck).toBe(5);
   });

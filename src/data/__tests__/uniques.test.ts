@@ -8,7 +8,7 @@ describe('getUniques', () => {
   it('returns presets with identity mod ids and base weapon refs', () => {
     const uniques = getUniques('live');
     expect(uniques.length).toBeGreaterThan(50);
-    const salt = uniques.find(u => u.id === 'mod_Custom_SaltOfTheEarth');
+    const salt = uniques.find((u) => u.id === 'mod_Custom_SaltOfTheEarth');
     expect(salt).toMatchObject({
       baseWeaponId: 'DoubleBarrelShotgun',
       mods: expect.objectContaining({ ap_customName: 'mod_Custom_SaltOfTheEarth' }),
@@ -21,7 +21,7 @@ describe('getUniques', () => {
     const hiddenId = [...hiddenOmodIds][0];
     if (!hiddenId) return;
     const all = getUniques('live');
-    expect(all.some(u => u.id === hiddenId)).toBe(false);
+    expect(all.some((u) => u.id === hiddenId)).toBe(false);
   });
 
   it('forceVisibleOmodIds can surface a hidden identity mod', () => {
@@ -29,7 +29,7 @@ describe('getUniques', () => {
     if (!forcedId) return;
     // Only assert the wiring exists when a forced omod is also a unique preset.
     const fromDataset = getUniques('live');
-    if (fromDataset.some(u => u.id === forcedId)) {
+    if (fromDataset.some((u) => u.id === forcedId)) {
       expect(getOmodById('live', forcedId)).toBeDefined();
     }
   });
@@ -47,15 +47,21 @@ describe('getEquippedUnique', () => {
   });
 
   it('returns undefined when no identity mod is equipped', () => {
-    expect(getEquippedUnique('live', { weaponId: 'DoubleBarrelShotgun', mods: {}, legendaryEffects: [] })).toBeUndefined();
+    expect(
+      getEquippedUnique('live', {
+        weaponId: 'DoubleBarrelShotgun',
+        mods: {},
+        legendaryEffects: [],
+      }),
+    ).toBeUndefined();
   });
 });
 
 describe('getUniquesForWeapon', () => {
   it('groups presets by base weapon', () => {
     const forDbs = getUniquesForWeapon('live', 'DoubleBarrelShotgun');
-    expect(forDbs.map(u => u.id)).toEqual(
-      expect.arrayContaining(['mod_Custom_SaltOfTheEarth', 'mod_custom_Coldshoulder_DmgvsCryptid'])
+    expect(forDbs.map((u) => u.id)).toEqual(
+      expect.arrayContaining(['mod_Custom_SaltOfTheEarth', 'mod_custom_Coldshoulder_DmgvsCryptid']),
     );
   });
 });

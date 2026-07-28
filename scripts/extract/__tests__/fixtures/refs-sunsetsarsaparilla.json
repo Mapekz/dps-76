@@ -1,1 +1,10 @@
-[{"form_id":"0x00837E0F","record_type":"LVLI","editor_id":"SCORE_S22_LL_SarsaparillaMachine_Common","name":null,"offset":86681078,"depth":1}]
+[
+  {
+    "form_id": "0x00837E0F",
+    "record_type": "LVLI",
+    "editor_id": "SCORE_S22_LL_SarsaparillaMachine_Common",
+    "name": null,
+    "offset": 86681078,
+    "depth": 1
+  }
+]

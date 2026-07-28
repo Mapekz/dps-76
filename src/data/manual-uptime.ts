@@ -28,7 +28,10 @@ const MANUAL_UPTIME_PERKS = {
     name: 'Taking One for the Team',
     conditionKey: 'takingOneForTheTeamPct',
   },
-} as const satisfies Record<string, { formId: string; edid: string; name: string; conditionKey: keyof PlayerConditions }>;
+} as const satisfies Record<
+  string,
+  { formId: string; edid: string; name: string; conditionKey: keyof PlayerConditions }
+>;
 
 export type ManualUptimePerkKey = keyof typeof MANUAL_UPTIME_PERKS;
 

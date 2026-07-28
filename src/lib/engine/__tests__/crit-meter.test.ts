@@ -53,7 +53,11 @@ describe('computeCritMeter', () => {
   it('crit rate never exceeds every-other-shot', () => {
     const selections = { [LIMIT_BREAKING_ID]: 5 };
     const wornPieceCounts = getArmorEffectWornPieceCounts('live', selections);
-    const result = computeCritMeter(getArmorEffectModifiers('live', selections), fixer, ctx({ luck: 100, wornPieceCounts }));
+    const result = computeCritMeter(
+      getArmorEffectModifiers('live', selections),
+      fixer,
+      ctx({ luck: 100, wornPieceCounts }),
+    );
     expect(result.critRate).toBeLessThanOrEqual(0.5);
   });
 });

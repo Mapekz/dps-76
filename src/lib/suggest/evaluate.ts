@@ -1,9 +1,20 @@
 import type { GameMode } from '@/types';
 import { resolveLoadout } from '@/lib/loadout';
 import { computeScenarios, type ScenarioResult, type ScenarioSet } from '@/lib/engine/scenarios';
-import { makeBuildReducer, type BuildAction, type BuildState, type ScenarioKey } from '@/state/build-reducer';
+import {
+  makeBuildReducer,
+  type BuildAction,
+  type BuildState,
+  type ScenarioKey,
+} from '@/state/build-reducer';
 import { enumerateVariants } from './variants';
-import type { DpsSnapshot, EvaluatedSuggestion, ScenarioHeadline, SuggestionCandidate, SuggestionReport } from './types';
+import type {
+  DpsSnapshot,
+  EvaluatedSuggestion,
+  ScenarioHeadline,
+  SuggestionCandidate,
+  SuggestionReport,
+} from './types';
 
 /**
  * Speculative evaluation: run a BuildAction through the (pure) reducer, feed
@@ -42,18 +53,25 @@ export function evaluateAction(
   state: BuildState,
   mode: GameMode,
   action: BuildAction,
-  baseline: DpsSnapshot
+  baseline: DpsSnapshot,
 ): { result: DpsSnapshot; delta: DpsSnapshot } | null {
   const result = computeSnapshot(makeBuildReducer(mode)(state, action), mode);
   if (!result) return null;
   return {
     result,
-    delta: { freeAim: diff(result.freeAim, baseline.freeAim), vats: diff(result.vats, baseline.vats) },
+    delta: {
+      freeAim: diff(result.freeAim, baseline.freeAim),
+      vats: diff(result.vats, baseline.vats),
+    },
   };
 }
 
 /** Full ranked sweep of every single-change variant. */
-export function evaluateSuggestions(state: BuildState, mode: GameMode, metric: ScenarioKey): SuggestionReport {
+export function evaluateSuggestions(
+  state: BuildState,
+  mode: GameMode,
+  metric: ScenarioKey,
+): SuggestionReport {
   const baseline = computeSnapshot(state, mode);
   if (!baseline) return { baseline: null, metric, suggestions: [] };
 
@@ -67,27 +85,36 @@ export function evaluateSuggestions(state: BuildState, mode: GameMode, metric: S
     suggestions.push({ ...candidate, ...evaluated, primaryDeltaPct });
   }
 
-  suggestions.sort((a, b) => b.primaryDeltaPct - a.primaryDeltaPct || Number(b.budget.legal) - Number(a.budget.legal));
+  suggestions.sort(
+    (a, b) =>
+      b.primaryDeltaPct - a.primaryDeltaPct || Number(b.budget.legal) - Number(a.budget.legal),
+  );
   return { baseline, metric, suggestions };
 }
 
 /** Suggestions worth showing: positive movers, ranked; legality kept for labeling. */
-export function topSuggestions(report: SuggestionReport, limit: number, tiedThresholdPct = 0.01): {
+export function topSuggestions(
+  report: SuggestionReport,
+  limit: number,
+  tiedThresholdPct = 0.01,
+): {
   ranked: EvaluatedSuggestion[];
   tied: EvaluatedSuggestion[];
 } {
   // Different ESM records can share a display name and an identical outcome
   // (per-family receiver twins) — showing both is noise, keep the first.
   const seen = new Set<string>();
-  const positive = report.suggestions.filter(s => {
+  const positive = report.suggestions.filter((s) => {
     if (s.primaryDeltaPct <= 0) return false;
     const key = `${s.label}|${s.primaryDeltaPct.toFixed(5)}`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
-  const ranked = positive.filter(s => s.primaryDeltaPct >= tiedThresholdPct).slice(0, limit);
-  const tied = positive.filter(s => s.primaryDeltaPct < tiedThresholdPct).slice(0, Math.max(0, limit - ranked.length) + 3);
+  const ranked = positive.filter((s) => s.primaryDeltaPct >= tiedThresholdPct).slice(0, limit);
+  const tied = positive
+    .filter((s) => s.primaryDeltaPct < tiedThresholdPct)
+    .slice(0, Math.max(0, limit - ranked.length) + 3);
   return { ranked, tied };
 }
 

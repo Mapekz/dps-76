@@ -11,7 +11,12 @@ import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
 import { resolveStats } from '@/lib/loadout';
-import { resolveBulletStormStacks, isBulletStormStacksActive, isOnslaughtStacksActive, resolveOnslaughtStacks } from '@/lib/engine/stacks';
+import {
+  resolveBulletStormStacks,
+  isBulletStormStacksActive,
+  isOnslaughtStacksActive,
+  resolveOnslaughtStacks,
+} from '@/lib/engine/stacks';
 import { buildDeltaCount } from '@/lib/build-delta';
 import { cn } from '@/lib/utils';
 import { createDefaultPlayerConditions, type PlayerConditions } from '@/types';
@@ -26,7 +31,13 @@ import { SectionTrigger } from './SectionTrigger';
 
 /** In-game meter state names — SURV_NewHungerThreshold_Msg_* / SURV_NewThirstThreshold_Msg_* (tier 4 = fullest). */
 const FOOD_TIER_NAMES = ['Hungry', 'Partially Fed', 'Fed', 'Well Fed', 'Fully Fed'] as const;
-const DRINK_TIER_NAMES = ['Thirsty', 'Partially Hydrated', 'Hydrated', 'Well Hydrated', 'Fully Hydrated'] as const;
+const DRINK_TIER_NAMES = [
+  'Thirsty',
+  'Partially Hydrated',
+  'Hydrated',
+  'Well Hydrated',
+  'Fully Hydrated',
+] as const;
 
 /**
  * GHL_SURV_FeralThreshold_Msg_* names banded over the 0–8 GHL_FeralTier AV
@@ -69,7 +80,7 @@ function SliderField({
         max={max}
         step={step}
         value={[value]}
-        onValueChange={v => onChange(firstSliderValue(v))}
+        onValueChange={(v) => onChange(firstSliderValue(v))}
         marks={[
           { value: min, label: `${min}%` },
           { value: max, label: `${max}%` },
@@ -97,7 +108,7 @@ function SwitchRow({
       htmlFor={id}
       className={cn(
         'flex items-center justify-between gap-2 text-sm',
-        disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+        disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
       )}
     >
       <span>{label}</span>
@@ -130,7 +141,7 @@ export function ConditionsSection() {
   const onslaughtValue = resolveOnslaughtStacks(
     onslaughtStored,
     onslaughtMax,
-    onslaughtReverse ? (onslaughtReverseAvg ?? 0) : undefined
+    onslaughtReverse ? (onslaughtReverseAvg ?? 0) : undefined,
   );
   const hasKillStreak = scenarios?.hasKillStreakSources ?? false;
 
@@ -149,7 +160,8 @@ export function ConditionsSection() {
   // effective weapon actually carries a reloadSkipChanceBash source
   // (mirrors the kill-streak/Concentrated Fire existence-gate pattern).
   const hasBattleLoaders = scenarios?.hasBattleLoadersSource ?? false;
-  const battleLoadersBashSec = conditions.battleLoadersBashSec ?? defaults.battleLoadersBashSec ?? 0;
+  const battleLoadersBashSec =
+    conditions.battleLoadersBashSec ?? defaults.battleLoadersBashSec ?? 0;
 
   // VATS hit-chance aggregate (Phase 4, display-only): the folded total from
   // ScenarioSet.vatsHitChanceBonus (V.A.T.S. Enhanced, Awareness, Eye of the
@@ -178,7 +190,7 @@ export function ConditionsSection() {
     bulletStormStored,
     bulletStormMin,
     bulletStormMax,
-    bulletStormAverageMode ? (bulletStormAvg ?? 0) : undefined
+    bulletStormAverageMode ? (bulletStormAvg ?? 0) : undefined,
   );
 
   const foodTier = conditions.foodTier ?? 0;
@@ -231,7 +243,7 @@ export function ConditionsSection() {
         isAimingDownSights: defaults.isAimingDownSights ?? false,
         isInPowerArmor: defaults.isInPowerArmor,
         hydrated: defaults.hydrated ?? true,
-      }
+      },
     ) +
     (isOnslaughtStacksActive(onslaughtStored, onslaughtReverse) ? 1 : 0) +
     (isBulletStormStacksActive(bulletStormStored, bulletStormAverageMode) ? 1 : 0);
@@ -253,7 +265,7 @@ export function ConditionsSection() {
             value={conditions.healthPercent}
             min={1}
             max={100}
-            onChange={v => set('healthPercent', v)}
+            onChange={(v) => set('healthPercent', v)}
           />
 
           <div className="flex items-center justify-between text-sm">
@@ -271,7 +283,7 @@ export function ConditionsSection() {
                   max={4}
                   step={1}
                   value={[foodTier]}
-                  onValueChange={v => set('foodTier', firstSliderValue(v))}
+                  onValueChange={(v) => set('foodTier', firstSliderValue(v))}
                   marks={FOOD_TIER_NAMES.map((_, i) => ({ value: i }))}
                 />
               </div>
@@ -284,7 +296,7 @@ export function ConditionsSection() {
                   max={4}
                   step={1}
                   value={[drinkTier]}
-                  onValueChange={v => set('drinkTier', firstSliderValue(v))}
+                  onValueChange={(v) => set('drinkTier', firstSliderValue(v))}
                   marks={DRINK_TIER_NAMES.map((_, i) => ({ value: i }))}
                 />
               </div>
@@ -300,8 +312,11 @@ export function ConditionsSection() {
                 max={8}
                 step={1}
                 value={[feralTier]}
-                onValueChange={v => set('feralTier', firstSliderValue(v))}
-                marks={Array.from({ length: 9 }, (_, i) => ({ value: i, label: i % 2 === 0 ? String(i) : undefined }))}
+                onValueChange={(v) => set('feralTier', firstSliderValue(v))}
+                marks={Array.from({ length: 9 }, (_, i) => ({
+                  value: i,
+                  label: i % 2 === 0 ? String(i) : undefined,
+                }))}
               />
             </div>
           )}
@@ -317,7 +332,7 @@ export function ConditionsSection() {
                 max={stats.maxHealth}
                 step={5}
                 value={[glow]}
-                onValueChange={v => set('glow', firstSliderValue(v))}
+                onValueChange={(v) => set('glow', firstSliderValue(v))}
                 marks={[
                   { value: 0, label: '0' },
                   { value: 180, label: '180' },
@@ -328,15 +343,20 @@ export function ConditionsSection() {
           )}
 
           <div className="space-y-1.5">
-            <Label htmlFor="char-caps">Caps on hand: {conditions.capsOnHand.toLocaleString()}</Label>
+            <Label htmlFor="char-caps">
+              Caps on hand: {conditions.capsOnHand.toLocaleString()}
+            </Label>
             <Slider
               id="char-caps"
               min={0}
               max={40000}
               step={1000}
               value={[Math.min(conditions.capsOnHand, 40000)]}
-              onValueChange={v => set('capsOnHand', firstSliderValue(v))}
-              marks={[0, 10000, 20000, 29000, 40000].map(v => ({ value: v, label: v === 0 ? '0' : `${v / 1000}k` }))}
+              onValueChange={(v) => set('capsOnHand', firstSliderValue(v))}
+              marks={[0, 10000, 20000, 29000, 40000].map((v) => ({
+                value: v,
+                label: v === 0 ? '0' : `${v / 1000}k`,
+              }))}
             />
           </div>
 
@@ -349,10 +369,15 @@ export function ConditionsSection() {
               step={1}
               disabled={!hasKillStreak}
               value={[conditions.adrenalineStacks]}
-              onValueChange={v => set('adrenalineStacks', firstSliderValue(v))}
-              marks={Array.from({ length: 11 }, (_, i) => ({ value: i, label: i % 2 === 0 ? String(i) : undefined }))}
+              onValueChange={(v) => set('adrenalineStacks', firstSliderValue(v))}
+              marks={Array.from({ length: 11 }, (_, i) => ({
+                value: i,
+                label: i % 2 === 0 ? String(i) : undefined,
+              }))}
             />
-            {!hasKillStreak && <p className="text-muted-foreground text-xs">No kill-streak sources equipped</p>}
+            {!hasKillStreak && (
+              <p className="text-muted-foreground text-xs">No kill-streak sources equipped</p>
+            )}
           </div>
 
           <div className="space-y-1.5">
@@ -363,8 +388,8 @@ export function ConditionsSection() {
             </Label>
             {onslaughtReverse ? (
               <p className="text-muted-foreground text-xs">
-                Engine-computed average during sustained fire (Gunslinger Master). Consumption scales with
-                fire rate, projectiles, and targets hit below.
+                Engine-computed average during sustained fire (Gunslinger Master). Consumption
+                scales with fire rate, projectiles, and targets hit below.
               </p>
             ) : (
               <Slider
@@ -374,7 +399,7 @@ export function ConditionsSection() {
                 step={1}
                 disabled={onslaughtMax === 0}
                 value={[onslaughtValue]}
-                onValueChange={v => set('onslaughtStacks', firstSliderValue(v))}
+                onValueChange={(v) => set('onslaughtStacks', firstSliderValue(v))}
                 marks={
                   onslaughtMax > 0
                     ? Array.from({ length: onslaughtMax + 1 }, (_, i) => ({
@@ -385,7 +410,9 @@ export function ConditionsSection() {
                 }
               />
             )}
-            {onslaughtMax === 0 && <p className="text-muted-foreground text-xs">No Onslaught sources equipped</p>}
+            {onslaughtMax === 0 && (
+              <p className="text-muted-foreground text-xs">No Onslaught sources equipped</p>
+            )}
           </div>
 
           <div className="space-y-1.5">
@@ -398,13 +425,13 @@ export function ConditionsSection() {
               id="char-bulletstorm-average"
               label="Use sustained-fire average"
               checked={bulletStormAverageMode}
-              onCheckedChange={v => set('bulletStormAverageMode', v)}
+              onCheckedChange={(v) => set('bulletStormAverageMode', v)}
               disabled={bulletStormMax === 0}
             />
             {bulletStormAverageMode ? (
               <p className="text-muted-foreground text-xs">
-                Engine-computed average during sustained fire — builds with ammo spent, resets on reload (Lock and
-                Load keeps half).
+                Engine-computed average during sustained fire — builds with ammo spent, resets on
+                reload (Lock and Load keeps half).
               </p>
             ) : (
               <Slider
@@ -414,12 +441,15 @@ export function ConditionsSection() {
                 step={1}
                 disabled={bulletStormMax === 0}
                 value={[bulletStormValue]}
-                onValueChange={v => set('bulletStormStacks', firstSliderValue(v))}
+                onValueChange={(v) => set('bulletStormStacks', firstSliderValue(v))}
                 marks={
                   bulletStormMax > 0
                     ? Array.from({ length: bulletStormMax - bulletStormMin + 1 }, (_, i) => {
                         const v = bulletStormMin + i;
-                        return { value: v, label: v % 5 === 0 || v === bulletStormMax ? String(v) : undefined };
+                        return {
+                          value: v,
+                          label: v % 5 === 0 || v === bulletStormMax ? String(v) : undefined,
+                        };
                       })
                     : undefined
                 }
@@ -441,12 +471,16 @@ export function ConditionsSection() {
               step={1}
               disabled={!hasConcentratedFire}
               value={[concentratedFireStacks]}
-              onValueChange={v => set('concentratedFireStacks', firstSliderValue(v))}
-              marks={Array.from({ length: 21 }, (_, i) => ({ value: i, label: i % 5 === 0 ? String(i) : undefined }))}
+              onValueChange={(v) => set('concentratedFireStacks', firstSliderValue(v))}
+              marks={Array.from({ length: 21 }, (_, i) => ({
+                value: i,
+                label: i % 5 === 0 ? String(i) : undefined,
+              }))}
             />
             <p className="text-muted-foreground text-xs">
-              Stacks build per VATS shot landed on the same body part and reset when you switch body part or target
-              — a manual stand-in for the game's hidden counter (each rank adds +1/2/3% VATS damage per stack).
+              Stacks build per VATS shot landed on the same body part and reset when you switch body
+              part or target — a manual stand-in for the game's hidden counter (each rank adds
+              +1/2/3% VATS damage per stack).
             </p>
             {!hasConcentratedFire && (
               <p className="text-muted-foreground text-xs">No Concentrated Fire sources equipped</p>
@@ -464,7 +498,7 @@ export function ConditionsSection() {
               step={0.25}
               disabled={!hasBattleLoaders}
               value={[battleLoadersBashSec]}
-              onValueChange={v => set('battleLoadersBashSec', firstSliderValue(v))}
+              onValueChange={(v) => set('battleLoadersBashSec', firstSliderValue(v))}
               marks={[
                 { value: 0, label: '0s' },
                 { value: 0.75, label: '0.75s' },
@@ -472,9 +506,9 @@ export function ConditionsSection() {
               ]}
             />
             <p className="text-muted-foreground text-xs">
-              Seconds spent on the bash swing that triggers Battle-Loader's instant reload, used in place of a real
-              reload. The 0.75s default is an unmeasured placeholder pending in-game stopwatch testing — actual
-              timing likely depends on the weapon's bash animation.
+              Seconds spent on the bash swing that triggers Battle-Loader's instant reload, used in
+              place of a real reload. The 0.75s default is an unmeasured placeholder pending in-game
+              stopwatch testing — actual timing likely depends on the weapon's bash animation.
             </p>
             {!hasBattleLoaders && (
               <p className="text-muted-foreground text-xs">No Battle-Loader's sources equipped</p>
@@ -488,7 +522,7 @@ export function ConditionsSection() {
               value={conditions.targetsHit ?? 1}
               min={1}
               max={20}
-              onChange={v => set('targetsHit', v)}
+              onChange={(v) => set('targetsHit', v)}
             />
           )}
 
@@ -499,7 +533,7 @@ export function ConditionsSection() {
             min={0}
             max={200}
             step={10}
-            onChange={v => set('weaponConditionPct', v)}
+            onChange={(v) => set('weaponConditionPct', v)}
           />
 
           <div className="space-y-1.5">
@@ -510,11 +544,11 @@ export function ConditionsSection() {
               min={0}
               max={2000}
               step={10}
-              onChange={v => set('playerDamageResist', v)}
+              onChange={(v) => set('playerDamageResist', v)}
             />
             <p className="text-muted-foreground text-xs">
-              No armor model exists yet — this is a manual stand-in for Berserker's-style effects that scale off
-              your OWN damage resist (0 = naked, the curve's max-bonus end).
+              No armor model exists yet — this is a manual stand-in for Berserker's-style effects
+              that scale off your OWN damage resist (0 = naked, the curve's max-bonus end).
             </p>
           </div>
 
@@ -526,11 +560,11 @@ export function ConditionsSection() {
               min={10}
               max={100}
               step={5}
-              onChange={v => set('hitRatePct', v)}
+              onChange={(v) => set('hitRatePct', v)}
             />
             <p className="text-muted-foreground text-xs">
-              Share of free-aim shots that land (movement, target size). Scales the Free Aim effective DPS; VATS has
-              its own hit-rate setting below.
+              Share of free-aim shots that land (movement, target size). Scales the Free Aim
+              effective DPS; VATS has its own hit-rate setting below.
             </p>
           </div>
 
@@ -542,7 +576,7 @@ export function ConditionsSection() {
               min={10}
               max={100}
               step={5}
-              onChange={v => set('vatsHitRatePct', v)}
+              onChange={(v) => set('vatsHitRatePct', v)}
             />
             {vatsHitChanceBonus > 0 && (
               <Tooltip>
@@ -550,9 +584,9 @@ export function ConditionsSection() {
                   +{Math.round(vatsHitChanceBonus * 100)}% VATS hit bonus
                 </TooltipTrigger>
                 <TooltipContent>
-                  Informational total of equipped VATS-accuracy sources (V.A.T.S. Enhanced, Awareness, Eye of the
-                  Hunter, V.A.T.S. Matrix Overlay...). The slider above stays authoritative — this never changes any
-                  DPS number.
+                  Informational total of equipped VATS-accuracy sources (V.A.T.S. Enhanced,
+                  Awareness, Eye of the Hunter, V.A.T.S. Matrix Overlay...). The slider above stays
+                  authoritative — this never changes any DPS number.
                 </TooltipContent>
               </Tooltip>
             )}
@@ -562,9 +596,9 @@ export function ConditionsSection() {
                   hit chance × {vatsHitChanceMult.toFixed(2)}
                 </TooltipTrigger>
                 <TooltipContent>
-                  Concentrated Fire multiplies the game's computed VATS hit chance directly (not a flat % add), per
-                  the Concentrated Fire stacks slider below. Informational only — the slider above stays
-                  authoritative and this never changes any DPS number.
+                  Concentrated Fire multiplies the game's computed VATS hit chance directly (not a
+                  flat % add), per the Concentrated Fire stacks slider below. Informational only —
+                  the slider above stays authoritative and this never changes any DPS number.
                 </TooltipContent>
               </Tooltip>
             )}
@@ -578,11 +612,11 @@ export function ConditionsSection() {
               min={10}
               max={100}
               step={5}
-              onChange={v => set('bodyPartHitRatePct', v)}
+              onChange={(v) => set('bodyPartHitRatePct', v)}
             />
             <p className="text-muted-foreground text-xs">
-              Once the Target section has a non-torso body part selected: this share of hits lands on it, the rest
-              hit the torso.
+              Once the Target section has a non-torso body part selected: this share of hits lands
+              on it, the rest hit the torso.
             </p>
           </div>
 
@@ -592,10 +626,11 @@ export function ConditionsSection() {
                 id="char-hydrated"
                 label="Fully hydrated"
                 checked={conditions.hydrated ?? true}
-                onCheckedChange={v => set('hydrated', v)}
+                onCheckedChange={(v) => set('hydrated', v)}
               />
               <p className="text-muted-foreground text-xs">
-                Fully hydrated grants +35% AP regen (45/60% with Rejuvenated). Ghouls have no hydration.
+                Fully hydrated grants +35% AP regen (45/60% with Rejuvenated). Ghouls have no
+                hydration.
               </p>
             </div>
           )}
@@ -604,28 +639,28 @@ export function ConditionsSection() {
             id="char-power-attack"
             label="Power attacking (melee)"
             checked={conditions.isPowerAttacking}
-            onCheckedChange={v => set('isPowerAttacking', v)}
+            onCheckedChange={(v) => set('isPowerAttacking', v)}
           />
 
           <SwitchRow
             id="char-last-shot"
             label="Firing the magazine's last round"
             checked={conditions.isLastShot ?? false}
-            onCheckedChange={v => set('isLastShot', v)}
+            onCheckedChange={(v) => set('isLastShot', v)}
           />
 
           <SwitchRow
             id="char-ads"
             label="Aiming down sights"
             checked={conditions.isAimingDownSights ?? false}
-            onCheckedChange={v => set('isAimingDownSights', v)}
+            onCheckedChange={(v) => set('isAimingDownSights', v)}
           />
 
           <SwitchRow
             id="char-power-armor"
             label="Wearing power armor"
             checked={conditions.isInPowerArmor}
-            onCheckedChange={v => set('isInPowerArmor', v)}
+            onCheckedChange={(v) => set('isInPowerArmor', v)}
           />
         </div>
       </AccordionContent>

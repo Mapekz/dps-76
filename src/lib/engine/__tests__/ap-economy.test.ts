@@ -115,18 +115,34 @@ describe('computeApEconomy', () => {
       apPerCrit: 0,
       shotsPerCrit: Infinity,
     });
-    expect(result.regenPerSec).toBeCloseTo((AP_POOL_BASE * (AP_REGEN_RATE_PCT + 10)) / 100 * 1.45, 10);
+    expect(result.regenPerSec).toBeCloseTo(
+      ((AP_POOL_BASE * (AP_REGEN_RATE_PCT + 10)) / 100) * 1.45,
+      10,
+    );
   });
 
   it('power armor swaps the race base to 3.0 — regen halves', () => {
     const human = computeApEconomy({
-      apCost: 0, shotsPerSec: 0, agility: 15, apRegenBonus: 0, apPerCrit: 0, shotsPerCrit: Infinity,
+      apCost: 0,
+      shotsPerSec: 0,
+      agility: 15,
+      apRegenBonus: 0,
+      apPerCrit: 0,
+      shotsPerCrit: Infinity,
     });
     const pa = computeApEconomy({
-      apCost: 0, shotsPerSec: 0, agility: 15, apRegenBonus: 0, apPerCrit: 0, shotsPerCrit: Infinity,
+      apCost: 0,
+      shotsPerSec: 0,
+      agility: 15,
+      apRegenBonus: 0,
+      apPerCrit: 0,
+      shotsPerCrit: Infinity,
       isInPowerArmor: true,
     });
-    expect(pa.regenPerSec).toBeCloseTo(human.regenPerSec * (AP_REGEN_RATE_PCT_POWER_ARMOR / AP_REGEN_RATE_PCT), 10);
+    expect(pa.regenPerSec).toBeCloseTo(
+      human.regenPerSec * (AP_REGEN_RATE_PCT_POWER_ARMOR / AP_REGEN_RATE_PCT),
+      10,
+    );
   });
 
   it('apMax penalties shrink the pool AND its (informational, non-uptime) regen (rate is % of max AP per second)', () => {
@@ -159,26 +175,41 @@ describe('computeApEconomy', () => {
       apPerCrit: 0,
       shotsPerCrit: Infinity,
     });
-    expect(result.regenPerSec).toBeCloseTo((AP_POOL_BASE * AP_REGEN_RATE_PCT) / 100 * 1.45, 10);
+    expect(result.regenPerSec).toBeCloseTo(((AP_POOL_BASE * AP_REGEN_RATE_PCT) / 100) * 1.45, 10);
     expect(result.maxAp).toBe(AP_POOL_BASE);
   });
 
   it('agility scales the AP pool linearly via the named GMST constants', () => {
     const result = computeApEconomy({
-      apCost: 10, shotsPerSec: 1, agility: 30, apRegenBonus: 0, apPerCrit: 0, shotsPerCrit: Infinity,
+      apCost: 10,
+      shotsPerSec: 1,
+      agility: 30,
+      apRegenBonus: 0,
+      apPerCrit: 0,
+      shotsPerCrit: Infinity,
     });
     expect(result.maxAp).toBe(AP_POOL_BASE + AP_POOL_PER_AGILITY * 30);
   });
 
   it('zero drain (no AP cost or no shots fired) never constrains uptime', () => {
     const noCost = computeApEconomy({
-      apCost: 0, shotsPerSec: 4, agility: 15, apRegenBonus: 0, apPerCrit: 0, shotsPerCrit: Infinity,
+      apCost: 0,
+      shotsPerSec: 4,
+      agility: 15,
+      apRegenBonus: 0,
+      apPerCrit: 0,
+      shotsPerCrit: Infinity,
     });
     expect(noCost.drainPerSec).toBe(0);
     expect(noCost.uptime).toBe(1);
 
     const noShots = computeApEconomy({
-      apCost: 16, shotsPerSec: 0, agility: 15, apRegenBonus: 0, apPerCrit: 0, shotsPerCrit: Infinity,
+      apCost: 16,
+      shotsPerSec: 0,
+      agility: 15,
+      apRegenBonus: 0,
+      apPerCrit: 0,
+      shotsPerCrit: Infinity,
     });
     expect(noShots.drainPerSec).toBe(0);
     expect(noShots.uptime).toBe(1);
@@ -186,7 +217,12 @@ describe('computeApEconomy', () => {
 
   it('uptime is clamped to [0, 1] even for pathological inputs', () => {
     const negativeCost = computeApEconomy({
-      apCost: -5, shotsPerSec: 4, agility: 15, apRegenBonus: 0, apPerCrit: 0, shotsPerCrit: Infinity,
+      apCost: -5,
+      shotsPerSec: 4,
+      agility: 15,
+      apRegenBonus: 0,
+      apPerCrit: 0,
+      shotsPerCrit: Infinity,
     });
     expect(negativeCost.uptime).toBe(1);
   });
@@ -204,7 +240,12 @@ describe('computeApEconomy', () => {
     it('credits regenPerSec × (reloadSec − delay), averaged over the magazine cycle', () => {
       // 20s dump + 4s reload cycle at 20/24 shots/s: credit = 12.6 × (4−1)/24
       // = 1.575; uptime = 1.575 / (16 × 20/24).
-      const result = computeApEconomy({ ...base, shotsPerSec: 20 / 24, magDumpSec: 20, reloadSec: 4 });
+      const result = computeApEconomy({
+        ...base,
+        shotsPerSec: 20 / 24,
+        magDumpSec: 20,
+        reloadSec: 4,
+      });
       expect(result.reloadRegenPerSec).toBeCloseTo(1.575, 10);
       expect(result.apGainPerSec).toBeCloseTo(1.575, 10);
       expect(result.uptime).toBeCloseTo(1.575 / (16 * (20 / 24)), 10);

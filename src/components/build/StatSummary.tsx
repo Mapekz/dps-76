@@ -29,7 +29,7 @@ export function StatSummary() {
 
   return (
     <div className="mb-3 flex flex-wrap items-center gap-1.5">
-      {SPECIAL_KEYS.map(key => {
+      {SPECIAL_KEYS.map((key) => {
         const value = stats.special[key];
         const base = player.conditions[key];
         const buffed = value !== base;
@@ -42,7 +42,9 @@ export function StatSummary() {
             <span className="font-condensed text-muted-foreground text-[10px] font-semibold uppercase">
               {LETTERS[key]}
             </span>{' '}
-            <span className={`font-mono text-xs tabular-nums ${buffed ? 'text-positive' : ''}`}>{value}</span>
+            <span className={`font-mono text-xs tabular-nums ${buffed ? 'text-positive' : ''}`}>
+              {value}
+            </span>
           </div>
         );
       })}
@@ -52,7 +54,9 @@ export function StatSummary() {
       >
         <HeartIcon className="text-muted-foreground size-3" />
         <span className="font-mono text-xs tabular-nums">{stats.maxHealth}</span>
-        <span className="font-condensed text-muted-foreground text-[10px] font-semibold uppercase">HP</span>
+        <span className="font-condensed text-muted-foreground text-[10px] font-semibold uppercase">
+          HP
+        </span>
       </div>
     </div>
   );

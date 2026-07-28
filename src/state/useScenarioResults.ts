@@ -32,7 +32,9 @@ export function useScenarioResults(): ScenarioResults {
   }, [state.player, state.enemy, mode]);
 
   const auto: ScenarioKey =
-    scenarios && scenarios.vats.sustain.sustainedDps >= scenarios.freeAim.sustain.sustainedDps ? 'vats' : 'freeAim';
+    scenarios && scenarios.vats.sustain.sustainedDps >= scenarios.freeAim.sustain.sustainedDps
+      ? 'vats'
+      : 'freeAim';
 
   return { scenarios, emphasized: state.view.emphasized ?? auto };
 }

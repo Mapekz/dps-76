@@ -1,11 +1,11 @@
-import * as React from "react"
-import { Slider as SliderPrimitive } from "@base-ui/react/slider"
+import * as React from 'react';
+import { Slider as SliderPrimitive } from '@base-ui/react/slider';
 
 export interface SliderMark {
   /** Position in the slider's own min/max coordinate space. */
-  value: number
+  value: number;
   /** Tick label; omitted = tick only. */
-  label?: React.ReactNode
+  label?: React.ReactNode;
 }
 
 function Slider({
@@ -19,8 +19,8 @@ function Slider({
 }: SliderPrimitive.Root.Props & { marks?: SliderMark[] }) {
   const _values = React.useMemo(
     () => (Array.isArray(value) ? value : Array.isArray(defaultValue) ? defaultValue : [min, max]),
-    [value, defaultValue, min, max]
-  )
+    [value, defaultValue, min, max],
+  );
 
   return (
     <div className="w-full">
@@ -67,30 +67,33 @@ function Slider({
           its own height always pushes whatever comes next down for real, so
           it can't silently overlap a sibling (in this file or a caller's) the
           way an absolutely-positioned overlay with a guessed clearance can. */}
-      {marks && max > min && (
-        // mx-2 (not px-2): percentages on the absolutely-positioned mark
-        // children resolve against this row's padding box, which already
-        // spans edge-to-edge — padding doesn't narrow that reference frame,
-        // only a real inset (margin, here) does. Without it the 0%/100%
-        // marks sit flush with the true edge and half their label bleeds
-        // past it into the Card's overflow-hidden.
-        <div data-slot="slider-marks" className="pointer-events-none relative mt-1.5 h-5 mx-2">
-          {marks.map(m => (
-            <div
-              key={m.value}
-              className="absolute flex -translate-x-1/2 flex-col items-center"
-              style={{ left: `${((m.value - min) / (max - min)) * 100}%` }}
-            >
-              <span className="bg-border block h-1 w-px" />
-              {m.label !== undefined && (
-                <span className="text-muted-foreground text-[9px] leading-tight tabular-nums">{m.label}</span>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+      {marks &&
+        max > min && (
+          // mx-2 (not px-2): percentages on the absolutely-positioned mark
+          // children resolve against this row's padding box, which already
+          // spans edge-to-edge — padding doesn't narrow that reference frame,
+          // only a real inset (margin, here) does. Without it the 0%/100%
+          // marks sit flush with the true edge and half their label bleeds
+          // past it into the Card's overflow-hidden.
+          <div data-slot="slider-marks" className="pointer-events-none relative mt-1.5 h-5 mx-2">
+            {marks.map((m) => (
+              <div
+                key={m.value}
+                className="absolute flex -translate-x-1/2 flex-col items-center"
+                style={{ left: `${((m.value - min) / (max - min)) * 100}%` }}
+              >
+                <span className="bg-border block h-1 w-px" />
+                {m.label !== undefined && (
+                  <span className="text-muted-foreground text-[9px] leading-tight tabular-nums">
+                    {m.label}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
     </div>
-  )
+  );
 }
 
-export { Slider }
+export { Slider };

@@ -62,7 +62,11 @@ describe('equippedRaceLock', () => {
   });
 
   it('flags a conflict when both human-only and ghoul-only perks are equipped', () => {
-    const lock = equippedRaceLock('live', [{ perkId: 'QuickHands', rank: 1 }], [{ perkId: 'ActionDiet', rank: 1 }]);
+    const lock = equippedRaceLock(
+      'live',
+      [{ perkId: 'QuickHands', rank: 1 }],
+      [{ perkId: 'ActionDiet', rank: 1 }],
+    );
     expect(lock.locked).toBeNull();
     expect(lock.conflict).toBe(true);
     expect(lock.lockedBy.length).toBe(2);

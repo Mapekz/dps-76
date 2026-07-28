@@ -131,7 +131,7 @@ function componentMitigationMult(
   damage: number,
   resist: number,
   resistType: GeneratedNpcDamageType,
-  constants: MitigationConstants
+  constants: MitigationConstants,
 ): number {
   if (resist <= 0) return 1;
   const factor = Math.pow((damage * constants.damageFactor) / resist, constants.resistExponent);
@@ -164,12 +164,12 @@ export function applyMitigation(
   defenses: EnemyDefenses | undefined,
   armorPenTotal: number,
   flatResistDebuffPhysical: number,
-  constants: MitigationConstants = DEFAULT_MITIGATION_CONSTANTS
+  constants: MitigationConstants = DEFAULT_MITIGATION_CONSTANTS,
 ): HitBreakdown {
   if (!defenses) return hit;
 
   const armorPenFactor = 1 - clamp01(armorPenTotal);
-  const components: ComponentHit[] = hit.components.map(c => {
+  const components: ComponentHit[] = hit.components.map((c) => {
     const resistType = DAMAGE_TYPE_TO_RESIST_TYPE[c.damageType];
     const base = defenses.resists[resistType] ?? 0;
     const flatDebuff = resistType === 'physical' ? flatResistDebuffPhysical : 0;

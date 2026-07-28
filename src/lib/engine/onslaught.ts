@@ -12,17 +12,26 @@ function clampStacks(stacks: number, max: number): number {
 
 /** True when the weapon has at least one non-explosion damage component. */
 export function weaponHasNonExplosionPhysical(weapon: Weapon): boolean {
-  return (weapon.components ?? []).some(c => !c.fromExplosion);
+  return (weapon.components ?? []).some((c) => !c.fromExplosion);
 }
 
 /**
  * True when the weapon contributes explosion hit-events: launcher EXPL
  * payloads, intrinsic explosion mult, or an active Explosive-legendary fold.
  */
-export function weaponHasExplosion(weapon: Weapon, modifiers: Modifier[], ctx: ResolveContext): boolean {
-  if ((weapon.components ?? []).some(c => c.fromExplosion)) return true;
+export function weaponHasExplosion(
+  weapon: Weapon,
+  modifiers: Modifier[],
+  ctx: ResolveContext,
+): boolean {
+  if ((weapon.components ?? []).some((c) => c.fromExplosion)) return true;
   if ((weapon.explosionBaseWeaponDamageMult ?? 0) > 0) return true;
-  const payload = foldBucket(modifiers, 'explosivePayload', weapon.explosionBaseWeaponDamageMult ?? 0, ctx);
+  const payload = foldBucket(
+    modifiers,
+    'explosivePayload',
+    weapon.explosionBaseWeaponDamageMult ?? 0,
+    ctx,
+  );
   return payload > 0;
 }
 
@@ -34,7 +43,7 @@ export function perShotOnslaughtConsume(
   weapon: Weapon,
   modifiers: Modifier[],
   ctx: ResolveContext,
-  targets: number
+  targets: number,
 ): number {
   const projectileCount = weapon.projectileCount ?? 1;
   const physicalHits = weaponHasNonExplosionPhysical(weapon) ? projectileCount : 0;
@@ -81,7 +90,7 @@ function reverseOnslaughtMagCycleAvg(
   regen: number,
   perShotConsume: number,
   fireRate: number,
-  timing: { shotsPerMag: number; magDumpSec: number; reloadSec: number }
+  timing: { shotsPerMag: number; magDumpSec: number; reloadSec: number },
 ): number {
   const { shotsPerMag, magDumpSec, reloadSec } = timing;
   let startStacks = max;
@@ -116,7 +125,7 @@ function reverseOnslaughtContinuousAvg(
   max: number,
   regen: number,
   perShotConsume: number,
-  fireRate: number
+  fireRate: number,
 ): number {
   const interval = 1 / fireRate;
   let startStacks = max;

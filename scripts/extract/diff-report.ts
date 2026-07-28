@@ -39,14 +39,21 @@ async function loadGitJson<T>(ref: string, repoRelPath: string): Promise<T | nul
   }
 }
 
-function diffIds<T extends Entry>(oldItems: T[], newItems: T[]): { added: T[]; removed: T[]; hidden: T[]; rescued: T[] } {
-  const oldById = new Map(oldItems.map(i => [i.id, i]));
-  const newById = new Map(newItems.map(i => [i.id, i]));
-  const added = newItems.filter(i => !oldById.has(i.id));
-  const removed = oldItems.filter(i => !newById.has(i.id));
+function diffIds<T extends Entry>(
+  oldItems: T[],
+  newItems: T[],
+): { added: T[]; removed: T[]; hidden: T[]; rescued: T[] } {
+  const oldById = new Map(oldItems.map((i) => [i.id, i]));
+  const newById = new Map(newItems.map((i) => [i.id, i]));
+  const added = newItems.filter((i) => !oldById.has(i.id));
+  const removed = oldItems.filter((i) => !newById.has(i.id));
   // Visibility flips on records present in both.
-  const hidden = newItems.filter(i => oldById.has(i.id) && visible(oldById.get(i.id)!) && !visible(i));
-  const rescued = newItems.filter(i => oldById.has(i.id) && !visible(oldById.get(i.id)!) && visible(i));
+  const hidden = newItems.filter(
+    (i) => oldById.has(i.id) && visible(oldById.get(i.id)!) && !visible(i),
+  );
+  const rescued = newItems.filter(
+    (i) => oldById.has(i.id) && !visible(oldById.get(i.id)!) && visible(i),
+  );
   return { added, removed, hidden, rescued };
 }
 
@@ -76,9 +83,14 @@ async function main() {
 
   // Weapons
   const oldWeapons = (await loadGitJson<GeneratedWeapon[]>(base, `${genRel}/weapons.json`)) ?? [];
-  const newWeapons = JSON.parse(await readFile(path.join(genAbs, 'weapons.json'), 'utf8')) as GeneratedWeapon[];
+  const newWeapons = JSON.parse(
+    await readFile(path.join(genAbs, 'weapons.json'), 'utf8'),
+  ) as GeneratedWeapon[];
   const w = diffIds(oldWeapons, newWeapons);
-  out.push(`## Weapons: ${oldWeapons.length} → ${newWeapons.length} (visible: ${oldWeapons.filter(visible).length} → ${newWeapons.filter(visible).length})`, '');
+  out.push(
+    `## Weapons: ${oldWeapons.length} → ${newWeapons.length} (visible: ${oldWeapons.filter(visible).length} → ${newWeapons.filter(visible).length})`,
+    '',
+  );
   out.push(...section('Added', w.added));
   out.push(...section('Removed', w.removed));
   out.push(...section('Newly hidden (obtainable → false)', w.hidden));
@@ -86,7 +98,9 @@ async function main() {
 
   // Omods
   const oldOmods = (await loadGitJson<GeneratedOmod[]>(base, `${genRel}/omods.json`)) ?? [];
-  const newOmods = JSON.parse(await readFile(path.join(genAbs, 'omods.json'), 'utf8')) as GeneratedOmod[];
+  const newOmods = JSON.parse(
+    await readFile(path.join(genAbs, 'omods.json'), 'utf8'),
+  ) as GeneratedOmod[];
   const isLegendary = (o: GeneratedOmod) => LEGENDARY_SLOT_RE.test(o.attachPointEdid);
 
   for (const [label, filter] of [
@@ -96,7 +110,10 @@ async function main() {
     const oldSet = oldOmods.filter(filter);
     const newSet = newOmods.filter(filter);
     const d = diffIds(oldSet, newSet);
-    out.push(`## ${label}: ${oldSet.length} → ${newSet.length} (visible: ${oldSet.filter(visible).length} → ${newSet.filter(visible).length})`, '');
+    out.push(
+      `## ${label}: ${oldSet.length} → ${newSet.length} (visible: ${oldSet.filter(visible).length} → ${newSet.filter(visible).length})`,
+      '',
+    );
     out.push(...section('Added', d.added));
     out.push(...section('Removed', d.removed));
     out.push(...section('Newly hidden (obtainable → false)', d.hidden));
@@ -105,11 +122,15 @@ async function main() {
 
   // Legendary modifier-count deltas (the "did translation improve" signal),
   // grouped by star slot.
-  const oldById = new Map(oldOmods.map(o => [o.id, o]));
+  const oldById = new Map(oldOmods.map((o) => [o.id, o]));
   const deltas = newOmods
     .filter(isLegendary)
-    .map(o => ({ omod: o, before: oldById.get(o.id)?.modifiers.length ?? 0, after: o.modifiers.length }))
-    .filter(d => oldById.has(d.omod.id) && d.before !== d.after);
+    .map((o) => ({
+      omod: o,
+      before: oldById.get(o.id)?.modifiers.length ?? 0,
+      after: o.modifiers.length,
+    }))
+    .filter((d) => oldById.has(d.omod.id) && d.before !== d.after);
   out.push(`## Legendary modifier-count changes (${deltas.length})`, '');
   if (deltas.length === 0) {
     out.push('_none_', '');
@@ -128,10 +149,14 @@ async function main() {
     }
   }
 
-  const zeroModLegendaries = newOmods.filter(o => isLegendary(o) && visible(o) && o.modifiers.length === 0);
+  const zeroModLegendaries = newOmods.filter(
+    (o) => isLegendary(o) && visible(o) && o.modifiers.length === 0,
+  );
   out.push(`## Visible zero-modifier legendaries remaining: ${zeroModLegendaries.length}`, '');
   for (const o of zeroModLegendaries.sort((a, b) => a.id.localeCompare(b.id))) {
-    out.push(`- \`${o.id}\` — ${o.name}${o.hasEnchantments ? ' (has enchantment — translation gap)' : ''}`);
+    out.push(
+      `- \`${o.id}\` — ${o.name}${o.hasEnchantments ? ' (has enchantment — translation gap)' : ''}`,
+    );
   }
   out.push('');
 
@@ -144,13 +169,13 @@ async function main() {
     '',
     'Run `pnpm test src/data/__tests__/dataset.test.ts` — asserts every hand-maintained ' +
       'override (src/data/overrides/*) still targets a real generated id, for both live and pts.',
-    ''
+    '',
   );
 
   console.log(out.join('\n'));
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error(err);
   process.exit(1);
 });

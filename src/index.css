@@ -4,8 +4,8 @@
 @import '@fontsource/barlow-condensed/500.css';
 @import '@fontsource/barlow-condensed/600.css';
 @import '@fontsource-variable/spline-sans-mono';
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -121,21 +121,40 @@
 
 /* Delta flashes: the changed number pulses from positive/negative back to ink. */
 @keyframes flash-positive {
-  from { color: var(--positive); }
-  to { color: var(--foreground); }
+  from {
+    color: var(--positive);
+  }
+  to {
+    color: var(--foreground);
+  }
 }
 
 @keyframes flash-negative {
-  from { color: var(--negative); }
-  to { color: var(--foreground); }
+  from {
+    color: var(--negative);
+  }
+  to {
+    color: var(--foreground);
+  }
 }
 
 /* Ghost "+4.2%" superscript beside a flashed number. */
 @keyframes ghost-rise {
-  0% { opacity: 0; transform: translateY(2px); }
-  15% { opacity: 1; transform: translateY(0); }
-  70% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-3px); }
+  0% {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
 }
 
 @theme inline {
@@ -171,14 +190,38 @@
   border-right: 1.5px solid var(--bracket-color, var(--border));
   top: 0;
   bottom: 0;
-  -webkit-mask-image: linear-gradient(to bottom, black 12px, transparent 12px, transparent calc(100% - 12px), black calc(100% - 12px));
-  mask-image: linear-gradient(to bottom, black 12px, transparent 12px, transparent calc(100% - 12px), black calc(100% - 12px));
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    black 12px,
+    transparent 12px,
+    transparent calc(100% - 12px),
+    black calc(100% - 12px)
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    black 12px,
+    transparent 12px,
+    transparent calc(100% - 12px),
+    black calc(100% - 12px)
+  );
 }
 .vats-brackets::after {
   border-top: 1.5px solid var(--bracket-color, var(--border));
   border-bottom: 1.5px solid var(--bracket-color, var(--border));
-  -webkit-mask-image: linear-gradient(to right, black 12px, transparent 12px, transparent calc(100% - 12px), black calc(100% - 12px));
-  mask-image: linear-gradient(to right, black 12px, transparent 12px, transparent calc(100% - 12px), black calc(100% - 12px));
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black 12px,
+    transparent 12px,
+    transparent calc(100% - 12px),
+    black calc(100% - 12px)
+  );
+  mask-image: linear-gradient(
+    to right,
+    black 12px,
+    transparent 12px,
+    transparent calc(100% - 12px),
+    black calc(100% - 12px)
+  );
 }
 .vats-brackets[data-emphasized='true'] {
   --bracket-color: var(--primary);

@@ -114,7 +114,12 @@ const MAX_DAMAGE_REDUCTION_GMSTS: ReadonlyArray<{ label: string; formId: string 
 ];
 
 /** Fallback mitigation scalars if a GMST family fails to resolve entirely — matches the pre-extraction hardcodes in `mitigation.ts`. */
-const FALLBACK_MITIGATION = { resistExponent: 0.365, damageFactor: 0.15, minReduction: 0.01, maxReduction: 0.99 };
+const FALLBACK_MITIGATION = {
+  resistExponent: 0.365,
+  damageFactor: 0.15,
+  minReduction: 0.01,
+  maxReduction: 0.99,
+};
 
 /** `fVATSCriticalChargeBase` (0x00249662) — crit-meter.ts's flat per-hit fill addend. */
 const VATS_CRIT_CHARGE_BASE_GMST = '0x00249662';
@@ -155,7 +160,7 @@ async function resolveSpecialAvif(
   client: EsmClient,
   formId: string,
   label: string,
-  unresolved: string[]
+  unresolved: string[],
 ): Promise<{ min: number; max: number } | null> {
   try {
     const rec = await client.get(formId);
@@ -165,22 +170,27 @@ async function resolveSpecialAvif(
     unresolved.push(`constants: ${label} AVIF ${formId} missing numeric Minimum/Maximum Value`);
     return null;
   } catch (err) {
-    unresolved.push(`constants: ${label} AVIF ${formId} failed to resolve: ${(err as Error).message}`);
+    unresolved.push(
+      `constants: ${label} AVIF ${formId} failed to resolve: ${(err as Error).message}`,
+    );
     return null;
   }
 }
 
-async function resolveSpecial(client: EsmClient, unresolved: string[]): Promise<{ min: number; max: number }> {
+async function resolveSpecial(
+  client: EsmClient,
+  unresolved: string[],
+): Promise<{ min: number; max: number }> {
   const resolved = await Promise.all(
-    SPECIAL_AVIFS.map(({ label, formId }) => resolveSpecialAvif(client, formId, label, unresolved))
+    SPECIAL_AVIFS.map(({ label, formId }) => resolveSpecialAvif(client, formId, label, unresolved)),
   );
-  const bounds = SPECIAL_AVIFS.map((s, i) => (resolved[i] ? { ...s, ...resolved[i]! } : null)).filter(
-    (b): b is { label: string; formId: string; min: number; max: number } => b !== null
-  );
+  const bounds = SPECIAL_AVIFS.map((s, i) =>
+    resolved[i] ? { ...s, ...resolved[i]! } : null,
+  ).filter((b): b is { label: string; formId: string; min: number; max: number } => b !== null);
 
   if (bounds.length === 0) {
     unresolved.push(
-      `constants: no SPECIAL AVIF resolved — falling back to [${FALLBACK_SPECIAL_CLAMP.min}, ${FALLBACK_SPECIAL_CLAMP.max}]`
+      `constants: no SPECIAL AVIF resolved — falling back to [${FALLBACK_SPECIAL_CLAMP.min}, ${FALLBACK_SPECIAL_CLAMP.max}]`,
     );
     return FALLBACK_SPECIAL_CLAMP;
   }
@@ -192,7 +202,7 @@ async function resolveSpecial(client: EsmClient, unresolved: string[]): Promise<
   for (const b of rest) {
     if (b.min !== first.min || b.max !== first.max) {
       unresolved.push(
-        `constants: ${b.label} AVIF clamp [${b.min}, ${b.max}] != ${first.label} [${first.min}, ${first.max}] — SPECIAL clamp is no longer uniform across stats`
+        `constants: ${b.label} AVIF clamp [${b.min}, ${b.max}] != ${first.label} [${first.min}, ${first.max}] — SPECIAL clamp is no longer uniform across stats`,
       );
     }
   }
@@ -201,7 +211,12 @@ async function resolveSpecial(client: EsmClient, unresolved: string[]): Promise<
 }
 
 /** Resolve one GMST's Float field; null (+ unresolved note) on any failure — the GMST analog of resolveSpecialAvif/resolveGlobal. */
-async function resolveGmstFloat(client: EsmClient, formId: string, label: string, unresolved: string[]): Promise<number | null> {
+async function resolveGmstFloat(
+  client: EsmClient,
+  formId: string,
+  label: string,
+  unresolved: string[],
+): Promise<number | null> {
   try {
     const rec = await client.get(formId);
     const value = rec.fields['Float'];
@@ -209,13 +224,20 @@ async function resolveGmstFloat(client: EsmClient, formId: string, label: string
     unresolved.push(`constants: ${label} GMST ${formId} missing numeric Float`);
     return null;
   } catch (err) {
-    unresolved.push(`constants: ${label} GMST ${formId} failed to resolve: ${(err as Error).message}`);
+    unresolved.push(
+      `constants: ${label} GMST ${formId} failed to resolve: ${(err as Error).message}`,
+    );
     return null;
   }
 }
 
 /** Resolve one `u`-prefixed GMST's UInt field; null (+ unresolved note) on any failure — the unsigned-int analog of `resolveGmstFloat`. */
-async function resolveGmstUInt(client: EsmClient, formId: string, label: string, unresolved: string[]): Promise<number | null> {
+async function resolveGmstUInt(
+  client: EsmClient,
+  formId: string,
+  label: string,
+  unresolved: string[],
+): Promise<number | null> {
   try {
     const rec = await client.get(formId);
     const value = rec.fields['UInt'];
@@ -223,7 +245,9 @@ async function resolveGmstUInt(client: EsmClient, formId: string, label: string,
     unresolved.push(`constants: ${label} GMST ${formId} missing numeric UInt`);
     return null;
   } catch (err) {
-    unresolved.push(`constants: ${label} GMST ${formId} failed to resolve: ${(err as Error).message}`);
+    unresolved.push(
+      `constants: ${label} GMST ${formId} failed to resolve: ${(err as Error).message}`,
+    );
     return null;
   }
 }
@@ -239,7 +263,7 @@ async function resolveRacePropertyValue(
   raceFormId: string,
   avFormId: string,
   label: string,
-  unresolved: string[]
+  unresolved: string[],
 ): Promise<number | null> {
   try {
     const rec = await client.get(raceFormId);
@@ -248,13 +272,20 @@ async function resolveRacePropertyValue(
       unresolved.push(`constants: ${label} RACE ${raceFormId} has no Properties array`);
       return null;
     }
-    const row = props.find(p => p && typeof p === 'object' && (p as { 'Actor Value'?: string })['Actor Value'] === avFormId);
+    const row = props.find(
+      (p) =>
+        p && typeof p === 'object' && (p as { 'Actor Value'?: string })['Actor Value'] === avFormId,
+    );
     const value = (row as { Value?: unknown } | undefined)?.Value;
     if (typeof value === 'number') return value;
-    unresolved.push(`constants: ${label} RACE ${raceFormId} has no numeric Properties row for AV ${avFormId}`);
+    unresolved.push(
+      `constants: ${label} RACE ${raceFormId} has no numeric Properties row for AV ${avFormId}`,
+    );
     return null;
   } catch (err) {
-    unresolved.push(`constants: ${label} RACE ${raceFormId} failed to resolve: ${(err as Error).message}`);
+    unresolved.push(
+      `constants: ${label} RACE ${raceFormId} failed to resolve: ${(err as Error).message}`,
+    );
     return null;
   }
 }
@@ -271,10 +302,12 @@ async function resolveUniformGmstGroup(
   familyLabel: string,
   entries: ReadonlyArray<{ label: string; formId: string }>,
   fallback: number,
-  unresolved: string[]
+  unresolved: string[],
 ): Promise<number> {
   const resolved = await Promise.all(
-    entries.map(({ label, formId }) => resolveGmstFloat(client, formId, `${familyLabel}/${label}`, unresolved))
+    entries.map(({ label, formId }) =>
+      resolveGmstFloat(client, formId, `${familyLabel}/${label}`, unresolved),
+    ),
   );
   const bounds = entries
     .map((e, i) => (resolved[i] !== null ? { ...e, value: resolved[i]! } : null))
@@ -289,36 +322,87 @@ async function resolveUniformGmstGroup(
   for (const b of rest) {
     if (b.value !== first.value) {
       unresolved.push(
-        `constants: ${familyLabel}/${b.label} GMST ${b.value} != ${familyLabel}/${first.label} ${first.value} — not uniform across damage types`
+        `constants: ${familyLabel}/${b.label} GMST ${b.value} != ${familyLabel}/${first.label} ${first.value} — not uniform across damage types`,
       );
     }
   }
   return first.value;
 }
 
-async function resolveMitigation(client: EsmClient, unresolved: string[]): Promise<GeneratedConstants['mitigation']> {
+async function resolveMitigation(
+  client: EsmClient,
+  unresolved: string[],
+): Promise<GeneratedConstants['mitigation']> {
   const [resistExponent, damageFactor, minReduction, maxReduction] = await Promise.all([
-    resolveUniformGmstGroup(client, 'ArmorDmgReductionExp', RESIST_EXPONENT_GMSTS, FALLBACK_MITIGATION.resistExponent, unresolved),
-    resolveUniformGmstGroup(client, 'DamageFactor', DAMAGE_FACTOR_GMSTS, FALLBACK_MITIGATION.damageFactor, unresolved),
-    resolveUniformGmstGroup(client, 'MinDamageReduction', MIN_DAMAGE_REDUCTION_GMSTS, FALLBACK_MITIGATION.minReduction, unresolved),
-    resolveUniformGmstGroup(client, 'MaxDamageReduction', MAX_DAMAGE_REDUCTION_GMSTS, FALLBACK_MITIGATION.maxReduction, unresolved),
+    resolveUniformGmstGroup(
+      client,
+      'ArmorDmgReductionExp',
+      RESIST_EXPONENT_GMSTS,
+      FALLBACK_MITIGATION.resistExponent,
+      unresolved,
+    ),
+    resolveUniformGmstGroup(
+      client,
+      'DamageFactor',
+      DAMAGE_FACTOR_GMSTS,
+      FALLBACK_MITIGATION.damageFactor,
+      unresolved,
+    ),
+    resolveUniformGmstGroup(
+      client,
+      'MinDamageReduction',
+      MIN_DAMAGE_REDUCTION_GMSTS,
+      FALLBACK_MITIGATION.minReduction,
+      unresolved,
+    ),
+    resolveUniformGmstGroup(
+      client,
+      'MaxDamageReduction',
+      MAX_DAMAGE_REDUCTION_GMSTS,
+      FALLBACK_MITIGATION.maxReduction,
+      unresolved,
+    ),
   ]);
   return { resistExponent, damageFactor, minReduction, maxReduction };
 }
 
-async function resolveVatsCrit(client: EsmClient, unresolved: string[]): Promise<GeneratedConstants['vatsCrit']> {
-  const chargeBase = await resolveGmstFloat(client, VATS_CRIT_CHARGE_BASE_GMST, 'VATSCriticalChargeBase', unresolved);
+async function resolveVatsCrit(
+  client: EsmClient,
+  unresolved: string[],
+): Promise<GeneratedConstants['vatsCrit']> {
+  const chargeBase = await resolveGmstFloat(
+    client,
+    VATS_CRIT_CHARGE_BASE_GMST,
+    'VATSCriticalChargeBase',
+    unresolved,
+  );
   return { chargeBase: chargeBase ?? FALLBACK_VATS_CRIT.chargeBase };
 }
 
-async function resolveActionPoints(client: EsmClient, unresolved: string[]): Promise<GeneratedConstants['actionPoints']> {
-  const [poolBase, poolPerAgility, regenDelaySec, regenRatePct, regenRatePctPowerArmor] = await Promise.all([
-    resolveGmstFloat(client, AP_POOL_BASE_GMST, 'ActionPointsBase', unresolved),
-    resolveGmstFloat(client, AP_POOL_PER_AGILITY_GMST, 'ActionPointsMult', unresolved),
-    resolveGmstFloat(client, AP_REGEN_DELAY_GMST, 'DamagedAVRegenDelay', unresolved),
-    resolveRacePropertyValue(client, HUMAN_RACE_FORMID, ACTION_POINTS_RATE_AV, 'HumanRace ActionPointsRate', unresolved),
-    resolveRacePropertyValue(client, POWER_ARMOR_RACE_FORMID, ACTION_POINTS_RATE_AV, 'PowerArmorRace ActionPointsRate', unresolved),
-  ]);
+async function resolveActionPoints(
+  client: EsmClient,
+  unresolved: string[],
+): Promise<GeneratedConstants['actionPoints']> {
+  const [poolBase, poolPerAgility, regenDelaySec, regenRatePct, regenRatePctPowerArmor] =
+    await Promise.all([
+      resolveGmstFloat(client, AP_POOL_BASE_GMST, 'ActionPointsBase', unresolved),
+      resolveGmstFloat(client, AP_POOL_PER_AGILITY_GMST, 'ActionPointsMult', unresolved),
+      resolveGmstFloat(client, AP_REGEN_DELAY_GMST, 'DamagedAVRegenDelay', unresolved),
+      resolveRacePropertyValue(
+        client,
+        HUMAN_RACE_FORMID,
+        ACTION_POINTS_RATE_AV,
+        'HumanRace ActionPointsRate',
+        unresolved,
+      ),
+      resolveRacePropertyValue(
+        client,
+        POWER_ARMOR_RACE_FORMID,
+        ACTION_POINTS_RATE_AV,
+        'PowerArmorRace ActionPointsRate',
+        unresolved,
+      ),
+    ]);
   return {
     poolBase: poolBase ?? FALLBACK_ACTION_POINTS.poolBase,
     poolPerAgility: poolPerAgility ?? FALLBACK_ACTION_POINTS.poolPerAgility,
@@ -328,13 +412,29 @@ async function resolveActionPoints(client: EsmClient, unresolved: string[]): Pro
   };
 }
 
-async function resolveBulletStorm(client: EsmClient, unresolved: string[]): Promise<GeneratedConstants['bulletStorm']> {
-  const ammoPerStack = await resolveGmstUInt(client, BULLET_STORM_AMMO_PER_STACK_GMST, 'AmmoSpenderAmmoUsePerStack', unresolved);
+async function resolveBulletStorm(
+  client: EsmClient,
+  unresolved: string[],
+): Promise<GeneratedConstants['bulletStorm']> {
+  const ammoPerStack = await resolveGmstUInt(
+    client,
+    BULLET_STORM_AMMO_PER_STACK_GMST,
+    'AmmoSpenderAmmoUsePerStack',
+    unresolved,
+  );
   return { ammoPerStack: ammoPerStack ?? FALLBACK_BULLET_STORM.ammoPerStack };
 }
 
-async function resolveDistance(client: EsmClient, unresolved: string[]): Promise<GeneratedConstants['distance']> {
-  const closeThresholdUnits = await resolveGmstFloat(client, CLOSE_THRESHOLD_GMST, 'DistanceForCloseDamage', unresolved);
+async function resolveDistance(
+  client: EsmClient,
+  unresolved: string[],
+): Promise<GeneratedConstants['distance']> {
+  const closeThresholdUnits = await resolveGmstFloat(
+    client,
+    CLOSE_THRESHOLD_GMST,
+    'DistanceForCloseDamage',
+    unresolved,
+  );
   return { closeThresholdUnits: closeThresholdUnits ?? FALLBACK_DISTANCE.closeThresholdUnits };
 }
 
@@ -353,5 +453,8 @@ export async function extractConstants(client: EsmClient): Promise<ConstantsResu
     resolveBulletStorm(client, unresolved),
     resolveDistance(client, unresolved),
   ]);
-  return { constants: { special, mitigation, vatsCrit, actionPoints, bulletStorm, distance }, unresolved };
+  return {
+    constants: { special, mitigation, vatsCrit, actionPoints, bulletStorm, distance },
+    unresolved,
+  };
 }

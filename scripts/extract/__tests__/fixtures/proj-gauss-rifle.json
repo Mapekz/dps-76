@@ -1,1 +1,86 @@
-{"header":{"signature":"PROJ","form_id":"0x001CC149","flags":0,"form_version":197,"data_size":465,"offset":77873476},"editor_id":"ProjectileGaussRifle","fields":{"_record_type":"Projectile","Editor ID":"ProjectileGaussRifle","Object Bounds":{"X1":-10,"Y1":0,"Z1":-10,"X2":10,"Y2":1022,"Z2":10},"Name":"Bullets","Model":{"Model FileName":"Effects\\GaussTracerBeam.nif","Model Information":{"Counters":{"Textures":5,"Addon Nodes":1,"SRGB":4,"Materials":0},"Textures":[{"File Hash":"0xEF5ADB75","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x8EA4593B","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xF8DD447F","Extension":"dds","Folder Hash":"0x33552C58"},{"File Hash":"0xDC309C83","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xB642448D","Extension":"dds","Folder Hash":"0xEA3C9738"}],"Addon Nodes":[217],"Materials":[]}},"Unused":{"hex":""},"Data":{"Flags":{"value":"0xA0A","flags":["Explosion","Muzzle Flash","Pass Through Small Transparent","Penetrates Geometry"]},"Type":{"value":4,"name":"Beam"},"Gravity":0.0,"Speed":1000.0,"Range":10000.0,"Light":null,"Muzzle Flash - Light":"0x0022C1DC","Explosion - Alt. Trigger - Proximity":0.0,"Explosion - Alt. Trigger - Timer":0.0,"Explosion":"0x0022E05D","Sound":"0x0001D565","Muzzle Flash - Duration":0.09000000357627869,"Fade Duration":0.10000000149011612,"Impact Force":7.0,"Sound - Countdown":null,"Sound - Disable":null,"Default Weapon Source":null,"Cone Spread":0.0,"Collision Radius":10.0,"Lifetime":0.8299999833106995,"Relaunch Interval":0.25,"Decal Data":null,"Collision Layer":null,"Tracer Frequency":1,"VATS Projectile":null},"Muzzle Flash Model":{"Model FileName":"Effects\\MuzGaussRifle.nif","Model Information":{"Counters":{"Textures":7,"Addon Nodes":3,"SRGB":4,"Materials":0},"Textures":[{"File Hash":"0x1BFA5ED0","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xEF0A5B85","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x57DB8E13","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xB70E670D","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x150566E6","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x73C5ED51","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xFB2FB7CE","Extension":"dds","Folder Hash":"0xEA3C9738"}],"Addon Nodes":[16,1,17],"Materials":[]}},"Sound Level":{"value":1,"name":"Normal"}}}
+{
+  "header": {
+    "signature": "PROJ",
+    "form_id": "0x001CC149",
+    "flags": 0,
+    "form_version": 197,
+    "data_size": 465,
+    "offset": 77873476
+  },
+  "editor_id": "ProjectileGaussRifle",
+  "fields": {
+    "_record_type": "Projectile",
+    "Editor ID": "ProjectileGaussRifle",
+    "Object Bounds": { "X1": -10, "Y1": 0, "Z1": -10, "X2": 10, "Y2": 1022, "Z2": 10 },
+    "Name": "Bullets",
+    "Model": {
+      "Model FileName": "Effects\\GaussTracerBeam.nif",
+      "Model Information": {
+        "Counters": { "Textures": 5, "Addon Nodes": 1, "SRGB": 4, "Materials": 0 },
+        "Textures": [
+          { "File Hash": "0xEF5ADB75", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x8EA4593B", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xF8DD447F", "Extension": "dds", "Folder Hash": "0x33552C58" },
+          { "File Hash": "0xDC309C83", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xB642448D", "Extension": "dds", "Folder Hash": "0xEA3C9738" }
+        ],
+        "Addon Nodes": [217],
+        "Materials": []
+      }
+    },
+    "Unused": { "hex": "" },
+    "Data": {
+      "Flags": {
+        "value": "0xA0A",
+        "flags": [
+          "Explosion",
+          "Muzzle Flash",
+          "Pass Through Small Transparent",
+          "Penetrates Geometry"
+        ]
+      },
+      "Type": { "value": 4, "name": "Beam" },
+      "Gravity": 0.0,
+      "Speed": 1000.0,
+      "Range": 10000.0,
+      "Light": null,
+      "Muzzle Flash - Light": "0x0022C1DC",
+      "Explosion - Alt. Trigger - Proximity": 0.0,
+      "Explosion - Alt. Trigger - Timer": 0.0,
+      "Explosion": "0x0022E05D",
+      "Sound": "0x0001D565",
+      "Muzzle Flash - Duration": 0.09000000357627869,
+      "Fade Duration": 0.10000000149011612,
+      "Impact Force": 7.0,
+      "Sound - Countdown": null,
+      "Sound - Disable": null,
+      "Default Weapon Source": null,
+      "Cone Spread": 0.0,
+      "Collision Radius": 10.0,
+      "Lifetime": 0.8299999833106995,
+      "Relaunch Interval": 0.25,
+      "Decal Data": null,
+      "Collision Layer": null,
+      "Tracer Frequency": 1,
+      "VATS Projectile": null
+    },
+    "Muzzle Flash Model": {
+      "Model FileName": "Effects\\MuzGaussRifle.nif",
+      "Model Information": {
+        "Counters": { "Textures": 7, "Addon Nodes": 3, "SRGB": 4, "Materials": 0 },
+        "Textures": [
+          { "File Hash": "0x1BFA5ED0", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xEF0A5B85", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x57DB8E13", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xB70E670D", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x150566E6", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x73C5ED51", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xFB2FB7CE", "Extension": "dds", "Folder Hash": "0xEA3C9738" }
+        ],
+        "Addon Nodes": [16, 1, 17],
+        "Materials": []
+      }
+    },
+    "Sound Level": { "value": 1, "name": "Normal" }
+  }
+}

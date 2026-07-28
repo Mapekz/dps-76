@@ -1,1 +1,58 @@
-{"header":{"signature":"PCRD","form_id":"0x005A5943","flags":0,"form_version":206,"data_size":245,"offset":906449911},"editor_id":"LGN_WhatRads_Card","fields":{"_record_type":"Perk Card","Editor ID":"LGN_WhatRads_Card","Description":"Putting the \"active\" in radioactive!","Unknown":{"Value":0.0,"Min Level":50,"Special":{"value":0,"name":"Strength"},"Race Restriction":{"value":1,"name":"Human"}},"Male Name":"LGNRadicalRadiation","Perk Card Flags":{"value":"0x1","flags":["Legendary Perk"]},"Perks":[{"Perk":{"Start Marker":null,"Card Rank Cost":1,"Male Perk":"0x005A5944","End Marker":null}},{"Perk":{"Start Marker":null,"Card Rank Cost":1,"Male Perk":"0x005A5945","End Marker":null}},{"Perk":{"Start Marker":null,"Card Rank Cost":1,"Male Perk":"0x005A5946","End Marker":null}},{"Perk":{"Start Marker":null,"Card Rank Cost":1,"Male Perk":"0x005A5947","End Marker":null}}]}}
+{
+  "header": {
+    "signature": "PCRD",
+    "form_id": "0x005A5943",
+    "flags": 0,
+    "form_version": 206,
+    "data_size": 245,
+    "offset": 906449911
+  },
+  "editor_id": "LGN_WhatRads_Card",
+  "fields": {
+    "_record_type": "Perk Card",
+    "Editor ID": "LGN_WhatRads_Card",
+    "Description": "Putting the \"active\" in radioactive!",
+    "Unknown": {
+      "Value": 0.0,
+      "Min Level": 50,
+      "Special": { "value": 0, "name": "Strength" },
+      "Race Restriction": { "value": 1, "name": "Human" }
+    },
+    "Male Name": "LGNRadicalRadiation",
+    "Perk Card Flags": { "value": "0x1", "flags": ["Legendary Perk"] },
+    "Perks": [
+      {
+        "Perk": {
+          "Start Marker": null,
+          "Card Rank Cost": 1,
+          "Male Perk": "0x005A5944",
+          "End Marker": null
+        }
+      },
+      {
+        "Perk": {
+          "Start Marker": null,
+          "Card Rank Cost": 1,
+          "Male Perk": "0x005A5945",
+          "End Marker": null
+        }
+      },
+      {
+        "Perk": {
+          "Start Marker": null,
+          "Card Rank Cost": 1,
+          "Male Perk": "0x005A5946",
+          "End Marker": null
+        }
+      },
+      {
+        "Perk": {
+          "Start Marker": null,
+          "Card Rank Cost": 1,
+          "Male Perk": "0x005A5947",
+          "End Marker": null
+        }
+      }
+    ]
+  }
+}

@@ -27,8 +27,8 @@ export function ResultsPane() {
               <CrosshairIcon className="text-muted-foreground mx-auto size-8" />
               <p className="text-sm font-medium">No weapon equipped</p>
               <p className="text-muted-foreground text-sm">
-                Pick a weapon under <span className="text-foreground">Build → Weapon</span>, or paste a Nukes &amp;
-                Dragons link in the header to import your perks.
+                Pick a weapon under <span className="text-foreground">Build → Weapon</span>, or
+                paste a Nukes &amp; Dragons link in the header to import your perks.
               </p>
             </div>
           )}

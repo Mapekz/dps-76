@@ -1,17 +1,14 @@
-import path from "path"
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import { defineConfig, configDefaults } from 'vitest/config'
+import path from 'path';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+import { defineConfig, configDefaults } from 'vitest/config';
 
 // https://vite.dev/config/
 export default defineConfig(({ command }) => ({
-  plugins: [
-    react(),
-    tailwindcss(),
-  ],
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      '@': path.resolve(__dirname, './src'),
     },
   },
   base: command === 'build' ? '/dps-76/' : '/',
@@ -22,4 +19,4 @@ export default defineConfig(({ command }) => ({
     // double-counts (or fails on) unrelated in-progress work.
     exclude: [...configDefaults.exclude, '**/.claude/**'],
   },
-}))
+}));

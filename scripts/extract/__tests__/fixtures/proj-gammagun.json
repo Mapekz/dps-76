@@ -1,1 +1,75 @@
-{"header":{"signature":"PROJ","form_id":"0x000F0DDC","flags":0,"form_version":192,"data_size":404,"offset":77910045},"editor_id":"ProjectileGammaGun","fields":{"_record_type":"Projectile","Editor ID":"ProjectileGammaGun","Object Bounds":{"X1":-3,"Y1":-6,"Z1":-4,"X2":3,"Y2":6,"Z2":4},"Model":{"Model FileName":"Effects\\GammaProjectile.nif","Model Information":{"Counters":{"Textures":6,"Addon Nodes":1,"SRGB":5,"Materials":0},"Textures":[{"File Hash":"0xAA365636","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xDEB2C1E8","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x48183DB0","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xE0422165","Extension":"dds","Folder Hash":"0x33552C58"},{"File Hash":"0xDC309C83","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x28C1CBE3","Extension":"dds","Folder Hash":"0xEA3C9738"}],"Addon Nodes":[200],"Materials":[]}},"Unused":{"hex":""},"Data":{"Flags":{"value":"0x2","flags":["Explosion"]},"Type":{"value":1,"name":"Missile"},"Gravity":0.0,"Speed":4500.0,"Range":15000.0,"Light":"0x000F473A","Muzzle Flash - Light":null,"Explosion - Alt. Trigger - Proximity":0.0,"Explosion - Alt. Trigger - Timer":0.0,"Explosion":"0x000F17EC","Sound":null,"Muzzle Flash - Duration":0.03999999910593033,"Fade Duration":0.5,"Impact Force":10.0,"Sound - Countdown":null,"Sound - Disable":null,"Default Weapon Source":"0x000DDB7C","Cone Spread":0.0,"Collision Radius":5.0,"Lifetime":0.75,"Relaunch Interval":0.10000000149011612,"Decal Data":null,"Collision Layer":null,"Tracer Frequency":1,"VATS Projectile":null},"Muzzle Flash Model":{"Model FileName":"Effects\\MuzAlienBlaster01.nif","Model Information":{"Counters":{"Textures":4,"Addon Nodes":0,"SRGB":3,"Materials":0},"Textures":[{"File Hash":"0x071770F9","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x6330503D","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x69FE6E93","Extension":"dds","Folder Hash":"0x33552C58"},{"File Hash":"0x1F8C7BCA","Extension":"dds","Folder Hash":"0xEA3C9738"}],"Addon Nodes":[],"Materials":[]}},"Sound Level":{"value":1,"name":"Normal"}}}
+{
+  "header": {
+    "signature": "PROJ",
+    "form_id": "0x000F0DDC",
+    "flags": 0,
+    "form_version": 192,
+    "data_size": 404,
+    "offset": 77910045
+  },
+  "editor_id": "ProjectileGammaGun",
+  "fields": {
+    "_record_type": "Projectile",
+    "Editor ID": "ProjectileGammaGun",
+    "Object Bounds": { "X1": -3, "Y1": -6, "Z1": -4, "X2": 3, "Y2": 6, "Z2": 4 },
+    "Model": {
+      "Model FileName": "Effects\\GammaProjectile.nif",
+      "Model Information": {
+        "Counters": { "Textures": 6, "Addon Nodes": 1, "SRGB": 5, "Materials": 0 },
+        "Textures": [
+          { "File Hash": "0xAA365636", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xDEB2C1E8", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x48183DB0", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xE0422165", "Extension": "dds", "Folder Hash": "0x33552C58" },
+          { "File Hash": "0xDC309C83", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x28C1CBE3", "Extension": "dds", "Folder Hash": "0xEA3C9738" }
+        ],
+        "Addon Nodes": [200],
+        "Materials": []
+      }
+    },
+    "Unused": { "hex": "" },
+    "Data": {
+      "Flags": { "value": "0x2", "flags": ["Explosion"] },
+      "Type": { "value": 1, "name": "Missile" },
+      "Gravity": 0.0,
+      "Speed": 4500.0,
+      "Range": 15000.0,
+      "Light": "0x000F473A",
+      "Muzzle Flash - Light": null,
+      "Explosion - Alt. Trigger - Proximity": 0.0,
+      "Explosion - Alt. Trigger - Timer": 0.0,
+      "Explosion": "0x000F17EC",
+      "Sound": null,
+      "Muzzle Flash - Duration": 0.03999999910593033,
+      "Fade Duration": 0.5,
+      "Impact Force": 10.0,
+      "Sound - Countdown": null,
+      "Sound - Disable": null,
+      "Default Weapon Source": "0x000DDB7C",
+      "Cone Spread": 0.0,
+      "Collision Radius": 5.0,
+      "Lifetime": 0.75,
+      "Relaunch Interval": 0.10000000149011612,
+      "Decal Data": null,
+      "Collision Layer": null,
+      "Tracer Frequency": 1,
+      "VATS Projectile": null
+    },
+    "Muzzle Flash Model": {
+      "Model FileName": "Effects\\MuzAlienBlaster01.nif",
+      "Model Information": {
+        "Counters": { "Textures": 4, "Addon Nodes": 0, "SRGB": 3, "Materials": 0 },
+        "Textures": [
+          { "File Hash": "0x071770F9", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x6330503D", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x69FE6E93", "Extension": "dds", "Folder Hash": "0x33552C58" },
+          { "File Hash": "0x1F8C7BCA", "Extension": "dds", "Folder Hash": "0xEA3C9738" }
+        ],
+        "Addon Nodes": [],
+        "Materials": []
+      }
+    },
+    "Sound Level": { "value": 1, "name": "Normal" }
+  }
+}

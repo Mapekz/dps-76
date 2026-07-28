@@ -55,7 +55,12 @@ export interface HitTrace {
   weakpointBonus: BucketTrace | null;
   bodyPartMult: number;
   /** Charging-weapon damage ramp (src/lib/charge.ts) — null for weapons that don't charge. */
-  charge: { chargeTimeSec: number; fullPowerSeconds: number; fullPowerDamageMult: number; mult: number } | null;
+  charge: {
+    chargeTimeSec: number;
+    fullPowerSeconds: number;
+    fullPowerDamageMult: number;
+    mult: number;
+  } | null;
 }
 
 export interface CritMeterTrace {

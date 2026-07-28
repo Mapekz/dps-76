@@ -435,7 +435,13 @@ export interface GeneratedBodyPartRace {
 }
 
 /** The 6 damage types an NPC_'s resist Properties cover (Phase 2 spike — AVs 0x2E3/0x2EB/0x2E5/0x2E7/0x2E4/0x2EA). */
-export type GeneratedNpcDamageType = 'physical' | 'energy' | 'fire' | 'cryo' | 'poison' | 'radiation';
+export type GeneratedNpcDamageType =
+  | 'physical'
+  | 'energy'
+  | 'fire'
+  | 'cryo'
+  | 'poison'
+  | 'radiation';
 
 export interface GeneratedNpcResist {
   damageType: GeneratedNpcDamageType;
@@ -538,7 +544,12 @@ export interface GeneratedConstants {
   /** SPECIAL AVIF Minimum/Maximum Value — clamp on effective (post-buff) SPECIAL, src/lib/player-stats.ts `derivePlayerStats`. */
   special: { min: number; max: number };
   /** `f<Type>ArmorDmgReductionExp`/`f<Type>DamageFactor`/`f<Type>Min|MaxDamageReduction` GMSTs — resist-mitigation formula scalars, src/lib/engine/mitigation.ts `applyMitigation`. */
-  mitigation: { resistExponent: number; damageFactor: number; minReduction: number; maxReduction: number };
+  mitigation: {
+    resistExponent: number;
+    damageFactor: number;
+    minReduction: number;
+    maxReduction: number;
+  };
   /**
    * `fVATSCriticalChargeBase` GMST — flat per-hit VATS crit-meter fill addend,
    * src/lib/engine/crit-meter.ts `computeCritMeter`. The per-LCK term is a

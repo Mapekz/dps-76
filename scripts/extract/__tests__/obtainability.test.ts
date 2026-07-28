@@ -67,7 +67,9 @@ describe('ObtainabilityClassifier', () => {
   it('Minigun_Vertibird: QA chest + DO_NOT_PLACE NPC referencers are junk-filtered → unobtainable', async () => {
     const client = stubClient({ '0x001299A6': minigunVertibird });
     const classifier = new ObtainabilityClassifier(client);
-    const verdicts = await classifier.classify([{ formId: '0x001299A6', edid: 'Minigun_Vertibird' }]);
+    const verdicts = await classifier.classify([
+      { formId: '0x001299A6', edid: 'Minigun_Vertibird' },
+    ]);
     expect(verdicts.get('0x001299A6')).toEqual({ obtainable: false, signals: [] });
   });
 
@@ -77,7 +79,9 @@ describe('ObtainabilityClassifier', () => {
       '0x007BC5BA': lvliNpc,
     });
     const classifier = new ObtainabilityClassifier(client);
-    const verdicts = await classifier.classify([{ formId: '0x007BC5C4', edid: 'RD01_crAssaultRifle' }]);
+    const verdicts = await classifier.classify([
+      { formId: '0x007BC5C4', edid: 'RD01_crAssaultRifle' },
+    ]);
     const verdict = verdicts.get('0x007BC5C4')!;
     expect(verdict.obtainable).toBe(false);
     expect(verdict.signals).toContain('npcLvliOnly');
@@ -89,7 +93,7 @@ describe('ObtainabilityClassifier', () => {
     const verdicts = await classifier.classify([{ formId: '0x000CE97D', edid: '44' }]);
     const verdict = verdicts.get('0x000CE97D')!;
     expect(verdict.obtainable).toBe(true);
-    expect(verdict.signals.some(s => s.startsWith('cobj:'))).toBe(true);
+    expect(verdict.signals.some((s) => s.startsWith('cobj:'))).toBe(true);
   });
 
   it('ProtestSign01: scrap recipe (COBJ _NOCRAFT) no longer proves access, but an independent FLST ref does → obtainable', async () => {
@@ -98,18 +102,32 @@ describe('ObtainabilityClassifier', () => {
     const verdicts = await classifier.classify([{ formId: '0x002D481E', edid: 'ProtestSign01' }]);
     const verdict = verdicts.get('0x002D481E')!;
     expect(verdict.obtainable).toBe(true);
-    expect(verdict.signals.some(s => s.startsWith('flst:'))).toBe(true);
+    expect(verdict.signals.some((s) => s.startsWith('flst:'))).toBe(true);
   });
 
   it('synthetic: only referencer is a _REPAIRONLY/_NOCRAFT COBJ → unobtainable, noGrantCobj', async () => {
     const client = stubClient({
       '0xWEAPON_DEAD_UNIQUE': [
-        { form_id: '0xCOBJ1', record_type: 'COBJ', editor_id: 'co_SuperSledge_TheFarmhand_REPAIRONLY', name: null, depth: 1 },
-        { form_id: '0xCOBJ2', record_type: 'COBJ', editor_id: 'co_Weapon_Melee_SomeUnique_NOCRAFT', name: null, depth: 1 },
+        {
+          form_id: '0xCOBJ1',
+          record_type: 'COBJ',
+          editor_id: 'co_SuperSledge_TheFarmhand_REPAIRONLY',
+          name: null,
+          depth: 1,
+        },
+        {
+          form_id: '0xCOBJ2',
+          record_type: 'COBJ',
+          editor_id: 'co_Weapon_Melee_SomeUnique_NOCRAFT',
+          name: null,
+          depth: 1,
+        },
       ],
     });
     const classifier = new ObtainabilityClassifier(client);
-    const verdicts = await classifier.classify([{ formId: '0xWEAPON_DEAD_UNIQUE', edid: 'DeadLegacyUnique' }]);
+    const verdicts = await classifier.classify([
+      { formId: '0xWEAPON_DEAD_UNIQUE', edid: 'DeadLegacyUnique' },
+    ]);
     const verdict = verdicts.get('0xWEAPON_DEAD_UNIQUE')!;
     expect(verdict.obtainable).toBe(false);
     expect(verdict.signals).toContain('noGrantCobj:co_SuperSledge_TheFarmhand_REPAIRONLY');
@@ -127,12 +145,20 @@ describe('ObtainabilityClassifier', () => {
     // against real ESM data, only the entry point is fabricated.
     const client = stubClient({
       '0xSYNTH_LVLI_ONLY_WEAPON': [
-        { form_id: '0x001ACFB9', record_type: 'LVLI', editor_id: 'LL_Weapon_Simple_Ranged_44', name: null, depth: 1 },
+        {
+          form_id: '0x001ACFB9',
+          record_type: 'LVLI',
+          editor_id: 'LL_Weapon_Simple_Ranged_44',
+          name: null,
+          depth: 1,
+        },
       ],
       '0x001ACFB9': lvliLoot,
     });
     const classifier = new ObtainabilityClassifier(client);
-    const verdicts = await classifier.classify([{ formId: '0xSYNTH_LVLI_ONLY_WEAPON', edid: 'SynthWeapon' }]);
+    const verdicts = await classifier.classify([
+      { formId: '0xSYNTH_LVLI_ONLY_WEAPON', edid: 'SynthWeapon' },
+    ]);
     const verdict = verdicts.get('0xSYNTH_LVLI_ONLY_WEAPON')!;
     expect(verdict.obtainable).toBe(true);
     expect(verdict.signals).toContain('lvli:LL_Weapon_Simple_Ranged_44');
@@ -140,9 +166,15 @@ describe('ObtainabilityClassifier', () => {
 
   it('synthetic: LVLI A ↔ LVLI B cycle with no terminal → unobtainable, does not hang', async () => {
     const client = stubClient({
-      '0xWEAPON_CYCLE': [{ form_id: '0xLVLI_A', record_type: 'LVLI', editor_id: 'LVLI_A', name: null, depth: 1 }],
-      '0xLVLI_A': [{ form_id: '0xLVLI_B', record_type: 'LVLI', editor_id: 'LVLI_B', name: null, depth: 1 }],
-      '0xLVLI_B': [{ form_id: '0xLVLI_A', record_type: 'LVLI', editor_id: 'LVLI_A', name: null, depth: 1 }],
+      '0xWEAPON_CYCLE': [
+        { form_id: '0xLVLI_A', record_type: 'LVLI', editor_id: 'LVLI_A', name: null, depth: 1 },
+      ],
+      '0xLVLI_A': [
+        { form_id: '0xLVLI_B', record_type: 'LVLI', editor_id: 'LVLI_B', name: null, depth: 1 },
+      ],
+      '0xLVLI_B': [
+        { form_id: '0xLVLI_A', record_type: 'LVLI', editor_id: 'LVLI_A', name: null, depth: 1 },
+      ],
     });
     const classifier = new ObtainabilityClassifier(client);
     const verdicts = await classifier.classify([{ formId: '0xWEAPON_CYCLE', edid: 'CycleWeapon' }]);
@@ -151,7 +183,9 @@ describe('ObtainabilityClassifier', () => {
 
   it('synthetic: a placed-ref (REFR) referencer alone is never sufficient → unobtainable, placedRef', async () => {
     const client = stubClient({
-      '0xWEAPON_REFR': [{ form_id: '0xREF1', record_type: 'REFR', editor_id: null, name: null, depth: 1 }],
+      '0xWEAPON_REFR': [
+        { form_id: '0xREF1', record_type: 'REFR', editor_id: null, name: null, depth: 1 },
+      ],
     });
     const classifier = new ObtainabilityClassifier(client);
     const verdicts = await classifier.classify([{ formId: '0xWEAPON_REFR', edid: 'RefrWeapon' }]);
@@ -162,7 +196,9 @@ describe('ObtainabilityClassifier', () => {
 
   it('synthetic: an NPC_-only referencer is never sufficient → unobtainable, npcOnly', async () => {
     const client = stubClient({
-      '0xWEAPON_NPC': [{ form_id: '0xNPC1', record_type: 'NPC_', editor_id: 'SomeCreature', name: null, depth: 1 }],
+      '0xWEAPON_NPC': [
+        { form_id: '0xNPC1', record_type: 'NPC_', editor_id: 'SomeCreature', name: null, depth: 1 },
+      ],
     });
     const classifier = new ObtainabilityClassifier(client);
     const verdicts = await classifier.classify([{ formId: '0xWEAPON_NPC', edid: 'NpcWeapon' }]);
@@ -173,8 +209,24 @@ describe('ObtainabilityClassifier', () => {
 
   it('synthetic: a WEAP referencer rides along only when that weapon is already obtainable', async () => {
     const client = stubClient({
-      '0xOMOD_OK': [{ form_id: '0xWEAPON_OK', record_type: 'WEAP', editor_id: 'SomeWeaponEdid', name: null, depth: 1 }],
-      '0xOMOD_BAD': [{ form_id: '0xWEAPON_BAD', record_type: 'WEAP', editor_id: 'OtherWeaponEdid', name: null, depth: 1 }],
+      '0xOMOD_OK': [
+        {
+          form_id: '0xWEAPON_OK',
+          record_type: 'WEAP',
+          editor_id: 'SomeWeaponEdid',
+          name: null,
+          depth: 1,
+        },
+      ],
+      '0xOMOD_BAD': [
+        {
+          form_id: '0xWEAPON_BAD',
+          record_type: 'WEAP',
+          editor_id: 'OtherWeaponEdid',
+          name: null,
+          depth: 1,
+        },
+      ],
     });
     const classifier = new ObtainabilityClassifier(client, new Set(['0xWEAPON_OK']));
     const verdicts = await classifier.classify([
@@ -189,10 +241,31 @@ describe('ObtainabilityClassifier', () => {
 
   it('synthetic: an ARMO referencer rides along only when that armor piece is already obtainable (Phase 3 armor pipeline, 2026-07-18)', async () => {
     const client = stubClient({
-      '0xOMOD_OK': [{ form_id: '0xARMO_OK', record_type: 'ARMO', editor_id: 'SomeArmorEdid', name: null, depth: 1 }],
-      '0xOMOD_BAD': [{ form_id: '0xARMO_BAD', record_type: 'ARMO', editor_id: 'OtherArmorEdid', name: null, depth: 1 }],
+      '0xOMOD_OK': [
+        {
+          form_id: '0xARMO_OK',
+          record_type: 'ARMO',
+          editor_id: 'SomeArmorEdid',
+          name: null,
+          depth: 1,
+        },
+      ],
+      '0xOMOD_BAD': [
+        {
+          form_id: '0xARMO_BAD',
+          record_type: 'ARMO',
+          editor_id: 'OtherArmorEdid',
+          name: null,
+          depth: 1,
+        },
+      ],
     });
-    const classifier = new ObtainabilityClassifier(client, new Set(), undefined, new Set(['0xARMO_OK']));
+    const classifier = new ObtainabilityClassifier(
+      client,
+      new Set(),
+      undefined,
+      new Set(['0xARMO_OK']),
+    );
     const verdicts = await classifier.classify([
       { formId: '0xOMOD_OK', edid: 'OmodOk' },
       { formId: '0xOMOD_BAD', edid: 'OmodBad' },
@@ -214,7 +287,9 @@ describe('ObtainabilityClassifier', () => {
       '0x0067B39C': lvliResoNukaColaCandy,
     });
     const classifier = new ObtainabilityClassifier(client);
-    const verdicts = await classifier.classify([{ formId: '0x0067B396', edid: 'NukaColaCandyMachine_Candy' }]);
+    const verdicts = await classifier.classify([
+      { formId: '0x0067B396', edid: 'NukaColaCandyMachine_Candy' },
+    ]);
     const verdict = verdicts.get('0x0067B396')!;
     expect(verdict.obtainable).toBe(true);
     expect(verdict.signals).toContain('lvli:ATX_Resources_NukaColaCandyMachine_Candy');
@@ -244,13 +319,31 @@ describe('ObtainabilityClassifier', () => {
     // a world activator that merely holds a loot list proves nothing.
     const client = stubClient({
       '0xALCH_VIA_WORLD_ACTI': [
-        { form_id: '0xLVLI_X', record_type: 'LVLI', editor_id: 'LL_SomeDispenser', name: null, depth: 1 },
+        {
+          form_id: '0xLVLI_X',
+          record_type: 'LVLI',
+          editor_id: 'LL_SomeDispenser',
+          name: null,
+          depth: 1,
+        },
       ],
-      '0xLVLI_X': [{ form_id: '0xACTI_X', record_type: 'ACTI', editor_id: 'SomeWorldActivator', name: null, depth: 1 }],
-      '0xACTI_X': [{ form_id: '0xREFR_X', record_type: 'REFR', editor_id: null, name: null, depth: 1 }],
+      '0xLVLI_X': [
+        {
+          form_id: '0xACTI_X',
+          record_type: 'ACTI',
+          editor_id: 'SomeWorldActivator',
+          name: null,
+          depth: 1,
+        },
+      ],
+      '0xACTI_X': [
+        { form_id: '0xREFR_X', record_type: 'REFR', editor_id: null, name: null, depth: 1 },
+      ],
     });
     const classifier = new ObtainabilityClassifier(client);
-    const verdicts = await classifier.classify([{ formId: '0xALCH_VIA_WORLD_ACTI', edid: 'WorldActiConsumable' }]);
+    const verdicts = await classifier.classify([
+      { formId: '0xALCH_VIA_WORLD_ACTI', edid: 'WorldActiConsumable' },
+    ]);
     expect(verdicts.get('0xALCH_VIA_WORLD_ACTI')!.obtainable).toBe(false);
   });
 
@@ -263,7 +356,9 @@ describe('ObtainabilityClassifier', () => {
       '0x00655D12': gulpershineFerm,
     });
     const classifier = new ObtainabilityClassifier(client);
-    const verdicts = await classifier.classify([{ formId: '0x00655D13', edid: 'E08A_Brew_GulpershineVintage' }]);
+    const verdicts = await classifier.classify([
+      { formId: '0x00655D13', edid: 'E08A_Brew_GulpershineVintage' },
+    ]);
     const verdict = verdicts.get('0x00655D13')!;
     expect(verdict.obtainable).toBe(true);
     expect(verdict.signals).toContain('alch:E08A_Brew_GulpershineFresh');
@@ -279,7 +374,9 @@ describe('ObtainabilityClassifier', () => {
       '0x00469852': firecrackerFerm,
     });
     const classifier = new ObtainabilityClassifier(client);
-    const verdicts = await classifier.classify([{ formId: '0x00469853', edid: 'Brew_FirecrackerWhiskeyFresh' }]);
+    const verdicts = await classifier.classify([
+      { formId: '0x00469853', edid: 'Brew_FirecrackerWhiskeyFresh' },
+    ]);
     expect(verdicts.get('0x00469853')!.obtainable).toBe(false);
   });
 
@@ -340,7 +437,13 @@ describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () =>
       '0x00000871': bookFastTriggerRefs,
       // First vendor LVLI in the book's refs → a vendor container.
       '0x003EC64A': [
-        { form_id: '0xCONT_V', record_type: 'CONT', editor_id: 'LC060_WhitespringVendorChest_BoS', name: null, depth: 1 },
+        {
+          form_id: '0xCONT_V',
+          record_type: 'CONT',
+          editor_id: 'LC060_WhitespringVendorChest_BoS',
+          name: null,
+          depth: 1,
+        },
       ],
     });
     const index = indexOf(
@@ -349,11 +452,17 @@ describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () =>
         edid: 'co_mod_AssaultRifle_Receiver_FastTrigger-CritDMG',
         createdObjectFormId: '0xOMOD_PLAN',
         learnMethod: 4,
-        learnRecipeFrom: { formId: '0x00000871', recordType: 'BOOK', edid: 'recipe_mod_AssaultRifle_Receiver_FastTrigger-CritDMG' },
-      })
+        learnRecipeFrom: {
+          formId: '0x00000871',
+          recordType: 'BOOK',
+          edid: 'recipe_mod_AssaultRifle_Receiver_FastTrigger-CritDMG',
+        },
+      }),
     );
     const classifier = new ObtainabilityClassifier(client, new Set(), index);
-    const verdicts = await classifier.classify([{ formId: '0xOMOD_PLAN', edid: 'mod_AssaultRifle_Receiver_FastTrigger' }]);
+    const verdicts = await classifier.classify([
+      { formId: '0xOMOD_PLAN', edid: 'mod_AssaultRifle_Receiver_FastTrigger' },
+    ]);
     const verdict = verdicts.get('0xOMOD_PLAN')!;
     expect(verdict.obtainable).toBe(true);
     expect(verdict.signals).toContain('cobjBook:co_mod_AssaultRifle_Receiver_FastTrigger-CritDMG');
@@ -366,7 +475,13 @@ describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () =>
       // exclusion FLST — neither proves a player can get the plan.
       '0xBOOK_CUT': [
         COBJ_REF('0xCOBJ_CUT', 'co_mod_Cut_Content'),
-        { form_id: '0xFLST_EX', record_type: 'FLST', editor_id: 'BabylonExcludeList', name: null, depth: 1 },
+        {
+          form_id: '0xFLST_EX',
+          record_type: 'FLST',
+          editor_id: 'BabylonExcludeList',
+          name: null,
+          depth: 1,
+        },
       ],
     });
     const index = indexOf(
@@ -375,8 +490,12 @@ describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () =>
         edid: 'co_mod_Cut_Content',
         createdObjectFormId: '0xOMOD_CUT',
         learnMethod: 4,
-        learnRecipeFrom: { formId: '0xBOOK_CUT', recordType: 'BOOK', edid: 'recipe_mod_Cut_Content' },
-      })
+        learnRecipeFrom: {
+          formId: '0xBOOK_CUT',
+          recordType: 'BOOK',
+          edid: 'recipe_mod_Cut_Content',
+        },
+      }),
     );
     const classifier = new ObtainabilityClassifier(client, new Set(), index);
     const verdicts = await classifier.classify([{ formId: '0xOMOD_CUT', edid: 'mod_Cut_Content' }]);
@@ -391,12 +510,36 @@ describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () =>
     // cap must walk it to the CONT terminal.
     const chain: Record<string, unknown> = {
       '0xOMOD_VENDOR': [COBJ_REF('0xCOBJ_VENDOR', 'co_mod_Vendor_Taught')],
-      '0xBOOK_VENDOR': [{ form_id: '0xLVL1', record_type: 'LVLI', editor_id: 'LLS_Recipes_L1', name: null, depth: 1 }],
+      '0xBOOK_VENDOR': [
+        {
+          form_id: '0xLVL1',
+          record_type: 'LVLI',
+          editor_id: 'LLS_Recipes_L1',
+          name: null,
+          depth: 1,
+        },
+      ],
     };
     for (let i = 1; i < 8; i++) {
-      chain[`0xLVL${i}`] = [{ form_id: `0xLVL${i + 1}`, record_type: 'LVLI', editor_id: `LL_Recipes_L${i + 1}`, name: null, depth: 1 }];
+      chain[`0xLVL${i}`] = [
+        {
+          form_id: `0xLVL${i + 1}`,
+          record_type: 'LVLI',
+          editor_id: `LL_Recipes_L${i + 1}`,
+          name: null,
+          depth: 1,
+        },
+      ];
     }
-    chain['0xLVL8'] = [{ form_id: '0xCONT_VENDOR', record_type: 'CONT', editor_id: 'VendorChest', name: null, depth: 1 }];
+    chain['0xLVL8'] = [
+      {
+        form_id: '0xCONT_VENDOR',
+        record_type: 'CONT',
+        editor_id: 'VendorChest',
+        name: null,
+        depth: 1,
+      },
+    ];
     const client = stubClient(chain);
     const index = indexOf(
       cobjInfo({
@@ -404,11 +547,17 @@ describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () =>
         edid: 'co_mod_Vendor_Taught',
         createdObjectFormId: '0xOMOD_VENDOR',
         learnMethod: 4,
-        learnRecipeFrom: { formId: '0xBOOK_VENDOR', recordType: 'BOOK', edid: 'recipe_mod_Vendor_Taught' },
-      })
+        learnRecipeFrom: {
+          formId: '0xBOOK_VENDOR',
+          recordType: 'BOOK',
+          edid: 'recipe_mod_Vendor_Taught',
+        },
+      }),
     );
     const classifier = new ObtainabilityClassifier(client, new Set(), index);
-    const verdicts = await classifier.classify([{ formId: '0xOMOD_VENDOR', edid: 'mod_Vendor_Taught' }]);
+    const verdicts = await classifier.classify([
+      { formId: '0xOMOD_VENDOR', edid: 'mod_Vendor_Taught' },
+    ]);
     expect(verdicts.get('0xOMOD_VENDOR')!.obtainable).toBe(true);
   });
 
@@ -431,7 +580,7 @@ describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () =>
         createdObjectFormId: '0xOMOD_UNSCRAP',
         learnMethod: 1,
         learnRecipeFrom: { formId: '0xWEAP_CUT', recordType: 'WEAP', edid: 'CutWeapon' },
-      })
+      }),
     );
     const classifier = new ObtainabilityClassifier(client, new Set(['0xWEAP_BPR']), index);
     const verdicts = await classifier.classify([
@@ -457,7 +606,7 @@ describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () =>
         createdObjectFormId: '0xOMOD_SELF',
         learnMethod: 1,
         learnRecipeFrom: { formId: '0xOMOD_SELF', recordType: 'OMOD', edid: 'mod_Self_Scrap' },
-      })
+      }),
     );
     const classifier = new ObtainabilityClassifier(client, new Set(), index);
     const verdicts = await classifier.classify([{ formId: '0xOMOD_SELF', edid: 'mod_Self_Scrap' }]);
@@ -474,8 +623,12 @@ describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () =>
         edid: 'co_Weapon_CleanSoundingName',
         createdObjectFormId: '0xWEAP_DEAD',
         learnMethod: 0,
-        learnRecipeFrom: { formId: '0x00054A1F', recordType: 'MISC', edid: 'recipe_Dummy_Uncraftable_Item_NOCRAFT' },
-      })
+        learnRecipeFrom: {
+          formId: '0x00054A1F',
+          recordType: 'MISC',
+          edid: 'recipe_Dummy_Uncraftable_Item_NOCRAFT',
+        },
+      }),
     );
     const classifier = new ObtainabilityClassifier(client, new Set(), index);
     const verdicts = await classifier.classify([{ formId: '0xWEAP_DEAD', edid: 'DeadWeapon' }]);
@@ -495,7 +648,7 @@ describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () =>
         edid: 'co_mod_Known_By_Default',
         createdObjectFormId: '0xOMOD_DEFAULT',
         learnMethod: 3,
-      })
+      }),
     );
     const classifier = new ObtainabilityClassifier(client, new Set(), index);
     const verdicts = await classifier.classify([

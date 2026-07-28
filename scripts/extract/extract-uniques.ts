@@ -17,14 +17,16 @@ const LEGENDARY_SLOT_RE = /^ap_Legendary(\d+)$/;
 const RANDOM_LEGENDARY_SLOT_RE = /^modcol_Legendary_Crafting_Weapon(\d+)$/;
 
 function isIdentityOmod(omod: GeneratedOmod): boolean {
-  if (omod.attachPointEdid === 'ap_customName' && omod.addedKeywords.includes('ObjectTypeUnique')) return true;
+  if (omod.attachPointEdid === 'ap_customName' && omod.addedKeywords.includes('ObjectTypeUnique'))
+    return true;
   // Cursed uniques ride ap_Item_Description (Broadsider, MoM blades, …).
   if (omod.attachPointEdid === 'ap_Item_Description') return true;
   return false;
 }
 
 function isCosmeticAttachPoint(attachPointEdid: string): boolean {
-  if (attachPointEdid === 'ap_customName' || attachPointEdid === 'ap_Item_Description') return false;
+  if (attachPointEdid === 'ap_customName' || attachPointEdid === 'ap_Item_Description')
+    return false;
   return COSMETIC_SLOT_RE.test(attachPointEdid);
 }
 
@@ -42,9 +44,9 @@ export interface ExtractUniquesResult {
 export async function extractUniques(
   client: EsmClient,
   weapons: GeneratedWeapon[],
-  omods: GeneratedOmod[]
+  omods: GeneratedOmod[],
 ): Promise<ExtractUniquesResult> {
-  const omodByFormId = new Map(omods.map(o => [o.formId, o]));
+  const omodByFormId = new Map(omods.map((o) => [o.formId, o]));
   const uniques: GeneratedUnique[] = [];
   const skipped: SkippedUniqueCombination[] = [];
   const seenIdentityIds = new Set<string>();

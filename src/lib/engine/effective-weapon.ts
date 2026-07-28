@@ -97,12 +97,14 @@ function foldChanceUnion(modifiers: Modifier[], bucket: Bucket, ctx: ResolveCont
 function materializeDamageTypeComponents(
   weapon: Weapon,
   modifiers: Modifier[],
-  ctx: ResolveContext
+  ctx: ResolveContext,
 ): { components: WeaponComponent[]; consumedIds: Set<string> } {
-  const existingTypes = new Set((weapon.components ?? []).filter(c => !c.fromExplosion).map(c => c.damageType));
+  const existingTypes = new Set(
+    (weapon.components ?? []).filter((c) => !c.fromExplosion).map((c) => c.damageType),
+  );
   const fallback =
-    (weapon.components ?? []).find(c => !c.fromExplosion && c.damageType === 'ballistic') ??
-    (weapon.components ?? []).find(c => !c.fromExplosion);
+    (weapon.components ?? []).find((c) => !c.fromExplosion && c.damageType === 'ballistic') ??
+    (weapon.components ?? []).find((c) => !c.fromExplosion);
   if (!fallback) return { components: [], consumedIds: new Set() };
 
   const candidateTypes = new Set<DamageType>();
@@ -121,8 +123,8 @@ function materializeDamageTypeComponents(
   for (const type of candidateTypes) {
     const typeCtx: ResolveContext = { ...ctx, componentType: type, componentIsExplosion: false };
     const matching = modifiers
-      .filter(m => m.bucket === 'baseDamage')
-      .map(m => ({ mod: m, value: effectiveValue(m, typeCtx) }))
+      .filter((m) => m.bucket === 'baseDamage')
+      .map((m) => ({ mod: m, value: effectiveValue(m, typeCtx) }))
       .filter((e): e is { mod: Modifier; value: number } => e.value !== null);
     if (matching.length === 0) continue;
 
@@ -172,16 +174,19 @@ export function buildEffectiveWeapon(
   // Enemy-type identifiers of the selected target (see ResolveContext) — lets
   // enemy-type-gated weapon-stat modifiers resolve, and keeps every root
   // context builder consistent.
-  enemyTypeIds: readonly string[] = []
+  enemyTypeIds: readonly string[] = [],
 ): EffectiveWeapon {
   const loadoutStatModifiers = loadoutModifiers.filter(
-    m => WEAPON_STAT_BUCKETS.has(m.bucket) || SUSTAIN_CHANCE_BUCKETS.has(m.bucket)
+    (m) => WEAPON_STAT_BUCKETS.has(m.bucket) || SUSTAIN_CHANCE_BUCKETS.has(m.bucket),
   );
-  if (equippedOmods.length === 0 && loadoutStatModifiers.length === 0) return { weapon, modifiers: [] };
+  if (equippedOmods.length === 0 && loadoutStatModifiers.length === 0)
+    return { weapon, modifiers: [] };
 
-  const allOmodModifiers = equippedOmods.flatMap(o => o.modifiers);
+  const allOmodModifiers = equippedOmods.flatMap((o) => o.modifiers);
 
-  const keywords = [...new Set([...(weapon.keywords ?? []), ...equippedOmods.flatMap(o => o.addedKeywords)])];
+  const keywords = [
+    ...new Set([...(weapon.keywords ?? []), ...equippedOmods.flatMap((o) => o.addedKeywords)]),
+  ];
   // A neutral scenario (no VATS/sneak/crit/power-attack flags): weapon-stat
   // conditions seen so far (killStreakCount) are scenario-independent, and
   // this fold runs once per resolveLoadout call, before scenario branching.
@@ -198,7 +203,10 @@ export function buildEffectiveWeapon(
   // does per scenario input (cap modifiers are themselves never
   // onslaught-gated, so folding with cap 0 is exact).
   const onslaughtMaxStacks = foldBucket(
-    [...allOmodModifiers, ...loadoutModifiers], 'onslaughtMaxStacks', 0, baseCtx
+    [...allOmodModifiers, ...loadoutModifiers],
+    'onslaughtMaxStacks',
+    0,
+    baseCtx,
   );
   // Bullet-Storm-stack curves on weapon-stat buckets (Bullet Storm's own
   // reload-speed curve, cross-family-gated on Lock and Load) read the
@@ -206,17 +214,26 @@ export function buildEffectiveWeapon(
   // above (cap/floor modifiers are themselves never Bullet-Storm-gated, so
   // folding with cap/floor 0 is exact).
   const bulletStormMaxStacks = foldBucket(
-    [...allOmodModifiers, ...loadoutModifiers], 'bulletStormMaxStacks', 0, baseCtx
+    [...allOmodModifiers, ...loadoutModifiers],
+    'bulletStormMaxStacks',
+    0,
+    baseCtx,
   );
   const bulletStormMinStacks = foldBucket(
-    [...allOmodModifiers, ...loadoutModifiers], 'bulletStormMinStacks', 0, baseCtx
+    [...allOmodModifiers, ...loadoutModifiers],
+    'bulletStormMinStacks',
+    0,
+    baseCtx,
   );
   // Bonus-move-speed fraction for the moveSpeedBonus curve input (Fast
   // Fighter's reload conversion) — same bootstrap pattern: fold once from the
   // FULL modifier list (Speed Demon's source is a mutation, not a weapon-stat
   // modifier), thread on the ctx every weapon-stat fold below sees.
   const moveSpeedBonus = foldBucket(
-    [...allOmodModifiers, ...loadoutModifiers], 'moveSpeedBonus', 0, baseCtx
+    [...allOmodModifiers, ...loadoutModifiers],
+    'moveSpeedBonus',
+    0,
+    baseCtx,
   );
   const ctx: ResolveContext = {
     ...baseCtx,
@@ -236,20 +253,33 @@ export function buildEffectiveWeapon(
   // by OMODs that carry an explicit `IsAutomatic` property) is the only
   // correct signal — do not OR in a keyword check here.
   const isAutomatic = foldBucket(statModifiers, 'isAutomatic', weapon.isAutomatic ? 1 : 0, ctx) > 0;
-  const animDurationSec = foldBucket(statModifiers, 'animDurationSec', weapon.animDurationSec ?? 0.11, ctx);
+  const animDurationSec = foldBucket(
+    statModifiers,
+    'animDurationSec',
+    weapon.animDurationSec ?? 0.11,
+    ctx,
+  );
   // Semi-auto attack-delay rewrite (OMOD AttackDelaySec MUL_ADD — Salt of the
   // Earth's delay penalty, 2026-07-15 audit). weapon.animDelaySec is
   // undefined for automatic-only weapons (fire-rate.ts never reads it then),
   // so fold over 0.5 (fire-rate.ts's own fallback) only when the base weapon
   // actually carries the stat, same `?? undefined` shape as the base type.
   const animDelaySec =
-    weapon.animDelaySec !== undefined || statModifiers.some(m => m.bucket === 'animDelaySec')
-      ? Math.max(MIN_ANIM_DELAY_SEC, foldBucket(statModifiers, 'animDelaySec', weapon.animDelaySec ?? 0.5, ctx))
+    weapon.animDelaySec !== undefined || statModifiers.some((m) => m.bucket === 'animDelaySec')
+      ? Math.max(
+          MIN_ANIM_DELAY_SEC,
+          foldBucket(statModifiers, 'animDelaySec', weapon.animDelaySec ?? 0.5, ctx),
+        )
       : undefined;
   // NOTE: projectileCount folds into the effective weapon but NO damage term
   // consumes it yet — per-projectile/pellet modeling is deferred (with the
   // DoT engine work). Two Shot's damage today is only its extracted dbm.
-  const projectileCount = foldBucket(statModifiers, 'projectileCount', weapon.projectileCount ?? 1, ctx);
+  const projectileCount = foldBucket(
+    statModifiers,
+    'projectileCount',
+    weapon.projectileCount ?? 1,
+    ctx,
+  );
   const capacity = foldBucket(statModifiers, 'ammoCapacity', weapon.capacity ?? 0, ctx);
   const reloadSpeed = foldBucket(statModifiers, 'reloadSpeed', weapon.reloadSpeed ?? 1.0, ctx);
   const reloadSkipChance = foldChanceUnion(statModifiers, 'reloadSkipChance', ctx);
@@ -266,9 +296,17 @@ export function buildEffectiveWeapon(
   // existing pair) — same fold pattern as ammoCapacity/reloadSpeed/apCost.
   // weaponCharges() (src/lib/charge.ts) treats 0 as "doesn't charge", so
   // folding over `?? 0` is neutral for weapons with no charge fields at all.
-  const fullPowerSeconds = foldBucket(statModifiers, 'chargeFullPowerSec', weapon.fullPowerSeconds ?? 0, ctx);
+  const fullPowerSeconds = foldBucket(
+    statModifiers,
+    'chargeFullPowerSec',
+    weapon.fullPowerSeconds ?? 0,
+    ctx,
+  );
   const fullPowerDamageMult = foldBucket(
-    statModifiers, 'chargeFullPowerDamageMult', weapon.fullPowerDamageMult ?? 0, ctx
+    statModifiers,
+    'chargeFullPowerDamageMult',
+    weapon.fullPowerDamageMult ?? 0,
+    ctx,
   );
   // Range/falloff (Phase 1 engine half): barrels mostly (long-range barrels
   // MUL_ADD 0.5 on both min/max; one SET on weaponOutOfRangeMult, the Abraxo
@@ -281,13 +319,20 @@ export function buildEffectiveWeapon(
   const minRange = foldBucket(statModifiers, 'weaponMinRange', weapon.minRange ?? 0, ctx);
   const maxRange = foldBucket(statModifiers, 'weaponMaxRange', weapon.maxRange ?? 0, ctx);
   const outOfRangeDamageMult = foldBucket(
-    statModifiers, 'weaponOutOfRangeMult', weapon.outOfRangeDamageMult ?? 1.0, ctx
+    statModifiers,
+    'weaponOutOfRangeMult',
+    weapon.outOfRangeDamageMult ?? 1.0,
+    ctx,
   );
 
   const modifiers = allOmodModifiers.filter(
-    m => !WEAPON_STAT_BUCKETS.has(m.bucket) && !SUSTAIN_CHANCE_BUCKETS.has(m.bucket)
+    (m) => !WEAPON_STAT_BUCKETS.has(m.bucket) && !SUSTAIN_CHANCE_BUCKETS.has(m.bucket),
   );
-  const { components: materialized, consumedIds } = materializeDamageTypeComponents(weapon, modifiers, ctx);
+  const { components: materialized, consumedIds } = materializeDamageTypeComponents(
+    weapon,
+    modifiers,
+    ctx,
+  );
 
   return {
     weapon: {
@@ -311,6 +356,6 @@ export function buildEffectiveWeapon(
       outOfRangeDamageMult,
       components: [...weapon.components, ...materialized],
     },
-    modifiers: modifiers.filter(m => !consumedIds.has(m.id)),
+    modifiers: modifiers.filter((m) => !consumedIds.has(m.id)),
   };
 }

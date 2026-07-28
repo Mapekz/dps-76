@@ -16,5 +16,5 @@ export function getNpcs(mode: GameMode): GeneratedNpc[] {
 }
 
 export function getNpc(mode: GameMode, id: string): GeneratedNpc | undefined {
-  return getDataset(mode).npcs.find(n => n.id === id);
+  return getDataset(mode).npcs.find((n) => n.id === id);
 }

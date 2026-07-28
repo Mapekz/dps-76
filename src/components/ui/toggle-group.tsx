@@ -29,7 +29,7 @@ export function ToggleGroup<T extends string | number>({
 }) {
   return (
     <ButtonGroup role="radiogroup" aria-label={ariaLabel}>
-      {options.map(opt => (
+      {options.map((opt) => (
         <Button
           key={opt.value}
           type="button"
@@ -37,7 +37,9 @@ export function ToggleGroup<T extends string | number>({
           role="radio"
           aria-checked={value === opt.value}
           variant={value === opt.value ? 'default' : 'outline'}
-          className={value === opt.value ? 'border border-primary hover:border-primary/90' : undefined}
+          className={
+            value === opt.value ? 'border border-primary hover:border-primary/90' : undefined
+          }
           disabled={disabled}
           title={opt.title}
           onClick={() => onValueChange(opt.value)}

@@ -1,5 +1,13 @@
 import type { PlayerConditions, EnemyConditions, Weapon } from '@/types';
-import type { Bucket, Condition, CurveInput, DamageType, Modifier, ModOp, StackCounter } from '@/types/modifiers';
+import type {
+  Bucket,
+  Condition,
+  CurveInput,
+  DamageType,
+  Modifier,
+  ModOp,
+  StackCounter,
+} from '@/types/modifiers';
 import { interpolateCurve } from '@/lib/curve-tables';
 import { CLOSE_THRESHOLD_UNITS, DEFAULT_DISTANCE_UNITS, FAR_THRESHOLD_UNITS } from '@/lib/distance';
 import { resolveBulletStormStacks, resolveOnslaughtStacks } from './stacks';
@@ -113,7 +121,11 @@ export interface ResolveContext {
  * CurveInput reader — both consumers read the identical clamped count.
  */
 function effectiveOnslaughtStacks(p: PlayerConditions, ctx: ResolveContext): number {
-  return resolveOnslaughtStacks(p.onslaughtStacks, ctx.onslaughtMaxStacks ?? 0, ctx.onslaughtReverseStacks);
+  return resolveOnslaughtStacks(
+    p.onslaughtStacks,
+    ctx.onslaughtMaxStacks ?? 0,
+    ctx.onslaughtReverseStacks,
+  );
 }
 
 /**
@@ -132,7 +144,7 @@ function effectiveBulletStormStacks(p: PlayerConditions, ctx: ResolveContext): n
     p.bulletStormStacks,
     ctx.bulletStormMinStacks ?? 0,
     ctx.bulletStormMaxStacks ?? 0,
-    ctx.bulletStormAvgStacks
+    ctx.bulletStormAvgStacks,
   );
 }
 
@@ -141,45 +153,48 @@ function effectiveBulletStormStacks(p: PlayerConditions, ctx: ResolveContext): n
  * Single source of truth for what game state each modifier axis consumes —
  * add a row here when adding a StackCounter or CurveInput.
  */
-const PLAYER_STATE_READERS: Record<StackCounter | CurveInput, (p: PlayerConditions, ctx: ResolveContext) => number> = {
+const PLAYER_STATE_READERS: Record<
+  StackCounter | CurveInput,
+  (p: PlayerConditions, ctx: ResolveContext) => number
+> = {
   // Stack counters (modifier value × count).
-  tenderizer: p => p.tenderizerStacks ?? 0,
+  tenderizer: (p) => p.tenderizerStacks ?? 0,
   onslaught: (p, ctx) => effectiveOnslaughtStacks(p, ctx),
   bulletStorm: (p, ctx) => effectiveBulletStormStacks(p, ctx),
-  adrenaline: p => p.adrenalineStacks,
+  adrenaline: (p) => p.adrenalineStacks,
   // Concentrated Fire's per-VATS-shot stack counter — manual slider standing
   // in for the game's hidden native counter (docs/assumptions.md
   // "Concentrated Fire stacks").
-  concentratedFire: p => p.concentratedFireStacks ?? 0,
+  concentratedFire: (p) => p.concentratedFireStacks ?? 0,
   // Curve inputs (X value fed into a value curve).
-  healthFraction: p => p.healthPercent / 100,
-  capsOnHand: p => p.capsOnHand,
-  killStreak: p => p.adrenalineStacks,
-  addictionCount: p => p.addictionCount,
+  healthFraction: (p) => p.healthPercent / 100,
+  capsOnHand: (p) => p.capsOnHand,
+  killStreak: (p) => p.adrenalineStacks,
+  addictionCount: (p) => p.addictionCount,
   onslaughtStacks: (p, ctx) => effectiveOnslaughtStacks(p, ctx),
   // Juggernaut's curve X is ABSOLUTE current HP. maxHealth is derived in
   // resolveLoadout (245 + 5×END + maxHealth bucket — docs/assumptions.md
   // "Max HP"); the 300 fallback only serves synthetic engine tests.
-  healthCurrent: p => (p.healthPercent / 100) * (p.maxHealth ?? 300),
+  healthCurrent: (p) => (p.healthPercent / 100) * (p.maxHealth ?? 300),
   // The WIELDER's own DR (Berserker's — see the CurveInput doc comment for
   // the 2026-07-18 rename/correction from the misleading `enemyDamageResist`
   // name). Manual knob, default 0 (naked).
-  playerDamageResist: p => p.playerDamageResist ?? 0,
+  playerDamageResist: (p) => p.playerDamageResist ?? 0,
   itemLevel: (_, ctx) => ctx.itemLevel ?? 50,
-  mutationCount: p => p.mutationCount ?? 0,
+  mutationCount: (p) => p.mutationCount ?? 0,
   // Lifegiver's max-HP curve X — the buff-folded END stat (resolveLoadout).
-  endurance: p => p.endurance,
+  endurance: (p) => p.endurance,
   // Science!/Pyro-Technician's/Cryologist's damage-vs-INT curve X — the
   // buff-folded INT stat (mirrors the endurance reader above).
-  intelligence: p => p.intelligence,
+  intelligence: (p) => p.intelligence,
   // The Debilitator's limb-damage-vs-STR curve X.
-  strength: p => p.strength,
+  strength: (p) => p.strength,
   // The Peace Maker's explosive-damage-vs-CHA curve X.
-  charisma: p => p.charisma,
+  charisma: (p) => p.charisma,
   // Awareness perk's VATS-accuracy-vs-PER curve X (Phase 4 — VATS
   // hit-chance aggregate, display-only) — mirrors the strength/endurance/
   // charisma readers above.
-  perception: p => p.perception,
+  perception: (p) => p.perception,
   // Bullet Storm / Heavy Gunner's ammo-spent stack curve X (shared field with
   // the `bulletStorm` StackCounter reader above — both clamp through
   // effectiveBulletStormStacks).
@@ -187,13 +202,13 @@ const PLAYER_STATE_READERS: Record<StackCounter | CurveInput, (p: PlayerConditio
   // Shotgun Champ's damage-vs-crippled curve X — the effective (OMOD-folded)
   // weapon's projectile count.
   projectileCount: (_, ctx) => ctx.weapon.projectileCount ?? 1,
-  hungerThirstTier: p => p.hungerThirstTier ?? 0,
-  feralTier: p => p.feralTier ?? 0,
+  hungerThirstTier: (p) => p.hungerThirstTier ?? 0,
+  feralTier: (p) => p.feralTier ?? 0,
   // Fast Fighter's curve X — the bootstrap-folded bonus-move-speed fraction
   // (ResolveContext.moveSpeedBonus, threaded by buildEffectiveWeapon).
   moveSpeedBonus: (_, ctx) => ctx.moveSpeedBonus ?? 0,
   // Polished's curve X = GetEquippedWeaponHealthPercent (0.0-2.0 fraction; no AVIF).
-  weaponCondition: p => (p.weaponConditionPct ?? 100) / 100,
+  weaponCondition: (p) => (p.weaponConditionPct ?? 100) / 100,
 };
 
 /**
@@ -208,7 +223,7 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
     case 'weaponKeyword':
       return (ctx.weapon.keywords ?? []).includes(cond.keyword) === cond.present ? 1 : null;
     case 'weaponKeywordAny':
-      return cond.keywords.some(k => (ctx.weapon.keywords ?? []).includes(k)) ? 1 : null;
+      return cond.keywords.some((k) => (ctx.weapon.keywords ?? []).includes(k)) ? 1 : null;
     case 'weaponAnimTypeMax':
       // GetWeaponAnimType() ≤ max (Martial Artist's melee gate). Unknown anim
       // type (synthetic test weapons) fails closed like any unmatched gate.
@@ -220,7 +235,7 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       // (ctx.enemyTypeIds). No target selected → inactive, like other enemy gates.
       return (ctx.enemyTypeIds ?? []).includes(cond.keywordOrRace) ? 1 : null;
     case 'enemyTypeAny':
-      return cond.keywordsOrRaces.some(id => (ctx.enemyTypeIds ?? []).includes(id)) ? 1 : null;
+      return cond.keywordsOrRaces.some((id) => (ctx.enemyTypeIds ?? []).includes(id)) ? 1 : null;
     case 'damageTypeScope':
       // Whole-weapon folds skip component-scoped modifiers; per-component
       // folds require a matching component type. 'explosive' scope also
@@ -265,11 +280,15 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       return ctx.player.isLastShot ? 1 : null;
     case 'enemyHasActiveEffect': {
       const active =
-        cond.keyword === 'DamageTypeFire' ? ctx.enemy.isBurning
-        : cond.keyword === 'DamageTypePoison' ? ctx.enemy.isPoisoned
-        : cond.keyword === 'DamageTypeBleed' ? ctx.enemy.isBleeding
-        : cond.keyword === 'DamageTypeCryo' ? ctx.enemy.isFrozen
-        : false; // keywords beyond fire/poison/bleed/cryo have no UI input yet — inactive
+        cond.keyword === 'DamageTypeFire'
+          ? ctx.enemy.isBurning
+          : cond.keyword === 'DamageTypePoison'
+            ? ctx.enemy.isPoisoned
+            : cond.keyword === 'DamageTypeBleed'
+              ? ctx.enemy.isBleeding
+              : cond.keyword === 'DamageTypeCryo'
+                ? ctx.enemy.isFrozen
+                : false; // keywords beyond fire/poison/bleed/cryo have no UI input yet — inactive
       return active ? 1 : null;
     }
     case 'enemyGroupCount': {
@@ -299,7 +318,10 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       return apCost > 0 ? apCost : null;
     }
     case 'stacks': {
-      const count = Math.max(0, Math.min(PLAYER_STATE_READERS[cond.counter](ctx.player, ctx), cond.max));
+      const count = Math.max(
+        0,
+        Math.min(PLAYER_STATE_READERS[cond.counter](ctx.player, ctx), cond.max),
+      );
       return count > 0 ? count : null;
     }
     case 'strangeInNumbers':
@@ -372,7 +394,8 @@ export function effectiveValue(mod: Modifier, ctx: ResolveContext): number | nul
   // Curve-driven values (Bloodied, Nerd Rage, ...): Y at the current input,
   // scaled by mod.curveScale (the route scale, e.g. 0.01 for STAT-point curves).
   const base = mod.curve
-    ? interpolateCurve(mod.curve.points, PLAYER_STATE_READERS[mod.curve.input](ctx.player, ctx)) * mod.curveScale
+    ? interpolateCurve(mod.curve.points, PLAYER_STATE_READERS[mod.curve.input](ctx.player, ctx)) *
+      mod.curveScale
     : mod.value;
   return base * scale;
 }
@@ -422,7 +445,7 @@ export function foldBucket(
   bucket: Bucket,
   base: number,
   ctx: ResolveContext,
-  collect?: BucketTrace[]
+  collect?: BucketTrace[],
 ): number {
   const entries: Array<{ op: ModOp; value: number; mod?: Modifier }> = [];
   for (const mod of modifiers) {
@@ -439,15 +462,15 @@ export function foldBucket(
       op: e.op,
       value: e.value,
     });
-    const sets = entries.filter(e => e.op === 'SET');
+    const sets = entries.filter((e) => e.op === 'SET');
     collect.push({
       bucket,
       base,
       result,
       set: sets.length > 0 ? contribution(sets[sets.length - 1]) : null,
       overriddenSets: sets.slice(0, -1).map(contribution),
-      mulAdd: entries.filter(e => e.op === 'MUL_ADD').map(contribution),
-      add: entries.filter(e => e.op === 'ADD').map(contribution),
+      mulAdd: entries.filter((e) => e.op === 'MUL_ADD').map(contribution),
+      add: entries.filter((e) => e.op === 'ADD').map(contribution),
     });
   }
 
@@ -461,7 +484,7 @@ export function foldBucket(
 export function foldWholeDamage(
   modifiers: Modifier[],
   ctx: ResolveContext,
-  collect?: TraceContribution[]
+  collect?: TraceContribution[],
 ): number {
   let mult = 1;
   for (const mod of modifiers) {

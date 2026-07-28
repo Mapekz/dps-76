@@ -1,1 +1,84 @@
-{"header":{"signature":"PERK","form_id":"0x00797E25","flags":0,"form_version":202,"data_size":346,"offset":905884032},"editor_id":"GHL_GlowingCriticals01","fields":{"_record_type":"Perk","Editor ID":"GHL_GlowingCriticals01","Name":"Glowing Criticals","Description":"When your Glow is high, Gain 20% bonus Critical damage in V.A.T.S.","Data":{"Trait":{"value":1,"name":"True"},"Level":0,"Num Ranks":1,"Unknown":{"hex":""}},"SWF Sprite Name":"Gunsmith","Effects":[{"Effect":{"Effect Header":{"Effect Type":{"value":2,"name":"Entry Point"},"Rank":0},"Entry Point":{"Entry Point":{"value":2,"name":"Mod My Critical Hit Damage Mult"},"Function":{"value":2,"name":"Add Value"},"Perk Condition Tab Count":3},"Perk Conditions":[{"Perk Condition":{"Run On (Tab Index)":0,"Conditions":[{"Condition":{"Condition Data":{"Operator":"Equal To","AND/OR":"AND","Comparison Value":1.0,"Function":"GetIsPlayerGhoul","Run On":"Subject"}}},{"Condition":{"Condition Data":{"Operator":"Greater Than Or Equal To","AND/OR":"AND","Comparison Value":180.0,"Function":"GetValue","Parameter 1":"0x000002E1","Run On":"Subject"}}},{"Condition":{"Condition Data":{"Operator":"Equal To","AND/OR":"AND","Comparison Value":0.0,"Function":"HasPerk","Parameter 1":"0x00797E5D","Run On":"Subject"}}}]}}],"Function Type":{"value":1,"name":"Float"},"Perk Entry ID":1,"Float":0.20000000298023224,"Effect End":null}}]}}
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x00797E25",
+    "flags": 0,
+    "form_version": 202,
+    "data_size": 346,
+    "offset": 905884032
+  },
+  "editor_id": "GHL_GlowingCriticals01",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "GHL_GlowingCriticals01",
+    "Name": "Glowing Criticals",
+    "Description": "When your Glow is high, Gain 20% bonus Critical damage in V.A.T.S.",
+    "Data": {
+      "Trait": { "value": 1, "name": "True" },
+      "Level": 0,
+      "Num Ranks": 1,
+      "Unknown": { "hex": "" }
+    },
+    "SWF Sprite Name": "Gunsmith",
+    "Effects": [
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 2, "name": "Entry Point" }, "Rank": 0 },
+          "Entry Point": {
+            "Entry Point": { "value": 2, "name": "Mod My Critical Hit Damage Mult" },
+            "Function": { "value": 2, "name": "Add Value" },
+            "Perk Condition Tab Count": 3
+          },
+          "Perk Conditions": [
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 0,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 1.0,
+                        "Function": "GetIsPlayerGhoul",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Greater Than Or Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 180.0,
+                        "Function": "GetValue",
+                        "Parameter 1": "0x000002E1",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 0.0,
+                        "Function": "HasPerk",
+                        "Parameter 1": "0x00797E5D",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "Function Type": { "value": 1, "name": "Float" },
+          "Perk Entry ID": 1,
+          "Float": 0.20000000298023224,
+          "Effect End": null
+        }
+      }
+    ]
+  }
+}

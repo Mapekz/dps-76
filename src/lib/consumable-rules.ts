@@ -63,7 +63,7 @@ function sharesBonus(a: GeneratedBuff, b: GeneratedBuff): boolean {
   if (a.category === 'bobblehead' && b.category === 'bobblehead') return true;
   if (!a.dispelKeys || !b.dispelKeys) return false;
   const bKeys = new Set(b.dispelKeys);
-  return a.dispelKeys.some(key => bKeys.has(key));
+  return a.dispelKeys.some((key) => bKeys.has(key));
 }
 
 /**
@@ -75,7 +75,7 @@ function sharesBonus(a: GeneratedBuff, b: GeneratedBuff): boolean {
 export function applySelection(
   buffsById: ReadonlyMap<string, GeneratedBuff>,
   active: readonly string[],
-  id: string
+  id: string,
 ): SelectionResult {
   const incoming = buffsById.get(id);
   if (!incoming) return { consumables: [...active], replaced: [] };
@@ -94,9 +94,9 @@ export function applySelection(
 export function toggleConsumable(
   buffsById: ReadonlyMap<string, GeneratedBuff>,
   active: readonly string[],
-  id: string
+  id: string,
 ): SelectionResult {
-  if (active.includes(id)) return { consumables: active.filter(x => x !== id), replaced: [] };
+  if (active.includes(id)) return { consumables: active.filter((x) => x !== id), replaced: [] };
   return applySelection(buffsById, active, id);
 }
 
@@ -107,7 +107,10 @@ export function toggleConsumable(
  * along the way. Used by the persistence codec on decode to normalize
  * share-URL payloads that predate (or bypassed) the stacking rules.
  */
-export function sanitizeConsumables(buffsById: ReadonlyMap<string, GeneratedBuff>, ids: string[]): string[] {
+export function sanitizeConsumables(
+  buffsById: ReadonlyMap<string, GeneratedBuff>,
+  ids: string[],
+): string[] {
   let active: string[] = [];
   for (const id of ids) {
     if (!buffsById.has(id) || active.includes(id)) continue;
@@ -126,7 +129,7 @@ export function consumablesById(mode: GameMode): Map<string, GeneratedBuff> {
   if (!idCache) idCache = new Map();
   let byId = idCache.get(mode);
   if (!byId) {
-    byId = new Map(getConsumables(mode).map(b => [b.id, b]));
+    byId = new Map(getConsumables(mode).map((b) => [b.id, b]));
     idCache.set(mode, byId);
   }
   return byId;

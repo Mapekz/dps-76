@@ -42,7 +42,7 @@ export function getGeneratedPerk(mode: GameMode, perkId: string): GeneratedPerk 
  */
 function resolveLoadoutRank(
   mode: GameMode,
-  loadout: PerkLoadout
+  loadout: PerkLoadout,
 ): { generated: GeneratedPerk; familyRank: number } | undefined {
   const generated = getGeneratedPerk(mode, loadout.perkId);
   if (!generated) return undefined;
@@ -74,7 +74,10 @@ export function getLoadoutModifiers(mode: GameMode, loadouts: PerkLoadout[]): Mo
  * input of `perkFamilyRank` conditions (cross-family HasPerk gates, e.g.
  * Lock and Load → Bullet Storm's reload speed).
  */
-export function getEquippedPerkFamilyRanks(mode: GameMode, loadouts: PerkLoadout[]): Record<string, number> {
+export function getEquippedPerkFamilyRanks(
+  mode: GameMode,
+  loadouts: PerkLoadout[],
+): Record<string, number> {
   const ranks: Record<string, number> = {};
   for (const loadout of loadouts) {
     const resolved = resolveLoadoutRank(mode, loadout);
@@ -88,7 +91,7 @@ export function getEquippedPerkFamilyRanks(mode: GameMode, loadouts: PerkLoadout
 /** Registry PerkIds with no generated family — review after each extraction run. */
 export function getUnjoinedPerkIds(mode: GameMode): string[] {
   const registry = getDataset(mode).perkRegistry;
-  return Object.keys(registry).filter(perkId => !getGeneratedPerk(mode, perkId));
+  return Object.keys(registry).filter((perkId) => !getGeneratedPerk(mode, perkId));
 }
 
 /**

@@ -1,7 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import type { Weapon } from '@/types';
 import { createDefaultPlayerConditions } from '@/types';
-import { computeSustain, DEFAULT_BATTLE_LOADERS_BASH_SEC, sustainTiming } from '@/lib/engine/sustain';
+import {
+  computeSustain,
+  DEFAULT_BATTLE_LOADERS_BASH_SEC,
+  sustainTiming,
+} from '@/lib/engine/sustain';
 
 function gun(overrides: Partial<Weapon> = {}): Weapon {
   return {
@@ -62,7 +66,11 @@ describe('computeSustain', () => {
   });
 
   it('per-shell reloaders repeat the animation once per round (Lever Action shape: 1.77s × 6)', () => {
-    const s = computeSustain(100, 2, gun({ capacity: 6, animationReloadSec: 1.77, reloadPerShell: true }));
+    const s = computeSustain(
+      100,
+      2,
+      gun({ capacity: 6, animationReloadSec: 1.77, reloadPerShell: true }),
+    );
     expect(s.reloadSec).toBeCloseTo(1.77 * 6, 10);
     // Control at the same capacity: a whole-magazine reload stays 1.77s.
     const control = computeSustain(100, 2, gun({ capacity: 6, animationReloadSec: 1.77 }));
@@ -71,13 +79,21 @@ describe('computeSustain', () => {
   });
 
   it('per-shell reload time divides by the folded reload speed like any other', () => {
-    const s = computeSustain(100, 2, gun({ capacity: 6, animationReloadSec: 1.77, reloadPerShell: true, reloadSpeed: 1.3 }));
+    const s = computeSustain(
+      100,
+      2,
+      gun({ capacity: 6, animationReloadSec: 1.77, reloadPerShell: true, reloadSpeed: 1.3 }),
+    );
     expect(s.reloadSec).toBeCloseTo((1.77 * 6) / 1.3, 10);
   });
 
   it('reloadSkipChance shortens reloadSec by (1 − chance)', () => {
     const base = computeSustain(100, 5, gun({ animationReloadSec: 2.0 }));
-    const withSkip = computeSustain(100, 5, gun({ animationReloadSec: 2.0, reloadSkipChance: 0.18 }));
+    const withSkip = computeSustain(
+      100,
+      5,
+      gun({ animationReloadSec: 2.0, reloadSkipChance: 0.18 }),
+    );
     expect(withSkip.reloadSec).toBeCloseTo(base.reloadSec * 0.82, 10);
     expect(withSkip.sustainedDps).toBeGreaterThan(base.sustainedDps);
   });
@@ -92,7 +108,9 @@ describe('computeSustain', () => {
   it('melee/no-mag weapons ignore sustain chance fields', () => {
     const base = computeSustain(100, 2, gun({ capacity: 0, weaponClass: 'melee' }));
     const withChances = computeSustain(
-      100, 2, gun({ capacity: 0, weaponClass: 'melee', reloadSkipChance: 0.5, ammoFreeChance: 0.5 })
+      100,
+      2,
+      gun({ capacity: 0, weaponClass: 'melee', reloadSkipChance: 0.5, ammoFreeChance: 0.5 }),
     );
     expect(withChances).toEqual(base);
   });
@@ -101,7 +119,11 @@ describe('computeSustain', () => {
 describe('reloadSkipChanceBash — two-channel reload-skip model (Phase C)', () => {
   it('bash-only: costs bashAnimationSec instead of the real reload', () => {
     // reloadSec = (1-0) * ((1-0.5)*2.0 + 0.5*1.0) = 1.0 + 0.5 = 1.5
-    const timing = sustainTiming(gun({ animationReloadSec: 2.0, reloadSkipChanceBash: 0.5 }), 5, 1.0);
+    const timing = sustainTiming(
+      gun({ animationReloadSec: 2.0, reloadSkipChanceBash: 0.5 }),
+      5,
+      1.0,
+    );
     expect(timing.reloadSec).toBeCloseTo(1.5, 10);
   });
 
@@ -115,7 +137,9 @@ describe('reloadSkipChanceBash — two-channel reload-skip model (Phase C)', () 
   it('combines reloadSkipChance and reloadSkipChanceBash — free skip wins first', () => {
     // reloadSec = (1-0.2) * ((1-0.5)*2.0 + 0.5*1.0) = 0.8 * 1.5 = 1.2
     const timing = sustainTiming(
-      gun({ animationReloadSec: 2.0, reloadSkipChance: 0.2, reloadSkipChanceBash: 0.5 }), 5, 1.0
+      gun({ animationReloadSec: 2.0, reloadSkipChance: 0.2, reloadSkipChanceBash: 0.5 }),
+      5,
+      1.0,
     );
     expect(timing.reloadSec).toBeCloseTo(1.2, 10);
   });
@@ -124,7 +148,9 @@ describe('reloadSkipChanceBash — two-channel reload-skip model (Phase C)', () 
     const pFree = 0.2;
     const pBash = 0.5;
     const twoChannel = sustainTiming(
-      gun({ animationReloadSec: 2.0, reloadSkipChance: pFree, reloadSkipChanceBash: pBash }), 5, 0
+      gun({ animationReloadSec: 2.0, reloadSkipChance: pFree, reloadSkipChanceBash: pBash }),
+      5,
+      0,
     );
     // Old formula (pre-Phase-C): reloadSec = realReloadSec * (1 - union),
     // union = 1 - (1-pFree)(1-pBash).
@@ -137,13 +163,20 @@ describe('reloadSkipChanceBash — two-channel reload-skip model (Phase C)', () 
   it('sustainTiming defaults bashAnimationSec to DEFAULT_BATTLE_LOADERS_BASH_SEC when omitted', () => {
     const omitted = sustainTiming(gun({ animationReloadSec: 2.0, reloadSkipChanceBash: 0.5 }), 5);
     const explicit = sustainTiming(
-      gun({ animationReloadSec: 2.0, reloadSkipChanceBash: 0.5 }), 5, DEFAULT_BATTLE_LOADERS_BASH_SEC
+      gun({ animationReloadSec: 2.0, reloadSkipChanceBash: 0.5 }),
+      5,
+      DEFAULT_BATTLE_LOADERS_BASH_SEC,
     );
     expect(omitted.reloadSec).toBeCloseTo(explicit.reloadSec, 10);
   });
 
   it('computeSustain threads bashAnimationSec through to sustainTiming', () => {
-    const s = computeSustain(100, 5, gun({ animationReloadSec: 2.0, reloadSkipChanceBash: 0.5 }), 1.0);
+    const s = computeSustain(
+      100,
+      5,
+      gun({ animationReloadSec: 2.0, reloadSkipChanceBash: 0.5 }),
+      1.0,
+    );
     expect(s.reloadSec).toBeCloseTo(1.5, 10);
     expect(s.sustainedDps).toBeGreaterThan(0);
   });
@@ -151,6 +184,8 @@ describe('reloadSkipChanceBash — two-channel reload-skip model (Phase C)', () 
 
 describe('DEFAULT_BATTLE_LOADERS_BASH_SEC default-sync regression', () => {
   it('createDefaultPlayerConditions().battleLoadersBashSec stays in sync with DEFAULT_BATTLE_LOADERS_BASH_SEC (deliberate literal duplication — types/ stays a leaf)', () => {
-    expect(createDefaultPlayerConditions().battleLoadersBashSec).toBe(DEFAULT_BATTLE_LOADERS_BASH_SEC);
+    expect(createDefaultPlayerConditions().battleLoadersBashSec).toBe(
+      DEFAULT_BATTLE_LOADERS_BASH_SEC,
+    );
   });
 });

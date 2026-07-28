@@ -17,12 +17,15 @@ const { syntheticWeaponStatModifier } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('@/data/perk-modifiers', async importOriginal => {
+vi.mock('@/data/perk-modifiers', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/data/perk-modifiers')>();
   return {
     ...actual,
-    getLoadoutModifiers: (mode: Parameters<typeof actual.getLoadoutModifiers>[0], perks: Parameters<typeof actual.getLoadoutModifiers>[1]) =>
-      perks.some(perk => String(perk.perkId) === 'SyntheticWeaponStatPerk')
+    getLoadoutModifiers: (
+      mode: Parameters<typeof actual.getLoadoutModifiers>[0],
+      perks: Parameters<typeof actual.getLoadoutModifiers>[1],
+    ) =>
+      perks.some((perk) => String(perk.perkId) === 'SyntheticWeaponStatPerk')
         ? [syntheticWeaponStatModifier]
         : actual.getLoadoutModifiers(mode, perks),
   };
@@ -45,10 +48,14 @@ describe('loadout assembly ordering', () => {
     const withSyntheticPerk = resolveLoadout(
       { ...base, perks: [syntheticPerk] },
       createDefaultEnemyConfig(),
-      'live'
+      'live',
     )!;
 
     expect(withSyntheticPerk.weapon.speed).toBeCloseTo((stock.weapon.speed ?? 1) + 0.123, 10);
-    expect(withSyntheticPerk.modifiers.some(modifier => modifier.id === syntheticWeaponStatModifier.id)).toBe(false);
+    expect(
+      withSyntheticPerk.modifiers.some(
+        (modifier) => modifier.id === syntheticWeaponStatModifier.id,
+      ),
+    ).toBe(false);
   });
 });

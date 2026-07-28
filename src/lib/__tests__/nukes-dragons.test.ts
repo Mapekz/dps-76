@@ -43,7 +43,12 @@ describe('legendaryPerkIds', () => {
   });
 
   it('excludes ghoul cards', () => {
-    for (const id of [PerkId.RadSpecialist, PerkId.GlowingCriticals, PerkId.ArmsOfSteel, PerkId.ActionGhoul]) {
+    for (const id of [
+      PerkId.RadSpecialist,
+      PerkId.GlowingCriticals,
+      PerkId.ArmsOfSteel,
+      PerkId.ActionGhoul,
+    ]) {
       expect(legendaryPerkIds.has(id), id).toBe(false);
     }
   });
@@ -58,7 +63,9 @@ describe('legendaryPerkIds', () => {
 describe('parseBuildUrl', () => {
   it('reads legendary perks from the lp= param alongside p=', () => {
     // Real v2 N&D URL shape: regular + ghoul cards in p=, legendary in lp=.
-    const perks = parseBuildUrl('https://nukesdragons.com/fallout-76/character?v=2&s=fffffff&p=lt30n1&lp=xp4xm2');
+    const perks = parseBuildUrl(
+      'https://nukesdragons.com/fallout-76/character?v=2&s=fffffff&p=lt30n1&lp=xp4xm2',
+    );
     expect(perks).toEqual([
       { key: 'lt', name: PerkId.BloodyMess, rank: 3 },
       { key: '0n', name: PerkId.GlowingCriticals, rank: 1 },
@@ -78,7 +85,7 @@ describe('reclassifyPerkLoadouts', () => {
       [
         { perkId: PerkId.RadSpecialist, rank: 1 },
         { perkId: PerkId.LegendaryLuck, rank: 4 },
-      ]
+      ],
     );
     expect(result.migrated).toBe(2);
     expect(result.perks).toEqual([
@@ -94,7 +101,7 @@ describe('reclassifyPerkLoadouts', () => {
   it('reports zero migrations for a correctly-split loadout', () => {
     const result = reclassifyPerkLoadouts(
       [{ perkId: PerkId.BloodyMess, rank: 3 }],
-      [{ perkId: PerkId.FollowThrough, rank: 4 }]
+      [{ perkId: PerkId.FollowThrough, rank: 4 }],
     );
     expect(result.migrated).toBe(0);
   });

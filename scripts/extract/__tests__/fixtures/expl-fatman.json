@@ -1,1 +1,102 @@
-{"header":{"signature":"EXPL","form_id":"0x001A7FF2","flags":0,"form_version":208,"data_size":623,"offset":904427657},"editor_id":"ExplosionFatMan","fields":{"_record_type":"Explosion","Editor ID":"ExplosionFatMan","Object Bounds":{"X1":-884,"Y1":-884,"Z1":-686,"X2":877,"Y2":879,"Z2":776},"Description":"","Model":{"Model FileName":"Effects\\ExplosionNuke01.nif","Model Information":{"Counters":{"Textures":33,"Addon Nodes":2,"SRGB":23,"Materials":0},"Textures":[{"File Hash":"0x12623C28","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x3659311B","Extension":"dds","Folder Hash":"0x4C3C64BE"},{"File Hash":"0x039A0C4B","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x5E3D679A","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xE961A853","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xD8575037","Extension":"dds","Folder Hash":"0x4C3C64BE"},{"File Hash":"0x071770F9","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x8CDAF9EB","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xB6D841D8","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xC1C69D0E","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xE0EC749E","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xAFD90B40","Extension":"dds","Folder Hash":"0x33552C58"},{"File Hash":"0x1F8C7BCA","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x35FA29CB","Extension":"dds","Folder Hash":"0x33552C58"},{"File Hash":"0x3EEE0EF1","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xA3F5E7D7","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xB70E670D","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x1CE79F9B","Extension":"dds","Folder Hash":"0x33552C58"},{"File Hash":"0x22586D54","Extension":"dds","Folder Hash":"0x4C3C64BE"},{"File Hash":"0x48183DB0","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x5EC144A1","Extension":"dds","Folder Hash":"0x33552C58"},{"File Hash":"0x4297DB44","Extension":"dds","Folder Hash":"0x33552C58"},{"File Hash":"0xEAE8CFDE","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x543F5ED5","Extension":"dds","Folder Hash":"0x33552C58"},{"File Hash":"0x39A330A2","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x851C44F4","Extension":"dds","Folder Hash":"0x33552C58"},{"File Hash":"0xDF421E3B","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xFC91F062","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xF8DD447F","Extension":"dds","Folder Hash":"0x33552C58"},{"File Hash":"0xBE819001","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0x1C61E6D1","Extension":"dds","Folder Hash":"0x33552C58"},{"File Hash":"0xA0244BBA","Extension":"dds","Folder Hash":"0xEA3C9738"},{"File Hash":"0xAA365636","Extension":"dds","Folder Hash":"0xEA3C9738"}],"Addon Nodes":[4,243],"Materials":[]}},"Image Space Modifier":"0x0002458E","Data":{"Light":"0x00023D3A","Sound 1":"0x00030E1F","Sound 2":"0x0003243A","Impact Data Set":"0x000DB863","Placed Object":null,"Spawn Projectile":null,"Damage Curve Table":{"formid":"0x0080F249","curve_path":"Player\\Damage\\Damage_Universal_Tier89.json","curve":[{"x":1.0,"y":469.0},{"x":5.0,"y":525.0},{"x":10.0,"y":593.0},{"x":15.0,"y":669.0},{"x":20.0,"y":755.0},{"x":25.0,"y":853.0},{"x":30.0,"y":963.0},{"x":35.0,"y":1087.0},{"x":40.0,"y":1227.0},{"x":45.0,"y":1386.0},{"x":50.0,"y":1565.0}]},"Force":1200.0,"Damage":1.0,"Inner Radius":425.0,"Outer Radius":850.0,"IS Radius":5000.0,"Vertical Offset Mult":0.30000001192092896,"Flags1":{"value":"0x42","flags":["Always Uses World Orientation","Ignore Image Space Swap"]},"Sound Level":{"value":3,"name":"Very Loud"},"Placed Object AutoFade Delay":0.0,"Stagger":{"value":2,"name":"Medium"},"Spawn":{"X":0.0,"Y":0.0,"Z":1.0,"Spread Degrees":10.0,"Count":1},"Base Weapon Damage Mult":0.0,"Float":1.0}}}
+{
+  "header": {
+    "signature": "EXPL",
+    "form_id": "0x001A7FF2",
+    "flags": 0,
+    "form_version": 208,
+    "data_size": 623,
+    "offset": 904427657
+  },
+  "editor_id": "ExplosionFatMan",
+  "fields": {
+    "_record_type": "Explosion",
+    "Editor ID": "ExplosionFatMan",
+    "Object Bounds": { "X1": -884, "Y1": -884, "Z1": -686, "X2": 877, "Y2": 879, "Z2": 776 },
+    "Description": "",
+    "Model": {
+      "Model FileName": "Effects\\ExplosionNuke01.nif",
+      "Model Information": {
+        "Counters": { "Textures": 33, "Addon Nodes": 2, "SRGB": 23, "Materials": 0 },
+        "Textures": [
+          { "File Hash": "0x12623C28", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x3659311B", "Extension": "dds", "Folder Hash": "0x4C3C64BE" },
+          { "File Hash": "0x039A0C4B", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x5E3D679A", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xE961A853", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xD8575037", "Extension": "dds", "Folder Hash": "0x4C3C64BE" },
+          { "File Hash": "0x071770F9", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x8CDAF9EB", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xB6D841D8", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xC1C69D0E", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xE0EC749E", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xAFD90B40", "Extension": "dds", "Folder Hash": "0x33552C58" },
+          { "File Hash": "0x1F8C7BCA", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x35FA29CB", "Extension": "dds", "Folder Hash": "0x33552C58" },
+          { "File Hash": "0x3EEE0EF1", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xA3F5E7D7", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xB70E670D", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x1CE79F9B", "Extension": "dds", "Folder Hash": "0x33552C58" },
+          { "File Hash": "0x22586D54", "Extension": "dds", "Folder Hash": "0x4C3C64BE" },
+          { "File Hash": "0x48183DB0", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x5EC144A1", "Extension": "dds", "Folder Hash": "0x33552C58" },
+          { "File Hash": "0x4297DB44", "Extension": "dds", "Folder Hash": "0x33552C58" },
+          { "File Hash": "0xEAE8CFDE", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x543F5ED5", "Extension": "dds", "Folder Hash": "0x33552C58" },
+          { "File Hash": "0x39A330A2", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x851C44F4", "Extension": "dds", "Folder Hash": "0x33552C58" },
+          { "File Hash": "0xDF421E3B", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xFC91F062", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xF8DD447F", "Extension": "dds", "Folder Hash": "0x33552C58" },
+          { "File Hash": "0xBE819001", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0x1C61E6D1", "Extension": "dds", "Folder Hash": "0x33552C58" },
+          { "File Hash": "0xA0244BBA", "Extension": "dds", "Folder Hash": "0xEA3C9738" },
+          { "File Hash": "0xAA365636", "Extension": "dds", "Folder Hash": "0xEA3C9738" }
+        ],
+        "Addon Nodes": [4, 243],
+        "Materials": []
+      }
+    },
+    "Image Space Modifier": "0x0002458E",
+    "Data": {
+      "Light": "0x00023D3A",
+      "Sound 1": "0x00030E1F",
+      "Sound 2": "0x0003243A",
+      "Impact Data Set": "0x000DB863",
+      "Placed Object": null,
+      "Spawn Projectile": null,
+      "Damage Curve Table": {
+        "formid": "0x0080F249",
+        "curve_path": "Player\\Damage\\Damage_Universal_Tier89.json",
+        "curve": [
+          { "x": 1.0, "y": 469.0 },
+          { "x": 5.0, "y": 525.0 },
+          { "x": 10.0, "y": 593.0 },
+          { "x": 15.0, "y": 669.0 },
+          { "x": 20.0, "y": 755.0 },
+          { "x": 25.0, "y": 853.0 },
+          { "x": 30.0, "y": 963.0 },
+          { "x": 35.0, "y": 1087.0 },
+          { "x": 40.0, "y": 1227.0 },
+          { "x": 45.0, "y": 1386.0 },
+          { "x": 50.0, "y": 1565.0 }
+        ]
+      },
+      "Force": 1200.0,
+      "Damage": 1.0,
+      "Inner Radius": 425.0,
+      "Outer Radius": 850.0,
+      "IS Radius": 5000.0,
+      "Vertical Offset Mult": 0.30000001192092896,
+      "Flags1": {
+        "value": "0x42",
+        "flags": ["Always Uses World Orientation", "Ignore Image Space Swap"]
+      },
+      "Sound Level": { "value": 3, "name": "Very Loud" },
+      "Placed Object AutoFade Delay": 0.0,
+      "Stagger": { "value": 2, "name": "Medium" },
+      "Spawn": { "X": 0.0, "Y": 0.0, "Z": 1.0, "Spread Degrees": 10.0, "Count": 1 },
+      "Base Weapon Damage Mult": 0.0,
+      "Float": 1.0
+    }
+  }
+}

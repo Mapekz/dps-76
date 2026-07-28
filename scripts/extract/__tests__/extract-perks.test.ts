@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import type { EsmClient, EsmListRow, EsmRecord } from '../esm-client';
-import { effectiveFamilyMaxRank, extractPerks, resolveRankSources, toGeneratedPerkCard } from '../extract-perks';
+import {
+  effectiveFamilyMaxRank,
+  extractPerks,
+  resolveRankSources,
+  toGeneratedPerkCard,
+} from '../extract-perks';
 import { flattenPerkConditionRows, translateConditions } from '../normalize/conditions';
 import tenderizerCard from './fixtures/pcrd-tenderizercard.json';
 import commandoCard from './fixtures/pcrd-commandocard.json';
@@ -33,7 +38,9 @@ describe('toGeneratedPerkCard', () => {
   });
 
   it('ActionBoyGirlCard (0x00093E84): gender twin — both Male and Female Perk formids surfaced per rank', () => {
-    const { card, rankPerkFormIds } = toGeneratedPerkCard(actionBoyGirlCard as unknown as EsmRecord);
+    const { card, rankPerkFormIds } = toGeneratedPerkCard(
+      actionBoyGirlCard as unknown as EsmRecord,
+    );
     expect(card.special).toBe('Agility');
     expect(card.costs).toEqual([1, 2, 3]);
     expect(card.minLevel).toBe(2);
@@ -79,11 +86,15 @@ describe('toGeneratedPerkCard', () => {
 
 describe('resolveRankSources', () => {
   it('maps a full-length card to the identity [1..n]', () => {
-    expect(resolveRankSources([['0xA'], ['0xB'], ['0xC']], ['0xA', '0xB', '0xC'])).toEqual([1, 2, 3]);
+    expect(resolveRankSources([['0xA'], ['0xB'], ['0xC']], ['0xA', '0xB', '0xC'])).toEqual([
+      1, 2, 3,
+    ]);
   });
 
   it('maps a compressed card to the family rank prefix (LifegiverCard: 1 entry, 3 family ranks)', () => {
-    expect(resolveRankSources([['0x0004A0CF']], ['0x0004A0CF', '0x001D2465', '0x001D2467'])).toEqual([1]);
+    expect(
+      resolveRankSources([['0x0004A0CF']], ['0x0004A0CF', '0x001D2465', '0x001D2467']),
+    ).toEqual([1]);
   });
 
   it("maps StarchedGenesCard's single entry to family rank 2 (the live card is the old rank-2 record)", () => {
@@ -91,7 +102,9 @@ describe('resolveRankSources', () => {
   });
 
   it('resolves a gender-twin entry against the female family too', () => {
-    expect(resolveRankSources([['0x0004D869', '0x0004D872']], ['0x0004D872', '0xFEM2'])).toEqual([1]);
+    expect(resolveRankSources([['0x0004D869', '0x0004D872']], ['0x0004D872', '0xFEM2'])).toEqual([
+      1,
+    ]);
   });
 
   it('returns null when an entry matches no rank of the family', () => {
@@ -123,7 +136,9 @@ describe('effectiveFamilyMaxRank (cut-rank fix, 2026-07-16)', () => {
 
 describe('translateConditions (glowAtLeast — Rads AV 0x000002E1, 2026-07-13)', () => {
   it("translates a literal GetValue(Rads) >= 180 row to glowAtLeast (GHL_GlowingCriticals01's entry-point gate)", () => {
-    const effects = (ghlGlowingCriticals01 as unknown as EsmRecord).fields['Effects'] as Array<Record<string, unknown>>;
+    const effects = (ghlGlowingCriticals01 as unknown as EsmRecord).fields['Effects'] as Array<
+      Record<string, unknown>
+    >;
     const perkConditions = (effects[0]['Effect'] as Record<string, unknown>)['Perk Conditions'];
     const rows = flattenPerkConditionRows(perkConditions);
     const { conditions } = translateConditions(rows, { edidByFormId: new Map() });
@@ -131,7 +146,9 @@ describe('translateConditions (glowAtLeast — Rads AV 0x000002E1, 2026-07-13)',
   });
 
   it("resolves a GLOB-compared Rads row via globalValues (GHL_MadScientist01's ability grant: GetValue(Rads) >= GLOB GHL_BasicGlowUse=5)", () => {
-    const effects = (ghlMadScientist01 as unknown as EsmRecord).fields['Effects'] as Array<Record<string, unknown>>;
+    const effects = (ghlMadScientist01 as unknown as EsmRecord).fields['Effects'] as Array<
+      Record<string, unknown>
+    >;
     // Effects[1] is the "Ability" entry whose tab-0 Perk Conditions carry the
     // GLOB-compared Rads gate (0x007F68B6 = GHL_BasicGlowUse, Value 5.0).
     const abilityEffect = effects[1]['Effect'] as Record<string, unknown>;
@@ -229,19 +246,40 @@ function makeLockAndLoadStubClient(): EsmClient {
     if (known[target]) return known[target];
     // The STAT_Damage*Perk plumbing perks (buildAvifRoutes) and any other
     // stray edid lookup — no Effects, so downstream parsing no-ops on them.
-    return { header: { signature: 'PERK', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+    return {
+      header: { signature: 'PERK', form_id: target },
+      editor_id: target,
+      fields: {},
+    } as unknown as EsmRecord;
   };
   return {
     async list(type: string): Promise<EsmListRow[]> {
       if (type === 'PERK') {
         return [
-          { form_id: rank1FormId, record_type: 'PERK', editor_id: 'LockAndLoad01', name: 'Lock and Load' },
-          { form_id: rank2FormId, record_type: 'PERK', editor_id: 'LockAndLoad02', name: 'Lock and Load' },
-          { form_id: rank3FormId, record_type: 'PERK', editor_id: 'LockAndLoad03', name: 'Lock and Load' },
+          {
+            form_id: rank1FormId,
+            record_type: 'PERK',
+            editor_id: 'LockAndLoad01',
+            name: 'Lock and Load',
+          },
+          {
+            form_id: rank2FormId,
+            record_type: 'PERK',
+            editor_id: 'LockAndLoad02',
+            name: 'Lock and Load',
+          },
+          {
+            form_id: rank3FormId,
+            record_type: 'PERK',
+            editor_id: 'LockAndLoad03',
+            name: 'Lock and Load',
+          },
         ];
       }
       if (type === 'PCRD') {
-        return [{ form_id: cardFormId, record_type: 'PCRD', editor_id: 'LockAndLoadCard', name: null }];
+        return [
+          { form_id: cardFormId, record_type: 'PCRD', editor_id: 'LockAndLoadCard', name: null },
+        ];
       }
       return [];
     },
@@ -254,7 +292,7 @@ function makeLockAndLoadStubClient(): EsmClient {
 describe('extractPerks (cut-rank fix — Lock and Load, 2026-07-16)', () => {
   it('a 3-record edid chain with a PCRD listing only rank 1 extracts maxRank 1 and one rank entry, dropping the dead r2/r3 chain records', async () => {
     const result = await extractPerks(makeLockAndLoadStubClient());
-    const family = result.perks.find(p => p.family === 'LockAndLoad');
+    const family = result.perks.find((p) => p.family === 'LockAndLoad');
     expect(family).toBeDefined();
     expect(family!.maxRank).toBe(1);
     expect(family!.ranks).toHaveLength(1);
@@ -264,7 +302,7 @@ describe('extractPerks (cut-rank fix — Lock and Load, 2026-07-16)', () => {
     // Rank 1's real entry point still extracts correctly (proves the mgef.ts
     // EP210 → bulletStormRetention wiring alongside the cut-rank fix).
     expect(family!.ranks[0].modifiers).toContainEqual(
-      expect.objectContaining({ bucket: 'bulletStormRetention', op: 'ADD', value: 0.5 })
+      expect.objectContaining({ bucket: 'bulletStormRetention', op: 'ADD', value: 0.5 }),
     );
   });
 });

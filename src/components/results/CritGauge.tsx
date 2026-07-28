@@ -35,7 +35,11 @@ export function CritGauge({ critMeter }: { critMeter: CritMeterResult }) {
 
   return (
     <div className="space-y-1">
-      <div className="flex items-center gap-0.5" role="img" aria-label={`Critical hit every ${shotsPerCrit} shots`}>
+      <div
+        className="flex items-center gap-0.5"
+        role="img"
+        aria-label={`Critical hit every ${shotsPerCrit} shots`}
+      >
         {Array.from({ length: segments }, (_, i) => {
           const isCritShot = !truncated && i === segments - 1;
           return (
@@ -43,7 +47,7 @@ export function CritGauge({ critMeter }: { critMeter: CritMeterResult }) {
               key={i}
               className={cn(
                 'h-1.5 flex-1 rounded-none transition-colors',
-                isCritShot ? 'bg-primary' : 'bg-muted-foreground/30'
+                isCritShot ? 'bg-primary' : 'bg-muted-foreground/30',
               )}
             />
           );

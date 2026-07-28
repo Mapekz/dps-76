@@ -40,7 +40,10 @@ export const LEGENDARY_SPECIAL_PERKS: Readonly<Record<string, SpecialKey>> = {
 
 /** Legendary SPECIAL card stat/perk-point bonuses from a legendary loadout. */
 export function legendaryBonusOf(legendaryPerks: PerkLoadout[]): Record<SpecialKey, number> {
-  const legendaryBonus = Object.fromEntries(SPECIAL_KEYS.map(k => [k, 0])) as Record<SpecialKey, number>;
+  const legendaryBonus = Object.fromEntries(SPECIAL_KEYS.map((k) => [k, 0])) as Record<
+    SpecialKey,
+    number
+  >;
   for (const { perkId, rank } of legendaryPerks) {
     const stat = LEGENDARY_SPECIAL_PERKS[perkId];
     if (stat) legendaryBonus[stat] += legendarySpecialBonus(rank);
@@ -52,7 +55,7 @@ export function computePerkBudget(
   mode: GameMode,
   perks: PerkLoadout[],
   legendaryPerks: PerkLoadout[],
-  allocation: Record<SpecialKey, number>
+  allocation: Record<SpecialKey, number>,
 ): PerkBudget {
   const registry = getPerks(mode);
 
@@ -60,7 +63,8 @@ export function computePerkBudget(
   for (const { perkId, rank } of perks) {
     const perk = registry[perkId as keyof typeof registry];
     // No `special` = a legendary card (mis-filed here by an old build) — costs nothing.
-    if (perk?.special) cards.push({ special: SPECIAL_TO_KEY[perk.special], cost: perkCardCostAtRank(perk, rank) });
+    if (perk?.special)
+      cards.push({ special: SPECIAL_TO_KEY[perk.special], cost: perkCardCostAtRank(perk, rank) });
   }
 
   return derivePerkBudget(cards, legendaryBonusOf(legendaryPerks), allocation);
@@ -79,7 +83,12 @@ export function perkSpecialKey(mode: GameMode, perkId: string): SpecialKey | nul
  * rank only (not a cumulative sum across ranks), so the delta of an add or
  * a rank-up is `cost(toRank) − cost(fromRank)`.
  */
-export function perkCardCostDelta(mode: GameMode, perkId: string, fromRank: number, toRank: number): number {
+export function perkCardCostDelta(
+  mode: GameMode,
+  perkId: string,
+  fromRank: number,
+  toRank: number,
+): number {
   const perk = getPerks(mode)[perkId as keyof ReturnType<typeof getPerks>];
   if (!perk) return 0; // unknown perk: don't block (import edge cases)
   return perkCardCostAtRank(perk, toRank) - perkCardCostAtRank(perk, fromRank);

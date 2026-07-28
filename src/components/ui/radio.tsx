@@ -17,7 +17,7 @@ function Radio({ className, ...props }: React.ComponentProps<'input'>) {
         data-slot="radio"
         className={cn(
           'peer border-input checked:border-primary focus-visible:ring-ring size-4 appearance-none rounded-full border shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
-          className
+          className,
         )}
         {...props}
       />

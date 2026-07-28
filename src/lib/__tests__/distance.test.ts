@@ -55,7 +55,7 @@ describe('rangeFalloffMult — composite model (docs/assumptions.md "Target dist
     const midpoint = (min + max) / 2;
     expect(rangeFalloffMult(midpoint, min, max, outOfRangeMult)).toBeCloseTo(
       1.0 + (outOfRangeMult - 1.0) * 0.5,
-      9
+      9,
     );
   });
 
@@ -81,11 +81,17 @@ describe('rangeFalloffMult — exact curve breakpoints at a clean maxRange = 2x 
   const outOfRangeMult = 0.5;
 
   it('at 1.25x maxRange (X=1.5) applies curveY(1.5) = 0.75', () => {
-    expect(rangeFalloffMult(1.25 * max, min, max, outOfRangeMult)).toBeCloseTo(outOfRangeMult * 0.75, 9);
+    expect(rangeFalloffMult(1.25 * max, min, max, outOfRangeMult)).toBeCloseTo(
+      outOfRangeMult * 0.75,
+      9,
+    );
   });
 
   it('at 1.5x maxRange (X=2.0) applies curveY(2.0) = 0.2 (curve floor)', () => {
-    expect(rangeFalloffMult(1.5 * max, min, max, outOfRangeMult)).toBeCloseTo(outOfRangeMult * 0.2, 9);
+    expect(rangeFalloffMult(1.5 * max, min, max, outOfRangeMult)).toBeCloseTo(
+      outOfRangeMult * 0.2,
+      9,
+    );
   });
 
   it('is flat beyond 1.5x maxRange (curve clamps to its own endpoint)', () => {

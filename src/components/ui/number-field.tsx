@@ -62,9 +62,9 @@ export function NumberField({
       step={step}
       value={text}
       className={className}
-      onChange={e => setText(e.target.value)}
+      onChange={(e) => setText(e.target.value)}
       onBlur={commit}
-      onKeyDown={e => {
+      onKeyDown={(e) => {
         if (e.key !== 'Enter') return;
         commit();
         e.currentTarget.blur();

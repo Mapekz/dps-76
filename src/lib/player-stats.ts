@@ -92,7 +92,10 @@ const SPECIAL_LEVEL_REWARD_CURVE = levelRewardCurveFile.curve;
  *   blocked in-app; imported builds that violate it are flagged instead.
  */
 export function specialAllocationPool(playerLevel: number): number {
-  return SPECIAL_KEYS.length * constantsFile.special.min + interpolateCurve(SPECIAL_LEVEL_REWARD_CURVE, playerLevel);
+  return (
+    SPECIAL_KEYS.length * constantsFile.special.min +
+    interpolateCurve(SPECIAL_LEVEL_REWARD_CURVE, playerLevel)
+  );
 }
 
 export const SPECIAL_ALLOCATION_POOL = specialAllocationPool(PLAYER_LEVEL);
@@ -109,7 +112,7 @@ export const SPECIAL_ALLOCATION_POOL = specialAllocationPool(PLAYER_LEVEL);
 const LEGENDARY_SLOT_UNLOCK_CURVE = legendarySlotCurveFile.curve;
 
 export function legendarySlotsAtLevel(playerLevel: number): number {
-  return LEGENDARY_SLOT_UNLOCK_CURVE.filter(p => p.y <= playerLevel).length;
+  return LEGENDARY_SLOT_UNLOCK_CURVE.filter((p) => p.y <= playerLevel).length;
 }
 export const SPECIAL_POINTS_CAP = 15;
 /**
@@ -161,22 +164,34 @@ export function perkCardCostAtRank(perk: Pick<Perk, 'costs'> | undefined, rank: 
 export function derivePerkBudget(
   cards: Array<{ special: SpecialKey; cost: number }>,
   legendaryBonus: Record<SpecialKey, number>,
-  allocation: Record<SpecialKey, number>
+  allocation: Record<SpecialKey, number>,
 ): PerkBudget {
-  const cardPoints = Object.fromEntries(SPECIAL_KEYS.map(k => [k, 0])) as Record<SpecialKey, number>;
+  const cardPoints = Object.fromEntries(SPECIAL_KEYS.map((k) => [k, 0])) as Record<
+    SpecialKey,
+    number
+  >;
   for (const card of cards) cardPoints[card.special] += card.cost;
 
   const budgetPerStat = Object.fromEntries(
-    SPECIAL_KEYS.map(k => [k, Math.min(SPECIAL_POINTS_CAP, allocation[k] + legendaryBonus[k])])
+    SPECIAL_KEYS.map((k) => [k, Math.min(SPECIAL_POINTS_CAP, allocation[k] + legendaryBonus[k])]),
   ) as Record<SpecialKey, number>;
   const baseSpecial = Object.fromEntries(
-    SPECIAL_KEYS.map(k => [k, allocation[k] + legendaryBonus[k]])
+    SPECIAL_KEYS.map((k) => [k, allocation[k] + legendaryBonus[k]]),
   ) as Record<SpecialKey, number>;
   const totalAllocated = SPECIAL_KEYS.reduce((sum, k) => sum + allocation[k], 0);
   const overBudget =
-    totalAllocated > SPECIAL_ALLOCATION_POOL || SPECIAL_KEYS.some(k => cardPoints[k] > budgetPerStat[k]);
+    totalAllocated > SPECIAL_ALLOCATION_POOL ||
+    SPECIAL_KEYS.some((k) => cardPoints[k] > budgetPerStat[k]);
 
-  return { cardPoints, legendaryBonus, allocation, budgetPerStat, baseSpecial, totalAllocated, overBudget };
+  return {
+    cardPoints,
+    legendaryBonus,
+    allocation,
+    budgetPerStat,
+    baseSpecial,
+    totalAllocated,
+    overBudget,
+  };
 }
 
 /** Can `delta` more card points be slotted into `stat` within its budget? */
@@ -191,8 +206,11 @@ export function canSlotCardPoints(budget: PerkBudget, stat: SpecialKey, delta = 
  * counts; docs/assumptions.md "Strange in Numbers"). Shared by resolveLoadout
  * (feeds the engine) and the Mutations header badge.
  */
-export function deriveStrangeInNumbers(perks: PerkLoadout[], conditions: PlayerConditions): boolean {
-  return perks.some(p => p.perkId === 'StrangeInNumbers') && (conditions.teammateCount ?? 0) >= 1;
+export function deriveStrangeInNumbers(
+  perks: PerkLoadout[],
+  conditions: PlayerConditions,
+): boolean {
+  return perks.some((p) => p.perkId === 'StrangeInNumbers') && (conditions.teammateCount ?? 0) >= 1;
 }
 
 /**
@@ -203,12 +221,15 @@ export function deriveStrangeInNumbers(perks: PerkLoadout[], conditions: PlayerC
  * resolveStats (feeds the engine + stat folds) and the Mutations header badge.
  */
 export function deriveClassFreakRank(perks: PerkLoadout[]): number {
-  return perks.find(p => p.perkId === 'ClassFreak')?.rank ?? 0;
+  return perks.find((p) => p.perkId === 'ClassFreak')?.rank ?? 0;
 }
 
 /** HungerThirstTier (0–8) = food meter tier + drink meter tier (0–4 each) — docs/assumptions.md. */
 export function deriveHungerThirstTier(conditions: PlayerConditions): number {
-  return Math.max(0, Math.min(4, conditions.foodTier ?? 0)) + Math.max(0, Math.min(4, conditions.drinkTier ?? 0));
+  return (
+    Math.max(0, Math.min(4, conditions.foodTier ?? 0)) +
+    Math.max(0, Math.min(4, conditions.drinkTier ?? 0))
+  );
 }
 
 /**
@@ -217,8 +238,11 @@ export function deriveHungerThirstTier(conditions: PlayerConditions): number {
  * `getSuppressedAddictions`, src/data/buffs.ts). Docs/assumptions.md
  * "Consumable stacking & addictions".
  */
-export function deriveAddictionCount(addictions: string[], suppressed: ReadonlySet<string>): number {
-  return addictions.filter(id => !suppressed.has(id)).length;
+export function deriveAddictionCount(
+  addictions: string[],
+  suppressed: ReadonlySet<string>,
+): number {
+  return addictions.filter((id) => !suppressed.has(id)).length;
 }
 
 export interface DerivedPlayerStats {
@@ -242,7 +266,7 @@ export function derivePlayerStats(
   // ESM-extracted SPECIAL clamp (`getSpecialClamp`) — real callers pass the
   // dataset's live value; defaults to the hardcoded fallback for callers that
   // don't have a `mode` in scope (tests).
-  clamp: { min: number; max: number } = { min: SPECIAL_EFFECTIVE_MIN, max: SPECIAL_EFFECTIVE_MAX }
+  clamp: { min: number; max: number } = { min: SPECIAL_EFFECTIVE_MIN, max: SPECIAL_EFFECTIVE_MAX },
 ): DerivedPlayerStats {
   const scenario = { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false };
   const enemyCtx = enemy ?? createDefaultEnemyConditions();
@@ -262,10 +286,10 @@ export function derivePlayerStats(
     onslaughtMaxStacks: 0,
   };
   const special = Object.fromEntries(
-    SPECIAL_KEYS.map(key => {
+    SPECIAL_KEYS.map((key) => {
       const folded = foldBucket(modifiers, SPECIAL_BUCKETS[key], baseSpecial[key], earlyCtx);
       return [key, Math.max(clamp.min, Math.min(clamp.max, folded))];
-    })
+    }),
   ) as Record<SpecialKey, number>;
 
   // The maxHealth fold resolves real curves/conditions (Lifegiver's curve X
@@ -273,7 +297,7 @@ export function derivePlayerStats(
   // SPECIAL in context.
   const ctx: ResolveContext = { ...earlyCtx, player: { ...player, ...special } };
   const maxHealth = Math.round(
-    foldBucket(modifiers, 'maxHealth', BASE_MAX_HP + MAX_HP_PER_ENDURANCE * special.endurance, ctx)
+    foldBucket(modifiers, 'maxHealth', BASE_MAX_HP + MAX_HP_PER_ENDURANCE * special.endurance, ctx),
   );
 
   return { special, maxHealth };

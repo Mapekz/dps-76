@@ -48,19 +48,29 @@ describe('isDietMutation', () => {
 describe('dietVerdict (ESM perk-condition keyword sets)', () => {
   it('Carnivore doubles meat, zeroes vegetable', () => {
     expect(dietVerdict(food(), [CARNIVORE_MUTATION_ID])).toBe('doubled');
-    expect(dietVerdict(food({ ingredientKeywords: ['IngredientTypeVegetable'] }), [CARNIVORE_MUTATION_ID])).toBe('zeroed');
+    expect(
+      dietVerdict(food({ ingredientKeywords: ['IngredientTypeVegetable'] }), [
+        CARNIVORE_MUTATION_ID,
+      ]),
+    ).toBe('zeroed');
   });
 
   it('Herbivore doubles vegetable/herb/fruit, zeroes meat', () => {
     for (const kw of ['IngredientTypeVegetable', 'IngredientTypeHerb', 'IngredientTypeFruit']) {
-      expect(dietVerdict(food({ ingredientKeywords: [kw] }), [HERBIVORE_MUTATION_ID])).toBe('doubled');
+      expect(dietVerdict(food({ ingredientKeywords: [kw] }), [HERBIVORE_MUTATION_ID])).toBe(
+        'doubled',
+      );
     }
     expect(dietVerdict(food(), [HERBIVORE_MUTATION_ID])).toBe('zeroed');
   });
 
   it('the asymmetry is real: Carnivore leaves herb/fruit dishes untouched (only Vegetable is zeroed)', () => {
-    expect(dietVerdict(food({ ingredientKeywords: ['IngredientTypeFruit'] }), [CARNIVORE_MUTATION_ID])).toBe(null);
-    expect(dietVerdict(food({ ingredientKeywords: ['IngredientTypeHerb'] }), [CARNIVORE_MUTATION_ID])).toBe(null);
+    expect(
+      dietVerdict(food({ ingredientKeywords: ['IngredientTypeFruit'] }), [CARNIVORE_MUTATION_ID]),
+    ).toBe(null);
+    expect(
+      dietVerdict(food({ ingredientKeywords: ['IngredientTypeHerb'] }), [CARNIVORE_MUTATION_ID]),
+    ).toBe(null);
   });
 
   it('no diet mutation, no ingredient keywords, or no scalable modifiers → untouched', () => {
@@ -68,7 +78,9 @@ describe('dietVerdict (ESM perk-condition keyword sets)', () => {
     expect(dietVerdict(food({ ingredientKeywords: [] }), [CARNIVORE_MUTATION_ID])).toBe(null);
     // Rudy's Pozole shape: meat-tagged but its modifiers lack the
     // SURV_EffectTypeFood* effect keywords.
-    expect(dietVerdict(food({ foodScalableModifierIds: undefined }), [CARNIVORE_MUTATION_ID])).toBe(null);
+    expect(dietVerdict(food({ foodScalableModifierIds: undefined }), [CARNIVORE_MUTATION_ID])).toBe(
+      null,
+    );
   });
 
   it('meat+vegetable dish: zeroing wins for either mutation (entry points compose 2×0)', () => {
@@ -81,9 +93,11 @@ describe('dietVerdict (ESM perk-condition keyword sets)', () => {
 describe('dietSuppressionLabel', () => {
   it('names the mutation that zeroes scalable food', () => {
     expect(dietSuppressionLabel(food(), [HERBIVORE_MUTATION_ID])).toBe('Herbivore');
-    expect(dietSuppressionLabel(food({ ingredientKeywords: ['IngredientTypeVegetable'] }), [CARNIVORE_MUTATION_ID])).toBe(
-      'Carnivore'
-    );
+    expect(
+      dietSuppressionLabel(food({ ingredientKeywords: ['IngredientTypeVegetable'] }), [
+        CARNIVORE_MUTATION_ID,
+      ]),
+    ).toBe('Carnivore');
     expect(dietSuppressionLabel(food(), [CARNIVORE_MUTATION_ID])).toBe(null);
     expect(dietSuppressionLabel(food(), [])).toBe(null);
   });
@@ -93,8 +107,14 @@ describe('applyDietScaling', () => {
   it('doubled: emits ×2.0 / ×2.5 Strange-in-Numbers-conditioned variants', () => {
     const result = applyDietScaling(food(), [CARNIVORE_MUTATION_ID]);
     expect(result).toHaveLength(2);
-    expect(result[0]).toMatchObject({ value: 6, conditions: [{ kind: 'strangeInNumbers', value: false }] });
-    expect(result[1]).toMatchObject({ value: 7.5, conditions: [{ kind: 'strangeInNumbers', value: true }] });
+    expect(result[0]).toMatchObject({
+      value: 6,
+      conditions: [{ kind: 'strangeInNumbers', value: false }],
+    });
+    expect(result[1]).toMatchObject({
+      value: 7.5,
+      conditions: [{ kind: 'strangeInNumbers', value: true }],
+    });
     expect(result[0].id).not.toBe(result[1].id);
   });
 
@@ -110,7 +130,7 @@ describe('applyDietScaling', () => {
     const result = applyDietScaling(buff, [CARNIVORE_MUTATION_ID]);
     // scalable → 2 SIN variants; exempt one unchanged.
     expect(result).toHaveLength(3);
-    expect(result.find(m => m.id === '0xF00D:1')).toMatchObject({ value: 1, conditions: [] });
+    expect(result.find((m) => m.id === '0xF00D:1')).toMatchObject({ value: 1, conditions: [] });
   });
 
   it('curve-valued modifiers scale via curveScale', () => {
@@ -120,7 +140,13 @@ describe('applyDietScaling', () => {
       bucket: 'specialEndurance',
       op: 'ADD',
       conditions: [],
-      curve: { input: 'healthFraction', points: [{ x: 0, y: 1 }, { x: 1, y: 0 }] },
+      curve: {
+        input: 'healthFraction',
+        points: [
+          { x: 0, y: 1 },
+          { x: 1, y: 0 },
+        ],
+      },
       curveScale: 0.01,
     };
     const buff = food({ modifiers: [curveMod] });
@@ -131,15 +157,15 @@ describe('applyDietScaling', () => {
 });
 
 describe('real extracted data (pins the 2026-07-13 ESM audit)', () => {
-  const byId = new Map(getConsumables('live').map(b => [b.id, b]));
+  const byId = new Map(getConsumables('live').map((b) => [b.id, b]));
 
   it('Aged Mirelurk Queen Steak (meat): +3 END doubles under Carnivore', () => {
     const steak = byId.get('MirelurkQueenMeatTasty');
     expect(steak).toBeDefined();
     expect(dietVerdict(steak!, [CARNIVORE_MUTATION_ID])).toBe('doubled');
     const mods = getBuffModifiers('live', [CARNIVORE_MUTATION_ID], ['MirelurkQueenMeatTasty']);
-    const endMods = mods.filter(m => m.bucket === 'specialEndurance');
-    expect(endMods.map(m => ('value' in m ? m.value : null)).sort()).toEqual([6, 7.5]);
+    const endMods = mods.filter((m) => m.bucket === 'specialEndurance');
+    expect(endMods.map((m) => ('value' in m ? m.value : null)).sort()).toEqual([6, 7.5]);
   });
 
   it("Rudy's Pozole: meat-tagged but its plain Fortify effects lack the food-scale keywords → exempt", () => {
@@ -154,7 +180,9 @@ describe('real extracted data (pins the 2026-07-13 ESM audit)', () => {
     expect(soup).toBeDefined();
     expect(dietVerdict(soup!, [CARNIVORE_MUTATION_ID])).toBe('zeroed');
     expect(dietVerdict(soup!, [HERBIVORE_MUTATION_ID])).toBe('doubled');
-    expect(getBuffModifiers('live', [CARNIVORE_MUTATION_ID], ['CarrotVegetableCookedSoup'])).toEqual([]);
+    expect(
+      getBuffModifiers('live', [CARNIVORE_MUTATION_ID], ['CarrotVegetableCookedSoup']),
+    ).toEqual([]);
   });
 
   it('Wasteland Fish Sandwich (meat): zeroed under Herbivore, with an explicit suppression label', () => {
@@ -162,14 +190,20 @@ describe('real extracted data (pins the 2026-07-13 ESM audit)', () => {
     expect(sandwich).toBeDefined();
     expect(dietVerdict(sandwich!, [HERBIVORE_MUTATION_ID])).toBe('zeroed');
     expect(dietSuppressionLabel(sandwich!, [HERBIVORE_MUTATION_ID])).toBe('Herbivore');
-    const mods = getBuffModifiers('live', [HERBIVORE_MUTATION_ID], ['SeasonalFish_Meal_SummerWastelandFishSandwich']);
-    expect(mods.some(m => m.bucket === 'moveSpeedBonus')).toBe(false);
+    const mods = getBuffModifiers(
+      'live',
+      [HERBIVORE_MUTATION_ID],
+      ['SeasonalFish_Meal_SummerWastelandFishSandwich'],
+    );
+    expect(mods.some((m) => m.bucket === 'moveSpeedBonus')).toBe(false);
   });
 
   it('no damage-relevant food carries both meat and vegetable tags (composition rule stays theoretical)', () => {
     for (const buff of byId.values()) {
       const kw = new Set(buff.ingredientKeywords ?? []);
-      expect(kw.has('IngredientTypeMeat') && kw.has('IngredientTypeVegetable'), buff.id).toBe(false);
+      expect(kw.has('IngredientTypeMeat') && kw.has('IngredientTypeVegetable'), buff.id).toBe(
+        false,
+      );
     }
   });
 });

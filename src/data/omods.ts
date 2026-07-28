@@ -30,7 +30,7 @@ const byIdCache = new Map<GameMode, Map<string, GeneratedOmod>>();
 export function getOmodById(mode: GameMode, id: string): GeneratedOmod | undefined {
   let map = byIdCache.get(mode);
   if (!map) {
-    map = new Map(getDataset(mode).omods.map(o => [o.id, o]));
+    map = new Map(getDataset(mode).omods.map((o) => [o.id, o]));
     byIdCache.set(mode, map);
   }
   return map.get(id);
@@ -41,7 +41,7 @@ const byFormIdCache = new Map<GameMode, Map<string, GeneratedOmod>>();
 function omodsByFormId(mode: GameMode): Map<string, GeneratedOmod> {
   let map = byFormIdCache.get(mode);
   if (!map) {
-    map = new Map(getDataset(mode).omods.map(o => [o.formId, o]));
+    map = new Map(getDataset(mode).omods.map((o) => [o.formId, o]));
     byFormIdCache.set(mode, map);
   }
   return map;
@@ -70,7 +70,7 @@ export function getDefaultOmodId(mode: GameMode, weapon: Weapon, slot: string): 
 export function getDefaultOmods(
   mode: GameMode,
   weapon: Weapon,
-  chosenMods: Record<string, string | null | undefined>
+  chosenMods: Record<string, string | null | undefined>,
 ): GeneratedOmod[] {
   const out: GeneratedOmod[] = [];
   for (const formId of weapon.defaultModFormIds ?? []) {
@@ -134,10 +134,11 @@ const STOCK_NAME_RE = /^(standard|no |stock)/i;
 export function classifyOmodDisplay(
   omod: GeneratedOmod,
   weapon?: Weapon,
-  mode: GameMode = 'live'
+  mode: GameMode = 'live',
 ): { show: boolean; badge?: OmodBadge } {
   const overrideBadge = getDataset(mode).omodBadgeOverrides[omod.id];
-  const isStock = (weapon?.templateModFormIds ?? []).includes(omod.formId) || STOCK_NAME_RE.test(omod.name);
+  const isStock =
+    (weapon?.templateModFormIds ?? []).includes(omod.formId) || STOCK_NAME_RE.test(omod.name);
   const hasModifiers = omod.modifiers.length > 0;
   if (!hasModifiers && !overrideBadge && !isStock) return { show: true, badge: 'inert' };
   if (overrideBadge) return { show: true, badge: overrideBadge };
@@ -152,7 +153,7 @@ export function classifyOmodDisplay(
     // — both left INERT_ENGINE_BUCKETS (mitigation.ts, the Berserker's
     // playerDamageResist rename) — so every remaining all-inert case is a
     // plain 'inert' badge now (Anti-Armor-style mods show unbadged instead).
-    if (omod.modifiers.every(m => !modifierHasEngineEffect(m))) {
+    if (omod.modifiers.every((m) => !modifierHasEngineEffect(m))) {
       return { show: true, badge: 'inert' };
     }
     return { show: true };
@@ -204,7 +205,10 @@ function slotLabel(mode: GameMode, weaponId: string, attachPointEdid: string): s
   const perWeapon = getDataset(mode).perWeaponSlotLabelOverrides[weaponId]?.[attachPointEdid];
   if (perWeapon) return perWeapon;
   if (SLOT_LABEL_OVERRIDES[attachPointEdid]) return SLOT_LABEL_OVERRIDES[attachPointEdid];
-  const raw = attachPointEdid.replace(/^ap_(gun_|melee_|Gun|Melee)?/i, '').replace(/[_-]+/g, ' ').trim();
+  const raw = attachPointEdid
+    .replace(/^ap_(gun_|melee_|Gun|Melee)?/i, '')
+    .replace(/[_-]+/g, ' ')
+    .trim();
   return raw.charAt(0).toUpperCase() + raw.slice(1);
 }
 
@@ -217,7 +221,7 @@ function buildSlots(
   mode: GameMode,
   weapon: Weapon,
   includeSlot: (attachPointEdid: string, omod: GeneratedOmod) => boolean,
-  sortSlots: (a: OmodSlot, b: OmodSlot) => number
+  sortSlots: (a: OmodSlot, b: OmodSlot) => number,
 ): OmodSlot[] {
   const dataset = getDataset(mode);
   const groups = new Map<string, OmodOption[]>();
@@ -233,17 +237,23 @@ function buildSlots(
     // rescue is weapon-contextual (needs the weapon being modded), so it
     // stays here rather than folding into the shared visibility predicate.
     const isWeaponDefault = (weapon.defaultModFormIds ?? []).includes(omod.formId);
-    if (!isRecordVisible(
-      omod,
-      { hidden: dataset.hiddenOmodIds, forceVisible: dataset.forceVisibleOmodIds },
-      isWeaponDefault
-    )) continue;
+    if (
+      !isRecordVisible(
+        omod,
+        { hidden: dataset.hiddenOmodIds, forceVisible: dataset.forceVisibleOmodIds },
+        isWeaponDefault,
+      )
+    )
+      continue;
     if (!includeSlot(omod.attachPointEdid, omod)) continue;
     if (!isEligible(omod, weapon, mode)) continue;
     const { show, badge } = classifyOmodDisplay(omod, weapon, mode);
     if (!show) continue;
     const option: OmodOption = badge ? { ...omod, badge } : omod;
-    (groups.get(omod.attachPointEdid) ?? groups.set(omod.attachPointEdid, []).get(omod.attachPointEdid)!).push(option);
+    (
+      groups.get(omod.attachPointEdid) ??
+      groups.set(omod.attachPointEdid, []).get(omod.attachPointEdid)!
+    ).push(option);
   }
   const defaultFormIds = new Set(weapon.defaultModFormIds ?? []);
   const templateFormIds = new Set(weapon.templateModFormIds ?? []);
@@ -255,9 +265,10 @@ function buildSlots(
   const dedupe = (options: OmodOption[]): OmodOption[] => {
     const byKey = new Map<string, OmodOption>();
     for (const option of options) {
-      const key = `${option.name} ${JSON.stringify(option.modifiers.map(m => Object.fromEntries(Object.entries(m).filter(([field]) => field !== 'id' && field !== 'source'))))}`;
+      const key = `${option.name} ${JSON.stringify(option.modifiers.map((m) => Object.fromEntries(Object.entries(m).filter(([field]) => field !== 'id' && field !== 'source'))))}`;
       const prev = byKey.get(key);
-      if (!prev || (templateFormIds.has(option.formId) && !templateFormIds.has(prev.formId))) byKey.set(key, option);
+      if (!prev || (templateFormIds.has(option.formId) && !templateFormIds.has(prev.formId)))
+        byKey.set(key, option);
     }
     return [...byKey.values()];
   };
@@ -271,7 +282,7 @@ function buildSlots(
             // The weapon's standard part first, then alphabetical.
             Number(defaultFormIds.has(b.formId)) - Number(defaultFormIds.has(a.formId)) ||
             a.name.localeCompare(b.name) ||
-            a.id.localeCompare(b.id)
+            a.id.localeCompare(b.id),
         ),
       }))
       // Hygiene rule 2 (hide no-decision slots): drop a slot whose every
@@ -285,8 +296,12 @@ function buildSlots(
       .filter(
         ({ slot, options }) =>
           NON_HYGIENE_SLOT_RE.test(slot) ||
-          (options.some(o => !defaultFormIds.has(o.formId)) &&
-            !(options.length === 1 && STOCK_NAME_RE.test(options[0].name) && options[0].modifiers.length === 0))
+          (options.some((o) => !defaultFormIds.has(o.formId)) &&
+            !(
+              options.length === 1 &&
+              STOCK_NAME_RE.test(options[0].name) &&
+              options[0].modifiers.length === 0
+            )),
       )
       .sort(sortSlots)
   );
@@ -315,7 +330,7 @@ export function getOmodSlots(mode: GameMode, weapon: Weapon): OmodSlot[] {
           (weapon.templateModFormIds ?? []).includes(omod.formId)) ||
         getDataset(mode).omodBadgeOverrides[omod.id] !== undefined) &&
       !LEGENDARY_SLOT_RE.test(edid),
-    (a, b) => a.label.localeCompare(b.label)
+    (a, b) => a.label.localeCompare(b.label),
   );
 }
 
@@ -324,8 +339,8 @@ export function getLegendaryOmodSlots(mode: GameMode, weapon: Weapon): OmodSlot[
   return buildSlots(
     mode,
     weapon,
-    edid => LEGENDARY_SLOT_RE.test(edid),
-    (a, b) => a.slot.localeCompare(b.slot)
+    (edid) => LEGENDARY_SLOT_RE.test(edid),
+    (a, b) => a.slot.localeCompare(b.slot),
   );
 }
 
@@ -346,7 +361,7 @@ const RENAMING_SLOTS: ReadonlyArray<[slot: string, keyword: string]> = [
 export function effectiveWeaponName(
   mode: GameMode,
   weapon: Weapon,
-  mods: Record<string, string | null | undefined>
+  mods: Record<string, string | null | undefined>,
 ): string {
   for (const [slot, keyword] of RENAMING_SLOTS) {
     const chosen = mods[slot];

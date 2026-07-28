@@ -25,7 +25,9 @@ describe('Follow Through / Taking One for the Team wholeDamage toggles', () => {
       legendaryPerks: [{ perkId: 'FollowThrough', rank: 1 }],
       conditions: { ...createDefaultPlayerConfig().conditions, followThroughPct: 20 },
     });
-    const mod = input!.modifiers.find(m => m.bucket === 'wholeDamage' && m.source.name === 'Follow Through');
+    const mod = input!.modifiers.find(
+      (m) => m.bucket === 'wholeDamage' && m.source.name === 'Follow Through',
+    );
     expect(mod).toBeDefined();
     expect(mod).toMatchObject({ value: 0.2, op: 'ADD' });
   });
@@ -39,9 +41,11 @@ describe('Follow Through / Taking One for the Team wholeDamage toggles', () => {
         takingOneForTheTeamPct: 30,
       },
     });
-    const followThrough = input!.modifiers.find(m => m.bucket === 'wholeDamage' && m.source.name === 'Follow Through');
+    const followThrough = input!.modifiers.find(
+      (m) => m.bucket === 'wholeDamage' && m.source.name === 'Follow Through',
+    );
     const toftt = input!.modifiers.find(
-      m => m.bucket === 'wholeDamage' && m.source.name === 'Taking One for the Team'
+      (m) => m.bucket === 'wholeDamage' && m.source.name === 'Taking One for the Team',
     );
     expect(followThrough).toMatchObject({ value: 0.2, op: 'ADD' });
     expect(toftt).toMatchObject({ value: 0.3, op: 'ADD' });
@@ -49,7 +53,7 @@ describe('Follow Through / Taking One for the Team wholeDamage toggles', () => {
 
   it('the toggle at its 0 default emits nothing, regardless of equip', () => {
     const input = loadout({ legendaryPerks: [{ perkId: 'FollowThrough', rank: 1 }] });
-    expect(input!.modifiers.some(m => m.bucket === 'wholeDamage')).toBe(false);
+    expect(input!.modifiers.some((m) => m.bucket === 'wholeDamage')).toBe(false);
   });
 
   it('both dialed up compose as two independent wholeDamage factors', () => {
@@ -64,8 +68,10 @@ describe('Follow Through / Taking One for the Team wholeDamage toggles', () => {
         takingOneForTheTeamPct: 40,
       },
     });
-    const wholeDamageMods = input!.modifiers.filter(m => m.bucket === 'wholeDamage');
+    const wholeDamageMods = input!.modifiers.filter((m) => m.bucket === 'wholeDamage');
     expect(wholeDamageMods).toHaveLength(2);
-    expect(wholeDamageMods.map(m => ('value' in m ? m.value : undefined)).sort()).toEqual([0.4, 0.4]);
+    expect(wholeDamageMods.map((m) => ('value' in m ? m.value : undefined)).sort()).toEqual([
+      0.4, 0.4,
+    ]);
   });
 });

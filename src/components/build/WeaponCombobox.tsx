@@ -43,8 +43,8 @@ function WeaponCombobox({
   const [collapsed, setCollapsed] = React.useState(true);
 
   const selectedOption = React.useMemo(
-    () => options.find(option => option.value === value) ?? null,
-    [options, value]
+    () => options.find((option) => option.value === value) ?? null,
+    [options, value],
   );
 
   // Base UI's own items/filter/Collection auto-filtering doesn't narrow
@@ -55,7 +55,10 @@ function WeaponCombobox({
   const groups = React.useMemo(() => {
     const q = search.trim().toLowerCase();
     const filtered = q
-      ? options.filter(o => o.label.toLowerCase().includes(q) || (o.subtitle?.toLowerCase().includes(q) ?? false))
+      ? options.filter(
+          (o) =>
+            o.label.toLowerCase().includes(q) || (o.subtitle?.toLowerCase().includes(q) ?? false),
+        )
       : options;
     const map = new Map<string | undefined, WeaponComboboxOption[]>();
     for (const option of filtered) {
@@ -73,7 +76,7 @@ function WeaponCombobox({
   return (
     <Popover
       open={open}
-      onOpenChange={next => {
+      onOpenChange={(next) => {
         setOpen(next);
         if (!next) setSearch('');
       }}
@@ -99,9 +102,11 @@ function WeaponCombobox({
       <PopoverContent className="w-[--anchor-width] p-0">
         <ComboboxPrimitive.Root
           value={selectedOption}
-          isItemEqualToValue={(a: WeaponComboboxOption, b: WeaponComboboxOption) => a.value === b.value}
+          isItemEqualToValue={(a: WeaponComboboxOption, b: WeaponComboboxOption) =>
+            a.value === b.value
+          }
           inputValue={search}
-          onInputValueChange={next => setSearch(next)}
+          onInputValueChange={(next) => setSearch(next)}
           onValueChange={(next: WeaponComboboxOption | null) => {
             onValueChange(next && next.value === value ? null : (next?.value ?? null));
             setOpen(false);
@@ -110,7 +115,10 @@ function WeaponCombobox({
           inline
           open
         >
-          <div data-slot="combobox-input-wrapper" className="flex h-10 items-center gap-2 border-b border-input px-3">
+          <div
+            data-slot="combobox-input-wrapper"
+            className="flex h-10 items-center gap-2 border-b border-input px-3"
+          >
             <SearchIcon className="size-3.5 shrink-0 opacity-50" />
             <ComboboxPrimitive.Input
               placeholder={searchPlaceholder}
@@ -123,18 +131,24 @@ function WeaponCombobox({
               const isCollapsible = collapsibleGroup !== undefined && group === collapsibleGroup;
               const groupExpanded = !isCollapsible || uniqueGroupExpanded;
               return (
-                <ComboboxPrimitive.Group key={group ?? ''} className="text-foreground overflow-hidden p-1">
+                <ComboboxPrimitive.Group
+                  key={group ?? ''}
+                  className="text-foreground overflow-hidden p-1"
+                >
                   {isCollapsible ? (
                     <button
                       type="button"
                       className="text-muted-foreground hover:text-foreground flex w-full items-center justify-between px-3 py-2 text-xs font-semibold tracking-wider uppercase"
-                      onClick={() => setCollapsed(c => !c)}
+                      onClick={() => setCollapsed((c) => !c)}
                     >
                       <span>
                         {group} ({groupOptions.length})
                       </span>
                       <ChevronDownIcon
-                        className={cn('size-4 transition-transform', uniqueGroupExpanded && 'rotate-180')}
+                        className={cn(
+                          'size-4 transition-transform',
+                          uniqueGroupExpanded && 'rotate-180',
+                        )}
                       />
                     </button>
                   ) : (
@@ -145,17 +159,24 @@ function WeaponCombobox({
                     )
                   )}
                   {groupExpanded &&
-                    groupOptions.map(option => (
+                    groupOptions.map((option) => (
                       <ComboboxPrimitive.Item
                         key={option.value}
                         value={option}
                         className="data-highlighted:bg-accent data-highlighted:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-none px-2 py-1.5 text-sm outline-hidden select-none"
                       >
-                        <CheckIcon className={cn('mr-2 size-4 shrink-0', value === option.value ? 'opacity-100' : 'opacity-0')} />
+                        <CheckIcon
+                          className={cn(
+                            'mr-2 size-4 shrink-0',
+                            value === option.value ? 'opacity-100' : 'opacity-0',
+                          )}
+                        />
                         <span className="min-w-0 flex-1">
                           <span className="block truncate">{option.label}</span>
                           {option.subtitle && (
-                            <span className="text-muted-foreground block truncate text-xs">{option.subtitle}</span>
+                            <span className="text-muted-foreground block truncate text-xs">
+                              {option.subtitle}
+                            </span>
                           )}
                         </span>
                       </ComboboxPrimitive.Item>

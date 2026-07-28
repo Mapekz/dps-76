@@ -78,7 +78,7 @@ interface PerkEffect {
 }
 
 function junkPerk(edid: string): boolean {
-  return EXCLUDED_PERK_EDIDS.some(p => p.test(edid));
+  return EXCLUDED_PERK_EDIDS.some((p) => p.test(edid));
 }
 
 export interface ToGeneratedPerkCardResult {
@@ -95,10 +95,13 @@ export interface ToGeneratedPerkCardResult {
  * compressed cards record fewer entries than the family has ranks, and
  * StarchedGenes' single entry points at the family's rank-2 record → [2].
  */
-export function resolveRankSources(rankPerkFormIds: string[][], familyFormIds: string[]): number[] | null {
+export function resolveRankSources(
+  rankPerkFormIds: string[][],
+  familyFormIds: string[],
+): number[] | null {
   const sources: number[] = [];
   for (const entryIds of rankPerkFormIds) {
-    const idx = familyFormIds.findIndex(formId => entryIds.includes(formId));
+    const idx = familyFormIds.findIndex((formId) => entryIds.includes(formId));
     if (idx === -1) return null;
     sources.push(idx + 1);
   }
@@ -129,7 +132,10 @@ export function resolveRankSources(rankPerkFormIds: string[][], familyFormIds: s
  * there anyway. Families with no joined card (`rankSources` undefined) keep
  * the full chain length, unchanged.
  */
-export function effectiveFamilyMaxRank(chainLength: number, rankSources: number[] | undefined): number {
+export function effectiveFamilyMaxRank(
+  chainLength: number,
+  rankSources: number[] | undefined,
+): number {
   if (!rankSources || rankSources.length === 0) return chainLength;
   return Math.max(...rankSources);
 }
@@ -149,11 +155,15 @@ export function effectiveFamilyMaxRank(chainLength: number, rankSources: number[
  * nests it there, though none in the 20260710 dump do.
  */
 export function toGeneratedPerkCard(record: EsmRecord): ToGeneratedPerkCardResult {
-  const unknown = (record.fields['Perk Card Data'] ?? record.fields['Unknown'] ?? {}) as Record<string, unknown>;
-  const special = ((unknown['Special'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown';
-  const raceRestrictionName = (unknown['Race Restriction'] as Record<string, unknown> | undefined)?.['name'] as
-    | string
-    | undefined;
+  const unknown = (record.fields['Perk Card Data'] ?? record.fields['Unknown'] ?? {}) as Record<
+    string,
+    unknown
+  >;
+  const special =
+    ((unknown['Special'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown';
+  const raceRestrictionName = (
+    unknown['Race Restriction'] as Record<string, unknown> | undefined
+  )?.['name'] as string | undefined;
   // Enum names observed: "None" (0), "Human" (1), "Ghoul" (2) — join by name,
   // not the numeric value, since only the name is guaranteed stable.
   const raceRestriction: GeneratedPerkCard['raceRestriction'] =
@@ -194,12 +204,14 @@ export function toGeneratedPerkCard(record: EsmRecord): ToGeneratedPerkCardResul
 function getEffects(record: EsmRecord): Array<Record<string, unknown>> {
   const effects = record.fields['Effects'];
   if (!Array.isArray(effects)) return [];
-  return effects.map(e => (e as Record<string, unknown>)['Effect'] as Record<string, unknown>);
+  return effects.map((e) => (e as Record<string, unknown>)['Effect'] as Record<string, unknown>);
 }
 
 function parsePerkEffect(effect: Record<string, unknown>): PerkEffect {
   const header = (effect['Effect Header'] ?? {}) as Record<string, unknown>;
-  const effectType = ((header['Effect Type'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown';
+  const effectType =
+    ((header['Effect Type'] as Record<string, unknown> | undefined)?.['name'] as string) ??
+    'Unknown';
 
   const conditionRows = flattenPerkConditionRows(effect['Perk Conditions']);
 
@@ -208,8 +220,12 @@ function parsePerkEffect(effect: Record<string, unknown>): PerkEffect {
     return {
       effectType,
       entryPoint: {
-        name: ((ep['Entry Point'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown',
-        functionName: ((ep['Function'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown',
+        name:
+          ((ep['Entry Point'] as Record<string, unknown> | undefined)?.['name'] as string) ??
+          'Unknown',
+        functionName:
+          ((ep['Function'] as Record<string, unknown> | undefined)?.['name'] as string) ??
+          'Unknown',
         float: typeof effect['Float'] === 'number' ? (effect['Float'] as number) : 0,
         actorValue: (effect['Function Parameter 3 (Actor Value)'] as string) ?? null,
       },
@@ -233,14 +249,14 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
   const rows = await client.list('PERK');
   const excluded: Record<string, string[]> = { junkEdid: [], noNameOrCard: [] };
 
-  const candidates = rows.filter(r => {
+  const candidates = rows.filter((r) => {
     if (junkPerk(r.editor_id)) {
       excluded.junkEdid.push(r.editor_id);
       return false;
     }
     return true;
   });
-  const records = await mapPool(candidates, 8, r => client.get(r.form_id));
+  const records = await mapPool(candidates, 8, (r) => client.get(r.form_id));
 
   // Keep anything with a localized Name. Some real perk cards lack an SWF
   // sprite (Nerd Rage!), so SWF presence is recorded as `hasCard`, not used
@@ -248,7 +264,7 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
   // relies on rank 1's shared SPEL), so effects can't be required either.
   // The app-side name-join to the PerkId registry is the actual gate; it
   // prefers carded entries on collisions.
-  const cards = records.filter(r => {
+  const cards = records.filter((r) => {
     const keep = !!r.fields['Name'];
     if (!keep) excluded.noNameOrCard.push(r.editor_id);
     return keep;
@@ -296,7 +312,7 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
   }
 
   const edidByFormId = new Map<string, string>();
-  await mapPool([...formIdPool], 8, async id => {
+  await mapPool([...formIdPool], 8, async (id) => {
     edidByFormId.set(id, await client.resolveEdid(id));
   });
 
@@ -308,7 +324,7 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
   // Resolve each GLOB's numeric Value (mirrors normalize/mgef.ts's
   // translateGrantedPerk, which does the same for the granted-perk chase).
   const globalValues = new Map<string, number>();
-  await mapPool([...globalIdPool], 8, async id => {
+  await mapPool([...globalIdPool], 8, async (id) => {
     try {
       const glob = await client.get(id);
       const value = glob.fields['Value'];
@@ -331,41 +347,41 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
   const crossFamilyRank = buildCrossFamilyRankMap(
     [...families].map(([family, familyRecords]) => ({
       family,
-      formIds: familyRecords.map(r => r.header.form_id),
-    }))
+      formIds: familyRecords.map((r) => r.header.form_id),
+    })),
   );
   const cardByFamily = new Map<string, GeneratedPerkCard>();
   const unresolvedCards: string[] = [];
   await mapPool(
-    pcrdRows.filter(r => !junkPerk(r.editor_id)),
+    pcrdRows.filter((r) => !junkPerk(r.editor_id)),
     8,
-    async row => {
+    async (row) => {
       const record = await client.get(row.form_id);
       const { card, rankPerkFormIds } = toGeneratedPerkCard(record);
       const allPerkFormIds = rankPerkFormIds.flat();
       const matchedFamilies = new Set(
-        allPerkFormIds.map(id => formIdToFamily.get(id)).filter((f): f is string => !!f)
+        allPerkFormIds.map((id) => formIdToFamily.get(id)).filter((f): f is string => !!f),
       );
       if (matchedFamilies.size === 0) {
         unresolvedCards.push(
-          `${record.editor_id}: no rank perk formid (${allPerkFormIds.join(', ') || 'none'}) matched an extracted family`
+          `${record.editor_id}: no rank perk formid (${allPerkFormIds.join(', ') || 'none'}) matched an extracted family`,
         );
         return;
       }
       // Attach to EVERY matched family — gender-twin cards (ActionBoyGirlCard)
       // match both the Boy and Girl family via their Male/Female Perk formids.
       for (const family of matchedFamilies) {
-        const familyFormIds = families.get(family)!.map(r => r.header.form_id);
+        const familyFormIds = families.get(family)!.map((r) => r.header.form_id);
         const rankSources = resolveRankSources(rankPerkFormIds, familyFormIds);
         if (!rankSources) {
           unresolvedCards.push(
-            `${record.editor_id}: a Perks[] entry matched no rank of family ${family} (${familyFormIds.join(', ')})`
+            `${record.editor_id}: a Perks[] entry matched no rank of family ${family} (${familyFormIds.join(', ')})`,
           );
           continue;
         }
         cardByFamily.set(family, { ...card, rankSources });
       }
-    }
+    },
   );
 
   const unknownEntryPoints = new Set<string>();
@@ -384,9 +400,11 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
     // (a record's own conditions can reference a rank above the card's
     // reach, e.g. StarchedGenes' filler rank 1 vs. its live rank 2).
     const effectiveMaxRank = effectiveFamilyMaxRank(familyRecords.length, card?.rankSources);
-    const formIds = familyRecords.map(r => r.header.form_id);
+    const formIds = familyRecords.map((r) => r.header.form_id);
     const pairedFamily = GENDER_TWIN_PAIRS[family];
-    const pairedFamilyFormIds = pairedFamily ? families.get(pairedFamily)?.map(r => r.header.form_id) : undefined;
+    const pairedFamilyFormIds = pairedFamily
+      ? families.get(pairedFamily)?.map((r) => r.header.form_id)
+      : undefined;
     const notes = new Set<string>();
     const ranks: GeneratedPerk['ranks'] = [];
 
@@ -407,7 +425,7 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
         op: Modifier['op'],
         payload: ModifierValue,
         conditions: Condition[],
-        sourceIndex: number
+        sourceIndex: number,
       ) => {
         modifiers.push({
           id: `${formIds[0]}:r${rank}:${sourceIndex}:${modifiers.length}`,
@@ -446,9 +464,12 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
               if (!ENTRY_POINT_IGNORED.has(ep.name)) unknownEntryPoints.add(ep.name);
               continue;
             }
-            const { conditions: translated, unresolved } = translateConditions(parsed.conditionRows, translationCtx);
+            const { conditions: translated, unresolved } = translateConditions(
+              parsed.conditionRows,
+              translationCtx,
+            );
             if (translated === null) continue; // inactive at this rank
-            unresolved.forEach(u => allUnresolved.add(`${family}: ${u}`));
+            unresolved.forEach((u) => allUnresolved.add(`${family}: ${u}`));
             // Baked scope conditions for entry points the bucket alone can't
             // express (Mod Player Explosion Damage → explosive-scoped dbm).
             const conditions = [...translated, ...(ENTRY_POINT_EXTRA_CONDITIONS[ep.name] ?? [])];
@@ -467,7 +488,10 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
           }
 
           if (parsed.ability) {
-            const { conditions: grantConds } = translateConditions(parsed.conditionRows, translationCtx);
+            const { conditions: grantConds } = translateConditions(
+              parsed.conditionRows,
+              translationCtx,
+            );
             if (grantConds === null) continue;
 
             for (const se of spellCache.get(parsed.ability) ?? []) {
@@ -483,15 +507,21 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
                   conditionForms,
                   crossFamilyRank,
                   ...(pairedFamilyFormIds && { pairedFamilyFormIds }),
-                }
+                },
               );
-              result.notes.forEach(n => notes.add(n));
-              result.unmappedAvifs.forEach(a => unmappedAvifs.add(a));
+              result.notes.forEach((n) => notes.add(n));
+              result.unmappedAvifs.forEach((a) => unmappedAvifs.add(a));
               for (const fragment of result.modifiers) {
                 const payload: ModifierValue = fragment.curve
                   ? { curve: fragment.curve, curveScale: fragment.curveScale }
                   : { value: fragment.value };
-                pushModifier(fragment.bucket, fragment.op, payload, [...grantConds, ...fragment.conditions], sourceIndex);
+                pushModifier(
+                  fragment.bucket,
+                  fragment.op,
+                  payload,
+                  [...grantConds, ...fragment.conditions],
+                  sourceIndex,
+                );
               }
             }
           }
@@ -509,7 +539,9 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
       // translationCtx's own use inside the loop, unaffected.
       formIds: formIds.slice(0, effectiveMaxRank),
       maxRank: effectiveMaxRank,
-      descriptions: familyRecords.slice(0, effectiveMaxRank).map(r => (r.fields['Description'] as string) ?? ''),
+      descriptions: familyRecords
+        .slice(0, effectiveMaxRank)
+        .map((r) => (r.fields['Description'] as string) ?? ''),
       ranks,
       // hasCard ⇔ a PCRD record actually joined this family (see the PCRD
       // join above) — NOT SWF-sprite presence, which was true for ~218

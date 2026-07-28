@@ -53,7 +53,7 @@ export const DEFAULT_BATTLE_LOADERS_BASH_SEC = 0.75;
 export function sustainTiming(
   weapon: Weapon,
   fireRate: number,
-  bashAnimationSec: number = DEFAULT_BATTLE_LOADERS_BASH_SEC
+  bashAnimationSec: number = DEFAULT_BATTLE_LOADERS_BASH_SEC,
 ): SustainTiming {
   const capacity = weapon.capacity ?? 0;
   const ammoPerShot = weapon.ammoPerShot ?? 1;
@@ -66,7 +66,8 @@ export function sustainTiming(
   }
 
   const perShellMult = weapon.reloadPerShell ? shotsPerMag : 1;
-  const realReloadSec = ((weapon.animationReloadSec ?? 0) * perShellMult) / (weapon.reloadSpeed || 1.0);
+  const realReloadSec =
+    ((weapon.animationReloadSec ?? 0) * perShellMult) / (weapon.reloadSpeed || 1.0);
   // Two independent reload-skip channels (docs/assumptions.md "Reload-skip &
   // free-ammo expected value"): `reloadSkipChance` (Quick Hands/Wild West
   // Wind — passive on the reload itself, free) and `reloadSkipChanceBash`
@@ -91,7 +92,7 @@ export function computeSustain(
   perHitAvg: number,
   fireRate: number,
   weapon: Weapon,
-  bashAnimationSec?: number
+  bashAnimationSec?: number,
 ): SustainResult {
   const burstDps = perHitAvg * fireRate;
   const timing = sustainTiming(weapon, fireRate, bashAnimationSec);

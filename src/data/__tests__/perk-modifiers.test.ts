@@ -22,7 +22,9 @@ describe('perk registry ↔ generated family join', () => {
     expect(perk?.family).toBe('Commando');
     expect(perk?.maxRank).toBe(3);
     // +25/50/75% ranged damage vs torso
-    expect(perk?.ranks[2].modifiers.some(m => m.bucket === 'dbm' && !m.curve && m.value === 0.75)).toBe(true);
+    expect(
+      perk?.ranks[2].modifiers.some((m) => m.bucket === 'dbm' && !m.curve && m.value === 0.75),
+    ).toBe(true);
   });
 
   it('Tenderizer is target-side: no player modifier from the card, 0.001/stack from target-debuffs', () => {
@@ -31,7 +33,11 @@ describe('perk registry ↔ generated family join', () => {
     const mods = getTargetDebuffModifiers({});
     expect(mods).toHaveLength(1);
     expect(mods[0]).toMatchObject({ bucket: 'dbm', op: 'ADD', value: 0.001 });
-    expect(mods[0].conditions[0]).toMatchObject({ kind: 'stacks', counter: 'tenderizer', max: 1000 });
+    expect(mods[0].conditions[0]).toMatchObject({
+      kind: 'stacks',
+      counter: 'tenderizer',
+      max: 1000,
+    });
   });
 
   it('reports unjoined PerkIds without crashing (review list, not a failure)', () => {
@@ -55,7 +61,9 @@ describe('perk registry ↔ generated family join', () => {
   });
 
   it('joins the reclassified legendary perks to their LGN_ families', () => {
-    expect(getGeneratedPerk('live', PerkId.TakingOneForTheTeam)?.family).toBe('LGN_TakingOneForTheTeam_Perk');
+    expect(getGeneratedPerk('live', PerkId.TakingOneForTheTeam)?.family).toBe(
+      'LGN_TakingOneForTheTeam_Perk',
+    );
     // Pinned via perkFamilyOverrides — two families share the name "Blood Sacrifice!".
     expect(getGeneratedPerk('live', PerkId.BloodSacrifice)?.family).toBe('LGN_BloodSacrifice_Perk');
     // Registry name fixed from "Breath It In" — joins the GHL_ ghoul family.
@@ -96,15 +104,46 @@ describe('perk effects through the engine (real data)', () => {
     // A non-torso part at mult 1.0 (e.g. an arm) must NOT trigger Center
     // Masochist — this was the bug: bodyPart was derived from the mult's
     // sign (1.0 → 'torso') rather than the picked part's identity.
-    const noPerkLimb = computeScenarios({ ...base, weapon, modifiers: [], player: weakpoint, weakpointMult: 1.0, targetIsTorso: false });
-    const withPerkLimb = computeScenarios({ ...base, weapon, modifiers: perk, player: weakpoint, weakpointMult: 1.0, targetIsTorso: false });
+    const noPerkLimb = computeScenarios({
+      ...base,
+      weapon,
+      modifiers: [],
+      player: weakpoint,
+      weakpointMult: 1.0,
+      targetIsTorso: false,
+    });
+    const withPerkLimb = computeScenarios({
+      ...base,
+      weapon,
+      modifiers: perk,
+      player: weakpoint,
+      weakpointMult: 1.0,
+      targetIsTorso: false,
+    });
     expect(withPerkLimb.freeAim.perHit.total).toBeCloseTo(noPerkLimb.freeAim.perHit.total, 6);
 
     // A torso-weakpoint part (mult > 1, e.g. a Deathclaw's belly) must
     // trigger Center Masochist AND stack with the weakpoint bonus mult.
-    const noPerkTorsoWeak = computeScenarios({ ...base, weapon, modifiers: [], player: weakpoint, weakpointMult: 3.0, targetIsTorso: true });
-    const withPerkTorsoWeak = computeScenarios({ ...base, weapon, modifiers: perk, player: weakpoint, weakpointMult: 3.0, targetIsTorso: true });
-    expect(withPerkTorsoWeak.freeAim.perHit.total).toBeCloseTo(noPerkTorsoWeak.freeAim.perHit.total * 1.75, 6);
+    const noPerkTorsoWeak = computeScenarios({
+      ...base,
+      weapon,
+      modifiers: [],
+      player: weakpoint,
+      weakpointMult: 3.0,
+      targetIsTorso: true,
+    });
+    const withPerkTorsoWeak = computeScenarios({
+      ...base,
+      weapon,
+      modifiers: perk,
+      player: weakpoint,
+      weakpointMult: 3.0,
+      targetIsTorso: true,
+    });
+    expect(withPerkTorsoWeak.freeAim.perHit.total).toBeCloseTo(
+      noPerkTorsoWeak.freeAim.perHit.total * 1.75,
+      6,
+    );
   });
 
   it('Ninja boosts sneak damage for melee but not for the Fixer', () => {
@@ -114,11 +153,26 @@ describe('perk effects through the engine (real data)', () => {
     const sneaking = { ...createDefaultPlayerConditions(), isSneaking: true };
 
     const fixerBase = computeScenarios({ ...base, weapon: fixer, modifiers: [], player: sneaking });
-    const fixerNinja = computeScenarios({ ...base, weapon: fixer, modifiers: ninja, player: sneaking });
+    const fixerNinja = computeScenarios({
+      ...base,
+      weapon: fixer,
+      modifiers: ninja,
+      player: sneaking,
+    });
     expect(fixerNinja.vats.perHit.total).toBeCloseTo(fixerBase.vats.perHit.total, 6);
 
-    const sledgeBase = computeScenarios({ ...base, weapon: sledge, modifiers: [], player: sneaking });
-    const sledgeNinja = computeScenarios({ ...base, weapon: sledge, modifiers: ninja, player: sneaking });
+    const sledgeBase = computeScenarios({
+      ...base,
+      weapon: sledge,
+      modifiers: [],
+      player: sneaking,
+    });
+    const sledgeNinja = computeScenarios({
+      ...base,
+      weapon: sledge,
+      modifiers: ninja,
+      player: sneaking,
+    });
     expect(sledgeNinja.vats.perHit.total).toBeGreaterThan(sledgeBase.vats.perHit.total);
   });
 
@@ -192,11 +246,11 @@ describe('perkHasEngineEffect (drives the perk picker\'s "no effect yet" badge)'
   // — the BringingOutTheBigGuns-shaped hole. Both gate real `dbm` modifiers
   // (Mechanic's Best Friend / The Pipe, perk + legendary OMOD), so they're
   // pinned in perkForceEffectivePerkIds.
-  it('is true for Makeshift Warrior (gates Mechanic\'s Best Friend\'s dbm modifiers)', () => {
+  it("is true for Makeshift Warrior (gates Mechanic's Best Friend's dbm modifiers)", () => {
     expect(perkHasEngineEffect('live', PerkId.MakeshiftWarrior)).toBe(true);
   });
 
-  it('is true for Licensed Plumber (gates The Pipe\'s dbm modifiers)', () => {
+  it("is true for Licensed Plumber (gates The Pipe's dbm modifiers)", () => {
     expect(perkHasEngineEffect('live', PerkId.LicensedPlumber)).toBe(true);
   });
 
@@ -207,9 +261,17 @@ describe('perkHasEngineEffect (drives the perk picker\'s "no effect yet" badge)'
 
 describe('parseSpecialFromUrl', () => {
   it('decodes the 7-hex-digit s= param in SPECIAL order', () => {
-    const special = parseSpecialFromUrl('https://nukesdragons.com/fallout-76/character?v=1&s=8c114f9&p=xyz');
+    const special = parseSpecialFromUrl(
+      'https://nukesdragons.com/fallout-76/character?v=1&s=8c114f9&p=xyz',
+    );
     expect(special).toEqual({
-      strength: 8, perception: 12, endurance: 1, charisma: 1, intelligence: 4, agility: 15, luck: 9,
+      strength: 8,
+      perception: 12,
+      endurance: 1,
+      charisma: 1,
+      intelligence: 4,
+      agility: 15,
+      luck: 9,
     });
   });
 

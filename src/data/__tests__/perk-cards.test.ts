@@ -16,8 +16,13 @@ import { SPECIAL_KEYS, type SpecialKey } from '@/lib/player-stats';
  * changes the join surface.
  */
 
-function baseSpecial(overrides: Partial<Record<SpecialKey, number>> = {}): Record<SpecialKey, number> {
-  return { ...(Object.fromEntries(SPECIAL_KEYS.map(k => [k, 1])) as Record<SpecialKey, number>), ...overrides };
+function baseSpecial(
+  overrides: Partial<Record<SpecialKey, number>> = {},
+): Record<SpecialKey, number> {
+  return {
+    ...(Object.fromEntries(SPECIAL_KEYS.map((k) => [k, 1])) as Record<SpecialKey, number>),
+    ...overrides,
+  };
 }
 
 describe('perk card registry — join coverage', () => {
@@ -30,8 +35,8 @@ describe('perk card registry — join coverage', () => {
     }
 
     const orphans = getDataset('live')
-      .perks.filter(f => f.card && !f.card.isLegendaryCard && !claimedFamilies.has(f.family))
-      .map(f => f.family)
+      .perks.filter((f) => f.card && !f.card.isLegendaryCard && !claimedFamilies.has(f.family))
+      .map((f) => f.family)
       .sort();
 
     // ActionGirl/Aquagirl/PartyGirl: gender-twin ESM families with identical
@@ -43,26 +48,48 @@ describe('perk card registry — join coverage', () => {
     // the live game (user-confirmed 2026-07-13 — unreleased content, the
     // record graph can't distinguish shipped from unshipped) — deliberately
     // given no PerkId.
-    expect(orphans).toEqual(['ActionGirl', 'Antibiotic', 'Aquagirl', 'Conductor', 'LightMeal', 'PartyGirl']);
+    expect(orphans).toEqual([
+      'ActionGirl',
+      'Antibiotic',
+      'Aquagirl',
+      'Conductor',
+      'LightMeal',
+      'PartyGirl',
+    ]);
   });
 
   it('every registry display name matches its joined family card name, except the combined gender-twin names', () => {
     const registry = getPerks('live');
     // Combined "Boy/Girl" PerkIds intentionally diverge from the per-gender
     // ESM card names ("Action Boy", "Aquaboy", "Party Boy") they join.
-    const combinedGenderTwins = new Set<string>([PerkId.ActionBoyGirl, PerkId.AquaBoyGirl, PerkId.PartyBoyGirl]);
+    const combinedGenderTwins = new Set<string>([
+      PerkId.ActionBoyGirl,
+      PerkId.AquaBoyGirl,
+      PerkId.PartyBoyGirl,
+    ]);
     // Case-insensitive: the registry corrects ESM casing quirks ("Scoped-up",
     // "Thru-hiker", "Bone shatterer") but must track renames punctuation-exact.
     const mismatches = Object.entries(registry)
       .filter(([perkId]) => !combinedGenderTwins.has(perkId))
-      .map(([perkId, perk]) => ({ perkId, name: perk.name, generated: getGeneratedPerk('live', perkId) }))
-      .filter(({ name, generated }) => generated && name.toLowerCase() !== generated.name.toLowerCase())
-      .map(({ perkId, name, generated }) => `${perkId}: registry "${name}" vs ESM card "${generated!.name}"`);
+      .map(([perkId, perk]) => ({
+        perkId,
+        name: perk.name,
+        generated: getGeneratedPerk('live', perkId),
+      }))
+      .filter(
+        ({ name, generated }) => generated && name.toLowerCase() !== generated.name.toLowerCase(),
+      )
+      .map(
+        ({ perkId, name, generated }) =>
+          `${perkId}: registry "${name}" vs ESM card "${generated!.name}"`,
+      );
     expect(mismatches).toEqual([]);
   });
 
   it('every perkCardOverrides entry is for a PerkId that cannot otherwise derive a card (no stale overrides)', () => {
-    const staleOverrides = Object.keys(perkCardOverrides).filter(perkId => !!getGeneratedPerk('live', perkId)?.card);
+    const staleOverrides = Object.keys(perkCardOverrides).filter(
+      (perkId) => !!getGeneratedPerk('live', perkId)?.card,
+    );
     expect(staleOverrides).toEqual([]);
   });
 });
@@ -81,7 +108,10 @@ describe('perk card registry — internal consistency', () => {
     for (const perkId of legendaryPerkIds) {
       const perk = registry[perkId as PerkId];
       expect(perk, `legendary PerkId "${perkId}" is missing from the registry`).toBeDefined();
-      expect(perk?.special, `legendary PerkId "${perkId}" unexpectedly carries a special`).toBeUndefined();
+      expect(
+        perk?.special,
+        `legendary PerkId "${perkId}" unexpectedly carries a special`,
+      ).toBeUndefined();
     }
   });
 
@@ -90,11 +120,11 @@ describe('perk card registry — internal consistency', () => {
       'live',
       [], // legendary cards belong in the legendaryPerks list, not perks
       [{ perkId: PerkId.LegendaryStrength, rank: 4 }],
-      baseSpecial()
+      baseSpecial(),
     );
     // legendaryBonus (the +1/+2/+3/+5 stat/point grant) is separate from
     // cardPoints (SPECIAL-budget consumption) — only the latter must stay 0.
-    expect(Object.values(budget.cardPoints).every(v => v === 0)).toBe(true);
+    expect(Object.values(budget.cardPoints).every((v) => v === 0)).toBe(true);
   });
 });
 
@@ -102,43 +132,87 @@ describe('perk card registry — pinned real values (20260710 ESM)', () => {
   const registry = getPerks('live');
 
   it('Tenderizer: single rank costing 2 Charisma points', () => {
-    expect(registry[PerkId.Tenderizer]).toMatchObject({ special: Special.Charisma, maxRank: 1, costs: [2] });
+    expect(registry[PerkId.Tenderizer]).toMatchObject({
+      special: Special.Charisma,
+      maxRank: 1,
+      costs: [2],
+    });
   });
 
   it('Strong Back: single rank costing 2 Strength points', () => {
-    expect(registry[PerkId.StrongBack]).toMatchObject({ special: Special.Strength, maxRank: 1, costs: [2] });
+    expect(registry[PerkId.StrongBack]).toMatchObject({
+      special: Special.Strength,
+      maxRank: 1,
+      costs: [2],
+    });
   });
 
   it('Scoped-Up (ex Rifleman Expert): single rank costing 2 Perception points', () => {
-    expect(registry[PerkId.RiflemanExpert]).toMatchObject({ special: Special.Perception, maxRank: 1, costs: [2] });
+    expect(registry[PerkId.RiflemanExpert]).toMatchObject({
+      special: Special.Perception,
+      maxRank: 1,
+      costs: [2],
+    });
   });
 
   it('Smart Shot (ex Rifleman Master): single rank costing 3 Perception points', () => {
-    expect(registry[PerkId.RiflemanMaster]).toMatchObject({ special: Special.Perception, maxRank: 1, costs: [3] });
+    expect(registry[PerkId.RiflemanMaster]).toMatchObject({
+      special: Special.Perception,
+      maxRank: 1,
+      costs: [3],
+    });
   });
 
   it('Party Boy/Girl: 2 ranks costing 2/3 Charisma points', () => {
-    expect(registry[PerkId.PartyBoyGirl]).toMatchObject({ special: Special.Charisma, maxRank: 2, costs: [2, 3] });
+    expect(registry[PerkId.PartyBoyGirl]).toMatchObject({
+      special: Special.Charisma,
+      maxRank: 2,
+      costs: [2, 3],
+    });
   });
 
   it('Center Masochist (ESM family "Commando"): 3 ranks costing 1/2/3 Perception points', () => {
-    expect(registry[PerkId.CenterMasochist]).toMatchObject({ special: Special.Perception, maxRank: 3, costs: [1, 2, 3] });
+    expect(registry[PerkId.CenterMasochist]).toMatchObject({
+      special: Special.Perception,
+      maxRank: 3,
+      costs: [1, 2, 3],
+    });
   });
 
   it('Bringing the Big Guns (ex "Bringing Out the Big Guns", joins the repurposed HeavyGunnerMaster family): single rank costing 3 Strength points', () => {
-    expect(registry[PerkId.BringingOutTheBigGuns]).toMatchObject({ special: Special.Strength, maxRank: 1, costs: [3] });
+    expect(registry[PerkId.BringingOutTheBigGuns]).toMatchObject({
+      special: Special.Strength,
+      maxRank: 1,
+      costs: [3],
+    });
   });
 
   it('the net-new PerkIds join real ESM cards', () => {
-    expect(registry[PerkId.PortablePower]).toMatchObject({ special: Special.Strength, maxRank: 3, costs: [1, 2, 3] });
-    expect(registry[PerkId.SturdyFrame]).toMatchObject({ special: Special.Strength, maxRank: 2, costs: [1, 2] });
+    expect(registry[PerkId.PortablePower]).toMatchObject({
+      special: Special.Strength,
+      maxRank: 3,
+      costs: [1, 2, 3],
+    });
+    expect(registry[PerkId.SturdyFrame]).toMatchObject({
+      special: Special.Strength,
+      maxRank: 2,
+      costs: [1, 2],
+    });
   });
 
   it('compressed cards clamp maxRank to the PCRD entry count — the surplus PERK ranks are dead content', () => {
     // LifegiverCard 0x0000BB40: single live rank costing 2 END (LifeGiver02/03 are dead).
-    expect(registry[PerkId.LifeGiver]).toMatchObject({ special: Special.Endurance, maxRank: 1, costs: [2] });
+    expect(registry[PerkId.LifeGiver]).toMatchObject({
+      special: Special.Endurance,
+      maxRank: 1,
+      costs: [2],
+    });
     // BodyguardsCard 0x00310BF8: single live rank costing 1 CHA (ranks 2-4 dead).
-    expect(registry[PerkId.Bodyguards]).toMatchObject({ special: Special.Charisma, maxRank: 1, costs: [1] });
+    expect(registry[PerkId.Bodyguards]).toMatchObject({
+      special: Special.Charisma,
+      maxRank: 1,
+      costs: [1],
+    });
     // DemolitionExpertCard 0x003440B9: 3 live ranks costing 1/2/3 INT (ranks 4-5 dead).
     expect(registry[PerkId.DemolitionExpert]).toMatchObject({
       special: Special.Intelligence,
@@ -159,12 +233,12 @@ describe('perk card registry — pinned real values (20260710 ESM)', () => {
   it('every joined card has rankSources aligned with costs and within the family rank range', () => {
     const broken = getDataset('live')
       .perks.filter(
-        f =>
+        (f) =>
           f.card &&
           (f.card.rankSources.length !== f.card.costs.length ||
-            f.card.rankSources.some(r => r < 1 || r > f.maxRank))
+            f.card.rankSources.some((r) => r < 1 || r > f.maxRank)),
       )
-      .map(f => f.family);
+      .map((f) => f.family);
     expect(broken).toEqual([]);
   });
 });

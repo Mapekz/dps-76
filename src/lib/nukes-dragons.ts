@@ -1,5 +1,5 @@
-import { PerkId } from "@/data/perk-ids";
-import type { ParsedPerk, PerkLoadout } from "@/types";
+import { PerkId } from '@/data/perk-ids';
+import type { ParsedPerk, PerkLoadout } from '@/types';
 
 // Mapping from Nukes & Dragons URL keys to PerkId
 export const nukesDragonsPerks: Record<string, PerkId> = {
@@ -229,34 +229,34 @@ export const nukesDragonsPerks: Record<string, PerkId> = {
 
   // Ghoul perks (regular SPECIAL cards, ghoul-only). N&D's "0"-prefixed key
   // space, case-sensitive — "0d"/"0D" and "0n"/"0N" are DIFFERENT perks.
-  "01": PerkId.RadSpecialist,
-  "03": PerkId.RadioactiveStrength,
-  "05": PerkId.ArmsOfSteel,
-  "07": PerkId.MadScientist,
-  "09": PerkId.EyeOfTheHunter,
-  "0B": PerkId.BrickWall,
-  "0F": PerkId.ChemDiet,
-  "0H": PerkId.ScienceMonster,
-  "0J": PerkId.BombScientist,
-  "0L": PerkId.MoralSupport,
-  "0P": PerkId.RadReaver,
-  "0R": PerkId.GunTricks,
-  "0T": PerkId.HyperReflexes,
-  "0V": PerkId.GlowingOne,
-  "0X": PerkId.GlowingHunter,
-  "0b": PerkId.ThickSkin,
-  "0f": PerkId.BattleGenes,
-  "0d": PerkId.FeralPresence,
-  "0h": PerkId.UnitedOrdeal,
-  "0j": PerkId.FaultySpots,
-  "0l": PerkId.GlowingGut,
-  "0p": PerkId.JaguarSpeed,
-  "0r": PerkId.ActionGhoul,
-  "0n": PerkId.GlowingCriticals,
-  "0t": PerkId.RadiationPower,
-  "0v": PerkId.WildWestHands,
-  "0x": PerkId.BreathItIn,
-  "0z": PerkId.BoneShatterer,
+  '01': PerkId.RadSpecialist,
+  '03': PerkId.RadioactiveStrength,
+  '05': PerkId.ArmsOfSteel,
+  '07': PerkId.MadScientist,
+  '09': PerkId.EyeOfTheHunter,
+  '0B': PerkId.BrickWall,
+  '0F': PerkId.ChemDiet,
+  '0H': PerkId.ScienceMonster,
+  '0J': PerkId.BombScientist,
+  '0L': PerkId.MoralSupport,
+  '0P': PerkId.RadReaver,
+  '0R': PerkId.GunTricks,
+  '0T': PerkId.HyperReflexes,
+  '0V': PerkId.GlowingOne,
+  '0X': PerkId.GlowingHunter,
+  '0b': PerkId.ThickSkin,
+  '0f': PerkId.BattleGenes,
+  '0d': PerkId.FeralPresence,
+  '0h': PerkId.UnitedOrdeal,
+  '0j': PerkId.FaultySpots,
+  '0l': PerkId.GlowingGut,
+  '0p': PerkId.JaguarSpeed,
+  '0r': PerkId.ActionGhoul,
+  '0n': PerkId.GlowingCriticals,
+  '0t': PerkId.RadiationPower,
+  '0v': PerkId.WildWestHands,
+  '0x': PerkId.BreathItIn,
+  '0z': PerkId.BoneShatterer,
 
   // Legendary perks: N&D's "x"-prefixed keys, plus the two ghoul-exclusive
   // legendary cards 0D (Action Diet) and 0N (Feral Rage) which share the
@@ -288,8 +288,8 @@ export const nukesDragonsPerks: Record<string, PerkId> = {
   xo: PerkId.Retribution,
   xp: PerkId.TakingOneForTheTeam,
   xq: PerkId.WhatRads,
-  "0D": PerkId.ActionDiet,
-  "0N": PerkId.FeralRage,
+  '0D': PerkId.ActionDiet,
+  '0N': PerkId.FeralRage,
 };
 
 /**
@@ -299,9 +299,34 @@ export const nukesDragonsPerks: Record<string, PerkId> = {
  * legendary perks use "x" keys plus those two "0" stragglers.
  */
 const LEGENDARY_PERK_KEYS: ReadonlySet<string> = new Set([
-  "x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "xa", "xb",
-  "xd", "xe", "xf", "xg", "xh", "xi", "xj", "xk", "xl", "xm", "xn", "xo",
-  "xp", "xq", "0D", "0N",
+  'x0',
+  'x1',
+  'x2',
+  'x3',
+  'x4',
+  'x5',
+  'x6',
+  'x7',
+  'x8',
+  'x9',
+  'xa',
+  'xb',
+  'xd',
+  'xe',
+  'xf',
+  'xg',
+  'xh',
+  'xi',
+  'xj',
+  'xk',
+  'xl',
+  'xm',
+  'xn',
+  'xo',
+  'xp',
+  'xq',
+  '0D',
+  '0N',
 ]);
 
 /** Returns true if the given N&D key belongs to a legendary perk. */
@@ -342,10 +367,7 @@ export function parseBuildUrl(url: string): ParsedPerk[] {
   try {
     const urlObj = new URL(url);
     const params = new URLSearchParams(urlObj.search);
-    return [
-      ...parsePerkString(params.get("p") ?? ""),
-      ...parsePerkString(params.get("lp") ?? ""),
-    ];
+    return [...parsePerkString(params.get('p') ?? ''), ...parsePerkString(params.get('lp') ?? '')];
   } catch {
     return parsePerkString(url);
   }
@@ -390,7 +412,7 @@ export function parsedPerksToLoadout(parsedPerks: ParsedPerk[]): PerkLoadout[] {
  */
 export function reclassifyPerkLoadouts(
   perks: PerkLoadout[],
-  legendaryPerks: PerkLoadout[]
+  legendaryPerks: PerkLoadout[],
 ): { perks: PerkLoadout[]; legendaryPerks: PerkLoadout[]; migrated: number } {
   const all = [...perks, ...legendaryPerks];
   const migrated =
@@ -412,8 +434,8 @@ export function parseSpecialFromUrl(url: string): ParsedSpecial | null {
     const params = new URLSearchParams(new URL(url).search);
     const s = params.get('s');
     if (!s || s.length < 7) return null;
-    const values = [...s.slice(0, 7)].map(ch => parseInt(ch, 16));
-    if (values.some(v => Number.isNaN(v))) return null;
+    const values = [...s.slice(0, 7)].map((ch) => parseInt(ch, 16));
+    if (values.some((v) => Number.isNaN(v))) return null;
     const [strength, perception, endurance, charisma, intelligence, agility, luck] = values;
     return { strength, perception, endurance, charisma, intelligence, agility, luck };
   } catch {
@@ -435,7 +457,7 @@ export function parseBuildName(url: string): string | null {
   try {
     const urlObj = new URL(url);
     const params = new URLSearchParams(urlObj.search);
-    const name = params.get("n");
+    const name = params.get('n');
     return name ? decodeURIComponent(name) : null;
   } catch {
     return null;
@@ -446,8 +468,7 @@ export function isValidNukesDragonsUrl(url: string): boolean {
   try {
     const urlObj = new URL(url);
     return (
-      urlObj.hostname === "nukesdragons.com" &&
-      urlObj.pathname.includes("/fallout-76/character")
+      urlObj.hostname === 'nukesdragons.com' && urlObj.pathname.includes('/fallout-76/character')
     );
   } catch {
     return false;

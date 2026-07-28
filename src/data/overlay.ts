@@ -24,7 +24,7 @@ export interface VisibilityOverlay {
 export function isRecordVisible(
   record: { id: string; obtainable?: boolean },
   overlay: VisibilityOverlay,
-  extraForceVisible = false
+  extraForceVisible = false,
 ): boolean {
   return (
     (record.obtainable !== false || overlay.forceVisible.has(record.id) || extraForceVisible) &&

@@ -24,7 +24,7 @@ import type { Modifier } from '@/types/modifiers';
 /** The SPECIAL ADD modifier for the selected public team type, scaled by team size (bond-score proxy). */
 export function getPublicTeamModifiers(
   publicTeamType: PlayerConditions['publicTeamType'],
-  teammateCount: number
+  teammateCount: number,
 ): Modifier[] {
   const bondScore = Math.min(teammateCount + 1, 4);
 
@@ -32,7 +32,12 @@ export function getPublicTeamModifiers(
     return [
       {
         id: 'publicTeam:casual',
-        source: { kind: 'perk', formId: '0x005B7585', edid: 'PT_CasualTeamBonus', name: 'Public Team — Casual' },
+        source: {
+          kind: 'perk',
+          formId: '0x005B7585',
+          edid: 'PT_CasualTeamBonus',
+          name: 'Public Team — Casual',
+        },
         bucket: 'specialIntelligence',
         op: 'ADD',
         value: bondScore,
@@ -45,7 +50,12 @@ export function getPublicTeamModifiers(
     return [
       {
         id: 'publicTeam:exploration',
-        source: { kind: 'perk', formId: '0x005B7587', edid: 'PT_ExplorationTeamBonus', name: 'Public Team — Exploration' },
+        source: {
+          kind: 'perk',
+          formId: '0x005B7587',
+          edid: 'PT_ExplorationTeamBonus',
+          name: 'Public Team — Exploration',
+        },
         bucket: 'specialEndurance',
         op: 'ADD',
         value: bondScore,

@@ -1,776 +1,759 @@
 {
- "_readme": [
-  "Golden cases pin the engine to a known-good output. Two `source` styles:",
-  "  - 'in-game (pending)' / a measurement note: fill `expected` from an actual",
-  "    game measurement (pip-boy damage card or hit numbers vs a known",
-  "    target); `expected: null` cases are skipped until measured.",
-  "  - 'engine-snapshot': `expected` is the CURRENT computed resolveLoadout",
-  "    -> computeScenarios output for an archetype build, captured to lock the",
-  "    assembly seam (OMOD collection order, weapon-stat drop, damage-type",
-  "    materialization, SPECIAL fold order) against regression \u2014 it proves",
-  "    stability, not correctness. tolerancePct is tight (0.01) since it's",
-  "    exact recomputation, not a fuzzy in-game reading.",
-  "  - 'hand-computed': `expected` is derived independently by spec math, a",
-  "    correctness anchor distinct from both of the above.",
-  "scenario: freeAim | vats. Sneak and weakpoint targeting are player",
-  "conditions (isSneaking / isAimingAtWeakpoint), not scenarios.",
-  "conditions/enemyConditions patch the defaults from src/types/index.ts."
- ],
- "cases": [
-  {
-   "name": "Stock Fixer @50, no perks \u2014 pip-boy card damage",
-   "weaponId": "CombatRifle_Fixer",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": 103,
-   "tolerancePct": 2,
-   "source": "in-game (pending)"
-  },
-  {
-   "name": "Fixer + Powerful Automatic Receiver @50 \u2014 pip-boy card damage",
-   "weaponId": "CombatRifle_Fixer",
-   "itemLevel": 50,
-   "mods": {
-    "ap_gun_Receiver": "mod_CombatRifle_Receiver_Damage-Auto"
-   },
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": 90.125,
-   "tolerancePct": 2,
-   "source": "in-game (pending)"
-  },
-  {
-   "name": "Shishkebab @45 cap, 15 STR \u2014 dual-component total (verifies split-damage curve semantics)",
-   "weaponId": "Shishkebab",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {
-    "strength": 15
-   },
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": 224,
-   "tolerancePct": 2,
-   "source": "user formula (72\u219264 per component: Shishkebab's max Eligible Level is 45, so (64\u00d71.75)\u00d72 \u2014 CONFIRM in-game that no lvl-50 Shishkebab exists; at 50 the curve would give 252)"
-  },
-  {
-   "name": "Stock Fixer @50 \u2014 sustained DPS incl. reload (reload \u2248 3.2s/1.1765 \u2248 2.72s, unverified)",
-   "weaponId": "CombatRifle_Fixer",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "sustainedDps",
-   "expected": null,
-   "tolerancePct": 5,
-   "source": "pending in-game stopwatch: time N full mag+reload cycles vs a target dummy (docs/assumptions.md, Sustained DPS)"
-  },
-  {
-   "name": "Two Shot Fixer @50, no perks \u2014 validates extracted dbm 0.75",
-   "weaponId": "CombatRifle_Fixer",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [
-    "mod_Legendary_Weapon1_Guns_TwoShot"
-   ],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": 180.25,
-   "tolerancePct": 2,
-   "source": "user-confirmed 2026-07-10: base Fixer @50 = 103, Two Shot = 103 \u00d7 1.75 = 180.25 (pip-boy card rounds to 180/181; hundredths kept for the calc)"
-  },
-  {
-   "name": "Stock Fat Man @50, no perks \u2014 EXPL payload chase (engine: 5 impact + 1386 explosion @45 eligible-level cap = 1391; does the pip-boy card show the sum?)",
-   "weaponId": "Fatman",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": null,
-   "tolerancePct": 2,
-   "source": "pending in-game pip-boy reading (#65: verifies the WEAP-impact + EXPL-curve summing assumption, docs/assumptions.md 'Launcher explosion damage')"
-  },
-  {
-   "name": "Stock Missile Launcher @50, no perks \u2014 EXPL payload chase (engine: 5 impact + 968 explosion = 973)",
-   "weaponId": "MissileLauncher",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": null,
-   "tolerancePct": 2,
-   "source": "pending in-game pip-boy reading (#65)"
-  },
-  {
-   "name": "Gauss Minigun + Tesla Coil Capacitor @50, no perks \u2014 validates the materialized energy component (DamageTypeValues conversion)",
-   "weaponId": "GaussMinigun",
-   "itemLevel": 50,
-   "mods": {
-    "ap_gun_Tesla": "mod_GaussMinigun_Tesla_Capacitor"
-   },
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": null,
-   "tolerancePct": 2,
-   "source": "pending in-game measurement"
-  },
-  {
-   "name": "Gauss Minigun + Tesla Coil Capacitor @50 + Science! rank 1 \u2014 validates the energy component AND its explosive twin both take the energy-scoped bonus",
-   "weaponId": "GaussMinigun",
-   "itemLevel": 50,
-   "mods": {
-    "ap_gun_Tesla": "mod_GaussMinigun_Tesla_Capacitor"
-   },
-   "legendaryEffects": [],
-   "perks": [
+  "_readme": [
+    "Golden cases pin the engine to a known-good output. Two `source` styles:",
+    "  - 'in-game (pending)' / a measurement note: fill `expected` from an actual",
+    "    game measurement (pip-boy damage card or hit numbers vs a known",
+    "    target); `expected: null` cases are skipped until measured.",
+    "  - 'engine-snapshot': `expected` is the CURRENT computed resolveLoadout",
+    "    -> computeScenarios output for an archetype build, captured to lock the",
+    "    assembly seam (OMOD collection order, weapon-stat drop, damage-type",
+    "    materialization, SPECIAL fold order) against regression \u2014 it proves",
+    "    stability, not correctness. tolerancePct is tight (0.01) since it's",
+    "    exact recomputation, not a fuzzy in-game reading.",
+    "  - 'hand-computed': `expected` is derived independently by spec math, a",
+    "    correctness anchor distinct from both of the above.",
+    "scenario: freeAim | vats. Sneak and weakpoint targeting are player",
+    "conditions (isSneaking / isAimingAtWeakpoint), not scenarios.",
+    "conditions/enemyConditions patch the defaults from src/types/index.ts."
+  ],
+  "cases": [
     {
-     "perkId": "Science",
-     "rank": 1
-    }
-   ],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": null,
-   "tolerancePct": 2,
-   "source": "pending in-game measurement"
-  },
-  {
-   "name": "War Glaive + Plasma Blade @50, no perks \u2014 validates the DamageTypeValues-converted energy component on a melee weapon",
-   "weaponId": "WarGlaive",
-   "itemLevel": 50,
-   "mods": {
-    "ap_melee_MeleeMod": "mod_melee_WarGlaive_Plasma"
-   },
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": null,
-   "tolerancePct": 2,
-   "source": "pending in-game measurement"
-  },
-  {
-   "name": "Bloodied sneak-crit Hunting Rifle (Severe Receiver, Speed Demon, Buffout+Mentats addiction) \u2014 engine-snapshot",
-   "weaponId": "HuntingRifle",
-   "itemLevel": 50,
-   "mods": {
-    "ap_gun_Receiver": "mod_HuntingRifle_Receiver_Damage-CritDMG"
-   },
-   "legendaryEffects": [
-    "mod_Legendary_Weapon1_DamageInverseHealth"
-   ],
-   "perks": [
-    {
-     "perkId": "CenterMasochist",
-     "rank": 1
-    }
-   ],
-   "legendaryPerks": [
-    {
-     "perkId": "FollowThrough",
-     "rank": 1
-    }
-   ],
-   "mutations": [
-    "Mutation_SpeedDemon"
-   ],
-   "consumables": [
-    "Buffout"
-   ],
-   "addictions": [
-    "AbAddictionMentats"
-   ],
-   "conditions": {
-    "isSneaking": true,
-    "healthPercent": 20,
-    "followThroughPct": 20
-   },
-   "enemyConditions": {},
-   "scenario": "vats",
-   "measure": "perHit",
-   "expected": 1742.3999999999999,
-   "tolerancePct": 0.01,
-   "source": "engine-snapshot"
-  },
-  {
-   "name": "Bloodied heavy gunner Minigun (Class Freak 3, dual mutations, teammates, sustained) \u2014 engine-snapshot",
-   "weaponId": "Minigun",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [
-    "mod_Legendary_Weapon1_DamageInverseHealth"
-   ],
-   "perks": [
-    {
-     "perkId": "ClassFreak",
-     "rank": 3
-    }
-   ],
-   "legendaryPerks": [],
-   "mutations": [
-    "Mutation_SpeedDemon",
-    "Mutation_HerdMentality"
-   ],
-   "consumables": [],
-   "addictions": [],
-   "conditions": {
-    "healthPercent": 15,
-    "teammateCount": 2
-   },
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "sustainedDps",
-   "expected": 1042.4077312157938,
-   "tolerancePct": 0.01,
-   "source": "engine-snapshot"
-  },
-  {
-   "name": "Melee power-attack Super Sledge (Science! rank 1, no matching damage type) \u2014 engine-snapshot",
-   "weaponId": "SuperSledge",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [
-    {
-     "perkId": "Science",
-     "rank": 1
-    }
-   ],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "addictions": [],
-   "conditions": {
-    "isPowerAttacking": true
-   },
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": 711.375,
-   "tolerancePct": 0.01,
-   "source": "engine-snapshot"
-  },
-  {
-   "name": "Stock Fixer @50 sneak attack, no perks \u2014 hand-computed (base 103 x [dbm 1.0 + sneak(2.75 sneakBase - 1.0 + 0.5 default-Suppressor sneakBonus)] = 103 x 3.25 = 334.75)",
-   "weaponId": "CombatRifle_Fixer",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {
-    "isSneaking": true
-   },
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": 334.75,
-   "tolerancePct": 0.01,
-   "source": "hand-computed: PaperDamage = base x (dbmFold + sneakTerm) = 103 x (1.0 + (sneakBase 2.75 + sneakBonus 0.5 - 1.0)) = 103 x 3.25. sneakBase 2.75 is the Fixer's own weapon.sneakAttackMult (weapons.json); sneakBonus 0.5 comes from the Fixer's DEFAULT (undecided-slot) Suppressor barrel, which resolveLoadout folds in even with mods:{} since an undecided slot means the weapon's real stock part, not no part."
-  },
-  {
-   "name": "Gatling Gun fire rate (hand-authored animDurationSec correction) \u2014 engine-snapshot",
-   "weaponId": "GatlingGun",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "addictions": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "fireRate",
-   "expected": 2,
-   "tolerancePct": 0.01,
-   "source": "engine-snapshot"
-  },
-  {
-   "name": "Stock Fixer @50, ghoul in a public Casual team of 3 \u2014 United Ordeal + Public team INT bonus",
-   "weaponId": "CombatRifle_Fixer",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "addictions": [],
-   "conditions": {
-    "isGhoul": true,
-    "teammateCount": 2,
-    "publicTeamType": "casual"
-   },
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": null,
-   "tolerancePct": 2,
-   "source": "in-game (pending): validates United Ordeal's ghoul+teammateCount gate and the Public team Casual INT bonus (min(teammateCount+1,4)=3) together \u2014 neither moves the Fixer's raw dbm, so this pins the SPECIAL-side wiring pending an in-game pip-boy read once both effects are user-facing"
-  },
-  {
-   "name": "Baseline AP regen, fully hydrated, no perks \u2014 stopwatch a full AP pool refill (model: 210 pool \u00d7 6%/s race base \u00d7 1.35 hydration = 17.0 AP/s)",
-   "weaponId": "CombatRifle_Fixer",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "vats",
-   "expected": null,
-   "tolerancePct": 5,
-   "measure": "apRegenPerSec",
-   "source": "in-game (pending) \u2014 time 210 AP from empty: model predicts ~12.3s; out of combat, no sprint, no PA. Repeating at a different AGI also cross-checks the %-of-max-AP rate semantics"
-  },
-  {
-   "name": "Baseline AP regen in Power Armor, fully hydrated \u2014 stopwatch (model: 210 \u00d7 3%/s PowerArmorRace base \u00d7 1.35 = 8.5 AP/s, half the human rate)",
-   "weaponId": "CombatRifle_Fixer",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {
-    "isInPowerArmor": true
-   },
-   "enemyConditions": {},
-   "scenario": "vats",
-   "expected": null,
-   "tolerancePct": 5,
-   "measure": "apRegenPerSec",
-   "source": "in-game (pending) \u2014 210 AP from empty \u2248 24.7s in PA; pins the PowerArmorRace ActionPointsRate=3.0 halving"
-  },
-  {
-   "name": "Lone Wanderer rank 3 solo AP regen @15 CHA \u2014 stopwatch (model: 210 \u00d7 6%/s \u00d7 (1 + 0.30 CHA-curve + 0.35 hydration) = 20.8 AP/s)",
-   "weaponId": "CombatRifle_Fixer",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [
-    {
-     "perkId": "LoneWanderer",
-     "rank": 3
-    }
-   ],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "vats",
-   "expected": null,
-   "tolerancePct": 5,
-   "measure": "apRegenPerSec",
-   "source": "in-game (pending) \u2014 solo, NOT on any team; 210 AP from empty \u2248 10.1s; also confirms ranks 2/3 use the CHA curve (stale flat 20/30% descriptions)"
-  },
-  {
-   "name": "Company Tea AP regen \u2014 stopwatch (model: 210 \u00d7 (6+10)%/s \u00d7 1.35 hydration = 45.4 AP/s; pins the flat-adds-to-race-base composition)",
-   "weaponId": "CombatRifle_Fixer",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [
-    "CompanyTea_RSVP02"
-   ],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "vats",
-   "expected": null,
-   "tolerancePct": 5,
-   "measure": "apRegenPerSec",
-   "source": "in-game (pending) \u2014 210 AP from empty \u2248 4.6s; no Carnivore/Herbivore active (tea is food-scalable in data)"
-  },
-  {
-   "name": "Number Cruncher on stock Fixer (16 AP cost) \u2014 pip-boy card damage (model: +32% dbm, works in free aim)",
-   "weaponId": "CombatRifle_Fixer",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [
-    {
-     "perkId": "NumberCruncher",
-     "rank": 1
-    }
-   ],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "expected": null,
-   "tolerancePct": 2,
-   "measure": "perHit",
-   "source": "in-game (pending) \u2014 compare pip-boy damage card with/without the card equipped; also spot-check V.A.T.S. Optimized receiver drops the bonus to +20.8%"
-  },
-  {
-   "name": "Lock and Load activates Bullet Storm's reload curve on .50 Cal \u2014 stopwatch (model: 5.0s / (1 + 0.10 @10 stacks, Bullet Storm's base cap) \u2248 4.55s)",
-   "weaponId": "50CalMachineGun",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [
-    {
-     "perkId": "BulletStorm",
-     "rank": 1
+      "name": "Stock Fixer @50, no perks \u2014 pip-boy card damage",
+      "weaponId": "CombatRifle_Fixer",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": 103,
+      "tolerancePct": 2,
+      "source": "in-game (pending)"
     },
     {
-     "perkId": "LockAndLoad",
-     "rank": 1
-    }
-   ],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {
-    "bulletStormStacks": 10
-   },
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "expected": null,
-   "tolerancePct": 5,
-   "measure": "reloadSec",
-   "source": "in-game (pending) \u2014 stopwatch a full 250-round belt reload at 30 ammo-spent stacks with vs without Lock and Load equipped (without: 5.0s)"
-  },
-  {
-   "name": "Lever Action full 6-round reload \u2014 stopwatch (model: per-shell 1.77s \u00d7 6 = 10.6s; AnimsSequentialReload keyword)",
-   "weaponId": "DLC03_LeverGun",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "expected": null,
-   "tolerancePct": 10,
-   "measure": "reloadSec",
-   "source": "in-game (pending) \u2014 stopwatch reload from a fully empty tube; ALSO stopwatch a Double-Barrel cycle to confirm it is NOT per-shell (model: one combined 3.07s break-action reload)"
-  },
-  {
-   "name": "Double-Barrel steady-state VATS uptime \u2014 reload-regen pin (model: gain = 13.02 regen \u00d7 (3.07\u22121)/cycle; pins the 1s fDamagedAVRegenDelay reading)",
-   "weaponId": "DoubleBarrelShotgun",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "vats",
-   "expected": null,
-   "tolerancePct": 10,
-   "measure": "apUptime",
-   "source": "in-game (pending) \u2014 sustained VATS fire-and-reload loop; fraction of time able to fire before waiting on AP. Also sanity-checks that regen visibly starts ~1s into the reload"
-  },
-  {
-   "name": "Full-charge Gauss Rifle @50, no perks \u2014 Phase 2 charging (chargeTimeSec omitted = always fully charge)",
-   "weaponId": "GaussRifle",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": null,
-   "tolerancePct": 2,
-   "source": "pending in-game pip-boy reading at full charge hold (docs/assumptions.md \"Charging weapons\"); extraction hasn't yet read WEAP Full Power Seconds/Full Power Damage Mult off the Gauss Rifle record, so this is currently a no-op pending the extraction phase \u2014 un-skip once both extraction and the measurement land"
-  },
-  {
-   "name": "Full-draw Bow @50, no perks \u2014 Phase 2 charging (charge time floors at minimumChargeTime, baking in its multiplier)",
-   "weaponId": "RegularBow",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": null,
-   "tolerancePct": 2,
-   "source": "pending in-game pip-boy reading at full draw; extraction hasn't yet read the bow's Full Power Seconds/Full Power Damage Mult/Minimum Charge Time off WEAP.Data, so this is currently a no-op pending the extraction phase"
-  },
-  {
-   "name": "Tesla + Charging Barrel @50, no perks \u2014 validates a charging-barrel OMOD turning charging ON (chargeFullPowerSec/chargeFullPowerDamageMult SET)",
-   "weaponId": "DLC01LightningGun",
-   "itemLevel": 50,
-   "mods": {
-    "ap_gun_Barrel": "DLC01_mod_LightningGun_Barrel_ChargeHold"
-   },
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": null,
-   "tolerancePct": 2,
-   "source": "pending in-game measurement; DLC01_mod_LightningGun_Barrel_ChargeHold is extracted today (vatsApCost only) but the extraction pipeline doesn't yet map its FullPowerSeconds/FullPowerDamageMult OMOD properties to the chargeFullPowerSec/chargeFullPowerDamageMult buckets, so this case is currently a no-op pending the extraction phase"
-  },
-  {
-   "name": "Gamma Gun + Electric Signal Carrier Antennae @50, no perks \u2014 charging-barrel-equivalent muzzle turning charging ON",
-   "weaponId": "GammaGun",
-   "itemLevel": 50,
-   "mods": {
-    "ap_gun_Muzzle": "mod_GammaGun_SpecialMuzzle_Charger"
-   },
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": null,
-   "tolerancePct": 2,
-   "source": "pending in-game measurement; mod_GammaGun_SpecialMuzzle_Charger is extracted today (vatsApCost only) but the extraction pipeline doesn't yet map its FullPowerSeconds/FullPowerDamageMult OMOD properties to the chargeFullPowerSec/chargeFullPowerDamageMult buckets, so this case is currently a no-op pending the extraction phase"
-  },
-  {
-   "name": "Laser Gun + Sniper Barrel @50, no perks \u2014 charging-barrel-equivalent barrel turning charging ON",
-   "weaponId": "LaserGun",
-   "itemLevel": 50,
-   "mods": {
-    "ap_gun_Barrel": "mod_LaserGun_barrel_Super_Base"
-   },
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": null,
-   "tolerancePct": 2,
-   "source": "pending in-game measurement \u2014 proves laser sniper barrels charge without the HoldInputToPower flag (docs/assumptions.md \"Charging weapons\", the numeric-gate rationale); mod_LaserGun_barrel_Super_Base is extracted today (vatsApCost only) but the extraction pipeline doesn't yet map its FullPowerSeconds/FullPowerDamageMult OMOD properties to the chargeFullPowerSec/chargeFullPowerDamageMult buckets, so this case is currently a no-op pending the extraction phase"
-  },
-  {
-   "name": "Compound Bow + Flaming Arrows @50, no perks \u2014 charged-shot DoT exclusion (dotDps unaffected by chargeMult)",
-   "weaponId": "CompoundBow",
-   "itemLevel": 50,
-   "mods": {
-    "ap_gun_Bolt": "mod_CompoundBow_Bolt_Flaming"
-   },
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": null,
-   "tolerancePct": 2,
-   "source": "pending in-game measurement of the charged-shot DoT tick rate (#53); Flaming Arrows' dotDamage is real and active today, but the bow's own Full Power Seconds/Full Power Damage Mult aren't extracted yet, so the charge multiplier is a no-op until the extraction phase lands \u2014 once it does, this pins that a partial-draw shot's flaming-arrow burn ticks the same as a full-draw shot's (computeDotDps never sees chargeMult)"
-  },
-  {
-   "name": "Hunting Rifle @50, no perks \u2014 range falloff at 1.25\u00d7maxRange (X=1.5, composite model)",
-   "weaponId": "HuntingRifle",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {
-    "targetDistance": 6531
-   },
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": null,
-   "tolerancePct": 3,
-   "source": "pending in-game measurement (#57 \"Composite range-falloff shape\"); Hunting Rifle minRange 2612 / maxRange 5225 / outOfRangeDamageMult 0.5, distance 6531 raw units \u2248 1.25\u00d7maxRange \u2192 X = (d\u2212minRange)/(maxRange\u2212minRange) \u2248 1.5 \u2192 curveY(1.5) = 0.75 \u2192 predicted rangeFalloffMult \u2248 0.375 (0.5\u00d70.75), i.e. perHit \u2248 stock \u00d7 0.375; pins the composite model's USER-CONFIRMED X = (d\u2212minRange)/(maxRange\u2212minRange) reading against real damage numbers"
-  },
-  {
-   "name": "Combat Rifle (Fixer) @50, no perks vs Scorchbeast Queen (Lv 100) \u2014 mitigated sustained DPS",
-   "weaponId": "CombatRifle_Fixer",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {},
-   "enemyConditions": {
-    "targetRace": "EncScorchbeastQueen01Template",
-    "targetLevel": 100
-   },
-   "scenario": "freeAim",
-   "measure": "effectiveSustainedDps",
-   "expected": null,
-   "tolerancePct": 15,
-   "source": "pending in-game measurement (#59 \"Phase 2 mitigation formula\") \u2014 Phase 2, Resist mitigation Option A; SBQ Lv100 physical resist from CT_Creatures_Armor_Universal_Tier33 (curve-only, unmeasured), no armorPen/flat-debuff sources equipped; cross-checks the (damage\u00d70.15/Resist)^0.365 formula end-to-end against a real Pip-Boy DPS reading, not just the extracted resist curve"
-  },
-  {
-   "name": "Combat Rifle (Fixer) @50, Unyielding x5 at 10% HP \u2014 STR-boosted melee-term-neutral perHit sanity (SPECIAL-driven, ranged weapon)",
-   "weaponId": "CombatRifle_Fixer",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "armorEffects": {
-    "mod_Legendary_Armor1_LowHealthIncreasesStats": 5
-   },
-   "conditions": {
-    "healthPercent": 10
-   },
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "perHit",
-   "expected": null,
-   "tolerancePct": 2,
-   "source": "pending in-game measurement (Phase 3 armor pipeline, UI + state) \u2014 Unyielding 5-piece stack below the 20% HP threshold (+15 to all SPECIAL but Endurance, engine-side hand-verified against the extracted curve in src/data/__tests__/armor-modifiers.test.ts); a ranged weapon has no melee STR term so this mostly pins the assembly seam (per-piece scaling, wornPieceCount-free curveScale x5), not a STR-sensitive damage delta \u2014 see docs/assumptions.md \"Armor\""
-  },
-  {
-   "name": "Combat Rifle (Fixer) @50, Battle-Loader's x3 \u2014 sustained DPS with the 45% reload-skip chance folded in",
-   "weaponId": "CombatRifle_Fixer",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "armorEffects": {
-    "mod_Legendary_Armor4_BattleLoaders": 3
-   },
-   "conditions": {},
-   "enemyConditions": {},
-   "scenario": "freeAim",
-   "measure": "sustainedDps",
-   "expected": null,
-   "tolerancePct": 2,
-   "source": "pending in-game measurement (Phase 3 armor pipeline, UI + state; Phase C bash-cost model) \u2014 Battle-Loader's 3-piece tier (45% reloadSkipChanceBash, wornPieceCount==3), modeled via the two-channel reload-skip formula with the 0.75s DEFAULT_BATTLE_LOADERS_BASH_SEC placeholder (bash cadence itself still unmodeled \u2014 the chance is treated as sustained/per-reload, docs/assumptions.md \"Armor\" + \"Reload-skip & free-ammo expected value\"); pins the sustain-chance fold end-to-end once a real Pip-Boy sustained-DPS reading with the mod equipped exists"
-  },
-  {
-   "name": "Combat Rifle (Fixer) @50, Concentrated Fire rank 3 @ 20 stacks \u2014 VATS per-hit with the stacking damage bonus maxed",
-   "weaponId": "CombatRifle_Fixer",
-   "itemLevel": 50,
-   "mods": {},
-   "legendaryEffects": [],
-   "perks": [
+      "name": "Fixer + Powerful Automatic Receiver @50 \u2014 pip-boy card damage",
+      "weaponId": "CombatRifle_Fixer",
+      "itemLevel": 50,
+      "mods": {
+        "ap_gun_Receiver": "mod_CombatRifle_Receiver_Damage-Auto"
+      },
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": 90.125,
+      "tolerancePct": 2,
+      "source": "in-game (pending)"
+    },
     {
-     "perkId": "ConcentratedFire",
-     "rank": 3
+      "name": "Shishkebab @45 cap, 15 STR \u2014 dual-component total (verifies split-damage curve semantics)",
+      "weaponId": "Shishkebab",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {
+        "strength": 15
+      },
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": 224,
+      "tolerancePct": 2,
+      "source": "user formula (72\u219264 per component: Shishkebab's max Eligible Level is 45, so (64\u00d71.75)\u00d72 \u2014 CONFIRM in-game that no lvl-50 Shishkebab exists; at 50 the curve would give 252)"
+    },
+    {
+      "name": "Stock Fixer @50 \u2014 sustained DPS incl. reload (reload \u2248 3.2s/1.1765 \u2248 2.72s, unverified)",
+      "weaponId": "CombatRifle_Fixer",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "sustainedDps",
+      "expected": null,
+      "tolerancePct": 5,
+      "source": "pending in-game stopwatch: time N full mag+reload cycles vs a target dummy (docs/assumptions.md, Sustained DPS)"
+    },
+    {
+      "name": "Two Shot Fixer @50, no perks \u2014 validates extracted dbm 0.75",
+      "weaponId": "CombatRifle_Fixer",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": ["mod_Legendary_Weapon1_Guns_TwoShot"],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": 180.25,
+      "tolerancePct": 2,
+      "source": "user-confirmed 2026-07-10: base Fixer @50 = 103, Two Shot = 103 \u00d7 1.75 = 180.25 (pip-boy card rounds to 180/181; hundredths kept for the calc)"
+    },
+    {
+      "name": "Stock Fat Man @50, no perks \u2014 EXPL payload chase (engine: 5 impact + 1386 explosion @45 eligible-level cap = 1391; does the pip-boy card show the sum?)",
+      "weaponId": "Fatman",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": null,
+      "tolerancePct": 2,
+      "source": "pending in-game pip-boy reading (#65: verifies the WEAP-impact + EXPL-curve summing assumption, docs/assumptions.md 'Launcher explosion damage')"
+    },
+    {
+      "name": "Stock Missile Launcher @50, no perks \u2014 EXPL payload chase (engine: 5 impact + 968 explosion = 973)",
+      "weaponId": "MissileLauncher",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": null,
+      "tolerancePct": 2,
+      "source": "pending in-game pip-boy reading (#65)"
+    },
+    {
+      "name": "Gauss Minigun + Tesla Coil Capacitor @50, no perks \u2014 validates the materialized energy component (DamageTypeValues conversion)",
+      "weaponId": "GaussMinigun",
+      "itemLevel": 50,
+      "mods": {
+        "ap_gun_Tesla": "mod_GaussMinigun_Tesla_Capacitor"
+      },
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": null,
+      "tolerancePct": 2,
+      "source": "pending in-game measurement"
+    },
+    {
+      "name": "Gauss Minigun + Tesla Coil Capacitor @50 + Science! rank 1 \u2014 validates the energy component AND its explosive twin both take the energy-scoped bonus",
+      "weaponId": "GaussMinigun",
+      "itemLevel": 50,
+      "mods": {
+        "ap_gun_Tesla": "mod_GaussMinigun_Tesla_Capacitor"
+      },
+      "legendaryEffects": [],
+      "perks": [
+        {
+          "perkId": "Science",
+          "rank": 1
+        }
+      ],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": null,
+      "tolerancePct": 2,
+      "source": "pending in-game measurement"
+    },
+    {
+      "name": "War Glaive + Plasma Blade @50, no perks \u2014 validates the DamageTypeValues-converted energy component on a melee weapon",
+      "weaponId": "WarGlaive",
+      "itemLevel": 50,
+      "mods": {
+        "ap_melee_MeleeMod": "mod_melee_WarGlaive_Plasma"
+      },
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": null,
+      "tolerancePct": 2,
+      "source": "pending in-game measurement"
+    },
+    {
+      "name": "Bloodied sneak-crit Hunting Rifle (Severe Receiver, Speed Demon, Buffout+Mentats addiction) \u2014 engine-snapshot",
+      "weaponId": "HuntingRifle",
+      "itemLevel": 50,
+      "mods": {
+        "ap_gun_Receiver": "mod_HuntingRifle_Receiver_Damage-CritDMG"
+      },
+      "legendaryEffects": ["mod_Legendary_Weapon1_DamageInverseHealth"],
+      "perks": [
+        {
+          "perkId": "CenterMasochist",
+          "rank": 1
+        }
+      ],
+      "legendaryPerks": [
+        {
+          "perkId": "FollowThrough",
+          "rank": 1
+        }
+      ],
+      "mutations": ["Mutation_SpeedDemon"],
+      "consumables": ["Buffout"],
+      "addictions": ["AbAddictionMentats"],
+      "conditions": {
+        "isSneaking": true,
+        "healthPercent": 20,
+        "followThroughPct": 20
+      },
+      "enemyConditions": {},
+      "scenario": "vats",
+      "measure": "perHit",
+      "expected": 1742.3999999999999,
+      "tolerancePct": 0.01,
+      "source": "engine-snapshot"
+    },
+    {
+      "name": "Bloodied heavy gunner Minigun (Class Freak 3, dual mutations, teammates, sustained) \u2014 engine-snapshot",
+      "weaponId": "Minigun",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": ["mod_Legendary_Weapon1_DamageInverseHealth"],
+      "perks": [
+        {
+          "perkId": "ClassFreak",
+          "rank": 3
+        }
+      ],
+      "legendaryPerks": [],
+      "mutations": ["Mutation_SpeedDemon", "Mutation_HerdMentality"],
+      "consumables": [],
+      "addictions": [],
+      "conditions": {
+        "healthPercent": 15,
+        "teammateCount": 2
+      },
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "sustainedDps",
+      "expected": 1042.4077312157938,
+      "tolerancePct": 0.01,
+      "source": "engine-snapshot"
+    },
+    {
+      "name": "Melee power-attack Super Sledge (Science! rank 1, no matching damage type) \u2014 engine-snapshot",
+      "weaponId": "SuperSledge",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [
+        {
+          "perkId": "Science",
+          "rank": 1
+        }
+      ],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "addictions": [],
+      "conditions": {
+        "isPowerAttacking": true
+      },
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": 711.375,
+      "tolerancePct": 0.01,
+      "source": "engine-snapshot"
+    },
+    {
+      "name": "Stock Fixer @50 sneak attack, no perks \u2014 hand-computed (base 103 x [dbm 1.0 + sneak(2.75 sneakBase - 1.0 + 0.5 default-Suppressor sneakBonus)] = 103 x 3.25 = 334.75)",
+      "weaponId": "CombatRifle_Fixer",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {
+        "isSneaking": true
+      },
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": 334.75,
+      "tolerancePct": 0.01,
+      "source": "hand-computed: PaperDamage = base x (dbmFold + sneakTerm) = 103 x (1.0 + (sneakBase 2.75 + sneakBonus 0.5 - 1.0)) = 103 x 3.25. sneakBase 2.75 is the Fixer's own weapon.sneakAttackMult (weapons.json); sneakBonus 0.5 comes from the Fixer's DEFAULT (undecided-slot) Suppressor barrel, which resolveLoadout folds in even with mods:{} since an undecided slot means the weapon's real stock part, not no part."
+    },
+    {
+      "name": "Gatling Gun fire rate (hand-authored animDurationSec correction) \u2014 engine-snapshot",
+      "weaponId": "GatlingGun",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "addictions": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "fireRate",
+      "expected": 2,
+      "tolerancePct": 0.01,
+      "source": "engine-snapshot"
+    },
+    {
+      "name": "Stock Fixer @50, ghoul in a public Casual team of 3 \u2014 United Ordeal + Public team INT bonus",
+      "weaponId": "CombatRifle_Fixer",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "addictions": [],
+      "conditions": {
+        "isGhoul": true,
+        "teammateCount": 2,
+        "publicTeamType": "casual"
+      },
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": null,
+      "tolerancePct": 2,
+      "source": "in-game (pending): validates United Ordeal's ghoul+teammateCount gate and the Public team Casual INT bonus (min(teammateCount+1,4)=3) together \u2014 neither moves the Fixer's raw dbm, so this pins the SPECIAL-side wiring pending an in-game pip-boy read once both effects are user-facing"
+    },
+    {
+      "name": "Baseline AP regen, fully hydrated, no perks \u2014 stopwatch a full AP pool refill (model: 210 pool \u00d7 6%/s race base \u00d7 1.35 hydration = 17.0 AP/s)",
+      "weaponId": "CombatRifle_Fixer",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "vats",
+      "expected": null,
+      "tolerancePct": 5,
+      "measure": "apRegenPerSec",
+      "source": "in-game (pending) \u2014 time 210 AP from empty: model predicts ~12.3s; out of combat, no sprint, no PA. Repeating at a different AGI also cross-checks the %-of-max-AP rate semantics"
+    },
+    {
+      "name": "Baseline AP regen in Power Armor, fully hydrated \u2014 stopwatch (model: 210 \u00d7 3%/s PowerArmorRace base \u00d7 1.35 = 8.5 AP/s, half the human rate)",
+      "weaponId": "CombatRifle_Fixer",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {
+        "isInPowerArmor": true
+      },
+      "enemyConditions": {},
+      "scenario": "vats",
+      "expected": null,
+      "tolerancePct": 5,
+      "measure": "apRegenPerSec",
+      "source": "in-game (pending) \u2014 210 AP from empty \u2248 24.7s in PA; pins the PowerArmorRace ActionPointsRate=3.0 halving"
+    },
+    {
+      "name": "Lone Wanderer rank 3 solo AP regen @15 CHA \u2014 stopwatch (model: 210 \u00d7 6%/s \u00d7 (1 + 0.30 CHA-curve + 0.35 hydration) = 20.8 AP/s)",
+      "weaponId": "CombatRifle_Fixer",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [
+        {
+          "perkId": "LoneWanderer",
+          "rank": 3
+        }
+      ],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "vats",
+      "expected": null,
+      "tolerancePct": 5,
+      "measure": "apRegenPerSec",
+      "source": "in-game (pending) \u2014 solo, NOT on any team; 210 AP from empty \u2248 10.1s; also confirms ranks 2/3 use the CHA curve (stale flat 20/30% descriptions)"
+    },
+    {
+      "name": "Company Tea AP regen \u2014 stopwatch (model: 210 \u00d7 (6+10)%/s \u00d7 1.35 hydration = 45.4 AP/s; pins the flat-adds-to-race-base composition)",
+      "weaponId": "CombatRifle_Fixer",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": ["CompanyTea_RSVP02"],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "vats",
+      "expected": null,
+      "tolerancePct": 5,
+      "measure": "apRegenPerSec",
+      "source": "in-game (pending) \u2014 210 AP from empty \u2248 4.6s; no Carnivore/Herbivore active (tea is food-scalable in data)"
+    },
+    {
+      "name": "Number Cruncher on stock Fixer (16 AP cost) \u2014 pip-boy card damage (model: +32% dbm, works in free aim)",
+      "weaponId": "CombatRifle_Fixer",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [
+        {
+          "perkId": "NumberCruncher",
+          "rank": 1
+        }
+      ],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "expected": null,
+      "tolerancePct": 2,
+      "measure": "perHit",
+      "source": "in-game (pending) \u2014 compare pip-boy damage card with/without the card equipped; also spot-check V.A.T.S. Optimized receiver drops the bonus to +20.8%"
+    },
+    {
+      "name": "Lock and Load activates Bullet Storm's reload curve on .50 Cal \u2014 stopwatch (model: 5.0s / (1 + 0.10 @10 stacks, Bullet Storm's base cap) \u2248 4.55s)",
+      "weaponId": "50CalMachineGun",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [
+        {
+          "perkId": "BulletStorm",
+          "rank": 1
+        },
+        {
+          "perkId": "LockAndLoad",
+          "rank": 1
+        }
+      ],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {
+        "bulletStormStacks": 10
+      },
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "expected": null,
+      "tolerancePct": 5,
+      "measure": "reloadSec",
+      "source": "in-game (pending) \u2014 stopwatch a full 250-round belt reload at 30 ammo-spent stacks with vs without Lock and Load equipped (without: 5.0s)"
+    },
+    {
+      "name": "Lever Action full 6-round reload \u2014 stopwatch (model: per-shell 1.77s \u00d7 6 = 10.6s; AnimsSequentialReload keyword)",
+      "weaponId": "DLC03_LeverGun",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "expected": null,
+      "tolerancePct": 10,
+      "measure": "reloadSec",
+      "source": "in-game (pending) \u2014 stopwatch reload from a fully empty tube; ALSO stopwatch a Double-Barrel cycle to confirm it is NOT per-shell (model: one combined 3.07s break-action reload)"
+    },
+    {
+      "name": "Double-Barrel steady-state VATS uptime \u2014 reload-regen pin (model: gain = 13.02 regen \u00d7 (3.07\u22121)/cycle; pins the 1s fDamagedAVRegenDelay reading)",
+      "weaponId": "DoubleBarrelShotgun",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "vats",
+      "expected": null,
+      "tolerancePct": 10,
+      "measure": "apUptime",
+      "source": "in-game (pending) \u2014 sustained VATS fire-and-reload loop; fraction of time able to fire before waiting on AP. Also sanity-checks that regen visibly starts ~1s into the reload"
+    },
+    {
+      "name": "Full-charge Gauss Rifle @50, no perks \u2014 Phase 2 charging (chargeTimeSec omitted = always fully charge)",
+      "weaponId": "GaussRifle",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": null,
+      "tolerancePct": 2,
+      "source": "pending in-game pip-boy reading at full charge hold (docs/assumptions.md \"Charging weapons\"); extraction hasn't yet read WEAP Full Power Seconds/Full Power Damage Mult off the Gauss Rifle record, so this is currently a no-op pending the extraction phase \u2014 un-skip once both extraction and the measurement land"
+    },
+    {
+      "name": "Full-draw Bow @50, no perks \u2014 Phase 2 charging (charge time floors at minimumChargeTime, baking in its multiplier)",
+      "weaponId": "RegularBow",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": null,
+      "tolerancePct": 2,
+      "source": "pending in-game pip-boy reading at full draw; extraction hasn't yet read the bow's Full Power Seconds/Full Power Damage Mult/Minimum Charge Time off WEAP.Data, so this is currently a no-op pending the extraction phase"
+    },
+    {
+      "name": "Tesla + Charging Barrel @50, no perks \u2014 validates a charging-barrel OMOD turning charging ON (chargeFullPowerSec/chargeFullPowerDamageMult SET)",
+      "weaponId": "DLC01LightningGun",
+      "itemLevel": 50,
+      "mods": {
+        "ap_gun_Barrel": "DLC01_mod_LightningGun_Barrel_ChargeHold"
+      },
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": null,
+      "tolerancePct": 2,
+      "source": "pending in-game measurement; DLC01_mod_LightningGun_Barrel_ChargeHold is extracted today (vatsApCost only) but the extraction pipeline doesn't yet map its FullPowerSeconds/FullPowerDamageMult OMOD properties to the chargeFullPowerSec/chargeFullPowerDamageMult buckets, so this case is currently a no-op pending the extraction phase"
+    },
+    {
+      "name": "Gamma Gun + Electric Signal Carrier Antennae @50, no perks \u2014 charging-barrel-equivalent muzzle turning charging ON",
+      "weaponId": "GammaGun",
+      "itemLevel": 50,
+      "mods": {
+        "ap_gun_Muzzle": "mod_GammaGun_SpecialMuzzle_Charger"
+      },
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": null,
+      "tolerancePct": 2,
+      "source": "pending in-game measurement; mod_GammaGun_SpecialMuzzle_Charger is extracted today (vatsApCost only) but the extraction pipeline doesn't yet map its FullPowerSeconds/FullPowerDamageMult OMOD properties to the chargeFullPowerSec/chargeFullPowerDamageMult buckets, so this case is currently a no-op pending the extraction phase"
+    },
+    {
+      "name": "Laser Gun + Sniper Barrel @50, no perks \u2014 charging-barrel-equivalent barrel turning charging ON",
+      "weaponId": "LaserGun",
+      "itemLevel": 50,
+      "mods": {
+        "ap_gun_Barrel": "mod_LaserGun_barrel_Super_Base"
+      },
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": null,
+      "tolerancePct": 2,
+      "source": "pending in-game measurement \u2014 proves laser sniper barrels charge without the HoldInputToPower flag (docs/assumptions.md \"Charging weapons\", the numeric-gate rationale); mod_LaserGun_barrel_Super_Base is extracted today (vatsApCost only) but the extraction pipeline doesn't yet map its FullPowerSeconds/FullPowerDamageMult OMOD properties to the chargeFullPowerSec/chargeFullPowerDamageMult buckets, so this case is currently a no-op pending the extraction phase"
+    },
+    {
+      "name": "Compound Bow + Flaming Arrows @50, no perks \u2014 charged-shot DoT exclusion (dotDps unaffected by chargeMult)",
+      "weaponId": "CompoundBow",
+      "itemLevel": 50,
+      "mods": {
+        "ap_gun_Bolt": "mod_CompoundBow_Bolt_Flaming"
+      },
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": null,
+      "tolerancePct": 2,
+      "source": "pending in-game measurement of the charged-shot DoT tick rate (#53); Flaming Arrows' dotDamage is real and active today, but the bow's own Full Power Seconds/Full Power Damage Mult aren't extracted yet, so the charge multiplier is a no-op until the extraction phase lands \u2014 once it does, this pins that a partial-draw shot's flaming-arrow burn ticks the same as a full-draw shot's (computeDotDps never sees chargeMult)"
+    },
+    {
+      "name": "Hunting Rifle @50, no perks \u2014 range falloff at 1.25\u00d7maxRange (X=1.5, composite model)",
+      "weaponId": "HuntingRifle",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {
+        "targetDistance": 6531
+      },
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": null,
+      "tolerancePct": 3,
+      "source": "pending in-game measurement (#57 \"Composite range-falloff shape\"); Hunting Rifle minRange 2612 / maxRange 5225 / outOfRangeDamageMult 0.5, distance 6531 raw units \u2248 1.25\u00d7maxRange \u2192 X = (d\u2212minRange)/(maxRange\u2212minRange) \u2248 1.5 \u2192 curveY(1.5) = 0.75 \u2192 predicted rangeFalloffMult \u2248 0.375 (0.5\u00d70.75), i.e. perHit \u2248 stock \u00d7 0.375; pins the composite model's USER-CONFIRMED X = (d\u2212minRange)/(maxRange\u2212minRange) reading against real damage numbers"
+    },
+    {
+      "name": "Combat Rifle (Fixer) @50, no perks vs Scorchbeast Queen (Lv 100) \u2014 mitigated sustained DPS",
+      "weaponId": "CombatRifle_Fixer",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {},
+      "enemyConditions": {
+        "targetRace": "EncScorchbeastQueen01Template",
+        "targetLevel": 100
+      },
+      "scenario": "freeAim",
+      "measure": "effectiveSustainedDps",
+      "expected": null,
+      "tolerancePct": 15,
+      "source": "pending in-game measurement (#59 \"Phase 2 mitigation formula\") \u2014 Phase 2, Resist mitigation Option A; SBQ Lv100 physical resist from CT_Creatures_Armor_Universal_Tier33 (curve-only, unmeasured), no armorPen/flat-debuff sources equipped; cross-checks the (damage\u00d70.15/Resist)^0.365 formula end-to-end against a real Pip-Boy DPS reading, not just the extracted resist curve"
+    },
+    {
+      "name": "Combat Rifle (Fixer) @50, Unyielding x5 at 10% HP \u2014 STR-boosted melee-term-neutral perHit sanity (SPECIAL-driven, ranged weapon)",
+      "weaponId": "CombatRifle_Fixer",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "armorEffects": {
+        "mod_Legendary_Armor1_LowHealthIncreasesStats": 5
+      },
+      "conditions": {
+        "healthPercent": 10
+      },
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "perHit",
+      "expected": null,
+      "tolerancePct": 2,
+      "source": "pending in-game measurement (Phase 3 armor pipeline, UI + state) \u2014 Unyielding 5-piece stack below the 20% HP threshold (+15 to all SPECIAL but Endurance, engine-side hand-verified against the extracted curve in src/data/__tests__/armor-modifiers.test.ts); a ranged weapon has no melee STR term so this mostly pins the assembly seam (per-piece scaling, wornPieceCount-free curveScale x5), not a STR-sensitive damage delta \u2014 see docs/assumptions.md \"Armor\""
+    },
+    {
+      "name": "Combat Rifle (Fixer) @50, Battle-Loader's x3 \u2014 sustained DPS with the 45% reload-skip chance folded in",
+      "weaponId": "CombatRifle_Fixer",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "armorEffects": {
+        "mod_Legendary_Armor4_BattleLoaders": 3
+      },
+      "conditions": {},
+      "enemyConditions": {},
+      "scenario": "freeAim",
+      "measure": "sustainedDps",
+      "expected": null,
+      "tolerancePct": 2,
+      "source": "pending in-game measurement (Phase 3 armor pipeline, UI + state; Phase C bash-cost model) \u2014 Battle-Loader's 3-piece tier (45% reloadSkipChanceBash, wornPieceCount==3), modeled via the two-channel reload-skip formula with the 0.75s DEFAULT_BATTLE_LOADERS_BASH_SEC placeholder (bash cadence itself still unmodeled \u2014 the chance is treated as sustained/per-reload, docs/assumptions.md \"Armor\" + \"Reload-skip & free-ammo expected value\"); pins the sustain-chance fold end-to-end once a real Pip-Boy sustained-DPS reading with the mod equipped exists"
+    },
+    {
+      "name": "Combat Rifle (Fixer) @50, Concentrated Fire rank 3 @ 20 stacks \u2014 VATS per-hit with the stacking damage bonus maxed",
+      "weaponId": "CombatRifle_Fixer",
+      "itemLevel": 50,
+      "mods": {},
+      "legendaryEffects": [],
+      "perks": [
+        {
+          "perkId": "ConcentratedFire",
+          "rank": 3
+        }
+      ],
+      "legendaryPerks": [],
+      "mutations": [],
+      "consumables": [],
+      "conditions": {
+        "concentratedFireStacks": 20
+      },
+      "enemyConditions": {},
+      "scenario": "vats",
+      "measure": "perHit",
+      "expected": null,
+      "tolerancePct": 2,
+      "source": "pending in-game measurement (Phase B \u2014 Concentrated Fire stacks) \u2014 rank 3's EP135-derived dbm ADD (0.03/stack) at the GMST max of 20 stacks should read +60% VATS damage over the no-stacks baseline; needs a real Pip-Boy VATS damage-card reading after building up stacks on one body part to confirm the per-stack magnitude in practice, not just the engine fold"
     }
-   ],
-   "legendaryPerks": [],
-   "mutations": [],
-   "consumables": [],
-   "conditions": {
-    "concentratedFireStacks": 20
-   },
-   "enemyConditions": {},
-   "scenario": "vats",
-   "measure": "perHit",
-   "expected": null,
-   "tolerancePct": 2,
-   "source": "pending in-game measurement (Phase B \u2014 Concentrated Fire stacks) \u2014 rank 3's EP135-derived dbm ADD (0.03/stack) at the GMST max of 20 stacks should read +60% VATS damage over the no-stacks baseline; needs a real Pip-Boy VATS damage-card reading after building up stacks on one body part to confirm the per-stack magnitude in practice, not just the engine fold"
-  }
- ]
+  ]
 }

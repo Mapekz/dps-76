@@ -19,15 +19,19 @@ import titan from './fixtures/bptd-titan.json';
 describe('bptdToParts', () => {
   it('Human: 6 targetable parts, head at the standard 1.5×, only the torso non-crippable', () => {
     const { parts, crippableLimbCount } = bptdToParts((human as { fields: unknown }).fields);
-    expect(parts.map(p => p.name).sort()).toEqual(
-      ['Head', 'Left Arm', 'Left Leg', 'Right Arm', 'Right Leg', 'Torso'].sort()
+    expect(parts.map((p) => p.name).sort()).toEqual(
+      ['Head', 'Left Arm', 'Left Leg', 'Right Arm', 'Right Leg', 'Torso'].sort(),
     );
-    expect(parts.find(p => p.name === 'Head')).toMatchObject({ dmgMult: 1.5, crippable: true });
-    expect(parts.find(p => p.name === 'Torso')).toMatchObject({ dmgMult: 1, crippable: false });
+    expect(parts.find((p) => p.name === 'Head')).toMatchObject({ dmgMult: 1.5, crippable: true });
+    expect(parts.find((p) => p.name === 'Torso')).toMatchObject({ dmgMult: 1, crippable: false });
     // Technical nodes (Headtracking/Camera/Weapon/Root) are dropped; feet fold into their leg's condition.
-    expect(parts.some(p => ['Headtracking', 'Camera', 'Weapon', 'Root', 'RaiderLeftFoot', 'RaiderRightFoot'].includes(p.name))).toBe(
-      false
-    );
+    expect(
+      parts.some((p) =>
+        ['Headtracking', 'Camera', 'Weapon', 'Root', 'RaiderLeftFoot', 'RaiderRightFoot'].includes(
+          p.name,
+        ),
+      ),
+    ).toBe(false);
     // 5 distinct crippable Actor Values (arms + legs + head; torso excluded).
     expect(crippableLimbCount).toBe(5);
   });
@@ -35,11 +39,18 @@ describe('bptdToParts', () => {
   it('Storm Goliath: 9 parts including the Actor-Value-tracked Back Panel weak point, Glass now crippable', () => {
     const { parts, crippableLimbCount } = bptdToParts((stormGoliath as { fields: unknown }).fields);
     expect(parts).toHaveLength(9);
-    expect(parts.find(p => p.name === 'Back Panel')).toMatchObject({ partType: 'Brain', dmgMult: 1, crippable: true });
+    expect(parts.find((p) => p.name === 'Back Panel')).toMatchObject({
+      partType: 'Brain',
+      dmgMult: 1,
+      crippable: true,
+    });
     // Glass carries a real limb condition (Actor Value) even without an "On Cripple"/"Explodable" flag.
-    expect(parts.find(p => p.name === 'Glass')).toMatchObject({ dmgMult: 1.15, crippable: true });
-    expect(parts.find(p => p.name === 'Torso')).toMatchObject({ dmgMult: 0.85, crippable: false });
-    expect(parts.some(p => p.partType === 'Root')).toBe(false);
+    expect(parts.find((p) => p.name === 'Glass')).toMatchObject({ dmgMult: 1.15, crippable: true });
+    expect(parts.find((p) => p.name === 'Torso')).toMatchObject({
+      dmgMult: 0.85,
+      crippable: false,
+    });
+    expect(parts.some((p) => p.partType === 'Root')).toBe(false);
     expect(crippableLimbCount).toBe(8);
   });
 
@@ -52,38 +63,63 @@ describe('bptdToParts', () => {
 
   it('Ultracite Terror: real eye weak points and armor plates survive (Part Type "Eye" is no longer skipped)', () => {
     const { parts, crippableLimbCount } = bptdToParts((terror as { fields: unknown }).fields);
-    expect(parts.map(p => p.name).sort()).toEqual(
-      ['Head', 'LeftEye', 'Plate A', 'Plate B', 'Plate C', 'Plate D', 'Plate E', 'Plate F', 'Plate G', 'RightEye'].sort()
+    expect(parts.map((p) => p.name).sort()).toEqual(
+      [
+        'Head',
+        'LeftEye',
+        'Plate A',
+        'Plate B',
+        'Plate C',
+        'Plate D',
+        'Plate E',
+        'Plate F',
+        'Plate G',
+        'RightEye',
+      ].sort(),
     );
-    expect(parts.find(p => p.name === 'RightEye')).toMatchObject({ partType: 'Eye', dmgMult: 3, crippable: true });
-    expect(parts.find(p => p.name === 'LeftEye')).toMatchObject({ dmgMult: 3, crippable: true });
+    expect(parts.find((p) => p.name === 'RightEye')).toMatchObject({
+      partType: 'Eye',
+      dmgMult: 3,
+      crippable: true,
+    });
+    expect(parts.find((p) => p.name === 'LeftEye')).toMatchObject({ dmgMult: 3, crippable: true });
     // The technical "Body" (Torso, null Actor Value) node is dropped, unlike the real armor plates.
-    expect(parts.some(p => p.name === 'Body')).toBe(false);
+    expect(parts.some((p) => p.name === 'Body')).toBe(false);
     expect(crippableLimbCount).toBe(10);
   });
 
   it('Scorchbeast: arms/wings/legs/head/torso restored; the two legs share one Actor Value and merge to one row', () => {
     const { parts, crippableLimbCount } = bptdToParts((scorchbeast as { fields: unknown }).fields);
-    expect(parts.map(p => p.name).sort()).toEqual(
-      ['Head', 'Left Arm', 'Left Leg', 'Left Wing', 'Right Arm', 'Right Wing', 'Torso'].sort()
+    expect(parts.map((p) => p.name).sort()).toEqual(
+      ['Head', 'Left Arm', 'Left Leg', 'Left Wing', 'Right Arm', 'Right Wing', 'Torso'].sort(),
     );
     // Right Leg and Left Leg both track Actor Value 0x2CE — one merged row survives (lower Part Type value wins).
-    expect(parts.filter(p => p.partType === 'LeftLeg1' || p.partType === 'RightLeg1')).toHaveLength(1);
-    expect(parts.find(p => p.name === 'Head')).toMatchObject({ dmgMult: 1.5, crippable: true });
-    expect(parts.find(p => p.name === 'Torso')).toMatchObject({ dmgMult: 1, crippable: false });
+    expect(
+      parts.filter((p) => p.partType === 'LeftLeg1' || p.partType === 'RightLeg1'),
+    ).toHaveLength(1);
+    expect(parts.find((p) => p.name === 'Head')).toMatchObject({ dmgMult: 1.5, crippable: true });
+    expect(parts.find((p) => p.name === 'Torso')).toMatchObject({ dmgMult: 1, crippable: false });
     expect(crippableLimbCount).toBe(6);
   });
 
   it('Ultracite Titan: both arms restored, and Chest/Belly survive as distinct rows despite sharing an Actor Value', () => {
     const { parts, crippableLimbCount } = bptdToParts((titan as { fields: unknown }).fields);
-    expect(parts.map(p => p.name).sort()).toEqual(['Belly', 'Chest', 'Head', 'Left Arm', 'Right Arm', 'Torso'].sort());
+    expect(parts.map((p) => p.name).sort()).toEqual(
+      ['Belly', 'Chest', 'Head', 'Left Arm', 'Right Arm', 'Torso'].sort(),
+    );
     // Chest (×1.35), Belly (×1.15) and Torso (×0.85) all track the same Actor Value (EnduranceCondition) but
     // differ in damage mult, so the dedup key (Actor Value + mult) keeps all three distinct.
-    expect(parts.find(p => p.name === 'Chest')).toMatchObject({ dmgMult: 1.35, crippable: true });
-    expect(parts.find(p => p.name === 'Belly')).toMatchObject({ dmgMult: 1.15, crippable: true });
-    expect(parts.find(p => p.name === 'Torso')).toMatchObject({ dmgMult: 0.85, crippable: false });
-    expect(parts.find(p => p.name === 'Left Arm')).toMatchObject({ dmgMult: 1, crippable: true });
-    expect(parts.find(p => p.name === 'Right Arm')).toMatchObject({ dmgMult: 1, crippable: true });
+    expect(parts.find((p) => p.name === 'Chest')).toMatchObject({ dmgMult: 1.35, crippable: true });
+    expect(parts.find((p) => p.name === 'Belly')).toMatchObject({ dmgMult: 1.15, crippable: true });
+    expect(parts.find((p) => p.name === 'Torso')).toMatchObject({
+      dmgMult: 0.85,
+      crippable: false,
+    });
+    expect(parts.find((p) => p.name === 'Left Arm')).toMatchObject({ dmgMult: 1, crippable: true });
+    expect(parts.find((p) => p.name === 'Right Arm')).toMatchObject({
+      dmgMult: 1,
+      crippable: true,
+    });
     // Distinct crippable Actor Values: Chest+Belly share one (counts once), plus Left Arm, Right Arm, Head.
     expect(crippableLimbCount).toBe(4);
   });
@@ -92,9 +128,12 @@ describe('bptdToParts', () => {
     const { parts, crippableLimbCount } = bptdToParts((guardian as { fields: unknown }).fields, {
       conditionPartsOnly: true,
     });
-    expect(parts.map(p => p.name).sort()).toEqual(['Torso', 'Ultragenetic Shield System'].sort());
-    expect(parts.find(p => p.name === 'Ultragenetic Shield System')).toMatchObject({ dmgMult: 1, crippable: true });
-    expect(parts.find(p => p.name === 'Torso')).toMatchObject({ dmgMult: 3, crippable: false });
+    expect(parts.map((p) => p.name).sort()).toEqual(['Torso', 'Ultragenetic Shield System'].sort());
+    expect(parts.find((p) => p.name === 'Ultragenetic Shield System')).toMatchObject({
+      dmgMult: 1,
+      crippable: true,
+    });
+    expect(parts.find((p) => p.name === 'Torso')).toMatchObject({ dmgMult: 3, crippable: false });
     expect(crippableLimbCount).toBe(1);
   });
 
@@ -110,13 +149,20 @@ describe('extractBodyParts NPC_ → RACE resolution', () => {
   // fields); BPTDs reuse the fixtures above.
   const records: Record<
     string,
-    { header: { signature: string; form_id: string }; editor_id: string; fields: Record<string, unknown> }
+    {
+      header: { signature: string; form_id: string };
+      editor_id: string;
+      fields: Record<string, unknown>;
+    }
   > = {
     HumanRace: {
       header: { signature: 'RACE', form_id: '0x00013746' },
       editor_id: 'HumanRace',
       // Mixed KWDA: only the ActorType* entries survive into `keywords`.
-      fields: { 'Body Part Data': '0x00017AD4', Keywords: { Keywords: ['0x0002CB72', '0x00013794', '0x00249612'] } },
+      fields: {
+        'Body Part Data': '0x00017AD4',
+        Keywords: { Keywords: ['0x0002CB72', '0x00013794', '0x00249612'] },
+      },
     },
     '0x0002CB72': {
       header: { signature: 'KYWD', form_id: '0x0002CB72' },
@@ -141,7 +187,10 @@ describe('extractBodyParts NPC_ → RACE resolution', () => {
     '0x00013746': {
       header: { signature: 'RACE', form_id: '0x00013746' },
       editor_id: 'HumanRace',
-      fields: { 'Body Part Data': '0x00017AD4', Keywords: { Keywords: ['0x0002CB72', '0x00013794', '0x00249612'] } },
+      fields: {
+        'Body Part Data': '0x00017AD4',
+        Keywords: { Keywords: ['0x0002CB72', '0x00013794', '0x00249612'] },
+      },
     },
     '0x00017AD4': {
       header: { signature: 'BPTD', form_id: '0x00017AD4' },
@@ -182,8 +231,8 @@ describe('extractBodyParts NPC_ → RACE resolution', () => {
 
   it('resolves NPC_ rows through fields.Race and RACE rows directly', async () => {
     const { races } = await extractBodyParts(fakeClient);
-    const boss = races.find(r => r.id === 'Burn_BountyTarget_BIG_Death');
-    const race = races.find(r => r.id === 'HumanRace');
+    const boss = races.find((r) => r.id === 'Burn_BountyTarget_BIG_Death');
+    const race = races.find((r) => r.id === 'HumanRace');
     expect(boss).toBeDefined();
     expect(race).toBeDefined();
     // The boss resolved to the RACE's formId and BPTD, not the NPC's.
@@ -198,9 +247,9 @@ describe('extractBodyParts NPC_ → RACE resolution', () => {
 
   it('records the resolved RACE edid and its ActorType* keywords for enemy-type matching', async () => {
     const { races } = await extractBodyParts(fakeClient);
-    const race = races.find(r => r.id === 'HumanRace');
-    const boss = races.find(r => r.id === 'Burn_BountyTarget_BIG_Death');
-    const guardianBoss = races.find(r => r.id === 'RD01_Enc01_GuardianBot');
+    const race = races.find((r) => r.id === 'HumanRace');
+    const boss = races.find((r) => r.id === 'Burn_BountyTarget_BIG_Death');
+    const guardianBoss = races.find((r) => r.id === 'RD01_Enc01_GuardianBot');
     // RACE rows: raceEdid equals the row id; KWDA filtered to ActorType* only.
     expect(race!.raceEdid).toBe('HumanRace');
     expect(race!.keywords).toEqual(['ActorTypeHuman', 'ActorTypeNPC']);
@@ -214,20 +263,22 @@ describe('extractBodyParts NPC_ → RACE resolution', () => {
 
   it('applies conditionPartsOnly through the full NPC_ → RACE → BPTD resolution', async () => {
     const { races } = await extractBodyParts(fakeClient);
-    const boss = races.find(r => r.id === 'RD01_Enc01_GuardianBot');
+    const boss = races.find((r) => r.id === 'RD01_Enc01_GuardianBot');
     expect(boss).toBeDefined();
-    expect(boss!.parts.map(p => p.name).sort()).toEqual(['Torso', 'Ultragenetic Shield System'].sort());
+    expect(boss!.parts.map((p) => p.name).sort()).toEqual(
+      ['Torso', 'Ultragenetic Shield System'].sort(),
+    );
     expect(boss!.crippableLimbCount).toBe(1);
     expect(boss!.noCripple).toBe(false);
   });
 
   it('forces every part non-crippable and crippableLimbCount to 0 for a crippleImmune race', async () => {
     const { races } = await extractBodyParts(fakeClient);
-    const blueDevil = races.find(r => r.id === 'BlueDevilRace');
+    const blueDevil = races.find((r) => r.id === 'BlueDevilRace');
     expect(blueDevil).toBeDefined();
     expect(blueDevil!.noCripple).toBe(true);
     expect(blueDevil!.crippableLimbCount).toBe(0);
-    expect(blueDevil!.parts.every(p => !p.crippable)).toBe(true);
+    expect(blueDevil!.parts.every((p) => !p.crippable)).toBe(true);
     // The parts themselves (names/mults) are unaffected — only crippable state is forced.
     expect(blueDevil!.parts.length).toBeGreaterThan(0);
   });
@@ -236,6 +287,6 @@ describe('extractBodyParts NPC_ → RACE resolution', () => {
     const { unresolved } = await extractBodyParts(fakeClient);
     // Every curated row missing from the fake store is reported, none throw.
     expect(unresolved.length).toBeGreaterThan(0);
-    expect(unresolved.every(u => u.startsWith('bodyparts:'))).toBe(true);
+    expect(unresolved.every((u) => u.startsWith('bodyparts:'))).toBe(true);
   });
 });

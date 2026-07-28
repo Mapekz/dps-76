@@ -104,15 +104,27 @@ describe('BUCKET_REGISTRY', () => {
   it('derives WEAPON_STAT_BUCKETS as exactly the weaponStat-regime buckets', () => {
     expect([...WEAPON_STAT_BUCKETS].sort()).toEqual(
       [
-        'fireRateSpeed', 'isAutomatic', 'animDurationSec', 'animDelaySec', 'projectileCount', 'ammoCapacity', 'reloadSpeed',
-        'vatsApCost', 'chargeFullPowerSec', 'chargeFullPowerDamageMult',
-        'weaponMinRange', 'weaponMaxRange', 'weaponOutOfRangeMult',
-      ].sort()
+        'fireRateSpeed',
+        'isAutomatic',
+        'animDurationSec',
+        'animDelaySec',
+        'projectileCount',
+        'ammoCapacity',
+        'reloadSpeed',
+        'vatsApCost',
+        'chargeFullPowerSec',
+        'chargeFullPowerDamageMult',
+        'weaponMinRange',
+        'weaponMaxRange',
+        'weaponOutOfRangeMult',
+      ].sort(),
     );
   });
 
   it('derives SUSTAIN_CHANCE_BUCKETS as exactly the sustainChance-regime buckets', () => {
-    expect([...SUSTAIN_CHANCE_BUCKETS].sort()).toEqual(['reloadSkipChance', 'reloadSkipChanceBash', 'ammoFreeChance'].sort());
+    expect([...SUSTAIN_CHANCE_BUCKETS].sort()).toEqual(
+      ['reloadSkipChance', 'reloadSkipChanceBash', 'ammoFreeChance'].sort(),
+    );
   });
 
   it('derives INERT_ENGINE_BUCKETS as exactly the no-engine-effect buckets', () => {
@@ -130,10 +142,15 @@ describe('BUCKET_REGISTRY', () => {
     // as limbDamage/bashDamage.
     expect([...INERT_ENGINE_BUCKETS].sort()).toEqual(
       [
-        'limbDamage', 'bashDamage', 'addDamageComponent',
-        'bulletStormOnKill', 'bulletStormSpinUp', 'deflectChance',
-        'damageResistGain', 'energyResistGain',
-      ].sort()
+        'limbDamage',
+        'bashDamage',
+        'addDamageComponent',
+        'bulletStormOnKill',
+        'bulletStormSpinUp',
+        'deflectChance',
+        'damageResistGain',
+        'energyResistGain',
+      ].sort(),
     );
   });
 });
@@ -146,7 +163,10 @@ function plainMod(bucket: Bucket, conditions: Modifier['conditions'] = []): Modi
 }
 
 /** Minimal curve-driven Modifier fixture, for the playerDamageResist-input case. */
-function curveMod(bucket: Bucket, input: Modifier['curve'] extends undefined ? never : NonNullable<Modifier['curve']>['input']): Modifier {
+function curveMod(
+  bucket: Bucket,
+  input: Modifier['curve'] extends undefined ? never : NonNullable<Modifier['curve']>['input'],
+): Modifier {
   return {
     id: 'test',
     source: SOURCE,
@@ -168,7 +188,7 @@ describe('modifierHasEngineEffect / hasAnyEngineEffect', () => {
     expect(modifierHasEngineEffect(plainMod('armorPenFlat'))).toBe(true);
   });
 
-  it('is true for a playerDamageResist-scaled curve (Berserker\'s wielder-DR wiring, renamed from enemyDamageResist)', () => {
+  it("is true for a playerDamageResist-scaled curve (Berserker's wielder-DR wiring, renamed from enemyDamageResist)", () => {
     expect(modifierHasEngineEffect(curveMod('dbm', 'playerDamageResist'))).toBe(true);
   });
 
@@ -176,12 +196,16 @@ describe('modifierHasEngineEffect / hasAnyEngineEffect', () => {
     expect(modifierHasEngineEffect(plainMod('vatsHitChance'))).toBe(true);
   });
 
-  it('is true for vatsHitChanceMult — display regime, Concentrated Fire\'s EP109 multiplier (USER-RESOLVED 2026-07-19)', () => {
+  it("is true for vatsHitChanceMult — display regime, Concentrated Fire's EP109 multiplier (USER-RESOLVED 2026-07-19)", () => {
     expect(modifierHasEngineEffect(plainMod('vatsHitChanceMult'))).toBe(true);
   });
 
   it('is false when the modifier carries an unresolved condition', () => {
-    expect(modifierHasEngineEffect(plainMod('dbm', [{ kind: 'unresolved', raw: 'GetRandomPercent()=20' }]))).toBe(false);
+    expect(
+      modifierHasEngineEffect(
+        plainMod('dbm', [{ kind: 'unresolved', raw: 'GetRandomPercent()=20' }]),
+      ),
+    ).toBe(false);
   });
 
   it('is true for an ordinary effective bucket with no gating issues', () => {

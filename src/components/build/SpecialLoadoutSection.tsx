@@ -2,7 +2,14 @@ import * as React from 'react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { ToggleGroup } from '@/components/ui/toggle-group';
@@ -28,7 +35,9 @@ function RaceControl() {
   const isGhoul = player.conditions.isGhoul ?? false;
 
   // Non-null while the removal-confirm dialog is open.
-  const [pending, setPending] = React.useState<{ isGhoul: boolean; removing: string[] } | null>(null);
+  const [pending, setPending] = React.useState<{ isGhoul: boolean; removing: string[] } | null>(
+    null,
+  );
 
   const handleClick = (race: 'human' | 'ghoul') => {
     const target = race === 'ghoul';
@@ -50,14 +59,22 @@ function RaceControl() {
       <ToggleGroup
         aria-label="Race"
         options={[
-          { value: 'human', label: 'Human', title: 'Human: food/drink meters apply; feral meter does not' },
-          { value: 'ghoul', label: 'Ghoul', title: 'Ghoul: feral meter applies; food/drink meters do not' },
+          {
+            value: 'human',
+            label: 'Human',
+            title: 'Human: food/drink meters apply; feral meter does not',
+          },
+          {
+            value: 'ghoul',
+            label: 'Ghoul',
+            title: 'Ghoul: feral meter applies; food/drink meters do not',
+          },
         ]}
         value={isGhoul ? 'ghoul' : 'human'}
         onValueChange={handleClick}
       />
 
-      <Dialog open={pending !== null} onOpenChange={open => !open && setPending(null)}>
+      <Dialog open={pending !== null} onOpenChange={(open) => !open && setPending(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Switch to {pending?.isGhoul ? 'Ghoul' : 'Human'}?</DialogTitle>
@@ -66,7 +83,9 @@ function RaceControl() {
             </DialogDescription>
           </DialogHeader>
           <ul className="text-negative list-inside list-disc text-sm">
-            {pending?.removing.map(name => <li key={name}>{name}</li>)}
+            {pending?.removing.map((name) => (
+              <li key={name}>{name}</li>
+            ))}
           </ul>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setPending(null)}>
@@ -93,7 +112,9 @@ export function SpecialLoadoutSection() {
   const isGhoul = player.conditions.isGhoul ?? false;
   const { cardCount, overBudget } = usePerkStatus();
   const legendaryBonus = legendaryBonusOf(player.legendaryPerks);
-  const specialSummary = SPECIAL_KEYS.map(k => player.conditions[k] + legendaryBonus[k]).join('·');
+  const specialSummary = SPECIAL_KEYS.map((k) => player.conditions[k] + legendaryBonus[k]).join(
+    '·',
+  );
   const summary = `${isGhoul ? 'Ghoul' : 'Human'} · ${specialSummary} · ${cardCount > 0 ? `${cardCount} cards` : 'no perks'}`;
 
   return (

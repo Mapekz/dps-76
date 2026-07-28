@@ -431,10 +431,7 @@
             "Explodable - Limb Replacement Scale": 1.0,
             "Flags": {
               "value": "0x9",
-              "flags": [
-                "Severable",
-                "Explodable"
-              ]
+              "flags": ["Severable", "Explodable"]
             },
             "Part Type": {
               "value": 13,
@@ -497,10 +494,7 @@
             "Explodable - Limb Replacement Scale": 1.0,
             "Flags": {
               "value": "0x9",
-              "flags": [
-                "Severable",
-                "Explodable"
-              ]
+              "flags": ["Severable", "Explodable"]
             },
             "Part Type": {
               "value": 10,
@@ -563,10 +557,7 @@
             "Explodable - Limb Replacement Scale": 1.0,
             "Flags": {
               "value": "0x9",
-              "flags": [
-                "Severable",
-                "Explodable"
-              ]
+              "flags": ["Severable", "Explodable"]
             },
             "Part Type": {
               "value": 8,
@@ -629,10 +620,7 @@
             "Explodable - Limb Replacement Scale": 1.0,
             "Flags": {
               "value": "0x9",
-              "flags": [
-                "Severable",
-                "Explodable"
-              ]
+              "flags": ["Severable", "Explodable"]
             },
             "Part Type": {
               "value": 6,
@@ -695,12 +683,7 @@
             "Explodable - Limb Replacement Scale": 0.0,
             "Flags": {
               "value": "0x1B",
-              "flags": [
-                "Severable",
-                "Hit Reaction",
-                "Explodable",
-                "Cut - Meat Cap Sever"
-              ]
+              "flags": ["Severable", "Hit Reaction", "Explodable", "Cut - Meat Cap Sever"]
             },
             "Part Type": {
               "value": 1,
@@ -763,11 +746,7 @@
             "Explodable - Limb Replacement Scale": 1.0,
             "Flags": {
               "value": "0xE",
-              "flags": [
-                "Hit Reaction",
-                "Hit Reaction - Default",
-                "Explodable"
-              ]
+              "flags": ["Hit Reaction", "Hit Reaction - Default", "Explodable"]
             },
             "Part Type": {
               "value": 0,

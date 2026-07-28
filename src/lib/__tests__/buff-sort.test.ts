@@ -8,14 +8,30 @@ function buff(name: string): GeneratedBuff {
 
 describe('byName', () => {
   it('sorts embedded issue numbers numerically, not lexicographically', () => {
-    const names = ['Guns and Bullets 10', 'Guns and Bullets 2', 'Guns and Bullets 1', 'Guns and Bullets 9'];
-    const sorted = names.map(buff).sort(byName).map(b => b.name);
-    expect(sorted).toEqual(['Guns and Bullets 1', 'Guns and Bullets 2', 'Guns and Bullets 9', 'Guns and Bullets 10']);
+    const names = [
+      'Guns and Bullets 10',
+      'Guns and Bullets 2',
+      'Guns and Bullets 1',
+      'Guns and Bullets 9',
+    ];
+    const sorted = names
+      .map(buff)
+      .sort(byName)
+      .map((b) => b.name);
+    expect(sorted).toEqual([
+      'Guns and Bullets 1',
+      'Guns and Bullets 2',
+      'Guns and Bullets 9',
+      'Guns and Bullets 10',
+    ]);
   });
 
   it('plain alphabetical names (no digits) sort unaffected', () => {
     const names = ['Bobblehead: Strength', 'Bobblehead: Agility', 'Bobblehead: Luck'];
-    const sorted = names.map(buff).sort(byName).map(b => b.name);
+    const sorted = names
+      .map(buff)
+      .sort(byName)
+      .map((b) => b.name);
     expect(sorted).toEqual(['Bobblehead: Agility', 'Bobblehead: Luck', 'Bobblehead: Strength']);
   });
 });

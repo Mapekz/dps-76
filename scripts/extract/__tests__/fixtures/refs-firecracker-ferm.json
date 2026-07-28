@@ -1,1 +1,58 @@
-[{"form_id":"0x003F6CDC","record_type":"CHAL","editor_id":"POST_Challenge_Weekly_Consume_Alcohol_Sub_FirecrackerWhiskey_Low_Brewing","name":null,"offset":939058959,"depth":1},{"form_id":"0x003F6CF5","record_type":"CHAL","editor_id":"POST_Challenge_Weekly_Craft_Alcohol_Sub_FirecrackerWhiskey_Low_Brewing","name":null,"offset":939058623,"depth":1},{"form_id":"0x0040A1F4","record_type":"CHAL","editor_id":"POST_Challenge_Weekly_Craft_Alcohol_Sub_FirecrackerWhiskey_Med_Brewing","name":null,"offset":938982414,"depth":1},{"form_id":"0x0040A20A","record_type":"CHAL","editor_id":"POST_Challenge_Weekly_Craft_Alcohol_Sub_FirecrackerWhiskey_High_Brewing","name":null,"offset":938998996,"depth":1},{"form_id":"0x0040A229","record_type":"CHAL","editor_id":"POST_Challenge_Weekly_Consume_Alcohol_Sub_FirecrackerWhiskey_Med_Brewing","name":null,"offset":939039793,"depth":1},{"form_id":"0x0040A23F","record_type":"CHAL","editor_id":"CUT_Challenge_WeirdBug08","name":null,"offset":939009798,"depth":1},{"form_id":"0x0040A255","record_type":"CHAL","editor_id":"POST_Challenge_Weekly_Consume_Alcohol_Sub_FirecrackerWhiskey_High_Brewing","name":null,"offset":939015436,"depth":1}]
+[
+  {
+    "form_id": "0x003F6CDC",
+    "record_type": "CHAL",
+    "editor_id": "POST_Challenge_Weekly_Consume_Alcohol_Sub_FirecrackerWhiskey_Low_Brewing",
+    "name": null,
+    "offset": 939058959,
+    "depth": 1
+  },
+  {
+    "form_id": "0x003F6CF5",
+    "record_type": "CHAL",
+    "editor_id": "POST_Challenge_Weekly_Craft_Alcohol_Sub_FirecrackerWhiskey_Low_Brewing",
+    "name": null,
+    "offset": 939058623,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0040A1F4",
+    "record_type": "CHAL",
+    "editor_id": "POST_Challenge_Weekly_Craft_Alcohol_Sub_FirecrackerWhiskey_Med_Brewing",
+    "name": null,
+    "offset": 938982414,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0040A20A",
+    "record_type": "CHAL",
+    "editor_id": "POST_Challenge_Weekly_Craft_Alcohol_Sub_FirecrackerWhiskey_High_Brewing",
+    "name": null,
+    "offset": 938998996,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0040A229",
+    "record_type": "CHAL",
+    "editor_id": "POST_Challenge_Weekly_Consume_Alcohol_Sub_FirecrackerWhiskey_Med_Brewing",
+    "name": null,
+    "offset": 939039793,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0040A23F",
+    "record_type": "CHAL",
+    "editor_id": "CUT_Challenge_WeirdBug08",
+    "name": null,
+    "offset": 939009798,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0040A255",
+    "record_type": "CHAL",
+    "editor_id": "POST_Challenge_Weekly_Consume_Alcohol_Sub_FirecrackerWhiskey_High_Brewing",
+    "name": null,
+    "offset": 939015436,
+    "depth": 1
+  }
+]

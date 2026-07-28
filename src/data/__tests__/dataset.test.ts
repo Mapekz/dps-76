@@ -26,15 +26,15 @@ describe('getUnresolvedOverrideKeys', () => {
 describe('getDataset value overlays', () => {
   it('folds a real legendary modifier override into the live Merged Dataset', () => {
     const id = 'mod_Legendary_Weapon2_DmgLimbs';
-    expect(getDataset('live').omods.find(omod => omod.id === id)?.modifiers).toEqual(
-      legendaryValueOverrides[id]
+    expect(getDataset('live').omods.find((omod) => omod.id === id)?.modifiers).toEqual(
+      legendaryValueOverrides[id],
     );
   });
 });
 
 describe('generated uniques resolve', () => {
   it('every unique id maps to an omod and baseWeaponId to a generated weapon (live)', () => {
-    const weaponIds = new Set(generatedWeaponsRawLive.map(w => w.id));
+    const weaponIds = new Set(generatedWeaponsRawLive.map((w) => w.id));
     for (const unique of generatedUniquesLive as unknown as GeneratedUnique[]) {
       expect(getOmodById('live', unique.id), `${unique.id} omod`).toBeDefined();
       expect(weaponIds.has(unique.baseWeaponId), `${unique.baseWeaponId} weapon`).toBe(true);

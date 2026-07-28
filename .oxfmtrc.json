@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "singleQuote": true,
+  "ignorePatterns": [
+    "src/data/*/generated/**",
+    "src/data/*/curvetables/**",
+    "**/*.md",
+    "**/*.yml",
+    "**/*.yaml"
+  ]
+}

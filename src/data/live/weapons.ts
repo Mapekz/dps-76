@@ -48,7 +48,11 @@ function classifyWeaponClass(gw: GeneratedWeapon): Weapon['weaponClass'] {
   if (kw.has('WeaponTypeThrown') || gw.weaponTypeName === 'Grenade') return 'thrown';
   if (kw.has('WeaponTypeUnarmed') || gw.weaponTypeName === 'HandToHandMelee') return 'unarmed';
   if (kw.has('WeaponTypeRifle')) return 'rifle';
-  if (gw.weaponTypeName === 'OneHandSword' || gw.weaponTypeName === 'TwoHandSword' || kw.has('WeaponTypeMeleeGeneral')) {
+  if (
+    gw.weaponTypeName === 'OneHandSword' ||
+    gw.weaponTypeName === 'TwoHandSword' ||
+    kw.has('WeaponTypeMeleeGeneral')
+  ) {
     return 'melee';
   }
   // Remaining guns without a class keyword (e.g. some uniques) — treat as rifle.
@@ -62,10 +66,10 @@ function classifyWeaponClass(gw: GeneratedWeapon): Weapon['weaponClass'] {
  */
 export function adaptWeapon(
   gw: GeneratedWeapon,
-  corrections: Readonly<Record<string, Partial<Weapon>>> = {}
+  corrections: Readonly<Record<string, Partial<Weapon>>> = {},
 ): Weapon {
   const levelCap = gw.eligibleLevels.length > 0 ? Math.min(50, Math.max(...gw.eligibleLevels)) : 50;
-  const components = gw.components.map(c => ({
+  const components = gw.components.map((c) => ({
     damageType: DAMAGE_TYPE_MAP[c.damageType],
     tier: c.tier ?? -1,
     levelCap,
@@ -85,8 +89,9 @@ export function adaptWeapon(
   const animDelaySec =
     weaponClass === 'melee' || weaponClass === 'unarmed'
       ? gw.animationAttackSec
-      : gw.attackDelaySec > 0 ? gw.attackDelaySec : undefined;
-
+      : gw.attackDelaySec > 0
+        ? gw.attackDelaySec
+        : undefined;
 
   return {
     id: gw.id,
@@ -147,7 +152,7 @@ export const DEFAULT_LEVEL_STOPS: readonly number[] = [1, 5, 10, 15, 20, 25, 30,
  * record ships none (~44 weapons carry `[]`).
  */
 export function weaponLevelStops(weapon: Weapon | undefined): readonly number[] {
-  const eligible = (weapon?.eligibleLevels ?? []).filter(l => l >= 1 && l <= 50);
+  const eligible = (weapon?.eligibleLevels ?? []).filter((l) => l >= 1 && l <= 50);
   if (eligible.length === 0) return DEFAULT_LEVEL_STOPS;
   return [...new Set(eligible)].sort((a, b) => a - b);
 }
@@ -170,18 +175,18 @@ export const generatedWeaponsRaw = generatedWeapons as GeneratedWeapon[];
 export function buildWeapons(
   generated: GeneratedWeapon[],
   visibility: VisibilityOverlay,
-  corrections: Readonly<Record<string, Partial<Weapon>>>
+  corrections: Readonly<Record<string, Partial<Weapon>>>,
 ): Record<string, Weapon> {
   return Object.fromEntries(
     generated
-    // Obtainability verdicts ride the generated data (obtainable: false =
-    // no player-reachable ESM reference); corrections.ts rescues false
-    // negatives and hides false positives. Unlike omods/consumables, hidden
-    // weapon records are dropped from the dataset entirely (not just the
-    // picker) — hiddenWeaponIds targets records that were never real player
-    // weapons in the first place (dev items, workshop objects, NPC
-    // duplicates), not real content a stale build might still reference.
-      .filter(gw => isRecordVisible(gw, visibility))
-      .map(gw => [gw.id, adaptWeapon(gw, corrections)])
+      // Obtainability verdicts ride the generated data (obtainable: false =
+      // no player-reachable ESM reference); corrections.ts rescues false
+      // negatives and hides false positives. Unlike omods/consumables, hidden
+      // weapon records are dropped from the dataset entirely (not just the
+      // picker) — hiddenWeaponIds targets records that were never real player
+      // weapons in the first place (dev items, workshop objects, NPC
+      // duplicates), not real content a stale build might still reference.
+      .filter((gw) => isRecordVisible(gw, visibility))
+      .map((gw) => [gw.id, adaptWeapon(gw, corrections)]),
   );
 }

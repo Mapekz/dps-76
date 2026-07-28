@@ -19,13 +19,21 @@ function SuggestionRow({ suggestion, tied }: { suggestion: EvaluatedSuggestion; 
         {suggestion.label}
       </span>
       {!suggestion.budget.legal && (
-        <span className="text-negative whitespace-nowrap text-[10px]" title="Would exceed the perk point budget">
+        <span
+          className="text-negative whitespace-nowrap text-[10px]"
+          title="Would exceed the perk point budget"
+        >
           {suggestion.budget.special
             ? `needs ${suggestion.budget.deficit} pt in ${suggestion.budget.special.slice(0, 3).toUpperCase()}`
             : 'no free slot'}
         </span>
       )}
-      <span className={cn('font-mono text-xs tabular-nums', tied ? 'text-muted-foreground' : 'text-positive')}>
+      <span
+        className={cn(
+          'font-mono text-xs tabular-nums',
+          tied ? 'text-muted-foreground' : 'text-positive',
+        )}
+      >
         {tied ? '≈' : formatPercentDelta(suggestion.primaryDeltaPct)}
       </span>
       <Button
@@ -70,7 +78,7 @@ export function SuggestionsPanel() {
         </p>
       ) : (
         <div className="divide-border/50 divide-y">
-          {ranked.map(s => (
+          {ranked.map((s) => (
             <SuggestionRow key={s.id} suggestion={s} />
           ))}
         </div>
@@ -82,16 +90,20 @@ export function SuggestionsPanel() {
             <Separator className="flex-1" />
             <Tooltip>
               <TooltipTrigger
-                render={<span className="text-muted-foreground cursor-default text-[10px] uppercase tracking-wide" />}
+                render={
+                  <span className="text-muted-foreground cursor-default text-[10px] uppercase tracking-wide" />
+                }
               >
                 effectively tied
               </TooltipTrigger>
-              <TooltipContent>Gains under 1% — within the noise of the fire-rate approximation.</TooltipContent>
+              <TooltipContent>
+                Gains under 1% — within the noise of the fire-rate approximation.
+              </TooltipContent>
             </Tooltip>
             <Separator className="flex-1" />
           </div>
           <div className="divide-border/50 divide-y">
-            {tied.map(s => (
+            {tied.map((s) => (
               <SuggestionRow key={s.id} suggestion={s} tied />
             ))}
           </div>

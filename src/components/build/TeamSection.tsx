@@ -44,17 +44,20 @@ export function TeamSection() {
   // Plain-value only (no curve) per getPublicTeamModifiers' contract — the
   // `!teamBonus.curve` check just satisfies the ModifierValue discriminant.
   const teamBonusText =
-    teamBonus && !teamBonus.curve ? `+${teamBonus.value} ${SPECIAL_ABBR[teamBonus.bucket] ?? teamBonus.bucket}` : null;
+    teamBonus && !teamBonus.curve
+      ? `+${teamBonus.value} ${SPECIAL_ABBR[teamBonus.bucket] ?? teamBonus.bucket}`
+      : null;
 
   // Derived, not stored: same rule resolveLoadout feeds the engine (see
   // deriveStrangeInNumbers) — the card must be equipped AND a teammate present.
-  const sinEquipped = player.perks.some(p => p.perkId === 'StrangeInNumbers');
+  const sinEquipped = player.perks.some((p) => p.perkId === 'StrangeInNumbers');
   const sinActive = deriveStrangeInNumbers(player.perks, conditions);
 
   // United Ordeal (GHL_UnitedOrdeal): a ghoul-only perk with team bonuses —
   // "active" mirrors Strange in Numbers' teammate gate, plus the race check.
-  const unitedOrdealEquipped = player.perks.some(p => p.perkId === 'UnitedOrdeal');
-  const unitedOrdealActive = unitedOrdealEquipped && (conditions.isGhoul ?? false) && conditions.teammateCount >= 1;
+  const unitedOrdealEquipped = player.perks.some((p) => p.perkId === 'UnitedOrdeal');
+  const unitedOrdealActive =
+    unitedOrdealEquipped && (conditions.isGhoul ?? false) && conditions.teammateCount >= 1;
 
   const summary =
     conditions.teammateCount === 0 && publicTeamType === 'none'
@@ -95,9 +98,9 @@ export function TeamSection() {
             <Label>Teammates</Label>
             <ToggleGroup
               aria-label="Teammates"
-              options={[0, 1, 2, 3].map(n => ({ value: n, label: String(n) }))}
+              options={[0, 1, 2, 3].map((n) => ({ value: n, label: String(n) }))}
               value={conditions.teammateCount}
-              onValueChange={v => set('teammateCount', v)}
+              onValueChange={(v) => set('teammateCount', v)}
             />
           </div>
 
@@ -107,16 +110,18 @@ export function TeamSection() {
               aria-label="Public team"
               options={PUBLIC_TEAM_OPTIONS}
               value={publicTeamType}
-              onValueChange={v => set('publicTeamType', v)}
+              onValueChange={(v) => set('publicTeamType', v)}
             />
             {teamBonusText && (
-              <p className="text-muted-foreground text-xs">{teamBonusText} from the public-team SPECIAL fortify</p>
+              <p className="text-muted-foreground text-xs">
+                {teamBonusText} from the public-team SPECIAL fortify
+              </p>
             )}
           </div>
 
           <p className="text-muted-foreground text-xs">
-            Teammates are assumed mutated (for Strange in Numbers) and ghoul (for United Ordeal) — teammate identity
-            isn't modeled.
+            Teammates are assumed mutated (for Strange in Numbers) and ghoul (for United Ordeal) —
+            teammate identity isn't modeled.
           </p>
 
           <div className="space-y-1 text-sm">
@@ -130,7 +135,11 @@ export function TeamSection() {
               <div className="flex items-center justify-between">
                 <span>United Ordeal</span>
                 <span className={unitedOrdealActive ? 'font-medium' : 'text-muted-foreground'}>
-                  {unitedOrdealEquipped ? (unitedOrdealActive ? 'active' : 'inactive') : 'not equipped'}
+                  {unitedOrdealEquipped
+                    ? unitedOrdealActive
+                      ? 'active'
+                      : 'inactive'
+                    : 'not equipped'}
                 </span>
               </div>
             )}

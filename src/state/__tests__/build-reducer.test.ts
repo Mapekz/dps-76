@@ -1,5 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
-import { makeBuildReducer, createDefaultBuildState, type BuildAction, type BuildState } from '@/state/build-reducer';
+import {
+  makeBuildReducer,
+  createDefaultBuildState,
+  type BuildAction,
+  type BuildState,
+} from '@/state/build-reducer';
 import type { GeneratedBuff } from '@/types/generated';
 
 const buildReducer = makeBuildReducer('live');
@@ -13,18 +18,41 @@ function run(actions: BuildAction[], from: BuildState = createDefaultBuildState(
 // implementation against fixtures that are hermetic against whatever
 // scripts/extract currently produces (a concurrent agent is rewriting the
 // buff extractor).
-vi.mock('@/lib/consumable-rules', async importOriginal => {
+vi.mock('@/lib/consumable-rules', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/lib/consumable-rules')>();
-  const chemA: GeneratedBuff = { id: 'ChemA', formId: '0xC1', name: 'Chem A', kind: 'consumable', modifiers: [], notes: [], category: 'chem' };
-  const chemB: GeneratedBuff = { id: 'ChemB', formId: '0xC2', name: 'Chem B', kind: 'consumable', modifiers: [], notes: [], category: 'chem' };
-  const stub = new Map<string, GeneratedBuff>([[chemA.id, chemA], [chemB.id, chemB]]);
+  const chemA: GeneratedBuff = {
+    id: 'ChemA',
+    formId: '0xC1',
+    name: 'Chem A',
+    kind: 'consumable',
+    modifiers: [],
+    notes: [],
+    category: 'chem',
+  };
+  const chemB: GeneratedBuff = {
+    id: 'ChemB',
+    formId: '0xC2',
+    name: 'Chem B',
+    kind: 'consumable',
+    modifiers: [],
+    notes: [],
+    category: 'chem',
+  };
+  const stub = new Map<string, GeneratedBuff>([
+    [chemA.id, chemA],
+    [chemB.id, chemB],
+  ]);
   return { ...actual, consumablesById: () => stub };
 });
 
 describe('buildReducer', () => {
   it('weapon/select equips fresh and null unequips', () => {
     const s = run([{ type: 'weapon/select', weaponId: 'CombatRifle_Fixer' }]);
-    expect(s.player.weapon).toEqual({ weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [] });
+    expect(s.player.weapon).toEqual({
+      weaponId: 'CombatRifle_Fixer',
+      mods: {},
+      legendaryEffects: [],
+    });
     expect(run([{ type: 'weapon/select', weaponId: null }], s).player.weapon).toBeNull();
   });
 
@@ -48,38 +76,70 @@ describe('buildReducer', () => {
   it('weapon/selectUnique cross-base installs preset with per-slot legendary merge', () => {
     const fromFixer = run([
       { type: 'weapon/select', weaponId: 'CombatRifle_Fixer' },
-      { type: 'weapon/legendary', slotIndex: 0, omodId: 'mod_Legendary_Weapon1_Guns_AmmoCapacity4x' },
+      {
+        type: 'weapon/legendary',
+        slotIndex: 0,
+        omodId: 'mod_Legendary_Weapon1_Guns_AmmoCapacity4x',
+      },
     ]);
-    const salt = run([{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }], fromFixer);
+    const salt = run(
+      [{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }],
+      fromFixer,
+    );
     expect(salt.player.weapon?.weaponId).toBe('DoubleBarrelShotgun');
     expect(salt.player.weapon?.mods.ap_customName).toBe('mod_Custom_SaltOfTheEarth');
-    expect(salt.player.weapon?.legendaryEffects[0]).toBe('mod_Legendary_Weapon1_Guns_AmmoCapacity4x');
+    expect(salt.player.weapon?.legendaryEffects[0]).toBe(
+      'mod_Legendary_Weapon1_Guns_AmmoCapacity4x',
+    );
     expect(salt.player.weapon?.legendaryEffects[2]).toBe('mod_Legendary_Weapon3_Guns_ReloadSpeed');
   });
 
   it('weapon/selectUnique on same base without unique only sets identity slot', () => {
     const bare = run([
       { type: 'weapon/select', weaponId: 'DoubleBarrelShotgun' },
-      { type: 'weapon/mod', slot: 'ap_gun_Barrel', omodId: 'mod_DoubleBarrelShotgun_barrel_long_Base' },
-      { type: 'weapon/legendary', slotIndex: 0, omodId: 'mod_Legendary_Weapon1_Guns_AmmoCapacity4x' },
+      {
+        type: 'weapon/mod',
+        slot: 'ap_gun_Barrel',
+        omodId: 'mod_DoubleBarrelShotgun_barrel_long_Base',
+      },
+      {
+        type: 'weapon/legendary',
+        slotIndex: 0,
+        omodId: 'mod_Legendary_Weapon1_Guns_AmmoCapacity4x',
+      },
     ]);
-    const salt = run([{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }], bare);
+    const salt = run(
+      [{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }],
+      bare,
+    );
     expect(salt.player.weapon?.mods.ap_gun_Barrel).toBe('mod_DoubleBarrelShotgun_barrel_long_Base');
     expect(salt.player.weapon?.mods.ap_customName).toBe('mod_Custom_SaltOfTheEarth');
-    expect(salt.player.weapon?.legendaryEffects[0]).toBe('mod_Legendary_Weapon1_Guns_AmmoCapacity4x');
+    expect(salt.player.weapon?.legendaryEffects[0]).toBe(
+      'mod_Legendary_Weapon1_Guns_AmmoCapacity4x',
+    );
   });
 
   it('weapon/selectUnique same-base different unique applies full preset', () => {
-    const cold = run([{ type: 'weapon/selectUnique', uniqueId: 'mod_custom_Coldshoulder_DmgvsCryptid' }]);
-    const salt = run([{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }], cold);
+    const cold = run([
+      { type: 'weapon/selectUnique', uniqueId: 'mod_custom_Coldshoulder_DmgvsCryptid' },
+    ]);
+    const salt = run(
+      [{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }],
+      cold,
+    );
     expect(salt.player.weapon?.mods.ap_customName).toBe('mod_Custom_SaltOfTheEarth');
-    expect(salt.player.weapon?.mods.ap_gun_Receiver).toBe('mod_DoubleBarrelShotgun_Receiver_FastTrigger-HipAccuracy');
+    expect(salt.player.weapon?.mods.ap_gun_Receiver).toBe(
+      'mod_DoubleBarrelShotgun_Receiver_FastTrigger-HipAccuracy',
+    );
     expect(salt.player.weapon?.legendaryEffects[2]).toBe('mod_Legendary_Weapon3_Guns_ReloadSpeed');
   });
 
   it('weapon/selectUnique re-select is a no-op', () => {
     const equipped = run([{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }]);
-    const again = run([{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }], equipped);
+    const again = run(
+      [{ type: 'weapon/selectUnique', uniqueId: 'mod_Custom_SaltOfTheEarth' }],
+      equipped,
+    );
     expect(again).toBe(equipped);
   });
 
@@ -92,20 +152,34 @@ describe('buildReducer', () => {
     // Fresh build starts at 1 across the board.
     expect(createDefaultBuildState().player.conditions.strength).toBe(1);
     expect(run([{ type: 'special/set', stat: 'luck', value: 33 }]).player.conditions.luck).toBe(15);
-    expect(run([{ type: 'special/set', stat: 'strength', value: -1 }]).player.conditions.strength).toBe(1);
+    expect(
+      run([{ type: 'special/set', stat: 'strength', value: -1 }]).player.conditions.strength,
+    ).toBe(1);
 
     // All stats at 8 = exactly 56 allocated; any further raise is refused.
     const maxedPool = run(
-      (['strength', 'perception', 'endurance', 'charisma', 'intelligence', 'agility', 'luck'] as const).map(stat => ({
+      (
+        [
+          'strength',
+          'perception',
+          'endurance',
+          'charisma',
+          'intelligence',
+          'agility',
+          'luck',
+        ] as const
+      ).map((stat) => ({
         type: 'special/set' as const,
         stat,
         value: 8,
-      }))
+      })),
     );
     const refused = run([{ type: 'special/set', stat: 'luck', value: 9 }], maxedPool);
     expect(refused).toBe(maxedPool);
     // Lowering is always allowed.
-    expect(run([{ type: 'special/set', stat: 'luck', value: 3 }], maxedPool).player.conditions.luck).toBe(3);
+    expect(
+      run([{ type: 'special/set', stat: 'luck', value: 3 }], maxedPool).player.conditions.luck,
+    ).toBe(3);
   });
 
   it('blocks card slotting past min(15, base + Legendary SPECIAL bonus) and past the 6 legendary slots', () => {
@@ -120,7 +194,7 @@ describe('buildReducer', () => {
         { type: 'special/set', stat: 'perception', value: 3 },
         { type: 'perk/setRank', perkId: 'CenterMasochist', rank: 3 },
       ],
-      one
+      one,
     );
     expect(raised.player.perks).toEqual([{ perkId: 'CenterMasochist', rank: 3 }]);
 
@@ -130,7 +204,7 @@ describe('buildReducer', () => {
         { type: 'perk/add', perkId: 'LegendaryPerception', rank: 1, legendary: true },
         { type: 'perk/setRank', perkId: 'CenterMasochist', rank: 2 },
       ],
-      one
+      one,
     );
     expect(viaLeggo.player.perks).toEqual([{ perkId: 'CenterMasochist', rank: 2 }]);
 
@@ -142,7 +216,10 @@ describe('buildReducer', () => {
       { type: 'perk/add', perkId: 'LegendaryIntelligence', rank: 1, legendary: true },
       { type: 'perk/add', perkId: 'LegendaryAgility', rank: 1, legendary: true },
     ]);
-    const seventh = run([{ type: 'perk/add', perkId: 'LegendaryLuck', rank: 1, legendary: true }], legendaries);
+    const seventh = run(
+      [{ type: 'perk/add', perkId: 'LegendaryLuck', rank: 1, legendary: true }],
+      legendaries,
+    );
     expect(seventh.player.legendaryPerks).toHaveLength(6);
   });
 
@@ -163,7 +240,7 @@ describe('buildReducer', () => {
         { type: 'perk/remove', perkId: 'CenterMasochist' },
         { type: 'perk/remove', perkId: 'LegendaryLuck' },
       ],
-      s
+      s,
     );
     expect(removed.player.perks).toEqual([]);
     expect(removed.player.legendaryPerks).toEqual([]);
@@ -181,7 +258,9 @@ describe('buildReducer', () => {
     const herb = run([{ type: 'mutation/toggle', id: 'Mutation_Herbivore' }], carn);
     expect(herb.player.mutations).toEqual(['Mutation_Herbivore']);
     // Toggling the active one OFF does not resurrect the evicted twin.
-    expect(run([{ type: 'mutation/toggle', id: 'Mutation_Herbivore' }], herb).player.mutations).toEqual([]);
+    expect(
+      run([{ type: 'mutation/toggle', id: 'Mutation_Herbivore' }], herb).player.mutations,
+    ).toEqual([]);
   });
 
   it('consumable/toggle enforces stacking rules (auto-displaces a colliding chem)', () => {
@@ -196,7 +275,9 @@ describe('buildReducer', () => {
   it('addiction/toggle flips membership, independent of consumable selection', () => {
     const on = run([{ type: 'addiction/toggle', id: 'AbAddictionX' }]);
     expect(on.player.addictions).toEqual(['AbAddictionX']);
-    expect(run([{ type: 'addiction/toggle', id: 'AbAddictionX' }], on).player.addictions).toEqual([]);
+    expect(run([{ type: 'addiction/toggle', id: 'AbAddictionX' }], on).player.addictions).toEqual(
+      [],
+    );
   });
 
   it('condition/set and enemy/condition patch the right config', () => {
@@ -222,14 +303,22 @@ describe('buildReducer', () => {
             { key: '01', name: 'RadSpecialist', rank: 1 }, // ghoul card — regular, not legendary
           ],
           name: 'My Build',
-          special: { strength: 5, perception: 20, endurance: 5, charisma: 5, intelligence: 5, agility: 5, luck: 15 },
+          special: {
+            strength: 5,
+            perception: 20,
+            endurance: 5,
+            charisma: 5,
+            intelligence: 5,
+            agility: 5,
+            luck: 15,
+          },
           isGhoul: true, // RadSpecialist (key '01') is ghoul-only — Human would prune it
         },
       ],
-      before
+      before,
     );
     expect(s.buildName).toBe('My Build');
-    expect(s.player.perks.some(p => p.perkId === 'OldPerk')).toBe(false);
+    expect(s.player.perks.some((p) => p.perkId === 'OldPerk')).toBe(false);
     // s= SPECIAL merged, clamped to the 15-per-stat cap.
     expect(s.player.conditions.perception).toBe(15);
     expect(s.player.conditions.luck).toBe(15);
@@ -250,7 +339,7 @@ describe('buildReducer', () => {
         isGhoul: true,
       },
     ]);
-    expect(s.player.perks.some(p => p.perkId === 'GlowingCriticals')).toBe(true);
+    expect(s.player.perks.some((p) => p.perkId === 'GlowingCriticals')).toBe(true);
     expect(s.player.conditions.isGhoul).toBe(true);
 
     // A mixed-race (invalid) link imported as Human drops the ghoul-only card.
@@ -311,14 +400,17 @@ describe('body-part mult and race forcing', () => {
   it('rejects adding a ghoul-only perk while Human is selected (state unchanged)', () => {
     // Fresh builds start Human. Ghoul cards are regular SPECIAL-slotted perks (not legendary).
     const s = run([{ type: 'perk/add', perkId: 'GlowingCriticals', rank: 1, legendary: false }]);
-    expect(s.player.perks.some(p => p.perkId === 'GlowingCriticals')).toBe(false);
+    expect(s.player.perks.some((p) => p.perkId === 'GlowingCriticals')).toBe(false);
     expect(s.player.conditions.isGhoul).toBe(false);
   });
 
   it('adds a ghoul-only perk once the race is already Ghoul', () => {
     const asGhoul = run([{ type: 'race/set', isGhoul: true }]);
-    const s = run([{ type: 'perk/add', perkId: 'GlowingCriticals', rank: 1, legendary: false }], asGhoul);
-    expect(s.player.perks.some(p => p.perkId === 'GlowingCriticals')).toBe(true);
+    const s = run(
+      [{ type: 'perk/add', perkId: 'GlowingCriticals', rank: 1, legendary: false }],
+      asGhoul,
+    );
+    expect(s.player.perks.some((p) => p.perkId === 'GlowingCriticals')).toBe(true);
   });
 
   it('adding an unrestricted perk leaves race alone', () => {
@@ -327,7 +419,10 @@ describe('body-part mult and race forcing', () => {
   });
 
   it('race/set switches race and prunes equipped perks locked to the old race', () => {
-    const withHumanPerk = run([{ type: 'race/set', isGhoul: false }, { type: 'perk/add', perkId: 'QuickHands', rank: 1, legendary: false }]);
+    const withHumanPerk = run([
+      { type: 'race/set', isGhoul: false },
+      { type: 'perk/add', perkId: 'QuickHands', rank: 1, legendary: false },
+    ]);
     expect(withHumanPerk.player.perks).toEqual([{ perkId: 'QuickHands', rank: 1 }]);
 
     const switched = run([{ type: 'race/set', isGhoul: true }], withHumanPerk);

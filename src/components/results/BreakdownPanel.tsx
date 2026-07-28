@@ -1,4 +1,9 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
 import { MultiplierChainTable } from './MultiplierChainTable';
@@ -16,7 +21,9 @@ export function BreakdownPanel() {
   return (
     <Accordion
       value={view.breakdownOpen ? ['breakdown'] : []}
-      onValueChange={value => dispatch({ type: 'view/set', view: { breakdownOpen: value.includes('breakdown') } })}
+      onValueChange={(value) =>
+        dispatch({ type: 'view/set', view: { breakdownOpen: value.includes('breakdown') } })
+      }
     >
       <AccordionItem value="breakdown" className="border-b-0">
         <AccordionTrigger className="py-2">

@@ -80,10 +80,26 @@ export interface CurveTableGroup {
  * prefix search silently drops tier49, 49 files instead of the true 50).
  */
 export const CURVE_TABLE_GROUPS: CurveTableGroup[] = [
-  { pattern: '*Creatures_Health_Universal_Tier*', outSubdir: 'creatures/health', filePrefix: 'health_universal_tier' },
-  { pattern: '*Creatures_Armor_Universal_Tier*', outSubdir: 'creatures/armor', filePrefix: 'armor_universal_tier' },
-  { pattern: '*Player_Damage_Universal_Tier*', outSubdir: 'player/damage', filePrefix: 'damage_universal_tier' },
-  { pattern: '*Player_Armor_Universal_Tier*', outSubdir: 'player/armor', filePrefix: 'armor_universal_tier' },
+  {
+    pattern: '*Creatures_Health_Universal_Tier*',
+    outSubdir: 'creatures/health',
+    filePrefix: 'health_universal_tier',
+  },
+  {
+    pattern: '*Creatures_Armor_Universal_Tier*',
+    outSubdir: 'creatures/armor',
+    filePrefix: 'armor_universal_tier',
+  },
+  {
+    pattern: '*Player_Damage_Universal_Tier*',
+    outSubdir: 'player/damage',
+    filePrefix: 'damage_universal_tier',
+  },
+  {
+    pattern: '*Player_Armor_Universal_Tier*',
+    outSubdir: 'player/armor',
+    filePrefix: 'armor_universal_tier',
+  },
 ];
 
 export interface CurveTableSingleton {
@@ -200,7 +216,7 @@ export interface CurveTablesResult {
 async function resolveSingletonRecord(
   client: EsmClient,
   singleton: CurveTableSingleton,
-  unresolved: string[]
+  unresolved: string[],
 ): Promise<EsmRecord | null> {
   if (singleton.dfob) {
     const { formId, editorId } = singleton.dfob;
@@ -208,24 +224,28 @@ async function resolveSingletonRecord(
       const dfobRecord = await client.get(formId);
       const target = dfobRecord.fields['Object'];
       if (typeof target !== 'string') {
-        unresolved.push(`curvetables: DFOB ${editorId} (${formId}) has no Object formid — falling back to ${singleton.editorId}`);
+        unresolved.push(
+          `curvetables: DFOB ${editorId} (${formId}) has no Object formid — falling back to ${singleton.editorId}`,
+        );
       } else {
         const record = await client.get(target);
         if (record.header.signature !== 'CURV') {
           unresolved.push(
-            `curvetables: DFOB ${editorId} points at ${record.header.signature} ${record.editor_id} (${target}), not a CURV — falling back to ${singleton.editorId}`
+            `curvetables: DFOB ${editorId} points at ${record.header.signature} ${record.editor_id} (${target}), not a CURV — falling back to ${singleton.editorId}`,
           );
         } else {
           if (record.editor_id !== singleton.editorId) {
             unresolved.push(
-              `curvetables: DFOB ${editorId} repointed — expected CURV ${singleton.editorId}, got ${record.editor_id} (${target}); using the DFOB target, review the rename/repoint`
+              `curvetables: DFOB ${editorId} repointed — expected CURV ${singleton.editorId}, got ${record.editor_id} (${target}); using the DFOB target, review the rename/repoint`,
             );
           }
           return record;
         }
       }
     } catch (err) {
-      unresolved.push(`curvetables: DFOB ${editorId} (${formId}) failed to resolve: ${(err as Error).message} — falling back to ${singleton.editorId}`);
+      unresolved.push(
+        `curvetables: DFOB ${editorId} (${formId}) failed to resolve: ${(err as Error).message} — falling back to ${singleton.editorId}`,
+      );
     }
   }
   try {
@@ -250,10 +270,12 @@ export async function extractCurveTables(client: EsmClient): Promise<CurveTables
     }
 
     const withTiers = matches
-      .map(m => ({ ...m, tier: tierFromEdid(m.editor_id) }))
-      .filter(m => {
+      .map((m) => ({ ...m, tier: tierFromEdid(m.editor_id) }))
+      .filter((m) => {
         if (m.tier == null) {
-          unresolved.push(`curvetables: ${group.outSubdir} record ${m.editor_id} (${m.form_id}) has no parseable tier suffix`);
+          unresolved.push(
+            `curvetables: ${group.outSubdir} record ${m.editor_id} (${m.form_id}) has no parseable tier suffix`,
+          );
           return false;
         }
         return true;
@@ -265,7 +287,9 @@ export async function extractCurveTables(client: EsmClient): Promise<CurveTables
       try {
         record = await client.get(m.form_id);
       } catch (err) {
-        unresolved.push(`curvetables: get ${m.editor_id} (${m.form_id}) failed: ${(err as Error).message}`);
+        unresolved.push(
+          `curvetables: get ${m.editor_id} (${m.form_id}) failed: ${(err as Error).message}`,
+        );
         continue;
       }
       const content = toCurveTableFile(record.fields['Curve']);
@@ -287,7 +311,9 @@ export async function extractCurveTables(client: EsmClient): Promise<CurveTables
     if (!record) continue;
     const content = toCurveTableFile(record.fields['Curve']);
     if (!content || content.curve.length === 0) {
-      unresolved.push(`curvetables: ${record.editor_id} (${record.header.form_id}) has no curve points`);
+      unresolved.push(
+        `curvetables: ${record.editor_id} (${record.header.form_id}) has no curve points`,
+      );
       continue;
     }
     files.push({

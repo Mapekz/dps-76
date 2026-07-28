@@ -26,12 +26,7 @@
     "Configuration": {
       "Flags": {
         "value": "0x138",
-        "flags": [
-          "Respawn",
-          "Auto-calc stats",
-          "Unique",
-          "Has Base Sound Data"
-        ]
+        "flags": ["Respawn", "Auto-calc stats", "Unique", "Has Base Sound Data"]
       },
       "XP Value Offset": 0,
       "Level": 100,
@@ -1654,15 +1649,9 @@
     },
     "Keywords": {
       "Keyword Count": 3,
-      "Keywords": [
-        "0x001C5020",
-        "0x005AE171",
-        "0x005B5A90"
-      ]
+      "Keywords": ["0x001C5020", "0x005AE171", "0x005B5A90"]
     },
-    "Attach Parent Slots": [
-      "0x003D0353"
-    ],
+    "Attach Parent Slots": ["0x003D0353"],
     "Object Template": {
       "Count": 1,
       "Combinations": [

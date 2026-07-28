@@ -23,7 +23,9 @@ import mgefAbAddictionCount from './fixtures/mgef-abaddictioncount.json';
 // Stubbed-client pattern from obtainability.test.ts: cast a plain object
 // implementing only the EsmClient methods each helper actually calls.
 
-function record(overrides: Partial<EsmRecord> & { fields?: Record<string, unknown> } = {}): EsmRecord {
+function record(
+  overrides: Partial<EsmRecord> & { fields?: Record<string, unknown> } = {},
+): EsmRecord {
   return {
     header: { signature: 'ALCH', form_id: '0xDEFAULT' },
     editor_id: 'Default',
@@ -51,11 +53,15 @@ describe('isExcludedConsumableEdid', () => {
 
 describe('classifyConsumableCategory', () => {
   it('magazine (dedicated MagazineKeyword, e.g. Guns and Bullets issues)', () => {
-    expect(classifyConsumableCategory(['MagazineKeyword', 'MagazineTypeGunsAndBullets'])).toBe('magazine');
+    expect(classifyConsumableCategory(['MagazineKeyword', 'MagazineTypeGunsAndBullets'])).toBe(
+      'magazine',
+    );
   });
 
   it('bobblehead (dedicated BobbleheadKeyword, e.g. Strength/Small Guns bobbleheads)', () => {
-    expect(classifyConsumableCategory(['BobbleheadKeyword', 'BobbleheadTypeStrength'])).toBe('bobblehead');
+    expect(classifyConsumableCategory(['BobbleheadKeyword', 'BobbleheadTypeStrength'])).toBe(
+      'bobblehead',
+    );
   });
 
   it('chem takes top priority', () => {
@@ -117,7 +123,11 @@ describe('buildDispelKeys', () => {
   // (StackBuffStrength / FoodDispelEffect_Strength) — different
   // discriminators ⇒ different dispel keys, so chem STR never collides with
   // food STR even though both are "+Strength".
-  function mgefRecord(formId: string, edid: string, opts: { dispel: boolean; keywords: string[] }): EsmRecord {
+  function mgefRecord(
+    formId: string,
+    edid: string,
+    opts: { dispel: boolean; keywords: string[] },
+  ): EsmRecord {
     return {
       header: { signature: 'MGEF', form_id: formId },
       editor_id: edid,
@@ -141,14 +151,35 @@ describe('buildDispelKeys', () => {
     dispel: true,
     keywords: ['0xKW_FOOD_EFFECT', '0xKW_FOOD_DISPEL_STR', '0xKW_SURV_FOOD'],
   });
-  const nonDispel = mgefRecord('0xNON_DISPEL', 'SomeOtherEffect', { dispel: false, keywords: ['0xKW_WHATEVER'] });
+  const nonDispel = mgefRecord('0xNON_DISPEL', 'SomeOtherEffect', {
+    dispel: false,
+    keywords: ['0xKW_WHATEVER'],
+  });
   const keywordRecords: Record<string, EsmRecord> = {
-    '0xKW_CHEM_EFFECT': mgefRecord('0xKW_CHEM_EFFECT', 'ChemEffect', { dispel: false, keywords: [] }),
-    '0xKW_STACK_STR': mgefRecord('0xKW_STACK_STR', 'StackBuffStrength', { dispel: false, keywords: [] }),
-    '0xKW_CHEM_DISPEL': mgefRecord('0xKW_CHEM_DISPEL', 'ChemDispelEffects', { dispel: false, keywords: [] }),
-    '0xKW_FOOD_EFFECT': mgefRecord('0xKW_FOOD_EFFECT', 'FoodEffect', { dispel: false, keywords: [] }),
-    '0xKW_FOOD_DISPEL_STR': mgefRecord('0xKW_FOOD_DISPEL_STR', 'FoodDispelEffect_Strength', { dispel: false, keywords: [] }),
-    '0xKW_SURV_FOOD': mgefRecord('0xKW_SURV_FOOD', 'SURV_EffectTypeFoodBuff', { dispel: false, keywords: [] }),
+    '0xKW_CHEM_EFFECT': mgefRecord('0xKW_CHEM_EFFECT', 'ChemEffect', {
+      dispel: false,
+      keywords: [],
+    }),
+    '0xKW_STACK_STR': mgefRecord('0xKW_STACK_STR', 'StackBuffStrength', {
+      dispel: false,
+      keywords: [],
+    }),
+    '0xKW_CHEM_DISPEL': mgefRecord('0xKW_CHEM_DISPEL', 'ChemDispelEffects', {
+      dispel: false,
+      keywords: [],
+    }),
+    '0xKW_FOOD_EFFECT': mgefRecord('0xKW_FOOD_EFFECT', 'FoodEffect', {
+      dispel: false,
+      keywords: [],
+    }),
+    '0xKW_FOOD_DISPEL_STR': mgefRecord('0xKW_FOOD_DISPEL_STR', 'FoodDispelEffect_Strength', {
+      dispel: false,
+      keywords: [],
+    }),
+    '0xKW_SURV_FOOD': mgefRecord('0xKW_SURV_FOOD', 'SURV_EffectTypeFoodBuff', {
+      dispel: false,
+      keywords: [],
+    }),
     '0xKW_WHATEVER': mgefRecord('0xKW_WHATEVER', 'SomeKeyword', { dispel: false, keywords: [] }),
   };
 
@@ -165,7 +196,11 @@ describe('buildDispelKeys', () => {
   });
 
   it('chem STR and food STR carry DIFFERENT keys (different discriminating keyword)', async () => {
-    const client = stubClientFor({ '0xCHEM_STR': strChem, '0xFOOD_STR': strFood, ...keywordRecords });
+    const client = stubClientFor({
+      '0xCHEM_STR': strChem,
+      '0xFOOD_STR': strFood,
+      ...keywordRecords,
+    });
     const chemKeys = await buildDispelKeys(client, [spellEffect('0xCHEM_STR')]);
     const foodKeys = await buildDispelKeys(client, [spellEffect('0xFOOD_STR')]);
     expect(chemKeys).not.toEqual(foodKeys);
@@ -173,7 +208,10 @@ describe('buildDispelKeys', () => {
 
   it('dedupes identical keys across multiple effects on the same buff', async () => {
     const client = stubClientFor({ '0xCHEM_STR': strChem, ...keywordRecords });
-    const keys = await buildDispelKeys(client, [spellEffect('0xCHEM_STR'), spellEffect('0xCHEM_STR')]);
+    const keys = await buildDispelKeys(client, [
+      spellEffect('0xCHEM_STR'),
+      spellEffect('0xCHEM_STR'),
+    ]);
     expect(keys).toEqual(['ChemDispelEffects|ChemEffect|StackBuffStrength']);
   });
 });
@@ -189,7 +227,11 @@ describe('resolveAddiction', () => {
     const buffout = record({ fields: { 'Effect Data': { Addiction: '0x0004BAE0' } } });
     const notes = new Set<string>();
     const ref = await resolveAddiction(client, buffout, notes);
-    expect(ref).toEqual({ id: 'AbAddictionBuffout', formId: '0x0004BAE0', name: 'Buffout Addiction' });
+    expect(ref).toEqual({
+      id: 'AbAddictionBuffout',
+      formId: '0x0004BAE0',
+      name: 'Buffout Addiction',
+    });
     expect(notes.size).toBe(0);
   });
 
@@ -262,7 +304,7 @@ describe('extractMutation (penaltyModifierIds tagging, 2026-07-14)', () => {
       new Map<string, AvifRoute[]>(),
       new Map<string, string>(),
       notes,
-      unmapped
+      unmapped,
     );
 
     expect(buff).not.toBeNull();
@@ -270,8 +312,18 @@ describe('extractMutation (penaltyModifierIds tagging, 2026-07-14)', () => {
     // Order mirrors the SPEL's Effects list; Mutation_Treated_Effect and
     // abMutationCount contribute zero modifiers each (see comment above).
     expect(mods).toHaveLength(4);
-    expect(mods[0]).toMatchObject({ bucket: 'specialStrength', op: 'ADD', value: -3, conditions: [] });
-    expect(mods[1]).toMatchObject({ bucket: 'specialEndurance', op: 'ADD', value: -3, conditions: [] });
+    expect(mods[0]).toMatchObject({
+      bucket: 'specialStrength',
+      op: 'ADD',
+      value: -3,
+      conditions: [],
+    });
+    expect(mods[1]).toMatchObject({
+      bucket: 'specialEndurance',
+      op: 'ADD',
+      value: -3,
+      conditions: [],
+    });
     expect(mods[2]).toMatchObject({
       bucket: 'specialIntelligence',
       op: 'ADD',
@@ -312,17 +364,27 @@ describe('extractAddictionEffects (2026-07-14)', () => {
       addictionAlcohol as unknown as EsmRecord,
       new Map<string, AvifRoute[]>(),
       new Map<string, string>(),
-      unmapped
+      unmapped,
     );
 
     expect(modifiers).toHaveLength(2);
-    expect(modifiers[0]).toMatchObject({ bucket: 'specialAgility', op: 'ADD', value: -1, conditions: [] });
-    expect(modifiers[1]).toMatchObject({ bucket: 'specialCharisma', op: 'ADD', value: -1, conditions: [] });
+    expect(modifiers[0]).toMatchObject({
+      bucket: 'specialAgility',
+      op: 'ADD',
+      value: -1,
+      conditions: [],
+    });
+    expect(modifiers[1]).toMatchObject({
+      bucket: 'specialCharisma',
+      op: 'ADD',
+      value: -1,
+      conditions: [],
+    });
     expect(modifiers[0].source.kind).toBe('addiction');
     expect(modifiers[1].source.kind).toBe('addiction');
 
     // abAddictionCount is bookkeeping-only: no "no route for AV" note leaks
     // through (it would if the skip-by-edid guard regressed).
-    expect(notes.some(n => n.includes('no route for AV'))).toBe(false);
+    expect(notes.some((n) => n.includes('no route for AV'))).toBe(false);
   });
 });

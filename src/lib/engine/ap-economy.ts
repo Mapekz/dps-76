@@ -170,23 +170,33 @@ export interface ApEconomyResult {
 
 export function computeApEconomy(input: ApEconomyInput): ApEconomyResult {
   const constants = input.constants ?? DEFAULT_ACTION_POINT_CONSTANTS;
-  const maxAp = Math.max(0, constants.poolBase + constants.poolPerAgility * input.agility + (input.apMaxBonus ?? 0));
-  const baseRatePct = input.isInPowerArmor ? constants.regenRatePctPowerArmor : constants.regenRatePct;
-  const regenPerSec = (maxAp * (baseRatePct + (input.apRegenFlatBonus ?? 0))) / 100 * (1 + input.apRegenBonus);
+  const maxAp = Math.max(
+    0,
+    constants.poolBase + constants.poolPerAgility * input.agility + (input.apMaxBonus ?? 0),
+  );
+  const baseRatePct = input.isInPowerArmor
+    ? constants.regenRatePctPowerArmor
+    : constants.regenRatePct;
+  const regenPerSec =
+    ((maxAp * (baseRatePct + (input.apRegenFlatBonus ?? 0))) / 100) * (1 + input.apRegenBonus);
 
   const critsPerSec =
-    Number.isFinite(input.shotsPerCrit) && input.shotsPerCrit > 0 ? input.shotsPerSec / input.shotsPerCrit : 0;
+    Number.isFinite(input.shotsPerCrit) && input.shotsPerCrit > 0
+      ? input.shotsPerSec / input.shotsPerCrit
+      : 0;
   // Refresh-only crit HoTs: active fraction = min(1, duration × crits/sec).
   const critHotPerSec = (input.critHots ?? []).reduce(
     (sum, hot) => sum + hot.ratePerSec * Math.min(1, Math.max(0, hot.durationSec) * critsPerSec),
-    0
+    0,
   );
   // Passive regen doesn't tick during the mag dump, but DOES tick during the
   // reload window after AP_REGEN_DELAY_SEC (module doc) — credit it averaged
   // over the same magazine cycle shotsPerSec uses.
   const cycleSec = Math.max(0, input.magDumpSec ?? 0) + Math.max(0, input.reloadSec ?? 0);
   const reloadRegenPerSec =
-    cycleSec > 0 ? (regenPerSec * Math.max(0, (input.reloadSec ?? 0) - constants.regenDelaySec)) / cycleSec : 0;
+    cycleSec > 0
+      ? (regenPerSec * Math.max(0, (input.reloadSec ?? 0) - constants.regenDelaySec)) / cycleSec
+      : 0;
   const apGainPerSec = input.apPerCrit * critsPerSec + critHotPerSec + reloadRegenPerSec;
   const drainPerSec = Math.max(0, input.apCost) * Math.max(0, input.shotsPerSec);
 
@@ -196,7 +206,15 @@ export function computeApEconomy(input: ApEconomyInput): ApEconomyResult {
 
   const uptime = Math.max(0, Math.min(1, apGainPerSec / drainPerSec));
   const secondsToEmpty = maxAp / (drainPerSec - apGainPerSec);
-  return { maxAp, regenPerSec, apGainPerSec, reloadRegenPerSec, drainPerSec, uptime, secondsToEmpty };
+  return {
+    maxAp,
+    regenPerSec,
+    apGainPerSec,
+    reloadRegenPerSec,
+    drainPerSec,
+    uptime,
+    secondsToEmpty,
+  };
 }
 
 /**

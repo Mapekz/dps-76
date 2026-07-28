@@ -18,20 +18,29 @@ describe('getTargetDebuffModifiers — Taking One for the Team flat DR debuff', 
     [4, 50],
   ])('rank %i → magnitude %i on the armorPenFlat bucket, unconditioned', (rank, magnitude) => {
     const mods = getTargetDebuffModifiers({ takingOneForTheTeamDrRank: rank as 1 | 2 | 3 | 4 });
-    const toftt = mods.find(m => m.id === 'target-debuff:TakingOneForTheTeamDr');
-    expect(toftt).toMatchObject({ bucket: 'armorPenFlat', op: 'ADD', value: magnitude, conditions: [] });
+    const toftt = mods.find((m) => m.id === 'target-debuff:TakingOneForTheTeamDr');
+    expect(toftt).toMatchObject({
+      bucket: 'armorPenFlat',
+      op: 'ADD',
+      value: magnitude,
+      conditions: [],
+    });
   });
 
   it('is distinct from the Tenderizer stack debuff (both present when both active)', () => {
     const mods = getTargetDebuffModifiers({ takingOneForTheTeamDrRank: 2 });
     expect(mods).toHaveLength(2);
-    expect(mods.some(m => m.id === 'target-debuff:Tenderizer')).toBe(true);
-    expect(mods.some(m => m.id === 'target-debuff:TakingOneForTheTeamDr')).toBe(true);
+    expect(mods.some((m) => m.id === 'target-debuff:Tenderizer')).toBe(true);
+    expect(mods.some((m) => m.id === 'target-debuff:TakingOneForTheTeamDr')).toBe(true);
   });
 
   it('Tenderizer stays unconditioned-except-for-stacks (regression guard)', () => {
     const mods = getTargetDebuffModifiers({});
-    const tenderizer = mods.find(m => m.id === 'target-debuff:Tenderizer');
-    expect(tenderizer?.conditions[0]).toMatchObject({ kind: 'stacks', counter: 'tenderizer', max: TENDERIZER_MAX_STACKS });
+    const tenderizer = mods.find((m) => m.id === 'target-debuff:Tenderizer');
+    expect(tenderizer?.conditions[0]).toMatchObject({
+      kind: 'stacks',
+      counter: 'tenderizer',
+      max: TENDERIZER_MAX_STACKS,
+    });
   });
 });

@@ -22,7 +22,12 @@ export function ScenarioChips({ compact = false }: { compact?: boolean }) {
 
   const isAiming = player.conditions.isAimingAtWeakpoint;
   const defaultPart = getDefaultBodyPart(mode, enemy.conditions.targetRace);
-  const target = resolveTargetBodyPart(mode, enemy.conditions.targetRace, enemy.conditions.targetBodyPart, player.weakpointMult);
+  const target = resolveTargetBodyPart(
+    mode,
+    enemy.conditions.targetRace,
+    enemy.conditions.targetBodyPart,
+    player.weakpointMult,
+  );
   const defaultName = defaultPart?.name ?? 'Torso';
   const targetLabel = isAiming ? `${target.name} ×${target.mult.toFixed(2)}` : defaultName;
   const targetTitle = isAiming
@@ -35,7 +40,12 @@ export function ScenarioChips({ compact = false }: { compact?: boolean }) {
       size="xs"
       compact={compact}
       options={[
-        { value: 'isSneaking' as const, label: 'Sneaking', icon: EyeOffIcon, active: player.conditions.isSneaking },
+        {
+          value: 'isSneaking' as const,
+          label: 'Sneaking',
+          icon: EyeOffIcon,
+          active: player.conditions.isSneaking,
+        },
         {
           value: 'isAimingAtWeakpoint' as const,
           label: targetLabel,

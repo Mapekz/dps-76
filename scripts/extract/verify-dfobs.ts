@@ -159,26 +159,30 @@ export async function verifyDfobs(client: EsmClient): Promise<VerifyDfobsResult>
   let verified = 0;
 
   await Promise.all(
-    DFOB_BRIDGES.map(async bridge => {
+    DFOB_BRIDGES.map(async (bridge) => {
       try {
         const dfob = await client.get(bridge.dfobFormId);
         const target = dfob.fields['Object'];
         if (typeof target !== 'string') {
-          unresolved.push(`dfobs: ${bridge.dfobEditorId} (${bridge.dfobFormId}) has no Object formid`);
+          unresolved.push(
+            `dfobs: ${bridge.dfobEditorId} (${bridge.dfobFormId}) has no Object formid`,
+          );
           return;
         }
         const record = await client.get(target);
         if (record.editor_id !== bridge.expectedTargetEdid) {
           unresolved.push(
-            `dfobs: ${bridge.dfobEditorId} repointed — expected ${bridge.expectedTargetEdid}, got ${record.header.signature} ${record.editor_id} (${target}); review ${bridge.consumer}`
+            `dfobs: ${bridge.dfobEditorId} repointed — expected ${bridge.expectedTargetEdid}, got ${record.header.signature} ${record.editor_id} (${target}); review ${bridge.consumer}`,
           );
           return;
         }
         verified += 1;
       } catch (err) {
-        unresolved.push(`dfobs: ${bridge.dfobEditorId} (${bridge.dfobFormId}) failed to resolve: ${(err as Error).message}`);
+        unresolved.push(
+          `dfobs: ${bridge.dfobEditorId} (${bridge.dfobFormId}) failed to resolve: ${(err as Error).message}`,
+        );
       }
-    })
+    }),
   );
 
   return { verified, unresolved };

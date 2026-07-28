@@ -38,13 +38,26 @@ export const TENDERIZER_MAX_STACKS = 1000;
 
 /** Rank 0 (off) through 4 → flat DamageResist debuff magnitude. Index = rank. */
 const TAKING_ONE_FOR_THE_TEAM_DR_MAGNITUDES = [0, 6, 10, 15, 50] as const;
-const TAKING_ONE_FOR_THE_TEAM_DR_MGEF_FORM_IDS = ['0x005A5DEF', '0x005B01AB', '0x005B01AC', '0x005B01AD'] as const;
+const TAKING_ONE_FOR_THE_TEAM_DR_MGEF_FORM_IDS = [
+  '0x005A5DEF',
+  '0x005B01AB',
+  '0x005B01AC',
+  '0x005B01AD',
+] as const;
 
-export function getTargetDebuffModifiers(conditions: Pick<PlayerConditions, 'takingOneForTheTeamDrRank'>): Modifier[] {
+export function getTargetDebuffModifiers(
+  conditions: Pick<PlayerConditions, 'takingOneForTheTeamDrRank'>,
+): Modifier[] {
   const modifiers: Modifier[] = [
     {
       id: 'target-debuff:Tenderizer',
-      source: { kind: 'perk', formId: '0x003E21F4', edid: 'Tenderizer', name: 'Tenderizer', rank: 1 },
+      source: {
+        kind: 'perk',
+        formId: '0x003E21F4',
+        edid: 'Tenderizer',
+        name: 'Tenderizer',
+        rank: 1,
+      },
       bucket: 'dbm',
       op: 'ADD',
       value: 0.001,

@@ -28,7 +28,11 @@ export interface RaceLock {
 }
 
 /** The race lock implied by an equipped perk loadout (regular + legendary). */
-export function equippedRaceLock(mode: GameMode, perks: PerkLoadout[], legendaryPerks: PerkLoadout[]): RaceLock {
+export function equippedRaceLock(
+  mode: GameMode,
+  perks: PerkLoadout[],
+  legendaryPerks: PerkLoadout[],
+): RaceLock {
   const registry = getPerks(mode);
   const humanBy: string[] = [];
   const ghoulBy: string[] = [];
@@ -51,7 +55,7 @@ export function wrongRacePerks(
   mode: GameMode,
   perks: PerkLoadout[],
   legendaryPerks: PerkLoadout[],
-  targetIsGhoul: boolean
+  targetIsGhoul: boolean,
 ): string[] {
   const registry = getPerks(mode);
   const target: RaceRestriction = targetIsGhoul ? 'ghoul' : 'human';

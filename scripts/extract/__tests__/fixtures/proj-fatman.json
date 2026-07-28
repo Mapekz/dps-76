@@ -1,1 +1,62 @@
-{"header":{"signature":"PROJ","form_id":"0x000E6B2F","flags":0,"form_version":192,"data_size":282,"offset":77911440},"editor_id":"ProjectileFatMan","fields":{"_record_type":"Projectile","Editor ID":"ProjectileFatMan","Object Bounds":{"X1":-6,"Y1":-22,"Z1":-6,"X2":6,"Y2":1,"Z2":6},"Model":{"Model FileName":"Ammo\\FatMan\\AmmoFatMan.nif","Model Information":{"Counters":{"Textures":4,"Addon Nodes":0,"SRGB":1,"Materials":1},"Textures":[{"File Hash":"0x72A008E2","Extension":"dds","Folder Hash":"0x18354C05"},{"File Hash":"0x88AF3581","Extension":"dds","Folder Hash":"0x18354C05"},{"File Hash":"0x9CAE69CE","Extension":"dds","Folder Hash":"0x18354C05"},{"File Hash":"0x7C7B80D0","Extension":"dds","Folder Hash":"0x18354C05"}],"Addon Nodes":[],"Materials":[{"File Hash":"0x338A8279","Extension":"bgsm","Folder Hash":"0xEF9D4326"}]}},"Unused":{"hex":""},"Data":{"Flags":{"value":"0x2","flags":["Explosion"]},"Type":{"value":1,"name":"Missile"},"Gravity":0.6000000238418579,"Speed":1900.0,"Range":22000.0,"Light":null,"Muzzle Flash - Light":null,"Explosion - Alt. Trigger - Proximity":0.0,"Explosion - Alt. Trigger - Timer":0.0,"Explosion":"0x001A7FF2","Sound":"0x000DBD54","Muzzle Flash - Duration":0.05000000074505806,"Fade Duration":0.5,"Impact Force":5.0,"Sound - Countdown":null,"Sound - Disable":null,"Default Weapon Source":"0x000BD56F","Cone Spread":0.0,"Collision Radius":5.0,"Lifetime":0.5,"Relaunch Interval":0.25,"Decal Data":null,"Collision Layer":null,"Tracer Frequency":0,"VATS Projectile":null},"Muzzle Flash Model":{"Model FileName":""},"Sound Level":{"value":1,"name":"Normal"}}}
+{
+  "header": {
+    "signature": "PROJ",
+    "form_id": "0x000E6B2F",
+    "flags": 0,
+    "form_version": 192,
+    "data_size": 282,
+    "offset": 77911440
+  },
+  "editor_id": "ProjectileFatMan",
+  "fields": {
+    "_record_type": "Projectile",
+    "Editor ID": "ProjectileFatMan",
+    "Object Bounds": { "X1": -6, "Y1": -22, "Z1": -6, "X2": 6, "Y2": 1, "Z2": 6 },
+    "Model": {
+      "Model FileName": "Ammo\\FatMan\\AmmoFatMan.nif",
+      "Model Information": {
+        "Counters": { "Textures": 4, "Addon Nodes": 0, "SRGB": 1, "Materials": 1 },
+        "Textures": [
+          { "File Hash": "0x72A008E2", "Extension": "dds", "Folder Hash": "0x18354C05" },
+          { "File Hash": "0x88AF3581", "Extension": "dds", "Folder Hash": "0x18354C05" },
+          { "File Hash": "0x9CAE69CE", "Extension": "dds", "Folder Hash": "0x18354C05" },
+          { "File Hash": "0x7C7B80D0", "Extension": "dds", "Folder Hash": "0x18354C05" }
+        ],
+        "Addon Nodes": [],
+        "Materials": [
+          { "File Hash": "0x338A8279", "Extension": "bgsm", "Folder Hash": "0xEF9D4326" }
+        ]
+      }
+    },
+    "Unused": { "hex": "" },
+    "Data": {
+      "Flags": { "value": "0x2", "flags": ["Explosion"] },
+      "Type": { "value": 1, "name": "Missile" },
+      "Gravity": 0.6000000238418579,
+      "Speed": 1900.0,
+      "Range": 22000.0,
+      "Light": null,
+      "Muzzle Flash - Light": null,
+      "Explosion - Alt. Trigger - Proximity": 0.0,
+      "Explosion - Alt. Trigger - Timer": 0.0,
+      "Explosion": "0x001A7FF2",
+      "Sound": "0x000DBD54",
+      "Muzzle Flash - Duration": 0.05000000074505806,
+      "Fade Duration": 0.5,
+      "Impact Force": 5.0,
+      "Sound - Countdown": null,
+      "Sound - Disable": null,
+      "Default Weapon Source": "0x000BD56F",
+      "Cone Spread": 0.0,
+      "Collision Radius": 5.0,
+      "Lifetime": 0.5,
+      "Relaunch Interval": 0.25,
+      "Decal Data": null,
+      "Collision Layer": null,
+      "Tracer Frequency": 0,
+      "VATS Projectile": null
+    },
+    "Muzzle Flash Model": { "Model FileName": "" },
+    "Sound Level": { "value": 1, "name": "Normal" }
+  }
+}

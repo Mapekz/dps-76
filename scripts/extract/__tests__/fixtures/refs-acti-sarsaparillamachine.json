@@ -1,1 +1,10 @@
-[{"form_id":"0x00832CA9","record_type":"COBJ","editor_id":"SCORE_S22_workshop_co_Resources_SarsaparillaMachine","name":null,"offset":924774125,"depth":1}]
+[
+  {
+    "form_id": "0x00832CA9",
+    "record_type": "COBJ",
+    "editor_id": "SCORE_S22_workshop_co_Resources_SarsaparillaMachine",
+    "name": null,
+    "offset": 924774125,
+    "depth": 1
+  }
+]

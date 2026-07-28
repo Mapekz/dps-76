@@ -35,8 +35,18 @@ describe('isExcludedArmorEdid', () => {
 /** Minimal stub EsmClient: canned ARMO rows/records + refs for the obtainability pass. */
 function makeStubClient(): EsmClient {
   const rows: EsmListRow[] = [
-    { form_id: '0xARMO_REAL', record_type: 'ARMO', editor_id: 'Armor_Test_Torso', name: 'Test Torso' },
-    { form_id: '0xARMO_UNREACHABLE', record_type: 'ARMO', editor_id: 'Armor_Test_Unreachable', name: 'Unreachable Torso' },
+    {
+      form_id: '0xARMO_REAL',
+      record_type: 'ARMO',
+      editor_id: 'Armor_Test_Torso',
+      name: 'Test Torso',
+    },
+    {
+      form_id: '0xARMO_UNREACHABLE',
+      record_type: 'ARMO',
+      editor_id: 'Armor_Test_Unreachable',
+      name: 'Unreachable Torso',
+    },
     { form_id: '0xARMO_NONAME', record_type: 'ARMO', editor_id: 'Armor_Test_NoName', name: null },
     { form_id: '0xARMO_SKIN', record_type: 'ARMO', editor_id: 'SkinTestJunk', name: 'Junk Skin' },
   ];
@@ -63,7 +73,15 @@ function makeStubClient(): EsmClient {
     } as unknown as EsmRecord,
   };
   const refs: Record<string, EsmRefRow[]> = {
-    '0xARMO_REAL': [{ form_id: '0xCOBJ1', record_type: 'COBJ', editor_id: 'co_armor_Test_Torso', name: null, depth: 1 }],
+    '0xARMO_REAL': [
+      {
+        form_id: '0xCOBJ1',
+        record_type: 'COBJ',
+        editor_id: 'co_armor_Test_Torso',
+        name: null,
+        depth: 1,
+      },
+    ],
     '0xARMO_UNREACHABLE': [],
   };
   return {
@@ -84,7 +102,7 @@ function makeStubClient(): EsmClient {
 describe('extractArmor', () => {
   it('pre-filters junk/non-equippable edids and no-Name records before touching obtainability', async () => {
     const result = await extractArmor(makeStubClient());
-    const ids = result.armors.map(a => a.id);
+    const ids = result.armors.map((a) => a.id);
     expect(ids).not.toContain('SkinTestJunk');
     expect(ids).not.toContain('Armor_Test_NoName');
     expect(ids).toContain('Armor_Test_Torso');
@@ -93,14 +111,14 @@ describe('extractArmor', () => {
 
   it('derives obtainable via reverse references, same as weapons (COBJ referencer → obtainable)', async () => {
     const result = await extractArmor(makeStubClient());
-    const real = result.armors.find(a => a.id === 'Armor_Test_Torso')!;
+    const real = result.armors.find((a) => a.id === 'Armor_Test_Torso')!;
     expect(real.obtainable).toBe(true);
     expect(result.obtainableFormIds.has('0xARMO_REAL')).toBe(true);
   });
 
   it('keeps an unreachable armor piece in the data flagged obtainable:false (review/rescue, not silently dropped)', async () => {
     const result = await extractArmor(makeStubClient());
-    const unreachable = result.armors.find(a => a.id === 'Armor_Test_Unreachable')!;
+    const unreachable = result.armors.find((a) => a.id === 'Armor_Test_Unreachable')!;
     expect(unreachable).toBeDefined();
     expect(unreachable.obtainable).toBe(false);
     expect(result.obtainableFormIds.has('0xARMO_UNREACHABLE')).toBe(false);

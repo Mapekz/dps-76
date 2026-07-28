@@ -60,14 +60,14 @@ export interface EligibleWeaponView {
 export function isOmodEligibleForWeapon(
   omod: EligibleOmodView,
   weapon: EligibleWeaponView,
-  restrictions: Readonly<Record<string, readonly string[]>> = {}
+  restrictions: Readonly<Record<string, readonly string[]>> = {},
 ): boolean {
   const slots = weapon.attachParentSlots ?? [];
   if (!slots.includes(omod.attachPointFormId)) return false;
   if (omod.targetKeywords.length > 0) {
     const keywords = weapon.keywords ?? [];
     return (
-      omod.targetKeywords.every(k => keywords.includes(k)) ||
+      omod.targetKeywords.every((k) => keywords.includes(k)) ||
       (weapon.templateModFormIds ?? []).includes(omod.formId)
     );
   }

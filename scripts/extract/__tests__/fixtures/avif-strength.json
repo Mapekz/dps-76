@@ -1,5 +1,12 @@
 {
-  "header": { "signature": "AVIF", "form_id": "0x000002C2", "flags": 0, "form_version": 209, "data_size": 88, "offset": 896801507 },
+  "header": {
+    "signature": "AVIF",
+    "form_id": "0x000002C2",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 88,
+    "offset": 896801507
+  },
   "editor_id": "Strength",
   "fields": {
     "_record_type": "Actor Value Information",

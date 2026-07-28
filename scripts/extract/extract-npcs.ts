@@ -1,7 +1,11 @@
 import type { EsmClient, EsmRecord } from './esm-client';
 import { CURATED_TARGETS } from './curated-targets';
 import { tierFromEdid } from './extract-curvetables';
-import type { GeneratedNpc, GeneratedNpcDamageType, GeneratedNpcResist } from '../../src/types/generated';
+import type {
+  GeneratedNpc,
+  GeneratedNpcDamageType,
+  GeneratedNpcResist,
+} from '../../src/types/generated';
 
 /**
  * Per-curated-target NPC stats (Health + 6 resists + level-scaling window),
@@ -46,13 +50,18 @@ function keywordFormIds(fields: Record<string, unknown>): string[] {
 }
 
 /** Resolve the epic-creature disallow-keyword FLST to a formId set; empty (fail-open to `epicAllowed: true`) on any error. */
-async function resolveEpicDisallowedKeywords(client: EsmClient, unresolved: string[]): Promise<Set<string>> {
+async function resolveEpicDisallowedKeywords(
+  client: EsmClient,
+  unresolved: string[],
+): Promise<Set<string>> {
   try {
     const flst = await client.get(EPIC_CREATURE_DISALLOWED_KEYWORDS_FLST);
     const ids = (flst.fields['FormIDs'] as Array<{ FormID?: string }> | undefined) ?? [];
-    return new Set(ids.map(f => f.FormID).filter((id): id is string => !!id));
+    return new Set(ids.map((f) => f.FormID).filter((id): id is string => !!id));
   } catch (err) {
-    unresolved.push(`npcs: EpicCreatureDisallowedKeywords FLST ${EPIC_CREATURE_DISALLOWED_KEYWORDS_FLST} failed to resolve: ${(err as Error).message} — epicAllowed defaults to true for every row`);
+    unresolved.push(
+      `npcs: EpicCreatureDisallowedKeywords FLST ${EPIC_CREATURE_DISALLOWED_KEYWORDS_FLST} failed to resolve: ${(err as Error).message} — epicAllowed defaults to true for every row`,
+    );
     return new Set();
   }
 }
@@ -90,7 +99,9 @@ async function resolveEpicDisallowedKeywords(client: EsmClient, unresolved: stri
 // `BOSS_EPIC_RANK_QUESTS` anyway so a run still emits a specific unresolved
 // note (rather than silently having no row at all) and `epicRank` stays
 // unset for this race. See `docs/assumptions.md "Creature stat curves & NPC extraction"`.
-export const BOSS_EPIC_RANK_QUESTS: Readonly<Record<string, { questEdid: string; questFormId: string }>> = {
+export const BOSS_EPIC_RANK_QUESTS: Readonly<
+  Record<string, { questEdid: string; questFormId: string }>
+> = {
   EncScorchbeastQueen01Template: { questEdid: 'CB15_ScorchedEarth', questFormId: '0x003E271D' },
   WendigoColossusRace: { questEdid: 'E06_Colossus', questFormId: '0x00583D14' },
   StormBossRace: { questEdid: 'Storm_RegionBoss', questFormId: '0x006AD506' },
@@ -124,7 +135,7 @@ interface VirtualMachineAdapter {
 
 /** Exact-name lookup within a VMAD struct-entry array (VMAD property names come straight from the compiled script, not normalized by the CLI). */
 function vmadProp(props: VmadProperty[], name: string): VmadProperty | undefined {
-  return props.find(p => p.name === name);
+  return props.find((p) => p.name === name);
 }
 
 /** Shape (a) — see header note above. Exported for tests. */
@@ -161,7 +172,11 @@ export function resolveEpicRankFromVmad(vmad: VirtualMachineAdapter): number | n
 }
 
 /** Looks up `targetEdid` in `BOSS_EPIC_RANK_QUESTS`, fetches its summon quest, and resolves epic rank via both VMAD shapes. Returns `undefined` (+ an unresolved note) for every non-curated-boss row and for a curated boss whose quest carries neither shape. */
-async function resolveBossEpicRank(client: EsmClient, targetEdid: string, unresolved: string[]): Promise<number | undefined> {
+async function resolveBossEpicRank(
+  client: EsmClient,
+  targetEdid: string,
+  unresolved: string[],
+): Promise<number | undefined> {
   const boss = BOSS_EPIC_RANK_QUESTS[targetEdid];
   if (!boss) return undefined;
 
@@ -169,20 +184,24 @@ async function resolveBossEpicRank(client: EsmClient, targetEdid: string, unreso
   try {
     quest = await client.get(boss.questEdid);
   } catch (err) {
-    unresolved.push(`npcs: ${targetEdid} epic-rank quest ${boss.questEdid} (${boss.questFormId}) not found: ${(err as Error).message}`);
+    unresolved.push(
+      `npcs: ${targetEdid} epic-rank quest ${boss.questEdid} (${boss.questFormId}) not found: ${(err as Error).message}`,
+    );
     return undefined;
   }
 
   const vmad = quest.fields['Virtual Machine Adapter'] as VirtualMachineAdapter | undefined;
   if (!vmad) {
-    unresolved.push(`npcs: ${targetEdid} epic-rank quest ${boss.questEdid} (${boss.questFormId}) has no Virtual Machine Adapter`);
+    unresolved.push(
+      `npcs: ${targetEdid} epic-rank quest ${boss.questEdid} (${boss.questFormId}) has no Virtual Machine Adapter`,
+    );
     return undefined;
   }
 
   const rank = resolveEpicRankFromVmad(vmad);
   if (rank == null) {
     unresolved.push(
-      `npcs: ${targetEdid} epic-rank quest ${boss.questEdid} (${boss.questFormId}) carries neither an EncounterWaves BossEpicLevel@100%-chance wave nor a defaultforcelegendaryalias.minRank alias — epicRank left unset`
+      `npcs: ${targetEdid} epic-rank quest ${boss.questEdid} (${boss.questFormId}) carries neither an EncounterWaves BossEpicLevel@100%-chance wave nor a defaultforcelegendaryalias.minRank alias — epicRank left unset`,
     );
     return undefined;
   }
@@ -226,7 +245,11 @@ const SET_VALUE_FUNCTION = 'Set Value';
 type NormalizedLevelBoundOp = { op: 'add'; delta: number } | { op: 'set'; value: number };
 
 /** One entry-point effect's contribution to one bound (min or max), folded onto `acc`. Add accumulates onto a prior Add; Set replaces whatever came before (last-wins across perks, in `Perks` array order). */
-function foldNormalizedLevelBound(acc: NormalizedLevelBoundOp | null, functionName: string, float: number): NormalizedLevelBoundOp | null {
+function foldNormalizedLevelBound(
+  acc: NormalizedLevelBoundOp | null,
+  functionName: string,
+  float: number,
+): NormalizedLevelBoundOp | null {
   if (functionName === SET_VALUE_FUNCTION) {
     return { op: 'set', value: float };
   }
@@ -250,7 +273,7 @@ export async function resolveNormalizedLevelAdjustment(
   client: EsmClient,
   npcRecord: EsmRecord,
   label: string,
-  unresolved: string[]
+  unresolved: string[],
 ): Promise<{ min: NormalizedLevelBoundOp | null; max: NormalizedLevelBoundOp | null }> {
   const perksNode = npcRecord.fields['Perks'];
   const perkEntries = Array.isArray(perksNode) ? (perksNode as Array<Record<string, unknown>>) : [];
@@ -259,7 +282,9 @@ export async function resolveNormalizedLevelAdjustment(
   let max: NormalizedLevelBoundOp | null = null;
 
   for (const entry of perkEntries) {
-    const perkFormId = (entry['Perk'] as Record<string, unknown> | undefined)?.['Perk'] as string | undefined;
+    const perkFormId = (entry['Perk'] as Record<string, unknown> | undefined)?.['Perk'] as
+      | string
+      | undefined;
     if (!perkFormId) continue;
 
     let perkRecord: EsmRecord;
@@ -267,7 +292,7 @@ export async function resolveNormalizedLevelAdjustment(
       perkRecord = await client.get(perkFormId);
     } catch (err) {
       unresolved.push(
-        `npcs: ${label} Perks entry ${perkFormId} failed to resolve: ${(err as Error).message} — normalized-level adjustment skipped for this perk`
+        `npcs: ${label} Perks entry ${perkFormId} failed to resolve: ${(err as Error).message} — normalized-level adjustment skipped for this perk`,
       );
       continue;
     }
@@ -275,15 +300,23 @@ export async function resolveNormalizedLevelAdjustment(
     const effects = perkRecord.fields['Effects'];
     if (!Array.isArray(effects)) continue;
     for (const item of effects) {
-      const effect = (item as Record<string, unknown>)['Effect'] as Record<string, unknown> | undefined;
+      const effect = (item as Record<string, unknown>)['Effect'] as
+        | Record<string, unknown>
+        | undefined;
       if (!effect) continue;
       const header = (effect['Effect Header'] ?? {}) as Record<string, unknown>;
-      const effectType = (header['Effect Type'] as Record<string, unknown> | undefined)?.['name'] as string | undefined;
+      const effectType = (header['Effect Type'] as Record<string, unknown> | undefined)?.[
+        'name'
+      ] as string | undefined;
       if (effectType !== 'Entry Point') continue;
 
       const ep = (effect['Entry Point'] ?? {}) as Record<string, unknown>;
-      const entryPointName = (ep['Entry Point'] as Record<string, unknown> | undefined)?.['name'] as string | undefined;
-      const functionName = (ep['Function'] as Record<string, unknown> | undefined)?.['name'] as string | undefined;
+      const entryPointName = (ep['Entry Point'] as Record<string, unknown> | undefined)?.[
+        'name'
+      ] as string | undefined;
+      const functionName = (ep['Function'] as Record<string, unknown> | undefined)?.['name'] as
+        | string
+        | undefined;
       const float = typeof effect['Float'] === 'number' ? (effect['Float'] as number) : 0;
 
       if (entryPointName === NORMALIZED_MIN_LEVEL_ENTRY_POINT) {
@@ -298,7 +331,10 @@ export async function resolveNormalizedLevelAdjustment(
 }
 
 /** Applies a resolved bound adjustment to a base GLOB value. A null base (fixed-level unique with no scaling window at all) stays null — the adjustment doesn't fabricate a window that doesn't exist. Exported for tests. */
-export function applyNormalizedLevelAdjustment(base: number | null, adjustment: NormalizedLevelBoundOp | null): number | null {
+export function applyNormalizedLevelAdjustment(
+  base: number | null,
+  adjustment: NormalizedLevelBoundOp | null,
+): number | null {
   if (base == null || adjustment == null) return base;
   return adjustment.op === 'set' ? adjustment.value : base + adjustment.delta;
 }
@@ -395,7 +431,10 @@ export function avToNumber(av: string | null | undefined): number | null {
 }
 
 /** RACE Properties as the base layer, NPC_ Properties overriding per-AV — see header note. Exported for tests. */
-export function mergeProperties(raceProps: RawProperty[], npcProps: RawProperty[]): Map<number, MergedEntry> {
+export function mergeProperties(
+  raceProps: RawProperty[],
+  npcProps: RawProperty[],
+): Map<number, MergedEntry> {
   const merged = new Map<number, MergedEntry>();
   for (const [props] of [[raceProps], [npcProps]] as const) {
     for (const p of props) {
@@ -411,7 +450,7 @@ export function mergeProperties(raceProps: RawProperty[], npcProps: RawProperty[
 export function resolveStat(
   entry: MergedEntry | undefined,
   label: string,
-  unresolved: string[]
+  unresolved: string[],
 ): { flatValue: number; curveTier: number | null } {
   if (!entry) return { flatValue: 0, curveTier: null };
   if (entry.curveTableEdid == null || entry.value !== 0) {
@@ -420,14 +459,21 @@ export function resolveStat(
   }
   const tier = tierFromEdid(entry.curveTableEdid);
   if (tier == null) {
-    unresolved.push(`npcs: ${label} references non-Universal-Tier curve table "${entry.curveTableEdid}" — not representable, dropped`);
+    unresolved.push(
+      `npcs: ${label} references non-Universal-Tier curve table "${entry.curveTableEdid}" — not representable, dropped`,
+    );
     return { flatValue: 0, curveTier: null };
   }
   return { flatValue: 0, curveTier: tier };
 }
 
 /** Resolve a GLOB formId reference to its numeric Value; null (+ unresolved note) on any failure. */
-async function resolveGlobal(client: EsmClient, formId: string | undefined, label: string, unresolved: string[]): Promise<number | null> {
+async function resolveGlobal(
+  client: EsmClient,
+  formId: string | undefined,
+  label: string,
+  unresolved: string[],
+): Promise<number | null> {
   if (!formId) return null;
   try {
     const rec = await client.get(formId);
@@ -466,7 +512,9 @@ export async function extractNpcs(client: EsmClient): Promise<NpcsResult> {
     } else if (record.header.signature === 'RACE') {
       const templateEdid = RACE_NPC_TEMPLATES[target.edid];
       if (!templateEdid) {
-        unresolved.push(`npcs: ${target.edid} is a RACE with no representative NPC_ template mapped — see RACE_NPC_TEMPLATES`);
+        unresolved.push(
+          `npcs: ${target.edid} is a RACE with no representative NPC_ template mapped — see RACE_NPC_TEMPLATES`,
+        );
         continue;
       }
       try {
@@ -476,11 +524,15 @@ export async function extractNpcs(client: EsmClient): Promise<NpcsResult> {
         continue;
       }
       if (npcRecord.header.signature !== 'NPC_') {
-        unresolved.push(`npcs: ${target.edid}'s mapped template ${templateEdid} is not an NPC_ record (got ${npcRecord.header.signature})`);
+        unresolved.push(
+          `npcs: ${target.edid}'s mapped template ${templateEdid} is not an NPC_ record (got ${npcRecord.header.signature})`,
+        );
         continue;
       }
     } else {
-      unresolved.push(`npcs: ${target.edid} is neither RACE nor NPC_ (got ${record.header.signature})`);
+      unresolved.push(
+        `npcs: ${target.edid} is neither RACE nor NPC_ (got ${record.header.signature})`,
+      );
       continue;
     }
 
@@ -495,7 +547,9 @@ export async function extractNpcs(client: EsmClient): Promise<NpcsResult> {
         raceProps = (raceRecord.fields['Properties'] as RawProperty[] | undefined) ?? [];
         raceKeywords = keywordFormIds(raceRecord.fields);
       } catch {
-        unresolved.push(`npcs: ${target.edid} (${npcRecord.editor_id})'s Race ${raceFormId} not found — resist fallback skipped`);
+        unresolved.push(
+          `npcs: ${target.edid} (${npcRecord.editor_id})'s Race ${raceFormId} not found — resist fallback skipped`,
+        );
       }
     }
 
@@ -505,36 +559,71 @@ export async function extractNpcs(client: EsmClient): Promise<NpcsResult> {
     // hop is exhaustive of every possible indirection Bethesda might use, but
     // it matches every other keyword-gate depth this extractor already uses.
     const npcKeywords = keywordFormIds(npcRecord.fields);
-    const epicAllowed = ![...npcKeywords, ...raceKeywords].some(id => epicDisallowedKeywords.has(id));
+    const epicAllowed = ![...npcKeywords, ...raceKeywords].some((id) =>
+      epicDisallowedKeywords.has(id),
+    );
 
     const merged = mergeProperties(raceProps, npcProps);
 
     const health = resolveStat(merged.get(HEALTH_AV), `${target.edid} health`, unresolved);
     if (!merged.has(HEALTH_AV)) {
-      unresolved.push(`npcs: ${target.edid} (${npcRecord.editor_id}) has no Health Property (NPC_ nor RACE fallback)`);
+      unresolved.push(
+        `npcs: ${target.edid} (${npcRecord.editor_id}) has no Health Property (NPC_ nor RACE fallback)`,
+      );
     }
 
     const resists: GeneratedNpcResist[] = [];
-    for (const [avNum, damageType] of Object.entries(RESIST_AVS).map(([k, v]) => [Number(k), v] as const)) {
+    for (const [avNum, damageType] of Object.entries(RESIST_AVS).map(
+      ([k, v]) => [Number(k), v] as const,
+    )) {
       const entry = merged.get(avNum);
       if (!entry) {
-        unresolved.push(`npcs: ${target.edid} (${npcRecord.editor_id}) has no ${damageType} resist Property (NPC_ nor RACE fallback)`);
+        unresolved.push(
+          `npcs: ${target.edid} (${npcRecord.editor_id}) has no ${damageType} resist Property (NPC_ nor RACE fallback)`,
+        );
       }
       const resolved = resolveStat(entry, `${target.edid} ${damageType} resist`, unresolved);
       resists.push({ damageType, flatValue: resolved.flatValue, curveTier: resolved.curveTier });
     }
 
-    const scaling = (npcRecord.fields['Actor Scaling Info'] as Record<string, string> | undefined) ?? {};
-    const baseLevelMinGlobal = await resolveGlobal(client, scaling['Level Min Global'], `${target.edid} Level Min Global`, unresolved);
-    const baseLevelMaxGlobal = await resolveGlobal(client, scaling['Level Max Global'], `${target.edid} Level Max Global`, unresolved);
-    const levelOffsetGlobal = await resolveGlobal(client, scaling['Level Offset Global'], `${target.edid} Level Offset Global`, unresolved);
+    const scaling =
+      (npcRecord.fields['Actor Scaling Info'] as Record<string, string> | undefined) ?? {};
+    const baseLevelMinGlobal = await resolveGlobal(
+      client,
+      scaling['Level Min Global'],
+      `${target.edid} Level Min Global`,
+      unresolved,
+    );
+    const baseLevelMaxGlobal = await resolveGlobal(
+      client,
+      scaling['Level Max Global'],
+      `${target.edid} Level Max Global`,
+      unresolved,
+    );
+    const levelOffsetGlobal = await resolveGlobal(
+      client,
+      scaling['Level Offset Global'],
+      `${target.edid} Level Offset Global`,
+      unresolved,
+    );
 
     // Bake any NPC-perk-based normalized-level adjustment directly into the
     // stored min/max (see `resolveNormalizedLevelAdjustment` header note) —
     // no new field, no runtime consumer changes needed.
-    const normalizedLevelAdjustment = await resolveNormalizedLevelAdjustment(client, npcRecord, target.edid, unresolved);
-    const levelMinGlobal = applyNormalizedLevelAdjustment(baseLevelMinGlobal, normalizedLevelAdjustment.min);
-    const levelMaxGlobal = applyNormalizedLevelAdjustment(baseLevelMaxGlobal, normalizedLevelAdjustment.max);
+    const normalizedLevelAdjustment = await resolveNormalizedLevelAdjustment(
+      client,
+      npcRecord,
+      target.edid,
+      unresolved,
+    );
+    const levelMinGlobal = applyNormalizedLevelAdjustment(
+      baseLevelMinGlobal,
+      normalizedLevelAdjustment.min,
+    );
+    const levelMaxGlobal = applyNormalizedLevelAdjustment(
+      baseLevelMaxGlobal,
+      normalizedLevelAdjustment.max,
+    );
 
     const epicRank = await resolveBossEpicRank(client, target.edid, unresolved);
 

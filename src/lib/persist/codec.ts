@@ -88,7 +88,10 @@ function perkIdToKey(): Map<string, string> {
   return reverseKeyCache;
 }
 
-function encodePerks(loadout: PerkLoadout[]): { chunks: string; fallback: Array<[string, number]> } {
+function encodePerks(loadout: PerkLoadout[]): {
+  chunks: string;
+  fallback: Array<[string, number]>;
+} {
   const keys = perkIdToKey();
   let chunks = '';
   const fallback: Array<[string, number]> = [];
@@ -100,7 +103,11 @@ function encodePerks(loadout: PerkLoadout[]): { chunks: string; fallback: Array<
   return { chunks, fallback };
 }
 
-function decodePerks(chunks: string | undefined, fallback: Array<[string, number]> | undefined, warnings: string[]): PerkLoadout[] {
+function decodePerks(
+  chunks: string | undefined,
+  fallback: Array<[string, number]> | undefined,
+  warnings: string[],
+): PerkLoadout[] {
   const out: PerkLoadout[] = [];
   if (chunks) {
     for (let i = 0; i + 3 <= chunks.length; i += 3) {
@@ -115,7 +122,8 @@ function decodePerks(chunks: string | undefined, fallback: Array<[string, number
     }
   }
   for (const [perkId, rank] of fallback ?? []) {
-    if (typeof perkId === 'string' && Number.isFinite(rank) && rank >= 1) out.push({ perkId, rank });
+    if (typeof perkId === 'string' && Number.isFinite(rank) && rank >= 1)
+      out.push({ perkId, rank });
   }
   return out;
 }
@@ -139,7 +147,10 @@ const DERIVED_PLAYER_CONDITION_KEYS = new Set<keyof PlayerConditions>([
 
 // ── deflate/base64url plumbing (browser + Node ≥18) ─────────────────────────
 
-async function pipe(bytes: Uint8Array<ArrayBuffer>, stream: CompressionStream | DecompressionStream): Promise<Uint8Array> {
+async function pipe(
+  bytes: Uint8Array<ArrayBuffer>,
+  stream: CompressionStream | DecompressionStream,
+): Promise<Uint8Array> {
   const readable = new Blob([bytes]).stream().pipeThrough(stream);
   return new Uint8Array(await new Response(readable).arrayBuffer());
 }
@@ -167,7 +178,9 @@ export async function encodeBuild(state: BuildState): Promise<string> {
   const legendaryPerks = encodePerks(player.legendaryPerks);
 
   const wire: SerializedBuild = {
-    ...(player.weapon && { w: [player.weapon.weaponId, player.weapon.mods, player.weapon.legendaryEffects] }),
+    ...(player.weapon && {
+      w: [player.weapon.weaponId, player.weapon.mods, player.weapon.legendaryEffects],
+    }),
     ...(player.itemLevel !== defaults.player.itemLevel && { il: player.itemLevel }),
     ...(player.weakpointMult !== defaults.player.weakpointMult && { wm: player.weakpointMult }),
     ...(player.chargeTimeSec !== undefined && { ct: player.chargeTimeSec }),
@@ -206,7 +219,9 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
   let wire: SerializedBuild;
   try {
     const deflated = fromBase64Url(encoded.slice(VERSION_PREFIX.length));
-    const json = new TextDecoder().decode(await pipe(deflated, new DecompressionStream('deflate-raw')));
+    const json = new TextDecoder().decode(
+      await pipe(deflated, new DecompressionStream('deflate-raw')),
+    );
     wire = JSON.parse(json) as SerializedBuild;
   } catch {
     return null;
@@ -225,7 +240,9 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
     const weaponId =
       getWeapons(mode)[rawWeaponId] !== undefined
         ? rawWeaponId
-        : (Object.keys(getWeapons(mode)).find(id => id.toLowerCase() === rawWeaponId.toLowerCase()) ?? rawWeaponId);
+        : (Object.keys(getWeapons(mode)).find(
+            (id) => id.toLowerCase() === rawWeaponId.toLowerCase(),
+          ) ?? rawWeaponId);
     if (getWeapons(mode)[weaponId]) {
       const keptMods: Record<string, string | null> = {};
       for (const [slot, omodId] of Object.entries(mods ?? {})) {
@@ -255,7 +272,7 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
 
   const keepKnown = (loadout: PerkLoadout[]) =>
     loadout
-      .filter(p => {
+      .filter((p) => {
         if (perkRegistry[p.perkId as PerkId]) return true;
         warnings.push(`unknown perk "${p.perkId}" — removed`);
         return false;
@@ -263,7 +280,7 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
       // Silent clamp: an out-of-range rank (stale/adversarial payload, or a
       // card's maxRank shrinking after an ESM sync) is clamped rather than
       // dropped — the existing over-budget flag covers budget overruns.
-      .map(p => {
+      .map((p) => {
         const maxRank = perkRegistry[p.perkId as PerkId].maxRank;
         return p.rank > maxRank ? { ...p, rank: maxRank } : p;
       });
@@ -274,20 +291,20 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
   const reclassified = reclassifyPerkLoadouts(state.player.perks, state.player.legendaryPerks);
   if (reclassified.migrated > 0) {
     warnings.push(
-      `${reclassified.migrated} perk(s) moved between regular/legendary after a classification fix`
+      `${reclassified.migrated} perk(s) moved between regular/legendary after a classification fix`,
     );
     state.player.perks = reclassified.perks;
     state.player.legendaryPerks = reclassified.legendaryPerks;
   }
 
-  const knownMutations = new Set(getMutations(mode).map(b => b.id));
-  state.player.mutations = (wire.m ?? []).filter(id => {
+  const knownMutations = new Set(getMutations(mode).map((b) => b.id));
+  state.player.mutations = (wire.m ?? []).filter((id) => {
     if (knownMutations.has(id)) return true;
     warnings.push(`unknown mutation "${id}" — removed`);
     return false;
   });
-  const knownConsumables = new Set(getConsumables(mode).map(b => b.id));
-  const knownConsumableIds = (wire.c ?? []).filter(id => {
+  const knownConsumables = new Set(getConsumables(mode).map((b) => b.id));
+  const knownConsumableIds = (wire.c ?? []).filter((id) => {
     if (knownConsumables.has(id)) return true;
     warnings.push(`unknown consumable "${id}" — removed`);
     return false;
@@ -298,13 +315,13 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
   const sanitizedConsumables = sanitizeConsumables(consumablesById(mode), knownConsumableIds);
   if (sanitizedConsumables.length !== knownConsumableIds.length) {
     warnings.push(
-      "removed to satisfy stacking rules (one chem/alcohol at a time; same-bonus food/drink don't stack)"
+      "removed to satisfy stacking rules (one chem/alcohol at a time; same-bonus food/drink don't stack)",
     );
   }
   state.player.consumables = sanitizedConsumables;
 
-  const knownAddictions = new Set(getAddictions(mode).map(a => a.id));
-  state.player.addictions = (wire.ad ?? []).filter(id => {
+  const knownAddictions = new Set(getAddictions(mode).map((a) => a.id));
+  state.player.addictions = (wire.ad ?? []).filter((id) => {
     if (knownAddictions.has(id)) return true;
     warnings.push(`unknown addiction "${id}" — removed`);
     return false;
@@ -338,7 +355,9 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
       // Pre-overhaul URLs stored a manual count; there's no way to map a
       // bare number back to specific addiction ids, so it's dropped rather
       // than silently winning over the (now addiction-less) picker state.
-      warnings.push('"addictionCount" is no longer a manual input — pick your addictions in Chems & Addictions');
+      warnings.push(
+        '"addictionCount" is no longer a manual input — pick your addictions in Chems & Addictions',
+      );
       continue;
     }
     if (DERIVED_PLAYER_CONDITION_KEYS.has(key as keyof PlayerConditions)) continue; // legacy payloads

@@ -213,7 +213,9 @@ export const omodNameOverrides: Readonly<Record<string, string>> = {
  * Mr. Handy Buzz Blade's sole shock mod rides ap_melee_MeleeMod, which
  * already reads "Upgrade" (its real KYWD FULL) via SLOT_LABEL_OVERRIDES.
  */
-export const perWeaponSlotLabelOverrides: Readonly<Record<string, Readonly<Record<string, string>>>> = {
+export const perWeaponSlotLabelOverrides: Readonly<
+  Record<string, Readonly<Record<string, string>>>
+> = {
   // "Scope" options: No Mod / Burning / Electrified / Poisoned / Turbo —
   // blade treatments.
   AutoAxe: { ap_gun_Scope: 'Blade' },
@@ -268,7 +270,7 @@ export const omodModifierAdditions: Readonly<Record<string, Modifier[]>> = {
           conditions: [],
         },
       ],
-    ])
+    ]),
   ),
   // Dom Pedro (WEAP `Nitro`) Explosive muzzle mods: their OverrideProjectile
   // chase finds EXPL `Nitro_Explosive` (0x0084460A → PROJ → EXPL, walked
@@ -298,17 +300,25 @@ export const omodModifierAdditions: Readonly<Record<string, Modifier[]>> = {
               input: 'itemLevel',
               // EXPL Nitro_Explosive Damage Curve Table (Tier24 universal).
               points: [
-                { x: 1, y: 31 }, { x: 5, y: 35 }, { x: 10, y: 39 }, { x: 15, y: 44 },
-                { x: 20, y: 50 }, { x: 25, y: 56 }, { x: 30, y: 64 }, { x: 35, y: 72 },
-                { x: 40, y: 81 }, { x: 45, y: 91 }, { x: 50, y: 103 },
+                { x: 1, y: 31 },
+                { x: 5, y: 35 },
+                { x: 10, y: 39 },
+                { x: 15, y: 44 },
+                { x: 20, y: 50 },
+                { x: 25, y: 56 },
+                { x: 30, y: 64 },
+                { x: 35, y: 72 },
+                { x: 40, y: 81 },
+                { x: 45, y: 91 },
+                { x: 50, y: 103 },
               ],
             },
             curveScale: 1,
             conditions: [{ kind: 'damageTypeScope', types: ['ballistic'] }],
           },
         ],
-      ]
-    )
+      ],
+    ),
   ),
   // Dom Pedro (Nitro) Fortunate magazine mods: EP-211 "add a bullet to clip"
   // chance is note-only in extraction — hand-supplied as ammoFreeChance EV

@@ -7,7 +7,11 @@ import { getGeneratedPerk } from '@/data/perk-modifiers';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';
 import { perkCardCostAtRank, type PerkBudget } from '@/lib/player-stats';
 import { Special } from '@/data/special';
-import { LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS, type BuildState, type SpecialKey } from '@/state/build-reducer';
+import {
+  LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS,
+  type BuildState,
+  type SpecialKey,
+} from '@/state/build-reducer';
 import type { SuggestionBudget, SuggestionCandidate } from './types';
 
 /**
@@ -33,7 +37,7 @@ const LEGAL: SuggestionBudget = { legal: true };
 /** A perk family is damage-relevant when any rank emits modifiers. */
 function isDamageRelevant(mode: GameMode, perkId: string): boolean {
   const generated = getGeneratedPerk(mode, perkId);
-  return !!generated && generated.ranks.some(r => r.modifiers.length > 0);
+  return !!generated && generated.ranks.some((r) => r.modifiers.length > 0);
 }
 
 /**
@@ -95,9 +99,11 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
 
   // ── perks ─────────────────────────────────────────────────────────────────
   const registry = getPerks(mode) as Record<string, Perk>;
-  const equippedRanks = new Map([...player.perks, ...player.legendaryPerks].map(p => [p.perkId, p.rank]));
+  const equippedRanks = new Map(
+    [...player.perks, ...player.legendaryPerks].map((p) => [p.perkId, p.rank]),
+  );
   const allocation = Object.fromEntries(
-    Object.values(SPECIAL_TO_KEY).map(key => [key, player.conditions[key]])
+    Object.values(SPECIAL_TO_KEY).map((key) => [key, player.conditions[key]]),
   ) as Record<SpecialKey, number>;
   const cardBudget = computePerkBudget(mode, player.perks, player.legendaryPerks, allocation);
 
@@ -108,7 +114,8 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
 
     if (currentRank !== undefined) {
       if (currentRank < perk.maxRank) {
-        const extraCost = perkCardCostAtRank(perk, currentRank + 1) - perkCardCostAtRank(perk, currentRank);
+        const extraCost =
+          perkCardCostAtRank(perk, currentRank + 1) - perkCardCostAtRank(perk, currentRank);
         out.push({
           id: `perk-rank:${perkId}`,
           action: { type: 'perk/setRank', perkId, rank: currentRank + 1 },

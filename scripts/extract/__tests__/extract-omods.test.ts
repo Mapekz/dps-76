@@ -68,13 +68,22 @@ function makeStubClient(): EsmClient {
     // Placeholder for keywords / the shared Includes template / the
     // STAT_Damage*Perk plumbing perks buildAvifRoutes fetches by edid — none
     // of these carry Effects/Properties, so downstream parsing no-ops on them.
-    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+    return {
+      header: { signature: 'KYWD', form_id: target },
+      editor_id: target,
+      fields: {},
+    } as unknown as EsmRecord;
   };
   return {
     async list(type: string): Promise<EsmListRow[]> {
       if (type !== 'OMOD') return [];
       return [
-        { form_id: '0x0047187E', record_type: 'OMOD', editor_id: 'mod_Custom_AllRise', name: 'All Rise Custom Mod' },
+        {
+          form_id: '0x0047187E',
+          record_type: 'OMOD',
+          editor_id: 'mod_Custom_AllRise',
+          name: 'All Rise Custom Mod',
+        },
         {
           form_id: '0x008F0DD2',
           record_type: 'OMOD',
@@ -92,26 +101,32 @@ function makeStubClient(): EsmClient {
 describe('extractOmods (unique-mod rework, 2026-07-13)', () => {
   it('mod_Custom_UnstoppableMonster: property 116 resolves the attached perk, whose two damage-TAKEN entry points land as a note (not a silent drop) and never surface as an unknown property', async () => {
     const result = await extractOmods(makeStubClient(), new Set());
-    const omod = result.omods.find(o => o.id === 'mod_Custom_UnstoppableMonster');
+    const omod = result.omods.find((o) => o.id === 'mod_Custom_UnstoppableMonster');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toEqual([]); // "Mod Incoming Weapon Damage" has no formula bucket — damage taken, out of scope
-    expect((omod!.notes ?? []).some(n => n.includes('Mod Incoming Weapon Damage') && n.includes('not modeled'))).toBe(true);
+    expect(
+      (omod!.notes ?? []).some(
+        (n) => n.includes('Mod Incoming Weapon Damage') && n.includes('not modeled'),
+      ),
+    ).toBe(true);
     // The aggregate _meta-visible report also carries the note (edid-prefixed).
     expect(
       result.notes.some(
-        n => n.startsWith('mod_Custom_UnstoppableMonster:') && n.includes('Mod Incoming Weapon Damage')
-      )
+        (n) =>
+          n.startsWith('mod_Custom_UnstoppableMonster:') &&
+          n.includes('Mod Incoming Weapon Damage'),
+      ),
     ).toBe(true);
     expect(result.unknownProperties).not.toContain('Unknown');
-    expect(result.unknownProperties.some(p => p.startsWith('Property#'))).toBe(false);
+    expect(result.unknownProperties.some((p) => p.startsWith('Property#'))).toBe(false);
   });
 
   it('mod_Custom_AllRise: ActorValues ADD Health 50.0 decodes to a maxHealth modifier of value 50', async () => {
     const result = await extractOmods(makeStubClient(), new Set());
-    const omod = result.omods.find(o => o.id === 'mod_Custom_AllRise');
+    const omod = result.omods.find((o) => o.id === 'mod_Custom_AllRise');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
-      expect.objectContaining({ bucket: 'maxHealth', op: 'ADD', value: 50 })
+      expect.objectContaining({ bucket: 'maxHealth', op: 'ADD', value: 50 }),
     );
     expect(omod!.notes).not.toContain('ActorValues on Health — unmapped');
   });
@@ -167,7 +182,11 @@ function makeDamageTypeValuesStubClient(): EsmClient {
   };
   const get = async (target: string): Promise<EsmRecord> => {
     if (known[target]) return known[target];
-    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+    return {
+      header: { signature: 'KYWD', form_id: target },
+      editor_id: target,
+      fields: {},
+    } as unknown as EsmRecord;
   };
   return {
     async list(type: string): Promise<EsmListRow[]> {
@@ -190,7 +209,7 @@ function makeDamageTypeValuesStubClient(): EsmClient {
 describe('extractOmods (DamageTypeValues ADD/SET, Task A 2026-07-13)', () => {
   it('emits baseDamage modifiers for ADD and SET, damage-type scoped, with no "not yet modeled" note', async () => {
     const result = await extractOmods(makeDamageTypeValuesStubClient(), new Set());
-    const omod = result.omods.find(o => o.id === 'mod_Test_DamageTypeValues');
+    const omod = result.omods.find((o) => o.id === 'mod_Test_DamageTypeValues');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
       expect.objectContaining({
@@ -198,7 +217,7 @@ describe('extractOmods (DamageTypeValues ADD/SET, Task A 2026-07-13)', () => {
         op: 'ADD',
         value: 5,
         conditions: [{ kind: 'damageTypeScope', types: ['energy'] }],
-      })
+      }),
     );
     expect(omod!.modifiers).toContainEqual(
       expect.objectContaining({
@@ -206,10 +225,10 @@ describe('extractOmods (DamageTypeValues ADD/SET, Task A 2026-07-13)', () => {
         op: 'SET',
         value: 0,
         conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
-      })
+      }),
     );
-    expect((omod!.notes ?? []).some(n => n.includes('not yet modeled'))).toBe(false);
-    expect(result.notes.some(n => n.includes('not yet modeled'))).toBe(false);
+    expect((omod!.notes ?? []).some((n) => n.includes('not yet modeled'))).toBe(false);
+    expect(result.notes.some((n) => n.includes('not yet modeled'))).toBe(false);
   });
 });
 
@@ -251,7 +270,11 @@ function makeChargingBarrelStubClient(): EsmClient {
   };
   const get = async (target: string): Promise<EsmRecord> => {
     if (known[target]) return known[target];
-    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+    return {
+      header: { signature: 'KYWD', form_id: target },
+      editor_id: target,
+      fields: {},
+    } as unknown as EsmRecord;
   };
   return {
     async list(type: string): Promise<EsmListRow[]> {
@@ -274,13 +297,13 @@ function makeChargingBarrelStubClient(): EsmClient {
 describe('extractOmods (charging-barrel FullPowerSeconds/FullPowerDamageMult, charging weapons phase 2 2026-07-15)', () => {
   it('emits chargeFullPowerSec/chargeFullPowerDamageMult SET modifiers, no unknown-property report', async () => {
     const result = await extractOmods(makeChargingBarrelStubClient(), new Set());
-    const omod = result.omods.find(o => o.id === 'mod_Test_ChargingBarrel');
+    const omod = result.omods.find((o) => o.id === 'mod_Test_ChargingBarrel');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
-      expect.objectContaining({ bucket: 'chargeFullPowerSec', op: 'SET', value: 1.0 })
+      expect.objectContaining({ bucket: 'chargeFullPowerSec', op: 'SET', value: 1.0 }),
     );
     expect(omod!.modifiers).toContainEqual(
-      expect.objectContaining({ bucket: 'chargeFullPowerDamageMult', op: 'SET', value: 2.0 })
+      expect.objectContaining({ bucket: 'chargeFullPowerDamageMult', op: 'SET', value: 2.0 }),
     );
     expect(result.unknownProperties).not.toContain('FullPowerSeconds');
     expect(result.unknownProperties).not.toContain('FullPowerDamageMult');
@@ -318,8 +341,18 @@ function makeSlowBurnerStubClient(): EsmClient {
           'Form Type': { name: 'Weapon' },
           'Attach Point': '0x0047A264',
           Properties: [
-            { 'Function Type': { name: 'REM' }, Property: { name: 'Enchantments' }, 'Value 1': '0xBASEENCH', 'Value 2': 1 },
-            { 'Function Type': { name: 'ADD' }, Property: { name: 'Enchantments' }, 'Value 1': newEnchFormId, 'Value 2': 1 },
+            {
+              'Function Type': { name: 'REM' },
+              Property: { name: 'Enchantments' },
+              'Value 1': '0xBASEENCH',
+              'Value 2': 1,
+            },
+            {
+              'Function Type': { name: 'ADD' },
+              Property: { name: 'Enchantments' },
+              'Value 1': newEnchFormId,
+              'Value 2': 1,
+            },
           ],
         },
       },
@@ -336,7 +369,16 @@ function makeSlowBurnerStubClient(): EsmClient {
               'Effect Item Data': { Magnitude: 3, Duration: 6 },
               Conditions: {
                 Conditions: [
-                  { Condition: { 'Condition Data': { Function: 'GetIsPlayer', 'Comparison Value': 1, Operator: 'Equal To', 'Run On': 'Subject' } } },
+                  {
+                    Condition: {
+                      'Condition Data': {
+                        Function: 'GetIsPlayer',
+                        'Comparison Value': 1,
+                        Operator: 'Equal To',
+                        'Run On': 'Subject',
+                      },
+                    },
+                  },
                 ],
               },
             },
@@ -356,7 +398,16 @@ function makeSlowBurnerStubClient(): EsmClient {
               'Effect Item Data': { Magnitude: 16, Duration: 12 },
               Conditions: {
                 Conditions: [
-                  { Condition: { 'Condition Data': { Function: 'GetIsPlayer', 'Comparison Value': 0, Operator: 'Equal To', 'Run On': 'Subject' } } },
+                  {
+                    Condition: {
+                      'Condition Data': {
+                        Function: 'GetIsPlayer',
+                        'Comparison Value': 0,
+                        Operator: 'Equal To',
+                        'Run On': 'Subject',
+                      },
+                    },
+                  },
                 ],
               },
             },
@@ -368,19 +419,40 @@ function makeSlowBurnerStubClient(): EsmClient {
       header: { signature: 'MGEF', form_id: newMgefFormId },
       editor_id: 'NewSlowBurnMgef',
       fields: {
-        'Magic Effect Data': { Data: { Archetype: { name: 'Damage' }, 'Resist Value': fireResistFormId, Flags: { value: '0x0', flags: [] } } },
+        'Magic Effect Data': {
+          Data: {
+            Archetype: { name: 'Damage' },
+            'Resist Value': fireResistFormId,
+            Flags: { value: '0x0', flags: [] },
+          },
+        },
       },
     } as unknown as EsmRecord,
-    [fireResistFormId]: { header: { signature: 'AVIF', form_id: fireResistFormId }, editor_id: 'FireResist', fields: {} } as unknown as EsmRecord,
+    [fireResistFormId]: {
+      header: { signature: 'AVIF', form_id: fireResistFormId },
+      editor_id: 'FireResist',
+      fields: {},
+    } as unknown as EsmRecord,
   };
   const get = async (target: string): Promise<EsmRecord> => {
     if (known[target]) return known[target];
-    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+    return {
+      header: { signature: 'KYWD', form_id: target },
+      editor_id: target,
+      fields: {},
+    } as unknown as EsmRecord;
   };
   return {
     async list(type: string): Promise<EsmListRow[]> {
       if (type !== 'OMOD') return [];
-      return [{ form_id: omodFormId, record_type: 'OMOD', editor_id: 'mod_Test_SlowBurner', name: 'Test Slow-Burning Tank' }];
+      return [
+        {
+          form_id: omodFormId,
+          record_type: 'OMOD',
+          editor_id: 'mod_Test_SlowBurner',
+          name: 'Test Slow-Burning Tank',
+        },
+      ];
     },
     get,
     resolveEdid: async (formId: string) => (await get(formId)).editor_id,
@@ -389,9 +461,9 @@ function makeSlowBurnerStubClient(): EsmClient {
 }
 
 describe('extractOmods (Enchantments REM-vs-ADD + GetIsPlayer/subjectIsTarget, 2026-07-14)', () => {
-  it('skips the REMed base ench entirely (never fetched, note-only) and keeps only the ADDed ench\'s NPC-branch dot', async () => {
+  it("skips the REMed base ench entirely (never fetched, note-only) and keeps only the ADDed ench's NPC-branch dot", async () => {
     const result = await extractOmods(makeSlowBurnerStubClient(), new Set());
-    const omod = result.omods.find(o => o.id === 'mod_Test_SlowBurner');
+    const omod = result.omods.find((o) => o.id === 'mod_Test_SlowBurner');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toEqual([
       expect.objectContaining({
@@ -402,7 +474,9 @@ describe('extractOmods (Enchantments REM-vs-ADD + GetIsPlayer/subjectIsTarget, 2
         conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
       }),
     ]);
-    expect((omod!.notes ?? []).some(n => n.includes('removes enchantment BaseFireHitEnch'))).toBe(true);
+    expect((omod!.notes ?? []).some((n) => n.includes('removes enchantment BaseFireHitEnch'))).toBe(
+      true,
+    );
   });
 });
 
@@ -431,7 +505,14 @@ function makeLobberStubClient(cosmetic = false): EsmClient {
         Data: {
           'Form Type': { name: 'Weapon' },
           'Attach Point': '0x0002249D',
-          Properties: [{ 'Function Type': { name: 'SET' }, Property: { name: 'OverrideProjectile' }, 'Value 1': projFormId, 'Value 2': 1 }],
+          Properties: [
+            {
+              'Function Type': { name: 'SET' },
+              Property: { name: 'OverrideProjectile' },
+              'Value 1': projFormId,
+              'Value 2': 1,
+            },
+          ],
         },
         'Target OMOD Keywords': ['0xMA_TESTLAUNCHER'],
       },
@@ -453,33 +534,63 @@ function makeLobberStubClient(cosmetic = false): EsmClient {
     [hazdFormId]: {
       header: { signature: 'HAZD', form_id: hazdFormId },
       editor_id: 'TestLobberHazard',
-      fields: { Data: { Limit: 20, Radius: 25, Lifetime: 7, 'Target Interval': 0.3, Effect: spelFormId } },
+      fields: {
+        Data: { Limit: 20, Radius: 25, Lifetime: 7, 'Target Interval': 0.3, Effect: spelFormId },
+      },
     } as unknown as EsmRecord,
     [spelFormId]: {
       header: { signature: 'SPEL', form_id: spelFormId },
       editor_id: 'TestLobberHazardSpell',
       fields: {
         Data: { 'Target Type': { name: 'Contact' }, 'Cast Type': { name: 'Fire and Forget' } },
-        Effects: [{ Effect: { 'Base Effect': mgefFormId, 'Effect Item Data': { Magnitude: 34, Duration: 1 } } }],
+        Effects: [
+          {
+            Effect: {
+              'Base Effect': mgefFormId,
+              'Effect Item Data': { Magnitude: 34, Duration: 1 },
+            },
+          },
+        ],
       },
     } as unknown as EsmRecord,
     [mgefFormId]: {
       header: { signature: 'MGEF', form_id: mgefFormId },
       editor_id: 'TestLobberHazardEffect',
       fields: {
-        'Magic Effect Data': { Data: { Archetype: { name: 'Damage' }, 'Resist Value': energyResistFormId, Flags: { value: '0x0', flags: [] } } },
+        'Magic Effect Data': {
+          Data: {
+            Archetype: { name: 'Damage' },
+            'Resist Value': energyResistFormId,
+            Flags: { value: '0x0', flags: [] },
+          },
+        },
       },
     } as unknown as EsmRecord,
-    [energyResistFormId]: { header: { signature: 'AVIF', form_id: energyResistFormId }, editor_id: 'EnergyResist', fields: {} } as unknown as EsmRecord,
+    [energyResistFormId]: {
+      header: { signature: 'AVIF', form_id: energyResistFormId },
+      editor_id: 'EnergyResist',
+      fields: {},
+    } as unknown as EsmRecord,
   };
   const get = async (target: string): Promise<EsmRecord> => {
     if (known[target]) return known[target];
-    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+    return {
+      header: { signature: 'KYWD', form_id: target },
+      editor_id: target,
+      fields: {},
+    } as unknown as EsmRecord;
   };
   return {
     async list(type: string): Promise<EsmListRow[]> {
       if (type !== 'OMOD') return [];
-      return [{ form_id: omodFormId, record_type: 'OMOD', editor_id: 'mod_Test_LobberBarrel', name: 'Test Lobber Barrel' }];
+      return [
+        {
+          form_id: omodFormId,
+          record_type: 'OMOD',
+          editor_id: 'mod_Test_LobberBarrel',
+          name: 'Test Lobber Barrel',
+        },
+      ];
     },
     get,
     resolveEdid: async (formId: string) => (await get(formId)).editor_id,
@@ -490,7 +601,7 @@ function makeLobberStubClient(cosmetic = false): EsmClient {
 describe('extractOmods (OverrideProjectile launcher-hazard chase, 2026-07-14)', () => {
   it('chases PROJ → EXPL → HAZD → SPEL into an energy-scoped dotDamage modifier, durationSec from HAZD Lifetime', async () => {
     const result = await extractOmods(makeLobberStubClient(), new Set());
-    const omod = result.omods.find(o => o.id === 'mod_Test_LobberBarrel');
+    const omod = result.omods.find((o) => o.id === 'mod_Test_LobberBarrel');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toEqual([
       expect.objectContaining({
@@ -505,7 +616,7 @@ describe('extractOmods (OverrideProjectile launcher-hazard chase, 2026-07-14)', 
 
   it('materializes nothing for a PROJ lacking the Explosion flag (the ~154-cosmetic-mod majority)', async () => {
     const result = await extractOmods(makeLobberStubClient(true), new Set());
-    const omod = result.omods.find(o => o.id === 'mod_Test_LobberBarrel');
+    const omod = result.omods.find((o) => o.id === 'mod_Test_LobberBarrel');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toEqual([]);
     expect(omod!.notes).toEqual([]);
@@ -517,11 +628,17 @@ describe('extractOmods (OverrideProjectile launcher-hazard chase, 2026-07-14)', 
     // to a weapon with its own fromExplosion component — chaseExplosion is
     // WEAP-level and barrel-agnostic, so this OMOD's own hazard/direct damage
     // would ADD to that stale baseline rather than replace it.
-    const result = await extractOmods(makeLobberStubClient(), new Set(), new Set(['0xMA_TESTLAUNCHER']));
-    const omod = result.omods.find(o => o.id === 'mod_Test_LobberBarrel');
+    const result = await extractOmods(
+      makeLobberStubClient(),
+      new Set(),
+      new Set(['0xMA_TESTLAUNCHER']),
+    );
+    const omod = result.omods.find((o) => o.id === 'mod_Test_LobberBarrel');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toEqual([]);
-    expect((omod!.notes ?? []).some(n => n.includes('already has its own launcher explosion'))).toBe(true);
+    expect(
+      (omod!.notes ?? []).some((n) => n.includes('already has its own launcher explosion')),
+    ).toBe(true);
   });
 });
 
@@ -546,7 +663,14 @@ function makeCosmeticReskinStubClient(): EsmClient {
         Data: {
           'Form Type': { name: 'Weapon' },
           'Attach Point': '0x00024004',
-          Properties: [{ 'Function Type': { name: 'SET' }, Property: { name: 'OverrideProjectile' }, 'Value 1': projFormId, 'Value 2': 1 }],
+          Properties: [
+            {
+              'Function Type': { name: 'SET' },
+              Property: { name: 'OverrideProjectile' },
+              'Value 1': projFormId,
+              'Value 2': 1,
+            },
+          ],
         },
       },
     } as unknown as EsmRecord,
@@ -560,19 +684,46 @@ function makeCosmeticReskinStubClient(): EsmClient {
       editor_id: 'TestReskinExplosion',
       fields: {
         Data: { Damage: 0, 'Placed Object': null, 'Base Weapon Damage Mult': 0 },
-        'Damage Types': [{ Type: '0xDTFIRE', Amount: 25, 'Curve Table': { curve_path: 'Player\\Damage\\Damage_Universal_Tier13.json', curve: [{ x: 1, y: 10 }, { x: 50, y: 32 }] } }],
+        'Damage Types': [
+          {
+            Type: '0xDTFIRE',
+            Amount: 25,
+            'Curve Table': {
+              curve_path: 'Player\\Damage\\Damage_Universal_Tier13.json',
+              curve: [
+                { x: 1, y: 10 },
+                { x: 50, y: 32 },
+              ],
+            },
+          },
+        ],
       },
     } as unknown as EsmRecord,
-    '0xDTFIRE': { header: { signature: 'DMGT', form_id: '0xDTFIRE' }, editor_id: 'dtFire', fields: {} } as unknown as EsmRecord,
+    '0xDTFIRE': {
+      header: { signature: 'DMGT', form_id: '0xDTFIRE' },
+      editor_id: 'dtFire',
+      fields: {},
+    } as unknown as EsmRecord,
   };
   const get = async (target: string): Promise<EsmRecord> => {
     if (known[target]) return known[target];
-    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+    return {
+      header: { signature: 'KYWD', form_id: target },
+      editor_id: target,
+      fields: {},
+    } as unknown as EsmRecord;
   };
   return {
     async list(type: string): Promise<EsmListRow[]> {
       if (type !== 'OMOD') return [];
-      return [{ form_id: omodFormId, record_type: 'OMOD', editor_id: 'mod_Test_CosmeticReskin', name: 'Test Cosmetic Reskin' }];
+      return [
+        {
+          form_id: omodFormId,
+          record_type: 'OMOD',
+          editor_id: 'mod_Test_CosmeticReskin',
+          name: 'Test Cosmetic Reskin',
+        },
+      ];
     },
     get,
     resolveEdid: async (formId: string) => (await get(formId)).editor_id,
@@ -583,10 +734,10 @@ function makeCosmeticReskinStubClient(): EsmClient {
 describe('extractOmods (OverrideProjectile cosmetic-reskin guard, 2026-07-14)', () => {
   it('does NOT materialize direct EXPL typed damage when there is no Placed Object hazard (Cremator chemical-color false positive)', async () => {
     const result = await extractOmods(makeCosmeticReskinStubClient(), new Set());
-    const omod = result.omods.find(o => o.id === 'mod_Test_CosmeticReskin');
+    const omod = result.omods.find((o) => o.id === 'mod_Test_CosmeticReskin');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toEqual([]);
-    expect((omod!.notes ?? []).some(n => n.includes('not modeled'))).toBe(true);
+    expect((omod!.notes ?? []).some((n) => n.includes('not modeled'))).toBe(true);
   });
 });
 
@@ -612,8 +763,18 @@ describe('extractOmods (OverrideProjectile REM/SET, 2026-07-14)', () => {
             'Form Type': { name: 'Weapon' },
             'Attach Point': '0x00024004',
             Properties: [
-              { 'Function Type': { name: 'REM' }, Property: { name: 'OverrideProjectile' }, 'Value 1': remProjFormId, 'Value 2': 1 },
-              { 'Function Type': { name: 'SET' }, Property: { name: 'OverrideProjectile' }, 'Value 1': setProjFormId, 'Value 2': 1 },
+              {
+                'Function Type': { name: 'REM' },
+                Property: { name: 'OverrideProjectile' },
+                'Value 1': remProjFormId,
+                'Value 2': 1,
+              },
+              {
+                'Function Type': { name: 'SET' },
+                Property: { name: 'OverrideProjectile' },
+                'Value 1': setProjFormId,
+                'Value 2': 1,
+              },
             ],
           },
         },
@@ -638,15 +799,34 @@ describe('extractOmods (OverrideProjectile REM/SET, 2026-07-14)', () => {
         editor_id: 'TestSetHazardSpell',
         fields: {
           Data: { 'Target Type': { name: 'Contact' } },
-          Effects: [{ Effect: { 'Base Effect': mgefFormId, 'Effect Item Data': { Magnitude: 20, Duration: 1 } } }],
+          Effects: [
+            {
+              Effect: {
+                'Base Effect': mgefFormId,
+                'Effect Item Data': { Magnitude: 20, Duration: 1 },
+              },
+            },
+          ],
         },
       } as unknown as EsmRecord,
       [mgefFormId]: {
         header: { signature: 'MGEF', form_id: mgefFormId },
         editor_id: 'TestSetHazardEffect',
-        fields: { 'Magic Effect Data': { Data: { Archetype: { name: 'Damage' }, 'Resist Value': '0xFIRERESISTX', Flags: { value: '0x0', flags: [] } } } },
+        fields: {
+          'Magic Effect Data': {
+            Data: {
+              Archetype: { name: 'Damage' },
+              'Resist Value': '0xFIRERESISTX',
+              Flags: { value: '0x0', flags: [] },
+            },
+          },
+        },
       } as unknown as EsmRecord,
-      '0xFIRERESISTX': { header: { signature: 'AVIF', form_id: '0xFIRERESISTX' }, editor_id: 'FireResist', fields: {} } as unknown as EsmRecord,
+      '0xFIRERESISTX': {
+        header: { signature: 'AVIF', form_id: '0xFIRERESISTX' },
+        editor_id: 'FireResist',
+        fields: {},
+      } as unknown as EsmRecord,
       // The REM code path resolves this projectile's OWN edid (for the
       // note text — mirrors the Enchantments REM fix), so it's legitimately
       // fetched; what must NEVER be fetched is what it chases TO (its own
@@ -660,16 +840,28 @@ describe('extractOmods (OverrideProjectile REM/SET, 2026-07-14)', () => {
     };
     const forbidden = new Set(['0xREMEXPL']);
     const get = async (target: string): Promise<EsmRecord> => {
-      if (forbidden.has(target)) throw new Error(`unexpected get(${target}) — the REMed branch must never be chased`);
+      if (forbidden.has(target))
+        throw new Error(`unexpected get(${target}) — the REMed branch must never be chased`);
       if (known[target]) return known[target];
       // Placeholder for the plumbing-perk edids buildAvifRoutes always
       // fetches (STAT_DamagePerk & co.) and any keyword/AVIF lookups.
-      return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+      return {
+        header: { signature: 'KYWD', form_id: target },
+        editor_id: target,
+        fields: {},
+      } as unknown as EsmRecord;
     };
     const client = {
       async list(type: string): Promise<EsmListRow[]> {
         if (type !== 'OMOD') return [];
-        return [{ form_id: omodFormId, record_type: 'OMOD', editor_id: 'mod_Test_PinkLike', name: 'Test Pink-Like' }];
+        return [
+          {
+            form_id: omodFormId,
+            record_type: 'OMOD',
+            editor_id: 'mod_Test_PinkLike',
+            name: 'Test Pink-Like',
+          },
+        ];
       },
       get,
       resolveEdid: async (formId: string) => (await get(formId)).editor_id,
@@ -677,12 +869,14 @@ describe('extractOmods (OverrideProjectile REM/SET, 2026-07-14)', () => {
     } as unknown as EsmClient;
 
     const result = await extractOmods(client, new Set());
-    const omod = result.omods.find(o => o.id === 'mod_Test_PinkLike');
+    const omod = result.omods.find((o) => o.id === 'mod_Test_PinkLike');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toEqual([
       expect.objectContaining({ bucket: 'dotDamage', op: 'ADD', value: 20 }),
     ]);
-    expect((omod!.notes ?? []).some(n => n.includes('removes projectile override TestRemProjectile'))).toBe(true);
+    expect(
+      (omod!.notes ?? []).some((n) => n.includes('removes projectile override TestRemProjectile')),
+    ).toBe(true);
   });
 });
 
@@ -695,7 +889,11 @@ describe('extractOmods (OverrideProjectile REM/SET, 2026-07-14)', () => {
  * (Locked's shell COBJ creates nothing → no byCreatedObject entry). A plain
  * non-legendary mod in the same shape keeps the WEAP-ride rule.
  */
-function makeLegendaryCraftStub(): { client: EsmClient; cobjIndex: CobjIndex; weaponFormId: string } {
+function makeLegendaryCraftStub(): {
+  client: EsmClient;
+  cobjIndex: CobjIndex;
+  weaponFormId: string;
+} {
   const withCobjFormId = '0xLEGWITHCOBJ';
   const noCobjFormId = '0xLEGNOCOBJ';
   const plainFormId = '0xPLAINRIDE';
@@ -716,7 +914,12 @@ function makeLegendaryCraftStub(): { client: EsmClient; cobjIndex: CobjIndex; we
       },
     }) as unknown as EsmRecord;
   const known: Record<string, EsmRecord> = {
-    [withCobjFormId]: omodRecord(withCobjFormId, 'mod_Test_Legendary_WithRecipe', 'With Recipe', true),
+    [withCobjFormId]: omodRecord(
+      withCobjFormId,
+      'mod_Test_Legendary_WithRecipe',
+      'With Recipe',
+      true,
+    ),
     [noCobjFormId]: omodRecord(noCobjFormId, 'mod_Test_Legendary_LockedLike', 'Locked-Like', true),
     [plainFormId]: omodRecord(plainFormId, 'mod_Test_PlainTemplateRide', 'Plain Ride', false),
     [legKeywordFormId]: {
@@ -727,7 +930,11 @@ function makeLegendaryCraftStub(): { client: EsmClient; cobjIndex: CobjIndex; we
   };
   const get = async (target: string): Promise<EsmRecord> => {
     if (known[target]) return known[target];
-    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+    return {
+      header: { signature: 'KYWD', form_id: target },
+      editor_id: target,
+      fields: {},
+    } as unknown as EsmRecord;
   };
   const cobjInfo = {
     formId: '0xCOBJGRANT',
@@ -745,15 +952,32 @@ function makeLegendaryCraftStub(): { client: EsmClient; cobjIndex: CobjIndex; we
     async list(type: string): Promise<EsmListRow[]> {
       if (type !== 'OMOD') return [];
       return [
-        { form_id: withCobjFormId, record_type: 'OMOD', editor_id: 'mod_Test_Legendary_WithRecipe', name: 'With Recipe' },
-        { form_id: noCobjFormId, record_type: 'OMOD', editor_id: 'mod_Test_Legendary_LockedLike', name: 'Locked-Like' },
-        { form_id: plainFormId, record_type: 'OMOD', editor_id: 'mod_Test_PlainTemplateRide', name: 'Plain Ride' },
+        {
+          form_id: withCobjFormId,
+          record_type: 'OMOD',
+          editor_id: 'mod_Test_Legendary_WithRecipe',
+          name: 'With Recipe',
+        },
+        {
+          form_id: noCobjFormId,
+          record_type: 'OMOD',
+          editor_id: 'mod_Test_Legendary_LockedLike',
+          name: 'Locked-Like',
+        },
+        {
+          form_id: plainFormId,
+          record_type: 'OMOD',
+          editor_id: 'mod_Test_PlainTemplateRide',
+          name: 'Plain Ride',
+        },
       ];
     },
     get,
     resolveEdid: async (formId: string) => (await get(formId)).editor_id,
     // Every OMOD's only reverse reference is the obtainable host weapon.
-    refs: async () => [{ form_id: weaponFormId, record_type: 'WEAP', editor_id: 'HostHuntingRifle' }],
+    refs: async () => [
+      { form_id: weaponFormId, record_type: 'WEAP', editor_id: 'HostHuntingRifle' },
+    ],
   } as unknown as EsmClient;
   return { client, cobjIndex, weaponFormId };
 }
@@ -763,18 +987,20 @@ describe('extractOmods (legendary-crafting obtainability gate, 2026-07-15)', () 
     const { client, cobjIndex, weaponFormId } = makeLegendaryCraftStub();
     const result = await extractOmods(client, new Set([weaponFormId]), new Set(), cobjIndex);
 
-    const withRecipe = result.omods.find(o => o.id === 'mod_Test_Legendary_WithRecipe');
+    const withRecipe = result.omods.find((o) => o.id === 'mod_Test_Legendary_WithRecipe');
     expect(withRecipe?.obtainable).toBe(true);
     expect(withRecipe?.hasGrantingCobj).toBe(true);
 
-    const lockedLike = result.omods.find(o => o.id === 'mod_Test_Legendary_LockedLike');
+    const lockedLike = result.omods.find((o) => o.id === 'mod_Test_Legendary_LockedLike');
     expect(lockedLike?.obtainable).toBe(false);
     expect(lockedLike?.hasGrantingCobj).toBeUndefined();
-    const detail = result.excludedDetailed.omodUnobtainable.find(d => d.id === 'mod_Test_Legendary_LockedLike');
+    const detail = result.excludedDetailed.omodUnobtainable.find(
+      (d) => d.id === 'mod_Test_Legendary_LockedLike',
+    );
     expect(detail?.signals).toContain('legendaryNoGrantCobj');
     expect(detail?.signals).toContain('weap:HostHuntingRifle');
 
-    const plainRide = result.omods.find(o => o.id === 'mod_Test_PlainTemplateRide');
+    const plainRide = result.omods.find((o) => o.id === 'mod_Test_PlainTemplateRide');
     expect(plainRide?.obtainable).toBe(true);
   });
 });
@@ -848,14 +1074,28 @@ function makeBulletStormStubClient(): EsmClient {
   };
   const get = async (target: string): Promise<EsmRecord> => {
     if (known[target]) return known[target];
-    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+    return {
+      header: { signature: 'KYWD', form_id: target },
+      editor_id: target,
+      fields: {},
+    } as unknown as EsmRecord;
   };
   return {
     async list(type: string): Promise<EsmListRow[]> {
       if (type !== 'OMOD') return [];
       return [
-        { form_id: minStacksOmodFormId, record_type: 'OMOD', editor_id: 'mod_Test_ResoluteVeteran', name: 'Test Resolute Veteran' },
-        { form_id: onKillOmodFormId, record_type: 'OMOD', editor_id: 'mod_Test_FinalWord', name: 'Test Final Word' },
+        {
+          form_id: minStacksOmodFormId,
+          record_type: 'OMOD',
+          editor_id: 'mod_Test_ResoluteVeteran',
+          name: 'Test Resolute Veteran',
+        },
+        {
+          form_id: onKillOmodFormId,
+          record_type: 'OMOD',
+          editor_id: 'mod_Test_FinalWord',
+          name: 'Test Final Word',
+        },
       ];
     },
     get,
@@ -867,22 +1107,22 @@ function makeBulletStormStubClient(): EsmClient {
 describe('extractOmods (Bullet Storm ActorValues — AmmoSpenderMinStacks/EnableAmmoSpenderOnKill, 2026-07-16)', () => {
   it('ActorValues ADD 5.0 on AmmoSpenderMinStacks decodes to a bulletStormMinStacks ADD modifier of value 5', async () => {
     const result = await extractOmods(makeBulletStormStubClient(), new Set());
-    const omod = result.omods.find(o => o.id === 'mod_Test_ResoluteVeteran');
+    const omod = result.omods.find((o) => o.id === 'mod_Test_ResoluteVeteran');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
-      expect.objectContaining({ bucket: 'bulletStormMinStacks', op: 'ADD', value: 5 })
+      expect.objectContaining({ bucket: 'bulletStormMinStacks', op: 'ADD', value: 5 }),
     );
     expect(omod!.notes).not.toContain('ActorValues on AmmoSpenderMinStacks — unmapped');
   });
 
-  it("ActorValues SET 1.0 on EnableAmmoSpenderOnKill decodes to a bulletStormOnKill SET modifier (regression: SET must not downgrade to ADD)", async () => {
+  it('ActorValues SET 1.0 on EnableAmmoSpenderOnKill decodes to a bulletStormOnKill SET modifier (regression: SET must not downgrade to ADD)', async () => {
     const result = await extractOmods(makeBulletStormStubClient(), new Set());
-    const omod = result.omods.find(o => o.id === 'mod_Test_FinalWord');
+    const omod = result.omods.find((o) => o.id === 'mod_Test_FinalWord');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
-      expect.objectContaining({ bucket: 'bulletStormOnKill', op: 'SET', value: 1 })
+      expect.objectContaining({ bucket: 'bulletStormOnKill', op: 'SET', value: 1 }),
     );
-    expect(omod!.modifiers.find(m => m.bucket === 'bulletStormOnKill')?.op).not.toBe('ADD');
+    expect(omod!.modifiers.find((m) => m.bucket === 'bulletStormOnKill')?.op).not.toBe('ADD');
     expect(omod!.notes).not.toContain('ActorValues on EnableAmmoSpenderOnKill — unmapped');
   });
 });
@@ -920,14 +1160,28 @@ function makeRangeBarrelStubClient(): EsmClient {
   };
   const get = async (target: string): Promise<EsmRecord> => {
     if (known[target]) return known[target];
-    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+    return {
+      header: { signature: 'KYWD', form_id: target },
+      editor_id: target,
+      fields: {},
+    } as unknown as EsmRecord;
   };
   return {
     async list(type: string): Promise<EsmListRow[]> {
       if (type !== 'OMOD') return [];
       return [
-        { form_id: childFormId, record_type: 'OMOD', editor_id: 'mod_Test_LongRangeBarrel', name: 'Test Long Range Barrel' },
-        { form_id: parentFormId, record_type: 'OMOD', editor_id: '_PARENT_mod_WEAPON_Barrel_Long_Range', name: null },
+        {
+          form_id: childFormId,
+          record_type: 'OMOD',
+          editor_id: 'mod_Test_LongRangeBarrel',
+          name: 'Test Long Range Barrel',
+        },
+        {
+          form_id: parentFormId,
+          record_type: 'OMOD',
+          editor_id: '_PARENT_mod_WEAPON_Barrel_Long_Range',
+          name: null,
+        },
       ];
     },
     get,
@@ -939,18 +1193,20 @@ function makeRangeBarrelStubClient(): EsmClient {
 describe('extractOmods (range barrel MinRange/MaxRange, Phase 1 extraction half)', () => {
   it('flattens the real _PARENT_mod_WEAPON_Barrel_Long_Range template into weaponMinRange/weaponMaxRange MUL_ADD 0.5 modifiers on the including child mod', async () => {
     const result = await extractOmods(makeRangeBarrelStubClient(), new Set());
-    const omod = result.omods.find(o => o.id === 'mod_Test_LongRangeBarrel');
+    const omod = result.omods.find((o) => o.id === 'mod_Test_LongRangeBarrel');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
-      expect.objectContaining({ bucket: 'weaponMinRange', op: 'MUL_ADD', value: 0.5 })
+      expect.objectContaining({ bucket: 'weaponMinRange', op: 'MUL_ADD', value: 0.5 }),
     );
     expect(omod!.modifiers).toContainEqual(
-      expect.objectContaining({ bucket: 'weaponMaxRange', op: 'MUL_ADD', value: 0.5 })
+      expect.objectContaining({ bucket: 'weaponMaxRange', op: 'MUL_ADD', value: 0.5 }),
     );
     expect(result.unknownProperties).not.toContain('MinRange');
     expect(result.unknownProperties).not.toContain('MaxRange');
     // The template itself is never emitted as a player-facing mod.
-    expect(result.omods.find(o => o.id === '_PARENT_mod_WEAPON_Barrel_Long_Range')).toBeUndefined();
+    expect(
+      result.omods.find((o) => o.id === '_PARENT_mod_WEAPON_Barrel_Long_Range'),
+    ).toBeUndefined();
   });
 
   it('maps a synthetic OutOfRangeDamageMult property to weaponOutOfRangeMult (no real OMOD carries this property in the sampled range barrels — synthetic pin for completeness)', async () => {
@@ -958,7 +1214,14 @@ describe('extractOmods (range barrel MinRange/MaxRange, Phase 1 extraction half)
     const client = {
       async list(type: string): Promise<EsmListRow[]> {
         if (type !== 'OMOD') return [];
-        return [{ form_id: omodFormId, record_type: 'OMOD', editor_id: 'mod_Test_OutOfRangeMult', name: 'Test Out Of Range Mult' }];
+        return [
+          {
+            form_id: omodFormId,
+            record_type: 'OMOD',
+            editor_id: 'mod_Test_OutOfRangeMult',
+            name: 'Test Out Of Range Mult',
+          },
+        ];
       },
       async get(target: string): Promise<EsmRecord> {
         if (target === omodFormId) {
@@ -971,23 +1234,32 @@ describe('extractOmods (range barrel MinRange/MaxRange, Phase 1 extraction half)
                 'Form Type': { name: 'Weapon' },
                 'Attach Point': '0x0002249D',
                 Properties: [
-                  { 'Function Type': { name: 'SET' }, Property: { name: 'OutOfRangeDamageMult' }, 'Value 1': 0.75, 'Value 2': 0.0 },
+                  {
+                    'Function Type': { name: 'SET' },
+                    Property: { name: 'OutOfRangeDamageMult' },
+                    'Value 1': 0.75,
+                    'Value 2': 0.0,
+                  },
                 ],
               },
             },
           } as unknown as EsmRecord;
         }
-        return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+        return {
+          header: { signature: 'KYWD', form_id: target },
+          editor_id: target,
+          fields: {},
+        } as unknown as EsmRecord;
       },
       resolveEdid: async (formId: string) => formId,
       refs: async () => [],
     } as unknown as EsmClient;
 
     const result = await extractOmods(client, new Set());
-    const omod = result.omods.find(o => o.id === 'mod_Test_OutOfRangeMult');
+    const omod = result.omods.find((o) => o.id === 'mod_Test_OutOfRangeMult');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
-      expect.objectContaining({ bucket: 'weaponOutOfRangeMult', op: 'SET', value: 0.75 })
+      expect.objectContaining({ bucket: 'weaponOutOfRangeMult', op: 'SET', value: 0.75 }),
     );
     expect(result.unknownProperties).not.toContain('OutOfRangeDamageMult');
   });
@@ -1025,7 +1297,11 @@ function makeArmorStubClient(): EsmClient {
     // AVIF the 2★ SPECIAL mod's ActorValues property targets directly (the
     // raw SPECIAL AVIF, not a STAT_* plumbing stat) — must resolve to the
     // exact edid FALLBACK_AVIF_ROUTES keys on.
-    '0x000002C2': { header: { signature: 'AVIF', form_id: '0x000002C2' }, editor_id: 'Strength', fields: {} } as unknown as EsmRecord,
+    '0x000002C2': {
+      header: { signature: 'AVIF', form_id: '0x000002C2' },
+      editor_id: 'Strength',
+      fields: {},
+    } as unknown as EsmRecord,
     // The worn-keyword Battle-Loader's WornApparelHasKeywordCount conditions
     // gate on — must resolve to the exact edid the wornPieceCount condition
     // carries.
@@ -1041,14 +1317,28 @@ function makeArmorStubClient(): EsmClient {
     // the STAT_Damage*Perk plumbing perks buildAvifRoutes always fetches —
     // none of these carry Effects/Properties, so downstream parsing no-ops
     // on them (same convention as makeStubClient() above).
-    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+    return {
+      header: { signature: 'KYWD', form_id: target },
+      editor_id: target,
+      fields: {},
+    } as unknown as EsmRecord;
   };
   return {
     async list(type: string): Promise<EsmListRow[]> {
       if (type !== 'OMOD') return [];
       return [
-        { form_id: '0x004EE54E', record_type: 'OMOD', editor_id: 'mod_Legendary_Armor2_StatStrength', name: 'Strength' },
-        { form_id: '0x00792A28', record_type: 'OMOD', editor_id: 'mod_Legendary_Armor4_BattleLoaders', name: "Battle-Loader's" },
+        {
+          form_id: '0x004EE54E',
+          record_type: 'OMOD',
+          editor_id: 'mod_Legendary_Armor2_StatStrength',
+          name: 'Strength',
+        },
+        {
+          form_id: '0x00792A28',
+          record_type: 'OMOD',
+          editor_id: 'mod_Legendary_Armor4_BattleLoaders',
+          name: "Battle-Loader's",
+        },
       ];
     },
     get,
@@ -1060,59 +1350,60 @@ function makeArmorStubClient(): EsmClient {
 describe('extractOmods (Phase 3 armor pipeline, 2026-07-18)', () => {
   it('routes both armor OMODs into armorOmods, and neither into the weapon omods array', async () => {
     const result = await extractOmods(makeArmorStubClient(), new Set());
-    expect(result.armorOmods.map(o => o.id).sort()).toEqual(
-      ['mod_Legendary_Armor2_StatStrength', 'mod_Legendary_Armor4_BattleLoaders'].sort()
+    expect(result.armorOmods.map((o) => o.id).sort()).toEqual(
+      ['mod_Legendary_Armor2_StatStrength', 'mod_Legendary_Armor4_BattleLoaders'].sort(),
     );
-    expect(result.omods.find(o => o.id === 'mod_Legendary_Armor2_StatStrength')).toBeUndefined();
-    expect(result.omods.find(o => o.id === 'mod_Legendary_Armor4_BattleLoaders')).toBeUndefined();
+    expect(result.omods.find((o) => o.id === 'mod_Legendary_Armor2_StatStrength')).toBeUndefined();
+    expect(result.omods.find((o) => o.id === 'mod_Legendary_Armor4_BattleLoaders')).toBeUndefined();
   });
 
-  it("2★ SPECIAL (Strength): ActorValues ADD Strength 2.0 decodes to a specialStrength modifier via the existing fallback route", async () => {
+  it('2★ SPECIAL (Strength): ActorValues ADD Strength 2.0 decodes to a specialStrength modifier via the existing fallback route', async () => {
     const result = await extractOmods(makeArmorStubClient(), new Set());
-    const omod = result.armorOmods.find(o => o.id === 'mod_Legendary_Armor2_StatStrength');
+    const omod = result.armorOmods.find((o) => o.id === 'mod_Legendary_Armor2_StatStrength');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
-      expect.objectContaining({ bucket: 'specialStrength', op: 'ADD', value: 2 })
+      expect.objectContaining({ bucket: 'specialStrength', op: 'ADD', value: 2 }),
     );
     expect(omod!.notes ?? []).not.toContain('ActorValues on Strength — unmapped');
   });
 
   it("Battle-Loader's: 5 reloadSkipChance modifiers at the right per-worn-piece chances, each carrying the matching wornPieceCount condition", async () => {
     const result = await extractOmods(makeArmorStubClient(), new Set());
-    const omod = result.armorOmods.find(o => o.id === 'mod_Legendary_Armor4_BattleLoaders');
+    const omod = result.armorOmods.find((o) => o.id === 'mod_Legendary_Armor4_BattleLoaders');
     expect(omod).toBeDefined();
 
-    const reloadMods = omod!.modifiers.filter(m => m.bucket === 'reloadSkipChance');
+    const reloadMods = omod!.modifiers.filter((m) => m.bucket === 'reloadSkipChance');
     expect(reloadMods).toHaveLength(5);
     // Every emitted modifier is flat-valued (GetRandomPercent chance, not a
     // curve) — narrow accordingly instead of widening to `unknown`.
     const flatValue = (m: (typeof reloadMods)[number]): number => {
-      if (!('value' in m)) throw new Error(`expected a flat-value modifier, got a curve one: ${JSON.stringify(m)}`);
+      if (!('value' in m))
+        throw new Error(`expected a flat-value modifier, got a curve one: ${JSON.stringify(m)}`);
       return m.value;
     };
     // NOT the raw Set Value 1.0 placeholder — the real per-tier chance.
-    expect(reloadMods.every(m => flatValue(m) !== 1)).toBe(true);
+    expect(reloadMods.every((m) => flatValue(m) !== 1)).toBe(true);
 
     const byWornCondition = new Map(
-      reloadMods.map(m => {
+      reloadMods.map((m) => {
         const worn = m.conditions.find(
-          (c): c is Extract<typeof c, { kind: 'wornPieceCount' }> => c.kind === 'wornPieceCount'
+          (c): c is Extract<typeof c, { kind: 'wornPieceCount' }> => c.kind === 'wornPieceCount',
         );
         return [worn ? `${worn.count}${worn.orMore ? '+' : ''}` : 'MISSING', flatValue(m)];
-      })
+      }),
     );
     expect(byWornCondition).toEqual(
       new Map([
         ['1', 0.15],
-        ['2', 0.30],
+        ['2', 0.3],
         ['3', 0.45],
-        ['4', 0.60],
+        ['4', 0.6],
         ['5+', 0.75],
-      ])
+      ]),
     );
     // Every wornPieceCount condition names the Battle-Loader's keyword.
     for (const m of reloadMods) {
-      const worn = m.conditions.find(c => c.kind === 'wornPieceCount');
+      const worn = m.conditions.find((c) => c.kind === 'wornPieceCount');
       expect(worn).toMatchObject({ keyword: 'HasLegendary_Armor_BattleLoaders' });
     }
   });
@@ -1139,7 +1430,11 @@ function makeVatsEnhancedStubClient(): EsmClient {
   };
   const get = async (target: string): Promise<EsmRecord> => {
     if (known[target]) return known[target];
-    return { header: { signature: 'KYWD', form_id: target }, editor_id: target, fields: {} } as unknown as EsmRecord;
+    return {
+      header: { signature: 'KYWD', form_id: target },
+      editor_id: target,
+      fields: {},
+    } as unknown as EsmRecord;
   };
   return {
     async list(type: string): Promise<EsmListRow[]> {
@@ -1162,10 +1457,10 @@ function makeVatsEnhancedStubClient(): EsmClient {
 describe('extractOmods (V.A.T.S. Enhanced — STAT_VATSAccuracy fallback route, Phase 4 2026-07-18)', () => {
   it('ActorValues ADD 50.0 on STAT_VATSAccuracy decodes to a vatsHitChance ADD modifier of value 0.5', async () => {
     const result = await extractOmods(makeVatsEnhancedStubClient(), new Set());
-    const omod = result.omods.find(o => o.id === 'mod_Legendary_Weapon2_Guns_VATSAccuracy');
+    const omod = result.omods.find((o) => o.id === 'mod_Legendary_Weapon2_Guns_VATSAccuracy');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
-      expect.objectContaining({ bucket: 'vatsHitChance', op: 'ADD', value: 0.5 })
+      expect.objectContaining({ bucket: 'vatsHitChance', op: 'ADD', value: 0.5 }),
     );
     expect(omod!.notes).not.toContain('ActorValues on STAT_VATSAccuracy — unmapped');
   });

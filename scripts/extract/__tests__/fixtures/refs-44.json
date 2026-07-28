@@ -1,1 +1,458 @@
-[{"form_id":"0x00015570","record_type":"REFR","editor_id":null,"name":null,"offset":259964657,"depth":1},{"form_id":"0x00030DFF","record_type":"COBJ","editor_id":"co_Weapon_Ranged_44","name":null,"offset":927342288,"depth":1},{"form_id":"0x00136635","record_type":"REFR","editor_id":null,"name":null,"offset":232587400,"depth":1},{"form_id":"0x001ACFB9","record_type":"LVLI","editor_id":"LL_Weapon_Simple_Ranged_44","name":null,"offset":90417818,"depth":1},{"form_id":"0x001ACFBA","record_type":"LVLI","editor_id":"DEBUG_LL_Weapon_44_Random","name":null,"offset":90417586,"depth":1},{"form_id":"0x001ACFBC","record_type":"LVLI","editor_id":"LL_Weapon_Ranged_44_Scoped","name":null,"offset":90417139,"depth":1},{"form_id":"0x001CF590","record_type":"FLST","editor_id":"modScrapRecipe_Null_Cromponent_Steel","name":null,"offset":905745166,"depth":1},{"form_id":"0x001E32C9","record_type":"FLST","editor_id":"ModdableWeaponsList","name":null,"offset":905743780,"depth":1},{"form_id":"0x001E7DA4","record_type":"CONT","editor_id":"QAWeaponChest","name":null,"offset":20770527,"depth":1},{"form_id":"0x002892C0","record_type":"REFR","editor_id":null,"name":null,"offset":232583791,"depth":1},{"form_id":"0x0031C03E","record_type":"COBJ","editor_id":"co_mod_44_Barrel_Long_HipAccuracy","name":null,"offset":927310171,"depth":1},{"form_id":"0x0031C040","record_type":"COBJ","editor_id":"co_mod_44_Barrel_Long_Recoil","name":null,"offset":927309991,"depth":1},{"form_id":"0x0031C041","record_type":"COBJ","editor_id":"co_mod_44_Barrel_Long_Recoil-HipAccuracy","name":null,"offset":927319968,"depth":1},{"form_id":"0x0031C045","record_type":"COBJ","editor_id":"co_mod_44_Barrel_VeryShort_HipAccuracy","name":null,"offset":927319538,"depth":1},{"form_id":"0x0031C047","record_type":"COBJ","editor_id":"co_mod_44_Barrel_VeryShort_Recoil","name":null,"offset":927313074,"depth":1},{"form_id":"0x0031C048","record_type":"COBJ","editor_id":"co_mod_44_Barrel_VeryShort_Recoil-HipAccuracy","name":null,"offset":927309572,"depth":1},{"form_id":"0x0031C04B","record_type":"COBJ","editor_id":"co_mod_44_Grip_HipAccuracy","name":null,"offset":927320746,"depth":1},{"form_id":"0x0031C04D","record_type":"COBJ","editor_id":"co_mod_44_Grip_HipAccuracy-Recoil","name":null,"offset":927318996,"depth":1},{"form_id":"0x0031C04E","record_type":"COBJ","editor_id":"co_mod_44_Grip_HipAccuracy-SecondaryDMG","name":null,"offset":927313458,"depth":1},{"form_id":"0x0031C04F","record_type":"COBJ","editor_id":"co_mod_44_Grip_Recoil","name":null,"offset":927319181,"depth":1},{"form_id":"0x0031C051","record_type":"COBJ","editor_id":"co_mod_44_Grip_Recoil-SecondaryDMG","name":null,"offset":927311286,"depth":1},{"form_id":"0x0031C052","record_type":"COBJ","editor_id":"co_mod_44_Grip_SecondaryDMG","name":null,"offset":927313847,"depth":1},{"form_id":"0x0031C059","record_type":"COBJ","editor_id":"co_mod_44_Receiver_CritDMG","name":null,"offset":927310933,"depth":1},{"form_id":"0x0031C05B","record_type":"COBJ","editor_id":"co_mod_44_Receiver_CritDMG-FastTrigger","name":null,"offset":927315050,"depth":1},{"form_id":"0x0031C05C","record_type":"COBJ","editor_id":"co_mod_44_Receiver_CritDMG-HipAccuracy","name":null,"offset":927320924,"depth":1},{"form_id":"0x0031C05D","record_type":"COBJ","editor_id":"co_mod_44_Receiver_Damage","name":null,"offset":927318241,"depth":1},{"form_id":"0x0031C05F","record_type":"COBJ","editor_id":"co_mod_44_Receiver_Damage-CritDMG","name":null,"offset":927317852,"depth":1},{"form_id":"0x0031C060","record_type":"COBJ","editor_id":"co_mod_44_Receiver_Damage-FastTrigger","name":null,"offset":927312363,"depth":1},{"form_id":"0x0031C061","record_type":"COBJ","editor_id":"co_mod_44_Receiver_Damage-HipAccuracy","name":null,"offset":927310356,"depth":1},{"form_id":"0x0031C062","record_type":"COBJ","editor_id":"co_mod_44_Receiver_FastTrigger","name":null,"offset":927311987,"depth":1},{"form_id":"0x0031C064","record_type":"COBJ","editor_id":"co_mod_44_Receiver_FastTrigger-HipAccuracy","name":null,"offset":927312169,"depth":1},{"form_id":"0x0031C067","record_type":"COBJ","editor_id":"co_mod_44_Receiver_HipAccuracy","name":null,"offset":927315240,"depth":1},{"form_id":"0x0031C072","record_type":"COBJ","editor_id":"co_mod_44_SCOPE_ShortScope_Base","name":null,"offset":927314227,"depth":1},{"form_id":"0x0031C076","record_type":"COBJ","editor_id":"co_mod_44_SCOPE_ShortScope_Recon_Base","name":null,"offset":927317018,"depth":1},{"form_id":"0x0032CE26","record_type":"CONT","editor_id":"QAVendorChest","name":null,"offset":20651315,"depth":1},{"form_id":"0x0034ADC2","record_type":"LVLI","editor_id":"Test_InstanceContainer","name":null,"offset":90116123,"depth":1},{"form_id":"0x0034E20F","record_type":"LVLI","editor_id":"LL_Weapon_Ranged_44_SemiAuto","name":null,"offset":90113694,"depth":1},{"form_id":"0x00368DAE","record_type":"CONT","editor_id":"TestQAWeaponRecipe","name":null,"offset":20631169,"depth":1},{"form_id":"0x0037D0B6","record_type":"LVLI","editor_id":"LC016_LL_Weapon_Ranged_44_Gilded","name":null,"offset":89243117,"depth":1},{"form_id":"0x0038E59C","record_type":"CONT","editor_id":"POI238_PrisonerWoodCrate","name":null,"offset":20622555,"depth":1},{"form_id":"0x0038F0F5","record_type":"FLST","editor_id":"ImguiDebugDisplayList","name":null,"offset":905686120,"depth":1},{"form_id":"0x003E1DD3","record_type":"CONT","editor_id":"RE_ObjectCMB06_Wall_Safe","name":null,"offset":20561480,"depth":1},{"form_id":"0x00417C45","record_type":"LVLI","editor_id":"LegendaryItems_LL_Weapons_Ranged_All","name":null,"offset":88679937,"depth":1},{"form_id":"0x0055AB7F","record_type":"LVLI","editor_id":"W05_Daily_R02_MidquestReward_Hunter1_LL_Weapons","name":null,"offset":88489207,"depth":1},{"form_id":"0x0055ADB1","record_type":"LVLI","editor_id":"W05_MQ_004P_Crane_LL_Pistol_Reward","name":null,"offset":88487675,"depth":1},{"form_id":"0x005849FC","record_type":"INFO","editor_id":null,"name":null,"offset":881440350,"depth":1},{"form_id":"0x005D038B","record_type":"LVLI","editor_id":"BS01_MQ02_Invention_LL_Weapon_Ranged_TheFactFinder","name":null,"offset":87990328,"depth":1},{"form_id":"0x005FE494","record_type":"COBJ","editor_id":"co_Weapon_Ranged_44_MedicalMalpractice","name":null,"offset":926049979,"depth":1},{"form_id":"0x00608353","record_type":"FLST","editor_id":"Debug_AllWeapons_List","name":null,"offset":905377320,"depth":1},{"form_id":"0x006312AA","record_type":"GMRW","editor_id":"QuestReward_MTR11_Delve_Stage9999_01","name":null,"offset":940030826,"depth":1},{"form_id":"0x00692D30","record_type":"LVLI","editor_id":"LL_Weapon_Ranged_44_SomersetSpecial","name":null,"offset":87586294,"depth":1},{"form_id":"0x006F9B85","record_type":"REFR","editor_id":null,"name":null,"offset":377585587,"depth":1},{"form_id":"0x007B24AE","record_type":"LVLI","editor_id":"LLC_PTS_Locker_P56_CombatBalance","name":null,"offset":86926460,"depth":1},{"form_id":"0x007B7934","record_type":"LVLI","editor_id":"LL_WeaponUser_Weapons","name":null,"offset":86878773,"depth":1},{"form_id":"0x0081576F","record_type":"REFR","editor_id":null,"name":null,"offset":612117239,"depth":1},{"form_id":"0x008ADA15","record_type":"COBJ","editor_id":"ATX_co_mod_44_Weapon_Lawbringer","name":null,"offset":924594489,"depth":1},{"form_id":"0x008DC2D6","record_type":"LVLI","editor_id":"LL_Weapon_Ranged_44_MedicalMalpractice","name":null,"offset":86165157,"depth":1}]
+[
+  {
+    "form_id": "0x00015570",
+    "record_type": "REFR",
+    "editor_id": null,
+    "name": null,
+    "offset": 259964657,
+    "depth": 1
+  },
+  {
+    "form_id": "0x00030DFF",
+    "record_type": "COBJ",
+    "editor_id": "co_Weapon_Ranged_44",
+    "name": null,
+    "offset": 927342288,
+    "depth": 1
+  },
+  {
+    "form_id": "0x00136635",
+    "record_type": "REFR",
+    "editor_id": null,
+    "name": null,
+    "offset": 232587400,
+    "depth": 1
+  },
+  {
+    "form_id": "0x001ACFB9",
+    "record_type": "LVLI",
+    "editor_id": "LL_Weapon_Simple_Ranged_44",
+    "name": null,
+    "offset": 90417818,
+    "depth": 1
+  },
+  {
+    "form_id": "0x001ACFBA",
+    "record_type": "LVLI",
+    "editor_id": "DEBUG_LL_Weapon_44_Random",
+    "name": null,
+    "offset": 90417586,
+    "depth": 1
+  },
+  {
+    "form_id": "0x001ACFBC",
+    "record_type": "LVLI",
+    "editor_id": "LL_Weapon_Ranged_44_Scoped",
+    "name": null,
+    "offset": 90417139,
+    "depth": 1
+  },
+  {
+    "form_id": "0x001CF590",
+    "record_type": "FLST",
+    "editor_id": "modScrapRecipe_Null_Cromponent_Steel",
+    "name": null,
+    "offset": 905745166,
+    "depth": 1
+  },
+  {
+    "form_id": "0x001E32C9",
+    "record_type": "FLST",
+    "editor_id": "ModdableWeaponsList",
+    "name": null,
+    "offset": 905743780,
+    "depth": 1
+  },
+  {
+    "form_id": "0x001E7DA4",
+    "record_type": "CONT",
+    "editor_id": "QAWeaponChest",
+    "name": null,
+    "offset": 20770527,
+    "depth": 1
+  },
+  {
+    "form_id": "0x002892C0",
+    "record_type": "REFR",
+    "editor_id": null,
+    "name": null,
+    "offset": 232583791,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C03E",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Barrel_Long_HipAccuracy",
+    "name": null,
+    "offset": 927310171,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C040",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Barrel_Long_Recoil",
+    "name": null,
+    "offset": 927309991,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C041",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Barrel_Long_Recoil-HipAccuracy",
+    "name": null,
+    "offset": 927319968,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C045",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Barrel_VeryShort_HipAccuracy",
+    "name": null,
+    "offset": 927319538,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C047",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Barrel_VeryShort_Recoil",
+    "name": null,
+    "offset": 927313074,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C048",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Barrel_VeryShort_Recoil-HipAccuracy",
+    "name": null,
+    "offset": 927309572,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C04B",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Grip_HipAccuracy",
+    "name": null,
+    "offset": 927320746,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C04D",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Grip_HipAccuracy-Recoil",
+    "name": null,
+    "offset": 927318996,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C04E",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Grip_HipAccuracy-SecondaryDMG",
+    "name": null,
+    "offset": 927313458,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C04F",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Grip_Recoil",
+    "name": null,
+    "offset": 927319181,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C051",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Grip_Recoil-SecondaryDMG",
+    "name": null,
+    "offset": 927311286,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C052",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Grip_SecondaryDMG",
+    "name": null,
+    "offset": 927313847,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C059",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Receiver_CritDMG",
+    "name": null,
+    "offset": 927310933,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C05B",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Receiver_CritDMG-FastTrigger",
+    "name": null,
+    "offset": 927315050,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C05C",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Receiver_CritDMG-HipAccuracy",
+    "name": null,
+    "offset": 927320924,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C05D",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Receiver_Damage",
+    "name": null,
+    "offset": 927318241,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C05F",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Receiver_Damage-CritDMG",
+    "name": null,
+    "offset": 927317852,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C060",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Receiver_Damage-FastTrigger",
+    "name": null,
+    "offset": 927312363,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C061",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Receiver_Damage-HipAccuracy",
+    "name": null,
+    "offset": 927310356,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C062",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Receiver_FastTrigger",
+    "name": null,
+    "offset": 927311987,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C064",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Receiver_FastTrigger-HipAccuracy",
+    "name": null,
+    "offset": 927312169,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C067",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_Receiver_HipAccuracy",
+    "name": null,
+    "offset": 927315240,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C072",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_SCOPE_ShortScope_Base",
+    "name": null,
+    "offset": 927314227,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0031C076",
+    "record_type": "COBJ",
+    "editor_id": "co_mod_44_SCOPE_ShortScope_Recon_Base",
+    "name": null,
+    "offset": 927317018,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0032CE26",
+    "record_type": "CONT",
+    "editor_id": "QAVendorChest",
+    "name": null,
+    "offset": 20651315,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0034ADC2",
+    "record_type": "LVLI",
+    "editor_id": "Test_InstanceContainer",
+    "name": null,
+    "offset": 90116123,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0034E20F",
+    "record_type": "LVLI",
+    "editor_id": "LL_Weapon_Ranged_44_SemiAuto",
+    "name": null,
+    "offset": 90113694,
+    "depth": 1
+  },
+  {
+    "form_id": "0x00368DAE",
+    "record_type": "CONT",
+    "editor_id": "TestQAWeaponRecipe",
+    "name": null,
+    "offset": 20631169,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0037D0B6",
+    "record_type": "LVLI",
+    "editor_id": "LC016_LL_Weapon_Ranged_44_Gilded",
+    "name": null,
+    "offset": 89243117,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0038E59C",
+    "record_type": "CONT",
+    "editor_id": "POI238_PrisonerWoodCrate",
+    "name": null,
+    "offset": 20622555,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0038F0F5",
+    "record_type": "FLST",
+    "editor_id": "ImguiDebugDisplayList",
+    "name": null,
+    "offset": 905686120,
+    "depth": 1
+  },
+  {
+    "form_id": "0x003E1DD3",
+    "record_type": "CONT",
+    "editor_id": "RE_ObjectCMB06_Wall_Safe",
+    "name": null,
+    "offset": 20561480,
+    "depth": 1
+  },
+  {
+    "form_id": "0x00417C45",
+    "record_type": "LVLI",
+    "editor_id": "LegendaryItems_LL_Weapons_Ranged_All",
+    "name": null,
+    "offset": 88679937,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0055AB7F",
+    "record_type": "LVLI",
+    "editor_id": "W05_Daily_R02_MidquestReward_Hunter1_LL_Weapons",
+    "name": null,
+    "offset": 88489207,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0055ADB1",
+    "record_type": "LVLI",
+    "editor_id": "W05_MQ_004P_Crane_LL_Pistol_Reward",
+    "name": null,
+    "offset": 88487675,
+    "depth": 1
+  },
+  {
+    "form_id": "0x005849FC",
+    "record_type": "INFO",
+    "editor_id": null,
+    "name": null,
+    "offset": 881440350,
+    "depth": 1
+  },
+  {
+    "form_id": "0x005D038B",
+    "record_type": "LVLI",
+    "editor_id": "BS01_MQ02_Invention_LL_Weapon_Ranged_TheFactFinder",
+    "name": null,
+    "offset": 87990328,
+    "depth": 1
+  },
+  {
+    "form_id": "0x005FE494",
+    "record_type": "COBJ",
+    "editor_id": "co_Weapon_Ranged_44_MedicalMalpractice",
+    "name": null,
+    "offset": 926049979,
+    "depth": 1
+  },
+  {
+    "form_id": "0x00608353",
+    "record_type": "FLST",
+    "editor_id": "Debug_AllWeapons_List",
+    "name": null,
+    "offset": 905377320,
+    "depth": 1
+  },
+  {
+    "form_id": "0x006312AA",
+    "record_type": "GMRW",
+    "editor_id": "QuestReward_MTR11_Delve_Stage9999_01",
+    "name": null,
+    "offset": 940030826,
+    "depth": 1
+  },
+  {
+    "form_id": "0x00692D30",
+    "record_type": "LVLI",
+    "editor_id": "LL_Weapon_Ranged_44_SomersetSpecial",
+    "name": null,
+    "offset": 87586294,
+    "depth": 1
+  },
+  {
+    "form_id": "0x006F9B85",
+    "record_type": "REFR",
+    "editor_id": null,
+    "name": null,
+    "offset": 377585587,
+    "depth": 1
+  },
+  {
+    "form_id": "0x007B24AE",
+    "record_type": "LVLI",
+    "editor_id": "LLC_PTS_Locker_P56_CombatBalance",
+    "name": null,
+    "offset": 86926460,
+    "depth": 1
+  },
+  {
+    "form_id": "0x007B7934",
+    "record_type": "LVLI",
+    "editor_id": "LL_WeaponUser_Weapons",
+    "name": null,
+    "offset": 86878773,
+    "depth": 1
+  },
+  {
+    "form_id": "0x0081576F",
+    "record_type": "REFR",
+    "editor_id": null,
+    "name": null,
+    "offset": 612117239,
+    "depth": 1
+  },
+  {
+    "form_id": "0x008ADA15",
+    "record_type": "COBJ",
+    "editor_id": "ATX_co_mod_44_Weapon_Lawbringer",
+    "name": null,
+    "offset": 924594489,
+    "depth": 1
+  },
+  {
+    "form_id": "0x008DC2D6",
+    "record_type": "LVLI",
+    "editor_id": "LL_Weapon_Ranged_44_MedicalMalpractice",
+    "name": null,
+    "offset": 86165157,
+    "depth": 1
+  }
+]

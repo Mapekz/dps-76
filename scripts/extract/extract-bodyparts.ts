@@ -89,7 +89,14 @@ function toCandidatePart(raw: RawPart, conditionPartsOnly: boolean): CandidatePa
   // The torso core isn't a "limb" in the crippled-limb sense (Bully's/
   // Tormentor's perCrippledLimb) even when the game tracks its condition.
   const crippable = actorValue != null && partType !== 'Torso';
-  return { name, partType, dmgMult, crippable, actorValue, partTypeValue: data['Part Type']?.value ?? 0 };
+  return {
+    name,
+    partType,
+    dmgMult,
+    crippable,
+    actorValue,
+    partTypeValue: data['Part Type']?.value ?? 0,
+  };
 }
 
 export interface BodyPartsNormalized {
@@ -99,9 +106,12 @@ export interface BodyPartsNormalized {
 }
 
 /** Pure BPTD → parts normalization (exposed for fixture tests). */
-export function bptdToParts(bptdFields: unknown, opts: { conditionPartsOnly?: boolean } = {}): BodyPartsNormalized {
+export function bptdToParts(
+  bptdFields: unknown,
+  opts: { conditionPartsOnly?: boolean } = {},
+): BodyPartsNormalized {
   const candidates = collectRawParts(bptdFields)
-    .map(raw => toCandidatePart(raw, opts.conditionPartsOnly ?? false))
+    .map((raw) => toCandidatePart(raw, opts.conditionPartsOnly ?? false))
     .filter((p): p is CandidatePart => p !== null);
 
   // Some BPTDs list one part per skeleton side-node that shares a single
@@ -119,8 +129,9 @@ export function bptdToParts(bptdFields: unknown, opts: { conditionPartsOnly?: bo
   }
 
   const deduped = [...byKey.values()];
-  const crippableLimbCount = new Set(deduped.filter(p => p.crippable).map(p => p.actorValue)).size;
-  const parts: GeneratedBodyPart[] = deduped.map(p => ({
+  const crippableLimbCount = new Set(deduped.filter((p) => p.crippable).map((p) => p.actorValue))
+    .size;
+  const parts: GeneratedBodyPart[] = deduped.map((p) => ({
     name: p.name,
     partType: p.partType,
     dmgMult: p.dmgMult,
@@ -141,7 +152,13 @@ export async function extractBodyParts(client: EsmClient): Promise<BodyPartsResu
   const races = await mapPool(
     CURATED_TARGETS,
     8,
-    async ({ edid, label, category, conditionPartsOnly, crippleImmune }): Promise<GeneratedBodyPartRace | null> => {
+    async ({
+      edid,
+      label,
+      category,
+      conditionPartsOnly,
+      crippleImmune,
+    }): Promise<GeneratedBodyPartRace | null> => {
       let record;
       try {
         record = await client.get(edid);
@@ -176,7 +193,9 @@ export async function extractBodyParts(client: EsmClient): Promise<BodyPartsResu
       const keywordFormIds: string[] = Array.isArray(keywordsNode['Keywords'])
         ? (keywordsNode['Keywords'] as string[])
         : [];
-      const keywords = (await Promise.all(keywordFormIds.map(id => client.resolveEdid(id)))).filter(isEnemyKeyword);
+      const keywords = (
+        await Promise.all(keywordFormIds.map((id) => client.resolveEdid(id)))
+      ).filter(isEnemyKeyword);
 
       const bptdFormId = raceRecord.fields['Body Part Data'] as string | null;
       if (!bptdFormId) {
@@ -190,7 +209,9 @@ export async function extractBodyParts(client: EsmClient): Promise<BodyPartsResu
         return null;
       }
       const noCripple = crippleImmune ?? false;
-      const parts = noCripple ? normalized.parts.map(p => ({ ...p, crippable: false })) : normalized.parts;
+      const parts = noCripple
+        ? normalized.parts.map((p) => ({ ...p, crippable: false }))
+        : normalized.parts;
       const crippableLimbCount = noCripple ? 0 : normalized.crippableLimbCount;
       return {
         id: edid,
@@ -204,7 +225,7 @@ export async function extractBodyParts(client: EsmClient): Promise<BodyPartsResu
         crippableLimbCount,
         noCripple,
       };
-    }
+    },
   );
 
   return { races: races.filter((r): r is GeneratedBodyPartRace => r !== null), unresolved };

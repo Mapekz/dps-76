@@ -13,10 +13,10 @@ describe('Unique mod slot (ap_customName)', () => {
   it("Super Sledge's Unique slot is labeled 'Unique' and lists its four known unique mods", () => {
     const superSledge = getWeapons('live')['SuperSledge'];
     const slots = getOmodSlots('live', superSledge);
-    const uniqueSlot = slots.find(s => s.slot === 'ap_customName');
+    const uniqueSlot = slots.find((s) => s.slot === 'ap_customName');
     expect(uniqueSlot?.label).toBe('Unique');
 
-    const ids = uniqueSlot?.options.map(o => o.id) ?? [];
+    const ids = uniqueSlot?.options.map((o) => o.id) ?? [];
     for (const id of [
       'mod_Custom_AllRise',
       'mod_Custom_SuperSledge_TheFarmhand',
@@ -30,8 +30,8 @@ describe('Unique mod slot (ap_customName)', () => {
   it("Deathclaw Gauntlet's Unique slot contains Unstoppable Monster, badged inert (its damage-taken effect is notes-only)", () => {
     const gauntlet = getWeapons('live')['DeathclawGauntlet'];
     const slots = getOmodSlots('live', gauntlet);
-    const uniqueSlot = slots.find(s => s.slot === 'ap_customName');
-    const option = uniqueSlot?.options.find(o => o.id === 'mod_Custom_UnstoppableMonster');
+    const uniqueSlot = slots.find((s) => s.slot === 'ap_customName');
+    const option = uniqueSlot?.options.find((o) => o.id === 'mod_Custom_UnstoppableMonster');
     expect(option).toBeDefined();
     // classifyOmodDisplay's notes fallback: a zero-modifier stock part with
     // extraction notes badges 'inert' rather than showing unbadged.
@@ -72,7 +72,9 @@ describe('isEligible', () => {
 
   it('branch 1: keyword-scoped mods use the subset check', () => {
     const omod = synthOmod({ targetKeywords: ['ma_HuntingRifle'] });
-    expect(isEligible(omod, synthWeapon({ keywords: ['ma_HuntingRifle', 'ObjectTypeWeapon'] }))).toBe(true);
+    expect(
+      isEligible(omod, synthWeapon({ keywords: ['ma_HuntingRifle', 'ObjectTypeWeapon'] })),
+    ).toBe(true);
     expect(isEligible(omod, synthWeapon({ keywords: ['ma_GatlingGun'] }))).toBe(false);
   });
 
@@ -81,7 +83,9 @@ describe('isEligible', () => {
     // via the template combination that includes the mod — the base WEAP
     // never carries it.
     const omod = synthOmod({ targetKeywords: ['ma_Flamer', 'RD01_ma_BoilingPoint'] });
-    expect(isEligible(omod, synthWeapon({ keywords: ['ma_Flamer'], templateModFormIds: ['0xMOD'] }))).toBe(true);
+    expect(
+      isEligible(omod, synthWeapon({ keywords: ['ma_Flamer'], templateModFormIds: ['0xMOD'] })),
+    ).toBe(true);
     expect(isEligible(omod, synthWeapon({ keywords: ['ma_Flamer'] }))).toBe(false);
   });
 
@@ -98,8 +102,12 @@ describe('isEligible', () => {
     // branch 2 doc-comment).
     const omod = synthOmod({ id: 'mod_Custom_RewardMod' });
     const restrictions = { mod_Custom_RewardMod: ['AlienBlaster'] };
-    expect(isOmodEligibleForWeapon(omod, synthWeapon({ id: 'AlienBlaster' }), restrictions)).toBe(true);
-    expect(isOmodEligibleForWeapon(omod, synthWeapon({ id: 'GaussMinigun' }), restrictions)).toBe(false);
+    expect(isOmodEligibleForWeapon(omod, synthWeapon({ id: 'AlienBlaster' }), restrictions)).toBe(
+      true,
+    );
+    expect(isOmodEligibleForWeapon(omod, synthWeapon({ id: 'GaussMinigun' }), restrictions)).toBe(
+      false,
+    );
   });
 
   it('branch 2c: an empty-keyword mod with no template seat and no rescue is not eligible anywhere', () => {
@@ -111,7 +119,7 @@ describe('COBJ-anchored eligibility against live data (regression cases from the
   const optionIds = (weaponId: string): string[] => {
     const weapon = getWeapons('live')[weaponId];
     expect(weapon, weaponId).toBeDefined();
-    return getOmodSlots('live', weapon).flatMap(s => s.options.map(o => o.id));
+    return getOmodSlots('live', weapon).flatMap((s) => s.options.map((o) => o.id));
   };
 
   it('the Vox Syringe Barrel stays on its quest syringer and leaves the gauss minigun', () => {
@@ -131,7 +139,7 @@ describe('COBJ-anchored eligibility against live data (regression cases from the
     }
   });
 
-  it("the Alien Blaster offers only the base V.A.T.S. Unknown mod, not its five unreferenced legacy siblings (2026-07-16 regression guard)", () => {
+  it('the Alien Blaster offers only the base V.A.T.S. Unknown mod, not its five unreferenced legacy siblings (2026-07-16 regression guard)', () => {
     const ids = optionIds('AlienBlaster');
     expect(ids).toContain('mod_Custom_TheVATSUnknown');
     for (const id of [
@@ -164,15 +172,15 @@ describe('show-all-mods display policy against live data', () => {
     // rangeFalloffMult's inputs (scenarios.ts), so modifierHasEngineEffect
     // sees a real effect and the badge clears — same predicate, new ground
     // truth (src/types/modifiers.ts BUCKET_REGISTRY).
-    const muzzle = slotsOf('BlackPowder_Rifle').find(s => s.slot === 'ap_gun_Muzzle');
-    const bayonet = muzzle?.options.find(o => o.id === 'mod_BlackPowder_Rifle_Bayonet');
+    const muzzle = slotsOf('BlackPowder_Rifle').find((s) => s.slot === 'ap_gun_Muzzle');
+    const bayonet = muzzle?.options.find((o) => o.id === 'mod_BlackPowder_Rifle_Bayonet');
     expect(bayonet).toBeDefined();
     expect(bayonet?.badge).toBeUndefined();
   });
 
   it("the Gauss Minigun's sight slot offers the Gunner Sights, badged inert", () => {
-    const sight = slotsOf('GaussMinigun').find(s => s.slot === 'ap_gun_Sight');
-    const gunnerSights = sight?.options.find(o => o.id === 'mod_GaussMinigun_Scope_SightReflex');
+    const sight = slotsOf('GaussMinigun').find((s) => s.slot === 'ap_gun_Sight');
+    const gunnerSights = sight?.options.find((o) => o.id === 'mod_GaussMinigun_Scope_SightReflex');
     expect(gunnerSights).toBeDefined();
     expect(gunnerSights?.badge).toBe('inert');
   });
@@ -180,21 +188,25 @@ describe('show-all-mods display policy against live data', () => {
   it('enemy-type-gated mods are unbadged conditionals, not "needs enemy DR"', () => {
     // Assassin's (1★ legendary, GetIsRace HumanRace) — legendary picker path.
     const fixer = getWeapons('live')['CombatRifle_Fixer'];
-    const star1 = getLegendaryOmodSlots('live', fixer).find(s => /Weapon1/i.test(s.slot) || s.options.some(o => o.id.includes('Weapon1')));
-    const assassins = star1?.options.find(o => o.id === 'mod_Legendary_Weapon1_DmgVsPlayers');
+    const star1 = getLegendaryOmodSlots('live', fixer).find(
+      (s) => /Weapon1/i.test(s.slot) || s.options.some((o) => o.id.includes('Weapon1')),
+    );
+    const assassins = star1?.options.find((o) => o.id === 'mod_Legendary_Weapon1_DmgVsPlayers');
     expect(assassins).toBeDefined();
     expect(assassins?.badge).toBeUndefined();
 
     // Cold Shoulder's Paranormal Mod (ActorTypeCryptid) — standard picker path.
     const doubleBarrel = getWeapons('live')['DoubleBarrelShotgun'];
-    const unique = getOmodSlots('live', doubleBarrel).find(s => s.slot === 'ap_customName');
-    const paranormal = unique?.options.find(o => o.id === 'mod_custom_Coldshoulder_DmgvsCryptid');
+    const unique = getOmodSlots('live', doubleBarrel).find((s) => s.slot === 'ap_customName');
+    const paranormal = unique?.options.find((o) => o.id === 'mod_custom_Coldshoulder_DmgvsCryptid');
     expect(paranormal).toBeDefined();
     expect(paranormal?.badge).toBeUndefined();
 
     // Prime Receiver (anti-Scorched dbm) — receiver slot.
-    const receiver = slotsOf('CombatRifle_Fixer').find(s => s.slot === 'ap_gun_Receiver');
-    const prime = receiver?.options.find(o => o.id === 'mod_CombatRifle_receiver_AntiScorchBeast');
+    const receiver = slotsOf('CombatRifle_Fixer').find((s) => s.slot === 'ap_gun_Receiver');
+    const prime = receiver?.options.find(
+      (o) => o.id === 'mod_CombatRifle_receiver_AntiScorchBeast',
+    );
     expect(prime).toBeDefined();
     expect(prime?.badge).toBeUndefined();
   });
@@ -206,7 +218,9 @@ describe('show-all-mods display policy against live data', () => {
         expect(slot.slot, weapon.id).not.toBe('ap_Gun_UniversalOffset_Range');
         expect(slot.slot, weapon.id).not.toBe('ap_Weapon_Model_Replacement');
         for (const o of slot.options) {
-          expect(o.id.startsWith('mod_Legendary_Crafting_Weapon'), `${weapon.id}/${o.id}`).toBe(false);
+          expect(o.id.startsWith('mod_Legendary_Crafting_Weapon'), `${weapon.id}/${o.id}`).toBe(
+            false,
+          );
         }
       }
     }
@@ -224,34 +238,34 @@ describe('slot hygiene against live data', () => {
     return getOmodSlots('live', weapon);
   };
 
-  it("the Hatchet's melee slot keeps exactly one \"No Upgrade\" (template-preferred) alongside its real upgrades", () => {
-    const melee = slotsOf('Hatchet').find(s => s.slot === 'ap_melee_MeleeMod');
-    const noUpgrades = melee?.options.filter(o => o.name === 'No Upgrade') ?? [];
-    expect(noUpgrades.map(o => o.id)).toEqual(['mod_melee_Null_MeleeMod']);
-    expect(melee?.options.map(o => o.id)).toContain('mod_melee_Hatchet_ElectroFusion');
+  it('the Hatchet\'s melee slot keeps exactly one "No Upgrade" (template-preferred) alongside its real upgrades', () => {
+    const melee = slotsOf('Hatchet').find((s) => s.slot === 'ap_melee_MeleeMod');
+    const noUpgrades = melee?.options.filter((o) => o.name === 'No Upgrade') ?? [];
+    expect(noUpgrades.map((o) => o.id)).toEqual(['mod_melee_Null_MeleeMod']);
+    expect(melee?.options.map((o) => o.id)).toContain('mod_melee_Hatchet_ElectroFusion');
   });
 
   it('standard-only slots disappear: M79 receiver, Auto Grenade Launcher feeder/grip/sight', () => {
-    expect(slotsOf('M79').map(s => s.slot)).not.toContain('ap_gun_Receiver');
-    const aglSlots = slotsOf('AutoGrenadeLauncher').map(s => s.slot);
+    expect(slotsOf('M79').map((s) => s.slot)).not.toContain('ap_gun_Receiver');
+    const aglSlots = slotsOf('AutoGrenadeLauncher').map((s) => s.slot);
     for (const slot of ['ap_gun_FeedThroat', 'ap_gun_Grip', 'ap_gun_Sight']) {
       expect(aglSlots, slot).not.toContain(slot);
     }
   });
 
   it('single-option stock-part slots disappear even when the part is not a listed default (AGL Bot Mag, .50 cal Mag)', () => {
-    expect(slotsOf('AutoGrenadeLauncher').map(s => s.slot)).not.toContain('ap_Bot_Mag');
-    expect(slotsOf('50CalMachineGun').map(s => s.slot)).not.toContain('ap_gun_Mag');
+    expect(slotsOf('AutoGrenadeLauncher').map((s) => s.slot)).not.toContain('ap_Bot_Mag');
+    expect(slotsOf('50CalMachineGun').map((s) => s.slot)).not.toContain('ap_gun_Mag');
   });
 
-  it("the Bone Club keeps its melee slot — clearing the default Wounding mod to \"No Upgrade\" is a real choice", () => {
-    const melee = slotsOf('BoneClub').find(s => s.slot === 'ap_melee_MeleeMod');
-    expect(melee?.options.map(o => o.name)).toContain('No Upgrade');
+  it('the Bone Club keeps its melee slot — clearing the default Wounding mod to "No Upgrade" is a real choice', () => {
+    const melee = slotsOf('BoneClub').find((s) => s.slot === 'ap_melee_MeleeMod');
+    expect(melee?.options.map((o) => o.name)).toContain('No Upgrade');
     expect(melee?.options.length).toBeGreaterThan(1);
   });
 
   it("the Cremator's bogus receiver slot (flame-color cosmetics) is gone; its real stat slots remain", () => {
-    const slots = slotsOf('Cremator').map(s => s.slot);
+    const slots = slotsOf('Cremator').map((s) => s.slot);
     expect(slots).not.toContain('ap_gun_Receiver');
     for (const slot of ['ap_gun_Barrel', 'ap_gun_ChemicalType', 'ap_gun_Mag']) {
       expect(slots, slot).toContain(slot);
@@ -260,7 +274,7 @@ describe('slot hygiene against live data', () => {
 
   it('single-option unique-identity slots survive the standard-only rule (The Fixer, Circuit Breaker)', () => {
     for (const weaponId of ['CombatRifle_Fixer', '10mm_CircuitBreaker']) {
-      const unique = slotsOf(weaponId).find(s => s.slot === 'ap_customName');
+      const unique = slotsOf(weaponId).find((s) => s.slot === 'ap_customName');
       expect(unique, weaponId).toBeDefined();
       expect(unique!.options.length, weaponId).toBeGreaterThan(0);
     }
@@ -275,7 +289,7 @@ describe('slot labels', () => {
   const labelOf = (weaponId: string, slot: string): string | undefined => {
     const weapon = getWeapons('live')[weaponId];
     expect(weapon, weaponId).toBeDefined();
-    return getOmodSlots('live', weapon).find(s => s.slot === slot)?.label;
+    return getOmodSlots('live', weapon).find((s) => s.slot === slot)?.label;
   };
 
   it('global overrides: melee "MeleeMod" reads Upgrade (KYWD FULL), Cremator "ChemicalType" reads Tank, "Mag" reads Magazine', () => {
@@ -284,7 +298,7 @@ describe('slot labels', () => {
     expect(labelOf('Cremator', 'ap_gun_Mag')).toBe('Magazine');
   });
 
-  it('power-tool per-weapon overrides derived from each slot\'s eligible mods', () => {
+  it("power-tool per-weapon overrides derived from each slot's eligible mods", () => {
     expect(labelOf('AutoAxe', 'ap_gun_Scope')).toBe('Blade');
     expect(labelOf('Chainsaw_76', 'ap_gun_Barrel')).toBe('Bar');
     expect(labelOf('Chainsaw_76', 'ap_gun_Scope')).toBe('Attachment');
@@ -314,32 +328,49 @@ describe('attach-point closure against live data', () => {
 
   it('the Hunting Rifle regains its receiver-granted slots; the scope slot lists all twelve scopes', () => {
     const slots = slotsOf('HuntingRifle');
-    const edids = slots.map(s => s.slot);
-    for (const slot of ['ap_gun_Barrel', 'ap_gun_Grip', 'ap_gun_Mag', 'ap_gun_Muzzle', 'ap_gun_Scope']) {
+    const edids = slots.map((s) => s.slot);
+    for (const slot of [
+      'ap_gun_Barrel',
+      'ap_gun_Grip',
+      'ap_gun_Mag',
+      'ap_gun_Muzzle',
+      'ap_gun_Scope',
+    ]) {
       expect(edids, slot).toContain(slot);
     }
-    const scope = slots.find(s => s.slot === 'ap_gun_Scope');
+    const scope = slots.find((s) => s.slot === 'ap_gun_Scope');
     expect(scope?.options).toHaveLength(12);
     // Zero-stat non-stock scopes surface badged inert (show-all-mods policy).
-    expect(scope?.options.find(o => o.id === 'mod_HuntingRifle_SCOPE_reflex_Base')?.badge).toBe('inert');
+    expect(scope?.options.find((o) => o.id === 'mod_HuntingRifle_SCOPE_reflex_Base')?.badge).toBe(
+      'inert',
+    );
   });
 
   it('The Fixer offers its full slot set again (was Receiver + Unique only)', () => {
-    const edids = slotsOf('CombatRifle_Fixer').map(s => s.slot);
-    for (const slot of ['ap_gun_Barrel', 'ap_gun_Grip', 'ap_gun_Mag', 'ap_gun_Muzzle', 'ap_gun_Scope', 'ap_customName']) {
+    const edids = slotsOf('CombatRifle_Fixer').map((s) => s.slot);
+    for (const slot of [
+      'ap_gun_Barrel',
+      'ap_gun_Grip',
+      'ap_gun_Mag',
+      'ap_gun_Muzzle',
+      'ap_gun_Scope',
+      'ap_customName',
+    ]) {
       expect(edids, slot).toContain(slot);
     }
   });
 
   it('tester regression: .44, 10mm, 10mm SMG and assault rifle offer more than a receiver slot', () => {
     for (const weaponId of ['44', '10mm', '10mmSMG', 'AssaultRifle']) {
-      const edids = slotsOf(weaponId).map(s => s.slot);
-      expect(edids.filter(e => e !== 'ap_gun_Receiver').length, weaponId).toBeGreaterThanOrEqual(3);
+      const edids = slotsOf(weaponId).map((s) => s.slot);
+      expect(edids.filter((e) => e !== 'ap_gun_Receiver').length, weaponId).toBeGreaterThanOrEqual(
+        3,
+      );
     }
   });
 
   it('the Plasma Gun barrel slot offers its full barrel family (flamer/sniper/splitter/…)', () => {
-    const barrel = slotsOf('PlasmaGun').find(s => s.slot === 'ap_gun_Barrel');
+    const barrel = slotsOf('PlasmaGun').find((s) => s.slot === 'ap_gun_Barrel');
     expect(barrel?.options.length).toBeGreaterThanOrEqual(20);
   });
 });
@@ -353,7 +384,7 @@ describe('unique & cursed mods against live data', () => {
   const uniqueOptions = (weaponId: string, slot = 'ap_customName') => {
     const weapon = getWeapons('live')[weaponId];
     expect(weapon, weaponId).toBeDefined();
-    return getOmodSlots('live', weapon).find(s => s.slot === slot)?.options ?? [];
+    return getOmodSlots('live', weapon).find((s) => s.slot === slot)?.options ?? [];
   };
 
   it('previously keyword-blocked template uniques surface in their Unique slot', () => {
@@ -367,39 +398,61 @@ describe('unique & cursed mods against live data', () => {
       ['PlasmaGun', 'mod_Custom_Plasma_Abraxolator'],
       ['RailwayRifle', 'RD01_Mod_Custom_LicketySplit_CustomName'],
     ] as const) {
-      expect(uniqueOptions(weaponId).map(o => o.id), `${weaponId}/${omodId}`).toContain(omodId);
+      expect(
+        uniqueOptions(weaponId).map((o) => o.id),
+        `${weaponId}/${omodId}`,
+      ).toContain(omodId);
     }
   });
 
   it('rescued unnamed identity effects surface with their corrected names', () => {
     const flamer = uniqueOptions('Flamer');
-    expect(flamer.find(o => o.id === 'mod_custom_HolyFire_Effect')?.name).toBe('Holy Fire');
+    expect(flamer.find((o) => o.id === 'mod_custom_HolyFire_Effect')?.name).toBe('Holy Fire');
     const pick = uniqueOptions('Pickaxe');
-    expect(pick.find(o => o.id === 'mod_custom_CultistPiercer_Effect')?.name).toBe('Cultist Piercer');
+    expect(pick.find((o) => o.id === 'mod_custom_CultistPiercer_Effect')?.name).toBe(
+      'Cultist Piercer',
+    );
   });
 
   it('name fixes: The Kabloom (was "Poison"), Cold Shoulder (was "Paranormal Mod"), Flatliner, stripped Custom-Name suffixes', () => {
-    expect(uniqueOptions('PumpActionShotgun').find(o => o.id === 'mod_custom_TheKabloom_Effect')?.name).toBe('The Kabloom');
-    expect(uniqueOptions('DoubleBarrelShotgun').find(o => o.id === 'mod_custom_Coldshoulder_DmgvsCryptid')?.name).toBe('Cold Shoulder');
-    expect(uniqueOptions('GaussRifle').find(o => o.id === 'RD01_Mod_Custom_StrikeBreaker_CustomName')?.name).toBe('Flatliner');
-    expect(uniqueOptions('Flamer').find(o => o.id === 'RD01_Mod_Custom_BoilingPoint_CustomName')?.name).toBe('Boiling Point');
+    expect(
+      uniqueOptions('PumpActionShotgun').find((o) => o.id === 'mod_custom_TheKabloom_Effect')?.name,
+    ).toBe('The Kabloom');
+    expect(
+      uniqueOptions('DoubleBarrelShotgun').find(
+        (o) => o.id === 'mod_custom_Coldshoulder_DmgvsCryptid',
+      )?.name,
+    ).toBe('Cold Shoulder');
+    expect(
+      uniqueOptions('GaussRifle').find((o) => o.id === 'RD01_Mod_Custom_StrikeBreaker_CustomName')
+        ?.name,
+    ).toBe('Flatliner');
+    expect(
+      uniqueOptions('Flamer').find((o) => o.id === 'RD01_Mod_Custom_BoilingPoint_CustomName')?.name,
+    ).toBe('Boiling Point');
   });
 
   it('cursed mods ride a slot labeled "Cursed" and rename the weapon', () => {
     const broadsider = getWeapons('live')['Broadsider'];
-    const slot = getOmodSlots('live', broadsider).find(s => s.slot === 'ap_Item_Description');
+    const slot = getOmodSlots('live', broadsider).find((s) => s.slot === 'ap_Item_Description');
     expect(slot?.label).toBe('Cursed');
-    expect(slot?.options.map(o => o.id)).toContain('EN06_mod_Ranged_Broadsider_Custom_Cursed');
+    expect(slot?.options.map((o) => o.id)).toContain('EN06_mod_Ranged_Broadsider_Custom_Cursed');
     expect(
-      effectiveWeaponName('live', broadsider, { ap_Item_Description: 'EN06_mod_Ranged_Broadsider_Custom_Cursed' })
+      effectiveWeaponName('live', broadsider, {
+        ap_Item_Description: 'EN06_mod_Ranged_Broadsider_Custom_Cursed',
+      }),
     ).toBe('Cursed Broadsider');
     expect(effectiveWeaponName('live', broadsider, {})).toBe(broadsider.name);
   });
 
   it("Voice of Set's identity mod shows under a per-weapon 'Unique' label with its real name", () => {
     const options = uniqueOptions('MoM_VoiceOfSet_44', 'ap_Item_Description');
-    expect(options.find(o => o.id === 'mod_Description_MoM_VoiceofSet')?.name).toBe('Voice of Set');
+    expect(options.find((o) => o.id === 'mod_Description_MoM_VoiceofSet')?.name).toBe(
+      'Voice of Set',
+    );
     const weapon = getWeapons('live')['MoM_VoiceOfSet_44'];
-    expect(getOmodSlots('live', weapon).find(s => s.slot === 'ap_Item_Description')?.label).toBe('Unique');
+    expect(getOmodSlots('live', weapon).find((s) => s.slot === 'ap_Item_Description')?.label).toBe(
+      'Unique',
+    );
   });
 });

@@ -4,20 +4,45 @@ import type { GeneratedBuff } from '@/types/generated';
 
 // Synthetic buffs — hermetic against whatever scripts/extract currently
 // produces (a concurrent agent is rewriting the buff extractor).
-function buff(id: string, category: GeneratedBuff['category'], dispelKeys?: string[]): GeneratedBuff {
-  return { id, formId: `0x${id}`, name: id, kind: 'consumable', modifiers: [], notes: [], category, dispelKeys };
+function buff(
+  id: string,
+  category: GeneratedBuff['category'],
+  dispelKeys?: string[],
+): GeneratedBuff {
+  return {
+    id,
+    formId: `0x${id}`,
+    name: id,
+    kind: 'consumable',
+    modifiers: [],
+    notes: [],
+    category,
+    dispelKeys,
+  };
 }
 
 const chemA = buff('ChemA', 'chem', ['ChemEffect|ChemDispelEffects|StackPsychoStrength']);
 const chemB = buff('ChemB', 'chem', ['ChemEffect|ChemDispelEffects|StackBuffStrength']);
-const alcoholA = buff('AlcoholA', 'alcohol', ['AlcoholEffect|AlcoholDispelEffect|StackAlcoholStrength']);
-const alcoholB = buff('AlcoholB', 'alcohol', ['AlcoholEffect|AlcoholDispelEffect|StackAlcoholEndurance']);
+const alcoholA = buff('AlcoholA', 'alcohol', [
+  'AlcoholEffect|AlcoholDispelEffect|StackAlcoholStrength',
+]);
+const alcoholB = buff('AlcoholB', 'alcohol', [
+  'AlcoholEffect|AlcoholDispelEffect|StackAlcoholEndurance',
+]);
 // Two STR foods share a key (same bonus); an END food carries a different key.
-const foodStr1 = buff('FoodStr1', 'food', ['FoodEffect|SURV_EffectTypeFoodBuff|FoodDispelEffect_Strength']);
-const foodStr2 = buff('FoodStr2', 'food', ['FoodEffect|SURV_EffectTypeFoodBuff|FoodDispelEffect_Strength']);
-const foodEnd = buff('FoodEnd', 'food', ['FoodEffect|SURV_EffectTypeFoodBuff|FoodDispelEffect_Endurance']);
+const foodStr1 = buff('FoodStr1', 'food', [
+  'FoodEffect|SURV_EffectTypeFoodBuff|FoodDispelEffect_Strength',
+]);
+const foodStr2 = buff('FoodStr2', 'food', [
+  'FoodEffect|SURV_EffectTypeFoodBuff|FoodDispelEffect_Strength',
+]);
+const foodEnd = buff('FoodEnd', 'food', [
+  'FoodEffect|SURV_EffectTypeFoodBuff|FoodDispelEffect_Endurance',
+]);
 // Milk_Chally-style case: a DRINK sharing a food's exact key (cross-category).
-const drinkStr = buff('DrinkStr', 'drink', ['FoodEffect|SURV_EffectTypeFoodBuff|FoodDispelEffect_Strength']);
+const drinkStr = buff('DrinkStr', 'drink', [
+  'FoodEffect|SURV_EffectTypeFoodBuff|FoodDispelEffect_Strength',
+]);
 // Magazines/bobbleheads carry no dispelKeys — category alone drives their collision.
 const magazineA = buff('MagazineA', 'magazine');
 const magazineB = buff('MagazineB', 'magazine');
@@ -25,9 +50,20 @@ const bobbleheadA = buff('BobbleheadA', 'bobblehead');
 const bobbleheadB = buff('BobbleheadB', 'bobblehead');
 
 const buffsById = new Map<string, GeneratedBuff>(
-  [chemA, chemB, alcoholA, alcoholB, foodStr1, foodStr2, foodEnd, drinkStr, magazineA, magazineB, bobbleheadA, bobbleheadB].map(
-    b => [b.id, b]
-  )
+  [
+    chemA,
+    chemB,
+    alcoholA,
+    alcoholB,
+    foodStr1,
+    foodStr2,
+    foodEnd,
+    drinkStr,
+    magazineA,
+    magazineB,
+    bobbleheadA,
+    bobbleheadB,
+  ].map((b) => [b.id, b]),
 );
 
 describe('applySelection', () => {
@@ -76,7 +112,9 @@ describe('applySelection', () => {
     active = applySelection(buffsById, active, 'FoodStr1').consumables;
     active = applySelection(buffsById, active, 'MagazineA').consumables;
     const result = applySelection(buffsById, active, 'BobbleheadA');
-    expect(result.consumables.sort()).toEqual(['AlcoholA', 'BobbleheadA', 'ChemA', 'FoodStr1', 'MagazineA'].sort());
+    expect(result.consumables.sort()).toEqual(
+      ['AlcoholA', 'BobbleheadA', 'ChemA', 'FoodStr1', 'MagazineA'].sort(),
+    );
     expect(result.replaced).toEqual([]);
   });
 
@@ -147,13 +185,22 @@ describe('sanitizeConsumables', () => {
   });
 
   it('drops duplicates', () => {
-    expect(sanitizeConsumables(buffsById, ['FoodStr1', 'FoodEnd', 'FoodStr1'])).toEqual(['FoodStr1', 'FoodEnd']);
+    expect(sanitizeConsumables(buffsById, ['FoodStr1', 'FoodEnd', 'FoodStr1'])).toEqual([
+      'FoodStr1',
+      'FoodEnd',
+    ]);
   });
 
   it('keeps non-colliding items and resolves collisions across a mixed legacy payload', () => {
     // ChemA then ChemB (B wins), AlcoholA stays (different category/keys),
     // FoodStr1 then FoodStr2 (Str2 wins) — final set: ChemB, AlcoholA, FoodStr2.
-    const result = sanitizeConsumables(buffsById, ['ChemA', 'ChemB', 'AlcoholA', 'FoodStr1', 'FoodStr2']);
+    const result = sanitizeConsumables(buffsById, [
+      'ChemA',
+      'ChemB',
+      'AlcoholA',
+      'FoodStr1',
+      'FoodStr2',
+    ]);
     expect(result.slice().sort()).toEqual(['AlcoholA', 'ChemB', 'FoodStr2'].sort());
   });
 

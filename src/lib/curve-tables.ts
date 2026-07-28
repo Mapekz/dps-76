@@ -14,12 +14,12 @@ interface CurveFile {
 // X values are at 1, 5, 10, 15, … 50 (not every integer — linear interpolation required).
 const liveDamageCurves = import.meta.glob<{ default: CurveFile }>(
   '../data/live/curvetables/player/damage/damage_universal_tier*.json',
-  { eager: true }
+  { eager: true },
 );
 
 const ptsDamageCurves = import.meta.glob<{ default: CurveFile }>(
   '../data/pts/curvetables/player/damage/damage_universal_tier*.json',
-  { eager: true }
+  { eager: true },
 );
 
 function getCurvesByMode(mode: GameMode) {

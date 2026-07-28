@@ -44,7 +44,10 @@ export function parseCurve(node: unknown): { tier: number | null; curve: CurvePo
  * Explosion (the shot-down fallback) is a DIFFERENT field and must never be
  * chased here.
  */
-export async function projectileExplosionFormId(client: EsmClient, projFormId: string): Promise<string | null> {
+export async function projectileExplosionFormId(
+  client: EsmClient,
+  projFormId: string,
+): Promise<string | null> {
   const proj = await client.get(projFormId);
   const projData = (proj.fields['Data'] ?? {}) as Record<string, unknown>;
   const projFlags = ((projData['Flags'] ?? {}) as Record<string, unknown>)['flags'];
@@ -57,7 +60,13 @@ export interface DecodedExplosionDamage {
   /** Main physical explosion damage (WEAP "Damage Curve"-shaped) — null when absent (no curve, no flat Damage). */
   main: { tier: number | null; curve: CurvePoint[] | null; amount: number } | null;
   /** Typed entries (Cremator fire, Gamma Gun radiation, Polar Lobber cryo) — WEAP "Damage Types"-shaped. */
-  typed: Array<{ damageType: GeneratedDamageType; damageTypeEdid: string; amount: number; tier: number | null; curve: CurvePoint[] | null }>;
+  typed: Array<{
+    damageType: GeneratedDamageType;
+    damageTypeEdid: string;
+    amount: number;
+    tier: number | null;
+    curve: CurvePoint[] | null;
+  }>;
   /** EXPL "Base Weapon Damage Mult" (Gauss family: 0.15) — 0 when absent. */
   baseWeaponDamageMult: number;
 }
@@ -66,13 +75,16 @@ export interface DecodedExplosionDamage {
 export async function decodeExplosionDamage(
   client: EsmClient,
   expl: EsmRecord,
-  unresolved: string[]
+  unresolved: string[],
 ): Promise<DecodedExplosionDamage> {
   const explData = (expl.fields['Data'] ?? {}) as Record<string, unknown>;
 
   const mainCurve = parseCurve(explData['Damage Curve Table']);
   const flatDamage = asNumber(explData['Damage']);
-  const main = mainCurve.curve || flatDamage > 0 ? { tier: mainCurve.tier, curve: mainCurve.curve, amount: flatDamage } : null;
+  const main =
+    mainCurve.curve || flatDamage > 0
+      ? { tier: mainCurve.tier, curve: mainCurve.curve, amount: flatDamage }
+      : null;
 
   const typedEntries = Array.isArray(expl.fields['Damage Types'])
     ? (expl.fields['Damage Types'] as Array<Record<string, unknown>>)
@@ -84,7 +96,13 @@ export async function decodeExplosionDamage(
     const damageType = DAMAGE_TYPE_EDID_MAP[typeEdid];
     if (!damageType) unresolved.push(`damage type ${typeEdid} (${typeFormId})`);
     const { tier, curve } = parseCurve(entry['Curve Table']);
-    typed.push({ damageType: damageType ?? 'unknown', damageTypeEdid: typeEdid, tier, curve, amount: asNumber(entry['Amount']) });
+    typed.push({
+      damageType: damageType ?? 'unknown',
+      damageTypeEdid: typeEdid,
+      tier,
+      curve,
+      amount: asNumber(entry['Amount']),
+    });
   }
 
   return { main, typed, baseWeaponDamageMult: asNumber(explData['Base Weapon Damage Mult']) };

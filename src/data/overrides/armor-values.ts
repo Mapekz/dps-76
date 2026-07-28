@@ -46,85 +46,165 @@ export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> 
   mod_Legendary_Armor4_BattleLoaders: [
     {
       id: 'mod_Legendary_Armor4_BattleLoaders:override:0',
-      source: { kind: 'omod', formId: '0x00792A28', edid: 'mod_Legendary_Armor4_BattleLoaders', name: "Battle-Loader's" },
+      source: {
+        kind: 'omod',
+        formId: '0x00792A28',
+        edid: 'mod_Legendary_Armor4_BattleLoaders',
+        name: "Battle-Loader's",
+      },
       bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.15,
-      conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 1 }],
+      conditions: [
+        { kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 1 },
+      ],
     },
     {
       id: 'mod_Legendary_Armor4_BattleLoaders:override:1',
-      source: { kind: 'omod', formId: '0x00792A28', edid: 'mod_Legendary_Armor4_BattleLoaders', name: "Battle-Loader's" },
+      source: {
+        kind: 'omod',
+        formId: '0x00792A28',
+        edid: 'mod_Legendary_Armor4_BattleLoaders',
+        name: "Battle-Loader's",
+      },
       bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.3,
-      conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 2 }],
+      conditions: [
+        { kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 2 },
+      ],
     },
     {
       id: 'mod_Legendary_Armor4_BattleLoaders:override:2',
-      source: { kind: 'omod', formId: '0x00792A28', edid: 'mod_Legendary_Armor4_BattleLoaders', name: "Battle-Loader's" },
+      source: {
+        kind: 'omod',
+        formId: '0x00792A28',
+        edid: 'mod_Legendary_Armor4_BattleLoaders',
+        name: "Battle-Loader's",
+      },
       bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.45,
-      conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 3 }],
+      conditions: [
+        { kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 3 },
+      ],
     },
     {
       id: 'mod_Legendary_Armor4_BattleLoaders:override:3',
-      source: { kind: 'omod', formId: '0x00792A28', edid: 'mod_Legendary_Armor4_BattleLoaders', name: "Battle-Loader's" },
+      source: {
+        kind: 'omod',
+        formId: '0x00792A28',
+        edid: 'mod_Legendary_Armor4_BattleLoaders',
+        name: "Battle-Loader's",
+      },
       bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.6,
-      conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 4 }],
+      conditions: [
+        { kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 4 },
+      ],
     },
     {
       id: 'mod_Legendary_Armor4_BattleLoaders:override:4',
-      source: { kind: 'omod', formId: '0x00792A28', edid: 'mod_Legendary_Armor4_BattleLoaders', name: "Battle-Loader's" },
+      source: {
+        kind: 'omod',
+        formId: '0x00792A28',
+        edid: 'mod_Legendary_Armor4_BattleLoaders',
+        name: "Battle-Loader's",
+      },
       bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.75,
-      conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 5, orMore: true }],
+      conditions: [
+        {
+          kind: 'wornPieceCount',
+          keyword: 'HasLegendary_Armor_BattleLoaders',
+          count: 5,
+          orMore: true,
+        },
+      ],
     },
   ],
   mod_Legendary_PowerArmor4_BattleLoaders: [
     {
       id: 'mod_Legendary_PowerArmor4_BattleLoaders:override:0',
-      source: { kind: 'omod', formId: '0x007A74C2', edid: 'mod_Legendary_PowerArmor4_BattleLoaders', name: "Battle-Loader's" },
+      source: {
+        kind: 'omod',
+        formId: '0x007A74C2',
+        edid: 'mod_Legendary_PowerArmor4_BattleLoaders',
+        name: "Battle-Loader's",
+      },
       bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.15,
-      conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 1 }],
+      conditions: [
+        { kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 1 },
+      ],
     },
     {
       id: 'mod_Legendary_PowerArmor4_BattleLoaders:override:1',
-      source: { kind: 'omod', formId: '0x007A74C2', edid: 'mod_Legendary_PowerArmor4_BattleLoaders', name: "Battle-Loader's" },
+      source: {
+        kind: 'omod',
+        formId: '0x007A74C2',
+        edid: 'mod_Legendary_PowerArmor4_BattleLoaders',
+        name: "Battle-Loader's",
+      },
       bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.3,
-      conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 2 }],
+      conditions: [
+        { kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 2 },
+      ],
     },
     {
       id: 'mod_Legendary_PowerArmor4_BattleLoaders:override:2',
-      source: { kind: 'omod', formId: '0x007A74C2', edid: 'mod_Legendary_PowerArmor4_BattleLoaders', name: "Battle-Loader's" },
+      source: {
+        kind: 'omod',
+        formId: '0x007A74C2',
+        edid: 'mod_Legendary_PowerArmor4_BattleLoaders',
+        name: "Battle-Loader's",
+      },
       bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.45,
-      conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 3 }],
+      conditions: [
+        { kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 3 },
+      ],
     },
     {
       id: 'mod_Legendary_PowerArmor4_BattleLoaders:override:3',
-      source: { kind: 'omod', formId: '0x007A74C2', edid: 'mod_Legendary_PowerArmor4_BattleLoaders', name: "Battle-Loader's" },
+      source: {
+        kind: 'omod',
+        formId: '0x007A74C2',
+        edid: 'mod_Legendary_PowerArmor4_BattleLoaders',
+        name: "Battle-Loader's",
+      },
       bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.6,
-      conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 4 }],
+      conditions: [
+        { kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 4 },
+      ],
     },
     {
       id: 'mod_Legendary_PowerArmor4_BattleLoaders:override:4',
-      source: { kind: 'omod', formId: '0x007A74C2', edid: 'mod_Legendary_PowerArmor4_BattleLoaders', name: "Battle-Loader's" },
+      source: {
+        kind: 'omod',
+        formId: '0x007A74C2',
+        edid: 'mod_Legendary_PowerArmor4_BattleLoaders',
+        name: "Battle-Loader's",
+      },
       bucket: 'reloadSkipChanceBash',
       op: 'ADD',
       value: 0.75,
-      conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_BattleLoaders', count: 5, orMore: true }],
+      conditions: [
+        {
+          kind: 'wornPieceCount',
+          keyword: 'HasLegendary_Armor_BattleLoaders',
+          count: 5,
+          orMore: true,
+        },
+      ],
     },
   ],
 
@@ -147,7 +227,12 @@ export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> 
   mod_Legendary_Armor4_Bruiser: [
     {
       id: 'mod_Legendary_Armor4_Bruiser:override:0',
-      source: { kind: 'omod', formId: '0x00792A2A', edid: 'mod_Legendary_Armor4_Bruiser', name: "Bruiser's" },
+      source: {
+        kind: 'omod',
+        formId: '0x00792A2A',
+        edid: 'mod_Legendary_Armor4_Bruiser',
+        name: "Bruiser's",
+      },
       bucket: 'dbm',
       op: 'ADD',
       value: 0.05,
@@ -157,7 +242,12 @@ export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> 
   mod_Legendary_PowerArmor4_Bruiser: [
     {
       id: 'mod_Legendary_PowerArmor4_Bruiser:override:0',
-      source: { kind: 'omod', formId: '0x007A74CD', edid: 'mod_Legendary_PowerArmor4_Bruiser', name: "Bruiser's" },
+      source: {
+        kind: 'omod',
+        formId: '0x007A74CD',
+        edid: 'mod_Legendary_PowerArmor4_Bruiser',
+        name: "Bruiser's",
+      },
       bucket: 'dbm',
       op: 'ADD',
       value: 0.05,
@@ -167,7 +257,12 @@ export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> 
   mod_Legendary_Armor4_Ranger: [
     {
       id: 'mod_Legendary_Armor4_Ranger:override:0',
-      source: { kind: 'omod', formId: '0x00792A34', edid: 'mod_Legendary_Armor4_Ranger', name: "Ranger's" },
+      source: {
+        kind: 'omod',
+        formId: '0x00792A34',
+        edid: 'mod_Legendary_Armor4_Ranger',
+        name: "Ranger's",
+      },
       bucket: 'dbm',
       op: 'ADD',
       value: 0.05,
@@ -177,7 +272,12 @@ export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> 
   mod_Legendary_PowerArmor4_Ranger: [
     {
       id: 'mod_Legendary_PowerArmor4_Ranger:override:0',
-      source: { kind: 'omod', formId: '0x007A74CE', edid: 'mod_Legendary_PowerArmor4_Ranger', name: "Ranger's" },
+      source: {
+        kind: 'omod',
+        formId: '0x007A74CE',
+        edid: 'mod_Legendary_PowerArmor4_Ranger',
+        name: "Ranger's",
+      },
       bucket: 'dbm',
       op: 'ADD',
       value: 0.05,

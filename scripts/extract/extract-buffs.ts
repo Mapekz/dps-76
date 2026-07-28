@@ -128,13 +128,13 @@ const ADDICTION_BOOKKEEPING_MGEF_EDIDS = new Set(['abAddictionCount', 'CA_Addict
  */
 export async function buildDispelKeys(
   client: EsmClient,
-  effects: readonly SpellEffect[]
+  effects: readonly SpellEffect[],
 ): Promise<string[]> {
   const keys = new Set<string>();
   for (const effect of effects) {
     const mgef = await getMgefInfo(client, effect.mgefFormId);
     if (!mgef.dispelWithKeywords) continue;
-    const kwEdids = await Promise.all(mgef.keywords.map(k => client.resolveEdid(k)));
+    const kwEdids = await Promise.all(mgef.keywords.map((k) => client.resolveEdid(k)));
     keys.add([...kwEdids].sort().join('|'));
   }
   return [...keys].sort();
@@ -145,7 +145,11 @@ export async function buildDispelKeys(
  * formid directly on the record (no AVIF chase needed). Absent/null/zero ⇒
  * non-addictive.
  */
-export async function resolveAddiction(client: EsmClient, record: EsmRecord, notes: Set<string>): Promise<GeneratedAddictionRef | undefined> {
+export async function resolveAddiction(
+  client: EsmClient,
+  record: EsmRecord,
+  notes: Set<string>,
+): Promise<GeneratedAddictionRef | undefined> {
   const effectData = (record.fields['Effect Data'] ?? {}) as Record<string, unknown>;
   const addictionFormId = effectData['Addiction'];
   if (typeof addictionFormId !== 'string' || addictionFormId === '0x00000000') return undefined;
@@ -186,7 +190,7 @@ export async function extractMutation(
   routes: Map<string, AvifRoute[]>,
   edidByFormId: Map<string, string>,
   allNotes: string[],
-  allUnmapped: Set<string>
+  allUnmapped: Set<string>,
 ): Promise<GeneratedBuff | null> {
   let record;
   try {
@@ -204,17 +208,20 @@ export async function extractMutation(
   // scalableIndexes pattern).
   const penaltyIndexes = new Set<number>();
   for (const effect of parseMagicEffects(record)) {
-    const result = await translateMagicEffect({ client, routes, edidByFormId, timedIsActive: true, noteUnroutedAvs: true }, effect);
+    const result = await translateMagicEffect(
+      { client, routes, edidByFormId, timedIsActive: true, noteUnroutedAvs: true },
+      effect,
+    );
     if (result.modifiers.length > 0) {
       const mgef = await getMgefInfo(client, effect.mgefFormId);
-      const kwEdids = await Promise.all(mgef.keywords.map(k => client.resolveEdid(k)));
+      const kwEdids = await Promise.all(mgef.keywords.map((k) => client.resolveEdid(k)));
       if (mgef.detrimental && kwEdids.includes(MUTATION_NEGATIVE_EFFECT_KEYWORD)) {
         for (let i = 0; i < result.modifiers.length; i++) penaltyIndexes.add(fragments.length + i);
       }
     }
     fragments.push(...result.modifiers);
-    result.notes.forEach(n => notes.add(`${edid}: ${n}`));
-    result.unmappedAvifs.forEach(a => allUnmapped.add(a));
+    result.notes.forEach((n) => notes.add(`${edid}: ${n}`));
+    result.unmappedAvifs.forEach((a) => allUnmapped.add(a));
   }
 
   const source = {
@@ -225,7 +232,7 @@ export async function extractMutation(
   };
 
   const modifiers = withSource(fragments, source, record.header.form_id);
-  const penaltyModifierIds = modifiers.filter((_, i) => penaltyIndexes.has(i)).map(m => m.id);
+  const penaltyModifierIds = modifiers.filter((_, i) => penaltyIndexes.has(i)).map((m) => m.id);
 
   allNotes.push(...notes);
   return {
@@ -259,17 +266,20 @@ export async function extractAddictionEffects(
   spel: EsmRecord,
   routes: Map<string, AvifRoute[]>,
   edidByFormId: Map<string, string>,
-  allUnmapped: Set<string>
+  allUnmapped: Set<string>,
 ): Promise<{ modifiers: GeneratedAddiction['modifiers']; notes: string[] }> {
   const notes = new Set<string>();
   const fragments = [];
   for (const effect of parseMagicEffects(spel)) {
     const mgef = await getMgefInfo(client, effect.mgefFormId);
     if (ADDICTION_BOOKKEEPING_MGEF_EDIDS.has(mgef.edid)) continue;
-    const result = await translateMagicEffect({ client, routes, edidByFormId, timedIsActive: true, noteUnroutedAvs: true }, effect);
+    const result = await translateMagicEffect(
+      { client, routes, edidByFormId, timedIsActive: true, noteUnroutedAvs: true },
+      effect,
+    );
     fragments.push(...result.modifiers);
-    result.notes.forEach(n => notes.add(`${spel.editor_id}: ${n}`));
-    result.unmappedAvifs.forEach(a => allUnmapped.add(a));
+    result.notes.forEach((n) => notes.add(`${spel.editor_id}: ${n}`));
+    result.unmappedAvifs.forEach((a) => allUnmapped.add(a));
   }
   const source = {
     kind: 'addiction' as const,
@@ -286,11 +296,13 @@ async function buildConsumable(
   record: EsmRecord,
   routes: Map<string, AvifRoute[]>,
   edidByFormId: Map<string, string>,
-  allUnmapped: Set<string>
+  allUnmapped: Set<string>,
 ): Promise<CategorizedBuff | null> {
   const keywordsNode = (record.fields['Keywords'] ?? {}) as Record<string, unknown>;
-  const keywordFormIds = Array.isArray(keywordsNode['Keywords']) ? (keywordsNode['Keywords'] as string[]) : [];
-  const keywordEdids = await Promise.all(keywordFormIds.map(id => client.resolveEdid(id)));
+  const keywordFormIds = Array.isArray(keywordsNode['Keywords'])
+    ? (keywordsNode['Keywords'] as string[])
+    : [];
+  const keywordEdids = await Promise.all(keywordFormIds.map((id) => client.resolveEdid(id)));
   const category = classifyConsumableCategory(keywordEdids);
   if (!category) return null;
 
@@ -302,22 +314,25 @@ async function buildConsumable(
   // after withSource assigns them.
   const scalableIndexes = new Set<number>();
   for (const effect of effects) {
-    const result = await translateMagicEffect({ client, routes, edidByFormId, timedIsActive: true, noteUnroutedAvs: true }, effect);
+    const result = await translateMagicEffect(
+      { client, routes, edidByFormId, timedIsActive: true, noteUnroutedAvs: true },
+      effect,
+    );
     if (result.modifiers.length > 0) {
       const mgef = await getMgefInfo(client, effect.mgefFormId);
-      const kwEdids = await Promise.all(mgef.keywords.map(k => client.resolveEdid(k)));
-      if (kwEdids.some(k => FOOD_SCALE_KEYWORD_EDIDS.has(k))) {
+      const kwEdids = await Promise.all(mgef.keywords.map((k) => client.resolveEdid(k)));
+      if (kwEdids.some((k) => FOOD_SCALE_KEYWORD_EDIDS.has(k))) {
         for (let i = 0; i < result.modifiers.length; i++) scalableIndexes.add(fragments.length + i);
       }
     }
     fragments.push(...result.modifiers);
-    result.notes.forEach(n => notes.add(`${record.editor_id}: ${n}`));
-    result.unmappedAvifs.forEach(a => allUnmapped.add(a));
+    result.notes.forEach((n) => notes.add(`${record.editor_id}: ${n}`));
+    result.unmappedAvifs.forEach((a) => allUnmapped.add(a));
   }
 
   const dispelKeys = await buildDispelKeys(client, effects);
   const addiction = await resolveAddiction(client, record, notes);
-  const ingredientKeywords = keywordEdids.filter(e => INGREDIENT_KEYWORD_RE.test(e));
+  const ingredientKeywords = keywordEdids.filter((e) => INGREDIENT_KEYWORD_RE.test(e));
 
   const source = {
     kind: 'consumable' as const,
@@ -327,7 +342,9 @@ async function buildConsumable(
   };
 
   const modifiers = withSource(fragments, source, record.header.form_id);
-  const foodScalableModifierIds = modifiers.filter((_, i) => scalableIndexes.has(i)).map(m => m.id);
+  const foodScalableModifierIds = modifiers
+    .filter((_, i) => scalableIndexes.has(i))
+    .map((m) => m.id);
 
   const buff: GeneratedBuff = {
     id: record.editor_id,
@@ -374,7 +391,7 @@ export async function extractBuffs(client: EsmClient): Promise<ExtractBuffsResul
   };
 
   const alchRows = await client.search('*', { type: 'ALCH', searchIn: 'name' });
-  const candidates = alchRows.filter(row => {
+  const candidates = alchRows.filter((row) => {
     if (isExcludedConsumableEdid(row.editor_id)) {
       excluded.consumableJunkEdid.push(row.editor_id);
       return false;
@@ -382,7 +399,7 @@ export async function extractBuffs(client: EsmClient): Promise<ExtractBuffsResul
     return true;
   });
 
-  const records = await mapPool(candidates, 8, row => client.get(row.form_id));
+  const records = await mapPool(candidates, 8, (row) => client.get(row.form_id));
 
   const categorized: CategorizedBuff[] = [];
   for (const record of records) {
@@ -398,13 +415,19 @@ export async function extractBuffs(client: EsmClient): Promise<ExtractBuffsResul
   // alike) — same contract as weapons/omods: failures stay in the JSON
   // flagged obtainable:false (app hides, corrections.ts can force-visible).
   const classifier = new ObtainabilityClassifier(client);
-  const verdicts = await classifier.classify(categorized.map(c => ({ formId: c.buff.formId, edid: c.buff.id })));
+  const verdicts = await classifier.classify(
+    categorized.map((c) => ({ formId: c.buff.formId, edid: c.buff.id })),
+  );
   for (const { buff } of categorized) {
     const verdict = verdicts.get(buff.formId);
     buff.obtainable = verdict?.obtainable ?? false;
     if (!buff.obtainable) {
       excluded.consumableUnobtainable.push(buff.id);
-      excludedDetailed.consumableUnobtainable.push({ id: buff.id, name: buff.name, signals: verdict?.signals });
+      excludedDetailed.consumableUnobtainable.push({
+        id: buff.id,
+        name: buff.name,
+        signals: verdict?.signals,
+      });
     }
   }
 
@@ -434,7 +457,7 @@ export async function extractBuffs(client: EsmClient): Promise<ExtractBuffsResul
   // filters, same as weapons/omods.
   const isRelevant = (b: GeneratedBuff): boolean =>
     b.modifiers.length > 0 || (b.addiction !== undefined && (b.dispelKeys?.length ?? 0) > 0);
-  const consumables = categorized.map(c => c.buff).filter(isRelevant);
+  const consumables = categorized.map((c) => c.buff).filter(isRelevant);
   for (const { buff } of categorized) {
     if (!isRelevant(buff)) {
       excluded.consumableNoDamageOrSpecial.push(buff.id);
@@ -442,7 +465,7 @@ export async function extractBuffs(client: EsmClient): Promise<ExtractBuffsResul
     }
   }
   consumables.sort((a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
-  const consumableIds = new Set(consumables.map(c => c.id));
+  const consumableIds = new Set(consumables.map((c) => c.id));
 
   // Addiction catalog: from ALL obtainable categorized records (including
   // 0-modifier ones — an addiction whose chem has no modeled DPS effect must
@@ -456,12 +479,17 @@ export async function extractBuffs(client: EsmClient): Promise<ExtractBuffsResul
     if (!addictionById.has(buff.addiction.id)) {
       // Withdrawal penalties extracted ONCE per family from the shared SPEL
       // (every causing consumable references the same record).
-      let penalty: { modifiers: GeneratedAddiction['modifiers']; notes: string[] } = { modifiers: [], notes: [] };
+      let penalty: { modifiers: GeneratedAddiction['modifiers']; notes: string[] } = {
+        modifiers: [],
+        notes: [],
+      };
       try {
         const spel = await client.get(buff.addiction.formId);
         penalty = await extractAddictionEffects(client, spel, routes, edidByFormId, unmapped);
       } catch {
-        penalty.notes.push(`${buff.addiction.id}: addiction SPEL ${buff.addiction.formId} not readable — no withdrawal penalties extracted`);
+        penalty.notes.push(
+          `${buff.addiction.id}: addiction SPEL ${buff.addiction.formId} not readable — no withdrawal penalties extracted`,
+        );
       }
       notes.push(...penalty.notes);
       addictionById.set(buff.addiction.id, {
@@ -489,5 +517,13 @@ export async function extractBuffs(client: EsmClient): Promise<ExtractBuffsResul
   for (const buff of consumables) for (const n of buff.notes) finalConsumableNotes.add(n);
   notes.push(...finalConsumableNotes);
 
-  return { mutations, consumables, addictions, excluded, excludedDetailed, notes, unmappedAvifs: [...unmapped] };
+  return {
+    mutations,
+    consumables,
+    addictions,
+    excluded,
+    excludedDetailed,
+    notes,
+    unmappedAvifs: [...unmapped],
+  };
 }

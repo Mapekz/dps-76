@@ -1,1 +1,171 @@
-{"header":{"signature":"PERK","form_id":"0x00797E41","flags":0,"form_version":206,"data_size":579,"offset":905879961},"editor_id":"GHL_MadScientist01","fields":{"_record_type":"Perk","Editor ID":"GHL_MadScientist01","Name":"Mad Scientist","Description":"Energy Weapons expend a small amount of Glow per attack for +10% Damage.","Data":{"Trait":{"value":1,"name":"True"},"Level":0,"Num Ranks":1,"Unknown":{"hex":""}},"SWF Sprite Name":"Gunsmith","Effects":[{"Effect":{"Effect Header":{"Effect Type":{"value":2,"name":"Entry Point"},"Rank":1},"Entry Point":{"Entry Point":{"value":51,"name":"Apply Combat Hit Spell"},"Function":{"value":10,"name":"Select Spell"},"Perk Condition Tab Count":3},"Perk Conditions":[{"Perk Condition":{"Run On (Tab Index)":0,"Conditions":[{"Condition":{"Condition Data":{"Operator":"Equal To","AND/OR":"AND","Comparison Value":0.0,"Function":"IsPowerAttacking","Run On":"Subject"}}}]}},{"Perk Condition":{"Run On (Tab Index)":1,"Conditions":[{"Condition":{"Condition Data":{"Operator":"Equal To","AND/OR":"AND","Comparison Value":1.0,"Function":"HasKeyword","Parameter 1":"0x0033A7C9","Run On":"Subject"}}}]}}],"Function Type":{"value":5,"name":"Spell Item"},"Perk Entry ID":0,"Spell":"0x007AD439","Unknown Spell Value":3,"Effect End":null}},{"Effect":{"Effect Header":{"Effect Type":{"value":1,"name":"Ability"},"Rank":0},"Ability":"0x00799DFB","Perk Conditions":[{"Perk Condition":{"Run On (Tab Index)":0,"Conditions":[{"Condition":{"Condition Data":{"Operator":"Equal To","AND/OR":"AND","Comparison Value":0.0,"Function":"IsPowerAttacking","Run On":"Subject"}}},{"Condition":{"Condition Data":{"Operator":"Greater Than Or Equal To","AND/OR":"AND","Comparison Value":"0x007F68B6","Function":"GetValue","Parameter 1":"0x000002E1","Run On":"Subject"}}}]}},{"Perk Condition":{"Run On (Tab Index)":1,"Conditions":[{"Condition":{"Condition Data":{"Operator":"Equal To","AND/OR":"AND","Comparison Value":1.0,"Function":"HasKeyword","Parameter 1":"0x0033A7C9","Run On":"Subject"}}}]}},{"Perk Condition":{"Run On (Tab Index)":2,"Conditions":[{"Condition":{"Condition Data":{"Operator":"Equal To","AND/OR":"AND","Comparison Value":0.0,"Function":"GetDead","Run On":"Subject"}}}]}}],"Function Type":{"value":5,"name":"Spell Item"},"Perk Entry ID":1,"Spell":"0x007AD438","Unknown Spell Value":0,"Effect End":null}},{"Effect":{"Effect Header":{"Effect Type":{"value":2,"name":"Entry Point"},"Rank":0},"Entry Point":{"Entry Point":{"value":51,"name":"Apply Combat Hit Spell"},"Function":{"value":10,"name":"Select Spell"},"Perk Condition Tab Count":3},"Effect End":null}}]}}
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x00797E41",
+    "flags": 0,
+    "form_version": 206,
+    "data_size": 579,
+    "offset": 905879961
+  },
+  "editor_id": "GHL_MadScientist01",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "GHL_MadScientist01",
+    "Name": "Mad Scientist",
+    "Description": "Energy Weapons expend a small amount of Glow per attack for +10% Damage.",
+    "Data": {
+      "Trait": { "value": 1, "name": "True" },
+      "Level": 0,
+      "Num Ranks": 1,
+      "Unknown": { "hex": "" }
+    },
+    "SWF Sprite Name": "Gunsmith",
+    "Effects": [
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 2, "name": "Entry Point" }, "Rank": 1 },
+          "Entry Point": {
+            "Entry Point": { "value": 51, "name": "Apply Combat Hit Spell" },
+            "Function": { "value": 10, "name": "Select Spell" },
+            "Perk Condition Tab Count": 3
+          },
+          "Perk Conditions": [
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 0,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 0.0,
+                        "Function": "IsPowerAttacking",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 1,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 1.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x0033A7C9",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "Function Type": { "value": 5, "name": "Spell Item" },
+          "Perk Entry ID": 0,
+          "Spell": "0x007AD439",
+          "Unknown Spell Value": 3,
+          "Effect End": null
+        }
+      },
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 1, "name": "Ability" }, "Rank": 0 },
+          "Ability": "0x00799DFB",
+          "Perk Conditions": [
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 0,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 0.0,
+                        "Function": "IsPowerAttacking",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Greater Than Or Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": "0x007F68B6",
+                        "Function": "GetValue",
+                        "Parameter 1": "0x000002E1",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 1,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 1.0,
+                        "Function": "HasKeyword",
+                        "Parameter 1": "0x0033A7C9",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 2,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 0.0,
+                        "Function": "GetDead",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "Function Type": { "value": 5, "name": "Spell Item" },
+          "Perk Entry ID": 1,
+          "Spell": "0x007AD438",
+          "Unknown Spell Value": 0,
+          "Effect End": null
+        }
+      },
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 2, "name": "Entry Point" }, "Rank": 0 },
+          "Entry Point": {
+            "Entry Point": { "value": 51, "name": "Apply Combat Hit Spell" },
+            "Function": { "value": 10, "name": "Select Spell" },
+            "Perk Condition Tab Count": 3
+          },
+          "Effect End": null
+        }
+      }
+    ]
+  }
+}

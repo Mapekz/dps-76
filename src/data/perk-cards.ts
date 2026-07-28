@@ -43,7 +43,7 @@ const FALLBACK_MAX_RANK = 3;
 
 export function derivePerkRegistry(
   nameRegistry: Readonly<Record<PerkId, PerkNameEntry>>,
-  generatedPerks: GeneratedPerk[]
+  generatedPerks: GeneratedPerk[],
 ): Record<PerkId, Perk> {
   const joinMaps = buildPerkJoinMaps(generatedPerks);
   const out = {} as Record<PerkId, Perk>;
@@ -60,9 +60,18 @@ export function derivePerkRegistry(
     // uniformly across the registry; it is inert without `special`.
     if (legendaryPerkIds.has(perkId)) {
       // Card entries are the live rank count (see the non-legendary path).
-      const maxRank = generated?.card ? generated.card.costs.length : (generated?.maxRank ?? FALLBACK_MAX_RANK);
-      const costs = generated?.card ? [...generated.card.costs] : Array.from({ length: maxRank }, () => 1);
-      out[perkId] = { name, maxRank, costs, raceRestriction: generated?.card?.raceRestriction ?? null };
+      const maxRank = generated?.card
+        ? generated.card.costs.length
+        : (generated?.maxRank ?? FALLBACK_MAX_RANK);
+      const costs = generated?.card
+        ? [...generated.card.costs]
+        : Array.from({ length: maxRank }, () => 1);
+      out[perkId] = {
+        name,
+        maxRank,
+        costs,
+        raceRestriction: generated?.card?.raceRestriction ?? null,
+      };
       continue;
     }
 
@@ -86,7 +95,13 @@ export function derivePerkRegistry(
 
     const override = perkCardOverrides[perkId];
     if (override) {
-      out[perkId] = { name, special: override.special, maxRank: override.maxRank, costs: override.costs, raceRestriction: null };
+      out[perkId] = {
+        name,
+        special: override.special,
+        maxRank: override.maxRank,
+        costs: override.costs,
+        raceRestriction: null,
+      };
       continue;
     }
 
@@ -95,7 +110,12 @@ export function derivePerkRegistry(
     // when available, else a conservative default; cost = rank (the old
     // blanket assumption) since there's no real per-rank cost to read.
     const maxRank = generated?.maxRank ?? FALLBACK_MAX_RANK;
-    out[perkId] = { name, maxRank, costs: Array.from({ length: maxRank }, (_, i) => i + 1), raceRestriction: null };
+    out[perkId] = {
+      name,
+      maxRank,
+      costs: Array.from({ length: maxRank }, (_, i) => i + 1),
+      raceRestriction: null,
+    };
   }
 
   return out;

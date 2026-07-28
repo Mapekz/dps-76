@@ -3,7 +3,12 @@ import { describeBuffModifiers } from '@/lib/buff-description';
 import type { GeneratedBuff } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 
-const source: Modifier['source'] = { kind: 'consumable', formId: '0xTEST', edid: 'Test', name: 'Test' };
+const source: Modifier['source'] = {
+  kind: 'consumable',
+  formId: '0xTEST',
+  edid: 'Test',
+  name: 'Test',
+};
 
 function buff(modifiers: Modifier[]): GeneratedBuff {
   return { id: 'Test', formId: '0xTEST', name: 'Test', kind: 'consumable', modifiers, notes: [] };
@@ -11,12 +16,26 @@ function buff(modifiers: Modifier[]): GeneratedBuff {
 
 describe('describeBuffModifiers', () => {
   it('unconditional dbm reads as a plain damage percentage (Guns and Bullets 7)', () => {
-    const mod: Modifier = { id: '0x1:0', source, bucket: 'dbm', op: 'ADD', value: 0.1, conditions: [] };
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.1,
+      conditions: [],
+    };
     expect(describeBuffModifiers(buff([mod]))).toBe('+10% damage');
   });
 
   it('SPECIAL bucket reads as a flat point add, not a percentage (Strength bobblehead)', () => {
-    const mod: Modifier = { id: '0x2:0', source, bucket: 'specialStrength', op: 'ADD', value: 2, conditions: [] };
+    const mod: Modifier = {
+      id: '0x2:0',
+      source,
+      bucket: 'specialStrength',
+      op: 'ADD',
+      value: 2,
+      conditions: [],
+    };
     expect(describeBuffModifiers(buff([mod]))).toBe('+2 Strength');
   });
 
@@ -33,7 +52,7 @@ describe('describeBuffModifiers', () => {
       ],
     };
     expect(describeBuffModifiers(buff([mod]))).toBe(
-      '+20% damage (with ballistic weapons, non-heavy guns)'
+      '+20% damage (with ballistic weapons, non-heavy guns)',
     );
   });
 
@@ -74,12 +93,26 @@ describe('describeBuffModifiers', () => {
   });
 
   it('a non-whole percentage keeps its decimal', () => {
-    const mod: Modifier = { id: '0x8:0', source, bucket: 'dbm', op: 'ADD', value: 0.075, conditions: [] };
+    const mod: Modifier = {
+      id: '0x8:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.075,
+      conditions: [],
+    };
     expect(describeBuffModifiers(buff([mod]))).toBe('+7.5% damage');
   });
 
   it('an unmodeled bucket is omitted rather than guessed at', () => {
-    const mod: Modifier = { id: '0x7:0', source, bucket: 'apRegen', op: 'ADD', value: 0.1, conditions: [] };
+    const mod: Modifier = {
+      id: '0x7:0',
+      source,
+      bucket: 'apRegen',
+      op: 'ADD',
+      value: 0.1,
+      conditions: [],
+    };
     expect(describeBuffModifiers(buff([mod]))).toBeNull();
   });
 
@@ -126,7 +159,9 @@ describe('describeBuffModifiers ctx: strangeInNumbers / classFreakRank filtering
       value: 0.15,
       conditions: [{ kind: 'strangeInNumbers', value: true }],
     };
-    expect(describeBuffModifiers(buff([base, boosted]), { strangeInNumbers: true })).toBe('+15% damage');
+    expect(describeBuffModifiers(buff([base, boosted]), { strangeInNumbers: true })).toBe(
+      '+15% damage',
+    );
   });
 
   it('strangeInNumbers condition never renders as a clause', () => {
@@ -178,12 +213,26 @@ describe('describeBuffModifiers ctx: strangeInNumbers / classFreakRank filtering
 
 describe('describeBuffModifiers ctx: penaltyScale', () => {
   it('scales a flat (non-SPECIAL) bucket value — maxHealth', () => {
-    const mod: Modifier = { id: '0x1:0', source, bucket: 'maxHealth', op: 'ADD', value: -20, conditions: [] };
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'maxHealth',
+      op: 'ADD',
+      value: -20,
+      conditions: [],
+    };
     expect(describeBuffModifiers(buff([mod]), { penaltyScale: 0.5 })).toBe('-10 max HP');
   });
 
   it('scales a SPECIAL point bucket value', () => {
-    const mod: Modifier = { id: '0x1:0', source, bucket: 'specialStrength', op: 'ADD', value: -4, conditions: [] };
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'specialStrength',
+      op: 'ADD',
+      value: -4,
+      conditions: [],
+    };
     expect(describeBuffModifiers(buff([mod]), { penaltyScale: 0.5 })).toBe('-2 Strength');
   });
 
@@ -204,7 +253,7 @@ describe('describeBuffModifiers ctx: penaltyScale', () => {
       conditions: [],
     };
     expect(describeBuffModifiers(buff([mod]), { penaltyScale: 0.5 })).toBe(
-      '+2.5–50% damage (scales with kill streak)'
+      '+2.5–50% damage (scales with kill streak)',
     );
   });
 
@@ -218,7 +267,9 @@ describe('describeBuffModifiers ctx: penaltyScale', () => {
       conditions: [{ kind: 'damageTypeScope', types: ['poison'] }],
       durationSec: 15,
     };
-    expect(describeBuffModifiers(buff([mod]), { penaltyScale: 0.5 })).toBe('+5/s poison damage (15s)');
+    expect(describeBuffModifiers(buff([mod]), { penaltyScale: 0.5 })).toBe(
+      '+5/s poison damage (15s)',
+    );
   });
 });
 
@@ -302,27 +353,62 @@ describe('describeBuffModifiers: curve support', () => {
 
 describe('describeBuffModifiers: new bucket labels', () => {
   it('maxHealth reads as a flat HP point add, not a percentage', () => {
-    const mod: Modifier = { id: '0x1:0', source, bucket: 'maxHealth', op: 'ADD', value: -50, conditions: [] };
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'maxHealth',
+      op: 'ADD',
+      value: -50,
+      conditions: [],
+    };
     expect(describeBuffModifiers(buff([mod]))).toBe('-50 max HP');
   });
 
   it('reloadSpeed reads as a percentage', () => {
-    const mod: Modifier = { id: '0x1:0', source, bucket: 'reloadSpeed', op: 'ADD', value: 0.3, conditions: [] };
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'reloadSpeed',
+      op: 'ADD',
+      value: 0.3,
+      conditions: [],
+    };
     expect(describeBuffModifiers(buff([mod]))).toBe('+30% reload speed');
   });
 
   it('moveSpeedBonus reads as a percentage (Wasteland Fish Sandwich)', () => {
-    const mod: Modifier = { id: '0x1:0', source, bucket: 'moveSpeedBonus', op: 'ADD', value: 0.2, conditions: [] };
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'moveSpeedBonus',
+      op: 'ADD',
+      value: 0.2,
+      conditions: [],
+    };
     expect(describeBuffModifiers(buff([mod]))).toBe('+20% movement speed');
   });
 
   it('apMax reads as a flat max-AP point add (Poached Angler)', () => {
-    const mod: Modifier = { id: '0x1:0', source, bucket: 'apMax', op: 'ADD', value: 20, conditions: [] };
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'apMax',
+      op: 'ADD',
+      value: 20,
+      conditions: [],
+    };
     expect(describeBuffModifiers(buff([mod]))).toBe('+20 max AP');
   });
 
   it('apRegenFlat reads as a flat AP-regen point add (Corn Soup)', () => {
-    const mod: Modifier = { id: '0x1:0', source, bucket: 'apRegenFlat', op: 'ADD', value: 10, conditions: [] };
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'apRegenFlat',
+      op: 'ADD',
+      value: 10,
+      conditions: [],
+    };
     expect(describeBuffModifiers(buff([mod]))).toBe('+10 AP regen');
   });
 });
@@ -397,7 +483,14 @@ describe('describeBuffModifiers: teammateCount clause', () => {
 
 describe('describeBuffModifiers: relaxed param type', () => {
   it('accepts a bare { modifiers } shape, not just a full GeneratedBuff (GeneratedAddiction callers)', () => {
-    const mod: Modifier = { id: '0x1:0', source, bucket: 'specialAgility', op: 'ADD', value: -1, conditions: [] };
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'specialAgility',
+      op: 'ADD',
+      value: -1,
+      conditions: [],
+    };
     // Shaped like GeneratedAddiction (id/formId/name/causedBy/modifiers/notes),
     // not GeneratedBuff (no `kind`/`category`) — describeBuffModifiers must not
     // require anything beyond `modifiers`.

@@ -55,18 +55,32 @@ describe('avToNumber', () => {
 
 describe('mergeProperties', () => {
   const race: RawProperty[] = [
-    { 'Actor Value': '0x000002E3', Value: 0, 'Curve Table': { editor_id: 'CT_Creatures_Armor_Universal_Tier22' } },
+    {
+      'Actor Value': '0x000002E3',
+      Value: 0,
+      'Curve Table': { editor_id: 'CT_Creatures_Armor_Universal_Tier22' },
+    },
     { 'Actor Value': '0x000002D4', Value: 0, 'Curve Table': null }, // RACE placeholder — see SuperMutantRace fixture note below.
   ];
   const npc: RawProperty[] = [
-    { 'Actor Value': '0x000002D4', Value: 0, 'Curve Table': { editor_id: 'CT_Creatures_Health_Universal_Tier23' } },
+    {
+      'Actor Value': '0x000002D4',
+      Value: 0,
+      'Curve Table': { editor_id: 'CT_Creatures_Health_Universal_Tier23' },
+    },
   ];
 
   it('NPC_ overrides RACE per-AV; RACE fills AVs the NPC_ lacks', () => {
     const merged = mergeProperties(race, npc);
-    expect(merged.get(0x2e3)).toEqual({ value: 0, curveTableEdid: 'CT_Creatures_Armor_Universal_Tier22' });
+    expect(merged.get(0x2e3)).toEqual({
+      value: 0,
+      curveTableEdid: 'CT_Creatures_Armor_Universal_Tier22',
+    });
     // NPC_'s real curve wins over the RACE's flat-0/no-curve placeholder.
-    expect(merged.get(0x2d4)).toEqual({ value: 0, curveTableEdid: 'CT_Creatures_Health_Universal_Tier23' });
+    expect(merged.get(0x2d4)).toEqual({
+      value: 0,
+      curveTableEdid: 'CT_Creatures_Health_Universal_Tier23',
+    });
   });
 
   it('an AV present on neither layer is simply absent from the map', () => {
@@ -82,26 +96,45 @@ describe('resolveStat', () => {
   });
 
   it('flat value with no curve table', () => {
-    expect(resolveStat({ value: 850, curveTableEdid: null }, 'x', unresolved)).toEqual({ flatValue: 850, curveTier: null });
+    expect(resolveStat({ value: 850, curveTableEdid: null }, 'x', unresolved)).toEqual({
+      flatValue: 850,
+      curveTier: null,
+    });
     expect(unresolved).toEqual([]);
   });
 
   it('curve table with a zero flat value resolves to a Tier number, flatValue 0', () => {
-    expect(resolveStat({ value: 0, curveTableEdid: 'CT_Creatures_Health_Universal_Tier23' }, 'x', unresolved)).toEqual({
+    expect(
+      resolveStat(
+        { value: 0, curveTableEdid: 'CT_Creatures_Health_Universal_Tier23' },
+        'x',
+        unresolved,
+      ),
+    ).toEqual({
       flatValue: 0,
       curveTier: 23,
     });
   });
 
   it('flat-wins: a nonzero flat value alongside a curve table ignores the curve (RD01_Enc06_ScorchtongueHead pattern)', () => {
-    expect(resolveStat({ value: 500000, curveTableEdid: 'CT_Creatures_Health_Universal_Tier59' }, 'x', unresolved)).toEqual({
+    expect(
+      resolveStat(
+        { value: 500000, curveTableEdid: 'CT_Creatures_Health_Universal_Tier59' },
+        'x',
+        unresolved,
+      ),
+    ).toEqual({
       flatValue: 500000,
       curveTier: null,
     });
   });
 
   it('a non-Tier-suffixed curve table is reported unresolved and dropped to 0/null', () => {
-    const result = resolveStat({ value: 0, curveTableEdid: 'CT_Creatures_Health_HumanRaider' }, 'some-label', unresolved);
+    const result = resolveStat(
+      { value: 0, curveTableEdid: 'CT_Creatures_Health_HumanRaider' },
+      'some-label',
+      unresolved,
+    );
     expect(result).toEqual({ flatValue: 0, curveTier: null });
     expect(unresolved).toHaveLength(1);
     expect(unresolved[0]).toContain('some-label');
@@ -116,30 +149,37 @@ describe('resolveStat', () => {
 
 describe('RACE_NPC_TEMPLATES', () => {
   it('has an entry for every RACE-signature curated row, and no dangling entries for rows not in CURATED_TARGETS', () => {
-    const curatedEdids = new Set(CURATED_TARGETS.map(t => t.edid));
+    const curatedEdids = new Set(CURATED_TARGETS.map((t) => t.edid));
     for (const key of Object.keys(RACE_NPC_TEMPLATES)) {
-      expect(curatedEdids.has(key), `RACE_NPC_TEMPLATES key "${key}" is not a curated target edid`).toBe(true);
+      expect(
+        curatedEdids.has(key),
+        `RACE_NPC_TEMPLATES key "${key}" is not a curated target edid`,
+      ).toBe(true);
     }
   });
 });
 
 describe('BOSS_EPIC_RANK_QUESTS', () => {
   it('has an entry for every mapped boss, keyed by a real curated target edid', () => {
-    const curatedEdids = new Set(CURATED_TARGETS.map(t => t.edid));
+    const curatedEdids = new Set(CURATED_TARGETS.map((t) => t.edid));
     for (const key of Object.keys(BOSS_EPIC_RANK_QUESTS)) {
-      expect(curatedEdids.has(key), `BOSS_EPIC_RANK_QUESTS key "${key}" is not a curated target edid`).toBe(true);
+      expect(
+        curatedEdids.has(key),
+        `BOSS_EPIC_RANK_QUESTS key "${key}" is not a curated target edid`,
+      ).toBe(true);
     }
   });
 
   it('covers exactly the 3 ESM-proven bosses (SBQ, Earle, Storm Goliath) — Earle stays mapped despite resolving to no rank (see extract-npcs.ts header note)', () => {
     expect(Object.keys(BOSS_EPIC_RANK_QUESTS).sort()).toEqual(
-      ['EncScorchbeastQueen01Template', 'StormBossRace', 'WendigoColossusRace'].sort()
+      ['EncScorchbeastQueen01Template', 'StormBossRace', 'WendigoColossusRace'].sort(),
     );
   });
 });
 
 type Vmad = Parameters<typeof resolveEpicRankFromVmad>[0];
-const vmadOf = (quest: { fields: Record<string, unknown> }): Vmad => quest.fields['Virtual Machine Adapter'] as Vmad;
+const vmadOf = (quest: { fields: Record<string, unknown> }): Vmad =>
+  quest.fields['Virtual Machine Adapter'] as Vmad;
 
 describe('epicRankFromEncounterWaves (shape a — CB15_ScorchedEarth, SBQ)', () => {
   it('reads BossEpicLevel from the boss wave when BossEpicChance is 100', () => {
@@ -161,10 +201,12 @@ describe('epicRankFromEncounterWaves (shape a — CB15_ScorchedEarth, SBQ)', () 
             {
               name: 'EncounterWaves',
               type: 17,
-              value: [[
-                { name: 'BossEpicLevel', type: 3, value: 3 },
-                { name: 'BossEpicChance', type: 4, value: 50.0 },
-              ]],
+              value: [
+                [
+                  { name: 'BossEpicLevel', type: 3, value: 3 },
+                  { name: 'BossEpicChance', type: 4, value: 50.0 },
+                ],
+              ],
             },
           ],
         },
@@ -184,7 +226,17 @@ describe('epicRankFromForceLegendaryAlias (shape b — Storm_RegionBoss, Storm G
       version: 6,
       scripts: [],
       aliases: [
-        { alias_id: 0, form_id: '0x1', alias_scripts: [{ name: 'someOtherAliasScript', status: 0, properties: [{ name: 'minRank', type: 3, value: 5 }] }] },
+        {
+          alias_id: 0,
+          form_id: '0x1',
+          alias_scripts: [
+            {
+              name: 'someOtherAliasScript',
+              status: 0,
+              properties: [{ name: 'minRank', type: 3, value: 5 }],
+            },
+          ],
+        },
       ],
     };
     expect(epicRankFromForceLegendaryAlias(vmad)).toBeNull();
@@ -236,7 +288,9 @@ describe('resolveNormalizedLevelAdjustment', () => {
       },
     };
   }
-  const nonEntryPointEffect = { Effect: { 'Effect Header': { 'Effect Type': { value: 1, name: 'Ability' } } } };
+  const nonEntryPointEffect = {
+    Effect: { 'Effect Header': { 'Effect Type': { value: 1, name: 'Ability' } } },
+  };
 
   function fakeClientWith(records: Record<string, EsmRecord>): EsmClient {
     return {
@@ -249,7 +303,9 @@ describe('resolveNormalizedLevelAdjustment', () => {
   }
 
   const npcWithPerks = (perkFormIds: string[]) =>
-    ({ fields: { Perks: perkFormIds.map(id => ({ Perk: { Perk: id } })) } }) as unknown as EsmRecord;
+    ({
+      fields: { Perks: perkFormIds.map((id) => ({ Perk: { Perk: id } })) },
+    }) as unknown as EsmRecord;
 
   it('an NPC with no Perks field resolves to {min: null, max: null}', async () => {
     const npc = { fields: {} } as unknown as EsmRecord;
@@ -292,8 +348,12 @@ describe('resolveNormalizedLevelAdjustment', () => {
 
   it('two Add perks accumulate cumulatively per bound', async () => {
     const client = fakeClientWith({
-      '0xAAA': { fields: { Effects: [entryPointEffect('Mod NPC Normalized Min Level', 'Add Value', 10)] } } as unknown as EsmRecord,
-      '0xBBB': { fields: { Effects: [entryPointEffect('Mod NPC Normalized Min Level', 'Add Value', 25)] } } as unknown as EsmRecord,
+      '0xAAA': {
+        fields: { Effects: [entryPointEffect('Mod NPC Normalized Min Level', 'Add Value', 10)] },
+      } as unknown as EsmRecord,
+      '0xBBB': {
+        fields: { Effects: [entryPointEffect('Mod NPC Normalized Min Level', 'Add Value', 25)] },
+      } as unknown as EsmRecord,
     });
     const npc = npcWithPerks(['0xAAA', '0xBBB']);
     const result = await resolveNormalizedLevelAdjustment(client, npc, 'x', []);
@@ -302,8 +362,12 @@ describe('resolveNormalizedLevelAdjustment', () => {
 
   it('two Set perks: last one (in Perks array order) wins', async () => {
     const client = fakeClientWith({
-      '0xAAA': { fields: { Effects: [entryPointEffect('Mod NPC Normalized Min Level', 'Set Value', 15)] } } as unknown as EsmRecord,
-      '0xBBB': { fields: { Effects: [entryPointEffect('Mod NPC Normalized Min Level', 'Set Value', 40)] } } as unknown as EsmRecord,
+      '0xAAA': {
+        fields: { Effects: [entryPointEffect('Mod NPC Normalized Min Level', 'Set Value', 15)] },
+      } as unknown as EsmRecord,
+      '0xBBB': {
+        fields: { Effects: [entryPointEffect('Mod NPC Normalized Min Level', 'Set Value', 40)] },
+      } as unknown as EsmRecord,
     });
     const npc = npcWithPerks(['0xAAA', '0xBBB']);
     const result = await resolveNormalizedLevelAdjustment(client, npc, 'x', []);
@@ -313,7 +377,12 @@ describe('resolveNormalizedLevelAdjustment', () => {
   it('an unresolvable Perks entry pushes an unresolved note and is skipped, not a crash', async () => {
     const unresolved: string[] = [];
     const npc = npcWithPerks(['0xDEAD']);
-    const result = await resolveNormalizedLevelAdjustment(fakeClientWith({}), npc, 'SomeNpc', unresolved);
+    const result = await resolveNormalizedLevelAdjustment(
+      fakeClientWith({}),
+      npc,
+      'SomeNpc',
+      unresolved,
+    );
     expect(result).toEqual({ min: null, max: null });
     expect(unresolved).toHaveLength(1);
     expect(unresolved[0]).toContain('SomeNpc');
@@ -349,26 +418,39 @@ describe('extractNpcs (fake client — full RACE→NPC_ resolution + GLOB level 
   };
 
   const records: Record<string, EsmRecord> = {
-    HumanRace: { header: { signature: 'RACE', form_id: '0x00013746' }, editor_id: 'HumanRace', fields: {} } as unknown as EsmRecord,
+    HumanRace: {
+      header: { signature: 'RACE', form_id: '0x00013746' },
+      editor_id: 'HumanRace',
+      fields: {},
+    } as unknown as EsmRecord,
     EN06_LvlWendigoColossus_Nuked: npcEarle as unknown as EsmRecord,
-    [(npcEarle as { header: { form_id: string } }).header.form_id]: npcEarle as unknown as EsmRecord,
+    [(npcEarle as { header: { form_id: string } }).header.form_id]:
+      npcEarle as unknown as EsmRecord,
     WendigoColossusRace: raceWendigoColossus as unknown as EsmRecord,
-    [(raceWendigoColossus as { header: { form_id: string } }).header.form_id]: raceWendigoColossus as unknown as EsmRecord,
+    [(raceWendigoColossus as { header: { form_id: string } }).header.form_id]:
+      raceWendigoColossus as unknown as EsmRecord,
     EncScorchbeastQueen01Template: npcSbq as unknown as EsmRecord,
     [(npcSbq as { header: { form_id: string } }).header.form_id]: npcSbq as unknown as EsmRecord,
     ScorchBeastRace: raceScorchbeast as unknown as EsmRecord,
-    [(raceScorchbeast as { header: { form_id: string } }).header.form_id]: raceScorchbeast as unknown as EsmRecord,
+    [(raceScorchbeast as { header: { form_id: string } }).header.form_id]:
+      raceScorchbeast as unknown as EsmRecord,
     SuperMutantRace: { ...(raceSuperMutant as unknown as EsmRecord), editor_id: 'SuperMutantRace' },
-    [(raceSuperMutant as { header: { form_id: string } }).header.form_id]: raceSuperMutant as unknown as EsmRecord,
+    [(raceSuperMutant as { header: { form_id: string } }).header.form_id]:
+      raceSuperMutant as unknown as EsmRecord,
     EncSuperMutant_Template: npcSuperMutantTemplate as unknown as EsmRecord,
-    [(npcSuperMutantTemplate as { header: { form_id: string } }).header.form_id]: npcSuperMutantTemplate as unknown as EsmRecord,
+    [(npcSuperMutantTemplate as { header: { form_id: string } }).header.form_id]:
+      npcSuperMutantTemplate as unknown as EsmRecord,
     // Epic-rank summon quests (Phase A) — keyed by questEdid, exactly how
     // `resolveBossEpicRank` fetches them (BOSS_EPIC_RANK_QUESTS).
     CB15_ScorchedEarth: questCb15 as unknown as EsmRecord,
     E06_Colossus: questE06Colossus as unknown as EsmRecord,
   };
   for (const [formId, value] of Object.entries(GLOBS)) {
-    records[formId] = { header: { signature: 'GLOB', form_id: formId }, editor_id: `glob_${formId}`, fields: { Value: value } } as unknown as EsmRecord;
+    records[formId] = {
+      header: { signature: 'GLOB', form_id: formId },
+      editor_id: `glob_${formId}`,
+      fields: { Value: value },
+    } as unknown as EsmRecord;
   }
 
   // Only a slice of CURATED_TARGETS is stocked above — the rest resolve
@@ -385,7 +467,7 @@ describe('extractNpcs (fake client — full RACE→NPC_ resolution + GLOB level 
 
   it('resolves Earle (WendigoColossusRace → the Earle override, not the generic template); its epic rank stays unset (E06_Colossus proves neither VMAD shape)', async () => {
     const { npcs, unresolved } = await extractNpcs(fakeClient);
-    const earle = npcs.find(n => n.id === 'WendigoColossusRace');
+    const earle = npcs.find((n) => n.id === 'WendigoColossusRace');
     expect(earle).toBeDefined();
     expect(earle!.formId).toBe('0x0059E02F');
     expect(earle!.name).toBe('Earle / Wendigo Colossus');
@@ -395,12 +477,14 @@ describe('extractNpcs (fake client — full RACE→NPC_ resolution + GLOB level 
     expect(earle!.healthCurveTier).toBe(55);
     expect(earle!.resists).toHaveLength(6);
     expect(earle!.epicRank).toBeUndefined();
-    expect(unresolved.some(u => u.includes('WendigoColossusRace epic-rank quest E06_Colossus'))).toBe(true);
+    expect(
+      unresolved.some((u) => u.includes('WendigoColossusRace epic-rank quest E06_Colossus')),
+    ).toBe(true);
   });
 
   it('resolves the Scorchbeast Queen curated row (EncScorchbeastQueen01Template, already NPC_-keyed); epicRank 3 from CB15_ScorchedEarth', async () => {
     const { npcs } = await extractNpcs(fakeClient);
-    const sbq = npcs.find(n => n.id === 'EncScorchbeastQueen01Template');
+    const sbq = npcs.find((n) => n.id === 'EncScorchbeastQueen01Template');
     expect(sbq).toBeDefined();
     expect(sbq!.name).toBe('Scorchbeast Queen');
     expect(sbq!.healthCurveTier).toBe(55);
@@ -411,13 +495,13 @@ describe('extractNpcs (fake client — full RACE→NPC_ resolution + GLOB level 
 
   it('a curated row with no BOSS_EPIC_RANK_QUESTS entry (SuperMutantRace) never gets an epicRank', async () => {
     const { npcs } = await extractNpcs(fakeClient);
-    const sm = npcs.find(n => n.id === 'SuperMutantRace');
+    const sm = npcs.find((n) => n.id === 'SuperMutantRace');
     expect(sm!.epicRank).toBeUndefined();
   });
 
   it('resolves SuperMutantRace through its mapped template, and the RACE fallback layer never clobbers the NPC_-carried Health curve', async () => {
     const { npcs } = await extractNpcs(fakeClient);
-    const sm = npcs.find(n => n.id === 'SuperMutantRace');
+    const sm = npcs.find((n) => n.id === 'SuperMutantRace');
     expect(sm).toBeDefined();
     expect(sm!.formId).toBe('0x0001A00C'); // EncSuperMutant_Template's own formId, not SuperMutantRace's.
     expect(sm!.healthCurveTier).toBe(23);
@@ -429,14 +513,14 @@ describe('extractNpcs (fake client — full RACE→NPC_ resolution + GLOB level 
     // Only 3 of CURATED_TARGETS's rows are stocked in the fake store.
     expect(npcs.length).toBeLessThan(CURATED_TARGETS.length);
     expect(unresolved.length).toBeGreaterThan(0);
-    expect(unresolved.every(u => u.startsWith('npcs:'))).toBe(true);
+    expect(unresolved.every((u) => u.startsWith('npcs:'))).toBe(true);
   });
 
   it('every resolved npc carries exactly the 6 documented resist damage types', async () => {
     const { npcs } = await extractNpcs(fakeClient);
     for (const npc of npcs) {
-      expect(npc.resists.map(r => r.damageType).sort()).toEqual(
-        ['cryo', 'energy', 'fire', 'physical', 'poison', 'radiation'].sort()
+      expect(npc.resists.map((r) => r.damageType).sort()).toEqual(
+        ['cryo', 'energy', 'fire', 'physical', 'poison', 'radiation'].sort(),
       );
     }
   });

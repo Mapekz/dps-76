@@ -25,7 +25,7 @@ export function SpecialAllocationEditor() {
   return (
     <div>
       <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
-        {SPECIAL_KEYS.map(key => {
+        {SPECIAL_KEYS.map((key) => {
           const base = player.conditions[key];
           const leggo = legendaryBonus[key];
           // Shift-click steps by 2; the delta is pre-clamped because the
@@ -73,13 +73,18 @@ export function SpecialAllocationEditor() {
           );
         })}
       </div>
-      <p className={cn('mt-2 font-mono text-[11px] tabular-nums', poolLeft < 0 ? 'text-negative' : 'text-muted-foreground')}>
+      <p
+        className={cn(
+          'mt-2 font-mono text-[11px] tabular-nums',
+          poolLeft < 0 ? 'text-negative' : 'text-muted-foreground',
+        )}
+      >
         Points allocated: {total}/{SPECIAL_ALLOCATION_POOL}
       </p>
       <p className="text-muted-foreground mt-1 text-xs">
-        Base allocation caps at 15 per stat; Legendary SPECIAL cards add up to +5 on top (green) and raise that
-        stat's perk-point budget (still capped at 15). Buffs from consumables and gear show in the stat summary
-        above.
+        Base allocation caps at 15 per stat; Legendary SPECIAL cards add up to +5 on top (green) and
+        raise that stat's perk-point budget (still capped at 15). Buffs from consumables and gear
+        show in the stat summary above.
       </p>
     </div>
   );

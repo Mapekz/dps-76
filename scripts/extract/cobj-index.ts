@@ -72,7 +72,11 @@ export function isNonGrantingCobj(info: CobjInfo | undefined, edid: string): boo
 
 function numberField(value: unknown): number | null {
   if (typeof value === 'number') return value;
-  if (value && typeof value === 'object' && typeof (value as { value?: unknown }).value === 'number') {
+  if (
+    value &&
+    typeof value === 'object' &&
+    typeof (value as { value?: unknown }).value === 'number'
+  ) {
     return (value as { value: number }).value;
   }
   return null;
@@ -84,7 +88,7 @@ function formIdField(value: unknown): string | null {
 
 export async function buildCobjIndex(client: EsmClient): Promise<CobjIndex> {
   const rows = await client.list('COBJ');
-  const records = await client.bulkGet(rows.map(r => r.form_id));
+  const records = await client.bulkGet(rows.map((r) => r.form_id));
 
   const infos: CobjInfo[] = [];
   const learnFromIds = new Set<string>();
@@ -115,7 +119,7 @@ export async function buildCobjIndex(client: EsmClient): Promise<CobjIndex> {
   const learnFromRecords = new Map<string, CobjLearnFrom>();
   const targets = [...learnFromIds];
   await client.bulkGet(targets).catch(() => {});
-  for (const settled of await Promise.allSettled(targets.map(t => client.get(t)))) {
+  for (const settled of await Promise.allSettled(targets.map((t) => client.get(t)))) {
     if (settled.status !== 'fulfilled') continue;
     const record = settled.value;
     learnFromRecords.set(record.header.form_id, {
@@ -129,8 +133,11 @@ export async function buildCobjIndex(client: EsmClient): Promise<CobjIndex> {
   for (const info of infos) {
     const learnFromId = rawLearnFrom.get(info.formId);
     if (learnFromId) {
-      info.learnRecipeFrom =
-        learnFromRecords.get(learnFromId) ?? { formId: learnFromId, recordType: 'UNKNOWN', edid: `<unresolved:${learnFromId}>` };
+      info.learnRecipeFrom = learnFromRecords.get(learnFromId) ?? {
+        formId: learnFromId,
+        recordType: 'UNKNOWN',
+        edid: `<unresolved:${learnFromId}>`,
+      };
     }
     index.byFormId.set(info.formId, info);
     if (info.createdObjectFormId) {

@@ -19,23 +19,23 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
 
   it('the receiver is offered in the Fixer receiver slot', () => {
     const slots = getOmodSlots('live', fixer);
-    const receiverSlot = slots.find(s => s.slot === 'ap_gun_Receiver');
-    expect(receiverSlot?.options.some(o => o.id === receiver.id)).toBe(true);
+    const receiverSlot = slots.find((s) => s.slot === 'ap_gun_Receiver');
+    expect(receiverSlot?.options.some((o) => o.id === receiver.id)).toBe(true);
     // Cosmetic and legendary slots are hidden from the standard picker — except
     // ap_customName, which now surfaces the Fixer's own identity unique mod.
-    expect(slots.some(s => /legendary|Appearance|Description/i.test(s.slot))).toBe(false);
+    expect(slots.some((s) => /legendary|Appearance|Description/i.test(s.slot))).toBe(false);
 
-    const uniqueSlot = slots.find(s => s.slot === 'ap_customName');
+    const uniqueSlot = slots.find((s) => s.slot === 'ap_customName');
     expect(uniqueSlot?.label).toBe('Unique');
-    expect(uniqueSlot?.options.map(o => o.id)).toEqual(['P01B_mod_Custom_Fixer']);
+    expect(uniqueSlot?.options.map((o) => o.id)).toEqual(['P01B_mod_Custom_Fixer']);
   });
 
   it('unique-effect mods on cosmetic slots surface only on their own weapons', () => {
     // Perfect Storm's payload rides ap_customName and is listed in the 10mm
     // SMG's templateModFormIds — offered there, never on the Fixer.
     const smgSlots = getOmodSlots('live', getWeapons('live')['10mmSMG']);
-    const customSlot = smgSlots.find(s => s.slot === 'ap_customName');
-    expect(customSlot?.options.some(o => o.id === 'mod_Custom_PerfectStorm')).toBe(true);
+    const customSlot = smgSlots.find((s) => s.slot === 'ap_customName');
+    expect(customSlot?.options.some((o) => o.id === 'mod_Custom_PerfectStorm')).toBe(true);
 
     // The V.A.T.S. Unknown: base 'AlienBlaster' lists ap_customName in its own
     // attachParentSlots and hosts mod_Custom_TheVATSUnknown in its
@@ -45,9 +45,11 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
     // unique's sole real effect (see corrections.ts omodModifierAdditions).
     const vatsUnknown = getWeapons('live')['AlienBlaster'];
     const vatsSlots = getOmodSlots('live', vatsUnknown);
-    const vatsCustom = vatsSlots.find(s => s.slot === 'ap_customName');
-    expect(vatsCustom?.options.map(o => o.id)).toContain('mod_Custom_TheVATSUnknown');
-    expect(vatsCustom?.options.filter(o => o.id.startsWith('mod_Custom_TheVATSUnknown_'))).toHaveLength(0);
+    const vatsCustom = vatsSlots.find((s) => s.slot === 'ap_customName');
+    expect(vatsCustom?.options.map((o) => o.id)).toContain('mod_Custom_TheVATSUnknown');
+    expect(
+      vatsCustom?.options.filter((o) => o.id.startsWith('mod_Custom_TheVATSUnknown_')),
+    ).toHaveLength(0);
   });
 
   it('equipping Perfect Storm on the 10mm SMG changes freeAim.perHit.total vs stock', () => {
@@ -112,7 +114,12 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
       modifiers: [
         {
           id: '0x0:0',
-          source: { kind: 'omod' as const, formId: '0x0', edid: 'test_mag', name: 'Test Drum Magazine' },
+          source: {
+            kind: 'omod' as const,
+            formId: '0x0',
+            edid: 'test_mag',
+            name: 'Test Drum Magazine',
+          },
           bucket: 'ammoCapacity' as const,
           op: 'MUL_ADD' as const,
           value: 0.5,
@@ -120,7 +127,12 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
         },
         {
           id: '0x0:1',
-          source: { kind: 'omod' as const, formId: '0x0', edid: 'test_mag', name: 'Test Drum Magazine' },
+          source: {
+            kind: 'omod' as const,
+            formId: '0x0',
+            edid: 'test_mag',
+            name: 'Test Drum Magazine',
+          },
           bucket: 'reloadSpeed' as const,
           op: 'MUL_ADD' as const,
           value: 0.25,
@@ -156,7 +168,12 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
       modifiers: [
         {
           id: '0x007CFAAC:0',
-          source: { kind: 'omod' as const, formId: '0x007CFAAC', edid: 'mod_custom_Doolin', name: 'The Dragon Doolin' },
+          source: {
+            kind: 'omod' as const,
+            formId: '0x007CFAAC',
+            edid: 'mod_custom_Doolin',
+            name: 'The Dragon Doolin',
+          },
           bucket: 'animDelaySec' as const,
           op: 'SET' as const,
           value: 0,
@@ -187,9 +204,14 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
       targetKeywords: [],
       addedKeywords: [],
       hasEnchantments: true,
-      modifiers: [1, 2, 3].map(n => ({
+      modifiers: [1, 2, 3].map((n) => ({
         id: `0x0:${n}`,
-        source: { kind: 'omod' as const, formId: '0x0', edid: 'test_thrill_seeker', name: "Test Thrill-Seeker's" },
+        source: {
+          kind: 'omod' as const,
+          formId: '0x0',
+          edid: 'test_thrill_seeker',
+          name: "Test Thrill-Seeker's",
+        },
         bucket: 'reloadSpeed' as const,
         op: 'ADD' as const,
         value: 0.03 * n,
@@ -198,10 +220,16 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
     };
     const base = fixer.reloadSpeed ?? 1.0;
 
-    const at0 = buildEffectiveWeapon(fixer, [thrillSeekerLike], 50, { ...createDefaultPlayerConditions(), adrenalineStacks: 0 });
+    const at0 = buildEffectiveWeapon(fixer, [thrillSeekerLike], 50, {
+      ...createDefaultPlayerConditions(),
+      adrenalineStacks: 0,
+    });
     expect(at0.weapon.reloadSpeed).toBeCloseTo(base, 6); // no tier matches 0 stacks
 
-    const at2 = buildEffectiveWeapon(fixer, [thrillSeekerLike], 50, { ...createDefaultPlayerConditions(), adrenalineStacks: 2 });
+    const at2 = buildEffectiveWeapon(fixer, [thrillSeekerLike], 50, {
+      ...createDefaultPlayerConditions(),
+      adrenalineStacks: 2,
+    });
     expect(at2.weapon.reloadSpeed).toBeCloseTo(base + 0.06, 6); // ONLY the count:2 tier fires
   });
 
@@ -219,7 +247,12 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
       modifiers: [
         {
           id: '0x0:0',
-          source: { kind: 'omod' as const, formId: '0x0', edid: 'test_vats_optimized', name: 'Test V.A.T.S. Optimized' },
+          source: {
+            kind: 'omod' as const,
+            formId: '0x0',
+            edid: 'test_vats_optimized',
+            name: 'Test V.A.T.S. Optimized',
+          },
           bucket: 'vatsApCost' as const,
           op: 'MUL_ADD' as const,
           value: -0.35,
@@ -249,7 +282,12 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, measur
       conditions: [],
     };
     const { weapon, modifiers } = buildEffectiveWeapon(
-      fixer, [], 50, createDefaultPlayerConditions(), createDefaultEnemyConditions(), [perkReload]
+      fixer,
+      [],
+      50,
+      createDefaultPlayerConditions(),
+      createDefaultEnemyConditions(),
+      [perkReload],
     );
     expect(weapon.reloadSpeed).toBeCloseTo(base + 0.4, 6);
     // Loadout modifiers stay owned by the caller — the returned list only
@@ -267,12 +305,22 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, measur
       conditions: [{ kind: 'playerIsGhoul' as const, value: true }],
     };
     const asHuman = buildEffectiveWeapon(
-      fixer, [], 50, createDefaultPlayerConditions(), createDefaultEnemyConditions(), [ghoulReload]
+      fixer,
+      [],
+      50,
+      createDefaultPlayerConditions(),
+      createDefaultEnemyConditions(),
+      [ghoulReload],
     );
     expect(asHuman.weapon.reloadSpeed).toBeCloseTo(base, 6);
 
     const asGhoul = buildEffectiveWeapon(
-      fixer, [], 50, { ...createDefaultPlayerConditions(), isGhoul: true }, createDefaultEnemyConditions(), [ghoulReload]
+      fixer,
+      [],
+      50,
+      { ...createDefaultPlayerConditions(), isGhoul: true },
+      createDefaultEnemyConditions(),
+      [ghoulReload],
     );
     expect(asGhoul.weapon.reloadSpeed).toBeCloseTo(base + 0.3, 6);
   });
@@ -286,14 +334,23 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, measur
       op: 'ADD' as const,
       curve: {
         input: 'onslaughtStacks' as const,
-        points: [{ x: 0, y: 0 }, { x: 1, y: 0.01 }, { x: 100, y: 1 }],
+        points: [
+          { x: 0, y: 0 },
+          { x: 1, y: 0.01 },
+          { x: 100, y: 1 },
+        ],
       },
       curveScale: 1,
       conditions: [],
     };
     const capSource = {
       id: '0x2:0',
-      source: { kind: 'perk' as const, formId: '0x2', edid: 'test_onslaught_cap', name: 'Test Onslaught Cap' },
+      source: {
+        kind: 'perk' as const,
+        formId: '0x2',
+        edid: 'test_onslaught_cap',
+        name: 'Test Onslaught Cap',
+      },
       bucket: 'onslaughtMaxStacks' as const,
       op: 'ADD' as const,
       value: 10,
@@ -303,13 +360,16 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, measur
     const player = createDefaultPlayerConditions();
 
     // No cap source equipped → the curve clamps to 0 stacks → inert.
-    const withoutCap = buildEffectiveWeapon(fixer, [], 50, player, createDefaultEnemyConditions(), [guerrillaExpertLike]);
+    const withoutCap = buildEffectiveWeapon(fixer, [], 50, player, createDefaultEnemyConditions(), [
+      guerrillaExpertLike,
+    ]);
     expect(withoutCap.weapon.reloadSpeed).toBeCloseTo(base, 6);
 
     // Cap 10 equipped → follow-max resolves to 10 → curve Y = 0.1.
-    const withCap = buildEffectiveWeapon(
-      fixer, [], 50, player, createDefaultEnemyConditions(), [guerrillaExpertLike, capSource]
-    );
+    const withCap = buildEffectiveWeapon(fixer, [], 50, player, createDefaultEnemyConditions(), [
+      guerrillaExpertLike,
+      capSource,
+    ]);
     expect(withCap.weapon.reloadSpeed).toBeCloseTo(base + 0.1, 6);
   });
 
@@ -322,14 +382,22 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, measur
       op: 'ADD' as const,
       curve: {
         input: 'moveSpeedBonus' as const,
-        points: [{ x: 0, y: 0 }, { x: 1, y: 1 }],
+        points: [
+          { x: 0, y: 0 },
+          { x: 1, y: 1 },
+        ],
       },
       curveScale: 0.5,
       conditions: [],
     };
     const speedDemonLike = (value: number) => ({
       id: '0x3:0',
-      source: { kind: 'mutation' as const, formId: '0x3', edid: 'test_move_speed', name: 'Test Move Speed' },
+      source: {
+        kind: 'mutation' as const,
+        formId: '0x3',
+        edid: 'test_move_speed',
+        name: 'Test Move Speed',
+      },
       bucket: 'moveSpeedBonus' as const,
       op: 'ADD' as const,
       value,
@@ -338,19 +406,31 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, measur
     const player = createDefaultPlayerConditions();
 
     // No move-speed source equipped → curve reads 0 → inert.
-    const alone = buildEffectiveWeapon(fixer, [], 50, player, createDefaultEnemyConditions(), [fastFighterLike]);
+    const alone = buildEffectiveWeapon(fixer, [], 50, player, createDefaultEnemyConditions(), [
+      fastFighterLike,
+    ]);
     expect(alone.weapon.reloadSpeed).toBeCloseTo(base, 6);
 
     // Speed Demon's +20% move speed → +10% reload speed.
     const withSpeedDemon = buildEffectiveWeapon(
-      fixer, [], 50, player, createDefaultEnemyConditions(), [fastFighterLike, speedDemonLike(0.2)]
+      fixer,
+      [],
+      50,
+      player,
+      createDefaultEnemyConditions(),
+      [fastFighterLike, speedDemonLike(0.2)],
     );
     expect(withSpeedDemon.weapon.reloadSpeed).toBeCloseTo(base + 0.1, 6);
 
     // A net move-speed PENALTY clamps at the curve's (0,0) endpoint — never
     // slows reload.
     const withPenalty = buildEffectiveWeapon(
-      fixer, [], 50, player, createDefaultEnemyConditions(), [fastFighterLike, speedDemonLike(-0.4)]
+      fixer,
+      [],
+      50,
+      player,
+      createDefaultEnemyConditions(),
+      [fastFighterLike, speedDemonLike(-0.4)],
     );
     expect(withPenalty.weapon.reloadSpeed).toBeCloseTo(base, 6);
   });
@@ -360,36 +440,44 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, measur
     const gunRunner = getLoadoutModifiers('live', [{ perkId: PerkId.GunRunner, rank: 2 }]);
     const player = createDefaultPlayerConditions();
 
-    const ranged = buildEffectiveWeapon(
-      fixer, [], 50, player, createDefaultEnemyConditions(), [...fastFighter, ...gunRunner]
-    );
+    const ranged = buildEffectiveWeapon(fixer, [], 50, player, createDefaultEnemyConditions(), [
+      ...fastFighter,
+      ...gunRunner,
+    ]);
     expect(ranged.weapon.reloadSpeed).toBeCloseTo(base + 0.1, 6); // +20% move → +10% reload
 
     const melee = getWeapons('live')['DeathclawGauntlet'];
     const meleeBase = melee.reloadSpeed ?? 1.0;
-    const onMelee = buildEffectiveWeapon(
-      melee, [], 50, player, createDefaultEnemyConditions(), [...fastFighter, ...gunRunner]
-    );
+    const onMelee = buildEffectiveWeapon(melee, [], 50, player, createDefaultEnemyConditions(), [
+      ...fastFighter,
+      ...gunRunner,
+    ]);
     expect(onMelee.weapon.reloadSpeed).toBeCloseTo(meleeBase, 6);
   });
 
   it('Wasteland Fish Sandwich (real consumable data) feeds Fast Fighter reload speed', () => {
     const mods = getBuffModifiers('live', [], ['SeasonalFish_Meal_SummerWastelandFishSandwich']);
     expect(mods).toEqual(
-      expect.arrayContaining([expect.objectContaining({ bucket: 'moveSpeedBonus', value: 0.2 })])
+      expect.arrayContaining([expect.objectContaining({ bucket: 'moveSpeedBonus', value: 0.2 })]),
     );
     const fastFighter = getLoadoutModifiers('live', [{ perkId: PerkId.FastFighter, rank: 1 }]);
     const player = createDefaultPlayerConditions();
-    const result = buildEffectiveWeapon(
-      fixer, [], 50, player, createDefaultEnemyConditions(), [...fastFighter, ...mods]
-    );
+    const result = buildEffectiveWeapon(fixer, [], 50, player, createDefaultEnemyConditions(), [
+      ...fastFighter,
+      ...mods,
+    ]);
     expect(result.weapon.reloadSpeed).toBeCloseTo(base + 0.1, 6);
   });
 });
 
 describe('dual-site bootstrap folds', () => {
   const fixer = getWeapons('live')['CombatRifle_Fixer'];
-  const source = { kind: 'perk' as const, formId: '0xB00', edid: 'test_bootstrap', name: 'Test Bootstrap' };
+  const source = {
+    kind: 'perk' as const,
+    formId: '0xB00',
+    edid: 'test_bootstrap',
+    name: 'Test Bootstrap',
+  };
 
   function add(bucket: Bucket, value: number, id: string = bucket): Modifier {
     return { id, source, bucket, op: 'ADD', value, conditions: [] };
@@ -401,7 +489,13 @@ describe('dual-site bootstrap folds', () => {
       source,
       bucket: 'reloadSpeed',
       op: 'ADD',
-      curve: { input, points: [{ x: 0, y: 0 }, { x: 100, y: 100 }] },
+      curve: {
+        input,
+        points: [
+          { x: 0, y: 0 },
+          { x: 100, y: 100 },
+        ],
+      },
       curveScale: 1,
       conditions: [],
     };
@@ -432,31 +526,34 @@ describe('dual-site bootstrap folds', () => {
       scenarioValue: (result: ReturnType<typeof computeScenarios>) => result.bulletStormMinStacks,
       player: { ...createDefaultPlayerConditions(), bulletStormStacks: 0 },
     },
-  ])('$bucket produces the same value in effective-weapon and scenarios', ({ input, modifiers, expected, scenarioValue, player }) => {
-    const identicalModifiers = [...modifiers, observer(input)];
-    const effective = buildEffectiveWeapon(
-      fixer,
-      [],
-      50,
-      player,
-      createDefaultEnemyConditions(),
-      identicalModifiers
-    );
-    const effectiveSiteValue = effective.weapon.reloadSpeed! - (fixer.reloadSpeed ?? 1);
-    const scenarios = computeScenarios({
-      mode: 'live',
-      weapon: fixer,
-      itemLevel: 50,
-      modifiers: identicalModifiers,
-      player,
-      enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2,
-      critRate: 0,
-    });
+  ])(
+    '$bucket produces the same value in effective-weapon and scenarios',
+    ({ input, modifiers, expected, scenarioValue, player }) => {
+      const identicalModifiers = [...modifiers, observer(input)];
+      const effective = buildEffectiveWeapon(
+        fixer,
+        [],
+        50,
+        player,
+        createDefaultEnemyConditions(),
+        identicalModifiers,
+      );
+      const effectiveSiteValue = effective.weapon.reloadSpeed! - (fixer.reloadSpeed ?? 1);
+      const scenarios = computeScenarios({
+        mode: 'live',
+        weapon: fixer,
+        itemLevel: 50,
+        modifiers: identicalModifiers,
+        player,
+        enemy: createDefaultEnemyConditions(),
+        weakpointMult: 2,
+        critRate: 0,
+      });
 
-    expect(effectiveSiteValue).toBeCloseTo(expected, 10);
-    expect(scenarioValue(scenarios)).toBeCloseTo(effectiveSiteValue, 10);
-  });
+      expect(effectiveSiteValue).toBeCloseTo(expected, 10);
+      expect(scenarioValue(scenarios)).toBeCloseTo(effectiveSiteValue, 10);
+    },
+  );
 });
 
 describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-13)', () => {
@@ -467,7 +564,11 @@ describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-
   const teslaCapacitor = getOmodById('live', 'mod_GaussMinigun_Tesla_Capacitor')!;
 
   /** A synthetic blanket "−30% on every damage type" barrel/receiver shape. */
-  function blanketBaseDamageOmod(id: string, types: Array<'ballistic' | 'energy' | 'cryo' | 'fire' | 'poison' | 'radiation'>, value: number) {
+  function blanketBaseDamageOmod(
+    id: string,
+    types: Array<'ballistic' | 'energy' | 'cryo' | 'fire' | 'poison' | 'radiation'>,
+    value: number,
+  ) {
     return {
       id,
       formId: '0x0',
@@ -492,7 +593,7 @@ describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-
   it('materializes an energy component on the ballistic-only Gauss Minigun with the real Tesla Coil Capacitor', () => {
     const { weapon, modifiers } = buildEffectiveWeapon(gaussMinigun, [teslaCapacitor]);
 
-    expect(weapon.components.map(c => c.damageType)).toEqual(['ballistic', 'energy']);
+    expect(weapon.components.map((c) => c.damageType)).toEqual(['ballistic', 'energy']);
     const [ballistic, energy] = weapon.components;
     expect(energy.scale).toBeCloseTo(0.5, 10);
     expect(energy.flatBonus ?? 0).toBeCloseTo(0, 10);
@@ -504,16 +605,21 @@ describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-
     // The energy-scoped baseDamage MUL_ADD fed the materialization and is
     // consumed; the ballistic-scoped one targets an EXISTING component and
     // survives untouched for the normal per-component fold.
-    const baseDamageMods = modifiers.filter(m => m.bucket === 'baseDamage');
+    const baseDamageMods = modifiers.filter((m) => m.bucket === 'baseDamage');
     expect(baseDamageMods).toHaveLength(1);
-    expect(baseDamageMods[0].conditions).toEqual([{ kind: 'damageTypeScope', types: ['ballistic'] }]);
+    expect(baseDamageMods[0].conditions).toEqual([
+      { kind: 'damageTypeScope', types: ['ballistic'] },
+    ]);
   });
 
   it('feeds through the engine with no double count: ballistic 53×0.8, energy 53×0.5 (plus their intrinsic 15% explosive twins)', () => {
     const { weapon, modifiers } = buildEffectiveWeapon(gaussMinigun, [teslaCapacitor]);
     const base = {
-      mode: 'live' as const, itemLevel: 50,
-      player: createDefaultPlayerConditions(), enemy: createDefaultEnemyConditions(), weakpointMult: 2.0,
+      mode: 'live' as const,
+      itemLevel: 50,
+      player: createDefaultPlayerConditions(),
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2.0,
     };
     const result = computeScenarios({ ...base, weapon, modifiers, critRate: 0 });
     const components = result.freeAim.perHit.components;
@@ -537,22 +643,22 @@ describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-
     const blanket = blanketBaseDamageOmod(
       'test_blanket_receiver',
       ['ballistic', 'energy', 'cryo', 'fire', 'poison', 'radiation'],
-      -0.3
+      -0.3,
     );
     const { weapon, modifiers } = buildEffectiveWeapon(fixer, [blanket]);
 
     // Every non-ballistic type saw ONLY a dropped negative — nothing materializes.
-    expect(weapon.components.map(c => c.damageType)).toEqual(['ballistic']);
+    expect(weapon.components.map((c) => c.damageType)).toEqual(['ballistic']);
     // Nothing was consumed: no type materialized, so all 6 baseDamage mods survive
     // (the 5 non-ballistic ones stay inert — no matching component to fold over).
-    expect(modifiers.filter(m => m.bucket === 'baseDamage')).toHaveLength(6);
+    expect(modifiers.filter((m) => m.bucket === 'baseDamage')).toHaveLength(6);
   });
 
   it('negative MULs on a missing type are dropped, not netted: Tesla + a synthetic −0.3 energy blanket still materializes scale 0.5', () => {
     const energyBlanket = blanketBaseDamageOmod('test_energy_blanket', ['energy'], -0.3);
     const { weapon } = buildEffectiveWeapon(gaussMinigun, [teslaCapacitor, energyBlanket]);
 
-    const energy = weapon.components.find(c => c.damageType === 'energy');
+    const energy = weapon.components.find((c) => c.damageType === 'energy');
     expect(energy).toBeDefined();
     // NOT 0.5 − 0.3 = 0.2 — the negative multiplies energy's own zero base
     // and contributes nothing, dropped per-modifier.
@@ -573,7 +679,12 @@ describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-
       modifiers: [
         {
           id: '0x0:0',
-          source: { kind: 'omod' as const, formId: '0x0', edid: 'test_flat_conversion', name: 'Test Flat Conversion Mod' },
+          source: {
+            kind: 'omod' as const,
+            formId: '0x0',
+            edid: 'test_flat_conversion',
+            name: 'Test Flat Conversion Mod',
+          },
           bucket: 'baseDamage' as const,
           op: 'SET' as const,
           value: 0,
@@ -581,7 +692,12 @@ describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-
         },
         {
           id: '0x0:1',
-          source: { kind: 'omod' as const, formId: '0x0', edid: 'test_flat_conversion', name: 'Test Flat Conversion Mod' },
+          source: {
+            kind: 'omod' as const,
+            formId: '0x0',
+            edid: 'test_flat_conversion',
+            name: 'Test Flat Conversion Mod',
+          },
           bucket: 'baseDamage' as const,
           op: 'ADD' as const,
           value: 5,
@@ -591,7 +707,7 @@ describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-
     };
     const { weapon } = buildEffectiveWeapon(fixer, [flatConversionLike]);
 
-    const energy = weapon.components.find(c => c.damageType === 'energy');
+    const energy = weapon.components.find((c) => c.damageType === 'energy');
     expect(energy).toBeDefined();
     expect(energy!.scale).toBeCloseTo(0, 10);
     expect(energy!.flatBonus).toBeCloseTo(5, 10);
@@ -621,7 +737,12 @@ describe('charging weapon-stat buckets (chargeFullPowerSec/chargeFullPowerDamage
       modifiers: [
         {
           id: '0x0:0',
-          source: { kind: 'omod' as const, formId: '0x0', edid: 'test_charging_barrel', name: 'Test Charging Barrel' },
+          source: {
+            kind: 'omod' as const,
+            formId: '0x0',
+            edid: 'test_charging_barrel',
+            name: 'Test Charging Barrel',
+          },
           bucket: 'chargeFullPowerSec' as const,
           op: 'SET' as const,
           value: 1.0,
@@ -637,7 +758,7 @@ describe('charging weapon-stat buckets (chargeFullPowerSec/chargeFullPowerDamage
 });
 
 describe('range weapon-stat buckets (weaponMinRange/weaponMaxRange/weaponOutOfRangeMult, Phase 1 engine half)', () => {
-  it('a Long Barrel MUL_ADDs +50% onto Hunting Rifle\'s base min/max range', () => {
+  it("a Long Barrel MUL_ADDs +50% onto Hunting Rifle's base min/max range", () => {
     // ESM: Hunting Rifle minRange 2612, maxRange 5225, outOfRangeDamageMult
     // 0.5; mod_HuntingRifle_barrel_Long_Base MUL_ADD +0.5 on both range
     // fields, no OutOfRangeMult property (unchanged).
@@ -662,7 +783,7 @@ describe('range weapon-stat buckets (weaponMinRange/weaponMaxRange/weaponOutOfRa
     expect(weapon.outOfRangeDamageMult).toBeCloseTo(0.7, 6);
   });
 
-  it('an equipped OMOD with no range buckets leaves the base weapon\'s range fields untouched', () => {
+  it("an equipped OMOD with no range buckets leaves the base weapon's range fields untouched", () => {
     // Forces the non-early-return fold path (a real equipped OMOD) while
     // exercising a bucket unrelated to range — the base ?? fallback in the
     // weaponMinRange/weaponMaxRange/weaponOutOfRangeMult folds should be a
@@ -679,7 +800,12 @@ describe('range weapon-stat buckets (weaponMinRange/weaponMaxRange/weaponOutOfRa
 describe('sustain chance buckets (foldChanceUnion)', () => {
   const fixer = getWeapons('live')['CombatRifle_Fixer'];
   const baseCapacity = fixer.capacity ?? 0;
-  const omodSource = { kind: 'omod' as const, formId: '0x0', edid: 'test_sustain', name: 'Test Sustain Mod' };
+  const omodSource = {
+    kind: 'omod' as const,
+    formId: '0x0',
+    edid: 'test_sustain',
+    name: 'Test Sustain Mod',
+  };
   const perkSource = { kind: 'perk' as const, formId: '0x1', edid: 'test_perk', name: 'Test Perk' };
 
   it('two reload-skip sources compose as 1 − (1 − c1)(1 − c2)', () => {
@@ -776,8 +902,22 @@ describe('sustain chance buckets (foldChanceUnion)', () => {
       addedKeywords: [],
       hasEnchantments: false,
       modifiers: [
-        { id: '0x0:0', source: omodSource, bucket: 'reloadSkipChance' as const, op: 'ADD' as const, value: cFree, conditions: [] },
-        { id: '0x0:1', source: omodSource, bucket: 'reloadSkipChanceBash' as const, op: 'ADD' as const, value: cBash, conditions: [] },
+        {
+          id: '0x0:0',
+          source: omodSource,
+          bucket: 'reloadSkipChance' as const,
+          op: 'ADD' as const,
+          value: cFree,
+          conditions: [],
+        },
+        {
+          id: '0x0:1',
+          source: omodSource,
+          bucket: 'reloadSkipChanceBash' as const,
+          op: 'ADD' as const,
+          value: cBash,
+          conditions: [],
+        },
       ],
     };
     const { weapon } = buildEffectiveWeapon(fixer, [splitChannels]);
@@ -824,12 +964,22 @@ describe('sustain chance buckets (foldChanceUnion)', () => {
       conditions: [{ kind: 'playerIsGhoul' as const, value: true }],
     };
     const asHuman = buildEffectiveWeapon(
-      fixer, [], 50, createDefaultPlayerConditions(), createDefaultEnemyConditions(), [ghoulReloadSkip]
+      fixer,
+      [],
+      50,
+      createDefaultPlayerConditions(),
+      createDefaultEnemyConditions(),
+      [ghoulReloadSkip],
     );
     expect(asHuman.weapon.reloadSkipChance).toBeCloseTo(0, 10);
 
     const asGhoul = buildEffectiveWeapon(
-      fixer, [], 50, { ...createDefaultPlayerConditions(), isGhoul: true }, createDefaultEnemyConditions(), [ghoulReloadSkip]
+      fixer,
+      [],
+      50,
+      { ...createDefaultPlayerConditions(), isGhoul: true },
+      createDefaultEnemyConditions(),
+      [ghoulReloadSkip],
     );
     expect(asGhoul.weapon.reloadSkipChance).toBeCloseTo(0.36, 10);
   });

@@ -4,11 +4,7 @@ import { computeScenarios } from '@/lib/engine/scenarios';
 import { getDefaultOmodId, getOmodById } from '@/data/omods';
 import { getWeapons } from '@/data';
 import { PerkId } from '@/data/perk-ids';
-import {
-  createDefaultEnemyConfig,
-  createDefaultPlayerConfig,
-  type PlayerConfig,
-} from '@/types';
+import { createDefaultEnemyConfig, createDefaultPlayerConfig, type PlayerConfig } from '@/types';
 
 /**
  * Undecided mod slots must carry the weapon's real standard parts (ESM Object
@@ -34,25 +30,33 @@ describe('default mod folding (assemble-time)', () => {
 
   it("unmodded Fixer carries its default parts' modifiers (Calibrated Receiver crit, Suppressor sneak)", () => {
     const input = loadout('CombatRifle_Fixer');
-    const sources = new Set(input!.modifiers.map(m => m.source.edid));
+    const sources = new Set(input!.modifiers.map((m) => m.source.edid));
     expect(sources).toContain('mod_CombatRifle_Receiver_CritDMG'); // Calibrated Receiver
     expect(sources).toContain('mod_CombatRifle_muzzle_Suppressor_Base'); // Suppressor
   });
 
   it('an explicit slot choice replaces the default for that slot only (no double-count)', () => {
-    const input = loadout('CombatRifle_Fixer', { ap_gun_Receiver: 'mod_CombatRifle_Receiver_Damage-Auto' });
-    const receiverMods = input!.modifiers.filter(m => m.source.edid.startsWith('mod_CombatRifle_Receiver'));
-    const sources = new Set(receiverMods.map(m => m.source.edid));
+    const input = loadout('CombatRifle_Fixer', {
+      ap_gun_Receiver: 'mod_CombatRifle_Receiver_Damage-Auto',
+    });
+    const receiverMods = input!.modifiers.filter((m) =>
+      m.source.edid.startsWith('mod_CombatRifle_Receiver'),
+    );
+    const sources = new Set(receiverMods.map((m) => m.source.edid));
     expect(sources).toContain('mod_CombatRifle_Receiver_Damage-Auto');
     expect(sources).not.toContain('mod_CombatRifle_Receiver_CritDMG');
     // Other slots keep their defaults.
-    expect(input!.modifiers.some(m => m.source.edid === 'mod_CombatRifle_muzzle_Suppressor_Base')).toBe(true);
+    expect(
+      input!.modifiers.some((m) => m.source.edid === 'mod_CombatRifle_muzzle_Suppressor_Base'),
+    ).toBe(true);
   });
 
   it('an explicit null (reset-to-standard) behaves identically to an untouched slot', () => {
     const untouched = loadout('CombatRifle_Fixer');
     const cleared = loadout('CombatRifle_Fixer', { ap_gun_Receiver: null });
-    expect(cleared!.modifiers.map(m => m.id).sort()).toEqual(untouched!.modifiers.map(m => m.id).sort());
+    expect(cleared!.modifiers.map((m) => m.id).sort()).toEqual(
+      untouched!.modifiers.map((m) => m.id).sort(),
+    );
   });
 
   it('stat-carrying cosmetic-slot unique folds in when selected', () => {
@@ -63,16 +67,22 @@ describe('default mod folding (assemble-time)', () => {
     // mod hosted on base DoubleBarrelShotgun's templateModFormIds. Explicitly
     // selecting it (rather than relying on default-fold, since it isn't the
     // weapon's default part) still folds its modifiers in.
-    const input = loadout('DoubleBarrelShotgun', { ap_customName: 'mod_custom_Coldshoulder_DmgvsCryptid' });
+    const input = loadout('DoubleBarrelShotgun', {
+      ap_customName: 'mod_custom_Coldshoulder_DmgvsCryptid',
+    });
     const paranormal = getOmodById('live', 'mod_custom_Coldshoulder_DmgvsCryptid');
     expect(paranormal?.modifiers.length).toBe(3);
-    expect(input!.modifiers.some(m => m.source.edid === paranormal!.id)).toBe(true);
+    expect(input!.modifiers.some((m) => m.source.edid === paranormal!.id)).toBe(true);
   });
 
   it('picking the default explicitly equals leaving the slot untouched', () => {
     const untouched = loadout('CombatRifle_Fixer');
-    const explicit = loadout('CombatRifle_Fixer', { ap_gun_Receiver: 'mod_CombatRifle_Receiver_CritDMG' });
-    expect(explicit!.modifiers.map(m => m.id).sort()).toEqual(untouched!.modifiers.map(m => m.id).sort());
+    const explicit = loadout('CombatRifle_Fixer', {
+      ap_gun_Receiver: 'mod_CombatRifle_Receiver_CritDMG',
+    });
+    expect(explicit!.modifiers.map((m) => m.id).sort()).toEqual(
+      untouched!.modifiers.map((m) => m.id).sort(),
+    );
   });
 });
 
@@ -141,7 +151,9 @@ describe('loadout weapon-stat folding (perk weapon-stat fold gap)', () => {
 
   it('Ground Pounder rank 3 folds +0.3 reload speed on small guns but not heavy guns (expanded SmallGun_Actor_Condition, 2026-07-14)', () => {
     const stockFixer = loadout('CombatRifle_Fixer');
-    const fixer = loadoutWithPerks('CombatRifle_Fixer', [{ perkId: PerkId.GroundPounder, rank: 3 }]);
+    const fixer = loadoutWithPerks('CombatRifle_Fixer', [
+      { perkId: PerkId.GroundPounder, rank: 3 },
+    ]);
     expect(fixer!.weapon.reloadSpeed).toBeCloseTo((stockFixer!.weapon.reloadSpeed ?? 1) + 0.3, 6);
 
     const stockGauss = loadout('GaussMinigun');
@@ -161,7 +173,7 @@ describe('loadout weapon-stat folding (perk weapon-stat fold gap)', () => {
     // Mutation_SpeedDemon: reloadSpeed ADD 0.3 (0.4 under Strange in Numbers).
     expect(withMutation!.weapon.reloadSpeed).toBeCloseTo((stock!.weapon.reloadSpeed ?? 1) + 0.3, 6);
     // Consumed by the effective-weapon fold — never left in the resolver list.
-    expect(withMutation!.modifiers.some(m => m.bucket === 'reloadSpeed')).toBe(false);
+    expect(withMutation!.modifiers.some((m) => m.bucket === 'reloadSpeed')).toBe(false);
   });
 
   it('Wasteland Fish Sandwich feeds Fast Fighter through the full resolveLoadout assembly path', () => {
@@ -174,7 +186,7 @@ describe('loadout weapon-stat folding (perk weapon-stat fold gap)', () => {
         consumables: ['SeasonalFish_Meal_SummerWastelandFishSandwich'],
       },
       createDefaultEnemyConfig(),
-      'live'
+      'live',
     );
     expect(withFish!.weapon.reloadSpeed).toBeGreaterThan(stock!.weapon.reloadSpeed!);
   });
@@ -191,12 +203,12 @@ describe('loadout weapon-stat folding (perk weapon-stat fold gap)', () => {
         consumables: ['SeasonalFish_Meal_SummerWastelandFishSandwich'],
       },
       createDefaultEnemyConfig(),
-      'live'
+      'live',
     )!;
 
-    expect(input.modifiers.some(m => m.bucket === 'moveSpeedBonus')).toBe(false);
-    expect(input.modifiers.some(m => m.bucket === 'onslaughtMaxStacks')).toBe(true);
-    expect(input.modifiers.some(m => m.bucket === 'onslaughtReverse')).toBe(true);
+    expect(input.modifiers.some((m) => m.bucket === 'moveSpeedBonus')).toBe(false);
+    expect(input.modifiers.some((m) => m.bucket === 'onslaughtMaxStacks')).toBe(true);
+    expect(input.modifiers.some((m) => m.bucket === 'onslaughtReverse')).toBe(true);
 
     const scenarios = computeScenarios(input);
     expect(scenarios.onslaughtMaxStacks).toBe(10);

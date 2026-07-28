@@ -39,7 +39,9 @@ export const perkFamilyOverrides: Readonly<Record<string, string>> = {
  * currently empty (every non-legendary registry PerkId joins a carded family
  * once BringingOutTheBigGuns is pinned above).
  */
-export const perkCardOverrides: Readonly<Record<string, { special?: Special; maxRank: number; costs: number[] }>> = {};
+export const perkCardOverrides: Readonly<
+  Record<string, { special?: Special; maxRank: number; costs: number[] }>
+> = {};
 
 /**
  * Hand-authored modifiers for perks whose ESM effects are procedural and not
@@ -73,7 +75,13 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
     [
       {
         id: 'override:Rejuvenated:r1',
-        source: { kind: 'perk', formId: '0x003DE58F', edid: 'Rejuvenated01', name: 'Rejuvenated', rank: 1 },
+        source: {
+          kind: 'perk',
+          formId: '0x003DE58F',
+          edid: 'Rejuvenated01',
+          name: 'Rejuvenated',
+          rank: 1,
+        },
         bucket: 'apRegen',
         op: 'ADD',
         value: 0.1,
@@ -86,7 +94,13 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
     [
       {
         id: 'override:Rejuvenated:r2',
-        source: { kind: 'perk', formId: '0x003DE590', edid: 'Rejuvenated02', name: 'Rejuvenated', rank: 2 },
+        source: {
+          kind: 'perk',
+          formId: '0x003DE590',
+          edid: 'Rejuvenated02',
+          name: 'Rejuvenated',
+          rank: 2,
+        },
         bucket: 'apRegen',
         op: 'ADD',
         value: 0.25,
@@ -110,7 +124,13 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
     [
       {
         id: 'override:CommandoExpert:r1',
-        source: { kind: 'perk', formId: '0x0031AEF2', edid: 'CommandoExpert01', name: 'Fast Fighter', rank: 1 },
+        source: {
+          kind: 'perk',
+          formId: '0x0031AEF2',
+          edid: 'CommandoExpert01',
+          name: 'Fast Fighter',
+          rank: 1,
+        },
         bucket: 'reloadSpeed',
         op: 'ADD',
         curve: {
@@ -134,7 +154,13 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
     [
       {
         id: 'override:QuickHands:r1',
-        source: { kind: 'perk', formId: '0x000221FC', edid: 'QuickHands01', name: 'Quick Hands', rank: 1 },
+        source: {
+          kind: 'perk',
+          formId: '0x000221FC',
+          edid: 'QuickHands01',
+          name: 'Quick Hands',
+          rank: 1,
+        },
         bucket: 'reloadSkipChance',
         op: 'ADD',
         value: 0.06,
@@ -144,7 +170,13 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
     [
       {
         id: 'override:QuickHands:r2',
-        source: { kind: 'perk', formId: '0x001D2478', edid: 'QuickHands02', name: 'Quick Hands', rank: 2 },
+        source: {
+          kind: 'perk',
+          formId: '0x001D2478',
+          edid: 'QuickHands02',
+          name: 'Quick Hands',
+          rank: 2,
+        },
         bucket: 'reloadSkipChance',
         op: 'ADD',
         value: 0.12,
@@ -154,7 +186,13 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
     [
       {
         id: 'override:QuickHands:r3',
-        source: { kind: 'perk', formId: '0x003E862D', edid: 'QuickHands03', name: 'Quick Hands', rank: 3 },
+        source: {
+          kind: 'perk',
+          formId: '0x003E862D',
+          edid: 'QuickHands03',
+          name: 'Quick Hands',
+          rank: 3,
+        },
         bucket: 'reloadSkipChance',
         op: 'ADD',
         value: 0.18,
@@ -169,7 +207,13 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
     [
       {
         id: 'override:GHL_WildWestHands:r1',
-        source: { kind: 'perk', formId: '0x00797E20', edid: 'GHL_WildWestHands01', name: 'Wild West Hands', rank: 1 },
+        source: {
+          kind: 'perk',
+          formId: '0x00797E20',
+          edid: 'GHL_WildWestHands01',
+          name: 'Wild West Hands',
+          rank: 1,
+        },
         bucket: 'reloadSkipChance',
         op: 'ADD',
         value: 0.12,
@@ -179,7 +223,13 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
     [
       {
         id: 'override:GHL_WildWestHands:r2',
-        source: { kind: 'perk', formId: '0x00797E30', edid: 'GHL_WildWestHands02', name: 'Wild West Hands', rank: 2 },
+        source: {
+          kind: 'perk',
+          formId: '0x00797E30',
+          edid: 'GHL_WildWestHands02',
+          name: 'Wild West Hands',
+          rank: 2,
+        },
         bucket: 'reloadSkipChance',
         op: 'ADD',
         value: 0.24,
@@ -189,7 +239,13 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
     [
       {
         id: 'override:GHL_WildWestHands:r3',
-        source: { kind: 'perk', formId: '0x00797E2D', edid: 'GHL_WildWestHands03', name: 'Wild West Hands', rank: 3 },
+        source: {
+          kind: 'perk',
+          formId: '0x00797E2D',
+          edid: 'GHL_WildWestHands03',
+          name: 'Wild West Hands',
+          rank: 3,
+        },
         bucket: 'reloadSkipChance',
         op: 'ADD',
         value: 0.36,
@@ -206,13 +262,17 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
     [
       {
         id: 'override:GunslingerMaster:r1:reverse',
-        source: { kind: 'perk', formId: '0x0004A09F', edid: 'GunslingerMaster', name: 'Gunslinger Master', rank: 1 },
+        source: {
+          kind: 'perk',
+          formId: '0x0004A09F',
+          edid: 'GunslingerMaster',
+          name: 'Gunslinger Master',
+          rank: 1,
+        },
         bucket: 'onslaughtReverse',
         op: 'ADD',
         value: 1,
-        conditions: [
-          { kind: 'weaponKeyword', keyword: 'WeaponTypeRanged', present: true },
-        ],
+        conditions: [{ kind: 'weaponKeyword', keyword: 'WeaponTypeRanged', present: true }],
       },
     ],
   ],
@@ -265,15 +325,30 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
     [
       {
         id: 'override:ConcentratedFire:r1:stacking',
-        source: { kind: 'perk', formId: '0x0004D890', edid: 'ConcentratedFire01', name: 'Concentrated Fire', rank: 1 },
+        source: {
+          kind: 'perk',
+          formId: '0x0004D890',
+          edid: 'ConcentratedFire01',
+          name: 'Concentrated Fire',
+          rank: 1,
+        },
         bucket: 'dbm',
         op: 'ADD',
         value: 0.01,
-        conditions: [{ kind: 'vatsOnly' }, { kind: 'stacks', counter: 'concentratedFire', max: 20 }],
+        conditions: [
+          { kind: 'vatsOnly' },
+          { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+        ],
       },
       {
         id: 'override:ConcentratedFire:r1:hitChanceMultSemi',
-        source: { kind: 'perk', formId: '0x0004D890', edid: 'ConcentratedFire01', name: 'Concentrated Fire', rank: 1 },
+        source: {
+          kind: 'perk',
+          formId: '0x0004D890',
+          edid: 'ConcentratedFire01',
+          name: 'Concentrated Fire',
+          rank: 1,
+        },
         bucket: 'vatsHitChanceMult',
         op: 'MUL_ADD',
         value: 0.04,
@@ -284,7 +359,13 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
       },
       {
         id: 'override:ConcentratedFire:r1:hitChanceMultAuto',
-        source: { kind: 'perk', formId: '0x0004D890', edid: 'ConcentratedFire01', name: 'Concentrated Fire', rank: 1 },
+        source: {
+          kind: 'perk',
+          formId: '0x0004D890',
+          edid: 'ConcentratedFire01',
+          name: 'Concentrated Fire',
+          rank: 1,
+        },
         bucket: 'vatsHitChanceMult',
         op: 'MUL_ADD',
         value: 0.01,
@@ -297,15 +378,30 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
     [
       {
         id: 'override:ConcentratedFire:r2:stacking',
-        source: { kind: 'perk', formId: '0x001D2459', edid: 'ConcentratedFire02', name: 'Concentrated Fire', rank: 2 },
+        source: {
+          kind: 'perk',
+          formId: '0x001D2459',
+          edid: 'ConcentratedFire02',
+          name: 'Concentrated Fire',
+          rank: 2,
+        },
         bucket: 'dbm',
         op: 'ADD',
         value: 0.02,
-        conditions: [{ kind: 'vatsOnly' }, { kind: 'stacks', counter: 'concentratedFire', max: 20 }],
+        conditions: [
+          { kind: 'vatsOnly' },
+          { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+        ],
       },
       {
         id: 'override:ConcentratedFire:r2:hitChanceMultSemi',
-        source: { kind: 'perk', formId: '0x001D2459', edid: 'ConcentratedFire02', name: 'Concentrated Fire', rank: 2 },
+        source: {
+          kind: 'perk',
+          formId: '0x001D2459',
+          edid: 'ConcentratedFire02',
+          name: 'Concentrated Fire',
+          rank: 2,
+        },
         bucket: 'vatsHitChanceMult',
         op: 'MUL_ADD',
         value: 0.08,
@@ -316,7 +412,13 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
       },
       {
         id: 'override:ConcentratedFire:r2:hitChanceMultAuto',
-        source: { kind: 'perk', formId: '0x001D2459', edid: 'ConcentratedFire02', name: 'Concentrated Fire', rank: 2 },
+        source: {
+          kind: 'perk',
+          formId: '0x001D2459',
+          edid: 'ConcentratedFire02',
+          name: 'Concentrated Fire',
+          rank: 2,
+        },
         bucket: 'vatsHitChanceMult',
         op: 'MUL_ADD',
         value: 0.02,
@@ -329,15 +431,30 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
     [
       {
         id: 'override:ConcentratedFire:r3:stacking',
-        source: { kind: 'perk', formId: '0x001D245A', edid: 'ConcentratedFire03', name: 'Concentrated Fire', rank: 3 },
+        source: {
+          kind: 'perk',
+          formId: '0x001D245A',
+          edid: 'ConcentratedFire03',
+          name: 'Concentrated Fire',
+          rank: 3,
+        },
         bucket: 'dbm',
         op: 'ADD',
         value: 0.03,
-        conditions: [{ kind: 'vatsOnly' }, { kind: 'stacks', counter: 'concentratedFire', max: 20 }],
+        conditions: [
+          { kind: 'vatsOnly' },
+          { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+        ],
       },
       {
         id: 'override:ConcentratedFire:r3:hitChanceMultSemi',
-        source: { kind: 'perk', formId: '0x001D245A', edid: 'ConcentratedFire03', name: 'Concentrated Fire', rank: 3 },
+        source: {
+          kind: 'perk',
+          formId: '0x001D245A',
+          edid: 'ConcentratedFire03',
+          name: 'Concentrated Fire',
+          rank: 3,
+        },
         bucket: 'vatsHitChanceMult',
         op: 'MUL_ADD',
         value: 0.12,
@@ -348,7 +465,13 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
       },
       {
         id: 'override:ConcentratedFire:r3:hitChanceMultAuto',
-        source: { kind: 'perk', formId: '0x001D245A', edid: 'ConcentratedFire03', name: 'Concentrated Fire', rank: 3 },
+        source: {
+          kind: 'perk',
+          formId: '0x001D245A',
+          edid: 'ConcentratedFire03',
+          name: 'Concentrated Fire',
+          rank: 3,
+        },
         bucket: 'vatsHitChanceMult',
         op: 'MUL_ADD',
         value: 0.03,

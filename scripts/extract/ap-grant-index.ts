@@ -51,7 +51,7 @@ export function emptyApGrantIndex(): ApGrantIndex {
 
 export async function buildApGrantIndex(client: EsmClient): Promise<ApGrantIndex> {
   const rows = await client.list('OMOD');
-  const records = await client.bulkGet(rows.map(r => r.form_id));
+  const records = await client.bulkGet(rows.map((r) => r.form_id));
 
   const index = new Map<string, ApGrantEntry>();
   for (const record of records) {
@@ -64,9 +64,12 @@ export async function buildApGrantIndex(client: EsmClient): Promise<ApGrantIndex
     index.set(record.header.form_id, {
       formId: record.header.form_id,
       edid: record.editor_id,
-      attachPointFormId: typeof data['Attach Point'] === 'string' ? (data['Attach Point'] as string) : null,
-      grantedApFormIds: Array.isArray(data['Attach Parent Slots']) ? (data['Attach Parent Slots'] as string[]) : [],
-      targetKeywords: await Promise.all(rawTargets.map(k => client.resolveEdid(k))),
+      attachPointFormId:
+        typeof data['Attach Point'] === 'string' ? (data['Attach Point'] as string) : null,
+      grantedApFormIds: Array.isArray(data['Attach Parent Slots'])
+        ? (data['Attach Parent Slots'] as string[])
+        : [],
+      targetKeywords: await Promise.all(rawTargets.map((k) => client.resolveEdid(k))),
       unnamed: exclusion === 'unnamed',
     });
   }

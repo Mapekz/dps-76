@@ -1,12 +1,21 @@
 import { describe, it, expect } from 'vitest';
 import type { Weapon } from '@/types';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
-import { applyMitigation, DEFAULT_MITIGATION_CONSTANTS, type EnemyDefenses } from '@/lib/engine/mitigation';
+import {
+  applyMitigation,
+  DEFAULT_MITIGATION_CONSTANTS,
+  type EnemyDefenses,
+} from '@/lib/engine/mitigation';
 import type { HitBreakdown } from '@/lib/engine/paper-damage';
 import { computeScenarios, type ScenarioInput } from '@/lib/engine/scenarios';
 
-function hit(components: Array<{ damageType: HitBreakdown['components'][number]['damageType']; damage: number }>): HitBreakdown {
-  const full = components.map(c => ({ ...c, base: c.damage }));
+function hit(
+  components: Array<{
+    damageType: HitBreakdown['components'][number]['damageType'];
+    damage: number;
+  }>,
+): HitBreakdown {
+  const full = components.map((c) => ({ ...c, base: c.damage }));
   return { components: full, total: full.reduce((sum, c) => sum + c.damage, 0) };
 }
 
@@ -16,7 +25,10 @@ describe('applyMitigation — formula + clamps', () => {
   it('matches (damage × 0.15 / resist)^0.365, unclamped range', () => {
     const h = hit([{ damageType: 'ballistic', damage: 100 }]);
     const mitigated = applyMitigation(h, defenses({ physical: 300 }), 0, 0);
-    expect(mitigated.components[0].damage).toBeCloseTo(100 * Math.pow((100 * 0.15) / 300, 0.365), 10);
+    expect(mitigated.components[0].damage).toBeCloseTo(
+      100 * Math.pow((100 * 0.15) / 300, 0.365),
+      10,
+    );
   });
 
   it('clamps the multiplier to [0.01, 0.99]', () => {
@@ -47,7 +59,12 @@ describe('applyMitigation — formula + clamps', () => {
 
 describe('applyMitigation — ESM-extracted constants param', () => {
   it('DEFAULT_MITIGATION_CONSTANTS matches the formula every other test in this file hand-computes against', () => {
-    expect(DEFAULT_MITIGATION_CONSTANTS).toEqual({ resistExponent: 0.365, damageFactor: 0.15, minReduction: 0.01, maxReduction: 0.99 });
+    expect(DEFAULT_MITIGATION_CONSTANTS).toEqual({
+      resistExponent: 0.365,
+      damageFactor: 0.15,
+      minReduction: 0.01,
+      maxReduction: 0.99,
+    });
   });
 
   it('an explicit constants arg overrides the default — a different exponent/factor changes the retained damage', () => {
@@ -89,7 +106,7 @@ describe('applyMitigation — armorPen fraction', () => {
     expect(overPen.components[0].damage).toBe(500);
   });
 
-  it('a negative armorPenTotal (shouldn\'t occur from real data, but the formula stays sane) never REDUCES the resist below base', () => {
+  it("a negative armorPenTotal (shouldn't occur from real data, but the formula stays sane) never REDUCES the resist below base", () => {
     const h = hit([{ damageType: 'ballistic', damage: 100 }]);
     const noPen = applyMitigation(h, defenses({ physical: 300 }), 0, 0);
     const negPen = applyMitigation(h, defenses({ physical: 300 }), -0.5, 0);
@@ -104,7 +121,10 @@ describe('applyMitigation — flat resist debuff (Taking One for the Team), phys
     const noDebuff = applyMitigation(h, defenses({ physical: 300 }), 0, 0);
     const debuffed = applyMitigation(h, defenses({ physical: 300 }), 0, 50);
     expect(debuffed.components[0].damage).toBeGreaterThan(noDebuff.components[0].damage);
-    expect(debuffed.components[0].damage).toBeCloseTo(100 * Math.pow((100 * 0.15) / 250, 0.365), 10);
+    expect(debuffed.components[0].damage).toBeCloseTo(
+      100 * Math.pow((100 * 0.15) / 250, 0.365),
+      10,
+    );
   });
 
   it('applies to the physical resist type EXPLOSIVE damage also maps to', () => {
@@ -141,14 +161,20 @@ describe('applyMitigation — per-damage-type routing', () => {
     for (const damageType of ['poison', 'cryo', 'fire'] as const) {
       const h = hit([{ damageType, damage: 100 }]);
       const mitigated = applyMitigation(h, defenses({ [damageType]: 300 }), 0, 0);
-      expect(mitigated.components[0].damage).toBeCloseTo(100 * Math.pow((100 * 0.15) / 300, 0.365), 10);
+      expect(mitigated.components[0].damage).toBeCloseTo(
+        100 * Math.pow((100 * 0.15) / 300, 0.365),
+        10,
+      );
     }
   });
 
   it('radiation reads its own named resist but at DOUBLE the standard exponent (0.730, not 0.365)', () => {
     const h = hit([{ damageType: 'radiation', damage: 100 }]);
     const mitigated = applyMitigation(h, defenses({ radiation: 300 }), 0, 0);
-    expect(mitigated.components[0].damage).toBeCloseTo(100 * Math.pow((100 * 0.15) / 300, 0.73), 10);
+    expect(mitigated.components[0].damage).toBeCloseTo(
+      100 * Math.pow((100 * 0.15) / 300, 0.73),
+      10,
+    );
     // Sanity: the 0.365 formula would retain noticeably MORE damage — proves
     // the two exponents actually diverge for this input, not just algebra.
     expect(mitigated.components[0].damage).toBeLessThan(100 * Math.pow((100 * 0.15) / 300, 0.365));
@@ -166,7 +192,10 @@ describe('applyMitigation — per-damage-type routing', () => {
       { damageType: 'energy', damage: 100 },
     ]);
     const mitigated = applyMitigation(h, defenses({ physical: 300, energy: 300 }), 0, 0);
-    expect(mitigated.total).toBeCloseTo(mitigated.components[0].damage + mitigated.components[1].damage, 10);
+    expect(mitigated.total).toBeCloseTo(
+      mitigated.components[0].damage + mitigated.components[1].damage,
+      10,
+    );
   });
 });
 
@@ -185,15 +214,40 @@ describe('applyMitigation — per-damage-type routing', () => {
  * value is sufficient to pin the magnitude.
  */
 describe('Option A divergence (blended-hit mitigation vs. true per-hit mitigation)', () => {
-  function perHitMitigatedTotal(dNonCrit: number, dCrit: number, critRate: number, resist: number): number {
-    const nonCrit = applyMitigation(hit([{ damageType: 'ballistic', damage: dNonCrit }]), defenses({ physical: resist }), 0, 0).total;
-    const crit = applyMitigation(hit([{ damageType: 'ballistic', damage: dCrit }]), defenses({ physical: resist }), 0, 0).total;
+  function perHitMitigatedTotal(
+    dNonCrit: number,
+    dCrit: number,
+    critRate: number,
+    resist: number,
+  ): number {
+    const nonCrit = applyMitigation(
+      hit([{ damageType: 'ballistic', damage: dNonCrit }]),
+      defenses({ physical: resist }),
+      0,
+      0,
+    ).total;
+    const crit = applyMitigation(
+      hit([{ damageType: 'ballistic', damage: dCrit }]),
+      defenses({ physical: resist }),
+      0,
+      0,
+    ).total;
     return (1 - critRate) * nonCrit + critRate * crit;
   }
 
-  function optionAMitigatedTotal(dNonCrit: number, dCrit: number, critRate: number, resist: number): number {
+  function optionAMitigatedTotal(
+    dNonCrit: number,
+    dCrit: number,
+    critRate: number,
+    resist: number,
+  ): number {
     const blended = (1 - critRate) * dNonCrit + critRate * dCrit;
-    return applyMitigation(hit([{ damageType: 'ballistic', damage: blended }]), defenses({ physical: resist }), 0, 0).total;
+    return applyMitigation(
+      hit([{ damageType: 'ballistic', damage: blended }]),
+      defenses({ physical: resist }),
+      0,
+      0,
+    ).total;
   }
 
   it.each([
@@ -205,22 +259,25 @@ describe('Option A divergence (blended-hit mitigation vs. true per-hit mitigatio
     [0.15, -2.117, 0.01],
     [0.3, -2.857, 0.01],
     [0.45, -2.837, 0.01],
-  ])('at a %s%% steady-state VATS crit rate, Option A under-states retained damage by ~%s%%', (critRate, expectedPct) => {
-    const dNonCrit = 50;
-    const dCrit = 100; // 2× crit mult
-    const resist = 300;
-    const perHit = perHitMitigatedTotal(dNonCrit, dCrit, critRate, resist);
-    const optionA = optionAMitigatedTotal(dNonCrit, dCrit, critRate, resist);
-    const divergencePct = ((optionA - perHit) / perHit) * 100;
-    expect(divergencePct).toBeCloseTo(expectedPct, 2);
-    // Small in absolute terms (a few percent) — the plan's "upgrade to
-    // per-hit only if non-trivial" bar is not crossed; Option A ships as
-    // specified.
-    expect(Math.abs(divergencePct)).toBeLessThan(5);
-  });
+  ])(
+    'at a %s%% steady-state VATS crit rate, Option A under-states retained damage by ~%s%%',
+    (critRate, expectedPct) => {
+      const dNonCrit = 50;
+      const dCrit = 100; // 2× crit mult
+      const resist = 300;
+      const perHit = perHitMitigatedTotal(dNonCrit, dCrit, critRate, resist);
+      const optionA = optionAMitigatedTotal(dNonCrit, dCrit, critRate, resist);
+      const divergencePct = ((optionA - perHit) / perHit) * 100;
+      expect(divergencePct).toBeCloseTo(expectedPct, 2);
+      // Small in absolute terms (a few percent) — the plan's "upgrade to
+      // per-hit only if non-trivial" bar is not crossed; Option A ships as
+      // specified.
+      expect(Math.abs(divergencePct)).toBeLessThan(5);
+    },
+  );
 
   it('divergence magnitude is independent of the resist value (algebraic cancellation)', () => {
-    const perResist = [50, 300, 1200].map(resist => {
+    const perResist = [50, 300, 1200].map((resist) => {
       const perHit = perHitMitigatedTotal(50, 100, 0.3, resist);
       const optionA = optionAMitigatedTotal(50, 100, 0.3, resist);
       return ((optionA - perHit) / perHit) * 100;
@@ -232,7 +289,10 @@ describe('Option A divergence (blended-hit mitigation vs. true per-hit mitigatio
 
 // ── computeScenarios integration (synthetic enemy, hand-computed) ──────────
 
-const FLAT_100 = [{ x: 1, y: 100 }, { x: 50, y: 100 }];
+const FLAT_100 = [
+  { x: 1, y: 100 },
+  { x: 50, y: 100 },
+];
 
 function makeWeapon(overrides: Partial<Weapon> = {}): Weapon {
   return {
@@ -280,7 +340,10 @@ describe('computeScenarios — ScenarioInput.enemyDefenses (synthetic enemy)', (
     expect(s.freeAim.effective?.retainedPct).toBeCloseTo(expectedMult * 100, 6);
     // sustainedDps scales by the SAME retained fraction as perHit.
     const retainedFraction = s.freeAim.effective!.perHit.total / s.freeAim.perHit.total;
-    expect(s.freeAim.effective?.sustainedDps).toBeCloseTo(s.freeAim.sustain.sustainedDps * retainedFraction, 6);
+    expect(s.freeAim.effective?.sustainedDps).toBeCloseTo(
+      s.freeAim.sustain.sustainedDps * retainedFraction,
+      6,
+    );
     // TTK = enemy HP ÷ mitigated sustained DPS.
     expect(s.freeAim.effective?.ttk).toBeCloseTo(1000 / s.freeAim.effective!.sustainedDps, 6);
   });
@@ -296,9 +359,16 @@ describe('computeScenarios — ScenarioInput.enemyDefenses (synthetic enemy)', (
     const withLowerExponent = computeScenarios({
       ...baseInput,
       enemyDefenses,
-      mitigationConstants: { resistExponent: 0.1, damageFactor: 0.15, minReduction: 0.01, maxReduction: 0.99 },
+      mitigationConstants: {
+        resistExponent: 0.1,
+        damageFactor: 0.15,
+        minReduction: 0.01,
+        maxReduction: 0.99,
+      },
     });
-    expect(withLowerExponent.freeAim.effective!.perHit.total).toBeGreaterThan(withDefault.freeAim.effective!.perHit.total);
+    expect(withLowerExponent.freeAim.effective!.perHit.total).toBeGreaterThan(
+      withDefault.freeAim.effective!.perHit.total,
+    );
   });
 
   it('armorPen and armorPenFlat bucket modifiers fold into the mitigation call (end-to-end)', () => {
@@ -306,7 +376,12 @@ describe('computeScenarios — ScenarioInput.enemyDefenses (synthetic enemy)', (
     const modifiers: ScenarioInput['modifiers'] = [
       {
         id: 'test-armorpen',
-        source: { kind: 'legendaryEffect', formId: '0x0', edid: 'TestAntiArmor', name: 'Test Anti-Armor' },
+        source: {
+          kind: 'legendaryEffect',
+          formId: '0x0',
+          edid: 'TestAntiArmor',
+          name: 'Test Anti-Armor',
+        },
         bucket: 'armorPen',
         op: 'ADD',
         value: 0.5,
@@ -315,7 +390,9 @@ describe('computeScenarios — ScenarioInput.enemyDefenses (synthetic enemy)', (
     ];
     const withPen = computeScenarios({ ...baseInput, modifiers, enemyDefenses });
     const withoutPen = computeScenarios({ ...baseInput, enemyDefenses });
-    expect(withPen.freeAim.effective!.perHit.total).toBeGreaterThan(withoutPen.freeAim.effective!.perHit.total);
+    expect(withPen.freeAim.effective!.perHit.total).toBeGreaterThan(
+      withoutPen.freeAim.effective!.perHit.total,
+    );
   });
 
   it('DoT stays unmitigated and separate from `effective` (v1 scope)', () => {

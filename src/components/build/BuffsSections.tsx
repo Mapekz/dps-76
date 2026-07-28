@@ -7,7 +7,14 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import { Radio } from '@/components/ui/radio';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { FilterListRoot, FilterInput, FilterList, FilterEmpty, FilterGroup, FilterItem } from '@/components/ui/filter-list';
+import {
+  FilterListRoot,
+  FilterInput,
+  FilterList,
+  FilterEmpty,
+  FilterGroup,
+  FilterItem,
+} from '@/components/ui/filter-list';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { matchesQuery } from '@/lib/filter-query';
@@ -17,7 +24,12 @@ import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getAddictions, getConsumables, getMutations, getSuppressedAddictions } from '@/data/buffs';
 import { getOmodById } from '@/data/omods';
 import { applySelection, consumablesById } from '@/lib/consumable-rules';
-import { dietVerdict, dietSuppressionLabel, isDietMutation, type DietVerdict } from '@/lib/diet-mutations';
+import {
+  dietVerdict,
+  dietSuppressionLabel,
+  isDietMutation,
+  type DietVerdict,
+} from '@/lib/diet-mutations';
 import { mutationDescriptionOverrides } from '@/data/overrides/mutation-descriptions';
 import { deriveClassFreakRank, deriveStrangeInNumbers } from '@/lib/player-stats';
 import { describeBuffModifiers } from '@/lib/buff-description';
@@ -38,7 +50,10 @@ import { SectionTrigger } from './SectionTrigger';
  */
 function NoEffectBadge() {
   return (
-    <Badge variant="outline" className="text-muted-foreground ml-1 px-1 py-0 text-[10px] font-normal">
+    <Badge
+      variant="outline"
+      className="text-muted-foreground ml-1 px-1 py-0 text-[10px] font-normal"
+    >
       no effect yet
     </Badge>
   );
@@ -70,10 +85,13 @@ function CheckboxRow({
   return (
     <label
       htmlFor={id}
-      className={cn('flex cursor-pointer gap-2 py-0.5 text-sm', hasDescription ? 'items-start' : 'items-center')}
+      className={cn(
+        'flex cursor-pointer gap-2 py-0.5 text-sm',
+        hasDescription ? 'items-start' : 'items-center',
+      )}
     >
       <div className={hasDescription ? 'pt-0.5' : undefined}>
-        <Checkbox id={id} checked={checked} onCheckedChange={v => onCheckedChange(v === true)} />
+        <Checkbox id={id} checked={checked} onCheckedChange={(v) => onCheckedChange(v === true)} />
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
@@ -96,7 +114,7 @@ export function MutationsSection() {
 
   // Derived, not a toggle: the Strange in Numbers card equipped + a teammate
   // to be mutated with (same rule resolveLoadout feeds the engine).
-  const sinEquipped = player.perks.some(p => p.perkId === 'StrangeInNumbers');
+  const sinEquipped = player.perks.some((p) => p.perkId === 'StrangeInNumbers');
   const sinActive = deriveStrangeInNumbers(player.perks, player.conditions);
   const classFreakRank = deriveClassFreakRank(player.perks);
   const classFreakReductionPct = Math.round((1 - CLASS_FREAK_TIER_FACTORS[classFreakRank]) * 100);
@@ -109,7 +127,9 @@ export function MutationsSection() {
           summary={player.mutations.length === 0 ? 'none' : undefined}
           badge={
             <>
-              {player.mutations.length > 0 && <Badge variant="secondary">{player.mutations.length} active</Badge>}
+              {player.mutations.length > 0 && (
+                <Badge variant="secondary">{player.mutations.length} active</Badge>
+              )}
               {sinEquipped && (
                 <Badge
                   variant={sinActive ? 'default' : 'outline'}
@@ -123,7 +143,9 @@ export function MutationsSection() {
                 </Badge>
               )}
               {classFreakRank > 0 && (
-                <Badge title={`Class Freak: mutation penalties reduced by ${classFreakReductionPct}%`}>
+                <Badge
+                  title={`Class Freak: mutation penalties reduced by ${classFreakReductionPct}%`}
+                >
                   CF −{classFreakReductionPct}%
                 </Badge>
               )}
@@ -133,20 +155,27 @@ export function MutationsSection() {
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-0.5">
-          {mutations.map(m => {
+          {mutations.map((m) => {
             const penaltySet = new Set(m.penaltyModifierIds ?? []);
-            const positives = m.modifiers.filter(mod => !penaltySet.has(mod.id));
-            const penalties = m.modifiers.filter(mod => penaltySet.has(mod.id));
+            const positives = m.modifiers.filter((mod) => !penaltySet.has(mod.id));
+            const penalties = m.modifiers.filter((mod) => penaltySet.has(mod.id));
             // Herb/Carnivore realize their whole effect on OTHER consumables'
             // modifiers (diet-mutations.ts), so they carry none of their own —
             // describeBuffModifiers has nothing to derive from without this override.
             const description =
-              describeBuffModifiers({ modifiers: positives }, { strangeInNumbers: sinActive, classFreakRank }) ??
+              describeBuffModifiers(
+                { modifiers: positives },
+                { strangeInNumbers: sinActive, classFreakRank },
+              ) ??
               mutationDescriptionOverrides[m.id] ??
               null;
             const penaltyDescription = describeBuffModifiers(
               { modifiers: penalties },
-              { strangeInNumbers: sinActive, classFreakRank, penaltyScale: CLASS_FREAK_TIER_FACTORS[classFreakRank] }
+              {
+                strangeInNumbers: sinActive,
+                classFreakRank,
+                penaltyScale: CLASS_FREAK_TIER_FACTORS[classFreakRank],
+              },
             );
             return (
               <CheckboxRow
@@ -197,7 +226,7 @@ interface LedgerGroup {
 function buildLedger(
   chems: GeneratedBuff[],
   alcohols: GeneratedBuff[],
-  addictions: readonly GeneratedAddiction[]
+  addictions: readonly GeneratedAddiction[],
 ): LedgerGroup[] {
   const chemsByFamily = new Map<string, GeneratedBuff[]>();
   const alcoholsByFamily = new Map<string, GeneratedBuff[]>();
@@ -210,14 +239,15 @@ function buildLedger(
   };
 
   for (const chem of chems) {
-    if (!chem.addiction) unaddictive.push({ addiction: null, chems: [chem], picker: [], sortKey: chem.name });
+    if (!chem.addiction)
+      unaddictive.push({ addiction: null, chems: [chem], picker: [], sortKey: chem.name });
     else push(chemsByFamily, chem.addiction.id, chem);
   }
   for (const alcohol of alcohols) {
     if (alcohol.addiction) push(alcoholsByFamily, alcohol.addiction.id, alcohol);
   }
 
-  const families = addictions.map(a => ({
+  const families = addictions.map((a) => ({
     addiction: a,
     chems: (chemsByFamily.get(a.id) ?? []).sort(byName),
     picker: (alcoholsByFamily.get(a.id) ?? []).sort(byName),
@@ -252,7 +282,7 @@ function ConsumableRadioRow({
       className={cn(
         'hover:bg-muted/40 flex cursor-pointer gap-2 rounded-none px-2 py-1 text-sm',
         description ? 'items-start' : 'items-center',
-        active && 'bg-muted/50'
+        active && 'bg-muted/50',
       )}
     >
       <div className={description ? 'pt-0.5' : undefined}>
@@ -289,11 +319,11 @@ const NONE = '__none__';
 function CausePicker({ items, placeholder }: { items: GeneratedBuff[]; placeholder: string }) {
   const { player } = useBuild();
   const dispatch = useBuildDispatch();
-  const active = items.find(i => player.consumables.includes(i.id));
-  const itemsById = new Map(items.map(i => [i.id, i]));
+  const active = items.find((i) => player.consumables.includes(i.id));
+  const itemsById = new Map(items.map((i) => [i.id, i]));
   const options: ComboboxOption[] = [
     { value: NONE, label: placeholder },
-    ...items.map(i => ({ value: i.id, label: i.name })),
+    ...items.map((i) => ({ value: i.id, label: i.name })),
   ];
   const description = active ? describeBuffModifiers(active) : null;
 
@@ -314,7 +344,7 @@ function CausePicker({ items, placeholder }: { items: GeneratedBuff[]; placehold
         searchPlaceholder="Search brews…"
         emptyText="No brew found."
         className="h-8 text-sm font-normal"
-        renderOptionExtra={option => {
+        renderOptionExtra={(option) => {
           if (option.value === NONE) return null;
           const item = itemsById.get(option.value);
           return (
@@ -336,7 +366,15 @@ function CausePicker({ items, placeholder }: { items: GeneratedBuff[]; placehold
  * item, this row (not the item's own row) is the only way to remove it, so
  * the delta belongs here.
  */
-function NoneRadioRow({ label, groupName, activeId }: { label: string; groupName: string; activeId?: string }) {
+function NoneRadioRow({
+  label,
+  groupName,
+  activeId,
+}: {
+  label: string;
+  groupName: string;
+  activeId?: string;
+}) {
   const dispatch = useBuildDispatch();
   return (
     <label className="hover:bg-muted/40 flex cursor-pointer items-center gap-2 rounded-none px-2 py-1 text-sm">
@@ -384,7 +422,7 @@ function AddictionCell({
       htmlFor={id}
       className={cn(
         'hover:bg-muted/40 flex w-full cursor-pointer gap-2 rounded-none px-2 py-1 text-sm',
-        description ? 'items-start' : 'items-center'
+        description ? 'items-start' : 'items-center',
       )}
     >
       <div className={description ? 'pt-0.5' : undefined}>
@@ -397,7 +435,10 @@ function AddictionCell({
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <span
-            className={cn('min-w-0 flex-1 truncate', addicted && suppressedBy && 'text-muted-foreground line-through')}
+            className={cn(
+              'min-w-0 flex-1 truncate',
+              addicted && suppressedBy && 'text-muted-foreground line-through',
+            )}
           >
             {familyLabel(addiction.name)}
           </span>
@@ -408,7 +449,7 @@ function AddictionCell({
                   <span
                     className={cn(
                       'text-muted-foreground flex shrink-0 items-center gap-1 text-[10px] uppercase tracking-wide',
-                      !addicted && 'opacity-50'
+                      !addicted && 'opacity-50',
                     )}
                   />
                 }
@@ -426,7 +467,9 @@ function AddictionCell({
           )}
         </div>
         {description && (
-          <p className={cn('text-[10px]', counted ? 'text-negative' : 'text-muted-foreground')}>{description}</p>
+          <p className={cn('text-[10px]', counted ? 'text-negative' : 'text-muted-foreground')}>
+            {description}
+          </p>
         )}
       </div>
     </label>
@@ -458,16 +501,27 @@ function LedgerRow({
   return (
     <div className="flex items-stretch">
       <div className="min-w-0 flex-1 py-0.5">
-        {group.chems.map(c => (
-          <ConsumableRadioRow key={c.id} item={c} groupName="active-chem" description={describeBuffModifiers(c)} />
+        {group.chems.map((c) => (
+          <ConsumableRadioRow
+            key={c.id}
+            item={c}
+            groupName="active-chem"
+            description={describeBuffModifiers(c)}
+          />
         ))}
         {group.picker.length > 0 && <CausePicker items={group.picker} placeholder="No alcohol" />}
         {group.chems.length === 0 && group.picker.length === 0 && (
-          <p className="text-muted-foreground/60 px-2 py-1 text-sm italic">No modeled chem causes it</p>
+          <p className="text-muted-foreground/60 px-2 py-1 text-sm italic">
+            No modeled chem causes it
+          </p>
         )}
       </div>
       <div className={cn(RAIL, 'flex items-center py-0.5 pl-2')}>
-        <AddictionCell group={group} suppressedBy={suppressorOf.get(group.addiction?.id ?? '')} showDelta={showDelta} />
+        <AddictionCell
+          group={group}
+          suppressedBy={suppressorOf.get(group.addiction?.id ?? '')}
+          showDelta={showDelta}
+        />
       </div>
     </div>
   );
@@ -497,9 +551,9 @@ function SingleSelectBuffSection({
   const { mode } = useGameMode();
   const { player } = useBuild();
   const items = getConsumables(mode)
-    .filter(c => c.category === category)
+    .filter((c) => c.category === category)
     .sort(byName);
-  const active = items.find(c => player.consumables.includes(c.id));
+  const active = items.find((c) => player.consumables.includes(c.id));
 
   return (
     <AccordionItem value={accordionValue}>
@@ -510,7 +564,7 @@ function SingleSelectBuffSection({
         {items.length > 0 ? (
           <div className="space-y-0.5">
             <NoneRadioRow label={noneLabel} groupName={groupName} activeId={active?.id} />
-            {items.map(item => (
+            {items.map((item) => (
               <ConsumableRadioRow
                 key={item.id}
                 item={item}
@@ -557,16 +611,16 @@ export function ChemsSection() {
   const { mode } = useGameMode();
   const { player } = useBuild();
   const consumables = getConsumables(mode);
-  const chems = consumables.filter(c => c.category === 'chem').sort(byName);
-  const alcohols = consumables.filter(c => c.category === 'alcohol').sort(byName);
+  const chems = consumables.filter((c) => c.category === 'chem').sort(byName);
+  const alcohols = consumables.filter((c) => c.category === 'alcohol').sort(byName);
   const ledger = buildLedger(chems, alcohols, getAddictions(mode));
   const suppressed = getSuppressedAddictions(mode, player.consumables);
 
   // Families whose causes collapse to a picker (alcohol) sit above the chem
   // radio group; everything the radios cover — plus cause-less families like
   // Med-X — sits below it, under the "None" deselect.
-  const alcoholGroups = ledger.filter(g => g.picker.length > 0);
-  const chemGroups = ledger.filter(g => g.picker.length === 0);
+  const alcoholGroups = ledger.filter((g) => g.picker.length > 0);
+  const chemGroups = ledger.filter((g) => g.picker.length === 0);
 
   // What suppresses each addiction — any active item that causes it, chem or brew.
   const suppressorOf = new Map<string, GeneratedBuff>();
@@ -577,12 +631,12 @@ export function ChemsSection() {
   // Something equipped reads addictionCount off a curve — find it in the data
   // rather than by name, so any future effect on the same axis gates ΔDPS too.
   const readsAddictionCount = (player.weapon?.legendaryEffects ?? []).some(
-    id => id && getOmodById(mode, id)?.modifiers.some(m => m.curve?.input === 'addictionCount')
+    (id) => id && getOmodById(mode, id)?.modifiers.some((m) => m.curve?.input === 'addictionCount'),
   );
 
-  const activeChem = chems.find(c => player.consumables.includes(c.id));
-  const activeAlcohol = alcohols.find(c => player.consumables.includes(c.id));
-  const counted = player.addictions.filter(id => !suppressed.has(id)).length;
+  const activeChem = chems.find((c) => player.consumables.includes(c.id));
+  const activeAlcohol = alcohols.find((c) => player.consumables.includes(c.id));
+  const counted = player.addictions.filter((id) => !suppressed.has(id)).length;
   const nothingActive = !activeChem && !activeAlcohol && counted === 0;
 
   return (
@@ -604,7 +658,10 @@ export function ChemsSection() {
                 </Badge>
               )}
               {counted > 0 && (
-                <Badge variant="destructive" title={`${counted} addiction${counted === 1 ? '' : 's'} counted against DPS`}>
+                <Badge
+                  variant="destructive"
+                  title={`${counted} addiction${counted === 1 ? '' : 's'} counted against DPS`}
+                >
                   <SkullIcon /> {counted} addiction{counted === 1 ? '' : 's'}
                 </Badge>
               )}
@@ -622,8 +679,13 @@ export function ChemsSection() {
             isn't part of the chem radio group. The gap below keeps it from reading
             as the first option of that group. */}
         <div className="divide-border/50 divide-y">
-          {alcoholGroups.map(group => (
-            <LedgerRow key={group.addiction!.id} group={group} suppressorOf={suppressorOf} showDelta={readsAddictionCount} />
+          {alcoholGroups.map((group) => (
+            <LedgerRow
+              key={group.addiction!.id}
+              group={group}
+              suppressorOf={suppressorOf}
+              showDelta={readsAddictionCount}
+            />
           ))}
         </div>
 
@@ -635,7 +697,7 @@ export function ChemsSection() {
             <div className={RAIL} />
           </div>
 
-          {chemGroups.map(group => (
+          {chemGroups.map((group) => (
             <LedgerRow
               key={group.addiction?.id ?? group.chems[0].id}
               group={group}
@@ -674,12 +736,14 @@ function FoodDrinkAddCombobox({
     // Popover stays open for multi-add.
   };
 
-  const foodItems = items.filter(i => i.category === 'food');
-  const drinkItems = items.filter(i => i.category === 'drink');
+  const foodItems = items.filter((i) => i.category === 'food');
+  const drinkItems = items.filter((i) => i.category === 'drink');
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
-      <PopoverTrigger render={<Button variant="outline" size="sm" className="w-full justify-start" />}>
+      <PopoverTrigger
+        render={<Button variant="outline" size="sm" className="w-full justify-start" />}
+      >
         <PlusIcon className="mr-1 size-3.5" /> Add food or drink…
       </PopoverTrigger>
       <PopoverContent className="w-[--anchor-width] p-0" align="start">
@@ -725,14 +789,14 @@ function FoodDrinkList({
   const { query } = useFilterQuery();
 
   const renderGroup = (heading: string, groupItems: GeneratedBuff[]) => {
-    const filtered = groupItems.filter(item => matchesQuery([item.name], query));
+    const filtered = groupItems.filter((item) => matchesQuery([item.name], query));
     if (filtered.length === 0) return null;
     return (
       <FilterGroup key={heading} heading={heading}>
-        {filtered.map(item => {
+        {filtered.map((item) => {
           const selected = activeSet.has(item.id);
           const replaced = selected ? [] : applySelection(byId, active, item.id).replaced;
-          const replacedNames = replaced.map(id => byId.get(id)?.name ?? id);
+          const replacedNames = replaced.map((id) => byId.get(id)?.name ?? id);
           const description = describeBuffModifiers(item);
           const suppression = dietSuppressionLabel(item, mutations);
           return (
@@ -745,13 +809,20 @@ function FoodDrinkList({
                   {suppression && <DietSuppressionBadge mutation={suppression} />}
                 </div>
                 {description && (
-                  <p className={cn('text-muted-foreground truncate text-xs', suppression && 'line-through')}>
+                  <p
+                    className={cn(
+                      'text-muted-foreground truncate text-xs',
+                      suppression && 'line-through',
+                    )}
+                  >
                     {description}
                   </p>
                 )}
               </div>
               {replacedNames.length > 0 && (
-                <span className="text-muted-foreground ml-2 truncate text-xs">replaces {replacedNames.join(', ')}</span>
+                <span className="text-muted-foreground ml-2 truncate text-xs">
+                  replaces {replacedNames.join(', ')}
+                </span>
               )}
               {!selected && <ActionDelta action={{ type: 'consumable/toggle', id: item.id }} />}
             </FilterItem>
@@ -765,7 +836,7 @@ function FoodDrinkList({
 
   return (
     <FilterList className="max-h-72">
-      <FilterEmpty show={groups.every(g => g === null)}>No match.</FilterEmpty>
+      <FilterEmpty show={groups.every((g) => g === null)}>No match.</FilterEmpty>
       {groups}
     </FilterList>
   );
@@ -795,7 +866,12 @@ function FoodDrinkRow({
   const description = describeBuffModifiers(item);
   const suppression = dietSuppressionLabel(item, mutations);
   return (
-    <div className={cn('bg-muted/40 flex gap-1 rounded px-2 py-1 text-sm', description ? 'items-start' : 'items-center')}>
+    <div
+      className={cn(
+        'bg-muted/40 flex gap-1 rounded px-2 py-1 text-sm',
+        description ? 'items-start' : 'items-center',
+      )}
+    >
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1">
           <span className="min-w-0 flex-1 truncate">{item.name}</span>
@@ -804,7 +880,9 @@ function FoodDrinkRow({
           {suppression && <DietSuppressionBadge mutation={suppression} />}
         </div>
         {description && (
-          <p className={cn('text-muted-foreground text-xs', suppression && 'line-through')}>{description}</p>
+          <p className={cn('text-muted-foreground text-xs', suppression && 'line-through')}>
+            {description}
+          </p>
         )}
       </div>
       {/* No ΔDPS here — food/drink is multi-select with no single "None" row
@@ -831,12 +909,15 @@ export function FoodDrinkSection() {
   const [open, setOpen] = React.useState(false);
 
   const items = getConsumables(mode)
-    .filter(c => c.category === 'food' || c.category === 'drink')
+    .filter((c) => c.category === 'food' || c.category === 'drink')
     .sort(byName);
   const byId = consumablesById(mode);
   const activeItems = player.consumables
-    .map(id => byId.get(id))
-    .filter((c): c is GeneratedBuff => c !== undefined && (c.category === 'food' || c.category === 'drink'))
+    .map((id) => byId.get(id))
+    .filter(
+      (c): c is GeneratedBuff =>
+        c !== undefined && (c.category === 'food' || c.category === 'drink'),
+    )
     .sort(byName);
 
   return (
@@ -845,7 +926,9 @@ export function FoodDrinkSection() {
         <SectionTrigger
           label="Food & Drink"
           summary={activeItems.length === 0 ? 'none' : undefined}
-          badge={activeItems.length > 0 && <Badge variant="secondary">{activeItems.length} active</Badge>}
+          badge={
+            activeItems.length > 0 && <Badge variant="secondary">{activeItems.length} active</Badge>
+          }
         />
       </AccordionTrigger>
       <AccordionContent>
@@ -860,7 +943,7 @@ export function FoodDrinkSection() {
           />
           {activeItems.length > 0 ? (
             <div className="grid gap-1">
-              {activeItems.map(item => (
+              {activeItems.map((item) => (
                 <FoodDrinkRow
                   key={item.id}
                   item={item}

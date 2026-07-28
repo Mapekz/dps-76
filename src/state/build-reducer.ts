@@ -85,12 +85,26 @@ export type BuildAction =
   | { type: 'mutation/toggle'; id: string }
   | { type: 'consumable/toggle'; id: string }
   | { type: 'addiction/toggle'; id: string }
-  | { type: 'condition/set'; key: keyof PlayerConditions; value: PlayerConditions[keyof PlayerConditions] }
+  | {
+      type: 'condition/set';
+      key: keyof PlayerConditions;
+      value: PlayerConditions[keyof PlayerConditions];
+    }
   | { type: 'armorEffect/setCount'; id: string; count: number }
   | { type: 'race/set'; isGhoul: boolean }
-  | { type: 'enemy/condition'; key: keyof EnemyConditions; value: EnemyConditions[keyof EnemyConditions] }
+  | {
+      type: 'enemy/condition';
+      key: keyof EnemyConditions;
+      value: EnemyConditions[keyof EnemyConditions];
+    }
   | { type: 'view/set'; view: Partial<ViewState> }
-  | { type: 'build/importNd'; perks: ParsedPerk[]; name: string | null; special: ParsedSpecial | null; isGhoul: boolean }
+  | {
+      type: 'build/importNd';
+      perks: ParsedPerk[];
+      name: string | null;
+      special: ParsedSpecial | null;
+      isGhoul: boolean;
+    }
   | { type: 'build/hydrate'; state: BuildState };
 
 export function createDefaultBuildState(): BuildState {
@@ -107,7 +121,7 @@ export function createDefaultBuildState(): BuildState {
 }
 
 function toggle(list: string[], id: string): string[] {
-  return list.includes(id) ? list.filter(x => x !== id) : [...list, id];
+  return list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
 }
 
 function withPlayer(state: BuildState, player: PlayerConfig): BuildState {
@@ -126,13 +140,21 @@ function withPlayer(state: BuildState, player: PlayerConfig): BuildState {
  * afterward: a later `condition/set` isn't touched by this, it only re-syncs
  * on the next perk add/rank-change/remove.
  */
-function syncTargetDebuffConditions(conditions: PlayerConditions, perkId: string, rank: number): PlayerConditions {
+function syncTargetDebuffConditions(
+  conditions: PlayerConditions,
+  perkId: string,
+  rank: number,
+): PlayerConditions {
   const clamped = Math.max(0, Math.min(4, rank)) as 0 | 1 | 2 | 3 | 4;
   if (perkId === 'FollowThrough') {
     return { ...conditions, followThroughPct: clamped * 10 };
   }
   if (perkId === 'TakingOneForTheTeam') {
-    return { ...conditions, takingOneForTheTeamPct: clamped * 10, takingOneForTheTeamDrRank: clamped };
+    return {
+      ...conditions,
+      takingOneForTheTeamPct: clamped * 10,
+      takingOneForTheTeamDrRank: clamped,
+    };
   }
   return conditions;
 }
@@ -140,7 +162,7 @@ function syncTargetDebuffConditions(conditions: PlayerConditions, perkId: string
 /** Drop equipped perks locked to the race being left behind. */
 function keepForRace(list: PerkLoadout[], isGhoul: boolean, mode: GameMode): PerkLoadout[] {
   const target = isGhoul ? 'ghoul' : 'human';
-  return list.filter(p => {
+  return list.filter((p) => {
     const race = perkRaceRestriction(mode, p.perkId);
     return race === null || race === target;
   });
@@ -155,7 +177,10 @@ export const LEGENDARY_PERK_SLOTS = legendarySlotsAtLevel(PLAYER_LEVEL);
 
 /** The user-defined base SPECIAL allocation stored in conditions, as a plain record. */
 function allocationOf(player: PlayerConfig): Record<SpecialKey, number> {
-  return Object.fromEntries(SPECIAL_KEYS.map(k => [k, player.conditions[k]])) as Record<SpecialKey, number>;
+  return Object.fromEntries(SPECIAL_KEYS.map((k) => [k, player.conditions[k]])) as Record<
+    SpecialKey,
+    number
+  >;
 }
 
 /**
@@ -168,7 +193,7 @@ function regularSlotBlocked(
   perkId: string,
   fromRank: number,
   toRank: number,
-  mode: GameMode
+  mode: GameMode,
 ): boolean {
   const stat = perkSpecialKey(mode, perkId);
   if (!stat) return false; // unknown perk: don't block (import edge cases)
@@ -183,7 +208,9 @@ function regularSlotBlocked(
  * (docs/adr/0002). Re-create (memoized) when mode changes; the returned
  * function is otherwise a plain, pure `(state, action) => BuildState` reducer.
  */
-export function makeBuildReducer(mode: GameMode): (state: BuildState, action: BuildAction) => BuildState {
+export function makeBuildReducer(
+  mode: GameMode,
+): (state: BuildState, action: BuildAction) => BuildState {
   return (state, action) => buildReducer(state, action, mode);
 }
 
@@ -191,7 +218,7 @@ function mergeLegendaryEffects(
   preset: (string | null)[],
   prior: (string | null)[],
   weaponId: string,
-  mode: GameMode
+  mode: GameMode,
 ): (string | null)[] {
   const weapon = getWeapons(mode)[weaponId];
   if (!weapon) return [...preset];
@@ -217,11 +244,15 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
     case 'weapon/select':
       return withPlayer(state, {
         ...player,
-        weapon: action.weaponId ? { weaponId: action.weaponId, mods: {}, legendaryEffects: [] } : null,
+        weapon: action.weaponId
+          ? { weaponId: action.weaponId, mods: {}, legendaryEffects: [] }
+          : null,
         // Default to the weapon's best obtainable level (Enclave Plasma 45,
         // Shishkebab 45, most weapons 50) — the slider only offers its real
         // eligible levels anyway.
-        itemLevel: action.weaponId ? maxEligibleLevel(getWeapons(mode)[action.weaponId]) : player.itemLevel,
+        itemLevel: action.weaponId
+          ? maxEligibleLevel(getWeapons(mode)[action.weaponId])
+          : player.itemLevel,
         // A new weapon resets to "always fully charge" — the old hold time
         // was relative to the previous weapon's charge window.
         chargeTimeSec: undefined,
@@ -254,7 +285,7 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
               unique.legendaryEffects,
               current?.legendaryEffects ?? [],
               unique.baseWeaponId,
-              mode
+              mode,
             ),
           },
           itemLevel: crossBase ? maxEligibleLevel(baseWeapon) : player.itemLevel,
@@ -308,18 +339,20 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
 
     case 'perk/add': {
       const list = action.legendary ? 'legendaryPerks' : 'perks';
-      if (player[list].some(p => p.perkId === action.perkId)) return state;
+      if (player[list].some((p) => p.perkId === action.perkId)) return state;
       const rank = Math.max(1, action.rank);
       // Enforce the game's limits: LEGENDARY_PERK_SLOTS legendary slots (6 at
       // endgame); regular cards must fit
       // the stat's perk-point budget (min(15, base + Legendary SPECIAL bonus)).
       if (action.legendary && player.legendaryPerks.length >= LEGENDARY_PERK_SLOTS) return state;
-      if (!action.legendary && regularSlotBlocked(player, action.perkId, 0, rank, mode)) return state;
+      if (!action.legendary && regularSlotBlocked(player, action.perkId, 0, rank, mode))
+        return state;
       // A card locked to the other race can't be added — the picker greys it
       // out for the same reason (PerkEditorSection.tsx). Race itself only
       // changes via race/set, which prunes the loadout to match.
       const race = perkRaceRestriction(mode, action.perkId);
-      if (race !== null && (player.conditions.isGhoul ?? false) !== (race === 'ghoul')) return state;
+      if (race !== null && (player.conditions.isGhoul ?? false) !== (race === 'ghoul'))
+        return state;
       return withPlayer(state, {
         ...player,
         [list]: [...player[list], { perkId: action.perkId, rank }],
@@ -329,17 +362,18 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
 
     case 'perk/setRank': {
       const current =
-        player.perks.find(p => p.perkId === action.perkId) ??
-        player.legendaryPerks.find(p => p.perkId === action.perkId);
+        player.perks.find((p) => p.perkId === action.perkId) ??
+        player.legendaryPerks.find((p) => p.perkId === action.perkId);
       if (!current) return state;
       // Defensive clamp: a stale/imported action.rank must not exceed the
       // card's real maxRank (derived from the ESM card — see perk-cards.ts).
       const maxRank = getPerks(mode)[action.perkId as PerkId]?.maxRank ?? action.rank;
       const rank = Math.max(1, Math.min(action.rank, maxRank));
-      const isRegular = player.perks.some(p => p.perkId === action.perkId);
-      if (isRegular && regularSlotBlocked(player, action.perkId, current.rank, rank, mode)) return state;
+      const isRegular = player.perks.some((p) => p.perkId === action.perkId);
+      if (isRegular && regularSlotBlocked(player, action.perkId, current.rank, rank, mode))
+        return state;
       const bump = (list: typeof player.perks) =>
-        list.map(p => (p.perkId === action.perkId ? { ...p, rank } : p));
+        list.map((p) => (p.perkId === action.perkId ? { ...p, rank } : p));
       return withPlayer(state, {
         ...player,
         perks: bump(player.perks),
@@ -351,8 +385,8 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
     case 'perk/remove':
       return withPlayer(state, {
         ...player,
-        perks: player.perks.filter(p => p.perkId !== action.perkId),
-        legendaryPerks: player.legendaryPerks.filter(p => p.perkId !== action.perkId),
+        perks: player.perks.filter((p) => p.perkId !== action.perkId),
+        legendaryPerks: player.legendaryPerks.filter((p) => p.perkId !== action.perkId),
         conditions: syncTargetDebuffConditions(player.conditions, action.perkId, 0),
       });
 
@@ -372,11 +406,13 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
       // Carnivore ↔ Herbivore are mutually exclusive in-game (taking one
       // serum cures the other) — selecting one evicts its counterpart.
       const dietTwin =
-        action.id === CARNIVORE_MUTATION_ID ? HERBIVORE_MUTATION_ID
-        : action.id === HERBIVORE_MUTATION_ID ? CARNIVORE_MUTATION_ID
-        : null;
+        action.id === CARNIVORE_MUTATION_ID
+          ? HERBIVORE_MUTATION_ID
+          : action.id === HERBIVORE_MUTATION_ID
+            ? CARNIVORE_MUTATION_ID
+            : null;
       if (dietTwin && mutations.includes(action.id)) {
-        mutations = mutations.filter(id => id !== dietTwin);
+        mutations = mutations.filter((id) => id !== dietTwin);
       }
       return withPlayer(state, { ...player, mutations });
     }
@@ -386,14 +422,18 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
       // displacement) are enforced here, not in the engine.
       return withPlayer(state, {
         ...player,
-        consumables: toggleConsumable(consumablesById(mode), player.consumables, action.id).consumables,
+        consumables: toggleConsumable(consumablesById(mode), player.consumables, action.id)
+          .consumables,
       });
 
     case 'addiction/toggle':
       return withPlayer(state, { ...player, addictions: toggle(player.addictions, action.id) });
 
     case 'condition/set':
-      return withPlayer(state, { ...player, conditions: { ...player.conditions, [action.key]: action.value } });
+      return withPlayer(state, {
+        ...player,
+        conditions: { ...player.conditions, [action.key]: action.value },
+      });
 
     case 'armorEffect/setCount': {
       const effect = getArmorEffectById(mode, action.id);
@@ -418,7 +458,10 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
     case 'enemy/condition':
       return {
         ...state,
-        enemy: { ...state.enemy, conditions: { ...state.enemy.conditions, [action.key]: action.value } },
+        enemy: {
+          ...state.enemy,
+          conditions: { ...state.enemy.conditions, [action.key]: action.value },
+        },
       };
 
     case 'view/set':
@@ -434,18 +477,21 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
       // pruned so a mixed-race (invalid) link can't leave silently-inert
       // cards behind once a race is chosen for it.
       const regular = keepForRace(
-        parsedPerksToLoadout(action.perks.filter(p => !isLegendaryPerkKey(p.key))),
+        parsedPerksToLoadout(action.perks.filter((p) => !isLegendaryPerkKey(p.key))),
         action.isGhoul,
-        mode
+        mode,
       );
       const legendary = keepForRace(
-        parsedPerksToLoadout(action.perks.filter(p => isLegendaryPerkKey(p.key))),
+        parsedPerksToLoadout(action.perks.filter((p) => isLegendaryPerkKey(p.key))),
         action.isGhoul,
-        mode
+        mode,
       );
       const importedSpecial = action.special
         ? (Object.fromEntries(
-            Object.entries(action.special).map(([k, v]) => [k, Math.max(1, Math.min(SPECIAL_POINTS_CAP, v))])
+            Object.entries(action.special).map(([k, v]) => [
+              k,
+              Math.max(1, Math.min(SPECIAL_POINTS_CAP, v)),
+            ]),
           ) as unknown as ParsedSpecial)
         : null;
       const conditions = {

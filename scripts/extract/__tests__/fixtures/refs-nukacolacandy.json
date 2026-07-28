@@ -1,1 +1,10 @@
-[{"form_id":"0x0067B39C","record_type":"LVLI","editor_id":"ATX_Resources_NukaColaCandyMachine_Candy","name":null,"offset":87666176,"depth":1}]
+[
+  {
+    "form_id": "0x0067B39C",
+    "record_type": "LVLI",
+    "editor_id": "ATX_Resources_NukaColaCandyMachine_Candy",
+    "name": null,
+    "offset": 87666176,
+    "depth": 1
+  }
+]

@@ -5,13 +5,21 @@ import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/t
 import { chargeDamageMultiplier } from '@/lib/charge';
 import { getFireRate } from '@/lib/fire-rate';
 import { foldBucket, foldOps, foldWholeDamage, type ResolveContext } from '@/lib/engine/resolve';
-import { computeDotDps, computePaperDamage, totalCritMult, totalSneakMult } from '@/lib/engine/paper-damage';
+import {
+  computeDotDps,
+  computePaperDamage,
+  totalCritMult,
+  totalSneakMult,
+} from '@/lib/engine/paper-damage';
 import { computeScenarios } from '@/lib/engine/scenarios';
 
 // Engine-core tests: synthetic weapon + hand-fed modifiers, hand-computed
 // expectations straight from the spec formula. No extracted data involved.
 
-const FLAT_100 = [{ x: 1, y: 100 }, { x: 50, y: 100 }];
+const FLAT_100 = [
+  { x: 1, y: 100 },
+  { x: 50, y: 100 },
+];
 
 function makeWeapon(overrides: Partial<Weapon> = {}): Weapon {
   return {
@@ -30,7 +38,13 @@ function makeWeapon(overrides: Partial<Weapon> = {}): Weapon {
   };
 }
 
-function mod(partial: { bucket: Bucket; op: ModOp; value: number; id?: string; conditions?: Condition[] }): Modifier {
+function mod(partial: {
+  bucket: Bucket;
+  op: ModOp;
+  value: number;
+  id?: string;
+  conditions?: Condition[];
+}): Modifier {
   return {
     id: partial.id ?? 'test-mod',
     source: { kind: 'perk', formId: '0x0', edid: 'TestSource', name: 'Test Source' },
@@ -101,27 +115,43 @@ describe('condition evaluation', () => {
   const weapon = makeWeapon();
 
   it('weaponClass gates on the equipped weapon', () => {
-    const rifleOnly = mod({ bucket: 'dbm', op: 'ADD', value: 0.2, conditions: [{ kind: 'weaponClass', classes: ['rifle'] }] });
-    const heavyOnly = mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'weaponClass', classes: ['heavy'] }] });
+    const rifleOnly = mod({
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.2,
+      conditions: [{ kind: 'weaponClass', classes: ['rifle'] }],
+    });
+    const heavyOnly = mod({
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.5,
+      conditions: [{ kind: 'weaponClass', classes: ['heavy'] }],
+    });
     expect(foldBucket([rifleOnly, heavyOnly], 'dbm', 1.0, makeCtx(weapon))).toBeCloseTo(1.2, 10);
   });
 
-  it('enemyType gates on the selected target\'s type ids; no target → inactive', () => {
+  it("enemyType gates on the selected target's type ids; no target → inactive", () => {
     const zealotsLike = mod({
-      bucket: 'dbm', op: 'ADD', value: 0.5,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.5,
       conditions: [{ kind: 'enemyType', keywordOrRace: 'ActorTypeScorched' }],
     });
     // No target selected (enemyTypeIds unset) → inactive.
     expect(foldBucket([zealotsLike], 'dbm', 1.0, makeCtx(weapon))).toBe(1.0);
     // Selected target carries the keyword → active.
-    const scorched = makeCtx(weapon, { enemyTypeIds: ['ScorchedRace', 'ActorTypeScorched', 'ActorTypeHuman'] });
+    const scorched = makeCtx(weapon, {
+      enemyTypeIds: ['ScorchedRace', 'ActorTypeScorched', 'ActorTypeHuman'],
+    });
     expect(foldBucket([zealotsLike], 'dbm', 1.0, scorched)).toBeCloseTo(1.5, 10);
     // Mismatched target → inactive.
     const robot = makeCtx(weapon, { enemyTypeIds: ['AssaultronRace', 'ActorTypeRobot'] });
     expect(foldBucket([zealotsLike], 'dbm', 1.0, robot)).toBe(1.0);
     // Race-edid gates (GetIsRace — Assassin's "HumanRace") match the same set.
     const assassinsLike = mod({
-      bucket: 'dbm', op: 'ADD', value: 0.5,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.5,
       conditions: [{ kind: 'enemyType', keywordOrRace: 'HumanRace' }],
     });
     const human = makeCtx(weapon, { enemyTypeIds: ['HumanRace', 'ActorTypeHuman'] });
@@ -131,8 +161,12 @@ describe('condition evaluation', () => {
 
   it('enemyTypeAny matches when ANY listed id is on the target', () => {
     const ghoulSlayersLike = mod({
-      bucket: 'dbm', op: 'ADD', value: 0.5,
-      conditions: [{ kind: 'enemyTypeAny', keywordsOrRaces: ['ActorTypeFeralGhoul', 'ActorTypeGhoul'] }],
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.5,
+      conditions: [
+        { kind: 'enemyTypeAny', keywordsOrRaces: ['ActorTypeFeralGhoul', 'ActorTypeGhoul'] },
+      ],
     });
     const ghoul = makeCtx(weapon, { enemyTypeIds: ['FeralGhoulRace', 'ActorTypeGhoul'] });
     expect(foldBucket([ghoulSlayersLike], 'dbm', 1.0, ghoul)).toBeCloseTo(1.5, 10);
@@ -143,23 +177,43 @@ describe('condition evaluation', () => {
 
   it('stacks conditions scale the value by the clamped counter', () => {
     const tenderizer = mod({
-      bucket: 'dbm', op: 'ADD', value: 0.1,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.1,
       conditions: [{ kind: 'stacks', counter: 'tenderizer', max: 1000 }],
     });
     const player = { ...createDefaultPlayerConditions(), tenderizerStacks: 100 };
     expect(foldBucket([tenderizer], 'dbm', 1.0, makeCtx(weapon, { player }))).toBeCloseTo(11.0, 10);
 
     const overMax = { ...player, tenderizerStacks: 5000 };
-    expect(foldBucket([tenderizer], 'dbm', 1.0, makeCtx(weapon, { player: overMax }))).toBeCloseTo(101.0, 10);
+    expect(foldBucket([tenderizer], 'dbm', 1.0, makeCtx(weapon, { player: overMax }))).toBeCloseTo(
+      101.0,
+      10,
+    );
 
     const zero = { ...player, tenderizerStacks: 0 };
     expect(foldBucket([tenderizer], 'dbm', 1.0, makeCtx(weapon, { player: zero }))).toBe(1.0);
   });
 
   it('healthBelowPct, inPowerArmor, and unresolved behave as gates', () => {
-    const bloodied = mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'healthBelowPct', pct: 20 }] });
-    const paOnly = mod({ bucket: 'dbm', op: 'ADD', value: 0.25, conditions: [{ kind: 'inPowerArmor', value: true }] });
-    const broken = mod({ bucket: 'dbm', op: 'ADD', value: 99, conditions: [{ kind: 'unresolved', raw: 'GetValue mystery' }] });
+    const bloodied = mod({
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.5,
+      conditions: [{ kind: 'healthBelowPct', pct: 20 }],
+    });
+    const paOnly = mod({
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.25,
+      conditions: [{ kind: 'inPowerArmor', value: true }],
+    });
+    const broken = mod({
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 99,
+      conditions: [{ kind: 'unresolved', raw: 'GetValue mystery' }],
+    });
 
     const healthy = makeCtx(weapon);
     expect(foldBucket([bloodied, paOnly, broken], 'dbm', 1.0, healthy)).toBe(1.0);
@@ -170,107 +224,179 @@ describe('condition evaluation', () => {
     expect(foldBucket([bloodied, paOnly, broken], 'dbm', 1.0, lowHpInPa)).toBeCloseTo(1.75, 10);
   });
 
-  it('healthBelowPct gates inclusively (Foundation\'s Vengeance: GetHealthPercentage ≤ 0.25)', () => {
+  it("healthBelowPct gates inclusively (Foundation's Vengeance: GetHealthPercentage ≤ 0.25)", () => {
     const foundationsVengeance = mod({
-      bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'healthBelowPct', pct: 25 }],
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.5,
+      conditions: [{ kind: 'healthBelowPct', pct: 25 }],
     });
 
-    const atThreshold = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), healthPercent: 25 } });
+    const atThreshold = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), healthPercent: 25 },
+    });
     expect(foldBucket([foundationsVengeance], 'dbm', 1.0, atThreshold)).toBeCloseTo(1.5, 10);
 
-    const belowThreshold = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), healthPercent: 24 } });
+    const belowThreshold = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), healthPercent: 24 },
+    });
     expect(foldBucket([foundationsVengeance], 'dbm', 1.0, belowThreshold)).toBeCloseTo(1.5, 10);
 
-    const aboveThreshold = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), healthPercent: 26 } });
+    const aboveThreshold = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), healthPercent: 26 },
+    });
     expect(foldBucket([foundationsVengeance], 'dbm', 1.0, aboveThreshold)).toBe(1.0);
   });
 
   it('healthBelowPct gates strictly when inclusive: false', () => {
     const strict = mod({
-      bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'healthBelowPct', pct: 25, inclusive: false }],
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.5,
+      conditions: [{ kind: 'healthBelowPct', pct: 25, inclusive: false }],
     });
 
-    const atThreshold = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), healthPercent: 25 } });
+    const atThreshold = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), healthPercent: 25 },
+    });
     expect(foldBucket([strict], 'dbm', 1.0, atThreshold)).toBe(1.0);
 
-    const belowThreshold = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), healthPercent: 24 } });
+    const belowThreshold = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), healthPercent: 24 },
+    });
     expect(foldBucket([strict], 'dbm', 1.0, belowThreshold)).toBeCloseTo(1.5, 10);
   });
 
   it('glowAtLeast gates on the ghoul Glow meter (Glowing Criticals-style ≥180 threshold)', () => {
-    const glowingCrit = mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'glowAtLeast', min: 180 }] });
+    const glowingCrit = mod({
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.5,
+      conditions: [{ kind: 'glowAtLeast', min: 180 }],
+    });
 
-    const atThreshold = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), glow: 180 } });
+    const atThreshold = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), glow: 180 },
+    });
     expect(foldBucket([glowingCrit], 'dbm', 1.0, atThreshold)).toBeCloseTo(1.5, 10);
 
-    const aboveThreshold = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), glow: 300 } });
+    const aboveThreshold = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), glow: 300 },
+    });
     expect(foldBucket([glowingCrit], 'dbm', 1.0, aboveThreshold)).toBeCloseTo(1.5, 10);
 
-    const belowThreshold = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), glow: 179 } });
+    const belowThreshold = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), glow: 179 },
+    });
     expect(foldBucket([glowingCrit], 'dbm', 1.0, belowThreshold)).toBe(1.0);
 
-    const unset = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), glow: undefined } });
+    const unset = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), glow: undefined },
+    });
     expect(foldBucket([glowingCrit], 'dbm', 1.0, unset)).toBe(1.0); // glow undefined → treated as 0
   });
 
   it('perkFamilyRank gates on the derived family→rank map (cross-family HasPerk, Lock and Load → Bullet Storm)', () => {
     const needsLnL = mod({
-      bucket: 'dbm', op: 'ADD', value: 0.3,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.3,
       conditions: [{ kind: 'perkFamilyRank', family: 'LockAndLoad', minRank: 2, present: true }],
     });
     const lacksLnL = mod({
-      bucket: 'dbm', op: 'ADD', value: 0.1,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.1,
       conditions: [{ kind: 'perkFamilyRank', family: 'LockAndLoad', minRank: 2, present: false }],
     });
 
     // Owning rank 3 satisfies the ≥2 gate (rank N implies every rank ≤ N).
-    const rank3 = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), equippedPerkRanks: { LockAndLoad: 3 } } });
+    const rank3 = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), equippedPerkRanks: { LockAndLoad: 3 } },
+    });
     expect(foldBucket([needsLnL, lacksLnL], 'dbm', 1.0, rank3)).toBeCloseTo(1.3, 10);
 
-    const rank1 = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), equippedPerkRanks: { LockAndLoad: 1 } } });
+    const rank1 = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), equippedPerkRanks: { LockAndLoad: 1 } },
+    });
     expect(foldBucket([needsLnL, lacksLnL], 'dbm', 1.0, rank1)).toBeCloseTo(1.1, 10);
 
     // Unset map → owns nothing → only the present:false gate passes.
-    const unequipped = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), equippedPerkRanks: undefined } });
+    const unequipped = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), equippedPerkRanks: undefined },
+    });
     expect(foldBucket([needsLnL, lacksLnL], 'dbm', 1.0, unequipped)).toBeCloseTo(1.1, 10);
   });
 
   it('wornPieceCount gates exact-match tiers and orMore tiers (Phase 3 armor pipeline, engine half)', () => {
     const exactTier3 = mod({
-      bucket: 'dbm', op: 'ADD', value: 0.3,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.3,
       conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_Test', count: 3 }],
     });
     const orMoreTier5 = mod({
-      bucket: 'dbm', op: 'ADD', value: 0.75,
-      conditions: [{ kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_Test', count: 5, orMore: true }],
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.75,
+      conditions: [
+        { kind: 'wornPieceCount', keyword: 'HasLegendary_Armor_Test', count: 5, orMore: true },
+      ],
     });
 
     // No wornPieceCounts input at all → both inactive (default 0).
     expect(foldBucket([exactTier3, orMoreTier5], 'dbm', 1.0, makeCtx(weapon))).toBe(1.0);
 
     // Below the exact tier → inactive.
-    const two = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), wornPieceCounts: { HasLegendary_Armor_Test: 2 } } });
+    const two = makeCtx(weapon, {
+      player: {
+        ...createDefaultPlayerConditions(),
+        wornPieceCounts: { HasLegendary_Armor_Test: 2 },
+      },
+    });
     expect(foldBucket([exactTier3, orMoreTier5], 'dbm', 1.0, two)).toBe(1.0);
 
     // Exact match → the exact-tier modifier fires, the orMore one doesn't.
-    const three = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), wornPieceCounts: { HasLegendary_Armor_Test: 3 } } });
+    const three = makeCtx(weapon, {
+      player: {
+        ...createDefaultPlayerConditions(),
+        wornPieceCounts: { HasLegendary_Armor_Test: 3 },
+      },
+    });
     expect(foldBucket([exactTier3, orMoreTier5], 'dbm', 1.0, three)).toBeCloseTo(1.3, 10);
 
     // Above the exact tier but below the orMore threshold → both inactive
     // (exact tiers don't cascade — Battle-Loader's/Limit-Breaking's real shape).
-    const four = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), wornPieceCounts: { HasLegendary_Armor_Test: 4 } } });
+    const four = makeCtx(weapon, {
+      player: {
+        ...createDefaultPlayerConditions(),
+        wornPieceCounts: { HasLegendary_Armor_Test: 4 },
+      },
+    });
     expect(foldBucket([exactTier3, orMoreTier5], 'dbm', 1.0, four)).toBe(1.0);
 
     // At the orMore threshold → the top tier fires.
-    const five = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), wornPieceCounts: { HasLegendary_Armor_Test: 5 } } });
+    const five = makeCtx(weapon, {
+      player: {
+        ...createDefaultPlayerConditions(),
+        wornPieceCounts: { HasLegendary_Armor_Test: 5 },
+      },
+    });
     expect(foldBucket([exactTier3, orMoreTier5], 'dbm', 1.0, five)).toBeCloseTo(1.75, 10);
 
     // Above the orMore threshold → still fires (≥, not ==).
-    const six = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), wornPieceCounts: { HasLegendary_Armor_Test: 6 } } });
+    const six = makeCtx(weapon, {
+      player: {
+        ...createDefaultPlayerConditions(),
+        wornPieceCounts: { HasLegendary_Armor_Test: 6 },
+      },
+    });
     expect(foldBucket([exactTier3, orMoreTier5], 'dbm', 1.0, six)).toBeCloseTo(1.75, 10);
 
     // A different keyword's count doesn't leak into this one.
-    const otherKeyword = makeCtx(weapon, { player: { ...createDefaultPlayerConditions(), wornPieceCounts: { SomeOtherKeyword: 5 } } });
+    const otherKeyword = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), wornPieceCounts: { SomeOtherKeyword: 5 } },
+    });
     expect(foldBucket([exactTier3, orMoreTier5], 'dbm', 1.0, otherKeyword)).toBe(1.0);
   });
 });
@@ -294,7 +420,7 @@ describe('Grounded (2026-07-21): classFreakRank tier selection on a wholeDamage 
         { kind: 'weaponKeywordAny', keywords: ['WeaponTypeEnergy'] },
         { kind: 'classFreakRank', min: rank, max: rank },
       ],
-    })
+    }),
   );
 
   it.each([
@@ -303,12 +429,16 @@ describe('Grounded (2026-07-21): classFreakRank tier selection on a wholeDamage 
     [2, 0.75],
     [3, 0.88],
   ])('classFreakRank %i selects exactly its own tier (base 1.0 → %f)', (rank, expected) => {
-    const ctx = makeCtx(energyWeapon, { player: { ...createDefaultPlayerConditions(), classFreakRank: rank } });
+    const ctx = makeCtx(energyWeapon, {
+      player: { ...createDefaultPlayerConditions(), classFreakRank: rank },
+    });
     expect(foldWholeDamage(groundedTiers, ctx)).toBeCloseTo(expected, 10);
   });
 
   it('the weaponKeywordAny energy gate keeps Grounded off a ballistic weapon', () => {
-    const ctx = makeCtx(ballisticWeapon, { player: { ...createDefaultPlayerConditions(), classFreakRank: 0 } });
+    const ctx = makeCtx(ballisticWeapon, {
+      player: { ...createDefaultPlayerConditions(), classFreakRank: 0 },
+    });
     expect(foldWholeDamage(groundedTiers, ctx)).toBe(1.0);
   });
 });
@@ -320,12 +450,16 @@ describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp
     const furious = mod({ bucket: 'onslaughtMaxStacks', op: 'ADD', value: 9 });
     expect(foldBucket([furious], 'onslaughtMaxStacks', 0, makeCtx(weapon))).toBe(9);
     const guerrillaExpert = mod({ bucket: 'onslaughtMaxStacks', op: 'ADD', value: 3 });
-    expect(foldBucket([furious, guerrillaExpert], 'onslaughtMaxStacks', 0, makeCtx(weapon))).toBe(12);
+    expect(foldBucket([furious, guerrillaExpert], 'onslaughtMaxStacks', 0, makeCtx(weapon))).toBe(
+      12,
+    );
   });
 
   it('sentinel -1 assumes full stacks (the app-wide assume-max convention)', () => {
     const perStack = mod({
-      bucket: 'dbm', op: 'ADD', value: 0.01,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.01,
       conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
     });
     const atDefault = makeCtx(weapon, {
@@ -337,7 +471,9 @@ describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp
 
   it('an explicit stack selection scales the per-stack bonus (synthetic 1%/stack: 4 stacks → +4%)', () => {
     const perStack = mod({
-      bucket: 'dbm', op: 'ADD', value: 0.01,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.01,
       conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
     });
     const explicit4 = makeCtx(weapon, {
@@ -349,7 +485,9 @@ describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp
 
   it('an explicit selection above the computed max clamps down to the max', () => {
     const perStack = mod({
-      bucket: 'dbm', op: 'ADD', value: 0.01,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.01,
       conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
     });
     const overMax = makeCtx(weapon, {
@@ -361,7 +499,9 @@ describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp
 
   it('zero Onslaught sources equipped (max 0) → no bonus even at an explicit stored value of 10', () => {
     const perStack = mod({
-      bucket: 'dbm', op: 'ADD', value: 0.01,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.01,
       conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
     });
     const noSources = makeCtx(weapon, {
@@ -371,13 +511,25 @@ describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp
     expect(foldBucket([perStack], 'dbm', 1.0, noSources)).toBe(1.0);
   });
 
-  it("Whacker Smacker-style curve (onslaughtStacks input) scales with the clamped shared counter", () => {
+  it('Whacker Smacker-style curve (onslaughtStacks input) scales with the clamped shared counter', () => {
     const curveMod: Modifier = {
       id: 'whacker-smacker',
-      source: { kind: 'omod', formId: '0x0', edid: 'E09B_mod_Custom_WhackerSmacker', name: 'Whacker Smacker' },
+      source: {
+        kind: 'omod',
+        formId: '0x0',
+        edid: 'E09B_mod_Custom_WhackerSmacker',
+        name: 'Whacker Smacker',
+      },
       bucket: 'powerAttackBonus',
       op: 'ADD',
-      curve: { input: 'onslaughtStacks', points: [{ x: 0, y: 0 }, { x: 1, y: 5 }, { x: 100, y: 500 }] },
+      curve: {
+        input: 'onslaughtStacks',
+        points: [
+          { x: 0, y: 0 },
+          { x: 1, y: 5 },
+          { x: 100, y: 500 },
+        ],
+      },
       curveScale: 0.01,
       conditions: [],
     };
@@ -397,7 +549,7 @@ describe('crit and sneak composition (MUL_ADD before ADD)', () => {
   it('MUL_ADD OMODs adjust the weapon base before additive bonuses stack', () => {
     const mods = [
       mod({ bucket: 'critDmgBase', op: 'MUL_ADD', value: -0.25 }), // 2.0 → 1.5
-      mod({ bucket: 'critDmgBonus', op: 'ADD', value: 0.65 }),     // Better Criticals-ish
+      mod({ bucket: 'critDmgBonus', op: 'ADD', value: 0.65 }), // Better Criticals-ish
     ];
     expect(totalCritMult(mods, weapon, makeCtx(weapon))).toBeCloseTo(2.15, 10);
   });
@@ -405,15 +557,15 @@ describe('crit and sneak composition (MUL_ADD before ADD)', () => {
   it('sneak composes the same way', () => {
     const mods = [
       mod({ bucket: 'sneakBase', op: 'MUL_ADD', value: 0.375 }), // 2.0 → 2.75
-      mod({ bucket: 'sneakBonus', op: 'ADD', value: 1.0 }),      // Ninja-ish
+      mod({ bucket: 'sneakBonus', op: 'ADD', value: 1.0 }), // Ninja-ish
     ];
     expect(totalSneakMult(mods, weapon, makeCtx(weapon))).toBeCloseTo(3.75, 10);
   });
 
   it('critDmgBonusScale (The V.A.T.S. Unknown) scales only the folded crit bonus, not the base', () => {
     const mods = [
-      mod({ bucket: 'critDmgBase', op: 'MUL_ADD', value: -0.25 }),    // 2.0 → 1.5, untouched by the scale
-      mod({ bucket: 'critDmgBonus', op: 'ADD', value: 0.65 }),        // Better Criticals-ish
+      mod({ bucket: 'critDmgBase', op: 'MUL_ADD', value: -0.25 }), // 2.0 → 1.5, untouched by the scale
+      mod({ bucket: 'critDmgBonus', op: 'ADD', value: 0.65 }), // Better Criticals-ish
       mod({ bucket: 'critDmgBonusScale', op: 'MUL_ADD', value: 0.1 }), // ×1.1 (mean of the 0.2x-2.0x roll)
     ];
     // adjustedBase 1.5 + (0.65 × 1.1) = 2.215
@@ -439,9 +591,17 @@ describe('computePaperDamage', () => {
       mod({ bucket: 'wholeDamage', op: 'ADD', value: 0.1 }),
       mod({ bucket: 'weakpointBonus', op: 'ADD', value: 0.3 }),
     ];
-    const ctx = makeCtx(weapon, { scenario: { isVats: true, isSneaking: true, isPowerAttack: false, isCrit: true } });
+    const ctx = makeCtx(weapon, {
+      scenario: { isVats: true, isSneaking: true, isPowerAttack: false, isCrit: true },
+    });
     const result = computePaperDamage({
-      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx, bodyPartMult: 2.0, bodyPart: 'weakpoint',
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx,
+      bodyPartMult: 2.0,
+      bodyPart: 'weakpoint',
     });
     // parenthesis = 1.4 + (2.5−1) + (2.0−1) = 3.9
     // total = 100 × 3.9 × (1.2 × 1.1) × 2.0 × 1.3 = 1338.48
@@ -452,7 +612,15 @@ describe('computePaperDamage', () => {
     const weapon = makeWeapon();
     const mods = [mod({ bucket: 'weakpointBonus', op: 'ADD', value: 0.3 })];
     const ctx = makeCtx(weapon);
-    const torso = computePaperDamage({ mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx, bodyPartMult: 1.0, bodyPart: 'torso' });
+    const torso = computePaperDamage({
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx,
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
+    });
     expect(torso.total).toBeCloseTo(100, 6);
   });
 
@@ -464,10 +632,21 @@ describe('computePaperDamage', () => {
       ],
     });
     const mods = [
-      mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'damageTypeScope', types: ['fire'] }] }),
+      mod({
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.5,
+        conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
+      }),
     ];
     const result = computePaperDamage({
-      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(weapon),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     expect(result.components[0].damage).toBeCloseTo(100, 6); // ballistic untouched
     expect(result.components[1].damage).toBeCloseTo(150, 6); // fire boosted
@@ -478,13 +657,25 @@ describe('computePaperDamage', () => {
     const player = { ...createDefaultPlayerConditions(), strength: 20 };
     const melee = makeWeapon({ weaponClass: 'melee' });
     const meleeResult = computePaperDamage({
-      mode: 'live', weapon: melee, itemLevel: 50, modifiers: [], ctx: makeCtx(melee, { player }), bodyPartMult: 1, bodyPart: 'torso',
+      mode: 'live',
+      weapon: melee,
+      itemLevel: 50,
+      modifiers: [],
+      ctx: makeCtx(melee, { player }),
+      bodyPartMult: 1,
+      bodyPart: 'torso',
     });
     expect(meleeResult.total).toBeCloseTo(100 * (1 + 20 / 20), 6);
 
     const unarmed = makeWeapon({ weaponClass: 'unarmed' });
     const unarmedResult = computePaperDamage({
-      mode: 'live', weapon: unarmed, itemLevel: 50, modifiers: [], ctx: makeCtx(unarmed, { player }), bodyPartMult: 1, bodyPart: 'torso',
+      mode: 'live',
+      weapon: unarmed,
+      itemLevel: 50,
+      modifiers: [],
+      ctx: makeCtx(unarmed, { player }),
+      bodyPartMult: 1,
+      bodyPart: 'torso',
     });
     expect(unarmedResult.total).toBeCloseTo(100 * (1 + 20 / 10), 6);
   });
@@ -496,7 +687,13 @@ describe('baseDamage fold (2026-07-13, DamageTypeValues fold-fix + zero clamp)',
   it('ADD on baseDamage is flat, not scaled by the component base (fold-shape fix)', () => {
     const mods = [mod({ bucket: 'baseDamage', op: 'ADD', value: 5 })];
     const result = computePaperDamage({
-      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(weapon),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     // base 100 + flat ADD 5 = 105 — NOT 100 × (1 + 5) = 600, the old
     // `base * foldBucket(mods, 'baseDamage', 1.0, ...)` shape.
@@ -510,7 +707,13 @@ describe('baseDamage fold (2026-07-13, DamageTypeValues fold-fix + zero clamp)',
       mod({ bucket: 'baseDamage', op: 'MUL_ADD', value: 0.5 }),
     ];
     const result = computePaperDamage({
-      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(weapon),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     // 50 (SET) + 0.5 × 100 (ORIGINAL base, per foldOps) = 100.
     expect(result.components[0].base).toBeCloseTo(100, 6);
@@ -519,7 +722,13 @@ describe('baseDamage fold (2026-07-13, DamageTypeValues fold-fix + zero clamp)',
   it('zero clamp: a baseDamage fold driven negative contributes 0, not negative damage', () => {
     const mods = [mod({ bucket: 'baseDamage', op: 'ADD', value: -500 })];
     const result = computePaperDamage({
-      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(weapon),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     expect(result.components[0].base).toBe(0);
     expect(result.total).toBe(0);
@@ -537,8 +746,13 @@ describe('power-attack race multiplier (Stage C1, RACE record Damage Mult)', () 
   it('multiplies a melee power attack ×1.5 normally', () => {
     const melee = makeWeapon({ weaponClass: 'melee' });
     const result = computePaperDamage({
-      mode: 'live', weapon: melee, itemLevel: 50, modifiers: [],
-      ctx: makeCtx(melee, { player: zeroStr, scenario: paFlags }), bodyPartMult: 1, bodyPart: 'torso',
+      mode: 'live',
+      weapon: melee,
+      itemLevel: 50,
+      modifiers: [],
+      ctx: makeCtx(melee, { player: zeroStr, scenario: paFlags }),
+      bodyPartMult: 1,
+      bodyPart: 'torso',
     });
     expect(result.total).toBeCloseTo(150, 6); // 100 × 1.0 × 1.5
   });
@@ -546,9 +760,13 @@ describe('power-attack race multiplier (Stage C1, RACE record Damage Mult)', () 
   it('multiplies a melee power attack ×2.0 in Power Armor', () => {
     const melee = makeWeapon({ weaponClass: 'melee' });
     const result = computePaperDamage({
-      mode: 'live', weapon: melee, itemLevel: 50, modifiers: [],
+      mode: 'live',
+      weapon: melee,
+      itemLevel: 50,
+      modifiers: [],
       ctx: makeCtx(melee, { player: { ...zeroStr, isInPowerArmor: true }, scenario: paFlags }),
-      bodyPartMult: 1, bodyPart: 'torso',
+      bodyPartMult: 1,
+      bodyPart: 'torso',
     });
     expect(result.total).toBeCloseTo(200, 6); // 100 × 1.0 × 2.0
   });
@@ -556,8 +774,13 @@ describe('power-attack race multiplier (Stage C1, RACE record Damage Mult)', () 
   it('does not apply to a non-power-attack hit', () => {
     const melee = makeWeapon({ weaponClass: 'melee' });
     const result = computePaperDamage({
-      mode: 'live', weapon: melee, itemLevel: 50, modifiers: [],
-      ctx: makeCtx(melee, { player: zeroStr }), bodyPartMult: 1, bodyPart: 'torso',
+      mode: 'live',
+      weapon: melee,
+      itemLevel: 50,
+      modifiers: [],
+      ctx: makeCtx(melee, { player: zeroStr }),
+      bodyPartMult: 1,
+      bodyPart: 'torso',
     });
     expect(result.total).toBeCloseTo(100, 6);
   });
@@ -565,8 +788,13 @@ describe('power-attack race multiplier (Stage C1, RACE record Damage Mult)', () 
   it('excludes automatic "power tool" melee (WeaponTypeAutomaticMelee — Ripper/Shredder/Auto Axe)', () => {
     const autoMelee = makeWeapon({ weaponClass: 'melee', keywords: ['WeaponTypeAutomaticMelee'] });
     const result = computePaperDamage({
-      mode: 'live', weapon: autoMelee, itemLevel: 50, modifiers: [],
-      ctx: makeCtx(autoMelee, { player: zeroStr, scenario: paFlags }), bodyPartMult: 1, bodyPart: 'torso',
+      mode: 'live',
+      weapon: autoMelee,
+      itemLevel: 50,
+      modifiers: [],
+      ctx: makeCtx(autoMelee, { player: zeroStr, scenario: paFlags }),
+      bodyPartMult: 1,
+      bodyPart: 'torso',
     });
     expect(result.total).toBeCloseTo(100, 6); // no race mult
   });
@@ -574,8 +802,13 @@ describe('power-attack race multiplier (Stage C1, RACE record Damage Mult)', () 
   it('excludes unarmed power attacks (unarmed power events are not Power-Attack-flagged in RACE data)', () => {
     const unarmed = makeWeapon({ weaponClass: 'unarmed' });
     const result = computePaperDamage({
-      mode: 'live', weapon: unarmed, itemLevel: 50, modifiers: [],
-      ctx: makeCtx(unarmed, { player: zeroStr, scenario: paFlags }), bodyPartMult: 1, bodyPart: 'torso',
+      mode: 'live',
+      weapon: unarmed,
+      itemLevel: 50,
+      modifiers: [],
+      ctx: makeCtx(unarmed, { player: zeroStr, scenario: paFlags }),
+      bodyPartMult: 1,
+      bodyPart: 'torso',
     });
     expect(result.total).toBeCloseTo(100, 6); // no race mult
   });
@@ -586,11 +819,21 @@ describe('Charged cadence (Stage C2, cycle folded into sustained DPS)', () => {
   // (no enchantment); CURV weapon_chargedmeleeattack.json: charges 1/2/3 →
   // +0.5/+1.5/+3.0 damage bonus, max 3. Modeled cycle: 3 light (normal) hits
   // + 1 full-charge detonation (full power-attack treatment × (1 + 3.0)).
-  const chargedWeapon = makeWeapon({ weaponClass: 'melee', animDelaySec: 1.0, keywords: ['WeaponHasSecondaryCharging'] });
+  const chargedWeapon = makeWeapon({
+    weaponClass: 'melee',
+    animDelaySec: 1.0,
+    keywords: ['WeaponHasSecondaryCharging'],
+  });
   const zeroStr = { ...createDefaultPlayerConditions(), strength: 0 };
   const baseInput = {
-    mode: 'live' as const, weapon: chargedWeapon, itemLevel: 50, modifiers: [],
-    player: zeroStr, enemy: createDefaultEnemyConditions(), weakpointMult: 2.0, critRate: 0,
+    mode: 'live' as const,
+    weapon: chargedWeapon,
+    itemLevel: 50,
+    modifiers: [],
+    player: zeroStr,
+    enemy: createDefaultEnemyConditions(),
+    weakpointMult: 2.0,
+    critRate: 0,
   };
 
   it('averages 3 normal hits + 1 detonation over the 4-attack cycle', () => {
@@ -673,7 +916,10 @@ describe('charging weapons (Gauss family, bows, tesla/gamma/laser barrels)', () 
 
   describe('minimumChargeTime floors resolvedChargeTimeSec (src/lib/charge.ts)', () => {
     const bowW = makeWeapon({
-      weaponClass: 'bow', fullPowerSeconds: 1.0, fullPowerDamageMult: 2.0, minimumChargeTime: 0.25,
+      weaponClass: 'bow',
+      fullPowerSeconds: 1.0,
+      fullPowerDamageMult: 2.0,
+      minimumChargeTime: 0.25,
     });
 
     it('a sub-min chargeTimeSec floors to minimumChargeTime: ×1.5 (the 50→75 worked example)', () => {
@@ -692,7 +938,12 @@ describe('charging weapons (Gauss family, bows, tesla/gamma/laser barrels)', () 
     });
 
     it('Speed only shrinks the attack-delay tail, never the charge itself', () => {
-      const w = makeWeapon({ fullPowerSeconds: 1.0, fullPowerDamageMult: 2.0, animDelaySec: 0.15, speed: 2.0 });
+      const w = makeWeapon({
+        fullPowerSeconds: 1.0,
+        fullPowerDamageMult: 2.0,
+        animDelaySec: 0.15,
+        speed: 2.0,
+      });
       expect(getFireRate(w, 1.0)).toBeCloseTo(1 / 1.075, 10); // charge unchanged, delay halved
     });
 
@@ -709,9 +960,14 @@ describe('charging weapons (Gauss family, bows, tesla/gamma/laser barrels)', () 
 
   describe('computeScenarios integration', () => {
     const baseInput = {
-      mode: 'live' as const, weapon: gauss, itemLevel: 50, modifiers: [],
-      player: createDefaultPlayerConditions(), enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2.0, critRate: 0,
+      mode: 'live' as const,
+      weapon: gauss,
+      itemLevel: 50,
+      modifiers: [],
+      player: createDefaultPlayerConditions(),
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2.0,
+      critRate: 0,
     };
 
     it('freeAim and vats report the SAME fireRate and per-hit charge scaling for a fixed chargeTimeSec', () => {
@@ -722,9 +978,13 @@ describe('charging weapons (Gauss family, bows, tesla/gamma/laser barrels)', () 
       expect(s.vats.perHit.total).toBeCloseTo(200, 6); // critRate 0 → non-crit hit only
     });
 
-    it('exposes the charging field with the effective weapon\'s charge parameters', () => {
+    it("exposes the charging field with the effective weapon's charge parameters", () => {
       const s = computeScenarios(baseInput);
-      expect(s.charging).toEqual({ fullPowerSeconds: 1.0, fullPowerDamageMult: 2.0, minimumChargeTime: 0 });
+      expect(s.charging).toEqual({
+        fullPowerSeconds: 1.0,
+        fullPowerDamageMult: 2.0,
+        minimumChargeTime: 0,
+      });
     });
 
     it('charging is null for a non-charging weapon', () => {
@@ -735,17 +995,31 @@ describe('charging weapons (Gauss family, bows, tesla/gamma/laser barrels)', () 
 
   describe('explosion twin inherits the charge multiplier (via scaledBase)', () => {
     const weapon = makeWeapon({
-      fullPowerSeconds: 1.0, fullPowerDamageMult: 2.0, explosionBaseWeaponDamageMult: 0.15,
+      fullPowerSeconds: 1.0,
+      fullPowerDamageMult: 2.0,
+      explosionBaseWeaponDamageMult: 0.15,
     });
 
     it('twin damage scales with chargeMult exactly like the parent component', () => {
       const full = computePaperDamage({
-        mode: 'live', weapon, itemLevel: 50, modifiers: [], ctx: makeCtx(weapon),
-        bodyPartMult: 1.0, bodyPart: 'torso', chargeTimeSec: 1.0,
+        mode: 'live',
+        weapon,
+        itemLevel: 50,
+        modifiers: [],
+        ctx: makeCtx(weapon),
+        bodyPartMult: 1.0,
+        bodyPart: 'torso',
+        chargeTimeSec: 1.0,
       });
       const half = computePaperDamage({
-        mode: 'live', weapon, itemLevel: 50, modifiers: [], ctx: makeCtx(weapon),
-        bodyPartMult: 1.0, bodyPart: 'torso', chargeTimeSec: 0.5,
+        mode: 'live',
+        weapon,
+        itemLevel: 50,
+        modifiers: [],
+        ctx: makeCtx(weapon),
+        bodyPartMult: 1.0,
+        bodyPart: 'torso',
+        chargeTimeSec: 0.5,
       });
       expect(full.components).toHaveLength(2);
       // full charge: parent 100 × 3 = 300, twin 300 × 0.15 = 45.
@@ -770,9 +1044,14 @@ describe('charging weapons (Gauss family, bows, tesla/gamma/laser barrels)', () 
 
     it('computeScenarios: dotDps is identical at full vs partial charge, while perHit is not', () => {
       const baseInput = {
-        mode: 'live' as const, weapon, itemLevel: 50, modifiers: dotMods,
-        player: createDefaultPlayerConditions(), enemy: createDefaultEnemyConditions(),
-        weakpointMult: 2.0, critRate: 0,
+        mode: 'live' as const,
+        weapon,
+        itemLevel: 50,
+        modifiers: dotMods,
+        player: createDefaultPlayerConditions(),
+        enemy: createDefaultEnemyConditions(),
+        weakpointMult: 2.0,
+        critRate: 0,
       };
       const full = computeScenarios({ ...baseInput, chargeTimeSec: 1.0 });
       const half = computeScenarios({ ...baseInput, chargeTimeSec: 0.5 });
@@ -791,10 +1070,21 @@ describe('explosive payload twins (Stage A1, Explosive 2★)', () => {
   it('an explosive-scoped dbm modifier boosts ONLY the payload portion', () => {
     const mods = [
       mod({ bucket: 'explosivePayload', op: 'ADD', value: 0.2 }),
-      mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }] }),
+      mod({
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.5,
+        conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }],
+      }),
     ];
     const result = computePaperDamage({
-      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(weapon),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     expect(result.components).toHaveLength(2);
     expect(result.components[0]).toMatchObject({ damageType: 'ballistic' });
@@ -812,10 +1102,22 @@ describe('explosive payload twins (Stage A1, Explosive 2★)', () => {
     const mods = [
       mod({ bucket: 'explosivePayload', op: 'ADD', value: 0.2 }),
       mod({ bucket: 'dbm', op: 'ADD', value: 0.9, id: 'bloodied' }), // unscoped — applies everywhere
-      mod({ bucket: 'dbm', op: 'ADD', value: 0.6, id: 'demo', conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }] }),
+      mod({
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.6,
+        id: 'demo',
+        conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }],
+      }),
     ];
     const result = computePaperDamage({
-      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(weapon),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     expect(result.components[0].damage).toBeCloseTo(190, 6); // 100 × (1 + 0.9)
     // Twin: 20 × (1 + 0.9 + 0.6) = 50 — additive, NOT 20 × 1.9 × 1.6 = 60.8.
@@ -825,25 +1127,41 @@ describe('explosive payload twins (Stage A1, Explosive 2★)', () => {
 
   it('no twin is spawned when explosivePayload is inactive', () => {
     const result = computePaperDamage({
-      mode: 'live', weapon, itemLevel: 50, modifiers: [], ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: [],
+      ctx: makeCtx(weapon),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     expect(result.components).toHaveLength(1);
     expect(result.total).toBeCloseTo(100, 6);
   });
 
-  it("Gauss intrinsic payload (explosionBaseWeaponDamageMult) spawns a twin with no legendary, and the Explosive 2★ ADDs on top", () => {
+  it('Gauss intrinsic payload (explosionBaseWeaponDamageMult) spawns a twin with no legendary, and the Explosive 2★ ADDs on top', () => {
     const gauss = makeWeapon({ explosionBaseWeaponDamageMult: 0.15 });
     const bare = computePaperDamage({
-      mode: 'live', weapon: gauss, itemLevel: 50, modifiers: [], ctx: makeCtx(gauss), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon: gauss,
+      itemLevel: 50,
+      modifiers: [],
+      ctx: makeCtx(gauss),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     expect(bare.components).toHaveLength(2);
     expect(bare.components[1]).toMatchObject({ damageType: 'ballistic' }); // twin inherits the parent type
     expect(bare.components[1].damage).toBeCloseTo(15, 6); // 100 × 0.15
 
     const withLegendary = computePaperDamage({
-      mode: 'live', weapon: gauss, itemLevel: 50,
+      mode: 'live',
+      weapon: gauss,
+      itemLevel: 50,
       modifiers: [mod({ bucket: 'explosivePayload', op: 'ADD', value: 0.2 })],
-      ctx: makeCtx(gauss), bodyPartMult: 1.0, bodyPart: 'torso',
+      ctx: makeCtx(gauss),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     expect(withLegendary.components[1].damage).toBeCloseTo(35, 6); // 100 × (0.15 + 0.2)
   });
@@ -855,10 +1173,21 @@ describe('explosive payload twins (Stage A1, Explosive 2★)', () => {
     // the main component and its twin — not just an 'explosive'-scoped one.
     const mods = [
       mod({ bucket: 'explosivePayload', op: 'ADD', value: 0.2 }),
-      mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'damageTypeScope', types: ['ballistic'] }] }),
+      mod({
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.5,
+        conditions: [{ kind: 'damageTypeScope', types: ['ballistic'] }],
+      }),
     ];
     const result = computePaperDamage({
-      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(weapon),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     expect(result.components[0].damage).toBeCloseTo(150, 6); // 100 × (1 + 0.5)
     expect(result.components[1]).toMatchObject({ damageType: 'ballistic' });
@@ -872,17 +1201,35 @@ describe('launcher explosion components (fromExplosion, EXPL chase)', () => {
   const launcher = makeWeapon({
     components: [
       { damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: [{ x: 1, y: 5 }] },
-      { damageType: 'explosive', tier: -1, levelCap: 50, curvePoints: FLAT_100, fromExplosion: true },
+      {
+        damageType: 'explosive',
+        tier: -1,
+        levelCap: 50,
+        curvePoints: FLAT_100,
+        fromExplosion: true,
+      },
     ],
   });
 
   it('Demolition Expert (explosive-scoped dbm) adds into the explosion parenthesis, not the impact, additively with general dbm', () => {
     const mods = [
-      mod({ bucket: 'dbm', op: 'ADD', value: 0.6, id: 'demo', conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }] }),
+      mod({
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.6,
+        id: 'demo',
+        conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }],
+      }),
       mod({ bucket: 'dbm', op: 'ADD', value: 0.5, id: 'adrenal' }), // unscoped
     ];
     const result = computePaperDamage({
-      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: mods, ctx: makeCtx(launcher), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon: launcher,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(launcher),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     expect(result.components).toHaveLength(2);
     expect(result.components[0].damage).toBeCloseTo(7.5, 6); // impact: 5 × (1 + 0.5)
@@ -893,11 +1240,32 @@ describe('launcher explosion components (fromExplosion, EXPL chase)', () => {
 
   it("'explosive'-scoped dbm applies to an elemental explosion component (Cremator fire ball, Gamma radiation burst)", () => {
     const gamma = makeWeapon({
-      components: [{ damageType: 'radiation', tier: -1, levelCap: 50, curvePoints: FLAT_100, fromExplosion: true }],
+      components: [
+        {
+          damageType: 'radiation',
+          tier: -1,
+          levelCap: 50,
+          curvePoints: FLAT_100,
+          fromExplosion: true,
+        },
+      ],
     });
-    const mods = [mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }] })];
+    const mods = [
+      mod({
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.5,
+        conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }],
+      }),
+    ];
     const result = computePaperDamage({
-      mode: 'live', weapon: gamma, itemLevel: 50, modifiers: mods, ctx: makeCtx(gamma), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon: gamma,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(gamma),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     expect(result.components[0].damage).toBeCloseTo(150, 6); // dbm 1.0 + 0.5
   });
@@ -905,13 +1273,19 @@ describe('launcher explosion components (fromExplosion, EXPL chase)', () => {
   it('an explosion component never spawns an explosive twin of itself', () => {
     const mods = [mod({ bucket: 'explosivePayload', op: 'ADD', value: 0.2 })];
     const result = computePaperDamage({
-      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: mods, ctx: makeCtx(launcher), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon: launcher,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(launcher),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     // impact + its own-type twin + explosion — NOT a fourth twin-of-explosion.
     expect(result.components).toHaveLength(3);
     // The impact's twin inherits 'ballistic' (its parent's type); only the
     // REAL EXPL-chased component stays typed 'explosive'.
-    expect(result.components.filter(c => c.damageType === 'explosive')).toHaveLength(1);
+    expect(result.components.filter((c) => c.damageType === 'explosive')).toHaveLength(1);
     expect(result.components[1]).toMatchObject({ damageType: 'ballistic' });
     expect(result.components[1].damage).toBeCloseTo(1, 6); // 5 × 0.2 twin
   });
@@ -925,18 +1299,36 @@ describe('explosive damage ignores sneak & body-part multipliers', () => {
   const launcher = makeWeapon({
     components: [
       { damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: [{ x: 1, y: 5 }] },
-      { damageType: 'explosive', tier: -1, levelCap: 50, curvePoints: FLAT_100, fromExplosion: true },
+      {
+        damageType: 'explosive',
+        tier: -1,
+        levelCap: 50,
+        curvePoints: FLAT_100,
+        fromExplosion: true,
+      },
     ],
   });
 
   it('a fromExplosion component ignores sneak while a non-explosive component on the same weapon still gets it', () => {
     const noSneak = computePaperDamage({
-      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: [], ctx: makeCtx(launcher), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon: launcher,
+      itemLevel: 50,
+      modifiers: [],
+      ctx: makeCtx(launcher),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     const sneaking = computePaperDamage({
-      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: [],
-      ctx: makeCtx(launcher, { scenario: { isVats: false, isSneaking: true, isPowerAttack: false, isCrit: false } }),
-      bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon: launcher,
+      itemLevel: 50,
+      modifiers: [],
+      ctx: makeCtx(launcher, {
+        scenario: { isVats: false, isSneaking: true, isPowerAttack: false, isCrit: false },
+      }),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     // Ballistic impact: sneakAttackMult 2.0 default → sneakTerm 1.0 → 5 × (1 + 1) = 10.
     expect(sneaking.components[0].damage).toBeCloseTo(10, 6);
@@ -947,11 +1339,23 @@ describe('explosive damage ignores sneak & body-part multipliers', () => {
 
   it('a fromExplosion component ignores the weakpoint multiplier AND weakpointBonus perks', () => {
     const torso = computePaperDamage({
-      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: [], ctx: makeCtx(launcher), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon: launcher,
+      itemLevel: 50,
+      modifiers: [],
+      ctx: makeCtx(launcher),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     const mods = [mod({ bucket: 'weakpointBonus', op: 'ADD', value: 0.5 })];
     const weakpoint = computePaperDamage({
-      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: mods, ctx: makeCtx(launcher), bodyPartMult: 2.0, bodyPart: 'weakpoint',
+      mode: 'live',
+      weapon: launcher,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(launcher),
+      bodyPartMult: 2.0,
+      bodyPart: 'weakpoint',
     });
     // Ballistic impact: bodyPartMult 2.0 × weakpointMult (1 + 0.5) = 3.0 → 5 × 3 = 15.
     expect(weakpoint.components[0].damage).toBeCloseTo(15, 6);
@@ -962,10 +1366,22 @@ describe('explosive damage ignores sneak & body-part multipliers', () => {
 
   it('a fromExplosion component ignores a strongpoint (armored-limb) multiplier < 1.0', () => {
     const torso = computePaperDamage({
-      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: [], ctx: makeCtx(launcher), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon: launcher,
+      itemLevel: 50,
+      modifiers: [],
+      ctx: makeCtx(launcher),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     const strongpoint = computePaperDamage({
-      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: [], ctx: makeCtx(launcher), bodyPartMult: 0.15, bodyPart: 'limb',
+      mode: 'live',
+      weapon: launcher,
+      itemLevel: 50,
+      modifiers: [],
+      ctx: makeCtx(launcher),
+      bodyPartMult: 0.15,
+      bodyPart: 'limb',
     });
     // Ballistic impact: 5 × 0.15 = 0.75.
     expect(strongpoint.components[0].damage).toBeCloseTo(0.75, 6);
@@ -978,12 +1394,24 @@ describe('explosive damage ignores sneak & body-part multipliers', () => {
     const weapon = makeWeapon(); // 1 ballistic component, base 100
     const mods = [mod({ bucket: 'explosivePayload', op: 'ADD', value: 0.2 })];
     const baseline = computePaperDamage({
-      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(weapon),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     const sneakingWeakpoint = computePaperDamage({
-      mode: 'live', weapon, itemLevel: 50, modifiers: mods,
-      ctx: makeCtx(weapon, { scenario: { isVats: false, isSneaking: true, isPowerAttack: false, isCrit: false } }),
-      bodyPartMult: 2.0, bodyPart: 'weakpoint',
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(weapon, {
+        scenario: { isVats: false, isSneaking: true, isPowerAttack: false, isCrit: false },
+      }),
+      bodyPartMult: 2.0,
+      bodyPart: 'weakpoint',
     });
     // Parent ballistic: sneakTerm 1.0 × bodyPartMult 2.0 → 100 × 2 × 2 = 400 (baseline 100).
     expect(sneakingWeakpoint.components[0].damage).toBeCloseTo(400, 6);
@@ -994,12 +1422,26 @@ describe('explosive damage ignores sneak & body-part multipliers', () => {
   });
 
   it('crit still scales explosive damage (fromExplosion component AND explosive twin — only sneak/body-part are exempt)', () => {
-    const critCtx = makeCtx(launcher, { scenario: { isVats: true, isSneaking: false, isPowerAttack: false, isCrit: true } });
+    const critCtx = makeCtx(launcher, {
+      scenario: { isVats: true, isSneaking: false, isPowerAttack: false, isCrit: true },
+    });
     const noCrit = computePaperDamage({
-      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: [], ctx: makeCtx(launcher), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon: launcher,
+      itemLevel: 50,
+      modifiers: [],
+      ctx: makeCtx(launcher),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     const crit = computePaperDamage({
-      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: [], ctx: critCtx, bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon: launcher,
+      itemLevel: 50,
+      modifiers: [],
+      ctx: critCtx,
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     // critDamageMult default 2.0 → critTerm 1.0 → doubles the explosion component too.
     expect(crit.components[1].damage).toBeCloseTo(noCrit.components[1].damage * 2, 6);
@@ -1007,22 +1449,46 @@ describe('explosive damage ignores sneak & body-part multipliers', () => {
     const twinWeapon = makeWeapon();
     const twinMods = [mod({ bucket: 'explosivePayload', op: 'ADD', value: 0.2 })];
     const twinNoCrit = computePaperDamage({
-      mode: 'live', weapon: twinWeapon, itemLevel: 50, modifiers: twinMods, ctx: makeCtx(twinWeapon), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon: twinWeapon,
+      itemLevel: 50,
+      modifiers: twinMods,
+      ctx: makeCtx(twinWeapon),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     const twinCrit = computePaperDamage({
-      mode: 'live', weapon: twinWeapon, itemLevel: 50, modifiers: twinMods,
-      ctx: makeCtx(twinWeapon, { scenario: { isVats: true, isSneaking: false, isPowerAttack: false, isCrit: true } }),
-      bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon: twinWeapon,
+      itemLevel: 50,
+      modifiers: twinMods,
+      ctx: makeCtx(twinWeapon, {
+        scenario: { isVats: true, isSneaking: false, isPowerAttack: false, isCrit: true },
+      }),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     expect(twinCrit.components[1].damage).toBeCloseTo(twinNoCrit.components[1].damage * 2, 6);
   });
 
   it('range falloff multiplies the ballistic impact but NOT the explosive payload (explosions are exempt)', () => {
     const noFalloff = computePaperDamage({
-      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: [], ctx: makeCtx(launcher), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon: launcher,
+      itemLevel: 50,
+      modifiers: [],
+      ctx: makeCtx(launcher),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     const withFalloff = computePaperDamage({
-      mode: 'live', weapon: launcher, itemLevel: 50, modifiers: [], ctx: makeCtx(launcher), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon: launcher,
+      itemLevel: 50,
+      modifiers: [],
+      ctx: makeCtx(launcher),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
       rangeFalloffMult: 0.5,
     });
     // Ballistic impact: falloff halves it — 5 × 0.5 = 2.5.
@@ -1037,10 +1503,22 @@ describe('explosive damage ignores sneak & body-part multipliers', () => {
     const weapon = makeWeapon(); // 1 ballistic component, base 100
     const mods = [mod({ bucket: 'explosivePayload', op: 'ADD', value: 0.2 })];
     const noFalloff = computePaperDamage({
-      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(weapon),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
     });
     const withFalloff = computePaperDamage({
-      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 1.0, bodyPart: 'torso',
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(weapon),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
       rangeFalloffMult: 0.5,
     });
     // Parent ballistic: falloff halves it — 100 × 0.5 = 50.
@@ -1058,14 +1536,18 @@ describe('computeDotDps (Stage A2, DoT line)', () => {
     });
     const ctx = makeCtx(weapon);
     const active = mod({
-      bucket: 'dotDamage', op: 'ADD', value: 3,
+      bucket: 'dotDamage',
+      op: 'ADD',
+      value: 3,
       conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
     });
     expect(computeDotDps([active], weapon, ctx)).toBeCloseTo(3, 10);
 
     // Scope names a type the weapon doesn't deal — the condition never matches.
     const mismatched = mod({
-      bucket: 'dotDamage', op: 'ADD', value: 3,
+      bucket: 'dotDamage',
+      op: 'ADD',
+      value: 3,
       conditions: [{ kind: 'damageTypeScope', types: ['poison'] }],
     });
     expect(computeDotDps([mismatched], weapon, ctx)).toBe(0);
@@ -1091,7 +1573,9 @@ describe('computeDotDps (Stage A2, DoT line)', () => {
 
     it('an OMOD ADD dotDamage modifier STACKS on top of the weapon-intrinsic base (HarpoonGun + Barbed Harpoon)', () => {
       const omodAdd = mod({
-        bucket: 'dotDamage', op: 'ADD', value: 10,
+        bucket: 'dotDamage',
+        op: 'ADD',
+        value: 10,
         conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
       });
       expect(computeDotDps([intrinsicDot(13), omodAdd], weapon, ctx)).toBeCloseTo(23, 10);
@@ -1099,7 +1583,9 @@ describe('computeDotDps (Stage A2, DoT line)', () => {
 
     it('an OMOD SET dotDamage modifier REPLACES the weapon-intrinsic base rather than stacking (Cremator + Slow-Burner)', () => {
       const omodSet = mod({
-        bucket: 'dotDamage', op: 'SET', value: 17,
+        bucket: 'dotDamage',
+        op: 'SET',
+        value: 17,
         conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
       });
       expect(computeDotDps([intrinsicDot(13), omodSet], weapon, ctx)).toBeCloseTo(17, 10);
@@ -1114,14 +1600,20 @@ describe('computeDotDps (Stage A2, DoT line)', () => {
       });
       const bleedCtx = makeCtx(bleedWeapon);
       const omodSet = mod({
-        bucket: 'dotDamage', op: 'SET', value: 17,
+        bucket: 'dotDamage',
+        op: 'SET',
+        value: 17,
         conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
       });
       const unrelatedBleed = mod({
-        bucket: 'dotDamage', op: 'ADD', value: 5,
+        bucket: 'dotDamage',
+        op: 'ADD',
+        value: 5,
         conditions: [{ kind: 'damageTypeScope', types: ['ballistic'] }],
       });
-      expect(computeDotDps([intrinsicDot(13), omodSet, unrelatedBleed], bleedWeapon, bleedCtx)).toBeCloseTo(22, 10); // 17 (fire, replaced) + 5 (ballistic, untouched)
+      expect(
+        computeDotDps([intrinsicDot(13), omodSet, unrelatedBleed], bleedWeapon, bleedCtx),
+      ).toBeCloseTo(22, 10); // 17 (fire, replaced) + 5 (ballistic, untouched)
     });
   });
 
@@ -1130,22 +1622,37 @@ describe('computeDotDps (Stage A2, DoT line)', () => {
     const weapon = makeWeapon({
       components: [{ damageType: 'fire', tier: -1, levelCap: 50, curvePoints: FLAT_100 }],
     });
-    const mods = [mod({ bucket: 'dotDamage', op: 'ADD', value: 3, conditions: [{ kind: 'damageTypeScope', types: ['fire'] }] })];
+    const mods = [
+      mod({
+        bucket: 'dotDamage',
+        op: 'ADD',
+        value: 3,
+        conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
+      }),
+    ];
 
     it('computeDotDps returns the same value sneaking or not', () => {
       const notSneaking = computeDotDps(mods, weapon, makeCtx(weapon));
-      const sneaking = computeDotDps(mods, weapon, makeCtx(weapon, {
-        scenario: { isVats: false, isSneaking: true, isPowerAttack: false, isCrit: false },
-      }));
+      const sneaking = computeDotDps(
+        mods,
+        weapon,
+        makeCtx(weapon, {
+          scenario: { isVats: false, isSneaking: true, isPowerAttack: false, isCrit: false },
+        }),
+      );
       expect(sneaking).toBeCloseTo(notSneaking, 10);
       expect(notSneaking).toBeCloseTo(3, 10);
     });
 
     it('computeDotDps returns the same value critting or not', () => {
       const noCrit = computeDotDps(mods, weapon, makeCtx(weapon));
-      const crit = computeDotDps(mods, weapon, makeCtx(weapon, {
-        scenario: { isVats: true, isSneaking: false, isPowerAttack: false, isCrit: true },
-      }));
+      const crit = computeDotDps(
+        mods,
+        weapon,
+        makeCtx(weapon, {
+          scenario: { isVats: true, isSneaking: false, isPowerAttack: false, isCrit: true },
+        }),
+      );
       expect(crit).toBeCloseTo(noCrit, 10);
       expect(noCrit).toBeCloseTo(3, 10);
     });
@@ -1158,14 +1665,22 @@ describe('computeDotDps (Stage A2, DoT line)', () => {
     // (a bare equality on dotDps alone could pass vacuously if the toggle did
     // nothing at all).
     const baseInput = {
-      mode: 'live' as const, weapon, itemLevel: 50, modifiers: mods,
-      enemy: createDefaultEnemyConditions(), weakpointMult: 2.0,
+      mode: 'live' as const,
+      weapon,
+      itemLevel: 50,
+      modifiers: mods,
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2.0,
     };
 
     it('toggling sneak leaves dotDps unchanged but raises the free-aim per-hit total', () => {
-      const notSneaking = computeScenarios({ ...baseInput, player: createDefaultPlayerConditions() });
+      const notSneaking = computeScenarios({
+        ...baseInput,
+        player: createDefaultPlayerConditions(),
+      });
       const sneaking = computeScenarios({
-        ...baseInput, player: { ...createDefaultPlayerConditions(), isSneaking: true },
+        ...baseInput,
+        player: { ...createDefaultPlayerConditions(), isSneaking: true },
       });
       expect(sneaking.freeAim.dotDps).toBeCloseTo(notSneaking.freeAim.dotDps, 10);
       expect(sneaking.vats.dotDps).toBeCloseTo(notSneaking.vats.dotDps, 10);
@@ -1175,7 +1690,8 @@ describe('computeDotDps (Stage A2, DoT line)', () => {
     it('toggling weakpoint targeting (body-part mult) leaves dotDps unchanged but raises the per-hit total', () => {
       const torso = computeScenarios({ ...baseInput, player: createDefaultPlayerConditions() });
       const weakpoint = computeScenarios({
-        ...baseInput, player: { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true },
+        ...baseInput,
+        player: { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true },
       });
       expect(weakpoint.freeAim.dotDps).toBeCloseTo(torso.freeAim.dotDps, 10);
       expect(weakpoint.vats.dotDps).toBeCloseTo(torso.vats.dotDps, 10);
@@ -1184,10 +1700,14 @@ describe('computeDotDps (Stage A2, DoT line)', () => {
 
     it('raising the VATS crit rate leaves vats.dotDps unchanged but raises the VATS per-hit total', () => {
       const noCrit = computeScenarios({
-        ...baseInput, player: createDefaultPlayerConditions(), critRate: 0,
+        ...baseInput,
+        player: createDefaultPlayerConditions(),
+        critRate: 0,
       });
       const critting = computeScenarios({
-        ...baseInput, player: createDefaultPlayerConditions(), critRate: 0.5,
+        ...baseInput,
+        player: createDefaultPlayerConditions(),
+        critRate: 0.5,
       });
       expect(critting.vats.dotDps).toBeCloseTo(noCrit.vats.dotDps, 10);
       expect(critting.vats.perHit.total).toBeGreaterThan(noCrit.vats.perHit.total);
@@ -1198,11 +1718,23 @@ describe('computeDotDps (Stage A2, DoT line)', () => {
     const weapon = makeWeapon({
       components: [{ damageType: 'fire', tier: -1, levelCap: 50, curvePoints: FLAT_100 }],
     });
-    const mods = [mod({ bucket: 'dotDamage', op: 'ADD', value: 3, conditions: [{ kind: 'damageTypeScope', types: ['fire'] }] })];
+    const mods = [
+      mod({
+        bucket: 'dotDamage',
+        op: 'ADD',
+        value: 3,
+        conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
+      }),
+    ];
     const input = {
-      mode: 'live' as const, weapon, itemLevel: 50, modifiers: mods,
-      player: createDefaultPlayerConditions(), enemy: createDefaultEnemyConditions(),
-      weakpointMult: 2.0, critRate: 0,
+      mode: 'live' as const,
+      weapon,
+      itemLevel: 50,
+      modifiers: mods,
+      player: createDefaultPlayerConditions(),
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2.0,
+      critRate: 0,
     };
     const withDot = computeScenarios(input);
     const withoutDot = computeScenarios({ ...input, modifiers: [] });
@@ -1219,13 +1751,23 @@ describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
   // reload-inclusive shots/s = 20/24 (effectiveShotsPerSecond, NOT the raw 1.0/s
   // fire rate — see ap-economy.ts's doc comment on why reload downtime counts).
   const apWeapon = makeWeapon({
-    animDelaySec: 1.0, isPhysical: false, apCost: 16,
-    capacity: 20, ammoPerShot: 1, reloadSpeed: 1.0, animationReloadSec: 4.0,
+    animDelaySec: 1.0,
+    isPhysical: false,
+    apCost: 16,
+    capacity: 20,
+    ammoPerShot: 1,
+    reloadSpeed: 1.0,
+    animationReloadSec: 4.0,
   });
   const baseInput = {
-    mode: 'live' as const, weapon: apWeapon, itemLevel: 50, modifiers: [],
+    mode: 'live' as const,
+    weapon: apWeapon,
+    itemLevel: 50,
+    modifiers: [],
     player: { ...createDefaultPlayerConditions(), agility: 15 },
-    enemy: createDefaultEnemyConditions(), weakpointMult: 2.0, critRate: 0,
+    enemy: createDefaultEnemyConditions(),
+    weakpointMult: 2.0,
+    critRate: 0,
   };
 
   it('surfaces an ap-limited uptime for a ranged weapon with a real VATS AP cost', () => {
@@ -1240,7 +1782,10 @@ describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
     expect(s.vats.ap!.reloadRegenPerSec).toBeCloseTo(1.575, 10);
     expect(s.vats.ap!.apGainPerSec).toBeCloseTo(1.575, 10);
     expect(s.vats.ap!.uptime).toBeCloseTo(1.575 / (40 / 3), 10);
-    expect(s.vats.ap!.apLimitedDps).toBeCloseTo(s.vats.sustain.sustainedDps * (1.575 / (40 / 3)), 10);
+    expect(s.vats.ap!.apLimitedDps).toBeCloseTo(
+      s.vats.sustain.sustainedDps * (1.575 / (40 / 3)),
+      10,
+    );
     expect(s.vats.ap!.secondsToEmpty).toBeCloseTo(210 / (40 / 3 - 1.575), 10);
     // AP economy is a VATS-only concept — free aim never carries it.
     expect(s.freeAim.ap).toBeUndefined();
@@ -1250,8 +1795,13 @@ describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
     // Same weapon but a 1.0s reload — max(0, 1.0 − 1.0) = 0 credit, so
     // passive regen contributes nothing and uptime is 0 again.
     const quickReload = makeWeapon({
-      animDelaySec: 1.0, isPhysical: false, apCost: 16,
-      capacity: 20, ammoPerShot: 1, reloadSpeed: 1.0, animationReloadSec: 1.0,
+      animDelaySec: 1.0,
+      isPhysical: false,
+      apCost: 16,
+      capacity: 20,
+      ammoPerShot: 1,
+      reloadSpeed: 1.0,
+      animationReloadSec: 1.0,
     });
     const s = computeScenarios({ ...baseInput, weapon: quickReload });
     expect(s.vats.ap!.reloadRegenPerSec).toBe(0);
@@ -1279,8 +1829,13 @@ describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
     // The same bonus on a ≤1s-reload weapon moves nothing — the mag dump
     // itself never earns passive regen.
     const quickReload = makeWeapon({
-      animDelaySec: 1.0, isPhysical: false, apCost: 16,
-      capacity: 20, ammoPerShot: 1, reloadSpeed: 1.0, animationReloadSec: 1.0,
+      animDelaySec: 1.0,
+      isPhysical: false,
+      apCost: 16,
+      capacity: 20,
+      ammoPerShot: 1,
+      reloadSpeed: 1.0,
+      animationReloadSec: 1.0,
     });
     const quick = computeScenarios({ ...baseInput, weapon: quickReload, modifiers: richRegen });
     expect(quick.vats.ap!.uptime).toBe(0);
@@ -1296,19 +1851,32 @@ describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
 
 describe('computeScenarios hit rate (Stage B/C, manual free-aim + VATS)', () => {
   const weapon = makeWeapon({
-    animDelaySec: 1.0, isPhysical: false, capacity: 20, ammoPerShot: 1, reloadSpeed: 1.0, animationReloadSec: 4.0,
+    animDelaySec: 1.0,
+    isPhysical: false,
+    capacity: 20,
+    ammoPerShot: 1,
+    reloadSpeed: 1.0,
+    animationReloadSec: 4.0,
   });
   const input = {
-    mode: 'live' as const, weapon, itemLevel: 50, modifiers: [],
-    player: createDefaultPlayerConditions(), enemy: createDefaultEnemyConditions(),
-    weakpointMult: 2.0, critRate: 0,
+    mode: 'live' as const,
+    weapon,
+    itemLevel: 50,
+    modifiers: [],
+    player: createDefaultPlayerConditions(),
+    enemy: createDefaultEnemyConditions(),
+    weakpointMult: 2.0,
+    critRate: 0,
   };
 
   it('scales free-aim SUSTAINED dps only — burst, per-hit, and VATS stay unchanged', () => {
     const full = computeScenarios(input);
     const half = computeScenarios({ ...input, player: { ...input.player, hitRatePct: 50 } });
 
-    expect(half.freeAim.sustain.sustainedDps).toBeCloseTo(full.freeAim.sustain.sustainedDps * 0.5, 10);
+    expect(half.freeAim.sustain.sustainedDps).toBeCloseTo(
+      full.freeAim.sustain.sustainedDps * 0.5,
+      10,
+    );
     expect(half.freeAim.burstDps).toBeCloseTo(full.freeAim.burstDps, 10);
     expect(half.freeAim.perHit.total).toBeCloseTo(full.freeAim.perHit.total, 10);
     expect(half.vats.sustain.sustainedDps).toBeCloseTo(full.vats.sustain.sustainedDps, 10);
@@ -1327,7 +1895,10 @@ describe('computeScenarios hit rate (Stage B/C, manual free-aim + VATS)', () => 
   });
 
   it('surfaces the applied hit rate on ScenarioResult.hitRatePct', () => {
-    const s = computeScenarios({ ...input, player: { ...input.player, hitRatePct: 70, vatsHitRatePct: 40 } });
+    const s = computeScenarios({
+      ...input,
+      player: { ...input.player, hitRatePct: 70, vatsHitRatePct: 40 },
+    });
     expect(s.freeAim.hitRatePct).toBe(70);
     expect(s.vats.hitRatePct).toBe(40);
   });
@@ -1338,18 +1909,32 @@ describe('computeScenarios hit rate (Stage B/C, manual free-aim + VATS)', () => 
     delete playerWithoutHitRate.vatsHitRatePct;
     const withField = computeScenarios(input); // default factory sets both to 100
     const withoutField = computeScenarios({ ...input, player: playerWithoutHitRate });
-    expect(withoutField.freeAim.sustain.sustainedDps).toBeCloseTo(withField.freeAim.sustain.sustainedDps, 10);
-    expect(withoutField.vats.sustain.sustainedDps).toBeCloseTo(withField.vats.sustain.sustainedDps, 10);
+    expect(withoutField.freeAim.sustain.sustainedDps).toBeCloseTo(
+      withField.freeAim.sustain.sustainedDps,
+      10,
+    );
+    expect(withoutField.vats.sustain.sustainedDps).toBeCloseTo(
+      withField.vats.sustain.sustainedDps,
+      10,
+    );
   });
 
   it('vatsHitRatePct scales ap.apLimitedDps proportionally — a miss still costs AP, so uptime itself is unaffected', () => {
     const apWeapon = makeWeapon({
-      animDelaySec: 1.0, isPhysical: false, capacity: 20, ammoPerShot: 1, reloadSpeed: 1.0, animationReloadSec: 4.0,
+      animDelaySec: 1.0,
+      isPhysical: false,
+      capacity: 20,
+      ammoPerShot: 1,
+      reloadSpeed: 1.0,
+      animationReloadSec: 4.0,
       apCost: 10,
     });
     const apInput = { ...input, weapon: apWeapon };
     const full = computeScenarios(apInput);
-    const half = computeScenarios({ ...apInput, player: { ...apInput.player, vatsHitRatePct: 50 } });
+    const half = computeScenarios({
+      ...apInput,
+      player: { ...apInput.player, vatsHitRatePct: 50 },
+    });
 
     expect(full.vats.ap).toBeDefined();
     expect(half.vats.ap!.uptime).toBeCloseTo(full.vats.ap!.uptime, 10);
@@ -1419,7 +2004,15 @@ describe('foldOps (shared fold arithmetic)', () => {
 
   it('falls back to base with no entries; last SET wins', () => {
     expect(foldOps([], 3.0)).toBe(3.0);
-    expect(foldOps([{ op: 'SET' as const, value: 5 }, { op: 'SET' as const, value: 3 }], 1.0)).toBe(3);
+    expect(
+      foldOps(
+        [
+          { op: 'SET' as const, value: 5 },
+          { op: 'SET' as const, value: 3 },
+        ],
+        1.0,
+      ),
+    ).toBe(3);
   });
 });
 
@@ -1440,7 +2033,12 @@ describe('crit condition (first-class, symmetric with sneaking/powerAttack)', ()
 
 describe('vatsOnly condition (Phase B — Concentrated Fire stacks; symmetric with sneaking/powerAttack/crit)', () => {
   const weapon = makeWeapon();
-  const vatsOnlyMod = mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'vatsOnly' }] });
+  const vatsOnlyMod = mod({
+    bucket: 'dbm',
+    op: 'ADD',
+    value: 0.5,
+    conditions: [{ kind: 'vatsOnly' }],
+  });
 
   it('applies in VATS and VATS+Sneak, not in Manual Aim', () => {
     const vatsCtx = makeCtx(weapon, {
@@ -1506,7 +2104,10 @@ describe('Concentrated Fire stacks — rank × stacks table (computeScenarios)',
         bucket: 'dbm',
         op: 'ADD',
         value: perStack,
-        conditions: [{ kind: 'vatsOnly' }, { kind: 'stacks', counter: 'concentratedFire', max: 20 }],
+        conditions: [
+          { kind: 'vatsOnly' },
+          { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+        ],
       }),
     ];
     const noStacks = computeScenarios({ ...base, modifiers });
@@ -1524,9 +2125,14 @@ describe('Concentrated Fire stacks — rank × stacks table (computeScenarios)',
 describe('hasConcentratedFireSources detection', () => {
   const weapon = makeWeapon({ animDelaySec: 1.0 });
   const base = {
-    mode: 'live' as const, weapon, itemLevel: 50, modifiers: [] as Modifier[],
-    player: createDefaultPlayerConditions(), enemy: createDefaultEnemyConditions(),
-    weakpointMult: 2.0, critRate: 0,
+    mode: 'live' as const,
+    weapon,
+    itemLevel: 50,
+    modifiers: [] as Modifier[],
+    player: createDefaultPlayerConditions(),
+    enemy: createDefaultEnemyConditions(),
+    weakpointMult: 2.0,
+    critRate: 0,
   };
 
   it('is false with no Concentrated Fire source equipped', () => {
@@ -1548,11 +2154,14 @@ describe('body-part damage direction (sub-1 multipliers = limb hits)', () => {
   it("a <1 body-part mult scales damage down and doesn't trigger weakpoint bonuses via scenarios", () => {
     const weapon = makeWeapon({ animDelaySec: 1.0 });
     const input = {
-      mode: 'live' as const, weapon, itemLevel: 50,
+      mode: 'live' as const,
+      weapon,
+      itemLevel: 50,
       modifiers: [mod({ bucket: 'weakpointBonus', op: 'ADD', value: 0.3 })],
       player: { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true },
       enemy: createDefaultEnemyConditions(),
-      weakpointMult: 0.5, critRate: 0,
+      weakpointMult: 0.5,
+      critRate: 0,
     };
     const result = computeScenarios(input);
     // ×0.5 body part, weakpointBonus must NOT apply (bodyPart resolves to 'limb', not 'weakpoint').
@@ -1561,9 +2170,22 @@ describe('body-part damage direction (sub-1 multipliers = limb hits)', () => {
 
   it('torso-gated modifiers are inert on limb hits', () => {
     const weapon = makeWeapon();
-    const mods = [mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'bodyPart', part: 'torso' }] })];
+    const mods = [
+      mod({
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.5,
+        conditions: [{ kind: 'bodyPart', part: 'torso' }],
+      }),
+    ];
     const limb = computePaperDamage({
-      mode: 'live', weapon, itemLevel: 50, modifiers: mods, ctx: makeCtx(weapon), bodyPartMult: 0.5, bodyPart: 'limb',
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(weapon),
+      bodyPartMult: 0.5,
+      bodyPart: 'limb',
     });
     expect(limb.total).toBeCloseTo(100 * 0.5, 6);
   });
@@ -1571,18 +2193,30 @@ describe('body-part damage direction (sub-1 multipliers = limb hits)', () => {
 
 describe('computeScenarios body-part hit rate (weakpoint aiming only)', () => {
   const weapon = makeWeapon({
-    animDelaySec: 1.0, isPhysical: false, capacity: 20, ammoPerShot: 1, reloadSpeed: 1.0, animationReloadSec: 4.0,
+    animDelaySec: 1.0,
+    isPhysical: false,
+    capacity: 20,
+    ammoPerShot: 1,
+    reloadSpeed: 1.0,
+    animationReloadSec: 4.0,
   });
   const base = {
-    mode: 'live' as const, weapon, itemLevel: 50, modifiers: [] as Modifier[],
+    mode: 'live' as const,
+    weapon,
+    itemLevel: 50,
+    modifiers: [] as Modifier[],
     player: { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true },
     enemy: createDefaultEnemyConditions(),
-    weakpointMult: 2.0, critRate: 0,
+    weakpointMult: 2.0,
+    critRate: 0,
   };
 
   it('blends the aimed-part hit with a torso hit by the rate', () => {
     const full = computeScenarios(base);
-    const blended = computeScenarios({ ...base, player: { ...base.player, bodyPartHitRatePct: 75 } });
+    const blended = computeScenarios({
+      ...base,
+      player: { ...base.player, bodyPartHitRatePct: 75 },
+    });
     // 75% land at ×2, 25% at ×1 → 100 × (0.75×2 + 0.25×1) = 175
     expect(full.freeAim.perHit.total).toBeCloseTo(200, 6);
     expect(blended.freeAim.perHit.total).toBeCloseTo(175, 6);
@@ -1590,7 +2224,10 @@ describe('computeScenarios body-part hit rate (weakpoint aiming only)', () => {
   });
 
   it('is a no-op at 100% and when not aiming at a weakpoint', () => {
-    const at100 = computeScenarios({ ...base, player: { ...base.player, bodyPartHitRatePct: 100 } });
+    const at100 = computeScenarios({
+      ...base,
+      player: { ...base.player, bodyPartHitRatePct: 100 },
+    });
     expect(at100.freeAim.perHit.total).toBeCloseTo(computeScenarios(base).freeAim.perHit.total, 10);
 
     const notAiming = computeScenarios({
@@ -1604,9 +2241,15 @@ describe('computeScenarios body-part hit rate (weakpoint aiming only)', () => {
     const charged = makeWeapon({ weaponClass: 'melee', keywords: ['WeaponHasSecondaryCharging'] });
     const input = { ...base, weapon: charged };
     const full = computeScenarios(input);
-    const blended = computeScenarios({ ...input, player: { ...input.player, bodyPartHitRatePct: 50 } });
+    const blended = computeScenarios({
+      ...input,
+      player: { ...input.player, bodyPartHitRatePct: 50 },
+    });
     // Every leg of the cycle blends ×2 and ×1 hits at 50% → the whole sustained metric scales by 0.75.
-    expect(blended.freeAim.sustain.sustainedDps).toBeCloseTo(full.freeAim.sustain.sustainedDps * 0.75, 6);
+    expect(blended.freeAim.sustain.sustainedDps).toBeCloseTo(
+      full.freeAim.sustain.sustainedDps * 0.75,
+      6,
+    );
   });
 });
 
@@ -1619,7 +2262,12 @@ describe('target status effect conditions (bleed/cryo)', () => {
     ['DamageTypeFire', 'isBurning'],
     ['DamageTypePoison', 'isPoisoned'],
   ] as const)('%s gates on enemy.%s', (keyword, flag) => {
-    const m = mod({ bucket: 'dbm', op: 'ADD', value: 0.5, conditions: [{ kind: 'enemyHasActiveEffect', keyword }] });
+    const m = mod({
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.5,
+      conditions: [{ kind: 'enemyHasActiveEffect', keyword }],
+    });
     const off = makeCtx(weapon);
     const on = makeCtx(weapon, { enemy: { ...createDefaultEnemyConditions(), [flag]: true } });
     expect(foldBucket([m], 'dbm', 1.0, off)).toBeCloseTo(1.0, 10);
@@ -1630,9 +2278,14 @@ describe('target status effect conditions (bleed/cryo)', () => {
 describe('hasKillStreakSources detection', () => {
   const weapon = makeWeapon({ animDelaySec: 1.0 });
   const base = {
-    mode: 'live' as const, weapon, itemLevel: 50, modifiers: [] as Modifier[],
-    player: createDefaultPlayerConditions(), enemy: createDefaultEnemyConditions(),
-    weakpointMult: 2.0, critRate: 0,
+    mode: 'live' as const,
+    weapon,
+    itemLevel: 50,
+    modifiers: [] as Modifier[],
+    player: createDefaultPlayerConditions(),
+    enemy: createDefaultEnemyConditions(),
+    weakpointMult: 2.0,
+    critRate: 0,
   };
 
   it('is false with no kill-streak reader equipped', () => {
@@ -1645,16 +2298,32 @@ describe('hasKillStreakSources detection', () => {
       source: { kind: 'perk', formId: '0x0', edid: 'TestSource', name: 'Test Source' },
       bucket: 'dbm',
       op: 'ADD',
-      curve: { input: 'killStreak', points: [{ x: 0, y: 0 }, { x: 10, y: 50 }] },
+      curve: {
+        input: 'killStreak',
+        points: [
+          { x: 0, y: 0 },
+          { x: 10, y: 50 },
+        ],
+      },
       curveScale: 0.01,
       conditions: [],
     };
     expect(computeScenarios({ ...base, modifiers: [curveMod] }).hasKillStreakSources).toBe(true);
 
-    const countMod = mod({ bucket: 'dbm', op: 'ADD', value: 0.3, conditions: [{ kind: 'killStreakCount', count: 10 }] });
+    const countMod = mod({
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.3,
+      conditions: [{ kind: 'killStreakCount', count: 10 }],
+    });
     expect(computeScenarios({ ...base, modifiers: [countMod] }).hasKillStreakSources).toBe(true);
 
-    const stackMod = mod({ bucket: 'dbm', op: 'ADD', value: 0.05, conditions: [{ kind: 'stacks', counter: 'adrenaline', max: 10 }] });
+    const stackMod = mod({
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.05,
+      conditions: [{ kind: 'stacks', counter: 'adrenaline', max: 10 }],
+    });
     expect(computeScenarios({ ...base, modifiers: [stackMod] }).hasKillStreakSources).toBe(true);
   });
 });
@@ -1662,16 +2331,21 @@ describe('hasKillStreakSources detection', () => {
 describe('hasBattleLoadersSource detection (Phase C — bash-tier reload skip)', () => {
   const weapon = makeWeapon({ animDelaySec: 1.0 });
   const base = {
-    mode: 'live' as const, weapon, itemLevel: 50, modifiers: [] as Modifier[],
-    player: createDefaultPlayerConditions(), enemy: createDefaultEnemyConditions(),
-    weakpointMult: 2.0, critRate: 0,
+    mode: 'live' as const,
+    weapon,
+    itemLevel: 50,
+    modifiers: [] as Modifier[],
+    player: createDefaultPlayerConditions(),
+    enemy: createDefaultEnemyConditions(),
+    weakpointMult: 2.0,
+    critRate: 0,
   };
 
   it('is false with no reloadSkipChanceBash folded onto the effective weapon', () => {
     expect(computeScenarios(base).hasBattleLoadersSource).toBe(false);
   });
 
-  it('is true once buildEffectiveWeapon has folded a reloadSkipChanceBash source onto the weapon (Battle-Loader\'s)', () => {
+  it("is true once buildEffectiveWeapon has folded a reloadSkipChanceBash source onto the weapon (Battle-Loader's)", () => {
     // reloadSkipChanceBash is a sustainChance bucket, folded and stripped
     // from the modifier list upstream (buildEffectiveWeapon/assemble) — the
     // ONLY way it reaches computeScenarios is already-folded onto the
@@ -1691,9 +2365,14 @@ describe('vatsHitChanceBonus (Phase 4 — VATS hit-chance aggregate, display-onl
   // the regression guard below checks it stays untouched alongside sustainedDps.
   const weapon = makeWeapon({ animDelaySec: 1.0, apCost: 20 });
   const base = {
-    mode: 'live' as const, weapon, itemLevel: 50, modifiers: [] as Modifier[],
-    player: createDefaultPlayerConditions(), enemy: createDefaultEnemyConditions(),
-    weakpointMult: 2.0, critRate: 0,
+    mode: 'live' as const,
+    weapon,
+    itemLevel: 50,
+    modifiers: [] as Modifier[],
+    player: createDefaultPlayerConditions(),
+    enemy: createDefaultEnemyConditions(),
+    weakpointMult: 2.0,
+    critRate: 0,
   };
 
   it('is 0 with no vatsHitChance sources equipped', () => {
@@ -1708,21 +2387,31 @@ describe('vatsHitChanceBonus (Phase 4 — VATS hit-chance aggregate, display-onl
   it('sums multiple vatsHitChance ADD sources additively', () => {
     const a = mod({ id: 'a', bucket: 'vatsHitChance', op: 'ADD', value: 0.5 });
     const b = mod({ id: 'b', bucket: 'vatsHitChance', op: 'ADD', value: 0.1 });
-    expect(computeScenarios({ ...base, modifiers: [a, b] }).vatsHitChanceBonus).toBeCloseTo(0.6, 10);
+    expect(computeScenarios({ ...base, modifiers: [a, b] }).vatsHitChanceBonus).toBeCloseTo(
+      0.6,
+      10,
+    );
   });
 
   it('folds a MUL_ADD-only vatsHitChance source correctly (V.A.T.S. Matrix Overlay/Hoppy Hunter/Twisted Muscles-style — REGRESSION: the base-0 fold every other bootstrap bucket uses would silently zero this out, since foldOps scales MUL_ADD by the base)', () => {
     const armorHelmet = mod({ bucket: 'vatsHitChance', op: 'MUL_ADD', value: 0.1 }); // Multiply Value 1.1 → float-1
-    expect(computeScenarios({ ...base, modifiers: [armorHelmet] }).vatsHitChanceBonus).toBeCloseTo(0.1, 10);
+    expect(computeScenarios({ ...base, modifiers: [armorHelmet] }).vatsHitChanceBonus).toBeCloseTo(
+      0.1,
+      10,
+    );
 
     const hoppyHunterPenalty = mod({ bucket: 'vatsHitChance', op: 'MUL_ADD', value: -0.2 }); // Multiply Value 0.8 → float-1
-    expect(computeScenarios({ ...base, modifiers: [hoppyHunterPenalty] }).vatsHitChanceBonus).toBeCloseTo(-0.2, 10);
+    expect(
+      computeScenarios({ ...base, modifiers: [hoppyHunterPenalty] }).vatsHitChanceBonus,
+    ).toBeCloseTo(-0.2, 10);
   });
 
   it('sums a mix of ADD and MUL_ADD vatsHitChance sources as independent additive contributions', () => {
     const vatsEnhanced = mod({ id: 'a', bucket: 'vatsHitChance', op: 'ADD', value: 0.5 });
     const armorHelmet = mod({ id: 'b', bucket: 'vatsHitChance', op: 'MUL_ADD', value: 0.1 });
-    expect(computeScenarios({ ...base, modifiers: [vatsEnhanced, armorHelmet] }).vatsHitChanceBonus).toBeCloseTo(0.6, 10);
+    expect(
+      computeScenarios({ ...base, modifiers: [vatsEnhanced, armorHelmet] }).vatsHitChanceBonus,
+    ).toBeCloseTo(0.6, 10);
   });
 
   it('REGRESSION GUARD: a vatsHitChance modifier never changes perHit/sustainedDps/apLimitedDps in ANY scenario (display-only, must never feed the damage formula)', () => {
@@ -1781,7 +2470,11 @@ describe('vatsHitChanceMult (Concentrated Fire EP109 multiplier, USER-RESOLVED 2
   // the DPS-neutrality guard below checks it stays untouched alongside
   // sustainedDps, mirroring the vatsHitChanceBonus suite above.
   const semiWeapon = makeWeapon({ animDelaySec: 1.0, apCost: 20 });
-  const autoWeapon = makeWeapon({ animDelaySec: 1.0, apCost: 20, keywords: ['WeaponTypeAutomatic'] });
+  const autoWeapon = makeWeapon({
+    animDelaySec: 1.0,
+    apCost: 20,
+    keywords: ['WeaponTypeAutomatic'],
+  });
   const baseFor = (weapon: Weapon, concentratedFireStacks = 0) => ({
     mode: 'live' as const,
     weapon,
@@ -1821,12 +2514,18 @@ describe('vatsHitChanceMult (Concentrated Fire EP109 multiplier, USER-RESOLVED 2
   });
 
   it('rank 2 semi-auto × 10 stacks folds to exactly 1.80 on a non-automatic weapon', () => {
-    const result = computeScenarios({ ...baseFor(semiWeapon, 10), modifiers: [semiMult, autoMult] });
+    const result = computeScenarios({
+      ...baseFor(semiWeapon, 10),
+      modifiers: [semiMult, autoMult],
+    });
     expect(result.vatsHitChanceMult).toBeCloseTo(1.8, 10);
   });
 
   it('rank 2 × 10 stacks folds to exactly 1.20 on an automatic weapon', () => {
-    const result = computeScenarios({ ...baseFor(autoWeapon, 10), modifiers: [semiMult, autoMult] });
+    const result = computeScenarios({
+      ...baseFor(autoWeapon, 10),
+      modifiers: [semiMult, autoMult],
+    });
     expect(result.vatsHitChanceMult).toBeCloseTo(1.2, 10);
   });
 
@@ -1835,9 +2534,15 @@ describe('vatsHitChanceMult (Concentrated Fire EP109 multiplier, USER-RESOLVED 2
     expect(result.vatsHitChanceMult).toBe(1);
   });
 
-  it('auto vs semi gating picks the right value for the equipped weapon\'s effective auto state (both sources equipped simultaneously, mutually exclusive by weaponKeyword)', () => {
-    const semiResult = computeScenarios({ ...baseFor(semiWeapon, 10), modifiers: [semiMult, autoMult] });
-    const autoResult = computeScenarios({ ...baseFor(autoWeapon, 10), modifiers: [semiMult, autoMult] });
+  it("auto vs semi gating picks the right value for the equipped weapon's effective auto state (both sources equipped simultaneously, mutually exclusive by weaponKeyword)", () => {
+    const semiResult = computeScenarios({
+      ...baseFor(semiWeapon, 10),
+      modifiers: [semiMult, autoMult],
+    });
+    const autoResult = computeScenarios({
+      ...baseFor(autoWeapon, 10),
+      modifiers: [semiMult, autoMult],
+    });
     // The semi-auto weapon never sees the automatic-gated 0.02 contribution,
     // and vice versa — only ONE of the two mutually exclusive weaponKeyword
     // branches is ever active for a given effective weapon.
@@ -1847,7 +2552,9 @@ describe('vatsHitChanceMult (Concentrated Fire EP109 multiplier, USER-RESOLVED 2
 
   it('folds a MUL_ADD-only vatsHitChanceMult source correctly against base 1 (REGRESSION: the base-0 fold every other bootstrap bucket uses would silently zero this out, since foldOps scales MUL_ADD by the base — same lesson as vatsHitChanceBonus)', () => {
     const m = mod({ bucket: 'vatsHitChanceMult', op: 'MUL_ADD', value: 0.1 });
-    expect(computeScenarios({ ...baseFor(semiWeapon), modifiers: [m] }).vatsHitChanceMult).toBeCloseTo(1.1, 10);
+    expect(
+      computeScenarios({ ...baseFor(semiWeapon), modifiers: [m] }).vatsHitChanceMult,
+    ).toBeCloseTo(1.1, 10);
   });
 
   it('REGRESSION GUARD: a vatsHitChanceMult modifier never changes perHit/sustainedDps/apLimitedDps in ANY scenario (display-only, must never feed the damage formula)', () => {

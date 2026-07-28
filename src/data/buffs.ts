@@ -22,8 +22,11 @@ export function getMutations(mode: GameMode): GeneratedBuff[] {
  */
 export function getConsumables(mode: GameMode): GeneratedBuff[] {
   const dataset = getDataset(mode);
-  return dataset.consumables.filter(b =>
-    isRecordVisible(b, { hidden: dataset.hiddenConsumableIds, forceVisible: dataset.forceVisibleConsumableIds })
+  return dataset.consumables.filter((b) =>
+    isRecordVisible(b, {
+      hidden: dataset.hiddenConsumableIds,
+      forceVisible: dataset.forceVisibleConsumableIds,
+    }),
   );
 }
 
@@ -54,7 +57,11 @@ export function getSuppressedAddictions(mode: GameMode, consumableIds: string[])
 }
 
 /** Engine modifiers for the selected mutation/consumable ids. */
-export function getBuffModifiers(mode: GameMode, mutationIds: string[], consumableIds: string[]): Modifier[] {
+export function getBuffModifiers(
+  mode: GameMode,
+  mutationIds: string[],
+  consumableIds: string[],
+): Modifier[] {
   const dataset = getDataset(mode);
   const modifiers: Modifier[] = [];
   for (const buff of dataset.mutations) {
@@ -77,10 +84,13 @@ export function getBuffModifiers(mode: GameMode, mutationIds: string[], consumab
  * `getSuppressedAddictions`). No conditions needed: suppression is decided
  * here at assembly time, not at fold time.
  */
-export function getAddictionModifiers(mode: GameMode, countedAddictionIds: readonly string[]): Modifier[] {
+export function getAddictionModifiers(
+  mode: GameMode,
+  countedAddictionIds: readonly string[],
+): Modifier[] {
   if (countedAddictionIds.length === 0) return [];
   const counted = new Set(countedAddictionIds);
   return getDataset(mode)
-    .addictions.filter(a => counted.has(a.id))
-    .flatMap(a => a.modifiers ?? []);
+    .addictions.filter((a) => counted.has(a.id))
+    .flatMap((a) => a.modifiers ?? []);
 }

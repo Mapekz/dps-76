@@ -31,9 +31,12 @@ export function getSpecialClamp(mode: GameMode): { min: number; max: number } {
 }
 
 /** ESM-extracted GMST scalars for the resist-mitigation formula — see GeneratedConstants. */
-export function getMitigationConstants(
-  mode: GameMode
-): { resistExponent: number; damageFactor: number; minReduction: number; maxReduction: number } {
+export function getMitigationConstants(mode: GameMode): {
+  resistExponent: number;
+  damageFactor: number;
+  minReduction: number;
+  maxReduction: number;
+} {
   return getDataset(mode).constants.mitigation;
 }
 
@@ -68,8 +71,10 @@ export function getPerkById(mode: GameMode, perkId: PerkId): Perk | undefined {
 }
 
 /** Project an id/name-keyed record into combobox `{ value, label }` options. */
-function toOptions(record: Record<string, { id: string; name: string }>): Array<{ value: string; label: string }> {
-  return Object.values(record).map(x => ({ value: x.id, label: x.name }));
+function toOptions(
+  record: Record<string, { id: string; name: string }>,
+): Array<{ value: string; label: string }> {
+  return Object.values(record).map((x) => ({ value: x.id, label: x.name }));
 }
 
 export function getWeaponOptions(mode: GameMode) {

@@ -81,7 +81,12 @@ export const CURATED_TARGETS: CuratedTarget[] = [
   { edid: 'BigfootRace', label: 'Bigfoot', category: 'standard', crippleImmune: true },
   // NoCripplePerk 0x004121E8 directly on the NPC_ (not the shared DeathclawRace,
   // so the plain "Deathclaw" entry above stays crippable).
-  { edid: 'Burn_E01_EncDeathclawMatriarch', label: 'Deathclaw Matriarch', category: 'standard', crippleImmune: true },
+  {
+    edid: 'Burn_E01_EncDeathclawMatriarch',
+    label: 'Deathclaw Matriarch',
+    category: 'standard',
+    crippleImmune: true,
+  },
 
   // Gleaming Depths raid (RD01_) encounter bosses. The Ultragenetic Mole
   // Miner Stalker is deliberately absent — it takes no damage. The Terror's
@@ -92,7 +97,12 @@ export const CURATED_TARGETS: CuratedTarget[] = [
   // (0x0077459D, EP "Mod Body Part Damage Mult" ×0 while its shield is up) —
   // only its shield generator and torso carry a real Actor Value, so
   // `conditionPartsOnly` drops the 5 phantom ×3 "weak points" the BPTD lists.
-  { edid: 'RD01_Enc01_GuardianBot', label: 'EN06 Guardian', category: 'raid', conditionPartsOnly: true },
+  {
+    edid: 'RD01_Enc01_GuardianBot',
+    label: 'EN06 Guardian',
+    category: 'raid',
+    conditionPartsOnly: true,
+  },
   { edid: 'RD01_Enc04_Grenadier', label: 'Epsilon Squad - Lynx', category: 'raid' },
   { edid: 'RD01_Enc04_Assassin', label: 'Epsilon Squad - Vulture', category: 'raid' },
   { edid: 'RD01_Enc04_Brute', label: 'Epsilon Squad - Bloodhound', category: 'raid' },

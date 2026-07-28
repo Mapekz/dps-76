@@ -126,13 +126,18 @@ export interface BuffDescriptionCtx {
 }
 
 /** Qualifier clause for one modifier's conditions, plus whether any of them are currently inert. */
-function describeConditions(conditions: readonly Condition[]): { clause: string; inactive: boolean } {
+function describeConditions(conditions: readonly Condition[]): {
+  clause: string;
+  inactive: boolean;
+} {
   const clauses: string[] = [];
   let inactive = false;
   for (const c of conditions) {
     switch (c.kind) {
       case 'weaponKeyword':
-        clauses.push(c.present ? `with ${weaponLabel(c.keyword)}` : `non-${weaponLabel(c.keyword)}`);
+        clauses.push(
+          c.present ? `with ${weaponLabel(c.keyword)}` : `non-${weaponLabel(c.keyword)}`,
+        );
         break;
       case 'weaponKeywordAny':
         clauses.push(`with ${c.keywords.map(weaponLabel).join(' or ')}`);
@@ -148,14 +153,14 @@ function describeConditions(conditions: readonly Condition[]): { clause: string;
         clauses.push(
           c.keywordOrRace.startsWith('WeaponType')
             ? `with ${weaponLabel(c.keywordOrRace)}`
-            : `vs ${enemyLabel(c.keywordOrRace)}`
+            : `vs ${enemyLabel(c.keywordOrRace)}`,
         );
         break;
       case 'enemyTypeAny':
         clauses.push(
-          c.keywordsOrRaces.every(k => k.startsWith('WeaponType'))
+          c.keywordsOrRaces.every((k) => k.startsWith('WeaponType'))
             ? `with ${c.keywordsOrRaces.map(weaponLabel).join(' or ')}`
-            : `vs ${c.keywordsOrRaces.map(enemyLabel).join(' or ')}`
+            : `vs ${c.keywordsOrRaces.map(enemyLabel).join(' or ')}`,
         );
         break;
       case 'teammateCount':
@@ -211,19 +216,20 @@ function formatFlatRange(lo: number, hi: number): string {
 function describeHealthFractionStaircase(
   points: readonly { x: number; y: number }[],
   curveScale: number,
-  scale: number
+  scale: number,
 ): string {
   const steps: Array<{ x: number; y: number }> = [];
   for (const p of points) {
     const y = p.y * curveScale * scale;
     const last = steps[steps.length - 1];
-    if (last && last.y === y) last.x = p.x; // extend the plateau's upper x bound
+    if (last && last.y === y)
+      last.x = p.x; // extend the plateau's upper x bound
     else steps.push({ x: p.x, y });
   }
   return steps
-    .filter(s => s.y !== 0)
+    .filter((s) => s.y !== 0)
     .sort((a, b) => b.x - a.x)
-    .map(s => `${formatFlatRange(s.y, s.y)} at ≤${Math.round(s.x * 100)}% HP`)
+    .map((s) => `${formatFlatRange(s.y, s.y)} at ≤${Math.round(s.x * 100)}% HP`)
     .join(', ');
 }
 
@@ -235,9 +241,13 @@ function describeHealthFractionStaircase(
  */
 function describeDotDamage(m: Modifier, scale: number): string | null {
   if (m.curve) return null; // not produced for dotDamage today
-  const scopeIndex = m.conditions.findIndex(c => c.kind === 'damageTypeScope');
-  const scope = scopeIndex >= 0 ? (m.conditions[scopeIndex] as Extract<Condition, { kind: 'damageTypeScope' }>) : null;
-  const remaining = scopeIndex >= 0 ? m.conditions.filter((_, i) => i !== scopeIndex) : m.conditions;
+  const scopeIndex = m.conditions.findIndex((c) => c.kind === 'damageTypeScope');
+  const scope =
+    scopeIndex >= 0
+      ? (m.conditions[scopeIndex] as Extract<Condition, { kind: 'damageTypeScope' }>)
+      : null;
+  const remaining =
+    scopeIndex >= 0 ? m.conditions.filter((_, i) => i !== scopeIndex) : m.conditions;
 
   const value = m.value * scale;
   const elementLabel = scope ? `${scope.types.join('/')} ` : '';
@@ -280,10 +290,12 @@ function describeModifier(m: Modifier, scale: number, labelOverride?: string): s
       magnitude = describeHealthFractionStaircase(m.curve.points, m.curveScale, scale);
       extraClauses.push(label);
     } else {
-      const ys = m.curve.points.map(p => p.y * m.curveScale * scale);
+      const ys = m.curve.points.map((p) => p.y * m.curveScale * scale);
       const lo = Math.min(...ys);
       const hi = Math.max(...ys);
-      magnitude = percentLabel ? `${formatPercentRange(lo, hi)} ${percentLabel}` : `${formatFlatRange(lo, hi)} ${flatLabel}`;
+      magnitude = percentLabel
+        ? `${formatPercentRange(lo, hi)} ${percentLabel}`
+        : `${formatFlatRange(lo, hi)} ${flatLabel}`;
       const axisLabel = CURVE_AXIS_LABELS[m.curve.input] ?? m.curve.input;
       extraClauses.push(`scales with ${axisLabel}`);
     }
@@ -343,11 +355,11 @@ function groupSpecialModifiers(modifiers: readonly Modifier[]): {
 
   const groups: Array<{ label: string; representative: Modifier }> = [];
   for (const list of bySignature.values()) {
-    const buckets = new Set(list.map(m => m.bucket));
+    const buckets = new Set(list.map((m) => m.bucket));
     if (buckets.size === SPECIAL_BUCKETS.length) {
       groups.push({ label: 'all SPECIAL', representative: list[0] });
     } else if (buckets.size === SPECIAL_BUCKETS.length - 1) {
-      const missing = SPECIAL_BUCKETS.find(b => !buckets.has(b));
+      const missing = SPECIAL_BUCKETS.find((b) => !buckets.has(b));
       const missingLabel = missing ? FLAT_POINT_BUCKET_LABELS[missing] : undefined;
       groups.push({
         label: missingLabel ? `all SPECIAL except ${missingLabel}` : 'all SPECIAL',
@@ -361,10 +373,15 @@ function groupSpecialModifiers(modifiers: readonly Modifier[]): {
 }
 
 /** True when every strangeInNumbers/classFreakRank gate on `m` matches ctx (the resolved-fact filter). */
-function passesResolvedGates(m: Modifier, strangeInNumbers: boolean, classFreakRank: number): boolean {
+function passesResolvedGates(
+  m: Modifier,
+  strangeInNumbers: boolean,
+  classFreakRank: number,
+): boolean {
   for (const c of m.conditions) {
     if (c.kind === 'strangeInNumbers' && c.value !== strangeInNumbers) return false;
-    if (c.kind === 'classFreakRank' && (classFreakRank < c.min || classFreakRank > c.max)) return false;
+    if (c.kind === 'classFreakRank' && (classFreakRank < c.min || classFreakRank > c.max))
+      return false;
   }
   return true;
 }
@@ -372,17 +389,19 @@ function passesResolvedGates(m: Modifier, strangeInNumbers: boolean, classFreakR
 /** Short "+10% damage (with ballistic weapons)" summary, or null if nothing describable. */
 export function describeBuffModifiers(
   buff: { modifiers: readonly Modifier[] },
-  ctx: BuffDescriptionCtx = {}
+  ctx: BuffDescriptionCtx = {},
 ): string | null {
   const strangeInNumbers = ctx.strangeInNumbers ?? false;
   const classFreakRank = ctx.classFreakRank ?? 0;
   const scale = ctx.penaltyScale ?? 1;
 
-  const relevant = buff.modifiers.filter(m => passesResolvedGates(m, strangeInNumbers, classFreakRank));
+  const relevant = buff.modifiers.filter((m) =>
+    passesResolvedGates(m, strangeInNumbers, classFreakRank),
+  );
   const { groups, rest } = groupSpecialModifiers(relevant);
   const parts = [
-    ...groups.map(g => describeModifier(g.representative, scale, g.label)),
-    ...rest.map(m => describeModifier(m, scale)),
+    ...groups.map((g) => describeModifier(g.representative, scale, g.label)),
+    ...rest.map((m) => describeModifier(m, scale)),
   ].filter((s): s is string => s !== null);
   return parts.length > 0 ? parts.join('; ') : null;
 }

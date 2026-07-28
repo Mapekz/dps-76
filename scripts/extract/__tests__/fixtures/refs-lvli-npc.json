@@ -1,1 +1,26 @@
-[{"form_id":"0x007933F9","record_type":"NPC_","editor_id":"RD01_Enc02_D1_MoleMiner_Ranged","name":null,"offset":71854483,"depth":1},{"form_id":"0x007933FD","record_type":"NPC_","editor_id":"RD01_Enc02_D2_MoleMiner_Ranged","name":null,"offset":71853405,"depth":1},{"form_id":"0x00793400","record_type":"NPC_","editor_id":"RD01_Enc02_D3_MoleMiner_Ranged","name":null,"offset":71852335,"depth":1}]
+[
+  {
+    "form_id": "0x007933F9",
+    "record_type": "NPC_",
+    "editor_id": "RD01_Enc02_D1_MoleMiner_Ranged",
+    "name": null,
+    "offset": 71854483,
+    "depth": 1
+  },
+  {
+    "form_id": "0x007933FD",
+    "record_type": "NPC_",
+    "editor_id": "RD01_Enc02_D2_MoleMiner_Ranged",
+    "name": null,
+    "offset": 71853405,
+    "depth": 1
+  },
+  {
+    "form_id": "0x00793400",
+    "record_type": "NPC_",
+    "editor_id": "RD01_Enc02_D3_MoleMiner_Ranged",
+    "name": null,
+    "offset": 71852335,
+    "depth": 1
+  }
+]

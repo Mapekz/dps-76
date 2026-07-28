@@ -16,12 +16,16 @@ function burstDps(overrides: Partial<PlayerConfig> = {}) {
 
 describe('magazine/bobblehead wiring (buffValueOverrides → resolveLoadout → engine)', () => {
   it('Big Guns bobblehead adds damage on a heavy gun only', () => {
-    const heavyBase = burstDps({ weapon: { weaponId: 'GaussMinigun', mods: {}, legendaryEffects: [] } });
+    const heavyBase = burstDps({
+      weapon: { weaponId: 'GaussMinigun', mods: {}, legendaryEffects: [] },
+    });
     const heavyBuffed = burstDps({
       weapon: { weaponId: 'GaussMinigun', mods: {}, legendaryEffects: [] },
       consumables: ['BobbleHead_BigGuns_Potion'],
     });
-    const rifleBase = burstDps({ weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [] } });
+    const rifleBase = burstDps({
+      weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [] },
+    });
     const rifleBuffed = burstDps({
       weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [] },
       consumables: ['BobbleHead_BigGuns_Potion'],
@@ -37,7 +41,9 @@ describe('magazine/bobblehead wiring (buffValueOverrides → resolveLoadout → 
       weapon: { weaponId: 'Knife', mods: {}, legendaryEffects: [] },
       consumables: ['Magazine_USCovertOps08_Potion'],
     });
-    const heavyBase = burstDps({ weapon: { weaponId: 'GaussMinigun', mods: {}, legendaryEffects: [] } });
+    const heavyBase = burstDps({
+      weapon: { weaponId: 'GaussMinigun', mods: {}, legendaryEffects: [] },
+    });
     const heavyBuffed = burstDps({
       weapon: { weaponId: 'GaussMinigun', mods: {}, legendaryEffects: [] },
       consumables: ['Magazine_USCovertOps08_Potion'],
@@ -73,12 +79,12 @@ describe('magazine/bobblehead wiring (buffValueOverrides → resolveLoadout → 
     const magazineOnly = resolveStats(
       { ...createDefaultPlayerConfig(), consumables: ['Magazine_LiveAndLove05_Potion'] },
       createDefaultEnemyConfig(),
-      'live'
+      'live',
     );
     const alcoholOnly = resolveStats(
       { ...createDefaultPlayerConfig(), consumables: ['Brew_BlackwaterBrew'] },
       createDefaultEnemyConfig(),
-      'live'
+      'live',
     );
     const magazineAndAlcohol = resolveStats(
       {
@@ -86,7 +92,7 @@ describe('magazine/bobblehead wiring (buffValueOverrides → resolveLoadout → 
         consumables: ['Magazine_LiveAndLove05_Potion', 'Brew_BlackwaterBrew'],
       },
       createDefaultEnemyConfig(),
-      'live'
+      'live',
     );
 
     expect(magazineOnly.special.luck).toBe(15);
