@@ -1,5 +1,5 @@
 import { EsmClient, mapPool } from './esm-client';
-import { CobjIndex, CobjInfo, isNonGrantingCobj } from './cobj-index';
+import { isNonGrantingCobj, type CobjIndex, type CobjInfo } from './cobj-index';
 
 /**
  * Player-obtainability derivation via reverse references (`esm refs`).
@@ -120,24 +120,37 @@ export class ObtainabilityClassifier {
    *  chase always starts its LVLI walks at depth 0. */
   private bookCache = new Map<string, boolean>();
 
-  constructor(
-    private client: EsmClient,
-    /** Weapons already ruled obtainable — an OMOD referenced by one rides along. */
-    private obtainableWeaponFormIds: ReadonlySet<string> = new Set(),
-    /** Forward COBJ index (buildCobjIndex). When present, COBJ referencers are
-     *  gated by their Learn Method: plan-taught recipes must have an obtainable
-     *  BOOK, scrap-taught ones an obtainable scrap source. Absent (the
-     *  weapons/buffs passes) every non-stub COBJ grants, as before. */
-    private cobjIndex?: CobjIndex,
-    /** Armor pieces already ruled obtainable (extract-armor.ts) — an OMOD
-     *  referenced by one rides along, the ARMO-record parallel of
-     *  `obtainableWeaponFormIds` (Phase 3 armor pipeline, 2026-07-18). */
-    private obtainableArmorFormIds: ReadonlySet<string> = new Set()
-  ) {}
+  private client: EsmClient;
+  /** Weapons already ruled obtainable — an OMOD referenced by one rides along. */
+  private obtainableWeaponFormIds: ReadonlySet<string>;
+  /** Forward COBJ index (buildCobjIndex). When present, COBJ referencers are
+   *  gated by their Learn Method: plan-taught recipes must have an obtainable
+   *  BOOK, scrap-taught ones an obtainable scrap source. Absent (the
+   *  weapons/buffs passes) every non-stub COBJ grants, as before. */
+  private cobjIndex?: CobjIndex;
+  /** Armor pieces already ruled obtainable (extract-armor.ts) — an OMOD
+   *  referenced by one rides along, the ARMO-record parallel of
+   *  `obtainableWeaponFormIds` (Phase 3 armor pipeline, 2026-07-18). */
+  private obtainableArmorFormIds: ReadonlySet<string>;
 
-  async classify(candidates: ObtainabilityCandidate[], concurrency = 8): Promise<Map<string, ObtainabilityVerdict>> {
+  constructor(
+    client: EsmClient,
+    obtainableWeaponFormIds: ReadonlySet<string> = new Set(),
+    cobjIndex?: CobjIndex,
+    obtainableArmorFormIds: ReadonlySet<string> = new Set(),
+  ) {
+    this.client = client;
+    this.obtainableWeaponFormIds = obtainableWeaponFormIds;
+    this.cobjIndex = cobjIndex;
+    this.obtainableArmorFormIds = obtainableArmorFormIds;
+  }
+
+  async classify(
+    candidates: ObtainabilityCandidate[],
+    concurrency = 8,
+  ): Promise<Map<string, ObtainabilityVerdict>> {
     const verdicts = new Map<string, ObtainabilityVerdict>();
-    await mapPool(candidates, concurrency, async candidate => {
+    await mapPool(candidates, concurrency, async (candidate) => {
       verdicts.set(candidate.formId, await this.classifyOne(candidate));
     });
     return verdicts;
@@ -262,7 +275,8 @@ export class ObtainabilityClassifier {
           break;
         }
       }
-      if (!obtainable && lvlis.length > 0 && !signals.includes('npcLvliOnly')) signals.push('npcLvliOnly');
+      if (!obtainable && lvlis.length > 0 && !signals.includes('npcLvliOnly'))
+        signals.push('npcLvliOnly');
     }
 
     // OMOD referencers are usually modcol_* collections: a weapon references
@@ -296,7 +310,11 @@ export class ObtainabilityClassifier {
 
   /** An ALCH referencer (the previous state in a ferment/spoil chain) proves
    *  access when its own referencer chain reaches a player-facing type. */
-  private async isPlayerFacingAlch(formId: string, depth: number, chain: Set<string>): Promise<boolean> {
+  private async isPlayerFacingAlch(
+    formId: string,
+    depth: number,
+    chain: Set<string>,
+  ): Promise<boolean> {
     const cached = this.alchCache.get(formId);
     if (cached !== undefined) return cached;
     if (depth > ALCH_DEPTH_CAP || chain.has(formId)) return false;
@@ -310,10 +328,13 @@ export class ObtainabilityClassifier {
     chain.add(formId);
 
     let result = refs.some(
-      ref =>
+      (ref) =>
         !JUNK_REFERRER_RE.test(ref.editor_id) &&
-        !(ref.record_type === 'COBJ' && isNonGrantingCobj(this.cobjIndex?.byFormId.get(ref.form_id), ref.editor_id)) &&
-        OBTAINABLE_REF_TYPES[ref.record_type] !== undefined
+        !(
+          ref.record_type === 'COBJ' &&
+          isNonGrantingCobj(this.cobjIndex?.byFormId.get(ref.form_id), ref.editor_id)
+        ) &&
+        OBTAINABLE_REF_TYPES[ref.record_type] !== undefined,
     );
     if (!result) {
       for (const ref of refs) {
@@ -350,10 +371,10 @@ export class ObtainabilityClassifier {
       return false;
     }
     const result = refs.some(
-      ref =>
+      (ref) =>
         ref.record_type === 'COBJ' &&
         !JUNK_REFERRER_RE.test(ref.editor_id) &&
-        !isNonGrantingCobj(this.cobjIndex?.byFormId.get(ref.form_id), ref.editor_id)
+        !isNonGrantingCobj(this.cobjIndex?.byFormId.get(ref.form_id), ref.editor_id),
     );
     this.actiCache.set(formId, result);
     return result;
@@ -377,11 +398,11 @@ export class ObtainabilityClassifier {
     }
 
     let result = refs.some(
-      ref =>
+      (ref) =>
         !JUNK_REFERRER_RE.test(ref.editor_id) &&
         ref.record_type !== 'COBJ' &&
         !(ref.record_type === 'FLST' && /exclude/i.test(ref.editor_id)) &&
-        OBTAINABLE_REF_TYPES[ref.record_type] !== undefined
+        OBTAINABLE_REF_TYPES[ref.record_type] !== undefined,
     );
     if (!result) {
       for (const ref of refs) {
@@ -398,7 +419,11 @@ export class ObtainabilityClassifier {
 
   /** An OMOD referencer (mod collection / including mod) proves access when
    *  its own referencer chain reaches an obtainable weapon, COBJ, MISC, etc. */
-  private async isPlayerFacingOmod(formId: string, depth: number, chain: Set<string>): Promise<boolean> {
+  private async isPlayerFacingOmod(
+    formId: string,
+    depth: number,
+    chain: Set<string>,
+  ): Promise<boolean> {
     const cached = this.omodCache.get(formId);
     if (cached !== undefined) return cached;
     if (depth > OMOD_DEPTH_CAP || chain.has(formId)) return false;
@@ -412,12 +437,15 @@ export class ObtainabilityClassifier {
     chain.add(formId);
 
     let result = refs.some(
-      ref =>
+      (ref) =>
         !JUNK_REFERRER_RE.test(ref.editor_id) &&
-        !(ref.record_type === 'COBJ' && isNonGrantingCobj(this.cobjIndex?.byFormId.get(ref.form_id), ref.editor_id)) &&
+        !(
+          ref.record_type === 'COBJ' &&
+          isNonGrantingCobj(this.cobjIndex?.byFormId.get(ref.form_id), ref.editor_id)
+        ) &&
         (OBTAINABLE_REF_TYPES[ref.record_type] !== undefined ||
           (ref.record_type === 'WEAP' && this.obtainableWeaponFormIds.has(ref.form_id)) ||
-          (ref.record_type === 'ARMO' && this.obtainableArmorFormIds.has(ref.form_id)))
+          (ref.record_type === 'ARMO' && this.obtainableArmorFormIds.has(ref.form_id))),
     );
     if (!result) {
       for (const ref of refs) {
@@ -436,7 +464,12 @@ export class ObtainabilityClassifier {
    *  loot (non-QA CONT/GMRW/QUST, or a RESO camp generator's produce list)
    *  rather than only NPC loadouts. A dispensing ACTI counts too, but only if
    *  the player can build it (see isCraftableActi). */
-  private async isPlayerFacingLvli(formId: string, depth: number, chain: Set<string>, cap = LVLI_DEPTH_CAP): Promise<boolean> {
+  private async isPlayerFacingLvli(
+    formId: string,
+    depth: number,
+    chain: Set<string>,
+    cap = LVLI_DEPTH_CAP,
+  ): Promise<boolean> {
     // Verdicts are cap-specific: a `false` under the shallow default cap may
     // be a truncation that the deeper book-chase cap would walk through.
     const cacheKey = `${cap}:${formId}`;
@@ -453,7 +486,7 @@ export class ObtainabilityClassifier {
     chain.add(formId);
 
     let result = refs.some(
-      ref => !JUNK_REFERRER_RE.test(ref.editor_id) && LVLI_TERMINAL_TYPES.has(ref.record_type)
+      (ref) => !JUNK_REFERRER_RE.test(ref.editor_id) && LVLI_TERMINAL_TYPES.has(ref.record_type),
     );
     if (!result) {
       for (const ref of refs) {

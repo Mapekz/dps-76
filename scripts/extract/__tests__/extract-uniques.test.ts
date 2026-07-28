@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import type { GeneratedOmod, GeneratedWeapon } from '../../src/types/generated';
+import type { GeneratedOmod, GeneratedWeapon } from '../../../src/types/generated';
 import type { EsmClient, EsmRecord } from '../esm-client';
 import { extractUniques } from '../extract-uniques';
 import doubleBarrel from './fixtures/weap-double-barrel-shotgun.json';
@@ -74,7 +74,9 @@ const weapons: GeneratedWeapon[] = [
     name: 'Double-Barrel Shotgun',
     weaponTypeName: 'Gun',
     keywords: [],
-    components: [{ damageType: 'ballistic', damageTypeEdid: null, amount: 1, tier: 1, curve: null }],
+    components: [
+      { damageType: 'ballistic', damageTypeEdid: null, amount: 1, tier: 1, curve: null },
+    ],
     isAutomaticFlag: false,
     critDamageMult: 2,
     critChargeBonus: 1,
@@ -121,7 +123,7 @@ const stubClient = {
 describe('extractUniques', () => {
   it('emits identity, preset mods, and positional legendaries from named combinations', async () => {
     const { uniques } = await extractUniques(stubClient, weapons, omods);
-    const salt = uniques.find(u => u.id === 'mod_Custom_SaltOfTheEarth');
+    const salt = uniques.find((u) => u.id === 'mod_Custom_SaltOfTheEarth');
     expect(salt).toMatchObject({
       name: 'Salt of the Earth',
       baseWeaponId: 'DoubleBarrelShotgun',
@@ -135,7 +137,11 @@ describe('extractUniques', () => {
     // fallback (not in `omods`) — regression guard for the 2026-07-15
     // legendary-null-truncation bug (Foundation's Vengeance/Cryptid Jawbone
     // Knife both had their random ★2/★3 silently dropped instead of null'd).
-    const cold = uniques.find(u => u.id === 'mod_custom_Coldshoulder_DmgvsCryptid');
-    expect(cold?.legendaryEffects).toEqual(['mod_Legendary_Weapon1_Guns_AmmoCapacity4x', null, null]);
+    const cold = uniques.find((u) => u.id === 'mod_custom_Coldshoulder_DmgvsCryptid');
+    expect(cold?.legendaryEffects).toEqual([
+      'mod_Legendary_Weapon1_Guns_AmmoCapacity4x',
+      null,
+      null,
+    ]);
   });
 });

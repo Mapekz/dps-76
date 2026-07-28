@@ -42,10 +42,13 @@ export interface EsmRefRow {
  *   unlike the single-target form, a bad selector doesn't fail the whole call.
  */
 export class EsmClient {
+  private esmPath: string;
   private getCache = new Map<string, Promise<EsmRecord>>();
   private refsCache = new Map<string, Promise<EsmRefRow[]>>();
 
-  constructor(private esmPath: string) {}
+  constructor(esmPath: string) {
+    this.esmPath = esmPath;
+  }
 
   private async run(args: string[]): Promise<string> {
     const { stdout } = await execFileAsync('esm', ['-p', '--esm', this.esmPath, ...args], {
@@ -63,7 +66,7 @@ export class EsmClient {
   /** Search by pattern; "*" matches all. `searchIn: 'name'` restricts to records with a localized name. */
   async search(
     pattern: string,
-    opts: { type?: string; searchIn?: 'edid' | 'name' | 'both'; limit?: number } = {}
+    opts: { type?: string; searchIn?: 'edid' | 'name' | 'both'; limit?: number } = {},
   ): Promise<EsmListRow[]> {
     const args = ['search', pattern, '--limit', String(opts.limit ?? 99999), '--json'];
     if (opts.type) args.push('--type', opts.type);
@@ -75,7 +78,7 @@ export class EsmClient {
   get(target: string): Promise<EsmRecord> {
     let cached = this.getCache.get(target);
     if (!cached) {
-      cached = this.run(['get', target, '--json']).then(out => JSON.parse(out));
+      cached = this.run(['get', target, '--json']).then((out) => JSON.parse(out));
       this.getCache.set(target, cached);
     }
     return cached;
@@ -88,31 +91,31 @@ export class EsmClient {
    * `targets`, duplicates included.
    */
   bulkGet(targets: string[]): Promise<EsmRecord[]> {
-    const uncached = [...new Set(targets)].filter(t => !this.getCache.has(t));
+    const uncached = [...new Set(targets)].filter((t) => !this.getCache.has(t));
     if (uncached.length === 1) {
       // The CLI's multi-selector form only activates for 2+ targets; a
       // single uncached target just goes through the classic get() path.
       void this.get(uncached[0]);
     } else if (uncached.length > 1) {
       const bulk = this.run(['get', ...uncached, '--json']).then(
-        out => JSON.parse(out) as Array<{ sel: string; error?: string } & Partial<EsmRecord>>
+        (out) => JSON.parse(out) as Array<{ sel: string; error?: string } & Partial<EsmRecord>>,
       );
       for (const target of uncached) {
         this.getCache.set(
           target,
-          bulk.then(entries => {
-            const entry = entries.find(e => e.sel === target);
+          bulk.then((entries) => {
+            const entry = entries.find((e) => e.sel === target);
             if (!entry || entry.error) {
               throw new Error(`esm get ${target}: ${entry?.error ?? 'missing from bulk response'}`);
             }
             const record: Partial<typeof entry> = { ...entry };
             delete record.sel;
             return record as EsmRecord;
-          })
+          }),
         );
       }
     }
-    return Promise.all(targets.map(t => this.get(t)));
+    return Promise.all(targets.map((t) => this.get(t)));
   }
 
   /**
@@ -129,7 +132,7 @@ export class EsmClient {
    */
   refs(
     formId: string,
-    opts: { depth?: number; limit?: number; type?: string; paths?: boolean } = {}
+    opts: { depth?: number; limit?: number; type?: string; paths?: boolean } = {},
   ): Promise<EsmRefRow[]> {
     const depth = opts.depth ?? 1;
     const limit = opts.limit ?? 4000;
@@ -142,7 +145,7 @@ export class EsmClient {
       if (type) args.push('--type', type);
       if (paths) args.push('--paths');
       args.push('--json');
-      cached = this.run(args).then(out => JSON.parse(out));
+      cached = this.run(args).then((out) => JSON.parse(out));
       this.refsCache.set(key, cached);
     }
     return cached;
@@ -160,7 +163,11 @@ export class EsmClient {
 }
 
 /** Run `fn` over `items` with bounded concurrency, preserving order. */
-export async function mapPool<T, R>(items: T[], concurrency: number, fn: (item: T, i: number) => Promise<R>): Promise<R[]> {
+export async function mapPool<T, R>(
+  items: T[],
+  concurrency: number,
+  fn: (item: T, i: number) => Promise<R>,
+): Promise<R[]> {
   const results = new Array<R>(items.length);
   let next = 0;
   async function worker() {

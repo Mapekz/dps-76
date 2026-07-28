@@ -14,8 +14,10 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { weapons } from '../src/data/live/weapons';
+import { getWeapons } from '../src/data';
 import { VETTED_WEAPON_IDS } from '../src/data/vetted-weapons';
+
+const weapons = getWeapons('live');
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -32,7 +34,8 @@ function loadMeta(): MetaShape | null {
 
 // Heuristic red flags for newly-appearing records — the same signals used in
 // the 2026-07-12 vetting pass. A hit is a review prompt, not a verdict.
-const SUSPICIOUS_EDID = /^(W0\d_MQ|AC_MQ|V9\d_|LC\d|RD0\d|SDOW|Burn_|DailyOps|CharGen|Creature_|CUT_|Workshop|PharmaBot)/i;
+const SUSPICIOUS_EDID =
+  /^(W0\d_MQ|AC_MQ|V9\d_|LC\d|RD0\d|SDOW|Burn_|DailyOps|CharGen|Creature_|CUT_|Workshop|PharmaBot)/i;
 const SUSPICIOUS_KEYWORDS = ['WeaponTypeNonOffensive', 'BlockVATS', 'ObjectTypeCamera'];
 
 function flagsFor(id: string): string[] {
@@ -47,8 +50,8 @@ const visible = Object.keys(weapons).sort();
 const pinned = new Set<string>(VETTED_WEAPON_IDS);
 const visibleSet = new Set(visible);
 
-const added = visible.filter(id => !pinned.has(id));
-const removed = [...pinned].filter(id => !visibleSet.has(id)).sort();
+const added = visible.filter((id) => !pinned.has(id));
+const removed = [...pinned].filter((id) => !visibleSet.has(id)).sort();
 
 console.log(`# Weapon roster vetting report\n`);
 console.log(`Visible: ${visible.length} · Pinned: ${pinned.size}\n`);
@@ -68,7 +71,7 @@ for (const id of removed) {
   if (meta?.excluded) {
     for (const [bucket, ids] of Object.entries(meta.excluded)) {
       if (ids.includes(id)) {
-        const detail = meta.excludedDetailed?.weaponUnobtainable?.find(d => d.id === id);
+        const detail = meta.excludedDetailed?.weaponUnobtainable?.find((d) => d.id === id);
         where = `excluded.${bucket}${detail?.signals?.length ? ` [${detail.signals.join(', ')}]` : ''}`;
         break;
       }
@@ -89,7 +92,9 @@ if (dupes.length === 0) console.log('_none_');
 for (const [name, ids] of dupes) console.log(`- "${name}": ${ids.join(', ')}`);
 
 if (!meta) {
-  console.log('\n_(no local _meta.json — excluded-bucket locations unavailable; run `pnpm extract` to produce one)_');
+  console.log(
+    '\n_(no local _meta.json — excluded-bucket locations unavailable; run `pnpm extract` to produce one)_',
+  );
 }
 
 process.exitCode = added.length + removed.length > 0 ? 1 : 0;

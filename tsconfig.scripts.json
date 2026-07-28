@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.scripts.tsbuildinfo",
+    "target": "ES2023",
+    "useDefineForClassFields": true,
+    /* union of tsconfig.app.json's browser lib and tsconfig.node.json's ES2023 —
+       scripts/extract reaches into src/ via relative imports, so both environments
+       need to type-check within this one program (see comment below on "references") */
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    /* "node" for scripts' own fs/path/process use; "vite/client" so the src/ files
+       this program re-checks still see import.meta.env etc. */
+    "types": ["node", "vite/client"],
+    "skipLibCheck": true,
+    "stableTypeOrdering": true,
+
+    /* Path Resolution */
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  },
+  /* Not wired in as a project reference from tsconfig.app.json: TS7 still enforces
+     TS6310 ("referenced project may not disable emit") on any noEmit project used
+     as a reference target, and this repo deliberately keeps every project noEmit
+     (Vite does the real transpile/bundle). Including "src" here re-checks it under
+     a second, standalone program instead — redundant with tsconfig.app.json's own
+     check, but cheap under TS7 (~1-2s) and avoids adding a declaration-emit output
+     this project doesn't otherwise have. */
+  "include": ["scripts", "src"]
+}

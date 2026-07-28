@@ -10,9 +10,13 @@ import {
   type MgefTranslationDeps,
 } from './normalize/mgef';
 import { translateConditions } from './normalize/conditions';
-import { DAMAGE_TYPE_EDID_MAP, decodeExplosionDamage, projectileExplosionFormId } from './normalize/explosion';
+import {
+  DAMAGE_TYPE_EDID_MAP,
+  decodeExplosionDamage,
+  projectileExplosionFormId,
+} from './normalize/explosion';
 import { ObtainabilityClassifier } from './obtainability';
-import { CobjIndex, emptyCobjIndex, isNonGrantingCobj } from './cobj-index';
+import { emptyCobjIndex, isNonGrantingCobj, type CobjIndex } from './cobj-index';
 
 /**
  * OMOD extraction. A weapon mod's real stats usually live on _PARENT_ template
@@ -135,39 +139,93 @@ const PROPERTY_BUCKETS: Record<string, PropertyMapping> = {
 
 /** Property names that never affect the damage formula — skipped without reporting. */
 const PROPERTY_IGNORED = new Set([
-  'Weight', 'Value', 'Health', 'Ammo', 'Reach',
-  'AimModelBaseStability', 'AimModelRecoilMaxDegPerShot',
+  'Weight',
+  'Value',
+  'Health',
+  'Ammo',
+  'Reach',
+  'AimModelBaseStability',
+  'AimModelRecoilMaxDegPerShot',
   // NOTE: 'AttackDamage' and 'DamageTypeValues' are handled explicitly below
   // (they scale component base damage), not ignored.
-  'AimModelRecoilMinDegPerShot', 'AimModelRecoilArcDeg', 'AimModelRecoilArcRotateDeg',
-  'AimModelConeIronSightsMultiplier', 'AimModelMinConeDegrees', 'AimModelMaxConeDegrees',
-  'AimModelConeSneakMultiplier', 'AimModelConeIncreasePerShot', 'AimModelConeDecreasePerSec',
-  'ZoomDataFOVMult', 'ZoomDataOverlay', 'ZoomDataIsModFormID', 'HitBehavior', 'Rank',
-  'ColorRemappingIndex', 'MaterialSwaps', 'ModelSection', 'SoundLevel', 'NPCsUseAmmo',
+  'AimModelRecoilMinDegPerShot',
+  'AimModelRecoilArcDeg',
+  'AimModelRecoilArcRotateDeg',
+  'AimModelConeIronSightsMultiplier',
+  'AimModelMinConeDegrees',
+  'AimModelMaxConeDegrees',
+  'AimModelConeSneakMultiplier',
+  'AimModelConeIncreasePerShot',
+  'AimModelConeDecreasePerSec',
+  'ZoomDataFOVMult',
+  'ZoomDataOverlay',
+  'ZoomDataIsModFormID',
+  'HitBehavior',
+  'Rank',
+  'ColorRemappingIndex',
+  'MaterialSwaps',
+  'ModelSection',
+  'SoundLevel',
+  'NPCsUseAmmo',
   'ActionPointCost',
   // 'MinPowerPerShot' — stale pre-rename field name: the esm CLI renamed this
   // Data property twice ("Min Power Per Shot" → "Max Power Per Shot" →
   // "Full Power Damage Mult", which IS mapped above), superseded.
-  'MinPowerPerShot', 'Stagger', 'SightedTransitionSeconds', 'AccuracyBonus',
-  'HasScope', 'BoltAction', 'BashImpactDataSet', 'BlockMaterial', 'EnableMarts',
-  'VerticalRecoilMult', 'HorizontalRecoilMult', 'ConditionDamageScale', 'DisableSighted',
-  'AimAssistModel', 'AimModel', 'AimModelConeDecreaseDelayMs',
-  'AimModelRecoilDiminishSightsMult', 'AimModelRecoilDiminishSpringForce', 'AimModelRecoilHipMult',
-  'AimModelRecoilShotsForRunaway', 'AmmoConsumption', 'AttackSound', 'CritEffect', 'Durability',
-  'EquipSlot', 'EquipSound', 'FastEquipSound', 'HasAlternateRumble', 'HasRepeatableSingleFire',
+  'MinPowerPerShot',
+  'Stagger',
+  'SightedTransitionSeconds',
+  'AccuracyBonus',
+  'HasScope',
+  'BoltAction',
+  'BashImpactDataSet',
+  'BlockMaterial',
+  'EnableMarts',
+  'VerticalRecoilMult',
+  'HorizontalRecoilMult',
+  'ConditionDamageScale',
+  'DisableSighted',
+  'AimAssistModel',
+  'AimModel',
+  'AimModelConeDecreaseDelayMs',
+  'AimModelRecoilDiminishSightsMult',
+  'AimModelRecoilDiminishSpringForce',
+  'AimModelRecoilHipMult',
+  'AimModelRecoilShotsForRunaway',
+  'AmmoConsumption',
+  'AttackSound',
+  'CritEffect',
+  'Durability',
+  'EquipSlot',
+  'EquipSound',
+  'FastEquipSound',
+  'HasAlternateRumble',
+  'HasRepeatableSingleFire',
   'HitBehaviour',
   // 'HoldInputToPower' — the app's charging gate is numeric (effective
   // FullPowerSeconds/FullPowerDamageMult > 0, see src/lib/charge.ts), not this
   // flag: laser sniper barrels set charge values WITHOUT carrying it.
-  'HoldInputToPower', 'IdleSound', 'ImpactDataSet', 'MinWeaponDrawTime',
-  'ModelSwap', 'NPCAmmoList',
+  'HoldInputToPower',
+  'IdleSound',
+  'ImpactDataSet',
+  'MinWeaponDrawTime',
+  'ModelSwap',
+  'NPCAmmoList',
   // 'OverheatRateDown'/'OverheatRateUp' — overheat is broken in-game (V63
   // carbine / gauss minigun), deliberately unmodeled.
-  'OverheatRateDown', 'OverheatRateUp',
+  'OverheatRateDown',
+  'OverheatRateUp',
   // NOTE: 'OverrideProjectile' is handled explicitly below (Lobber Barrel /
   // Polar Lobber launcher-hazard chase), not ignored.
-  'SecondaryDamage', 'SoundTagSet', 'UnEquipSound', 'Unknown', 'UnsightedTransitionSeconds',
-  'WeightMult', 'ZoomData', 'ZoomDataCameraOffsetX', 'ZoomDataCameraOffsetY', 'ZoomDataCameraOffsetZ',
+  'SecondaryDamage',
+  'SoundTagSet',
+  'UnEquipSound',
+  'Unknown',
+  'UnsightedTransitionSeconds',
+  'WeightMult',
+  'ZoomData',
+  'ZoomDataCameraOffsetX',
+  'ZoomDataCameraOffsetY',
+  'ZoomDataCameraOffsetZ',
   // Armor-only cosmetic properties (Phase 3 armor pipeline, 2026-07-18 full-
   // extraction sweep — no weapon-side equivalent to alias, unlike the
   // PROPERTY_NAME_ALIASES set above): 'Addon Index' picks a material/size
@@ -175,7 +233,9 @@ const PROPERTY_IGNORED = new Set([
   // slot, 'Body Part' scopes a paint/material SET to one biped part — all
   // three are cosmetic-only (paint sets, material swaps), never damage-
   // relevant.
-  'Addon Index', 'Biped World Model', 'Body Part',
+  'Addon Index',
+  'Biped World Model',
+  'Body Part',
 ]);
 
 // Dev/dead-record prefixes that never reach players (case-insensitive; the
@@ -224,7 +284,10 @@ export type OmodRecordExclusion = 'wrongFormType' | 'authoringTemplate' | 'junkE
  *   template may legitimately include one, so the grant index keeps these
  *   as seed-only entries.
  */
-export function classifyOmodRecordExclusion(record: EsmRecord, allowedFormTypes: ReadonlySet<string>): OmodRecordExclusion | null {
+export function classifyOmodRecordExclusion(
+  record: EsmRecord,
+  allowedFormTypes: ReadonlySet<string>,
+): OmodRecordExclusion | null {
   const data = omodData(record);
   const formType = ((data['Form Type'] as Record<string, unknown>)?.['name'] as string) ?? '';
   if (!allowedFormTypes.has(formType)) return 'wrongFormType';
@@ -300,15 +363,21 @@ export function propertyName(raw: unknown): string {
 function parseProperties(data: Record<string, unknown>): RawProperty[] {
   const props = data['Properties'];
   if (!Array.isArray(props)) return [];
-  return (props as Array<Record<string, unknown>>).map(p => {
-    const curveNode = p['Curve Table'] as { curve?: Array<{ x: number; y: number }> } | null | undefined;
+  return (props as Array<Record<string, unknown>>).map((p) => {
+    const curveNode = p['Curve Table'] as
+      | { curve?: Array<{ x: number; y: number }> }
+      | null
+      | undefined;
     return {
-      functionType: (((p['Function Type'] as Record<string, unknown>)?.['name'] as string) ?? 'SET').replace('MUL+ADD', 'MUL_ADD'),
+      functionType: (
+        ((p['Function Type'] as Record<string, unknown>)?.['name'] as string) ?? 'SET'
+      ).replace('MUL+ADD', 'MUL_ADD'),
       property: propertyName(p['Property']),
       value1: p['Value 1'],
       value2: p['Value 2'],
       hasCurveTable: p['Curve Table'] != null,
-      curvePoints: Array.isArray(curveNode?.curve) && curveNode.curve.length > 0 ? curveNode.curve : null,
+      curvePoints:
+        Array.isArray(curveNode?.curve) && curveNode.curve.length > 0 ? curveNode.curve : null,
     };
   });
 }
@@ -333,7 +402,7 @@ function includeFormIds(data: Record<string, unknown>): string[] {
   const includes = data['Includes'];
   if (!Array.isArray(includes)) return [];
   return (includes as Array<Record<string, unknown>>)
-    .map(i => i['Mod'])
+    .map((i) => i['Mod'])
     .filter((m): m is string => typeof m === 'string');
 }
 
@@ -341,14 +410,15 @@ function includeFormIds(data: Record<string, unknown>): string[] {
  *  npcOnly/noGrantCobj/cobjScrapUnproven) — see obtainability.ts classifyOne.
  *  `armo` (2026-07-18, Phase 3 armor pipeline) is the ARMO-record parallel of
  *  `weap`. */
-const PROVING_SIGNAL_RE = /^(cobj|cobjBook|cobjScrap|gmrw|lgdi|qust|cont|misc|flst|reso|lvli|alch|weap|armo|omod):/;
+const PROVING_SIGNAL_RE =
+  /^(cobj|cobjBook|cobjScrap|gmrw|lgdi|qust|cont|misc|flst|reso|lvli|alch|weap|armo|omod):/;
 /** The inherited subset of proofs: the record rides along on its weapon/armor
  *  (or a mod collection) without any recipe/drop/reward of its own. */
 const INHERITED_SIGNAL_RE = /^(weap|armo|omod):/;
 
 function isWeakEvidence(signals: string[]): boolean {
-  const proofs = signals.filter(s => PROVING_SIGNAL_RE.test(s));
-  return proofs.length > 0 && proofs.every(s => INHERITED_SIGNAL_RE.test(s));
+  const proofs = signals.filter((s) => PROVING_SIGNAL_RE.test(s));
+  return proofs.length > 0 && proofs.every((s) => INHERITED_SIGNAL_RE.test(s));
 }
 
 /** Slots whose mods legitimately have no recipe or drop of their own
@@ -412,11 +482,11 @@ export async function extractOmods(
    * last so every existing weapon-focused call site (tests included) stays
    * unchanged.
    */
-  obtainableArmorFormIds: ReadonlySet<string> = new Set()
+  obtainableArmorFormIds: ReadonlySet<string> = new Set(),
 ): Promise<ExtractOmodsResult> {
   const rows = await client.list('OMOD');
-  const records = await mapPool(rows, 8, r => client.get(r.form_id));
-  const byFormId = new Map(records.map(r => [r.header.form_id, r]));
+  const records = await mapPool(rows, 8, (r) => client.get(r.form_id));
+  const byFormId = new Map(records.map((r) => [r.header.form_id, r]));
 
   const unknownProperties = new Set<string>();
   const notes = new Set<string>();
@@ -443,10 +513,10 @@ export async function extractOmods(
     enchFormId: string,
     source: Modifier['source'],
     into: Modifier[],
-    modNotes: Set<string>
+    modNotes: Set<string>,
   ): Promise<void> {
     const { modifiers, notes, targetType } = await translateEnchantment(mgefDeps, enchFormId);
-    notes.forEach(n => modNotes.add(n));
+    notes.forEach((n) => modNotes.add(n));
     for (const fragment of modifiers) {
       // A Self-delivery ENCH applies to the WIELDER, so a damage-dealing
       // fragment there is self-damage — never weapon output. Xerxos
@@ -490,14 +560,16 @@ export async function extractOmods(
     source: Modifier['source'],
     into: Modifier[],
     modNotes: Set<string>,
-    targetsExplosiveFamily: boolean
+    targetsExplosiveFamily: boolean,
   ): Promise<void> {
     const unresolved: string[] = [];
     let explFormId: string | null;
     try {
       explFormId = await projectileExplosionFormId(client, projFormId);
     } catch (err) {
-      modNotes.add(`OverrideProjectile ${projFormId}: ${err instanceof Error ? err.message : String(err)}`);
+      modNotes.add(
+        `OverrideProjectile ${projFormId}: ${err instanceof Error ? err.message : String(err)}`,
+      );
       return;
     }
     if (!explFormId) return; // no Explosion flag / no Explosion formid — cosmetic mod, nothing to chase.
@@ -510,13 +582,14 @@ export async function extractOmods(
       return;
     }
     const decoded = await decodeExplosionDamage(client, expl, unresolved);
-    unresolved.forEach(u => modNotes.add(u));
+    unresolved.forEach((u) => modNotes.add(u));
 
     const explData = (expl.fields['Data'] ?? {}) as Record<string, unknown>;
     const hazdFormId = explData['Placed Object'] as string | null;
     const hasHazard = !!hazdFormId && hazdFormId !== '0x00000000';
     const hasDirectDamage =
-      decoded.main != null || decoded.typed.some(t => t.damageType !== 'unknown' && (t.curve || t.amount > 0));
+      decoded.main != null ||
+      decoded.typed.some((t) => t.damageType !== 'unknown' && (t.curve || t.amount > 0));
 
     if (targetsExplosiveFamily) {
       // This OMOD targets a weapon family that already carries its own
@@ -532,7 +605,7 @@ export async function extractOmods(
       // payloads").
       if (hasDirectDamage || hasHazard) {
         modNotes.add(
-          `EXPL ${expl.editor_id} targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md "OMOD-chased launcher payloads")`
+          `EXPL ${expl.editor_id} targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md "OMOD-chased launcher payloads")`,
         );
       }
       return;
@@ -555,7 +628,7 @@ export async function extractOmods(
     if (!hasHazard) {
       if (hasDirectDamage) {
         modNotes.add(
-          `EXPL ${expl.editor_id} carries direct damage with no Placed Object hazard — not modeled (docs/assumptions.md "OMOD-chased launcher payloads")`
+          `EXPL ${expl.editor_id} carries direct damage with no Placed Object hazard — not modeled (docs/assumptions.md "OMOD-chased launcher payloads")`,
         );
       }
       return;
@@ -582,7 +655,7 @@ export async function extractOmods(
       // flagged for a follow-up decision rather than silently dropped or
       // guessed at (docs/assumptions.md "OMOD-chased launcher payloads").
       modNotes.add(
-        `EXPL ${expl.editor_id} Base Weapon Damage Mult ${decoded.baseWeaponDamageMult} — not modeled`
+        `EXPL ${expl.editor_id} Base Weapon Damage Mult ${decoded.baseWeaponDamageMult} — not modeled`,
       );
     }
 
@@ -595,18 +668,24 @@ export async function extractOmods(
       return;
     }
     const hazdData = (hazd.fields['Data'] ?? {}) as Record<string, unknown>;
-    const lifetime = typeof hazdData['Lifetime'] === 'number' ? (hazdData['Lifetime'] as number) : undefined;
+    const lifetime =
+      typeof hazdData['Lifetime'] === 'number' ? (hazdData['Lifetime'] as number) : undefined;
     const spelFormId = hazdData['Effect'] as string | null;
     if (!spelFormId || spelFormId === '0x00000000') return;
 
-    const { modifiers: hazardFragments, notes: hazardNotes } = await translateEnchantment(mgefDeps, spelFormId);
-    hazardNotes.forEach(n => modNotes.add(n));
+    const { modifiers: hazardFragments, notes: hazardNotes } = await translateEnchantment(
+      mgefDeps,
+      spelFormId,
+    );
+    hazardNotes.forEach((n) => modNotes.add(n));
     for (const fragment of hazardFragments) {
       into.push({
         id: `${source.formId}:${into.length}`,
         source,
         ...fragment,
-        ...(fragment.bucket === 'dotDamage' && lifetime !== undefined ? { durationSec: lifetime } : {}),
+        ...(fragment.bucket === 'dotDamage' && lifetime !== undefined
+          ? { durationSec: lifetime }
+          : {}),
       });
     }
   }
@@ -619,7 +698,7 @@ export async function extractOmods(
     if (!record) return [];
     const data = omodData(record);
     const own = parseProperties(data);
-    const inherited = includeFormIds(data).flatMap(id => collectProperties(id, seen));
+    const inherited = includeFormIds(data).flatMap((id) => collectProperties(id, seen));
     // Parents first: a child's SET should win over an included parent's.
     return [...inherited, ...own];
   }
@@ -665,13 +744,14 @@ export async function extractOmods(
     '0x00849316': '0x004E89A8', // mod_Legendary_Weapon2_Fire ("Pyro-Technician's") → ap_Legendary2
   };
   const unnamedTemplateMembers: ExcludedRecordDetail[] = [];
-  const named = records.filter(r => {
+  const named = records.filter((r) => {
     const exclusion = classifyOmodRecordExclusion(r, OMOD_ALLOWED_FORM_TYPES);
     if (exclusion === 'junkEdid') excluded.omodJunkEdid.push(r.editor_id);
     if (exclusion === 'unnamed') {
       const data = omodData(r);
       const props = data['Properties'];
-      if (!templateModFormIds.has(r.header.form_id) || !Array.isArray(props) || props.length === 0) return false;
+      if (!templateModFormIds.has(r.header.form_id) || !Array.isArray(props) || props.length === 0)
+        return false;
       const rescued = IDENTITY_ATTACH_POINTS.has(data['Attach Point'] as string);
       unnamedTemplateMembers.push({
         id: r.editor_id,
@@ -692,20 +772,22 @@ export async function extractOmods(
     // values (see classifyOmodRecordExclusion's doc comment).
     const formType = ((data['Form Type'] as Record<string, unknown>)?.['name'] as string) ?? '';
     const targetList = formType === 'Armor' ? armorOmods : omods;
-    const attachPoint = (data['Attach Point'] as string) ?? ATTACH_POINT_OVERRIDES[record.header.form_id] ?? null;
+    const attachPoint =
+      (data['Attach Point'] as string) ?? ATTACH_POINT_OVERRIDES[record.header.form_id] ?? null;
     if (!attachPoint) continue;
 
     const targetKeywords = await Promise.all(
-      (Array.isArray(record.fields['Target OMOD Keywords']) ? (record.fields['Target OMOD Keywords'] as string[]) : []).map(
-        k => client.resolveEdid(k)
-      )
+      (Array.isArray(record.fields['Target OMOD Keywords'])
+        ? (record.fields['Target OMOD Keywords'] as string[])
+        : []
+      ).map((k) => client.resolveEdid(k)),
     );
     // Targets a weapon family that already carries its own fromExplosion
     // component (a launcher — see ExtractWeaponsResult.explosiveFamilyKeywords'
     // doc comment): the OverrideProjectile chase must stay note-only for these,
     // since it would materialize damage ALONGSIDE the weapon's now-stale
     // baseline explosion rather than replacing it.
-    const targetsExplosiveFamily = targetKeywords.some(k => explosiveFamilyKeywords.has(k));
+    const targetsExplosiveFamily = targetKeywords.some((k) => explosiveFamilyKeywords.has(k));
 
     const properties = collectProperties(record.header.form_id, new Set());
     const modifiers: Modifier[] = [];
@@ -758,7 +840,13 @@ export async function extractOmods(
           if (prop.functionType === 'REM') {
             modNotes.add(`removes projectile override ${await client.resolveEdid(prop.value1)}`);
           } else {
-            await overrideProjectileModifiers(prop.value1, source, modifiers, modNotes, targetsExplosiveFamily);
+            await overrideProjectileModifiers(
+              prop.value1,
+              source,
+              modifiers,
+              modNotes,
+              targetsExplosiveFamily,
+            );
           }
         }
         continue;
@@ -774,9 +862,13 @@ export async function extractOmods(
         // note, never a silent drop.
         if (typeof prop.value1 === 'string') {
           const result = await translateGrantedPerk(mgefDeps, record.editor_id, prop.value1);
-          result.notes.forEach(n => modNotes.add(n));
+          result.notes.forEach((n) => modNotes.add(n));
           for (const fragment of result.modifiers) {
-            modifiers.push({ id: `${record.header.form_id}:perk:${modifiers.length}`, source, ...fragment });
+            modifiers.push({
+              id: `${record.header.form_id}:perk:${modifiers.length}`,
+              source,
+              ...fragment,
+            });
           }
         }
         continue;
@@ -795,20 +887,31 @@ export async function extractOmods(
           // ACTOR_VALUE_BUCKETS' doc comment). Same three-way mapping the
           // DamageTypeValues handler below already uses.
           const op =
-            prop.functionType === 'SET' ? ('SET' as const) :
-            prop.functionType === 'MUL_ADD' ? ('MUL_ADD' as const) :
-            ('ADD' as const);
+            prop.functionType === 'SET'
+              ? ('SET' as const)
+              : prop.functionType === 'MUL_ADD'
+                ? ('MUL_ADD' as const)
+                : ('ADD' as const);
           const pushAv = (bucket: Bucket, scale: number, conditions: Modifier['conditions']) => {
             modifiers.push(
               curvePoints
                 ? {
-                    id: `${record.header.form_id}:${modifiers.length}`, source, bucket, op,
-                    curve: { input: 'itemLevel', points: curvePoints }, curveScale: scale, conditions,
+                    id: `${record.header.form_id}:${modifiers.length}`,
+                    source,
+                    bucket,
+                    op,
+                    curve: { input: 'itemLevel', points: curvePoints },
+                    curveScale: scale,
+                    conditions,
                   }
                 : {
-                    id: `${record.header.form_id}:${modifiers.length}`, source, bucket, op,
-                    value: flatValue * scale, conditions,
-                  }
+                    id: `${record.header.form_id}:${modifiers.length}`,
+                    source,
+                    bucket,
+                    op,
+                    value: flatValue * scale,
+                    conditions,
+                  },
             );
           };
           // 1) Plumbing-perk routes (STAT_DamageVsPerk & co.) — bucket, scale,
@@ -819,9 +922,12 @@ export async function extractOmods(
           const avMapping = ACTOR_VALUE_BUCKETS[avEdid];
           if (plumbed) {
             for (const route of plumbed) {
-              const { conditions, unresolved } = translateConditions(route.rawConditions, { edidByFormId, crossFamilyRank });
+              const { conditions, unresolved } = translateConditions(route.rawConditions, {
+                edidByFormId,
+                crossFamilyRank,
+              });
               if (conditions === null) continue;
-              unresolved.forEach(u => modNotes.add(`route(${avEdid}): ${u}`));
+              unresolved.forEach((u) => modNotes.add(`route(${avEdid}): ${u}`));
               pushAv(route.bucket, route.scale, conditions);
             }
           } else if (fallback) {
@@ -844,22 +950,35 @@ export async function extractOmods(
         const curved = prop.curvePoints != null;
         if ((curved || typeof prop.value1 === 'number') && prop.functionType !== 'SET') {
           const op = prop.functionType === 'MUL_ADD' ? ('MUL_ADD' as const) : ('ADD' as const);
-          const conditions: Modifier['conditions'] = [{ kind: 'damageTypeScope', types: ['ballistic'] }];
+          const conditions: Modifier['conditions'] = [
+            { kind: 'damageTypeScope', types: ['ballistic'] },
+          ];
           modifiers.push(
             curved
               ? {
-                  id: `${record.header.form_id}:${modifiers.length}`, source, bucket: 'baseDamage', op,
-                  curve: { input: 'itemLevel', points: prop.curvePoints! }, curveScale: 1, conditions,
+                  id: `${record.header.form_id}:${modifiers.length}`,
+                  source,
+                  bucket: 'baseDamage',
+                  op,
+                  curve: { input: 'itemLevel', points: prop.curvePoints! },
+                  curveScale: 1,
+                  conditions,
                 }
               : {
-                  id: `${record.header.form_id}:${modifiers.length}`, source, bucket: 'baseDamage', op,
-                  value: prop.value1 as number, conditions,
-                }
+                  id: `${record.header.form_id}:${modifiers.length}`,
+                  source,
+                  bucket: 'baseDamage',
+                  op,
+                  value: prop.value1 as number,
+                  conditions,
+                },
           );
         } else if (prop.hasCurveTable && !curved) {
           modNotes.add(`AttackDamage carries an unparsed curve table — not modeled`);
         } else {
-          modNotes.add(`AttackDamage ${prop.functionType} with value ${JSON.stringify(prop.value1)} — unhandled`);
+          modNotes.add(
+            `AttackDamage ${prop.functionType} with value ${JSON.stringify(prop.value1)} — unhandled`,
+          );
         }
         continue;
       }
@@ -874,28 +993,47 @@ export async function extractOmods(
           const dtEdid = await client.resolveEdid(prop.value1);
           const damageType = DAMAGE_TYPE_EDID_MAP[dtEdid];
           const curved = prop.curvePoints != null;
-          if (damageType && damageType !== 'unknown' && (curved || typeof prop.value2 === 'number')) {
+          if (
+            damageType &&
+            damageType !== 'unknown' &&
+            (curved || typeof prop.value2 === 'number')
+          ) {
             const op =
-              prop.functionType === 'SET' ? ('SET' as const) :
-              prop.functionType === 'MUL_ADD' ? ('MUL_ADD' as const) :
-              ('ADD' as const);
-            const conditions: Modifier['conditions'] = [{ kind: 'damageTypeScope', types: [damageType] }];
+              prop.functionType === 'SET'
+                ? ('SET' as const)
+                : prop.functionType === 'MUL_ADD'
+                  ? ('MUL_ADD' as const)
+                  : ('ADD' as const);
+            const conditions: Modifier['conditions'] = [
+              { kind: 'damageTypeScope', types: [damageType] },
+            ];
             modifiers.push(
               curved
                 ? {
-                    id: `${record.header.form_id}:${modifiers.length}`, source, bucket: 'baseDamage', op,
-                    curve: { input: 'itemLevel', points: prop.curvePoints! }, curveScale: 1, conditions,
+                    id: `${record.header.form_id}:${modifiers.length}`,
+                    source,
+                    bucket: 'baseDamage',
+                    op,
+                    curve: { input: 'itemLevel', points: prop.curvePoints! },
+                    curveScale: 1,
+                    conditions,
                   }
                 : {
-                    id: `${record.header.form_id}:${modifiers.length}`, source, bucket: 'baseDamage', op,
-                    value: prop.value2 as number, conditions,
-                  }
+                    id: `${record.header.form_id}:${modifiers.length}`,
+                    source,
+                    bucket: 'baseDamage',
+                    op,
+                    value: prop.value2 as number,
+                    conditions,
+                  },
             );
           } else {
             modNotes.add(`DamageTypeValues ${prop.functionType} on unmapped type ${dtEdid}`);
           }
         } else {
-          modNotes.add(`DamageTypeValues ${prop.functionType} with non-formid value1 ${JSON.stringify(prop.value1)} — unhandled`);
+          modNotes.add(
+            `DamageTypeValues ${prop.functionType} with non-formid value1 ${JSON.stringify(prop.value1)} — unhandled`,
+          );
         }
         continue;
       }
@@ -907,7 +1045,8 @@ export async function extractOmods(
       }
       if (prop.curvePoints) {
         // A curve table overrides the hardcoded value: Y at X = item level.
-        const op = prop.functionType === 'SET' ? 'SET' : prop.functionType === 'MUL_ADD' ? 'MUL_ADD' : 'ADD';
+        const op =
+          prop.functionType === 'SET' ? 'SET' : prop.functionType === 'MUL_ADD' ? 'MUL_ADD' : 'ADD';
         const bucket = op === 'ADD' && mapping.addBucket ? mapping.addBucket : mapping.bucket;
         modifiers.push({
           id: `${record.header.form_id}:${modifiers.length}`,
@@ -930,14 +1069,19 @@ export async function extractOmods(
         value = prop.value1;
       } else if (typeof prop.value1 === 'boolean') {
         value = prop.value1 ? 1 : 0;
-      } else if (prop.value1 && typeof prop.value1 === 'object' && 'value' in (prop.value1 as object)) {
+      } else if (
+        prop.value1 &&
+        typeof prop.value1 === 'object' &&
+        'value' in (prop.value1 as object)
+      ) {
         value = ((prop.value1 as Record<string, unknown>)['value'] as number) ?? 0;
       } else {
         notes.add(`${record.editor_id}: ${prop.property} has non-numeric value`);
         continue;
       }
 
-      const op = prop.functionType === 'SET' ? 'SET' : prop.functionType === 'MUL_ADD' ? 'MUL_ADD' : 'ADD';
+      const op =
+        prop.functionType === 'SET' ? 'SET' : prop.functionType === 'MUL_ADD' ? 'MUL_ADD' : 'ADD';
       const bucket = op === 'ADD' && mapping.addBucket ? mapping.addBucket : mapping.bucket;
       modifiers.push({
         id: `${record.header.form_id}:${modifiers.length}`,
@@ -951,7 +1095,7 @@ export async function extractOmods(
 
     for (const note of modNotes) notes.add(`${record.editor_id}: ${note}`);
     const hasGrantingCobj = (cobjIndex.byCreatedObject.get(record.header.form_id) ?? []).some(
-      c => !isNonGrantingCobj(c, c.edid)
+      (c) => !isNonGrantingCobj(c, c.edid),
     );
     targetList.push({
       id: record.editor_id,
@@ -974,9 +1118,16 @@ export async function extractOmods(
   // One classifier + one classify() call over BOTH weapon and armor OMODs
   // together (armor OMODs additionally ride on obtainableArmorFormIds via the
   // ARMO branch in obtainability.ts, parallel to the WEAP branch).
-  const classifier = new ObtainabilityClassifier(client, obtainableWeaponFormIds, cobjIndex, obtainableArmorFormIds);
+  const classifier = new ObtainabilityClassifier(
+    client,
+    obtainableWeaponFormIds,
+    cobjIndex,
+    obtainableArmorFormIds,
+  );
   const allOmods = [...omods, ...armorOmods];
-  const verdicts = await classifier.classify(allOmods.map(o => ({ formId: o.formId, edid: o.id })));
+  const verdicts = await classifier.classify(
+    allOmods.map((o) => ({ formId: o.formId, edid: o.id })),
+  );
   const excludedDetailed: Record<string, ExcludedRecordDetail[]> = { omodUnobtainable: [] };
   const reviewFlagged: Record<string, ExcludedRecordDetail[]> = {
     omodWeakEvidence: [],
@@ -988,7 +1139,11 @@ export async function extractOmods(
     let signals = verdict?.signals;
     // Legendary-crafting mods need a real granting recipe (see
     // LEGENDARY_CRAFT_KEYWORD_RE) — template/FLST rides alone don't count.
-    if (obtainable && !omod.hasGrantingCobj && omod.targetKeywords.some(k => LEGENDARY_CRAFT_KEYWORD_RE.test(k))) {
+    if (
+      obtainable &&
+      !omod.hasGrantingCobj &&
+      omod.targetKeywords.some((k) => LEGENDARY_CRAFT_KEYWORD_RE.test(k))
+    ) {
       obtainable = false;
       signals = [...(signals ?? []), 'legendaryNoGrantCobj'];
     }
@@ -1001,7 +1156,11 @@ export async function extractOmods(
       !defaultModFormIds.has(omod.formId) &&
       !NON_CRAFT_SLOT_RE.test(omod.attachPointEdid)
     ) {
-      reviewFlagged.omodWeakEvidence.push({ id: omod.id, name: omod.name, signals: verdict?.signals });
+      reviewFlagged.omodWeakEvidence.push({
+        id: omod.id,
+        name: omod.name,
+        signals: verdict?.signals,
+      });
     }
   }
 
