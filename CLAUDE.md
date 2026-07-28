@@ -12,7 +12,8 @@ This is a Fallout 76 DPS (Damage Per Second) calculator web application. It comp
 - `pnpm build` - Type check and build for production
 - `pnpm build:gh-pages` - Build for GitHub Pages deployment (sets NODE_ENV=production)
 - `pnpm test` - Run vitest suite (engine unit tests, extraction fixtures, golden cases)
-- `pnpm lint` - Run ESLint
+- `pnpm lint` / `pnpm lint:fix` - Run oxlint (Rust-based; not ESLint)
+- `pnpm fmt` / `pnpm fmt:check` - Format with oxfmt
 - `pnpm preview` - Preview production build locally
 - `pnpm extract --esm <path-to-SeventySix.esm> --mode live [--only weapons,perks,omods,buffs]` - Regenerate game data from an ESM dump (requires the `esm` CLI on PATH). `--esm` can be omitted if the `FO76_ESM_PATH` env var is set instead; `pnpm esm:walk` uses the same fallback.
 - `pnpm extract:diff [--base HEAD]` - Markdown review report of generated-data changes vs a git ref; run after every extraction
@@ -141,7 +142,23 @@ import { useGameMode } from '@/hooks/useGameMode';
 ## Build Configuration
 
 - Uses **Vite 8**, which bundles Rolldown natively (no more separate `rolldown-vite` alias/override)
-- TypeScript pinned to `~6.0.3` (not the latest 7.x native-compiler release) because `typescript-eslint@8.x` only supports `typescript <6.1.0`; revisit once typescript-eslint adds TS7 support
+- TypeScript **7** (the native Go compiler — `tsc` *is* the Go binary in TS7, ships no `tsserver`;
+  editors need the dedicated TS7 language-server extension). Previously pinned to `~6.0.3` because
+  `typescript-eslint@8.x` only supports `typescript <6.1.0`; that pin was dropped, not merely
+  bumped — ESLint/typescript-eslint were replaced by `oxlint` (see below), which has no dependency
+  on the `typescript` package, so nothing in the toolchain constrains the TS version anymore.
+- Linting is **oxlint**, not ESLint — `.oxlintrc.json` at the repo root. `pnpm lint` /
+  `pnpm lint:fix`. Formatting is **oxfmt** — `.oxfmtrc.json`; `pnpm fmt` / `pnpm fmt:check`.
+  Both are Oxc/Rust-based, chosen for speed (lint dropped from ~5s to well under 1s). oxlint's
+  `react` plugin covers eslint-plugin-react-hooks + react-refresh under different rule names
+  (`react/exhaustive-deps`, `react/only-export-components` — note the renamed prefix vs the old
+  `react-hooks/`/`react-refresh/` ESLint plugins). It has **no equivalent** for
+  `react-hooks/set-state-in-effect`; that pattern (see `src/hooks/useSuggestions.ts`) is now just a
+  plain comment, not a suppressed lint rule. oxfmt formats JSON by default with no per-language
+  opt-out, so `.oxfmtrc.json`'s `ignorePatterns` — excluding `src/data/*/generated/**`,
+  `src/data/*/curvetables/**`, and all `.md`/`.yml`/`.yaml` — is load-bearing: without it, every
+  `pnpm extract` would reformat hundreds of generated files, and prose docs/vendored skill files
+  (`skills-lock.json` pins their hashes) would get silently reflowed by oxfmt's bundled Prettier.
 - Tailwind CSS v4 with @tailwindcss/vite plugin
 - Base URL is `/dps-76/` for production builds (GitHub Pages) and `/` for dev
 
