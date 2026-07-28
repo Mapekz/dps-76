@@ -24,13 +24,13 @@ export function GameModeProvider({ children, defaultMode = 'live' }: GameModePro
 
   const value = React.useMemo<GameModeContextValue>(
     () => ({ mode, setMode, toggleMode, isLive: mode === 'live', isPTS: mode === 'pts' }),
-    [mode, toggleMode]
+    [mode, toggleMode],
   );
 
   return <GameModeContext.Provider value={value}>{children}</GameModeContext.Provider>;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
+// oxlint-disable-next-line react/only-export-components
 export function useGameMode(): GameModeContextValue {
   const context = React.useContext(GameModeContext);
   if (context === undefined) {
