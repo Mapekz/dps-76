@@ -13163,6 +13163,34 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_TeslaScience03_Potion",
+  "formId": "0x00432D01",
+  "name": "Tesla Science 3",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x00432D01:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00432D01",
+     "edid": "Magazine_TeslaScience03_Potion",
+     "name": "Tesla Science 3"
+    },
+    "bucket": "explosionRadiusBonus",
+    "op": "ADD",
+    "value": 0.3,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "Magazine_TeslaScience05_Potion",
   "formId": "0x00432D07",
   "name": "Tesla Science 5",

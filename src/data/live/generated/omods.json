@@ -42846,8 +42846,8 @@
     "value": 0.2,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetValue(RadResistExposure)=1000"
+      "kind": "radResistAtLeast",
+      "min": 1000
      }
     ]
    },
@@ -42864,8 +42864,8 @@
     "value": 0.2,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetValue(RadResistExposure)=2000"
+      "kind": "radResistAtLeast",
+      "min": 2000
      }
     ]
    },
@@ -42882,8 +42882,8 @@
     "value": 0.2,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetValue(RadResistExposure)=3000"
+      "kind": "radResistAtLeast",
+      "min": 3000
      }
     ]
    },
@@ -42900,8 +42900,8 @@
     "value": 0.2,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetValue(RadResistExposure)=4000"
+      "kind": "radResistAtLeast",
+      "min": 4000
      }
     ]
    },
@@ -42918,8 +42918,8 @@
     "value": 0.2,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetValue(RadResistExposure)=5000"
+      "kind": "radResistAtLeast",
+      "min": 5000
      }
     ]
    },
@@ -42936,8 +42936,8 @@
     "value": 0.2,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetValue(RadResistExposure)=6000"
+      "kind": "radResistAtLeast",
+      "min": 6000
      }
     ]
    },
@@ -42954,8 +42954,8 @@
     "value": 0.2,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetValue(RadResistExposure)=7000"
+      "kind": "radResistAtLeast",
+      "min": 7000
      }
     ]
    },
@@ -42972,8 +42972,8 @@
     "value": 0.2,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetValue(RadResistExposure)=8000"
+      "kind": "radResistAtLeast",
+      "min": 8000
      }
     ]
    }
@@ -42984,16 +42984,7 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "perk Perk_Daisycutter: GetValue(RadResistExposure)=1000",
-   "perk Perk_Daisycutter: GetValue(RadResistExposure)=2000",
-   "perk Perk_Daisycutter: GetValue(RadResistExposure)=3000",
-   "perk Perk_Daisycutter: GetValue(RadResistExposure)=4000",
-   "perk Perk_Daisycutter: GetValue(RadResistExposure)=5000",
-   "perk Perk_Daisycutter: GetValue(RadResistExposure)=6000",
-   "perk Perk_Daisycutter: GetValue(RadResistExposure)=7000",
-   "perk Perk_Daisycutter: GetValue(RadResistExposure)=8000"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
