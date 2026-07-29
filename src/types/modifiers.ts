@@ -659,7 +659,7 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
     regime: 'sustainChance',
     hasEngineEffect: true,
     foldedBy:
-      "effective-weapon.ts (weapon.reloadSkipChanceBash rewrite); feeds sustain.ts reloadSec — bash-triggered channel (Battle-Loader's EP199), separate from reloadSkipChance's passive-on-reload channel (Quick Hands/Wild West Wind EP182)",
+      "effective-weapon.ts (weapon.reloadSkipChanceBash rewrite); feeds sustain.ts reloadSec — bash-triggered channel (Battle-Loader's EP199), separate from reloadSkipChance's passive-on-reload channel (Quick Hands/Wild West Hands EP182)",
   },
   ammoFreeChance: {
     regime: 'sustainChance',

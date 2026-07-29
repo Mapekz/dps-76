@@ -35,7 +35,7 @@ export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> 
   //     ordinary reload, is still unmodeled), but its bash-ness is preserved
   //     STRUCTURALLY instead: Battle-Loader's uses the `reloadSkipChanceBash`
   //     bucket (EP199 "Instant Reload Clip On Bash"), not the plain
-  //     `reloadSkipChance` channel Quick Hands / Wild West Wind use (EP182
+  //     `reloadSkipChance` channel Quick Hands / Wild West Hands use (EP182
   //     "Auto Fill Weapon Clip", passive on the reload itself, never
   //     bash-taxed). That split (2026-07-19, Phase C — go-through-every-
   //     single-silly-whistle.md) is what lets `sustain.ts` charge a real
