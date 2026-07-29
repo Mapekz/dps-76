@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-29T00:00:00.000Z",
+  "title": "Design System: DPS-76",
+  "extensions": {
+    "colorMeta": {
+      "vault-gold": {
+        "role": "primary",
+        "displayName": "Vault Gold",
+        "canonical": "oklch(0.82 0.14 80)",
+        "tonalRamp": [
+          "oklch(0.30 0.10 80)",
+          "oklch(0.40 0.11 80)",
+          "oklch(0.50 0.12 80)",
+          "oklch(0.60 0.13 80)",
+          "oklch(0.70 0.135 80)",
+          "oklch(0.82 0.14 80)",
+          "oklch(0.90 0.09 80)",
+          "oklch(0.95 0.04 80)"
+        ]
+      },
+      "terminal-black": {
+        "role": "neutral",
+        "displayName": "Terminal Black / Terminal Cream (neutral axis)",
+        "canonical": "oklch(0.19 0.01 145)",
+        "tonalRamp": [
+          "oklch(0.15 0.008 145)",
+          "oklch(0.19 0.01 145)",
+          "oklch(0.23 0.012 145)",
+          "oklch(0.27 0.014 145)",
+          "oklch(0.31 0.015 145)",
+          "oklch(0.55 0.02 130)",
+          "oklch(0.75 0.02 110)",
+          "oklch(0.915 0.02 95)"
+        ]
+      },
+      "phosphor-green": {
+        "role": "positive",
+        "displayName": "Phosphor Green",
+        "canonical": "oklch(0.83 0.14 155)",
+        "tonalRamp": [
+          "oklch(0.30 0.10 155)",
+          "oklch(0.40 0.12 155)",
+          "oklch(0.53 0.14 150)",
+          "oklch(0.63 0.14 152)",
+          "oklch(0.73 0.14 154)",
+          "oklch(0.83 0.14 155)",
+          "oklch(0.90 0.10 155)",
+          "oklch(0.95 0.05 155)"
+        ]
+      },
+      "ember-red": {
+        "role": "negative",
+        "displayName": "Ember Red",
+        "canonical": "oklch(0.73 0.16 35)",
+        "tonalRamp": [
+          "oklch(0.30 0.12 30)",
+          "oklch(0.40 0.15 30)",
+          "oklch(0.55 0.19 30)",
+          "oklch(0.63 0.17 32)",
+          "oklch(0.68 0.165 34)",
+          "oklch(0.73 0.16 35)",
+          "oklch(0.85 0.10 35)",
+          "oklch(0.93 0.05 35)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "section-label": {
+        "displayName": "Section Label",
+        "purpose": "Structural page labels — \"Damage output\", \"Suggestions\", scenario names. Barlow Condensed, uppercase, widest tracking of the two uppercase voices."
+      },
+      "micro-label": {
+        "displayName": "Micro Label",
+        "purpose": "Interactive-control text — button labels, badges, card titles, field captions. Plain Barlow (not condensed) so it never competes with Section Label."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Descriptions, helper copy, tooltip content."
+      },
+      "readout": {
+        "displayName": "Readout",
+        "purpose": "Every quantitative value on screen — DPS, percentages, seconds, AP. Spline Sans Mono, tabular-nums, never mixed with prose."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "flash-positive",
+        "value": "0.9s ease-out",
+        "purpose": "DeltaFlash: digits pulse Phosphor Green back to ink when a value increases."
+      },
+      {
+        "name": "flash-negative",
+        "value": "0.9s ease-out",
+        "purpose": "DeltaFlash: digits pulse Ember Red back to ink when a value decreases."
+      },
+      {
+        "name": "ghost-rise",
+        "value": "0.9s ease-out forwards",
+        "purpose": "The floating \"+4.2%\" superscript beside a flashed DeltaFlash number: rises and fades once."
+      },
+      {
+        "name": "button-press",
+        "value": "translateY(1px), no explicit duration (relies on transition-all)",
+        "purpose": "Mechanical press cue on button :active — a small physical depress, not a scale/glow effect."
+      },
+      {
+        "name": "accordion-panel",
+        "value": "height 0.2s ease-out",
+        "purpose": "Build-column section expand/collapse."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Solid Vault Gold action button with the Micro Label voice; presses down 1px on :active.",
+      "html": "<button class=\"ds-btn-primary\">Apply</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 24px; background: var(--primary); color: var(--primary-foreground); border: 1px solid transparent; border-radius: 0; font-family: 'Barlow', ui-sans-serif, system-ui, sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.15s ease, transform 0.1s ease; } .ds-btn-primary:hover { background: color-mix(in oklch, var(--primary) 80%, transparent); } .ds-btn-primary:focus-visible { outline: none; border-color: var(--ring); box-shadow: 0 0 0 2px color-mix(in oklch, var(--ring) 30%, transparent); } .ds-btn-primary:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "Badge",
+      "kind": "chip",
+      "refersTo": "badge-default",
+      "description": "Stamped-tag label — same uppercase Micro Label voice as buttons, smaller. Used for \"Alpha\" and other status marks.",
+      "html": "<span class=\"ds-badge\">Alpha</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; background: var(--primary); color: var(--primary-foreground); border: 1px solid transparent; border-radius: 0; font-family: 'Barlow', ui-sans-serif, system-ui, sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Flat panel surface, one step lighter than the base screen, with a near-invisible ring instead of a shadow.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-header\"><div class=\"ds-card-title\">Scenario</div></div><div class=\"ds-card-content\">Content</div></div>",
+      "css": ".ds-card { display: flex; flex-direction: column; gap: 24px; background: var(--card); color: var(--card-foreground); border-radius: 0; padding: 24px 0; box-shadow: 0 1px 2px rgba(0,0,0,0.08); outline: 1px solid color-mix(in oklch, var(--foreground) 5%, transparent); outline-offset: -1px; } .ds-card-header { padding: 0 24px; } .ds-card-title { font-family: 'Barlow', ui-sans-serif, system-ui, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; } .ds-card-content { padding: 0 24px; }"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "No box — a transparent field with only a bottom border, reading as a ledger line rather than a form widget.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Build name\" />",
+      "css": ".ds-input { display: block; width: 100%; height: 40px; padding: 4px 0; background: transparent; border: none; border-bottom: 1px solid var(--input); color: var(--foreground); font-size: 14px; outline: none; transition: border-color 0.15s ease; } .ds-input::placeholder { color: var(--muted-foreground); } .ds-input:focus { border-bottom-color: var(--ring); } .ds-input:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "VATS Bracket Frame",
+      "kind": "custom",
+      "refersTo": "vats-brackets",
+      "description": "Signature ornament: masked hairline corner brackets lifted from the game's own VATS targeting HUD, framing the two scenario cards. Brackets switch to Vault Gold when the card is the emphasized one.",
+      "html": "<div class=\"ds-vats-frame\" data-emphasized=\"true\"><p class=\"ds-vats-label\">VATS</p><p class=\"ds-vats-value\">482.6</p></div>",
+      "css": ".ds-vats-frame { position: relative; padding: 10px 12px; text-align: left; } .ds-vats-frame::before, .ds-vats-frame::after { content: ''; position: absolute; inset: 0; pointer-events: none; transition: border-color 0.15s ease-out; } .ds-vats-frame::before { border-left: 1.5px solid var(--border); border-right: 1.5px solid var(--border); top: 0; bottom: 0; -webkit-mask-image: linear-gradient(to bottom, black 12px, transparent 12px, transparent calc(100% - 12px), black calc(100% - 12px)); mask-image: linear-gradient(to bottom, black 12px, transparent 12px, transparent calc(100% - 12px), black calc(100% - 12px)); } .ds-vats-frame::after { border-top: 1.5px solid var(--border); border-bottom: 1.5px solid var(--border); -webkit-mask-image: linear-gradient(to right, black 12px, transparent 12px, transparent calc(100% - 12px), black calc(100% - 12px)); mask-image: linear-gradient(to right, black 12px, transparent 12px, transparent calc(100% - 12px), black calc(100% - 12px)); } .ds-vats-frame[data-emphasized='true']::before, .ds-vats-frame[data-emphasized='true']::after { border-color: var(--primary); } .ds-vats-label { font-family: 'Barlow Condensed', 'Barlow', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted-foreground); } .ds-vats-frame[data-emphasized='true'] .ds-vats-label { color: var(--primary); } .ds-vats-value { font-family: 'Spline Sans Mono Variable', ui-monospace, monospace; font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--foreground); margin-top: 4px; }"
+    },
+    {
+      "name": "Delta Flash Number",
+      "kind": "custom",
+      "refersTo": "delta-flash",
+      "description": "A monospace readout that pulses Phosphor Green/Ember Red for 0.9s on change, with a rising ghost percentage beside it. Color is always transient; the number returns to ink at rest.",
+      "html": "<span class=\"ds-delta-flash\"><span class=\"ds-delta-flash-value ds-flash-up\">128.4</span><span class=\"ds-delta-flash-ghost ds-delta-flash-up\">+4.2%</span></span>",
+      "css": ".ds-delta-flash { position: relative; display: inline-block; font-family: 'Spline Sans Mono Variable', ui-monospace, monospace; font-variant-numeric: tabular-nums; } .ds-delta-flash-value { color: var(--foreground); } .ds-delta-flash-value.ds-flash-up { animation: ds-flash-positive 0.9s ease-out; } .ds-delta-flash-value.ds-flash-down { animation: ds-flash-negative 0.9s ease-out; } .ds-delta-flash-ghost { position: absolute; top: -12px; right: -4px; transform: translateX(100%); font-size: 10px; font-weight: 500; animation: ds-ghost-rise 0.9s ease-out forwards; } .ds-delta-flash-ghost.ds-delta-flash-up { color: var(--positive); } .ds-delta-flash-ghost.ds-delta-flash-down { color: var(--negative); } @keyframes ds-flash-positive { from { color: var(--positive); } to { color: var(--foreground); } } @keyframes ds-flash-negative { from { color: var(--negative); } to { color: var(--foreground); } } @keyframes ds-ghost-rise { 0% { opacity: 0; transform: translateY(2px) translateX(100%); } 15% { opacity: 1; transform: translateY(0) translateX(100%); } 70% { opacity: 1; } 100% { opacity: 0; transform: translateY(-3px) translateX(100%); } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Pip-Black Terminal",
+    "overview": "DPS-76 reads as an active phosphor-black instrument screen, not a marketing surface. The default (and identity-leading) state is near-black with a warm, slightly green-grey cast — the code's own comment calls it \"phosphor-terminal ancestry, no CRT kitsch\": the palette and density of a wasteland data terminal, deliberately without scanlines, glow, vignette, or flicker. A single warm accent — vault gold — stands in for the terminal's one \"power light\": selection, primary action, and brand all read through the same hue, nothing else competes with it for attention. A light mode exists as the terminal's printed counterpart (the same ink + vault-gold relationship rendered on warm paper instead of a lit screen) but the terminal state is the lead identity this system is designed from.\n\nEvery surface is sharp-cornered — --radius: 0 is not a default left unset, it is enforced everywhere: buttons, cards, inputs, switches, tooltips, even the tooltip's little arrow. Depth is conveyed by hairline borders and a near-invisible ring-1 ring-foreground/5, never by drop shadow. The one recurring ornamental device is a targeting-HUD corner bracket (.vats-brackets, lifted directly from the game's own VATS framing) that frames the two scenario cards a player watches most closely — decoration earns its place only when it's diegetic to the product's own subject matter, not applied generically.\n\nNumbers are the product. Every numeric readout — DPS, percentages, seconds, AP — renders in Spline Sans Mono with tabular-nums, while every word around it renders in Barlow or Barlow Condensed. That split is load-bearing: a reader's eye should never have to guess whether a token on screen is prose or a value to act on.",
+    "keyCharacteristics": [
+      "Near-black, warm-grey-green terminal surface as the default, identity-leading state; light mode is the same relationship on warm paper.",
+      "One accent color (vault gold) carries brand, selection, and primary action — never spent decoratively.",
+      "Universal zero-radius: every surface is sharp-cornered, no exceptions.",
+      "Depth via hairline border + near-invisible ring, never drop shadow.",
+      "Numbers in monospace, words in humanist sans — a strict, consistent split.",
+      "The corner-bracket \"VATS frame\" is the one signature ornament, reserved for the scenario readouts it's thematically drawn from."
+    ],
+    "rules": [
+      { "name": "The One Accent Rule", "body": "Vault Gold is the only color allowed to mean \"this is the brand\" or \"this is selected.\" If a new component needs a second attention-grabbing color, that's a sign it should use Gold, not that the palette needs a second accent.", "section": "colors" },
+      { "name": "The Functional-Only Color Rule", "body": "Outside of Vault Gold, color exists only to report a fact the user needs (gain, loss, error, selection state). No badge, icon, or panel is tinted for decoration or mood.", "section": "colors" },
+      { "name": "The Numerals-Are-Mono Rule", "body": "Any value that answers \"how much\" renders in Spline Sans Mono with tabular-nums. Everything else — labels, sentences, names — renders in Barlow or Barlow Condensed. A component that mixes the two within one number is a bug, not a style choice.", "section": "typography" },
+      { "name": "The Two Uppercase Voices Rule", "body": "Structural section labels use Barlow Condensed; micro-labels on interactive controls (buttons, badges, field captions) use plain Barlow. Don't collapse them into one — the condensed voice marks \"this organizes the page,\" the plain voice marks \"this is a control.\"", "section": "typography" },
+      { "name": "The Numbers-Stay-Visible Rule", "body": "On any viewport, the current DPS readout must remain on screen (full HeadlineStrip on desktop, the sticky condensed strip on mobile) no matter how far the user has scrolled into build configuration. The tweak → flash feedback loop is the product; losing sight of the number breaks it.", "section": "layout" },
+      { "name": "The Flat-By-Default Rule", "body": "No component introduces a drop shadow beyond the Card's near-invisible shadow-sm. If a surface needs to read as \"above\" the page, reach for a border or background-tone step first.", "section": "elevation" },
+      { "name": "The No-Radius Rule", "body": "border-radius: 0 everywhere, no exceptions, no \"just this once for a pill badge.\" A rounded corner appearing anywhere in this system is a regression, not a variant.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do keep Vault Gold as the only color that means \"brand / selected / primary action\" — everywhere else, color reports a fact (gain, loss, error).",
+      "Do render every quantitative value in Spline Sans Mono with tabular-nums; render every label/sentence in Barlow or Barlow Condensed.",
+      "Do keep every corner at 0px radius, including one-off components; check new UI against the No-Radius Rule before shipping it.",
+      "Do convey depth with a hairline border or the Card's ring-1 + shadow-sm combination, never a heavier drop shadow.",
+      "Do reserve the VATS corner-bracket frame for the scenario readouts it's thematically tied to.",
+      "Do keep the current DPS number on screen at every viewport width (full strip desktop, condensed sticky strip mobile)."
+    ],
+    "donts": [
+      "Don't add CRT kitsch — no scanlines, bloom/glow, vignette, chromatic aberration, or flicker. The terminal metaphor is structural (density, mono numerals, sharp corners), not a screen-texture effect.",
+      "Don't add skeuomorphic chrome — no fake bezels, no plastic/metal texture, no cartoon Vault-Boy iconography standing in for real content.",
+      "Don't round a corner anywhere, even \"just this once\" for a pill-shaped badge or a soft card.",
+      "Don't tint a surface or icon a color for mood or decoration; every color use should be traceable to the One Accent Rule or the Functional-Only Color Rule.",
+      "Don't let a number sit permanently colored green or red outside of the transient DeltaFlash pulse — color marks a change in progress, not a static verdict."
+    ]
+  }
+}
