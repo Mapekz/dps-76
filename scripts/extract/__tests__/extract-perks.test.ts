@@ -190,7 +190,7 @@ describe('translateConditions (glowAtLeast — Rads AV 0x000002E1, 2026-07-13)',
 });
 
 describe('translateConditions (radResistAtLeast — RadResistExposure AV 0x000002EA, 20260724 Daisy Cutter rebuild)', () => {
-  it('translates a literal GetValue(RadResistExposure) >= 1000 row to radResistAtLeast (Perk_Daisycutter\'s ladder, verified via esm chase 0x00471882)', () => {
+  it("translates a literal GetValue(RadResistExposure) >= 1000 row to radResistAtLeast (Perk_Daisycutter's ladder, verified via esm chase 0x00471882)", () => {
     const row = {
       Function: 'GetValue',
       'Parameter 1': '0x000002EA',

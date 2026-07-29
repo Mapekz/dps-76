@@ -178,13 +178,41 @@
       "The corner-bracket \"VATS frame\" is the one signature ornament, reserved for the scenario readouts it's thematically drawn from."
     ],
     "rules": [
-      { "name": "The One Accent Rule", "body": "Vault Gold is the only color allowed to mean \"this is the brand\" or \"this is selected.\" If a new component needs a second attention-grabbing color, that's a sign it should use Gold, not that the palette needs a second accent.", "section": "colors" },
-      { "name": "The Functional-Only Color Rule", "body": "Outside of Vault Gold, color exists only to report a fact the user needs (gain, loss, error, selection state). No badge, icon, or panel is tinted for decoration or mood.", "section": "colors" },
-      { "name": "The Numerals-Are-Mono Rule", "body": "Any value that answers \"how much\" renders in Spline Sans Mono with tabular-nums. Everything else — labels, sentences, names — renders in Barlow or Barlow Condensed. A component that mixes the two within one number is a bug, not a style choice.", "section": "typography" },
-      { "name": "The Two Uppercase Voices Rule", "body": "Structural section labels use Barlow Condensed; micro-labels on interactive controls (buttons, badges, field captions) use plain Barlow. Don't collapse them into one — the condensed voice marks \"this organizes the page,\" the plain voice marks \"this is a control.\"", "section": "typography" },
-      { "name": "The Numbers-Stay-Visible Rule", "body": "On any viewport, the current DPS readout must remain on screen (full HeadlineStrip on desktop, the sticky condensed strip on mobile) no matter how far the user has scrolled into build configuration. The tweak → flash feedback loop is the product; losing sight of the number breaks it.", "section": "layout" },
-      { "name": "The Flat-By-Default Rule", "body": "No component introduces a drop shadow beyond the Card's near-invisible shadow-sm. If a surface needs to read as \"above\" the page, reach for a border or background-tone step first.", "section": "elevation" },
-      { "name": "The No-Radius Rule", "body": "border-radius: 0 everywhere, no exceptions, no \"just this once for a pill badge.\" A rounded corner appearing anywhere in this system is a regression, not a variant.", "section": "shapes" }
+      {
+        "name": "The One Accent Rule",
+        "body": "Vault Gold is the only color allowed to mean \"this is the brand\" or \"this is selected.\" If a new component needs a second attention-grabbing color, that's a sign it should use Gold, not that the palette needs a second accent.",
+        "section": "colors"
+      },
+      {
+        "name": "The Functional-Only Color Rule",
+        "body": "Outside of Vault Gold, color exists only to report a fact the user needs (gain, loss, error, selection state). No badge, icon, or panel is tinted for decoration or mood.",
+        "section": "colors"
+      },
+      {
+        "name": "The Numerals-Are-Mono Rule",
+        "body": "Any value that answers \"how much\" renders in Spline Sans Mono with tabular-nums. Everything else — labels, sentences, names — renders in Barlow or Barlow Condensed. A component that mixes the two within one number is a bug, not a style choice.",
+        "section": "typography"
+      },
+      {
+        "name": "The Two Uppercase Voices Rule",
+        "body": "Structural section labels use Barlow Condensed; micro-labels on interactive controls (buttons, badges, field captions) use plain Barlow. Don't collapse them into one — the condensed voice marks \"this organizes the page,\" the plain voice marks \"this is a control.\"",
+        "section": "typography"
+      },
+      {
+        "name": "The Numbers-Stay-Visible Rule",
+        "body": "On any viewport, the current DPS readout must remain on screen (full HeadlineStrip on desktop, the sticky condensed strip on mobile) no matter how far the user has scrolled into build configuration. The tweak → flash feedback loop is the product; losing sight of the number breaks it.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "No component introduces a drop shadow beyond the Card's near-invisible shadow-sm. If a surface needs to read as \"above\" the page, reach for a border or background-tone step first.",
+        "section": "elevation"
+      },
+      {
+        "name": "The No-Radius Rule",
+        "body": "border-radius: 0 everywhere, no exceptions, no \"just this once for a pill badge.\" A rounded corner appearing anywhere in this system is a regression, not a variant.",
+        "section": "shapes"
+      }
     ],
     "dos": [
       "Do keep Vault Gold as the only color that means \"brand / selected / primary action\" — everywhere else, color reports a fact (gain, loss, error).",

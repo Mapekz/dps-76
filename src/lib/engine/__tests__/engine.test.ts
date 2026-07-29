@@ -296,7 +296,7 @@ describe('condition evaluation', () => {
     expect(foldBucket([glowingCrit], 'dbm', 1.0, unset)).toBe(1.0); // glow undefined → treated as 0
   });
 
-  it('radResistAtLeast gates Daisy Cutter\'s 8-step Rad-Resistance ladder, capping at +160% (8000+)', () => {
+  it("radResistAtLeast gates Daisy Cutter's 8-step Rad-Resistance ladder, capping at +160% (8000+)", () => {
     // Perk_Daisycutter's real ESM shape (esm chase 0x00471882): 8 discrete
     // dbm ADD 0.2 modifiers, each gated GetValue(RadResistExposure) >= N for
     // N = 1000..8000 — additive, so the fold sums whichever steps are unlocked.
