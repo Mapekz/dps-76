@@ -262,6 +262,28 @@ export interface GeneratedArmor {
   obtainable?: boolean;
 }
 
+/**
+ * A barrel/receiver OMOD's `OverrideProjectile` swap that detonates a
+ * DIFFERENT EXPL than the weapon's own baseline (Hellstorm Missile
+ * Launcher's Napalm/Cryo/Plasma tube barrels: the base explosion never
+ * fires once the projectile is swapped). Produced by extract-omods.ts's
+ * `overrideProjectileModifiers` for weapons in `explosiveFamilyKeywords`
+ * (docs/assumptions.md "OMOD-chased launcher payloads" § Launcher-family
+ * replacement) — REPLACES, not adds to, the weapon's WEAP-level
+ * `fromExplosion` components (src/lib/engine/effective-weapon.ts). Inert
+ * (never applied) on a weapon with no baseline `fromExplosion` component at
+ * all — `explosiveFamilyKeywords` is a coarse keyword union across every
+ * launcher family, so a false-positive match here simply never fires.
+ */
+export interface GeneratedExplosionSwap {
+  /** EXPL editor_id the swapped projectile detonates — provenance for review. */
+  explEdid: string;
+  /** Replacement `fromExplosion` components — same shape chaseExplosion emits. */
+  components: GeneratedDamageComponent[];
+  /** EXPL "Base Weapon Damage Mult" — replaces the weapon's own when this swap applies. */
+  baseWeaponDamageMult: number;
+}
+
 export interface GeneratedOmod {
   /** ESM editor_id (e.g. mod_CombatRifle_Receiver_Damage-Auto). */
   id: string;
@@ -292,6 +314,8 @@ export interface GeneratedOmod {
   hasGrantingCobj?: boolean;
   /** Extraction caveats for this record (unrouted AVs, unmodeled curves) — powers UI badges. */
   notes?: string[];
+  /** See GeneratedExplosionSwap — present only for a launcher-family barrel whose EXPL carries real damage. */
+  explosionSwap?: GeneratedExplosionSwap;
 }
 
 /**

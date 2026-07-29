@@ -714,6 +714,150 @@ describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-
   });
 });
 
+describe('explosionSwap replacement (launcher-family projectile-swap, docs/assumptions.md "OMOD-chased launcher payloads" § Launcher-family replacement, 2026-07-29)', () => {
+  const FLAT_100 = [
+    { x: 1, y: 100 },
+    { x: 50, y: 100 },
+  ];
+
+  /** A synthetic launcher-shaped weapon: ballistic impact + its own baseline fromExplosion component. */
+  function makeLauncherWeapon() {
+    return {
+      id: 'test_launcher',
+      name: 'Test Launcher',
+      components: [
+        { damageType: 'ballistic' as const, tier: -1, levelCap: 50, curvePoints: FLAT_100 },
+        {
+          damageType: 'explosive' as const,
+          tier: -1,
+          levelCap: 50,
+          curvePoints: FLAT_100,
+          fromExplosion: true,
+        },
+      ],
+      damageType: 'ballistic' as const,
+      weaponClass: 'heavy' as const,
+      isAutomatic: false,
+      isPhysical: true,
+      critDamageMult: 2.0,
+      critChargeBonus: 1.0,
+      sneakAttackMult: 2.0,
+      damageBonusMult: 1.0,
+    };
+  }
+
+  /** A synthetic non-launcher weapon: plain ballistic-only, no fromExplosion component at all. */
+  function makeBallisticOnlyWeapon() {
+    return {
+      id: 'test_rifle',
+      name: 'Test Rifle',
+      components: [
+        { damageType: 'ballistic' as const, tier: -1, levelCap: 50, curvePoints: FLAT_100 },
+      ],
+      damageType: 'ballistic' as const,
+      weaponClass: 'rifle' as const,
+      isAutomatic: false,
+      isPhysical: true,
+      critDamageMult: 2.0,
+      critChargeBonus: 1.0,
+      sneakAttackMult: 2.0,
+      damageBonusMult: 1.0,
+    };
+  }
+
+  /** A synthetic barrel OMOD carrying an explosionSwap, no ordinary modifiers (mirrors the real Cryo Payload shape). */
+  function makeSwapOmod(baseWeaponDamageMult = 0) {
+    return {
+      id: 'test_cryo_barrel',
+      formId: '0x0',
+      name: 'Test Cryo Barrel',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_gun_Barrel',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [],
+      explosionSwap: {
+        explEdid: 'TestSwapExplosion',
+        baseWeaponDamageMult,
+        components: [
+          {
+            damageType: 'cryo' as const,
+            damageTypeEdid: 'dtCryo',
+            amount: 0,
+            tier: 15,
+            curve: [
+              { x: 1, y: 10 },
+              { x: 50, y: 40 },
+            ],
+            fromExplosion: true,
+          },
+        ],
+      },
+    };
+  }
+
+  it('replaces the baseline fromExplosion component with the swap — not both', () => {
+    const { weapon } = buildEffectiveWeapon(makeLauncherWeapon(), [makeSwapOmod()]);
+
+    expect(weapon.components.map((c) => c.damageType)).toEqual(['ballistic', 'cryo']);
+    const [ballistic, cryo] = weapon.components;
+    // Untouched ballistic component survives unchanged.
+    expect(ballistic).toMatchObject({ damageType: 'ballistic' });
+    expect(ballistic.fromExplosion).toBeUndefined();
+    // Swapped-in component: engine shape (curvePoints/levelCap), not the extractor shape.
+    expect(cryo).toMatchObject({
+      damageType: 'cryo',
+      tier: 15,
+      levelCap: 50, // borrowed from the base weapon's own components, not the swap
+      curvePoints: [
+        { x: 1, y: 10 },
+        { x: 50, y: 40 },
+      ],
+      fromExplosion: true,
+    });
+  });
+
+  it('overrides explosionBaseWeaponDamageMult from the swap when it applies', () => {
+    const { weapon } = buildEffectiveWeapon(makeLauncherWeapon(), [makeSwapOmod(0.2)]);
+    expect(weapon.explosionBaseWeaponDamageMult).toBe(0.2);
+  });
+
+  it('is a no-op on a weapon with no baseline fromExplosion component at all', () => {
+    const { weapon } = buildEffectiveWeapon(makeBallisticOnlyWeapon(), [makeSwapOmod()]);
+    expect(weapon.components.map((c) => c.damageType)).toEqual(['ballistic']);
+    expect(weapon.explosionBaseWeaponDamageMult).toBeUndefined();
+  });
+
+  it('only the LAST equipped omod carrying a swap wins', () => {
+    const first = makeSwapOmod();
+    const second = {
+      ...makeSwapOmod(),
+      id: 'test_plasma_barrel',
+      explosionSwap: {
+        explEdid: 'TestSwapExplosionPlasma',
+        baseWeaponDamageMult: 0,
+        components: [
+          {
+            damageType: 'energy' as const,
+            damageTypeEdid: 'dtEnergy',
+            amount: 0,
+            tier: 20,
+            curve: [
+              { x: 1, y: 20 },
+              { x: 50, y: 80 },
+            ],
+            fromExplosion: true,
+          },
+        ],
+      },
+    };
+    const { weapon } = buildEffectiveWeapon(makeLauncherWeapon(), [first, second]);
+    expect(weapon.components.map((c) => c.damageType)).toEqual(['ballistic', 'energy']);
+  });
+});
+
 describe('charging weapon-stat buckets (chargeFullPowerSec/chargeFullPowerDamageMult)', () => {
   const fixer = getWeapons('live')['CombatRifle_Fixer'];
 

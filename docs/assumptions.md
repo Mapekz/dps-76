@@ -156,9 +156,10 @@ ProjectilePlasmaLarge).
   with `damageTypeScope: ['explosive']`, folding in the same parenthesis as
   Bloodied/Adrenal (0.9+0.5+0.6 → ×3.0, not the pre-patch ×3.84). The
   'explosive' scope matches `fromExplosion` regardless of elemental type.
-- **Not modeled**: OMOD projectile overrides swapping the explosion (a mod
-  pointing at a different EXPL keeps the base explosion's numbers); explosion
-  radius/AoE; self-damage.
+- **Not modeled**: explosion radius/AoE; self-damage. (OMOD projectile
+  overrides swapping the explosion — e.g. Hellstorm's Napalm/Cryo/Plasma tube
+  barrels — ARE modeled: see "OMOD-chased launcher payloads" § Launcher-family
+  replacement below.)
 - Gamma Gun graduated out of the `noDamage` bucket 2026-07-13 — its only
   damage IS the explosion (`fromExplosion` radiation component, tier 18
   curve), now modeled. (Supersedes any older note elsewhere calling it
@@ -216,17 +217,33 @@ Barrel.
   point at re-skinned EXPLs with the same damage as its own on-hit ench;
   walking both would double-count). Without a hazard, a `note` records the
   value rather than dropping or double-counting.
-- **Launcher-family guard** (`explosiveFamilyKeywords`): a barrel OMOD's
-  materialization is skipped (note-only) when the weapon already carries its
-  own weapon-level `fromExplosion` component (BOS Rocket Launcher's elemental
-  barrels vs. the Hellstorm's own baseline explosion) — avoids adding a
-  number on top of an already-separate, unreconciled baseline. **Known gap**:
-  OMOD-level projectile swaps still don't suppress/replace the weapon's stale
-  baseline component generally.
+- **Launcher-family replacement** (`explosiveFamilyKeywords`, 2026-07-29): a
+  barrel OMOD targeting a weapon that already carries its own weapon-level
+  `fromExplosion` component (BOS Rocket Launcher's Napalm/Cryo/Plasma tube
+  barrels vs. the Hellstorm's own baseline explosion) has its EXPL chase
+  emitted as an `explosionSwap` (`GeneratedOmod.explosionSwap`) instead of
+  ordinary `baseDamage` modifiers — the base explosion never detonates once
+  the projectile is swapped, so effective-weapon.ts's `buildEffectiveWeapon`
+  REPLACES the weapon's `fromExplosion` component(s) with the swap's,
+  guarded on the base weapon still carrying at least one `fromExplosion`
+  component (`hasBaselineExplosion`). That guard is the safety net for
+  `explosiveFamilyKeywords` being a coarse keyword UNION across every
+  launcher family: a false-positive match on a non-launcher weapon simply
+  never applies. The swapped-in EXPL's own on-hit `Enchantment` (Napalm's
+  fire DoT — same `translateEnchantment` path a weapon-intrinsic DoT or an
+  OMOD's `Enchantments` property uses, including the Self-delivery
+  self-damage guard) and any lingering-hazard tick damage (Napalm's ground
+  fire, via the same HAZD chase below) ADD on top as ordinary OMOD
+  modifiers — only the `fromExplosion` component itself replaces, not the
+  OMOD's other damage sources. Lobber/Polar Lobber are unaffected by this
+  branch (Lightning Gun/Cryolator are pure beam weapons with no
+  `fromExplosion` component to replace) — they keep the additive chase below.
 - **ASSUMPTION, unconfirmed**: HAZD `Target Interval` (re-tick rate) and
-  `Limit` (max simultaneous targets) are NOT modeled — the hazard's magnitude
-  folds like any other steady-state DoT, which may over/understate a lobbed
-  payload's real contribution.
+  `Limit` (max simultaneous targets) are NOT modeled, for either chase — the
+  hazard's magnitude folds like any other steady-state DoT (assumes the
+  target stays in the field for its full `Lifetime`), which may
+  over/understate a lobbed payload's or a ground-fire field's real
+  contribution.
 - **NOT modeled: EXPL "Base Weapon Damage Mult"** (Polar Lobber 1.0) —
   ambiguous whether it means "double the EXPL's own damage" or "twin the
   weapon's original beam damage" (the Polar Lobber replaces the Cryolator's

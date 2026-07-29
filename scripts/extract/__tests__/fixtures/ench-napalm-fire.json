@@ -1,0 +1,117 @@
+{
+  "header": {
+    "signature": "ENCH",
+    "form_id": "0x005ED8E1",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 180,
+    "offset": 9039642
+  },
+  "editor_id": "FXEnchFireHitBOSLauncher_Napalm",
+  "fields": {
+    "_record_type": "Enchantment",
+    "Editor ID": "FXEnchFireHitBOSLauncher_Napalm",
+    "Object Bounds": {
+      "X1": 0,
+      "Y1": 0,
+      "Z1": 0,
+      "X2": 0,
+      "Y2": 0,
+      "Z2": 0
+    },
+    "Name": "Napalm Payload Fire",
+    "Effect Data": {
+      "Enchantment Cost": 0,
+      "Flags": {
+        "value": "0x5",
+        "flags": ["No Auto-Calc", "Extend Duration On Recast"]
+      },
+      "Cast Type": {
+        "value": 1,
+        "name": "Fire and Forget"
+      },
+      "Enchantment Amount": 0,
+      "Target Type": {
+        "value": 1,
+        "name": "Contact"
+      },
+      "Enchant Type": {
+        "value": 6,
+        "name": "Enchantment"
+      },
+      "Charge Time": 0.0,
+      "Base Enchantment": null,
+      "Worn Restrictions": null
+    },
+    "Effects": [
+      {
+        "Effect": {
+          "Base Effect": "0x002407FD",
+          "Effect Item Data": {
+            "Effect ID": 1,
+            "Magnitude": 14.0,
+            "Area": 0,
+            "Duration": 7
+          },
+          "Curve Table": {
+            "formid": "0x0080F200",
+            "editor_id": "CT_Player_Damage_Universal_Tier16",
+            "curve_path": "Player\\Damage\\Damage_Universal_Tier16.json",
+            "curve": [
+              {
+                "x": 1.0,
+                "y": 14.0
+              },
+              {
+                "x": 5.0,
+                "y": 16.0
+              },
+              {
+                "x": 10.0,
+                "y": 18.0
+              },
+              {
+                "x": 15.0,
+                "y": 20.0
+              },
+              {
+                "x": 20.0,
+                "y": 23.0
+              },
+              {
+                "x": 25.0,
+                "y": 26.0
+              },
+              {
+                "x": 30.0,
+                "y": 29.0
+              },
+              {
+                "x": 35.0,
+                "y": 33.0
+              },
+              {
+                "x": 40.0,
+                "y": 37.0
+              },
+              {
+                "x": 45.0,
+                "y": 42.0
+              },
+              {
+                "x": 50.0,
+                "y": 47.0
+              }
+            ]
+          },
+          "Effect Flags": {
+            "value": "0x0",
+            "flags": []
+          },
+          "Cooldown Duration": 0
+        }
+      }
+    ],
+    "Max Item ID": 1
+  }
+}

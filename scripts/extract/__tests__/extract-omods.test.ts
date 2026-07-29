@@ -12,6 +12,18 @@ import battleLoadersEnch from './fixtures/ench-battleloaders.json';
 import battleLoadersMgef from './fixtures/mgef-battleloaders.json';
 import battleLoadersPerk from './fixtures/perk-battleloaders.json';
 import vatsEnhancedOmod from './fixtures/omod-vatsenhanced.json';
+import hellstormCryoOmod from './fixtures/omod-hellstorm-cryo.json';
+import hellstormCryoProj from './fixtures/proj-hellstorm-cryo.json';
+import hellstormCryoExpl from './fixtures/expl-hellstorm-cryo.json';
+import hellstormNapalmOmod from './fixtures/omod-hellstorm-napalm.json';
+import hellstormNapalmProj from './fixtures/proj-hellstorm-napalm.json';
+import hellstormNapalmExpl from './fixtures/expl-hellstorm-napalm.json';
+import napalmFireEnch from './fixtures/ench-napalm-fire.json';
+import napalmFireMgef from './fixtures/mgef-hellstorm-napalm-fire.json';
+import fireResistAvif from './fixtures/avif-fireresist.json';
+import fireHazardHazd from './fixtures/hazd-fire-molotov.json';
+import fireHazardSpel from './fixtures/spel-fire-hazard.json';
+import fireHazardMgef from './fixtures/mgef-fire-hazard-effect.json';
 
 // Fixtures are verbatim `esm -p --esm <esmPath> get <edid|formid> --json` output
 // (20260710 ESM). These pin the unique-mod rework's two previously-undecoded
@@ -622,12 +634,18 @@ describe('extractOmods (OverrideProjectile launcher-hazard chase, 2026-07-14)', 
     expect(omod!.notes).toEqual([]);
   });
 
-  it('materializes nothing (note-only) when the omod targets a weapon family that already has its own launcher explosion (Hellstorm + Napalm/Cryo/Plasma tube barrels)', async () => {
-    // Same Lobber-shaped chain as above, but this time the omod's target
-    // keyword is flagged (via explosiveFamilyKeywords) as already belonging
-    // to a weapon with its own fromExplosion component — chaseExplosion is
-    // WEAP-level and barrel-agnostic, so this OMOD's own hazard/direct damage
-    // would ADD to that stale baseline rather than replace it.
+  it("launcher-family swap (explosiveFamilyKeywords match): still chases the swapped EXPL's own hazard damage as an ordinary modifier even when the EXPL itself has no direct/typed damage to replace the baseline with (explosionSwap stays absent)", async () => {
+    // Same Lobber-shaped chain as the first test above, but this time the
+    // omod's target keyword is flagged (via explosiveFamilyKeywords) as
+    // already belonging to a weapon with its own fromExplosion component —
+    // see the real Hellstorm cryo/napalm fixtures below for the "EXPL DOES
+    // carry direct damage" shape (explosionSwap gets populated there). The
+    // Lobber EXPL has no main curve / no typed Damage Types, only a hazard,
+    // so `explosionSwap` stays undefined while the hazard's own dotDamage
+    // still materializes exactly like the non-family case (2026-07-29:
+    // launcher-family REPLACES the baseline fromExplosion component instead
+    // of staying note-only — docs/assumptions.md "OMOD-chased launcher
+    // payloads" § Launcher-family replacement).
     const result = await extractOmods(
       makeLobberStubClient(),
       new Set(),
@@ -635,10 +653,204 @@ describe('extractOmods (OverrideProjectile launcher-hazard chase, 2026-07-14)', 
     );
     const omod = result.omods.find((o) => o.id === 'mod_Test_LobberBarrel');
     expect(omod).toBeDefined();
+    expect(omod!.explosionSwap).toBeUndefined();
+    expect(omod!.modifiers).toEqual([
+      expect.objectContaining({
+        bucket: 'dotDamage',
+        op: 'ADD',
+        value: 34,
+        durationSec: 7,
+        conditions: [{ kind: 'damageTypeScope', types: ['energy'] }],
+      }),
+    ]);
+  });
+});
+
+/**
+ * Real ESM fixtures (`esm -p get`, 20260724 dump) for the Hellstorm Missile
+ * Launcher's (`BOSRocketLauncher`) Cryo/Napalm tube barrels — the case the
+ * launcher-family replacement branch exists for. Both OMODs `SET
+ * OverrideProjectile` to a payload-specific PROJ whose EXPL carries real
+ * typed damage the base `ExplosionMissileShellBOSLauncher` (the weapon's own
+ * baseline `fromExplosion` component, tier 46) never fires once swapped:
+ *   Cryo:   EXPL 0x005E47DD → dtCryo, Tier33 (58 @L1 → 194 @L50), no hazard.
+ *   Napalm: EXPL 0x005E47DC → dtFire, Tier33 (58 → 194), PLUS its own
+ *     on-hit Enchantment (0x005ED8E1, Tier16 fire DoT, 14 @L1 → 47 @L50,
+ *     duration 7) AND a Placed Object ground hazard (0x0023C9E6
+ *     FireHazardMolotov, flat magnitude 5, Lifetime 15).
+ * `byFormId` (extractOmods' own OMOD index) only ever contains what
+ * `client.list('OMOD')` returns — a single record here — so the OMODs'
+ * real `Includes` chain (the shared Long-Range-Barrel/Missile-Ammo-Type
+ * templates) is never resolved and contributes no modifiers, same as every
+ * other stub client in this file; only `OverrideProjectile` produces output.
+ */
+function makeHellstormStubClient(payload: 'cryo' | 'napalm'): EsmClient {
+  const known: Record<string, EsmRecord> = {
+    '0x005E47E0': {
+      header: { signature: 'KYWD', form_id: '0x005E47E0' },
+      editor_id: 'ma_BOSRocketLauncher',
+      fields: {},
+    } as unknown as EsmRecord,
+    '0x00060A82': {
+      header: { signature: 'DMGT', form_id: '0x00060A82' },
+      editor_id: 'dtFire',
+      fields: {},
+    } as unknown as EsmRecord,
+    '0x00060A83': {
+      header: { signature: 'DMGT', form_id: '0x00060A83' },
+      editor_id: 'dtCryo',
+      fields: {},
+    } as unknown as EsmRecord,
+    '0x000002E5': fireResistAvif as unknown as EsmRecord,
+  };
+  if (payload === 'cryo') {
+    known['0x005E47E8'] = hellstormCryoOmod as unknown as EsmRecord;
+    known['0x005E47EB'] = hellstormCryoProj as unknown as EsmRecord;
+    known['0x005E47DD'] = hellstormCryoExpl as unknown as EsmRecord;
+  } else {
+    known['0x005E47E4'] = hellstormNapalmOmod as unknown as EsmRecord;
+    known['0x005E47EC'] = hellstormNapalmProj as unknown as EsmRecord;
+    known['0x005E47DC'] = hellstormNapalmExpl as unknown as EsmRecord;
+    known['0x005ED8E1'] = napalmFireEnch as unknown as EsmRecord;
+    known['0x002407FD'] = napalmFireMgef as unknown as EsmRecord;
+    known['0x0023C9E6'] = fireHazardHazd as unknown as EsmRecord;
+    known['0x00195904'] = fireHazardSpel as unknown as EsmRecord;
+    known['0x00023C61'] = fireHazardMgef as unknown as EsmRecord;
+  }
+  const omodFormId = payload === 'cryo' ? '0x005E47E8' : '0x005E47E4';
+  const omodEdid =
+    payload === 'cryo'
+      ? 'mod_BOSRocketLauncher_TubeBarrel_Cryo'
+      : 'mod_BOSRocketLauncher_TubeBarrel_Napalm';
+  const get = async (target: string): Promise<EsmRecord> => {
+    if (known[target]) return known[target];
+    return {
+      header: { signature: 'KYWD', form_id: target },
+      editor_id: target,
+      fields: {},
+    } as unknown as EsmRecord;
+  };
+  return {
+    async list(type: string): Promise<EsmListRow[]> {
+      if (type !== 'OMOD') return [];
+      return [{ form_id: omodFormId, record_type: 'OMOD', editor_id: omodEdid, name: '' }];
+    },
+    get,
+    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+    refs: async () => [],
+  } as unknown as EsmClient;
+}
+
+describe('extractOmods (launcher-family explosionSwap replacement, real Hellstorm fixtures, 2026-07-29)', () => {
+  it('Cryo Payload: OverrideProjectile → EXPL with typed cryo damage (no hazard, no Enchantment) becomes an explosionSwap with one fromExplosion cryo component — no ordinary modifiers', async () => {
+    const result = await extractOmods(
+      makeHellstormStubClient('cryo'),
+      new Set(),
+      new Set(['ma_BOSRocketLauncher']),
+    );
+    const omod = result.omods.find((o) => o.id === 'mod_BOSRocketLauncher_TubeBarrel_Cryo');
+    expect(omod).toBeDefined();
     expect(omod!.modifiers).toEqual([]);
-    expect(
-      (omod!.notes ?? []).some((n) => n.includes('already has its own launcher explosion')),
-    ).toBe(true);
+    expect(omod!.explosionSwap).toEqual({
+      explEdid: 'ExplosionMissileShellBOSLauncher_Cryo',
+      baseWeaponDamageMult: 0,
+      components: [
+        {
+          damageType: 'cryo',
+          damageTypeEdid: 'dtCryo',
+          amount: 0,
+          tier: 33,
+          curve: [
+            { x: 1, y: 58 },
+            { x: 5, y: 65 },
+            { x: 10, y: 73 },
+            { x: 15, y: 83 },
+            { x: 20, y: 94 },
+            { x: 25, y: 106 },
+            { x: 30, y: 119 },
+            { x: 35, y: 135 },
+            { x: 40, y: 152 },
+            { x: 45, y: 172 },
+            { x: 50, y: 194 },
+          ],
+          fromExplosion: true,
+        },
+      ],
+    });
+  });
+
+  it("Napalm Payload: explosionSwap carries the fire component, PLUS the EXPL's own on-hit Enchantment (curve-shaped fire DoT, durationSec from the ENCH's own Duration) AND its ground hazard (flat fire DoT, durationSec from HAZD Lifetime) as ordinary modifiers", async () => {
+    const result = await extractOmods(
+      makeHellstormStubClient('napalm'),
+      new Set(),
+      new Set(['ma_BOSRocketLauncher']),
+    );
+    const omod = result.omods.find((o) => o.id === 'mod_BOSRocketLauncher_TubeBarrel_Napalm');
+    expect(omod).toBeDefined();
+    expect(omod!.explosionSwap).toEqual({
+      explEdid: 'ExplosionMissileShellBOSLauncher_Napalm',
+      baseWeaponDamageMult: 0,
+      components: [
+        {
+          damageType: 'fire',
+          damageTypeEdid: 'dtFire',
+          amount: 0,
+          tier: 33,
+          curve: [
+            { x: 1, y: 58 },
+            { x: 5, y: 65 },
+            { x: 10, y: 73 },
+            { x: 15, y: 83 },
+            { x: 20, y: 94 },
+            { x: 25, y: 106 },
+            { x: 30, y: 119 },
+            { x: 35, y: 135 },
+            { x: 40, y: 152 },
+            { x: 45, y: 172 },
+            { x: 50, y: 194 },
+          ],
+          fromExplosion: true,
+        },
+      ],
+    });
+    expect(omod!.modifiers).toEqual([
+      // EXPL "Enchantment" hop — curve-shaped (11 points, itemLevel input),
+      // durationSec 7 straight from the ENCH's own Effect Item Data Duration
+      // (no HAZD Lifetime override on this hop).
+      expect.objectContaining({
+        bucket: 'dotDamage',
+        op: 'ADD',
+        curve: {
+          input: 'itemLevel',
+          points: [
+            { x: 1, y: 14 },
+            { x: 5, y: 16 },
+            { x: 10, y: 18 },
+            { x: 15, y: 20 },
+            { x: 20, y: 23 },
+            { x: 25, y: 26 },
+            { x: 30, y: 29 },
+            { x: 35, y: 33 },
+            { x: 40, y: 37 },
+            { x: 45, y: 42 },
+            { x: 50, y: 47 },
+          ],
+        },
+        curveScale: 1,
+        durationSec: 7,
+        conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
+      }),
+      // EXPL "Placed Object" HAZD hop — flat magnitude 5, durationSec
+      // OVERRIDDEN to the HAZD's own Lifetime (15), not the SPEL effect's
+      // own per-tick Duration (0).
+      expect.objectContaining({
+        bucket: 'dotDamage',
+        op: 'ADD',
+        value: 5,
+        durationSec: 15,
+        conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
+      }),
+    ]);
   });
 });
 

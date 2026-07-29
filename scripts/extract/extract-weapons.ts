@@ -11,6 +11,7 @@ import {
   asNumber,
   DAMAGE_TYPE_EDID_MAP,
   decodeExplosionDamage,
+  explosionComponents,
   parseCurve,
   projectileExplosionFormId,
 } from './normalize/explosion';
@@ -64,16 +65,15 @@ interface ExtractWeaponsResult {
    * component (chaseExplosion, weapon-level — launcher families: Missile
    * Launchers, Fat Man, Gamma Gun, ...). Feeds extract-omods.ts's
    * `OverrideProjectile` chase: a barrel/receiver OMOD targeting one of these
-   * keywords swaps WHICH projectile such a weapon fires — its own EXPL/HAZD
-   * chase would materialize damage ALONGSIDE the weapon's now-stale baseline
-   * fromExplosion component instead of replacing it (a pre-existing,
-   * documented gap — chaseExplosion's own doc comment: "OMOD projectile
-   * overrides swapping the explosion... not modeled"), so that chase must
-   * stay note-only for these weapon families (docs/assumptions.md
-   * "OMOD-chased launcher payloads"). Verified 2026-07-14 on the Hellstorm
+   * keywords swaps WHICH projectile such a weapon fires — since that
+   * baseline explosion never detonates once the projectile is swapped, the
+   * OMOD's own EXPL/Enchantment/HAZD chase REPLACES it (as an
+   * `explosionSwap`, applied in src/lib/engine/effective-weapon.ts) rather
+   * than adding to it (docs/assumptions.md "OMOD-chased launcher payloads" §
+   * Launcher-family replacement). Verified 2026-07-14 on the Hellstorm
    * Missile Launcher's Napalm/Cryo/Plasma tube barrels — unlike Lobber/Polar
    * Lobber (Lightning Gun/Cryolator are pure beam weapons with NO
-   * fromExplosion component to conflict with).
+   * fromExplosion component to replace, so their chase stays additive).
    */
   explosiveFamilyKeywords: Set<string>;
 }
@@ -206,33 +206,13 @@ export async function chaseExplosion(
 
     const expl = await client.get(explFormId);
     const decoded = await decodeExplosionDamage(client, expl, unresolved);
-    const components: GeneratedDamageComponent[] = [];
 
-    // Main physical explosion damage (same node shape as WEAP "Damage Curve").
-    if (decoded.main) {
-      components.push({
-        damageType: 'explosive',
-        damageTypeEdid: null,
-        amount: decoded.main.amount,
-        tier: decoded.main.tier,
-        curve: decoded.main.curve,
-        fromExplosion: true,
-      });
-    }
-
-    // Typed entries (Cremator fire, Gamma Gun radiation) — WEAP-identical shape.
-    for (const entry of decoded.typed) {
-      components.push({
-        damageType: entry.damageType,
-        damageTypeEdid: entry.damageTypeEdid,
-        amount: entry.amount,
-        tier: entry.tier,
-        curve: entry.curve,
-        fromExplosion: true,
-      });
-    }
-
-    return { components, baseWeaponDamageMult: decoded.baseWeaponDamageMult };
+    // Main physical explosion damage + typed entries (Cremator fire, Gamma
+    // Gun radiation) — see explosionComponents' doc comment.
+    return {
+      components: explosionComponents(decoded),
+      baseWeaponDamageMult: decoded.baseWeaponDamageMult,
+    };
   } catch (err) {
     unresolved.push(
       `explosion chase failed for ${edid}: ${err instanceof Error ? err.message : String(err)}`,

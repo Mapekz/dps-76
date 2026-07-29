@@ -1,0 +1,59 @@
+{
+  "header": {
+    "signature": "HAZD",
+    "form_id": "0x0023C9E6",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 190,
+    "offset": 74637133
+  },
+  "editor_id": "FireHazardMolotov",
+  "fields": {
+    "_record_type": "Hazard",
+    "Editor ID": "FireHazardMolotov",
+    "Object Bounds": {
+      "X1": 0,
+      "Y1": 0,
+      "Z1": 0,
+      "X2": 0,
+      "Y2": 0,
+      "Z2": 0
+    },
+    "Name": "Fire Hazard",
+    "Model": {
+      "Model FileName": "Effects\\FXFireMedSmokey01.nif",
+      "Model Information": {
+        "Counters": {
+          "Textures": 0,
+          "Addon Nodes": 2,
+          "SRGB": 0,
+          "Materials": 0
+        },
+        "Textures": [],
+        "Addon Nodes": [5, 6],
+        "Materials": []
+      }
+    },
+    "Image Space Modifier": "0x00064C26",
+    "Data": {
+      "Limit": 0,
+      "Radius": 16.0,
+      "Lifetime": 15.0,
+      "Image Space Radius": 0.0,
+      "Target Interval": 0.3,
+      "Flags": {
+        "value": "0x0",
+        "flags": []
+      },
+      "Effect": "0x00195904",
+      "Light": "0x0049616F",
+      "Impact Data Set": null,
+      "Sound": null,
+      "Taper Effectiveness": {
+        "Full Effect Radius": 0.0,
+        "Taper Weight": 0.0,
+        "Taper Curse": 0.0
+      }
+    }
+  }
+}

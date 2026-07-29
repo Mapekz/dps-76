@@ -1,0 +1,91 @@
+{
+  "header": {
+    "signature": "PROJ",
+    "form_id": "0x005E47EB",
+    "flags": 0,
+    "form_version": 195,
+    "data_size": 331,
+    "offset": 74445110
+  },
+  "editor_id": "ProjectileMissileBOSLauncher_Cryo",
+  "fields": {
+    "_record_type": "Projectile",
+    "Editor ID": "ProjectileMissileBOSLauncher_Cryo",
+    "Object Bounds": {
+      "X1": 0,
+      "Y1": 0,
+      "Z1": 0,
+      "X2": 0,
+      "Y2": 0,
+      "Z2": 0
+    },
+    "Model": {
+      "Model FileName": "weapons/quadlauncher/Rocket_Cryo_Projectile.nif",
+      "Model Information": {
+        "Counters": {
+          "Textures": 0,
+          "Addon Nodes": 0,
+          "SRGB": 0,
+          "Materials": 0
+        },
+        "Textures": [],
+        "Addon Nodes": [],
+        "Materials": []
+      }
+    },
+    "Unused": {
+      "hex": ""
+    },
+    "Data": {
+      "Flags": {
+        "value": "0xA",
+        "flags": ["Explosion", "Muzzle Flash"]
+      },
+      "Type": {
+        "value": 1,
+        "name": "Missile"
+      },
+      "Gravity": 0.0,
+      "Speed": 2500.0,
+      "Range": 15000.0,
+      "Light": "0x005ECFA7",
+      "Muzzle Flash - Light": "0x00004B29",
+      "Explosion - Alt. Trigger - Proximity": 0.0,
+      "Explosion - Alt. Trigger - Timer": 0.0,
+      "Explosion": "0x005E47DD",
+      "Sound": "0x005EE7E9",
+      "Muzzle Flash - Duration": 0.5,
+      "Fade Duration": 0.5,
+      "Impact Force": 10.0,
+      "Sound - Countdown": null,
+      "Sound - Disable": null,
+      "Default Weapon Source": "0x005E47EE",
+      "Cone Spread": 0.0,
+      "Collision Radius": 5.0,
+      "Lifetime": 0.5,
+      "Relaunch Interval": 0.25,
+      "Decal Data": null,
+      "Collision Layer": null,
+      "Tracer Frequency": 0,
+      "VATS Projectile": null
+    },
+    "Muzzle Flash Model": {
+      "Model FileName": "weapons/quadlauncher/BOS_Cryo_MuzzleFlash.nif",
+      "Model Information": {
+        "Counters": {
+          "Textures": 0,
+          "Addon Nodes": 0,
+          "SRGB": 0,
+          "Materials": 0
+        },
+        "Textures": [],
+        "Addon Nodes": [],
+        "Materials": []
+      }
+    },
+    "Sound Level": {
+      "value": 1,
+      "name": "Normal"
+    }
+  }
+}

@@ -1,6 +1,11 @@
 import type { EnemyConditions, PlayerConditions, Weapon, WeaponComponent } from '@/types';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
-import type { GeneratedOmod } from '@/types/generated';
+import type {
+  GeneratedDamageComponent,
+  GeneratedDamageType,
+  GeneratedExplosionSwap,
+  GeneratedOmod,
+} from '@/types/generated';
 import type { Bucket, DamageType, Modifier } from '@/types/modifiers';
 import { SUSTAIN_CHANCE_BUCKETS, WEAPON_STAT_BUCKETS } from '@/types/modifiers';
 import { effectiveValue, foldBucket, type ResolveContext } from './resolve';
@@ -30,6 +35,11 @@ const MIN_ANIM_DELAY_SEC = 0.001;
  *   deal materialize a new `WeaponComponent` for that type (Tesla Coil
  *   Capacitor's +0.5 energy on the ballistic-only Gauss Minigun) —
  *   `materializeDamageTypeComponents` below
+ * - an equipped OMOD's `explosionSwap` (Hellstorm's Napalm/Cryo/Plasma tube
+ *   barrels) REPLACES the weapon's own `fromExplosion` component(s) rather
+ *   than adding to them — see the `explosionSwap`/`baseComponents` block
+ *   below (docs/assumptions.md "OMOD-chased launcher payloads" §
+ *   Launcher-family replacement)
  * - remaining modifiers (dbm, critDmgBase, sneakBase, …) feed the resolver
  * - weapon-stat buckets from LOADOUT sources (perks/mutations/consumables —
  *   Guerrilla Expert's reload, Speed Demon's reload) fold in alongside the
@@ -45,6 +55,37 @@ export interface EffectiveWeapon {
 // (perk/mutation/consumable) modifiers, then dropped from the downstream
 // modifier list) is derived from BUCKET_REGISTRY (@/types/modifiers) and
 // re-exported above, not hand-maintained here.
+
+// Mirrors src/data/live/weapons.ts's adaptWeapon damage-type/component
+// mapping — duplicated here (rather than imported) because the engine must
+// stay live/pts-mode-agnostic and never reaches into a mode-specific data
+// adapter. Keep both in sync if a new GeneratedDamageType is ever added.
+const EXPLOSION_SWAP_DAMAGE_TYPE_MAP: Record<GeneratedDamageType, WeaponComponent['damageType']> = {
+  ballistic: 'ballistic',
+  energy: 'energy',
+  fire: 'fire',
+  cryo: 'cryo',
+  poison: 'poison',
+  radiation: 'radiation',
+  explosive: 'explosive',
+  unknown: 'ballistic',
+};
+
+/** Converts an `explosionSwap`'s extractor-shaped components to engine-shaped `WeaponComponent`s. */
+function explosionSwapComponents(
+  components: readonly GeneratedDamageComponent[],
+  levelCap: number,
+): WeaponComponent[] {
+  return components.map((c) => ({
+    damageType: EXPLOSION_SWAP_DAMAGE_TYPE_MAP[c.damageType],
+    tier: c.tier ?? -1,
+    levelCap,
+    // Flat-amount components (no tier, no curve) become a constant
+    // one-point curve — same convention as adaptWeapon.
+    curvePoints: c.curve ?? (c.tier == null ? [{ x: 1, y: c.amount }] : undefined),
+    fromExplosion: true,
+  }));
+}
 
 function foldChanceUnion(modifiers: Modifier[], bucket: Bucket, ctx: ResolveContext): number {
   let survive = 1;
@@ -328,8 +369,38 @@ export function buildEffectiveWeapon(
   const modifiers = allOmodModifiers.filter(
     (m) => !WEAPON_STAT_BUCKETS.has(m.bucket) && !SUSTAIN_CHANCE_BUCKETS.has(m.bucket),
   );
+
+  // Launcher-family projectile-swap replacement (docs/assumptions.md
+  // "OMOD-chased launcher payloads" § Launcher-family replacement): a barrel
+  // OMOD's OverrideProjectile can swap which EXPL detonates (Hellstorm's
+  // Napalm/Cryo/Plasma tube barrels) — that EXPL's damage REPLACES the
+  // weapon's own WEAP-level fromExplosion baseline, which never fires once
+  // the projectile is swapped. Only the last equipped omod carrying a swap
+  // wins (mirrors every other single-slot OMOD stat override). A swap is a
+  // no-op on a weapon with no baseline fromExplosion component at all — the
+  // keyword gate (explosiveFamilyKeywords) is a coarse union across every
+  // launcher family, so a false-positive match here simply never applies,
+  // same as the pre-replacement (note-only) behavior.
+  const explosionSwap = equippedOmods.reduce<GeneratedExplosionSwap | undefined>(
+    (found, o) => o.explosionSwap ?? found,
+    undefined,
+  );
+  const hasBaselineExplosion = (weapon.components ?? []).some((c) => c.fromExplosion);
+  const baseComponents =
+    explosionSwap && hasBaselineExplosion
+      ? [
+          ...(weapon.components ?? []).filter((c) => !c.fromExplosion),
+          ...explosionSwapComponents(
+            explosionSwap.components,
+            weapon.components[0]?.levelCap ?? 50,
+          ),
+        ]
+      : (weapon.components ?? []);
+  const weaponForMaterialization =
+    baseComponents === weapon.components ? weapon : { ...weapon, components: baseComponents };
+
   const { components: materialized, consumedIds } = materializeDamageTypeComponents(
-    weapon,
+    weaponForMaterialization,
     modifiers,
     ctx,
   );
@@ -354,7 +425,10 @@ export function buildEffectiveWeapon(
       minRange,
       maxRange,
       outOfRangeDamageMult,
-      components: [...weapon.components, ...materialized],
+      ...(explosionSwap && hasBaselineExplosion
+        ? { explosionBaseWeaponDamageMult: explosionSwap.baseWeaponDamageMult }
+        : {}),
+      components: [...baseComponents, ...materialized],
     },
     modifiers: modifiers.filter((m) => !consumedIds.has(m.id)),
   };

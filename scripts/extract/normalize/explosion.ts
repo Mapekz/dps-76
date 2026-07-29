@@ -1,4 +1,8 @@
-import type { CurvePoint, GeneratedDamageType } from '../../../src/types/generated';
+import type {
+  CurvePoint,
+  GeneratedDamageComponent,
+  GeneratedDamageType,
+} from '../../../src/types/generated';
 import type { EsmClient, EsmRecord } from '../esm-client';
 
 /**
@@ -106,4 +110,44 @@ export async function decodeExplosionDamage(
   }
 
   return { main, typed, baseWeaponDamageMult: asNumber(explData['Base Weapon Damage Mult']) };
+}
+
+/**
+ * Turn a decoded EXPL's damage into `fromExplosion`-flagged components — the
+ * WEAP-identical shape both callers need: extract-weapons.ts's `chaseExplosion`
+ * (the weapon's own baseline explosion) and extract-omods.ts's launcher-family
+ * `explosionSwap` (a barrel's OverrideProjectile detonating a DIFFERENT EXPL —
+ * docs/assumptions.md "OMOD-chased launcher payloads" § Launcher-family
+ * replacement). Factored out so the two can't drift: main curve → physical
+ * `'explosive'` damage; each typed entry → its own elemental type. No
+ * filtering (an `'unknown'`/zero-curve typed entry still becomes a
+ * component) — callers gate on `decodeExplosionDamage`'s output themselves
+ * before calling this.
+ */
+export function explosionComponents(decoded: DecodedExplosionDamage): GeneratedDamageComponent[] {
+  const components: GeneratedDamageComponent[] = [];
+
+  if (decoded.main) {
+    components.push({
+      damageType: 'explosive',
+      damageTypeEdid: null,
+      amount: decoded.main.amount,
+      tier: decoded.main.tier,
+      curve: decoded.main.curve,
+      fromExplosion: true,
+    });
+  }
+
+  for (const entry of decoded.typed) {
+    components.push({
+      damageType: entry.damageType,
+      damageTypeEdid: entry.damageTypeEdid,
+      amount: entry.amount,
+      tier: entry.tier,
+      curve: entry.curve,
+      fromExplosion: true,
+    });
+  }
+
+  return components;
 }
