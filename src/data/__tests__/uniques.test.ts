@@ -9,11 +9,17 @@ describe('getUniques', () => {
     const uniques = getUniques('live');
     expect(uniques.length).toBeGreaterThan(50);
     const salt = uniques.find((u) => u.id === 'mod_Custom_SaltOfTheEarth');
+    // `mods` is asserted separately, not nested via `expect.objectContaining`
+    // inside this `toMatchObject` — Bun's JSON-module loader gives every
+    // JSON-sourced object (including `mods`) a null prototype, and Bun's
+    // `toMatchObject`/`objectContaining` diff logic corrupts on a repeated
+    // (`--rerun-each`) match against a null-prototype nested object (verified
+    // with a minimal repro outside this codebase; Vitest is unaffected).
     expect(salt).toMatchObject({
       baseWeaponId: 'DoubleBarrelShotgun',
-      mods: expect.objectContaining({ ap_customName: 'mod_Custom_SaltOfTheEarth' }),
       legendaryEffects: [null, null, 'mod_Legendary_Weapon3_Guns_ReloadSpeed'],
     });
+    expect(salt!.mods.ap_customName).toBe('mod_Custom_SaltOfTheEarth');
     expect(getOmodById('live', salt!.id)?.name).toBeTruthy();
   });
 
