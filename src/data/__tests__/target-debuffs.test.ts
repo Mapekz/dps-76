@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import { getTargetDebuffModifiers, TENDERIZER_MAX_STACKS } from '@/data/target-debuffs';
 
 describe('getTargetDebuffModifiers — Taking One for the Team flat DR debuff', () => {

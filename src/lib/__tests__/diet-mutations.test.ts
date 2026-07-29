@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import type { GeneratedBuff } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 import {

@@ -11,7 +11,8 @@ This is a Fallout 76 DPS (Damage Per Second) calculator web application. It comp
 - `bun run dev` - Start development server with HMR
 - `bun run build` - Type check and build for production
 - `bun run build:gh-pages` - Build for GitHub Pages deployment (sets NODE_ENV=production)
-- `bun run test` - Run vitest suite (engine unit tests, extraction fixtures, golden cases)
+- `bun run test` - Run the bun test suite (engine unit tests, extraction fixtures, golden cases)
+- `bun run bench` - Run the suggestion-engine hot-path benchmark (`scripts/bench-engine.ts`)
 - `bun run lint` / `bun run lint:fix` - Run oxlint (Rust-based; not ESLint)
 - `bun run fmt` / `bun run fmt:check` - Format with oxfmt
 - `bun run preview` - Preview production build locally
@@ -19,11 +20,12 @@ This is a Fallout 76 DPS (Damage Per Second) calculator web application. It comp
 - `bun run extract:diff [--base HEAD]` - Markdown review report of generated-data changes vs a git ref; run after every extraction
 
 This project uses **Bun** as the package manager and script runner (`bun install`, `bun run <script>`),
-not npm/yarn/pnpm. Vite, Vitest, and `tsc` still run under **Node** — their `#!/usr/bin/env node`
+not npm/yarn/pnpm. Vite and `tsc` still run under **Node** — their `#!/usr/bin/env node`
 shebangs make `bun run <script>` delegate to Node automatically, so Node stays installed
-(CI pins `node-version: '24'`). Only script execution (`extract`/`extract:diff`/`vet:weapons`)
-and dependency installation use the Bun runtime itself; never run Vite/Vitest under `bun --bun` —
-Vite 8's Rolldown bundler hits an open Bun N-API bug ([oven-sh/bun#26388](https://github.com/oven-sh/bun/issues/26388)).
+(CI pins `node-version: '24'`). Tests run on the Bun runtime itself (`bun test`, see "Testing"
+below), same as script execution (`extract`/`extract:diff`/`vet:weapons`/`bench`) and dependency
+installation; never run Vite under `bun --bun` — Vite 8's Rolldown bundler hits an open Bun N-API
+bug ([oven-sh/bun#26388](https://github.com/oven-sh/bun/issues/26388)).
 
 ## Architecture Overview
 
@@ -135,25 +137,31 @@ name in `src/data/perk-modifiers.ts`; misses are patched in
   (`scripts/extract/__tests__/fixtures/`).
 - Golden cases (`src/lib/engine/__tests__/golden/cases.json`) hold in-game
   measured numbers; `expected: null` cases are skipped until measured.
-- `vitest run` (`bun run test`) is the authoritative runner (CI runs it), but the
-  suite is also kept green under `bun test --parallel` as a fast local option
-  (`--parallel` implies `--isolate`; bare `bun test` shares one module registry
-  across files and reports false failures from mock leakage — see
-  `src/lib/__tests__/enemy-defenses.test.ts`'s doc-comment). New `vi.mock` calls
-  must stay portable: don't use `vi.hoisted` or `vi.importActual` (neither exists
-  under Bun's `vi`), and pair any `importOriginal` partial mock with a namespace
-  import of the real module as a fallback —
-  `typeof importOriginal === 'function' ? await importOriginal() : actualModule`
-  — since Bun's mock factory receives no `importOriginal` argument. See
-  `src/lib/persist/__tests__/codec.test.ts` for the pattern. If an override
-  needs to *delegate* to the real implementation for some inputs (not just
-  spread `...actual` for other exports), snapshot that one function into a
-  local const inside the factory before returning
-  (`const real = actual.someFn; return { someFn: (...) => real(...) }`) —
-  under Bun, `actualModule`'s properties are live references into the same
+- `bun test --parallel` (`bun run test`) is the sole runner (CI runs it) — `bun:test`'s
+  `describe`/`it`/`expect`/`vi` cover the whole suite (no DOM/component tests, no
+  coverage tooling). `--parallel` (which implies `--isolate`) is **mandatory, not
+  a perf knob**: bare `bun test` shares one module registry across files, so a
+  `vi.mock` in one file can silently patch the module another file imports.
+  Confirmed reproducible instance: `build-reducer.test.ts`'s `@/lib/consumable-rules`
+  mock leaks into `src/lib/persist/__tests__/codec.test.ts` and breaks it, in
+  either file order, without `--isolate` — see
+  `src/lib/__tests__/enemy-defenses.test.ts`'s doc-comment.
+- `vi.mock` factories run unhoisted (in place, not lifted above the file's
+  imports like Vitest) but eagerly — `mock.module` patches the module registry
+  synchronously when `vi.mock(...)` is called, before any later top-level
+  `import` in the file resolves. There is no `vi.hoisted` or `vi.importActual`
+  under Bun's `vi`. A partial mock (spreading real exports, overriding a few)
+  should import the real module by namespace *before* calling `vi.mock`, and
+  read from that namespace inside the factory — see
+  `src/lib/persist/__tests__/codec.test.ts`. If an override needs to
+  *delegate* to the real implementation for some inputs (not just spread the
+  rest through), snapshot that one function into a local const *before* the
+  `vi.mock(...)` call, not inside the factory —
+  `const real = actualModule.someFn; vi.mock(id, () => ({ someFn: (...) => real(...) }))`
+  — because `actualModule`'s properties are live references into the same
   module record `vi.mock` is about to replace, so an override that instead
-  calls `actual.someFn(...)` at call time recurses into itself once the mock
-  is installed (confirmed: it hangs, doesn't throw). See
+  calls `actualModule.someFn(...)` at call time recurses into itself once the
+  mock is installed (confirmed: it hangs, doesn't throw). See
   `src/lib/__tests__/loadout-ordering.test.ts`.
 
 ## Import Path Alias

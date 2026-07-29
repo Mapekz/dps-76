@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import { resolveLoadout } from '@/lib/loadout';
 import { createDefaultEnemyConfig, createDefaultPlayerConfig, type PlayerConfig } from '@/types';
 

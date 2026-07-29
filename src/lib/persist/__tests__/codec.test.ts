@@ -1,12 +1,11 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi } from 'bun:test';
 import { decodeBuild, encodeBuild } from '@/lib/persist/codec';
 import { makeBuildReducer, createDefaultBuildState, type BuildAction } from '@/state/build-reducer';
 import { nukesDragonsPerks } from '@/lib/nukes-dragons';
 import type { GeneratedAddiction, GeneratedBuff } from '@/types/generated';
-// Bun's `vi.mock` factory gets no `importOriginal` and is unhoisted, so this
-// namespace is still the real module when the factory below runs. Under
-// Vitest the mock IS hoisted above this import, but the ternary in the
-// factory never dereferences `actualBuffs` there — `importOriginal` wins.
+// Bun's `vi.mock` factory gets no `importOriginal` argument and is unhoisted,
+// so this namespace import is still the real module when the factory below
+// runs — it stands in for `importOriginal()`.
 import * as actualBuffs from '@/data/buffs';
 
 const buildReducer = makeBuildReducer('live');
@@ -51,17 +50,11 @@ const testAddiction: GeneratedAddiction = {
   notes: [],
 };
 
-vi.mock('@/data/buffs', async (importOriginal) => {
-  const actual =
-    typeof importOriginal === 'function'
-      ? await importOriginal<typeof import('@/data/buffs')>()
-      : actualBuffs;
-  return {
-    ...actual,
-    getConsumables: () => [testChemA, testChemB],
-    getAddictions: () => [testAddiction],
-  };
-});
+vi.mock('@/data/buffs', () => ({
+  ...actualBuffs,
+  getConsumables: () => [testChemA, testChemB],
+  getAddictions: () => [testAddiction],
+}));
 
 /** Hand-builds a v1 wire payload without going through encodeBuild — lets a
  * test simulate a legacy/adversarial URL shape that the current app would

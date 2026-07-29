@@ -8,9 +8,11 @@
        need to type-check within this one program (see comment below on "references") */
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    /* "node" for scripts' own fs/path/process use; "vite/client" so the src/ files
+    /* "node" for scripts' own fs/path/process use; "bun" for this program's
+       Bun.nanoseconds()/bun:test usage (scripts/bench-engine.ts, every
+       *.test.ts under src/ and scripts/); "vite/client" so the src/ files
        this program re-checks still see import.meta.env etc. */
-    "types": ["node", "vite/client"],
+    "types": ["node", "bun", "vite/client"],
     "skipLibCheck": true,
     "stableTypeOrdering": true,
 

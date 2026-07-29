@@ -32,9 +32,9 @@
     "noUncheckedSideEffectImports": true
   },
   "include": ["src"],
-  // Test/bench files never ship in the Vite bundle this program gates, and
-  // some need Node builtins (fs/path/url) this program deliberately omits
-  // from `types` — tsconfig.scripts.json's redundant src/ pass already
-  // type-checks them with "node" in its types.
-  "exclude": ["**/*.test.ts", "**/*.test.tsx", "**/*.bench.ts"]
+  // Test files never ship in the Vite bundle this program gates, and some
+  // need Node builtins (fs/path/url) this program deliberately omits from
+  // `types` — tsconfig.scripts.json's redundant src/ pass already
+  // type-checks them with "node"/"bun" in its types.
+  "exclude": ["**/*.test.ts", "**/*.test.tsx"]
 }

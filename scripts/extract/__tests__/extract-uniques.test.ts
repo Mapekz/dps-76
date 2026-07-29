@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import type { GeneratedOmod, GeneratedWeapon } from '../../../src/types/generated';
 import type { EsmClient, EsmRecord } from '../esm-client';
 import { extractUniques } from '../extract-uniques';

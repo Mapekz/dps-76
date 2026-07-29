@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import type { Weapon } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
 import { getWeapons } from '@/data';

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import type { EsmClient, EsmListRow, EsmRecord, EsmRefRow } from '../esm-client';
 import { extractArmor, isExcludedArmorEdid } from '../extract-armor';
 

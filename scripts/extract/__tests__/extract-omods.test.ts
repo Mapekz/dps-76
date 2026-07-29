@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import type { EsmClient, EsmListRow, EsmRecord } from '../esm-client';
 import type { CobjIndex } from '../cobj-index';
 import { extractOmods, isExcludedOmodEdid, propertyName } from '../extract-omods';

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi } from 'bun:test';
 import { getEnemyDefenses } from '@/lib/enemy-defenses';
 import type { GeneratedNpc } from '@/types/generated';
 
@@ -6,18 +6,19 @@ import type { GeneratedNpc } from '@/types/generated';
  * `@/data/npcs` and `@/lib/creature-curves` are mocked so these tests assert
  * the epic-HP-mult wiring in isolation from the real extracted dataset (no
  * dependency on which races currently carry `epicRank` in npcs.json) — same
- * `vi.mock` pattern as `src/state/__tests__/build-reducer.test.ts` (hoisted
- * above this file's imports by vitest, so the plain top-level `import` above
- * already resolves against the mocks; under Bun, `mock.module` is unhoisted
- * but eager, so it patches the module registry before the top-level `import`
- * above ever resolves — same net effect, different mechanism).
+ * `vi.mock` pattern as `src/state/__tests__/build-reducer.test.ts`. Bun's
+ * `mock.module` is unhoisted but eager: it patches the module registry
+ * synchronously when `vi.mock(...)` runs, before the plain top-level
+ * `import` above ever resolves, so the mocks are already in place by the
+ * time this file's tests run.
  *
  * These are full-replacement factories (no `importOriginal`), so they carry
  * no Bun-portability ternary — but Bun shares one module registry across
- * test files, so this file's `@/lib/creature-curves` stub leaks into
- * `src/lib/__tests__/creature-curves.test.ts` (which mocks nothing and
- * asserts real curve math) unless `bun test` is run with `--parallel`
- * (implies `--isolate`).
+ * test files, so an un-isolated run risks any file's `vi.mock` leaking into
+ * any other. Confirmed reproducible instance: `build-reducer.test.ts`'s
+ * `@/lib/consumable-rules` mock leaks into
+ * `src/lib/persist/__tests__/codec.test.ts` (a real failure, in either file
+ * order) unless `bun test` is run with `--parallel` (implies `--isolate`).
  */
 const BASE_HP = 100_000;
 let stubNpc: GeneratedNpc | undefined;

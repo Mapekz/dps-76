@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import type { EsmClient, EsmRefRow } from '../esm-client';
 import { ObtainabilityClassifier } from '../obtainability';
 import { emptyCobjIndex, type CobjIndex, type CobjInfo } from '../cobj-index';

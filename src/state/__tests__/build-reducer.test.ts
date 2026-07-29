@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi } from 'bun:test';
 import {
   makeBuildReducer,
   createDefaultBuildState,
@@ -6,11 +6,9 @@ import {
   type BuildState,
 } from '@/state/build-reducer';
 import type { GeneratedBuff } from '@/types/generated';
-// Bun's `vi.mock` factory gets no `importOriginal` and is unhoisted, so this
-// namespace is still the real module when the factory below runs. Under
-// Vitest the mock IS hoisted above this import, but the ternary in the
-// factory never dereferences `actualConsumableRules` there —
-// `importOriginal` wins.
+// Bun's `vi.mock` factory gets no `importOriginal` argument and is unhoisted,
+// so this namespace import is still the real module when the factory below
+// runs — it stands in for `importOriginal()`.
 import * as actualConsumableRules from '@/lib/consumable-rules';
 
 const buildReducer = makeBuildReducer('live');
@@ -24,11 +22,7 @@ function run(actions: BuildAction[], from: BuildState = createDefaultBuildState(
 // implementation against fixtures that are hermetic against whatever
 // scripts/extract currently produces (a concurrent agent is rewriting the
 // buff extractor).
-vi.mock('@/lib/consumable-rules', async (importOriginal) => {
-  const actual =
-    typeof importOriginal === 'function'
-      ? await importOriginal<typeof import('@/lib/consumable-rules')>()
-      : actualConsumableRules;
+vi.mock('@/lib/consumable-rules', () => {
   const chemA: GeneratedBuff = {
     id: 'ChemA',
     formId: '0xC1',
@@ -51,7 +45,7 @@ vi.mock('@/lib/consumable-rules', async (importOriginal) => {
     [chemA.id, chemA],
     [chemB.id, chemB],
   ]);
-  return { ...actual, consumablesById: () => stub };
+  return { ...actualConsumableRules, consumablesById: () => stub };
 });
 
 describe('buildReducer', () => {

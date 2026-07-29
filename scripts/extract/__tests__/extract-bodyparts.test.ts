@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import { bptdToParts, extractBodyParts } from '../extract-bodyparts';
 import type { EsmClient } from '../esm-client';
 import stormGoliath from './fixtures/bptd-storm-goliath.json';

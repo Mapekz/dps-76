@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import type { EsmClient, EsmRecord } from '../esm-client';
 import { extractConstants } from '../extract-constants';
 import avifStrength from './fixtures/avif-strength.json';

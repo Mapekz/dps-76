@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import { getEquippedUnique, getUniques, getUniquesForWeapon } from '@/data/uniques';
 import { getOmodById } from '@/data/omods';
 import { hiddenOmodIds, forceVisibleOmodIds } from '@/data/overrides/corrections';

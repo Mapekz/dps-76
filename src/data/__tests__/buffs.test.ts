@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import { hasAnyEngineEffect } from '@/types/modifiers';
 import { consumablesById } from '@/lib/consumable-rules';
 import { getConsumables } from '../buffs';

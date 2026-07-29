@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import type { Weapon } from '@/types';
 import type { Bucket, Condition, ModOp, Modifier } from '@/types/modifiers';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';

@@ -20,10 +20,11 @@ jobs:
         with:
           bun-version: 1.3.14
 
-      # Node stays installed: vite/vitest/tsc all run under Node via their
+      # Node stays installed: vite/tsc run under Node via their
       # `#!/usr/bin/env node` shebangs — `bun run` respects that shebang and
-      # delegates to Node rather than the Bun runtime. Only script execution
-      # (extract/extract:diff/vet:weapons) and package install use Bun itself.
+      # delegates to Node rather than the Bun runtime. Tests run on the Bun
+      # runtime itself (`bun test`), same as script execution
+      # (extract/extract:diff/vet:weapons) and package install.
       - name: Setup Node
         uses: actions/setup-node@v6
         with:

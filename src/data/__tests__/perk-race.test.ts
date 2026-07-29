@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import { equippedRaceLock, perkRaceRestriction, wrongRacePerks } from '@/data/perk-race';
 import { getGeneratedPerk } from '@/data/perk-modifiers';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import type { EsmClient, EsmListRow, EsmRecord } from '../esm-client';
 import { buildCobjIndex, isNonGrantingCobj, type CobjInfo } from '../cobj-index';
 import cobj10mmBarrelLong from './fixtures/cobj-10mm-barrel-long.json';

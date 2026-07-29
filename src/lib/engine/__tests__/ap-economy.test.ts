@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import {
   AP_POOL_BASE,
   AP_POOL_PER_AGILITY,

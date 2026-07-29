@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import type { Condition } from '@/types/modifiers';
 import { getDataset } from '@/data/dataset';
 import { getGeneratedPerk } from '@/data/perk-modifiers';

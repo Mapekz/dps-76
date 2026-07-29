@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
 import { computePerkBudget } from '@/data/perk-budget';
 import { PerkId } from '@/data/perk-ids';

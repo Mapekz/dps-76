@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import { byName } from '@/lib/buff-sort';
 import type { GeneratedBuff } from '@/types/generated';
 

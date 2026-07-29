@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'bun:test';
 import { buildDataset, type DatasetSource, type HandAuthored } from '@/data/dataset';
 import type { GeneratedConstants, GeneratedOmod } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';

@@ -11,13 +11,14 @@ A Fallout 76 outgoing-DPS calculator. Configure your player build — perks, wea
 - React 19 + TypeScript (strict)
 - Vite 8 (Rolldown-based bundler, built in)
 - Tailwind CSS v4 + [shadcn/ui](https://ui.shadcn.com/) (Base UI primitives)
-- Vitest (engine unit tests, extraction fixtures, golden cases)
+- `bun test` (engine unit tests, extraction fixtures, golden cases)
 
 ## Getting started
 
-This project uses **Bun** (package manager + script runner). Vite/Vitest/tsc still run under
-Node under the hood, via `bun run` respecting their `#!/usr/bin/env node` shebangs — Node stays
-installed alongside Bun. Do not use npm, yarn, or pnpm.
+This project uses **Bun** (package manager + script runner). Vite/tsc still run under Node
+under the hood, via `bun run` respecting their `#!/usr/bin/env node` shebangs — Node stays
+installed alongside Bun. Tests run on the Bun runtime itself (`bun test`). Do not use npm,
+yarn, or pnpm.
 
 ```sh
 bun install

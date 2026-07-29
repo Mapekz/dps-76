@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import {
   BUCKET_REGISTRY,
   SUSTAIN_CHANCE_BUCKETS,
@@ -104,29 +104,27 @@ describe('BUCKET_REGISTRY', () => {
   });
 
   it('derives WEAPON_STAT_BUCKETS as exactly the weaponStat-regime buckets', () => {
-    expect([...WEAPON_STAT_BUCKETS].sort()).toEqual(
-      [
-        'fireRateSpeed',
-        'isAutomatic',
-        'animDurationSec',
-        'animDelaySec',
-        'projectileCount',
-        'ammoCapacity',
-        'reloadSpeed',
-        'vatsApCost',
-        'chargeFullPowerSec',
-        'chargeFullPowerDamageMult',
-        'weaponMinRange',
-        'weaponMaxRange',
-        'weaponOutOfRangeMult',
-      ].sort(),
-    );
+    const expected: Bucket[] = [
+      'fireRateSpeed',
+      'isAutomatic',
+      'animDurationSec',
+      'animDelaySec',
+      'projectileCount',
+      'ammoCapacity',
+      'reloadSpeed',
+      'vatsApCost',
+      'chargeFullPowerSec',
+      'chargeFullPowerDamageMult',
+      'weaponMinRange',
+      'weaponMaxRange',
+      'weaponOutOfRangeMult',
+    ];
+    expect([...WEAPON_STAT_BUCKETS].sort()).toEqual(expected.sort());
   });
 
   it('derives SUSTAIN_CHANCE_BUCKETS as exactly the sustainChance-regime buckets', () => {
-    expect([...SUSTAIN_CHANCE_BUCKETS].sort()).toEqual(
-      ['reloadSkipChance', 'reloadSkipChanceBash', 'ammoFreeChance'].sort(),
-    );
+    const expected: Bucket[] = ['reloadSkipChance', 'reloadSkipChanceBash', 'ammoFreeChance'];
+    expect([...SUSTAIN_CHANCE_BUCKETS].sort()).toEqual(expected.sort());
   });
 
   it('derives INERT_ENGINE_BUCKETS as exactly the no-engine-effect buckets', () => {
@@ -142,18 +140,17 @@ describe('BUCKET_REGISTRY', () => {
     // damageResistGain/energyResistGain (2026-07-21, Scaly Skin's positive
     // side): wearer-side resist mitigation isn't modeled — same inert status
     // as limbDamage/bashDamage.
-    expect([...INERT_ENGINE_BUCKETS].sort()).toEqual(
-      [
-        'limbDamage',
-        'bashDamage',
-        'addDamageComponent',
-        'bulletStormOnKill',
-        'bulletStormSpinUp',
-        'deflectChance',
-        'damageResistGain',
-        'energyResistGain',
-      ].sort(),
-    );
+    const expected: Bucket[] = [
+      'limbDamage',
+      'bashDamage',
+      'addDamageComponent',
+      'bulletStormOnKill',
+      'bulletStormSpinUp',
+      'deflectChance',
+      'damageResistGain',
+      'energyResistGain',
+    ];
+    expect([...INERT_ENGINE_BUCKETS].sort()).toEqual(expected.sort());
   });
 });
 

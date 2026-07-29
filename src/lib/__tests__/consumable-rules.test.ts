@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import { applySelection, sanitizeConsumables, toggleConsumable } from '@/lib/consumable-rules';
 import type { GeneratedBuff } from '@/types/generated';
 

@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'bun:test';
+import type { GeneratedNpcDamageType } from '../../../src/types/generated';
 import type { EsmClient, EsmRecord } from '../esm-client';
 import { CURATED_TARGETS } from '../curated-targets';
 import {
@@ -518,10 +519,16 @@ describe('extractNpcs (fake client — full RACE→NPC_ resolution + GLOB level 
 
   it('every resolved npc carries exactly the 6 documented resist damage types', async () => {
     const { npcs } = await extractNpcs(fakeClient);
+    const expected: GeneratedNpcDamageType[] = [
+      'cryo',
+      'energy',
+      'fire',
+      'physical',
+      'poison',
+      'radiation',
+    ];
     for (const npc of npcs) {
-      expect(npc.resists.map((r) => r.damageType).sort()).toEqual(
-        ['cryo', 'energy', 'fire', 'physical', 'poison', 'radiation'].sort(),
-      );
+      expect(npc.resists.map((r) => r.damageType).sort()).toEqual(expected.sort());
     }
   });
 });

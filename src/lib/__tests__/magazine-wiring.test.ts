@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import { resolveLoadout, resolveStats } from '@/lib/loadout';
 import { computeScenarios } from '@/lib/engine/scenarios';
 import { createDefaultEnemyConfig, createDefaultPlayerConfig, type PlayerConfig } from '@/types';

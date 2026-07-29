@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import { getWeapons } from '@/data';
 import { adaptWeapon } from '@/data/live/weapons';
 import generatedWeapons from '@/data/live/generated/weapons.json';

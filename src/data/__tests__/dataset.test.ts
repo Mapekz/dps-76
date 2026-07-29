@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'bun:test';
 import { getDataset, getUnresolvedOverrideKeys } from '@/data/dataset';
 import generatedUniquesLive from '@/data/live/generated/uniques.json';
 import { generatedWeaponsRaw as generatedWeaponsRawLive } from '@/data/live/weapons';
