@@ -189,6 +189,43 @@ describe('translateConditions (glowAtLeast — Rads AV 0x000002E1, 2026-07-13)',
   });
 });
 
+describe('translateConditions (radResistAtLeast — RadResistExposure AV 0x000002EA, 20260724 Daisy Cutter rebuild)', () => {
+  it('translates a literal GetValue(RadResistExposure) >= 1000 row to radResistAtLeast (Perk_Daisycutter\'s ladder, verified via esm chase 0x00471882)', () => {
+    const row = {
+      Function: 'GetValue',
+      'Parameter 1': '0x000002EA',
+      'Comparison Value': 1000,
+      Operator: 'Greater Than Or Equal To',
+    };
+    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([{ kind: 'radResistAtLeast', min: 1000 }]);
+  });
+
+  it('translates the top step of the ladder (>= 8000, the +160% cap)', () => {
+    const row = {
+      Function: 'GetValue',
+      'Parameter 1': '0x000002EA',
+      'Comparison Value': 8000,
+      Operator: 'Greater Than Or Equal To',
+    };
+    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([{ kind: 'radResistAtLeast', min: 8000 }]);
+  });
+
+  it('leaves a RadResistExposure GetValue row unresolved for a non-≥ comparison (e.g. "Less Than")', () => {
+    const row = {
+      Function: 'GetValue',
+      'Parameter 1': '0x000002EA',
+      'Comparison Value': 1000,
+      Operator: 'Less Than',
+    };
+    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([
+      { kind: 'unresolved', raw: 'GetValue(0x000002EA) Less Than 1000' },
+    ]);
+  });
+});
+
 /**
  * Stub client mirroring Lock and Load's real 20260710 ESM shape (verified via
  * `esm get`/`esm refs`, 2026-07-16): a 3-record edid chain (LockAndLoad01-03)

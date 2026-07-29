@@ -191,6 +191,12 @@ describe('modifierHasEngineEffect / hasAnyEngineEffect', () => {
     expect(modifierHasEngineEffect(curveMod('dbm', 'playerDamageResist'))).toBe(true);
   });
 
+  it("is true for a radResistAtLeast-gated modifier (Daisy Cutter's Rad-Resistance ladder, 20260724 rebuild)", () => {
+    expect(
+      modifierHasEngineEffect(plainMod('dbm', [{ kind: 'radResistAtLeast', min: 1000 }])),
+    ).toBe(true);
+  });
+
   it('is true for vatsHitChance — display regime still counts as "moves a number" (Phase 4, V.A.T.S. Enhanced &c.)', () => {
     expect(modifierHasEngineEffect(plainMod('vatsHitChance'))).toBe(true);
   });

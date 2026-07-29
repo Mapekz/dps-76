@@ -1091,6 +1091,17 @@ export type Condition =
    * ≥180 and Glow-spend checks (≥5/≥50 via GHL_*GlowUse GLOBs).
    */
   | { kind: 'glowAtLeast'; min: number }
+  /**
+   * Player Rad Resistance (the RadResistExposure AV, 0x000002EA) at or above
+   * `min` — Daisy Cutter's rebuilt effect (unique Fat Man, 20260724 patch):
+   * 8 discrete gates at 1000/2000/…/8000, each unlocking its own +20% dbm
+   * step, for a hard +160% cap at ≥8000 (nothing beyond). Additive — pools
+   * with other damage bonuses rather than multiplying them. No armor model
+   * derives Rad Resistance from equipped gear (same gap as `playerDamageResist`
+   * / Berserker's), so the AV is a manual knob,
+   * `PlayerConditions.playerRadResist`, default 0.
+   */
+  | { kind: 'radResistAtLeast'; min: number }
   /** Extraction escape hatch: condition semantics not yet understood. Engine skips the modifier; UI badges it. */
   | { kind: 'unresolved'; raw: string };
 

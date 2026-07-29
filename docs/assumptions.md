@@ -1658,6 +1658,14 @@ auto-converted); their stats are stale and must not be shown.
   2026-07-21) ships as an identity-mod preset on the base Gamma Gun
   (`mod_Custom_Xerxos`); the standalone `SCORE_S7_GammaGun_Xerxos` WEAP is
   the usual dead REPAIRONLY legacy record and stays excluded.
+- **Daisy Cutter** (unique Fat Man, rebuilt 20260724 — see
+  `Data/notes/20260717_to_20260724/patch-summary.md`): its old flat 30%
+  clip-refill chance became an 8-step `+20%` dbm ladder gated on
+  `GetValue(RadResistExposure) ≥ 1000..8000` (`radResistAtLeast` condition,
+  `resolve.ts`), capping at **+160% at 8000** with nothing beyond. No armor
+  model derives player Rad Resistance from equipped gear (same gap as
+  Berserker's `playerDamageResist`), so it's a manual knob,
+  `PlayerConditions.playerRadResist`, default 0.
 - **Instance-only target keywords** (~24 unique `ap_customName` mods): the
   game applies a second target keyword at instance-creation via template
   combination, which the base WEAP never has — the shared eligibility

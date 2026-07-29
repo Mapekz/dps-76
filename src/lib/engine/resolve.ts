@@ -378,6 +378,12 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       // Ghoul Glow meter (Rads AV) at or above the threshold — a plain gate,
       // not a stack scale (Glowing Criticals ≥180, Glow-spend ≥5/≥50).
       return (ctx.player.glow ?? 0) >= cond.min ? 1 : null;
+    case 'radResistAtLeast':
+      // Player Rad Resistance (RadResistExposure AV) at or above the
+      // threshold — a plain gate, not a stack scale (Daisy Cutter's 8
+      // discrete +20% steps at 1000/2000/…/8000; the eight ADD modifiers sum
+      // through the normal dbm fold, giving the +160% cap at 8000 for free).
+      return (ctx.player.playerRadResist ?? 0) >= cond.min ? 1 : null;
     case 'unresolved':
       return null;
   }

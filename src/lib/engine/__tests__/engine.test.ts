@@ -296,6 +296,47 @@ describe('condition evaluation', () => {
     expect(foldBucket([glowingCrit], 'dbm', 1.0, unset)).toBe(1.0); // glow undefined → treated as 0
   });
 
+  it('radResistAtLeast gates Daisy Cutter\'s 8-step Rad-Resistance ladder, capping at +160% (8000+)', () => {
+    // Perk_Daisycutter's real ESM shape (esm chase 0x00471882): 8 discrete
+    // dbm ADD 0.2 modifiers, each gated GetValue(RadResistExposure) >= N for
+    // N = 1000..8000 — additive, so the fold sums whichever steps are unlocked.
+    const daisyCutterSteps = Array.from({ length: 8 }, (_, i) =>
+      mod({
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.2,
+        conditions: [{ kind: 'radResistAtLeast', min: (i + 1) * 1000 }],
+      }),
+    );
+
+    const naked = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), playerRadResist: 0 },
+    });
+    expect(foldBucket(daisyCutterSteps, 'dbm', 1.0, naked)).toBe(1.0); // no steps unlocked
+
+    const oneStep = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), playerRadResist: 1000 },
+    });
+    expect(foldBucket(daisyCutterSteps, 'dbm', 1.0, oneStep)).toBeCloseTo(1.2, 10);
+
+    const capped = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), playerRadResist: 8000 },
+    });
+    expect(foldBucket(daisyCutterSteps, 'dbm', 1.0, capped)).toBeCloseTo(2.6, 10); // +160%
+
+    // Above the top gate, the ladder is structurally capped — no 9th step
+    // exists to unlock, so the sum stays at +160% rather than clamping.
+    const beyondCap = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), playerRadResist: 20000 },
+    });
+    expect(foldBucket(daisyCutterSteps, 'dbm', 1.0, beyondCap)).toBeCloseTo(2.6, 10);
+
+    const unset = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), playerRadResist: undefined },
+    });
+    expect(foldBucket(daisyCutterSteps, 'dbm', 1.0, unset)).toBe(1.0); // undefined → treated as 0
+  });
+
   it('perkFamilyRank gates on the derived family→rank map (cross-family HasPerk, Lock and Load → Bullet Storm)', () => {
     const needsLnL = mod({
       bucket: 'dbm',

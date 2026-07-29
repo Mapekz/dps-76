@@ -208,6 +208,14 @@ export interface PlayerConditions {
    */
   playerDamageResist?: number;
   /**
+   * Manual knob (default 0 = no Rad Resistance) for the RadResistExposure AV
+   * (0x000002EA) — today only Daisy Cutter's `radResistAtLeast` condition
+   * (unique Fat Man, rebuilt 20260724). Same gap as `playerDamageResist`
+   * above: no armor-mitigation model derives this from equipped gear, so
+   * it's user-supplied; see docs/assumptions.md "Unique weapons".
+   */
+  playerRadResist?: number;
+  /**
    * Worn-piece counts keyed by the armor-added keyword a `wornPieceCount`
    * condition tests (e.g. `HasLegendary_Armor_BattleLoaders`) — Battle-
    * Loader's 1-5 reload-skip tiers, Limit-Breaking's 1-5 crit-cost tiers.
@@ -687,6 +695,7 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     takingOneForTheTeamPct: 0, // no damage multiplier assumed by default
     takingOneForTheTeamDrRank: 0, // no flat DR debuff assumed by default
     playerDamageResist: 0, // naked (Berserker's curve max-bonus end) — matches this input's prior always-0 hardcoded behavior
+    playerRadResist: 0, // no Rad Resistance (Daisy Cutter's radResistAtLeast floor)
     strength: 15,
     perception: 15,
     endurance: 15,

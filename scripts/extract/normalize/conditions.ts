@@ -356,6 +356,18 @@ function translateSingle(
         }
         return { kind: 'unresolved', raw: `GetValue(${edid}) ${cond.Operator} ${rawCmp}` };
       }
+      if (param === '0x000002EA') {
+        // RadResistExposure — Daisy Cutter's rebuilt effect (20260724 patch):
+        // 8 discrete GetValue(RadResistExposure) ≥ N rows (N = 1000..8000),
+        // each gating its own +20% dbm ADD step, for a +160% cap at 8000
+        // (docs/assumptions.md "Unique weapons"). Same ≥-only approximation as
+        // the Glow branch above — no non-≥ comparison occurs in data for this
+        // AV; stay unresolved rather than guess if one shows up.
+        if (/^greater than( or equal to)?$/i.test(cond.Operator ?? '') && typeof cmp === 'number') {
+          return { kind: 'radResistAtLeast', min: cmp };
+        }
+        return { kind: 'unresolved', raw: `GetValue(${edid}) ${cond.Operator} ${rawCmp}` };
+      }
       return { kind: 'unresolved', raw: `GetValue(${edid})=${cond['Comparison Value']}` };
     }
     case 'GetLoadedAmmoCount':

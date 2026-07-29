@@ -215,6 +215,7 @@ export function ConditionsSection() {
         targetsHit: conditions.targetsHit ?? 1,
         weaponConditionPct: conditions.weaponConditionPct ?? 100,
         playerDamageResist: conditions.playerDamageResist ?? 0,
+        playerRadResist: conditions.playerRadResist ?? 0,
         hitRatePct: conditions.hitRatePct ?? 100,
         bodyPartHitRatePct: conditions.bodyPartHitRatePct ?? 100,
         isPowerAttacking: conditions.isPowerAttacking,
@@ -236,6 +237,7 @@ export function ConditionsSection() {
         targetsHit: defaults.targetsHit ?? 1,
         weaponConditionPct: defaults.weaponConditionPct ?? 100,
         playerDamageResist: defaults.playerDamageResist ?? 0,
+        playerRadResist: defaults.playerRadResist ?? 0,
         hitRatePct: defaults.hitRatePct ?? 100,
         bodyPartHitRatePct: defaults.bodyPartHitRatePct ?? 100,
         isPowerAttacking: defaults.isPowerAttacking,
@@ -549,6 +551,22 @@ export function ConditionsSection() {
             <p className="text-muted-foreground text-xs">
               No armor model exists yet — this is a manual stand-in for Berserker's-style effects
               that scale off your OWN damage resist (0 = naked, the curve's max-bonus end).
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <NumberField
+              id="char-player-rad-resist"
+              label="Your radiation resist"
+              value={conditions.playerRadResist ?? 0}
+              min={0}
+              max={10000}
+              step={100}
+              onChange={(v) => set('playerRadResist', v)}
+            />
+            <p className="text-muted-foreground text-xs">
+              No armor model exists yet — this is a manual stand-in for Daisy Cutter's +20%
+              damage-per-1000-Rad-Resistance ladder, which caps at +160% (8000+).
             </p>
           </div>
 
