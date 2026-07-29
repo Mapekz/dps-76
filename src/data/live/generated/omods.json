@@ -41734,7 +41734,21 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00471880:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00471880",
+     "edid": "mod_Custom_BunkerBuster",
+     "name": "Bunker Buster"
+    },
+    "bucket": "explosionRadiusToDamage",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItemName_BunkerBuster",
@@ -41742,9 +41756,7 @@
    "FeaturedItem"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "ActorValues on ConvertExplosiveRadiusToDamage — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

@@ -10529,11 +10529,41 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00393F66:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00393F66",
+       "edid": "Grenadier",
+       "name": "Grenadier",
+       "rank": 1
+      },
+      "bucket": "explosionRadiusBonus",
+      "op": "ADD",
+      "value": 0.5,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00393F66:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00393F66",
+       "edid": "Grenadier",
+       "name": "Grenadier",
+       "rank": 2
+      },
+      "bucket": "explosionRadiusBonus",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -29037,7 +29067,8 @@
    "entry point Mod Player Explosion Damage uses Multiply 1 + Actor Value Mult — skipped",
    "entry point Mod Weapon Attack Damage uses Multiply 1 + Actor Value Mult — skipped",
    "entry point Mod Weak Body Part Damage Mult uses Multiply 1 + Actor Value Mult — skipped",
-   "entry point Mod Outgoing Limb Damage uses Multiply 1 + Actor Value Mult — skipped"
+   "entry point Mod Outgoing Limb Damage uses Multiply 1 + Actor Value Mult — skipped",
+   "entry point Mod Player Explosion Scale uses Multiply 1 + Actor Value Mult — skipped"
   ]
  },
  {
