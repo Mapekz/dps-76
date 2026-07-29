@@ -6,6 +6,12 @@ import {
   type BuildState,
 } from '@/state/build-reducer';
 import type { GeneratedBuff } from '@/types/generated';
+// Bun's `vi.mock` factory gets no `importOriginal` and is unhoisted, so this
+// namespace is still the real module when the factory below runs. Under
+// Vitest the mock IS hoisted above this import, but the ternary in the
+// factory never dereferences `actualConsumableRules` there —
+// `importOriginal` wins.
+import * as actualConsumableRules from '@/lib/consumable-rules';
 
 const buildReducer = makeBuildReducer('live');
 
@@ -19,7 +25,10 @@ function run(actions: BuildAction[], from: BuildState = createDefaultBuildState(
 // scripts/extract currently produces (a concurrent agent is rewriting the
 // buff extractor).
 vi.mock('@/lib/consumable-rules', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/consumable-rules')>();
+  const actual =
+    typeof importOriginal === 'function'
+      ? await importOriginal<typeof import('@/lib/consumable-rules')>()
+      : actualConsumableRules;
   const chemA: GeneratedBuff = {
     id: 'ChemA',
     formId: '0xC1',

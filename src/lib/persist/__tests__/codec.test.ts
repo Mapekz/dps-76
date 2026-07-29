@@ -3,6 +3,11 @@ import { decodeBuild, encodeBuild } from '@/lib/persist/codec';
 import { makeBuildReducer, createDefaultBuildState, type BuildAction } from '@/state/build-reducer';
 import { nukesDragonsPerks } from '@/lib/nukes-dragons';
 import type { GeneratedAddiction, GeneratedBuff } from '@/types/generated';
+// Bun's `vi.mock` factory gets no `importOriginal` and is unhoisted, so this
+// namespace is still the real module when the factory below runs. Under
+// Vitest the mock IS hoisted above this import, but the ternary in the
+// factory never dereferences `actualBuffs` there — `importOriginal` wins.
+import * as actualBuffs from '@/data/buffs';
 
 const buildReducer = makeBuildReducer('live');
 
@@ -47,7 +52,10 @@ const testAddiction: GeneratedAddiction = {
 };
 
 vi.mock('@/data/buffs', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/data/buffs')>();
+  const actual =
+    typeof importOriginal === 'function'
+      ? await importOriginal<typeof import('@/data/buffs')>()
+      : actualBuffs;
   return {
     ...actual,
     getConsumables: () => [testChemA, testChemB],

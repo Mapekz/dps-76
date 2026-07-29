@@ -135,6 +135,26 @@ name in `src/data/perk-modifiers.ts`; misses are patched in
   (`scripts/extract/__tests__/fixtures/`).
 - Golden cases (`src/lib/engine/__tests__/golden/cases.json`) hold in-game
   measured numbers; `expected: null` cases are skipped until measured.
+- `vitest run` (`bun run test`) is the authoritative runner (CI runs it), but the
+  suite is also kept green under `bun test --parallel` as a fast local option
+  (`--parallel` implies `--isolate`; bare `bun test` shares one module registry
+  across files and reports false failures from mock leakage — see
+  `src/lib/__tests__/enemy-defenses.test.ts`'s doc-comment). New `vi.mock` calls
+  must stay portable: don't use `vi.hoisted` or `vi.importActual` (neither exists
+  under Bun's `vi`), and pair any `importOriginal` partial mock with a namespace
+  import of the real module as a fallback —
+  `typeof importOriginal === 'function' ? await importOriginal() : actualModule`
+  — since Bun's mock factory receives no `importOriginal` argument. See
+  `src/lib/persist/__tests__/codec.test.ts` for the pattern. If an override
+  needs to *delegate* to the real implementation for some inputs (not just
+  spread `...actual` for other exports), snapshot that one function into a
+  local const inside the factory before returning
+  (`const real = actual.someFn; return { someFn: (...) => real(...) }`) —
+  under Bun, `actualModule`'s properties are live references into the same
+  module record `vi.mock` is about to replace, so an override that instead
+  calls `actual.someFn(...)` at call time recurses into itself once the mock
+  is installed (confirmed: it hangs, doesn't throw). See
+  `src/lib/__tests__/loadout-ordering.test.ts`.
 
 ## Import Path Alias
 

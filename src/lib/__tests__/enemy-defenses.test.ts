@@ -8,7 +8,16 @@ import type { GeneratedNpc } from '@/types/generated';
  * dependency on which races currently carry `epicRank` in npcs.json) — same
  * `vi.mock` pattern as `src/state/__tests__/build-reducer.test.ts` (hoisted
  * above this file's imports by vitest, so the plain top-level `import` above
- * already resolves against the mocks).
+ * already resolves against the mocks; under Bun, `mock.module` is unhoisted
+ * but eager, so it patches the module registry before the top-level `import`
+ * above ever resolves — same net effect, different mechanism).
+ *
+ * These are full-replacement factories (no `importOriginal`), so they carry
+ * no Bun-portability ternary — but Bun shares one module registry across
+ * test files, so this file's `@/lib/creature-curves` stub leaks into
+ * `src/lib/__tests__/creature-curves.test.ts` (which mocks nothing and
+ * asserts real curve math) unless `bun test` is run with `--parallel`
+ * (implies `--isolate`).
  */
 const BASE_HP = 100_000;
 let stubNpc: GeneratedNpc | undefined;
