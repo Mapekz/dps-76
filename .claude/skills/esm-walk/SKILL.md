@@ -12,7 +12,7 @@ esm -p walk <formid|edid> [--refs] [--depth N]   # compact digest + chain follow
 esm -p chase <selector> [--depth N] [--json]     # OMOD/PERK/SPEL/ALCH/ENCH mechanism taxonomy
 ```
 
-`pnpm esm:walk` remains as a thin alias for `esm -p walk`. Generic CLI
+`bun run esm:walk` remains as a thin alias for `esm -p walk`. Generic CLI
 mechanics — path resolution, bulk `get`, `refs` flags, how to read the walk
 digest (GLOB flat-wins rule, curves, conditions), generic obtainability
 guidance, curve-table conventions, field-name churn — live in the `esm-cli`
@@ -86,7 +86,7 @@ graph alone couldn't distinguish from live).
   `legendary-values.ts`, `buff-overrides.ts`.
 - New mechanics: bucket/condition in `src/types/modifiers.ts` + `resolve.ts` +
   extractor mapping + `docs/assumptions.md` entry.
-- After any extractor change: `pnpm extract … [--only …]`, review `_meta.json`
-  unresolved/excludedDetailed deltas and `pnpm extract:diff`. Diff generated
+- After any extractor change: `bun run extract … [--only …]`, review `_meta.json`
+  unresolved/excludedDetailed deltas and `bun run extract:diff`. Diff generated
   values against git — a mapping change that shifts UNRELATED values is a
   regression, not noise.

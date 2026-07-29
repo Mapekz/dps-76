@@ -11,7 +11,7 @@ import { CURATED_TARGETS } from './curated-targets';
  *
  * The curated target list (CURATED_TARGETS) lives in ./curated-targets.ts —
  * shared with extract-npcs.ts so both extractors key off the exact same row
- * set. Add a row there (not here) and re-run `pnpm extract --only
+ * set. Add a row there (not here) and re-run `bun run extract --only
  * bodyparts,npcs` to extend the picker. Rows may name a RACE edid directly or
  * an NPC_ edid (this extractor resolves NPC → Race → BPTD), which lets boss
  * entries that share a race stay distinct in the picker.

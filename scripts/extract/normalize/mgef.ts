@@ -1303,7 +1303,7 @@ export async function translateMagicEffect(
   // binds each effect's optional trailing subrecords to the physically
   // correct effect instead of a global FIFO queue), so a present
   // `magnitudeGlobal` is always this effect's own reference and should always
-  // win over the flat magnitude. Requires a fresh `pnpm extract` against a
+  // win over the flat magnitude. Requires a fresh `bun run extract` against a
   // rebuilt `esm` binary to take effect.
   let resolvedEffect = effect;
   if (effect.magnitudeGlobal) {

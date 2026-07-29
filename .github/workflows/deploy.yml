@@ -27,27 +27,36 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          # Pinned exact: pnpm 11.12.0's self-installer crashes on bootstrap
-          # (pnpm/action-setup#276, open upstream). Do not float on "11" until fixed.
-          version: 11.10.0
+          bun-version: 1.3.14
 
+      # Node stays installed: vite/tsc run under Node via their
+      # `#!/usr/bin/env node` shebangs — `bun run` respects that shebang and
+      # delegates to Node rather than the Bun runtime.
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
           node-version: '24'
-          cache: 'pnpm'
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
 
+      # setup-bun caches the Bun binary but not installed dependencies.
+      - name: Cache Bun install cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Build
-        run: pnpm run build
+        run: bun run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5

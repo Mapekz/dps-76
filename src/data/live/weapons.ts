@@ -5,7 +5,7 @@ import generatedWeapons from './generated/weapons.json';
 
 /**
  * Live weapons — adapted from ESM-extracted data (src/data/live/generated/,
- * produced by `pnpm extract`), with hand-maintained overrides from
+ * produced by `bun run extract`), with hand-maintained overrides from
  * src/data/overrides/corrections.ts layered on top.
  */
 

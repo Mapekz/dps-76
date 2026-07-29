@@ -12,7 +12,7 @@ tests/lint/build, those only prove CI would pass.
 ## Launch
 
 ```bash
-pnpm dev            # Vite dev server, base URL "/" (not "/dps-76/" — that's prod only)
+bun run dev         # Vite dev server, base URL "/" (not "/dps-76/" — that's prod only)
 ```
 
 Runs on `http://localhost:5173/` by default. Open it with the

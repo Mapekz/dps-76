@@ -8,7 +8,7 @@ movement-speed bonus** modeled so Fast Fighter's input is complete.
 
 **Registry enforcement:** `src/data/__tests__/move-speed-census.test.ts` pins
 every extracted `moveSpeedBonus` modifier against a hand-maintained allowlist.
-A new `SpeedMult` source after `pnpm extract` fails CI until dispositioned here.
+A new `SpeedMult` source after `bun run extract` fails CI until dispositioned here.
 
 ## Modeled today
 

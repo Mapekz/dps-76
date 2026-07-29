@@ -1,6 +1,6 @@
 ---
 name: weapon-vetting
-description: Keep the vetted weapon roster in check after an ESM sync. Use when running pnpm extract against a new SeventySix.esm dump, when the weapons pinning test fails, or when reviewing pnpm vet:weapons output.
+description: Keep the vetted weapon roster in check after an ESM sync. Use when running bun run extract against a new SeventySix.esm dump, when the weapons pinning test fails, or when reviewing bun run vet:weapons output.
 ---
 
 # Weapon roster vetting
@@ -23,11 +23,11 @@ A fresh extraction only requires reviewing the **delta**, not re-vetting all
    rarely change) and note the copy — or re-run the curvetable dump step.
    **The daemon caches the loose-file view: run `esm daemon stop` after
    adding curvetables**, then extract.
-2. `pnpm extract --esm <dump> --mode live` then `pnpm extract:diff` — review
+2. `bun run extract --esm <dump> --mode live` then `bun run extract:diff` — review
    record-level changes (real balance changes vs extraction artifacts; the
    dump dir's `patch_<old>_to_<new>/` reports say which records the patch
    actually touched).
-3. `pnpm vet:weapons` — prints newly-visible entries (with red-flag
+3. `bun run vet:weapons` — prints newly-visible entries (with red-flag
    heuristics), dropped entries (with their exclusion bucket + obtainability
    signals), and duplicate display names.
 4. Adjudicate each delta entry with the `esm-walk` skill:
@@ -41,7 +41,7 @@ A fresh extraction only requires reviewing the **delta**, not re-vetting all
      full grouped `--refs` list, filter to one referrer type server-side:
      `esm -p --esm <esm> refs --formid <weapon-id> --type <SIG> --json` (e.g.
      `--type COBJ` for craftable, `--type LVLI` for loot chains).
-5. `pnpm test` — the pinning test must pass; golden cases catch balance
+5. `bun run test` — the pinning test must pass; golden cases catch balance
    regressions (a failing golden case after a patch may mean the weapon was
    really rebalanced → re-measure in game before touching expectations).
 

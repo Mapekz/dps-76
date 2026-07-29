@@ -12,7 +12,7 @@ import { SPECIAL_KEYS, type SpecialKey } from '@/lib/player-stats';
 /**
  * Drift detection for the ESM-derived perk registry (src/data/perk-cards.ts),
  * in the spirit of the vetted-weapons-roster test: pins real PCRD card data
- * and fails loudly (with the offending list) when a future `pnpm extract`
+ * and fails loudly (with the offending list) when a future `bun run extract`
  * changes the join surface.
  */
 

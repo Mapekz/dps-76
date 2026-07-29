@@ -81,7 +81,7 @@ import generatedConstantsLive from './live/generated/constants.json';
  *
  * This is the one place the live/pts split is decided. Only a single ESM is
  * extracted today, so both modes resolve to the same live-backed dataset; when
- * a PTS dump lands (`pnpm extract --mode pts`), build a pts dataset here and
+ * a PTS dump lands (`bun run extract --mode pts`), build a pts dataset here and
  * this is the only edit.
  */
 

@@ -41,7 +41,7 @@ If the concept you need isn't in the glossary yet, that's a signal — either yo
 Rules when reading or writing it:
 
 - **Entries are terse.** One claim, a status tag, a code pointer. Investigation narrative belongs in the commit message. An explanation of how a mechanic works — even an ESM-proven one — belongs in the implementing function's doc-comment, not here. In-game measurement TODOs go to the measurement backlog.
-- **Section names are cited verbatim across the codebase** — ~270 references across `src/`, `scripts/`, and generated data, including `src/data/live/generated/omods.json`, whose citations are emitted by the extractors. Never rename, merge, or split a section without updating every citation; for generated files that means editing `scripts/extract/*` and re-running `pnpm extract`, not hand-editing JSON.
+- **Section names are cited verbatim across the codebase** — ~270 references across `src/`, `scripts/`, and generated data, including `src/data/live/generated/omods.json`, whose citations are emitted by the extractors. Never rename, merge, or split a section without updating every citation; for generated files that means editing `scripts/extract/*` and re-running `bun run extract`, not hand-editing JSON.
 - **New unproven values need an entry.** If a change introduces a number the ESM doesn't prove, add one — one claim, a status tag, a code pointer.
 - **Don't migrate it into `CONTEXT.md`.** The split is intentional (see above), and merging would break the verbatim citations.
 

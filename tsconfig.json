@@ -13,12 +13,12 @@
   ],
   "compilerOptions": {
     // Inert for tsc itself (solution-style configs with `files: []` don't apply
-    // their own compilerOptions to the build), but load-bearing for tsx: it
+    // their own compilerOptions to the build), but load-bearing for Bun: it
     // resolves `@/*` at runtime by reading the nearest tsconfig.json's `paths`
     // directly, not through tsc's project-reference graph. Removing this breaks
-    // `pnpm extract`/`pnpm extract:diff`/`pnpm vet:weapons` the moment any file
+    // `bun run extract`/`extract:diff`/`vet:weapons` the moment any file
     // they transitively import (e.g. src/data/omods.ts) uses a value-level `@/`
-    // import — confirmed by running `pnpm vet:weapons` after removing it.
+    // import — confirmed by running `vet:weapons` after removing it.
     "paths": {
       "@/*": ["./src/*"]
     }

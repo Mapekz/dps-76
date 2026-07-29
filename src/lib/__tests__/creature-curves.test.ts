@@ -6,7 +6,7 @@ import { getCreatureHealth, getCreatureResist } from '@/lib/creature-curves';
  * (2026-07-18, scripts/extract/extract-curvetables.ts) curve files — the
  * exact bug the Phase 2 spike found (stale hand-copied curvetables) means
  * these numbers only hold post-re-extraction; if this test starts failing
- * after a `pnpm extract --only curvetables` run, re-derive the expectations
+ * after a `bun run extract --only curvetables` run, re-derive the expectations
  * from the new file rather than assuming a regression.
  */
 

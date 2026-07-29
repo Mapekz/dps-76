@@ -10,25 +10,27 @@ A Fallout 76 outgoing-DPS calculator. Configure your player build — perks, wea
 
 - React 19 + TypeScript (strict)
 - Vite 8 (Rolldown-based bundler, built in)
-- Tailwind CSS v4 + [shadcn/ui](https://ui.shadcn.com/) (Radix UI primitives)
-- No test framework (tests are manual)
+- Tailwind CSS v4 + [shadcn/ui](https://ui.shadcn.com/) (Base UI primitives)
+- Vitest (engine unit tests, extraction fixtures, golden cases)
 
 ## Getting started
 
-This project uses **pnpm**. Do not use npm or yarn.
+This project uses **Bun** (package manager + script runner). Vite/Vitest/tsc still run under
+Node under the hood, via `bun run` respecting their `#!/usr/bin/env node` shebangs — Node stays
+installed alongside Bun. Do not use npm, yarn, or pnpm.
 
 ```sh
-pnpm install
-pnpm dev        # dev server with HMR at http://localhost:5173
-pnpm build      # typecheck (tsc -b) + production build → dist/
-pnpm lint       # ESLint
-pnpm preview    # serve the production build locally
+bun install
+bun run dev        # dev server with HMR at http://localhost:5173
+bun run build      # typecheck (tsc -b) + production build → dist/
+bun run lint       # oxlint
+bun run preview    # serve the production build locally
 ```
 
 ### GitHub Pages deploy
 
 ```sh
-pnpm build:gh-pages   # NODE_ENV=production build with base URL /dps-76/
+bun run build:gh-pages   # NODE_ENV=production build with base URL /dps-76/
 ```
 
 CI deploys automatically via `.github/workflows/deploy.yml` on push to `main`.

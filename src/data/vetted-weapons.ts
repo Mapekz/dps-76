@@ -4,7 +4,7 @@
  * forceVisibleWeaponIds / weaponCorrections). Pinned so ESM re-extractions
  * can't silently change what the picker shows: the pinning test
  * (src/data/__tests__/weapons.test.ts) fails on any drift, and
- * `pnpm vet:weapons` reports the delta for review
+ * `bun run vet:weapons` reports the delta for review
  * (.claude/skills/weapon-vetting/SKILL.md).
  *
  * Update deliberately: adjudicate each addition/removal, THEN regenerate

@@ -8,17 +8,22 @@ This is a Fallout 76 DPS (Damage Per Second) calculator web application. It comp
 
 ## Development Commands
 
-- `pnpm dev` - Start development server with HMR
-- `pnpm build` - Type check and build for production
-- `pnpm build:gh-pages` - Build for GitHub Pages deployment (sets NODE_ENV=production)
-- `pnpm test` - Run vitest suite (engine unit tests, extraction fixtures, golden cases)
-- `pnpm lint` / `pnpm lint:fix` - Run oxlint (Rust-based; not ESLint)
-- `pnpm fmt` / `pnpm fmt:check` - Format with oxfmt
-- `pnpm preview` - Preview production build locally
-- `pnpm extract --esm <path-to-SeventySix.esm> --mode live [--only weapons,perks,omods,buffs]` - Regenerate game data from an ESM dump (requires the `esm` CLI on PATH). `--esm` can be omitted if the `FO76_ESM_PATH` env var is set instead; `pnpm esm:walk` uses the same fallback.
-- `pnpm extract:diff [--base HEAD]` - Markdown review report of generated-data changes vs a git ref; run after every extraction
+- `bun run dev` - Start development server with HMR
+- `bun run build` - Type check and build for production
+- `bun run build:gh-pages` - Build for GitHub Pages deployment (sets NODE_ENV=production)
+- `bun run test` - Run vitest suite (engine unit tests, extraction fixtures, golden cases)
+- `bun run lint` / `bun run lint:fix` - Run oxlint (Rust-based; not ESLint)
+- `bun run fmt` / `bun run fmt:check` - Format with oxfmt
+- `bun run preview` - Preview production build locally
+- `bun run extract --esm <path-to-SeventySix.esm> --mode live [--only weapons,perks,omods,buffs]` - Regenerate game data from an ESM dump (requires the `esm` CLI on PATH). `--esm` can be omitted if the `FO76_ESM_PATH` env var is set instead; `bun run esm:walk` uses the same fallback.
+- `bun run extract:diff [--base HEAD]` - Markdown review report of generated-data changes vs a git ref; run after every extraction
 
-This project uses **pnpm** as the package manager, not npm or yarn.
+This project uses **Bun** as the package manager and script runner (`bun install`, `bun run <script>`),
+not npm/yarn/pnpm. Vite, Vitest, and `tsc` still run under **Node** — their `#!/usr/bin/env node`
+shebangs make `bun run <script>` delegate to Node automatically, so Node stays installed
+(CI pins `node-version: '24'`). Only script execution (`extract`/`extract:diff`/`vet:weapons`)
+and dependency installation use the Bun runtime itself; never run Vite/Vitest under `bun --bun` —
+Vite 8's Rolldown bundler hits an open Bun N-API bug ([oven-sh/bun#26388](https://github.com/oven-sh/bun/issues/26388)).
 
 ## Architecture Overview
 
@@ -105,7 +110,7 @@ rename or merge one without updating its citations.
 
 The `useGameMode` hook provides context for 'live' vs 'pts'. Only one ESM is
 extracted today — pts re-exports live until a PTS dump is dropped in and
-`pnpm extract --mode pts` is run. The Header toggle stays disabled meanwhile.
+`bun run extract --mode pts` is run. The Header toggle stays disabled meanwhile.
 
 ### Component Structure
 
@@ -147,8 +152,8 @@ import { useGameMode } from '@/hooks/useGameMode';
   `typescript-eslint@8.x` only supports `typescript <6.1.0`; that pin was dropped, not merely
   bumped — ESLint/typescript-eslint were replaced by `oxlint` (see below), which has no dependency
   on the `typescript` package, so nothing in the toolchain constrains the TS version anymore.
-- Linting is **oxlint**, not ESLint — `.oxlintrc.json` at the repo root. `pnpm lint` /
-  `pnpm lint:fix`. Formatting is **oxfmt** — `.oxfmtrc.json`; `pnpm fmt` / `pnpm fmt:check`.
+- Linting is **oxlint**, not ESLint — `.oxlintrc.json` at the repo root. `bun run lint` /
+  `bun run lint:fix`. Formatting is **oxfmt** — `.oxfmtrc.json`; `bun run fmt` / `bun run fmt:check`.
   Both are Oxc/Rust-based, chosen for speed (lint dropped from ~5s to well under 1s). oxlint's
   `react` plugin covers eslint-plugin-react-hooks + react-refresh under different rule names
   (`react/exhaustive-deps`, `react/only-export-components` — note the renamed prefix vs the old
@@ -157,14 +162,14 @@ import { useGameMode } from '@/hooks/useGameMode';
   plain comment, not a suppressed lint rule. oxfmt formats JSON by default with no per-language
   opt-out, so `.oxfmtrc.json`'s `ignorePatterns` — excluding `src/data/*/generated/**`,
   `src/data/*/curvetables/**`, and all `.md`/`.yml`/`.yaml` — is load-bearing: without it, every
-  `pnpm extract` would reformat hundreds of generated files, and prose docs/vendored skill files
+  `bun run extract` would reformat hundreds of generated files, and prose docs/vendored skill files
   (`skills-lock.json` pins their hashes) would get silently reflowed by oxfmt's bundled Prettier.
 - Tailwind CSS v4 with @tailwindcss/vite plugin
 - Base URL is `/dps-76/` for production builds (GitHub Pages) and `/` for dev
 
 ## Adding / Fixing Game Data
 
-1. Prefer re-running `pnpm extract` over hand-editing anything in `generated/`.
+1. Prefer re-running `bun run extract` over hand-editing anything in `generated/`.
 2. Wrong or missing values go in `src/data/overrides/*` with a source comment.
 3. New damage mechanics usually need: a `Bucket` or `Condition` in
    `src/types/modifiers.ts`, evaluation in `src/lib/engine/resolve.ts`, a

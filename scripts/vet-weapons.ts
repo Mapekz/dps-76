@@ -4,7 +4,7 @@
  * PINNED vetted list (src/data/vetted-weapons.ts), so an ESM re-extraction
  * only requires reviewing the delta instead of re-vetting all ~200 entries.
  *
- *   pnpm vet:weapons
+ *   bun run vet:weapons
  *
  * Review procedure: .claude/skills/weapon-vetting/SKILL.md. The pinning test
  * (src/data/__tests__/weapons.test.ts) fails CI until the delta is either
@@ -93,7 +93,7 @@ for (const [name, ids] of dupes) console.log(`- "${name}": ${ids.join(', ')}`);
 
 if (!meta) {
   console.log(
-    '\n_(no local _meta.json — excluded-bucket locations unavailable; run `pnpm extract` to produce one)_',
+    '\n_(no local _meta.json — excluded-bucket locations unavailable; run `bun run extract` to produce one)_',
   );
 }
 

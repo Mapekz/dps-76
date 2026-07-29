@@ -4,9 +4,9 @@ import { VETTED_WEAPON_IDS } from '../vetted-weapons';
 
 /**
  * Pinning test for the vetted weapon roster (2026-07-12 pass). A fresh
- * `pnpm extract` can silently change which records pass the junk/obtainability
+ * `bun run extract` can silently change which records pass the junk/obtainability
  * filters — this fails loudly instead of letting the picker drift unreviewed.
- * On failure: run `pnpm vet:weapons` and follow
+ * On failure: run `bun run vet:weapons` and follow
  * .claude/skills/weapon-vetting/SKILL.md — adjudicate the delta, then update
  * VETTED_WEAPON_IDS deliberately.
  */

@@ -9,11 +9,11 @@ const execFileAsync = promisify(execFile);
 
 /**
  * Post-extraction review report: what changed in the generated data vs a git
- * ref (default HEAD). Run after every `pnpm extract` and attach to the
+ * ref (default HEAD). Run after every `bun run extract` and attach to the
  * sign-off — this is how junk-filter/obtainability regressions get caught
  * before they ship.
  *
- * Usage: pnpm extract:diff [--mode live] [--base HEAD]
+ * Usage: bun run extract:diff [--mode live] [--base HEAD]
  */
 
 const LEGENDARY_SLOT_RE = /legendary/i;
@@ -167,7 +167,7 @@ async function main() {
   out.push(
     '## Overlay reviewer',
     '',
-    'Run `pnpm test src/data/__tests__/dataset.test.ts` — asserts every hand-maintained ' +
+    'Run `bun run test src/data/__tests__/dataset.test.ts` — asserts every hand-maintained ' +
       'override (src/data/overrides/*) still targets a real generated id, for both live and pts.',
     '',
   );

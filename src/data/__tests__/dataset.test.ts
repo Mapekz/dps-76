@@ -8,7 +8,7 @@ import type { GeneratedUnique } from '@/types/generated';
 
 /**
  * Overlay reviewer: every hand-maintained override table (src/data/overrides/*)
- * must still target a real generated id. A failure here means a `pnpm extract`
+ * must still target a real generated id. A failure here means a `bun run extract`
  * renamed/removed something an override keys off of — the override is now
  * silently inert. Fix by updating or removing the stale entry (see the
  * overlay's own file for its source-comment convention).

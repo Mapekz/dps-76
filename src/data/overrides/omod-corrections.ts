@@ -2,7 +2,7 @@ import type { Modifier } from '@/types/modifiers';
 
 /**
  * Hand-maintained weapon-OMOD corrections layered over ESM-generated data.
- * This file survives regeneration (`pnpm extract`). Every entry should
+ * This file survives regeneration (`bun run extract`). Every entry should
  * carry a source comment (in-game test, wiki, community).
  */
 
