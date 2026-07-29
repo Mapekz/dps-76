@@ -68874,7 +68874,68 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0080F54D:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0080F54D",
+     "edid": "mod_Legendary_Armor1_Adrenal",
+     "name": "Adrenal"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "curve": {
+     "input": "killStreak",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": 10
+      },
+      {
+       "x": 10,
+       "y": 100
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": []
+   },
+   {
+    "id": "0x0080F54D:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0080F54D",
+     "edid": "mod_Legendary_Armor1_Adrenal",
+     "name": "Adrenal"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "curve": {
+     "input": "killStreak",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": 10
+      },
+      {
+       "x": 10,
+       "y": 100
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_Adrenal",
@@ -68883,8 +68944,6 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "MGEF AbPerkFortifyResistDamage: no route for AV DamageResist — needs mapping",
-   "MGEF AbPerkFortifyResistEnergy: no route for AV EnergyResist — needs mapping",
    "MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping"
   ],
   "obtainable": true
@@ -69842,7 +69901,21 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00849312:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00849312",
+     "edid": "mod_Legendary_Armor2_Elementalist",
+     "name": "Elementalist"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": 25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "BOUNTY_HasLegendary_Armor_Elementalist",
@@ -69852,7 +69925,6 @@
   "hasGrantingCobj": true,
   "notes": [
    "MGEF AbFortifyResistCryo: no route for AV FrostResist — needs mapping",
-   "MGEF AbPerkFortifyResistEnergy: no route for AV EnergyResist — needs mapping",
    "MGEF AbPerkFortifyResistFire: no route for AV FireResist — needs mapping",
    "MGEF AbPerkFortifyResistPoison: no route for AV PoisonResist — needs mapping",
    "MGEF AbPerkFortifyResistRadiationExpose: no route for AV RadResistExposure — needs mapping",
@@ -71443,7 +71515,68 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0080F54E:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0080F54E",
+     "edid": "mod_Legendary_PowerArmor1_Adrenal",
+     "name": "Adrenal"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "curve": {
+     "input": "killStreak",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": 10
+      },
+      {
+       "x": 10,
+       "y": 100
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": []
+   },
+   {
+    "id": "0x0080F54E:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0080F54E",
+     "edid": "mod_Legendary_PowerArmor1_Adrenal",
+     "name": "Adrenal"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "curve": {
+     "input": "killStreak",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": 10
+      },
+      {
+       "x": 10,
+       "y": 100
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_Adrenal",
@@ -71452,8 +71585,6 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "MGEF AbPerkFortifyResistDamage: no route for AV DamageResist — needs mapping",
-   "MGEF AbPerkFortifyResistEnergy: no route for AV EnergyResist — needs mapping",
    "MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping"
   ],
   "obtainable": true
@@ -72130,7 +72261,21 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x008493E7:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008493E7",
+     "edid": "mod_Legendary_PowerArmor2_Elementalist",
+     "name": "Elementalist"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": 25,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "BOUNTY_HasLegendary_Armor_Elementalist",
@@ -72140,7 +72285,6 @@
   "hasGrantingCobj": true,
   "notes": [
    "MGEF AbFortifyResistCryo: no route for AV FrostResist — needs mapping",
-   "MGEF AbPerkFortifyResistEnergy: no route for AV EnergyResist — needs mapping",
    "MGEF AbPerkFortifyResistFire: no route for AV FireResist — needs mapping",
    "MGEF AbPerkFortifyResistPoison: no route for AV PoisonResist — needs mapping",
    "MGEF AbPerkFortifyResistRadiationExpose: no route for AV RadResistExposure — needs mapping",

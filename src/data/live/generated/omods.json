@@ -15920,8 +15920,8 @@
   "formId": "0x005A70C1",
   "name": "Cursed Pickaxe",
   "description": "",
-  "attachPointFormId": "0x00521926",
-  "attachPointEdid": "ap_Item_Description",
+  "attachPointFormId": "0x009302C8",
+  "attachPointEdid": "ap_curse",
   "targetKeywords": [],
   "modifiers": [
    {
@@ -15963,8 +15963,8 @@
   "formId": "0x005A70C0",
   "name": "Cursed Shovel",
   "description": "",
-  "attachPointFormId": "0x00521926",
-  "attachPointEdid": "ap_Item_Description",
+  "attachPointFormId": "0x009302C8",
+  "attachPointEdid": "ap_curse",
   "targetKeywords": [],
   "modifiers": [
    {
@@ -16006,8 +16006,8 @@
   "formId": "0x00614357",
   "name": "Cursed Sickle",
   "description": "",
-  "attachPointFormId": "0x00521926",
-  "attachPointEdid": "ap_Item_Description",
+  "attachPointFormId": "0x009302C8",
+  "attachPointEdid": "ap_curse",
   "targetKeywords": [],
   "modifiers": [
    {
@@ -16049,8 +16049,8 @@
   "formId": "0x00614386",
   "name": "Cursed Broadsider",
   "description": "",
-  "attachPointFormId": "0x00521926",
-  "attachPointEdid": "ap_Item_Description",
+  "attachPointFormId": "0x009302C8",
+  "attachPointEdid": "ap_curse",
   "targetKeywords": [],
   "modifiers": [
    {
@@ -16092,8 +16092,8 @@
   "formId": "0x005A70C2",
   "name": "Cursed Harpoon Gun",
   "description": "",
-  "attachPointFormId": "0x00521926",
-  "attachPointEdid": "ap_Item_Description",
+  "attachPointFormId": "0x009302C8",
+  "attachPointEdid": "ap_curse",
   "targetKeywords": [],
   "modifiers": [
    {
@@ -28268,6 +28268,7 @@
   ],
   "addedKeywords": [
    "WeaponTypeFireDamage",
+   "s_40_wpn_laser_sheepsquatch",
    "dn_weap_EnergyGun"
   ],
   "hasEnchantments": false,
@@ -40372,26 +40373,6 @@
     "op": "MUL_ADD",
     "value": 0.5,
     "conditions": []
-   },
-   {
-    "id": "0x00172359:5",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00172359",
-     "edid": "mod_Cryolator_Barrel_Long",
-     "name": "Crystallizing Barrel"
-    },
-    "bucket": "baseDamage",
-    "op": "MUL_ADD",
-    "value": -0.1,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "cryo"
-      ]
-     }
-    ]
    }
   ],
   "addedKeywords": [
@@ -42155,6 +42136,19 @@
      "edid": "mod_custom_CosmicKnife_Superheated",
      "name": "Cosmic Knife Super-Heated"
     },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": -25,
+    "conditions": []
+   },
+   {
+    "id": "0x00837E13:ench:7",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00837E13",
+     "edid": "mod_custom_CosmicKnife_Superheated",
+     "name": "Cosmic Knife Super-Heated"
+    },
     "bucket": "dotDamage",
     "op": "ADD",
     "curve": {
@@ -42229,7 +42223,6 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "MGEF CosmicKnife_Superheated_DamageResistEffect_Contact: no route for AV DamageResist — needs mapping",
    "condition: IsUsingAltCurveTable()=1"
   ],
   "obtainable": true
@@ -42389,7 +42382,152 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00471882:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00471882",
+     "edid": "mod_Custom_Daisycutter",
+     "name": "Daisycutter"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(RadResistExposure)=1000"
+     }
+    ]
+   },
+   {
+    "id": "0x00471882:perk:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00471882",
+     "edid": "mod_Custom_Daisycutter",
+     "name": "Daisycutter"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(RadResistExposure)=2000"
+     }
+    ]
+   },
+   {
+    "id": "0x00471882:perk:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00471882",
+     "edid": "mod_Custom_Daisycutter",
+     "name": "Daisycutter"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(RadResistExposure)=3000"
+     }
+    ]
+   },
+   {
+    "id": "0x00471882:perk:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00471882",
+     "edid": "mod_Custom_Daisycutter",
+     "name": "Daisycutter"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(RadResistExposure)=4000"
+     }
+    ]
+   },
+   {
+    "id": "0x00471882:perk:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00471882",
+     "edid": "mod_Custom_Daisycutter",
+     "name": "Daisycutter"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(RadResistExposure)=5000"
+     }
+    ]
+   },
+   {
+    "id": "0x00471882:perk:5",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00471882",
+     "edid": "mod_Custom_Daisycutter",
+     "name": "Daisycutter"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(RadResistExposure)=6000"
+     }
+    ]
+   },
+   {
+    "id": "0x00471882:perk:6",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00471882",
+     "edid": "mod_Custom_Daisycutter",
+     "name": "Daisycutter"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(RadResistExposure)=7000"
+     }
+    ]
+   },
+   {
+    "id": "0x00471882:perk:7",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00471882",
+     "edid": "mod_Custom_Daisycutter",
+     "name": "Daisycutter"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(RadResistExposure)=8000"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItemName_Daisycutter",
@@ -42397,8 +42535,14 @@
   ],
   "hasEnchantments": false,
   "notes": [
-   "perk Perk_Daisycutter: GetRandomPercent()=30",
-   "perk Perk_Daisycutter: entry point Auto Fill Weapon Clip — not modeled"
+   "perk Perk_Daisycutter: GetValue(RadResistExposure)=1000",
+   "perk Perk_Daisycutter: GetValue(RadResistExposure)=2000",
+   "perk Perk_Daisycutter: GetValue(RadResistExposure)=3000",
+   "perk Perk_Daisycutter: GetValue(RadResistExposure)=4000",
+   "perk Perk_Daisycutter: GetValue(RadResistExposure)=5000",
+   "perk Perk_Daisycutter: GetValue(RadResistExposure)=6000",
+   "perk Perk_Daisycutter: GetValue(RadResistExposure)=7000",
+   "perk Perk_Daisycutter: GetValue(RadResistExposure)=8000"
   ],
   "obtainable": true
  },
@@ -44351,12 +44495,14 @@
   "attachPointEdid": "ap_gun_Appearance",
   "targetKeywords": [
    "ma_Gun_Appearance",
-   "ma_MG42",
-   "ma_RedTerror"
+   "ma_MG42"
   ],
   "modifiers": [],
-  "addedKeywords": [],
+  "addedKeywords": [
+   "ATX_dn_HasMaterial_MG42_Communist"
+  ],
   "hasEnchantments": false,
+  "hasGrantingCobj": true,
   "notes": [],
   "obtainable": true
  },
@@ -46337,7 +46483,7 @@
   "id": "mod_Custom_Xerxos",
   "formId": "0x008F173D",
   "name": "Xerxos",
-  "description": "Emits Radiation",
+  "description": "Emits Radiation at 6 RAD/s",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
@@ -69272,7 +69418,44 @@
   "targetKeywords": [
    "ma_legendarycrafting_weaponranged"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x004F5777:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x004F5777",
+     "edid": "mod_Legendary_Weapon3_Guns_ResistReload",
+     "name": "Resilient"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 500,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetActorGunState()=4"
+     }
+    ]
+   },
+   {
+    "id": "0x004F5777:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x004F5777",
+     "edid": "mod_Legendary_Weapon3_Guns_ResistReload",
+     "name": "Resilient"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": 500,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetActorGunState()=4"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Weapon_ReloadsIncreaseDamageResist"
@@ -69281,8 +69464,6 @@
   "hasGrantingCobj": true,
   "notes": [
    "MGEF AbPerkFortifyResistCryo: no route for AV FrostResist — needs mapping",
-   "MGEF AbPerkFortifyResistDamage: no route for AV DamageResist — needs mapping",
-   "MGEF AbPerkFortifyResistEnergy: no route for AV EnergyResist — needs mapping",
    "MGEF AbPerkFortifyResistFire: no route for AV FireResist — needs mapping",
    "MGEF AbPerkFortifyResistPoison: no route for AV PoisonResist — needs mapping",
    "MGEF AbPerkFortifyResistRadiationExpose: no route for AV RadResistExposure — needs mapping",
@@ -69301,7 +69482,26 @@
   "targetKeywords": [
    "ma_legendarycrafting_weaponranged"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x004F5772:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x004F5772",
+     "edid": "mod_Legendary_Weapon3_Guns_ResistSights",
+     "name": "Steadfast"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 50,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetInIronSights()=1"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Weapon_DamageResistSights"
@@ -69310,7 +69510,6 @@
   "hasGrantingCobj": true,
   "notes": [
    "MGEF AbDamageResistSights_Description archetype Script — needs override",
-   "MGEF AbPerkFortifyResistDamage: no route for AV DamageResist — needs mapping",
    "condition: GetInIronSights()=1"
   ],
   "obtainable": true
@@ -76616,25 +76815,10 @@
     "conditions": []
    }
   ],
-  "addedKeywords": [],
-  "hasEnchantments": true,
-  "hasGrantingCobj": true,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "mod_melee_PipeWrench_Model_Null",
-  "formId": "0x005FB446",
-  "name": "No Customization",
-  "description": "",
-  "attachPointFormId": "0x001A001E",
-  "attachPointEdid": "ap_melee_Appearance",
-  "targetKeywords": [
-   "ma_PipeWrench"
+  "addedKeywords": [
+   "dn_HasMeleeMod_Hook"
   ],
-  "modifiers": [],
-  "addedKeywords": [],
-  "hasEnchantments": false,
+  "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [],
   "obtainable": true
@@ -78524,8 +78708,8 @@
   "formId": "0x005FDE0D",
   "name": "Cursed Rolling Pin",
   "description": "",
-  "attachPointFormId": "0x00521926",
-  "attachPointEdid": "ap_Item_Description",
+  "attachPointFormId": "0x009302C8",
+  "attachPointEdid": "ap_curse",
   "targetKeywords": [],
   "modifiers": [
    {
@@ -96973,6 +97157,19 @@
     "op": "MUL_ADD",
     "value": 0.15,
     "conditions": []
+   },
+   {
+    "id": "0x003C654F:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x003C654F",
+     "edid": "mod_PipeSyringer_Barrel_Endangerol",
+     "name": "Endangerol Syringe Barrel"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": -0.25,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -96981,9 +97178,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF EndangerolDamageDamageResistEffect_Contact: no route for AV DamageResist — needs mapping"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -121264,8 +121459,7 @@
   "attachPointEdid": "ap_gun_Appearance",
   "targetKeywords": [
    "ma_Gun_Appearance",
-   "ma_AutoGrenadeLauncher",
-   "RD01_ma_ResolveBreaker"
+   "ma_AutoGrenadeLauncher"
   ],
   "modifiers": [],
   "addedKeywords": [],
@@ -123497,15 +123691,27 @@
   "targetKeywords": [
    "ma_TeslaCannon"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0079A634:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0079A634",
+     "edid": "SCORE_S19_mod_TeslaCannon_Assembly_DirectCurrentMuzzle",
+     "name": "Direct Current Muzzle"
+    },
+    "bucket": "energyResistGain",
+    "op": "ADD",
+    "value": -0.2,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "dn_HasAssembly_DirectCurrentMuzzle"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF TeslaCannonDamageDamageResistEffect_Contact: no route for AV EnergyResist — needs mapping"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -126666,26 +126872,6 @@
   "modifiers": [],
   "addedKeywords": [
    "CustomItemName_GardenTrowel"
-  ],
-  "hasEnchantments": false,
-  "hasGrantingCobj": true,
-  "notes": [],
-  "obtainable": true
- },
- {
-  "id": "Storm_mod_MG42_Weapon_Paint_RedTerror",
-  "formId": "0x007478D3",
-  "name": "Red Terror Paint",
-  "description": "",
-  "attachPointFormId": "0x00114364",
-  "attachPointEdid": "ap_gun_Appearance",
-  "targetKeywords": [
-   "ma_Gun_Appearance",
-   "ma_MG42"
-  ],
-  "modifiers": [],
-  "addedKeywords": [
-   "ATX_dn_HasMaterial_MG42_Communist"
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,

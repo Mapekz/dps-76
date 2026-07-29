@@ -1611,7 +1611,47 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00242E59:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00242E59",
+       "edid": "Barbarian",
+       "name": "Barbarian",
+       "rank": 1
+      },
+      "bucket": "damageResistGain",
+      "op": "ADD",
+      "curve": {
+       "input": "strength",
+       "points": [
+        {
+         "x": 1,
+         "y": 18
+        },
+        {
+         "x": 15,
+         "y": 61
+        },
+        {
+         "x": 30,
+         "y": 96
+        },
+        {
+         "x": 60,
+         "y": 131
+        },
+        {
+         "x": 100,
+         "y": 175
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -2196,7 +2236,96 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00310BF5:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00310BF5",
+       "edid": "Bodyguards",
+       "name": "Bodyguards",
+       "rank": 1
+      },
+      "bucket": "damageResistGain",
+      "op": "ADD",
+      "curve": {
+       "input": "charisma",
+       "points": [
+        {
+         "x": 1,
+         "y": 4
+        },
+        {
+         "x": 15,
+         "y": 15
+        },
+        {
+         "x": 30,
+         "y": 24
+        },
+        {
+         "x": 60,
+         "y": 32
+        },
+        {
+         "x": 100,
+         "y": 43
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount Greater Than 0"
+       }
+      ]
+     },
+     {
+      "id": "0x00310BF5:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00310BF5",
+       "edid": "Bodyguards",
+       "name": "Bodyguards",
+       "rank": 1
+      },
+      "bucket": "energyResistGain",
+      "op": "ADD",
+      "curve": {
+       "input": "charisma",
+       "points": [
+        {
+         "x": 1,
+         "y": 4
+        },
+        {
+         "x": 15,
+         "y": 15
+        },
+        {
+         "x": 30,
+         "y": 24
+        },
+        {
+         "x": 60,
+         "y": 32
+        },
+        {
+         "x": 100,
+         "y": 43
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount Greater Than 0"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -5338,7 +5467,36 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00110E45:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00110E45",
+       "edid": "DLC03_FarHarborSurvivalistPerk",
+       "name": "Far Harbor Survivalist",
+       "rank": 1
+      },
+      "bucket": "damageResistGain",
+      "op": "ADD",
+      "value": 5,
+      "conditions": []
+     },
+     {
+      "id": "0x00110E45:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00110E45",
+       "edid": "DLC03_FarHarborSurvivalistPerk",
+       "name": "Far Harbor Survivalist",
+       "rank": 1
+      },
+      "bucket": "energyResistGain",
+      "op": "ADD",
+      "value": 5,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -5774,7 +5932,36 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00114090:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00114090",
+       "edid": "DLC04CompGagePerk",
+       "name": "Lessons In Blood",
+       "rank": 1
+      },
+      "bucket": "damageResistGain",
+      "op": "ADD",
+      "value": 10,
+      "conditions": []
+     },
+     {
+      "id": "0x00114090:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00114090",
+       "edid": "DLC04CompGagePerk",
+       "name": "Lessons In Blood",
+       "rank": 1
+      },
+      "bucket": "energyResistGain",
+      "op": "ADD",
+      "value": 10,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -5925,7 +6112,36 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005C456C:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005C456C",
+       "edid": "E01F_Fasnacht_FortifyResistancePerk",
+       "name": "Fortify Resistance Perk",
+       "rank": 1
+      },
+      "bucket": "damageResistGain",
+      "op": "ADD",
+      "value": 25,
+      "conditions": []
+     },
+     {
+      "id": "0x005C456C:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005C456C",
+       "edid": "E01F_Fasnacht_FortifyResistancePerk",
+       "name": "Fortify Resistance Perk",
+       "rank": 1
+      },
+      "bucket": "energyResistGain",
+      "op": "ADD",
+      "value": 25,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -5947,6 +6163,34 @@
     "modifiers": [
      {
       "id": "0x0064C2E6:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0064C2E6",
+       "edid": "E08B_DamResistPerk",
+       "name": "Rad Resistant",
+       "rank": 1
+      },
+      "bucket": "damageResistGain",
+      "op": "ADD",
+      "value": 800,
+      "conditions": []
+     },
+     {
+      "id": "0x0064C2E6:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0064C2E6",
+       "edid": "E08B_DamResistPerk",
+       "name": "Rad Resistant",
+       "rank": 1
+      },
+      "bucket": "energyResistGain",
+      "op": "ADD",
+      "value": 800,
+      "conditions": []
+     },
+     {
+      "id": "0x0064C2E6:r1:1:2",
       "source": {
        "kind": "perk",
        "formId": "0x0064C2E6",
@@ -13614,7 +13858,96 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00185A2D:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00185A2D",
+       "edid": "IronStomach",
+       "name": "Iron Stomach",
+       "rank": 1
+      },
+      "bucket": "damageResistGain",
+      "op": "ADD",
+      "curve": {
+       "input": "endurance",
+       "points": [
+        {
+         "x": 1,
+         "y": 18
+        },
+        {
+         "x": 15,
+         "y": 61
+        },
+        {
+         "x": 30,
+         "y": 96
+        },
+        {
+         "x": 60,
+         "y": 131
+        },
+        {
+         "x": 100,
+         "y": 175
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetNumActiveEffectsWithKeyword(SURV_EffectTypeDisease) Equal To 0"
+       }
+      ]
+     },
+     {
+      "id": "0x00185A2D:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00185A2D",
+       "edid": "IronStomach",
+       "name": "Iron Stomach",
+       "rank": 1
+      },
+      "bucket": "energyResistGain",
+      "op": "ADD",
+      "curve": {
+       "input": "endurance",
+       "points": [
+        {
+         "x": 1,
+         "y": 18
+        },
+        {
+         "x": 15,
+         "y": 61
+        },
+        {
+         "x": 30,
+         "y": 96
+        },
+        {
+         "x": 60,
+         "y": 131
+        },
+        {
+         "x": 100,
+         "y": 175
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetNumActiveEffectsWithKeyword(SURV_EffectTypeDisease) Equal To 0"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -18988,6 +19321,34 @@
       "op": "ADD",
       "value": 0.25,
       "conditions": []
+     },
+     {
+      "id": "0x00793524:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00793524",
+       "edid": "MILE_Caravan_Tier02_DamageResistPerk",
+       "name": "Tier 2 Damage Resist",
+       "rank": 1
+      },
+      "bucket": "damageResistGain",
+      "op": "ADD",
+      "value": 200,
+      "conditions": []
+     },
+     {
+      "id": "0x00793524:r1:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00793524",
+       "edid": "MILE_Caravan_Tier02_DamageResistPerk",
+       "name": "Tier 2 Damage Resist",
+       "rank": 1
+      },
+      "bucket": "energyResistGain",
+      "op": "ADD",
+      "value": 200,
+      "conditions": []
      }
     ]
    }
@@ -19021,6 +19382,34 @@
       "bucket": "dbm",
       "op": "ADD",
       "value": 0.25,
+      "conditions": []
+     },
+     {
+      "id": "0x00793523:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00793523",
+       "edid": "MILE_Caravan_Tier03_DamageResistPerk",
+       "name": "Tier 3 Damage Resist",
+       "rank": 1
+      },
+      "bucket": "damageResistGain",
+      "op": "ADD",
+      "value": 800,
+      "conditions": []
+     },
+     {
+      "id": "0x00793523:r1:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00793523",
+       "edid": "MILE_Caravan_Tier03_DamageResistPerk",
+       "name": "Tier 3 Damage Resist",
+       "rank": 1
+      },
+      "bucket": "energyResistGain",
+      "op": "ADD",
+      "value": 800,
       "conditions": []
      }
     ]
@@ -24217,7 +24606,31 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x004E1F1C:r1:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E1F1C",
+       "edid": "PlayerTeamPerk",
+       "name": "Player Team Perk",
+       "rank": 1
+      },
+      "bucket": "damageResistGain",
+      "op": "ADD",
+      "value": 5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetGlobalValue(SpotlightWeekIndex)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetPlayerTeammateCount Greater Than 0"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -25822,7 +26235,47 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x000CA99D:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x000CA99D",
+       "edid": "Refractor",
+       "name": "Refractor",
+       "rank": 1
+      },
+      "bucket": "energyResistGain",
+      "op": "ADD",
+      "curve": {
+       "input": "perception",
+       "points": [
+        {
+         "x": 1,
+         "y": 18
+        },
+        {
+         "x": 15,
+         "y": 61
+        },
+        {
+         "x": 30,
+         "y": 96
+        },
+        {
+         "x": 60,
+         "y": 131
+        },
+        {
+         "x": 100,
+         "y": 175
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -26223,7 +26676,45 @@
     "rank": 1,
     "modifiers": [
      {
-      "id": "0x001D247F:r1:2:0",
+      "id": "0x001D247F:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001D247F",
+       "edid": "Rooted",
+       "name": "Rooted",
+       "rank": 1
+      },
+      "bucket": "damageResistGain",
+      "op": "ADD",
+      "value": 25,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsMoving()=0"
+       }
+      ]
+     },
+     {
+      "id": "0x001D247F:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001D247F",
+       "edid": "Rooted",
+       "name": "Rooted",
+       "rank": 1
+      },
+      "bucket": "energyResistGain",
+      "op": "ADD",
+      "value": 25,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsMoving()=0"
+       }
+      ]
+     },
+     {
+      "id": "0x001D247F:r1:2:2",
       "source": {
        "kind": "perk",
        "formId": "0x001D247F",
@@ -26255,7 +26746,45 @@
     "rank": 2,
     "modifiers": [
      {
-      "id": "0x001D247F:r2:3:0",
+      "id": "0x001D247F:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001D247F",
+       "edid": "Rooted",
+       "name": "Rooted",
+       "rank": 2
+      },
+      "bucket": "damageResistGain",
+      "op": "ADD",
+      "value": 50,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsMoving()=0"
+       }
+      ]
+     },
+     {
+      "id": "0x001D247F:r2:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001D247F",
+       "edid": "Rooted",
+       "name": "Rooted",
+       "rank": 2
+      },
+      "bucket": "energyResistGain",
+      "op": "ADD",
+      "value": 50,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsMoving()=0"
+       }
+      ]
+     },
+     {
+      "id": "0x001D247F:r2:3:2",
       "source": {
        "kind": "perk",
        "formId": "0x001D247F",
@@ -26287,7 +26816,45 @@
     "rank": 3,
     "modifiers": [
      {
-      "id": "0x001D247F:r3:3:0",
+      "id": "0x001D247F:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001D247F",
+       "edid": "Rooted",
+       "name": "Rooted",
+       "rank": 3
+      },
+      "bucket": "damageResistGain",
+      "op": "ADD",
+      "value": 50,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsMoving()=0"
+       }
+      ]
+     },
+     {
+      "id": "0x001D247F:r3:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001D247F",
+       "edid": "Rooted",
+       "name": "Rooted",
+       "rank": 3
+      },
+      "bucket": "energyResistGain",
+      "op": "ADD",
+      "value": 50,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsMoving()=0"
+       }
+      ]
+     },
+     {
+      "id": "0x001D247F:r3:3:2",
       "source": {
        "kind": "perk",
        "formId": "0x001D247F",
@@ -28602,6 +29169,20 @@
      },
      {
       "id": "0x006B3C3A:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x006B3C3A",
+       "edid": "Storm_MutationPerk_Electric",
+       "name": "Electric  Perk",
+       "rank": 1
+      },
+      "bucket": "energyResistGain",
+      "op": "ADD",
+      "value": 10,
+      "conditions": []
+     },
+     {
+      "id": "0x006B3C3A:r1:1:2",
       "source": {
        "kind": "perk",
        "formId": "0x006B3C3A",

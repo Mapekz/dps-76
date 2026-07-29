@@ -379,22 +379,6 @@
   ]
  },
  {
-  "id": "EN06_mod_Ranged_Broadsider_Custom_Cursed",
-  "name": "",
-  "baseWeaponId": "Broadsider",
-  "mods": {
-   "ap_gun_Barrel": "mod_Broadsider_Barrel_Standard",
-   "ap_gun_Grip": "mod_Broadsider_Grip_Standard",
-   "ap_gun_Mag": "mod_Broadsider_Mag_Null",
-   "ap_Item_Description": "EN06_mod_Ranged_Broadsider_Custom_Cursed"
-  },
-  "legendaryEffects": [
-   "mod_Legendary_Weapon1_AntiArmor",
-   "mod_Legendary_Weapon2_DmgCrits",
-   "mod_Legendary_Weapon3_VATSCostAP"
-  ]
- },
- {
   "id": "E09A_mod_Custom_GrandFinale",
   "name": "",
   "baseWeaponId": "Broadsider",
@@ -842,21 +826,6 @@
   ]
  },
  {
-  "id": "EN06_mod_Ranged_HarpoonGun_Custom_Cursed",
-  "name": "Ice Breaker",
-  "baseWeaponId": "DLC03_HarpoonGun",
-  "mods": {
-   "ap_Item_Description": "EN06_mod_Ranged_HarpoonGun_Custom_Cursed",
-   "ap_gun_Mag": "DLC03_mod_HarpoonGun_Magazine_Standard",
-   "ap_gun_Scope": "DLC03_mod_HarpoonGun_Scope_SightsIron"
-  },
-  "legendaryEffects": [
-   "mod_Legendary_Weapon1_Execute",
-   "mod_Legendary_Weapon2_Guns_Bashing",
-   "mod_Legendary_Weapon3_Weight"
-  ]
- },
- {
   "id": "SCORE_S21_mod_custom_IceBreaker",
   "name": "Kingfisher",
   "baseWeaponId": "DLC03_HarpoonGun",
@@ -1118,16 +1087,6 @@
   ]
  },
  {
-  "id": "EN06_mod_melee_PickAxe_Custom_Cursed",
-  "name": "",
-  "baseWeaponId": "Pickaxe",
-  "mods": {
-   "ap_melee_MeleeMod": "mod_melee_PickAxe_Standard",
-   "ap_Item_Description": "EN06_mod_melee_PickAxe_Custom_Cursed"
-  },
-  "legendaryEffects": []
- },
- {
   "id": "mod_custom_CultistPiercer_Effect",
   "name": "",
   "baseWeaponId": "Pickaxe",
@@ -1180,8 +1139,8 @@
    "ap_customName": "mod_Custom_SlugBuster"
   },
   "legendaryEffects": [
-   "mod_Legendary_Weapon1_AntiArmor",
-   "mod_Legendary_Weapon2_DmgCrits",
+   null,
+   null,
    "mod_Legendary_Weapon3_Weight"
   ]
  },
@@ -1192,7 +1151,7 @@
   "mods": {
    "ap_gun_Barrel": "mod_PlasmaGun_barrel_Flamer_Abraxo",
    "ap_gun_Grip": "mod_PlasmaGun_Grip_Recoil-HipAccuracy",
-   "ap_gun_Receiver": "mod_PlasmaGun_Receiver_Burning-CritDMG",
+   "ap_gun_Receiver": "mod_Enclave_PlasmaGun_Receiver_CritDMG",
    "ap_gun_Mag": "mod_PlasmaGun_Magazine_Base",
    "ap_gun_Scope": "mod_PlasmaGun_SCOPE_ironsights_Base",
    "ap_customName": "mod_Custom_Plasma_AbraxoGun"
@@ -1343,20 +1302,6 @@
   ]
  },
  {
-  "id": "mod_melee_RollingPin_Custom_Cursed",
-  "name": "",
-  "baseWeaponId": "RollingPin",
-  "mods": {
-   "ap_Item_Description": "mod_melee_RollingPin_Custom_Cursed",
-   "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod"
-  },
-  "legendaryEffects": [
-   "mod_Legendary_Weapon1_DamageNight",
-   "mod_Legendary_Weapon2_Melee_DamagePowerAttack",
-   "mod_Legendary_Weapon3_StatStrength"
-  ]
- },
- {
   "id": "mod_custom_BlueRidgeBrandingIron_Custom",
   "name": "",
   "baseWeaponId": "Shishkebab",
@@ -1367,20 +1312,6 @@
    null,
    "mod_Legendary_Weapon2_Melee_SwingSpeed",
    null
-  ]
- },
- {
-  "id": "EN06_mod_melee_Shovel_Custom_Cursed",
-  "name": "",
-  "baseWeaponId": "Shovel",
-  "mods": {
-   "ap_Item_Description": "EN06_mod_melee_Shovel_Custom_Cursed",
-   "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod"
-  },
-  "legendaryEffects": [
-   "mod_Legendary_Weapon1_Execute",
-   "mod_Legendary_Weapon2_Melee_SwingSpeed",
-   "mod_Legendary_Weapon3_Weight"
   ]
  },
  {
@@ -1395,20 +1326,6 @@
    null,
    "mod_Legendary_Weapon2_Melee_PickPocket",
    null
-  ]
- },
- {
-  "id": "EN06_mod_melee_Sickle_Custom_Cursed",
-  "name": "",
-  "baseWeaponId": "Sickle",
-  "mods": {
-   "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod",
-   "ap_Item_Description": "EN06_mod_melee_Sickle_Custom_Cursed"
-  },
-  "legendaryEffects": [
-   "mod_Legendary_Weapon1_Vampire",
-   "mod_Legendary_Weapon2_Melee_SwingSpeed",
-   "mod_Legendary_Weapon3_StatEndurance"
   ]
  },
  {
