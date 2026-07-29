@@ -276,6 +276,25 @@ export function buildEffectiveWeapon(
     0,
     baseCtx,
   );
+  // Bunker Buster (mod_Custom_BunkerBuster): converts the player's
+  // accumulated explosive-radius bonus (Grenadier +50%/+100%) into damage
+  // instead. Both buckets bootstrap-fold once here — same pattern as
+  // onslaughtMaxStacks/moveSpeedBonus above — because the conversion needs
+  // the OMOD's flag (explosionRadiusToDamage) and the player's perk-sourced
+  // bonus (explosionRadiusBonus) combined into ONE synthesized modifier,
+  // not threaded through ResolveContext.
+  const explosionRadiusBonus = foldBucket(
+    [...allOmodModifiers, ...loadoutModifiers],
+    'explosionRadiusBonus',
+    0,
+    baseCtx,
+  );
+  const explosionRadiusToDamage = foldBucket(
+    [...allOmodModifiers, ...loadoutModifiers],
+    'explosionRadiusToDamage',
+    0,
+    baseCtx,
+  );
   const ctx: ResolveContext = {
     ...baseCtx,
     onslaughtMaxStacks,
@@ -367,7 +386,11 @@ export function buildEffectiveWeapon(
   );
 
   const modifiers = allOmodModifiers.filter(
-    (m) => !WEAPON_STAT_BUCKETS.has(m.bucket) && !SUSTAIN_CHANCE_BUCKETS.has(m.bucket),
+    (m) =>
+      !WEAPON_STAT_BUCKETS.has(m.bucket) &&
+      !SUSTAIN_CHANCE_BUCKETS.has(m.bucket) &&
+      m.bucket !== 'explosionRadiusBonus' &&
+      m.bucket !== 'explosionRadiusToDamage',
   );
 
   // Launcher-family projectile-swap replacement (docs/assumptions.md
@@ -405,6 +428,33 @@ export function buildEffectiveWeapon(
     ctx,
   );
 
+  const resolvedModifiers = modifiers.filter((m) => !consumedIds.has(m.id));
+
+  // Synthesize the converted DBM: additive inside the dbm parenthesis
+  // (matches the June-2026 "explosion bonuses are ADDITIVE dbm" precedent —
+  // Demolition Expert / SCAV! route the same way), explosive-scoped so only
+  // fromExplosion components / Explosive-legendary twins pick it up
+  // (ResolveContext.componentIsExplosion, resolve.ts) — the weapon's own
+  // ballistic impact token is untouched. Reuses the explosionRadiusToDamage
+  // modifier's own `source` so BreakdownPanel/MultiplierChainTable attribute
+  // the bonus to the OMOD that carries the flag (Bunker Buster), not a
+  // synthetic source.
+  if (explosionRadiusBonus > 0 && explosionRadiusToDamage > 0) {
+    const sourceModifier = [...allOmodModifiers, ...loadoutModifiers].find(
+      (m) => m.bucket === 'explosionRadiusToDamage',
+    );
+    if (sourceModifier) {
+      resolvedModifiers.push({
+        id: `${sourceModifier.id}:explosionRadiusConversion`,
+        source: sourceModifier.source,
+        bucket: 'dbm',
+        op: 'ADD',
+        value: explosionRadiusBonus * explosionRadiusToDamage,
+        conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }],
+      });
+    }
+  }
+
   return {
     weapon: {
       ...weapon,
@@ -430,6 +480,6 @@ export function buildEffectiveWeapon(
         : {}),
       components: [...baseComponents, ...materialized],
     },
-    modifiers: modifiers.filter((m) => !consumedIds.has(m.id)),
+    modifiers: resolvedModifiers,
   };
 }

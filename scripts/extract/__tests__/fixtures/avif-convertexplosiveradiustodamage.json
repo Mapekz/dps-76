@@ -1,0 +1,25 @@
+{
+  "header": {
+    "signature": "AVIF",
+    "form_id": "0x00919EE2",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 183,
+    "offset": 893607999
+  },
+  "editor_id": "ConvertExplosiveRadiusToDamage",
+  "fields": {
+    "_record_type": "Actor Value Information",
+    "Editor ID": "ConvertExplosiveRadiusToDamage",
+    "DURL": "0.0000",
+    "Name": "Explosive Radius to Damage Effect",
+    "Description": "Modifiers to Explosive Radius Apply to Damage Instead",
+    "Default Value": 0.0,
+    "Minimum Value": 0.0,
+    "Maximum Value": 1.0,
+    "Flags": { "value": "0x80500", "flags": ["Allow Local Edits", "Default to 0", "Boolean"] },
+    "Type": { "value": 8, "name": "Variable" },
+    "Networking Flags": { "value": "0x0", "flags": [] },
+    "Description 2": "Enables the Explosive Radius -> Damage ability"
+  }
+}

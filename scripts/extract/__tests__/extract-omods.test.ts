@@ -5,6 +5,7 @@ import { extractOmods, isExcludedOmodEdid, propertyName } from '../extract-omods
 import unstoppableMonsterOmod from './fixtures/omod-unstoppablemonster.json';
 import unstoppableMonsterPerk from './fixtures/perk-unstoppablemonster.json';
 import allRiseOmod from './fixtures/omod-allrise.json';
+import bunkerBusterOmod from './fixtures/omod-bunkerbuster.json';
 import barrelLongRangeParent from './fixtures/omod-barrel-long-range-parent.json';
 import armor2StatStrengthOmod from './fixtures/omod-armor2-statstrength.json';
 import battleLoadersOmod from './fixtures/omod-battleloaders.json';
@@ -141,6 +142,61 @@ describe('extractOmods (unique-mod rework, 2026-07-13)', () => {
       expect.objectContaining({ bucket: 'maxHealth', op: 'ADD', value: 50 }),
     );
     expect(omod!.notes).not.toContain('ActorValues on Health — unmapped');
+  });
+});
+
+/**
+ * Stub client for mod_Custom_BunkerBuster (2026-07-29): ActorValues ADD
+ * ConvertExplosiveRadiusToDamage 1.0 → explosionRadiusToDamage bucket.
+ */
+function makeBunkerBusterStubClient(): EsmClient {
+  const omodFormId = '0x00471880';
+  const convertAv = '0x00919EE2';
+  const known: Record<string, EsmRecord> = {
+    [omodFormId]: bunkerBusterOmod as unknown as EsmRecord,
+    [convertAv]: {
+      header: { signature: 'AVIF', form_id: convertAv },
+      editor_id: 'ConvertExplosiveRadiusToDamage',
+      fields: {},
+    } as unknown as EsmRecord,
+  };
+  const get = async (target: string): Promise<EsmRecord> => {
+    if (known[target]) return known[target];
+    return {
+      header: { signature: 'KYWD', form_id: target },
+      editor_id: target,
+      fields: {},
+    } as unknown as EsmRecord;
+  };
+  return {
+    async list(type: string): Promise<EsmListRow[]> {
+      if (type !== 'OMOD') return [];
+      return [
+        {
+          form_id: omodFormId,
+          record_type: 'OMOD',
+          editor_id: 'mod_Custom_BunkerBuster',
+          name: 'Bunker Buster',
+        },
+      ];
+    },
+    get,
+    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+    refs: async () => [],
+  } as unknown as EsmClient;
+}
+
+describe('extractOmods (Bunker Buster / ConvertExplosiveRadiusToDamage, 2026-07-29)', () => {
+  it('mod_Custom_BunkerBuster: ActorValues ADD ConvertExplosiveRadiusToDamage 1.0 decodes to explosionRadiusToDamage 1.0', async () => {
+    const result = await extractOmods(makeBunkerBusterStubClient(), new Set());
+    const omod = result.omods.find((o) => o.id === 'mod_Custom_BunkerBuster');
+    expect(omod).toBeDefined();
+    expect(omod!.modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'explosionRadiusToDamage', op: 'ADD', value: 1.0 }),
+    );
+    expect(omod!.notes ?? []).not.toContain(
+      'ActorValues on ConvertExplosiveRadiusToDamage — unmapped',
+    );
   });
 });
 

@@ -35,6 +35,8 @@ const ALL_BUCKETS: Bucket[] = [
   'limbDamage',
   'bashDamage',
   'explosivePayload',
+  'explosionRadiusBonus',
+  'explosionRadiusToDamage',
   'critFill',
   'critConsumption',
   'fireRateSpeed',

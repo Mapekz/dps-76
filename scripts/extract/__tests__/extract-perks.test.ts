@@ -13,6 +13,10 @@ import actionBoyGirlCard from './fixtures/pcrd-actionboygirlcard.json';
 import lgnWhatRadsCard from './fixtures/pcrd-lgnwhatradscard.json';
 import ghlGlowingCriticals01 from './fixtures/perk-ghlglowingcriticals01.json';
 import ghlMadScientist01 from './fixtures/perk-ghlmadscientist01.json';
+import grenadier01 from './fixtures/perk-grenadier01.json';
+import grenadier02 from './fixtures/perk-grenadier02.json';
+import abPerkGrenadier from './fixtures/spel-abperkgrenadier.json';
+import abPerkFortifyExplosionRadius from './fixtures/mgef-abperkfortifyexplosionradius.json';
 
 // Fixtures are verbatim `esm -p get <formid> --json` output (20260710 ESM).
 // These tests pin the PCRD → GeneratedPerkCard normalization and the new
@@ -303,6 +307,101 @@ describe('extractPerks (cut-rank fix — Lock and Load, 2026-07-16)', () => {
     // EP210 → bulletStormRetention wiring alongside the cut-rank fix).
     expect(family!.ranks[0].modifiers).toContainEqual(
       expect.objectContaining({ bucket: 'bulletStormRetention', op: 'ADD', value: 0.5 }),
+    );
+  });
+});
+
+/**
+ * Stub client mirroring Grenadier's real 20260724 ESM shape (verified via
+ * `esm get`, 2026-07-29): Grenadier01 (0x00393F66) grants AbPerkGrenadier
+ * (0x00393F67), whose two AbPerkFortifyExplosionRadius effects (50/100) gate
+ * on HasPerk(Grenadier02); Grenadier02 (0x00393F69) carries no effects of
+ * its own. STAT_DamagePerk Effects[30] supplies the buildAvifRoutes entry
+ * for STAT_ExplosionRadius → explosionRadiusBonus ×0.01.
+ */
+function makeGrenadierStubClient(): EsmClient {
+  const rank1FormId = '0x00393F66';
+  const rank2FormId = '0x00393F69';
+  const spellFormId = '0x00393F67';
+  const mgefFormId = '0x00393F68';
+  const explosionRadiusAv = '0x00066997';
+  const known: Record<string, EsmRecord> = {
+    [rank1FormId]: grenadier01 as unknown as EsmRecord,
+    [rank2FormId]: grenadier02 as unknown as EsmRecord,
+    [spellFormId]: abPerkGrenadier as unknown as EsmRecord,
+    [mgefFormId]: abPerkFortifyExplosionRadius as unknown as EsmRecord,
+    [explosionRadiusAv]: {
+      header: { signature: 'AVIF', form_id: explosionRadiusAv },
+      editor_id: 'STAT_ExplosionRadius',
+      fields: {},
+    } as unknown as EsmRecord,
+    STAT_DamagePerk: {
+      header: { signature: 'PERK', form_id: '0x0023A0EB' },
+      editor_id: 'STAT_DamagePerk',
+      fields: {
+        Effects: [
+          {
+            Effect: {
+              'Entry Point': {
+                'Entry Point': { name: 'Mod Player Explosion Scale' },
+              },
+              Float: 0.01,
+              'Function Parameter 3 (Actor Value)': explosionRadiusAv,
+            },
+          },
+        ],
+      },
+    } as unknown as EsmRecord,
+  };
+  const get = async (target: string): Promise<EsmRecord> => {
+    if (known[target]) return known[target];
+    return {
+      header: { signature: 'PERK', form_id: target },
+      editor_id: target,
+      fields: {},
+    } as unknown as EsmRecord;
+  };
+  return {
+    async list(type: string): Promise<EsmListRow[]> {
+      if (type !== 'PERK') return [];
+      return [
+        {
+          form_id: rank1FormId,
+          record_type: 'PERK',
+          editor_id: 'Grenadier01',
+          name: 'Grenadier',
+        },
+        {
+          form_id: rank2FormId,
+          record_type: 'PERK',
+          editor_id: 'Grenadier02',
+          name: 'Grenadier',
+        },
+      ];
+    },
+    get,
+    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+    refs: async () => [],
+  } as unknown as EsmClient;
+}
+
+describe('extractPerks (Grenadier / explosion radius bonus, 2026-07-29)', () => {
+  it('rank 1: AbPerkFortifyExplosionRadius magnitude 50 → explosionRadiusBonus 0.5', async () => {
+    const result = await extractPerks(makeGrenadierStubClient());
+    const family = result.perks.find((p) => p.family === 'Grenadier');
+    expect(family).toBeDefined();
+    expect(family!.ranks).toHaveLength(2);
+    expect(family!.ranks[0].modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'explosionRadiusBonus', op: 'ADD', value: 0.5 }),
+    );
+  });
+
+  it('rank 2: AbPerkFortifyExplosionRadius magnitude 100 → explosionRadiusBonus 1.0', async () => {
+    const result = await extractPerks(makeGrenadierStubClient());
+    const family = result.perks.find((p) => p.family === 'Grenadier');
+    expect(family).toBeDefined();
+    expect(family!.ranks[1].modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'explosionRadiusBonus', op: 'ADD', value: 1.0 }),
     );
   });
 });

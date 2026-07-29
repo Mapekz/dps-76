@@ -1581,6 +1581,54 @@ describe('ENTRY_POINT_BUCKETS (Mod Weapon Attack Damage, 2026-07-21)', () => {
   });
 });
 
+describe('ENTRY_POINT_BUCKETS (Grenadier / explosion radius, 2026-07-29)', () => {
+  it("maps 'Mod Player Explosion Scale' to explosionRadiusBonus (STAT_DamagePerk Effects[30] → STAT_ExplosionRadius ×0.01)", () => {
+    expect(ENTRY_POINT_BUCKETS['Mod Player Explosion Scale']).toBe('explosionRadiusBonus');
+  });
+});
+
+describe('translate (Grenadier / AbPerkFortifyExplosionRadius, 2026-07-29)', () => {
+  it('routes a Peak Value Modifier on STAT_ExplosionRadius to explosionRadiusBonus (magnitude 50 → 0.5 via plumbing ×0.01)', () => {
+    const routedAv = new Map<string, AvifRoute[]>([
+      ['0x00066997', [{ bucket: 'explosionRadiusBonus', scale: 0.01, rawConditions: [] }]],
+    ]);
+    const grenadierEdids = new Map<string, string>([['0x00066997', 'STAT_ExplosionRadius']]);
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier', actorValue: '0x00066997' }),
+      effect({ magnitude: 50 }),
+      routedAv,
+      grenadierEdids,
+    );
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0]).toEqual({
+      bucket: 'explosionRadiusBonus',
+      op: 'ADD',
+      value: 0.5,
+      conditions: [],
+    });
+  });
+
+  it('routes rank-2 magnitude 100 to explosionRadiusBonus value 1.0', () => {
+    const routedAv = new Map<string, AvifRoute[]>([
+      ['0x00066997', [{ bucket: 'explosionRadiusBonus', scale: 0.01, rawConditions: [] }]],
+    ]);
+    const grenadierEdids = new Map<string, string>([['0x00066997', 'STAT_ExplosionRadius']]);
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier', actorValue: '0x00066997' }),
+      effect({ magnitude: 100 }),
+      routedAv,
+      grenadierEdids,
+    );
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0]).toEqual({
+      bucket: 'explosionRadiusBonus',
+      op: 'ADD',
+      value: 1.0,
+      conditions: [],
+    });
+  });
+});
+
 describe('ENTRY_POINT_BUCKETS (Bullet Storm, 2026-07-16)', () => {
   it("maps 'Mod Ammo Spender Max Reload Stack Mult' to bulletStormRetention (Lock and Load r1's EP210)", () => {
     expect(ENTRY_POINT_BUCKETS['Mod Ammo Spender Max Reload Stack Mult']).toBe(

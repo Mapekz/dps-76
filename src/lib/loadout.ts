@@ -45,6 +45,10 @@ const EFFECTIVE_WEAPON_BOOTSTRAP_BUCKETS: ReadonlySet<Bucket> = new Set([
   // Onslaught bootstrap buckets must stay in ScenarioInput.modifiers:
   // computeScenarios folds and exposes them there.
   'moveSpeedBonus',
+  // Bunker Buster radius→damage conversion — fully consumed inside buildEffectiveWeapon,
+  // synthesized into a dbm modifier there; must not reach ScenarioInput.modifiers directly.
+  'explosionRadiusBonus',
+  'explosionRadiusToDamage',
 ]);
 
 /**

@@ -85,6 +85,16 @@ const ACTOR_VALUE_BUCKETS: Record<string, { bucket: Bucket; scale: number }> = {
   // Final Word: enable on-kill stack grant (SET 1.0 — Boolean AV, see doc
   // comment above). Stored-inert until a kill-aware model exists.
   EnableAmmoSpenderOnKill: { bucket: 'bulletStormOnKill', scale: 1 },
+  // Bunker Buster (mod_Custom_BunkerBuster, OMOD 0x00471880): ActorValues ADD
+  // 0x00919EE2 ConvertExplosiveRadiusToDamage = 1.0. AVIF is Boolean
+  // (min 0/max 1/default 0), natively consumed via DFOB
+  // 0x00919EE3 ConvertExplosiveRadiusToDamage_DO — no SPEL/PERK/ENCH reads
+  // it in the ESM, so the ratio below is a modeling ASSUMPTION, not
+  // ESM-proven (docs/assumptions.md). The OMOD's own ADD value (1.0 = 100%)
+  // doubles as the conversion fraction; scale 1 passes it through unchanged.
+  // Folded together with `explosionRadiusBonus` in effective-weapon.ts
+  // buildEffectiveWeapon.
+  ConvertExplosiveRadiusToDamage: { bucket: 'explosionRadiusToDamage', scale: 1 },
 };
 
 /**

@@ -92,6 +92,24 @@ export type Bucket =
   | 'bashDamage'
   /** Fraction of a component's damage that spawns an explosive twin (LGND_ExplosivePayload — Explosive), folded per-component in paper-damage.ts. */
   | 'explosivePayload'
+  /**
+   * Accumulated `STAT_ExplosionRadius` bonus as a fraction (Grenadier rank 1
+   * → 0.5, rank 2 → 1.0 — MGEF AbPerkFortifyExplosionRadius, magnitude
+   * 50/100, scaled ×0.01 by the STAT_DamagePerk plumbing route, Perk Entry
+   * ID 37). Represents a radius/AoE increase — inert on its own (explosion
+   * radius/AoE itself is not modeled); only produces a damage effect when
+   * combined with `explosionRadiusToDamage` (effective-weapon.ts
+   * buildEffectiveWeapon).
+   */
+  | 'explosionRadiusBonus'
+  /**
+   * Fraction of the player's `explosionRadiusBonus` rerouted into damage
+   * instead of radius (AVIF `ConvertExplosiveRadiusToDamage`, a Boolean AV —
+   * mod_Custom_BunkerBuster ADDs 1.0 = 100%). Folded together with
+   * `explosionRadiusBonus` in effective-weapon.ts buildEffectiveWeapon to
+   * synthesize an explosive-scoped `dbm` ADD.
+   */
+  | 'explosionRadiusToDamage'
   | 'critFill'
   | 'critConsumption'
   | 'fireRateSpeed'
@@ -572,6 +590,16 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
     regime: 'damageFold',
     hasEngineEffect: true,
     foldedBy: 'paper-damage.ts computePaperDamage (explosive-twin branch)',
+  },
+  explosionRadiusBonus: {
+    regime: 'bootstrap',
+    hasEngineEffect: true,
+    foldedBy: 'effective-weapon.ts buildEffectiveWeapon (explosive-radius→damage conversion)',
+  },
+  explosionRadiusToDamage: {
+    regime: 'bootstrap',
+    hasEngineEffect: true,
+    foldedBy: 'effective-weapon.ts buildEffectiveWeapon (explosive-radius→damage conversion)',
   },
   critFill: {
     regime: 'critEconomy',

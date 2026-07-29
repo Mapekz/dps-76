@@ -156,14 +156,34 @@ ProjectilePlasmaLarge).
   with `damageTypeScope: ['explosive']`, folding in the same parenthesis as
   Bloodied/Adrenal (0.9+0.5+0.6 → ×3.0, not the pre-patch ×3.84). The
   'explosive' scope matches `fromExplosion` regardless of elemental type.
-- **Not modeled**: explosion radius/AoE; self-damage. (OMOD projectile
+- **Not modeled**: explosion radius/AoE itself; self-damage. (OMOD projectile
   overrides swapping the explosion — e.g. Hellstorm's Napalm/Cryo/Plasma tube
   barrels — ARE modeled: see "OMOD-chased launcher payloads" § Launcher-family
-  replacement below.)
+  replacement below. The explosive-radius-bonus-to-damage CONVERSION —
+  mod_Custom_BunkerBuster, Grenadier — is separately modeled: see
+  "Explosive-radius-to-damage conversion" below.)
 - Gamma Gun graduated out of the `noDamage` bucket 2026-07-13 — its only
   damage IS the explosion (`fromExplosion` radiation component, tier 18
   curve), now modeled. (Supersedes any older note elsewhere calling it
   unmodeled/excluded.)
+
+### Explosive-radius-to-damage conversion
+Engine: `effective-weapon.ts buildEffectiveWeapon`.
+
+`mod_Custom_BunkerBuster`'s AVIF `ConvertExplosiveRadiusToDamage` (Boolean,
+native DFOB consumer, no ESM-visible formula) redirects the player's
+accumulated `STAT_ExplosionRadius` bonus (Grenadier r1/r2: +50/+100 via MGEF
+AbPerkFortifyExplosionRadius) into damage instead of AoE.
+
+- **Conversion is 1:1** — radius percentage points fold straight into a `dbm`
+  fraction (Grenadier r2 + Bunker Buster ⇒ dbm ADD 1.0). **ASSUMPTION, not
+  ESM-proven** — no SPEL/PERK/ENCH reads the AV; pending in-game measurement.
+- **Placement is ADDITIVE `dbm`, explosive-scoped** (`damageTypeScope:
+  ['explosive']`), not a standalone multiplier — consistent with the
+  Demolition Expert / SCAV! precedent above. **ASSUMPTION (user-supplied)**.
+- Explosion radius/AoE itself remains unmodeled — `explosionRadiusBonus`
+  (Grenadier's own contribution) is inert with no engine effect unless
+  `explosionRadiusToDamage` is also set (Bunker Buster only source today).
 
 ## Weapon-intrinsic DoT & OMOD replacement
 Engine: `chaseWeaponEnchantment`/`translateEnchantment` (extract-weapons.ts),

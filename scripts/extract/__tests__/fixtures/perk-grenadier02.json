@@ -1,0 +1,24 @@
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x00393F69",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 73,
+    "offset": 892666516
+  },
+  "editor_id": "Grenadier02",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "Grenadier02",
+    "Name": "Grenadier",
+    "Description": "Your explosives detonate with twice the radius.",
+    "Data": {
+      "Playable": { "value": 1, "name": "True" },
+      "Hidden": { "value": 0, "name": "False" },
+      "Unknown": { "hex": "01" }
+    },
+    "Sound": "0x001A7638",
+    "SWF Sprite Name": "Grenadier"
+  }
+}

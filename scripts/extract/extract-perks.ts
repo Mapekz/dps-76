@@ -61,7 +61,6 @@ const GENDER_TWIN_PAIRS: Record<string, string> = {
 
 /** Entry-point names that are known damage-irrelevant (not reported as unknown). */
 const ENTRY_POINT_IGNORED = new Set([
-  'Mod Player Explosion Scale',
   'Mod Cone-of-fire Mult',
   'Mod VATS Concentrated Fire Chance Bonus',
   'Mod VATS Concentrated Fire Damage Mult',

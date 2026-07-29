@@ -1,0 +1,32 @@
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x00393F66",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 87,
+    "offset": 892666613
+  },
+  "editor_id": "Grenadier01",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "Grenadier01",
+    "Name": "Grenadier",
+    "Description": "Your explosives detonate with a 50% larger radius.",
+    "Data": {
+      "Playable": { "value": 1, "name": "True" },
+      "Hidden": { "value": 0, "name": "False" },
+      "Unknown": { "hex": "01" }
+    },
+    "SWF Sprite Name": "Grenadier",
+    "Effects": [
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 1, "name": "Ability" }, "Rank": 0 },
+          "Ability": "0x00393F67",
+          "Effect End": null
+        }
+      }
+    ]
+  }
+}

@@ -55,6 +55,18 @@ export const ENTRY_POINT_BUCKETS: Record<string, Bucket> = {
   // (user-reported 2026-07-13, in-game proven: Bloodied 0.9 + Adrenal 0.5 +
   // Demo Expert 0.6 → ×3.0, not (1+0.9+0.5)×(1+0.6)=×3.84), untouched here.
   'Mod Player Explosion Damage': 'baseDamage',
+  // Grenadier (STAT_DamagePerk Effects[30], Perk Entry ID 37, Function
+  // "Multiply 1 + Actor Value Mult", Float 0.01, AV STAT_ExplosionRadius
+  // 0x00066997, no perk conditions): STAT_ExplosionRadius accumulates the
+  // radius/AoE bonus (Grenadier r1 +50, r2 +100 via MGEF
+  // AbPerkFortifyExplosionRadius) as a raw percentage-point AV; this entry
+  // point's own ×0.01 scale converts it to the fraction
+  // `explosionRadiusBonus` carries. Inert alone (explosion radius/AoE isn't
+  // modeled) — only produces damage when mod_Custom_BunkerBuster's
+  // ConvertExplosiveRadiusToDamage flag is also set (extract-omods.ts
+  // ACTOR_VALUE_BUCKETS; folded together in effective-weapon.ts
+  // buildEffectiveWeapon).
+  'Mod Player Explosion Scale': 'explosionRadiusBonus',
   'Mod Power Attack Damage': 'powerAttackBonus',
   // Percent-of-meter semantics (Critical Savvy SETs 85/70/55); see crit-meter.ts.
   'Mod VATS Critical Cost': 'critConsumption',

@@ -714,6 +714,128 @@ describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-
   });
 });
 
+describe('explosionRadiusBonus → dbm conversion (Bunker Buster, Grenadier)', () => {
+  const FLAT_CURVE = [
+    { x: 1, y: 100 },
+    { x: 50, y: 100 },
+  ];
+  const FLAT_10 = [
+    { x: 1, y: 10 },
+    { x: 50, y: 10 },
+  ];
+
+  function makeDualComponentWeapon() {
+    return {
+      id: 'test_launcher_bunker_buster',
+      name: 'Test Launcher',
+      components: [
+        { damageType: 'ballistic' as const, tier: -1, levelCap: 50, curvePoints: FLAT_10 },
+        {
+          damageType: 'explosive' as const,
+          tier: -1,
+          levelCap: 50,
+          curvePoints: FLAT_CURVE,
+          fromExplosion: true,
+        },
+      ],
+      damageType: 'ballistic' as const,
+      weaponClass: 'heavy' as const,
+      isAutomatic: false,
+      isPhysical: true,
+      critDamageMult: 2.0,
+      critChargeBonus: 1.0,
+      sneakAttackMult: 2.0,
+      damageBonusMult: 1.0,
+    };
+  }
+
+  const omodSource = {
+    kind: 'omod' as const,
+    formId: '0xBUNKER',
+    edid: 'mod_Custom_BunkerBuster',
+    name: 'Bunker Buster',
+  };
+  const perkSource = {
+    kind: 'perk' as const,
+    formId: '0xGREN',
+    edid: 'perk_Grenadier',
+    name: 'Grenadier',
+  };
+
+  const bunkerBusterOmod = {
+    id: 'mod_Custom_BunkerBuster',
+    formId: '0xBUNKER',
+    name: 'Bunker Buster',
+    description: '',
+    attachPointFormId: '0x0',
+    attachPointEdid: 'ap_Legendary3',
+    targetKeywords: [],
+    addedKeywords: [],
+    hasEnchantments: false,
+    modifiers: [
+      {
+        id: '0xBUNKER:0',
+        source: omodSource,
+        bucket: 'explosionRadiusToDamage' as const,
+        op: 'ADD' as const,
+        value: 1.0,
+        conditions: [],
+      },
+    ],
+  };
+
+  const grenadierBonus = {
+    id: '0xGREN:0',
+    source: perkSource,
+    bucket: 'explosionRadiusBonus' as const,
+    op: 'ADD' as const,
+    value: 0.5,
+    conditions: [],
+  };
+
+  it('synthesizes an explosive-scoped dbm ADD when both buckets are present and nonzero', () => {
+    const { modifiers } = buildEffectiveWeapon(
+      makeDualComponentWeapon(),
+      [bunkerBusterOmod],
+      50,
+      createDefaultPlayerConditions(),
+      createDefaultEnemyConditions(),
+      [grenadierBonus],
+    );
+
+    const converted = modifiers.find((m) => m.id.endsWith(':explosionRadiusConversion'));
+    expect(converted).toBeDefined();
+    expect(converted).toMatchObject({
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.5,
+      source: omodSource,
+      conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }],
+    });
+    expect(modifiers.some((m) => m.bucket === 'explosionRadiusBonus')).toBe(false);
+    expect(modifiers.some((m) => m.bucket === 'explosionRadiusToDamage')).toBe(false);
+  });
+
+  it('does not synthesize dbm when only explosionRadiusBonus is present', () => {
+    const { modifiers } = buildEffectiveWeapon(
+      makeDualComponentWeapon(),
+      [],
+      50,
+      createDefaultPlayerConditions(),
+      createDefaultEnemyConditions(),
+      [grenadierBonus],
+    );
+    expect(modifiers.some((m) => m.bucket === 'dbm')).toBe(false);
+    expect(modifiers.some((m) => m.bucket === 'explosionRadiusBonus')).toBe(false);
+  });
+
+  it('does not synthesize dbm when only explosionRadiusToDamage is present', () => {
+    const { modifiers } = buildEffectiveWeapon(makeDualComponentWeapon(), [bunkerBusterOmod]);
+    expect(modifiers.some((m) => m.bucket === 'dbm')).toBe(false);
+    expect(modifiers.some((m) => m.bucket === 'explosionRadiusToDamage')).toBe(false);
+  });
+});
+
 describe('explosionSwap replacement (launcher-family projectile-swap, docs/assumptions.md "OMOD-chased launcher payloads" § Launcher-family replacement, 2026-07-29)', () => {
   const FLAT_100 = [
     { x: 1, y: 100 },
