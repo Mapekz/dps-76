@@ -1,46 +1,16 @@
 import type { GameMode } from '@/types';
+import type { CurvePoint } from '@/types/curves';
+import liveDamage from '@/data/live/curvetables/player/damage/index.generated';
+import ptsDamage from '@/data/pts/curvetables/player/damage/index.generated';
 
-interface CurvePoint {
-  x: number;
-  y: number;
-}
-
-interface CurveFile {
-  curve: CurvePoint[];
-}
-
-// Eagerly import all universal damage curve JSON files at build time.
-// Shape per file: { "curve": [{ "x": <level>, "y": <dmg> }, …] }
+// Barrel modules at ../data/<mode>/curvetables/player/damage/index.generated.ts
+// export a Record<number, CurveFile> indexed by tier number.
+// Shape per tier: { "curve": [{ "x": <level>, "y": <dmg> }, …] }
 // X values are at 1, 5, 10, 15, … 50 (not every integer — linear interpolation required).
-const liveDamageCurves = import.meta.glob<{ default: CurveFile }>(
-  '../data/live/curvetables/player/damage/damage_universal_tier*.json',
-  { eager: true },
-);
-
-const ptsDamageCurves = import.meta.glob<{ default: CurveFile }>(
-  '../data/pts/curvetables/player/damage/damage_universal_tier*.json',
-  { eager: true },
-);
-
-function getCurvesByMode(mode: GameMode) {
-  return mode === 'pts' ? ptsDamageCurves : liveDamageCurves;
-}
-
-/** Extract the tier number from a glob path, e.g. "…tier24.json" → 24 */
-function tierFromPath(path: string): number {
-  const m = path.match(/tier(\d+)\.json$/);
-  return m ? parseInt(m[1], 10) : -1;
-}
 
 /** Return the sorted curve points for the given mode + tier, or null if not found. */
 function getCurve(mode: GameMode, tier: number): CurvePoint[] | null {
-  const curves = getCurvesByMode(mode);
-  for (const [path, mod] of Object.entries(curves)) {
-    if (tierFromPath(path) === tier) {
-      return mod.default.curve;
-    }
-  }
-  return null;
+  return (mode === 'pts' ? ptsDamage : liveDamage)[tier]?.curve ?? null;
 }
 
 /**
