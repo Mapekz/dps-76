@@ -13,7 +13,7 @@
     "DisposableStack": "readonly",
     "SuppressedError": "readonly"
   },
-  "ignorePatterns": ["dist", ".claude"],
+  "ignorePatterns": ["dist", ".claude", "src/data/*/curvetables/**"],
   "rules": {
     "constructor-super": "error",
     "for-direction": "error",

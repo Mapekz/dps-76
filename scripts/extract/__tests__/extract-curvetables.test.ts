@@ -1,11 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import type { EsmClient, EsmRecord } from '../esm-client';
 import {
+  buildCurveTableBarrels,
   CURVE_TABLE_GROUPS,
   CURVE_TABLE_SINGLETONS,
   extractCurveTables,
   tierFromEdid,
   toCurveTableFile,
+  type ExtractedCurveTableFile,
 } from '../extract-curvetables';
 import armorTier22 from './fixtures/curv-creatures-armor-tier22.json';
 import armorTier49Zzz from './fixtures/curv-creatures-armor-tier49-zzz.json';
@@ -360,5 +362,130 @@ describe('extractCurveTables', () => {
       expect(unresolved[0]).toContain('CombatFormulaPercentOfMinToMaxRangeDMGMult_DO');
       expect(unresolved[1]).toContain('get CT_Player_PercentOfMinToMaxRangeDMGMult failed');
     });
+  });
+});
+
+describe('buildCurveTableBarrels', () => {
+  it('produces one barrel per CURVE_TABLE_GROUPS directory', () => {
+    const files: ExtractedCurveTableFile[] = [
+      {
+        relativePath: 'creatures/health/health_universal_tier1.json',
+        editorId: 'CT_Creatures_Health_Universal_Tier1',
+        formId: '0x123456',
+        content: { curve: [{ x: 1, y: 1 }] },
+      },
+      {
+        relativePath: 'creatures/health/health_universal_tier5.json',
+        editorId: 'CT_Creatures_Health_Universal_Tier5',
+        formId: '0x123457',
+        content: { curve: [{ x: 5, y: 5 }] },
+      },
+      {
+        relativePath: 'player/damage/damage_universal_tier2.json',
+        editorId: 'CT_Player_Damage_Universal_Tier2',
+        formId: '0x123458',
+        content: { curve: [{ x: 2, y: 2 }] },
+      },
+    ];
+    const barrels = buildCurveTableBarrels(files);
+    expect(barrels).toHaveLength(2);
+    const paths = barrels.map((b) => b.relativePath).sort();
+    expect(paths).toEqual([
+      'creatures/health/index.generated.ts',
+      'player/damage/index.generated.ts',
+    ]);
+  });
+
+  it('sorts tiers ascending within each barrel', () => {
+    const files: ExtractedCurveTableFile[] = [
+      {
+        relativePath: 'creatures/health/health_universal_tier5.json',
+        editorId: 'CT_Creatures_Health_Universal_Tier5',
+        formId: '0x123456',
+        content: { curve: [{ x: 5, y: 5 }] },
+      },
+      {
+        relativePath: 'creatures/health/health_universal_tier1.json',
+        editorId: 'CT_Creatures_Health_Universal_Tier1',
+        formId: '0x123457',
+        content: { curve: [{ x: 1, y: 1 }] },
+      },
+    ];
+    const barrels = buildCurveTableBarrels(files);
+    expect(barrels).toHaveLength(1);
+    const barrel = barrels[0];
+    expect(barrel.source).toContain('import tier1 from');
+    expect(barrel.source).toContain('import tier5 from');
+    // Verify tier1 comes before tier5
+    const tier1Idx = barrel.source.indexOf('import tier1');
+    const tier5Idx = barrel.source.indexOf('import tier5');
+    expect(tier1Idx).toBeLessThan(tier5Idx);
+  });
+
+  it('excludes singleton files (not in any CURVE_TABLE_GROUPS directory)', () => {
+    const files: ExtractedCurveTableFile[] = [
+      {
+        relativePath: 'player/range/percentofmintomaxrangedamagemult.json',
+        editorId: 'CT_Player_PercentOfMinToMaxRangeDMGMult',
+        formId: '0x008407AC',
+        content: { curve: [{ x: 1, y: 1 }] },
+      },
+      {
+        relativePath: 'creatures/health/health_universal_tier1.json',
+        editorId: 'CT_Creatures_Health_Universal_Tier1',
+        formId: '0x123456',
+        content: { curve: [{ x: 1, y: 1 }] },
+      },
+    ];
+    const barrels = buildCurveTableBarrels(files);
+    expect(barrels).toHaveLength(1);
+    expect(barrels[0].relativePath).toBe('creatures/health/index.generated.ts');
+  });
+
+  it('produces deterministic output (same input → byte-identical source)', () => {
+    const files: ExtractedCurveTableFile[] = [
+      {
+        relativePath: 'creatures/health/health_universal_tier5.json',
+        editorId: 'CT_Creatures_Health_Universal_Tier5',
+        formId: '0x123456',
+        content: { curve: [{ x: 5, y: 5 }] },
+      },
+      {
+        relativePath: 'creatures/health/health_universal_tier1.json',
+        editorId: 'CT_Creatures_Health_Universal_Tier1',
+        formId: '0x123457',
+        content: { curve: [{ x: 1, y: 1 }] },
+      },
+    ];
+    const barrels1 = buildCurveTableBarrels(files);
+    const barrels2 = buildCurveTableBarrels(files);
+    expect(barrels1[0].source).toBe(barrels2[0].source);
+  });
+
+  it('generates barrel source with proper imports and export', () => {
+    const files: ExtractedCurveTableFile[] = [
+      {
+        relativePath: 'creatures/health/health_universal_tier1.json',
+        editorId: 'CT_Creatures_Health_Universal_Tier1',
+        formId: '0x123456',
+        content: { curve: [{ x: 1, y: 1 }] },
+      },
+      {
+        relativePath: 'creatures/health/health_universal_tier5.json',
+        editorId: 'CT_Creatures_Health_Universal_Tier5',
+        formId: '0x123457',
+        content: { curve: [{ x: 5, y: 5 }] },
+      },
+    ];
+    const barrels = buildCurveTableBarrels(files);
+    const source = barrels[0].source;
+    expect(source).toContain('// AUTO-GENERATED');
+    expect(source).toContain("import type { CurveFile } from '@/types/curves'");
+    expect(source).toContain("import tier1 from './health_universal_tier1.json'");
+    expect(source).toContain("import tier5 from './health_universal_tier5.json'");
+    expect(source).toContain('export default {');
+    expect(source).toContain('1: tier1,');
+    expect(source).toContain('5: tier5,');
+    expect(source).toContain('} as Record<number, CurveFile>;');
   });
 });

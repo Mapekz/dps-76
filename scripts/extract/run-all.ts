@@ -18,7 +18,7 @@ import { extractOmods } from './extract-omods';
 import { extractUniques } from './extract-uniques';
 import { extractBuffs } from './extract-buffs';
 import { extractBodyParts } from './extract-bodyparts';
-import { extractCurveTables } from './extract-curvetables';
+import { buildCurveTableBarrels, extractCurveTables } from './extract-curvetables';
 import { extractNpcs } from './extract-npcs';
 import { extractConstants } from './extract-constants';
 import { verifyDfobs } from './verify-dfobs';
@@ -344,10 +344,17 @@ async function main() {
       await mkdir(path.dirname(filePath), { recursive: true });
       await writeFile(filePath, JSON.stringify(file.content, null, 1));
     }
+    const barrels = buildCurveTableBarrels(result.files);
+    for (const barrel of barrels) {
+      const barrelPath = path.join(curveDir, barrel.relativePath);
+      await mkdir(path.dirname(barrelPath), { recursive: true });
+      await writeFile(barrelPath, barrel.source);
+    }
     meta.counts.curvetables = result.files.length;
+    meta.counts.curvetableBarrels = barrels.length;
     meta.unresolved.push(...result.unresolved);
     console.log(
-      `  ${result.files.length} curve table files written → ${curveDir} (unresolved: ${result.unresolved.length})`,
+      `  ${result.files.length} curve table files + ${barrels.length} barrels written → ${curveDir} (unresolved: ${result.unresolved.length})`,
     );
   }
 
