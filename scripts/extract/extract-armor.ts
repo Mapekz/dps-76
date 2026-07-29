@@ -3,8 +3,8 @@ import { EsmClient, mapPool } from './esm-client';
 import { ObtainabilityClassifier } from './obtainability';
 
 /**
- * Armor grounding pass (Phase 3 armor pipeline, go-through-every-single-
- * silly-whistle.md): list + classify ARMO records so the omods pass can
+ * Armor grounding pass (Phase 3 armor pipeline — docs/assumptions.md "Armor
+ * pipeline (Phase 3 extraction)"): list + classify ARMO records so the omods pass can
  * derive armor-OMOD obtainability the same way it already does for weapons
  * (an OMOD referenced by an obtainable ARMO's own attach/template chain
  * rides along — the WEAP-riding rule's ARMO parallel, obtainability.ts).

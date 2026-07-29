@@ -193,9 +193,10 @@ export interface ScenarioSet {
   hasConcentratedFireSources: boolean;
   /**
    * True when the effective weapon carries a nonzero `reloadSkipChanceBash`
-   * (Battle-Loader's — the bash-triggered reload-skip channel, Phase C, go-
-   * through-every-single-silly-whistle.md) — gates the UI's bash-time
-   * slider (`ConditionsSection.tsx`, `PlayerConditions.battleLoadersBashSec`).
+   * (Battle-Loader's — the bash-triggered reload-skip channel, see
+   * docs/assumptions.md "Reload-skip & free-ammo expected value") — gates the
+   * UI's bash-time slider (`ConditionsSection.tsx`,
+   * `PlayerConditions.battleLoadersBashSec`).
    * Unlike `hasKillStreakSources`/`hasConcentratedFireSources` (existence
    * scans over `ScenarioInput.modifiers`), this reads the FOLDED weapon
    * field instead: `reloadSkipChanceBash` is a `sustainChance`-regime

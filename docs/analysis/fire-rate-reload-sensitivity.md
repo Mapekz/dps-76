@@ -26,7 +26,7 @@ from the tables below.
 4. **One real model risk stands**: reload bonuses are folded as a rate
    divisor (`t/1.x`). If the game time-scales instead (`t×(1−x)`), the calc
    *understates* reload mods — the two semantics diverge hard at stacked
-   bonuses (§6). Stopwatch protocol added to `measurement-backlog.md`.
+   bonuses (§6). Stopwatch protocol tracked in `#2`.
 5. **Fast Fighter was unmodeled and now works** (§9): it grants half your
    bonus movement speed as reload speed, auto-derived from modeled move-speed
    sources (Speed Demon +20/+25%, Wasteland Fish Sandwich +20%).
@@ -184,8 +184,7 @@ properties MUL/ADD onto the same 1.0-baseline weapon stat), and time-scaling
 explodes at stacked bonuses (Speed Demon 0.4 + Gun Tricks 0.3 + Swift Mag
 0.2 → −90% reload time is not believable in-game). But it is measurable:
 **.44 revolver, +30% bonus → 2.56s/shell (divide) vs 2.33s (time-scale);
-stacked +60% as a ghoul → −37.5% vs −60%** — protocol added to
-`measurement-backlog.md`.
+stacked +60% as a ghoul → −37.5% vs −60%** — protocol tracked in `#2`.
 
 ## 7. Suggestions-panel audit (mid-build, VATS metric)
 
@@ -250,8 +249,8 @@ as the intended semantics; bucket keeps the name `weakpointBonus`.
   Runner…) extract with unresolved IsSprinting-style gates and stay inert
   by design; unconditional sources (Wasteland Fish Sandwich +20%) feed Fast
   Fighter automatically. Follow-up sweep: `docs/move-speed-census.md`.
-- New measurement-backlog entries: divide-vs-time-scale reload stopwatch,
-  Fast Fighter conversion check.
+- New measurement issues: divide-vs-time-scale reload stopwatch (`#2`), Fast
+  Fighter conversion check (`#69`).
 - `docs/assumptions.md`: "Fast Fighter & the moveSpeedBonus bucket" section.
 
 ## 11. Open questions (ordered by leverage)

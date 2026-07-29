@@ -119,8 +119,9 @@ function assemble(
 
   // Perk/legendary-perk/buff modifiers, gathered BEFORE the effective weapon
   // is built so their weapon-stat buckets (reloadSpeed, fireRateSpeed, …)
-  // fold into it alongside OMOD stats — Guerrilla Expert's reload was inert
-  // when this ran after buildEffectiveWeapon (measurement-backlog §1).
+  // fold into it alongside OMOD stats — Guerrilla Expert's reload is inert if
+  // this runs after buildEffectiveWeapon (docs/assumptions.md "Onslaught",
+  // Guerrilla Expert's reload-speed bullet).
   const loadoutModifiers = [
     ...getLoadoutModifiers(mode, playerConfig.perks),
     ...getLoadoutModifiers(mode, playerConfig.legendaryPerks),

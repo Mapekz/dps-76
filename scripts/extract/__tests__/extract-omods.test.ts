@@ -1396,8 +1396,8 @@ describe('extractOmods (Bullet Storm ActorValues — AmmoSpenderMinStacks/Enable
 });
 
 /**
- * Stub client for the range-barrel bucket wiring (Phase 1 extraction half,
- * go-through-every-single-silly-whistle.md). The REAL parent template fixture
+ * Stub client for the range-barrel bucket wiring (Phase 1 extraction half —
+ * docs/assumptions.md "Target distance (Close / Far)"). The REAL parent template fixture
  * (omod-barrel-long-range-parent.json, verbatim `esm get 0x0027ABFA` output —
  * `_PARENT_mod_WEAPON_Barrel_Long_Range`, carrying MaxRange/MinRange MUL+ADD
  * 0.5) is wired in via a synthetic named child mod's `Data.Includes`, exactly
@@ -1534,8 +1534,8 @@ describe('extractOmods (range barrel MinRange/MaxRange, Phase 1 extraction half)
 });
 
 /**
- * Phase 3 armor pipeline (go-through-every-single-silly-whistle.md, extraction
- * half): classifyOmodRecordExclusion now gates on Form Type ∈ {'Weapon',
+ * Phase 3 armor pipeline (docs/assumptions.md "Armor pipeline (Phase 3
+ * extraction)"): classifyOmodRecordExclusion gates on Form Type ∈ {'Weapon',
  * 'Armor'} instead of Weapon-only, and extractOmods emits a SECOND array
  * (armorOmods) alongside the unchanged weapon `omods` array from one shared
  * OMOD list+get pass. Fixtures are verbatim `esm -p get <formid> --json`

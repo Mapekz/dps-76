@@ -37,8 +37,7 @@ export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> 
   //     bucket (EP199 "Instant Reload Clip On Bash"), not the plain
   //     `reloadSkipChance` channel Quick Hands / Wild West Hands use (EP182
   //     "Auto Fill Weapon Clip", passive on the reload itself, never
-  //     bash-taxed). That split (2026-07-19, Phase C — go-through-every-
-  //     single-silly-whistle.md) is what lets `sustain.ts` charge a real
+  //     bash-taxed). That split is what lets `sustain.ts` charge a real
   //     time cost (`PlayerConditions.battleLoadersBashSec`) for Battle-
   //     Loader's specifically instead of treating it as Quick-Hands-style
   //     free/sustained skip — see docs/assumptions.md "Reload-skip &

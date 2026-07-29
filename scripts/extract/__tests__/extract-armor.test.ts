@@ -3,8 +3,8 @@ import type { EsmClient, EsmListRow, EsmRecord, EsmRefRow } from '../esm-client'
 import { extractArmor, isExcludedArmorEdid } from '../extract-armor';
 
 /**
- * Phase 3 armor pipeline (go-through-every-single-silly-whistle.md):
- * extract-armor.ts is obtainability-grounding only (no resistances, no mod
+ * Phase 3 armor pipeline (docs/assumptions.md "Armor pipeline (Phase 3
+ * extraction)"): extract-armor.ts is obtainability-grounding only (no resistances, no mod
  * slots — see its own doc comment). These tests pin the two things it's
  * responsible for: the dev/non-equippable-prefix pre-filter, and that
  * obtainability derivation reuses the same reverse-reference machinery as

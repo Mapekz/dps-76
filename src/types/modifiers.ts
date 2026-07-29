@@ -997,9 +997,10 @@ export type Condition =
   /**
    * Number of currently-worn armor pieces carrying `keyword` == count, or ≥
    * count with orMore (Battle-Loader's 1/2/3/4/≥5-piece tiers —
-   * WornApparelHasKeywordCount). Phase 3 armor pipeline (extraction half,
-   * go-through-every-single-silly-whistle.md): INERT until the engine half
-   * wires `PlayerConditions.wornPieceCounts` — see resolve.ts's stub case.
+   * WornApparelHasKeywordCount). Evaluated against
+   * `PlayerConditions.wornPieceCounts`, which `resolveLoadout` derives from
+   * the Armor checklist — see resolve.ts's `wornPieceCount` case and
+   * docs/assumptions.md "Armor".
    */
   | { kind: 'wornPieceCount'; keyword: string; count: number; orMore?: boolean }
   /**

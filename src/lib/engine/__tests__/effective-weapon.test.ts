@@ -267,7 +267,7 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
   });
 });
 
-describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, measurement-backlog §1)', () => {
+describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, docs/assumptions.md "Onslaught")', () => {
   const fixer = getWeapons('live')['CombatRifle_Fixer'];
   const base = fixer.reloadSpeed ?? 1.0;
   const perkSource = { kind: 'perk' as const, formId: '0x1', edid: 'test_perk', name: 'Test Perk' };
