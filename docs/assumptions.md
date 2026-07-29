@@ -1705,9 +1705,13 @@ auto-converted); their stats are stale and must not be shown.
 - **Unnamed identity effects** (Holy Fire, Cultist Piercer, Elder's Mark,
   ...) were silently dropped by the no-Name filter — rescued when
   template-member + has properties + sits on an identity attach point.
-- **Cursed mods** (`ap_Item_Description`, Nuka-World on Tour): real stat
-  payloads on a cosmetic naming slot, no `ObjectTypeUnique` — surfaced by
-  the same modifiers+template-membership gate, labeled "Cursed".
+- **Cursed mods** (`ap_curse`, Nuka-World on Tour): real stat payloads on a
+  cosmetic naming slot, no `ObjectTypeUnique` — surfaced by the same
+  modifiers+template-membership gate, labeled "Cursed". Rode the shared
+  `ap_Item_Description` slot pre-20260724 patch; Bethesda split Cursed mods
+  onto their own dedicated attach point that patch (`src/data/omods.ts`
+  `SLOT_LABEL_OVERRIDES`/`RENAMING_SLOTS` updated to match — confirmed via
+  `Data/notes/20260717_to_20260724/patch-summary.md`).
 - **Dom Pedro**: its Explosive muzzle mods' EXPL payload is hand-supplied
   via `omodModifierAdditions` as a ballistic-scoped ADD curve (right paper
   number, but explosive-only perk interactions aren't modeled — the engine

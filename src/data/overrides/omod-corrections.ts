@@ -226,10 +226,6 @@ export const perWeaponSlotLabelOverrides: Readonly<
   Drill: { ap_gun_Barrel: 'Drill Bit' },
   // "Upgrade" options: Standard / Curved BLADE / Extended BLADE.
   Ripper: { ap_melee_MeleeMod: 'Blade' },
-  // Voice of Set's identity rides ap_Item_Description like the Cursed mods
-  // (global label "Cursed") — but it's a Mistress of Mystery unique, not a
-  // cursed item.
-  MoM_VoiceOfSet_44: { ap_Item_Description: 'Unique' },
 };
 /**
  * Modifier ADDITIONS layered onto an OMOD's extracted modifiers (unlike

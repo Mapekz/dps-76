@@ -434,12 +434,12 @@ describe('unique & cursed mods against live data', () => {
 
   it('cursed mods ride a slot labeled "Cursed" and rename the weapon', () => {
     const broadsider = getWeapons('live')['Broadsider'];
-    const slot = getOmodSlots('live', broadsider).find((s) => s.slot === 'ap_Item_Description');
+    const slot = getOmodSlots('live', broadsider).find((s) => s.slot === 'ap_curse');
     expect(slot?.label).toBe('Cursed');
     expect(slot?.options.map((o) => o.id)).toContain('EN06_mod_Ranged_Broadsider_Custom_Cursed');
     expect(
       effectiveWeaponName('live', broadsider, {
-        ap_Item_Description: 'EN06_mod_Ranged_Broadsider_Custom_Cursed',
+        ap_curse: 'EN06_mod_Ranged_Broadsider_Custom_Cursed',
       }),
     ).toBe('Cursed Broadsider');
     expect(effectiveWeaponName('live', broadsider, {})).toBe(broadsider.name);
