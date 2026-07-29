@@ -29370,9 +29370,66 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "EXPL ExplosionMissileShellBOSLauncher_Cryo targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
-  ],
+  "explosionSwap": {
+   "explEdid": "ExplosionMissileShellBOSLauncher_Cryo",
+   "components": [
+    {
+     "damageType": "cryo",
+     "damageTypeEdid": "dtCryo",
+     "amount": 0,
+     "tier": 33,
+     "curve": [
+      {
+       "x": 1,
+       "y": 58
+      },
+      {
+       "x": 5,
+       "y": 65
+      },
+      {
+       "x": 10,
+       "y": 73
+      },
+      {
+       "x": 15,
+       "y": 83
+      },
+      {
+       "x": 20,
+       "y": 94
+      },
+      {
+       "x": 25,
+       "y": 106
+      },
+      {
+       "x": 30,
+       "y": 119
+      },
+      {
+       "x": 35,
+       "y": 135
+      },
+      {
+       "x": 40,
+       "y": 152
+      },
+      {
+       "x": 45,
+       "y": 172
+      },
+      {
+       "x": 50,
+       "y": 194
+      }
+     ],
+     "fromExplosion": true
+    }
+   ],
+   "baseWeaponDamageMult": 0
+  },
+  "notes": [],
   "obtainable": true
  },
  {
@@ -29533,6 +29590,97 @@
     "op": "MUL_ADD",
     "value": 0.5,
     "conditions": []
+   },
+   {
+    "id": "0x005E47E4:ench:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x005E47E4",
+     "edid": "mod_BOSRocketLauncher_TubeBarrel_Napalm",
+     "name": "Napalm Payload"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 14
+      },
+      {
+       "x": 5,
+       "y": 16
+      },
+      {
+       "x": 10,
+       "y": 18
+      },
+      {
+       "x": 15,
+       "y": 20
+      },
+      {
+       "x": 20,
+       "y": 23
+      },
+      {
+       "x": 25,
+       "y": 26
+      },
+      {
+       "x": 30,
+       "y": 29
+      },
+      {
+       "x": 35,
+       "y": 33
+      },
+      {
+       "x": 40,
+       "y": 37
+      },
+      {
+       "x": 45,
+       "y": 42
+      },
+      {
+       "x": 50,
+       "y": 47
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ],
+    "durationSec": 7
+   },
+   {
+    "id": "0x005E47E4:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x005E47E4",
+     "edid": "mod_BOSRocketLauncher_TubeBarrel_Napalm",
+     "name": "Napalm Payload"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "value": 5,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ],
+    "durationSec": 15
    }
   ],
   "addedKeywords": [
@@ -29543,9 +29691,66 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "EXPL ExplosionMissileShellBOSLauncher_Napalm targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
-  ],
+  "explosionSwap": {
+   "explEdid": "ExplosionMissileShellBOSLauncher_Napalm",
+   "components": [
+    {
+     "damageType": "fire",
+     "damageTypeEdid": "dtFire",
+     "amount": 0,
+     "tier": 33,
+     "curve": [
+      {
+       "x": 1,
+       "y": 58
+      },
+      {
+       "x": 5,
+       "y": 65
+      },
+      {
+       "x": 10,
+       "y": 73
+      },
+      {
+       "x": 15,
+       "y": 83
+      },
+      {
+       "x": 20,
+       "y": 94
+      },
+      {
+       "x": 25,
+       "y": 106
+      },
+      {
+       "x": 30,
+       "y": 119
+      },
+      {
+       "x": 35,
+       "y": 135
+      },
+      {
+       "x": 40,
+       "y": 152
+      },
+      {
+       "x": 45,
+       "y": 172
+      },
+      {
+       "x": 50,
+       "y": 194
+      }
+     ],
+     "fromExplosion": true
+    }
+   ],
+   "baseWeaponDamageMult": 0
+  },
+  "notes": [],
   "obtainable": true
  },
  {
@@ -29606,8 +29811,67 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
+  "explosionSwap": {
+   "explEdid": "ExplosionMissileShellBOSLauncher_Plasma",
+   "components": [
+    {
+     "damageType": "energy",
+     "damageTypeEdid": "dtEnergy",
+     "amount": 0,
+     "tier": 43,
+     "curve": [
+      {
+       "x": 1,
+       "y": 99
+      },
+      {
+       "x": 5,
+       "y": 111
+      },
+      {
+       "x": 10,
+       "y": 125
+      },
+      {
+       "x": 15,
+       "y": 141
+      },
+      {
+       "x": 20,
+       "y": 159
+      },
+      {
+       "x": 25,
+       "y": 180
+      },
+      {
+       "x": 30,
+       "y": 203
+      },
+      {
+       "x": 35,
+       "y": 229
+      },
+      {
+       "x": 40,
+       "y": 259
+      },
+      {
+       "x": 45,
+       "y": 292
+      },
+      {
+       "x": 50,
+       "y": 330
+      }
+     ],
+     "fromExplosion": true
+    }
+   ],
+   "baseWeaponDamageMult": 0
+  },
   "notes": [
-   "EXPL ExplosionMissileShellBOSLauncher_Plasma targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
+   "MGEF Generic_Weapon_CritPlasmaEffect archetype Script — needs override"
   ],
   "obtainable": true
  },
@@ -38999,8 +39263,66 @@
   "addedKeywords": [],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
+  "explosionSwap": {
+   "explEdid": "ExplosionCrematorFireball_Blue",
+   "components": [
+    {
+     "damageType": "fire",
+     "damageTypeEdid": "dtFire",
+     "amount": 25,
+     "tier": 13,
+     "curve": [
+      {
+       "x": 1,
+       "y": 10
+      },
+      {
+       "x": 5,
+       "y": 11
+      },
+      {
+       "x": 10,
+       "y": 12
+      },
+      {
+       "x": 15,
+       "y": 14
+      },
+      {
+       "x": 20,
+       "y": 16
+      },
+      {
+       "x": 25,
+       "y": 18
+      },
+      {
+       "x": 30,
+       "y": 20
+      },
+      {
+       "x": 35,
+       "y": 22
+      },
+      {
+       "x": 40,
+       "y": 25
+      },
+      {
+       "x": 45,
+       "y": 29
+      },
+      {
+       "x": 50,
+       "y": 32
+      }
+     ],
+     "fromExplosion": true
+    }
+   ],
+   "baseWeaponDamageMult": 0
+  },
   "notes": [
-   "EXPL ExplosionCrematorFireball_Blue targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")",
    "removes projectile override ProjectileCremator"
   ],
   "obtainable": true
@@ -39019,8 +39341,66 @@
   "addedKeywords": [],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
+  "explosionSwap": {
+   "explEdid": "ExplosionCrematorFireball_Green",
+   "components": [
+    {
+     "damageType": "fire",
+     "damageTypeEdid": "dtFire",
+     "amount": 25,
+     "tier": 13,
+     "curve": [
+      {
+       "x": 1,
+       "y": 10
+      },
+      {
+       "x": 5,
+       "y": 11
+      },
+      {
+       "x": 10,
+       "y": 12
+      },
+      {
+       "x": 15,
+       "y": 14
+      },
+      {
+       "x": 20,
+       "y": 16
+      },
+      {
+       "x": 25,
+       "y": 18
+      },
+      {
+       "x": 30,
+       "y": 20
+      },
+      {
+       "x": 35,
+       "y": 22
+      },
+      {
+       "x": 40,
+       "y": 25
+      },
+      {
+       "x": 45,
+       "y": 29
+      },
+      {
+       "x": 50,
+       "y": 32
+      }
+     ],
+     "fromExplosion": true
+    }
+   ],
+   "baseWeaponDamageMult": 0
+  },
   "notes": [
-   "EXPL ExplosionCrematorFireball_Green targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")",
    "removes projectile override ProjectileCremator"
   ],
   "obtainable": true
@@ -39039,8 +39419,66 @@
   "addedKeywords": [],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
+  "explosionSwap": {
+   "explEdid": "ExplosionCrematorFireball_Pink",
+   "components": [
+    {
+     "damageType": "fire",
+     "damageTypeEdid": "dtFire",
+     "amount": 25,
+     "tier": 13,
+     "curve": [
+      {
+       "x": 1,
+       "y": 10
+      },
+      {
+       "x": 5,
+       "y": 11
+      },
+      {
+       "x": 10,
+       "y": 12
+      },
+      {
+       "x": 15,
+       "y": 14
+      },
+      {
+       "x": 20,
+       "y": 16
+      },
+      {
+       "x": 25,
+       "y": 18
+      },
+      {
+       "x": 30,
+       "y": 20
+      },
+      {
+       "x": 35,
+       "y": 22
+      },
+      {
+       "x": 40,
+       "y": 25
+      },
+      {
+       "x": 45,
+       "y": 29
+      },
+      {
+       "x": 50,
+       "y": 32
+      }
+     ],
+     "fromExplosion": true
+    }
+   ],
+   "baseWeaponDamageMult": 0
+  },
   "notes": [
-   "EXPL ExplosionCrematorFireball_Pink targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")",
    "removes projectile override ProjectileCremator"
   ],
   "obtainable": true
@@ -52757,9 +53195,66 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "EXPL ExplosionFatManMIRVPack targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
-  ],
+  "explosionSwap": {
+   "explEdid": "ExplosionFatManMIRVPack",
+   "components": [
+    {
+     "damageType": "explosive",
+     "damageTypeEdid": null,
+     "amount": 0,
+     "tier": 24,
+     "curve": [
+      {
+       "x": 1,
+       "y": 31
+      },
+      {
+       "x": 5,
+       "y": 35
+      },
+      {
+       "x": 10,
+       "y": 39
+      },
+      {
+       "x": 15,
+       "y": 44
+      },
+      {
+       "x": 20,
+       "y": 50
+      },
+      {
+       "x": 25,
+       "y": 56
+      },
+      {
+       "x": 30,
+       "y": 64
+      },
+      {
+       "x": 35,
+       "y": 72
+      },
+      {
+       "x": 40,
+       "y": 81
+      },
+      {
+       "x": 45,
+       "y": 91
+      },
+      {
+       "x": 50,
+       "y": 103
+      }
+     ],
+     "fromExplosion": true
+    }
+   ],
+   "baseWeaponDamageMult": 0
+  },
+  "notes": [],
   "obtainable": true
  },
  {
@@ -53462,9 +53957,119 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "EXPL ExplosionGammaGunLarge targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
-  ],
+  "explosionSwap": {
+   "explEdid": "ExplosionGammaGunLarge",
+   "components": [
+    {
+     "damageType": "radiation",
+     "damageTypeEdid": "dtRadiationExposure",
+     "amount": 0,
+     "tier": 20,
+     "curve": [
+      {
+       "x": 1,
+       "y": 22
+      },
+      {
+       "x": 5,
+       "y": 24
+      },
+      {
+       "x": 10,
+       "y": 27
+      },
+      {
+       "x": 15,
+       "y": 31
+      },
+      {
+       "x": 20,
+       "y": 35
+      },
+      {
+       "x": 25,
+       "y": 39
+      },
+      {
+       "x": 30,
+       "y": 45
+      },
+      {
+       "x": 35,
+       "y": 50
+      },
+      {
+       "x": 40,
+       "y": 57
+      },
+      {
+       "x": 45,
+       "y": 64
+      },
+      {
+       "x": 50,
+       "y": 72
+      }
+     ],
+     "fromExplosion": true
+    },
+    {
+     "damageType": "energy",
+     "damageTypeEdid": "dtEnergy",
+     "amount": 0,
+     "tier": 20,
+     "curve": [
+      {
+       "x": 1,
+       "y": 22
+      },
+      {
+       "x": 5,
+       "y": 24
+      },
+      {
+       "x": 10,
+       "y": 27
+      },
+      {
+       "x": 15,
+       "y": 31
+      },
+      {
+       "x": 20,
+       "y": 35
+      },
+      {
+       "x": 25,
+       "y": 39
+      },
+      {
+       "x": 30,
+       "y": 45
+      },
+      {
+       "x": 35,
+       "y": 50
+      },
+      {
+       "x": 40,
+       "y": 57
+      },
+      {
+       "x": 45,
+       "y": 64
+      },
+      {
+       "x": 50,
+       "y": 72
+      }
+     ],
+     "fromExplosion": true
+    }
+   ],
+   "baseWeaponDamageMult": 0
+  },
+  "notes": [],
   "obtainable": true
  },
  {
@@ -53483,9 +54088,119 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "EXPL ExplosionGammaGun targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
-  ],
+  "explosionSwap": {
+   "explEdid": "ExplosionGammaGun",
+   "components": [
+    {
+     "damageType": "radiation",
+     "damageTypeEdid": "dtRadiationExposure",
+     "amount": 0,
+     "tier": 18,
+     "curve": [
+      {
+       "x": 1,
+       "y": 18
+      },
+      {
+       "x": 5,
+       "y": 20
+      },
+      {
+       "x": 10,
+       "y": 22
+      },
+      {
+       "x": 15,
+       "y": 25
+      },
+      {
+       "x": 20,
+       "y": 29
+      },
+      {
+       "x": 25,
+       "y": 32
+      },
+      {
+       "x": 30,
+       "y": 36
+      },
+      {
+       "x": 35,
+       "y": 41
+      },
+      {
+       "x": 40,
+       "y": 46
+      },
+      {
+       "x": 45,
+       "y": 52
+      },
+      {
+       "x": 50,
+       "y": 59
+      }
+     ],
+     "fromExplosion": true
+    },
+    {
+     "damageType": "energy",
+     "damageTypeEdid": "dtEnergy",
+     "amount": 0,
+     "tier": 18,
+     "curve": [
+      {
+       "x": 1,
+       "y": 18
+      },
+      {
+       "x": 5,
+       "y": 20
+      },
+      {
+       "x": 10,
+       "y": 22
+      },
+      {
+       "x": 15,
+       "y": 25
+      },
+      {
+       "x": 20,
+       "y": 29
+      },
+      {
+       "x": 25,
+       "y": 32
+      },
+      {
+       "x": 30,
+       "y": 36
+      },
+      {
+       "x": 35,
+       "y": 41
+      },
+      {
+       "x": 40,
+       "y": 46
+      },
+      {
+       "x": 45,
+       "y": 52
+      },
+      {
+       "x": 50,
+       "y": 59
+      }
+     ],
+     "fromExplosion": true
+    }
+   ],
+   "baseWeaponDamageMult": 0
+  },
+  "notes": [],
   "obtainable": true
  },
  {
@@ -84787,9 +85502,66 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "EXPL ExplosionMissileShell targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
-  ],
+  "explosionSwap": {
+   "explEdid": "ExplosionMissileShell",
+   "components": [
+    {
+     "damageType": "explosive",
+     "damageTypeEdid": null,
+     "amount": 0,
+     "tier": 72,
+     "curve": [
+      {
+       "x": 1,
+       "y": 290
+      },
+      {
+       "x": 5,
+       "y": 325
+      },
+      {
+       "x": 10,
+       "y": 367
+      },
+      {
+       "x": 15,
+       "y": 414
+      },
+      {
+       "x": 20,
+       "y": 467
+      },
+      {
+       "x": 25,
+       "y": 528
+      },
+      {
+       "x": 30,
+       "y": 596
+      },
+      {
+       "x": 35,
+       "y": 673
+      },
+      {
+       "x": 40,
+       "y": 759
+      },
+      {
+       "x": 45,
+       "y": 857
+      },
+      {
+       "x": 50,
+       "y": 968
+      }
+     ],
+     "fromExplosion": true
+    }
+   ],
+   "baseWeaponDamageMult": 0
+  },
+  "notes": [],
   "obtainable": true
  },
  {
@@ -118326,9 +119098,119 @@
   "modifiers": [],
   "addedKeywords": [],
   "hasEnchantments": false,
-  "notes": [
-   "EXPL P62_ExplosionGrenade_ChaosEngine_Cryogenic targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
-  ],
+  "explosionSwap": {
+   "explEdid": "P62_ExplosionGrenade_ChaosEngine_Cryogenic",
+   "components": [
+    {
+     "damageType": "explosive",
+     "damageTypeEdid": null,
+     "amount": 0,
+     "tier": null,
+     "curve": [
+      {
+       "x": 1,
+       "y": 0
+      },
+      {
+       "x": 5,
+       "y": 0
+      },
+      {
+       "x": 10,
+       "y": 0
+      },
+      {
+       "x": 15,
+       "y": 87
+      },
+      {
+       "x": 20,
+       "y": 87
+      },
+      {
+       "x": 25,
+       "y": 97
+      },
+      {
+       "x": 30,
+       "y": 97
+      },
+      {
+       "x": 35,
+       "y": 107
+      },
+      {
+       "x": 40,
+       "y": 107
+      },
+      {
+       "x": 45,
+       "y": 117
+      },
+      {
+       "x": 50,
+       "y": 117
+      }
+     ],
+     "fromExplosion": true
+    },
+    {
+     "damageType": "cryo",
+     "damageTypeEdid": "dtCryo",
+     "amount": 0,
+     "tier": null,
+     "curve": [
+      {
+       "x": 1,
+       "y": 0
+      },
+      {
+       "x": 5,
+       "y": 0
+      },
+      {
+       "x": 10,
+       "y": 0
+      },
+      {
+       "x": 15,
+       "y": 87
+      },
+      {
+       "x": 20,
+       "y": 87
+      },
+      {
+       "x": 25,
+       "y": 97
+      },
+      {
+       "x": 30,
+       "y": 97
+      },
+      {
+       "x": 35,
+       "y": 107
+      },
+      {
+       "x": 40,
+       "y": 107
+      },
+      {
+       "x": 45,
+       "y": 117
+      },
+      {
+       "x": 50,
+       "y": 117
+      }
+     ],
+     "fromExplosion": true
+    }
+   ],
+   "baseWeaponDamageMult": 0
+  },
+  "notes": [],
   "obtainable": true
  },
  {
@@ -118359,9 +119241,119 @@
   "modifiers": [],
   "addedKeywords": [],
   "hasEnchantments": false,
-  "notes": [
-   "EXPL P62_crExplosionGrenade_ChaosEngine_Cryogenic targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
-  ],
+  "explosionSwap": {
+   "explEdid": "P62_crExplosionGrenade_ChaosEngine_Cryogenic",
+   "components": [
+    {
+     "damageType": "explosive",
+     "damageTypeEdid": null,
+     "amount": 0,
+     "tier": 25,
+     "curve": [
+      {
+       "x": 1,
+       "y": 34
+      },
+      {
+       "x": 5,
+       "y": 38
+      },
+      {
+       "x": 10,
+       "y": 42
+      },
+      {
+       "x": 15,
+       "y": 48
+      },
+      {
+       "x": 20,
+       "y": 54
+      },
+      {
+       "x": 25,
+       "y": 61
+      },
+      {
+       "x": 30,
+       "y": 69
+      },
+      {
+       "x": 35,
+       "y": 78
+      },
+      {
+       "x": 40,
+       "y": 88
+      },
+      {
+       "x": 45,
+       "y": 99
+      },
+      {
+       "x": 50,
+       "y": 112
+      }
+     ],
+     "fromExplosion": true
+    },
+    {
+     "damageType": "cryo",
+     "damageTypeEdid": "dtCryo",
+     "amount": 0,
+     "tier": 25,
+     "curve": [
+      {
+       "x": 1,
+       "y": 34
+      },
+      {
+       "x": 5,
+       "y": 38
+      },
+      {
+       "x": 10,
+       "y": 42
+      },
+      {
+       "x": 15,
+       "y": 48
+      },
+      {
+       "x": 20,
+       "y": 54
+      },
+      {
+       "x": 25,
+       "y": 61
+      },
+      {
+       "x": 30,
+       "y": 69
+      },
+      {
+       "x": 35,
+       "y": 78
+      },
+      {
+       "x": 40,
+       "y": 88
+      },
+      {
+       "x": 45,
+       "y": 99
+      },
+      {
+       "x": 50,
+       "y": 112
+      }
+     ],
+     "fromExplosion": true
+    }
+   ],
+   "baseWeaponDamageMult": 0
+  },
+  "notes": [],
   "obtainable": true
  },
  {
@@ -121489,9 +122481,66 @@
    "UnsellableObject"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "EXPL RD01_ExplosionAutoGrenadeLauncher_ResolveBreaker targets a weapon that already has its own launcher explosion — not modeled (docs/assumptions.md \"OMOD-chased launcher payloads\")"
-  ],
+  "explosionSwap": {
+   "explEdid": "RD01_ExplosionAutoGrenadeLauncher_ResolveBreaker",
+   "components": [
+    {
+     "damageType": "cryo",
+     "damageTypeEdid": "dtCryo",
+     "amount": 0,
+     "tier": 40,
+     "curve": [
+      {
+       "x": 1,
+       "y": 86
+      },
+      {
+       "x": 5,
+       "y": 96
+      },
+      {
+       "x": 10,
+       "y": 108
+      },
+      {
+       "x": 15,
+       "y": 122
+      },
+      {
+       "x": 20,
+       "y": 138
+      },
+      {
+       "x": 25,
+       "y": 155
+      },
+      {
+       "x": 30,
+       "y": 175
+      },
+      {
+       "x": 35,
+       "y": 198
+      },
+      {
+       "x": 40,
+       "y": 224
+      },
+      {
+       "x": 45,
+       "y": 253
+      },
+      {
+       "x": 50,
+       "y": 285
+      }
+     ],
+     "fromExplosion": true
+    }
+   ],
+   "baseWeaponDamageMult": 0
+  },
+  "notes": [],
   "obtainable": true
  },
  {
