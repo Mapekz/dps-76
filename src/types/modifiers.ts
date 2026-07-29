@@ -226,9 +226,10 @@ export type Bucket =
    */
   | 'apRegen'
   /**
-   * Flat AP restored per VATS crit (Conductor's: 110 = 10 instant + 100 over
-   * 5s, hand-supplied in `overrides/legendary-values.ts` — the entry point is
-   * script-driven and not extractor-modeled). Consumed by `ap-economy.ts`.
+   * Flat AP restored per VATS crit (Conductor's instant half: +10 — the
+   * duration-5 HoT half is `apCritHot`, not folded in here). Hand-supplied in
+   * `overrides/legendary-values.ts` — the Apply Combat Hit Spell entry point
+   * isn't extractor-modeled. Consumed by `ap-economy.ts`.
    */
   | 'apPerCrit'
   /**
@@ -253,9 +254,12 @@ export type Bucket =
    * AP-over-time granted per VATS crit (Conductor's: 20 AP/s for
    * `durationSec` 5 — SPEL Legendary_Weapon_ConductorsPlayerRestoreSpell's
    * duration-5 Value Modifier, distinct from its instant +10 `apPerCrit`
-   * half). REFRESH-ONLY: a new crit restarts the window, never stacks —
-   * mirrors the dotDamage convention. Steady state in `ap-economy.ts`:
-   * rate × min(1, durationSec × critsPerSec).
+   * half). REFRESH-ONLY: MGEF Legendary_Weapon_ConductorsApplyRestorePlayerAPPerkEffect
+   * carries `Dispel with Keywords` + KYWD ConductorsDispelPlayerEffectKeyword
+   * ("prevent Owner & Recipients from stacking AP & Health Regen effects"),
+   * so a new crit dispels the prior instance and restarts the window — same
+   * steady-state shape as the dotDamage convention. Steady state in
+   * `ap-economy.ts`: rate × min(1, durationSec × critsPerSec).
    */
   | 'apCritHot'
   /**

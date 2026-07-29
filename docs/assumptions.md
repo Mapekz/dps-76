@@ -824,9 +824,13 @@ Engine: `src/lib/engine/ap-economy.ts`.
 - **On-kill AP restores are OUT OF SCOPE** — need enemy TTK modeling
   (phase 3).
 - **Conductor's** (hand-supplied): crit restores `apPerCrit 10` +
-  `apCritHot 20 AP/s over 5s`. The HoT is **REFRESH-ONLY** — a new crit
-  restarts the window rather than stacking (**user-confirmed** in-game
-  2026-07-15, mirrors the dotDamage convention): steady-state HoT =
+  `apCritHot 20 AP/s over 5s`. The HoT is **REFRESH-ONLY** — MGEF
+  `Legendary_Weapon_ConductorsApplyRestorePlayerAPPerkEffect` carries
+  `Dispel with Keywords` + KYWD `ConductorsDispelPlayerEffectKeyword`
+  (**ESM**; notes text: prevent Owner & Recipients from stacking; also
+  **user-confirmed** in-game 2026-07-15). A new crit dispels the prior
+  instance and restarts the window (general Creation-engine rule; some
+  effects instead skip apply when already active). Steady-state HoT =
   `20 × min(1, 5 × critsPerSec)`, saturating at +20 AP/s under fast crit
   cadence.
 - **Passive regen does NOT tick during sustained VATS fire, but DOES tick

@@ -80,13 +80,16 @@ export const legendaryValueOverrides: Readonly<Record<string, Modifier[]>> = {
   // second entry point's SPEL is the teammate-aura cloak, self-irrelevant).
   //
   // TWO modifiers, not one flat 110: the HoT REFRESHES on a new crit instead
-  // of stacking (user-confirmed in-game 2026-07-15), so at fast crit cadence
-  // it saturates at +20 AP/s — the old flat `apPerCrit: 110` overcounted
-  // (crit every 1s would have credited 110 AP/s; real ceiling is 10 + 20).
-  // Slow cadence (crit interval ≥ 5s) still recovers the full 110 per crit.
-  // No on-kill component exists on this effect (verified — out of scope per
-  // plan, waits on enemy TTK). Unconditional: ap-economy.ts scales both
-  // halves by crit cadence itself, so no `crit` gate belongs here.
+  // of stacking. ESM-proven via MGEF flag `Dispel with Keywords` + KYWD
+  // ConductorsDispelPlayerEffectKeyword 0x007B71D3 (notes: "prevent Owner &
+  // Recipients from stacking AP & Health Regen effects") — also
+  // user-confirmed in-game 2026-07-15. At fast crit cadence it saturates at
+  // +20 AP/s — the old flat `apPerCrit: 110` overcounted (crit every 1s would
+  // have credited 110 AP/s; real ceiling is 10 + 20). Slow cadence (crit
+  // interval ≥ 5s) still recovers the full 110 per crit. No on-kill
+  // component exists on this effect (verified — out of scope per plan, waits
+  // on enemy TTK). Unconditional: ap-economy.ts scales both halves by crit
+  // cadence itself, so no `crit` gate belongs here.
   mod_Legendary_Weapon4_Conductors: [
     {
       id: 'mod_Legendary_Weapon4_Conductors:override:0',

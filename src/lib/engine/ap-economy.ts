@@ -34,11 +34,14 @@ import type { SustainResult } from './sustain';
  * remains.
  *
  * On-crit AP HoTs (Conductor's 20 AP/s over 5s half) are REFRESH-ONLY: a new
- * crit restarts the window instead of stacking (user-confirmed in-game
- * behavior, mirrors the dotDamage convention), so the steady-state term is
- * rate × min(1, durationSec × critsPerSec) — fast crits saturate at the raw
- * rate, slow crits (interval ≥ duration) recover the full rate × duration
- * per crit.
+ * crit dispels the prior instance and restarts the window instead of
+ * stacking. ESM-proven for Conductor's via MGEF `Dispel with Keywords` +
+ * KYWD ConductorsDispelPlayerEffectKeyword (general Creation-engine rule:
+ * matching-keyword re-apply dispels first; some effects instead gate on an
+ * already-active check and skip). Mirrors the dotDamage convention. Steady-
+ * state term is rate × min(1, durationSec × critsPerSec) — fast crits
+ * saturate at the raw rate, slow crits (interval ≥ duration) recover the
+ * full rate × duration per crit.
  *
  * Passive regen does NOT tick while VATS-firing continuously (user-confirmed
  * in-game 2026-07-15): the race-base %-of-max regen and every passive bonus
