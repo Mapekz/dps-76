@@ -9,7 +9,7 @@ import {
 import { getPerks, getWeapons } from '@/data';
 import { getAddictions, getConsumables, getMutations } from '@/data/buffs';
 import { getOmodById } from '@/data/omods';
-import { getArmorEffectById } from '@/data/armor-modifiers';
+import { clampArmorTierBudgets, getArmorEffectById } from '@/data/armor-modifiers';
 import { nukesDragonsPerks, reclassifyPerkLoadouts } from '@/lib/nukes-dragons';
 import { buildDelta } from '@/lib/build-delta';
 import { consumablesById, sanitizeConsumables } from '@/lib/consumable-rules';
@@ -334,6 +334,16 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
       continue;
     }
     state.player.armorEffects[id] = Math.max(0, Math.min(effect.maxCount, count));
+  }
+  // Cross-effect budget (stale/adversarial payload, or a tier's roster
+  // shrinking after an ESM sync) — layered on top of each effect's own
+  // per-piece maxCount clamp above.
+  const clampedTiers = clampArmorTierBudgets(mode, state.player.armorEffects);
+  if (clampedTiers.changed) {
+    state.player.armorEffects = clampedTiers.armorEffects;
+    warnings.push(
+      'armor legendary pieces exceeded the 5-per-star-tier limit — extra pieces were removed',
+    );
   }
 
   // Conditions: only keys that exist in the current schema survive.

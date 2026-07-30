@@ -377,6 +377,40 @@ describe('Armor checklist (Phase 3 armor pipeline, UI + state)', () => {
     const decoded = await decodeBuild(encoded, 'live');
     expect(decoded!.state.player.armorEffects).toEqual({});
   });
+
+  it('clamps an over-budget star tier on decode: first-encoded effect keeps its count, the second is trimmed, and a warning is surfaced', async () => {
+    // Both are tier 4 (mod_Legendary_Armor4_*); 5 + 3 = 8 > the 5-per-tier
+    // budget (clampArmorTierBudgets, src/data/armor-modifiers.ts). This is
+    // a hand-built wire payload (see encodeRawWire) because the reducer
+    // itself never lets a build get into this state — only a
+    // stale/adversarial URL can.
+    const encoded = await encodeRawWire({
+      ae: [
+        ['mod_Legendary_Armor4_BattleLoaders', 5],
+        ['mod_Legendary_Armor4_LimitBreak', 3],
+      ],
+    });
+    const decoded = await decodeBuild(encoded, 'live');
+    expect(decoded!.state.player.armorEffects).toEqual({
+      mod_Legendary_Armor4_BattleLoaders: 5,
+    });
+    expect(decoded!.warnings.some((w) => w.includes('5-per-star-tier limit'))).toBe(true);
+  });
+
+  it('an in-budget star tier round-trips unchanged with no star-tier warning', async () => {
+    const encoded = await encodeRawWire({
+      ae: [
+        ['mod_Legendary_Armor4_BattleLoaders', 2],
+        ['mod_Legendary_Armor4_LimitBreak', 3],
+      ],
+    });
+    const decoded = await decodeBuild(encoded, 'live');
+    expect(decoded!.state.player.armorEffects).toEqual({
+      mod_Legendary_Armor4_BattleLoaders: 2,
+      mod_Legendary_Armor4_LimitBreak: 3,
+    });
+    expect(decoded!.warnings.some((w) => w.includes('star-tier limit'))).toBe(false);
+  });
 });
 
 describe('consumables & addictions (2026-07-13 overhaul, hermetic fixtures)', () => {
