@@ -8,9 +8,11 @@ import type { SuggestionReport } from '@/lib/suggest/types';
 const RECOMPUTE_DEBOUNCE_MS = 300;
 
 /**
- * Debounced full what-if sweep (~400 evals ≈ 2ms, benched). While a recompute
- * is pending the previous report is returned with `stale: true` so the panel
- * can dim instead of flickering empty.
+ * Debounced full what-if sweep (~650 candidates ≈ 23ms with the per-sweep
+ * LoadoutMemo — `bun run bench` measures this end-to-end; the residual cost is
+ * genuinely-distinct candidates' computeScenarios calls, not redundant
+ * assembly). While a recompute is pending the previous report is returned with
+ * `stale: true` so the panel can dim instead of flickering empty.
  */
 export function useSuggestions(): { report: SuggestionReport | null; stale: boolean } {
   const { mode } = useGameMode();

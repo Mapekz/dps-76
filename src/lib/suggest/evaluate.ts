@@ -1,5 +1,6 @@
 import type { GameMode } from '@/types';
 import { resolveLoadout } from '@/lib/loadout';
+import { cached, createLoadoutMemo, type LoadoutMemo } from '@/lib/loadout-memo';
 import { computeScenarios, type ScenarioResult, type ScenarioSet } from '@/lib/engine/scenarios';
 import {
   makeBuildReducer,
@@ -42,9 +43,28 @@ export function snapshotOf(scenarios: ScenarioSet): DpsSnapshot {
   return { freeAim: headline(scenarios.freeAim), vats: headline(scenarios.vats) };
 }
 
-function computeSnapshot(state: BuildState, mode: GameMode): DpsSnapshot | null {
-  const input = resolveLoadout(state.player, state.enemy, mode);
-  return input ? snapshotOf(computeScenarios(input)) : null;
+function computeSnapshot(
+  state: BuildState,
+  mode: GameMode,
+  memo?: LoadoutMemo,
+): DpsSnapshot | null {
+  const input = resolveLoadout(state.player, state.enemy, mode, memo);
+  if (!input) return null;
+  // Sweep-level cache for `computeScenarios` ITSELF, not just resolveLoadout's
+  // assembly: every `ScenarioInput` field except weapon/modifiers/player is
+  // provably invariant across one sweep — none of it is fed by any
+  // `PlayerConfig`/`EnemyConfig` slice a suggestion candidate's `BuildAction`
+  // ever touches (see resolveLoadout's own doc-comment and
+  // src/lib/loadout-memo.ts). `weapon`/`modifiers`/`player` are themselves
+  // already canonicalized by `resolveLoadout` (stable references when their
+  // real inputs didn't change) — so a damage-IRRELEVANT candidate (an inert
+  // consumable/mutation `variants.ts` enumerates unconditionally, a perk
+  // whose modifiers don't move any bucket THIS build reads) collapses to a
+  // hit here, skipping the engine's per-scenario fold entirely rather than
+  // just avoiding redundant assembly work.
+  return cached(memo?.scenarios, [input.weapon, input.modifiers, input.player], () =>
+    snapshotOf(computeScenarios(input)),
+  );
 }
 
 function diff(a: ScenarioHeadline, b: ScenarioHeadline): ScenarioHeadline {
@@ -72,8 +92,9 @@ function evaluateActions(
   mode: GameMode,
   actions: readonly BuildAction[],
   baseline: DpsSnapshot,
+  memo?: LoadoutMemo,
 ): { result: DpsSnapshot; delta: DpsSnapshot } | null {
-  const result = computeSnapshot(applyActions(state, mode, actions), mode);
+  const result = computeSnapshot(applyActions(state, mode, actions), mode, memo);
   if (!result) return null;
   return {
     result,
@@ -165,14 +186,24 @@ export function evaluateSuggestions(
   mode: GameMode,
   metric: ScenarioKey,
 ): SuggestionReport {
-  const baseline = computeSnapshot(state, mode);
+  // One memo per sweep (src/lib/loadout-memo.ts): every candidate re-runs
+  // `resolveLoadout` on a `BuildState` that differs from `state` by exactly
+  // one `PlayerConfig` slice (the reducer's immutable updates keep every
+  // OTHER slice's reference identity — see makeBuildReducer/withPlayer), so
+  // caching assemble()'s per-slice sub-steps here turns the ~600-candidate
+  // sweep's dominant cost (rebuilding perk/buff/armor/addiction modifier
+  // lists and re-walking enemy/bodypart data from scratch every candidate)
+  // into mostly cache hits. Discarded when this function returns — never
+  // shared across sweeps or renders.
+  const memo = createLoadoutMemo(mode);
+  const baseline = computeSnapshot(state, mode, memo);
   if (!baseline) return { baseline: null, metric, suggestions: [] };
 
   const metricBase = baseline[metric].sustainedDps;
   const suggestions: EvaluatedSuggestion[] = [];
 
   for (const candidate of enumerateVariants(state, mode)) {
-    const evaluated = evaluateActions(state, mode, candidate.action, baseline);
+    const evaluated = evaluateActions(state, mode, candidate.action, baseline, memo);
     if (!evaluated) continue;
     const primaryDeltaPct = metricBase > 0 ? evaluated.delta[metric].sustainedDps / metricBase : 0;
     suggestions.push({ ...candidate, ...evaluated, primaryDeltaPct });
