@@ -24,7 +24,7 @@ import { consumablesById, toggleConsumable } from '@/lib/consumable-rules';
 import { CARNIVORE_MUTATION_ID, HERBIVORE_MUTATION_ID } from '@/lib/diet-mutations';
 import { getPerks, getUniqueById, getEquippedUnique, getWeapons, maxEligibleLevel } from '@/data';
 import { getOmodById } from '@/data/omods';
-import { getArmorEffectById } from '@/data/armor-modifiers';
+import { getArmorEffectById, getArmorTierUsage, MAX_LEGENDARY_COUNT } from '@/data/armor-modifiers';
 import { isOmodEligibleForWeapon } from '@/data/omod-eligibility';
 import type { PerkId } from '@/data/perk-ids';
 
@@ -438,7 +438,18 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
     case 'armorEffect/setCount': {
       const effect = getArmorEffectById(mode, action.id);
       const maxCount = effect?.maxCount ?? 5;
-      const count = Math.max(0, Math.min(maxCount, action.count));
+      let count = Math.max(0, Math.min(maxCount, action.count));
+      // Legendary effects additionally share a per-star-tier budget
+      // (MAX_LEGENDARY_COUNT worn pieces across every effect in that tier —
+      // see getArmorTierUsage). Clamp to whatever room this effect's own
+      // current count leaves in the tier; other effects' stored counts are
+      // never touched here — clampArmorTierBudgets handles bulk imports.
+      if (effect?.starTier !== undefined) {
+        const currentOwnCount = player.armorEffects[action.id] ?? 0;
+        const tierUsage = getArmorTierUsage(mode, player.armorEffects)[effect.starTier];
+        const remaining = MAX_LEGENDARY_COUNT - (tierUsage - currentOwnCount);
+        count = Math.max(0, Math.min(count, remaining));
+      }
       const armorEffects = { ...player.armorEffects };
       if (count > 0) armorEffects[action.id] = count;
       else delete armorEffects[action.id];

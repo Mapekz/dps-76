@@ -10,6 +10,7 @@ import type { GeneratedBuff } from '@/types/generated';
 // so this namespace import is still the real module when the factory below
 // runs — it stands in for `importOriginal()`.
 import * as actualConsumableRules from '@/lib/consumable-rules';
+import { getArmorEffects, MAX_LEGENDARY_COUNT } from '@/data/armor-modifiers';
 
 const buildReducer = makeBuildReducer('live');
 
@@ -442,5 +443,64 @@ describe('body-part mult and race forcing', () => {
       { type: 'race/set', isGhoul: true },
     ]);
     expect(s.player.perks).toEqual([{ perkId: 'Commando', rank: 1 }]);
+  });
+});
+
+describe('armorEffect/setCount: per-star-tier budget', () => {
+  // Both 4★: mod_Legendary_Armor4_BattleLoaders and mod_Legendary_Armor4_LimitBreak
+  // (src/data/__tests__/armor-modifiers.test.ts pins the same pair/tier).
+  const BATTLE_LOADERS = 'mod_Legendary_Armor4_BattleLoaders';
+  const LIMIT_BREAKING = 'mod_Legendary_Armor4_LimitBreak';
+
+  it("clamps an incoming count to the tier's remaining budget, leaving the other effect's stored count untouched", () => {
+    const s = run([
+      { type: 'armorEffect/setCount', id: BATTLE_LOADERS, count: 3 },
+      { type: 'armorEffect/setCount', id: LIMIT_BREAKING, count: 5 },
+    ]);
+    // Tier 4 budget is MAX_LEGENDARY_COUNT (5); Battle-Loader's already holds
+    // 3, so Limit-Breaking is clamped to the remaining 2.
+    expect(s.player.armorEffects[LIMIT_BREAKING]).toBe(MAX_LEGENDARY_COUNT - 3);
+    expect(s.player.armorEffects[BATTLE_LOADERS]).toBe(3);
+  });
+
+  it('swap order is never blocked: lowering one effect first always frees room for raising the other', () => {
+    // Tier is full: 3 + 2 = MAX_LEGENDARY_COUNT.
+    const full = run([
+      { type: 'armorEffect/setCount', id: BATTLE_LOADERS, count: 3 },
+      { type: 'armorEffect/setCount', id: LIMIT_BREAKING, count: 2 },
+    ]);
+    expect(full.player.armorEffects).toEqual({ [BATTLE_LOADERS]: 3, [LIMIT_BREAKING]: 2 });
+
+    const swapped = run(
+      [
+        { type: 'armorEffect/setCount', id: BATTLE_LOADERS, count: 1 },
+        { type: 'armorEffect/setCount', id: LIMIT_BREAKING, count: 4 },
+      ],
+      full,
+    );
+    expect(swapped.player.armorEffects).toEqual({ [BATTLE_LOADERS]: 1, [LIMIT_BREAKING]: 4 });
+  });
+
+  it("raising an effect's own count within its own tier space works when it alone occupies the tier", () => {
+    const s = run([
+      { type: 'armorEffect/setCount', id: BATTLE_LOADERS, count: 3 },
+      { type: 'armorEffect/setCount', id: BATTLE_LOADERS, count: 5 },
+    ]);
+    expect(s.player.armorEffects[BATTLE_LOADERS]).toBe(5);
+  });
+
+  it('a misc effect (no starTier) is unaffected by legendary tier occupancy, even with the tier full', () => {
+    const misc = getArmorEffects('live').find((e) => e.group === 'misc' && e.maxCount > 1);
+    if (!misc)
+      throw new Error('expected a misc armor effect with maxCount > 1 in the live dataset');
+
+    const full = run([
+      { type: 'armorEffect/setCount', id: BATTLE_LOADERS, count: MAX_LEGENDARY_COUNT },
+    ]);
+    expect(full.player.armorEffects[BATTLE_LOADERS]).toBe(MAX_LEGENDARY_COUNT);
+
+    const s = run([{ type: 'armorEffect/setCount', id: misc.id, count: misc.maxCount }], full);
+    expect(s.player.armorEffects[misc.id]).toBe(misc.maxCount);
+    expect(s.player.armorEffects[BATTLE_LOADERS]).toBe(MAX_LEGENDARY_COUNT); // untouched
   });
 });
