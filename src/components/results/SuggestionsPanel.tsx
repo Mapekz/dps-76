@@ -10,6 +10,7 @@ import { useBuildDispatch } from '@/state/BuildProvider';
 import type { EvaluatedSuggestion } from '@/lib/suggest/types';
 
 const PANEL_LIMIT = 8;
+const CONSUMABLE_LIMIT = 4;
 
 function SuggestionRow({ suggestion, tied }: { suggestion: EvaluatedSuggestion; tied?: boolean }) {
   const dispatch = useBuildDispatch();
@@ -49,33 +50,31 @@ function SuggestionRow({ suggestion, tied }: { suggestion: EvaluatedSuggestion; 
 }
 
 /**
- * Ranked single-change what-ifs, re-simmed on every build change (debounced;
- * the whole sweep is ~2ms). Apply feedback is the headline flash — the
- * numbers the user is already watching move.
+ * One ranked/tied/empty block. Reused for the structural-suggestions section
+ * and the consumable-boosts section below it — same row markup, same "tied"
+ * (<1%) treatment, different scope of candidates and empty-state copy.
  */
-export function SuggestionsPanel() {
-  const { report, stale } = useSuggestions();
-  if (!report || !report.baseline) return null;
-
-  const { ranked, tied } = topSuggestions(report, PANEL_LIMIT);
-  const metricLabel = report.metric === 'vats' ? 'VATS' : 'Free Aim';
-
+function SuggestionSection({
+  title,
+  ranked,
+  tied,
+  emptyMessage,
+}: {
+  title?: string;
+  ranked: EvaluatedSuggestion[];
+  tied: EvaluatedSuggestion[];
+  emptyMessage: React.ReactNode;
+}) {
   return (
-    <div className={cn('space-y-1 transition-opacity', stale && 'opacity-60')}>
-      <div className="flex items-center justify-between">
-        <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.14em]">
-          Suggestions
+    <div>
+      {title && (
+        <p className="font-condensed text-muted-foreground mb-1 text-[11px] font-semibold uppercase tracking-[0.12em]">
+          {title}
         </p>
-        <span className="text-muted-foreground flex items-center gap-1 text-[10px]">
-          {stale && <Loader2Icon className="size-3 animate-spin" />}
-          ranked by {metricLabel} sustained
-        </span>
-      </div>
+      )}
 
       {ranked.length === 0 && tied.length === 0 ? (
-        <p className="text-muted-foreground py-1 text-sm">
-          Nothing beats the current setup — this build is locally optimal for {metricLabel}.
-        </p>
+        <p className="text-muted-foreground py-1 text-sm">{emptyMessage}</p>
       ) : (
         <div className="divide-border/50 divide-y">
           {ranked.map((s) => (
@@ -109,6 +108,59 @@ export function SuggestionsPanel() {
           </div>
         </>
       )}
+    </div>
+  );
+}
+
+/**
+ * Ranked single-change what-ifs, re-simmed on every build change (debounced;
+ * the whole sweep is ~2ms). Apply feedback is the headline flash — the
+ * numbers the user is already watching move. Split into a structural
+ * section (mods/legendaries/perks/mutations/armor — the default
+ * `topSuggestions` scope) and a consumable-boosts section, since consumables
+ * are transient buffs rather than build changes and would otherwise crowd
+ * out the structural ranking.
+ */
+export function SuggestionsPanel() {
+  const { report, stale } = useSuggestions();
+  if (!report || !report.baseline) return null;
+
+  const { ranked, tied } = topSuggestions(report, PANEL_LIMIT);
+  const consumables = topSuggestions(report, CONSUMABLE_LIMIT, undefined, {
+    groups: new Set(['consumable']),
+  });
+  const metricLabel = report.metric === 'vats' ? 'VATS' : 'Free Aim';
+
+  return (
+    <div className={cn('space-y-3 transition-opacity', stale && 'opacity-60')}>
+      <div>
+        <div className="flex items-center justify-between">
+          <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.14em]">
+            Suggestions
+          </p>
+          <span className="text-muted-foreground flex items-center gap-1 text-[10px]">
+            {stale && <Loader2Icon className="size-3 animate-spin" />}
+            ranked by {metricLabel} sustained
+          </span>
+        </div>
+
+        <SuggestionSection
+          ranked={ranked}
+          tied={tied}
+          emptyMessage={
+            <>Nothing beats the current setup — this build is locally optimal for {metricLabel}.</>
+          }
+        />
+      </div>
+
+      <div>
+        <SuggestionSection
+          title="Consumable boosts"
+          ranked={consumables.ranked}
+          tied={consumables.tied}
+          emptyMessage={<>No consumable currently helps {metricLabel} sustained.</>}
+        />
+      </div>
     </div>
   );
 }
