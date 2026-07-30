@@ -1,5 +1,5 @@
 import type { GeneratedConstants } from '../../src/types/generated';
-import { EsmClient } from './esm-client';
+import { EsmClient, type EsmListRow } from './esm-client';
 
 /**
  * Game-wide scalar constants read directly off ESM records — the one
@@ -23,13 +23,12 @@ import { EsmClient } from './esm-client';
  * `fVATSCriticalChargeBase` addend is a bare scalar and belongs here.
  *
  * AP economy: `src/lib/engine/ap-economy.ts`'s pool/regen-delay scalars —
- * `fAVDActionPointsBase`/`Mult` (pool size) and `fDamagedAVRegenDelay`
- * (regen-resume delay). NOTE the delay is a PROXY read: the setting that
- * actually governs AP is `fDamagedAPRegenDelay` (USER-CONFIRMED 2026-07-30),
- * which is exe-baked with NO ESM record, so there is nothing here to extract;
- * `fDamagedAVRegenDelay` stands in because both are 1.0. If a dump ever
- * diverges them this read becomes WRONG — drop it for ap-economy.ts's
- * hardcoded 1.0 (docs/assumptions.md "VATS AP economy"). The
+ * `fAVDActionPointsBase`/`Mult` (pool size) and `fDamagedAPRegenDelay`
+ * (regen-resume delay, USER-CONFIRMED 2026-07-30 as the AP-specific setting,
+ * NOT the generic `fDamagedAVRegenDelay`). FO76 ships that delay exe-baked
+ * with no ESM record, so it is probed by EditorID and falls back to the known
+ * exe default when absent — see `AP_REGEN_DELAY_EDID` /
+ * `probeOptionalGmstFloat` (docs/assumptions.md "VATS AP economy"). The
  * race-based %-of-max regen RATE (`AP_REGEN_RATE_PCT`/`_POWER_ARMOR`) is a
  * RACE `Properties` row, not a GMST — read via `resolveRaceActionPointsRate`.
  *
@@ -134,17 +133,36 @@ const FALLBACK_VATS_CRIT = { chargeBase: 5.0 };
 const AP_POOL_BASE_GMST = '0x0004D878';
 /** `fAVDActionPointsMult` (0x0004D879) — ap-economy.ts's AP pool per AGI point. */
 const AP_POOL_PER_AGILITY_GMST = '0x0004D879';
-/** `fDamagedAVRegenDelay` (0x000DB2AA) — PROXY for the exe-only `fDamagedAPRegenDelay` that governs AP (see module doc). */
-const AP_REGEN_DELAY_GMST = '0x000DB2AA';
+/**
+ * `fDamagedAPRegenDelay` — the AP-specific regen-resume delay governing
+ * ap-economy.ts's `AP_REGEN_DELAY_SEC`. Addressed by EditorID, not FormID,
+ * because FO76 ships it exe-baked with NO ESM record: there is no FormID to
+ * hardcode, and absence is the EXPECTED result (see `probeOptionalGmstFloat`).
+ * If a future dump ever copies the setting into the ESM, this picks the real
+ * value up automatically.
+ */
+const AP_REGEN_DELAY_EDID = 'fDamagedAPRegenDelay';
+/**
+ * Value used while the ESM has no `fDamagedAPRegenDelay` record: FO76's
+ * exe-baked default, 1.0 (published in the "Fallout 76 game settings"
+ * `EXE Game Settings (2020)` table). Deliberately NOT read from
+ * `fDamagedAVRegenDelay` (0x000DB2AA) — that generic post-any-AV-drain delay
+ * is a DIFFERENT setting that merely happens to share the value today.
+ */
+const AP_REGEN_DELAY_EXE_DEFAULT = 1.0;
 /** RACE `Properties` row for AV ActionPointsRate (0x000002D8) — percent-of-max-AP regen/sec. */
 const ACTION_POINTS_RATE_AV = '0x000002D8';
 const HUMAN_RACE_FORMID = '0x00013746';
 const POWER_ARMOR_RACE_FORMID = '0x0001D31E';
-/** Fallback matching ap-economy.ts's pre-extraction hardcodes. */
+/**
+ * Fallback matching ap-economy.ts's pre-extraction hardcodes. No
+ * `regenDelaySec` member: that field's fallback is
+ * `AP_REGEN_DELAY_EXE_DEFAULT`, which is a real sourced value rather than a
+ * this-should-never-happen guard like these.
+ */
 const FALLBACK_ACTION_POINTS = {
   poolBase: 60,
   poolPerAgility: 10,
-  regenDelaySec: 1.0,
   regenRatePct: 6.0,
   regenRatePctPowerArmor: 3.0,
 };
@@ -233,6 +251,37 @@ async function resolveGmstFloat(
     );
     return null;
   }
+}
+
+/**
+ * Probe for a GMST that is OPTIONAL in the ESM, addressed by EditorID.
+ *
+ * Unlike `resolveGmstFloat`, a missing record is the expected outcome and
+ * stays SILENT — callers supply a known exe-baked default instead. Only a
+ * record that exists but is malformed notes, since that is a real gap.
+ * Presence is tested with `search` rather than `get` because a `get` miss and
+ * a genuine CLI failure both surface as an empty-stdout parse error, whereas
+ * `search` returns a clean `[]`.
+ *
+ * The pattern match is a substring, so the exact EditorID is re-checked here
+ * — `fDamagedAPRegenDelay` must not be satisfied by some longer neighbour.
+ */
+async function probeOptionalGmstFloat(
+  client: EsmClient,
+  edid: string,
+  label: string,
+  unresolved: string[],
+): Promise<number | null> {
+  let hit: EsmListRow | undefined;
+  try {
+    const rows = await client.search(edid, { type: 'GMST', searchIn: 'edid' });
+    hit = rows.find((r) => r.editor_id === edid);
+  } catch (err) {
+    unresolved.push(`constants: ${label} GMST ${edid} probe failed: ${(err as Error).message}`);
+    return null;
+  }
+  if (!hit) return null; // no ESM record — expected for an exe-baked setting
+  return resolveGmstFloat(client, hit.form_id, label, unresolved);
 }
 
 /** Resolve one `u`-prefixed GMST's UInt field; null (+ unresolved note) on any failure — the unsigned-int analog of `resolveGmstFloat`. */
@@ -391,7 +440,7 @@ async function resolveActionPoints(
     await Promise.all([
       resolveGmstFloat(client, AP_POOL_BASE_GMST, 'ActionPointsBase', unresolved),
       resolveGmstFloat(client, AP_POOL_PER_AGILITY_GMST, 'ActionPointsMult', unresolved),
-      resolveGmstFloat(client, AP_REGEN_DELAY_GMST, 'DamagedAVRegenDelay', unresolved),
+      probeOptionalGmstFloat(client, AP_REGEN_DELAY_EDID, 'DamagedAPRegenDelay', unresolved),
       resolveRacePropertyValue(
         client,
         HUMAN_RACE_FORMID,
@@ -410,7 +459,9 @@ async function resolveActionPoints(
   return {
     poolBase: poolBase ?? FALLBACK_ACTION_POINTS.poolBase,
     poolPerAgility: poolPerAgility ?? FALLBACK_ACTION_POINTS.poolPerAgility,
-    regenDelaySec: regenDelaySec ?? FALLBACK_ACTION_POINTS.regenDelaySec,
+    // No `?? FALLBACK_ACTION_POINTS.regenDelaySec` — this one's absence is
+    // routine, not a resolution failure, so it falls back to the exe default.
+    regenDelaySec: regenDelaySec ?? AP_REGEN_DELAY_EXE_DEFAULT,
     regenRatePct: regenRatePct ?? FALLBACK_ACTION_POINTS.regenRatePct,
     regenRatePctPowerArmor: regenRatePctPowerArmor ?? FALLBACK_ACTION_POINTS.regenRatePctPowerArmor,
   };

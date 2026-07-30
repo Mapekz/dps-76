@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'bun:test';
-import type { EsmClient, EsmRecord } from '../esm-client';
+import type { EsmClient, EsmListRow, EsmRecord } from '../esm-client';
 import { extractConstants } from '../extract-constants';
 import avifStrength from './fixtures/avif-strength.json';
 import gmstResistExponent from './fixtures/gmst-resist-exponent.json';
@@ -93,7 +93,13 @@ function uniformMitigationRecords(): Record<string, EsmRecord> {
 const VATS_CRIT_CHARGE_BASE_FORM_ID = '0x00249662';
 const AP_POOL_BASE_FORM_ID = '0x0004D878';
 const AP_POOL_PER_AGILITY_FORM_ID = '0x0004D879';
-const AP_REGEN_DELAY_FORM_ID = '0x000DB2AA';
+/**
+ * `fDamagedAPRegenDelay` has NO ESM record (exe-baked), so the default
+ * fixtures deliberately omit it — extraction must fall back to 1.0 silently.
+ * This FormID is invented, used only by the "future dump adds it" test.
+ */
+const AP_REGEN_DELAY_EDID = 'fDamagedAPRegenDelay';
+const AP_REGEN_DELAY_HYPOTHETICAL_FORM_ID = '0x00BADA55';
 const BULLET_STORM_AMMO_PER_STACK_FORM_ID = '0x0083C3D0';
 const HUMAN_RACE_FORM_ID = '0x00013746';
 const POWER_ARMOR_RACE_FORM_ID = '0x0001D31E';
@@ -117,7 +123,6 @@ function uniformNewConstantsRecords(): Record<string, EsmRecord> {
       'fAVDActionPointsMult',
       10,
     ),
-    [AP_REGEN_DELAY_FORM_ID]: gmstStub(AP_REGEN_DELAY_FORM_ID, 'fDamagedAVRegenDelay', 1.0),
     [BULLET_STORM_AMMO_PER_STACK_FORM_ID]: gmstAmmoPerStack as unknown as EsmRecord,
     [HUMAN_RACE_FORM_ID]: raceHuman as unknown as EsmRecord,
     [POWER_ARMOR_RACE_FORM_ID]: racePowerArmor as unknown as EsmRecord,
@@ -131,6 +136,14 @@ function clientFrom(records: Record<string, EsmRecord>): EsmClient {
       const record = records[target];
       if (!record) throw new Error(`not found: ${target}`);
       return record;
+    },
+    // Mirrors the CLI's SUBSTRING EditorID search over whatever the fixture
+    // holds, so a record the fixture omits yields [] — exactly what the real
+    // ESM returns for the exe-baked fDamagedAPRegenDelay.
+    async search(pattern: string): Promise<EsmListRow[]> {
+      return Object.entries(records)
+        .filter(([, r]) => r.editor_id?.includes(pattern))
+        .map(([formId, r]) => ({ form_id: formId, editor_id: r.editor_id }) as EsmListRow);
     },
   } as unknown as EsmClient;
 }
@@ -285,6 +298,55 @@ describe('extractConstants — VATS crit-meter base', () => {
 });
 
 describe('extractConstants — action points', () => {
+  // fDamagedAPRegenDelay is exe-baked in FO76 with no ESM record. Absence is
+  // the NORMAL path, so it must not read as an extraction gap — and it must
+  // not quietly borrow the generic fDamagedAVRegenDelay's value either.
+  it('falls back to the exe-baked 1.0 when the ESM has no fDamagedAPRegenDelay record, silently', async () => {
+    const records: Record<string, EsmRecord> = {
+      ...uniformSpecialRecords(),
+      ...uniformMitigationRecords(),
+      ...uniformNewConstantsRecords(),
+    };
+    // The generic AV delay IS present in the real ESM — assert it is not
+    // mistaken for the AP-specific one even when sitting right there.
+    records['0x000DB2AA'] = gmstStub('0x000DB2AA', 'fDamagedAVRegenDelay', 0.25);
+    const { constants, unresolved } = await extractConstants(clientFrom(records));
+    expect(constants.actionPoints.regenDelaySec).toBe(1.0);
+    expect(unresolved.some((u) => u.includes('RegenDelay'))).toBe(false);
+  });
+
+  it('prefers the ESM value over the exe default if a future dump ever adds the record', async () => {
+    const records: Record<string, EsmRecord> = {
+      ...uniformSpecialRecords(),
+      ...uniformMitigationRecords(),
+      ...uniformNewConstantsRecords(),
+      [AP_REGEN_DELAY_HYPOTHETICAL_FORM_ID]: gmstStub(
+        AP_REGEN_DELAY_HYPOTHETICAL_FORM_ID,
+        AP_REGEN_DELAY_EDID,
+        0.5,
+      ),
+    };
+    const { constants, unresolved } = await extractConstants(clientFrom(records));
+    expect(constants.actionPoints.regenDelaySec).toBe(0.5);
+    expect(unresolved).toHaveLength(0);
+  });
+
+  it('flags a present-but-malformed fDamagedAPRegenDelay instead of silently defaulting', async () => {
+    const records: Record<string, EsmRecord> = {
+      ...uniformSpecialRecords(),
+      ...uniformMitigationRecords(),
+      ...uniformNewConstantsRecords(),
+      [AP_REGEN_DELAY_HYPOTHETICAL_FORM_ID]: {
+        header: { signature: 'GMST', form_id: AP_REGEN_DELAY_HYPOTHETICAL_FORM_ID },
+        editor_id: AP_REGEN_DELAY_EDID,
+        fields: {},
+      },
+    };
+    const { constants, unresolved } = await extractConstants(clientFrom(records));
+    expect(constants.actionPoints.regenDelaySec).toBe(1.0); // still usable
+    expect(unresolved.some((u) => u.includes('DamagedAPRegenDelay'))).toBe(true);
+  });
+
   it('reads pool/regen-delay GMSTs and both race regen rates when everything resolves', async () => {
     const records: Record<string, EsmRecord> = {
       ...uniformSpecialRecords(),

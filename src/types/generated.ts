@@ -583,10 +583,10 @@ export interface GeneratedConstants {
    */
   vatsCrit: { chargeBase: number };
   /**
-   * `fAVDActionPointsBase`/`Mult` (pool), `fDamagedAVRegenDelay` (regen-resume
-   * delay — a PROXY for the exe-only `fDamagedAPRegenDelay` that actually
-   * governs; both 1.0, see ap-economy.ts `AP_REGEN_DELAY_SEC`), RACE
-   * `Properties` AV ActionPointsRate (Human/PowerArmor regen rate %) —
+   * `fAVDActionPointsBase`/`Mult` (pool), `fDamagedAPRegenDelay` (regen-resume
+   * delay — exe-baked with no ESM record today, so it falls back to the known
+   * 1.0; see ap-economy.ts `AP_REGEN_DELAY_SEC`), RACE `Properties` AV
+   * ActionPointsRate (Human/PowerArmor regen rate %) —
    * src/lib/engine/ap-economy.ts `computeApEconomy`.
    */
   actionPoints: {

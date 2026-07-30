@@ -107,11 +107,11 @@ export const AP_REGEN_RATE_PCT_POWER_ARMOR = 3.0;
  * game settings" `EXE Game Settings (2020)` table. Pinned by a golden
  * measurement (docs/assumptions.md "VATS AP economy").
  *
- * CAVEAT for extraction: because the governing GMST is exe-only,
- * `extract-constants.ts` reads `fDamagedAVRegenDelay` (0x000DB2AA, ESM = 1.0)
- * as a PROXY. Both read 1.0 today. If a future dump diverges them, the proxy
- * is WRONG and must be dropped in favour of this hardcoded 1.0 — do not
- * follow the AV record.
+ * Extraction: `extract-constants.ts` probes for the record by EditorID every
+ * run and falls back to this 1.0 while it is absent, so a future dump that
+ * copies the setting into the ESM picks the real value up on its own. It
+ * never reads `fDamagedAVRegenDelay` as a stand-in — that generic
+ * post-any-AV-drain delay is a different setting that merely shares the value.
  */
 export const AP_REGEN_DELAY_SEC = 1.0;
 

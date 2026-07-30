@@ -847,12 +847,14 @@ Engine: `src/lib/engine/ap-economy.ts`.
   Scribe-Howard 2021-07-27, mirrored on fallout.fandom.com and fallout.wiki);
   it has **no ESM record** — verified in the 20260724 dump and re-confirmed by
   that page's ESM table.
-- **AP regen delay is extracted via a PROXY record** (2026-07-30): the
-  governing `fDamagedAPRegenDelay` is exe-only, so `extract-constants.ts`
-  reads `fDamagedAVRegenDelay` (0x000DB2AA, ESM = 1.0) instead. The two agree
-  at 1.0 today; a future dump that diverges them makes the proxy WRONG, and
-  the fix is to drop it for the hardcoded exe value, not to follow the AV
-  record. `_meta.json` will not flag this — it is a silent-drift risk.
+- **AP regen delay falls back to the exe default** (2026-07-30): with no ESM
+  record to read, `extract-constants.ts` probes `fDamagedAPRegenDelay` by
+  EditorID (`probeOptionalGmstFloat`) and uses the exe-baked 1.0 while it is
+  absent — absence is expected, so it stays out of `_meta.json`; only a
+  present-but-malformed record notes. If a dump ever copies the setting into
+  the ESM, the extracted value takes over automatically. `fDamagedAVRegenDelay`
+  is deliberately NOT read as a stand-in — a different setting that merely
+  shares the value would drift silently.
 - **AP regen delay, superseded framing** (still factually true, no longer the
   source): `fDamagedAVRegenDelay` is the generic post-any-AV-drain resume
   delay — jumping, power attacking, sprinting, Dodgy's AP drain — and has been
