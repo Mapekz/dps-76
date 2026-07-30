@@ -35,6 +35,9 @@ import { describeBuffModifiers } from '@/lib/buff-description';
  *   tiered shape is handled for free.
  */
 
+/** Legendary star tier (1★–4★), parsed off the representative record's `ap_LegendaryN` attach point. */
+export type ArmorStarTier = 1 | 2 | 3 | 4;
+
 export interface ArmorEffectEntry {
   /** Stable id — the representative OMOD's edid (armor variant wins over power-armor when both exist, alphabetically). */
   id: string;
@@ -50,10 +53,13 @@ export interface ArmorEffectEntry {
   wornPieceKeyword?: string;
   /** PER-PIECE (count=1) base modifiers, as extracted (+ armor-values.ts overrides). */
   modifiers: Modifier[];
+  /** Present iff `group === 'legendary'` — derived from the representative record's `attachPointEdid` (ap_LegendaryN). */
+  starTier?: ArmorStarTier;
 }
 
-const LEGENDARY_ATTACH_POINT_RE = /^ap_Legendary[1-4]$/;
-const MAX_LEGENDARY_COUNT = 5;
+const LEGENDARY_ATTACH_POINT_RE = /^ap_Legendary([1-4])$/;
+/** Per-star-tier budget: sum of worn-piece counts for all legendary effects sharing a tier must stay ≤ this. */
+export const MAX_LEGENDARY_COUNT = 5;
 
 /** Body-slot markers observed in armor-omod ids (Lining: Torso+Limb; PA Misc: Torso or Helmet alone) — data-derived, not a fixed roster. */
 const PIECE_TAGS = ['Torso', 'Limb', 'Helmet'] as const;
@@ -80,7 +86,15 @@ function buildEntry(name: string, records: GeneratedOmod[]): ArmorEffectEntry {
   const sorted = [...records].sort((a, b) => a.id.localeCompare(b.id));
   const representative = sorted[0];
   const ids = sorted.map((r) => r.id);
-  const isLegendary = LEGENDARY_ATTACH_POINT_RE.test(representative.attachPointEdid);
+  // "Powered" (+AP regen) has twin records at ap_Legendary1
+  // (mod_Legendary_Armor_APRegen) and ap_Legendary2 (mod_Legendary_Armor2_
+  // APRegen / mod_Legendary_PowerArmor2_APRegen); the alphabetical
+  // representative pick lands on the tier-2 record, so Powered counts
+  // against the 2★ budget — pre-existing data ambiguity inherited
+  // deliberately, not fixed here.
+  const match = LEGENDARY_ATTACH_POINT_RE.exec(representative.attachPointEdid);
+  const isLegendary = match !== null;
+  const starTier = match ? (Number(match[1]) as ArmorStarTier) : undefined;
   const selfScaling = representative.modifiers.some((m) =>
     m.conditions.some((c) => c.kind === 'wornPieceCount'),
   );
@@ -99,6 +113,7 @@ function buildEntry(name: string, records: GeneratedOmod[]): ArmorEffectEntry {
     selfScaling,
     wornPieceKeyword: selfScaling ? findWornPieceKeyword(representative.modifiers) : undefined,
     modifiers: representative.modifiers,
+    starTier,
   };
 }
 
@@ -188,4 +203,60 @@ export function getArmorEffectWornPieceCounts(
 /** Looks up one checklist entry by id — build-reducer's clamp, codec's validation. */
 export function getArmorEffectById(mode: GameMode, id: string): ArmorEffectEntry | undefined {
   return getArmorEffects(mode).find((e) => e.id === id);
+}
+
+/**
+ * Sums selected worn-piece counts per legendary star tier (1★–4★) across all
+ * legendary effects sharing that tier — the "how full is each tier's
+ * budget" readout the per-star-tier cap (reducer clamp, tier UI) is built
+ * on. Misc effects, and ids in `selections` that don't match any effect,
+ * don't participate.
+ */
+export function getArmorTierUsage(
+  mode: GameMode,
+  selections: Readonly<Record<string, number>>,
+): Record<ArmorStarTier, number> {
+  const usage: Record<ArmorStarTier, number> = { 1: 0, 2: 0, 3: 0, 4: 0 };
+  for (const effect of getArmorEffects(mode)) {
+    if (effect.starTier === undefined) continue;
+    usage[effect.starTier] += selectedCount(effect, selections);
+  }
+  return usage;
+}
+
+/**
+ * Trims worn-piece-count selections so no legendary star tier's combined
+ * total (across every effect sharing that tier) exceeds `MAX_LEGENDARY_COUNT`
+ * — a cross-effect budget layered on top of each effect's own per-piece
+ * `maxCount` clamp. Walks `Object.entries(armorEffects)` in insertion order
+ * (first-set-wins), NOT the `getArmorEffects()` roster order, so which
+ * effect(s) absorb the trim depends on selection order — matching how a
+ * user experiences incrementally hitting the budget rather than an
+ * arbitrary alphabetical tiebreak. Misc effects and unknown ids pass
+ * through untouched; entries trimmed to 0 are omitted from the result
+ * rather than kept as explicit zeroes.
+ */
+export function clampArmorTierBudgets(
+  mode: GameMode,
+  armorEffects: Readonly<Record<string, number>>,
+): { armorEffects: Record<string, number>; changed: boolean } {
+  const tierTotals: Record<ArmorStarTier, number> = { 1: 0, 2: 0, 3: 0, 4: 0 };
+  const out: Record<string, number> = {};
+  let changed = false;
+
+  for (const [id, rawCount] of Object.entries(armorEffects)) {
+    const effect = getArmorEffectById(mode, id);
+    if (!effect || effect.starTier === undefined) {
+      out[id] = rawCount;
+      continue;
+    }
+    const clampedToMax = Math.max(0, Math.min(effect.maxCount, rawCount));
+    const remaining = MAX_LEGENDARY_COUNT - tierTotals[effect.starTier];
+    const trimmed = Math.max(0, Math.min(clampedToMax, remaining));
+    tierTotals[effect.starTier] += trimmed;
+    if (trimmed !== rawCount) changed = true;
+    if (trimmed > 0) out[id] = trimmed;
+  }
+
+  return { armorEffects: out, changed };
 }

@@ -3,6 +3,9 @@ import {
   getArmorEffects,
   getArmorEffectModifiers,
   getArmorEffectWornPieceCounts,
+  getArmorTierUsage,
+  clampArmorTierBudgets,
+  MAX_LEGENDARY_COUNT,
 } from '@/data/armor-modifiers';
 import { effectiveValue, type ResolveContext } from '@/lib/engine/resolve';
 import { resolveLoadout } from '@/lib/loadout';
@@ -82,6 +85,100 @@ describe('getArmorEffects (curated inventory)', () => {
         expect(m.conditions.some((c) => c.kind === 'unresolved')).toBe(false);
       }
     }
+  });
+});
+
+describe("ArmorStarTier: derived from the representative record's ap_LegendaryN attach point", () => {
+  const effects = getArmorEffects('live');
+  const byId = new Map(effects.map((e) => [e.id, e]));
+
+  it('assigns the tier read directly off armor-omods.json attachPointEdid for known effects', () => {
+    // Unyielding: mod_Legendary_Armor1_LowHealthIncreasesStats @ ap_Legendary1.
+    expect(byId.get(UNYIELDING)?.starTier).toBe(1);
+    // 2★ Strength: mod_Legendary_Armor2_StatStrength @ ap_Legendary2.
+    expect(byId.get(STRENGTH_2STAR)?.starTier).toBe(2);
+    // Battle-Loader's and Limit-Breaking: mod_Legendary_Armor4_* @ ap_Legendary4.
+    expect(byId.get(BATTLE_LOADERS)?.starTier).toBe(4);
+    expect(byId.get(LIMIT_BREAKING)?.starTier).toBe(4);
+  });
+
+  it(
+    'Powered is a pre-existing data ambiguity: a non-obtainable tier-1 twin ' +
+      '(mod_Legendary_Armor_APRegen @ ap_Legendary1) is filtered out by obtainability, ' +
+      'leaving the tier-2 record (mod_Legendary_Armor2_APRegen @ ap_Legendary2) as the ' +
+      'sole survivor and thus the representative — Powered counts against the 2★ budget',
+    () => {
+      const powered = effects.find((e) => e.name === 'Powered');
+      expect(powered?.id).toBe('mod_Legendary_Armor2_APRegen');
+      expect(powered?.starTier).toBe(2);
+    },
+  );
+
+  it('misc-group entries never carry a starTier', () => {
+    const misc = effects.filter((e) => e.group === 'misc');
+    expect(misc.length).toBeGreaterThan(0); // sanity: misc group is non-empty
+    for (const e of misc) expect(e.starTier).toBeUndefined();
+  });
+});
+
+describe('getArmorTierUsage', () => {
+  it('sums selected counts within a tier and ignores misc/unknown ids', () => {
+    const usage = getArmorTierUsage('live', {
+      [UNYIELDING]: 3, // tier 1
+      [STRENGTH_2STAR]: 2, // tier 2
+      mod_armor_UnderArmor_style_BOS: 1, // misc — ignored
+      not_a_real_armor_effect_id: 5, // unknown — ignored
+    });
+    expect(usage).toEqual({ 1: 3, 2: 2, 3: 0, 4: 0 });
+  });
+
+  it('sums multiple effects sharing the same tier', () => {
+    const usage = getArmorTierUsage('live', {
+      [BATTLE_LOADERS]: 3, // tier 4
+      [LIMIT_BREAKING]: 2, // tier 4
+    });
+    expect(usage[4]).toBe(5); // 3 + 2
+  });
+
+  it('returns all-zero for empty selections', () => {
+    expect(getArmorTierUsage('live', {})).toEqual({ 1: 0, 2: 0, 3: 0, 4: 0 });
+  });
+});
+
+describe('clampArmorTierBudgets', () => {
+  it('two same-tier effects summing over the budget: first-inserted keeps its full count, second is trimmed to the remainder', () => {
+    // Battle-Loader's + Limit-Breaking are both tier 4; 3 + 4 = 7 > MAX_LEGENDARY_COUNT (5).
+    const input = { [BATTLE_LOADERS]: 3, [LIMIT_BREAKING]: 4 };
+    const { armorEffects, changed } = clampArmorTierBudgets('live', input);
+    expect(armorEffects).toEqual({ [BATTLE_LOADERS]: 3, [LIMIT_BREAKING]: 2 });
+    expect(changed).toBe(true);
+  });
+
+  it('an entry trimmed all the way to 0 is omitted from the result, not kept as an explicit zero', () => {
+    // Strength fills the whole tier-2 budget; Powered (also tier 2) has nothing left.
+    const input = { [STRENGTH_2STAR]: MAX_LEGENDARY_COUNT, mod_Legendary_Armor2_APRegen: 3 };
+    const { armorEffects, changed } = clampArmorTierBudgets('live', input);
+    expect(armorEffects).toEqual({ [STRENGTH_2STAR]: MAX_LEGENDARY_COUNT });
+    expect('mod_Legendary_Armor2_APRegen' in armorEffects).toBe(false);
+    expect(changed).toBe(true);
+  });
+
+  it('a legal map (every tier under budget) is returned unchanged, with changed:false', () => {
+    const input = { [UNYIELDING]: 3, [STRENGTH_2STAR]: 2, [BATTLE_LOADERS]: 5 };
+    const { armorEffects, changed } = clampArmorTierBudgets('live', input);
+    expect(armorEffects).toEqual(input);
+    expect(changed).toBe(false);
+  });
+
+  it('misc and unknown ids pass through untouched and never count against a tier budget', () => {
+    const input = {
+      [STRENGTH_2STAR]: MAX_LEGENDARY_COUNT,
+      mod_armor_UnderArmor_style_BOS: 1,
+      not_a_real_armor_effect_id: 42,
+    };
+    const { armorEffects, changed } = clampArmorTierBudgets('live', input);
+    expect(armorEffects).toEqual(input);
+    expect(changed).toBe(false);
   });
 });
 
