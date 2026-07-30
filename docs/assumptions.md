@@ -839,22 +839,29 @@ Engine: `src/lib/engine/ap-economy.ts`.
   cadence.
 - **Passive regen does NOT tick during sustained VATS fire, but DOES tick
   during the reload window** (**user-confirmed**, both halves, 2026-07-15) —
-  starts `AP_REGEN_DELAY_SEC` (1.0s, from GMST `fDamagedAVRegenDelay`) after
-  firing stops. **CONFIRMED 2026-07-21**: `fDamagedAVRegenDelay` is the
-  generic post-any-AV-drain regen-resume delay — the same delay that applies
-  after VATS shooting, jumping, power attacking, sprinting, Dodgy's AP drain,
-  etc., not something VATS/AP-specific — and its use here for AP specifically
-  is correct. Re-verified in ESM 2026-07-29: `fDamagedAVRegenDelay`
-  (0x000DB2AA) = 1.0; no AP-specific delay GMST record exists in the ESM
-  (`fDamagedStaminaRegenDelay` = 0.5 governs the vestigial Stamina AV, not
-  AP). Cross-game check (web, 2026-07-29): the Creation-Engine vanilla
-  `fDamagedAVRegenDelay` has been 1.0 since Skyrim — the 0.5s figures in
-  modding circles are the per-stat Health/Stamina/Magicka overrides;
-  FO3/NV predate the delay mechanic entirely (`fActionPointsRestoreRate`
-  0.06 = bar-fraction/s, no delay). Residual: FO4's exe also exposes
-  `fDamagedAPRegenDelay` (no published default, no FO76 ESM record) — if an
-  exe-baked AP-specific default existed at 0.5 the in-game kick-in would
-  read ~0.5s, and the observed ~1s (`#75` session) rules that out.
+  starts `AP_REGEN_DELAY_SEC` (1.0s) after firing stops. The governing GMST is
+  **`fDamagedAPRegenDelay` = 1.0** (**USER-CONFIRMED 2026-07-30** — the
+  AP-specific delay, NOT the generic `fDamagedAVRegenDelay` this entry
+  previously credited). Value published in FO76's exe-baked defaults
+  (*Fallout 76 game settings*, `EXE Game Settings (2020)` table, uploaded by
+  Scribe-Howard 2021-07-27, mirrored on fallout.fandom.com and fallout.wiki);
+  it has **no ESM record** — verified in the 20260724 dump and re-confirmed by
+  that page's ESM table.
+- **AP regen delay is extracted via a PROXY record** (2026-07-30): the
+  governing `fDamagedAPRegenDelay` is exe-only, so `extract-constants.ts`
+  reads `fDamagedAVRegenDelay` (0x000DB2AA, ESM = 1.0) instead. The two agree
+  at 1.0 today; a future dump that diverges them makes the proxy WRONG, and
+  the fix is to drop it for the hardcoded exe value, not to follow the AV
+  record. `_meta.json` will not flag this — it is a silent-drift risk.
+- **AP regen delay, superseded framing** (still factually true, no longer the
+  source): `fDamagedAVRegenDelay` is the generic post-any-AV-drain resume
+  delay — jumping, power attacking, sprinting, Dodgy's AP drain — and has been
+  1.0 since Skyrim; the 0.5s figures in modding circles are per-stat
+  Health/Stamina/Magicka overrides (`fDamagedStaminaRegenDelay` = 0.5 governs
+  the vestigial Stamina AV, not AP); FO3/NV predate the delay mechanic
+  entirely (`fActionPointsRestoreRate` 0.06 = bar-fraction/s, no delay). FO4
+  also references `fDamagedAPRegenDelay` (absent from reg2k's FO4 no-op list)
+  but publishes no value.
 - **Steady-state model**: `apGainPerSec = apPerCrit×(shotsPerSec/
   shotsPerCrit) + Σ hot.rate×min(1, hot.durationSec×critsPerSec) +
   reloadRegenPerSec`; `drainPerSec = apCost×shotsPerSec`. `shotsPerSec`

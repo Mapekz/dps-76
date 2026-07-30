@@ -101,12 +101,17 @@ export const AP_REGEN_RATE_PCT = 6.0;
 export const AP_REGEN_RATE_PCT_POWER_ARMOR = 3.0;
 /**
  * Seconds after firing stops before passive AP regen starts ticking again.
- * GMST `fDamagedAVRegenDelay` (0x000DB2AA, 20260710 dump) = 1.0 — the generic
- * post-any-AV-drain regen-resume delay: the SAME delay that applies after
- * VATS shooting, jumping, power attacking, sprinting, Dodgy's AP drain, etc.
- * (USER-CONFIRMED 2026-07-21, not exclusively a firing/AP-specific field);
- * its use here for AP specifically is correct, pinned by a golden measurement
- * (docs/assumptions.md "VATS AP economy").
+ * Governed by GMST `fDamagedAPRegenDelay` = 1.0 — the AP-SPECIFIC delay
+ * (USER-CONFIRMED 2026-07-30), not the generic `fDamagedAVRegenDelay`. It has
+ * NO ESM record: the value is FO76 exe-baked, published in the "Fallout 76
+ * game settings" `EXE Game Settings (2020)` table. Pinned by a golden
+ * measurement (docs/assumptions.md "VATS AP economy").
+ *
+ * CAVEAT for extraction: because the governing GMST is exe-only,
+ * `extract-constants.ts` reads `fDamagedAVRegenDelay` (0x000DB2AA, ESM = 1.0)
+ * as a PROXY. Both read 1.0 today. If a future dump diverges them, the proxy
+ * is WRONG and must be dropped in favour of this hardcoded 1.0 — do not
+ * follow the AV record.
  */
 export const AP_REGEN_DELAY_SEC = 1.0;
 

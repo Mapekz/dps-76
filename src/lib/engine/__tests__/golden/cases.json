@@ -512,7 +512,7 @@
       "source": "in-game (pending) \u2014 stopwatch reload from a fully empty tube; ALSO stopwatch a Double-Barrel cycle to confirm it is NOT per-shell (model: one combined 3.07s break-action reload)"
     },
     {
-      "name": "Double-Barrel steady-state VATS uptime \u2014 reload-regen pin (model: gain = 13.02 regen \u00d7 (3.07\u22121)/cycle; pins the 1s fDamagedAVRegenDelay reading)",
+      "name": "Double-Barrel steady-state VATS uptime \u2014 reload-regen pin (model: gain = 13.02 regen \u00d7 (3.07\u22121)/cycle; pins the 1s fDamagedAPRegenDelay reading)",
       "weaponId": "DoubleBarrelShotgun",
       "itemLevel": 50,
       "mods": {},

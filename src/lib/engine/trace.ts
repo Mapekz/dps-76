@@ -87,7 +87,7 @@ export interface ApRegenTrace {
   /**
    * Reload-window regen credit (plain formula numbers, not a bucket fold):
    * passive regen ticks during the reload after `regenDelaySec`
-   * (AP_REGEN_DELAY_SEC — GMST fDamagedAVRegenDelay), cycle-averaged into
+   * (AP_REGEN_DELAY_SEC — GMST fDamagedAPRegenDelay), cycle-averaged into
    * apGainPerSec as `reloadRegenPerSec`. All 0 on no-magazine weapons.
    */
   reloadSec: number;

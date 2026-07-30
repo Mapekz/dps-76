@@ -24,8 +24,12 @@ import { EsmClient } from './esm-client';
  *
  * AP economy: `src/lib/engine/ap-economy.ts`'s pool/regen-delay scalars —
  * `fAVDActionPointsBase`/`Mult` (pool size) and `fDamagedAVRegenDelay`
- * (regen-resume delay, a generic post-any-AV-drain delay reused here for AP —
- * USER-CONFIRMED 2026-07-21, docs/assumptions.md "VATS AP economy"). The
+ * (regen-resume delay). NOTE the delay is a PROXY read: the setting that
+ * actually governs AP is `fDamagedAPRegenDelay` (USER-CONFIRMED 2026-07-30),
+ * which is exe-baked with NO ESM record, so there is nothing here to extract;
+ * `fDamagedAVRegenDelay` stands in because both are 1.0. If a dump ever
+ * diverges them this read becomes WRONG — drop it for ap-economy.ts's
+ * hardcoded 1.0 (docs/assumptions.md "VATS AP economy"). The
  * race-based %-of-max regen RATE (`AP_REGEN_RATE_PCT`/`_POWER_ARMOR`) is a
  * RACE `Properties` row, not a GMST — read via `resolveRaceActionPointsRate`.
  *
@@ -130,7 +134,7 @@ const FALLBACK_VATS_CRIT = { chargeBase: 5.0 };
 const AP_POOL_BASE_GMST = '0x0004D878';
 /** `fAVDActionPointsMult` (0x0004D879) — ap-economy.ts's AP pool per AGI point. */
 const AP_POOL_PER_AGILITY_GMST = '0x0004D879';
-/** `fDamagedAVRegenDelay` (0x000DB2AA) — generic post-any-AV-drain regen-resume delay, reused for AP (see module doc). */
+/** `fDamagedAVRegenDelay` (0x000DB2AA) — PROXY for the exe-only `fDamagedAPRegenDelay` that governs AP (see module doc). */
 const AP_REGEN_DELAY_GMST = '0x000DB2AA';
 /** RACE `Properties` row for AV ActionPointsRate (0x000002D8) — percent-of-max-AP regen/sec. */
 const ACTION_POINTS_RATE_AV = '0x000002D8';
