@@ -76,10 +76,18 @@ export function ApEconomyPanel({ result }: { result: ScenarioResult }) {
       />
 
       {ap.uptime < 1 ? (
-        <Row
-          label={`fire ${formatSeconds(ap.secondsToEmpty ?? 0)} · pause ${formatSeconds(ap.pauseSec ?? 0)}`}
-          value={`${(ap.uptime * 100).toFixed(1)}% uptime`}
-        />
+        <>
+          <Row
+            label={`fire ${formatSeconds(ap.secondsToEmpty ?? 0)} · pause ${formatSeconds(ap.pauseSec ?? 0)}`}
+            value={`${(ap.uptime * 100).toFixed(1)}% uptime`}
+          />
+          <Row
+            indent
+            label="downtime fallback (free aim)"
+            value={`${ap.downtimeFallbackDps.toFixed(1)}/s`}
+            title="DPS credited while the pool refills — the Free Aim scenario's sustained rate."
+          />
+        </>
       ) : (
         <Row muted label="ap never the constraint" value="" />
       )}

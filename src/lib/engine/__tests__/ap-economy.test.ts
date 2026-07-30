@@ -440,4 +440,11 @@ describe('apLimitedDps', () => {
     expect(apLimitedDps(500, 1)).toBe(500);
     expect(apLimitedDps(500, 0)).toBe(0);
   });
+
+  it('blends in a downtime-fallback dps for the (1 − uptime) pause window', () => {
+    expect(apLimitedDps(500, 0.5, 100)).toBe(300); // half VATS, half fallback
+    expect(apLimitedDps(500, 1, 100)).toBe(500); // uptime 1 → fallback weight 0
+    expect(apLimitedDps(500, 0, 100)).toBe(100); // uptime 0 → pure fallback
+    expect(apLimitedDps(500, 0.5)).toBe(250); // omitted fallback defaults to 0
+  });
 });

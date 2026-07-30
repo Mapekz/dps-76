@@ -68,10 +68,10 @@ export interface ScenarioExplain {
  * `mitigated / unmitigated × 100` on that same total (0-100, matching the
  * `*Pct` convention elsewhere on this type). `ttk` is enemy HP ÷
  * `sustainedDps` here (`Infinity` when `sustainedDps` is 0 — no damage
- * ever lands). For VATS, `sustainedDps`/`ttk` are ALSO scaled by the AP
- * economy's `uptime` (`ScenarioResult.ap.uptime`, `ap-economy.ts`) — the
- * vs-target number is throttled by the same duty cycle as `apLimitedDps`,
- * not just by mitigation. DoT (`dotDps`) is NOT included — mitigation
+ * ever lands). For VATS, `sustainedDps`/`ttk` are blended over the AP duty
+ * cycle via `blendEffectiveDps` — the same uptime-weighted mix of VATS and
+ * Free Aim fallback as `apLimitedDps`, not just per-scenario mitigation. DoT
+ * (`dotDps`) is NOT included — mitigation
  * doesn't apply to it in v1 (docs/assumptions.md "Resist mitigation").
  */
 export interface EffectiveResult {
@@ -118,6 +118,12 @@ export interface ScenarioResult {
   ap?: {
     uptime: number;
     apLimitedDps: number;
+    /**
+     * The Free Aim scenario's own hit-rate-scaled sustained DPS — the
+     * downtime fallback rate `apLimitedDps` blends in for the (1 − uptime)
+     * pause window (the player free-aims while the pool refills).
+     */
+    downtimeFallbackDps: number;
     secondsToEmpty?: number;
     /** Forced pool-cycle pause length (regenDelaySec + full-pool refill) — present alongside secondsToEmpty when uptime < 1 (`ap-economy.ts`'s `pauseSec`). */
     pauseSec?: number;
@@ -609,12 +615,8 @@ function bodyPartBlendedHit(
  * `vatsCycleHit` comment in `computeScenarios`). `retainedFraction` is
  * derived from the SAME total mitigation scales `sustainedDps` by, so the
  * mitigation-only ratio `mitigated.total / cycleHit.total` always equals
- * `retainedFraction`. `uptime` (default 1, the free-aim call's implicit
- * value) additionally throttles `sustainedDps`/`ttk` for VATS — the
- * AP-limited duty cycle (`ap.uptime`) must gate the vs-target number exactly
- * like it gates `apLimitedDps`, so with uptime < 1
- * `effective.sustainedDps / sustainedDps !== retainedFraction` (it's
- * `retainedFraction × uptime`).
+ * `retainedFraction`. The cross-scenario AP-duty-cycle blend (VATS + Free Aim
+ * fallback over `ap.uptime`) lives in `blendEffectiveDps`, not here.
  */
 function effectiveAgainstEnemy(
   cycleHit: HitBreakdown,
@@ -623,7 +625,6 @@ function effectiveAgainstEnemy(
   armorPenTotal: number,
   armorPenFlatTotal: number,
   mitigationConstants: MitigationConstants | undefined,
-  uptime = 1,
 ): ScenarioResult['effective'] {
   if (!defenses) return undefined;
   const mitigated = applyMitigation(
@@ -634,12 +635,33 @@ function effectiveAgainstEnemy(
     mitigationConstants,
   );
   const retainedFraction = cycleHit.total > 0 ? mitigated.total / cycleHit.total : 1;
-  const mitigatedSustainedDps = sustainedDps * retainedFraction * uptime;
+  const mitigatedSustainedDps = sustainedDps * retainedFraction;
   return {
     perHit: mitigated,
     sustainedDps: mitigatedSustainedDps,
     retainedPct: retainedFraction * 100,
     ttk: mitigatedSustainedDps > 0 ? defenses.hp / mitigatedSustainedDps : Infinity,
+  };
+}
+
+/**
+ * Blend the VATS scenario's mitigated DPS with the Free Aim fallback over
+ * the AP duty cycle, reusing `apLimitedDps` so the raw and post-mitigation
+ * blends can never drift apart. `perHit`/`retainedPct` stay VATS-only —
+ * they describe a landed VATS hit's mitigation quality, and there is no
+ * principled single per-hit figure for a duty-cycle mix of two attack modes.
+ */
+function blendEffectiveDps(
+  vats: NonNullable<ScenarioResult['effective']>,
+  freeAim: NonNullable<ScenarioResult['effective']>,
+  uptime: number,
+  hp: number,
+): NonNullable<ScenarioResult['effective']> {
+  const sustainedDps = apLimitedDps(vats.sustainedDps, uptime, freeAim.sustainedDps);
+  return {
+    ...vats,
+    sustainedDps,
+    ttk: sustainedDps > 0 ? hp / sustainedDps : Infinity,
   };
 }
 
@@ -1059,7 +1081,12 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     }
     ap = {
       uptime: economy.uptime,
-      apLimitedDps: apLimitedDps(vatsSustain.sustainedDps, economy.uptime),
+      apLimitedDps: apLimitedDps(
+        vatsSustain.sustainedDps,
+        economy.uptime,
+        freeSustain.sustainedDps,
+      ),
+      downtimeFallbackDps: freeSustain.sustainedDps,
       ...(economy.secondsToEmpty !== undefined && { secondsToEmpty: economy.secondsToEmpty }),
       ...(economy.pauseSec !== undefined && { pauseSec: economy.pauseSec }),
       maxAp: economy.maxAp,
@@ -1086,23 +1113,27 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // freeSustain/vatsSustain (freeCycleHit/vatsCycleHit — the charged-cycle
   // blend for charged weapons) so the mitigated sustainedDps stays
   // consistent with the mitigated perHit's retained fraction.
+  const defenses = input.enemyDefenses;
   const freeEffective = effectiveAgainstEnemy(
     freeCycleHit,
     freeSustain.sustainedDps,
-    input.enemyDefenses,
+    defenses,
     armorPenTotal,
     armorPenFlatTotal,
     input.mitigationConstants,
   );
-  const vatsEffective = effectiveAgainstEnemy(
+  const vatsEffectiveRaw = effectiveAgainstEnemy(
     vatsCycleHit,
     vatsSustain.sustainedDps,
-    input.enemyDefenses,
+    defenses,
     armorPenTotal,
     armorPenFlatTotal,
     input.mitigationConstants,
-    ap?.uptime,
   );
+  const vatsEffective =
+    vatsEffectiveRaw && freeEffective && ap && defenses
+      ? blendEffectiveDps(vatsEffectiveRaw, freeEffective, ap.uptime, defenses.hp)
+      : vatsEffectiveRaw;
 
   return {
     onslaughtMaxStacks,

@@ -49,8 +49,7 @@ _Avoid_: mode (that means Live/PTS), case, Manual Aim (say Free Aim).
 
 **AP Uptime**:
 The steady-state fraction of time a VATS build can actually fire before the AP
-pool forces a pause; the VATS scenario's canonical DPS is its sustained DPS
-scaled by AP Uptime (1 when AP never constrains).
+pool forces a pause; the VATS scenario's canonical DPS is `uptime × VATS sustained + (1 − uptime) × Free Aim sustained` — the pause window is spent free-aiming, not idle (1 when AP never constrains).
 _Avoid_: AP efficiency, duty cycle (say AP Uptime).
 
 **Effective Weapon**:

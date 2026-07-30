@@ -844,7 +844,10 @@ Engine: `src/lib/engine/ap-economy.ts`.
   generic post-any-AV-drain regen-resume delay — the same delay that applies
   after VATS shooting, jumping, power attacking, sprinting, Dodgy's AP drain,
   etc., not something VATS/AP-specific — and its use here for AP specifically
-  is correct.
+  is correct. Re-verified in ESM 2026-07-29: `fDamagedAVRegenDelay`
+  (0x000DB2AA) = 1.0; no AP-specific delay GMST exists (the only rival,
+  `fDamagedStaminaRegenDelay` = 0.5, contradicts the ~1s kick-in observed
+  in-game the same day alongside `#75`).
 - **Steady-state model**: `apGainPerSec = apPerCrit×(shotsPerSec/
   shotsPerCrit) + Σ hot.rate×min(1, hot.durationSec×critsPerSec) +
   reloadRegenPerSec`; `drainPerSec = apCost×shotsPerSec`. `shotsPerSec`
@@ -860,9 +863,21 @@ Engine: `src/lib/engine/ap-economy.ts`.
   deliberately ignored (conservative, small). Pinned by `#71`'s golden.
 - **VATS canonical DPS = `apLimitedDps`** (2026-07-29, **user decision**):
   the card headline, headline strip, auto-emphasis pick, suggestion deltas,
-  and the vs-target effective sustained all use `sustainedDps × uptime`
-  (identical to raw sustained when uptime = 1); the unthrottled number is a
-  sub-row when uptime < 1 (`ScenarioCard.tsx`).
+  and the vs-target effective sustained all use the duty-cycle blend
+  `uptime × vatsSustained + (1 − uptime) × freeAimSustained` — during the
+  AP-empty pause the player free-aims (free-aim accuracy, no crits) instead of
+  idling; fallback rate = the Free Aim scenario's own hit-rate-scaled sustained
+  DPS, surfaced as `ap.downtimeFallbackDps`. Note the post-mitigation
+  `effective.sustainedDps`/`ttk` blend the same weights via `blendEffectiveDps`
+  (`src/lib/engine/scenarios.ts`), and that `effectiveAgainstEnemy` no longer
+  takes uptime; `perHit`/`retainedPct` stay VATS-only. Pointer:
+  `src/lib/engine/ap-economy.ts` `apLimitedDps`.
+- **Passive AP regen during free-aim fallback** (**CONFIRMED** in-game
+  2026-07-29, `#75`): passive AP regen keeps ticking at full `regenPerSec`
+  while firing in free aim — sighted fire, hip fire, and scoped ADS all cost
+  no AP and leave regen running. Sole exception: holding breath while scoped
+  drains AP and suppresses regen; the fallback window assumes no breath-hold.
+  Pointer: `pauseSec` in `src/lib/engine/ap-economy.ts`.
 - Display: AP breakdown always shown when `ScenarioResult.ap` exists; ranged
   weapons only (melee/VATS-melee AP costs are out of scope).
 - **Manual-aim hit rate** (`hitRatePct`, 10–100, default 100): scales
@@ -870,8 +885,10 @@ Engine: `src/lib/engine/ap-economy.ts`.
   only — never per-hit or burst.
 - **Manual VATS hit rate** (`vatsHitRatePct`, 10–100, default 100): same
   mechanic as `hitRatePct` but for the VATS scenario — a user-supplied
-  estimate, not computed accuracy. Also scales `ap.apLimitedDps` (a miss
-  still costs AP). Auto-computing VATS hit chance from distance/Perception/
+  estimate, not computed accuracy. Also scales the VATS-weighted term of
+  `ap.apLimitedDps`; the fallback term uses free aim's own `hitRatePct`
+  instead (a miss still costs AP). Auto-computing VATS hit chance from
+  distance/Perception/
   perks stays **permanently out of scope**; `scenarios.ts` (Stage B/C hit-rate
   block).
 

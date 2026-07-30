@@ -12,11 +12,13 @@ const formatHitRatePct = (value: number) => `${Math.round(value)}%`;
 
 const EFFECTIVE_DPS_DEFINITION =
   'Reload-aware sustained DPS × your hit chance — the realistic damage you deal over time. ' +
-  'In VATS, further throttled by the AP economy when the AP pool can\'t sustain continuous fire (see "unthrottled" below).';
+  'In VATS, further throttled by the AP economy when the AP pool can\'t sustain continuous fire (see "unthrottled" below). During downtime the pool refills, the build free-aims instead of idling.';
 const UPTIME_DEFINITION =
   "Passive AP regen doesn't tick during sustained VATS fire — uptime is the steady-state duty " +
   'cycle: fire until the pool empties, exit VATS, wait ~1s, refill at passive regen. This row is ' +
   'the un-throttled number, as if AP were never the constraint.';
+const DOWNTIME_FALLBACK_DEFINITION =
+  'While the AP pool refills, the build fires in free aim (free-aim accuracy, no crits). The VATS headline blends this rate in for the downtime share.';
 const BURST_DPS_DEFINITION =
   'Theoretical ceiling: per-hit × fire rate, trigger held down continuously with no reload and every shot landing.';
 const HIT_CHANCE_DEFINITION =
@@ -116,14 +118,26 @@ export function ScenarioCard({
         </div>
       )}
       {result.ap && result.ap.uptime < 1 && (
-        <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
-          <span title={UPTIME_DEFINITION}>unthrottled ({formatUptimePct(result.ap.uptime)})</span>
-          <DeltaFlash
-            className="text-foreground text-sm"
-            value={result.sustain.sustainedDps}
-            format={formatDamage}
-          />
-        </div>
+        <>
+          <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
+            <span title={UPTIME_DEFINITION}>unthrottled ({formatUptimePct(result.ap.uptime)})</span>
+            <DeltaFlash
+              className="text-foreground text-sm"
+              value={result.sustain.sustainedDps}
+              format={formatDamage}
+            />
+          </div>
+          <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
+            <span title={DOWNTIME_FALLBACK_DEFINITION}>
+              downtime fallback (free aim, {Math.round((1 - result.ap.uptime) * 100)}% of the time)
+            </span>
+            <DeltaFlash
+              className="text-foreground text-sm"
+              value={result.ap.downtimeFallbackDps}
+              format={formatDamage}
+            />
+          </div>
+        </>
       )}
       {result.critMeter && (
         <div className="pt-1">

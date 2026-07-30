@@ -1832,7 +1832,11 @@ describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
     expect(s.vats.ap!.secondsToEmpty).toBeCloseTo(burstSec, 10);
     expect(s.vats.ap!.pauseSec).toBeCloseTo(pauseSec, 10);
     expect(s.vats.ap!.uptime).toBeCloseTo(uptime, 10);
-    expect(s.vats.ap!.apLimitedDps).toBeCloseTo(s.vats.sustain.sustainedDps * uptime, 10);
+    expect(s.vats.ap!.apLimitedDps).toBeCloseTo(
+      s.vats.sustain.sustainedDps * uptime + s.freeAim.sustain.sustainedDps * (1 - uptime),
+      10,
+    );
+    expect(s.vats.ap!.downtimeFallbackDps).toBe(s.freeAim.sustain.sustainedDps);
     // AP economy is a VATS-only concept — free aim never carries it.
     expect(s.freeAim.ap).toBeUndefined();
   });
@@ -1987,7 +1991,7 @@ describe('computeScenarios hit rate (Stage B/C, manual free-aim + VATS)', () => 
     );
   });
 
-  it('vatsHitRatePct scales ap.apLimitedDps proportionally — a miss still costs AP, so uptime itself is unaffected', () => {
+  it('vatsHitRatePct scales only the VATS term in ap.apLimitedDps — fallback and uptime stay unchanged', () => {
     const apWeapon = makeWeapon({
       animDelaySec: 1.0,
       isPhysical: false,
@@ -2005,8 +2009,39 @@ describe('computeScenarios hit rate (Stage B/C, manual free-aim + VATS)', () => 
     });
 
     expect(full.vats.ap).toBeDefined();
+    expect(full.vats.ap!.uptime).toBeLessThan(1);
     expect(half.vats.ap!.uptime).toBeCloseTo(full.vats.ap!.uptime, 10);
-    expect(half.vats.ap!.apLimitedDps).toBeCloseTo(full.vats.ap!.apLimitedDps * 0.5, 10);
+    expect(half.freeAim.sustain.sustainedDps).toBeCloseTo(full.freeAim.sustain.sustainedDps, 10);
+    const fallback = full.freeAim.sustain.sustainedDps;
+    const fallbackContrib = fallback * (1 - full.vats.ap!.uptime);
+    expect(half.vats.ap!.apLimitedDps - fallbackContrib).toBeCloseTo(
+      (full.vats.ap!.apLimitedDps - fallbackContrib) * 0.5,
+      10,
+    );
+  });
+
+  it('raising free-aim hitRatePct moves downtimeFallbackDps and apLimitedDps without changing VATS sustain or uptime', () => {
+    const apWeapon = makeWeapon({
+      animDelaySec: 1.0,
+      isPhysical: false,
+      capacity: 20,
+      ammoPerShot: 1,
+      reloadSpeed: 1.0,
+      animationReloadSec: 4.0,
+      apCost: 10,
+    });
+    const apInput = { ...input, weapon: apWeapon };
+    const full = computeScenarios(apInput);
+    const lowHit = computeScenarios({
+      ...apInput,
+      player: { ...apInput.player, hitRatePct: 50 },
+    });
+
+    expect(full.vats.ap!.uptime).toBeLessThan(1);
+    expect(lowHit.vats.ap!.uptime).toBeCloseTo(full.vats.ap!.uptime, 10);
+    expect(lowHit.vats.sustain.sustainedDps).toBeCloseTo(full.vats.sustain.sustainedDps, 10);
+    expect(lowHit.vats.ap!.downtimeFallbackDps).toBeLessThan(full.vats.ap!.downtimeFallbackDps);
+    expect(lowHit.vats.ap!.apLimitedDps).not.toBeCloseTo(full.vats.ap!.apLimitedDps, 10);
   });
 });
 

@@ -395,6 +395,29 @@ describe('computeScenarios — ScenarioInput.enemyDefenses (synthetic enemy)', (
     );
   });
 
+  it('VATS effective sustainedDps/ttk blend in the Free Aim fallback with the same uptime weights as apLimitedDps', () => {
+    const apWeapon = makeWeapon({
+      animDelaySec: 1.0,
+      isPhysical: false,
+      apCost: 16,
+      capacity: 20,
+      ammoPerShot: 1,
+      reloadSpeed: 1.0,
+      animationReloadSec: 4.0,
+    });
+    const enemyDefenses = { hp: 1000, resists: { physical: 300 } };
+    const s = computeScenarios({ ...baseInput, weapon: apWeapon, enemyDefenses });
+
+    expect(s.vats.ap!.uptime).toBeLessThan(1);
+    const uptime = s.vats.ap!.uptime;
+    const vatsRetainedFraction = s.vats.effective!.perHit.total / s.vats.perHit.total;
+    const vatsRawMitigated = s.vats.sustain.sustainedDps * vatsRetainedFraction;
+    const expected = uptime * vatsRawMitigated + (1 - uptime) * s.freeAim.effective!.sustainedDps;
+    expect(s.vats.effective!.sustainedDps).toBeCloseTo(expected, 6);
+    expect(s.vats.effective!.ttk).toBeCloseTo(1000 / expected, 6);
+    expect(s.vats.effective!.retainedPct).toBeCloseTo(vatsRetainedFraction * 100, 6);
+  });
+
   it('DoT stays unmitigated and separate from `effective` (v1 scope)', () => {
     const enemyDefenses = { hp: 1000, resists: { physical: 300 } };
     const dotModifiers: ScenarioInput['modifiers'] = [

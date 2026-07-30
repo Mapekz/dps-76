@@ -80,7 +80,8 @@ import type { SustainResult } from './sustain';
  * extends past the burst into the pause window is deliberately ignored
  * (conservative: slightly understates gain during the pause; small at
  * typical duration/pause lengths). Issue #71's golden pins this form once
- * measured.
+ * measured. The pause window is no longer modeled as idle downtime — the
+ * caller blends in a free-aim fallback rate via `apLimitedDps`.
  *
  * On-kill AP restores (Grim Reaper's Sprint, Inertial) are OUT OF SCOPE
  * (need enemy TTK, phase 3) — not computed here.
@@ -314,7 +315,15 @@ export function effectiveShotsPerSecond(sustain: SustainResult, fireRate: number
   return sustain.shotsPerMag / cycleSec;
 }
 
-/** Sustained VATS DPS scaled by the AP-limited duty cycle. */
-export function apLimitedDps(sustainedDps: number, uptime: number): number {
-  return sustainedDps * uptime;
+/**
+ * AP-duty-cycle DPS blend (docs/assumptions.md "VATS canonical DPS"): fraction
+ * `uptime` of wall-clock time nets VATS sustained DPS, fraction `1 − uptime`
+ * nets the free-aim fallback rate (the player free-aims while the pool refills).
+ */
+export function apLimitedDps(
+  sustainedDps: number,
+  uptime: number,
+  downtimeFallbackDps = 0,
+): number {
+  return sustainedDps * uptime + downtimeFallbackDps * (1 - uptime);
 }
