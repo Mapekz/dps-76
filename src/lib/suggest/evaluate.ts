@@ -26,7 +26,13 @@ function headline(result: ScenarioResult): ScenarioHeadline {
   return {
     perHit: result.perHit.total,
     burstDps: result.burstDps,
-    sustainedDps: result.sustain.sustainedDps,
+    // Canonical DPS for this scenario: AP-limited when VATS AP is the
+    // constraint (see ScenarioCard.tsx/useScenarioResults.ts), else the same
+    // reload/hit-rate sustained value free aim always uses. Field name kept
+    // as `sustainedDps` — every consumer (DiffTooltip, ActionDelta,
+    // evaluateSuggestions' primaryDeltaPct) reads through this snapshot, so
+    // this one fold is what makes AP-economy picks show up in deltas.
+    sustainedDps: result.ap?.apLimitedDps ?? result.sustain.sustainedDps,
     critRate: result.critRate,
   };
 }

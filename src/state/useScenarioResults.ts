@@ -7,7 +7,12 @@ import type { ScenarioKey } from '@/state/build-reducer';
 
 export interface ScenarioResults {
   scenarios: ScenarioSet | null;
-  /** The emphasized card — suggestions metric + condensed-bar lead. User pick, else higher sustained DPS. */
+  /**
+   * The emphasized card — suggestions metric + condensed-bar lead. User
+   * pick, else whichever scenario has the higher canonical DPS (VATS ←
+   * AP-limited when throttled, `vats.ap?.apLimitedDps ?? vats.sustain.sustainedDps`;
+   * Free Aim ← sustained, since it has no AP economy).
+   */
   emphasized: ScenarioKey;
 }
 
@@ -32,7 +37,9 @@ export function useScenarioResults(): ScenarioResults {
   }, [state.player, state.enemy, mode]);
 
   const auto: ScenarioKey =
-    scenarios && scenarios.vats.sustain.sustainedDps >= scenarios.freeAim.sustain.sustainedDps
+    scenarios &&
+    (scenarios.vats.ap?.apLimitedDps ?? scenarios.vats.sustain.sustainedDps) >=
+      scenarios.freeAim.sustain.sustainedDps
       ? 'vats'
       : 'freeAim';
 
