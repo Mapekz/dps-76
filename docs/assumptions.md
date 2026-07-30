@@ -845,9 +845,16 @@ Engine: `src/lib/engine/ap-economy.ts`.
   after VATS shooting, jumping, power attacking, sprinting, Dodgy's AP drain,
   etc., not something VATS/AP-specific — and its use here for AP specifically
   is correct. Re-verified in ESM 2026-07-29: `fDamagedAVRegenDelay`
-  (0x000DB2AA) = 1.0; no AP-specific delay GMST exists (the only rival,
-  `fDamagedStaminaRegenDelay` = 0.5, contradicts the ~1s kick-in observed
-  in-game the same day alongside `#75`).
+  (0x000DB2AA) = 1.0; no AP-specific delay GMST record exists in the ESM
+  (`fDamagedStaminaRegenDelay` = 0.5 governs the vestigial Stamina AV, not
+  AP). Cross-game check (web, 2026-07-29): the Creation-Engine vanilla
+  `fDamagedAVRegenDelay` has been 1.0 since Skyrim — the 0.5s figures in
+  modding circles are the per-stat Health/Stamina/Magicka overrides;
+  FO3/NV predate the delay mechanic entirely (`fActionPointsRestoreRate`
+  0.06 = bar-fraction/s, no delay). Residual: FO4's exe also exposes
+  `fDamagedAPRegenDelay` (no published default, no FO76 ESM record) — if an
+  exe-baked AP-specific default existed at 0.5 the in-game kick-in would
+  read ~0.5s, and the observed ~1s (`#75` session) rules that out.
 - **Steady-state model**: `apGainPerSec = apPerCrit×(shotsPerSec/
   shotsPerCrit) + Σ hot.rate×min(1, hot.durationSec×critsPerSec) +
   reloadRegenPerSec`; `drainPerSec = apCost×shotsPerSec`. `shotsPerSec`
