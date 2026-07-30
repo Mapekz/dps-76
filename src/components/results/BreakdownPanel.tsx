@@ -6,6 +6,7 @@ import {
 } from '@/components/ui/accordion';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
+import { ApEconomyPanel } from './ApEconomyPanel';
 import { MultiplierChainTable } from './MultiplierChainTable';
 
 /**
@@ -44,6 +45,7 @@ export function BreakdownPanel() {
                 VATS
               </p>
               <MultiplierChainTable result={scenarios.vats} />
+              <ApEconomyPanel result={scenarios.vats} />
             </div>
           </div>
         </AccordionContent>
