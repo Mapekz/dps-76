@@ -13,6 +13,7 @@ import type {
   EvaluatedSuggestion,
   ScenarioHeadline,
   SuggestionCandidate,
+  SuggestionGroup,
   SuggestionReport,
 } from './types';
 
@@ -54,14 +55,25 @@ function diff(a: ScenarioHeadline, b: ScenarioHeadline): ScenarioHeadline {
   };
 }
 
-/** Evaluate one action against a baseline (hover diffs). Null when no weapon. */
-export function evaluateAction(
+/** Folds the reducer over an ordered action list — a suggestion candidate's `action` array applied sequentially. */
+function applyActions(
   state: BuildState,
   mode: GameMode,
-  action: BuildAction,
+  actions: readonly BuildAction[],
+): BuildState {
+  const reducer = makeBuildReducer(mode);
+  let next = state;
+  for (const action of actions) next = reducer(next, action);
+  return next;
+}
+
+function evaluateActions(
+  state: BuildState,
+  mode: GameMode,
+  actions: readonly BuildAction[],
   baseline: DpsSnapshot,
 ): { result: DpsSnapshot; delta: DpsSnapshot } | null {
-  const result = computeSnapshot(makeBuildReducer(mode)(state, action), mode);
+  const result = computeSnapshot(applyActions(state, mode, actions), mode);
   if (!result) return null;
   return {
     result,
@@ -72,7 +84,82 @@ export function evaluateAction(
   };
 }
 
-/** Full ranked sweep of every single-change variant. */
+/** Evaluate one action against a baseline (hover diffs). Null when no weapon. */
+export function evaluateAction(
+  state: BuildState,
+  mode: GameMode,
+  action: BuildAction,
+  baseline: DpsSnapshot,
+): { result: DpsSnapshot; delta: DpsSnapshot } | null {
+  return evaluateActions(state, mode, [action], baseline);
+}
+
+/**
+ * Collapses graduated-family candidates (perk ranks, armor counts) to ≤2
+ * rows: `next` (the cheapest step that's still a positive mover) and `best`
+ * (the single highest-delta step, ties broken toward lower cost) when they
+ * differ. A family with no positive member collapses to just `best` — it's
+ * still ≤0 and gets filtered out downstream by `topSuggestions`. Families of
+ * size 1 pass through untouched. Called on the evaluated list BEFORE the
+ * final sort, so `report.suggestions` is already collapsed.
+ */
+export function collapseSuggestionFamilies(
+  suggestions: EvaluatedSuggestion[],
+): EvaluatedSuggestion[] {
+  const order: string[] = [];
+  const groups = new Map<string, EvaluatedSuggestion[]>();
+  for (const s of suggestions) {
+    let members = groups.get(s.family);
+    if (!members) {
+      members = [];
+      groups.set(s.family, members);
+      order.push(s.family);
+    }
+    members.push(s);
+  }
+
+  const out: EvaluatedSuggestion[] = [];
+  for (const family of order) {
+    const members = groups.get(family)!;
+    if (members.length === 1) {
+      out.push(members[0]);
+      continue;
+    }
+
+    let best = members[0];
+    for (const m of members) {
+      if (
+        m.primaryDeltaPct > best.primaryDeltaPct ||
+        (m.primaryDeltaPct === best.primaryDeltaPct && m.cost < best.cost)
+      ) {
+        best = m;
+      }
+    }
+
+    const positive = members.filter((m) => m.primaryDeltaPct > 0);
+    if (positive.length === 0) {
+      out.push(best);
+      continue;
+    }
+
+    let next = positive[0];
+    for (const m of positive) {
+      if (
+        m.cost < next.cost ||
+        (m.cost === next.cost && m.primaryDeltaPct > next.primaryDeltaPct)
+      ) {
+        next = m;
+      }
+    }
+
+    out.push(next);
+    if (best !== next) out.push(best);
+  }
+
+  return out;
+}
+
+/** Full ranked sweep of every candidate variant (graduated families pre-collapsed to ≤2 rows). */
 export function evaluateSuggestions(
   state: BuildState,
   mode: GameMode,
@@ -85,32 +172,45 @@ export function evaluateSuggestions(
   const suggestions: EvaluatedSuggestion[] = [];
 
   for (const candidate of enumerateVariants(state, mode)) {
-    const evaluated = evaluateAction(state, mode, candidate.action, baseline);
+    const evaluated = evaluateActions(state, mode, candidate.action, baseline);
     if (!evaluated) continue;
     const primaryDeltaPct = metricBase > 0 ? evaluated.delta[metric].sustainedDps / metricBase : 0;
     suggestions.push({ ...candidate, ...evaluated, primaryDeltaPct });
   }
 
-  suggestions.sort(
+  const collapsed = collapseSuggestionFamilies(suggestions);
+  collapsed.sort(
     (a, b) =>
       b.primaryDeltaPct - a.primaryDeltaPct || Number(b.budget.legal) - Number(a.budget.legal),
   );
-  return { baseline, metric, suggestions };
+  return { baseline, metric, suggestions: collapsed };
 }
+
+/** Default group scope for the suggestions panel: build-structural changes, not consumables (those get their own section). */
+export const STRUCTURAL_GROUPS: ReadonlySet<SuggestionGroup> = new Set([
+  'mod',
+  'legendary',
+  'perk',
+  'mutation',
+  'armor',
+]);
 
 /** Suggestions worth showing: positive movers, ranked; legality kept for labeling. */
 export function topSuggestions(
   report: SuggestionReport,
   limit: number,
   tiedThresholdPct = 0.01,
+  options: { groups?: ReadonlySet<SuggestionGroup> } = {},
 ): {
   ranked: EvaluatedSuggestion[];
   tied: EvaluatedSuggestion[];
 } {
+  const groups = options.groups ?? STRUCTURAL_GROUPS;
+  const scoped = report.suggestions.filter((s) => groups.has(s.group));
   // Different ESM records can share a display name and an identical outcome
   // (per-family receiver twins) — showing both is noise, keep the first.
   const seen = new Set<string>();
-  const positive = report.suggestions.filter((s) => {
+  const positive = scoped.filter((s) => {
     if (s.primaryDeltaPct <= 0) return false;
     const key = `${s.label}|${s.primaryDeltaPct.toFixed(5)}`;
     if (seen.has(key)) return false;

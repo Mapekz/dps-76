@@ -40,7 +40,7 @@ function SuggestionRow({ suggestion, tied }: { suggestion: EvaluatedSuggestion; 
         variant="ghost"
         size="sm"
         className="h-6 px-2 text-xs"
-        onClick={() => dispatch(suggestion.action)}
+        onClick={() => suggestion.action.forEach((a) => dispatch(a))}
       >
         Apply
       </Button>

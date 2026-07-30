@@ -6,7 +6,7 @@ import type { BuildAction, ScenarioKey, SpecialKey } from '@/state/build-reducer
  * replays — one change vocabulary, three consumers.
  */
 
-export type SuggestionGroup = 'mod' | 'legendary' | 'perk' | 'mutation' | 'consumable';
+export type SuggestionGroup = 'mod' | 'legendary' | 'perk' | 'mutation' | 'armor' | 'consumable';
 
 export interface SuggestionBudget {
   legal: boolean;
@@ -19,10 +19,20 @@ export interface SuggestionBudget {
 export interface SuggestionCandidate {
   /** Stable id for caching/keys. */
   id: string;
-  action: BuildAction;
+  /** Ordered sequence of actions applied in sequence to reach this candidate (e.g. an armor swap is a drop + an add). */
+  action: BuildAction[];
   label: string;
   group: SuggestionGroup;
   budget: SuggestionBudget;
+  /**
+   * Collapse unit: candidates sharing a `family` are graduated steps toward
+   * the same change (e.g. every rank of one perk, every count of one armor
+   * effect) and get collapsed post-evaluation to ≤2 rows (the cheapest
+   * positive-delta step and the best overall) by `collapseSuggestionFamilies`.
+   */
+  family: string;
+  /** Steps/points spent to reach this candidate (rank delta, worn-piece count delta, ...). 0 for non-graduated candidates (a single on/off toggle). */
+  cost: number;
 }
 
 export interface ScenarioHeadline {
