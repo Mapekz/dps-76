@@ -1822,19 +1822,26 @@ describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
     expect(s.vats.ap!.regenPerSec).toBeCloseTo(12.6, 10);
     expect(s.vats.ap!.reloadRegenPerSec).toBeCloseTo(1.575, 10);
     expect(s.vats.ap!.apGainPerSec).toBeCloseTo(1.575, 10);
-    expect(s.vats.ap!.uptime).toBeCloseTo(1.575 / (40 / 3), 10);
-    expect(s.vats.ap!.apLimitedDps).toBeCloseTo(
-      s.vats.sustain.sustainedDps * (1.575 / (40 / 3)),
-      10,
-    );
-    expect(s.vats.ap!.secondsToEmpty).toBeCloseTo(210 / (40 / 3 - 1.575), 10);
+    // Pool-cycle model (ap-economy.ts "Pool-cycle uptime"): burstSec = maxAp /
+    // (drainPerSec − apGainPerSec) = 210 / (40/3 − 1.575) ≈ 17.859674;
+    // pauseSec = regenDelaySec(1) + maxAp/regenPerSec = 1 + 210/12.6 ≈
+    // 17.666667; uptime = burstSec / (burstSec + pauseSec) ≈ 0.502716.
+    const burstSec = 210 / (40 / 3 - 1.575);
+    const pauseSec = 1 + 210 / 12.6;
+    const uptime = burstSec / (burstSec + pauseSec);
+    expect(s.vats.ap!.secondsToEmpty).toBeCloseTo(burstSec, 10);
+    expect(s.vats.ap!.pauseSec).toBeCloseTo(pauseSec, 10);
+    expect(s.vats.ap!.uptime).toBeCloseTo(uptime, 10);
+    expect(s.vats.ap!.apLimitedDps).toBeCloseTo(s.vats.sustain.sustainedDps * uptime, 10);
     // AP economy is a VATS-only concept — free aim never carries it.
     expect(s.freeAim.ap).toBeUndefined();
   });
 
-  it('a reload window at or below the 1s regen delay earns no reload-regen credit', () => {
+  it('a reload window at or below the 1s regen delay earns no reload-regen credit, but the pool still cycles', () => {
     // Same weapon but a 1.0s reload — max(0, 1.0 − 1.0) = 0 credit, so
-    // passive regen contributes nothing and uptime is 0 again.
+    // apGainPerSec is 0 again, but (unlike the pre-pool-cycle model) uptime
+    // is NOT 0: the pool still burns down, forces a pause, and passive
+    // regen refills it during that pause.
     const quickReload = makeWeapon({
       animDelaySec: 1.0,
       isPhysical: false,
@@ -1847,7 +1854,15 @@ describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
     const s = computeScenarios({ ...baseInput, weapon: quickReload });
     expect(s.vats.ap!.reloadRegenPerSec).toBe(0);
     expect(s.vats.ap!.apGainPerSec).toBe(0);
-    expect(s.vats.ap!.uptime).toBe(0);
+    // shotsPerSec = 20/21 (20s dump + 1s reload); drainPerSec = 16×20/21.
+    // burstSec = 210 / drainPerSec ≈ 13.78125; pauseSec = 1 + 210/12.6 ≈
+    // 17.666667 (same regenPerSec as the previous test — same AGI, no
+    // bonuses); uptime ≈ 0.438225.
+    const drainPerSec = 16 * (20 / 21);
+    const burstSec = 210 / drainPerSec;
+    const pauseSec = 1 + 210 / 12.6;
+    const uptime = burstSec / (burstSec + pauseSec);
+    expect(s.vats.ap!.uptime).toBeCloseTo(uptime, 10);
   });
 
   it('omits ap for melee weapons (AP-limited uptime is undefined for melee) and for zero-cost weapons', () => {
@@ -1858,17 +1873,21 @@ describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
     expect(computeScenarios({ ...baseInput, weapon: noCostWeapon }).vats.ap).toBeUndefined();
   });
 
-  it('apRegen bonuses feed uptime ONLY through the reload window (never the mag dump)', () => {
+  it('apRegen bonuses feed uptime through BOTH the reload-window gain credit AND the pool-cycle pause (never the mag dump itself)', () => {
     const richRegen = [mod({ bucket: 'apRegen', op: 'ADD', value: 10 })]; // absurd but isolates the math
     const baseline = computeScenarios(baseInput);
     const s = computeScenarios({ ...baseInput, modifiers: richRegen });
     // regenPerSec = 12.6 × 11 = 138.6 → reloadRegenPerSec = 138.6 × 3/24 =
-    // 17.325 > drain 40/3, so uptime saturates purely from reload regen.
+    // 17.325 > drain 40/3, so uptime saturates purely from reload regen (the
+    // gain ≥ drain early-return branch — no pauseSec).
     expect(s.vats.ap!.regenPerSec).toBeGreaterThan(baseline.vats.ap!.regenPerSec);
     expect(s.vats.ap!.reloadRegenPerSec).toBeCloseTo(17.325, 10);
     expect(s.vats.ap!.uptime).toBe(1);
-    // The same bonus on a ≤1s-reload weapon moves nothing — the mag dump
-    // itself never earns passive regen.
+    expect(s.vats.ap!.pauseSec).toBeUndefined();
+    // The same bonus on a ≤1s-reload weapon still earns nothing from the
+    // reload window (mag dump itself never earns passive regen), but now
+    // DOES move uptime via the faster pool-cycle refill during the pause —
+    // the pre-pool-cycle model's uptime-0 result no longer holds.
     const quickReload = makeWeapon({
       animDelaySec: 1.0,
       isPhysical: false,
@@ -1879,7 +1898,15 @@ describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
       animationReloadSec: 1.0,
     });
     const quick = computeScenarios({ ...baseInput, weapon: quickReload, modifiers: richRegen });
-    expect(quick.vats.ap!.uptime).toBe(0);
+    expect(quick.vats.ap!.reloadRegenPerSec).toBe(0);
+    // burstSec = 210 / (16×20/21) ≈ 13.78125 (unchanged — same drain, no
+    // in-burst gain); pauseSec = 1 + 210/138.6 ≈ 2.515152 (much shorter than
+    // the unboosted 17.666667 — the richRegen bonus refills the pool fast);
+    // uptime ≈ 0.845662.
+    const burstSec = 210 / (16 * (20 / 21));
+    const pauseSec = 1 + 210 / 138.6;
+    const uptime = burstSec / (burstSec + pauseSec);
+    expect(quick.vats.ap!.uptime).toBeCloseTo(uptime, 10);
   });
 
   it('apPerCrit modifiers raise the in-combat gain rate and can saturate uptime at 1', () => {

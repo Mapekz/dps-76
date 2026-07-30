@@ -2,6 +2,7 @@ import { describe, it, expect } from 'bun:test';
 import {
   AP_POOL_BASE,
   AP_POOL_PER_AGILITY,
+  AP_REGEN_DELAY_SEC,
   AP_REGEN_RATE_PCT,
   AP_REGEN_RATE_PCT_POWER_ARMOR,
   apLimitedDps,
@@ -26,11 +27,11 @@ function sustain(overrides: Partial<SustainResult> = {}): SustainResult {
 }
 
 describe('computeApEconomy', () => {
-  it('Fixer-shaped example (16 AP/shot, 4 shots/s, 15 AGI, no perks/legendaries): passive regen does not offset drain', () => {
+  it('Fixer-shaped example (16 AP/shot, 4 shots/s, 15 AGI, no perks/legendaries): pool-cycle burst/pause/uptime', () => {
     // maxAp = 60 + 10×15 = 210; regenPerSec = 210 × 6/100 = 12.6 (HumanRace
-    // ActionPointsRate 6.0 = % of max AP per second) is reported but does NOT
-    // tick during sustained VATS fire (user-confirmed 2026-07-15) — with no
-    // in-combat restores (apPerCrit 0), apGainPerSec = 0; drainPerSec = 16×4 = 64.
+    // ActionPointsRate 6.0 = % of max AP per second) does NOT tick during
+    // sustained VATS fire (user-confirmed 2026-07-15) — with no in-combat
+    // restores (apPerCrit 0), apGainPerSec = 0; drainPerSec = 16×4 = 64.
     const result = computeApEconomy({
       apCost: 16,
       shotsPerSec: 4,
@@ -43,16 +44,26 @@ describe('computeApEconomy', () => {
     expect(result.regenPerSec).toBeCloseTo(12.6, 10);
     expect(result.apGainPerSec).toBe(0);
     expect(result.drainPerSec).toBe(64);
-    expect(result.uptime).toBe(0);
-    // secondsToEmpty = maxAp / (drain − gain) = 210 / 64
-    expect(result.secondsToEmpty).toBeCloseTo(210 / 64, 10);
+    // Pool-cycle model (ap-economy.ts "Pool-cycle uptime"): burst drains the
+    // full pool at the net rate, pause is the post-drain delay plus a
+    // full-pool refill at the passive rate, uptime is the resulting duty
+    // cycle.
+    // burstSec = 210 / (64 − 0) = 3.28125
+    // pauseSec = 1 + 210/12.6 = 1 + 16.666667 = 17.666667
+    // uptime = 3.28125 / (3.28125 + 17.666667) ≈ 0.156638
+    const burstSec = 210 / 64;
+    const pauseSec = AP_REGEN_DELAY_SEC + 210 / 12.6;
+    const uptime = burstSec / (burstSec + pauseSec);
+    expect(result.secondsToEmpty).toBeCloseTo(burstSec, 10);
+    expect(result.pauseSec).toBeCloseTo(pauseSec, 10);
+    expect(result.uptime).toBeCloseTo(uptime, 10);
   });
 
-  it('a large flat apPerCrit at a crit every 2nd shot pushes gain above drain → uptime saturates at 1', () => {
+  it('a large flat apPerCrit at a crit every 2nd shot pushes gain above drain → uptime saturates at 1, no pauseSec', () => {
     // Same weapon/shots as above, but crits fire every 2nd shot: critsPerSec =
-    // 4/2 = 2; apGainPerSec = 110×2 = 220 > drainPerSec 64 → uptime 1, no
-    // secondsToEmpty — passive regen is excluded entirely (110 was
-    // Conductor's retired flat model — kept as a synthetic magnitude here).
+    // 4/2 = 2; apGainPerSec = 110×2 = 220 > drainPerSec 64 → gain ≥ drain, the
+    // early-return branch: uptime 1, no secondsToEmpty/pauseSec (the pool
+    // never empties, so there is no burst/pause cycle to report).
     const result = computeApEconomy({
       apCost: 16,
       shotsPerSec: 4,
@@ -65,13 +76,18 @@ describe('computeApEconomy', () => {
     expect(result.drainPerSec).toBe(64);
     expect(result.uptime).toBe(1);
     expect(result.secondsToEmpty).toBeUndefined();
+    expect(result.pauseSec).toBeUndefined();
   });
 
   it("crit HoTs saturate at their raw rate when crits refresh inside the window (Conductor's fast cadence)", () => {
-    // Conductor's split model: 10 instant + 20 AP/s over 5s, refresh-only.
-    // Crit every 2nd shot at 4 shots/s → critsPerSec 2, crit interval 0.5s ≪ 5s
-    // → HoT active fraction min(1, 5×2) = 1 → HoT contributes its raw 20 AP/s.
-    // apGainPerSec = 10×2 + 20 = 40 — passive regen (12.6) is excluded.
+    // Conductor's split model: 10 instant + 20 AP/s over 5s, REFRESH-ONLY
+    // (ESM-proven: SPEL 0x007ACB0D's HoT effect MGEF 0x007ACB09 carries Magic
+    // Effect Data Flags 0x100 "Dispel with Keywords" + KYWD
+    // ConductorsDispelPlayerEffectKeyword 0x007B71D3 — module doc). Crit
+    // every 2nd shot at 4 shots/s → critsPerSec 2, crit interval 0.5s ≪ 5s →
+    // HoT active fraction min(1, 5×2) = 1 → HoT contributes its raw 20 AP/s.
+    // apGainPerSec = 10×2 + 20 = 40 — passive regen (12.6) is still excluded
+    // from the in-burst gain, but now feeds the pool-cycle pause.
     const result = computeApEconomy({
       apCost: 16,
       shotsPerSec: 4,
@@ -82,7 +98,15 @@ describe('computeApEconomy', () => {
       shotsPerCrit: 2,
     });
     expect(result.apGainPerSec).toBeCloseTo(40, 10);
-    expect(result.uptime).toBeCloseTo(40 / 64, 10);
+    // burstSec = 210 / (64 − 40) = 8.75; pauseSec = 1 + 210/12.6 = 17.666667
+    // (unchanged from the previous test — pauseSec depends only on
+    // maxAp/regenPerSec, not on apGainPerSec); uptime ≈ 0.331230.
+    const burstSec = 210 / (64 - 40);
+    const pauseSec = AP_REGEN_DELAY_SEC + 210 / 12.6;
+    const uptime = burstSec / (burstSec + pauseSec);
+    expect(result.secondsToEmpty).toBeCloseTo(burstSec, 10);
+    expect(result.pauseSec).toBeCloseTo(pauseSec, 10);
+    expect(result.uptime).toBeCloseTo(uptime, 10);
   });
 
   it('crit HoTs pay out in full at slow cadence (crit interval ≥ HoT duration → 110/crit equivalence)', () => {
@@ -145,11 +169,10 @@ describe('computeApEconomy', () => {
     );
   });
 
-  it('apMax penalties shrink the pool AND its (informational, non-uptime) regen (rate is % of max AP per second)', () => {
+  it('apMax penalties shrink the pool AND its regen (rate is % of max AP per second) — both feed the pool-cycle uptime now', () => {
     // Scaly Skin-shaped −50 max AP: pool 210−50 = 160; regenPerSec = 160 × 6/100 =
-    // 9.6 (vs 12.6 at 210 — the %-of-max model makes regen pool-proportional)
-    // but it's excluded from uptime; secondsToEmpty = 160/64 with no in-combat
-    // restores.
+    // 9.6 (vs 12.6 at 210 — the %-of-max model makes regen pool-proportional);
+    // drainPerSec = 64, apGainPerSec = 0 (no in-combat restores).
     const result = computeApEconomy({
       apCost: 16,
       shotsPerSec: 4,
@@ -161,8 +184,16 @@ describe('computeApEconomy', () => {
     });
     expect(result.maxAp).toBe(160);
     expect(result.regenPerSec).toBeCloseTo(9.6, 10);
-    expect(result.uptime).toBe(0);
-    expect(result.secondsToEmpty).toBeCloseTo(160 / 64, 10);
+    // burstSec = 160/64 = 2.5; pauseSec = 1 + 160/9.6 = 17.666667; uptime ≈
+    // 0.123967 — smaller pool than the 210-AGI-15 baseline (test above) means
+    // a shorter burst against the SAME pauseSec (maxAp/regenPerSec is
+    // pool-size-invariant at a fixed rate %), so uptime drops.
+    const burstSec = 160 / 64;
+    const pauseSec = AP_REGEN_DELAY_SEC + 160 / 9.6;
+    const uptime = burstSec / (burstSec + pauseSec);
+    expect(result.secondsToEmpty).toBeCloseTo(burstSec, 10);
+    expect(result.pauseSec).toBeCloseTo(pauseSec, 10);
+    expect(result.uptime).toBeCloseTo(uptime, 10);
   });
 
   it('apRegen perk bonuses multiply the race-base rate', () => {
@@ -237,9 +268,9 @@ describe('computeApEconomy', () => {
       shotsPerCrit: Infinity,
     };
 
-    it('credits regenPerSec × (reloadSec − delay), averaged over the magazine cycle', () => {
+    it('credits regenPerSec × (reloadSec − delay), averaged over the magazine cycle, then feeds the pool-cycle burst/pause', () => {
       // 20s dump + 4s reload cycle at 20/24 shots/s: credit = 12.6 × (4−1)/24
-      // = 1.575; uptime = 1.575 / (16 × 20/24).
+      // = 1.575; drainPerSec = 16 × 20/24 = 13.333333.
       const result = computeApEconomy({
         ...base,
         shotsPerSec: 20 / 24,
@@ -248,7 +279,16 @@ describe('computeApEconomy', () => {
       });
       expect(result.reloadRegenPerSec).toBeCloseTo(1.575, 10);
       expect(result.apGainPerSec).toBeCloseTo(1.575, 10);
-      expect(result.uptime).toBeCloseTo(1.575 / (16 * (20 / 24)), 10);
+      // burstSec = 210 / (13.333333 − 1.575) ≈ 17.859674
+      // pauseSec = 1 + 210/12.6 ≈ 17.666667
+      // uptime = burstSec / (burstSec + pauseSec) ≈ 0.502716
+      const drainPerSec = 16 * (20 / 24);
+      const burstSec = 210 / (drainPerSec - 1.575);
+      const pauseSec = AP_REGEN_DELAY_SEC + 210 / 12.6;
+      const uptime = burstSec / (burstSec + pauseSec);
+      expect(result.secondsToEmpty).toBeCloseTo(burstSec, 10);
+      expect(result.pauseSec).toBeCloseTo(pauseSec, 10);
+      expect(result.uptime).toBeCloseTo(uptime, 10);
     });
 
     it('a reload at or below the 1s delay earns nothing', () => {
@@ -271,6 +311,7 @@ describe('computeApEconomy', () => {
       expect(result.reloadRegenPerSec).toBeCloseTo(8.82, 10);
       expect(result.uptime).toBe(1);
       expect(result.secondsToEmpty).toBeUndefined();
+      expect(result.pauseSec).toBeUndefined();
     });
 
     it('stacks with crit restores into one apGainPerSec (breakout stays separate)', () => {
@@ -285,6 +326,96 @@ describe('computeApEconomy', () => {
       });
       expect(result.reloadRegenPerSec).toBeCloseTo(1.575, 10);
       expect(result.apGainPerSec).toBeCloseTo(1.575 + (10 * 20) / 24 / 2, 10);
+    });
+  });
+
+  describe('pool-cycle uptime (adopted 2026-07-29)', () => {
+    it('delay amortization: a bigger pool (higher AGI) strictly raises uptime at the same drain/gain rates', () => {
+      // Same weapon (16 AP/shot, 4 shots/s), apGainPerSec = 0 both times, only
+      // AGI changes. Because regenPerSec = maxAp × ratePct/100, the refill
+      // term maxAp/regenPerSec = 100/ratePct is POOL-SIZE-INVARIANT — pauseSec
+      // is identical at both AGI values (only burstSec grows), which is what
+      // makes a bigger pool strictly better: it amortizes the same fixed
+      // pause over a longer burst.
+      const low = computeApEconomy({
+        apCost: 16,
+        shotsPerSec: 4,
+        agility: 15, // maxAp 210, regenPerSec 12.6
+        apRegenBonus: 0,
+        apPerCrit: 0,
+        shotsPerCrit: Infinity,
+      });
+      const high = computeApEconomy({
+        apCost: 16,
+        shotsPerSec: 4,
+        agility: 50, // maxAp 560, regenPerSec 33.6
+        apRegenBonus: 0,
+        apPerCrit: 0,
+        shotsPerCrit: Infinity,
+      });
+      expect(high.pauseSec).toBeCloseTo(low.pauseSec!, 10);
+      expect(high.secondsToEmpty!).toBeGreaterThan(low.secondsToEmpty!);
+      expect(high.uptime).toBeGreaterThan(low.uptime);
+      // uptime@15 ≈ 0.156638, uptime@50 ≈ 0.331230 — hand-computed via the
+      // same burst/pause formula as the tests above.
+      expect(low.uptime).toBeCloseTo(3.28125 / (3.28125 + (AP_REGEN_DELAY_SEC + 210 / 12.6)), 10);
+      expect(high.uptime).toBeCloseTo(8.75 / (8.75 + (AP_REGEN_DELAY_SEC + 560 / 33.6)), 10);
+    });
+
+    it('apRegenBonus/apRegenFlatBonus/apMaxBonus now move uptime (previously excluded — module doc)', () => {
+      const baseline = computeApEconomy({
+        apCost: 16,
+        shotsPerSec: 4,
+        agility: 15, // maxAp 210, regenPerSec 12.6, drainPerSec 64, gain 0
+        apRegenBonus: 0,
+        apPerCrit: 0,
+        shotsPerCrit: Infinity,
+      });
+
+      // +100% apRegen doubles regenPerSec (12.6 → 25.2), shrinking pauseSec
+      // (1 + 210/25.2 = 9.333333 vs baseline's 1 + 210/12.6 = 17.666667) while
+      // burstSec is unchanged (gain still 0) → uptime rises.
+      const withApRegen = computeApEconomy({
+        apCost: 16,
+        shotsPerSec: 4,
+        agility: 15,
+        apRegenBonus: 1.0,
+        apPerCrit: 0,
+        shotsPerCrit: Infinity,
+      });
+      const burstSec = 210 / 64;
+      const pauseSecWithApRegen = AP_REGEN_DELAY_SEC + 210 / 25.2;
+      expect(withApRegen.uptime).toBeCloseTo(burstSec / (burstSec + pauseSecWithApRegen), 10);
+      expect(withApRegen.uptime).toBeGreaterThan(baseline.uptime);
+
+      // +10 apRegenFlat (added onto the 6.0 race base before the % mult:
+      // regenPerSec = 210 × 16/100 = 33.6) shrinks pauseSec the same way.
+      const withApRegenFlat = computeApEconomy({
+        apCost: 16,
+        shotsPerSec: 4,
+        agility: 15,
+        apRegenBonus: 0,
+        apRegenFlatBonus: 10,
+        apPerCrit: 0,
+        shotsPerCrit: Infinity,
+      });
+      const pauseSecWithFlat = AP_REGEN_DELAY_SEC + 210 / 33.6;
+      expect(withApRegenFlat.uptime).toBeCloseTo(burstSec / (burstSec + pauseSecWithFlat), 10);
+      expect(withApRegenFlat.uptime).toBeGreaterThan(baseline.uptime);
+
+      // −50 apMax (Scaly Skin-shaped) shrinks BOTH the burst (smaller pool to
+      // drain) and, via the %-of-max regen model, keeps pauseSec unchanged
+      // (still 100/ratePct + delay) — so uptime strictly falls.
+      const withApMaxPenalty = computeApEconomy({
+        apCost: 16,
+        shotsPerSec: 4,
+        agility: 15,
+        apRegenBonus: 0,
+        apMaxBonus: -50,
+        apPerCrit: 0,
+        shotsPerCrit: Infinity,
+      });
+      expect(withApMaxPenalty.uptime).toBeLessThan(baseline.uptime);
     });
   });
 });

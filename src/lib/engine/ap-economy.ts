@@ -7,10 +7,10 @@ import type { SustainResult } from './sustain';
  * Every VATS shot costs AP (WEAP "Action Point Cost" — Weapon.apCost); AP
  * regenerates over time and VATS crits can restore extra AP (Conductor's).
  * When the drain rate exceeds the gain rate, the player cannot sustain
- * continuous VATS fire forever — `uptime` is the steady-state duty cycle
- * (fraction of time spent actively firing before the pool runs dry and
- * regen must catch back up), and `apLimitedDps` is the sustained VATS DPS
- * scaled by that duty cycle.
+ * continuous VATS fire forever: the pool-cycle model below alternates a
+ * firing burst with a forced regen pause, `uptime` is the steady-state
+ * fraction of time spent in the burst, and `apLimitedDps` is the sustained
+ * VATS DPS scaled by that duty cycle.
  *
  * ESM sources (20260710 dump, recorded in the same assumptions.md section):
  * - GMSTs `fAVDActionPointsBase` = 60, `fAVDActionPointsMult` = 10 →
@@ -33,15 +33,28 @@ import type { SustainResult } from './sustain';
  * AGI values would also distinguish %-of-max from flat if any doubt
  * remains.
  *
- * On-crit AP HoTs (Conductor's 20 AP/s over 5s half) are REFRESH-ONLY: a new
- * crit dispels the prior instance and restarts the window instead of
- * stacking. ESM-proven for Conductor's via MGEF `Dispel with Keywords` +
- * KYWD ConductorsDispelPlayerEffectKeyword (general Creation-engine rule:
- * matching-keyword re-apply dispels first; some effects instead gate on an
- * already-active check and skip). Mirrors the dotDamage convention. Steady-
- * state term is rate × min(1, durationSec × critsPerSec) — fast crits
- * saturate at the raw rate, slow crits (interval ≥ duration) recover the
- * full rate × duration per crit.
+ * On-crit AP HoTs (Conductor's 20 AP/s over 5s) are REFRESH-ONLY: a new crit
+ * dispels the prior instance and restarts the window instead of stacking.
+ * ESM-proven (20260710 dump) on SPEL
+ * `Legendary_Weapon_ConductorsPlayerRestoreSpell` (0x007ACB0D)'s HoT effect
+ * entry, MGEF `Legendary_Weapon_ConductorsApplyRestorePlayerAPPerkEffect`
+ * (0x007ACB09, magnitude 20 / duration 5, Archetype "Value Modifier" on AV
+ * `ActionPoints` 0x000002D5): Magic Effect Data Flags = `0x100` = "Dispel
+ * with Keywords", Keywords = [KYWD `ConductorsDispelPlayerEffectKeyword`
+ * (0x007B71D3, Type "Dispel Effect")] whose Notes field reads verbatim
+ * "used ... to prevent Owner & Recipients from stacking AP & Health Regen
+ * effects" — confirms REFRESH (dispel-and-reapply), not a conditional-skip
+ * gate. The parallel Health HoT MGEF
+ * (`...ApplyRestorePlayerHealthPerkEffect`, 0x007ACB08) carries the same
+ * flag/keyword pair. The spell's two instant effects (MGEF
+ * `RestoreActionPoints` 0x00047668 magnitude 10, `RestoreHealthGeneric`
+ * 0x00023735 magnitude 10, both duration 0) are plain one-shot Value
+ * Modifiers with no stacking semantics to check. This matches the in-game
+ * 2026-07-15 confirmation ("a new crit restarts the window") exactly — ESM
+ * and observation agree, no indistinguishability caveat needed. Mirrors the
+ * dotDamage convention. Steady-state term is rate × min(1, durationSec ×
+ * critsPerSec) — fast crits saturate at the raw rate, slow crits (interval
+ * ≥ duration) recover the full rate × duration per crit.
  *
  * Passive regen does NOT tick while VATS-firing continuously (user-confirmed
  * in-game 2026-07-15): the race-base %-of-max regen and every passive bonus
@@ -55,11 +68,19 @@ import type { SustainResult } from './sustain';
  * restores (Conductor's spike + HoT) and AP-cost modifiers (folded into
  * `apCost` upstream).
  *
- * Considered and NOT implemented (user decision 2026-07-15): crediting full
- * passive regen during the AP-forced pause when uptime < 1, i.e. the
- * duty-cycle form uptime = regen/(drain − gain + regen). That would change
- * apLimitedDps for every AP-constrained build, not just reload-heavy ones —
- * revisit against an in-game uptime measurement before adopting.
+ * Pool-cycle uptime (ADOPTED 2026-07-29, user decision — supersedes the
+ * 2026-07-15 gain/drain heuristic): an AP-constrained build alternates a
+ * firing BURST — the pool drains to empty over `burstSec = maxAp /
+ * (drainPerSec − apGainPerSec)` (the existing `secondsToEmpty`) — with a
+ * forced PAUSE, `pauseSec = regenDelaySec + maxAp / regenPerSec`: exit VATS,
+ * wait the post-drain delay, then refill the FULL pool at full passive
+ * `regenPerSec` (a full refill is optimal play — it amortizes the fixed
+ * delay over the largest possible next burst). Steady state
+ * `uptime = burstSec / (burstSec + pauseSec)`. Conductor's HoT tail that
+ * extends past the burst into the pause window is deliberately ignored
+ * (conservative: slightly understates gain during the pause; small at
+ * typical duration/pause lengths). Issue #71's golden pins this form once
+ * measured.
  *
  * On-kill AP restores (Grim Reaper's Sprint, Inertial) are OUT OF SCOPE
  * (need enemy TTK, phase 3) — not computed here.
@@ -119,15 +140,15 @@ export interface ApEconomyInput {
   /** Steady-state shots/sec while actively firing (reload-inclusive — see `effectiveShotsPerSecond`). */
   shotsPerSec: number;
   agility: number;
-  /** Σ of active `apRegen` modifiers (decimal, 0.45 = +45%). Feeds only the informational `regenPerSec` — passive regen is excluded from the uptime math (module doc). */
+  /** Σ of active `apRegen` modifiers (decimal, 0.45 = +45%). Feeds `regenPerSec`, which drives both the reload-window gain credit and the pool-cycle pause length (module doc). */
   apRegenBonus: number;
   /**
    * Σ of active `apRegenFlat` modifiers — ActionPointsRate AV points, i.e.
    * percent-of-max-AP per second added onto the race base (Company Tea +10).
-   * Feeds only the informational `regenPerSec` — see `apRegenBonus`.
+   * Feeds `regenPerSec` — see `apRegenBonus`.
    */
   apRegenFlatBonus?: number;
-  /** Swaps the race base rate to PowerArmorRace's 3.0 (half the human 6.0). Feeds only `regenPerSec`. */
+  /** Swaps the race base rate to PowerArmorRace's 3.0 (half the human 6.0). Feeds `regenPerSec`. */
   isInPowerArmor?: boolean;
   /** Σ of active `apMax` modifiers (flat AP pool — food/magazine fortifies, Scaly Skin's penalty). */
   apMaxBonus?: number;
@@ -154,10 +175,26 @@ export interface ApEconomyInput {
 
 export interface ApEconomyResult {
   maxAp: number;
-  /** Passive regen rate (race base + flat/percent bonuses) — informational only; does NOT feed apGainPerSec/uptime (see module doc). */
+  /**
+   * Passive regen rate (race base + flat/percent bonuses). Does NOT tick
+   * during the mag dump (`apGainPerSec` excludes it there — module doc), but
+   * feeds both `reloadRegenPerSec` and the pool-cycle `pauseSec`/`uptime`
+   * terms.
+   */
   regenPerSec: number;
   /** AP/sec restored while cycling: crit spike + HoT + the reload-window regen credit. */
   apGainPerSec: number;
+  /**
+   * Instant `apPerCrit` restore, steady-state (apPerCrit × crits/sec) —
+   * already folded into apGainPerSec; broken out for display.
+   */
+  critSpikePerSec: number;
+  /**
+   * Refresh-only on-crit AP HoT rate, steady-state (module doc's saturating
+   * min(1, duration × crits/sec) term) — already folded into apGainPerSec;
+   * broken out for display.
+   */
+  critHotPerSec: number;
   /**
    * Passive regen credited during the reload window, cycle-averaged
    * (regenPerSec × max(0, reloadSec − AP_REGEN_DELAY_SEC) / cycleSec) —
@@ -167,8 +204,16 @@ export interface ApEconomyResult {
   drainPerSec: number;
   /** Steady-state duty cycle, clamped 0–1. 1 when gain ≥ drain (AP is never the constraint). */
   uptime: number;
-  /** Time to empty a full pool at the net drain rate — only meaningful when uptime < 1. */
+  /** Burst length: time to empty a full pool at the net drain rate — only present when uptime < 1. */
   secondsToEmpty?: number;
+  /**
+   * Forced pause length after the pool empties: `regenDelaySec + maxAp /
+   * regenPerSec` (exit VATS, wait the delay, refill the full pool at full
+   * passive regen — module doc "Pool-cycle uptime"). Only present when
+   * uptime < 1; absent (not just 0) in the `regenPerSec <= 0` fallback,
+   * where no pause is credited (see `computeApEconomy`).
+   */
+  pauseSec?: number;
 }
 
 export function computeApEconomy(input: ApEconomyInput): ApEconomyResult {
@@ -200,23 +245,57 @@ export function computeApEconomy(input: ApEconomyInput): ApEconomyResult {
     cycleSec > 0
       ? (regenPerSec * Math.max(0, (input.reloadSec ?? 0) - constants.regenDelaySec)) / cycleSec
       : 0;
-  const apGainPerSec = input.apPerCrit * critsPerSec + critHotPerSec + reloadRegenPerSec;
+  const critSpikePerSec = input.apPerCrit * critsPerSec;
+  const apGainPerSec = critSpikePerSec + critHotPerSec + reloadRegenPerSec;
   const drainPerSec = Math.max(0, input.apCost) * Math.max(0, input.shotsPerSec);
 
   if (drainPerSec <= apGainPerSec || drainPerSec <= 0) {
-    return { maxAp, regenPerSec, apGainPerSec, reloadRegenPerSec, drainPerSec, uptime: 1 };
+    return {
+      maxAp,
+      regenPerSec,
+      apGainPerSec,
+      critSpikePerSec,
+      critHotPerSec,
+      reloadRegenPerSec,
+      drainPerSec,
+      uptime: 1,
+    };
   }
 
-  const uptime = Math.max(0, Math.min(1, apGainPerSec / drainPerSec));
-  const secondsToEmpty = maxAp / (drainPerSec - apGainPerSec);
+  // Pool-cycle model (module doc "Pool-cycle uptime"): burst drains the pool
+  // to empty, then a forced pause (post-drain delay + full-pool refill at
+  // regenPerSec) before the next burst starts.
+  const burstSec = maxAp / (drainPerSec - apGainPerSec);
+  if (regenPerSec <= 0) {
+    // Can't happen in practice (every race base % > 0) — guards the
+    // division below. Falls back to the old gain/drain clamp with no pause
+    // credited rather than dividing by zero.
+    const uptime = Math.max(0, Math.min(1, apGainPerSec / drainPerSec));
+    return {
+      maxAp,
+      regenPerSec,
+      apGainPerSec,
+      critSpikePerSec,
+      critHotPerSec,
+      reloadRegenPerSec,
+      drainPerSec,
+      uptime,
+      secondsToEmpty: burstSec,
+    };
+  }
+  const pauseSec = constants.regenDelaySec + maxAp / regenPerSec;
+  const uptime = burstSec / (burstSec + pauseSec);
   return {
     maxAp,
     regenPerSec,
     apGainPerSec,
+    critSpikePerSec,
+    critHotPerSec,
     reloadRegenPerSec,
     drainPerSec,
     uptime,
-    secondsToEmpty,
+    secondsToEmpty: burstSec,
+    pauseSec,
   };
 }
 

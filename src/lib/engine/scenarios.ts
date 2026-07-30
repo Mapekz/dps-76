@@ -68,8 +68,11 @@ export interface ScenarioExplain {
  * `mitigated / unmitigated × 100` on that same total (0-100, matching the
  * `*Pct` convention elsewhere on this type). `ttk` is enemy HP ÷
  * `sustainedDps` here (`Infinity` when `sustainedDps` is 0 — no damage
- * ever lands). DoT (`dotDps`) is NOT included — mitigation doesn't apply to
- * it in v1 (docs/assumptions.md "Resist mitigation").
+ * ever lands). For VATS, `sustainedDps`/`ttk` are ALSO scaled by the AP
+ * economy's `uptime` (`ScenarioResult.ap.uptime`, `ap-economy.ts`) — the
+ * vs-target number is throttled by the same duty cycle as `apLimitedDps`,
+ * not just by mitigation. DoT (`dotDps`) is NOT included — mitigation
+ * doesn't apply to it in v1 (docs/assumptions.md "Resist mitigation").
  */
 export interface EffectiveResult {
   perHit: HitBreakdown;
@@ -116,13 +119,21 @@ export interface ScenarioResult {
     uptime: number;
     apLimitedDps: number;
     secondsToEmpty?: number;
+    /** Forced pool-cycle pause length (regenDelaySec + full-pool refill) — present alongside secondsToEmpty when uptime < 1 (`ap-economy.ts`'s `pauseSec`). */
+    pauseSec?: number;
     /** AP economy breakdown for display: pool size, regen and effective cost. */
     maxAp: number;
     regenPerSec: number;
     /** Crit-restore AP/sec (instant apPerCrit + refresh-only HoTs) + the reload-window regen credit. */
     apGainPerSec: number;
+    /** Instant apPerCrit restore, steady-state (apPerCrit × crits/sec) — already inside apGainPerSec. */
+    critSpikePerSec: number;
+    /** Refresh-only on-crit AP HoT rate, steady-state — already inside apGainPerSec. */
+    critHotPerSec: number;
     /** Passive regen credited during the reload window, cycle-averaged (already inside apGainPerSec). */
     reloadRegenPerSec: number;
+    /** apCostPerShot × shots/sec — the steady-state AP drain rate (`ap-economy.ts`'s `drainPerSec`). */
+    drainPerSec: number;
     /** Effective per-shot VATS AP cost (post weapon-OMOD vatsApCost fold). */
     apCostPerShot: number;
   };
@@ -596,9 +607,14 @@ function bodyPartBlendedHit(
  * actually feeds `sustainedDps` (the charged-cycle blend for charged
  * weapons, the plain scenario hit otherwise — see the `freeCycleHit`/
  * `vatsCycleHit` comment in `computeScenarios`). `retainedFraction` is
- * derived from the SAME total mitigation scales `sustainedDps` by, so
- * `effective.sustainedDps / sustainedDps === effective.perHit.total /
- * cycleHit.total` always holds.
+ * derived from the SAME total mitigation scales `sustainedDps` by, so the
+ * mitigation-only ratio `mitigated.total / cycleHit.total` always equals
+ * `retainedFraction`. `uptime` (default 1, the free-aim call's implicit
+ * value) additionally throttles `sustainedDps`/`ttk` for VATS — the
+ * AP-limited duty cycle (`ap.uptime`) must gate the vs-target number exactly
+ * like it gates `apLimitedDps`, so with uptime < 1
+ * `effective.sustainedDps / sustainedDps !== retainedFraction` (it's
+ * `retainedFraction × uptime`).
  */
 function effectiveAgainstEnemy(
   cycleHit: HitBreakdown,
@@ -607,6 +623,7 @@ function effectiveAgainstEnemy(
   armorPenTotal: number,
   armorPenFlatTotal: number,
   mitigationConstants: MitigationConstants | undefined,
+  uptime = 1,
 ): ScenarioResult['effective'] {
   if (!defenses) return undefined;
   const mitigated = applyMitigation(
@@ -617,7 +634,7 @@ function effectiveAgainstEnemy(
     mitigationConstants,
   );
   const retainedFraction = cycleHit.total > 0 ? mitigated.total / cycleHit.total : 1;
-  const mitigatedSustainedDps = sustainedDps * retainedFraction;
+  const mitigatedSustainedDps = sustainedDps * retainedFraction * uptime;
   return {
     perHit: mitigated,
     sustainedDps: mitigatedSustainedDps,
@@ -1044,10 +1061,14 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       uptime: economy.uptime,
       apLimitedDps: apLimitedDps(vatsSustain.sustainedDps, economy.uptime),
       ...(economy.secondsToEmpty !== undefined && { secondsToEmpty: economy.secondsToEmpty }),
+      ...(economy.pauseSec !== undefined && { pauseSec: economy.pauseSec }),
       maxAp: economy.maxAp,
       regenPerSec: economy.regenPerSec,
       apGainPerSec: economy.apGainPerSec,
+      critSpikePerSec: economy.critSpikePerSec,
+      critHotPerSec: economy.critHotPerSec,
       reloadRegenPerSec: economy.reloadRegenPerSec,
+      drainPerSec: economy.drainPerSec,
       apCostPerShot: input.weapon.apCost!,
     };
   }
@@ -1080,6 +1101,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     armorPenTotal,
     armorPenFlatTotal,
     input.mitigationConstants,
+    ap?.uptime,
   );
 
   return {
