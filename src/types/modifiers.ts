@@ -88,9 +88,30 @@ export type Bucket =
   //     USER-RESOLVED 2026-07-21, routed to `baseDamage` — NOT the same
   //     route as STAT_DmgExplosive above, and currently inert (no live
   //     consumer; see the mgef.ts comment for why).
+  //   - The Explosive 2★ legendary (`explosivePayload` below) ALSO rewrites
+  //     to an explosive-scoped `baseDamage` MUL_ADD, but only on a
+  //     Curve-Table Explosion (effective-weapon.ts) — this is a THIRD, still
+  //     distinct route (pre-DBM, user-measured 2026-07-30), not the same
+  //     mechanism as the inert entry-point route above.
   /** Bash-attack damage (STAT_DmgBash — Basher's) — inert until bash attacks are modeled. */
   | 'bashDamage'
-  /** Fraction of a component's damage that spawns an explosive twin (LGND_ExplosivePayload — Explosive), folded per-component in paper-damage.ts. */
+  /**
+   * The Explosive 2★ legendary (LGND_ExplosivePayload, ADD 0.2). Always
+   * +20% BASE damage pre-DBM (user-confirmed 2026-07-30) — WHICH base
+   * depends on the weapon's explosion kind (CONTEXT.md "Curve-Table
+   * Explosion" / "Projectile-Scaling Explosion"), decided in
+   * effective-weapon.ts's `buildEffectiveWeapon`, not here:
+   *   - Projectile-Scaling Explosion (Gauss/Tesla explosionBaseWeaponDamageMult):
+   *     left untouched — folded per-component as the explosive-twin's
+   *     intrinsic-base bonus in paper-damage.ts (0.15 + 0.20 = 0.35).
+   *   - Curve-Table Explosion (fromExplosion components): rewritten into an
+   *     explosive-scoped `baseDamage` MUL_ADD and stripped — no twin.
+   *   - Chain-suppressed (Tesla + AC muzzle, chain lightning): stripped
+   *     outright, contributes nothing.
+   * Regime is `damageFold` for the first case only; the other two consume
+   * it entirely inside `buildEffectiveWeapon` (a `bootstrap`-shaped
+   * destiny) before it would ever reach paper-damage.ts.
+   */
   | 'explosivePayload'
   /**
    * Accumulated `STAT_ExplosionRadius` bonus as a fraction (Grenadier rank 1
@@ -593,7 +614,10 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   explosivePayload: {
     regime: 'damageFold',
     hasEngineEffect: true,
-    foldedBy: 'paper-damage.ts computePaperDamage (explosive-twin branch)',
+    foldedBy:
+      'paper-damage.ts computePaperDamage (explosive-twin branch) on a Projectile-Scaling ' +
+      'Explosion; effective-weapon.ts buildEffectiveWeapon (rewrite-to-baseDamage or strip) ' +
+      'on a Curve-Table Explosion or chain-suppressed weapon',
   },
   explosionRadiusBonus: {
     regime: 'bootstrap',

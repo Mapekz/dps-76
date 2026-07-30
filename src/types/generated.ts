@@ -316,6 +316,17 @@ export interface GeneratedOmod {
   notes?: string[];
   /** See GeneratedExplosionSwap — present only for a launcher-family barrel whose EXPL carries real damage. */
   explosionSwap?: GeneratedExplosionSwap;
+  /**
+   * This OMOD's `OverrideProjectile` resolves to a `Chain`-flagged EXPL —
+   * chain lightning (Tesla Cannon's Alternate Current muzzle), not a real
+   * explosion. Its bounce damage is engine-native, has no ESM
+   * representation, and is exempt from every explosive-damage mechanic.
+   * When equipped, `buildEffectiveWeapon` (effective-weapon.ts) must clear
+   * the weapon's `explosionBaseWeaponDamageMult` AND strip `explosivePayload`
+   * outright — a 2★ Explosive is dead weight on this build, not a normal
+   * twin (user-confirmed 2026-07-30). Absent = false.
+   */
+  chainSuppressesExplosion?: boolean;
 }
 
 /**

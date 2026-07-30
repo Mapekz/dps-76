@@ -395,6 +395,17 @@ export function buildEffectiveWeapon(
       m.bucket !== 'explosionRadiusToDamage',
   );
 
+  // Chain-lightning suppression (Tesla Cannon's Alternate Current muzzle):
+  // an equipped OMOD's OverrideProjectile can resolve to a Chain-flagged
+  // EXPL — chain lightning, not a real explosion (GeneratedOmod.
+  // chainSuppressesExplosion, scripts/extract/extract-omods.ts /
+  // normalize/explosion.ts's `explosionIsChain`). Its bounce falloff is
+  // engine-native with no ESM representation, so the weapon's own explosion
+  // (Curve-Table OR Projectile-Scaling — CONTEXT.md) must be treated as
+  // absent entirely: see hasCurveExplosion/explosionBaseWeaponDamageMult and
+  // the Explosive 2★ branch below.
+  const chainSuppressesExplosion = equippedOmods.some((o) => o.chainSuppressesExplosion);
+
   // Launcher-family projectile-swap replacement (docs/assumptions.md
   // "OMOD-chased launcher payloads" § Launcher-family replacement): a barrel
   // OMOD's OverrideProjectile can swap which EXPL detonates (Hellstorm's
@@ -411,8 +422,9 @@ export function buildEffectiveWeapon(
     undefined,
   );
   const hasBaselineExplosion = (weapon.components ?? []).some((c) => c.fromExplosion);
-  const baseComponents =
-    explosionSwap && hasBaselineExplosion
+  const baseComponents = chainSuppressesExplosion
+    ? (weapon.components ?? []).filter((c) => !c.fromExplosion)
+    : explosionSwap && hasBaselineExplosion
       ? [
           ...(weapon.components ?? []).filter((c) => !c.fromExplosion),
           ...explosionSwapComponents(
@@ -423,6 +435,10 @@ export function buildEffectiveWeapon(
       : (weapon.components ?? []);
   const weaponForMaterialization =
     baseComponents === weapon.components ? weapon : { ...weapon, components: baseComponents };
+  // Post-swap/post-suppression Curve-Table Explosion check (CONTEXT.md) —
+  // used by the Explosive 2★ branch below, evaluated on the EFFECTIVE
+  // components so an explosionSwap or chain suppression is accounted for.
+  const hasCurveExplosion = baseComponents.some((c) => c.fromExplosion);
 
   const { components: materialized, consumedIds } = materializeDamageTypeComponents(
     weaponForMaterialization,
@@ -457,6 +473,45 @@ export function buildEffectiveWeapon(
     }
   }
 
+  // Explosive 2★ (`explosivePayload`): the legendary always contributes
+  // +20% as BASE damage, pre-DBM (user-confirmed 2026-07-30) — WHICH base it
+  // attaches to depends on the weapon's explosion kind (CONTEXT.md):
+  //  - Projectile-Scaling Explosion (Gauss/Tesla explosionBaseWeaponDamageMult):
+  //    untouched here — paper-damage.ts's own explosivePayload fold already
+  //    adds the legendary's fraction straight onto the intrinsic mult
+  //    (0.15 + 0.20 = 0.35), matching the measured in-game behavior.
+  //  - Curve-Table Explosion (fromExplosion components — launchers, Gamma
+  //    Gun, Cremator): rewritten HERE into an explosive-scoped `baseDamage`
+  //    MUL_ADD (folds pre-DBM, paper-damage.ts's dbm parenthesis never sees
+  //    it as a separate term) and stripped from the returned modifiers, so
+  //    paper-damage.ts's explosivePayload twin fold never runs for this
+  //    weapon — no twin off the direct-impact token either (decided: the 20%
+  //    goes entirely into the explosion's own base, nowhere else).
+  //  - Chain-suppressed (Tesla + AC muzzle — chain lightning, not an
+  //    explosion): the legendary is dead weight — stripped outright, no
+  //    twin, no base boost (user-confirmed 2026-07-30).
+  if (chainSuppressesExplosion || hasCurveExplosion) {
+    const payloadSource = [...allOmodModifiers, ...loadoutModifiers].find(
+      (m) => m.bucket === 'explosivePayload',
+    );
+    const payload = payloadSource
+      ? foldBucket([...allOmodModifiers, ...loadoutModifiers], 'explosivePayload', 0, baseCtx)
+      : 0;
+    for (let i = resolvedModifiers.length - 1; i >= 0; i--) {
+      if (resolvedModifiers[i].bucket === 'explosivePayload') resolvedModifiers.splice(i, 1);
+    }
+    if (hasCurveExplosion && !chainSuppressesExplosion && payload > 0 && payloadSource) {
+      resolvedModifiers.push({
+        id: `${payloadSource.id}:explosiveBaseDamage`,
+        source: payloadSource.source,
+        bucket: 'baseDamage',
+        op: 'MUL_ADD',
+        value: payload,
+        conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }],
+      });
+    }
+  }
+
   return {
     weapon: {
       ...weapon,
@@ -477,9 +532,11 @@ export function buildEffectiveWeapon(
       minRange,
       maxRange,
       outOfRangeDamageMult,
-      ...(explosionSwap && hasBaselineExplosion
-        ? { explosionBaseWeaponDamageMult: explosionSwap.baseWeaponDamageMult }
-        : {}),
+      ...(chainSuppressesExplosion
+        ? { explosionBaseWeaponDamageMult: 0 }
+        : explosionSwap && hasBaselineExplosion
+          ? { explosionBaseWeaponDamageMult: explosionSwap.baseWeaponDamageMult }
+          : {}),
       components: [...baseComponents, ...materialized],
     },
     modifiers: resolvedModifiers,

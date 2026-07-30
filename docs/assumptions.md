@@ -152,8 +152,35 @@ ProjectilePlasmaLarge).
   Pip-Boy card reading (Fat Man, Missile Launcher goldens).
 - **EXPL "Base Weapon Damage Mult"** (Gauss family 0.15, Tesla Cannon 0.10) is
   modeled as the intrinsic BASE of the `explosivePayload` twin fold;
-  Explosive 2★ legendary (+0.2) ADDs on top. **ASSUMPTION** (additive
-  stacking unconfirmed in-game).
+  Explosive 2★ legendary (+0.2) ADDs on top (0.15 → 0.35 / 0.10 → 0.30).
+  **USER-MEASURED 2026-07-30** (supersedes the prior "additive stacking
+  unconfirmed" note — this is a Projectile-Scaling Explosion, see below).
+- **Explosive 2★ dual behavior, USER-MEASURED 2026-07-30**: the legendary
+  always contributes +20% as BASE damage, pre-DBM — WHICH base it attaches to
+  depends on the weapon's explosion kind (CONTEXT.md):
+  - **Projectile-Scaling Explosion** (Gauss family, Tesla Cannon w/
+    standard/DC muzzle — `explosionBaseWeaponDamageMult`): the +0.2 ADDs to
+    the mult itself (see bullet above) — unchanged, already correct.
+  - **Curve-Table Explosion** (`fromExplosion` components — launchers,
+    Gamma Gun, Cremator, Broadsider, Chaos Engine, War Shrike): the +20%
+    instead boosts the explosion's OWN base damage, pre-DBM — a
+    `baseDamage` MUL_ADD scoped `damageTypeScope: ['explosive']`
+    (effective-weapon.ts), **multiplicative with Demolition Expert /
+    'explosive' dbm bonuses**, unlike every other explosion bonus below. The
+    direct-impact component (Hellstorm's ballistic 5, say) does NOT also
+    spawn a twin — the 20% lands entirely in the explosion, nowhere else
+    (decided: the alternative reading would make the 2★ worth ~2× on a
+    weapon like Hellstorm or Cremator where direct and explosion damage are
+    comparable magnitude).
+  - **Chain-suppressed** (Tesla Cannon's Alternate Current muzzle — chain
+    lightning, not an explosion, see "Chain lightning" below): the 2★ is
+    dead weight, contributes exactly zero.
+  - Fixed 2026-07-30: prior to this, a Curve-Table-Explosion weapon's
+    explosion never saw the legendary at all (`paper-damage.ts` returns
+    early for an explosion component before the twin fold runs), while its
+    direct-impact token spawned a spurious twin instead — sharpest on
+    Gamma Gun (no direct component: the 2★ contributed literally zero) and
+    Hellstorm/Cremator (direct and explosion share the same tier/magnitude).
 - **Explosion bonuses are ADDITIVE dbm** (June 2026 patch, **user-reported**):
   Demolition Expert and 'Mod Player Explosion Damage' (SCAV!) route to `dbm`
   with `damageTypeScope: ['explosive']`, folding in the same parenthesis as
@@ -169,6 +196,34 @@ ProjectilePlasmaLarge).
   damage IS the explosion (`fromExplosion` radiation component, tier 18
   curve), now modeled. (Supersedes any older note elsewhere calling it
   unmodeled/excluded.)
+
+### Chain lightning (Tesla Cannon's Alternate Current muzzle)
+Engine: `explosionIsChain` (`scripts/extract/normalize/explosion.ts`),
+`GeneratedOmod.chainSuppressesExplosion`, `effective-weapon.ts
+buildEffectiveWeapon`.
+
+The AC muzzle's `OverrideProjectile` resolves to `ProjectileTeslaBeam_Chain` →
+EXPL `SCORE_S19_Chainlightning_TeslaCannon`, which carries `Data.Flags1`
+`Chain` and zero damage/mult (`Damage: 0.0`, `Damage Curve Table: null`, `Base
+Weapon Damage Mult: 0.0`) — this is chain lightning on direct hit + bounces,
+not an explosion. Detected by the `Chain` flag; when equipped, suppresses the
+weapon's `explosionBaseWeaponDamageMult` AND strips `explosivePayload`
+outright (a 2★ Explosive contributes nothing — **user-confirmed
+2026-07-30**), rather than falling back to a normal plain-weapon twin.
+
+- **Not modeled**: the chain damage itself — 100% on direct hit (subject to
+  weakpoint/strongpoint like a normal projectile hit, per user report), with
+  falloff per bounce, max 2 bounces (3rd target hit). V63-BERTHA
+  (`mod_custom_V63-BERTHA_Perk`, *"Lightning Arches to an Additional
+  Target"*, one entry-point effect `Add Value -0.1`) adds a bounce and
+  reduces the falloff. Needs a target-count concept the engine does not have.
+- **Falloff rate is NOT in the ESM** — chain lightning uses an older
+  engine-native mechanism. `GMST fBouncedProjectilePowerMult` (`0x00851143`
+  = 0.7) is **Hat Trick's** ricochet setting, confirmed **NOT** this
+  mechanism — do not reuse it here. User-reported falloff is a 30%-per-bounce
+  loss (40% on the 3rd target); whether that composes as subtractive
+  (0.7 → 0.4, matching BERTHA's `-0.1` ⇒ 0.8) or multiplicative (0.7² = 0.49
+  on the 3rd target) is unmeasured. **NEEDS MEASUREMENT.**
 
 ### Explosive-radius-to-damage conversion
 Engine: `effective-weapon.ts buildEffectiveWeapon`.
@@ -269,6 +324,15 @@ Barrel.
   weapon's original beam damage" (the Polar Lobber replaces the Cryolator's
   firing mode entirely, unlike the Gauss case). Extracted but left unmodeled
   pending a user decision + in-game measurement; a `note` records the value.
+  Consequence: the Explosive 2★ still takes the plain-weapon (twin) branch on
+  Polar Lobber rather than the Projectile-Scaling branch (see "Launcher
+  explosion damage" above) — pre-existing, not a regression of the
+  2026-07-30 fix.
+- A `Chain`-flagged EXPL (chain lightning — Tesla Cannon's AC muzzle) is a
+  third, DISTINCT outcome of this same chase, split out into its own
+  "Chain lightning" section above rather than folded into this list — it
+  emits no `explosionSwap` and no ordinary modifiers at all, only
+  `GeneratedOmod.chainSuppressesExplosion`.
 
 ## Mixed damage-type OMOD conversion (DamageTypeValues)
 Engine: `materializeDamageTypeComponents`, `effective-weapon.ts`.
@@ -559,7 +623,7 @@ picker badge.
 | Executioner's | +50% dbm while enemy HP ≤ 40% (default 100 → inactive) | ESM |
 | DmgVs* family (Hunter's, Exterminator's, Ghoul Slayer's, Assassin's, Troubleshooter's, Zealot's, Mutant Slayer's) | +50% dbm vs matching enemy race/keyword, active since 2026-07-15 via the Target picker's race | ESM |
 | Bully's / Tormentor | dbm per crippled limb (+25%/+20%), cap **6** | ESM value; cap is ours |
-| Explosive (2★) | `explosivePayload` spawns an explosive twin per component; folds dbm/crit/PA/wholeDamage but NOT sneak/body-part (see **Formula structure**) | ESM property |
+| Explosive (2★) | Always +20% BASE damage pre-DBM (see **Launcher explosion damage** § "Explosive 2★ dual behavior"). On a Projectile-Scaling Explosion: `explosivePayload` spawns an explosive twin per component, folding dbm/crit/PA/wholeDamage but NOT sneak/body-part (see **Formula structure**). On a Curve-Table Explosion: rewritten into a `baseDamage` MUL_ADD on the explosion itself, no twin. Chain-suppressed (Tesla + AC muzzle): contributes nothing. | ESM property; branch USER-MEASURED 2026-07-30 |
 | Crippling / Basher's | extracted to `limbDamage`/`bashDamage` — INERT until limb-targeting/bash is modeled | ESM |
 | Scaly Skin (+ Chameleon/Grounded ripple, same AV route) | +DamageResist/+EnergyResist extracted to `damageResistGain`/`energyResistGain` (flat points, 50/62 normal/Class-Freak-boosted) — INERT until wearer-side resist mitigation is modeled | ESM-confirmed |
 | Pyromaniac's / Viper's / Severing's | +50% dbm while target has an active fire/poison/bleed status (toggle, default off); Viper's `ImmuneToPoison` gate CONSUMED (target assumed vulnerable) | ESM granted-perk chase |

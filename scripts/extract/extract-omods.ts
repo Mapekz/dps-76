@@ -18,6 +18,7 @@ import {
   DAMAGE_TYPE_EDID_MAP,
   decodeExplosionDamage,
   explosionComponents,
+  explosionIsChain,
   projectileExplosionFormId,
 } from './normalize/explosion';
 import { ObtainabilityClassifier } from './obtainability';
@@ -636,6 +637,14 @@ export async function extractOmods(
    * carry no damage — this chase must materialize nothing for those, with at
    * most one note when a chased PROJ has the Explosion flag but no decodable
    * damage.
+   *
+   * A third, narrower shape: the swapped PROJ's EXPL is `Chain`-flagged
+   * (Tesla Cannon's Alternate Current muzzle → `ProjectileTeslaBeam_Chain` →
+   * `SCORE_S19_Chainlightning_TeslaCannon`) — chain lightning, not an
+   * explosion at all. Its bounce damage is engine-native (no ESM
+   * representation), so it must SUPPRESS the weapon's own
+   * `explosionBaseWeaponDamageMult` rather than be chased for damage —
+   * reported via `chainSuppressesExplosion` instead of a `swap`.
    */
   async function overrideProjectileModifiers(
     projFormId: string,
@@ -643,7 +652,7 @@ export async function extractOmods(
     into: Modifier[],
     modNotes: Set<string>,
     targetsExplosiveFamily: boolean,
-  ): Promise<GeneratedExplosionSwap | null> {
+  ): Promise<{ swap: GeneratedExplosionSwap | null; chainSuppressesExplosion: boolean }> {
     const unresolved: string[] = [];
     let explFormId: string | null;
     try {
@@ -652,17 +661,25 @@ export async function extractOmods(
       modNotes.add(
         `OverrideProjectile ${projFormId}: ${err instanceof Error ? err.message : String(err)}`,
       );
-      return null;
+      return { swap: null, chainSuppressesExplosion: false };
     }
-    if (!explFormId) return null; // no Explosion flag / no Explosion formid — cosmetic mod, nothing to chase.
+    if (!explFormId) return { swap: null, chainSuppressesExplosion: false }; // no Explosion flag / no Explosion formid — cosmetic mod, nothing to chase.
 
     let expl: EsmRecord;
     try {
       expl = await client.get(explFormId);
     } catch {
       modNotes.add(`OverrideProjectile explosion ${explFormId} not found`);
-      return null;
+      return { swap: null, chainSuppressesExplosion: false };
     }
+
+    if (explosionIsChain(expl)) {
+      modNotes.add(
+        `OverrideProjectile ${expl.editor_id}: Chain-flagged explosion (chain lightning, not an explosion) — suppresses explosionBaseWeaponDamageMult and the Explosive 2★ payload`,
+      );
+      return { swap: null, chainSuppressesExplosion: true };
+    }
+
     const decoded = await decodeExplosionDamage(client, expl, unresolved);
     unresolved.forEach((u) => modNotes.add(u));
 
@@ -695,7 +712,7 @@ export async function extractOmods(
       if (hasHazard) {
         await hazardModifiers(hazdFormId!, source, into, modNotes);
       }
-      return swap;
+      return { swap, chainSuppressesExplosion: false };
     }
 
     if (!hasHazard) {
@@ -704,7 +721,7 @@ export async function extractOmods(
           `EXPL ${expl.editor_id} carries direct damage with no Placed Object hazard — not modeled (docs/assumptions.md "OMOD-chased launcher payloads")`,
         );
       }
-      return null;
+      return { swap: null, chainSuppressesExplosion: false };
     }
 
     // EXPL's own direct typed damage (Polar Lobber's cryo impact) — an
@@ -733,7 +750,7 @@ export async function extractOmods(
     }
 
     await hazardModifiers(hazdFormId!, source, into, modNotes);
-    return null;
+    return { swap: null, chainSuppressesExplosion: false };
   }
 
   /** Recursively collect properties from an OMOD and its include chain. */
@@ -841,6 +858,7 @@ export async function extractOmods(
     const modNotes = new Set<string>();
     let hasEnchantments = false;
     let explosionSwap: GeneratedExplosionSwap | undefined;
+    let chainSuppressesExplosion = false;
     const source: Modifier['source'] = {
       kind: 'omod',
       formId: record.header.form_id,
@@ -887,14 +905,15 @@ export async function extractOmods(
           if (prop.functionType === 'REM') {
             modNotes.add(`removes projectile override ${await client.resolveEdid(prop.value1)}`);
           } else {
-            const swap = await overrideProjectileModifiers(
+            const result = await overrideProjectileModifiers(
               prop.value1,
               source,
               modifiers,
               modNotes,
               targetsExplosiveFamily,
             );
-            if (swap) explosionSwap = swap;
+            if (result.swap) explosionSwap = result.swap;
+            if (result.chainSuppressesExplosion) chainSuppressesExplosion = true;
           }
         }
         continue;
@@ -1158,6 +1177,7 @@ export async function extractOmods(
       hasEnchantments,
       ...(hasGrantingCobj ? { hasGrantingCobj } : {}),
       ...(explosionSwap ? { explosionSwap } : {}),
+      ...(chainSuppressesExplosion ? { chainSuppressesExplosion } : {}),
       notes: [...modNotes].sort(),
     });
   }

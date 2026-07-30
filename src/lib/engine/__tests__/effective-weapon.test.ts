@@ -980,6 +980,260 @@ describe('explosionSwap replacement (launcher-family projectile-swap, docs/assum
   });
 });
 
+describe('Explosive 2★ dual behavior (explosivePayload branch, docs/assumptions.md "Launcher explosion damage" § "Explosive 2★ dual behavior", user-measured 2026-07-30)', () => {
+  const FLAT_100 = [
+    { x: 1, y: 100 },
+    { x: 50, y: 100 },
+  ];
+  const FLAT_10 = [
+    { x: 1, y: 10 },
+    { x: 50, y: 10 },
+  ];
+
+  const legendarySource = {
+    kind: 'omod' as const,
+    formId: '0xEXPL2',
+    edid: 'mod_Legendary_Weapon2_Guns_ExplosiveBullets',
+    name: 'Explosive',
+  };
+
+  /** Mirrors the real Explosive 2★'s ESM shape: one unconditioned ADD 0.2. */
+  function makeExplosiveOmod() {
+    return {
+      id: 'mod_Legendary_Weapon2_Guns_ExplosiveBullets',
+      formId: '0xEXPL2',
+      name: 'Explosive',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_Legendary2',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [
+        {
+          id: '0xEXPL2:0',
+          source: legendarySource,
+          bucket: 'explosivePayload' as const,
+          op: 'ADD' as const,
+          value: 0.2,
+          conditions: [],
+        },
+      ],
+    };
+  }
+
+  /** Plain weapon: single ballistic component, no explosion of any kind. */
+  function makePlainWeapon() {
+    return {
+      id: 'test_plain_rifle',
+      name: 'Test Rifle',
+      components: [
+        { damageType: 'ballistic' as const, tier: -1, levelCap: 50, curvePoints: FLAT_100 },
+      ],
+      damageType: 'ballistic' as const,
+      weaponClass: 'rifle' as const,
+      isAutomatic: false,
+      isPhysical: true,
+      critDamageMult: 2.0,
+      critChargeBonus: 1.0,
+      sneakAttackMult: 2.0,
+      damageBonusMult: 1.0,
+    };
+  }
+
+  /** Projectile-Scaling Explosion: Gauss-shape, real direct component + explosionBaseWeaponDamageMult, no fromExplosion component. */
+  function makeProjectileScalingWeapon() {
+    return { ...makePlainWeapon(), id: 'test_gauss', explosionBaseWeaponDamageMult: 0.15 };
+  }
+
+  /** Curve-Table Explosion, Missile-Launcher shape: real direct component + a fromExplosion component. */
+  function makeCurveExplosionWeapon() {
+    return {
+      id: 'test_missile_launcher',
+      name: 'Test Missile Launcher',
+      components: [
+        { damageType: 'ballistic' as const, tier: -1, levelCap: 50, curvePoints: FLAT_10 },
+        {
+          damageType: 'explosive' as const,
+          tier: -1,
+          levelCap: 50,
+          curvePoints: FLAT_100,
+          fromExplosion: true,
+        },
+      ],
+      damageType: 'ballistic' as const,
+      weaponClass: 'heavy' as const,
+      isAutomatic: false,
+      isPhysical: true,
+      critDamageMult: 2.0,
+      critChargeBonus: 1.0,
+      sneakAttackMult: 2.0,
+      damageBonusMult: 1.0,
+    };
+  }
+
+  /** Curve-Table Explosion, Gamma-Gun shape: NO direct component — the explosion is the weapon's only damage. */
+  function makeNoDirectExplosionWeapon() {
+    return {
+      id: 'test_gamma_gun',
+      name: 'Test Gamma Gun',
+      components: [
+        {
+          damageType: 'radiation' as const,
+          tier: -1,
+          levelCap: 50,
+          curvePoints: FLAT_100,
+          fromExplosion: true,
+        },
+        {
+          damageType: 'energy' as const,
+          tier: -1,
+          levelCap: 50,
+          curvePoints: FLAT_100,
+          fromExplosion: true,
+        },
+      ],
+      damageType: 'radiation' as const,
+      weaponClass: 'heavy' as const,
+      isAutomatic: false,
+      isPhysical: true,
+      critDamageMult: 2.0,
+      critChargeBonus: 1.0,
+      sneakAttackMult: 2.0,
+      damageBonusMult: 1.0,
+    };
+  }
+
+  it('Projectile-Scaling Explosion: explosivePayload passes through untouched (paper-damage.ts folds it as the twin base)', () => {
+    const { modifiers } = buildEffectiveWeapon(makeProjectileScalingWeapon(), [
+      makeExplosiveOmod(),
+    ]);
+    expect(modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'explosivePayload', value: 0.2 }),
+    );
+    expect(modifiers.some((m) => m.bucket === 'baseDamage')).toBe(false);
+  });
+
+  it('plain weapon (no explosion at all): explosivePayload also passes through untouched', () => {
+    const { modifiers } = buildEffectiveWeapon(makePlainWeapon(), [makeExplosiveOmod()]);
+    expect(modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'explosivePayload', value: 0.2 }),
+    );
+  });
+
+  it('Curve-Table Explosion: rewrites explosivePayload into an explosive-scoped baseDamage MUL_ADD, strips explosivePayload', () => {
+    const { modifiers } = buildEffectiveWeapon(makeCurveExplosionWeapon(), [makeExplosiveOmod()]);
+    expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
+    const synthesized = modifiers.find((m) => m.bucket === 'baseDamage');
+    expect(synthesized).toMatchObject({
+      bucket: 'baseDamage',
+      op: 'MUL_ADD',
+      value: 0.2,
+      source: legendarySource,
+      conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }],
+    });
+  });
+
+  it('Curve-Table Explosion with no direct component (Gamma Gun shape): still rewrites — the legendary is not dead weight', () => {
+    const { modifiers } = buildEffectiveWeapon(makeNoDirectExplosionWeapon(), [
+      makeExplosiveOmod(),
+    ]);
+    expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
+    expect(modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'baseDamage', op: 'MUL_ADD', value: 0.2 }),
+    );
+  });
+
+  it('Curve-Table Explosion with no legendary equipped: no baseDamage synthesized, nothing to strip', () => {
+    const { modifiers } = buildEffectiveWeapon(makeCurveExplosionWeapon(), []);
+    expect(modifiers.some((m) => m.bucket === 'baseDamage')).toBe(false);
+    expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
+  });
+
+  it('branch is chosen POST-swap: an explosionSwap onto a plain weapon (hypothetically) still keys off the effective components', () => {
+    // The launcher-family swap only ever applies when the base weapon
+    // already has a baseline fromExplosion component (see the
+    // explosionSwap describe block above) — so swapping doesn't change
+    // which branch a launcher takes, only WHICH curve. Confirm the rewrite
+    // still fires on a swapped-in explosion.
+    const swapOmod = {
+      id: 'test_barrel',
+      formId: '0x0',
+      name: 'Test Barrel',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_gun_Barrel',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [],
+      explosionSwap: {
+        explEdid: 'TestSwapExplosion',
+        baseWeaponDamageMult: 0,
+        components: [
+          {
+            damageType: 'cryo' as const,
+            damageTypeEdid: 'dtCryo',
+            amount: 0,
+            tier: 15,
+            curve: FLAT_100,
+            fromExplosion: true,
+          },
+        ],
+      },
+    };
+    const { modifiers } = buildEffectiveWeapon(makeCurveExplosionWeapon(), [
+      swapOmod,
+      makeExplosiveOmod(),
+    ]);
+    expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
+    expect(modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'baseDamage', op: 'MUL_ADD', value: 0.2 }),
+    );
+  });
+
+  it('chain-suppressed (Tesla + AC muzzle shape): clears explosionBaseWeaponDamageMult AND strips explosivePayload — no fallback twin', () => {
+    const chainOmod = {
+      id: 'test_ac_muzzle',
+      formId: '0x0',
+      name: 'Alternate Current Muzzle',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_gun_Muzzle',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [],
+      chainSuppressesExplosion: true,
+    };
+    const { weapon, modifiers } = buildEffectiveWeapon(makeProjectileScalingWeapon(), [
+      chainOmod,
+      makeExplosiveOmod(),
+    ]);
+    expect(weapon.explosionBaseWeaponDamageMult).toBe(0);
+    expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
+    expect(modifiers.some((m) => m.bucket === 'baseDamage')).toBe(false);
+  });
+
+  it('chain-suppressed with no legendary equipped: still clears explosionBaseWeaponDamageMult', () => {
+    const chainOmod = {
+      id: 'test_ac_muzzle',
+      formId: '0x0',
+      name: 'Alternate Current Muzzle',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_gun_Muzzle',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [],
+      chainSuppressesExplosion: true,
+    };
+    const { weapon } = buildEffectiveWeapon(makeProjectileScalingWeapon(), [chainOmod]);
+    expect(weapon.explosionBaseWeaponDamageMult).toBe(0);
+  });
+});
+
 describe('charging weapon-stat buckets (chargeFullPowerSec/chargeFullPowerDamageMult)', () => {
   const fixer = getWeapons('live')['CombatRifle_Fixer'];
 

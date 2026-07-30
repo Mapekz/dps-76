@@ -57,6 +57,17 @@ A weapon with its equipped OMODs applied (merged keywords, rewritten speed/auto
 state) — the shape the engine actually reads.
 _Avoid_: modded weapon, final weapon.
 
+**Curve-Table Explosion**:
+An explosion carrying its own damage curve (launchers, Gamma Gun, Cremator). The
+Explosive 2★ boosts it at its own base, before DBM.
+_Avoid_: launcher payload, blast.
+
+**Projectile-Scaling Explosion**:
+An explosion whose damage is a fraction of the weapon's projectile damage (Gauss
+0.15, Tesla Cannon 0.10). The Explosive 2★ adds to that fraction rather than to
+a base.
+_Avoid_: explosion mult, payload.
+
 **Effective Stacks**:
 The resolved, clamped Onslaught or Bullet Storm count shared by the engine's
 `PLAYER_STATE_READERS` and the ConditionsSection display via

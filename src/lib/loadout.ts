@@ -51,6 +51,15 @@ const EFFECTIVE_WEAPON_BOOTSTRAP_BUCKETS: ReadonlySet<Bucket> = new Set([
   // synthesized into a dbm modifier there; must not reach ScenarioInput.modifiers directly.
   'explosionRadiusBonus',
   'explosionRadiusToDamage',
+  // Explosive 2★ — buildEffectiveWeapon decides its destiny per weapon (see
+  // its doc-comment): left untouched for a Projectile-Scaling Explosion
+  // (paper-damage.ts's own fold), rewritten into a baseDamage MUL_ADD for a
+  // Curve-Table Explosion, or stripped outright when chain-suppressed. Its
+  // only current source is an equipped OMOD (allOmodModifiers), never
+  // loadoutModifiers — listed here defensively for symmetry with
+  // explosionRadiusBonus/ToDamage, so a future loadout-sourced contribution
+  // can't bypass the branch logic and leak into ScenarioInput.modifiers raw.
+  'explosivePayload',
 ]);
 
 // getPlayerBaselineModifiers() takes no arguments and its result never

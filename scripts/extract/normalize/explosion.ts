@@ -60,6 +60,23 @@ export async function projectileExplosionFormId(
   return explFormId && explFormId !== '0x00000000' ? explFormId : null;
 }
 
+/**
+ * True when an already-fetched EXPL is chain lightning, not a real
+ * explosion (Tesla Cannon's Alternate Current muzzle: `OverrideProjectile` →
+ * PROJ `ProjectileTeslaBeam_Chain` → EXPL `SCORE_S19_Chainlightning_TeslaCannon`,
+ * `Data.Flags1` carries the `Chain` bit, `Damage`/`Damage Curve Table`/`Base
+ * Weapon Damage Mult` all zero/null). The bounce falloff is engine-native
+ * with no ESM representation (confirmed: NOT `GMST fBouncedProjectilePowerMult`
+ * 0x00851143 — that's Hat Trick's ricochet setting) — chain lightning is
+ * exempt from every explosive-damage mechanic (Demolition Expert, the
+ * Explosive 2★, explosionBaseWeaponDamageMult) rather than merely un-decoded.
+ */
+export function explosionIsChain(expl: EsmRecord): boolean {
+  const explData = (expl.fields['Data'] ?? {}) as Record<string, unknown>;
+  const flags1 = ((explData['Flags1'] ?? {}) as Record<string, unknown>)['flags'];
+  return Array.isArray(flags1) && flags1.includes('Chain');
+}
+
 export interface DecodedExplosionDamage {
   /** Main physical explosion damage (WEAP "Damage Curve"-shaped) — null when absent (no curve, no flat Damage). */
   main: { tier: number | null; curve: CurvePoint[] | null; amount: number } | null;

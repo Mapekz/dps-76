@@ -1237,6 +1237,124 @@ describe('explosive payload twins (Stage A1, Explosive 2★)', () => {
   });
 });
 
+describe('Explosive 2★ end-to-end on a Curve-Table Explosion (pre-DBM base rewrite, docs/assumptions.md "Launcher explosion damage" § "Explosive 2★ dual behavior", user-measured 2026-07-30)', () => {
+  // Missile-Launcher shape: ballistic impact (5) + its own fromExplosion
+  // component (100). effective-weapon.ts rewrites the Explosive 2★'s
+  // explosivePayload ADD into exactly this shape before computePaperDamage
+  // ever runs — these tests feed that rewritten shape directly, with NO
+  // explosivePayload modifier present, to pin the pre-DBM math and confirm
+  // no twin spawns off the direct-impact token.
+  const launcher = makeWeapon({
+    components: [
+      { damageType: 'ballistic', tier: -1, levelCap: 50, curvePoints: [{ x: 1, y: 5 }] },
+      {
+        damageType: 'explosive',
+        tier: -1,
+        levelCap: 50,
+        curvePoints: FLAT_100,
+        fromExplosion: true,
+      },
+    ],
+  });
+
+  it('boosts the explosion base pre-DBM; the direct-impact component is untouched and no twin spawns', () => {
+    const mods = [
+      mod({
+        bucket: 'baseDamage',
+        op: 'MUL_ADD',
+        value: 0.2,
+        conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }],
+      }),
+    ];
+    const result = computePaperDamage({
+      mode: 'live',
+      weapon: launcher,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(launcher),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
+    });
+    expect(result.components).toHaveLength(2); // impact + explosion — NO twin
+    expect(result.components[0].damage).toBeCloseTo(5, 6); // direct impact untouched
+    expect(result.components[1].base).toBeCloseTo(120, 6); // 100 × 1.2, pre-DBM
+    expect(result.components[1].damage).toBeCloseTo(120, 6); // dbm parenthesis is 1.0 (weapon base), unscoped
+    expect(result.total).toBeCloseTo(125, 6);
+  });
+
+  it('is MULTIPLICATIVE with Demolition Expert, unlike the additive explosion-dbm bonuses', () => {
+    const mods = [
+      mod({
+        bucket: 'baseDamage',
+        op: 'MUL_ADD',
+        value: 0.2,
+        conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }],
+      }),
+      mod({
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.6,
+        id: 'demo',
+        conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }],
+      }),
+    ];
+    const result = computePaperDamage({
+      mode: 'live',
+      weapon: launcher,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(launcher),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
+    });
+    // 100 × 1.2 (pre-DBM base rewrite) × (1 + 0.6) (dbm parenthesis) = 192 —
+    // NOT 100 × (1 + 0.2 + 0.6) = 180, the additive shape every other
+    // explosion bonus uses.
+    expect(result.components[1].damage).toBeCloseTo(192, 6);
+  });
+
+  it('boosts BOTH parts of a multi-component explosion (War Shrike shape)', () => {
+    const warShrike = makeWeapon({
+      components: [
+        {
+          damageType: 'explosive',
+          tier: -1,
+          levelCap: 50,
+          curvePoints: FLAT_100,
+          fromExplosion: true,
+        },
+        {
+          damageType: 'ballistic',
+          tier: -1,
+          levelCap: 50,
+          curvePoints: FLAT_100,
+          fromExplosion: true,
+        },
+      ],
+    });
+    const mods = [
+      mod({
+        bucket: 'baseDamage',
+        op: 'MUL_ADD',
+        value: 0.2,
+        conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }],
+      }),
+    ];
+    const result = computePaperDamage({
+      mode: 'live',
+      weapon: warShrike,
+      itemLevel: 50,
+      modifiers: mods,
+      ctx: makeCtx(warShrike),
+      bodyPartMult: 1.0,
+      bodyPart: 'torso',
+    });
+    expect(result.components).toHaveLength(2);
+    expect(result.components[0].base).toBeCloseTo(120, 6);
+    expect(result.components[1].base).toBeCloseTo(120, 6);
+  });
+});
+
 describe('launcher explosion components (fromExplosion, EXPL chase)', () => {
   // Fat Man shape: token flat impact (5) + the EXPL payload as its own component.
   const launcher = makeWeapon({
