@@ -847,13 +847,22 @@ Engine: `src/lib/engine/ap-economy.ts`.
   is correct.
 - **Steady-state model**: `apGainPerSec = apPerCrit×(shotsPerSec/
   shotsPerCrit) + Σ hot.rate×min(1, hot.durationSec×critsPerSec) +
-  reloadRegenPerSec`; `drainPerSec = apCost×shotsPerSec`; `uptime =
-  clamp(apGainPerSec/drainPerSec, 0, 1)`. `shotsPerSec` reuses the same
-  reload-inclusive cadence as `sustainedDps`.
-- **Considered, NOT implemented** (**user decision** 2026-07-15): crediting
-  full passive regen during the AP-forced pause (the duty-cycle form) —
-  physically defensible but would raise `apLimitedDps` for every
-  AP-constrained build; revisit against a measurement.
+  reloadRegenPerSec`; `drainPerSec = apCost×shotsPerSec`. `shotsPerSec`
+  reuses the same reload-inclusive cadence as `sustainedDps`.
+- **Pool-cycle uptime** (**ASSUMPTION**, adopted 2026-07-29, **user
+  decision**; supersedes the 2026-07-15 "considered, NOT implemented"
+  gain/drain clamp): when `drainPerSec > apGainPerSec`, `burstSec =
+  maxAp/(drain − gain)` (fire until empty; = `secondsToEmpty`), `pauseSec =
+  regenDelaySec + maxAp/regenPerSec` (exit VATS, full-pool refill at full
+  passive regen — full refill is optimal play, it amortizes the 1s delay),
+  `uptime = burstSec/(burstSec + pauseSec)`. Passive regen now feeds uptime
+  via the pause; Conductor's HoT tail extending into the pause is
+  deliberately ignored (conservative, small). Pinned by `#71`'s golden.
+- **VATS canonical DPS = `apLimitedDps`** (2026-07-29, **user decision**):
+  the card headline, headline strip, auto-emphasis pick, suggestion deltas,
+  and the vs-target effective sustained all use `sustainedDps × uptime`
+  (identical to raw sustained when uptime = 1); the unthrottled number is a
+  sub-row when uptime < 1 (`ScenarioCard.tsx`).
 - Display: AP breakdown always shown when `ScenarioResult.ap` exists; ranged
   weapons only (melee/VATS-melee AP costs are out of scope).
 - **Manual-aim hit rate** (`hitRatePct`, 10–100, default 100): scales

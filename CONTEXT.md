@@ -42,9 +42,16 @@ Combining all active modifiers on one bucket over an intrinsic base:
 _Avoid_: reduce, aggregate, sum.
 
 **Scenario**:
-One of the three displayed attack contexts — Manual Aim, VATS, VATS+Sneak — each
-computed from one resolved config via per-attack `ScenarioFlags`.
-_Avoid_: mode (that means Live/PTS), case.
+One of the two displayed attack contexts — Free Aim or VATS — each computed
+from one resolved config via per-attack `ScenarioFlags`. Sneak is a player
+condition applied to both, not a third scenario.
+_Avoid_: mode (that means Live/PTS), case, Manual Aim (say Free Aim).
+
+**AP Uptime**:
+The steady-state fraction of time a VATS build can actually fire before the AP
+pool forces a pause; the VATS scenario's canonical DPS is its sustained DPS
+scaled by AP Uptime (1 when AP never constrains).
+_Avoid_: AP efficiency, duty cycle (say AP Uptime).
 
 **Effective Weapon**:
 A weapon with its equipped OMODs applied (merged keywords, rewritten speed/auto
@@ -137,5 +144,5 @@ _Avoid_: combined data, resolved data.
 
 - "mod" meant both **OMOD** and a **Modifier IR** entry — resolved: OMOD is the
   game record, Modifier is the normalized IR it produces.
-- "mode" meant both **Mode** (Live/PTS) and **Scenario** (Manual/VATS/Sneak) —
+- "mode" meant both **Mode** (Live/PTS) and **Scenario** (Free Aim/VATS) —
   resolved: these are distinct axes.
