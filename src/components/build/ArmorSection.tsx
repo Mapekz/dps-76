@@ -7,7 +7,14 @@ import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import { NumberField } from '@/components/ui/number-field';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
-import { getArmorEffectById, getArmorEffects, type ArmorEffectEntry } from '@/data/armor-modifiers';
+import {
+  getArmorEffectById,
+  getArmorEffects,
+  getArmorTierUsage,
+  MAX_LEGENDARY_COUNT,
+  type ArmorEffectEntry,
+  type ArmorStarTier,
+} from '@/data/armor-modifiers';
 import { SectionTrigger } from './SectionTrigger';
 
 /**
@@ -42,10 +49,13 @@ function EffectDescription({ description }: { description: string | null }) {
 function ActiveEffectRow({
   effect,
   options,
+  tierUsage,
 }: {
   effect: ArmorEffectEntry;
   /** Every effect in this group not used by another active row, plus this row's own current effect. */
   options: ArmorEffectEntry[];
+  /** Summed worn-piece counts per legendary star tier across the whole checklist (includes this row's own count). */
+  tierUsage: Record<ArmorStarTier, number>;
 }) {
   const { mode } = useGameMode();
   const { player } = useBuild();
@@ -53,6 +63,18 @@ function ActiveEffectRow({
   const count = player.armorEffects[effect.id] ?? 0;
   const min = effect.group === 'legendary' ? 0 : 1;
   const countFieldId = `armor-effect-count-${effect.id}`;
+  // For legendary effects, the field's own tier budget headroom (this row's
+  // count is already included in tierUsage, so the free space it can still
+  // absorb is MAX_LEGENDARY_COUNT minus the tier total) additionally caps
+  // the field — mirrors the reducer's own `armorEffect/setCount` clamp so
+  // the field refuses over-tier input rather than silently snapping back.
+  const max =
+    effect.starTier !== undefined
+      ? Math.min(
+          effect.maxCount,
+          count + Math.max(0, MAX_LEGENDARY_COUNT - tierUsage[effect.starTier]),
+        )
+      : effect.maxCount;
 
   const comboOptions: ComboboxOption[] = options.map((e) => ({ value: e.id, label: e.name }));
 
@@ -65,7 +87,22 @@ function ActiveEffectRow({
           onValueChange={(nextId) => {
             if (!nextId || nextId === effect.id) return;
             const nextEffect = getArmorEffectById(mode, nextId);
-            const nextCount = Math.max(1, Math.min(nextEffect?.maxCount ?? 5, count));
+            const desiredCount = Math.max(1, Math.min(nextEffect?.maxCount ?? 5, count));
+            // Switching also crosses star tiers, so the target's own tier
+            // budget can be tighter than its per-effect maxCount — clamp
+            // here too, so the dispatched count already matches what the
+            // reducer would land on (UI and stored state agree immediately)
+            // instead of relying on a silent post-dispatch clamp. Since this
+            // row's own count is being zeroed as part of the switch, exclude
+            // it from the target tier's usage when both effects share a tier.
+            let nextCount = desiredCount;
+            if (nextEffect?.starTier !== undefined) {
+              const usageExcludingSwitch =
+                tierUsage[nextEffect.starTier] -
+                (effect.starTier === nextEffect.starTier ? count : 0);
+              const freeSpace = Math.max(0, MAX_LEGENDARY_COUNT - usageExcludingSwitch);
+              nextCount = Math.min(desiredCount, freeSpace);
+            }
             dispatch({ type: 'armorEffect/setCount', id: effect.id, count: 0 });
             dispatch({ type: 'armorEffect/setCount', id: nextId, count: nextCount });
           }}
@@ -81,7 +118,7 @@ function ActiveEffectRow({
           id={countFieldId}
           value={count}
           min={min}
-          max={effect.maxCount}
+          max={max}
           onChange={(v) => dispatch({ type: 'armorEffect/setCount', id: effect.id, count: v })}
           className="w-16 shrink-0"
         />
@@ -144,11 +181,13 @@ function EffectGroup({
   effects,
   addLabel,
   addPlaceholder,
+  tierUsage,
 }: {
   title: string;
   effects: ArmorEffectEntry[];
   addLabel: string;
   addPlaceholder: string;
+  tierUsage: Record<ArmorStarTier, number>;
 }) {
   const { player } = useBuild();
   const dispatch = useBuildDispatch();
@@ -159,8 +198,21 @@ function EffectGroup({
 
   const activeEffects = effects.filter((e) => (player.armorEffects[e.id] ?? 0) > 0);
   const activeIds = new Set(activeEffects.map((e) => e.id));
-  const availableEffects = effects.filter((e) => !activeIds.has(e.id));
+  // Legendary effects whose tier is already at budget would no-op on add —
+  // exclude them from the draft-row picker. Misc effects (no starTier) are
+  // never affected by the tier budget, so they pass through unfiltered.
+  const availableEffects = effects.filter(
+    (e) =>
+      !activeIds.has(e.id) &&
+      (e.starTier === undefined || tierUsage[e.starTier] < MAX_LEGENDARY_COUNT),
+  );
   const everyEffectActive = effects.every((e) => (player.armorEffects[e.id] ?? 0) > 0);
+  // Data-driven tier set for the usage strip — whatever star tiers this
+  // group's effects actually carry (misc effects have none, so their group
+  // naturally renders no strip).
+  const legendaryTiers = [
+    ...new Set(effects.map((e) => e.starTier).filter((t): t is ArmorStarTier => t !== undefined)),
+  ].sort((a, b) => a - b);
 
   const addDraft = () => {
     nextDraftKey.current += 1;
@@ -173,12 +225,20 @@ function EffectGroup({
       <p className="font-condensed text-muted-foreground pb-1 text-[10px] font-semibold uppercase tracking-[0.1em]">
         {title}
       </p>
+      {legendaryTiers.length > 0 && (
+        <p className="text-muted-foreground pb-1.5 text-xs">
+          {legendaryTiers
+            .map((tier) => `${tier}★ ${tierUsage[tier]}/${MAX_LEGENDARY_COUNT}`)
+            .join(' · ')}
+        </p>
+      )}
       <div className="divide-border/50 divide-y">
         {activeEffects.map((effect) => (
           <ActiveEffectRow
             key={effect.id}
             effect={effect}
             options={effects.filter((e) => e.id === effect.id || !activeIds.has(e.id))}
+            tierUsage={tierUsage}
           />
         ))}
         {drafts.map((key) => (
@@ -215,6 +275,7 @@ export function ArmorSection() {
   const legendary = effects.filter((e) => e.group === 'legendary');
   const misc = effects.filter((e) => e.group === 'misc');
   const activeCount = Object.values(player.armorEffects).filter((count) => count > 0).length;
+  const tierUsage = getArmorTierUsage(mode, player.armorEffects);
 
   return (
     <AccordionItem value="armor">
@@ -232,12 +293,14 @@ export function ArmorSection() {
             effects={legendary}
             addLabel="Add legendary mod"
             addPlaceholder="Pick a legendary effect…"
+            tierUsage={tierUsage}
           />
           <EffectGroup
             title="Misc & PA mods"
             effects={misc}
             addLabel="Add normal mod"
             addPlaceholder="Pick a normal mod…"
+            tierUsage={tierUsage}
           />
         </div>
       </AccordionContent>
