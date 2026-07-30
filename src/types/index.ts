@@ -470,9 +470,10 @@ export interface Weapon {
    */
   reloadPerShell?: boolean;
   /**
-   * Per-shot VATS AP cost (WEAP Data."Action Point Cost"). Fixer 16, Minigun
-   * 8, Super Sledge 52. Rewritten by the `vatsApCost` OMOD bucket (V.A.T.S.
-   * Optimized) in `effective-weapon.ts`; consumed by `ap-economy.ts` (Stage B).
+   * Per-shot VATS AP cost (WEAP Data."Action Point Cost"). Fixer/Plasma 16,
+   * Minigun 8, Super Sledge 52. Rewritten by the `vatsApCost` OMOD bucket in
+   * `effective-weapon.ts` — raw float after Σ MUL_ADD, not Pip-Boy
+   * `round(cost)`. Consumed by `ap-economy.ts` (Stage B).
    */
   apCost?: number;
 

@@ -233,6 +233,20 @@ describe('AP economy (Stage B, real data)', () => {
     expect(fixer.apCost).toBe(16); // WEAP Data."Action Point Cost" — extractor-verified
   });
 
+  it('keeps fractional VATS AP cost after OMOD fold — does not round to the Pip-Boy display', () => {
+    // Plasma Gun 16 × (1 − 0.3 thrower − 0.1 aligned − 0.1 stock + 0.2 calib)
+    // = 11.2; Pip-Boy shows round(11.2) = 11 (user-measured 2026-07-29).
+    const plasma = getWeapons('live')['PlasmaGun'];
+    const omods = [
+      getOmodById('live', 'mod_PlasmaGun_Barrel_Flamer_Recoil-HipAccuracy')!,
+      getOmodById('live', 'mod_PlasmaGun_Grip_Recoil-HipAccuracy')!,
+      getOmodById('live', 'mod_PlasmaGun_Receiver_CritDMG')!,
+    ];
+    const { weapon } = buildEffectiveWeapon(plasma, omods);
+    expect(weapon.apCost).toBeCloseTo(11.2, 10);
+    expect(weapon.apCost).not.toBe(11);
+  });
+
   it("Conductor's spike + refresh-only HoT: crit gain caps at spike×crits/sec + 20, not the flat-110 overcount", () => {
     // ESM chain hand-supplied in overrides/legendary-values.ts (script-driven
     // entry point, not extractor-modeled): 10 instant per crit + 20 AP/s over

@@ -348,8 +348,10 @@ export function buildEffectiveWeapon(
   // (docs/assumptions.md "Reload-skip & free-ammo expected value").
   const reloadSkipChanceBash = foldChanceUnion(statModifiers, 'reloadSkipChanceBash', ctx);
   const ammoFreeChance = foldChanceUnion(statModifiers, 'ammoFreeChance', ctx);
-  // V.A.T.S. Optimized (Stage B): MUL_ADD −0.35 on the weapon's per-shot VATS
-  // AP cost, same fold pattern as ammoCapacity/reloadSpeed above.
+  // VATS AP cost (Stage B): foldBucket Σ MUL_ADD on WEAP Action Point Cost
+  // (V.A.T.S. Optimized −0.35, plasma barrel/stock/capacitor, …). Keep the
+  // RAW float — Pip-Boy shows round(cost); do not round here
+  // (docs/assumptions.md "VATS AP economy").
   const apCost = foldBucket(statModifiers, 'vatsApCost', weapon.apCost ?? 0, ctx);
   // Charging (tesla/gamma/laser charging-barrel OMODs turn charging ON via a
   // SET FullPowerSeconds/FullPowerDamageMult; Gauss-family barrels retune an

@@ -789,9 +789,13 @@ Engine: `src/lib/distance.ts` (constants, `rangeFalloffMult`), `resolve.ts`
 Engine: `src/lib/engine/ap-economy.ts`.
 
 - **AP pool**: `MaxAP = 60 + 10×AGI` (GMSTs `fAVDActionPointsBase`/`Mult`).
-- **Per-shot VATS AP cost**: WEAP `Data."Action Point Cost"`. Verified:
-  Fixer 16, Minigun 8, Super Sledge 52. Only rewrite is the `vatsApCost`
-  bucket (V.A.T.S. Optimized, MUL_ADD −0.35).
+- **Per-shot VATS AP cost**: WEAP `Data."Action Point Cost"`, rewritten by
+  the `vatsApCost` bucket (`foldBucket` Σ MUL_ADD — V.A.T.S. Optimized
+  −0.35, plasma thrower/aligned/stock/capacitor, …). Verified bases: Fixer
+  16, Plasma Gun / Mind Over Matter 16, Minigun 8, Super Sledge 52.
+  **Engine keeps the raw float** (e.g. 16×0.7 = 11.2); Pip-Boy displays
+  `round(cost)` (user-measured 2026-07-29 — sniper 24.8→25, aligned-auto
+  17.6→18). Do not round to match the Pip-Boy.
 - **Regen — race-based %-of-max model, CORRECTED 2026-07-15**: base rate
   lives on RACE `Properties` AV `ActionPointsRate` (**HumanRace 6.0,
   PowerArmorRace 3.0** — ESM-proven; the player's race swaps in power armor,
