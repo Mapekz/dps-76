@@ -75,6 +75,33 @@ legendary perks + mutations + consumables assembled into the engine's
 `ScenarioInput` by `resolveLoadout` (`src/lib/loadout.ts`).
 _Avoid_: build (that's the user-facing config, `PlayerConfig`), config.
 
+**Star Tier**:
+The legendary-slot class (1★–4★) of an armor legendary effect, given by its
+`ap_Legendary1-4` attach point. Each tier has a **Tier Budget**: across all
+effects in that tier, summed worn-piece counts never exceed the 5 armor pieces
+(2× Limit Breaking + 3× Battle-Loader's is legal; 5 + 5 is not) — enforced in
+the model, not just advice (`docs/adr/0004`).
+_Avoid_: star level, slot (that's an OMOD attach point), rank (that's perks).
+
+### Suggestions
+
+**Suggestion Family**:
+The collapse unit for graduated suggestion candidates — one perk line's ranks,
+one armor effect's worn-piece counts, or one same-tier X→Y swap pair. Every
+reachable step is evaluated, but at most two rows per family surface: the
+cheapest positive step ("next improving step") and the best absolute delta, so
+stepwise breakpoints (Crit Savvy 3, Limit Breaking ×5) are visible even when
+intermediate steps are worthless.
+_Avoid_: group (that's the candidate's kind — perk/mod/armor/…), dedupe key.
+
+**Structural Suggestion / Consumable Boost**:
+The two suggestion-panel tiers. Structural suggestions (perks, legendary
+perks, OMODs, weapon legendary effects, armor effects, mutations) rank in the
+main list; Consumable Boosts rank only in their own smaller section below —
+always, with no completeness heuristic. Consumables serve a build; they are
+never presented as its basis.
+_Avoid_: primary/secondary suggestions, buffs (ambiguous with armor effects).
+
 ### Data pipeline
 
 **Mode**:

@@ -20,6 +20,9 @@ import {
 import { PerkId } from '../src/data/perk-ids';
 import { resolveLoadout } from '../src/lib/loadout';
 import { computeScenarios } from '../src/lib/engine/scenarios';
+import { type BuildState } from '../src/state/build-reducer';
+import { enumerateVariants } from '../src/lib/suggest/variants';
+import { evaluateSuggestions } from '../src/lib/suggest/evaluate';
 
 function bench(name: string, fn: () => void, iters = 2000): void {
   fn(); // warm
@@ -48,6 +51,17 @@ const maxedConfig: PlayerConfig = {
   legendaryPerks: [],
   mutations: ['Mutation_SpeedDemon', 'Mutation_AdrenalReaction'],
   consumables: [],
+  // Multi-tier armor layout so the armor add/swap enumeration is exercised,
+  // not benched at zero (tiers 1/2/3/4 partially occupied → both plain
+  // increases and same-tier swaps get emitted).
+  armorEffects: {
+    mod_Legendary_Armor1_LowHealthIncreasesStats: 2,
+    mod_Legendary_Armor2_StatStrength: 3,
+    mod_Legendary_Armor3_Active: 1,
+    mod_Legendary_Armor3_Healthy: 1,
+    mod_Legendary_Armor4_BattleLoaders: 3,
+    mod_Legendary_Armor4_LimitBreak: 2,
+  },
   conditions: { ...createDefaultPlayerConditions(), tenderizerStacks: 10, healthPercent: 25 },
 };
 const enemy = createDefaultEnemyConfig();
@@ -66,3 +80,18 @@ bench('resolveLoadout + computeScenarios (one variant eval)', () => {
 bench('computeScenarios only (pre-resolved input)', () => {
   computeScenarios(resolvedOnce!);
 });
+
+// End-to-end suggestions sweep — the number the "< 8ms → plain useMemo"
+// decision rule above actually gates on. The per-eval benches predate this;
+// useSuggestions' old "~400 evals ≈ 2ms" docstring figure was inferred from
+// them, never measured. Informational, not a CI gate.
+const maxedState: BuildState = {
+  player: maxedConfig,
+  enemy,
+  buildName: null,
+  view: { emphasized: null, breakdownOpen: false },
+};
+console.log(`enumerateVariants: ${enumerateVariants(maxedState, 'live').length} raw candidates`);
+bench('evaluateSuggestions (full sweep, freeAim metric)', () => {
+  evaluateSuggestions(maxedState, 'live', 'freeAim');
+}, 200);

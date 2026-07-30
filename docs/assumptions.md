@@ -1877,7 +1877,14 @@ auto-converted); their stats are stale and must not be shown.
   Limb variants) get max 2, single-slot PA Misc/underarmor mods get max 1.
   Legendary-slot effects (`ap_Legendary1-4`) always get max 5 (5 armor
   pieces), including Battle-Loader's/Limit-Breaking (self-scaling — the max
-  bounds the checklist count, not a value multiplier).
+  bounds the checklist count, not a value multiplier). Since 2026-07-30 the
+  5-piece ceiling is additionally a SHARED budget per star tier (Σ worn
+  pieces ≤ 5 across every effect on the same `ap_Legendary<N>` tier),
+  enforced by `armorEffect/setCount`'s clamp (`build-reducer.ts`, via
+  `getArmorTierUsage`) and at hydration (`clampArmorTierBudgets` in
+  `codec.ts`) — see `docs/adr/0004`. "Powered" has twin records on tiers 1
+  and 2; the representative pick lands on tier 2, so it counts against the
+  2★ budget (documented in `armor-modifiers.ts`).
 
 ## Known gaps / deferred
 - **Follow Through / Taking One for the Team** extract with empty `modifiers`
