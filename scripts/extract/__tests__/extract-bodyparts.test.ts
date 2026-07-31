@@ -8,7 +8,7 @@ import terror from './fixtures/bptd-terror.json';
 import scorchbeast from './fixtures/bptd-scorchbeast.json';
 import titan from './fixtures/bptd-titan.json';
 
-// Fixtures are verbatim `esm -p get <formid> --json` output (20260702/20260710
+// Fixtures are verbatim `esm get <formid> --json` output (20260702/20260710
 // ESM dumps): BPTD 0x006D79FF (StormBossRace), 0x00017AD4 (HumanRace),
 // 0x0077B596 (Guardian), 0x00786D45 (Terror), 0x00017DD5 (Scorchbeast),
 // 0x00656CD4 (Ultracite Titan). Pins the BPTD → GeneratedBodyPart

@@ -314,7 +314,7 @@ describe('translate (Bullet Storm, 2026-07-16)', () => {
 });
 
 describe('getMgefInfo (consumables overhaul, 2026-07-13)', () => {
-  // Fixture is verbatim `esm -p get FortifyStrengthChemEffect --json` output
+  // Fixture is verbatim `esm get FortifyStrengthChemEffect --json` output
   // (20260710 ESM), formid 0x002466E6 — the "Chem: Fortify Strength" MGEF
   // Buffout's Effects list applies. Proof point from the plan: this MGEF
   // carries the "Dispel with Keywords" flag plus 3 keywords (ChemEffect,

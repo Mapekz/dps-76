@@ -29,7 +29,8 @@ export interface EsmRefRow {
 }
 
 /**
- * Thin wrapper around the `esm` CLI (one-shot `-p` mode with a warm daemon).
+ * Thin wrapper around the `esm` CLI (every subcommand is one-shot and
+ * daemon-backed by default).
  *
  * Quirks handled here:
  * - `list()` defaults to an explicit large limit rather than `--limit 0`
@@ -51,7 +52,7 @@ export class EsmClient {
   }
 
   private async run(args: string[]): Promise<string> {
-    const { stdout } = await execFileAsync('esm', ['-p', '--esm', this.esmPath, ...args], {
+    const { stdout } = await execFileAsync('esm', ['--esm', this.esmPath, ...args], {
       maxBuffer: 256 * 1024 * 1024,
     });
     return stdout;

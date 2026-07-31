@@ -39,7 +39,7 @@ A fresh extraction only requires reviewing the **delta**, not re-vetting all
    - Genuinely new/removed content → update `VETTED_WEAPON_IDS`.
    - To hand-confirm one weapon's obtainability signal without eyeballing the
      full grouped `--refs` list, filter to one referrer type server-side:
-     `esm -p --esm <esm> refs --formid <weapon-id> --type <SIG> --json` (e.g.
+     `esm --esm <esm> refs --formid <weapon-id> --type <SIG> --json` (e.g.
      `--type COBJ` for craftable, `--type LVLI` for loot chains).
 5. `bun run test` — the pinning test must pass; golden cases catch balance
    regressions (a failing golden case after a patch may mean the weapon was
@@ -52,7 +52,7 @@ A fresh extraction only requires reviewing the **delta**, not re-vetting all
   Monster → Deathclaw Gauntlet). Expect waves of unique-WEAP removals whose
   effects reappear as OMODs — that's roster shrinkage to *accept* (update the
   pinned list), not rescue. Decoding the migrated effect is now a single
-  `esm -p walk <omod-formid|edid>` call (see the esm-walk skill) — the OMOD
+  `esm walk <omod-formid|edid>` call (see the esm-walk skill) — the OMOD
   digest classifies every mechanism inline (ENCH/perk-grant forward hops,
   keyword-hook reverse resolution, an MGEF's "Perk to Apply"/"Equip Ability"
   pass-through) instead of a manual `get`/`refs` chain.

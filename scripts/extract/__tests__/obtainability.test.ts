@@ -21,7 +21,7 @@ import gulpershineFerm from './fixtures/refs-gulpershine-ferm.json';
 import firecrackerFresh from './fixtures/refs-firecracker-fresh.json';
 import firecrackerFerm from './fixtures/refs-firecracker-ferm.json';
 
-// Fixtures are verbatim `esm -p --esm <esmPath> refs --formid/--edid <target> --json
+// Fixtures are verbatim `esm --esm <esmPath> refs --formid/--edid <target> --json
 // --limit 4000 --depth 1` output (20260702 ESM; the consumable-chain ones below
 // from 20260710). Formids:
 //   refs-minigun-vertibird.json   Minigun_Vertibird                  0x001299A6

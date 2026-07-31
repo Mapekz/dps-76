@@ -8,7 +8,7 @@ import cobjFastTriggerPlan from './fixtures/cobj-assaultrifle-fasttrigger-plan.j
 import cobjBayonetScrap from './fixtures/cobj-blackpowder-bayonet-scrap.json';
 import cobj44RepairOnly from './fixtures/cobj-44-repaironly.json';
 
-// Fixtures are verbatim `esm -p get <formid> --json` output (20260710 ESM),
+// Fixtures are verbatim `esm get <formid> --json` output (20260710 ESM),
 // one per Learn Method / Repair Method shape the parser must handle:
 //   cobj-10mm-barrel-long.json              co_mod_10mm_Barrel_Long_Base                       0x002E6947
 //     Learn Method 3 (known by default), Repair Method 0, no Learn Recipe From

@@ -17,7 +17,7 @@ import chargedMeleeAttack from './fixtures/curv-legendarymods-weapon-chargedmele
 import specialLevelReward from './fixtures/curv-player-special-levelrewardcurve.json';
 import legendaryPerkSlotCount from './fixtures/curv-player-perks-legendaryperkslotcount.json';
 
-// Fixtures are verbatim `esm -p get <formid|edid> --json` output (20260710
+// Fixtures are verbatim `esm get <formid|edid> --json` output (20260710
 // ESM): CT_Creatures_Armor_Universal_Tier22 (0x0076E999, the record proven
 // stale in the Phase 2 spike — 50 points, domain 1-540, vs. the checked-in
 // hand-copy's 50 points/domain 2-100) and the zzz-renamed Tier49

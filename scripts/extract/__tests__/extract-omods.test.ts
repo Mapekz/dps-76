@@ -26,7 +26,7 @@ import fireHazardHazd from './fixtures/hazd-fire-molotov.json';
 import fireHazardSpel from './fixtures/spel-fire-hazard.json';
 import fireHazardMgef from './fixtures/mgef-fire-hazard-effect.json';
 
-// Fixtures are verbatim `esm -p --esm <esmPath> get <edid|formid> --json` output
+// Fixtures are verbatim `esm --esm <esmPath> get <edid|formid> --json` output
 // (20260710 ESM). These pin the unique-mod rework's two previously-undecoded
 // OMOD property mechanisms (docs: how-do-we-handle-enumerated-feather.md):
 //   omod-unstoppablemonster.json  mod_Custom_UnstoppableMonster  0x008F0DD2
@@ -692,7 +692,7 @@ describe('extractOmods (OverrideProjectile launcher-hazard chase, 2026-07-14)', 
 });
 
 /**
- * Real ESM fixtures (`esm -p get`, 20260724 dump) for the Hellstorm Missile
+ * Real ESM fixtures (`esm get`, 20260724 dump) for the Hellstorm Missile
  * Launcher's (`BOSRocketLauncher`) Cryo/Napalm tube barrels — the case where
  * `buildEffectiveWeapon`'s explosionChase REPLACES a baseline `fromExplosion`
  * component (see GeneratedExplosionSwap's doc comment). Both OMODs `SET
@@ -1522,7 +1522,7 @@ describe('extractOmods (range barrel MinRange/MaxRange, Phase 1 extraction half)
  * extraction)"): classifyOmodRecordExclusion gates on Form Type ∈ {'Weapon',
  * 'Armor'} instead of Weapon-only, and extractOmods emits a SECOND array
  * (armorOmods) alongside the unchanged weapon `omods` array from one shared
- * OMOD list+get pass. Fixtures are verbatim `esm -p get <formid> --json`
+ * OMOD list+get pass. Fixtures are verbatim `esm get <formid> --json`
  * output (20260710 ESM):
  *   omod-armor2-statstrength.json  mod_Legendary_Armor2_StatStrength  0x004EE54E
  *     — 2★ SPECIAL armor mod: `ActorValues ADD Strength 2.0` routes through
@@ -1663,7 +1663,7 @@ describe('extractOmods (Phase 3 armor pipeline, 2026-07-18)', () => {
 
 /**
  * Stub client for V.A.T.S. Enhanced (Phase 4 — VATS hit-chance aggregate,
- * display-only, 2026-07-18). Fixture is verbatim `esm -p get 0x00524153
+ * display-only, 2026-07-18). Fixture is verbatim `esm get 0x00524153
  * --json` output: mod_Legendary_Weapon2_Guns_VATSAccuracy carries a direct
  * `ActorValues ADD STAT_VATSAccuracy 50.0` property (no ENCH/PERK chain) —
  * the simplest of the three real sources this phase wires (the other two,

@@ -2,7 +2,7 @@
  * "Epic Levels" rank → {healthMult, outgoingDamageMult}, hand-authored from
  * QUST `SQ_EpicCreatures` (0x0001C339) Virtual Machine Adapter property
  * `EpicRankData` (esm-walk, coordinator follow-up 2026-07-18 —
- * `esm -p get SQ_EpicCreatures --json`). This is a Papyrus struct-array
+ * `esm get SQ_EpicCreatures --json`). This is a Papyrus struct-array
  * Property on a singleton quest, not a per-record extractable field — same
  * "script-computed value, hand-transcribed with a source comment" shape as
  * `legendary-values.ts`, not a generic extractor mapping.

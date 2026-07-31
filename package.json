@@ -17,7 +17,7 @@
     "extract": "bun scripts/extract/run-all.ts",
     "extract:diff": "bun scripts/extract/diff-report.ts",
     "vet:weapons": "bun scripts/vet-weapons.ts",
-    "esm:walk": "esm -p walk",
+    "esm:walk": "esm walk",
     "preview": "vite preview",
     "build:gh-pages": "NODE_ENV=production bun run build"
   },

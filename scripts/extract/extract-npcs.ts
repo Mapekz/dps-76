@@ -71,7 +71,7 @@ async function resolveEpicDisallowedKeywords(
 // Unlike `epicAllowed` (a real per-NPC/RACE keyword check), a curated boss's
 // FIXED epic rank has no per-NPC ESM field — it lives on the summon QUEST's
 // Virtual Machine Adapter, in one of two shapes verified directly against
-// the 20260710 dump (`esm -p get <questEdid> --json`):
+// the 20260710 dump (`esm get <questEdid> --json`):
 //
 //  (a) `scripts[].properties` carries an `EncounterWaves` struct-array
 //      property (VMAD property type 17); the boss wave (`BossWave: true`)
@@ -214,7 +214,7 @@ async function resolveBossEpicRank(
 // `Actor Scaling Info.{Level Min/Max Global}` GLOBs: ~65+ NPCs (Head Hunt
 // bounty bosses among them) additionally carry a `crModNormalizedLevel*`
 // PERK whose Entry Point effects further modify that window. Verified
-// directly against the 20260717 dump (`esm -p get crModNormalizedLevelPerk_25
+// directly against the 20260717 dump (`esm get crModNormalizedLevelPerk_25
 // --json`, `crModNormalizedLevelRangePerk_15_to_100`,
 // `HTO_crModNormalizedLevelPerk_Boss`): the two relevant entry points are
 // "Mod NPC Normalized Min Level" (206) and "Mod NPC Normalized Max level"

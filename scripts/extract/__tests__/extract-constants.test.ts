@@ -9,7 +9,7 @@ import gmstCloseDistance from './fixtures/gmst-distance-for-close-damage.json';
 import raceHuman from './fixtures/race-human.json';
 import racePowerArmor from './fixtures/race-powerarmor.json';
 
-// avif-strength.json is verbatim `esm -p get 0x000002C2 --json` output
+// avif-strength.json is verbatim `esm get 0x000002C2 --json` output
 // (20260717 ESM) — pins the real field names ("Minimum Value"/"Maximum
 // Value") this extractor reads. The other 6 SPECIAL AVIFs are lightweight
 // inline stubs (same shape as edidOnly() helpers elsewhere in this suite —

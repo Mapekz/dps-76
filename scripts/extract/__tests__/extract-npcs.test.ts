@@ -26,7 +26,7 @@ import questCb15 from './fixtures/qust-cb15-scorchedearth.json';
 import questStormRegionBoss from './fixtures/qust-storm-regionboss.json';
 import questE06Colossus from './fixtures/qust-e06-colossus.json';
 
-// npc-*.json fixtures are verbatim `esm -p get <edid> --json` output
+// npc-*.json fixtures are verbatim `esm get <edid> --json` output
 // (20260710 ESM): EN06_LvlWendigoColossus_Nuked (Earle, 0x0059E02F),
 // EncScorchbeastQueen01Template (the SBQ world-spawn template curated row,
 // 0x00043C75 — NOT the unique boss CB15_ScorchBeastQueen), EncSuperMutant_Template
@@ -35,7 +35,7 @@ import questE06Colossus from './fixtures/qust-e06-colossus.json';
 // morph/head-part/outfit data no code path here reads; keeping the full dump
 // would 5-10x these fixtures' size for zero test value.
 //
-// qust-*.json fixtures are TRIMMED (2026-07-19, `esm -p get <questEdid>
+// qust-*.json fixtures are TRIMMED (2026-07-19, `esm get <questEdid>
 // --json`, live-queried — not inherited from any earlier informal
 // investigation) to {header, editor_id, fields.'Virtual Machine Adapter'}:
 // CB15_ScorchedEarth (0x003E271D, SBQ's summon quest — shape a, the

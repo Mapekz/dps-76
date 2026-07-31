@@ -18,7 +18,7 @@ import grenadier02 from './fixtures/perk-grenadier02.json';
 import abPerkGrenadier from './fixtures/spel-abperkgrenadier.json';
 import abPerkFortifyExplosionRadius from './fixtures/mgef-abperkfortifyexplosionradius.json';
 
-// Fixtures are verbatim `esm -p get <formid> --json` output (20260710 ESM).
+// Fixtures are verbatim `esm get <formid> --json` output (20260710 ESM).
 // These tests pin the PCRD → GeneratedPerkCard normalization and the new
 // glowAtLeast (Rads AV) condition translation.
 

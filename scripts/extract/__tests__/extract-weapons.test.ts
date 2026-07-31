@@ -29,7 +29,7 @@ import ammo2mmEc from './fixtures/ammo-2mmec.json';
 import projGaussRifle from './fixtures/proj-gauss-rifle.json';
 import explGaussImpact from './fixtures/expl-gauss-impact.json';
 
-// Fixtures are verbatim `esm -p get <formid> --json` output (20260702 ESM;
+// Fixtures are verbatim `esm get <formid> --json` output (20260702 ESM;
 // explosion-chain fixtures from the 20260710 dump).
 // These tests pin the WEAP → GeneratedWeapon normalization semantics.
 
@@ -141,7 +141,7 @@ describe('toGeneratedWeapon', () => {
   });
 
   it('RegularBow: charging fields (Full Power Seconds/Damage Mult from Data, Minimum Charge Time top-level)', async () => {
-    // Fixture is verbatim `esm -p get RegularBow` output (20260715 ESM,
+    // Fixture is verbatim `esm get RegularBow` output (20260715 ESM,
     // captured while implementing charging weapons phase 2). "Minimum
     // Charge Time" is a TOP-LEVEL WEAP field (sibling of Data/RGW3), NOT
     // nested inside Data — this pins that distinction.
