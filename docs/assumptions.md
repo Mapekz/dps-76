@@ -21,47 +21,6 @@ exact text** (comments, tests, golden-case `source` strings, and the
 `OMOD-chased launcher payloads` notes baked into generated `omods.json`) — do
 not rename or merge one without updating every citation.
 
-## Index
-
-- **Formula structure** — the paper-damage formula, bucket fold, explosive/DoT carve-outs
-- **Base damage & components** — per-component curve evaluation, physical-component gate
-- **Launcher explosion damage** — WEAP+EXPL chain, the summing assumption
-- **Weapon-intrinsic DoT & OMOD replacement** — Contact-delivery `GetIsPlayer` inversion, REM/ADD/SET semantics
-- **OMOD-chased launcher payloads** — Lobber/Polar Lobber hazard chase
-- **Mixed damage-type OMOD conversion (DamageTypeValues)** — type materialization, twin inheritance
-- **Fire rate** — CLOSED
-- **Charging weapons** — FPS/FPDM ramp, cadence, extraction still outstanding
-- **Sustained DPS** — reload divisor, per-shell reloaders, reload-skip/free-ammo EV, Fast Fighter
-- **Crit meter**
-- **Value curves** — single-point/null-input curve conventions, cross-family HasPerk gates
-- **Hand-supplied values** — the per-legendary-effect model table
-- **Consumable stacking & addictions** — same-bonus dispel-key rule, addiction derivation
-- **Magazines & bobbleheads**
-- **Carnivore's / Herbivore's food scaling**
-- **Mutation penalties & Class Freak**
-- **Target distance (Close / Far)** — continuous distance slider, composite range-falloff model, explosive-component exemption
-- **VATS AP economy & manual-aim hit rate** — regen model, hydration baseline, Number Cruncher, Conductor's
-- **VATS hit-chance aggregate (display-only)** — additive/multiplicative pills, Concentrated Fire stacks
-- **Power attacks & melee cadence** — power-attack race mult, Charged, Thrill-Seeker's
-- **Onslaught** — stack counter, max-stack table, the Route-B correction
-- **Bullet Storm** — stack counter, accrual formula, reload retention, average mode
-- **SPECIAL & perk budget**
-- **Max HP (derived)**
-- **Ghoul Glow**
-- **Elemental 2★ effects & enemy-status 4★ rework**
-- **Resist mitigation** — formula, doubled radiation exponent, Option A + measured divergence, per-type mapping, TOFTT flat debuff, level-slider default
-- **Berserker's (Damage Unarmored)** — wielder's-own-DR curve rename from `enemyDamageResist`, manual knob
-- **Creature stat curves & NPC extraction (Phase 2 data)** — effectiveLevel X-axis, RACE/NPC_ Properties merge, flat-wins, epic-creature eligibility + fixed-rank (SBQ/Storm Goliath, NOT Earle), SBQ HP resolved
-- **Body parts (BPTD-extracted)**
-- **CAMP resource generators & consumable chains**
-- **OMOD eligibility & recipe chains**
-- **Attach-point closure**
-- **Unique weapons**
-- **Armor pipeline (Phase 3 extraction)** — dual weapon/armor OMOD output, `GetIsPlayer(Target)` tab-index-2 reading, `wornPieceCount` condition
-- **Armor (Phase 3 engine + UI, 2026-07-18)** — worn-piece-count checklist, per-piece vs self-scaling, Unyielding thresholds
-- **Known gaps / deferred**
-- **Future DPS streams**
-
 ## Formula structure
 Engine: `src/lib/engine/paper-damage.ts`, `resolve.ts`.
 
@@ -148,7 +107,7 @@ ProjectilePlasmaLarge).
 
 - **WEAP + EXPL sum per shot** — the engine adds the token WEAP impact damage
   and the EXPL explosion (Fat Man @45: 5 + 1386; Hellstorm: 379+379, two
-  separately-authored halves). **ASSUMPTION, not ESM-proven** — pending
+  separately-authored halves). **ASSUMPTION**, not ESM-proven — pending
   Pip-Boy card reading (Fat Man, Missile Launcher goldens).
 - **EXPL "Base Weapon Damage Mult"** (Gauss family 0.15, Tesla Cannon 0.10) is
   modeled as the intrinsic BASE of the `explosivePayload` twin fold;
@@ -234,11 +193,11 @@ accumulated `STAT_ExplosionRadius` bonus (Grenadier r1/r2: +50/+100 via MGEF
 AbPerkFortifyExplosionRadius) into damage instead of AoE.
 
 - **Conversion is 1:1** — radius percentage points fold straight into a `dbm`
-  fraction (Grenadier r2 + Bunker Buster ⇒ dbm ADD 1.0). **ASSUMPTION, not
-  ESM-proven** — no SPEL/PERK/ENCH reads the AV; pending in-game measurement.
+  fraction (Grenadier r2 + Bunker Buster ⇒ dbm ADD 1.0). **ASSUMPTION**, not
+  ESM-proven — no SPEL/PERK/ENCH reads the AV; pending in-game measurement.
 - **Placement is ADDITIVE `dbm`, explosive-scoped** (`damageTypeScope:
   ['explosive']`), not a standalone multiplier — consistent with the
-  Demolition Expert / SCAV! precedent above. **ASSUMPTION (user-supplied)**.
+  Demolition Expert / SCAV! precedent above. **ASSUMPTION**, user-supplied.
 - Explosion radius/AoE itself remains unmodeled — `explosionRadiusBonus`
   (Grenadier's own contribution) is inert with no engine effect unless
   `explosionRadiusToDamage` is also set (Bunker Buster only source today).
@@ -274,109 +233,28 @@ Contact-delivery.
   unused by the engine.
 
 ## OMOD-chased launcher payloads
-Engine: `overrideProjectileModifiers` (`extract-omods.ts`), consumed by
-`buildEffectiveWeapon` (`effective-weapon.ts`) via `GeneratedOmod.
-explosionChase`.
+Engine: `overrideProjectileModifiers` (`extract-omods.ts`) — full mechanic
+(unified PROJ→EXPL chase, REPLACE-vs-ADD, materialization) is in that
+function's doc-comment, not repeated here. Consumed by `buildEffectiveWeapon`
+(`effective-weapon.ts`) via `GeneratedOmod.explosionChase`.
 
-Some weapon OMODs carry `OverrideProjectile` (154 in the dump) swapping the
-fired projectile — mostly cosmetic, but several deal genuine explosive-family
-damage: Lightning Gun's Lobber Barrel, Cryolator's Polar Lobber Barrel, Dom
-Pedro's Nitro's/Nitro's-Penetrating, Explosive Arrows/Frame (bow/crossbow),
-Firework Frame (crossbow), Plasma Caster's Signal Dish Barrel, Nuka-Cola
-Quantum Gun's Thirst Zapper mag, Hellstorm Missile Launcher's Napalm/Cryo/
-Plasma tube barrels, Nuka-Launcher's identity mod.
+Covers 154 `OverrideProjectile` OMODs (mostly cosmetic); the ones with real
+explosive-family damage: Lightning Gun's Lobber Barrel, Cryolator's Polar
+Lobber Barrel, Dom Pedro's Nitro's/Nitro's-Penetrating, Explosive Arrows/Frame,
+Firework Frame, Plasma Caster's Signal Dish Barrel, Nuka-Cola Quantum Gun's
+Thirst Zapper mag, Hellstorm's Napalm/Cryo/Plasma tube barrels, Nuka-Launcher.
 
-- **One unified chase, unconditional on which weapon the OMOD targets**
-  (redesigned 2026-07-30 — see "Superseded" below for what this replaced):
-  PROJ (same Explosion-flag gate as launcher weapons) → EXPL's own direct
-  damage — BOTH the untyped main curve/flat `Damage` field and any typed
-  `Damage Types` entries — PLUS, independently, a hop EXPL `Placed Object` →
-  HAZD → HAZD `Effect` (SPEL) → Damage-archetype MGEF (damage type from the
-  MGEF's own Resist Value AV), and EXPL `Enchantment` (Napalm's on-hit fire
-  DoT). All three chase UNCONDITIONALLY whenever present — a hazard or
-  Enchantment is never a gate on whether the direct damage above
-  materializes, it's an independent bonus effect layered on top of it
-  (**user-confirmed 2026-07-30**: characterizing hazard presence as any kind
-  of "signal" was simply wrong — it's just an optional add-on).
-- **Materialization**: direct damage becomes a genuine NEW `fromExplosion`
-  `WeaponComponent` — `GeneratedOmod.explosionChase`, built via the SAME
-  `explosionComponents()` helper the WEAP-level `chaseExplosion` uses. This
-  is deliberately NOT a plain `baseDamage` modifier scoped `damageTypeScope:
-  ['explosive']`: `materializeDamageTypeComponents` (`effective-weapon.ts`)
-  explicitly EXCLUDES `'explosive'` from the types it can synthesize — that
-  string is reserved for the `componentIsExplosion` dual-match scope
-  (resolve.ts), not a literal materializable type, so a plain modifier
-  shaped that way would silently never materialize (caught 2026-07-30 before
-  shipping). Building a real component instead also means this damage is
-  correctly `fromExplosion`-flagged for Demolition Expert / the Explosive 2★
-  (a typed entry like Polar Lobber's cryo or Signal Dish's radiation/energy
-  gets flagged too, unlike an ordinary same-shaped DamageTypeValues OMOD
-  conversion). The curve is authoritative over a coincidental flat
-  `Damage`/`Amount` value whenever both are present — same convention every
-  other damage field follows. The HAZD's tick damage → `dotDamage`, NOT
-  `baseDamage` — a lingering field is semantically the same "refresh-only,
-  magnitude=dps" convention as any other DoT, a deliberate bucket choice.
-- **REPLACE vs. ADD is decided PER WEAPON, at engine time, not at extraction
-  time** (`buildEffectiveWeapon`): filtering out any existing `fromExplosion`
-  component(s) before appending `explosionChase`'s own is the SAME
-  expression either way — a no-op when the weapon had none (ADD: Polar
-  Lobber Barrel, Nitro's, Explosive Arrows/Frame, Firework Frame, Signal Dish
-  Barrel) and a real replacement when it did (REPLACE: Hellstorm's
-  Napalm/Cryo/Plasma tube barrels — the baseline never detonates once the
-  projectile is swapped). The swapped-in EXPL's own `Enchantment`/hazard
-  still ADD on top regardless, as ordinary OMOD modifiers.
 - **`explosionBaseWeaponDamageMult` is cleared to 0 whenever a chase applies**
-  (chain-suppressed too) — never copied from the chase's own mult. The
-  weapon's intrinsic mult-based `explosivePayload` twin mechanic
-  (paper-damage.ts) would be redundant with, or simply wrong alongside, a
-  chase's real components.
-- **Superseded 2026-07-30**: this section previously (a) branched on whether
-  the OMOD's `Target OMOD Keywords` matched `explosiveFamilyKeywords` (a
-  coarse keyword union of every weapon already carrying a baseline
-  `fromExplosion` component) to decide REPLACE-vs-ADD, chased at extraction
-  time, and (b) additionally gated direct-damage materialization on a HAZD
-  hop existing, to filter Cremator-style cosmetic re-skins. Both were wrong:
-  - The keyword heuristic is unnecessary — the engine already has the real
-    weapon's own `weapon.components` and can just check `fromExplosion`
-    presence directly, per actual weapon, with no pre-classification needed.
-  - It's also unsound for identity/customName OMODs (`ap_customName` — a
-    unique weapon's own dedicated skin/name mod): `SCORE_S11_mod_Custom_
-    NukaLauncher` ("Nuka-Launcher") carries NO `Target OMOD Keywords` at all
-    — that property is simply absent from customName mods, which bind to
-    their base weapon through an entirely different mechanism: the identity
-    mod's own keyword feeds a LVLI (leveled item list) that a drop
-    list/vendor/quest references (obtainability — `obtainability.ts`'s
-    COBJ/GMRW/LGDI/QUST/CONT/MISC/FLST reverse-ref chase, `extract-uniques.ts`'s
-    Combination records for the mod-loadout binding) — a COMPLETELY SEPARATE
-    concern from what damage the mod's own `OverrideProjectile` deals. The
-    keyword gate conflated "can the player obtain this" with "what does the
-    projectile-override chase find," which is why it went blind for exactly
-    the OMODs that don't use targetKeywords for eligibility in the first
-    place. Nuka-Launcher's base weapon (`AutoGrenadeLauncher`, per
-    `uniques.json`'s `baseWeaponId`) already explodes; the unified per-weapon
-    REPLACE/ADD check above sees that correctly with no special-casing.
-  - The hazard-gate reasoning was independently wrong on its own terms (see
-    the "one unified chase" bullet above) — a hazard was never a legitimate
-    signal for anything, gated or not.
-- **ASSUMPTION, unconfirmed**: HAZD `Target Interval` (re-tick rate) and
-  `Limit` (max simultaneous targets) are NOT modeled — the hazard's magnitude
-  folds like any other steady-state DoT (assumes the target stays in the
-  field for its full `Lifetime`), which may over/understate a lobbed
-  payload's or a ground-fire field's real contribution.
-- **NOT modeled/consumed: EXPL "Base Weapon Damage Mult"** — extracted for
-  audit only (Polar Lobber's is 1.0), never wired anywhere: whenever an
-  `explosionChase` carries real direct damage (main curve or typed entries),
-  that damage is authoritative and simply supersedes the mult — the same
-  "curve is authoritative over a flat fallback" rule every other damage
-  field follows, generalized (**user-confirmed 2026-07-30**): a
-  Projectile-Scaling Explosion (Gauss/Tesla) uses the mult ONLY because it
-  has no curve/typed damage of its own on that EXPL; once one states real
-  damage explicitly, the mult is simply unused.
-- A `Chain`-flagged EXPL (chain lightning — Tesla Cannon's AC muzzle) is a
-  third, DISTINCT outcome of this same chase, split out into its own "Chain
-  lightning" section above rather than folded into this list — it emits no
-  `explosionChase` and no ordinary modifiers at all, only
-  `GeneratedOmod.chainSuppressesExplosion`.
+  (chain-suppressed too) — the weapon's intrinsic mult-based `explosivePayload`
+  twin mechanic (paper-damage.ts) would be redundant with, or wrong alongside,
+  a chase's real components.
+- **ASSUMPTION**, unconfirmed: HAZD `Target Interval` (re-tick rate) and
+  `Limit` (max simultaneous targets) are NOT modeled — magnitude folds as a
+  steady-state DoT for the HAZD's full `Lifetime`, which may over/understate
+  a lobbed payload's real contribution.
+- A `Chain`-flagged EXPL (Tesla Cannon's AC muzzle) is a distinct outcome of
+  this same chase — see **Chain lightning** above; it emits no
+  `explosionChase`, only `GeneratedOmod.chainSuppressesExplosion`.
 
 ## Mixed damage-type OMOD conversion (DamageTypeValues)
 Engine: `materializeDamageTypeComponents`, `effective-weapon.ts`.
@@ -413,42 +291,13 @@ the weapon doesn't deal used to silently no-op.
   Tesla/Science! is user-verified.
 
 ## Fire rate — CLOSED
-Engine: `src/lib/fire-rate.ts`.
+Engine: `src/lib/fire-rate.ts` — formula, `isAutomatic` resolution, and the
+Gatling Gun/Gatling Laser `animDurationSec` exceptions are documented on
+`getFireRate`'s doc-comment. **CONFIRMED** against 30+ in-game Pip-Boy
+readings (live + PTS dumps).
 
-- **Formula**: auto = `speed / 0.11`; semi = `speed / Attack Delay Seconds`;
-  melee = 1.0/s stub (melee timing is the one open scope — `#45`).
-- **CONFIRMED** against 30+ in-game Pip-Boy readings (live + PTS dumps):
-  `Pip-Boy Fire Rate = (effectiveSpeed / cycleConstant) × 10`, rounded —
-  `cycleConstant` = 0.11 (auto) or the weapon's own Attack Delay Seconds
-  (semi).
-- The historical 0.8248 "physical" multiplier and every per-family
-  automatic-receiver Speed change is `SET`/`MUL_ADD Speed` on OMODs, resolved
-  through ordinary `Includes`-chain flattening — never hardcoded. Confirmed
-  across many weapon families.
-- **`isAutomatic` is the base WEAP `Data.Flags` "Automatic" bit**
-  (`isAutomaticFlag`), OR'd with an OMOD's real `IsAutomatic SET` — never the
-  `WeaponTypeAutomatic` **keyword**, which drives perk conditions only, not
-  fire mode (Combat Shotgun's Automatic Receiver carries the keyword but sets
-  `HasRepeatableSingleFire`, never `IsAutomatic`).
-- V63 Carbine/Meltdown's reduced fire rate comes entirely from its base WEAP
-  `Speed 0.8` — no automatic-receiver override exists for it.
-- **Confirmed exceptions — real alternate animation-cycle constants** (no ESM
-  property encodes these; hand-maintained `animDurationSec` overrides in
-  `overrides/corrections.ts`): **Gatling Gun 0.5s** (own `AnimsGatlingGun`
-  keyword, distinct from Minigun's standard-cycle `AnimsMinigun`);
-  **Gatling Laser Charging Barrels ≈0.1667s (1/6s)** (two independent
-  effective-Speed readings back-solve to the same constant). Minigun/Gatling
-  Laser (Speed 2.0) and Gauss Minigun (Speed 1.0) all fit the flat 0.11
-  formula in their base states — the shared `Charging Attack` WEAP flag does
-  NOT by itself imply a custom cycle.
-- **Not exceptions**: **Submachine Gun** has no true semi mode — every
-  receiver incl. "Standard" pulls the same automatic-init template, so its raw
-  unmodified Speed is never an achievable state. **Railway Rifle** matches the
-  ordinary formula exactly in both live and PTS (compare each dump against its
-  own readings, never across dumps).
-- Stock weapons use base WEAP stats — fine except when a weapon has no true
-  semi/auto choice (Submachine Gun above), where the "Standard" option may
-  still carry a real override that must be walked.
+- **melee = 1.0/s stub** — the one open scope. **ASSUMPTION**, pending real
+  melee cadence extraction (`#45`).
 
 ## Charging weapons
 Engine: `src/lib/charge.ts`, `paper-damage.ts`, `fire-rate.ts`,
@@ -894,253 +743,114 @@ Engine: `src/lib/distance.ts` (constants, `rangeFalloffMult`), `resolve.ts`
   `ammoCapacity`/`reloadSpeed`).
 
 ## VATS AP economy & manual-aim hit rate
-Engine: `src/lib/engine/ap-economy.ts`.
+Engine: `src/lib/engine/ap-economy.ts` — pool/regen formula, the race-based
+%-of-max model, Conductor's refresh-only HoT, the `AP_REGEN_DELAY_SEC` GMST
+provenance, and the pool-cycle uptime model are all documented on that
+module's own doc-comment, not repeated here.
 
-- **AP pool**: `MaxAP = 60 + 10×AGI` (GMSTs `fAVDActionPointsBase`/`Mult`).
 - **Per-shot VATS AP cost**: WEAP `Data."Action Point Cost"`, rewritten by
-  the `vatsApCost` bucket (`foldBucket` Σ MUL_ADD — V.A.T.S. Optimized
-  −0.35, plasma thrower/aligned/stock/capacitor, …). Verified bases: Fixer
-  16, Plasma Gun / Mind Over Matter 16, Minigun 8, Super Sledge 52.
-  **Engine keeps the raw float** (e.g. 16×0.7 = 11.2); Pip-Boy displays
-  `round(cost)` (user-measured 2026-07-29 — sniper 24.8→25, aligned-auto
-  17.6→18). Do not round to match the Pip-Boy.
-- **Regen — race-based %-of-max model, CORRECTED 2026-07-15**: base rate
-  lives on RACE `Properties` AV `ActionPointsRate` (**HumanRace 6.0,
-  PowerArmorRace 3.0** — ESM-proven; the player's race swaps in power armor,
-  halving regen). The value reads as **percent of Max AP regenerated per
-  second** (**user-confirmed semantics**, not record-typed): `regenPerSec =
-  maxAp × (raceBase + Σ apRegenFlat)/100 × (1 + Σ apRegen)`. Flat sources
-  (Company Tea, Nukashine, magazines) ADD onto the race base; percent sources
-  (Action Boy/Girl, Lone Wanderer, hydration) stack additively into ONE
-  multiplier. Consequence: regen is pool-proportional (AGI/apMax fortifies
-  raise absolute regen). 5 null goldens pin this (`#55`).
-- **Max AP fortifies** (`apMax` bucket, 2026-07-15): Peak Value Modifiers on
-  AV `ActionPoints` — food/alcohol/magazines, Scaly Skin's −50 penalty,
-  Civil Unrest's +50 identity mod. `maxAp = 60 + 10×AGI + Σ apMax`.
-- **Instant AP restores are OUT OF SCOPE by design** (2026-07-15, mirrors
-  instant heals) — one-shot Value-Modifier events have no steady-state
-  meaning.
-- **Hydration AP regen** (baseline, 2026-07-15 esm-walk): a hidden ability
-  grants +35% AP-regen to every fully-hydrated non-ghoul with NO perk
-  required. Modeled as a **default-ON** toggle. **ASSUMPTION**: lower
-  hydration tiers are NOT modeled — all-or-nothing, optimal play = fully
-  hydrated. **Rejuvenated** layers hand-authored deltas on top
-  (`perk-overrides.ts`); its rank-2 ESM tier also requires Rads ≤100 —
-  assumed true (optimal play).
+  the `vatsApCost` bucket. **Engine keeps the raw float** (e.g. 16×0.7 =
+  11.2); Pip-Boy displays `round(cost)` (user-measured 2026-07-29) — do not
+  round to match the Pip-Boy.
+- **Instant AP restores are OUT OF SCOPE by design** (mirrors instant heals)
+  — one-shot Value-Modifier events have no steady-state meaning. Same verdict
+  for on-kill restores (Grim Reaper's Sprint, Inertial) — need enemy TTK
+  modeling (phase 3).
+- **Hydration AP regen** (baseline): a hidden ability grants +35% AP-regen to
+  every fully-hydrated non-ghoul with no perk required. Modeled as a
+  **default-ON** toggle. **ASSUMPTION**: lower hydration tiers are NOT
+  modeled — all-or-nothing, optimal play = fully hydrated. **Rejuvenated**
+  layers hand-authored deltas on top (`perk-overrides.ts`); its rank-2 ESM
+  tier also requires Rads ≤100 — assumed true (optimal play).
 - **Packin' Light** (**Encumbrance**): its `IsOverEncumbered()=0` gate is
   consumed as always-true — the calculator assumes the player is never over
   encumbered.
 - **Number Cruncher** ("+2% damage per AP cost"): routed as `dbm 0.02` scaled
   by the EFFECTIVE (post-OMOD-fold) per-shot AP cost, in every scenario —
   **user-confirmed** it improves free aim too. Stock Fixer (16 AP) → +32%.
-- **On-kill AP restores are OUT OF SCOPE** — need enemy TTK modeling
-  (phase 3).
-- **Conductor's** (hand-supplied): crit restores `apPerCrit 10` +
-  `apCritHot 20 AP/s over 5s`. The HoT is **REFRESH-ONLY** — MGEF
-  `Legendary_Weapon_ConductorsApplyRestorePlayerAPPerkEffect` carries
-  `Dispel with Keywords` + KYWD `ConductorsDispelPlayerEffectKeyword`
-  (**ESM**; notes text: prevent Owner & Recipients from stacking; also
-  **user-confirmed** in-game 2026-07-15). A new crit dispels the prior
-  instance and restarts the window (general Creation-engine rule; some
-  effects instead skip apply when already active). Steady-state HoT =
-  `20 × min(1, 5 × critsPerSec)`, saturating at +20 AP/s under fast crit
-  cadence.
-- **Passive regen does NOT tick during sustained VATS fire, but DOES tick
-  during the reload window** (**user-confirmed**, both halves, 2026-07-15) —
-  starts `AP_REGEN_DELAY_SEC` (1.0s) after firing stops. The governing GMST is
-  **`fDamagedAPRegenDelay` = 1.0** (**USER-CONFIRMED 2026-07-30** — the
-  AP-specific delay, NOT the generic `fDamagedAVRegenDelay` this entry
-  previously credited). Value published in FO76's exe-baked defaults
-  (*Fallout 76 game settings*, `EXE Game Settings (2020)` table, uploaded by
-  Scribe-Howard 2021-07-27, mirrored on fallout.fandom.com and fallout.wiki);
-  it has **no ESM record** — verified in the 20260724 dump and re-confirmed by
-  that page's ESM table.
-- **AP regen delay falls back to the exe default** (2026-07-30): with no ESM
-  record to read, `extract-constants.ts` probes `fDamagedAPRegenDelay` by
-  EditorID (`probeOptionalGmstFloat`) and uses the exe-baked 1.0 while it is
-  absent — absence is expected, so it stays out of `_meta.json`; only a
-  present-but-malformed record notes. If a dump ever copies the setting into
-  the ESM, the extracted value takes over automatically. `fDamagedAVRegenDelay`
-  is deliberately NOT read as a stand-in — a different setting that merely
-  shares the value would drift silently.
-- **AP regen delay, superseded framing** (still factually true, no longer the
-  source): `fDamagedAVRegenDelay` is the generic post-any-AV-drain resume
-  delay — jumping, power attacking, sprinting, Dodgy's AP drain — and has been
-  1.0 since Skyrim; the 0.5s figures in modding circles are per-stat
-  Health/Stamina/Magicka overrides (`fDamagedStaminaRegenDelay` = 0.5 governs
-  the vestigial Stamina AV, not AP); FO3/NV predate the delay mechanic
-  entirely (`fActionPointsRestoreRate` 0.06 = bar-fraction/s, no delay). FO4
-  also references `fDamagedAPRegenDelay` (absent from reg2k's FO4 no-op list)
-  but publishes no value.
-- **Steady-state model**: `apGainPerSec = apPerCrit×(shotsPerSec/
-  shotsPerCrit) + Σ hot.rate×min(1, hot.durationSec×critsPerSec) +
-  reloadRegenPerSec`; `drainPerSec = apCost×shotsPerSec`. `shotsPerSec`
-  reuses the same reload-inclusive cadence as `sustainedDps`.
-- **Pool-cycle uptime** (**ASSUMPTION**, adopted 2026-07-29, **user
-  decision**; supersedes the 2026-07-15 "considered, NOT implemented"
-  gain/drain clamp): when `drainPerSec > apGainPerSec`, `burstSec =
-  maxAp/(drain − gain)` (fire until empty; = `secondsToEmpty`), `pauseSec =
-  regenDelaySec + maxAp/regenPerSec` (exit VATS, full-pool refill at full
-  passive regen — full refill is optimal play, it amortizes the 1s delay),
-  `uptime = burstSec/(burstSec + pauseSec)`. Passive regen now feeds uptime
-  via the pause; Conductor's HoT tail extending into the pause is
-  deliberately ignored (conservative, small). Pinned by `#71`'s golden.
 - **VATS canonical DPS = `apLimitedDps`** (2026-07-29, **user decision**):
   the card headline, headline strip, auto-emphasis pick, suggestion deltas,
   and the vs-target effective sustained all use the duty-cycle blend
   `uptime × vatsSustained + (1 − uptime) × freeAimSustained` — during the
-  AP-empty pause the player free-aims (free-aim accuracy, no crits) instead of
-  idling; fallback rate = the Free Aim scenario's own hit-rate-scaled sustained
-  DPS, surfaced as `ap.downtimeFallbackDps`. Note the post-mitigation
-  `effective.sustainedDps`/`ttk` blend the same weights via `blendEffectiveDps`
-  (`src/lib/engine/scenarios.ts`), and that `effectiveAgainstEnemy` no longer
-  takes uptime; `perHit`/`retainedPct` stay VATS-only. Pointer:
-  `src/lib/engine/ap-economy.ts` `apLimitedDps`.
+  AP-empty pause the player free-aims instead of idling. The post-mitigation
+  `effective.sustainedDps`/`ttk` blend the same weights via
+  `blendEffectiveDps` (`scenarios.ts`); `effectiveAgainstEnemy` no longer
+  takes uptime, `perHit`/`retainedPct` stay VATS-only.
 - **Passive AP regen during free-aim fallback** (**CONFIRMED** in-game
-  2026-07-29, `#75`): passive AP regen keeps ticking at full `regenPerSec`
-  while firing in free aim — sighted fire, hip fire, and scoped ADS all cost
-  no AP and leave regen running. Sole exception: holding breath while scoped
-  drains AP and suppresses regen; the fallback window assumes no breath-hold.
-  Pointer: `pauseSec` in `src/lib/engine/ap-economy.ts`.
+  2026-07-29, `#75`): keeps ticking at full `regenPerSec` while firing in
+  free aim — sighted, hip, and scoped ADS all cost no AP. Sole exception:
+  holding breath while scoped drains AP and suppresses regen; the fallback
+  window assumes no breath-hold.
 - Display: AP breakdown always shown when `ScenarioResult.ap` exists; ranged
   weapons only (melee/VATS-melee AP costs are out of scope).
 - **Manual-aim hit rate** (`hitRatePct`, 10–100, default 100): Free Aim's
   "does the shot hit the enemy at all" share. Scales free-aim **SUSTAINED**
-  dps (the headline "effective" number, `ScenarioCard.tsx`) only — never
-  per-hit or burst. Independent of `bodyPartHitRatePct` (below, and see "Body
-  parts (BPTD-extracted)") — that's "of the shots that hit, how many find the
-  aimed part vs. center mass".
+  dps only — never per-hit or burst. Independent of `bodyPartHitRatePct` —
+  see **Body parts (BPTD-extracted)** — that's "of the shots that hit, how
+  many find the aimed part vs. center mass".
 - **Manual VATS hit rate** (`vatsHitRatePct`, 10–100, default 100): VATS's
   *only* accuracy knob — the share of VATS shots that land on the targeted
-  body part (or center mass when no part is targeted). A user-supplied
-  estimate, not computed accuracy; auto-computing VATS hit chance from
-  distance/Perception/perks stays **permanently out of scope** (`scenarios.ts`
-  Stage B/C hit-rate block). Unlike Free Aim, a VATS miss deals **zero
-  damage** — there is no torso/center-mass fallback (2026-07-31: previously
-  VATS shared `bodyPartHitRatePct`'s part/torso blend with Free Aim; that was
-  the source of the three-slider confusion this section resolves — see
+  body part. A user-supplied estimate, not computed accuracy; auto-computing
+  VATS hit chance from distance/Perception/perks stays **permanently out of
+  scope**. Unlike Free Aim, a VATS miss deals **zero damage** — no
+  torso/center-mass fallback (2026-07-31: previously VATS shared
+  `bodyPartHitRatePct`'s part/torso blend with Free Aim — see
   `bodyPartBlendedHit`'s doc comment in `scenarios.ts`). Also scales the
   VATS-weighted term of `ap.apLimitedDps`; the fallback term uses free aim's
   own `hitRatePct` instead (a miss still costs AP).
 
 ## VATS hit-chance aggregate (display-only)
 Engine: `scenarios.ts` (bootstrap fold → `ScenarioSet.vatsHitChanceBonus`).
-UI: `TargetSection.tsx` pill next to the VATS hit-rate slider (moved from
-`ConditionsSection.tsx` 2026-07-31, alongside the rest of the Accuracy group
-— see "Body-part hit rate" below).
+UI: `TargetSection.tsx` pill next to the VATS hit-rate slider.
 
-- **Aggregation ≠ computation** (user decision): the standing
-  "auto-computing VATS hit chance from distance/Perception/perks is
-  permanently out of scope" ruling above bars DERIVING a hit-chance NUMBER
-  from game state; it does not bar summing already-known ESM bonus
-  MAGNITUDES for display. `vatsHitChance` (`regime: 'display'`) folds ONCE
-  per scenario input against the VATS resolve context
-  (`onslaughtMaxStacks`/`armorPen` "fold once" precedent) into
-  `ScenarioSet.vatsHitChanceBonus` and is consumed ONLY by the UI pill —
+- **Aggregation ≠ computation** (user decision): the standing "auto-computing
+  VATS hit chance from distance/Perception/perks is permanently out of
+  scope" ruling bars DERIVING a hit-chance NUMBER from game state; it does
+  not bar summing already-known ESM bonus MAGNITUDES for display.
+  `vatsHitChance` (`regime: 'display'`) is consumed ONLY by the UI pill —
   **never** threaded into `sustainedDps`/`apLimitedDps`/any damage term
   (regression-tested, `engine.test.ts` "vatsHitChanceBonus"). The manual
   `vatsHitRatePct` slider stays the sole authoritative VATS hit-rate input.
 - **Fold base is 1, not 0** (unlike `armorPen`/`onslaughtMaxStacks`):
-  `foldBucket(mods, 'vatsHitChance', 1, ctx) - 1`. Real sources split
-  ADD (V.A.T.S. Enhanced, Awareness, Orange Mentats) and MUL_ADD (the
-  V.A.T.S. Matrix Overlay armor mods, Hoppy Hunter IPA, Twisted Muscles —
-  all extracted from ESM "Multiply Value" entry points as `float − 1`, same
-  as every other Multiply-Value route). `foldOps` scales MUL_ADD terms by
-  the base, so base 0 would silently zero out every MUL_ADD source; folding
-  against 1 and subtracting 1 back out recovers each source's intended
-  contribution while keeping "0 = nothing equipped" for the pill's
-  `> 0` visibility check.
-- **Modeled sources** (all ESM-proven unless noted):
-  - **V.A.T.S. Enhanced** (OMOD `mod_Legendary_Weapon2_Guns_VATSAccuracy`
-    `0x00524153`): flat `ActorValues ADD STAT_VATSAccuracy 50.0` → +0.50.
-  - **Awareness** perk (`0x000D2287`, hasCard, Perception-gated card):
-    curve vs the player's Perception AV (`0x000002C3`) on `STAT_VATSAccuracy`
-    — points (1,5)→(15,18)→(30,30)→(60,45)→(100,50), scale 0.01. New
-    `CurveInput` `'perception'` (mirrors strength/endurance/charisma/
-    intelligence).
-  - **Eye of the Hunter** (Ghoul-exclusive perk, `GHL_EyeOfTheHunter01-03`
-    `0x00797E2F`/`0x00797E5B`/`0x00797E2B`): +0.20/+0.25/+0.30 by rank,
-    gated `playerIsGhoul(true)` + `targetDistance('far')`. The ESM's own
-    gate is `GetDistanceToClosestHostileActor() >= 10/20/30` (by rank) — the
-    **only** numeric distance-THRESHOLD condition rows found anywhere in
-    the dump (contrast the close/far damage gates, which are native-code
-    with zero condition rows). **APPROXIMATION**: collapsed onto the app's
-    existing far-range bucket rather than adding a third distance tier for
-    one perk (`normalize/conditions.ts`'s new
-    `GetDistanceToClosestHostileActor` case).
-  - **V.A.T.S. Matrix Overlay** — 7 power-armor helmet OMODs (Hellcat
-    `0x0060DB3A`, T45 `0x0020374D`, T51 `0x0017A5AE`, T60 `0x0020374C`, T65
-    `0x00585929`, X01 `0x0020374B`, Enclave Vulcan `0x00788D8D`), each
-    granting `FortifyVATSAccuracyChemPerk` (`0x001CC775`, `Mod VATS Hit
-    Chance`/Multiply Value ×1.1) → MUL_ADD +0.10. `ENTRY_POINT_BUCKETS` row
-    `'Mod VATS Hit Chance': 'vatsHitChance'` routes through the generic
-    Multiply-Value branch in `translateGrantedPerk` — no special-casing.
-  - **Orange Mentats** (ALCH `0x000518C5`): flat Peak Value Modifier +10 for
-    300s on `STAT_VATSAccuracy` → +0.10.
-  - **Hoppy Hunter IPA** (ALCH `0x00454128`, via granted perk
-    `HoppyHunter_ScopeStability` `0x0045412A`, description "Decreases
-    V.A.T.S. Accuracy"): `Mod VATS Hit Chance` ×0.8 → MUL_ADD **−0.20** (a
-    genuine penalty chem — the aggregate can go negative; the UI pill hides
-    itself at ≤0).
-  - **Twisted Muscles** mutation penalty (SPEL `0x003C402F`, via granted
-    perk `Mutation_ReduceAccuracy_Perk` `0x003C4035`): `Mod VATS Hit Chance`
-    ×0.7/0.77/0.85/0.93 by Class Freak tier → MUL_ADD −0.30/−0.23/−0.15/
-    −0.07 (mirrors the perk's existing Cone-of-fire penalty shape, which
-    stays unmapped — free-aim spread accuracy has no bucket).
-  - **Concentrated Fire** — no longer feeds this `vatsHitChance` aggregate;
-    its hit-chance half is a MULTIPLIER, not an additive %, so it feeds a
-    separate `vatsHitChanceMult` pill instead. See "Concentrated Fire
-    stacks" below.
-- **Concentrated Fire stacks**: the `STAT_DamagePerk` plumbing perk
-  (`0x0023A0EB`) carries EP135 "Mod VATS Concentrated Fire Damage Mult"
-  (float **0.01** × AV `ConcentratedFireRank` `0x00900A59`, no weapon gate)
-  and EP109 "Mod VATS Concentrated Fire Chance Bonus" (float **4.0**
-  non-automatic / **1.0** automatic × the same AV); max stacks is GMST
-  `iVATSConcentratedFireBonus` `0x007CF698` = **20**. **ESM-PROVEN** facts,
-  but both entry points stay `ENTRY_POINT_IGNORED` in `extract-perks.ts`
-  pending an esm-walk of how `ConcentratedFire01-03` write the AV — the
-  override below is a hand-authored stand-in for that extraction, and **must
-  be removed in the same commit if the extraction lands** (double-stack
-  hazard). Provenance tracked in `#48`.
-  - **Damage half — modeled, ESM-derived magnitude**: each rank adds a
-    `dbm` ADD of 0.01/0.02/0.03 (`overrides/perk-overrides.ts`
-    `ConcentratedFire`), gated `vatsOnly` + `stacks(counter:
-    'concentratedFire', max: 20)`, reproducing EP135's `0.01 × rank ×
-    stacks` exactly. The stack COUNT is a manual slider
-    (`PlayerConditions.concentratedFireStacks`, `ConditionsSection.tsx`,
-    default 0 — user-approved) standing in for the native per-target
-    consecutive-shots-fired counter, which resets on body-part/target
-    switch (the calculator assumes a steady stream of hits on one body
-    part). **ASSUMPTION**: the slider's value each session, not the
-    ESM-proven per-stack magnitude/cap above.
-  - **Hit-chance half — EP109 unit USER-RESOLVED**: EP109 is a MULTIPLIER on
-    the game's own computed VATS hit chance, **not** a flat additive % — per
-    stack, semi-auto weapons multiply hit chance by `(1 + 0.04×rank)` and
-    automatic weapons by `(1 + 0.01×rank)`. The raw "4.0 / 1.0" floats read as
-    additive accuracy points only pre-~2025, before a game rework; don't
-    re-read them that way. Modeled as two `vatsHitChanceMult` (`regime:
-    'display'`) `MUL_ADD` entries per rank in `overrides/perk-overrides.ts`
-    `ConcentratedFire` — one gated `weaponKeyword WeaponTypeAutomatic
-    present:false` (semi), one `present:true` (auto), the exact keyword the
-    ESM's own `HasKeyword(WeaponTypeAutomatic)==1/==0` conditions read — both
-    also gated `stacks(counter: 'concentratedFire', max: 20)`. Folded once per
-    scenario input (`scenarios.ts`, alongside `vatsHitChance`) against base 1
-    and exposed AS-IS (1 = neutral, not de-based) into
-    `ScenarioSet.vatsHitChanceMult`, rendered by `ConditionsSection.tsx`'s
-    "hit chance × 1.xx" pill and hidden at exactly 1. Same display-only
-    contract as `vatsHitChance`: **NEVER** consumed by any damage term.
-- **Badges**: every source above loses the picker's "no effect yet" badge
-  automatically via `modifierHasEngineEffect` (`vatsHitChance` is
-  `hasEngineEffect: true`, `specialPerception` precedent — "the folded
-  value is what the UI renders" counts as an effect).
-- **Sweep, nothing else found**: `perks.json`/`omods.json`/
-  `armor-omods.json`/`consumables.json`/`mutations.json` carry no other
-  unresolved VATS-accuracy-flavored AV/entry-point after this pass (the two
-  hidden non-card perks the wiring incidentally surfaced —
-  `GHL_SURV_FeralPerk`'s Feral-state penalty and the engine-internal
-  `PlayerPerk`'s `PerceptionCondition` gate — both land behind `unresolved`
-  GLOB-comparison conditions and are permanently inert; neither is
-  card-joined to any PerkId).
+  `foldBucket(mods, 'vatsHitChance', 1, ctx) - 1` — `foldOps` scales MUL_ADD
+  terms by the base, so base 0 would silently zero out every MUL_ADD source.
+
+Modeled sources (all ESM-proven unless noted):
+
+| Source | Route | Contribution |
+|---|---|---|
+| V.A.T.S. Enhanced (OMOD) | flat ADD `STAT_VATSAccuracy` | +0.50 |
+| Awareness perk | curve vs Perception AV, new `CurveInput 'perception'` | +0.05 to +0.50 by rank |
+| Eye of the Hunter (Ghoul-only) | `playerIsGhoul` + `targetDistance('far')` — **APPROXIMATION**, ESM's own gate is a numeric distance threshold, collapsed onto the far-range bucket | +0.20/+0.25/+0.30 |
+| V.A.T.S. Matrix Overlay (7 PA helmets) | `FortifyVATSAccuracyChemPerk`, Multiply Value ×1.1 | MUL_ADD +0.10 |
+| Orange Mentats | flat Peak Value Modifier, 300s | +0.10 |
+| Hoppy Hunter IPA | Multiply Value ×0.8 (penalty — pill hides at ≤0) | MUL_ADD −0.20 |
+| Twisted Muscles (Class Freak tiers) | Multiply Value ×0.7/0.77/0.85/0.93 | MUL_ADD −0.30/−0.23/−0.15/−0.07 |
+
+Concentrated Fire does NOT feed this aggregate — its hit-chance half is a
+multiplier, not additive; see **Concentrated Fire stacks** below.
+
+- **Concentrated Fire stacks**: the `STAT_DamagePerk` plumbing perk carries
+  EP135 "Mod VATS Concentrated Fire Damage Mult" (0.01 × `ConcentratedFireRank`
+  AV) and EP109 "Mod VATS Concentrated Fire Chance Bonus" (4.0 non-auto /
+  1.0 auto × the same AV); max stacks GMST `iVATSConcentratedFireBonus` = 20.
+  **ESM-PROVEN**, but both entry points stay `ENTRY_POINT_IGNORED` pending an
+  esm-walk of how `ConcentratedFire01-03` write the AV — the
+  `perk-overrides.ts` `ConcentratedFire` override is a hand-authored
+  stand-in, **must be removed in the same commit if the extraction lands**
+  (double-stack hazard, `#48`).
+  - **Damage half**: each rank adds `dbm` ADD 0.01/0.02/0.03, gated
+    `vatsOnly` + `stacks(counter: 'concentratedFire', max: 20)`. The stack
+    COUNT is a manual slider (default 0) standing in for the native
+    per-target consecutive-shots counter (resets on target switch) — the
+    calculator assumes a steady stream of hits on one body part.
+    **ASSUMPTION**: the slider's value, not the ESM-proven magnitude/cap.
+  - **Hit-chance half — EP109 unit USER-RESOLVED**: a MULTIPLIER on the
+    game's own computed VATS hit chance, not additive % — per stack, semi
+    ×(1+0.04×rank), auto ×(1+0.01×rank) (the raw floats read as additive
+    points only pre-~2025, before a game rework). Modeled as
+    `vatsHitChanceMult` (`regime: 'display'`), exposed AS-IS (1=neutral) —
+    same display-only contract, **never** consumed by any damage term.
 
 ## Power attacks & melee cadence
 Engine: `paper-damage.ts`, `scenarios.ts`, `fire-rate.ts`.
@@ -1194,179 +904,70 @@ Engine: `paper-damage.ts`, `scenarios.ts`, `fire-rate.ts`.
   player owns one gender's card at a time.
 
 ## Onslaught
-Bucket: `Bucket.onslaughtMaxStacks`; engine: `resolve.ts`'s
+Bucket: `Bucket.onslaughtMaxStacks`; engine: `src/lib/engine/onslaught.ts`
+(stack counter, max-stack table, Route B, reverse mode — full mechanic in its
+module doc-comment, not repeated here), `resolve.ts`'s
 `effectiveOnslaughtStacks`.
 
-The Onslaught stack counter is engine-hardcoded (raw AV `0x00000395`, no
-AVIF record at all) — MESG text documents +1 stack/hit, −1/sec, entirely
-engine-native (nothing to model). **The app's Onslaught-stacks slider IS the
-steady-state input**, standing in for "whatever the counter settles at
-during sustained play" (same convention as `adrenalineStacks`/
-`bulletStormStacks`). **Base max = 0 is an INFERENCE** — no record defines a
-starting cap.
-
-**Max-stack contributors** (Perk Entry Point 190 "Mod Max Consecutive Hits
-Allowed" ADDs a flat cap; `ScenarioSet.onslaughtMaxStacks` exposes the fold
-to the UI slider):
-
-| Source | Max | Per-stack bonus |
-|---|---|---|
-| Guerrilla Expert | +3 | +1%/stack reload speed (ranged) |
-| Guerrilla Master | +5 | +5%/stack dbm at close range (ranged) |
-| Gunslinger Expert | +3 | +1%/stack weak-spot damage (ranged) |
-| Gunslinger Master | +10 | none — EP190 is its only extracted effect; **reverse** behavior (regen/consume flip) is engine-native, hand-authored via `onslaughtReverse` bucket (`perk-overrides.ts`) |
-| Furious | +9 | +5%/stack dbm |
-| Pounder's | +10 | +10%/stack dbm |
-| Splinter's Special Effect | +10 | +10%/stack dbm (P62 content — see below) |
-| Whacker Smacker | +0 (grants none) | +5%/stack power-attack damage — needs an external max-stack source |
-
-- **Route B per-stack value**: Furious/Pounder's/Splinter's EP189 reads
-  `Float × value(a private referenced AV)` — that AV's **Default Value IS the
-  real per-stack step**, not the `Float` alone (Furious's private AV: Default
-  5.0, so `0.01×5=0.05` → +5%/stack, **confirmed in-game**;
-  Pounder's/Splinter's Default 10.0 → +10%/stack). The AVIF Maximum
-  corroborates it — it reads Default × stack cap, not authoring boilerplate.
-- **Sentinel default**: `onslaughtStacks = -1` means "follow the computed
-  max" (assume full stacks, the app's existing assume-max convention). A
-  non-negative value is an explicit user selection, clamped to the current
-  max at read time.
+- **Base max = 0 is an INFERENCE** — no record defines a starting cap. **The
+  app's slider IS the steady-state input**, standing in for "whatever the
+  counter settles at during sustained play" (same convention as
+  `adrenalineStacks`/`bulletStormStacks`). Sentinel `-1` = follow the
+  computed max.
 - **Splinter's/Chaos Engine's/Tempest's P62 family**: fully modeled but
-  **never shipped in-game** ("The Drifter" encounter never released) —
-  stays hidden regardless of what the record graph implies; same verdict for
-  the P62 weapon-side legendaries and Combo-Breaker's.
-- **Guerrilla Expert's reload-speed bonus is functionally wired**:
-  perk/legendary-perk/mutation/consumable modifiers are gathered BEFORE
-  `buildEffectiveWeapon`, so weapon-stat buckets fold from OMOD + loadout
-  sources together. Two assumptions: (1) evaluates against
-  RAW player conditions, not buff-derived SPECIAL (no known source needs it,
-  avoids a `resolveLoadout` ordering cycle); (2) Onslaught-curve inputs read
-  a stack cap bootstrap-folded the same way `scenarios.ts` does.
-- **`GetWeaponAnimType()` gate mapped** (Martial Artist's melee gate): FO76
-  uses only anim types 0/1/5/6/9/10, so `≤6` = melee/unarmed exactly,
-  **except** the gun-animated melee oddities Paddle Ball and War Shrike (anim
-  9, melee keywords) — correctly NOT buffed, modeled as a dedicated
-  `weaponAnimTypeMax` condition rather than a keyword/class translation.
-- **Reverse Onslaught (Gunslinger Master)** — **GAME FACT** (engine hardcode,
-  not ESM-proven): equipping GSM inverts the shared counter — **+1 stack/sec
-  regen continuously** (during fire and reload) and **−1 stack per hit-event**
-  (per physical projectile + per explosion per target + per melee swing).
-  Modeled as a bootstrap `onslaughtReverse` bucket fold (`scenarios.ts`) plus
-  a steady-state sawtooth simulation (`onslaught.ts`'s
-  `reverseOnslaughtAvgStacks`) threaded on
-  `ResolveContext.onslaughtReverseStacks`; the UI slider becomes a read-only
-  average when reverse mode is active (`ConditionsSection.tsx`).
-- **Reverse regen rate** — **ASSUMPTION**: +1 stack/sec, never interrupted
-  (`onslaught.ts` `ONSLAUGHT_REGEN_PER_SEC`).
-- **Reverse consumption** — **ASSUMPTION**: `physicalHits + explosionHits ×
-  targetsHit` where `physicalHits = projectileCount` when any non-`fromExplosion`
-  component exists (else 0), `explosionHits = projectileCount` when the weapon
-  has a `fromExplosion` payload, intrinsic `explosionBaseWeaponDamageMult`, or
-  folded `explosivePayload` (`onslaught.ts` `perShotOnslaughtConsume`).
-- **Reverse averaging** — **ASSUMPTION**: faithful mag+reload sawtooth fixed-
-  point (`onslaught.ts`); first mag starts at max; mean of per-shot stack
-  levels at convergence.
+  **never shipped in-game** ("The Drifter" encounter never released) — stays
+  hidden regardless of what the record graph implies; same verdict for the
+  P62 weapon-side legendaries and Combo-Breaker's.
+- **Reverse regen/consumption/averaging** — **ASSUMPTION** (each): +1
+  stack/sec never interrupted (`ONSLAUGHT_REGEN_PER_SEC`); consumption =
+  `onslaughtHitEventsPerShot`; averaging = faithful mag+reload sawtooth
+  fixed-point, first mag starts at max. **Forward sustained sim** is the
+  mirror by symmetry (unmeasured) — `forwardOnslaughtAvgStacks`.
 - **`targetsHit` input** — **ASSUMPTION**: default 1 (single-target DPS);
   user-set for AoE/cleave fan-out under reverse mode only today
   (`PlayerConditions.targetsHit`).
-- **`SmallGun_Actor_Condition` gate mapped** (Ground Pounder's reload gate):
-  decodes to `(Rifle OR Shotgun OR Pistol) AND NOT HeavyGun` — the extractor
-  now inline-expands standalone condition-form references when they
-  translate completely.
-- **Forward sustained sim** — **ASSUMPTION** (symmetry unmeasured): normal-mode
-  sustained value = sawtooth sim of +1 stack per hit-event vs −1/sec continuous
-  decay (decay through reload too); hit-event counting symmetric with reverse
-  consumption — `src/lib/engine/onslaught.ts` `forwardOnslaughtAvgStacks`.
 - **Splash-reliant suppression** — **ASSUMED** (playstyle: direct hits
   essentially never land; exceptions with real projectile damage: Hellstorm,
-  Cremator, Tesla Cannon): lobbed splash launchers count no physical projectile
-  tick (explosion only) in Onslaught hit-events, both directions, both scenarios
-  — curated list `src/data/overrides/weapon-corrections.ts` `splashReliantWeaponIds`;
-  in-game measurement tracked as a needs-measurement GitHub issue (#77).
+  Cremator, Tesla Cannon): lobbed splash launchers count no physical
+  projectile tick (explosion only) in Onslaught hit-events, both directions —
+  curated list `weapon-corrections.ts` `splashReliantWeaponIds`; in-game
+  measurement tracked as `#77`.
 
 
 ## Bullet Storm
 Buckets: `bulletStormMaxStacks`, `bulletStormMinStacks`, `bulletStormRetention`;
 engine: `resolve.ts`'s `effectiveBulletStormStacks`, `bulletstorm.ts`'s
-`bulletStormAvgStacks`.
+`bulletStormAvgStacks` — accrual formula and the instant-reload/retention
+interaction are documented on that function, not repeated here.
 
-The Bullet Storm stack counter is engine-hardcoded (raw AV `0x0000039B`, no
-AVIF record) — same shape as Onslaught's counter. **Base max = 0 is an
-INFERENCE** — no record defines a starting cap; `bulletStormMaxStacks`
-sources are all landed from extraction: Bullet Storm perk +10 (unconditional),
-Bringing Out the Big Guns +10 more (gated `perkFamilyRank(HeavyGunnerMaster,
-minRank: 1)`), Foundation's Vengeance +5 more (gated on its weapon keyword AND
-`healthBelowPct: 25`) — cap ranges 10/20/25 depending on loadout.
-`bulletStormMinStacks` (Resolute Veteran +5, landed on the omod side) is the
-same shape as a floor instead of a cap.
+The stack counter is engine-hardcoded (raw AV `0x0000039B`, no AVIF record) —
+same shape as Onslaught's. **Base max = 0 is an INFERENCE**.
+`bulletStormMaxStacks` sources: Bullet Storm perk +10 (unconditional),
+Bringing Out the Big Guns +10 more (`perkFamilyRank(HeavyGunnerMaster,
+minRank: 1)`), Foundation's Vengeance +5 more (`healthBelowPct: 25`, gate is
+**ESM-PROVEN** inclusive `≤` — see `conditions.ts`'s `GetHealthPercentage`
+handler) — cap ranges 10/20/25 depending on loadout. `bulletStormMinStacks`
+(Resolute Veteran +5, omod side) is the same shape as a floor.
 
-- **`healthBelowPct` is inclusive — ESM-PROVEN**: Foundation's Vengeance's
-  `GetHealthPercentage() Less Than Or Equal To 0.25` gate evaluates `≤`, not
-  strict `<` — at exactly 25% health the +5 cap applies. Extraction preserves
-  the ESM's strict-vs-inclusive operator via an `inclusive` flag on
-  `healthBelowPct`/`enemyHealthBelowPct`/`enemyHealthAbovePct` (absent ⇒
-  inclusive; `false` ⇒ strict — `conditions.ts`'s `GetHealthPercentage`
-  handler, evaluated in `resolve.ts`), so a future strict-`<` source isn't
-  silently mis-modeled as inclusive. Foundation's Vengeance is the only
-  player-side `healthBelowPct` source today (all 3 perk-rank entries, `pct:
-  25`, no flag — it's `≤`). Enemy health gates (Executioner's/Instigating)
-  were already inclusive and also emit no flag.
-- **Accrual formula — USER-MEASURED**: `(projectileCount + ammoPerShot − 1) /
-  30` stacks per shot, using POST-MOD effective-weapon numbers (e.g. 8
-  projectiles + 5 ammo/shot → 12/30/shot; +1 projectile from Two Shot →
-  13/30). The divisor **IS ESM-PROVEN**: GMST `uAmmoSpenderAmmoUsePerStack`
-  (`0x0083C3D0`) = 30 (`bulletstorm.ts` `BULLET_STORM_AMMO_PER_STACK`).
-- **Reload loss — GAME FACT**: 100% of stacks are lost on a REAL reload by
-  default; no passive decay/regen otherwise. Lock and Load r1 sets retention
-  to 0.5 (keep half) via its own entry point (EP210, `Mod Ammo Spender Max
-  Reload Stack Mult`) — `bulletStormRetention` bucket, folded once per
-  scenario input and consumed only by the sustained-fire average model (the
-  manual stacks slider ignores it).
-- **Instant reloads keep 100% of stacks — GAME FACT (user-confirmed)**:
-  neither the free-tier skip (`reloadSkipChance` — Quick Hands, Wild West
-  Hands) nor the bash-tier skip (`reloadSkipChanceBash` — Battle-Loader's;
-  see **Reload-skip & free-ammo expected value**) loses Bullet Storm stacks —
-  there's no real reload for Lock and Load's retention to apply to.
-  `bulletStormAvgStacks` composes both channels as independent probabilities
-  (`skip = 1 − (1 − pFree)(1 − pBash)`, the same shape `foldChanceUnion` uses
-  within a single channel) and blends retention only over the non-skipped
-  fraction: `effectiveRetention = skip + (1 − skip) × retention` — at
-  `skip = 1` retention is irrelevant (stacks never reset), at `skip = 0`
-  retention always applies.
 - **Sentinel default**: `bulletStormStacks = -1` means "follow the computed
-  max" — same convention as `onslaughtStacks`. A non-negative value is an
-  explicit user selection, clamped to `[min, max]` at read time
-  (`effectiveBulletStormStacks`; `min > max` degrades to `max`, never a floor
-  above the cap).
-- **Sustained-fire average (auto, `bulletStormStacks = -1`)** —
-  engine-computed sustained-fire average, mirroring Onslaught-reverse's
-  read-only average: `bulletStormAvgStacks` fixed-point-iterates mag+reload cycles (accrue every
-  shot, apply retention once per reload) until the starting stack level
-  converges, then averages the per-shot levels of the converged cycle. A
-  weapon with no magazine (melee/unarmed, capacity 0) never reloads, so it
-  simplifies to a flat `max` (**ASSUMPTION**, doesn't model an initial
-  ramp-up from 0). **ASSUMPTION, unproven**: the simulation carries a
-  possibly-fractional running stack total across reloads (retention scales
-  the exact float, not a rounded whole-stack count) — whether the hidden AV
-  itself tracks fractional progress this way, vs. truncating to whole stacks
-  before a reload can apply retention, has no in-game confirmation.
-- **Cross-family reload-speed curve**: Bullet Storm's own reload-speed curve
-  (+1%/ammo-spent stack) is gated `HasPerk(LockAndLoad01)` — see **Value
-  curves**' cross-family HasPerk gates, `perkFamilyRank` condition kind.
+  max" — same convention as `onslaughtStacks`, clamped to `[min, max]` at
+  read time (`min > max` degrades to `max`, never a floor above the cap).
+- **No-magazine weapons** (melee/unarmed, capacity 0) simplify the sustained
+  average to a flat `max` — **ASSUMPTION**, doesn't model an initial ramp-up
+  from 0. **ASSUMPTION**, unproven: the sim carries a possibly-fractional
+  running stack total across reloads — whether the hidden AV tracks
+  fractional progress this way vs. truncating to whole stacks has no
+  in-game confirmation.
 - **Bootstrap fold, twice**: like `onslaughtMaxStacks`/`moveSpeedBonus`,
   `bulletStormMaxStacks`/`bulletStormMinStacks` are folded once per scenario
-  input (`scenarios.ts`, feeds paper-damage) AND once in the weapon-stat
-  bootstrap fold (`effective-weapon.ts`, so the reload-speed curve above sees
-  the cap/floor too) — `bulletStormRetention`/the sustained-fire average are
-  NOT folded in `effective-weapon.ts` (weapon-stat pass only, same accepted
-  boundary as `onslaughtReverseStacks`).
-- **Inert siblings**: `bulletStormOnKill` (Final Word's +1 stack on kill —
-  kills are unknowable in steady-state paper DPS), `bulletStormSpinUp`
-  (Valkyrie's per-stack spin-up ramp — not modeled), `deflectChance` (The
-  Action Hero — defensive, no incoming-damage model; deliberately generic,
-  not Bullet-Storm-scoped, for future deflect/reflect sources).
-- **Default is Sustained Stacks**: slider sentinel `−1` = auto (engine
-  sustained-average sim); `bulletStormAverageMode` toggle removed 2026-07-30; a
-  manually pinned slider value wins over the sim.
+  input AND once in the weapon-stat bootstrap fold (so the reload-speed curve
+  sees the cap/floor too) — `bulletStormRetention`/the sustained-fire average
+  are NOT folded in `effective-weapon.ts`, same boundary as
+  `onslaughtReverseStacks`.
+- **Inert siblings**: `bulletStormOnKill` (Final Word — kills are unknowable
+  in steady-state paper DPS), `bulletStormSpinUp` (Valkyrie's spin-up ramp —
+  not modeled), `deflectChance` (The Action Hero — no incoming-damage model;
+  deliberately generic, not Bullet-Storm-scoped).
 
 
 ## SPECIAL & perk budget
@@ -1463,100 +1064,37 @@ effects gate on `GetValue(Rads) ≥ N`.
   now +50% vs frozen targets.
 
 ## Resist mitigation
-Engine: `src/lib/engine/mitigation.ts` (`applyMitigation`), `src/lib/enemy-defenses.ts`
+Engine: `src/lib/engine/mitigation.ts` (`applyMitigation`) — formula, the
+7-GMST exponent/factor/clamp inventory, radiation squaring, the
+damage-type→resist-type map, and the Option A pipeline-position rationale are
+all documented there, not repeated here. `src/lib/enemy-defenses.ts`
 (`getEnemyDefenses`, `resolveTargetLevel`), `scenarios.ts` (bootstrap fold →
-`armorPenTotal`/`armorPenFlatTotal`, `effectiveAgainstEnemy`). Shipped as
-Phase 2 — Enemy defenses.
+`armorPenTotal`/`armorPenFlatTotal`). Shipped as Phase 2 — Enemy defenses.
 
-- **Formula**: `Resist = max(0, base − flatDebuff) × (1 − clamp01(armorPenTotal))`;
-  `mult = clamp((damage × 0.15 / Resist)^0.365, 0.01, 0.99)`; `Resist ≤ 0` →
-  `mult = 1` (full penetration, not the 0.99 clamp ceiling — a deliberate
-  upgrade over the old dormant scaffold, which returned 0.99 for that case).
-  `0.365` is the `f<Type>ArmorDmgReductionExp` GMST — **ESM-PROVEN**,
-  identical (0.365) for every resist type: `fPhysicalArmorDmgReductionExp`
-  0x0017D8A9, `fEnergyArmorDmgReductionExp` 0x0017D8A6,
-  `fRadsArmorDmgReductionExp` 0x0017D8AB, `fFireArmorDmgReductionExp`
-  0x0017D8A7, `fFrostArmorDmgReductionExp` 0x0017D8A8,
-  `fPoisonArmorDmgReductionExp` 0x0017D8AA, `fShockArmorDmgReductionExp`
-  0x0017D8AC (20260717 dump). `0.15` is likewise the `f<Type>DamageFactor`
-  GMST, uniform across types; the `0.01`/`0.99` clamp bounds match
-  `f<Type>MinDamageReduction`/`f<Type>MaxDamageReduction` (the Min family has
-  only 5 members — `fRadsMinDamageReduction`/`fPoisonMinDamageReduction` don't
-  exist in the ESM, harmless since the clamp floor is one shared scalar, not
-  dispatched per resist type). The sibling `_NORM`-suffixed GMST set (e.g.
-  `fPhysicalArmorDmgReductionExp_NORM` 0x005CF073 = 0.6377, `...ArmorBase_NORM`
-  = 51.0) is a distinct, unused formula variant — not the one this formula or
-  engine draws from. Extracted (not hand-copied) —
-  `scripts/extract/extract-constants.ts` → `constants.json` →
-  `getMitigationConstants` (`@/data`) — so re-extraction re-derives all 4
-  scalars instead of them silently drifting.
-- **Radiation squares the whole mitigation factor**: every resist type
-  (including radiation) shares the same 0.365 exponent GMST — there is **no
-  ESM-provable "radiation exponent"**. Radiation nonetheless bites roughly
-  twice as hard as every other resist type in observed play
-  (**USER-CONFIRMED**), so `mitigation.ts` squares the factor computed from
-  the shared exponent, for radiation only, before the clamp:
-  `(x^0.365)^2 = x^0.730`. Deliberately expressed as square-of-the-extracted-
-  constant rather than a hardcoded 0.730, so the ESM-provable exponent and the
-  empirical radiation correction stay visibly separate.
-- **Per-damage-type mapping**: `ballistic`/`explosive` → `physical`;
-  `energy`/`radiation`/`poison`/`cryo`/`fire` map 1:1 to their own NPC resist
-  AV. Total map (every `DamageType` has an entry) — explosive is
-  conventionally physical elsewhere in this codebase and NPCs carry no
-  separate explosive-resist AV. **ASSUMPTION** (project convention, not a
-  distinct ESM-provable claim).
-- **Pipeline position — Option A** (plan-decided): mitigation applies ONCE to
-  each scenario's already-blended `HitBreakdown` (crit-weighted,
-  body-part-blended; for charged weapons, the charge-cycle-blended hit that
-  actually feeds `sustainedDps`), not per raw hit before blending.
-  **MEASURED (synthetic, `mitigation.test.ts` "Option A divergence")**: since
-  `damage × mult(damage)` is convex in `damage` (mult's exponent 0.365 < 1
-  makes the retained-damage function's effective exponent 1.365 > 1),
-  Jensen's inequality means Option A always slightly UNDER-states retained
-  damage vs. true per-hit-then-blend. Magnitude is a pure function of crit
-  rate and the crit multiplier (resist/armorPen/flat-debuff terms cancel out
-  of the ratio algebraically) — at a 2× crit mult and 15–45% steady-state
-  VATS crit rates, divergence is **−2.1% to −2.9%**: small, so Option A ships
-  as specified rather than upgrading to per-hit (the plan's own bar).
-- **`armorPen`** (fraction, e.g. 0.50 = 50% penetration): Incisor/
-  Stabilized/Tank Killer/Anti-Armor legendary families, 76 extracted
-  modifiers, all unconditioned flat ADDs. Folded ONCE per scenario input
-  (`scenarios.ts` bootstrap spot, `onslaughtMaxStacks` precedent) into
-  `armorPenTotal`.
-- **`armorPenFlat`** (resist points, NOT a fraction — distinct bucket/units
-  from `armorPen`): today's only source is Taking One for the Team's flat DR
-  debuff. **ESM-PROVEN** (esm-walk; `#62`): the hidden companion perk
-  `LGN_TakingOneForTheTeam_DamageIncrease_Perk` bundles a Peak Value Modifier
-  DamageResist debuff (Detrimental, 10s, no Energy Resist component) onto the
-  target — MGEF `..._DamageIncrease_Effect01-04` (formIds 0x005A5DEF,
-  0x005B01AB, 0x005B01AC, 0x005B01AD), magnitudes **6 / 10 / 15 / 50** at
-  ranks 1–4. The rank-4 jump (15→50, not the ~20 an even progression
-  predicts) is flagged as a **possible ESM data-entry anomaly**, modeled
-  as-is (not "corrected"). Emitted via `PlayerConditions.takingOneForTheTeamDrRank`
-  (`src/data/target-debuffs.ts`, unconditional — any player's card can have
-  applied it), a SEPARATE field/mechanism from `takingOneForTheTeamPct`
-  (`manual-uptime.ts`'s wholeDamage %-multiplier, a different ESM effect
-  bundled on the same perk).
-  - **Physical-only mechanism** (the ESM's own scope — no Energy Resist
-    component): rather than a per-modifier `damageTypeScope` condition (the
-    bootstrap fold context has no `componentType` to gate against — it would
-    just always fail there), the restriction is enforced CONSUMER-side in
-    `mitigation.ts`: `flatResistDebuffPhysical` is only subtracted from a
-    component whose resolved resist type is `'physical'`. Documented as a
-    deliberate mechanism choice, not an oversight.
+- **Option A divergence — MEASURED** (synthetic, `mitigation.test.ts` "Option
+  A divergence"): applying mitigation once to the blended hit under-states
+  retained damage vs. true per-hit-then-blend by **−2.1% to −2.9%** at a 2×
+  crit mult and 15–45% steady-state VATS crit rates (Jensen's inequality;
+  magnitude is a pure function of crit rate/mult) — small enough that Option A
+  ships as specified.
+- **`armorPen`** (fraction): Incisor/Stabilized/Tank Killer/Anti-Armor
+  legendary families, 76 extracted modifiers, unconditioned flat ADDs.
+- **`armorPenFlat`** (resist points, not a fraction): only source is Taking
+  One for the Team's flat DR debuff. **ESM-PROVEN** (`#62`): hidden companion
+  perk `LGN_TakingOneForTheTeam_DamageIncrease_Perk`, physical-only (no
+  Energy Resist component — enforced consumer-side in `mitigation.ts`),
+  magnitudes **6 / 10 / 15 / 50** at ranks 1–4. The rank-4 jump (not the ~20
+  an even progression predicts) is a **possible ESM data-entry anomaly**,
+  modeled as-is, not corrected.
 - **DoT is NOT mitigated in v1** — `ScenarioResult.dotDps` stays a separate,
-  unmitigated steady-state add; no resist model wired for DoT ticks. Deferred
-  (matches the plan).
-- **Level-slider default = max** (`TargetSection.tsx`, `resolveTargetLevel`):
-  an unset `EnemyConditions.targetLevel` resolves to the race's
-  `levelMaxGlobal` — **ASSUMPTION** ("endgame" use case: sizing a build
-  against the toughest version of a target a player will actually meet).
-  Fallback bounds 1–100 when a race has no Renorm window at all — also
-  **ASSUMPTION**, no ESM signal pins this specific pair.
+  unmitigated steady-state add. Deferred, matches the plan.
+- **Level-slider default = max** (`resolveTargetLevel`): an unset
+  `EnemyConditions.targetLevel` resolves to the race's `levelMaxGlobal` —
+  **ASSUMPTION** ("endgame" use case). Fallback bounds 1–100 when a race has
+  no Renorm window at all — also **ASSUMPTION**.
 - Golden placeholder: `golden/cases.json` "Combat Rifle (Fixer) @50 ... vs
-  Scorchbeast Queen (Lv 100)" (`measure: 'effectiveSustainedDps'`, `expected:
-  null`) — pending an in-game DPS/TTK reading to cross-check the formula
-  end-to-end, not just the extracted resist curve.
+  Scorchbeast Queen (Lv 100)" (`expected: null`) — pending an in-game DPS/TTK
+  reading to cross-check the formula end-to-end.
 
 ## Berserker's (Damage Unarmored)
 Engine: `resolve.ts` (`playerDamageResist` `CurveInput` reader), `src/types/modifiers.ts`
@@ -1621,12 +1159,6 @@ Engine: `scripts/extract/extract-curvetables.ts`, `scripts/extract/extract-npcs.
   it's still FormID-live. A prefix-only search pattern silently drops it (49
   files instead of 50); `extract-curvetables.ts` uses a leading `*` wildcard
   to catch it. **ESM-proven** (ships in the 20260710 dump).
-- **Curvetables are extracted, never hand-copied (CLOSED)**: `bun run extract
-  --only curvetables` re-extracts all 4 Universal-Tier families
-  (`creatures/{health,armor}`, `player/{armor,damage}`) via the `esm` CLI, and
-  never reads the dump's sibling `misc/` folder directly. This replaced a
-  Dec-2025 manual-copy set that had silently drifted from the live ESM — treat
-  any hand-edited curve JSON as stale by default.
 - **NPC-perk normalized-level adjustment — CONFIRMED**, baked into
   `levelMinGlobal`/`levelMaxGlobal`: a `crModNormalizedLevel*` PERK on an
   NPC's own `Perks` array (not just the RACE/NPC_ GLOBs) can Add-onto or
@@ -1823,21 +1355,9 @@ auto-converted); their stats are stale and must not be shown.
   ENCH damage (Xerxos's `SelfRadDamage` wielder irradiation — the
   `enchantmentModifiers` gate in `scripts/extract/extract-omods.ts` keeps
   self-damage out of weapon output).
-- **Doctor's Orders** (audited 2026-07-15): grants a revive-cooldown-reset
-  chance — pure self/team support, never touches outgoing damage/DR/crit.
-  Deliberately unmodeled, consistent with the existing non-combat
-  convention.
-- **Crowd Control** (audited 2026-07-15, user report "does bleed now"):
-  confirmed CORRECT as extracted — bleed routes through the generic
-  physical-DR bucket (there's no separate bleed `DamageType` in FO76); the
-  user's observation is accurate, it just isn't a distinct engine bucket.
-- **Pyro-Technician's**: looked craftable from static ESM data but
-  **user-confirmed 2026-07-15 NOT actually craftable in-game** — was hidden
-  from the picker. RESOLVED 2026-07-21: the 20260717 dump renamed the whole
-  2★ trio to `POST_mod_Legendary_Weapon2_{Fire,Cryo,Poison}` (staging
-  prefix, junk-filtered at the extraction root), pulling Pyro-Technician's,
-  Cryologist's, and Toxicologist's out of the shipping data entirely;
-  re-adjudicate when a dump drops the `POST_` prefix.
+- **Pyro-Technician's/Cryologist's/Toxicologist's**: pulled out of shipping
+  data by a `POST_` staging-prefix rename (junk-filtered at the extraction
+  root) — re-adjudicate craftability when a dump drops the prefix.
 - **Gamma Gun**: its own weapon-level explosion IS now modeled
   (`fromExplosion`, graduated out of `noDamage` 2026-07-13 — see **Launcher
   explosion damage**). Xerxos (Season 7 reward, user-confirmed live
@@ -1861,11 +1381,9 @@ auto-converted); their stats are stale and must not be shown.
   template-member + has properties + sits on an identity attach point.
 - **Cursed mods** (`ap_curse`, Nuka-World on Tour): real stat payloads on a
   cosmetic naming slot, no `ObjectTypeUnique` — surfaced by the same
-  modifiers+template-membership gate, labeled "Cursed". Rode the shared
-  `ap_Item_Description` slot pre-20260724 patch; Bethesda split Cursed mods
-  onto their own dedicated attach point that patch (`src/data/omods.ts`
-  `SLOT_LABEL_OVERRIDES`/`RENAMING_SLOTS` updated to match — confirmed via
-  `Data/notes/20260717_to_20260724/patch-summary.md`).
+  modifiers+template-membership gate, labeled "Cursed". Own dedicated attach
+  point since the 20260724 patch (rode the shared `ap_Item_Description` slot
+  before it — `omods.ts` `SLOT_LABEL_OVERRIDES`/`RENAMING_SLOTS`).
 - **Dom Pedro**: its Explosive muzzle mods' EXPL payload is hand-supplied
   via `omodModifierAdditions` as a ballistic-scoped ADD curve (right paper
   number, but explosive-only perk interactions aren't modeled — the engine
@@ -1898,17 +1416,12 @@ auto-converted); their stats are stale and must not be shown.
   too but the same string name in both enums (no alias needed there). A real
   weapon/armor spelling split for a different property would surface as an
   `unknownProperties` entry, same safety net as always.
-- **ESM-PROVEN**: `GetIsPlayer` condition rows at PERK tab-index 2
-  (`flattenPerkConditionRows` forces their `Run On` to `'Target'`) mean "is
+- **ESM-PROVEN**: `GetIsPlayer` condition rows at PERK tab-index 2 mean "is
   the entry point's target the player" — the OPPOSITE reading from a
-  tab-0/self-gate `GetIsPlayer` row. Handled in `conditions.ts`'s
-  `GetIsPlayer` case (checks `cond['Run On'] === 'Target'`), the same
-  inversion the Contact-delivery `subjectIsTarget` flag applies — see
-  **Weapon-intrinsic DoT & OMOD replacement**. Consequence worth knowing:
-  `Wanted_DebtorsDisease_Perk` ("Bankruptcy Penalty", 0x00437FF0) carries
-  EXACTLY one condition, a tab-2 `GetIsPlayer Equal To 1.0` — a PVP-only −50%
-  dbm penalty, so it correctly resolves `inactive` (`modifiers: []`) in this
-  PvE calculator rather than applying unconditionally.
+  tab-0/self-gate row, same inversion as Contact-delivery's `subjectIsTarget`
+  flag (see **Weapon-intrinsic DoT & OMOD replacement**). Consequence:
+  `Wanted_DebtorsDisease_Perk`'s tab-2 `GetIsPlayer` row is a PVP-only −50%
+  dbm penalty, correctly resolving `inactive` in this PvE calculator.
 - **ESM-PROVEN**: `WornApparelHasKeywordCount` (worn-piece-count tiers —
   Battle-Loader's 1/2/3/4/≥5, Limit-Breaking Armor, Crusaders S.P.E.C.I.A.L.)
   translates to a new `{kind: 'wornPieceCount', keyword, count, orMore?}`
@@ -2013,14 +1526,8 @@ auto-converted); their stats are stale and must not be shown.
   Limb variants) get max 2, single-slot PA Misc/underarmor mods get max 1.
   Legendary-slot effects (`ap_Legendary1-4`) always get max 5 (5 armor
   pieces), including Battle-Loader's/Limit-Breaking (self-scaling — the max
-  bounds the checklist count, not a value multiplier). Since 2026-07-30 the
-  5-piece ceiling is additionally a SHARED budget per star tier (Σ worn
-  pieces ≤ 5 across every effect on the same `ap_Legendary<N>` tier),
-  enforced by `armorEffect/setCount`'s clamp (`build-reducer.ts`, via
-  `getArmorTierUsage`) and at hydration (`clampArmorTierBudgets` in
-  `codec.ts`) — see `docs/adr/0004`. "Powered" has twin records on tiers 1
-  and 2; the representative pick lands on tier 2, so it counts against the
-  2★ budget (documented in `armor-modifiers.ts`).
+  bounds the checklist count, not a value multiplier). The 5-piece ceiling
+  is additionally a shared budget per star tier — see `docs/adr/0004`.
 
 ## Known gaps / deferred
 - **Follow Through / Taking One for the Team** extract with empty `modifiers`

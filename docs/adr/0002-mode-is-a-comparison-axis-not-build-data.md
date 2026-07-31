@@ -16,6 +16,8 @@ formulas) are expected to differ. That makes Mode an axis you evaluate a build
 but differ only in Mode aren't meaningfully different builds, they're the same
 build viewed twice.
 
+## Do not undo this
+
 A future reviewer might reasonably want to fold `mode` into `BuildState` (the
 reducer needs it for perk-budget/race rules, after all — see
 `makeBuildReducer` in `src/state/build-reducer.ts`) or into the persisted

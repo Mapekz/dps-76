@@ -20,11 +20,11 @@ from a blank config.
 
 Computes the full paper-damage formula for a Fallout 76 player build — crit,
 sneak, power attack, weakpoint, tenderizer, legendary effects, mutations,
-consumables — across Manual Aim / VATS / VATS+Sneak scenarios, using game
-data extracted directly from the game's ESM rather than hand-authored or
-community-estimated. Success is a build's exact DPS that a min-maxer can
-trust before spending resources in-game, plus concrete suggestions for how
-to improve it.
+consumables — across Free Aim / VATS scenarios (sneak is a player condition,
+not a third scenario), using game data extracted directly from the game's
+ESM rather than hand-authored or community-estimated. Success is a build's
+exact DPS that a min-maxer can trust before spending resources in-game, plus
+concrete suggestions for how to improve it.
 
 ## Positioning
 
@@ -37,9 +37,8 @@ spreadsheets, other FO76 DPS calculators) split across, never combine:
 3. **Prescriptive** — surfaces concrete suggestions for improving the
    current build, not just a static readout.
 4. **Working toward mechanic completeness** — already models crit, sneak,
-   power attack, weakpoint, tenderizer, legendary effects, mutations, and
-   consumables together; enemy mitigation is scaffolded but intentionally
-   dormant in the current MVP scope.
+   power attack, weakpoint, tenderizer, legendary effects, mutations,
+   consumables, and enemy resist mitigation together.
 
 ## Operating Context
 
@@ -51,8 +50,7 @@ chain, and suggestions panel. Dark mode is the default reading environment.
 
 ## Capabilities and Constraints
 
-- MVP scope: outgoing DPS only. Enemy/incoming damage (DR/ER mitigation) is
-  modeled in the engine but not yet exposed end-to-end; the Live/PTS mode
+- Outgoing DPS plus enemy resist mitigation (DR/ER); the Live/PTS mode
   toggle exists in the UI but stays disabled until a PTS ESM dump is
   extracted.
 - Game data (weapons, perks, OMODs, mutations, consumables) is extracted
@@ -64,9 +62,8 @@ chain, and suggestions panel. Dark mode is the default reading environment.
 
 - Name: "DPS-76". Currently marked with an "Alpha" badge in the header,
   signaling active, incomplete-but-usable status.
-- Dark mode is the default appearance on load; a light-mode toggle exists.
-- Typeface commitments already in place: Barlow / Barlow Condensed
-  (headings, condensed uppercase tracking) and Spline Sans Mono (monospace).
+- Visual identity (color, typography, dark-mode-default, component specs) is
+  specified authoritatively in [`DESIGN.md`](./DESIGN.md) — not repeated here.
 
 ## Evidence on Hand
 

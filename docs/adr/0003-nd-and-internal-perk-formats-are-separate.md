@@ -14,6 +14,8 @@ The one genuine shared seam is the `nukesDragonsPerks` dictionary in
 `src/lib/nukes-dragons.ts` (key → `PerkId` mapping). `codec.ts` already imports
 it and builds a reverse map locally; the dictionary is not duplicated.
 
+## Do not undo this
+
 A future reviewer might reasonably want to unify the encoders into one shared
 codec module, or pick one radix everywhere (e.g. base-36 for both) — don't.
 N&D's format is not ours to change: we are reading *their* site's URL emission,

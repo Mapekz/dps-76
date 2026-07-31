@@ -4,7 +4,7 @@ A Fallout 76 outgoing-DPS calculator. Configure your player build — perks, wea
 
 **Live app:** <https://mapekz.github.io/dps-76/>
 
-> **MVP scope**: currently calculates outgoing DPS only. Enemy/incoming damage is scaffolded but dormant. The Live/PTS toggle UI is present but disabled for now. See `todos/` for the deferred feature backlog.
+> **Scope**: outgoing DPS plus enemy defenses (resist mitigation). The Live/PTS toggle UI is present but disabled until a PTS ESM dump lands. Deferred work is tracked as [GitHub Issues](https://github.com/Mapekz/dps-76/issues).
 
 ## Tech stack
 
@@ -17,8 +17,8 @@ A Fallout 76 outgoing-DPS calculator. Configure your player build — perks, wea
 
 This project uses **Bun** (package manager + script runner). Vite/tsc still run under Node
 under the hood, via `bun run` respecting their `#!/usr/bin/env node` shebangs — Node stays
-installed alongside Bun. Tests run on the Bun runtime itself (`bun test`). Do not use npm,
-yarn, or pnpm.
+installed alongside Bun. Tests run on the Bun runtime itself (`bun test --parallel`). Do not
+use npm, yarn, or pnpm.
 
 ```sh
 bun install
@@ -36,33 +36,9 @@ bun run build:gh-pages   # NODE_ENV=production build with base URL /dps-76/
 
 CI deploys automatically via `.github/workflows/deploy.yml` on push to `main`.
 
-## Data model
+## Architecture
 
-Two parallel datasets live under `src/data/`:
-
-```
-src/data/
-  live/    perks.ts  weapons.ts  enemies.ts  armor.ts  power-armor.ts  curvetables/
-  pts/     perks.ts  weapons.ts  enemies.ts  armor.ts  power-armor.ts  curvetables/
-```
-
-Each `curvetables/` directory contains ~360 JSON files (creature HP/armor curves and player damage curves). Data is accessed mode-aware via `src/data/index.ts` (`getPerks(mode)`, `getWeapons(mode)`, etc.) and the `useGameMode` React context (`src/hooks/useGameMode.tsx`).
-
-The default game mode is `'live'`. PTS mode is selectable in code but the toggle UI is currently disabled.
-
-## Project structure
-
-```
-src/
-  components/
-    layout/     Header.tsx  ThreeColumnLayout.tsx  BuildUrlInput.tsx
-    player/     PlayerColumn.tsx
-    enemy/      EnemyColumn.tsx  (scaffolded, not rendered in MVP)
-    stats/      DamageStatsColumn.tsx
-    ui/         shadcn/ui wrappers (24 components)
-  data/         live/ + pts/ datasets + index.ts + stats.ts + perk-ids.ts
-  hooks/        useGameMode.tsx  useDamageCalc.ts
-  lib/          damage-formulas.ts  curve-tables.ts  fire-rate.ts  nukes-dragons.ts  utils.ts
-  types/        index.ts  (all shared types)
-  main.tsx      App.tsx
-```
+Game data is extracted from the ESM (not hand-authored), merged through an overlay
+pipeline, and fed to a synthetic-data-testable damage engine — see
+[`CLAUDE.md`](./CLAUDE.md) for the full data-pipeline and module map, and
+[`CONTEXT.md`](./CONTEXT.md) for the domain vocabulary (Bucket, Scenario, Loadout, ...).

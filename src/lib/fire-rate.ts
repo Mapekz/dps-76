@@ -24,6 +24,22 @@ import { resolvedChargeTimeSec, weaponCharges } from '@/lib/charge';
  *   therefore the same cadence) applies whether the shot is Free Aim or VATS
  *   — nothing auto-charges in-game.
  * - Returns shots/sec (multiply by perHit to get DPS — do NOT divide by 60).
+ * - `isAutomatic` is the base WEAP `Data.Flags` "Automatic" bit, OR'd with an
+ *   OMOD's real `IsAutomatic SET` — never the `WeaponTypeAutomatic` keyword,
+ *   which drives perk conditions only, not fire mode (Combat Shotgun's
+ *   Automatic Receiver carries the keyword but sets `HasRepeatableSingleFire`,
+ *   never `IsAutomatic`). V63 Carbine/Meltdown's reduced fire rate comes
+ *   entirely from its base WEAP `Speed 0.8`, no automatic-receiver override.
+ * - `animDurationSec` defaults to 0.11 (fits Minigun/Gatling Laser/Gauss
+ *   Minigun in their base states). Two confirmed exceptions with no ESM
+ *   property encoding them, hand-maintained in `overrides/corrections.ts`:
+ *   Gatling Gun 0.5s (own `AnimsGatlingGun` keyword, distinct from Minigun's
+ *   `AnimsMinigun`) and Gatling Laser Charging Barrels ≈0.1667s (1/6s, two
+ *   independent effective-Speed readings back-solve to the same constant).
+ *   The shared `Charging Attack` WEAP flag does not by itself imply a custom
+ *   cycle. Submachine Gun has no true semi mode (every receiver incl.
+ *   "Standard" pulls the automatic-init template) — not an exception, its
+ *   raw Speed is simply never an achievable state.
  */
 export function getFireRate(weapon: Weapon, chargeTimeSec?: number): number {
   const speed = weapon.speed ?? 1.0;

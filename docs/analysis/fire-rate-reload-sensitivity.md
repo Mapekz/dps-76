@@ -259,7 +259,7 @@ as the intended semantics; bucket keeps the name `weakpointBonus`.
 2. Per-shell reload scaling (`anim × N`) — already on the backlog; the lever
    action's r=71.6% makes everything downstream of it sensitive to this.
 3. Does Fast Fighter count sprint-only move-speed bonuses while stationary?
-   (`move-speed-sources.md`.)
+   (`docs/move-speed-census.md`.)
 4. Semi-auto fire-rate model (`speed / attackDelaySec`) vs the in-game
    Pip-Boy fire-rate stat for the four case weapons — worth a spot-check
    pass now that fire rate is proven to be the strongest DPS knob.

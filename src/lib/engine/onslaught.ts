@@ -3,6 +3,35 @@ import type { Modifier } from '@/types/modifiers';
 import { foldBucket, type ResolveContext } from './resolve';
 import { sustainTiming } from './sustain';
 
+/**
+ * The Onslaught stack counter (raw AV `0x00000395`, no AVIF record) is
+ * entirely engine-native — nothing here reads an ESM formula, only Perk
+ * Entry Point 190 "Mod Max Consecutive Hits Allowed" max-stack ADDs and
+ * per-stack bonus effects. `ScenarioSet.onslaughtMaxStacks` exposes the
+ * fold to the UI slider (`bucket: Bucket.onslaughtMaxStacks`,
+ * `effectiveOnslaughtStacks` in `resolve.ts`).
+ *
+ * Max-stack contributors (docs/assumptions.md "Onslaught" for the source
+ * table): Guerrilla Expert +3, Guerrilla Master +5, Gunslinger Expert +3,
+ * Gunslinger Master +10 (reverse mode, see below), Furious +9, Pounder's
+ * +10, Splinter's Special Effect +10 (P62 content, never shipped — modeled
+ * but permanently hidden). Whacker Smacker grants a per-stack bonus but no
+ * cap of its own.
+ *
+ * Route B per-stack value: Furious/Pounder's/Splinter's EP189 reads
+ * `Float × value(a private referenced AV)` — the private AV's Default Value
+ * IS the real per-stack step, not the Float alone (Furious: Default 5.0, so
+ * `0.01×5=0.05` → +5%/stack, confirmed in-game; the AVIF Maximum corroborates
+ * it, reading Default × stack cap rather than authoring boilerplate).
+ *
+ * Reverse mode (Gunslinger Master) inverts the shared counter: +1 stack/sec
+ * continuous regen (fire and reload) and −1 stack per hit-event, modeled as
+ * a bootstrap `onslaughtReverse` bucket fold plus the steady-state sawtooth
+ * simulation below. The forward (normal-mode) sustained sim mirrors this by
+ * symmetry (unmeasured): +1 stack per hit-event vs −1/sec continuous decay,
+ * decay through reload too.
+ */
+
 /** Reverse-onslaught regen rate (stacks/sec, continuous — docs/assumptions.md "Onslaught"). */
 export const ONSLAUGHT_REGEN_PER_SEC = 1;
 

@@ -11,6 +11,8 @@ Consequently, code that bridges game data to the engine — resolving a
 `resolveLoadout` is the one sanctioned `@/data → engine` composition point; both
 the `useScenarioResults` hook and the golden-case harness go through it.
 
+## Do not undo this
+
 A future reviewer might reasonably want to co-locate `resolveLoadout` with the
 engine (it is engine input, after all) — don't. Moving it under
 `src/lib/engine/` would make the engine import `@/data` and forfeit the

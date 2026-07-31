@@ -23,14 +23,6 @@ legal; ×5 + ×5 is not. Enforcement lives in three places that share
 - The suggestions engine enumerates armor candidates that are legal by
   construction (increases bounded by tier free space; swaps piece-neutral).
 
-Why enforce in the model rather than only in the suggestions engine (the
-"soft budget" alternative): suggestions built on states that can violate the
-invariant make swap advice ambiguous (replace *which* over-allocated
-pieces?), and an editor that allows what advice forbids reads as a bug. The
-trade-off accepted with full enforcement: previously-legal bookmarked builds
-that oversubscribed a tier now hydrate smaller (surfaced, not silent — the
-banner says so).
-
 Known data quirk, inherited deliberately: "Powered" (+AP regen) has twin
 records on tiers 1 and 2; the checklist's representative pick lands on the
 tier-2 record (the tier-1 twin is unobtainable in the current dump), so
@@ -45,3 +37,14 @@ Out of scope here: defense-aware suggestion costs. DPS-only deltas may today
 suggest swapping away defensive effects (Sentinel → Bruiser's); once incoming
 DPS/mitigation/Deflect modeling exists, that stops being free — separate
 future work.
+
+## Do not undo this
+
+A future reviewer might reasonably want to enforce the budget only in the
+suggestions engine (a "soft budget" that lets the model/editor represent
+illegal states) — don't. Suggestions built on states that can violate the
+invariant make swap advice ambiguous (replace *which* over-allocated
+pieces?), and an editor that allows what advice forbids reads as a bug. The
+trade-off accepted with full enforcement — previously-legal bookmarked
+builds that oversubscribed a tier now hydrate smaller (surfaced, not
+silent — the banner says so) — is intentional, not a gap to close.

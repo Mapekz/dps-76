@@ -48,6 +48,9 @@ Game data is **extracted, not hand-authored**:
    `forceVisibleWeaponIds`/`forceVisibleOmodIds` in `overrides/corrections.ts`
    — no re-extract needed. Script-granted quest rewards (VMAD properties)
    have NO record-level reverse refs and always need the rescue list.
+   Curve tables (`bun run extract --only curvetables`) are likewise always
+   re-extracted from the dump's `misc/curvetables/` via the `esm` CLI, never
+   hand-copied — treat any hand-edited curve JSON as stale by default.
 3. `src/data/overrides/` is the hand-maintained layer that survives
    regeneration: N&D key fixes (`perk-overrides.ts`), script-computed
    legendary values (`legendary-values.ts`, `buff-overrides.ts`), weapon
@@ -78,19 +81,15 @@ The engine lives in `src/lib/engine/`:
 - `resolve.ts` - condition evaluation + bucket folds via the shared `foldOps` primitive (SET → ×Π(1+MUL_ADD) → +ΣADD)
 - `paper-damage.ts` - the spec formula, per damage component
 - `crit-meter.ts` - steady-state VATS crit cadence from LCK/Crit Savvy/Limit Breaking
-- `scenarios.ts` - one config → Manual Aim / VATS / VATS+Sneak results
+- `scenarios.ts` - one config → Free Aim / VATS results (sneak is a player condition, not a third scenario)
 - `effective-weapon.ts` - applies equipped OMODs (keywords, speed, auto state) before the engine runs
 - `mitigation.ts` - enemy DR/ER mitigation (Phase 2 — Enemy defenses), applied once per scenario to the blended `HitBreakdown` (Option A)
 
-`docs/assumptions.md` is a terse
-registry of every value the engine asserts that isn't proven by ESM data —
-one claim per bullet with a status tag and a code pointer. Keep entries terse:
-investigation narrative belongs in the commit message, in-game measurement
-TODOs are tracked as GitHub issues (label `needs-measurement`), and an explanation of how a
-mechanic works (even an ESM-proven one) belongs in the implementing
-function's doc-comment, not in the registry. Section names are cited
-verbatim across the codebase (including generated `omods.json`) — don't
-rename or merge one without updating its citations.
+`docs/assumptions.md` is a terse registry of every value the engine asserts
+that isn't proven by ESM data — see `.claude/skills/docs-writing/SKILL.md`
+for entry format, section-name-as-API rules, and where non-assumption
+content (investigation narrative, mechanic explanations, measurement TODOs)
+actually belongs.
 
 ### Damage Calculation Flow
 
@@ -210,15 +209,19 @@ import { useGameMode } from '@/hooks/useGameMode';
 
 ### Issue tracker
 
-Issues live in GitHub Issues on `Mapekz/dps-76`, via the `gh` CLI.
+Issues live in GitHub Issues on `Mapekz/dps-76`, via the `gh` CLI. Triage
+label vocabulary — `needs-triage`, `needs-info`, `ready-for-agent`,
+`ready-for-human`, `wontfix` — lives alongside the `gh` conventions.
 See `docs/agents/issue-tracker.md`.
-
-### Triage labels
-
-Canonical vocabulary — `needs-triage`, `needs-info`, `ready-for-agent`,
-`ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
 
 ### Domain docs
 
 Single-context: `CONTEXT.md` + `docs/adr/` at the repo root, plus
 `docs/assumptions.md` for engine claims. See `docs/agents/domain.md`.
+
+### Docs conventions
+
+Writing or editing anything under `docs/`, `CONTEXT.md`, or an ADR: the four
+doc genres (glossary/registry/ADR/investigation), the placement matrix, and
+the ADR shape live in `.claude/skills/docs-writing/SKILL.md` — not repeated
+here.
