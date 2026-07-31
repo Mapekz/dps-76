@@ -29,6 +29,14 @@ function SuggestionRow({ suggestion, tied }: { suggestion: EvaluatedSuggestion; 
             : 'no free slot'}
         </span>
       )}
+      {suggestion.group === 'combo' && (
+        <span
+          className="bg-muted text-muted-foreground rounded px-1.5 py-0.5 text-[10px] whitespace-nowrap"
+          title="Applies two changes at once"
+        >
+          Combo
+        </span>
+      )}
       <span
         className={cn(
           'font-mono text-xs tabular-nums',

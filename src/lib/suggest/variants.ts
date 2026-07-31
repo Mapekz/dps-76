@@ -20,14 +20,16 @@ import {
 } from '@/state/build-reducer';
 import { hasAnyEngineEffect } from '@/types/modifiers';
 import type { SuggestionBudget, SuggestionCandidate } from './types';
+import { enumerateCombos } from './combos';
 
 /**
  * Enumerates every legal-ish variant of the current build: alternative OMODs
  * per slot, legendary effects per star, perk rank-ups and damage-relevant
  * unequipped perks at every rank (budget-aware — illegal moves are emitted
  * with `legal: false` and a deficit so the UI can say "requires dropping N
- * points"), armor-effect count increases and same-tier legendary swaps, and
- * mutation/consumable toggles in both directions.
+ * points"), armor-effect count increases and same-tier legendary swaps,
+ * mutation/consumable toggles in both directions, and mechanism-derived combo
+ * pairs (Onslaught synergies, etc.) that open doors the single-step ladder cannot.
  *
  * Graduated families (perk ranks, armor counts) emit one candidate PER STEP
  * rather than only the next step — `family` groups the steps so
@@ -278,6 +280,9 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
       cost: 0,
     });
   }
+
+  // ── combo pairs ────────────────────────────────────────────────────────────
+  out.push(...enumerateCombos(state, mode));
 
   return out;
 }

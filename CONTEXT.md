@@ -122,6 +122,16 @@ always, with no completeness heuristic. Consumables serve a build; they are
 never presented as its basis.
 _Avoid_: primary/secondary suggestions, buffs (ambiguous with armor effects).
 
+**Combo Suggestion**:
+A two-piece Structural Suggestion pairing stack-mechanism pieces (one stack
+enabler/cap source, at least one per-stack payoff) whose joint DPS delta
+exceeds either piece alone. A combo surfaces only past the **dominance filter**
+— no constituent single may chart on its own (the ladder has no first rung)
+AND the pair's delta must beat the best of them by the existing 1% tie
+threshold — and applying it dispatches both changes at once.
+_Avoid_: synergy pair, joint candidate; archetype is reserved for future
+playstyle suggestions and must not be used for pairs.
+
 ### Data pipeline
 
 **Mode**:

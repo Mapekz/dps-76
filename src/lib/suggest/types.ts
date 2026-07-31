@@ -6,7 +6,14 @@ import type { BuildAction, ScenarioKey, SpecialKey } from '@/state/build-reducer
  * replays — one change vocabulary, three consumers.
  */
 
-export type SuggestionGroup = 'mod' | 'legendary' | 'perk' | 'mutation' | 'armor' | 'consumable';
+export type SuggestionGroup =
+  | 'mod'
+  | 'legendary'
+  | 'perk'
+  | 'mutation'
+  | 'armor'
+  | 'consumable'
+  | 'combo';
 
 export interface SuggestionBudget {
   legal: boolean;
@@ -33,6 +40,12 @@ export interface SuggestionCandidate {
   family: string;
   /** Steps/points spent to reach this candidate (rank delta, worn-piece count delta, ...). 0 for non-graduated candidates (a single on/off toggle). */
   cost: number;
+  /**
+   * Constituent piece keys (`perk:<perkId>` / `omod:<omodId>`) for combo
+   * suggestions — used by evaluate.ts's dominance filter to ensure a combo
+   * only charts when it beats its best constituent single.
+   */
+  comboPieces?: readonly string[];
 }
 
 export interface ScenarioHeadline {

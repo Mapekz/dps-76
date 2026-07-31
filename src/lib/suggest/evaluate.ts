@@ -24,6 +24,9 @@ import type {
  * this path runs hundreds of times per config change (benched ~5µs/eval).
  */
 
+/** Shared by topSuggestions' tie grouping and the combo dominance filter — one threshold, not two magic numbers. */
+export const TIED_THRESHOLD_PCT = 0.01;
+
 function headline(result: ScenarioResult): ScenarioHeadline {
   return {
     perHit: result.perHit.total,
@@ -209,7 +212,43 @@ export function evaluateSuggestions(
     suggestions.push({ ...candidate, ...evaluated, primaryDeltaPct });
   }
 
-  const collapsed = collapseSuggestionFamilies(suggestions);
+  // Combo dominance filter: pairs are door-openers for synergies the single-step
+  // ladder cannot start (e.g., clean slow weapon: every Onslaught single ≈ 0);
+  // when any constituent single already charts comparably, the ladder is open and
+  // the pair row is redundant noise. See docs/adr/0006-combo-suggestions-are-mechanism-derived-pairs.md.
+  const bestByPiece = new Map<string, number>();
+  for (const s of suggestions) {
+    if (s.group === 'combo') continue;
+    if (s.group === 'perk') {
+      // Perk singles: family IS the piece key (perk:<perkId>)
+      const max = bestByPiece.get(s.family) ?? 0;
+      bestByPiece.set(s.family, Math.max(max, s.primaryDeltaPct));
+    } else if (s.group === 'legendary') {
+      // Legendary singles: extract piece key as 'omod:' + omodId from id like 'leg:<slotIndex>:<omodId>'
+      const secondColon = s.id.indexOf(':', s.id.indexOf(':') + 1);
+      if (secondColon > 0) {
+        const pieceKey = 'omod:' + s.id.substring(secondColon + 1);
+        const max = bestByPiece.get(pieceKey) ?? 0;
+        bestByPiece.set(pieceKey, Math.max(max, s.primaryDeltaPct));
+      }
+    }
+  }
+
+  const filtered = suggestions.filter((s) => {
+    if (s.group !== 'combo') return true;
+    const bestConstituent = Math.max(...s.comboPieces!.map((key) => bestByPiece.get(key) ?? 0));
+    // Two clauses, both required: the pair must out-earn its best piece by the
+    // tie threshold, AND no piece may chart on its own — a charting single
+    // means the ladder already has a first rung there, so the pair is noise
+    // even when the synergy is superlinear (auto Fixer: Furious alone +31.8%
+    // suppresses every Furious pair; the ladder reaches the same build).
+    return (
+      bestConstituent < TIED_THRESHOLD_PCT &&
+      s.primaryDeltaPct > bestConstituent + TIED_THRESHOLD_PCT
+    );
+  });
+
+  const collapsed = collapseSuggestionFamilies(filtered);
   collapsed.sort(
     (a, b) =>
       b.primaryDeltaPct - a.primaryDeltaPct || Number(b.budget.legal) - Number(a.budget.legal),
@@ -224,13 +263,14 @@ export const STRUCTURAL_GROUPS: ReadonlySet<SuggestionGroup> = new Set([
   'perk',
   'mutation',
   'armor',
+  'combo',
 ]);
 
 /** Suggestions worth showing: positive movers, ranked; legality kept for labeling. */
 export function topSuggestions(
   report: SuggestionReport,
   limit: number,
-  tiedThresholdPct = 0.01,
+  tiedThresholdPct = TIED_THRESHOLD_PCT,
   options: { groups?: ReadonlySet<SuggestionGroup> } = {},
 ): {
   ranked: EvaluatedSuggestion[];
