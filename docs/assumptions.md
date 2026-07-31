@@ -274,64 +274,108 @@ Contact-delivery.
   unused by the engine.
 
 ## OMOD-chased launcher payloads
-Engine: `overrideProjectileModifiers`, `extract-omods.ts`.
+Engine: `overrideProjectileModifiers` (`extract-omods.ts`), consumed by
+`buildEffectiveWeapon` (`effective-weapon.ts`) via `GeneratedOmod.
+explosionChase`.
 
 Some weapon OMODs carry `OverrideProjectile` (154 in the dump) swapping the
-fired projectile — mostly cosmetic, but two convert a beam weapon into a
-lobbed explosive: Lightning Gun's Lobber Barrel, Cryolator's Polar Lobber
-Barrel.
+fired projectile — mostly cosmetic, but several deal genuine explosive-family
+damage: Lightning Gun's Lobber Barrel, Cryolator's Polar Lobber Barrel, Dom
+Pedro's Nitro's/Nitro's-Penetrating, Explosive Arrows/Frame (bow/crossbow),
+Firework Frame (crossbow), Plasma Caster's Signal Dish Barrel, Nuka-Cola
+Quantum Gun's Thirst Zapper mag, Hellstorm Missile Launcher's Napalm/Cryo/
+Plasma tube barrels, Nuka-Launcher's identity mod.
 
-- **Chase**: PROJ (same Explosion-flag gate as launcher weapons) → EXPL's own
-  direct damage, PLUS a hop EXPL `Placed Object` → HAZD → HAZD `Effect`
-  (SPEL) → Damage-archetype MGEF, damage type from the MGEF's own Resist
-  Value AV.
-- **Materialization**: EXPL direct typed damage → `baseDamage` ADD (instant,
-  itemLevel-scaled). The HAZD's tick damage → `dotDamage`, NOT `baseDamage` —
-  a lingering field is semantically the same "refresh-only, magnitude=dps"
-  convention as any other DoT, a deliberate bucket choice (not just a
-  SET-collision workaround).
-- **Direct EXPL damage only materializes when a HAZD (Placed Object) hop ALSO
-  exists** — filters cosmetic re-skins (Cremator's flame-color receiver mods
-  point at re-skinned EXPLs with the same damage as its own on-hit ench;
-  walking both would double-count). Without a hazard, a `note` records the
-  value rather than dropping or double-counting.
-- **Launcher-family replacement** (`explosiveFamilyKeywords`): a barrel OMOD
-  targeting a weapon that already carries its own weapon-level
-  `fromExplosion` component (BOS Rocket Launcher's Napalm/Cryo/Plasma tube
-  barrels vs. the Hellstorm's baseline explosion) emits its EXPL chase as an
-  `explosionSwap` (`GeneratedOmod.explosionSwap`) instead of ordinary
-  `baseDamage` modifiers — the base explosion never detonates once the
-  projectile is swapped, so `buildEffectiveWeapon` REPLACES the weapon's
-  `fromExplosion` component(s) with the swap's. Guarded on the base weapon
-  still carrying at least one (`hasBaselineExplosion`) — the safety net for
-  `explosiveFamilyKeywords` being a coarse keyword UNION across every launcher
-  family, so a false-positive match on a non-launcher weapon simply never
-  applies. Only the `fromExplosion` component replaces: the swapped-in EXPL's
-  own on-hit `Enchantment` (Napalm's fire DoT, via `translateEnchantment`
-  including the Self-delivery self-damage guard) and its lingering-hazard
-  ticks (the HAZD chase above) still ADD on top as ordinary OMOD modifiers.
-  Lobber/Polar Lobber are unaffected — Lightning Gun/Cryolator are pure beam
-  weapons with no `fromExplosion` component to replace, so they keep the
-  additive chase.
+- **One unified chase, unconditional on which weapon the OMOD targets**
+  (redesigned 2026-07-30 — see "Superseded" below for what this replaced):
+  PROJ (same Explosion-flag gate as launcher weapons) → EXPL's own direct
+  damage — BOTH the untyped main curve/flat `Damage` field and any typed
+  `Damage Types` entries — PLUS, independently, a hop EXPL `Placed Object` →
+  HAZD → HAZD `Effect` (SPEL) → Damage-archetype MGEF (damage type from the
+  MGEF's own Resist Value AV), and EXPL `Enchantment` (Napalm's on-hit fire
+  DoT). All three chase UNCONDITIONALLY whenever present — a hazard or
+  Enchantment is never a gate on whether the direct damage above
+  materializes, it's an independent bonus effect layered on top of it
+  (**user-confirmed 2026-07-30**: characterizing hazard presence as any kind
+  of "signal" was simply wrong — it's just an optional add-on).
+- **Materialization**: direct damage becomes a genuine NEW `fromExplosion`
+  `WeaponComponent` — `GeneratedOmod.explosionChase`, built via the SAME
+  `explosionComponents()` helper the WEAP-level `chaseExplosion` uses. This
+  is deliberately NOT a plain `baseDamage` modifier scoped `damageTypeScope:
+  ['explosive']`: `materializeDamageTypeComponents` (`effective-weapon.ts`)
+  explicitly EXCLUDES `'explosive'` from the types it can synthesize — that
+  string is reserved for the `componentIsExplosion` dual-match scope
+  (resolve.ts), not a literal materializable type, so a plain modifier
+  shaped that way would silently never materialize (caught 2026-07-30 before
+  shipping). Building a real component instead also means this damage is
+  correctly `fromExplosion`-flagged for Demolition Expert / the Explosive 2★
+  (a typed entry like Polar Lobber's cryo or Signal Dish's radiation/energy
+  gets flagged too, unlike an ordinary same-shaped DamageTypeValues OMOD
+  conversion). The curve is authoritative over a coincidental flat
+  `Damage`/`Amount` value whenever both are present — same convention every
+  other damage field follows. The HAZD's tick damage → `dotDamage`, NOT
+  `baseDamage` — a lingering field is semantically the same "refresh-only,
+  magnitude=dps" convention as any other DoT, a deliberate bucket choice.
+- **REPLACE vs. ADD is decided PER WEAPON, at engine time, not at extraction
+  time** (`buildEffectiveWeapon`): filtering out any existing `fromExplosion`
+  component(s) before appending `explosionChase`'s own is the SAME
+  expression either way — a no-op when the weapon had none (ADD: Polar
+  Lobber Barrel, Nitro's, Explosive Arrows/Frame, Firework Frame, Signal Dish
+  Barrel) and a real replacement when it did (REPLACE: Hellstorm's
+  Napalm/Cryo/Plasma tube barrels — the baseline never detonates once the
+  projectile is swapped). The swapped-in EXPL's own `Enchantment`/hazard
+  still ADD on top regardless, as ordinary OMOD modifiers.
+- **`explosionBaseWeaponDamageMult` is cleared to 0 whenever a chase applies**
+  (chain-suppressed too) — never copied from the chase's own mult. The
+  weapon's intrinsic mult-based `explosivePayload` twin mechanic
+  (paper-damage.ts) would be redundant with, or simply wrong alongside, a
+  chase's real components.
+- **Superseded 2026-07-30**: this section previously (a) branched on whether
+  the OMOD's `Target OMOD Keywords` matched `explosiveFamilyKeywords` (a
+  coarse keyword union of every weapon already carrying a baseline
+  `fromExplosion` component) to decide REPLACE-vs-ADD, chased at extraction
+  time, and (b) additionally gated direct-damage materialization on a HAZD
+  hop existing, to filter Cremator-style cosmetic re-skins. Both were wrong:
+  - The keyword heuristic is unnecessary — the engine already has the real
+    weapon's own `weapon.components` and can just check `fromExplosion`
+    presence directly, per actual weapon, with no pre-classification needed.
+  - It's also unsound for identity/customName OMODs (`ap_customName` — a
+    unique weapon's own dedicated skin/name mod): `SCORE_S11_mod_Custom_
+    NukaLauncher` ("Nuka-Launcher") carries NO `Target OMOD Keywords` at all
+    — that property is simply absent from customName mods, which bind to
+    their base weapon through an entirely different mechanism: the identity
+    mod's own keyword feeds a LVLI (leveled item list) that a drop
+    list/vendor/quest references (obtainability — `obtainability.ts`'s
+    COBJ/GMRW/LGDI/QUST/CONT/MISC/FLST reverse-ref chase, `extract-uniques.ts`'s
+    Combination records for the mod-loadout binding) — a COMPLETELY SEPARATE
+    concern from what damage the mod's own `OverrideProjectile` deals. The
+    keyword gate conflated "can the player obtain this" with "what does the
+    projectile-override chase find," which is why it went blind for exactly
+    the OMODs that don't use targetKeywords for eligibility in the first
+    place. Nuka-Launcher's base weapon (`AutoGrenadeLauncher`, per
+    `uniques.json`'s `baseWeaponId`) already explodes; the unified per-weapon
+    REPLACE/ADD check above sees that correctly with no special-casing.
+  - The hazard-gate reasoning was independently wrong on its own terms (see
+    the "one unified chase" bullet above) — a hazard was never a legitimate
+    signal for anything, gated or not.
 - **ASSUMPTION, unconfirmed**: HAZD `Target Interval` (re-tick rate) and
-  `Limit` (max simultaneous targets) are NOT modeled, for either chase — the
-  hazard's magnitude folds like any other steady-state DoT (assumes the
-  target stays in the field for its full `Lifetime`), which may
-  over/understate a lobbed payload's or a ground-fire field's real
-  contribution.
-- **NOT modeled: EXPL "Base Weapon Damage Mult"** (Polar Lobber 1.0) —
-  ambiguous whether it means "double the EXPL's own damage" or "twin the
-  weapon's original beam damage" (the Polar Lobber replaces the Cryolator's
-  firing mode entirely, unlike the Gauss case). Extracted but left unmodeled
-  pending a user decision + in-game measurement; a `note` records the value.
-  Consequence: the Explosive 2★ still takes the plain-weapon (twin) branch on
-  Polar Lobber rather than the Projectile-Scaling branch (see "Launcher
-  explosion damage" above) — pre-existing, not a regression of the
-  2026-07-30 fix.
+  `Limit` (max simultaneous targets) are NOT modeled — the hazard's magnitude
+  folds like any other steady-state DoT (assumes the target stays in the
+  field for its full `Lifetime`), which may over/understate a lobbed
+  payload's or a ground-fire field's real contribution.
+- **NOT modeled/consumed: EXPL "Base Weapon Damage Mult"** — extracted for
+  audit only (Polar Lobber's is 1.0), never wired anywhere: whenever an
+  `explosionChase` carries real direct damage (main curve or typed entries),
+  that damage is authoritative and simply supersedes the mult — the same
+  "curve is authoritative over a flat fallback" rule every other damage
+  field follows, generalized (**user-confirmed 2026-07-30**): a
+  Projectile-Scaling Explosion (Gauss/Tesla) uses the mult ONLY because it
+  has no curve/typed damage of its own on that EXPL; once one states real
+  damage explicitly, the mult is simply unused.
 - A `Chain`-flagged EXPL (chain lightning — Tesla Cannon's AC muzzle) is a
-  third, DISTINCT outcome of this same chase, split out into its own
-  "Chain lightning" section above rather than folded into this list — it
-  emits no `explosionSwap` and no ordinary modifiers at all, only
+  third, DISTINCT outcome of this same chase, split out into its own "Chain
+  lightning" section above rather than folded into this list — it emits no
+  `explosionChase` and no ordinary modifiers at all, only
   `GeneratedOmod.chainSuppressesExplosion`.
 
 ## Mixed damage-type OMOD conversion (DamageTypeValues)

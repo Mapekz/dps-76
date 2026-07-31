@@ -35,11 +35,14 @@ const MIN_ANIM_DELAY_SEC = 0.001;
  *   deal materialize a new `WeaponComponent` for that type (Tesla Coil
  *   Capacitor's +0.5 energy on the ballistic-only Gauss Minigun) —
  *   `materializeDamageTypeComponents` below
- * - an equipped OMOD's `explosionSwap` (Hellstorm's Napalm/Cryo/Plasma tube
- *   barrels) REPLACES the weapon's own `fromExplosion` component(s) rather
- *   than adding to them — see the `explosionSwap`/`baseComponents` block
- *   below (docs/assumptions.md "OMOD-chased launcher payloads" §
- *   Launcher-family replacement)
+ * - an equipped OMOD's `explosionChase` (its `OverrideProjectile` → EXPL
+ *   chase result) either REPLACES the weapon's own `fromExplosion`
+ *   component(s) (Hellstorm's Napalm/Cryo/Plasma tube barrels — the
+ *   baseline never detonates once the projectile is swapped) or ADDS one to
+ *   a weapon with none (Polar Lobber Barrel, Nitro's, Explosive
+ *   Arrows/Frame, Firework Frame, Signal Dish Barrel) — decided per-weapon
+ *   right here, see the `explosionChase`/`baseComponents` block below
+ *   (docs/assumptions.md "OMOD-chased launcher payloads")
  * - remaining modifiers (dbm, critDmgBase, sneakBase, …) feed the resolver
  * - weapon-stat buckets from LOADOUT sources (perks/mutations/consumables —
  *   Guerrilla Expert's reload, Speed Demon's reload) fold in alongside the
@@ -71,7 +74,7 @@ const EXPLOSION_SWAP_DAMAGE_TYPE_MAP: Record<GeneratedDamageType, WeaponComponen
   unknown: 'ballistic',
 };
 
-/** Converts an `explosionSwap`'s extractor-shaped components to engine-shaped `WeaponComponent`s. */
+/** Converts an `explosionChase`'s extractor-shaped components to engine-shaped `WeaponComponent`s. */
 function explosionSwapComponents(
   components: readonly GeneratedDamageComponent[],
   levelCap: number,
@@ -406,38 +409,39 @@ export function buildEffectiveWeapon(
   // the Explosive 2★ branch below.
   const chainSuppressesExplosion = equippedOmods.some((o) => o.chainSuppressesExplosion);
 
-  // Launcher-family projectile-swap replacement (docs/assumptions.md
-  // "OMOD-chased launcher payloads" § Launcher-family replacement): a barrel
-  // OMOD's OverrideProjectile can swap which EXPL detonates (Hellstorm's
-  // Napalm/Cryo/Plasma tube barrels) — that EXPL's damage REPLACES the
-  // weapon's own WEAP-level fromExplosion baseline, which never fires once
-  // the projectile is swapped. Only the last equipped omod carrying a swap
-  // wins (mirrors every other single-slot OMOD stat override). A swap is a
-  // no-op on a weapon with no baseline fromExplosion component at all — the
-  // keyword gate (explosiveFamilyKeywords) is a coarse union across every
-  // launcher family, so a false-positive match here simply never applies,
-  // same as the pre-replacement (note-only) behavior.
-  const explosionSwap = equippedOmods.reduce<GeneratedExplosionSwap | undefined>(
-    (found, o) => o.explosionSwap ?? found,
+  // OMOD `OverrideProjectile` chase (docs/assumptions.md "OMOD-chased
+  // launcher payloads"): an equipped OMOD's EXPL chase can REPLACE the
+  // weapon's own baseline `fromExplosion` component(s) (Hellstorm's
+  // Napalm/Cryo/Plasma tube barrels — the baseline never detonates once the
+  // projectile is swapped) or ADD a genuine new one to a weapon that has
+  // none (Polar Lobber Barrel, Nitro's, Explosive Arrows/Frame, Firework
+  // Frame, Signal Dish Barrel). Both are the SAME expression: filtering out
+  // any existing `fromExplosion` component(s) before appending the chase's
+  // own is a no-op when none existed (ADD) and a real replacement when they
+  // did (REPLACE) — redesigned 2026-07-30, no target-weapon classification
+  // needed at extraction time (`GeneratedExplosionSwap`'s doc comment). Only
+  // the last equipped OMOD carrying a chase wins, same single-slot-override
+  // convention as every other OMOD stat.
+  const explosionChase = equippedOmods.reduce<GeneratedExplosionSwap | undefined>(
+    (found, o) => o.explosionChase ?? found,
     undefined,
   );
-  const hasBaselineExplosion = (weapon.components ?? []).some((c) => c.fromExplosion);
   const baseComponents = chainSuppressesExplosion
     ? (weapon.components ?? []).filter((c) => !c.fromExplosion)
-    : explosionSwap && hasBaselineExplosion
+    : explosionChase
       ? [
           ...(weapon.components ?? []).filter((c) => !c.fromExplosion),
           ...explosionSwapComponents(
-            explosionSwap.components,
-            weapon.components[0]?.levelCap ?? 50,
+            explosionChase.components,
+            weapon.components?.[0]?.levelCap ?? 50,
           ),
         ]
       : (weapon.components ?? []);
   const weaponForMaterialization =
     baseComponents === weapon.components ? weapon : { ...weapon, components: baseComponents };
-  // Post-swap/post-suppression Curve-Table Explosion check (CONTEXT.md) —
+  // Post-chase/post-suppression Curve-Table Explosion check (CONTEXT.md) —
   // used by the Explosive 2★ branch below, evaluated on the EFFECTIVE
-  // components so an explosionSwap or chain suppression is accounted for.
+  // components so an explosionChase or chain suppression is accounted for.
   const hasCurveExplosion = baseComponents.some((c) => c.fromExplosion);
 
   const { components: materialized, consumedIds } = materializeDamageTypeComponents(
@@ -532,11 +536,13 @@ export function buildEffectiveWeapon(
       minRange,
       maxRange,
       outOfRangeDamageMult,
-      ...(chainSuppressesExplosion
-        ? { explosionBaseWeaponDamageMult: 0 }
-        : explosionSwap && hasBaselineExplosion
-          ? { explosionBaseWeaponDamageMult: explosionSwap.baseWeaponDamageMult }
-          : {}),
+      // Cleared whenever chain-suppressed OR an OMOD chase applies: in
+      // either case the weapon's intrinsic mult-based explosivePayload twin
+      // mechanic (paper-damage.ts) would be redundant with — or simply
+      // wrong alongside — the chase's own real components/suppression; the
+      // mult is never itself carried over from a chase (curve/typed damage
+      // supersedes it — GeneratedExplosionSwap's doc comment).
+      ...(chainSuppressesExplosion || explosionChase ? { explosionBaseWeaponDamageMult: 0 } : {}),
       components: [...baseComponents, ...materialized],
     },
     modifiers: resolvedModifiers,

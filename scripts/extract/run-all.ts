@@ -11,7 +11,7 @@ import { EsmClient } from './esm-client';
 import { buildApGrantIndex } from './ap-grant-index';
 import { buildCobjIndex } from './cobj-index';
 import { buildCrossFamilyRankMap } from './normalize/conditions';
-import { explosiveFamilyKeywordsOf, extractWeapons } from './extract-weapons';
+import { extractWeapons } from './extract-weapons';
 import { extractPerks } from './extract-perks';
 import { extractArmor } from './extract-armor';
 import { extractOmods } from './extract-omods';
@@ -106,10 +106,6 @@ async function main() {
   // Full weapons list — the OMOD pass reads defaultModFormIds off it (a
   // weapon's default part is never weak-evidence-flagged).
   let allWeapons: GeneratedWeapon[] | undefined;
-  // Keywords of weapons already carrying their own fromExplosion component —
-  // feeds the OverrideProjectile chase's launcher-family guard (see
-  // ExtractWeaponsResult.explosiveFamilyKeywords).
-  let explosiveFamilyKeywords: Set<string> | undefined;
   // Full perk-family list — the OMOD pass builds its cross-family HasPerk
   // rank map (perkFamilyRank conditions) from it.
   let allPerks: GeneratedPerk[] | undefined;
@@ -124,16 +120,9 @@ async function main() {
     // makes the omods pass (full runs) correspondingly cheaper.
     console.log('  building attach-point grant index…');
     const apGrantIndex = await buildApGrantIndex(client);
-    const {
-      weapons,
-      excluded,
-      excludedDetailed,
-      unresolved,
-      obtainableFormIds,
-      explosiveFamilyKeywords: efk,
-    } = await extractWeapons(client, apGrantIndex);
+    const { weapons, excluded, excludedDetailed, unresolved, obtainableFormIds } =
+      await extractWeapons(client, apGrantIndex);
     obtainableWeaponFormIds = obtainableFormIds;
-    explosiveFamilyKeywords = efk;
     allWeapons = weapons;
     await writeFile(path.join(outDir, 'weapons.json'), JSON.stringify(weapons, null, 1));
     meta.counts.weapons = weapons.length;
@@ -198,7 +187,6 @@ async function main() {
     obtainableWeaponFormIds ??= new Set(
       allWeapons.filter((w) => w.obtainable !== false).map((w) => w.formId),
     );
-    explosiveFamilyKeywords ??= explosiveFamilyKeywordsOf(allWeapons);
     const defaultModFormIds = new Set(allWeapons.flatMap((w) => w.defaultModFormIds ?? []));
     const templateModFormIds = new Set(allWeapons.flatMap((w) => w.templateModFormIds ?? []));
     if (!allPerks) {
@@ -237,7 +225,6 @@ async function main() {
     const result = await extractOmods(
       client,
       obtainableWeaponFormIds,
-      explosiveFamilyKeywords,
       cobjIndex,
       defaultModFormIds,
       templateModFormIds,

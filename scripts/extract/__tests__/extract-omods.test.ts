@@ -689,43 +689,13 @@ describe('extractOmods (OverrideProjectile launcher-hazard chase, 2026-07-14)', 
     expect(omod!.modifiers).toEqual([]);
     expect(omod!.notes).toEqual([]);
   });
-
-  it("launcher-family swap (explosiveFamilyKeywords match): still chases the swapped EXPL's own hazard damage as an ordinary modifier even when the EXPL itself has no direct/typed damage to replace the baseline with (explosionSwap stays absent)", async () => {
-    // Same Lobber-shaped chain as the first test above, but this time the
-    // omod's target keyword is flagged (via explosiveFamilyKeywords) as
-    // already belonging to a weapon with its own fromExplosion component —
-    // see the real Hellstorm cryo/napalm fixtures below for the "EXPL DOES
-    // carry direct damage" shape (explosionSwap gets populated there). The
-    // Lobber EXPL has no main curve / no typed Damage Types, only a hazard,
-    // so `explosionSwap` stays undefined while the hazard's own dotDamage
-    // still materializes exactly like the non-family case (2026-07-29:
-    // launcher-family REPLACES the baseline fromExplosion component instead
-    // of staying note-only — docs/assumptions.md "OMOD-chased launcher
-    // payloads" § Launcher-family replacement).
-    const result = await extractOmods(
-      makeLobberStubClient(),
-      new Set(),
-      new Set(['0xMA_TESTLAUNCHER']),
-    );
-    const omod = result.omods.find((o) => o.id === 'mod_Test_LobberBarrel');
-    expect(omod).toBeDefined();
-    expect(omod!.explosionSwap).toBeUndefined();
-    expect(omod!.modifiers).toEqual([
-      expect.objectContaining({
-        bucket: 'dotDamage',
-        op: 'ADD',
-        value: 34,
-        durationSec: 7,
-        conditions: [{ kind: 'damageTypeScope', types: ['energy'] }],
-      }),
-    ]);
-  });
 });
 
 /**
  * Real ESM fixtures (`esm -p get`, 20260724 dump) for the Hellstorm Missile
- * Launcher's (`BOSRocketLauncher`) Cryo/Napalm tube barrels — the case the
- * launcher-family replacement branch exists for. Both OMODs `SET
+ * Launcher's (`BOSRocketLauncher`) Cryo/Napalm tube barrels — the case where
+ * `buildEffectiveWeapon`'s explosionChase REPLACES a baseline `fromExplosion`
+ * component (see GeneratedExplosionSwap's doc comment). Both OMODs `SET
  * OverrideProjectile` to a payload-specific PROJ whose EXPL carries real
  * typed damage the base `ExplosionMissileShellBOSLauncher` (the weapon's own
  * baseline `fromExplosion` component, tier 46) never fires once swapped:
@@ -797,17 +767,13 @@ function makeHellstormStubClient(payload: 'cryo' | 'napalm'): EsmClient {
   } as unknown as EsmClient;
 }
 
-describe('extractOmods (launcher-family explosionSwap replacement, real Hellstorm fixtures, 2026-07-29)', () => {
-  it('Cryo Payload: OverrideProjectile → EXPL with typed cryo damage (no hazard, no Enchantment) becomes an explosionSwap with one fromExplosion cryo component — no ordinary modifiers', async () => {
-    const result = await extractOmods(
-      makeHellstormStubClient('cryo'),
-      new Set(),
-      new Set(['ma_BOSRocketLauncher']),
-    );
+describe('extractOmods (OverrideProjectile explosionChase, real Hellstorm fixtures, 2026-07-29)', () => {
+  it('Cryo Payload: OverrideProjectile → EXPL with typed cryo damage (no hazard, no Enchantment) becomes an explosionChase with one fromExplosion cryo component — no ordinary modifiers', async () => {
+    const result = await extractOmods(makeHellstormStubClient('cryo'), new Set());
     const omod = result.omods.find((o) => o.id === 'mod_BOSRocketLauncher_TubeBarrel_Cryo');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toEqual([]);
-    expect(omod!.explosionSwap).toEqual({
+    expect(omod!.explosionChase).toEqual({
       explEdid: 'ExplosionMissileShellBOSLauncher_Cryo',
       baseWeaponDamageMult: 0,
       components: [
@@ -835,15 +801,11 @@ describe('extractOmods (launcher-family explosionSwap replacement, real Hellstor
     });
   });
 
-  it("Napalm Payload: explosionSwap carries the fire component, PLUS the EXPL's own on-hit Enchantment (curve-shaped fire DoT, durationSec from the ENCH's own Duration) AND its ground hazard (flat fire DoT, durationSec from HAZD Lifetime) as ordinary modifiers", async () => {
-    const result = await extractOmods(
-      makeHellstormStubClient('napalm'),
-      new Set(),
-      new Set(['ma_BOSRocketLauncher']),
-    );
+  it("Napalm Payload: explosionChase carries the fire component, PLUS the EXPL's own on-hit Enchantment (curve-shaped fire DoT, durationSec from the ENCH's own Duration) AND its ground hazard (flat fire DoT, durationSec from HAZD Lifetime) as ordinary modifiers", async () => {
+    const result = await extractOmods(makeHellstormStubClient('napalm'), new Set());
     const omod = result.omods.find((o) => o.id === 'mod_BOSRocketLauncher_TubeBarrel_Napalm');
     expect(omod).toBeDefined();
-    expect(omod!.explosionSwap).toEqual({
+    expect(omod!.explosionChase).toEqual({
       explEdid: 'ExplosionMissileShellBOSLauncher_Napalm',
       baseWeaponDamageMult: 0,
       components: [
@@ -911,12 +873,20 @@ describe('extractOmods (launcher-family explosionSwap replacement, real Hellstor
 });
 
 /**
- * Stub client mirroring the Cremator flame-color false-positive found while
+ * Stub client shaped like the Cremator flame-color OMODs found while
  * validating the OverrideProjectile fix (2026-07-14): PROJ (Explosion flag)
- * → EXPL carrying typed damage but NO "Placed Object" (a re-skinned
- * fireball-impact VFX, purely cosmetic — Cremator's chemical colors don't
- * change damage in-game) — must materialize NOTHING (just a note), unlike
- * the Polar Lobber shape (typed damage PLUS a hazard) above.
+ * → EXPL carrying typed damage but NO "Placed Object". Originally guarded
+ * against materializing this at all without a hazard present, out of a
+ * concern that real Cremator recolors deal the SAME fire damage the
+ * weapon's own baseline `fromExplosion` component already deals. Superseded
+ * 2026-07-30 (user-confirmed): a hazard was never a legitimate signal for
+ * anything — it's an independent bonus effect, not a gate — and the actual
+ * double-count risk is handled correctly regardless, since
+ * `buildEffectiveWeapon` REPLACES (not adds to) a baseline `fromExplosion`
+ * component whenever one exists (GeneratedExplosionSwap's doc comment); a
+ * stub with no baseline at all (as here) just gets a genuinely new
+ * component. Materializes via `explosionChase`, hazard or not — same as
+ * Polar Lobber below, just without the extra hazard tick.
  */
 function makeCosmeticReskinStubClient(): EsmClient {
   const omodFormId = '0xCOSMETIC';
@@ -999,13 +969,27 @@ function makeCosmeticReskinStubClient(): EsmClient {
   } as unknown as EsmClient;
 }
 
-describe('extractOmods (OverrideProjectile cosmetic-reskin guard, 2026-07-14)', () => {
-  it('does NOT materialize direct EXPL typed damage when there is no Placed Object hazard (Cremator chemical-color false positive)', async () => {
+describe('extractOmods (OverrideProjectile explosionChase, no baseline weapon involved, 2026-07-30)', () => {
+  it('materializes direct EXPL typed damage as a fromExplosion explosionChase component, hazard or not', async () => {
     const result = await extractOmods(makeCosmeticReskinStubClient(), new Set());
     const omod = result.omods.find((o) => o.id === 'mod_Test_CosmeticReskin');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toEqual([]);
-    expect((omod!.notes ?? []).some((n) => n.includes('not modeled'))).toBe(true);
+    expect(omod!.explosionChase).toMatchObject({
+      explEdid: 'TestReskinExplosion',
+      baseWeaponDamageMult: 0,
+      components: [
+        expect.objectContaining({
+          damageType: 'fire',
+          amount: 25,
+          fromExplosion: true,
+          curve: [
+            { x: 1, y: 10 },
+            { x: 50, y: 32 },
+          ],
+        }),
+      ],
+    });
   });
 });
 
@@ -1253,7 +1237,7 @@ function makeLegendaryCraftStub(): {
 describe('extractOmods (legendary-crafting obtainability gate, 2026-07-15)', () => {
   it('a legendary-crafting mod without a granting COBJ flips obtainable:false with a legendaryNoGrantCobj signal; one with a real recipe stays obtainable; the WEAP-ride rule is untouched for non-legendary mods', async () => {
     const { client, cobjIndex, weaponFormId } = makeLegendaryCraftStub();
-    const result = await extractOmods(client, new Set([weaponFormId]), new Set(), cobjIndex);
+    const result = await extractOmods(client, new Set([weaponFormId]), cobjIndex);
 
     const withRecipe = result.omods.find((o) => o.id === 'mod_Test_Legendary_WithRecipe');
     expect(withRecipe?.obtainable).toBe(true);

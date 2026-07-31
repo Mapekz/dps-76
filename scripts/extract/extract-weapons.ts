@@ -60,35 +60,6 @@ interface ExtractWeaponsResult {
   unresolved: string[];
   /** Formids of obtainable weapons — feeds the OMOD obtainability pass. */
   obtainableFormIds: Set<string>;
-  /**
-   * Keywords of every weapon that already carries its OWN `fromExplosion`
-   * component (chaseExplosion, weapon-level — launcher families: Missile
-   * Launchers, Fat Man, Gamma Gun, ...). Feeds extract-omods.ts's
-   * `OverrideProjectile` chase: a barrel/receiver OMOD targeting one of these
-   * keywords swaps WHICH projectile such a weapon fires — since that
-   * baseline explosion never detonates once the projectile is swapped, the
-   * OMOD's own EXPL/Enchantment/HAZD chase REPLACES it (as an
-   * `explosionSwap`, applied in src/lib/engine/effective-weapon.ts) rather
-   * than adding to it (docs/assumptions.md "OMOD-chased launcher payloads" §
-   * Launcher-family replacement). Verified 2026-07-14 on the Hellstorm
-   * Missile Launcher's Napalm/Cryo/Plasma tube barrels — unlike Lobber/Polar
-   * Lobber (Lightning Gun/Cryolator are pure beam weapons with NO
-   * fromExplosion component to replace, so their chase stays additive).
-   */
-  explosiveFamilyKeywords: Set<string>;
-}
-
-/** Shared by extractWeapons() and run-all.ts's `--only omods`-without-weapons fallback. */
-export function explosiveFamilyKeywordsOf(
-  weapons: Pick<GeneratedWeapon, 'keywords' | 'components'>[],
-): Set<string> {
-  const keywords = new Set<string>();
-  for (const w of weapons) {
-    if (w.components.some((c) => c.fromExplosion)) {
-      for (const kw of w.keywords) keywords.add(kw);
-    }
-  }
-  return keywords;
 }
 
 async function buildComponents(
@@ -611,6 +582,5 @@ export async function extractWeapons(
     excludedDetailed,
     unresolved: [...new Set(unresolved)],
     obtainableFormIds,
-    explosiveFamilyKeywords: explosiveFamilyKeywordsOf(weapons),
   };
 }

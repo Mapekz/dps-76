@@ -132,14 +132,13 @@ export async function decodeExplosionDamage(
 /**
  * Turn a decoded EXPL's damage into `fromExplosion`-flagged components — the
  * WEAP-identical shape both callers need: extract-weapons.ts's `chaseExplosion`
- * (the weapon's own baseline explosion) and extract-omods.ts's launcher-family
- * `explosionSwap` (a barrel's OverrideProjectile detonating a DIFFERENT EXPL —
- * docs/assumptions.md "OMOD-chased launcher payloads" § Launcher-family
- * replacement). Factored out so the two can't drift: main curve → physical
- * `'explosive'` damage; each typed entry → its own elemental type. No
- * filtering (an `'unknown'`/zero-curve typed entry still becomes a
- * component) — callers gate on `decodeExplosionDamage`'s output themselves
- * before calling this.
+ * (the weapon's own baseline explosion) and extract-omods.ts's
+ * `explosionChase` (a barrel's OverrideProjectile detonating a DIFFERENT
+ * EXPL — docs/assumptions.md "OMOD-chased launcher payloads"). Factored out
+ * so the two can't drift: main curve → physical `'explosive'` damage; each
+ * typed entry → its own elemental type. No filtering (an `'unknown'`/
+ * zero-curve typed entry still becomes a component) — callers gate on
+ * `decodeExplosionDamage`'s output themselves before calling this.
  */
 export function explosionComponents(decoded: DecodedExplosionDamage): GeneratedDamageComponent[] {
   const components: GeneratedDamageComponent[] = [];

@@ -475,8 +475,6 @@ export async function extractOmods(
   client: EsmClient,
   /** Formids of obtainable weapons (from the weapons pass) — an OMOD referenced by one rides along. */
   obtainableWeaponFormIds: ReadonlySet<string>,
-  /** See ExtractWeaponsResult.explosiveFamilyKeywords (extract-weapons.ts) — gates the OverrideProjectile chase. */
-  explosiveFamilyKeywords: ReadonlySet<string> = new Set(),
   /** Forward COBJ index (buildCobjIndex) — learn-method-aware obtainability + hasGrantingCobj. */
   cobjIndex: CobjIndex = emptyCobjIndex(),
   /** Union of every weapon's defaultModFormIds — a default part is never flagged weak-evidence. */
@@ -559,9 +557,8 @@ export async function extractOmods(
    * persists) rather than the SPEL's own per-tick Effect Item Data duration —
    * inert metadata either way (Modifier.durationSec is not read by the
    * engine today), but Lifetime is the more honest "how long this dot-like
-   * field lasts" reading. Shared by `overrideProjectileModifiers`'s two
-   * hazard-chasing branches (Lobber-family additive chase, launcher-family
-   * explosionSwap replacement).
+   * field lasts" reading. Shared by every `overrideProjectileModifiers` call
+   * whose EXPL carries a hazard, unconditional on the target weapon.
    */
   async function hazardModifiers(
     hazdFormId: string,
@@ -601,36 +598,53 @@ export async function extractOmods(
 
   /**
    * OMOD `OverrideProjectile` chase: PROJ (require the Explosion flag — the
-   * same gate `chaseExplosion`, extract-weapons.ts, uses) → EXPL. Two
-   * distinct shapes, branched on `targetsExplosiveFamily`
-   * (ExtractWeaponsResult.explosiveFamilyKeywords' doc comment):
+   * same gate `chaseExplosion`, extract-weapons.ts, uses) → EXPL. ONE
+   * unified shape, unconditional on which weapon the OMOD targets
+   * (redesigned 2026-07-30 — see below for what this replaced):
    *
-   * - **Launcher-family replacement** (Hellstorm Missile Launcher's
-   *   Napalm/Cryo/Plasma tube barrels, verified 2026-07-14): the weapon
-   *   already carries its own WEAP-level `fromExplosion` baseline, which
-   *   never detonates once this barrel swaps the projectile — so the EXPL's
-   *   own direct damage is returned as an `explosionSwap` for
-   *   effective-weapon.ts to REPLACE that baseline with (docs/assumptions.md
-   *   "OMOD-chased launcher payloads" § Launcher-family replacement), plus
-   *   the EXPL's own on-hit `Enchantment` (Napalm's fire DoT — same
-   *   `enchantmentModifiers` path an OMOD's `Enchantments` property uses) and
-   *   any lingering-hazard tick damage (Napalm's ground fire).
-   * - **Additive chase** (Lobber Barrel / Polar Lobber — Lightning
-   *   Gun/Cryolator are pure beam weapons with no `fromExplosion` component
-   *   to replace): EXPL's own direct damage (a launcher-style payload the
-   *   barrel itself deals; the Lobber's own EXPL carries none, a dead end)
-   *   PLUS EXPL "Placed Object" → HAZD tick damage, both ADDed as ordinary
-   *   OMOD modifiers via `hazardModifiers` above. A "Placed Object" (HAZD)
-   *   hop is the signal that this is a genuine payload CONVERSION, not a
-   *   coincidental OverrideProjectile use — verified 2026-07-14: Cremator's
-   *   flame-color Receiver mods (Chemical_BlueFire/GreenFire/PinkFire) EACH
-   *   carry their own re-skinned fireball-impact EXPL with the SAME tier-13
-   *   typed fire damage as the base RedFire/default color (whose own EXPL
-   *   carries none), no Placed Object on any of them — a purely cosmetic VFX
-   *   re-skin that would otherwise silently double the Cremator's fire
-   *   damage for 3 of its 4 color choices. Direct EXPL damage is therefore
-   *   only materialized when a hazard ALSO exists; without one it's noted
-   *   (when non-zero) rather than silently dropped or guessed at.
+   * - **Direct damage** (main curve/flat AND any typed `Damage Types`
+   *   entries) materializes UNCONDITIONALLY, via `explosionComponents()` —
+   *   the SAME helper the WEAP-level `chaseExplosion` uses — into a
+   *   `GeneratedOmod.explosionChase` the engine (`buildEffectiveWeapon`,
+   *   effective-weapon.ts) turns into real `fromExplosion` WeaponComponents.
+   *   Whether that REPLACES an existing baseline or simply ADDS is decided
+   *   there, per the ACTUAL weapon being built, by checking whether it
+   *   already has a `fromExplosion` component — never at extraction time.
+   *   This is deliberately NOT a plain `baseDamage` modifier: see
+   *   `materializeDamageTypeComponents`'s doc comment (effective-weapon.ts)
+   *   for why a literal `damageTypeScope: ['explosive']` modifier would
+   *   silently never materialize (caught 2026-07-30 before shipping).
+   * - **EXPL "Base Weapon Damage Mult"** is extracted (audit note only, see
+   *   below) but never consumed here: whenever direct component damage is
+   *   present, it's authoritative and the mult is superseded — the same
+   *   "curve is authoritative" rule every other damage field follows,
+   *   generalized: a Projectile-Scaling Explosion (Gauss/Tesla) uses the
+   *   mult ONLY because it has no curve/typed damage of its own; once an
+   *   EXPL states real damage explicitly, there's nothing left for the mult
+   *   to add (Polar Lobber's `Base Weapon Damage Mult: 1.0` is exactly this
+   *   — its typed cryo curve is the complete, authoritative explosion
+   *   damage, and the mult is simply unused, not "modeled elsewhere").
+   * - **EXPL "Placed Object" → HAZD tick damage** and **EXPL "Enchantment"**
+   *   (Napalm's ground fire / on-hit fire DoT) are INDEPENDENT bonus effects
+   *   layered on top of the direct damage above, chased UNCONDITIONALLY
+   *   whenever present — never a gate on whether direct damage materializes.
+   *   (Earlier revisions of this function used hazard presence as a proxy
+   *   for "is this a genuine payload conversion" and skipped direct damage
+   *   without one; that reasoning was wrong on its own terms — a hazard is
+   *   just an optional add-on effect, not a signal of anything — corrected
+   *   2026-07-30.)
+   *
+   * Was previously two branches split on a target-weapon-family keyword
+   * heuristic (REPLACE for a barrel targeting `explosiveFamilyKeywords`,
+   * additive-only otherwise) — removed 2026-07-30: that heuristic was both
+   * unnecessary (the engine can just check the real weapon's own components)
+   * and unsound for identity/customName mods (`ap_customName` — a unique
+   * weapon's own dedicated skin/name mod, e.g. `SCORE_S11_mod_Custom_
+   * NukaLauncher`), which carry no `Target OMOD Keywords` at all — their
+   * binding to a base weapon lives in the separate Combination mechanism
+   * `extract-uniques.ts` reads, structurally invisible to a keyword gate at
+   * OMOD-extraction time regardless of which weapon they're actually bolted
+   * onto.
    *
    * The overwhelming majority of the 154 weapon OMODs carrying
    * OverrideProjectile are cosmetic (suppressors, focusers) whose PROJ/EXPL
@@ -638,21 +652,23 @@ export async function extractOmods(
    * most one note when a chased PROJ has the Explosion flag but no decodable
    * damage.
    *
-   * A third, narrower shape: the swapped PROJ's EXPL is `Chain`-flagged
+   * A narrower, distinct shape: the swapped PROJ's EXPL is `Chain`-flagged
    * (Tesla Cannon's Alternate Current muzzle → `ProjectileTeslaBeam_Chain` →
    * `SCORE_S19_Chainlightning_TeslaCannon`) — chain lightning, not an
    * explosion at all. Its bounce damage is engine-native (no ESM
    * representation), so it must SUPPRESS the weapon's own
    * `explosionBaseWeaponDamageMult` rather than be chased for damage —
-   * reported via `chainSuppressesExplosion` instead of a `swap`.
+   * reported via `chainSuppressesExplosion` instead of a `chase`.
    */
   async function overrideProjectileModifiers(
     projFormId: string,
     source: Modifier['source'],
     into: Modifier[],
     modNotes: Set<string>,
-    targetsExplosiveFamily: boolean,
-  ): Promise<{ swap: GeneratedExplosionSwap | null; chainSuppressesExplosion: boolean }> {
+  ): Promise<{
+    chase: GeneratedExplosionSwap | null;
+    chainSuppressesExplosion: boolean;
+  }> {
     const unresolved: string[] = [];
     let explFormId: string | null;
     try {
@@ -661,23 +677,23 @@ export async function extractOmods(
       modNotes.add(
         `OverrideProjectile ${projFormId}: ${err instanceof Error ? err.message : String(err)}`,
       );
-      return { swap: null, chainSuppressesExplosion: false };
+      return { chase: null, chainSuppressesExplosion: false };
     }
-    if (!explFormId) return { swap: null, chainSuppressesExplosion: false }; // no Explosion flag / no Explosion formid — cosmetic mod, nothing to chase.
+    if (!explFormId) return { chase: null, chainSuppressesExplosion: false }; // no Explosion flag / no Explosion formid — cosmetic mod, nothing to chase.
 
     let expl: EsmRecord;
     try {
       expl = await client.get(explFormId);
     } catch {
       modNotes.add(`OverrideProjectile explosion ${explFormId} not found`);
-      return { swap: null, chainSuppressesExplosion: false };
+      return { chase: null, chainSuppressesExplosion: false };
     }
 
     if (explosionIsChain(expl)) {
       modNotes.add(
         `OverrideProjectile ${expl.editor_id}: Chain-flagged explosion (chain lightning, not an explosion) — suppresses explosionBaseWeaponDamageMult and the Explosive 2★ payload`,
       );
-      return { swap: null, chainSuppressesExplosion: true };
+      return { chase: null, chainSuppressesExplosion: true };
     }
 
     const decoded = await decodeExplosionDamage(client, expl, unresolved);
@@ -690,67 +706,41 @@ export async function extractOmods(
       decoded.main != null ||
       decoded.typed.some((t) => t.damageType !== 'unknown' && (t.curve || t.amount > 0));
 
-    if (targetsExplosiveFamily) {
-      let swap: GeneratedExplosionSwap | null = null;
-      if (hasDirectDamage) {
-        swap = {
-          explEdid: expl.editor_id,
-          components: explosionComponents(decoded),
-          baseWeaponDamageMult: decoded.baseWeaponDamageMult,
-        };
-      }
-      // EXPL "Enchantment" (top-level field, sibling of "Data" — NOT nested
-      // inside it): the explosion's own on-hit proc (Napalm's fire DoT,
-      // FXEnchFireHitBOSLauncher_Napalm). Reuses `enchantmentModifiers` —
-      // same translateEnchantment path + Self-delivery self-damage guard an
-      // OMOD's own `Enchantments` property uses; nothing to do when absent
-      // (Cryo/Plasma's EXPLs carry no Enchantment field).
-      const enchFormId = (expl.fields['Enchantment'] as string | null) ?? null;
-      if (enchFormId && enchFormId !== '0x00000000') {
-        await enchantmentModifiers(enchFormId, source, into, modNotes);
-      }
-      if (hasHazard) {
-        await hazardModifiers(hazdFormId!, source, into, modNotes);
-      }
-      return { swap, chainSuppressesExplosion: false };
-    }
-
-    if (!hasHazard) {
-      if (hasDirectDamage) {
-        modNotes.add(
-          `EXPL ${expl.editor_id} carries direct damage with no Placed Object hazard — not modeled (docs/assumptions.md "OMOD-chased launcher payloads")`,
-        );
-      }
-      return { swap: null, chainSuppressesExplosion: false };
-    }
-
-    // EXPL's own direct typed damage (Polar Lobber's cryo impact) — an
-    // instant, dbm-scaled hit, same shape as DamageTypeValues/AttackDamage.
-    for (const entry of decoded.typed) {
-      if (entry.damageType === 'unknown' || !(entry.curve || entry.amount > 0)) continue;
-      into.push({
-        id: `${source.formId}:${into.length}`,
-        source,
-        bucket: 'baseDamage',
-        op: 'ADD',
-        curve: { input: 'itemLevel', points: entry.curve ?? [{ x: 1, y: entry.amount }] },
-        curveScale: 1,
-        conditions: [{ kind: 'damageTypeScope', types: [entry.damageType] }],
-      });
+    let chase: GeneratedExplosionSwap | null = null;
+    if (hasDirectDamage) {
+      chase = {
+        explEdid: expl.editor_id,
+        components: explosionComponents(decoded),
+        baseWeaponDamageMult: decoded.baseWeaponDamageMult,
+      };
     }
     if (decoded.baseWeaponDamageMult > 0) {
-      // No OMOD-level route exists for "Base Weapon Damage Mult" (the
-      // existing `explosivePayload` mechanic is a WEAPON-field base, not an
-      // OMOD modifier target) — extracted but deliberately not modeled;
-      // flagged for a follow-up decision rather than silently dropped or
-      // guessed at (docs/assumptions.md "OMOD-chased launcher payloads").
+      // Audit note only — see the doc comment above for why this is never
+      // consumed: whenever direct component damage is present it's
+      // authoritative, and the mult is superseded, not "modeled elsewhere".
       modNotes.add(
-        `EXPL ${expl.editor_id} Base Weapon Damage Mult ${decoded.baseWeaponDamageMult} — not modeled`,
+        `EXPL ${expl.editor_id} Base Weapon Damage Mult ${decoded.baseWeaponDamageMult} — superseded by the EXPL's own direct damage above, not consumed`,
       );
     }
 
-    await hazardModifiers(hazdFormId!, source, into, modNotes);
-    return { swap: null, chainSuppressesExplosion: false };
+    // EXPL "Enchantment" (top-level field, sibling of "Data" — NOT nested
+    // inside it): the explosion's own on-hit proc (Napalm's fire DoT,
+    // FXEnchFireHitBOSLauncher_Napalm). Reuses `enchantmentModifiers` — same
+    // translateEnchantment path + Self-delivery self-damage guard an OMOD's
+    // own `Enchantments` property uses; nothing to do when absent (most
+    // EXPLs carry no Enchantment field). An independent bonus effect, not
+    // gated on `hasDirectDamage` or `hasHazard`.
+    const enchFormId = (expl.fields['Enchantment'] as string | null) ?? null;
+    if (enchFormId && enchFormId !== '0x00000000') {
+      await enchantmentModifiers(enchFormId, source, into, modNotes);
+    }
+    // EXPL "Placed Object" → HAZD lingering tick damage (Napalm's ground
+    // fire, Polar Lobber's cryo field): ALSO an independent bonus effect on
+    // top of the direct damage above, not a gate on it.
+    if (hasHazard) {
+      await hazardModifiers(hazdFormId!, source, into, modNotes);
+    }
+    return { chase, chainSuppressesExplosion: false };
   }
 
   /** Recursively collect properties from an OMOD and its include chain. */
@@ -845,19 +835,13 @@ export async function extractOmods(
         : []
       ).map((k) => client.resolveEdid(k)),
     );
-    // Targets a weapon family that already carries its own fromExplosion
-    // component (a launcher — see ExtractWeaponsResult.explosiveFamilyKeywords'
-    // doc comment): the OverrideProjectile chase REPLACES that baseline
-    // rather than adding to it (overrideProjectileModifiers's launcher-family
-    // branch).
-    const targetsExplosiveFamily = targetKeywords.some((k) => explosiveFamilyKeywords.has(k));
 
     const properties = collectProperties(record.header.form_id, new Set());
     const modifiers: Modifier[] = [];
     const addedKeywords: string[] = [];
     const modNotes = new Set<string>();
     let hasEnchantments = false;
-    let explosionSwap: GeneratedExplosionSwap | undefined;
+    let explosionChase: GeneratedExplosionSwap | undefined;
     let chainSuppressesExplosion = false;
     const source: Modifier['source'] = {
       kind: 'omod',
@@ -910,9 +894,8 @@ export async function extractOmods(
               source,
               modifiers,
               modNotes,
-              targetsExplosiveFamily,
             );
-            if (result.swap) explosionSwap = result.swap;
+            if (result.chase) explosionChase = result.chase;
             if (result.chainSuppressesExplosion) chainSuppressesExplosion = true;
           }
         }
@@ -1176,7 +1159,7 @@ export async function extractOmods(
       addedKeywords,
       hasEnchantments,
       ...(hasGrantingCobj ? { hasGrantingCobj } : {}),
-      ...(explosionSwap ? { explosionSwap } : {}),
+      ...(explosionChase ? { explosionChase } : {}),
       ...(chainSuppressesExplosion ? { chainSuppressesExplosion } : {}),
       notes: [...modNotes].sort(),
     });

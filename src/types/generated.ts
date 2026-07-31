@@ -263,24 +263,41 @@ export interface GeneratedArmor {
 }
 
 /**
- * A barrel/receiver OMOD's `OverrideProjectile` swap that detonates a
- * DIFFERENT EXPL than the weapon's own baseline (Hellstorm Missile
- * Launcher's Napalm/Cryo/Plasma tube barrels: the base explosion never
- * fires once the projectile is swapped). Produced by extract-omods.ts's
- * `overrideProjectileModifiers` for weapons in `explosiveFamilyKeywords`
- * (docs/assumptions.md "OMOD-chased launcher payloads" § Launcher-family
- * replacement) — REPLACES, not adds to, the weapon's WEAP-level
- * `fromExplosion` components (src/lib/engine/effective-weapon.ts). Inert
- * (never applied) on a weapon with no baseline `fromExplosion` component at
- * all — `explosiveFamilyKeywords` is a coarse keyword union across every
- * launcher family, so a false-positive match here simply never fires.
+ * An OMOD's `OverrideProjectile` chase result — the EXPL a swapped
+ * projectile detonates, decoded into `fromExplosion` components (same shape
+ * `chaseExplosion`, the WEAP-level chase, emits). Produced unconditionally
+ * by extract-omods.ts's `overrideProjectileModifiers` whenever the EXPL
+ * carries real damage, regardless of which weapon the OMOD targets.
+ *
+ * Consumed by `buildEffectiveWeapon` (src/lib/engine/effective-weapon.ts),
+ * which decides REPLACE vs. ADD per the ACTUAL weapon being built — not at
+ * extraction time — by checking whether that weapon already has a baseline
+ * `fromExplosion` component: if so, this chase REPLACES it (the baseline
+ * never detonates once the projectile is swapped — Hellstorm Missile
+ * Launcher's Napalm/Cryo/Plasma tube barrels); if not, this chase ADDS a
+ * genuine new explosion the weapon didn't have (Polar Lobber Barrel, Dom
+ * Pedro's Nitro's, Explosive Arrows/Frame, Firework Frame, Signal Dish
+ * Barrel). Redesigned 2026-07-30 — this single field replaces two
+ * extraction-time-classified fields (`explosionSwap`/`explosionAdd`) that
+ * tried to pre-decide the launcher-family question via a target-weapon
+ * keyword heuristic; that heuristic was unnecessary (the engine already
+ * knows the real weapon's own components) and unsound for identity/
+ * customName mods (`ap_customName`), which carry no target keywords at all
+ * regardless of which weapon they're bolted onto (their binding lives in
+ * the separate Combination mechanism `extract-uniques.ts` reads).
  */
 export interface GeneratedExplosionSwap {
   /** EXPL editor_id the swapped projectile detonates — provenance for review. */
   explEdid: string;
-  /** Replacement `fromExplosion` components — same shape chaseExplosion emits. */
+  /** The chased `fromExplosion` components — same shape chaseExplosion emits. */
   components: GeneratedDamageComponent[];
-  /** EXPL "Base Weapon Damage Mult" — replaces the weapon's own when this swap applies. */
+  /**
+   * EXPL "Base Weapon Damage Mult" — extracted for audit only, never
+   * consumed: whenever `components` carries real direct damage (which gates
+   * this field's presence at all), that damage is authoritative and
+   * supersedes the mult (docs/assumptions.md "OMOD-chased launcher
+   * payloads").
+   */
   baseWeaponDamageMult: number;
 }
 
@@ -314,8 +331,8 @@ export interface GeneratedOmod {
   hasGrantingCobj?: boolean;
   /** Extraction caveats for this record (unrouted AVs, unmodeled curves) — powers UI badges. */
   notes?: string[];
-  /** See GeneratedExplosionSwap — present only for a launcher-family barrel whose EXPL carries real damage. */
-  explosionSwap?: GeneratedExplosionSwap;
+  /** See GeneratedExplosionSwap — present only when this OMOD's `OverrideProjectile` chase found real EXPL damage. */
+  explosionChase?: GeneratedExplosionSwap;
   /**
    * This OMOD's `OverrideProjectile` resolves to a `Chain`-flagged EXPL —
    * chain lightning (Tesla Cannon's Alternate Current muzzle), not a real

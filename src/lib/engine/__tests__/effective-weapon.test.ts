@@ -836,7 +836,7 @@ describe('explosionRadiusBonus → dbm conversion (Bunker Buster, Grenadier)', (
   });
 });
 
-describe('explosionSwap replacement (launcher-family projectile-swap, docs/assumptions.md "OMOD-chased launcher payloads" § Launcher-family replacement, 2026-07-29)', () => {
+describe('explosionChase — REPLACE vs ADD decided per weapon, docs/assumptions.md "OMOD-chased launcher payloads" (redesigned 2026-07-30)', () => {
   const FLAT_100 = [
     { x: 1, y: 100 },
     { x: 50, y: 100 },
@@ -887,7 +887,7 @@ describe('explosionSwap replacement (launcher-family projectile-swap, docs/assum
     };
   }
 
-  /** A synthetic barrel OMOD carrying an explosionSwap, no ordinary modifiers (mirrors the real Cryo Payload shape). */
+  /** A synthetic barrel OMOD carrying an explosionChase, no ordinary modifiers (mirrors the real Cryo Payload shape). */
   function makeSwapOmod(baseWeaponDamageMult = 0) {
     return {
       id: 'test_cryo_barrel',
@@ -900,7 +900,7 @@ describe('explosionSwap replacement (launcher-family projectile-swap, docs/assum
       addedKeywords: [],
       hasEnchantments: false,
       modifiers: [],
-      explosionSwap: {
+      explosionChase: {
         explEdid: 'TestSwapExplosion',
         baseWeaponDamageMult,
         components: [
@@ -941,15 +941,15 @@ describe('explosionSwap replacement (launcher-family projectile-swap, docs/assum
     });
   });
 
-  it('overrides explosionBaseWeaponDamageMult from the swap when it applies', () => {
+  it('clears explosionBaseWeaponDamageMult when a chase applies (curve/typed damage supersedes the mult — never copied from the chase)', () => {
     const { weapon } = buildEffectiveWeapon(makeLauncherWeapon(), [makeSwapOmod(0.2)]);
-    expect(weapon.explosionBaseWeaponDamageMult).toBe(0.2);
+    expect(weapon.explosionBaseWeaponDamageMult).toBe(0);
   });
 
-  it('is a no-op on a weapon with no baseline fromExplosion component at all', () => {
+  it('ADDS the chase (not a no-op) on a weapon with no baseline fromExplosion component at all — redesigned 2026-07-30, replaces "explosionAdd"', () => {
     const { weapon } = buildEffectiveWeapon(makeBallisticOnlyWeapon(), [makeSwapOmod()]);
-    expect(weapon.components.map((c) => c.damageType)).toEqual(['ballistic']);
-    expect(weapon.explosionBaseWeaponDamageMult).toBeUndefined();
+    expect(weapon.components.map((c) => c.damageType)).toEqual(['ballistic', 'cryo']);
+    expect(weapon.components[1]).toMatchObject({ damageType: 'cryo', fromExplosion: true });
   });
 
   it('only the LAST equipped omod carrying a swap wins', () => {
@@ -957,7 +957,7 @@ describe('explosionSwap replacement (launcher-family projectile-swap, docs/assum
     const second = {
       ...makeSwapOmod(),
       id: 'test_plasma_barrel',
-      explosionSwap: {
+      explosionChase: {
         explEdid: 'TestSwapExplosionPlasma',
         baseWeaponDamageMult: 0,
         components: [
@@ -1150,12 +1150,11 @@ describe('Explosive 2★ dual behavior (explosivePayload branch, docs/assumption
     expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
   });
 
-  it('branch is chosen POST-swap: an explosionSwap onto a plain weapon (hypothetically) still keys off the effective components', () => {
-    // The launcher-family swap only ever applies when the base weapon
-    // already has a baseline fromExplosion component (see the
-    // explosionSwap describe block above) — so swapping doesn't change
-    // which branch a launcher takes, only WHICH curve. Confirm the rewrite
-    // still fires on a swapped-in explosion.
+  it('branch is chosen POST-chase: an explosionChase applied to a Curve-Table-Explosion weapon still keys off the effective components', () => {
+    // A chase on a weapon that already has a baseline fromExplosion
+    // component REPLACES it (see the explosionChase describe block above) —
+    // so it doesn't change which branch a launcher takes, only WHICH curve.
+    // Confirm the rewrite still fires on a swapped-in explosion.
     const swapOmod = {
       id: 'test_barrel',
       formId: '0x0',
@@ -1167,7 +1166,7 @@ describe('Explosive 2★ dual behavior (explosivePayload branch, docs/assumption
       addedKeywords: [],
       hasEnchantments: false,
       modifiers: [],
-      explosionSwap: {
+      explosionChase: {
         explEdid: 'TestSwapExplosion',
         baseWeaponDamageMult: 0,
         components: [
@@ -1231,6 +1230,112 @@ describe('Explosive 2★ dual behavior (explosivePayload branch, docs/assumption
     };
     const { weapon } = buildEffectiveWeapon(makeProjectileScalingWeapon(), [chainOmod]);
     expect(weapon.explosionBaseWeaponDamageMult).toBe(0);
+  });
+});
+
+describe('explosionChase ADDs to a weapon with no baseline explosion, docs/assumptions.md "OMOD-chased launcher payloads" (2026-07-30)', () => {
+  const FLAT_100 = [
+    { x: 1, y: 100 },
+    { x: 50, y: 100 },
+  ];
+
+  function makePlainBow() {
+    return {
+      id: 'test_bow',
+      name: 'Test Bow',
+      components: [
+        { damageType: 'ballistic' as const, tier: -1, levelCap: 50, curvePoints: FLAT_100 },
+      ],
+      damageType: 'ballistic' as const,
+      weaponClass: 'bow' as const,
+      isAutomatic: false,
+      isPhysical: true,
+      critDamageMult: 2.0,
+      critChargeBonus: 1.0,
+      sneakAttackMult: 2.0,
+      damageBonusMult: 1.0,
+    };
+  }
+
+  function makeExplosiveArrowsOmod() {
+    return {
+      id: 'mod_RegularBow_Bolt_Explosive',
+      formId: '0x0',
+      name: 'Explosive',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_gun_Bolt',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [],
+      explosionChase: {
+        explEdid: 'ExplosionArrowExplosive',
+        baseWeaponDamageMult: 0,
+        components: [
+          {
+            damageType: 'explosive' as const,
+            damageTypeEdid: null,
+            amount: 15,
+            tier: 24,
+            curve: [
+              { x: 1, y: 31 },
+              { x: 50, y: 103 },
+            ],
+            fromExplosion: true,
+          },
+        ],
+      },
+    };
+  }
+
+  it('ADDS a fromExplosion component to a weapon with no baseline explosion at all', () => {
+    const { weapon } = buildEffectiveWeapon(makePlainBow(), [makeExplosiveArrowsOmod()]);
+    expect(weapon.components.map((c) => c.damageType)).toEqual(['ballistic', 'explosive']);
+    const [ballistic, explosive] = weapon.components;
+    expect(ballistic.fromExplosion).toBeUndefined();
+    expect(explosive).toMatchObject({
+      damageType: 'explosive',
+      tier: 24,
+      levelCap: 50,
+      fromExplosion: true,
+      curvePoints: [
+        { x: 1, y: 31 },
+        { x: 50, y: 103 },
+      ],
+    });
+  });
+
+  it('the added component makes the weapon a Curve-Table Explosion for the Explosive 2★ branch', () => {
+    const explosiveTwoStar = {
+      id: 'mod_Legendary_Weapon2_Guns_ExplosiveBullets',
+      formId: '0xEXPL2',
+      name: 'Explosive',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_Legendary2',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [
+        {
+          id: '0xEXPL2:0',
+          source: { kind: 'omod' as const, formId: '0xEXPL2', edid: 'x', name: 'Explosive' },
+          bucket: 'explosivePayload' as const,
+          op: 'ADD' as const,
+          value: 0.2,
+          conditions: [],
+        },
+      ],
+    };
+    const { modifiers } = buildEffectiveWeapon(makePlainBow(), [
+      makeExplosiveArrowsOmod(),
+      explosiveTwoStar,
+    ]);
+    expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
+    expect(modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'baseDamage', op: 'MUL_ADD', value: 0.2 }),
+    );
   });
 });
 
