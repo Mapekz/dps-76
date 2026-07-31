@@ -19,7 +19,9 @@ const RANDOM_LEGENDARY_SLOT_RE = /^modcol_Legendary_Crafting_Weapon(\d+)$/;
 function isIdentityOmod(omod: GeneratedOmod): boolean {
   if (omod.attachPointEdid === 'ap_customName' && omod.addedKeywords.includes('ObjectTypeUnique'))
     return true;
-  // Cursed uniques ride ap_Item_Description (Broadsider, MoM blades, …).
+  // MoM (Mistress of Mystery) blades ride ap_Item_Description; Cursed identity mods
+  // (Nuka-World on Tour) moved to their own ap_curse attach point in the 20260724 patch.
+  // See src/data/omods.ts for the attach-point layout.
   if (omod.attachPointEdid === 'ap_Item_Description') return true;
   return false;
 }

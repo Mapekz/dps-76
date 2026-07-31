@@ -388,6 +388,9 @@ export async function toGeneratedWeapon(
     // ("Min Power Per Shot" → "Max Power Per Shot" → "Full Power Damage
     // Mult") — the checked-in weap-gammagun.json fixture still has the OLD
     // name; re-verify against a fresh `esm get` before trusting fixture shape.
+    // NOTE: WEAP.Data ALSO carries separate Overheat fields in the same
+    // neighborhood; overheat is broken in-game and deliberately unmodeled.
+    // See extract-omods.ts for details.
     fullPowerSeconds: asNumber(data['Full Power Seconds']),
     fullPowerDamageMult: asNumber(data['Full Power Damage Mult']),
     minimumChargeTime: asNumber(fields['Minimum Charge Time']),

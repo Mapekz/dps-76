@@ -269,7 +269,7 @@ function buildSlots(
   const dedupe = (options: OmodOption[]): OmodOption[] => {
     const byKey = new Map<string, OmodOption>();
     for (const option of options) {
-      const key = `${option.name} ${JSON.stringify(option.modifiers.map((m) => Object.fromEntries(Object.entries(m).filter(([field]) => field !== 'id' && field !== 'source'))))}`;
+      const key = `${option.name} ${JSON.stringify(option.modifiers.map((m) => Object.fromEntries(Object.entries(m).filter(([field]) => field !== 'id' && field !== 'source'))))}`;
       const prev = byKey.get(key);
       if (!prev || (templateFormIds.has(option.formId) && !templateFormIds.has(prev.formId)))
         byKey.set(key, option);
@@ -361,6 +361,13 @@ const RENAMING_SLOTS: ReadonlyArray<[slot: string, keyword: string]> = [
   ['ap_customName', 'ObjectTypeUnique'],
   ['ap_curse', 'dn_HasCustomMod_Cursed'],
 ];
+
+// Cursed mods (ap_curse, Nuka-World on Tour) carry real stat payloads on a
+// cosmetic naming slot but do NOT carry ObjectTypeUnique. They're surfaced by
+// the generic "has modifiers + template-member" cosmetic-slot gate (line 329:
+// omod.modifiers.length > 0 && templateModFormIds.includes(...)), not by the
+// ObjectTypeUnique identity-unique path. They're labeled "Cursed" via the
+// RENAMING_SLOTS/SLOT_LABEL_OVERRIDES machinery above, not via ObjectTypeUnique.
 
 export function effectiveWeaponName(
   mode: GameMode,

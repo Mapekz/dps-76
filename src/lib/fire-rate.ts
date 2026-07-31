@@ -36,6 +36,10 @@ import { resolvedChargeTimeSec, weaponCharges } from '@/lib/charge';
  *   Gatling Gun 0.5s (own `AnimsGatlingGun` keyword, distinct from Minigun's
  *   `AnimsMinigun`) and Gatling Laser Charging Barrels ≈0.1667s (1/6s, two
  *   independent effective-Speed readings back-solve to the same constant).
+ *   Neither Gatling Gun nor Gatling Laser sets `fullPowerSeconds`/`fullPowerDamageMult`
+ *   at all — despite the "Charging Barrels" name, neither uses the FPS/FPDM charging
+ *   mechanic (`src/lib/charge.ts`); their "Charging" naming refers only to the
+ *   animDurationSec spin-up override documented above.
  *   The shared `Charging Attack` WEAP flag does not by itself imply a custom
  *   cycle. Submachine Gun has no true semi mode (every receiver incl.
  *   "Standard" pulls the automatic-init template) — not an exception, its

@@ -21,7 +21,7 @@
  * shapes and exactly which bosses qualify (SBQ, Storm Goliath — NOT Earle,
  * despite being a same-family curated boss; its quest was checked and
  * proves no forced rank). See docs/assumptions.md "Creature stat curves &
- * NPC extraction" for how this bears on the open Scorchbeast Queen HP
+ * NPC extraction" for how this bears on the RESOLVED Scorchbeast Queen HP
  * question (short answer: applying the now-proven rank 3 WIDENS the ~10×
  * gap to ~24–41×, not narrows it).
  *

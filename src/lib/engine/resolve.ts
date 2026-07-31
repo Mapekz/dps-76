@@ -1,3 +1,10 @@
+/**
+ * Condition evaluation and bucket folds for the damage engine.
+ *
+ * The shared fold primitive `foldOps` (lines ~409-421) implements the modifier arithmetic
+ * every bucket uses: result = (last SET ?? base) + (Σ MUL_ADD) × base + Σ ADD.
+ */
+
 import type { PlayerConditions, EnemyConditions, Weapon } from '@/types';
 import type {
   Bucket,

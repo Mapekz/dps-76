@@ -53,8 +53,12 @@ function powerAttackRaceMult(weapon: Weapon, isInPowerArmor: boolean): number {
 /**
  * STR melee scaling: STR/20 for 1h/2h melee, STR/10 for unarmed/gauntlets —
  * USER spec, not ESM-extracted. Candidate GMSTs `fAVDMeleeDamageMult` (0.05)/
- * `fDamageStrengthMult` (0.1) match these coefficients but the mapping isn't
- * confirmed (docs/assumptions.md "STR melee scaling") — left hardcoded.
+ * `fDamageStrengthMult` (0.1) match these coefficients numerically, but the
+ * mapping is NOT confirmed: unarmed-specific candidates `fHandDamageStrengthMult`
+ * and `fAVDUnarmedDamageMult` both read 0.0 (dead/vestigial), and no DFOB bridge
+ * or ESM reverse reference confirms either GMST's wiring (GMSTs are read by
+ * native engine code, not ESM-plugin-cross-referenced) — left hardcoded per
+ * the repo's speculative-facts convention.
  */
 function strengthTerm(weapon: Weapon, strength: number): number {
   if (weapon.weaponClass === 'unarmed') return strength * 0.1;

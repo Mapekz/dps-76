@@ -92,15 +92,20 @@ export const hiddenWeaponIds: ReadonlySet<string> = new Set<string>([
   // Unique-weapons rework (2026-07-13): dead legacy WEAPs the obtainability
   // heuristic can't catch because their COBJs are real-looking but are
   // themselves unreferenced (not REPAIRONLY/NOCRAFT-suffixed, just orphaned)
-  // — the game's unique-registry LVLIs actually grant the base weapon + a
-  // mod_Custom_* OMOD. Verified via `esm refs` 2026-07-13. This
-  // unreferenced-COBJ class is invisible to scripts/extract/obtainability.ts
-  // — needs periodic manual re-review after future extractions.
+  // — WeaponsUniqueNamedList (the unique-registry FLST) grants the base weapon
+  // + a mod_Custom_* OMOD at ap_customName (identity + effects), plus a paint.
+  // Verified via `esm refs` 2026-07-13. This unreferenced-COBJ class is
+  // invisible to scripts/extract/obtainability.ts — needs periodic manual
+  // re-review after future extractions.
   'E08B_SuperSledge_TheDebilitator', // -> SuperSledge Unique slot (E08B_mod_Custom_TheDebilitator)
   'E08B_HuntingRifle_DoctorsOrders', // -> HuntingRifle Unique slot (E08B_mod_Custom_HuntingRifle_DoctorsOrders)
   'E08B_Minigun_FoundationsVengeance', // -> Minigun Unique slot (E08B_mod_Custom_FoundationsVengeance)
   'E08B_Blunderbuss_PiratePunch', // -> Blackpowder_Pistol_Blunderbuss Unique slot (E08B_mod_Custom_Blackpowder_PiratePunch)
   'E08B_DeathTambo_ToneDeath', // -> DeathTambo Unique slot (E08B_mod_Custom_ToneDeath)
+  // Xerxos (Season 7 reward, user-confirmed live 2026-07-21): ships as a
+  // mod_Custom_Xerxos preset on base Gamma Gun, not a standalone WEAP. The
+  // legacy SCORE_S7_GammaGun_Xerxos record is the usual dead REPAIRONLY
+  // pattern and correctly stays excluded.
 ]);
 /**
  * Weapons the obtainability derivation (scripts/extract/obtainability.ts)

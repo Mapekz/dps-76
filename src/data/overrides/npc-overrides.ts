@@ -7,8 +7,8 @@ import type { GeneratedNpc } from '@/types/generated';
  * ESM can't express or gets wrong (e.g. a curated row whose representative
  * NPC_ template choice turns out to be a poor stand-in, or a stat that needs
  * an in-game-measured correction — see docs/assumptions.md and
- * docs/assumptions.md "Creature stat curves & NPC extraction", e.g. the open Scorchbeast Queen HP
- * discrepancy).
+ * docs/assumptions.md "Creature stat curves & NPC extraction", e.g. the RESOLVED Scorchbeast Queen HP
+ * discrepancy (see epic-creature.ts)).
  *
  * Empty today — no corrections have been needed yet (2026-07-18: the
  * curated-target → representative-NPC_ resolution covered all 83 rows with

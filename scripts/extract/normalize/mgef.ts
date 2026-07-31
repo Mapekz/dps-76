@@ -864,10 +864,7 @@ export function translate(
   let curve: ValueCurve | undefined;
   let effectiveMagnitude = effect.magnitude;
   if (effect.curvePoints && effect.curvePoints.length === 1) {
-    // A single-point curve table has no input axis to speak of — interpolating
-    // one point always returns that Y regardless of X, so it's an authored
-    // constant. Use the Y value directly rather than requiring a resolvable
-    // curveInputAv (see docs/assumptions.md, "Single-point curve tables").
+    // Single-point curve → flat magnitude (same rule as the DoT branch above).
     effectiveMagnitude = effect.curvePoints[0].y;
   } else if (effect.curvePoints) {
     const input = resolveCurveInput(effect.curveInputAv, mgef.edid);

@@ -172,7 +172,13 @@ export const CURVE_TABLE_SINGLETONS: CurveTableSingleton[] = [
   },
 ];
 
-/** Extract the trailing tier number from an editor_id, tolerant of the zzz-prefix and zero-padding (…Tier01 → 1). */
+/**
+ * Extract the trailing tier number from an editor_id, tolerant of the zzz-prefix and zero-padding (…Tier01 → 1).
+ *
+ * Curve-table tier numbers (`CT_..._Tier<N>`, ~1–59, what this function reads) and Renorm-window tier numbers
+ * (`Renorm_*_Tier<N>`, 00–31, used elsewhere in NPC level-scaling extraction) are unrelated numbering schemes
+ * that happen to share the word "Tier" — this function only ever sees the former.
+ */
 export function tierFromEdid(edid: string): number | null {
   const m = /Tier0*(\d+)$/i.exec(edid);
   return m ? parseInt(m[1], 10) : null;

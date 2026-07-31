@@ -227,7 +227,10 @@ const PROPERTY_IGNORED = new Set([
   'ModelSwap',
   'NPCAmmoList',
   // 'OverheatRateDown'/'OverheatRateUp' — overheat is broken in-game (V63
-  // carbine / gauss minigun), deliberately unmodeled.
+  // carbine / gauss minigun), deliberately unmodeled. WEAP.Data carries
+  // Overheat's own fields (MinOverheatIdle, etc.) alongside the charging
+  // FPS/FPDM fields that extract-weapons.ts reads; the two mechanics are
+  // structural neighbors despite only charging being modeled.
   'OverheatRateDown',
   'OverheatRateUp',
   // NOTE: 'OverrideProjectile' is handled explicitly below (Lobber Barrel /
