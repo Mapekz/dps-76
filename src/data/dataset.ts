@@ -32,6 +32,8 @@ import {
   weaponCorrections,
   hiddenWeaponIds,
   forceVisibleWeaponIds,
+  splashReliantWeaponIds,
+  buildSplashReliantCorrections,
   hiddenOmodIds,
   forceVisibleOmodIds,
   hiddenArmorOmodIds,
@@ -189,6 +191,8 @@ export interface DatasetSource {
   weaponCorrections: Readonly<Record<string, Partial<Weapon>>>;
   hiddenWeaponIds: ReadonlySet<string>;
   forceVisibleWeaponIds: ReadonlySet<string>;
+  /** Optional so synthetic test sources (dataset-build.test.ts) omit it. */
+  splashReliantWeaponIds?: ReadonlySet<string>;
   hiddenOmodIds: ReadonlySet<string>;
   forceVisibleOmodIds: ReadonlySet<string>;
   hiddenArmorOmodIds: ReadonlySet<string>;
@@ -216,11 +220,15 @@ export function buildDataset(hand: HandAuthored, source: DatasetSource): Dataset
     source.generatedArmorOmods,
     source.armorLegendaryValueOverrides,
   );
+  const mergedWeaponCorrections = {
+    ...source.weaponCorrections,
+    ...buildSplashReliantCorrections(source.splashReliantWeaponIds ?? new Set()),
+  };
   return {
     weapons: buildWeapons(
       source.generatedWeapons,
       { hidden: source.hiddenWeaponIds, forceVisible: source.forceVisibleWeaponIds },
-      source.weaponCorrections,
+      mergedWeaponCorrections,
     ),
     omods: mergedOmods,
     armorOmods: mergedArmorOmods,
@@ -270,6 +278,7 @@ const liveSource: DatasetSource = {
   weaponCorrections,
   hiddenWeaponIds,
   forceVisibleWeaponIds,
+  splashReliantWeaponIds,
   hiddenOmodIds,
   forceVisibleOmodIds,
   hiddenArmorOmodIds,

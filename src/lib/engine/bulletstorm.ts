@@ -32,8 +32,10 @@ function accrualPerShot(weapon: Weapon, ammoPerStack: number): number {
 }
 
 /**
- * Steady-state average Bullet Storm stack count during sustained fire, under
- * the average-mode toggle (`PlayerConditions.bulletStormAverageMode`).
+ * Steady-state average Bullet Storm stack count during sustained fire.
+ * Always computed when Bullet Storm sources are equipped; consumed when the
+ * `bulletStormStacks` slider is at its `-1` auto sentinel (a manual pin
+ * wins over this average — `stacks.ts`'s `resolveBulletStormStacks`).
  * Stacks accrue every shot and are (partially) lost on reload — the inverse
  * shape of reverse-Onslaught's regen/consume sawtooth (`onslaught.ts`
  * `reverseOnslaughtAvgStacks`), simulated the same way: fixed-point-iterate

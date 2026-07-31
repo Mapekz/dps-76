@@ -24,9 +24,9 @@ export interface PlayerConditions {
   /**
    * Bullet Storm stacks (shared engine counter, AV 0x0000039B — Bullet
    * Storm, Bringing Out the Big Guns, Foundation's Vengeance). Sentinel `-1`
-   * = "follow the computed max" (assume full stacks, the app's existing
-   * assume-max convention for adrenaline/onslaught); non-negative = an
-   * explicit user selection, clamped to `[min, max]` at read time
+   * = auto, resolving to the engine's computed Sustained Stacks average
+   * (`stacks.ts`'s `resolveBulletStormStacks`); a non-negative value is a
+   * manual pin that wins over the sim, clamped to `[min, max]` at read time
    * (`resolve.ts`'s `effectiveBulletStormStacks`). The computed max/min
    * themselves come from equipped Bullet Storm sources, not from this field
    * — see `ScenarioSet.bulletStormMaxStacks`/`bulletStormMinStacks`
@@ -34,22 +34,16 @@ export interface PlayerConditions {
    */
   bulletStormStacks: number;
   /**
-   * Engine-computed sustained-fire average stack count instead of the manual
-   * `bulletStormStacks` value (mirrors the read-only Onslaught-reverse
-   * average — `bulletstorm.ts` `bulletStormAvgStacks`). Default false (user
-   * manual slider).
-   */
-  bulletStormAverageMode?: boolean;
-  /**
    * Onslaught stacks (shared engine counter, AV 0x00000395 — Guerrilla/
    * Gunslinger Expert+Master, Furious, Pounder's, Splinter's, Whacker
-   * Smacker). Sentinel `-1` = "follow max" (assume full stacks, the app's
-   * existing assume-max convention for adrenaline/bulletStorm); non-negative
-   * = an explicit user selection from the Onslaught slider, clamped to the
-   * computed max at read time (`resolve.ts`'s `onslaught` reader). The
-   * computed max itself comes from equipped Onslaught sources, not from this
-   * field — see `ScenarioSet.onslaughtMaxStacks` (docs/assumptions.md
-   * "Onslaught").
+   * Smacker). Sentinel `-1` = auto, resolving to the engine's computed
+   * Sustained Stacks average (`stacks.ts`'s `resolveOnslaughtStacks`); a
+   * non-negative value from the Onslaught slider is a manual pin that wins
+   * over the sim, clamped to the computed max at read time (`resolve.ts`'s
+   * `onslaught` reader). The computed max itself comes from equipped
+   * Onslaught sources, not from this field — see `ScenarioSet.onslaughtMaxStacks`
+   * (docs/assumptions.md "Onslaught"). Gunslinger-Master's reverse mode
+   * (per-shot consumption instead of accrual) ignores this slider entirely.
    */
   onslaughtStacks: number;
   /**
@@ -556,6 +550,16 @@ export interface Weapon {
    */
   modifiers?: Modifier[];
 
+  /**
+   * Playstyle assumption, NOT a measured engine fact — lobbed/splash-dependent
+   * launchers are modeled as never landing their direct projectile hit, so
+   * Onslaught hit-event counting (`src/lib/engine/onslaught.ts`
+   * `onslaughtHitEventsPerShot`) suppresses their physical projectile tick and
+   * counts only the explosion. See docs/assumptions.md "Onslaught". Set from
+   * `src/data/overrides/weapon-corrections.ts`, never by the extractor.
+   */
+  splashReliant?: boolean;
+
   // ── Legacy / scaffolding ─────────────────────────────────────────────────
   /** Flat base damage override (used by enemy weapon scaffolding). Derived
    *  weapons set this to 0; prefer `components` for player weapons. */
@@ -665,7 +669,6 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     isGhoul: false,
     healthPercent: 100,
     bulletStormStacks: -1, // Follow the computed max (sentinel; see field comment)
-    bulletStormAverageMode: false, // manual slider by default
     onslaughtStacks: -1, // Follow the computed max (sentinel; see field comment)
     targetsHit: 1,
     adrenalineStacks: 0, // Default per user preference

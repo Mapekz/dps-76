@@ -1263,6 +1263,17 @@ to the UI slider):
   decodes to `(Rifle OR Shotgun OR Pistol) AND NOT HeavyGun` — the extractor
   now inline-expands standalone condition-form references when they
   translate completely.
+- **Forward sustained sim** — **ASSUMPTION** (symmetry unmeasured): normal-mode
+  sustained value = sawtooth sim of +1 stack per hit-event vs −1/sec continuous
+  decay (decay through reload too); hit-event counting symmetric with reverse
+  consumption — `src/lib/engine/onslaught.ts` `forwardOnslaughtAvgStacks`.
+- **Splash-reliant suppression** — **ASSUMED** (playstyle: direct hits
+  essentially never land; exceptions with real projectile damage: Hellstorm,
+  Cremator, Tesla Cannon): lobbed splash launchers count no physical projectile
+  tick (explosion only) in Onslaught hit-events, both directions, both scenarios
+  — curated list `src/data/overrides/weapon-corrections.ts` `splashReliantWeaponIds`;
+  in-game measurement tracked as a needs-measurement GitHub issue (#77).
+
 
 ## Bullet Storm
 Buckets: `bulletStormMaxStacks`, `bulletStormMinStacks`, `bulletStormRetention`;
@@ -1317,10 +1328,9 @@ same shape as a floor instead of a cap.
   explicit user selection, clamped to `[min, max]` at read time
   (`effectiveBulletStormStacks`; `min > max` degrades to `max`, never a floor
   above the cap).
-- **Average mode (`PlayerConditions.bulletStormAverageMode`, default false —
-  user-chosen opt-in)** — engine-computed sustained-fire average instead of
-  the manual slider, mirroring Onslaught-reverse's read-only average:
-  `bulletStormAvgStacks` fixed-point-iterates mag+reload cycles (accrue every
+- **Sustained-fire average (auto, `bulletStormStacks = -1`)** —
+  engine-computed sustained-fire average, mirroring Onslaught-reverse's
+  read-only average: `bulletStormAvgStacks` fixed-point-iterates mag+reload cycles (accrue every
   shot, apply retention once per reload) until the starting stack level
   converges, then averages the per-shot levels of the converged cycle. A
   weapon with no magazine (melee/unarmed, capacity 0) never reloads, so it
@@ -1345,6 +1355,10 @@ same shape as a floor instead of a cap.
   (Valkyrie's per-stack spin-up ramp — not modeled), `deflectChance` (The
   Action Hero — defensive, no incoming-damage model; deliberately generic,
   not Bullet-Storm-scoped, for future deflect/reflect sources).
+- **Default is Sustained Stacks**: slider sentinel `−1` = auto (engine
+  sustained-average sim); `bulletStormAverageMode` toggle removed 2026-07-30; a
+  manually pinned slider value wins over the sim.
+
 
 ## SPECIAL & perk budget
 Engine: `src/lib/player-stats.ts`.

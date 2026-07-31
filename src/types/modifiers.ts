@@ -785,7 +785,7 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
     regime: 'bootstrap',
     hasEngineEffect: true,
     foldedBy:
-      'scenarios.ts — folded once; consumed by bulletstorm.ts bulletStormAvgStacks (sustained-fire average model) when PlayerConditions.bulletStormAverageMode is on',
+      'scenarios.ts — folded once; consumed by bulletstorm.ts bulletStormAvgStacks (sustained-fire average model)',
   },
   bulletStormOnKill: {
     regime: 'unfolded',

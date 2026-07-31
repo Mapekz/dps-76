@@ -71,6 +71,13 @@ export interface ResolveContext {
    */
   onslaughtReverseStacks?: number;
   /**
+   * Engine-computed average Onslaught stack count under forward mode (Sustained Stacks).
+   * When the player's slider is -1 (auto), this value is used (clamped to `onslaughtMaxStacks`).
+   * A manual pin (stored !== -1) wins over this average — unlike `onslaughtReverseStacks`,
+   * which always wins. Undefined = no sim value available (e.g., zero fire rate bootstrap).
+   */
+  onslaughtForwardStacks?: number;
+  /**
    * The shared Bullet Storm stack cap, folded ONCE per scenario input from
    * every equipped source's `bulletStormMaxStacks` modifier (`scenarios.ts`)
    * — and separately bootstrap-folded by `buildEffectiveWeapon` so
@@ -86,11 +93,11 @@ export interface ResolveContext {
    */
   bulletStormMinStacks?: number;
   /**
-   * Engine-computed average Bullet Storm stack count under
-   * `PlayerConditions.bulletStormAverageMode`. When set,
-   * `effectiveBulletStormStacks` returns this value (clamped to
-   * `[bulletStormMinStacks, bulletStormMaxStacks]`) and ignores the player's
-   * slider. See `bulletstorm.ts` and docs/assumptions.md "Bullet Storm".
+   * Engine-computed sustained-fire average Bullet Storm stack count, always
+   * computed per scenario. Applied only when the player's slider is -1 (auto),
+   * clamped to `[bulletStormMinStacks, bulletStormMaxStacks]`; a manual pin
+   * wins over this average. See `bulletstorm.ts` and docs/assumptions.md
+   * "Bullet Storm".
    */
   bulletStormAvgStacks?: number;
   /**
@@ -114,30 +121,23 @@ export interface ResolveContext {
 }
 
 /**
- * Effective Onslaught stack count: the player's stored value with the
- * "follow max" sentinel (`-1`) resolved to the computed cap, then clamped to
- * that same cap (an explicit user selection can't exceed the equipped max).
- * Shared by the `onslaught` StackCounter reader and the `onslaughtStacks`
- * CurveInput reader — both consumers read the identical clamped count.
+ * Effective Onslaught stack count: reverse-mode average wins; auto (`-1`) uses
+ * the forward sustained average; a manual pin wins over forward average; all
+ * paths clamp to the equipped max. Shared by the `onslaught` StackCounter
+ * reader and the `onslaughtStacks` CurveInput reader.
  */
 function effectiveOnslaughtStacks(p: PlayerConditions, ctx: ResolveContext): number {
-  return resolveOnslaughtStacks(
-    p.onslaughtStacks,
-    ctx.onslaughtMaxStacks ?? 0,
-    ctx.onslaughtReverseStacks,
-  );
+  return resolveOnslaughtStacks(p.onslaughtStacks, ctx.onslaughtMaxStacks ?? 0, {
+    reverseAvg: ctx.onslaughtReverseStacks,
+    forwardAvg: ctx.onslaughtForwardStacks,
+  });
 }
 
 /**
- * Effective Bullet Storm stack count: the player's stored value with the
- * "follow max" sentinel (`-1`) resolved to the computed cap, then clamped to
- * `[min, max]` (an explicit user selection can't exceed the equipped max, nor
- * fall below the equipped floor — min > max degrades to max, never a floor
- * above the cap). When the engine has computed a sustained-fire average
- * (`ctx.bulletStormAvgStacks`, the average-mode toggle), it wins over the
- * player's slider — same override precedent as `onslaughtReverseStacks`.
- * Shared by the `bulletStorm` StackCounter reader and the `bulletStormStacks`
- * CurveInput reader.
+ * Effective Bullet Storm stack count: auto (`-1`) uses the sustained average;
+ * a manual pin wins over it; all paths clamp to `[min, max]` (min > max
+ * degrades to max). Shared by the `bulletStorm` StackCounter reader and the
+ * `bulletStormStacks` CurveInput reader.
  */
 function effectiveBulletStormStacks(p: PlayerConditions, ctx: ResolveContext): number {
   return resolveBulletStormStacks(

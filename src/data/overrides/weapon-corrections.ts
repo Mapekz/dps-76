@@ -133,6 +133,30 @@ export const forceVisibleWeaponIds: ReadonlySet<string> = new Set<string>([
   // ATX_Grognak_HockeyStick (cosmetic skin of another weapon),
   // ATX_CroquetMallet (wrong name / invalid weapon).
 ]);
+
+/**
+ * Weapons modeled as splash-reliant (lobbed/splash-dependent launchers that
+ * never land their direct projectile hit). With these weapons, the direct
+ * projectile hit is modeled as never connecting, so Onslaught hit-event
+ * counting suppresses their physical projectile tick and counts only the
+ * explosion. Playstyle rationale: you rely on splash damage (user-stated
+ * 2026-07-30; docs/assumptions.md "Onslaught").
+ *
+ * Deliberate exclusions (keep both hit ticks because their projectile damage is
+ * significant and aimed directly): BOSRocketLauncher (Hellstorm Missile Launcher),
+ * Cremator, TeslaCannon.
+ */
+export const splashReliantWeaponIds: ReadonlySet<string> = new Set<string>([
+  'MissileLauncher',
+  'Fatman',
+  'M79',
+  'E09A_MoleMinerM79',
+  'LC096_LvlScorchedGrenadeLauncher_M79',
+  'AutoGrenadeLauncher',
+  'SDOW_crSlasherBoss_AutoGL_DailyOps',
+  'Broadsider',
+]);
+
 /**
  * Per-weapon field patches applied after adaptation.
  *
@@ -145,7 +169,24 @@ export const forceVisibleWeaponIds: ReadonlySet<string> = new Set<string>([
  * Speed SET/MUL_ADD folding once `isAutomatic` stopped reading the
  * `WeaponTypeAutomatic` keyword (see effective-weapon.ts) — no override
  * needed for those.
+
+
+/**
+ * Build corrections object for splash-reliant weapons. These weapons are
+ * modeled as never landing their direct projectile hit, so Onslaught
+ * hit-event counting suppresses their physical projectile tick and counts
+ * only the explosion.
  */
+export function buildSplashReliantCorrections(
+  weaponIds: ReadonlySet<string>,
+): Readonly<Record<string, Partial<Weapon>>> {
+  const corrections: Record<string, Partial<Weapon>> = {};
+  for (const id of weaponIds) {
+    corrections[id] = { splashReliant: true };
+  }
+  return corrections;
+}
+
 export const weaponCorrections: Readonly<Record<string, Partial<Weapon>>> = {
   // Bare-fist damage records (real, engine-supported unarmed archetype —
   // paper-damage.ts STR/10 scaling). Renamed from "Unarmed Human"/"Unarmed

@@ -537,7 +537,7 @@ describe('Lock and Load → Bullet Storm reload speed (cross-family perkFamilyRa
 });
 
 describe('Onslaught (2026-07-12, real data)', () => {
-  it('Furious grants +9 max stacks and +5%/stack dbm; sentinel default assumes full stacks', () => {
+  it('Furious grants +9 max stacks and +5%/stack dbm; pinned at max stacks', () => {
     // ESM: OMOD mod_Legendary_Weapon1_DmgConsecutiveHits → ENCH 0x006C3173 →
     // Script MGEF → PERK Legendary_Weapon_DmgConsecutiveHits: EP190 Add Value
     // 9.0 (onslaughtMaxStacks), EP189 "Add Actor Value Mult" Float 0.01 ×
@@ -546,9 +546,15 @@ describe('Onslaught (2026-07-12, real data)', () => {
     const furious = getOmodById('live', 'mod_Legendary_Weapon1_DmgConsecutiveHits')!;
     const { weapon, modifiers } = buildEffectiveWeapon(fixer, [furious]);
 
-    const atMax = computeScenarios(base({ weapon, modifiers }));
+    const atMax = computeScenarios(
+      base({
+        weapon,
+        modifiers,
+        player: { ...createDefaultPlayerConditions(), onslaughtStacks: 9 },
+      }),
+    );
     expect(atMax.onslaughtMaxStacks).toBe(9);
-    expect(atMax.freeAim.perHit.total / stockTotal).toBeCloseTo(1.45, 6); // sentinel -1 → full 9 stacks
+    expect(atMax.freeAim.perHit.total / stockTotal).toBeCloseTo(1.45, 6); // pinned at max: 9 stacks
 
     const explicit4 = computeScenarios(
       base({
@@ -590,7 +596,13 @@ describe('Onslaught (2026-07-12, real data)', () => {
     const pounders = getOmodById('live', 'mod_Legendary_Weapon4_Melee_Pounders')!;
     const { weapon, modifiers } = buildEffectiveWeapon(bat, [pounders]);
     const batStock = computeScenarios(base({ weapon: bat })).freeAim.perHit.total;
-    const result = computeScenarios(base({ weapon, modifiers }));
+    const result = computeScenarios(
+      base({
+        weapon,
+        modifiers,
+        player: { ...createDefaultPlayerConditions(), onslaughtStacks: 10 },
+      }),
+    );
     expect(result.onslaughtMaxStacks).toBe(10);
     // Melee dbm folds over 1 + 0.05×STR (default 15) = 1.75 (Fencer's convention).
     expect(result.freeAim.perHit.total / batStock).toBeCloseTo((1.75 + 1.0) / 1.75, 6);
@@ -613,7 +625,13 @@ describe('Onslaught (2026-07-12, real data)', () => {
     const splinterEffect = getOmodById('live', 'P62_Mod_Custom_Splinter_SpecialEffect')!;
     const { weapon, modifiers } = buildEffectiveWeapon(splinter, [splinterEffect]);
     const splinterStock = computeScenarios(base({ weapon: splinter })).freeAim.perHit.total;
-    const result = computeScenarios(base({ weapon, modifiers }));
+    const result = computeScenarios(
+      base({
+        weapon,
+        modifiers,
+        player: { ...createDefaultPlayerConditions(), onslaughtStacks: 10 },
+      }),
+    );
     expect(result.onslaughtMaxStacks).toBe(10);
     expect(result.freeAim.perHit.total / splinterStock).toBeCloseTo(2.0, 6);
   });
@@ -632,9 +650,10 @@ describe('Onslaught (2026-07-12, real data)', () => {
       base({
         modifiers: guerrillaMaster,
         enemy: { ...createDefaultEnemyConditions(), targetDistance: 400 },
+        player: { ...createDefaultPlayerConditions(), onslaughtStacks: 5 },
       }),
     );
-    // curve (0,0)(1,5)(100,500) at x=5 (its own max, sentinel default) → y=25, ×0.01 = +25%.
+    // curve (0,0)(1,5)(100,500) at x=5 (pinned at its own max) → y=25, ×0.01 = +25%.
     expect(close.freeAim.perHit.total / stockTotal).toBeCloseTo(1.25, 6);
   });
 
@@ -651,10 +670,14 @@ describe('Onslaught (2026-07-12, real data)', () => {
     const withWeakpoint = computeScenarios(
       base({
         modifiers: gunslingerExpert,
-        player: { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true },
+        player: {
+          ...createDefaultPlayerConditions(),
+          isAimingAtWeakpoint: true,
+          onslaughtStacks: 3,
+        },
       }),
     );
-    // curve (0,0)(1,1.0)(100,100.0) at x=3 → y=3.0, ×0.01 = +3% weak-spot damage.
+    // curve (0,0)(1,1.0)(100,100.0) at x=3 (pinned at its own max) → y=3.0, ×0.01 = +3% weak-spot damage.
     expect(withWeakpoint.freeAim.perHit.total / stockWeakpoint).toBeCloseTo(1.03, 6);
   });
 
@@ -686,7 +709,11 @@ describe('Onslaught (2026-07-12, real data)', () => {
     const furious = getOmodById('live', 'mod_Legendary_Weapon1_DmgConsecutiveHits')!;
     const paired = buildEffectiveWeapon(whackerWeapon, [whackerEffect, furious]);
     const withMax = computeScenarios(
-      base({ weapon: paired.weapon, modifiers: paired.modifiers, player: paPlayer }),
+      base({
+        weapon: paired.weapon,
+        modifiers: paired.modifiers,
+        player: { ...paPlayer, onslaughtStacks: 9 },
+      }),
     );
     expect(withMax.onslaughtMaxStacks).toBe(9);
     // parenthesis = dbm(1 + 9×0.05 from Furious) + strTerm(0.75, melee STR 15)

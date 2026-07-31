@@ -4,8 +4,9 @@ import type { Modifier } from '@/types/modifiers';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
 import { foldBucket, type ResolveContext } from '@/lib/engine/resolve';
 import {
-  perShotOnslaughtConsume,
+  onslaughtHitEventsPerShot,
   reverseOnslaughtAvgStacks,
+  forwardOnslaughtAvgStacks,
   weaponHasExplosion,
   weaponHasNonExplosionPhysical,
 } from '@/lib/engine/onslaught';
@@ -100,8 +101,8 @@ describe('reverseOnslaughtAvgStacks', () => {
       animationReloadSec: 2,
     });
     const ctx = makeCtx(weapon);
-    const consume1 = perShotOnslaughtConsume(weapon, [], ctx, 1);
-    const consume3 = perShotOnslaughtConsume(weapon, [], ctx, 3);
+    const consume1 = onslaughtHitEventsPerShot(weapon, [], ctx, 1);
+    const consume3 = onslaughtHitEventsPerShot(weapon, [], ctx, 3);
     expect(consume3).toBeGreaterThan(consume1);
 
     const avg1 = reverseOnslaughtAvgStacks({
@@ -133,7 +134,7 @@ describe('reverseOnslaughtAvgStacks', () => {
     });
     expect(weaponHasNonExplosionPhysical(launcher)).toBe(false);
     expect(weaponHasExplosion(launcher, [], makeCtx(launcher))).toBe(true);
-    expect(perShotOnslaughtConsume(launcher, [], makeCtx(launcher), 3)).toBe(3);
+    expect(onslaughtHitEventsPerShot(launcher, [], makeCtx(launcher), 3)).toBe(3);
   });
 
   it("the average changes with bashAnimationSec when a Battle-Loader's bash source is present (Phase C — a Gunslinger Master build must see the bash-time correction)", () => {
@@ -310,5 +311,146 @@ describe('reverse onslaught scenarios (GSM + Furious)', () => {
     const weapon = makeWeapon();
     const ctx = makeCtx(weapon);
     expect(foldBucket([gsmReverse], 'onslaughtReverse', 0, ctx)).toBe(1);
+  });
+});
+
+describe('forwardOnslaughtAvgStacks', () => {
+  it('fast multi-projectile auto stacks near the cap', () => {
+    const weapon = makeWeapon({
+      isAutomatic: true,
+      projectileCount: 4,
+      capacity: 20,
+      ammoPerShot: 1,
+      animationReloadSec: 2,
+      reloadSpeed: 1,
+      speed: 4,
+      animDurationSec: 0.25,
+    });
+    const gain = 4; // 4 projectiles per shot
+    const avg = forwardOnslaughtAvgStacks({
+      max: 100,
+      gainPerShot: gain,
+      fireRate: 4,
+      weapon,
+    });
+    // Fast firing (4 shots/sec) with 4 gain/shot = 16 stacks/sec gain, vs 1 decay/sec
+    // Should converge near the cap (100)
+    expect(avg).toBeGreaterThan(90);
+  });
+
+  it('slow single-projectile rifle stacks near 0', () => {
+    const weapon = makeWeapon({
+      animDelaySec: 2,
+      capacity: 5,
+      ammoPerShot: 1,
+      animationReloadSec: 3,
+      reloadSpeed: 1,
+    });
+    const gain = 1; // 1 projectile per shot
+    const avg = forwardOnslaughtAvgStacks({
+      max: 100,
+      gainPerShot: gain,
+      fireRate: 0.5, // 0.5 shots/sec
+      weapon,
+    });
+    expect(avg).toBeLessThan(5);
+  });
+  it('medium-speed weapon with slow accrual vs decay stays moderate', () => {
+    const weapon = makeWeapon({
+      animDelaySec: 1,
+      capacity: 10,
+      ammoPerShot: 1,
+      animationReloadSec: 2,
+      reloadSpeed: 1,
+    });
+    const gain = 0.6; // Very slow gain
+    const avg = forwardOnslaughtAvgStacks({
+      max: 100,
+      gainPerShot: gain,
+      fireRate: 1, // 1 shot/sec × 0.6 gain = 0.6 stacks/sec gain, vs 1 decay/sec
+      weapon,
+    });
+    // Decay (1/sec) outpaces gain (0.6/sec), converges to near 0
+    expect(avg).toBeGreaterThanOrEqual(0);
+    expect(avg).toBeLessThan(30);
+  });
+});
+describe('forward onslaught scenarios (non-reverse Onslaught sources)', () => {
+  const furiousDbm: Modifier = {
+    id: 'furious-dbm',
+    source: { kind: 'omod', formId: '0x0', edid: 'Furious', name: 'Furious' },
+    bucket: 'dbm',
+    op: 'ADD',
+    value: 0.05,
+    conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
+  };
+  const furiousMax: Modifier = {
+    id: 'furious-max',
+    source: { kind: 'omod', formId: '0x0', edid: 'Furious', name: 'Furious' },
+    bucket: 'onslaughtMaxStacks',
+    op: 'ADD',
+    value: 9,
+    conditions: [],
+  };
+
+  it('surfaces forward mode avg stacks on ScenarioSet when not reverse', () => {
+    const rifle = makeWeapon({
+      animDelaySec: 0.5,
+      capacity: 5,
+      ammoPerShot: 1,
+      animationReloadSec: 2,
+    });
+    const result = computeScenarios({
+      mode: 'live',
+      weapon: rifle,
+      itemLevel: 50,
+      modifiers: [furiousMax, furiousDbm],
+      player: createDefaultPlayerConditions(),
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2,
+    });
+    expect(result.onslaughtReverse).toBe(false);
+    expect(result.onslaughtMaxStacks).toBe(9);
+    expect(result.onslaughtForwardAvgStacks).toBeDefined();
+    expect(result.onslaughtForwardAvgStacks).toBeGreaterThan(0);
+  });
+
+  it('fast-firing weapon forward average is high, slow-firing is low', () => {
+    const fastWeapon = makeWeapon({
+      isAutomatic: true,
+      projectileCount: 1,
+      capacity: 20,
+      ammoPerShot: 1,
+      speed: 10, // very fast
+      animDurationSec: 0.1,
+      animationReloadSec: 1.5,
+    });
+    const slowWeapon = makeWeapon({
+      animDelaySec: 2,
+      capacity: 5,
+      ammoPerShot: 1,
+      animationReloadSec: 3,
+    });
+    const fastResult = computeScenarios({
+      mode: 'live',
+      weapon: fastWeapon,
+      itemLevel: 50,
+      modifiers: [furiousMax, furiousDbm],
+      player: createDefaultPlayerConditions(),
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2,
+    });
+    const slowResult = computeScenarios({
+      mode: 'live',
+      weapon: slowWeapon,
+      itemLevel: 50,
+      modifiers: [furiousMax, furiousDbm],
+      player: createDefaultPlayerConditions(),
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2,
+    });
+    expect(fastResult.onslaughtForwardAvgStacks).toBeGreaterThan(
+      slowResult.onslaughtForwardAvgStacks ?? 0,
+    );
   });
 });

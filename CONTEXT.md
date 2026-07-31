@@ -68,11 +68,20 @@ An explosion whose damage is a fraction of the weapon's projectile damage (Gauss
 a base.
 _Avoid_: explosion mult, payload.
 
+**Sustained Stacks**:
+The steady-state average a stack counter (Onslaught, Bullet Storm) settles at
+during sustained fire, per the engine's mag+reload sawtooth simulations; what
+the stack sliders' auto (`−1`) setting resolves to.
+_Avoid_: max stacks, full stacks (those are a manual pin or a cap, not the
+simulated average).
+
 **Effective Stacks**:
 The resolved, clamped Onslaught or Bullet Storm count shared by the engine's
 `PLAYER_STATE_READERS` and the ConditionsSection display via
-`src/lib/engine/stacks.ts`.
+`src/lib/engine/stacks.ts` — from a manual pin, or on auto from **Sustained
+Stacks**.
 _Avoid_: displayed stacks, raw stacks.
+
 
 **Build Delta**:
 The set of non-default fields in a config object, shared by serialization

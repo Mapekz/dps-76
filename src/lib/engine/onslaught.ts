@@ -6,6 +6,9 @@ import { sustainTiming } from './sustain';
 /** Reverse-onslaught regen rate (stacks/sec, continuous — docs/assumptions.md "Onslaught"). */
 export const ONSLAUGHT_REGEN_PER_SEC = 1;
 
+/** Forward-onslaught decay rate (stacks/sec, continuous through fire AND reload — docs/assumptions.md "Onslaught"). */
+export const ONSLAUGHT_DECAY_PER_SEC = 1;
+
 function clampStacks(stacks: number, max: number): number {
   return Math.max(0, Math.min(stacks, max));
 }
@@ -36,10 +39,11 @@ export function weaponHasExplosion(
 }
 
 /**
- * Onslaught stacks consumed per attack event under reverse mode (per projectile
- * physical hit + per-projectile explosion × targets).
+ * Onslaught hit events per attack (per projectile physical hit + per-projectile
+ * explosion × targets) — consumed per shot in reverse mode, gained per shot in
+ * forward mode.
  */
-export function perShotOnslaughtConsume(
+export function onslaughtHitEventsPerShot(
   weapon: Weapon,
   modifiers: Modifier[],
   ctx: ResolveContext,
@@ -141,4 +145,97 @@ function reverseOnslaughtContinuousAvg(
   }
 
   return clampStacks(startStacks + regen * interval, max);
+}
+
+/**
+ * Steady-state average Onslaught stack count during sustained fire under
+ * forward mode (normal Onslaught, not Gunslinger Master). Stacks accumulate
+ * +gainPerShot per shot and decay −1/sec continuously (during both fire and
+ * reload). Simulates the mag+reload sawtooth (or continuous fire when there is
+ * no magazine) until the cycle converges, averaging per-shot stack levels.
+ * Symmetric inverse to `reverseOnslaughtAvgStacks` (docs/assumptions.md
+ * "Forward sustained sim").
+ */
+export function forwardOnslaughtAvgStacks(params: {
+  max: number;
+  gainPerShot: number;
+  fireRate: number;
+  weapon: Weapon;
+  /**
+   * Seconds per Battle-Loader's bash, threaded to `sustainTiming` (defaults
+   * inside it — sustain.ts `DEFAULT_BATTLE_LOADERS_BASH_SEC`). REQUIRED
+   * thread for consistency with `reverseOnslaughtAvgStacks`/`computeSustain`.
+   */
+  bashAnimationSec?: number;
+}): number {
+  const { max, gainPerShot, fireRate, weapon, bashAnimationSec } = params;
+  const decayPerSec = ONSLAUGHT_DECAY_PER_SEC;
+
+  if (max <= 0 || fireRate <= 0) return 0;
+
+  const timing = sustainTiming(weapon, fireRate, bashAnimationSec);
+
+  if (timing.shotsPerMag <= 0) {
+    return forwardOnslaughtContinuousAvg(max, decayPerSec, gainPerShot, fireRate);
+  }
+
+  return forwardOnslaughtMagCycleAvg(max, decayPerSec, gainPerShot, fireRate, timing);
+}
+
+function forwardOnslaughtMagCycleAvg(
+  max: number,
+  decayPerSec: number,
+  gainPerShot: number,
+  fireRate: number,
+  timing: { shotsPerMag: number; magDumpSec: number; reloadSec: number },
+): number {
+  const { shotsPerMag, magDumpSec, reloadSec } = timing;
+  let startStacks = 0;
+
+  for (let iter = 0; iter < 500; iter++) {
+    let stacks = startStacks;
+    let t = 0;
+    const shotLevels: number[] = [];
+
+    for (let i = 0; i < shotsPerMag; i++) {
+      const shotTime = i / fireRate;
+      stacks = clampStacks(stacks - decayPerSec * (shotTime - t), max);
+      t = shotTime;
+      shotLevels.push(stacks);
+      stacks = clampStacks(stacks + gainPerShot, max);
+    }
+
+    stacks = clampStacks(stacks - decayPerSec * (magDumpSec - t), max);
+    stacks = clampStacks(stacks - decayPerSec * reloadSec, max);
+
+    if (Math.abs(stacks - startStacks) < 1e-4) {
+      return shotLevels.reduce((a, b) => a + b, 0) / shotLevels.length;
+    }
+    startStacks = stacks;
+  }
+
+  // Did not converge — return the last cycle's average as a best effort.
+  return startStacks;
+}
+
+function forwardOnslaughtContinuousAvg(
+  max: number,
+  decayPerSec: number,
+  gainPerShot: number,
+  fireRate: number,
+): number {
+  const interval = 1 / fireRate;
+  let startStacks = 0;
+
+  for (let iter = 0; iter < 500; iter++) {
+    const preShot = clampStacks(startStacks - decayPerSec * interval, max);
+    const postShot = clampStacks(preShot + gainPerShot, max);
+
+    if (Math.abs(postShot - startStacks) < 1e-4) {
+      return preShot;
+    }
+    startStacks = postShot;
+  }
+
+  return clampStacks(startStacks - decayPerSec * interval, max);
 }

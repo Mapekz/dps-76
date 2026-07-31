@@ -252,6 +252,23 @@ describe('build codec', () => {
     const decoded = await decodeBuild(await encodeBuild(state), 'live');
     expect(decoded!.state.player.conditions.battleLoadersBashSec).toBe(1.5);
   });
+
+  it('decodes a legacy payload carrying the removed "bulletStormAverageMode" key without error, dropping it while sibling fields still apply', async () => {
+    // Pre-2026-07-30 share-URLs could carry this toggle alongside a manual
+    // bulletStormStacks pin (docs/adr/0005-stack-defaults-are-sustained-averages.md
+    // — the toggle was deleted, the `-1` sentinel now means auto). It's no
+    // longer a PlayerConditions field, so it falls through the same
+    // `key in state.player.conditions` guard as any other unrecognized/future
+    // key (see "tolerates future fields" above) — silently dropped, no warning.
+    const encoded = await encodeRawWire({
+      pc: { bulletStormAverageMode: true, bulletStormStacks: 5 },
+    });
+    const decoded = await decodeBuild(encoded, 'live');
+    expect(decoded).not.toBeNull();
+    expect('bulletStormAverageMode' in decoded!.state.player.conditions).toBe(false);
+    expect(decoded!.state.player.conditions.bulletStormStacks).toBe(5); // sibling field still applies
+    expect(decoded!.warnings).toEqual([]);
+  });
 });
 
 describe('derived condition fields', () => {

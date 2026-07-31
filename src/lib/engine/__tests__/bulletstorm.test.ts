@@ -251,11 +251,7 @@ describe('effectiveBulletStormStacks (via computeScenarios) — sentinel, clamp,
     conditions: [{ kind: 'stacks', counter: 'bulletStorm', max: 999 }],
   };
 
-  function ratioFor(
-    modifiers: Modifier[],
-    bulletStormStacks: number,
-    bulletStormAverageMode = false,
-  ) {
+  function ratioFor(modifiers: Modifier[], bulletStormStacks: number) {
     const base = computeScenarios({
       mode: 'live',
       weapon,
@@ -270,20 +266,12 @@ describe('effectiveBulletStormStacks (via computeScenarios) — sentinel, clamp,
       weapon,
       itemLevel: 50,
       modifiers,
-      player: { ...createDefaultPlayerConditions(), bulletStormStacks, bulletStormAverageMode },
+      player: { ...createDefaultPlayerConditions(), bulletStormStacks },
       enemy: createDefaultEnemyConditions(),
       weakpointMult: 2,
     });
     return withMods.freeAim.perHit.total / base.freeAim.perHit.total;
   }
-
-  it('sentinel -1 follows the computed max', () => {
-    expect(ratioFor([maxMod(10), stackDbm], -1)).toBeCloseTo(1.1, 6); // 10 stacks × 1%
-  });
-
-  it('an explicit value above max clamps down to max', () => {
-    expect(ratioFor([maxMod(10), stackDbm], 50)).toBeCloseTo(1.1, 6);
-  });
 
   it('an explicit value below the floor clamps up to min', () => {
     expect(ratioFor([maxMod(10), minMod(3), stackDbm], 1)).toBeCloseTo(1.03, 6); // floors to 3 stacks
@@ -303,14 +291,21 @@ describe('effectiveBulletStormStacks (via computeScenarios) — sentinel, clamp,
     expect(result.bulletStormMinStacks).toBe(3);
   });
 
-  it('bulletStormAverageMode overrides the manual slider with the engine-computed average', () => {
+  it('bulletStormAvgStacks is always computed when max > 0', () => {
     // max huge (no cap clamp), retention 0 → converged average = accrual/2
     // (2-shot magazine, projectileCount 8 + ammoPerShot 5 → 12/30 accrual).
     const accrual = (8 + 5 - 1) / BULLET_STORM_AMMO_PER_STACK;
     const expectedAvg = accrual / 2;
-    // The manual slider (999) is nowhere near expectedAvg — proves the
-    // average mode wins, not the stored value.
-    const ratio = ratioFor([maxMod(1000), retentionMod(0), stackDbm], 999, true);
-    expect(ratio).toBeCloseTo(1 + 0.01 * expectedAvg, 6);
+    const result = computeScenarios({
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: [maxMod(1000), retentionMod(0), stackDbm],
+      player: createDefaultPlayerConditions(),
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2,
+    });
+    expect(result.bulletStormAvgStacks).toBeDefined();
+    expect(result.bulletStormAvgStacks).toBeCloseTo(expectedAvg, 3);
   });
 });

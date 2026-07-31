@@ -20,7 +20,11 @@ import {
 } from './crit-meter';
 import { computeDotDps, computePaperDamage, type HitBreakdown } from './paper-damage';
 import { applyMitigation, type EnemyDefenses, type MitigationConstants } from './mitigation';
-import { perShotOnslaughtConsume, reverseOnslaughtAvgStacks } from './onslaught';
+import {
+  onslaughtHitEventsPerShot,
+  forwardOnslaughtAvgStacks,
+  reverseOnslaughtAvgStacks,
+} from './onslaught';
 import { BULLET_STORM_AMMO_PER_STACK, bulletStormAvgStacks } from './bulletstorm';
 import { computeSustain, DEFAULT_BATTLE_LOADERS_BASH_SEC, type SustainResult } from './sustain';
 import {
@@ -171,6 +175,12 @@ export interface ScenarioSet {
    */
   onslaughtReverseAvgStacks?: number;
   /**
+   * Steady-state average stack count under forward mode (undefined when
+   * `onslaughtReverse` is true or no Onslaught sources are equipped). The UI
+   * label reads this value as the suggested sustained Stacks average.
+   */
+  onslaughtForwardAvgStacks?: number;
+  /**
    * The shared Bullet Storm stack cap folded from every equipped source's
    * `bulletStormMaxStacks` modifier (0 when none are equipped) — same
    * precedent as `onslaughtMaxStacks`. Exposed here so the UI's Bullet Storm
@@ -185,9 +195,10 @@ export interface ScenarioSet {
    */
   bulletStormMinStacks: number;
   /**
-   * Steady-state average Bullet Storm stack count under
-   * `PlayerConditions.bulletStormAverageMode` (undefined when the toggle is
-   * off, or no Bullet Storm sources are equipped).
+   * Steady-state average Bullet Storm stack count during sustained fire (defined
+   * whenever sources are equipped, i.e., `bulletStormMaxStacks > 0`; on auto
+   * (slider −1) the engine resolves to this value, a manual pin wins per
+   * stacks.ts). See docs/assumptions.md "Bullet Storm".
    */
   bulletStormAvgStacks?: number;
   /**
@@ -354,10 +365,11 @@ export interface ScenarioInput {
   };
 }
 
-/** Onslaught cap + optional reverse-mode average, threaded on every ResolveContext. */
+/** Onslaught cap + optional averages (reverse and forward modes), threaded on every ResolveContext. */
 interface OnslaughtThread {
   maxStacks: number;
   reverseAvg?: number;
+  forwardAvg?: number;
 }
 
 /** Bullet Storm cap/floor + optional sustained-fire average, threaded on every ResolveContext. */
@@ -382,6 +394,7 @@ function scenarioCtx(
     enemyTypeIds: input.enemyTypeIds,
     onslaughtMaxStacks: onslaught.maxStacks,
     ...(onslaught.reverseAvg !== undefined && { onslaughtReverseStacks: onslaught.reverseAvg }),
+    ...(onslaught.forwardAvg !== undefined && { onslaughtForwardStacks: onslaught.forwardAvg }),
     bulletStormMaxStacks: bulletStorm.maxStacks,
     bulletStormMinStacks: bulletStorm.minStacks,
     ...(bulletStorm.avg !== undefined && { bulletStormAvgStacks: bulletStorm.avg }),
@@ -760,14 +773,14 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
 
   // Battle-Loader's bash time (Phase C — go-through-every-single-silly-
   // whistle.md): folded ONCE here, threaded into every reload-timing call
-  // below (reverseOnslaughtAvgStacks, bulletStormAvgStacks, both
+  // below (reverseOnslaughtAvgStacks, forwardOnslaughtAvgStacks, bulletStormAvgStacks, both
   // computeSustain calls) — same "fold once, thread everywhere" precedent as
   // onslaughtMaxStacks/rangeMult above.
   const bashAnimationSec = input.player.battleLoadersBashSec ?? DEFAULT_BATTLE_LOADERS_BASH_SEC;
 
   let onslaughtReverseAvg: number | undefined;
   if (onslaughtReverse && onslaughtMaxStacks > 0) {
-    const consume = perShotOnslaughtConsume(
+    const consume = onslaughtHitEventsPerShot(
       input.weapon,
       input.modifiers,
       bootstrapCtx,
@@ -782,11 +795,28 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     });
   }
 
+  let onslaughtForwardAvg: number | undefined;
+  if (!onslaughtReverse && onslaughtMaxStacks > 0) {
+    const gain = onslaughtHitEventsPerShot(
+      input.weapon,
+      input.modifiers,
+      bootstrapCtx,
+      input.player.targetsHit ?? 1,
+    );
+    onslaughtForwardAvg = forwardOnslaughtAvgStacks({
+      max: onslaughtMaxStacks,
+      gainPerShot: gain,
+      fireRate,
+      weapon: input.weapon,
+      bashAnimationSec,
+    });
+  }
+
   const onslaught: OnslaughtThread = {
     maxStacks: onslaughtMaxStacks,
     ...(onslaughtReverseAvg !== undefined && { reverseAvg: onslaughtReverseAvg }),
+    ...(onslaughtForwardAvg !== undefined && { forwardAvg: onslaughtForwardAvg }),
   };
-
   // Bullet Storm max/min/retention (folded ONCE, threaded onto every
   // ResolveContext below) — same bootstrap precedent as Onslaught above:
   // cap/floor/retention modifiers only gate on weapon keyword/class, never on
@@ -808,7 +838,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   );
 
   let bulletStormAvg: number | undefined;
-  if (input.player.bulletStormAverageMode && bulletStormMaxStacks > 0) {
+  if (bulletStormMaxStacks > 0) {
     bulletStormAvg = bulletStormAvgStacks({
       max: bulletStormMaxStacks,
       min: bulletStormMinStacks,
@@ -1139,6 +1169,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     onslaughtMaxStacks,
     onslaughtReverse,
     ...(onslaughtReverseAvg !== undefined && { onslaughtReverseAvgStacks: onslaughtReverseAvg }),
+    ...(onslaughtForwardAvg !== undefined && { onslaughtForwardAvgStacks: onslaughtForwardAvg }),
     bulletStormMaxStacks,
     bulletStormMinStacks,
     ...(bulletStormAvg !== undefined && { bulletStormAvgStacks: bulletStormAvg }),
