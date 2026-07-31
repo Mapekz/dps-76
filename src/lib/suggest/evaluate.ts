@@ -1,6 +1,7 @@
 import type { GameMode } from '@/types';
 import { resolveLoadout } from '@/lib/loadout';
 import { cached, createLoadoutMemo, type LoadoutMemo } from '@/lib/loadout-memo';
+import { apLimitedDps } from '@/lib/engine/ap-economy';
 import { computeScenarios, type ScenarioResult, type ScenarioSet } from '@/lib/engine/scenarios';
 import {
   makeBuildReducer,
@@ -34,10 +35,20 @@ function headline(result: ScenarioResult): ScenarioHeadline {
     // Canonical DPS for this scenario: AP-limited when VATS AP is the
     // constraint (see ScenarioCard.tsx/useScenarioResults.ts), else the same
     // reload/hit-rate sustained value free aim always uses. Field name kept
-    // as `sustainedDps` — every consumer (DiffTooltip, ActionDelta,
-    // evaluateSuggestions' primaryDeltaPct) reads through this snapshot, so
-    // this one fold is what makes AP-economy picks show up in deltas.
+    // as `sustainedDps` — every consumer (DiffTooltip, ActionDelta) reads
+    // through this snapshot, so this one fold is what makes AP-economy picks
+    // show up in deltas.
     sustainedDps: result.ap?.apLimitedDps ?? result.sustain.sustainedDps,
+    // VATS-Window DPS: damage over the AP-funded firing window only, pause
+    // counted as zero (apLimitedDps's default `downtimeFallbackDps = 0`).
+    // This is the *ranking objective* for suggestions/ActionDelta when VATS
+    // is emphasized — deliberately NOT the same as `sustainedDps` above,
+    // which blends in the free-aim fallback and must stay canonical for the
+    // headline. Equals `sustainedDps`'s raw sustain value (no AP blend) when
+    // there's no `ap` block (free aim, melee, 0-AP-cost VATS).
+    windowDps: result.ap
+      ? apLimitedDps(result.sustain.sustainedDps, result.ap.uptime, 0)
+      : result.sustain.sustainedDps,
     critRate: result.critRate,
   };
 }
@@ -75,6 +86,7 @@ function diff(a: ScenarioHeadline, b: ScenarioHeadline): ScenarioHeadline {
     perHit: a.perHit - b.perHit,
     burstDps: a.burstDps - b.burstDps,
     sustainedDps: a.sustainedDps - b.sustainedDps,
+    windowDps: a.windowDps - b.windowDps,
   };
 }
 
@@ -202,13 +214,13 @@ export function evaluateSuggestions(
   const baseline = computeSnapshot(state, mode, memo);
   if (!baseline) return { baseline: null, metric, suggestions: [] };
 
-  const metricBase = baseline[metric].sustainedDps;
+  const metricBase = baseline[metric].windowDps;
   const suggestions: EvaluatedSuggestion[] = [];
 
   for (const candidate of enumerateVariants(state, mode)) {
     const evaluated = evaluateActions(state, mode, candidate.action, baseline, memo);
     if (!evaluated) continue;
-    const primaryDeltaPct = metricBase > 0 ? evaluated.delta[metric].sustainedDps / metricBase : 0;
+    const primaryDeltaPct = metricBase > 0 ? evaluated.delta[metric].windowDps / metricBase : 0;
     suggestions.push({ ...candidate, ...evaluated, primaryDeltaPct });
   }
 
@@ -283,6 +295,11 @@ export function topSuggestions(
   const seen = new Set<string>();
   const positive = scoped.filter((s) => {
     if (s.primaryDeltaPct <= 0) return false;
+    // Guard against contradicting the headline: `windowDps` can rise while
+    // canonical achieved DPS falls (e.g. an AP-cost receiver that raises
+    // uptime but lowers per-shot damage enough that the blended DPS drops).
+    // Never show a row that would make Apply drive the headline down.
+    if (s.delta[report.metric].sustainedDps <= 0) return false;
     const key = `${s.label}|${s.primaryDeltaPct.toFixed(5)}`;
     if (seen.has(key)) return false;
     seen.add(key);

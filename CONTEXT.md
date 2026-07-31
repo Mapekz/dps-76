@@ -52,6 +52,14 @@ The steady-state fraction of time a VATS build can actually fire before the AP
 pool forces a pause; the VATS scenario's canonical DPS is `uptime × VATS sustained + (1 − uptime) × Free Aim sustained` — the pause window is spent free-aiming, not idle (1 when AP never constrains).
 _Avoid_: AP efficiency, duty cycle (say AP Uptime).
 
+**VATS-Window DPS**:
+The suggestion-ranking objective when VATS is emphasized: `AP Uptime × VATS
+sustained`, with the AP-empty pause counted as zero — NOT blended with Free
+Aim the way the scenario's canonical DPS is. Emphasizing VATS declares intent;
+this objective avoids diluting VATS-only gains (crit damage, Better Criticals)
+by the free-aim pause share.
+_Avoid_: VATS burst DPS, pure VATS DPS.
+
 **Effective Weapon**:
 A weapon with its equipped OMODs applied (merged keywords, rewritten speed/auto
 state) — the shape the engine actually reads.
@@ -183,6 +191,8 @@ _Avoid_: combined data, resolved data.
 - The **Merged Dataset** = generated (ESM-extracted) data + the **Overlay**,
   resolved once per **Mode**. **Plumbing Perks** drive how extraction assigns
   Modifier IR to **Buckets**.
+- **VATS-Window DPS** is derived from **AP Uptime** and drives the suggestions
+  ranking when VATS is emphasized — it is not the scenario's canonical DPS.
 
 ## Example dialogue
 

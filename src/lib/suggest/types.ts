@@ -51,7 +51,10 @@ export interface SuggestionCandidate {
 export interface ScenarioHeadline {
   perHit: number;
   burstDps: number;
+  /** Canonical achieved DPS — `ap.apLimitedDps` when AP-throttled. Never the ranking objective. */
   sustainedDps: number;
+  /** VATS-Window DPS: `AP Uptime × VATS sustained`, pause counted as zero. Equals `sustainedDps` for free aim. */
+  windowDps: number;
   critRate?: number;
 }
 
@@ -64,7 +67,7 @@ export interface EvaluatedSuggestion extends SuggestionCandidate {
   result: DpsSnapshot;
   /** result − baseline, per field. */
   delta: DpsSnapshot;
-  /** Fractional change of the chosen metric's sustained DPS (0.082 = +8.2%). */
+  /** Fractional change of the chosen metric's window DPS (0.082 = +8.2%). */
   primaryDeltaPct: number;
 }
 

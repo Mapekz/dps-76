@@ -698,6 +698,9 @@ module's own doc-comment, not repeated here.
   `bodyPartBlendedHit`'s doc comment in `scenarios.ts`). Also scales the
   VATS-weighted term of `ap.apLimitedDps`; the fallback term uses free aim's
   own `hitRatePct` instead (a miss still costs AP).
+- Suggestion ranking when VATS is emphasized uses VATS-Window DPS
+  (`uptime × VATS sustained`), not this section's canonical blend — see
+  `docs/adr/0007-vats-suggestions-rank-by-vats-window-dps.md`.
 
 ## VATS hit-chance aggregate (display-only)
 Engine: `scenarios.ts` (bootstrap fold → `ScenarioSet.vatsHitChanceBonus`).

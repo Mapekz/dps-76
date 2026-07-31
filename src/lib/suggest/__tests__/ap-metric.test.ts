@@ -7,7 +7,8 @@ import {
 } from '@/state/build-reducer';
 import { resolveLoadout } from '@/lib/loadout';
 import { computeScenarios } from '@/lib/engine/scenarios';
-import { evaluateSuggestions, snapshotOf } from '@/lib/suggest/evaluate';
+import { evaluateSuggestions, snapshotOf, topSuggestions } from '@/lib/suggest/evaluate';
+import type { SuggestionReport, EvaluatedSuggestion, ScenarioHeadline } from '@/lib/suggest/types';
 
 /**
  * Canonical-metric contract: VATS suggestion/emphasis deltas must reward
@@ -68,5 +69,108 @@ describe('canonical VATS metric (AP-limited when throttled)', () => {
     const teaRank = report.suggestions.findIndex((s) => s.id === tea!.id);
     const carnivoreRank = report.suggestions.findIndex((s) => s.id === carnivore!.id);
     expect(teaRank).toBeLessThan(carnivoreRank);
+  });
+});
+
+describe('VATS-Window DPS ranking objective', () => {
+  it('vats.windowDps equals uptime × VATS sustained, and is below the canonical AP-limited DPS on a throttled build', () => {
+    const input = resolveLoadout(fixerState.player, fixerState.enemy, 'live')!;
+    const scenarios = computeScenarios(input);
+    const snapshot = snapshotOf(scenarios);
+    expect(snapshot.vats.windowDps).toBeCloseTo(
+      scenarios.vats.ap!.uptime * scenarios.vats.sustain.sustainedDps,
+      6,
+    );
+    expect(snapshot.vats.windowDps).toBeLessThan(scenarios.vats.ap!.apLimitedDps);
+  });
+
+  it('freeAim.windowDps equals freeAim.sustainedDps (no ap block, no window/canonical distinction)', () => {
+    const input = resolveLoadout(fixerState.player, fixerState.enemy, 'live')!;
+    const scenarios = computeScenarios(input);
+    expect(scenarios.freeAim.ap).toBeUndefined();
+    const snapshot = snapshotOf(scenarios);
+    expect(snapshot.freeAim.windowDps).toBe(snapshot.freeAim.sustainedDps);
+  });
+
+  it('a VATS-only gain scores its full ΔV/V under the window metric, strictly higher than the old blended score would have given it', () => {
+    const report = evaluateSuggestions(fixerState, 'live', 'vats');
+    const vatsOnly = report.suggestions.find(
+      (s) => s.delta.freeAim.sustainedDps === 0 && s.delta.vats.windowDps > 0,
+    );
+    expect(vatsOnly).toBeDefined();
+    expect(vatsOnly!.primaryDeltaPct).toBeCloseTo(
+      vatsOnly!.delta.vats.windowDps / report.baseline!.vats.windowDps,
+      6,
+    );
+    const oldBlendedScore =
+      vatsOnly!.delta.vats.sustainedDps / report.baseline!.vats.sustainedDps;
+    expect(vatsOnly!.primaryDeltaPct).toBeGreaterThan(oldBlendedScore);
+  });
+
+  it('an AP-economy pick (Company Tea) still scores positive under the window metric — rejecting unblended V was correct', () => {
+    const report = evaluateSuggestions(fixerState, 'live', 'vats');
+    const tea = report.suggestions.find((s) => s.id === 'consumable:CompanyTea_RSVP02');
+    expect(tea).toBeDefined();
+    expect(tea!.primaryDeltaPct).toBeGreaterThan(0);
+  });
+
+  it('topSuggestions never shows a row that raises windowDps but lowers canonical sustainedDps (the guard against contradicting the headline)', () => {
+    const zeroHeadline: ScenarioHeadline = {
+      perHit: 0,
+      burstDps: 0,
+      sustainedDps: 0,
+      windowDps: 0,
+    };
+    const baseline = { freeAim: zeroHeadline, vats: zeroHeadline };
+
+    function syntheticSuggestion(
+      id: string,
+      primaryDeltaPct: number,
+      vatsSustainedDelta: number,
+      vatsWindowDelta: number,
+    ): EvaluatedSuggestion {
+      return {
+        id,
+        action: [],
+        label: id,
+        group: 'perk',
+        budget: { legal: true },
+        family: id,
+        cost: 0,
+        result: baseline,
+        delta: {
+          freeAim: zeroHeadline,
+          vats: {
+            ...zeroHeadline,
+            sustainedDps: vatsSustainedDelta,
+            windowDps: vatsWindowDelta,
+          },
+        },
+        primaryDeltaPct,
+      };
+    }
+
+    const fakeReport: SuggestionReport = {
+      baseline,
+      metric: 'vats',
+      suggestions: [
+        syntheticSuggestion('bad', 0.05, -1, 5),
+        syntheticSuggestion('good', 0.03, 2, 3),
+      ],
+    };
+
+    const result = topSuggestions(fakeReport, 10);
+    const shown = [...result.ranked, ...result.tied];
+    expect(shown.some((s) => s.id === 'good')).toBe(true);
+    expect(shown.some((s) => s.id === 'bad')).toBe(false);
+  });
+
+  it('metric: freeAim reports are unaffected by the windowDps change', () => {
+    const report = evaluateSuggestions(fixerState, 'live', 'freeAim');
+    const metricBase = report.baseline!.freeAim.sustainedDps;
+    for (const s of report.suggestions) {
+      const expected = metricBase > 0 ? s.delta.freeAim.sustainedDps / metricBase : 0;
+      expect(s.primaryDeltaPct).toBeCloseTo(expected, 6);
+    }
   });
 });

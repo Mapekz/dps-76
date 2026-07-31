@@ -270,7 +270,7 @@ describe('evaluateSuggestions', () => {
 });
 
 describe('collapseSuggestionFamilies', () => {
-  const headline: ScenarioHeadline = { perHit: 0, burstDps: 0, sustainedDps: 0 };
+  const headline: ScenarioHeadline = { perHit: 0, burstDps: 0, sustainedDps: 0, windowDps: 0 };
   const snapshot: DpsSnapshot = { freeAim: headline, vats: headline };
 
   function fixture(

@@ -138,6 +138,7 @@ export function SuggestionsPanel() {
     groups: new Set(['consumable']),
   });
   const metricLabel = report.metric === 'vats' ? 'VATS' : 'Free Aim';
+  const rankingLabel = report.metric === 'vats' ? 'VATS-window DPS' : 'Free Aim sustained';
 
   return (
     <div className={cn('space-y-3 transition-opacity', stale && 'opacity-60')}>
@@ -148,7 +149,16 @@ export function SuggestionsPanel() {
           </p>
           <span className="text-muted-foreground flex items-center gap-1 text-[10px]">
             {stale && <Loader2Icon className="size-3 animate-spin" />}
-            ranked by {metricLabel} sustained
+            <Tooltip>
+              <TooltipTrigger render={<span className="cursor-default" />}>
+                ranked by {rankingLabel}
+              </TooltipTrigger>
+              <TooltipContent>
+                Counts only the AP-funded firing window, so VATS gains aren't diluted by
+                the free-aim pause. The headline above still reports blended achieved
+                DPS.
+              </TooltipContent>
+            </Tooltip>
           </span>
         </div>
 
