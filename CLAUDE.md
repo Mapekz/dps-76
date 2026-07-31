@@ -202,7 +202,11 @@ import { useGameMode } from '@/hooks/useGameMode';
    `src/types/modifiers.ts`, evaluation in `src/lib/engine/resolve.ts`, a
    mapping in the extractor (`normalize/mgef.ts` or `extract-omods.ts`), and —
    if any value isn't ESM-proven — a terse entry in `docs/assumptions.md`
-   (one claim, a status tag, a code pointer; not a narrated writeup).
+   (one claim, a status tag, a code pointer; not a narrated writeup). ESM
+   plumbing (`STAT_DamagePerk` et al.) informs bucket routing; when adding a
+   new damage-modifying mechanic, confirm whether it's additive or
+   multiplicative in the dbm parenthesis — except `'Mod Weapon DMG Bonus Mult'`
+   routing (`normalize/mgef.ts`), always additive.
 4. Check `_meta.json` unresolved reports after extraction — silent gaps are bugs.
 
 ## Agent skills

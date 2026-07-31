@@ -192,3 +192,10 @@ _Avoid_: combined data, resolved data.
   game record, Modifier is the normalized IR it produces.
 - "mode" meant both **Mode** (Live/PTS) and **Scenario** (Free Aim/VATS) —
   resolved: these are distinct axes.
+- **Adrenal** referred to four distinct mechanics — resolved: the **Adrenaline
+  perk** (+10%/kill-streak stack, `dbm`, max 10), the **Adrenal Reaction
+  mutation** (+5%/stack, +6.25% with Strange in Numbers), the **Adrenal** legendary
+  weapon mod (+10%/kill-streak stack, curve-driven, max 10), and the Adrenal
+  legendary armor mod (scales DR+ER). All four share the kill-streak trigger
+  (`p.adrenalineStacks`, lines 164–172 in `src/lib/engine/resolve.ts`), but are
+  separate mechanics.
