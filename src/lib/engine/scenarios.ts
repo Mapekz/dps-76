@@ -483,6 +483,7 @@ function chargedCycleHit(
   onslaught: OnslaughtThread,
   bulletStorm: BulletStormThread,
   rangeMult: number,
+  bodyPartRate: number,
 ): HitBreakdown {
   const normal = critWeighted(
     bodyPartBlendedHit(
@@ -493,6 +494,7 @@ function chargedCycleHit(
       onslaught,
       bulletStorm,
       rangeMult,
+      bodyPartRate,
     ),
     bodyPartBlendedHit(
       input,
@@ -502,6 +504,7 @@ function chargedCycleHit(
       onslaught,
       bulletStorm,
       rangeMult,
+      bodyPartRate,
     ),
     critRate,
   );
@@ -515,6 +518,7 @@ function chargedCycleHit(
         onslaught,
         bulletStorm,
         rangeMult,
+        bodyPartRate,
       ),
       bodyPartBlendedHit(
         input,
@@ -524,6 +528,7 @@ function chargedCycleHit(
         onslaught,
         bulletStorm,
         rangeMult,
+        bodyPartRate,
       ),
       critRate,
     ),
@@ -584,11 +589,16 @@ function bodyPartWeighted(
 }
 
 /**
- * A hit while aiming at a body part: bodyPartHitRatePct of shots land on the
- * aimed part (bodyPartMult/bodyPart), the rest hit the torso (×1.0, 'torso').
- * Short-circuits to a plain hit when the two legs are identical — at 100%
- * hit rate, or when the aimed part's mult AND location both already match
- * the torso fallback — so the common path does zero extra work. Only the
+ * A hit while aiming at a body part: `bodyPartRate` (0–1) of shots land on
+ * the aimed part (bodyPartMult/bodyPart), the rest hit the torso (×1.0,
+ * 'torso'). `bodyPartRate` is an explicit per-scenario argument, not read
+ * off `input.player.bodyPartHitRatePct` directly — that field models
+ * Free Aim only (a missed weakpoint still lands center-mass); VATS has no
+ * such fallback (a miss deals nothing, entirely accounted for by
+ * `vatsHitRatePct`'s sustained-DPS scaling), so VATS call sites pass `1`
+ * here. Short-circuits to a plain hit when the two legs are identical — at
+ * rate 1, or when the aimed part's mult AND location both already match the
+ * torso fallback — so the common path does zero extra work. Only the
  * on-target leg carries the trace — `explain` shows the landed-hit chain,
  * the same simplest-defensible split as the Charged cycle's perHit.
  */
@@ -600,9 +610,10 @@ function bodyPartBlendedHit(
   onslaught: OnslaughtThread,
   bulletStorm: BulletStormThread,
   rangeMult: number,
+  bodyPartRate: number,
   trace?: HitTrace,
 ): HitBreakdown {
-  const rate = (input.player.bodyPartHitRatePct ?? 100) / 100;
+  const rate = Math.max(0, Math.min(bodyPartRate, 1));
   if (rate >= 1 || (bodyPartMult === 1.0 && bodyPart === 'torso')) {
     return hit(input, flags, bodyPartMult, bodyPart, onslaught, bulletStorm, rangeMult, trace);
   }
@@ -696,6 +707,12 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   const powerAttack = input.player.isPowerAttacking;
   const sneaking = input.player.isSneaking;
   const bodyPartMult = input.player.isAimingAtWeakpoint ? input.weakpointMult : 1.0;
+  // Free Aim's part/torso blend rate — a missed weakpoint still lands
+  // center-mass, so this is a genuine per-hit blend (bodyPartBlendedHit).
+  // VATS has no such fallback (see that function's doc comment) and always
+  // passes 1 — `vatsHitRatePct`'s sustained-DPS scaling further down is the
+  // entire VATS accuracy model.
+  const freeBodyPartRate = (input.player.bodyPartHitRatePct ?? 100) / 100;
   // Location axis for torso-gated perks (Center Masochist), independent of
   // the mult above — an armored torso can be <1.0, a torso-weakpoint
   // (Deathclaw Belly) can be >1.0. Order matters: not-aiming is a default
@@ -903,6 +920,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     onslaught,
     bulletStorm,
     rangeMult,
+    freeBodyPartRate,
     freeTrace,
   );
 
@@ -963,6 +981,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       onslaught,
       bulletStorm,
       rangeMult,
+      1, // VATS: no torso fallback on a missed part — see bodyPartBlendedHit's doc comment
       vatsTrace,
     ),
     bodyPartBlendedHit(
@@ -973,6 +992,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       onslaught,
       bulletStorm,
       rangeMult,
+      1,
       vatsCritTrace,
     ),
     critRate,
@@ -996,6 +1016,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
         onslaught,
         bulletStorm,
         rangeMult,
+        freeBodyPartRate,
       )
     : freeHit;
   const vatsCycleHit = charged
@@ -1008,6 +1029,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
         onslaught,
         bulletStorm,
         rangeMult,
+        1, // VATS: no torso fallback on a missed part — see bodyPartBlendedHit's doc comment
       )
     : vatsAvg;
   const freeCycleTotal = freeCycleHit.total;

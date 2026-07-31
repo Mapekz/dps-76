@@ -6,7 +6,6 @@ import { NumberField } from '@/components/ui/number-field';
 import { Slider } from '@/components/ui/slider';
 import { firstSliderValue } from '@/lib/slider-value';
 import { Switch } from '@/components/ui/switch';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
@@ -24,9 +23,11 @@ import { SectionTrigger } from './SectionTrigger';
 
 /**
  * The character's steady state: health, meters, caps, streak/stack counters,
- * weapon upkeep, and aim rates. Race lives in the SPECIAL Loadout section
+ * and weapon upkeep. Race lives in the SPECIAL Loadout section
  * (SpecialLoadoutSection.tsx); team size/public-team type in TeamSection;
- * target state in TargetSection; sneak/weakpoint stay on the headline chips.
+ * target state AND the three accuracy sliders (hitRatePct/vatsHitRatePct/
+ * bodyPartHitRatePct — they only make sense next to the body-part picker)
+ * live in TargetSection; sneak/weakpoint stay on the headline chips.
  */
 
 /** In-game meter state names — SURV_NewHungerThreshold_Msg_* / SURV_NewThirstThreshold_Msg_* (tier 4 = fullest). */
@@ -56,44 +57,6 @@ function feralStateName(tier: number): string {
 function formatStackAvg(value: number): string {
   const rounded = Math.round(value * 10) / 10;
   return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
-}
-
-function SliderField({
-  id,
-  label,
-  value,
-  min,
-  max,
-  step,
-  onChange,
-}: {
-  id: string;
-  label: string;
-  value: number;
-  min: number;
-  max: number;
-  step?: number;
-  onChange: (value: number) => void;
-}) {
-  return (
-    <div className="space-y-1.5">
-      <Label htmlFor={id}>
-        {label}: {value}%
-      </Label>
-      <Slider
-        id={id}
-        min={min}
-        max={max}
-        step={step}
-        value={[value]}
-        onValueChange={(v) => onChange(firstSliderValue(v))}
-        marks={[
-          { value: min, label: `${min}%` },
-          { value: max, label: `${max}%` },
-        ]}
-      />
-    </div>
-  );
 }
 
 function SwitchRow({
@@ -168,19 +131,6 @@ export function ConditionsSection() {
   const battleLoadersBashSec =
     conditions.battleLoadersBashSec ?? defaults.battleLoadersBashSec ?? 0;
 
-  // VATS hit-chance aggregate (Phase 4, display-only): the folded total from
-  // ScenarioSet.vatsHitChanceBonus (V.A.T.S. Enhanced, Awareness, Eye of the
-  // Hunter, V.A.T.S. Matrix Overlay...). Purely informational — the VATS hit
-  // rate slider below stays the sole authoritative hit-rate input for every
-  // DPS number (docs/assumptions.md "VATS hit-chance aggregate (display-only)").
-  const vatsHitChanceBonus = scenarios?.vatsHitChanceBonus ?? 0;
-
-  // Concentrated Fire's hit-chance MULTIPLIER (EP109, USER-RESOLVED
-  // 2026-07-19, display-only): ScenarioSet.vatsHitChanceMult, 1 = neutral.
-  // Same authoritative-slider caveat as the aggregate above — this never
-  // changes any DPS number (docs/assumptions.md "Concentrated Fire stacks").
-  const vatsHitChanceMult = scenarios?.vatsHitChanceMult ?? 1;
-
   // Bullet Storm: max/min from equipped sources; −1 = auto (Sustained Stacks —
   // ScenarioSet.bulletStormAvgStacks). Pin by dragging; "Auto" resets to −1.
   const bulletStormMax = scenarios?.bulletStormMaxStacks ?? 0;
@@ -216,8 +166,6 @@ export function ConditionsSection() {
         weaponConditionPct: conditions.weaponConditionPct ?? 100,
         playerDamageResist: conditions.playerDamageResist ?? 0,
         playerRadResist: conditions.playerRadResist ?? 0,
-        hitRatePct: conditions.hitRatePct ?? 100,
-        bodyPartHitRatePct: conditions.bodyPartHitRatePct ?? 100,
         isPowerAttacking: conditions.isPowerAttacking,
         isLastShot: conditions.isLastShot ?? false,
         isAimingDownSights: conditions.isAimingDownSights ?? false,
@@ -238,8 +186,6 @@ export function ConditionsSection() {
         weaponConditionPct: defaults.weaponConditionPct ?? 100,
         playerDamageResist: defaults.playerDamageResist ?? 0,
         playerRadResist: defaults.playerRadResist ?? 0,
-        hitRatePct: defaults.hitRatePct ?? 100,
-        bodyPartHitRatePct: defaults.bodyPartHitRatePct ?? 100,
         isPowerAttacking: defaults.isPowerAttacking,
         isLastShot: defaults.isLastShot ?? false,
         isAimingDownSights: defaults.isAimingDownSights ?? false,
@@ -577,74 +523,6 @@ export function ConditionsSection() {
             <p className="text-muted-foreground text-xs">
               No armor model exists yet — this is a manual stand-in for Daisy Cutter's +20%
               damage-per-1000-Rad-Resistance ladder, which caps at +160% (8000+).
-            </p>
-          </div>
-
-          <div className="space-y-1.5">
-            <SliderField
-              id="char-hit-rate"
-              label="Free-aim hit rate"
-              value={conditions.hitRatePct ?? 100}
-              min={10}
-              max={100}
-              step={5}
-              onChange={(v) => set('hitRatePct', v)}
-            />
-            <p className="text-muted-foreground text-xs">
-              Share of free-aim shots that land (movement, target size). Scales the Free Aim
-              effective DPS; VATS has its own hit-rate setting below.
-            </p>
-          </div>
-
-          <div className="space-y-1.5">
-            <SliderField
-              id="char-vats-hit-rate"
-              label="VATS hit rate"
-              value={conditions.vatsHitRatePct ?? 100}
-              min={10}
-              max={100}
-              step={5}
-              onChange={(v) => set('vatsHitRatePct', v)}
-            />
-            {vatsHitChanceBonus > 0 && (
-              <Tooltip>
-                <TooltipTrigger render={<Badge variant="secondary" className="cursor-help" />}>
-                  +{Math.round(vatsHitChanceBonus * 100)}% VATS hit bonus
-                </TooltipTrigger>
-                <TooltipContent>
-                  Informational total of equipped VATS-accuracy sources (V.A.T.S. Enhanced,
-                  Awareness, Eye of the Hunter, V.A.T.S. Matrix Overlay...). The slider above stays
-                  authoritative — this never changes any DPS number.
-                </TooltipContent>
-              </Tooltip>
-            )}
-            {vatsHitChanceMult !== 1 && (
-              <Tooltip>
-                <TooltipTrigger render={<Badge variant="secondary" className="cursor-help" />}>
-                  hit chance × {vatsHitChanceMult.toFixed(2)}
-                </TooltipTrigger>
-                <TooltipContent>
-                  Concentrated Fire multiplies the game's computed VATS hit chance directly (not a
-                  flat % add), per the Concentrated Fire stacks slider below. Informational only —
-                  the slider above stays authoritative and this never changes any DPS number.
-                </TooltipContent>
-              </Tooltip>
-            )}
-          </div>
-
-          <div className="space-y-1.5">
-            <SliderField
-              id="char-bodypart-rate"
-              label="Body part hit rate"
-              value={conditions.bodyPartHitRatePct ?? 100}
-              min={10}
-              max={100}
-              step={5}
-              onChange={(v) => set('bodyPartHitRatePct', v)}
-            />
-            <p className="text-muted-foreground text-xs">
-              Once the Target section has a non-torso body part selected: this share of hits lands
-              on it, the rest hit the torso.
             </p>
           </div>
 

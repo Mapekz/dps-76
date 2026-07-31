@@ -1004,21 +1004,30 @@ Engine: `src/lib/engine/ap-economy.ts`.
   Pointer: `pauseSec` in `src/lib/engine/ap-economy.ts`.
 - Display: AP breakdown always shown when `ScenarioResult.ap` exists; ranged
   weapons only (melee/VATS-melee AP costs are out of scope).
-- **Manual-aim hit rate** (`hitRatePct`, 10–100, default 100): scales
-  free-aim **SUSTAINED** dps (the headline "effective" number, `ScenarioCard.tsx`)
-  only — never per-hit or burst.
-- **Manual VATS hit rate** (`vatsHitRatePct`, 10–100, default 100): same
-  mechanic as `hitRatePct` but for the VATS scenario — a user-supplied
-  estimate, not computed accuracy. Also scales the VATS-weighted term of
-  `ap.apLimitedDps`; the fallback term uses free aim's own `hitRatePct`
-  instead (a miss still costs AP). Auto-computing VATS hit chance from
-  distance/Perception/
-  perks stays **permanently out of scope**; `scenarios.ts` (Stage B/C hit-rate
-  block).
+- **Manual-aim hit rate** (`hitRatePct`, 10–100, default 100): Free Aim's
+  "does the shot hit the enemy at all" share. Scales free-aim **SUSTAINED**
+  dps (the headline "effective" number, `ScenarioCard.tsx`) only — never
+  per-hit or burst. Independent of `bodyPartHitRatePct` (below, and see "Body
+  parts (BPTD-extracted)") — that's "of the shots that hit, how many find the
+  aimed part vs. center mass".
+- **Manual VATS hit rate** (`vatsHitRatePct`, 10–100, default 100): VATS's
+  *only* accuracy knob — the share of VATS shots that land on the targeted
+  body part (or center mass when no part is targeted). A user-supplied
+  estimate, not computed accuracy; auto-computing VATS hit chance from
+  distance/Perception/perks stays **permanently out of scope** (`scenarios.ts`
+  Stage B/C hit-rate block). Unlike Free Aim, a VATS miss deals **zero
+  damage** — there is no torso/center-mass fallback (2026-07-31: previously
+  VATS shared `bodyPartHitRatePct`'s part/torso blend with Free Aim; that was
+  the source of the three-slider confusion this section resolves — see
+  `bodyPartBlendedHit`'s doc comment in `scenarios.ts`). Also scales the
+  VATS-weighted term of `ap.apLimitedDps`; the fallback term uses free aim's
+  own `hitRatePct` instead (a miss still costs AP).
 
 ## VATS hit-chance aggregate (display-only)
 Engine: `scenarios.ts` (bootstrap fold → `ScenarioSet.vatsHitChanceBonus`).
-UI: `ConditionsSection.tsx` pill next to the VATS hit-rate slider.
+UI: `TargetSection.tsx` pill next to the VATS hit-rate slider (moved from
+`ConditionsSection.tsx` 2026-07-31, alongside the rest of the Accuracy group
+— see "Body-part hit rate" below).
 
 - **Aggregation ≠ computation** (user decision): the standing
   "auto-computing VATS hit chance from distance/Perception/perks is
@@ -1695,8 +1704,13 @@ humanoid headshot).
   center/belly parts (a different BPTD slot from `Torso`) are deliberately
   NOT counted as torso, leaving those specific parts torso-gate-inactive
   until measured.
-- **Body-part hit rate** (default 100%): while aiming, each hit blends
-  `rate×aimed-part + (1−rate)×torso`. Independent of free-aim `hitRatePct`.
+- **Body-part hit rate** (`bodyPartHitRatePct`, default 100%) — **Free Aim
+  only** (changed 2026-07-31; previously blended in VATS too, see the
+  `vatsHitRatePct` entry in "VATS AP economy & manual-aim hit rate" above):
+  while aiming, each Free Aim hit blends `rate×aimed-part + (1−rate)×torso`.
+  Independent of free-aim `hitRatePct`. VATS models a missed part as a miss
+  (zero damage, no torso fallback) via its own `vatsHitRatePct` slider
+  instead of this blend.
 - Crippled-limbs input caps at the picked race's distinct BPTD limb-AV count
   (10 when no race picked).
 - **NoCripple** (zero limb damage) is hand-authored per curated target (Blue

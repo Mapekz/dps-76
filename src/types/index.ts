@@ -139,28 +139,36 @@ export interface PlayerConditions {
   equippedPerkRanks?: Record<string, number>;
   weaponConditionPct?: number; // 0-200: equipped weapon condition, 100 = full, 200 = over-repaired max (Polished; default 100)
   /**
-   * Manual-aim (free-aim) hit rate %, 10-100, default 100. Models realistic
-   * misses (movement, target size) by scaling free-aim SUSTAINED dps (and
-   * thus the free-aim headline "effective" DPS) — never per-hit, never burst
-   * (those stay the every-shot-hits ceiling). Independent of VATS, which has
-   * its own `vatsHitRatePct` knob — see docs/assumptions.md "Manual-aim hit
-   * rate".
+   * Free Aim's "shots that hit the enemy at all" %, 10-100, default 100.
+   * Models realistic misses (movement, target size) by scaling free-aim
+   * SUSTAINED dps (and thus the free-aim headline "effective" DPS) — never
+   * per-hit, never burst (those stay the every-shot-hits ceiling).
+   * Independent of `bodyPartHitRatePct` below (which of those landed hits
+   * finds the targeted part vs. center mass) and of VATS, which has its own
+   * `vatsHitRatePct` knob — see docs/assumptions.md "Manual-aim hit rate".
    */
   hitRatePct?: number;
   /**
-   * Manual VATS hit rate %, 10-100, default 100. Mirrors `hitRatePct` but for
-   * the VATS scenario: scales VATS sustained/effective dps and the VATS
-   * AP-limited figure (a miss still costs AP), never per-hit or burst. This
-   * is a user-supplied estimate, not computed accuracy — auto-modeling VATS
-   * hit chance from distance/Perception/perks stays out of scope, see
+   * VATS's "shots that land on the targeted body part (or center mass when
+   * no part is targeted)" %, 10-100, default 100. VATS accuracy is
+   * deliberately NOT modeled from distance/Perception/perks (the game's
+   * formula is a black box, permanently out of scope) — this is the user's
+   * own estimate, standing in for the whole VATS accuracy model. Unlike Free
+   * Aim's pair below, there is no torso fallback on a miss: a miss deals
+   * zero damage. Scales VATS sustained/effective dps and the VATS AP-limited
+   * figure (a miss still costs AP), never per-hit or burst — see
    * docs/assumptions.md "Manual-aim hit rate".
    */
   vatsHitRatePct?: number;
   /**
-   * Chance (10–100, default 100) that an aimed shot actually lands on the
-   * targeted body part instead of the torso. Only applies while
-   * isAimingAtWeakpoint: each hit blends bodyPartMult and torso damage by this
-   * rate (scenarios.ts bodyPartBlendedHit).
+   * Free Aim only (10–100, default 100): of the shots that hit the enemy
+   * (`hitRatePct` above), the share that land on the targeted body part
+   * rather than center mass (the race's ×1.00 default part) — each hit
+   * blends bodyPartMult and torso damage by this rate
+   * (scenarios.ts bodyPartBlendedHit). Only meaningful while
+   * isAimingAtWeakpoint. VATS has no equivalent knob: see `vatsHitRatePct`'s
+   * doc comment for why VATS misses deal zero instead of falling back to
+   * center mass.
    */
   bodyPartHitRatePct?: number;
   /**

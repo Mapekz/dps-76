@@ -2412,7 +2412,7 @@ describe('body-part damage direction (sub-1 multipliers = limb hits)', () => {
   });
 });
 
-describe('computeScenarios body-part hit rate (weakpoint aiming only)', () => {
+describe('computeScenarios body-part hit rate (Free Aim only, weakpoint aiming only)', () => {
   const weapon = makeWeapon({
     animDelaySec: 1.0,
     isPhysical: false,
@@ -2432,7 +2432,7 @@ describe('computeScenarios body-part hit rate (weakpoint aiming only)', () => {
     critRate: 0,
   };
 
-  it('blends the aimed-part hit with a torso hit by the rate', () => {
+  it('blends the aimed-part hit with a torso hit by the rate, Free Aim only', () => {
     const full = computeScenarios(base);
     const blended = computeScenarios({
       ...base,
@@ -2441,7 +2441,9 @@ describe('computeScenarios body-part hit rate (weakpoint aiming only)', () => {
     // 75% land at ×2, 25% at ×1 → 100 × (0.75×2 + 0.25×1) = 175
     expect(full.freeAim.perHit.total).toBeCloseTo(200, 6);
     expect(blended.freeAim.perHit.total).toBeCloseTo(175, 6);
-    expect(blended.vats.perHit.total).toBeCloseTo(175, 6);
+    // VATS never blends toward torso on a missed part — a VATS miss deals
+    // zero and is accounted for entirely by vatsHitRatePct, not this field.
+    expect(blended.vats.perHit.total).toBeCloseTo(200, 6);
   });
 
   it('is a no-op at 100% and when not aiming at a weakpoint', () => {
@@ -2458,7 +2460,7 @@ describe('computeScenarios body-part hit rate (weakpoint aiming only)', () => {
     expect(notAiming.freeAim.perHit.total).toBeCloseTo(100, 6);
   });
 
-  it('applies inside the Charged cycle too', () => {
+  it('applies inside the Charged cycle too, Free Aim only', () => {
     const charged = makeWeapon({ weaponClass: 'melee', keywords: ['WeaponHasSecondaryCharging'] });
     const input = { ...base, weapon: charged };
     const full = computeScenarios(input);
@@ -2471,6 +2473,8 @@ describe('computeScenarios body-part hit rate (weakpoint aiming only)', () => {
       full.freeAim.sustain.sustainedDps * 0.75,
       6,
     );
+    // VATS's charged cycle is untouched by bodyPartHitRatePct.
+    expect(blended.vats.sustain.sustainedDps).toBeCloseTo(full.vats.sustain.sustainedDps, 6);
   });
 });
 

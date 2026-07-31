@@ -5,9 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NumberField } from '@/components/ui/number-field';
 import { Slider } from '@/components/ui/slider';
+import { SliderField } from '@/components/ui/slider-field';
 import { firstSliderValue } from '@/lib/slider-value';
 import { ToggleChips } from '@/components/ui/toggle-chips';
 import { ToggleGroup } from '@/components/ui/toggle-group';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
@@ -281,6 +283,26 @@ export function TargetSection() {
   const setPlayerCondition = (key: 'followThroughPct', value: number) =>
     dispatch({ type: 'condition/set', key, value });
 
+  // Accuracy (moved here from ConditionsSection — meaningless without the
+  // body-part picker above): Free Aim is two independent shares (does the
+  // shot hit the enemy at all, then of those does it land on the aimed part
+  // vs. center mass); VATS is a single share of shots landing on the aimed
+  // part (or center mass with no part picked) — a VATS miss deals zero,
+  // there is no torso fallback (docs/assumptions.md "Manual-aim hit rate").
+  const hitRatePct = player.conditions.hitRatePct ?? 100;
+  const vatsHitRatePct = player.conditions.vatsHitRatePct ?? 100;
+  const bodyPartHitRatePct = player.conditions.bodyPartHitRatePct ?? 100;
+  const setPlayer = (key: 'hitRatePct' | 'vatsHitRatePct' | 'bodyPartHitRatePct', value: number) =>
+    dispatch({ type: 'condition/set', key, value });
+  // VATS hit-chance aggregate/multiplier (Phase 4 / EP109, display-only):
+  // informational pills only — the vatsHitRatePct slider above stays the
+  // sole authoritative VATS hit-rate input for every DPS number (see its
+  // doc comment and docs/assumptions.md "VATS hit-chance aggregate
+  // (display-only)").
+  const vatsHitChanceBonus = scenarios?.vatsHitChanceBonus ?? 0;
+  const vatsHitChanceMult = scenarios?.vatsHitChanceMult ?? 1;
+  const centerMassName = defaultPart?.name ?? 'Torso';
+
   const setTakingOneForTheTeamRank = (rank: number) => {
     dispatch({ type: 'condition/set', key: 'takingOneForTheTeamPct', value: rank * 10 });
     dispatch({
@@ -306,6 +328,9 @@ export function TargetSection() {
         isBurning: conditions.isBurning ?? false,
         isPoisoned: conditions.isPoisoned ?? false,
         isFrozen: conditions.isFrozen ?? false,
+        hitRatePct,
+        vatsHitRatePct,
+        bodyPartHitRatePct,
       },
       {
         targetRace: defaults.targetRace,
@@ -321,6 +346,9 @@ export function TargetSection() {
         isBurning: defaults.isBurning ?? false,
         isPoisoned: defaults.isPoisoned ?? false,
         isFrozen: defaults.isFrozen ?? false,
+        hitRatePct: playerDefaults.hitRatePct ?? 100,
+        vatsHitRatePct: playerDefaults.vatsHitRatePct ?? 100,
+        bodyPartHitRatePct: playerDefaults.bodyPartHitRatePct ?? 100,
       },
     ) +
     (conditions.targetLevel != null ? 1 : 0) +
@@ -386,6 +414,88 @@ export function TargetSection() {
             flip a separate switch. 1.5 is a standard humanoid headshot (Super Mutants take 1.25);
             below 1.0 models armored parts like the Mirelurk shell.
           </p>
+
+          <div className="space-y-3 rounded-md border p-3">
+            <Label className="text-sm font-medium">Accuracy</Label>
+
+            <div className="space-y-1.5">
+              <p className="text-muted-foreground text-xs font-medium">Free aim</p>
+              <SliderField
+                id="target-hit-rate"
+                label="Shots that hit the target"
+                value={hitRatePct}
+                min={10}
+                max={100}
+                step={5}
+                onChange={(v) => setPlayer('hitRatePct', v)}
+              />
+              {isAiming && (
+                <SliderField
+                  id="target-bodypart-rate"
+                  label={`Of those, hitting ${resolvedTarget.name} ×${effectiveMult.toFixed(2)}`}
+                  value={bodyPartHitRatePct}
+                  min={10}
+                  max={100}
+                  step={5}
+                  onChange={(v) => setPlayer('bodyPartHitRatePct', v)}
+                />
+              )}
+              <p className="text-muted-foreground text-xs">
+                {isAiming
+                  ? `→ ${((hitRatePct / 100) * (bodyPartHitRatePct / 100) * 100).toFixed(0)}% ${resolvedTarget.name} · ${((hitRatePct / 100) * (1 - bodyPartHitRatePct / 100) * 100).toFixed(0)}% ${centerMassName} · ${(100 - hitRatePct).toFixed(0)}% miss`
+                  : `→ ${hitRatePct}% ${centerMassName} · ${100 - hitRatePct}% miss`}
+                {` A missed body part still lands on ${centerMassName.toLowerCase()}; a missed shot hits nothing.`}
+              </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <p className="text-muted-foreground text-xs font-medium">V.A.T.S.</p>
+              <SliderField
+                id="target-vats-hit-rate"
+                label={
+                  isAiming
+                    ? `Shots that hit ${resolvedTarget.name} ×${effectiveMult.toFixed(2)}`
+                    : 'Shots that hit the target'
+                }
+                value={vatsHitRatePct}
+                min={10}
+                max={100}
+                step={5}
+                onChange={(v) => setPlayer('vatsHitRatePct', v)}
+              />
+              <p className="text-muted-foreground text-xs">
+                VATS accuracy is not modeled (the game's hit-chance formula is a black box) — this
+                is your own estimate. A miss deals zero; there is no center-mass fallback.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {vatsHitChanceBonus > 0 && (
+                  <Tooltip>
+                    <TooltipTrigger render={<Badge variant="secondary" className="cursor-help" />}>
+                      +{Math.round(vatsHitChanceBonus * 100)}% VATS hit bonus
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Informational total of equipped VATS-accuracy sources (V.A.T.S. Enhanced,
+                      Awareness, Eye of the Hunter, V.A.T.S. Matrix Overlay...). The slider above
+                      stays authoritative — this never changes any DPS number.
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+                {vatsHitChanceMult !== 1 && (
+                  <Tooltip>
+                    <TooltipTrigger render={<Badge variant="secondary" className="cursor-help" />}>
+                      hit chance × {vatsHitChanceMult.toFixed(2)}
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Concentrated Fire multiplies the game's computed VATS hit chance directly (not
+                      a flat % add), per the Concentrated Fire stacks slider in Conditions.
+                      Informational only — the slider above stays authoritative and this never
+                      changes any DPS number.
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+              </div>
+            </div>
+          </div>
 
           {selectedRace && epicAllowed && (
             <div className="space-y-1.5">
