@@ -154,9 +154,8 @@ export function SuggestionsPanel() {
                 ranked by {rankingLabel}
               </TooltipTrigger>
               <TooltipContent>
-                Counts only the AP-funded firing window, so VATS gains aren't diluted by
-                the free-aim pause. The headline above still reports blended achieved
-                DPS.
+                Counts only the AP-funded firing window, so VATS gains aren't diluted by the
+                free-aim pause. The headline above still reports blended achieved DPS.
               </TooltipContent>
             </Tooltip>
           </span>

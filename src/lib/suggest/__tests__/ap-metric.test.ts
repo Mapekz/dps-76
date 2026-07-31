@@ -102,8 +102,7 @@ describe('VATS-Window DPS ranking objective', () => {
       vatsOnly!.delta.vats.windowDps / report.baseline!.vats.windowDps,
       6,
     );
-    const oldBlendedScore =
-      vatsOnly!.delta.vats.sustainedDps / report.baseline!.vats.sustainedDps;
+    const oldBlendedScore = vatsOnly!.delta.vats.sustainedDps / report.baseline!.vats.sustainedDps;
     expect(vatsOnly!.primaryDeltaPct).toBeGreaterThan(oldBlendedScore);
   });
 
