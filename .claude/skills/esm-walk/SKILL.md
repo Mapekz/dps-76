@@ -8,8 +8,8 @@ description: Walk SeventySix.esm records to verify an item/effect is real and pl
 The walker and the mechanics-chaser are native `esm` subcommands now:
 
 ```bash
-esm -p walk <formid|edid> [--refs] [--depth N]   # compact digest + chain following
-esm -p chase <selector> [--depth N] [--json]     # OMOD/PERK/SPEL/ALCH/ENCH mechanism taxonomy
+esm -p walk <formid|edid> [--refs] [--depth N] [--ref-limit N]   # the interactive tool: digest + chain following; OMOD mechanisms classified inline
+esm -p chase <selector> [--depth N] [--ref-limit N]              # pipeline JSON evidence contract (OMOD/PERK/SPEL/ALCH/ENCH only) — interactively just walk
 ```
 
 `bun run esm:walk` remains as a thin alias for `esm -p walk`. Generic CLI

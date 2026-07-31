@@ -52,10 +52,10 @@ A fresh extraction only requires reviewing the **delta**, not re-vetting all
   Monster → Deathclaw Gauntlet). Expect waves of unique-WEAP removals whose
   effects reappear as OMODs — that's roster shrinkage to *accept* (update the
   pinned list), not rescue. Decoding the migrated effect is now a single
-  `esm chase <omod-formid|edid>` call (see the esm-walk skill) — it follows
-  the OMOD's forward hop into the granted PERK/ENCH (and one more hop through
-  an MGEF's "Perk to Apply"/"Equip Ability" if present) automatically, instead
-  of a manual `get`/`refs` chain.
+  `esm -p walk <omod-formid|edid>` call (see the esm-walk skill) — the OMOD
+  digest classifies every mechanism inline (ENCH/perk-grant forward hops,
+  keyword-hook reverse resolution, an MGEF's "Perk to Apply"/"Equip Ability"
+  pass-through) instead of a manual `get`/`refs` chain.
 - Launcher explosion damage SHIPPED 2026-07-13 (the WEAP→PROJ→EXPL chase,
   docs/assumptions.md "Launcher explosion damage"). Throwables (grenades/
   mines, `projectileOnly` bucket) stay excluded by vetting-scope decision —
