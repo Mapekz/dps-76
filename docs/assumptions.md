@@ -46,32 +46,19 @@ PaperDamage = Σ_components base(c) × ( dbmFold(c) + Tenderizer + (CritMult−1
 - **Curve tables override flat magnitudes** wherever both exist (OMOD
   properties always default their input to `itemLevel`; MGEF/ENCH curves need
   a resolvable input AV or drop with a `_meta.json` note — see
-  **Single-point curve tables**). ~9 records remain genuinely unmodeled
-  (non-level creature/event DoTs, a lockpicking gimmick, a caps-scaled hidden
-  mod, PA battery drain).
+  **Single-point curve tables**). `scripts/extract/normalize/mgef.ts`.
 - `DamageTypeValues` on dtPhysical ≡ `AttackDamage` (both phys-only).
 - **Base-damage scaling** — `AttackDamage`/`DamageTypeValues` MUL_ADDs on
   OMODs multiply the component's BASE damage pre-parenthesis.
   **USER-CONFIRMED.** Golden: Fixer + Powerful Automatic Receiver =
   103×0.7×1.25 = 90.125.
-- **Classification caveat** — ESM plumbing (`STAT_DamagePerk` et al.) informs
-  bucket routing, but confirm additive-vs-multiplicative with the user for
-  everything EXCEPT "Mod Weapon DMG Bonus Mult" (always additive, no
-  confirmation needed).
 - **Crit/sneak composition** — OMOD MUL_ADD/SET adjusts weapon base mult
   first, then additive bonuses stack. **USER spec; ESM-consistent.**
 - **Weakpoint bonus** multiplies whole damage, only active when body-part
   mult > 1.0. ESM-confirmed (`STAT_DamagePerk`).
-- **STR melee scaling** — STR/20 (1h/2h melee), STR/10 (unarmed). **USER spec.**
-  Investigated 2026-07-21 for ESM backing: GMSTs `fAVDMeleeDamageMult` (0.05)
-  and `fDamageStrengthMult` (0.1) match the two coefficients exactly, but the
-  mapping is **NOT confirmed** — the name-obvious unarmed candidates
-  (`fHandDamageStrengthMult`, `fAVDUnarmedDamageMult`) both read 0.0 (dead/
-  vestigial), and `fDamageStrengthMult`'s generic name doesn't self-evidently
-  point to "unarmed" the way `fAVDMeleeDamageMult` points to "melee". No DFOB
-  bridge or reverse reference confirms either wiring (GMSTs are read by
-  native code, not cross-referenced in ESM). Left un-extracted — a value
-  match alone isn't proof, per this repo's speculative-facts convention.
+- **STR melee scaling** — STR/20 (1h/2h melee), STR/10 (unarmed). **USER
+  spec**, not ESM-confirmed — see `paper-damage.ts`'s `strengthTerm` doc for
+  the investigated-and-rejected GMST candidates.
 - **Body-part multiplier** — resolves from BPTD-extracted per-enemy data when
   a target/part is picked (see **Body parts (BPTD-extracted)**); the manual
   input is a fallback only, default 1.5 (a standard humanoid headshot).
@@ -106,45 +93,26 @@ chasing unflagged ones would give phantom missile damage, e.g.
 ProjectilePlasmaLarge).
 
 - **WEAP + EXPL sum per shot** — the engine adds the token WEAP impact damage
-  and the EXPL explosion (Fat Man @45: 5 + 1386; Hellstorm: 379+379, two
-  separately-authored halves). **ASSUMPTION**, not ESM-proven — pending
-  Pip-Boy card reading (Fat Man, Missile Launcher goldens).
+  and the EXPL explosion (Fat Man @45: 5 + 1386). **ASSUMPTION**, not
+  ESM-proven — pending Pip-Boy card reading (`#65`).
 - **EXPL "Base Weapon Damage Mult"** (Gauss family 0.15, Tesla Cannon 0.10) is
-  modeled as the intrinsic BASE of the `explosivePayload` twin fold;
-  Explosive 2★ legendary (+0.2) ADDs on top (0.15 → 0.35 / 0.10 → 0.30).
-  **USER-MEASURED 2026-07-30** (supersedes the prior "additive stacking
-  unconfirmed" note — this is a Projectile-Scaling Explosion, see below).
-- **Explosive 2★ dual behavior, USER-MEASURED 2026-07-30**: the legendary
-  always contributes +20% as BASE damage, pre-DBM — WHICH base it attaches to
-  depends on the weapon's explosion kind (CONTEXT.md):
-  - **Projectile-Scaling Explosion** (Gauss family, Tesla Cannon w/
-    standard/DC muzzle — `explosionBaseWeaponDamageMult`): the +0.2 ADDs to
-    the mult itself (see bullet above) — unchanged, already correct.
-  - **Curve-Table Explosion** (`fromExplosion` components — launchers,
-    Gamma Gun, Cremator, Broadsider, Chaos Engine, War Shrike): the +20%
-    instead boosts the explosion's OWN base damage, pre-DBM — a
-    `baseDamage` MUL_ADD scoped `damageTypeScope: ['explosive']`
-    (effective-weapon.ts), **multiplicative with Demolition Expert /
-    'explosive' dbm bonuses**, unlike every other explosion bonus below. The
-    direct-impact component (Hellstorm's ballistic 5, say) does NOT also
-    spawn a twin — the 20% lands entirely in the explosion, nowhere else
-    (decided: the alternative reading would make the 2★ worth ~2× on a
-    weapon like Hellstorm or Cremator where direct and explosion damage are
-    comparable magnitude).
-  - **Chain-suppressed** (Tesla Cannon's Alternate Current muzzle — chain
-    lightning, not an explosion, see "Chain lightning" below): the 2★ is
-    dead weight, contributes exactly zero.
-  - Fixed 2026-07-30: prior to this, a Curve-Table-Explosion weapon's
-    explosion never saw the legendary at all (`paper-damage.ts` returns
-    early for an explosion component before the twin fold runs), while its
-    direct-impact token spawned a spurious twin instead — sharpest on
-    Gamma Gun (no direct component: the 2★ contributed literally zero) and
-    Hellstorm/Cremator (direct and explosion share the same tier/magnitude).
+  the intrinsic BASE of the `explosivePayload` twin fold; Explosive 2★
+  ADDs +0.2 on top. **USER-MEASURED 2026-07-30.**
+- **Explosive 2★ dual behavior, USER-MEASURED 2026-07-30**: always +20% BASE
+  damage pre-DBM, but WHICH base depends on the weapon's explosion kind
+  (CONTEXT.md) — Projectile-Scaling adds to the mult above; Curve-Table
+  instead boosts the explosion's own base as an explosive-scoped `baseDamage`
+  MUL_ADD (multiplicative with Demolition Expert, unlike other explosion
+  bonuses); Chain-suppressed (Alternate Current muzzle) gets zero. Full
+  three-branch logic + rejected-alternative rationale: `effective-weapon.ts`.
 - **Explosion bonuses are ADDITIVE dbm** (June 2026 patch, **user-reported**):
-  Demolition Expert and 'Mod Player Explosion Damage' (SCAV!) route to `dbm`
-  with `damageTypeScope: ['explosive']`, folding in the same parenthesis as
+  Demolition Expert's `STAT_DmgExplosive` routes to `dbm` with
+  `damageTypeScope: ['explosive']`, folding in the same parenthesis as
   Bloodied/Adrenal (0.9+0.5+0.6 → ×3.0, not the pre-patch ×3.84). The
   'explosive' scope matches `fromExplosion` regardless of elemental type.
+  'Mod Player Explosion Damage' (SCAV!) is a DIFFERENT entry point, routed to
+  `baseDamage` (not `dbm`), **USER-RESOLVED 2026-07-21** — currently inert, no
+  live consumer (`normalize/mgef.ts`).
 - **Not modeled**: explosion radius/AoE itself; self-damage. (OMOD projectile
   overrides swapping the explosion — e.g. Hellstorm's Napalm/Cryo/Plasma tube
   barrels — ARE modeled: see "OMOD-chased launcher payloads" § Launcher-family
@@ -312,43 +280,17 @@ it (esm-walked: Tesla's base WEAP has FPDM 1.25/FPS 0 until its Charging Hold
 barrel SETs FPS 1.0; Gamma Gun's antenna muzzle and Laser Gun's Sniper Barrel
 work the same way).
 
-- **Gate**: `fullPowerSeconds>0 && fullPowerDamageMult>0` (numeric ESM
-  fields) — NOT the `HoldInputToPower` flag, since laser sniper barrels
-  charge without carrying it.
 - **Damage ramp — USER-CONFIRMED, NOT ESM-proven**: `damage(t) = base ×
-  (1 + FPDM × t/FPS)`, linear from base (×1) at t=0 up to `base × (1+FPDM)`
-  at t=FPS. Worked example: 50 base, FPDM 2.0, FPS 1.0s → 50 at t=0, 150 at
-  t=1.0. Despite the name, FPDM is a bonus ON TOP of ×1 base, not a
-  replacement. **Consequence**: per-hit damage never drops to 0, so
-  partial-charge/spamfire play can beat full-charge burst DPS — expected, not
-  a bug. No in-game confirmation of the linear shape itself yet, only the
-  full-charge endpoint value.
-- **Cadence — USER-CONFIRMED, speed-immune**: `shots/sec = 1/(chargeSec +
-  animDelaySec/speed)`. The charge-hold is real wall-clock time (Speed/
-  fire-rate buffs never speed up the hold); only the post-release
-  attack-delay tail divides by `speed`. Identical for Free Aim and VATS (one
-  scenario-wide `chargeTimeSec` input).
-- **Explosion-twin inheritance**: charge mult folds into the component base
-  BEFORE the `baseDamage` bucket fold, so the Gauss family's intrinsic
-  explosive twin inherits it for free (pinned by test).
-- **DoT exclusion — user decision, pending measurement**: charge scaling does
-  NOT apply to `computeDotDps`'s steady-state DoT (no `chargeTimeSec`
-  parameter exists there at all).
-- **`minimumChargeTime`** (bows) floors BOTH the UI slider and the engine's
-  resolved charge time — the multiplier AT the floor is baked into the
-  output (e.g. RegularBow resolves to ≈×1.19 for any hold ≤0.9s, not ×1/0%
-  charge). The true below-floor behavior (misfire, 0 damage) is deliberately
-  NOT modeled.
-- **Overheat is a different, deliberately unmodeled mechanic** (same
-  WEAP.Data block) — broken/no-op in live FO76; don't confuse with charging.
-- **Naming collision**: Gatling Laser's "Charging Barrels" are an unrelated
-  spin-up `animDurationSec` override (see **Fire rate**), NOT this FPS/FPDM
-  mechanic — neither Gatling Laser nor Gatling Gun sets FPS/FPDM at all.
-- **Still outstanding**: the extraction pipeline doesn't yet read
-  FPS/FPDM/MinChargeTime off WEAP.Data or map the OMOD
-  `FullPowerSeconds`/`FullPowerDamageMult` properties — every real weapon
-  reads as non-charging today, and the six `expected: null` charging goldens
-  are no-ops pending that extraction phase.
+  (1 + FPDM × t/FPS)`, linear, FPDM is a bonus ON TOP of ×1 base, not a
+  replacement. No in-game confirmation of the linear shape itself, only the
+  full-charge endpoint. Gate, ramp, `minimumChargeTime` flooring, the
+  speed-immune cadence formula, explosion-twin inheritance, the DoT
+  exclusion, the Overheat naming-neighbor, and the Gatling Charging-Barrels
+  naming collision are all fully documented in `src/lib/charge.ts` and
+  `src/lib/fire-rate.ts` — this bullet exists only to flag the ramp shape as
+  unconfirmed.
+- **Charging goldens** (6, `expected: null`) are unmeasured, not blocked —
+  extraction reads FPS/FPDM/`minimumChargeTime` today (`#53`).
 
 ## Sustained DPS
 Engine: `src/lib/engine/sustain.ts`.
@@ -477,10 +419,8 @@ player/weapon stat, overriding the flat magnitude. Extracted automatically
   correctly stay dropped rather than misread as item level.
 - **Cross-family `HasPerk` gates → `perkFamilyRank`**: a `HasPerk` row
   referencing ANOTHER perk family's rank chain (Bullet Storm's reload curve
-  gated on Lock and Load, Bear Arms' bash gate) translates to a runtime
-  `perkFamilyRank` condition rather than `unresolved`. Owning rank N
-  satisfies `HasPerk` on every rank ≤N of that family (mirrors the
-  self-family rule).
+  gated on Lock and Load) translates to a runtime `perkFamilyRank` condition
+  rather than `unresolved` (mirrors the self-family rule).
 - **Shotgun Champ's projectile-count axis** — **USER-CONFIRMED**: projectile
   count SCALES the bonus (curve X, new `projectileCount` CurveInput reading
   the effective weapon's projectile count); crippled-limb presence is a
@@ -494,15 +434,12 @@ player/weapon stat, overriding the flat magnitude. Extracted automatically
 | Junkie's | addiction count | (1→10…10→100) | +10%/addiction to +100% at 10; count itself uncapped in-game |
 | Aristocrat's | caps on hand | 0→0…17000→30…29000→50 | up to +50% at 29k caps |
 | Juggernaut's (weapon mod) | ABSOLUTE current HP | (0→0, 1000→100) | +0.1%/HP; see **Max HP (derived)** |
-| Unarmored-target | enemy DamageResist | extracted | INERT until enemy defenses land |
 | Adrenal (legendary + perk, both) | kill streak | (0→0, 1→10, 10→100) | +10%/stack; curve domain confirms the streak cap of 10 |
 | Polished | equipped weapon condition % | 27-point table, (1.0→0)…(2.0→+60%) | 100% = full condition (no bonus), 200% = over-repaired max; UI field `weaponConditionPct` 0–200 |
 
-**Don't conflate the four Adrenal-family sources** (same kill-streak trigger,
-different mechanics): Adrenaline perk (+10%/stack dbm), Adrenal Reaction
-mutation (+5%/stack, +6.25 SiN), Adrenal legendary WEAPON mod (+10%/stack
-dbm), Adrenal legendary ARMOR mod (scales DR+ER, out of scope until armor
-modeling).
+(Berserker's/Iron Fist's WIELDER-DR curve input is documented separately —
+see **Berserker's (Damage Unarmored)**. Don't conflate the four Adrenal-family
+sources — see `CONTEXT.md`'s Flagged ambiguities.)
 
 ## Hand-supplied values
 Policy: wiki-sourced values are banned — ESM-derived or in-game-measured only
@@ -527,7 +464,7 @@ picker badge.
 | **Hunger & thirst tiers** | `hungerThirstTier`(0–8) = foodTier + drinkTier (two 0–4 sliders). **INFERENCE**: the sum decomposition matches Gourmand's behavior but isn't record-proven | ESM AV max + inferred composition |
 | **Feral meter** names | 8/6–7/4–5/2–3/0–1 banding of 5 tier names over 9 values. **INFERENCE** (display-only) | ESM names; banding ours |
 | Two Shot | ×1.75 confirmed (Fixer@50: 103→180.25); extra projectile feeds no damage term yet (deferred) | ESM + **user-confirmed** 2026-07-10 |
-| Anti-Armor family | −50% target armor via `armorPen` — INERT until enemy DR lands | ESM |
+| Anti-Armor family | −50% target armor via `armorPen`, live (`mitigation.ts`) | ESM |
 | Bleed/burn/shock mod DoTs | `dotDamage`, **refresh-only model** (re-applying resets the timer; steady-state = summed magnitude). **INTERPRETED as dmg/sec, NOT ESM-proven** (ESM only proves total-over-duration). Exempt from sneak/crit/body-part (**Formula structure**) | ESM magnitude; rate reading ours |
 | Adrenal Reaction (mutation) | +5%/stack (+6.25% SiN); below x=1 the curve clamps to its lowest point, same convention as the game's own curve tables (not a zero-floor special case) | ESM curve |
 | **Tenderizer** | +0.1% dbm/stack, manual 0–1000 (cap +100%), target-side, applied UNCONDITIONALLY | ESM (2026-07-15); cap is ours |
@@ -678,69 +615,32 @@ Engine: `src/lib/distance.ts` (constants, `rangeFalloffMult`), `resolve.ts`
 `paper-damage.ts` (`outerMult`/`explosiveOuterMult`).
 
 - **Close gate = 850 raw units** — GMST `fDistanceForCloseDamage`.
-  **ESM-PROVEN.** `STAT_DmgVsClose`/`STAT_DmgVsFar` themselves carry NO
-  distance-condition rows anywhere in ESM — the actual range check happens in
-  native engine code, not data.
+  **ESM-PROVEN.** `STAT_DmgVsClose`/`STAT_DmgVsFar` carry NO distance-condition
+  rows anywhere in ESM — the range check is native engine code, not data.
 - **Far gate = 1000 raw units (46.875 Pip-Boy units).** **MEASURED** (user,
-  2026-07-18; re-confirmed 2026-07-19): no ESM record gives a number (DFOB
-  `DamageVsFar_DO` 0x00815EE7 only confirms the entry point exists) —
-  measured in-game via the CAMP-foundation method (~3.9 foundation pieces ×
-  12 Pip-Boy units each × `PIP_BOY_UNIT_DIVISOR` 64/3 ≈ 1000).
-- `EnemyConditions.targetDistance` is now a **continuous number** (raw game
-  units), replacing the old manual three-way `'close'|'none'|'far'` toggle —
-  a single continuous slider now drives both the Close/Far perk gates
-  (threshold comparison: `d ≤ 850` / `d ≥ 1000`, boundary-inclusive both
-  ways) AND the range-falloff multiplier below. Default
-  `DEFAULT_DISTANCE_UNITS` = 900 — strictly between the two gates, preserving
-  the old default's "neither fires" behavior. Consumers of the gates:
-  Guerrilla family (close), Down Ranger/Rifleman family (far), Sniper's
-  legendary (+100%, far).
-- **Composite range-falloff model.** **USER-CONFIRMED** mechanism (the
-  reconciliation of the two ESM-proven pieces below, re-confirmed
-  2026-07-19 — no shape validation pending); the curve and field names
-  themselves are ESM-proven.
-  - `d ≤ minRange` → ×1.0.
-  - `minRange < d ≤ maxRange` → linear interpolation from ×1.0 to
-    `outOfRangeDamageMult` (WEAP Data — Hunting Rifle: minRange 2612, maxRange
-    5225, outOfRangeDamageMult 0.5).
-  - `d > maxRange` → `outOfRangeDamageMult × curveY(X)`, where
-    `X = (d − minRange) / (maxRange − minRange)` — **NOT** `d / maxRange`.
-    The curve is `CT_Player_PercentOfMinToMaxRangeDMGMult` (0x008407AC, DFOB
-    `CombatFormulaPercentOfMinToMaxRangeDMGMult_DO` 0x008407AD; ESM-PROVEN,
-    byte-identical across every live/pts dump sampled through 2026-07-18):
-    points (1.0, 1.0), (1.5, 0.75), (1.75, 0.55), (2.0, 0.2), clamped flat to
-    its own endpoints outside its domain (game-accurate — same convention as
-    every other curve table). X = 1.0 exactly at `d = maxRange`, so the curve
-    segment is continuous with the linear segment's endpoint there. With the
-    sampled-weapon norm `maxRange = 2 × minRange`, X reaches 2.0 (the curve's
-    floor, 0.2) at `d = 1.5 × maxRange`, not `2 × maxRange`.
-  - Guard: a non-positive or degenerate `[minRange, maxRange]` span returns
-    ×1.0 (`rangeFalloffMult`'s own doc comment).
-- **Melee exemption**: melee weapons never reach `rangeFalloffMult` — gated by
-  the caller (`scenarios.ts`'s `isMelee` check), not a field-value guard,
-  because melee `outOfRangeDamageMult` values are sentinel-ish (Shishkebab
-  0.0, Machete −1.0) and must never be read.
-- **Explosive-component EXEMPTION** (supersedes the prior "inclusion"
-  reading, **USER-CONFIRMED** 2026-07-19): `rangeFalloffMult` is folded into
-  `outerMult` only — explosive components (launcher payloads, Explosive-
-  legendary twins) do NOT fall off with engagement distance at all via this
-  curve. `minRange`/`maxRange`/`outOfRangeDamageMult` model a projectile's own
-  flight/spread degrading with distance; an explosion's payload instead falls
-  off by distance from its OWN blast center within its `Inner Radius`/
-  `Outer Radius` (EXPL `Data`) — a spatial-precision mechanic, unmodeled and
-  distinct from engagement range. Joins the sneak/body-part-mult carve-outs as
-  a third confirmed explosive exemption.
+  2026-07-18; re-confirmed 2026-07-19) — no ESM record gives a number; via the
+  CAMP-foundation method (`src/lib/distance.ts`).
+- Both gates boundary-inclusive (`d ≤ 850` / `d ≥ 1000`), default
+  `DEFAULT_DISTANCE_UNITS` = 900 (neither fires). Consumers: Guerrilla family
+  (close), Down Ranger/Rifleman family (far), Sniper's legendary (+100%, far).
+- **Composite range-falloff model** — **USER-CONFIRMED** reconciliation of two
+  ESM-proven pieces (curve `CT_Player_PercentOfMinToMaxRangeDMGMult`
+  0x008407AC + the `minRange`/`maxRange`/`outOfRangeDamageMult` WEAP fields),
+  re-confirmed 2026-07-19. Full three-segment formula, the `X = (d−minRange)/
+  (maxRange−minRange)` derivation (NOT `d/maxRange`), the melee exemption, and
+  the degenerate-span guard are all in `src/lib/distance.ts`.
+- **Explosive-component EXEMPTION** (**USER-CONFIRMED** 2026-07-19):
+  `rangeFalloffMult` folds into `outerMult` only — explosive components don't
+  fall off with engagement distance via this curve at all (their own
+  Inner/Outer Radius blast-distance falloff is a separate, unmodeled,
+  spatial-precision mechanic). Joins the sneak/body-part-mult carve-outs as a
+  third confirmed explosive exemption.
 - **Sniper's magnitude rides a Global reference**, not the effect's own
-  Magnitude field (which reads 0) — a narrow, field-shape-specific
-  resolution, confirmed absent from other zero-magnitude effects (which are
-  genuinely script-driven).
+  Magnitude field (which reads 0) — a narrow, field-shape-specific resolution
+  (`normalize/mgef.ts`).
 - Range OMODs (`weaponMinRange`/`weaponMaxRange`/`weaponOutOfRangeMult`
-  buckets): mostly barrels (`_PARENT_mod_WEAPON_Barrel_Long_Range`
-  0x0027ABFA-shaped, MUL_ADD 0.5 on both range fields), one SET
-  (`mod_PlasmaGun_barrel_Flamer_Abraxo`, `weaponOutOfRangeMult` → 0.7);
-  scopes carry none. Folded in `effective-weapon.ts` over the base weapon's
-  `minRange`/`maxRange`/`outOfRangeDamageMult` (same pattern as
-  `ammoCapacity`/`reloadSpeed`).
+  buckets) folded in `effective-weapon.ts`, same pattern as `ammoCapacity`/
+  `reloadSpeed`; full bucket list in `src/types/modifiers.ts`.
 
 ## VATS AP economy & manual-aim hit rate
 Engine: `src/lib/engine/ap-economy.ts` — pool/regen formula, the race-based
@@ -857,43 +757,22 @@ Engine: `paper-damage.ts`, `scenarios.ts`, `fire-rate.ts`.
 
 - **Power-attack race multiplier** — RACE per-attack-event Damage Mult on
   Power-Attack-flagged events: HumanRace **1.5×**, PowerArmorRace **2.0×**
-  (the PA race swap IS the multiplier). Multiplies the whole melee hit
-  outside the dbm parenthesis. **Carve-outs proven in the same RACE records**
-  (stays 1.0): automatic "power tool" melee (Ripper/Auto Axe), gun bashes
-  (unmodeled), and UNARMED (not even Power-Attack-flagged). **Deliberately
-  NOT re-extracted as an ESM-derived constant** (`extract-constants.ts`'s
-  module doc comment): RACE `Attacks[]` is a 32-entry table of named attack
-  events, each with its own Damage Mult — for HumanRace 6 read 1.5 and 26 read
-  1.0, including Power-Attack-flagged carve-outs (e.g. `meleeAttackShredder`)
-  that legitimately keep 1.0. There is no single scalar to read, and picking
-  "the" generic-melee entry by event name risks silently extracting a
-  carve-out's value instead.
-- **Race-mult vs PowerAttackDBM split — USER-CONFIRMED**: the base
-  power-attack multiplier is the race-defined Attacks[] mult above (native,
-  hardcoded by design); DFOB `PowerAttackDamage_DO` (0x00837DFB) is unrelated
-  to it — it names the PowerAttackDBM entry point, AV `STAT_DmgPowerAttack`,
-  already routed `powerAttackBonus` (`normalize/mgef.ts`) and folded
-  additively in the dbm parenthesis (Heavy Hitter, Radioactive Strength,
-  Heavy Hitter's, Whacker Smacker). Bridge pinned each extraction
-  (`verify-dfobs.ts`).
-- **Melee speed applies relatively** (`1.0 × weapon.speed` instead of a flat
-  1.0) — so `fireRateSpeed` OMOD/AV rewrites have an effect on melee.
-  Absolute swing timings remain unmeasured (`#45`).
-- **Charged (4★ melee)**: damage curve gives **+0.5/+1.5/+3.0** at 1/2/3
-  charges (max 3), multiplying the releasing power attack by `(1+y)`.
-  **Extracted, not hand-copied** — DFOB
-  `WeaponSecondaryChargeUpDamageBonusCurve_DO` (0x0089A83C) → CURV
-  `CT_Legendary_Weapon_ChargedUpWeapon` (0x008A3B85) →
-  `extract-curvetables.ts`'s `CURVE_TABLE_SINGLETONS` →
-  `legendarymods/weapon_chargedmeleeattack.json`; `scenarios.ts` reads both
-  the max-charge count and the full-charge bonus off the curve's own domain/
-  endpoint rather than hardcoding them, so a future re-tuning is picked up on
-  re-extraction. **1-charge-per-light-attack is an INFERENCE** — no rate
-  field exists in ESM for this mechanic. Modeled as a steady-state cycle: N
-  normal hits (N = the curve's max charge count) + 1 full-charge detonation,
-  averaged into `burstDps`/`sustainedDps`. **Applies regardless of the
-  `isPowerAttacking` toggle** — a deliberate choice so DPS reflects real
-  steady-state play (**not derived from data**).
+  (the PA race swap IS the multiplier). **Deliberately NOT re-extracted as an
+  ESM-derived constant** (`extract-constants.ts`'s module doc comment) — RACE
+  `Attacks[]` is a 32-entry table with no single scalar to read; picking "the"
+  generic-melee entry by name risks silently extracting a carve-out's value
+  (Ripper/Auto Axe, gun bashes, UNARMED all legitimately stay 1.0) instead.
+- **Race-mult vs PowerAttackDBM split — USER-CONFIRMED**: the race mult above
+  (native, hardcoded) is unrelated to `STAT_DmgPowerAttack`'s additive
+  `powerAttackBonus` dbm bucket (Heavy Hitter, Radioactive Strength) — full
+  split at `paper-damage.ts`, DFOB pinned at `verify-dfobs.ts`.
+- **Melee speed applies relatively** (`1.0 × weapon.speed`) — so
+  `fireRateSpeed` OMOD/AV rewrites affect melee. Real per-weapon swing timing
+  is extracted (`animationAttackSec`, `#45` closed) — not a flat stub.
+- **Charged (4★ melee)**: **+0.5/+1.5/+3.0** at 1/2/3 charges, multiplying the
+  releasing power attack by `(1+y)`. Extracted (not hand-copied) — full curve
+  chase, the 1-charge-per-light-attack INFERENCE, and the steady-state cycle
+  model are documented at `scenarios.ts`.
 - **Thrill-Seeker's**: 10 exact kill-streak tiers, `0.03×N` on melee speed
   AND reload speed — relies on `foldWeaponStat` being condition-aware, or all
   10 tiers sum unconditionally.
@@ -978,56 +857,32 @@ derive-from-perks experiment):
 
 - **Base allocation is user-defined**: 1–15/stat, from a pool of 7 base + 49
   level-ups = **56**. Pool size **ESM-PROVEN 2026-07-21** (was
-  user-confirmed): `specialAllocationPool(level)` = 7 × the SPECIAL AVIF
-  Minimum Value (`constants.json.special.min`) + curve
-  `SPECIAL_LevelRewardCurve` (0x004F473F, via DFOB `SpecialPointCurve_DO`
-  0x004F4740) at the player level — extracted, not hand-copied
-  (`extract-curvetables.ts` singletons → `player/special/levelrewardcurve.json`).
-- **Player level is a fixed input**: `PLAYER_LEVEL = 300`
-  (`src/lib/player-stats.ts`) — every level-indexed curve (SPECIAL pool,
-  legendary slots) evaluates at endgame; a future level selector threads a
-  variable through the same functions. **Modeling choice**, same
-  size-against-endgame convention as the enemy level-slider default.
-- **Legendary perk slots are curve-derived**: `legendarySlotsAtLevel(level)`
-  counts `LegendaryPerkSlotCount` (0x005B67A0, via DFOB
-  `LegendaryPerkSlotCurve_DO` 0x005B67A1) points with unlock-level ≤ player
-  level — 6 at `PLAYER_LEVEL` (unlocks 50/75/100/150/200/300).
+  user-confirmed) — curve-derived, extracted not hand-copied; full derivation
+  and the `PLAYER_LEVEL = 300` fixed-endgame modeling choice at
+  `player-stats.ts`.
+- **Legendary perk slots are curve-derived** — 6 at `PLAYER_LEVEL`; formula
+  at `player-stats.ts`'s `legendarySlotsAtLevel`.
 - **Legendary SPECIAL cards** (+1/+2/+3/+5 by rank) add ON TOP of base (may
   exceed 15) AND grant that many extra perk points — budget per stat is
-  `min(15, base + legendary bonus)`. Their PERK records carry no effects; the
-  bonus is applied app-side, so no double-count with `specialX` buff
-  buckets.
-- **Card point costs are PCRD data, not rank** (2026-07-13) — each card's
-  per-rank cost comes from its own `Card Rank Cost` entries.
+  `min(15, base + legendary bonus)`; no double-count with `specialX` buff
+  buckets (`player-stats.ts`).
+- **Card point costs are PCRD data, not rank** — each card's per-rank cost
+  comes from its own `Card Rank Cost` entries (`perk-cards.ts`).
 - **The PCRD `Perks[]` list is the LIVE shape of a card** (**user-confirmed**
-  2026-07-13): 28 rebalanced cards record FEWER entries than the family has
-  PERK ranks — the surplus ranks are dead content from before the rebalance,
-  not missing data. `maxRank` clamps to the entry count.
+  2026-07-13): 28 rebalanced cards record fewer entries than the family has
+  PERK ranks — surplus ranks are dead content, not missing data. `maxRank`
+  clamps to the entry count (`perk-cards.ts`).
 - **Antibiotic / Conductor / Light Meal are NOT live cards**
-  (**user-confirmed**) — their PCRDs exist in the ESM but are unreleased;
-  deliberately get no PerkId.
-- **Card SPECIAL/rank counts are PCRD-derived**, not folk knowledge — e.g.
-  Tenderizer is a 1-rank Charisma card in the current dump.
+  (**user-confirmed**) — unreleased PCRDs; deliberately get no PerkId
+  (`perk-cards.ts`).
 - **Blocking**: over-budget slotting is refused in-app; N&D imports are NOT
   blocked (shown with an "over budget" badge instead).
-- **Race-restricted cards** (2026-07-14): 52 families carry a PCRD "Race
-  Restriction" enum — this is card-level ESM data, NOT derived from
-  `playerIsGhoul` modifier conditions. Switching race prunes whatever no
-  longer fits, after a confirm dialog — the user's choice is never silently
-  overridden.
-- **ESM-proven**: `perkHasEngineEffect` recognizes `LEGENDARY_SPECIAL_PERKS`
-  structurally (membership check, not a modifier scan) — their PERK records
-  extract with zero modifiers by design, since the bonus is the baseSpecial
-  pathway above (`src/data/perk-modifiers.ts` `perkHasEngineEffect`).
-- **ESM-proven**: Effective (post-buff) SPECIAL clamps to [1, 100] — each of
-  the 7 SPECIAL AVIF records (`Strength` 0x000002C2 through `Luck`
-  0x000002C8) declares `Minimum Value 1.0` / `Maximum Value 100.0`. Applied
-  after the `specialX` bucket fold (`derivePlayerStats`), so debuff stacking
-  (e.g. mutation penalties) can't drive a stat below the AVIF floor and buff
-  stacking can't push it past the AVIF ceiling. Extracted (not hand-copied) —
-  `scripts/extract/extract-constants.ts` → `constants.json` →
-  `getSpecialClamp` (`@/data`) — so re-extraction re-derives the clamp
-  instead of it silently drifting.
+- **Race-restricted cards**: a PCRD "Race Restriction" enum, card-level ESM
+  data NOT derived from `playerIsGhoul` modifier conditions — switching race
+  prunes whatever no longer fits, after a confirm dialog (`perk-race.ts`).
+- **ESM-proven**: Effective (post-buff) SPECIAL clamps to [1, 100] per the 7
+  SPECIAL AVIF records' own Min/Max Value — extracted, not hand-copied
+  (`extract-constants.ts` → `getSpecialClamp`).
 
 ## Max HP (derived)
 Engine: `src/lib/player-stats.ts`.
@@ -1123,102 +978,50 @@ Engine: `scripts/extract/extract-curvetables.ts`, `scripts/extract/extract-npcs.
 
 - **Curve X-axis = the target's own effective level**: `effectiveLevel =
   clamp(nearbyPlayerLevel + levelOffsetGlobal, levelMinGlobal,
-  levelMaxGlobal)`, fed directly into the matching
+  levelMaxGlobal)`, fed into the matching
   `CT_Creatures_{Health,Armor}_Universal_Tier<N>` curve. **ESM-proven**: the
-  `Renorm_*` GLOB family, `NPC_.Actor Scaling Info.{Level Min/Max/Offset
-  Global}` wiring, and `Properties[].Curve Table` per-AV attachment are all
-  directly observed. **INFERENCE** (high confidence, not literally labeled in
-  any record): the curve's implicit input axis is "Level" specifically (no
-  `Level` AVIF record exists in the ESM), and "nearbyPlayerLevel" is the
-  requesting player's raw character level — standard Bethesda auto-calc-stats
-  semantics, not provable from the plugin alone. `levelOffsetGlobal` is 0 in
-  every sample to date; kept as a real field since it's structurally present.
-  Curve-tier numbering (`CT_..._Tier<N>`, ~1-59) and Renorm-window numbering
-  (`Renorm_*_Tier<N>`, 00-31) are unrelated schemes that share the word
-  "Tier" — don't conflate them.
-- **Resist Properties fall back RACE → NPC_, per-AV** (found building
-  extract-npcs.ts, not covered by the spike's boss-only sample): Health
-  (0x2D4) is NPC_-only and never appears on a RACE record; the 6 resist AVs
-  frequently live on the RACE record instead of repeating on every NPC_ of
-  that race (e.g. `EncMirelurkCrab_Template` carries zero resist Properties
-  of its own — all 6 come from `MirelurkRace`). `extract-npcs.ts` merges
-  NPC_ Properties over RACE Properties, per AV — verified against ~40 sampled
-  records, zero exceptions found. **INFERENCE** (established
-  "more-specific-record-wins" convention; not documented anywhere Bethesda-side).
-- **Flat-wins tie-break**: when a Properties row carries both a nonzero flat
-  `Value` AND a `Curve Table` (rare), the flat value is authoritative and the
-  curve is ignored — mirrors the MGEF GLOB-magnitude flat-wins convention
-  (esm-cli skill doc). **ESM-proven example**: `RD01_Enc06_ScorchtongueHead`
-  (Ultracite Terror raid head) has flat Health 500000 alongside a
-  `CT_Creatures_Health_Universal_Tier59` ref, and flat 300 physical/energy/
-  fire/cryo/poison resist alongside Tier34-50 curve refs — only its
-  radiation resist (flat 0) actually curve-scales.
-- **`zzz`-prefix CURV rename**: `zzzCT_Creatures_Armor_Universal_Tier49`
-  (formerly `CT_Creatures_Armor_Universal_Tier49`) is Bethesda's
-  "hide-from-CK-browser" convention for a retired-from-new-authoring record —
-  it's still FormID-live. A prefix-only search pattern silently drops it (49
-  files instead of 50); `extract-curvetables.ts` uses a leading `*` wildcard
-  to catch it. **ESM-proven** (ships in the 20260710 dump).
-- **NPC-perk normalized-level adjustment — CONFIRMED**, baked into
-  `levelMinGlobal`/`levelMaxGlobal`: a `crModNormalizedLevel*` PERK on an
-  NPC's own `Perks` array (not just the RACE/NPC_ GLOBs) can Add-onto or
-  Set-replace the level-scaling window via the "Mod NPC Normalized Min
-  Level"/"Mod NPC Normalized Max level" Entry Points (`extract-npcs.ts`'s
-  `resolveNormalizedLevelAdjustment`). Head Hunt bounty bosses
-  (`Burn_BountyTarget_BIG_*`) mostly carry `crModNormalizedLevelPerk_25`
-  (Add +25/+25); Infestation-event bosses carry
-  `HTO_crModNormalizedLevelPerk_Boss` (Set 150/200 — matches their base GLOBs,
-  a no-op in practice).
+  `Renorm_*` GLOB family and `Properties[].Curve Table` per-AV attachment are
+  directly observed. **INFERENCE** (high confidence, unlabeled in any
+  record): the curve's implicit input axis is "Level" specifically (no
+  `Level` AVIF record exists), and "nearbyPlayerLevel" is the requesting
+  player's raw character level — standard Bethesda auto-calc-stats semantics,
+  not provable from the plugin alone.
+- **Resist Properties fall back RACE → NPC_, per-AV**, and a **flat-wins
+  tie-break** when a Properties row carries both a flat Value and a Curve
+  Table — both fully documented, with worked examples, at `extract-npcs.ts`.
+- **`zzz`-prefix CURV rename**: a Bethesda "hide-from-CK-browser" convention
+  for a retired-but-still-FormID-live record; `extract-curvetables.ts` uses a
+  leading `*` wildcard to catch it (else silently drops one tier).
+- **NPC-perk normalized-level adjustment**: a `crModNormalizedLevel*` PERK
+  can Add/Set the level-scaling window independent of the RACE/NPC_ GLOBs —
+  full mechanism and worked examples at `extract-npcs.ts`'s
+  `resolveNormalizedLevelAdjustment`.
 
 ### Epic creatures
 
 - **Per-rank HP multiplier — ESM-PROVEN**: `QUST SQ_EpicCreatures`
   (0x0001C339) VMAD property `EpicRankData` holds the table — `HealthMult`
-  **2.0 / 2.4 / 3.2 / 4.0 / 4.8** at ranks 1–5. (`outgoingDamageMult`
-  1.1/1.15/1.2/1.25/1.3 is present too but OUT OF SCOPE — this app doesn't
-  model enemy outgoing damage.) `getEnemyDefenses` (`src/lib/enemy-defenses.ts`)
-  reads `epicRank` off the npc row directly (data-driven, no caller-supplied
-  override) and scales `hp` only — DR/ER untouched.
+  **2.0 / 2.4 / 3.2 / 4.0 / 4.8** at ranks 1–5. `getEnemyDefenses` scales `hp`
+  only — DR/ER untouched; `outgoingDamageMult` is present but out of scope
+  (`epic-creature.ts`).
 - **Eligibility — ESM-PROVEN**: `GeneratedNpc.epicAllowed`
-  (`scripts/extract/extract-npcs.ts`) checks both the NPC_'s own Keywords and
-  its RACE's Keywords against FLST `EpicCreatureDisallowedKeywords`
-  (0x004FC5B7, 4 members). Both SBQ (`EncScorchbeastQueen01Template`) and
-  Earle (`EN06_LvlWendigoColossus_Nuked`, `WendigoColossusRace`) are
-  `epicAllowed: true`; the 4 curated targets that ARE excluded are all
-  Ultracite Terror raid-boss components (`RD01_Enc04_{Grenadier,Assassin,
-  Brute}`, `RD01_Enc06_ScorchtongueHead`). **`epicAllowed: true` is NOT a
-  claim that a race actually spawns epic** in a given encounter — for most
-  creatures that stays a runtime chance roll with no static ESM signal.
-- **Fixed epic rank IS ESM-provable for specific bosses**, via the summon
-  quest's Virtual Machine Adapter, in one of two shapes
-  (`extract-npcs.ts`'s `BOSS_EPIC_RANK_QUESTS` + `resolveEpicRankFromVmad`):
-  (a) an `EncounterWaves` struct-array property whose boss wave carries
-  `BossEpicLevel` alongside `BossEpicChance: 100` — `CB15_ScorchedEarth`
-  0x003E271D (SBQ's summon quest): rank 3; (b) a boss-alias
-  `defaultforcelegendaryalias` script's `minRank` property —
-  `Storm_RegionBoss` 0x006AD506 (Storm Goliath's 3 boss aliases for the
-  Plasma/Frag/Cryo variants, all `minRank: 3`): rank 3.
-- **Earle/Wendigo Colossus does NOT get a rank** — checked exhaustively and
-  empty: `E06_Colossus` 0x00583D14 (no BossEpicLevel/BossEpicChance on any of
-  its 3 waves, no `defaultforcelegendaryalias` on any of its 4 aliases),
-  `SQ_WendigoColossusSummonAllies`, `RB_Master` 0x004DF720, `E06_PocketWatch`,
-  and the boss NPC_'s own Keywords/Perks. A claim that `E06_Colossus` matches
-  shape (a) at rank 3 circulates informally and does **not** reproduce against
-  a live query.
-- **Loot-list rank ≠ epic creature rank**: a boss dropping N★ gear is not a
-  fixed epic rank N — the drop list and the epic-rank system are unrelated ESM
-  mechanisms. UC Titan's summon quest `E09A_Launcher` 0x0063461B: all 5 waves
-  carry only a `Difficulty` field. Head Hunt's 3★ drop is LVLI
-  `Burn_LL_BountyHunt_LegendaryTemplate_3Star_HeadHunt` 0x00833A16; Bigfoot's
-  4★ is LGDI `RA_LegendaryItems_Weapons_BigfootOnly_Rank4` 0x008833D6 — loot
-  lists, not epic upgrades. All three stay rank-less (`#52`).
-- **Scorchbeast Queen HP — RESOLVED (user)**: the ~32k community figure is the
-  game's OLD HP cap (32767, the signed-integer clamp boss HP hit until the cap
-  was widened ~2023), not an observed live HP, and there is NO
-  per-nearby-player boss-HP scaling (myth). The ESM-derived value (curve HP ×
-  epic HealthMult) is authoritative as computed: SBQ @ L60/L100 ≈ 759,562 /
-  1,305,734 at rank 3; Storm Goliath (level window 50–100, Tier49 curve, also
-  rank 3) ≈ 227,161 / 472,390. No measurement pending.
+  (`extract-npcs.ts`) checks Keywords against FLST
+  `EpicCreatureDisallowedKeywords` (0x004FC5B7). **`epicAllowed: true` is NOT
+  a claim that a race actually spawns epic** in a given encounter — for most
+  creatures that stays a runtime chance roll with no static ESM signal
+  (`epic-creature.ts`).
+- **Fixed epic rank IS ESM-provable for specific bosses** (SBQ, Storm
+  Goliath — both rank 3), via the summon quest's VMAD, in one of two shapes;
+  full mechanism at `extract-npcs.ts`'s `BOSS_EPIC_RANK_QUESTS` +
+  `resolveEpicRankFromVmad`. **Earle/Wendigo Colossus checked exhaustively
+  and does NOT get a rank** — a circulating informal claim to the contrary
+  does not reproduce against a live query (same file).
+- **Loot-list rank ≠ epic creature rank** (UC Titan, Head Hunt, Bigfoot) —
+  full formId-level detail tracked in `#52`, not restated here.
+- **Scorchbeast Queen HP — RESOLVED (user)**: the ~32k community figure is
+  the game's OLD signed-int HP cap (widened ~2023), not an observed live HP;
+  there is NO per-nearby-player boss-HP scaling (myth). The ESM-derived value
+  (curve HP × epic HealthMult) is authoritative — `epic-creature.ts`.
 
 ## Body parts (BPTD-extracted)
 Engine: `scripts/extract/extract-bodyparts.ts`.
@@ -1330,64 +1133,51 @@ weapons.
   picker slot.
 
 ## Unique weapons
-Rework basis: `WeaponsUniqueNamedList` FLST — each reworked unique is a base
-WEAP + a `mod_Custom_*` OMOD at `ap_customName` (identity + effects), plus a
-paint. Legacy standalone WEAP records are dead for everyone (owned items
-auto-converted); their stats are stale and must not be shown.
+Rework basis: `WeaponsUniqueNamedList` FLST, base WEAP + `mod_Custom_*` OMOD
+at `ap_customName` — full mechanism at `weapon-corrections.ts`. Legacy
+standalone WEAP records are dead for everyone (owned items auto-converted);
+their stats are stale and must not be shown.
 
 - Dead legacy WEAPs classify `obtainable: false` via the standard
   NOCRAFT-COBJ rule; a handful of E08B legacies have real-looking-but-
   unreferenced COBJs the heuristic can't catch — hand-hidden with a note to
-  re-review periodically.
+  re-review periodically (`weapon-corrections.ts`).
 - **Still-live standalone uniques** (real FLST/grant refs, kept in the
   roster): CombatRifle_Fixer, 10mm_CircuitBreaker, MoM_BladeOfBastet,
-  MoM_VoiceOfSet_44, PipeSyringer_Vox, atx_alienprobe,
-  BlackPowder_Rifle_Dragon. The Fancy Pump Action Shotgun/Revolver are
-  script-granted quest rewards, not reworked uniques.
+  MoM_VoiceOfSet_44, BlackPowder_Rifle_Dragon. The Fancy Pump Action
+  Shotgun/Revolver are script-granted quest rewards, not reworked uniques.
 - App-side, identity uniques surface as the "Unique" mod slot; equipping one
   renames the weapon in the Build summary.
 - **Deliberately note-only, no formula bucket** (extracted, badged `inert`,
-  never wired): damage-TAKEN perks, `EnableAmmoSpenderOnKill` (boolean flag,
-  already reachable via the manual `bulletStormStacks` slider),
+  never wired): damage-TAKEN perks, `EnableAmmoSpenderOnKill`,
   `STAT_DeflectChance`, sneak/detection AVs, `RefractingProjectileChance`
-  (V63 Laser Rifle beam-refract chance, native-consumed via its DFOB — no
-  ESM-visible damage semantics; user decision 2026-07-21), and Self-delivery
-  ENCH damage (Xerxos's `SelfRadDamage` wielder irradiation — the
-  `enchantmentModifiers` gate in `scripts/extract/extract-omods.ts` keeps
-  self-damage out of weapon output).
+  (V63 Laser Rifle, native-consumed via its DFOB — no ESM-visible damage
+  semantics; user decision 2026-07-21), and Self-delivery ENCH damage
+  (Xerxos's `SelfRadDamage` — `extract-omods.ts`'s `enchantmentModifiers`
+  gate keeps self-damage out of weapon output).
 - **Pyro-Technician's/Cryologist's/Toxicologist's**: pulled out of shipping
-  data by a `POST_` staging-prefix rename (junk-filtered at the extraction
-  root) — re-adjudicate craftability when a dump drops the prefix.
-- **Gamma Gun**: its own weapon-level explosion IS now modeled
-  (`fromExplosion`, graduated out of `noDamage` 2026-07-13 — see **Launcher
-  explosion damage**). Xerxos (Season 7 reward, user-confirmed live
-  2026-07-21) ships as an identity-mod preset on the base Gamma Gun
-  (`mod_Custom_Xerxos`); the standalone `SCORE_S7_GammaGun_Xerxos` WEAP is
-  the usual dead REPAIRONLY legacy record and stays excluded.
-- **Daisy Cutter** (unique Fat Man, rebuilt 20260724 — see
-  `Data/notes/20260717_to_20260724/patch-summary.md`): its old flat 30%
-  clip-refill chance became an 8-step `+20%` dbm ladder gated on
-  `GetValue(RadResistExposure) ≥ 1000..8000` (`radResistAtLeast` condition,
-  `resolve.ts`), capping at **+160% at 8000** with nothing beyond. No armor
-  model derives player Rad Resistance from equipped gear (same gap as
-  Berserker's `playerDamageResist`), so it's a manual knob,
-  `PlayerConditions.playerRadResist`, default 0.
+  data by a `POST_` staging-prefix rename — re-adjudicate craftability when
+  a dump drops the prefix.
+- **Gamma Gun**: its own weapon-level explosion IS now modeled (graduated
+  out of `noDamage` 2026-07-13 — see **Launcher explosion damage**). Xerxos
+  ships as an identity-mod preset on the base Gamma Gun — full detail
+  `weapon-corrections.ts`.
+- **Daisy Cutter** (rebuilt 20260724): an 8-step `+20%` dbm ladder gated on
+  `radResistAtLeast`, capping at **+160% at 8000** — no armor model derives
+  player Rad Resistance from gear (same gap as Berserker's), so it's a
+  manual knob default 0. Full ladder: `src/types/modifiers.ts`.
 - **Instance-only target keywords** (~24 unique `ap_customName` mods): the
   game applies a second target keyword at instance-creation via template
-  combination, which the base WEAP never has — the shared eligibility
-  predicate lets template membership bypass the keyword subset check.
+  combination — the shared eligibility predicate lets template membership
+  bypass the keyword subset check (`omod-eligibility.ts`).
 - **Unnamed identity effects** (Holy Fire, Cultist Piercer, Elder's Mark,
   ...) were silently dropped by the no-Name filter — rescued when
   template-member + has properties + sits on an identity attach point.
 - **Cursed mods** (`ap_curse`, Nuka-World on Tour): real stat payloads on a
-  cosmetic naming slot, no `ObjectTypeUnique` — surfaced by the same
-  modifiers+template-membership gate, labeled "Cursed". Own dedicated attach
-  point since the 20260724 patch (rode the shared `ap_Item_Description` slot
-  before it — `omods.ts` `SLOT_LABEL_OVERRIDES`/`RENAMING_SLOTS`).
+  cosmetic naming slot, no `ObjectTypeUnique` — own dedicated attach point
+  since the 20260724 patch (`omods.ts`).
 - **Dom Pedro**: its Explosive muzzle mods' EXPL payload is hand-supplied
-  via `omodModifierAdditions` as a ballistic-scoped ADD curve (right paper
-  number, but explosive-only perk interactions aren't modeled — the engine
-  has no OMOD-conditional explosive component).
+  (right paper number, but explosive-only perk interactions aren't modeled).
 - **The V.A.T.S. Unknown**: base OMOD SETs `VATSCriticalMultAdjustMin/Max` =
   0.2/2.0 (unmapped AVs, zero extracted modifiers) — **USER-CONFIRMED** this
   is a random ×0.2–×2.0 roll on the additive crit-damage BONUS only (not the
@@ -1401,133 +1191,68 @@ auto-converted); their stats are stale and must not be shown.
 
 ## Armor pipeline (Phase 3 extraction)
 
-- **ESM-PROVEN**: armor/power-armor OMODs (`Data."Form Type" = "Armor"`, not a
-  distinct "PowerArmor" value — verified on Battle-Loader's PA variant
-  `mod_Legendary_PowerArmor4_BattleLoaders`) share the same OMOD record type
-  as weapon mods, gated only by that field. `extract-omods.ts` emits both
-  `omods.json` (Weapon) and `armor-omods.json` (Armor) from one shared
-  list+get pass (`classifyOmodRecordExclusion(record, allowedFormTypes)`),
-  leaving weapon output byte-identical to a weapon-only extraction.
+- **ESM-PROVEN**: armor/power-armor OMODs (`Data."Form Type" = "Armor"`, not
+  a distinct "PowerArmor" value) share the same OMOD record type as weapon
+  mods, gated only by that field — full extraction split at `extract-omods.ts`.
 - **ESM-PROVEN**: the OMOD `Properties[].Property` enum differs between
-  weapon and armor mods for at least one entry — `ActorValues` (weapon,
-  numeric value 94) vs `Actor Values` with a space (armor, value 10),
-  otherwise semantically identical. `propertyName()`'s `PROPERTY_NAME_ALIASES`
-  normalizes this; `Enchantments`/`Keywords` carry different numeric values
-  too but the same string name in both enums (no alias needed there). A real
-  weapon/armor spelling split for a different property would surface as an
-  `unknownProperties` entry, same safety net as always.
+  weapon and armor mods for at least one entry (`ActorValues` vs
+  `Actor Values` with a space) — `propertyName()`'s `PROPERTY_NAME_ALIASES`
+  normalizes this (`extract-omods.ts`).
 - **ESM-PROVEN**: `GetIsPlayer` condition rows at PERK tab-index 2 mean "is
   the entry point's target the player" — the OPPOSITE reading from a
   tab-0/self-gate row, same inversion as Contact-delivery's `subjectIsTarget`
-  flag (see **Weapon-intrinsic DoT & OMOD replacement**). Consequence:
-  `Wanted_DebtorsDisease_Perk`'s tab-2 `GetIsPlayer` row is a PVP-only −50%
-  dbm penalty, correctly resolving `inactive` in this PvE calculator.
-- **ESM-PROVEN**: `WornApparelHasKeywordCount` (worn-piece-count tiers —
-  Battle-Loader's 1/2/3/4/≥5, Limit-Breaking Armor, Crusaders S.P.E.C.I.A.L.)
-  translates to a new `{kind: 'wornPieceCount', keyword, count, orMore?}`
-  condition (`conditions.ts`, pattern: `GetGroupTargetCount`). Engine half
+  flag (see **Weapon-intrinsic DoT & OMOD replacement**). Full worked
+  example (Battle-Loader's): `conditions.ts`.
+- **ESM-PROVEN**: `WornApparelHasKeywordCount` translates to a
+  `{kind: 'wornPieceCount', ...}` condition — `conditions.ts`. Engine half
   SHIPPED — see "Armor" below.
-- **ESM-PROVEN**: Battle-Loader's PERK entry point 199 ("Instant Reload Clip
-  On Bash") emits `Function Type: Float, Function: Set Value, Float: 1.0` on
-  all 5 tiers — a boolean trigger placeholder, NOT the 15/30/45/60/75% chance
-  (that value lives in each tier's own `GetRandomPercent` condition row).
-  `mgef.ts` narrowly special-cases this exact shape (pattern: the existing
-  EP-172/`Mod Ammo Used Count` case) to emit the real chance into
-  `reloadSkipChance`, leaving `GetRandomPercent`/`IsPowerAttacking`/`GetDead`
-  as `unresolved` conditions on the extracted modifier. Those are **not**
-  harmless: `evalCondition`'s `unresolved` case always returns `null`, so any
-  one of them permanently deactivates the modifier regardless of
-  `wornPieceCount` — see **Armor** below for the override that drops them.
+- **ESM-PROVEN**: Battle-Loader's PERK entry point 199 emits a boolean
+  trigger placeholder, NOT the real 15/30/45/60/75% chance (that lives in
+  each tier's own `GetRandomPercent` row) — `mgef.ts` special-cases this
+  shape into `reloadSkipChance`, leaving the rest `unresolved` — see
+  **Armor** below for the override that drops them.
 - `extract-armor.ts` is grounding-only: `{id, formId, name, obtainable}` per
-  ARMO record, feeding armor-OMOD obtainability the same way
-  `obtainableWeaponFormIds` feeds weapon-OMOD obtainability (`ObtainabilityClassifier`'s
-  new ARMO branch, parallel to its WEAP one). No resistances, no mod slots,
-  no UI consumer — that's later Phase 3 scope.
+  ARMO record, feeding armor-OMOD obtainability the same way weapon
+  obtainability works. No resistances, no mod slots, no UI consumer — later
+  Phase 3 scope.
 
 ## Armor (Phase 3 engine + UI, 2026-07-18)
 
-- **DESIGN**: the Armor checklist (`ArmorSection.tsx`) is
-  deliberately slim (worn-piece COUNT per effect, not a per-piece armor/mod
-  picker — user decision). `PlayerConfig.armorEffects: Record<effectId,
-  count>` is the single source of truth; `resolveLoadout` derives both the
-  folded `Modifier[]` list AND `PlayerConditions.wornPieceCounts` from it
-  (`src/data/armor-modifiers.ts`) — the UI never sets either downstream field.
+- **DESIGN**: the Armor UI (`ArmorSection.tsx`) is a per-slot-style
+  picker+count, matching `WeaponSection`'s mod-selector convention.
+  `PlayerConfig.armorEffects: Record<effectId, count>` is the single source
+  of truth; `resolveLoadout` derives both the folded `Modifier[]` list AND
+  `PlayerConditions.wornPieceCounts` from it — the UI never sets either
+  downstream field (`src/data/armor-modifiers.ts`).
 - **DESIGN**: per-piece scaling has two shapes, detected structurally (not by
-  source name) in `getArmorEffects`/`getArmorEffectModifiers`:
-  - Most effects (Unyielding, 2★ SPECIAL, Powered, Active, Healthy,
-    Bruiser's/Ranger's, Propelling, PA Misc/Lining/underarmor mods) extract
-    as ONE flat per-piece modifier with no `wornPieceCount` condition of its
-    own — the checklist count multiplies `value` (or `curveScale` for
-    curve-driven ones, e.g. Unyielding's stepped SPECIAL curves) directly.
-  - "Self-scaling" effects (any modifier carrying its own `wornPieceCount`
-    condition — Battle-Loader's, Limit-Breaking Armor) already extract as N
-    pre-tiered modifiers; the checklist count feeds
-    `PlayerConditions.wornPieceCounts` instead and the modifiers pass through
-    unscaled, letting the condition eval pick the one active tier.
+  source name) — flat per-piece (count multiplies `value`/`curveScale`
+  directly) vs "self-scaling" (already N pre-tiered modifiers, count feeds
+  `wornPieceCounts` instead) — full detail `armor-modifiers.ts`.
 - **Unyielding threshold semantics — GAME-CHANGE-PENDING** (user-confirmed
-  2026-07-19): the extracted curve's near-vertical step points (e.g.
-  x=0.1999→y=3, x=0.2→y=2 at the 20% break, same shape at 40%/60%) make
-  `interpolateCurve`'s linear interpolation (`src/lib/curve-tables.ts`)
-  evaluate the +3/+2/+1 SPECIAL tiers on a strict-`<` boundary — exactly
-  20%/40%/60% HP reads the LOWER tier, matching the CURRENT game build. An
+  2026-07-19): the extracted curve's near-vertical step points (x=0.1999→y=3,
+  x=0.2→y=2 at the 20% break, same at 40%/60%) evaluate the +3/+2/+1 SPECIAL
+  tiers on a strict-`<` boundary — matching the CURRENT game build. An
   announced future patch flips the comparison to `<=` at all three
   thresholds; when it ships, the stepped-curve breakpoints (or the
   step-eval convention itself) need revisiting, not just a data refresh.
-- **Battle-Loader's override (ESM-derived, not wiki)**: its extracted
-  modifiers carry `unresolved` conditions (`GetRandomPercent`,
-  `IsPowerAttacking`, `GetDead`) that permanently deactivate them regardless
-  of `wornPieceCount` (see the Armor-pipeline bullet above).
-  `src/data/overrides/armor-values.ts` (`armorLegendaryValueOverrides`)
-  REPLACES the modifiers, keeping only the `wornPieceCount` tier — the
-  baked-in value already IS the `GetRandomPercent` chance (keeping it as a
-  gate would double-apply the same probability); `GetDead` has no failure mode
-  this calculator models; `IsPowerAttacking` (the real per-bash trigger) is
-  dropped as a CONDITION, since bash cadence — how often a bash happens vs. an
-  ordinary reload — is still unmodeled. Its bash-ness survives structurally
-  via the dedicated `reloadSkipChanceBash` bucket, which carries its own time
-  cost (`PlayerConditions.battleLoadersBashSec`) instead of Quick Hands'
-  free-skip treatment — see **Reload-skip & free-ammo expected value**.
-- **Bruiser's/Ranger's override (ESM-derived)**: both ("Melee/Ranged Weapons
-  Deal +5% Bonus Damage, up to +25% on Full Stack" — both fields
-  ESM-extracted) type their worn-piece gate as a `weaponKeyword` check on
-  `HasLegendary_Armor_{Bruiser,Ranger}` — a keyword the OMOD adds to the ARMOR
-  piece, never to a weapon, so the condition can never pass as extracted.
-  `armor-values.ts` drops that broken keyword condition (keeping the real
-  weapon-class gate) and lets the generic per-piece value×count scaling
-  reconstruct the 5/10/15/20/25% ladder from the single 5%-per-piece value.
-- **EXCLUDED (data-quality, `hiddenArmorOmodIds`)**: Overeater's (its only
-  modifier is a `maxHealth` curve the ESM itself flags zero-magnitude/
-  script-scaled; its real DR/ER-per-buff mechanic is incoming-scope,
-  unextracted — `#49`) and Punishing (its two
-  modifiers are `HasLegendary_Weapon_HealAllies`-gated noise from a shared
-  `LegendaryCommonWeaponPerk` chase — same collision class documented under
-  Crippling in `legendary-values.ts` — not a real effect; its actual reflect-
-  damage mechanic, `ActorValues` on `ReflectMeleeDamage`, never extracted).
+- **Battle-Loader's + Bruiser's/Ranger's overrides**: both replace a broken
+  ESM-extracted condition (unresolved `GetRandomPercent`/`IsPowerAttacking`/
+  `GetDead`; a `weaponKeyword` gate that can never match a weapon) with the
+  real mechanic — full per-condition rationale at `armor-values.ts`.
+- **EXCLUDED (data-quality, `hiddenArmorOmodIds`)**: Overeater's (real DR/ER
+  mechanic is incoming-scope, unextracted — `#49`) and Punishing (extracted
+  modifiers are `LegendaryCommonWeaponPerk`-chase noise, not the real
+  reflect-damage mechanic) — full detail `armor-corrections.ts`.
 - **Limit-Breaking Armor is a sequential multiplier, not a bucket fold**: its
-  5-tier `critConsumption` MUL_ADD (−10%..−50%) must NOT fold through generic
-  `foldOps` arithmetic alongside Critical Savvy's SET. `foldOps`' "MUL_ADD
-  always scales the ORIGINAL base, even past a SET" rule (verified for OMOD
-  stat properties) would read "reduces the cost by X%" as a percentage off the
-  bucket's abstract 100 base (55 + (−0.5×100) = 5) instead of off whatever
-  Critical Savvy already set the cost to (55 × (1−0.5) = 27.5, the
-  hand-verified anchor). `crit-meter.ts` therefore detects self-scaling
-  `critConsumption` modifiers generically (MUL_ADD + a `wornPieceCount`
-  condition) and applies them as a separate sequential multiplier — the same
-  "independent stacking multiplier" shape as `foldWholeDamage` — which
-  reproduces the 16 LCK + Crit Savvy 3 + 5× Limit Breaking →
-  crit-every-2nd-shot anchor exactly. Limit-Breaking is sourced from real OMOD
-  data via the Armor checklist; `codec.ts` migrates legacy
-  `pc.limitBreakingPieces` payloads (a retired manual toggle) into the
-  equivalent checklist selection.
-- **ASSUMPTION**: worn-piece maxCount for non-legendary effects (PA Misc,
-  armor Lining, underarmor styles) is derived from body-slot tags observed in
-  the dedup group's OMOD ids (`Torso`/`Limb`/`Helmet`) rather than real armor-
-  slot topology data (none exists in this dataset) — Lining mods (Torso +
-  Limb variants) get max 2, single-slot PA Misc/underarmor mods get max 1.
-  Legendary-slot effects (`ap_Legendary1-4`) always get max 5 (5 armor
-  pieces), including Battle-Loader's/Limit-Breaking (self-scaling — the max
-  bounds the checklist count, not a value multiplier). The 5-piece ceiling
-  is additionally a shared budget per star tier — see `docs/adr/0004`.
+  `critConsumption` MUL_ADD must NOT fold through generic `foldOps`
+  alongside Critical Savvy's SET — full derivation + the hand-verified
+  anchor (16 LCK + Crit Savvy 3 + 5× Limit Breaking → crit-every-2nd-shot) at
+  `crit-meter.ts`.
+- **ASSUMPTION**: worn-piece maxCount for non-legendary effects is derived
+  from body-slot tags observed in the OMOD id (`Torso`/`Limb`/`Helmet`)
+  rather than real armor-slot topology data — none exists in this dataset.
+  Legendary-slot effects always get max 5; that ceiling is additionally a
+  shared budget per star tier — see `docs/adr/0004`.
 
 ## Known gaps / deferred
 - **Follow Through / Taking One for the Team** extract with empty `modifiers`
