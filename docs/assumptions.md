@@ -430,6 +430,18 @@ player/weapon stat, overriding the flat magnitude. Extracted automatically
   the effective weapon's projectile count); crippled-limb presence is a
   binary GATE, not a per-limb scale like Bully's (`perCrippledLimb` with
   `max: 1`).
+- **AV pass-through** (issue #44, 2026-08-03): a zero-magnitude, curve-less
+  Peak Value Modifier whose effect-level Actor Value names a player counter
+  reads its magnitude off that counter at runtime instead of a Curve Table —
+  Barbarian (STR) and Mind Over Matter (INT), both "+1 &lt;SPECIAL&gt; per
+  kill while on a Kill Streak (Max 10)". `mgef.ts` synthesizes an identity
+  curve (0→0, 1→1, 10→10) on the counter's axis, guarded to MGEFs that
+  themselves route to a `special*` bucket (units must match — counter points
+  in, SPECIAL points out) so it can't misfire on e.g.
+  `Legendary_Armor_OvereaterAddValue` (AV `hungerThirstTier`). The card text
+  omits the numeral ("+ STR per kill"); slope 1 is the pass-through itself,
+  corroborated by Mind Over Matter's parallel "+1 INT per kill" wording.
+  Clamp-at-10 and decay behavior remain unverified — issue #56.
 
 | Effect | Input (X) | Curve | Notes |
 |---|---|---|---|
@@ -439,6 +451,8 @@ player/weapon stat, overriding the flat magnitude. Extracted automatically
 | Aristocrat's | caps on hand | 0→0…17000→30…29000→50 | up to +50% at 29k caps |
 | Juggernaut's (weapon mod) | ABSOLUTE current HP | (0→0, 1000→100) | +0.1%/HP; see **Max HP (derived)** |
 | Adrenal (legendary + perk, both) | kill streak | (0→0, 1→10, 10→100) | +10%/stack; curve domain confirms the streak cap of 10 |
+| Barbarian (3★ melee legendary) | kill streak | (0→0, 1→1, 10→10) | +1 STR/kill; AV pass-through, no ESM curve — see **AV pass-through** |
+| Mind Over Matter (perk + unique plasma gun) | kill streak | (0→0, 1→1, 10→10) | +1 INT/kill; same AV pass-through shape |
 | Polished | equipped weapon condition % | 27-point table, (1.0→0)…(2.0→+60%) | 100% = full condition (no bonus), 200% = over-repaired max; UI field `weaponConditionPct` 0–200 |
 
 (Berserker's/Iron Fist's WIELDER-DR curve input is documented separately —

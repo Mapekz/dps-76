@@ -267,9 +267,7 @@
   ],
   "addedKeywords": [],
   "hasEnchantments": true,
-  "notes": [
-   "MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -45795,17 +45793,45 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x005EC269:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x005EC269",
+     "edid": "mod_Custom_PlasmaGun_MindOverMatter",
+     "name": "Mind Over Matter"
+    },
+    "bucket": "specialIntelligence",
+    "op": "ADD",
+    "curve": {
+     "input": "killStreak",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": 1
+      },
+      {
+       "x": 10,
+       "y": 10
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed",
    "CustomItemName_MindOverMatter"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "perk MindOverMatterPerk: MGEF AbPerkFortifyIntelligence: zero magnitude, no curve — script/scaled, needs override",
-   "perk MindOverMatterPerk: MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -46310,9 +46336,7 @@
    "ma_SoleSurvivor"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "perk SoleSurvivorPerk: MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -68860,9 +68884,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -71163,17 +71185,45 @@
   "targetKeywords": [
    "ma_legendarycrafting_weaponmelee"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0083DA6B:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0083DA6B",
+     "edid": "mod_Legendary_Weapon3_Melee_Barbarian",
+     "name": "Barbarian"
+    },
+    "bucket": "specialStrength",
+    "op": "ADD",
+    "curve": {
+     "input": "killStreak",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": 1
+      },
+      {
+       "x": 10,
+       "y": 10
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "BOUNTY_HasLegendary_Weapon_Barbarian"
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF AbPerkFortifyStrength: zero magnitude, no curve — script/scaled, needs override",
-   "MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -123258,9 +123308,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

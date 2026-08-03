@@ -91,6 +91,56 @@ describe('derivePlayerStats', () => {
   });
 });
 
+describe('derivePlayerStats: AV pass-through (Barbarian killStreak→specialStrength, 2026-08-03)', () => {
+  // Mirrors Barbarian's extracted shape (mgef.ts's AV-pass-through rule):
+  // specialStrength ADD, curve.input killStreak, identity points 0..10.
+  const barbarianStr: Modifier = {
+    id: 'test:barbarian',
+    source: {
+      kind: 'omod',
+      formId: '0x0083DA6B',
+      edid: 'mod_Legendary_Weapon3_Melee_Barbarian',
+      name: 'Barbarian',
+    },
+    bucket: 'specialStrength',
+    op: 'ADD',
+    curve: {
+      input: 'killStreak',
+      points: [
+        { x: 0, y: 0 },
+        { x: 1, y: 1 },
+        { x: 10, y: 10 },
+      ],
+    },
+    curveScale: 1,
+    conditions: [],
+  };
+
+  it('contributes 0 STR at kill streak 0 (curve clamps to its own x=0 point)', () => {
+    const { special } = derivePlayerStats([barbarianStr], baseSpecial({ strength: 5 }), {
+      ...conditions,
+      adrenalineStacks: 0,
+    });
+    expect(special.strength).toBe(5);
+  });
+
+  it('contributes +10 STR at kill streak 10 (the Max 10 cap)', () => {
+    const { special } = derivePlayerStats([barbarianStr], baseSpecial({ strength: 5 }), {
+      ...conditions,
+      adrenalineStacks: 10,
+    });
+    expect(special.strength).toBe(15);
+  });
+
+  it('interpolates between kill-streak points (streak 4 → +4 STR)', () => {
+    const { special } = derivePlayerStats([barbarianStr], baseSpecial({ strength: 5 }), {
+      ...conditions,
+      adrenalineStacks: 4,
+    });
+    expect(special.strength).toBe(9);
+  });
+});
+
 describe('derivePlayerStats: effective SPECIAL clamp', () => {
   it('defaults to [1, 100] (the SPECIAL AVIF floor/ceiling) when no clamp is passed', () => {
     const debuff = specialMod('specialStrength', -50);

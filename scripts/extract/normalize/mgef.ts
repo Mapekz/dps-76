@@ -452,6 +452,16 @@ export interface AvifRoute {
  */
 const OUT_OF_SCOPE_INSTANT_RESTORE_AVS = new Set(['Health', 'ActionPoints']);
 
+/**
+ * Arming flags with no damage meaning of their own — routing them would be a
+ * no-op, and the "needs mapping" note buried real gaps across 7 records
+ * (Adrenal weapon/armor, Barbarian, Lawbringer, Thrill-Seeker's, Sole
+ * Survivor, Mind Over Matter, Adrenal Reaction). EnableKillStreak (AVIF
+ * 0x0080B56A) only ENABLES the shared kill-streak counter (AV 0x00000399);
+ * every source's actual bonus rides a separate effect that routes normally.
+ */
+const NO_OP_FLAG_AVIFS = new Set(['EnableKillStreak']);
+
 const PLUMBING_PERKS = ['STAT_DamagePerk', 'STAT_CritDamagePerk', 'STAT_DamageVsPerk'];
 
 export function collectConditionFormIds(rows: RawCondition[], into: Set<string>): void {
@@ -591,6 +601,16 @@ const CURVE_INPUT_AVS: Record<string, CurveInput> = {
   // GetEquippedWeaponHealthPercent condition row.
   '0x0000039F': 'weaponCondition',
 };
+
+/**
+ * Counter axes an AV pass-through effect (see the `effect.magnitude === 0`
+ * branch below) may be read from, and the counter's cap — the AV pass-through
+ * curve's domain runs 0..max. killStreak: 10 — both Barbarian's and Mind Over
+ * Matter's card text say "(Max 10)", the MESG HelpAdrenaline help text states
+ * the cap, and every sibling kill-streak curve in the ESM (Adrenal, Sole
+ * Survivor, Crowd Control) ends its X domain at 10.
+ */
+const AV_PASSTHROUGH_DOMAINS: Partial<Record<CurveInput, number>> = { killStreak: 10 };
 
 /**
  * Curve inputs with NO Actor Value at all (curveInputAv is null): the input
@@ -872,6 +892,8 @@ export function translate(
   }
   if (!mgef.actorValue) return result;
 
+  const avifEdid = edidByFormId.get(mgef.actorValue) ?? mgef.actorValue;
+
   // Value curve (Bloodied, Nerd Rage...): Y at X = input AV; overrides magnitude.
   let curve: ValueCurve | undefined;
   let effectiveMagnitude = effect.magnitude;
@@ -889,10 +911,41 @@ export function translate(
       return result;
     }
   } else if (effect.magnitude === 0) {
-    result.notes.push(
-      `MGEF ${mgef.edid}: zero magnitude, no curve — script/scaled, needs override`,
-    );
-    return result;
+    // AV pass-through: a zero-magnitude, curve-less Peak Value Modifier whose
+    // effect-level Actor Value names a player counter reads its magnitude off
+    // that counter at runtime — Barbarian (OMOD 0x0083DA6B → ENCH 0x0083F305 →
+    // MGEF AbPerkFortifyStrength 0x004351E3, "+ STR per kill while on a Kill
+    // Streak (Max 10).") and Mind Over Matter (PERK 0x008F2AEC → SPEL
+    // 0x008F2AEF → MGEF AbPerkFortifyIntelligence 0x004351E1, "Gain +1 INT per
+    // kill while on a Kill Streak (Max 10)"). Guarded on the MGEF's OWN AV
+    // routing to a SPECIAL-point bucket so the units match (counter points in
+    // → SPECIAL points out); a blanket rule would also fire on
+    // Legendary_Armor_OvereaterAddValue (AV hungerThirstTier), where identity
+    // would be wrong. ESM census over the 20260724 dump: exactly these two
+    // effects match (ench_IntFromHacking is the only other zero-magnitude
+    // SPECIAL-fortify candidate, and its input AV 0x00356A14 is unmapped, so
+    // it correctly falls through to the note below).
+    const passthroughInput = resolveCurveInput(effect.curveInputAv, mgef.edid);
+    const max = passthroughInput ? AV_PASSTHROUGH_DOMAINS[passthroughInput] : undefined;
+    if (
+      passthroughInput &&
+      max !== undefined &&
+      FALLBACK_AVIF_ROUTES[avifEdid]?.bucket.startsWith('special')
+    ) {
+      curve = {
+        input: passthroughInput,
+        points: [
+          { x: 0, y: 0 },
+          { x: 1, y: 1 },
+          { x: max, y: max },
+        ],
+      };
+    } else {
+      result.notes.push(
+        `MGEF ${mgef.edid}: zero magnitude, no curve — script/scaled, needs override`,
+      );
+      return result;
+    }
   }
 
   // Detrimental flag: the magnitude REDUCES the actor value (mutation/
@@ -908,8 +961,6 @@ export function translate(
     }
     effectiveMagnitude = -effectiveMagnitude;
   }
-
-  const avifEdid = edidByFormId.get(mgef.actorValue) ?? mgef.actorValue;
 
   const allConds = [...effectConds];
   if (effect.duration > 0 && !opts.timedIsActive) {
@@ -963,6 +1014,8 @@ export function translate(
     // RestoreActionPoints/Food, Brain Bombs...) are out of scope by design —
     // the fortify (Peak Value Modifier) route on the same AV is what's modeled
     // (user decisions 2026-07-14 health / 2026-07-15 AP).
+  } else if (NO_OP_FLAG_AVIFS.has(avifEdid)) {
+    // Documented skip, not a gap — see NO_OP_FLAG_AVIFS above.
   } else if (opts.noteUnroutedAvs) {
     // Without this a value-modifier effect vanishes silently and the record
     // looks inexplicably empty in review (the pre-fix Juggernaut's failure mode).

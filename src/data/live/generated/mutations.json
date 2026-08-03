@@ -83,7 +83,6 @@
   ],
   "notes": [
    "Mutation_AdrenalReaction: MGEF abMutationCount: no route for AV MutationCount — needs mapping",
-   "Mutation_AdrenalReaction: MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping",
    "Mutation_AdrenalReaction: MGEF Mutation_AdrenalReaction_TextDummy archetype Script — needs override",
    "Mutation_AdrenalReaction: MGEF Mutation_AdrenalReaction_TextDummySuper archetype Script — needs override"
   ],

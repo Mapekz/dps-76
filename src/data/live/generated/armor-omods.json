@@ -68951,9 +68951,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -70139,8 +70137,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "MGEF AbPerkFortifyLimbDamageResistance: zero magnitude, no curve — script/scaled, needs override",
-   "MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping"
+   "MGEF AbPerkFortifyLimbDamageResistance: zero magnitude, no curve — script/scaled, needs override"
   ],
   "obtainable": true
  },
@@ -70206,9 +70203,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -70289,9 +70284,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -71772,9 +71765,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -72635,9 +72626,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -72722,9 +72711,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "MGEF abEnableKillStreak: no route for AV EnableKillStreak — needs mapping"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

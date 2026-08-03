@@ -20877,13 +20877,43 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x008F2AEC:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008F2AEC",
+       "edid": "MindOverMatterPerk",
+       "name": "Mind Over Matter",
+       "rank": 1
+      },
+      "bucket": "specialIntelligence",
+      "op": "ADD",
+      "curve": {
+       "input": "killStreak",
+       "points": [
+        {
+         "x": 0,
+         "y": 0
+        },
+        {
+         "x": 1,
+         "y": 1
+        },
+        {
+         "x": 10,
+         "y": 10
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
-  "notes": [
-   "MGEF AbPerkFortifyIntelligence: zero magnitude, no curve — script/scaled, needs override"
-  ]
+  "notes": []
  },
  {
   "family": "MinRonnieShawPerk",

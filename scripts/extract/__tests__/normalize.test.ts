@@ -952,6 +952,108 @@ describe('translateConditions (Stage C3, killstreak GetValue tiers)', () => {
   });
 });
 
+describe('translate (AV pass-through — Barbarian/Mind Over Matter, 2026-08-03)', () => {
+  // AbPerkFortifyStrength/AbPerkFortifyIntelligence shape: Peak Value
+  // Modifier, magnitude 0, no curve table, effect-level Actor Value =
+  // killStreak (0x00000399).
+  const strengthEdids = new Map<string, string>([['0xSTR', 'Strength']]);
+  const intelligenceEdids = new Map<string, string>([['0xINT', 'Intelligence']]);
+
+  it('a zero-magnitude SPECIAL-fortify effect on the killStreak AV becomes an identity killStreak curve', () => {
+    const r = translate(
+      mgef({ actorValue: '0xSTR', archetype: 'Peak Value Modifier' }),
+      effect({ magnitude: 0, curveInputAv: '0x00000399' }),
+      noRoutes,
+      strengthEdids,
+    );
+    expect(r.notes).toEqual([]);
+    expect(r.modifiers).toEqual([
+      {
+        bucket: 'specialStrength',
+        op: 'ADD',
+        curve: {
+          input: 'killStreak',
+          points: [
+            { x: 0, y: 0 },
+            { x: 1, y: 1 },
+            { x: 10, y: 10 },
+          ],
+        },
+        curveScale: 1,
+        conditions: [],
+      },
+    ]);
+  });
+
+  it('applies the same pass-through to Intelligence (Mind Over Matter)', () => {
+    const r = translate(
+      mgef({ actorValue: '0xINT', archetype: 'Peak Value Modifier' }),
+      effect({ magnitude: 0, curveInputAv: '0x00000399' }),
+      noRoutes,
+      intelligenceEdids,
+    );
+    expect(r.modifiers).toEqual([
+      {
+        bucket: 'specialIntelligence',
+        op: 'ADD',
+        curve: {
+          input: 'killStreak',
+          points: [
+            { x: 0, y: 0 },
+            { x: 1, y: 1 },
+            { x: 10, y: 10 },
+          ],
+        },
+        curveScale: 1,
+        conditions: [],
+      },
+    ]);
+  });
+
+  it('a zero-magnitude NON-SPECIAL effect on the killStreak AV keeps the "needs override" note (no blanket rule)', () => {
+    // Same magnitude/curve/AV shape as Barbarian, but routed to a non-SPECIAL
+    // bucket — mirrors Legendary_Armor_OvereaterAddValue (hungerThirstTier
+    // AV), where an identity pass-through would be wrong.
+    const hungerEdids = new Map<string, string>([['0xHUNGER', 'HungerThirstTier']]);
+    const r = translate(
+      mgef({ actorValue: '0xHUNGER', archetype: 'Peak Value Modifier' }),
+      effect({ magnitude: 0, curveInputAv: '0x00000399' }),
+      noRoutes,
+      hungerEdids,
+    );
+    expect(r.modifiers).toHaveLength(0);
+    expect(
+      r.notes.some((n) => n.includes('zero magnitude, no curve — script/scaled, needs override')),
+    ).toBe(true);
+  });
+
+  it('a zero-magnitude SPECIAL-fortify effect with an unmapped input AV keeps the note (ench_IntFromHacking)', () => {
+    const r = translate(
+      mgef({ actorValue: '0xINT', archetype: 'Peak Value Modifier' }),
+      effect({ magnitude: 0, curveInputAv: '0x00356A14' }),
+      noRoutes,
+      intelligenceEdids,
+    );
+    expect(r.modifiers).toHaveLength(0);
+    expect(
+      r.notes.some((n) => n.includes('zero magnitude, no curve — script/scaled, needs override')),
+    ).toBe(true);
+  });
+
+  it('EnableKillStreak is a documented no-op skip, not a "no route for AV" note', () => {
+    const enableKillStreakEdids = new Map<string, string>([['0xEKS', 'EnableKillStreak']]);
+    const r = translate(
+      mgef({ actorValue: '0xEKS' }),
+      effect({ magnitude: 1 }),
+      noRoutes,
+      enableKillStreakEdids,
+      { noteUnroutedAvs: true },
+    );
+    expect(r.modifiers).toHaveLength(0);
+    expect(r.notes.some((n) => n.includes('no route for AV'))).toBe(false);
+  });
+});
+
 describe('translateConditions (Stage C4, gender-twin paired family — Action Boy/Girl)', () => {
   const ownFamily = ['0xAB01', '0xAB02', '0xAB03']; // simulated family (e.g. Action Boy)
   const pairedFamily = ['0xAG01', '0xAG02', '0xAG03']; // paired family (e.g. Action Girl)
