@@ -26,9 +26,13 @@ A new `SpeedMult` source after `bun run extract` fails CI until dispositioned he
   the Conditions-section power-armor toggle.
 - Emergency Protocols (PA Misc torso mod, all 10 chassis): `moveSpeedBonus` +25%, gated
   `healthBelowPct 20 (strict)` + `inPowerArmor` — the first armor-OMOD source of this bucket.
-- Propelling (4★ armor/PA legendary, +5%/piece): `moveSpeedBonus`, unconditional — shipped with
+- Propelling (4★ PA legendary, +5%/piece): `moveSpeedBonus`, gated `inPowerArmor` — shipped with
   the armor pipeline (2026-07-18) but never added to this list or the census test's allowlist
-  until now (`collectMoveSpeedSources()` didn't scan `dataset.armorOmods` until this pass).
+  until now (`collectMoveSpeedSources()` didn't scan `dataset.armorOmods` until this pass). The
+  `inPowerArmor` gate is an app-supplied override (`overrides/armor-values.ts`), added 2026-08-03:
+  Propelling has no plain-armor sibling record, and its granting COBJ is gated on the
+  `Workbench_Crafting_PowerArmor` bench keyword — it can only ever be crafted onto a PA piece,
+  even though its own enchantment carries no ESM condition to that effect.
 
 ## Excluded (sprint / swim / event — deliberate)
 

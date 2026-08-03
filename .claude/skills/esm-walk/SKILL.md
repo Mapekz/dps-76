@@ -76,6 +76,35 @@ graph alone couldn't distinguish from live).
    on-record but never released. Confirm against release history or ask the
    user before rescuing anything unfamiliar.
 
+## Power-armor exclusivity (armor OMODs)
+
+Whether an armor-legendary/misc mod can ONLY be worn on power armor
+determines whether its modifiers need an app-supplied `{kind: 'inPowerArmor',
+value: true}` gate — the ESM's own enchantment conditions never state this
+directly (2026-08-03, Propelling: `esm get`/`esm refs`).
+
+1. **Attach point** (`ap_PowerArmor_Misc`/`Lining`/`Torso`/`Helmet`, etc.):
+   PA-body-slot-specific attach points genuinely only exist on power armor —
+   safe, general signal. `extract-omods.ts` already gates every OMOD on such
+   a point.
+2. **`ap_LegendaryN` mods**: legendary-slot mods share attach points across
+   armor AND power armor, so attach point alone can't tell PA-exclusive
+   legendaries (Propelling) from dual-availability ones (Powered, the
+   SPECIAL cards, Bruiser's/Ranger's, Overeater's, Active, Healthy,
+   Limit-Breaking, Crusaders).
+3. **Do NOT use the `ma_PowerArmorMod` Target OMOD Keyword alone** as a
+   PA-exclusivity signal — it's shared by thousands of records including
+   every dual-availability legendary's PA-flavored instance; using it
+   naively gates effects that are legitimately available on regular armor
+   too.
+4. **The reliable check for a legendary-slot mod**: does it have a
+   plain-armor sibling record under the same display name (no → suspect
+   PA-exclusive), and does its granting COBJ (`esm refs <formid>` → the
+   `COBJ`) carry `"Workbench Keyword": "Workbench_Crafting_PowerArmor"`
+   (`esm get` that COBJ)? Both true → PA-exclusive, verified. Model as a
+   single-instance override in `overrides/armor-values.ts` (see Propelling's
+   entry) — don't generalize into an extractor rule from one instance.
+
 ## Where fixes go
 
 - Visibility: `src/data/overrides/corrections.ts` —

@@ -283,4 +283,36 @@ export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> 
       conditions: [{ kind: 'weaponKeyword', keyword: 'WeaponTypeRanged', present: true }],
     },
   ],
+  // Propelling (4★ legendary, mod_Legendary_PowerArmor4_Propelling
+  // 0x00792A29): unlike Bruiser's/Ranger's above, Propelling has no plain-
+  // armor sibling record at all — its own OMOD's Target OMOD Keywords
+  // resolve to ma_legendarycrafting_powerarmor + ma_PowerArmorMod, and its
+  // granting COBJ (co_mod_Legendary_PowerArmor4_Propelling 0x007A120A) is
+  // gated on Workbench Keyword Workbench_Crafting_PowerArmor — verified
+  // 2026-08-03 via `esm get`/`esm refs`. So it can only ever be crafted onto
+  // a power-armor piece, meaning the ESM's own moveSpeedBonus modifier
+  // (unconditional in the extracted data) is APP-INFERRED to also require
+  // `inPowerArmor` here — not an ESM condition, since the enchantment effect
+  // itself carries none. NOT a general rule: `ma_PowerArmorMod` is shared by
+  // thousands of records including ordinary dual-availability legendaries
+  // (Powered, Overeater's, the SPECIAL cards, Active, Healthy, Bruiser's/
+  // Ranger's, Limit-Breaking, Crusaders — all confirmed to have a real
+  // plain-armor sibling record), so it is NOT a safe PA-exclusivity signal
+  // on its own; this override is scoped to the one instance whose COBJ was
+  // individually verified.
+  mod_Legendary_PowerArmor4_Propelling: [
+    {
+      id: '0x00792A29:ench:0',
+      source: {
+        kind: 'omod',
+        formId: '0x00792A29',
+        edid: 'mod_Legendary_PowerArmor4_Propelling',
+        name: 'Propelling',
+      },
+      bucket: 'moveSpeedBonus',
+      op: 'ADD',
+      value: 0.05,
+      conditions: [{ kind: 'inPowerArmor', value: true }],
+    },
+  ],
 };

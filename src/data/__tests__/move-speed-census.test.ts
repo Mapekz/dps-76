@@ -129,7 +129,10 @@ const EXPECTED_MOVE_SPEED_SOURCES: MoveSpeedCensusEntry[] = [
     kind: 'armor',
     name: 'Propelling',
     value: 0.05,
-    conditions: [],
+    // Gated inPowerArmor via armor-values.ts override — COBJ-verified
+    // PA-only crafting restriction, not an ESM condition on the effect
+    // itself (see that override's comment).
+    conditions: [{ kind: 'inPowerArmor', value: true }],
     disposition: 'modeled',
   },
   {

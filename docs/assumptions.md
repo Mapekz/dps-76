@@ -1281,6 +1281,14 @@ their stats are stale and must not be shown.
   Keywords. Besides Emergency Protocols, this newly gates Core Assembly,
   Internal Database, Motion-Assist Servos, Sensor Array, and V.A.T.S. Matrix
   Overlay (all PA-attach-point-exclusive name groups as of the 2026-08-03 dump).
+  Legendary-slot mods (`ap_LegendaryN`) don't carry a PA-specific attach point
+  even when PA-exclusive, so this rule can't catch them — **Propelling** is
+  handled separately as a single verified override (`overrides/armor-values.ts`)
+  keyed off its COBJ's `Workbench_Crafting_PowerArmor` bench restriction, not
+  a general rule: the `ma_PowerArmorMod` keyword it and Propelling both carry
+  is shared by thousands of records, most of which (Powered, the SPECIAL
+  cards, Overeater's, Active, Healthy, Bruiser's/Ranger's, Limit-Breaking,
+  Crusaders) have a real plain-armor sibling and are correctly ungated.
 
 ## Known gaps / deferred
 - **Follow Through / Taking One for the Team** extract with empty `modifiers`
