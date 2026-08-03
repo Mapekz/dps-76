@@ -466,7 +466,19 @@ export type Bucket =
    */
   | 'damageResistGain'
   /** Flat Energy Resist points the WEARER gains (AV EnergyResist 0x000002EB) — mirrors `damageResistGain`, same inert status. */
-  | 'energyResistGain';
+  | 'energyResistGain'
+  /**
+   * Multiplicative incoming-damage-taken modifier the WEARER gets (Entry Point
+   * "Mod Incoming Weapon Damage", self-targeted — e.g. Emergency Protocols'
+   * −50%, Heavyweight's, Lucid's, Unstoppable Monster's, Empath's). Inert: no
+   * player-defense/incoming-damage model exists (mirrors `damageResistGain`'s
+   * status) — exists so the value displays honestly instead of being silently
+   * dropped. Distinct from the TARGET-redirected offensive half of the same
+   * Entry Point (Follow Through / Taking One For The Team), which is
+   * hand-authored as `wholeDamage` in `src/data/manual-uptime.ts` and never
+   * reaches the extractor's generic entry-point routing.
+   */
+  | 'incomingDamageMult';
 
 /**
  * Which fold mechanism consumes a Bucket, and whether that fold's result
@@ -900,6 +912,12 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
     hasEngineEffect: false,
     foldedBy:
       'none — wearer-side resist mitigation not modeled (AV EnergyResist extracted via FALLBACK_AVIF_ROUTES, e.g. Scaly Skin, but no consumer yet)',
+  },
+  incomingDamageMult: {
+    regime: 'unfolded',
+    hasEngineEffect: false,
+    foldedBy:
+      'none — no player-defense/incoming-damage model exists (docs/assumptions.md "Mod Incoming Weapon Damage self-targeted sources")',
   },
 };
 

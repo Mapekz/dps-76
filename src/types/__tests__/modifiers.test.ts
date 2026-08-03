@@ -85,6 +85,7 @@ const ALL_BUCKETS: Bucket[] = [
   'specialLuck',
   'damageResistGain',
   'energyResistGain',
+  'incomingDamageMult',
 ];
 
 describe('BUCKET_REGISTRY', () => {
@@ -149,6 +150,7 @@ describe('BUCKET_REGISTRY', () => {
       'deflectChance',
       'damageResistGain',
       'energyResistGain',
+      'incomingDamageMult',
     ];
     expect([...INERT_ENGINE_BUCKETS].sort()).toEqual(expected.sort());
   });
@@ -180,6 +182,10 @@ function curveMod(
 describe('modifierHasEngineEffect / hasAnyEngineEffect', () => {
   it('is false for a bucket the engine never folds (INERT_ENGINE_BUCKETS)', () => {
     expect(modifierHasEngineEffect(plainMod('limbDamage'))).toBe(false);
+  });
+
+  it("is false for incomingDamageMult (Emergency Protocols' −50% damage-taken half, no player-defense model)", () => {
+    expect(modifierHasEngineEffect(plainMod('incomingDamageMult'))).toBe(false);
   });
 
   it('is true for armorPen/armorPenFlat now that mitigation.ts folds them (Phase 2)', () => {

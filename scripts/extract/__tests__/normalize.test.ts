@@ -455,6 +455,44 @@ describe('translateConditions (2026-07-10 review)', () => {
     const { conditions } = translateConditions([row], { edidByFormId: new Map() });
     expect(conditions).toEqual([{ kind: 'enemyHealthAbovePct', pct: 60, inclusive: false }]);
   });
+
+  it('translates GetValuePercent(Health) strict < to healthBelowPct with inclusive: false (Emergency Protocols)', () => {
+    const row: RawCondition = {
+      Function: 'GetValuePercent',
+      'Parameter 1': '0x000002D4',
+      'Comparison Value': 0.2,
+      Operator: 'Less Than',
+    };
+    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([{ kind: 'healthBelowPct', pct: 20, inclusive: false }]);
+  });
+
+  it('translates GetValuePercent(Health) ≤ to healthBelowPct with no inclusive flag', () => {
+    const row: RawCondition = {
+      Function: 'GetValuePercent',
+      'Parameter 1': '0x000002D4',
+      'Comparison Value': 0.25,
+      Operator: 'Less Than Or Equal To',
+    };
+    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([{ kind: 'healthBelowPct', pct: 25 }]);
+  });
+
+  it('translates GetValuePercent with non-Health param to unresolved (operator preserved)', () => {
+    const row: RawCondition = {
+      Function: 'GetValuePercent',
+      'Parameter 1': '0x000002EA',
+      'Comparison Value': 0,
+      Operator: 'Equal To',
+    };
+    const { conditions } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([
+      expect.objectContaining({
+        kind: 'unresolved',
+        raw: expect.stringMatching(/GetValuePercent.*Equal To/),
+      }),
+    ]);
+  });
 });
 
 describe('translateConditions (WornHasKeyword unique self-gate allowlist — Bullet Storm, 2026-07-16)', () => {

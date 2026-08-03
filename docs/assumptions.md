@@ -377,6 +377,10 @@ wrongly stack with Quad/reload-speed mods).
   still is **UNMEASURED** (`#69`).
 - A net move-speed penalty grants nothing (curve clamps at 0,0) — direction
   unverified in-game.
+- Emergency Protocols (PA Misc torso mod, all 10 chassis) is now a
+  `moveSpeedBonus` feeder, gated `healthBelowPct 20 (inclusive: false)` +
+  `inPowerArmor` — the first armor-OMOD source of this bucket (previously only
+  perks/mutations/consumables fed it).
 
 ## Crit meter
 Engine: `src/lib/engine/crit-meter.ts`.
@@ -1256,6 +1260,13 @@ their stats are stale and must not be shown.
   rather than real armor-slot topology data — none exists in this dataset.
   Legendary-slot effects always get max 5; that ceiling is additionally a
   shared budget per star tier — see `docs/adr/0004`.
+- **APP-SUPPLIED**: armor OMODs whose attach point edid starts with
+  `ap_PowerArmor*` receive an `{kind: 'inPowerArmor', value: true}` condition
+  on every modifier at extraction (`extract-omods.ts`) — not an ESM condition;
+  PA-exclusivity is expressed structurally via attach point / Target OMOD
+  Keywords. Besides Emergency Protocols, this newly gates Core Assembly,
+  Internal Database, Motion-Assist Servos, Sensor Array, and V.A.T.S. Matrix
+  Overlay (all PA-attach-point-exclusive name groups as of the 2026-08-03 dump).
 
 ## Known gaps / deferred
 - **Follow Through / Taking One for the Team** extract with empty `modifiers`
@@ -1269,13 +1280,16 @@ their stats are stale and must not be shown.
   (`enemyType`) is **no longer** deferred — see **Hand-supplied values**'
   DmgVs* row. Range falloff is **no longer** deferred — see **Target distance
   (Close / Far)**.
-- **"Mod Incoming Weapon Damage" self-targeted sources** (2026-07-21 sweep,
+- **Mod Incoming Weapon Damage self-targeted sources** (2026-07-21 sweep,
   triggered by the Grounded fold-shape fix above): `Mutation_EmpathPenalty_Perk`
   (Empath), `UnstoppableMonster_Perk`, `Legendary_Armor_Heavyweight`,
   `BOUNTY_Legendary_Armor_LucidPerk`, `PA_EmergencyProtocols` all fire this
   Entry Point directly on the perk holder (no target redirect) — genuinely
   incoming/defensive, correctly stay "not modeled" (no player-defense model
-  exists). Distinct from Follow Through / Taking One for the Team above,
+  exists). These now extract to an inert `incomingDamageMult` bucket modifier
+  (displays honestly, still applies no effect) rather than being dropped as
+  `unresolved` — the "no player-defense model" disposition itself is unchanged.
+  Distinct from Follow Through / Taking One for the Team above,
   which redirect the same Entry Point to the struck/attacking actor via a
   spell chain — that's the offensive, `wholeDamage`-modeled half. "Mod
   Incoming Explosion Damage" (the explosion-scoped sibling) has zero

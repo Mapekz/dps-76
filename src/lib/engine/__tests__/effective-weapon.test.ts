@@ -2,6 +2,7 @@ import { describe, it, expect } from 'bun:test';
 import { getWeapons } from '@/data';
 import { getBuffModifiers } from '@/data/buffs';
 import { getOmodById, getOmodSlots } from '@/data/omods';
+import { getArmorEffectModifiers } from '@/data/armor-modifiers';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
 import { PerkId } from '@/data/perk-ids';
 import { weaponCharges } from '@/lib/charge';
@@ -467,6 +468,57 @@ describe('loadout-sourced weapon-stat folding (perk weapon-stat fold gap, docs/a
       ...mods,
     ]);
     expect(result.weapon.reloadSpeed).toBeCloseTo(base + 0.1, 6);
+  });
+
+  it('Emergency Protocols (real armor data) feeds Fast Fighter reload speed only below 20% HP in power armor', () => {
+    const mods = getArmorEffectModifiers('live', {
+      mod_PowerArmor_Excavator_Torso_Misc_Emergency: 1,
+    });
+    expect(mods).toEqual(
+      expect.arrayContaining([expect.objectContaining({ bucket: 'moveSpeedBonus', value: 0.25 })]),
+    );
+    const fastFighter = getLoadoutModifiers('live', [{ perkId: PerkId.FastFighter, rank: 1 }]);
+
+    // Full health, in power armor: gate fails on health, no reload-speed change.
+    const healthyInPa = { ...createDefaultPlayerConditions(), isInPowerArmor: true };
+    const atFullHealth = buildEffectiveWeapon(
+      fixer,
+      [],
+      50,
+      healthyInPa,
+      createDefaultEnemyConditions(),
+      [...fastFighter, ...mods],
+    );
+    expect(atFullHealth.weapon.reloadSpeed).toBeCloseTo(base, 6);
+
+    // Below 20% HP but NOT in power armor: gate fails on inPowerArmor.
+    const lowHealthNoPa = { ...createDefaultPlayerConditions(), healthPercent: 15 };
+    const outsidePa = buildEffectiveWeapon(
+      fixer,
+      [],
+      50,
+      lowHealthNoPa,
+      createDefaultEnemyConditions(),
+      [...fastFighter, ...mods],
+    );
+    expect(outsidePa.weapon.reloadSpeed).toBeCloseTo(base, 6);
+
+    // Below 20% HP AND in power armor: both gates pass — +25% move speed → +12.5% reload speed
+    // (Fast Fighter's override is an identity curve × 0.5).
+    const lowHealthInPa = {
+      ...createDefaultPlayerConditions(),
+      healthPercent: 15,
+      isInPowerArmor: true,
+    };
+    const bothGates = buildEffectiveWeapon(
+      fixer,
+      [],
+      50,
+      lowHealthInPa,
+      createDefaultEnemyConditions(),
+      [...fastFighter, ...mods],
+    );
+    expect(bothGates.weapon.reloadSpeed).toBeCloseTo(base + 0.125, 6);
   });
 });
 

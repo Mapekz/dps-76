@@ -62,7 +62,7 @@ export const perks: Record<PerkId, PerkNameEntry> = {
   [PerkId.GlowSight]: { name: 'Glow Sight' },
   [PerkId.Awareness]: { name: 'Awareness' }, // Enemy info display - not combat
   [PerkId.CenterMasochist]: { name: 'Center Masochist' },
-  [PerkId.FastFighter]: { name: 'Fast Fighter' }, // Fire rate - not direct damage
+  [PerkId.FastFighter]: { name: 'Fast Fighter' }, // Reload speed (via moveSpeedBonus → reloadSpeed conversion, src/data/overrides/perk-overrides.ts)
   [PerkId.NumberCruncher]: { name: 'Number Cruncher' }, // Damage numbers display - not combat
   [PerkId.StrongArm]: { name: 'Strong Arm' }, // Throwing range - not direct damage
   [PerkId.RiflemanExpert]: { name: 'Scoped-Up' }, // Combat-overhaul rename of Rifleman Expert; ESM casing "Scoped-up", corrected

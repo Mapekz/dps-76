@@ -34,8 +34,11 @@ import fireHazardMgef from './fixtures/mgef-fire-hazard-effect.json';
 //     UnstoppableMonster_Perk.
 //   perk-unstoppablemonster.json  UnstoppableMonster_Perk        0x0069CBF4
 //     — both its Entry Point effects are "Mod Incoming Weapon Damage"
-//     (damage TAKEN, entry point 36) — no formula bucket exists for it
-//     (deliberately out of scope), so it must decode to a note, not silence.
+//     (damage TAKEN, entry point 36), routed to the inert incomingDamageMult
+//     bucket. The flat "Multiply Value" effect (-5%) decodes to a real
+//     modifier; the killstreak-scaled "Multiply 1 + Actor Value Mult" effect
+//     uses a function shape the generic dispatch doesn't handle, so it must
+//     still decode to a note, not silence.
 //   omod-allrise.json             mod_Custom_AllRise             0x0047187E
 //     — carries an ActorValues property ADDing AV 0x000002D4 (Health) = 50.0.
 
@@ -112,22 +115,52 @@ function makeStubClient(): EsmClient {
 }
 
 describe('extractOmods (unique-mod rework, 2026-07-13)', () => {
-  it('mod_Custom_UnstoppableMonster: property 116 resolves the attached perk, whose two damage-TAKEN entry points land as a note (not a silent drop) and never surface as an unknown property', async () => {
+  it('mod_Custom_UnstoppableMonster: property 116 resolves the attached perk, whose two "Mod Incoming Weapon Damage" effects split into one incomingDamageMult modifier (flat -5%) and one skipped note (killstreak-scaled, AV-mult function unhandled) — never a silent drop, never an unknown property', async () => {
     const result = await extractOmods(makeStubClient(), new Set());
     const omod = result.omods.find((o) => o.id === 'mod_Custom_UnstoppableMonster');
     expect(omod).toBeDefined();
-    expect(omod!.modifiers).toEqual([]); // "Mod Incoming Weapon Damage" has no formula bucket — damage taken, out of scope
+    // Function "Multiply Value" Float 0.95 (flat -5% incoming damage) now
+    // routes through ENTRY_POINT_BUCKETS to the inert incomingDamageMult
+    // bucket (MUL_ADD, float - 1) instead of being dropped.
+    expect(omod!.modifiers).toEqual([
+      {
+        id: '0x008F0DD2:perk:0',
+        source: {
+          kind: 'omod',
+          formId: '0x008F0DD2',
+          edid: 'mod_Custom_UnstoppableMonster',
+          name: 'Unstoppable Monster',
+        },
+        bucket: 'incomingDamageMult',
+        op: 'MUL_ADD',
+        value: -0.050000011920928955, // Float 0.95 (float32) minus 1, not a clean double
+        conditions: [],
+      },
+    ]);
+    // The other effect (Function "Multiply 1 + Actor Value Mult", the
+    // per-killstreak -1%/stack scaling) uses a function shape the generic
+    // dispatch doesn't handle — stays a "skipped" note, not "not modeled"
+    // (that note only fires when the entry point has no bucket at all).
+    expect(
+      (omod!.notes ?? []).some(
+        (n) =>
+          n.includes('Mod Incoming Weapon Damage') &&
+          n.includes('Multiply 1 + Actor Value Mult') &&
+          n.includes('skipped'),
+      ),
+    ).toBe(true);
     expect(
       (omod!.notes ?? []).some(
         (n) => n.includes('Mod Incoming Weapon Damage') && n.includes('not modeled'),
       ),
-    ).toBe(true);
-    // The aggregate _meta-visible report also carries the note (edid-prefixed).
+    ).toBe(false);
+    // The aggregate _meta-visible report also carries the skipped note (edid-prefixed).
     expect(
       result.notes.some(
         (n) =>
           n.startsWith('mod_Custom_UnstoppableMonster:') &&
-          n.includes('Mod Incoming Weapon Damage'),
+          n.includes('Mod Incoming Weapon Damage') &&
+          n.includes('skipped'),
       ),
     ).toBe(true);
     expect(result.unknownProperties).not.toContain('Unknown');

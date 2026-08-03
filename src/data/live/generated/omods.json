@@ -47538,14 +47538,28 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x008F0DD2:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008F0DD2",
+     "edid": "mod_Custom_UnstoppableMonster",
+     "name": "Unstoppable Monster"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -0.050000000000000044,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
   "notes": [
-   "perk UnstoppableMonster_Perk: entry point Mod Incoming Weapon Damage — not modeled"
+   "perk UnstoppableMonster_Perk: entry point Mod Incoming Weapon Damage uses Multiply 1 + Actor Value Mult — skipped"
   ],
   "obtainable": true
  },

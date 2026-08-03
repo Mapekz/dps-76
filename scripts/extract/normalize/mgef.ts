@@ -123,6 +123,18 @@ export const ENTRY_POINT_BUCKETS: Record<string, Bucket> = {
   // `translateGrantedPerk` below (`MUL_ADD (float − 1)`) handles all three
   // with no special-casing.
   'Mod VATS Hit Chance': 'vatsHitChance',
+  // Mod Incoming Weapon Damage (EP36) — every occurrence in the current ESM
+  // dump is self-targeted (PA_EmergencyProtocols, Legendary_Armor_Heavyweight,
+  // BOUNTY_Legendary_Armor_LucidPerk, UnstoppableMonster_Perk,
+  // Mutation_EmpathPenalty_Perk — verified via _meta.json unresolved-note scan,
+  // 2026-08-03). The offensive, TARGET-redirected half of this same Entry
+  // Point (Follow Through / Taking One For The Team) is hand-authored
+  // separately as `wholeDamage` in src/data/manual-uptime.ts and never reaches
+  // this generic routing — no self-vs-target split is needed here today; if a
+  // target-redirected occurrence of this exact Entry Point ever appears in a
+  // future ESM dump, route it to `baseDamage` instead (component-scoping,
+  // same reasoning as 'Mod Player Explosion Damage' above), not here.
+  'Mod Incoming Weapon Damage': 'incomingDamageMult',
 };
 
 /**

@@ -285,7 +285,22 @@ function translateSingle(
       return wants ? 'inactive' : null;
     case 'IsSneaking':
       return wants ? { kind: 'sneaking' } : { kind: 'unresolved', raw: 'IsSneaking=0' };
+    case 'GetValuePercent':
     case 'GetHealthPercentage': {
+      if (fn === 'GetValuePercent' && param !== '0x000002D4') {
+        // Only the Health AVIF (0x000002D4) maps to a health-percent gate. The
+        // two other observed params — Rads (mod_Legendary_PowerArmor4_
+        // RadioactivePowered's =0 rads gate) and ActionPoints (its =1 full-AP
+        // gate) — have no condition kind yet, so they stay unresolved. Unlike
+        // the generic `default:` fallback below, include the operator here —
+        // GetHealthPercentage's own unresolved fallback (a few lines down)
+        // already does, and dropping it (as the shared default does) hid that
+        // this was `Less Than`, not `Equal To`.
+        return {
+          kind: 'unresolved',
+          raw: `GetValuePercent(${edid}) ${cond.Operator} ${rawCmp}`,
+        };
+      }
       if (typeof cmp !== 'number') {
         return {
           kind: 'unresolved',

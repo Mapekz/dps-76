@@ -12,7 +12,30 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0079C80E:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0079C80E",
+       "edid": "abEpicAbsorbingBallisticPerk",
+       "name": "Epic Absorbtion Ballisitic Perk",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0,
+      "conditions": [
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "AmmoTypeBallistic",
+         "WeaponTypeBallistic"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -88,7 +111,33 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0079C80F:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0079C80F",
+       "edid": "abEpicAbsorbingMeleePerk",
+       "name": "Epic Absorbtion Melee Perk",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0,
+      "conditions": [
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "WeaponTypeUnarmed",
+         "WeaponTypeMelee1H",
+         "WeaponTypeMelee2H",
+         "WeaponTypeMeleeGeneral",
+         "WeaponTypeAutomaticMelee"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -1177,7 +1226,26 @@
     "rank": 1,
     "modifiers": [
      {
-      "id": "0x007521E5:r1:2:0",
+      "id": "0x007521E5:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x007521E5",
+       "edid": "ATX_COMP_Adelaide_Perk_HumanRobotInterface",
+       "name": "Human/Robot Interfacing",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.25,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeRobot"
+       }
+      ]
+     },
+     {
+      "id": "0x007521E5:r1:2:1",
       "source": {
        "kind": "perk",
        "formId": "0x007521E5",
@@ -2370,7 +2438,27 @@
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00330BA0:r3:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00330BA0",
+       "edid": "BornSurvivor",
+       "name": "Born Survivor",
+       "rank": 3
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0,
+      "conditions": [
+       {
+        "kind": "healthBelowPct",
+        "pct": 40
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -2431,7 +2519,33 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00085331:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00085331",
+       "edid": "BoSInitiatePerk",
+       "name": "Initiate",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.09999999999999998,
+      "conditions": [
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "ActorTypeFeralGhoul",
+         "ActorTypeFeralGhoulGlowingOne",
+         "ActorTypeSuperMutant",
+         "ActorTypeSuperMutantBehemoth",
+         "ActorTypeSynth"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -2488,7 +2602,33 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0084B157:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0084B157",
+       "edid": "BOUNTY_Legendary_Armor_FiercePerk",
+       "name": "Fierce",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": [
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "WeaponTypeHandToHand",
+         "WeaponTypeMelee1H",
+         "WeaponTypeMelee2H",
+         "WeaponTypeMeleeGeneral",
+         "WeaponTypeUnarmed"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -2564,7 +2704,33 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0084A4DF:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0084A4DF",
+       "edid": "BOUNTY_LegendaryArmor_JaggedPerk",
+       "name": "Jagged Reflection",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.050000000000000044,
+      "conditions": [
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "WeaponTypeHandToHand",
+         "WeaponTypeMelee1H",
+         "WeaponTypeMelee2H",
+         "WeaponTypeMeleeGeneral",
+         "WeaponTypeUnarmed"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -3093,7 +3259,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0048F897:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0048F897",
+       "edid": "CBZ09_BotDamageReductionPerk",
+       "name": "Reduce Damage by 75%",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.75,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -3887,7 +4068,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0067F96B:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0067F96B",
+       "edid": "cr_Heart_Grafton_DamageReductionPerk",
+       "name": "Heart of the swamp Damage Mitigation",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.9,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -3906,7 +4102,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0067BBAE:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0067BBAE",
+       "edid": "cr_Heart_Queen_DamageReductionPerk",
+       "name": "Heart of the swamp Damage Mitigation",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.6699999999999999,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -4165,7 +4376,123 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00023752:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00023752",
+       "edid": "crDeathclaw_toughness_perk",
+       "name": "Deathclaw Rage",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.5,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetCombatGroupMemberCount()=4"
+       }
+      ]
+     },
+     {
+      "id": "0x00023752:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00023752",
+       "edid": "crDeathclaw_toughness_perk",
+       "name": "Deathclaw Rage",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetCombatGroupMemberCount()=5"
+       }
+      ]
+     },
+     {
+      "id": "0x00023752:r1:3:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00023752",
+       "edid": "crDeathclaw_toughness_perk",
+       "name": "Deathclaw Rage",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.75,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetCombatGroupMemberCount()=6"
+       }
+      ]
+     },
+     {
+      "id": "0x00023752:r1:4:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00023752",
+       "edid": "crDeathclaw_toughness_perk",
+       "name": "Deathclaw Rage",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.19999999999999996,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetCombatGroupMemberCount()=2"
+       }
+      ]
+     },
+     {
+      "id": "0x00023752:r1:5:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00023752",
+       "edid": "crDeathclaw_toughness_perk",
+       "name": "Deathclaw Rage",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.25,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetCombatGroupMemberCount()=3"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -4566,7 +4893,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00470DAA:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00470DAA",
+       "edid": "crScorchBeastQueen_DamageReductionPerk",
+       "name": "ScorchBeastQueen Damage Mitigation",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -4589,15 +4931,132 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0073470D:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0073470D",
+       "edid": "crStormBoss_StatePerk",
+       "name": "Storm Region Boss Damage Mitigation",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsBleedingOut()=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0073470D:r2:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0073470D",
+       "edid": "crStormBoss_StatePerk",
+       "name": "Storm Region Boss Damage Mitigation",
+       "rank": 2
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsBleedingOut()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0073470D:r2:7:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0073470D",
+       "edid": "crStormBoss_StatePerk",
+       "name": "Storm Region Boss Damage Mitigation",
+       "rank": 2
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsBleedingOut()=1"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0073470D:r3:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0073470D",
+       "edid": "crStormBoss_StatePerk",
+       "name": "Storm Region Boss Damage Mitigation",
+       "rank": 3
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsBleedingOut()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0073470D:r3:7:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0073470D",
+       "edid": "crStormBoss_StatePerk",
+       "name": "Storm Region Boss Damage Mitigation",
+       "rank": 3
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsBleedingOut()=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0073470D:r3:11:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0073470D",
+       "edid": "crStormBoss_StatePerk",
+       "name": "Storm Region Boss Damage Mitigation",
+       "rank": 3
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsBleedingOut()=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -4616,7 +5075,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0067D4BE:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0067D4BE",
+       "edid": "crUltraciteAbomination_DamageReductionPerk",
+       "name": "Ultracite Titan Damage Mitigation",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -4711,7 +5185,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0054709C:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0054709C",
+       "edid": "crV96_ReduceDamagePerk",
+       "name": "crV96_ReduceDamagePerk",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.25,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -4740,27 +5229,362 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005A26EA:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsUsingAltCurveTable()=0"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005A26EA:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 2
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsUsingAltCurveTable()=0"
+       }
+      ]
+     },
+     {
+      "id": "0x005A26EA:r2:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 2
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005A26EA:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 3
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsUsingAltCurveTable()=0"
+       }
+      ]
+     },
+     {
+      "id": "0x005A26EA:r3:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 3
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": []
+     },
+     {
+      "id": "0x005A26EA:r3:3:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 3
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 4,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005A26EA:r4:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 4
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsUsingAltCurveTable()=0"
+       }
+      ]
+     },
+     {
+      "id": "0x005A26EA:r4:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 4
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": []
+     },
+     {
+      "id": "0x005A26EA:r4:3:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 4
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": []
+     },
+     {
+      "id": "0x005A26EA:r4:4:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 4
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.85,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 5,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005A26EA:r5:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 5
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsUsingAltCurveTable()=0"
+       }
+      ]
+     },
+     {
+      "id": "0x005A26EA:r5:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 5
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": []
+     },
+     {
+      "id": "0x005A26EA:r5:3:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 5
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": []
+     },
+     {
+      "id": "0x005A26EA:r5:4:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 5
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.85,
+      "conditions": []
+     },
+     {
+      "id": "0x005A26EA:r5:5:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 5
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 6,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005A26EA:r6:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 6
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsUsingAltCurveTable()=0"
+       }
+      ]
+     },
+     {
+      "id": "0x005A26EA:r6:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 6
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": []
+     },
+     {
+      "id": "0x005A26EA:r6:3:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 6
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": []
+     },
+     {
+      "id": "0x005A26EA:r6:4:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 6
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.85,
+      "conditions": []
+     },
+     {
+      "id": "0x005A26EA:r6:5:4",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 6
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": []
+     },
+     {
+      "id": "0x005A26EA:r6:6:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A26EA",
+       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
+       "name": "Wendigo Colossus Damage Reduction",
+       "rank": 6
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.8,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "IsUsingAltCurveTable()=0"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -4911,7 +5735,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0045E3F8:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0045E3F8",
+       "edid": "D01C_InsectRepellentPerk",
+       "name": "Insect Repellent",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.15000000000000002,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeBug"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -6222,7 +7066,50 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0068DDFF:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0068DDFF",
+       "edid": "E09A_AbominationPreventPrematureDeath",
+       "name": "Stop Premature Death",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasKeyword(E09A_Launcher_BossFinalStageKeyword)=1"
+       }
+      ]
+     },
+     {
+      "id": "0x0068DDFF:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0068DDFF",
+       "edid": "E09A_AbominationPreventPrematureDeath",
+       "name": "Stop Premature Death",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasKeyword(E09A_Launcher_BossFinalStageKeyword)=0"
+       },
+       {
+        "kind": "healthBelowPct",
+        "pct": 10
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -7052,19 +7939,163 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005A5D6D:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A5D6D",
+       "edid": "FollowThroughDamageDebuffPerk",
+       "name": "Follow Through Damage Debuff",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005A5D6D:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A5D6D",
+       "edid": "FollowThroughDamageDebuffPerk",
+       "name": "Follow Through Damage Debuff",
+       "rank": 2
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": []
+     },
+     {
+      "id": "0x005A5D6D:r2:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A5D6D",
+       "edid": "FollowThroughDamageDebuffPerk",
+       "name": "Follow Through Damage Debuff",
+       "rank": 2
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.19999999999999996,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005A5D6D:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A5D6D",
+       "edid": "FollowThroughDamageDebuffPerk",
+       "name": "Follow Through Damage Debuff",
+       "rank": 3
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": []
+     },
+     {
+      "id": "0x005A5D6D:r3:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A5D6D",
+       "edid": "FollowThroughDamageDebuffPerk",
+       "name": "Follow Through Damage Debuff",
+       "rank": 3
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.19999999999999996,
+      "conditions": []
+     },
+     {
+      "id": "0x005A5D6D:r3:3:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A5D6D",
+       "edid": "FollowThroughDamageDebuffPerk",
+       "name": "Follow Through Damage Debuff",
+       "rank": 3
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.30000000000000004,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 4,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005A5D6D:r4:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A5D6D",
+       "edid": "FollowThroughDamageDebuffPerk",
+       "name": "Follow Through Damage Debuff",
+       "rank": 4
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": []
+     },
+     {
+      "id": "0x005A5D6D:r4:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A5D6D",
+       "edid": "FollowThroughDamageDebuffPerk",
+       "name": "Follow Through Damage Debuff",
+       "rank": 4
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.19999999999999996,
+      "conditions": []
+     },
+     {
+      "id": "0x005A5D6D:r4:3:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A5D6D",
+       "edid": "FollowThroughDamageDebuffPerk",
+       "name": "Follow Through Damage Debuff",
+       "rank": 4
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.30000000000000004,
+      "conditions": []
+     },
+     {
+      "id": "0x005A5D6D:r4:4:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005A5D6D",
+       "edid": "FollowThroughDamageDebuffPerk",
+       "name": "Follow Through Damage Debuff",
+       "rank": 4
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.3999999999999999,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -9426,15 +10457,99 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00797E59:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E59",
+       "edid": "GHL_ThickSkin",
+       "name": "Thick Skin",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.040000000000000036,
+      "conditions": [
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       },
+       {
+        "kind": "inPowerArmor",
+        "value": false
+       },
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "WeaponTypeBallistic"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00797E59:r2:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E59",
+       "edid": "GHL_ThickSkin",
+       "name": "Thick Skin",
+       "rank": 2
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.06000000000000005,
+      "conditions": [
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       },
+       {
+        "kind": "inPowerArmor",
+        "value": false
+       },
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "WeaponTypeBallistic"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00797E59:r3:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00797E59",
+       "edid": "GHL_ThickSkin",
+       "name": "Thick Skin",
+       "rank": 3
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.09999999999999998,
+      "conditions": [
+       {
+        "kind": "playerIsGhoul",
+        "value": true
+       },
+       {
+        "kind": "inPowerArmor",
+        "value": false
+       },
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "WeaponTypeBallistic"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -12464,7 +13579,9 @@
    }
   ],
   "hasCard": false,
-  "notes": []
+  "notes": [
+   "entry point Mod Incoming Weapon Damage uses Multiply Actor Value Mult — skipped"
+  ]
  },
  {
   "family": "HolyFire_Perk",
@@ -16954,15 +18071,60 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005B01AE:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B01AE",
+       "edid": "LGN_TakingOneForTheTeam_DamageIncrease_Perk",
+       "name": "Taking One For The Team - DMG Increase",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.10000000000000009,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005B01AE:r2:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B01AE",
+       "edid": "LGN_TakingOneForTheTeam_DamageIncrease_Perk",
+       "name": "Taking One For The Team - DMG Increase",
+       "rank": 2
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.19999999999999996,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005B01AE:r3:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005B01AE",
+       "edid": "LGN_TakingOneForTheTeam_DamageIncrease_Perk",
+       "name": "Taking One For The Team - DMG Increase",
+       "rank": 3
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.30000000000000004,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 4,
@@ -17429,6 +18591,20 @@
         "count": 0
        }
       ]
+     },
+     {
+      "id": "0x001D246B:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001D246B",
+       "edid": "LoneWanderer",
+       "name": "Lone Wanderer",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -1,
+      "conditions": []
      }
     ]
    }
@@ -17920,7 +19096,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00169691:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00169691",
+       "edid": "Magazine_AwesomeTales08Perk",
+       "name": "Astoundingly Awesome 3",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.25,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeRobot"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -18395,7 +19591,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0030F5B4:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0030F5B4",
+       "edid": "Magazine_ScoutsLife02Perk",
+       "name": "Scout's Life 2",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.25,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeBug"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -18471,7 +19687,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00312B57:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00312B57",
+       "edid": "Magazine_ScoutsLife07Perk",
+       "name": "Scout's Life 2",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.25,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeAnimal"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -18509,7 +19745,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001F39CB:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001F39CB",
+       "edid": "Magazine_TeslaScience01Perk",
+       "name": "Tesla Science 1",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.25,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeRobot"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -18528,7 +19784,31 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001F39CD:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001F39CD",
+       "edid": "Magazine_TeslaScience02Perk",
+       "name": "Tesla Science 2",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.25,
+      "conditions": [
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "WeaponTypePlasma",
+         "WeaponTypePlasmaGrenade",
+         "WeaponTypePlasmaMine"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -18623,7 +19903,31 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00135F02:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00135F02",
+       "edid": "Magazine_Unstoppables01Perk",
+       "name": "Unstoppable",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "EPIsCalculatingBaseDamage()=0"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=5"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -18642,7 +19946,38 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x002ED82E:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x002ED82E",
+       "edid": "Magazine_Unstoppables02Perk",
+       "name": "Unstoppable",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "EPIsCalculatingBaseDamage()=0"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=20"
+       },
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "ActorTypeScorched",
+         "ActorTypeScorchbeast"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -18680,7 +20015,39 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x002ED832:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x002ED832",
+       "edid": "Magazine_Unstoppables04Perk",
+       "name": "Unstoppable",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "EPIsCalculatingBaseDamage()=0"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=30"
+       },
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "WeaponTypeMelee1H",
+         "WeaponTypeMelee2H",
+         "WeaponTypeUnarmed"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -18699,7 +20066,41 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x002ED833:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x002ED833",
+       "edid": "Magazine_Unstoppables05Perk",
+       "name": "Unstoppable",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "EPIsCalculatingBaseDamage()=0"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetRandomPercent()=30"
+       },
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "WeaponTypeLaser",
+         "WeaponTypeLaserMusket",
+         "WeaponTypePlasma",
+         "WeaponTypePlasmaGrenade",
+         "WeaponTypePlasmaMine"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -18718,7 +20119,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00312D65:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00312D65",
+       "edid": "Magazine_USCovertOps03Perk",
+       "name": "US Covert Ops 2",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.09999999999999998,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -19482,7 +20898,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x000ADF73:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x000ADF73",
+       "edid": "MinRonnieShawPerk",
+       "name": "Resistant to Fists attacks",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.25,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -20347,7 +21778,98 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x004E1F1D:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E1F1D",
+       "edid": "Mutation_EmpathPenalty_Perk",
+       "name": "Empath Penalty",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.25,
+      "conditions": [
+       {
+        "kind": "classFreakRank",
+        "min": 0,
+        "max": 0
+       }
+      ]
+     },
+     {
+      "id": "0x004E1F1D:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E1F1D",
+       "edid": "Mutation_EmpathPenalty_Perk",
+       "name": "Empath Penalty",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.17999999999999994,
+      "conditions": [
+       {
+        "kind": "classFreakRank",
+        "min": 0,
+        "max": 1
+       },
+       {
+        "kind": "classFreakRank",
+        "min": 1,
+        "max": 3
+       }
+      ]
+     },
+     {
+      "id": "0x004E1F1D:r1:3:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E1F1D",
+       "edid": "Mutation_EmpathPenalty_Perk",
+       "name": "Empath Penalty",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.1200000000000001,
+      "conditions": [
+       {
+        "kind": "classFreakRank",
+        "min": 0,
+        "max": 2
+       },
+       {
+        "kind": "classFreakRank",
+        "min": 2,
+        "max": 3
+       }
+      ]
+     },
+     {
+      "id": "0x004E1F1D:r1:4:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E1F1D",
+       "edid": "Mutation_EmpathPenalty_Perk",
+       "name": "Empath Penalty",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": 0.06000000000000005,
+      "conditions": [
+       {
+        "kind": "classFreakRank",
+        "min": 3,
+        "max": 3
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -21319,7 +22841,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0059AA80:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0059AA80",
+       "edid": "NucaCola_Vaccine_Buff_Perk",
+       "name": "Scorched Repellent",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.15000000000000002,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeScorched"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -21560,7 +23102,30 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00838A57:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00838A57",
+       "edid": "P62_AbTheDrifter_AbsorbingBallisticPerk",
+       "name": "Drifter Absorbtion Ballisitic Perk",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0,
+      "conditions": [
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "AmmoTypeBallistic",
+         "WeaponTypeBallistic"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -21579,7 +23144,31 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00838A5C:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00838A5C",
+       "edid": "P62_AbTheDrifter_AbsorbingEnergyPerk",
+       "name": "Drifter Absorbtion Energy Perk",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0,
+      "conditions": [
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "DamageTypeEnergy",
+         "AmmoTypeEnergy",
+         "WeaponTypeEnergy"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -21598,7 +23187,31 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00838A59:r1:4:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00838A59",
+       "edid": "P62_AbTheDrifter_AbsorbingFirePerk",
+       "name": "Drifter Absorbtion Fire Perk",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0,
+      "conditions": [
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "DamageTypeFire",
+         "IsAmmoType_FlamerFuel",
+         "WeaponTypeFireDamage"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -21617,7 +23230,33 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00838A58:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00838A58",
+       "edid": "P62_AbTheDrifter_AbsorbingMeleePerk",
+       "name": "Drifter Absorbtion Melee Perk",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0,
+      "conditions": [
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "WeaponTypeUnarmed",
+         "WeaponTypeMelee1H",
+         "WeaponTypeMelee2H",
+         "WeaponTypeMeleeGeneral",
+         "WeaponTypeAutomaticMelee"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -22531,7 +24170,28 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0008427A:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0008427A",
+       "edid": "PA_EmergencyProtocols",
+       "name": "Emergency Protocols",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.5,
+      "conditions": [
+       {
+        "kind": "healthBelowPct",
+        "pct": 20,
+        "inclusive": false
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -23894,35 +25554,241 @@
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001C63E6:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001C63E6",
+       "edid": "PerkMagWastelandSurvival",
+       "name": "Wasteland Survival 1",
+       "rank": 2
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.050000000000000044,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeBug"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001C63E6:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001C63E6",
+       "edid": "PerkMagWastelandSurvival",
+       "name": "Wasteland Survival 1",
+       "rank": 3
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.050000000000000044,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeBug"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 4,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001C63E6:r4:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001C63E6",
+       "edid": "PerkMagWastelandSurvival",
+       "name": "Wasteland Survival 1",
+       "rank": 4
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.050000000000000044,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeBug"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 5,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001C63E6:r5:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001C63E6",
+       "edid": "PerkMagWastelandSurvival",
+       "name": "Wasteland Survival 1",
+       "rank": 5
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.050000000000000044,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeBug"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 6,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001C63E6:r6:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001C63E6",
+       "edid": "PerkMagWastelandSurvival",
+       "name": "Wasteland Survival 1",
+       "rank": 6
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.050000000000000044,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeBug"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 7,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001C63E6:r7:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001C63E6",
+       "edid": "PerkMagWastelandSurvival",
+       "name": "Wasteland Survival 1",
+       "rank": 7
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.050000000000000044,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeBug"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 8,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001C63E6:r8:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001C63E6",
+       "edid": "PerkMagWastelandSurvival",
+       "name": "Wasteland Survival 1",
+       "rank": 8
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.050000000000000044,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeBug"
+       }
+      ]
+     },
+     {
+      "id": "0x001C63E6:r8:4:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001C63E6",
+       "edid": "PerkMagWastelandSurvival",
+       "name": "Wasteland Survival 1",
+       "rank": 8
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.050000000000000044,
+      "conditions": [
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "WeaponTypeUnarmed",
+         "WeaponTypeMelee1H",
+         "WeaponTypeMelee2H"
+        ]
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 9,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001C63E6:r9:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001C63E6",
+       "edid": "PerkMagWastelandSurvival",
+       "name": "Wasteland Survival 1",
+       "rank": 9
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.050000000000000044,
+      "conditions": [
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "ActorTypeBug"
+       }
+      ]
+     },
+     {
+      "id": "0x001C63E6:r9:4:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001C63E6",
+       "edid": "PerkMagWastelandSurvival",
+       "name": "Wasteland Survival 1",
+       "rank": 9
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.050000000000000044,
+      "conditions": [
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "WeaponTypeUnarmed",
+         "WeaponTypeMelee1H",
+         "WeaponTypeMelee2H"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -24638,7 +26504,49 @@
     "rank": 1,
     "modifiers": [
      {
-      "id": "0x004E1F1C:r1:3:0",
+      "id": "0x004E1F1C:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E1F1C",
+       "edid": "PlayerTeamPerk",
+       "name": "Player Team Perk",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.31999999999999995,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(MutationEmpathStrength)=2"
+       }
+      ]
+     },
+     {
+      "id": "0x004E1F1C:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x004E1F1C",
+       "edid": "PlayerTeamPerk",
+       "name": "Player Team Perk",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.25,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(MutationEmpathStrength)=1"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(MutationEmpathStrength)=2"
+       }
+      ]
+     },
+     {
+      "id": "0x004E1F1C:r1:3:2",
       "source": {
        "kind": "perk",
        "formId": "0x004E1F1C",
@@ -24791,7 +26699,31 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0011389C:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0011389C",
+       "edid": "POST-DLC04_PerkSmartGrenade",
+       "name": "Smart Grenade",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetIsID(Player)=1"
+       },
+       {
+        "kind": "enemyType",
+        "keywordOrRace": "POST-DLC04_WeaponTypeSmartGrenade"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -26064,7 +27996,31 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0077459D:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0077459D",
+       "edid": "RD01_Enc01_PreventLimbDamage_Perk",
+       "name": "Prevent Limb Damage",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasKeyword(RD01_Enc01_DamageState_Keyword)=0"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "IsMeleeAttacking()=1"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -26096,6 +28052,20 @@
       "bucket": "dbm",
       "op": "MUL_ADD",
       "value": 1,
+      "conditions": []
+     },
+     {
+      "id": "0x00793A77:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00793A77",
+       "edid": "RD01_Enc02_D2_Enemy_Perk",
+       "name": "Difficulty 2 Enemy Stat Adjustment Perk",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.33999999999999997,
       "conditions": []
      }
     ]
@@ -26131,6 +28101,20 @@
       "op": "MUL_ADD",
       "value": 2,
       "conditions": []
+     },
+     {
+      "id": "0x00793A78:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00793A78",
+       "edid": "RD01_Enc02_D3_Enemy_Perk",
+       "name": "Difficulty 3 Enemy Stat Adjustment Perk",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.6699999999999999,
+      "conditions": []
      }
     ]
    }
@@ -26151,7 +28135,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00788131:r1:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00788131",
+       "edid": "RD01_EnemyInvulnerability_Perk",
+       "name": "Enemy Invulnerability",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -1,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -29151,7 +31150,21 @@
     "rank": 1,
     "modifiers": [
      {
-      "id": "0x00783157:r1:3:0",
+      "id": "0x00783157:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00783157",
+       "edid": "Storm_MQ08_LostPerk",
+       "name": "Empowered Lost Perk",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "MUL_ADD",
+      "value": -0.7,
+      "conditions": []
+     },
+     {
+      "id": "0x00783157:r1:3:1",
       "source": {
        "kind": "perk",
        "formId": "0x00783157",
@@ -29770,7 +31783,9 @@
    }
   ],
   "hasCard": false,
-  "notes": []
+  "notes": [
+   "entry point Mod Incoming Weapon Damage uses Multiply 1 + Actor Value Mult — skipped"
+  ]
  },
  {
   "family": "test_Vharbison_EventPerk",
@@ -32718,7 +34733,21 @@
       "conditions": []
      },
      {
-      "id": "0x008DC2CE:r1:3:1",
+      "id": "0x008DC2CE:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CE",
+       "edid": "WorldPets_Cat_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0,
+      "conditions": []
+     },
+     {
+      "id": "0x008DC2CE:r1:3:2",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CE",
@@ -32741,7 +34770,30 @@
       ]
      },
      {
-      "id": "0x008DC2CE:r1:5:2",
+      "id": "0x008DC2CE:r1:4:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CE",
+       "edid": "WorldPets_Cat_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0.8,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=50"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=100"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CE:r1:5:4",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CE",
@@ -32764,7 +34816,30 @@
       ]
      },
      {
-      "id": "0x008DC2CE:r1:7:3",
+      "id": "0x008DC2CE:r1:6:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CE",
+       "edid": "WorldPets_Cat_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0.6,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=100"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=150"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CE:r1:7:6",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CE",
@@ -32787,7 +34862,30 @@
       ]
      },
      {
-      "id": "0x008DC2CE:r1:9:4",
+      "id": "0x008DC2CE:r1:8:7",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CE",
+       "edid": "WorldPets_Cat_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0.4,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=150"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=200"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CE:r1:9:8",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CE",
@@ -32798,6 +34896,25 @@
       "bucket": "dbm",
       "op": "SET",
       "value": 8,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=200"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CE:r1:10:9",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CE",
+       "edid": "WorldPets_Cat_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0.2,
       "conditions": [
        {
         "kind": "unresolved",
@@ -32840,7 +34957,21 @@
       "conditions": []
      },
      {
-      "id": "0x008DC2CD:r1:3:1",
+      "id": "0x008DC2CD:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CD",
+       "edid": "WorldPets_Deathclaw_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0,
+      "conditions": []
+     },
+     {
+      "id": "0x008DC2CD:r1:3:2",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CD",
@@ -32863,7 +34994,30 @@
       ]
      },
      {
-      "id": "0x008DC2CD:r1:5:2",
+      "id": "0x008DC2CD:r1:4:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CD",
+       "edid": "WorldPets_Deathclaw_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0.8,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=50"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=100"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CD:r1:5:4",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CD",
@@ -32886,7 +35040,30 @@
       ]
      },
      {
-      "id": "0x008DC2CD:r1:7:3",
+      "id": "0x008DC2CD:r1:6:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CD",
+       "edid": "WorldPets_Deathclaw_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0.6,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=100"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=150"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CD:r1:7:6",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CD",
@@ -32909,7 +35086,30 @@
       ]
      },
      {
-      "id": "0x008DC2CD:r1:9:4",
+      "id": "0x008DC2CD:r1:8:7",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CD",
+       "edid": "WorldPets_Deathclaw_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0.4,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=150"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=200"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CD:r1:9:8",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CD",
@@ -32920,6 +35120,25 @@
       "bucket": "dbm",
       "op": "SET",
       "value": 8,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=200"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CD:r1:10:9",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CD",
+       "edid": "WorldPets_Deathclaw_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0.2,
       "conditions": [
        {
         "kind": "unresolved",
@@ -32962,7 +35181,21 @@
       "conditions": []
      },
      {
-      "id": "0x008DC2CC:r1:3:1",
+      "id": "0x008DC2CC:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CC",
+       "edid": "WorldPets_Dog_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0,
+      "conditions": []
+     },
+     {
+      "id": "0x008DC2CC:r1:3:2",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CC",
@@ -32985,7 +35218,30 @@
       ]
      },
      {
-      "id": "0x008DC2CC:r1:5:2",
+      "id": "0x008DC2CC:r1:4:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CC",
+       "edid": "WorldPets_Dog_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0.8,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=50"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=100"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CC:r1:5:4",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CC",
@@ -33008,7 +35264,30 @@
       ]
      },
      {
-      "id": "0x008DC2CC:r1:7:3",
+      "id": "0x008DC2CC:r1:6:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CC",
+       "edid": "WorldPets_Dog_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0.6,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=100"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=150"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CC:r1:7:6",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CC",
@@ -33031,7 +35310,30 @@
       ]
      },
      {
-      "id": "0x008DC2CC:r1:9:4",
+      "id": "0x008DC2CC:r1:8:7",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CC",
+       "edid": "WorldPets_Dog_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0.4,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=150"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=200"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CC:r1:9:8",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CC",
@@ -33042,6 +35344,25 @@
       "bucket": "dbm",
       "op": "SET",
       "value": 8,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=200"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CC:r1:10:9",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CC",
+       "edid": "WorldPets_Dog_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0.2,
       "conditions": [
        {
         "kind": "unresolved",
@@ -33103,7 +35424,21 @@
       "conditions": []
      },
      {
-      "id": "0x008DC2CA:r1:3:1",
+      "id": "0x008DC2CA:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CA",
+       "edid": "WorldPets_Radhog_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0,
+      "conditions": []
+     },
+     {
+      "id": "0x008DC2CA:r1:3:2",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CA",
@@ -33126,7 +35461,30 @@
       ]
      },
      {
-      "id": "0x008DC2CA:r1:5:2",
+      "id": "0x008DC2CA:r1:4:3",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CA",
+       "edid": "WorldPets_Radhog_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0.8,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=50"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=100"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CA:r1:5:4",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CA",
@@ -33149,7 +35507,30 @@
       ]
      },
      {
-      "id": "0x008DC2CA:r1:7:3",
+      "id": "0x008DC2CA:r1:6:5",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CA",
+       "edid": "WorldPets_Radhog_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0.6,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=100"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=150"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CA:r1:7:6",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CA",
@@ -33172,7 +35553,30 @@
       ]
      },
      {
-      "id": "0x008DC2CA:r1:9:4",
+      "id": "0x008DC2CA:r1:8:7",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CA",
+       "edid": "WorldPets_Radhog_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0.4,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=150"
+       },
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=200"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CA:r1:9:8",
       "source": {
        "kind": "perk",
        "formId": "0x008DC2CA",
@@ -33183,6 +35587,25 @@
       "bucket": "dbm",
       "op": "SET",
       "value": 8,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "GetValue(WorldPets_PetProwessLevel)=200"
+       }
+      ]
+     },
+     {
+      "id": "0x008DC2CA:r1:10:9",
+      "source": {
+       "kind": "perk",
+       "formId": "0x008DC2CA",
+       "edid": "WorldPets_Radhog_PetProwess",
+       "name": "Pet Prowess",
+       "rank": 1
+      },
+      "bucket": "incomingDamageMult",
+      "op": "SET",
+      "value": 0.2,
       "conditions": [
        {
         "kind": "unresolved",

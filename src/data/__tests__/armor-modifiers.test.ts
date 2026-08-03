@@ -24,6 +24,7 @@ const UNYIELDING = 'mod_Legendary_Armor1_LowHealthIncreasesStats';
 const STRENGTH_2STAR = 'mod_Legendary_Armor2_StatStrength';
 const BATTLE_LOADERS = 'mod_Legendary_Armor4_BattleLoaders';
 const LIMIT_BREAKING = 'mod_Legendary_Armor4_LimitBreak';
+const EMERGENCY_PROTOCOLS = 'mod_PowerArmor_Excavator_Torso_Misc_Emergency';
 
 const fixer = getWeapons('live')['CombatRifle_Fixer'];
 
@@ -66,6 +67,17 @@ describe('getArmorEffects (curated inventory)', () => {
       maxCount: 5,
       selfScaling: true,
       wornPieceKeyword: 'HasLegendary_Armor_LimitBreak',
+    });
+  });
+
+  it('includes Emergency Protocols as a single-checkbox misc PA effect', () => {
+    const byId = new Map(effects.map((e) => [e.id, e]));
+    const emergencyProtocols = byId.get(EMERGENCY_PROTOCOLS);
+    expect(emergencyProtocols).toMatchObject({
+      name: 'Emergency Protocols',
+      group: 'misc',
+      maxCount: 1,
+      selfScaling: false,
     });
   });
 
@@ -218,6 +230,49 @@ describe('getArmorEffectModifiers: per-piece scaling', () => {
     const at1 = getArmorEffectModifiers('live', { [UNYIELDING]: 1 });
     const strengthAt1 = at1.find((m) => m.bucket === 'specialStrength')!;
     expect(effectiveValue(strengthAt1, atZeroHp)).toBeCloseTo(3, 10);
+  });
+});
+
+describe('Emergency Protocols: healthBelowPct + inPowerArmor gates', () => {
+  const modifiers = getArmorEffectModifiers('live', { [EMERGENCY_PROTOCOLS]: 1 });
+
+  it('extracts a moveSpeedBonus +0.25 and an inert incomingDamageMult -0.5, both gated', () => {
+    expect(modifiers).toHaveLength(2);
+    const moveSpeed = modifiers.find((m) => m.bucket === 'moveSpeedBonus')!;
+    const incomingDamage = modifiers.find((m) => m.bucket === 'incomingDamageMult')!;
+    expect(moveSpeed).toBeDefined();
+    expect(incomingDamage).toBeDefined();
+    expect((moveSpeed as { value: number }).value).toBeCloseTo(0.25, 10);
+    expect((incomingDamage as { value: number }).value).toBeCloseTo(-0.5, 10);
+  });
+
+  it('both modifiers are inactive above 20% health even in power armor', () => {
+    const atFullHp = ctx({ healthPercent: 100, isInPowerArmor: true });
+    for (const m of modifiers) {
+      expect(effectiveValue(m, atFullHp)).toBeNull();
+    }
+  });
+
+  it('both modifiers are inactive below 20% health when NOT in power armor', () => {
+    const atLowHpNoPa = ctx({ healthPercent: 15, isInPowerArmor: false });
+    for (const m of modifiers) {
+      expect(effectiveValue(m, atLowHpNoPa)).toBeNull();
+    }
+  });
+
+  it('both modifiers are active below 20% health while in power armor', () => {
+    const atLowHpInPa = ctx({ healthPercent: 15, isInPowerArmor: true });
+    const moveSpeed = modifiers.find((m) => m.bucket === 'moveSpeedBonus')!;
+    const incomingDamage = modifiers.find((m) => m.bucket === 'incomingDamageMult')!;
+    expect(effectiveValue(moveSpeed, atLowHpInPa)).toBeCloseTo(0.25, 10);
+    expect(effectiveValue(incomingDamage, atLowHpInPa)).toBeCloseTo(-0.5, 10);
+  });
+
+  it('exactly at 20% health is inactive (strict "less than", not inclusive)', () => {
+    const atExactly20 = ctx({ healthPercent: 20, isInPowerArmor: true });
+    for (const m of modifiers) {
+      expect(effectiveValue(m, atExactly20)).toBeNull();
+    }
   });
 });
 

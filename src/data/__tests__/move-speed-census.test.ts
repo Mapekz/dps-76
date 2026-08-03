@@ -15,7 +15,7 @@ type MoveSpeedDisposition = 'modeled' | 'excluded:non-player' | 'excluded:not-re
 
 interface MoveSpeedCensusEntry {
   formId: string;
-  kind: 'perk' | 'mutation' | 'consumable';
+  kind: 'perk' | 'mutation' | 'consumable' | 'armor';
   name: string;
   rank?: number;
   value: number | 'curve';
@@ -121,6 +121,127 @@ const EXPECTED_MOVE_SPEED_SOURCES: MoveSpeedCensusEntry[] = [
     hasCard: true,
     disposition: 'modeled',
   },
+  // --- modeled (armor/PA OMODs — Phase 3 armor pipeline; collectMoveSpeedSources() only
+  // started scanning dataset.armorOmods as of this census extension, closing a blind spot
+  // that let docs/move-speed-census.md wrongly claim Emergency Protocols "wasn't found") ---
+  {
+    formId: '0x00792A29',
+    kind: 'armor',
+    name: 'Propelling',
+    value: 0.05,
+    conditions: [],
+    disposition: 'modeled',
+  },
+  {
+    formId: '0x00338666',
+    kind: 'armor',
+    name: 'Emergency Protocols',
+    value: 0.25,
+    conditions: [
+      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'inPowerArmor', value: true },
+    ],
+    disposition: 'modeled',
+  },
+  {
+    formId: '0x0060DB33',
+    kind: 'armor',
+    name: 'Emergency Protocols',
+    value: 0.25,
+    conditions: [
+      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'inPowerArmor', value: true },
+    ],
+    disposition: 'modeled',
+  },
+  {
+    formId: '0x001D032E',
+    kind: 'armor',
+    name: 'Emergency Protocols',
+    value: 0.25,
+    conditions: [
+      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'inPowerArmor', value: true },
+    ],
+    disposition: 'modeled',
+  },
+  {
+    formId: '0x001D032D',
+    kind: 'armor',
+    name: 'Emergency Protocols',
+    value: 0.25,
+    conditions: [
+      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'inPowerArmor', value: true },
+    ],
+    disposition: 'modeled',
+  },
+  {
+    formId: '0x0017A5DD',
+    kind: 'armor',
+    name: 'Emergency Protocols',
+    value: 0.25,
+    conditions: [
+      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'inPowerArmor', value: true },
+    ],
+    disposition: 'modeled',
+  },
+  {
+    formId: '0x001D032C',
+    kind: 'armor',
+    name: 'Emergency Protocols',
+    value: 0.25,
+    conditions: [
+      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'inPowerArmor', value: true },
+    ],
+    disposition: 'modeled',
+  },
+  {
+    formId: '0x00585931',
+    kind: 'armor',
+    name: 'Emergency Protocols',
+    value: 0.25,
+    conditions: [
+      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'inPowerArmor', value: true },
+    ],
+    disposition: 'modeled',
+  },
+  {
+    formId: '0x003385FB',
+    kind: 'armor',
+    name: 'Emergency Protocols',
+    value: 0.25,
+    conditions: [
+      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'inPowerArmor', value: true },
+    ],
+    disposition: 'modeled',
+  },
+  {
+    formId: '0x001D032B',
+    kind: 'armor',
+    name: 'Emergency Protocols',
+    value: 0.25,
+    conditions: [
+      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'inPowerArmor', value: true },
+    ],
+    disposition: 'modeled',
+  },
+  {
+    formId: '0x00788D9A',
+    kind: 'armor',
+    name: 'Emergency Protocols',
+    value: 0.25,
+    conditions: [
+      { kind: 'healthBelowPct', pct: 20, inclusive: false },
+      { kind: 'inPowerArmor', value: true },
+    ],
+    disposition: 'modeled',
+  },
   // --- excluded (present in extracted data but must not reach the player fold) ---
   {
     formId: '0x00661FDF',
@@ -190,6 +311,19 @@ function collectMoveSpeedSources(): CollectedEntry[] {
       hits.push({
         formId: mod.source.formId,
         kind: 'consumable',
+        name: mod.source.name,
+        value: 'curve' in mod && mod.curve ? 'curve' : mod.value,
+        conditions: mod.conditions,
+      });
+    }
+  }
+
+  for (const omod of dataset.armorOmods) {
+    for (const mod of omod.modifiers) {
+      if (mod.bucket !== 'moveSpeedBonus') continue;
+      hits.push({
+        formId: mod.source.formId,
+        kind: 'armor',
         name: mod.source.name,
         value: 'curve' in mod && mod.curve ? 'curve' : mod.value,
         conditions: mod.conditions,

@@ -24,6 +24,11 @@ A new `SpeedMult` source after `bun run extract` fails CI until dispositioned he
 - Portable Power r1–r3 (+10/20/30%): `moveSpeedBonus`, gated on
   `inPowerArmor` (WornHasKeyword `ArmorTypePower` mapped at extraction) — needs
   the Conditions-section power-armor toggle.
+- Emergency Protocols (PA Misc torso mod, all 10 chassis): `moveSpeedBonus` +25%, gated
+  `healthBelowPct 20 (strict)` + `inPowerArmor` — the first armor-OMOD source of this bucket.
+- Propelling (4★ armor/PA legendary, +5%/piece): `moveSpeedBonus`, unconditional — shipped with
+  the armor pipeline (2026-07-18) but never added to this list or the census test's allowlist
+  until now (`collectMoveSpeedSources()` didn't scan `dataset.armorOmods` until this pass).
 
 ## Excluded (sprint / swim / event — deliberate)
 
@@ -76,10 +81,14 @@ Categories that previously read as "not yet swept" but are now dispositioned:
 - **Armor / power-armor OMODs** — pipeline SHIPPED 2026-07-18
   (`armor-omods.json`, commit 66870c6). Swept: **Propelling** (4★ PA legendary,
   `moveSpeedBonus` +5%/piece, clean `SpeedMult` route) shipped in the Armor
-  Effects checklist (`#16`). **Emergency
-  Protocols / Shrouded** — not found in the curated inventory (either
-  non-obtainable or not carrying a `SpeedMult`-routed property; not chased
-  further this pass). **Sleek** — found, but its AV is
+  Effects checklist (`#16`). **Emergency Protocols** — now modeled (see
+  "Modeled today" above); the record was always present and extracting a
+  correct `moveSpeedBonus` value, but stayed invisible because its
+  `GetValuePercent(Health)` condition translated to `unresolved` until
+  `scripts/extract/normalize/conditions.ts` gained a case for that ESM
+  function (2026-08-03). **Shrouded** — not chased further this pass, still
+  unresolved; disposition unrelated to the Emergency Protocols fix above.
+  **Sleek** — found, but its AV is
   `Mod_StealthMove_AV` (sneak-locomotion), the SAME non-`SpeedMult` axis as
   The Fixer's `Mod_StealthMove_AV` grant above — it would NOT feed
   `moveSpeedBonus` even if mapped; moved into that "deliberately unmapped"

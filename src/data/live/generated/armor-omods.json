@@ -54782,6 +54782,10 @@
      {
       "kind": "unresolved",
       "raw": "GetValue(PA_Strength_AV)=6"
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
      }
     ]
    }
@@ -54905,6 +54909,10 @@
      {
       "kind": "unresolved",
       "raw": "GetValue(PA_Strength_AV)=6"
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
      }
     ]
    }
@@ -69054,7 +69062,98 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00529A14:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00529A14",
+     "edid": "mod_Legendary_Armor1_Heavyweight",
+     "name": "Heavyweight"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Heavyweight)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x00529A14:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00529A14",
+     "edid": "mod_Legendary_Armor1_Heavyweight",
+     "name": "Heavyweight"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Heavyweight)=2"
+     }
+    ]
+   },
+   {
+    "id": "0x00529A14:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00529A14",
+     "edid": "mod_Legendary_Armor1_Heavyweight",
+     "name": "Heavyweight"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Heavyweight)=3"
+     }
+    ]
+   },
+   {
+    "id": "0x00529A14:ench:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00529A14",
+     "edid": "mod_Legendary_Armor1_Heavyweight",
+     "name": "Heavyweight"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Heavyweight)=4"
+     }
+    ]
+   },
+   {
+    "id": "0x00529A14:ench:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00529A14",
+     "edid": "mod_Legendary_Armor1_Heavyweight",
+     "name": "Heavyweight"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Heavyweight)=5"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_Heavyweight"
@@ -69067,8 +69166,7 @@
    "perk Legendary_Armor_Heavyweight: GetValue(LGND_EquippedArmorCount_Heavyweight)=2",
    "perk Legendary_Armor_Heavyweight: GetValue(LGND_EquippedArmorCount_Heavyweight)=3",
    "perk Legendary_Armor_Heavyweight: GetValue(LGND_EquippedArmorCount_Heavyweight)=4",
-   "perk Legendary_Armor_Heavyweight: GetValue(LGND_EquippedArmorCount_Heavyweight)=5",
-   "perk Legendary_Armor_Heavyweight: entry point Mod Incoming Weapon Damage — not modeled"
+   "perk Legendary_Armor_Heavyweight: GetValue(LGND_EquippedArmorCount_Heavyweight)=5"
   ],
   "obtainable": true
  },
@@ -69513,7 +69611,98 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0083DA67:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0083DA67",
+     "edid": "mod_Legendary_Armor1_Lucid",
+     "name": "Lucid"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(BOUNTY_LGND_Armor_Lucid)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x0083DA67:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0083DA67",
+     "edid": "mod_Legendary_Armor1_Lucid",
+     "name": "Lucid"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(BOUNTY_LGND_Armor_Lucid)=2"
+     }
+    ]
+   },
+   {
+    "id": "0x0083DA67:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0083DA67",
+     "edid": "mod_Legendary_Armor1_Lucid",
+     "name": "Lucid"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(BOUNTY_LGND_Armor_Lucid)=3"
+     }
+    ]
+   },
+   {
+    "id": "0x0083DA67:ench:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0083DA67",
+     "edid": "mod_Legendary_Armor1_Lucid",
+     "name": "Lucid"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(BOUNTY_LGND_Armor_Lucid)=4"
+     }
+    ]
+   },
+   {
+    "id": "0x0083DA67:ench:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0083DA67",
+     "edid": "mod_Legendary_Armor1_Lucid",
+     "name": "Lucid"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(BOUNTY_LGND_Armor_Lucid)=5"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "BOUNTY_HasLegendary_Armor_Lucid",
@@ -69529,8 +69718,7 @@
    "perk BOUNTY_Legendary_Armor_LucidPerk: GetValue(BOUNTY_LGND_Armor_Lucid)=2",
    "perk BOUNTY_Legendary_Armor_LucidPerk: GetValue(BOUNTY_LGND_Armor_Lucid)=3",
    "perk BOUNTY_Legendary_Armor_LucidPerk: GetValue(BOUNTY_LGND_Armor_Lucid)=4",
-   "perk BOUNTY_Legendary_Armor_LucidPerk: GetValue(BOUNTY_LGND_Armor_Lucid)=5",
-   "perk BOUNTY_Legendary_Armor_LucidPerk: entry point Mod Incoming Weapon Damage — not modeled"
+   "perk BOUNTY_Legendary_Armor_LucidPerk: GetValue(BOUNTY_LGND_Armor_Lucid)=5"
   ],
   "obtainable": true
  },
@@ -71863,7 +72051,98 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0083E316:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0083E316",
+     "edid": "mod_Legendary_PowerArmor1_Lucid",
+     "name": "Lucid"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(BOUNTY_LGND_Armor_Lucid)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x0083E316:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0083E316",
+     "edid": "mod_Legendary_PowerArmor1_Lucid",
+     "name": "Lucid"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(BOUNTY_LGND_Armor_Lucid)=2"
+     }
+    ]
+   },
+   {
+    "id": "0x0083E316:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0083E316",
+     "edid": "mod_Legendary_PowerArmor1_Lucid",
+     "name": "Lucid"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(BOUNTY_LGND_Armor_Lucid)=3"
+     }
+    ]
+   },
+   {
+    "id": "0x0083E316:ench:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0083E316",
+     "edid": "mod_Legendary_PowerArmor1_Lucid",
+     "name": "Lucid"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(BOUNTY_LGND_Armor_Lucid)=4"
+     }
+    ]
+   },
+   {
+    "id": "0x0083E316:ench:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0083E316",
+     "edid": "mod_Legendary_PowerArmor1_Lucid",
+     "name": "Lucid"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(BOUNTY_LGND_Armor_Lucid)=5"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "BOUNTY_HasLegendary_Armor_Lucid",
@@ -71879,8 +72158,7 @@
    "perk BOUNTY_Legendary_Armor_LucidPerk: GetValue(BOUNTY_LGND_Armor_Lucid)=2",
    "perk BOUNTY_Legendary_Armor_LucidPerk: GetValue(BOUNTY_LGND_Armor_Lucid)=3",
    "perk BOUNTY_Legendary_Armor_LucidPerk: GetValue(BOUNTY_LGND_Armor_Lucid)=4",
-   "perk BOUNTY_Legendary_Armor_LucidPerk: GetValue(BOUNTY_LGND_Armor_Lucid)=5",
-   "perk BOUNTY_Legendary_Armor_LucidPerk: entry point Mod Incoming Weapon Damage — not modeled"
+   "perk BOUNTY_Legendary_Armor_LucidPerk: GetValue(BOUNTY_LGND_Armor_Lucid)=5"
   ],
   "obtainable": true
  },
@@ -73647,8 +73925,8 @@
   "hasGrantingCobj": true,
   "notes": [
    "MGEF Legendary_PowerArmor_RadioactivePoweredApplyRADDrainPerkEffect: no route for AV Rads — needs mapping",
-   "condition: GetValuePercent(ActionPoints)=1",
-   "condition: GetValuePercent(Rads)=0"
+   "condition: GetValuePercent(ActionPoints) Not Equal To 1",
+   "condition: GetValuePercent(Rads) Greater Than 0"
   ],
   "obtainable": true
  },
@@ -74684,7 +74962,12 @@
     "bucket": "specialIntelligence",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -74719,7 +75002,12 @@
     "bucket": "specialPerception",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -75167,7 +75455,12 @@
      ]
     },
     "curveScale": 1,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -75252,8 +75545,36 @@
     "value": 0.25,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetValuePercent(Health)=0.2"
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x00338666:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00338666",
+     "edid": "mod_PowerArmor_Excavator_Torso_Misc_Emergency",
+     "name": "Emergency Protocols"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -0.5,
+    "conditions": [
+     {
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
      }
     ]
    }
@@ -75263,11 +75584,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: entry point Mod Incoming Weapon Damage — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -75365,7 +75682,12 @@
     "bucket": "specialStrength",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -75788,7 +76110,12 @@
     "bucket": "specialIntelligence",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -75846,7 +76173,12 @@
     "bucket": "specialPerception",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -75881,7 +76213,12 @@
     "bucket": "vatsHitChance",
     "op": "MUL_ADD",
     "value": 0.10000000000000009,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -76114,7 +76451,12 @@
      ]
     },
     "curveScale": 1,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -76176,8 +76518,36 @@
     "value": 0.25,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetValuePercent(Health)=0.2"
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x0060DB33:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0060DB33",
+     "edid": "mod_PowerArmor_Hellcat_Torso_Misc_Emergency",
+     "name": "Emergency Protocols"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -0.5,
+    "conditions": [
+     {
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
      }
     ]
    }
@@ -76187,11 +76557,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: entry point Mod Incoming Weapon Damage — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -76362,7 +76728,12 @@
     "bucket": "specialStrength",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -76933,7 +77304,12 @@
     "bucket": "specialIntelligence",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -76968,7 +77344,12 @@
     "bucket": "specialPerception",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -77286,7 +77667,12 @@
      ]
     },
     "curveScale": 1,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -77371,8 +77757,36 @@
     "value": 0.25,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetValuePercent(Health)=0.2"
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x001D032E:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x001D032E",
+     "edid": "mod_PowerArmor_Raider_Torso_Misc_Emergency",
+     "name": "Emergency Protocols"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -0.5,
+    "conditions": [
+     {
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
      }
     ]
    }
@@ -77382,11 +77796,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: entry point Mod Incoming Weapon Damage — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -77533,7 +77943,12 @@
     "bucket": "specialStrength",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -78129,7 +78544,12 @@
     "bucket": "specialIntelligence",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -78185,7 +78605,12 @@
     "bucket": "specialPerception",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -78219,7 +78644,12 @@
     "bucket": "vatsHitChance",
     "op": "MUL_ADD",
     "value": 0.10000000000000009,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -79006,7 +79436,12 @@
      ]
     },
     "curveScale": 1,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -79068,8 +79503,36 @@
     "value": 0.25,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetValuePercent(Health)=0.2"
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x001D032D:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x001D032D",
+     "edid": "mod_PowerArmor_T45_Torso_Misc_Emergency",
+     "name": "Emergency Protocols"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -0.5,
+    "conditions": [
+     {
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
      }
     ]
    }
@@ -79079,11 +79542,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: entry point Mod Incoming Weapon Damage — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -79252,7 +79711,12 @@
     "bucket": "specialStrength",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -79982,7 +80446,12 @@
     "bucket": "specialIntelligence",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -80038,7 +80507,12 @@
     "bucket": "specialPerception",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -80072,7 +80546,12 @@
     "bucket": "vatsHitChance",
     "op": "MUL_ADD",
     "value": 0.10000000000000009,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -81616,7 +82095,12 @@
      ]
     },
     "curveScale": 1,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -81678,8 +82162,36 @@
     "value": 0.25,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetValuePercent(Health)=0.2"
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x0017A5DD:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0017A5DD",
+     "edid": "mod_PowerArmor_T51_Torso_Misc_Emergency",
+     "name": "Emergency Protocols"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -0.5,
+    "conditions": [
+     {
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
      }
     ]
    }
@@ -81689,11 +82201,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: entry point Mod Incoming Weapon Damage — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -81862,7 +82370,12 @@
     "bucket": "specialStrength",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -82675,7 +83188,12 @@
     "bucket": "specialIntelligence",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -82730,7 +83248,12 @@
     "bucket": "specialPerception",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -82764,7 +83287,12 @@
     "bucket": "vatsHitChance",
     "op": "MUL_ADD",
     "value": 0.10000000000000009,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -84746,7 +85274,12 @@
      ]
     },
     "curveScale": 1,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -84808,8 +85341,36 @@
     "value": 0.25,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetValuePercent(Health)=0.2"
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x001D032C:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x001D032C",
+     "edid": "mod_PowerArmor_T60_Torso_Misc_Emergency",
+     "name": "Emergency Protocols"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -0.5,
+    "conditions": [
+     {
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
      }
     ]
    }
@@ -84819,11 +85380,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: entry point Mod Incoming Weapon Damage — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -84992,7 +85549,12 @@
     "bucket": "specialStrength",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -85378,7 +85940,12 @@
     "bucket": "specialIntelligence",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -85436,7 +86003,12 @@
     "bucket": "specialPerception",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -85471,7 +86043,12 @@
     "bucket": "vatsHitChance",
     "op": "MUL_ADD",
     "value": 0.10000000000000009,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -85894,7 +86471,12 @@
      ]
     },
     "curveScale": 1,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -85956,8 +86538,36 @@
     "value": 0.25,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetValuePercent(Health)=0.2"
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x00585931:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00585931",
+     "edid": "mod_PowerArmor_T65_Torso_Misc_Emergency",
+     "name": "Emergency Protocols"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -0.5,
+    "conditions": [
+     {
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
      }
     ]
    }
@@ -85967,11 +86577,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: entry point Mod Incoming Weapon Damage — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -86140,7 +86746,12 @@
     "bucket": "specialStrength",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -86411,7 +87022,12 @@
     "bucket": "specialIntelligence",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -86446,7 +87062,12 @@
     "bucket": "specialPerception",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -87007,7 +87628,12 @@
      ]
     },
     "curveScale": 1,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -87092,8 +87718,36 @@
     "value": 0.25,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetValuePercent(Health)=0.2"
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x003385FB:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x003385FB",
+     "edid": "mod_PowerArmor_Ultracite_Torso_Misc_Emergency",
+     "name": "Emergency Protocols"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -0.5,
+    "conditions": [
+     {
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
      }
     ]
    }
@@ -87103,11 +87757,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: entry point Mod Incoming Weapon Damage — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -87254,7 +87904,12 @@
     "bucket": "specialStrength",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -88033,7 +88688,12 @@
     "bucket": "specialIntelligence",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -88090,7 +88750,12 @@
     "bucket": "specialPerception",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -88124,7 +88789,12 @@
     "bucket": "vatsHitChance",
     "op": "MUL_ADD",
     "value": 0.10000000000000009,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -89348,7 +90018,12 @@
      ]
     },
     "curveScale": 1,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -89410,8 +90085,36 @@
     "value": 0.25,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetValuePercent(Health)=0.2"
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x001D032B:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x001D032B",
+     "edid": "mod_PowerArmor_X01_Torso_Misc_Emergency",
+     "name": "Emergency Protocols"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -0.5,
+    "conditions": [
+     {
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
      }
     ]
    }
@@ -89421,11 +90124,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: entry point Mod Incoming Weapon Damage — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -89594,7 +90293,12 @@
     "bucket": "specialStrength",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -91834,7 +92538,12 @@
     "bucket": "specialIntelligence",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -91892,7 +92601,12 @@
     "bucket": "specialPerception",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -91927,7 +92641,12 @@
     "bucket": "vatsHitChance",
     "op": "MUL_ADD",
     "value": 0.10000000000000009,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -92225,7 +92944,12 @@
      ]
     },
     "curveScale": 1,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -92287,8 +93011,36 @@
     "value": 0.25,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetValuePercent(Health)=0.2"
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
+   },
+   {
+    "id": "0x00788D9A:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00788D9A",
+     "edid": "RD01_Mod_PowerArmor_EnclaveVulcan_Torso_Misc_Emergency",
+     "name": "Emergency Protocols"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -0.5,
+    "conditions": [
+     {
+      "kind": "healthBelowPct",
+      "pct": 20,
+      "inclusive": false
+     },
+     {
+      "kind": "inPowerArmor",
+      "value": true
      }
     ]
    }
@@ -92298,11 +93050,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: GetValuePercent(Health)=0.2",
-   "perk PA_EmergencyProtocols: entry point Mod Incoming Weapon Damage — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -92497,7 +93245,12 @@
     "bucket": "specialStrength",
     "op": "ADD",
     "value": 2,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "inPowerArmor",
+      "value": true
+     }
+    ]
    }
   ],
   "addedKeywords": [

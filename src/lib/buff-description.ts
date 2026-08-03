@@ -26,6 +26,7 @@ const PERCENT_BUCKET_LABELS: Partial<Record<Bucket, string>> = {
   limbDamage: 'limb damage',
   reloadSpeed: 'reload speed',
   moveSpeedBonus: 'movement speed',
+  incomingDamageMult: 'damage taken',
 };
 
 /** Buckets whose Modifier.value is a flat point add, not a percentage. */
@@ -176,6 +177,12 @@ function describeConditions(conditions: readonly Condition[]): {
         break;
       case 'underAlcoholEffect':
         clauses.push(c.value ? 'under alcohol' : 'while sober');
+        break;
+      case 'healthBelowPct':
+        clauses.push(`below ${c.pct}% health`);
+        break;
+      case 'inPowerArmor':
+        clauses.push(c.value ? 'in power armor' : 'outside power armor');
         break;
       default:
         // Other condition kinds aren't produced by the buff sources this

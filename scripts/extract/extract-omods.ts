@@ -1219,6 +1219,22 @@ export async function extractOmods(
     }
   }
 
+  // Power-armor-exclusive armor OMODs (attach point prefix `ap_PowerArmor*`)
+  // aren't gated in the ESM itself — PA-exclusivity is expressed structurally
+  // via the attach point / Target OMOD Keywords, not a perk condition — so the
+  // app supplies the gate here. General rule, not special-cased to any one
+  // mod: verified 2026-08-03 that no visible armor-effect NAME GROUP mixes a
+  // non-PA and a PA record (armor-modifiers.ts dedupes OMODs by display name
+  // and picks one alphabetical representative per group — if a group ever
+  // mixed variants, gating only the PA ones here could under- or over-gate the
+  // group's representative; today it can't happen).
+  for (const omod of armorOmods) {
+    if (!omod.attachPointEdid.startsWith('ap_PowerArmor')) continue;
+    for (const m of omod.modifiers) {
+      m.conditions.push({ kind: 'inPowerArmor', value: true });
+    }
+  }
+
   omods.sort((a, b) => a.id.localeCompare(b.id));
   armorOmods.sort((a, b) => a.id.localeCompare(b.id));
   return {
