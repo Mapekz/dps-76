@@ -582,6 +582,42 @@ describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp
     });
     expect(foldBucket([curveMod], 'powerAttackBonus', 0, atFive)).toBeCloseTo(0.25, 10); // interpolate(5)=25, ×0.01
   });
+
+  it("Pirate Punch's curve (lockpickSkill input) scales with the derived lockpick-skill stat", () => {
+    // Real ESM curve: PiratePunchBonus (0,0),(1,5),(20,100) — +5%/point, scale 0.01
+    // (folded into STAT_DmgPistolsNonAuto via the plumbing-perk route, not the
+    // FALLBACK_AVIF_ROUTES scale-1 route that grants the skill points themselves).
+    const curveMod: Modifier = {
+      id: 'pirate-punch',
+      source: {
+        kind: 'omod',
+        formId: '0x0064D004',
+        edid: 'E08B_mod_Custom_Blackpowder_PiratePunch',
+        name: 'Pirate Punch',
+      },
+      bucket: 'dbm',
+      op: 'ADD',
+      curve: {
+        input: 'lockpickSkill',
+        points: [
+          { x: 0, y: 0 },
+          { x: 1, y: 5 },
+          { x: 20, y: 100 },
+        ],
+      },
+      curveScale: 0.01,
+      conditions: [],
+    };
+    // Max realistic build: Picklock/Expert/Master (+3) + Master Infiltrator (+3)
+    // + Safecracker's ×5 pieces (+5) = 11 → +55%.
+    const maxed = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), lockpickSkill: 11 },
+    });
+    expect(foldBucket([curveMod], 'dbm', 1.0, maxed)).toBeCloseTo(1.55, 10);
+
+    const bare = makeCtx(weapon, { player: createDefaultPlayerConditions() });
+    expect(foldBucket([curveMod], 'dbm', 1.0, bare)).toBe(1.0);
+  });
 });
 
 describe('crit and sneak composition (MUL_ADD before ADD)', () => {

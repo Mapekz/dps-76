@@ -165,6 +165,12 @@ export const FALLBACK_AVIF_ROUTES: Record<
 > = {
   STAT_SneakAttackBonus: { bucket: 'sneakBonus', scale: 0.01 },
   STAT_DmgPowerAttack: { bucket: 'powerAttackBonus', scale: 0.01 },
+  // Lockpick Skill (Picklock/Picklock Expert/Picklock Master perks ADD 1 each,
+  // Master Infiltrator legendary ADD 3, Safecracker's 3★ armor ADD 1/piece —
+  // esm refs 0x0032CB37, 2026-08-04). Scale 1, NOT 0.01: this AV is integer
+  // skill points (max realistic 11), not a percent. Feeds Pirate Punch's
+  // unique-mod curve via the `lockpickSkill` CurveInput (CURVE_INPUT_AVS below).
+  STAT_LockpickingTier: { bucket: 'lockpickSkill', scale: 1 },
   // Read directly by DamageVsNonWeakpoint_DO in the damage formula.
   STAT_DmgVsTorso: {
     bucket: 'dbm',
@@ -571,6 +577,7 @@ const CURVE_INPUT_AVS: Record<string, CurveInput> = {
   '0x00000393': 'capsOnHand', // Aristocrat's
   '0x00000399': 'killStreak', // Adrenal Reaction
   '0x001EB998': 'addictionCount', // Junkie's
+  '0x0032CB37': 'lockpickSkill', // STAT_LockpickingTier — Pirate Punch's "+5% Damage per Lockpick Skill" curve (PiratePunchBonus: (0,0),(1,5),(20,100))
   '0x000002D4': 'healthCurrent', // Health (absolute) — Juggernaut's (x 0→1000, y 0→100)
   // DamageResist — Berserker's ("DamageUnarmored"): the WIELDER's own DR, not
   // the enemy's (renamed from `enemyDamageResist` 2026-07-18, user-confirmed —

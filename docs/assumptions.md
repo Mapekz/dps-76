@@ -1338,18 +1338,9 @@ their stats are stale and must not be shown.
 - SPECIAL-scaled perk entry points ("Add Actor Value Mult") are skipped and
   noted per-perk.
 - A handful of `cr`-prefixed creature/event DoT curves (non-level domain, X
-  up to 540) and a few niche unique-mod curves remain unmapped: Pirate Punch
-  (below), Eat The Rich (NPC-only reward, not player-obtainable), PA battery
-  drain (no DPS/AP/HP impact).
-- **Pirate Punch / lockpick skill** (2026-07-13, **deferred — user
-  decision**): a real ESM-proven curve ("+5% Damage per Lockpick Skill")
-  extracts with zero modifiers because its curve input AV isn't in the
-  mapped set. Landing it needs a new `lockpickSkill` CurveInput + an
-  aggregation step (Locksmith + Picklock ranks + Master Infiltrator + the
-  lockpick magazine/bobblehead, none of which currently route). **Master
-  Infiltrator's actual per-rank grant needs ESM verification** before
-  implementing — its card text conflicts with a "+1/rank" recollection;
-  don't trust either without walking the ESM.
+  up to 540) and a few niche unique-mod curves remain unmapped: Eat The Rich
+  (NPC-only reward, not player-obtainable), PA battery drain (no DPS/AP/HP
+  impact).
 - No magazine/bobblehead buffs remain inert — see **Magazines & bobbleheads**.
 
 ## Future DPS streams

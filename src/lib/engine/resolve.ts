@@ -233,6 +233,9 @@ const PLAYER_STATE_READERS: Record<
   moveSpeedBonus: (_, ctx) => ctx.moveSpeedBonus ?? 0,
   // Polished's curve X = GetEquippedWeaponHealthPercent (0.0-2.0 fraction; no AVIF).
   weaponCondition: (p) => (p.weaponConditionPct ?? 100) / 100,
+  // Pirate Punch's curve X — folded lockpickSkill bucket (Picklock ranks,
+  // Master Infiltrator, Safecracker's 3★ armor).
+  lockpickSkill: (p) => p.lockpickSkill ?? 0,
 };
 
 /**

@@ -294,6 +294,40 @@ describe('translate (Onslaught, 2026-07-12)', () => {
   });
 });
 
+describe('translate (Lockpick Skill / Pirate Punch, 2026-08-04)', () => {
+  it("carries curve.input 'lockpickSkill' for a curve keyed off STAT_LockpickingTier (0x0032CB37, Pirate Punch's unique-mod curve)", () => {
+    const routedAv = new Map<string, AvifRoute[]>([
+      ['0xAV', [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]],
+    ]);
+    const curved = effect({
+      curvePoints: [
+        { x: 0, y: 0 },
+        { x: 1, y: 5 },
+        { x: 20, y: 100 },
+      ],
+      curveInputAv: '0x0032CB37',
+    });
+    const r = translate(mgef({ archetype: 'Peak Value Modifier' }), curved, routedAv, edids);
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0].bucket).toBe('dbm');
+    expect(r.modifiers[0].curve?.input).toBe('lockpickSkill');
+    expect(r.modifiers[0].curve ? r.modifiers[0].curveScale : null).toBeCloseTo(0.01, 10);
+  });
+
+  it('routes a flat Peak Value Modifier on STAT_LockpickingTier to the lockpickSkill bucket via the FALLBACK_AVIF_ROUTES fallback (Picklock/Master Infiltrator/Safecracker\'s-style grant, scale 1 not 0.01 — integer skill points)', () => {
+    const lockpickEdids = new Map<string, string>([['0xAV', 'STAT_LockpickingTier']]);
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier' }),
+      effect({ magnitude: 1 }),
+      noRoutes,
+      lockpickEdids,
+    );
+    expect(r.modifiers).toEqual([
+      { bucket: 'lockpickSkill', op: 'ADD', value: 1, conditions: [] },
+    ]);
+  });
+});
+
 describe('translate (Bullet Storm, 2026-07-16)', () => {
   it("routes a Peak Value Modifier on AmmoSpenderMaxStacks to bulletStormMaxStacks (Heavy Gunner's abAmmoSpenderFortifyStacks-style flat magnitude)", () => {
     const bulletStormEdids = new Map<string, string>([['0xAV', 'AmmoSpenderMaxStacks']]);

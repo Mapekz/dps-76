@@ -15693,16 +15693,61 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0064D004:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0064D004",
+     "edid": "E08B_mod_Custom_Blackpowder_PiratePunch",
+     "name": "Pirate Punch"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "curve": {
+     "input": "lockpickSkill",
+     "points": [
+      {
+       "x": 0,
+       "y": 0
+      },
+      {
+       "x": 1,
+       "y": 5
+      },
+      {
+       "x": 20,
+       "y": 100
+      }
+     ]
+    },
+    "curveScale": 0.01,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypePistol",
+      "present": true
+     },
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeAutomatic",
+      "present": false
+     },
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeHeavyGun",
+      "present": false
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed",
    "CustomItemName_PiratePunch"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "AbPerkFortifyDmgPistolsNonAuto: curve with unmapped input AV 0x0032CB37 — needs override"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

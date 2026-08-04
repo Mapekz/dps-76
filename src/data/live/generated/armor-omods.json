@@ -70816,7 +70816,21 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00527F7B:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00527F7B",
+     "edid": "mod_Legendary_Armor3_LockPick",
+     "name": "Safecracker's"
+    },
+    "bucket": "lockpickSkill",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_LockPick"
@@ -70824,8 +70838,7 @@
   "hasEnchantments": false,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on STAT_HackingTier — unmapped",
-   "ActorValues on STAT_LockpickingTier — unmapped"
+   "ActorValues on STAT_HackingTier — unmapped"
   ],
   "obtainable": true
  },
@@ -73239,7 +73252,21 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00606273:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606273",
+     "edid": "mod_Legendary_PowerArmor3_LockPick",
+     "name": "Safecracker's"
+    },
+    "bucket": "lockpickSkill",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_LockPick"
@@ -73247,8 +73274,7 @@
   "hasEnchantments": false,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on STAT_HackingTier — unmapped",
-   "ActorValues on STAT_LockpickingTier — unmapped"
+   "ActorValues on STAT_HackingTier — unmapped"
   ],
   "obtainable": true
  },

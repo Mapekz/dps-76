@@ -49,6 +49,7 @@ const FLAT_POINT_BUCKET_LABELS: Partial<Record<Bucket, string>> = {
 const CURVE_AXIS_LABELS: Partial<Record<CurveInput, string>> = {
   killStreak: 'kill streak',
   healthFraction: 'missing health',
+  lockpickSkill: 'lockpick skill',
 };
 
 const WEAPON_KEYWORD_LABELS: Record<string, string> = {

@@ -135,8 +135,6 @@ const IDENTIFIER_ALLOWLIST = new Set([
   'actualModule',
   // Triage label value, not a code identifier.
   'wontfix',
-  // Named in "Known gaps / deferred" as a not-yet-built CurveInput.
-  'lockpickSkill',
   // Formula pseudo-variables — the doc defines these inline as notation for
   // a math expression, not references to real TS identifiers.
   'cycleConstant',

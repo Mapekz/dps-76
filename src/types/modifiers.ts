@@ -438,6 +438,15 @@ export type Bucket =
    */
   | 'maxHealth'
   /**
+   * Lockpick Skill (`STAT_LockpickingTier`, integer points, base 0). Folded
+   * in player-stats.ts derivePlayerStats exactly like maxHealth — every
+   * contributing perk/armor-effect modifier ADDs into this bucket — and
+   * threaded onto PlayerConditions.lockpickSkill, read by the `lockpickSkill`
+   * CurveInput (Pirate Punch unique weapon mod: "+5% Damage per Lockpick
+   * Skill", ESM curve PiratePunchBonus).
+   */
+  | 'lockpickSkill'
+  /**
    * SPECIAL stat bonuses (consumables, legendary +STR...), folded uniformly
    * by player-stats.ts into `special.<key>`. Every one of the seven feeds a
    * real downstream consumer: Strength → the melee term + its curve input,
@@ -861,6 +870,12 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
     hasEngineEffect: true,
     foldedBy: 'player-stats.ts derivePlayerStats (245 + 5xEND + this fold)',
   },
+  lockpickSkill: {
+    regime: 'playerStat',
+    hasEngineEffect: true,
+    foldedBy:
+      "player-stats.ts derivePlayerStats; feeds the lockpickSkill CurveInput (Pirate Punch)",
+  },
   specialStrength: {
     regime: 'playerStat',
     hasEngineEffect: true,
@@ -1282,7 +1297,8 @@ export type CurveInput =
    * GetEquippedWeaponHealthPercent, proven by the cut DEL_Legendary_Weapon_
    * PolishedPerk predecessor record (docs/assumptions.md).
    */
-  | 'weaponCondition';
+  | 'weaponCondition'
+  | 'lockpickSkill'; // STAT_LockpickingTier 0x0032CB37 — Pirate Punch's "+5% Damage per Lockpick Skill" curve
 
 export interface ValueCurve {
   input: CurveInput;

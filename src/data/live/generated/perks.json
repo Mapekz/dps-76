@@ -17729,19 +17729,79 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005CFCAB:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005CFCAB",
+       "edid": "LGN_MasterInfiltrator_Perk",
+       "name": "Master Infiltrator",
+       "rank": 1
+      },
+      "bucket": "lockpickSkill",
+      "op": "ADD",
+      "value": 3,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005CFCAB:r2:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005CFCAB",
+       "edid": "LGN_MasterInfiltrator_Perk",
+       "name": "Master Infiltrator",
+       "rank": 2
+      },
+      "bucket": "lockpickSkill",
+      "op": "ADD",
+      "value": 3,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005CFCAB:r3:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005CFCAB",
+       "edid": "LGN_MasterInfiltrator_Perk",
+       "name": "Master Infiltrator",
+       "rank": 3
+      },
+      "bucket": "lockpickSkill",
+      "op": "ADD",
+      "value": 3,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 4,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x005CFCAB:r4:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005CFCAB",
+       "edid": "LGN_MasterInfiltrator_Perk",
+       "name": "Master Infiltrator",
+       "rank": 4
+      },
+      "bucket": "lockpickSkill",
+      "op": "ADD",
+      "value": 3,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -26008,7 +26068,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x000523FF:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x000523FF",
+       "edid": "Picklock",
+       "name": "Picklock",
+       "rank": 1
+      },
+      "bucket": "lockpickSkill",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -26039,7 +26114,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00052400:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00052400",
+       "edid": "PicklockExpert",
+       "name": "Picklock Expert",
+       "rank": 1
+      },
+      "bucket": "lockpickSkill",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -26070,7 +26160,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00052401:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00052401",
+       "edid": "PicklockMaster",
+       "name": "Picklock Master",
+       "rank": 1
+      },
+      "bucket": "lockpickSkill",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,

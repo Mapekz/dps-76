@@ -211,8 +211,12 @@ describe('perkHasEngineEffect (drives the perk picker\'s "no effect yet" badge)'
     expect(perkHasEngineEffect('live', PerkId.Gunslinger)).toBe(true);
   });
 
-  it('is false for a perk that only affects a non-combat mechanic (Picklock)', () => {
-    expect(perkHasEngineEffect('live', PerkId.Picklock)).toBe(false);
+  it('is false for a perk that only affects a non-combat mechanic (Green Thumb)', () => {
+    expect(perkHasEngineEffect('live', PerkId.GreenThumb)).toBe(false);
+  });
+
+  it('is true for Picklock (feeds Pirate Punch\'s lockpickSkill curve since 2026-08-04)', () => {
+    expect(perkHasEngineEffect('live', PerkId.Picklock)).toBe(true);
   });
 
   it('is true for Iron Fist (DR-scaled dbm curve, wired to the playerDamageResist manual knob — Phase 2)', () => {

@@ -250,6 +250,8 @@ export interface DerivedPlayerStats {
   special: Record<SpecialKey, number>;
   /** 245 + 5×effective END + maxHealth-bucket folds (Lifegiver &c.), rounded. */
   maxHealth: number;
+  /** Folded lockpickSkill bucket (Picklock ranks, Master Infiltrator, Safecracker's) — base 0, no formula term unlike maxHealth. */
+  lockpickSkill: number;
 }
 
 export function derivePlayerStats(
@@ -304,6 +306,7 @@ export function derivePlayerStats(
   const maxHealth = Math.round(
     foldBucket(modifiers, 'maxHealth', BASE_MAX_HP + MAX_HP_PER_ENDURANCE * special.endurance, ctx),
   );
+  const lockpickSkill = foldBucket(modifiers, 'lockpickSkill', 0, ctx);
 
-  return { special, maxHealth };
+  return { special, maxHealth, lockpickSkill };
 }

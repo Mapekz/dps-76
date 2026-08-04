@@ -76,6 +76,7 @@ const ALL_BUCKETS: Bucket[] = [
   'vatsHitChanceMult',
   'dotDamage',
   'maxHealth',
+  'lockpickSkill',
   'specialStrength',
   'specialPerception',
   'specialEndurance',
