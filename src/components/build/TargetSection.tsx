@@ -35,6 +35,7 @@ import {
   gameUnitsToPipBoy,
   pipBoyToGameUnits,
 } from '@/lib/distance';
+import { ENEMY_HEALTH_PERCENT_STOPS } from '@/lib/health-percent';
 import {
   createDefaultEnemyConditions,
   createDefaultPlayerConditions,
@@ -71,13 +72,6 @@ const STATUS_TOGGLES: Array<{ key: keyof EnemyConditions; label: string; title: 
     title: 'Active cryo effect — no equipped effect consumes this yet',
   },
 ];
-
-const ENEMY_NUMBER_FIELDS: Array<{
-  key: keyof EnemyConditions;
-  label: string;
-  min: number;
-  max: number;
-}> = [{ key: 'healthPercent', label: 'Health %', min: 1, max: 100 }];
 
 // Encircler's top tier is GetGroupTargetCount ≥5 (buffs-legendary.test.ts) —
 // nothing distinguishes larger groups, so the control caps at "5+".
@@ -154,6 +148,10 @@ export function TargetSection() {
   const defaults = createDefaultEnemyConditions();
   const setEnemy = (key: keyof EnemyConditions, value: EnemyConditions[keyof EnemyConditions]) =>
     dispatch({ type: 'enemy/condition', key, value });
+  // healthPercent is optional on EnemyConditions even though the default
+  // factory always sets it — fall back to the literal 100 the codec/reducer
+  // both snap to, not `defaults.healthPercent` (still typed optional).
+  const enemyHealthPercent = conditions.healthPercent ?? defaults.healthPercent ?? 100;
 
   const races = getBodyPartRaces(mode);
   // Category groups in a fixed order, alphabetized within each.
@@ -596,20 +594,18 @@ export function TargetSection() {
             </div>
           )}
 
-          {ENEMY_NUMBER_FIELDS.map((field) => (
-            <div key={field.key} className="space-y-1.5">
-              <Label htmlFor={`target-${field.key}`}>{field.label}</Label>
-              <NumberField
-                id={`target-${field.key}`}
-                min={field.min}
-                max={field.max}
-                value={
-                  (conditions[field.key] as number | undefined) ?? (defaults[field.key] as number)
-                }
-                onChange={(v) => setEnemy(field.key, v)}
-              />
-            </div>
-          ))}
+          <div className="space-y-1.5">
+            <Label htmlFor="target-healthPercent">Enemy health: {enemyHealthPercent}%</Label>
+            <Slider
+              id="target-healthPercent"
+              min={ENEMY_HEALTH_PERCENT_STOPS[0]}
+              max={ENEMY_HEALTH_PERCENT_STOPS[ENEMY_HEALTH_PERCENT_STOPS.length - 1]}
+              step={20}
+              value={[enemyHealthPercent]}
+              onValueChange={(v) => setEnemy('healthPercent', firstSliderValue(v))}
+              marks={ENEMY_HEALTH_PERCENT_STOPS.map((v) => ({ value: v, label: `${v}` }))}
+            />
+          </div>
 
           <div className="space-y-1.5">
             <Label>Enemies in the group (incl. target)</Label>

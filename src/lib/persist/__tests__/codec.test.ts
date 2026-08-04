@@ -382,6 +382,19 @@ describe('Armor checklist (Phase 3 armor pipeline, UI + state)', () => {
     expect(decoded!.warnings.some((w) => w.includes('NotARealArmorEffect'))).toBe(true);
   });
 
+  it('snaps an off-grid legacy player healthPercent to the nearest slider stop', async () => {
+    const near40 = await decodeBuild(await encodeRawWire({ pc: { healthPercent: 37 } }), 'live');
+    expect(near40!.state.player.conditions.healthPercent).toBe(40);
+
+    const near5 = await decodeBuild(await encodeRawWire({ pc: { healthPercent: 1 } }), 'live');
+    expect(near5!.state.player.conditions.healthPercent).toBe(5);
+  });
+
+  it('snaps an off-grid legacy enemy healthPercent to the nearest (coarser) slider stop', async () => {
+    const decoded = await decodeBuild(await encodeRawWire({ ec: { healthPercent: 1 } }), 'live');
+    expect(decoded!.state.enemy.conditions.healthPercent).toBe(20);
+  });
+
   it('migrates a legacy "limitBreakingPieces" condition into the checklist selection', async () => {
     const encoded = await encodeRawWire({ pc: { limitBreakingPieces: 5 } });
     const decoded = await decodeBuild(encoded, 'live');

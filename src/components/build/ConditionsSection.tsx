@@ -17,6 +17,7 @@ import {
   resolveOnslaughtStacks,
 } from '@/lib/engine/stacks';
 import { buildDeltaCount } from '@/lib/build-delta';
+import { healthPercentIndex, PLAYER_HEALTH_PERCENT_STOPS } from '@/lib/health-percent';
 import { cn } from '@/lib/utils';
 import { createDefaultPlayerConditions, type PlayerConditions } from '@/types';
 import { SectionTrigger } from './SectionTrigger';
@@ -207,14 +208,20 @@ export function ConditionsSection() {
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-3">
-          <NumberField
-            id="char-health"
-            label="Health %"
-            value={conditions.healthPercent}
-            min={1}
-            max={100}
-            onChange={(v) => set('healthPercent', v)}
-          />
+          <div className="space-y-1.5">
+            <Label htmlFor="char-health">Health: {conditions.healthPercent}%</Label>
+            <Slider
+              id="char-health"
+              min={0}
+              max={PLAYER_HEALTH_PERCENT_STOPS.length - 1}
+              step={1}
+              value={[healthPercentIndex(conditions.healthPercent, PLAYER_HEALTH_PERCENT_STOPS)]}
+              onValueChange={(v) =>
+                set('healthPercent', PLAYER_HEALTH_PERCENT_STOPS[firstSliderValue(v)])
+              }
+              marks={PLAYER_HEALTH_PERCENT_STOPS.map((pct, i) => ({ value: i, label: `${pct}` }))}
+            />
+          </div>
 
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Max HP</span>

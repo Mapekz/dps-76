@@ -12,6 +12,11 @@ import { getOmodById } from '@/data/omods';
 import { clampArmorTierBudgets, getArmorEffectById } from '@/data/armor-modifiers';
 import { nukesDragonsPerks, reclassifyPerkLoadouts } from '@/lib/nukes-dragons';
 import { buildDelta } from '@/lib/build-delta';
+import {
+  ENEMY_HEALTH_PERCENT_STOPS,
+  PLAYER_HEALTH_PERCENT_STOPS,
+  snapHealthPercent,
+} from '@/lib/health-percent';
 import { consumablesById, sanitizeConsumables } from '@/lib/consumable-rules';
 import { createDefaultBuildState, type BuildState } from '@/state/build-reducer';
 import type { PerkId } from '@/data/perk-ids';
@@ -348,6 +353,13 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
 
   // Conditions: only keys that exist in the current schema survive.
   for (const [key, value] of Object.entries(wire.pc ?? {})) {
+    if (key === 'healthPercent' && typeof value === 'number') {
+      // Health % is now a discrete slider (src/lib/health-percent.ts); older
+      // URLs can carry any 1-100 value, so snap to the nearest allowed stop
+      // rather than let the stored value and the slider position disagree.
+      state.player.conditions.healthPercent = snapHealthPercent(value, PLAYER_HEALTH_PERCENT_STOPS);
+      continue;
+    }
     if (key === 'limitBreakingPieces' && typeof value === 'number') {
       // Pre-Phase-3 URLs stored Limit Breaking as a standalone manual
       // condition; it's now the "Limit-Breaking" Armor checklist row
@@ -376,6 +388,11 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
     }
   }
   for (const [key, value] of Object.entries(wire.ec ?? {})) {
+    if (key === 'healthPercent' && typeof value === 'number') {
+      // Same migration as the player loop above, using the coarser enemy stops.
+      state.enemy.conditions.healthPercent = snapHealthPercent(value, ENEMY_HEALTH_PERCENT_STOPS);
+      continue;
+    }
     if (key === 'targetDistance' && typeof value === 'string') {
       // Pre-Phase-1 URLs stored a three-way bucket ('close'|'none'|'far');
       // targetDistance is now a continuous raw-game-units number. Map to a

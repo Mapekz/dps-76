@@ -459,9 +459,17 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
     case 'race/set':
       // The user's choice, not a side effect of adding a perk — prune whatever
       // no longer fits instead of blocking the switch (UI confirms first).
+      // Switching to Ghoul also resets Health % to 100: low-HP builds lean on
+      // taking Rads to cut max HP, and Ghouls convert Rads into Glow instead,
+      // so a carried-over low value wouldn't reflect a feasible ghoul build.
+      // Human→Ghoul only — switching back to Human leaves whatever's there.
       return withPlayer(state, {
         ...player,
-        conditions: { ...player.conditions, isGhoul: action.isGhoul },
+        conditions: {
+          ...player.conditions,
+          isGhoul: action.isGhoul,
+          ...(action.isGhoul ? { healthPercent: 100 } : {}),
+        },
         perks: keepForRace(player.perks, action.isGhoul, mode),
         legendaryPerks: keepForRace(player.legendaryPerks, action.isGhoul, mode),
       });
@@ -509,6 +517,9 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
         ...player.conditions,
         ...(importedSpecial ?? {}),
         isGhoul: action.isGhoul,
+        // Same reasoning as race/set: a ghoul import can't land on a
+        // low-HP value that Health % on Ghoul doesn't support.
+        ...(action.isGhoul ? { healthPercent: 100 } : {}),
       };
       return {
         ...state,

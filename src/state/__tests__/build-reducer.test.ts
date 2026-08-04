@@ -437,6 +437,41 @@ describe('body-part mult and race forcing', () => {
     expect(back.player.conditions.isGhoul).toBe(false);
   });
 
+  it('race/set to Ghoul resets Health % to 100 (low-HP builds rely on Rads, which Ghouls convert to Glow instead)', () => {
+    const lowHealth = run([{ type: 'condition/set', key: 'healthPercent', value: 20 }]);
+    expect(lowHealth.player.conditions.healthPercent).toBe(20);
+
+    const asGhoul = run([{ type: 'race/set', isGhoul: true }], lowHealth);
+    expect(asGhoul.player.conditions.healthPercent).toBe(100);
+  });
+
+  it('race/set to Human leaves Health % untouched', () => {
+    const lowHealthGhoul = run(
+      [{ type: 'condition/set', key: 'healthPercent', value: 40 }],
+      run([{ type: 'race/set', isGhoul: true }]),
+    );
+    const backToHuman = run([{ type: 'race/set', isGhoul: false }], lowHealthGhoul);
+    expect(backToHuman.player.conditions.healthPercent).toBe(40);
+  });
+
+  it('build/importNd as Ghoul resets Health % to 100', () => {
+    const lowHealth = run([{ type: 'condition/set', key: 'healthPercent', value: 20 }]);
+    const imported = run(
+      [{ type: 'build/importNd', perks: [], name: null, special: null, isGhoul: true }],
+      lowHealth,
+    );
+    expect(imported.player.conditions.healthPercent).toBe(100);
+  });
+
+  it('build/importNd as Human leaves Health % untouched', () => {
+    const lowHealth = run([{ type: 'condition/set', key: 'healthPercent', value: 20 }]);
+    const imported = run(
+      [{ type: 'build/importNd', perks: [], name: null, special: null, isGhoul: false }],
+      lowHealth,
+    );
+    expect(imported.player.conditions.healthPercent).toBe(20);
+  });
+
   it('race/set leaves unrestricted perks equipped across the switch', () => {
     const s = run([
       { type: 'perk/add', perkId: 'Commando', rank: 1, legendary: false },
