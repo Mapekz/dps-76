@@ -219,6 +219,17 @@ export function buildEffectiveWeapon(
   // enemy-type-gated weapon-stat modifiers resolve, and keeps every root
   // context builder consistent.
   enemyTypeIds: readonly string[] = [],
+  // Opt-in bucket-read recorder — see ResolveContext.bucketReads's doc-comment
+  // (resolve.ts). NOTE: the early return just below (no OMODs, no
+  // weapon-stat-bucket loadout modifiers) skips baseCtx and every fold in
+  // this function entirely, so a candidate whose ONLY contribution is a
+  // WEAPON_STAT_BUCKETS/SUSTAIN_CHANCE_BUCKETS/EFFECTIVE_WEAPON_BOOTSTRAP_BUCKETS
+  // modifier can flip this early return (0 → 1 stat modifiers) without ever
+  // being recorded on a baseline that itself took the early-return path —
+  // `evaluateSuggestions`' pruning treats those three bucket sets as always
+  // in scope statically, not via this recorder, specifically to route around
+  // that gap (see the L2 pruning doc-comment there).
+  bucketReads?: Set<Bucket>,
 ): EffectiveWeapon {
   const loadoutStatModifiers = loadoutModifiers.filter(
     (m) => WEAPON_STAT_BUCKETS.has(m.bucket) || SUSTAIN_CHANCE_BUCKETS.has(m.bucket),
@@ -241,6 +252,7 @@ export function buildEffectiveWeapon(
     scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
     itemLevel,
     enemyTypeIds,
+    bucketReads,
   };
   // Onslaught-stack curves on weapon-stat buckets (Guerrilla Expert's reload)
   // read the equipped stack cap — bootstrap-fold it exactly like scenarios.ts

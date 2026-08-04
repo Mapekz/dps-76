@@ -1,3 +1,4 @@
+import type { Bucket } from '@/types/modifiers';
 import type { BuildAction, ScenarioKey, SpecialKey } from '@/state/build-reducer';
 
 /**
@@ -46,6 +47,17 @@ export interface SuggestionCandidate {
    * only charts when it beats its best constituent single.
    */
   comboPieces?: readonly string[];
+  /**
+   * Every `Bucket` this candidate's change could possibly touch (union
+   * across whatever it adds/removes — e.g. a perk-rank candidate's family
+   * spans every rank 1..maxRank, not just the current↔target pair), used by
+   * `evaluateSuggestions`' L2 pruning (evaluate.ts) to skip a candidate whose
+   * buckets are all disjoint from the baseline's recorded engine read-set.
+   * ONLY set for groups that can never change the equipped weapon/OMOD
+   * identity (`perk`/`armor`/`mutation`/`consumable`) — `undefined` for
+   * `mod`/`legendary`/`combo`, which are NEVER pruned (see that doc-comment).
+   */
+  touchedBuckets?: ReadonlySet<Bucket>;
 }
 
 export interface ScenarioHeadline {

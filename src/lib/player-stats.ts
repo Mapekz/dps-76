@@ -267,6 +267,10 @@ export function derivePlayerStats(
   // dataset's live value; defaults to the hardcoded fallback for callers that
   // don't have a `mode` in scope (tests).
   clamp: { min: number; max: number } = { min: SPECIAL_EFFECTIVE_MIN, max: SPECIAL_EFFECTIVE_MAX },
+  // Opt-in bucket-read recorder — see ResolveContext.bucketReads's doc-comment
+  // (resolve.ts). Threaded from resolveLoadout only for the suggestions
+  // sweep's one throwaway recording pass; undefined everywhere else.
+  bucketReads?: Set<Bucket>,
 ): DerivedPlayerStats {
   const scenario = { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false };
   const enemyCtx = enemy ?? createDefaultEnemyConditions();
@@ -284,6 +288,7 @@ export function derivePlayerStats(
     itemLevel: itemLevel ?? 50,
     enemyTypeIds,
     onslaughtMaxStacks: 0,
+    bucketReads,
   };
   const special = Object.fromEntries(
     SPECIAL_KEYS.map((key) => {

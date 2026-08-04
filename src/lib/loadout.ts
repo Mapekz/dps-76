@@ -41,7 +41,7 @@ import {
 import type { ScenarioInput } from '@/lib/engine/scenarios';
 import { cached, type LoadoutMemo, type MemoNode } from '@/lib/loadout-memo';
 
-const EFFECTIVE_WEAPON_BOOTSTRAP_BUCKETS: ReadonlySet<Bucket> = new Set([
+export const EFFECTIVE_WEAPON_BOOTSTRAP_BUCKETS: ReadonlySet<Bucket> = new Set([
   // Folded by buildEffectiveWeapon into ResolveContext.moveSpeedBonus so
   // Fast Fighter's reload-speed curve can see Speed Demon / fish sandwich.
   // Onslaught bootstrap buckets must stay in ScenarioInput.modifiers:
@@ -460,6 +460,13 @@ function assemble(
   enemyConfig: EnemyConfig,
   mode: GameMode,
   memo?: LoadoutMemo,
+  // Opt-in bucket-read recorder — see ResolveContext.bucketReads's doc-comment
+  // (resolve.ts). Threaded only by resolveLoadout's throwaway recording call
+  // (src/lib/suggest/evaluate.ts); undefined for every other caller. NOTE:
+  // when `memo` is also given and hits `memo.effectiveWeapon`'s cache,
+  // buildEffectiveWeapon (and its bucketReads recording) is skipped — callers
+  // that need bucketReads populated must not reuse a warm memo.
+  bucketReads?: Set<Bucket>,
 ): {
   weapon: Weapon | undefined;
   modifiers: Modifier[];
@@ -521,6 +528,7 @@ function assemble(
           enemyConfig.conditions,
           loadoutModifiers,
           enemyTypeIds,
+          bucketReads,
         ),
     );
     weapon = built.weapon;
@@ -604,12 +612,20 @@ export function resolveLoadout(
   enemyConfig: EnemyConfig,
   mode: GameMode,
   memo?: LoadoutMemo,
+  // Opt-in bucket-read recorder — see ResolveContext.bucketReads's doc-comment
+  // (resolve.ts) and assemble()'s doc-comment above for the memo-cache-hit
+  // caveat. Stamped onto the returned ScenarioInput so computeScenarios keeps
+  // recording into the SAME set. Threaded only by evaluateSuggestions'
+  // throwaway recording call (src/lib/suggest/evaluate.ts); undefined
+  // everywhere else.
+  bucketReads?: Set<Bucket>,
 ): ScenarioInput | null {
   const { weapon, modifiers, conditions, enemyTypeIds } = assemble(
     playerConfig,
     enemyConfig,
     mode,
     memo,
+    bucketReads,
   );
   if (!weapon) return null;
 
@@ -638,6 +654,7 @@ export function resolveLoadout(
         playerConfig.itemLevel,
         enemyTypeIds,
         getSpecialClamp(mode),
+        bucketReads,
       ),
   );
   // Canonicalized as a unit: whenever `conditions`, the derived
@@ -723,5 +740,6 @@ export function resolveLoadout(
       bulletStorm: getBulletStormConstants(mode),
       distance: getDistanceConstants(mode),
     },
+    bucketReads,
   };
 }
