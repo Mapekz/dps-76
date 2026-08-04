@@ -48,3 +48,11 @@ pieces?), and an editor that allows what advice forbids reads as a bug. The
 trade-off accepted with full enforcement — previously-legal bookmarked
 builds that oversubscribed a tier now hydrate smaller (surfaced, not
 silent — the banner says so) — is intentional, not a gap to close.
+
+`docs/adr/0008` grew each tier's picker roster from a handful of
+engine-effective effects to the full obtainable set per tier (21–22 legendary
+effects per tier on the 20260803 dump, most badged inert) — the budget now
+competes against a much larger field within each tier. That is the intended
+effect of surfacing the full roster, not a regression in this ADR's
+invariant: `getArmorTierUsage`/`clampArmorTierBudgets` sum worn-piece counts
+the same way regardless of how many *choices* exist per tier.

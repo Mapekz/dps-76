@@ -40,24 +40,8 @@ import type { BuildAction } from '@/state/build-reducer';
 import type { GameMode } from '@/types';
 import type { GeneratedAddiction, GeneratedBuff } from '@/types/generated';
 import { hasAnyEngineEffect } from '@/types/modifiers';
+import { NoEffectBadge } from './OptionBadge';
 import { SectionTrigger } from './SectionTrigger';
-
-/**
- * Same 'no effect yet' predicate and visual language as the OMOD/perk
- * pickers (modifierHasEngineEffect, @/types/modifiers) — a buff whose every
- * modifier is inert (extraction gap, unmodeled bucket) reads honestly here
- * instead of silently doing nothing.
- */
-function NoEffectBadge() {
-  return (
-    <Badge
-      variant="outline"
-      className="text-muted-foreground ml-1 px-1 py-0 text-[10px] font-normal"
-    >
-      no effect yet
-    </Badge>
-  );
-}
 
 function CheckboxRow({
   id,

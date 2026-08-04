@@ -1249,6 +1249,8 @@ their stats are stale and must not be shown.
   source name) — flat per-piece (count multiplies `value`/`curveScale`
   directly) vs "self-scaling" (already N pre-tiered modifiers, count feeds
   `wornPieceCounts` instead) — full detail `armor-modifiers.ts`.
+- **DESIGN**: the picker roster and grouping (Material → Lining → Misc →
+  1★–4★, inert mods badged not hidden) is `docs/adr/0008`, not repeated here.
 - **Unyielding threshold semantics — GAME-CHANGE-PENDING** (user-confirmed
   2026-07-19): the extracted curve's near-vertical step points (x=0.1999→y=3,
   x=0.2→y=2 at the 20% break, same at 40%/60%) evaluate the +3/+2/+1 SPECIAL
@@ -1272,6 +1274,8 @@ their stats are stale and must not be shown.
 - **ASSUMPTION**: worn-piece maxCount for non-legendary effects is derived
   from body-slot tags observed in the OMOD id (`Torso`/`Limb`/`Helmet`)
   rather than real armor-slot topology data — none exists in this dataset.
+  Material-group entries (`docs/adr/0008`) carry no such tag and so land at
+  `maxCount: 1` by the same fallback, not a Material-specific rule.
   Legendary-slot effects always get max 5; that ceiling is additionally a
   shared budget per star tier — see `docs/adr/0004`.
 - **APP-SUPPLIED**: armor OMODs whose attach point edid starts with

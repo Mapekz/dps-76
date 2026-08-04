@@ -13,8 +13,11 @@ import {
   getArmorTierUsage,
   MAX_LEGENDARY_COUNT,
   type ArmorEffectEntry,
+  type ArmorSlotGroup,
   type ArmorStarTier,
 } from '@/data/armor-modifiers';
+import { ActionDelta } from '@/components/diff/ActionDelta';
+import { NoEffectBadge } from './OptionBadge';
 import { SectionTrigger } from './SectionTrigger';
 
 /**
@@ -25,10 +28,11 @@ import { SectionTrigger } from './SectionTrigger';
  * row (`+ Add legendary/normal mod`), picks which effect it represents via
  * the row's own Combobox, and sets a worn-piece count (`NumberField`,
  * 0-5 for legendary, 1-`effect.maxCount` for misc — that cap varies per
- * effect since not every mod can mount on every armor piece). Every row is a
- * curated, engine-effective legendary or craftable armor/PA effect
- * (`src/data/armor-modifiers.ts` `getArmorEffects`, filter-derived — nothing
- * here can be badged inert by construction).
+ * effect since not every mod can mount on every armor piece). Every row is
+ * an obtainable armor/PA mod on an admitted workbench attach point
+ * (`src/data/armor-modifiers.ts` `getArmorEffects`, allow-list derived —
+ * zero-modifier choices show a "no effect yet" badge instead of vanishing,
+ * same convention as the weapon OMOD picker in `src/data/omods.ts`).
  *
  * `PlayerConfig.armorEffects` (effect id → worn-piece count) already
  * supports arbitrary independent effects with independent counts
@@ -78,6 +82,15 @@ function ActiveEffectRow({
 
   const comboOptions: ComboboxOption[] = options.map((e) => ({ value: e.id, label: e.name }));
 
+  const switchTargetCount = (opt: ArmorEffectEntry | undefined): number => {
+    const desiredCount = Math.max(1, Math.min(opt?.maxCount ?? 5, count));
+    if (opt?.starTier === undefined) return desiredCount;
+    const usageExcludingSwitch =
+      tierUsage[opt.starTier] - (effect.starTier === opt.starTier ? count : 0);
+    const freeSpace = Math.max(0, MAX_LEGENDARY_COUNT - usageExcludingSwitch);
+    return Math.min(desiredCount, freeSpace);
+  };
+
   return (
     <div className="space-y-1 py-1.5">
       <div className="flex items-center gap-2">
@@ -87,22 +100,7 @@ function ActiveEffectRow({
           onValueChange={(nextId) => {
             if (!nextId || nextId === effect.id) return;
             const nextEffect = getArmorEffectById(mode, nextId);
-            const desiredCount = Math.max(1, Math.min(nextEffect?.maxCount ?? 5, count));
-            // Switching also crosses star tiers, so the target's own tier
-            // budget can be tighter than its per-effect maxCount — clamp
-            // here too, so the dispatched count already matches what the
-            // reducer would land on (UI and stored state agree immediately)
-            // instead of relying on a silent post-dispatch clamp. Since this
-            // row's own count is being zeroed as part of the switch, exclude
-            // it from the target tier's usage when both effects share a tier.
-            let nextCount = desiredCount;
-            if (nextEffect?.starTier !== undefined) {
-              const usageExcludingSwitch =
-                tierUsage[nextEffect.starTier] -
-                (effect.starTier === nextEffect.starTier ? count : 0);
-              const freeSpace = Math.max(0, MAX_LEGENDARY_COUNT - usageExcludingSwitch);
-              nextCount = Math.min(desiredCount, freeSpace);
-            }
+            const nextCount = switchTargetCount(nextEffect);
             dispatch({ type: 'armorEffect/setCount', id: effect.id, count: 0 });
             dispatch({ type: 'armorEffect/setCount', id: nextId, count: nextCount });
           }}
@@ -110,6 +108,23 @@ function ActiveEffectRow({
           searchPlaceholder="Search effects…"
           emptyText="No effect matches."
           className="flex-1"
+          renderOptionExtra={(o) => {
+            const opt = options.find((e) => e.id === o.value);
+            const isCurrent = o.value === effect.id;
+            return (
+              <>
+                {opt?.badge === 'inert' && <NoEffectBadge />}
+                {!isCurrent && (
+                  <ActionDelta
+                    action={[
+                      { type: 'armorEffect/setCount', id: effect.id, count: 0 },
+                      { type: 'armorEffect/setCount', id: o.value, count: switchTargetCount(opt) },
+                    ]}
+                  />
+                )}
+              </>
+            );
+          }}
         />
         <label htmlFor={countFieldId} className="sr-only">
           {effect.name} worn-piece count
@@ -122,6 +137,10 @@ function ActiveEffectRow({
           onChange={(v) => dispatch({ type: 'armorEffect/setCount', id: effect.id, count: v })}
           className="w-16 shrink-0"
         />
+        {effect.badge === 'inert' && <NoEffectBadge />}
+        {count < max && (
+          <ActionDelta action={{ type: 'armorEffect/setCount', id: effect.id, count: count + 1 }} />
+        )}
         <Button
           variant="ghost"
           size="icon"
@@ -162,6 +181,15 @@ function DraftEffectRow({
         searchPlaceholder="Search effects…"
         emptyText="No effect matches."
         className="flex-1"
+        renderOptionExtra={(o) => {
+          const opt = options.find((e) => e.id === o.value);
+          return (
+            <>
+              {opt?.badge === 'inert' && <NoEffectBadge />}
+              <ActionDelta action={{ type: 'armorEffect/setCount', id: o.value, count: 1 }} />
+            </>
+          );
+        }}
       />
       <Button
         variant="ghost"
@@ -207,12 +235,7 @@ function EffectGroup({
       (e.starTier === undefined || tierUsage[e.starTier] < MAX_LEGENDARY_COUNT),
   );
   const everyEffectActive = effects.every((e) => (player.armorEffects[e.id] ?? 0) > 0);
-  // Data-driven tier set for the usage strip — whatever star tiers this
-  // group's effects actually carry (misc effects have none, so their group
-  // naturally renders no strip).
-  const legendaryTiers = [
-    ...new Set(effects.map((e) => e.starTier).filter((t): t is ArmorStarTier => t !== undefined)),
-  ].sort((a, b) => a - b);
+  const starTier = effects[0]?.starTier;
 
   const addDraft = () => {
     nextDraftKey.current += 1;
@@ -222,16 +245,16 @@ function EffectGroup({
 
   return (
     <div>
-      <p className="font-condensed text-muted-foreground pb-1 text-[10px] font-semibold uppercase tracking-[0.1em]">
-        {title}
-      </p>
-      {legendaryTiers.length > 0 && (
-        <p className="text-muted-foreground pb-1.5 text-xs">
-          {legendaryTiers
-            .map((tier) => `${tier}★ ${tierUsage[tier]}/${MAX_LEGENDARY_COUNT}`)
-            .join(' · ')}
+      <div className="flex items-baseline justify-between pb-1">
+        <p className="font-condensed text-muted-foreground text-[10px] font-semibold uppercase tracking-[0.1em]">
+          {title}
         </p>
-      )}
+        {starTier !== undefined && (
+          <p className="text-muted-foreground text-xs">
+            {starTier}★ {tierUsage[starTier]}/{MAX_LEGENDARY_COUNT}
+          </p>
+        )}
+      </div>
       <div className="divide-border/50 divide-y">
         {activeEffects.map((effect) => (
           <ActiveEffectRow
@@ -268,12 +291,68 @@ function EffectGroup({
   );
 }
 
+const GROUP_DESCRIPTORS: Array<{
+  key: ArmorSlotGroup | `legendary-${ArmorStarTier}`;
+  title: string;
+  addLabel: string;
+  addPlaceholder: string;
+  predicate: (e: ArmorEffectEntry) => boolean;
+}> = [
+  {
+    key: 'material',
+    title: 'Material',
+    addLabel: 'Add material',
+    addPlaceholder: 'Pick a material…',
+    predicate: (e) => e.group === 'material',
+  },
+  {
+    key: 'lining',
+    title: 'Lining',
+    addLabel: 'Add lining',
+    addPlaceholder: 'Pick a lining…',
+    predicate: (e) => e.group === 'lining',
+  },
+  {
+    key: 'misc',
+    title: 'Misc',
+    addLabel: 'Add misc mod',
+    addPlaceholder: 'Pick a misc mod…',
+    predicate: (e) => e.group === 'misc',
+  },
+  {
+    key: 'legendary-1',
+    title: '1★ Legendary',
+    addLabel: 'Add 1★ effect',
+    addPlaceholder: 'Pick a 1★ effect…',
+    predicate: (e) => e.starTier === 1,
+  },
+  {
+    key: 'legendary-2',
+    title: '2★ Legendary',
+    addLabel: 'Add 2★ effect',
+    addPlaceholder: 'Pick a 2★ effect…',
+    predicate: (e) => e.starTier === 2,
+  },
+  {
+    key: 'legendary-3',
+    title: '3★ Legendary',
+    addLabel: 'Add 3★ effect',
+    addPlaceholder: 'Pick a 3★ effect…',
+    predicate: (e) => e.starTier === 3,
+  },
+  {
+    key: 'legendary-4',
+    title: '4★ Legendary',
+    addLabel: 'Add 4★ effect',
+    addPlaceholder: 'Pick a 4★ effect…',
+    predicate: (e) => e.starTier === 4,
+  },
+];
+
 export function ArmorSection() {
   const { mode } = useGameMode();
   const { player } = useBuild();
   const effects = getArmorEffects(mode);
-  const legendary = effects.filter((e) => e.group === 'legendary');
-  const misc = effects.filter((e) => e.group === 'misc');
   const activeCount = Object.values(player.armorEffects).filter((count) => count > 0).length;
   const tierUsage = getArmorTierUsage(mode, player.armorEffects);
 
@@ -288,20 +367,16 @@ export function ArmorSection() {
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-4">
-          <EffectGroup
-            title="Legendary effects"
-            effects={legendary}
-            addLabel="Add legendary mod"
-            addPlaceholder="Pick a legendary effect…"
-            tierUsage={tierUsage}
-          />
-          <EffectGroup
-            title="Misc & PA mods"
-            effects={misc}
-            addLabel="Add normal mod"
-            addPlaceholder="Pick a normal mod…"
-            tierUsage={tierUsage}
-          />
+          {GROUP_DESCRIPTORS.map((d) => (
+            <EffectGroup
+              key={d.key}
+              title={d.title}
+              effects={effects.filter(d.predicate)}
+              addLabel={d.addLabel}
+              addPlaceholder={d.addPlaceholder}
+              tierUsage={tierUsage}
+            />
+          ))}
         </div>
       </AccordionContent>
     </AccordionItem>

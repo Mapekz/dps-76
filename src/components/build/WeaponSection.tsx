@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Badge } from '@/components/ui/badge';
 import { Combobox } from '@/components/ui/combobox';
 import { WeaponCombobox } from '@/components/build/WeaponCombobox';
 import { Label } from '@/components/ui/label';
@@ -23,6 +22,7 @@ import {
 } from '@/data/omods';
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import { DeltaText } from '@/components/diff/DiffTooltip';
+import { OptionBadge } from './OptionBadge';
 import { SectionTrigger } from './SectionTrigger';
 
 /**
@@ -55,14 +55,7 @@ const BADGE_LABELS: Record<OmodBadge, string> = {
 function OmodBadgeTag({ slot, omodId }: { slot: OmodSlot; omodId: string }) {
   const badge = slot.options.find((o) => o.id === omodId)?.badge;
   if (!badge) return null;
-  return (
-    <Badge
-      variant="outline"
-      className="text-muted-foreground ml-1 px-1 py-0 text-[10px] font-normal"
-    >
-      {BADGE_LABELS[badge]}
-    </Badge>
-  );
+  return <OptionBadge>{BADGE_LABELS[badge]}</OptionBadge>;
 }
 
 export function WeaponSection() {
@@ -201,14 +194,7 @@ export function WeaponSection() {
                   emptyText="No mod matches."
                   renderOptionExtra={(o) => (
                     <>
-                      {o.value === defaultOmodId && (
-                        <Badge
-                          variant="outline"
-                          className="text-muted-foreground ml-1 px-1 py-0 text-[10px] font-normal"
-                        >
-                          standard
-                        </Badge>
-                      )}
+                      {o.value === defaultOmodId && <OptionBadge>standard</OptionBadge>}
                       {o.value !== '__standard__' && <OmodBadgeTag slot={slot} omodId={o.value} />}
                       {/* No ±% on the already-selected option — the delta of a no-op is 0. */}
                       {o.value !== displayValue && (

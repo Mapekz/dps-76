@@ -102,7 +102,7 @@ function applyActions(
   return next;
 }
 
-function evaluateActions(
+export function evaluateActions(
   state: BuildState,
   mode: GameMode,
   actions: readonly BuildAction[],

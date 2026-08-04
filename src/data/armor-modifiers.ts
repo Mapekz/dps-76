@@ -9,14 +9,16 @@ import { describeBuffModifiers } from '@/lib/buff-description';
 /**
  * Armor checklist inventory (Phase 3 armor pipeline, UI + state half)
  * — the armor-omod analogue of `perk-modifiers.ts`. Deliberately
- * CURATED-BY-FILTER, not hand-listed: every armor/PA legendary or craftable
- * mod with at least one engine-effective modifier (`hasAnyEngineEffect`,
- * same predicate the OMOD/perk/consumable pickers badge with) shows up here
- * automatically, deduped by display name (armor and power-armor variants,
- * and same-effect-different-PA-model variants, share a name and an
- * identical modifier payload — verified 2026-07-18). Known-bad records are
- * excluded via `hiddenArmorOmodIds` (data-quality issues, source-commented
- * there) rather than by hand-picking what stays IN.
+ * CURATED-BY-ATTACH-POINT, not hand-listed: every obtainable armor/PA mod
+ * on an admitted workbench attach point (Material → Lining → Misc → 1★–4★)
+ * shows up here automatically, deduped by display name (armor and
+ * power-armor variants, and same-effect-different-PA-model variants, share
+ * a name and an identical modifier payload — verified 2026-07-18). Cosmetic
+ * attach points (paint, limb skins, reroll, etc.) are excluded by an explicit
+ * allow-list. Engine-ineffective mods are included and badged `inert` rather
+ * than hidden (`hasAnyEngineEffect`, same predicate the OMOD picker uses).
+ * Known-bad records are excluded via `hiddenArmorOmodIds` (data-quality
+ * issues, source-commented there) rather than by hand-picking what stays IN.
  *
  * Per-piece scaling model (docs/assumptions.md "Armor"):
  * - Most effects (Unyielding, 2★ SPECIAL, Powered, Active, Healthy,
@@ -38,13 +40,20 @@ import { describeBuffModifiers } from '@/lib/buff-description';
 /** Legendary star tier (1★–4★), parsed off the representative record's `ap_LegendaryN` attach point. */
 export type ArmorStarTier = 1 | 2 | 3 | 4;
 
+/** In-game armor workbench slot group — Material, Lining, Misc, or Legendary (split by star tier in the UI). */
+export type ArmorSlotGroup = 'material' | 'lining' | 'misc' | 'legendary';
+
 export interface ArmorEffectEntry {
   /** Stable id — the representative OMOD's edid (armor variant wins over power-armor when both exist, alphabetically). */
   id: string;
   name: string;
   /** ESM description when non-empty, else a data-derived summary (describeBuffModifiers) of the PER-PIECE base modifiers. */
   description: string | null;
-  group: 'legendary' | 'misc';
+  group: ArmorSlotGroup;
+  /** Representative record's `attachPointEdid` — for tests/UI inspection of which slot an entry came from. */
+  attachPointEdid: string;
+  /** Present when the representative record has no engine-effective modifiers — shown in the picker, not hidden. */
+  badge?: 'inert';
   /** 1 = single checkbox; >1 = a 0..maxCount stepper (worn-piece count). */
   maxCount: number;
   /** True when `modifiers` already carry their own wornPieceCount tiers (Battle-Loader's, Limit-Breaking) — see module header. */
@@ -60,6 +69,41 @@ export interface ArmorEffectEntry {
 const LEGENDARY_ATTACH_POINT_RE = /^ap_Legendary([1-4])$/;
 /** Per-star-tier budget: sum of worn-piece counts for all legendary effects sharing a tier must stay ≤ this. */
 export const MAX_LEGENDARY_COUNT = 5;
+
+const GROUP_ORDER: readonly ArmorSlotGroup[] = ['material', 'lining', 'misc', 'legendary'];
+
+/**
+ * Non-legendary attach points admitted to the armor picker, and which slot
+ * group each belongs to — an explicit include-list (like omods.ts's
+ * DEAD_MECHANIC_SLOT_EDIDS / SLOT_LABEL_OVERRIDES), not a heuristic, so a
+ * new cosmetic attach point in a future ESM dump is excluded by default
+ * rather than silently appearing. Verified against the 20260803 dump via
+ * `jq` census over armor-omods.json (see docs/adr/0008).
+ */
+function nonLegendaryGroup(omod: GeneratedOmod): ArmorSlotGroup | null {
+  switch (omod.attachPointEdid) {
+    case 'ap_armor_Tier':
+    case 'ap_PowerArmor_Lining':
+      return 'material';
+    case 'ap_underarmor_style':
+      return 'lining';
+    case 'ap_armor_Lining':
+      // Underarmor lining effects (Shielded/Treated/Protective/Resistant
+      // Lining) and non-PA functional mods (Sleek, Cushioned, Jetpack…)
+      // share this one attach point in the ESM — the `_UnderArmor_` id
+      // token is the only discriminator.
+      return omod.id.includes('_UnderArmor_') ? 'lining' : 'misc';
+    case 'ap_PowerArmor_Misc':
+      return 'misc';
+    default:
+      return null;
+  }
+}
+
+/** True for jetpack cosmetic reskins (Nuka-Cola Jetpack, MothMan Jet Pack, …) that must collapse into the base "Jetpack"/"Jet Pack" entry. */
+function isJetpackReskin(name: string): boolean {
+  return /jet ?pack/i.test(name) && name !== 'Jetpack' && name !== 'Jet Pack';
+}
 
 /** Body-slot markers observed in armor-omod ids (Lining: Torso+Limb; PA Misc: Torso or Helmet alone) — data-derived, not a fixed roster. */
 const PIECE_TAGS = ['Torso', 'Limb', 'Helmet'] as const;
@@ -83,7 +127,12 @@ function findWornPieceKeyword(modifiers: readonly Modifier[]): string | undefine
 }
 
 function buildEntry(name: string, records: GeneratedOmod[]): ArmorEffectEntry {
-  const sorted = [...records].sort((a, b) => a.id.localeCompare(b.id));
+  const sorted = [...records].sort((a, b) => {
+    const aEff = hasAnyEngineEffect(a.modifiers);
+    const bEff = hasAnyEngineEffect(b.modifiers);
+    if (aEff !== bEff) return aEff ? -1 : 1;
+    return a.id.localeCompare(b.id);
+  });
   const representative = sorted[0];
   const ids = sorted.map((r) => r.id);
   // "Powered" (+AP regen) has twin records at ap_Legendary1
@@ -108,7 +157,9 @@ function buildEntry(name: string, records: GeneratedOmod[]): ArmorEffectEntry {
     id: representative.id,
     name,
     description: description || null,
-    group: isLegendary ? 'legendary' : 'misc',
+    group: isLegendary ? 'legendary' : nonLegendaryGroup(representative)!,
+    attachPointEdid: representative.attachPointEdid,
+    badge: hasAnyEngineEffect(representative.modifiers) ? undefined : 'inert',
     maxCount,
     selfScaling,
     wornPieceKeyword: selfScaling ? findWornPieceKeyword(representative.modifiers) : undefined,
@@ -119,7 +170,7 @@ function buildEntry(name: string, records: GeneratedOmod[]): ArmorEffectEntry {
 
 const effectsCache = new Map<GameMode, ArmorEffectEntry[]>();
 
-/** The full curated checklist inventory for `mode`, grouped and sorted (legendary first, then misc, alphabetical within each). */
+/** The full curated checklist inventory for `mode`, grouped and sorted (material → lining → misc → 1★–4★, alphabetical within each). */
 export function getArmorEffects(mode: GameMode): ArmorEffectEntry[] {
   const cached = effectsCache.get(mode);
   if (cached) return cached;
@@ -135,14 +186,21 @@ export function getArmorEffects(mode: GameMode): ArmorEffectEntry[] {
       })
     )
       continue;
-    if (!hasAnyEngineEffect(omod.modifiers)) continue;
+    const isLegendary = LEGENDARY_ATTACH_POINT_RE.test(omod.attachPointEdid);
+    if (!isLegendary && nonLegendaryGroup(omod) === null) continue; // cosmetic/unlisted attach point
+    if (!isLegendary && isJetpackReskin(omod.name)) continue; // cosmetic jetpack skin
     (groups.get(omod.name) ?? groups.set(omod.name, []).get(omod.name)!).push(omod);
   }
 
   const entries = [...groups.entries()].map(([name, records]) => buildEntry(name, records));
-  entries.sort((a, b) =>
-    a.group === b.group ? a.name.localeCompare(b.name) : a.group === 'legendary' ? -1 : 1,
-  );
+  entries.sort((a, b) => {
+    const groupDiff = GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group);
+    if (groupDiff !== 0) return groupDiff;
+    if (a.group === 'legendary' && a.starTier !== b.starTier) {
+      return (a.starTier ?? 0) - (b.starTier ?? 0);
+    }
+    return a.name.localeCompare(b.name);
+  });
 
   effectsCache.set(mode, entries);
   return entries;

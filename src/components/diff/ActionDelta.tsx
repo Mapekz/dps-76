@@ -8,8 +8,18 @@ import { DeltaText } from './DiffTooltip';
  * DPS — the same ranking objective SuggestionsPanel uses, so inline deltas
  * agree with panel rows) — rendered directly in option rows so the answer is
  * visible before hovering, and on touch where hover doesn't exist.
+ *
+ * `action` may be a single `BuildAction` or an ordered sequence — e.g. an
+ * effect switch is really "drop the old selection, then set the new one",
+ * and previewing only the second half would show the wrong delta.
  */
-export function ActionDelta({ action, className }: { action: BuildAction; className?: string }) {
+export function ActionDelta({
+  action,
+  className,
+}: {
+  action: BuildAction | readonly BuildAction[];
+  className?: string;
+}) {
   const { baseline, getDiff } = useHoverDiffs();
   const { emphasized } = useScenarioResults();
   if (!baseline) return null;

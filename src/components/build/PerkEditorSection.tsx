@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { CheckIcon, LockIcon, MinusIcon, PlusIcon, XIcon } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
@@ -27,18 +26,7 @@ import type { Perk, PerkLoadout } from '@/types';
 import { LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS, type SpecialKey } from '@/state/build-reducer';
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import { DiffTooltip } from '@/components/diff/DiffTooltip';
-
-/** Shared with the OMOD/legendary-effect picker's badge (WeaponSection.tsx) — same visual language across the Build panel. */
-function NoEffectBadge() {
-  return (
-    <Badge
-      variant="outline"
-      className="text-muted-foreground ml-1 px-1 py-0 text-[10px] font-normal"
-    >
-      no effect yet
-    </Badge>
-  );
-}
+import { NoEffectBadge } from './OptionBadge';
 
 const SPECIAL_ORDER: Array<{ key: SpecialKey; special: Special; letter: string }> = [
   { key: 'strength', special: Special.Strength, letter: 'S' },

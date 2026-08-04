@@ -90,13 +90,19 @@ describe('getArmorEffects (curated inventory)', () => {
     expect(names.filter((n) => n === "Bruiser's")).toHaveLength(1);
   });
 
-  it('every returned effect is engine-effective and every modifier folds cleanly (no leftover unresolved conditions)', () => {
+  it('every returned effect that is NOT badged inert is engine-effective, with no leftover unresolved conditions', () => {
     for (const effect of effects) {
+      if (effect.badge === 'inert') continue;
       expect(effect.modifiers.length).toBeGreaterThan(0);
       for (const m of effect.modifiers) {
         expect(m.conditions.some((c) => c.kind === 'unresolved')).toBe(false);
       }
     }
+  });
+
+  it('the roster now includes non-engine-effective entries, badged inert', () => {
+    const inert = effects.filter((e) => e.badge === 'inert');
+    expect(inert.length).toBeGreaterThan(0);
   });
 });
 
@@ -130,6 +136,42 @@ describe("ArmorStarTier: derived from the representative record's ap_LegendaryN 
     const misc = effects.filter((e) => e.group === 'misc');
     expect(misc.length).toBeGreaterThan(0); // sanity: misc group is non-empty
     for (const e of misc) expect(e.starTier).toBeUndefined();
+  });
+});
+
+describe('ArmorSlotGroup: material/lining/misc split', () => {
+  const effects = getArmorEffects('live');
+  const byName = new Map(effects.map((e) => [e.name, e]));
+
+  it('ap_armor_Tier and ap_PowerArmor_Lining records land in material', () => {
+    expect(byName.get('Standard')?.group).toBe('material');
+    expect(byName.get('Standard Plate')?.group).toBe('material');
+  });
+
+  it('underarmor styles and _UnderArmor_ lining effects land in lining', () => {
+    expect(byName.get('Casual Style')?.group).toBe('lining');
+    expect(byName.get('Shielded Lining')?.group).toBe('lining');
+  });
+
+  it('non-underarmor ap_armor_Lining and ap_PowerArmor_Misc records land in misc', () => {
+    expect(byName.get('Sleek')?.group).toBe('misc');
+    expect(byName.get('Targeting HUD')?.group).toBe('misc');
+  });
+
+  it('excludes cosmetic attach points entirely', () => {
+    const excludedAttachPoints = ['ap_armor_Paint', 'ap_PowerArmor_BodyMod', 'ap_Legendary_Reroll'];
+    for (const e of effects) expect(excludedAttachPoints).not.toContain(e.attachPointEdid);
+  });
+
+  it('collapses jetpack cosmetic reskins to the base entry per attach point', () => {
+    const jetpackNames = effects.map((e) => e.name).filter((n) => /jet ?pack/i.test(n));
+    expect(jetpackNames.sort()).toEqual(['Jet Pack', 'Jetpack']);
+  });
+
+  it('badges genuinely inert entries and does not badge engine-effective ones', () => {
+    expect(byName.get('Sleek')?.badge).toBe('inert');
+    expect(byName.get('Unyielding')?.badge).toBeUndefined();
+    expect(byName.get("Bruiser's")?.badge).toBeUndefined();
   });
 });
 
