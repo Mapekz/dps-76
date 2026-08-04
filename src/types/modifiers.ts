@@ -1062,7 +1062,7 @@ export type Condition =
    * Kill-streak count == count, exact-match tier (Thrill-Seeker's 10 discrete
    * GetValue(killStreak) Equal To N rows — 0.03×N magnitude per tier, distinct
    * from the `stacks`/curve-scaled kill-streak sources). Evaluated against
-   * `PlayerConditions.adrenalineStacks` (the app's kill-streak counter).
+   * `PlayerConditions.killStreak`.
    */
   | { kind: 'killStreakCount'; count: number }
   /** value × missing-health fraction, capped (Bloodied: up to ×0.95 of the listed max). */

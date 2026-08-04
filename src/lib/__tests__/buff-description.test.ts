@@ -349,6 +349,26 @@ describe('describeBuffModifiers: curve support', () => {
     };
     expect(describeBuffModifiers(buff([mod]))).toBe('0–+20 max HP (scales with endurance)');
   });
+
+  it('a kill-streak identity curve on a SPECIAL bucket reads as a flat range (Barbarian)', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'specialStrength',
+      op: 'ADD',
+      curve: {
+        input: 'killStreak',
+        points: [
+          { x: 0, y: 0 },
+          { x: 1, y: 1 },
+          { x: 10, y: 10 },
+        ],
+      },
+      curveScale: 1,
+      conditions: [],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('0–+10 Strength (scales with kill streak)');
+  });
 });
 
 describe('describeBuffModifiers: new bucket labels', () => {

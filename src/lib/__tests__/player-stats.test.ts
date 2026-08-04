@@ -119,7 +119,7 @@ describe('derivePlayerStats: AV pass-through (Barbarian killStreak→specialStre
   it('contributes 0 STR at kill streak 0 (curve clamps to its own x=0 point)', () => {
     const { special } = derivePlayerStats([barbarianStr], baseSpecial({ strength: 5 }), {
       ...conditions,
-      adrenalineStacks: 0,
+      killStreak: 0,
     });
     expect(special.strength).toBe(5);
   });
@@ -127,7 +127,7 @@ describe('derivePlayerStats: AV pass-through (Barbarian killStreak→specialStre
   it('contributes +10 STR at kill streak 10 (the Max 10 cap)', () => {
     const { special } = derivePlayerStats([barbarianStr], baseSpecial({ strength: 5 }), {
       ...conditions,
-      adrenalineStacks: 10,
+      killStreak: 10,
     });
     expect(special.strength).toBe(15);
   });
@@ -135,7 +135,7 @@ describe('derivePlayerStats: AV pass-through (Barbarian killStreak→specialStre
   it('interpolates between kill-streak points (streak 4 → +4 STR)', () => {
     const { special } = derivePlayerStats([barbarianStr], baseSpecial({ strength: 5 }), {
       ...conditions,
-      adrenalineStacks: 4,
+      killStreak: 4,
     });
     expect(special.strength).toBe(9);
   });

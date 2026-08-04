@@ -88,7 +88,7 @@ describe('legendary weapon effects', () => {
       base({
         weapon,
         modifiers,
-        player: { ...createDefaultPlayerConditions(), adrenalineStacks: 5 },
+        player: { ...createDefaultPlayerConditions(), killStreak: 5 },
       }),
     );
     expect(at5.freeAim.perHit.total / stockTotal).toBeCloseTo(1.5, 6);
@@ -96,7 +96,7 @@ describe('legendary weapon effects', () => {
       base({
         weapon,
         modifiers,
-        player: { ...createDefaultPlayerConditions(), adrenalineStacks: 10 },
+        player: { ...createDefaultPlayerConditions(), killStreak: 10 },
       }),
     );
     expect(at10.freeAim.perHit.total / stockTotal).toBeCloseTo(2.0, 6);
@@ -107,14 +107,14 @@ describe('legendary weapon effects', () => {
     const at10 = computeScenarios(
       base({
         modifiers: adrenaline,
-        player: { ...createDefaultPlayerConditions(), adrenalineStacks: 10 },
+        player: { ...createDefaultPlayerConditions(), killStreak: 10 },
       }),
     );
     expect(at10.freeAim.perHit.total / stockTotal).toBeCloseTo(2.0, 6);
     const at0 = computeScenarios(
       base({
         modifiers: adrenaline,
-        player: { ...createDefaultPlayerConditions(), adrenalineStacks: 0 },
+        player: { ...createDefaultPlayerConditions(), killStreak: 0 },
       }),
     );
     expect(at0.freeAim.perHit.total / stockTotal).toBeCloseTo(1.0, 6);
@@ -368,9 +368,9 @@ describe('target distance & weapon condition (Stage A3/A4, real data)', () => {
 describe("Thrill-Seeker's (Stage C3, real data)", () => {
   it('reload speed scales with kill-streak count (0/5/10 stacks), raising sustained DPS', () => {
     const thrillSeeker = getOmodById('live', 'RA_mod_Legendary_Weapon4_ThrillSeeker')!;
-    const at0 = { ...createDefaultPlayerConditions(), adrenalineStacks: 0 };
-    const at5 = { ...createDefaultPlayerConditions(), adrenalineStacks: 5 };
-    const at10 = { ...createDefaultPlayerConditions(), adrenalineStacks: 10 };
+    const at0 = { ...createDefaultPlayerConditions(), killStreak: 0 };
+    const at5 = { ...createDefaultPlayerConditions(), killStreak: 5 };
+    const at10 = { ...createDefaultPlayerConditions(), killStreak: 10 };
 
     const w0 = buildEffectiveWeapon(fixer, [thrillSeeker], 50, at0).weapon;
     const w5 = buildEffectiveWeapon(fixer, [thrillSeeker], 50, at5).weapon;
@@ -748,7 +748,7 @@ describe('mutations and consumables', () => {
 
   it('Adrenal Reaction (extracted ESM curves) scales with kill streak: +5%/stack, ×1.25 with Strange in Numbers', () => {
     const mods = getBuffModifiers('live', ['Mutation_AdrenalReaction'], []);
-    const player = { ...createDefaultPlayerConditions(), adrenalineStacks: 10 };
+    const player = { ...createDefaultPlayerConditions(), killStreak: 10 };
     const solo = computeScenarios(base({ modifiers: mods, player }));
     expect(solo.freeAim.perHit.total).toBeCloseTo(stockTotal * 1.5, 6);
 

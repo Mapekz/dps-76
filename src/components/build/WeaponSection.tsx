@@ -12,6 +12,7 @@ import { resolveLoadout } from '@/lib/loadout';
 import { computeScenarios } from '@/lib/engine/scenarios';
 import { getWeapons, weaponLevelStops, getUniques, getEquippedUnique } from '@/data';
 import {
+  classifyOmodDisplay,
   effectiveWeaponName,
   getDefaultOmodId,
   getOmodById,
@@ -20,6 +21,8 @@ import {
   type OmodBadge,
   type OmodSlot,
 } from '@/data/omods';
+import { describeBuffModifiers } from '@/lib/buff-description';
+import type { GameMode, Weapon } from '@/types';
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import { DeltaText } from '@/components/diff/DiffTooltip';
 import { OptionBadge } from './OptionBadge';
@@ -56,6 +59,23 @@ function OmodBadgeTag({ slot, omodId }: { slot: OmodSlot; omodId: string }) {
   const badge = slot.options.find((o) => o.id === omodId)?.badge;
   if (!badge) return null;
   return <OptionBadge>{BADGE_LABELS[badge]}</OptionBadge>;
+}
+
+function OmodDescription({
+  omodId,
+  weapon,
+  mode,
+}: {
+  omodId: string | null;
+  weapon: Weapon;
+  mode: GameMode;
+}) {
+  if (!omodId || omodId === '__standard__') return null;
+  const omod = getOmodById(mode, omodId);
+  if (!omod || classifyOmodDisplay(omod, weapon, mode).badge === 'inert') return null;
+  const description = describeBuffModifiers(omod);
+  if (!description) return null;
+  return <p className="text-muted-foreground text-xs">{description}</p>;
 }
 
 export function WeaponSection() {
@@ -209,6 +229,9 @@ export function WeaponSection() {
                     </>
                   )}
                 />
+                {selectedWeapon && (
+                  <OmodDescription omodId={displayValue} weapon={selectedWeapon} mode={mode} />
+                )}
               </div>
             );
           })}
@@ -236,6 +259,13 @@ export function WeaponSection() {
                   </>
                 )}
               />
+              {selectedWeapon && (
+                <OmodDescription
+                  omodId={player.weapon?.legendaryEffects[i] ?? null}
+                  weapon={selectedWeapon}
+                  mode={mode}
+                />
+              )}
             </div>
           ))}
 

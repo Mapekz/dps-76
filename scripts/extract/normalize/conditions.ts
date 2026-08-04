@@ -335,7 +335,7 @@ function translateSingle(
       if (param === '0x00000399') {
         // Thrill-Seeker's (Stage C3): 10 discrete GetValue(killStreak) Equal
         // To N tiers, each gating its own 0.03×N-scaled effect — translate to
-        // an exact-count condition (evaluated against adrenalineStacks).
+        // an exact-count condition (evaluated against PlayerConditions.killStreak).
         if (/^equal to$/i.test(cond.Operator ?? '') && typeof cmp === 'number') {
           return { kind: 'killStreakCount', count: cmp };
         }

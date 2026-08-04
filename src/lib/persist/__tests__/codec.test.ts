@@ -269,6 +269,14 @@ describe('build codec', () => {
     expect(decoded!.state.player.conditions.bulletStormStacks).toBe(5); // sibling field still applies
     expect(decoded!.warnings).toEqual([]);
   });
+
+  it('legacy adrenalineStacks key in a decoded payload is dropped, not aliased (no back-compat shim by design)', async () => {
+    const encoded = await encodeRawWire({ pc: { adrenalineStacks: 7 } });
+    const decoded = await decodeBuild(encoded, 'live');
+    expect(decoded).not.toBeNull();
+    expect(decoded!.state.player.conditions.killStreak).toBe(0);
+    expect(decoded!.warnings).toEqual([]);
+  });
 });
 
 describe('derived condition fields', () => {

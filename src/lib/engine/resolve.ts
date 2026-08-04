@@ -185,7 +185,7 @@ const PLAYER_STATE_READERS: Record<
   tenderizer: (p) => p.tenderizerStacks ?? 0,
   onslaught: (p, ctx) => effectiveOnslaughtStacks(p, ctx),
   bulletStorm: (p, ctx) => effectiveBulletStormStacks(p, ctx),
-  adrenaline: (p) => p.adrenalineStacks,
+  adrenaline: (p) => p.killStreak,
   // Concentrated Fire's per-VATS-shot stack counter — manual slider standing
   // in for the game's hidden native counter (docs/assumptions.md
   // "Concentrated Fire stacks").
@@ -193,7 +193,7 @@ const PLAYER_STATE_READERS: Record<
   // Curve inputs (X value fed into a value curve).
   healthFraction: (p) => p.healthPercent / 100,
   capsOnHand: (p) => p.capsOnHand,
-  killStreak: (p) => p.adrenalineStacks,
+  killStreak: (p) => p.killStreak,
   addictionCount: (p) => p.addictionCount,
   onslaughtStacks: (p, ctx) => effectiveOnslaughtStacks(p, ctx),
   // Juggernaut's curve X is ABSOLUTE current HP. maxHealth is derived in
@@ -325,7 +325,7 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       return (cond.orMore ? n >= cond.count : n === cond.count) ? 1 : null;
     }
     case 'killStreakCount':
-      return ctx.player.adrenalineStacks === cond.count ? 1 : null;
+      return ctx.player.killStreak === cond.count ? 1 : null;
     case 'scaledByMissingHealth': {
       const missing = Math.max(0, Math.min(1, 1 - ctx.player.healthPercent / 100));
       const scale = Math.min(missing, cond.cap);

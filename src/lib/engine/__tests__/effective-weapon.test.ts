@@ -223,13 +223,13 @@ describe('buildEffectiveWeapon with real OMOD data', () => {
 
     const at0 = buildEffectiveWeapon(fixer, [thrillSeekerLike], 50, {
       ...createDefaultPlayerConditions(),
-      adrenalineStacks: 0,
+      killStreak: 0,
     });
     expect(at0.weapon.reloadSpeed).toBeCloseTo(base, 6); // no tier matches 0 stacks
 
     const at2 = buildEffectiveWeapon(fixer, [thrillSeekerLike], 50, {
       ...createDefaultPlayerConditions(),
-      adrenalineStacks: 2,
+      killStreak: 2,
     });
     expect(at2.weapon.reloadSpeed).toBeCloseTo(base + 0.06, 6); // ONLY the count:2 tier fires
   });

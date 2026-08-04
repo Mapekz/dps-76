@@ -160,7 +160,7 @@ export function ConditionsSection() {
         feralTier,
         glow,
         capsOnHand: conditions.capsOnHand,
-        adrenalineStacks: conditions.adrenalineStacks,
+        killStreak: conditions.killStreak,
         concentratedFireStacks,
         battleLoadersBashSec,
         targetsHit: conditions.targetsHit ?? 1,
@@ -180,7 +180,7 @@ export function ConditionsSection() {
         feralTier: defaults.feralTier ?? 0,
         glow: defaults.glow ?? 0,
         capsOnHand: defaults.capsOnHand,
-        adrenalineStacks: defaults.adrenalineStacks,
+        killStreak: defaults.killStreak,
         concentratedFireStacks: defaults.concentratedFireStacks,
         battleLoadersBashSec: defaults.battleLoadersBashSec ?? 0,
         targetsHit: defaults.targetsHit ?? 1,
@@ -316,15 +316,15 @@ export function ConditionsSection() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="char-killstreak">Kill streak: {conditions.adrenalineStacks}</Label>
+            <Label htmlFor="char-killstreak">Kill streak: {conditions.killStreak}</Label>
             <Slider
               id="char-killstreak"
               min={0}
               max={10}
               step={1}
               disabled={!hasKillStreak}
-              value={[conditions.adrenalineStacks]}
-              onValueChange={(v) => set('adrenalineStacks', firstSliderValue(v))}
+              value={[conditions.killStreak]}
+              onValueChange={(v) => set('killStreak', firstSliderValue(v))}
               marks={Array.from({ length: 11 }, (_, i) => ({
                 value: i,
                 label: i % 2 === 0 ? String(i) : undefined,

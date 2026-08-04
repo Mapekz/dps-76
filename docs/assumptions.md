@@ -490,7 +490,7 @@ picker badge.
 | SPECIAL buffs (Buffout, Bufftats, Mentats, Berry Mentats) | flat unconditional ADDs into STR/LCK; other stats stored-inert until perk-SPECIAL scaling. Stacking in **Consumable stacking & addictions** | ESM |
 | Juggernaut's max-HP input | `maxHealth` is DERIVED (**Max HP (derived)**), read-only | — |
 | **Strange in Numbers** | DERIVED: active iff card equipped AND `teammateCount≥1` (teammate mutation status not modeled — **user decision**) | card text + user decision |
-| Kill-streak slider gating | detection is an existence scan over assembled modifiers, unlike Onslaught's dedicated bucket fold | engine wiring |
+| Kill-streak slider gating | detection is an existence scan over assembled modifiers, unlike Onslaught's dedicated bucket fold; the `0` default is a deliberate decision, not a gap — see `docs/adr/0009-kill-streak-and-other-exogenous-counters-keep-zero-defaults.md` | engine wiring |
 | United Ordeal | Ghoul-only, +1/+2/+3 all 7 SPECIAL, ranks 1–3, while `playerIsGhoul` AND `teammateCount≥1` | ESM |
 | Public team bonuses | user-selected toggle (None/Casual/Exploration), NOT derived; magnitude `min(teammateCount+1,4)` is a **documented bond-score-proxy simplification** | ESM gate + ours |
 

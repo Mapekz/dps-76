@@ -52,7 +52,7 @@ export interface PlayerConditions {
    * equipped (docs/assumptions.md "Onslaught"); default 1 (single target).
    */
   targetsHit?: number;
-  adrenalineStacks: number; // 0-10 (default 0 per user preference)
+  killStreak: number; // 0-10 (default 0 per user preference)
   tenderizerStacks: number; // 0–1000, +0.001 dbm (0.1%) per stack, cap +100%; target state, works without the card equipped
   /**
    * Concentrated Fire's per-VATS-shot stacking damage bonus (0–20, default
@@ -679,7 +679,7 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     bulletStormStacks: -1, // Follow the computed max (sentinel; see field comment)
     onslaughtStacks: -1, // Follow the computed max (sentinel; see field comment)
     targetsHit: 1,
-    adrenalineStacks: 0, // Default per user preference
+    killStreak: 0, // Default per user preference — see docs/adr/0009-kill-streak-and-other-exogenous-counters-keep-zero-defaults.md
     tenderizerStacks: 0, // Solo default — no other players hitting the target
     concentratedFireStacks: 0, // Slider default (user-approved) — stands in for the hidden native stack counter
     addictionCount: 0,

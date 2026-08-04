@@ -17,12 +17,13 @@ import { useFilterQuery } from '@/hooks/useFilterQuery';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getPerks } from '@/data';
-import { perkHasEngineEffect } from '@/data/perk-modifiers';
+import { getLoadoutModifiers, perkHasEngineEffect } from '@/data/perk-modifiers';
+import { describeBuffModifiers } from '@/lib/buff-description';
 import { usePerkStatus } from './usePerkStatus';
 import { Special } from '@/data/special';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';
 import { canSlotCardPoints, perkCardCostAtRank, type PerkBudget } from '@/lib/player-stats';
-import type { Perk, PerkLoadout } from '@/types';
+import type { GameMode, Perk, PerkLoadout } from '@/types';
 import { LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS, type SpecialKey } from '@/state/build-reducer';
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import { DiffTooltip } from '@/components/diff/DiffTooltip';
@@ -117,70 +118,77 @@ function PerkRow({
   maxRank,
   raiseBlocked,
   noEffect,
+  mode,
 }: {
   entry: PerkEntry;
   maxRank: number;
   raiseBlocked?: boolean;
   noEffect?: boolean;
+  mode: GameMode;
 }) {
   const dispatch = useBuildDispatch();
   // Legendary cards (no `special`) never consume SPECIAL perk points.
   const cost = entry.perk.special ? perkCardCostAtRank(entry.perk, entry.rank) : null;
+  const modifiers = getLoadoutModifiers(mode, [{ perkId: entry.perkId, rank: entry.rank }]);
+  const description = !noEffect ? describeBuffModifiers({ modifiers }) : null;
   return (
-    <div className="bg-muted/40 flex items-center gap-1 rounded px-2 py-1 text-sm">
-      <span className="min-w-0 flex-1 truncate">{entry.perk.name}</span>
-      {noEffect && <NoEffectBadge />}
-      {cost !== null && (
-        <span
-          className="text-muted-foreground text-[10px] tabular-nums"
-          title={`Costs ${cost} perk point${cost === 1 ? '' : 's'} at rank ${entry.rank}`}
-        >
-          {cost} pt
-        </span>
-      )}
-      <DiffTooltip action={{ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank - 1 }}>
+    <div className="bg-muted/40 rounded px-2 py-1 text-sm">
+      <div className="flex items-center gap-1">
+        <span className="min-w-0 flex-1 truncate">{entry.perk.name}</span>
+        {noEffect && <NoEffectBadge />}
+        {cost !== null && (
+          <span
+            className="text-muted-foreground text-[10px] tabular-nums"
+            title={`Costs ${cost} perk point${cost === 1 ? '' : 's'} at rank ${entry.rank}`}
+          >
+            {cost} pt
+          </span>
+        )}
+        <DiffTooltip action={{ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank - 1 }}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-6"
+            disabled={entry.rank <= 1}
+            aria-label={`Lower ${entry.perk.name} rank`}
+            onClick={() =>
+              dispatch({ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank - 1 })
+            }
+          >
+            <MinusIcon className="size-3" />
+          </Button>
+        </DiffTooltip>
+        <span className="w-4 text-center font-mono text-xs tabular-nums">{entry.rank}</span>
+        <DiffTooltip action={{ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank + 1 }}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-6"
+            disabled={entry.rank >= maxRank || raiseBlocked}
+            aria-label={`Raise ${entry.perk.name} rank`}
+            title={
+              raiseBlocked && entry.rank < maxRank
+                ? 'SPECIAL budget exhausted (15/stat, 56 total)'
+                : undefined
+            }
+            onClick={() =>
+              dispatch({ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank + 1 })
+            }
+          >
+            <PlusIcon className="size-3" />
+          </Button>
+        </DiffTooltip>
         <Button
           variant="ghost"
           size="icon"
-          className="size-6"
-          disabled={entry.rank <= 1}
-          aria-label={`Lower ${entry.perk.name} rank`}
-          onClick={() =>
-            dispatch({ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank - 1 })
-          }
+          className="text-muted-foreground size-6"
+          aria-label={`Remove ${entry.perk.name}`}
+          onClick={() => dispatch({ type: 'perk/remove', perkId: entry.perkId })}
         >
-          <MinusIcon className="size-3" />
+          <XIcon className="size-3" />
         </Button>
-      </DiffTooltip>
-      <span className="w-4 text-center font-mono text-xs tabular-nums">{entry.rank}</span>
-      <DiffTooltip action={{ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank + 1 }}>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-6"
-          disabled={entry.rank >= maxRank || raiseBlocked}
-          aria-label={`Raise ${entry.perk.name} rank`}
-          title={
-            raiseBlocked && entry.rank < maxRank
-              ? 'SPECIAL budget exhausted (15/stat, 56 total)'
-              : undefined
-          }
-          onClick={() =>
-            dispatch({ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank + 1 })
-          }
-        >
-          <PlusIcon className="size-3" />
-        </Button>
-      </DiffTooltip>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="text-muted-foreground size-6"
-        aria-label={`Remove ${entry.perk.name}`}
-        onClick={() => dispatch({ type: 'perk/remove', perkId: entry.perkId })}
-      >
-        <XIcon className="size-3" />
-      </Button>
+      </div>
+      {description && <p className="text-muted-foreground text-xs">{description}</p>}
     </div>
   );
 }
@@ -454,6 +462,7 @@ function PerkList({
  * (SpecialLoadoutSection.tsx), not its own accordion item.
  */
 export function PerkEditor() {
+  const { mode } = useGameMode();
   const { registry, noEffect } = usePerkRegistry();
   const { player } = useBuild();
   // Main picker state lives here so the SpecialBudgetBar can open it pre-filtered.
@@ -544,6 +553,7 @@ export function PerkEditor() {
                       maxRank={entry.perk.maxRank}
                       raiseBlocked={raiseBlockedFor(entry)}
                       noEffect={noEffect.has(entry.perkId)}
+                      mode={mode}
                     />
                   ))}
                 </div>
@@ -563,6 +573,7 @@ export function PerkEditor() {
                     maxRank={entry.perk.maxRank}
                     raiseBlocked={raiseBlockedFor(entry)}
                     noEffect={noEffect.has(entry.perkId)}
+                    mode={mode}
                   />
                 ))}
               </div>
@@ -599,6 +610,7 @@ export function PerkEditor() {
               entry={entry}
               maxRank={entry.perk.maxRank}
               noEffect={noEffect.has(entry.perkId)}
+              mode={mode}
             />
           ))}
         </div>

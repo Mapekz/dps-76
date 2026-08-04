@@ -90,6 +90,16 @@ The resolved, clamped Onslaught or Bullet Storm count shared by the engine's
 Stacks**.
 _Avoid_: displayed stacks, raw stacks.
 
+**Modifier Ceiling**:
+The range/max value shown for a curve-driven modifier whose input axis a
+player has left at its zero/no-benefit default (kill streak, caps on hand,
+addiction count, feral tier, …) — computed by `describeBuffModifiers`
+(`src/lib/buff-description.ts`), NOT simulated like **Sustained Stacks**.
+Display-only: the engine still evaluates the modifier at the player's actual
+(often zero) current value; there is no steady-state simulation behind the
+shown ceiling.
+_Avoid_: max value, potential bonus (those don't distinguish it from a real
+simulated average).
 
 **Build Delta**:
 The set of non-default fields in a config object, shared by serialization
@@ -217,5 +227,7 @@ _Avoid_: combined data, resolved data.
   mutation** (+5%/stack, +6.25% with Strange in Numbers), the **Adrenal** legendary
   weapon mod (+10%/kill-streak stack, curve-driven, max 10), and the Adrenal
   legendary armor mod (scales DR+ER). All four share the kill-streak trigger
-  (`p.adrenalineStacks`, lines 164–172 in `src/lib/engine/resolve.ts`), but are
-  separate mechanics.
+  (`p.killStreak` in `resolve.ts`'s `PLAYER_STATE_READERS`), but are separate
+  mechanics. Barbarian, Mind Over Matter, and Thrill-Seeker's also read this same
+  counter and are NOT part of the Adrenal family — reinforcing why the field is
+  named generically (`killStreak`) rather than after any one consumer.
