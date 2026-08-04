@@ -666,7 +666,14 @@ export function resolveLoadout(
   // entirely for a candidate with no real damage effect.
   const player = cached(
     memo?.player,
-    [conditions, special, maxHealth, lockpickSkill, playerConfig.mutations, playerConfig.consumables],
+    [
+      conditions,
+      special,
+      maxHealth,
+      lockpickSkill,
+      playerConfig.mutations,
+      playerConfig.consumables,
+    ],
     () => ({
       // Derived-gate view of the stored conditions (strangeInNumbers,
       // classFreakRank — see assemble()).

@@ -67,6 +67,17 @@ export interface PlayerConditions {
    * docs/assumptions.md "Concentrated Fire stacks".
    */
   concentratedFireStacks: number;
+  /**
+   * Completed lifetime lore/achievement challenges (HasCompletedChallenge gates).
+   * The Pipe's pipe-weapon crafting challenge is toggled via Conditions when that
+   * unique is equipped; default empty (none completed).
+   */
+  completedChallengeIds?: string[];
+  /**
+   * Kingfisher's Local Legend fishing challenges completed (0–6). A count slider
+   * stands in for six independent +10% gates — see docs/assumptions.md.
+   */
+  localLegendFishingChallengesCompleted?: number;
 
   // Other steady-state inputs for conditional sources
   /**
@@ -684,6 +695,8 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     killStreak: 0, // Default per user preference — see docs/adr/0009-kill-streak-and-other-exogenous-counters-keep-zero-defaults.md
     tenderizerStacks: 0, // Solo default — no other players hitting the target
     concentratedFireStacks: 0, // Slider default (user-approved) — stands in for the hidden native stack counter
+    completedChallengeIds: [],
+    localLegendFishingChallengesCompleted: 0,
     addictionCount: 0,
     capsOnHand: 0,
     maxHealth: 300, // synthetic-test default; the app derives it in resolveLoadout (245 + 5×END + buffs)

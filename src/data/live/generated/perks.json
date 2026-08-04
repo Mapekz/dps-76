@@ -24084,8 +24084,8 @@
       "value": 0.5,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetInIronSights()=1"
+        "kind": "aimingDownSights",
+        "value": true
        }
       ]
      }
@@ -24093,9 +24093,7 @@
    }
   ],
   "hasCard": false,
-  "notes": [
-   "condition: GetInIronSights()=1"
-  ]
+  "notes": []
  },
  {
   "family": "P62_SetBonus_SecretServiceDrifter_ReflectivePerk",
@@ -28726,8 +28724,8 @@
       "value": 0.25,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetInIronSights()=1"
+        "kind": "aimingDownSights",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -32032,8 +32030,8 @@
       "value": 0.2,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "HasCompletedChallenge(Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe)=1"
+        "kind": "lifetimeChallengeCompleted",
+        "challengeId": "Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe"
        }
       ]
      }

@@ -176,8 +176,8 @@
     "value": 0.35000000000000003,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetInIronSights()=1"
+      "kind": "aimingDownSights",
+      "value": true
      },
      {
       "kind": "unresolved",
@@ -187,7 +187,6 @@
    }
   ],
   "notes": [
-   "Magazine_AwesomeTales10_Potion: route(STAT_DmgScoped): GetInIronSights()=1",
    "Magazine_AwesomeTales10_Potion: route(STAT_DmgScoped): OR-group[HasKeyword(HasScopeRecon)=1 | HasKeyword(HasScope)=1]"
   ],
   "category": "magazine",

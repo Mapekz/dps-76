@@ -874,7 +874,7 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
     regime: 'playerStat',
     hasEngineEffect: true,
     foldedBy:
-      "player-stats.ts derivePlayerStats; feeds the lockpickSkill CurveInput (Pirate Punch)",
+      'player-stats.ts derivePlayerStats; feeds the lockpickSkill CurveInput (Pirate Punch)',
   },
   specialStrength: {
     regime: 'playerStat',
@@ -1049,6 +1049,13 @@ export type Condition =
   | { kind: 'lastRound' }
   /** Player is aiming down sights (GetInIronSights) — override-produced gate for scoped-damage magazines. */
   | { kind: 'aimingDownSights'; value: boolean }
+  /**
+   * Lifetime lore/achievement challenge completed (HasCompletedChallenge on a
+   * CHAL formid). Evaluated against `PlayerConditions.completedChallengeIds`
+   * (The Pipe) or `localLegendFishingChallengesCompleted` (Kingfisher's six
+   * Local Legend fishing challenges — docs/assumptions.md).
+   */
+  | { kind: 'lifetimeChallengeCompleted'; challengeId: string }
   /** Active alcohol consumable selected (HasMagicEffectKeyword(AlcoholEffect)) — derived in resolveLoadout. */
   | { kind: 'underAlcoholEffect'; value: boolean }
   /** Target carries ≥1 active effect with this keyword (Pyromaniac's: DamageTypeFire; Viper's: DamageTypePoison). */

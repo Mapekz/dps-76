@@ -35,7 +35,14 @@ import {
   type CritMeterTrace,
   type HitTrace,
 } from './trace';
-import { effectiveValue, foldBucket, type ResolveContext, type ScenarioFlags } from './resolve';
+import {
+  effectiveValue,
+  foldBucket,
+  KINGFISHER_LOCAL_LEGEND_CHALLENGE_SET,
+  PIPE_WEAPON_CRAFTING_CHALLENGE_ID,
+  type ResolveContext,
+  type ScenarioFlags,
+} from './resolve';
 
 /** Which body part a hit lands on — the location axis for torso-gated perks (Center Masochist). */
 type BodyPartLocation = NonNullable<ResolveContext['bodyPart']>;
@@ -219,6 +226,16 @@ export interface ScenarioSet {
    * dedicated bucket.
    */
   hasConcentratedFireSources: boolean;
+  /**
+   * True when any equipped source gates on The Pipe's pipe-weapon crafting
+   * lifetime challenge — shows the completion toggle in Conditions.
+   */
+  hasPipeCraftingChallengeSource: boolean;
+  /**
+   * True when any equipped source gates on Kingfisher's Local Legend fishing
+   * challenges — shows the 0–6 count slider in Conditions.
+   */
+  hasKingfisherLocalLegendSource: boolean;
   /**
    * True when the effective weapon carries a nonzero `reloadSkipChanceBash`
    * (Battle-Loader's — the bash-triggered reload-skip channel, see
@@ -907,6 +924,22 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     m.conditions.some((c) => c.kind === 'stacks' && c.counter === 'concentratedFire'),
   );
 
+  const hasPipeCraftingChallengeSource = input.modifiers.some((m) =>
+    m.conditions.some(
+      (c) =>
+        c.kind === 'lifetimeChallengeCompleted' &&
+        c.challengeId === PIPE_WEAPON_CRAFTING_CHALLENGE_ID,
+    ),
+  );
+
+  const hasKingfisherLocalLegendSource = input.modifiers.some((m) =>
+    m.conditions.some(
+      (c) =>
+        c.kind === 'lifetimeChallengeCompleted' &&
+        KINGFISHER_LOCAL_LEGEND_CHALLENGE_SET.has(c.challengeId),
+    ),
+  );
+
   // Battle-Loader's bash source (see ScenarioSet.hasBattleLoadersSource doc
   // comment for why this reads the folded weapon field instead of an
   // input.modifiers scan — reloadSkipChanceBash is stripped from the
@@ -1206,6 +1239,8 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     ...(bulletStormAvg !== undefined && { bulletStormAvgStacks: bulletStormAvg }),
     hasKillStreakSources,
     hasConcentratedFireSources,
+    hasPipeCraftingChallengeSource,
+    hasKingfisherLocalLegendSource,
     hasBattleLoadersSource,
     charging,
     range,

@@ -30810,8 +30810,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "MGEF Camera_TargetingHUD_Cloak archetype Cloak — needs override",
-   "condition: GetInIronSights(<unresolved:0x00000014>)=1"
+   "MGEF Camera_TargetingHUD_Cloak archetype Cloak — needs override"
   ],
   "obtainable": false
  },
@@ -43525,7 +43524,26 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x006E2247:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x006E2247",
+     "edid": "mod_custom_CultistPiercer_Effect",
+     "name": "mod_custom_CultistPiercer_Effect"
+    },
+    "bucket": "armorPen",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeCryptid"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "Moon_dn_Weapon_Melee_CultistPiercer",
@@ -43533,9 +43551,7 @@
    "CustomItemName_CultistPiercer"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "perk CultistPiercer_Perk: entry point Mod Target Damage Resistance — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -43838,16 +43854,34 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x006E2246:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x006E2246",
+     "edid": "mod_custom_EldersMark_Effect",
+     "name": "mod_custom_EldersMark_Effect"
+    },
+    "bucket": "critDmgBonus",
+    "op": "ADD",
+    "value": 0.02,
+    "conditions": [
+     {
+      "kind": "stacks",
+      "counter": "onslaught",
+      "max": 99
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItemName_EldersMark",
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "perk EldersMark_Perk: entry point Mod My Critical Hit Damage Mult uses Add Actor Value Mult — skipped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -44143,8 +44177,8 @@
     "value": 0.1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasCompletedChallenge(Challenge_Lifetime_Fishing_LocalLegend_01)=1"
+      "kind": "lifetimeChallengeCompleted",
+      "challengeId": "Challenge_Lifetime_Fishing_LocalLegend_01"
      }
     ]
    },
@@ -44161,8 +44195,8 @@
     "value": 0.1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasCompletedChallenge(Challenge_Lifetime_Fishing_LocalLegend_02)=1"
+      "kind": "lifetimeChallengeCompleted",
+      "challengeId": "Challenge_Lifetime_Fishing_LocalLegend_02"
      }
     ]
    },
@@ -44179,8 +44213,8 @@
     "value": 0.1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasCompletedChallenge(Challenge_Lifetime_Fishing_LocalLegend_03)=1"
+      "kind": "lifetimeChallengeCompleted",
+      "challengeId": "Challenge_Lifetime_Fishing_LocalLegend_03"
      }
     ]
    },
@@ -44197,8 +44231,8 @@
     "value": 0.1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasCompletedChallenge(Burn_Challenge_Lifetime_Fishing_LocalLegend_04)=1"
+      "kind": "lifetimeChallengeCompleted",
+      "challengeId": "Burn_Challenge_Lifetime_Fishing_LocalLegend_04"
      }
     ]
    },
@@ -44215,8 +44249,8 @@
     "value": 0.1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasCompletedChallenge(Challenge_Lifetime_Fishing_SeasonalFish_Fall_LocalLegend)=1"
+      "kind": "lifetimeChallengeCompleted",
+      "challengeId": "Challenge_Lifetime_Fishing_SeasonalFish_Fall_LocalLegend"
      }
     ]
    },
@@ -44233,8 +44267,8 @@
     "value": 0.1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasCompletedChallenge(Challenge_Lifetime_Fishing_SeasonalFish_Summer_LocalLegend)=1"
+      "kind": "lifetimeChallengeCompleted",
+      "challengeId": "Challenge_Lifetime_Fishing_SeasonalFish_Summer_LocalLegend"
      }
     ]
    }
@@ -44244,14 +44278,7 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "condition: HasCompletedChallenge(Burn_Challenge_Lifetime_Fishing_LocalLegend_04)=1",
-   "condition: HasCompletedChallenge(Challenge_Lifetime_Fishing_LocalLegend_01)=1",
-   "condition: HasCompletedChallenge(Challenge_Lifetime_Fishing_LocalLegend_02)=1",
-   "condition: HasCompletedChallenge(Challenge_Lifetime_Fishing_LocalLegend_03)=1",
-   "condition: HasCompletedChallenge(Challenge_Lifetime_Fishing_SeasonalFish_Fall_LocalLegend)=1",
-   "condition: HasCompletedChallenge(Challenge_Lifetime_Fishing_SeasonalFish_Summer_LocalLegend)=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -44534,8 +44561,8 @@
     "value": 0.3,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetInIronSights()=1"
+      "kind": "aimingDownSights",
+      "value": true
      },
      {
       "kind": "targetDistance",
@@ -44550,9 +44577,7 @@
    "CustomItemName_Longshot"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "condition: GetInIronSights()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -46589,8 +46614,8 @@
     "value": 0.15,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetInIronSights()=1"
+      "kind": "aimingDownSights",
+      "value": true
      }
     ]
    }
@@ -46601,9 +46626,7 @@
    "CustomItemName_TheFactFinder"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "condition: GetInIronSights()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -47163,17 +47186,15 @@
     "value": 0.2,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasCompletedChallenge(Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe)=1"
+      "kind": "lifetimeChallengeCompleted",
+      "challengeId": "Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe"
      }
     ]
    }
   ],
   "addedKeywords": [],
   "hasEnchantments": false,
-  "notes": [
-   "perk ThePipe_Perk: HasCompletedChallenge(Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe)=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -47568,7 +47589,27 @@
    "ma_RailwayRifle",
    "ma_TickettoRevenge"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00759B4C:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00759B4C",
+     "edid": "mod_custom_TickettoRevenge",
+     "name": "Ticket to Revenge"
+    },
+    "bucket": "armorPen",
+    "op": "ADD",
+    "value": 0.03,
+    "conditions": [
+     {
+      "kind": "stacks",
+      "counter": "onslaught",
+      "max": 99
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed",
@@ -47576,9 +47617,7 @@
    "ma_TickettoRevenge"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "perk custom_TickettoRevenge_Perk: entry point Mod Target Damage Resistance — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -70582,8 +70621,8 @@
     "value": 0.25,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetInIronSights()=1"
+      "kind": "aimingDownSights",
+      "value": true
      }
     ]
    }
@@ -70595,8 +70634,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "MGEF AbDmgSights_Description archetype Script — needs override",
-   "condition: GetInIronSights()=1"
+   "MGEF AbDmgSights_Description archetype Script — needs override"
   ],
   "obtainable": true
  },
@@ -71074,8 +71112,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on STAT_SpeedMultWhileAiming — unmapped",
-   "MGEF AbFortifyActorSpeedMult: zero magnitude, no curve — script/scaled, needs override",
-   "condition: GetInIronSights()=1"
+   "MGEF AbFortifyActorSpeedMult: zero magnitude, no curve — script/scaled, needs override"
   ],
   "obtainable": true
  },
@@ -71202,8 +71239,8 @@
     "value": 50,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetInIronSights()=1"
+      "kind": "aimingDownSights",
+      "value": true
      }
     ]
    }
@@ -71215,8 +71252,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "MGEF AbDamageResistSights_Description archetype Script — needs override",
-   "condition: GetInIronSights()=1"
+   "MGEF AbDamageResistSights_Description archetype Script — needs override"
   ],
   "obtainable": true
  },
@@ -71854,8 +71890,8 @@
     "value": 0.4,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetInIronSights()=1"
+      "kind": "aimingDownSights",
+      "value": true
      },
      {
       "kind": "targetDistance",
@@ -71871,8 +71907,7 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "MGEF AbLocked_Description archetype Script — needs override",
-   "condition: GetInIronSights()=1"
+   "MGEF AbLocked_Description archetype Script — needs override"
   ],
   "obtainable": false
  },
@@ -121243,8 +121278,8 @@
     "value": 0.5,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "GetInIronSights()=1"
+      "kind": "aimingDownSights",
+      "value": true
      }
     ]
    }
@@ -121256,8 +121291,6 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "perk P62_Legendary_Weapon_SightSeersPerk: GetInIronSights()=1",
-   "perk P62_Legendary_Weapon_SightSeersPerk: condition: GetInIronSights()=1",
    "perk P62_Legendary_Weapon_SightSeersPerk: entry point Mod Gun Range Mult — not modeled"
   ],
   "obtainable": false

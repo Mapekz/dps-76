@@ -2,9 +2,11 @@ import { describe, it, expect } from 'bun:test';
 import {
   translate,
   translateEnchantment,
+  translateGrantedPerk,
   parseMagicEffects,
   getMgefInfo,
   ENTRY_POINT_BUCKETS,
+  SHARED_ONSLAUGHT_COUNTER_AV,
   type MgefInfo,
   type SpellEffect,
   type AvifRoute,
@@ -314,7 +316,7 @@ describe('translate (Lockpick Skill / Pirate Punch, 2026-08-04)', () => {
     expect(r.modifiers[0].curve ? r.modifiers[0].curveScale : null).toBeCloseTo(0.01, 10);
   });
 
-  it('routes a flat Peak Value Modifier on STAT_LockpickingTier to the lockpickSkill bucket via the FALLBACK_AVIF_ROUTES fallback (Picklock/Master Infiltrator/Safecracker\'s-style grant, scale 1 not 0.01 — integer skill points)', () => {
+  it("routes a flat Peak Value Modifier on STAT_LockpickingTier to the lockpickSkill bucket via the FALLBACK_AVIF_ROUTES fallback (Picklock/Master Infiltrator/Safecracker's-style grant, scale 1 not 0.01 — integer skill points)", () => {
     const lockpickEdids = new Map<string, string>([['0xAV', 'STAT_LockpickingTier']]);
     const r = translate(
       mgef({ archetype: 'Peak Value Modifier' }),
@@ -322,9 +324,7 @@ describe('translate (Lockpick Skill / Pirate Punch, 2026-08-04)', () => {
       noRoutes,
       lockpickEdids,
     );
-    expect(r.modifiers).toEqual([
-      { bucket: 'lockpickSkill', op: 'ADD', value: 1, conditions: [] },
-    ]);
+    expect(r.modifiers).toEqual([{ bucket: 'lockpickSkill', op: 'ADD', value: 1, conditions: [] }]);
   });
 });
 
@@ -983,6 +983,39 @@ describe('translateConditions (Stage C3, killstreak GetValue tiers)', () => {
     expect(conditions).toEqual([
       { kind: 'unresolved', raw: 'GetValue(0x00000399) Greater Than Or Equal To 3' },
     ]);
+  });
+});
+
+describe('translateConditions (GetInIronSights / HasCompletedChallenge)', () => {
+  it('translates GetInIronSights Equal To 1 to aimingDownSights', () => {
+    const row: RawCondition = {
+      Function: 'GetInIronSights',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+    };
+    const { conditions, unresolved } = translateConditions([row], { edidByFormId: new Map() });
+    expect(conditions).toEqual([{ kind: 'aimingDownSights', value: true }]);
+    expect(unresolved).toEqual([]);
+  });
+
+  it('translates HasCompletedChallenge Equal To 1 to lifetimeChallengeCompleted', () => {
+    const row: RawCondition = {
+      Function: 'HasCompletedChallenge',
+      'Parameter 1': '0xCHAL',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+    };
+    const edidMap = new Map([
+      ['0xCHAL', 'Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe'],
+    ]);
+    const { conditions, unresolved } = translateConditions([row], { edidByFormId: edidMap });
+    expect(conditions).toEqual([
+      {
+        kind: 'lifetimeChallengeCompleted',
+        challengeId: 'Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe',
+      },
+    ]);
+    expect(unresolved).toEqual([]);
   });
 });
 
@@ -2057,5 +2090,147 @@ describe('translateConditions (Phase 4 — GetDistanceToClosestHostileActor, 202
       { kind: 'unresolved', raw: 'GetDistanceToClosestHostileActor Less Than 10' },
     ]);
     expect(unresolved).toEqual(['GetDistanceToClosestHostileActor Less Than 10']);
+  });
+});
+
+describe('translateGrantedPerk (unique weapons, 2026-08-04)', () => {
+  const cryptidEdids = new Map<string, string>([['0x00331AC2', 'ActorTypeCryptid']]);
+
+  function entryPointPerk(
+    perkEdid: string,
+    effect: Record<string, unknown>,
+  ): Record<string, unknown> {
+    return {
+      editor_id: perkEdid,
+      fields: {
+        Effects: [{ Effect: effect }],
+      },
+    };
+  }
+
+  function grantedPerkClient(perkFormId: string, perk: Record<string, unknown>): EsmClient {
+    return {
+      async get(formId: string): Promise<EsmRecord> {
+        if (formId === perkFormId) return perk as unknown as EsmRecord;
+        throw new Error(`unexpected get(${formId})`);
+      },
+      resolveEdid: async (formId: string) => cryptidEdids.get(formId) ?? formId,
+    } as unknown as EsmClient;
+  }
+
+  it("routes Cultist Piercer's Mod Target Damage Resistance ×0.5 to armorPen ADD 0.5 vs Cryptids", async () => {
+    const perkFormId = '0x0077B581';
+    const perk = entryPointPerk('CultistPiercer_Perk', {
+      'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+      'Entry Point': {
+        'Entry Point': { name: 'Mod Target Damage Resistance' },
+        Function: { name: 'Multiply Value' },
+      },
+      Float: 0.5,
+      'Perk Conditions': [
+        {
+          'Perk Condition': {
+            'Run On (Tab Index)': 2,
+            Conditions: [
+              {
+                Condition: {
+                  'Condition Data': {
+                    Function: 'HasKeyword',
+                    'Parameter 1': '0x00331AC2',
+                    'Comparison Value': 1,
+                    Operator: 'Equal To',
+                    'Run On': 'Subject',
+                  },
+                },
+              },
+            ],
+          },
+        },
+      ],
+    });
+    const result = await translateGrantedPerk(
+      {
+        client: grantedPerkClient(perkFormId, perk),
+        routes: new Map(),
+        edidByFormId: cryptidEdids,
+      },
+      'mod_custom_CultistPiercer_Effect',
+      perkFormId,
+    );
+    expect(result.modifiers).toEqual([
+      {
+        bucket: 'armorPen',
+        op: 'ADD',
+        value: 0.5,
+        conditions: [{ kind: 'enemyType', keywordOrRace: 'ActorTypeCryptid' }],
+      },
+    ]);
+  });
+
+  it("routes Elder's Mark Add Actor Value Mult on shared ConsecutiveHitCount to critDmgBonus ADD per Onslaught stack", async () => {
+    const perkFormId = '0x00913B5E';
+    const perk = entryPointPerk('EldersMark_Perk', {
+      'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+      'Entry Point': {
+        'Entry Point': { name: 'Mod My Critical Hit Damage Mult' },
+        Function: { name: 'Add Actor Value Mult' },
+      },
+      Float: 0.02,
+      'Function Parameter 3 (Actor Value)': SHARED_ONSLAUGHT_COUNTER_AV,
+    });
+    const result = await translateGrantedPerk(
+      {
+        client: grantedPerkClient(perkFormId, perk),
+        routes: new Map(),
+        edidByFormId: new Map(),
+      },
+      'mod_custom_EldersMark_Effect',
+      perkFormId,
+    );
+    expect(result.modifiers).toEqual([
+      {
+        bucket: 'critDmgBonus',
+        op: 'ADD',
+        value: 0.02,
+        conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
+      },
+    ]);
+  });
+
+  it('routes Ticket to Revenge Multiply 1 + Actor Value Mult on shared ConsecutiveHitCount to armorPen ADD 0.03 per Onslaught stack', async () => {
+    const perkFormId = '0x00913B5F';
+    const perk = entryPointPerk('custom_TickettoRevenge_Perk', {
+      'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+      'Entry Point': {
+        'Entry Point': { name: 'Mod Target Damage Resistance' },
+        Function: { name: 'Multiply 1 + Actor Value Mult' },
+      },
+      Float: -0.03,
+      'Function Parameter 3 (Actor Value)': {
+        formid: SHARED_ONSLAUGHT_COUNTER_AV,
+        editor_id: 'ConsecutiveHitCount',
+      },
+    });
+    const result = await translateGrantedPerk(
+      {
+        client: grantedPerkClient(perkFormId, perk),
+        routes: new Map(),
+        edidByFormId: new Map(),
+      },
+      'mod_custom_TickettoRevenge',
+      perkFormId,
+    );
+    expect(result.modifiers).toEqual([
+      {
+        bucket: 'armorPen',
+        op: 'ADD',
+        value: 0.03,
+        conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
+      },
+    ]);
+  });
+
+  it('registers Mod Target Damage Resistance in ENTRY_POINT_BUCKETS as armorPen', () => {
+    expect(ENTRY_POINT_BUCKETS['Mod Target Damage Resistance']).toBe('armorPen');
   });
 });

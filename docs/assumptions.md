@@ -549,7 +549,8 @@ of the chem/food/drink/alcohol classification.
 - **Stacking**: one magazine and one bobblehead active at a time, independent
   of each other and of chem/alcohol/food/drink.
 - **Aim-down-sights toggle** (`PlayerConditions.isAimingDownSights`, default
-  false): gates override-wired scoped-damage magazines (Awesome Tales 10's
+  false): gates extracted `GetInIronSights()` rows (The Fact Finder, Longshot)
+  and override-wired scoped-damage magazines (Awesome Tales 10's
   `GetInIronSights()` row). User-editable in Conditions.
 - **Under-alcohol derived flag** (`PlayerConditions.underAlcoholEffect`,
   derived in `resolveLoadout` from any active alcohol-category consumable):
@@ -772,6 +773,19 @@ multiplier, not additive; see **Concentrated Fire stacks** below.
     points only pre-~2025, before a game rework). Modeled as
     `vatsHitChanceMult` (`regime: 'display'`), exposed AS-IS (1=neutral) —
     same display-only contract, **never** consumed by any damage term.
+
+## Lifetime challenge completions
+Engine: `resolve.ts` (`lifetimeChallengeCompleted`), `ConditionsSection.tsx`.
+
+- **Pipe crafting challenge** (`PlayerConditions.completedChallengeIds`, default
+  empty): manual toggle when The Pipe is equipped; gates the fourth Licensed
+  Plumber `dbm` rung (`HasCompletedChallenge(Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe)`).
+- **Kingfisher Local Legend count** (`PlayerConditions.localLegendFishingChallengesCompleted`,
+  default `0`): manual 0–6 slider when Kingfisher is equipped; each completed
+  challenge is +10% `dbm` via six independent `HasCompletedChallenge` gates —
+  the slider stands in for which challenges are done without modeling six
+  separate toggles. Same exogenous-counter default as kill streak / Concentrated
+  Fire — `docs/adr/0009-kill-streak-and-other-exogenous-counters-keep-zero-defaults.md`.
 
 ## Power attacks & melee cadence
 Engine: `paper-damage.ts`, `scenarios.ts`, `fire-rate.ts`.
@@ -1209,6 +1223,10 @@ their stats are stale and must not be shown.
   still wants an in-game measurement (`#72`). Its five
   `mod_Custom_TheVATSUnknown_*` siblings are unreferenced legacy/cut records,
   not real variants — removed from the picker.
+- **The Guarantee** (`mod_Custom_Overkill`): ADDs +5 to `KillStreakPerKillCount`
+  AV (0x00924E31) — no ESM-visible consumer besides its own grant and DFOB;
+  the paper model has no per-kill accrual to scale (`killStreak` is a static
+  slider, docs/adr/0009-kill-streak-and-other-exogenous-counters-keep-zero-defaults.md).
 
 ## Armor pipeline (Phase 3 extraction)
 

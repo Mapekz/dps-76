@@ -50,8 +50,9 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
   // LL_MutatedEvents_Rewards_Weapon_Cryolator_MintyBreather and wired it
   // into WeaponsUniqueNamedList (mutated-events reward, user-confirmed live).
   // The delete-the-line instruction above executed as designed.
-  // The Pipe (Pipe Gun): its template-combination keyword 0x0091EE2B has
-  // zero external refs — no LVLI/QUST/FLST ever instantiates the config.
+  // The Pipe (Pipe Gun): uniques.md found no LVLI, plan or recipe exists yet
+  // for this item as of the current ESM dump — re-review when a later ESM dump
+  // adds a grant path (LVLI, COBJ recipe, or quest reward).
   'mod_Custom_ThePipe',
   // Pyro-Technician's (mod_Legendary_Weapon2_Fire, 0x00849316): the July-10
   // patch repurposed a formerly-orphaned bounty record (Attach Point left
@@ -377,6 +378,59 @@ export const omodModifierAdditions: Readonly<Record<string, Modifier[]>> = {
       op: 'MUL_ADD',
       value: 0.1,
       conditions: [],
+    },
+  ],
+  // Acceptable Overkill (Laser unique): OMOD ADDs +1 to ConcentratedFireRank AV
+  // (0x00900A59) — "free Concentrated Fire rank 1". Mirrors the
+  // ConcentratedFire01 perk override in perk-overrides.ts (EP135/EP109 are
+  // still ENTRY_POINT_IGNORED upstream). If native extraction lands, remove
+  // BOTH this entry and the perk override in the same commit — double-stack
+  // hazard.
+  mod_Custom_AcceptableOverkill: [
+    {
+      id: 'mod_Custom_AcceptableOverkill:stacking',
+      source: {
+        kind: 'omod',
+        formId: '0x008EE1EB',
+        edid: 'mod_Custom_AcceptableOverkill',
+        name: 'Acceptable Overkill',
+      },
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.01,
+      conditions: [{ kind: 'vatsOnly' }, { kind: 'stacks', counter: 'concentratedFire', max: 20 }],
+    },
+    {
+      id: 'mod_Custom_AcceptableOverkill:hitChanceMultSemi',
+      source: {
+        kind: 'omod',
+        formId: '0x008EE1EB',
+        edid: 'mod_Custom_AcceptableOverkill',
+        name: 'Acceptable Overkill',
+      },
+      bucket: 'vatsHitChanceMult',
+      op: 'MUL_ADD',
+      value: 0.04,
+      conditions: [
+        { kind: 'weaponKeyword', keyword: 'WeaponTypeAutomatic', present: false },
+        { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+      ],
+    },
+    {
+      id: 'mod_Custom_AcceptableOverkill:hitChanceMultAuto',
+      source: {
+        kind: 'omod',
+        formId: '0x008EE1EB',
+        edid: 'mod_Custom_AcceptableOverkill',
+        name: 'Acceptable Overkill',
+      },
+      bucket: 'vatsHitChanceMult',
+      op: 'MUL_ADD',
+      value: 0.01,
+      conditions: [
+        { kind: 'weaponKeyword', keyword: 'WeaponTypeAutomatic', present: true },
+        { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+      ],
     },
   ],
 };

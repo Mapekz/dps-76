@@ -215,7 +215,7 @@ describe('perkHasEngineEffect (drives the perk picker\'s "no effect yet" badge)'
     expect(perkHasEngineEffect('live', PerkId.GreenThumb)).toBe(false);
   });
 
-  it('is true for Picklock (feeds Pirate Punch\'s lockpickSkill curve since 2026-08-04)', () => {
+  it("is true for Picklock (feeds Pirate Punch's lockpickSkill curve since 2026-08-04)", () => {
     expect(perkHasEngineEffect('live', PerkId.Picklock)).toBe(true);
   });
 

@@ -1,5 +1,7 @@
+import { hiddenOmodIds, omodNameOverrides } from '../../src/data/overrides/omod-corrections';
 import type { GeneratedOmod, GeneratedUnique, GeneratedWeapon } from '../../src/types/generated';
 import type { EsmClient } from './esm-client';
+import { isExcludedOmodEdid } from './extract-omods';
 import { walkWeaponCombinations } from './extract-weapons';
 
 const COSMETIC_SLOT_RE = /appearance|paint|skin|material/i;
@@ -16,13 +18,33 @@ const LEGENDARY_SLOT_RE = /^ap_Legendary(\d+)$/;
 // ★2/★3, patch-summary.md).
 const RANDOM_LEGENDARY_SLOT_RE = /^modcol_Legendary_Crafting_Weapon(\d+)$/;
 
+/** Dev/cut/NPC-only identity mods on ap_customName that lack ObjectTypeUnique. */
+const IDENTITY_JUNK_EDID_RE = /^(deprecated|Burn_Bounty|Burn_BountyEnchantment)/i;
+
+function sharesTargetKeywordGate(a: GeneratedOmod, b: GeneratedOmod): boolean {
+  if (a.targetKeywords.length === 0 || b.targetKeywords.length === 0) return false;
+  const bSet = new Set(b.targetKeywords);
+  return a.targetKeywords.every((kw) => bSet.has(kw));
+}
+
+/** Exposed for tests — structural exclusion for widened ap_customName identity mods. */
+export function isExcludedIdentityOmod(omod: GeneratedOmod): boolean {
+  const id = omod.id;
+  if (omod.obtainable === false) return true;
+  if (id.startsWith('_PARENT_')) return true;
+  if (IDENTITY_JUNK_EDID_RE.test(id)) return true;
+  if (/MutationNameMod_/i.test(id)) return true;
+  if (/^cr[^a-z]/.test(id)) return true;
+  if (isExcludedOmodEdid(id)) return true;
+  return false;
+}
+
 function isIdentityOmod(omod: GeneratedOmod): boolean {
-  if (omod.attachPointEdid === 'ap_customName' && omod.addedKeywords.includes('ObjectTypeUnique'))
-    return true;
   // MoM (Mistress of Mystery) blades ride ap_Item_Description; Cursed identity mods
   // (Nuka-World on Tour) moved to their own ap_curse attach point in the 20260724 patch.
   // See src/data/omods.ts for the attach-point layout.
   if (omod.attachPointEdid === 'ap_Item_Description') return true;
+  if (omod.attachPointEdid === 'ap_customName') return !isExcludedIdentityOmod(omod);
   return false;
 }
 
@@ -30,6 +52,31 @@ function isCosmeticAttachPoint(attachPointEdid: string): boolean {
   if (attachPointEdid === 'ap_customName' || attachPointEdid === 'ap_Item_Description')
     return false;
   return COSMETIC_SLOT_RE.test(attachPointEdid);
+}
+
+/**
+ * Unique preset display name precedence (highest first):
+ * 1. `omodNameOverrides` (hand-maintained)
+ * 2. Identity OMOD Name with " Custom Mod"/" Custom Name" suffix stripped
+ * 3. Object Template Combination.Name fallback
+ *
+ * The OMOD's `CustomItemName_*` added keyword resolved through the `dn_CommonGun`
+ * Instance Naming Rules record (INNR 0x002377CF) is the game's actual naming
+ * mechanism and would be the most-correct source, but the `esm` CLI's INNR decoder
+ * currently can't pair that ruleset's keywords with their display strings (an upstream
+ * `FO76-Tools/esm` schema issue) — this OMOD-Name fallback is the best available
+ * approximation today, not a final answer.
+ */
+function stripIdentityOmodNameSuffix(name: string): string {
+  return name.replace(/\s+Custom (Mod|Name)$/i, '');
+}
+
+function resolveUniquePresetName(identityOmod: GeneratedOmod, comboName: string): string {
+  const override = omodNameOverrides[identityOmod.id];
+  if (override !== undefined) return override;
+  const fromOmod = stripIdentityOmodNameSuffix(identityOmod.name).trim();
+  if (fromOmod) return fromOmod;
+  return comboName;
 }
 
 export interface SkippedUniqueCombination {
@@ -49,6 +96,7 @@ export async function extractUniques(
   omods: GeneratedOmod[],
 ): Promise<ExtractUniquesResult> {
   const omodByFormId = new Map(omods.map((o) => [o.formId, o]));
+  const omodById = new Map(omods.map((o) => [o.id, o]));
   const uniques: GeneratedUnique[] = [];
   const skipped: SkippedUniqueCombination[] = [];
   const seenIdentityIds = new Set<string>();
@@ -95,6 +143,8 @@ export async function extractUniques(
 
       if (!identityOmod) continue;
 
+      if (hiddenOmodIds.has(identityOmod.id)) continue;
+
       if (seenIdentityIds.has(identityOmod.id)) {
         skipped.push({
           weaponId: weapon.id,
@@ -117,12 +167,38 @@ export async function extractUniques(
       seenIdentityIds.add(identityOmod.id);
       uniques.push({
         id: identityOmod.id,
-        name: combo.name,
+        name: resolveUniquePresetName(identityOmod, combo.name),
         baseWeaponId: weapon.id,
         mods,
         legendaryEffects,
       });
     }
+  }
+
+  // COBJ-granted identity mods (e.g. Cosmic Knife Super-Heated) share a
+  // target-keyword gate with a template-combination sibling but never appear in
+  // Object Template Includes — emit a minimal preset on the same base weapon.
+  for (const omod of omods) {
+    if (!isIdentityOmod(omod) || seenIdentityIds.has(omod.id) || hiddenOmodIds.has(omod.id))
+      continue;
+
+    let baseWeaponId: string | undefined;
+    for (const unique of uniques) {
+      const sibling = omodById.get(unique.id);
+      if (!sibling || !sharesTargetKeywordGate(sibling, omod)) continue;
+      baseWeaponId = unique.baseWeaponId;
+      break;
+    }
+    if (!baseWeaponId) continue;
+
+    seenIdentityIds.add(omod.id);
+    uniques.push({
+      id: omod.id,
+      name: resolveUniquePresetName(omod, ''),
+      baseWeaponId,
+      mods: { [omod.attachPointEdid]: omod.id },
+      legendaryEffects: [],
+    });
   }
 
   return { uniques, skipped };

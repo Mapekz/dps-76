@@ -285,6 +285,18 @@ function translateSingle(
       return wants ? 'inactive' : null;
     case 'IsSneaking':
       return wants ? { kind: 'sneaking' } : { kind: 'unresolved', raw: 'IsSneaking=0' };
+    case 'GetInIronSights':
+      return { kind: 'aimingDownSights', value: wants };
+    case 'HasCompletedChallenge':
+      if (/^equal to$/i.test(cond.Operator ?? '')) {
+        return wants
+          ? { kind: 'lifetimeChallengeCompleted', challengeId: edid }
+          : { kind: 'unresolved', raw: `HasCompletedChallenge(${edid})=0` };
+      }
+      return {
+        kind: 'unresolved',
+        raw: `HasCompletedChallenge(${edid}) ${cond.Operator} ${rawCmp}`,
+      };
     case 'GetValuePercent':
     case 'GetHealthPercentage': {
       if (fn === 'GetValuePercent' && param !== '0x000002D4') {

@@ -18,6 +18,10 @@ import {
 } from '@/lib/engine/stacks';
 import { buildDeltaCount } from '@/lib/build-delta';
 import { healthPercentIndex, PLAYER_HEALTH_PERCENT_STOPS } from '@/lib/health-percent';
+import {
+  KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS,
+  PIPE_WEAPON_CRAFTING_CHALLENGE_ID,
+} from '@/lib/engine/resolve';
 import { cn } from '@/lib/utils';
 import { createDefaultPlayerConditions, type PlayerConditions } from '@/types';
 import { SectionTrigger } from './SectionTrigger';
@@ -123,6 +127,15 @@ export function ConditionsSection() {
   const hasConcentratedFire = scenarios?.hasConcentratedFireSources ?? false;
   const concentratedFireStacks = conditions.concentratedFireStacks;
 
+  const hasPipeCraftingChallenge = scenarios?.hasPipeCraftingChallengeSource ?? false;
+  const pipeCraftingChallengeCompleted = (conditions.completedChallengeIds ?? []).includes(
+    PIPE_WEAPON_CRAFTING_CHALLENGE_ID,
+  );
+
+  const hasKingfisherLocalLegend = scenarios?.hasKingfisherLocalLegendSource ?? false;
+  const localLegendFishingChallengesCompleted =
+    conditions.localLegendFishingChallengesCompleted ?? 0;
+
   // Battle-Loader's bash time (Phase C — go-through-every-single-silly-
   // whistle.md): a manual slider standing in for the time cost of a bash
   // swing that triggers Battle-Loader's instant reload, gated on whether the
@@ -162,6 +175,8 @@ export function ConditionsSection() {
         capsOnHand: conditions.capsOnHand,
         killStreak: conditions.killStreak,
         concentratedFireStacks,
+        completedChallengeIds: conditions.completedChallengeIds ?? [],
+        localLegendFishingChallengesCompleted,
         battleLoadersBashSec,
         targetsHit: conditions.targetsHit ?? 1,
         weaponConditionPct: conditions.weaponConditionPct ?? 100,
@@ -181,6 +196,8 @@ export function ConditionsSection() {
         capsOnHand: defaults.capsOnHand,
         killStreak: defaults.killStreak,
         concentratedFireStacks: defaults.concentratedFireStacks,
+        completedChallengeIds: defaults.completedChallengeIds ?? [],
+        localLegendFishingChallengesCompleted: defaults.localLegendFishingChallengesCompleted ?? 0,
         battleLoadersBashSec: defaults.battleLoadersBashSec ?? 0,
         targetsHit: defaults.targetsHit ?? 1,
         weaponConditionPct: defaults.weaponConditionPct ?? 100,
@@ -449,6 +466,49 @@ export function ConditionsSection() {
               <p className="text-muted-foreground text-xs">No Concentrated Fire sources equipped</p>
             )}
           </div>
+
+          {hasPipeCraftingChallenge && (
+            <SwitchRow
+              id="char-pipe-crafting-challenge"
+              label="Completed pipe-weapon crafting challenge"
+              checked={pipeCraftingChallengeCompleted}
+              onCheckedChange={(checked) => {
+                const ids = conditions.completedChallengeIds ?? [];
+                set(
+                  'completedChallengeIds',
+                  checked
+                    ? [...ids, PIPE_WEAPON_CRAFTING_CHALLENGE_ID]
+                    : ids.filter((id) => id !== PIPE_WEAPON_CRAFTING_CHALLENGE_ID),
+                );
+              }}
+            />
+          )}
+
+          {hasKingfisherLocalLegend && (
+            <div className="space-y-1.5">
+              <Label htmlFor="char-kingfisher-local-legend">
+                Completed Local Legend fishing challenges ({localLegendFishingChallengesCompleted} /{' '}
+                {KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS.length})
+              </Label>
+              <Slider
+                id="char-kingfisher-local-legend"
+                min={0}
+                max={KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS.length}
+                step={1}
+                value={[localLegendFishingChallengesCompleted]}
+                onValueChange={(v) =>
+                  set('localLegendFishingChallengesCompleted', firstSliderValue(v))
+                }
+                marks={Array.from(
+                  { length: KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS.length + 1 },
+                  (_, i) => ({
+                    value: i,
+                    label: i % 2 === 0 ? String(i) : undefined,
+                  }),
+                )}
+              />
+            </div>
+          )}
 
           <div className="space-y-1.5">
             <Label htmlFor="char-battle-loaders-bash">

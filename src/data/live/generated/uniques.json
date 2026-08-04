@@ -1,7 +1,7 @@
 [
  {
   "id": "mod_Custom_TheFactFinder",
-  "name": "",
+  "name": "The Fact Finder",
   "baseWeaponId": "44",
   "mods": {
    "ap_gun_Receiver": "mod_44_receiver_Base",
@@ -18,7 +18,7 @@
  },
  {
   "id": "mod_Custom_SomersetSpecial",
-  "name": "",
+  "name": "Somerset Special",
   "baseWeaponId": "44",
   "mods": {
    "ap_gun_Receiver": "mod_44_receiver_Base",
@@ -34,8 +34,26 @@
   ]
  },
  {
+  "id": "ATX_mod_44_Weapon_Custom_Lawbringer",
+  "name": "Lawbringer",
+  "baseWeaponId": "44",
+  "mods": {
+   "ap_gun_Scope": "mod_44_SCOPE_IronSights_Base",
+   "ap_gun_Receiver": "mod_44_receiver_Base",
+   "ap_gun_Grip": "mod_44_grip_Base",
+   "ap_gun_Barrel": "mod_44_barrel_long_Base",
+   "ap_customName": "ATX_mod_44_Weapon_Custom_Lawbringer"
+  },
+  "legendaryEffects": [
+   "mod_Legendary_Weapon1_Adrenal",
+   null,
+   null,
+   "RA_mod_Legendary_Weapon4_ThrillSeeker"
+  ]
+ },
+ {
   "id": "mod_Custom_MedicalMalpractice",
-  "name": "",
+  "name": "Medical Malpractice",
   "baseWeaponId": "44",
   "mods": {
    "ap_gun_Receiver": "mod_44_Receiver_FastTrigger",
@@ -86,7 +104,7 @@
  },
  {
   "id": "mod_Custom_PerfectStorm",
-  "name": "",
+  "name": "Perfect Storm",
   "baseWeaponId": "10mmSMG",
   "mods": {
    "ap_gun_Receiver": "mod_10mmSMG_Receiver_Base",
@@ -104,7 +122,7 @@
  },
  {
   "id": "mod_custom_Suppressed10mmSMG_AnchorageAce",
-  "name": "",
+  "name": "Anchorage Ace",
   "baseWeaponId": "10mmSMG",
   "mods": {
    "ap_gun_Grip": "mod_10mmSMG_Grip_Recoil-SecondaryDMG",
@@ -123,7 +141,7 @@
  },
  {
   "id": "P62_Mod_Custom_Splinter_CustomName",
-  "name": "",
+  "name": "Splinter",
   "baseWeaponId": "10mmSMG",
   "mods": {
    "ap_gun_Receiver": "mod_10mmSMG_Receiver_CritDMG-HipAccuracy",
@@ -143,7 +161,7 @@
  },
  {
   "id": "mod_Custom_OldGuard",
-  "name": "",
+  "name": "Old Guard",
   "baseWeaponId": "10mmSMG",
   "mods": {
    "ap_gun_Receiver": "mod_10mmSMG_Receiver_Damage-HipAccuracy",
@@ -162,7 +180,7 @@
  },
  {
   "id": "mod_Custom_TheVATSUnknown",
-  "name": "",
+  "name": "The V.A.T.S. Unknown",
   "baseWeaponId": "AlienBlaster",
   "mods": {
    "ap_gun_Grip": "mod_AlienBlaster_Grip_Better",
@@ -179,7 +197,7 @@
  },
  {
   "id": "mod_Custom_ZetasRevenge",
-  "name": "",
+  "name": "Zeta's Revenge",
   "baseWeaponId": "AlienBlaster",
   "mods": {
    "ap_gun_Grip": "mod_AlienBlaster_Grip_Better",
@@ -196,7 +214,7 @@
  },
  {
   "id": "mod_Custom_WhistleInTheDark",
-  "name": "",
+  "name": "Whistle in the Dark",
   "baseWeaponId": "AssaultRifle",
   "mods": {
    "ap_gun_Grip": "mod_AssaultRifle_Grip_Recoil-HipAccuracy",
@@ -215,7 +233,7 @@
  },
  {
   "id": "P62_Mod_Custom_Tempest_CustomName",
-  "name": "",
+  "name": "Tempest",
   "baseWeaponId": "DLC01_AssaultronBlade",
   "mods": {
    "ap_melee_MeleeMod": "dlc01_mod_melee_assaultronblade_Shock",
@@ -231,7 +249,7 @@
  },
  {
   "id": "mod_Custom_TheGutter",
-  "name": "",
+  "name": "The Gutter",
   "baseWeaponId": "DLC01_AssaultronBlade",
   "mods": {
    "ap_melee_MeleeMod": "dlc01_mod_melee_assaultronblade_Standard",
@@ -295,7 +313,7 @@
  },
  {
   "id": "SCORE_S11_mod_Custom_NukaLauncher",
-  "name": "",
+  "name": "Nuka-Launcher",
   "baseWeaponId": "AutoGrenadeLauncher",
   "mods": {
    "ap_gun_Barrel": "mod_AutoGrenadeLauncher_Barrel_Standard",
@@ -312,7 +330,7 @@
  },
  {
   "id": "E09A_mod_Custom_RatBat",
-  "name": "",
+  "name": "Rat Bat",
   "baseWeaponId": "BaseballBat",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod",
@@ -326,7 +344,7 @@
  },
  {
   "id": "mod_custom_V63ShockBaton_custom",
-  "name": "Disorderly Conduct",
+  "name": "V63 Shock Baton",
   "baseWeaponId": "Baton",
   "mods": {
    "ap_customName": "mod_custom_V63ShockBaton_custom"
@@ -339,7 +357,7 @@
  },
  {
   "id": "mod_Custom_DisorderlyConduct",
-  "name": "",
+  "name": "Disorderly Conduct",
   "baseWeaponId": "Baton",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_Baton_Shock",
@@ -353,7 +371,7 @@
  },
  {
   "id": "mod_custom_OguaGauntlet_Effect",
-  "name": "",
+  "name": "Ogua Gauntlet",
   "baseWeaponId": "BearArm",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod",
@@ -367,7 +385,7 @@
  },
  {
   "id": "E08B_mod_Custom_Blackpowder_PiratePunch",
-  "name": "",
+  "name": "Pirate Punch",
   "baseWeaponId": "Blackpowder_Pistol_Blunderbuss",
   "mods": {
    "ap_customName": "E08B_mod_Custom_Blackpowder_PiratePunch"
@@ -380,7 +398,7 @@
  },
  {
   "id": "E09A_mod_Custom_GrandFinale",
-  "name": "",
+  "name": "Grand Finale",
   "baseWeaponId": "Broadsider",
   "mods": {
    "ap_gun_Barrel": "mod_Broadsider_Barrel_Standard",
@@ -396,7 +414,7 @@
  },
  {
   "id": "RD01_Mod_Custom_Cauterizer_CustomName",
-  "name": "",
+  "name": "Cauterizer",
   "baseWeaponId": "Chainsaw_76",
   "mods": {
    "ap_gun_Barrel": "mod_Chainsaw_Bar_Base",
@@ -412,7 +430,7 @@
  },
  {
   "id": "mod_Custom_MeteoriteSword",
-  "name": "Meteorite Sword",
+  "name": "Meteorite Sword Paint",
   "baseWeaponId": "ChineseOfficerSword",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_ChineseOfficerSword_Null",
@@ -426,7 +444,7 @@
  },
  {
   "id": "mod_custom_CryptidJawboneKnife",
-  "name": "",
+  "name": "Cryptid Jawbone Knife",
   "baseWeaponId": "Knife",
   "mods": {
    "ap_customName": "mod_custom_CryptidJawboneKnife",
@@ -440,7 +458,7 @@
  },
  {
   "id": "mod_custom_CosmicKnife",
-  "name": "",
+  "name": "Cosmic Knife",
   "baseWeaponId": "Knife",
   "mods": {
    "ap_customName": "mod_custom_CosmicKnife"
@@ -453,7 +471,7 @@
  },
  {
   "id": "E08B_mod_Custom_CrowdControl",
-  "name": "",
+  "name": "Crowd Control",
   "baseWeaponId": "CombatShotgun",
   "mods": {
    "ap_Gun_UniversalOffset_Range": "mod_UniversalOffset_Range_Shotgun",
@@ -487,7 +505,7 @@
  },
  {
   "id": "SCORE_MiniSeason_LoveHurts_mod_Custom_PiercingLove",
-  "name": "",
+  "name": "Piercing Love",
   "baseWeaponId": "CompoundBow",
   "mods": {
    "ap_customName": "SCORE_MiniSeason_LoveHurts_mod_Custom_PiercingLove",
@@ -502,7 +520,7 @@
  },
  {
   "id": "E09C_mod_Custom_BurningLove",
-  "name": "",
+  "name": "Burning Love",
   "baseWeaponId": "CompoundBow",
   "mods": {
    "ap_gun_Bolt": "mod_CompoundBow_Bolt_Base",
@@ -546,7 +564,7 @@
  },
  {
   "id": "E08B_mod_Custom_ToneDeath",
-  "name": "",
+  "name": "Tone Death",
   "baseWeaponId": "DeathTambo",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod",
@@ -560,7 +578,7 @@
  },
  {
   "id": "mod_Custom_UnstoppableMonster",
-  "name": "",
+  "name": "Unstoppable Monster",
   "baseWeaponId": "DeathclawGauntlet",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_DeathclawGauntlet_Hook",
@@ -574,7 +592,7 @@
  },
  {
   "id": "mod_Custom_SaltOfTheEarth",
-  "name": "Salt of the Earth",
+  "name": "Salt Of The Earth",
   "baseWeaponId": "DoubleBarrelShotgun",
   "mods": {
    "ap_Gun_UniversalOffset_Range": "mod_UniversalOffset_Range_Shotgun",
@@ -612,7 +630,7 @@
  },
  {
   "id": "mod_Custom_Overkill",
-  "name": "The Guarantee",
+  "name": "Overkill",
   "baseWeaponId": "Fatman",
   "mods": {
    "ap_gun_Barrel": "mod_Fatman_Barrel_MIRV",
@@ -626,7 +644,7 @@
  },
  {
   "id": "mod_Custom_Daisycutter",
-  "name": "",
+  "name": "Daisycutter",
   "baseWeaponId": "Fatman",
   "mods": {
    "ap_gun_Barrel": "mod_Fatman_Barrel_MIRV",
@@ -640,7 +658,7 @@
  },
  {
   "id": "mod_Custom_TheGuarantee",
-  "name": "",
+  "name": "The Guarantee",
   "baseWeaponId": "Fatman",
   "mods": {
    "ap_gun_Barrel": "mod_Fatman_Barrel_MIRV",
@@ -705,7 +723,7 @@
  },
  {
   "id": "mod_Custom_Xerxos",
-  "name": "",
+  "name": "Xerxos",
   "baseWeaponId": "GammaGun",
   "mods": {
    "ap_gun_Muzzle": "mod_Null_Muzzle",
@@ -721,7 +739,7 @@
  },
  {
   "id": "mod_Custom_ResoluteVeteran",
-  "name": "",
+  "name": "Resolute Veteran",
   "baseWeaponId": "GatlingGun",
   "mods": {
    "ap_gun_Barrel": "mod_GatlingGun_Barrel_Long",
@@ -740,7 +758,7 @@
  },
  {
   "id": "mod_custom_V63GatlingLaser_customName",
-  "name": "",
+  "name": "Vault 63 Gatling Laser",
   "baseWeaponId": "GatlingLaser",
   "mods": {
    "ap_gun_Scope": "mod_GatlingLaser_SCOPE_reflex_Base",
@@ -757,7 +775,7 @@
  },
  {
   "id": "RD01_Mod_Custom_Valkyrie_CustomName",
-  "name": "",
+  "name": "Valkyrie",
   "baseWeaponId": "GatlingLaser",
   "mods": {
    "ap_gun_Receiver": "mod_GatlingLaser_Receiver_CritDMG-HipAccuracy",
@@ -775,7 +793,7 @@
  },
  {
   "id": "RD01_Mod_Custom_DrillFist_CustomName",
-  "name": "",
+  "name": "Drill Fist",
   "baseWeaponId": "Gauntlet",
   "mods": {
    "ap_melee_MeleeMod": "RD01_Mod_Melee_Gauntlet_DrillBits",
@@ -790,7 +808,7 @@
  },
  {
   "id": "RD01_Mod_Custom_StrikeBreaker_CustomName",
-  "name": "",
+  "name": "Flatliner",
   "baseWeaponId": "GaussRifle",
   "mods": {
    "ap_gun_Barrel": "mod_GaussRifle_Barrel_Shroud_HipAccuracy",
@@ -809,7 +827,7 @@
  },
  {
   "id": "mod_custom_ShatteredGrounds_Custom",
-  "name": "",
+  "name": "Shattered Grounds",
   "baseWeaponId": "DLC04_HandMadeGun",
   "mods": {
    "ap_gun_Barrel": "DLC04_mod_HandMadeGun_Barrel_Long_Recoil-HipAccuracy",
@@ -827,7 +845,7 @@
  },
  {
   "id": "SCORE_S21_mod_custom_IceBreaker",
-  "name": "Kingfisher",
+  "name": "Ice Breaker",
   "baseWeaponId": "DLC03_HarpoonGun",
   "mods": {
    "ap_gun_Scope": "DLC03_mod_HarpoonGun_Scope_SightReflex",
@@ -842,7 +860,7 @@
  },
  {
   "id": "mod_Custom_Kingfisher",
-  "name": "",
+  "name": "Kingfisher",
   "baseWeaponId": "DLC03_HarpoonGun",
   "mods": {
    "ap_gun_Mag": "DLC03_mod_HarpoonGun_Magazine_Barbed",
@@ -857,7 +875,7 @@
  },
  {
   "id": "mod_Custom_Longshot",
-  "name": "",
+  "name": "Longshot",
   "baseWeaponId": "HuntingRifle",
   "mods": {
    "ap_Gun_UniversalOffset_Range": "mod_UniversalOffset_Range_BoltAction",
@@ -877,7 +895,7 @@
  },
  {
   "id": "E08B_mod_Custom_HuntingRifle_DoctorsOrders",
-  "name": "",
+  "name": "Doctor's Orders",
   "baseWeaponId": "HuntingRifle",
   "mods": {
    "ap_Gun_UniversalOffset_Range": "mod_UniversalOffset_Range_BoltAction",
@@ -897,7 +915,7 @@
  },
  {
   "id": "mod_custom_V63LaserRifle_customName",
-  "name": "",
+  "name": "Vault 63 Laser Rifle",
   "baseWeaponId": "LaserGun",
   "mods": {
    "ap_gun_Barrel": "mod_LaserGun_Barrel_Spinning_Recoil-HipAccuracy",
@@ -915,7 +933,7 @@
  },
  {
   "id": "mod_Custom_AcceptableOverkill",
-  "name": "",
+  "name": "Acceptable Overkill",
   "baseWeaponId": "LaserGun",
   "mods": {
    "ap_gun_Receiver": "mod_LaserGun_Receiver_CritDMG",
@@ -952,7 +970,7 @@
  },
  {
   "id": "E09D_mod_custom_WesternSpirit",
-  "name": "",
+  "name": "Western Spirit",
   "baseWeaponId": "DLC03_LeverGun",
   "mods": {
    "ap_Gun_UniversalOffset_Range": "DLC03_mod_UniversalOffset_Range_LeverGun",
@@ -971,7 +989,7 @@
  },
  {
   "id": "mod_custom_RedTerror_customName",
-  "name": "",
+  "name": "Red Terror",
   "baseWeaponId": "MG42",
   "mods": {
    "ap_gun_Receiver": "mod_MG42_Receiver_AmmoConv308",
@@ -989,7 +1007,7 @@
  },
  {
   "id": "E09C_mod_Custom_LoveTap",
-  "name": "Default",
+  "name": "Love Tap",
   "baseWeaponId": "E09C_SubmachineGun_LoveTap",
   "mods": {
    "ap_gun_Receiver": "mod_SubmachineGun_Receiver_Automatic1",
@@ -1008,7 +1026,7 @@
  },
  {
   "id": "P62_Mod_Custom_ChaosEngine_CustomName",
-  "name": "",
+  "name": "Chaos Engine",
   "baseWeaponId": "M79",
   "mods": {
    "ap_gun_Receiver": "mod_M79_Receiver_Standard",
@@ -1026,7 +1044,7 @@
  },
  {
   "id": "mod_Custom_CrushingBlow",
-  "name": "",
+  "name": "Crushing Blow",
   "baseWeaponId": "M79",
   "mods": {
    "ap_gun_Barrel": "mod_M79_Barrel_Short",
@@ -1042,7 +1060,7 @@
  },
  {
   "id": "E08B_mod_Custom_FoundationsVengeance",
-  "name": "",
+  "name": "Foundation's Vengeance",
   "baseWeaponId": "Minigun",
   "mods": {
    "ap_gun_Barrel": "mod_Minigun_Barrel_Standard",
@@ -1058,7 +1076,7 @@
  },
  {
   "id": "mod_Custom_BoomStick",
-  "name": "",
+  "name": "BoomStick",
   "baseWeaponId": "MissileLauncher",
   "mods": {
    "ap_gun_Barrel": "mod_MissileLauncher_TubeBarrel_Quad",
@@ -1073,7 +1091,7 @@
  },
  {
   "id": "mod_Custom_BunkerBuster",
-  "name": "",
+  "name": "Bunker Buster",
   "baseWeaponId": "MissileLauncher",
   "mods": {
    "ap_gun_Barrel": "mod_MissileLauncher_TubeBarrel_Triple",
@@ -1088,7 +1106,7 @@
  },
  {
   "id": "mod_custom_CultistPiercer_Effect",
-  "name": "",
+  "name": "Cultist Piercer",
   "baseWeaponId": "Pickaxe",
   "mods": {
    "ap_customName": "mod_custom_CultistPiercer_Effect"
@@ -1101,7 +1119,7 @@
  },
  {
   "id": "mod_custom_HeadHunter_Effect",
-  "name": "",
+  "name": "Head Hunter",
   "baseWeaponId": "Pickaxe",
   "mods": {
    "ap_customName": "mod_custom_HeadHunter_Effect"
@@ -1128,7 +1146,7 @@
  },
  {
   "id": "mod_Custom_SlugBuster",
-  "name": "Prototype ABX03",
+  "name": "Slug Buster",
   "baseWeaponId": "PlasmaGun",
   "mods": {
    "ap_gun_Receiver": "mod_PlasmaGun_Receiver_Burning-HipAccuracy",
@@ -1146,7 +1164,7 @@
  },
  {
   "id": "mod_Custom_Plasma_AbraxoGun",
-  "name": "Slug Buster",
+  "name": "Meadow Breeze Sprayer",
   "baseWeaponId": "PlasmaGun",
   "mods": {
    "ap_gun_Barrel": "mod_PlasmaGun_barrel_Flamer_Abraxo",
@@ -1164,7 +1182,7 @@
  },
  {
   "id": "mod_Custom_Plasma_Abraxolator",
-  "name": "",
+  "name": "Prototype ABX03",
   "baseWeaponId": "PlasmaGun",
   "mods": {
    "ap_gun_Barrel": "mod_PlasmaGun_barrel_Flamer_Abraxo",
@@ -1183,7 +1201,7 @@
  },
  {
   "id": "mod_Custom_PlasmaGun_MindOverMatter",
-  "name": "",
+  "name": "Mind Over Matter",
   "baseWeaponId": "PlasmaGun",
   "mods": {
    "ap_gun_Receiver": "mod_PlasmaGun_receiver_Base",
@@ -1215,7 +1233,7 @@
  },
  {
   "id": "mod_Custom_CivilUnrest",
-  "name": "",
+  "name": "Civil Unrest",
   "baseWeaponId": "PumpActionShotgun",
   "mods": {
    "ap_gun_Barrel": "mod_PumpActionShotgun_Barrel_Medium_Recoil",
@@ -1234,7 +1252,7 @@
  },
  {
   "id": "mod_custom_TheKabloom_Effect",
-  "name": "",
+  "name": "The Kabloom",
   "baseWeaponId": "PumpActionShotgun",
   "mods": {
    "ap_Gun_UniversalOffset_Range": "mod_UniversalOffset_Range_Shotgun",
@@ -1253,7 +1271,7 @@
  },
  {
   "id": "mod_custom_TickettoRevenge",
-  "name": "",
+  "name": "Ticket to Revenge",
   "baseWeaponId": "RailwayRifle",
   "mods": {
    "ap_gun_Barrel": "mod_RailwayRifle_Barrel_Long",
@@ -1270,7 +1288,7 @@
  },
  {
   "id": "RD01_Mod_Custom_LicketySplit_CustomName",
-  "name": "",
+  "name": "Lickety-Split",
   "baseWeaponId": "RailwayRifle",
   "mods": {
    "ap_gun_Receiver": "mod_RailwayRifle_Receiver_Automatic1",
@@ -1289,7 +1307,7 @@
  },
  {
   "id": "mod_Custom_CommandersCharge",
-  "name": "Commanders Charge",
+  "name": "Commander's Charge",
   "baseWeaponId": "RevolutionarySword",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_RevolutionarySword_Shock",
@@ -1303,7 +1321,7 @@
  },
  {
   "id": "mod_custom_BlueRidgeBrandingIron_Custom",
-  "name": "",
+  "name": "Blue Ridge Branding Iron",
   "baseWeaponId": "Shishkebab",
   "mods": {
    "ap_customName": "mod_custom_BlueRidgeBrandingIron_Custom"
@@ -1316,7 +1334,7 @@
  },
  {
   "id": "SDOW_Mod_Custom_RelicReaper",
-  "name": "",
+  "name": "Relic Reaper",
   "baseWeaponId": "Shovel",
   "mods": {
    "ap_customName": "SDOW_Mod_Custom_RelicReaper",
@@ -1330,7 +1348,7 @@
  },
  {
   "id": "E09D_mod_custom_GunthersRevolver",
-  "name": "",
+  "name": "Gunther's Big Iron",
   "baseWeaponId": "SingleActionRevolver",
   "mods": {
    "ap_gun_Receiver": "mod_SingleActionRevolver_Receiver_Standard",
@@ -1346,7 +1364,7 @@
  },
  {
   "id": "mod_Custom_BlackDiamond",
-  "name": "",
+  "name": "Black Diamond",
   "baseWeaponId": "SkiSword",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_SkiSword_SkateBlade",
@@ -1373,7 +1391,7 @@
  },
  {
   "id": "mod_custom_EldersMark_Effect",
-  "name": "",
+  "name": "Elder's Mark",
   "baseWeaponId": "SubmachineGun",
   "mods": {
    "ap_gun_Receiver": "mod_SubmachineGun_Receiver_Automatic1",
@@ -1391,7 +1409,7 @@
  },
  {
   "id": "mod_Custom_AllRise",
-  "name": "",
+  "name": "All Rise",
   "baseWeaponId": "SuperSledge",
   "mods": {
    "ap_melee_MeleeMod": "DLC04_mod_melee_Sledgehammer_ExtraHeavyHead_Rocket",
@@ -1405,7 +1423,7 @@
  },
  {
   "id": "E08B_mod_Custom_TheDebilitator",
-  "name": "",
+  "name": "The Debilitator",
   "baseWeaponId": "SuperSledge",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_SuperSledge_Null",
@@ -1419,7 +1437,7 @@
  },
  {
   "id": "mod_Custom_SuperSledge_TheFarmhand",
-  "name": "",
+  "name": "The Farmhand",
   "baseWeaponId": "SuperSledge",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_SuperSledge_Null",
@@ -1433,7 +1451,7 @@
  },
  {
   "id": "E09B_mod_Custom_WhackerSmacker",
-  "name": "",
+  "name": "Whacker Smacker",
   "baseWeaponId": "SuperSledge",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_SuperSledge_Null",
@@ -1447,7 +1465,7 @@
  },
  {
   "id": "mod_custom_LucaSwitchblade_Effect",
-  "name": "The Quick Fix",
+  "name": "Luca's Switchblade",
   "baseWeaponId": "Switchblade",
   "mods": {
    "ap_customName": "mod_custom_LucaSwitchblade_Effect",
@@ -1461,7 +1479,7 @@
  },
  {
   "id": "mod_Custom_TheQuickFix",
-  "name": "",
+  "name": "The Quick Fix",
   "baseWeaponId": "Switchblade",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_Switchblade_Serrated",
@@ -1475,7 +1493,7 @@
  },
  {
   "id": "mod_custom_V63-BERTHA_customName",
-  "name": "Night Light",
+  "name": "V63-BERTHA",
   "baseWeaponId": "DLC01LightningGun",
   "mods": {
    "ap_gun_Barrel": "DLC01_mod_LightningGun_Barrel_Automatic",
@@ -1490,7 +1508,7 @@
  },
  {
   "id": "mod_Custom_NightLight",
-  "name": "",
+  "name": "Night Light",
   "baseWeaponId": "DLC01LightningGun",
   "mods": {
    "ap_gun_Barrel": "DLC01_mod_LightningGun_Barrel_Automatic",
@@ -1516,5 +1534,14 @@
    "mod_Legendary_Weapon2_Melee_DamagePowerAttack",
    null
   ]
+ },
+ {
+  "id": "mod_custom_CosmicKnife_Superheated",
+  "name": "Cosmic Knife Super-Heated",
+  "baseWeaponId": "Knife",
+  "mods": {
+   "ap_customName": "mod_custom_CosmicKnife_Superheated"
+  },
+  "legendaryEffects": []
  }
 ]

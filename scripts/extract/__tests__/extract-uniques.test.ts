@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'bun:test';
 import type { GeneratedOmod, GeneratedWeapon } from '../../../src/types/generated';
 import type { EsmClient, EsmRecord } from '../esm-client';
-import { extractUniques } from '../extract-uniques';
+import { extractUniques, isExcludedIdentityOmod } from '../extract-uniques';
 import doubleBarrel from './fixtures/weap-double-barrel-shotgun.json';
 
 const omods: GeneratedOmod[] = [
@@ -120,12 +120,50 @@ const stubClient = {
   },
 } as unknown as EsmClient;
 
+describe('isExcludedIdentityOmod', () => {
+  const base: GeneratedOmod = {
+    id: 'ATX_mod_44_Weapon_Custom_Lawbringer',
+    formId: '0x0090AB94',
+    name: 'Lawbringer',
+    description: '',
+    attachPointFormId: '0x0047A264',
+    attachPointEdid: 'ap_customName',
+    targetKeywords: ['ma_44'],
+    modifiers: [],
+    addedKeywords: [],
+    hasEnchantments: false,
+    obtainable: true,
+  };
+
+  it('allows obtainable ap_customName mods without ObjectTypeUnique', () => {
+    expect(isExcludedIdentityOmod(base)).toBe(false);
+  });
+
+  it('excludes Burn_Bounty bounty-target enchantments', () => {
+    expect(
+      isExcludedIdentityOmod({
+        ...base,
+        id: 'Burn_Bounty_mod_custom_BleedEffect',
+        obtainable: true,
+      }),
+    ).toBe(true);
+  });
+
+  it('excludes unobtainable identity mods', () => {
+    expect(isExcludedIdentityOmod({ ...base, obtainable: false })).toBe(true);
+  });
+
+  it('excludes creature-prefixed edids', () => {
+    expect(isExcludedIdentityOmod({ ...base, id: 'crAssaultRifle_Custom' })).toBe(true);
+  });
+});
+
 describe('extractUniques', () => {
   it('emits identity, preset mods, and positional legendaries from named combinations', async () => {
     const { uniques } = await extractUniques(stubClient, weapons, omods);
     const salt = uniques.find((u) => u.id === 'mod_Custom_SaltOfTheEarth');
     expect(salt).toMatchObject({
-      name: 'Salt of the Earth',
+      name: 'Salt Of The Earth',
       baseWeaponId: 'DoubleBarrelShotgun',
       mods: expect.objectContaining({
         ap_customName: 'mod_Custom_SaltOfTheEarth',
@@ -143,5 +181,193 @@ describe('extractUniques', () => {
       null,
       null,
     ]);
+  });
+
+  it('prefers identity OMOD Name over Combination.Name (combo "Default" → "Love Tap")', async () => {
+    const loveTapOmod: GeneratedOmod = {
+      id: 'E09C_mod_Custom_LoveTap',
+      formId: '0x00663B0C',
+      name: 'Love Tap',
+      description: '',
+      attachPointFormId: '0x0047A264',
+      attachPointEdid: 'ap_customName',
+      targetKeywords: [],
+      modifiers: [],
+      addedKeywords: ['ObjectTypeUnique'],
+      hasEnchantments: false,
+      obtainable: true,
+    };
+    const comboFixture = {
+      ...doubleBarrel,
+      fields: {
+        ...doubleBarrel.fields,
+        'Object Template': {
+          Count: 2,
+          Combinations: [
+            doubleBarrel.fields['Object Template'].Combinations[0],
+            {
+              Combination: {
+                Name: 'Default',
+                'Object Mod Template Item': {
+                  Includes: [{ Mod: '0x00663B0C' }],
+                },
+              },
+            },
+          ],
+        },
+      },
+    };
+    const client = {
+      async get(): Promise<EsmRecord> {
+        return comboFixture as unknown as EsmRecord;
+      },
+      async resolveEdid(): Promise<string> {
+        return '<unresolved>';
+      },
+    } as unknown as EsmClient;
+
+    const { uniques } = await extractUniques(client, weapons, [...omods, loveTapOmod]);
+    expect(uniques.find((u) => u.id === 'E09C_mod_Custom_LoveTap')?.name).toBe('Love Tap');
+  });
+
+  it('uses distinct OMOD names for Tesla presets (V63-BERTHA vs Night Light)', async () => {
+    const teslaMods: GeneratedOmod[] = [
+      {
+        id: 'mod_custom_V63-BERTHA_customName',
+        formId: '0x0075C3B7',
+        name: 'V63-BERTHA',
+        description: '',
+        attachPointFormId: '0x0047A264',
+        attachPointEdid: 'ap_customName',
+        targetKeywords: ['DLC01ma_LightningGun'],
+        modifiers: [],
+        addedKeywords: ['ObjectTypeUnique'],
+        hasEnchantments: false,
+        obtainable: true,
+      },
+      {
+        id: 'mod_Custom_NightLight',
+        formId: '0x008F0DD3',
+        name: 'Night Light',
+        description: '',
+        attachPointFormId: '0x0047A264',
+        attachPointEdid: 'ap_customName',
+        targetKeywords: ['DLC01ma_LightningGun'],
+        modifiers: [],
+        addedKeywords: ['ObjectTypeUnique'],
+        hasEnchantments: false,
+        obtainable: true,
+      },
+    ];
+    const teslaFixture = {
+      ...doubleBarrel,
+      fields: {
+        ...doubleBarrel.fields,
+        'Object Template': {
+          Count: 3,
+          Combinations: [
+            doubleBarrel.fields['Object Template'].Combinations[0],
+            {
+              Combination: {
+                Name: 'Night Light',
+                'Object Mod Template Item': {
+                  Includes: [{ Mod: '0x0075C3B7' }],
+                },
+              },
+            },
+            {
+              Combination: {
+                Name: '',
+                'Object Mod Template Item': {
+                  Includes: [{ Mod: '0x008F0DD3' }],
+                },
+              },
+            },
+          ],
+        },
+      },
+    };
+    const client = {
+      async get(): Promise<EsmRecord> {
+        return teslaFixture as unknown as EsmRecord;
+      },
+      async resolveEdid(): Promise<string> {
+        return '<unresolved>';
+      },
+    } as unknown as EsmClient;
+
+    const { uniques } = await extractUniques(client, weapons, [...omods, ...teslaMods]);
+    expect(uniques.find((u) => u.id === 'mod_custom_V63-BERTHA_customName')?.name).toBe(
+      'V63-BERTHA',
+    );
+    expect(uniques.find((u) => u.id === 'mod_Custom_NightLight')?.name).toBe('Night Light');
+  });
+
+  it('emits COBJ-granted sibling identity mods sharing a target-keyword gate', async () => {
+    const cosmicMods: GeneratedOmod[] = [
+      {
+        id: 'mod_custom_CosmicKnife',
+        formId: '0x00832CB6',
+        name: 'Cosmic Knife',
+        description: '',
+        attachPointFormId: '0x0047A264',
+        attachPointEdid: 'ap_customName',
+        targetKeywords: ['ma_CosmicKnife'],
+        modifiers: [],
+        addedKeywords: ['ObjectTypeUnique'],
+        hasEnchantments: false,
+        obtainable: true,
+      },
+      {
+        id: 'mod_custom_CosmicKnife_Superheated',
+        formId: '0x00837E13',
+        name: 'Cosmic Knife Super-Heated',
+        description: '',
+        attachPointFormId: '0x0047A264',
+        attachPointEdid: 'ap_customName',
+        targetKeywords: ['ma_CosmicKnife'],
+        modifiers: [],
+        addedKeywords: [],
+        hasEnchantments: false,
+        obtainable: true,
+      },
+    ];
+    const cosmicFixture = {
+      ...doubleBarrel,
+      fields: {
+        ...doubleBarrel.fields,
+        'Object Template': {
+          Count: 2,
+          Combinations: [
+            doubleBarrel.fields['Object Template'].Combinations[0],
+            {
+              Combination: {
+                Name: '',
+                'Object Mod Template Item': {
+                  Includes: [{ Mod: '0x00832CB6' }],
+                },
+              },
+            },
+          ],
+        },
+      },
+    };
+    const client = {
+      async get(): Promise<EsmRecord> {
+        return cosmicFixture as unknown as EsmRecord;
+      },
+      async resolveEdid(): Promise<string> {
+        return '<unresolved>';
+      },
+    } as unknown as EsmClient;
+
+    const { uniques } = await extractUniques(client, weapons, [...omods, ...cosmicMods]);
+    const superheated = uniques.find((u) => u.id === 'mod_custom_CosmicKnife_Superheated');
+    expect(superheated).toMatchObject({
+      name: 'Cosmic Knife Super-Heated',
+      baseWeaponId: 'DoubleBarrelShotgun',
+      mods: { ap_customName: 'mod_custom_CosmicKnife_Superheated' },
+      legendaryEffects: [],
+    });
   });
 });

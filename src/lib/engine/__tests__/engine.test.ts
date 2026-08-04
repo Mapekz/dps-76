@@ -195,6 +195,59 @@ describe('condition evaluation', () => {
     expect(foldBucket([tenderizer], 'dbm', 1.0, makeCtx(weapon, { player: zero }))).toBe(1.0);
   });
 
+  it('aimingDownSights gates on PlayerConditions.isAimingDownSights', () => {
+    const adsMod = mod({
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.3,
+      conditions: [{ kind: 'aimingDownSights', value: true }],
+    });
+    expect(foldBucket([adsMod], 'dbm', 1.0, makeCtx(weapon))).toBe(1.0);
+    const ads = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), isAimingDownSights: true },
+    });
+    expect(foldBucket([adsMod], 'dbm', 1.0, ads)).toBeCloseTo(1.3, 10);
+  });
+
+  it('lifetimeChallengeCompleted gates Pipe and Kingfisher challenges', () => {
+    const pipeMod = mod({
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.2,
+      conditions: [
+        {
+          kind: 'lifetimeChallengeCompleted',
+          challengeId: 'Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe',
+        },
+      ],
+    });
+    const kingfisherMod = mod({
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.1,
+      conditions: [
+        {
+          kind: 'lifetimeChallengeCompleted',
+          challengeId: 'Challenge_Lifetime_Fishing_LocalLegend_01',
+        },
+      ],
+    });
+    expect(foldBucket([pipeMod], 'dbm', 1.0, makeCtx(weapon))).toBe(1.0);
+    const pipeDone = makeCtx(weapon, {
+      player: {
+        ...createDefaultPlayerConditions(),
+        completedChallengeIds: ['Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe'],
+      },
+    });
+    expect(foldBucket([pipeMod], 'dbm', 1.0, pipeDone)).toBeCloseTo(1.2, 10);
+
+    expect(foldBucket([kingfisherMod], 'dbm', 1.0, makeCtx(weapon))).toBe(1.0);
+    const oneLegend = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), localLegendFishingChallengesCompleted: 1 },
+    });
+    expect(foldBucket([kingfisherMod], 'dbm', 1.0, oneLegend)).toBeCloseTo(1.1, 10);
+  });
+
   it('healthBelowPct, inPowerArmor, and unresolved behave as gates', () => {
     const bloodied = mod({
       bucket: 'dbm',

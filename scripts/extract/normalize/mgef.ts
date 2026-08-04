@@ -135,6 +135,11 @@ export const ENTRY_POINT_BUCKETS: Record<string, Bucket> = {
   // future ESM dump, route it to `baseDamage` instead (component-scoping,
   // same reasoning as 'Mod Player Explosion Damage' above), not here.
   'Mod Incoming Weapon Damage': 'incomingDamageMult',
+  // Cultist Piercer / Ticket to Revenge: "Mod Target Damage Resistance" with
+  // Multiply Value (DR × float) or Multiply 1 + Actor Value Mult (Onslaught-
+  // scaled DR). Routed to `armorPen` (fraction, not `armorPenFlat` resist
+  // points) — see src/types/modifiers.ts + mitigation.ts.
+  'Mod Target Damage Resistance': 'armorPen',
 };
 
 /**
@@ -1076,6 +1081,19 @@ function parseGetRandomPercentChance(
  * at all — `contextEdid` is just the caller's own edid for the not-found note
  * text, so either caller (an MGEF or an OMOD) works unchanged.
  */
+/** Shared Onslaught consecutive-hit counter (ConsecutiveHitCount AVIF). */
+export const SHARED_ONSLAUGHT_COUNTER_AV = '0x00000395';
+
+function resolvePerkEffectAvFormId(effect: Record<string, unknown>): string | null {
+  const avId = effect['Function Parameter 3 (Actor Value)'];
+  if (typeof avId === 'string' && avId.startsWith('0x')) return avId;
+  if (avId && typeof avId === 'object' && 'formid' in avId) {
+    const fid = (avId as { formid: unknown }).formid;
+    if (typeof fid === 'string') return fid;
+  }
+  return null;
+}
+
 export async function translateGrantedPerk(
   deps: MgefTranslationDeps,
   contextEdid: string,
@@ -1195,6 +1213,52 @@ export async function translateGrantedPerk(
         continue;
       }
       const epConditions = [...conditions, ...(ENTRY_POINT_EXTRA_CONDITIONS[name] ?? [])];
+      const avFormId = resolvePerkEffectAvFormId(e);
+      const onslaughtStacks: Condition = { kind: 'stacks', counter: 'onslaught', max: 99 };
+
+      // Elder's Mark / Ticket to Revenge: reference the LIVE shared Onslaught
+      // counter (0x395) directly — Float is already the per-stack magnitude; no
+      // private-accumulator Default Value lookup (contrast the EP189 branch
+      // below for Furious/Pounder's/Splinter's private AVs).
+      if (avFormId === SHARED_ONSLAUGHT_COUNTER_AV) {
+        if (functionName === 'Add Actor Value Mult') {
+          result.modifiers.push({
+            bucket,
+            op: 'ADD',
+            value: float,
+            conditions: [...epConditions, onslaughtStacks],
+          });
+          continue;
+        }
+        if (functionName === 'Multiply 1 + Actor Value Mult') {
+          // Game: entry × (1 + float × stacks). `armorPen` bootstrap-folds with
+          // base 0 (ADD-only today) — MUL_ADD would be inert there, so map to
+          // ADD(−float) per stack (Ticket's −0.03 → +0.03 pen/stack).
+          const op = bucket === 'armorPen' ? 'ADD' : 'MUL_ADD';
+          const value = bucket === 'armorPen' ? -float : float;
+          result.modifiers.push({
+            bucket,
+            op,
+            value,
+            conditions: [...epConditions, onslaughtStacks],
+          });
+          continue;
+        }
+      }
+
+      // Cultist Piercer: Multiply Value on target DR (×0.5 = 50% pen). The
+      // generic MUL_ADD(float−1) shape is inert on `armorPen` (bootstrap base
+      // 0) — ADD(1−float) matches mitigation.ts's fraction convention.
+      if (name === 'Mod Target Damage Resistance' && functionName === 'Multiply Value') {
+        result.modifiers.push({
+          bucket,
+          op: 'ADD',
+          value: 1 - float,
+          conditions: epConditions,
+        });
+        continue;
+      }
+
       if (functionName === 'Add Value') {
         result.modifiers.push({ bucket, op: 'ADD', value: float, conditions: epConditions });
       } else if (functionName === 'Set Value') {

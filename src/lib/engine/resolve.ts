@@ -20,6 +20,24 @@ import { CLOSE_THRESHOLD_UNITS, DEFAULT_DISTANCE_UNITS, FAR_THRESHOLD_UNITS } fr
 import { resolveBulletStormStacks, resolveOnslaughtStacks } from './stacks';
 import type { BucketTrace, TraceContribution } from './trace';
 
+/** HasCompletedChallenge gate on The Pipe's fourth Licensed Plumber rung. */
+export const PIPE_WEAPON_CRAFTING_CHALLENGE_ID =
+  'Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe';
+
+/** Kingfisher's six independent Local Legend fishing challenges (fixed order for count-slider evaluation). */
+export const KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS = [
+  'Challenge_Lifetime_Fishing_LocalLegend_01',
+  'Challenge_Lifetime_Fishing_LocalLegend_02',
+  'Challenge_Lifetime_Fishing_LocalLegend_03',
+  'Burn_Challenge_Lifetime_Fishing_LocalLegend_04',
+  'Challenge_Lifetime_Fishing_SeasonalFish_Fall_LocalLegend',
+  'Challenge_Lifetime_Fishing_SeasonalFish_Summer_LocalLegend',
+] as const;
+
+export const KINGFISHER_LOCAL_LEGEND_CHALLENGE_SET = new Set<string>(
+  KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS,
+);
+
 /** Per-attack flags that differ between the displayed scenarios. */
 export interface ScenarioFlags {
   isVats: boolean;
@@ -375,6 +393,16 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       return (ctx.player.isGhoul ?? false) === cond.value ? 1 : null;
     case 'aimingDownSights':
       return (ctx.player.isAimingDownSights ?? false) === cond.value ? 1 : null;
+    case 'lifetimeChallengeCompleted': {
+      const kingfisherIndex = KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS.indexOf(
+        cond.challengeId as (typeof KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS)[number],
+      );
+      if (kingfisherIndex >= 0) {
+        const count = ctx.player.localLegendFishingChallengesCompleted ?? 0;
+        return kingfisherIndex < count ? 1 : null;
+      }
+      return (ctx.player.completedChallengeIds ?? []).includes(cond.challengeId) ? 1 : null;
+    }
     case 'underAlcoholEffect':
       return (ctx.player.underAlcoholEffect ?? false) === cond.value ? 1 : null;
     case 'hydrated':
