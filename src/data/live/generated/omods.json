@@ -122933,7 +122933,7 @@
   "id": "RA_mod_Legendary_Weapon4_ThrillSeeker",
   "formId": "0x00863AA2",
   "name": "Thrill-Seeker's",
-  "description": "Reload Speed & Melee Attack Speed increases based on Killstreak Count",
+  "description": "+3% Reload Speed & Melee Attack Speed Per Kill While on Kill Streak",
   "attachPointFormId": "0x004E89AA",
   "attachPointEdid": "ap_Legendary4",
   "targetKeywords": [
