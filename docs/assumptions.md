@@ -1249,8 +1249,9 @@ their stats are stale and must not be shown.
   source name) — flat per-piece (count multiplies `value`/`curveScale`
   directly) vs "self-scaling" (already N pre-tiered modifiers, count feeds
   `wornPieceCounts` instead) — full detail `armor-modifiers.ts`.
-- **DESIGN**: the picker roster and grouping (Material → Lining → Misc →
-  1★–4★, inert mods badged not hidden) is `docs/adr/0008`, not repeated here.
+- **DESIGN**: the picker roster and grouping (Underarmor Lining → Material →
+  Misc → 1★–4★, inert mods badged not hidden, PA materials excluded) is
+  `docs/adr/0008` + `docs/adr/0010`, not repeated here.
 - **Unyielding threshold semantics — GAME-CHANGE-PENDING** (user-confirmed
   2026-07-19): the extracted curve's near-vertical step points (x=0.1999→y=3,
   x=0.2→y=2 at the 20% break, same at 40%/60%) evaluate the +3/+2/+1 SPECIAL
@@ -1271,13 +1272,21 @@ their stats are stale and must not be shown.
   alongside Critical Savvy's SET — full derivation + the hand-verified
   anchor (16 LCK + Crit Savvy 3 + 5× Limit Breaking → crit-every-2nd-shot) at
   `crit-meter.ts`.
-- **ASSUMPTION**: worn-piece maxCount for non-legendary effects is derived
-  from body-slot tags observed in the OMOD id (`Torso`/`Limb`/`Helmet`)
-  rather than real armor-slot topology data — none exists in this dataset.
-  Material-group entries (`docs/adr/0008`) carry no such tag and so land at
-  `maxCount: 1` by the same fallback, not a Material-specific rule.
-  Legendary-slot effects always get max 5; that ceiling is additionally a
-  shared budget per star tier — see `docs/adr/0004`.
+- **ESM-PROVEN**: non-legendary piece reach is the plain union of piece tags
+  across a name-group's ids/targetKeywords (`Torso`, `Helmet`,
+  `LimbArm`/`Arm`, `LimbLeg`/`Leg`, bare `Limb` = arms+legs) — tag vocabulary
+  and derivation documented at `armor-modifiers.ts`; no specific-beats-generic
+  tie-break (Muffled is genuinely arm-capable on BOS Infantry/Robot sets,
+  KYWD-verified 2026-08-04 — `docs/adr/0010`). Legendary-slot effects keep
+  max 5 as a shared budget per star tier — see `docs/adr/0004`.
+- **USER-CONFIRMED** (2026-08-03): piece capacities are body armor
+  torso 1 / arms 2 / legs 2 (5 mod-bearing pieces, no helmet slot for these
+  mods) and PA + helmet 1 — the capacity tables in `armor-modifiers.ts`; the
+  ESM has no armor-slot topology record to extract this from.
+- **ASSUMPTION**: underarmor (style + functional lining) is worn under BOTH
+  body armor and power armor with effects active — no ESM condition or
+  keyword distinguishes; none of the 14 underarmor-family records carries a
+  PA-gated modifier (`armor-modifiers.ts`, `armorType: 'both'`).
 - **APP-SUPPLIED**: armor OMODs whose attach point edid starts with
   `ap_PowerArmor*` receive an `{kind: 'inPowerArmor', value: true}` condition
   on every modifier at extraction (`extract-omods.ts`) — not an ESM condition;
@@ -1293,6 +1302,9 @@ their stats are stale and must not be shown.
   is shared by thousands of records, most of which (Powered, the SPECIAL
   cards, Overeater's, Active, Healthy, Bruiser's/Ranger's, Limit-Breaking,
   Crusaders) have a real plain-armor sibling and are correctly ungated.
+  Roster-side armor-type classification (which legendaries the picker shows
+  per armor type) is separate from this modifier gating and derives from
+  record presence per name, COBJ-verified — `docs/adr/0010`.
 
 ## Known gaps / deferred
 - **Follow Through / Taking One for the Team** extract with empty `modifiers`

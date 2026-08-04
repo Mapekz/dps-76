@@ -1,150 +1,267 @@
 import * as React from 'react';
-import { PlusIcon, XIcon } from 'lucide-react';
+import { CheckIcon, LockIcon, PlusIcon, XIcon } from 'lucide-react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
-import { NumberField } from '@/components/ui/number-field';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ToggleGroup } from '@/components/ui/toggle-group';
+import {
+  FilterListRoot,
+  FilterInput,
+  FilterList,
+  FilterEmpty,
+  FilterGroup,
+  FilterItem,
+} from '@/components/ui/filter-list';
+import { useFilterQuery } from '@/hooks/useFilterQuery';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import {
   getArmorEffectById,
   getArmorEffects,
+  getArmorSlotUsage,
   getArmorTierUsage,
+  maxFeasibleArmorEffectCount,
   MAX_LEGENDARY_COUNT,
+  wrongArmorTypeEffects,
   type ArmorEffectEntry,
+  type ArmorPieceClass,
   type ArmorSlotGroup,
+  type ArmorSlotUsage,
   type ArmorStarTier,
+  type FeasibilityFamilyKey,
 } from '@/data/armor-modifiers';
+import { matchesQuery } from '@/lib/filter-query';
+import { cn } from '@/lib/utils';
 import { ActionDelta } from '@/components/diff/ActionDelta';
+import { CountStepper } from './CountStepper';
 import { NoEffectBadge } from './OptionBadge';
 import { SectionTrigger } from './SectionTrigger';
 
-/**
- * Armor section (Phase 3 armor pipeline, UI half) — a per-slot-style
- * picker+count UI, matching WeaponSection's mod-selector convention
- * (a `Combobox` per row) rather than a flat checklist. Armor has no fixed
- * named slots the way weapon OMODs do, so rows are dynamic: the user ADDs a
- * row (`+ Add legendary/normal mod`), picks which effect it represents via
- * the row's own Combobox, and sets a worn-piece count (`NumberField`,
- * 0-5 for legendary, 1-`effect.maxCount` for misc — that cap varies per
- * effect since not every mod can mount on every armor piece). Every row is
- * an obtainable armor/PA mod on an admitted workbench attach point
- * (`src/data/armor-modifiers.ts` `getArmorEffects`, allow-list derived —
- * zero-modifier choices show a "no effect yet" badge instead of vanishing,
- * same convention as the weapon OMOD picker in `src/data/omods.ts`).
- *
- * `PlayerConfig.armorEffects` (effect id → worn-piece count) already
- * supports arbitrary independent effects with independent counts
- * simultaneously — this UI is just a dynamic view over that map, one row per
- * currently-nonzero entry, entirely through the existing
- * `armorEffect/setCount` action (count > 0 sets, count <= 0 deletes).
- * `selfScaling` effects (Battle-Loader's, Limit-Breaking) dispatch the exact
- * same action; the tiered-modifier derivation lives entirely in
- * `armor-modifiers.ts` and needs no special-casing here.
- */
+type FilterChip =
+  | 'lining'
+  | 'material'
+  | 'misc'
+  | 'legendary-1'
+  | 'legendary-2'
+  | 'legendary-3'
+  | 'legendary-4';
+
+const FILTER_CHIPS: Array<{ key: FilterChip; label: string }> = [
+  { key: 'lining', label: 'Underarmor Lining' },
+  { key: 'material', label: 'Material' },
+  { key: 'misc', label: 'Misc' },
+  { key: 'legendary-1', label: '1★' },
+  { key: 'legendary-2', label: '2★' },
+  { key: 'legendary-3', label: '3★' },
+  { key: 'legendary-4', label: '4★' },
+];
+
+const PIECE_LABELS: Record<ArmorPieceClass, string> = {
+  torso: 'torso',
+  arm: 'arms',
+  leg: 'legs',
+  helmet: 'helmet',
+  underarmorStyle: 'style',
+  underarmorLining: 'lining',
+};
+
+function armorTypeEligible(effect: ArmorEffectEntry, isInPowerArmor: boolean): boolean {
+  if (effect.armorType === 'both') return true;
+  if (isInPowerArmor) return effect.armorType === 'powerArmor';
+  return effect.armorType === 'bodyArmor';
+}
+
+function matchesFilterChip(effect: ArmorEffectEntry, chip: FilterChip | null): boolean {
+  if (chip === null) return true;
+  if (chip === 'lining') return effect.group === 'lining';
+  if (chip === 'material') return effect.group === 'material';
+  if (chip === 'misc') return effect.group === 'misc';
+  return effect.starTier === Number(chip.split('-')[1]);
+}
+
+function familiesForGroup(
+  group: ArmorSlotGroup | `legendary-${ArmorStarTier}`,
+  isInPowerArmor: boolean,
+): FeasibilityFamilyKey[] {
+  if (group === 'material') return ['bodyArmor:material'];
+  if (group === 'lining') return ['underarmorStyle', 'underarmorLining'];
+  if (group === 'misc') return isInPowerArmor ? ['powerArmor:misc'] : ['bodyArmor:misc'];
+  return [];
+}
+
+function formatSlotUsage(
+  slotUsage: ArmorSlotUsage,
+  families: FeasibilityFamilyKey[],
+): string | undefined {
+  const parts: string[] = [];
+  for (const family of families) {
+    const usage = slotUsage[family];
+    if (!usage) continue;
+    for (const [cls, entry] of Object.entries(usage) as Array<
+      [ArmorPieceClass, { used: number; capacity: number }]
+    >) {
+      if (entry.capacity <= 0) continue;
+      parts.push(`${PIECE_LABELS[cls]} ${entry.used}/${entry.capacity}`);
+    }
+  }
+  return parts.length > 0 ? parts.join(' · ') : undefined;
+}
 
 function EffectDescription({ description }: { description: string | null }) {
   if (!description) return null;
   return <p className="text-muted-foreground text-xs">{description}</p>;
 }
 
-/** A currently-active effect row: switch-effect combobox, worn-piece count, remove button. */
-function ActiveEffectRow({
-  effect,
-  options,
-  tierUsage,
-}: {
-  effect: ArmorEffectEntry;
-  /** Every effect in this group not used by another active row, plus this row's own current effect. */
-  options: ArmorEffectEntry[];
-  /** Summed worn-piece counts per legendary star tier across the whole checklist (includes this row's own count). */
-  tierUsage: Record<ArmorStarTier, number>;
-}) {
+function ArmorTypeControl() {
+  const { mode } = useGameMode();
+  const { player } = useBuild();
+  const dispatch = useBuildDispatch();
+  const isInPowerArmor = player.conditions.isInPowerArmor;
+
+  const [pending, setPending] = React.useState<{
+    isInPowerArmor: boolean;
+    removing: string[];
+  } | null>(null);
+
+  const handleClick = (armor: 'body' | 'power') => {
+    const target = armor === 'power';
+    if (target === isInPowerArmor) return;
+    const removing = wrongArmorTypeEffects(mode, player.armorEffects, target);
+    if (removing.length === 0) dispatch({ type: 'armorType/set', isInPowerArmor: target });
+    else setPending({ isInPowerArmor: target, removing });
+  };
+
+  const confirm = () => {
+    if (!pending) return;
+    dispatch({ type: 'armorType/set', isInPowerArmor: pending.isInPowerArmor });
+    setPending(null);
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <Label>Armor type</Label>
+      <ToggleGroup
+        aria-label="Armor type"
+        options={[
+          { value: 'body', label: 'Body Armor' },
+          { value: 'power', label: 'Power Armor' },
+        ]}
+        value={isInPowerArmor ? 'power' : 'body'}
+        onValueChange={handleClick}
+      />
+
+      <Dialog open={pending !== null} onOpenChange={(open) => !open && setPending(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Switch to {pending?.isInPowerArmor ? 'Power Armor' : 'Body Armor'}?
+            </DialogTitle>
+            <DialogDescription>
+              These {pending?.isInPowerArmor ? 'body armor' : 'power armor'}-only effects will be
+              removed:
+            </DialogDescription>
+          </DialogHeader>
+          <ul className="text-negative list-inside list-disc text-sm">
+            {pending?.removing.map((id) => (
+              <li key={id}>{getArmorEffectById(mode, id)?.name ?? id}</li>
+            ))}
+          </ul>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setPending(null)}>
+              Cancel
+            </Button>
+            <Button type="button" variant="destructive" onClick={confirm}>
+              Switch &amp; remove
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function ArmorEffectRow({ effect }: { effect: ArmorEffectEntry }) {
   const { mode } = useGameMode();
   const { player } = useBuild();
   const dispatch = useBuildDispatch();
   const count = player.armorEffects[effect.id] ?? 0;
-  const min = effect.group === 'legendary' ? 0 : 1;
-  const countFieldId = `armor-effect-count-${effect.id}`;
-  // For legendary effects, the field's own tier budget headroom (this row's
-  // count is already included in tierUsage, so the free space it can still
-  // absorb is MAX_LEGENDARY_COUNT minus the tier total) additionally caps
-  // the field — mirrors the reducer's own `armorEffect/setCount` clamp so
-  // the field refuses over-tier input rather than silently snapping back.
+  const tierUsage = getArmorTierUsage(mode, player.armorEffects);
+
+  const withoutSelf = { ...player.armorEffects };
+  delete withoutSelf[effect.id];
+  const maxFeasible = maxFeasibleArmorEffectCount(mode, effect.id, withoutSelf);
+
   const max =
     effect.starTier !== undefined
-      ? Math.min(
-          effect.maxCount,
-          count + Math.max(0, MAX_LEGENDARY_COUNT - tierUsage[effect.starTier]),
-        )
-      : effect.maxCount;
+      ? Math.min(maxFeasible, count + Math.max(0, MAX_LEGENDARY_COUNT - tierUsage[effect.starTier]))
+      : maxFeasible;
 
-  const comboOptions: ComboboxOption[] = options.map((e) => ({ value: e.id, label: e.name }));
-
-  const switchTargetCount = (opt: ArmorEffectEntry | undefined): number => {
-    const desiredCount = Math.max(1, Math.min(opt?.maxCount ?? 5, count));
-    if (opt?.starTier === undefined) return desiredCount;
-    const usageExcludingSwitch =
-      tierUsage[opt.starTier] - (effect.starTier === opt.starTier ? count : 0);
-    const freeSpace = Math.max(0, MAX_LEGENDARY_COUNT - usageExcludingSwitch);
-    return Math.min(desiredCount, freeSpace);
-  };
+  if (effect.maxCount === 1) {
+    return (
+      <div className="bg-muted/40 space-y-1 rounded px-2 py-1 text-sm">
+        <div className="flex items-center gap-1">
+          <span className="min-w-0 flex-1 truncate">{effect.name}</span>
+          {effect.badge === 'inert' && <NoEffectBadge />}
+          <Badge variant="secondary" className="text-[10px]">
+            on
+          </Badge>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground size-6"
+            aria-label={`Remove ${effect.name}`}
+            onClick={() => dispatch({ type: 'armorEffect/setCount', id: effect.id, count: 0 })}
+          >
+            <XIcon className="size-3" />
+          </Button>
+        </div>
+        <EffectDescription description={effect.description} />
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-1 py-1.5">
-      <div className="flex items-center gap-2">
-        <Combobox
-          options={comboOptions}
-          value={effect.id}
-          onValueChange={(nextId) => {
-            if (!nextId || nextId === effect.id) return;
-            const nextEffect = getArmorEffectById(mode, nextId);
-            const nextCount = switchTargetCount(nextEffect);
-            dispatch({ type: 'armorEffect/setCount', id: effect.id, count: 0 });
-            dispatch({ type: 'armorEffect/setCount', id: nextId, count: nextCount });
-          }}
-          placeholder="Pick an effect…"
-          searchPlaceholder="Search effects…"
-          emptyText="No effect matches."
-          className="flex-1"
-          renderOptionExtra={(o) => {
-            const opt = options.find((e) => e.id === o.value);
-            const isCurrent = o.value === effect.id;
-            return (
-              <>
-                {opt?.badge === 'inert' && <NoEffectBadge />}
-                {!isCurrent && (
-                  <ActionDelta
-                    action={[
-                      { type: 'armorEffect/setCount', id: effect.id, count: 0 },
-                      { type: 'armorEffect/setCount', id: o.value, count: switchTargetCount(opt) },
-                    ]}
-                  />
-                )}
-              </>
-            );
-          }}
-        />
-        <label htmlFor={countFieldId} className="sr-only">
-          {effect.name} worn-piece count
-        </label>
-        <NumberField
-          id={countFieldId}
-          value={count}
-          min={min}
-          max={max}
-          onChange={(v) => dispatch({ type: 'armorEffect/setCount', id: effect.id, count: v })}
-          className="w-16 shrink-0"
-        />
+    <div className="bg-muted/40 space-y-1 rounded px-2 py-1 text-sm">
+      <div className="flex items-center gap-1">
+        <span className="min-w-0 flex-1 truncate">{effect.name}</span>
         {effect.badge === 'inert' && <NoEffectBadge />}
-        {count < max && (
-          <ActionDelta action={{ type: 'armorEffect/setCount', id: effect.id, count: count + 1 }} />
-        )}
+        <CountStepper
+          count={count}
+          min={1}
+          max={max}
+          onDecrement={() =>
+            dispatch({ type: 'armorEffect/setCount', id: effect.id, count: count - 1 })
+          }
+          onIncrement={() =>
+            dispatch({ type: 'armorEffect/setCount', id: effect.id, count: count + 1 })
+          }
+          decrementTooltipAction={{
+            type: 'armorEffect/setCount',
+            id: effect.id,
+            count: count - 1,
+          }}
+          incrementTooltipAction={{
+            type: 'armorEffect/setCount',
+            id: effect.id,
+            count: count + 1,
+          }}
+          decrementAriaLabel={`Lower ${effect.name} count`}
+          incrementAriaLabel={`Raise ${effect.name} count`}
+        />
         <Button
           variant="ghost"
           size="icon"
-          className="text-muted-foreground size-6 shrink-0"
+          className="text-muted-foreground size-6"
           aria-label={`Remove ${effect.name}`}
           onClick={() => dispatch({ type: 'armorEffect/setCount', id: effect.id, count: 0 })}
         >
@@ -156,92 +273,255 @@ function ActiveEffectRow({
   );
 }
 
-/** An empty draft row — added locally, not yet backed by any dispatched state, until an effect is picked. */
-function DraftEffectRow({
-  options,
-  placeholder,
-  onPick,
-  onCancel,
+function ArmorEffectList({
+  filterChip,
+  isInPowerArmor,
+  onEmpty,
 }: {
-  options: ArmorEffectEntry[];
-  placeholder: string;
-  onPick: (id: string) => void;
-  onCancel: () => void;
+  filterChip: FilterChip | null;
+  isInPowerArmor: boolean;
+  onEmpty: (empty: boolean) => void;
 }) {
-  const comboOptions: ComboboxOption[] = options.map((e) => ({ value: e.id, label: e.name }));
+  const { mode } = useGameMode();
+  const { player } = useBuild();
+  const { query } = useFilterQuery();
+  const dispatch = useBuildDispatch();
+  const effects = getArmorEffects(mode);
+  const tierUsage = getArmorTierUsage(mode, player.armorEffects);
+
+  const equipped = new Map(Object.entries(player.armorEffects).filter(([, c]) => c > 0));
+
+  const incrementBlocked = (effect: ArmorEffectEntry): boolean => {
+    const current = equipped.get(effect.id) ?? 0;
+    const withoutSelf = { ...player.armorEffects };
+    delete withoutSelf[effect.id];
+    const maxFeasible = maxFeasibleArmorEffectCount(mode, effect.id, withoutSelf);
+    if (current >= maxFeasible) return true;
+    if (effect.starTier !== undefined && tierUsage[effect.starTier] >= MAX_LEGENDARY_COUNT)
+      return true;
+    return false;
+  };
+
+  const select = (effect: ArmorEffectEntry) => {
+    if (!armorTypeEligible(effect, isInPowerArmor) || incrementBlocked(effect)) return;
+    const current = equipped.get(effect.id) ?? 0;
+    dispatch({ type: 'armorEffect/setCount', id: effect.id, count: current + 1 });
+  };
+
+  const decrement = (effect: ArmorEffectEntry) => {
+    const current = equipped.get(effect.id);
+    if (current === undefined) return;
+    dispatch({
+      type: 'armorEffect/setCount',
+      id: effect.id,
+      count: current > 1 ? current - 1 : 0,
+    });
+  };
+
+  const filtered = effects.filter(
+    (e) =>
+      armorTypeEligible(e, isInPowerArmor) &&
+      matchesFilterChip(e, filterChip) &&
+      matchesQuery([e.name], query),
+  );
+
+  React.useEffect(() => {
+    onEmpty(filtered.length === 0);
+  }, [filtered.length, onEmpty]);
+
+  if (filtered.length === 0) return null;
+
   return (
-    <div className="flex items-center gap-2 py-1.5">
-      <Combobox
-        options={comboOptions}
-        value={null}
-        onValueChange={(id) => {
-          if (id) onPick(id);
-        }}
-        placeholder={placeholder}
-        searchPlaceholder="Search effects…"
-        emptyText="No effect matches."
-        className="flex-1"
-        renderOptionExtra={(o) => {
-          const opt = options.find((e) => e.id === o.value);
-          return (
-            <>
-              {opt?.badge === 'inert' && <NoEffectBadge />}
-              <ActionDelta action={{ type: 'armorEffect/setCount', id: o.value, count: 1 }} />
-            </>
-          );
-        }}
-      />
-      <Button
-        variant="ghost"
-        size="icon"
-        className="text-muted-foreground size-6 shrink-0"
-        aria-label="Cancel"
-        onClick={onCancel}
-      >
-        <XIcon className="size-3" />
-      </Button>
-    </div>
+    <FilterGroup>
+      {filtered.map((effect) => {
+        const count = equipped.get(effect.id);
+        const typeLocked = !armorTypeEligible(effect, isInPowerArmor);
+        const blocked = typeLocked || incrementBlocked(effect);
+        return (
+          <FilterItem
+            key={effect.id}
+            disabled={blocked}
+            onClick={() => select(effect)}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              decrement(effect);
+            }}
+            title={
+              count === undefined
+                ? undefined
+                : count > 1
+                  ? 'Right-click to lower'
+                  : 'Right-click to remove'
+            }
+          >
+            <CheckIcon
+              className={cn('mr-2 size-4', count !== undefined ? 'opacity-100' : 'opacity-0')}
+            />
+            {typeLocked && <LockIcon className="text-muted-foreground mr-1 size-3 shrink-0" />}
+            <span className="min-w-0 flex-1 truncate">{effect.name}</span>
+            {effect.badge === 'inert' && <NoEffectBadge />}
+            {!blocked &&
+              (count === undefined ? (
+                <ActionDelta action={{ type: 'armorEffect/setCount', id: effect.id, count: 1 }} />
+              ) : count <
+                maxFeasibleArmorEffectCount(mode, effect.id, {
+                  ...player.armorEffects,
+                  [effect.id]: 0,
+                }) ? (
+                <ActionDelta
+                  action={{
+                    type: 'armorEffect/setCount',
+                    id: effect.id,
+                    count: count + 1,
+                  }}
+                />
+              ) : null)}
+            <span className="text-muted-foreground ml-2 text-xs">
+              {typeLocked
+                ? `${effect.armorType === 'powerArmor' ? 'power armor' : 'body armor'} only`
+                : blocked
+                  ? 'slot full'
+                  : count !== undefined
+                    ? `×${count}/${effect.maxCount}`
+                    : `max ${effect.maxCount}`}
+            </span>
+          </FilterItem>
+        );
+      })}
+    </FilterGroup>
   );
 }
+
+function ArmorEffectAddPopover() {
+  const { player } = useBuild();
+  const [open, setOpen] = React.useState(false);
+  const [filterChip, setFilterChip] = React.useState<FilterChip | null>(null);
+  const [listEmpty, setListEmpty] = React.useState(false);
+  const isInPowerArmor = player.conditions.isInPowerArmor;
+
+  return (
+    <Popover
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (!next) setFilterChip(null);
+      }}
+    >
+      <PopoverTrigger
+        render={<Button variant="outline" size="sm" className="w-full justify-start" />}
+      >
+        <PlusIcon className="mr-1 size-3.5" /> Add armor effect…
+      </PopoverTrigger>
+      <PopoverContent className="w-[--anchor-width] p-0" align="start">
+        <FilterListRoot>
+          <FilterInput placeholder="Search armor effects…" />
+          <div className="flex flex-wrap items-center gap-0.5 border-b px-2 py-1">
+            {FILTER_CHIPS.map(({ key, label }) => (
+              <Button
+                key={key}
+                type="button"
+                variant={filterChip === key ? 'default' : 'ghost'}
+                size="sm"
+                className="h-6 px-2 text-xs"
+                onClick={() => setFilterChip(filterChip === key ? null : key)}
+              >
+                {label}
+              </Button>
+            ))}
+            {filterChip !== null && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="size-6"
+                aria-label="Clear filter"
+                onClick={() => setFilterChip(null)}
+              >
+                <XIcon className="size-3" />
+              </Button>
+            )}
+          </div>
+          <FilterList className="max-h-72">
+            <FilterEmpty show={listEmpty}>No effect matches.</FilterEmpty>
+            <ArmorEffectList
+              filterChip={filterChip}
+              isInPowerArmor={isInPowerArmor}
+              onEmpty={setListEmpty}
+            />
+          </FilterList>
+          <p className="text-muted-foreground border-t px-2 py-1 text-[11px]">
+            Left-click to add or raise a count · right-click to lower or remove.
+          </p>
+        </FilterListRoot>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+const GROUP_DESCRIPTORS: Array<{
+  key: ArmorSlotGroup | `legendary-${ArmorStarTier}`;
+  title: string;
+  predicate: (e: ArmorEffectEntry) => boolean;
+}> = [
+  {
+    key: 'lining',
+    title: 'Underarmor Lining',
+    predicate: (e) => e.group === 'lining',
+  },
+  {
+    key: 'material',
+    title: 'Material',
+    predicate: (e) => e.group === 'material',
+  },
+  {
+    key: 'misc',
+    title: 'Misc',
+    predicate: (e) => e.group === 'misc',
+  },
+  {
+    key: 'legendary-1',
+    title: '1★ Legendary',
+    predicate: (e) => e.starTier === 1,
+  },
+  {
+    key: 'legendary-2',
+    title: '2★ Legendary',
+    predicate: (e) => e.starTier === 2,
+  },
+  {
+    key: 'legendary-3',
+    title: '3★ Legendary',
+    predicate: (e) => e.starTier === 3,
+  },
+  {
+    key: 'legendary-4',
+    title: '4★ Legendary',
+    predicate: (e) => e.starTier === 4,
+  },
+];
 
 function EffectGroup({
   title,
   effects,
-  addLabel,
-  addPlaceholder,
   tierUsage,
+  slotUsageText,
+  starTier,
 }: {
   title: string;
   effects: ArmorEffectEntry[];
-  addLabel: string;
-  addPlaceholder: string;
-  tierUsage: Record<ArmorStarTier, number>;
+  tierUsage?: Record<ArmorStarTier, number>;
+  slotUsageText?: string;
+  starTier?: ArmorStarTier;
 }) {
   const { player } = useBuild();
-  const dispatch = useBuildDispatch();
-  const [drafts, setDrafts] = React.useState<number[]>([]);
-  const nextDraftKey = React.useRef(0);
-
-  if (effects.length === 0) return null;
-
   const activeEffects = effects.filter((e) => (player.armorEffects[e.id] ?? 0) > 0);
-  const activeIds = new Set(activeEffects.map((e) => e.id));
-  // Legendary effects whose tier is already at budget would no-op on add —
-  // exclude them from the draft-row picker. Misc effects (no starTier) are
-  // never affected by the tier budget, so they pass through unfiltered.
-  const availableEffects = effects.filter(
-    (e) =>
-      !activeIds.has(e.id) &&
-      (e.starTier === undefined || tierUsage[e.starTier] < MAX_LEGENDARY_COUNT),
-  );
-  const everyEffectActive = effects.every((e) => (player.armorEffects[e.id] ?? 0) > 0);
-  const starTier = effects[0]?.starTier;
 
-  const addDraft = () => {
-    nextDraftKey.current += 1;
-    setDrafts((prev) => [...prev, nextDraftKey.current]);
-  };
-  const removeDraft = (key: number) => setDrafts((prev) => prev.filter((k) => k !== key));
+  if (activeEffects.length === 0) return null;
+
+  const headerRight =
+    starTier !== undefined && tierUsage
+      ? `${starTier}★ ${tierUsage[starTier]}/${MAX_LEGENDARY_COUNT}`
+      : slotUsageText;
 
   return (
     <div>
@@ -249,134 +529,70 @@ function EffectGroup({
         <p className="font-condensed text-muted-foreground text-[10px] font-semibold uppercase tracking-[0.1em]">
           {title}
         </p>
-        {starTier !== undefined && (
-          <p className="text-muted-foreground text-xs">
-            {starTier}★ {tierUsage[starTier]}/{MAX_LEGENDARY_COUNT}
-          </p>
-        )}
+        {headerRight && <p className="text-muted-foreground text-xs">{headerRight}</p>}
       </div>
-      <div className="divide-border/50 divide-y">
+      <div className="grid gap-1">
         {activeEffects.map((effect) => (
-          <ActiveEffectRow
-            key={effect.id}
-            effect={effect}
-            options={effects.filter((e) => e.id === effect.id || !activeIds.has(e.id))}
-            tierUsage={tierUsage}
-          />
-        ))}
-        {drafts.map((key) => (
-          <DraftEffectRow
-            key={key}
-            options={availableEffects}
-            placeholder={addPlaceholder}
-            onPick={(id) => {
-              dispatch({ type: 'armorEffect/setCount', id, count: 1 });
-              removeDraft(key);
-            }}
-            onCancel={() => removeDraft(key)}
-          />
+          <ArmorEffectRow key={effect.id} effect={effect} />
         ))}
       </div>
-      {!everyEffectActive && (
-        <Button
-          variant="outline"
-          size="sm"
-          className="mt-2 w-full justify-start"
-          onClick={addDraft}
-        >
-          <PlusIcon className="mr-1 size-3.5" /> {addLabel}
-        </Button>
-      )}
     </div>
   );
 }
-
-const GROUP_DESCRIPTORS: Array<{
-  key: ArmorSlotGroup | `legendary-${ArmorStarTier}`;
-  title: string;
-  addLabel: string;
-  addPlaceholder: string;
-  predicate: (e: ArmorEffectEntry) => boolean;
-}> = [
-  {
-    key: 'material',
-    title: 'Material',
-    addLabel: 'Add material',
-    addPlaceholder: 'Pick a material…',
-    predicate: (e) => e.group === 'material',
-  },
-  {
-    key: 'lining',
-    title: 'Lining',
-    addLabel: 'Add lining',
-    addPlaceholder: 'Pick a lining…',
-    predicate: (e) => e.group === 'lining',
-  },
-  {
-    key: 'misc',
-    title: 'Misc',
-    addLabel: 'Add misc mod',
-    addPlaceholder: 'Pick a misc mod…',
-    predicate: (e) => e.group === 'misc',
-  },
-  {
-    key: 'legendary-1',
-    title: '1★ Legendary',
-    addLabel: 'Add 1★ effect',
-    addPlaceholder: 'Pick a 1★ effect…',
-    predicate: (e) => e.starTier === 1,
-  },
-  {
-    key: 'legendary-2',
-    title: '2★ Legendary',
-    addLabel: 'Add 2★ effect',
-    addPlaceholder: 'Pick a 2★ effect…',
-    predicate: (e) => e.starTier === 2,
-  },
-  {
-    key: 'legendary-3',
-    title: '3★ Legendary',
-    addLabel: 'Add 3★ effect',
-    addPlaceholder: 'Pick a 3★ effect…',
-    predicate: (e) => e.starTier === 3,
-  },
-  {
-    key: 'legendary-4',
-    title: '4★ Legendary',
-    addLabel: 'Add 4★ effect',
-    addPlaceholder: 'Pick a 4★ effect…',
-    predicate: (e) => e.starTier === 4,
-  },
-];
 
 export function ArmorSection() {
   const { mode } = useGameMode();
   const { player } = useBuild();
   const effects = getArmorEffects(mode);
+  const isInPowerArmor = player.conditions.isInPowerArmor;
   const activeCount = Object.values(player.armorEffects).filter((count) => count > 0).length;
   const tierUsage = getArmorTierUsage(mode, player.armorEffects);
+  const slotUsage = getArmorSlotUsage(mode, player.armorEffects);
+
+  const summary =
+    activeCount === 0
+      ? isInPowerArmor
+        ? 'Power Armor'
+        : undefined
+      : isInPowerArmor
+        ? `Power Armor · ${activeCount} active`
+        : undefined;
 
   return (
     <AccordionItem value="armor">
       <AccordionTrigger>
         <SectionTrigger
           label="Armor"
-          summary={activeCount === 0 ? 'none' : undefined}
-          badge={activeCount > 0 && <Badge variant="secondary">{activeCount} active</Badge>}
+          summary={summary}
+          badge={
+            activeCount > 0 && !isInPowerArmor ? (
+              <Badge variant="secondary">{activeCount} active</Badge>
+            ) : undefined
+          }
         />
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-4">
-          {GROUP_DESCRIPTORS.map((d) => (
-            <EffectGroup
-              key={d.key}
-              title={d.title}
-              effects={effects.filter(d.predicate)}
-              addLabel={d.addLabel}
-              addPlaceholder={d.addPlaceholder}
-              tierUsage={tierUsage}
-            />
-          ))}
+          <ArmorTypeControl />
+          <ArmorEffectAddPopover />
+          {GROUP_DESCRIPTORS.map((d) => {
+            const groupEffects = effects.filter(d.predicate);
+            const families = familiesForGroup(d.key, isInPowerArmor);
+            const slotUsageText = formatSlotUsage(slotUsage, families);
+            const starTier = d.key.startsWith('legendary-')
+              ? (Number(d.key.split('-')[1]) as ArmorStarTier)
+              : undefined;
+            return (
+              <EffectGroup
+                key={d.key}
+                title={d.title}
+                effects={groupEffects}
+                tierUsage={tierUsage}
+                slotUsageText={slotUsageText}
+                starTier={starTier}
+              />
+            );
+          })}
         </div>
       </AccordionContent>
     </AccordionItem>

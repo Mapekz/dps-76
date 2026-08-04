@@ -9,7 +9,12 @@ import {
 import { getPerks, getWeapons } from '@/data';
 import { getAddictions, getConsumables, getMutations } from '@/data/buffs';
 import { getOmodById } from '@/data/omods';
-import { clampArmorTierBudgets, getArmorEffectById } from '@/data/armor-modifiers';
+import {
+  clampArmorPieceCapacities,
+  clampArmorTierBudgets,
+  getArmorEffectById,
+  wrongArmorTypeEffects,
+} from '@/data/armor-modifiers';
 import { nukesDragonsPerks, reclassifyPerkLoadouts } from '@/lib/nukes-dragons';
 import { buildDelta } from '@/lib/build-delta';
 import {
@@ -387,6 +392,24 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
       (state.player.conditions as unknown as Record<string, unknown>)[key] = value;
     }
   }
+
+  const wrongType = wrongArmorTypeEffects(
+    mode,
+    state.player.armorEffects,
+    state.player.conditions.isInPowerArmor,
+  );
+  if (wrongType.length > 0) {
+    for (const id of wrongType) delete state.player.armorEffects[id];
+    warnings.push(
+      'armor effects incompatible with the power-armor toggle were removed after decode',
+    );
+  }
+  const clampedPieces = clampArmorPieceCapacities(mode, state.player.armorEffects);
+  if (clampedPieces.changed) {
+    state.player.armorEffects = clampedPieces.armorEffects;
+    warnings.push('armor piece slots exceeded capacity — extra pieces were removed');
+  }
+
   for (const [key, value] of Object.entries(wire.ec ?? {})) {
     if (key === 'healthPercent' && typeof value === 'number') {
       // Same migration as the player loop above, using the coarser enemy stops.

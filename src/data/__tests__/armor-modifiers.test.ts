@@ -5,6 +5,8 @@ import {
   getArmorEffectWornPieceCounts,
   getArmorTierUsage,
   clampArmorTierBudgets,
+  clampArmorPieceCapacities,
+  maxFeasibleArmorEffectCount,
   MAX_LEGENDARY_COUNT,
 } from '@/data/armor-modifiers';
 import { effectiveValue, type ResolveContext } from '@/lib/engine/resolve';
@@ -143,9 +145,10 @@ describe('ArmorSlotGroup: material/lining/misc split', () => {
   const effects = getArmorEffects('live');
   const byName = new Map(effects.map((e) => [e.name, e]));
 
-  it('ap_armor_Tier and ap_PowerArmor_Lining records land in material', () => {
+  it('ap_armor_Tier records land in material; PA lining materials are excluded', () => {
     expect(byName.get('Standard')?.group).toBe('material');
-    expect(byName.get('Standard Plate')?.group).toBe('material');
+    expect(byName.get('Standard Plate')).toBeUndefined();
+    expect(byName.get('Model A')).toBeUndefined();
   });
 
   it('underarmor styles and _UnderArmor_ lining effects land in lining', () => {
@@ -407,5 +410,119 @@ describe('Number Cruncher exemption: armor selections never feed scaledByWeaponA
     expect(withArmor.weapon.apCost).toBe(bare.weapon.apCost);
     expect(bareMods.length).toBeGreaterThan(0);
     expect(armorMods.length).toBeGreaterThan(0);
+  });
+});
+
+describe('pieceReach, maxCount, and armorType derivation', () => {
+  const effects = getArmorEffects('live');
+  const byName = new Map(effects.map((e) => [e.name, e]));
+
+  const DEEP_POCKETED = 'DLC03_mod_armor_Marine_Lining_Limb_ImprovedCarryCapacity2';
+  const CUSHIONED = 'DLC03_mod_armor_Marine_Lining_LimbLeg_ReducedFallingDamage';
+  const AERODYNAMIC = 'DLC03_mod_armor_Marine_Lining_LimbArm_ReducedPowerAttack';
+  const MUFFLED = 'DLC03_mod_armor_Marine_Lining_Limb_ReducedDetection';
+  const BODY_JETPACK = 'mod_armor_BOSInfantry_JetPack';
+  const EMERGENCY_PROTOCOLS = 'mod_PowerArmor_Excavator_Torso_Misc_Emergency';
+  const STANDARD_MATERIAL = 'DLC03_mod_armor_Marine_Arm_Material_0';
+
+  it('derives expected pieceReach, maxCount, and armorType for named priority effects', () => {
+    expect(byName.get('Deep Pocketed')).toMatchObject({
+      id: DEEP_POCKETED,
+      maxCount: 5,
+      armorType: 'bodyArmor',
+      pieceReach: new Set(['torso', 'arm', 'leg']),
+    });
+    expect(byName.get('Cushioned')).toMatchObject({
+      id: CUSHIONED,
+      maxCount: 2,
+      armorType: 'bodyArmor',
+      pieceReach: new Set(['leg']),
+    });
+    expect(byName.get('Aerodynamic')).toMatchObject({
+      id: AERODYNAMIC,
+      maxCount: 2,
+      armorType: 'bodyArmor',
+      pieceReach: new Set(['arm']),
+    });
+    expect(byName.get('Muffled')).toMatchObject({
+      id: MUFFLED,
+      maxCount: 4,
+      armorType: 'bodyArmor',
+      pieceReach: new Set(['arm', 'leg']),
+    });
+    expect(byName.get('Emergency Protocols')).toMatchObject({
+      id: EMERGENCY_PROTOCOLS,
+      maxCount: 1,
+      armorType: 'powerArmor',
+      pieceReach: new Set(['torso']),
+    });
+    expect(byName.get('Jetpack')).toMatchObject({
+      id: BODY_JETPACK,
+      maxCount: 1,
+      armorType: 'bodyArmor',
+      pieceReach: new Set(['torso']),
+    });
+    expect(byName.get('Standard')).toMatchObject({
+      id: STANDARD_MATERIAL,
+      maxCount: 5,
+      armorType: 'bodyArmor',
+    });
+    expect(byName.get('Unyielding')?.armorType).toBe('bodyArmor');
+    expect(byName.get('Propelling')?.armorType).toBe('powerArmor');
+    expect(byName.get('Chameleon')?.armorType).toBe('both');
+    expect(byName.get('Targeting HUD')).toMatchObject({
+      maxCount: 1,
+      armorType: 'powerArmor',
+      pieceReach: new Set(['helmet']),
+    });
+  });
+
+  it('every obtainable non-legendary entry has non-empty pieceReach', () => {
+    for (const effect of effects) {
+      if (effect.group === 'legendary') continue;
+      expect(effect.pieceReach?.size ?? 0).toBeGreaterThan(0);
+    }
+  });
+
+  it('no non-legendary name-group spans two armor types', () => {
+    const byNameType = new Map<string, Set<string>>();
+    for (const effect of effects) {
+      if (effect.group === 'legendary') continue;
+      const types = byNameType.get(effect.name) ?? new Set();
+      types.add(effect.armorType);
+      byNameType.set(effect.name, types);
+    }
+    for (const [, types] of byNameType) {
+      expect(types.size).toBe(1);
+    }
+  });
+
+  it('PA lining materials are absent from getArmorEffects', () => {
+    expect(effects.some((e) => e.attachPointEdid === 'ap_PowerArmor_Lining')).toBe(false);
+  });
+});
+
+describe('slot exclusivity feasibility', () => {
+  const DEEP_POCKETED = 'DLC03_mod_armor_Marine_Lining_Limb_ImprovedCarryCapacity2';
+  const BODY_JETPACK = 'mod_armor_BOSInfantry_JetPack';
+  const PA_JETPACK = 'mod_PowerArmor_Hellcat_Torso_Misc_JetPack';
+  const EMERGENCY_PROTOCOLS = 'mod_PowerArmor_Excavator_Torso_Misc_Emergency';
+
+  it('Jetpack=1 caps Deep Pocketed at 4', () => {
+    const max = maxFeasibleArmorEffectCount('live', DEEP_POCKETED, { [BODY_JETPACK]: 1 });
+    expect(max).toBe(4);
+    const clamped = clampArmorPieceCapacities('live', {
+      [BODY_JETPACK]: 1,
+      [DEEP_POCKETED]: 5,
+    });
+    expect(clamped.armorEffects[DEEP_POCKETED]).toBe(4);
+    expect(clamped.changed).toBe(true);
+  });
+
+  it('Emergency Protocols=1 forces Jet Pack max to 0', () => {
+    const max = maxFeasibleArmorEffectCount('live', PA_JETPACK, {
+      [EMERGENCY_PROTOCOLS]: 1,
+    });
+    expect(max).toBe(0);
   });
 });

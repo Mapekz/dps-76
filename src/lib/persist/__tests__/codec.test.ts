@@ -449,6 +449,28 @@ describe('Armor checklist (Phase 3 armor pipeline, UI + state)', () => {
     });
     expect(decoded!.warnings.some((w) => w.includes('star-tier limit'))).toBe(false);
   });
+
+  it('prunes wrong-armor-type effects after pc decodes and clamps piece capacities with warnings', async () => {
+    const encoded = await encodeRawWire({
+      ae: [
+        ['mod_PowerArmor_Excavator_Torso_Misc_Emergency', 1],
+        ['mod_PowerArmor_Hellcat_Torso_Misc_JetPack', 1],
+        ['mod_Legendary_PowerArmor4_Propelling', 2],
+        ['mod_Legendary_Armor1_LowHealthIncreasesStats', 3],
+      ],
+      pc: { isInPowerArmor: true },
+    });
+    const decoded = await decodeBuild(encoded, 'live');
+    expect(decoded!.state.player.conditions.isInPowerArmor).toBe(true);
+    expect(decoded!.state.player.armorEffects).toEqual({
+      mod_PowerArmor_Excavator_Torso_Misc_Emergency: 1,
+      mod_Legendary_PowerArmor4_Propelling: 2,
+    });
+    expect(
+      decoded!.warnings.some((w) => w.includes('incompatible with the power-armor toggle')),
+    ).toBe(true);
+    expect(decoded!.warnings.some((w) => w.includes('piece slots exceeded capacity'))).toBe(true);
+  });
 });
 
 describe('consumables & addictions (2026-07-13 overhaul, hermetic fixtures)', () => {

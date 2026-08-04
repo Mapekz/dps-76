@@ -24,7 +24,13 @@ import { consumablesById, toggleConsumable } from '@/lib/consumable-rules';
 import { CARNIVORE_MUTATION_ID, HERBIVORE_MUTATION_ID } from '@/lib/diet-mutations';
 import { getPerks, getUniqueById, getEquippedUnique, getWeapons, maxEligibleLevel } from '@/data';
 import { getOmodById } from '@/data/omods';
-import { getArmorEffectById, getArmorTierUsage, MAX_LEGENDARY_COUNT } from '@/data/armor-modifiers';
+import {
+  getArmorEffectById,
+  getArmorTierUsage,
+  maxFeasibleArmorEffectCount,
+  MAX_LEGENDARY_COUNT,
+  wrongArmorTypeEffects,
+} from '@/data/armor-modifiers';
 import { isOmodEligibleForWeapon } from '@/data/omod-eligibility';
 import type { PerkId } from '@/data/perk-ids';
 
@@ -91,6 +97,7 @@ export type BuildAction =
       value: PlayerConditions[keyof PlayerConditions];
     }
   | { type: 'armorEffect/setCount'; id: string; count: number }
+  | { type: 'armorType/set'; isInPowerArmor: boolean }
   | { type: 'race/set'; isGhoul: boolean }
   | {
       type: 'enemy/condition';
@@ -450,10 +457,26 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
         const remaining = MAX_LEGENDARY_COUNT - (tierUsage - currentOwnCount);
         count = Math.max(0, Math.min(count, remaining));
       }
+      if (effect && effect.group !== 'legendary') {
+        const withoutSelf = { ...player.armorEffects };
+        delete withoutSelf[action.id];
+        count = Math.min(count, maxFeasibleArmorEffectCount(mode, action.id, withoutSelf));
+      }
       const armorEffects = { ...player.armorEffects };
       if (count > 0) armorEffects[action.id] = count;
       else delete armorEffects[action.id];
       return withPlayer(state, { ...player, armorEffects });
+    }
+
+    case 'armorType/set': {
+      const removing = wrongArmorTypeEffects(mode, player.armorEffects, action.isInPowerArmor);
+      const armorEffects = { ...player.armorEffects };
+      for (const id of removing) delete armorEffects[id];
+      return withPlayer(state, {
+        ...player,
+        conditions: { ...player.conditions, isInPowerArmor: action.isInPowerArmor },
+        armorEffects,
+      });
     }
 
     case 'race/set':

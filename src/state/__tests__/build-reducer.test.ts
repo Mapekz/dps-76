@@ -539,3 +539,55 @@ describe('armorEffect/setCount: per-star-tier budget', () => {
     expect(s.player.armorEffects[BATTLE_LOADERS]).toBe(MAX_LEGENDARY_COUNT); // untouched
   });
 });
+
+describe('armorEffect/setCount: piece slot exclusivity', () => {
+  const DEEP_POCKETED = 'DLC03_mod_armor_Marine_Lining_Limb_ImprovedCarryCapacity2';
+  const BODY_JETPACK = 'mod_armor_BOSInfantry_JetPack';
+  const PA_JETPACK = 'mod_PowerArmor_Hellcat_Torso_Misc_JetPack';
+  const EMERGENCY_PROTOCOLS = 'mod_PowerArmor_Excavator_Torso_Misc_Emergency';
+
+  it('Jetpack=1 caps Deep Pocketed at 4 on setCount', () => {
+    const s = run([
+      { type: 'armorEffect/setCount', id: BODY_JETPACK, count: 1 },
+      { type: 'armorEffect/setCount', id: DEEP_POCKETED, count: 5 },
+    ]);
+    expect(s.player.armorEffects[DEEP_POCKETED]).toBe(4);
+  });
+
+  it('Emergency Protocols=1 blocks Jet Pack entirely', () => {
+    const s = run([
+      { type: 'armorEffect/setCount', id: EMERGENCY_PROTOCOLS, count: 1 },
+      { type: 'armorEffect/setCount', id: PA_JETPACK, count: 1 },
+    ]);
+    expect(s.player.armorEffects[EMERGENCY_PROTOCOLS]).toBe(1);
+    expect(s.player.armorEffects[PA_JETPACK]).toBeUndefined();
+  });
+});
+
+describe('armorType/set', () => {
+  const UNYIELDING = 'mod_Legendary_Armor1_LowHealthIncreasesStats';
+  const PROPPELLING = 'mod_Legendary_PowerArmor4_Propelling';
+  const CASUAL_STYLE = 'mod_armor_UnderArmor_style_Casual';
+
+  it('flips the condition and prunes mismatched effects; both-type effects survive', () => {
+    const s = run([
+      { type: 'armorEffect/setCount', id: UNYIELDING, count: 3 },
+      { type: 'armorEffect/setCount', id: PROPPELLING, count: 2 },
+      { type: 'armorEffect/setCount', id: CASUAL_STYLE, count: 1 },
+      { type: 'armorType/set', isInPowerArmor: true },
+    ]);
+    expect(s.player.conditions.isInPowerArmor).toBe(true);
+    expect(s.player.armorEffects[UNYIELDING]).toBeUndefined();
+    expect(s.player.armorEffects[PROPPELLING]).toBe(2);
+    expect(s.player.armorEffects[CASUAL_STYLE]).toBe(1);
+  });
+
+  it('plain condition/set on isInPowerArmor does not prune armor effects', () => {
+    const s = run([
+      { type: 'armorEffect/setCount', id: UNYIELDING, count: 3 },
+      { type: 'condition/set', key: 'isInPowerArmor', value: true },
+    ]);
+    expect(s.player.conditions.isInPowerArmor).toBe(true);
+    expect(s.player.armorEffects[UNYIELDING]).toBe(3);
+  });
+});

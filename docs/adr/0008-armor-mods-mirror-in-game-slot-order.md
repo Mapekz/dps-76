@@ -13,20 +13,25 @@ with zero DPS delta... Zero-modifier non-stock mods show badged 'inert'
 instead of vanishing") — armor now matches it.
 
 Decision: `getArmorEffects` includes every obtainable, non-cosmetic armor/PA
-mod, and `ArmorSection` groups them the way the in-game workbench does —
-**Material → Lining → Misc → 1★ → 2★ → 3★ → 4★** — instead of two flat
-buckets. Entries with no engine-effective modifier get `badge: 'inert'`
-(same `hasAnyEngineEffect` predicate, now a badge input instead of a filter)
-rather than being dropped.
+mod, and `ArmorSection` groups them by the in-game workbench's slot
+categories, displayed as **Underarmor Lining → Material → Misc → 1★ → 2★ →
+3★ → 4★** — instead of two flat buckets. (Originally Material-first,
+matching workbench order; reordered 2026-08-04 to surface the lining group
+first under its clearer "Underarmor Lining" title — the categories still
+mirror the workbench, the display order no longer does.) Entries with no
+engine-effective modifier get `badge: 'inert'` (same `hasAnyEngineEffect`
+predicate, now a badge input instead of a filter) rather than being dropped.
 
 **Cosmetic exclusion is now an explicit allow-list, not the engine-effect
-filter.** `nonLegendaryGroup` (`armor-modifiers.ts`) admits exactly four
-non-legendary attach points and drops everything else:
+filter.** `nonLegendaryGroup` (`armor-modifiers.ts`) admits exactly three
+non-legendary attach points and drops everything else (`ap_PowerArmor_Lining`
+— PA materials Mk.I, Model A/B, Standard Plate — was admitted here until
+2026-08-04; now excluded, see `docs/adr/0010`):
 
 | `attachPointEdid` | Group | Example names |
 |---|---|---|
-| `ap_armor_Tier`, `ap_PowerArmor_Lining` | Material | Polymer, Fiberglass, Shadowed; Mk.I, Model A, Standard Plate |
-| `ap_underarmor_style`; `ap_armor_Lining` where id contains `_UnderArmor_` | Lining | Casual Style; Shielded/Treated/Protective/Resistant Lining |
+| `ap_armor_Tier` | Material | Polymer, Fiberglass, Shadowed |
+| `ap_underarmor_style`; `ap_armor_Lining` where id contains `_UnderArmor_` | Lining ("Underarmor Lining") | Casual Style; Shielded/Treated/Protective/Resistant Lining |
 | `ap_armor_Lining` (all other ids); `ap_PowerArmor_Misc` | Misc | Sleek, Cushioned, Deep Pocketed, Jetpack; Targeting HUD, Core Assembly |
 | `ap_Legendary1`–`ap_Legendary4` | Legendary, split by `starTier` | Unyielding (1★) … Bruiser's (4★) |
 
@@ -58,7 +63,8 @@ now that a same-name group can mix an effective and an inert record.
 
 Roster grew from 32 to 170 entries on the 20260803 dump: 24 material / 14
 lining / 54 misc (post jetpack-collapse) / 80 legendary (21+19+22+16 across
-the four tiers).
+the four tiers). (Counts predate `docs/adr/0010`'s PA-material exclusion,
+which removes the 4 `ap_PowerArmor_Lining` names from the material group.)
 
 ## Do not undo this
 

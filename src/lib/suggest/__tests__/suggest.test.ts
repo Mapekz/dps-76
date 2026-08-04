@@ -6,6 +6,7 @@ import {
   type BuildState,
 } from '@/state/build-reducer';
 import { getPerks } from '@/data';
+import { getArmorEffects } from '@/data/armor-modifiers';
 import { enumerateVariants } from '@/lib/suggest/variants';
 import {
   collapseSuggestionFamilies,
@@ -210,6 +211,29 @@ describe('enumerateVariants', () => {
       expect(miscIncrease).toBeDefined();
       expect(miscIncrease?.group).toBe('armor');
       expect(miscIncrease?.budget.legal).toBe(true);
+    });
+
+    it('never proposes counts above feasible piece limits or wrong-armor-type effects', () => {
+      const ULTRA_LIGHT = getArmorEffects('live').find((e) => e.name === 'Ultra-Light Build')!.id;
+      const BODY_JETPACK = 'mod_armor_BOSInfantry_JetPack';
+      const UNYIELDING = 'mod_Legendary_Armor1_LowHealthIncreasesStats';
+
+      const withJetpack = stateFrom(
+        [{ type: 'armorEffect/setCount', id: BODY_JETPACK, count: 1 }],
+        fixerState,
+      );
+      const increases = enumerateVariants(withJetpack, 'live').filter((v) =>
+        v.id.startsWith(`armor-count:${ULTRA_LIGHT}:`),
+      );
+      expect(increases.length).toBeGreaterThan(0);
+      expect(increases.every((v) => Number(v.id.split(':')[2]) <= 4)).toBe(true);
+
+      const inPa = stateFrom([{ type: 'armorType/set', isInPowerArmor: true }], fixerState);
+      const paVariants = enumerateVariants(inPa, 'live');
+      expect(paVariants.some((v) => v.id.includes(UNYIELDING))).toBe(false);
+      expect(
+        paVariants.some((v) => v.id.startsWith('armor-count:') && v.id.includes(BODY_JETPACK)),
+      ).toBe(false);
     });
   });
 });

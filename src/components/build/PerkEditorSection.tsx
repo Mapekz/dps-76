@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CheckIcon, LockIcon, MinusIcon, PlusIcon, XIcon } from 'lucide-react';
+import { CheckIcon, LockIcon, PlusIcon, XIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
@@ -26,8 +26,8 @@ import { canSlotCardPoints, perkCardCostAtRank, type PerkBudget } from '@/lib/pl
 import type { GameMode, Perk, PerkLoadout } from '@/types';
 import { LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS, type SpecialKey } from '@/state/build-reducer';
 import { ActionDelta } from '@/components/diff/ActionDelta';
-import { DiffTooltip } from '@/components/diff/DiffTooltip';
 import { NoEffectBadge } from './OptionBadge';
+import { CountStepper } from './CountStepper';
 
 const SPECIAL_ORDER: Array<{ key: SpecialKey; special: Special; letter: string }> = [
   { key: 'strength', special: Special.Strength, letter: 'S' },
@@ -144,40 +144,35 @@ function PerkRow({
             {cost} pt
           </span>
         )}
-        <DiffTooltip action={{ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank - 1 }}>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-6"
-            disabled={entry.rank <= 1}
-            aria-label={`Lower ${entry.perk.name} rank`}
-            onClick={() =>
-              dispatch({ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank - 1 })
-            }
-          >
-            <MinusIcon className="size-3" />
-          </Button>
-        </DiffTooltip>
-        <span className="w-4 text-center font-mono text-xs tabular-nums">{entry.rank}</span>
-        <DiffTooltip action={{ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank + 1 }}>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-6"
-            disabled={entry.rank >= maxRank || raiseBlocked}
-            aria-label={`Raise ${entry.perk.name} rank`}
-            title={
-              raiseBlocked && entry.rank < maxRank
-                ? 'SPECIAL budget exhausted (15/stat, 56 total)'
-                : undefined
-            }
-            onClick={() =>
-              dispatch({ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank + 1 })
-            }
-          >
-            <PlusIcon className="size-3" />
-          </Button>
-        </DiffTooltip>
+        <CountStepper
+          count={entry.rank}
+          min={1}
+          max={maxRank}
+          onDecrement={() =>
+            dispatch({ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank - 1 })
+          }
+          onIncrement={() =>
+            dispatch({ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank + 1 })
+          }
+          incrementDisabled={raiseBlocked}
+          incrementTitle={
+            raiseBlocked && entry.rank < maxRank
+              ? 'SPECIAL budget exhausted (15/stat, 56 total)'
+              : undefined
+          }
+          decrementTooltipAction={{
+            type: 'perk/setRank',
+            perkId: entry.perkId,
+            rank: entry.rank - 1,
+          }}
+          incrementTooltipAction={{
+            type: 'perk/setRank',
+            perkId: entry.perkId,
+            rank: entry.rank + 1,
+          }}
+          decrementAriaLabel={`Lower ${entry.perk.name} rank`}
+          incrementAriaLabel={`Raise ${entry.perk.name} rank`}
+        />
         <Button
           variant="ghost"
           size="icon"

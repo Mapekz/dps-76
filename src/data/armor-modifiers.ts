@@ -5,6 +5,7 @@ import { hasAnyEngineEffect } from '@/types/modifiers';
 import { getDataset } from './dataset';
 import { isRecordVisible } from './overlay';
 import { describeBuffModifiers } from '@/lib/buff-description';
+import { armorPieceOverrides } from './overrides/armor-piece-overrides';
 
 /**
  * Armor checklist inventory (Phase 3 armor pipeline, UI + state half)
@@ -43,6 +44,18 @@ export type ArmorStarTier = 1 | 2 | 3 | 4;
 /** In-game armor workbench slot group — Material, Lining, Misc, or Legendary (split by star tier in the UI). */
 export type ArmorSlotGroup = 'material' | 'lining' | 'misc' | 'legendary';
 
+/** Body-piece classes for non-legendary slot-exclusivity and maxCount derivation. */
+export type ArmorPieceClass =
+  | 'torso'
+  | 'arm'
+  | 'leg'
+  | 'helmet'
+  | 'underarmorStyle'
+  | 'underarmorLining';
+
+/** Which armor chassis an effect can mount on. Legendary derives from record presence per display name. */
+export type ArmorType = 'bodyArmor' | 'powerArmor' | 'both';
+
 export interface ArmorEffectEntry {
   /** Stable id — the representative OMOD's edid (armor variant wins over power-armor when both exist, alphabetically). */
   id: string;
@@ -64,13 +77,76 @@ export interface ArmorEffectEntry {
   modifiers: Modifier[];
   /** Present iff `group === 'legendary'` — derived from the representative record's `attachPointEdid` (ap_LegendaryN). */
   starTier?: ArmorStarTier;
+  /** Body armor, power armor, or both (underarmor). */
+  armorType: ArmorType;
+  /** Non-legendary piece reach — undefined for legendary (star-tier budget only). */
+  pieceReach?: ReadonlySet<ArmorPieceClass>;
 }
 
 const LEGENDARY_ATTACH_POINT_RE = /^ap_Legendary([1-4])$/;
 /** Per-star-tier budget: sum of worn-piece counts for all legendary effects sharing a tier must stay ≤ this. */
 export const MAX_LEGENDARY_COUNT = 5;
 
-const GROUP_ORDER: readonly ArmorSlotGroup[] = ['material', 'lining', 'misc', 'legendary'];
+const GROUP_ORDER: readonly ArmorSlotGroup[] = ['lining', 'material', 'misc', 'legendary'];
+
+/** Cross-effect slot-exclusivity pools (material vs misc never share a family). */
+export type FeasibilityFamilyKey =
+  | 'bodyArmor:material'
+  | 'bodyArmor:misc'
+  | 'powerArmor:misc'
+  | 'underarmorStyle'
+  | 'underarmorLining';
+
+export type ArmorSlotUsageEntry = { used: number; capacity: number };
+export type ArmorSlotUsage = Partial<
+  Record<FeasibilityFamilyKey, Partial<Record<ArmorPieceClass, ArmorSlotUsageEntry>>>
+>;
+
+const BODY_ARMOR_CAPACITIES: Readonly<Record<ArmorPieceClass, number>> = {
+  torso: 1,
+  arm: 2,
+  leg: 2,
+  helmet: 0,
+  underarmorStyle: 0,
+  underarmorLining: 0,
+};
+
+const POWER_ARMOR_CAPACITIES: Readonly<Record<ArmorPieceClass, number>> = {
+  torso: 1,
+  arm: 2,
+  leg: 2,
+  helmet: 1,
+  underarmorStyle: 0,
+  underarmorLining: 0,
+};
+
+const UNDERARMOR_STYLE_CAPACITIES: Readonly<Record<ArmorPieceClass, number>> = {
+  torso: 0,
+  arm: 0,
+  leg: 0,
+  helmet: 0,
+  underarmorStyle: 1,
+  underarmorLining: 0,
+};
+
+const UNDERARMOR_LINING_CAPACITIES: Readonly<Record<ArmorPieceClass, number>> = {
+  torso: 0,
+  arm: 0,
+  leg: 0,
+  helmet: 0,
+  underarmorStyle: 0,
+  underarmorLining: 1,
+};
+
+const FAMILY_CAPACITIES: Readonly<
+  Record<FeasibilityFamilyKey, Readonly<Record<ArmorPieceClass, number>>>
+> = {
+  'bodyArmor:material': BODY_ARMOR_CAPACITIES,
+  'bodyArmor:misc': BODY_ARMOR_CAPACITIES,
+  'powerArmor:misc': POWER_ARMOR_CAPACITIES,
+  underarmorStyle: UNDERARMOR_STYLE_CAPACITIES,
+  underarmorLining: UNDERARMOR_LINING_CAPACITIES,
+};
 
 /**
  * Non-legendary attach points admitted to the armor picker, and which slot
@@ -83,7 +159,6 @@ const GROUP_ORDER: readonly ArmorSlotGroup[] = ['material', 'lining', 'misc', 'l
 function nonLegendaryGroup(omod: GeneratedOmod): ArmorSlotGroup | null {
   switch (omod.attachPointEdid) {
     case 'ap_armor_Tier':
-    case 'ap_PowerArmor_Lining':
       return 'material';
     case 'ap_underarmor_style':
       return 'lining';
@@ -105,17 +180,169 @@ function isJetpackReskin(name: string): boolean {
   return /jet ?pack/i.test(name) && name !== 'Jetpack' && name !== 'Jet Pack';
 }
 
-/** Body-slot markers observed in armor-omod ids (Lining: Torso+Limb; PA Misc: Torso or Helmet alone) — data-derived, not a fixed roster. */
-const PIECE_TAGS = ['Torso', 'Limb', 'Helmet'] as const;
+function armorTypeOfRecord(omod: GeneratedOmod): ArmorType {
+  if (omod.attachPointEdid === 'ap_underarmor_style') return 'both';
+  if (omod.attachPointEdid === 'ap_armor_Lining' && omod.id.includes('_UnderArmor_')) return 'both';
+  if (omod.attachPointEdid.startsWith('ap_PowerArmor_')) return 'powerArmor';
+  if (omod.attachPointEdid === 'ap_armor_Tier') return 'bodyArmor';
+  if (omod.attachPointEdid === 'ap_armor_Lining') return 'bodyArmor';
+  return 'bodyArmor';
+}
 
-function countPieceTags(ids: readonly string[]): number {
-  const tags = new Set<string>();
-  for (const id of ids) {
-    for (const tag of PIECE_TAGS) {
-      if (new RegExp(`(?:^|_)${tag}(?:_|$)`).test(id)) tags.add(tag);
+function legendaryArmorType(records: readonly GeneratedOmod[]): ArmorType {
+  let hasArmor = false;
+  let hasPA = false;
+  for (const r of records) {
+    if (/mod_Legendary_Armor/.test(r.id)) hasArmor = true;
+    if (/mod_Legendary_PowerArmor/.test(r.id)) hasPA = true;
+  }
+  if (hasArmor && hasPA) return 'both';
+  if (hasPA) return 'powerArmor';
+  return 'bodyArmor';
+}
+
+function tokensFromTexts(texts: readonly string[]): string[] {
+  const tokens: string[] = [];
+  for (const text of texts) {
+    for (const token of text.split('_')) tokens.push(token);
+  }
+  return tokens;
+}
+
+function derivePieceReachFromTokens(texts: readonly string[]): ReadonlySet<ArmorPieceClass> {
+  const reach = new Set<ArmorPieceClass>();
+  for (const token of tokensFromTexts(texts)) {
+    if (token === 'Torso') reach.add('torso');
+    else if (token === 'Helmet') reach.add('helmet');
+    else if (token === 'LimbArm' || token === 'Arm') reach.add('arm');
+    else if (token === 'LimbLeg' || token === 'Leg') reach.add('leg');
+    else if (token === 'Limb') {
+      reach.add('arm');
+      reach.add('leg');
     }
   }
-  return tags.size;
+  return reach;
+}
+
+function derivePieceReach(
+  name: string,
+  records: readonly GeneratedOmod[],
+  armorType: ArmorType,
+): ReadonlySet<ArmorPieceClass> {
+  const override = armorPieceOverrides[name];
+  if (override) return new Set(override);
+
+  const representative = records[0];
+  if (representative.attachPointEdid === 'ap_underarmor_style') return new Set(['underarmorStyle']);
+  if (representative.id.includes('_UnderArmor_')) return new Set(['underarmorLining']);
+
+  const texts: string[] = [];
+  for (const r of records) {
+    texts.push(r.id);
+    if (r.targetKeywords) texts.push(...r.targetKeywords);
+  }
+  const reach = derivePieceReachFromTokens(texts);
+  if (reach.size > 0) return reach;
+
+  // Records with only set-wide keywords and no piece suffix (Shrouded/Wood:
+  // ma_armor_Wood + ma_armor_lining) attach anywhere on the chassis — the
+  // set-wide keyword sits on every piece, so full reach IS the data-driven
+  // reading. The `*_Null` empty-slot placeholders that also matched here are
+  // hidden via `hiddenArmorOmodIds` instead.
+  if (armorType === 'powerArmor') return new Set(['torso', 'arm', 'leg', 'helmet']);
+  if (armorType === 'bodyArmor') return new Set(['torso', 'arm', 'leg']);
+  return reach;
+}
+
+function maxCountFromReach(reach: ReadonlySet<ArmorPieceClass>, armorType: ArmorType): number {
+  if (reach.has('underarmorStyle')) return UNDERARMOR_STYLE_CAPACITIES.underarmorStyle;
+  if (reach.has('underarmorLining')) return UNDERARMOR_LINING_CAPACITIES.underarmorLining;
+
+  const capacities = armorType === 'powerArmor' ? POWER_ARMOR_CAPACITIES : BODY_ARMOR_CAPACITIES;
+  let sum = 0;
+  for (const cls of reach) sum += capacities[cls];
+  return sum > 0 ? sum : 1;
+}
+
+function feasibilityFamilyOf(effect: ArmorEffectEntry): FeasibilityFamilyKey | null {
+  if (effect.group === 'legendary') return null;
+  if (effect.pieceReach?.has('underarmorStyle')) return 'underarmorStyle';
+  if (effect.pieceReach?.has('underarmorLining')) return 'underarmorLining';
+  if (effect.group === 'material') return 'bodyArmor:material';
+  if (effect.group === 'misc' && effect.armorType === 'powerArmor') return 'powerArmor:misc';
+  if (effect.group === 'misc') return 'bodyArmor:misc';
+  return null;
+}
+
+function activeClasses(capacities: Readonly<Record<ArmorPieceClass, number>>): ArmorPieceClass[] {
+  return (Object.keys(capacities) as ArmorPieceClass[]).filter((c) => capacities[c] > 0);
+}
+
+function allNonEmptySubsets<T>(items: readonly T[]): T[][] {
+  const out: T[][] = [];
+  const n = items.length;
+  for (let mask = 1; mask < 1 << n; mask++) {
+    const subset: T[] = [];
+    for (let i = 0; i < n; i++) {
+      if (mask & (1 << i)) subset.push(items[i]);
+    }
+    out.push(subset);
+  }
+  return out;
+}
+
+function isReachSubsetOf(
+  reach: ReadonlySet<ArmorPieceClass>,
+  subset: ReadonlySet<ArmorPieceClass>,
+): boolean {
+  for (const c of reach) {
+    if (!subset.has(c)) return false;
+  }
+  return true;
+}
+
+function capacityOfSubset(
+  subset: ReadonlySet<ArmorPieceClass>,
+  capacities: Readonly<Record<ArmorPieceClass, number>>,
+): number {
+  let sum = 0;
+  for (const c of subset) sum += capacities[c];
+  return sum;
+}
+
+function usedInSubset(
+  items: ReadonlyArray<{ reach: ReadonlySet<ArmorPieceClass>; count: number }>,
+  subset: ReadonlySet<ArmorPieceClass>,
+): number {
+  let sum = 0;
+  for (const item of items) {
+    if (isReachSubsetOf(item.reach, subset)) sum += item.count;
+  }
+  return sum;
+}
+
+function supersetsOfReach(
+  reach: ReadonlySet<ArmorPieceClass>,
+  universe: readonly ArmorPieceClass[],
+): ReadonlySet<ArmorPieceClass>[] {
+  return allNonEmptySubsets(universe)
+    .filter((subset) => isReachSubsetOf(reach, new Set(subset)))
+    .map((subset) => new Set(subset));
+}
+
+function maxFeasibleForReach(
+  reach: ReadonlySet<ArmorPieceClass>,
+  capacities: Readonly<Record<ArmorPieceClass, number>>,
+  others: ReadonlyArray<{ reach: ReadonlySet<ArmorPieceClass>; count: number }>,
+  absoluteMax: number,
+): number {
+  const universe = activeClasses(capacities);
+  let max = absoluteMax;
+  for (const superset of supersetsOfReach(reach, universe)) {
+    const room = capacityOfSubset(superset, capacities) - usedInSubset(others, superset);
+    max = Math.min(max, room);
+  }
+  return Math.max(0, max);
 }
 
 function findWornPieceKeyword(modifiers: readonly Modifier[]): string | undefined {
@@ -134,7 +361,6 @@ function buildEntry(name: string, records: GeneratedOmod[]): ArmorEffectEntry {
     return a.id.localeCompare(b.id);
   });
   const representative = sorted[0];
-  const ids = sorted.map((r) => r.id);
   // "Powered" (+AP regen) has twin records at ap_Legendary1
   // (mod_Legendary_Armor_APRegen) and ap_Legendary2 (mod_Legendary_Armor2_
   // APRegen / mod_Legendary_PowerArmor2_APRegen); the alphabetical
@@ -147,9 +373,15 @@ function buildEntry(name: string, records: GeneratedOmod[]): ArmorEffectEntry {
   const selfScaling = representative.modifiers.some((m) =>
     m.conditions.some((c) => c.kind === 'wornPieceCount'),
   );
+
+  const armorType = isLegendary ? legendaryArmorType(sorted) : armorTypeOfRecord(representative);
+  const pieceReach = isLegendary ? undefined : derivePieceReach(name, sorted, armorType);
   const maxCount = isLegendary
     ? MAX_LEGENDARY_COUNT
-    : Math.max(1, Math.min(MAX_LEGENDARY_COUNT, countPieceTags(ids)));
+    : pieceReach && pieceReach.size > 0
+      ? maxCountFromReach(pieceReach, armorType)
+      : 1;
+
   const description =
     representative.description?.trim() ||
     describeBuffModifiers({ modifiers: representative.modifiers });
@@ -165,12 +397,14 @@ function buildEntry(name: string, records: GeneratedOmod[]): ArmorEffectEntry {
     wornPieceKeyword: selfScaling ? findWornPieceKeyword(representative.modifiers) : undefined,
     modifiers: representative.modifiers,
     starTier,
+    armorType,
+    pieceReach: pieceReach && pieceReach.size > 0 ? pieceReach : undefined,
   };
 }
 
 const effectsCache = new Map<GameMode, ArmorEffectEntry[]>();
 
-/** The full curated checklist inventory for `mode`, grouped and sorted (material → lining → misc → 1★–4★, alphabetical within each). */
+/** The full curated checklist inventory for `mode`, grouped and sorted (lining → material → misc → 1★–4★, alphabetical within each). */
 export function getArmorEffects(mode: GameMode): ArmorEffectEntry[] {
   const cached = effectsCache.get(mode);
   if (cached) return cached;
@@ -282,6 +516,51 @@ export function getArmorTierUsage(
   return usage;
 }
 
+function familyItemsForClamp(
+  mode: GameMode,
+  family: FeasibilityFamilyKey,
+  armorEffects: Readonly<Record<string, number>>,
+): Array<{ id: string; reach: ReadonlySet<ArmorPieceClass>; count: number }> {
+  const items: Array<{ id: string; reach: ReadonlySet<ArmorPieceClass>; count: number }> = [];
+  for (const effect of getArmorEffects(mode)) {
+    if (feasibilityFamilyOf(effect) !== family) continue;
+    const count = armorEffects[effect.id] ?? 0;
+    if (count <= 0 || !effect.pieceReach) continue;
+    items.push({ id: effect.id, reach: effect.pieceReach, count });
+  }
+  return items;
+}
+
+function clampOneFamily(
+  mode: GameMode,
+  family: FeasibilityFamilyKey,
+  armorEffects: Readonly<Record<string, number>>,
+  out: Record<string, number>,
+  insertionOrder: readonly string[],
+): boolean {
+  const capacities = FAMILY_CAPACITIES[family];
+  const entries = familyItemsForClamp(mode, family, armorEffects);
+  entries.sort((a, b) => insertionOrder.indexOf(a.id) - insertionOrder.indexOf(b.id));
+
+  const accepted: Array<{ reach: ReadonlySet<ArmorPieceClass>; count: number }> = [];
+  let changed = false;
+
+  for (const { id, reach, count: requested } of entries) {
+    const maxFeasible = maxFeasibleForReach(reach, capacities, accepted, requested);
+    const trimmed = Math.max(0, Math.min(requested, maxFeasible));
+    if (trimmed !== requested) changed = true;
+    if (trimmed > 0) {
+      out[id] = trimmed;
+      accepted.push({ reach, count: trimmed });
+    } else {
+      delete out[id];
+      if (requested > 0) changed = true;
+    }
+  }
+
+  return changed;
+}
+
 /**
  * Trims worn-piece-count selections so no legendary star tier's combined
  * total (across every effect sharing that tier) exceeds `MAX_LEGENDARY_COUNT`
@@ -317,4 +596,153 @@ export function clampArmorTierBudgets(
   }
 
   return { armorEffects: out, changed };
+}
+
+/**
+ * Trims non-legendary selections so every slot-exclusivity family stays
+ * feasible (Hall's subset test). Walks `Object.entries(armorEffects)` in
+ * insertion order within each family — first-set-wins, matching tier-budget
+ * semantics.
+ */
+export function clampArmorPieceCapacities(
+  mode: GameMode,
+  armorEffects: Readonly<Record<string, number>>,
+): { armorEffects: Record<string, number>; changed: boolean } {
+  const out: Record<string, number> = { ...armorEffects };
+  const insertionOrder = Object.keys(armorEffects);
+  let changed = false;
+
+  const families: FeasibilityFamilyKey[] = [
+    'bodyArmor:material',
+    'bodyArmor:misc',
+    'powerArmor:misc',
+    'underarmorStyle',
+    'underarmorLining',
+  ];
+
+  for (const family of families) {
+    const familyOut: Record<string, number> = {};
+    for (const effect of getArmorEffects(mode)) {
+      if (feasibilityFamilyOf(effect) === family && out[effect.id] !== undefined) {
+        familyOut[effect.id] = out[effect.id];
+      }
+    }
+    if (clampOneFamily(mode, family, armorEffects, familyOut, insertionOrder)) {
+      changed = true;
+      for (const effect of getArmorEffects(mode)) {
+        if (feasibilityFamilyOf(effect) === family) {
+          if (familyOut[effect.id] !== undefined) out[effect.id] = familyOut[effect.id];
+          else delete out[effect.id];
+        }
+      }
+    }
+  }
+
+  return { armorEffects: out, changed };
+}
+
+/**
+ * Maximum worn-piece count `effectId` can hold given the other selections in
+ * the same feasibility family. Legendary effects defer to star-tier budget
+ * only (callers layer `getArmorTierUsage` on top).
+ */
+export function maxFeasibleArmorEffectCount(
+  mode: GameMode,
+  effectId: string,
+  armorEffects: Readonly<Record<string, number>>,
+): number {
+  const effect = getArmorEffectById(mode, effectId);
+  if (!effect) return 0;
+  if (effect.group === 'legendary') return effect.maxCount;
+
+  const family = feasibilityFamilyOf(effect);
+  if (!family || !effect.pieceReach) return effect.maxCount;
+
+  const capacities = FAMILY_CAPACITIES[family];
+  const others: Array<{ reach: ReadonlySet<ArmorPieceClass>; count: number }> = [];
+  for (const e of getArmorEffects(mode)) {
+    if (e.id === effectId || feasibilityFamilyOf(e) !== family || !e.pieceReach) continue;
+    const count = armorEffects[e.id] ?? 0;
+    if (count > 0) others.push({ reach: e.pieceReach, count });
+  }
+
+  return maxFeasibleForReach(effect.pieceReach, capacities, others, effect.maxCount);
+}
+
+function greedyClassUsage(
+  capacities: Readonly<Record<ArmorPieceClass, number>>,
+  items: ReadonlyArray<{ reach: ReadonlySet<ArmorPieceClass>; count: number; id: string }>,
+): Partial<Record<ArmorPieceClass, number>> {
+  const used: Partial<Record<ArmorPieceClass, number>> = {};
+  for (const cls of activeClasses(capacities)) used[cls] = 0;
+
+  const sorted = [...items].sort((a, b) => {
+    const diff = a.reach.size - b.reach.size;
+    if (diff !== 0) return diff;
+    return a.id.localeCompare(b.id);
+  });
+
+  for (const item of sorted) {
+    for (let i = 0; i < item.count; i++) {
+      for (const cls of item.reach) {
+        if ((used[cls] ?? 0) < capacities[cls]) {
+          used[cls] = (used[cls] ?? 0) + 1;
+          break;
+        }
+      }
+    }
+  }
+
+  return used;
+}
+
+/** Per feasibility-family, per-class slot usage for group headers. */
+export function getArmorSlotUsage(
+  mode: GameMode,
+  armorEffects: Readonly<Record<string, number>>,
+): ArmorSlotUsage {
+  const usage: ArmorSlotUsage = {};
+  const families: FeasibilityFamilyKey[] = [
+    'bodyArmor:material',
+    'bodyArmor:misc',
+    'powerArmor:misc',
+    'underarmorStyle',
+    'underarmorLining',
+  ];
+
+  for (const family of families) {
+    const capacities = FAMILY_CAPACITIES[family];
+    const items: Array<{ reach: ReadonlySet<ArmorPieceClass>; count: number; id: string }> = [];
+    for (const effect of getArmorEffects(mode)) {
+      if (feasibilityFamilyOf(effect) !== family || !effect.pieceReach) continue;
+      const count = armorEffects[effect.id] ?? 0;
+      if (count <= 0) continue;
+      items.push({ reach: effect.pieceReach, count, id: effect.id });
+    }
+    const used = greedyClassUsage(capacities, items);
+    const familyUsage: Partial<Record<ArmorPieceClass, ArmorSlotUsageEntry>> = {};
+    for (const cls of activeClasses(capacities)) {
+      familyUsage[cls] = { used: used[cls] ?? 0, capacity: capacities[cls] };
+    }
+    usage[family] = familyUsage;
+  }
+
+  return usage;
+}
+
+/** Effect ids whose `armorType` mismatches the target power-armor toggle. `both` never mismatches. */
+export function wrongArmorTypeEffects(
+  mode: GameMode,
+  armorEffects: Readonly<Record<string, number>>,
+  isInPowerArmor: boolean,
+): string[] {
+  const removing: string[] = [];
+  for (const [id, count] of Object.entries(armorEffects)) {
+    if (count <= 0) continue;
+    const effect = getArmorEffectById(mode, id);
+    if (!effect || effect.armorType === 'both') continue;
+    if (isInPowerArmor && effect.armorType === 'bodyArmor') removing.push(id);
+    if (!isInPowerArmor && effect.armorType === 'powerArmor') removing.push(id);
+  }
+  return removing;
 }

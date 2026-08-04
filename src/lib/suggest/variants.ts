@@ -4,6 +4,7 @@ import {
   type ArmorEffectEntry,
   getArmorEffects,
   getArmorTierUsage,
+  maxFeasibleArmorEffectCount,
   MAX_LEGENDARY_COUNT,
 } from '@/data/armor-modifiers';
 import { getConsumables, getMutations } from '@/data/buffs';
@@ -59,6 +60,12 @@ function isDamageRelevant(mode: GameMode, perkId: string): boolean {
 /** An armor effect is damage-relevant when its per-piece modifiers reach the engine at all. */
 function isArmorEffectRelevant(effect: ArmorEffectEntry): boolean {
   return hasAnyEngineEffect(effect.modifiers);
+}
+
+function armorTypeEligible(effect: ArmorEffectEntry, isInPowerArmor: boolean): boolean {
+  if (effect.armorType === 'both') return true;
+  if (isInPowerArmor) return effect.armorType === 'powerArmor';
+  return effect.armorType === 'bodyArmor';
 }
 
 /**
@@ -229,20 +236,24 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
   // ── armor effects ──────────────────────────────────────────────────────────
   const armorEffects = getArmorEffects(mode);
   const tierUsage = getArmorTierUsage(mode, player.armorEffects);
+  const isInPowerArmor = player.conditions.isInPowerArmor;
 
   for (const effect of armorEffects) {
     const current = armorEffectCount(effect, player.armorEffects);
-    if (!isArmorEffectRelevant(effect)) continue;
+    if (!isArmorEffectRelevant(effect) || !armorTypeEligible(effect, isInPowerArmor)) continue;
 
+    const withoutSelf = { ...player.armorEffects };
+    delete withoutSelf[effect.id];
+    const maxFeasible = maxFeasibleArmorEffectCount(mode, effect.id, withoutSelf);
     const free =
       effect.starTier !== undefined
         ? MAX_LEGENDARY_COUNT - tierUsage[effect.starTier]
-        : effect.maxCount - current;
+        : maxFeasible - current;
     if (free <= 0) continue;
 
     const family = `armor-count:${effect.id}`;
     const touchedBuckets = bucketsOf(effect.modifiers);
-    const upper = Math.min(effect.maxCount, current + free);
+    const upper = Math.min(maxFeasible, current + free);
     for (let count = current + 1; count <= upper; count++) {
       out.push({
         id: `armor-count:${effect.id}:${count}`,
@@ -266,11 +277,20 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
     if (countX <= 0) continue;
 
     for (const y of armorEffects) {
-      if (y.id === x.id || y.starTier !== x.starTier || !isArmorEffectRelevant(y)) continue;
+      if (
+        y.id === x.id ||
+        y.starTier !== x.starTier ||
+        !isArmorEffectRelevant(y) ||
+        !armorTypeEligible(y, isInPowerArmor)
+      )
+        continue;
       const countY = armorEffectCount(y, player.armorEffects);
+      const withoutY = { ...player.armorEffects };
+      delete withoutY[y.id];
+      const maxY = maxFeasibleArmorEffectCount(mode, y.id, withoutY);
       const touchedBuckets = unionBuckets(x.modifiers, y.modifiers);
       for (let k = 1; k <= countX; k++) {
-        if (countY + k > y.maxCount) continue;
+        if (countY + k > maxY) continue;
         out.push({
           id: `armor-swap:${x.id}:${y.id}:${k}`,
           action: [

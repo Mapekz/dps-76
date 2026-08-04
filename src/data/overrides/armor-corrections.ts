@@ -28,6 +28,13 @@ export const hiddenArmorOmodIds: ReadonlySet<string> = new Set<string>([
   // unmapped" — the actual reflect-damage mechanic never extracted). See
   // #49.
   'mod_Legendary_Armor_ReflectDamage',
+  // "No Misc" / "No Misc Mod": the workbench's empty-slot placeholder OMODs
+  // (`*_Null` ids, zero modifiers, generic set-wide target keywords). The
+  // picker's unselected state already means "no misc mod"; as roster rows
+  // they'd consume piece-slot feasibility budget (full-chassis reach via the
+  // untagged-keyword fallback) and block real mods for no reason.
+  'mod_armor_Lining_Null',
+  'mod_PowerArmor_Misc_Null',
 ]);
 
 /**

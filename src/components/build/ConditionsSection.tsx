@@ -170,7 +170,6 @@ export function ConditionsSection() {
         isPowerAttacking: conditions.isPowerAttacking,
         isLastShot: conditions.isLastShot ?? false,
         isAimingDownSights: conditions.isAimingDownSights ?? false,
-        isInPowerArmor: conditions.isInPowerArmor,
         hydrated: conditions.hydrated ?? true,
       },
       {
@@ -190,7 +189,6 @@ export function ConditionsSection() {
         isPowerAttacking: defaults.isPowerAttacking,
         isLastShot: defaults.isLastShot ?? false,
         isAimingDownSights: defaults.isAimingDownSights ?? false,
-        isInPowerArmor: defaults.isInPowerArmor,
         hydrated: defaults.hydrated ?? true,
       },
     ) +
@@ -567,13 +565,6 @@ export function ConditionsSection() {
             label="Aiming down sights"
             checked={conditions.isAimingDownSights ?? false}
             onCheckedChange={(v) => set('isAimingDownSights', v)}
-          />
-
-          <SwitchRow
-            id="char-power-armor"
-            label="Wearing power armor"
-            checked={conditions.isInPowerArmor}
-            onCheckedChange={(v) => set('isInPowerArmor', v)}
           />
         </div>
       </AccordionContent>
