@@ -140,26 +140,6 @@
   ]
  },
  {
-  "id": "P62_Mod_Custom_Splinter_CustomName",
-  "name": "Splinter",
-  "baseWeaponId": "10mmSMG",
-  "mods": {
-   "ap_gun_Receiver": "mod_10mmSMG_Receiver_CritDMG-HipAccuracy",
-   "ap_gun_Barrel": "mod_10mmSMG_Barrel_Long_HipAccuracy",
-   "ap_gun_Grip": "mod_10mmSMG_Grip_HipAccuracy",
-   "ap_gun_Mag": "mod_10mmSMG_Magazine_ArmorPen",
-   "ap_gun_Scope": "mod_10mmSMG_SCOPE_Reflex_Base",
-   "ap_customName": "P62_Mod_Custom_Splinter_CustomName",
-   "ap_Misc": "P62_Mod_Custom_Splinter_SpecialEffect"
-  },
-  "legendaryEffects": [
-   "mod_Legendary_Weapon1_Vampire",
-   "mod_Legendary_Weapon2_Guns_ExplosiveBullets",
-   "mod_Legendary_Weapon3_Guns_ResistReload",
-   "mod_Legendary_Weapon4_Pyromaniac"
-  ]
- },
- {
   "id": "mod_Custom_OldGuard",
   "name": "Old Guard",
   "baseWeaponId": "10mmSMG",
@@ -229,22 +209,6 @@
    "mod_Legendary_Weapon1_DamageNight",
    null,
    null
-  ]
- },
- {
-  "id": "P62_Mod_Custom_Tempest_CustomName",
-  "name": "Tempest",
-  "baseWeaponId": "DLC01_AssaultronBlade",
-  "mods": {
-   "ap_melee_MeleeMod": "dlc01_mod_melee_assaultronblade_Shock",
-   "ap_customName": "P62_Mod_Custom_Tempest_CustomName",
-   "ap_Misc": "P62_Mod_Custom_Tempest_SpecialEffect"
-  },
-  "legendaryEffects": [
-   "mod_Legendary_Weapon1_DamageInverseHealth",
-   "mod_Legendary_Weapon2_Melee_SwingSpeed",
-   "mod_Legendary_Weapon3_StatStrength",
-   "mod_Legendary_Weapon4_Melee_Pounders"
   ]
  },
  {
@@ -490,17 +454,25 @@
   ]
  },
  {
-  "id": "mod_Custom_CamdenWhacker",
+  "id": "mod_Custom_CamdenWhacker_Bleed",
   "name": "Camden Whacker",
   "baseWeaponId": "DLC04_CommieWhacker",
   "mods": {
    "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod",
-   "ap_customName": "mod_Custom_CamdenWhacker"
+   "ap_customName": "mod_Custom_CamdenWhacker_Bleed"
   },
   "legendaryEffects": [
    null,
    null,
    null
+  ],
+  "variantIds": [
+   "mod_Custom_CamdenWhacker_Bleed",
+   "mod_Custom_CamdenWhacker_Energy",
+   "mod_Custom_CamdenWhacker_RAD",
+   "mod_Custom_CamdenWhacker_Cryo",
+   "mod_Custom_CamdenWhacker_Fire",
+   "mod_Custom_CamdenWhacker_Poison"
   ]
  },
  {
@@ -1025,24 +997,6 @@
   ]
  },
  {
-  "id": "P62_Mod_Custom_ChaosEngine_CustomName",
-  "name": "Chaos Engine",
-  "baseWeaponId": "M79",
-  "mods": {
-   "ap_gun_Receiver": "mod_M79_Receiver_Standard",
-   "ap_gun_Barrel": "mod_M79_Barrel_Long",
-   "ap_gun_Grip": "mod_M79_StockFull",
-   "ap_customName": "P62_Mod_Custom_ChaosEngine_CustomName",
-   "ap_Misc": "P62_Mod_Custom_ChaosEngine_SpecialEffect"
-  },
-  "legendaryEffects": [
-   "mod_Legendary_Weapon1_Guns_TwoShot",
-   "mod_Legendary_Weapon2_DmgLimbs",
-   "mod_Legendary_Weapon3_Guns_ReloadSpeed",
-   "mod_Legendary_Weapon4_Guns_Electricians"
-  ]
- },
- {
   "id": "mod_Custom_CrushingBlow",
   "name": "Crushing Blow",
   "baseWeaponId": "M79",
@@ -1333,17 +1287,25 @@
   ]
  },
  {
-  "id": "SDOW_Mod_Custom_RelicReaper",
+  "id": "SDOW_Mod_Custom_RelicReaper_CapCollector",
   "name": "Relic Reaper",
   "baseWeaponId": "Shovel",
   "mods": {
-   "ap_customName": "SDOW_Mod_Custom_RelicReaper",
+   "ap_customName": "SDOW_Mod_Custom_RelicReaper_CapCollector",
    "ap_melee_MeleeMod": "mod_melee_Null_MeleeMod"
   },
   "legendaryEffects": [
    null,
    "mod_Legendary_Weapon2_Melee_PickPocket",
    null
+  ],
+  "variantIds": [
+   "SDOW_Mod_Custom_RelicReaper_CapCollector",
+   "SDOW_Mod_Custom_RelicReaper_FortuneFinder",
+   "SDOW_Mod_Custom_RelicReaper_Pannapictagraphist",
+   "SDOW_Mod_Custom_RelicReaper_PerceptiBobble",
+   "SDOW_Mod_Custom_RelicReaper_CanDo",
+   "SDOW_Mod_Custom_RelicReaper_PharmaFarma"
   ]
  },
  {

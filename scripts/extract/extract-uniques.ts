@@ -1,7 +1,7 @@
 import { hiddenOmodIds, omodNameOverrides } from '../../src/data/overrides/omod-corrections';
 import type { GeneratedOmod, GeneratedUnique, GeneratedWeapon } from '../../src/types/generated';
 import type { EsmClient } from './esm-client';
-import { isExcludedOmodEdid } from './extract-omods';
+import { isExcludedOmodEdid, isVariantContainer } from './extract-omods';
 import { walkWeaponCombinations } from './extract-weapons';
 
 const COSMETIC_SLOT_RE = /appearance|paint|skin|material/i;
@@ -71,6 +71,26 @@ function stripIdentityOmodNameSuffix(name: string): string {
   return name.replace(/\s+Custom (Mod|Name)$/i, '');
 }
 
+async function resolveContainerPresetName(
+  client: EsmClient,
+  containerEdid: string,
+  containerFormId: string,
+  comboName: string,
+): Promise<string> {
+  const override = omodNameOverrides[containerEdid];
+  if (override !== undefined) return override;
+  try {
+    const record = await client.get(containerFormId);
+    const fromOmod = stripIdentityOmodNameSuffix(
+      ((record.fields['Name'] as string | undefined) ?? record.editor_id).trim(),
+    );
+    if (fromOmod) return fromOmod;
+  } catch {
+    /* fall through */
+  }
+  return comboName;
+}
+
 function resolveUniquePresetName(identityOmod: GeneratedOmod, comboName: string): string {
   const override = omodNameOverrides[identityOmod.id];
   if (override !== undefined) return override;
@@ -90,10 +110,63 @@ export interface ExtractUniquesResult {
   skipped: SkippedUniqueCombination[];
 }
 
+function lowestFormIdVariant(variants: GeneratedOmod[]): GeneratedOmod {
+  return [...variants].sort((a, b) => a.formId.localeCompare(b.formId))[0];
+}
+
+async function resolveVariantContainer(
+  client: EsmClient,
+  containerFormId: string,
+  omodByFormId: Map<string, GeneratedOmod>,
+  variantContainers: Record<string, GeneratedOmod[]> | undefined,
+): Promise<{
+  defaultOmod: GeneratedOmod;
+  variantIds: string[];
+  containerEdid: string;
+  containerFormId: string;
+} | null> {
+  const fromExtract = variantContainers?.[containerFormId];
+  if (fromExtract?.length) {
+    const sorted = [...fromExtract].sort((a, b) => a.formId.localeCompare(b.formId));
+    const containerEdid = sorted[0].variantOf ?? '';
+    return {
+      defaultOmod: sorted[0],
+      variantIds: sorted.map((v) => v.id),
+      containerEdid,
+      containerFormId,
+    };
+  }
+  try {
+    const containerRecord = await client.get(containerFormId);
+    if (!isVariantContainer(containerRecord)) return null;
+    const data = (containerRecord.fields['Data'] ?? {}) as Record<string, unknown>;
+    const includes = data['Includes'];
+    if (!Array.isArray(includes)) return null;
+    const variantFormIds = (includes as Array<Record<string, unknown>>)
+      .map((i) => i['Mod'])
+      .filter((m): m is string => typeof m === 'string')
+      .sort();
+    const variantOmods = variantFormIds
+      .map((id) => omodByFormId.get(id))
+      .filter((o): o is GeneratedOmod => o !== undefined);
+    if (variantOmods.length === 0) return null;
+    const defaultOmod = lowestFormIdVariant(variantOmods);
+    return {
+      defaultOmod,
+      variantIds: variantOmods.map((v) => v.id),
+      containerEdid: containerRecord.editor_id,
+      containerFormId,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function extractUniques(
   client: EsmClient,
   weapons: GeneratedWeapon[],
   omods: GeneratedOmod[],
+  variantContainers: Record<string, GeneratedOmod[]> = {},
 ): Promise<ExtractUniquesResult> {
   const omodByFormId = new Map(omods.map((o) => [o.formId, o]));
   const omodById = new Map(omods.map((o) => [o.id, o]));
@@ -110,12 +183,30 @@ export async function extractUniques(
 
     for (const combo of combinations) {
       let identityOmod: GeneratedOmod | undefined;
+      let variantIds: string[] | undefined;
+      let variantContainer: { edid: string; formId: string } | undefined;
       const mods: Record<string, string> = {};
       const legendaryByIndex = new Map<number, string>();
       const randomLegendaryIndices = new Set<number>();
 
       for (const formId of combo.modFormIds) {
-        const omod = omodByFormId.get(formId);
+        let omod = omodByFormId.get(formId);
+        if (!omod) {
+          const resolved = await resolveVariantContainer(
+            client,
+            formId,
+            omodByFormId,
+            variantContainers,
+          );
+          if (resolved) {
+            omod = resolved.defaultOmod;
+            variantIds = resolved.variantIds;
+            variantContainer = {
+              edid: resolved.containerEdid,
+              formId: resolved.containerFormId,
+            };
+          }
+        }
         if (!omod) {
           // Not in the (Weapon-Form-Type-filtered) omods dataset — check if
           // it's the shared random-legendary-pool selector before giving up.
@@ -165,12 +256,21 @@ export async function extractUniques(
       }
 
       seenIdentityIds.add(identityOmod.id);
+      const presetName = variantContainer
+        ? await resolveContainerPresetName(
+            client,
+            variantContainer.edid,
+            variantContainer.formId,
+            combo.name,
+          )
+        : resolveUniquePresetName(identityOmod, combo.name);
       uniques.push({
         id: identityOmod.id,
-        name: resolveUniquePresetName(identityOmod, combo.name),
+        name: presetName,
         baseWeaponId: weapon.id,
         mods,
         legendaryEffects,
+        ...(variantIds ? { variantIds } : {}),
       });
     }
   }

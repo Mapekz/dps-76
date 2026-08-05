@@ -12089,10 +12089,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -12109,9 +12105,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -12511,10 +12505,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -12532,9 +12522,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -12875,10 +12863,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -12898,9 +12882,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -24486,88 +24468,6 @@
     "conditions": [
      {
       "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "HasPerk(ImmuneToPoison)=0"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "poison"
-      ]
-     }
-    ],
-    "durationSec": 20
-   },
-   {
-    "id": "0x0062EB04:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0062EB04",
-     "edid": "mod_AlienBlaster_AlienMag_DTPoison",
-     "name": "Poison Mag"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 16
-      },
-      {
-       "x": 5,
-       "y": 18
-      },
-      {
-       "x": 10,
-       "y": 20
-      },
-      {
-       "x": 15,
-       "y": 23
-      },
-      {
-       "x": 20,
-       "y": 26
-      },
-      {
-       "x": 25,
-       "y": 29
-      },
-      {
-       "x": 30,
-       "y": 33
-      },
-      {
-       "x": 35,
-       "y": 37
-      },
-      {
-       "x": 40,
-       "y": 42
-      },
-      {
-       "x": 45,
-       "y": 47
-      },
-      {
-       "x": 50,
-       "y": 53
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "unresolved",
       "raw": "HasPerk(ImmuneToPoison)=0"
      },
      {
@@ -24590,9 +24490,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "EXPL ExplosionAlienBlasterPoison Base Weapon Damage Mult 0.1 — superseded by the EXPL's own direct damage above, not consumed",
-   "condition: HasPerk(ImmuneToPoison)=0",
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
+   "condition: HasPerk(ImmuneToPoison)=0"
   ],
   "obtainable": true
  },
@@ -25274,88 +25172,6 @@
     "conditions": [
      {
       "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "HasPerk(ImmuneToPoison)=0"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "poison"
-      ]
-     }
-    ],
-    "durationSec": 20
-   },
-   {
-    "id": "0x0062FE8A:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0062FE8A",
-     "edid": "mod_AlienRifle_Receiver_Poison",
-     "name": "Poison Receiver"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 7
-      },
-      {
-       "x": 5,
-       "y": 8
-      },
-      {
-       "x": 10,
-       "y": 9
-      },
-      {
-       "x": 15,
-       "y": 10
-      },
-      {
-       "x": 20,
-       "y": 12
-      },
-      {
-       "x": 25,
-       "y": 13
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 35,
-       "y": 17
-      },
-      {
-       "x": 40,
-       "y": 19
-      },
-      {
-       "x": 45,
-       "y": 21
-      },
-      {
-       "x": 50,
-       "y": 24
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "unresolved",
       "raw": "HasPerk(ImmuneToPoison)=0"
      },
      {
@@ -25378,9 +25194,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "condition: HasPerk(ImmuneToPoison)=0",
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
+   "condition: HasPerk(ImmuneToPoison)=0"
   ],
   "obtainable": true
  },
@@ -31203,84 +31017,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x0004DF00:ench:4",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0004DF00",
-     "edid": "mod_Chainsaw_Flamer",
-     "name": "Flamer"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 11
-      },
-      {
-       "x": 5,
-       "y": 12
-      },
-      {
-       "x": 10,
-       "y": 14
-      },
-      {
-       "x": 15,
-       "y": 16
-      },
-      {
-       "x": 20,
-       "y": 18
-      },
-      {
-       "x": 25,
-       "y": 20
-      },
-      {
-       "x": 30,
-       "y": 23
-      },
-      {
-       "x": 35,
-       "y": 26
-      },
-      {
-       "x": 40,
-       "y": 29
-      },
-      {
-       "x": 45,
-       "y": 33
-      },
-      {
-       "x": 50,
-       "y": 37
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -31298,10 +31034,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -40948,84 +40681,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 7
-   },
-   {
-    "id": "0x00590459:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00590459",
-     "edid": "mod_Crossbow_Receiver_Flaming",
-     "name": "Flaming Frame"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 18
-      },
-      {
-       "x": 5,
-       "y": 20
-      },
-      {
-       "x": 10,
-       "y": 22
-      },
-      {
-       "x": 15,
-       "y": 25
-      },
-      {
-       "x": 20,
-       "y": 29
-      },
-      {
-       "x": 25,
-       "y": 32
-      },
-      {
-       "x": 30,
-       "y": 36
-      },
-      {
-       "x": 35,
-       "y": 41
-      },
-      {
-       "x": 40,
-       "y": 46
-      },
-      {
-       "x": 45,
-       "y": 52
-      },
-      {
-       "x": 50,
-       "y": 59
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -41042,10 +40697,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -42382,10 +42034,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -42405,9 +42053,7 @@
    "dn_UniqueEffectFireDamage"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -42489,21 +42135,247 @@
   "obtainable": true
  },
  {
-  "id": "mod_Custom_CamdenWhacker",
-  "formId": "0x008EDF26",
-  "name": "Camden Whacker",
+  "id": "mod_Custom_CamdenWhacker_Bleed",
+  "formId": "0x008EDF27",
+  "name": "Camden Whacker (Bleed)",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
   "modifiers": [
    {
-    "id": "0x008EDF26:ench:0",
+    "id": "0x008EDF27:ench:0",
     "source": {
      "kind": "omod",
-     "formId": "0x008EDF26",
-     "edid": "mod_Custom_CamdenWhacker",
-     "name": "Camden Whacker"
+     "formId": "0x008EDF27",
+     "edid": "mod_Custom_CamdenWhacker_Bleed",
+     "name": "Camden Whacker (Bleed)"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 2
+      },
+      {
+       "x": 50,
+       "y": 2
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     }
+    ],
+    "durationSec": 5
+   }
+  ],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "dn_UniqueEffectBleedDamage"
+  ],
+  "hasEnchantments": true,
+  "variantOf": "mod_Custom_CamdenWhacker",
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "mod_Custom_CamdenWhacker_Cryo",
+  "formId": "0x008EDF2A",
+  "name": "Camden Whacker (Cryo)",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [
+   {
+    "id": "0x008EDF2A:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008EDF2A",
+     "edid": "mod_Custom_CamdenWhacker_Cryo",
+     "name": "Camden Whacker (Cryo)"
+    },
+    "bucket": "baseDamage",
+    "op": "MUL_ADD",
+    "value": -0.4,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x008EDF2A:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008EDF2A",
+     "edid": "mod_Custom_CamdenWhacker_Cryo",
+     "name": "Camden Whacker (Cryo)"
+    },
+    "bucket": "baseDamage",
+    "op": "MUL_ADD",
+    "value": 0.6,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "cryo"
+      ]
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "DamageTypeCyro",
+   "dn_UniqueEffectCryoDamage"
+  ],
+  "hasEnchantments": false,
+  "variantOf": "mod_Custom_CamdenWhacker",
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "mod_Custom_CamdenWhacker_Energy",
+  "formId": "0x008EDF28",
+  "name": "Camden Whacker (Energy)",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [
+   {
+    "id": "0x008EDF28:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008EDF28",
+     "edid": "mod_Custom_CamdenWhacker_Energy",
+     "name": "Camden Whacker (Energy)"
+    },
+    "bucket": "baseDamage",
+    "op": "MUL_ADD",
+    "value": -0.4,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     }
+    ]
+   },
+   {
+    "id": "0x008EDF28:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008EDF28",
+     "edid": "mod_Custom_CamdenWhacker_Energy",
+     "name": "Camden Whacker (Energy)"
+    },
+    "bucket": "baseDamage",
+    "op": "MUL_ADD",
+    "value": 0.6,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "energy"
+      ]
+     }
+    ]
+   }
+  ],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "DamageTypeEnergy",
+   "dn_UniqueEffectEnergyDamage"
+  ],
+  "hasEnchantments": false,
+  "variantOf": "mod_Custom_CamdenWhacker",
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "mod_Custom_CamdenWhacker_Fire",
+  "formId": "0x008EDF2B",
+  "name": "Camden Whacker (Fire)",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [
+   {
+    "id": "0x008EDF2B:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008EDF2B",
+     "edid": "mod_Custom_CamdenWhacker_Fire",
+     "name": "Camden Whacker (Fire)"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 2
+      },
+      {
+       "x": 50,
+       "y": 10
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ],
+    "durationSec": 3
+   }
+  ],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "dn_UniqueEffectFireDamage"
+  ],
+  "hasEnchantments": true,
+  "variantOf": "mod_Custom_CamdenWhacker",
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "mod_Custom_CamdenWhacker_Poison",
+  "formId": "0x008EDF2C",
+  "name": "Camden Whacker (Poison)",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [
+   {
+    "id": "0x008EDF2C:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008EDF2C",
+     "edid": "mod_Custom_CamdenWhacker_Poison",
+     "name": "Camden Whacker (Poison)"
     },
     "bucket": "dotDamage",
     "op": "ADD",
@@ -42566,128 +42438,33 @@
      }
     ],
     "durationSec": 10
-   },
+   }
+  ],
+  "addedKeywords": [
+   "ObjectTypeUnique",
+   "dn_UniqueEffectPoisonDamage"
+  ],
+  "hasEnchantments": true,
+  "variantOf": "mod_Custom_CamdenWhacker",
+  "notes": [],
+  "obtainable": true
+ },
+ {
+  "id": "mod_Custom_CamdenWhacker_RAD",
+  "formId": "0x008EDF29",
+  "name": "Camden Whacker (Radiation)",
+  "description": "",
+  "attachPointFormId": "0x0047A264",
+  "attachPointEdid": "ap_customName",
+  "targetKeywords": [],
+  "modifiers": [
    {
-    "id": "0x008EDF26:1",
+    "id": "0x008EDF29:ench:0",
     "source": {
      "kind": "omod",
-     "formId": "0x008EDF26",
-     "edid": "mod_Custom_CamdenWhacker",
-     "name": "Camden Whacker"
-    },
-    "bucket": "baseDamage",
-    "op": "MUL_ADD",
-    "value": -0.4,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "ballistic"
-      ]
-     }
-    ]
-   },
-   {
-    "id": "0x008EDF26:2",
-    "source": {
-     "kind": "omod",
-     "formId": "0x008EDF26",
-     "edid": "mod_Custom_CamdenWhacker",
-     "name": "Camden Whacker"
-    },
-    "bucket": "baseDamage",
-    "op": "MUL_ADD",
-    "value": 0.6,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "cryo"
-      ]
-     }
-    ]
-   },
-   {
-    "id": "0x008EDF26:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x008EDF26",
-     "edid": "mod_Custom_CamdenWhacker",
-     "name": "Camden Whacker"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 50,
-       "y": 2
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "ballistic"
-      ]
-     }
-    ],
-    "durationSec": 5
-   },
-   {
-    "id": "0x008EDF26:4",
-    "source": {
-     "kind": "omod",
-     "formId": "0x008EDF26",
-     "edid": "mod_Custom_CamdenWhacker",
-     "name": "Camden Whacker"
-    },
-    "bucket": "baseDamage",
-    "op": "MUL_ADD",
-    "value": -0.4,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "ballistic"
-      ]
-     }
-    ]
-   },
-   {
-    "id": "0x008EDF26:5",
-    "source": {
-     "kind": "omod",
-     "formId": "0x008EDF26",
-     "edid": "mod_Custom_CamdenWhacker",
-     "name": "Camden Whacker"
-    },
-    "bucket": "baseDamage",
-    "op": "MUL_ADD",
-    "value": 0.6,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "energy"
-      ]
-     }
-    ]
-   },
-   {
-    "id": "0x008EDF26:ench:6",
-    "source": {
-     "kind": "omod",
-     "formId": "0x008EDF26",
-     "edid": "mod_Custom_CamdenWhacker",
-     "name": "Camden Whacker"
+     "formId": "0x008EDF29",
+     "edid": "mod_Custom_CamdenWhacker_RAD",
+     "name": "Camden Whacker (Radiation)"
     },
     "bucket": "dotDamage",
     "op": "ADD",
@@ -42701,54 +42478,13 @@
      }
     ],
     "durationSec": 2
-   },
-   {
-    "id": "0x008EDF26:ench:7",
-    "source": {
-     "kind": "omod",
-     "formId": "0x008EDF26",
-     "edid": "mod_Custom_CamdenWhacker",
-     "name": "Camden Whacker"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 2
-      },
-      {
-       "x": 50,
-       "y": 10
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
    }
   ],
   "addedKeywords": [
-   "ObjectTypeUnique",
-   "dn_UniqueEffectPoisonDamage",
-   "DamageTypeCyro",
-   "dn_UniqueEffectCryoDamage",
-   "dn_UniqueEffectBleedDamage",
-   "DamageTypeEnergy",
-   "dn_UniqueEffectEnergyDamage",
-   "dn_UniqueEffectRadiationDamage",
-   "dn_UniqueEffectFireDamage"
+   "dn_UniqueEffectRadiationDamage"
   ],
   "hasEnchantments": true,
+  "variantOf": "mod_Custom_CamdenWhacker",
   "notes": [],
   "obtainable": true
  },
@@ -43295,10 +43031,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -43401,9 +43133,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -45392,84 +45122,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x00471884:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00471884",
-     "edid": "mod_Custom_PerfectStorm",
-     "name": "Perfect Storm"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 5
-      },
-      {
-       "x": 5,
-       "y": 6
-      },
-      {
-       "x": 10,
-       "y": 6
-      },
-      {
-       "x": 15,
-       "y": 7
-      },
-      {
-       "x": 20,
-       "y": 8
-      },
-      {
-       "x": 25,
-       "y": 9
-      },
-      {
-       "x": 30,
-       "y": 11
-      },
-      {
-       "x": 35,
-       "y": 12
-      },
-      {
-       "x": 40,
-       "y": 13
-      },
-      {
-       "x": 45,
-       "y": 15
-      },
-      {
-       "x": 50,
-       "y": 17
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -45489,10 +45141,7 @@
    "HasLegendary_Weapon_IncendiaryBullets"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -46906,35 +46555,6 @@
     },
     "bucket": "dotDamage",
     "op": "ADD",
-    "value": 5,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "HasPerk(ImmuneToPoison)=0"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "poison"
-      ]
-     }
-    ],
-    "durationSec": 10
-   },
-   {
-    "id": "0x006E2242:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x006E2242",
-     "edid": "mod_custom_TheKabloom_Effect",
-     "name": "Poison"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
     "curve": {
      "input": "itemLevel",
      "points": [
@@ -46988,10 +46608,6 @@
     "conditions": [
      {
       "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "unresolved",
       "raw": "HasPerk(ImmuneToPoison)=0"
      },
      {
@@ -47014,9 +46630,7 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "condition: HasPerk(ImmuneToPoison)=0",
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
+   "condition: HasPerk(ImmuneToPoison)=0"
   ],
   "obtainable": true
  },
@@ -47709,7 +47323,7 @@
   ],
   "hasEnchantments": false,
   "notes": [
-   "perk mod_custom_V63-BERTHA_Perk: entry point Unknown — not modeled"
+   "perk mod_custom_V63-BERTHA_Perk: entry point Mod Chain Damage Falloff — not modeled"
   ],
   "obtainable": true
  },
@@ -48008,12 +47622,24 @@
   "attachPointFormId": "0x00521926",
   "attachPointEdid": "ap_Item_Description",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00522666:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00522666",
+     "edid": "mod_Description_MoM_BladeofBastet",
+     "name": "mod_Description_MoM_BladeofBastet"
+    },
+    "bucket": "armorPen",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [],
   "hasEnchantments": true,
-  "notes": [
-   "AbFortifyArmorPenetration: curve with unmapped input AV 0x006DE64A — needs override"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -53058,10 +52684,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -53071,81 +52693,7 @@
     "durationSec": 3
    },
    {
-    "id": "0x0018C6FA:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0018C6FA",
-     "edid": "mod_Enclave_PlasmaGun_Receiver_Burning",
-     "name": "Gamma Wave Emitter"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 6
-      },
-      {
-       "x": 5,
-       "y": 7
-      },
-      {
-       "x": 10,
-       "y": 8
-      },
-      {
-       "x": 15,
-       "y": 9
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 25,
-       "y": 11
-      },
-      {
-       "x": 30,
-       "y": 13
-      },
-      {
-       "x": 35,
-       "y": 14
-      },
-      {
-       "x": 40,
-       "y": 16
-      },
-      {
-       "x": 45,
-       "y": 18
-      },
-      {
-       "x": 50,
-       "y": 20
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x0018C6FA:4",
+    "id": "0x0018C6FA:3",
     "source": {
      "kind": "omod",
      "formId": "0x0018C6FA",
@@ -53220,10 +52768,7 @@
    "dn_HasReceiver_GammaWave"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -53391,10 +52936,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -53404,81 +52945,7 @@
     "durationSec": 3
    },
    {
-    "id": "0x0018C706:ench:5",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0018C706",
-     "edid": "mod_Enclave_PlasmaGun_Receiver_Burning-CritDMG",
-     "name": "Severe Beta Wave Tuner"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 6
-      },
-      {
-       "x": 5,
-       "y": 7
-      },
-      {
-       "x": 10,
-       "y": 8
-      },
-      {
-       "x": 15,
-       "y": 9
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 25,
-       "y": 11
-      },
-      {
-       "x": 30,
-       "y": 13
-      },
-      {
-       "x": 35,
-       "y": 14
-      },
-      {
-       "x": 40,
-       "y": 16
-      },
-      {
-       "x": 45,
-       "y": 18
-      },
-      {
-       "x": 50,
-       "y": 20
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x0018C706:6",
+    "id": "0x0018C706:5",
     "source": {
      "kind": "omod",
      "formId": "0x0018C706",
@@ -53553,10 +53020,7 @@
    "dn_HasReceiver_Severe"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -53698,10 +53162,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -53711,81 +53171,7 @@
     "durationSec": 3
    },
    {
-    "id": "0x0018C70A:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0018C70A",
-     "edid": "mod_Enclave_PlasmaGun_Receiver_Burning-HipAccuracy",
-     "name": "Refined Beta Wave Tuner"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 6
-      },
-      {
-       "x": 5,
-       "y": 7
-      },
-      {
-       "x": 10,
-       "y": 8
-      },
-      {
-       "x": 15,
-       "y": 9
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 25,
-       "y": 11
-      },
-      {
-       "x": 30,
-       "y": 13
-      },
-      {
-       "x": 35,
-       "y": 14
-      },
-      {
-       "x": 40,
-       "y": 16
-      },
-      {
-       "x": 45,
-       "y": 18
-      },
-      {
-       "x": 50,
-       "y": 20
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x0018C70A:4",
+    "id": "0x0018C70A:3",
     "source": {
      "kind": "omod",
      "formId": "0x0018C70A",
@@ -53860,10 +53246,7 @@
    "dn_HasReceiver_BetaWave"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -54792,10 +54175,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -54811,9 +54190,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -56763,10 +56140,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -56776,81 +56149,7 @@
     "durationSec": 3
    },
    {
-    "id": "0x00312AF5:ench:2",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00312AF5",
-     "edid": "mod_GatlingLaser_Receiver_Burning_Base",
-     "name": "Gamma Wave Emitter"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 7
-      },
-      {
-       "x": 5,
-       "y": 8
-      },
-      {
-       "x": 10,
-       "y": 9
-      },
-      {
-       "x": 15,
-       "y": 10
-      },
-      {
-       "x": 20,
-       "y": 12
-      },
-      {
-       "x": 25,
-       "y": 13
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 35,
-       "y": 17
-      },
-      {
-       "x": 40,
-       "y": 19
-      },
-      {
-       "x": 45,
-       "y": 21
-      },
-      {
-       "x": 50,
-       "y": 24
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x00312AF5:3",
+    "id": "0x00312AF5:2",
     "source": {
      "kind": "omod",
      "formId": "0x00312AF5",
@@ -56928,10 +56227,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -57066,10 +56362,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -57079,81 +56371,7 @@
     "durationSec": 3
    },
    {
-    "id": "0x00312AF7:ench:4",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00312AF7",
-     "edid": "mod_GatlingLaser_Receiver_Burning-CritDMG",
-     "name": "Severe Beta Wave Tuner"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 7
-      },
-      {
-       "x": 5,
-       "y": 8
-      },
-      {
-       "x": 10,
-       "y": 9
-      },
-      {
-       "x": 15,
-       "y": 10
-      },
-      {
-       "x": 20,
-       "y": 12
-      },
-      {
-       "x": 25,
-       "y": 13
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 35,
-       "y": 17
-      },
-      {
-       "x": 40,
-       "y": 19
-      },
-      {
-       "x": 45,
-       "y": 21
-      },
-      {
-       "x": 50,
-       "y": 24
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x00312AF7:5",
+    "id": "0x00312AF7:4",
     "source": {
      "kind": "omod",
      "formId": "0x00312AF7",
@@ -57231,10 +56449,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -57343,10 +56558,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -57356,81 +56567,7 @@
     "durationSec": 3
    },
    {
-    "id": "0x00312AF8:ench:2",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00312AF8",
-     "edid": "mod_GatlingLaser_Receiver_Burning-HipAccuracy",
-     "name": "Refined Beta Wave Tuner"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 7
-      },
-      {
-       "x": 5,
-       "y": 8
-      },
-      {
-       "x": 10,
-       "y": 9
-      },
-      {
-       "x": 15,
-       "y": 10
-      },
-      {
-       "x": 20,
-       "y": 12
-      },
-      {
-       "x": 25,
-       "y": 13
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 35,
-       "y": 17
-      },
-      {
-       "x": 40,
-       "y": 19
-      },
-      {
-       "x": 45,
-       "y": 21
-      },
-      {
-       "x": 50,
-       "y": 24
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x00312AF8:3",
+    "id": "0x00312AF8:2",
     "source": {
      "kind": "omod",
      "formId": "0x00312AF8",
@@ -57508,10 +56645,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -58475,10 +57609,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -58488,81 +57618,7 @@
     "durationSec": 3
    },
    {
-    "id": "0x007B23D6:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x007B23D6",
-     "edid": "mod_GatlingPlasma_Receiver_Burning",
-     "name": "Gamma Wave Emitter"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 6
-      },
-      {
-       "x": 5,
-       "y": 7
-      },
-      {
-       "x": 10,
-       "y": 8
-      },
-      {
-       "x": 15,
-       "y": 9
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 25,
-       "y": 11
-      },
-      {
-       "x": 30,
-       "y": 13
-      },
-      {
-       "x": 35,
-       "y": 14
-      },
-      {
-       "x": 40,
-       "y": 16
-      },
-      {
-       "x": 45,
-       "y": 18
-      },
-      {
-       "x": 50,
-       "y": 20
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x007B23D6:4",
+    "id": "0x007B23D6:3",
     "source": {
      "kind": "omod",
      "formId": "0x007B23D6",
@@ -58638,10 +57694,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -67330,10 +66383,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -67343,81 +66392,7 @@
     "durationSec": 3
    },
    {
-    "id": "0x003129D3:ench:2",
-    "source": {
-     "kind": "omod",
-     "formId": "0x003129D3",
-     "edid": "mod_LaserGun_Receiver_Burning",
-     "name": "Gamma Wave Emitter"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 6
-      },
-      {
-       "x": 5,
-       "y": 7
-      },
-      {
-       "x": 10,
-       "y": 8
-      },
-      {
-       "x": 15,
-       "y": 9
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 25,
-       "y": 11
-      },
-      {
-       "x": 30,
-       "y": 13
-      },
-      {
-       "x": 35,
-       "y": 14
-      },
-      {
-       "x": 40,
-       "y": 16
-      },
-      {
-       "x": 45,
-       "y": 18
-      },
-      {
-       "x": 50,
-       "y": 20
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x003129D3:3",
+    "id": "0x003129D3:2",
     "source": {
      "kind": "omod",
      "formId": "0x003129D3",
@@ -67495,10 +66470,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -67633,10 +66605,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -67646,81 +66614,7 @@
     "durationSec": 3
    },
    {
-    "id": "0x003129D5:ench:4",
-    "source": {
-     "kind": "omod",
-     "formId": "0x003129D5",
-     "edid": "mod_LaserGun_Receiver_Burning-CritDMG",
-     "name": "Severe Beta Wave Tuner"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 6
-      },
-      {
-       "x": 5,
-       "y": 7
-      },
-      {
-       "x": 10,
-       "y": 8
-      },
-      {
-       "x": 15,
-       "y": 9
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 25,
-       "y": 11
-      },
-      {
-       "x": 30,
-       "y": 13
-      },
-      {
-       "x": 35,
-       "y": 14
-      },
-      {
-       "x": 40,
-       "y": 16
-      },
-      {
-       "x": 45,
-       "y": 18
-      },
-      {
-       "x": 50,
-       "y": 20
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x003129D5:5",
+    "id": "0x003129D5:4",
     "source": {
      "kind": "omod",
      "formId": "0x003129D5",
@@ -67798,10 +66692,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -67923,10 +66814,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -67936,81 +66823,7 @@
     "durationSec": 3
    },
    {
-    "id": "0x003129D7:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x003129D7",
-     "edid": "mod_LaserGun_Receiver_Burning-FastTrigger",
-     "name": "Tuned Beta Wave Tuner"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 6
-      },
-      {
-       "x": 5,
-       "y": 7
-      },
-      {
-       "x": 10,
-       "y": 8
-      },
-      {
-       "x": 15,
-       "y": 9
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 25,
-       "y": 11
-      },
-      {
-       "x": 30,
-       "y": 13
-      },
-      {
-       "x": 35,
-       "y": 14
-      },
-      {
-       "x": 40,
-       "y": 16
-      },
-      {
-       "x": 45,
-       "y": 18
-      },
-      {
-       "x": 50,
-       "y": 20
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x003129D7:4",
+    "id": "0x003129D7:3",
     "source": {
      "kind": "omod",
      "formId": "0x003129D7",
@@ -68088,10 +66901,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -68200,10 +67010,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -68213,81 +67019,7 @@
     "durationSec": 3
    },
    {
-    "id": "0x003129D6:ench:2",
-    "source": {
-     "kind": "omod",
-     "formId": "0x003129D6",
-     "edid": "mod_LaserGun_Receiver_Burning-HipAccuracy",
-     "name": "Refined Beta Wave Tuner"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 6
-      },
-      {
-       "x": 5,
-       "y": 7
-      },
-      {
-       "x": 10,
-       "y": 8
-      },
-      {
-       "x": 15,
-       "y": 9
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 25,
-       "y": 11
-      },
-      {
-       "x": 30,
-       "y": 13
-      },
-      {
-       "x": 35,
-       "y": 14
-      },
-      {
-       "x": 40,
-       "y": 16
-      },
-      {
-       "x": 45,
-       "y": 18
-      },
-      {
-       "x": 50,
-       "y": 20
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x003129D6:3",
+    "id": "0x003129D6:2",
     "source": {
      "kind": "omod",
      "formId": "0x003129D6",
@@ -68365,10 +67097,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -72831,84 +71560,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x00571D9A:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00571D9A",
-     "edid": "mod_melee_AutoAxe_Burning",
-     "name": "Burning"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 14
-      },
-      {
-       "x": 5,
-       "y": 16
-      },
-      {
-       "x": 10,
-       "y": 18
-      },
-      {
-       "x": 15,
-       "y": 20
-      },
-      {
-       "x": 20,
-       "y": 23
-      },
-      {
-       "x": 25,
-       "y": 26
-      },
-      {
-       "x": 30,
-       "y": 29
-      },
-      {
-       "x": 35,
-       "y": 33
-      },
-      {
-       "x": 40,
-       "y": 37
-      },
-      {
-       "x": 45,
-       "y": 42
-      },
-      {
-       "x": 50,
-       "y": 47
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -72927,10 +71578,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -73127,88 +71775,6 @@
     "conditions": [
      {
       "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "HasPerk(ImmuneToPoison)=0"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "poison"
-      ]
-     }
-    ],
-    "durationSec": 15
-   },
-   {
-    "id": "0x00571D9B:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00571D9B",
-     "edid": "mod_melee_AutoAxe_Poison",
-     "name": "Poisoned"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 7
-      },
-      {
-       "x": 5,
-       "y": 8
-      },
-      {
-       "x": 10,
-       "y": 9
-      },
-      {
-       "x": 15,
-       "y": 10
-      },
-      {
-       "x": 20,
-       "y": 12
-      },
-      {
-       "x": 25,
-       "y": 13
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 35,
-       "y": 17
-      },
-      {
-       "x": 40,
-       "y": 19
-      },
-      {
-       "x": 45,
-       "y": 21
-      },
-      {
-       "x": 50,
-       "y": 24
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "unresolved",
       "raw": "HasPerk(ImmuneToPoison)=0"
      },
      {
@@ -73231,9 +71797,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "condition: HasPerk(ImmuneToPoison)=0",
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
+   "condition: HasPerk(ImmuneToPoison)=0"
   ],
   "obtainable": true
  },
@@ -78891,10 +77455,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -78981,9 +77541,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -79125,10 +77683,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -79144,9 +77698,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -79374,31 +77926,6 @@
     },
     "bucket": "dotDamage",
     "op": "ADD",
-    "value": 5,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 4
-   },
-   {
-    "id": "0x005E959D:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x005E959D",
-     "edid": "mod_melee_PlasmaSword_Fire",
-     "name": "Flaming Blade"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
     "curve": {
      "input": "itemLevel",
      "points": [
@@ -79451,10 +77978,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -79471,10 +77994,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -80861,10 +79381,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -80880,9 +79396,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -81011,10 +79525,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -81101,9 +79611,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -81308,84 +79816,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "poison"
-      ]
-     }
-    ],
-    "durationSec": 33
-   },
-   {
-    "id": "0x0045583E:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0045583E",
-     "edid": "mod_melee_SheepSquatchClub_Poisoned",
-     "name": "Poisoned Sheepsquatch Club"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 8
-      },
-      {
-       "x": 5,
-       "y": 9
-      },
-      {
-       "x": 10,
-       "y": 11
-      },
-      {
-       "x": 15,
-       "y": 12
-      },
-      {
-       "x": 20,
-       "y": 14
-      },
-      {
-       "x": 25,
-       "y": 15
-      },
-      {
-       "x": 30,
-       "y": 17
-      },
-      {
-       "x": 35,
-       "y": 19
-      },
-      {
-       "x": 40,
-       "y": 22
-      },
-      {
-       "x": 45,
-       "y": 25
-      },
-      {
-       "x": 50,
-       "y": 28
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "poison"
@@ -81401,10 +79831,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -81719,10 +80146,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -81738,9 +80161,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -81869,10 +80290,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -81959,9 +80376,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -82765,10 +81180,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -82854,7 +81265,6 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "condition: IsUsingAltCurveTable()=1",
    "removes enchantment ShishkebabBleedFireDOT"
   ],
   "obtainable": true
@@ -83957,31 +82367,6 @@
     },
     "bucket": "dotDamage",
     "op": "ADD",
-    "value": 5,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 5
-   },
-   {
-    "id": "0x005D7F2A:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x005D7F2A",
-     "edid": "mod_melee_WarGlaive_Fire",
-     "name": "Flaming Blade"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
     "curve": {
      "input": "itemLevel",
      "points": [
@@ -84034,10 +82419,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -84054,10 +82435,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -87532,7 +85910,7 @@
   "notes": [
    "perk mod_weapon_NitroFortunate: WornHasKeyword(Nitro_4Mod)=1",
    "perk mod_weapon_NitroFortunate: WornHasKeyword(Nitro_6Mod)=1",
-   "perk mod_weapon_NitroFortunate: entry point Unknown 211 — not modeled"
+   "perk mod_weapon_NitroFortunate: entry point Mod Add Bullet To Clip Chance — not modeled"
   ],
   "obtainable": true
  },
@@ -87583,7 +85961,7 @@
   "notes": [
    "perk mod_weapon_NitroFortunate: WornHasKeyword(Nitro_4Mod)=1",
    "perk mod_weapon_NitroFortunate: WornHasKeyword(Nitro_6Mod)=1",
-   "perk mod_weapon_NitroFortunate: entry point Unknown 211 — not modeled"
+   "perk mod_weapon_NitroFortunate: entry point Mod Add Bullet To Clip Chance — not modeled"
   ],
   "obtainable": true
  },
@@ -99156,31 +97534,6 @@
     },
     "bucket": "dotDamage",
     "op": "ADD",
-    "value": 4,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "poison"
-      ]
-     }
-    ],
-    "durationSec": 40
-   },
-   {
-    "id": "0x003C6552:ench:2",
-    "source": {
-     "kind": "omod",
-     "formId": "0x003C6552",
-     "edid": "mod_PipeSyringer_Barrel_RadscorpionVenom",
-     "name": "Radscorpion Venom Syringe Barrel"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
     "curve": {
      "input": "itemLevel",
      "points": [
@@ -99233,10 +97586,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "poison"
@@ -99252,10 +97601,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -100813,10 +99159,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -100826,81 +99168,7 @@
     "durationSec": 3
    },
    {
-    "id": "0x0086DBEC:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0086DBEC",
-     "edid": "mod_PlasmaCaster_Receiver_Burning",
-     "name": "Gamma Wave Emitter"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 6
-      },
-      {
-       "x": 5,
-       "y": 7
-      },
-      {
-       "x": 10,
-       "y": 8
-      },
-      {
-       "x": 15,
-       "y": 9
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 25,
-       "y": 11
-      },
-      {
-       "x": 30,
-       "y": 13
-      },
-      {
-       "x": 35,
-       "y": 14
-      },
-      {
-       "x": 40,
-       "y": 16
-      },
-      {
-       "x": 45,
-       "y": 18
-      },
-      {
-       "x": 50,
-       "y": 20
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x0086DBEC:4",
+    "id": "0x0086DBEC:3",
     "source": {
      "kind": "omod",
      "formId": "0x0086DBEC",
@@ -100976,10 +99244,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -104567,10 +102832,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -104580,81 +102841,7 @@
     "durationSec": 3
    },
    {
-    "id": "0x0018C46C:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0018C46C",
-     "edid": "mod_PlasmaGun_Receiver_Burning",
-     "name": "Gamma Wave Emitter"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 6
-      },
-      {
-       "x": 5,
-       "y": 7
-      },
-      {
-       "x": 10,
-       "y": 8
-      },
-      {
-       "x": 15,
-       "y": 9
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 25,
-       "y": 11
-      },
-      {
-       "x": 30,
-       "y": 13
-      },
-      {
-       "x": 35,
-       "y": 14
-      },
-      {
-       "x": 40,
-       "y": 16
-      },
-      {
-       "x": 45,
-       "y": 18
-      },
-      {
-       "x": 50,
-       "y": 20
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x0018C46C:4",
+    "id": "0x0018C46C:3",
     "source": {
      "kind": "omod",
      "formId": "0x0018C46C",
@@ -104731,10 +102918,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -104902,10 +103086,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -104915,81 +103095,7 @@
     "durationSec": 3
    },
    {
-    "id": "0x0018C46D:ench:5",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0018C46D",
-     "edid": "mod_PlasmaGun_Receiver_Burning-CritDMG",
-     "name": "Calibrated Beta Wave Tuner"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 6
-      },
-      {
-       "x": 5,
-       "y": 7
-      },
-      {
-       "x": 10,
-       "y": 8
-      },
-      {
-       "x": 15,
-       "y": 9
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 25,
-       "y": 11
-      },
-      {
-       "x": 30,
-       "y": 13
-      },
-      {
-       "x": 35,
-       "y": 14
-      },
-      {
-       "x": 40,
-       "y": 16
-      },
-      {
-       "x": 45,
-       "y": 18
-      },
-      {
-       "x": 50,
-       "y": 20
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x0018C46D:6",
+    "id": "0x0018C46D:5",
     "source": {
      "kind": "omod",
      "formId": "0x0018C46D",
@@ -105066,10 +103172,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -105211,10 +103314,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -105224,81 +103323,7 @@
     "durationSec": 3
    },
    {
-    "id": "0x0018C46E:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x0018C46E",
-     "edid": "mod_PlasmaGun_Receiver_Burning-HipAccuracy",
-     "name": "Refined Beta Wave Tuner"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 6
-      },
-      {
-       "x": 5,
-       "y": 7
-      },
-      {
-       "x": 10,
-       "y": 8
-      },
-      {
-       "x": 15,
-       "y": 9
-      },
-      {
-       "x": 20,
-       "y": 10
-      },
-      {
-       "x": 25,
-       "y": 11
-      },
-      {
-       "x": 30,
-       "y": 13
-      },
-      {
-       "x": 35,
-       "y": 14
-      },
-      {
-       "x": 40,
-       "y": 16
-      },
-      {
-       "x": 45,
-       "y": 18
-      },
-      {
-       "x": 50,
-       "y": 20
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x0018C46E:4",
+    "id": "0x0018C46E:3",
     "source": {
      "kind": "omod",
      "formId": "0x0018C46E",
@@ -105375,10 +103400,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -112519,84 +110541,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "poison"
-      ]
-     }
-    ],
-    "durationSec": 40
-   },
-   {
-    "id": "0x005894B1:ench:3",
-    "source": {
-     "kind": "omod",
-     "formId": "0x005894B1",
-     "edid": "mod_RegularBow_Bolt_Poison",
-     "name": "Poison Arrows"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 8
-      },
-      {
-       "x": 5,
-       "y": 9
-      },
-      {
-       "x": 10,
-       "y": 11
-      },
-      {
-       "x": 15,
-       "y": 12
-      },
-      {
-       "x": 20,
-       "y": 14
-      },
-      {
-       "x": 25,
-       "y": 15
-      },
-      {
-       "x": 30,
-       "y": 17
-      },
-      {
-       "x": 35,
-       "y": 19
-      },
-      {
-       "x": 40,
-       "y": 22
-      },
-      {
-       "x": 45,
-       "y": 25
-      },
-      {
-       "x": 50,
-       "y": 28
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "poison"
@@ -112614,10 +110558,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -115142,10 +113083,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -115155,81 +113092,7 @@
     "durationSec": 3
    },
    {
-    "id": "0x00312B2C:ench:2",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00312B2C",
-     "edid": "mod_Ultracite_GatlingLaser_Receiver_Burning",
-     "name": "Gamma Wave Emitter"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 7
-      },
-      {
-       "x": 5,
-       "y": 8
-      },
-      {
-       "x": 10,
-       "y": 9
-      },
-      {
-       "x": 15,
-       "y": 10
-      },
-      {
-       "x": 20,
-       "y": 12
-      },
-      {
-       "x": 25,
-       "y": 13
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 35,
-       "y": 17
-      },
-      {
-       "x": 40,
-       "y": 19
-      },
-      {
-       "x": 45,
-       "y": 21
-      },
-      {
-       "x": 50,
-       "y": 24
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x00312B2C:3",
+    "id": "0x00312B2C:2",
     "source": {
      "kind": "omod",
      "formId": "0x00312B2C",
@@ -115307,10 +113170,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -115445,10 +113305,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -115458,81 +113314,7 @@
     "durationSec": 3
    },
    {
-    "id": "0x00312B2E:ench:4",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00312B2E",
-     "edid": "mod_Ultracite_GatlingLaser_Receiver_Burning-CritDMG",
-     "name": "Severe Beta Wave Tuner"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 7
-      },
-      {
-       "x": 5,
-       "y": 8
-      },
-      {
-       "x": 10,
-       "y": 9
-      },
-      {
-       "x": 15,
-       "y": 10
-      },
-      {
-       "x": 20,
-       "y": 12
-      },
-      {
-       "x": 25,
-       "y": 13
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 35,
-       "y": 17
-      },
-      {
-       "x": 40,
-       "y": 19
-      },
-      {
-       "x": 45,
-       "y": 21
-      },
-      {
-       "x": 50,
-       "y": 24
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x00312B2E:5",
+    "id": "0x00312B2E:4",
     "source": {
      "kind": "omod",
      "formId": "0x00312B2E",
@@ -115610,10 +113392,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -115722,10 +113501,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "fire"
@@ -115735,81 +113510,7 @@
     "durationSec": 3
    },
    {
-    "id": "0x00312B2F:ench:2",
-    "source": {
-     "kind": "omod",
-     "formId": "0x00312B2F",
-     "edid": "mod_Ultracite_GatlingLaser_Receiver_Burning-HipAccuracy",
-     "name": "Refined Beta Wave Tuner"
-    },
-    "bucket": "dotDamage",
-    "op": "ADD",
-    "curve": {
-     "input": "itemLevel",
-     "points": [
-      {
-       "x": 1,
-       "y": 7
-      },
-      {
-       "x": 5,
-       "y": 8
-      },
-      {
-       "x": 10,
-       "y": 9
-      },
-      {
-       "x": 15,
-       "y": 10
-      },
-      {
-       "x": 20,
-       "y": 12
-      },
-      {
-       "x": 25,
-       "y": 13
-      },
-      {
-       "x": 30,
-       "y": 15
-      },
-      {
-       "x": 35,
-       "y": 17
-      },
-      {
-       "x": 40,
-       "y": 19
-      },
-      {
-       "x": 45,
-       "y": 21
-      },
-      {
-       "x": 50,
-       "y": 24
-      }
-     ]
-    },
-    "curveScale": 1,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "IsUsingAltCurveTable()=1"
-     },
-     {
-      "kind": "damageTypeScope",
-      "types": [
-       "fire"
-      ]
-     }
-    ],
-    "durationSec": 3
-   },
-   {
-    "id": "0x00312B2F:3",
+    "id": "0x00312B2F:2",
     "source": {
      "kind": "omod",
      "formId": "0x00312B2F",
@@ -115887,10 +113588,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: IsUsingAltCurveTable()=0",
-   "condition: IsUsingAltCurveTable()=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -128946,59 +126644,9 @@
   "obtainable": true
  },
  {
-  "id": "SDOW_Mod_Custom_RelicReaper",
-  "formId": "0x009097C3",
-  "name": "Relic Reaper",
-  "description": "",
-  "attachPointFormId": "0x0047A264",
-  "attachPointEdid": "ap_customName",
-  "targetKeywords": [],
-  "modifiers": [],
-  "addedKeywords": [
-   "ObjectTypeUnique",
-   "CustomItem_SpeciallyNamed",
-   "CustomItem_SpeciallyNamed",
-   "CustomItem_SpeciallyNamed",
-   "CustomItem_SpeciallyNamed",
-   "CustomItem_SpeciallyNamed",
-   "CustomItem_SpeciallyNamed"
-  ],
-  "hasEnchantments": false,
-  "notes": [
-   "perk CanDo01: GetRandomPercent()=20",
-   "perk CanDo01: GetRandomPercent()=40",
-   "perk CanDo01: GetRandomPercent()=60",
-   "perk CanDo01: GetRandomPercent()=85",
-   "perk CanDo01: GetValue(Luck)=15",
-   "perk CanDo01: GetValue(Luck)=30",
-   "perk CanDo01: GetValue(Luck)=60",
-   "perk CanDo01: HasKeyword(MealTypePackaged)=1",
-   "perk CanDo01: entry point Mod Item Spawn Count — not modeled",
-   "perk CapCollector01: GetIsID(Caps001)=1",
-   "perk CapCollector01: GetRandomPercent()=20",
-   "perk CapCollector01: GetRandomPercent()=40",
-   "perk CapCollector01: GetRandomPercent()=60",
-   "perk CapCollector01: GetRandomPercent()=85",
-   "perk CapCollector01: GetValue(Luck)=15",
-   "perk CapCollector01: GetValue(Luck)=30",
-   "perk CapCollector01: GetValue(Luck)=60",
-   "perk CapCollector01: entry point Mod Item Spawn Count — not modeled",
-   "perk PharmaFarma01: GetRandomPercent()=20",
-   "perk PharmaFarma01: GetRandomPercent()=40",
-   "perk PharmaFarma01: GetRandomPercent()=60",
-   "perk PharmaFarma01: GetRandomPercent()=85",
-   "perk PharmaFarma01: GetValue(Luck)=15",
-   "perk PharmaFarma01: GetValue(Luck)=30",
-   "perk PharmaFarma01: GetValue(Luck)=60",
-   "perk PharmaFarma01: HasKeyword(ChemTypeHealing)=1",
-   "perk PharmaFarma01: entry point Mod Item Spawn Count — not modeled"
-  ],
-  "obtainable": true
- },
- {
   "id": "SDOW_Mod_Custom_RelicReaper_CanDo",
   "formId": "0x0090ED04",
-  "name": "Relic Reaper",
+  "name": "Relic Reaper (Can Do)",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -129009,6 +126657,7 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
+  "variantOf": "SDOW_Mod_Custom_RelicReaper",
   "notes": [
    "perk CanDo01: GetRandomPercent()=20",
    "perk CanDo01: GetRandomPercent()=40",
@@ -129025,7 +126674,7 @@
  {
   "id": "SDOW_Mod_Custom_RelicReaper_CapCollector",
   "formId": "0x0090ED00",
-  "name": "Relic Reaper",
+  "name": "Relic Reaper (Cap Collector)",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -129036,6 +126685,7 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
+  "variantOf": "SDOW_Mod_Custom_RelicReaper",
   "notes": [
    "perk CapCollector01: GetIsID(Caps001)=1",
    "perk CapCollector01: GetRandomPercent()=20",
@@ -129052,7 +126702,7 @@
  {
   "id": "SDOW_Mod_Custom_RelicReaper_FortuneFinder",
   "formId": "0x0090ED01",
-  "name": "Relic Reaper",
+  "name": "Relic Reaper (Fortune Finder)",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -129063,13 +126713,14 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
+  "variantOf": "SDOW_Mod_Custom_RelicReaper",
   "notes": [],
   "obtainable": true
  },
  {
   "id": "SDOW_Mod_Custom_RelicReaper_Pannapictagraphist",
   "formId": "0x0090ED02",
-  "name": "Relic Reaper",
+  "name": "Relic Reaper (Pannapictagraphist)",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -129080,13 +126731,14 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
+  "variantOf": "SDOW_Mod_Custom_RelicReaper",
   "notes": [],
   "obtainable": true
  },
  {
   "id": "SDOW_Mod_Custom_RelicReaper_PerceptiBobble",
   "formId": "0x0090ED03",
-  "name": "Relic Reaper",
+  "name": "Relic Reaper (Percepti Bobble)",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -129097,13 +126749,14 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
+  "variantOf": "SDOW_Mod_Custom_RelicReaper",
   "notes": [],
   "obtainable": true
  },
  {
   "id": "SDOW_Mod_Custom_RelicReaper_PharmaFarma",
   "formId": "0x0090ED05",
-  "name": "Relic Reaper",
+  "name": "Relic Reaper (Pharma Farma)",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -129114,6 +126767,7 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
+  "variantOf": "SDOW_Mod_Custom_RelicReaper",
   "notes": [
    "perk PharmaFarma01: GetRandomPercent()=20",
    "perk PharmaFarma01: GetRandomPercent()=40",

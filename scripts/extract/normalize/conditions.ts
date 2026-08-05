@@ -276,6 +276,11 @@ function translateSingle(
       // encumbered — so =0 is always true (consumed) and an =1-gated effect
       // can never apply (docs/assumptions.md "Encumbrance").
       return wants ? 'inactive' : null;
+    case 'IsUsingAltCurveTable':
+      // Fire/poison DoT uniques gate the curve-table branch with =1 (=0 is the
+      // unused flat-magnitude fallback on the same ENCH). Player-facing mods
+      // always take the alt-curve path — consume =1, kill =0.
+      return wants ? null : 'inactive';
     case 'IsSprinting':
     case 'IsSwimming':
       // The calculator models grounded, non-sprint combat (aiming/firing) — never

@@ -4,6 +4,7 @@ import { parseArgs } from 'node:util';
 import type {
   GeneratedArmor,
   GeneratedMeta,
+  GeneratedOmod,
   GeneratedPerk,
   GeneratedWeapon,
 } from '../../src/types/generated';
@@ -176,6 +177,8 @@ async function main() {
     );
   }
 
+  let variantContainers: Record<string, GeneratedOmod[]> = {};
+
   if (only.includes('omods')) {
     console.log('Extracting OMODs…');
     if (!allWeapons) {
@@ -231,6 +234,28 @@ async function main() {
       crossFamilyRank,
       obtainableArmorFormIds,
     );
+    // Replace variant-container formIds in weapon templates with their emitted
+    // variant siblings (Camden Whacker, Relic Reaper) before uniques extraction.
+    for (const weapon of allWeapons) {
+      const ids = weapon.templateModFormIds;
+      if (!ids?.length) continue;
+      let changed = false;
+      const rewritten: string[] = [];
+      for (const formId of ids) {
+        const variants = result.variantContainers[formId];
+        if (variants?.length) {
+          rewritten.push(...variants.map((v) => v.formId));
+          changed = true;
+        } else {
+          rewritten.push(formId);
+        }
+      }
+      if (changed) weapon.templateModFormIds = rewritten;
+    }
+    if (Object.keys(result.variantContainers).length > 0) {
+      await writeFile(path.join(outDir, 'weapons.json'), JSON.stringify(allWeapons, null, 1));
+    }
+    variantContainers = result.variantContainers;
     await writeFile(path.join(outDir, 'omods.json'), JSON.stringify(result.omods, null, 1));
     await writeFile(
       path.join(outDir, 'armor-omods.json'),
@@ -266,20 +291,20 @@ async function main() {
     const omods = JSON.parse(
       await readFile(path.join(outDir, 'omods.json'), 'utf8'),
     ) as import('../../src/types/generated').GeneratedOmod[];
-    const result = await extractUniques(client, allWeapons, omods);
-    await writeFile(path.join(outDir, 'uniques.json'), JSON.stringify(result.uniques, null, 1));
-    meta.counts.uniques = result.uniques.length;
-    if (result.skipped.length > 0) {
+    const uniqueResult = await extractUniques(client, allWeapons, omods, variantContainers);
+    await writeFile(path.join(outDir, 'uniques.json'), JSON.stringify(uniqueResult.uniques, null, 1));
+    meta.counts.uniques = uniqueResult.uniques.length;
+    if (uniqueResult.skipped.length > 0) {
       meta.reviewFlagged = {
         ...meta.reviewFlagged,
-        skippedUniqueCombinations: result.skipped.map((s) => ({
+        skippedUniqueCombinations: uniqueResult.skipped.map((s) => ({
           id: `${s.weaponId}:${s.combinationName}`,
           name: s.reason,
         })),
       };
     }
     console.log(
-      `  ${result.uniques.length} unique presets (skipped combinations: ${result.skipped.length})`,
+      `  ${uniqueResult.uniques.length} unique presets (skipped combinations: ${uniqueResult.skipped.length})`,
     );
   }
 

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'bun:test';
 import type { GeneratedOmod, GeneratedWeapon } from '../../../src/types/generated';
 import type { EsmClient, EsmRecord } from '../esm-client';
 import { extractUniques, isExcludedIdentityOmod } from '../extract-uniques';
+import { hiddenOmodIds } from '../../../src/data/overrides/omod-corrections';
 import doubleBarrel from './fixtures/weap-double-barrel-shotgun.json';
 
 const omods: GeneratedOmod[] = [
@@ -369,5 +370,153 @@ describe('extractUniques', () => {
       mods: { ap_customName: 'mod_custom_CosmicKnife_Superheated' },
       legendaryEffects: [],
     });
+  });
+});
+
+describe('extractUniques (variant container presets)', () => {
+  const camdenVariants: GeneratedOmod[] = [
+    {
+      id: 'mod_Custom_CamdenWhacker_Bleed',
+      formId: '0x008EDF27',
+      name: 'Camden Whacker (Bleed)',
+      description: '',
+      attachPointFormId: '0x0047A264',
+      attachPointEdid: 'ap_customName',
+      targetKeywords: [],
+      modifiers: [],
+      addedKeywords: [],
+      hasEnchantments: true,
+      variantOf: 'mod_Custom_CamdenWhacker',
+    },
+    {
+      id: 'mod_Custom_CamdenWhacker_Poison',
+      formId: '0x008EDF2C',
+      name: 'Camden Whacker (Poison)',
+      description: '',
+      attachPointFormId: '0x0047A264',
+      attachPointEdid: 'ap_customName',
+      targetKeywords: [],
+      modifiers: [],
+      addedKeywords: [],
+      hasEnchantments: true,
+      variantOf: 'mod_Custom_CamdenWhacker',
+    },
+    {
+      id: 'mod_Custom_CamdenWhacker_Fire',
+      formId: '0x008EDF2B',
+      name: 'Camden Whacker (Fire)',
+      description: '',
+      attachPointFormId: '0x0047A264',
+      attachPointEdid: 'ap_customName',
+      targetKeywords: [],
+      modifiers: [],
+      addedKeywords: [],
+      hasEnchantments: true,
+      variantOf: 'mod_Custom_CamdenWhacker',
+    },
+    {
+      id: 'mod_Custom_CamdenWhacker_Cryo',
+      formId: '0x008EDF2A',
+      name: 'Camden Whacker (Cryo)',
+      description: '',
+      attachPointFormId: '0x0047A264',
+      attachPointEdid: 'ap_customName',
+      targetKeywords: [],
+      modifiers: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      variantOf: 'mod_Custom_CamdenWhacker',
+    },
+    {
+      id: 'mod_Custom_CamdenWhacker_Energy',
+      formId: '0x008EDF28',
+      name: 'Camden Whacker (Energy)',
+      description: '',
+      attachPointFormId: '0x0047A264',
+      attachPointEdid: 'ap_customName',
+      targetKeywords: [],
+      modifiers: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      variantOf: 'mod_Custom_CamdenWhacker',
+    },
+    {
+      id: 'mod_Custom_CamdenWhacker_RAD',
+      formId: '0x008EDF29',
+      name: 'Camden Whacker (Radiation)',
+      description: '',
+      attachPointFormId: '0x0047A264',
+      attachPointEdid: 'ap_customName',
+      targetKeywords: [],
+      modifiers: [],
+      addedKeywords: [],
+      hasEnchantments: true,
+      variantOf: 'mod_Custom_CamdenWhacker',
+    },
+  ];
+
+  const commieWhacker = {
+    id: 'DLC04_CommieWhacker',
+    formId: '0x008EDF25',
+    name: 'Commie Whacker',
+    templateModFormIds: camdenVariants.map((v) => v.formId),
+    obtainable: true,
+  } as GeneratedWeapon;
+
+  it('resolves a variant-container OT combo to the lowest-formId default with variantIds', async () => {
+    const client = {
+      async get(formId: string): Promise<EsmRecord> {
+        if (formId === '0x008EDF25') {
+          return {
+            header: { signature: 'WEAP', form_id: formId },
+            editor_id: 'DLC04_CommieWhacker',
+            fields: {
+              'Object Template': {
+                Combinations: [
+                  {
+                    Combination: {
+                      Name: 'Default',
+                      'Object Mod Template Item': {
+                        Includes: [{ Mod: '0x00000001' }],
+                      },
+                    },
+                  },
+                  {
+                    Combination: {
+                      Name: 'Camden Whacker',
+                      'Object Mod Template Item': {
+                        Includes: [{ Mod: '0x008EDF26' }],
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          } as unknown as EsmRecord;
+        }
+        throw new Error(`unexpected get ${formId}`);
+      },
+      resolveEdid: async (formId: string) => formId,
+    } as unknown as EsmClient;
+
+    const variantContainers = {
+      '0x008EDF26': camdenVariants,
+    };
+
+    const { uniques } = await extractUniques(client, [commieWhacker], camdenVariants, variantContainers);
+    const camdenPresets = uniques.filter((u) => u.baseWeaponId === 'DLC04_CommieWhacker');
+    expect(camdenPresets).toHaveLength(1);
+    expect(camdenPresets[0]).toMatchObject({
+      id: 'mod_Custom_CamdenWhacker_Bleed',
+      name: 'Camden Whacker',
+      mods: { ap_customName: 'mod_Custom_CamdenWhacker_Bleed' },
+    });
+    expect(camdenPresets[0].variantIds).toHaveLength(6);
+  });
+
+  it('does not emit P62 Drifter presets when identity mods are hidden', () => {
+    expect(hiddenOmodIds.has('P62_Mod_Custom_Splinter_CustomName')).toBe(true);
+    expect(hiddenOmodIds.has('P62_Mod_Custom_Tempest_CustomName')).toBe(true);
+    expect(hiddenOmodIds.has('P62_Mod_Custom_ChaosEngine_CustomName')).toBe(true);
   });
 });

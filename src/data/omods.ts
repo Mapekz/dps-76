@@ -138,7 +138,8 @@ export function classifyOmodDisplay(
 ): { show: boolean; badge?: OmodBadge } {
   const overrideBadge = getDataset(mode).omodBadgeOverrides[omod.id];
   const isStock =
-    (weapon?.templateModFormIds ?? []).includes(omod.formId) || STOCK_NAME_RE.test(omod.name);
+    ((weapon?.templateModFormIds ?? []).includes(omod.formId) && omod.variantOf === undefined) ||
+    STOCK_NAME_RE.test(omod.name);
   const hasModifiers = omod.modifiers.length > 0;
   if (!hasModifiers && !overrideBadge && !isStock) return { show: true, badge: 'inert' };
   if (overrideBadge) return { show: true, badge: overrideBadge };
@@ -330,7 +331,7 @@ export function getOmodSlots(mode: GameMode, weapon: Weapon): OmodSlot[] {
         // Identity uniques surfaced even with no stats — 2026-07-13 unique
         // rework, see docs/assumptions.md "Unique weapons".
         (edid === 'ap_customName' &&
-          omod.addedKeywords.includes('ObjectTypeUnique') &&
+          (omod.addedKeywords.includes('ObjectTypeUnique') || omod.variantOf !== undefined) &&
           (weapon.templateModFormIds ?? []).includes(omod.formId)) ||
         getDataset(mode).omodBadgeOverrides[omod.id] !== undefined) &&
       !LEGENDARY_SLOT_RE.test(edid),
@@ -378,7 +379,11 @@ export function effectiveWeaponName(
     const chosen = mods[slot];
     const omodId = typeof chosen === 'string' ? chosen : getDefaultOmodId(mode, weapon, slot);
     const omod = omodId ? getOmodById(mode, omodId) : undefined;
-    if (omod?.addedKeywords.includes(keyword)) return omod.name;
+    if (
+      omod?.addedKeywords.includes(keyword) ||
+      (keyword === 'ObjectTypeUnique' && omod?.variantOf !== undefined)
+    )
+      return omod.name;
   }
   return weapon.name;
 }

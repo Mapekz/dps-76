@@ -27,6 +27,21 @@ import { createDefaultBuildState, type BuildState } from '@/state/build-reducer'
 import type { PerkId } from '@/data/perk-ids';
 
 /**
+ * Legacy identity-mod container ids from before the `Don't Use All` variant
+ * split (2026-08): persisted URLs may still hold the container editor id;
+ * remap to the lowest-formId default variant before the validity check below.
+ * Same precedent as the case-insensitive weapon-id fallback.
+ */
+const LEGACY_OMOD_ID_ALIASES: Readonly<Record<string, string>> = {
+  mod_Custom_CamdenWhacker: 'mod_Custom_CamdenWhacker_Bleed',
+  SDOW_Mod_Custom_RelicReaper: 'SDOW_Mod_Custom_RelicReaper_CapCollector',
+};
+
+function resolveLegacyOmodId(omodId: string): string {
+  return LEGACY_OMOD_ID_ALIASES[omodId] ?? omodId;
+}
+
+/**
  * Versioned URL/localStorage codec for the full build state.
  *
  * Format: `1.` + base64url(deflate-raw(compact JSON)). The JSON stores only
@@ -258,7 +273,12 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
     if (getWeapons(mode)[weaponId]) {
       const keptMods: Record<string, string | null> = {};
       for (const [slot, omodId] of Object.entries(mods ?? {})) {
-        if (omodId === null || getOmodById(mode, omodId)) keptMods[slot] = omodId;
+        if (omodId === null) {
+          keptMods[slot] = omodId;
+          continue;
+        }
+        const resolvedOmodId = resolveLegacyOmodId(omodId);
+        if (getOmodById(mode, resolvedOmodId)) keptMods[slot] = resolvedOmodId;
         else warnings.push(`unknown weapon mod "${omodId}" — removed`);
       }
       const keptLegendary: (string | null)[] = [];

@@ -54448,7 +54448,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion1Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -54467,7 +54469,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion2Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -55977,7 +55981,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion1Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -55996,7 +56002,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion2Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -57106,7 +57114,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion1Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -57125,7 +57135,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion2Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -58086,7 +58098,9 @@
    "dn_HasLining_Explosion1"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion1Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -58104,7 +58118,9 @@
    "dn_HasLining_Explosion2"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion2Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": false
  },
  {
@@ -59142,7 +59158,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion1Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -59161,7 +59179,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion2Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -60497,7 +60517,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion1Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -60516,7 +60538,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion2Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -61567,7 +61591,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion1Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -61586,7 +61612,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion2Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -62878,7 +62906,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion1Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -62897,7 +62927,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion2Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -63762,7 +63794,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion1Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -63781,7 +63815,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion2Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -64645,7 +64681,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion1Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -64664,7 +64702,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion2Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -66216,7 +66256,9 @@
    "dn_HasLining_Explosion1"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion1Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": false
  },
  {
@@ -66822,7 +66864,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion1Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -66841,7 +66885,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk mod_armor_Explosion2Perk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -68612,7 +68658,21 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x008A418A:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008A418A",
+     "edid": "mod_Custom_LastStand",
+     "name": "Last Stand"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed",
@@ -68710,7 +68770,27 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00471889:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00471889",
+     "edid": "mod_Custom_TrailWarden",
+     "name": "Trail Warden"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeThrowingKnife",
+      "present": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed",
@@ -69178,7 +69258,26 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x004F6D7D:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x004F6D7D",
+     "edid": "mod_Legendary_Armor1_LessDMGAnimals",
+     "name": "Hunter's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeAnimal"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_LessDMGAnimals"
@@ -69200,7 +69299,29 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x004F6D7C:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x004F6D7C",
+     "edid": "mod_Legendary_Armor1_LessDMGBugs",
+     "name": "Exterminator's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "enemyTypeAny",
+      "keywordsOrRaces": [
+       "ActorTypeBug",
+       "ActorTypeMirelurk"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_LessDMGBugs"
@@ -69222,7 +69343,29 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x004F6D7E:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x004F6D7E",
+     "edid": "mod_Legendary_Armor1_LessDMGGhouls",
+     "name": "Ghoul Slayer's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "enemyTypeAny",
+      "keywordsOrRaces": [
+       "ActorTypeFeralGhoul",
+       "ActorTypeGhoul"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_LessDMGGhouls"
@@ -69244,7 +69387,26 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x004F6D78:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x004F6D78",
+     "edid": "mod_Legendary_Armor1_LessDMGPlayers",
+     "name": "Assassin's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeHuman"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_LessDMGHumans"
@@ -69266,7 +69428,26 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x004F6D7F:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x004F6D7F",
+     "edid": "mod_Legendary_Armor1_LessDMGRobots",
+     "name": "Troubleshooter's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeRobot"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_LessDMGRobots"
@@ -69288,7 +69469,26 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x004EE548:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x004EE548",
+     "edid": "mod_Legendary_Armor1_LessDmgScorched",
+     "name": "Zealot's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeScorched"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_LessDMGScorched"
@@ -69310,7 +69510,26 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x004F6D80:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x004F6D80",
+     "edid": "mod_Legendary_Armor1_LessDMGSuperMutants",
+     "name": "Mutant Slayer's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeSuperMutant"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_LessDMGSupermutants"
@@ -69862,7 +70081,98 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00521914:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00521914",
+     "edid": "mod_Legendary_Armor1_ResistancesInverseHealth",
+     "name": "Bolstering"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Bolstering)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x00521914:perk:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00521914",
+     "edid": "mod_Legendary_Armor1_ResistancesInverseHealth",
+     "name": "Bolstering"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Bolstering)=2"
+     }
+    ]
+   },
+   {
+    "id": "0x00521914:perk:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00521914",
+     "edid": "mod_Legendary_Armor1_ResistancesInverseHealth",
+     "name": "Bolstering"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Bolstering)=3"
+     }
+    ]
+   },
+   {
+    "id": "0x00521914:perk:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00521914",
+     "edid": "mod_Legendary_Armor1_ResistancesInverseHealth",
+     "name": "Bolstering"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Bolstering)=4"
+     }
+    ]
+   },
+   {
+    "id": "0x00521914:perk:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00521914",
+     "edid": "mod_Legendary_Armor1_ResistancesInverseHealth",
+     "name": "Bolstering"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Bolstering)=5"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_ResistancesInverseHealth"
@@ -69870,7 +70180,12 @@
   "hasEnchantments": false,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on LGND_EquippedArmorCount_Bolstering — unmapped"
+   "ActorValues on LGND_EquippedArmorCount_Bolstering — unmapped",
+   "perk Legendary_Armor_Bolstering: GetValue(LGND_EquippedArmorCount_Bolstering)=1",
+   "perk Legendary_Armor_Bolstering: GetValue(LGND_EquippedArmorCount_Bolstering)=2",
+   "perk Legendary_Armor_Bolstering: GetValue(LGND_EquippedArmorCount_Bolstering)=3",
+   "perk Legendary_Armor_Bolstering: GetValue(LGND_EquippedArmorCount_Bolstering)=4",
+   "perk Legendary_Armor_Bolstering: GetValue(LGND_EquippedArmorCount_Bolstering)=5"
   ],
   "obtainable": true
  },
@@ -69884,7 +70199,98 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00529A0C:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00529A0C",
+     "edid": "mod_Legendary_Armor1_ResistancesMutation",
+     "name": "Mutant's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Mutants)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x00529A0C:perk:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00529A0C",
+     "edid": "mod_Legendary_Armor1_ResistancesMutation",
+     "name": "Mutant's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Mutants)=2"
+     }
+    ]
+   },
+   {
+    "id": "0x00529A0C:perk:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00529A0C",
+     "edid": "mod_Legendary_Armor1_ResistancesMutation",
+     "name": "Mutant's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Mutants)=3"
+     }
+    ]
+   },
+   {
+    "id": "0x00529A0C:perk:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00529A0C",
+     "edid": "mod_Legendary_Armor1_ResistancesMutation",
+     "name": "Mutant's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Mutants)=4"
+     }
+    ]
+   },
+   {
+    "id": "0x00529A0C:perk:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00529A0C",
+     "edid": "mod_Legendary_Armor1_ResistancesMutation",
+     "name": "Mutant's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Mutants)=5"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_ResistancesMutation"
@@ -69892,7 +70298,12 @@
   "hasEnchantments": false,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on LGND_EquippedArmorCount_Mutants — unmapped"
+   "ActorValues on LGND_EquippedArmorCount_Mutants — unmapped",
+   "perk Legendary_Armor_ResistancesMutation_Perk: GetValue(LGND_EquippedArmorCount_Mutants)=1",
+   "perk Legendary_Armor_ResistancesMutation_Perk: GetValue(LGND_EquippedArmorCount_Mutants)=2",
+   "perk Legendary_Armor_ResistancesMutation_Perk: GetValue(LGND_EquippedArmorCount_Mutants)=3",
+   "perk Legendary_Armor_ResistancesMutation_Perk: GetValue(LGND_EquippedArmorCount_Mutants)=4",
+   "perk Legendary_Armor_ResistancesMutation_Perk: GetValue(LGND_EquippedArmorCount_Mutants)=5"
   ],
   "obtainable": true
  },
@@ -69989,7 +70400,98 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00529A05:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00529A05",
+     "edid": "mod_Legendary_Armor1_ResistancesProportionalHealth",
+     "name": "Vanguard's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Vanguards)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x00529A05:perk:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00529A05",
+     "edid": "mod_Legendary_Armor1_ResistancesProportionalHealth",
+     "name": "Vanguard's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Vanguards)=2"
+     }
+    ]
+   },
+   {
+    "id": "0x00529A05:perk:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00529A05",
+     "edid": "mod_Legendary_Armor1_ResistancesProportionalHealth",
+     "name": "Vanguard's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Vanguards)=3"
+     }
+    ]
+   },
+   {
+    "id": "0x00529A05:perk:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00529A05",
+     "edid": "mod_Legendary_Armor1_ResistancesProportionalHealth",
+     "name": "Vanguard's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Vanguards)=4"
+     }
+    ]
+   },
+   {
+    "id": "0x00529A05:perk:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00529A05",
+     "edid": "mod_Legendary_Armor1_ResistancesProportionalHealth",
+     "name": "Vanguard's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Vanguards)=5"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_ResistancesProportionalHealth"
@@ -69997,7 +70499,12 @@
   "hasEnchantments": false,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on LGND_EquippedArmorCount_Vanguards — unmapped"
+   "ActorValues on LGND_EquippedArmorCount_Vanguards — unmapped",
+   "perk Legendary_Armor_Vanguard: GetValue(LGND_EquippedArmorCount_Vanguards)=1",
+   "perk Legendary_Armor_Vanguard: GetValue(LGND_EquippedArmorCount_Vanguards)=2",
+   "perk Legendary_Armor_Vanguard: GetValue(LGND_EquippedArmorCount_Vanguards)=3",
+   "perk Legendary_Armor_Vanguard: GetValue(LGND_EquippedArmorCount_Vanguards)=4",
+   "perk Legendary_Armor_Vanguard: GetValue(LGND_EquippedArmorCount_Vanguards)=5"
   ],
   "obtainable": true
  },
@@ -70263,7 +70770,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk LegendaryReduceExplosionDamagePerk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -70772,7 +71281,26 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x004EE54C:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x004EE54C",
+     "edid": "mod_Legendary_Armor3_LessDamageStandStill",
+     "name": "Sentinel's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsMoving()=0"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_ArmorWeapon_LessDamangeStandStill"
@@ -70780,7 +71308,8 @@
   "hasEnchantments": false,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on LGND_EquippedArmorCount_Sentinel — unmapped"
+   "ActorValues on LGND_EquippedArmorCount_Sentinel — unmapped",
+   "perk Legendary_Armor_LessDamageStandStill: IsMoving()=0"
   ],
   "obtainable": true
  },
@@ -70998,7 +71527,9 @@
   "hasEnchantments": false,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on Legendary_Armor_WeightAmmoValue — unmapped"
+   "ActorValues on Legendary_Armor_WeightAmmoValue — unmapped",
+   "perk Legendary_Armor_WeightAmmoPerkDUPLICATE000: GetIsObjectType(Ammunition)=1",
+   "perk Legendary_Armor_WeightAmmoPerkDUPLICATE000: entry point Mod Item Weight — not modeled"
   ],
   "obtainable": true
  },
@@ -71867,7 +72398,26 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00606274:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606274",
+     "edid": "mod_Legendary_PowerArmor1_LessDMGAnimals",
+     "name": "Hunter's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeAnimal"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_LessDMGAnimals"
@@ -71890,7 +72440,29 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00606266:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606266",
+     "edid": "mod_Legendary_PowerArmor1_LessDMGBugs",
+     "name": "Exterminator's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "enemyTypeAny",
+      "keywordsOrRaces": [
+       "ActorTypeBug",
+       "ActorTypeMirelurk"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_LessDMGBugs"
@@ -71913,7 +72485,29 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0060625E:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0060625E",
+     "edid": "mod_Legendary_PowerArmor1_LessDMGGhouls",
+     "name": "Ghoul Slayer's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "enemyTypeAny",
+      "keywordsOrRaces": [
+       "ActorTypeFeralGhoul",
+       "ActorTypeGhoul"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_LessDMGGhouls"
@@ -71936,7 +72530,26 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00606259:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606259",
+     "edid": "mod_Legendary_PowerArmor1_LessDMGPlayers",
+     "name": "Assassin's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeHuman"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_LessDMGHumans"
@@ -71959,7 +72572,26 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00606275:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606275",
+     "edid": "mod_Legendary_PowerArmor1_LessDMGRobots",
+     "name": "Troubleshooter's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeRobot"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_LessDMGRobots"
@@ -71982,7 +72614,26 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0060626D:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0060626D",
+     "edid": "mod_Legendary_PowerArmor1_LessDmgScorched",
+     "name": "Zealot's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeScorched"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_LessDMGScorched"
@@ -72005,7 +72656,26 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00606265:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606265",
+     "edid": "mod_Legendary_PowerArmor1_LessDMGSuperMutants",
+     "name": "Mutant Slayer's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ActorTypeSuperMutant"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_LessDMGSupermutants"
@@ -72310,7 +72980,98 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00606257:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606257",
+     "edid": "mod_Legendary_PowerArmor1_ResistancesInverseHealth",
+     "name": "Bolstering"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Bolstering)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x00606257:perk:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606257",
+     "edid": "mod_Legendary_PowerArmor1_ResistancesInverseHealth",
+     "name": "Bolstering"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Bolstering)=2"
+     }
+    ]
+   },
+   {
+    "id": "0x00606257:perk:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606257",
+     "edid": "mod_Legendary_PowerArmor1_ResistancesInverseHealth",
+     "name": "Bolstering"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Bolstering)=3"
+     }
+    ]
+   },
+   {
+    "id": "0x00606257:perk:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606257",
+     "edid": "mod_Legendary_PowerArmor1_ResistancesInverseHealth",
+     "name": "Bolstering"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Bolstering)=4"
+     }
+    ]
+   },
+   {
+    "id": "0x00606257:perk:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606257",
+     "edid": "mod_Legendary_PowerArmor1_ResistancesInverseHealth",
+     "name": "Bolstering"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Bolstering)=5"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_ResistancesInverseHealth"
@@ -72318,7 +73079,12 @@
   "hasEnchantments": false,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on LGND_EquippedArmorCount_Bolstering — unmapped"
+   "ActorValues on LGND_EquippedArmorCount_Bolstering — unmapped",
+   "perk Legendary_Armor_Bolstering: GetValue(LGND_EquippedArmorCount_Bolstering)=1",
+   "perk Legendary_Armor_Bolstering: GetValue(LGND_EquippedArmorCount_Bolstering)=2",
+   "perk Legendary_Armor_Bolstering: GetValue(LGND_EquippedArmorCount_Bolstering)=3",
+   "perk Legendary_Armor_Bolstering: GetValue(LGND_EquippedArmorCount_Bolstering)=4",
+   "perk Legendary_Armor_Bolstering: GetValue(LGND_EquippedArmorCount_Bolstering)=5"
   ],
   "obtainable": true
  },
@@ -72333,7 +73099,98 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00606253:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606253",
+     "edid": "mod_Legendary_PowerArmor1_ResistancesMutation",
+     "name": "Mutant's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Mutants)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x00606253:perk:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606253",
+     "edid": "mod_Legendary_PowerArmor1_ResistancesMutation",
+     "name": "Mutant's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Mutants)=2"
+     }
+    ]
+   },
+   {
+    "id": "0x00606253:perk:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606253",
+     "edid": "mod_Legendary_PowerArmor1_ResistancesMutation",
+     "name": "Mutant's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Mutants)=3"
+     }
+    ]
+   },
+   {
+    "id": "0x00606253:perk:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606253",
+     "edid": "mod_Legendary_PowerArmor1_ResistancesMutation",
+     "name": "Mutant's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Mutants)=4"
+     }
+    ]
+   },
+   {
+    "id": "0x00606253:perk:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606253",
+     "edid": "mod_Legendary_PowerArmor1_ResistancesMutation",
+     "name": "Mutant's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Mutants)=5"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_ResistancesMutation"
@@ -72341,7 +73198,12 @@
   "hasEnchantments": false,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on LGND_EquippedArmorCount_Mutants — unmapped"
+   "ActorValues on LGND_EquippedArmorCount_Mutants — unmapped",
+   "perk Legendary_Armor_ResistancesMutation_Perk: GetValue(LGND_EquippedArmorCount_Mutants)=1",
+   "perk Legendary_Armor_ResistancesMutation_Perk: GetValue(LGND_EquippedArmorCount_Mutants)=2",
+   "perk Legendary_Armor_ResistancesMutation_Perk: GetValue(LGND_EquippedArmorCount_Mutants)=3",
+   "perk Legendary_Armor_ResistancesMutation_Perk: GetValue(LGND_EquippedArmorCount_Mutants)=4",
+   "perk Legendary_Armor_ResistancesMutation_Perk: GetValue(LGND_EquippedArmorCount_Mutants)=5"
   ],
   "obtainable": true
  },
@@ -72441,7 +73303,98 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00606276:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606276",
+     "edid": "mod_Legendary_PowerArmor1_ResistancesProportionalHealth",
+     "name": "Vanguard's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Vanguards)=1"
+     }
+    ]
+   },
+   {
+    "id": "0x00606276:perk:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606276",
+     "edid": "mod_Legendary_PowerArmor1_ResistancesProportionalHealth",
+     "name": "Vanguard's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Vanguards)=2"
+     }
+    ]
+   },
+   {
+    "id": "0x00606276:perk:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606276",
+     "edid": "mod_Legendary_PowerArmor1_ResistancesProportionalHealth",
+     "name": "Vanguard's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Vanguards)=3"
+     }
+    ]
+   },
+   {
+    "id": "0x00606276:perk:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606276",
+     "edid": "mod_Legendary_PowerArmor1_ResistancesProportionalHealth",
+     "name": "Vanguard's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Vanguards)=4"
+     }
+    ]
+   },
+   {
+    "id": "0x00606276:perk:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606276",
+     "edid": "mod_Legendary_PowerArmor1_ResistancesProportionalHealth",
+     "name": "Vanguard's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "GetValue(LGND_EquippedArmorCount_Vanguards)=5"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_ResistancesProportionalHealth"
@@ -72449,7 +73402,12 @@
   "hasEnchantments": false,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on LGND_EquippedArmorCount_Vanguards — unmapped"
+   "ActorValues on LGND_EquippedArmorCount_Vanguards — unmapped",
+   "perk Legendary_Armor_Vanguard: GetValue(LGND_EquippedArmorCount_Vanguards)=1",
+   "perk Legendary_Armor_Vanguard: GetValue(LGND_EquippedArmorCount_Vanguards)=2",
+   "perk Legendary_Armor_Vanguard: GetValue(LGND_EquippedArmorCount_Vanguards)=3",
+   "perk Legendary_Armor_Vanguard: GetValue(LGND_EquippedArmorCount_Vanguards)=4",
+   "perk Legendary_Armor_Vanguard: GetValue(LGND_EquippedArmorCount_Vanguards)=5"
   ],
   "obtainable": true
  },
@@ -72702,7 +73660,9 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "perk LegendaryReduceExplosionDamagePerk: entry point Mod Incoming Explosion Damage — not modeled"
+  ],
   "obtainable": true
  },
  {
@@ -73229,7 +74189,26 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00606277:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606277",
+     "edid": "mod_Legendary_PowerArmor3_LessDamageStandStill",
+     "name": "Sentinel's"
+    },
+    "bucket": "incomingDamageMult",
+    "op": "MUL_ADD",
+    "value": -1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "IsMoving()=0"
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_ArmorWeapon_LessDamangeStandStill"
@@ -73237,7 +74216,8 @@
   "hasEnchantments": false,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on LGND_EquippedArmorCount_Sentinel — unmapped"
+   "ActorValues on LGND_EquippedArmorCount_Sentinel — unmapped",
+   "perk Legendary_Armor_LessDamageStandStill: IsMoving()=0"
   ],
   "obtainable": true
  },
@@ -73347,7 +74327,9 @@
   "hasEnchantments": false,
   "hasGrantingCobj": true,
   "notes": [
-   "ActorValues on Legendary_Armor_WeightAmmoValue — unmapped"
+   "ActorValues on Legendary_Armor_WeightAmmoValue — unmapped",
+   "perk Legendary_Armor_WeightAmmoPerkDUPLICATE000: GetIsObjectType(Ammunition)=1",
+   "perk Legendary_Armor_WeightAmmoPerkDUPLICATE000: entry point Mod Item Weight — not modeled"
   ],
   "obtainable": true
  },

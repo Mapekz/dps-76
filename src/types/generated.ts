@@ -243,6 +243,12 @@ export interface GeneratedUnique {
   mods: Record<string, string>;
   /** Baked-in legendaries by star index (ap_Legendary{N} → N-1); gaps as null. */
   legendaryEffects: (string | null)[];
+  /**
+   * Sibling variant identity-mod ids when this preset's Object Template
+   * combination names a `Don't Use All` container (Camden Whacker, Relic
+   * Reaper). Absent on ordinary uniques.
+   */
+  variantIds?: string[];
 }
 
 /**
@@ -331,6 +337,12 @@ export interface GeneratedOmod {
   hasGrantingCobj?: boolean;
   /** Extraction caveats for this record (unrouted AVs, unmodeled curves) — powers UI badges. */
   notes?: string[];
+  /**
+   * Editor id of the variant-container OMOD this record was split from
+   * (`Don't Use All` identity attach-point containers — Camden Whacker,
+   * Relic Reaper). Absent on ordinary mods.
+   */
+  variantOf?: string;
   /** See GeneratedExplosionSwap — present only when this OMOD's `OverrideProjectile` chase found real EXPL damage. */
   explosionChase?: GeneratedExplosionSwap;
   /**

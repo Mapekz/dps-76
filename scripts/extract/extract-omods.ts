@@ -21,6 +21,7 @@ import {
   explosionIsChain,
   projectileExplosionFormId,
 } from './normalize/explosion';
+import { omodNameOverrides } from '../../src/data/overrides/omod-corrections';
 import { ObtainabilityClassifier } from './obtainability';
 import { emptyCobjIndex, isNonGrantingCobj, type CobjIndex } from './cobj-index';
 
@@ -370,6 +371,9 @@ const PROPERTY_NAME_ALIASES: Record<string, string> = {
   'Color Remapping Index': 'ColorRemappingIndex',
   'Material Swaps': 'MaterialSwaps',
   'Model Swap': 'ModelSwap',
+  // Property 116: unique-mod perk grant. Older `esm` dumps surfaced it as a bare
+  // number (→ RAW_NUMERIC_PROPERTIES); current dumps use the enum name "Perk".
+  Perk: 'AttachedPerk',
 };
 
 export function propertyName(raw: unknown): string {
@@ -425,6 +429,64 @@ function includeFormIds(data: Record<string, unknown>): string[] {
     .filter((m): m is string => typeof m === 'string');
 }
 
+/** Identity attach points that host unique-weapon naming mods. */
+const IDENTITY_ATTACH_POINTS = new Set([
+  '0x0047A264', // ap_customName
+  '0x00521926', // ap_Item_Description
+]);
+
+function includeDontUseAllFormIds(data: Record<string, unknown>): string[] {
+  const includes = data['Includes'];
+  if (!Array.isArray(includes)) return [];
+  return (includes as Array<Record<string, unknown>>)
+    .filter((i) => {
+      const flag = i["Don't Use All"];
+      if (typeof flag === 'object' && flag !== null && 'value' in flag) {
+        return (flag as { value: number }).value === 1;
+      }
+      return flag === 1;
+    })
+    .map((i) => i['Mod'])
+    .filter((m): m is string => typeof m === 'string');
+}
+
+/**
+ * Variant container = zero own properties, ≥2 `Don't Use All` includes, on an
+ * identity attach point. The game rolls exactly one variant at grant time;
+ * flattening the container unions all variants (the Camden Whacker bug).
+ */
+export function isVariantContainer(record: EsmRecord): boolean {
+  const data = omodData(record);
+  if ((data['Property Count'] as number) !== 0) return false;
+  const includes = data['Includes'];
+  if (!Array.isArray(includes) || includes.length < 2) return false;
+  const attachPoint = data['Attach Point'] as string;
+  if (!IDENTITY_ATTACH_POINTS.has(attachPoint)) return false;
+  return includeDontUseAllFormIds(data).length === includes.length;
+}
+
+function resolveVariantDisplayName(
+  containerEdid: string,
+  containerName: string,
+  variantEdid: string,
+): string {
+  const override = omodNameOverrides[variantEdid];
+  if (override !== undefined) return override;
+  let suffix = variantEdid;
+  if (variantEdid.startsWith(`${containerEdid}_`)) {
+    suffix = variantEdid.slice(containerEdid.length + 1);
+  }
+  const label = suffix.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ');
+  return `${containerName} (${label})`;
+}
+
+interface OmodEmitJob {
+  record: EsmRecord;
+  propertyRootFormId: string;
+  variantOf?: string;
+  nameOverride?: string;
+}
+
 /** Obtainability signals that PROVE access (vs informational ones like
  *  npcOnly/noGrantCobj/cobjScrapUnproven) — see obtainability.ts classifyOne.
  *  `armo` (2026-07-18, Phase 3 armor pipeline) is the ARMO-record parallel of
@@ -466,6 +528,8 @@ export interface ExtractOmodsResult {
   omods: GeneratedOmod[];
   /** Armor/power-armor-attached OMODs (Form Type "Armor") — Phase 3 armor pipeline. */
   armorOmods: GeneratedOmod[];
+  /** Emitted variant OMODs keyed by the container's formId (container itself is not emitted). */
+  variantContainers: Record<string, GeneratedOmod[]>;
   excluded: Record<string, string[]>;
   excludedDetailed: Record<string, ExcludedRecordDetail[]>;
   /** Kept-but-weakly-evidenced records (see GeneratedMeta.reviewFlagged). */
@@ -763,10 +827,6 @@ export async function extractOmods(
   // authoring noise, not player choices. EVERY unnamed template member with
   // properties lands in _meta.json reviewFlagged.omodUnnamedTemplateMember
   // (rescued or skipped) so future gaps can't vanish silently again.
-  const IDENTITY_ATTACH_POINTS = new Set([
-    '0x0047A264', // ap_customName
-    '0x00521926', // ap_Item_Description
-  ]);
   // ESM authoring gap (2026-07-15 audit, uniques-effect sweep): the July-10
   // patch repurposed formID 0x00849316 — Editor ID/Name/Description/
   // Data.Properties all rewritten from a bounty-exclusive melee legendary
@@ -792,7 +852,18 @@ export async function extractOmods(
     '0x00849316': '0x004E89A8', // mod_Legendary_Weapon2_Fire ("Pyro-Technician's") → ap_Legendary2
   };
   const unnamedTemplateMembers: ExcludedRecordDetail[] = [];
+  const variantContainers: Record<string, GeneratedOmod[]> = {};
+  const variantChildFormIds = new Set<string>();
+  for (const record of records) {
+    if (!isVariantContainer(record)) continue;
+    for (const variantFormId of includeDontUseAllFormIds(omodData(record))) {
+      variantChildFormIds.add(variantFormId);
+    }
+  }
+
   const named = records.filter((r) => {
+    if (variantChildFormIds.has(r.header.form_id)) return false;
+    if (isVariantContainer(r)) return false;
     const exclusion = classifyOmodRecordExclusion(r, OMOD_ALLOWED_FORM_TYPES);
     if (exclusion === 'junkEdid') excluded.omodJunkEdid.push(r.editor_id);
     if (exclusion === 'unnamed') {
@@ -811,9 +882,33 @@ export async function extractOmods(
     return exclusion === null;
   });
 
+  const emitJobs: OmodEmitJob[] = named.map((record) => ({
+    record,
+    propertyRootFormId: record.header.form_id,
+  }));
+  for (const record of records) {
+    if (!isVariantContainer(record)) continue;
+    const containerName = omodDisplayName(record);
+    for (const variantFormId of includeDontUseAllFormIds(omodData(record))) {
+      const variantRecord = byFormId.get(variantFormId);
+      if (!variantRecord) continue;
+      emitJobs.push({
+        record: variantRecord,
+        propertyRootFormId: variantFormId,
+        variantOf: record.editor_id,
+        nameOverride: resolveVariantDisplayName(
+          record.editor_id,
+          containerName,
+          variantRecord.editor_id,
+        ),
+      });
+    }
+  }
+
   const omods: GeneratedOmod[] = [];
   const armorOmods: GeneratedOmod[] = [];
-  for (const record of named) {
+  for (const job of emitJobs) {
+    const record = job.record;
     const data = omodData(record);
     // Form Type buckets this record into the weapon or armor output array —
     // OMOD_ALLOWED_FORM_TYPES already restricted `named` to exactly these two
@@ -831,7 +926,7 @@ export async function extractOmods(
       ).map((k) => client.resolveEdid(k)),
     );
 
-    const properties = collectProperties(record.header.form_id, new Set());
+    const properties = collectProperties(job.propertyRootFormId, new Set());
     const modifiers: Modifier[] = [];
     const addedKeywords: string[] = [];
     const modNotes = new Set<string>();
@@ -842,7 +937,7 @@ export async function extractOmods(
       kind: 'omod',
       formId: record.header.form_id,
       edid: record.editor_id,
-      name: omodDisplayName(record),
+      name: job.nameOverride ?? omodDisplayName(record),
     };
 
     for (const prop of properties) {
@@ -1142,10 +1237,10 @@ export async function extractOmods(
     const hasGrantingCobj = (cobjIndex.byCreatedObject.get(record.header.form_id) ?? []).some(
       (c) => !isNonGrantingCobj(c, c.edid),
     );
-    targetList.push({
+    const generated: GeneratedOmod = {
       id: record.editor_id,
       formId: record.header.form_id,
-      name: omodDisplayName(record),
+      name: job.nameOverride ?? omodDisplayName(record),
       description: (record.fields['Description'] as string) ?? '',
       attachPointFormId: attachPoint,
       attachPointEdid: await client.resolveEdid(attachPoint),
@@ -1156,8 +1251,16 @@ export async function extractOmods(
       ...(hasGrantingCobj ? { hasGrantingCobj } : {}),
       ...(explosionChase ? { explosionChase } : {}),
       ...(chainSuppressesExplosion ? { chainSuppressesExplosion } : {}),
+      ...(job.variantOf ? { variantOf: job.variantOf } : {}),
       notes: [...modNotes].sort(),
-    });
+    };
+    targetList.push(generated);
+    if (job.variantOf) {
+      const containerFormId = records.find((r) => r.editor_id === job.variantOf)?.header.form_id;
+      if (containerFormId) {
+        (variantContainers[containerFormId] ??= []).push(generated);
+      }
+    }
   }
 
   // Obtainability derivation (see extract-weapons.ts for the flag semantics:
@@ -1232,6 +1335,7 @@ export async function extractOmods(
   return {
     omods,
     armorOmods,
+    variantContainers,
     excluded,
     excludedDetailed,
     reviewFlagged,

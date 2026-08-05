@@ -71,3 +71,31 @@ describe('getUniquesForWeapon', () => {
     );
   });
 });
+
+describe('getEquippedUnique (variant container presets)', () => {
+  const camdenVariantIds = [
+    'mod_Custom_CamdenWhacker_Bleed',
+    'mod_Custom_CamdenWhacker_Poison',
+    'mod_Custom_CamdenWhacker_Fire',
+    'mod_Custom_CamdenWhacker_Cryo',
+    'mod_Custom_CamdenWhacker_Energy',
+    'mod_Custom_CamdenWhacker_RAD',
+  ] as const;
+
+  function weaponWithIdentityMod(omodId: string): WeaponConfig {
+    return {
+      weaponId: 'DLC04_CommieWhacker',
+      mods: { ap_customName: omodId },
+      legendaryEffects: [],
+    };
+  }
+
+  it('resolves every Camden Whacker variant id to the same unique preset', () => {
+    for (const variantId of camdenVariantIds) {
+      const equipped = getEquippedUnique('live', weaponWithIdentityMod(variantId));
+      expect(equipped?.id).toBe('mod_Custom_CamdenWhacker_Bleed');
+      expect(equipped?.name).toBe('Camden Whacker');
+      expect(equipped?.variantIds).toHaveLength(6);
+    }
+  });
+});

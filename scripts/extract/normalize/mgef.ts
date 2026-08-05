@@ -176,6 +176,9 @@ export const FALLBACK_AVIF_ROUTES: Record<
   // skill points (max realistic 11), not a percent. Feeds Pirate Punch's
   // unique-mod curve via the `lockpickSkill` CurveInput (CURVE_INPUT_AVS below).
   STAT_LockpickingTier: { bucket: 'lockpickSkill', scale: 1 },
+  // Peak Value Modifier on ArmorPenetration AV (Anti-Armor, Blade of Bastet's
+  // AbFortifyArmorPenetration curve, ...). Percentage flag on AVIF → scale 0.01.
+  ArmorPenetration: { bucket: 'armorPen', scale: 0.01, archetypes: ['Peak Value Modifier'] },
   // Read directly by DamageVsNonWeakpoint_DO in the damage formula.
   STAT_DmgVsTorso: {
     bucket: 'dbm',
@@ -916,6 +919,12 @@ export function translate(
     const input = resolveCurveInput(effect.curveInputAv, mgef.edid);
     if (input) {
       curve = { input, points: effect.curvePoints };
+    } else if (effect.curveInputAv === '0x006DE64A' && avifEdid === 'ArmorPenetration') {
+      // Blade of Bastet (MoM_ench_BladeofBastet): MoM_EyeOfRa curve input is
+      // 0/1 for Eye of Ra worn — armor loadout unmodeled; emit the base +50
+      // tier (curve Y at X=0) as a flat ADD. Eye of Ra doubling to +100 is a
+      // documented gap (docs/assumptions.md "Unique weapons").
+      effectiveMagnitude = effect.curvePoints[0]?.y ?? effect.magnitude;
     } else {
       result.notes.push(
         `${mgef.edid}: curve with unmapped input AV ${effect.curveInputAv} — needs override`,

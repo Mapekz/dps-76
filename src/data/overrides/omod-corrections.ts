@@ -75,6 +75,21 @@ export const hiddenOmodIds: ReadonlySet<string> = new Set<string>([
   // records now drop at the extraction root, so the hide entry became a
   // stale overlay key and was removed; re-adjudicate when a future dump
   // drops the POST_ prefix.
+  // P62 "The Drifter" unreleased encounter — same rationale as the three
+  // hidden WEAP records in weapon-corrections.ts (user-confirmed never
+  // shipped). Hides unique presets (Splinter/Tempest/Chaos Engine) and their
+  // mod-slot noise on 10mmSMG / AssaultronBlade / M79.
+  'P62_Mod_Custom_Splinter_CustomName',
+  'P62_Mod_Custom_Tempest_CustomName',
+  'P62_Mod_Custom_ChaosEngine_CustomName',
+  'P62_Mod_Custom_Splinter_SpecialEffect',
+  'P62_Mod_Custom_Tempest_SpecialEffect',
+  'P62_Mod_Custom_ChaosEngine_SpecialEffect',
+  'P62_Mod_Custom_crTempest_SpecialEffect',
+  'P62_Mod_Custom_crChaosEngine_SpecialEffect',
+  'P62_Mod_Custom_Splinter_Appearance',
+  'P62_Mod_Custom_Tempest_Appearance',
+  'P62_Mod_Custom_ChaosEngine_Appearance',
 ]);
 /** Omod counterpart of forceVisibleWeaponIds (rescues obtainable:false records). */
 export const forceVisibleOmodIds: ReadonlySet<string> = new Set<string>([
@@ -202,6 +217,11 @@ export const omodNameOverrides: Readonly<Record<string, string>> = {
   // a DEFAULT part (engine folds it via getDefaultOmods).
   mod_Description_MoM_VoiceofSet: 'Voice of Set',
   mod_Description_MoM_BladeofBastet: 'Blade of Bastet',
+  // Camden Whacker / Relic Reaper variant-container split (2026-08).
+  mod_Custom_CamdenWhacker_RAD: 'Camden Whacker (Radiation)',
+  SDOW_Mod_Custom_RelicReaper_PerceptiBobble: 'Relic Reaper (Percepti Bobble)',
+  SDOW_Mod_Custom_RelicReaper_Pannapictagraphist: 'Relic Reaper (Pannapictagraphist)',
+  SDOW_Mod_Custom_RelicReaper_PharmaFarma: 'Relic Reaper (Pharma Farma)',
 };
 /**
  * Per-weapon slot label overrides — (weaponId, attachPointEdid) → label.

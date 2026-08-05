@@ -98,7 +98,14 @@ export function WeaponSection() {
   const weaponOptions = [
     ...uniques.map((u) => ({
       value: u.id,
-      label: getOmodById(mode, u.id)?.name ?? u.name,
+      // Prefer the preset's own name over the identity mod's raw name: it's
+      // derived from the omod name with the " Custom Mod"/" Custom Name"
+      // suffix already stripped (resolveUniquePresetName), and for a
+      // variant-container preset (Camden Whacker, Relic Reaper) the default
+      // variant's own omod name carries a "(Bleed)"-style suffix that must
+      // NOT leak into the weapon-picker row — that suffix belongs only to
+      // the Unique mod slot's own options.
+      label: u.name || (getOmodById(mode, u.id)?.name ?? u.name),
       group: 'Unique weapons' as const,
       subtitle: weapons[u.baseWeaponId]?.name,
     })),

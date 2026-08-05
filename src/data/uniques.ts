@@ -27,7 +27,13 @@ export function getUniques(mode: GameMode): GeneratedUnique[] {
 export function getUniqueById(mode: GameMode, id: string): GeneratedUnique | undefined {
   let map = byIdCache.get(mode);
   if (!map) {
-    map = new Map(allUniques(mode).map((u) => [u.id, u]));
+    map = new Map<string, GeneratedUnique>();
+    for (const unique of allUniques(mode)) {
+      map.set(unique.id, unique);
+      for (const variantId of unique.variantIds ?? []) {
+        map.set(variantId, unique);
+      }
+    }
     byIdCache.set(mode, map);
   }
   return map.get(id);

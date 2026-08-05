@@ -573,7 +573,9 @@ its module doc-comment), `resolve.ts`'s `effectiveOnslaughtStacks`.
   computed max.
 - **Splinter's/Chaos Engine's/Tempest's P62 family**: fully modeled but
   never shipped in-game ("The Drifter" encounter never released) — stays
-  hidden regardless of what the record graph implies.
+  hidden regardless of what the record graph implies (`weapon-corrections.ts`
+  hides the WEAPs; `omod-corrections.ts` hides their identity/special-
+  effect/appearance OMODs).
 - **Reverse regen/consumption/averaging** — **ASSUMPTION** (each): +1
   stack/sec never interrupted; consumption = `onslaughtHitEventsPerShot`;
   averaging = faithful mag+reload sawtooth. Forward sustained sim is the
@@ -595,7 +597,9 @@ The stack counter is engine-hardcoded (raw AV `0x0000039B`, no AVIF
 record), same shape as Onslaught's. **Base max = 0 is an INFERENCE.**
 `bulletStormMaxStacks` sources: Bullet Storm perk +10, Bringing Out the Big
 Guns +10 more, Foundation's Vengeance +5 more (`healthBelowPct: 25`,
-inclusive `≤`) — cap ranges 10/20/25 by loadout. `bulletStormMinStacks`
+inclusive `≤`, via Heavy Gunner's `AbPerkHeavyGunner` SPEL gated on
+`CustomItemName_FoundationsVengeance` keyword the identity OMOD grants — not
+a direct OMOD modifier) — cap ranges 10/20/25 by loadout. `bulletStormMinStacks`
 (Resolute Veteran +5) is the same shape as a floor.
 
 - **Sentinel default** `-1` = follow the computed max, same convention as
@@ -825,6 +829,10 @@ must not be shown.
   (V63 Laser Rifle), and self-delivery ENCH damage (Xerxos's
   `SelfRadDamage` — `enchantmentModifiers` gate keeps self-damage out of
   weapon output).
+- **Blade of Bastet** (`mod_Description_MoM_BladeofBastet`): +50% armor pen
+  (base `MoM_EyeOfRa` curve tier at X=0) via `armorPen` ADD;
+  `scripts/extract/normalize/mgef.ts`. Eye of Ra doubling to +100% **ASSUMPTION,
+  unmodeled** — needs armor loadout toggle for `MoMEyeOfRaItemKeyword`.
 - **Daisy Cutter**: an 8-step `+20%` dbm ladder gated on
   `radResistAtLeast`, capping at +160% at 8000 — no armor model derives
   player Rad Resistance from gear, so it's a manual knob default 0. Full
@@ -847,10 +855,33 @@ must not be shown.
   exact scaling target still wants an in-game measurement (`#72`). Full
   provenance for its five unreferenced legacy siblings:
   `omod-corrections.ts`.
-- **The Guarantee** (`mod_Custom_Overkill`): ADDs +5 to
-  `KillStreakPerKillCount` AV — no ESM-visible consumer besides its own
-  grant; the paper model has no per-kill accrual to scale (`killStreak` is
-  a static slider, `docs/adr/0009`).
+- **Camden Whacker / Relic Reaper variant containers** (2026-08): both are
+  zero-property OMODs whose `Includes` are all `Don't Use All` — the game
+  rolls exactly one variant at grant time. `extract-omods.ts` now emits each
+  include as its own record (`variantOf` back-pointer) instead of flattening
+  the union; the container record itself is never emitted. **ASSUMPTION**:
+  default/preset identity = lowest-formId variant (Bleed for Camden,
+  CapCollector for Relic Reaper) — the ESM include struct has no chance
+  field, so there's no data-backed "correct" default, only a stable one.
+  **Known gap**: Camden's Poison/Fire/Radiation variants' `dotDamage` reads
+  zero DPS impact today — `paper-damage.ts computeDotDps` only counts a DoT
+  whose `damageTypeScope` matches one of the WEAPON's own base component
+  types (Commie Whacker is ballistic-only), so a non-ballistic DoT from a
+  unique mod is silently dropped by that same pre-existing convention for
+  ANY weapon/unique pairing shaped this way, not something this split
+  introduced. Bleed (ballistic-scoped) and Cryo/Energy (base-damage
+  MUL_ADD conversion, a different mechanism entirely) are unaffected.
+  Fixing the general gate is a separate, broader engine change (needs a
+  variant's own DoT type to join the effective component set) — filed
+  separately, not attempted here.
+- **Overkill** (`mod_Custom_Overkill`, formId `0x00685530`): ADDs +5 to
+  `KillStreakPerKillCount` AV (`0x00924E31`, DFOB-registered like
+  `EnableKillStreak`) — streak maxes in two kills instead of ten. **No paper-
+  DPS effect**: `killStreak` is an exogenous slider (`docs/adr/0009`) with no
+  per-kill accrual model, so a rate change has no meaning to steady-state DPS.
+  Code: `extract-omods.ts` ACTOR_VALUE_BUCKETS note. **Not** The Guarantee —
+  that is `mod_Custom_TheGuarantee` (`0x008F0DCC`), already modeled via
+  Demolition Expert on its identity OMOD.
 
 ## Armor pipeline (Phase 3 extraction)
 Engine: `extract-omods.ts`, `conditions.ts`. Armor/PA OMODs share the same

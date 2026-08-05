@@ -456,3 +456,28 @@ describe('unique & cursed mods against live data', () => {
     );
   });
 });
+
+describe('variant-container weapon mod slots', () => {
+  it('offers six elemental variants on Commie Whacker and Shovel', () => {
+    const commie = getWeapons('live')['DLC04_CommieWhacker'];
+    const shovel = getWeapons('live')['Shovel'];
+    const commieUnique = getOmodSlots('live', commie).find((s) => s.slot === 'ap_customName');
+    const shovelUnique = getOmodSlots('live', shovel).find((s) => s.slot === 'ap_customName');
+    expect(commieUnique?.options).toHaveLength(6);
+    expect(shovelUnique?.options).toHaveLength(6);
+    expect(commieUnique?.options.every((o) => o.variantOf === 'mod_Custom_CamdenWhacker')).toBe(
+      true,
+    );
+    expect(shovelUnique?.options.every((o) => o.variantOf === 'SDOW_Mod_Custom_RelicReaper')).toBe(
+      true,
+    );
+  });
+
+  it('shows no P62 Drifter mods on 10mm SMG, Assaultron Blade, or M79', () => {
+    for (const weaponId of ['10mmSMG', 'DLC01_AssaultronBlade', 'M79'] as const) {
+      const weapon = getWeapons('live')[weaponId];
+      const optionIds = getOmodSlots('live', weapon).flatMap((s) => s.options.map((o) => o.id));
+      expect(optionIds.some((id) => id.startsWith('P62_'))).toBe(false);
+    }
+  });
+});

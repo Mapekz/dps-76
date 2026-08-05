@@ -341,6 +341,19 @@ describe('derived condition fields', () => {
     expect(decoded!.state.player.perks).toEqual([{ perkId: 'RadSpecialist', rank: 1 }]);
     expect(decoded!.warnings.some((w) => w.includes('classification'))).toBe(true);
   });
+
+  it('rewrites legacy variant-container omod ids to the default variant without warnings', async () => {
+    const state = createDefaultBuildState();
+    state.player.weapon = {
+      weaponId: 'DLC04_CommieWhacker',
+      mods: { ap_customName: 'mod_Custom_CamdenWhacker' },
+      legendaryEffects: [],
+    };
+    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    expect(decoded!.state.player.weapon).toBeDefined();
+    expect(decoded!.state.player.weapon!.mods.ap_customName).toBe('mod_Custom_CamdenWhacker_Bleed');
+    expect(decoded!.warnings).toEqual([]);
+  });
 });
 
 describe('Armor checklist (Phase 3 armor pipeline, UI + state)', () => {

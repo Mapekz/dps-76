@@ -47,6 +47,10 @@ describe('propertyName (property 116 raw-numeric decode)', () => {
     expect(propertyName(116)).toBe('AttachedPerk');
   });
 
+  it('maps the enum name "Perk" to AttachedPerk', () => {
+    expect(propertyName({ name: 'Perk' })).toBe('AttachedPerk');
+  });
+
   it('maps other raw numbers to Property#<n> instead of collapsing to Unknown', () => {
     expect(propertyName(999)).toBe('Property#999');
   });
@@ -1748,5 +1752,170 @@ describe('extractOmods (V.A.T.S. Enhanced — STAT_VATSAccuracy fallback route, 
       expect.objectContaining({ bucket: 'vatsHitChance', op: 'ADD', value: 0.5 }),
     );
     expect(omod!.notes).not.toContain('ActorValues on STAT_VATSAccuracy — unmapped');
+  });
+});
+
+describe('extractOmods (variant container split)', () => {
+  const CONTAINER_ID = '0x00CA0001';
+  const VARIANT_FIRE_ID = '0x00CA0002';
+  const VARIANT_POISON_ID = '0x00CA0003';
+  const AP_CUSTOM = '0x0047A264';
+  const FIRE_ENCH = '0x00CA00E1';
+  const POISON_ENCH = '0x00CA00E2';
+
+  function makeVariantContainerStub(): EsmClient {
+    const records: Record<string, EsmRecord> = {
+      [CONTAINER_ID]: {
+        header: { signature: 'OMOD', form_id: CONTAINER_ID },
+        editor_id: 'mod_Test_VariantContainer',
+        fields: {
+          Name: 'Test Whacker',
+          Data: {
+            'Property Count': 0,
+            'Form Type': { name: 'Weapon' },
+            'Attach Point': AP_CUSTOM,
+            Includes: [
+              { Mod: VARIANT_FIRE_ID, "Don't Use All": { value: 1, name: 'True' } },
+              { Mod: VARIANT_POISON_ID, "Don't Use All": { value: 1, name: 'True' } },
+            ],
+          },
+        },
+      } as unknown as EsmRecord,
+      [VARIANT_FIRE_ID]: {
+        header: { signature: 'OMOD', form_id: VARIANT_FIRE_ID },
+        editor_id: 'mod_Test_VariantContainer_Fire',
+        fields: {
+          Data: {
+            'Property Count': 1,
+            'Form Type': { name: 'Weapon' },
+            'Attach Point': AP_CUSTOM,
+            Properties: [
+              {
+                'Function Type': { name: 'ADD' },
+                Property: { name: 'Enchantments' },
+                'Value 1': FIRE_ENCH,
+                'Value 2': 1,
+              },
+            ],
+          },
+        },
+      } as unknown as EsmRecord,
+      [VARIANT_POISON_ID]: {
+        header: { signature: 'OMOD', form_id: VARIANT_POISON_ID },
+        editor_id: 'mod_Test_VariantContainer_Poison',
+        fields: {
+          Data: {
+            'Property Count': 1,
+            'Form Type': { name: 'Weapon' },
+            'Attach Point': AP_CUSTOM,
+            Properties: [
+              {
+                'Function Type': { name: 'ADD' },
+                Property: { name: 'Enchantments' },
+                'Value 1': POISON_ENCH,
+                'Value 2': 1,
+              },
+            ],
+          },
+        },
+      } as unknown as EsmRecord,
+      [FIRE_ENCH]: {
+        header: { signature: 'ENCH', form_id: FIRE_ENCH },
+        editor_id: 'ench_Test_Fire',
+        fields: {
+          'Effect Data': { 'Target Type': { name: 'Contact' } },
+          Effects: [
+            {
+              Effect: {
+                'Base Effect': '0x00CA00A1',
+                'Effect Item Data': { Magnitude: 10, Duration: 3 },
+              },
+            },
+          ],
+        },
+      } as unknown as EsmRecord,
+      [POISON_ENCH]: {
+        header: { signature: 'ENCH', form_id: POISON_ENCH },
+        editor_id: 'ench_Test_Poison',
+        fields: {
+          'Effect Data': { 'Target Type': { name: 'Contact' } },
+          Effects: [
+            {
+              Effect: {
+                'Base Effect': '0x00CA00A2',
+                'Effect Item Data': { Magnitude: 5, Duration: 5 },
+              },
+            },
+          ],
+        },
+      } as unknown as EsmRecord,
+      '0x00CA00A1': {
+        header: { signature: 'MGEF', form_id: '0x00CA00A1' },
+        editor_id: 'mgef_Test_Fire',
+        fields: {
+          'Magic Effect Data': {
+            Data: {
+              Archetype: { name: 'Damage' },
+              Delivery: { name: 'Contact' },
+              'Actor Value': '0x00000000',
+            },
+          },
+        },
+      } as unknown as EsmRecord,
+      '0x00CA00A2': {
+        header: { signature: 'MGEF', form_id: '0x00CA00A2' },
+        editor_id: 'mgef_Test_Poison',
+        fields: {
+          'Magic Effect Data': {
+            Data: {
+              Archetype: { name: 'Damage' },
+              Delivery: { name: 'Contact' },
+              'Actor Value': '0x00000000',
+            },
+          },
+        },
+      } as unknown as EsmRecord,
+      [AP_CUSTOM]: {
+        header: { signature: 'KYWD', form_id: AP_CUSTOM },
+        editor_id: 'ap_customName',
+        fields: {},
+      } as unknown as EsmRecord,
+    };
+
+    const get = async (formId: string): Promise<EsmRecord> =>
+      records[formId] ?? {
+        header: { signature: 'KYWD', form_id: formId },
+        editor_id: 'ma_placeholder',
+        fields: {},
+      };
+
+    return {
+      async list(type: string): Promise<EsmListRow[]> {
+        if (type !== 'OMOD') return [];
+        return Object.values(records)
+          .filter((r) => r.header.signature === 'OMOD')
+          .map((r) => ({
+            form_id: r.header.form_id,
+            record_type: 'OMOD',
+            editor_id: r.editor_id,
+            name: (r.fields['Name'] as string) ?? r.editor_id,
+          }));
+      },
+      get,
+      resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+      refs: async () => [],
+    } as unknown as EsmClient;
+  }
+
+  it('emits each variant with disjoint modifiers and never emits the container', async () => {
+    const result = await extractOmods(makeVariantContainerStub(), new Set());
+    expect(result.omods.some((o) => o.id === 'mod_Test_VariantContainer')).toBe(false);
+    const fire = result.omods.find((o) => o.id === 'mod_Test_VariantContainer_Fire');
+    const poison = result.omods.find((o) => o.id === 'mod_Test_VariantContainer_Poison');
+    expect(fire?.variantOf).toBe('mod_Test_VariantContainer');
+    expect(poison?.variantOf).toBe('mod_Test_VariantContainer');
+    expect(fire?.modifiers.some((m) => m.bucket === 'dotDamage')).toBe(true);
+    expect(poison?.modifiers.some((m) => m.bucket === 'dotDamage')).toBe(true);
+    expect(result.variantContainers[CONTAINER_ID]?.length).toBe(2);
   });
 });
