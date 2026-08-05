@@ -23,13 +23,10 @@ Decision, in four parts (`src/data/armor-modifiers.ts`):
   through it (`maxFeasibleArmorEffectCount`/`clampArmorPieceCapacities`).
 - **Every effect is classified `bodyArmor` | `powerArmor` | `both`.**
   Non-legendary from `attachPointEdid`; legendary from record presence per
-  display name — verified 2026-08-04 against granting COBJs: all 9
-  obtainable Armor-only names carry `Workbench_Crafting_Armor` (0x001F6062),
-  all 8 PA-only names carry `Workbench_Crafting_PowerArmor` (0x004EA39F), so
-  presence is the restriction, with no authoring gaps and no override list.
-  The picker shows only the active type (plus `both`); toggling armor type
-  prunes now-invalid selections behind a confirm dialog (`armorType/set`,
-  mirroring `race/set`).
+  display name — verification evidence at `legendaryArmorType`
+  (`armor-modifiers.ts`), not repeated here. The picker shows only the
+  active type (plus `both`); toggling armor type prunes now-invalid
+  selections behind a confirm dialog (`armorType/set`, mirroring `race/set`).
 - **PA materials (`ap_PowerArmor_Lining`) are excluded from the roster**
   entirely (user decision 2026-08-03): stat-inert, and Material is a
   body-armor-only group. This narrows ADR-0008's "inert mods are badged,
@@ -38,20 +35,17 @@ Decision, in four parts (`src/data/armor-modifiers.ts`):
 ## Do not undo this
 
 A future reviewer might reasonably want to re-add a "specific tags beat
-generic `Limb`" tie-break so Muffled reads legs-only like Cushioned —
-don't: BOS Infantry and Robot arm ARMOs carry the generic-`Limb` lining
-keywords Muffled targets (`ma_armor_BOSInfantry_Lining_Limb` 0x005DD33E,
-`ma_armor_Lining_Robot_Limb` 0x00508D82, verified 2026-08-04), so Muffled
-genuinely fits arms on those sets; the union reading is the correct one.
+generic `Limb`" tie-break so Muffled reads legs-only like Cushioned — don't:
+the union reading is correct, and the ARMO-level evidence for why is
+documented at `derivePieceReach` (`armor-modifiers.ts`).
 
 Don't pool Material and Misc into one capacity family "since they share
 pieces" — they are separate slots on the same physical piece at the in-game
 workbench; pooling them would make a full Material loadout block Misc mods.
 
 Don't infer legendary PA-exclusivity from the `ma_PowerArmorMod` keyword —
-it appears on every dual-availability legendary's PA-flavored record too
-(see `.claude/skills/esm-walk/SKILL.md`, "Power-armor exclusivity").
-Record presence per name, COBJ-verified above, is the signal.
+record presence per name (`legendaryArmorType`) is the signal; see that
+function's doc-comment for why the keyword alone doesn't work.
 
 Don't switch the armor-type toggle from prune-with-confirm to
 retain-and-filter for A/B comparison convenience — retain was proposed and

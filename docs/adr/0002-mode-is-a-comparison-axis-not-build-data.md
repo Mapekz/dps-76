@@ -30,16 +30,11 @@ codec (so a shared build URL "pins" the mode it was authored in) — don't:
   mode, which is backwards for a comparison tool — a recipient should see the
   build in THEIR mode by default.
 
-Instead, `makeBuildReducer(mode)` is a factory: `BuildProvider` re-derives the
-reducer (memoized) from `GameModeContext`'s active mode, so the reducer always
-sees the right mode for its perk-registry-dependent rules without Mode ever
-entering the state it operates on. `resolveLoadout`/`computeScenarios` keep
-Mode as a plain parameter for the same reason — a future side-by-side
-live/pts comparison is just `resolveLoadout(config, 'live')` next to
-`resolveLoadout(config, 'pts')` on the identical `config`.
-
-Out of scope for this ADR (a real future feature, not decided here):
-surfacing an actual build INCOMPATIBILITY across modes — a perk that vanished,
-changed cost, or moved SPECIAL — instead of silently dropping it the way
-`keepForRace` already does for race mismatches. The Mode-as-parameter seam is
-what makes that feature possible later; building it is separate work.
+Instead, `makeBuildReducer(mode)` is a factory (see its own doc-comment,
+`src/state/build-reducer.ts`): `BuildProvider` re-derives the reducer
+(memoized) from `GameModeContext`'s active mode, so the reducer always sees
+the right mode without Mode ever entering the state it operates on.
+`resolveLoadout`/`computeScenarios` keep Mode as a plain parameter for the
+same reason — a future side-by-side live/pts comparison is just
+`resolveLoadout(config, 'live')` next to `resolveLoadout(config, 'pts')` on
+the identical `config`.

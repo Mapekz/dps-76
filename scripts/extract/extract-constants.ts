@@ -1,5 +1,6 @@
 import type { GeneratedConstants } from '../../src/types/generated';
 import { EsmClient, type EsmListRow } from './esm-client';
+import { avToNumber } from './extract-npcs';
 
 /**
  * Game-wide scalar constants read directly off ESM records — the one
@@ -232,18 +233,19 @@ async function resolveSpecial(
   return { min: first.min, max: first.max };
 }
 
-/** Resolve one GMST's Float field; null (+ unresolved note) on any failure — the GMST analog of resolveSpecialAvif/resolveGlobal. */
-async function resolveGmstFloat(
+/** Shared shape for resolveGmstFloat/resolveGmstUInt: get one GMST, read its `field`, push an unresolved note and return null on any failure. */
+async function resolveGmstNumericField(
   client: EsmClient,
   formId: string,
+  field: 'Float' | 'UInt',
   label: string,
   unresolved: string[],
 ): Promise<number | null> {
   try {
     const rec = await client.get(formId);
-    const value = rec.fields['Float'];
+    const value = rec.fields[field];
     if (typeof value === 'number') return value;
-    unresolved.push(`constants: ${label} GMST ${formId} missing numeric Float`);
+    unresolved.push(`constants: ${label} GMST ${formId} missing numeric ${field}`);
     return null;
   } catch (err) {
     unresolved.push(
@@ -251,6 +253,16 @@ async function resolveGmstFloat(
     );
     return null;
   }
+}
+
+/** Resolve one GMST's Float field; null (+ unresolved note) on any failure — the GMST analog of resolveSpecialAvif/resolveGlobal. */
+async function resolveGmstFloat(
+  client: EsmClient,
+  formId: string,
+  label: string,
+  unresolved: string[],
+): Promise<number | null> {
+  return resolveGmstNumericField(client, formId, 'Float', label, unresolved);
 }
 
 /**
@@ -291,25 +303,17 @@ async function resolveGmstUInt(
   label: string,
   unresolved: string[],
 ): Promise<number | null> {
-  try {
-    const rec = await client.get(formId);
-    const value = rec.fields['UInt'];
-    if (typeof value === 'number') return value;
-    unresolved.push(`constants: ${label} GMST ${formId} missing numeric UInt`);
-    return null;
-  } catch (err) {
-    unresolved.push(
-      `constants: ${label} GMST ${formId} failed to resolve: ${(err as Error).message}`,
-    );
-    return null;
-  }
+  return resolveGmstNumericField(client, formId, 'UInt', label, unresolved);
 }
 
 /**
  * Resolve one RACE record's flat `Properties[]` value for a given Actor
  * Value formid (e.g. ActionPointsRate) — the same `{Actor Value, Value}` row
  * shape `extract-npcs.ts`'s `mergeProperties` reads, narrowed here to a
- * single race/AV pair with no NPC-override merge.
+ * single race/AV pair with no NPC-override merge. AV comparison goes
+ * through `avToNumber` (not raw string equality) so a padding/case
+ * difference in the ESM's own hex formatting can't silently diverge this
+ * from `mergeProperties`' matching.
  */
 async function resolveRacePropertyValue(
   client: EsmClient,
@@ -318,6 +322,7 @@ async function resolveRacePropertyValue(
   label: string,
   unresolved: string[],
 ): Promise<number | null> {
+  const targetAv = avToNumber(avFormId);
   try {
     const rec = await client.get(raceFormId);
     const props = rec.fields['Properties'];
@@ -327,7 +332,9 @@ async function resolveRacePropertyValue(
     }
     const row = props.find(
       (p) =>
-        p && typeof p === 'object' && (p as { 'Actor Value'?: string })['Actor Value'] === avFormId,
+        p &&
+        typeof p === 'object' &&
+        avToNumber((p as { 'Actor Value'?: string | null })['Actor Value']) === targetAv,
     );
     const value = (row as { Value?: unknown } | undefined)?.Value;
     if (typeof value === 'number') return value;

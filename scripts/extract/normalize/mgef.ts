@@ -1428,28 +1428,11 @@ export async function translateMagicEffect(
   // a `magnitudeGlobal` FormID, that Global's Value is the authoritative
   // magnitude and overrides the flat Effect Item Data float — the same
   // relationship a Curve Table has to the flat magnitude (see the
-  // curve-override path above, which needs no equivalent guard).
-  //
-  // This used to be gated on `magnitude === 0` to work around a bug in the
-  // external `esm` CLI's Rust decoder: it mis-associated each effect's
-  // OPTIONAL trailing GLOB/curve-table subrecord across effects within one
-  // record via a global FIFO queue, so an effect with no GLOB trailer of its
-  // own could wrongly inherit a later effect's GLOB. A present
-  // `magnitudeGlobal` was therefore not reliably the CURRENT effect's own
-  // reference. Gating on `magnitude === 0` was a defensive heuristic that
-  // happened to dodge the worst symptom — Psycho's real dbm 0.15 and
-  // Buffout's real STR 2 stealing a sibling effect's survival-restore GLOB
-  // and inflating to 10.8 / 720 — but it also silently kept
-  // BlightVegetableCookedSoup's crit-damage bonus wrong: its flat magnitude
-  // (25.0 → 0.25) is nonzero, so the guard skipped its own genuinely-
-  // associated GLOB (Value 50.0 → the correct 0.5, i.e. +50% crit damage).
-  //
-  // That decoder bug is now fixed at the source (FO76-Tools/esm/src/decode.rs
-  // binds each effect's optional trailing subrecords to the physically
-  // correct effect instead of a global FIFO queue), so a present
-  // `magnitudeGlobal` is always this effect's own reference and should always
-  // win over the flat magnitude. Requires a fresh `bun run extract` against a
-  // rebuilt `esm` binary to take effect.
+  // curve-override path above, which needs no equivalent guard). A present
+  // `magnitudeGlobal` is always this effect's own reference (the `esm` CLI's
+  // decoder binds each effect's optional trailing subrecords to the
+  // physically correct effect) and should always win over the flat
+  // magnitude — never re-add a `magnitude === 0` gate here.
   let resolvedEffect = effect;
   if (effect.magnitudeGlobal) {
     try {

@@ -19,6 +19,9 @@ import type { SuggestionBudget, SuggestionCandidate } from './types';
  * doors the greedy single-step ladder cannot (e.g., Onslaught pairs where
  * no single piece beats alternatives, but a pair does via stacking).
  * See docs/adr/0006-combo-suggestions-are-mechanism-derived-pairs.md.
+ * Evaluation cost stays cheap: ~≤100 extra evals (~1 ms on a ~25 ms sweep) —
+ * scope is bounded by mechanism (Onslaught, Bullet Storm) and the combo set
+ * is compact, perks and legendary effects pairing once.
  */
 
 const SPECIAL_TO_KEY: Record<Special, SpecialKey> = {

@@ -7,10 +7,9 @@ description: Conventions for writing and maintaining dps-76's docs (CONTEXT.md, 
 
 This repo has four doc genres with different rules. Picking the wrong one —
 or writing a registry entry like a blog post — is how `docs/assumptions.md`
-grew to 2000+ lines holding barely 100 real claims, and how
-`docs/analysis/fire-rate-reload-sensitivity.md` (265 lines, zero inbound
-references) ended up with a session changelog inside it. This skill is the
-judgment layer that keeps a new addition from repeating either mistake.
+once grew to 1383 lines holding barely 50 real claims (trimmed back to ~900
+in a 2026-08-04 pass). This skill is the judgment layer that keeps a new
+addition from repeating that mistake.
 
 **Scope boundary**: this covers *documentation* — prose files under `docs/`,
 `CONTEXT.md`, `docs/adr/`. It does not cover code comments in general
@@ -51,9 +50,9 @@ session) or a GitHub issue (a task, not a fact) — see the placement matrix.
 
 ## Placement matrix
 
-The single most-repeated rule in this repo (previously stated three times,
-independently, in `CLAUDE.md`, `docs/agents/domain.md`, and
-`docs/assumptions.md`'s own preamble — now stated once, here):
+The single most-repeated rule in this repo — stated once, here;
+`docs/agents/domain.md` and `docs/assumptions.md`'s own preamble both defer
+to this table rather than restating it:
 
 | Content | Goes to |
 |---|---|
@@ -115,14 +114,11 @@ A future reviewer might reasonably want to `<X>` — don't: `<why, in enough
 detail that "just try it" doesn't survive a re-read>`.
 ```
 
-The `## Do not undo this` section is the one required heading — it's what
-makes every standing prohibition in the repo greppable in one command
-(`grep -A4 '^## Do not undo this' docs/adr/*.md`), and it's the part an
-agent actually needs: `docs/agents/domain.md` tells agents to *cite* ADRs
-when their output would contradict one (`ADR-0002 (Mode is a comparison
-axis, not build data)`), which only works if the ADR states a clear, findable
-"don't." Everything above the heading is prose for a human deciding whether
-to reopen the decision, not something an agent parses.
+The `## Do not undo this` section is the one required heading — it makes
+every standing prohibition in the repo greppable in one command
+(`grep -A4 '^## Do not undo this' docs/adr/*.md`), and it's the part
+`docs/agents/domain.md` tells agents to *cite* when their output would
+contradict one (`ADR-0002 (Mode is a comparison axis, not build data)`).
 
 ## Mechanics every doc here follows
 
@@ -130,9 +126,8 @@ to reopen the decision, not something an agent parses.
 - Every claim carries a repo-root-relative code pointer in backticks, often
   with a line range.
 - Findings carry inline ISO dates (`2026-07-15`, `SHIPPED 2026-07-18`);
-  documents themselves are undated — git owns document history, a dated H1
-  (like `docs/analysis/fire-rate-reload-sensitivity.md`'s) is the exception,
-  not the pattern to copy.
+  documents themselves are undated — git owns document history. A dated H1
+  is the investigation-genre exception, not the pattern to copy elsewhere.
 - Bold marks a coined term at first use; backticks mark identifiers, paths,
   Buckets, FormIDs. FormIDs are written `0x00661FDF` — 8 digits, uppercase
   hex, lowercase `x`.
@@ -154,20 +149,14 @@ to reopen the decision, not something an agent parses.
 ## Two habits that prevent the next rot
 
 - **Defer, don't restate.** If another doc or skill already owns a fact,
-  name it and stop — don't re-explain it "for completeness."
-  `.claude/skills/esm-walk/SKILL.md` is the model: it states outright that
-  generic ESM/CLI mechanics live in `FO76-Tools`'s `esm-cli` skill and it
-  covers "only the dps-76-specific judgment layer." Before writing a
-  paragraph explaining how something works, check whether a doc-comment,
+  name it and stop — don't re-explain it "for completeness." Before writing
+  a paragraph explaining how something works, check whether a doc-comment,
   another skill, or an ADR already says it.
 - **The inbound-reference test.** Before creating a new doc file, ask what
-  will cite it — a test, a code comment, another doc, an issue. If the
-  honest answer is "nothing yet," that's a signal to fold the content into
-  an existing registry/doc-comment instead of starting a new file that
-  nothing points at. This is the exact difference between
-  `docs/move-speed-census.md` (3 code citations + a CI-enforcing test) and
-  `docs/analysis/fire-rate-reload-sensitivity.md` (zero) — the latter is why
-  investigation docs need the lifecycle rule above.
+  will cite it — a test, a code comment, another doc, an issue. "Nothing
+  yet" is a signal to fold the content into an existing registry/doc-comment
+  instead. `docs/move-speed-census.md` (3 code citations + a CI-enforcing
+  test) is the bar to clear.
 
 ## Where fixes go
 

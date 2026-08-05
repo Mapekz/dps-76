@@ -13,19 +13,13 @@ Issues and PRDs for this repo live as GitHub issues on `Mapekz/dps-76`. Use the 
 
 Infer the repo from `git remote -v` — `gh` does this automatically when run inside a clone.
 
-If `gh` reports the wrong account, the push-capable one for this repo is `Mapekz` (`gh auth switch -u Mapekz`).
+The account is normally auto-pinned to `Mapekz` by a local hook; if `gh` still reports the wrong account, `gh auth switch -u Mapekz` is the fallback.
 
-## When a skill says "publish to the issue tracker"
-
-Create a GitHub issue.
-
-## When a skill says "fetch the relevant ticket"
-
-Run `gh issue view <number> --comments`.
+"Publish to the issue tracker" means create a GitHub issue; "fetch the relevant ticket" means `gh issue view <number> --comments`.
 
 ## Repo-specific conventions
 
-- Issue titles and bodies use the vocabulary defined in `CONTEXT.md` — say **OMOD**, not "attachment"; **Bucket**, not "category"; **Scenario** (Free Aim/VATS; sneak is a condition, not a scenario), not "mode". See `docs/agents/domain.md`.
+- Issue titles and bodies use the vocabulary defined in `CONTEXT.md` — see `docs/agents/domain.md`.
 - An issue proposing a change to damage-engine math should cite the relevant `docs/assumptions.md` section by its verbatim name, and say whether the change adds, retires, or contradicts an entry there.
 - In-game measurement tasks (numbers that can only be settled by playing) belong in `docs/assumptions.md`'s measurement backlog conventions rather than as bare issues — check how existing claims are tracked before filing a duplicate.
 

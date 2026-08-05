@@ -26,13 +26,11 @@ A new `SpeedMult` source after `bun run extract` fails CI until dispositioned he
   the Conditions-section power-armor toggle.
 - Emergency Protocols (PA Misc torso mod, all 10 chassis): `moveSpeedBonus` +25%, gated
   `healthBelowPct 20 (strict)` + `inPowerArmor` — the first armor-OMOD source of this bucket.
-- Propelling (4★ PA legendary, +5%/piece): `moveSpeedBonus`, gated `inPowerArmor` — shipped with
-  the armor pipeline (2026-07-18) but never added to this list or the census test's allowlist
-  until now (`collectMoveSpeedSources()` didn't scan `dataset.armorOmods` until this pass). The
-  `inPowerArmor` gate is an app-supplied override (`overrides/armor-values.ts`), added 2026-08-03:
-  Propelling has no plain-armor sibling record, and its granting COBJ is gated on the
-  `Workbench_Crafting_PowerArmor` bench keyword — it can only ever be crafted onto a PA piece,
-  even though its own enchantment carries no ESM condition to that effect.
+- Propelling (4★ PA legendary, +5%/piece): `moveSpeedBonus`, gated `inPowerArmor` — an
+  app-supplied override (`overrides/armor-values.ts`): Propelling has no plain-armor sibling
+  record, and its granting COBJ is gated on the `Workbench_Crafting_PowerArmor` bench keyword —
+  it can only ever be crafted onto a PA piece, even though its own enchantment carries no ESM
+  condition to that effect.
 
 ## Excluded (sprint / swim / event — deliberate)
 
@@ -71,33 +69,21 @@ player loadout fold (census test marks them `excluded:*`).
   count sneak speed? Stopwatch with Fast Fighter + Fixer while sneaking would
   settle it.
 
-## Verified empty / blocked (2026-07-15)
-
-Categories that previously read as "not yet swept" but are now dispositioned:
+## Verified empty / blocked
 
 - **Foods beyond Fish Sandwich** — none in extracted data. No other ALCH in
-  `consumables.json` carries `SpeedMult`; the fish sandwich is the sole
-  food/drink speed buff today.
+  `consumables.json` carries `SpeedMult`.
 - **Chems + addiction penalties** — none in extracted data. No chem carries
   `SpeedMult`; `addictions.json` has no speed-penalty withdrawal modifier. The
   Fast Fighter curve's `(0,0)` endpoint clamp for negative `SpeedMult` is
-  documented but **moot until data appears**.
-- **Armor / power-armor OMODs** — pipeline SHIPPED 2026-07-18
-  (`armor-omods.json`, commit 66870c6). Swept: **Propelling** (4★ PA legendary,
-  `moveSpeedBonus` +5%/piece, clean `SpeedMult` route) shipped in the Armor
-  Effects checklist (`#16`). **Emergency Protocols** — now modeled (see
-  "Modeled today" above); the record was always present and extracting a
-  correct `moveSpeedBonus` value, but stayed invisible because its
-  `GetValuePercent(Health)` condition translated to `unresolved` until
-  `scripts/extract/normalize/conditions.ts` gained a case for that ESM
-  function (2026-08-03). **Shrouded** — not chased further this pass, still
-  unresolved; disposition unrelated to the Emergency Protocols fix above.
-  **Sleek** — found, but its AV is
-  `Mod_StealthMove_AV` (sneak-locomotion), the SAME non-`SpeedMult` axis as
-  The Fixer's `Mod_StealthMove_AV` grant above — it would NOT feed
-  `moveSpeedBonus` even if mapped; moved into that "deliberately unmapped"
-  bucket, same open question about whether Fast Fighter counts sneak speed.
-- **Weight-class / encumbrance** — **out of scope**. Engine-native movement
+  documented but moot until data appears.
+- **Armor / power-armor OMODs** — swept (`armor-omods.json`): Propelling and
+  Emergency Protocols are modeled (see "Modeled today" above). **Shrouded** —
+  not chased further, still unresolved. **Sleek** — found, but its AV is
+  `Mod_StealthMove_AV` (sneak-locomotion), the same non-`SpeedMult` axis as
+  The Fixer's grant above — moved into "deliberately unmapped", same open
+  question about whether Fast Fighter counts sneak speed.
+- **Weight-class / encumbrance** — out of scope. Engine-native movement
   penalty with no MGEF; `conditions.ts:228-233` only consumes
   `IsOverEncumbered` as a gate on other effects, not as a `moveSpeedBonus`
   source.

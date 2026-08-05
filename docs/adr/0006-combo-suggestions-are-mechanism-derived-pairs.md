@@ -22,9 +22,8 @@ Furious alone charts +31.8%, so every Furious pair is suppressed as
 redundant). Pairs suffice because one opens the door; the ladder climbs the
 rest.
 
-Evaluation cost stays cheap: ~≤100 extra evals (~1 ms on a ~25 ms sweep)
-because the registry scope is bounded by mechanism (Onslaught, Bullet Storm)
-and the combo set is compact — perks and legendary effects pair once.
+Evaluation cost stays cheap — see `combos.ts`'s own doc-comment for the
+benchmark.
 
 ## Do not undo this
 

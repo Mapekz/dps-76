@@ -630,24 +630,16 @@ export async function extractOmods(
    * - **EXPL "Placed Object" → HAZD tick damage** and **EXPL "Enchantment"**
    *   (Napalm's ground fire / on-hit fire DoT) are INDEPENDENT bonus effects
    *   layered on top of the direct damage above, chased UNCONDITIONALLY
-   *   whenever present — never a gate on whether direct damage materializes.
-   *   (Earlier revisions of this function used hazard presence as a proxy
-   *   for "is this a genuine payload conversion" and skipped direct damage
-   *   without one; that reasoning was wrong on its own terms — a hazard is
-   *   just an optional add-on effect, not a signal of anything — corrected
-   *   2026-07-30.)
+   *   whenever present — never a gate on whether direct damage materializes
+   *   (a hazard is just an optional add-on effect, not a signal of anything).
    *
-   * Was previously two branches split on a target-weapon-family keyword
-   * heuristic (REPLACE for a barrel targeting `explosiveFamilyKeywords`,
-   * additive-only otherwise) — removed 2026-07-30: that heuristic was both
-   * unnecessary (the engine can just check the real weapon's own components)
-   * and unsound for identity/customName mods (`ap_customName` — a unique
-   * weapon's own dedicated skin/name mod, e.g. `SCORE_S11_mod_Custom_
-   * NukaLauncher`), which carry no `Target OMOD Keywords` at all — their
-   * binding to a base weapon lives in the separate Combination mechanism
-   * `extract-uniques.ts` reads, structurally invisible to a keyword gate at
-   * OMOD-extraction time regardless of which weapon they're actually bolted
-   * onto.
+   * Unconditional on target-weapon-family keyword by design, not just by
+   * simplification: a keyword-gated REPLACE-vs-additive split is unsound for
+   * identity/customName mods (`ap_customName` — a unique weapon's own
+   * dedicated skin/name mod), which carry no `Target OMOD Keywords` at all —
+   * their binding to a base weapon lives in the separate Combination
+   * mechanism `extract-uniques.ts` reads, structurally invisible to a
+   * keyword gate at OMOD-extraction time.
    *
    * The overwhelming majority of the 154 weapon OMODs carrying
    * OverrideProjectile are cosmetic (suppressors, focusers) whose PROJ/EXPL

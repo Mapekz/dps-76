@@ -1,5 +1,5 @@
 import type { GeneratedBodyPart, GeneratedBodyPartRace } from '../../src/types/generated';
-import { EsmClient, mapPool } from './esm-client';
+import { EsmClient, mapPool, resolveKeywordEdids } from './esm-client';
 import { isEnemyKeyword } from './normalize/conditions';
 import { CURATED_TARGETS } from './curated-targets';
 
@@ -189,13 +189,9 @@ export async function extractBodyParts(client: EsmClient): Promise<BodyPartsResu
       // edid itself (GetIsRace gates, Assassin's "HumanRace") is stored
       // separately as raceEdid below. Boss NPC_ records are never consulted:
       // no extracted condition references a boss-only keyword.
-      const keywordsNode = (raceRecord.fields['Keywords'] ?? {}) as Record<string, unknown>;
-      const keywordFormIds: string[] = Array.isArray(keywordsNode['Keywords'])
-        ? (keywordsNode['Keywords'] as string[])
-        : [];
-      const keywords = (
-        await Promise.all(keywordFormIds.map((id) => client.resolveEdid(id)))
-      ).filter(isEnemyKeyword);
+      const keywords = (await resolveKeywordEdids(client, raceRecord.fields)).filter(
+        isEnemyKeyword,
+      );
 
       const bptdFormId = raceRecord.fields['Body Part Data'] as string | null;
       if (!bptdFormId) {

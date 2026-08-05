@@ -163,6 +163,20 @@ export class EsmClient {
   }
 }
 
+/** Raw `fields['Keywords'].Keywords` formid array off a record, or `[]` if the record carries none. */
+export function keywordFormIds(fields: Record<string, unknown>): string[] {
+  const node = (fields['Keywords'] ?? {}) as Record<string, unknown>;
+  return Array.isArray(node['Keywords']) ? (node['Keywords'] as string[]) : [];
+}
+
+/** `keywordFormIds(fields)`, each resolved to its editor_id via `client.resolveEdid`. */
+export async function resolveKeywordEdids(
+  client: EsmClient,
+  fields: Record<string, unknown>,
+): Promise<string[]> {
+  return Promise.all(keywordFormIds(fields).map((id) => client.resolveEdid(id)));
+}
+
 /** Run `fn` over `items` with bounded concurrency, preserving order. */
 export async function mapPool<T, R>(
   items: T[],

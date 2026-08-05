@@ -12,37 +12,21 @@ If any of these files don't exist, **proceed silently**. Don't flag their absenc
 
 ## File structure
 
-Single-context repo:
-
-```
-/
-├── CONTEXT.md
-├── docs/
-│   ├── adr/            one file per decision — see .claude/skills/docs-writing
-│   ├── analysis/        dated point-in-time investigations, not living docs
-│   ├── move-speed-census.md   a registry, same genre as assumptions.md
-│   └── assumptions.md
-└── src/
-```
+Single-context repo: `CONTEXT.md` (glossary) + `docs/adr/` (decisions) +
+`docs/assumptions.md`/`docs/move-speed-census.md` (registries) — genre rules
+and where each kind of fact goes: `.claude/skills/docs-writing/SKILL.md`.
 
 ## Use the glossary's vocabulary
 
 When your output names a domain concept (in an issue title, a refactor proposal, a hypothesis, a test name), use the term as defined in `CONTEXT.md`. Don't drift to synonyms the glossary explicitly avoids.
 
-`CONTEXT.md` carries an explicit `_Avoid_` line under most terms, and a **Flagged ambiguities** section recording collisions already resolved — notably that "mod" means **OMOD** (the game record) and never **Modifier IR** (the normalized shape it produces), and that "mode" means Live/PTS and never **Scenario** (Free Aim/VATS; sneak is a condition, not a third scenario). Treat both as settled; don't reintroduce either collision.
+`CONTEXT.md` carries an explicit `_Avoid_` line under most terms, and a **Flagged ambiguities** section recording collisions already resolved. Treat those as settled; don't reintroduce one.
 
 If the concept you need isn't in the glossary yet, that's a signal — either you're inventing language the project doesn't use (reconsider) or there's a real gap (note it for `/grill-with-docs`).
 
 ## Engine claims: docs/assumptions.md
 
-`docs/assumptions.md` is the registry of every value the engine asserts that isn't proven by ESM data. It is a **different kind of document from `CONTEXT.md`** and is deliberately kept separate: the glossary says what a word means and its terms are refined over time, while the registry says what we assert without proof and its entries are retired the moment something is measured or extracted.
-
-Rules when reading or writing it:
-
-- **Entries are terse.** One claim, a status tag, a code pointer. Investigation narrative belongs in the commit message. An explanation of how a mechanic works — even an ESM-proven one — belongs in the implementing function's doc-comment, not here. In-game measurement TODOs go to the measurement backlog. Full conventions: `.claude/skills/docs-writing/SKILL.md`.
-- **Section names are cited verbatim across the codebase** — `src/`, `scripts/`, and generated data, including `src/data/live/generated/omods.json`, whose citations are emitted by the extractors. `src/data/__tests__/doc-citations.test.ts` fails CI if a citation's target heading/anchor goes missing — treat its failures as authoritative over any stale count here. Never rename, merge, or split a section without updating every citation; for generated files that means editing `scripts/extract/*` and re-running `bun run extract`, not hand-editing JSON.
-- **New unproven values need an entry.** If a change introduces a number the ESM doesn't prove, add one — one claim, a status tag, a code pointer.
-- **Don't migrate it into `CONTEXT.md`.** The split is intentional (see above), and merging would break the verbatim citations.
+`docs/assumptions.md` is the registry of every value the engine asserts that isn't proven by ESM data — read it before proposing anything that changes damage-engine math. It is deliberately a different kind of document from `CONTEXT.md` (registry, not glossary) and must not be merged into it — full conventions, entry format, and the citation-guard test: `.claude/skills/docs-writing/SKILL.md`. New unproven values a change introduces need an entry there.
 
 ## Flag ADR conflicts
 

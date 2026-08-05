@@ -82,9 +82,10 @@ interface SerializedBuild {
 // array (px/lpx) for perks outside the 2-char dictionary. Deliberately
 // distinct from src/lib/nukes-dragons.ts parsePerkString, which decodes
 // nukesdragons.com's externally-fixed build-share URL scheme (base-10 rank,
-// capped at 5) — a format we do not control and cannot extend. The one shared
-// seam is the nukesDragonsPerks dictionary (key → PerkId), imported above and
-// reversed via perkIdToKey below; it is not duplicated.
+// capped at 5) — a format we do not control and cannot extend
+// (docs/adr/0003-nd-and-internal-perk-formats-are-separate.md). The one
+// shared seam is the nukesDragonsPerks dictionary (key → PerkId), imported
+// above and reversed via perkIdToKey below; it is not duplicated.
 
 let reverseKeyCache: Map<string, string> | null = null;
 function perkIdToKey(): Map<string, string> {

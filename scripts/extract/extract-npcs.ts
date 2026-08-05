@@ -1,4 +1,4 @@
-import type { EsmClient, EsmRecord } from './esm-client';
+import { keywordFormIds, type EsmClient, type EsmRecord } from './esm-client';
 import { CURATED_TARGETS } from './curated-targets';
 import { tierFromEdid } from './extract-curvetables';
 import type {
@@ -43,12 +43,6 @@ import type {
  */
 const EPIC_CREATURE_DISALLOWED_KEYWORDS_FLST = '0x004FC5B7';
 
-/** `record.fields['Keywords']` → the raw keyword formIds (pattern shared with extract-weapons.ts/extract-bodyparts.ts). */
-function keywordFormIds(fields: Record<string, unknown>): string[] {
-  const node = (fields['Keywords'] ?? {}) as Record<string, unknown>;
-  return Array.isArray(node['Keywords']) ? (node['Keywords'] as string[]) : [];
-}
-
 /** Resolve the epic-creature disallow-keyword FLST to a formId set; empty (fail-open to `epicAllowed: true`) on any error. */
 async function resolveEpicDisallowedKeywords(
   client: EsmClient,
@@ -92,10 +86,8 @@ async function resolveEpicDisallowedKeywords(
 // same race), `RB_Master` (0x004DF720, the "Region Boss Master Quest" hub
 // listing all 4 region-boss events — confirms Scorched Earth/Colossus/Nuka
 // Launcher/Storm Region Boss are siblings), `E06_PocketWatch`, and the boss
-// NPC_'s own Keywords/Perks. This directly contradicts an earlier informal
-// investigation note (scratchpad, not checked in) that claimed E06_Colossus
-// matched shape (a) at rank 3 — that claim does not reproduce against a live
-// query and was NOT carried into this map. Earle is kept in
+// NPC_'s own Keywords/Perks — a circulating claim that E06_Colossus matches
+// shape (a) at rank 3 does not reproduce against a live query. Earle is kept in
 // `BOSS_EPIC_RANK_QUESTS` anyway so a run still emits a specific unresolved
 // note (rather than silently having no row at all) and `epicRank` stays
 // unset for this race. See `docs/assumptions.md "Creature stat curves & NPC extraction"`.

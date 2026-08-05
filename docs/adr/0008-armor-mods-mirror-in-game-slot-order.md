@@ -1,70 +1,27 @@
 # Armor picker groups mirror the in-game workbench slot order, including inert mods
 
-Before this decision, `getArmorEffects` (`src/data/armor-modifiers.ts`)
-curated its roster by filtering to ONLY `hasAnyEngineEffect` records — 32
-entries out of ~890 distinct armor-mod names — and `ArmorSection.tsx`
-rendered them as two flat groups ("Legendary effects", "Misc & PA mods"),
-alphabetical within each. Every mod with zero modifiers in the ESM (jetpack,
-sleek, custom-fitted, cushioned, pocketed, dense, shielded, treated, polymer
-— the mods a player actually picks at the in-game armor workbench) was
-invisible. The weapon OMOD picker had already made the opposite call
-(`src/data/omods.ts:126-133`, "show ALL valid + obtainable mods, even those
-with zero DPS delta... Zero-modifier non-stock mods show badged 'inert'
-instead of vanishing") — armor now matches it.
+`getArmorEffects` (`src/data/armor-modifiers.ts`) used to curate its roster
+to only `hasAnyEngineEffect` records (32 of ~890 distinct armor-mod names),
+hiding every mod with zero ESM modifiers — jetpack, sleek, custom-fitted,
+cushioned, etc. — even though those are real in-game workbench choices. The
+weapon OMOD picker had already made the opposite call
+(`src/data/omods.ts:126-133`); armor now matches it.
 
 Decision: `getArmorEffects` includes every obtainable, non-cosmetic armor/PA
 mod, and `ArmorSection` groups them by the in-game workbench's slot
-categories, displayed as **Underarmor Lining → Material → Misc → 1★ → 2★ →
-3★ → 4★** — instead of two flat buckets. (Originally Material-first,
-matching workbench order; reordered 2026-08-04 to surface the lining group
-first under its clearer "Underarmor Lining" title — the categories still
-mirror the workbench, the display order no longer does.) Entries with no
-engine-effective modifier get `badge: 'inert'` (same `hasAnyEngineEffect`
-predicate, now a badge input instead of a filter) rather than being dropped.
+categories — **Underarmor Lining → Material → Misc → 1★ → 2★ → 3★ → 4★**.
+Entries with no engine-effective modifier get `badge: 'inert'` rather than
+being dropped.
 
 **Cosmetic exclusion is now an explicit allow-list, not the engine-effect
-filter.** `nonLegendaryGroup` (`armor-modifiers.ts`) admits exactly three
-non-legendary attach points and drops everything else (`ap_PowerArmor_Lining`
-— PA materials Mk.I, Model A/B, Standard Plate — was admitted here until
-2026-08-04; now excluded, see `docs/adr/0010`):
-
-| `attachPointEdid` | Group | Example names |
-|---|---|---|
-| `ap_armor_Tier` | Material | Polymer, Fiberglass, Shadowed |
-| `ap_underarmor_style`; `ap_armor_Lining` where id contains `_UnderArmor_` | Lining ("Underarmor Lining") | Casual Style; Shielded/Treated/Protective/Resistant Lining |
-| `ap_armor_Lining` (all other ids); `ap_PowerArmor_Misc` | Misc | Sleek, Cushioned, Deep Pocketed, Jetpack; Targeting HUD, Core Assembly |
-| `ap_Legendary1`–`ap_Legendary4` | Legendary, split by `starTier` | Unyielding (1★) … Bruiser's (4★) |
-
-Everything else (`ap_armor_Paint`, the six `ap_PowerArmor_*Mod` limb paints,
-`ap_Backpack_*`, `ap_Legendary_Reroll`, headlamp/skin attach points,
-`ap_customName`) stays excluded, same outcome as before, now reached
-explicitly instead of as a side effect of the engine-effect filter.
-
-**`ap_armor_Lining` is one ESM attach point covering two in-game slots.**
-Underarmor lining effects (`mod_armor_UnderArmor_<style>_Shielded`, …) and
-non-PA functional Misc mods (`mod_armor_<Set>_Lining_<Torso|Limb>_<Effect>`
-— Sleek, Cushioned, Ultra-Light Build, …) share it; the `_UnderArmor_` id
-token is the only discriminator, checked in `nonLegendaryGroup`.
-
-**Jetpack cosmetic reskins collapse to one entry per attach point.**
-`ap_armor_Lining` and `ap_PowerArmor_Misc` each carry dozens of zero-modifier
-jetpack skins (Nuka-Cola Jetpack, MothMan Jet Pack, Alien Invader Jet
-Pack, …). `isJetpackReskin` drops any name matching `/jet ?pack/i` except
-the two base names ("Jetpack" on `ap_armor_Lining`, "Jet Pack" on
-`ap_PowerArmor_Misc`) before the by-name grouping step, so a reskin never
-becomes its own roster row.
-
-**Representative-record tiebreak now prefers engine-effective records.**
-`buildEntry`'s sort used to be pure `id.localeCompare`; it now sorts
-engine-effective records before non-effective ones, then by id. This is a
-no-op for every effect that existed before this change (verified: all 16
-pre-existing legendary effect ids are unchanged) — it only starts mattering
-now that a same-name group can mix an effective and an inert record.
-
-Roster grew from 32 to 170 entries on the 20260803 dump: 24 material / 14
-lining / 54 misc (post jetpack-collapse) / 80 legendary (21+19+22+16 across
-the four tiers). (Counts predate `docs/adr/0010`'s PA-material exclusion,
-which removes the 4 `ap_PowerArmor_Lining` names from the material group.)
+filter**: `nonLegendaryGroup` (`armor-modifiers.ts`) admits exactly three
+non-legendary attach points, documented at that function — everything else
+(`ap_armor_Paint`, PA limb paints, `ap_Backpack_*`, `ap_Legendary_Reroll`,
+headlamp/skin attach points, `ap_customName`) stays excluded. Jetpack
+cosmetic reskins collapse to one entry per attach point
+(`isJetpackReskin`), and the representative-record tiebreak for a same-name
+group now prefers engine-effective records (`buildEntry`) — both documented
+at their functions, not repeated here.
 
 ## Do not undo this
 
@@ -84,4 +41,5 @@ Also don't fold the `ap_armor_Lining` split (Lining vs Misc) back into one
 group to "match the ESM's one attach point" — the ESM's attach-point
 boundary is an implementation detail of how Bethesda modeled the mod slot,
 not the in-game category a player sees at the workbench. The `_UnderArmor_`
-id check is a deliberate un-flattening, not a workaround.
+id check in `nonLegendaryGroup` is a deliberate un-flattening, not a
+workaround.

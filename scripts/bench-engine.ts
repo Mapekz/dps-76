@@ -1,25 +1,11 @@
 /**
- * 2A bench gate for the suggestion engine (plan: UI redesign phase 2).
- * Original decision rule for a ~400-variant sweep:
- *   < 8ms total → plain useMemo + debounce on the main thread
- *   8–50ms      → structural memoization (assembleLoadoutParts) suffices
- *   > 50ms      → web worker
- *
- *   bun run bench
- *
- * #76 update (2026-08-03): the ~650-675-candidate sweep this line actually
- * measures sits in the 8-50ms tier (~23ms) and STAYS there — a bucket-indexed
- * engine fold (WeakMap-cached Map<Bucket,Modifier[]>) measured as a net
- * regression at this array size (~36-50 modifiers) and was reverted; sound
- * candidate pruning (evaluate.ts's `recordEngineBucketReads`/`isDisjoint`,
- * bucket-disjointness only — condition-level pruning would be the kind of
- * heuristic zero-skip that caused the suggestions rework's defect #1) only
- * trims it by ~5-10%. Going below 8ms without that heuristic risk isn't
- * available, so the sweep was moved to a Web Worker anyway
- * (`src/workers/suggestions.worker.ts`, wired through
- * `src/hooks/useSuggestions.ts`) despite being under the original 50ms
- * trigger — this number is informational only now; it no longer gates the
- * main thread in the app.
+ * Hot-path benchmark for the suggestion engine's ~650-675-candidate sweep
+ * (`bun run bench`). Informational only — the sweep runs off the main
+ * thread in a Web Worker (`src/workers/suggestions.worker.ts`, wired
+ * through `src/hooks/useSuggestions.ts`), so this number doesn't gate
+ * anything; it's a regression signal for future engine-fold changes (a
+ * bucket-indexed fold was tried and reverted here as a net regression at
+ * this array size, `#76`).
  *
  * Ported from the old vitest `bench()`-based src/lib/engine/__tests__/perf.bench.ts
  * — bun:test has no bench() equivalent, so this is a plain script timed with

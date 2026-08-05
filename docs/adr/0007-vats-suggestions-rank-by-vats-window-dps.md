@@ -26,8 +26,9 @@ headline down.
 
 ## Do not undo this
 
-Or rank on unblended VATS sustained DPS (`V`) instead, to "simplify" by
-dropping the uptime factor entirely — don't. Uptime does not appear in
+A future reviewer might reasonably want to rank on unblended VATS sustained
+DPS (`V`) instead, to "simplify" by dropping the uptime factor entirely —
+don't. Uptime does not appear in
 `sustain.sustainedDps` at all, so every AP-economy lever (Action Boy,
 AP-cost receivers, `apMax`/`apRegenFlat` consumables) would score exactly
 `0` and get filtered by `topSuggestions`' `<= 0` check, making the panel

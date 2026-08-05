@@ -26,8 +26,9 @@ the server takes a couple seconds to cold-start on first request, but
   prefer it over screenshots for finding elements and reading state; it's
   cheap and exact (radio `checked`, buttons' visible ΔDPS text, etc.).
 - The Build column is one big `Accordion` (`src/components/build/
-  BuildColumn.tsx`): Weapon → Special Loadout → Mutations → Conditions →
-  Chems/Alcohol → Food & Drink → Magazines → Bobbleheads → Target. Each
+  BuildColumn.tsx`): Weapon → Armor → Special Loadout → Team → Mutations →
+  Conditions → Chems/Alcohol → Food & Drink → Magazines → Bobbleheads →
+  Target. Each
   section is a collapsed `button` in the snapshot ("MAGAZINES none",
   "CHEMS, ALCOHOL & ADDICTIONS Overdrive" etc.) — `click` it to expand, then
   re-`take_snapshot` for the newly-revealed `region`'s contents.

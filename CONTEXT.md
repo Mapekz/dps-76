@@ -54,10 +54,8 @@ _Avoid_: AP efficiency, duty cycle (say AP Uptime).
 
 **VATS-Window DPS**:
 The suggestion-ranking objective when VATS is emphasized: `AP Uptime × VATS
-sustained`, with the AP-empty pause counted as zero — NOT blended with Free
-Aim the way the scenario's canonical DPS is. Emphasizing VATS declares intent;
-this objective avoids diluting VATS-only gains (crit damage, Better Criticals)
-by the free-aim pause share.
+sustained`, NOT blended with Free Aim the way the scenario's canonical DPS
+is — see `docs/adr/0007` for why.
 _Avoid_: VATS burst DPS, pure VATS DPS.
 
 **Effective Weapon**:
@@ -115,10 +113,8 @@ _Avoid_: build (that's the user-facing config, `PlayerConfig`), config.
 
 **Star Tier**:
 The legendary-slot class (1★–4★) of an armor legendary effect, given by its
-`ap_Legendary1-4` attach point. Each tier has a **Tier Budget**: across all
-effects in that tier, summed worn-piece counts never exceed the 5 armor pieces
-(2× Limit Breaking + 3× Battle-Loader's is legal; 5 + 5 is not) — enforced in
-the model, not just advice (`docs/adr/0004`).
+`ap_Legendary1-4` attach point. Each tier has a **Tier Budget** enforced in
+the model, not just advice — see `docs/adr/0004`.
 _Avoid_: star level, slot (that's an OMOD attach point), rank (that's perks).
 
 ### Suggestions
@@ -143,10 +139,8 @@ _Avoid_: primary/secondary suggestions, buffs (ambiguous with armor effects).
 **Combo Suggestion**:
 A two-piece Structural Suggestion pairing stack-mechanism pieces (one stack
 enabler/cap source, at least one per-stack payoff) whose joint DPS delta
-exceeds either piece alone. A combo surfaces only past the **dominance filter**
-— no constituent single may chart on its own (the ladder has no first rung)
-AND the pair's delta must beat the best of them by the existing 1% tie
-threshold — and applying it dispatches both changes at once.
+exceeds either piece alone, gated by the **dominance filter** — see
+`docs/adr/0006` for the filter's exact two-clause shape.
 _Avoid_: synergy pair, joint candidate; archetype is reserved for future
 playstyle suggestions and must not be used for pairs.
 
@@ -154,12 +148,10 @@ playstyle suggestions and must not be used for pairs.
 
 **Mode**:
 The game-data variant, `live` or `pts`. One ESM is extracted today, so both
-resolve to the same data. The switcher holds a build FIXED and varies Mode to
-compare how a formula/calculation change affects that same build — Mode is a
-comparison axis a build is evaluated *at* (a parameter to `resolveLoadout`,
-`makeBuildReducer`, every `@/data` accessor), never a property a build *has*.
-It lives in `GameModeContext`, not `BuildState`, and is never persisted
-(`docs/adr/0002`).
+resolve to the same data. Mode is a comparison axis a build is evaluated *at*
+(a parameter to `resolveLoadout`, every `@/data` accessor), never a property
+a build *has* — lives in `GameModeContext`, not `BuildState`, never
+persisted. See `docs/adr/0002` for why.
 _Avoid_: version, environment, scenario.
 
 **OMOD**:
@@ -180,15 +172,8 @@ _Avoid_: patch, fixup, corrections (that's one specific overlay file).
 
 **Merged Dataset**:
 The single mode-resolved view of all game data, produced by `getDataset(mode)`
-(`src/data/dataset.ts`). VALUE overlays (legendary/buff/omod modifier
-overrides) are folded in right there, so every accessor reads already-merged
-modifiers. VISIBILITY overlay sets (hidden/forceVisible) are also reachable
-through `getDataset(mode)`, but apply downstream, in each collection's own
-accessor — by design: a build that already selected a since-hidden
-omod/consumable must keep computing, only the picker should stop offering it,
-while a hidden weapon record (never real player content) is dropped from the
-dataset entirely. `dataset.ts` stays the one home for the Overlay *contract*
-even where it isn't the one applying it.
+— VALUE and VISIBILITY overlay semantics are documented on that function's
+own doc-comment (`src/data/dataset.ts`), not repeated here.
 _Avoid_: combined data, resolved data.
 
 ## Relationships
@@ -204,18 +189,6 @@ _Avoid_: combined data, resolved data.
 - **VATS-Window DPS** is derived from **AP Uptime** and drives the suggestions
   ranking when VATS is emphasized — it is not the scenario's canonical DPS.
 
-## Example dialogue
-
-> **Dev:** "When I equip a Powerful Automatic Receiver, where does the −30%
-> show up?"
-> **Domain expert:** "That OMOD becomes part of the **Effective Weapon** and
-> emits **Modifier IR** on the `baseDamage` **Bucket**. `resolveLoadout` puts it
-> in the **Loadout**, and the engine **folds** it before the dbm parenthesis."
-> **Dev:** "And the −30% value itself?"
-> **Domain expert:** "Extracted from the OMOD's include chain into the **Merged
-> Dataset** — not hand-authored. Only the script-computed legendary magnitudes
-> live in the **Overlay**."
-
 ## Flagged ambiguities
 
 - "mod" meant both **OMOD** and a **Modifier IR** entry — resolved: OMOD is the
@@ -228,6 +201,5 @@ _Avoid_: combined data, resolved data.
   weapon mod (+10%/kill-streak stack, curve-driven, max 10), and the Adrenal
   legendary armor mod (scales DR+ER). All four share the kill-streak trigger
   (`p.killStreak` in `resolve.ts`'s `PLAYER_STATE_READERS`), but are separate
-  mechanics. Barbarian, Mind Over Matter, and Thrill-Seeker's also read this same
-  counter and are NOT part of the Adrenal family — reinforcing why the field is
-  named generically (`killStreak`) rather than after any one consumer.
+  mechanics — see `docs/adr/0009` for the other, non-Adrenal readers of that
+  same counter and why the field is named generically.

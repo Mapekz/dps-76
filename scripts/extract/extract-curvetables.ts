@@ -2,54 +2,28 @@ import type { EsmClient, EsmListRow, EsmRecord } from './esm-client';
 
 /**
  * Re-extraction of the generic "Universal Tier" creature/player curve
- * tables (`src/data/<mode>/curvetables/{creatures,player}/**`). These files
- * were originally hand-copied byte-for-byte from a dump's
- * `misc/curvetables/json/` folder (Dec 2025, commit 6dbfc80) and had gone
- * stale — the checked-in `creatures/armor/armor_universal_tier22.json` was a
- * 50-point, domain-2–100 relic while the live ESM's version is a 50-point,
- * domain-1–540 curve (Phase 2 spike, 2026-07-18). This extractor replaces
- * that manual process: it goes through the `esm` CLI like every other
- * extractor (never touches the dump's sibling `misc/` folder directly), so
- * the output is reformatted (LF, 1-space indent) rather than byte-identical
- * to Bethesda's own CRLF/tab-indented shipped files — a deliberate,
- * accepted formatting drift; only the numbers are load-bearing.
+ * tables (`src/data/<mode>/curvetables/{creatures,player}/**`), via the
+ * `esm` CLI like every other extractor (never touches the dump's sibling
+ * `misc/` folder directly) — output is reformatted (LF, 1-space indent)
+ * rather than byte-identical to Bethesda's own shipped files; only the
+ * numbers are load-bearing. Hand-copying a curve table JSON is always stale
+ * by default — never treat one as current without re-running this.
  *
  * Scope: only the 4 "Universal Tier" CURV families consumed by the
- * engine/UI today (creature Health/Armor for Phase 2's enemy-defenses work,
- * player Damage/Armor for parity — `src/lib/curve-tables.ts` already reads
- * `player/damage`). Per-creature NAMED curve tables (e.g.
- * `CT_Creatures_Health_HumanRaider`, visible as loose
- * `misc/curvetables/json/creatures/health/health_humanraider.json` files in
- * the dump) are a DIFFERENT, out-of-scope system — every curated NPC_ sampled
- * for extract-npcs.ts referenced only Universal-Tier curves on its own
- * Properties[] rows (Phase 2 spike + extraction pass), so this scope
- * restriction hasn't lost real data. Not re-verified here.
- *
+ * engine/UI today (creature Health/Armor, player Damage/Armor). Per-creature
+ * NAMED curve tables (e.g. `CT_Creatures_Health_HumanRaider`) are a
+ * DIFFERENT, out-of-scope system — every curated NPC_ sampled for
+ * extract-npcs.ts referenced only Universal-Tier curves on its own
+ * Properties[] rows, so this scope restriction hasn't lost real data.
  * `CT_Player_XP_Universal_Tier*` and `CT_Creatures_Damage_Universal_Tier*`
- * (the pre-existing `curvetables/creatures/weapon/` dir, creature attack
- * damage — unrelated to Phase 2's target-defense work) are intentionally
- * NOT re-extracted here; out of this slice's stated scope.
+ * are likewise intentionally NOT re-extracted here.
  *
  * Also owns a handful of one-off ("singleton") CURV records that have no
  * tier family at all — just a single editor_id with no numeric suffix, so
- * `CURVE_TABLE_GROUPS`' search+tier-sort machinery doesn't apply. First
- * addition: `CT_Player_PercentOfMinToMaxRangeDMGMult` (0x008407AC,
- * `src/lib/distance.ts`'s range-falloff curve), previously a hand-copy
- * (commit 6dbfc80). Second addition: `CT_LuckVATSCriticalCharge`
- * (0x00655629, `src/lib/engine/crit-meter.ts`'s per-LCK VATS crit-meter fill
- * term) — reached via DFOB `LuckVATSCriticalChargeCurve_DO` (0x0065562A,
- * user-identified 2026-07-21; the old hardcoded `fVATSCriticalChargeMult`
- * linear term it replaces is no longer the live mechanic). Third addition:
- * `CT_Legendary_Weapon_ChargedUpWeapon` (0x008A3B85,
- * `src/lib/engine/scenarios.ts`'s Charged 4★ melee full-charge damage bonus)
- * — reached via DFOB `WeaponSecondaryChargeUpDamageBonusCurve_DO`
- * (0x0089A83C, user-identified 2026-07-21). Fourth/fifth additions
- * (2026-07-21, DFOB sweep): `SPECIAL_LevelRewardCurve` (0x004F473F, the
- * level→SPECIAL-points curve behind `player-stats.ts`'s allocation pool) and
- * `LegendaryPerkSlotCount` (0x005B67A0, slot→unlock-level behind
- * `build-reducer.ts`'s legendary slot count). Since that sweep, every
+ * `CURVE_TABLE_GROUPS`' search+tier-sort machinery doesn't apply. Every
  * singleton resolves DFOB-first (`resolveSingletonRecord`) — the same
- * indirection the game exe uses. See `CURVE_TABLE_SINGLETONS` below.
+ * indirection the game exe uses; each entry's FormIDs and consumer are
+ * listed at `CURVE_TABLE_SINGLETONS` below, not repeated here.
  */
 
 export interface CurveTablePoint {

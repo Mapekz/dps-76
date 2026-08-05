@@ -6,7 +6,7 @@ import type {
 import type { Modifier } from '../../src/types/modifiers';
 import { isOmodEligibleForWeapon } from '../../src/data/omod-eligibility';
 import { type ApGrantEntry, type ApGrantIndex, emptyApGrantIndex } from './ap-grant-index';
-import { EsmClient, mapPool, type EsmRecord } from './esm-client';
+import { EsmClient, mapPool, resolveKeywordEdids, type EsmRecord } from './esm-client';
 import {
   asNumber,
   DAMAGE_TYPE_EDID_MAP,
@@ -340,11 +340,7 @@ export async function toGeneratedWeapon(
   const crit = (fields['Critical Data'] ?? {}) as Record<string, unknown>;
   const flagsNode = (data['Flags'] ?? {}) as Record<string, unknown>;
   const flagNames = Array.isArray(flagsNode['flags']) ? (flagsNode['flags'] as string[]) : [];
-  const keywordsNode = (fields['Keywords'] ?? {}) as Record<string, unknown>;
-  const keywordFormIds: string[] = Array.isArray(keywordsNode['Keywords'])
-    ? (keywordsNode['Keywords'] as string[])
-    : [];
-  const keywords = await Promise.all(keywordFormIds.map((id) => client.resolveEdid(id)));
+  const keywords = await resolveKeywordEdids(client, fields);
   const weaponTypeName =
     ((data['Weapon Type'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown';
 

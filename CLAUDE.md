@@ -11,7 +11,7 @@ This is a Fallout 76 DPS (Damage Per Second) calculator web application. It comp
 - `bun run dev` - Start development server with HMR
 - `bun run build` - Type check and build for production
 - `bun run build:gh-pages` - Build for GitHub Pages deployment (sets NODE_ENV=production)
-- `bun run test` - Run the bun test suite (engine unit tests, extraction fixtures, golden cases)
+- `bun run test` - Run the test suite (see "Testing" below)
 - `bun run bench` - Run the suggestion-engine hot-path benchmark (`scripts/bench-engine.ts`)
 - `bun run lint` / `bun run lint:fix` - Run oxlint (Rust-based; not ESLint)
 - `bun run fmt` / `bun run fmt:check` - Format with oxfmt
@@ -105,7 +105,7 @@ actually belongs.
    it to `computeScenarios()` and resolves which scenario is emphasized.
 3. **Display:** `ResultsPane` (`src/components/results/`) renders the two
    scenario cards (Free Aim / VATS — see `ScenarioKey` in `build-reducer.ts`;
-   sneak is a player condition, not a third scenario).
+   see `CONTEXT.md`'s **Scenario** entry for the sneak-is-a-condition rule).
 
 ### Game Mode System
 
@@ -116,7 +116,7 @@ extracted today — pts re-exports live until a PTS dump is dropped in and
 ### Component Structure
 
 - `src/components/layout/` - Page shell (`AppShell` mounts `Header` + `BuildColumn` + `ResultsPane`), `BuildUrlInput` (N&D import), `ThemeToggle`
-- `src/components/build/` - Player/enemy configuration UI, mounted as `BuildColumn`'s accordion sections: `WeaponSection`, `ArmorSection`, `SpecialLoadoutSection`/`SpecialSection`, `PerkEditorSection`, `TeamSection`, `BuffsSections` (mutations/magazines/bobbleheads/chems/food-drink), `ConditionsSection`, `TargetSection` (enemy/target + body-part selection — the one place enemy config lives; there is no separate enemy column), `StatSummary`
+- `src/components/build/` - Player/enemy configuration UI, mounted as `BuildColumn`'s accordion sections (in order): `WeaponSection`, `ArmorSection`, `SpecialLoadoutSection` (embeds `PerkEditor` from `PerkEditorSection.tsx`), `TeamSection`, `BuffsSections` (mutations/magazines/bobbleheads/chems/food-drink), `ConditionsSection`, `TargetSection` (enemy/target + body-part selection — the one place enemy config lives; there is no separate enemy column), `StatSummary`
 - `src/components/results/` - Damage statistics display: `ResultsPane` renders `HeadlineStrip` + one `ScenarioCard` per scenario (Free Aim / VATS), plus `CritGauge`, `DeltaFlash`, `BreakdownPanel`, `MultiplierChainTable`, `SuggestionsPanel`
 - `src/components/diff/` - N&D-import delta annotations (`ActionDelta`, `DiffTooltip`)
 - `src/components/ui/` - Reusable UI components (Base UI wrappers with Tailwind styling — not Radix)
@@ -145,23 +145,14 @@ name in `src/data/perk-modifiers.ts`; misses are patched in
   mock leaks into `src/lib/persist/__tests__/codec.test.ts` and breaks it, in
   either file order, without `--isolate` — see
   `src/lib/__tests__/enemy-defenses.test.ts`'s doc-comment.
-- `vi.mock` factories run unhoisted (in place, not lifted above the file's
-  imports like Vitest) but eagerly — `mock.module` patches the module registry
-  synchronously when `vi.mock(...)` is called, before any later top-level
-  `import` in the file resolves. There is no `vi.hoisted` or `vi.importActual`
-  under Bun's `vi`. A partial mock (spreading real exports, overriding a few)
-  should import the real module by namespace *before* calling `vi.mock`, and
-  read from that namespace inside the factory — see
-  `src/lib/persist/__tests__/codec.test.ts`. If an override needs to
-  *delegate* to the real implementation for some inputs (not just spread the
-  rest through), snapshot that one function into a local const *before* the
-  `vi.mock(...)` call, not inside the factory —
-  `const real = actualModule.someFn; vi.mock(id, () => ({ someFn: (...) => real(...) }))`
-  — because `actualModule`'s properties are live references into the same
-  module record `vi.mock` is about to replace, so an override that instead
-  calls `actualModule.someFn(...)` at call time recurses into itself once the
-  mock is installed (confirmed: it hangs, doesn't throw). See
-  `src/lib/__tests__/loadout-ordering.test.ts`.
+- `vi.mock` factories run unhoisted-but-eager under Bun (no `vi.hoisted`/
+  `vi.importActual`); a partial mock must import the real module by
+  namespace *before* calling `vi.mock` and snapshot any delegated function
+  into a local const first, not call it off that namespace inside the
+  factory (it recurses into the mock once installed — confirmed: hangs,
+  doesn't throw). See `src/lib/persist/__tests__/codec.test.ts` and
+  `src/lib/__tests__/loadout-ordering.test.ts`'s doc comments for the
+  worked pattern.
 
 ## Import Path Alias
 
@@ -175,10 +166,8 @@ import { useGameMode } from '@/hooks/useGameMode';
 
 - Uses **Vite 8**, which bundles Rolldown natively (no more separate `rolldown-vite` alias/override)
 - TypeScript **7** (the native Go compiler — `tsc` *is* the Go binary in TS7, ships no `tsserver`;
-  editors need the dedicated TS7 language-server extension). Previously pinned to `~6.0.3` because
-  `typescript-eslint@8.x` only supports `typescript <6.1.0`; that pin was dropped, not merely
-  bumped — ESLint/typescript-eslint were replaced by `oxlint` (see below), which has no dependency
-  on the `typescript` package, so nothing in the toolchain constrains the TS version anymore.
+  editors need the dedicated TS7 language-server extension). Nothing in the toolchain pins the TS
+  version — `oxlint` (see below) has no dependency on the `typescript` package.
 - Linting is **oxlint**, not ESLint — `.oxlintrc.json` at the repo root. `bun run lint` /
   `bun run lint:fix`. Formatting is **oxfmt** — `.oxfmtrc.json`; `bun run fmt` / `bun run fmt:check`.
   Both are Oxc/Rust-based, chosen for speed (lint dropped from ~5s to well under 1s). oxlint's
@@ -211,21 +200,9 @@ import { useGameMode } from '@/hooks/useGameMode';
 
 ## Agent skills
 
-### Issue tracker
-
-Issues live in GitHub Issues on `Mapekz/dps-76`, via the `gh` CLI. Triage
-label vocabulary — `needs-triage`, `needs-info`, `ready-for-agent`,
-`ready-for-human`, `wontfix` — lives alongside the `gh` conventions.
-See `docs/agents/issue-tracker.md`.
-
-### Domain docs
-
-Single-context: `CONTEXT.md` + `docs/adr/` at the repo root, plus
-`docs/assumptions.md` for engine claims. See `docs/agents/domain.md`.
-
-### Docs conventions
-
-Writing or editing anything under `docs/`, `CONTEXT.md`, or an ADR: the four
-doc genres (glossary/registry/ADR/investigation), the placement matrix, and
-the ADR shape live in `.claude/skills/docs-writing/SKILL.md` — not repeated
-here.
+- **Issue tracker**: GitHub Issues on `Mapekz/dps-76` via the `gh` CLI; label
+  vocabulary and conventions are in `docs/agents/issue-tracker.md`.
+- **Domain docs**: `CONTEXT.md` + `docs/adr/` + `docs/assumptions.md` — see
+  `docs/agents/domain.md`.
+- **Docs conventions**: the four doc genres, placement matrix, and ADR shape
+  live in `.claude/skills/docs-writing/SKILL.md`.

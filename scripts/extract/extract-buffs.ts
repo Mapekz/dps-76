@@ -5,7 +5,7 @@ import type {
   GeneratedAddictionRef,
   GeneratedBuff,
 } from '../../src/types/generated';
-import { EsmClient, mapPool, type EsmRecord } from './esm-client';
+import { EsmClient, mapPool, resolveKeywordEdids, type EsmRecord } from './esm-client';
 import { ObtainabilityClassifier } from './obtainability';
 import {
   buildAvifRoutes,
@@ -298,11 +298,7 @@ async function buildConsumable(
   edidByFormId: Map<string, string>,
   allUnmapped: Set<string>,
 ): Promise<CategorizedBuff | null> {
-  const keywordsNode = (record.fields['Keywords'] ?? {}) as Record<string, unknown>;
-  const keywordFormIds = Array.isArray(keywordsNode['Keywords'])
-    ? (keywordsNode['Keywords'] as string[])
-    : [];
-  const keywordEdids = await Promise.all(keywordFormIds.map((id) => client.resolveEdid(id)));
+  const keywordEdids = await resolveKeywordEdids(client, record.fields);
   const category = classifyConsumableCategory(keywordEdids);
   if (!category) return null;
 

@@ -189,6 +189,17 @@ function armorTypeOfRecord(omod: GeneratedOmod): ArmorType {
   return 'bodyArmor';
 }
 
+/**
+ * Legendary armor-type classification is by record presence per display
+ * name, not an override list: verified 2026-08-04 against granting COBJs —
+ * all 9 obtainable Armor-only names carry `Workbench_Crafting_Armor`
+ * (0x001F6062), all 8 PA-only names carry `Workbench_Crafting_PowerArmor`
+ * (0x004EA39F), so presence is the restriction with no authoring gaps
+ * (docs/adr/0010). Don't infer PA-exclusivity from the `ma_PowerArmorMod`
+ * keyword instead — it appears on every dual-availability legendary's
+ * PA-flavored record too (`.claude/skills/esm-walk/SKILL.md`, "Power-armor
+ * exclusivity").
+ */
 function legendaryArmorType(records: readonly GeneratedOmod[]): ArmorType {
   let hasArmor = false;
   let hasPA = false;
@@ -224,6 +235,15 @@ function derivePieceReachFromTokens(texts: readonly string[]): ReadonlySet<Armor
   return reach;
 }
 
+/**
+ * Piece reach is the plain union of ESM piece tags — deliberately no
+ * "specific tags beat generic `Limb`" tie-break, so Muffled (targets the
+ * generic `Limb` lining keyword) reaches arms wherever a set's arm ARMO
+ * genuinely carries that keyword: BOS Infantry (`ma_armor_BOSInfantry_
+ * Lining_Limb` 0x005DD33E) and Robot (`ma_armor_Lining_Robot_Limb`
+ * 0x00508D82), verified 2026-08-04 (docs/adr/0010). The union reading is
+ * correct — Muffled genuinely fits arms on those sets.
+ */
 function derivePieceReach(
   name: string,
   records: readonly GeneratedOmod[],
@@ -354,6 +374,10 @@ function findWornPieceKeyword(modifiers: readonly Modifier[]): string | undefine
 }
 
 function buildEntry(name: string, records: GeneratedOmod[]): ArmorEffectEntry {
+  // Engine-effective records sort before non-effective ones, then by id —
+  // a no-op for every effect that existed before docs/adr/0008 (verified:
+  // all 16 pre-existing legendary effect ids unchanged); it only starts
+  // mattering once a same-name group can mix an effective and inert record.
   const sorted = [...records].sort((a, b) => {
     const aEff = hasAnyEngineEffect(a.modifiers);
     const bEff = hasAnyEngineEffect(b.modifiers);

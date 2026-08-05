@@ -311,6 +311,18 @@ const datasets: Record<GameMode, Dataset> = {
   ),
 };
 
+/**
+ * The single mode-resolved view of all game data (CONTEXT.md's **Merged
+ * Dataset**). VALUE overlays (legendary/buff/omod modifier overrides) are
+ * folded in right here, so every accessor reads already-merged modifiers.
+ * VISIBILITY overlay sets (hidden/forceVisible) are also reachable through
+ * this function, but apply downstream, in each collection's own accessor —
+ * by design: a build that already selected a since-hidden omod/consumable
+ * must keep computing, only the picker should stop offering it, while a
+ * hidden weapon record (never real player content) is dropped from the
+ * dataset entirely. This module stays the one home for the Overlay
+ * *contract* even where it isn't the one applying it.
+ */
 export function getDataset(mode: GameMode): Dataset {
   return datasets[mode];
 }

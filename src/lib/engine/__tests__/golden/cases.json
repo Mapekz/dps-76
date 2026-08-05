@@ -91,7 +91,7 @@
       "measure": "sustainedDps",
       "expected": null,
       "tolerancePct": 5,
-      "source": "pending in-game stopwatch: time N full mag+reload cycles vs a target dummy (docs/assumptions.md, Sustained DPS)"
+      "source": "pending in-game stopwatch: time N full mag+reload cycles vs a target dummy (docs/assumptions.md \"Sustained DPS\")"
     },
     {
       "name": "Two Shot Fixer @50, no perks — validates extracted dbm 0.75",
@@ -127,7 +127,7 @@
       "measure": "perHit",
       "expected": null,
       "tolerancePct": 2,
-      "source": "pending in-game pip-boy reading (#65: verifies the WEAP-impact + EXPL-curve summing assumption, docs/assumptions.md 'Launcher explosion damage')"
+      "source": "pending in-game pip-boy reading (#65: verifies the WEAP-impact + EXPL-curve summing assumption, docs/assumptions.md \"Launcher explosion damage\")"
     },
     {
       "name": "Stock Missile Launcher @50, no perks — EXPL payload chase (engine: 5 impact + 968 explosion = 973)",
