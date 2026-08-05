@@ -503,7 +503,12 @@ describe('extractUniques (variant container presets)', () => {
       '0x008EDF26': camdenVariants,
     };
 
-    const { uniques } = await extractUniques(client, [commieWhacker], camdenVariants, variantContainers);
+    const { uniques } = await extractUniques(
+      client,
+      [commieWhacker],
+      camdenVariants,
+      variantContainers,
+    );
     const camdenPresets = uniques.filter((u) => u.baseWeaponId === 'DLC04_CommieWhacker');
     expect(camdenPresets).toHaveLength(1);
     expect(camdenPresets[0]).toMatchObject({

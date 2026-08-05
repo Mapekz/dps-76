@@ -292,7 +292,10 @@ async function main() {
       await readFile(path.join(outDir, 'omods.json'), 'utf8'),
     ) as import('../../src/types/generated').GeneratedOmod[];
     const uniqueResult = await extractUniques(client, allWeapons, omods, variantContainers);
-    await writeFile(path.join(outDir, 'uniques.json'), JSON.stringify(uniqueResult.uniques, null, 1));
+    await writeFile(
+      path.join(outDir, 'uniques.json'),
+      JSON.stringify(uniqueResult.uniques, null, 1),
+    );
     meta.counts.uniques = uniqueResult.uniques.length;
     if (uniqueResult.skipped.length > 0) {
       meta.reviewFlagged = {
