@@ -77,6 +77,8 @@ const ALL_BUCKETS: Bucket[] = [
   'dotDamage',
   'maxHealth',
   'lockpickSkill',
+  'hackingSkill',
+  'stimpakHealMult',
   'specialStrength',
   'specialPerception',
   'specialEndurance',

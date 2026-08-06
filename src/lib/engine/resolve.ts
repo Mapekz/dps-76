@@ -254,6 +254,8 @@ const PLAYER_STATE_READERS: Record<
   // Pirate Punch's curve X — folded lockpickSkill bucket (Picklock ranks,
   // Master Infiltrator, Safecracker's 3★ armor).
   lockpickSkill: (p) => p.lockpickSkill ?? 0,
+  hackingSkill: (p) => p.hackingSkill ?? 0,
+  stimpakHealMult: (p) => p.stimpakHealMult ?? 0,
 };
 
 /**
@@ -458,7 +460,8 @@ export function effectiveValue(mod: Modifier, ctx: ResolveContext): number | nul
     ? interpolateCurve(mod.curve.points, PLAYER_STATE_READERS[mod.curve.input](ctx.player, ctx)) *
       mod.curveScale
     : mod.value;
-  return base * scale;
+  const scaled = mod.scaledBy ? base * PLAYER_STATE_READERS[mod.scaledBy](ctx.player, ctx) : base;
+  return scaled * scale;
 }
 
 /**

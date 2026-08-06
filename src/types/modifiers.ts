@@ -447,6 +447,24 @@ export type Bucket =
    */
   | 'lockpickSkill'
   /**
+   * Hacking Skill (`STAT_HackingTier` 0x00356A14, integer points, base 0).
+   * Folded in player-stats.ts derivePlayerStats exactly like lockpickSkill —
+   * Hacker/Hacker Expert/Hacker Master (+1 each), Master Infiltrator (+3),
+   * Safecracker's 3★ armor (+1/piece) — threaded onto
+   * PlayerConditions.hackingSkill, read by the `hackingSkill` CurveInput.
+   * No shipped weapon reads it yet; wired for drop-in.
+   */
+  | 'hackingSkill'
+  /**
+   * Stimpak Healing (`STAT_HealMultStimpak` 0x00206F31, percent-point AV,
+   * base 0). Folded in player-stats.ts derivePlayerStats — First Aid perk
+   * (Intelligence-keyed curve) and Medicine Bobblehead (flat +30) — and
+   * threaded onto PlayerConditions.stimpakHealMult. Medical Malpractice's
+   * identity perk scales dbm by this stat via the `scaledBy` mechanism (not a
+   * curve input on the grant side).
+   */
+  | 'stimpakHealMult'
+  /**
    * SPECIAL stat bonuses (consumables, legendary +STR...), folded uniformly
    * by player-stats.ts into `special.<key>`. Every one of the seven feeds a
    * real downstream consumer: Strength → the melee term + its curve input,
@@ -549,11 +567,14 @@ export interface BucketRegimeEntry {
   /** Whether the registry-driven result excludes its intrinsic base; defaults to false. */
   deBased?: boolean;
   /**
-   * False when the fold happens but its result reaches nothing further
-   * (specialPerception: folded into `special.perception`, never read again)
-   * — distinct from `regime: 'unfolded'`, where no fold happens at all.
-   * `INERT_ENGINE_BUCKETS` = every bucket where this is false OR regime is
-   * 'unfolded'.
+   * True when this bucket is modeled correctly all the way through the engine
+   * (folded, threaded, and — if applicable — read by a consumer), even if no
+   * currently shipped game content produces a nonzero DPS change from it
+   * today (`hackingSkill` is the running example). False = genuinely not yet
+   * implemented (NYI): the fold either doesn't happen, or happens but a
+   * known engine capability is missing — distinct from `regime: 'unfolded'`,
+   * where no fold happens at all. `INERT_ENGINE_BUCKETS` = every bucket where
+   * this is false OR regime is 'unfolded'.
    */
   hasEngineEffect: boolean;
   /** Where this bucket is folded (function/module), or why it has no effect. */
@@ -561,12 +582,12 @@ export interface BucketRegimeEntry {
 }
 
 /**
- * `hasEngineEffect: false` above means the fold happens but nothing downstream
- * reads its result at all — e.g. `armorPen` extracts a real value but no
- * enemy-DR model consumes it yet. Contrast the `specialX` buckets: every one
- * of them, including Perception, feeds `DerivedPlayerStats.special` and is
- * rendered by `StatSummary`, so all seven are `hasEngineEffect: true` even
- * though Perception has no paper-damage consumer.
+ * `hasEngineEffect: true` = modeled end-to-end (folded, threaded, consumer-
+ * ready), even when no shipped content moves DPS from it yet (`hackingSkill`).
+ * `hasEngineEffect: false` = NYI — e.g. `bashDamage`/`deflectChance`
+ * (`regime: 'unfolded'`, no fold at all) or a fold with no engine capability
+ * yet. The picker's "no effect yet" badge means NYI, not "happens to be 0 DPS
+ * with your current build."
  */
 
 export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
@@ -875,6 +896,18 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
     hasEngineEffect: true,
     foldedBy:
       'player-stats.ts derivePlayerStats; feeds the lockpickSkill CurveInput (Pirate Punch)',
+  },
+  hackingSkill: {
+    regime: 'playerStat',
+    hasEngineEffect: true,
+    foldedBy:
+      'player-stats.ts derivePlayerStats; no consumer yet — wired for drop-in (STAT_HackingTier peer of lockpickSkill)',
+  },
+  stimpakHealMult: {
+    regime: 'playerStat',
+    hasEngineEffect: true,
+    foldedBy:
+      'player-stats.ts derivePlayerStats; feeds Medical Malpractice via the scaledBy mechanism',
   },
   specialStrength: {
     regime: 'playerStat',
@@ -1305,7 +1338,9 @@ export type CurveInput =
    * PolishedPerk predecessor record (docs/assumptions.md).
    */
   | 'weaponCondition'
-  | 'lockpickSkill'; // STAT_LockpickingTier 0x0032CB37 — Pirate Punch's "+5% Damage per Lockpick Skill" curve
+  | 'lockpickSkill' // STAT_LockpickingTier 0x0032CB37 — Pirate Punch's "+5% Damage per Lockpick Skill" curve
+  | 'hackingSkill' // STAT_HackingTier 0x00356A14 — wired for drop-in (peer of lockpickSkill; no curve consumer yet)
+  | 'stimpakHealMult'; // STAT_HealMultStimpak 0x00206F31 — Medical Malpractice's dbm scale (via scaledBy, not a curve)
 
 export interface ValueCurve {
   input: CurveInput;
@@ -1334,6 +1369,13 @@ export type Modifier = {
   conditions: Condition[];
   /** Effect duration in seconds (DoT ticks, timed buffs) — carried for the future DoT model, unused by the engine. */
   durationSec?: number;
+  /**
+   * "Add Actor Value Mult" entry points: the resolved value is multiplied by
+   * a live player stat rather than being constant — effective = value × stat.
+   * Composes with `curve` (curve result × stat), though nothing uses both today.
+   * Medical Malpractice: dbm ADD 0.01 scaledBy 'stimpakHealMult'.
+   */
+  scaledBy?: CurveInput;
 } & ModifierValue;
 
 /** A modifier fragment without its id/source (as produced by MGEF translation). */
@@ -1342,4 +1384,11 @@ export type ModifierFragment = {
   op: ModOp;
   conditions: Condition[];
   durationSec?: number;
+  /**
+   * "Add Actor Value Mult" entry points: the resolved value is multiplied by
+   * a live player stat rather than being constant — effective = value × stat.
+   * Composes with `curve` (curve result × stat), though nothing uses both today.
+   * Medical Malpractice: dbm ADD 0.01 scaledBy 'stimpakHealMult'.
+   */
+  scaledBy?: CurveInput;
 } & ModifierValue;

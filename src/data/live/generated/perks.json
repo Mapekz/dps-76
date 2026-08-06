@@ -2751,11 +2751,57 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00563B87:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00563B87",
+       "edid": "BowBeforeMe",
+       "name": "Bow Before Me",
+       "rank": 1
+      },
+      "bucket": "armorPen",
+      "op": "MUL_ADD",
+      "value": -0.19999999999999996,
+      "conditions": [
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeBow",
+         "WeaponTypeThrowingKnife"
+        ]
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00563B87:r2:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00563B87",
+       "edid": "BowBeforeMe",
+       "name": "Bow Before Me",
+       "rank": 2
+      },
+      "bucket": "armorPen",
+      "op": "MUL_ADD",
+      "value": -0.4,
+      "conditions": [
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeBow",
+         "WeaponTypeThrowingKnife"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -5229,52 +5275,13 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": [
-     {
-      "id": "0x005A26EA:r1:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x005A26EA",
-       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
-       "name": "Wendigo Colossus Damage Reduction",
-       "rank": 1
-      },
-      "bucket": "incomingDamageMult",
-      "op": "MUL_ADD",
-      "value": -0.7,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsUsingAltCurveTable()=0"
-       }
-      ]
-     }
-    ]
+    "modifiers": []
    },
    {
     "rank": 2,
     "modifiers": [
      {
-      "id": "0x005A26EA:r2:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x005A26EA",
-       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
-       "name": "Wendigo Colossus Damage Reduction",
-       "rank": 2
-      },
-      "bucket": "incomingDamageMult",
-      "op": "MUL_ADD",
-      "value": -0.7,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsUsingAltCurveTable()=0"
-       }
-      ]
-     },
-     {
-      "id": "0x005A26EA:r2:2:1",
+      "id": "0x005A26EA:r2:2:0",
       "source": {
        "kind": "perk",
        "formId": "0x005A26EA",
@@ -5293,26 +5300,7 @@
     "rank": 3,
     "modifiers": [
      {
-      "id": "0x005A26EA:r3:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x005A26EA",
-       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
-       "name": "Wendigo Colossus Damage Reduction",
-       "rank": 3
-      },
-      "bucket": "incomingDamageMult",
-      "op": "MUL_ADD",
-      "value": -0.7,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsUsingAltCurveTable()=0"
-       }
-      ]
-     },
-     {
-      "id": "0x005A26EA:r3:2:1",
+      "id": "0x005A26EA:r3:2:0",
       "source": {
        "kind": "perk",
        "formId": "0x005A26EA",
@@ -5326,7 +5314,7 @@
       "conditions": []
      },
      {
-      "id": "0x005A26EA:r3:3:2",
+      "id": "0x005A26EA:r3:3:1",
       "source": {
        "kind": "perk",
        "formId": "0x005A26EA",
@@ -5345,26 +5333,7 @@
     "rank": 4,
     "modifiers": [
      {
-      "id": "0x005A26EA:r4:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x005A26EA",
-       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
-       "name": "Wendigo Colossus Damage Reduction",
-       "rank": 4
-      },
-      "bucket": "incomingDamageMult",
-      "op": "MUL_ADD",
-      "value": -0.7,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsUsingAltCurveTable()=0"
-       }
-      ]
-     },
-     {
-      "id": "0x005A26EA:r4:2:1",
+      "id": "0x005A26EA:r4:2:0",
       "source": {
        "kind": "perk",
        "formId": "0x005A26EA",
@@ -5378,7 +5347,7 @@
       "conditions": []
      },
      {
-      "id": "0x005A26EA:r4:3:2",
+      "id": "0x005A26EA:r4:3:1",
       "source": {
        "kind": "perk",
        "formId": "0x005A26EA",
@@ -5392,7 +5361,7 @@
       "conditions": []
      },
      {
-      "id": "0x005A26EA:r4:4:3",
+      "id": "0x005A26EA:r4:4:2",
       "source": {
        "kind": "perk",
        "formId": "0x005A26EA",
@@ -5411,26 +5380,7 @@
     "rank": 5,
     "modifiers": [
      {
-      "id": "0x005A26EA:r5:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x005A26EA",
-       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
-       "name": "Wendigo Colossus Damage Reduction",
-       "rank": 5
-      },
-      "bucket": "incomingDamageMult",
-      "op": "MUL_ADD",
-      "value": -0.7,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsUsingAltCurveTable()=0"
-       }
-      ]
-     },
-     {
-      "id": "0x005A26EA:r5:2:1",
+      "id": "0x005A26EA:r5:2:0",
       "source": {
        "kind": "perk",
        "formId": "0x005A26EA",
@@ -5444,7 +5394,7 @@
       "conditions": []
      },
      {
-      "id": "0x005A26EA:r5:3:2",
+      "id": "0x005A26EA:r5:3:1",
       "source": {
        "kind": "perk",
        "formId": "0x005A26EA",
@@ -5458,7 +5408,7 @@
       "conditions": []
      },
      {
-      "id": "0x005A26EA:r5:4:3",
+      "id": "0x005A26EA:r5:4:2",
       "source": {
        "kind": "perk",
        "formId": "0x005A26EA",
@@ -5472,7 +5422,7 @@
       "conditions": []
      },
      {
-      "id": "0x005A26EA:r5:5:4",
+      "id": "0x005A26EA:r5:5:3",
       "source": {
        "kind": "perk",
        "formId": "0x005A26EA",
@@ -5491,26 +5441,7 @@
     "rank": 6,
     "modifiers": [
      {
-      "id": "0x005A26EA:r6:1:0",
-      "source": {
-       "kind": "perk",
-       "formId": "0x005A26EA",
-       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
-       "name": "Wendigo Colossus Damage Reduction",
-       "rank": 6
-      },
-      "bucket": "incomingDamageMult",
-      "op": "MUL_ADD",
-      "value": -0.7,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsUsingAltCurveTable()=0"
-       }
-      ]
-     },
-     {
-      "id": "0x005A26EA:r6:2:1",
+      "id": "0x005A26EA:r6:2:0",
       "source": {
        "kind": "perk",
        "formId": "0x005A26EA",
@@ -5524,7 +5455,7 @@
       "conditions": []
      },
      {
-      "id": "0x005A26EA:r6:3:2",
+      "id": "0x005A26EA:r6:3:1",
       "source": {
        "kind": "perk",
        "formId": "0x005A26EA",
@@ -5538,7 +5469,7 @@
       "conditions": []
      },
      {
-      "id": "0x005A26EA:r6:4:3",
+      "id": "0x005A26EA:r6:4:2",
       "source": {
        "kind": "perk",
        "formId": "0x005A26EA",
@@ -5552,7 +5483,7 @@
       "conditions": []
      },
      {
-      "id": "0x005A26EA:r6:5:4",
+      "id": "0x005A26EA:r6:5:3",
       "source": {
        "kind": "perk",
        "formId": "0x005A26EA",
@@ -5564,25 +5495,6 @@
       "op": "MUL_ADD",
       "value": -0.7,
       "conditions": []
-     },
-     {
-      "id": "0x005A26EA:r6:6:5",
-      "source": {
-       "kind": "perk",
-       "formId": "0x005A26EA",
-       "edid": "crWendigoColossus_DamageReductionPerk_Tier",
-       "name": "Wendigo Colossus Damage Reduction",
-       "rank": 6
-      },
-      "bucket": "incomingDamageMult",
-      "op": "MUL_ADD",
-      "value": -0.8,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "IsUsingAltCurveTable()=0"
-       }
-      ]
      }
     ]
    }
@@ -5677,7 +5589,9 @@
    }
   ],
   "hasCard": false,
-  "notes": []
+  "notes": [
+   "entry point Mod Target Damage Resistance uses Multiply 1 + Actor Value Mult — skipped"
+  ]
  },
  {
   "family": "CZ_ReduceDamage",
@@ -5918,7 +5832,21 @@
     "rank": 1,
     "modifiers": [
      {
-      "id": "0x00866D88:r1:3:0",
+      "id": "0x00866D88:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00866D88",
+       "edid": "DailyOps_MutationPerk_SavageStrike",
+       "name": "Savage Strike Perk",
+       "rank": 1
+      },
+      "bucket": "armorPen",
+      "op": "MUL_ADD",
+      "value": -0.5,
+      "conditions": []
+     },
+     {
+      "id": "0x00866D88:r1:3:1",
       "source": {
        "kind": "perk",
        "formId": "0x00866D88",
@@ -6062,11 +5990,73 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0009535C:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0009535C",
+       "edid": "Deadeye",
+       "name": "Deadeye",
+       "rank": 1
+      },
+      "bucket": "armorPen",
+      "op": "MUL_ADD",
+      "value": -0.15000000000000002,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRifle",
+        "present": true
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeAutomatic",
+        "present": false
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0009535C:r2:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0009535C",
+       "edid": "Deadeye",
+       "name": "Deadeye",
+       "rank": 2
+      },
+      "bucket": "armorPen",
+      "op": "MUL_ADD",
+      "value": -0.25,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRifle",
+        "present": true
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeAutomatic",
+        "present": false
+       },
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeHeavyGun",
+        "present": false
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -6359,7 +6349,36 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00110B2D:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00110B2D",
+       "edid": "DLC03_HuntersWisdom",
+       "name": "Hunter's Wisdom",
+       "rank": 1
+      },
+      "bucket": "armorPen",
+      "op": "MUL_ADD",
+      "value": -0.25,
+      "conditions": [
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "ActorTypeAnimal",
+         "ActorTypeMirelurk",
+         "ActorTypeMirelurkHunter",
+         "ActorTypeMirelurkKing",
+         "ActorTypeMirelurkQueen",
+         "DLC03_ActorTypeAngler",
+         "DLC03_ActorTypeFogCrawler",
+         "DLC03_ActorTypeHermitCrab"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -7275,7 +7294,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0024754A:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0024754A",
+       "edid": "EndangerolPerk",
+       "name": "Endangerol",
+       "rank": 1
+      },
+      "bucket": "armorPen",
+      "op": "MUL_ADD",
+      "value": -0.75,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -7612,15 +7646,84 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0032CB42:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0032CB42",
+       "edid": "Exterminator",
+       "name": "Exterminator",
+       "rank": 1
+      },
+      "bucket": "armorPen",
+      "op": "MUL_ADD",
+      "value": -0.25,
+      "conditions": [
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "ActorTypeBug",
+         "ActorTypeMirelurk"
+        ]
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0032CB42:r2:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0032CB42",
+       "edid": "Exterminator",
+       "name": "Exterminator",
+       "rank": 2
+      },
+      "bucket": "armorPen",
+      "op": "MUL_ADD",
+      "value": -0.5,
+      "conditions": [
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "ActorTypeBug",
+         "ActorTypeMirelurk"
+        ]
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0032CB42:r3:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0032CB42",
+       "edid": "Exterminator",
+       "name": "Exterminator",
+       "rank": 3
+      },
+      "bucket": "armorPen",
+      "op": "MUL_ADD",
+      "value": -0.75,
+      "conditions": [
+       {
+        "kind": "enemyTypeAny",
+        "keywordsOrRaces": [
+         "ActorTypeBug",
+         "ActorTypeMirelurk"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -7802,7 +7905,47 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004C926:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004C926",
+       "edid": "FirstAid",
+       "name": "First Aid",
+       "rank": 1
+      },
+      "bucket": "stimpakHealMult",
+      "op": "ADD",
+      "curve": {
+       "input": "intelligence",
+       "points": [
+        {
+         "x": 1,
+         "y": 10
+        },
+        {
+         "x": 15,
+         "y": 35
+        },
+        {
+         "x": 30,
+         "y": 65
+        },
+        {
+         "x": 60,
+         "y": 90
+        },
+        {
+         "x": 100,
+         "y": 100
+        }
+       ]
+      },
+      "curveScale": 1,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -12600,7 +12743,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00356A11:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00356A11",
+       "edid": "Hacker",
+       "name": "Hacker",
+       "rank": 1
+      },
+      "bucket": "hackingSkill",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -12631,7 +12789,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00356A17:r1:4:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00356A17",
+       "edid": "HackerExpert",
+       "name": "Hacker Expert",
+       "rank": 1
+      },
+      "bucket": "hackingSkill",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -12662,7 +12835,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00356A1A:r1:5:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00356A1A",
+       "edid": "HackerMaster",
+       "name": "Hacker Master",
+       "rank": 1
+      },
+      "bucket": "hackingSkill",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -14738,15 +14926,87 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003DE58B:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003DE58B",
+       "edid": "Incisor",
+       "name": "Incisor",
+       "rank": 1
+      },
+      "bucket": "armorPen",
+      "op": "MUL_ADD",
+      "value": -0.25,
+      "conditions": [
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeMelee1H",
+         "WeaponTypeMelee2H",
+         "WeaponTypeUnarmed"
+        ]
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003DE58B:r2:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003DE58B",
+       "edid": "Incisor",
+       "name": "Incisor",
+       "rank": 2
+      },
+      "bucket": "armorPen",
+      "op": "MUL_ADD",
+      "value": -0.5,
+      "conditions": [
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeMelee1H",
+         "WeaponTypeMelee2H",
+         "WeaponTypeUnarmed"
+        ]
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x003DE58B:r3:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x003DE58B",
+       "edid": "Incisor",
+       "name": "Incisor",
+       "rank": 3
+      },
+      "bucket": "armorPen",
+      "op": "MUL_ADD",
+      "value": -0.75,
+      "conditions": [
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeMelee1H",
+         "WeaponTypeMelee2H",
+         "WeaponTypeUnarmed"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -16486,7 +16746,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001FE6B8:r1:1:0",
+      "source": {
+       "kind": "legendaryPerk",
+       "formId": "0x001FE6B8",
+       "edid": "LegendaryAntiArmorPerk",
+       "name": "Ignore target armor",
+       "rank": 1
+      },
+      "bucket": "armorPen",
+      "op": "MUL_ADD",
+      "value": -0.5,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -17743,6 +18018,20 @@
       "op": "ADD",
       "value": 3,
       "conditions": []
+     },
+     {
+      "id": "0x005CFCAB:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005CFCAB",
+       "edid": "LGN_MasterInfiltrator_Perk",
+       "name": "Master Infiltrator",
+       "rank": 1
+      },
+      "bucket": "hackingSkill",
+      "op": "ADD",
+      "value": 3,
+      "conditions": []
      }
     ]
    },
@@ -17759,6 +18048,20 @@
        "rank": 2
       },
       "bucket": "lockpickSkill",
+      "op": "ADD",
+      "value": 3,
+      "conditions": []
+     },
+     {
+      "id": "0x005CFCAB:r2:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005CFCAB",
+       "edid": "LGN_MasterInfiltrator_Perk",
+       "name": "Master Infiltrator",
+       "rank": 2
+      },
+      "bucket": "hackingSkill",
       "op": "ADD",
       "value": 3,
       "conditions": []
@@ -17781,6 +18084,20 @@
       "op": "ADD",
       "value": 3,
       "conditions": []
+     },
+     {
+      "id": "0x005CFCAB:r3:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005CFCAB",
+       "edid": "LGN_MasterInfiltrator_Perk",
+       "name": "Master Infiltrator",
+       "rank": 3
+      },
+      "bucket": "hackingSkill",
+      "op": "ADD",
+      "value": 3,
+      "conditions": []
      }
     ]
    },
@@ -17797,6 +18114,20 @@
        "rank": 4
       },
       "bucket": "lockpickSkill",
+      "op": "ADD",
+      "value": 3,
+      "conditions": []
+     },
+     {
+      "id": "0x005CFCAB:r4:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x005CFCAB",
+       "edid": "LGN_MasterInfiltrator_Perk",
+       "name": "Master Infiltrator",
+       "rank": 4
+      },
+      "bucket": "hackingSkill",
       "op": "ADD",
       "value": 3,
       "conditions": []
@@ -21181,11 +21512,72 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00245BA3:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00245BA3",
+       "edid": "mod_armor_IgnoreArmorPerk",
+       "name": "Ignore armor with melee weapons",
+       "rank": 1
+      },
+      "bucket": "armorPen",
+      "op": "ADD",
+      "value": -5,
+      "conditions": [
+       {
+        "kind": "wornPieceCount",
+        "keyword": "dn_HasLining_IgnoreArmor",
+        "count": 1
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeHandToHand",
+         "WeaponTypeMelee2H",
+         "WeaponTypeMelee1H",
+         "WeaponTypeUnarmed"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "0x00245BA3:r1:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00245BA3",
+       "edid": "mod_armor_IgnoreArmorPerk",
+       "name": "Ignore armor with melee weapons",
+       "rank": 1
+      },
+      "bucket": "armorPen",
+      "op": "ADD",
+      "value": -10,
+      "conditions": [
+       {
+        "kind": "wornPieceCount",
+        "keyword": "dn_HasLining_IgnoreArmor",
+        "count": 2
+       },
+       {
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "WeaponTypeHandToHand",
+         "WeaponTypeMelee2H",
+         "WeaponTypeMelee1H",
+         "WeaponTypeUnarmed"
+        ]
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
-  "notes": []
+  "notes": [
+   "entry point Mod Target Damage Resistance uses Multiply 1 + Actor Value Mult — skipped"
+  ]
  },
  {
   "family": "mod_armor_LessStagger",
@@ -31795,11 +32187,53 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0031D4BC:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031D4BC",
+       "edid": "TankKiller",
+       "name": "Tank Killer",
+       "rank": 1
+      },
+      "bucket": "armorPen",
+      "op": "MUL_ADD",
+      "value": -0.19999999999999996,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0031D4BC:r2:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0031D4BC",
+       "edid": "TankKiller",
+       "name": "Tank Killer",
+       "rank": 2
+      },
+      "bucket": "armorPen",
+      "op": "MUL_ADD",
+      "value": -0.4,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeRanged",
+        "present": true
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -35854,7 +36288,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x006B5DF6:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x006B5DF6",
+       "edid": "XPD_IgnoreArmorPerk_Boss",
+       "name": "Ignore target armor",
+       "rank": 1
+      },
+      "bucket": "armorPen",
+      "op": "MUL_ADD",
+      "value": -0.5,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,

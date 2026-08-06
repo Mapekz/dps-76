@@ -252,6 +252,10 @@ export interface DerivedPlayerStats {
   maxHealth: number;
   /** Folded lockpickSkill bucket (Picklock ranks, Master Infiltrator, Safecracker's) — base 0, no formula term unlike maxHealth. */
   lockpickSkill: number;
+  /** Folded hackingSkill bucket (Hacker ranks, Master Infiltrator, Safecracker's) — base 0, no formula term; no consumer yet. */
+  hackingSkill: number;
+  /** Folded stimpakHealMult bucket (First Aid, Medicine Bobblehead) — base 0, percent points; feeds Medical Malpractice scaledBy. */
+  stimpakHealMult: number;
 }
 
 export function derivePlayerStats(
@@ -307,6 +311,8 @@ export function derivePlayerStats(
     foldBucket(modifiers, 'maxHealth', BASE_MAX_HP + MAX_HP_PER_ENDURANCE * special.endurance, ctx),
   );
   const lockpickSkill = foldBucket(modifiers, 'lockpickSkill', 0, ctx);
+  const hackingSkill = foldBucket(modifiers, 'hackingSkill', 0, ctx);
+  const stimpakHealMult = foldBucket(modifiers, 'stimpakHealMult', 0, ctx);
 
-  return { special, maxHealth, lockpickSkill };
+  return { special, maxHealth, lockpickSkill, hackingSkill, stimpakHealMult };
 }

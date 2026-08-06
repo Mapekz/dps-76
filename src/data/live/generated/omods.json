@@ -44456,16 +44456,29 @@
   "targetKeywords": [
    "ma_44"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x008DC2D7:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008DC2D7",
+     "edid": "mod_Custom_MedicalMalpractice",
+     "name": "Medical Malpractice"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.01,
+    "scaledBy": "stimpakHealMult",
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItemName_MedicalMalpractice",
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "perk MedicalMalpractice_Perk: entry point Mod Weapon DMG Bonus Mult uses Add Actor Value Mult — skipped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

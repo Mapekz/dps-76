@@ -328,6 +328,137 @@ describe('translate (Lockpick Skill / Pirate Punch, 2026-08-04)', () => {
   });
 });
 
+describe('translate (Medical Malpractice / hacking skill / Stimpak healing, 2026-08-05)', () => {
+  it("routes Medical Malpractice's Add Actor Value Mult on Mod Weapon DMG Bonus Mult to dbm ADD with scaledBy stimpakHealMult", async () => {
+    const perkFormId = '0x0050D7FD';
+    const perk = {
+      editor_id: 'MedicalMalpractice_Perk',
+      fields: {
+        Effects: [
+          {
+            Effect: {
+              'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+              'Entry Point': {
+                'Entry Point': { name: 'Mod Weapon DMG Bonus Mult' },
+                Function: { name: 'Add Actor Value Mult' },
+              },
+              Float: 0.01,
+              'Function Parameter 3 (Actor Value)': '0x00206F31',
+            },
+          },
+        ],
+      },
+    };
+    const client = {
+      async get(formId: string): Promise<EsmRecord> {
+        if (formId === perkFormId) return perk as unknown as EsmRecord;
+        throw new Error(`unexpected get(${formId})`);
+      },
+      resolveEdid: async (formId: string) => formId,
+    } as unknown as EsmClient;
+    const result = await translateGrantedPerk(
+      { client, routes: new Map(), edidByFormId: new Map() },
+      'mod_Custom_MedicalMalpractice',
+      perkFormId,
+    );
+    expect(result.modifiers).toEqual([
+      {
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.01,
+        scaledBy: 'stimpakHealMult',
+        conditions: [],
+      },
+    ]);
+  });
+
+  it('routes a flat Peak Value Modifier on STAT_HackingTier to the hackingSkill bucket via FALLBACK_AVIF_ROUTES (scale 1 — integer skill points)', () => {
+    const hackingEdids = new Map<string, string>([['0xAV', 'STAT_HackingTier']]);
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier' }),
+      effect({ magnitude: 1 }),
+      noRoutes,
+      hackingEdids,
+    );
+    expect(r.modifiers).toEqual([{ bucket: 'hackingSkill', op: 'ADD', value: 1, conditions: [] }]);
+  });
+
+  it('routes a flat Peak Value Modifier on STAT_HealMultStimpak to the stimpakHealMult bucket via FALLBACK_AVIF_ROUTES (scale 1 — percent points)', () => {
+    const stimpakEdids = new Map<string, string>([['0xAV', 'STAT_HealMultStimpak']]);
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier' }),
+      effect({ magnitude: 30 }),
+      noRoutes,
+      stimpakEdids,
+    );
+    expect(r.modifiers).toEqual([
+      { bucket: 'stimpakHealMult', op: 'ADD', value: 30, conditions: [] },
+    ]);
+  });
+});
+
+describe('CURVE_INPUT_AVS plumbing-perk isolation (2026-08-05)', () => {
+  // Hardcoded from `esm get` over STAT_DamagePerk, STAT_CritDamagePerk,
+  // STAT_DamageVsPerk, STAT_BeneficialPerk, PlayerPerk — every "Add Actor
+  // Value Mult" Function Parameter 3 (Actor Value) on those plumbing perks.
+  const PLUMBING_PERK_ACTOR_VALUE_MULT_AVS = [
+    '0x00019D38',
+    '0x0001BC1B',
+    '0x00058D36',
+    '0x0008D1BF',
+    '0x001477A8',
+    '0x0018330E',
+    '0x0018912C',
+    '0x0018ACC8',
+    '0x0018EEE1',
+    '0x0018EEEB',
+    '0x0018EEEC',
+    '0x0018EEED',
+    '0x0018EEEE',
+    '0x0018EEEF',
+    '0x0018EEF1',
+    '0x0018EEF2',
+    '0x002202CE',
+    '0x002202CF',
+    '0x00239F99',
+    '0x0023A007',
+    '0x0023A067',
+    '0x0023A068',
+    '0x0023A0EA',
+    '0x002C99DD',
+    '0x002C99E0',
+    '0x002C99E1',
+    '0x002C9A37',
+    '0x002C9A38',
+    '0x002DBFCA',
+    '0x00312D66',
+    '0x003440A1',
+    '0x003440A6',
+    '0x0035206E',
+    '0x003789AC',
+    '0x00393F5F',
+    '0x004F5775',
+    '0x0052CFB0',
+    '0x00563B89',
+    '0x00645D86',
+    '0x00647223',
+    '0x00674C84',
+    '0x00674C85',
+    '0x00690C78',
+    '0x006E1052',
+    '0x007ACB02',
+    '0x007ACE76',
+    '0x00900A59',
+  ] as const;
+
+  it('has zero overlap with CURVE_INPUT_AVS keys (ungated scaledBy branch safety)', async () => {
+    const { CURVE_INPUT_AVS } = await import('../normalize/mgef');
+    const curveKeys = new Set(Object.keys(CURVE_INPUT_AVS));
+    const overlap = PLUMBING_PERK_ACTOR_VALUE_MULT_AVS.filter((av) => curveKeys.has(av));
+    expect(overlap).toEqual([]);
+  });
+});
+
 describe('translate (Bullet Storm, 2026-07-16)', () => {
   it("routes a Peak Value Modifier on AmmoSpenderMaxStacks to bulletStormMaxStacks (Heavy Gunner's abAmmoSpenderFortifyStacks-style flat magnitude)", () => {
     const bulletStormEdids = new Map<string, string>([['0xAV', 'AmmoSpenderMaxStacks']]);
@@ -1094,7 +1225,7 @@ describe('translate (AV pass-through — Barbarian/Mind Over Matter, 2026-08-03)
     ).toBe(true);
   });
 
-  it('a zero-magnitude SPECIAL-fortify effect with an unmapped input AV keeps the note (ench_IntFromHacking)', () => {
+  it('a zero-magnitude SPECIAL-fortify effect whose input AV is not in AV_PASSTHROUGH_DOMAINS keeps the note (ench_IntFromHacking)', () => {
     const r = translate(
       mgef({ actorValue: '0xINT', archetype: 'Peak Value Modifier' }),
       effect({ magnitude: 0, curveInputAv: '0x00356A14' }),

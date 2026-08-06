@@ -43,6 +43,9 @@ const FLAT_POINT_BUCKET_LABELS: Partial<Record<Bucket, string>> = {
   apRegenFlat: 'AP regen',
   damageResistGain: 'Damage Resist',
   energyResistGain: 'Energy Resist',
+  lockpickSkill: 'Lockpick Skill',
+  hackingSkill: 'Hacking Skill',
+  stimpakHealMult: 'Stimpak Healing',
 };
 
 /** Friendly names for curve axes; unmapped axes fall back to the raw CurveInput name. */
@@ -50,6 +53,8 @@ const CURVE_AXIS_LABELS: Partial<Record<CurveInput, string>> = {
   killStreak: 'kill streak',
   healthFraction: 'missing health',
   lockpickSkill: 'lockpick skill',
+  hackingSkill: 'hacking skill',
+  stimpakHealMult: 'Stimpak healing',
 };
 
 const WEAPON_KEYWORD_LABELS: Record<string, string> = {
@@ -306,6 +311,15 @@ function describeModifier(m: Modifier, scale: number, labelOverride?: string): s
         : `${formatFlatRange(lo, hi)} ${flatLabel}`;
       const axisLabel = CURVE_AXIS_LABELS[m.curve.input] ?? m.curve.input;
       extraClauses.push(`scales with ${axisLabel}`);
+    }
+  } else if (m.scaledBy) {
+    if (!percentLabel && !flatLabel) return null;
+    const axisLabel = CURVE_AXIS_LABELS[m.scaledBy] ?? m.scaledBy;
+    if (percentLabel) {
+      magnitude = `${formatPercent(m.value * scale)} ${percentLabel} per point of ${axisLabel}`;
+    } else {
+      const v = m.value * scale;
+      magnitude = `${v > 0 ? '+' : ''}${v} ${flatLabel} per point of ${axisLabel}`;
     }
   } else if (percentLabel) {
     magnitude = `${formatPercent(m.value * scale)} ${percentLabel}`;

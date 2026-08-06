@@ -168,6 +168,8 @@ const DERIVED_PLAYER_CONDITION_KEYS = new Set<keyof PlayerConditions>([
   'hungerThirstTier',
   'maxHealth',
   'lockpickSkill',
+  'hackingSkill',
+  'stimpakHealMult',
   'mutationCount',
   'addictionCount',
 ]);

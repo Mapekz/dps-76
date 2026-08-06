@@ -98,6 +98,10 @@ export interface PlayerConditions {
   maxHealth?: number;
   /** Derived Lockpick Skill (Picklock ranks + Master Infiltrator + Safecracker's worn count) — resolveLoadout recomputes every run, like maxHealth. Feeds the `lockpickSkill` CurveInput (Pirate Punch). */
   lockpickSkill?: number;
+  /** Derived Hacking Skill (Hacker ranks + Master Infiltrator + Safecracker's worn count) — resolveLoadout recomputes every run, like lockpickSkill. Feeds the `hackingSkill` CurveInput (no consumer yet). */
+  hackingSkill?: number;
+  /** Derived Stimpak Healing percent points (First Aid + Medicine Bobblehead) — resolveLoadout recomputes every run. Feeds Medical Malpractice's `scaledBy` dbm term. */
+  stimpakHealMult?: number;
   mutationCount?: number; // for Mutant's curve — derived from the selected mutations in resolveLoadout
   /**
    * HungerThirstTier AV (0x006D37DC, 0–8) for Gourmand's curve. DERIVED in
@@ -701,6 +705,8 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     capsOnHand: 0,
     maxHealth: 300, // synthetic-test default; the app derives it in resolveLoadout (245 + 5×END + buffs)
     lockpickSkill: 0,
+    hackingSkill: 0,
+    stimpakHealMult: 0,
     hungerThirstTier: 0, // synthetic-test default; the app derives it in resolveLoadout (foodTier + drinkTier)
     foodTier: 0, // food meter empty (Hungry)
     drinkTier: 0, // drink meter empty (Thirsty)

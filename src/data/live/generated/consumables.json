@@ -1274,6 +1274,34 @@
   "obtainable": true
  },
  {
+  "id": "BobbleHead_Medicine_Potion",
+  "formId": "0x0042FED8",
+  "name": "Bobblehead: Medicine",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x0042FED8:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0042FED8",
+     "edid": "BobbleHead_Medicine_Potion",
+     "name": "Bobblehead: Medicine"
+    },
+    "bucket": "stimpakHealMult",
+    "op": "ADD",
+    "value": 30,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "BobbleHead_Melee_Potion",
   "formId": "0x0042FEDA",
   "name": "Bobblehead: Melee",
@@ -4758,6 +4786,34 @@
     "bucket": "specialLuck",
     "op": "ADD",
     "value": 2,
+    "conditions": []
+   }
+  ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "GHL_GlowingBobbleHead_Medicine_Potion",
+  "formId": "0x007A2F99",
+  "name": "Glowing Bobblehead: Medicine",
+  "kind": "consumable",
+  "modifiers": [
+   {
+    "id": "0x007A2F99:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x007A2F99",
+     "edid": "GHL_GlowingBobbleHead_Medicine_Potion",
+     "name": "Glowing Bobblehead: Medicine"
+    },
+    "bucket": "stimpakHealMult",
+    "op": "ADD",
+    "value": 30,
     "conditions": []
    }
   ],

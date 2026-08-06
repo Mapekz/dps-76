@@ -89,6 +89,18 @@ describe('derivePlayerStats', () => {
     // Between (1,10) and (15,120): 10 + (8−1)/(15−1)×110 = 65.
     expect(maxHealth).toBe(BASE_MAX_HP + MAX_HP_PER_ENDURANCE * 8 + 65);
   });
+
+  it('folds lockpickSkill, hackingSkill, and stimpakHealMult buckets into derived player stats', () => {
+    const mods = [
+      specialMod('lockpickSkill', 3),
+      specialMod('hackingSkill', 2),
+      specialMod('stimpakHealMult', 30),
+    ];
+    const stats = derivePlayerStats(mods, baseSpecial(), conditions);
+    expect(stats.lockpickSkill).toBe(3);
+    expect(stats.hackingSkill).toBe(2);
+    expect(stats.stimpakHealMult).toBe(30);
+  });
 });
 
 describe('derivePlayerStats: AV pass-through (Barbarian killStreak→specialStrength, 2026-08-03)', () => {

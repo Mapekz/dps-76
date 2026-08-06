@@ -11,6 +11,7 @@ import { getWeapons } from '@/data';
 import { getTargetDebuffModifiers } from '@/data/target-debuffs';
 import { computeScenarios } from '@/lib/engine/scenarios';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
+import { hasAnyEngineEffect } from '@/types/modifiers';
 import { parseSpecialFromUrl } from '@/lib/nukes-dragons';
 
 // Integration over the REAL generated data: registry ↔ ESM family join and
@@ -217,6 +218,40 @@ describe('perkHasEngineEffect (drives the perk picker\'s "no effect yet" badge)'
 
   it("is true for Picklock (feeds Pirate Punch's lockpickSkill curve since 2026-08-04)", () => {
     expect(perkHasEngineEffect('live', PerkId.Picklock)).toBe(true);
+  });
+
+  it('is true for Hacker once extract routes STAT_HackingTier (hackingSkill bucket; perks.json updated on next extract)', () => {
+    expect(
+      hasAnyEngineEffect([
+        {
+          id: 'test:hacker',
+          source: { kind: 'perk', formId: '0x0', edid: 'Hacker', name: 'Hacker', rank: 1 },
+          bucket: 'hackingSkill',
+          op: 'ADD',
+          value: 1,
+          conditions: [],
+        },
+      ]),
+    ).toBe(true);
+    const mods = getGeneratedPerk('live', PerkId.Hacker)?.ranks[0]?.modifiers ?? [];
+    if (mods.length > 0) expect(perkHasEngineEffect('live', PerkId.Hacker)).toBe(true);
+  });
+
+  it('is true for First Aid once extract routes STAT_HealMultStimpak (stimpakHealMult bucket; perks.json updated on next extract)', () => {
+    expect(
+      hasAnyEngineEffect([
+        {
+          id: 'test:first-aid',
+          source: { kind: 'perk', formId: '0x0', edid: 'FirstAid', name: 'First Aid', rank: 1 },
+          bucket: 'stimpakHealMult',
+          op: 'ADD',
+          value: 1,
+          conditions: [],
+        },
+      ]),
+    ).toBe(true);
+    const mods = getGeneratedPerk('live', PerkId.FirstAid)?.ranks[0]?.modifiers ?? [];
+    if (mods.length > 0) expect(perkHasEngineEffect('live', PerkId.FirstAid)).toBe(true);
   });
 
   it('is true for Iron Fist (DR-scaled dbm curve, wired to the playerDamageResist manual knob — Phase 2)', () => {

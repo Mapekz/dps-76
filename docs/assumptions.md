@@ -963,8 +963,22 @@ picker roster/grouping are documented at `src/data/armor-modifiers.ts`,
   struck actor — the offensive, `wholeDamage`-modeled half. Full FormID
   provenance and the routing rule for a future target-redirected
   occurrence: `normalize/mgef.ts`.
-- SPECIAL-scaled perk entry points ("Add Actor Value Mult") are skipped
-  and noted per-perk.
+- SPECIAL-scaled perk entry points ("Add Actor Value Mult") resolve via the
+  `scaledBy` mechanism when the entry point's actor value maps to a known
+  player-stat axis in `CURVE_INPUT_AVS` (`scripts/extract/normalize/mgef.ts`);
+  only entry points referencing an unmapped AV are still skipped and noted
+  per-perk.
+- **Stimpak Healing units** — `STAT_HealMultStimpak`'s AVIF carries a
+  "Percentage (Scale By 100 In UI)" flag suggesting a stored fraction, but
+  every observed ESM magnitude (bobblehead +30, FirstAidBonus curve Y range
+  10–100) is a percent-point integer and the game's tooltip token appends a
+  literal "%" — modeled as percent points, with the ×0.01 conversion at the
+  Medical Malpractice consumer (perk Float 0.01), not at the grant side
+  (`FALLBACK_AVIF_ROUTES` `STAT_HealMultStimpak` row in `mgef.ts`).
+- **Hacking Skill** — `hackingSkill` is modeled end-to-end (folded,
+  threaded, `hasEngineEffect: true`) but has no current consumer; ENCH
+  `ench_IntFromHacking` (`0x0091A081`, orphan in the 20260803 dump) is the
+  likely future consumer if a hacking-scaled unique ships.
 - A handful of `cr`-prefixed creature/event DoT curves (non-level domain)
   and a few niche unique-mod curves remain unmapped: Eat The Rich
   (NPC-only, not player-obtainable), PA battery drain (no DPS/AP/HP

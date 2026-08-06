@@ -671,6 +671,30 @@ describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp
     const bare = makeCtx(weapon, { player: createDefaultPlayerConditions() });
     expect(foldBucket([curveMod], 'dbm', 1.0, bare)).toBe(1.0);
   });
+
+  it("Medical Malpractice's scaledBy dbm (stimpakHealMult input) multiplies the flat value by the derived stat", () => {
+    const scaledMod: Modifier = {
+      id: 'medical-malpractice',
+      source: {
+        kind: 'omod',
+        formId: '0x0050D7FD',
+        edid: 'MedicalMalpractice_Perk',
+        name: 'Medical Malpractice',
+      },
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.01,
+      scaledBy: 'stimpakHealMult',
+      conditions: [],
+    };
+    const at65 = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), stimpakHealMult: 65 },
+    });
+    expect(foldBucket([scaledMod], 'dbm', 1.0, at65)).toBeCloseTo(1.65, 10);
+
+    const bare = makeCtx(weapon, { player: createDefaultPlayerConditions() });
+    expect(foldBucket([scaledMod], 'dbm', 1.0, bare)).toBe(1.0);
+  });
 });
 
 describe('crit and sneak composition (MUL_ADD before ADD)', () => {

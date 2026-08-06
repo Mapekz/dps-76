@@ -71358,6 +71358,19 @@
     "op": "ADD",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x00527F7B:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00527F7B",
+     "edid": "mod_Legendary_Armor3_LockPick",
+     "name": "Safecracker's"
+    },
+    "bucket": "hackingSkill",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -71366,9 +71379,7 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "ActorValues on STAT_HackingTier — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -74245,6 +74256,19 @@
     "op": "ADD",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x00606273:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00606273",
+     "edid": "mod_Legendary_PowerArmor3_LockPick",
+     "name": "Safecracker's"
+    },
+    "bucket": "hackingSkill",
+    "op": "ADD",
+    "value": 1,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -74253,9 +74277,7 @@
   ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
-  "notes": [
-   "ActorValues on STAT_HackingTier — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

@@ -176,6 +176,20 @@ export const FALLBACK_AVIF_ROUTES: Record<
   // skill points (max realistic 11), not a percent. Feeds Pirate Punch's
   // unique-mod curve via the `lockpickSkill` CurveInput (CURVE_INPUT_AVS below).
   STAT_LockpickingTier: { bucket: 'lockpickSkill', scale: 1 },
+  // Hacking Skill (Hacker/Hacker Expert/Hacker Master perks ADD 1 each,
+  // Master Infiltrator legendary ADD 3, Safecracker's 3★ armor ADD 1/piece —
+  // same OMODs that grant lockpickSkill, esm refs 0x00356A14). No weapon
+  // reads this as a curve input yet — wired for drop-in, matching
+  // lockpickSkill's shape exactly (STAT_HackingTier is its direct peer).
+  STAT_HackingTier: { bucket: 'hackingSkill', scale: 1 },
+  // Stimpak Healing (STAT_HealMultStimpak, percent-point AV, base 0):
+  // granted by First Aid perk (Intelligence-keyed curve) and the Medicine
+  // Bobblehead (flat +30). Scale 1: the AV's magnitudes ARE percent points
+  // (bobblehead 30, FirstAidBonus curve Y range 10-100) despite the AVIF's
+  // "Percentage (Scale By 100 In UI)" flag suggesting a stored fraction —
+  // the x0.01 conversion happens at the CONSUMER (Medical Malpractice's own
+  // perk Float is 0.01) via the scaledBy mechanism, not here.
+  STAT_HealMultStimpak: { bucket: 'stimpakHealMult', scale: 1 },
   // Peak Value Modifier on ArmorPenetration AV (Anti-Armor, Blade of Bastet's
   // AbFortifyArmorPenetration curve, ...). Percentage flag on AVIF → scale 0.01.
   ArmorPenetration: { bucket: 'armorPen', scale: 0.01, archetypes: ['Peak Value Modifier'] },
@@ -575,7 +589,7 @@ export async function buildAvifRoutes(
  * names the player stat the curve X is read from. These low engine AVs have
  * no ESM records, so they're mapped by formid constant.
  */
-const CURVE_INPUT_AVS: Record<string, CurveInput> = {
+export const CURVE_INPUT_AVS: Record<string, CurveInput> = {
   '0x000002C2': 'strength', // Strength — The Debilitator's limb-damage-vs-STR curve
   '0x000002C4': 'endurance', // Endurance — Lifegiver's END-keyed max-HP curve (docs/assumptions.md "Max HP")
   '0x000002C5': 'charisma', // Charisma — The Peace Maker's explosive-damage-vs-CHA curve
@@ -586,6 +600,8 @@ const CURVE_INPUT_AVS: Record<string, CurveInput> = {
   '0x00000399': 'killStreak', // Adrenal Reaction
   '0x001EB998': 'addictionCount', // Junkie's
   '0x0032CB37': 'lockpickSkill', // STAT_LockpickingTier — Pirate Punch's "+5% Damage per Lockpick Skill" curve (PiratePunchBonus: (0,0),(1,5),(20,100))
+  '0x00356A14': 'hackingSkill', // STAT_HackingTier — no curve consumer yet; wired for drop-in (peer of lockpickSkill)
+  '0x00206F31': 'stimpakHealMult', // STAT_HealMultStimpak — Medical Malpractice's dbm scale (via scaledBy, not a curve)
   '0x000002D4': 'healthCurrent', // Health (absolute) — Juggernaut's (x 0→1000, y 0→100)
   // DamageResist — Berserker's ("DamageUnarmored"): the WIELDER's own DR, not
   // the enemy's (renamed from `enemyDamageResist` 2026-07-18, user-confirmed —
@@ -944,8 +960,9 @@ export function translate(
     // Legendary_Armor_OvereaterAddValue (AV hungerThirstTier), where identity
     // would be wrong. ESM census over the 20260724 dump: exactly these two
     // effects match (ench_IntFromHacking is the only other zero-magnitude
-    // SPECIAL-fortify candidate, and its input AV 0x00356A14 is unmapped, so
-    // it correctly falls through to the note below).
+    // SPECIAL-fortify candidate, but its input AV 0x00356A14 is not in
+    // AV_PASSTHROUGH_DOMAINS — only killStreak is — so it correctly falls
+    // through to the note below).
     const passthroughInput = resolveCurveInput(effect.curveInputAv, mgef.edid);
     const max = passthroughInput ? AV_PASSTHROUGH_DOMAINS[passthroughInput] : undefined;
     if (
@@ -1324,6 +1341,14 @@ export async function translateGrantedPerk(
           op: 'ADD',
           value: perStack,
           conditions: [...conditions, { kind: 'stacks', counter: 'onslaught', max: 99 }],
+        });
+      } else if (functionName === 'Add Actor Value Mult' && CURVE_INPUT_AVS[avFormId ?? '']) {
+        result.modifiers.push({
+          bucket,
+          op: 'ADD', // 'Mod Weapon DMG Bonus Mult' is always additive
+          value: float,
+          scaledBy: CURVE_INPUT_AVS[avFormId!],
+          conditions: epConditions,
         });
       } else {
         result.notes.push(`perk ${perkEdid}: entry point ${name} uses ${functionName} — skipped`);

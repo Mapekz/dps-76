@@ -28,7 +28,10 @@ _Avoid_: category, slot (slot means an OMOD attach point).
 Which fold mechanism consumes a Bucket (`damageFold`, `dot`, `weaponStat`,
 `critEconomy`, `apEconomy`, `playerStat`, `bootstrap`, or `unfolded`), and
 whether the fold's result reaches anything (`hasEngineEffect`) — one table,
-`BUCKET_REGISTRY` (`src/types/modifiers.ts`), answering both. Its optional
+`BUCKET_REGISTRY` (`src/types/modifiers.ts`), answering both. `true` = modeled
+end-to-end even when no shipped content moves DPS yet; `false` = NYI (the
+picker's "no effect yet" badge means not implemented, not "0 with your build").
+Its optional
 `foldBase` and `deBased` fields also own non-default fold-output conventions
 (defaults: 0 and false). `WEAPON_STAT_BUCKETS` (`effective-weapon.ts`) and
 `INERT_ENGINE_BUCKETS` (the OMOD/consumable picker's "no engine effect" badge,
