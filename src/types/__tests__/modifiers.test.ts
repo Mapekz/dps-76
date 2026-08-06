@@ -69,7 +69,6 @@ const ALL_BUCKETS: Bucket[] = [
   'bulletStormSpinUp',
   'deflectChance',
   'moveSpeedBonus',
-  'addDamageComponent',
   'armorPen',
   'armorPenFlat',
   'vatsHitChance',
@@ -139,23 +138,20 @@ describe('BUCKET_REGISTRY', () => {
     // Every specialX bucket (playerStat regime) has a real downstream effect:
     // Endurance/Charisma/Intelligence/Agility feed max HP, a curve input, or
     // the VATS AP pool; Perception has no paper-damage consumer but its
-    // folded value is what StatSummary renders. limbDamage/bashDamage/
-    // addDamageComponent have no fold consumer at all.
+    // folded value is what StatSummary renders. limbDamage/bashDamage have no
+    // fold consumer at all.
     // weaponMinRange/weaponMaxRange/weaponOutOfRangeMult are no longer inert
     // (Phase 1 engine half — effective-weapon.ts folds them, scenarios.ts
     // threads rangeFalloffMult into paper-damage.ts). armorPen/armorPenFlat
     // are no longer inert either (Phase 2 — mitigation.ts consumes both).
-    // damageResistGain/energyResistGain (2026-07-21, Scaly Skin's positive
-    // side): wearer-side resist mitigation isn't modeled — same inert status
-    // as limbDamage/bashDamage.
+    // damageResistGain (2026-08-06, Barbarian STR→DR): folded onto the manual
+    // playerDamageResist knob in player-stats.ts — no longer inert.
     const expected: Bucket[] = [
       'limbDamage',
       'bashDamage',
-      'addDamageComponent',
       'bulletStormOnKill',
       'bulletStormSpinUp',
       'deflectChance',
-      'damageResistGain',
       'energyResistGain',
       'incomingDamageMult',
     ];

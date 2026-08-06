@@ -263,6 +263,10 @@ describe('perkHasEngineEffect (drives the perk picker\'s "no effect yet" badge)'
     expect(perkHasEngineEffect('live', PerkId.IronFist)).toBe(true);
   });
 
+  it('is true for Barbarian (STR→DR damageResistGain fold + Iron Fist synergy)', () => {
+    expect(perkHasEngineEffect('live', PerkId.Barbarian)).toBe(true);
+  });
+
   // Quick Hands / Wild West Hands were the subject of concurrent work
   // (perk-overrides.ts's extraPerkModifiers, reloadSkipChance) — guard that
   // they read as effective so the picker never badges them inert.
@@ -291,6 +295,22 @@ describe('perkHasEngineEffect (drives the perk picker\'s "no effect yet" badge)'
 
   it("is true for Licensed Plumber (gates The Pipe's dbm modifiers)", () => {
     expect(perkHasEngineEffect('live', PerkId.LicensedPlumber)).toBe(true);
+  });
+
+  it('is true for Tenderizer (Target-section tenderizerStacks knob — pinned in perkForceEffectivePerkIds)', () => {
+    expect(perkHasEngineEffect('live', PerkId.Tenderizer)).toBe(true);
+  });
+
+  it('is true for Mad Scientist (IsPowerAttacking=0 gate now resolves)', () => {
+    expect(perkHasEngineEffect('live', PerkId.MadScientist)).toBe(true);
+  });
+
+  it('is true for Radiation Power (IsPowerAttacking=0 gate now resolves)', () => {
+    expect(perkHasEngineEffect('live', PerkId.RadiationPower)).toBe(true);
+  });
+
+  it('is true for Psychopath (GetIsInVATS=0 gate now resolves)', () => {
+    expect(perkHasEngineEffect('live', PerkId.Psychopath)).toBe(true);
   });
 
   it('is false for an unjoined/unknown PerkId', () => {

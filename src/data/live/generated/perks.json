@@ -1717,7 +1717,56 @@
        ]
       },
       "curveScale": 1,
-      "conditions": []
+      "conditions": [
+       {
+        "kind": "unarmored",
+        "value": false
+       }
+      ]
+     },
+     {
+      "id": "0x00242E59:r1:1:0:unarmored",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00242E59",
+       "edid": "Barbarian",
+       "name": "Barbarian",
+       "rank": 1
+      },
+      "bucket": "damageResistGain",
+      "op": "ADD",
+      "curve": {
+       "input": "strength",
+       "points": [
+        {
+         "x": 1,
+         "y": 18
+        },
+        {
+         "x": 15,
+         "y": 61
+        },
+        {
+         "x": 30,
+         "y": 96
+        },
+        {
+         "x": 60,
+         "y": 131
+        },
+        {
+         "x": 100,
+         "y": 175
+        }
+       ]
+      },
+      "curveScale": 2,
+      "conditions": [
+       {
+        "kind": "unarmored",
+        "value": true
+       }
+      ]
      }
     ]
    }
@@ -9886,8 +9935,8 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=0"
+        "kind": "powerAttack",
+        "value": false
        },
        {
         "kind": "weaponKeyword",
@@ -9928,8 +9977,8 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=0"
+        "kind": "powerAttack",
+        "value": false
        },
        {
         "kind": "weaponKeyword",
@@ -9970,8 +10019,8 @@
         "value": true
        },
        {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=0"
+        "kind": "powerAttack",
+        "value": false
        },
        {
         "kind": "weaponKeyword",
@@ -10005,9 +10054,7 @@
     3
    ]
   },
-  "notes": [
-   "condition: IsPowerAttacking()=0"
-  ]
+  "notes": []
  },
  {
   "family": "GHL_MoralSupport",
@@ -10133,8 +10180,8 @@
         "min": 5
        },
        {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=0"
+        "kind": "powerAttack",
+        "value": false
        }
       ]
      }
@@ -10165,8 +10212,8 @@
         "min": 5
        },
        {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=0"
+        "kind": "powerAttack",
+        "value": false
        }
       ]
      }
@@ -10197,8 +10244,8 @@
         "min": 5
        },
        {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=0"
+        "kind": "powerAttack",
+        "value": false
        }
       ]
      }
@@ -10222,9 +10269,7 @@
     3
    ]
   },
-  "notes": [
-   "condition: IsPowerAttacking()=0"
-  ]
+  "notes": []
  },
  {
   "family": "GHL_RadioactiveStrength",
@@ -15682,8 +15727,8 @@
         "orMore": true
        },
        {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=1"
+        "kind": "powerAttack",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -15714,8 +15759,8 @@
         "count": 4
        },
        {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=1"
+        "kind": "powerAttack",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -15746,8 +15791,8 @@
         "count": 3
        },
        {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=1"
+        "kind": "powerAttack",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -15778,8 +15823,8 @@
         "count": 2
        },
        {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=1"
+        "kind": "powerAttack",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -15810,8 +15855,8 @@
         "count": 1
        },
        {
-        "kind": "unresolved",
-        "raw": "IsPowerAttacking()=1"
+        "kind": "powerAttack",
+        "value": true
        },
        {
         "kind": "unresolved",
@@ -27596,8 +27641,8 @@
       "value": -0.9,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "GetIsInVATS()=0"
+        "kind": "vatsOnly",
+        "value": false
        }
       ]
      }

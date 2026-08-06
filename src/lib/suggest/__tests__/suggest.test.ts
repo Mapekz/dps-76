@@ -228,7 +228,7 @@ describe('enumerateVariants', () => {
       expect(increases.length).toBeGreaterThan(0);
       expect(increases.every((v) => Number(v.id.split(':')[2]) <= 4)).toBe(true);
 
-      const inPa = stateFrom([{ type: 'armorType/set', isInPowerArmor: true }], fixerState);
+      const inPa = stateFrom([{ type: 'armorType/set', armorWorn: 'power' }], fixerState);
       const paVariants = enumerateVariants(inPa, 'live');
       expect(paVariants.some((v) => v.id.includes(UNYIELDING))).toBe(false);
       expect(

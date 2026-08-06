@@ -574,9 +574,10 @@ describe('armorType/set', () => {
       { type: 'armorEffect/setCount', id: UNYIELDING, count: 3 },
       { type: 'armorEffect/setCount', id: PROPPELLING, count: 2 },
       { type: 'armorEffect/setCount', id: CASUAL_STYLE, count: 1 },
-      { type: 'armorType/set', isInPowerArmor: true },
+      { type: 'armorType/set', armorWorn: 'power' },
     ]);
     expect(s.player.conditions.isInPowerArmor).toBe(true);
+    expect(s.player.conditions.armorWorn).toBe('power');
     expect(s.player.armorEffects[UNYIELDING]).toBeUndefined();
     expect(s.player.armorEffects[PROPPELLING]).toBe(2);
     expect(s.player.armorEffects[CASUAL_STYLE]).toBe(1);
@@ -589,5 +590,17 @@ describe('armorType/set', () => {
     ]);
     expect(s.player.conditions.isInPowerArmor).toBe(true);
     expect(s.player.armorEffects[UNYIELDING]).toBe(3);
+  });
+
+  it("armorWorn 'none' clears every armor effect and leaves isInPowerArmor false", () => {
+    const s = run([
+      { type: 'armorEffect/setCount', id: UNYIELDING, count: 3 },
+      { type: 'armorEffect/setCount', id: PROPPELLING, count: 2 },
+      { type: 'armorEffect/setCount', id: CASUAL_STYLE, count: 1 },
+      { type: 'armorType/set', armorWorn: 'none' },
+    ]);
+    expect(s.player.conditions.armorWorn).toBe('none');
+    expect(s.player.conditions.isInPowerArmor).toBe(false);
+    expect(s.player.armorEffects).toEqual({});
   });
 });

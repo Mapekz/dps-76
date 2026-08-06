@@ -2400,7 +2400,13 @@ describe('vatsOnly condition (Phase B — Concentrated Fire stacks; symmetric wi
     bucket: 'dbm',
     op: 'ADD',
     value: 0.5,
-    conditions: [{ kind: 'vatsOnly' }],
+    conditions: [{ kind: 'vatsOnly', value: true }],
+  });
+  const notVatsMod = mod({
+    bucket: 'dbm',
+    op: 'ADD',
+    value: 0.5,
+    conditions: [{ kind: 'vatsOnly', value: false }],
   });
 
   it('applies in VATS and VATS+Sneak, not in Manual Aim', () => {
@@ -2419,6 +2425,84 @@ describe('vatsOnly condition (Phase B — Concentrated Fire stacks; symmetric wi
     // makeCtx default is isVats: false (Manual Aim) → the modifier is inactive.
     expect(foldBucket([vatsOnlyMod], 'dbm', 1.0, makeCtx(weapon))).toBeCloseTo(1.0, 10);
   });
+
+  it('value:false applies in Manual Aim only, not in VATS', () => {
+    const vatsCtx = makeCtx(weapon, {
+      scenario: { isVats: true, isSneaking: false, isPowerAttack: false, isCrit: false },
+    });
+    expect(foldBucket([notVatsMod], 'dbm', 1.0, vatsCtx)).toBeCloseTo(1.0, 10);
+    expect(foldBucket([notVatsMod], 'dbm', 1.0, makeCtx(weapon))).toBeCloseTo(1.5, 10);
+  });
+});
+
+describe('powerAttack condition (negatable, symmetric with vatsOnly/playerIsGhoul)', () => {
+  const weapon = makeWeapon();
+  const powerAttackMod = mod({
+    bucket: 'dbm',
+    op: 'ADD',
+    value: 0.5,
+    conditions: [{ kind: 'powerAttack', value: true }],
+  });
+  const notPowerAttackMod = mod({
+    bucket: 'dbm',
+    op: 'ADD',
+    value: 0.5,
+    conditions: [{ kind: 'powerAttack', value: false }],
+  });
+
+  it('value:true applies only when power attacking', () => {
+    const paCtx = makeCtx(weapon, {
+      scenario: { isVats: false, isSneaking: false, isPowerAttack: true, isCrit: false },
+    });
+    expect(foldBucket([powerAttackMod], 'dbm', 1.0, paCtx)).toBeCloseTo(1.5, 10);
+    expect(foldBucket([powerAttackMod], 'dbm', 1.0, makeCtx(weapon))).toBeCloseTo(1.0, 10);
+  });
+
+  it('value:false applies only when NOT power attacking', () => {
+    const paCtx = makeCtx(weapon, {
+      scenario: { isVats: false, isSneaking: false, isPowerAttack: true, isCrit: false },
+    });
+    expect(foldBucket([notPowerAttackMod], 'dbm', 1.0, paCtx)).toBeCloseTo(1.0, 10);
+    expect(foldBucket([notPowerAttackMod], 'dbm', 1.0, makeCtx(weapon))).toBeCloseTo(1.5, 10);
+  });
+});
+
+describe('unarmored condition (symmetric with powerAttack/vatsOnly)', () => {
+  const weapon = makeWeapon();
+  const armoredMod = mod({
+    bucket: 'dbm',
+    op: 'ADD',
+    value: 0.5,
+    conditions: [{ kind: 'unarmored', value: false }],
+  });
+  const unarmoredMod = mod({
+    bucket: 'dbm',
+    op: 'ADD',
+    value: 0.5,
+    conditions: [{ kind: 'unarmored', value: true }],
+  });
+
+  it('value:false applies only when wearing armor', () => {
+    const armoredCtx = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), armorWorn: 'body' },
+    });
+    const unarmoredCtx = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), armorWorn: 'none' },
+    });
+    expect(foldBucket([armoredMod], 'dbm', 1.0, armoredCtx)).toBeCloseTo(1.5, 10);
+    expect(foldBucket([armoredMod], 'dbm', 1.0, unarmoredCtx)).toBeCloseTo(1.0, 10);
+  });
+
+  it('value:true applies only when NOT wearing armor', () => {
+    const armoredCtx = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), armorWorn: 'body' },
+    });
+    const unarmoredCtx = makeCtx(weapon, {
+      player: { ...createDefaultPlayerConditions(), armorWorn: 'none' },
+    });
+    expect(foldBucket([unarmoredMod], 'dbm', 1.0, unarmoredCtx)).toBeCloseTo(1.5, 10);
+    expect(foldBucket([unarmoredMod], 'dbm', 1.0, armoredCtx)).toBeCloseTo(1.0, 10);
+  });
 });
 
 describe('concentratedFire stack counter (Phase B — Concentrated Fire stacks)', () => {
@@ -2428,7 +2512,10 @@ describe('concentratedFire stack counter (Phase B — Concentrated Fire stacks)'
     bucket: 'dbm',
     op: 'ADD',
     value: 0.01,
-    conditions: [{ kind: 'vatsOnly' }, { kind: 'stacks', counter: 'concentratedFire', max: 20 }],
+    conditions: [
+      { kind: 'vatsOnly', value: true },
+      { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+    ],
   });
 
   it('clamps a stored value above the GMST max down to 20', () => {
@@ -2468,7 +2555,7 @@ describe('Concentrated Fire stacks — rank × stacks table (computeScenarios)',
         op: 'ADD',
         value: perStack,
         conditions: [
-          { kind: 'vatsOnly' },
+          { kind: 'vatsOnly', value: true },
           { kind: 'stacks', counter: 'concentratedFire', max: 20 },
         ],
       }),
@@ -2507,7 +2594,10 @@ describe('hasConcentratedFireSources detection', () => {
       bucket: 'dbm',
       op: 'ADD',
       value: 0.02,
-      conditions: [{ kind: 'vatsOnly' }, { kind: 'stacks', counter: 'concentratedFire', max: 20 }],
+      conditions: [
+        { kind: 'vatsOnly', value: true },
+        { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+      ],
     });
     expect(computeScenarios({ ...base, modifiers: [cfMod] }).hasConcentratedFireSources).toBe(true);
   });

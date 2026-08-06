@@ -31,6 +31,12 @@ import {
  *    perks (STAT_DamagePerk, STAT_CritDamagePerk, STAT_DamageVsPerk) define
  *    how each STAT feeds the damage formula — we extract those routes first
  *    and reuse them, so bucket/scale/conditions are data-driven, not guessed.
+ * 3. Self-referencing magnitude multiplier (Barbarian01 0x00242E59 only):
+ *    a second Entry Point "Mod Spell Magnitude" ×2.0 on the perk's own
+ *    Ability SPEL, gated on zero armor worn (WornHasKeyword armor keywords
+ *    = 0) plus GetIsID(self). Synthesized post-extraction as two
+ *    damageResistGain modifiers with `unarmored` conditions — not routed
+ *    through ENTRY_POINT_BUCKETS (one-off; see BARBARIAN_PERK_FORM_ID).
  *
  * Rank chains: Commando01/02/03 are separate records sharing one SPEL whose
  * effects are gated by HasPerk(rankN). Owning rank R in-game grants records
@@ -59,6 +65,37 @@ const GENDER_TWIN_PAIRS: Record<string, string> = {
   ActionBoy: 'ActionGirl',
   ActionGirl: 'ActionBoy',
 };
+
+/**
+ * Barbarian01 (PERK 0x00242E59): Effect 2 is Entry Point "Mod Spell Magnitude"
+ * ×2.0 on the perk's own Ability SPEL (0x00242E5A), gated on zero armor worn
+ * (WornHasKeyword ArmorTypePower/ObjectTypeArmor/ObjectTypeBasicArmor = 0) plus
+ * GetIsID(self). Post-processed into two `damageResistGain` modifiers with
+ * `unarmored` conditions — not routed through ENTRY_POINT_BUCKETS.
+ */
+const BARBARIAN_PERK_FORM_ID = '0x00242E59';
+
+function applyBarbarianUnarmoredPostProcess(modifiers: Modifier[]): void {
+  const idx = modifiers.findIndex(
+    (m) => m.bucket === 'damageResistGain' && m.op === 'ADD' && m.curve != null,
+  );
+  if (idx === -1) return;
+
+  const base = modifiers[idx];
+  if (!base.curve) return;
+  const curveScale = base.curveScale;
+  const armored: Modifier = {
+    ...base,
+    conditions: [...base.conditions, { kind: 'unarmored', value: false }],
+  };
+  const unarmored: Modifier = {
+    ...base,
+    id: `${base.id}:unarmored`,
+    curveScale: curveScale * 2,
+    conditions: [...base.conditions, { kind: 'unarmored', value: true }],
+  };
+  modifiers.splice(idx, 1, armored, unarmored);
+}
 
 /** Entry-point names that are known damage-irrelevant (not reported as unknown). */
 const ENTRY_POINT_IGNORED = new Set([
@@ -554,6 +591,10 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
             }
           }
         }
+      }
+
+      if (formIds[0] === BARBARIAN_PERK_FORM_ID) {
+        applyBarbarianUnarmoredPostProcess(modifiers);
       }
 
       ranks.push({ rank, modifiers });

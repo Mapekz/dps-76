@@ -42,6 +42,7 @@ import {
 } from '@/data/armor-modifiers';
 import { matchesQuery } from '@/lib/filter-query';
 import { cn } from '@/lib/utils';
+import type { ArmorWorn } from '@/types';
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import { CountStepper } from './CountStepper';
 import { NoEffectBadge } from './OptionBadge';
@@ -75,9 +76,16 @@ const PIECE_LABELS: Record<ArmorPieceClass, string> = {
   underarmorLining: 'lining',
 };
 
-function armorTypeEligible(effect: ArmorEffectEntry, isInPowerArmor: boolean): boolean {
+const ARMOR_WORN_LABELS: Record<ArmorWorn, string> = {
+  none: 'No Armor',
+  body: 'Body Armor',
+  power: 'Power Armor',
+};
+
+function armorTypeEligible(effect: ArmorEffectEntry, armorWorn: ArmorWorn): boolean {
+  if (armorWorn === 'none') return false;
   if (effect.armorType === 'both') return true;
-  if (isInPowerArmor) return effect.armorType === 'powerArmor';
+  if (armorWorn === 'power') return effect.armorType === 'powerArmor';
   return effect.armorType === 'bodyArmor';
 }
 
@@ -91,11 +99,11 @@ function matchesFilterChip(effect: ArmorEffectEntry, chip: FilterChip | null): b
 
 function familiesForGroup(
   group: ArmorSlotGroup | `legendary-${ArmorStarTier}`,
-  isInPowerArmor: boolean,
+  armorWorn: ArmorWorn,
 ): FeasibilityFamilyKey[] {
   if (group === 'material') return ['bodyArmor:material'];
   if (group === 'lining') return ['underarmorStyle', 'underarmorLining'];
-  if (group === 'misc') return isInPowerArmor ? ['powerArmor:misc'] : ['bodyArmor:misc'];
+  if (group === 'misc') return armorWorn === 'power' ? ['powerArmor:misc'] : ['bodyArmor:misc'];
   return [];
 }
 
@@ -126,24 +134,23 @@ function ArmorTypeControl() {
   const { mode } = useGameMode();
   const { player } = useBuild();
   const dispatch = useBuildDispatch();
-  const isInPowerArmor = player.conditions.isInPowerArmor;
+  const armorWorn = player.conditions.armorWorn;
 
   const [pending, setPending] = React.useState<{
-    isInPowerArmor: boolean;
+    armorWorn: ArmorWorn;
     removing: string[];
   } | null>(null);
 
-  const handleClick = (armor: 'body' | 'power') => {
-    const target = armor === 'power';
-    if (target === isInPowerArmor) return;
+  const handleClick = (target: ArmorWorn) => {
+    if (target === armorWorn) return;
     const removing = wrongArmorTypeEffects(mode, player.armorEffects, target);
-    if (removing.length === 0) dispatch({ type: 'armorType/set', isInPowerArmor: target });
-    else setPending({ isInPowerArmor: target, removing });
+    if (removing.length === 0) dispatch({ type: 'armorType/set', armorWorn: target });
+    else setPending({ armorWorn: target, removing });
   };
 
   const confirm = () => {
     if (!pending) return;
-    dispatch({ type: 'armorType/set', isInPowerArmor: pending.isInPowerArmor });
+    dispatch({ type: 'armorType/set', armorWorn: pending.armorWorn });
     setPending(null);
   };
 
@@ -153,10 +160,11 @@ function ArmorTypeControl() {
       <ToggleGroup
         aria-label="Armor type"
         options={[
+          { value: 'none', label: 'No Armor' },
           { value: 'body', label: 'Body Armor' },
           { value: 'power', label: 'Power Armor' },
         ]}
-        value={isInPowerArmor ? 'power' : 'body'}
+        value={armorWorn}
         onValueChange={handleClick}
       />
 
@@ -164,11 +172,14 @@ function ArmorTypeControl() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              Switch to {pending?.isInPowerArmor ? 'Power Armor' : 'Body Armor'}?
+              Switch to {pending ? ARMOR_WORN_LABELS[pending.armorWorn] : ''}?
             </DialogTitle>
             <DialogDescription>
-              These {pending?.isInPowerArmor ? 'body armor' : 'power armor'}-only effects will be
-              removed:
+              {pending?.armorWorn === 'none'
+                ? 'All armor effects will be removed:'
+                : `These ${
+                    pending?.armorWorn === 'power' ? 'body armor' : 'power armor'
+                  }-only effects will be removed:`}
             </DialogDescription>
           </DialogHeader>
           <ul className="text-negative list-inside list-disc text-sm">
@@ -275,11 +286,11 @@ function ArmorEffectRow({ effect }: { effect: ArmorEffectEntry }) {
 
 function ArmorEffectList({
   filterChip,
-  isInPowerArmor,
+  armorWorn,
   onEmpty,
 }: {
   filterChip: FilterChip | null;
-  isInPowerArmor: boolean;
+  armorWorn: ArmorWorn;
   onEmpty: (empty: boolean) => void;
 }) {
   const { mode } = useGameMode();
@@ -303,7 +314,7 @@ function ArmorEffectList({
   };
 
   const select = (effect: ArmorEffectEntry) => {
-    if (!armorTypeEligible(effect, isInPowerArmor) || incrementBlocked(effect)) return;
+    if (!armorTypeEligible(effect, armorWorn) || incrementBlocked(effect)) return;
     const current = equipped.get(effect.id) ?? 0;
     dispatch({ type: 'armorEffect/setCount', id: effect.id, count: current + 1 });
   };
@@ -319,10 +330,7 @@ function ArmorEffectList({
   };
 
   const filtered = effects.filter(
-    (e) =>
-      armorTypeEligible(e, isInPowerArmor) &&
-      matchesFilterChip(e, filterChip) &&
-      matchesQuery([e.name], query),
+    (e) => matchesFilterChip(e, filterChip) && matchesQuery([e.name], query),
   );
 
   React.useEffect(() => {
@@ -335,7 +343,7 @@ function ArmorEffectList({
     <FilterGroup>
       {filtered.map((effect) => {
         const count = equipped.get(effect.id);
-        const typeLocked = !armorTypeEligible(effect, isInPowerArmor);
+        const typeLocked = !armorTypeEligible(effect, armorWorn);
         const blocked = typeLocked || incrementBlocked(effect);
         return (
           <FilterItem
@@ -378,7 +386,9 @@ function ArmorEffectList({
               ) : null)}
             <span className="text-muted-foreground ml-2 text-xs">
               {typeLocked
-                ? `${effect.armorType === 'powerArmor' ? 'power armor' : 'body armor'} only`
+                ? armorWorn === 'none'
+                  ? 'no armor worn'
+                  : `${effect.armorType === 'powerArmor' ? 'power armor' : 'body armor'} only`
                 : blocked
                   ? 'slot full'
                   : count !== undefined
@@ -397,7 +407,7 @@ function ArmorEffectAddPopover() {
   const [open, setOpen] = React.useState(false);
   const [filterChip, setFilterChip] = React.useState<FilterChip | null>(null);
   const [listEmpty, setListEmpty] = React.useState(false);
-  const isInPowerArmor = player.conditions.isInPowerArmor;
+  const armorWorn = player.conditions.armorWorn;
 
   return (
     <Popover
@@ -443,11 +453,7 @@ function ArmorEffectAddPopover() {
           </div>
           <FilterList className="max-h-72">
             <FilterEmpty show={listEmpty}>No effect matches.</FilterEmpty>
-            <ArmorEffectList
-              filterChip={filterChip}
-              isInPowerArmor={isInPowerArmor}
-              onEmpty={setListEmpty}
-            />
+            <ArmorEffectList filterChip={filterChip} armorWorn={armorWorn} onEmpty={setListEmpty} />
           </FilterList>
           <p className="text-muted-foreground border-t px-2 py-1 text-[11px]">
             Left-click to add or raise a count · right-click to lower or remove.
@@ -544,17 +550,19 @@ export function ArmorSection() {
   const { mode } = useGameMode();
   const { player } = useBuild();
   const effects = getArmorEffects(mode);
-  const isInPowerArmor = player.conditions.isInPowerArmor;
+  const armorWorn = player.conditions.armorWorn;
   const activeCount = Object.values(player.armorEffects).filter((count) => count > 0).length;
   const tierUsage = getArmorTierUsage(mode, player.armorEffects);
   const slotUsage = getArmorSlotUsage(mode, player.armorEffects);
 
   const summary =
     activeCount === 0
-      ? isInPowerArmor
+      ? armorWorn === 'power'
         ? 'Power Armor'
-        : undefined
-      : isInPowerArmor
+        : armorWorn === 'none'
+          ? 'No Armor'
+          : undefined
+      : armorWorn === 'power'
         ? `Power Armor · ${activeCount} active`
         : undefined;
 
@@ -565,7 +573,7 @@ export function ArmorSection() {
           label="Armor"
           summary={summary}
           badge={
-            activeCount > 0 && !isInPowerArmor ? (
+            activeCount > 0 && armorWorn === 'body' ? (
               <Badge variant="secondary">{activeCount} active</Badge>
             ) : undefined
           }
@@ -577,7 +585,7 @@ export function ArmorSection() {
           <ArmorEffectAddPopover />
           {GROUP_DESCRIPTORS.map((d) => {
             const groupEffects = effects.filter(d.predicate);
-            const families = familiesForGroup(d.key, isInPowerArmor);
+            const families = familiesForGroup(d.key, armorWorn);
             const slotUsageText = formatSlotUsage(slotUsage, families);
             const starTier = d.key.startsWith('legendary-')
               ? (Number(d.key.split('-')[1]) as ArmorStarTier)

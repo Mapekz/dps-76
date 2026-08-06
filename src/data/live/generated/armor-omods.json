@@ -71743,8 +71743,8 @@
       "orMore": true
      },
      {
-      "kind": "unresolved",
-      "raw": "IsPowerAttacking()=1"
+      "kind": "powerAttack",
+      "value": true
      },
      {
       "kind": "unresolved",
@@ -71774,8 +71774,8 @@
       "count": 4
      },
      {
-      "kind": "unresolved",
-      "raw": "IsPowerAttacking()=1"
+      "kind": "powerAttack",
+      "value": true
      },
      {
       "kind": "unresolved",
@@ -71805,8 +71805,8 @@
       "count": 3
      },
      {
-      "kind": "unresolved",
-      "raw": "IsPowerAttacking()=1"
+      "kind": "powerAttack",
+      "value": true
      },
      {
       "kind": "unresolved",
@@ -71836,8 +71836,8 @@
       "count": 2
      },
      {
-      "kind": "unresolved",
-      "raw": "IsPowerAttacking()=1"
+      "kind": "powerAttack",
+      "value": true
      },
      {
       "kind": "unresolved",
@@ -71867,8 +71867,8 @@
       "count": 1
      },
      {
-      "kind": "unresolved",
-      "raw": "IsPowerAttacking()=1"
+      "kind": "powerAttack",
+      "value": true
      },
      {
       "kind": "unresolved",
@@ -71894,8 +71894,7 @@
    "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=30",
    "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=45",
    "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=60",
-   "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=75",
-   "perk Legendary_Armor_BattleLoadersPerk: IsPowerAttacking()=1"
+   "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=75"
   ],
   "obtainable": true
  },
@@ -74683,8 +74682,8 @@
       "orMore": true
      },
      {
-      "kind": "unresolved",
-      "raw": "IsPowerAttacking()=1"
+      "kind": "powerAttack",
+      "value": true
      },
      {
       "kind": "unresolved",
@@ -74714,8 +74713,8 @@
       "count": 4
      },
      {
-      "kind": "unresolved",
-      "raw": "IsPowerAttacking()=1"
+      "kind": "powerAttack",
+      "value": true
      },
      {
       "kind": "unresolved",
@@ -74745,8 +74744,8 @@
       "count": 3
      },
      {
-      "kind": "unresolved",
-      "raw": "IsPowerAttacking()=1"
+      "kind": "powerAttack",
+      "value": true
      },
      {
       "kind": "unresolved",
@@ -74776,8 +74775,8 @@
       "count": 2
      },
      {
-      "kind": "unresolved",
-      "raw": "IsPowerAttacking()=1"
+      "kind": "powerAttack",
+      "value": true
      },
      {
       "kind": "unresolved",
@@ -74807,8 +74806,8 @@
       "count": 1
      },
      {
-      "kind": "unresolved",
-      "raw": "IsPowerAttacking()=1"
+      "kind": "powerAttack",
+      "value": true
      },
      {
       "kind": "unresolved",
@@ -74834,8 +74833,7 @@
    "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=30",
    "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=45",
    "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=60",
-   "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=75",
-   "perk Legendary_Armor_BattleLoadersPerk: IsPowerAttacking()=1"
+   "perk Legendary_Armor_BattleLoadersPerk: GetRandomPercent()=75"
   ],
   "obtainable": true
  },

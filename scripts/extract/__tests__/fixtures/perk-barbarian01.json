@@ -1,0 +1,109 @@
+{
+  "header": {
+    "signature": "PERK",
+    "form_id": "0x00242E59",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 286,
+    "offset": 892771511
+  },
+  "editor_id": "Barbarian01",
+  "fields": {
+    "_record_type": "Perk",
+    "Editor ID": "Barbarian01",
+    "Name": "Barbarian",
+    "Description": "Gain Damage Resistance based on your STR. Doubled when not wearing armor.",
+    "Data": {
+      "Playable": { "value": 1, "name": "True" },
+      "Hidden": { "value": 0, "name": "False" },
+      "Unknown": { "hex": "01" }
+    },
+    "Effects": [
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 1, "name": "Ability" }, "Rank": 0 },
+          "Ability": "0x00242E5A",
+          "Effect End": null
+        }
+      },
+      {
+        "Effect": {
+          "Effect Header": { "Effect Type": { "value": 2, "name": "Entry Point" }, "Rank": 0 },
+          "Entry Point": {
+            "Entry Point": { "value": 29, "name": "Mod Spell Magnitude" },
+            "Function": { "value": 3, "name": "Multiply Value" },
+            "Perk Condition Tab Count": 4
+          },
+          "Perk Conditions": [
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 0,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 0.0,
+                        "Function": "WornHasKeyword",
+                        "Parameter 1": "0x0004D8A1",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 0.0,
+                        "Function": "WornHasKeyword",
+                        "Parameter 1": "0x000F4AE9",
+                        "Run On": "Subject"
+                      }
+                    }
+                  },
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 0.0,
+                        "Function": "WornHasKeyword",
+                        "Parameter 1": "0x0033C769",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "Perk Condition": {
+                "Run On (Tab Index)": 1,
+                "Conditions": [
+                  {
+                    "Condition": {
+                      "Condition Data": {
+                        "Operator": "Equal To",
+                        "AND/OR": "AND",
+                        "Comparison Value": 1.0,
+                        "Function": "GetIsID",
+                        "Parameter 1": "0x00242E5A",
+                        "Run On": "Subject"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "Function Type": { "value": 1, "name": "Float" },
+          "Perk Entry ID": 0,
+          "Float": 2.0,
+          "Effect End": null
+        }
+      }
+    ]
+  }
+}

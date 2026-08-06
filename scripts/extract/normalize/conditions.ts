@@ -290,6 +290,10 @@ function translateSingle(
       return wants ? 'inactive' : null;
     case 'IsSneaking':
       return wants ? { kind: 'sneaking' } : { kind: 'unresolved', raw: 'IsSneaking=0' };
+    case 'IsPowerAttacking':
+      return { kind: 'powerAttack', value: wants };
+    case 'GetIsInVATS':
+      return { kind: 'vatsOnly', value: wants };
     case 'GetInIronSights':
       return { kind: 'aimingDownSights', value: wants };
     case 'HasCompletedChallenge':

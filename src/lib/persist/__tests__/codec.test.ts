@@ -241,6 +241,25 @@ describe('build codec', () => {
     expect(encoded.length).toBeLessThan(200);
   });
 
+  it('round-trips armorWorn none', async () => {
+    const state = stateFrom([{ type: 'armorType/set', armorWorn: 'none' }]);
+    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    expect(decoded!.state.player.conditions.armorWorn).toBe('none');
+    expect(decoded!.state.player.conditions.isInPowerArmor).toBe(false);
+  });
+
+  it('decodes legacy pc without armorWorn from isInPowerArmor', async () => {
+    const powerEncoded = await encodeRawWire({ pc: { isInPowerArmor: true } });
+    const powerDecoded = await decodeBuild(powerEncoded, 'live');
+    expect(powerDecoded!.state.player.conditions.armorWorn).toBe('power');
+    expect(powerDecoded!.state.player.conditions.isInPowerArmor).toBe(true);
+
+    const bodyEncoded = await encodeRawWire({ pc: { isInPowerArmor: false } });
+    const bodyDecoded = await decodeBuild(bodyEncoded, 'live');
+    expect(bodyDecoded!.state.player.conditions.armorWorn).toBe('body');
+    expect(bodyDecoded!.state.player.conditions.isInPowerArmor).toBe(false);
+  });
+
   it('round-trips concentratedFireStacks (Phase B — Concentrated Fire stacks)', async () => {
     const state = stateFrom([{ type: 'condition/set', key: 'concentratedFireStacks', value: 15 }]);
     const decoded = await decodeBuild(await encodeBuild(state), 'live');
@@ -475,6 +494,7 @@ describe('Armor checklist (Phase 3 armor pipeline, UI + state)', () => {
     });
     const decoded = await decodeBuild(encoded, 'live');
     expect(decoded!.state.player.conditions.isInPowerArmor).toBe(true);
+    expect(decoded!.state.player.conditions.armorWorn).toBe('power');
     expect(decoded!.state.player.armorEffects).toEqual({
       mod_PowerArmor_Excavator_Torso_Misc_Emergency: 1,
       mod_Legendary_PowerArmor4_Propelling: 2,

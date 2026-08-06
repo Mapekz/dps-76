@@ -8,6 +8,7 @@ import {
   clampArmorPieceCapacities,
   maxFeasibleArmorEffectCount,
   MAX_LEGENDARY_COUNT,
+  wrongArmorTypeEffects,
 } from '@/data/armor-modifiers';
 import { effectiveValue, type ResolveContext } from '@/lib/engine/resolve';
 import { resolveLoadout } from '@/lib/loadout';
@@ -499,6 +500,22 @@ describe('pieceReach, maxCount, and armorType derivation', () => {
 
   it('PA lining materials are absent from getArmorEffects', () => {
     expect(effects.some((e) => e.attachPointEdid === 'ap_PowerArmor_Lining')).toBe(false);
+  });
+});
+
+describe('wrongArmorTypeEffects', () => {
+  const UNYIELDING = 'mod_Legendary_Armor1_LowHealthIncreasesStats';
+  const PROPPELLING = 'mod_Legendary_PowerArmor4_Propelling';
+  const CASUAL_STYLE = 'mod_armor_UnderArmor_style_Casual';
+
+  it("returns every equipped id when armorWorn is 'none'", () => {
+    const armorEffects = {
+      [UNYIELDING]: 3,
+      [PROPPELLING]: 2,
+      [CASUAL_STYLE]: 1,
+    };
+    const removing = wrongArmorTypeEffects('live', armorEffects, 'none');
+    expect(removing.sort()).toEqual([CASUAL_STYLE, PROPPELLING, UNYIELDING].sort());
   });
 });
 

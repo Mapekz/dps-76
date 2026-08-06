@@ -1131,6 +1131,44 @@ describe('translateConditions (GetInIronSights / HasCompletedChallenge)', () => 
     expect(unresolved).toEqual([]);
   });
 
+  it('translates IsPowerAttacking Equal To 0/1 to powerAttack', () => {
+    const off: RawCondition = {
+      Function: 'IsPowerAttacking',
+      'Comparison Value': 0,
+      Operator: 'Equal To',
+    };
+    const on: RawCondition = {
+      Function: 'IsPowerAttacking',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+    };
+    expect(translateConditions([off], { edidByFormId: new Map() }).conditions).toEqual([
+      { kind: 'powerAttack', value: false },
+    ]);
+    expect(translateConditions([on], { edidByFormId: new Map() }).conditions).toEqual([
+      { kind: 'powerAttack', value: true },
+    ]);
+  });
+
+  it('translates GetIsInVATS Equal To 0/1 to vatsOnly', () => {
+    const off: RawCondition = {
+      Function: 'GetIsInVATS',
+      'Comparison Value': 0,
+      Operator: 'Equal To',
+    };
+    const on: RawCondition = {
+      Function: 'GetIsInVATS',
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+    };
+    expect(translateConditions([off], { edidByFormId: new Map() }).conditions).toEqual([
+      { kind: 'vatsOnly', value: false },
+    ]);
+    expect(translateConditions([on], { edidByFormId: new Map() }).conditions).toEqual([
+      { kind: 'vatsOnly', value: true },
+    ]);
+  });
+
   it('translates HasCompletedChallenge Equal To 1 to lifetimeChallengeCompleted', () => {
     const row: RawCondition = {
       Function: 'HasCompletedChallenge',

@@ -418,7 +418,10 @@ export const omodModifierAdditions: Readonly<Record<string, Modifier[]>> = {
       bucket: 'dbm',
       op: 'ADD',
       value: 0.01,
-      conditions: [{ kind: 'vatsOnly' }, { kind: 'stacks', counter: 'concentratedFire', max: 20 }],
+      conditions: [
+        { kind: 'vatsOnly', value: true },
+        { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+      ],
     },
     {
       id: 'mod_Custom_AcceptableOverkill:hitChanceMultSemi',

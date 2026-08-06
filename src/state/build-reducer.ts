@@ -1,6 +1,7 @@
 import {
   createDefaultEnemyConfig,
   createDefaultPlayerConfig,
+  type ArmorWorn,
   type EnemyConditions,
   type EnemyConfig,
   type GameMode,
@@ -97,7 +98,7 @@ export type BuildAction =
       value: PlayerConditions[keyof PlayerConditions];
     }
   | { type: 'armorEffect/setCount'; id: string; count: number }
-  | { type: 'armorType/set'; isInPowerArmor: boolean }
+  | { type: 'armorType/set'; armorWorn: ArmorWorn }
   | { type: 'race/set'; isGhoul: boolean }
   | {
       type: 'enemy/condition';
@@ -469,12 +470,16 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
     }
 
     case 'armorType/set': {
-      const removing = wrongArmorTypeEffects(mode, player.armorEffects, action.isInPowerArmor);
+      const removing = wrongArmorTypeEffects(mode, player.armorEffects, action.armorWorn);
       const armorEffects = { ...player.armorEffects };
       for (const id of removing) delete armorEffects[id];
       return withPlayer(state, {
         ...player,
-        conditions: { ...player.conditions, isInPowerArmor: action.isInPowerArmor },
+        conditions: {
+          ...player.conditions,
+          armorWorn: action.armorWorn,
+          isInPowerArmor: action.armorWorn === 'power',
+        },
         armorEffects,
       });
     }

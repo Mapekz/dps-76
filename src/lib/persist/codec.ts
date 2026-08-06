@@ -419,10 +419,16 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
     }
   }
 
+  const wirePc = wire.pc ?? {};
+  if (!('armorWorn' in wirePc)) {
+    state.player.conditions.armorWorn = state.player.conditions.isInPowerArmor ? 'power' : 'body';
+  }
+  state.player.conditions.isInPowerArmor = state.player.conditions.armorWorn === 'power';
+
   const wrongType = wrongArmorTypeEffects(
     mode,
     state.player.armorEffects,
-    state.player.conditions.isInPowerArmor,
+    state.player.conditions.armorWorn,
   );
   if (wrongType.length > 0) {
     for (const id of wrongType) delete state.player.armorEffects[id];

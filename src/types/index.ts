@@ -7,11 +7,15 @@ export type { Special } from '@/data/special';
 export type { PerkId } from '@/data/perk-ids';
 export type { Stat, StatModification } from '@/data/stats';
 
+/** Body armor vs power armor vs unarmored — authoritative armor-type state. */
+export type ArmorWorn = 'none' | 'body' | 'power';
+
 // Player conditions for conditional perks and calculations
 export interface PlayerConditions {
   // Combat state
   isSneaking: boolean;
   isAimingAtWeakpoint: boolean; // weakpoint (head) targeting; applies to both scenarios
+  armorWorn: ArmorWorn;
   isInPowerArmor: boolean;
   isSolo: boolean;
   isPowerAttacking: boolean; // melee power attacks (toggle; applies across scenarios)
@@ -690,6 +694,7 @@ export function createDefaultPlayerConditions(): PlayerConditions {
   return {
     isSneaking: false,
     isAimingAtWeakpoint: false,
+    armorWorn: 'body',
     isInPowerArmor: false,
     isSolo: true,
     isPowerAttacking: false,

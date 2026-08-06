@@ -30,10 +30,10 @@ describe('consumable picker', () => {
 describe('consumable "no effect yet" badge (hasAnyEngineEffect over item.modifiers)', () => {
   const byId = (id: string) => getConsumables('live').find((c) => c.id === id);
 
-  it('flags Med-X, a zero-modifier chem, as no-effect', () => {
+  it('flags Med-X as engine-effective now that damageResistGain folds onto playerDamageResist', () => {
     const medX = byId('MedX');
     expect(medX).toBeDefined();
-    expect(hasAnyEngineEffect(medX!.modifiers)).toBe(false);
+    expect(hasAnyEngineEffect(medX!.modifiers)).toBe(true);
   });
 
   it('does not flag Tesla Science 5 — resolved via buffValueOverrides (concurrent work) to a real weaponClass-gated ammoFreeChance', () => {

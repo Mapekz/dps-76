@@ -1,4 +1,4 @@
-import type { GameMode } from '@/types';
+import type { ArmorWorn, GameMode } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 import { hasAnyEngineEffect } from '@/types/modifiers';
@@ -754,19 +754,23 @@ export function getArmorSlotUsage(
   return usage;
 }
 
-/** Effect ids whose `armorType` mismatches the target power-armor toggle. `both` never mismatches. */
+/** Effect ids incompatible with the target armor-worn state. `both` never mismatches body/power. */
 export function wrongArmorTypeEffects(
   mode: GameMode,
   armorEffects: Readonly<Record<string, number>>,
-  isInPowerArmor: boolean,
+  armorWorn: ArmorWorn,
 ): string[] {
   const removing: string[] = [];
   for (const [id, count] of Object.entries(armorEffects)) {
     if (count <= 0) continue;
+    if (armorWorn === 'none') {
+      removing.push(id);
+      continue;
+    }
     const effect = getArmorEffectById(mode, id);
     if (!effect || effect.armorType === 'both') continue;
-    if (isInPowerArmor && effect.armorType === 'bodyArmor') removing.push(id);
-    if (!isInPowerArmor && effect.armorType === 'powerArmor') removing.push(id);
+    if (armorWorn === 'power' && effect.armorType === 'bodyArmor') removing.push(id);
+    if (armorWorn === 'body' && effect.armorType === 'powerArmor') removing.push(id);
   }
   return removing;
 }

@@ -134,6 +134,38 @@ describe('derivePlayerStats', () => {
     expect(stats.stimpakHealMagMult).toBeCloseTo(0.939375, 10);
     expect(stats.stimpakHealDurationMult).toBe(1);
   });
+
+  it('folds damageResistGain onto the manual playerDamageResist knob (additive, not replacement)', () => {
+    const drMod: Modifier = {
+      id: 'test:dr',
+      source: { kind: 'perk', formId: '0x0', edid: 'test', name: 'test' },
+      bucket: 'damageResistGain',
+      op: 'ADD',
+      value: 40,
+      conditions: [],
+    };
+    const stats = derivePlayerStats([drMod], baseSpecial(), {
+      ...conditions,
+      playerDamageResist: 25,
+    });
+    expect(stats.damageResistGain).toBe(65);
+  });
+
+  it('Barbarian rank 1 at STR 15: armored DR 61, unarmored DR 122 (curve ×2)', () => {
+    const barbarian = getLoadoutModifiers('live', [{ perkId: PerkId.Barbarian, rank: 1 }]);
+    const armored = derivePlayerStats(barbarian, baseSpecial({ strength: 15 }), {
+      ...conditions,
+      armorWorn: 'body',
+      playerDamageResist: 0,
+    });
+    const unarmored = derivePlayerStats(barbarian, baseSpecial({ strength: 15 }), {
+      ...conditions,
+      armorWorn: 'none',
+      playerDamageResist: 0,
+    });
+    expect(armored.damageResistGain).toBe(61);
+    expect(unarmored.damageResistGain).toBe(122);
+  });
 });
 
 describe('derivePlayerStats: AV pass-through (Barbarian killStreak→specialStrength, 2026-08-03)', () => {

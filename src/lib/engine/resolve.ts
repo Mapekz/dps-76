@@ -299,14 +299,16 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
     case 'sneaking':
       return ctx.scenario.isSneaking ? 1 : null;
     case 'powerAttack':
-      return ctx.scenario.isPowerAttack ? 1 : null;
+      return ctx.scenario.isPowerAttack === cond.value ? 1 : null;
     case 'crit':
       return ctx.scenario.isCrit ? 1 : null;
     case 'vatsOnly':
-      // Active for both the VATS and VATS+Sneak scenarios (sneaking is a
-      // global flag layered on top of isVats, not a separate scenario flag);
-      // inactive for Manual Aim.
-      return ctx.scenario.isVats ? 1 : null;
+      // Active for both the VATS and VATS+Sneak scenarios when value:true
+      // (sneaking is a global flag layered on top of isVats, not a separate
+      // scenario flag); inactive for Manual Aim.
+      return ctx.scenario.isVats === cond.value ? 1 : null;
+    case 'unarmored':
+      return (ctx.player.armorWorn === 'none') === cond.value ? 1 : null;
     case 'healthBelowPct': {
       // PLAYER health below pct. Operator is data-driven from the ESM
       // (`inclusive` — absent ⇒ ≤, matching Foundation's Vengeance's

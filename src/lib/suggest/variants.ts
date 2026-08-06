@@ -1,4 +1,4 @@
-import type { GameMode, Perk } from '@/types';
+import type { ArmorWorn, GameMode, Perk } from '@/types';
 import { getPerks, getWeapons } from '@/data';
 import {
   type ArmorEffectEntry,
@@ -62,9 +62,10 @@ function isArmorEffectRelevant(effect: ArmorEffectEntry): boolean {
   return hasAnyEngineEffect(effect.modifiers);
 }
 
-function armorTypeEligible(effect: ArmorEffectEntry, isInPowerArmor: boolean): boolean {
+function armorTypeEligible(effect: ArmorEffectEntry, armorWorn: ArmorWorn): boolean {
+  if (armorWorn === 'none') return false;
   if (effect.armorType === 'both') return true;
-  if (isInPowerArmor) return effect.armorType === 'powerArmor';
+  if (armorWorn === 'power') return effect.armorType === 'powerArmor';
   return effect.armorType === 'bodyArmor';
 }
 
@@ -236,11 +237,11 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
   // ── armor effects ──────────────────────────────────────────────────────────
   const armorEffects = getArmorEffects(mode);
   const tierUsage = getArmorTierUsage(mode, player.armorEffects);
-  const isInPowerArmor = player.conditions.isInPowerArmor;
+  const armorWorn = player.conditions.armorWorn;
 
   for (const effect of armorEffects) {
     const current = armorEffectCount(effect, player.armorEffects);
-    if (!isArmorEffectRelevant(effect) || !armorTypeEligible(effect, isInPowerArmor)) continue;
+    if (!isArmorEffectRelevant(effect) || !armorTypeEligible(effect, armorWorn)) continue;
 
     const withoutSelf = { ...player.armorEffects };
     delete withoutSelf[effect.id];
@@ -281,7 +282,7 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
         y.id === x.id ||
         y.starTier !== x.starTier ||
         !isArmorEffectRelevant(y) ||
-        !armorTypeEligible(y, isInPowerArmor)
+        !armorTypeEligible(y, armorWorn)
       )
         continue;
       const countY = armorEffectCount(y, player.armorEffects);

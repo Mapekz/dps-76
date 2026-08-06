@@ -47189,8 +47189,8 @@
       "present": true
      },
      {
-      "kind": "unresolved",
-      "raw": "GetIsInVATS()=0"
+      "kind": "vatsOnly",
+      "value": false
      }
     ]
    }
@@ -47200,9 +47200,7 @@
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "perk Psychopath01: GetIsInVATS()=0"
-  ],
+  "notes": [],
   "obtainable": false
  },
  {

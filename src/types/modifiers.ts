@@ -50,7 +50,7 @@ export type ModOp = 'SET' | 'MUL_ADD' | 'ADD';
  * - wholeDamage: separate stacking whole-damage multipliers (TOFTT, Follow
  *   Through, Grounded's Charged Penalty).
  * - critFill / critConsumption: crit-meter economy (Crit Savvy, Limit Breaking).
- * - fireRateSpeed / isAutomatic / projectileCount / vatsApCost / addDamageComponent:
+ * - fireRateSpeed / isAutomatic / projectileCount / vatsApCost:
  *   weapon-stat rewrites from OMODs (receiver speed, Two Shot, Explosive
  *   prefix, V.A.T.S. Optimized's AP-cost cut).
  * - apRegen / apPerCrit: VATS AP steady-state economy (Stage B,
@@ -355,7 +355,6 @@ export type Bucket =
    * docs/move-speed-census.md.
    */
   | 'moveSpeedBonus'
-  | 'addDamageComponent'
   /**
    * Armor penetration (Anti-Armor's ActorValues property) — a fraction
    * (0.50 = 50% penetration) folded ONCE per scenario input (`scenarios.ts`
@@ -880,12 +879,6 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
     foldedBy:
       'effective-weapon.ts buildEffectiveWeapon — folded once, threaded on ResolveContext.moveSpeedBonus; feeds the moveSpeedBonus CurveInput (Fast Fighter). Threaded in the weapon-stat fold ONLY — a damage-bucket curve on this input would read 0 until scenarios.ts also threads it',
   },
-  addDamageComponent: {
-    regime: 'unfolded',
-    hasEngineEffect: false,
-    foldedBy:
-      'none — no reader anywhere in the codebase; likely superseded by explosivePayload/materializeDamageTypeComponents',
-  },
   armorPen: {
     regime: 'mitigation',
     hasEngineEffect: true,
@@ -993,10 +986,10 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
     foldedBy: "player-stats.ts derivePlayerStats; feeds crit-meter.ts computeCritMeter's fill rate",
   },
   damageResistGain: {
-    regime: 'unfolded',
-    hasEngineEffect: false,
+    regime: 'playerStat',
+    hasEngineEffect: true,
     foldedBy:
-      'none — wearer-side resist mitigation not modeled (AV DamageResist extracted via FALLBACK_AVIF_ROUTES, e.g. Scaly Skin, but no consumer yet)',
+      'player-stats.ts derivePlayerStats; folded onto the manual playerDamageResist knob (Barbarian STR→DR, Iron Fist DR→unarmed)',
   },
   energyResistGain: {
     regime: 'unfolded',
@@ -1103,16 +1096,20 @@ export type Condition =
   /** OR-group of enemy race/type gates (Ghoul Slayer's: FeralGhoul OR Ghoul) — resolves against `ctx.enemyTypeIds`. */
   | { kind: 'enemyTypeAny'; keywordsOrRaces: string[] }
   | { kind: 'sneaking' }
-  | { kind: 'powerAttack' }
+  /** `value: true` requires a power attack; `value: false` requires NOT power attacking. */
+  | { kind: 'powerAttack'; value: boolean }
   /** The hit is a VATS critical (symmetric with sneaking/powerAttack). */
   | { kind: 'crit' }
   /**
    * The attack is fired in VATS (symmetric with sneaking/powerAttack/crit) —
-   * active for both the VATS and VATS+Sneak scenarios, inactive for Manual
-   * Aim (`ctx.scenario.isVats`). Concentrated Fire's per-stack damage bonus
-   * only applies in VATS (docs/assumptions.md "Concentrated Fire stacks").
+   * `value: true` is active for both the VATS and VATS+Sneak scenarios,
+   * inactive for Manual Aim (`ctx.scenario.isVats`); `value: false` requires
+   * NOT firing in VATS. Concentrated Fire's per-stack damage bonus only
+   * applies in VATS (docs/assumptions.md "Concentrated Fire stacks").
    */
-  | { kind: 'vatsOnly' }
+  | { kind: 'vatsOnly'; value: boolean }
+  /** No armor piece worn at all (Barbarian's unarmored ×2 — symmetric with sneaking/powerAttack/crit/vatsOnly). */
+  | { kind: 'unarmored'; value: boolean }
   /** PLAYER health below pct. Absent/true ⇒ ≤ (Foundation's Vengeance: GetHealthPercentage ≤ 0.25); false ⇒ strict <. */
   | { kind: 'healthBelowPct'; pct: number; inclusive?: boolean }
   /** ENEMY health below pct (Executioner's: ≤40, threshold from GLOB LGND_ExecuteHealthThreshold). Absent/true ⇒ ≤; false ⇒ strict <. */

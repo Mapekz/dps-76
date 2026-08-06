@@ -17,6 +17,11 @@ import grenadier01 from './fixtures/perk-grenadier01.json';
 import grenadier02 from './fixtures/perk-grenadier02.json';
 import abPerkGrenadier from './fixtures/spel-abperkgrenadier.json';
 import abPerkFortifyExplosionRadius from './fixtures/mgef-abperkfortifyexplosionradius.json';
+import barbarian01 from './fixtures/perk-barbarian01.json';
+import abPerkBarbarian from './fixtures/spel-abperkbarbarian.json';
+import abPerkFortifyResistDamage from './fixtures/mgef-abperkfortifyresistdamage.json';
+import { foldBucket } from '@/lib/engine/resolve';
+import { createDefaultPlayerConditions, createDefaultEnemyConditions } from '@/types';
 
 // Fixtures are verbatim `esm get <formid> --json` output (20260710 ESM).
 // These tests pin the PCRD → GeneratedPerkCard normalization and the new
@@ -330,6 +335,59 @@ function makeLockAndLoadStubClient(): EsmClient {
   } as unknown as EsmClient;
 }
 
+/**
+ * Stub client mirroring Barbarian's real 20260702 ESM shape (verified via
+ * `esm get`, 2026-08-06): Barbarian01 (0x00242E59) grants AbPerkBarbarian
+ * (0x00242E5A) whose AbPerkFortifyResistDamage effect curve-scales STR → DR;
+ * Effect 2 is the self-referencing "Mod Spell Magnitude" ×2.0 entry point
+ * (post-processed into `unarmored` conditions, not extracted generically).
+ */
+function makeBarbarianStubClient(): EsmClient {
+  const perkFormId = '0x00242E59';
+  const spellFormId = '0x00242E5A';
+  const mgefFormId = '0x0004A0AC';
+  const damageResistAv = '0x000002E3';
+  const known: Record<string, EsmRecord> = {
+    [perkFormId]: barbarian01 as unknown as EsmRecord,
+    [spellFormId]: abPerkBarbarian as unknown as EsmRecord,
+    [mgefFormId]: abPerkFortifyResistDamage as unknown as EsmRecord,
+    [damageResistAv]: {
+      header: { signature: 'AVIF', form_id: damageResistAv },
+      editor_id: 'DamageResist',
+      fields: {},
+    } as unknown as EsmRecord,
+    STAT_DamagePerk: {
+      header: { signature: 'PERK', form_id: '0x0023A0EB' },
+      editor_id: 'STAT_DamagePerk',
+      fields: { Effects: [] },
+    } as unknown as EsmRecord,
+  };
+  const get = async (target: string): Promise<EsmRecord> => {
+    if (known[target]) return known[target];
+    return {
+      header: { signature: 'PERK', form_id: target },
+      editor_id: target,
+      fields: {},
+    } as unknown as EsmRecord;
+  };
+  return {
+    async list(type: string): Promise<EsmListRow[]> {
+      if (type !== 'PERK') return [];
+      return [
+        {
+          form_id: perkFormId,
+          record_type: 'PERK',
+          editor_id: 'Barbarian01',
+          name: 'Barbarian',
+        },
+      ];
+    },
+    get,
+    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
+    refs: async () => [],
+  } as unknown as EsmClient;
+}
+
 describe('extractPerks (cut-rank fix — Lock and Load, 2026-07-16)', () => {
   it('a 3-record edid chain with a PCRD listing only rank 1 extracts maxRank 1 and one rank entry, dropping the dead r2/r3 chain records', async () => {
     const result = await extractPerks(makeLockAndLoadStubClient());
@@ -440,5 +498,76 @@ describe('extractPerks (Grenadier / explosion radius bonus, 2026-07-29)', () => 
     expect(family!.ranks[1].modifiers).toContainEqual(
       expect.objectContaining({ bucket: 'explosionRadiusBonus', op: 'ADD', value: 1.0 }),
     );
+  });
+});
+
+describe('extractPerks (Barbarian unarmored ×2 post-process, 2026-08-06)', () => {
+  it('splits rank-1 damageResistGain into armored (curveScale 1) and unarmored (×2) modifiers', async () => {
+    const result = await extractPerks(makeBarbarianStubClient());
+    const family = result.perks.find((p) => p.family === 'Barbarian');
+    expect(family).toBeDefined();
+    expect(family!.ranks).toHaveLength(1);
+    expect(family!.ranks[0].modifiers).toHaveLength(2);
+
+    const armored = family!.ranks[0].modifiers.find((m) =>
+      m.conditions.some((c) => c.kind === 'unarmored' && c.value === false),
+    );
+    const unarmored = family!.ranks[0].modifiers.find((m) =>
+      m.conditions.some((c) => c.kind === 'unarmored' && c.value === true),
+    );
+    expect(armored).toMatchObject({
+      bucket: 'damageResistGain',
+      op: 'ADD',
+      curveScale: 1,
+      curve: {
+        input: 'strength',
+        points: [
+          { x: 1, y: 18 },
+          { x: 15, y: 61 },
+          { x: 30, y: 96 },
+          { x: 60, y: 131 },
+          { x: 100, y: 175 },
+        ],
+      },
+    });
+    expect(unarmored).toMatchObject({
+      bucket: 'damageResistGain',
+      op: 'ADD',
+      curveScale: 2,
+    });
+  });
+
+  it('at STR 15, armored contributes DR 61 and unarmored DR 122', async () => {
+    const result = await extractPerks(makeBarbarianStubClient());
+    const mods = result.perks.find((p) => p.family === 'Barbarian')!.ranks[0].modifiers;
+    const weapon = {
+      id: '__test__',
+      name: 'Test',
+      components: [],
+      damageType: 'ballistic' as const,
+      weaponClass: 'unarmed' as const,
+      isAutomatic: false,
+      isPhysical: true,
+    };
+    const basePlayer = {
+      ...createDefaultPlayerConditions(),
+      strength: 15,
+      armorWorn: 'body' as const,
+      playerDamageResist: 0,
+    };
+    const armoredCtx = {
+      weapon,
+      player: { ...basePlayer, armorWorn: 'body' as const },
+      enemy: createDefaultEnemyConditions(),
+      scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
+      itemLevel: 50,
+      onslaughtMaxStacks: 0,
+    };
+    const unarmoredCtx = {
+      ...armoredCtx,
+      player: { ...basePlayer, armorWorn: 'none' as const },
+    };
+    expect(foldBucket(mods, 'damageResistGain', 0, armoredCtx)).toBe(61);
+    expect(foldBucket(mods, 'damageResistGain', 0, unarmoredCtx)).toBe(122);
   });
 });

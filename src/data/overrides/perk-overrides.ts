@@ -336,7 +336,7 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
         op: 'ADD',
         value: 0.01,
         conditions: [
-          { kind: 'vatsOnly' },
+          { kind: 'vatsOnly', value: true },
           { kind: 'stacks', counter: 'concentratedFire', max: 20 },
         ],
       },
@@ -389,7 +389,7 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
         op: 'ADD',
         value: 0.02,
         conditions: [
-          { kind: 'vatsOnly' },
+          { kind: 'vatsOnly', value: true },
           { kind: 'stacks', counter: 'concentratedFire', max: 20 },
         ],
       },
@@ -442,7 +442,7 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
         op: 'ADD',
         value: 0.03,
         conditions: [
-          { kind: 'vatsOnly' },
+          { kind: 'vatsOnly', value: true },
           { kind: 'stacks', counter: 'concentratedFire', max: 20 },
         ],
       },
@@ -526,4 +526,9 @@ export const perkForceEffectivePerkIds: ReadonlySet<string> = new Set([
   // flat-DR rank; build-reducer.ts auto-seeds both from the equipped rank).
   'FollowThrough',
   'TakingOneForTheTeam',
+  // Tenderizer: family extracts with zero modifiers (no rank in perks.json
+  // carries a modifier), but the stacking damage-taken debuff IS modeled as a
+  // manual Target-section condition knob (tenderizerStacks → resolve.ts
+  // stack-counter case; TargetSection.tsx slider).
+  'Tenderizer',
 ]);
