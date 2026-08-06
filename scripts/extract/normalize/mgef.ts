@@ -1091,6 +1091,34 @@ export function translate(
     );
   };
 
+  // Contact-delivered (on-hit), Hostile/Detrimental "Reduce Damage Resist" effects
+  // (Cosmic Knife Super-Heated's ench_CosmicKnife_Superheated, Endangerol Syringe
+  // Barrel's EnchSyringer_Endangerol — verified via `esm get`: Delivery Contact,
+  // Archetype Peak Value Modifier, AV DamageResist, flags Hostile+Detrimental) apply
+  // to the STRUCK TARGET, not the wielder — route to armorPenFlat (mitigation.ts's
+  // physical resist-point debuff, the same bucket Taking One for the Team's companion
+  // perk feeds) instead of the generic self-buff `damageResistGain` FALLBACK_AVIF_ROUTES
+  // entry. armorPenFlat's sign convention is "positive = points removed from base
+  // resist" (opposite of damageResistGain's direct-AV-delta reading), so this uses the
+  // magnitude's absolute value, not `effectiveMagnitude` (already Detrimental-negated
+  // for the AV-delta reading). Scoped to DamageResist + flat magnitude only — no
+  // verified EnergyResist or curve-based instance exists today.
+  if (
+    avifEdid === 'DamageResist' &&
+    mgef.archetype === 'Peak Value Modifier' &&
+    mgef.detrimental &&
+    opts.conditionCtx?.subjectIsTarget &&
+    !curve
+  ) {
+    result.modifiers.push({
+      bucket: 'armorPenFlat',
+      op: 'ADD',
+      value: Math.abs(effectiveMagnitude),
+      conditions: allConds,
+    });
+    return result;
+  }
+
   const avifRoutes = routes.get(mgef.actorValue);
   const fallbackEntry = FALLBACK_AVIF_ROUTES[avifEdid];
   // Archetype-restricted routes (Health → maxHealth is Peak-only) fall

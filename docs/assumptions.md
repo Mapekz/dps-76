@@ -674,11 +674,15 @@ are all documented there. `src/lib/enemy-defenses.ts`, `scenarios.ts`
   as specified.
 - **`armorPen`** (fraction): Incisor/Stabilized/Tank Killer/Anti-Armor,
   76 extracted modifiers, unconditioned flat ADDs.
-- **`armorPenFlat`** (resist points): only source is Taking One for the
-  Team's flat DR debuff — hidden companion perk, physical-only,
-  magnitudes **6/10/15/50** at ranks 1–4. The rank-4 jump (not the ~20 an
-  even progression predicts) is a possible ESM data-entry anomaly, modeled
-  as-is.
+- **`armorPenFlat`** (resist points): Taking One for the Team's flat DR
+  debuff (hidden companion perk, physical-only, magnitudes **6/10/15/50**
+  at ranks 1–4; the rank-4 jump is a possible ESM data-entry anomaly,
+  modeled as-is) plus Contact-delivered on-hit "Reduce Damage Resist"
+  weapon mods — Cosmic Knife Super-Heated (**25** points) and Pipe
+  Syringer's Endangerol Barrel (**0.25** points, literal ESM magnitude).
+  `mgef.ts` `translate()` routes Peak-Value-Modifier `DamageResist` MGEFs
+  with `Detrimental` + `subjectIsTarget` (Contact ENCH/SPEL delivery) to
+  this bucket with a positive value instead of `damageResistGain`.
 - **DoT is NOT mitigated in v1** — `ScenarioResult.dotDps` stays a
   separate, unmitigated add. Matches the plan.
 - **Level-slider default = max** (`resolveTargetLevel`): an unset target

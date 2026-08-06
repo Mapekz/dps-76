@@ -43047,9 +43047,9 @@
      "edid": "mod_custom_CosmicKnife_Superheated",
      "name": "Cosmic Knife Super-Heated"
     },
-    "bucket": "damageResistGain",
+    "bucket": "armorPenFlat",
     "op": "ADD",
-    "value": -25,
+    "value": 25,
     "conditions": []
    },
    {
@@ -97496,9 +97496,9 @@
      "edid": "mod_PipeSyringer_Barrel_Endangerol",
      "name": "Endangerol Syringe Barrel"
     },
-    "bucket": "damageResistGain",
+    "bucket": "armorPenFlat",
     "op": "ADD",
-    "value": -0.25,
+    "value": 0.25,
     "conditions": []
    }
   ],

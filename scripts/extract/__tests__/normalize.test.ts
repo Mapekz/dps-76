@@ -1746,6 +1746,43 @@ describe('translate (Detrimental sign handling, 2026-07-14)', () => {
   });
 });
 
+describe('translate (Contact-delivered DamageResist → armorPenFlat, 2026-08-06)', () => {
+  const drEdids = new Map<string, string>([['0xAV', 'DamageResist']]);
+
+  it('routes a Contact-delivered Detrimental Peak Value Modifier on AV DamageResist to armorPenFlat with a positive value (Cosmic Knife Super-Heated-style: mag 25 → +25)', () => {
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier', detrimental: true }),
+      effect({ magnitude: 25 }),
+      noRoutes,
+      drEdids,
+      { conditionCtx: { subjectIsTarget: true } },
+    );
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0]).toEqual({
+      bucket: 'armorPenFlat',
+      op: 'ADD',
+      value: 25,
+      conditions: [],
+    });
+  });
+
+  it('still routes the same MGEF shape Self-delivered to damageResistGain with negated magnitude (Barbarian/Rooted-style self-buff regression: mag 25 → −25)', () => {
+    const r = translate(
+      mgef({ archetype: 'Peak Value Modifier', detrimental: true }),
+      effect({ magnitude: 25 }),
+      noRoutes,
+      drEdids,
+    );
+    expect(r.modifiers).toHaveLength(1);
+    expect(r.modifiers[0]).toEqual({
+      bucket: 'damageResistGain',
+      op: 'ADD',
+      value: -25,
+      conditions: [],
+    });
+  });
+});
+
 describe('translate (Health-route archetype scoping, 2026-07-14)', () => {
   const healthEdids = new Map<string, string>([['0xAV', 'Health']]);
 
