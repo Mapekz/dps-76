@@ -690,11 +690,97 @@
   "formId": "0x004DF1DB",
   "name": "Healing Factor",
   "kind": "mutation",
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x004DF1DB:0",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004DF1DB",
+     "edid": "Mutation_HealingFactor",
+     "name": "Healing Factor"
+    },
+    "bucket": "stimpakHealMagMult",
+    "op": "MUL_ADD",
+    "value": -0.55,
+    "conditions": [
+     {
+      "kind": "classFreakRank",
+      "min": 0,
+      "max": 0
+     }
+    ]
+   },
+   {
+    "id": "0x004DF1DB:1",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004DF1DB",
+     "edid": "Mutation_HealingFactor",
+     "name": "Healing Factor"
+    },
+    "bucket": "stimpakHealMagMult",
+    "op": "MUL_ADD",
+    "value": -0.42000000000000004,
+    "conditions": [
+     {
+      "kind": "classFreakRank",
+      "min": 1,
+      "max": 3
+     },
+     {
+      "kind": "classFreakRank",
+      "min": 0,
+      "max": 1
+     }
+    ]
+   },
+   {
+    "id": "0x004DF1DB:2",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004DF1DB",
+     "edid": "Mutation_HealingFactor",
+     "name": "Healing Factor"
+    },
+    "bucket": "stimpakHealMagMult",
+    "op": "MUL_ADD",
+    "value": -0.28,
+    "conditions": [
+     {
+      "kind": "classFreakRank",
+      "min": 2,
+      "max": 3
+     },
+     {
+      "kind": "classFreakRank",
+      "min": 0,
+      "max": 2
+     }
+    ]
+   },
+   {
+    "id": "0x004DF1DB:3",
+    "source": {
+     "kind": "mutation",
+     "formId": "0x004DF1DB",
+     "edid": "Mutation_HealingFactor",
+     "name": "Healing Factor"
+    },
+    "bucket": "stimpakHealMagMult",
+    "op": "MUL_ADD",
+    "value": -0.14,
+    "conditions": [
+     {
+      "kind": "classFreakRank",
+      "min": 3,
+      "max": 3
+     }
+    ]
+   }
+  ],
   "notes": [
    "Mutation_HealingFactor: MGEF Mutation_FortifyHealRate: no route for AV HealRate — needs mapping",
    "Mutation_HealingFactor: perk Mutation_ReduceChemEffect_Perk: OR-group[EPAlchemyEffectHasKeyword(ChemTypeStimpack)=1 | EPAlchemyEffectHasKeyword(ChemTypeRadaway)=1 | EPAlchemyEffectHasKeyword(ChemTypeHealing)=1 | EPAlchemyEffectHasKeyword(ChemEffect)=1 | EPAlchemyEffectHasKeyword(PerkMedic)=1]",
-   "Mutation_HealingFactor: perk Mutation_ReduceChemEffect_Perk: entry point Mod Spell Magnitude — not modeled",
    "Mutation_HealingFactor: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },

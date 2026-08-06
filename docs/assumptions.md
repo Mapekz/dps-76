@@ -979,6 +979,18 @@ picker roster/grouping are documented at `src/data/armor-modifiers.ts`,
   threaded, `hasEngineEffect: true`) but has no current consumer; ENCH
   `ench_IntFromHacking` (`0x0091A081`, orphan in the 20260803 dump) is the
   likely future consumer if a hacking-scaled unique ships.
+- **Stimpak base-heal unit** — USER-CONFIRMED (2026-08-06): the
+  `StimpakRestoreHealth` MGEF (`0x0021DDB8`, Archetype `Stimpak` on AV
+  `Health`) has no GMST/curve/AVIF flag stating whether its magnitude is
+  flat HP or % of max HP per second — the ESM proves only the per-leg
+  numbers (`extract-healing.ts`: Stimpak `[2,20]+[10,2]`, Super exactly 2×,
+  Diluted exactly 0.5×, both legs firing concurrently from t=0, no
+  sequencing field). Modeled as % of max HP/sec on the project owner's call.
+  `stimpakHealMagMult`/`stimpakHealDurationMult` (`src/types/modifiers.ts`)
+  are the Field-Surgeon/Doctor's-3★/Healing-Factor-penalty multiplier
+  buckets that scale a leg's magnitude/duration independently
+  (`src/lib/healing.ts` `resolveStimpakHealing` combines them); no DPS
+  consumer yet, same posture as Hacking Skill above.
 - A handful of `cr`-prefixed creature/event DoT curves (non-level domain)
   and a few niche unique-mod curves remain unmapped: Eat The Rich
   (NPC-only, not player-obtainable), PA battery drain (no DPS/AP/HP

@@ -44,6 +44,22 @@ function specialMod(
   };
 }
 
+function specialMulMod(
+  bucket: Bucket,
+  value: number,
+  conditions: Condition[] = [],
+  id = 'test-special-mul-mod',
+): Modifier {
+  return {
+    id,
+    source: { kind: 'mutation', formId: '0xC1A55', edid: 'TestMutation', name: 'Test Mutation' },
+    bucket,
+    op: 'MUL_ADD',
+    value,
+    conditions,
+  };
+}
+
 const conditions = createDefaultPlayerConditions();
 
 describe('derivePlayerStats', () => {
@@ -100,6 +116,23 @@ describe('derivePlayerStats', () => {
     expect(stats.lockpickSkill).toBe(3);
     expect(stats.hackingSkill).toBe(2);
     expect(stats.stimpakHealMult).toBe(30);
+  });
+
+  it('product-folds stimpakHealMagMult and stimpakHealDurationMult (multiplicative, base 1)', () => {
+    const bare = derivePlayerStats([], baseSpecial(), conditions);
+    expect(bare.stimpakHealMagMult).toBe(1);
+    expect(bare.stimpakHealDurationMult).toBe(1);
+
+    // Field Surgeon ×1.67, Doctor's-5-pieces ×1.25, Healing-Factor-no-CF ×0.45
+    // → 1.67 × 1.25 × 0.45 = 0.939375 (NOT additive 1 + 0.67 + 0.25 - 0.55 = 1.37).
+    const magMods = [
+      specialMulMod('stimpakHealMagMult', 0.67, [], 'field-surgeon'),
+      specialMulMod('stimpakHealMagMult', 0.25, [], 'doctors-3star'),
+      specialMulMod('stimpakHealMagMult', -0.55, [], 'healing-factor'),
+    ];
+    const stats = derivePlayerStats(magMods, baseSpecial(), conditions);
+    expect(stats.stimpakHealMagMult).toBeCloseTo(0.939375, 10);
+    expect(stats.stimpakHealDurationMult).toBe(1);
   });
 });
 

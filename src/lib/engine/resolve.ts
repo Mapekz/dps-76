@@ -256,6 +256,11 @@ const PLAYER_STATE_READERS: Record<
   lockpickSkill: (p) => p.lockpickSkill ?? 0,
   hackingSkill: (p) => p.hackingSkill ?? 0,
   stimpakHealMult: (p) => p.stimpakHealMult ?? 0,
+  // stimpakHealMagMult/DurationMult bucket product-folds (player-stats.ts) —
+  // wired for a future Stimpak-healing-scaled unique via `scaledBy`, no
+  // consumer yet.
+  stimpakHealMagMult: (p) => p.stimpakHealMagMult ?? 1,
+  stimpakHealDurationMult: (p) => p.stimpakHealDurationMult ?? 1,
 };
 
 /**
@@ -540,6 +545,35 @@ export function foldBucket(
   }
 
   return result;
+}
+
+/**
+ * Product-fold all active MUL_ADD modifiers on one bucket: ∏(1 + value).
+ * Same shape as `foldWholeDamage` (TOFTT/Follow Through) generalized to any
+ * bucket — used by player-stats.ts for `stimpakHealMagMult`/
+ * `stimpakHealDurationMult`, whose Bethesda "Mod Spell Magnitude"/"Mod Spell
+ * Duration" perk entry points compose multiplicatively, unlike the additive
+ * `foldOps`/`foldBucket` every other MUL_ADD bucket uses. ADD/SET entries
+ * are not expected on these buckets (every current source is a "Multiply
+ * Value" perk entry point → MUL_ADD) and are silently ignored, same as
+ * `foldWholeDamage` ignoring anything but `wholeDamage`'s own shape.
+ */
+export function foldBucketProduct(
+  modifiers: Modifier[],
+  bucket: Bucket,
+  ctx: ResolveContext,
+  collect?: TraceContribution[],
+): number {
+  ctx.bucketReads?.add(bucket);
+  let mult = 1;
+  for (const mod of modifiers) {
+    if (mod.bucket !== bucket || mod.op !== 'MUL_ADD') continue;
+    const value = effectiveValue(mod, ctx);
+    if (value === null) continue;
+    mult *= 1 + value;
+    collect?.push({ source: mod.source, op: mod.op, value });
+  }
+  return mult;
 }
 
 /**

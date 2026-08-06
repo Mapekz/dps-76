@@ -1,7 +1,7 @@
 import type { EnemyConditions, Perk, PerkLoadout, PlayerConditions, Weapon } from '@/types';
 import { createDefaultEnemyConditions } from '@/types';
 import type { Bucket, Modifier } from '@/types/modifiers';
-import { foldBucket, type ResolveContext } from '@/lib/engine/resolve';
+import { foldBucket, foldBucketProduct, type ResolveContext } from '@/lib/engine/resolve';
 import { interpolateCurve } from '@/lib/curve-tables';
 import levelRewardCurveFile from '@/data/live/curvetables/player/special/levelrewardcurve.json';
 import legendarySlotCurveFile from '@/data/live/curvetables/player/perks/legendaryperkslotcount.json';
@@ -256,6 +256,10 @@ export interface DerivedPlayerStats {
   hackingSkill: number;
   /** Folded stimpakHealMult bucket (First Aid, Medicine Bobblehead) — base 0, percent points; feeds Medical Malpractice scaledBy. */
   stimpakHealMult: number;
+  /** Product-folded stimpakHealMagMult bucket (Field Surgeon, Doctor's 3★) — base 1, multiplicative; no consumer yet. */
+  stimpakHealMagMult: number;
+  /** Product-folded stimpakHealDurationMult bucket (Field Surgeon) — base 1, multiplicative; no consumer yet. */
+  stimpakHealDurationMult: number;
 }
 
 export function derivePlayerStats(
@@ -313,6 +317,16 @@ export function derivePlayerStats(
   const lockpickSkill = foldBucket(modifiers, 'lockpickSkill', 0, ctx);
   const hackingSkill = foldBucket(modifiers, 'hackingSkill', 0, ctx);
   const stimpakHealMult = foldBucket(modifiers, 'stimpakHealMult', 0, ctx);
+  const stimpakHealMagMult = foldBucketProduct(modifiers, 'stimpakHealMagMult', ctx);
+  const stimpakHealDurationMult = foldBucketProduct(modifiers, 'stimpakHealDurationMult', ctx);
 
-  return { special, maxHealth, lockpickSkill, hackingSkill, stimpakHealMult };
+  return {
+    special,
+    maxHealth,
+    lockpickSkill,
+    hackingSkill,
+    stimpakHealMult,
+    stimpakHealMagMult,
+    stimpakHealDurationMult,
+  };
 }

@@ -71236,7 +71236,104 @@
   "targetKeywords": [
    "ma_legendarycrafting_armor"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00609C46:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00609C46",
+     "edid": "mod_Legendary_Armor3_IncreaseHealing",
+     "name": "Doctor's"
+    },
+    "bucket": "stimpakHealMagMult",
+    "op": "MUL_ADD",
+    "value": 0.050000000000000044,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "HasLegendary_Armor_IncreaseHealing",
+      "count": 1
+     }
+    ]
+   },
+   {
+    "id": "0x00609C46:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00609C46",
+     "edid": "mod_Legendary_Armor3_IncreaseHealing",
+     "name": "Doctor's"
+    },
+    "bucket": "stimpakHealMagMult",
+    "op": "MUL_ADD",
+    "value": 0.10000000000000009,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "HasLegendary_Armor_IncreaseHealing",
+      "count": 2
+     }
+    ]
+   },
+   {
+    "id": "0x00609C46:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00609C46",
+     "edid": "mod_Legendary_Armor3_IncreaseHealing",
+     "name": "Doctor's"
+    },
+    "bucket": "stimpakHealMagMult",
+    "op": "MUL_ADD",
+    "value": 0.1499999999999999,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "HasLegendary_Armor_IncreaseHealing",
+      "count": 3
+     }
+    ]
+   },
+   {
+    "id": "0x00609C46:ench:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00609C46",
+     "edid": "mod_Legendary_Armor3_IncreaseHealing",
+     "name": "Doctor's"
+    },
+    "bucket": "stimpakHealMagMult",
+    "op": "MUL_ADD",
+    "value": 0.19999999999999996,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "HasLegendary_Armor_IncreaseHealing",
+      "count": 4
+     }
+    ]
+   },
+   {
+    "id": "0x00609C46:ench:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00609C46",
+     "edid": "mod_Legendary_Armor3_IncreaseHealing",
+     "name": "Doctor's"
+    },
+    "bucket": "stimpakHealMagMult",
+    "op": "MUL_ADD",
+    "value": 0.25,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "HasLegendary_Armor_IncreaseHealing",
+      "count": 5,
+      "orMore": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_IncreaseHealing"
@@ -71244,8 +71341,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk LegendaryIncreaseHealingPerk: OR-group[EPAlchemyEffectHasKeyword(ChemDispelRadX)=1 | EPAlchemyEffectHasKeyword(ChemTypeRadaway)=1 | EPAlchemyEffectHasKeyword(ChemTypeStimpack)=1]",
-   "perk LegendaryIncreaseHealingPerk: entry point Mod Spell Magnitude — not modeled"
+   "perk LegendaryIncreaseHealingPerk: OR-group[EPAlchemyEffectHasKeyword(ChemDispelRadX)=1 | EPAlchemyEffectHasKeyword(ChemTypeRadaway)=1 | EPAlchemyEffectHasKeyword(ChemTypeStimpack)=1]"
   ],
   "obtainable": true
  },
@@ -74153,7 +74249,104 @@
    "ma_legendarycrafting_powerarmor",
    "ma_PowerArmorMod"
   ],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00609C45:ench:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00609C45",
+     "edid": "mod_Legendary_PowerArmor3_IncreaseHealing",
+     "name": "Doctor's"
+    },
+    "bucket": "stimpakHealMagMult",
+    "op": "MUL_ADD",
+    "value": 0.050000000000000044,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "HasLegendary_Armor_IncreaseHealing",
+      "count": 1
+     }
+    ]
+   },
+   {
+    "id": "0x00609C45:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00609C45",
+     "edid": "mod_Legendary_PowerArmor3_IncreaseHealing",
+     "name": "Doctor's"
+    },
+    "bucket": "stimpakHealMagMult",
+    "op": "MUL_ADD",
+    "value": 0.10000000000000009,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "HasLegendary_Armor_IncreaseHealing",
+      "count": 2
+     }
+    ]
+   },
+   {
+    "id": "0x00609C45:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00609C45",
+     "edid": "mod_Legendary_PowerArmor3_IncreaseHealing",
+     "name": "Doctor's"
+    },
+    "bucket": "stimpakHealMagMult",
+    "op": "MUL_ADD",
+    "value": 0.1499999999999999,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "HasLegendary_Armor_IncreaseHealing",
+      "count": 3
+     }
+    ]
+   },
+   {
+    "id": "0x00609C45:ench:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00609C45",
+     "edid": "mod_Legendary_PowerArmor3_IncreaseHealing",
+     "name": "Doctor's"
+    },
+    "bucket": "stimpakHealMagMult",
+    "op": "MUL_ADD",
+    "value": 0.19999999999999996,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "HasLegendary_Armor_IncreaseHealing",
+      "count": 4
+     }
+    ]
+   },
+   {
+    "id": "0x00609C45:ench:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00609C45",
+     "edid": "mod_Legendary_PowerArmor3_IncreaseHealing",
+     "name": "Doctor's"
+    },
+    "bucket": "stimpakHealMagMult",
+    "op": "MUL_ADD",
+    "value": 0.25,
+    "conditions": [
+     {
+      "kind": "wornPieceCount",
+      "keyword": "HasLegendary_Armor_IncreaseHealing",
+      "count": 5,
+      "orMore": true
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "FeaturedItem",
    "HasLegendary_Armor_IncreaseHealing"
@@ -74161,8 +74354,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk LegendaryIncreaseHealingPerk: OR-group[EPAlchemyEffectHasKeyword(ChemDispelRadX)=1 | EPAlchemyEffectHasKeyword(ChemTypeRadaway)=1 | EPAlchemyEffectHasKeyword(ChemTypeStimpack)=1]",
-   "perk LegendaryIncreaseHealingPerk: entry point Mod Spell Magnitude — not modeled"
+   "perk LegendaryIncreaseHealingPerk: OR-group[EPAlchemyEffectHasKeyword(ChemDispelRadX)=1 | EPAlchemyEffectHasKeyword(ChemTypeRadaway)=1 | EPAlchemyEffectHasKeyword(ChemTypeStimpack)=1]"
   ],
   "obtainable": true
  },

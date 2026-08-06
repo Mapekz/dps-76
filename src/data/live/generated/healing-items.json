@@ -1,0 +1,107 @@
+[
+ {
+  "id": "HealingSalve",
+  "formId": "0x000522F7",
+  "name": "Healing Salve",
+  "legs": [
+   {
+    "magnitudePctMaxHpPerSec": 4,
+    "durationSec": 5
+   }
+  ],
+  "keywords": [
+   "ChemTypeHealing",
+   "ObjectTypeChem",
+   "ObjectTypeSalve",
+   "LimitedTypeChems_Aidbox"
+  ],
+  "notes": []
+ },
+ {
+  "id": "StimGas",
+  "formId": "0x0041557C",
+  "name": "Stimpak Diffuser",
+  "legs": [],
+  "keywords": [
+   "ChemTypeHealing",
+   "ObjectTypeChem",
+   "ObjectTypeSalve",
+   "LimitedTypeChems_Aidbox"
+  ],
+  "notes": [
+   "Script-archetype heal (StimGasTeamHealEffect 0x0041557B) — no ESM magnitude, needs in-game measurement"
+  ]
+ },
+ {
+  "id": "Stimpak",
+  "formId": "0x00023736",
+  "name": "Stimpak",
+  "legs": [
+   {
+    "magnitudePctMaxHpPerSec": 2,
+    "durationSec": 20
+   },
+   {
+    "magnitudePctMaxHpPerSec": 10,
+    "durationSec": 2
+   }
+  ],
+  "keywords": [
+   "PlayAnimOnItemUse",
+   "ObjectTypeStimpak",
+   "ChemTypeHealing",
+   "ObjectTypeChem",
+   "NoScrapReturn",
+   "LimitedTypeChems_Aidbox"
+  ],
+  "notes": []
+ },
+ {
+  "id": "StimpakDiluted",
+  "formId": "0x003078C2",
+  "name": "Stimpak: Diluted",
+  "legs": [
+   {
+    "magnitudePctMaxHpPerSec": 1,
+    "durationSec": 20
+   },
+   {
+    "magnitudePctMaxHpPerSec": 5,
+    "durationSec": 2
+   }
+  ],
+  "keywords": [
+   "PlayAnimOnItemUse",
+   "ObjectTypeStimpak",
+   "ChemTypeHealing",
+   "ChallengeMedsDiluted",
+   "ObjectTypeChem",
+   "LimitedTypeChems_Aidbox"
+  ],
+  "notes": []
+ },
+ {
+  "id": "SuperStimpak",
+  "formId": "0x00117DF9",
+  "name": "Stimpak: Super",
+  "legs": [
+   {
+    "magnitudePctMaxHpPerSec": 4,
+    "durationSec": 20
+   },
+   {
+    "magnitudePctMaxHpPerSec": 20,
+    "durationSec": 2
+   }
+  ],
+  "keywords": [
+   "PlayAnimOnItemUse",
+   "ObjectTypeStimpak",
+   "ChemTypeHealing",
+   "ObjectTypeChem",
+   "ChemTypeSuperStimpak",
+   "LimitedTypeChems_Aidbox"
+  ],
+  "notes": []
+ }
+]

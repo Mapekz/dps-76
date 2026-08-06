@@ -641,7 +641,15 @@ export function resolveLoadout(
   // conditions, weapon) — the exact inputs baseSpecialOf/derivePlayerStats
   // read (enemy/itemLevel/enemyTypeIds/clamp are invariant for the whole
   // sweep, so they're safe to leave out of the key — see loadout-memo.ts).
-  const { special, maxHealth, lockpickSkill, hackingSkill, stimpakHealMult } = cached(
+  const {
+    special,
+    maxHealth,
+    lockpickSkill,
+    hackingSkill,
+    stimpakHealMult,
+    stimpakHealMagMult,
+    stimpakHealDurationMult,
+  } = cached(
     memo?.derivedPlayerStats,
     [modifiers, playerConfig.legendaryPerks, playerConfig.conditions, conditions, weapon],
     () =>
@@ -673,6 +681,8 @@ export function resolveLoadout(
       lockpickSkill,
       hackingSkill,
       stimpakHealMult,
+      stimpakHealMagMult,
+      stimpakHealDurationMult,
       playerConfig.mutations,
       playerConfig.consumables,
     ],
@@ -685,6 +695,8 @@ export function resolveLoadout(
       lockpickSkill,
       hackingSkill,
       stimpakHealMult,
+      stimpakHealMagMult,
+      stimpakHealDurationMult,
       // Mutant's curve input: the selected mutation list IS the mutation count.
       mutationCount: playerConfig.conditions.mutationCount ?? playerConfig.mutations.length,
       // Ghoul Glow meter: clamp to the derived max HP (max Glow = max HP) so a

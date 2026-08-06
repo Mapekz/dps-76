@@ -19,6 +19,7 @@ import { extractOmods } from './extract-omods';
 import { extractUniques } from './extract-uniques';
 import { extractBuffs } from './extract-buffs';
 import { extractBodyParts } from './extract-bodyparts';
+import { extractHealing } from './extract-healing';
 import { buildCurveTableBarrels, extractCurveTables } from './extract-curvetables';
 import { extractNpcs } from './extract-npcs';
 import { extractConstants } from './extract-constants';
@@ -32,6 +33,7 @@ const KNOWN_EXTRACTORS = [
   'uniques',
   'buffs',
   'bodyparts',
+  'healing',
   'curvetables',
   'npcs',
   'constants',
@@ -346,6 +348,15 @@ async function main() {
     meta.counts.bodypartRaces = result.races.length;
     meta.unresolved.push(...result.unresolved);
     console.log(`  ${result.races.length} races (unresolved: ${result.unresolved.length})`);
+  }
+
+  if (only.includes('healing')) {
+    console.log('Extracting Stimpak/RadAway-adjacent healing items…');
+    const result = await extractHealing(client);
+    await writeFile(path.join(outDir, 'healing-items.json'), JSON.stringify(result.items, null, 1));
+    meta.counts.healingItems = result.items.length;
+    meta.unresolved.push(...result.unresolved);
+    console.log(`  ${result.items.length} healing items (unresolved: ${result.unresolved.length})`);
   }
 
   if (only.includes('curvetables')) {

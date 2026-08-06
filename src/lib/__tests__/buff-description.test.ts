@@ -431,6 +431,42 @@ describe('describeBuffModifiers: new bucket labels', () => {
     };
     expect(describeBuffModifiers(buff([mod]))).toBe('+10 AP regen');
   });
+
+  it('stimpakHealMagMult reads as a percentage (Field Surgeon)', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'stimpakHealMagMult',
+      op: 'MUL_ADD',
+      value: 0.67,
+      conditions: [],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+67% Stimpak/RadAway heal magnitude');
+  });
+
+  it('stimpakHealDurationMult reads as a percentage (Field Surgeon)', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'stimpakHealDurationMult',
+      op: 'MUL_ADD',
+      value: -0.4,
+      conditions: [],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('-40% Stimpak/RadAway heal duration');
+  });
+
+  it("Doctor's 3★ stimpakHealMagMult reads as a percentage", () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'stimpakHealMagMult',
+      op: 'MUL_ADD',
+      value: 0.25,
+      conditions: [],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+25% Stimpak/RadAway heal magnitude');
+  });
 });
 
 describe('describeBuffModifiers: dotDamage', () => {

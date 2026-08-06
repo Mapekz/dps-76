@@ -102,6 +102,10 @@ export interface PlayerConditions {
   hackingSkill?: number;
   /** Derived Stimpak Healing percent points (First Aid + Medicine Bobblehead) — resolveLoadout recomputes every run. Feeds Medical Malpractice's `scaledBy` dbm term. */
   stimpakHealMult?: number;
+  /** Derived Stimpak/RadAway heal MAGNITUDE multiplier (Field Surgeon, Doctor's 3★) — resolveLoadout recomputes every run. Base 1 (no bonus = ×1), not 0. No consumer yet. */
+  stimpakHealMagMult?: number;
+  /** Derived Stimpak/RadAway heal DURATION multiplier (Field Surgeon) — resolveLoadout recomputes every run. Base 1, not 0. No consumer yet. */
+  stimpakHealDurationMult?: number;
   mutationCount?: number; // for Mutant's curve — derived from the selected mutations in resolveLoadout
   /**
    * HungerThirstTier AV (0x006D37DC, 0–8) for Gourmand's curve. DERIVED in
@@ -707,6 +711,8 @@ export function createDefaultPlayerConditions(): PlayerConditions {
     lockpickSkill: 0,
     hackingSkill: 0,
     stimpakHealMult: 0,
+    stimpakHealMagMult: 1, // synthetic-test default — product-fold identity, unlike the additive stimpakHealMult's 0
+    stimpakHealDurationMult: 1,
     hungerThirstTier: 0, // synthetic-test default; the app derives it in resolveLoadout (foodTier + drinkTier)
     foodTier: 0, // food meter empty (Hungry)
     drinkTier: 0, // drink meter empty (Thirsty)

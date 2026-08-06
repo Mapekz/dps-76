@@ -27,6 +27,8 @@ const PERCENT_BUCKET_LABELS: Partial<Record<Bucket, string>> = {
   reloadSpeed: 'reload speed',
   moveSpeedBonus: 'movement speed',
   incomingDamageMult: 'damage taken',
+  stimpakHealMagMult: 'Stimpak/RadAway heal magnitude',
+  stimpakHealDurationMult: 'Stimpak/RadAway heal duration',
 };
 
 /** Buckets whose Modifier.value is a flat point add, not a percentage. */

@@ -465,6 +465,25 @@ export type Bucket =
    */
   | 'stimpakHealMult'
   /**
+   * Stimpak/RadAway heal MAGNITUDE multiplier (perk Entry Point 29 "Mod Spell
+   * Magnitude", function Multiply Value, applied to StimpakRestoreHealth MGEF
+   * 0x0021DDB8). Composes multiplicatively — folded via `foldBucketProduct`
+   * (resolve.ts) in player-stats.ts derivePlayerStats, NOT the additive
+   * `foldBucket`/`foldOps` every other MUL_ADD bucket uses. Contributors:
+   * Field Surgeon (×1.67), Doctor's 3★ armor legendary (×1.05–1.25 by worn
+   * pieces). No DPS consumer yet — wired for the future Stimpak-healing
+   * profile (src/lib/healing.ts) exactly like `hackingSkill`.
+   */
+  | 'stimpakHealMagMult'
+  /**
+   * Stimpak/RadAway heal DURATION multiplier — same mechanism as
+   * `stimpakHealMagMult` but perk Entry Point 30 "Mod Spell Duration".
+   * Contributors: Field Surgeon (×0.6 — its magnitude ×1.67 and duration ×0.6
+   * are net-neutral on total HP restored; it's a pure rate buff). No DPS
+   * consumer yet.
+   */
+  | 'stimpakHealDurationMult'
+  /**
    * SPECIAL stat bonuses (consumables, legendary +STR...), folded uniformly
    * by player-stats.ts into `special.<key>`. Every one of the seven feeds a
    * real downstream consumer: Strength → the melee term + its curve input,
@@ -557,6 +576,16 @@ export type BucketRegime =
    * a damage/sustain/AP term". See the `vatsHitChance` bucket doc comment.
    */
   | 'display'
+  /**
+   * Bethesda "Mod Spell Magnitude"/"Mod Spell Duration" perk entry points,
+   * which compose multiplicatively (∏(1+value) via `foldBucketProduct` in
+   * resolve.ts) rather than the additive damage-pool fold `foldOps` uses for
+   * every other MUL_ADD bucket. Folded once in player-stats.ts
+   * derivePlayerStats and threaded on PlayerConditions — same "folded once,
+   * threaded" shape as `playerStat`, distinct regime name because the fold
+   * arithmetic differs.
+   */
+  | 'spellMagnitude'
   /** No fold consumes this bucket at all (as opposed to a fold whose result nothing reads — see `hasEngineEffect`). */
   | 'unfolded';
 
@@ -908,6 +937,20 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
     hasEngineEffect: true,
     foldedBy:
       'player-stats.ts derivePlayerStats; feeds Medical Malpractice via the scaledBy mechanism',
+  },
+  stimpakHealMagMult: {
+    regime: 'spellMagnitude',
+    foldBase: 1,
+    hasEngineEffect: true,
+    foldedBy:
+      'player-stats.ts derivePlayerStats via foldBucketProduct; feeds the future Stimpak-healing profile (src/lib/healing.ts) — no DPS consumer yet',
+  },
+  stimpakHealDurationMult: {
+    regime: 'spellMagnitude',
+    foldBase: 1,
+    hasEngineEffect: true,
+    foldedBy:
+      'player-stats.ts derivePlayerStats via foldBucketProduct; feeds the future Stimpak-healing profile (src/lib/healing.ts) — no DPS consumer yet',
   },
   specialStrength: {
     regime: 'playerStat',
@@ -1340,7 +1383,9 @@ export type CurveInput =
   | 'weaponCondition'
   | 'lockpickSkill' // STAT_LockpickingTier 0x0032CB37 — Pirate Punch's "+5% Damage per Lockpick Skill" curve
   | 'hackingSkill' // STAT_HackingTier 0x00356A14 — wired for drop-in (peer of lockpickSkill; no curve consumer yet)
-  | 'stimpakHealMult'; // STAT_HealMultStimpak 0x00206F31 — Medical Malpractice's dbm scale (via scaledBy, not a curve)
+  | 'stimpakHealMult' // STAT_HealMultStimpak 0x00206F31 — Medical Malpractice's dbm scale (via scaledBy, not a curve)
+  | 'stimpakHealMagMult' // stimpakHealMagMult bucket product-fold — for a future Stimpak-healing-scaled unique (scaledBy)
+  | 'stimpakHealDurationMult'; // stimpakHealDurationMult bucket product-fold — same, duration axis
 
 export interface ValueCurve {
   input: CurveInput;

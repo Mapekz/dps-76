@@ -4,7 +4,13 @@ import type { Bucket, Condition, ModOp, Modifier } from '@/types/modifiers';
 import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
 import { chargeDamageMultiplier } from '@/lib/charge';
 import { getFireRate } from '@/lib/fire-rate';
-import { foldBucket, foldOps, foldWholeDamage, type ResolveContext } from '@/lib/engine/resolve';
+import {
+  foldBucket,
+  foldBucketProduct,
+  foldOps,
+  foldWholeDamage,
+  type ResolveContext,
+} from '@/lib/engine/resolve';
 import {
   computeDotDps,
   computePaperDamage,
@@ -2322,6 +2328,29 @@ describe('computeScenarios', () => {
     expect(s.vats.critMeter).toBeDefined();
     expect(s.vats.critRate).toBeCloseTo(s.vats.critMeter!.critRate, 10);
     expect(s.freeAim.critMeter).toBeUndefined();
+  });
+});
+
+describe('foldBucketProduct (multiplicative MUL_ADD fold)', () => {
+  const weapon = makeWeapon();
+  const ctx = makeCtx(weapon);
+
+  it('returns 1 with no modifiers', () => {
+    expect(foldBucketProduct([], 'stimpakHealMagMult', ctx)).toBe(1);
+  });
+
+  it('applies one MUL_ADD as ×(1 + value)', () => {
+    const mods = [mod({ bucket: 'stimpakHealMagMult', op: 'MUL_ADD', value: 0.67 })];
+    expect(foldBucketProduct(mods, 'stimpakHealMagMult', ctx)).toBeCloseTo(1.67, 10);
+  });
+
+  it('chains multiple MUL_ADD modifiers multiplicatively', () => {
+    const mods = [
+      mod({ bucket: 'stimpakHealMagMult', op: 'MUL_ADD', value: 0.67 }),
+      mod({ bucket: 'stimpakHealMagMult', op: 'MUL_ADD', value: 0.25 }),
+      mod({ bucket: 'stimpakHealMagMult', op: 'MUL_ADD', value: -0.55 }),
+    ];
+    expect(foldBucketProduct(mods, 'stimpakHealMagMult', ctx)).toBeCloseTo(0.939375, 10);
   });
 });
 

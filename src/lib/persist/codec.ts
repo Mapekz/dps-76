@@ -170,6 +170,8 @@ const DERIVED_PLAYER_CONDITION_KEYS = new Set<keyof PlayerConditions>([
   'lockpickSkill',
   'hackingSkill',
   'stimpakHealMult',
+  'stimpakHealMagMult',
+  'stimpakHealDurationMult',
   'mutationCount',
   'addictionCount',
 ]);

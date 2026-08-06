@@ -598,6 +598,25 @@ export interface ExcludedRecordDetail {
 }
 
 /**
+ * One healing-consumable item's base heal profile, extracted directly from
+ * its ALCH record's `StimpakRestoreHealth`-archetype (or sibling) effect
+ * legs — see extract-healing.ts for full ESM provenance. Magnitude unit is
+ * % of max HP per second (docs/assumptions.md "Stimpak base-heal unit").
+ * Multiplier sources (Field Surgeon, Doctor's, Healing Factor's penalty —
+ * the `stimpakHealMagMult`/`stimpakHealDurationMult` buckets) are NOT
+ * applied here; this is the unmodified base item.
+ */
+export interface GeneratedHealingItem {
+  id: string; // editor_id
+  formId: string;
+  name: string;
+  /** Empty for items with no ESM-provable magnitude (Stimpak Diffuser). */
+  legs: Array<{ magnitudePctMaxHpPerSec: number; durationSec: number }>;
+  keywords: string[];
+  notes: string[];
+}
+
+/**
  * Game-wide scalar constants read directly off ESM records (`extract-constants.ts`)
  * — the one extractor that emits bare numbers instead of an item list. Kept
  * deliberately narrow: add a field here only when a hardcoded engine scalar

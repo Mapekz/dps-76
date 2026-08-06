@@ -6,6 +6,7 @@ import {
   parseMagicEffects,
   getMgefInfo,
   ENTRY_POINT_BUCKETS,
+  resolveStimpakHealEntryPoint,
   SHARED_ONSLAUGHT_COUNTER_AV,
   type MgefInfo,
   type SpellEffect,
@@ -16,7 +17,8 @@ import {
   translateConditions,
   type RawCondition,
 } from '../normalize/conditions';
-import type { EsmClient, EsmRecord } from '../esm-client';
+import type { EsmClient, EsmListRow, EsmRecord } from '../esm-client';
+import { extractPerks } from '../extract-perks';
 import fortifyStrengthChemEffect from './fixtures/mgef-fortifystrengthchemeffect.json';
 
 // Pins the PURE (sync) MGEF → IR translation with plain fixtures — no esm CLI
@@ -2363,5 +2365,570 @@ describe('translateGrantedPerk (unique weapons, 2026-08-04)', () => {
 
   it('registers Mod Target Damage Resistance in ENTRY_POINT_BUCKETS as armorPen', () => {
     expect(ENTRY_POINT_BUCKETS['Mod Target Damage Resistance']).toBe('armorPen');
+  });
+});
+
+describe('stimpak-heal entry-point routing (Field Surgeon / Doctor / Healing Factor, 2026-08-06)', () => {
+  const KW = {
+    STIM: '0xKW001',
+    RAD: '0xKW002',
+    HEALING: '0xKW003',
+    RADX: '0xKW004',
+    CHEM: '0xKW005',
+    MEDIC: '0xKW006',
+    LEGENDARY_HEAL: '0xKW007',
+    CF1: '0x00391F0E',
+    CF2: '0x00391F11',
+    CF3: '0x00391F12',
+    RADX_ALCH: '0x00024057',
+    SERUM_HF: '0x0050A5CB',
+  } as const;
+
+  const stimpakEdids = new Map<string, string>([
+    [KW.STIM, 'ChemTypeStimpack'],
+    [KW.RAD, 'ChemTypeRadaway'],
+    [KW.HEALING, 'ChemTypeHealing'],
+    [KW.RADX, 'ChemDispelRadX'],
+    [KW.CHEM, 'ChemEffect'],
+    [KW.MEDIC, 'PerkMedic'],
+    [KW.LEGENDARY_HEAL, 'HasLegendary_Armor_IncreaseHealing'],
+    [KW.CF1, 'ClassFreak01'],
+    [KW.CF2, 'ClassFreak02'],
+    [KW.CF3, 'ClassFreak03'],
+    [KW.RADX_ALCH, 'RadX'],
+    [KW.SERUM_HF, 'Serum_HealingFactor'],
+  ]);
+
+  function wrapPerkConditions(...tabs: RawCondition[][]): unknown {
+    return tabs.map((rows) => ({
+      'Perk Condition': {
+        Conditions: rows.map((data) => ({ Condition: { 'Condition Data': data } })),
+      },
+    }));
+  }
+
+  function stimpakKeywordOrGroup(formIds: string[]): RawCondition[] {
+    return formIds.map((fid, i) => ({
+      Function: 'EPAlchemyEffectHasKeyword',
+      'Parameter 1': fid,
+      'Comparison Value': 1,
+      Operator: 'Equal To',
+      ...(i < formIds.length - 1 ? { 'AND/OR': 'OR' } : {}),
+    }));
+  }
+
+  function entryPointEffect(
+    epName: string,
+    float: number,
+    perkConditions: unknown,
+  ): Record<string, unknown> {
+    return {
+      'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+      'Entry Point': {
+        'Entry Point': { name: epName },
+        Function: { name: 'Multiply Value' },
+      },
+      Float: float,
+      'Perk Conditions': perkConditions,
+    };
+  }
+
+  function grantedPerkClient(
+    perkFormId: string,
+    perk: Record<string, unknown>,
+    edidMap: Map<string, string> = stimpakEdids,
+  ): EsmClient {
+    return {
+      async get(formId: string): Promise<EsmRecord> {
+        if (formId === perkFormId) return perk as unknown as EsmRecord;
+        throw new Error(`unexpected get(${formId})`);
+      },
+      resolveEdid: async (formId: string) => edidMap.get(formId) ?? formId,
+    } as unknown as EsmClient;
+  }
+
+  it('Field Surgeon shape: Subject mag/dur route; Potential-Players heal-others do not', async () => {
+    const formId = '0x000814FE';
+    const fieldSurgeon = {
+      header: { signature: 'PERK', form_id: formId },
+      editor_id: 'FieldSurgeon01',
+      fields: {
+        Name: 'Field Surgeon',
+        Description: 'Stimpaks and RadAway heal 60% faster.',
+        Effects: [
+          {
+            Effect: entryPointEffect(
+              'Mod Spell Magnitude',
+              1.67,
+              wrapPerkConditions(stimpakKeywordOrGroup([KW.RAD, KW.STIM])),
+            ),
+          },
+          {
+            Effect: entryPointEffect(
+              'Mod Spell Duration',
+              0.6,
+              wrapPerkConditions(stimpakKeywordOrGroup([KW.RAD, KW.STIM])),
+            ),
+          },
+          {
+            Effect: entryPointEffect(
+              'Mod Spell Magnitude',
+              1.67,
+              wrapPerkConditions([
+                {
+                  Function: 'EPAlchemyEffectHasKeyword',
+                  'Parameter 1': KW.MEDIC,
+                  'Comparison Value': 1,
+                  Operator: 'Equal To',
+                  'Run On': 'Potential Players',
+                },
+              ]),
+            ),
+          },
+          {
+            Effect: entryPointEffect(
+              'Mod Spell Duration',
+              0.6,
+              wrapPerkConditions([
+                {
+                  Function: 'EPAlchemyEffectHasKeyword',
+                  'Parameter 1': KW.MEDIC,
+                  'Comparison Value': 1,
+                  Operator: 'Equal To',
+                  'Run On': 'Potential Players',
+                },
+              ]),
+            ),
+          },
+        ],
+      },
+    } as unknown as EsmRecord;
+
+    const client = {
+      async list(type: string): Promise<EsmListRow[]> {
+        if (type === 'PERK') {
+          return [
+            {
+              form_id: formId,
+              record_type: 'PERK',
+              editor_id: 'FieldSurgeon01',
+              name: 'Field Surgeon',
+            },
+          ];
+        }
+        return [];
+      },
+      async get(id: string): Promise<EsmRecord> {
+        if (id === formId) return fieldSurgeon;
+        return {
+          header: { signature: 'PERK', form_id: id },
+          editor_id: id,
+          fields: {},
+        } as unknown as EsmRecord;
+      },
+      resolveEdid: async (id: string) => stimpakEdids.get(id) ?? id,
+      refs: async () => [],
+    } as unknown as EsmClient;
+
+    const result = await extractPerks(client);
+    const family = result.perks.find((p) => p.family === 'FieldSurgeon');
+    expect(family).toBeDefined();
+    expect(family!.ranks[0].modifiers).toHaveLength(2);
+    expect(family!.ranks[0].modifiers[0]).toMatchObject({
+      bucket: 'stimpakHealMagMult',
+      op: 'MUL_ADD',
+      conditions: [],
+    });
+    expect((family!.ranks[0].modifiers[0] as { value: number }).value).toBeCloseTo(0.67, 10);
+    expect(family!.ranks[0].modifiers[1]).toMatchObject({
+      bucket: 'stimpakHealDurationMult',
+      op: 'MUL_ADD',
+      value: -0.4,
+      conditions: [],
+    });
+  });
+
+  it("Doctor's shape: 5 granted tiers with wornPieceCount gates, no unresolved rows", async () => {
+    const perkFormId = '0x00609C49';
+    const floats = [1.05, 1.1, 1.15, 1.2, 1.25];
+    const wornCounts: Array<{ count: number; orMore?: true }> = [
+      { count: 1 },
+      { count: 2 },
+      { count: 3 },
+      { count: 4 },
+      { count: 5, orMore: true },
+    ];
+    const effects = floats.map((float, i) => {
+      const worn = wornCounts[i];
+      const wornRow: RawCondition = {
+        Function: 'WornApparelHasKeywordCount',
+        'Parameter 1': KW.LEGENDARY_HEAL,
+        'Comparison Value': worn.count,
+        Operator: worn.orMore ? 'Greater Than Or Equal To' : 'Equal To',
+      };
+      return {
+        Effect: entryPointEffect(
+          'Mod Spell Magnitude',
+          float,
+          wrapPerkConditions([wornRow], stimpakKeywordOrGroup([KW.RADX, KW.RAD, KW.STIM])),
+        ),
+      };
+    });
+    const perk = {
+      editor_id: 'LegendaryIncreaseHealingPerk',
+      fields: { Effects: effects },
+    };
+    const result = await translateGrantedPerk(
+      {
+        client: grantedPerkClient(perkFormId, perk),
+        routes: new Map(),
+        edidByFormId: stimpakEdids,
+      },
+      'Legendary_IncreaseHealingEffect',
+      perkFormId,
+    );
+    expect(result.modifiers).toHaveLength(5);
+    for (let i = 0; i < 5; i++) {
+      expect(result.modifiers[i]).toEqual({
+        bucket: 'stimpakHealMagMult',
+        op: 'MUL_ADD',
+        value: floats[i] - 1,
+        conditions: [
+          {
+            kind: 'wornPieceCount',
+            keyword: 'HasLegendary_Armor_IncreaseHealing',
+            count: wornCounts[i].count,
+            ...(wornCounts[i].orMore ? { orMore: true } : {}),
+          },
+        ],
+      });
+    }
+    expect(result.modifiers.every((m) => !m.conditions.some((c) => c.kind === 'unresolved'))).toBe(
+      true,
+    );
+    expect(result.notes.some((n) => n.includes('not modeled'))).toBe(false);
+  });
+
+  it('Healing Factor penalty shape: 4 tiers with classFreakRank; IsSpellTarget RadX/Serum rows consumed', async () => {
+    const perkFormId = '0x004DF1DF';
+    const floats = [0.45, 0.58, 0.72, 0.86];
+    const classFreakTabs: RawCondition[][] = [
+      [{ Function: 'HasPerk', 'Parameter 1': KW.CF1, 'Comparison Value': 0, Operator: 'Equal To' }],
+      [
+        { Function: 'HasPerk', 'Parameter 1': KW.CF2, 'Comparison Value': 0, Operator: 'Equal To' },
+        { Function: 'HasPerk', 'Parameter 1': KW.CF1, 'Comparison Value': 1, Operator: 'Equal To' },
+      ],
+      [
+        { Function: 'HasPerk', 'Parameter 1': KW.CF2, 'Comparison Value': 1, Operator: 'Equal To' },
+        { Function: 'HasPerk', 'Parameter 1': KW.CF3, 'Comparison Value': 0, Operator: 'Equal To' },
+      ],
+      [{ Function: 'HasPerk', 'Parameter 1': KW.CF3, 'Comparison Value': 1, Operator: 'Equal To' }],
+    ];
+    const suppressionRows: RawCondition[] = [
+      {
+        Function: 'IsSpellTarget',
+        'Parameter 1': KW.RADX_ALCH,
+        'Comparison Value': 0,
+        Operator: 'Equal To',
+      },
+      {
+        Function: 'IsSpellTarget',
+        'Parameter 1': KW.SERUM_HF,
+        'Comparison Value': 0,
+        Operator: 'Equal To',
+      },
+    ];
+    const keywordTab = stimpakKeywordOrGroup([KW.STIM, KW.RAD, KW.HEALING, KW.CHEM, KW.MEDIC]);
+    const effects = floats.map((float, i) => ({
+      Effect: entryPointEffect(
+        'Mod Spell Magnitude',
+        float,
+        wrapPerkConditions(classFreakTabs[i], suppressionRows, keywordTab),
+      ),
+    }));
+    const perk = { editor_id: 'Mutation_ReduceChemEffect_Perk', fields: { Effects: effects } };
+    const result = await translateGrantedPerk(
+      {
+        client: grantedPerkClient(perkFormId, perk),
+        routes: new Map(),
+        edidByFormId: stimpakEdids,
+      },
+      'Mutation_HealingFactor',
+      perkFormId,
+    );
+    expect(result.modifiers).toHaveLength(4);
+    const expectedValues = [-0.55, -0.42, -0.28, -0.14];
+    const expectedConditions = [
+      [{ kind: 'classFreakRank', min: 0, max: 0 }],
+      [
+        { kind: 'classFreakRank', min: 0, max: 1 },
+        { kind: 'classFreakRank', min: 1, max: 3 },
+      ],
+      [
+        { kind: 'classFreakRank', min: 2, max: 3 },
+        { kind: 'classFreakRank', min: 0, max: 2 },
+      ],
+      [{ kind: 'classFreakRank', min: 3, max: 3 }],
+    ];
+    for (let i = 0; i < 4; i++) {
+      expect(result.modifiers[i]).toMatchObject({
+        bucket: 'stimpakHealMagMult',
+        op: 'MUL_ADD',
+        conditions: expectedConditions[i],
+      });
+      expect((result.modifiers[i] as { value: number }).value).toBeCloseTo(expectedValues[i], 10);
+    }
+    expect(result.modifiers.every((m) => !m.conditions.some((c) => c.kind === 'unresolved'))).toBe(
+      true,
+    );
+  });
+
+  it('does not capture Carnivore food-scaling Mod Spell Magnitude (no stimpak keywords)', async () => {
+    const perkFormId = '0xCARNIVORE';
+    const perk = {
+      editor_id: 'Mutation_EatAllTheMeat_Perk',
+      fields: {
+        Effects: [
+          {
+            Effect: entryPointEffect(
+              'Mod Spell Magnitude',
+              2,
+              wrapPerkConditions(
+                [
+                  {
+                    Function: 'EPMagic_SpellHasKeyword',
+                    'Parameter 1': '0xMEAT',
+                    'Comparison Value': 1,
+                    Operator: 'Equal To',
+                  },
+                ],
+                [
+                  {
+                    Function: 'EPAlchemyEffectHasKeyword',
+                    'Parameter 1': '0xFOOD',
+                    'Comparison Value': 1,
+                    Operator: 'Equal To',
+                    'AND/OR': 'OR',
+                  },
+                  {
+                    Function: 'EPAlchemyEffectHasKeyword',
+                    'Parameter 1': '0xHUNGER',
+                    'Comparison Value': 1,
+                    Operator: 'Equal To',
+                    'AND/OR': 'OR',
+                  },
+                  {
+                    Function: 'EPAlchemyEffectHasKeyword',
+                    'Parameter 1': '0xHEALFOOD',
+                    'Comparison Value': 1,
+                    Operator: 'Equal To',
+                  },
+                ],
+              ),
+            ),
+          },
+        ],
+      },
+    };
+    const carnivoreEdids = new Map([
+      ['0xMEAT', 'IngredientTypeMeat'],
+      ['0xFOOD', 'SURV_EffectTypeFoodBuff'],
+      ['0xHUNGER', 'SURV_EffectTypeFoodHunger'],
+      ['0xHEALFOOD', 'SURV_EffectTypeFoodHealing'],
+    ]);
+    const result = await translateGrantedPerk(
+      {
+        client: grantedPerkClient(perkFormId, perk, carnivoreEdids),
+        routes: new Map(),
+        edidByFormId: carnivoreEdids,
+      },
+      'Mutation_Carnivore',
+      perkFormId,
+    );
+    expect(result.modifiers).toEqual([]);
+    expect(result.notes).toContain(
+      'perk Mutation_EatAllTheMeat_Perk: entry point Mod Spell Magnitude — not modeled',
+    );
+    expect(
+      resolveStimpakHealEntryPoint('Mod Spell Magnitude', perkFormId, [], carnivoreEdids),
+    ).toBe(null);
+  });
+
+  it('excludes Code Blue stimpak buff perk by FormID despite matching keywords', async () => {
+    const perkFormId = '0x006446B8';
+    const perk = {
+      editor_id: 'XPD_Fuel_CodeBlue_StimpakBuffPerk',
+      fields: {
+        Effects: [
+          {
+            Effect: entryPointEffect(
+              'Mod Spell Magnitude',
+              1.25,
+              wrapPerkConditions(stimpakKeywordOrGroup([KW.STIM])),
+            ),
+          },
+        ],
+      },
+    };
+    const result = await translateGrantedPerk(
+      {
+        client: grantedPerkClient(perkFormId, perk),
+        routes: new Map(),
+        edidByFormId: stimpakEdids,
+      },
+      'XPD_Fuel_CodeBlue',
+      perkFormId,
+    );
+    expect(result.modifiers).toEqual([]);
+    expect(result.notes).toContain(
+      'perk XPD_Fuel_CodeBlue_StimpakBuffPerk: entry point Mod Spell Magnitude — not modeled',
+    );
+  });
+
+  function safeFoodKeywordOrGroup(
+    ingredientFormId: string,
+    edidMap: Map<string, string>,
+  ): RawCondition[] {
+    const MEAT = '0xMEAT';
+    const RAD = '0xRAD';
+    const DISEASE = '0xDISEASE';
+    const CHEM = '0xCHEM';
+    edidMap.set(MEAT, 'IngredientTypeMeat');
+    edidMap.set('0xVEG', 'IngredientTypeVegetable');
+    edidMap.set(RAD, 'RadiationInjestion');
+    edidMap.set(DISEASE, 'SURV_EffectTypeDiseaseVector');
+    edidMap.set(CHEM, 'ChemEffect');
+    return [
+      {
+        Function: 'EPMagic_SpellHasKeyword',
+        'Parameter 1': ingredientFormId,
+        'Comparison Value': 1,
+        Operator: 'Equal To',
+        'AND/OR': 'OR',
+      },
+      {
+        Function: 'EPAlchemyEffectHasKeyword',
+        'Parameter 1': RAD,
+        'Comparison Value': 1,
+        Operator: 'Equal To',
+        'AND/OR': 'OR',
+      },
+      {
+        Function: 'EPAlchemyEffectHasKeyword',
+        'Parameter 1': DISEASE,
+        'Comparison Value': 1,
+        Operator: 'Equal To',
+        'AND/OR': 'OR',
+      },
+      {
+        Function: 'EPAlchemyEffectHasKeyword',
+        'Parameter 1': CHEM,
+        'Comparison Value': 1,
+        Operator: 'Equal To',
+      },
+    ];
+  }
+
+  it('does not route Carnivore Safe Meat perk (ChemEffect-only overlap, 0x003C4054)', async () => {
+    const perkFormId = '0x003C4054';
+    const edids = new Map<string, string>();
+    const keywordTab = safeFoodKeywordOrGroup('0xMEAT', edids);
+    const perk = {
+      editor_id: 'Mutation_EatSafeMeat_Perk',
+      fields: {
+        Effects: [
+          {
+            Effect: entryPointEffect('Mod Spell Magnitude', 1, wrapPerkConditions(keywordTab)),
+          },
+        ],
+      },
+    };
+    expect(
+      resolveStimpakHealEntryPoint('Mod Spell Magnitude', perkFormId, keywordTab, edids),
+    ).toBeNull();
+    const result = await translateGrantedPerk(
+      {
+        client: grantedPerkClient(perkFormId, perk, edids),
+        routes: new Map(),
+        edidByFormId: edids,
+      },
+      'Mutation_Carnivore',
+      perkFormId,
+    );
+    expect(result.modifiers).toEqual([]);
+    expect(result.notes).toContain(
+      'perk Mutation_EatSafeMeat_Perk: entry point Mod Spell Magnitude — not modeled',
+    );
+  });
+
+  it('does not route Herbivore Safe Veggies perk (ChemEffect-only overlap, 0x003C4059)', async () => {
+    const perkFormId = '0x003C4059';
+    const edids = new Map<string, string>();
+    const keywordTab = safeFoodKeywordOrGroup('0xVEG', edids);
+    const perk = {
+      editor_id: 'Mutation_EatSafeVeggies_Perk',
+      fields: {
+        Effects: [
+          {
+            Effect: entryPointEffect('Mod Spell Magnitude', 1, wrapPerkConditions(keywordTab)),
+          },
+        ],
+      },
+    };
+    expect(
+      resolveStimpakHealEntryPoint('Mod Spell Magnitude', perkFormId, keywordTab, edids),
+    ).toBeNull();
+    const result = await translateGrantedPerk(
+      {
+        client: grantedPerkClient(perkFormId, perk, edids),
+        routes: new Map(),
+        edidByFormId: edids,
+      },
+      'Mutation_Herbivore',
+      perkFormId,
+    );
+    expect(result.modifiers).toEqual([]);
+    expect(result.notes).toContain(
+      'perk Mutation_EatSafeVeggies_Perk: entry point Mod Spell Magnitude — not modeled',
+    );
+  });
+
+  it('excludes WorldPets pet healing perk by FormID despite ChemTypeStimpack (0x008DC2CB)', async () => {
+    const perkFormId = '0x008DC2CB';
+    const perk = {
+      editor_id: 'WorldPets_Healing_SpeedHealing',
+      fields: {
+        Effects: [
+          {
+            Effect: entryPointEffect(
+              'Mod Spell Magnitude',
+              1.5,
+              wrapPerkConditions(stimpakKeywordOrGroup([KW.STIM])),
+            ),
+          },
+        ],
+      },
+    };
+    expect(
+      resolveStimpakHealEntryPoint(
+        'Mod Spell Magnitude',
+        perkFormId,
+        stimpakKeywordOrGroup([KW.STIM]),
+        stimpakEdids,
+      ),
+    ).toBeNull();
+    const result = await translateGrantedPerk(
+      {
+        client: grantedPerkClient(perkFormId, perk),
+        routes: new Map(),
+        edidByFormId: stimpakEdids,
+      },
+      'WorldPets_Healing',
+      perkFormId,
+    );
+    expect(result.modifiers).toEqual([]);
+    expect(result.notes).toContain(
+      'perk WorldPets_Healing_SpeedHealing: entry point Mod Spell Magnitude — not modeled',
+    );
   });
 });

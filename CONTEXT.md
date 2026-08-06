@@ -41,7 +41,12 @@ _Avoid_: routing, dispatch.
 
 **Fold**:
 Combining all active modifiers on one bucket over an intrinsic base:
-`(last SET ?? base) + ΣMUL_ADD×base + ΣADD`. The arithmetic lives once in `foldOps`.
+`(last SET ?? base) + ΣMUL_ADD×base + ΣADD`. The arithmetic lives once in
+`foldOps` — except the `spellMagnitude` regime (Field Surgeon &c.'s
+Stimpak-healing multipliers), which composes multiplicatively
+(`∏(1+MUL_ADD)`) via the separate `foldBucketProduct`, since it models
+Bethesda perk entry points that multiply rather than the additive damage-pool
+convention every other bucket uses.
 _Avoid_: reduce, aggregate, sum.
 
 **Scenario**:

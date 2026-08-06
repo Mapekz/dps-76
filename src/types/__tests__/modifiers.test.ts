@@ -79,6 +79,8 @@ const ALL_BUCKETS: Bucket[] = [
   'lockpickSkill',
   'hackingSkill',
   'stimpakHealMult',
+  'stimpakHealMagMult',
+  'stimpakHealDurationMult',
   'specialStrength',
   'specialPerception',
   'specialEndurance',
@@ -96,7 +98,7 @@ describe('BUCKET_REGISTRY', () => {
     expect(Object.keys(BUCKET_REGISTRY).sort()).toEqual([...ALL_BUCKETS].sort());
   });
 
-  it('records only the two non-default bootstrap fold conventions', () => {
+  it('records only the four non-default bootstrap/product fold conventions', () => {
     const entriesWithConventions = Object.entries(BUCKET_REGISTRY)
       .filter(([, entry]) => entry.foldBase !== undefined || entry.deBased !== undefined)
       .map(([bucket, entry]) => [bucket, { foldBase: entry.foldBase, deBased: entry.deBased }]);
@@ -104,6 +106,8 @@ describe('BUCKET_REGISTRY', () => {
     expect(entriesWithConventions).toEqual([
       ['vatsHitChance', { foldBase: 1, deBased: true }],
       ['vatsHitChanceMult', { foldBase: 1, deBased: false }],
+      ['stimpakHealMagMult', { foldBase: 1, deBased: undefined }],
+      ['stimpakHealDurationMult', { foldBase: 1, deBased: undefined }],
     ]);
   });
 

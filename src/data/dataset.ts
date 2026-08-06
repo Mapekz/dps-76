@@ -3,6 +3,7 @@ import type {
   GeneratedAddiction,
   GeneratedBodyPartRace,
   GeneratedConstants,
+  GeneratedHealingItem,
   GeneratedNpc,
   GeneratedOmod,
   GeneratedBuff,
@@ -56,6 +57,7 @@ import generatedAddictionsLive from './live/generated/addictions.json';
 import generatedBodyPartsLive from './live/generated/bodyparts.json';
 import generatedUniquesLive from './live/generated/uniques.json';
 import generatedConstantsLive from './live/generated/constants.json';
+import generatedHealingItemsLive from './live/generated/healing-items.json';
 
 /**
  * The single merged, mode-resolved view of the game data, and the one home
@@ -149,6 +151,8 @@ export interface Dataset {
   powerArmor: PowerArmor;
   /** Game-wide scalar constants (extract-constants.ts) — e.g. the SPECIAL clamp read via `getSpecialClamp`. */
   constants: GeneratedConstants;
+  /** ESM-extracted base heal profiles for Stimpak/RadAway-adjacent items — see `getHealingItems`. */
+  healingItems: GeneratedHealingItem[];
   hiddenWeaponIds: ReadonlySet<string>;
   forceVisibleWeaponIds: ReadonlySet<string>;
   hiddenOmodIds: ReadonlySet<string>;
@@ -184,6 +188,8 @@ export interface DatasetSource {
   generatedUniques: GeneratedUnique[];
   generatedNpcs: GeneratedNpc[];
   constants: GeneratedConstants;
+  /** Optional so synthetic test sources (dataset-build.test.ts) omit it. */
+  healingItems?: GeneratedHealingItem[];
   legendaryValueOverrides: Readonly<Record<string, Modifier[]>>;
   armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>>;
   buffValueOverrides: Readonly<Record<string, Modifier[]>>;
@@ -243,6 +249,7 @@ export function buildDataset(hand: HandAuthored, source: DatasetSource): Dataset
     bodyArmor,
     powerArmor,
     constants: source.constants,
+    healingItems: source.healingItems ?? [],
     hiddenWeaponIds: source.hiddenWeaponIds,
     forceVisibleWeaponIds: source.forceVisibleWeaponIds,
     hiddenOmodIds: source.hiddenOmodIds,
@@ -271,6 +278,7 @@ const liveSource: DatasetSource = {
   generatedUniques: generatedUniquesLive as unknown as GeneratedUnique[],
   generatedNpcs: generatedNpcsRawLive,
   constants: generatedConstantsLive as GeneratedConstants,
+  healingItems: generatedHealingItemsLive as GeneratedHealingItem[],
   legendaryValueOverrides,
   armorLegendaryValueOverrides,
   buffValueOverrides,

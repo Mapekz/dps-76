@@ -11,6 +11,7 @@ import {
 import {
   ENTRY_POINT_BUCKETS,
   ENTRY_POINT_EXTRA_CONDITIONS,
+  resolveStimpakHealEntryPoint,
   buildAvifRoutes,
   collectConditionFormIds,
   collectConditionGlobalIds,
@@ -458,6 +459,34 @@ export async function extractPerks(client: EsmClient): Promise<ExtractPerksResul
 
           if (parsed.entryPoint) {
             const ep = parsed.entryPoint;
+            const stimpakHeal = resolveStimpakHealEntryPoint(
+              ep.name,
+              record.header.form_id,
+              parsed.conditionRows,
+              edidByFormId,
+            );
+            if (stimpakHeal) {
+              const { conditions: translated, unresolved } = translateConditions(
+                stimpakHeal.conditionRows,
+                translationCtx,
+              );
+              if (translated === null) continue;
+              unresolved.forEach((u) => allUnresolved.add(`${family}: ${u}`));
+              if (ep.functionName === 'Multiply Value') {
+                pushModifier(
+                  stimpakHeal.bucket,
+                  'MUL_ADD',
+                  { value: ep.float - 1 },
+                  translated,
+                  sourceIndex,
+                );
+              } else {
+                notes.add(
+                  `entry point ${ep.name} uses ${ep.functionName} — stimpak-heal gate matched but function unhandled`,
+                );
+              }
+              continue;
+            }
             const bucket = ENTRY_POINT_BUCKETS[ep.name];
             if (!bucket) {
               if (!ENTRY_POINT_IGNORED.has(ep.name)) unknownEntryPoints.add(ep.name);

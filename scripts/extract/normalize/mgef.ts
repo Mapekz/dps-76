@@ -143,6 +143,80 @@ export const ENTRY_POINT_BUCKETS: Record<string, Bucket> = {
 };
 
 /**
+ * Narrow keyword set that TRIGGERS stimpak-heal routing — deliberately
+ * excludes ChemEffect/ChemTypeHealing/PerkMedic (too broad: also used by
+ * Carnivore's/Herbivore's unrelated "Safe Meat/Veggies" disease-reduction
+ * perks and other content). Every real stimpak-heal source (Field Surgeon,
+ * Doctor's 3★, Healing Factor's penalty) carries at least one of these three
+ * in its OR-group alongside whatever broader keywords it also has.
+ */
+const STIMPAK_HEAL_TRIGGER_KEYWORD_EDIDS = new Set([
+  'ChemTypeStimpack',
+  'ChemTypeRadaway',
+  'ChemDispelRadX',
+]);
+
+/**
+ * Perks excluded from stimpak-heal routing despite satisfying the trigger:
+ * - 0x006446B8 XPD_Fuel_CodeBlue_StimpakBuffPerk — Expeditions fuel buff, not
+ *   repeatable endgame content (project owner, 2026-08-06).
+ * - 0x008DC2CB WorldPets_Healing_SpeedHealing — pet-only (`playable: False`);
+ *   carries ChemTypeStimpack directly, so the keyword gate alone can't
+ *   exclude it.
+ */
+const STIMPAK_HEAL_EXCLUDED_PERK_FORM_IDS = new Set(['0x006446B8', '0x008DC2CB']);
+
+function isChemKeywordRow(row: RawCondition): boolean {
+  return row.Function === 'EPAlchemyEffectHasKeyword' || row.Function === 'EPMagic_SpellHasKeyword';
+}
+
+/**
+ * Routes EP29 "Mod Spell Magnitude" / EP30 "Mod Spell Duration" to
+ * `stimpakHealMagMult`/`stimpakHealDurationMult` ONLY when every matching
+ * keyword-gate row in this effect runs on Subject (excludes Field Surgeon's
+ * heal-OTHERS effects, `Run On: Potential Players`) and at least one row
+ * names a stimpak-heal trigger keyword. Every other EP29/EP30 use (Class
+ * Freak's generic mutation-penalty scaling, Carnivore/Herbivore food scaling,
+ * WorldPets, Code Blue) returns null and falls through to the existing
+ * unknown-entry-point/skipped path completely unchanged.
+ *
+ * Returns the target bucket plus `conditionRows` with the matched
+ * keyword-gate rows REMOVED — they're now baked into the bucket choice.
+ * Leaving them in would double-gate the modifier AND land as an
+ * `{kind:'unresolved'}` condition (EPAlchemyEffectHasKeyword/
+ * EPMagic_SpellHasKeyword have no other translateConditions case), which
+ * would make the modifier permanently inert via `modifierHasEngineEffect`.
+ * Any OTHER condition rows on the effect (Doctor's wornPieceCount tab,
+ * Healing Factor's classFreakRank tab) are left untouched and still flow
+ * through the caller's normal `translateConditions` call.
+ */
+export function resolveStimpakHealEntryPoint(
+  epName: string,
+  perkFormId: string,
+  conditionRows: RawCondition[],
+  edidByFormId: Map<string, string>,
+): { bucket: Bucket; conditionRows: RawCondition[] } | null {
+  if (epName !== 'Mod Spell Magnitude' && epName !== 'Mod Spell Duration') return null;
+  if (STIMPAK_HEAL_EXCLUDED_PERK_FORM_IDS.has(perkFormId)) return null;
+
+  const chemRows = conditionRows.filter(isChemKeywordRow);
+  const triggered = chemRows.some((row) =>
+    STIMPAK_HEAL_TRIGGER_KEYWORD_EDIDS.has(edidByFormId.get(row['Parameter 1'] ?? '') ?? ''),
+  );
+  if (!triggered) return null;
+  if (chemRows.some((row) => (row['Run On'] ?? 'Subject') !== 'Subject')) return null;
+
+  const bucket: Bucket =
+    epName === 'Mod Spell Magnitude' ? 'stimpakHealMagMult' : 'stimpakHealDurationMult';
+  // Consume EVERY chem-keyword row in this effect, not just the ones that
+  // triggered — Healing Factor's penalty OR-group carries ChemTypeHealing/
+  // ChemEffect/PerkMedic alongside ChemTypeStimpack; leaving those un-consumed
+  // would land them as `{kind:'unresolved'}` (no other translateConditions
+  // case handles these two Functions), permanently killing the modifier.
+  return { bucket, conditionRows: conditionRows.filter((row) => !isChemKeywordRow(row)) };
+}
+
+/**
  * Baked conditions appended to every modifier an entry point produces —
  * for entry points whose scope isn't expressible by the bucket alone.
  * Consumed by both entry-point translation sites (extract-perks.ts's direct
@@ -1228,6 +1302,37 @@ export async function translateGrantedPerk(
         } else {
           result.notes.push(
             `perk ${perkEdid}: ${name} — GetRandomPercent present but chance unparsed, skipped`,
+          );
+        }
+        continue;
+      }
+
+      const stimpakHeal = resolveStimpakHealEntryPoint(
+        name,
+        perkFormId,
+        conditionRows,
+        edidByFormId,
+      );
+      if (stimpakHeal) {
+        const { conditions: stimpakConditions, unresolved: stimpakUnresolved } =
+          translateConditions(stimpakHeal.conditionRows, {
+            edidByFormId,
+            globalValues,
+            conditionForms,
+            crossFamilyRank: deps.crossFamilyRank,
+          });
+        if (stimpakConditions === null) continue;
+        stimpakUnresolved.forEach((u) => result.notes.push(`perk ${perkEdid}: ${u}`));
+        if (functionName === 'Multiply Value') {
+          result.modifiers.push({
+            bucket: stimpakHeal.bucket,
+            op: 'MUL_ADD',
+            value: float - 1,
+            conditions: stimpakConditions,
+          });
+        } else {
+          result.notes.push(
+            `perk ${perkEdid}: entry point ${name} uses ${functionName} — stimpak-heal gate matched but function unhandled`,
           );
         }
         continue;
