@@ -143,23 +143,6 @@ export interface ResolveContext {
    * constant (`FAR_THRESHOLD_UNITS`) — see `distance.ts`.
    */
   closeThresholdUnits?: number;
-  /**
-   * Opt-in recorder for `foldBucket`/`foldWholeDamage`: every bucket either
-   * function is asked to fold gets added here. Root-constructed on a
-   * `ResolveContext` (`scenarios.ts`'s `scenarioCtx`, `player-stats.ts`'s
-   * `earlyCtx`, `effective-weapon.ts`'s `baseCtx` — the only three places a
-   * `ResolveContext` is built from scratch rather than spread from an
-   * existing one) and propagates for free through every `{ ...ctx, ... }`
-   * derivation downstream. Used exactly once per suggestions sweep
-   * (`evaluateSuggestions`, `src/lib/suggest/evaluate.ts`) to record the set
-   * of buckets ONE full baseline resolve+scenario pass actually queries —
-   * the read set is a property of the weapon/mode's code path, not of which
-   * modifiers happen to be present, so recording it once is exact for every
-   * candidate in the sweep (see the L2 pruning doc-comment there).
-   * `undefined` everywhere else — costs one `?.` check per fold, no
-   * allocation, on the normal (unrecorded) path.
-   */
-  bucketReads?: Set<Bucket>;
 }
 
 /**
@@ -518,7 +501,6 @@ export function foldBucket(
   ctx: ResolveContext,
   collect?: BucketTrace[],
 ): number {
-  ctx.bucketReads?.add(bucket);
   const entries: Array<{ op: ModOp; value: number; mod?: Modifier }> = [];
   for (const mod of modifiers) {
     if (mod.bucket !== bucket) continue;
@@ -566,7 +548,6 @@ export function foldBucketProduct(
   ctx: ResolveContext,
   collect?: TraceContribution[],
 ): number {
-  ctx.bucketReads?.add(bucket);
   let mult = 1;
   for (const mod of modifiers) {
     if (mod.bucket !== bucket || mod.op !== 'MUL_ADD') continue;
@@ -587,7 +568,6 @@ export function foldWholeDamage(
   ctx: ResolveContext,
   collect?: TraceContribution[],
 ): number {
-  ctx.bucketReads?.add('wholeDamage');
   let mult = 1;
   for (const mod of modifiers) {
     if (mod.bucket !== 'wholeDamage') continue;

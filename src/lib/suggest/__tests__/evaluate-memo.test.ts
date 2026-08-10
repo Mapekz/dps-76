@@ -4,7 +4,6 @@ import {
   makeBuildReducer,
   type BuildAction,
   type BuildState,
-  type ScenarioKey,
 } from '@/state/build-reducer';
 import { PerkId } from '@/data/perk-ids';
 import { resolveLoadout } from '@/lib/loadout';
@@ -117,97 +116,6 @@ describe('evaluateSuggestions memoization correctness', () => {
         // avoid redundant work getting to it.
         expect(suggestion.result).toEqual(naive!);
       }
-    });
-  });
-});
-
-/**
- * Exactness guard for L2 candidate pruning (#76, evaluate.ts's
- * `recordEngineBucketReads`/`isDisjoint`): pruning must never change the
- * observable `SuggestionReport` — same rows, same order, same numbers — only
- * skip resolve+engine work for candidates it can PROVE are zero-effect. Full
- * `toEqual` on the entire report (not a sample), against the SAME sweep with
- * pruning disabled via `evaluateSuggestions`' `disablePruning` escape hatch,
- * across builds chosen to stress the two known risk spots:
- *
- * - `nakedBuildState`: zero OMODs equipped and zero weapon-stat-bucket perks
- *   — `buildEffectiveWeapon`'s early-return fast path (effective-weapon.ts)
- *   fires for the BASELINE itself, which would silently drop
- *   WEAPON_STAT_BUCKETS/SUSTAIN_CHANCE_BUCKETS/EFFECTIVE_WEAPON_BOOTSTRAP_BUCKETS
- *   from the recorded read-set if evaluate.ts didn't seed them statically
- *   (`ALWAYS_IN_SCOPE_BUCKETS`) — this build is exactly the case that would
- *   catch a regression there.
- * - `meleeBuildState`/`launcherBuildState`: exercise weapon-shape-gated folds
- *   (powerAttackBonus/melee STR term; explosivePayload/explosionRadiusBonus)
- *   that a ranged non-explosive baseline (`richBuildState`) never reads at
- *   all, so a bug that over-prunes them specifically wouldn't show up there.
- */
-describe('L2 candidate pruning (#76) — pruned report exactly equals unpruned', () => {
-  function nakedBuildState(): BuildState {
-    let state = createDefaultBuildState();
-    state = applyActions(state, [
-      { type: 'weapon/select', weaponId: 'CombatRifle_Fixer' },
-      // CenterMasochist is a bodyPart/dbm perk — deliberately NOT a
-      // WEAPON_STAT_BUCKETS/SUSTAIN_CHANCE_BUCKETS source, so this build
-      // equips a weapon and a perk but never trips buildEffectiveWeapon's
-      // "any weapon-stat modifier present" gate.
-      { type: 'perk/add', perkId: PerkId.CenterMasochist, rank: 1, legendary: false },
-    ]);
-    return state;
-  }
-
-  function meleeBuildState(): BuildState {
-    let state = createDefaultBuildState();
-    state = applyActions(state, [
-      { type: 'weapon/select', weaponId: 'BaseballBat' },
-      { type: 'special/set', stat: 'strength', value: 8 },
-      { type: 'perk/add', perkId: PerkId.CenterMasochist, rank: 2, legendary: false },
-      { type: 'armorEffect/setCount', id: 'mod_Legendary_Armor2_StatStrength', count: 2 },
-      { type: 'mutation/toggle', id: 'Mutation_SpeedDemon' },
-    ]);
-    return state;
-  }
-
-  function launcherBuildState(): BuildState {
-    let state = createDefaultBuildState();
-    state = applyActions(state, [
-      { type: 'weapon/select', weaponId: 'Fatman' },
-      { type: 'perk/add', perkId: PerkId.BloodyMess, rank: 1, legendary: false },
-      { type: 'armorEffect/setCount', id: 'mod_Legendary_Armor4_BattleLoaders', count: 2 },
-      { type: 'mutation/toggle', id: 'Mutation_AdrenalReaction' },
-    ]);
-    return state;
-  }
-
-  const BUILDS: Array<[string, () => BuildState]> = [
-    ['rich (ranged, torso target)', richBuildState],
-    ['naked (no OMODs, no weapon-stat perks)', nakedBuildState],
-    ['melee', meleeBuildState],
-    ['launcher', launcherBuildState],
-  ];
-
-  describe.each(BUILDS)('%s', (_label, makeState) => {
-    it.each<ScenarioKey>(['freeAim', 'vats'])(
-      'pruned report deep-equals the unpruned report for metric "%s"',
-      (metric) => {
-        const state = makeState();
-        const pruned = evaluateSuggestions(state, 'live', metric);
-        const unpruned = evaluateSuggestions(state, 'live', metric, { disablePruning: true });
-        expect(pruned.baseline).toEqual(unpruned.baseline);
-        expect(pruned.suggestions).toEqual(unpruned.suggestions);
-      },
-    );
-
-    it('actually exercises the prune path (sanity: not a no-op test)', () => {
-      // A pruned row's `result` is the literal `baseline` reference (see
-      // evaluate.ts's ZERO_DELTA synthesis) — a naive/unpruned re-evaluation
-      // of a genuine no-op would compute a FRESH (deep-equal but not `===`)
-      // snapshot instead, so this reference check is specific to "this row
-      // took the pruned path", not "this row happens to be a no-op".
-      const state = makeState();
-      const report = evaluateSuggestions(state, 'live', 'freeAim');
-      const prunedRows = report.suggestions.filter((s) => s.result === report.baseline);
-      expect(prunedRows.length).toBeGreaterThan(0);
     });
   });
 });

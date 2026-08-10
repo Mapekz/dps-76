@@ -380,14 +380,6 @@ export interface ScenarioInput {
     bulletStorm?: { ammoPerStack: number };
     distance?: { closeThresholdUnits: number };
   };
-  /**
-   * Opt-in bucket-read recorder, threaded straight onto every root
-   * `ResolveContext` this file builds (`scenarioCtx` below) — see
-   * `ResolveContext.bucketReads`'s doc-comment (resolve.ts) for what it's
-   * for. `undefined` for every normal caller; `resolveLoadout` stamps it here
-   * only for the suggestions sweep's one throwaway recording pass.
-   */
-  bucketReads?: Set<Bucket>;
 }
 
 /** Onslaught cap + optional averages (reverse and forward modes), threaded on every ResolveContext. */
@@ -417,7 +409,6 @@ function scenarioCtx(
     scenario: { ...flags, isPowerAttack: flags.isPowerAttack && isMelee(input.weapon) },
     itemLevel: input.itemLevel,
     enemyTypeIds: input.enemyTypeIds,
-    bucketReads: input.bucketReads,
     onslaughtMaxStacks: onslaught.maxStacks,
     ...(onslaught.reverseAvg !== undefined && { onslaughtReverseStacks: onslaught.reverseAvg }),
     ...(onslaught.forwardAvg !== undefined && { onslaughtForwardStacks: onslaught.forwardAvg }),

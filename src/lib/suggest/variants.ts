@@ -19,7 +19,6 @@ import {
   type BuildState,
   type SpecialKey,
 } from '@/state/build-reducer';
-import type { Bucket, Modifier } from '@/types/modifiers';
 import { hasAnyEngineEffect } from '@/types/modifiers';
 import type { SuggestionBudget, SuggestionCandidate } from './types';
 import { enumerateCombos } from './combos';
@@ -84,33 +83,6 @@ function perkBudget(budget: PerkBudget, perk: Perk, extraCost: number): Suggesti
 /** Clamped selected count for an armor effect (mirrors armor-modifiers.ts's private `selectedCount`). */
 function armorEffectCount(effect: ArmorEffectEntry, selections: Readonly<Record<string, number>>) {
   return Math.max(0, Math.min(effect.maxCount, selections[effect.id] ?? 0));
-}
-
-/** The set of `Bucket`s a modifier list touches — `SuggestionCandidate.touchedBuckets`'s shared builder. */
-function bucketsOf(modifiers: readonly Modifier[]): ReadonlySet<Bucket> {
-  return new Set(modifiers.map((m) => m.bucket));
-}
-
-/** Union of `bucketsOf` across several modifier lists — for candidates spanning more than one source (perk-rank families, armor swaps). */
-function unionBuckets(...lists: Array<readonly Modifier[]>): ReadonlySet<Bucket> {
-  const out = new Set<Bucket>();
-  for (const list of lists) for (const m of list) out.add(m.bucket);
-  return out;
-}
-
-/**
- * Every bucket ANY rank (1..maxRank) of this perk family could contribute —
- * not just the specific current↔target pair a candidate represents. A
- * candidate's actual change swaps the family's WHOLE modifier contribution
- * (current rank's list → target rank's list, not a delta), so the safe
- * over-approximation is the union across every possible rank: if no rank of
- * this family ever emits a bucket the engine reads, no rank-change candidate
- * for it can matter either.
- */
-function perkFamilyBuckets(mode: GameMode, perkId: string): ReadonlySet<Bucket> {
-  const generated = getGeneratedPerk(mode, perkId);
-  if (!generated) return new Set();
-  return unionBuckets(...generated.ranks.map((r) => r.modifiers));
 }
 
 export function enumerateVariants(state: BuildState, mode: GameMode): SuggestionCandidate[] {
@@ -182,7 +154,6 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
     const isLegendary = legendaryPerkIds.has(perkId);
     const currentRank = equippedRanks.get(perkId);
     const family = `perk:${perkId}`;
-    const touchedBuckets = perkFamilyBuckets(mode, perkId);
 
     if (currentRank !== undefined) {
       // Equipped — one candidate per rank above the current, all the way to max.
@@ -201,7 +172,6 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
           budget,
           family,
           cost,
-          touchedBuckets,
         });
       }
     } else {
@@ -228,7 +198,6 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
           budget,
           family,
           cost,
-          touchedBuckets,
         });
       }
     }
@@ -253,7 +222,6 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
     if (free <= 0) continue;
 
     const family = `armor-count:${effect.id}`;
-    const touchedBuckets = bucketsOf(effect.modifiers);
     const upper = Math.min(maxFeasible, current + free);
     for (let count = current + 1; count <= upper; count++) {
       out.push({
@@ -264,7 +232,6 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
         budget: LEGAL,
         family,
         cost: count - current,
-        touchedBuckets,
       });
     }
   }
@@ -289,7 +256,6 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
       const withoutY = { ...player.armorEffects };
       delete withoutY[y.id];
       const maxY = maxFeasibleArmorEffectCount(mode, y.id, withoutY);
-      const touchedBuckets = unionBuckets(x.modifiers, y.modifiers);
       for (let k = 1; k <= countX; k++) {
         if (countY + k > maxY) continue;
         out.push({
@@ -303,7 +269,6 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
           budget: LEGAL,
           family: `armor-swap:${x.id}->${y.id}`,
           cost: k,
-          touchedBuckets,
         });
       }
     }
@@ -321,7 +286,6 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
       budget: LEGAL,
       family: id,
       cost: 0,
-      touchedBuckets: bucketsOf(mutation.modifiers ?? []),
     });
   }
   for (const consumable of getConsumables(mode)) {
@@ -335,7 +299,6 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
       budget: LEGAL,
       family: id,
       cost: 0,
-      touchedBuckets: bucketsOf(consumable.modifiers ?? []),
     });
   }
 
