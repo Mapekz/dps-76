@@ -1,4 +1,5 @@
-import { hiddenOmodIds, omodNameOverrides } from '../../src/data/overrides/omod-corrections';
+import { omodNameOverrides } from '../../src/data/overrides/omod-corrections';
+import { cutUniqueIdentityOmodIds } from './cut-unique-identity-omod-ids';
 import type { GeneratedOmod, GeneratedUnique, GeneratedWeapon } from '../../src/types/generated';
 import type { EsmSource } from './esm-client';
 import { isExcludedOmodEdid, isVariantContainer } from './extract-omods';
@@ -234,7 +235,7 @@ export async function extractUniques(
 
       if (!identityOmod) continue;
 
-      if (hiddenOmodIds.has(identityOmod.id)) continue;
+      if (cutUniqueIdentityOmodIds.has(identityOmod.id)) continue;
 
       if (seenIdentityIds.has(identityOmod.id)) {
         skipped.push({
@@ -279,7 +280,11 @@ export async function extractUniques(
   // target-keyword gate with a template-combination sibling but never appear in
   // Object Template Includes — emit a minimal preset on the same base weapon.
   for (const omod of omods) {
-    if (!isIdentityOmod(omod) || seenIdentityIds.has(omod.id) || hiddenOmodIds.has(omod.id))
+    if (
+      !isIdentityOmod(omod) ||
+      seenIdentityIds.has(omod.id) ||
+      cutUniqueIdentityOmodIds.has(omod.id)
+    )
       continue;
 
     let baseWeaponId: string | undefined;
