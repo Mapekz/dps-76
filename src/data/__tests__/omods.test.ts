@@ -95,19 +95,19 @@ describe('isEligible', () => {
   });
 
   it('branch 2b: omodWeaponRestrictions rescues reward-granted mods with no template seat', () => {
-    // Exercises isOmodEligibleForWeapon's restrictions param directly (rather
-    // than a specific live omodWeaponRestrictions entry, which may be empty
+    // Exercises isOmodEligibleForWeapon's restrictedToWeaponIds param directly
+    // (rather than a specific live omodWeaponRestrictions entry, which may be empty
     // at any given time) — reward-granted identity mods with no ESM-derivable
     // weapon tie at all still need this rescue path (see omod-eligibility.ts
     // branch 2 doc-comment).
     const omod = synthOmod({ id: 'mod_Custom_RewardMod' });
-    const restrictions = { mod_Custom_RewardMod: ['AlienBlaster'] };
-    expect(isOmodEligibleForWeapon(omod, synthWeapon({ id: 'AlienBlaster' }), restrictions)).toBe(
-      true,
-    );
-    expect(isOmodEligibleForWeapon(omod, synthWeapon({ id: 'GaussMinigun' }), restrictions)).toBe(
-      false,
-    );
+    const restrictedToWeaponIds = ['AlienBlaster'];
+    expect(
+      isOmodEligibleForWeapon(omod, synthWeapon({ id: 'AlienBlaster' }), restrictedToWeaponIds),
+    ).toBe(true);
+    expect(
+      isOmodEligibleForWeapon(omod, synthWeapon({ id: 'GaussMinigun' }), restrictedToWeaponIds),
+    ).toBe(false);
   });
 
   it('branch 2c: an empty-keyword mod with no template seat and no rescue is not eligible anywhere', () => {

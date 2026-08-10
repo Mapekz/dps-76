@@ -72,7 +72,7 @@ function OmodDescription({
 }) {
   if (!omodId || omodId === '__standard__') return null;
   const omod = getOmodById(mode, omodId);
-  if (!omod || classifyOmodDisplay(omod, weapon, mode).badge === 'inert') return null;
+  if (!omod || classifyOmodDisplay(omod, weapon).badge === 'inert') return null;
   const description = describeBuffModifiers(omod);
   if (!description) return null;
   return <p className="text-muted-foreground text-xs">{description}</p>;

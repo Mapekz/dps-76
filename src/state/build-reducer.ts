@@ -236,7 +236,7 @@ function mergeLegendaryEffects(
     const priorEntry = prior[i] ?? null;
     if (priorEntry) {
       const omod = getOmodById(mode, priorEntry);
-      if (omod && isOmodEligibleForWeapon(omod, weapon)) {
+      if (omod && isOmodEligibleForWeapon(omod, weapon, omod.restrictedToWeaponIds)) {
         merged[i] = priorEntry;
         continue;
       }

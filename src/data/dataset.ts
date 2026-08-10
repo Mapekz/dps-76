@@ -47,6 +47,7 @@ import {
 } from './overrides/corrections';
 import { perkFamilyOverrides, extraPerkModifiers } from './overrides/perk-overrides';
 import { npcOverrides } from './overrides/npc-overrides';
+import { armorPieceOverrides } from './overrides/armor-piece-overrides';
 import { derivePerkRegistry, type PerkNameEntry } from './perk-cards';
 import generatedOmodsLive from './live/generated/omods.json';
 import generatedArmorOmodsLive from './live/generated/armor-omods.json';
@@ -122,6 +123,36 @@ export function applyNameOverride<T extends { id: string; name: string }>(
   });
 }
 
+/** Attach a picker badge override when keyed by omod id (omodBadgeOverrides). */
+export function applyBadgeOverride<T extends { id: string }>(
+  items: T[],
+  badgesById: Readonly<Record<string, 'inert' | 'pendingMechanic'>>,
+): (T & { badgeOverride?: 'inert' | 'pendingMechanic' })[] {
+  return items.map((item) => {
+    const badgeOverride = badgesById[item.id];
+    return badgeOverride ? { ...item, badgeOverride } : item;
+  });
+}
+
+/** Attach weapon-restriction rescue ids when keyed by omod id (omodWeaponRestrictions). */
+export function applyWeaponRestrictions<T extends { id: string }>(
+  items: T[],
+  restrictionsById: Readonly<Record<string, readonly string[]>>,
+): (T & { restrictedToWeaponIds?: readonly string[] })[] {
+  return items.map((item) => {
+    const restrictedToWeaponIds = restrictionsById[item.id];
+    return restrictedToWeaponIds ? { ...item, restrictedToWeaponIds } : item;
+  });
+}
+
+/** A generated OMOD with its id-keyed Overlays already applied — see buildDataset. */
+export type MergedOmod = GeneratedOmod & {
+  /** From omodBadgeOverrides: forces a picker badge for effects whose data can't move numbers yet. */
+  badgeOverride?: 'inert' | 'pendingMechanic';
+  /** From omodWeaponRestrictions: weapon edids this mod is rescued onto when it has no ESM-derivable tie. */
+  restrictedToWeaponIds?: readonly string[];
+};
+
 /** Replace an npc record wholesale when an override targets its id (npc-overrides.ts REPLACES, not patches — see that file's header). */
 export function applyNpcOverrides(
   items: GeneratedNpc[],
@@ -135,7 +166,7 @@ type PowerArmor = typeof powerArmorLive;
 
 export interface Dataset {
   weapons: Record<string, Weapon>;
-  omods: GeneratedOmod[];
+  omods: MergedOmod[];
   /** Armor/power-armor OMODs (Phase 3 armor pipeline) — feeds src/data/armor-modifiers.ts, not the weapon mod pickers. */
   armorOmods: GeneratedOmod[];
   uniques: GeneratedUnique[];
@@ -161,9 +192,7 @@ export interface Dataset {
   forceVisibleArmorOmodIds: ReadonlySet<string>;
   hiddenConsumableIds: ReadonlySet<string>;
   forceVisibleConsumableIds: ReadonlySet<string>;
-  omodBadgeOverrides: Readonly<Record<string, 'inert' | 'pendingMechanic'>>;
-  omodWeaponRestrictions: Readonly<Record<string, readonly string[]>>;
-  omodNameOverrides: Readonly<Record<string, string>>;
+  /** Weapon × attach-point slot labels — not omod-keyed, so it cannot ride MergedOmod. */
   perWeaponSlotLabelOverrides: Readonly<Record<string, Readonly<Record<string, string>>>>;
   omodModifierAdditions: Readonly<Record<string, Modifier[]>>;
 }
@@ -215,12 +244,18 @@ export interface DatasetSource {
 /** Build one Merged Dataset from explicit generated, hand-authored, and Overlay inputs. */
 export function buildDataset(hand: HandAuthored, source: DatasetSource): Dataset {
   const { perkNames, bodyArmor, powerArmor } = hand;
-  const mergedOmods = applyNameOverride(
-    applyModifierAddition(
-      applyModifierOverride(source.generatedOmods, source.legendaryValueOverrides),
-      source.omodModifierAdditions,
+  const mergedOmods = applyWeaponRestrictions(
+    applyBadgeOverride(
+      applyNameOverride(
+        applyModifierAddition(
+          applyModifierOverride(source.generatedOmods, source.legendaryValueOverrides),
+          source.omodModifierAdditions,
+        ),
+        source.omodNameOverrides,
+      ),
+      source.omodBadgeOverrides,
     ),
-    source.omodNameOverrides,
+    source.omodWeaponRestrictions,
   );
   const mergedArmorOmods = applyModifierOverride(
     source.generatedArmorOmods,
@@ -258,9 +293,6 @@ export function buildDataset(hand: HandAuthored, source: DatasetSource): Dataset
     forceVisibleArmorOmodIds: source.forceVisibleArmorOmodIds,
     hiddenConsumableIds: source.hiddenConsumableIds,
     forceVisibleConsumableIds: source.forceVisibleConsumableIds,
-    omodBadgeOverrides: source.omodBadgeOverrides,
-    omodWeaponRestrictions: source.omodWeaponRestrictions,
-    omodNameOverrides: source.omodNameOverrides,
     perWeaponSlotLabelOverrides: source.perWeaponSlotLabelOverrides,
     omodModifierAdditions: source.omodModifierAdditions,
   };
@@ -393,10 +425,13 @@ export function getUnresolvedOverrideKeys(mode: GameMode): UnresolvedOverrideKey
     check(`omodWeaponRestrictions[${omodId}] (weapon ref)`, weaponRefs, weaponIds);
   }
 
-  const armorOmodIds = new Set((generatedArmorOmodsLive as GeneratedOmod[]).map((o) => o.id));
+  const armorOmods = generatedArmorOmodsLive as GeneratedOmod[];
+  const armorOmodIds = new Set(armorOmods.map((o) => o.id));
   check('armorLegendaryValueOverrides', Object.keys(armorLegendaryValueOverrides), armorOmodIds);
   check('hiddenArmorOmodIds', hiddenArmorOmodIds, armorOmodIds);
   check('forceVisibleArmorOmodIds', forceVisibleArmorOmodIds, armorOmodIds);
+  const armorEffectNames = new Set(armorOmods.map((o) => o.name));
+  check('armorPieceOverrides', Object.keys(armorPieceOverrides), armorEffectNames);
 
   const buffIds = new Set(
     [...generatedMutationsLive, ...generatedConsumablesLive].map((b) => b.id),

@@ -1,7 +1,6 @@
 import type { GameMode, Weapon } from '@/types';
-import type { GeneratedOmod } from '@/types/generated';
 import { modifierHasEngineEffect } from '@/types/modifiers';
-import { getDataset } from './dataset';
+import { getDataset, type MergedOmod } from './dataset';
 import { isOmodEligibleForWeapon } from './omod-eligibility';
 import { isRecordVisible } from './overlay';
 
@@ -25,9 +24,9 @@ const DEAD_MECHANIC_SLOT_EDIDS: ReadonlySet<string> = new Set([
   'ap_Weapon_Model_Replacement',
 ]);
 
-const byIdCache = new Map<GameMode, Map<string, GeneratedOmod>>();
+const byIdCache = new Map<GameMode, Map<string, MergedOmod>>();
 
-export function getOmodById(mode: GameMode, id: string): GeneratedOmod | undefined {
+export function getOmodById(mode: GameMode, id: string): MergedOmod | undefined {
   let map = byIdCache.get(mode);
   if (!map) {
     map = new Map(getDataset(mode).omods.map((o) => [o.id, o]));
@@ -36,9 +35,9 @@ export function getOmodById(mode: GameMode, id: string): GeneratedOmod | undefin
   return map.get(id);
 }
 
-const byFormIdCache = new Map<GameMode, Map<string, GeneratedOmod>>();
+const byFormIdCache = new Map<GameMode, Map<string, MergedOmod>>();
 
-function omodsByFormId(mode: GameMode): Map<string, GeneratedOmod> {
+function omodsByFormId(mode: GameMode): Map<string, MergedOmod> {
   let map = byFormIdCache.get(mode);
   if (!map) {
     map = new Map(getDataset(mode).omods.map((o) => [o.formId, o]));
@@ -71,8 +70,8 @@ export function getDefaultOmods(
   mode: GameMode,
   weapon: Weapon,
   chosenMods: Record<string, string | null | undefined>,
-): GeneratedOmod[] {
-  const out: GeneratedOmod[] = [];
+): MergedOmod[] {
+  const out: MergedOmod[] = [];
   for (const formId of weapon.defaultModFormIds ?? []) {
     const omod = omodsByFormId(mode).get(formId);
     if (!omod) continue;
@@ -92,10 +91,12 @@ export function getDefaultOmods(
  * May the picker offer this mod on this weapon? Semantics live in the shared
  * predicate (./omod-eligibility) — the extractor's attach-point closure uses
  * the exact same gate, so extracted slot lists can't drift from what the
- * picker offers. This wrapper just supplies the app-layer rescue table.
+ * picker offers. This wrapper just unpacks the rescue ids the merge chokepoint
+ * already attached to the record (dataset.ts's MergedOmod) — it needs no Mode,
+ * because the Overlay was resolved before the record got here.
  */
-export function isEligible(omod: GeneratedOmod, weapon: Weapon, mode: GameMode = 'live'): boolean {
-  return isOmodEligibleForWeapon(omod, weapon, getDataset(mode).omodWeaponRestrictions);
+export function isEligible(omod: MergedOmod, weapon: Weapon): boolean {
+  return isOmodEligibleForWeapon(omod, weapon, omod.restrictedToWeaponIds);
 }
 
 /**
@@ -110,7 +111,7 @@ export function isEligible(omod: GeneratedOmod, weapon: Weapon, mode: GameMode =
  */
 export type OmodBadge = 'inert' | 'pendingMechanic';
 
-export type OmodOption = GeneratedOmod & { badge?: OmodBadge };
+export type OmodOption = MergedOmod & { badge?: OmodBadge };
 
 // INERT_ENGINE_BUCKETS (buckets with no engine effect today — drives the
 // 'inert' picker badge below) is derived from BUCKET_REGISTRY
@@ -132,11 +133,10 @@ const STOCK_NAME_RE = /^(standard|no |stock)/i;
  * Zero-modifier non-stock mods show badged 'inert' instead of vanishing.
  */
 export function classifyOmodDisplay(
-  omod: GeneratedOmod,
+  omod: MergedOmod,
   weapon?: Weapon,
-  mode: GameMode = 'live',
 ): { show: boolean; badge?: OmodBadge } {
-  const overrideBadge = getDataset(mode).omodBadgeOverrides[omod.id];
+  const overrideBadge = omod.badgeOverride;
   const isStock =
     ((weapon?.templateModFormIds ?? []).includes(omod.formId) && omod.variantOf === undefined) ||
     STOCK_NAME_RE.test(omod.name);
@@ -225,7 +225,7 @@ function slotLabel(mode: GameMode, weaponId: string, attachPointEdid: string): s
 function buildSlots(
   mode: GameMode,
   weapon: Weapon,
-  includeSlot: (attachPointEdid: string, omod: GeneratedOmod) => boolean,
+  includeSlot: (attachPointEdid: string, omod: MergedOmod) => boolean,
   sortSlots: (a: OmodSlot, b: OmodSlot) => number,
 ): OmodSlot[] {
   const dataset = getDataset(mode);
@@ -251,8 +251,8 @@ function buildSlots(
     )
       continue;
     if (!includeSlot(omod.attachPointEdid, omod)) continue;
-    if (!isEligible(omod, weapon, mode)) continue;
-    const { show, badge } = classifyOmodDisplay(omod, weapon, mode);
+    if (!isEligible(omod, weapon)) continue;
+    const { show, badge } = classifyOmodDisplay(omod, weapon);
     if (!show) continue;
     const option: OmodOption = badge ? { ...omod, badge } : omod;
     (
@@ -333,7 +333,7 @@ export function getOmodSlots(mode: GameMode, weapon: Weapon): OmodSlot[] {
         (edid === 'ap_customName' &&
           (omod.addedKeywords.includes('ObjectTypeUnique') || omod.variantOf !== undefined) &&
           (weapon.templateModFormIds ?? []).includes(omod.formId)) ||
-        getDataset(mode).omodBadgeOverrides[omod.id] !== undefined) &&
+        omod.badgeOverride !== undefined) &&
       !LEGENDARY_SLOT_RE.test(edid),
     (a, b) => a.label.localeCompare(b.label),
   );

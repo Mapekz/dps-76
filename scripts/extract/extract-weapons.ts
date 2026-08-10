@@ -451,7 +451,6 @@ export function applyAttachPointClosure(
       if (
         !isOmodEligibleForWeapon(
           {
-            id: entry.edid,
             formId: entry.formId,
             attachPointFormId: entry.attachPointFormId!,
             targetKeywords: entry.targetKeywords,

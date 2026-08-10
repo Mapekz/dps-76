@@ -9,7 +9,7 @@
  * pure: no `@/` alias, no imports from dataset.ts / overrides/* / generated
  * JSON — extraction runs against a live ESM while those read the previous,
  * checked-in generation (stale and circular). Every input is threaded by the
- * caller, including the restrictions rescue table.
+ * caller, including per-omod weapon-restriction rescue ids.
  *
  * Semantics (history in git; see docs/assumptions.md "OMOD eligibility & recipe chains"):
  *
@@ -31,8 +31,8 @@
  *   match everything sharing the attach point — the source of "Vox Syringe
  *   Barrel on a gauss minigun"-class pollution). Such a mod is eligible only
  *   when this weapon's own ESM instance template whitelists it (Object
- *   Template Includes → templateModFormIds), or an explicit restrictions
- *   entry names the weapon (reward-granted identity mods with no
+ *   Template Includes → templateModFormIds), or the caller supplies
+ *   restrictedToWeaponIds (reward-granted identity mods with no
  *   ESM-derivable weapon tie at all).
  *
  * A crafting recipe existing (hasGrantingCobj) is deliberately NOT an input:
@@ -41,15 +41,13 @@
  */
 
 export interface EligibleOmodView {
-  /** Editor id — the restrictions rescue table is keyed by it. */
-  id: string;
   formId: string;
   attachPointFormId: string;
   targetKeywords: readonly string[];
 }
 
 export interface EligibleWeaponView {
-  /** Editor id — matched against restrictions entries. */
+  /** Editor id — matched against restrictedToWeaponIds. */
   id: string;
   attachParentSlots?: readonly string[];
   /** Keyword EDIDs (both sides of the subset check are edid-shaped). */
@@ -60,7 +58,7 @@ export interface EligibleWeaponView {
 export function isOmodEligibleForWeapon(
   omod: EligibleOmodView,
   weapon: EligibleWeaponView,
-  restrictions: Readonly<Record<string, readonly string[]>> = {},
+  restrictedToWeaponIds: readonly string[] = [],
 ): boolean {
   const slots = weapon.attachParentSlots ?? [];
   if (!slots.includes(omod.attachPointFormId)) return false;
@@ -73,6 +71,6 @@ export function isOmodEligibleForWeapon(
   }
   return (
     (weapon.templateModFormIds ?? []).includes(omod.formId) ||
-    (restrictions[omod.id]?.includes(weapon.id) ?? false)
+    restrictedToWeaponIds.includes(weapon.id)
   );
 }
