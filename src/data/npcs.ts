@@ -11,10 +11,6 @@ import { getDataset } from './dataset';
  * lookup only.
  */
 
-export function getNpcs(mode: GameMode): GeneratedNpc[] {
-  return getDataset(mode).npcs;
-}
-
 export function getNpc(mode: GameMode, id: string): GeneratedNpc | undefined {
   return getDataset(mode).npcs.find((n) => n.id === id);
 }

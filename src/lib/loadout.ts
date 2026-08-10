@@ -1,15 +1,8 @@
 import type { PlayerConfig, EnemyConfig, GameMode, PlayerConditions, Weapon } from '@/types';
 import type { Bucket, Modifier } from '@/types/modifiers';
 import type { GeneratedOmod } from '@/types/generated';
-import {
-  getActionPointConstants,
-  getBulletStormConstants,
-  getDistanceConstants,
-  getMitigationConstants,
-  getSpecialClamp,
-  getVatsCritConstants,
-  getWeapons,
-} from '@/data';
+import { getDistanceConstants, getSpecialClamp, getWeapons } from '@/data';
+import { getDataset } from '@/data/dataset';
 import { getEquippedPerkFamilyRanks, getLoadoutModifiers } from '@/data/perk-modifiers';
 import { getArmorEffectModifiers, getArmorEffectWornPieceCounts } from '@/data/armor-modifiers';
 import { getDefaultOmods, getOmodById } from '@/data/omods';
@@ -822,11 +815,15 @@ export function resolveLoadout(
     // Limit Breaking, weapon crit charge bonus).
     chargeTimeSec: playerConfig.chargeTimeSec,
     enemyDefenses,
-    mitigationConstants: getMitigationConstants(mode),
+    // ESM-extracted GMST scalars for the resist-mitigation formula — see GeneratedConstants.
+    mitigationConstants: getDataset(mode).constants.mitigation,
     engineConstants: {
-      vatsCrit: getVatsCritConstants(mode),
-      actionPoints: getActionPointConstants(mode),
-      bulletStorm: getBulletStormConstants(mode),
+      // ESM-extracted `fVATSCriticalChargeBase` GMST — see GeneratedConstants.
+      vatsCrit: getDataset(mode).constants.vatsCrit,
+      // ESM-extracted AP pool/regen-delay GMSTs + RACE regen-rate scalars — see GeneratedConstants.
+      actionPoints: getDataset(mode).constants.actionPoints,
+      // ESM-extracted `uAmmoSpenderAmmoUsePerStack` GMST — see GeneratedConstants.
+      bulletStorm: getDataset(mode).constants.bulletStorm,
       distance: getDistanceConstants(mode),
     },
   };

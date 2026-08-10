@@ -17,48 +17,9 @@ export function getWeapons(mode: GameMode): Record<string, Weapon> {
 
 export { getUniques, getUniqueById, getEquippedUnique, getUniquesForWeapon } from './uniques';
 
-export function getBodyArmor(mode: GameMode) {
-  return getDataset(mode).bodyArmor;
-}
-
-export function getPowerArmor(mode: GameMode) {
-  return getDataset(mode).powerArmor;
-}
-
 /** ESM-extracted clamp on effective (post-buff) SPECIAL — see GeneratedConstants. */
 export function getSpecialClamp(mode: GameMode): { min: number; max: number } {
   return getDataset(mode).constants.special;
-}
-
-/** ESM-extracted GMST scalars for the resist-mitigation formula — see GeneratedConstants. */
-export function getMitigationConstants(mode: GameMode): {
-  resistExponent: number;
-  damageFactor: number;
-  minReduction: number;
-  maxReduction: number;
-} {
-  return getDataset(mode).constants.mitigation;
-}
-
-/** ESM-extracted `fVATSCriticalChargeBase` GMST — see GeneratedConstants. */
-export function getVatsCritConstants(mode: GameMode): { chargeBase: number } {
-  return getDataset(mode).constants.vatsCrit;
-}
-
-/** ESM-extracted AP pool/regen-delay GMSTs + RACE regen-rate scalars — see GeneratedConstants. */
-export function getActionPointConstants(mode: GameMode): {
-  poolBase: number;
-  poolPerAgility: number;
-  regenDelaySec: number;
-  regenRatePct: number;
-  regenRatePctPowerArmor: number;
-} {
-  return getDataset(mode).constants.actionPoints;
-}
-
-/** ESM-extracted `uAmmoSpenderAmmoUsePerStack` GMST — see GeneratedConstants. */
-export function getBulletStormConstants(mode: GameMode): { ammoPerStack: number } {
-  return getDataset(mode).constants.bulletStorm;
 }
 
 /** ESM-extracted `fDistanceForCloseDamage` GMST (the "Close" perk-gate threshold) — see GeneratedConstants. */
@@ -82,9 +43,9 @@ export function getWeaponOptions(mode: GameMode) {
 }
 
 export function getBodyArmorOptions(mode: GameMode) {
-  return toOptions(getBodyArmor(mode));
+  return toOptions(getDataset(mode).bodyArmor);
 }
 
 export function getPowerArmorOptions(mode: GameMode) {
-  return toOptions(getPowerArmor(mode));
+  return toOptions(getDataset(mode).powerArmor);
 }

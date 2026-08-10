@@ -15,8 +15,9 @@ legal; ×5 + ×5 is not. Enforcement lives in three places that share
 - `armorEffect/setCount` (`src/state/build-reducer.ts`) clamps the incoming
   count to the tier's remaining space. Pieces are never taken from other
   effects implicitly — freeing them is an explicit decrease-then-increase
-  (the ArmorSection combobox switch and suggestion swap actions both order
-  their steps that way).
+  (the suggestion swap action in `src/lib/suggest/variants.ts` orders its
+  steps that way; the ArmorSection UI does not today — each armor-effect edit
+  in the picker is a single `armorEffect/setCount` dispatch).
 - Hydration (`src/lib/persist/codec.ts`) runs `clampArmorTierBudgets` over
   decoded builds: persisted/shared URLs that oversubscribe a tier are trimmed
   first-set-wins with a warning in the existing hydration banner.

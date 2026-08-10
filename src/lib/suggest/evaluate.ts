@@ -14,7 +14,6 @@ import type {
   DpsSnapshot,
   EvaluatedSuggestion,
   ScenarioHeadline,
-  SuggestionCandidate,
   SuggestionGroup,
   SuggestionReport,
 } from './types';
@@ -126,16 +125,6 @@ export function evaluateActions(
       vats: diff(result.vats, baseline.vats),
     },
   };
-}
-
-/** Evaluate one action against a baseline (hover diffs). Null when no weapon. */
-export function evaluateAction(
-  state: BuildState,
-  mode: GameMode,
-  action: BuildAction,
-  baseline: DpsSnapshot,
-): { result: DpsSnapshot; delta: DpsSnapshot } | null {
-  return evaluateActions(state, mode, [action], baseline);
 }
 
 /**
@@ -319,5 +308,3 @@ export function topSuggestions(
     .slice(0, Math.max(0, limit - ranked.length) + 3);
   return { ranked, tied };
 }
-
-export type { SuggestionCandidate };
