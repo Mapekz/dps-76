@@ -1,6 +1,6 @@
 import type { GeneratedPerk, GeneratedPerkCard } from '../../src/types/generated';
 import type { Bucket, Condition, Modifier, ModifierValue } from '../../src/types/modifiers';
-import { EsmClient, mapPool, type EsmRecord } from './esm-client';
+import { mapPool, type EsmRecord, type EsmSource } from './esm-client';
 import {
   buildCrossFamilyRankMap,
   flattenPerkConditionRows,
@@ -282,7 +282,7 @@ export interface ExtractPerksResult {
   unresolvedCards: string[];
 }
 
-export async function extractPerks(client: EsmClient): Promise<ExtractPerksResult> {
+export async function extractPerks(client: EsmSource): Promise<ExtractPerksResult> {
   const rows = await client.list('PERK');
   const excluded: Record<string, string[]> = { junkEdid: [], noNameOrCard: [] };
 

@@ -17,7 +17,8 @@ import {
   translateConditions,
   type RawCondition,
 } from '../normalize/conditions';
-import type { EsmClient, EsmListRow, EsmRecord } from '../esm-client';
+import type { EsmRecord, EsmSource } from '../esm-client';
+import { createInMemoryEsmSource } from '../esm-source-fake';
 import { extractPerks } from '../extract-perks';
 import fortifyStrengthChemEffect from './fixtures/mgef-fortifystrengthchemeffect.json';
 
@@ -351,13 +352,10 @@ describe('translate (Medical Malpractice / hacking skill / Stimpak healing, 2026
         ],
       },
     };
-    const client = {
-      async get(formId: string): Promise<EsmRecord> {
-        if (formId === perkFormId) return perk as unknown as EsmRecord;
-        throw new Error(`unexpected get(${formId})`);
-      },
-      resolveEdid: async (formId: string) => formId,
-    } as unknown as EsmClient;
+    const client = createInMemoryEsmSource({
+      records: { [perkFormId]: perk as unknown as EsmRecord },
+      resolveEdidFallback: (formId) => formId,
+    });
     const result = await translateGrantedPerk(
       { client, routes: new Map(), edidByFormId: new Map() },
       'mod_Custom_MedicalMalpractice',
@@ -488,12 +486,9 @@ describe('getMgefInfo (consumables overhaul, 2026-07-13)', () => {
   // StackBuffStrength, ChemDispelEffects) — StackBuffStrength is the
   // discriminating keyword that keeps chem STR buffs from colliding with
   // food STR buffs (which key off FoodDispelEffect_Strength instead).
-  const stubClient = {
-    async get(formId: string): Promise<EsmRecord> {
-      if (formId === '0x002466E6') return fortifyStrengthChemEffect as unknown as EsmRecord;
-      throw new Error(`unexpected get(${formId})`);
-    },
-  } as unknown as EsmClient;
+  const stubClient = createInMemoryEsmSource({
+    records: { '0x002466E6': fortifyStrengthChemEffect as unknown as EsmRecord },
+  });
 
   it('parses keywords and dispelWithKeywords from the raw record shape', async () => {
     const info = await getMgefInfo(stubClient, '0x002466E6');
@@ -504,9 +499,9 @@ describe('getMgefInfo (consumables overhaul, 2026-07-13)', () => {
   });
 
   it('defaults keywords to [] and dispelWithKeywords to false when absent', async () => {
-    const bareClient = {
-      async get(): Promise<EsmRecord> {
-        return {
+    const bareClient = createInMemoryEsmSource({
+      records: {
+        '0xBARE': {
           header: { signature: 'MGEF', form_id: '0xBARE' },
           editor_id: 'BareMgef',
           fields: {
@@ -514,9 +509,9 @@ describe('getMgefInfo (consumables overhaul, 2026-07-13)', () => {
               Data: { Archetype: { name: 'Value Modifier' }, Flags: { value: '0x0', flags: [] } },
             },
           },
-        } as unknown as EsmRecord;
+        } as unknown as EsmRecord,
       },
-    } as unknown as EsmClient;
+    });
     const info = await getMgefInfo(bareClient, '0xBARE');
     expect(info.keywords).toEqual([]);
     expect(info.dispelWithKeywords).toBe(false);
@@ -1653,21 +1648,17 @@ describe('getMgefInfo (Detrimental flag, 2026-07-14)', () => {
   }
 
   it('is true for a Detrimental-flagged MGEF (Mutation_ReduceStrength-style)', async () => {
-    const client = {
-      async get() {
-        return flagRecord(['Recover', 'Detrimental', 'No Duration', 'No Area']);
-      },
-    } as unknown as EsmClient;
+    const client = createInMemoryEsmSource({
+      getFallback: () => flagRecord(['Recover', 'Detrimental', 'No Duration', 'No Area']),
+    });
     const info = await getMgefInfo(client, '0xFLAGS');
     expect(info.detrimental).toBe(true);
   });
 
   it('is false when the flag is absent (FortifyStrengthChemEffect-style)', async () => {
-    const client = {
-      async get() {
-        return flagRecord(['Recover', 'Dispel with Keywords', 'No Area']);
-      },
-    } as unknown as EsmClient;
+    const client = createInMemoryEsmSource({
+      getFallback: () => flagRecord(['Recover', 'Dispel with Keywords', 'No Area']),
+    });
     const info = await getMgefInfo(client, '0xFLAGS');
     expect(info.detrimental).toBe(false);
   });
@@ -2074,7 +2065,7 @@ describe('translateEnchantment (Contact-delivery weapon/OMOD on-hit procs, 2026-
 
   const enchFormId = '0xENCH1';
   const mgefFormId = '0xMGEF1';
-  const get = async (formId: string): Promise<EsmRecord> => {
+  const recordFor = (formId: string): EsmRecord => {
     if (formId === enchFormId) {
       return {
         header: { signature: 'ENCH', form_id: enchFormId },
@@ -2138,10 +2129,7 @@ describe('translateEnchantment (Contact-delivery weapon/OMOD on-hit procs, 2026-
       } as unknown as EsmRecord;
     throw new Error(`unexpected get(${formId})`);
   };
-  const stubClient = {
-    get,
-    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
-  } as unknown as EsmClient;
+  const stubClient = createInMemoryEsmSource({ getFallback: recordFor });
 
   const deps = {
     client: stubClient,
@@ -2172,7 +2160,7 @@ describe('translateEnchantment (Contact-delivery weapon/OMOD on-hit procs, 2026-
 
   it('does NOT invert GetIsPlayer for a Self-delivery record (ordinary granted effect)', async () => {
     const selfEnchFormId = '0xENCH2';
-    const getSelf = async (formId: string): Promise<EsmRecord> => {
+    const recordForSelf = (formId: string): EsmRecord => {
       if (formId === selfEnchFormId) {
         return {
           header: { signature: 'ENCH', form_id: selfEnchFormId },
@@ -2206,10 +2194,9 @@ describe('translateEnchantment (Contact-delivery weapon/OMOD on-hit procs, 2026-
       }
       throw new Error(`unexpected get(${formId})`);
     };
-    const selfClient = {
-      get: getSelf,
-      resolveEdid: async (formId: string) => (await getSelf(formId)).editor_id,
-    } as unknown as EsmClient;
+    const selfClient = createInMemoryEsmSource({
+      getFallback: recordForSelf,
+    });
     const result = await translateEnchantment(
       {
         client: selfClient,
@@ -2316,14 +2303,11 @@ describe('translateGrantedPerk (unique weapons, 2026-08-04)', () => {
     };
   }
 
-  function grantedPerkClient(perkFormId: string, perk: Record<string, unknown>): EsmClient {
-    return {
-      async get(formId: string): Promise<EsmRecord> {
-        if (formId === perkFormId) return perk as unknown as EsmRecord;
-        throw new Error(`unexpected get(${formId})`);
-      },
-      resolveEdid: async (formId: string) => cryptidEdids.get(formId) ?? formId,
-    } as unknown as EsmClient;
+  function grantedPerkClient(perkFormId: string, perk: Record<string, unknown>): EsmSource {
+    return createInMemoryEsmSource({
+      records: { [perkFormId]: perk as unknown as EsmRecord },
+      resolveEdidFallback: (formId) => cryptidEdids.get(formId) ?? formId,
+    });
   }
 
   it("routes Cultist Piercer's Mod Target Damage Resistance ×0.5 to armorPen ADD 0.5 vs Cryptids", async () => {
@@ -2512,14 +2496,11 @@ describe('stimpak-heal entry-point routing (Field Surgeon / Doctor / Healing Fac
     perkFormId: string,
     perk: Record<string, unknown>,
     edidMap: Map<string, string> = stimpakEdids,
-  ): EsmClient {
-    return {
-      async get(formId: string): Promise<EsmRecord> {
-        if (formId === perkFormId) return perk as unknown as EsmRecord;
-        throw new Error(`unexpected get(${formId})`);
-      },
-      resolveEdid: async (formId: string) => edidMap.get(formId) ?? formId,
-    } as unknown as EsmClient;
+  ): EsmSource {
+    return createInMemoryEsmSource({
+      records: { [perkFormId]: perk as unknown as EsmRecord },
+      resolveEdidFallback: (formId) => edidMap.get(formId) ?? formId,
+    });
   }
 
   it('Field Surgeon shape: Subject mag/dur route; Potential-Players heal-others do not', async () => {
@@ -2579,31 +2560,25 @@ describe('stimpak-heal entry-point routing (Field Surgeon / Doctor / Healing Fac
       },
     } as unknown as EsmRecord;
 
-    const client = {
-      async list(type: string): Promise<EsmListRow[]> {
-        if (type === 'PERK') {
-          return [
-            {
-              form_id: formId,
-              record_type: 'PERK',
-              editor_id: 'FieldSurgeon01',
-              name: 'Field Surgeon',
-            },
-          ];
-        }
-        return [];
-      },
-      async get(id: string): Promise<EsmRecord> {
-        if (id === formId) return fieldSurgeon;
-        return {
+    const client = createInMemoryEsmSource({
+      rows: [
+        {
+          form_id: formId,
+          record_type: 'PERK',
+          editor_id: 'FieldSurgeon01',
+          name: 'Field Surgeon',
+        },
+      ],
+      records: { [formId]: fieldSurgeon },
+      getFallback: (id) =>
+        ({
           header: { signature: 'PERK', form_id: id },
           editor_id: id,
           fields: {},
-        } as unknown as EsmRecord;
-      },
-      resolveEdid: async (id: string) => stimpakEdids.get(id) ?? id,
-      refs: async () => [],
-    } as unknown as EsmClient;
+        }) as EsmRecord,
+      resolveEdidMap: Object.fromEntries(stimpakEdids),
+      resolveEdidFallback: (id) => id,
+    });
 
     const result = await extractPerks(client);
     const family = result.perks.find((p) => p.family === 'FieldSurgeon');

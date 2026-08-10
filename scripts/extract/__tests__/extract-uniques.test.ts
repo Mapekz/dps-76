@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'bun:test';
 import type { GeneratedOmod, GeneratedWeapon } from '../../../src/types/generated';
-import type { EsmClient, EsmRecord } from '../esm-client';
+import type { EsmRecord } from '../esm-client';
+import { createInMemoryEsmSource } from '../esm-source-fake';
 import { extractUniques, isExcludedIdentityOmod } from '../extract-uniques';
 import { hiddenOmodIds } from '../../../src/data/overrides/omod-corrections';
 import doubleBarrel from './fixtures/weap-double-barrel-shotgun.json';
@@ -112,14 +113,10 @@ const RANDOM_POOL_EDIDS: Record<string, string> = {
   '0x007904EC': 'modcol_Legendary_Crafting_Weapon3',
 };
 
-const stubClient = {
-  async get(): Promise<EsmRecord> {
-    return doubleBarrel as unknown as EsmRecord;
-  },
-  async resolveEdid(formId: string): Promise<string> {
-    return RANDOM_POOL_EDIDS[formId] ?? `<unresolved:${formId}>`;
-  },
-} as unknown as EsmClient;
+const stubClient = createInMemoryEsmSource({
+  getFallback: () => doubleBarrel as unknown as EsmRecord,
+  resolveEdidMap: RANDOM_POOL_EDIDS,
+});
 
 describe('isExcludedIdentityOmod', () => {
   const base: GeneratedOmod = {
@@ -218,14 +215,10 @@ describe('extractUniques', () => {
         },
       },
     };
-    const client = {
-      async get(): Promise<EsmRecord> {
-        return comboFixture as unknown as EsmRecord;
-      },
-      async resolveEdid(): Promise<string> {
-        return '<unresolved>';
-      },
-    } as unknown as EsmClient;
+    const client = createInMemoryEsmSource({
+      getFallback: () => comboFixture as unknown as EsmRecord,
+      resolveEdidFallback: () => '<unresolved>',
+    });
 
     const { uniques } = await extractUniques(client, weapons, [...omods, loveTapOmod]);
     expect(uniques.find((u) => u.id === 'E09C_mod_Custom_LoveTap')?.name).toBe('Love Tap');
@@ -288,14 +281,10 @@ describe('extractUniques', () => {
         },
       },
     };
-    const client = {
-      async get(): Promise<EsmRecord> {
-        return teslaFixture as unknown as EsmRecord;
-      },
-      async resolveEdid(): Promise<string> {
-        return '<unresolved>';
-      },
-    } as unknown as EsmClient;
+    const client = createInMemoryEsmSource({
+      getFallback: () => teslaFixture as unknown as EsmRecord,
+      resolveEdidFallback: () => '<unresolved>',
+    });
 
     const { uniques } = await extractUniques(client, weapons, [...omods, ...teslaMods]);
     expect(uniques.find((u) => u.id === 'mod_custom_V63-BERTHA_customName')?.name).toBe(
@@ -353,14 +342,10 @@ describe('extractUniques', () => {
         },
       },
     };
-    const client = {
-      async get(): Promise<EsmRecord> {
-        return cosmicFixture as unknown as EsmRecord;
-      },
-      async resolveEdid(): Promise<string> {
-        return '<unresolved>';
-      },
-    } as unknown as EsmClient;
+    const client = createInMemoryEsmSource({
+      getFallback: () => cosmicFixture as unknown as EsmRecord,
+      resolveEdidFallback: () => '<unresolved>',
+    });
 
     const { uniques } = await extractUniques(client, weapons, [...omods, ...cosmicMods]);
     const superheated = uniques.find((u) => u.id === 'mod_custom_CosmicKnife_Superheated');
@@ -464,40 +449,37 @@ describe('extractUniques (variant container presets)', () => {
   } as GeneratedWeapon;
 
   it('resolves a variant-container OT combo to the lowest-formId default with variantIds', async () => {
-    const client = {
-      async get(formId: string): Promise<EsmRecord> {
-        if (formId === '0x008EDF25') {
-          return {
-            header: { signature: 'WEAP', form_id: formId },
-            editor_id: 'DLC04_CommieWhacker',
-            fields: {
-              'Object Template': {
-                Combinations: [
-                  {
-                    Combination: {
-                      Name: 'Default',
-                      'Object Mod Template Item': {
-                        Includes: [{ Mod: '0x00000001' }],
-                      },
+    const client = createInMemoryEsmSource({
+      records: {
+        '0x008EDF25': {
+          header: { signature: 'WEAP', form_id: '0x008EDF25' },
+          editor_id: 'DLC04_CommieWhacker',
+          fields: {
+            'Object Template': {
+              Combinations: [
+                {
+                  Combination: {
+                    Name: 'Default',
+                    'Object Mod Template Item': {
+                      Includes: [{ Mod: '0x00000001' }],
                     },
                   },
-                  {
-                    Combination: {
-                      Name: 'Camden Whacker',
-                      'Object Mod Template Item': {
-                        Includes: [{ Mod: '0x008EDF26' }],
-                      },
+                },
+                {
+                  Combination: {
+                    Name: 'Camden Whacker',
+                    'Object Mod Template Item': {
+                      Includes: [{ Mod: '0x008EDF26' }],
                     },
                   },
-                ],
-              },
+                },
+              ],
             },
-          } as unknown as EsmRecord;
-        }
-        throw new Error(`unexpected get ${formId}`);
+          },
+        } as unknown as EsmRecord,
       },
-      resolveEdid: async (formId: string) => formId,
-    } as unknown as EsmClient;
+      resolveEdidFallback: (formId) => formId,
+    });
 
     const variantContainers = {
       '0x008EDF26': camdenVariants,

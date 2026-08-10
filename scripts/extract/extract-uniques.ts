@@ -1,6 +1,6 @@
 import { hiddenOmodIds, omodNameOverrides } from '../../src/data/overrides/omod-corrections';
 import type { GeneratedOmod, GeneratedUnique, GeneratedWeapon } from '../../src/types/generated';
-import type { EsmClient } from './esm-client';
+import type { EsmSource } from './esm-client';
 import { isExcludedOmodEdid, isVariantContainer } from './extract-omods';
 import { walkWeaponCombinations } from './extract-weapons';
 
@@ -72,7 +72,7 @@ function stripIdentityOmodNameSuffix(name: string): string {
 }
 
 async function resolveContainerPresetName(
-  client: EsmClient,
+  client: EsmSource,
   containerEdid: string,
   containerFormId: string,
   comboName: string,
@@ -115,7 +115,7 @@ function lowestFormIdVariant(variants: GeneratedOmod[]): GeneratedOmod {
 }
 
 async function resolveVariantContainer(
-  client: EsmClient,
+  client: EsmSource,
   containerFormId: string,
   omodByFormId: Map<string, GeneratedOmod>,
   variantContainers: Record<string, GeneratedOmod[]> | undefined,
@@ -163,7 +163,7 @@ async function resolveVariantContainer(
 }
 
 export async function extractUniques(
-  client: EsmClient,
+  client: EsmSource,
   weapons: GeneratedWeapon[],
   omods: GeneratedOmod[],
   variantContainers: Record<string, GeneratedOmod[]> = {},

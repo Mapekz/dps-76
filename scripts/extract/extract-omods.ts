@@ -4,7 +4,7 @@ import type {
   GeneratedOmod,
 } from '../../src/types/generated';
 import type { Bucket, Modifier } from '../../src/types/modifiers';
-import { EsmClient, mapPool, type EsmRecord } from './esm-client';
+import { mapPool, type EsmRecord, type EsmSource } from './esm-client';
 import {
   FALLBACK_AVIF_ROUTES,
   buildAvifRoutes,
@@ -539,7 +539,7 @@ export interface ExtractOmodsResult {
 }
 
 export async function extractOmods(
-  client: EsmClient,
+  client: EsmSource,
   /** Formids of obtainable weapons (from the weapons pass) — an OMOD referenced by one rides along. */
   obtainableWeaponFormIds: ReadonlySet<string>,
   /** Forward COBJ index (buildCobjIndex) — learn-method-aware obtainability + hasGrantingCobj. */

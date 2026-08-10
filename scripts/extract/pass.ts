@@ -1,6 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import type { EsmClient } from './esm-client';
+import type { EsmSource } from './esm-client';
 import type { GameMode } from '../../src/types';
 import type { ExcludedRecordDetail, GeneratedMeta } from '../../src/types/generated';
 import type { ExtractWeaponsResult } from './extract-weapons';
@@ -100,7 +100,7 @@ export interface ExtractionPass<K extends ExtractorName = ExtractorName> {
 }
 
 export interface PassContext {
-  readonly client: EsmClient;
+  readonly client: EsmSource;
   readonly mode: GameMode;
   readonly outDir: string;
   /** In-memory result if `id` ran earlier in this session, else undefined — no disk fallback (that's each pass's own `readGenerated` call, for the deps that have one). */
@@ -110,7 +110,7 @@ export interface PassContext {
 }
 
 export function createPassContext(
-  client: EsmClient,
+  client: EsmSource,
   mode: GameMode,
   outDir: string,
   memoryResults: ReadonlyMap<ExtractorName, unknown>,

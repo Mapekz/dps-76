@@ -1,4 +1,4 @@
-import { EsmClient } from './esm-client';
+import type { EsmSource } from './esm-client';
 import { classifyOmodRecordExclusion } from './extract-omods';
 
 /**
@@ -49,7 +49,7 @@ export function emptyApGrantIndex(): ApGrantIndex {
   return new Map();
 }
 
-export async function buildApGrantIndex(client: EsmClient): Promise<ApGrantIndex> {
+export async function buildApGrantIndex(client: EsmSource): Promise<ApGrantIndex> {
   const rows = await client.list('OMOD');
   const records = await client.bulkGet(rows.map((r) => r.form_id));
 

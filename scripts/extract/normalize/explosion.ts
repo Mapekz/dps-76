@@ -3,7 +3,7 @@ import type {
   GeneratedDamageComponent,
   GeneratedDamageType,
 } from '../../../src/types/generated';
-import type { EsmClient, EsmRecord } from '../esm-client';
+import type { EsmRecord, EsmSource } from '../esm-client';
 
 /**
  * Shared PROJ → EXPL field decoding, used by BOTH the WEAP-level launcher
@@ -49,7 +49,7 @@ export function parseCurve(node: unknown): { tier: number | null; curve: CurvePo
  * chased here.
  */
 export async function projectileExplosionFormId(
-  client: EsmClient,
+  client: EsmSource,
   projFormId: string,
 ): Promise<string | null> {
   const proj = await client.get(projFormId);
@@ -94,7 +94,7 @@ export interface DecodedExplosionDamage {
 
 /** Decode an already-fetched EXPL record's damage fields (main curve / flat Damage / typed Damage Types / Base Weapon Damage Mult). */
 export async function decodeExplosionDamage(
-  client: EsmClient,
+  client: EsmSource,
   expl: EsmRecord,
   unresolved: string[],
 ): Promise<DecodedExplosionDamage> {

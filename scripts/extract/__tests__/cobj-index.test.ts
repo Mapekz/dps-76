@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'bun:test';
-import type { EsmClient, EsmListRow, EsmRecord } from '../esm-client';
+import type { EsmListRow, EsmRecord } from '../esm-client';
+import { createInMemoryEsmSource } from '../esm-source-fake';
 import { buildCobjIndex, isNonGrantingCobj, type CobjInfo } from '../cobj-index';
 import cobj10mmBarrelLong from './fixtures/cobj-10mm-barrel-long.json';
 import cobjThirstZapper from './fixtures/cobj-thirstzapper-scrap.json';
@@ -56,28 +57,16 @@ const LEARN_FROM_RECORDS: EsmRecord[] = [
   },
 ];
 
-function makeStubClient(): EsmClient {
-  const known = new Map<string, EsmRecord>(
-    [...FIXTURES, ...LEARN_FROM_RECORDS].map((r) => [r.header.form_id, r]),
-  );
-  const get = async (target: string): Promise<EsmRecord> => {
-    const record = known.get(target);
-    if (!record) throw new Error(`stub get: unknown ${target}`);
-    return record;
-  };
-  return {
-    async list(type: string): Promise<EsmListRow[]> {
-      expect(type).toBe('COBJ');
-      return FIXTURES.map((r) => ({
-        form_id: r.header.form_id,
-        record_type: 'COBJ',
-        editor_id: r.editor_id,
-        name: null,
-      }));
-    },
-    get,
-    bulkGet: (targets: string[]) => Promise.all(targets.map(get)),
-  } as unknown as EsmClient;
+function makeStubClient() {
+  const allRecords = [...FIXTURES, ...LEARN_FROM_RECORDS];
+  const records = Object.fromEntries(allRecords.map((r) => [r.header.form_id, r]));
+  const rows: EsmListRow[] = FIXTURES.map((r) => ({
+    form_id: r.header.form_id,
+    record_type: 'COBJ',
+    editor_id: r.editor_id,
+    name: null,
+  }));
+  return createInMemoryEsmSource({ records, rows });
 }
 
 describe('buildCobjIndex', () => {

@@ -1,4 +1,4 @@
-import type { EsmClient, EsmListRow, EsmRecord } from './esm-client';
+import type { EsmListRow, EsmRecord, EsmSource } from './esm-client';
 
 /**
  * Re-extraction of the generic "Universal Tier" creature/player curve
@@ -194,7 +194,7 @@ export interface CurveTablesResult {
  * `dfob` bridge.
  */
 async function resolveSingletonRecord(
-  client: EsmClient,
+  client: EsmSource,
   singleton: CurveTableSingleton,
   unresolved: string[],
 ): Promise<EsmRecord | null> {
@@ -236,7 +236,7 @@ async function resolveSingletonRecord(
   }
 }
 
-export async function extractCurveTables(client: EsmClient): Promise<CurveTablesResult> {
+export async function extractCurveTables(client: EsmSource): Promise<CurveTablesResult> {
   const files: ExtractedCurveTableFile[] = [];
   const unresolved: string[] = [];
 

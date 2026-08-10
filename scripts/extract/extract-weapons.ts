@@ -6,7 +6,7 @@ import type {
 import type { Modifier } from '../../src/types/modifiers';
 import { isOmodEligibleForWeapon } from '../../src/data/omod-eligibility';
 import { type ApGrantEntry, type ApGrantIndex, emptyApGrantIndex } from './ap-grant-index';
-import { EsmClient, mapPool, resolveKeywordEdids, type EsmRecord } from './esm-client';
+import { mapPool, resolveKeywordEdids, type EsmRecord, type EsmSource } from './esm-client';
 import {
   asNumber,
   DAMAGE_TYPE_EDID_MAP,
@@ -63,7 +63,7 @@ export interface ExtractWeaponsResult {
 }
 
 async function buildComponents(
-  client: EsmClient,
+  client: EsmSource,
   fields: Record<string, unknown>,
   unresolved: string[],
 ): Promise<GeneratedDamageComponent[]> {
@@ -151,7 +151,7 @@ export interface ExplosionChaseResult {
 }
 
 export async function chaseExplosion(
-  client: EsmClient,
+  client: EsmSource,
   fields: Record<string, unknown>,
   edid: string,
   unresolved: string[],
@@ -208,7 +208,7 @@ export async function chaseExplosion(
  * — docs/assumptions.md "Weapon-intrinsic DoT & OMOD replacement").
  */
 export async function chaseWeaponEnchantment(
-  client: EsmClient,
+  client: EsmSource,
   fields: Record<string, unknown>,
   formId: string,
   edid: string,
@@ -330,7 +330,7 @@ function extractDefaultModFormIds(
 }
 
 export async function toGeneratedWeapon(
-  client: EsmClient,
+  client: EsmSource,
   record: EsmRecord,
   unresolved: string[],
 ): Promise<GeneratedWeapon> {
@@ -473,7 +473,7 @@ export function applyAttachPointClosure(
 }
 
 export async function extractWeapons(
-  client: EsmClient,
+  client: EsmSource,
   apGrantIndex: ApGrantIndex = emptyApGrantIndex(),
 ): Promise<ExtractWeaponsResult> {
   const named = await client.search('*', { type: 'WEAP', searchIn: 'name' });

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'bun:test';
-import type { EsmClient, EsmListRow, EsmRecord, EsmRefRow } from '../esm-client';
+import type { EsmListRow, EsmRecord, EsmRefRow } from '../esm-client';
+import { createInMemoryEsmSource } from '../esm-source-fake';
 import { extractArmor, isExcludedArmorEdid } from '../extract-armor';
 
 /**
@@ -32,8 +33,8 @@ describe('isExcludedArmorEdid', () => {
   });
 });
 
-/** Minimal stub EsmClient: canned ARMO rows/records + refs for the obtainability pass. */
-function makeStubClient(): EsmClient {
+/** Minimal in-memory source: canned ARMO rows/records + refs for the obtainability pass. */
+function makeStubClient() {
   const rows: EsmListRow[] = [
     {
       form_id: '0xARMO_REAL',
@@ -84,19 +85,7 @@ function makeStubClient(): EsmClient {
     ],
     '0xARMO_UNREACHABLE': [],
   };
-  return {
-    async list(type: string): Promise<EsmListRow[]> {
-      return type === 'ARMO' ? rows : [];
-    },
-    async get(formId: string): Promise<EsmRecord> {
-      const r = records[formId];
-      if (!r) throw new Error(`unknown formid ${formId}`);
-      return r;
-    },
-    async refs(formId: string): Promise<EsmRefRow[]> {
-      return refs[formId] ?? [];
-    },
-  } as unknown as EsmClient;
+  return createInMemoryEsmSource({ rows, records, refs });
 }
 
 describe('extractArmor', () => {

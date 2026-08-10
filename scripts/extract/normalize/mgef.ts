@@ -8,7 +8,7 @@ import type {
   ModifierSource,
   ValueCurve,
 } from '../../../src/types/modifiers';
-import type { EsmClient, EsmRecord } from '../esm-client';
+import type { EsmRecord, EsmSource } from '../esm-client';
 import {
   flattenConditionRows,
   flattenPerkConditionRows,
@@ -583,7 +583,7 @@ export function collectConditionFormIds(rows: RawCondition[], into: Set<string>)
  * the row unexpanded (it stays `unresolved`, the pre-existing behavior).
  */
 export async function resolveConditionForms(
-  client: EsmClient,
+  client: EsmSource,
   rows: RawCondition[],
   edidByFormId: Map<string, string>,
   into: Map<string, RawCondition[]> = new Map(),
@@ -627,7 +627,7 @@ export function collectConditionGlobalIds(rows: RawCondition[], into: Set<string
 }
 
 export async function buildAvifRoutes(
-  client: EsmClient,
+  client: EsmSource,
   formIdPool: Set<string>,
 ): Promise<Map<string, AvifRoute[]>> {
   const routes = new Map<string, AvifRoute[]>();
@@ -824,7 +824,7 @@ export interface MgefInfo {
   detrimental: boolean;
 }
 
-export async function getMgefInfo(client: EsmClient, formId: string): Promise<MgefInfo> {
+export async function getMgefInfo(client: EsmSource, formId: string): Promise<MgefInfo> {
   const record = await client.get(formId);
   const data = ((record.fields['Magic Effect Data'] as Record<string, unknown> | undefined)?.[
     'Data'
@@ -851,7 +851,7 @@ export async function getMgefInfo(client: EsmClient, formId: string): Promise<Mg
 }
 
 export interface MgefTranslationDeps {
-  client: EsmClient;
+  client: EsmSource;
   routes: Map<string, AvifRoute[]>;
   edidByFormId: Map<string, string>;
   /**

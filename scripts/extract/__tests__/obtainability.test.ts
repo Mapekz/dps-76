@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'bun:test';
-import type { EsmClient, EsmRefRow } from '../esm-client';
+import type { EsmRefRow } from '../esm-client';
+import { createInMemoryEsmSource } from '../esm-source-fake';
 import { ObtainabilityClassifier } from '../obtainability';
 import { emptyCobjIndex, type CobjIndex, type CobjInfo } from '../cobj-index';
 import bookFastTriggerRefs from './fixtures/refs-book-fasttrigger-plan.json';
@@ -52,15 +53,14 @@ import firecrackerFerm from './fixtures/refs-firecracker-ferm.json';
 //   refs-firecracker-fresh.json        Brew_FirecrackerWhiskeyFresh             0x00469853
 //   refs-firecracker-ferm.json         Brew_FirecrackerWhiskeyFerm              0x00469852
 
-/** Stub EsmClient: formid -> canned refs rows, or 'throw' to simulate a refs() failure. */
-function stubClient(rows: Record<string, unknown>): EsmClient {
-  return {
-    async refs(formId: string): Promise<EsmRefRow[]> {
-      const entry = rows[formId];
-      if (entry === 'throw') throw new Error('refs failed');
-      return (entry as EsmRefRow[] | undefined) ?? [];
-    },
-  } as unknown as EsmClient;
+/** Real `esm refs` JSON and synthetic rows may carry null editor_ids on REFR rows. */
+type TestRefsEntry = (Omit<EsmRefRow, 'editor_id'> & { editor_id: string | null })[] | 'throw';
+
+/** In-memory source: formid -> canned refs rows, or 'throw' to simulate a refs() failure. */
+function stubClient(rows: Record<string, TestRefsEntry>) {
+  return createInMemoryEsmSource({
+    refs: rows as Record<string, EsmRefRow[] | 'throw'>,
+  });
 }
 
 describe('ObtainabilityClassifier', () => {
@@ -508,7 +508,7 @@ describe('ObtainabilityClassifier with a CobjIndex (learn-method gating)', () =>
     // Synthetic 8-LVLI vendor chain (the live Whitespring BoS shape): under
     // the general cap of 4 this is a truncated false; the book chase's own
     // cap must walk it to the CONT terminal.
-    const chain: Record<string, unknown> = {
+    const chain: Record<string, TestRefsEntry> = {
       '0xOMOD_VENDOR': [COBJ_REF('0xCOBJ_VENDOR', 'co_mod_Vendor_Taught')],
       '0xBOOK_VENDOR': [
         {

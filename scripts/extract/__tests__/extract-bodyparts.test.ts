@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'bun:test';
 import { bptdToParts, extractBodyParts } from '../extract-bodyparts';
-import type { EsmClient } from '../esm-client';
+import type { EsmRecord } from '../esm-client';
+import { createInMemoryEsmSource } from '../esm-source-fake';
 import stormGoliath from './fixtures/bptd-storm-goliath.json';
 import human from './fixtures/bptd-human.json';
 import guardian from './fixtures/bptd-guardian.json';
@@ -144,17 +145,10 @@ describe('bptdToParts', () => {
 });
 
 describe('extractBodyParts NPC_ → RACE resolution', () => {
-  // Fake EsmClient: .get() plus a real-shaped .resolveEdid (get → editor_id).
+  // In-memory source: records keyed by form_id or editor_id (get/resolveEdid).
   // Records mimic the wire shape (header.signature/form_id + editor_id +
   // fields); BPTDs reuse the fixtures above.
-  const records: Record<
-    string,
-    {
-      header: { signature: string; form_id: string };
-      editor_id: string;
-      fields: Record<string, unknown>;
-    }
-  > = {
+  const records: Record<string, EsmRecord> = {
     HumanRace: {
       header: { signature: 'RACE', form_id: '0x00013746' },
       editor_id: 'HumanRace',
@@ -220,14 +214,7 @@ describe('extractBodyParts NPC_ → RACE resolution', () => {
       fields: { 'Body Part Data': '0x00017AD4' },
     },
   };
-  const fakeClient = {
-    get: async (target: string) => {
-      const record = records[target];
-      if (!record) throw new Error(`not found: ${target}`);
-      return record;
-    },
-    resolveEdid: async (formId: string) => records[formId]?.editor_id ?? `<unresolved:${formId}>`,
-  } as unknown as EsmClient;
+  const fakeClient = createInMemoryEsmSource({ records });
 
   it('resolves NPC_ rows through fields.Race and RACE rows directly', async () => {
     const { races } = await extractBodyParts(fakeClient);

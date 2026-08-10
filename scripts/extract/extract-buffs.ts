@@ -5,7 +5,7 @@ import type {
   GeneratedAddictionRef,
   GeneratedBuff,
 } from '../../src/types/generated';
-import { EsmClient, mapPool, resolveKeywordEdids, type EsmRecord } from './esm-client';
+import { mapPool, resolveKeywordEdids, type EsmRecord, type EsmSource } from './esm-client';
 import { ObtainabilityClassifier } from './obtainability';
 import {
   buildAvifRoutes,
@@ -127,7 +127,7 @@ const ADDICTION_BOOKKEEPING_MGEF_EDIDS = new Set(['abAddictionCount', 'CA_Addict
  * item in a category). See docs/assumptions.md "Consumable stacking".
  */
 export async function buildDispelKeys(
-  client: EsmClient,
+  client: EsmSource,
   effects: readonly SpellEffect[],
 ): Promise<string[]> {
   const keys = new Set<string>();
@@ -146,7 +146,7 @@ export async function buildDispelKeys(
  * non-addictive.
  */
 export async function resolveAddiction(
-  client: EsmClient,
+  client: EsmSource,
   record: EsmRecord,
   notes: Set<string>,
 ): Promise<GeneratedAddictionRef | undefined> {
@@ -185,7 +185,7 @@ export interface ExtractBuffsResult {
  * called from extractBuffs' MUTATION_SPELLS loop.
  */
 export async function extractMutation(
-  client: EsmClient,
+  client: EsmSource,
   edid: string,
   routes: Map<string, AvifRoute[]>,
   edidByFormId: Map<string, string>,
@@ -262,7 +262,7 @@ interface CategorizedBuff {
  * Exported for tests (same precedent as extractMutation above).
  */
 export async function extractAddictionEffects(
-  client: EsmClient,
+  client: EsmSource,
   spel: EsmRecord,
   routes: Map<string, AvifRoute[]>,
   edidByFormId: Map<string, string>,
@@ -292,7 +292,7 @@ export async function extractAddictionEffects(
 
 /** Build a GeneratedBuff for one categorized ALCH record (even when 0 modifiers result — needed for the addiction catalog). */
 async function buildConsumable(
-  client: EsmClient,
+  client: EsmSource,
   record: EsmRecord,
   routes: Map<string, AvifRoute[]>,
   edidByFormId: Map<string, string>,
@@ -358,7 +358,7 @@ async function buildConsumable(
   return { buff, category };
 }
 
-export async function extractBuffs(client: EsmClient): Promise<ExtractBuffsResult> {
+export async function extractBuffs(client: EsmSource): Promise<ExtractBuffsResult> {
   const formIdPool = new Set<string>();
   const routes = await buildAvifRoutes(client, formIdPool);
   const edidByFormId = new Map<string, string>();

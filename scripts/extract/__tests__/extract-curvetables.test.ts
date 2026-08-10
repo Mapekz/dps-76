@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'bun:test';
-import type { EsmClient, EsmRecord } from '../esm-client';
+import type { EsmSource, EsmRecord } from '../esm-client';
+import { createInMemoryEsmSource } from '../esm-source-fake';
 import {
   buildCurveTableBarrels,
   CURVE_TABLE_GROUPS,
@@ -142,23 +143,21 @@ describe('extractCurveTables', () => {
   function makeClient(
     searchRows: Array<{ form_id: string; editor_id: string }>,
     recordSet: Record<string, EsmRecord> = records,
-  ): EsmClient {
+  ): EsmSource {
+    const base = createInMemoryEsmSource({ records: recordSet });
     return {
-      async search(pattern: string, opts: { type?: string }) {
+      ...base,
+      async search(pattern, opts = {}) {
         // Only the Creatures/Armor group's pattern is exercised by this fake
         // client — the other 3 groups return empty (landing in `files: []`,
-        // not `unresolved`).
+        // not `unresolved`). Intentionally looser than real esm glob matching
+        // so a search hit with no parseable tier suffix still surfaces.
         if (pattern.includes('Creatures_Armor') && opts.type === 'CURV') {
           return searchRows.map((r) => ({ ...r, record_type: 'CURV', name: null }));
         }
-        return [];
+        return base.search(pattern, opts);
       },
-      async get(formId: string) {
-        const record = recordSet[formId];
-        if (!record) throw new Error(`stub: no record for ${formId}`);
-        return record;
-      },
-    } as unknown as EsmClient;
+    };
   }
 
   const singletonRelativePaths = [
@@ -347,14 +346,7 @@ describe('extractCurveTables', () => {
     });
 
     it('reports unresolved when every get() fails for a singleton (not a crash)', async () => {
-      const client: EsmClient = {
-        async search() {
-          return [];
-        },
-        async get(target: string) {
-          throw new Error(`stub: no record for ${target}`);
-        },
-      } as unknown as EsmClient;
+      const client = createInMemoryEsmSource();
       const { files, unresolved } = await extractCurveTables(client);
       expect(files).toEqual([]);
       // Two notes per singleton: the DFOB failure + the editor_id fallback failure.

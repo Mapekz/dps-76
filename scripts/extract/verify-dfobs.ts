@@ -1,4 +1,4 @@
-import type { EsmClient } from './esm-client';
+import type { EsmSource } from './esm-client';
 
 /**
  * DFOB identity pinning (2026-07-21 DFOB sweep).
@@ -154,7 +154,7 @@ export interface VerifyDfobsResult {
   unresolved: string[];
 }
 
-export async function verifyDfobs(client: EsmClient): Promise<VerifyDfobsResult> {
+export async function verifyDfobs(client: EsmSource): Promise<VerifyDfobsResult> {
   const unresolved: string[] = [];
   let verified = 0;
 

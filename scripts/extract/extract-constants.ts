@@ -1,5 +1,5 @@
 import type { GeneratedConstants } from '../../src/types/generated';
-import { EsmClient, type EsmListRow } from './esm-client';
+import { type EsmListRow, type EsmSource } from './esm-client';
 import { avToNumber } from './extract-npcs';
 
 /**
@@ -180,7 +180,7 @@ const FALLBACK_DISTANCE = { closeThresholdUnits: 850 };
 
 /** Resolve one AVIF's Minimum/Maximum Value; null (+ unresolved note) on any failure, mirroring extract-npcs.ts's resolveGlobal. */
 async function resolveSpecialAvif(
-  client: EsmClient,
+  client: EsmSource,
   formId: string,
   label: string,
   unresolved: string[],
@@ -201,7 +201,7 @@ async function resolveSpecialAvif(
 }
 
 async function resolveSpecial(
-  client: EsmClient,
+  client: EsmSource,
   unresolved: string[],
 ): Promise<{ min: number; max: number }> {
   const resolved = await Promise.all(
@@ -235,7 +235,7 @@ async function resolveSpecial(
 
 /** Shared shape for resolveGmstFloat/resolveGmstUInt: get one GMST, read its `field`, push an unresolved note and return null on any failure. */
 async function resolveGmstNumericField(
-  client: EsmClient,
+  client: EsmSource,
   formId: string,
   field: 'Float' | 'UInt',
   label: string,
@@ -257,7 +257,7 @@ async function resolveGmstNumericField(
 
 /** Resolve one GMST's Float field; null (+ unresolved note) on any failure — the GMST analog of resolveSpecialAvif/resolveGlobal. */
 async function resolveGmstFloat(
-  client: EsmClient,
+  client: EsmSource,
   formId: string,
   label: string,
   unresolved: string[],
@@ -279,7 +279,7 @@ async function resolveGmstFloat(
  * — `fDamagedAPRegenDelay` must not be satisfied by some longer neighbour.
  */
 async function probeOptionalGmstFloat(
-  client: EsmClient,
+  client: EsmSource,
   edid: string,
   label: string,
   unresolved: string[],
@@ -298,7 +298,7 @@ async function probeOptionalGmstFloat(
 
 /** Resolve one `u`-prefixed GMST's UInt field; null (+ unresolved note) on any failure — the unsigned-int analog of `resolveGmstFloat`. */
 async function resolveGmstUInt(
-  client: EsmClient,
+  client: EsmSource,
   formId: string,
   label: string,
   unresolved: string[],
@@ -316,7 +316,7 @@ async function resolveGmstUInt(
  * from `mergeProperties`' matching.
  */
 async function resolveRacePropertyValue(
-  client: EsmClient,
+  client: EsmSource,
   raceFormId: string,
   avFormId: string,
   label: string,
@@ -358,7 +358,7 @@ async function resolveRacePropertyValue(
  * (`MIN_DAMAGE_REDUCTION_GMSTS` only has 5 legitimate members).
  */
 async function resolveUniformGmstGroup(
-  client: EsmClient,
+  client: EsmSource,
   familyLabel: string,
   entries: ReadonlyArray<{ label: string; formId: string }>,
   fallback: number,
@@ -390,7 +390,7 @@ async function resolveUniformGmstGroup(
 }
 
 async function resolveMitigation(
-  client: EsmClient,
+  client: EsmSource,
   unresolved: string[],
 ): Promise<GeneratedConstants['mitigation']> {
   const [resistExponent, damageFactor, minReduction, maxReduction] = await Promise.all([
@@ -427,7 +427,7 @@ async function resolveMitigation(
 }
 
 async function resolveVatsCrit(
-  client: EsmClient,
+  client: EsmSource,
   unresolved: string[],
 ): Promise<GeneratedConstants['vatsCrit']> {
   const chargeBase = await resolveGmstFloat(
@@ -440,7 +440,7 @@ async function resolveVatsCrit(
 }
 
 async function resolveActionPoints(
-  client: EsmClient,
+  client: EsmSource,
   unresolved: string[],
 ): Promise<GeneratedConstants['actionPoints']> {
   const [poolBase, poolPerAgility, regenDelaySec, regenRatePct, regenRatePctPowerArmor] =
@@ -475,7 +475,7 @@ async function resolveActionPoints(
 }
 
 async function resolveBulletStorm(
-  client: EsmClient,
+  client: EsmSource,
   unresolved: string[],
 ): Promise<GeneratedConstants['bulletStorm']> {
   const ammoPerStack = await resolveGmstUInt(
@@ -488,7 +488,7 @@ async function resolveBulletStorm(
 }
 
 async function resolveDistance(
-  client: EsmClient,
+  client: EsmSource,
   unresolved: string[],
 ): Promise<GeneratedConstants['distance']> {
   const closeThresholdUnits = await resolveGmstFloat(
@@ -505,7 +505,7 @@ export interface ConstantsResult {
   unresolved: string[];
 }
 
-export async function extractConstants(client: EsmClient): Promise<ConstantsResult> {
+export async function extractConstants(client: EsmSource): Promise<ConstantsResult> {
   const unresolved: string[] = [];
   const [special, mitigation, vatsCrit, actionPoints, bulletStorm, distance] = await Promise.all([
     resolveSpecial(client, unresolved),

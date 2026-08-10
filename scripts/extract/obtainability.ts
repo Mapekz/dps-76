@@ -1,4 +1,4 @@
-import { EsmClient, mapPool } from './esm-client';
+import { mapPool, type EsmSource } from './esm-client';
 import { isNonGrantingCobj, type CobjIndex, type CobjInfo } from './cobj-index';
 
 /**
@@ -120,7 +120,7 @@ export class ObtainabilityClassifier {
    *  chase always starts its LVLI walks at depth 0. */
   private bookCache = new Map<string, boolean>();
 
-  private client: EsmClient;
+  private client: EsmSource;
   /** Weapons already ruled obtainable — an OMOD referenced by one rides along. */
   private obtainableWeaponFormIds: ReadonlySet<string>;
   /** Forward COBJ index (buildCobjIndex). When present, COBJ referencers are
@@ -134,7 +134,7 @@ export class ObtainabilityClassifier {
   private obtainableArmorFormIds: ReadonlySet<string>;
 
   constructor(
-    client: EsmClient,
+    client: EsmSource,
     obtainableWeaponFormIds: ReadonlySet<string> = new Set(),
     cobjIndex?: CobjIndex,
     obtainableArmorFormIds: ReadonlySet<string> = new Set(),

@@ -1,4 +1,4 @@
-import { EsmClient } from './esm-client';
+import type { EsmSource } from './esm-client';
 
 /**
  * Forward COBJ index: one bulk pass over every constructible-object record,
@@ -86,7 +86,7 @@ function formIdField(value: unknown): string | null {
   return typeof value === 'string' && value !== '0x00000000' ? value : null;
 }
 
-export async function buildCobjIndex(client: EsmClient): Promise<CobjIndex> {
+export async function buildCobjIndex(client: EsmSource): Promise<CobjIndex> {
   const rows = await client.list('COBJ');
   const records = await client.bulkGet(rows.map((r) => r.form_id));
 

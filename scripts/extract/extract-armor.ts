@@ -1,5 +1,5 @@
 import type { GeneratedArmor } from '../../src/types/generated';
-import { EsmClient, mapPool } from './esm-client';
+import { mapPool, type EsmSource } from './esm-client';
 import { ObtainabilityClassifier } from './obtainability';
 
 /**
@@ -54,7 +54,7 @@ export interface ExtractArmorResult {
   obtainableFormIds: Set<string>;
 }
 
-export async function extractArmor(client: EsmClient): Promise<ExtractArmorResult> {
+export async function extractArmor(client: EsmSource): Promise<ExtractArmorResult> {
   const rows = await client.list('ARMO');
   const candidateRows = rows.filter((r) => !isExcludedArmorEdid(r.editor_id));
   const records = await mapPool(candidateRows, 8, (r) => client.get(r.form_id));

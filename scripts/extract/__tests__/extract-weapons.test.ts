@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'bun:test';
-import type { EsmClient, EsmRecord } from '../esm-client';
+import type { EsmSource, EsmRecord } from '../esm-client';
+import { createInMemoryEsmSource } from '../esm-source-fake';
 import {
   chaseExplosion,
   chaseWeaponEnchantment,
@@ -55,16 +56,11 @@ const CHAIN_RECORDS: Record<string, unknown> = {
   '0x0022E05D': explGaussImpact,
 };
 
-const stubClient = {
-  async resolveEdid(formId: string): Promise<string> {
-    return KNOWN_EDIDS[formId] ?? `kw_${formId}`;
-  },
-  async get(formId: string): Promise<EsmRecord> {
-    const record = CHAIN_RECORDS[formId];
-    if (!record) throw new Error(`stub: no record for ${formId}`);
-    return record as EsmRecord;
-  },
-} as unknown as EsmClient;
+const stubClient = createInMemoryEsmSource({
+  records: CHAIN_RECORDS as Record<string, EsmRecord>,
+  resolveEdidMap: KNOWN_EDIDS,
+  resolveEdidFallback: (formId) => `kw_${formId}`,
+});
 
 describe('toGeneratedWeapon', () => {
   it('Fixer: single ballistic component from the main curve, crit/sneak/fire-rate fields', async () => {
@@ -236,11 +232,11 @@ describe('chaseExplosion', () => {
  * this calculator must keep) and a PVP-only branch (GetIsPlayer=1 — a flat
  * value that must be dropped).
  */
-function makeWeaponEnchantmentStubClient(): EsmClient {
+function makeWeaponEnchantmentStubClient(): EsmSource {
   const enchFormId = '0xWEAPENCH';
   const mgefFormId = '0xWEAPMGEF';
   const fireResistFormId = '0xFIRERESIST';
-  const known: Record<string, EsmRecord> = {
+  const records: Record<string, EsmRecord> = {
     [enchFormId]: {
       header: { signature: 'ENCH', form_id: enchFormId },
       editor_id: 'TestWeaponFireHitEnch',
@@ -322,18 +318,15 @@ function makeWeaponEnchantmentStubClient(): EsmClient {
       fields: {},
     } as unknown as EsmRecord,
   };
-  const get = async (target: string): Promise<EsmRecord> => {
-    if (known[target]) return known[target];
-    return {
-      header: { signature: 'KYWD', form_id: target },
-      editor_id: target,
-      fields: {},
-    } as unknown as EsmRecord;
-  };
-  return {
-    get,
-    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
-  } as unknown as EsmClient;
+  return createInMemoryEsmSource({
+    records,
+    getFallback: (target) =>
+      ({
+        header: { signature: 'KYWD', form_id: target },
+        editor_id: target,
+        fields: {},
+      }) as unknown as EsmRecord,
+  });
 }
 
 describe('chaseWeaponEnchantment (weapon-intrinsic on-hit DoT, 2026-07-14)', () => {
@@ -382,20 +375,15 @@ describe('chaseWeaponEnchantment (weapon-intrinsic on-hit DoT, 2026-07-14)', () 
   });
 
   it('returns [] for a Self-delivery weapon enchantment (out of scope)', async () => {
-    const get = async (formId: string): Promise<EsmRecord> => {
-      if (formId === '0xSELFENCH') {
-        return {
+    const selfClient = createInMemoryEsmSource({
+      records: {
+        '0xSELFENCH': {
           header: { signature: 'ENCH', form_id: '0xSELFENCH' },
           editor_id: 'TestSelfWeaponEnch',
           fields: { 'Effect Data': { 'Target Type': { name: 'Self' } }, Effects: [] },
-        } as unknown as EsmRecord;
-      }
-      throw new Error(`unexpected get(${formId})`);
-    };
-    const selfClient = {
-      get,
-      resolveEdid: async (formId: string) => (await get(formId)).editor_id,
-    } as unknown as EsmClient;
+        } as unknown as EsmRecord,
+      },
+    });
     const modifiers = await chaseWeaponEnchantment(
       selfClient,
       { Enchantment: '0xSELFENCH' },

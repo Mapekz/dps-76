@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'bun:test';
-import type { EsmClient, EsmListRow, EsmRecord } from '../esm-client';
+import type { EsmSource, EsmListRow, EsmRecord } from '../esm-client';
+import { createInMemoryEsmSource } from '../esm-source-fake';
 import {
   effectiveFamilyMaxRank,
   extractPerks,
@@ -241,12 +242,12 @@ describe('translateConditions (radResistAtLeast — RadResistExposure AV 0x00000
  * 0x0032016B) lists exactly ONE rank entry pointing at rank 1's formid — the
  * cut-rank fix's motivating example (extract-perks.ts's effectiveFamilyMaxRank).
  */
-function makeLockAndLoadStubClient(): EsmClient {
+function makeLockAndLoadStubClient(): EsmSource {
   const rank1FormId = '0x00320168';
   const rank2FormId = '0x0032016A';
   const rank3FormId = '0x0032016C';
   const cardFormId = '0x0032016B';
-  const known: Record<string, EsmRecord> = {
+  const records: Record<string, EsmRecord> = {
     [rank1FormId]: {
       header: { signature: 'PERK', form_id: rank1FormId },
       editor_id: 'LockAndLoad01',
@@ -288,51 +289,37 @@ function makeLockAndLoadStubClient(): EsmClient {
       },
     } as unknown as EsmRecord,
   };
-  const get = async (target: string): Promise<EsmRecord> => {
-    if (known[target]) return known[target];
-    // The STAT_Damage*Perk plumbing perks (buildAvifRoutes) and any other
-    // stray edid lookup — no Effects, so downstream parsing no-ops on them.
-    return {
-      header: { signature: 'PERK', form_id: target },
-      editor_id: target,
-      fields: {},
-    } as unknown as EsmRecord;
-  };
-  return {
-    async list(type: string): Promise<EsmListRow[]> {
-      if (type === 'PERK') {
-        return [
-          {
-            form_id: rank1FormId,
-            record_type: 'PERK',
-            editor_id: 'LockAndLoad01',
-            name: 'Lock and Load',
-          },
-          {
-            form_id: rank2FormId,
-            record_type: 'PERK',
-            editor_id: 'LockAndLoad02',
-            name: 'Lock and Load',
-          },
-          {
-            form_id: rank3FormId,
-            record_type: 'PERK',
-            editor_id: 'LockAndLoad03',
-            name: 'Lock and Load',
-          },
-        ];
-      }
-      if (type === 'PCRD') {
-        return [
-          { form_id: cardFormId, record_type: 'PCRD', editor_id: 'LockAndLoadCard', name: null },
-        ];
-      }
-      return [];
+  const rows: EsmListRow[] = [
+    {
+      form_id: rank1FormId,
+      record_type: 'PERK',
+      editor_id: 'LockAndLoad01',
+      name: 'Lock and Load',
     },
-    get,
-    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
-    refs: async () => [],
-  } as unknown as EsmClient;
+    {
+      form_id: rank2FormId,
+      record_type: 'PERK',
+      editor_id: 'LockAndLoad02',
+      name: 'Lock and Load',
+    },
+    {
+      form_id: rank3FormId,
+      record_type: 'PERK',
+      editor_id: 'LockAndLoad03',
+      name: 'Lock and Load',
+    },
+    { form_id: cardFormId, record_type: 'PCRD', editor_id: 'LockAndLoadCard', name: null },
+  ];
+  return createInMemoryEsmSource({
+    records,
+    rows,
+    getFallback: (target) =>
+      ({
+        header: { signature: 'PERK', form_id: target },
+        editor_id: target,
+        fields: {},
+      }) as unknown as EsmRecord,
+  });
 }
 
 /**
@@ -342,12 +329,12 @@ function makeLockAndLoadStubClient(): EsmClient {
  * Effect 2 is the self-referencing "Mod Spell Magnitude" ×2.0 entry point
  * (post-processed into `unarmored` conditions, not extracted generically).
  */
-function makeBarbarianStubClient(): EsmClient {
+function makeBarbarianStubClient(): EsmSource {
   const perkFormId = '0x00242E59';
   const spellFormId = '0x00242E5A';
   const mgefFormId = '0x0004A0AC';
   const damageResistAv = '0x000002E3';
-  const known: Record<string, EsmRecord> = {
+  const records: Record<string, EsmRecord> = {
     [perkFormId]: barbarian01 as unknown as EsmRecord,
     [spellFormId]: abPerkBarbarian as unknown as EsmRecord,
     [mgefFormId]: abPerkFortifyResistDamage as unknown as EsmRecord,
@@ -362,30 +349,23 @@ function makeBarbarianStubClient(): EsmClient {
       fields: { Effects: [] },
     } as unknown as EsmRecord,
   };
-  const get = async (target: string): Promise<EsmRecord> => {
-    if (known[target]) return known[target];
-    return {
-      header: { signature: 'PERK', form_id: target },
-      editor_id: target,
-      fields: {},
-    } as unknown as EsmRecord;
-  };
-  return {
-    async list(type: string): Promise<EsmListRow[]> {
-      if (type !== 'PERK') return [];
-      return [
-        {
-          form_id: perkFormId,
-          record_type: 'PERK',
-          editor_id: 'Barbarian01',
-          name: 'Barbarian',
-        },
-      ];
-    },
-    get,
-    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
-    refs: async () => [],
-  } as unknown as EsmClient;
+  return createInMemoryEsmSource({
+    records,
+    rows: [
+      {
+        form_id: perkFormId,
+        record_type: 'PERK',
+        editor_id: 'Barbarian01',
+        name: 'Barbarian',
+      },
+    ],
+    getFallback: (target) =>
+      ({
+        header: { signature: 'PERK', form_id: target },
+        editor_id: target,
+        fields: {},
+      }) as unknown as EsmRecord,
+  });
 }
 
 describe('extractPerks (cut-rank fix — Lock and Load, 2026-07-16)', () => {
@@ -414,13 +394,13 @@ describe('extractPerks (cut-rank fix — Lock and Load, 2026-07-16)', () => {
  * its own. STAT_DamagePerk Effects[30] supplies the buildAvifRoutes entry
  * for STAT_ExplosionRadius → explosionRadiusBonus ×0.01.
  */
-function makeGrenadierStubClient(): EsmClient {
+function makeGrenadierStubClient(): EsmSource {
   const rank1FormId = '0x00393F66';
   const rank2FormId = '0x00393F69';
   const spellFormId = '0x00393F67';
   const mgefFormId = '0x00393F68';
   const explosionRadiusAv = '0x00066997';
-  const known: Record<string, EsmRecord> = {
+  const records: Record<string, EsmRecord> = {
     [rank1FormId]: grenadier01 as unknown as EsmRecord,
     [rank2FormId]: grenadier02 as unknown as EsmRecord,
     [spellFormId]: abPerkGrenadier as unknown as EsmRecord,
@@ -448,36 +428,29 @@ function makeGrenadierStubClient(): EsmClient {
       },
     } as unknown as EsmRecord,
   };
-  const get = async (target: string): Promise<EsmRecord> => {
-    if (known[target]) return known[target];
-    return {
-      header: { signature: 'PERK', form_id: target },
-      editor_id: target,
-      fields: {},
-    } as unknown as EsmRecord;
-  };
-  return {
-    async list(type: string): Promise<EsmListRow[]> {
-      if (type !== 'PERK') return [];
-      return [
-        {
-          form_id: rank1FormId,
-          record_type: 'PERK',
-          editor_id: 'Grenadier01',
-          name: 'Grenadier',
-        },
-        {
-          form_id: rank2FormId,
-          record_type: 'PERK',
-          editor_id: 'Grenadier02',
-          name: 'Grenadier',
-        },
-      ];
-    },
-    get,
-    resolveEdid: async (formId: string) => (await get(formId)).editor_id,
-    refs: async () => [],
-  } as unknown as EsmClient;
+  return createInMemoryEsmSource({
+    records,
+    rows: [
+      {
+        form_id: rank1FormId,
+        record_type: 'PERK',
+        editor_id: 'Grenadier01',
+        name: 'Grenadier',
+      },
+      {
+        form_id: rank2FormId,
+        record_type: 'PERK',
+        editor_id: 'Grenadier02',
+        name: 'Grenadier',
+      },
+    ],
+    getFallback: (target) =>
+      ({
+        header: { signature: 'PERK', form_id: target },
+        editor_id: target,
+        fields: {},
+      }) as unknown as EsmRecord,
+  });
 }
 
 describe('extractPerks (Grenadier / explosion radius bonus, 2026-07-29)', () => {

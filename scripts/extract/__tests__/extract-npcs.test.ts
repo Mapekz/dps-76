@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'bun:test';
 import type { GeneratedNpcDamageType } from '../../../src/types/generated';
-import type { EsmClient, EsmRecord } from '../esm-client';
+import type { EsmSource, EsmRecord } from '../esm-client';
+import { createInMemoryEsmSource } from '../esm-source-fake';
 import { CURATED_TARGETS } from '../curated-targets';
 import {
   RACE_NPC_TEMPLATES,
@@ -293,14 +294,8 @@ describe('resolveNormalizedLevelAdjustment', () => {
     Effect: { 'Effect Header': { 'Effect Type': { value: 1, name: 'Ability' } } },
   };
 
-  function fakeClientWith(records: Record<string, EsmRecord>): EsmClient {
-    return {
-      async get(target: string): Promise<EsmRecord> {
-        const record = records[target];
-        if (!record) throw new Error(`not found: ${target}`);
-        return record;
-      },
-    } as unknown as EsmClient;
+  function fakeClientWith(records: Record<string, EsmRecord>): EsmSource {
+    return createInMemoryEsmSource({ records });
   }
 
   const npcWithPerks = (perkFormIds: string[]) =>
@@ -458,13 +453,7 @@ describe('extractNpcs (fake client — full RACE→NPC_ resolution + GLOB level 
   // through this fake client's `get` throwing "not found", landing in
   // `unresolved` rather than crashing. That's fine: this test only asserts
   // the 3 stocked rows resolve correctly plus a total-shape sanity check.
-  const fakeClient = {
-    async get(target: string): Promise<EsmRecord> {
-      const record = records[target];
-      if (!record) throw new Error(`not found: ${target}`);
-      return record;
-    },
-  } as unknown as EsmClient;
+  const fakeClient = createInMemoryEsmSource({ records });
 
   it('resolves Earle (WendigoColossusRace → the Earle override, not the generic template); its epic rank stays unset (E06_Colossus proves neither VMAD shape)', async () => {
     const { npcs, unresolved } = await extractNpcs(fakeClient);

@@ -1,5 +1,5 @@
 import type { GeneratedBodyPart, GeneratedBodyPartRace } from '../../src/types/generated';
-import { EsmClient, mapPool, resolveKeywordEdids } from './esm-client';
+import { mapPool, resolveKeywordEdids, type EsmSource } from './esm-client';
 import { isEnemyKeyword } from './normalize/conditions';
 import { CURATED_TARGETS } from './curated-targets';
 
@@ -146,7 +146,7 @@ export interface BodyPartsResult {
   unresolved: string[];
 }
 
-export async function extractBodyParts(client: EsmClient): Promise<BodyPartsResult> {
+export async function extractBodyParts(client: EsmSource): Promise<BodyPartsResult> {
   const unresolved: string[] = [];
 
   const races = await mapPool(

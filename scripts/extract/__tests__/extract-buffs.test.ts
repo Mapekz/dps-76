@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'bun:test';
-import type { EsmClient, EsmRecord } from '../esm-client';
+import type { EsmRecord } from '../esm-client';
+import { createInMemoryEsmSource } from '../esm-source-fake';
 import {
   isExcludedConsumableEdid,
   classifyConsumableCategory,
@@ -20,8 +21,8 @@ import mgefReduceAgilityAlcohol from './fixtures/mgef-abreduceagilityalcoholaddi
 import mgefReduceCharismaAlcohol from './fixtures/mgef-abreducecharismaalcoholaddiction.json';
 import mgefAbAddictionCount from './fixtures/mgef-abaddictioncount.json';
 
-// Stubbed-client pattern from obtainability.test.ts: cast a plain object
-// implementing only the EsmClient methods each helper actually calls.
+// In-memory source pattern: createInMemoryEsmSource implements only the
+// EsmSource methods each helper actually calls.
 
 function record(
   overrides: Partial<EsmRecord> & { fields?: Record<string, unknown> } = {},
@@ -90,17 +91,8 @@ describe('classifyConsumableCategory', () => {
   });
 });
 
-function stubClientFor(records: Record<string, EsmRecord>): EsmClient {
-  return {
-    async get(target: string): Promise<EsmRecord> {
-      const rec = records[target];
-      if (!rec) throw new Error(`not found: ${target}`);
-      return rec;
-    },
-    async resolveEdid(formId: string): Promise<string> {
-      return records[formId]?.editor_id ?? `<unresolved:${formId}>`;
-    },
-  } as unknown as EsmClient;
+function stubClientFor(records: Record<string, EsmRecord>) {
+  return createInMemoryEsmSource({ records });
 }
 
 function spellEffect(mgefFormId: string): SpellEffect {

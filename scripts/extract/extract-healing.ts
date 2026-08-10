@@ -1,5 +1,5 @@
 import type { GeneratedHealingItem } from '../../src/types/generated';
-import { EsmClient, resolveKeywordEdids } from './esm-client';
+import { resolveKeywordEdids, type EsmSource } from './esm-client';
 import { parseMagicEffects } from './normalize/mgef';
 
 /**
@@ -31,7 +31,7 @@ export interface ExtractHealingResult {
   unresolved: string[];
 }
 
-export async function extractHealing(client: EsmClient): Promise<ExtractHealingResult> {
+export async function extractHealing(client: EsmSource): Promise<ExtractHealingResult> {
   const unresolved: string[] = [];
   const items: GeneratedHealingItem[] = [];
 

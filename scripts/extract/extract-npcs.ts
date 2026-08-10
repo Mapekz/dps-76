@@ -1,4 +1,4 @@
-import { keywordFormIds, type EsmClient, type EsmRecord } from './esm-client';
+import { keywordFormIds, type EsmRecord, type EsmSource } from './esm-client';
 import { CURATED_TARGETS } from './curated-targets';
 import { tierFromEdid } from './extract-curvetables';
 import type {
@@ -45,7 +45,7 @@ const EPIC_CREATURE_DISALLOWED_KEYWORDS_FLST = '0x004FC5B7';
 
 /** Resolve the epic-creature disallow-keyword FLST to a formId set; empty (fail-open to `epicAllowed: true`) on any error. */
 async function resolveEpicDisallowedKeywords(
-  client: EsmClient,
+  client: EsmSource,
   unresolved: string[],
 ): Promise<Set<string>> {
   try {
@@ -165,7 +165,7 @@ export function resolveEpicRankFromVmad(vmad: VirtualMachineAdapter): number | n
 
 /** Looks up `targetEdid` in `BOSS_EPIC_RANK_QUESTS`, fetches its summon quest, and resolves epic rank via both VMAD shapes. Returns `undefined` (+ an unresolved note) for every non-curated-boss row and for a curated boss whose quest carries neither shape. */
 async function resolveBossEpicRank(
-  client: EsmClient,
+  client: EsmSource,
   targetEdid: string,
   unresolved: string[],
 ): Promise<number | undefined> {
@@ -262,7 +262,7 @@ function foldNormalizedLevelBound(
  * Exported for tests.
  */
 export async function resolveNormalizedLevelAdjustment(
-  client: EsmClient,
+  client: EsmSource,
   npcRecord: EsmRecord,
   label: string,
   unresolved: string[],
@@ -461,7 +461,7 @@ export function resolveStat(
 
 /** Resolve a GLOB formId reference to its numeric Value; null (+ unresolved note) on any failure. */
 async function resolveGlobal(
-  client: EsmClient,
+  client: EsmSource,
   formId: string | undefined,
   label: string,
   unresolved: string[],
@@ -484,7 +484,7 @@ export interface NpcsResult {
   unresolved: string[];
 }
 
-export async function extractNpcs(client: EsmClient): Promise<NpcsResult> {
+export async function extractNpcs(client: EsmSource): Promise<NpcsResult> {
   const unresolved: string[] = [];
   const npcs: GeneratedNpc[] = [];
   const epicDisallowedKeywords = await resolveEpicDisallowedKeywords(client, unresolved);

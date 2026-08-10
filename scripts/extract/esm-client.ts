@@ -28,6 +28,21 @@ export interface EsmRefRow {
   offset?: number;
 }
 
+export interface EsmSource {
+  list(type: string, limit?: number): Promise<EsmListRow[]>;
+  search(
+    pattern: string,
+    opts?: { type?: string; searchIn?: 'edid' | 'name' | 'both'; limit?: number },
+  ): Promise<EsmListRow[]>;
+  get(target: string): Promise<EsmRecord>;
+  bulkGet(targets: string[]): Promise<EsmRecord[]>;
+  refs(
+    formId: string,
+    opts?: { depth?: number; limit?: number; type?: string; paths?: boolean },
+  ): Promise<EsmRefRow[]>;
+  resolveEdid(formId: string): Promise<string>;
+}
+
 /**
  * Thin wrapper around the `esm` CLI (every subcommand is one-shot and
  * daemon-backed by default).
@@ -42,7 +57,7 @@ export interface EsmRefRow {
  *   target (`{sel, ...record}` or `{sel, error}` for an unresolvable one) —
  *   unlike the single-target form, a bad selector doesn't fail the whole call.
  */
-export class EsmClient {
+export class EsmClient implements EsmSource {
   private esmPath: string;
   private getCache = new Map<string, Promise<EsmRecord>>();
   private refsCache = new Map<string, Promise<EsmRefRow[]>>();
@@ -171,7 +186,7 @@ export function keywordFormIds(fields: Record<string, unknown>): string[] {
 
 /** `keywordFormIds(fields)`, each resolved to its editor_id via `client.resolveEdid`. */
 export async function resolveKeywordEdids(
-  client: EsmClient,
+  client: EsmSource,
   fields: Record<string, unknown>,
 ): Promise<string[]> {
   return Promise.all(keywordFormIds(fields).map((id) => client.resolveEdid(id)));

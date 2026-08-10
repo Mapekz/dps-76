@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'bun:test';
-import type { EsmClient, EsmListRow, EsmRecord } from '../esm-client';
+import type { EsmListRow, EsmRecord } from '../esm-client';
+import { createInMemoryEsmSource } from '../esm-source-fake';
 import { extractConstants } from '../extract-constants';
 import avifStrength from './fixtures/avif-strength.json';
 import gmstResistExponent from './fixtures/gmst-resist-exponent.json';
@@ -130,22 +131,14 @@ function uniformNewConstantsRecords(): Record<string, EsmRecord> {
   };
 }
 
-function clientFrom(records: Record<string, EsmRecord>): EsmClient {
-  return {
-    async get(target: string): Promise<EsmRecord> {
-      const record = records[target];
-      if (!record) throw new Error(`not found: ${target}`);
-      return record;
-    },
-    // Mirrors the CLI's SUBSTRING EditorID search over whatever the fixture
-    // holds, so a record the fixture omits yields [] — exactly what the real
-    // ESM returns for the exe-baked fDamagedAPRegenDelay.
-    async search(pattern: string): Promise<EsmListRow[]> {
-      return Object.entries(records)
-        .filter(([, r]) => r.editor_id?.includes(pattern))
-        .map(([formId, r]) => ({ form_id: formId, editor_id: r.editor_id }) as EsmListRow);
-    },
-  } as unknown as EsmClient;
+function clientFrom(records: Record<string, EsmRecord>) {
+  const rows: EsmListRow[] = Object.entries(records).map(([formId, r]) => ({
+    form_id: formId,
+    record_type: r.header.signature,
+    editor_id: r.editor_id,
+    name: null,
+  }));
+  return createInMemoryEsmSource({ records, rows });
 }
 
 describe('extractConstants — SPECIAL clamp', () => {
