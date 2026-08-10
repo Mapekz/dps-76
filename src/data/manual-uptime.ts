@@ -36,7 +36,9 @@ const MANUAL_UPTIME_PERKS = {
 export type ManualUptimePerkKey = keyof typeof MANUAL_UPTIME_PERKS;
 
 /** The wholeDamage ADD modifiers for whichever manual damage-multiplier toggles are dialed above 0%. */
-export function getManualUptimeModifiers(conditions: PlayerConditions): Modifier[] {
+export function getManualUptimeModifiers(
+  conditions: Pick<PlayerConditions, 'followThroughPct' | 'takingOneForTheTeamPct'>,
+): Modifier[] {
   const modifiers: Modifier[] = [];
   for (const key of Object.keys(MANUAL_UPTIME_PERKS) as ManualUptimePerkKey[]) {
     const card = MANUAL_UPTIME_PERKS[key];

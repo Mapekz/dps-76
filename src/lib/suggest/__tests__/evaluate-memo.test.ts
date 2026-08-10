@@ -7,12 +7,13 @@ import {
 } from '@/state/build-reducer';
 import { PerkId } from '@/data/perk-ids';
 import { resolveLoadout } from '@/lib/loadout';
+import { createMemoScope } from '@/lib/loadout-memo';
 import { computeScenarios } from '@/lib/engine/scenarios';
-import { evaluateSuggestions, snapshotOf } from '@/lib/suggest/evaluate';
+import { evaluateActions, evaluateSuggestions, snapshotOf } from '@/lib/suggest/evaluate';
 import type { DpsSnapshot, EvaluatedSuggestion, SuggestionGroup } from '@/lib/suggest/types';
 
 /**
- * Correctness guard for `resolveLoadout`'s opt-in `LoadoutMemo` cache
+ * Correctness guard for `resolveLoadout`'s opt-in `MemoScope` cache
  * (src/lib/loadout-memo.ts, wired through by `evaluateSuggestions`): the
  * memoized full sweep must produce EXACTLY the same per-candidate DPS
  * numbers as evaluating each candidate in isolation, with no memo at all.
@@ -117,5 +118,73 @@ describe('evaluateSuggestions memoization correctness', () => {
         expect(suggestion.result).toEqual(naive!);
       }
     });
+  });
+});
+
+/**
+ * Regression guard for the bug this file's `MemoScope` rewrite fixed:
+ * `resolveLoadout`'s `player` assembly reads `playerConfig.addictions` (via
+ * `deriveAddictionCount`) but the pre-rewrite `LoadoutMemo`'s cache key for
+ * `player` never listed it — a candidate that only replaced `addictions`
+ * (leaving `conditions`/`mutations`/every other key input referentially
+ * identical) would incorrectly hit the PREVIOUS `player` object, silently
+ * dropping Junkie's addiction-count-driven damage.
+ *
+ * `variants.ts` never emits an `addiction/toggle` candidate today (see
+ * CONTEXT.md/that file), so `evaluateSuggestions`' own sweep can't exercise
+ * this — this test drives `evaluateActions` directly with a SHARED
+ * `MemoScope` across two calls (the exact reuse pattern the sweep relies on)
+ * to exercise it regardless.
+ */
+describe('addiction/toggle candidate — MemoScope key regression (see loadout.ts playerAgg)', () => {
+  function junkieBuildState(): BuildState {
+    let state = createDefaultBuildState();
+    state = applyActions(state, [
+      { type: 'weapon/select', weaponId: 'CombatRifle_Fixer' },
+      // Junkie's: +10% dbm per active (unsuppressed) addiction — a pure
+      // function of `addictionCount`, so any DPS movement below is
+      // attributable entirely to the addiction toggle, not to some other
+      // damage source moving at the same time.
+      {
+        type: 'weapon/legendary',
+        slotIndex: 0,
+        omodId: 'mod_Legendary_Weapon1_DamageAddiction',
+      },
+    ]);
+    return state;
+  }
+
+  it('toggling an addiction on, in a MemoScope already warmed by a zero-addiction evaluation, still moves DPS', () => {
+    const state = junkieBuildState();
+    const scope = createMemoScope();
+    const zero: DpsSnapshot = {
+      freeAim: { perHit: 0, burstDps: 0, sustainedDps: 0, windowDps: 0 },
+      vats: { perHit: 0, burstDps: 0, sustainedDps: 0, windowDps: 0 },
+    };
+
+    // Warm the scope on the 0-addiction state first — this is what makes the
+    // regression reachable: a fresh scope's first call can't hit a stale
+    // cache, so the bug only shows up on a SECOND call sharing the scope.
+    const warm = evaluateActions(state, 'live', [], zero, scope);
+    expect(warm).not.toBeNull();
+
+    const toggled = evaluateActions(
+      state,
+      'live',
+      [{ type: 'addiction/toggle', id: 'AbAddictionAlcohol' }],
+      zero,
+      scope,
+    );
+    expect(toggled).not.toBeNull();
+
+    // The bug's failure mode: toggled.result === warm.result (the stale
+    // 0-addiction player object served again). Assert real movement instead.
+    expect(toggled!.result.freeAim.sustainedDps).toBeGreaterThan(warm!.result.freeAim.sustainedDps);
+
+    // And exactness against a fully naive (unmemoized, no scope at all)
+    // evaluation of the SAME toggled state — not just "some" movement.
+    const naive = naiveSnapshot(state, [{ type: 'addiction/toggle', id: 'AbAddictionAlcohol' }]);
+    expect(naive).not.toBeNull();
+    expect(toggled!.result).toEqual(naive!);
   });
 });

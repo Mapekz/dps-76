@@ -1,6 +1,6 @@
 import type { GameMode } from '@/types';
 import { resolveLoadout } from '@/lib/loadout';
-import { cached, createLoadoutMemo, type LoadoutMemo } from '@/lib/loadout-memo';
+import { createKeyedCache, createMemoScope, type MemoScope } from '@/lib/loadout-memo';
 import { apLimitedDps } from '@/lib/engine/ap-economy';
 import { computeScenarios, type ScenarioResult, type ScenarioSet } from '@/lib/engine/scenarios';
 import {
@@ -57,26 +57,34 @@ export function snapshotOf(scenarios: ScenarioSet): DpsSnapshot {
   return { freeAim: headline(scenarios.freeAim), vats: headline(scenarios.vats) };
 }
 
-function computeSnapshot(
-  state: BuildState,
-  mode: GameMode,
-  memo?: LoadoutMemo,
-): DpsSnapshot | null {
-  const input = resolveLoadout(state.player, state.enemy, mode, memo);
+/**
+ * Sweep-level cache for `computeScenarios` ITSELF, not just resolveLoadout's
+ * assembly: every `ScenarioInput` field except weapon/modifiers/player is
+ * provably invariant across one sweep — none of it is fed by any
+ * `PlayerConfig`/`EnemyConfig` slice a suggestion candidate's `BuildAction`
+ * ever touches (see resolveLoadout's own doc-comment). `weapon`/`modifiers`/
+ * `player` are themselves already interned/canonicalized by `resolveLoadout`
+ * (stable references when their real inputs didn't change) — so a
+ * damage-IRRELEVANT candidate (an inert consumable/mutation `variants.ts`
+ * enumerates unconditionally, a perk whose modifiers don't move any bucket
+ * THIS build reads) collapses to a hit here, skipping the engine's
+ * per-scenario fold entirely rather than just avoiding redundant assembly
+ * work.
+ *
+ * Deliberately `createKeyedCache`, not `scoped()`: the sound key is
+ * `[weapon, modifiers, player]`, narrower than what `computeScenarios`
+ * actually reads (the full `ScenarioInput`) — a `scoped()` wrapper keyed on
+ * the whole `input` would never hit, since `resolveLoadout` allocates a fresh
+ * `ScenarioInput` object every call regardless of whether its fields changed.
+ * See `createKeyedCache`'s own doc-comment for why this narrower key is sound
+ * here specifically.
+ */
+const scenariosCache = createKeyedCache<DpsSnapshot>();
+
+function computeSnapshot(state: BuildState, mode: GameMode, scope?: MemoScope): DpsSnapshot | null {
+  const input = resolveLoadout(state.player, state.enemy, mode, scope);
   if (!input) return null;
-  // Sweep-level cache for `computeScenarios` ITSELF, not just resolveLoadout's
-  // assembly: every `ScenarioInput` field except weapon/modifiers/player is
-  // provably invariant across one sweep — none of it is fed by any
-  // `PlayerConfig`/`EnemyConfig` slice a suggestion candidate's `BuildAction`
-  // ever touches (see resolveLoadout's own doc-comment and
-  // src/lib/loadout-memo.ts). `weapon`/`modifiers`/`player` are themselves
-  // already canonicalized by `resolveLoadout` (stable references when their
-  // real inputs didn't change) — so a damage-IRRELEVANT candidate (an inert
-  // consumable/mutation `variants.ts` enumerates unconditionally, a perk
-  // whose modifiers don't move any bucket THIS build reads) collapses to a
-  // hit here, skipping the engine's per-scenario fold entirely rather than
-  // just avoiding redundant assembly work.
-  return cached(memo?.scenarios, [input.weapon, input.modifiers, input.player], () =>
+  return scenariosCache(scope, [input.weapon, input.modifiers, input.player], () =>
     snapshotOf(computeScenarios(input)),
   );
 }
@@ -107,9 +115,9 @@ export function evaluateActions(
   mode: GameMode,
   actions: readonly BuildAction[],
   baseline: DpsSnapshot,
-  memo?: LoadoutMemo,
+  scope?: MemoScope,
 ): { result: DpsSnapshot; delta: DpsSnapshot } | null {
-  const result = computeSnapshot(applyActions(state, mode, actions), mode, memo);
+  const result = computeSnapshot(applyActions(state, mode, actions), mode, scope);
   if (!result) return null;
   return {
     result,
@@ -201,7 +209,7 @@ export function evaluateSuggestions(
   mode: GameMode,
   metric: ScenarioKey,
 ): SuggestionReport {
-  // One memo per sweep (src/lib/loadout-memo.ts): every candidate re-runs
+  // One scope per sweep (src/lib/loadout-memo.ts): every candidate re-runs
   // `resolveLoadout` on a `BuildState` that differs from `state` by exactly
   // one `PlayerConfig` slice (the reducer's immutable updates keep every
   // OTHER slice's reference identity — see makeBuildReducer/withPlayer), so
@@ -210,15 +218,15 @@ export function evaluateSuggestions(
   // lists and re-walking enemy/bodypart data from scratch every candidate)
   // into mostly cache hits. Discarded when this function returns — never
   // shared across sweeps or renders.
-  const memo = createLoadoutMemo(mode);
-  const baseline = computeSnapshot(state, mode, memo);
+  const scope = createMemoScope();
+  const baseline = computeSnapshot(state, mode, scope);
   if (!baseline) return { baseline: null, metric, suggestions: [] };
 
   const metricBase = baseline[metric].windowDps;
   const suggestions: EvaluatedSuggestion[] = [];
 
   for (const candidate of enumerateVariants(state, mode)) {
-    const evaluated = evaluateActions(state, mode, candidate.action, baseline, memo);
+    const evaluated = evaluateActions(state, mode, candidate.action, baseline, scope);
     if (!evaluated) continue;
     const primaryDeltaPct = metricBase > 0 ? evaluated.delta[metric].windowDps / metricBase : 0;
     suggestions.push({ ...candidate, ...evaluated, primaryDeltaPct });
