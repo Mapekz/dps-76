@@ -147,39 +147,67 @@ function componentBase(
  * modeled at its expected value; see docs/assumptions.md). Base crit mult is
  * untouched by the scale.
  */
+export interface CritMultResult {
+  total: number;
+  trace: { base: BucketTrace; bonus: BucketTrace; bonusScale: BucketTrace } | null;
+}
+
 export function totalCritMult(
   modifiers: Modifier[],
   weapon: Weapon,
   ctx: ResolveContext,
-  collect?: BucketTrace[],
-): number {
+  tracing = false,
+): CritMultResult {
+  const baseCollect = tracing ? ([] as BucketTrace[]) : undefined;
   const adjustedBase = foldBucket(
     modifiers,
     'critDmgBase',
     weapon.critDamageMult ?? DEFAULT_CRIT_MULT,
     ctx,
-    collect,
+    baseCollect,
   );
-  const bonus = foldBucket(modifiers, 'critDmgBonus', 0, ctx, collect);
-  const bonusScale = foldBucket(modifiers, 'critDmgBonusScale', 1, ctx, collect);
-  return adjustedBase + bonus * bonusScale;
+  const bonusCollect = tracing ? ([] as BucketTrace[]) : undefined;
+  const bonus = foldBucket(modifiers, 'critDmgBonus', 0, ctx, bonusCollect);
+  const bonusScaleCollect = tracing ? ([] as BucketTrace[]) : undefined;
+  const bonusScale = foldBucket(modifiers, 'critDmgBonusScale', 1, ctx, bonusScaleCollect);
+  return {
+    total: adjustedBase + bonus * bonusScale,
+    trace: tracing
+      ? {
+          base: lastTrace(baseCollect!),
+          bonus: lastTrace(bonusCollect!),
+          bonusScale: lastTrace(bonusScaleCollect!),
+        }
+      : null,
+  };
 }
 
 /** Total sneak-attack multiplier, same composition rule as crit. */
+export interface SneakMultResult {
+  total: number;
+  trace: { base: BucketTrace; bonus: BucketTrace } | null;
+}
+
 export function totalSneakMult(
   modifiers: Modifier[],
   weapon: Weapon,
   ctx: ResolveContext,
-  collect?: BucketTrace[],
-): number {
+  tracing = false,
+): SneakMultResult {
+  const baseCollect = tracing ? ([] as BucketTrace[]) : undefined;
   const adjustedBase = foldBucket(
     modifiers,
     'sneakBase',
     weapon.sneakAttackMult ?? DEFAULT_SNEAK_MULT,
     ctx,
-    collect,
+    baseCollect,
   );
-  return adjustedBase + foldBucket(modifiers, 'sneakBonus', 0, ctx, collect);
+  const bonusCollect = tracing ? ([] as BucketTrace[]) : undefined;
+  const bonus = foldBucket(modifiers, 'sneakBonus', 0, ctx, bonusCollect);
+  return {
+    total: adjustedBase + bonus,
+    trace: tracing ? { base: lastTrace(baseCollect!), bonus: lastTrace(bonusCollect!) } : null,
+  };
 }
 
 export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
@@ -207,16 +235,15 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
   // Crit is a scenario flag (symmetric with sneaking/powerAttack).
   let critTerm = 0; // CritDBM
   if (ctx.scenario.isCrit) {
-    const collect = trace ? ([] as BucketTrace[]) : undefined;
-    critTerm = totalCritMult(modifiers, weapon, ctx, collect) - 1.0;
-    if (trace && collect)
-      trace.crit = { base: collect[0], bonus: collect[1], bonusScale: collect[2] };
+    const { total, trace: critTrace } = totalCritMult(modifiers, weapon, ctx, !!trace);
+    critTerm = total - 1.0;
+    if (trace && critTrace) trace.crit = critTrace;
   }
   let sneakTerm = 0; // SneakDBM
   if (ctx.scenario.isSneaking) {
-    const collect = trace ? ([] as BucketTrace[]) : undefined;
-    sneakTerm = totalSneakMult(modifiers, weapon, ctx, collect) - 1.0;
-    if (trace && collect) trace.sneak = { base: collect[0], bonus: collect[1] };
+    const { total, trace: sneakTrace } = totalSneakMult(modifiers, weapon, ctx, !!trace);
+    sneakTerm = total - 1.0;
+    if (trace && sneakTrace) trace.sneak = sneakTrace;
   }
   let powerAttackTerm = 0; // PowerAttackDBM
   if (ctx.scenario.isPowerAttack) {
@@ -255,7 +282,7 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
   const components: ComponentHit[] = componentBase(mode, weapon, itemLevel, chargeMult).flatMap(
     ({ type, base, isExplosion }) => {
       const componentCtx = { ...ctx, componentType: type, componentIsExplosion: isExplosion };
-      const collect = trace ? ([] as BucketTrace[]) : undefined;
+      const baseDamageCollect = trace ? ([] as BucketTrace[]) : undefined;
       // Base-damage scaling (AttackDamage / DamageTypeValues OMOD properties,
       // e.g. automatic receivers' −30%) applies BEFORE the dbm parenthesis.
       // foldBucket already implements MUL_ADD × ORIGINAL base + flat ADD (SET
@@ -263,8 +290,9 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
       // rather than flipping the parenthesis sign (user-confirmed zero clamp).
       const scaledBase = Math.max(
         0,
-        foldBucket(modifiers, 'baseDamage', base, componentCtx, collect),
+        foldBucket(modifiers, 'baseDamage', base, componentCtx, baseDamageCollect),
       );
+      const dbmCollect = trace ? ([] as BucketTrace[]) : undefined;
       // dbm folds per component so damage-type-scoped bonuses hit only matching parts.
       // Base = the weapon's intrinsic Damage Bonus Multiplier (RGW3, 1.0 baseline),
       // which is the "1 +" of the spec formula.
@@ -273,13 +301,13 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
         'dbm',
         weapon.damageBonusMult ?? 1.0,
         componentCtx,
-        collect,
+        dbmCollect,
       );
-      if (trace && collect) {
+      if (trace && baseDamageCollect && dbmCollect) {
         trace.components.push({
           damageType: type,
-          baseDamage: collect[0],
-          dbm: collect[1],
+          baseDamage: lastTrace(baseDamageCollect),
+          dbm: lastTrace(dbmCollect),
           isExplosion,
         });
       }
@@ -344,8 +372,8 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
       if (trace && payloadCollect && twinDbmCollect) {
         trace.components.push({
           damageType: type,
-          baseDamage: payloadCollect[0],
-          dbm: twinDbmCollect[0],
+          baseDamage: lastTrace(payloadCollect),
+          dbm: lastTrace(twinDbmCollect),
           isExplosion: true,
         });
       }

@@ -116,3 +116,9 @@ export function lastTrace(collect: BucketTrace[]): BucketTrace {
   if (!t) throw new Error('lastTrace: no trace was collected');
   return t;
 }
+
+/** Like `lastTrace`, but also asserts the sink itself was collected (tracing was on). */
+export function requireTrace(collect: BucketTrace[] | undefined): BucketTrace {
+  if (!collect) throw new Error('requireTrace: tracing was not enabled');
+  return lastTrace(collect);
+}

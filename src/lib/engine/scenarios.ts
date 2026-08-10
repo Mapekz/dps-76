@@ -29,7 +29,7 @@ import { BULLET_STORM_AMMO_PER_STACK, bulletStormAvgStacks } from './bulletstorm
 import { computeSustain, DEFAULT_BATTLE_LOADERS_BASH_SEC, type SustainResult } from './sustain';
 import {
   createHitTrace,
-  lastTrace,
+  requireTrace,
   type ApRegenTrace,
   type BucketTrace,
   type CritMeterTrace,
@@ -1155,9 +1155,9 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
         raceBasePct: input.player.isInPowerArmor
           ? apConstants.regenRatePctPowerArmor
           : apConstants.regenRatePct,
-        flat: lastTrace(flatCollect!),
-        percent: lastTrace(percentCollect!),
-        maxAp: lastTrace(maxApCollect!),
+        flat: requireTrace(flatCollect),
+        percent: requireTrace(percentCollect),
+        maxAp: requireTrace(maxApCollect),
         reloadSec: vatsSustain.reloadSec,
         magDumpSec: vatsSustain.magDumpSec,
         regenDelaySec: apConstants.regenDelaySec,

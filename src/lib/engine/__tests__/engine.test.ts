@@ -711,7 +711,7 @@ describe('crit and sneak composition (MUL_ADD before ADD)', () => {
       mod({ bucket: 'critDmgBase', op: 'MUL_ADD', value: -0.25 }), // 2.0 → 1.5
       mod({ bucket: 'critDmgBonus', op: 'ADD', value: 0.65 }), // Better Criticals-ish
     ];
-    expect(totalCritMult(mods, weapon, makeCtx(weapon))).toBeCloseTo(2.15, 10);
+    expect(totalCritMult(mods, weapon, makeCtx(weapon)).total).toBeCloseTo(2.15, 10);
   });
 
   it('sneak composes the same way', () => {
@@ -719,7 +719,7 @@ describe('crit and sneak composition (MUL_ADD before ADD)', () => {
       mod({ bucket: 'sneakBase', op: 'MUL_ADD', value: 0.375 }), // 2.0 → 2.75
       mod({ bucket: 'sneakBonus', op: 'ADD', value: 1.0 }), // Ninja-ish
     ];
-    expect(totalSneakMult(mods, weapon, makeCtx(weapon))).toBeCloseTo(3.75, 10);
+    expect(totalSneakMult(mods, weapon, makeCtx(weapon)).total).toBeCloseTo(3.75, 10);
   });
 
   it('critDmgBonusScale (The V.A.T.S. Unknown) scales only the folded crit bonus, not the base', () => {
@@ -729,12 +729,12 @@ describe('crit and sneak composition (MUL_ADD before ADD)', () => {
       mod({ bucket: 'critDmgBonusScale', op: 'MUL_ADD', value: 0.1 }), // ×1.1 (mean of the 0.2x-2.0x roll)
     ];
     // adjustedBase 1.5 + (0.65 × 1.1) = 2.215
-    expect(totalCritMult(mods, weapon, makeCtx(weapon))).toBeCloseTo(2.215, 10);
+    expect(totalCritMult(mods, weapon, makeCtx(weapon)).total).toBeCloseTo(2.215, 10);
   });
 
   it('critDmgBonusScale is a no-op when there is no crit bonus to scale', () => {
     const mods = [mod({ bucket: 'critDmgBonusScale', op: 'MUL_ADD', value: 0.1 })];
-    expect(totalCritMult(mods, weapon, makeCtx(weapon))).toBeCloseTo(2.0, 10);
+    expect(totalCritMult(mods, weapon, makeCtx(weapon)).total).toBeCloseTo(2.0, 10);
   });
 });
 
