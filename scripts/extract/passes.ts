@@ -151,15 +151,15 @@ export const omodsPass: ExtractionPass<'omods'> = {
 
     console.log('  building COBJ index…');
     const cobjIndex = await buildCobjIndex(ctx.client);
-    const raw = await extractOmods(
-      ctx.client,
-      weapons.obtainableFormIds,
+    const raw = await extractOmods({
+      client: ctx.client,
+      obtainableWeaponFormIds: weapons.obtainableFormIds,
       cobjIndex,
       defaultModFormIds,
       templateModFormIds,
       crossFamilyRank,
       obtainableArmorFormIds,
-    );
+    });
 
     const outputs: PassOutput[] = [
       { path: 'omods.json', content: raw.omods },

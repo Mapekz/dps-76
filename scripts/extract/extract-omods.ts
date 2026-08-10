@@ -538,16 +538,16 @@ export interface ExtractOmodsResult {
   notes: string[];
 }
 
-export async function extractOmods(
-  client: EsmSource,
+export interface ExtractOmodsOptions {
+  client: EsmSource;
   /** Formids of obtainable weapons (from the weapons pass) — an OMOD referenced by one rides along. */
-  obtainableWeaponFormIds: ReadonlySet<string>,
+  obtainableWeaponFormIds: ReadonlySet<string>;
   /** Forward COBJ index (buildCobjIndex) — learn-method-aware obtainability + hasGrantingCobj. */
-  cobjIndex: CobjIndex = emptyCobjIndex(),
+  cobjIndex?: CobjIndex;
   /** Union of every weapon's defaultModFormIds — a default part is never flagged weak-evidence. */
-  defaultModFormIds: ReadonlySet<string> = new Set(),
+  defaultModFormIds?: ReadonlySet<string>;
   /** Union of every weapon's templateModFormIds — rescues unnamed effect mods a template ships (Holy Fire). */
-  templateModFormIds: ReadonlySet<string> = new Set(),
+  templateModFormIds?: ReadonlySet<string>;
   /**
    * Perk formid → {family, rank} over all non-junk perk families
    * (buildCrossFamilyRankMap — run-all.ts builds it from the perks pass or
@@ -555,7 +555,7 @@ export async function extractOmods(
    * (Mechanic's Best Friend on MakeshiftWarrior0N) into runtime
    * perkFamilyRank conditions instead of unresolved.
    */
-  crossFamilyRank?: Map<string, { family: string; rank: number }>,
+  crossFamilyRank?: Map<string, { family: string; rank: number }>;
   /**
    * Formids of obtainable armor pieces (from the armor pass,
    * extract-armor.ts) — an armor OMOD referenced by one rides along, the
@@ -563,8 +563,19 @@ export async function extractOmods(
    * last so every existing weapon-focused call site (tests included) stays
    * unchanged.
    */
-  obtainableArmorFormIds: ReadonlySet<string> = new Set(),
-): Promise<ExtractOmodsResult> {
+  obtainableArmorFormIds?: ReadonlySet<string>;
+}
+
+export async function extractOmods(options: ExtractOmodsOptions): Promise<ExtractOmodsResult> {
+  const {
+    client,
+    obtainableWeaponFormIds,
+    cobjIndex = emptyCobjIndex(),
+    defaultModFormIds = new Set(),
+    templateModFormIds = new Set(),
+    crossFamilyRank,
+    obtainableArmorFormIds = new Set(),
+  } = options;
   const rows = await client.list('OMOD');
   const records = await mapPool(rows, 8, (r) => client.get(r.form_id));
   const byFormId = new Map(records.map((r) => [r.header.form_id, r]));

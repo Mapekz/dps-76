@@ -114,7 +114,10 @@ function makeStubClient(): EsmSource {
 
 describe('extractOmods (unique-mod rework, 2026-07-13)', () => {
   it('mod_Custom_UnstoppableMonster: property 116 resolves the attached perk, whose two "Mod Incoming Weapon Damage" effects split into one incomingDamageMult modifier (flat -5%) and one skipped note (killstreak-scaled, AV-mult function unhandled) — never a silent drop, never an unknown property', async () => {
-    const result = await extractOmods(makeStubClient(), new Set());
+    const result = await extractOmods({
+      client: makeStubClient(),
+      obtainableWeaponFormIds: new Set(),
+    });
     const omod = result.omods.find((o) => o.id === 'mod_Custom_UnstoppableMonster');
     expect(omod).toBeDefined();
     // Function "Multiply Value" Float 0.95 (flat -5% incoming damage) now
@@ -166,7 +169,10 @@ describe('extractOmods (unique-mod rework, 2026-07-13)', () => {
   });
 
   it('mod_Custom_AllRise: ActorValues ADD Health 50.0 decodes to a maxHealth modifier of value 50', async () => {
-    const result = await extractOmods(makeStubClient(), new Set());
+    const result = await extractOmods({
+      client: makeStubClient(),
+      obtainableWeaponFormIds: new Set(),
+    });
     const omod = result.omods.find((o) => o.id === 'mod_Custom_AllRise');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
@@ -206,7 +212,10 @@ function makeBunkerBusterStubClient(): EsmSource {
 
 describe('extractOmods (Bunker Buster / ConvertExplosiveRadiusToDamage, 2026-07-29)', () => {
   it('mod_Custom_BunkerBuster: ActorValues ADD ConvertExplosiveRadiusToDamage 1.0 decodes to explosionRadiusToDamage 1.0', async () => {
-    const result = await extractOmods(makeBunkerBusterStubClient(), new Set());
+    const result = await extractOmods({
+      client: makeBunkerBusterStubClient(),
+      obtainableWeaponFormIds: new Set(),
+    });
     const omod = result.omods.find((o) => o.id === 'mod_Custom_BunkerBuster');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
@@ -281,7 +290,10 @@ function makeDamageTypeValuesStubClient(): EsmSource {
 
 describe('extractOmods (DamageTypeValues ADD/SET, Task A 2026-07-13)', () => {
   it('emits baseDamage modifiers for ADD and SET, damage-type scoped, with no "not yet modeled" note', async () => {
-    const result = await extractOmods(makeDamageTypeValuesStubClient(), new Set());
+    const result = await extractOmods({
+      client: makeDamageTypeValuesStubClient(),
+      obtainableWeaponFormIds: new Set(),
+    });
     const omod = result.omods.find((o) => o.id === 'mod_Test_DamageTypeValues');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
@@ -356,7 +368,10 @@ function makeChargingBarrelStubClient(): EsmSource {
 
 describe('extractOmods (charging-barrel FullPowerSeconds/FullPowerDamageMult, charging weapons phase 2 2026-07-15)', () => {
   it('emits chargeFullPowerSec/chargeFullPowerDamageMult SET modifiers, no unknown-property report', async () => {
-    const result = await extractOmods(makeChargingBarrelStubClient(), new Set());
+    const result = await extractOmods({
+      client: makeChargingBarrelStubClient(),
+      obtainableWeaponFormIds: new Set(),
+    });
     const omod = result.omods.find((o) => o.id === 'mod_Test_ChargingBarrel');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
@@ -509,7 +524,10 @@ function makeSlowBurnerStubClient(): EsmSource {
 
 describe('extractOmods (Enchantments REM-vs-ADD + GetIsPlayer/subjectIsTarget, 2026-07-14)', () => {
   it("skips the REMed base ench entirely (never fetched, note-only) and keeps only the ADDed ench's NPC-branch dot", async () => {
-    const result = await extractOmods(makeSlowBurnerStubClient(), new Set());
+    const result = await extractOmods({
+      client: makeSlowBurnerStubClient(),
+      obtainableWeaponFormIds: new Set(),
+    });
     const omod = result.omods.find((o) => o.id === 'mod_Test_SlowBurner');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toEqual([
@@ -634,7 +652,10 @@ function makeLobberStubClient(cosmetic = false): EsmSource {
 
 describe('extractOmods (OverrideProjectile launcher-hazard chase, 2026-07-14)', () => {
   it('chases PROJ → EXPL → HAZD → SPEL into an energy-scoped dotDamage modifier, durationSec from HAZD Lifetime', async () => {
-    const result = await extractOmods(makeLobberStubClient(), new Set());
+    const result = await extractOmods({
+      client: makeLobberStubClient(),
+      obtainableWeaponFormIds: new Set(),
+    });
     const omod = result.omods.find((o) => o.id === 'mod_Test_LobberBarrel');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toEqual([
@@ -649,7 +670,10 @@ describe('extractOmods (OverrideProjectile launcher-hazard chase, 2026-07-14)', 
   });
 
   it('materializes nothing for a PROJ lacking the Explosion flag (the ~154-cosmetic-mod majority)', async () => {
-    const result = await extractOmods(makeLobberStubClient(true), new Set());
+    const result = await extractOmods({
+      client: makeLobberStubClient(true),
+      obtainableWeaponFormIds: new Set(),
+    });
     const omod = result.omods.find((o) => o.id === 'mod_Test_LobberBarrel');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toEqual([]);
@@ -723,7 +747,10 @@ function makeHellstormStubClient(payload: 'cryo' | 'napalm'): EsmSource {
 
 describe('extractOmods (OverrideProjectile explosionChase, real Hellstorm fixtures, 2026-07-29)', () => {
   it('Cryo Payload: OverrideProjectile → EXPL with typed cryo damage (no hazard, no Enchantment) becomes an explosionChase with one fromExplosion cryo component — no ordinary modifiers', async () => {
-    const result = await extractOmods(makeHellstormStubClient('cryo'), new Set());
+    const result = await extractOmods({
+      client: makeHellstormStubClient('cryo'),
+      obtainableWeaponFormIds: new Set(),
+    });
     const omod = result.omods.find((o) => o.id === 'mod_BOSRocketLauncher_TubeBarrel_Cryo');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toEqual([]);
@@ -756,7 +783,10 @@ describe('extractOmods (OverrideProjectile explosionChase, real Hellstorm fixtur
   });
 
   it("Napalm Payload: explosionChase carries the fire component, PLUS the EXPL's own on-hit Enchantment (curve-shaped fire DoT, durationSec from the ENCH's own Duration) AND its ground hazard (flat fire DoT, durationSec from HAZD Lifetime) as ordinary modifiers", async () => {
-    const result = await extractOmods(makeHellstormStubClient('napalm'), new Set());
+    const result = await extractOmods({
+      client: makeHellstormStubClient('napalm'),
+      obtainableWeaponFormIds: new Set(),
+    });
     const omod = result.omods.find((o) => o.id === 'mod_BOSRocketLauncher_TubeBarrel_Napalm');
     expect(omod).toBeDefined();
     expect(omod!.explosionChase).toEqual({
@@ -912,7 +942,10 @@ function makeCosmeticReskinStubClient(): EsmSource {
 
 describe('extractOmods (OverrideProjectile explosionChase, no baseline weapon involved, 2026-07-30)', () => {
   it('materializes direct EXPL typed damage as a fromExplosion explosionChase component, hazard or not', async () => {
-    const result = await extractOmods(makeCosmeticReskinStubClient(), new Set());
+    const result = await extractOmods({
+      client: makeCosmeticReskinStubClient(),
+      obtainableWeaponFormIds: new Set(),
+    });
     const omod = result.omods.find((o) => o.id === 'mod_Test_CosmeticReskin');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toEqual([]);
@@ -1050,7 +1083,7 @@ describe('extractOmods (OverrideProjectile REM/SET, 2026-07-14)', () => {
       },
     });
 
-    const result = await extractOmods(client, new Set());
+    const result = await extractOmods({ client, obtainableWeaponFormIds: new Set() });
     const omod = result.omods.find((o) => o.id === 'mod_Test_PinkLike');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toEqual([
@@ -1169,7 +1202,11 @@ function makeLegendaryCraftStub(): {
 describe('extractOmods (legendary-crafting obtainability gate, 2026-07-15)', () => {
   it('a legendary-crafting mod without a granting COBJ flips obtainable:false with a legendaryNoGrantCobj signal; one with a real recipe stays obtainable; the WEAP-ride rule is untouched for non-legendary mods', async () => {
     const { client, cobjIndex, weaponFormId } = makeLegendaryCraftStub();
-    const result = await extractOmods(client, new Set([weaponFormId]), cobjIndex);
+    const result = await extractOmods({
+      client,
+      obtainableWeaponFormIds: new Set([weaponFormId]),
+      cobjIndex,
+    });
 
     const withRecipe = result.omods.find((o) => o.id === 'mod_Test_Legendary_WithRecipe');
     expect(withRecipe?.obtainable).toBe(true);
@@ -1277,7 +1314,10 @@ function makeBulletStormStubClient(): EsmSource {
 
 describe('extractOmods (Bullet Storm ActorValues — AmmoSpenderMinStacks/EnableAmmoSpenderOnKill, 2026-07-16)', () => {
   it('ActorValues ADD 5.0 on AmmoSpenderMinStacks decodes to a bulletStormMinStacks ADD modifier of value 5', async () => {
-    const result = await extractOmods(makeBulletStormStubClient(), new Set());
+    const result = await extractOmods({
+      client: makeBulletStormStubClient(),
+      obtainableWeaponFormIds: new Set(),
+    });
     const omod = result.omods.find((o) => o.id === 'mod_Test_ResoluteVeteran');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
@@ -1287,7 +1327,10 @@ describe('extractOmods (Bullet Storm ActorValues — AmmoSpenderMinStacks/Enable
   });
 
   it('ActorValues SET 1.0 on EnableAmmoSpenderOnKill decodes to a bulletStormOnKill SET modifier (regression: SET must not downgrade to ADD)', async () => {
-    const result = await extractOmods(makeBulletStormStubClient(), new Set());
+    const result = await extractOmods({
+      client: makeBulletStormStubClient(),
+      obtainableWeaponFormIds: new Set(),
+    });
     const omod = result.omods.find((o) => o.id === 'mod_Test_FinalWord');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
@@ -1350,7 +1393,10 @@ function makeRangeBarrelStubClient(): EsmSource {
 
 describe('extractOmods (range barrel MinRange/MaxRange, Phase 1 extraction half)', () => {
   it('flattens the real _PARENT_mod_WEAPON_Barrel_Long_Range template into weaponMinRange/weaponMaxRange MUL_ADD 0.5 modifiers on the including child mod', async () => {
-    const result = await extractOmods(makeRangeBarrelStubClient(), new Set());
+    const result = await extractOmods({
+      client: makeRangeBarrelStubClient(),
+      obtainableWeaponFormIds: new Set(),
+    });
     const omod = result.omods.find((o) => o.id === 'mod_Test_LongRangeBarrel');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
@@ -1403,7 +1449,7 @@ describe('extractOmods (range barrel MinRange/MaxRange, Phase 1 extraction half)
       resolveEdidMap: { [omodFormId]: omodFormId },
     });
 
-    const result = await extractOmods(client, new Set());
+    const result = await extractOmods({ client, obtainableWeaponFormIds: new Set() });
     const omod = result.omods.find((o) => o.id === 'mod_Test_OutOfRangeMult');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
@@ -1480,7 +1526,10 @@ function makeArmorStubClient(): EsmSource {
 
 describe('extractOmods (Phase 3 armor pipeline, 2026-07-18)', () => {
   it('routes both armor OMODs into armorOmods, and neither into the weapon omods array', async () => {
-    const result = await extractOmods(makeArmorStubClient(), new Set());
+    const result = await extractOmods({
+      client: makeArmorStubClient(),
+      obtainableWeaponFormIds: new Set(),
+    });
     expect(result.armorOmods.map((o) => o.id).sort()).toEqual(
       ['mod_Legendary_Armor2_StatStrength', 'mod_Legendary_Armor4_BattleLoaders'].sort(),
     );
@@ -1489,7 +1538,10 @@ describe('extractOmods (Phase 3 armor pipeline, 2026-07-18)', () => {
   });
 
   it('2★ SPECIAL (Strength): ActorValues ADD Strength 2.0 decodes to a specialStrength modifier via the existing fallback route', async () => {
-    const result = await extractOmods(makeArmorStubClient(), new Set());
+    const result = await extractOmods({
+      client: makeArmorStubClient(),
+      obtainableWeaponFormIds: new Set(),
+    });
     const omod = result.armorOmods.find((o) => o.id === 'mod_Legendary_Armor2_StatStrength');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
@@ -1499,7 +1551,10 @@ describe('extractOmods (Phase 3 armor pipeline, 2026-07-18)', () => {
   });
 
   it("Battle-Loader's: 5 reloadSkipChance modifiers at the right per-worn-piece chances, each carrying the matching wornPieceCount condition", async () => {
-    const result = await extractOmods(makeArmorStubClient(), new Set());
+    const result = await extractOmods({
+      client: makeArmorStubClient(),
+      obtainableWeaponFormIds: new Set(),
+    });
     const omod = result.armorOmods.find((o) => o.id === 'mod_Legendary_Armor4_BattleLoaders');
     expect(omod).toBeDefined();
 
@@ -1574,7 +1629,10 @@ function makeVatsEnhancedStubClient(): EsmSource {
 
 describe('extractOmods (V.A.T.S. Enhanced — STAT_VATSAccuracy fallback route, Phase 4 2026-07-18)', () => {
   it('ActorValues ADD 50.0 on STAT_VATSAccuracy decodes to a vatsHitChance ADD modifier of value 0.5', async () => {
-    const result = await extractOmods(makeVatsEnhancedStubClient(), new Set());
+    const result = await extractOmods({
+      client: makeVatsEnhancedStubClient(),
+      obtainableWeaponFormIds: new Set(),
+    });
     const omod = result.omods.find((o) => o.id === 'mod_Legendary_Weapon2_Guns_VATSAccuracy');
     expect(omod).toBeDefined();
     expect(omod!.modifiers).toContainEqual(
@@ -1730,7 +1788,10 @@ describe('extractOmods (variant container split)', () => {
   }
 
   it('emits each variant with disjoint modifiers and never emits the container', async () => {
-    const result = await extractOmods(makeVariantContainerStub(), new Set());
+    const result = await extractOmods({
+      client: makeVariantContainerStub(),
+      obtainableWeaponFormIds: new Set(),
+    });
     expect(result.omods.some((o) => o.id === 'mod_Test_VariantContainer')).toBe(false);
     const fire = result.omods.find((o) => o.id === 'mod_Test_VariantContainer_Fire');
     const poison = result.omods.find((o) => o.id === 'mod_Test_VariantContainer_Poison');
