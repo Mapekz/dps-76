@@ -53,7 +53,7 @@ export function isExcludedWeaponEdid(edid: string): boolean {
   return EXCLUDED_EDID_PATTERNS.some((p) => p.test(edid));
 }
 
-interface ExtractWeaponsResult {
+export interface ExtractWeaponsResult {
   weapons: GeneratedWeapon[];
   excluded: Record<string, string[]>;
   excludedDetailed: Record<string, ExcludedRecordDetail[]>;

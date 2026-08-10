@@ -1,45 +1,18 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
-import type {
-  GeneratedArmor,
-  GeneratedMeta,
-  GeneratedOmod,
-  GeneratedPerk,
-  GeneratedWeapon,
-} from '../../src/types/generated';
+import type { GameMode } from '../../src/types';
+import type { GeneratedMeta } from '../../src/types/generated';
 import { EsmClient } from './esm-client';
-import { buildApGrantIndex } from './ap-grant-index';
-import { buildCobjIndex } from './cobj-index';
-import { buildCrossFamilyRankMap } from './normalize/conditions';
-import { extractWeapons } from './extract-weapons';
-import { extractPerks } from './extract-perks';
-import { extractArmor } from './extract-armor';
-import { extractOmods } from './extract-omods';
-import { extractUniques } from './extract-uniques';
-import { extractBuffs } from './extract-buffs';
-import { extractBodyParts } from './extract-bodyparts';
-import { extractHealing } from './extract-healing';
-import { buildCurveTableBarrels, extractCurveTables } from './extract-curvetables';
-import { extractNpcs } from './extract-npcs';
-import { extractConstants } from './extract-constants';
-import { verifyDfobs } from './verify-dfobs';
-
-const KNOWN_EXTRACTORS = [
-  'weapons',
-  'perks',
-  'armor',
-  'omods',
-  'uniques',
-  'buffs',
-  'bodyparts',
-  'healing',
-  'curvetables',
-  'npcs',
-  'constants',
-  'dfobs',
-] as const;
-type ExtractorName = (typeof KNOWN_EXTRACTORS)[number];
+import {
+  createPassContext,
+  foldIntoMeta,
+  KNOWN_EXTRACTORS,
+  resolveRunOrder,
+  writeOutput,
+  type ExtractorName,
+} from './pass';
+import { PASSES } from './passes';
 
 async function main() {
   const { values } = parseArgs({
@@ -63,26 +36,33 @@ async function main() {
     console.error(`Invalid --mode "${mode}" (expected live or pts)`);
     process.exit(1);
   }
-  const only = values.only
+  const requested = values.only
     ? (values.only.split(',').map((s) => s.trim()) as ExtractorName[])
     : [...KNOWN_EXTRACTORS];
-  for (const name of only) {
+  for (const name of requested) {
     if (!KNOWN_EXTRACTORS.includes(name)) {
       console.error(`Unknown extractor "${name}" (known: ${KNOWN_EXTRACTORS.join(', ')})`);
       process.exit(1);
     }
   }
+  // Topological order over `requested` PLUS the transitive closure of every
+  // selected pass's hard `needs` (pass.ts) — e.g. `--only uniques` alone now
+  // pulls in weapons+omods rather than silently reading a possibly-stale
+  // omods.json off disk. `optionalNeeds` are never auto-pulled; those passes
+  // degrade gracefully instead (see pass.ts's ExtractionPass doc-comment).
+  const runOrder = resolveRunOrder(PASSES, requested);
 
   const outDir = path.join(import.meta.dirname, '../../src/data', mode, 'generated');
   await mkdir(outDir, { recursive: true });
 
   const client = new EsmClient(esmPath);
-  // Partial runs (--only …) start from the existing meta so the sections not
-  // re-run keep their counts/excluded review data (they'd be clobbered
+  // Partial runs (fewer passes than KNOWN_EXTRACTORS, including anything
+  // auto-pulled in by `needs`) start from the existing meta so the sections
+  // not re-run keep their counts/excluded review data (they'd be clobbered
   // otherwise). `unresolved` stays run-scoped: it can't be attributed to a
   // section after the fact — a full run refreshes it completely.
   let previousMeta: Partial<GeneratedMeta> = {};
-  if (only.length < KNOWN_EXTRACTORS.length) {
+  if (runOrder.length < KNOWN_EXTRACTORS.length) {
     try {
       previousMeta = JSON.parse(
         await readFile(path.join(outDir, '_meta.json'), 'utf8'),
@@ -104,323 +84,13 @@ async function main() {
     unresolved: [],
   };
 
-  // Obtainable weapon formids feed the OMOD obtainability pass (two-phase).
-  let obtainableWeaponFormIds: Set<string> | undefined;
-  // Full weapons list — the OMOD pass reads defaultModFormIds off it (a
-  // weapon's default part is never weak-evidence-flagged).
-  let allWeapons: GeneratedWeapon[] | undefined;
-  // Full perk-family list — the OMOD pass builds its cross-family HasPerk
-  // rank map (perkFamilyRank conditions) from it.
-  let allPerks: GeneratedPerk[] | undefined;
-  // Obtainable armor formids feed the armor-OMOD obtainability pass (Phase 3
-  // armor pipeline), the ARMO-record parallel of obtainableWeaponFormIds.
-  let obtainableArmorFormIds: Set<string> | undefined;
-
-  if (only.includes('weapons')) {
-    console.log('Extracting weapons…');
-    // Attach-point closure input (mod-granted slots). Costs one OMOD
-    // list+bulkGet even on --only weapons runs; the warmed record cache
-    // makes the omods pass (full runs) correspondingly cheaper.
-    console.log('  building attach-point grant index…');
-    const apGrantIndex = await buildApGrantIndex(client);
-    const { weapons, excluded, excludedDetailed, unresolved, obtainableFormIds } =
-      await extractWeapons(client, apGrantIndex);
-    obtainableWeaponFormIds = obtainableFormIds;
-    allWeapons = weapons;
-    await writeFile(path.join(outDir, 'weapons.json'), JSON.stringify(weapons, null, 1));
-    meta.counts.weapons = weapons.length;
-    meta.excluded = { ...meta.excluded, ...excluded };
-    meta.excludedDetailed = { ...meta.excludedDetailed, ...excludedDetailed };
-    meta.unresolved.push(...unresolved);
-    console.log(
-      `  ${weapons.length} weapons (excluded: ${Object.entries(excluded)
-        .map(([k, v]) => `${v.length} ${k}`)
-        .join(', ')})`,
-    );
-  }
-
-  if (only.includes('perks')) {
-    console.log('Extracting perks…');
-    const result = await extractPerks(client);
-    allPerks = result.perks;
-    await writeFile(path.join(outDir, 'perks.json'), JSON.stringify(result.perks, null, 1));
-    meta.counts.perks = result.perks.length;
-    meta.excluded = {
-      ...meta.excluded,
-      perkJunkEdid: result.excluded.junkEdid,
-      perkNoCard: result.excluded.noNameOrCard,
-    };
-    meta.unresolved.push(...result.unresolved);
-    if (result.unknownEntryPoints.length > 0) {
-      meta.unresolved.push(...result.unknownEntryPoints.map((n) => `unknown entry point: ${n}`));
-    }
-    if (result.unmappedAvifs.length > 0) {
-      meta.unresolved.push(...result.unmappedAvifs.map((a) => `unmapped damage AVIF: ${a}`));
-    }
-    if (result.unresolvedCards.length > 0) {
-      meta.unresolved.push(...result.unresolvedCards.map((c) => `unresolved perk card: ${c}`));
-    }
-    console.log(
-      `  ${result.perks.length} perk families (junk: ${result.excluded.junkEdid.length}, non-card: ${result.excluded.noNameOrCard.length})`,
-    );
-    console.log(
-      `  unknown entry points: ${result.unknownEntryPoints.length}, unmapped AVIFs: ${result.unmappedAvifs.length}, unresolved conds: ${result.unresolved.length}, unresolved cards: ${result.unresolvedCards.length}`,
-    );
-  }
-
-  if (only.includes('armor')) {
-    console.log('Extracting armor (obtainability grounding)…');
-    const result = await extractArmor(client);
-    obtainableArmorFormIds = result.obtainableFormIds;
-    await writeFile(path.join(outDir, 'armor.json'), JSON.stringify(result.armors, null, 1));
-    meta.counts.armor = result.armors.length;
-    console.log(
-      `  ${result.armors.length} armor pieces (obtainable: ${result.obtainableFormIds.size})`,
-    );
-  }
-
-  let variantContainers: Record<string, GeneratedOmod[]> = {};
-
-  if (only.includes('omods')) {
-    console.log('Extracting OMODs…');
-    if (!allWeapons) {
-      // `--only omods` without a weapons pass: read the checked-in generated set.
-      allWeapons = JSON.parse(
-        await readFile(path.join(outDir, 'weapons.json'), 'utf8'),
-      ) as GeneratedWeapon[];
-    }
-    obtainableWeaponFormIds ??= new Set(
-      allWeapons.filter((w) => w.obtainable !== false).map((w) => w.formId),
-    );
-    const defaultModFormIds = new Set(allWeapons.flatMap((w) => w.defaultModFormIds ?? []));
-    const templateModFormIds = new Set(allWeapons.flatMap((w) => w.templateModFormIds ?? []));
-    if (!allPerks) {
-      // `--only omods` without a perks pass: read the checked-in generated
-      // set (mirrors the allWeapons fallback above). Missing perks.json is
-      // survivable — cross-family HasPerk gates just stay unresolved.
-      try {
-        allPerks = JSON.parse(
-          await readFile(path.join(outDir, 'perks.json'), 'utf8'),
-        ) as GeneratedPerk[];
-      } catch {
-        console.warn('  no perks.json found — cross-family HasPerk gates will stay unresolved');
-      }
-    }
-    if (!obtainableArmorFormIds) {
-      // `--only omods` without an armor pass: read the checked-in generated
-      // set (mirrors the allWeapons fallback above). Missing armor.json is
-      // survivable — armor-riding obtainability signals just stay absent.
-      try {
-        const allArmor = JSON.parse(
-          await readFile(path.join(outDir, 'armor.json'), 'utf8'),
-        ) as GeneratedArmor[];
-        obtainableArmorFormIds = new Set(
-          allArmor.filter((a) => a.obtainable !== false).map((a) => a.formId),
-        );
-      } catch {
-        console.warn('  no armor.json found — armor-riding obtainability signals will stay absent');
-        obtainableArmorFormIds = new Set();
-      }
-    }
-    const crossFamilyRank = allPerks
-      ? buildCrossFamilyRankMap(allPerks.map((p) => ({ family: p.family, formIds: p.formIds })))
-      : undefined;
-    console.log('  building COBJ index…');
-    const cobjIndex = await buildCobjIndex(client);
-    const result = await extractOmods(
-      client,
-      obtainableWeaponFormIds,
-      cobjIndex,
-      defaultModFormIds,
-      templateModFormIds,
-      crossFamilyRank,
-      obtainableArmorFormIds,
-    );
-    // Replace variant-container formIds in weapon templates with their emitted
-    // variant siblings (Camden Whacker, Relic Reaper) before uniques extraction.
-    for (const weapon of allWeapons) {
-      const ids = weapon.templateModFormIds;
-      if (!ids?.length) continue;
-      let changed = false;
-      const rewritten: string[] = [];
-      for (const formId of ids) {
-        const variants = result.variantContainers[formId];
-        if (variants?.length) {
-          rewritten.push(...variants.map((v) => v.formId));
-          changed = true;
-        } else {
-          rewritten.push(formId);
-        }
-      }
-      if (changed) weapon.templateModFormIds = rewritten;
-    }
-    if (Object.keys(result.variantContainers).length > 0) {
-      await writeFile(path.join(outDir, 'weapons.json'), JSON.stringify(allWeapons, null, 1));
-    }
-    variantContainers = result.variantContainers;
-    await writeFile(path.join(outDir, 'omods.json'), JSON.stringify(result.omods, null, 1));
-    await writeFile(
-      path.join(outDir, 'armor-omods.json'),
-      JSON.stringify(result.armorOmods, null, 1),
-    );
-    meta.counts.omods = result.omods.length;
-    meta.counts.armorOmods = result.armorOmods.length;
-    meta.excluded = { ...meta.excluded, ...result.excluded };
-    meta.excludedDetailed = { ...meta.excludedDetailed, ...result.excludedDetailed };
-    meta.reviewFlagged = { ...meta.reviewFlagged, ...result.reviewFlagged };
-    meta.unresolved.push(...result.unknownProperties.map((p) => `unknown OMOD property: ${p}`));
-    meta.unresolved.push(...result.notes);
-    console.log(
-      `  ${result.omods.length} named weapon OMODs, ${result.armorOmods.length} named armor OMODs (excluded: ${Object.entries(
-        result.excluded,
-      )
-        .map(([k, v]) => `${v.length} ${k}`)
-        .join(
-          ', ',
-        )}); unknown properties: ${result.unknownProperties.length}; weak-evidence review: ${
-        result.reviewFlagged.omodWeakEvidence.length
-      }`,
-    );
-  }
-
-  if (only.includes('uniques')) {
-    console.log('Extracting unique weapon presets…');
-    if (!allWeapons) {
-      allWeapons = JSON.parse(
-        await readFile(path.join(outDir, 'weapons.json'), 'utf8'),
-      ) as GeneratedWeapon[];
-    }
-    const omods = JSON.parse(
-      await readFile(path.join(outDir, 'omods.json'), 'utf8'),
-    ) as import('../../src/types/generated').GeneratedOmod[];
-    const uniqueResult = await extractUniques(client, allWeapons, omods, variantContainers);
-    await writeFile(
-      path.join(outDir, 'uniques.json'),
-      JSON.stringify(uniqueResult.uniques, null, 1),
-    );
-    meta.counts.uniques = uniqueResult.uniques.length;
-    if (uniqueResult.skipped.length > 0) {
-      meta.reviewFlagged = {
-        ...meta.reviewFlagged,
-        skippedUniqueCombinations: uniqueResult.skipped.map((s) => ({
-          id: `${s.weaponId}:${s.combinationName}`,
-          name: s.reason,
-        })),
-      };
-    }
-    console.log(
-      `  ${uniqueResult.uniques.length} unique presets (skipped combinations: ${uniqueResult.skipped.length})`,
-    );
-  }
-
-  if (only.includes('buffs')) {
-    console.log('Extracting mutations & consumables…');
-    const result = await extractBuffs(client);
-    await writeFile(path.join(outDir, 'mutations.json'), JSON.stringify(result.mutations, null, 1));
-    await writeFile(
-      path.join(outDir, 'consumables.json'),
-      JSON.stringify(result.consumables, null, 1),
-    );
-    await writeFile(
-      path.join(outDir, 'addictions.json'),
-      JSON.stringify(result.addictions, null, 1),
-    );
-    meta.counts.mutations = result.mutations.length;
-    meta.counts.consumables = result.consumables.length;
-    meta.counts.addictions = result.addictions.length;
-    meta.excluded = { ...meta.excluded, ...result.excluded };
-    meta.excludedDetailed = { ...meta.excludedDetailed, ...result.excludedDetailed };
-    meta.unresolved.push(...result.notes);
-    meta.unresolved.push(...result.unmappedAvifs.map((a) => `unmapped buff AVIF: ${a}`));
-    console.log(
-      `  ${result.mutations.length} mutations, ${result.consumables.length} consumables, ${result.addictions.length} addictions (excluded: ${Object.entries(
-        result.excluded,
-      )
-        .map(([k, v]) => `${v.length} ${k}`)
-        .join(', ')}; notes: ${result.notes.length})`,
-    );
-  }
-
-  if (only.includes('bodyparts')) {
-    console.log('Extracting enemy body parts…');
-    const result = await extractBodyParts(client);
-    await writeFile(path.join(outDir, 'bodyparts.json'), JSON.stringify(result.races, null, 1));
-    meta.counts.bodypartRaces = result.races.length;
-    meta.unresolved.push(...result.unresolved);
-    console.log(`  ${result.races.length} races (unresolved: ${result.unresolved.length})`);
-  }
-
-  if (only.includes('healing')) {
-    console.log('Extracting Stimpak/RadAway-adjacent healing items…');
-    const result = await extractHealing(client);
-    await writeFile(path.join(outDir, 'healing-items.json'), JSON.stringify(result.items, null, 1));
-    meta.counts.healingItems = result.items.length;
-    meta.unresolved.push(...result.unresolved);
-    console.log(`  ${result.items.length} healing items (unresolved: ${result.unresolved.length})`);
-  }
-
-  if (only.includes('curvetables')) {
-    console.log('Extracting creature/player universal curve tables…');
-    // Different output root than every other extractor: curvetables live at
-    // src/data/<mode>/curvetables/, not .../generated/ (see extract-curvetables.ts).
-    const curveDir = path.join(import.meta.dirname, '../../src/data', mode, 'curvetables');
-    const result = await extractCurveTables(client);
-    for (const file of result.files) {
-      const filePath = path.join(curveDir, file.relativePath);
-      await mkdir(path.dirname(filePath), { recursive: true });
-      await writeFile(filePath, JSON.stringify(file.content, null, 1));
-    }
-    const barrels = buildCurveTableBarrels(result.files);
-    for (const barrel of barrels) {
-      const barrelPath = path.join(curveDir, barrel.relativePath);
-      await mkdir(path.dirname(barrelPath), { recursive: true });
-      await writeFile(barrelPath, barrel.source);
-    }
-    meta.counts.curvetables = result.files.length;
-    meta.counts.curvetableBarrels = barrels.length;
-    meta.unresolved.push(...result.unresolved);
-    console.log(
-      `  ${result.files.length} curve table files + ${barrels.length} barrels written → ${curveDir} (unresolved: ${result.unresolved.length})`,
-    );
-  }
-
-  if (only.includes('npcs')) {
-    console.log('Extracting curated-target NPC stats…');
-    const result = await extractNpcs(client);
-    await writeFile(path.join(outDir, 'npcs.json'), JSON.stringify(result.npcs, null, 1));
-    meta.counts.npcs = result.npcs.length;
-    meta.unresolved.push(...result.unresolved);
-    console.log(`  ${result.npcs.length} npcs (unresolved: ${result.unresolved.length})`);
-  }
-
-  if (only.includes('constants')) {
-    console.log('Extracting game-wide scalar constants…');
-    const result = await extractConstants(client);
-    await writeFile(path.join(outDir, 'constants.json'), JSON.stringify(result.constants, null, 1));
-    meta.counts.constants = 1;
-    meta.unresolved.push(...result.unresolved);
-    console.log(
-      `  special clamp [${result.constants.special.min}, ${result.constants.special.max}], ` +
-        `mitigation exp=${result.constants.mitigation.resistExponent} factor=${result.constants.mitigation.damageFactor} ` +
-        `clamp=[${result.constants.mitigation.minReduction}, ${result.constants.mitigation.maxReduction}], ` +
-        `vatsCritBase=${result.constants.vatsCrit.chargeBase}, ` +
-        `apPool=${result.constants.actionPoints.poolBase}+${result.constants.actionPoints.poolPerAgility}×AGI ` +
-        `regenDelay=${result.constants.actionPoints.regenDelaySec}s regen=${result.constants.actionPoints.regenRatePct}%/` +
-        `${result.constants.actionPoints.regenRatePctPowerArmor}%PA, ` +
-        `bulletStormAmmoPerStack=${result.constants.bulletStorm.ammoPerStack}, ` +
-        `closeThreshold=${result.constants.distance.closeThresholdUnits} ` +
-        `(unresolved: ${result.unresolved.length})`,
-    );
-  }
-
-  if (only.includes('dfobs')) {
-    console.log(
-      'Verifying DFOB bridges (hardcoded record identities vs the exe indirection layer)…',
-    );
-    const result = await verifyDfobs(client);
-    meta.counts.dfobs = result.verified;
-    meta.unresolved.push(...result.unresolved);
-    console.log(`  ${result.verified} bridges verified (unresolved: ${result.unresolved.length})`);
+  const memoryResults = new Map<ExtractorName, unknown>();
+  for (const pass of runOrder) {
+    const ctx = createPassContext(client, mode as GameMode, outDir, memoryResults);
+    const { raw, result } = await pass.run(ctx);
+    memoryResults.set(pass.id, raw);
+    for (const output of result.outputs) await writeOutput(outDir, output);
+    foldIntoMeta(meta, result);
   }
 
   await writeFile(path.join(outDir, '_meta.json'), JSON.stringify(meta, null, 2));
