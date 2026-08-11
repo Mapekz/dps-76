@@ -12,6 +12,7 @@ import { getOmodById } from '@/data/omods';
 import { getArmorEffectById } from '@/data/armor-modifiers';
 import { nukesDragonsPerks, reclassifyPerkLoadouts } from '@/lib/nukes-dragons';
 import { buildDelta } from '@/lib/build-delta';
+import { DERIVED_PLAYER_CONDITION_KEYS } from '@/types/knob-registry';
 import {
   ENEMY_HEALTH_PERCENT_STOPS,
   PLAYER_HEALTH_PERCENT_STOPS,
@@ -152,26 +153,6 @@ function decodePerks(
 
 // ── non-default diffing ─────────────────────────────────────────────────────
 
-const diffAgainstDefaults = buildDelta;
-
-/**
- * Derived player-condition fields (resolveLoadout recomputes them from the
- * build every run): never written to URLs and ignored when a legacy payload
- * carries one — the stored values only feed synthetic engine tests.
- */
-const DERIVED_PLAYER_CONDITION_KEYS = new Set<keyof PlayerConditions>([
-  'strangeInNumbers',
-  'hungerThirstTier',
-  'maxHealth',
-  'lockpickSkill',
-  'hackingSkill',
-  'stimpakHealMult',
-  'stimpakHealMagMult',
-  'stimpakHealDurationMult',
-  'mutationCount',
-  'addictionCount',
-]);
-
 // ── deflate/base64url plumbing (browser + Node ≥18) ─────────────────────────
 
 async function pipe(
@@ -225,10 +206,10 @@ export async function encodeBuild(state: BuildState): Promise<string> {
     ...(view.emphasized && { ve: view.emphasized }),
     ...(view.breakdownOpen && { vb: true }),
   };
-  const pc = diffAgainstDefaults(player.conditions, createDefaultPlayerConditions());
+  const pc = buildDelta(player.conditions, createDefaultPlayerConditions());
   for (const key of DERIVED_PLAYER_CONDITION_KEYS) delete pc[key];
   if (Object.keys(pc).length > 0) wire.pc = pc;
-  const ec = diffAgainstDefaults(enemy.conditions, createDefaultEnemyConditions());
+  const ec = buildDelta(enemy.conditions, createDefaultEnemyConditions());
   if (Object.keys(ec).length > 0) wire.ec = ec;
 
   const bytes = new TextEncoder().encode(JSON.stringify(wire)) as Uint8Array<ArrayBuffer>;

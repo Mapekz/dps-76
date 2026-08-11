@@ -20,6 +20,7 @@ import { buildDeltaCount } from '@/lib/build-delta';
 import { healthPercentIndex, PLAYER_HEALTH_PERCENT_STOPS } from '@/lib/health-percent';
 import { cn } from '@/lib/utils';
 import { createDefaultPlayerConditions, type PlayerConditions } from '@/types';
+import { knobActiveBadgeObjects } from '@/types/knob-registry';
 import { SectionTrigger } from './SectionTrigger';
 
 /**
@@ -152,51 +153,15 @@ export function ConditionsSection() {
   // maxHealth in resolveLoadout; don't dispatch a correction on render.
   const glow = Math.min(conditions.glow ?? 0, stats.maxHealth);
 
+  const { value: badgeValues, defaults: badgeDefaults } = knobActiveBadgeObjects(
+    'conditions',
+    conditions,
+    enemy.conditions,
+    { maxHealth: stats.maxHealth },
+  );
+
   const activeCount =
-    buildDeltaCount(
-      {
-        healthPercent: conditions.healthPercent,
-        foodTier,
-        drinkTier,
-        feralTier,
-        glow,
-        capsOnHand: conditions.capsOnHand,
-        killStreak: conditions.killStreak,
-        concentratedFireStacks,
-        completedChallengeIds: conditions.completedChallengeIds ?? [],
-        localLegendFishingChallengesCompleted,
-        battleLoadersBashSec,
-        targetsHit: conditions.targetsHit ?? 1,
-        weaponConditionPct: conditions.weaponConditionPct ?? 100,
-        playerDamageResist: conditions.playerDamageResist ?? 0,
-        playerRadResist: conditions.playerRadResist ?? 0,
-        isPowerAttacking: conditions.isPowerAttacking,
-        isLastShot: conditions.isLastShot ?? false,
-        isAimingDownSights: conditions.isAimingDownSights ?? false,
-        hydrated: conditions.hydrated ?? true,
-      },
-      {
-        healthPercent: defaults.healthPercent,
-        foodTier: defaults.foodTier ?? 0,
-        drinkTier: defaults.drinkTier ?? 0,
-        feralTier: defaults.feralTier ?? 0,
-        glow: defaults.glow ?? 0,
-        capsOnHand: defaults.capsOnHand,
-        killStreak: defaults.killStreak,
-        concentratedFireStacks: defaults.concentratedFireStacks,
-        completedChallengeIds: defaults.completedChallengeIds ?? [],
-        localLegendFishingChallengesCompleted: defaults.localLegendFishingChallengesCompleted ?? 0,
-        battleLoadersBashSec: defaults.battleLoadersBashSec ?? 0,
-        targetsHit: defaults.targetsHit ?? 1,
-        weaponConditionPct: defaults.weaponConditionPct ?? 100,
-        playerDamageResist: defaults.playerDamageResist ?? 0,
-        playerRadResist: defaults.playerRadResist ?? 0,
-        isPowerAttacking: defaults.isPowerAttacking,
-        isLastShot: defaults.isLastShot ?? false,
-        isAimingDownSights: defaults.isAimingDownSights ?? false,
-        hydrated: defaults.hydrated ?? true,
-      },
-    ) +
+    buildDeltaCount(badgeValues, badgeDefaults) +
     (isOnslaughtStacksActive(onslaughtStored, onslaughtReverse) ? 1 : 0) +
     (isBulletStormStacksActive(bulletStormStored) ? 1 : 0);
 

@@ -36,11 +36,8 @@ import {
   pipBoyToGameUnits,
 } from '@/lib/distance';
 import { ENEMY_HEALTH_PERCENT_STOPS } from '@/lib/health-percent';
-import {
-  createDefaultEnemyConditions,
-  createDefaultPlayerConditions,
-  type EnemyConditions,
-} from '@/types';
+import { createDefaultEnemyConditions, type EnemyConditions } from '@/types';
+import { knobActiveBadgeObjects } from '@/types/knob-registry';
 import type { BodyPartRaceCategory } from '@/types/generated';
 import { SectionTrigger } from './SectionTrigger';
 
@@ -254,7 +251,6 @@ export function TargetSection() {
     : null;
 
   const tenderizer = player.conditions.tenderizerStacks;
-  const playerDefaults = createDefaultPlayerConditions();
   const followThroughPct = player.conditions.followThroughPct ?? 0;
   const takingOneForTheTeamDrRank = player.conditions.takingOneForTheTeamDrRank ?? 0;
 
@@ -288,45 +284,14 @@ export function TargetSection() {
     });
   };
 
+  const { value: badgeValues, defaults: badgeDefaults } = knobActiveBadgeObjects(
+    'target',
+    player.conditions,
+    conditions,
+  );
+
   const activeCount =
-    buildDeltaCount(
-      {
-        targetRace: conditions.targetRace,
-        isAimingAtWeakpoint: isAiming ?? false,
-        healthPercent: conditions.healthPercent ?? 100,
-        crippledLimbCount: conditions.crippledLimbCount,
-        groupTargetCount: conditions.groupTargetCount ?? 1,
-        targetDistance: conditions.targetDistance ?? DEFAULT_DISTANCE_UNITS,
-        tenderizerStacks: tenderizer,
-        followThroughPct,
-        takingOneForTheTeamDrRank,
-        isBleeding: conditions.isBleeding ?? false,
-        isBurning: conditions.isBurning ?? false,
-        isPoisoned: conditions.isPoisoned ?? false,
-        isFrozen: conditions.isFrozen ?? false,
-        hitRatePct,
-        vatsHitRatePct,
-        bodyPartHitRatePct,
-      },
-      {
-        targetRace: defaults.targetRace,
-        isAimingAtWeakpoint: playerDefaults.isAimingAtWeakpoint,
-        healthPercent: defaults.healthPercent ?? 100,
-        crippledLimbCount: defaults.crippledLimbCount,
-        groupTargetCount: defaults.groupTargetCount ?? 1,
-        targetDistance: defaults.targetDistance ?? DEFAULT_DISTANCE_UNITS,
-        tenderizerStacks: playerDefaults.tenderizerStacks,
-        followThroughPct: playerDefaults.followThroughPct ?? 0,
-        takingOneForTheTeamDrRank: playerDefaults.takingOneForTheTeamDrRank ?? 0,
-        isBleeding: defaults.isBleeding ?? false,
-        isBurning: defaults.isBurning ?? false,
-        isPoisoned: defaults.isPoisoned ?? false,
-        isFrozen: defaults.isFrozen ?? false,
-        hitRatePct: playerDefaults.hitRatePct ?? 100,
-        vatsHitRatePct: playerDefaults.vatsHitRatePct ?? 100,
-        bodyPartHitRatePct: playerDefaults.bodyPartHitRatePct ?? 100,
-      },
-    ) +
+    buildDeltaCount(badgeValues, badgeDefaults) +
     (conditions.targetLevel != null ? 1 : 0) +
     (forcedEpicRank == null && userEpicRank !== 0 ? 1 : 0);
 
