@@ -533,7 +533,7 @@ export type Bucket =
  * otherwise only discoverable by grepping resolve.ts/paper-damage.ts/
  * crit-meter.ts/ap-economy.ts/player-stats.ts/effective-weapon.ts by hand.
  * This is the one table that answers both questions and records non-default
- * fold-base/de-basing conventions; absent `foldBase`/`deBased` mean 0/false.
+ * fold-base/de-basing conventions; absent `deBased` means false.
  * `WEAPON_STAT_BUCKETS` (effective-weapon.ts) and `INERT_ENGINE_BUCKETS`
  * (omods.ts, the picker's "no engine effect" badge) are DERIVED from it below
  * instead of hand-maintained, so neither can silently drift from what the
@@ -590,8 +590,16 @@ export type BucketRegime =
 
 export interface BucketRegimeEntry {
   regime: BucketRegime;
-  /** Intrinsic base for registry-driven folds; defaults to 0 when absent. */
-  foldBase?: number;
+  /**
+   * The base value this bucket folds over (`foldBucket`'s third argument).
+   * 'dynamic' means the base is derived per weapon or per context at the fold
+   * site and cannot be declared here -- e.g. critDmgBase's
+   * `weapon.critDamageMult ?? DEFAULT_CRIT_MULT`. A number means every fold of
+   * this bucket uses exactly that base, and `foldRegisteredBucket` can supply it.
+   * 'unfolded' means no fold consumes this bucket (regime `unfolded` or an
+   * alternate fold primitive with no `foldBucket` third argument).
+   */
+  foldBase: number | 'dynamic' | 'unfolded';
   /** Whether the registry-driven result excludes its intrinsic base; defaults to false. */
   deBased?: boolean;
   /**
@@ -634,68 +642,81 @@ export interface BucketRegimeEntry {
 
 export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   baseDamage: {
+    foldBase: 'dynamic',
     regime: 'damageFold',
     hasEngineEffect: true,
     foldedBy:
       'paper-damage.ts computePaperDamage (per-component base scaling, before the dbm parenthesis)',
   },
   dbm: {
+    foldBase: 'dynamic',
     regime: 'damageFold',
     hasEngineEffect: true,
     foldedBy: 'paper-damage.ts computePaperDamage (dbm parenthesis)',
   },
   critDmgBase: {
+    foldBase: 'dynamic',
     regime: 'damageFold',
     hasEngineEffect: true,
     foldedBy: 'paper-damage.ts totalCritMult',
   },
   critDmgBonus: {
+    foldBase: 0,
     regime: 'damageFold',
     hasEngineEffect: true,
     foldedBy: 'paper-damage.ts totalCritMult',
   },
   critDmgBonusScale: {
+    foldBase: 1,
     regime: 'damageFold',
     hasEngineEffect: true,
     foldedBy: 'paper-damage.ts totalCritMult',
   },
   sneakBase: {
+    foldBase: 'dynamic',
     regime: 'damageFold',
     hasEngineEffect: true,
     foldedBy: 'paper-damage.ts totalSneakMult',
   },
   sneakBonus: {
+    foldBase: 0,
     regime: 'damageFold',
     hasEngineEffect: true,
     foldedBy: 'paper-damage.ts totalSneakMult',
   },
   powerAttackBonus: {
+    foldBase: 0,
     regime: 'damageFold',
     hasEngineEffect: true,
     foldedBy: 'paper-damage.ts computePaperDamage (dbm parenthesis)',
   },
   weakpointBonus: {
+    foldBase: 0,
     regime: 'damageFold',
     hasEngineEffect: true,
     foldedBy: 'paper-damage.ts computePaperDamage (outer multiplier)',
   },
   wholeDamage: {
+    foldBase: 1,
     regime: 'damageFold',
     hasEngineEffect: true,
     foldedBy: 'resolve.ts foldWholeDamage (outer multiplier)',
   },
   limbDamage: {
+    foldBase: 'unfolded',
     regime: 'unfolded',
     hasEngineEffect: false,
     foldedBy:
       "none — limb targeting not modeled (STAT_DmgLimbs plumbing extracted, e.g. Crippling's override, but no consumer yet)",
   },
   bashDamage: {
+    foldBase: 'unfolded',
     regime: 'unfolded',
     hasEngineEffect: false,
     foldedBy: 'none — bash attacks not modeled (STAT_DmgBash extracted, no consumer yet)',
   },
   explosivePayload: {
+    foldBase: 'dynamic',
     regime: 'damageFold',
     hasEngineEffect: true,
     // Explosive 2★ — buildEffectiveWeapon decides its destiny per weapon (see
@@ -713,6 +734,7 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
       'on a Curve-Table Explosion or chain-suppressed weapon',
   },
   explosionRadiusBonus: {
+    foldBase: 0,
     regime: 'bootstrap',
     hasEngineEffect: true,
     // Bunker Buster radius→damage conversion — fully consumed inside buildEffectiveWeapon,
@@ -721,6 +743,7 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
     foldedBy: 'effective-weapon.ts buildEffectiveWeapon (explosive-radius→damage conversion)',
   },
   explosionRadiusToDamage: {
+    foldBase: 0,
     regime: 'bootstrap',
     hasEngineEffect: true,
     // Bunker Buster radius→damage conversion — fully consumed inside buildEffectiveWeapon,
@@ -729,134 +752,158 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
     foldedBy: 'effective-weapon.ts buildEffectiveWeapon (explosive-radius→damage conversion)',
   },
   critFill: {
+    foldBase: 'dynamic',
     regime: 'critEconomy',
     hasEngineEffect: true,
     foldedBy: 'crit-meter.ts computeCritMeter',
   },
   critConsumption: {
+    foldBase: 100,
     regime: 'critEconomy',
     hasEngineEffect: true,
     foldedBy: 'crit-meter.ts computeCritMeter',
   },
   fireRateSpeed: {
+    foldBase: 'dynamic',
     regime: 'weaponStat',
     hasEngineEffect: true,
     foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.speed rewrite)',
   },
   isAutomatic: {
+    foldBase: 'dynamic',
     regime: 'weaponStat',
     hasEngineEffect: true,
     foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.isAutomatic rewrite)',
   },
   animDurationSec: {
+    foldBase: 'dynamic',
     regime: 'weaponStat',
     hasEngineEffect: true,
     foldedBy: 'effective-weapon.ts buildEffectiveWeapon (weapon.animDurationSec rewrite)',
   },
   animDelaySec: {
+    foldBase: 'dynamic',
     regime: 'weaponStat',
     hasEngineEffect: true,
     foldedBy:
       "effective-weapon.ts buildEffectiveWeapon (weapon.animDelaySec rewrite); feeds fire-rate.ts's semi-auto/charging-tail divisor",
   },
   projectileCount: {
+    foldBase: 'dynamic',
     regime: 'weaponStat',
     hasEngineEffect: true,
     foldedBy:
       "effective-weapon.ts buildEffectiveWeapon (weapon.projectileCount rewrite); no damage term multiplies per-projectile yet, but Shotgun Champ's curve reads the folded value via the projectileCount CurveInput",
   },
   ammoCapacity: {
+    foldBase: 'dynamic',
     regime: 'weaponStat',
     hasEngineEffect: true,
     foldedBy:
       'effective-weapon.ts buildEffectiveWeapon (weapon.capacity rewrite); feeds sustained DPS (sustain.ts)',
   },
   reloadSpeed: {
+    foldBase: 'dynamic',
     regime: 'weaponStat',
     hasEngineEffect: true,
     foldedBy:
       'effective-weapon.ts buildEffectiveWeapon (weapon.reloadSpeed rewrite); feeds sustained DPS (sustain.ts)',
   },
   reloadSkipChance: {
+    foldBase: 'dynamic',
     regime: 'sustainChance',
     hasEngineEffect: true,
     foldedBy: 'effective-weapon.ts (weapon.reloadSkipChance rewrite); feeds sustain.ts reloadSec',
   },
   reloadSkipChanceBash: {
+    foldBase: 'dynamic',
     regime: 'sustainChance',
     hasEngineEffect: true,
     foldedBy:
       "effective-weapon.ts (weapon.reloadSkipChanceBash rewrite); feeds sustain.ts reloadSec — bash-triggered channel (Battle-Loader's EP199), separate from reloadSkipChance's passive-on-reload channel (Quick Hands/Wild West Hands EP182)",
   },
   ammoFreeChance: {
+    foldBase: 'dynamic',
     regime: 'sustainChance',
     hasEngineEffect: true,
     foldedBy:
       'effective-weapon.ts (weapon.ammoFreeChance rewrite); feeds sustain.ts effective capacity',
   },
   vatsApCost: {
+    foldBase: 'dynamic',
     regime: 'weaponStat',
     hasEngineEffect: true,
     foldedBy:
       'effective-weapon.ts buildEffectiveWeapon (weapon.apCost rewrite); feeds ap-economy.ts',
   },
   chargeFullPowerSec: {
+    foldBase: 'dynamic',
     regime: 'weaponStat',
     hasEngineEffect: true,
     foldedBy:
       'effective-weapon.ts buildEffectiveWeapon (weapon.fullPowerSeconds rewrite); gates weaponCharges() and feeds resolvedChargeTimeSec (src/lib/charge.ts), consumed by fire-rate.ts',
   },
   chargeFullPowerDamageMult: {
+    foldBase: 'dynamic',
     regime: 'weaponStat',
     hasEngineEffect: true,
     foldedBy:
       'effective-weapon.ts buildEffectiveWeapon (weapon.fullPowerDamageMult rewrite); feeds chargeDamageMultiplier (src/lib/charge.ts)',
   },
   weaponMinRange: {
+    foldBase: 'dynamic',
     regime: 'weaponStat',
     hasEngineEffect: true,
     foldedBy:
       'effective-weapon.ts buildEffectiveWeapon (weapon.minRange rewrite); feeds lib/distance.ts rangeFalloffMult, folded into paper-damage.ts outerMult/explosiveOuterMult via scenarios.ts',
   },
   weaponMaxRange: {
+    foldBase: 'dynamic',
     regime: 'weaponStat',
     hasEngineEffect: true,
     foldedBy:
       'effective-weapon.ts buildEffectiveWeapon (weapon.maxRange rewrite); feeds lib/distance.ts rangeFalloffMult, folded into paper-damage.ts outerMult/explosiveOuterMult via scenarios.ts',
   },
   weaponOutOfRangeMult: {
+    foldBase: 'dynamic',
     regime: 'weaponStat',
     hasEngineEffect: true,
     foldedBy:
       'effective-weapon.ts buildEffectiveWeapon (weapon.outOfRangeDamageMult rewrite); feeds lib/distance.ts rangeFalloffMult, folded into paper-damage.ts outerMult/explosiveOuterMult via scenarios.ts',
   },
   apRegen: {
+    foldBase: 0,
     regime: 'apEconomy',
     hasEngineEffect: true,
     foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy',
   },
   apPerCrit: {
+    foldBase: 0,
     regime: 'apEconomy',
     hasEngineEffect: true,
     foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy',
   },
   apRegenFlat: {
+    foldBase: 0,
     regime: 'apEconomy',
     hasEngineEffect: true,
     foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy (flat AP/sec term)',
   },
   apMax: {
+    foldBase: 0,
     regime: 'apEconomy',
     hasEngineEffect: true,
     foldedBy: 'scenarios.ts, folded into ap-economy.ts computeApEconomy (AP pool size)',
   },
   apCritHot: {
+    foldBase: 'dynamic',
     regime: 'apEconomy',
     hasEngineEffect: true,
     foldedBy:
       'scenarios.ts (per-modifier collect — durationSec matters), ap-economy.ts computeApEconomy (refresh-only HoT term)',
   },
   onslaughtMaxStacks: {
+    foldBase: 0,
     regime: 'bootstrap',
     hasEngineEffect: true,
     // No consumedBefore — folded early in scenarios.ts / effective-weapon.ts but
@@ -866,46 +913,54 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
       'scenarios.ts / effective-weapon.ts — folded once, threaded on ResolveContext.onslaughtMaxStacks; caps the onslaught StackCounter and onslaughtStacks CurveInput',
   },
   onslaughtReverse: {
+    foldBase: 0,
     regime: 'bootstrap',
     hasEngineEffect: true,
     foldedBy:
       'scenarios.ts — folded once; folded > 0 activates reverse-onslaught stack averaging (onslaught.ts) threaded on ResolveContext.onslaughtReverseStacks',
   },
   bulletStormMaxStacks: {
+    foldBase: 0,
     regime: 'bootstrap',
     hasEngineEffect: true,
     foldedBy:
       'scenarios.ts / effective-weapon.ts — folded once at each site, threaded on ResolveContext.bulletStormMaxStacks; caps the bulletStorm StackCounter and bulletStormStacks CurveInput',
   },
   bulletStormMinStacks: {
+    foldBase: 0,
     regime: 'bootstrap',
     hasEngineEffect: true,
     foldedBy:
       'scenarios.ts / effective-weapon.ts — folded once at each site, threaded on ResolveContext.bulletStormMinStacks; floors the bulletStorm StackCounter and bulletStormStacks CurveInput',
   },
   bulletStormRetention: {
+    foldBase: 0,
     regime: 'bootstrap',
     hasEngineEffect: true,
     foldedBy:
       'scenarios.ts — folded once; consumed by bulletstorm.ts bulletStormAvgStacks (sustained-fire average model)',
   },
   bulletStormOnKill: {
+    foldBase: 'unfolded',
     regime: 'unfolded',
     hasEngineEffect: false,
     foldedBy:
       "none — kills are unknowable in steady-state paper DPS (Final Word's on-kill stack grant)",
   },
   bulletStormSpinUp: {
+    foldBase: 'unfolded',
     regime: 'unfolded',
     hasEngineEffect: false,
     foldedBy: "none — spin-up/ramp timing not modeled (Valkyrie's)",
   },
   deflectChance: {
+    foldBase: 'unfolded',
     regime: 'unfolded',
     hasEngineEffect: false,
     foldedBy: 'none — defensive, no incoming-damage model exists (The Action Hero)',
   },
   moveSpeedBonus: {
+    foldBase: 0,
     regime: 'bootstrap',
     hasEngineEffect: true,
     // Folded by buildEffectiveWeapon into ResolveContext.moveSpeedBonus so
@@ -915,124 +970,145 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
       'effective-weapon.ts buildEffectiveWeapon — folded once, threaded on ResolveContext.moveSpeedBonus; feeds the moveSpeedBonus CurveInput (Fast Fighter). Threaded in the weapon-stat fold ONLY — a damage-bucket curve on this input would read 0 until scenarios.ts also threads it',
   },
   armorPen: {
+    foldBase: 0,
     regime: 'mitigation',
     hasEngineEffect: true,
     foldedBy:
       'scenarios.ts bootstrap fold → armorPenTotal; consumed by mitigation.ts applyMitigation (per-component Resist fraction)',
   },
   armorPenFlat: {
+    foldBase: 0,
     regime: 'mitigation',
     hasEngineEffect: true,
     foldedBy:
       'scenarios.ts bootstrap fold → flat resist-point total; consumed by mitigation.ts applyMitigation (physical-resist-only, see bucket doc comment)',
   },
   vatsHitChance: {
-    regime: 'display',
     foldBase: 1,
+    regime: 'display',
     deBased: true,
     hasEngineEffect: true,
     foldedBy:
       "scenarios.ts bootstrap fold (base 1, de-based) → ScenarioSet.vatsHitChanceBonus, rendered by ConditionsSection.tsx's pill — NEVER consumed by sustainedDps/apLimitedDps/any formula (Phase 4 — VATS hit-chance aggregate, display-only)",
   },
   vatsHitChanceMult: {
-    regime: 'display',
     foldBase: 1,
+    regime: 'display',
     deBased: false,
     hasEngineEffect: true,
     foldedBy:
       "scenarios.ts bootstrap fold (base 1, NOT de-based — exposed as-is, 1 = neutral) → ScenarioSet.vatsHitChanceMult, rendered by ConditionsSection.tsx's pill — NEVER consumed by sustainedDps/apLimitedDps/any formula (Concentrated Fire EP109 multiplier, USER-RESOLVED 2026-07-19, display-only)",
   },
-  dotDamage: { regime: 'dot', hasEngineEffect: true, foldedBy: 'paper-damage.ts computeDotDps' },
+  dotDamage: {
+    regime: 'dot',
+    foldBase: 'dynamic',
+    hasEngineEffect: true,
+    foldedBy: 'paper-damage.ts computeDotDps',
+  },
   maxHealth: {
+    foldBase: 'dynamic',
     regime: 'playerStat',
     hasEngineEffect: true,
     foldedBy: 'player-stats.ts derivePlayerStats (245 + 5xEND + this fold)',
   },
   lockpickSkill: {
+    foldBase: 0,
     regime: 'playerStat',
     hasEngineEffect: true,
     foldedBy:
       'player-stats.ts derivePlayerStats; feeds the lockpickSkill CurveInput (Pirate Punch)',
   },
   hackingSkill: {
+    foldBase: 0,
     regime: 'playerStat',
     hasEngineEffect: true,
     foldedBy:
       'player-stats.ts derivePlayerStats; no consumer yet — wired for drop-in (STAT_HackingTier peer of lockpickSkill)',
   },
   stimpakHealMult: {
+    foldBase: 0,
     regime: 'playerStat',
     hasEngineEffect: true,
     foldedBy:
       'player-stats.ts derivePlayerStats; feeds Medical Malpractice via the scaledBy mechanism',
   },
   stimpakHealMagMult: {
-    regime: 'spellMagnitude',
     foldBase: 1,
+    regime: 'spellMagnitude',
     hasEngineEffect: true,
     foldedBy:
       'player-stats.ts derivePlayerStats via foldBucketProduct; feeds the future Stimpak-healing profile (src/lib/healing.ts) — no DPS consumer yet',
   },
   stimpakHealDurationMult: {
-    regime: 'spellMagnitude',
     foldBase: 1,
+    regime: 'spellMagnitude',
     hasEngineEffect: true,
     foldedBy:
       'player-stats.ts derivePlayerStats via foldBucketProduct; feeds the future Stimpak-healing profile (src/lib/healing.ts) — no DPS consumer yet',
   },
   specialStrength: {
+    foldBase: 'dynamic',
     regime: 'playerStat',
     hasEngineEffect: true,
     foldedBy:
       "player-stats.ts derivePlayerStats; feeds paper-damage.ts strengthTerm + the strength CurveInput (Debilitator's)",
   },
   specialPerception: {
+    foldBase: 'dynamic',
     regime: 'playerStat',
     hasEngineEffect: true,
     foldedBy:
       'player-stats.ts derivePlayerStats; no CurveInput/formula reads it, but the folded value is what StatSummary renders (and highlights when buffed) — same as the other six SPECIALs',
   },
   specialEndurance: {
+    foldBase: 'dynamic',
     regime: 'playerStat',
     hasEngineEffect: true,
     foldedBy:
       "player-stats.ts derivePlayerStats; feeds the maxHealth formula + the endurance CurveInput (Lifegiver's)",
   },
   specialCharisma: {
+    foldBase: 'dynamic',
     regime: 'playerStat',
     hasEngineEffect: true,
     foldedBy: "player-stats.ts derivePlayerStats; feeds the charisma CurveInput (Peace Maker's)",
   },
   specialIntelligence: {
+    foldBase: 'dynamic',
     regime: 'playerStat',
     hasEngineEffect: true,
     foldedBy:
       "player-stats.ts derivePlayerStats; feeds the intelligence CurveInput (Science!, Pyro-Technician's, Cryologist's)",
   },
   specialAgility: {
+    foldBase: 'dynamic',
     regime: 'playerStat',
     hasEngineEffect: true,
     foldedBy:
       "player-stats.ts derivePlayerStats; feeds ap-economy.ts computeApEconomy's AP pool size",
   },
   specialLuck: {
+    foldBase: 'dynamic',
     regime: 'playerStat',
     hasEngineEffect: true,
     foldedBy: "player-stats.ts derivePlayerStats; feeds crit-meter.ts computeCritMeter's fill rate",
   },
   damageResistGain: {
+    foldBase: 'dynamic',
     regime: 'playerStat',
     hasEngineEffect: true,
     foldedBy:
       'player-stats.ts derivePlayerStats; folded onto the manual playerDamageResist knob (Barbarian STR→DR, Iron Fist DR→unarmed)',
   },
   energyResistGain: {
+    foldBase: 'unfolded',
     regime: 'unfolded',
     hasEngineEffect: false,
     foldedBy:
       'none — wearer-side resist mitigation not modeled (AV EnergyResist extracted via FALLBACK_AVIF_ROUTES, e.g. Scaly Skin, but no consumer yet)',
   },
   incomingDamageMult: {
+    foldBase: 'unfolded',
     regime: 'unfolded',
     hasEngineEffect: false,
     foldedBy:

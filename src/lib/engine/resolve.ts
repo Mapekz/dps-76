@@ -15,6 +15,7 @@ import type {
   ModOp,
   StackCounter,
 } from '@/types/modifiers';
+import { BUCKET_REGISTRY } from '@/types/modifiers';
 import { interpolateCurve } from '@/lib/curve-tables';
 import { CLOSE_THRESHOLD_UNITS, DEFAULT_DISTANCE_UNITS, FAR_THRESHOLD_UNITS } from '@/lib/distance';
 import { resolveBulletStormStacks, resolveOnslaughtStacks } from './stacks';
@@ -490,6 +491,21 @@ export function foldOps(entries: Array<{ op: ModOp; value: number }>, base: numb
 }
 
 /**
+ * Whether `foldBucket` cross-checks its `base` argument against the bucket's
+ * declared `BUCKET_REGISTRY.foldBase`. On in every non-production build, which
+ * deliberately INCLUDES the test runner: `import.meta.env` is a Vite construct
+ * and is undefined under `bun test`, so gating on `import.meta.env.DEV` alone
+ * would leave the check inert exactly where the whole 68-row census is supposed
+ * to be proven. Vite statically replaces both expressions at build time, so the
+ * branch folds away for production.
+ */
+const CHECK_FOLD_BASE: boolean = (() => {
+  const env = import.meta.env as unknown as Record<string, unknown> | undefined;
+  if (typeof env?.DEV === 'boolean') return env.DEV; // Vite dev/prod
+  return env?.NODE_ENV !== 'production'; // bun test (env is process.env there)
+})();
+
+/**
  * Fold all active modifiers targeting one bucket over an intrinsic base value.
  * When `collect` is provided, a BucketTrace of every contribution (tagged with
  * its ModifierSource) is pushed onto it; the no-trace path does no extra work.
@@ -501,6 +517,15 @@ export function foldBucket(
   ctx: ResolveContext,
   collect?: BucketTrace[],
 ): number {
+  if (CHECK_FOLD_BASE) {
+    const declared = BUCKET_REGISTRY[bucket].foldBase;
+    if (typeof declared === 'number' && base !== declared) {
+      throw new Error(
+        `foldBucket('${bucket}'): passed base ${base} does not match BUCKET_REGISTRY foldBase ${declared}`,
+      );
+    }
+  }
+
   const entries: Array<{ op: ModOp; value: number; mod?: Modifier }> = [];
   for (const mod of modifiers) {
     if (mod.bucket !== bucket) continue;

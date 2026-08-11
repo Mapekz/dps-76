@@ -99,16 +99,18 @@ describe('BUCKET_REGISTRY', () => {
     expect(Object.keys(BUCKET_REGISTRY).sort()).toEqual([...ALL_BUCKETS].sort());
   });
 
-  it('records only the four non-default bootstrap/product fold conventions', () => {
+  it('records foldBase on every bucket and only the four non-default deBased/product conventions', () => {
+    for (const bucket of ALL_BUCKETS) {
+      expect(BUCKET_REGISTRY[bucket].foldBase).toBeDefined();
+    }
+
     const entriesWithConventions = Object.entries(BUCKET_REGISTRY)
-      .filter(([, entry]) => entry.foldBase !== undefined || entry.deBased !== undefined)
+      .filter(([, entry]) => entry.deBased !== undefined)
       .map(([bucket, entry]) => [bucket, { foldBase: entry.foldBase, deBased: entry.deBased }]);
 
     expect(entriesWithConventions).toEqual([
       ['vatsHitChance', { foldBase: 1, deBased: true }],
       ['vatsHitChanceMult', { foldBase: 1, deBased: false }],
-      ['stimpakHealMagMult', { foldBase: 1, deBased: undefined }],
-      ['stimpakHealDurationMult', { foldBase: 1, deBased: undefined }],
     ]);
   });
 

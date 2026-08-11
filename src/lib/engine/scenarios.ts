@@ -429,8 +429,8 @@ function foldRegisteredBucket(
   collect?: BucketTrace[],
 ): number {
   const { foldBase = 0, deBased = false } = BUCKET_REGISTRY[bucket];
-  const result = foldBucket(modifiers, bucket, foldBase, ctx, collect);
-  return deBased ? result - foldBase : result;
+  const result = foldBucket(modifiers, bucket, foldBase as number, ctx, collect);
+  return deBased ? result - (foldBase as number) : result;
 }
 
 function isMelee(weapon: Weapon): boolean {
