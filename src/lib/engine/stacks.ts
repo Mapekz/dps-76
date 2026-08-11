@@ -30,13 +30,3 @@ export function resolveBulletStormStacks(
   const raw = stored === -1 ? (sustainedAvg ?? max) : stored;
   return Math.max(0, Math.min(Math.max(raw, min), max));
 }
-
-/** Whether the Onslaught stack slider counts as active — manual pin only (auto is `-1`). */
-export function isOnslaughtStacksActive(stored: number, reverse: boolean): boolean {
-  return stored !== -1 && !reverse;
-}
-
-/** Whether the Bullet Storm stack slider counts as active — manual pin only (auto is `-1`). */
-export function isBulletStormStacksActive(stored: number): boolean {
-  return stored !== -1;
-}

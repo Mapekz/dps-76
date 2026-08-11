@@ -19,26 +19,14 @@ import type {
 import { BUCKET_REGISTRY } from '@/types/modifiers';
 import { interpolateCurve } from '@/lib/curve-tables';
 import { CLOSE_THRESHOLD_UNITS, DEFAULT_DISTANCE_UNITS, FAR_THRESHOLD_UNITS } from '@/lib/distance';
+import { KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS } from './affordances';
 import { resolveBulletStormStacks, resolveOnslaughtStacks } from './stacks';
 import type { BucketTrace, TraceContribution } from './trace';
 
-/** HasCompletedChallenge gate on The Pipe's fourth Licensed Plumber rung. */
-export const PIPE_WEAPON_CRAFTING_CHALLENGE_ID =
-  'Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe';
-
-/** Kingfisher's six independent Local Legend fishing challenges (fixed order for count-slider evaluation). */
-export const KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS = [
-  'Challenge_Lifetime_Fishing_LocalLegend_01',
-  'Challenge_Lifetime_Fishing_LocalLegend_02',
-  'Challenge_Lifetime_Fishing_LocalLegend_03',
-  'Burn_Challenge_Lifetime_Fishing_LocalLegend_04',
-  'Challenge_Lifetime_Fishing_SeasonalFish_Fall_LocalLegend',
-  'Challenge_Lifetime_Fishing_SeasonalFish_Summer_LocalLegend',
-] as const;
-
-export const KINGFISHER_LOCAL_LEGEND_CHALLENGE_SET = new Set<string>(
+export {
   KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS,
-);
+  PIPE_WEAPON_CRAFTING_CHALLENGE_ID,
+} from './affordances';
 
 /** Per-attack flags that differ between the displayed scenarios. */
 export interface ScenarioFlags {

@@ -303,7 +303,7 @@ describe('reverse onslaught scenarios (GSM + Furious)', () => {
       weakpointMult: 2,
     });
     expect(result.onslaughtReverse).toBe(true);
-    expect(result.onslaughtReverseAvgStacks).toBeGreaterThan(0);
+    expect(result.onslaughtEffectiveStacks).toBeGreaterThan(0);
     expect(result.onslaughtMaxStacks).toBe(10);
   });
 
@@ -411,8 +411,7 @@ describe('forward onslaught scenarios (non-reverse Onslaught sources)', () => {
     });
     expect(result.onslaughtReverse).toBe(false);
     expect(result.onslaughtMaxStacks).toBe(9);
-    expect(result.onslaughtForwardAvgStacks).toBeDefined();
-    expect(result.onslaughtForwardAvgStacks).toBeGreaterThan(0);
+    expect(result.onslaughtEffectiveStacks).toBeGreaterThan(0);
   });
 
   it('fast-firing weapon forward average is high, slow-firing is low', () => {
@@ -449,8 +448,8 @@ describe('forward onslaught scenarios (non-reverse Onslaught sources)', () => {
       enemy: createDefaultEnemyConditions(),
       weakpointMult: 2,
     });
-    expect(fastResult.onslaughtForwardAvgStacks).toBeGreaterThan(
-      slowResult.onslaughtForwardAvgStacks ?? 0,
+    expect(fastResult.onslaughtEffectiveStacks).toBeGreaterThan(
+      slowResult.onslaughtEffectiveStacks,
     );
   });
 });

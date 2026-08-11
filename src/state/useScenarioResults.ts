@@ -2,11 +2,13 @@ import * as React from 'react';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild } from '@/state/BuildProvider';
 import { resolveLoadout } from '@/lib/loadout';
+import { describeAffordances, type BuildAffordances } from '@/lib/engine/affordances';
 import { computeScenarios, type ScenarioSet } from '@/lib/engine/scenarios';
 import type { ScenarioKey } from '@/state/build-reducer';
 
 export interface ScenarioResults {
   scenarios: ScenarioSet | null;
+  affordances: BuildAffordances | null;
   /**
    * The emphasized card — suggestions metric + condensed-bar lead. User
    * pick, else whichever scenario has the higher canonical DPS (VATS ←
@@ -31,9 +33,13 @@ export function useScenarioResults(): ScenarioResults {
   const { mode } = useGameMode();
   const state = useBuild();
 
-  const scenarios = React.useMemo(() => {
+  const { scenarios, affordances } = React.useMemo(() => {
     const input = resolveLoadout(state.player, state.enemy, mode);
-    return input ? computeScenarios({ ...input, collectTrace: true }) : null;
+    if (!input) return { scenarios: null, affordances: null };
+    return {
+      scenarios: computeScenarios({ ...input, collectTrace: true }),
+      affordances: describeAffordances(input),
+    };
   }, [state.player, state.enemy, mode]);
 
   const auto: ScenarioKey =
@@ -43,5 +49,5 @@ export function useScenarioResults(): ScenarioResults {
       ? 'vats'
       : 'freeAim';
 
-  return { scenarios, emphasized: state.view.emphasized ?? auto };
+  return { scenarios, affordances, emphasized: state.view.emphasized ?? auto };
 }

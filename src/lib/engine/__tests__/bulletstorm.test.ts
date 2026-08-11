@@ -305,7 +305,6 @@ describe('effectiveBulletStormStacks (via computeScenarios) — sentinel, clamp,
       enemy: createDefaultEnemyConditions(),
       weakpointMult: 2,
     });
-    expect(result.bulletStormAvgStacks).toBeDefined();
-    expect(result.bulletStormAvgStacks).toBeCloseTo(expectedAvg, 3);
+    expect(result.bulletStormEffectiveStacks).toBeCloseTo(expectedAvg, 3);
   });
 });

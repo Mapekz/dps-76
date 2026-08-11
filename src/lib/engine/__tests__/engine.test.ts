@@ -17,6 +17,7 @@ import {
   totalCritMult,
   totalSneakMult,
 } from '@/lib/engine/paper-damage';
+import { describeAffordances } from '@/lib/engine/affordances';
 import { computeScenarios } from '@/lib/engine/scenarios';
 
 // Engine-core tests: synthetic weapon + hand-fed modifiers, hand-computed
@@ -1139,7 +1140,7 @@ describe('charging weapons (Gauss family, bows, tesla/gamma/laser barrels)', () 
     });
 
     it("exposes the charging field with the effective weapon's charge parameters", () => {
-      const s = computeScenarios(baseInput);
+      const s = describeAffordances(baseInput);
       expect(s.charging).toEqual({
         fullPowerSeconds: 1.0,
         fullPowerDamageMult: 2.0,
@@ -1148,7 +1149,7 @@ describe('charging weapons (Gauss family, bows, tesla/gamma/laser barrels)', () 
     });
 
     it('charging is null for a non-charging weapon', () => {
-      const s = computeScenarios({ ...baseInput, weapon: nonCharging });
+      const s = describeAffordances({ ...baseInput, weapon: nonCharging });
       expect(s.charging).toBeNull();
     });
   });
@@ -2586,7 +2587,7 @@ describe('hasConcentratedFireSources detection', () => {
   };
 
   it('is false with no Concentrated Fire source equipped', () => {
-    expect(computeScenarios(base).hasConcentratedFireSources).toBe(false);
+    expect(describeAffordances(base).hasConcentratedFireSources).toBe(false);
   });
 
   it('detects a concentratedFire stacks condition', () => {
@@ -2599,7 +2600,9 @@ describe('hasConcentratedFireSources detection', () => {
         { kind: 'stacks', counter: 'concentratedFire', max: 20 },
       ],
     });
-    expect(computeScenarios({ ...base, modifiers: [cfMod] }).hasConcentratedFireSources).toBe(true);
+    expect(describeAffordances({ ...base, modifiers: [cfMod] }).hasConcentratedFireSources).toBe(
+      true,
+    );
   });
 });
 
@@ -2746,7 +2749,7 @@ describe('hasKillStreakSources detection', () => {
   };
 
   it('is false with no kill-streak reader equipped', () => {
-    expect(computeScenarios(base).hasKillStreakSources).toBe(false);
+    expect(describeAffordances(base).hasKillStreakSources).toBe(false);
   });
 
   it('detects killStreak curves, killStreakCount conditions, and adrenaline stack counters', () => {
@@ -2765,7 +2768,7 @@ describe('hasKillStreakSources detection', () => {
       curveScale: 0.01,
       conditions: [],
     };
-    expect(computeScenarios({ ...base, modifiers: [curveMod] }).hasKillStreakSources).toBe(true);
+    expect(describeAffordances({ ...base, modifiers: [curveMod] }).hasKillStreakSources).toBe(true);
 
     const countMod = mod({
       bucket: 'dbm',
@@ -2773,7 +2776,7 @@ describe('hasKillStreakSources detection', () => {
       value: 0.3,
       conditions: [{ kind: 'killStreakCount', count: 10 }],
     });
-    expect(computeScenarios({ ...base, modifiers: [countMod] }).hasKillStreakSources).toBe(true);
+    expect(describeAffordances({ ...base, modifiers: [countMod] }).hasKillStreakSources).toBe(true);
 
     const stackMod = mod({
       bucket: 'dbm',
@@ -2781,7 +2784,7 @@ describe('hasKillStreakSources detection', () => {
       value: 0.05,
       conditions: [{ kind: 'stacks', counter: 'adrenaline', max: 10 }],
     });
-    expect(computeScenarios({ ...base, modifiers: [stackMod] }).hasKillStreakSources).toBe(true);
+    expect(describeAffordances({ ...base, modifiers: [stackMod] }).hasKillStreakSources).toBe(true);
   });
 });
 
@@ -2799,7 +2802,7 @@ describe('hasBattleLoadersSource detection (Phase C — bash-tier reload skip)',
   };
 
   it('is false with no reloadSkipChanceBash folded onto the effective weapon', () => {
-    expect(computeScenarios(base).hasBattleLoadersSource).toBe(false);
+    expect(describeAffordances(base).hasBattleLoadersSource).toBe(false);
   });
 
   it("is true once buildEffectiveWeapon has folded a reloadSkipChanceBash source onto the weapon (Battle-Loader's)", () => {
@@ -2808,12 +2811,12 @@ describe('hasBattleLoadersSource detection (Phase C — bash-tier reload skip)',
     // ONLY way it reaches computeScenarios is already-folded onto the
     // effective weapon, exactly as resolveLoadout would hand it here.
     const withBash = { ...weapon, reloadSkipChanceBash: 0.45 };
-    expect(computeScenarios({ ...base, weapon: withBash }).hasBattleLoadersSource).toBe(true);
+    expect(describeAffordances({ ...base, weapon: withBash }).hasBattleLoadersSource).toBe(true);
   });
 
   it('a zero reloadSkipChanceBash (present but folded to 0) still reads false', () => {
     const zeroBash = { ...weapon, reloadSkipChanceBash: 0 };
-    expect(computeScenarios({ ...base, weapon: zeroBash }).hasBattleLoadersSource).toBe(false);
+    expect(describeAffordances({ ...base, weapon: zeroBash }).hasBattleLoadersSource).toBe(false);
   });
 });
 
@@ -2833,18 +2836,21 @@ describe('vatsHitChanceBonus (Phase 4 — VATS hit-chance aggregate, display-onl
   };
 
   it('is 0 with no vatsHitChance sources equipped', () => {
-    expect(computeScenarios(base).vatsHitChanceBonus).toBe(0);
+    expect(describeAffordances(base).vatsHitChanceBonus).toBe(0);
   });
 
   it('folds a synthetic vatsHitChance modifier into vatsHitChanceBonus (V.A.T.S. Enhanced-style flat ADD)', () => {
     const m = mod({ bucket: 'vatsHitChance', op: 'ADD', value: 0.5 });
-    expect(computeScenarios({ ...base, modifiers: [m] }).vatsHitChanceBonus).toBeCloseTo(0.5, 10);
+    expect(describeAffordances({ ...base, modifiers: [m] }).vatsHitChanceBonus).toBeCloseTo(
+      0.5,
+      10,
+    );
   });
 
   it('sums multiple vatsHitChance ADD sources additively', () => {
     const a = mod({ id: 'a', bucket: 'vatsHitChance', op: 'ADD', value: 0.5 });
     const b = mod({ id: 'b', bucket: 'vatsHitChance', op: 'ADD', value: 0.1 });
-    expect(computeScenarios({ ...base, modifiers: [a, b] }).vatsHitChanceBonus).toBeCloseTo(
+    expect(describeAffordances({ ...base, modifiers: [a, b] }).vatsHitChanceBonus).toBeCloseTo(
       0.6,
       10,
     );
@@ -2852,14 +2858,13 @@ describe('vatsHitChanceBonus (Phase 4 — VATS hit-chance aggregate, display-onl
 
   it('folds a MUL_ADD-only vatsHitChance source correctly (V.A.T.S. Matrix Overlay/Hoppy Hunter/Twisted Muscles-style — REGRESSION: the base-0 fold every other bootstrap bucket uses would silently zero this out, since foldOps scales MUL_ADD by the base)', () => {
     const armorHelmet = mod({ bucket: 'vatsHitChance', op: 'MUL_ADD', value: 0.1 }); // Multiply Value 1.1 → float-1
-    expect(computeScenarios({ ...base, modifiers: [armorHelmet] }).vatsHitChanceBonus).toBeCloseTo(
-      0.1,
-      10,
-    );
+    expect(
+      describeAffordances({ ...base, modifiers: [armorHelmet] }).vatsHitChanceBonus,
+    ).toBeCloseTo(0.1, 10);
 
     const hoppyHunterPenalty = mod({ bucket: 'vatsHitChance', op: 'MUL_ADD', value: -0.2 }); // Multiply Value 0.8 → float-1
     expect(
-      computeScenarios({ ...base, modifiers: [hoppyHunterPenalty] }).vatsHitChanceBonus,
+      describeAffordances({ ...base, modifiers: [hoppyHunterPenalty] }).vatsHitChanceBonus,
     ).toBeCloseTo(-0.2, 10);
   });
 
@@ -2867,7 +2872,7 @@ describe('vatsHitChanceBonus (Phase 4 — VATS hit-chance aggregate, display-onl
     const vatsEnhanced = mod({ id: 'a', bucket: 'vatsHitChance', op: 'ADD', value: 0.5 });
     const armorHelmet = mod({ id: 'b', bucket: 'vatsHitChance', op: 'MUL_ADD', value: 0.1 });
     expect(
-      computeScenarios({ ...base, modifiers: [vatsEnhanced, armorHelmet] }).vatsHitChanceBonus,
+      describeAffordances({ ...base, modifiers: [vatsEnhanced, armorHelmet] }).vatsHitChanceBonus,
     ).toBeCloseTo(0.6, 10);
   });
 
@@ -2876,9 +2881,12 @@ describe('vatsHitChanceBonus (Phase 4 — VATS hit-chance aggregate, display-onl
     const withBonus = computeScenarios({ ...base, modifiers: [bonusMod] });
     const without = computeScenarios(base);
 
+    const withBonusAffordances = describeAffordances({ ...base, modifiers: [bonusMod] });
+    const withoutAffordances = describeAffordances(base);
+
     // The aggregate itself DOES differ...
-    expect(withBonus.vatsHitChanceBonus).toBeCloseTo(0.5, 10);
-    expect(without.vatsHitChanceBonus).toBe(0);
+    expect(withBonusAffordances.vatsHitChanceBonus).toBeCloseTo(0.5, 10);
+    expect(withoutAffordances.vatsHitChanceBonus).toBe(0);
 
     // ...but nothing downstream of it does. Free aim:
     expect(withBonus.freeAim.perHit.total).toBe(without.freeAim.perHit.total);
@@ -2904,6 +2912,20 @@ describe('vatsHitChanceBonus (Phase 4 — VATS hit-chance aggregate, display-onl
       value: 0.2,
       conditions: [{ kind: 'targetDistance', range: 'far' }],
     });
+    const nearAffordances = describeAffordances({
+      ...base,
+      modifiers: [m],
+      enemy: { ...createDefaultEnemyConditions(), targetDistance: 500 },
+    });
+    const farAffordances = describeAffordances({
+      ...base,
+      modifiers: [m],
+      enemy: { ...createDefaultEnemyConditions(), targetDistance: 1000 },
+    });
+    expect(nearAffordances.vatsHitChanceBonus).toBe(0);
+    expect(farAffordances.vatsHitChanceBonus).toBeCloseTo(0.2, 10);
+    // Same guard as above, restated at the condition-gated boundary: even
+    // when the source IS active (far), the damage numbers don't move.
     const near = computeScenarios({
       ...base,
       modifiers: [m],
@@ -2914,10 +2936,6 @@ describe('vatsHitChanceBonus (Phase 4 — VATS hit-chance aggregate, display-onl
       modifiers: [m],
       enemy: { ...createDefaultEnemyConditions(), targetDistance: 1000 },
     });
-    expect(near.vatsHitChanceBonus).toBe(0);
-    expect(far.vatsHitChanceBonus).toBeCloseTo(0.2, 10);
-    // Same guard as above, restated at the condition-gated boundary: even
-    // when the source IS active (far), the damage numbers don't move.
     expect(far.vats.sustain.sustainedDps).toBe(near.vats.sustain.sustainedDps);
   });
 });
@@ -2967,11 +2985,11 @@ describe('vatsHitChanceMult (Concentrated Fire EP109 multiplier, USER-RESOLVED 2
   });
 
   it('is 1 (neutral) with no vatsHitChanceMult sources equipped', () => {
-    expect(computeScenarios(baseFor(semiWeapon)).vatsHitChanceMult).toBe(1);
+    expect(describeAffordances(baseFor(semiWeapon)).vatsHitChanceMult).toBe(1);
   });
 
   it('rank 2 semi-auto × 10 stacks folds to exactly 1.80 on a non-automatic weapon', () => {
-    const result = computeScenarios({
+    const result = describeAffordances({
       ...baseFor(semiWeapon, 10),
       modifiers: [semiMult, autoMult],
     });
@@ -2979,7 +2997,7 @@ describe('vatsHitChanceMult (Concentrated Fire EP109 multiplier, USER-RESOLVED 2
   });
 
   it('rank 2 × 10 stacks folds to exactly 1.20 on an automatic weapon', () => {
-    const result = computeScenarios({
+    const result = describeAffordances({
       ...baseFor(autoWeapon, 10),
       modifiers: [semiMult, autoMult],
     });
@@ -2987,16 +3005,19 @@ describe('vatsHitChanceMult (Concentrated Fire EP109 multiplier, USER-RESOLVED 2
   });
 
   it('0 stacks folds to exactly 1.0 (neutral) even with sources equipped', () => {
-    const result = computeScenarios({ ...baseFor(semiWeapon, 0), modifiers: [semiMult, autoMult] });
+    const result = describeAffordances({
+      ...baseFor(semiWeapon, 0),
+      modifiers: [semiMult, autoMult],
+    });
     expect(result.vatsHitChanceMult).toBe(1);
   });
 
   it("auto vs semi gating picks the right value for the equipped weapon's effective auto state (both sources equipped simultaneously, mutually exclusive by weaponKeyword)", () => {
-    const semiResult = computeScenarios({
+    const semiResult = describeAffordances({
       ...baseFor(semiWeapon, 10),
       modifiers: [semiMult, autoMult],
     });
-    const autoResult = computeScenarios({
+    const autoResult = describeAffordances({
       ...baseFor(autoWeapon, 10),
       modifiers: [semiMult, autoMult],
     });
@@ -3010,7 +3031,7 @@ describe('vatsHitChanceMult (Concentrated Fire EP109 multiplier, USER-RESOLVED 2
   it('folds a MUL_ADD-only vatsHitChanceMult source correctly against base 1 (REGRESSION: the base-0 fold every other bootstrap bucket uses would silently zero this out, since foldOps scales MUL_ADD by the base — same lesson as vatsHitChanceBonus)', () => {
     const m = mod({ bucket: 'vatsHitChanceMult', op: 'MUL_ADD', value: 0.1 });
     expect(
-      computeScenarios({ ...baseFor(semiWeapon), modifiers: [m] }).vatsHitChanceMult,
+      describeAffordances({ ...baseFor(semiWeapon), modifiers: [m] }).vatsHitChanceMult,
     ).toBeCloseTo(1.1, 10);
   });
 
@@ -3019,9 +3040,12 @@ describe('vatsHitChanceMult (Concentrated Fire EP109 multiplier, USER-RESOLVED 2
     const withMult = computeScenarios({ ...b, modifiers: [semiMult, autoMult] });
     const without = computeScenarios(b);
 
+    const withMultAffordances = describeAffordances({ ...b, modifiers: [semiMult, autoMult] });
+    const withoutAffordances = describeAffordances(b);
+
     // The multiplier itself DOES differ...
-    expect(withMult.vatsHitChanceMult).toBeCloseTo(1.8, 10);
-    expect(without.vatsHitChanceMult).toBe(1);
+    expect(withMultAffordances.vatsHitChanceMult).toBeCloseTo(1.8, 10);
+    expect(withoutAffordances.vatsHitChanceMult).toBe(1);
 
     // ...but nothing downstream of it does. Free aim:
     expect(withMult.freeAim.perHit.total).toBe(without.freeAim.perHit.total);

@@ -11,17 +11,13 @@ import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
 import { resolveStats } from '@/lib/loadout';
 import {
-  resolveBulletStormStacks,
-  isBulletStormStacksActive,
-  isOnslaughtStacksActive,
-  resolveOnslaughtStacks,
-} from '@/lib/engine/stacks';
-import { buildDeltaCount } from '@/lib/build-delta';
-import { healthPercentIndex, PLAYER_HEALTH_PERCENT_STOPS } from '@/lib/health-percent';
-import {
   KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS,
   PIPE_WEAPON_CRAFTING_CHALLENGE_ID,
-} from '@/lib/engine/resolve';
+  isBulletStormStacksActive,
+  isOnslaughtStacksActive,
+} from '@/lib/engine/affordances';
+import { buildDeltaCount } from '@/lib/build-delta';
+import { healthPercentIndex, PLAYER_HEALTH_PERCENT_STOPS } from '@/lib/health-percent';
 import { cn } from '@/lib/utils';
 import { createDefaultPlayerConditions, type PlayerConditions } from '@/types';
 import { SectionTrigger } from './SectionTrigger';
@@ -95,7 +91,7 @@ export function ConditionsSection() {
   const { mode } = useGameMode();
   const { player, enemy } = useBuild();
   const dispatch = useBuildDispatch();
-  const { scenarios } = useScenarioResults();
+  const { scenarios, affordances } = useScenarioResults();
 
   const set = (key: keyof PlayerConditions, value: PlayerConditions[keyof PlayerConditions]) =>
     dispatch({ type: 'condition/set', key, value });
@@ -112,11 +108,8 @@ export function ConditionsSection() {
   const onslaughtMax = scenarios?.onslaughtMaxStacks ?? 0;
   const onslaughtReverse = scenarios?.onslaughtReverse ?? false;
   const onslaughtStored = conditions.onslaughtStacks;
-  const onslaughtValue = resolveOnslaughtStacks(onslaughtStored, onslaughtMax, {
-    reverseAvg: onslaughtReverse ? (scenarios?.onslaughtReverseAvgStacks ?? 0) : undefined,
-    forwardAvg: scenarios?.onslaughtForwardAvgStacks,
-  });
-  const hasKillStreak = scenarios?.hasKillStreakSources ?? false;
+  const onslaughtValue = scenarios?.onslaughtEffectiveStacks ?? 0;
+  const hasKillStreak = affordances?.hasKillStreakSources ?? false;
 
   // Concentrated Fire: manual 0–20 stacks slider standing in for the game's
   // hidden native per-target consecutive-shots-fired counter (see the
@@ -124,15 +117,15 @@ export function ConditionsSection() {
   // docs/assumptions.md "Concentrated Fire stacks"). Unlike Onslaught/Bullet
   // Storm there is no equipped-source-derived max: the cap is the fixed GMST
   // 20, so this only needs an existence gate, not a fold.
-  const hasConcentratedFire = scenarios?.hasConcentratedFireSources ?? false;
+  const hasConcentratedFire = affordances?.hasConcentratedFireSources ?? false;
   const concentratedFireStacks = conditions.concentratedFireStacks;
 
-  const hasPipeCraftingChallenge = scenarios?.hasPipeCraftingChallengeSource ?? false;
+  const hasPipeCraftingChallenge = affordances?.hasPipeCraftingChallengeSource ?? false;
   const pipeCraftingChallengeCompleted = (conditions.completedChallengeIds ?? []).includes(
     PIPE_WEAPON_CRAFTING_CHALLENGE_ID,
   );
 
-  const hasKingfisherLocalLegend = scenarios?.hasKingfisherLocalLegendSource ?? false;
+  const hasKingfisherLocalLegend = affordances?.hasKingfisherLocalLegendSource ?? false;
   const localLegendFishingChallengesCompleted =
     conditions.localLegendFishingChallengesCompleted ?? 0;
 
@@ -141,7 +134,7 @@ export function ConditionsSection() {
   // swing that triggers Battle-Loader's instant reload, gated on whether the
   // effective weapon actually carries a reloadSkipChanceBash source
   // (mirrors the kill-streak/Concentrated Fire existence-gate pattern).
-  const hasBattleLoaders = scenarios?.hasBattleLoadersSource ?? false;
+  const hasBattleLoaders = affordances?.hasBattleLoadersSource ?? false;
   const battleLoadersBashSec =
     conditions.battleLoadersBashSec ?? defaults.battleLoadersBashSec ?? 0;
 
@@ -150,12 +143,7 @@ export function ConditionsSection() {
   const bulletStormMax = scenarios?.bulletStormMaxStacks ?? 0;
   const bulletStormMin = scenarios?.bulletStormMinStacks ?? 0;
   const bulletStormStored = conditions.bulletStormStacks;
-  const bulletStormValue = resolveBulletStormStacks(
-    bulletStormStored,
-    bulletStormMin,
-    bulletStormMax,
-    scenarios?.bulletStormAvgStacks,
-  );
+  const bulletStormValue = scenarios?.bulletStormEffectiveStacks ?? 0;
 
   const foodTier = conditions.foodTier ?? 0;
   const drinkTier = conditions.drinkTier ?? 0;

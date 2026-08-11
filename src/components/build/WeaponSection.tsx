@@ -82,7 +82,7 @@ export function WeaponSection() {
   const { mode } = useGameMode();
   const { player, enemy } = useBuild();
   const dispatch = useBuildDispatch();
-  const { scenarios } = useScenarioResults();
+  const { scenarios, affordances } = useScenarioResults();
 
   const weapons = getWeapons(mode);
   const uniques = getUniques(mode);
@@ -123,7 +123,7 @@ export function WeaponSection() {
   // which already resets it) can shrink the effective charge window, and a
   // carried-over value could otherwise overshoot the new bounds — mirrors
   // resolvedChargeTimeSec's own clamp (src/lib/charge.ts).
-  const charging = scenarios?.charging ?? null;
+  const charging = affordances?.charging ?? null;
   const chargeTimeSec = charging
     ? Math.min(
         Math.max(player.chargeTimeSec ?? charging.fullPowerSeconds, charging.minimumChargeTime),

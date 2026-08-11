@@ -1,6 +1,5 @@
 import type { EnemyConditions, GameMode, PlayerConditions, Weapon } from '@/types';
 import type { Modifier } from '@/types/modifiers';
-import { weaponCharges } from '@/lib/charge';
 import { interpolateCurve } from '@/lib/curve-tables';
 import chargedMeleeCurveFile from '@/data/live/curvetables/legendarymods/weapon_chargedmeleeattack.json';
 import { DEFAULT_DISTANCE_UNITS, rangeFalloffMult } from '@/lib/distance';
@@ -38,11 +37,10 @@ import {
 import {
   effectiveValue,
   foldRegisteredBucket,
-  KINGFISHER_LOCAL_LEGEND_CHALLENGE_SET,
-  PIPE_WEAPON_CRAFTING_CHALLENGE_ID,
   type ResolveContext,
   type ScenarioFlags,
 } from './resolve';
+import { resolveBulletStormStacks, resolveOnslaughtStacks } from './stacks';
 
 /** Which body part a hit lands on — the location axis for torso-gated perks (Center Masochist). */
 type BodyPartLocation = NonNullable<ResolveContext['bodyPart']>;
@@ -164,10 +162,7 @@ export interface ScenarioSet {
   vats: ScenarioResult;
   /**
    * The shared Onslaught stack cap folded from every equipped source's
-   * `onslaughtMaxStacks` modifier (0 when none are equipped). Exposed here
-   * so the UI's Onslaught-stacks slider (`ConditionsSection`) can read the
-   * bound without re-running `resolveLoadout` — see docs/assumptions.md
-   * "Onslaught".
+   * `onslaughtMaxStacks` modifier (0 when none are equipped). Slider `max`.
    */
   onslaughtMaxStacks: number;
   /**
@@ -177,130 +172,27 @@ export interface ScenarioSet {
    */
   onslaughtReverse: boolean;
   /**
-   * Steady-state average stack count under reverse mode (undefined when
-   * `onslaughtReverse` is false).
+   * Resolved effective Onslaught stacks for `input.player.onslaughtStacks`
+   * (auto pin −1, reverse average, or manual pin) — same result as
+   * `resolveOnslaughtStacks` in stacks.ts.
    */
-  onslaughtReverseAvgStacks?: number;
-  /**
-   * Steady-state average stack count under forward mode (undefined when
-   * `onslaughtReverse` is true or no Onslaught sources are equipped). The UI
-   * label reads this value as the suggested sustained Stacks average.
-   */
-  onslaughtForwardAvgStacks?: number;
+  onslaughtEffectiveStacks: number;
   /**
    * The shared Bullet Storm stack cap folded from every equipped source's
-   * `bulletStormMaxStacks` modifier (0 when none are equipped) — same
-   * precedent as `onslaughtMaxStacks`. Exposed here so the UI's Bullet Storm
-   * stacks slider can read the bound without re-running `resolveLoadout`.
-   * See docs/assumptions.md "Bullet Storm".
+   * `bulletStormMaxStacks` modifier (0 when none are equipped). Slider `max`.
    */
   bulletStormMaxStacks: number;
   /**
    * The shared Bullet Storm stack FLOOR folded from every equipped source's
-   * `bulletStormMinStacks` modifier (0 when none are equipped — Resolute
-   * Veteran's +5).
+   * `bulletStormMinStacks` modifier (0 when none are equipped). Slider `min`.
    */
   bulletStormMinStacks: number;
   /**
-   * Steady-state average Bullet Storm stack count during sustained fire (defined
-   * whenever sources are equipped, i.e., `bulletStormMaxStacks > 0`; on auto
-   * (slider −1) the engine resolves to this value, a manual pin wins per
-   * stacks.ts). See docs/assumptions.md "Bullet Storm".
+   * Resolved effective Bullet Storm stacks for `input.player.bulletStormStacks`
+   * (auto pin −1 or manual pin) — same result as `resolveBulletStormStacks`
+   * in stacks.ts.
    */
-  bulletStormAvgStacks?: number;
-  /**
-   * True when any equipped source reads the kill-streak counter (Adrenaline,
-   * Crowd Control, Sole Survivor; Lawbringer, Adrenal, Thrill-Seeker's) — the
-   * UI's kill-streak slider disables without one. Unlike onslaughtMaxStacks
-   * this is an existence scan, not a bucket fold: kill-streak sources are
-   * curves/conditions attached to arbitrary buckets, there is no dedicated
-   * bucket to fold.
-   */
-  hasKillStreakSources: boolean;
-  /**
-   * True when any equipped source reads the `concentratedFire` stack counter
-   * (Concentrated Fire's per-VATS-shot `dbm` bonus) — the UI's Concentrated
-   * Fire stacks slider disables without one. Existence scan (mirrors
-   * `hasKillStreakSources`), not a bucket fold: Concentrated Fire's
-   * modifier carries the `stacks` condition directly rather than a
-   * dedicated bucket.
-   */
-  hasConcentratedFireSources: boolean;
-  /**
-   * True when any equipped source gates on The Pipe's pipe-weapon crafting
-   * lifetime challenge — shows the completion toggle in Conditions.
-   */
-  hasPipeCraftingChallengeSource: boolean;
-  /**
-   * True when any equipped source gates on Kingfisher's Local Legend fishing
-   * challenges — shows the 0–6 count slider in Conditions.
-   */
-  hasKingfisherLocalLegendSource: boolean;
-  /**
-   * True when the effective weapon carries a nonzero `reloadSkipChanceBash`
-   * (Battle-Loader's — the bash-triggered reload-skip channel, see
-   * docs/assumptions.md "Reload-skip & free-ammo expected value") — gates the
-   * UI's bash-time slider (`ConditionsSection.tsx`,
-   * `PlayerConditions.battleLoadersBashSec`).
-   * Unlike `hasKillStreakSources`/`hasConcentratedFireSources` (existence
-   * scans over `ScenarioInput.modifiers`), this reads the FOLDED weapon
-   * field instead: `reloadSkipChanceBash` is a `sustainChance`-regime
-   * bucket, consumed and stripped from the modifier list before it reaches
-   * `computeScenarios` (same fold-then-drop shape as every other
-   * `SUSTAIN_CHANCE_BUCKETS`/`WEAPON_STAT_BUCKETS` bucket — see
-   * `effective-weapon.ts`/`loadout.ts`'s `assemble`), so a raw modifier-list
-   * scan would always read false.
-   */
-  hasBattleLoadersSource: boolean;
-  /**
-   * The equipped weapon's charge parameters (Gauss family, bows, tesla/
-   * gamma/laser via charging-barrel OMODs — `weaponCharges()`,
-   * src/lib/charge.ts), computed ONCE from the effective `input.weapon` and
-   * exposed here so the UI's charge-time slider doesn't need to re-run
-   * resolveLoadout on every drag — same precedent as `onslaughtMaxStacks`.
-   * Null when the effective weapon doesn't charge (hides the slider).
-   */
-  charging: {
-    fullPowerSeconds: number;
-    fullPowerDamageMult: number;
-    minimumChargeTime: number;
-  } | null;
-  /**
-   * The equipped weapon's effective range fields (Phase 1 — Range +
-   * falloff), computed ONCE from the effective `input.weapon` — same
-   * precedent as `charging`, so the UI's distance slider can show weapon
-   * range context (TargetSection.tsx) without re-running resolveLoadout.
-   * Raw game units — the UI divides by PIP_BOY_UNIT_DIVISOR (src/lib/distance.ts)
-   * to display Pip-Boy units. Null for melee weapons or weapons with no
-   * usable range span (maxRange ≤ 0) — see `isMelee`/`rangeFalloffMult`.
-   */
-  range: { minRange: number; maxRange: number; outOfRangeMult: number } | null;
-  /**
-   * Display-only aggregate of every equipped `vatsHitChance`-bucket
-   * modifier's decimal value (0.10 = +10%), folded ONCE against the VATS
-   * scenario's resolve context (weapon-keyword/perk-rank/targetDistance/
-   * playerIsGhoul conditions all evaluate against the real VATS flags) —
-   * same "fold once" bootstrap precedent as `onslaughtMaxStacks`/`armorPen`.
-   * NEVER consumed by `sustainedDps`/`apLimitedDps`/any damage term — the
-   * manual `vatsHitRatePct` slider (`ConditionsSection.tsx`) stays the sole
-   * authoritative VATS hit-rate input. This field's only consumer is that
-   * same section's informational pill. See docs/assumptions.md "VATS
-   * hit-chance aggregate (display-only)".
-   */
-  vatsHitChanceBonus: number;
-  /**
-   * Display-only Concentrated Fire hit-chance MULTIPLIER (EP109,
-   * USER-RESOLVED 2026-07-19) — folded the same way as `vatsHitChanceBonus`
-   * above (once, against the VATS scenario's resolve context) but exposed
-   * AS-IS rather than de-based: 1 = neutral (no Concentrated Fire stacks, or
-   * no source equipped), 1.80 = a ×1.80 multiplier on the game's own
-   * computed VATS hit chance. NEVER consumed by `sustainedDps`/
-   * `apLimitedDps`/any damage term — the manual `vatsHitRatePct` slider
-   * stays the sole authoritative VATS hit-rate input. This field's only
-   * consumer is `ConditionsSection.tsx`'s informational pill. See
-   * docs/assumptions.md "Concentrated Fire stacks".
-   */
-  vatsHitChanceMult: number;
+  bulletStormEffectiveStacks: number;
 }
 
 export interface ScenarioInput {
@@ -383,17 +275,25 @@ export interface ScenarioInput {
 }
 
 /** Onslaught cap + optional averages (reverse and forward modes), threaded on every ResolveContext. */
-interface OnslaughtThread {
+export interface OnslaughtThread {
   maxStacks: number;
   reverseAvg?: number;
   forwardAvg?: number;
 }
 
 /** Bullet Storm cap/floor + optional sustained-fire average, threaded on every ResolveContext. */
-interface BulletStormThread {
+export interface BulletStormThread {
   maxStacks: number;
   minStacks: number;
   avg?: number;
+}
+
+/** Body-part and range geometry threaded through every hit() call. */
+interface HitGeom {
+  bodyPartMult: number;
+  bodyPart: BodyPartLocation;
+  rangeMult: number;
+  bodyPartRate: number;
 }
 
 function scenarioCtx(
@@ -421,8 +321,76 @@ function scenarioCtx(
   };
 }
 
-function isMelee(weapon: Weapon): boolean {
+export function isMeleeWeapon(weapon: Weapon): boolean {
   return weapon.weaponClass === 'melee' || weapon.weaponClass === 'unarmed';
+}
+
+const BOOTSTRAP_FLAGS: ScenarioFlags = {
+  isVats: false,
+  isSneaking: false,
+  isPowerAttack: false,
+  isCrit: false,
+};
+
+/** Flag-agnostic stack cap folds — shared by computeScenarios and describeAffordances. */
+export function bootstrapStackCaps(input: ScenarioInput): {
+  onslaughtMaxStacks: number;
+  onslaughtReverse: boolean;
+  bulletStormMaxStacks: number;
+  bulletStormMinStacks: number;
+  onslaught: OnslaughtThread;
+  bulletStorm: BulletStormThread;
+} {
+  const bootstrapCtx = scenarioCtx(
+    input,
+    BOOTSTRAP_FLAGS,
+    { maxStacks: 0 },
+    { maxStacks: 0, minStacks: 0 },
+  );
+  const onslaughtMaxStacks = foldRegisteredBucket(
+    input.modifiers,
+    'onslaughtMaxStacks',
+    bootstrapCtx,
+  );
+  const onslaughtReverse =
+    foldRegisteredBucket(input.modifiers, 'onslaughtReverse', bootstrapCtx) > 0;
+  const bulletStormMaxStacks = foldRegisteredBucket(
+    input.modifiers,
+    'bulletStormMaxStacks',
+    bootstrapCtx,
+  );
+  const bulletStormMinStacks = foldRegisteredBucket(
+    input.modifiers,
+    'bulletStormMinStacks',
+    bootstrapCtx,
+  );
+  return {
+    onslaughtMaxStacks,
+    onslaughtReverse,
+    bulletStormMaxStacks,
+    bulletStormMinStacks,
+    onslaught: { maxStacks: onslaughtMaxStacks },
+    bulletStorm: { maxStacks: bulletStormMaxStacks, minStacks: bulletStormMinStacks },
+  };
+}
+
+/** VATS resolve context — one construction site for damage folds and display-only folds. */
+export function buildVatsContext(
+  input: ScenarioInput,
+  onslaught: OnslaughtThread,
+  bulletStorm: BulletStormThread,
+): ResolveContext {
+  const vatsFlags: ScenarioFlags = {
+    isVats: true,
+    isSneaking: input.player.isSneaking,
+    isPowerAttack: input.player.isPowerAttacking,
+    isCrit: false,
+  };
+  return scenarioCtx(input, vatsFlags, onslaught, bulletStorm);
+}
+
+function isMelee(weapon: Weapon): boolean {
+  return isMeleeWeapon(weapon);
 }
 
 /**
@@ -482,34 +450,25 @@ function scaleHit(b: HitBreakdown, mult: number): HitBreakdown {
 function chargedCycleHit(
   input: ScenarioInput,
   flags: ScenarioFlags,
-  bodyPartMult: number,
-  bodyPart: BodyPartLocation,
+  geom: HitGeom,
   critRate: number,
   onslaught: OnslaughtThread,
   bulletStorm: BulletStormThread,
-  rangeMult: number,
-  bodyPartRate: number,
 ): HitBreakdown {
   const normal = critWeighted(
     bodyPartBlendedHit(
       input,
       { ...flags, isPowerAttack: false, isCrit: false },
-      bodyPartMult,
-      bodyPart,
+      geom,
       onslaught,
       bulletStorm,
-      rangeMult,
-      bodyPartRate,
     ),
     bodyPartBlendedHit(
       input,
       { ...flags, isPowerAttack: false, isCrit: true },
-      bodyPartMult,
-      bodyPart,
+      geom,
       onslaught,
       bulletStorm,
-      rangeMult,
-      bodyPartRate,
     ),
     critRate,
   );
@@ -518,22 +477,16 @@ function chargedCycleHit(
       bodyPartBlendedHit(
         input,
         { ...flags, isPowerAttack: true, isCrit: false },
-        bodyPartMult,
-        bodyPart,
+        geom,
         onslaught,
         bulletStorm,
-        rangeMult,
-        bodyPartRate,
       ),
       bodyPartBlendedHit(
         input,
         { ...flags, isPowerAttack: true, isCrit: true },
-        bodyPartMult,
-        bodyPart,
+        geom,
         onslaught,
         bulletStorm,
-        rangeMult,
-        bodyPartRate,
       ),
       critRate,
     ),
@@ -552,11 +505,9 @@ function chargedCycleHit(
 function hit(
   input: ScenarioInput,
   flags: ScenarioFlags,
-  bodyPartMult: number,
-  bodyPart: BodyPartLocation,
+  geom: Pick<HitGeom, 'bodyPartMult' | 'bodyPart' | 'rangeMult'>,
   onslaught: OnslaughtThread,
   bulletStorm: BulletStormThread,
-  rangeMult: number,
   trace?: HitTrace,
 ): HitBreakdown {
   return computePaperDamage({
@@ -565,14 +516,14 @@ function hit(
     itemLevel: input.itemLevel,
     modifiers: input.modifiers,
     ctx: scenarioCtx(input, flags, onslaught, bulletStorm),
-    bodyPartMult,
+    bodyPartMult: geom.bodyPartMult,
     // Location axis, independent of the mult above: >1 doesn't imply
     // weakpoint and 1.0 doesn't imply torso (an armored torso can be <1.0, a
     // torso-weakpoint like a Deathclaw's Belly can be >1.0) — see the
     // `targetBodyPart` derivation in computeScenarios.
-    bodyPart,
+    bodyPart: geom.bodyPart,
     chargeTimeSec: input.chargeTimeSec,
-    rangeFalloffMult: rangeMult,
+    rangeFalloffMult: geom.rangeMult,
     trace,
   });
 }
@@ -610,29 +561,23 @@ function bodyPartWeighted(
 function bodyPartBlendedHit(
   input: ScenarioInput,
   flags: ScenarioFlags,
-  bodyPartMult: number,
-  bodyPart: BodyPartLocation,
+  geom: HitGeom,
   onslaught: OnslaughtThread,
   bulletStorm: BulletStormThread,
-  rangeMult: number,
-  bodyPartRate: number,
   trace?: HitTrace,
 ): HitBreakdown {
-  const rate = Math.max(0, Math.min(bodyPartRate, 1));
-  if (rate >= 1 || (bodyPartMult === 1.0 && bodyPart === 'torso')) {
-    return hit(input, flags, bodyPartMult, bodyPart, onslaught, bulletStorm, rangeMult, trace);
+  const rate = Math.max(0, Math.min(geom.bodyPartRate, 1));
+  if (rate >= 1 || (geom.bodyPartMult === 1.0 && geom.bodyPart === 'torso')) {
+    return hit(input, flags, geom, onslaught, bulletStorm, trace);
   }
-  const atTarget = hit(
+  const atTarget = hit(input, flags, geom, onslaught, bulletStorm, trace);
+  const atTorso = hit(
     input,
     flags,
-    bodyPartMult,
-    bodyPart,
+    { ...geom, bodyPartMult: 1.0, bodyPart: 'torso' },
     onslaught,
     bulletStorm,
-    rangeMult,
-    trace,
   );
-  const atTorso = hit(input, flags, 1.0, 'torso', onslaught, bulletStorm, rangeMult);
   return bodyPartWeighted(atTarget, atTorso, rate);
 }
 
@@ -755,43 +700,9 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
         input.weapon.maxRange ?? 0,
         input.weapon.outOfRangeDamageMult ?? 1.0,
       );
-  // Effective weapon range, exposed for the UI's distance-slider context
-  // (TargetSection.tsx) — same precedent as `charging` below. Null when
-  // there's no usable range span to show (melee, or maxRange <= 0).
-  const range =
-    !isMelee(input.weapon) && (input.weapon.maxRange ?? 0) > 0
-      ? {
-          minRange: input.weapon.minRange ?? 0,
-          maxRange: input.weapon.maxRange ?? 0,
-          outOfRangeMult: input.weapon.outOfRangeDamageMult ?? 1.0,
-        }
-      : null;
 
-  // Onslaught max stacks (folded ONCE, threaded onto every ResolveContext
-  // below): onslaughtMaxStacks modifiers only gate on weapon keyword/class,
-  // never on scenario flags, so a flag-agnostic bootstrap context (max 0,
-  // the "ctxWithoutIt" the fold itself can't depend on) is enough to
-  // evaluate them. With no Onslaught sources equipped this is 0, so every
-  // `stacks:onslaught` / `onslaughtStacks`-curve modifier reads 0 below.
-  const bootstrapFlags: ScenarioFlags = {
-    isVats: false,
-    isSneaking: false,
-    isPowerAttack: false,
-    isCrit: false,
-  };
-  const bootstrapCtx = scenarioCtx(
-    input,
-    bootstrapFlags,
-    { maxStacks: 0 },
-    { maxStacks: 0, minStacks: 0 },
-  );
-  const onslaughtMaxStacks = foldRegisteredBucket(
-    input.modifiers,
-    'onslaughtMaxStacks',
-    bootstrapCtx,
-  );
-  const onslaughtReverse =
-    foldRegisteredBucket(input.modifiers, 'onslaughtReverse', bootstrapCtx) > 0;
+  const caps = bootstrapStackCaps(input);
+  const { onslaughtMaxStacks, onslaughtReverse, bulletStormMaxStacks, bulletStormMinStacks } = caps;
 
   // Battle-Loader's bash time (Phase C — go-through-every-single-silly-
   // whistle.md): folded ONCE here, threaded into every reload-timing call
@@ -802,6 +713,12 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
 
   let onslaughtReverseAvg: number | undefined;
   if (onslaughtReverse && onslaughtMaxStacks > 0) {
+    const bootstrapCtx = scenarioCtx(
+      input,
+      BOOTSTRAP_FLAGS,
+      { maxStacks: 0 },
+      { maxStacks: 0, minStacks: 0 },
+    );
     const consume = onslaughtHitEventsPerShot(
       input.weapon,
       input.modifiers,
@@ -819,6 +736,12 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
 
   let onslaughtForwardAvg: number | undefined;
   if (!onslaughtReverse && onslaughtMaxStacks > 0) {
+    const bootstrapCtx = scenarioCtx(
+      input,
+      BOOTSTRAP_FLAGS,
+      { maxStacks: 0 },
+      { maxStacks: 0, minStacks: 0 },
+    );
     const gain = onslaughtHitEventsPerShot(
       input.weapon,
       input.modifiers,
@@ -839,19 +762,11 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     ...(onslaughtReverseAvg !== undefined && { reverseAvg: onslaughtReverseAvg }),
     ...(onslaughtForwardAvg !== undefined && { forwardAvg: onslaughtForwardAvg }),
   };
-  // Bullet Storm max/min/retention (folded ONCE, threaded onto every
-  // ResolveContext below) — same bootstrap precedent as Onslaught above:
-  // cap/floor/retention modifiers only gate on weapon keyword/class, never on
-  // scenario flags, so the flag-agnostic bootstrap context is enough.
-  const bulletStormMaxStacks = foldRegisteredBucket(
-    input.modifiers,
-    'bulletStormMaxStacks',
-    bootstrapCtx,
-  );
-  const bulletStormMinStacks = foldRegisteredBucket(
-    input.modifiers,
-    'bulletStormMinStacks',
-    bootstrapCtx,
+  const bootstrapCtx = scenarioCtx(
+    input,
+    BOOTSTRAP_FLAGS,
+    { maxStacks: 0 },
+    { maxStacks: 0, minStacks: 0 },
   );
   const bulletStormRetention = foldRegisteredBucket(
     input.modifiers,
@@ -878,6 +793,23 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     ...(bulletStormAvg !== undefined && { avg: bulletStormAvg }),
   };
 
+  const onslaughtEffectiveStacks =
+    onslaughtMaxStacks > 0
+      ? resolveOnslaughtStacks(input.player.onslaughtStacks ?? -1, onslaughtMaxStacks, {
+          reverseAvg: onslaughtReverse ? onslaughtReverseAvg : undefined,
+          forwardAvg: onslaughtForwardAvg,
+        })
+      : 0;
+  const bulletStormEffectiveStacks =
+    bulletStormMaxStacks > 0
+      ? resolveBulletStormStacks(
+          input.player.bulletStormStacks ?? -1,
+          bulletStormMinStacks,
+          bulletStormMaxStacks,
+          bulletStormAvg,
+        )
+      : 0;
+
   // Enemy-defense mitigation inputs (Phase 2 — Enemy defenses), folded ONCE
   // per scenario input — same bootstrap precedent as Onslaught/Bullet Storm
   // above: both extracted `armorPen`/`armorPenFlat` sources only gate on
@@ -889,41 +821,18 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   const armorPenTotal = foldRegisteredBucket(input.modifiers, 'armorPen', bootstrapCtx);
   const armorPenFlatTotal = foldRegisteredBucket(input.modifiers, 'armorPenFlat', bootstrapCtx);
 
-  // Kill-streak sources (existence scan — see ScenarioSet.hasKillStreakSources).
-  const hasKillStreakSources = input.modifiers.some(
-    (m) =>
-      m.curve?.input === 'killStreak' ||
-      m.conditions.some(
-        (c) => c.kind === 'killStreakCount' || (c.kind === 'stacks' && c.counter === 'adrenaline'),
-      ),
-  );
-
-  // Concentrated Fire sources (existence scan — see ScenarioSet.hasConcentratedFireSources).
-  const hasConcentratedFireSources = input.modifiers.some((m) =>
-    m.conditions.some((c) => c.kind === 'stacks' && c.counter === 'concentratedFire'),
-  );
-
-  const hasPipeCraftingChallengeSource = input.modifiers.some((m) =>
-    m.conditions.some(
-      (c) =>
-        c.kind === 'lifetimeChallengeCompleted' &&
-        c.challengeId === PIPE_WEAPON_CRAFTING_CHALLENGE_ID,
-    ),
-  );
-
-  const hasKingfisherLocalLegendSource = input.modifiers.some((m) =>
-    m.conditions.some(
-      (c) =>
-        c.kind === 'lifetimeChallengeCompleted' &&
-        KINGFISHER_LOCAL_LEGEND_CHALLENGE_SET.has(c.challengeId),
-    ),
-  );
-
-  // Battle-Loader's bash source (see ScenarioSet.hasBattleLoadersSource doc
-  // comment for why this reads the folded weapon field instead of an
-  // input.modifiers scan — reloadSkipChanceBash is stripped from the
-  // modifier list before it reaches this function).
-  const hasBattleLoadersSource = (input.weapon.reloadSkipChanceBash ?? 0) > 0;
+  const freeGeom: HitGeom = {
+    bodyPartMult,
+    bodyPart: targetBodyPart,
+    rangeMult,
+    bodyPartRate: freeBodyPartRate,
+  };
+  const vatsGeom: HitGeom = {
+    bodyPartMult,
+    bodyPart: targetBodyPart,
+    rangeMult,
+    bodyPartRate: 1,
+  };
 
   // Free aim: crits are VATS-only, so never crit here.
   const freeFlags: ScenarioFlags = {
@@ -933,32 +842,15 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     isCrit: false,
   };
   const freeTrace = tracing ? createHitTrace() : undefined;
-  const freeHit = bodyPartBlendedHit(
-    input,
-    freeFlags,
-    bodyPartMult,
-    targetBodyPart,
-    onslaught,
-    bulletStorm,
-    rangeMult,
-    freeBodyPartRate,
-    freeTrace,
-  );
+  const freeHit = bodyPartBlendedHit(input, freeFlags, freeGeom, onslaught, bulletStorm, freeTrace);
 
   // VATS: crit cadence blends a non-crit and a crit hit. `vatsCtx` is the
   // one full (onslaught/bulletStorm-threaded) VATS-flavored resolve context
   // for this input — reused below by the crit meter, the AP economy fold,
-  // the VATS DoT fold, and the vatsHitChance aggregate, so weapon-keyword/
-  // perk-rank/targetDistance/playerIsGhoul conditions on every VATS-scoped
-  // fold evaluate against the same real VATS state instead of each call
-  // rebuilding an equivalent context.
-  const vatsFlags: ScenarioFlags = {
-    isVats: true,
-    isSneaking: sneaking,
-    isPowerAttack: powerAttack,
-    isCrit: false,
-  };
-  const vatsCtx = scenarioCtx(input, vatsFlags, onslaught, bulletStorm);
+  // and the VATS DoT fold, so weapon-keyword/perk-rank/targetDistance/
+  // playerIsGhoul conditions on every VATS-scoped fold evaluate against the
+  // same real VATS state instead of each call rebuilding an equivalent context.
+  const vatsCtx = buildVatsContext(input, onslaught, bulletStorm);
   const critMeterTrace = tracing
     ? ({ fill: null, consumption: null } as CritMeterTrace)
     : undefined;
@@ -970,50 +862,22 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     input.engineConstants?.vatsCrit ?? DEFAULT_VATS_CRIT_CONSTANTS,
   );
   const critRate = input.critRate ?? critMeter.critRate;
-  // VATS hit-chance aggregate (Phase 4 — display-only): folded ONCE against
-  // the VATS resolve context (same "fold once" bootstrap precedent as
-  // armorPen/onslaughtMaxStacks), NEVER consumed by any damage/sustain/AP
-  // term below — see the `vatsHitChance` bucket doc comment
-  // (src/types/modifiers.ts) and docs/assumptions.md "VATS hit-chance
-  // aggregate (display-only)". Surfaced on `ScenarioSet.vatsHitChanceBonus`
-  // purely for the ConditionsSection.tsx pill.
-  //
-  // Its unusual base-1/de-based convention is registry-owned; see the bucket
-  // doc comment for why mixed ADD/MUL_ADD sources require it.
-  const vatsHitChanceBonus = foldRegisteredBucket(input.modifiers, 'vatsHitChance', vatsCtx);
-  // Concentrated Fire's hit-chance MULTIPLIER (EP109, USER-RESOLVED
-  // 2026-07-19) — same "fold once against the VATS context" bootstrap
-  // precedent as vatsHitChanceBonus immediately above, and the same base-1
-  // reasoning, but NOT de-based: the exposed value IS the multiplier itself
-  // (1 = neutral). Both conventions are registry-owned. See the
-  // `vatsHitChanceMult` bucket doc comment
-  // (src/types/modifiers.ts) and docs/assumptions.md "Concentrated Fire
-  // stacks". Surfaced on `ScenarioSet.vatsHitChanceMult`, never consumed by
-  // any damage/sustain/AP term below.
-  const vatsHitChanceMult = foldRegisteredBucket(input.modifiers, 'vatsHitChanceMult', vatsCtx);
+  const vatsFlags: ScenarioFlags = {
+    isVats: true,
+    isSneaking: sneaking,
+    isPowerAttack: powerAttack,
+    isCrit: false,
+  };
   const vatsTrace = tracing ? createHitTrace() : undefined;
   const vatsCritTrace = tracing ? createHitTrace() : undefined;
   const vatsAvg = critWeighted(
-    bodyPartBlendedHit(
-      input,
-      vatsFlags,
-      bodyPartMult,
-      targetBodyPart,
-      onslaught,
-      bulletStorm,
-      rangeMult,
-      1, // VATS: no torso fallback on a missed part — see bodyPartBlendedHit's doc comment
-      vatsTrace,
-    ),
+    bodyPartBlendedHit(input, vatsFlags, vatsGeom, onslaught, bulletStorm, vatsTrace),
     bodyPartBlendedHit(
       input,
       { ...vatsFlags, isCrit: true },
-      bodyPartMult,
-      targetBodyPart,
+      vatsGeom,
       onslaught,
       bulletStorm,
-      rangeMult,
-      1,
       vatsCritTrace,
     ),
     critRate,
@@ -1028,30 +892,10 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // `freeHit`/`vatsAvg` one (whose total sustain no longer reflects).
   const charged = isCharged(input.weapon);
   const freeCycleHit = charged
-    ? chargedCycleHit(
-        input,
-        freeFlags,
-        bodyPartMult,
-        targetBodyPart,
-        0,
-        onslaught,
-        bulletStorm,
-        rangeMult,
-        freeBodyPartRate,
-      )
+    ? chargedCycleHit(input, freeFlags, freeGeom, 0, onslaught, bulletStorm)
     : freeHit;
   const vatsCycleHit = charged
-    ? chargedCycleHit(
-        input,
-        vatsFlags,
-        bodyPartMult,
-        targetBodyPart,
-        critRate,
-        onslaught,
-        bulletStorm,
-        rangeMult,
-        1, // VATS: no torso fallback on a missed part — see bodyPartBlendedHit's doc comment
-      )
+    ? chargedCycleHit(input, vatsFlags, vatsGeom, critRate, onslaught, bulletStorm)
     : vatsAvg;
   const freeCycleTotal = freeCycleHit.total;
   const vatsCycleTotal = vatsCycleHit.total;
@@ -1173,14 +1017,6 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     };
   }
 
-  const charging = weaponCharges(input.weapon)
-    ? {
-        fullPowerSeconds: input.weapon.fullPowerSeconds ?? 0,
-        fullPowerDamageMult: input.weapon.fullPowerDamageMult ?? 0,
-        minimumChargeTime: input.weapon.minimumChargeTime ?? 0,
-      }
-    : null;
-
   // Post-mitigation vs-target figures (Phase 2 — Enemy defenses): absent
   // when no target is selected. Uses the SAME cycle hit that produced
   // freeSustain/vatsSustain (freeCycleHit/vatsCycleHit — the charged-cycle
@@ -1211,20 +1047,10 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   return {
     onslaughtMaxStacks,
     onslaughtReverse,
-    ...(onslaughtReverseAvg !== undefined && { onslaughtReverseAvgStacks: onslaughtReverseAvg }),
-    ...(onslaughtForwardAvg !== undefined && { onslaughtForwardAvgStacks: onslaughtForwardAvg }),
+    onslaughtEffectiveStacks,
     bulletStormMaxStacks,
     bulletStormMinStacks,
-    ...(bulletStormAvg !== undefined && { bulletStormAvgStacks: bulletStormAvg }),
-    hasKillStreakSources,
-    hasConcentratedFireSources,
-    hasPipeCraftingChallengeSource,
-    hasKingfisherLocalLegendSource,
-    hasBattleLoadersSource,
-    charging,
-    range,
-    vatsHitChanceBonus,
-    vatsHitChanceMult,
+    bulletStormEffectiveStacks,
     freeAim: {
       perHit: freeHit,
       burstDps: freeSustain.burstDps,

@@ -138,8 +138,8 @@ export function TargetSection() {
   // computeScenarios (ScenarioSet.range), same precedent as WeaponSection's
   // charge-time slider reading ScenarioSet.charging. Null for melee weapons
   // or weapons with no usable range span.
-  const { scenarios } = useScenarioResults();
-  const weaponRange = scenarios?.range ?? null;
+  const { affordances } = useScenarioResults();
+  const weaponRange = affordances?.range ?? null;
 
   const conditions = enemy.conditions;
   const defaults = createDefaultEnemyConditions();
@@ -277,8 +277,8 @@ export function TargetSection() {
   // sole authoritative VATS hit-rate input for every DPS number (see its
   // doc comment and docs/assumptions.md "VATS hit-chance aggregate
   // (display-only)").
-  const vatsHitChanceBonus = scenarios?.vatsHitChanceBonus ?? 0;
-  const vatsHitChanceMult = scenarios?.vatsHitChanceMult ?? 1;
+  const vatsHitChanceBonus = affordances?.vatsHitChanceBonus ?? 0;
+  const vatsHitChanceMult = affordances?.vatsHitChanceMult ?? 1;
   const centerMassName = defaultPart?.name ?? 'Torso';
 
   const setTakingOneForTheTeamRank = (rank: number) => {

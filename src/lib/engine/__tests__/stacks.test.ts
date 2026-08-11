@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'bun:test';
-import {
-  isBulletStormStacksActive,
-  isOnslaughtStacksActive,
-  resolveBulletStormStacks,
-  resolveOnslaughtStacks,
-} from '@/lib/engine/stacks';
+import { isBulletStormStacksActive, isOnslaughtStacksActive } from '@/lib/engine/affordances';
+import { resolveBulletStormStacks, resolveOnslaughtStacks } from '@/lib/engine/stacks';
 
 describe('resolveOnslaughtStacks', () => {
   it('resolves the auto sentinel to max when no forward average is available', () => {
