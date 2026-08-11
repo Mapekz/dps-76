@@ -1116,6 +1116,58 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   },
 };
 
+/**
+ * Buckets that fold via `foldRegisteredBucket`, i.e. whose `BUCKET_REGISTRY`
+ * `foldBase` is a constant AND whose fold uses the plain `foldBucket`
+ * primitive. Derived-by-test rather than derived-by-type: a mapped conditional
+ * over BUCKET_REGISTRY collapses to `never`, because `Readonly<Record<Bucket,
+ * BucketRegimeEntry>>` widens each row's literal `foldBase` to `number`.
+ *
+ * `modifiers.test.ts` asserts this list plus OTHER_PRIMITIVE_CONSTANT_BASE_BUCKETS
+ * is exactly the set of numeric-`foldBase` rows, so it cannot drift from the
+ * registry unnoticed.
+ */
+export const CONSTANT_BASE_BUCKETS = [
+  'critDmgBonus',
+  'critDmgBonusScale',
+  'sneakBonus',
+  'powerAttackBonus',
+  'weakpointBonus',
+  'explosionRadiusBonus',
+  'explosionRadiusToDamage',
+  'critConsumption',
+  'apRegen',
+  'apPerCrit',
+  'apRegenFlat',
+  'apMax',
+  'onslaughtMaxStacks',
+  'onslaughtReverse',
+  'bulletStormMaxStacks',
+  'bulletStormMinStacks',
+  'bulletStormRetention',
+  'moveSpeedBonus',
+  'armorPen',
+  'armorPenFlat',
+  'vatsHitChance',
+  'vatsHitChanceMult',
+  'lockpickSkill',
+  'hackingSkill',
+  'stimpakHealMult',
+] as const;
+
+/**
+ * Numeric-`foldBase` buckets that deliberately do NOT use `foldRegisteredBucket`
+ * because they fold through a different primitive: `wholeDamage` via
+ * `foldWholeDamage`, the two stimpak multipliers via `foldBucketProduct`.
+ */
+export const OTHER_PRIMITIVE_CONSTANT_BASE_BUCKETS = [
+  'wholeDamage',
+  'stimpakHealMagMult',
+  'stimpakHealDurationMult',
+] as const;
+
+export type ConstantBaseBucket = (typeof CONSTANT_BASE_BUCKETS)[number];
+
 /** Buckets whose fold rewrites an effective-weapon field rather than feeding a damage term — derived from BUCKET_REGISTRY. */
 export const WEAPON_STAT_BUCKETS: ReadonlySet<Bucket> = new Set(
   (Object.entries(BUCKET_REGISTRY) as Array<[Bucket, BucketRegimeEntry]>)

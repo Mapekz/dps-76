@@ -2,7 +2,7 @@ import type { GameMode, Weapon } from '@/types';
 import type { DamageType, Modifier } from '@/types/modifiers';
 import { chargeDamageMultiplier, weaponCharges } from '@/lib/charge';
 import { getBaseDamage, interpolateCurve } from '@/lib/curve-tables';
-import { foldBucket, foldWholeDamage, type ResolveContext } from './resolve';
+import { foldBucket, foldRegisteredBucket, foldWholeDamage, type ResolveContext } from './resolve';
 import { lastTrace, type BucketTrace, type HitTrace } from './trace';
 
 /**
@@ -167,9 +167,9 @@ export function totalCritMult(
     baseCollect,
   );
   const bonusCollect = tracing ? ([] as BucketTrace[]) : undefined;
-  const bonus = foldBucket(modifiers, 'critDmgBonus', 0, ctx, bonusCollect);
+  const bonus = foldRegisteredBucket(modifiers, 'critDmgBonus', ctx, bonusCollect);
   const bonusScaleCollect = tracing ? ([] as BucketTrace[]) : undefined;
-  const bonusScale = foldBucket(modifiers, 'critDmgBonusScale', 1, ctx, bonusScaleCollect);
+  const bonusScale = foldRegisteredBucket(modifiers, 'critDmgBonusScale', ctx, bonusScaleCollect);
   return {
     total: adjustedBase + bonus * bonusScale,
     trace: tracing
@@ -203,7 +203,7 @@ export function totalSneakMult(
     baseCollect,
   );
   const bonusCollect = tracing ? ([] as BucketTrace[]) : undefined;
-  const bonus = foldBucket(modifiers, 'sneakBonus', 0, ctx, bonusCollect);
+  const bonus = foldRegisteredBucket(modifiers, 'sneakBonus', ctx, bonusCollect);
   return {
     total: adjustedBase + bonus,
     trace: tracing ? { base: lastTrace(baseCollect!), bonus: lastTrace(bonusCollect!) } : null,
@@ -248,7 +248,7 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
   let powerAttackTerm = 0; // PowerAttackDBM
   if (ctx.scenario.isPowerAttack) {
     const collect = trace ? ([] as BucketTrace[]) : undefined;
-    powerAttackTerm = foldBucket(modifiers, 'powerAttackBonus', 0, ctx, collect);
+    powerAttackTerm = foldRegisteredBucket(modifiers, 'powerAttackBonus', ctx, collect);
     if (trace && collect) trace.powerAttack = lastTrace(collect);
   }
   const strTerm = strengthTerm(weapon, ctx.player.strength);
@@ -258,7 +258,7 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
   let weakpointMult = 1.0; // WeakptDBM, folded as an outer multiplier (see Bucket doc-comment)
   if (bodyPartMult > 1.0) {
     const collect = trace ? ([] as BucketTrace[]) : undefined;
-    weakpointMult = 1.0 + foldBucket(modifiers, 'weakpointBonus', 0, ctx, collect);
+    weakpointMult = 1.0 + foldRegisteredBucket(modifiers, 'weakpointBonus', ctx, collect);
     if (trace && collect) trace.weakpointBonus = lastTrace(collect);
   }
   const paRaceMult = ctx.scenario.isPowerAttack

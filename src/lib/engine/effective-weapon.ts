@@ -12,7 +12,7 @@ import {
   SUSTAIN_CHANCE_BUCKETS,
   WEAPON_STAT_BUCKETS,
 } from '@/types/modifiers';
-import { effectiveValue, foldBucket, type ResolveContext } from './resolve';
+import { effectiveValue, foldBucket, foldRegisteredBucket, type ResolveContext } from './resolve';
 
 export { SUSTAIN_CHANCE_BUCKETS, WEAPON_STAT_BUCKETS };
 
@@ -250,10 +250,9 @@ export function buildEffectiveWeapon(
   // read the equipped stack cap — bootstrap-fold it exactly like scenarios.ts
   // does per scenario input (cap modifiers are themselves never
   // onslaught-gated, so folding with cap 0 is exact).
-  const onslaughtMaxStacks = foldBucket(
+  const onslaughtMaxStacks = foldRegisteredBucket(
     [...allOmodModifiers, ...loadoutModifiers],
     'onslaughtMaxStacks',
-    0,
     baseCtx,
   );
   // Bullet-Storm-stack curves on weapon-stat buckets (Bullet Storm's own
@@ -261,26 +260,23 @@ export function buildEffectiveWeapon(
   // equipped stack cap/floor — bootstrap-fold both exactly like Onslaught
   // above (cap/floor modifiers are themselves never Bullet-Storm-gated, so
   // folding with cap/floor 0 is exact).
-  const bulletStormMaxStacks = foldBucket(
+  const bulletStormMaxStacks = foldRegisteredBucket(
     [...allOmodModifiers, ...loadoutModifiers],
     'bulletStormMaxStacks',
-    0,
     baseCtx,
   );
-  const bulletStormMinStacks = foldBucket(
+  const bulletStormMinStacks = foldRegisteredBucket(
     [...allOmodModifiers, ...loadoutModifiers],
     'bulletStormMinStacks',
-    0,
     baseCtx,
   );
   // Bonus-move-speed fraction for the moveSpeedBonus curve input (Fast
   // Fighter's reload conversion) — same bootstrap pattern: fold once from the
   // FULL modifier list (Speed Demon's source is a mutation, not a weapon-stat
   // modifier), thread on the ctx every weapon-stat fold below sees.
-  const moveSpeedBonus = foldBucket(
+  const moveSpeedBonus = foldRegisteredBucket(
     [...allOmodModifiers, ...loadoutModifiers],
     'moveSpeedBonus',
-    0,
     baseCtx,
   );
   // Bunker Buster (mod_Custom_BunkerBuster): converts the player's
@@ -290,16 +286,14 @@ export function buildEffectiveWeapon(
   // the OMOD's flag (explosionRadiusToDamage) and the player's perk-sourced
   // bonus (explosionRadiusBonus) combined into ONE synthesized modifier,
   // not threaded through ResolveContext.
-  const explosionRadiusBonus = foldBucket(
+  const explosionRadiusBonus = foldRegisteredBucket(
     [...allOmodModifiers, ...loadoutModifiers],
     'explosionRadiusBonus',
-    0,
     baseCtx,
   );
-  const explosionRadiusToDamage = foldBucket(
+  const explosionRadiusToDamage = foldRegisteredBucket(
     [...allOmodModifiers, ...loadoutModifiers],
     'explosionRadiusToDamage',
-    0,
     baseCtx,
   );
   const ctx: ResolveContext = {

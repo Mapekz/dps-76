@@ -1,5 +1,5 @@
 import type { EnemyConditions, GameMode, PlayerConditions, Weapon } from '@/types';
-import { BUCKET_REGISTRY, type Bucket, type Modifier } from '@/types/modifiers';
+import type { Modifier } from '@/types/modifiers';
 import { weaponCharges } from '@/lib/charge';
 import { interpolateCurve } from '@/lib/curve-tables';
 import chargedMeleeCurveFile from '@/data/live/curvetables/legendarymods/weapon_chargedmeleeattack.json';
@@ -37,7 +37,7 @@ import {
 } from './trace';
 import {
   effectiveValue,
-  foldBucket,
+  foldRegisteredBucket,
   KINGFISHER_LOCAL_LEGEND_CHALLENGE_SET,
   PIPE_WEAPON_CRAFTING_CHALLENGE_ID,
   type ResolveContext,
@@ -419,18 +419,6 @@ function scenarioCtx(
       closeThresholdUnits: input.engineConstants.distance.closeThresholdUnits,
     }),
   };
-}
-
-/** Fold using the bucket's registry-owned base and output convention. */
-function foldRegisteredBucket(
-  modifiers: Modifier[],
-  bucket: Bucket,
-  ctx: ResolveContext,
-  collect?: BucketTrace[],
-): number {
-  const { foldBase = 0, deBased = false } = BUCKET_REGISTRY[bucket];
-  const result = foldBucket(modifiers, bucket, foldBase as number, ctx, collect);
-  return deBased ? result - (foldBase as number) : result;
 }
 
 function isMelee(weapon: Weapon): boolean {

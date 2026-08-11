@@ -1,7 +1,12 @@
 import type { EnemyConditions, Perk, PerkLoadout, PlayerConditions, Weapon } from '@/types';
 import { createDefaultEnemyConditions } from '@/types';
 import type { Bucket, Modifier } from '@/types/modifiers';
-import { foldBucket, foldBucketProduct, type ResolveContext } from '@/lib/engine/resolve';
+import {
+  foldBucket,
+  foldRegisteredBucket,
+  foldBucketProduct,
+  type ResolveContext,
+} from '@/lib/engine/resolve';
 import { interpolateCurve } from '@/lib/curve-tables';
 import levelRewardCurveFile from '@/data/live/curvetables/player/special/levelrewardcurve.json';
 import legendarySlotCurveFile from '@/data/live/curvetables/player/perks/legendaryperkslotcount.json';
@@ -311,15 +316,15 @@ export function derivePlayerStats(
   const maxHealth = Math.round(
     foldBucket(modifiers, 'maxHealth', BASE_MAX_HP + MAX_HP_PER_ENDURANCE * special.endurance, ctx),
   );
-  const lockpickSkill = foldBucket(modifiers, 'lockpickSkill', 0, ctx);
-  const hackingSkill = foldBucket(modifiers, 'hackingSkill', 0, ctx);
+  const lockpickSkill = foldRegisteredBucket(modifiers, 'lockpickSkill', ctx);
+  const hackingSkill = foldRegisteredBucket(modifiers, 'hackingSkill', ctx);
   const damageResistGain = foldBucket(
     modifiers,
     'damageResistGain',
     player.playerDamageResist ?? 0,
     ctx,
   );
-  const stimpakHealMult = foldBucket(modifiers, 'stimpakHealMult', 0, ctx);
+  const stimpakHealMult = foldRegisteredBucket(modifiers, 'stimpakHealMult', ctx);
   const stimpakHealMagMult = foldBucketProduct(modifiers, 'stimpakHealMagMult', ctx);
   const stimpakHealDurationMult = foldBucketProduct(modifiers, 'stimpakHealDurationMult', ctx);
 

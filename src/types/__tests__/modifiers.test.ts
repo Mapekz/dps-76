@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'bun:test';
 import {
   BUCKET_REGISTRY,
+  CONSTANT_BASE_BUCKETS,
   CONSUMED_BEFORE_BUCKETS,
+  OTHER_PRIMITIVE_CONSTANT_BASE_BUCKETS,
   EFFECTIVE_WEAPON_CONSUMED_BUCKETS,
   SUSTAIN_CHANCE_BUCKETS,
   WEAPON_STAT_BUCKETS,
@@ -248,5 +250,28 @@ describe('modifierHasEngineEffect / hasAnyEngineEffect', () => {
   it('hasAnyEngineEffect is false for an empty list and true if any modifier is effective', () => {
     expect(hasAnyEngineEffect([])).toBe(false);
     expect(hasAnyEngineEffect([plainMod('limbDamage'), plainMod('dbm')])).toBe(true);
+  });
+});
+
+describe('CONSTANT_BASE_BUCKETS', () => {
+  // The hand-listed constant-base buckets cannot be derived by type (a mapped
+  // conditional over BUCKET_REGISTRY collapses to `never`, since
+  // Readonly<Record<Bucket, BucketRegimeEntry>> widens each row's literal
+  // foldBase to `number`). So pin the list against the registry here instead:
+  // this is what stops it drifting once someone adds a bucket.
+  it('is exactly the numeric-foldBase rows, minus the other-primitive folds', () => {
+    const numericBase = Object.entries(BUCKET_REGISTRY)
+      .filter(([, entry]) => typeof entry.foldBase === 'number')
+      .map(([bucket]) => bucket)
+      .sort();
+    const claimed: string[] = [...CONSTANT_BASE_BUCKETS, ...OTHER_PRIMITIVE_CONSTANT_BASE_BUCKETS];
+    claimed.sort();
+    expect(claimed).toEqual(numericBase);
+  });
+
+  it('never claims a bucket whose base is dynamic or unfolded', () => {
+    for (const bucket of CONSTANT_BASE_BUCKETS) {
+      expect(typeof BUCKET_REGISTRY[bucket].foldBase).toBe('number');
+    }
   });
 });

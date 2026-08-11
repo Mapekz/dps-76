@@ -9,6 +9,7 @@ import type { PlayerConditions, EnemyConditions, Weapon } from '@/types';
 import type {
   Bucket,
   Condition,
+  ConstantBaseBucket,
   CurveInput,
   DamageType,
   Modifier,
@@ -554,6 +555,23 @@ export function foldBucket(
   }
 
   return result;
+}
+
+/** Fold using the bucket's registry-owned base and output convention. */
+export function foldRegisteredBucket(
+  modifiers: Modifier[],
+  bucket: ConstantBaseBucket,
+  ctx: ResolveContext,
+  collect?: BucketTrace[],
+): number {
+  const { foldBase, deBased = false } = BUCKET_REGISTRY[bucket];
+  if (typeof foldBase !== 'number') {
+    throw new Error(
+      `foldRegisteredBucket('${bucket}'): foldBase is ${String(foldBase)}; only constant-base buckets are valid`,
+    );
+  }
+  const result = foldBucket(modifiers, bucket, foldBase, ctx, collect);
+  return deBased ? result - foldBase : result;
 }
 
 /**

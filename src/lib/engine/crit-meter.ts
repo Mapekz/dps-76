@@ -2,7 +2,7 @@ import type { Weapon } from '@/types';
 import type { Modifier } from '@/types/modifiers';
 import { interpolateCurve } from '@/lib/curve-tables';
 import luckCritChargeCurveFile from '@/data/live/curvetables/player/vats/luckvatscriticalcharge.json';
-import { effectiveValue, foldBucket, type ResolveContext } from './resolve';
+import { effectiveValue, foldBucket, foldRegisteredBucket, type ResolveContext } from './resolve';
 import { lastTrace, type BucketTrace, type CritMeterTrace } from './trace';
 
 /**
@@ -106,7 +106,7 @@ export function computeCritMeter(
 
   const costCollect = trace ? ([] as BucketTrace[]) : undefined;
   const restModifiers = modifiers.filter((m) => !isSelfScalingCritConsumption(m));
-  const consumptionBase = foldBucket(restModifiers, 'critConsumption', 100, ctx, costCollect);
+  const consumptionBase = foldRegisteredBucket(restModifiers, 'critConsumption', ctx, costCollect);
   if (trace && costCollect) trace.consumption = lastTrace(costCollect);
 
   let selfScalingMult = 1;
