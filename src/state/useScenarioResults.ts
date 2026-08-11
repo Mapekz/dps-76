@@ -4,6 +4,7 @@ import { useBuild } from '@/state/BuildProvider';
 import { resolveLoadout } from '@/lib/loadout';
 import { describeAffordances, type BuildAffordances } from '@/lib/engine/affordances';
 import { computeScenarios, type ScenarioSet } from '@/lib/engine/scenarios';
+import { pickEmphasizedScenario } from '@/lib/scenario-emphasis';
 import type { ScenarioKey } from '@/state/build-reducer';
 
 export interface ScenarioResults {
@@ -42,12 +43,7 @@ export function useScenarioResults(): ScenarioResults {
     };
   }, [state.player, state.enemy, mode]);
 
-  const auto: ScenarioKey =
-    scenarios &&
-    (scenarios.vats.ap?.apLimitedDps ?? scenarios.vats.sustain.sustainedDps) >=
-      scenarios.freeAim.sustain.sustainedDps
-      ? 'vats'
-      : 'freeAim';
+  const auto: ScenarioKey = scenarios ? pickEmphasizedScenario(scenarios) : 'freeAim';
 
   return { scenarios, affordances, emphasized: state.view.emphasized ?? auto };
 }

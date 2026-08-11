@@ -3,6 +3,7 @@ import type { GeneratedAddiction, GeneratedBuff } from '@/types/generated';
 import type { Modifier } from '@/types/modifiers';
 import { applyDietScaling } from '@/lib/diet-mutations';
 import { applyClassFreakPenaltyScaling } from '@/lib/class-freak-mutations';
+import { getOmodById } from './omods';
 import { getDataset } from './dataset';
 import { isRecordVisible } from './overlay';
 
@@ -40,6 +41,23 @@ export function getAddictions(mode: GameMode): GeneratedAddiction[] {
 }
 
 /**
+ * Active consumable suppressing each addiction family — the inverse of
+ * `getSuppressedAddictions`. When multiple active items share a family, the
+ * last walk order wins (same as the prior inline Map build in ChemsSection).
+ */
+export function getAddictionSuppressors(
+  mode: GameMode,
+  consumableIds: string[],
+): Map<string, GeneratedBuff> {
+  const active = new Set(consumableIds);
+  const suppressors = new Map<string, GeneratedBuff>();
+  for (const buff of getConsumables(mode)) {
+    if (buff.addiction && active.has(buff.id)) suppressors.set(buff.addiction.id, buff);
+  }
+  return suppressors;
+}
+
+/**
  * Addiction ids suppressed by the player's currently-active consumables.
  * Category-agnostic (grill-session decision, 2026-07-13): an active chem,
  * alcohol, food, or drink all suppress their own addiction equally — the
@@ -48,12 +66,17 @@ export function getAddictions(mode: GameMode): GeneratedAddiction[] {
  * & addictions" and src/lib/player-stats.ts `deriveAddictionCount`.
  */
 export function getSuppressedAddictions(mode: GameMode, consumableIds: string[]): Set<string> {
-  const active = new Set(consumableIds);
-  const suppressed = new Set<string>();
-  for (const buff of getConsumables(mode)) {
-    if (buff.addiction && active.has(buff.id)) suppressed.add(buff.addiction.id);
-  }
-  return suppressed;
+  return new Set(getAddictionSuppressors(mode, consumableIds).keys());
+}
+
+/** True when an equipped weapon legendary reads Junkie's `addictionCount`. */
+export function readsAddictionCount(
+  mode: GameMode,
+  legendaryEffectIds: readonly (string | null | undefined)[],
+): boolean {
+  return legendaryEffectIds.some(
+    (id) => id && getOmodById(mode, id)?.modifiers.some((m) => m.curve?.input === 'addictionCount'),
+  );
 }
 
 /** Engine modifiers for the selected mutation/consumable ids. */

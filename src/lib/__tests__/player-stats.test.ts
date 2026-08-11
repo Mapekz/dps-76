@@ -267,6 +267,24 @@ describe('computePerkBudget (real card costs, not rank)', () => {
     );
     expect(budget.cardPoints.charisma).toBe(3);
   });
+
+  it('flags overBudget when legendary perk slots exceed the level cap', () => {
+    const legal = computePerkBudget(
+      'live',
+      [],
+      Array.from({ length: 6 }, () => ({ perkId: 'LegendaryLuck', rank: 1 })),
+      baseSpecial(),
+    );
+    expect(legal.overBudget).toBe(false);
+
+    const tooMany = computePerkBudget(
+      'live',
+      [],
+      Array.from({ length: 7 }, () => ({ perkId: 'LegendaryLuck', rank: 1 })),
+      baseSpecial(),
+    );
+    expect(tooMany.overBudget).toBe(true);
+  });
 });
 
 describe('deriveStrangeInNumbers', () => {

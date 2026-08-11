@@ -21,8 +21,14 @@ import { matchesQuery } from '@/lib/filter-query';
 import { useFilterQuery } from '@/hooks/useFilterQuery';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
-import { getAddictions, getConsumables, getMutations, getSuppressedAddictions } from '@/data/buffs';
-import { getOmodById } from '@/data/omods';
+import {
+  getAddictions,
+  getConsumables,
+  getMutations,
+  getAddictionSuppressors,
+  getSuppressedAddictions,
+  readsAddictionCount,
+} from '@/data/buffs';
 import { applySelection, consumablesById } from '@/lib/consumable-rules';
 import {
   dietVerdict,
@@ -35,10 +41,11 @@ import { deriveClassFreakRank, deriveStrangeInNumbers } from '@/lib/player-stats
 import { describeBuffModifiers } from '@/lib/buff-description';
 import { CLASS_FREAK_TIER_FACTORS } from '@/lib/class-freak-mutations';
 import { byName } from '@/lib/buff-sort';
+import { buildLedger, familyLabel, type LedgerGroup } from '@/lib/chem-ledger';
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import type { BuildAction } from '@/state/build-reducer';
 import type { GameMode } from '@/types';
-import type { GeneratedAddiction, GeneratedBuff } from '@/types/generated';
+import type { GeneratedBuff } from '@/types/generated';
 import { hasAnyEngineEffect } from '@/types/modifiers';
 import { NoEffectBadge } from './OptionBadge';
 import { SectionTrigger } from './SectionTrigger';
@@ -179,65 +186,6 @@ export function MutationsSection() {
       </AccordionContent>
     </AccordionItem>
   );
-}
-
-/** Strips the SPEL's " Addiction" suffix ("Psycho Addiction" → "Psycho"). */
-function familyLabel(name: string): string {
-  return name.replace(/ Addiction$/, '');
-}
-
-/**
- * One row of the ledger: an addiction FAMILY plus the consumables that cause it.
- * This is the ESM's own shape — Psycho, Psychobuff and Psychotats all carry
- * `addiction: AbAddictionPsycho`, so "addicted" is a family-level fact that
- * cannot be set per chem. Chems that cause no addiction each get a family-less
- * group of their own.
- *
- * Causes split by how many there are, not by category. A family's chems (1–4)
- * are radio rows, so their ΔDPS is visible without a click. All 40-odd brews
- * cause the single Alcohol addiction and nearly none of them move damage — as
- * rows they'd be a wall of ±0%, so that family's causes collapse into one
- * combobox (`picker`) on its row instead. Med-X has neither: no modeled chem
- * causes it, but the family still gets a row so the addiction count is complete.
- */
-interface LedgerGroup {
-  addiction: GeneratedAddiction | null;
-  chems: GeneratedBuff[];
-  picker: GeneratedBuff[];
-  sortKey: string;
-}
-
-function buildLedger(
-  chems: GeneratedBuff[],
-  alcohols: GeneratedBuff[],
-  addictions: readonly GeneratedAddiction[],
-): LedgerGroup[] {
-  const chemsByFamily = new Map<string, GeneratedBuff[]>();
-  const alcoholsByFamily = new Map<string, GeneratedBuff[]>();
-  const unaddictive: LedgerGroup[] = [];
-
-  const push = (map: Map<string, GeneratedBuff[]>, key: string, item: GeneratedBuff) => {
-    const bucket = map.get(key);
-    if (bucket) bucket.push(item);
-    else map.set(key, [item]);
-  };
-
-  for (const chem of chems) {
-    if (!chem.addiction)
-      unaddictive.push({ addiction: null, chems: [chem], picker: [], sortKey: chem.name });
-    else push(chemsByFamily, chem.addiction.id, chem);
-  }
-  for (const alcohol of alcohols) {
-    if (alcohol.addiction) push(alcoholsByFamily, alcohol.addiction.id, alcohol);
-  }
-
-  const families = addictions.map((a) => ({
-    addiction: a,
-    chems: (chemsByFamily.get(a.id) ?? []).sort(byName),
-    picker: (alcoholsByFamily.get(a.id) ?? []).sort(byName),
-    sortKey: familyLabel(a.name),
-  }));
-  return [...families, ...unaddictive].sort((a, b) => a.sortKey.localeCompare(b.sortKey));
 }
 
 /**
@@ -599,6 +547,7 @@ export function ChemsSection() {
   const alcohols = consumables.filter((c) => c.category === 'alcohol').sort(byName);
   const ledger = buildLedger(chems, alcohols, getAddictions(mode));
   const suppressed = getSuppressedAddictions(mode, player.consumables);
+  const suppressorOf = getAddictionSuppressors(mode, player.consumables);
 
   // Families whose causes collapse to a picker (alcohol) sit above the chem
   // radio group; everything the radios cover — plus cause-less families like
@@ -606,17 +555,7 @@ export function ChemsSection() {
   const alcoholGroups = ledger.filter((g) => g.picker.length > 0);
   const chemGroups = ledger.filter((g) => g.picker.length === 0);
 
-  // What suppresses each addiction — any active item that causes it, chem or brew.
-  const suppressorOf = new Map<string, GeneratedBuff>();
-  for (const c of consumables) {
-    if (c.addiction && player.consumables.includes(c.id)) suppressorOf.set(c.addiction.id, c);
-  }
-
-  // Something equipped reads addictionCount off a curve — find it in the data
-  // rather than by name, so any future effect on the same axis gates ΔDPS too.
-  const readsAddictionCount = (player.weapon?.legendaryEffects ?? []).some(
-    (id) => id && getOmodById(mode, id)?.modifiers.some((m) => m.curve?.input === 'addictionCount'),
-  );
+  const readsAddiction = readsAddictionCount(mode, player.weapon?.legendaryEffects ?? []);
 
   const activeChem = chems.find((c) => player.consumables.includes(c.id));
   const activeAlcohol = alcohols.find((c) => player.consumables.includes(c.id));
@@ -668,7 +607,7 @@ export function ChemsSection() {
               key={group.addiction!.id}
               group={group}
               suppressorOf={suppressorOf}
-              showDelta={readsAddictionCount}
+              showDelta={readsAddiction}
             />
           ))}
         </div>
@@ -686,7 +625,7 @@ export function ChemsSection() {
               key={group.addiction?.id ?? group.chems[0].id}
               group={group}
               suppressorOf={suppressorOf}
-              showDelta={readsAddictionCount}
+              showDelta={readsAddiction}
             />
           ))}
         </div>

@@ -4,8 +4,10 @@ import { PerkId } from '@/data/perk-ids';
 import { Special } from '@/data/special';
 import {
   derivePerkBudget,
+  legendarySlotsAtLevel,
   legendarySpecialBonus,
   perkCardCostAtRank,
+  PLAYER_LEVEL,
   SPECIAL_KEYS,
   type PerkBudget,
   type SpecialKey,
@@ -67,7 +69,9 @@ export function computePerkBudget(
       cards.push({ special: SPECIAL_TO_KEY[perk.special], cost: perkCardCostAtRank(perk, rank) });
   }
 
-  return derivePerkBudget(cards, legendaryBonusOf(legendaryPerks), allocation);
+  const budget = derivePerkBudget(cards, legendaryBonusOf(legendaryPerks), allocation);
+  const legendarySlotsOver = legendaryPerks.length > legendarySlotsAtLevel(PLAYER_LEVEL);
+  return { ...budget, overBudget: budget.overBudget || legendarySlotsOver };
 }
 
 /** The SPECIAL a (regular) perk card slots into, or null when unknown/legendary. */

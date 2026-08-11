@@ -1,7 +1,12 @@
 import { describe, it, expect } from 'bun:test';
 import { hasAnyEngineEffect } from '@/types/modifiers';
 import { consumablesById } from '@/lib/consumable-rules';
-import { getConsumables } from '../buffs';
+import {
+  getAddictionSuppressors,
+  getConsumables,
+  getSuppressedAddictions,
+  readsAddictionCount,
+} from '../buffs';
 
 describe('consumable picker', () => {
   it('keeps known junk hidden (quest-bound items stripped on completion)', () => {
@@ -59,5 +64,28 @@ describe('consumable "no effect yet" badge (hasAnyEngineEffect over item.modifie
       expect(item, id).toBeDefined();
       expect(hasAnyEngineEffect(item!.modifiers), id).toBe(true);
     }
+  });
+});
+
+describe('addiction suppression helpers', () => {
+  it('getSuppressedAddictions is the key set of getAddictionSuppressors', () => {
+    const suppressors = getAddictionSuppressors('live', ['Psycho']);
+    const suppressed = getSuppressedAddictions('live', ['Psycho']);
+    expect(suppressed).toEqual(new Set(suppressors.keys()));
+    expect(suppressors.get('AbAddictionPsycho')?.id).toBe('Psycho');
+  });
+
+  it('getAddictionSuppressors maps each active addiction family to its consumable', () => {
+    const suppressors = getAddictionSuppressors('live', ['Psycho', 'Brew_BeerBottleStandard01']);
+    expect(suppressors.get('AbAddictionPsycho')?.name).toBe('Psycho');
+    expect(suppressors.get('AbAddictionAlcohol')?.category).toBe('alcohol');
+  });
+});
+
+describe('readsAddictionCount', () => {
+  it("is true for Junkie's and false for unrelated legendaries", () => {
+    expect(readsAddictionCount('live', ['mod_Legendary_Weapon1_DamageAddiction'])).toBe(true);
+    expect(readsAddictionCount('live', [null, undefined, ''])).toBe(false);
+    expect(readsAddictionCount('live', [])).toBe(false);
   });
 });

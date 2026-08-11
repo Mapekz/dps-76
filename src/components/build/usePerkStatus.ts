@@ -2,7 +2,7 @@ import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild } from '@/state/BuildProvider';
 import { computePerkBudget } from '@/data/perk-budget';
 import { SPECIAL_KEYS } from '@/lib/player-stats';
-import { LEGENDARY_PERK_SLOTS, type SpecialKey } from '@/state/build-reducer';
+import type { SpecialKey } from '@/state/build-reducer';
 
 /**
  * Card/loadout status shared by the perk editor body (PerkEditorSection.tsx)
@@ -18,6 +18,6 @@ export function usePerkStatus() {
   return {
     budget,
     cardCount: player.perks.length + player.legendaryPerks.length,
-    overBudget: budget.overBudget || player.legendaryPerks.length > LEGENDARY_PERK_SLOTS,
+    overBudget: budget.overBudget,
   };
 }
