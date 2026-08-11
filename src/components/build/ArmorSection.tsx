@@ -30,7 +30,6 @@ import {
   getArmorEffects,
   getArmorSlotUsage,
   getArmorTierUsage,
-  maxFeasibleArmorEffectCount,
   MAX_LEGENDARY_COUNT,
   wrongArmorTypeEffects,
   type ArmorEffectEntry,
@@ -40,6 +39,7 @@ import {
   type ArmorStarTier,
   type FeasibilityFamilyKey,
 } from '@/data/armor-modifiers';
+import { armorEffectIncrementBlocked, maxAllowedArmorEffectCount } from '@/lib/build-rules';
 import { matchesQuery } from '@/lib/filter-query';
 import { cn } from '@/lib/utils';
 import type { ArmorWorn } from '@/types';
@@ -206,16 +206,7 @@ function ArmorEffectRow({ effect }: { effect: ArmorEffectEntry }) {
   const { player } = useBuild();
   const dispatch = useBuildDispatch();
   const count = player.armorEffects[effect.id] ?? 0;
-  const tierUsage = getArmorTierUsage(mode, player.armorEffects);
-
-  const withoutSelf = { ...player.armorEffects };
-  delete withoutSelf[effect.id];
-  const maxFeasible = maxFeasibleArmorEffectCount(mode, effect.id, withoutSelf);
-
-  const max =
-    effect.starTier !== undefined
-      ? Math.min(maxFeasible, count + Math.max(0, MAX_LEGENDARY_COUNT - tierUsage[effect.starTier]))
-      : maxFeasible;
+  const max = maxAllowedArmorEffectCount(mode, player.armorEffects, effect.id);
 
   if (effect.maxCount === 1) {
     return (
@@ -298,20 +289,11 @@ function ArmorEffectList({
   const { query } = useFilterQuery();
   const dispatch = useBuildDispatch();
   const effects = getArmorEffects(mode);
-  const tierUsage = getArmorTierUsage(mode, player.armorEffects);
 
   const equipped = new Map(Object.entries(player.armorEffects).filter(([, c]) => c > 0));
 
-  const incrementBlocked = (effect: ArmorEffectEntry): boolean => {
-    const current = equipped.get(effect.id) ?? 0;
-    const withoutSelf = { ...player.armorEffects };
-    delete withoutSelf[effect.id];
-    const maxFeasible = maxFeasibleArmorEffectCount(mode, effect.id, withoutSelf);
-    if (current >= maxFeasible) return true;
-    if (effect.starTier !== undefined && tierUsage[effect.starTier] >= MAX_LEGENDARY_COUNT)
-      return true;
-    return false;
-  };
+  const incrementBlocked = (effect: ArmorEffectEntry): boolean =>
+    armorEffectIncrementBlocked(mode, player.armorEffects, effect.id);
 
   const select = (effect: ArmorEffectEntry) => {
     if (!armorTypeEligible(effect, armorWorn) || incrementBlocked(effect)) return;
@@ -371,11 +353,7 @@ function ArmorEffectList({
             {!blocked &&
               (count === undefined ? (
                 <ActionDelta action={{ type: 'armorEffect/setCount', id: effect.id, count: 1 }} />
-              ) : count <
-                maxFeasibleArmorEffectCount(mode, effect.id, {
-                  ...player.armorEffects,
-                  [effect.id]: 0,
-                }) ? (
+              ) : count < maxAllowedArmorEffectCount(mode, player.armorEffects, effect.id) ? (
                 <ActionDelta
                   action={{
                     type: 'armorEffect/setCount',

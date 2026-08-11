@@ -354,6 +354,7 @@ describe('derived condition fields', () => {
     // legendary. encodePerks serializes whatever is in the array, so this
     // legitimately simulates an old payload.
     const legacy = createDefaultBuildState();
+    legacy.player.conditions.isGhoul = true;
     legacy.player.legendaryPerks = [{ perkId: 'RadSpecialist', rank: 1 }];
     const decoded = await decodeBuild(await encodeBuild(legacy), 'live');
     expect(decoded!.state.player.legendaryPerks).toEqual([]);
@@ -500,7 +501,7 @@ describe('Armor checklist (Phase 3 armor pipeline, UI + state)', () => {
       mod_Legendary_PowerArmor4_Propelling: 2,
     });
     expect(
-      decoded!.warnings.some((w) => w.includes('incompatible with the power-armor toggle')),
+      decoded!.warnings.some((w) => w.includes('incompatible with the selected armor type')),
     ).toBe(true);
     expect(decoded!.warnings.some((w) => w.includes('piece slots exceeded capacity'))).toBe(true);
   });
@@ -581,6 +582,15 @@ describe('consumables & addictions (2026-07-13 overhaul, hermetic fixtures)', ()
       createDefaultBuildState().enemy.conditions.targetDistance,
     );
     expect(decoded!.warnings.some((w) => w.includes('targetDistance'))).toBe(true);
+  });
+
+  it('clamps crippledLimbCount to the selected race on decode and warns', async () => {
+    const encoded = await encodeRawWire({
+      ec: { targetRace: 'BlueDevilRace', crippledLimbCount: 6 },
+    });
+    const decoded = await decodeBuild(encoded, 'live');
+    expect(decoded!.state.enemy.conditions.crippledLimbCount).toBe(0);
+    expect(decoded!.warnings.some((w) => w.includes('crippled limb count'))).toBe(true);
   });
 
   it('round-trips a real numeric targetDistance value written by the current app', async () => {

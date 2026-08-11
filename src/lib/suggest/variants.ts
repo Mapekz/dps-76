@@ -3,22 +3,21 @@ import { getPerks, getWeapons } from '@/data';
 import {
   type ArmorEffectEntry,
   getArmorEffects,
-  getArmorTierUsage,
   maxFeasibleArmorEffectCount,
-  MAX_LEGENDARY_COUNT,
 } from '@/data/armor-modifiers';
 import { getConsumables, getMutations } from '@/data/buffs';
 import { getLegendaryOmodSlots, getOmodSlots } from '@/data/omods';
 import { computePerkBudget } from '@/data/perk-budget';
 import { getGeneratedPerk } from '@/data/perk-modifiers';
-import { legendaryPerkIds } from '@/lib/nukes-dragons';
-import { perkCardCostAtRank, type PerkBudget } from '@/lib/player-stats';
-import { Special } from '@/data/special';
 import {
-  LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS,
-  type BuildState,
-  type SpecialKey,
-} from '@/state/build-reducer';
+  allocationOf,
+  maxAllowedArmorEffectCount,
+  perkMoveBudget,
+  storedArmorEffectCount,
+} from '@/lib/build-rules';
+import { legendaryPerkIds } from '@/lib/nukes-dragons';
+import { perkCardCostAtRank } from '@/lib/player-stats';
+import { LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS, type BuildState } from '@/state/build-reducer';
 import { hasAnyEngineEffect } from '@/types/modifiers';
 import type { SuggestionBudget, SuggestionCandidate } from './types';
 import { enumerateCombos } from './combos';
@@ -38,16 +37,6 @@ import { enumerateCombos } from './combos';
  * positive mover and the best mover after evaluation.
  */
 
-const SPECIAL_TO_KEY: Record<Special, SpecialKey> = {
-  [Special.Strength]: 'strength',
-  [Special.Perception]: 'perception',
-  [Special.Endurance]: 'endurance',
-  [Special.Charisma]: 'charisma',
-  [Special.Intelligence]: 'intelligence',
-  [Special.Agility]: 'agility',
-  [Special.Luck]: 'luck',
-};
-
 const LEGAL: SuggestionBudget = { legal: true };
 
 /** A perk family is damage-relevant when any rank emits modifiers. */
@@ -66,23 +55,6 @@ function armorTypeEligible(effect: ArmorEffectEntry, armorWorn: ArmorWorn): bool
   if (effect.armorType === 'both') return true;
   if (armorWorn === 'power') return effect.armorType === 'powerArmor';
   return effect.armorType === 'bodyArmor';
-}
-
-/**
- * Legality under the perk-budget rules (src/lib/player-stats.ts): card
- * points per stat ≤ min(15, base allocation + Legendary SPECIAL bonus).
- * Deficit = how many points past the budget the move would land.
- */
-function perkBudget(budget: PerkBudget, perk: Perk, extraCost: number): SuggestionBudget {
-  if (!perk.special) return LEGAL; // legendary cards are never SPECIAL-budget-constrained
-  const key = SPECIAL_TO_KEY[perk.special];
-  const deficit = budget.cardPoints[key] + extraCost - budget.budgetPerStat[key];
-  return deficit > 0 ? { legal: false, special: key, deficit } : LEGAL;
-}
-
-/** Clamped selected count for an armor effect (mirrors armor-modifiers.ts's private `selectedCount`). */
-function armorEffectCount(effect: ArmorEffectEntry, selections: Readonly<Record<string, number>>) {
-  return Math.max(0, Math.min(effect.maxCount, selections[effect.id] ?? 0));
 }
 
 export function enumerateVariants(state: BuildState, mode: GameMode): SuggestionCandidate[] {
@@ -144,10 +116,12 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
   const equippedRanks = new Map(
     [...player.perks, ...player.legendaryPerks].map((p) => [p.perkId, p.rank]),
   );
-  const allocation = Object.fromEntries(
-    Object.values(SPECIAL_TO_KEY).map((key) => [key, player.conditions[key]]),
-  ) as Record<SpecialKey, number>;
-  const cardBudget = computePerkBudget(mode, player.perks, player.legendaryPerks, allocation);
+  const cardBudget = computePerkBudget(
+    mode,
+    player.perks,
+    player.legendaryPerks,
+    allocationOf(player),
+  );
 
   for (const [perkId, perk] of Object.entries(registry)) {
     if (!isDamageRelevant(mode, perkId)) continue;
@@ -160,7 +134,7 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
       for (let rank = currentRank + 1; rank <= perk.maxRank; rank++) {
         const extraCost = perkCardCostAtRank(perk, rank) - perkCardCostAtRank(perk, currentRank);
         const cost = isLegendary ? rank - currentRank : extraCost;
-        const budget = isLegendary ? LEGAL : perkBudget(cardBudget, perk, extraCost);
+        const budget = isLegendary ? LEGAL : perkMoveBudget(cardBudget, perk, extraCost);
         const label = isLegendary
           ? `${perk.name} rank ${rank}`
           : `${perk.name} rank ${rank} (+${extraCost} pts)`;
@@ -181,7 +155,9 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
       for (let rank = 1; rank <= perk.maxRank; rank++) {
         const extraCost = perkCardCostAtRank(perk, rank);
         const cost = isLegendary ? rank : extraCost;
-        const budget = isLegendary ? legendarySlotBudget : perkBudget(cardBudget, perk, extraCost);
+        const budget = isLegendary
+          ? legendarySlotBudget
+          : perkMoveBudget(cardBudget, perk, extraCost);
         const label =
           rank === 1
             ? isLegendary
@@ -205,25 +181,17 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
 
   // ── armor effects ──────────────────────────────────────────────────────────
   const armorEffects = getArmorEffects(mode);
-  const tierUsage = getArmorTierUsage(mode, player.armorEffects);
   const armorWorn = player.conditions.armorWorn;
 
   for (const effect of armorEffects) {
-    const current = armorEffectCount(effect, player.armorEffects);
+    const current = storedArmorEffectCount(effect, player.armorEffects);
     if (!isArmorEffectRelevant(effect) || !armorTypeEligible(effect, armorWorn)) continue;
 
-    const withoutSelf = { ...player.armorEffects };
-    delete withoutSelf[effect.id];
-    const maxFeasible = maxFeasibleArmorEffectCount(mode, effect.id, withoutSelf);
-    const free =
-      effect.starTier !== undefined
-        ? MAX_LEGENDARY_COUNT - tierUsage[effect.starTier]
-        : maxFeasible - current;
-    if (free <= 0) continue;
+    const maxAllowed = maxAllowedArmorEffectCount(mode, player.armorEffects, effect.id);
+    if (current >= maxAllowed) continue;
 
     const family = `armor-count:${effect.id}`;
-    const upper = Math.min(maxFeasible, current + free);
-    for (let count = current + 1; count <= upper; count++) {
+    for (let count = current + 1; count <= maxAllowed; count++) {
       out.push({
         id: `armor-count:${effect.id}:${count}`,
         action: [{ type: 'armorEffect/setCount', id: effect.id, count }],
@@ -241,7 +209,7 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
   // so the pair is always legal even when the tier is already full.
   for (const x of armorEffects) {
     if (x.starTier === undefined) continue;
-    const countX = armorEffectCount(x, player.armorEffects);
+    const countX = storedArmorEffectCount(x, player.armorEffects);
     if (countX <= 0) continue;
 
     for (const y of armorEffects) {
@@ -252,7 +220,7 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
         !armorTypeEligible(y, armorWorn)
       )
         continue;
-      const countY = armorEffectCount(y, player.armorEffects);
+      const countY = storedArmorEffectCount(y, player.armorEffects);
       const withoutY = { ...player.armorEffects };
       delete withoutY[y.id];
       const maxY = maxFeasibleArmorEffectCount(mode, y.id, withoutY);

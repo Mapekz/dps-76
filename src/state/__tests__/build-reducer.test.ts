@@ -291,8 +291,8 @@ describe('buildReducer', () => {
       { type: 'enemy/condition', key: 'healthPercent', value: 35 },
     ]);
     expect(s.player.conditions.isSneaking).toBe(true);
-    expect(s.player.conditions.healthPercent).toBe(25);
-    expect(s.enemy.conditions.healthPercent).toBe(35);
+    expect(s.player.conditions.healthPercent).toBe(20);
+    expect(s.enemy.conditions.healthPercent).toBe(40);
   });
 
   it('build/importNd splits legendary perks by N&D key, replaces the loadout, merges SPECIAL', () => {

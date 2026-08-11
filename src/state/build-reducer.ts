@@ -6,18 +6,29 @@ import {
   type EnemyConfig,
   type GameMode,
   type ParsedPerk,
-  type PerkLoadout,
   type PlayerConditions,
   type PlayerConfig,
 } from '@/types';
 import { isLegendaryPerkKey, parsedPerksToLoadout, type ParsedSpecial } from '@/lib/nukes-dragons';
-import { computePerkBudget, perkCardCostDelta, perkSpecialKey } from '@/data/perk-budget';
 import { perkRaceRestriction } from '@/data/perk-race';
 import {
-  canSlotCardPoints,
+  clampArmorEffectCount,
+  clampCrippledLimbCount,
+  clampSpecialStat,
+  canRaiseSpecialAllocation,
+  keepForRace,
+  normalizeBuildState,
+  regularSlotBlocked,
+  snapPlayerHealthPercent,
+  snapEnemyHealthPercent,
+  syncTargetDebuffConditions,
+  takingOneForTheTeamFields,
+  targetBodyPartSelection,
+  targetRaceSelection,
+} from '@/lib/build-rules';
+import {
   legendarySlotsAtLevel,
   PLAYER_LEVEL,
-  SPECIAL_ALLOCATION_POOL,
   SPECIAL_KEYS,
   SPECIAL_POINTS_CAP,
 } from '@/lib/player-stats';
@@ -25,13 +36,7 @@ import { consumablesById, toggleConsumable } from '@/lib/consumable-rules';
 import { CARNIVORE_MUTATION_ID, HERBIVORE_MUTATION_ID } from '@/lib/diet-mutations';
 import { getPerks, getUniqueById, getEquippedUnique, getWeapons, maxEligibleLevel } from '@/data';
 import { getOmodById } from '@/data/omods';
-import {
-  getArmorEffectById,
-  getArmorTierUsage,
-  maxFeasibleArmorEffectCount,
-  MAX_LEGENDARY_COUNT,
-  wrongArmorTypeEffects,
-} from '@/data/armor-modifiers';
+import { wrongArmorTypeEffects } from '@/data/armor-modifiers';
 import { isOmodEligibleForWeapon } from '@/data/omod-eligibility';
 import type { PerkId } from '@/data/perk-ids';
 
@@ -97,6 +102,9 @@ export type BuildAction =
       key: keyof PlayerConditions;
       value: PlayerConditions[keyof PlayerConditions];
     }
+  | { type: 'condition/setTakingOneForTheTeamRank'; rank: 0 | 1 | 2 | 3 | 4 }
+  | { type: 'target/selectRace'; raceId: string | null }
+  | { type: 'target/selectBodyPart'; part: string | null }
   | { type: 'armorEffect/setCount'; id: string; count: number }
   | { type: 'armorType/set'; armorWorn: ArmorWorn }
   | { type: 'race/set'; isGhoul: boolean }
@@ -136,45 +144,8 @@ function withPlayer(state: BuildState, player: PlayerConfig): BuildState {
   return { ...state, player };
 }
 
-/**
- * Follow Through / Taking One for the Team both apply a TARGET debuff any
- * player's card can proc (the equipped rank isn't self-facing) — modeled as
- * manual Target-section knobs (`manual-uptime.ts`/`target-debuffs.ts`) since
- * uptime isn't steady-state-computable. Rather than leave those knobs at 0
- * with a rank-4 card equipped (reading as "no effect"), equipping/re-ranking/
- * removing the card seeds them to match the card's own rank — 10%/rank for
- * the damage-taken multiplier, 1:1 for the flat-DR rank (ESM ranks pair
- * exactly: rank 1 = 10%/−6, rank 4 = 40%/−50). The knob stays a free dial
- * afterward: a later `condition/set` isn't touched by this, it only re-syncs
- * on the next perk add/rank-change/remove.
- */
-function syncTargetDebuffConditions(
-  conditions: PlayerConditions,
-  perkId: string,
-  rank: number,
-): PlayerConditions {
-  const clamped = Math.max(0, Math.min(4, rank)) as 0 | 1 | 2 | 3 | 4;
-  if (perkId === 'FollowThrough') {
-    return { ...conditions, followThroughPct: clamped * 10 };
-  }
-  if (perkId === 'TakingOneForTheTeam') {
-    return {
-      ...conditions,
-      takingOneForTheTeamPct: clamped * 10,
-      takingOneForTheTeamDrRank: clamped,
-    };
-  }
-  return conditions;
-}
-
-/** Drop equipped perks locked to the race being left behind. */
-function keepForRace(list: PerkLoadout[], isGhoul: boolean, mode: GameMode): PerkLoadout[] {
-  const target = isGhoul ? 'ghoul' : 'human';
-  return list.filter((p) => {
-    const race = perkRaceRestriction(mode, p.perkId);
-    return race === null || race === target;
-  });
-}
+/** Sentinel picker value for "no part picked" — must match TargetSection's DEFAULT_OPTION. */
+export const TARGET_DEFAULT_BODY_PART = '__default_body_part__';
 
 /**
  * Legendary perk card slots unlocked at `PLAYER_LEVEL` (6 at the hardcoded
@@ -182,34 +153,6 @@ function keepForRace(list: PerkLoadout[], isGhoul: boolean, mode: GameMode): Per
  * `LegendaryPerkSlotCount` curve; see `legendarySlotsAtLevel`).
  */
 export const LEGENDARY_PERK_SLOTS = legendarySlotsAtLevel(PLAYER_LEVEL);
-
-/** The user-defined base SPECIAL allocation stored in conditions, as a plain record. */
-function allocationOf(player: PlayerConfig): Record<SpecialKey, number> {
-  return Object.fromEntries(SPECIAL_KEYS.map((k) => [k, player.conditions[k]])) as Record<
-    SpecialKey,
-    number
-  >;
-}
-
-/**
- * Would moving `perkId` from `fromRank` to `toRank` break its stat's
- * perk-point budget, min(15, base allocation + Legendary SPECIAL bonus)?
- * Legendary cards have their own slot cap and never consume card points.
- */
-function regularSlotBlocked(
-  player: PlayerConfig,
-  perkId: string,
-  fromRank: number,
-  toRank: number,
-  mode: GameMode,
-): boolean {
-  const stat = perkSpecialKey(mode, perkId);
-  if (!stat) return false; // unknown perk: don't block (import edge cases)
-  const delta = perkCardCostDelta(mode, perkId, fromRank, toRank);
-  if (delta <= 0) return false;
-  const budget = computePerkBudget(mode, player.perks, player.legendaryPerks, allocationOf(player));
-  return !canSlotCardPoints(budget, stat, delta);
-}
 
 /**
  * Builds the reducer for `mode` — the active editing mode, NOT build data
@@ -399,14 +342,12 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
       });
 
     case 'special/set': {
-      // Base allocation is user-defined: 1–15 per stat from the 56-point
-      // pool. Raising a stat past what the pool covers is refused; lowering
-      // below what slotted cards need is allowed and flagged (like imports).
-      const value = Math.max(1, Math.min(SPECIAL_POINTS_CAP, action.value));
-      const next = { ...player.conditions, [action.stat]: value };
-      const total = SPECIAL_KEYS.reduce((sum, k) => sum + next[k], 0);
-      if (value > player.conditions[action.stat] && total > SPECIAL_ALLOCATION_POOL) return state;
-      return withPlayer(state, { ...player, conditions: next });
+      const value = clampSpecialStat(action.value);
+      if (!canRaiseSpecialAllocation(player.conditions, action.stat, value)) return state;
+      return withPlayer(state, {
+        ...player,
+        conditions: { ...player.conditions, [action.stat]: value },
+      });
     }
 
     case 'mutation/toggle': {
@@ -437,32 +378,25 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
     case 'addiction/toggle':
       return withPlayer(state, { ...player, addictions: toggle(player.addictions, action.id) });
 
-    case 'condition/set':
+    case 'condition/set': {
+      let value = action.value;
+      if (action.key === 'healthPercent' && typeof value === 'number') {
+        value = snapPlayerHealthPercent(value);
+      }
       return withPlayer(state, {
         ...player,
-        conditions: { ...player.conditions, [action.key]: action.value },
+        conditions: { ...player.conditions, [action.key]: value },
+      });
+    }
+
+    case 'condition/setTakingOneForTheTeamRank':
+      return withPlayer(state, {
+        ...player,
+        conditions: { ...player.conditions, ...takingOneForTheTeamFields(action.rank) },
       });
 
     case 'armorEffect/setCount': {
-      const effect = getArmorEffectById(mode, action.id);
-      const maxCount = effect?.maxCount ?? 5;
-      let count = Math.max(0, Math.min(maxCount, action.count));
-      // Legendary effects additionally share a per-star-tier budget
-      // (MAX_LEGENDARY_COUNT worn pieces across every effect in that tier —
-      // see getArmorTierUsage). Clamp to whatever room this effect's own
-      // current count leaves in the tier; other effects' stored counts are
-      // never touched here — clampArmorTierBudgets handles bulk imports.
-      if (effect?.starTier !== undefined) {
-        const currentOwnCount = player.armorEffects[action.id] ?? 0;
-        const tierUsage = getArmorTierUsage(mode, player.armorEffects)[effect.starTier];
-        const remaining = MAX_LEGENDARY_COUNT - (tierUsage - currentOwnCount);
-        count = Math.max(0, Math.min(count, remaining));
-      }
-      if (effect && effect.group !== 'legendary') {
-        const withoutSelf = { ...player.armorEffects };
-        delete withoutSelf[action.id];
-        count = Math.min(count, maxFeasibleArmorEffectCount(mode, action.id, withoutSelf));
-      }
+      const count = clampArmorEffectCount(mode, player.armorEffects, action.id, action.count);
       const armorEffects = { ...player.armorEffects };
       if (count > 0) armorEffects[action.id] = count;
       else delete armorEffects[action.id];
@@ -502,14 +436,72 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
         legendaryPerks: keepForRace(player.legendaryPerks, action.isGhoul, mode),
       });
 
-    case 'enemy/condition':
+    case 'target/selectRace': {
+      const selection = targetRaceSelection(
+        mode,
+        action.raceId,
+        state.enemy.conditions.crippledLimbCount,
+      );
       return {
         ...state,
         enemy: {
           ...state.enemy,
-          conditions: { ...state.enemy.conditions, [action.key]: action.value },
+          conditions: {
+            ...state.enemy.conditions,
+            targetRace: selection.targetRace,
+            targetBodyPart: selection.targetBodyPart,
+            crippledLimbCount: selection.crippledLimbCount,
+          },
+        },
+        player: {
+          ...player,
+          conditions: {
+            ...player.conditions,
+            isAimingAtWeakpoint: selection.isAimingAtWeakpoint,
+          },
         },
       };
+    }
+
+    case 'target/selectBodyPart': {
+      const selection = targetBodyPartSelection(action.part, TARGET_DEFAULT_BODY_PART);
+      return {
+        ...state,
+        player: {
+          ...player,
+          conditions: {
+            ...player.conditions,
+            isAimingAtWeakpoint: selection.isAimingAtWeakpoint,
+          },
+        },
+        enemy: {
+          ...state.enemy,
+          conditions: {
+            ...state.enemy.conditions,
+            ...(selection.targetBodyPart !== undefined
+              ? { targetBodyPart: selection.targetBodyPart }
+              : {}),
+          },
+        },
+      };
+    }
+
+    case 'enemy/condition': {
+      let value = action.value;
+      if (action.key === 'crippledLimbCount' && typeof value === 'number') {
+        value = clampCrippledLimbCount(mode, state.enemy.conditions.targetRace, value);
+      }
+      if (action.key === 'healthPercent' && typeof value === 'number') {
+        value = snapEnemyHealthPercent(value);
+      }
+      return {
+        ...state,
+        enemy: {
+          ...state.enemy,
+          conditions: { ...state.enemy.conditions, [action.key]: value },
+        },
+      };
+    }
 
     case 'view/set':
       return { ...state, view: { ...state.view, ...action.view } };
@@ -562,6 +554,6 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
     }
 
     case 'build/hydrate':
-      return action.state;
+      return normalizeBuildState(mode, action.state).state;
   }
 }

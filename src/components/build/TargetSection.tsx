@@ -127,10 +127,7 @@ const TARGET_CATEGORY_ORDER: BodyPartRaceCategory[] = [
   'standard',
 ];
 
-// Sentinel picker value for "no part picked" — disarms aiming, falls back to
-// the race's neutral ×1.00 default part. Distinct from any real BPTD part name
-// (verified against the live extraction — see docs/assumptions.md if that ever changes).
-const DEFAULT_OPTION = '__default_body_part__';
+import { TARGET_DEFAULT_BODY_PART } from '@/state/build-reducer';
 
 export function TargetSection() {
   const { mode } = useGameMode();
@@ -194,42 +191,25 @@ export function TargetSection() {
         .sort((a, b) => a.name.localeCompare(b.name))
     : [];
   const partOptions = [
-    { value: DEFAULT_OPTION, label: `${defaultPart?.name ?? 'Neutral'} — ×1.00 (default)` },
+    {
+      value: TARGET_DEFAULT_BODY_PART,
+      label: `${defaultPart?.name ?? 'Neutral'} — ×1.00 (default)`,
+    },
     ...uniqueParts.map((p) => ({ value: p.name, label: `${p.name} — ×${p.dmgMult.toFixed(2)}` })),
   ];
-  const pickerValue = isAiming ? (conditions.targetBodyPart ?? DEFAULT_OPTION) : DEFAULT_OPTION;
+  const pickerValue = isAiming
+    ? (conditions.targetBodyPart ?? TARGET_DEFAULT_BODY_PART)
+    : TARGET_DEFAULT_BODY_PART;
 
   const setAiming = (value: boolean) =>
     dispatch({ type: 'condition/set', key: 'isAimingAtWeakpoint', value });
 
-  // Picking a real part arms aiming immediately — no separate step to
-  // remember. Picking Torso (or re-clicking the current selection, which the
-  // combobox reports as null) disarms it but keeps targetBodyPart as memory,
-  // so re-arming (via this picker or the results pill) restores the same part.
   const selectBodyPart = (part: string | null) => {
-    if (!part || part === DEFAULT_OPTION) {
-      setAiming(false);
-      return;
-    }
-    setEnemy('targetBodyPart', part);
-    setAiming(true);
+    dispatch({ type: 'target/selectBodyPart', part });
   };
 
   const selectRace = (raceId: string | null) => {
-    setEnemy('targetRace', raceId);
-    // Default to the race's juiciest part — the weakpoint people aim for.
-    const race = raceId ? getBodyPartRace(mode, raceId) : undefined;
-    const best = race ? [...race.parts].sort((a, b) => b.dmgMult - a.dmgMult)[0] : undefined;
-    setEnemy('targetBodyPart', best?.name ?? null);
-    // Only auto-arm when the best part is an actual weak point (>1.00) — for
-    // an all-armored race (no part above torso's ×1.00) default to Torso
-    // rather than silently applying a damage-reducing strongpoint.
-    setAiming((best?.dmgMult ?? 1.0) > 1.0);
-    // A stale high crippled count silently over-counts on a smaller enemy:
-    // the engine's perCrippledLimb clamps to each modifier's own cap (Bully's
-    // 6), never the enemy's real limb count — clamp it here on switch.
-    const newMax = getCrippablePartCount(mode, raceId);
-    if (conditions.crippledLimbCount > newMax) setEnemy('crippledLimbCount', newMax);
+    dispatch({ type: 'target/selectRace', raceId });
   };
 
   const targetDistanceUnits = conditions.targetDistance ?? DEFAULT_DISTANCE_UNITS;
@@ -302,11 +282,9 @@ export function TargetSection() {
   const centerMassName = defaultPart?.name ?? 'Torso';
 
   const setTakingOneForTheTeamRank = (rank: number) => {
-    dispatch({ type: 'condition/set', key: 'takingOneForTheTeamPct', value: rank * 10 });
     dispatch({
-      type: 'condition/set',
-      key: 'takingOneForTheTeamDrRank',
-      value: rank as 0 | 1 | 2 | 3 | 4,
+      type: 'condition/setTakingOneForTheTeamRank',
+      rank: rank as 0 | 1 | 2 | 3 | 4,
     });
   };
 
@@ -633,7 +611,7 @@ export function TargetSection() {
               max={Math.max(crippableMax, 1)}
               step={1}
               disabled={crippableMax === 0}
-              value={[Math.min(conditions.crippledLimbCount, crippableMax)]}
+              value={[conditions.crippledLimbCount]}
               onValueChange={(v) => setEnemy('crippledLimbCount', firstSliderValue(v))}
               marks={Array.from({ length: Math.max(crippableMax, 1) + 1 }, (_, i) => ({
                 value: i,

@@ -271,12 +271,20 @@ describe('evaluateSuggestions', () => {
     expect(report.suggestions).toEqual([]);
   });
 
-  it('topSuggestions splits ranked movers from <1% ties and drops losers', () => {
+  it('topSuggestions splits ranked movers from <1% ties and surfaces over-budget perk rows', () => {
     const report = evaluateSuggestions(fixerState, 'live', 'freeAim');
     const { ranked, tied } = topSuggestions(report, 8);
-    expect(ranked.every((s) => s.primaryDeltaPct >= 0.01)).toBe(true);
+    const legalRanked = ranked.filter((s) => s.budget.legal);
+    expect(legalRanked.every((s) => s.primaryDeltaPct >= 0.01)).toBe(true);
     expect(tied.every((s) => s.primaryDeltaPct > 0 && s.primaryDeltaPct < 0.01)).toBe(true);
-    expect(ranked.length).toBeLessThanOrEqual(8);
+    expect(legalRanked.length).toBeLessThanOrEqual(8);
+    const overBudget = ranked.filter((s) => !s.budget.legal);
+    expect(overBudget.some((s) => s.id === `perk-rank:${PerkId.CenterMasochist}:2`)).toBe(true);
+    expect(overBudget.every((s) => s.budget.legal === false)).toBe(true);
+    const firstIllegal = ranked.findIndex((s) => !s.budget.legal);
+    if (firstIllegal >= 0) {
+      expect(ranked.slice(0, firstIllegal).every((s) => s.budget.legal)).toBe(true);
+    }
   });
 
   it('topSuggestions defaults to structural groups only, but an explicit group set can select consumables', () => {

@@ -9,12 +9,7 @@ import {
 import { getPerks, getWeapons } from '@/data';
 import { getAddictions, getConsumables, getMutations } from '@/data/buffs';
 import { getOmodById } from '@/data/omods';
-import {
-  clampArmorPieceCapacities,
-  clampArmorTierBudgets,
-  getArmorEffectById,
-  wrongArmorTypeEffects,
-} from '@/data/armor-modifiers';
+import { getArmorEffectById } from '@/data/armor-modifiers';
 import { nukesDragonsPerks, reclassifyPerkLoadouts } from '@/lib/nukes-dragons';
 import { buildDelta } from '@/lib/build-delta';
 import {
@@ -24,6 +19,7 @@ import {
 } from '@/lib/health-percent';
 import { consumablesById, sanitizeConsumables } from '@/lib/consumable-rules';
 import { createDefaultBuildState, type BuildState } from '@/state/build-reducer';
+import { normalizeBuildState } from '@/lib/build-rules';
 import type { PerkId } from '@/data/perk-ids';
 
 /**
@@ -371,16 +367,6 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
     }
     state.player.armorEffects[id] = Math.max(0, Math.min(effect.maxCount, count));
   }
-  // Cross-effect budget (stale/adversarial payload, or a tier's roster
-  // shrinking after an ESM sync) — layered on top of each effect's own
-  // per-piece maxCount clamp above.
-  const clampedTiers = clampArmorTierBudgets(mode, state.player.armorEffects);
-  if (clampedTiers.changed) {
-    state.player.armorEffects = clampedTiers.armorEffects;
-    warnings.push(
-      'armor legendary pieces exceeded the 5-per-star-tier limit — extra pieces were removed',
-    );
-  }
 
   // Conditions: only keys that exist in the current schema survive.
   for (const [key, value] of Object.entries(wire.pc ?? {})) {
@@ -425,23 +411,6 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
   }
   state.player.conditions.isInPowerArmor = state.player.conditions.armorWorn === 'power';
 
-  const wrongType = wrongArmorTypeEffects(
-    mode,
-    state.player.armorEffects,
-    state.player.conditions.armorWorn,
-  );
-  if (wrongType.length > 0) {
-    for (const id of wrongType) delete state.player.armorEffects[id];
-    warnings.push(
-      'armor effects incompatible with the power-armor toggle were removed after decode',
-    );
-  }
-  const clampedPieces = clampArmorPieceCapacities(mode, state.player.armorEffects);
-  if (clampedPieces.changed) {
-    state.player.armorEffects = clampedPieces.armorEffects;
-    warnings.push('armor piece slots exceeded capacity — extra pieces were removed');
-  }
-
   for (const [key, value] of Object.entries(wire.ec ?? {})) {
     if (key === 'healthPercent' && typeof value === 'number') {
       // Same migration as the player loop above, using the coarser enemy stops.
@@ -472,5 +441,7 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
   if (wire.ve === 'freeAim' || wire.ve === 'vats') state.view.emphasized = wire.ve;
   if (wire.vb === true) state.view.breakdownOpen = true;
 
-  return { state, warnings };
+  const normalized = normalizeBuildState(mode, state);
+  warnings.push(...normalized.warnings);
+  return { state: normalized.state, warnings };
 }

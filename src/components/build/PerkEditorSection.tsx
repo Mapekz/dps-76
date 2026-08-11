@@ -23,6 +23,7 @@ import { usePerkStatus } from './usePerkStatus';
 import { Special } from '@/data/special';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';
 import { canSlotCardPoints, perkCardCostAtRank, type PerkBudget } from '@/lib/player-stats';
+import { isPerkPickerBlocked, isPerkRaceBlocked } from '@/lib/build-rules';
 import type { GameMode, Perk, PerkLoadout } from '@/types';
 import { LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS, type SpecialKey } from '@/state/build-reducer';
 import { ActionDelta } from '@/components/diff/ActionDelta';
@@ -229,24 +230,13 @@ function PerkAddCombobox({
     [...player.perks, ...player.legendaryPerks].map((p) => [p.perkId, p.rank]),
   );
   const legendarySlotsFull = player.legendaryPerks.length >= LEGENDARY_SLOTS;
-  const currentRace = (player.conditions.isGhoul ?? false) ? 'ghoul' : 'human';
 
-  // A card locked to the other race can't be added (mirrors the reducer's
-  // perk/add rejection) — the picker greys it out with a lock instead of
-  // silently doing nothing. Race itself only changes via the Race toggle.
+  // A card locked to the other race can't be added — the picker greys it out with a lock.
   const raceBlocked = (perk: Perk): boolean =>
-    perk.raceRestriction !== null && perk.raceRestriction !== currentRace;
+    isPerkRaceBlocked(perk, player.conditions.isGhoul ?? false);
 
-  // Mirrors the reducer's blocking rules so blocked picks read as disabled
-  // instead of silently doing nothing.
-  const slotBlocked = (perkId: string, isLegendary: boolean, perk: Perk): boolean => {
-    const rank = equipped.get(perkId);
-    if (isLegendary) return rank === undefined && legendarySlotsFull;
-    if (rank !== undefined && rank >= perk.maxRank) return false; // no-op anyway
-    if (!perk.special) return false; // fail open, like the reducer's regularSlotBlocked
-    const delta = costDelta(perk, rank ?? 0, (rank ?? 0) + 1);
-    return !canSlotCardPoints(budget, SPECIAL_TO_KEY[perk.special], delta);
-  };
+  const slotBlocked = (perkId: string, isLegendary: boolean, perk: Perk): boolean =>
+    isPerkPickerBlocked(budget, perk, equipped.get(perkId), isLegendary, legendarySlotsFull);
 
   const select = (perkId: string, isLegendary: boolean, perk: Perk) => {
     if (slotBlocked(perkId, isLegendary, perk) || raceBlocked(perk)) return;

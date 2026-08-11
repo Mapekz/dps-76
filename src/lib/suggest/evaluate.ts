@@ -88,6 +88,15 @@ function computeSnapshot(state: BuildState, mode: GameMode, scope?: MemoScope): 
   );
 }
 
+function zeroHeadline(): ScenarioHeadline {
+  return { perHit: 0, burstDps: 0, sustainedDps: 0, windowDps: 0 };
+}
+
+function zeroSnapshot(): DpsSnapshot {
+  const z = zeroHeadline();
+  return { freeAim: z, vats: z };
+}
+
 function diff(a: ScenarioHeadline, b: ScenarioHeadline): ScenarioHeadline {
   return {
     perHit: a.perHit - b.perHit,
@@ -215,7 +224,9 @@ export function evaluateSuggestions(
   const suggestions: EvaluatedSuggestion[] = [];
 
   for (const candidate of enumerateVariants(state, mode)) {
-    const evaluated = evaluateActions(state, mode, candidate.action, baseline, scope);
+    const evaluated = candidate.budget.legal
+      ? evaluateActions(state, mode, candidate.action, baseline, scope)
+      : { result: baseline, delta: zeroSnapshot() };
     if (!evaluated) continue;
     const primaryDeltaPct = metricBase > 0 ? evaluated.delta[metric].windowDps / metricBase : 0;
     suggestions.push({ ...candidate, ...evaluated, primaryDeltaPct });
@@ -290,20 +301,27 @@ export function topSuggestions(
   // Different ESM records can share a display name and an identical outcome
   // (per-family receiver twins) — showing both is noise, keep the first.
   const seen = new Set<string>();
-  const positive = scoped.filter((s) => {
-    if (s.primaryDeltaPct <= 0) return false;
-    // Guard against contradicting the headline: `windowDps` can rise while
-    // canonical achieved DPS falls (e.g. an AP-cost receiver that raises
-    // uptime but lowers per-shot damage enough that the blended DPS drops).
-    // Never show a row that would make Apply drive the headline down.
-    if (s.delta[report.metric].sustainedDps <= 0) return false;
-    const key = `${s.label}|${s.primaryDeltaPct.toFixed(5)}`;
+  const candidates = scoped.filter((s) => {
+    if (s.budget.legal) {
+      if (s.primaryDeltaPct <= 0) return false;
+      if (s.delta[report.metric].sustainedDps <= 0) return false;
+    } else if (s.group !== 'perk' && s.group !== 'combo') {
+      return false;
+    }
+    const key = s.budget.legal
+      ? `${s.label}|${s.primaryDeltaPct.toFixed(5)}`
+      : `${s.label}|over-budget`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
-  const ranked = positive.filter((s) => s.primaryDeltaPct >= tiedThresholdPct).slice(0, limit);
-  const tied = positive
+  const legalMovers = candidates.filter((s) => s.budget.legal);
+  const overBudget = candidates.filter((s) => !s.budget.legal);
+  const ranked = [
+    ...legalMovers.filter((s) => s.primaryDeltaPct >= tiedThresholdPct).slice(0, limit),
+    ...overBudget,
+  ];
+  const tied = legalMovers
     .filter((s) => s.primaryDeltaPct < tiedThresholdPct)
     .slice(0, Math.max(0, limit - ranked.length) + 3);
   return { ranked, tied };
