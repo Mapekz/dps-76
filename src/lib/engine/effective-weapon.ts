@@ -7,7 +7,11 @@ import type {
   GeneratedOmod,
 } from '@/types/generated';
 import type { Bucket, DamageType, Modifier } from '@/types/modifiers';
-import { SUSTAIN_CHANCE_BUCKETS, WEAPON_STAT_BUCKETS } from '@/types/modifiers';
+import {
+  EFFECTIVE_WEAPON_CONSUMED_BUCKETS,
+  SUSTAIN_CHANCE_BUCKETS,
+  WEAPON_STAT_BUCKETS,
+} from '@/types/modifiers';
 import { effectiveValue, foldBucket, type ResolveContext } from './resolve';
 
 export { SUSTAIN_CHANCE_BUCKETS, WEAPON_STAT_BUCKETS };
@@ -394,8 +398,7 @@ export function buildEffectiveWeapon(
     (m) =>
       !WEAPON_STAT_BUCKETS.has(m.bucket) &&
       !SUSTAIN_CHANCE_BUCKETS.has(m.bucket) &&
-      m.bucket !== 'explosionRadiusBonus' &&
-      m.bucket !== 'explosionRadiusToDamage',
+      !EFFECTIVE_WEAPON_CONSUMED_BUCKETS.has(m.bucket),
   );
 
   // Chain-lightning suppression (Tesla Cannon's Alternate Current muzzle):

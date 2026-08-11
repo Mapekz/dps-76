@@ -1,5 +1,5 @@
 import type { PlayerConfig, EnemyConfig, GameMode, PlayerConditions, Weapon } from '@/types';
-import type { Bucket, Modifier } from '@/types/modifiers';
+import { CONSUMED_BEFORE_BUCKETS, type Modifier } from '@/types/modifiers';
 import type { GeneratedOmod } from '@/types/generated';
 import { getDistanceConstants, getSpecialClamp, getWeapons } from '@/data';
 import { getDataset } from '@/data/dataset';
@@ -38,27 +38,6 @@ import {
   scoped,
   type MemoScope,
 } from '@/lib/loadout-memo';
-
-const EFFECTIVE_WEAPON_BOOTSTRAP_BUCKETS: ReadonlySet<Bucket> = new Set([
-  // Folded by buildEffectiveWeapon into ResolveContext.moveSpeedBonus so
-  // Fast Fighter's reload-speed curve can see Speed Demon / fish sandwich.
-  // Onslaught bootstrap buckets must stay in ScenarioInput.modifiers:
-  // computeScenarios folds and exposes them there.
-  'moveSpeedBonus',
-  // Bunker Buster radius→damage conversion — fully consumed inside buildEffectiveWeapon,
-  // synthesized into a dbm modifier there; must not reach ScenarioInput.modifiers directly.
-  'explosionRadiusBonus',
-  'explosionRadiusToDamage',
-  // Explosive 2★ — buildEffectiveWeapon decides its destiny per weapon (see
-  // its doc-comment): left untouched for a Projectile-Scaling Explosion
-  // (paper-damage.ts's own fold), rewritten into a baseDamage MUL_ADD for a
-  // Curve-Table Explosion, or stripped outright when chain-suppressed. Its
-  // only current source is an equipped OMOD (allOmodModifiers), never
-  // loadoutModifiers — listed here defensively for symmetry with
-  // explosionRadiusBonus/ToDamage, so a future loadout-sourced contribution
-  // can't bypass the branch logic and leak into ScenarioInput.modifiers raw.
-  'explosivePayload',
-]);
 
 // getPlayerBaselineModifiers() takes no arguments and its result never
 // varies (see that function's doc-comment) — hoisted to a module-level
@@ -389,7 +368,7 @@ const nonWeaponStatModifiersFiltered = scoped((loadoutModifiers: Modifier[]): Mo
     (m) =>
       !WEAPON_STAT_BUCKETS.has(m.bucket) &&
       !SUSTAIN_CHANCE_BUCKETS.has(m.bucket) &&
-      !EFFECTIVE_WEAPON_BOOTSTRAP_BUCKETS.has(m.bucket),
+      !CONSUMED_BEFORE_BUCKETS.has(m.bucket),
   ),
 );
 /**
@@ -420,7 +399,7 @@ function nonWeaponStatModifiersFor(
  * `loadoutModifiers` buildEffectiveWeapon can actually see, per its own
  * source (src/lib/engine/effective-weapon.ts): every fold it runs over
  * `loadoutModifiers` (`statModifiers` = the WEAPON_STAT_BUCKETS/
- * SUSTAIN_CHANCE_BUCKETS subset; the 4 EFFECTIVE_WEAPON_BOOTSTRAP_BUCKETS
+ * SUSTAIN_CHANCE_BUCKETS subset; the 4 CONSUMED_BEFORE_BUCKETS
  * bootstrap folds) goes through `resolve.ts`'s `foldBucket`, which only
  * looks at entries whose OWN `.bucket` matches the bucket being folded — so
  * a modifier whose bucket is in none of these 3 sets can never affect
@@ -434,7 +413,7 @@ const weaponRelevantModifiersFiltered = scoped((loadoutModifiers: Modifier[]): M
     (m) =>
       WEAPON_STAT_BUCKETS.has(m.bucket) ||
       SUSTAIN_CHANCE_BUCKETS.has(m.bucket) ||
-      EFFECTIVE_WEAPON_BOOTSTRAP_BUCKETS.has(m.bucket),
+      CONSUMED_BEFORE_BUCKETS.has(m.bucket),
   ),
 );
 /** Interns the filtered result: two different (by reference) `loadoutModifiers` arrays whose relevant subset is elementwise the SAME sequence of Modifier object references (true whenever every contributing source that changed doesn't touch these 3 bucket sets — e.g. a Rifleman-family perk rank-up, which only emits `dbm`/`critDbm`) collapse to the SAME array reference, letting `buildEffectiveWeapon`'s own cache (keyed on this) skip a rerun whose real inputs didn't change even though the raw `loadoutModifiers` reference did. Never a false hit: distinct object references can only coincide here by actually being the same object. */

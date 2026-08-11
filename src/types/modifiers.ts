@@ -605,7 +605,21 @@ export interface BucketRegimeEntry {
    * this is false OR regime is 'unfolded'.
    */
   hasEngineEffect: boolean;
-  /** Where this bucket is folded (function/module), or why it has no effect. */
+  /**
+   * Where this bucket is consumed, when that happens BEFORE the modifier list
+   * reaches the resolver. Absent = the bucket reaches ScenarioInput.modifiers
+   * normally (which includes most `regime: 'bootstrap'` buckets — bootstrap
+   * means "folded once up front", NOT "stripped from the list"; the Onslaught
+   * and Bullet-Storm stack bounds are folded early AND still passed through).
+   *
+   * - 'effectiveWeapon' — consumed inside buildEffectiveWeapon and stripped there.
+   * - 'loadoutAssemble' — stripped by loadout.ts's assemble() before the engine runs.
+   */
+  consumedBefore?: 'effectiveWeapon' | 'loadoutAssemble';
+  /**
+   * Documentation only — not enforced. Names the fold site for human readers;
+   * trust the code it points at over this string.
+   */
   foldedBy: string;
 }
 
@@ -684,6 +698,15 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   explosivePayload: {
     regime: 'damageFold',
     hasEngineEffect: true,
+    // Explosive 2★ — buildEffectiveWeapon decides its destiny per weapon (see
+    // its doc-comment): left untouched for a Projectile-Scaling Explosion
+    // (paper-damage.ts's own fold), rewritten into a baseDamage MUL_ADD for a
+    // Curve-Table Explosion, or stripped outright when chain-suppressed. Its
+    // only current source is an equipped OMOD (allOmodModifiers), never
+    // loadoutModifiers — listed here defensively for symmetry with
+    // explosionRadiusBonus/ToDamage, so a future loadout-sourced contribution
+    // can't bypass the branch logic and leak into ScenarioInput.modifiers raw.
+    consumedBefore: 'loadoutAssemble',
     foldedBy:
       'paper-damage.ts computePaperDamage (explosive-twin branch) on a Projectile-Scaling ' +
       'Explosion; effective-weapon.ts buildEffectiveWeapon (rewrite-to-baseDamage or strip) ' +
@@ -692,11 +715,17 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   explosionRadiusBonus: {
     regime: 'bootstrap',
     hasEngineEffect: true,
+    // Bunker Buster radius→damage conversion — fully consumed inside buildEffectiveWeapon,
+    // synthesized into a dbm modifier there; must not reach ScenarioInput.modifiers directly.
+    consumedBefore: 'effectiveWeapon',
     foldedBy: 'effective-weapon.ts buildEffectiveWeapon (explosive-radius→damage conversion)',
   },
   explosionRadiusToDamage: {
     regime: 'bootstrap',
     hasEngineEffect: true,
+    // Bunker Buster radius→damage conversion — fully consumed inside buildEffectiveWeapon,
+    // synthesized into a dbm modifier there; must not reach ScenarioInput.modifiers directly.
+    consumedBefore: 'effectiveWeapon',
     foldedBy: 'effective-weapon.ts buildEffectiveWeapon (explosive-radius→damage conversion)',
   },
   critFill: {
@@ -830,6 +859,9 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   onslaughtMaxStacks: {
     regime: 'bootstrap',
     hasEngineEffect: true,
+    // No consumedBefore — folded early in scenarios.ts / effective-weapon.ts but
+    // still passed through to ScenarioInput.modifiers (same for the other Onslaught
+    // and Bullet-Storm bootstrap stack-bound buckets).
     foldedBy:
       'scenarios.ts / effective-weapon.ts — folded once, threaded on ResolveContext.onslaughtMaxStacks; caps the onslaught StackCounter and onslaughtStacks CurveInput',
   },
@@ -876,6 +908,9 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
   moveSpeedBonus: {
     regime: 'bootstrap',
     hasEngineEffect: true,
+    // Folded by buildEffectiveWeapon into ResolveContext.moveSpeedBonus so
+    // Fast Fighter's reload-speed curve can see Speed Demon / fish sandwich.
+    consumedBefore: 'loadoutAssemble',
     foldedBy:
       'effective-weapon.ts buildEffectiveWeapon — folded once, threaded on ResolveContext.moveSpeedBonus; feeds the moveSpeedBonus CurveInput (Fast Fighter). Threaded in the weapon-stat fold ONLY — a damage-bucket curve on this input would read 0 until scenarios.ts also threads it',
   },
@@ -1023,6 +1058,20 @@ export const SUSTAIN_CHANCE_BUCKETS: ReadonlySet<Bucket> = new Set(
 export const INERT_ENGINE_BUCKETS: ReadonlySet<Bucket> = new Set(
   (Object.entries(BUCKET_REGISTRY) as Array<[Bucket, BucketRegimeEntry]>)
     .filter(([, entry]) => !entry.hasEngineEffect)
+    .map(([bucket]) => bucket),
+);
+
+/** Buckets stripped before the modifier list reaches the resolver — derived from BUCKET_REGISTRY. */
+export const CONSUMED_BEFORE_BUCKETS: ReadonlySet<Bucket> = new Set(
+  (Object.entries(BUCKET_REGISTRY) as Array<[Bucket, BucketRegimeEntry]>)
+    .filter(([, entry]) => entry.consumedBefore !== undefined)
+    .map(([bucket]) => bucket),
+);
+
+/** Subset of CONSUMED_BEFORE_BUCKETS stripped inside buildEffectiveWeapon's modifier filter. */
+export const EFFECTIVE_WEAPON_CONSUMED_BUCKETS: ReadonlySet<Bucket> = new Set(
+  (Object.entries(BUCKET_REGISTRY) as Array<[Bucket, BucketRegimeEntry]>)
+    .filter(([, entry]) => entry.consumedBefore === 'effectiveWeapon')
     .map(([bucket]) => bucket),
 );
 

@@ -42,10 +42,12 @@ interface PropertyMapping {
 }
 
 /**
- * ActorValues OMOD property → bucket (resolved AV edid → mapping). Anti-Armor
- * carries `ActorValues ADD ArmorPenetration 50.0` — the value lives on the
- * OMOD property, NOT its enchantment. Unmapped AVs are reported so the map
- * grows deliberately.
+ * ActorValues OMOD property → bucket (resolved AV edid → mapping) for AVs
+ * with no `FALLBACK_AVIF_ROUTES` entry (see the `fallback` branch in the
+ * ActorValues handler below — it wins over this map). Anti-Armor's
+ * `ActorValues ADD ArmorPenetration 50.0` and All Rise's flat `Health ADD`
+ * route via the shared fallback, not here. Unmapped AVs are reported so the
+ * map grows deliberately.
  *
  * Bullet Storm buckets landed 2026-07-16 (verified via `esm get`):
  * - Resolute Veteran's OMOD (mod_Custom_ResoluteVeteran 0x008F0DCE) carries
@@ -75,13 +77,7 @@ interface PropertyMapping {
  *   note drives the 'inert' badge and nothing else (user decision
  *   2026-07-21: badges + notes only, no expected-value modeling).
  */
-const ACTOR_VALUE_BUCKETS: Record<string, { bucket: Bucket; scale: number }> = {
-  ArmorPenetration: { bucket: 'armorPen', scale: 0.01 }, // 50.0 ⇒ 0.5 (inert until enemy DR lands)
-  // All Rise (unique-mod rework, 2026-07-13): flat Health ADD +50. Same
-  // bucket/scale as mgef.ts's HealthBonus route (Lifegiver's) — the OMOD
-  // carries the value directly on this property instead of an MGEF Peak
-  // Value Modifier, but the semantics (flat max-HP points) are identical.
-  Health: { bucket: 'maxHealth', scale: 1 },
+export const ACTOR_VALUE_BUCKETS: Record<string, { bucket: Bucket; scale: number }> = {
   // Resolute Veteran: flat Bullet Storm floor ADD +5 (see doc comment above).
   AmmoSpenderMinStacks: { bucket: 'bulletStormMinStacks', scale: 1 },
   // Final Word: enable on-kill stack grant (SET 1.0 — Boolean AV, see doc

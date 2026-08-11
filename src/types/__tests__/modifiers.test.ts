@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'bun:test';
 import {
   BUCKET_REGISTRY,
+  CONSUMED_BEFORE_BUCKETS,
+  EFFECTIVE_WEAPON_CONSUMED_BUCKETS,
   SUSTAIN_CHANCE_BUCKETS,
   WEAPON_STAT_BUCKETS,
   INERT_ENGINE_BUCKETS,
@@ -132,6 +134,21 @@ describe('BUCKET_REGISTRY', () => {
   it('derives SUSTAIN_CHANCE_BUCKETS as exactly the sustainChance-regime buckets', () => {
     const expected: Bucket[] = ['reloadSkipChance', 'reloadSkipChanceBash', 'ammoFreeChance'];
     expect([...SUSTAIN_CHANCE_BUCKETS].sort()).toEqual(expected.sort());
+  });
+
+  it('derives CONSUMED_BEFORE_BUCKETS as exactly the consumedBefore rows', () => {
+    const expected: Bucket[] = [
+      'moveSpeedBonus',
+      'explosionRadiusBonus',
+      'explosionRadiusToDamage',
+      'explosivePayload',
+    ];
+    expect([...CONSUMED_BEFORE_BUCKETS].sort()).toEqual(expected.sort());
+  });
+
+  it('derives EFFECTIVE_WEAPON_CONSUMED_BUCKETS as exactly the effectiveWeapon consumedBefore rows', () => {
+    const expected: Bucket[] = ['explosionRadiusBonus', 'explosionRadiusToDamage'];
+    expect([...EFFECTIVE_WEAPON_CONSUMED_BUCKETS].sort()).toEqual(expected.sort());
   });
 
   it('derives INERT_ENGINE_BUCKETS as exactly the no-engine-effect buckets', () => {
