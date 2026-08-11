@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'bun:test';
 import type { Weapon } from '@/types';
 import type { Modifier } from '@/types/modifiers';
-import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
+import { createDefaultEnemyConditions } from '@/types';
 import { foldBucket, type ResolveContext } from '@/lib/engine/resolve';
 import {
   onslaughtHitEventsPerShot,
@@ -11,6 +11,7 @@ import {
   weaponHasNonExplosionPhysical,
 } from '@/lib/engine/onslaught';
 import { computeScenarios } from '@/lib/engine/scenarios';
+import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
 
 const FLAT_100 = [
   { x: 1, y: 100 },
@@ -37,7 +38,7 @@ function makeWeapon(overrides: Partial<Weapon> = {}): Weapon {
 function makeCtx(weapon: Weapon): ResolveContext {
   return {
     weapon,
-    player: createDefaultPlayerConditions(),
+    player: makeResolvedPlayer(),
     enemy: createDefaultEnemyConditions(),
     scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
   };
@@ -236,7 +237,7 @@ describe('reverse onslaught scenarios (GSM + Furious)', () => {
       weapon,
       itemLevel: 50,
       modifiers: [...extraMods, gsmMax, gsmReverse, furiousDbm],
-      player: createDefaultPlayerConditions(),
+      player: makeResolvedPlayer(),
       enemy: createDefaultEnemyConditions(),
       weakpointMult: 2,
     });
@@ -245,7 +246,7 @@ describe('reverse onslaught scenarios (GSM + Furious)', () => {
       weapon,
       itemLevel: 50,
       modifiers: [...extraMods, gsmMax, gsmReverse],
-      player: createDefaultPlayerConditions(),
+      player: makeResolvedPlayer(),
       enemy: createDefaultEnemyConditions(),
       weakpointMult: 2,
     });
@@ -298,7 +299,7 @@ describe('reverse onslaught scenarios (GSM + Furious)', () => {
       weapon: makeWeapon({ animDelaySec: 2, capacity: 5, animationReloadSec: 3 }),
       itemLevel: 50,
       modifiers: [gsmMax, gsmReverse],
-      player: createDefaultPlayerConditions(),
+      player: makeResolvedPlayer(),
       enemy: createDefaultEnemyConditions(),
       weakpointMult: 2,
     });
@@ -405,7 +406,7 @@ describe('forward onslaught scenarios (non-reverse Onslaught sources)', () => {
       weapon: rifle,
       itemLevel: 50,
       modifiers: [furiousMax, furiousDbm],
-      player: createDefaultPlayerConditions(),
+      player: makeResolvedPlayer(),
       enemy: createDefaultEnemyConditions(),
       weakpointMult: 2,
     });
@@ -435,7 +436,7 @@ describe('forward onslaught scenarios (non-reverse Onslaught sources)', () => {
       weapon: fastWeapon,
       itemLevel: 50,
       modifiers: [furiousMax, furiousDbm],
-      player: createDefaultPlayerConditions(),
+      player: makeResolvedPlayer(),
       enemy: createDefaultEnemyConditions(),
       weakpointMult: 2,
     });
@@ -444,7 +445,7 @@ describe('forward onslaught scenarios (non-reverse Onslaught sources)', () => {
       weapon: slowWeapon,
       itemLevel: 50,
       modifiers: [furiousMax, furiousDbm],
-      player: createDefaultPlayerConditions(),
+      player: makeResolvedPlayer(),
       enemy: createDefaultEnemyConditions(),
       weakpointMult: 2,
     });

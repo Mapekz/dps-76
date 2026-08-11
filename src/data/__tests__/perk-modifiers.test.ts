@@ -10,9 +10,10 @@ import {
 import { getWeapons } from '@/data';
 import { getTargetDebuffModifiers } from '@/data/target-debuffs';
 import { computeScenarios } from '@/lib/engine/scenarios';
-import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
+import { createDefaultEnemyConditions } from '@/types';
 import { hasAnyEngineEffect } from '@/types/modifiers';
 import { parseSpecialFromUrl } from '@/lib/nukes-dragons';
+import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
 
 // Integration over the REAL generated data: registry ↔ ESM family join and
 // end-to-end perk effects through the engine.
@@ -77,7 +78,7 @@ describe('perk effects through the engine (real data)', () => {
   const base = {
     mode: 'live' as const,
     itemLevel: 50,
-    player: createDefaultPlayerConditions(),
+    player: makeResolvedPlayer(),
     enemy: createDefaultEnemyConditions(),
     weakpointMult: 2.0,
     critRate: 0,
@@ -86,7 +87,7 @@ describe('perk effects through the engine (real data)', () => {
   it('Center Masochist boosts Fixer torso hits but not weakpoint hits', () => {
     const weapon = getWeapons('live')['CombatRifle_Fixer'];
     const perk = getLoadoutModifiers('live', [{ perkId: PerkId.CenterMasochist, rank: 3 }]);
-    const weakpoint = { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true };
+    const weakpoint = { ...makeResolvedPlayer(), isAimingAtWeakpoint: true };
 
     const noPerk = computeScenarios({ ...base, weapon, modifiers: [] });
     const withPerk = computeScenarios({ ...base, weapon, modifiers: perk });
@@ -100,7 +101,7 @@ describe('perk effects through the engine (real data)', () => {
   it('Center Masochist location is decoupled from the body-part mult (BPTD partType, not mult sign)', () => {
     const weapon = getWeapons('live')['CombatRifle_Fixer'];
     const perk = getLoadoutModifiers('live', [{ perkId: PerkId.CenterMasochist, rank: 3 }]);
-    const weakpoint = { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true };
+    const weakpoint = { ...makeResolvedPlayer(), isAimingAtWeakpoint: true };
 
     // A non-torso part at mult 1.0 (e.g. an arm) must NOT trigger Center
     // Masochist — this was the bug: bodyPart was derived from the mult's
@@ -151,7 +152,7 @@ describe('perk effects through the engine (real data)', () => {
     const fixer = getWeapons('live')['CombatRifle_Fixer'];
     const sledge = getWeapons('live')['SuperSledge'];
     const ninja = getLoadoutModifiers('live', [{ perkId: PerkId.Ninja, rank: 1 }]);
-    const sneaking = { ...createDefaultPlayerConditions(), isSneaking: true };
+    const sneaking = { ...makeResolvedPlayer(), isSneaking: true };
 
     const fixerBase = computeScenarios({ ...base, weapon: fixer, modifiers: [], player: sneaking });
     const fixerNinja = computeScenarios({
@@ -185,7 +186,7 @@ describe('perk effects through the engine (real data)', () => {
       weapon,
       modifiers: mods,
       // 1000 stacks × 0.001 = +1.0 dbm → exactly double the per-hit damage.
-      player: { ...createDefaultPlayerConditions(), tenderizerStacks: 1000 },
+      player: { ...makeResolvedPlayer(), tenderizerStacks: 1000 },
     });
     const unstacked = computeScenarios({ ...base, weapon, modifiers: mods });
     expect(stacked.freeAim.perHit.total).toBeCloseTo(unstacked.freeAim.perHit.total * 2.0, 6);
@@ -199,7 +200,7 @@ describe('perk effects through the engine (real data)', () => {
       ...base,
       weapon,
       modifiers: perk,
-      player: { ...createDefaultPlayerConditions(), concentratedFireStacks: 10 },
+      player: { ...makeResolvedPlayer(), concentratedFireStacks: 10 },
     });
     // Rank 2 -> 0.02 dbm/stack x 10 stacks = +0.20 -> x1.2 VATS damage.
     expect(stacked.vats.perHit.total).toBeCloseTo(unstacked.vats.perHit.total * 1.2, 6);

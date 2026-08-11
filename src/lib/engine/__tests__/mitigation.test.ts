@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'bun:test';
 import type { Weapon } from '@/types';
-import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
+import { createDefaultEnemyConditions } from '@/types';
 import {
   applyMitigation,
   DEFAULT_MITIGATION_CONSTANTS,
@@ -8,6 +8,7 @@ import {
 } from '@/lib/engine/mitigation';
 import type { HitBreakdown } from '@/lib/engine/paper-damage';
 import { computeScenarios, type ScenarioInput } from '@/lib/engine/scenarios';
+import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
 
 function hit(
   components: Array<{
@@ -318,7 +319,7 @@ describe('computeScenarios — ScenarioInput.enemyDefenses (synthetic enemy)', (
     weapon,
     itemLevel: 50,
     modifiers: [],
-    player: createDefaultPlayerConditions(),
+    player: makeResolvedPlayer(),
     enemy: createDefaultEnemyConditions(),
     weakpointMult: 2.0,
   };

@@ -301,19 +301,22 @@ describe('build codec', () => {
 describe('derived condition fields', () => {
   it('never serializes derived keys, even when non-default in state', async () => {
     const state = createDefaultBuildState();
-    state.player.conditions.strangeInNumbers = true;
-    state.player.conditions.hungerThirstTier = 6;
-    state.player.conditions.maxHealth = 999;
-    state.player.conditions.mutationCount = 5;
-    state.player.conditions.addictionCount = 7;
+    // Simulate a poisoned in-memory state (legacy payloads may carry these keys).
+    Object.assign(state.player.conditions, {
+      strangeInNumbers: true,
+      hungerThirstTier: 6,
+      maxHealth: 999,
+      mutationCount: 5,
+      addictionCount: 7,
+    });
     const encoded = await encodeBuild(state);
     const decoded = await decodeBuild(encoded, 'live');
-    const defaults = createDefaultBuildState().player.conditions;
-    expect(decoded!.state.player.conditions.strangeInNumbers).toBe(defaults.strangeInNumbers);
-    expect(decoded!.state.player.conditions.hungerThirstTier).toBe(defaults.hungerThirstTier);
-    expect(decoded!.state.player.conditions.maxHealth).toBe(defaults.maxHealth);
-    expect(decoded!.state.player.conditions.mutationCount).toBe(defaults.mutationCount);
-    expect(decoded!.state.player.conditions.addictionCount).toBe(defaults.addictionCount);
+    const conditions = decoded!.state.player.conditions;
+    expect(conditions).not.toHaveProperty('strangeInNumbers');
+    expect(conditions).not.toHaveProperty('hungerThirstTier');
+    expect(conditions).not.toHaveProperty('maxHealth');
+    expect(conditions).not.toHaveProperty('mutationCount');
+    expect(conditions).not.toHaveProperty('addictionCount');
   });
 
   it('new picker/status fields round-trip', async () => {
@@ -550,9 +553,7 @@ describe('consumables & addictions (2026-07-13 overhaul, hermetic fixtures)', ()
     const encoded = await encodeRawWire({ pc: { addictionCount: 7 } });
     const decoded = await decodeBuild(encoded, 'live');
     expect(decoded).not.toBeNull();
-    expect(decoded!.state.player.conditions.addictionCount).toBe(
-      createDefaultBuildState().player.conditions.addictionCount,
-    );
+    expect(decoded!.state.player.conditions).not.toHaveProperty('addictionCount');
     expect(decoded!.warnings.some((w) => w.includes('addictionCount'))).toBe(true);
   });
 

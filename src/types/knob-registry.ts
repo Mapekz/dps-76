@@ -1,5 +1,7 @@
-import type { EnemyConditions, PlayerConditions } from '@/types';
-import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
+import type { EnemyConditions, PlayerInput } from '@/types';
+import { createDefaultEnemyConditions, createDefaultPlayerInput } from '@/types';
+import type { ResolvedPlayer } from '@/types/player';
+import { createDefaultResolvedPlayer } from '@/types/player';
 
 /** BuildColumn accordion id, ResultsPane scenario chips, or non-UI storage. */
 export type KnobSection =
@@ -29,7 +31,7 @@ interface KnobRowBase<K extends string, V> {
   /** Included in ConditionsSection or TargetSection "N active" badge diff. */
   activeBadge?: 'conditions' | 'target';
   /** When badge diff needs a coalesce or display clamp unlike stored value. */
-  badgeRead?: (player: PlayerConditions, ctx?: KnobBadgeContext) => unknown;
+  badgeRead?: (player: PlayerInput, ctx?: KnobBadgeContext) => unknown;
   /**
    * Static clamp or a symbolic ref — numeric clamps are descriptive; runtime
    * clamps live in `src/lib/build-rules.ts` / the reducer (see `clampRef`).
@@ -40,17 +42,18 @@ interface KnobRowBase<K extends string, V> {
 }
 
 export type PlayerKnobRow = {
-  [K in keyof PlayerConditions]: KnobRowBase<K, PlayerConditions[K]>;
-}[keyof PlayerConditions];
+  [K in keyof ResolvedPlayer]: KnobRowBase<K, ResolvedPlayer[K]>;
+}[keyof ResolvedPlayer];
 
 export type EnemyKnobRow = {
   [K in keyof EnemyConditions]: KnobRowBase<K, EnemyConditions[K]>;
 }[keyof EnemyConditions];
 
-const PLAYER_DEFAULTS = createDefaultPlayerConditions();
+const PLAYER_INPUT_DEFAULTS = createDefaultPlayerInput();
+const PLAYER_DEFAULTS = createDefaultResolvedPlayer();
 const ENEMY_DEFAULTS = createDefaultEnemyConditions();
 
-export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof PlayerConditions, PlayerKnobRow>> = {
+export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerKnobRow>> = {
   isSneaking: {
     key: 'isSneaking',
     owner: 'player',
@@ -337,8 +340,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof PlayerConditions, Playe
     default: PLAYER_DEFAULTS.glow ?? 0,
     label: 'Glow meter',
     activeBadge: 'conditions',
-    badgeRead: (p, ctx) =>
-      Math.min(p.glow ?? 0, ctx?.maxHealth ?? p.maxHealth ?? PLAYER_DEFAULTS.maxHealth ?? 300),
+    badgeRead: (p, ctx) => Math.min(p.glow ?? 0, ctx?.maxHealth ?? PLAYER_DEFAULTS.maxHealth),
     clampRef: 'resolveLoadout:min(glow, maxHealth)',
   },
   underAlcoholEffect: {
@@ -736,22 +738,22 @@ export const ENEMY_KNOB_REGISTRY: Readonly<Record<keyof EnemyConditions, EnemyKn
   },
 };
 
-const PLAYER_KNOB_KEYS = Object.keys(PLAYER_KNOB_REGISTRY) as Array<keyof PlayerConditions>;
+const PLAYER_KNOB_KEYS = Object.keys(PLAYER_KNOB_REGISTRY) as Array<keyof ResolvedPlayer>;
 const ENEMY_KNOB_KEYS = Object.keys(ENEMY_KNOB_REGISTRY) as Array<keyof EnemyConditions>;
 
 /** Player-condition keys resolveLoadout recomputes — never written to share URLs. */
-export const DERIVED_PLAYER_CONDITION_KEYS = new Set<keyof PlayerConditions>(
+export const DERIVED_PLAYER_CONDITION_KEYS = new Set<keyof ResolvedPlayer>(
   PLAYER_KNOB_KEYS.filter((key) => PLAYER_KNOB_REGISTRY[key]!.origin === 'derived'),
 );
 
 /** Build value/defaults objects for a section "N active" badge via `buildDeltaCount`. */
 export function knobActiveBadgeObjects(
   badge: 'conditions' | 'target',
-  player: PlayerConditions,
+  player: PlayerInput,
   enemy: EnemyConditions,
   ctx?: KnobBadgeContext,
 ): { value: Record<string, unknown>; defaults: Record<string, unknown> } {
-  const playerDefaults = createDefaultPlayerConditions();
+  const playerDefaults = PLAYER_INPUT_DEFAULTS;
   const enemyDefaults = createDefaultEnemyConditions();
   const value: Record<string, unknown> = {};
   const defaults: Record<string, unknown> = {};
@@ -759,8 +761,10 @@ export function knobActiveBadgeObjects(
   for (const key of PLAYER_KNOB_KEYS) {
     const row = PLAYER_KNOB_REGISTRY[key]!;
     if (row.activeBadge !== badge) continue;
-    value[key] = row.badgeRead ? row.badgeRead(player, ctx) : player[key];
-    defaults[key] = playerDefaults[key];
+    if (row.origin === 'input') {
+      value[key] = row.badgeRead ? row.badgeRead(player, ctx) : player[key as keyof PlayerInput];
+      defaults[key] = playerDefaults[key as keyof PlayerInput];
+    }
   }
   for (const key of ENEMY_KNOB_KEYS) {
     const row = ENEMY_KNOB_REGISTRY[key]!;

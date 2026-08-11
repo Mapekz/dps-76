@@ -1,300 +1,29 @@
-import type { Special } from '@/data/special';
 import type { Modifier } from '@/types/modifiers';
+import type { Special } from '@/data/special';
 import { DEFAULT_DISTANCE_UNITS } from '@/lib/distance';
-
-// Re-export for convenience
+import type { PlayerInput } from '@/types/player';
 export type { Special } from '@/data/special';
 export type { PerkId } from '@/data/perk-ids';
 export type { Stat, StatModification } from '@/data/stats';
-
-/** Body armor vs power armor vs unarmored — authoritative armor-type state. */
-export type ArmorWorn = 'none' | 'body' | 'power';
-
-// Player conditions for conditional perks and calculations
-export interface PlayerConditions {
-  // Combat state
-  isSneaking: boolean;
-  isAimingAtWeakpoint: boolean; // weakpoint (head) targeting; applies to both scenarios
-  armorWorn: ArmorWorn;
-  isInPowerArmor: boolean;
-  isSolo: boolean;
-  isPowerAttacking: boolean; // melee power attacks (toggle; applies across scenarios)
-  isLastShot?: boolean; // firing the magazine's last round (Last Shot legendary; default false)
-  isAimingDownSights?: boolean; // iron sights / ADS (gates scoped-damage buffs; default false)
-  isGhoul?: boolean; // playing a ghoul character (gates Gourmand's off, feral-meter effects on; default false)
-  healthPercent: number; // 0-100 for perks like Nerd Rage, Serendipity
-
-  // Stack counts
-  /**
-   * Bullet Storm stacks (shared engine counter, AV 0x0000039B — Bullet
-   * Storm, Bringing Out the Big Guns, Foundation's Vengeance). Sentinel `-1`
-   * = auto, resolving to the engine's computed Sustained Stacks average
-   * (`stacks.ts`'s `resolveBulletStormStacks`); a non-negative value is a
-   * manual pin that wins over the sim, clamped to `[min, max]` at read time
-   * (`resolve.ts`'s `effectiveBulletStormStacks`). The computed max/min
-   * themselves come from equipped Bullet Storm sources, not from this field
-   * — see `ScenarioSet.bulletStormMaxStacks`/`bulletStormMinStacks`
-   * (docs/assumptions.md "Bullet Storm").
-   */
-  bulletStormStacks: number;
-  /**
-   * Onslaught stacks (shared engine counter, AV 0x00000395 — Guerrilla/
-   * Gunslinger Expert+Master, Furious, Pounder's, Splinter's, Whacker
-   * Smacker). Sentinel `-1` = auto, resolving to the engine's computed
-   * Sustained Stacks average (`stacks.ts`'s `resolveOnslaughtStacks`); a
-   * non-negative value from the Onslaught slider is a manual pin that wins
-   * over the sim, clamped to the computed max at read time (`resolve.ts`'s
-   * `onslaught` reader). The computed max itself comes from equipped
-   * Onslaught sources, not from this field — see `ScenarioSet.onslaughtMaxStacks`
-   * (docs/assumptions.md "Onslaught"). Gunslinger-Master's reverse mode
-   * (per-shot consumption instead of accrual) ignores this slider entirely.
-   */
-  onslaughtStacks: number;
-  /**
-   * Enemies hit per attack event (primary target + AoE/cleave fan-out).
-   * Feeds reverse-onslaught per-shot consumption when Gunslinger Master is
-   * equipped (docs/assumptions.md "Onslaught"); default 1 (single target).
-   */
-  targetsHit?: number;
-  killStreak: number; // 0-10 (default 0 per user preference)
-  tenderizerStacks: number; // 0–1000, +0.001 dbm (0.1%) per stack, cap +100%; target state, works without the card equipped
-  /**
-   * Concentrated Fire's per-VATS-shot stacking damage bonus (0–20, default
-   * 0 — user-approved). The game tracks this as a HIDDEN native counter
-   * (AV `ConcentratedFireRank`-scaled EP135 "Mod VATS Concentrated Fire
-   * Damage Mult") that builds per VATS shot landed on the SAME body part and
-   * resets on switching body part/target; GMST `iVATSConcentratedFireBonus`
-   * caps it at 20. This field is the player's manual stand-in for that
-   * counter — the calculator assumes a steady stream of hits on one body
-   * part, so the reset-on-switch behavior itself isn't modeled. See
-   * `overrides/perk-overrides.ts` `ConcentratedFire` and
-   * docs/assumptions.md "Concentrated Fire stacks".
-   */
-  concentratedFireStacks: number;
-  /**
-   * Completed lifetime lore/achievement challenges (HasCompletedChallenge gates).
-   * The Pipe's pipe-weapon crafting challenge is toggled via Conditions when that
-   * unique is equipped; default empty (none completed).
-   */
-  completedChallengeIds?: string[];
-  /**
-   * Kingfisher's Local Legend fishing challenges completed (0–6). A count slider
-   * stands in for six independent +10% gates — see docs/assumptions.md.
-   */
-  localLegendFishingChallengesCompleted?: number;
-
-  // Other steady-state inputs for conditional sources
-  /**
-   * For Junkie's legendary. DERIVED in resolveLoadout — selected
-   * PlayerConfig.addictions minus those suppressed by an active addictive
-   * consumable (src/lib/player-stats.ts deriveAddictionCount); not
-   * user-editable. The stored default only feeds synthetic engine tests.
-   */
-  addictionCount: number;
-  capsOnHand: number; // for Aristocrat's legendary
-  /**
-   * Absolute max HP (Juggernaut's health curve, health-fraction thresholds).
-   * DERIVED in resolveLoadout — 245 + 5×effective END + maxHealth-bucket
-   * folds (Lifegiver &c., src/lib/player-stats.ts) — not user-editable; the
-   * stored default only feeds synthetic engine tests (docs/assumptions.md
-   * "Max HP").
-   */
-  maxHealth?: number;
-  /** Derived Lockpick Skill (Picklock ranks + Master Infiltrator + Safecracker's worn count) — resolveLoadout recomputes every run, like maxHealth. Feeds the `lockpickSkill` CurveInput (Pirate Punch). */
-  lockpickSkill?: number;
-  /** Derived Hacking Skill (Hacker ranks + Master Infiltrator + Safecracker's worn count) — resolveLoadout recomputes every run, like lockpickSkill. Feeds the `hackingSkill` CurveInput (no consumer yet). */
-  hackingSkill?: number;
-  /** Derived Stimpak Healing percent points (First Aid + Medicine Bobblehead) — resolveLoadout recomputes every run. Feeds Medical Malpractice's `scaledBy` dbm term. */
-  stimpakHealMult?: number;
-  /** Derived Stimpak/RadAway heal MAGNITUDE multiplier (Field Surgeon, Doctor's 3★) — resolveLoadout recomputes every run. Base 1 (no bonus = ×1), not 0. No consumer yet. */
-  stimpakHealMagMult?: number;
-  /** Derived Stimpak/RadAway heal DURATION multiplier (Field Surgeon) — resolveLoadout recomputes every run. Base 1, not 0. No consumer yet. */
-  stimpakHealDurationMult?: number;
-  mutationCount?: number; // for Mutant's curve — derived from the selected mutations in resolveLoadout
-  /**
-   * HungerThirstTier AV (0x006D37DC, 0–8) for Gourmand's curve. DERIVED in
-   * resolveLoadout as foodTier + drinkTier (each meter contributes its 0–4
-   * threshold tier — docs/assumptions.md "Hunger & thirst tiers"); the stored
-   * value only feeds synthetic engine tests.
-   */
-  hungerThirstTier?: number;
-  /** Food meter threshold tier, 0–4: Hungry → Fully Fed (SURV_NewHungerThreshold_Msg_*; default 0). */
-  foodTier?: number;
-  /** Drink meter threshold tier, 0–4: Thirsty → Fully Hydrated (SURV_NewThirstThreshold_Msg_*; default 0). */
-  drinkTier?: number;
-  feralTier?: number; // ghoul feral meter tier for Lucid/Feral's curves (default 0; GHL_FeralTier AV 0–8, 8 = "Wonderful")
-  /**
-   * Ghoul Glow meter (the Rads AV, 0x000002E1) — absolute value, 0..maxHealth
-   * (max Glow = max HP). Gates threshold conditions like Glowing Criticals'
-   * ≥180 (glowAtLeast). DERIVED-clamped in resolveLoadout (min(glow, maxHealth))
-   * so the engine never sees a value above the character's current max HP;
-   * the stored default only feeds synthetic engine tests.
-   */
-  glow?: number;
-  /**
-   * True when any active consumable is category alcohol (Live & Love 5's
-   * HasMagicEffectKeyword(AlcoholEffect) gate). DERIVED in resolveLoadout;
-   * the stored default only feeds synthetic engine tests.
-   */
-  underAlcoholEffect?: boolean;
-  /**
-   * Strange in Numbers gate → mutation values ×1.25. DERIVED in resolveLoadout
-   * (StrangeInNumbers perk equipped AND teammateCount ≥ 1 — the card needs a
-   * mutated teammate, docs/assumptions.md); the stored value only feeds
-   * synthetic engine tests.
-   */
-  strangeInNumbers: boolean;
-  /**
-   * Class Freak perk rank 0–3 → mutation penalties ×1/×0.75/×0.5/×0.25.
-   * DERIVED in resolveLoadout/resolveStats (src/lib/player-stats.ts
-   * deriveClassFreakRank — the equipped ClassFreak card's rank); the stored
-   * value only feeds synthetic engine tests. Gates `classFreakRank`
-   * conditions (mutation penalty tiers, Grounded's energy-damage tiers).
-   */
-  classFreakRank?: number;
-  /**
-   * Perk family editor-id (perks.json `family`) → highest owned rank, across
-   * BOTH the regular and legendary perk loadouts (legendary families are
-   * `Legendary*`-namespaced, so one merged map is collision-free). DERIVED in
-   * resolveLoadout/resolveStats (src/data/perk-modifiers.ts
-   * getEquippedPerkFamilyRanks); the stored value only feeds synthetic engine
-   * tests. Gates `perkFamilyRank` conditions — the cross-family HasPerk gates
-   * (Lock and Load → Bullet Storm's reload speed).
-   */
-  equippedPerkRanks?: Record<string, number>;
-  weaponConditionPct?: number; // 0-200: equipped weapon condition, 100 = full, 200 = over-repaired max (Polished; default 100)
-  /**
-   * Free Aim's "shots that hit the enemy at all" %, 10-100, default 100.
-   * Models realistic misses (movement, target size) by scaling free-aim
-   * SUSTAINED dps (and thus the free-aim headline "effective" DPS) — never
-   * per-hit, never burst (those stay the every-shot-hits ceiling).
-   * Independent of `bodyPartHitRatePct` below (which of those landed hits
-   * finds the targeted part vs. center mass) and of VATS, which has its own
-   * `vatsHitRatePct` knob — see docs/assumptions.md "Manual-aim hit rate".
-   */
-  hitRatePct?: number;
-  /**
-   * VATS's "shots that land on the targeted body part (or center mass when
-   * no part is targeted)" %, 10-100, default 100. VATS accuracy is
-   * deliberately NOT modeled from distance/Perception/perks (the game's
-   * formula is a black box, permanently out of scope) — this is the user's
-   * own estimate, standing in for the whole VATS accuracy model. Unlike Free
-   * Aim's pair below, there is no torso fallback on a miss: a miss deals
-   * zero damage. Scales VATS sustained/effective dps and the VATS AP-limited
-   * figure (a miss still costs AP), never per-hit or burst — see
-   * docs/assumptions.md "Manual-aim hit rate".
-   */
-  vatsHitRatePct?: number;
-  /**
-   * Free Aim only (10–100, default 100): of the shots that hit the enemy
-   * (`hitRatePct` above), the share that land on the targeted body part
-   * rather than center mass (the race's ×1.00 default part) — each hit
-   * blends bodyPartMult and torso damage by this rate
-   * (scenarios.ts bodyPartBlendedHit). Only meaningful while
-   * isAimingAtWeakpoint. VATS has no equivalent knob: see `vatsHitRatePct`'s
-   * doc comment for why VATS misses deal zero instead of falling back to
-   * center mass.
-   */
-  bodyPartHitRatePct?: number;
-  /**
-   * Manual damage-multiplier toggle (0-40, default 0) for the Follow Through
-   * legendary perk's ranged-sneak damage-taken debuff (10/20/30/40 s window
-   * per rank). Not steady-state-computable, so this represents the player's
-   * own estimate of the debuff's active magnitude; folds to one `wholeDamage`
-   * ADD modifier (value/100) UNCONDITIONALLY — any player's Follow Through
-   * can have placed it, not just this build's. See docs/assumptions.md.
-   */
-  followThroughPct?: number;
-  /**
-   * Manual damage-multiplier toggle (0-40, default 0) for Taking One for the
-   * Team's enemies-take-more-damage-while-teamed proc. Same simplification
-   * and unconditional fold as followThroughPct. See docs/assumptions.md.
-   */
-  takingOneForTheTeamPct?: number;
-  /**
-   * Taking One for the Team's hidden companion perk also debuffs the
-   * ATTACKER's target with a FLAT DamageResist reduction (Detrimental, 10s,
-   * no Energy Resist component) alongside the damage-taken % above — a
-   * separate ESM effect with separate units (resist points, not a
-   * percentage), esm-walk-confirmed 2026-07-14 (MGEF
-   * `..._DamageIncrease_Effect01-04`, formIds 0x005A5DEF/0x005B01AB-AD).
-   * Rank 0 = off; ranks 1-4 → magnitudes 6/10/15/50 (the rank-4 jump is
-   * flagged as a possible ESM data-entry anomaly, not confirmed intentional
-   * — docs/assumptions.md "Resist mitigation"). Folds into the `armorPenFlat`
-   * bucket via `src/data/target-debuffs.ts` (same unconditional-emission
-   * pattern as `tenderizerStacks`/`followThroughPct` — any player's card can
-   * have applied it, not just this build's).
-   */
-  takingOneForTheTeamDrRank?: 0 | 1 | 2 | 3 | 4;
-  /**
-   * Manual knob (default 0 = naked) for curve inputs keyed on the WIELDER's
-   * own DamageResist AV (0x000002E3) — today only Berserker's
-   * (`playerDamageResist` CurveInput, `resolve.ts`). No armor-mitigation
-   * model exists to derive this from equipped gear, so it's user-supplied;
-   * see docs/assumptions.md "Berserker's (Damage Unarmored)".
-   */
-  playerDamageResist?: number;
-  /**
-   * Manual knob (default 0 = no Rad Resistance) for the RadResistExposure AV
-   * (0x000002EA) — today only Daisy Cutter's `radResistAtLeast` condition
-   * (unique Fat Man, rebuilt 20260724). Same gap as `playerDamageResist`
-   * above: no armor-mitigation model derives this from equipped gear, so
-   * it's user-supplied; see docs/assumptions.md "Unique weapons".
-   */
-  playerRadResist?: number;
-  /**
-   * Worn-piece counts keyed by the armor-added keyword a `wornPieceCount`
-   * condition tests (e.g. `HasLegendary_Armor_BattleLoaders`) — Battle-
-   * Loader's 1-5 reload-skip tiers, Limit-Breaking's 1-5 crit-cost tiers.
-   * DERIVED in resolveLoadout from `PlayerConfig.armorEffects` (the Armor
-   * checklist's selections are the single source of truth —
-   * `src/data/armor-modifiers.ts` `getArmorEffectWornPieceCounts`); the UI
-   * never sets this directly, and the stored default only feeds synthetic
-   * engine tests. See docs/assumptions.md "Armor".
-   */
-  wornPieceCounts?: Record<string, number>;
-  /**
-   * Seconds spent on the bash swing that triggers Battle-Loader's instant
-   * reload, used IN PLACE OF the real reload it skips (the
-   * `reloadSkipChanceBash` bucket — Phase C, go-through-every-single-silly-
-   * whistle.md; see docs/assumptions.md "Reload-skip & free-ammo expected
-   * value"). Default `DEFAULT_BATTLE_LOADERS_BASH_SEC` (0.75s) —
-   * **ASSUMPTION**, a user-approved placeholder pending an in-game
-   * stopwatch measurement of a real bash swing (per-weapon animation timing
-   * likely varies; `#61`). `0` treats the bash
-   * as instant, matching Quick Hands' free-skip treatment.
-   */
-  battleLoadersBashSec?: number;
-
-  // SPECIAL stats
-  strength: number; // 1-15 (can exceed with legendary perks)
-  perception: number;
-  endurance: number;
-  charisma: number;
-  intelligence: number;
-  agility: number;
-  luck: number;
-
-  // Other
-  junkItemCount: number; // for Junk Shield perk
-  teammateCount: number; // for Bodyguards perk
-  /**
-   * Public team type, gating the team-size-scaled SPECIAL fortify granted by
-   * PT_PublicTeamBonuses_Perk (0x005B7584): 'casual' → +Intelligence
-   * (PT_CasualTeamBonus), 'exploration' → +Endurance
-   * (PT_ExplorationTeamBonus). 'none' (default) = not in a public team of
-   * that type. See @/data/public-teams.
-   */
-  publicTeamType?: 'none' | 'casual' | 'exploration';
-  /**
-   * Player is fully hydrated (SURV_Thirst below the WellHydrated threshold
-   * 720). Default true (optimal play). Gates the hidden Thirst ability's
-   * +35% AP regen baseline and Rejuvenated's boosts — non-ghoul only; lower
-   * hydration tiers are not modeled (docs/assumptions.md "Hydration AP
-   * regen").
-   */
-  hydrated?: boolean;
-}
+export type {
+  ArmorWorn,
+  PlayerConditionContext,
+  PlayerConditions,
+  PlayerInput,
+  ResolvedPlayer,
+} from '@/types/player';
+import {
+  createDefaultPlayerConditions,
+  createDefaultPlayerInput,
+  createDefaultResolvedPlayer,
+  toResolvedPlayer,
+} from '@/types/player';
+export {
+  createDefaultPlayerConditions,
+  createDefaultPlayerInput,
+  createDefaultResolvedPlayer,
+  toResolvedPlayer,
+};
 
 // Enemy conditions for conditional damage calculations
 export interface EnemyConditions {
@@ -655,7 +384,7 @@ export interface PlayerConfig {
    * Armor checklist selections — effectId (a stable representative
    * OMOD edid, `src/data/armor-modifiers.ts` `ArmorEffectEntry.id`) → worn
    * count (0-`maxCount`; single-slot effects use 0/1). Authoritative source
-   * for both the folded `Modifier[]` list and `PlayerConditions.wornPieceCounts`
+   * for both the folded `Modifier[]` list and `ResolvedPlayer.wornPieceCounts`
    * — resolveLoadout derives both, the UI never sets either downstream field
    * directly (docs/assumptions.md "Armor").
    */
@@ -668,7 +397,7 @@ export interface PlayerConfig {
    * is derived (getSuppressedAddictions), never stored.
    */
   addictions: string[];
-  conditions: PlayerConditions;
+  conditions: PlayerInput;
   /** Global item level for base-damage curve lookup (1–50, default 50). */
   itemLevel: number;
   /**
@@ -690,70 +419,6 @@ export interface PlayerConfig {
 }
 
 // Default values factory
-export function createDefaultPlayerConditions(): PlayerConditions {
-  return {
-    isSneaking: false,
-    isAimingAtWeakpoint: false,
-    armorWorn: 'body',
-    isInPowerArmor: false,
-    isSolo: true,
-    isPowerAttacking: false,
-    isLastShot: false,
-    isAimingDownSights: false,
-    isGhoul: false,
-    healthPercent: 100,
-    bulletStormStacks: -1, // Follow the computed max (sentinel; see field comment)
-    onslaughtStacks: -1, // Follow the computed max (sentinel; see field comment)
-    targetsHit: 1,
-    killStreak: 0, // Default per user preference — see docs/adr/0009-kill-streak-and-other-exogenous-counters-keep-zero-defaults.md
-    tenderizerStacks: 0, // Solo default — no other players hitting the target
-    concentratedFireStacks: 0, // Slider default (user-approved) — stands in for the hidden native stack counter
-    completedChallengeIds: [],
-    localLegendFishingChallengesCompleted: 0,
-    addictionCount: 0,
-    capsOnHand: 0,
-    maxHealth: 300, // synthetic-test default; the app derives it in resolveLoadout (245 + 5×END + buffs)
-    lockpickSkill: 0,
-    hackingSkill: 0,
-    stimpakHealMult: 0,
-    stimpakHealMagMult: 1, // synthetic-test default — product-fold identity, unlike the additive stimpakHealMult's 0
-    stimpakHealDurationMult: 1,
-    hungerThirstTier: 0, // synthetic-test default; the app derives it in resolveLoadout (foodTier + drinkTier)
-    foodTier: 0, // food meter empty (Hungry)
-    drinkTier: 0, // drink meter empty (Thirsty)
-    feralTier: 0, // Lucid/Feral's curve input (0–8; human default)
-    glow: 0, // ghoul Glow meter, absolute (0..maxHealth; human/no-Glow default)
-    underAlcoholEffect: false, // synthetic-test default; the app derives it in resolveLoadout (active alcohol consumable)
-    strangeInNumbers: false, // synthetic-test default; the app derives it in resolveLoadout (perk + teammates)
-    classFreakRank: 0, // synthetic-test default; the app derives it in resolveLoadout (equipped ClassFreak rank)
-    equippedPerkRanks: {}, // synthetic-test default; the app derives it in resolveLoadout (selected perk loadout)
-    // ASSUMPTION default — keep in sync with sustain.ts's
-    // DEFAULT_BATTLE_LOADERS_BASH_SEC (deliberate literal duplication:
-    // types/ stays a leaf, no engine import; regression-tested in
-    // sustain.test.ts).
-    battleLoadersBashSec: 0.75,
-    weaponConditionPct: 100, // full condition (Polished curve input; 200 = over-repaired max)
-    hitRatePct: 100, // manual-aim hit rate (100 = every shot lands; VATS has its own knob)
-    vatsHitRatePct: 100, // manual VATS hit rate (100 = every shot lands)
-    bodyPartHitRatePct: 100, // aimed shots always land on the targeted body part
-    followThroughPct: 0, // no damage multiplier assumed by default
-    takingOneForTheTeamPct: 0, // no damage multiplier assumed by default
-    takingOneForTheTeamDrRank: 0, // no flat DR debuff assumed by default
-    playerDamageResist: 0, // naked (Berserker's curve max-bonus end) — matches this input's prior always-0 hardcoded behavior
-    playerRadResist: 0, // no Rad Resistance (Daisy Cutter's radResistAtLeast floor)
-    strength: 15,
-    perception: 15,
-    endurance: 15,
-    charisma: 15,
-    intelligence: 15,
-    agility: 15,
-    luck: 15,
-    junkItemCount: 0,
-    teammateCount: 0,
-    publicTeamType: 'none',
-    hydrated: true, // fully hydrated — optimal-play default (hydration AP-regen baseline)
-  };
-}
 
 export function createDefaultEnemyConditions(): EnemyConditions {
   return {
@@ -785,7 +450,7 @@ export function createDefaultPlayerConfig(): PlayerConfig {
     mutations: [],
     consumables: [],
     addictions: [],
-    conditions: createDefaultPlayerConditions(),
+    conditions: createDefaultPlayerInput(),
     itemLevel: 50,
     weakpointMult: 1.5,
   };

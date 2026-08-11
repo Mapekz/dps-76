@@ -5,7 +5,8 @@
  * every bucket uses: result = (last SET ?? base) + (Σ MUL_ADD) × base + Σ ADD.
  */
 
-import type { PlayerConditions, EnemyConditions, Weapon } from '@/types';
+import type { EnemyConditions, Weapon } from '@/types';
+import type { ResolvedPlayer } from '@/types/player';
 import type {
   Bucket,
   Condition,
@@ -40,7 +41,7 @@ export interface ScenarioFlags {
 /** Everything a condition can be evaluated against. */
 export interface ResolveContext {
   weapon: Weapon;
-  player: PlayerConditions;
+  player: ResolvedPlayer;
   enemy: EnemyConditions;
   scenario: ScenarioFlags;
   /** Weapon item level for itemLevel-input curves (scenarios always set it; defaults to the level-50 clamp). */
@@ -141,7 +142,7 @@ export interface ResolveContext {
  * paths clamp to the equipped max. Shared by the `onslaught` StackCounter
  * reader and the `onslaughtStacks` CurveInput reader.
  */
-function effectiveOnslaughtStacks(p: PlayerConditions, ctx: ResolveContext): number {
+function effectiveOnslaughtStacks(p: ResolvedPlayer, ctx: ResolveContext): number {
   return resolveOnslaughtStacks(p.onslaughtStacks, ctx.onslaughtMaxStacks ?? 0, {
     reverseAvg: ctx.onslaughtReverseStacks,
     forwardAvg: ctx.onslaughtForwardStacks,
@@ -154,7 +155,7 @@ function effectiveOnslaughtStacks(p: PlayerConditions, ctx: ResolveContext): num
  * degrades to max). Shared by the `bulletStorm` StackCounter reader and the
  * `bulletStormStacks` CurveInput reader.
  */
-function effectiveBulletStormStacks(p: PlayerConditions, ctx: ResolveContext): number {
+function effectiveBulletStormStacks(p: ResolvedPlayer, ctx: ResolveContext): number {
   return resolveBulletStormStacks(
     p.bulletStormStacks,
     ctx.bulletStormMinStacks ?? 0,
@@ -170,7 +171,7 @@ function effectiveBulletStormStacks(p: PlayerConditions, ctx: ResolveContext): n
  */
 const PLAYER_STATE_READERS: Record<
   StackCounter | CurveInput,
-  (p: PlayerConditions, ctx: ResolveContext) => number
+  (p: ResolvedPlayer, ctx: ResolveContext) => number
 > = {
   // Stack counters (modifier value × count).
   tenderizer: (p) => p.tenderizerStacks ?? 0,

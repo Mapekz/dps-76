@@ -1,5 +1,7 @@
-import type { EnemyConditions, Perk, PerkLoadout, PlayerConditions, Weapon } from '@/types';
+import type { EnemyConditions, Perk, PerkLoadout, Weapon } from '@/types';
 import { createDefaultEnemyConditions } from '@/types';
+import type { PlayerConditionContext, PlayerInput } from '@/types/player';
+import { toResolvedPlayer } from '@/types/player';
 import type { Bucket, Modifier } from '@/types/modifiers';
 import {
   foldBucket,
@@ -211,10 +213,7 @@ export function canSlotCardPoints(budget: PerkBudget, stat: SpecialKey, delta = 
  * counts; docs/assumptions.md "Strange in Numbers"). Shared by resolveLoadout
  * (feeds the engine) and the Mutations header badge.
  */
-export function deriveStrangeInNumbers(
-  perks: PerkLoadout[],
-  conditions: PlayerConditions,
-): boolean {
+export function deriveStrangeInNumbers(perks: PerkLoadout[], conditions: PlayerInput): boolean {
   return perks.some((p) => p.perkId === 'StrangeInNumbers') && (conditions.teammateCount ?? 0) >= 1;
 }
 
@@ -230,7 +229,7 @@ export function deriveClassFreakRank(perks: PerkLoadout[]): number {
 }
 
 /** HungerThirstTier (0–8) = food meter tier + drink meter tier (0–4 each) — docs/assumptions.md. */
-export function deriveHungerThirstTier(conditions: PlayerConditions): number {
+export function deriveHungerThirstTier(conditions: PlayerInput): number {
   return (
     Math.max(0, Math.min(4, conditions.foodTier ?? 0)) +
     Math.max(0, Math.min(4, conditions.drinkTier ?? 0))
@@ -272,7 +271,7 @@ export interface DerivedPlayerStats {
 export function derivePlayerStats(
   modifiers: Modifier[],
   baseSpecial: Record<SpecialKey, number>,
-  player: PlayerConditions,
+  player: PlayerConditionContext,
   enemy?: EnemyConditions,
   weapon?: Weapon,
   itemLevel?: number,
@@ -295,7 +294,7 @@ export function derivePlayerStats(
   // context needs no SPECIAL values beyond the raw allocation it starts from.
   const earlyCtx: ResolveContext = {
     weapon: weapon ?? NO_WEAPON,
-    player,
+    player: toResolvedPlayer(player),
     enemy: enemyCtx,
     scenario,
     itemLevel: itemLevel ?? 50,
@@ -312,7 +311,9 @@ export function derivePlayerStats(
   // The maxHealth fold resolves real curves/conditions (Lifegiver's curve X
   // is the buff-folded END), so it runs through foldBucket with the folded
   // SPECIAL in context.
-  const ctx: ResolveContext = { ...earlyCtx, player: { ...player, ...special } };
+  // Reuses `earlyCtx.player` (already widened above) rather than re-widening
+  // `player` from the defaults — this runs once per suggestion candidate.
+  const ctx: ResolveContext = { ...earlyCtx, player: { ...earlyCtx.player, ...special } };
   const maxHealth = Math.round(
     foldBucket(modifiers, 'maxHealth', BASE_MAX_HP + MAX_HP_PER_ENDURANCE * special.endurance, ctx),
   );

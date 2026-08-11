@@ -22,7 +22,8 @@ import barbarian01 from './fixtures/perk-barbarian01.json';
 import abPerkBarbarian from './fixtures/spel-abperkbarbarian.json';
 import abPerkFortifyResistDamage from './fixtures/mgef-abperkfortifyresistdamage.json';
 import { foldBucket } from '@/lib/engine/resolve';
-import { createDefaultPlayerConditions, createDefaultEnemyConditions } from '@/types';
+import { createDefaultEnemyConditions } from '@/types';
+import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
 
 // Fixtures are verbatim `esm get <formid> --json` output (20260710 ESM).
 // These tests pin the PCRD → GeneratedPerkCard normalization and the new
@@ -523,7 +524,7 @@ describe('extractPerks (Barbarian unarmored ×2 post-process, 2026-08-06)', () =
       isPhysical: true,
     };
     const basePlayer = {
-      ...createDefaultPlayerConditions(),
+      ...makeResolvedPlayer(),
       strength: 15,
       armorWorn: 'body' as const,
       playerDamageResist: 0,

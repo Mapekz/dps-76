@@ -15,9 +15,9 @@ import {
   type SpecialKey,
 } from '@/lib/player-stats';
 import { applyClassFreakPenaltyScaling } from '@/lib/class-freak-mutations';
-import { createDefaultPlayerConditions } from '@/types';
 import type { GeneratedBuff } from '@/types/generated';
 import type { Bucket, Condition, Modifier } from '@/types/modifiers';
+import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
 
 function baseSpecial(
   overrides: Partial<Record<SpecialKey, number>> = {},
@@ -60,7 +60,7 @@ function specialMulMod(
   };
 }
 
-const conditions = createDefaultPlayerConditions();
+const conditions = makeResolvedPlayer();
 
 describe('derivePlayerStats', () => {
   it('max HP = 245 + 5×END with no modifiers', () => {
@@ -290,7 +290,7 @@ describe('computePerkBudget (real card costs, not rank)', () => {
 describe('deriveStrangeInNumbers', () => {
   it('requires both the card and at least one teammate', async () => {
     const { deriveStrangeInNumbers } = await import('@/lib/player-stats');
-    const conditions = createDefaultPlayerConditions();
+    const conditions = makeResolvedPlayer();
     const withTeam = { ...conditions, teammateCount: 2 };
     const sin = [{ perkId: 'StrangeInNumbers', rank: 1 }];
     expect(deriveStrangeInNumbers(sin, withTeam)).toBe(true);
@@ -302,7 +302,7 @@ describe('deriveStrangeInNumbers', () => {
 describe('deriveHungerThirstTier', () => {
   it('sums the two meter tiers, clamped to 0-4 each', async () => {
     const { deriveHungerThirstTier } = await import('@/lib/player-stats');
-    const base = createDefaultPlayerConditions();
+    const base = makeResolvedPlayer();
     expect(deriveHungerThirstTier(base)).toBe(0);
     expect(deriveHungerThirstTier({ ...base, foodTier: 4, drinkTier: 4 })).toBe(8);
     expect(deriveHungerThirstTier({ ...base, foodTier: 3, drinkTier: 1 })).toBe(4);

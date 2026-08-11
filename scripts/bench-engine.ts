@@ -14,7 +14,6 @@
 import {
   createDefaultEnemyConfig,
   createDefaultPlayerConfig,
-  createDefaultPlayerConditions,
   type PlayerConfig,
 } from '../src/types';
 import { PerkId } from '../src/data/perk-ids';
@@ -23,6 +22,7 @@ import { computeScenarios } from '../src/lib/engine/scenarios';
 import { type BuildState } from '../src/state/build-reducer';
 import { enumerateVariants } from '../src/lib/suggest/variants';
 import { evaluateSuggestions } from '../src/lib/suggest/evaluate';
+import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
 
 function bench(name: string, fn: () => void, iters = 2000): void {
   fn(); // warm
@@ -62,7 +62,7 @@ const maxedConfig: PlayerConfig = {
     mod_Legendary_Armor4_BattleLoaders: 3,
     mod_Legendary_Armor4_LimitBreak: 2,
   },
-  conditions: { ...createDefaultPlayerConditions(), tenderizerStacks: 10, healthPercent: 25 },
+  conditions: { ...makeResolvedPlayer(), tenderizerStacks: 10, healthPercent: 25 },
 };
 const enemy = createDefaultEnemyConfig();
 

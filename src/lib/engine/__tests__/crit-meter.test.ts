@@ -5,7 +5,8 @@ import { getArmorEffectModifiers, getArmorEffectWornPieceCounts } from '@/data/a
 import { PerkId } from '@/data/perk-ids';
 import { computeCritMeter } from '@/lib/engine/crit-meter';
 import type { ResolveContext } from '@/lib/engine/resolve';
-import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
+import { createDefaultEnemyConditions } from '@/types';
+import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
 
 /** Limit-Breaking Armor's checklist id (5-tier critConsumption, wornPieceCount-gated). */
 const LIMIT_BREAKING_ID = 'mod_Legendary_Armor4_LimitBreak';
@@ -13,7 +14,7 @@ const LIMIT_BREAKING_ID = 'mod_Legendary_Armor4_LimitBreak';
 function ctx(overrides: Partial<ResolveContext['player']> = {}): ResolveContext {
   return {
     weapon: getWeapons('live')['CombatRifle_Fixer'],
-    player: { ...createDefaultPlayerConditions(), ...overrides },
+    player: { ...makeResolvedPlayer(), ...overrides },
     enemy: createDefaultEnemyConditions(),
     scenario: { isVats: true, isSneaking: false, isPowerAttack: false, isCrit: false },
   };

@@ -6,7 +6,7 @@ import { ToggleGroup } from '@/components/ui/toggle-group';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getPublicTeamModifiers } from '@/data/public-teams';
 import { deriveStrangeInNumbers } from '@/lib/player-stats';
-import type { PlayerConditions } from '@/types';
+import type { PlayerInput } from '@/types';
 import type { Bucket } from '@/types/modifiers';
 import { SectionTrigger } from './SectionTrigger';
 
@@ -36,7 +36,7 @@ export function TeamSection() {
   const dispatch = useBuildDispatch();
   const conditions = player.conditions;
 
-  const set = (key: keyof PlayerConditions, value: PlayerConditions[keyof PlayerConditions]) =>
+  const set = (key: keyof PlayerInput, value: PlayerInput[keyof PlayerInput]) =>
     dispatch({ type: 'condition/set', key, value });
 
   const publicTeamType = conditions.publicTeamType ?? 'none';

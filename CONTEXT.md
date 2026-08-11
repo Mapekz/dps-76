@@ -89,6 +89,15 @@ the stack sliders' auto (`−1`) setting resolves to.
 _Avoid_: max stacks, full stacks (those are a manual pin or a cap, not the
 simulated average).
 
+**Resolved Player**:
+The engine-ready player view produced by `playerAgg` in `resolveLoadout`
+(`src/lib/loadout.ts`): buff-folded effective SPECIAL, folded
+`playerDamageResist`, and every derived stat (`maxHealth`, `addictionCount`,
+`strangeInNumbers`, …). Consumed by `ResolveContext.player` and
+`PLAYER_STATE_READERS` (`src/lib/engine/resolve.ts`). Distinct from
+`PlayerInput`, which is what the user configures and what persists.
+_Avoid_: player conditions, resolved conditions.
+
 **Effective Stacks**:
 The resolved, clamped Onslaught or Bullet Storm count shared by the engine's
 `PLAYER_STATE_READERS` and the ConditionsSection display via
@@ -199,6 +208,16 @@ _Avoid_: combined data, resolved data.
 
 ## Flagged ambiguities
 
+- **Effective Stacks** vs raw stack sliders — resolved: **Effective Stacks** is
+  the clamped value the engine reads (manual pin or **Sustained Stacks** average);
+  the sliders store the raw/auto sentinel.
+- **`playerDamageResist` base vs folded** — on `PlayerInput` it is the manual
+  Berserker's knob (also the `damageResistGain` fold base in
+  `derivePlayerStats`); on `ResolvedPlayer` the same key holds the folded output
+  written back by `playerAgg`.
+- **SPECIAL base vs effective** — on `PlayerInput` the seven SPECIAL keys are
+  budget-enforced base allocation (1–15); on `ResolvedPlayer` they are
+  buff-folded effective stats consumed by curve inputs and conditions.
 - "mod" meant both **OMOD** and a **Modifier IR** entry — resolved: OMOD is the
   game record, Modifier is the normalized IR it produces.
 - "mode" meant both **Mode** (Live/PTS) and **Scenario** (Free Aim/VATS) —

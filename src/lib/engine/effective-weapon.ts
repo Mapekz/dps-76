@@ -1,5 +1,6 @@
-import type { EnemyConditions, PlayerConditions, Weapon, WeaponComponent } from '@/types';
-import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
+import type { EnemyConditions, Weapon, WeaponComponent } from '@/types';
+import type { PlayerConditionContext } from '@/types/player';
+import { toResolvedPlayer } from '@/types/player';
 import type {
   GeneratedDamageComponent,
   GeneratedDamageType,
@@ -208,9 +209,9 @@ function materializeDamageTypeComponents(
 export function buildEffectiveWeapon(
   weapon: Weapon,
   equippedOmods: GeneratedOmod[],
-  itemLevel = 50,
-  player: PlayerConditions = createDefaultPlayerConditions(),
-  enemy: EnemyConditions = createDefaultEnemyConditions(),
+  itemLevel: number,
+  player: PlayerConditionContext,
+  enemy: EnemyConditions,
   // Loadout (perk/legendary-perk/mutation/consumable) modifiers: ONLY their
   // weapon-stat buckets fold here (Guerrilla Expert's reload, Speed Demon's
   // reload, Martial Artist's speed — the perk weapon-stat fold gap). They
@@ -240,7 +241,7 @@ export function buildEffectiveWeapon(
   // this fold runs once per resolveLoadout call, before scenario branching.
   const baseCtx: ResolveContext = {
     weapon: { ...weapon, keywords },
-    player,
+    player: toResolvedPlayer(player),
     enemy,
     scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
     itemLevel,

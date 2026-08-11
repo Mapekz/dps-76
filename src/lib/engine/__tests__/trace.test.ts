@@ -1,11 +1,12 @@
 import { describe, it, expect } from 'bun:test';
 import type { Weapon } from '@/types';
-import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
+import { createDefaultEnemyConditions } from '@/types';
 import type { Modifier } from '@/types/modifiers';
 import { computeScenarios, type ScenarioInput } from '@/lib/engine/scenarios';
 import { getWeapons } from '@/data';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
 import { PerkId } from '@/data/perk-ids';
+import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
 
 const FLAT_100 = [
   { x: 1, y: 100 },
@@ -43,7 +44,7 @@ function input(modifiers: Modifier[], overrides: Partial<ScenarioInput> = {}): S
     weapon: makeWeapon(),
     itemLevel: 50,
     modifiers,
-    player: { ...createDefaultPlayerConditions(), strength: 0 },
+    player: { ...makeResolvedPlayer(), strength: 0 },
     enemy: createDefaultEnemyConditions(),
     weakpointMult: 2.0,
     ...overrides,
@@ -130,7 +131,7 @@ describe('attribution trace', () => {
 
   it('gates sneak/weakpoint sections on the active conditions', () => {
     const player = {
-      ...createDefaultPlayerConditions(),
+      ...makeResolvedPlayer(),
       strength: 0,
       isSneaking: true,
       isAimingAtWeakpoint: true,
@@ -171,7 +172,7 @@ describe('attribution trace', () => {
       { perkId: PerkId.RiflemanExpert, rank: 3 },
       { perkId: PerkId.CenterMasochist, rank: 3 },
     ]);
-    const base = input(modifiers, { weapon, player: createDefaultPlayerConditions() });
+    const base = input(modifiers, { weapon, player: makeResolvedPlayer() });
     const untraced = computeScenarios(base);
     const traced = computeScenarios({ ...base, collectTrace: true });
     expect(traced.freeAim.perHit.total).toBe(untraced.freeAim.perHit.total);

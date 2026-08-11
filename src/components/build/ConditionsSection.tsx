@@ -19,7 +19,7 @@ import {
 import { buildDeltaCount } from '@/lib/build-delta';
 import { healthPercentIndex, PLAYER_HEALTH_PERCENT_STOPS } from '@/lib/health-percent';
 import { cn } from '@/lib/utils';
-import { createDefaultPlayerConditions, type PlayerConditions } from '@/types';
+import { createDefaultPlayerInput, type PlayerInput } from '@/types';
 import { knobActiveBadgeObjects } from '@/types/knob-registry';
 import { SectionTrigger } from './SectionTrigger';
 
@@ -94,11 +94,11 @@ export function ConditionsSection() {
   const dispatch = useBuildDispatch();
   const { scenarios, affordances } = useScenarioResults();
 
-  const set = (key: keyof PlayerConditions, value: PlayerConditions[keyof PlayerConditions]) =>
+  const set = (key: keyof PlayerInput, value: PlayerInput[keyof PlayerInput]) =>
     dispatch({ type: 'condition/set', key, value });
 
   const conditions = player.conditions;
-  const defaults = createDefaultPlayerConditions();
+  const defaults = createDefaultPlayerInput();
   const isGhoul = conditions.isGhoul ?? false;
 
   const stats = React.useMemo(() => resolveStats(player, enemy, mode), [player, enemy, mode]);

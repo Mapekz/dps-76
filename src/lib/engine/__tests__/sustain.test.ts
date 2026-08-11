@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'bun:test';
 import type { Weapon } from '@/types';
-import { createDefaultPlayerConditions } from '@/types';
+import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
 import {
   computeSustain,
   DEFAULT_BATTLE_LOADERS_BASH_SEC,
@@ -183,9 +183,7 @@ describe('reloadSkipChanceBash — two-channel reload-skip model (Phase C)', () 
 });
 
 describe('DEFAULT_BATTLE_LOADERS_BASH_SEC default-sync regression', () => {
-  it('createDefaultPlayerConditions().battleLoadersBashSec stays in sync with DEFAULT_BATTLE_LOADERS_BASH_SEC (deliberate literal duplication — types/ stays a leaf)', () => {
-    expect(createDefaultPlayerConditions().battleLoadersBashSec).toBe(
-      DEFAULT_BATTLE_LOADERS_BASH_SEC,
-    );
+  it('makeResolvedPlayer().battleLoadersBashSec stays in sync with DEFAULT_BATTLE_LOADERS_BASH_SEC (deliberate literal duplication — types/ stays a leaf)', () => {
+    expect(makeResolvedPlayer().battleLoadersBashSec).toBe(DEFAULT_BATTLE_LOADERS_BASH_SEC);
   });
 });

@@ -1,9 +1,10 @@
 import { describe, it, expect } from 'bun:test';
 import type { Weapon } from '@/types';
 import type { Modifier } from '@/types/modifiers';
-import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
+import { createDefaultEnemyConditions } from '@/types';
 import { BULLET_STORM_AMMO_PER_STACK, bulletStormAvgStacks } from '@/lib/engine/bulletstorm';
 import { computeScenarios } from '@/lib/engine/scenarios';
+import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
 
 const FLAT_100 = [
   { x: 1, y: 100 },
@@ -257,7 +258,7 @@ describe('effectiveBulletStormStacks (via computeScenarios) — sentinel, clamp,
       weapon,
       itemLevel: 50,
       modifiers: [],
-      player: createDefaultPlayerConditions(),
+      player: makeResolvedPlayer(),
       enemy: createDefaultEnemyConditions(),
       weakpointMult: 2,
     });
@@ -266,7 +267,7 @@ describe('effectiveBulletStormStacks (via computeScenarios) — sentinel, clamp,
       weapon,
       itemLevel: 50,
       modifiers,
-      player: { ...createDefaultPlayerConditions(), bulletStormStacks },
+      player: { ...makeResolvedPlayer(), bulletStormStacks },
       enemy: createDefaultEnemyConditions(),
       weakpointMult: 2,
     });
@@ -283,7 +284,7 @@ describe('effectiveBulletStormStacks (via computeScenarios) — sentinel, clamp,
       weapon,
       itemLevel: 50,
       modifiers: [maxMod(10), minMod(3)],
-      player: createDefaultPlayerConditions(),
+      player: makeResolvedPlayer(),
       enemy: createDefaultEnemyConditions(),
       weakpointMult: 2,
     });
@@ -301,7 +302,7 @@ describe('effectiveBulletStormStacks (via computeScenarios) — sentinel, clamp,
       weapon,
       itemLevel: 50,
       modifiers: [maxMod(1000), retentionMod(0), stackDbm],
-      player: createDefaultPlayerConditions(),
+      player: makeResolvedPlayer(),
       enemy: createDefaultEnemyConditions(),
       weakpointMult: 2,
     });

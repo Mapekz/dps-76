@@ -12,9 +12,12 @@ import { buildEffectiveWeapon } from '@/lib/engine/effective-weapon';
 import { computeScenarios, type ScenarioInput } from '@/lib/engine/scenarios';
 import { resolveLoadout } from '@/lib/loadout';
 import {
+  makeResolvedPlayer,
+  makeDefaultEnemy,
+} from '@/lib/engine/__tests__/resolved-player-fixture';
+import {
   createDefaultEnemyConditions,
   createDefaultEnemyConfig,
-  createDefaultPlayerConditions,
   createDefaultPlayerConfig,
   type PlayerConfig,
 } from '@/types';
@@ -30,7 +33,7 @@ function base(overrides: Partial<ScenarioInput> = {}): ScenarioInput {
     weapon: fixer,
     itemLevel: 50,
     modifiers: [],
-    player: createDefaultPlayerConditions(),
+    player: makeResolvedPlayer(),
     enemy: createDefaultEnemyConditions(),
     weakpointMult: 2.0,
     critRate: 0,
@@ -43,13 +46,19 @@ const stockTotal = computeScenarios(base()).freeAim.perHit.total;
 describe('legendary weapon effects', () => {
   it('Bloodied follows its extracted ENCH curve: (5% HP → +130) … (100% HP → 0)', () => {
     const bloodied = getOmodById('live', 'mod_Legendary_Weapon1_DamageInverseHealth')!;
-    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [bloodied]);
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      fixer,
+      [bloodied],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     // At 20% HP: linear between (0.05, 130) and (1.0, 0) → +109.47% dbm.
     const at20 = computeScenarios(
       base({
         weapon,
         modifiers,
-        player: { ...createDefaultPlayerConditions(), healthPercent: 20 },
+        player: { ...makeResolvedPlayer(), healthPercent: 20 },
       }),
     );
     const expected = 130 * (1 - (0.2 - 0.05) / 0.95) * 0.01;
@@ -58,11 +67,17 @@ describe('legendary weapon effects', () => {
 
   it('Bloodied at full HP adds nothing; below the first curve point clamps to +130%', () => {
     const bloodied = getOmodById('live', 'mod_Legendary_Weapon1_DamageInverseHealth')!;
-    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [bloodied]);
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      fixer,
+      [bloodied],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     const full = computeScenarios(base({ weapon, modifiers }));
     expect(full.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
     const dying = computeScenarios(
-      base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), healthPercent: 1 } }),
+      base({ weapon, modifiers, player: { ...makeResolvedPlayer(), healthPercent: 1 } }),
     );
     expect(dying.freeAim.perHit.total / stockTotal).toBeCloseTo(2.3, 6);
   });
@@ -71,7 +86,13 @@ describe('legendary weapon effects', () => {
     // ESM: MGEF AbLegendary_Weapon_DamageFirstBlood → PERK
     // Legendary_Weapon_DamageFirstBlood: dbm +0.5, target GetHealthPercentage ≥ 0.6.
     const instigating = getOmodById('live', 'mod_Legendary_Weapon1_DamageFirstBlood')!;
-    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [instigating]);
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      fixer,
+      [instigating],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     // Unset enemy health defaults to full → active.
     const vsFull = computeScenarios(base({ weapon, modifiers }));
     expect(vsFull.freeAim.perHit.total).toBeCloseTo(stockTotal * 1.5, 6);
@@ -83,12 +104,18 @@ describe('legendary weapon effects', () => {
 
   it('legendary Adrenal follows its extracted curve: +10% per kill-streak stack, max 10', () => {
     const adrenal = getOmodById('live', 'mod_Legendary_Weapon1_Adrenal')!;
-    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [adrenal]);
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      fixer,
+      [adrenal],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     const at5 = computeScenarios(
       base({
         weapon,
         modifiers,
-        player: { ...createDefaultPlayerConditions(), killStreak: 5 },
+        player: { ...makeResolvedPlayer(), killStreak: 5 },
       }),
     );
     expect(at5.freeAim.perHit.total / stockTotal).toBeCloseTo(1.5, 6);
@@ -96,7 +123,7 @@ describe('legendary weapon effects', () => {
       base({
         weapon,
         modifiers,
-        player: { ...createDefaultPlayerConditions(), killStreak: 10 },
+        player: { ...makeResolvedPlayer(), killStreak: 10 },
       }),
     );
     expect(at10.freeAim.perHit.total / stockTotal).toBeCloseTo(2.0, 6);
@@ -107,14 +134,14 @@ describe('legendary weapon effects', () => {
     const at10 = computeScenarios(
       base({
         modifiers: adrenaline,
-        player: { ...createDefaultPlayerConditions(), killStreak: 10 },
+        player: { ...makeResolvedPlayer(), killStreak: 10 },
       }),
     );
     expect(at10.freeAim.perHit.total / stockTotal).toBeCloseTo(2.0, 6);
     const at0 = computeScenarios(
       base({
         modifiers: adrenaline,
-        player: { ...createDefaultPlayerConditions(), killStreak: 0 },
+        player: { ...makeResolvedPlayer(), killStreak: 0 },
       }),
     );
     expect(at0.freeAim.perHit.total / stockTotal).toBeCloseTo(1.0, 6);
@@ -122,12 +149,18 @@ describe('legendary weapon effects', () => {
 
   it("Junkie's follows its extracted curve: +10% per addiction", () => {
     const junkies = getOmodById('live', 'mod_Legendary_Weapon1_DamageAddiction')!;
-    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [junkies]);
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      fixer,
+      [junkies],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     const withAddictions = computeScenarios(
       base({
         weapon,
         modifiers,
-        player: { ...createDefaultPlayerConditions(), addictionCount: 3 },
+        player: { ...makeResolvedPlayer(), addictionCount: 3 },
       }),
     );
     expect(withAddictions.freeAim.perHit.total / stockTotal).toBeCloseTo(1.3, 6);
@@ -137,18 +170,30 @@ describe('legendary weapon effects', () => {
 describe('legendary weapon effects (2026-07-11 condition kinds)', () => {
   it('Last Shot adds +100% only while firing the last round in the magazine', () => {
     const lastShot = getOmodById('live', 'mod_Legendary_Weapon2_Guns_LastShot')!;
-    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [lastShot]);
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      fixer,
+      [lastShot],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     const normally = computeScenarios(base({ weapon, modifiers }));
     expect(normally.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
     const lastRound = computeScenarios(
-      base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), isLastShot: true } }),
+      base({ weapon, modifiers, player: { ...makeResolvedPlayer(), isLastShot: true } }),
     );
     expect(lastRound.freeAim.perHit.total / stockTotal).toBeCloseTo(2.0, 6);
   });
 
   it("Encircler's picks its tier from the enemy group size: +10% solo target, +30% at 3, capped +50% at ≥5", () => {
     const encirclers = getOmodById('live', 'mod_Legendary_Weapon4_Encirclers')!;
-    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [encirclers]);
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      fixer,
+      [encirclers],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     // Unset group count defaults to 1 (the target itself) → base tier active.
     const solo = computeScenarios(base({ weapon, modifiers }));
     expect(solo.freeAim.perHit.total / stockTotal).toBeCloseTo(1.1, 6);
@@ -173,27 +218,39 @@ describe('legendary weapon effects (2026-07-11 condition kinds)', () => {
   it("Fencer's (melee) scales with teammates: +12.5% solo up to +50% with 3", () => {
     const bat = getWeapons('live')['BaseballBat'];
     const fencers = getOmodById('live', 'mod_Legendary_Weapon4_Melee_Fencers')!;
-    const { weapon, modifiers } = buildEffectiveWeapon(bat, [fencers]);
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      bat,
+      [fencers],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     const batStock = computeScenarios(base({ weapon: bat })).freeAim.perHit.total;
     // Melee dbm folds over 1 + 0.05×STR (default 15) = 1.75, so +x dbm scales by (1.75+x)/1.75.
     const solo = computeScenarios(base({ weapon, modifiers }));
     expect(solo.freeAim.perHit.total / batStock).toBeCloseTo(1.875 / 1.75, 6);
     const fullTeam = computeScenarios(
-      base({ weapon, modifiers, player: { ...createDefaultPlayerConditions(), teammateCount: 3 } }),
+      base({ weapon, modifiers, player: { ...makeResolvedPlayer(), teammateCount: 3 } }),
     );
     expect(fullTeam.freeAim.perHit.total / batStock).toBeCloseTo(2.25 / 1.75, 6);
   });
 
   it("Gourmand's follows its hunger/thirst tier curve for humans and shuts off for ghouls", () => {
     const gourmands = getOmodById('live', 'mod_Legendary_Weapon1_Gourmand')!;
-    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [gourmands]);
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      fixer,
+      [gourmands],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     const empty = computeScenarios(base({ weapon, modifiers }));
     expect(empty.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
     const fed = computeScenarios(
       base({
         weapon,
         modifiers,
-        player: { ...createDefaultPlayerConditions(), hungerThirstTier: 8 },
+        player: { ...makeResolvedPlayer(), hungerThirstTier: 8 },
       }),
     );
     expect(fed.freeAim.perHit.total / stockTotal).toBeCloseTo(1.4, 6);
@@ -202,7 +259,7 @@ describe('legendary weapon effects (2026-07-11 condition kinds)', () => {
       base({
         weapon,
         modifiers,
-        player: { ...createDefaultPlayerConditions(), hungerThirstTier: 8, isGhoul: true },
+        player: { ...makeResolvedPlayer(), hungerThirstTier: 8, isGhoul: true },
       }),
     );
     expect(ghoul.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
@@ -214,7 +271,13 @@ describe('legendary weapon effects (2026-07-11 condition kinds)', () => {
       ['mod_Legendary_Weapon4_Vipers', 'isPoisoned'],
     ] as const) {
       const omod = getOmodById('live', id)!;
-      const { weapon, modifiers } = buildEffectiveWeapon(fixer, [omod]);
+      const { weapon, modifiers } = buildEffectiveWeapon(
+        fixer,
+        [omod],
+        50,
+        makeResolvedPlayer(),
+        makeDefaultEnemy(),
+      );
       const clean = computeScenarios(base({ weapon, modifiers }));
       expect(clean.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
       const afflicted = computeScenarios(
@@ -228,7 +291,13 @@ describe('legendary weapon effects (2026-07-11 condition kinds)', () => {
 describe('AP economy (Stage B, real data)', () => {
   it('V.A.T.S. Optimized cuts the effective VATS AP cost by 35% (MUL_ADD −0.35 on vatsApCost)', () => {
     const vatsOptimized = getOmodById('live', 'mod_Legendary_Weapon3_VATSCostAP')!;
-    const { weapon } = buildEffectiveWeapon(fixer, [vatsOptimized]);
+    const { weapon } = buildEffectiveWeapon(
+      fixer,
+      [vatsOptimized],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     expect(weapon.apCost).toBeCloseTo((fixer.apCost ?? 0) * 0.65, 6);
     expect(fixer.apCost).toBe(16); // WEAP Data."Action Point Cost" — extractor-verified
   });
@@ -242,7 +311,13 @@ describe('AP economy (Stage B, real data)', () => {
       getOmodById('live', 'mod_PlasmaGun_Grip_Recoil-HipAccuracy')!,
       getOmodById('live', 'mod_PlasmaGun_Receiver_CritDMG')!,
     ];
-    const { weapon } = buildEffectiveWeapon(plasma, omods);
+    const { weapon } = buildEffectiveWeapon(
+      plasma,
+      omods,
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     expect(weapon.apCost).toBeCloseTo(11.2, 10);
     expect(weapon.apCost).not.toBe(11);
   });
@@ -255,7 +330,13 @@ describe('AP economy (Stage B, real data)', () => {
     // +20 AP/s. The retired flat `apPerCrit: 110` credited 110 AP per crit
     // regardless of cadence (~76 AP/s of crit gain here vs the real ~27).
     const conductors = getOmodById('live', 'mod_Legendary_Weapon4_Conductors')!;
-    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [conductors]);
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      fixer,
+      [conductors],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     const withConductors = computeScenarios(base({ weapon, modifiers }));
     const without = computeScenarios(base());
 
@@ -277,7 +358,13 @@ describe('AP economy (Stage B, real data)', () => {
 describe('explosive payload (Stage A1, real data)', () => {
   it('Explosive (2★) spawns a 20% explosive twin: freeAim total = stock × 1.2 with no other mods', () => {
     const explosive = getOmodById('live', 'mod_Legendary_Weapon2_Guns_ExplosiveBullets')!;
-    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [explosive]);
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      fixer,
+      [explosive],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     const result = computeScenarios(base({ weapon, modifiers }));
     expect(result.freeAim.perHit.total).toBeCloseTo(stockTotal * 1.2, 6);
   });
@@ -296,7 +383,13 @@ describe('target distance & weapon condition (Stage A3/A4, real data)', () => {
     // ESM: ENCH BOUNTY_ench_LegendaryWeapon_Snipers → MGEF abPerkFortifyDmgFar
     // on STAT_DmgVsFar, magnitude via GLOB BOUNTY_SnipersBonus = 100.
     const snipers = getOmodById('live', 'mod_Legendary_Weapon1_Guns_Sniper')!;
-    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [snipers]);
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      fixer,
+      [snipers],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     const none = computeScenarios(base({ weapon, modifiers }));
     expect(none.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
     const close = computeScenarios(
@@ -343,14 +436,20 @@ describe('target distance & weapon condition (Stage A3/A4, real data)', () => {
     // Extracted curve carries exact points (x: 1.5, y: 30) and (x: 2.0, y: 60)
     // at curveScale ≈ 0.01 — asserted directly, no interpolation needed.
     const polished = getOmodById('live', 'mod_Legendary_Weapon4_Polished')!;
-    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [polished]);
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      fixer,
+      [polished],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     const stock = computeScenarios(base({ weapon, modifiers }));
     expect(stock.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
     const at150 = computeScenarios(
       base({
         weapon,
         modifiers,
-        player: { ...createDefaultPlayerConditions(), weaponConditionPct: 150 },
+        player: { ...makeResolvedPlayer(), weaponConditionPct: 150 },
       }),
     );
     expect(at150.freeAim.perHit.total / stockTotal).toBeCloseTo(1.3, 6);
@@ -358,7 +457,7 @@ describe('target distance & weapon condition (Stage A3/A4, real data)', () => {
       base({
         weapon,
         modifiers,
-        player: { ...createDefaultPlayerConditions(), weaponConditionPct: 200 },
+        player: { ...makeResolvedPlayer(), weaponConditionPct: 200 },
       }),
     );
     expect(at200.freeAim.perHit.total / stockTotal).toBeCloseTo(1.6, 6);
@@ -368,13 +467,13 @@ describe('target distance & weapon condition (Stage A3/A4, real data)', () => {
 describe("Thrill-Seeker's (Stage C3, real data)", () => {
   it('reload speed scales with kill-streak count (0/5/10 stacks), raising sustained DPS', () => {
     const thrillSeeker = getOmodById('live', 'RA_mod_Legendary_Weapon4_ThrillSeeker')!;
-    const at0 = { ...createDefaultPlayerConditions(), killStreak: 0 };
-    const at5 = { ...createDefaultPlayerConditions(), killStreak: 5 };
-    const at10 = { ...createDefaultPlayerConditions(), killStreak: 10 };
+    const at0 = { ...makeResolvedPlayer(), killStreak: 0 };
+    const at5 = { ...makeResolvedPlayer(), killStreak: 5 };
+    const at10 = { ...makeResolvedPlayer(), killStreak: 10 };
 
-    const w0 = buildEffectiveWeapon(fixer, [thrillSeeker], 50, at0).weapon;
-    const w5 = buildEffectiveWeapon(fixer, [thrillSeeker], 50, at5).weapon;
-    const w10 = buildEffectiveWeapon(fixer, [thrillSeeker], 50, at10).weapon;
+    const w0 = buildEffectiveWeapon(fixer, [thrillSeeker], 50, at0, makeDefaultEnemy()).weapon;
+    const w5 = buildEffectiveWeapon(fixer, [thrillSeeker], 50, at5, makeDefaultEnemy()).weapon;
+    const w10 = buildEffectiveWeapon(fixer, [thrillSeeker], 50, at10, makeDefaultEnemy()).weapon;
 
     const baseReload = fixer.reloadSpeed ?? 1.0;
     expect(w0.reloadSpeed).toBeCloseTo(baseReload, 6); // no tier matches 0 kill streak
@@ -466,7 +565,7 @@ describe('Lock and Load → Bullet Storm reload speed (cross-family perkFamilyRa
     conditions: [],
   };
   const bulletStormWithMax = [...bulletStorm, syntheticMax];
-  const at10 = { ...createDefaultPlayerConditions(), bulletStormStacks: 10 };
+  const at10 = { ...makeResolvedPlayer(), bulletStormStacks: 10 };
 
   it('Bullet Storm alone leaves reload speed unmodified; owning Lock and Load activates the +1%/stack curve', () => {
     const without = buildEffectiveWeapon(
@@ -474,7 +573,7 @@ describe('Lock and Load → Bullet Storm reload speed (cross-family perkFamilyRa
       [],
       50,
       at10,
-      undefined,
+      makeDefaultEnemy(),
       bulletStormWithMax,
     ).weapon;
     expect(without.reloadSpeed).toBeCloseTo(fiftyCal.reloadSpeed ?? 1.0, 6);
@@ -485,7 +584,7 @@ describe('Lock and Load → Bullet Storm reload speed (cross-family perkFamilyRa
       [],
       50,
       owning,
-      undefined,
+      makeDefaultEnemy(),
       bulletStormWithMax,
     ).weapon;
     expect(withLnL.reloadSpeed).toBeCloseTo((fiftyCal.reloadSpeed ?? 1.0) + 0.1, 6); // 10/30 stacks × 30% max = +10%
@@ -521,7 +620,7 @@ describe('Lock and Load → Bullet Storm reload speed (cross-family perkFamilyRa
       [],
       50,
       { ...withoutLnL.player, bulletStormStacks: 10 },
-      undefined,
+      makeDefaultEnemy(),
       [...getLoadoutModifiers('live', withoutLnLPerks), syntheticMax],
     ).weapon.reloadSpeed!;
     const reloadWith = buildEffectiveWeapon(
@@ -529,7 +628,7 @@ describe('Lock and Load → Bullet Storm reload speed (cross-family perkFamilyRa
       [],
       50,
       { ...withLnL.player, bulletStormStacks: 10 },
-      undefined,
+      makeDefaultEnemy(),
       [...getLoadoutModifiers('live', withLnLPerks), syntheticMax],
     ).weapon.reloadSpeed!;
     expect(reloadWith).toBeGreaterThan(reloadWithout);
@@ -544,13 +643,19 @@ describe('Onslaught (2026-07-12, real data)', () => {
     // referenced AV LGND_Furious 0x006C3172 Default 5.0 = 0.05 (dbm, stacks).
     // Corrected 2026-07-15 (was +1%/stack — user-confirmed in-game +5%/stack).
     const furious = getOmodById('live', 'mod_Legendary_Weapon1_DmgConsecutiveHits')!;
-    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [furious]);
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      fixer,
+      [furious],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
 
     const atMax = computeScenarios(
       base({
         weapon,
         modifiers,
-        player: { ...createDefaultPlayerConditions(), onslaughtStacks: 9 },
+        player: { ...makeResolvedPlayer(), onslaughtStacks: 9 },
       }),
     );
     expect(atMax.onslaughtMaxStacks).toBe(9);
@@ -560,7 +665,7 @@ describe('Onslaught (2026-07-12, real data)', () => {
       base({
         weapon,
         modifiers,
-        player: { ...createDefaultPlayerConditions(), onslaughtStacks: 4 },
+        player: { ...makeResolvedPlayer(), onslaughtStacks: 4 },
       }),
     );
     expect(explicit4.freeAim.perHit.total / stockTotal).toBeCloseTo(1.2, 6);
@@ -569,7 +674,7 @@ describe('Onslaught (2026-07-12, real data)', () => {
       base({
         weapon,
         modifiers,
-        player: { ...createDefaultPlayerConditions(), onslaughtStacks: 999 },
+        player: { ...makeResolvedPlayer(), onslaughtStacks: 999 },
       }),
     );
     expect(overMax.freeAim.perHit.total / stockTotal).toBeCloseTo(1.45, 6); // clamps to the computed max
@@ -581,7 +686,7 @@ describe('Onslaught (2026-07-12, real data)', () => {
     expect(none.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
 
     const withStoredStacks = computeScenarios(
-      base({ player: { ...createDefaultPlayerConditions(), onslaughtStacks: 10 } }),
+      base({ player: { ...makeResolvedPlayer(), onslaughtStacks: 10 } }),
     );
     expect(withStoredStacks.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
   });
@@ -594,13 +699,19 @@ describe('Onslaught (2026-07-12, real data)', () => {
     // 0x007ACB37 Default 10.0 = 0.10/stack (corrected 2026-07-15, was 0.01).
     const bat = getWeapons('live')['BaseballBat'];
     const pounders = getOmodById('live', 'mod_Legendary_Weapon4_Melee_Pounders')!;
-    const { weapon, modifiers } = buildEffectiveWeapon(bat, [pounders]);
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      bat,
+      [pounders],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     const batStock = computeScenarios(base({ weapon: bat })).freeAim.perHit.total;
     const result = computeScenarios(
       base({
         weapon,
         modifiers,
-        player: { ...createDefaultPlayerConditions(), onslaughtStacks: 10 },
+        player: { ...makeResolvedPlayer(), onslaughtStacks: 10 },
       }),
     );
     expect(result.onslaughtMaxStacks).toBe(10);
@@ -623,13 +734,19 @@ describe('Onslaught (2026-07-12, real data)', () => {
     expect(splinterRecord).toBeDefined();
     const splinter = adaptWeapon(splinterRecord!);
     const splinterEffect = getOmodById('live', 'P62_Mod_Custom_Splinter_SpecialEffect')!;
-    const { weapon, modifiers } = buildEffectiveWeapon(splinter, [splinterEffect]);
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      splinter,
+      [splinterEffect],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     const splinterStock = computeScenarios(base({ weapon: splinter })).freeAim.perHit.total;
     const result = computeScenarios(
       base({
         weapon,
         modifiers,
-        player: { ...createDefaultPlayerConditions(), onslaughtStacks: 10 },
+        player: { ...makeResolvedPlayer(), onslaughtStacks: 10 },
       }),
     );
     expect(result.onslaughtMaxStacks).toBe(10);
@@ -650,7 +767,7 @@ describe('Onslaught (2026-07-12, real data)', () => {
       base({
         modifiers: guerrillaMaster,
         enemy: { ...createDefaultEnemyConditions(), targetDistance: 400 },
-        player: { ...createDefaultPlayerConditions(), onslaughtStacks: 5 },
+        player: { ...makeResolvedPlayer(), onslaughtStacks: 5 },
       }),
     );
     // curve (0,0)(1,5)(100,500) at x=5 (pinned at its own max) → y=25, ×0.01 = +25%.
@@ -665,13 +782,13 @@ describe('Onslaught (2026-07-12, real data)', () => {
     expect(noWeakpoint.onslaughtMaxStacks).toBe(3);
     expect(noWeakpoint.freeAim.perHit.total).toBeCloseTo(stockTotal, 6); // torso hit: weakpointBonus inactive
     const stockWeakpoint = computeScenarios(
-      base({ player: { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true } }),
+      base({ player: { ...makeResolvedPlayer(), isAimingAtWeakpoint: true } }),
     ).freeAim.perHit.total;
     const withWeakpoint = computeScenarios(
       base({
         modifiers: gunslingerExpert,
         player: {
-          ...createDefaultPlayerConditions(),
+          ...makeResolvedPlayer(),
           isAimingAtWeakpoint: true,
           onslaughtStacks: 3,
         },
@@ -693,9 +810,15 @@ describe('Onslaught (2026-07-12, real data)', () => {
     const whackerWeapon = getWeapons('live')['SuperSledge'];
     expect(whackerWeapon).toBeDefined();
     const whackerEffect = getOmodById('live', 'E09B_mod_Custom_WhackerSmacker')!;
-    const paPlayer = { ...createDefaultPlayerConditions(), isPowerAttacking: true };
+    const paPlayer = { ...makeResolvedPlayer(), isPowerAttacking: true };
 
-    const aloneEff = buildEffectiveWeapon(whackerWeapon, [whackerEffect]);
+    const aloneEff = buildEffectiveWeapon(
+      whackerWeapon,
+      [whackerEffect],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     const alone = computeScenarios(
       base({ weapon: aloneEff.weapon, modifiers: aloneEff.modifiers, player: paPlayer }),
     );
@@ -707,7 +830,13 @@ describe('Onslaught (2026-07-12, real data)', () => {
     // Pair with Furious (a separate legendary slot) to grant a real max (9) —
     // demonstrates the shared-cap mechanic combining two independent sources.
     const furious = getOmodById('live', 'mod_Legendary_Weapon1_DmgConsecutiveHits')!;
-    const paired = buildEffectiveWeapon(whackerWeapon, [whackerEffect, furious]);
+    const paired = buildEffectiveWeapon(
+      whackerWeapon,
+      [whackerEffect, furious],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     const withMax = computeScenarios(
       base({
         weapon: paired.weapon,
@@ -728,7 +857,13 @@ describe('Onslaught (2026-07-12, real data)', () => {
 
   it('max stacks aggregate across independently-equipped sources (Furious + Guerrilla Expert → 9 + 3 = 12)', () => {
     const furious = getOmodById('live', 'mod_Legendary_Weapon1_DmgConsecutiveHits')!;
-    const { weapon, modifiers: omodModifiers } = buildEffectiveWeapon(fixer, [furious]);
+    const { weapon, modifiers: omodModifiers } = buildEffectiveWeapon(
+      fixer,
+      [furious],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     const guerrillaExpert = getLoadoutModifiers('live', [
       { perkId: PerkId.GuerrillaExpert, rank: 1 },
     ]);
@@ -748,7 +883,7 @@ describe('mutations and consumables', () => {
 
   it('Adrenal Reaction (extracted ESM curves) scales with kill streak: +5%/stack, ×1.25 with Strange in Numbers', () => {
     const mods = getBuffModifiers('live', ['Mutation_AdrenalReaction'], []);
-    const player = { ...createDefaultPlayerConditions(), killStreak: 10 };
+    const player = { ...makeResolvedPlayer(), killStreak: 10 };
     const solo = computeScenarios(base({ modifiers: mods, player }));
     expect(solo.freeAim.perHit.total).toBeCloseTo(stockTotal * 1.5, 6);
 
@@ -763,7 +898,7 @@ describe('mutations and consumables', () => {
     const at5 = computeScenarios(
       base({
         modifiers: nerdRage,
-        player: { ...createDefaultPlayerConditions(), healthPercent: 5 },
+        player: { ...makeResolvedPlayer(), healthPercent: 5 },
       }),
     );
     expect(at5.freeAim.perHit.total / stockTotal).toBeCloseTo(1.8, 6);
@@ -782,7 +917,7 @@ describe('mutations and consumables', () => {
       base({
         modifiers: mods,
         critRate: 1,
-        player: { ...createDefaultPlayerConditions(), strangeInNumbers: true },
+        player: { ...makeResolvedPlayer(), strangeInNumbers: true },
       }),
     );
     expect(team.vats.perHit.total / none.vats.perHit.total).toBeCloseTo(2.625 / 2.0, 6);
@@ -799,7 +934,7 @@ describe('AP economy completion (2026-07-15, real extracted data)', () => {
     const solo = computeScenarios(base({ modifiers: lw }));
     expect(solo.vats.ap!.regenPerSec).toBeCloseTo(16.38, 6);
     const teamed = computeScenarios(
-      base({ modifiers: lw, player: { ...createDefaultPlayerConditions(), teammateCount: 2 } }),
+      base({ modifiers: lw, player: { ...makeResolvedPlayer(), teammateCount: 2 } }),
     );
     expect(teamed.vats.ap!.regenPerSec).toBeCloseTo(12.6, 6);
   });
@@ -812,7 +947,13 @@ describe('AP economy completion (2026-07-15, real extracted data)', () => {
 
     // V.A.T.S. Optimized (−35%) rewrites the effective cost → 10.4 → +20.8%.
     const vatsOptimized = getOmodById('live', 'mod_Legendary_Weapon3_VATSCostAP')!;
-    const { weapon, modifiers } = buildEffectiveWeapon(fixer, [vatsOptimized]);
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      fixer,
+      [vatsOptimized],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
     const optimized = computeScenarios(base({ weapon, modifiers: [...modifiers, ...nc] }));
     const stockOptimized = computeScenarios(base({ weapon, modifiers }));
     expect(optimized.freeAim.perHit.total / stockOptimized.freeAim.perHit.total).toBeCloseTo(
@@ -846,12 +987,12 @@ describe('AP economy completion (2026-07-15, real extracted data)', () => {
   });
 
   it('hydration baseline (+35% AP regen) applies through resolveLoadout, gated by the toggle and ghoul', () => {
-    const resolve = (conditions: Partial<ReturnType<typeof createDefaultPlayerConditions>>) =>
+    const resolve = (conditions: Partial<ReturnType<typeof makeResolvedPlayer>>) =>
       resolveLoadout(
         {
           ...createDefaultPlayerConfig(),
           weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [] },
-          conditions: { ...createDefaultPlayerConditions(), ...conditions },
+          conditions: { ...makeResolvedPlayer(), ...conditions },
         },
         createDefaultEnemyConfig(),
         'live',

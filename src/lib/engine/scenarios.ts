@@ -1,4 +1,5 @@
-import type { EnemyConditions, GameMode, PlayerConditions, Weapon } from '@/types';
+import type { EnemyConditions, GameMode, Weapon } from '@/types';
+import type { ResolvedPlayer } from '@/types/player';
 import type { Modifier } from '@/types/modifiers';
 import { interpolateCurve } from '@/lib/curve-tables';
 import chargedMeleeCurveFile from '@/data/live/curvetables/legendarymods/weapon_chargedmeleeattack.json';
@@ -200,7 +201,7 @@ export interface ScenarioInput {
   weapon: Weapon;
   itemLevel: number;
   modifiers: Modifier[];
-  player: PlayerConditions;
+  player: ResolvedPlayer;
   enemy: EnemyConditions;
   /**
    * Enemy-type identifiers of the selected target (race edid + ActorType*

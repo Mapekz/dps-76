@@ -6,7 +6,7 @@ import {
   type EnemyConfig,
   type GameMode,
   type ParsedPerk,
-  type PlayerConditions,
+  type PlayerInput,
   type PlayerConfig,
 } from '@/types';
 import { isLegendaryPerkKey, parsedPerksToLoadout, type ParsedSpecial } from '@/lib/nukes-dragons';
@@ -99,8 +99,8 @@ export type BuildAction =
   | { type: 'addiction/toggle'; id: string }
   | {
       type: 'condition/set';
-      key: keyof PlayerConditions;
-      value: PlayerConditions[keyof PlayerConditions];
+      key: keyof PlayerInput;
+      value: PlayerInput[keyof PlayerInput];
     }
   | { type: 'condition/setTakingOneForTheTeamRank'; rank: 0 | 1 | 2 | 3 | 4 }
   | { type: 'target/selectRace'; raceId: string | null }

@@ -1,10 +1,10 @@
 import {
   createDefaultEnemyConditions,
-  createDefaultPlayerConditions,
+  createDefaultPlayerInput,
   type EnemyConditions,
   type GameMode,
   type PerkLoadout,
-  type PlayerConditions,
+  type PlayerInput,
 } from '@/types';
 import { getPerks, getWeapons } from '@/data';
 import { getAddictions, getConsumables, getMutations } from '@/data/buffs';
@@ -22,6 +22,7 @@ import { consumablesById, sanitizeConsumables } from '@/lib/consumable-rules';
 import { createDefaultBuildState, type BuildState } from '@/state/build-reducer';
 import { normalizeBuildState } from '@/lib/build-rules';
 import type { PerkId } from '@/data/perk-ids';
+import type { ResolvedPlayer } from '@/types/player';
 
 /**
  * Legacy identity-mod container ids from before the `Don't Use All` variant
@@ -78,7 +79,7 @@ interface SerializedBuild {
   /** Armor checklist selections: [effectId, count][], count>0 only */
   ae?: Array<[string, number]>;
   /** non-default player conditions */
-  pc?: Partial<PlayerConditions>;
+  pc?: Partial<PlayerInput>;
   /** non-default enemy conditions */
   ec?: Partial<EnemyConditions>;
   n?: string;
@@ -206,8 +207,8 @@ export async function encodeBuild(state: BuildState): Promise<string> {
     ...(view.emphasized && { ve: view.emphasized }),
     ...(view.breakdownOpen && { vb: true }),
   };
-  const pc = buildDelta(player.conditions, createDefaultPlayerConditions());
-  for (const key of DERIVED_PLAYER_CONDITION_KEYS) delete pc[key];
+  const pc = buildDelta(player.conditions, createDefaultPlayerInput());
+  for (const key of DERIVED_PLAYER_CONDITION_KEYS) delete pc[key as keyof PlayerInput];
   if (Object.keys(pc).length > 0) wire.pc = pc;
   const ec = buildDelta(enemy.conditions, createDefaultEnemyConditions());
   if (Object.keys(ec).length > 0) wire.ec = ec;
@@ -380,7 +381,7 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
       );
       continue;
     }
-    if (DERIVED_PLAYER_CONDITION_KEYS.has(key as keyof PlayerConditions)) continue; // legacy payloads
+    if (DERIVED_PLAYER_CONDITION_KEYS.has(key as keyof ResolvedPlayer)) continue; // legacy payloads
     if (key in state.player.conditions) {
       (state.player.conditions as unknown as Record<string, unknown>)[key] = value;
     }

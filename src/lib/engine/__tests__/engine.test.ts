@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'bun:test';
 import type { Weapon } from '@/types';
 import type { Bucket, Condition, ModOp, Modifier } from '@/types/modifiers';
-import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
+import { createDefaultEnemyConditions } from '@/types';
 import { chargeDamageMultiplier } from '@/lib/charge';
 import { getFireRate } from '@/lib/fire-rate';
 import {
@@ -19,6 +19,7 @@ import {
 } from '@/lib/engine/paper-damage';
 import { describeAffordances } from '@/lib/engine/affordances';
 import { computeScenarios } from '@/lib/engine/scenarios';
+import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
 
 // Engine-core tests: synthetic weapon + hand-fed modifiers, hand-computed
 // expectations straight from the spec formula. No extracted data involved.
@@ -65,7 +66,7 @@ function mod(partial: {
 function makeCtx(weapon: Weapon, overrides: Partial<ResolveContext> = {}): ResolveContext {
   return {
     weapon,
-    player: createDefaultPlayerConditions(),
+    player: makeResolvedPlayer(),
     enemy: createDefaultEnemyConditions(),
     scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
     ...overrides,
@@ -189,7 +190,7 @@ describe('condition evaluation', () => {
       value: 0.1,
       conditions: [{ kind: 'stacks', counter: 'tenderizer', max: 1000 }],
     });
-    const player = { ...createDefaultPlayerConditions(), tenderizerStacks: 100 };
+    const player = { ...makeResolvedPlayer(), tenderizerStacks: 100 };
     expect(foldBucket([tenderizer], 'dbm', 1.0, makeCtx(weapon, { player }))).toBeCloseTo(11.0, 10);
 
     const overMax = { ...player, tenderizerStacks: 5000 };
@@ -211,7 +212,7 @@ describe('condition evaluation', () => {
     });
     expect(foldBucket([adsMod], 'dbm', 1.0, makeCtx(weapon))).toBe(1.0);
     const ads = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), isAimingDownSights: true },
+      player: { ...makeResolvedPlayer(), isAimingDownSights: true },
     });
     expect(foldBucket([adsMod], 'dbm', 1.0, ads)).toBeCloseTo(1.3, 10);
   });
@@ -242,7 +243,7 @@ describe('condition evaluation', () => {
     expect(foldBucket([pipeMod], 'dbm', 1.0, makeCtx(weapon))).toBe(1.0);
     const pipeDone = makeCtx(weapon, {
       player: {
-        ...createDefaultPlayerConditions(),
+        ...makeResolvedPlayer(),
         completedChallengeIds: ['Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe'],
       },
     });
@@ -250,7 +251,7 @@ describe('condition evaluation', () => {
 
     expect(foldBucket([kingfisherMod], 'dbm', 1.0, makeCtx(weapon))).toBe(1.0);
     const oneLegend = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), localLegendFishingChallengesCompleted: 1 },
+      player: { ...makeResolvedPlayer(), localLegendFishingChallengesCompleted: 1 },
     });
     expect(foldBucket([kingfisherMod], 'dbm', 1.0, oneLegend)).toBeCloseTo(1.1, 10);
   });
@@ -279,7 +280,7 @@ describe('condition evaluation', () => {
     expect(foldBucket([bloodied, paOnly, broken], 'dbm', 1.0, healthy)).toBe(1.0);
 
     const lowHpInPa = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), healthPercent: 15, isInPowerArmor: true },
+      player: { ...makeResolvedPlayer(), healthPercent: 15, isInPowerArmor: true },
     });
     expect(foldBucket([bloodied, paOnly, broken], 'dbm', 1.0, lowHpInPa)).toBeCloseTo(1.75, 10);
   });
@@ -293,17 +294,17 @@ describe('condition evaluation', () => {
     });
 
     const atThreshold = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), healthPercent: 25 },
+      player: { ...makeResolvedPlayer(), healthPercent: 25 },
     });
     expect(foldBucket([foundationsVengeance], 'dbm', 1.0, atThreshold)).toBeCloseTo(1.5, 10);
 
     const belowThreshold = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), healthPercent: 24 },
+      player: { ...makeResolvedPlayer(), healthPercent: 24 },
     });
     expect(foldBucket([foundationsVengeance], 'dbm', 1.0, belowThreshold)).toBeCloseTo(1.5, 10);
 
     const aboveThreshold = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), healthPercent: 26 },
+      player: { ...makeResolvedPlayer(), healthPercent: 26 },
     });
     expect(foldBucket([foundationsVengeance], 'dbm', 1.0, aboveThreshold)).toBe(1.0);
   });
@@ -317,12 +318,12 @@ describe('condition evaluation', () => {
     });
 
     const atThreshold = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), healthPercent: 25 },
+      player: { ...makeResolvedPlayer(), healthPercent: 25 },
     });
     expect(foldBucket([strict], 'dbm', 1.0, atThreshold)).toBe(1.0);
 
     const belowThreshold = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), healthPercent: 24 },
+      player: { ...makeResolvedPlayer(), healthPercent: 24 },
     });
     expect(foldBucket([strict], 'dbm', 1.0, belowThreshold)).toBeCloseTo(1.5, 10);
   });
@@ -336,22 +337,22 @@ describe('condition evaluation', () => {
     });
 
     const atThreshold = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), glow: 180 },
+      player: { ...makeResolvedPlayer(), glow: 180 },
     });
     expect(foldBucket([glowingCrit], 'dbm', 1.0, atThreshold)).toBeCloseTo(1.5, 10);
 
     const aboveThreshold = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), glow: 300 },
+      player: { ...makeResolvedPlayer(), glow: 300 },
     });
     expect(foldBucket([glowingCrit], 'dbm', 1.0, aboveThreshold)).toBeCloseTo(1.5, 10);
 
     const belowThreshold = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), glow: 179 },
+      player: { ...makeResolvedPlayer(), glow: 179 },
     });
     expect(foldBucket([glowingCrit], 'dbm', 1.0, belowThreshold)).toBe(1.0);
 
     const unset = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), glow: undefined },
+      player: { ...makeResolvedPlayer(), glow: undefined },
     });
     expect(foldBucket([glowingCrit], 'dbm', 1.0, unset)).toBe(1.0); // glow undefined → treated as 0
   });
@@ -370,29 +371,29 @@ describe('condition evaluation', () => {
     );
 
     const naked = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), playerRadResist: 0 },
+      player: { ...makeResolvedPlayer(), playerRadResist: 0 },
     });
     expect(foldBucket(daisyCutterSteps, 'dbm', 1.0, naked)).toBe(1.0); // no steps unlocked
 
     const oneStep = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), playerRadResist: 1000 },
+      player: { ...makeResolvedPlayer(), playerRadResist: 1000 },
     });
     expect(foldBucket(daisyCutterSteps, 'dbm', 1.0, oneStep)).toBeCloseTo(1.2, 10);
 
     const capped = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), playerRadResist: 8000 },
+      player: { ...makeResolvedPlayer(), playerRadResist: 8000 },
     });
     expect(foldBucket(daisyCutterSteps, 'dbm', 1.0, capped)).toBeCloseTo(2.6, 10); // +160%
 
     // Above the top gate, the ladder is structurally capped — no 9th step
     // exists to unlock, so the sum stays at +160% rather than clamping.
     const beyondCap = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), playerRadResist: 20000 },
+      player: { ...makeResolvedPlayer(), playerRadResist: 20000 },
     });
     expect(foldBucket(daisyCutterSteps, 'dbm', 1.0, beyondCap)).toBeCloseTo(2.6, 10);
 
     const unset = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), playerRadResist: undefined },
+      player: { ...makeResolvedPlayer(), playerRadResist: undefined },
     });
     expect(foldBucket(daisyCutterSteps, 'dbm', 1.0, unset)).toBe(1.0); // undefined → treated as 0
   });
@@ -413,18 +414,18 @@ describe('condition evaluation', () => {
 
     // Owning rank 3 satisfies the ≥2 gate (rank N implies every rank ≤ N).
     const rank3 = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), equippedPerkRanks: { LockAndLoad: 3 } },
+      player: { ...makeResolvedPlayer(), equippedPerkRanks: { LockAndLoad: 3 } },
     });
     expect(foldBucket([needsLnL, lacksLnL], 'dbm', 1.0, rank3)).toBeCloseTo(1.3, 10);
 
     const rank1 = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), equippedPerkRanks: { LockAndLoad: 1 } },
+      player: { ...makeResolvedPlayer(), equippedPerkRanks: { LockAndLoad: 1 } },
     });
     expect(foldBucket([needsLnL, lacksLnL], 'dbm', 1.0, rank1)).toBeCloseTo(1.1, 10);
 
     // Unset map → owns nothing → only the present:false gate passes.
     const unequipped = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), equippedPerkRanks: undefined },
+      player: { ...makeResolvedPlayer(), equippedPerkRanks: undefined },
     });
     expect(foldBucket([needsLnL, lacksLnL], 'dbm', 1.0, unequipped)).toBeCloseTo(1.1, 10);
   });
@@ -451,7 +452,7 @@ describe('condition evaluation', () => {
     // Below the exact tier → inactive.
     const two = makeCtx(weapon, {
       player: {
-        ...createDefaultPlayerConditions(),
+        ...makeResolvedPlayer(),
         wornPieceCounts: { HasLegendary_Armor_Test: 2 },
       },
     });
@@ -460,7 +461,7 @@ describe('condition evaluation', () => {
     // Exact match → the exact-tier modifier fires, the orMore one doesn't.
     const three = makeCtx(weapon, {
       player: {
-        ...createDefaultPlayerConditions(),
+        ...makeResolvedPlayer(),
         wornPieceCounts: { HasLegendary_Armor_Test: 3 },
       },
     });
@@ -470,7 +471,7 @@ describe('condition evaluation', () => {
     // (exact tiers don't cascade — Battle-Loader's/Limit-Breaking's real shape).
     const four = makeCtx(weapon, {
       player: {
-        ...createDefaultPlayerConditions(),
+        ...makeResolvedPlayer(),
         wornPieceCounts: { HasLegendary_Armor_Test: 4 },
       },
     });
@@ -479,7 +480,7 @@ describe('condition evaluation', () => {
     // At the orMore threshold → the top tier fires.
     const five = makeCtx(weapon, {
       player: {
-        ...createDefaultPlayerConditions(),
+        ...makeResolvedPlayer(),
         wornPieceCounts: { HasLegendary_Armor_Test: 5 },
       },
     });
@@ -488,7 +489,7 @@ describe('condition evaluation', () => {
     // Above the orMore threshold → still fires (≥, not ==).
     const six = makeCtx(weapon, {
       player: {
-        ...createDefaultPlayerConditions(),
+        ...makeResolvedPlayer(),
         wornPieceCounts: { HasLegendary_Armor_Test: 6 },
       },
     });
@@ -496,7 +497,7 @@ describe('condition evaluation', () => {
 
     // A different keyword's count doesn't leak into this one.
     const otherKeyword = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), wornPieceCounts: { SomeOtherKeyword: 5 } },
+      player: { ...makeResolvedPlayer(), wornPieceCounts: { SomeOtherKeyword: 5 } },
     });
     expect(foldBucket([exactTier3, orMoreTier5], 'dbm', 1.0, otherKeyword)).toBe(1.0);
   });
@@ -531,14 +532,14 @@ describe('Grounded (2026-07-21): classFreakRank tier selection on a wholeDamage 
     [3, 0.88],
   ])('classFreakRank %i selects exactly its own tier (base 1.0 → %f)', (rank, expected) => {
     const ctx = makeCtx(energyWeapon, {
-      player: { ...createDefaultPlayerConditions(), classFreakRank: rank },
+      player: { ...makeResolvedPlayer(), classFreakRank: rank },
     });
     expect(foldWholeDamage(groundedTiers, ctx)).toBeCloseTo(expected, 10);
   });
 
   it('the weaponKeywordAny energy gate keeps Grounded off a ballistic weapon', () => {
     const ctx = makeCtx(ballisticWeapon, {
-      player: { ...createDefaultPlayerConditions(), classFreakRank: 0 },
+      player: { ...makeResolvedPlayer(), classFreakRank: 0 },
     });
     expect(foldWholeDamage(groundedTiers, ctx)).toBe(1.0);
   });
@@ -564,7 +565,7 @@ describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp
       conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
     });
     const atDefault = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), onslaughtStacks: -1 },
+      player: { ...makeResolvedPlayer(), onslaughtStacks: -1 },
       onslaughtMaxStacks: 9,
     });
     expect(foldBucket([perStack], 'dbm', 1.0, atDefault)).toBeCloseTo(1.09, 10);
@@ -578,7 +579,7 @@ describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp
       conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
     });
     const explicit4 = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), onslaughtStacks: 4 },
+      player: { ...makeResolvedPlayer(), onslaughtStacks: 4 },
       onslaughtMaxStacks: 9,
     });
     expect(foldBucket([perStack], 'dbm', 1.0, explicit4)).toBeCloseTo(1.04, 10);
@@ -592,7 +593,7 @@ describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp
       conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
     });
     const overMax = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), onslaughtStacks: 999 },
+      player: { ...makeResolvedPlayer(), onslaughtStacks: 999 },
       onslaughtMaxStacks: 9,
     });
     expect(foldBucket([perStack], 'dbm', 1.0, overMax)).toBeCloseTo(1.09, 10);
@@ -606,7 +607,7 @@ describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp
       conditions: [{ kind: 'stacks', counter: 'onslaught', max: 99 }],
     });
     const noSources = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), onslaughtStacks: 10 },
+      player: { ...makeResolvedPlayer(), onslaughtStacks: 10 },
       // onslaughtMaxStacks omitted → defaults to 0 (ctx.onslaughtMaxStacks ?? 0).
     });
     expect(foldBucket([perStack], 'dbm', 1.0, noSources)).toBe(1.0);
@@ -637,7 +638,7 @@ describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp
     // No max-stack sources of its own (Whacker Smacker has NO EP190) — but
     // still reads the SHARED counter once something else grants a max.
     const atFive = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), onslaughtStacks: 5 },
+      player: { ...makeResolvedPlayer(), onslaughtStacks: 5 },
       onslaughtMaxStacks: 10,
     });
     expect(foldBucket([curveMod], 'powerAttackBonus', 0, atFive)).toBeCloseTo(0.25, 10); // interpolate(5)=25, ×0.01
@@ -671,11 +672,11 @@ describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp
     // Max realistic build: Picklock/Expert/Master (+3) + Master Infiltrator (+3)
     // + Safecracker's ×5 pieces (+5) = 11 → +55%.
     const maxed = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), lockpickSkill: 11 },
+      player: { ...makeResolvedPlayer(), lockpickSkill: 11 },
     });
     expect(foldBucket([curveMod], 'dbm', 1.0, maxed)).toBeCloseTo(1.55, 10);
 
-    const bare = makeCtx(weapon, { player: createDefaultPlayerConditions() });
+    const bare = makeCtx(weapon, { player: makeResolvedPlayer() });
     expect(foldBucket([curveMod], 'dbm', 1.0, bare)).toBe(1.0);
   });
 
@@ -695,11 +696,11 @@ describe('Onslaught (2026-07-12): max-stack fold + shared-counter sentinel/clamp
       conditions: [],
     };
     const at65 = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), stimpakHealMult: 65 },
+      player: { ...makeResolvedPlayer(), stimpakHealMult: 65 },
     });
     expect(foldBucket([scaledMod], 'dbm', 1.0, at65)).toBeCloseTo(1.65, 10);
 
-    const bare = makeCtx(weapon, { player: createDefaultPlayerConditions() });
+    const bare = makeCtx(weapon, { player: makeResolvedPlayer() });
     expect(foldBucket([scaledMod], 'dbm', 1.0, bare)).toBe(1.0);
   });
 });
@@ -815,7 +816,7 @@ describe('computePaperDamage', () => {
   });
 
   it('applies STR melee scaling: STR/20 for melee, STR/10 for unarmed', () => {
-    const player = { ...createDefaultPlayerConditions(), strength: 20 };
+    const player = { ...makeResolvedPlayer(), strength: 20 };
     const melee = makeWeapon({ weaponClass: 'melee' });
     const meleeResult = computePaperDamage({
       mode: 'live',
@@ -901,7 +902,7 @@ describe('power-attack race multiplier (Stage C1, RACE record Damage Mult)', () 
   // race swap IS the multiplier, applied as a whole factor OUTSIDE the dbm
   // parenthesis (distinct from the additive powerAttackBonus bucket). Zero
   // strength isolates the race mult from the STR melee term.
-  const zeroStr = { ...createDefaultPlayerConditions(), strength: 0 };
+  const zeroStr = { ...makeResolvedPlayer(), strength: 0 };
   const paFlags = { isVats: false, isSneaking: false, isPowerAttack: true, isCrit: false };
 
   it('multiplies a melee power attack ×1.5 normally', () => {
@@ -985,7 +986,7 @@ describe('Charged cadence (Stage C2, cycle folded into sustained DPS)', () => {
     animDelaySec: 1.0,
     keywords: ['WeaponHasSecondaryCharging'],
   });
-  const zeroStr = { ...createDefaultPlayerConditions(), strength: 0 };
+  const zeroStr = { ...makeResolvedPlayer(), strength: 0 };
   const baseInput = {
     mode: 'live' as const,
     weapon: chargedWeapon,
@@ -1125,7 +1126,7 @@ describe('charging weapons (Gauss family, bows, tesla/gamma/laser barrels)', () 
       weapon: gauss,
       itemLevel: 50,
       modifiers: [],
-      player: createDefaultPlayerConditions(),
+      player: makeResolvedPlayer(),
       enemy: createDefaultEnemyConditions(),
       weakpointMult: 2.0,
       critRate: 0,
@@ -1209,7 +1210,7 @@ describe('charging weapons (Gauss family, bows, tesla/gamma/laser barrels)', () 
         weapon,
         itemLevel: 50,
         modifiers: dotMods,
-        player: createDefaultPlayerConditions(),
+        player: makeResolvedPlayer(),
         enemy: createDefaultEnemyConditions(),
         weakpointMult: 2.0,
         critRate: 0,
@@ -1955,11 +1956,11 @@ describe('computeDotDps (Stage A2, DoT line)', () => {
     it('toggling sneak leaves dotDps unchanged but raises the free-aim per-hit total', () => {
       const notSneaking = computeScenarios({
         ...baseInput,
-        player: createDefaultPlayerConditions(),
+        player: makeResolvedPlayer(),
       });
       const sneaking = computeScenarios({
         ...baseInput,
-        player: { ...createDefaultPlayerConditions(), isSneaking: true },
+        player: { ...makeResolvedPlayer(), isSneaking: true },
       });
       expect(sneaking.freeAim.dotDps).toBeCloseTo(notSneaking.freeAim.dotDps, 10);
       expect(sneaking.vats.dotDps).toBeCloseTo(notSneaking.vats.dotDps, 10);
@@ -1967,10 +1968,10 @@ describe('computeDotDps (Stage A2, DoT line)', () => {
     });
 
     it('toggling weakpoint targeting (body-part mult) leaves dotDps unchanged but raises the per-hit total', () => {
-      const torso = computeScenarios({ ...baseInput, player: createDefaultPlayerConditions() });
+      const torso = computeScenarios({ ...baseInput, player: makeResolvedPlayer() });
       const weakpoint = computeScenarios({
         ...baseInput,
-        player: { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true },
+        player: { ...makeResolvedPlayer(), isAimingAtWeakpoint: true },
       });
       expect(weakpoint.freeAim.dotDps).toBeCloseTo(torso.freeAim.dotDps, 10);
       expect(weakpoint.vats.dotDps).toBeCloseTo(torso.vats.dotDps, 10);
@@ -1980,12 +1981,12 @@ describe('computeDotDps (Stage A2, DoT line)', () => {
     it('raising the VATS crit rate leaves vats.dotDps unchanged but raises the VATS per-hit total', () => {
       const noCrit = computeScenarios({
         ...baseInput,
-        player: createDefaultPlayerConditions(),
+        player: makeResolvedPlayer(),
         critRate: 0,
       });
       const critting = computeScenarios({
         ...baseInput,
-        player: createDefaultPlayerConditions(),
+        player: makeResolvedPlayer(),
         critRate: 0.5,
       });
       expect(critting.vats.dotDps).toBeCloseTo(noCrit.vats.dotDps, 10);
@@ -2010,7 +2011,7 @@ describe('computeDotDps (Stage A2, DoT line)', () => {
       weapon,
       itemLevel: 50,
       modifiers: mods,
-      player: createDefaultPlayerConditions(),
+      player: makeResolvedPlayer(),
       enemy: createDefaultEnemyConditions(),
       weakpointMult: 2.0,
       critRate: 0,
@@ -2043,7 +2044,7 @@ describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
     weapon: apWeapon,
     itemLevel: 50,
     modifiers: [],
-    player: { ...createDefaultPlayerConditions(), agility: 15 },
+    player: { ...makeResolvedPlayer(), agility: 15 },
     enemy: createDefaultEnemyConditions(),
     weakpointMult: 2.0,
     critRate: 0,
@@ -2173,7 +2174,7 @@ describe('computeScenarios hit rate (Stage B/C, manual free-aim + VATS)', () => 
     weapon,
     itemLevel: 50,
     modifiers: [],
-    player: createDefaultPlayerConditions(),
+    player: makeResolvedPlayer(),
     enemy: createDefaultEnemyConditions(),
     weakpointMult: 2.0,
     critRate: 0,
@@ -2214,7 +2215,7 @@ describe('computeScenarios hit rate (Stage B/C, manual free-aim + VATS)', () => 
   });
 
   it('defaults to unscaled (100%) when hitRatePct/vatsHitRatePct are entirely omitted from player state', () => {
-    const playerWithoutHitRate = createDefaultPlayerConditions();
+    const playerWithoutHitRate = makeResolvedPlayer();
     delete playerWithoutHitRate.hitRatePct;
     delete playerWithoutHitRate.vatsHitRatePct;
     const withField = computeScenarios(input); // default factory sets both to 100
@@ -2291,12 +2292,12 @@ describe('computeScenarios', () => {
     weapon,
     itemLevel: 50,
     modifiers: mods,
-    player: { ...createDefaultPlayerConditions(), strength: 0 },
+    player: { ...makeResolvedPlayer(), strength: 0 },
     enemy: createDefaultEnemyConditions(),
     weakpointMult: 2.0,
     critRate: 0.5,
   };
-  const withConditions = (patch: Partial<ReturnType<typeof createDefaultPlayerConditions>>) => ({
+  const withConditions = (patch: Partial<ReturnType<typeof makeResolvedPlayer>>) => ({
     ...input,
     player: { ...input.player, ...patch },
   });
@@ -2485,10 +2486,10 @@ describe('unarmored condition (symmetric with powerAttack/vatsOnly)', () => {
 
   it('value:false applies only when wearing armor', () => {
     const armoredCtx = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), armorWorn: 'body' },
+      player: { ...makeResolvedPlayer(), armorWorn: 'body' },
     });
     const unarmoredCtx = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), armorWorn: 'none' },
+      player: { ...makeResolvedPlayer(), armorWorn: 'none' },
     });
     expect(foldBucket([armoredMod], 'dbm', 1.0, armoredCtx)).toBeCloseTo(1.5, 10);
     expect(foldBucket([armoredMod], 'dbm', 1.0, unarmoredCtx)).toBeCloseTo(1.0, 10);
@@ -2496,10 +2497,10 @@ describe('unarmored condition (symmetric with powerAttack/vatsOnly)', () => {
 
   it('value:true applies only when NOT wearing armor', () => {
     const armoredCtx = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), armorWorn: 'body' },
+      player: { ...makeResolvedPlayer(), armorWorn: 'body' },
     });
     const unarmoredCtx = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), armorWorn: 'none' },
+      player: { ...makeResolvedPlayer(), armorWorn: 'none' },
     });
     expect(foldBucket([unarmoredMod], 'dbm', 1.0, unarmoredCtx)).toBeCloseTo(1.5, 10);
     expect(foldBucket([unarmoredMod], 'dbm', 1.0, armoredCtx)).toBeCloseTo(1.0, 10);
@@ -2520,7 +2521,7 @@ describe('concentratedFire stack counter (Phase B — Concentrated Fire stacks)'
   });
 
   it('clamps a stored value above the GMST max down to 20', () => {
-    const player = { ...createDefaultPlayerConditions(), concentratedFireStacks: 25 };
+    const player = { ...makeResolvedPlayer(), concentratedFireStacks: 25 };
     const ctx = makeCtx(weapon, { player, scenario: vatsFlags });
     // 25 clamps to 20 stacks × 0.01 = +0.20 → dbm fold 1.0 + 0.20 = 1.20.
     expect(foldBucket([stackMod], 'dbm', 1.0, ctx)).toBeCloseTo(1.2, 10);
@@ -2538,7 +2539,7 @@ describe('Concentrated Fire stacks — rank × stacks table (computeScenarios)',
     mode: 'live' as const,
     weapon,
     itemLevel: 50,
-    player: createDefaultPlayerConditions(),
+    player: makeResolvedPlayer(),
     enemy: createDefaultEnemyConditions(),
     weakpointMult: 2.0,
     critRate: 0,
@@ -2565,7 +2566,7 @@ describe('Concentrated Fire stacks — rank × stacks table (computeScenarios)',
     const stacked = computeScenarios({
       ...base,
       modifiers,
-      player: { ...createDefaultPlayerConditions(), concentratedFireStacks: 10 },
+      player: { ...makeResolvedPlayer(), concentratedFireStacks: 10 },
     });
     const expectedMult = 1 + perStack * 10;
     expect(stacked.vats.perHit.total).toBeCloseTo(noStacks.vats.perHit.total * expectedMult, 6);
@@ -2580,7 +2581,7 @@ describe('hasConcentratedFireSources detection', () => {
     weapon,
     itemLevel: 50,
     modifiers: [] as Modifier[],
-    player: createDefaultPlayerConditions(),
+    player: makeResolvedPlayer(),
     enemy: createDefaultEnemyConditions(),
     weakpointMult: 2.0,
     critRate: 0,
@@ -2614,7 +2615,7 @@ describe('body-part damage direction (sub-1 multipliers = limb hits)', () => {
       weapon,
       itemLevel: 50,
       modifiers: [mod({ bucket: 'weakpointBonus', op: 'ADD', value: 0.3 })],
-      player: { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true },
+      player: { ...makeResolvedPlayer(), isAimingAtWeakpoint: true },
       enemy: createDefaultEnemyConditions(),
       weakpointMult: 0.5,
       critRate: 0,
@@ -2661,7 +2662,7 @@ describe('computeScenarios body-part hit rate (Free Aim only, weakpoint aiming o
     weapon,
     itemLevel: 50,
     modifiers: [] as Modifier[],
-    player: { ...createDefaultPlayerConditions(), isAimingAtWeakpoint: true },
+    player: { ...makeResolvedPlayer(), isAimingAtWeakpoint: true },
     enemy: createDefaultEnemyConditions(),
     weakpointMult: 2.0,
     critRate: 0,
@@ -2742,7 +2743,7 @@ describe('hasKillStreakSources detection', () => {
     weapon,
     itemLevel: 50,
     modifiers: [] as Modifier[],
-    player: createDefaultPlayerConditions(),
+    player: makeResolvedPlayer(),
     enemy: createDefaultEnemyConditions(),
     weakpointMult: 2.0,
     critRate: 0,
@@ -2795,7 +2796,7 @@ describe('hasBattleLoadersSource detection (Phase C — bash-tier reload skip)',
     weapon,
     itemLevel: 50,
     modifiers: [] as Modifier[],
-    player: createDefaultPlayerConditions(),
+    player: makeResolvedPlayer(),
     enemy: createDefaultEnemyConditions(),
     weakpointMult: 2.0,
     critRate: 0,
@@ -2829,7 +2830,7 @@ describe('vatsHitChanceBonus (Phase 4 — VATS hit-chance aggregate, display-onl
     weapon,
     itemLevel: 50,
     modifiers: [] as Modifier[],
-    player: createDefaultPlayerConditions(),
+    player: makeResolvedPlayer(),
     enemy: createDefaultEnemyConditions(),
     weakpointMult: 2.0,
     critRate: 0,
@@ -2955,7 +2956,7 @@ describe('vatsHitChanceMult (Concentrated Fire EP109 multiplier, USER-RESOLVED 2
     weapon,
     itemLevel: 50,
     modifiers: [] as Modifier[],
-    player: { ...createDefaultPlayerConditions(), concentratedFireStacks },
+    player: { ...makeResolvedPlayer(), concentratedFireStacks },
     enemy: createDefaultEnemyConditions(),
     weakpointMult: 2.0,
     critRate: 0,

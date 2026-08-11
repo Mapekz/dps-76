@@ -1,4 +1,4 @@
-import type { GameMode, Perk, PerkLoadout, PlayerConditions, PlayerConfig } from '@/types';
+import type { GameMode, Perk, PerkLoadout, PlayerConfig, PlayerInput } from '@/types';
 import { getPerks } from '@/data';
 import type { PerkId } from '@/data/perk-ids';
 import { Special } from '@/data/special';
@@ -59,10 +59,10 @@ export function allocationOf(player: PlayerConfig): Record<SpecialKey, number> {
  * manual Target-section knobs to match the card's own rank.
  */
 export function syncTargetDebuffConditions(
-  conditions: PlayerConditions,
+  conditions: PlayerInput,
   perkId: string,
   rank: number,
-): PlayerConditions {
+): PlayerInput {
   const clamped = Math.max(0, Math.min(4, rank)) as 0 | 1 | 2 | 3 | 4;
   if (perkId === 'FollowThrough') {
     return { ...conditions, followThroughPct: clamped * 10 };
@@ -76,7 +76,7 @@ export function syncTargetDebuffConditions(
 /** Rank → paired Taking One for the Team manual knobs (ESM ranks pair 1:1). */
 export function takingOneForTheTeamFields(
   rank: number,
-): Pick<PlayerConditions, 'takingOneForTheTeamPct' | 'takingOneForTheTeamDrRank'> {
+): Pick<PlayerInput, 'takingOneForTheTeamPct' | 'takingOneForTheTeamDrRank'> {
   const clamped = Math.max(0, Math.min(4, rank)) as 0 | 1 | 2 | 3 | 4;
   return {
     takingOneForTheTeamPct: clamped * 10,
@@ -226,7 +226,7 @@ export function clampSpecialStat(value: number): number {
 
 /** Can `stat` be raised to `value` without exceeding the 56-point pool? */
 export function canRaiseSpecialAllocation(
-  conditions: PlayerConditions,
+  conditions: PlayerInput,
   stat: SpecialKey,
   value: number,
 ): boolean {
@@ -237,8 +237,8 @@ export function canRaiseSpecialAllocation(
 }
 
 /** Trim SPECIAL stats until the 56-point pool is satisfied (hydration/import). */
-export function clampSpecialAllocationPool(conditions: PlayerConditions): {
-  conditions: PlayerConditions;
+export function clampSpecialAllocationPool(conditions: PlayerInput): {
+  conditions: PlayerInput;
   changed: boolean;
 } {
   let next = { ...conditions };
@@ -319,7 +319,7 @@ export function targetBodyPartSelection(
 function normalizeArmorEffects(
   mode: GameMode,
   armorEffects: Record<string, number>,
-  armorWorn: PlayerConditions['armorWorn'],
+  armorWorn: PlayerInput['armorWorn'],
   warnings: string[],
 ): Record<string, number> {
   const wrongType = wrongArmorTypeEffects(mode, armorEffects, armorWorn);

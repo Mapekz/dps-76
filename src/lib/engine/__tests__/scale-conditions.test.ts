@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'bun:test';
 import type { Weapon } from '@/types';
-import { createDefaultEnemyConditions, createDefaultPlayerConditions } from '@/types';
+import { createDefaultEnemyConditions } from '@/types';
 import type { Bucket, Condition, ModOp, Modifier } from '@/types/modifiers';
 import { foldBucket, type ResolveContext } from '@/lib/engine/resolve';
+import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
 
 const FLAT_100 = [
   { x: 1, y: 100 },
@@ -45,7 +46,7 @@ function mod(partial: {
 function makeCtx(weapon: Weapon, overrides: Partial<ResolveContext> = {}): ResolveContext {
   return {
     weapon,
-    player: createDefaultPlayerConditions(),
+    player: makeResolvedPlayer(),
     enemy: createDefaultEnemyConditions(),
     scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
     ...overrides,
@@ -68,7 +69,7 @@ describe('scaledByMissingHealth', () => {
   it('scales linearly with missing health up to the cap', () => {
     // 50% HP → missing 0.5 → +1.0 × 0.5 = +0.5 dbm
     const half = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), healthPercent: 50 },
+      player: { ...makeResolvedPlayer(), healthPercent: 50 },
     });
     expect(foldBucket([bloodiedLike], 'dbm', 1.0, half)).toBeCloseTo(1.5, 10);
   });
@@ -76,13 +77,13 @@ describe('scaledByMissingHealth', () => {
   it('saturates at cond.cap even when more health is missing', () => {
     // 0% HP → missing 1.0, capped at 0.6 → +1.0 × 0.6 = +0.6 dbm
     const empty = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), healthPercent: 0 },
+      player: { ...makeResolvedPlayer(), healthPercent: 0 },
     });
     expect(foldBucket([bloodiedLike], 'dbm', 1.0, empty)).toBeCloseTo(1.6, 10);
 
     // 20% HP → missing 0.8, still capped at 0.6
     const low = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), healthPercent: 20 },
+      player: { ...makeResolvedPlayer(), healthPercent: 20 },
     });
     expect(foldBucket([bloodiedLike], 'dbm', 1.0, low)).toBeCloseTo(1.6, 10);
   });
@@ -99,7 +100,7 @@ describe('scaledByCaps', () => {
 
   it('is inactive with zero caps (identity)', () => {
     const broke = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), capsOnHand: 0 },
+      player: { ...makeResolvedPlayer(), capsOnHand: 0 },
     });
     expect(foldBucket([capsScaled], 'dbm', 1.0, broke)).toBe(1.0);
   });
@@ -107,19 +108,19 @@ describe('scaledByCaps', () => {
   it('scales linearly with caps on hand', () => {
     // 5_000 / 10_000 = 0.5 → +0.4 × 0.5 = +0.2 dbm
     const mid = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), capsOnHand: 5_000 },
+      player: { ...makeResolvedPlayer(), capsOnHand: 5_000 },
     });
     expect(foldBucket([capsScaled], 'dbm', 1.0, mid)).toBeCloseTo(1.2, 10);
   });
 
   it('saturates at 1 once caps reach capsForMax', () => {
     const maxed = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), capsOnHand: 10_000 },
+      player: { ...makeResolvedPlayer(), capsOnHand: 10_000 },
     });
     expect(foldBucket([capsScaled], 'dbm', 1.0, maxed)).toBeCloseTo(1.4, 10);
 
     const beyond = makeCtx(weapon, {
-      player: { ...createDefaultPlayerConditions(), capsOnHand: 25_000 },
+      player: { ...makeResolvedPlayer(), capsOnHand: 25_000 },
     });
     expect(foldBucket([capsScaled], 'dbm', 1.0, beyond)).toBeCloseTo(1.4, 10);
   });

@@ -5,13 +5,13 @@ import {
   createDefaultEnemyConfig,
   createDefaultEnemyConditions,
   createDefaultPlayerConfig,
-  createDefaultPlayerConditions,
   type EnemyConditions,
   type EnemyConfig,
   type PlayerConfig,
-  type PlayerConditions,
+  type ResolvedPlayer,
 } from '@/types';
 import goldenData from './cases.json';
+import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
 
 /**
  * Golden cases: in-game measured numbers (docs/assumptions.md). Cases with
@@ -31,7 +31,7 @@ interface GoldenCase {
   addictions?: string[];
   /** Armor checklist selections (Phase 3 armor pipeline): effectId → worn count. */
   armorEffects?: Record<string, number>;
-  conditions: Partial<PlayerConditions>;
+  conditions: Partial<ResolvedPlayer>;
   /**
    * Player-selected charge hold time in seconds, for weapons that charge
    * (Gauss family, bows, tesla/gamma/laser via charging-barrel OMODs — see
@@ -81,7 +81,7 @@ describe('golden cases (in-game measurements)', () => {
         addictions: c.addictions ?? [],
         armorEffects: c.armorEffects ?? {},
         itemLevel: c.itemLevel,
-        conditions: { ...createDefaultPlayerConditions(), ...c.conditions },
+        conditions: { ...makeResolvedPlayer(), ...c.conditions },
         chargeTimeSec: c.chargeTimeSec,
       };
       const enemyConfig: EnemyConfig = {

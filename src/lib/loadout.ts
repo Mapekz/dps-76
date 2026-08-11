@@ -1,4 +1,5 @@
-import type { PlayerConfig, EnemyConfig, GameMode, PlayerConditions, Weapon } from '@/types';
+import type { PlayerConfig, EnemyConfig, GameMode, Weapon } from '@/types';
+import type { PlayerConditionContext, PlayerInput } from '@/types/player';
 import { CONSUMED_BEFORE_BUCKETS, type Modifier } from '@/types/modifiers';
 import type { GeneratedOmod } from '@/types/generated';
 import { getDistanceConstants, getSpecialClamp, getWeapons } from '@/data';
@@ -52,7 +53,7 @@ const PLAYER_BASELINE_MODIFIERS: Modifier[] = getPlayerBaselineModifiers();
  */
 function baseSpecialOf(
   legendaryPerks: PlayerConfig['legendaryPerks'],
-  conditions: PlayerConfig['conditions'],
+  conditions: PlayerInput,
 ): Record<SpecialKey, number> {
   const legendaryBonus = legendaryBonusOf(legendaryPerks);
   return Object.fromEntries(
@@ -195,12 +196,12 @@ const manualUptimeModifiersFor = scoped(
 );
 
 const publicTeamModifiersFor = scoped(
-  (publicTeamType: PlayerConditions['publicTeamType'], teammateCount: number): Modifier[] =>
+  (publicTeamType: PlayerInput['publicTeamType'], teammateCount: number): Modifier[] =>
     getPublicTeamModifiers(publicTeamType, teammateCount),
 );
 
 const targetDebuffModifiersFor = scoped(
-  (takingOneForTheTeamDrRank: PlayerConditions['takingOneForTheTeamDrRank']): Modifier[] =>
+  (takingOneForTheTeamDrRank: PlayerInput['takingOneForTheTeamDrRank']): Modifier[] =>
     getTargetDebuffModifiers({ takingOneForTheTeamDrRank }),
 );
 
@@ -229,13 +230,13 @@ const armorEffectModifiersFor = scoped(
  */
 const deriveConditionsAgg = scoped(
   (
-    raw: PlayerConditions,
+    raw: PlayerInput,
     strangeInNumbers: boolean,
     classFreakRank: number,
     underAlcoholEffect: boolean,
     equippedPerkRanks: Record<string, number>,
     wornPieceCounts: Record<string, number>,
-  ): PlayerConditions => ({
+  ): PlayerConditionContext => ({
     ...raw,
     strangeInNumbers,
     classFreakRank,
@@ -250,7 +251,7 @@ function deriveConditionsFor(
   scope: MemoScope | undefined,
   mode: GameMode,
   playerConfig: PlayerConfig,
-): PlayerConditions {
+): PlayerConditionContext {
   const strangeInNumbers = strangeInNumbersFor(scope, playerConfig.perks, playerConfig.conditions);
   const classFreakRank = classFreakRankFor(scope, playerConfig.perks);
   const underAlcoholEffect = underAlcoholEffectFor(scope, mode, playerConfig.consumables);
@@ -311,7 +312,7 @@ function loadoutModifiersFor(
   scope: MemoScope | undefined,
   mode: GameMode,
   playerConfig: PlayerConfig,
-  conditions: PlayerConditions,
+  conditions: PlayerConditionContext,
 ): Modifier[] {
   const perkMods = perkFamilyModifiersFor(scope, mode, playerConfig.perks);
   const legendaryMods = perkFamilyModifiersFor(scope, mode, playerConfig.legendaryPerks);
@@ -447,7 +448,7 @@ const buildEffectiveWeaponFor = scoped(
     baseWeapon: Weapon,
     equippedOmods: GeneratedOmod[],
     itemLevel: number,
-    conditions: PlayerConditions,
+    conditions: PlayerConditionContext,
     enemyConditions: EnemyConfig['conditions'],
     weaponRelevantModifiers: Modifier[],
     enemyTypeIds: readonly string[],
@@ -475,7 +476,7 @@ function assemble(
 ): {
   weapon: Weapon | undefined;
   modifiers: Modifier[];
-  conditions: PlayerConditions;
+  conditions: PlayerConditionContext;
   enemyTypeIds: readonly string[];
 } {
   const baseWeapon = playerConfig.weapon
@@ -594,8 +595,8 @@ const derivedPlayerStatsFor = scoped(
     mode: GameMode,
     modifiers: Modifier[],
     legendaryPerks: PlayerConfig['legendaryPerks'],
-    rawConditions: PlayerConfig['conditions'],
-    conditions: PlayerConditions,
+    rawConditions: PlayerInput,
+    conditions: PlayerConditionContext,
     weapon: Weapon,
     itemLevel: number,
     enemyConditions: EnemyConfig['conditions'],
@@ -630,7 +631,7 @@ const derivedPlayerStatsFor = scoped(
  */
 const playerAgg = scoped(
   (
-    conditions: PlayerConditions,
+    conditions: PlayerConditionContext,
     special: Record<SpecialKey, number>,
     maxHealth: number,
     lockpickSkill: number,
@@ -640,7 +641,7 @@ const playerAgg = scoped(
     stimpakHealMagMult: number,
     stimpakHealDurationMult: number,
     mutations: string[],
-    rawConditions: PlayerConfig['conditions'],
+    rawConditions: PlayerInput,
     addictionCount: number,
   ) => ({
     // Derived-gate view of the stored conditions (strangeInNumbers,
@@ -655,7 +656,7 @@ const playerAgg = scoped(
     stimpakHealMagMult,
     stimpakHealDurationMult,
     // Mutant's curve input: the selected mutation list IS the mutation count.
-    mutationCount: rawConditions.mutationCount ?? mutations.length,
+    mutationCount: mutations.length,
     // Ghoul Glow meter: clamp to the derived max HP (max Glow = max HP) so a
     // stored value from a since-shrunk build never reads above the cap.
     glow: Math.min(rawConditions.glow ?? 0, maxHealth),
