@@ -122,6 +122,40 @@ export interface ResolvedPlayer extends PlayerConditionContext {
 /** @deprecated Use `PlayerInput`. */
 export type PlayerConditions = PlayerInput;
 
+/**
+ * The nine fields `ResolvedPlayer` adds beyond `PlayerConditionContext` —
+ * real folded values from `playerAgg`, but not yet known on the bootstrap
+ * SPECIAL-fold paths (`derivePlayerStats`'s early context,
+ * `buildEffectiveWeapon`'s pre-OMOD context). Named once here so
+ * `ResolveContextPlayer` and any future derived field stay in the same place
+ * — see `PLAYER_STATE_READERS` in `resolve.ts`, whose reader for each of
+ * these keys must supply a fallback (`?? <default>`) matching the value
+ * below, since a bootstrap `ResolveContext` genuinely lacks them.
+ */
+export type DerivedPlayerFields = Pick<
+  ResolvedPlayer,
+  | 'addictionCount'
+  | 'maxHealth'
+  | 'lockpickSkill'
+  | 'hackingSkill'
+  | 'stimpakHealMult'
+  | 'stimpakHealMagMult'
+  | 'stimpakHealDurationMult'
+  | 'mutationCount'
+  | 'hungerThirstTier'
+>;
+
+/**
+ * `ResolveContext.player`'s type: a `PlayerConditionContext` plus the derived
+ * fields *when they're known*. Bootstrap folds (SPECIAL, onslaught/Bullet
+ * Storm caps, move-speed bonus) build this from a bare
+ * `PlayerConditionContext` — no widening to a full `ResolvedPlayer` needed,
+ * since `PLAYER_STATE_READERS` falls back for every field here. The real
+ * `ResolvedPlayer` (from `playerAgg`) is always a valid value too, since it's
+ * a structural supertype.
+ */
+export type ResolveContextPlayer = PlayerConditionContext & Partial<DerivedPlayerFields>;
+
 export function createDefaultPlayerInput(): PlayerInput {
   return {
     isSneaking: false,
@@ -195,23 +229,4 @@ export function createDefaultResolvedPlayer(): ResolvedPlayer {
 /** @deprecated Use `createDefaultPlayerInput`. */
 export function createDefaultPlayerConditions(): PlayerInput {
   return createDefaultPlayerInput();
-}
-
-/**
- * Synthetic derived-field defaults for `toResolvedPlayer`. Built once, not per
- * call: `toResolvedPlayer` runs three times per suggestion candidate (twice in
- * `derivePlayerStats`, once in `buildEffectiveWeapon`) across ~700 candidates
- * per sweep, so rebuilding a 58-field object each time cost ~8% of the sweep.
- * Only ever spread from, never mutated — frozen so that stays true.
- */
-const RESOLVED_PLAYER_DEFAULTS: Readonly<ResolvedPlayer> = Object.freeze(
-  createDefaultResolvedPlayer(),
-);
-
-/** Widen pre-aggregation context to `ResolvedPlayer` using synthetic derived defaults. */
-export function toResolvedPlayer(
-  ctx: PlayerConditionContext,
-  overrides?: Partial<ResolvedPlayer>,
-): ResolvedPlayer {
-  return { ...RESOLVED_PLAYER_DEFAULTS, ...ctx, ...overrides };
 }

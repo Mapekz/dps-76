@@ -16,14 +16,8 @@ import {
   createDefaultPlayerConditions,
   createDefaultPlayerInput,
   createDefaultResolvedPlayer,
-  toResolvedPlayer,
 } from '@/types/player';
-export {
-  createDefaultPlayerConditions,
-  createDefaultPlayerInput,
-  createDefaultResolvedPlayer,
-  toResolvedPlayer,
-};
+export { createDefaultPlayerConditions, createDefaultPlayerInput, createDefaultResolvedPlayer };
 
 // Enemy conditions for conditional damage calculations
 export interface EnemyConditions {

@@ -1,7 +1,6 @@
 import type { EnemyConditions, Perk, PerkLoadout, Weapon } from '@/types';
 import { createDefaultEnemyConditions } from '@/types';
 import type { PlayerConditionContext, PlayerInput } from '@/types/player';
-import { toResolvedPlayer } from '@/types/player';
 import type { Bucket, Modifier } from '@/types/modifiers';
 import {
   foldBucket,
@@ -294,7 +293,7 @@ export function derivePlayerStats(
   // context needs no SPECIAL values beyond the raw allocation it starts from.
   const earlyCtx: ResolveContext = {
     weapon: weapon ?? NO_WEAPON,
-    player: toResolvedPlayer(player),
+    player,
     enemy: enemyCtx,
     scenario,
     itemLevel: itemLevel ?? 50,
@@ -310,9 +309,9 @@ export function derivePlayerStats(
 
   // The maxHealth fold resolves real curves/conditions (Lifegiver's curve X
   // is the buff-folded END), so it runs through foldBucket with the folded
-  // SPECIAL in context.
-  // Reuses `earlyCtx.player` (already widened above) rather than re-widening
-  // `player` from the defaults — this runs once per suggestion candidate.
+  // SPECIAL in context. `earlyCtx.player` is still a bare
+  // `PlayerConditionContext` (no derived fields) — `PLAYER_STATE_READERS`
+  // falls back for each one; see `ResolveContextPlayer` in types/player.ts.
   const ctx: ResolveContext = { ...earlyCtx, player: { ...earlyCtx.player, ...special } };
   const maxHealth = Math.round(
     foldBucket(modifiers, 'maxHealth', BASE_MAX_HP + MAX_HP_PER_ENDURANCE * special.endurance, ctx),

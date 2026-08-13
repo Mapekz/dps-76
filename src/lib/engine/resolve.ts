@@ -6,7 +6,7 @@
  */
 
 import type { EnemyConditions, Weapon } from '@/types';
-import type { ResolvedPlayer } from '@/types/player';
+import type { ResolveContextPlayer } from '@/types/player';
 import type {
   Bucket,
   Condition,
@@ -41,7 +41,7 @@ export interface ScenarioFlags {
 /** Everything a condition can be evaluated against. */
 export interface ResolveContext {
   weapon: Weapon;
-  player: ResolvedPlayer;
+  player: ResolveContextPlayer;
   enemy: EnemyConditions;
   scenario: ScenarioFlags;
   /** Weapon item level for itemLevel-input curves (scenarios always set it; defaults to the level-50 clamp). */
@@ -142,7 +142,7 @@ export interface ResolveContext {
  * paths clamp to the equipped max. Shared by the `onslaught` StackCounter
  * reader and the `onslaughtStacks` CurveInput reader.
  */
-function effectiveOnslaughtStacks(p: ResolvedPlayer, ctx: ResolveContext): number {
+function effectiveOnslaughtStacks(p: ResolveContextPlayer, ctx: ResolveContext): number {
   return resolveOnslaughtStacks(p.onslaughtStacks, ctx.onslaughtMaxStacks ?? 0, {
     reverseAvg: ctx.onslaughtReverseStacks,
     forwardAvg: ctx.onslaughtForwardStacks,
@@ -155,7 +155,7 @@ function effectiveOnslaughtStacks(p: ResolvedPlayer, ctx: ResolveContext): numbe
  * degrades to max). Shared by the `bulletStorm` StackCounter reader and the
  * `bulletStormStacks` CurveInput reader.
  */
-function effectiveBulletStormStacks(p: ResolvedPlayer, ctx: ResolveContext): number {
+function effectiveBulletStormStacks(p: ResolveContextPlayer, ctx: ResolveContext): number {
   return resolveBulletStormStacks(
     p.bulletStormStacks,
     ctx.bulletStormMinStacks ?? 0,
@@ -171,7 +171,7 @@ function effectiveBulletStormStacks(p: ResolvedPlayer, ctx: ResolveContext): num
  */
 const PLAYER_STATE_READERS: Record<
   StackCounter | CurveInput,
-  (p: ResolvedPlayer, ctx: ResolveContext) => number
+  (p: ResolveContextPlayer, ctx: ResolveContext) => number
 > = {
   // Stack counters (modifier value × count).
   tenderizer: (p) => p.tenderizerStacks ?? 0,
@@ -186,7 +186,7 @@ const PLAYER_STATE_READERS: Record<
   healthFraction: (p) => p.healthPercent / 100,
   capsOnHand: (p) => p.capsOnHand,
   killStreak: (p) => p.killStreak,
-  addictionCount: (p) => p.addictionCount,
+  addictionCount: (p) => p.addictionCount ?? 0,
   onslaughtStacks: (p, ctx) => effectiveOnslaughtStacks(p, ctx),
   // Juggernaut's curve X is ABSOLUTE current HP. maxHealth is derived in
   // resolveLoadout (245 + 5×END + maxHealth bucket — docs/assumptions.md

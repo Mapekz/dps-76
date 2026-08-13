@@ -26,8 +26,9 @@ Decision: **`PlayerInput` and `ResolvedPlayer` are distinct types**
 — `PlayerInput` plus the derived gates the SPECIAL folds themselves need.
 
 - `BuildState`, the reducer, the codec and the knob registry take `PlayerInput`.
-- `ResolveContext.player`, `PLAYER_STATE_READERS` and `ScenarioInput.player`
-  take `ResolvedPlayer`.
+- `ScenarioInput.player` takes `ResolvedPlayer`. `ResolveContext.player` and
+  `PLAYER_STATE_READERS` take the wider `ResolveContextPlayer` (see "Known
+  cost, resolved" below) — a `ResolvedPlayer` is always a valid value for it.
 - `buildEffectiveWeapon` no longer defaults its `player`/`enemy` arguments.
   Those defaults existed so tests could write `buildEffectiveWeapon(smg,
   [perfectStorm])`, but they also meant a production caller who forgot an
@@ -38,19 +39,24 @@ Decision: **`PlayerInput` and `ResolvedPlayer` are distinct types**
 The glossary entry is **Resolved Player** in `CONTEXT.md`, with both
 two-meaning collisions recorded under Flagged ambiguities.
 
-## Known cost
+## Known cost, resolved
 
-The split widens `PlayerConditionContext` to `ResolvedPlayer` at three points
-per suggestion candidate (`toResolvedPlayer`), which the single type did not
-need. Measured on the suggestions sweep: **~27.0 ms → ~28.5 ms**, about 5%,
-after hoisting the synthetic defaults to a module constant and removing a
-double-widening inside `derivePlayerStats`.
+The split originally widened `PlayerConditionContext` to `ResolvedPlayer` via
+a small helper, at two bootstrap points (`derivePlayerStats`,
+`buildEffectiveWeapon` — not three; an early doc comment overstated this).
+Measured on the suggestions sweep: ~27.0 ms → ~28.5–28.8 ms, about 5%.
 
-This was accepted, not overlooked. If it needs recovering, the fix is to type
-`ResolveContext.player` as the context plus *optional* derived fields and give
-the readers fallbacks, so the bootstrap path stops materialising a full
-`ResolvedPlayer` it only partly uses — a larger change than the split itself,
-and not worth bundling with it.
+This was accepted, not overlooked, but the write-up understated how cheap the
+fix was: `ResolveContext.player`'s type is now `ResolveContextPlayer`
+(`PlayerConditionContext & Partial<DerivedPlayerFields>`,
+`src/types/player.ts`) rather than a full `ResolvedPlayer`, and
+`PLAYER_STATE_READERS`' derived-field readers fall back (`resolve.ts`). 8 of
+the 9 derived fields already coalesced to a value identical to the old
+synthetic default; `addictionCount` needed one added `?? 0`. Total change:
+one new type, a handful of signature widenings, and deleting the two
+widening calls plus the helper itself. Bench back to ~27.7–29.7 ms
+— noisy around the pre-split baseline, not the earlier `larger than the split
+itself` fix this section used to describe.
 
 ## Do not undo this
 

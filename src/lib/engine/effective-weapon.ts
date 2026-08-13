@@ -1,6 +1,5 @@
 import type { EnemyConditions, Weapon, WeaponComponent } from '@/types';
 import type { PlayerConditionContext } from '@/types/player';
-import { toResolvedPlayer } from '@/types/player';
 import type {
   GeneratedDamageComponent,
   GeneratedDamageType,
@@ -241,7 +240,7 @@ export function buildEffectiveWeapon(
   // this fold runs once per resolveLoadout call, before scenario branching.
   const baseCtx: ResolveContext = {
     weapon: { ...weapon, keywords },
-    player: toResolvedPlayer(player),
+    player,
     enemy,
     scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
     itemLevel,
