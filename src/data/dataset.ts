@@ -382,7 +382,7 @@ export function getDataset(mode: GameMode): Dataset {
 export interface UnresolvedOverrideKey {
   /** The overlay table (export name in overrides/*.ts) the stale key lives in. */
   overlay: string;
-  /** The id that no longer resolves to a generated record for this mode. */
+  /** The id that no longer resolves to a generated record for this mode, or is a no-op override. */
   key: string;
 }
 
@@ -404,6 +404,22 @@ export function getUnresolvedOverrideKeys(mode: GameMode): UnresolvedOverrideKey
   const check = (overlay: string, keys: Iterable<string>, valid: ReadonlySet<string>) => {
     for (const key of keys) if (!valid.has(key)) out.push({ overlay, key });
   };
+  // A VALUE overlay is stale when it's redundant, not just when its key is
+  // gone: an entry whose value already equals what the generated record
+  // holds does nothing (see the Camden Whacker/Relic Reaper omodNameOverrides
+  // entries this caught — the extractor's own synthesis had converged on the
+  // override's value, so the override was dead weight with no signal short
+  // of a reviewer noticing by hand).
+  const checkNoOpValue = <T>(
+    overlay: string,
+    overridesById: Readonly<Record<string, T>>,
+    byId: ReadonlyMap<string, T>,
+  ) => {
+    for (const [key, value] of Object.entries(overridesById)) {
+      if (byId.has(key) && byId.get(key) === value)
+        out.push({ overlay: `${overlay} (no-op value)`, key });
+    }
+  };
 
   const weaponIds = generatedWeaponIdsFor(mode);
   check('weaponCorrections', Object.keys(weaponCorrections), weaponIds);
@@ -414,12 +430,14 @@ export function getUnresolvedOverrideKeys(mode: GameMode): UnresolvedOverrideKey
   // — see the HandAuthored comment above); read straight off the shared
   // generated collections, same as buildDataset does.
   const omodIds = new Set(generatedOmodsLive.map((o) => o.id));
+  const omodNamesById = new Map(generatedOmodsLive.map((o) => [o.id, o.name]));
   check('legendaryValueOverrides', Object.keys(legendaryValueOverrides), omodIds);
   check('omodModifierAdditions', Object.keys(omodModifierAdditions), omodIds);
   check('hiddenOmodIds', hiddenOmodIds, omodIds);
   check('forceVisibleOmodIds', forceVisibleOmodIds, omodIds);
   check('omodBadgeOverrides', Object.keys(omodBadgeOverrides), omodIds);
   check('omodNameOverrides', Object.keys(omodNameOverrides), omodIds);
+  checkNoOpValue('omodNameOverrides', omodNameOverrides, omodNamesById);
   check('omodWeaponRestrictions (key)', Object.keys(omodWeaponRestrictions), omodIds);
   for (const [omodId, weaponRefs] of Object.entries(omodWeaponRestrictions)) {
     check(`omodWeaponRestrictions[${omodId}] (weapon ref)`, weaponRefs, weaponIds);

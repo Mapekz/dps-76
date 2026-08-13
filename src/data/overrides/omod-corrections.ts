@@ -189,7 +189,9 @@ export const omodWeaponRestrictions: Readonly<Record<string, readonly string[]>>
  * wrong one is user-visible twice. The mechanical " Custom Mod"/" Custom
  * Name" suffixes are already stripped at extraction (omodDisplayName,
  * extract-omods.ts) — entries here are for names that are simply wrong in
- * the ESM record.
+ * the ESM record. `dataset.ts`'s `getUnresolvedOverrideKeys` flags an entry
+ * whose value already equals the generated name — a guard against exactly
+ * the no-op drift this table once had (see the removed-entries note below).
  */
 export const omodNameOverrides: Readonly<Record<string, string>> = {
   // ESM Name is "Poison" (the effect archetype, not the unique). The unique
@@ -217,11 +219,17 @@ export const omodNameOverrides: Readonly<Record<string, string>> = {
   // a DEFAULT part (engine folds it via getDefaultOmods).
   mod_Description_MoM_VoiceofSet: 'Voice of Set',
   mod_Description_MoM_BladeofBastet: 'Blade of Bastet',
-  // Camden Whacker / Relic Reaper variant-container split (2026-08).
-  mod_Custom_CamdenWhacker_RAD: 'Camden Whacker (Radiation)',
-  SDOW_Mod_Custom_RelicReaper_PerceptiBobble: 'Relic Reaper (Percepti Bobble)',
-  SDOW_Mod_Custom_RelicReaper_Pannapictagraphist: 'Relic Reaper (Pannapictagraphist)',
-  SDOW_Mod_Custom_RelicReaper_PharmaFarma: 'Relic Reaper (Pharma Farma)',
+  // The Camden Whacker / Relic Reaper variant-container split (2026-08) once
+  // had four entries here (RAD, PerceptiBobble, Pannapictagraphist,
+  // PharmaFarma) patching resolveVariantDisplayName's synthesized name —
+  // three were byte-identical no-ops, and RAD's "(Radiation)" only patched
+  // `omod.name`, not the `modifier.source.name` baked at extraction, so the
+  // picker and breakdown rows disagreed. Fixed at the root instead: the
+  // synthesizer now title-cases an all-caps suffix token (extract-omods.ts's
+  // resolveVariantDisplayName), so RAD synthesizes as "Rad" and all four
+  // entries became no-ops. Removed rather than kept defensive — see
+  // dataset.ts's `getUnresolvedOverrideKeys`, which now catches this class of
+  // drift for every override table.
 };
 /**
  * Per-weapon slot label overrides — (weaponId, attachPointEdid) → label.

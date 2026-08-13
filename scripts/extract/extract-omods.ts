@@ -365,7 +365,7 @@ export function isVariantContainer(record: EsmRecord): boolean {
   return includeDontUseAllFormIds(data).length === includes.length;
 }
 
-function resolveVariantDisplayName(
+export function resolveVariantDisplayName(
   containerEdid: string,
   containerName: string,
   variantEdid: string,
@@ -374,7 +374,18 @@ function resolveVariantDisplayName(
   if (variantEdid.startsWith(`${containerEdid}_`)) {
     suffix = variantEdid.slice(containerEdid.length + 1);
   }
-  const label = suffix.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ');
+  const label = suffix
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/_/g, ' ')
+    .split(' ')
+    .map((word) =>
+      // An all-caps token (e.g. "RAD") has no lower→upper transition for the
+      // split above to find — title-case it instead of leaving it shouting.
+      // Every other word here is already exactly-one-capital PascalCase from
+      // the split, so this only ever fires on a genuine acronym token.
+      /^[A-Z]{2,}$/.test(word) ? word[0] + word.slice(1).toLowerCase() : word,
+    )
+    .join(' ');
   return `${containerName} (${label})`;
 }
 

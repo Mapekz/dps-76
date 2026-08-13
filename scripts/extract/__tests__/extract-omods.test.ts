@@ -2,7 +2,12 @@ import { describe, it, expect } from 'bun:test';
 import type { EsmSource, EsmRecord, EsmRefRow } from '../esm-client';
 import { createInMemoryEsmSource } from '../esm-source-fake';
 import type { CobjIndex } from '../cobj-index';
-import { extractOmods, isExcludedOmodEdid, propertyName } from '../extract-omods';
+import {
+  extractOmods,
+  isExcludedOmodEdid,
+  propertyName,
+  resolveVariantDisplayName,
+} from '../extract-omods';
 import unstoppableMonsterOmod from './fixtures/omod-unstoppablemonster.json';
 import unstoppableMonsterPerk from './fixtures/perk-unstoppablemonster.json';
 import allRiseOmod from './fixtures/omod-allrise.json';
@@ -1639,6 +1644,35 @@ describe('extractOmods (V.A.T.S. Enhanced — STAT_VATSAccuracy fallback route, 
       expect.objectContaining({ bucket: 'vatsHitChance', op: 'ADD', value: 0.5 }),
     );
     expect(omod!.notes).not.toContain('ActorValues on STAT_VATSAccuracy — unmapped');
+  });
+});
+
+describe('resolveVariantDisplayName', () => {
+  it('splits a camelCase suffix into title-case words', () => {
+    expect(
+      resolveVariantDisplayName('mod_Custom_Foo', 'Foo', 'mod_Custom_Foo_PerceptiBobble'),
+    ).toBe('Foo (Percepti Bobble)');
+  });
+
+  it('leaves a single-word suffix alone', () => {
+    expect(resolveVariantDisplayName('mod_Custom_Foo', 'Foo', 'mod_Custom_Foo_Cryo')).toBe(
+      'Foo (Cryo)',
+    );
+  });
+
+  // Regression: the camelCase splitter finds no lower→upper transition inside
+  // an all-caps token, so an acronym suffix (Camden Whacker's RAD variant)
+  // used to synthesize as shouting "(RAD)" — title-case it instead.
+  it('title-cases an all-caps acronym suffix', () => {
+    expect(resolveVariantDisplayName('mod_Custom_Foo', 'Foo', 'mod_Custom_Foo_RAD')).toBe(
+      'Foo (Rad)',
+    );
+  });
+
+  it('does not title-case a normal capitalized word', () => {
+    expect(resolveVariantDisplayName('mod_Custom_Foo', 'Foo', 'mod_Custom_Foo_Poison')).toBe(
+      'Foo (Poison)',
+    );
   });
 });
 

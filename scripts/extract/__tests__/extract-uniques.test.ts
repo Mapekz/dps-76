@@ -428,7 +428,10 @@ describe('extractUniques (variant container presets)', () => {
     {
       id: 'mod_Custom_CamdenWhacker_RAD',
       formId: '0x008EDF29',
-      name: 'Camden Whacker (Radiation)',
+      // resolveVariantDisplayName title-cases the all-caps "RAD" suffix
+      // token — see resolveVariantDisplayName's acronym test in
+      // extract-omods.test.ts.
+      name: 'Camden Whacker (Rad)',
       description: '',
       attachPointFormId: '0x0047A264',
       attachPointEdid: 'ap_customName',

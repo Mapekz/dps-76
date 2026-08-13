@@ -42452,7 +42452,7 @@
  {
   "id": "mod_Custom_CamdenWhacker_RAD",
   "formId": "0x008EDF29",
-  "name": "Camden Whacker (RAD)",
+  "name": "Camden Whacker (Rad)",
   "description": "",
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
@@ -42464,7 +42464,7 @@
      "kind": "omod",
      "formId": "0x008EDF29",
      "edid": "mod_Custom_CamdenWhacker_RAD",
-     "name": "Camden Whacker (RAD)"
+     "name": "Camden Whacker (Rad)"
     },
     "bucket": "dotDamage",
     "op": "ADD",
