@@ -15,6 +15,10 @@ dist-ssr
 # Local-only extraction report (embeds an absolute ESM path)
 src/data/*/generated/_meta.json
 
+# Regenerable per-run UX critiques from the impeccable skill (design.json and
+# live/ config stay tracked — critique/ has no rotation, one ~16K file/run)
+.impeccable/critique/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

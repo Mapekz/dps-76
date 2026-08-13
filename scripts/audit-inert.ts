@@ -1,16 +1,13 @@
 /**
- * Ad-hoc census of every "no effect yet" badge across perks, weapon mods,
- * armor mods, and unique weapons, grouped by cause (inert bucket / unresolved
+ * Census of every "no effect yet" badge across perks, weapon mods, armor
+ * mods, and unique weapons, grouped by cause (inert bucket / unresolved
  * condition / zero modifiers). Reuses the exact accessors the app badges
  * with (classifyOmodDisplay, perkHasEngineEffect, getArmorEffects, ...) so
- * the report can't drift from what the picker actually shows.
+ * the report can't drift from what the picker actually shows. Output is
+ * console.log only — no files written, nothing pinned; re-run after an ESM
+ * sync or when scoping inert-item implementation work.
  *
- *   bun scripts/audit-inert.ts [--mode live|pts]
- *
- * Deliberately NOT wired into package.json / committed — run on demand while
- * scoping/verifying the inert-item implementation work (see the
- * list-out-all-inert-compiled-metcalfe plan). If this earns a permanent home,
- * promote it to a real `bun run audit:inert` script first.
+ *   bun run audit:inert [--mode live|pts]
  */
 import type { GameMode } from '../src/types';
 import type { Modifier } from '../src/types/modifiers';
