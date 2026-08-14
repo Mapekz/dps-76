@@ -156,6 +156,16 @@ export type DerivedPlayerFields = Pick<
  */
 export type ResolveContextPlayer = PlayerConditionContext & Partial<DerivedPlayerFields>;
 
+/**
+ * Default `PlayerInput` — the app's fresh-build baseline (SPECIAL 1/1/1/1/1/1/1,
+ * like a level-1 game start) and the delta baseline `src/lib/persist/codec.ts`
+ * diffs against when encoding a share URL. Do not swap in synthetic-test
+ * values here (see `createDefaultResolvedPlayer` below for those): a value
+ * the app default doesn't share with the codec's decode seed
+ * (`createDefaultBuildState()`) is a value that silently reverts to the
+ * decode seed for any user who happens to pick it — see the SPECIAL=15
+ * regression in `src/lib/persist/__tests__/codec.test.ts`.
+ */
 export function createDefaultPlayerInput(): PlayerInput {
   return {
     isSneaking: false,
@@ -191,13 +201,13 @@ export function createDefaultPlayerInput(): PlayerInput {
     takingOneForTheTeamDrRank: 0,
     playerDamageResist: 0,
     playerRadResist: 0,
-    strength: 15,
-    perception: 15,
-    endurance: 15,
-    charisma: 15,
-    intelligence: 15,
-    agility: 15,
-    luck: 15,
+    strength: 1,
+    perception: 1,
+    endurance: 1,
+    charisma: 1,
+    intelligence: 1,
+    agility: 1,
+    luck: 1,
     junkItemCount: 0,
     teammateCount: 0,
     publicTeamType: 'none',
@@ -205,10 +215,25 @@ export function createDefaultPlayerInput(): PlayerInput {
   };
 }
 
-/** Synthetic-test defaults matching the pre-split `createDefaultPlayerConditions`. */
+/**
+ * Synthetic-test defaults matching the pre-split `createDefaultPlayerConditions`.
+ * Deliberately maxes SPECIAL to 15/15/15/15/15/15/15 — a maxed-out synthetic
+ * test rig, not a value that's ever the app's actual default (that's
+ * `createDefaultPlayerInput()`'s 1/1/1/1/1/1/1). Used by
+ * `makeResolvedPlayer()` (`src/lib/engine/__tests__/resolved-player-fixture.ts`)
+ * and other hand-built engine test fixtures — never wire it into `BuildState`,
+ * the reducer, or the codec.
+ */
 export function createDefaultResolvedPlayer(): ResolvedPlayer {
   return {
     ...createDefaultPlayerInput(),
+    strength: 15,
+    perception: 15,
+    endurance: 15,
+    charisma: 15,
+    intelligence: 15,
+    agility: 15,
+    luck: 15,
     strangeInNumbers: false,
     classFreakRank: 0,
     underAlcoholEffect: false,

@@ -2,6 +2,8 @@ import { describe, it, expect, vi } from 'bun:test';
 import { decodeBuild, encodeBuild } from '@/lib/persist/codec';
 import { makeBuildReducer, createDefaultBuildState, type BuildAction } from '@/state/build-reducer';
 import { nukesDragonsPerks } from '@/lib/nukes-dragons';
+import { createDefaultPlayerInput, createDefaultEnemyConditions } from '@/types';
+import { buildDelta } from '@/lib/build-delta';
 import type { GeneratedAddiction, GeneratedBuff } from '@/types/generated';
 // Bun's `vi.mock` factory gets no `importOriginal` argument and is unhoisted,
 // so this namespace import is still the real module when the factory below
@@ -260,6 +262,19 @@ describe('build codec', () => {
     expect(bodyDecoded!.state.player.conditions.isInPowerArmor).toBe(false);
   });
 
+  it('round-trips a SPECIAL stat set to 15 (regression: the sibling tests above use 8, which happens to differ from both the encode and decode baselines and so could not have caught this)', async () => {
+    // A single stat at 15 is legal (15 + 6×1 = 21, well under the 56-point
+    // pool) and a common endgame pick (e.g. Luck 15). Previously,
+    // encodeBuild diffed against createDefaultPlayerInput() (SPECIAL all 15)
+    // while decodeBuild seeded from createDefaultBuildState() (SPECIAL all
+    // 1) — a stat at exactly 15 matched the encode baseline, was omitted
+    // from the wire, and silently came back as 1.
+    const state = stateFrom([{ type: 'special/set', stat: 'luck', value: 15 }]);
+    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    expect(decoded!.state.player.conditions.luck).toBe(15);
+    expect(decoded!.warnings).toEqual([]);
+  });
+
   it('round-trips concentratedFireStacks (Phase B — Concentrated Fire stacks)', async () => {
     const state = stateFrom([{ type: 'condition/set', key: 'concentratedFireStacks', value: 15 }]);
     const decoded = await decodeBuild(await encodeBuild(state), 'live');
@@ -295,6 +310,32 @@ describe('build codec', () => {
     expect(decoded).not.toBeNull();
     expect(decoded!.state.player.conditions.killStreak).toBe(0);
     expect(decoded!.warnings).toEqual([]);
+  });
+});
+
+describe('encode/decode baseline symmetry', () => {
+  it('the encode delta baseline (createDefaultPlayerInput/createDefaultEnemyConditions) matches the decode seed (createDefaultBuildState) exactly', () => {
+    // encodeBuild diffs against createDefaultPlayerInput()/createDefaultEnemyConditions()
+    // (codec.ts's `pc`/`ec` baselines); decodeBuild seeds from
+    // createDefaultBuildState(). A key omitted from the wire because it
+    // matched the encode baseline is refilled from the decode seed — if the
+    // two ever disagree on a scalar field, that field silently loses its
+    // value on every round-trip where the user happened to pick the encode
+    // baseline's value (see the SPECIAL=15 regression test above).
+    //
+    // Array-valued fields (completedChallengeIds) are excluded: buildDelta's
+    // strict `!==` always treats two fresh empty-array instances as
+    // "different" regardless of content — harmless here since decode always
+    // overwrites the field wholesale, and predates this test.
+    const scalarsOnly = (delta: Record<string, unknown>) =>
+      Object.fromEntries(Object.entries(delta).filter(([, v]) => !Array.isArray(v)));
+    const defaults = createDefaultBuildState();
+    expect(scalarsOnly(buildDelta(defaults.player.conditions, createDefaultPlayerInput()))).toEqual(
+      {},
+    );
+    expect(
+      scalarsOnly(buildDelta(defaults.enemy.conditions, createDefaultEnemyConditions())),
+    ).toEqual({});
   });
 });
 

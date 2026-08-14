@@ -1006,12 +1006,16 @@ describe('AP economy completion (2026-07-15, real extracted data)', () => {
   });
 
   it('Rejuvenated deltas stack on the hydration baseline to the ESM tier values (45%/60%)', () => {
+    // AGI 15 (via makeResolvedPlayer, matching the sibling test above) is
+    // stated explicitly — 12.6 = 60 + 10×15 AP pool × 6% regen — rather than
+    // inherited from createDefaultPlayerConfig(), whose actual default is 1.
     const resolve = (rank: 1 | 2) =>
       resolveLoadout(
         {
           ...createDefaultPlayerConfig(),
           perks: [{ perkId: PerkId.Rejuvenated, rank }],
           weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [] },
+          conditions: { ...makeResolvedPlayer() },
         },
         createDefaultEnemyConfig(),
         'live',

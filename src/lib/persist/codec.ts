@@ -1,11 +1,4 @@
-import {
-  createDefaultEnemyConditions,
-  createDefaultPlayerInput,
-  type EnemyConditions,
-  type GameMode,
-  type PerkLoadout,
-  type PlayerInput,
-} from '@/types';
+import { type EnemyConditions, type GameMode, type PerkLoadout, type PlayerInput } from '@/types';
 import { getPerks, getWeapons } from '@/data';
 import { getAddictions, getConsumables, getMutations } from '@/data/buffs';
 import { getOmodById } from '@/data/omods';
@@ -43,9 +36,11 @@ function resolveLegacyOmodId(omodId: string): string {
  * Versioned URL/localStorage codec for the full build state.
  *
  * Format: `1.` + base64url(deflate-raw(compact JSON)). The JSON stores only
- * non-default values (diffed against the default factories), so old links keep
- * decoding as the schema grows — unknown keys are dropped, missing keys fall
- * back to defaults. Perk chunks reuse the N&D 2-char key dictionary with our
+ * non-default values (diffed against `createDefaultBuildState()` — the same
+ * object decode() seeds from below, so a key omitted for matching the
+ * baseline is refilled with that exact value on the way back), so old links
+ * keep decoding as the schema grows — unknown keys are dropped, missing keys
+ * fall back to defaults. Perk chunks reuse the N&D 2-char key dictionary with our
  * own base-36 rank wire format (see encodePerks); perks without an N&D key
  * travel in a fallback array.
  *
@@ -207,10 +202,15 @@ export async function encodeBuild(state: BuildState): Promise<string> {
     ...(view.emphasized && { ve: view.emphasized }),
     ...(view.breakdownOpen && { vb: true }),
   };
-  const pc = buildDelta(player.conditions, createDefaultPlayerInput());
+  // Baseline must be `defaults` (createDefaultBuildState(), computed above) —
+  // the same object decode() seeds `state` from below. A key omitted here for
+  // matching this baseline is refilled with this baseline's value on decode;
+  // diffing against any other default silently drops values that happen to
+  // equal it (see the SPECIAL=15 regression in codec.test.ts).
+  const pc = buildDelta(player.conditions, defaults.player.conditions);
   for (const key of DERIVED_PLAYER_CONDITION_KEYS) delete pc[key as keyof PlayerInput];
   if (Object.keys(pc).length > 0) wire.pc = pc;
-  const ec = buildDelta(enemy.conditions, createDefaultEnemyConditions());
+  const ec = buildDelta(enemy.conditions, defaults.enemy.conditions);
   if (Object.keys(ec).length > 0) wire.ec = ec;
 
   const bytes = new TextEncoder().encode(JSON.stringify(wire)) as Uint8Array<ArrayBuffer>;

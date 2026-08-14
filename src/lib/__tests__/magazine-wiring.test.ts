@@ -2,6 +2,7 @@ import { describe, it, expect } from 'bun:test';
 import { resolveLoadout, resolveStats } from '@/lib/loadout';
 import { computeScenarios } from '@/lib/engine/scenarios';
 import { createDefaultEnemyConfig, createDefaultPlayerConfig, type PlayerConfig } from '@/types';
+import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixture';
 
 function loadout(overrides: Partial<PlayerConfig> = {}) {
   const playerConfig: PlayerConfig = { ...createDefaultPlayerConfig(), ...overrides };
@@ -76,19 +77,32 @@ describe('magazine/bobblehead wiring (buffValueOverrides → resolveLoadout → 
   });
 
   it('Live & Love 5 adds +2 effective Luck only while an alcohol is active', () => {
+    // Base Luck 15 is stated explicitly (via makeResolvedPlayer) rather than
+    // inherited from createDefaultPlayerConfig() — the app's actual default
+    // is 1 (see src/types/player.ts's createDefaultPlayerInput).
+    const baseConditions = { ...makeResolvedPlayer() };
     const magazineOnly = resolveStats(
-      { ...createDefaultPlayerConfig(), consumables: ['Magazine_LiveAndLove05_Potion'] },
+      {
+        ...createDefaultPlayerConfig(),
+        conditions: baseConditions,
+        consumables: ['Magazine_LiveAndLove05_Potion'],
+      },
       createDefaultEnemyConfig(),
       'live',
     );
     const alcoholOnly = resolveStats(
-      { ...createDefaultPlayerConfig(), consumables: ['Brew_BlackwaterBrew'] },
+      {
+        ...createDefaultPlayerConfig(),
+        conditions: baseConditions,
+        consumables: ['Brew_BlackwaterBrew'],
+      },
       createDefaultEnemyConfig(),
       'live',
     );
     const magazineAndAlcohol = resolveStats(
       {
         ...createDefaultPlayerConfig(),
+        conditions: baseConditions,
         consumables: ['Magazine_LiveAndLove05_Potion', 'Brew_BlackwaterBrew'],
       },
       createDefaultEnemyConfig(),

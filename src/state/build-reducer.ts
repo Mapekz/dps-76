@@ -26,12 +26,7 @@ import {
   targetBodyPartSelection,
   targetRaceSelection,
 } from '@/lib/build-rules';
-import {
-  legendarySlotsAtLevel,
-  PLAYER_LEVEL,
-  SPECIAL_KEYS,
-  SPECIAL_POINTS_CAP,
-} from '@/lib/player-stats';
+import { legendarySlotsAtLevel, PLAYER_LEVEL, SPECIAL_POINTS_CAP } from '@/lib/player-stats';
 import { consumablesById, toggleConsumable } from '@/lib/consumable-rules';
 import { CARNIVORE_MUTATION_ID, HERBIVORE_MUTATION_ID } from '@/lib/diet-mutations';
 import { getPerks, getUniqueById, getEquippedUnique, getWeapons, maxEligibleLevel } from '@/data';
@@ -124,10 +119,7 @@ export type BuildAction =
   | { type: 'build/hydrate'; state: BuildState };
 
 export function createDefaultBuildState(): BuildState {
-  // A fresh build starts at 1/1/1/1/1/1/1 like the game (the type factory's
-  // 15s exist for synthetic engine tests, not the app).
   const player = createDefaultPlayerConfig();
-  for (const k of SPECIAL_KEYS) player.conditions[k] = 1;
   return {
     player,
     enemy: createDefaultEnemyConfig(),

@@ -119,7 +119,13 @@ simulated average).
 **Build Delta**:
 The set of non-default fields in a config object, shared by serialization
 (`src/lib/persist/codec.ts`) and the "N active" badges (ConditionsSection,
-TargetSection), computed by `src/lib/build-delta.ts`.
+TargetSection), computed by `src/lib/build-delta.ts`. In the codec, the
+encode-side diff baseline and the decode-side seed **must be the same
+object** (`createDefaultBuildState()`) — a field a user set to a value that
+happens to equal a *different* default gets omitted from the wire and
+silently comes back as the decode seed's value instead. This bit the SPECIAL
+stats once (fixed 2026-08; `createDefaultPlayerInput()` and
+`createDefaultBuildState()` used to disagree on SPECIAL's default).
 _Avoid_: diff, delta count (say Build Delta).
 
 **Loadout**:
