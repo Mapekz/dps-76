@@ -39,7 +39,10 @@ function DialogOverlay({ className, ...props }: DialogPrimitive.Backdrop.Props) 
 function DialogContent({
   className,
   children,
-  showCloseButton = true,
+  // Every dialog in this app already ships a Cancel button in its footer —
+  // a second, redundant dismiss control in the corner is noise, not an
+  // affordance. Opt back in per call site for a dialog with no Cancel.
+  showCloseButton = false,
   ...props
 }: DialogPrimitive.Popup.Props & {
   showCloseButton?: boolean;
