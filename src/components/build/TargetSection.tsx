@@ -23,7 +23,10 @@ import {
   resolveTargetBodyPart,
 } from '@/data/bodyparts';
 import { getDistanceConstants } from '@/data';
-import { TENDERIZER_MAX_STACKS } from '@/data/target-debuffs';
+import {
+  TAKING_ONE_FOR_THE_TEAM_DR_MAGNITUDES,
+  TENDERIZER_MAX_STACKS,
+} from '@/data/target-debuffs';
 import { getNpc } from '@/data/npcs';
 import {
   getEnemyDefenses,
@@ -85,18 +88,18 @@ const DAMAGE_MULT_PCT_OPTIONS = [0, 10, 20, 30, 40].map((value) => ({ value, lab
 /**
  * Taking One for the Team's single rank control — consolidates what used to
  * be two separate ToggleGroups (a %-damage-taken multiplier and a flat-DR
- * debuff) into one, since the ESM ranks pair up 1:1: rank 1 = 10%/−6, rank 4
- * = 40%/−50 (esm-walk-confirmed DR magnitudes — src/data/target-debuffs.ts).
- * Picking a rank here sets BOTH `takingOneForTheTeamPct` (rank×10) and
- * `takingOneForTheTeamDrRank` (the rank itself) in one go.
+ * debuff) into one, since the ESM ranks pair up 1:1 (esm-walk-confirmed DR
+ * magnitudes — src/data/target-debuffs.ts, sourced from there rather than
+ * re-hand-synced here). Picking a rank here sets BOTH
+ * `takingOneForTheTeamPct` (rank×10) and `takingOneForTheTeamDrRank` (the
+ * rank itself) in one go.
  */
-const TAKING_ONE_FOR_THE_TEAM_RANK_OPTIONS = [
-  { value: 0, label: 'Off' },
-  { value: 1, label: 'R1 (10%/−6)' },
-  { value: 2, label: 'R2 (20%/−10)' },
-  { value: 3, label: 'R3 (30%/−15)' },
-  { value: 4, label: 'R4 (40%/−50)' },
-];
+const TAKING_ONE_FOR_THE_TEAM_RANK_OPTIONS = TAKING_ONE_FOR_THE_TEAM_DR_MAGNITUDES.map(
+  (dr, rank) => ({
+    value: rank,
+    label: rank === 0 ? 'Off' : `R${rank} (${rank * 10}%/−${dr})`,
+  }),
+);
 
 /**
  * "Epic Levels" rank toggle (Off/★1-3) — the user's estimate of a runtime

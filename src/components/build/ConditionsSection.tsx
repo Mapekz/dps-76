@@ -21,6 +21,7 @@ import { healthPercentIndex, PLAYER_HEALTH_PERCENT_STOPS } from '@/lib/health-pe
 import { cn } from '@/lib/utils';
 import { createDefaultPlayerInput, type PlayerInput } from '@/types';
 import { knobActiveBadgeObjects } from '@/types/knob-registry';
+import { DRINK_TIER_NAMES, FOOD_TIER_NAMES, feralStateName } from '@/data/meter-names';
 import { GroupHeading } from '@/components/ui/group-heading';
 import { SectionTrigger } from './SectionTrigger';
 
@@ -32,29 +33,6 @@ import { SectionTrigger } from './SectionTrigger';
  * bodyPartHitRatePct — they only make sense next to the body-part picker)
  * live in TargetSection; sneak/weakpoint stay on the headline chips.
  */
-
-/** In-game meter state names — SURV_NewHungerThreshold_Msg_* / SURV_NewThirstThreshold_Msg_* (tier 4 = fullest). */
-const FOOD_TIER_NAMES = ['Hungry', 'Partially Fed', 'Fed', 'Well Fed', 'Fully Fed'] as const;
-const DRINK_TIER_NAMES = [
-  'Thirsty',
-  'Partially Hydrated',
-  'Hydrated',
-  'Well Hydrated',
-  'Fully Hydrated',
-] as const;
-
-/**
- * GHL_SURV_FeralThreshold_Msg_* names banded over the 0–8 GHL_FeralTier AV
- * (5 states over 9 tiers — the exact cutoffs are an inference, tier 8 =
- * "Wonderful" is proven; docs/assumptions.md "Feral meter").
- */
-function feralStateName(tier: number): string {
-  if (tier >= 8) return 'Wonderful';
-  if (tier >= 6) return 'Normal';
-  if (tier >= 4) return 'Odd';
-  if (tier >= 2) return 'Losing it';
-  return 'Feral';
-}
 
 /** One decimal for sustained-stack averages; whole numbers omit the fraction. */
 function formatStackAvg(value: number): string {

@@ -37,7 +37,7 @@ import type { Modifier } from '@/types/modifiers';
 export const TENDERIZER_MAX_STACKS = 1000;
 
 /** Rank 0 (off) through 4 → flat DamageResist debuff magnitude. Index = rank. */
-const TAKING_ONE_FOR_THE_TEAM_DR_MAGNITUDES = [0, 6, 10, 15, 50] as const;
+export const TAKING_ONE_FOR_THE_TEAM_DR_MAGNITUDES = [0, 6, 10, 15, 50] as const;
 const TAKING_ONE_FOR_THE_TEAM_DR_MGEF_FORM_IDS = [
   '0x005A5DEF',
   '0x005B01AB',
