@@ -5,13 +5,10 @@ import { WeaponSection } from './WeaponSection';
 import { ArmorSection } from './ArmorSection';
 import { SpecialLoadoutSection } from './SpecialLoadoutSection';
 import { StatSummary } from './StatSummary';
-import {
-  MutationsSection,
-  ChemsSection,
-  FoodDrinkSection,
-  MagazinesSection,
-  BobbleheadsSection,
-} from './BuffsSections';
+import { MutationsSection } from './buffs/MutationsSection';
+import { ChemsSection } from './buffs/ChemsSection';
+import { FoodDrinkSection } from './buffs/FoodDrinkSection';
+import { MagazinesSection, BobbleheadsSection } from './buffs/shared';
 import { ConditionsSection } from './ConditionsSection';
 import { TargetSection } from './TargetSection';
 import { TeamSection } from './TeamSection';
