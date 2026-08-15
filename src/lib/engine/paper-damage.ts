@@ -3,7 +3,7 @@ import type { DamageType, Modifier } from '@/types/modifiers';
 import { chargeDamageMultiplier, weaponCharges } from '@/lib/charge';
 import { getBaseDamage, interpolateCurve } from '@/lib/curve-tables';
 import { foldBucket, foldRegisteredBucket, foldWholeDamage, type ResolveContext } from './resolve';
-import { lastTrace, type BucketTrace, type HitTrace } from './trace';
+import { lastTrace, tracedFold, type BucketTrace, type HitTrace } from './trace';
 
 /**
  * The paper-damage formula (user spec, docs/assumptions.md):
@@ -158,27 +158,21 @@ export function totalCritMult(
   ctx: ResolveContext,
   tracing = false,
 ): CritMultResult {
-  const baseCollect = tracing ? ([] as BucketTrace[]) : undefined;
-  const adjustedBase = foldBucket(
-    modifiers,
-    'critDmgBase',
-    weapon.critDamageMult ?? DEFAULT_CRIT_MULT,
-    ctx,
-    baseCollect,
+  const { value: adjustedBase, trace: baseTrace } = tracedFold(tracing, (collect) =>
+    foldBucket(modifiers, 'critDmgBase', weapon.critDamageMult ?? DEFAULT_CRIT_MULT, ctx, collect),
   );
-  const bonusCollect = tracing ? ([] as BucketTrace[]) : undefined;
-  const bonus = foldRegisteredBucket(modifiers, 'critDmgBonus', ctx, bonusCollect);
-  const bonusScaleCollect = tracing ? ([] as BucketTrace[]) : undefined;
-  const bonusScale = foldRegisteredBucket(modifiers, 'critDmgBonusScale', ctx, bonusScaleCollect);
+  const { value: bonus, trace: bonusTrace } = tracedFold(tracing, (collect) =>
+    foldRegisteredBucket(modifiers, 'critDmgBonus', ctx, collect),
+  );
+  const { value: bonusScale, trace: bonusScaleTrace } = tracedFold(tracing, (collect) =>
+    foldRegisteredBucket(modifiers, 'critDmgBonusScale', ctx, collect),
+  );
   return {
     total: adjustedBase + bonus * bonusScale,
-    trace: tracing
-      ? {
-          base: lastTrace(baseCollect!),
-          bonus: lastTrace(bonusCollect!),
-          bonusScale: lastTrace(bonusScaleCollect!),
-        }
-      : null,
+    trace:
+      tracing && baseTrace && bonusTrace && bonusScaleTrace
+        ? { base: baseTrace, bonus: bonusTrace, bonusScale: bonusScaleTrace }
+        : null,
   };
 }
 
@@ -194,19 +188,15 @@ export function totalSneakMult(
   ctx: ResolveContext,
   tracing = false,
 ): SneakMultResult {
-  const baseCollect = tracing ? ([] as BucketTrace[]) : undefined;
-  const adjustedBase = foldBucket(
-    modifiers,
-    'sneakBase',
-    weapon.sneakAttackMult ?? DEFAULT_SNEAK_MULT,
-    ctx,
-    baseCollect,
+  const { value: adjustedBase, trace: baseTrace } = tracedFold(tracing, (collect) =>
+    foldBucket(modifiers, 'sneakBase', weapon.sneakAttackMult ?? DEFAULT_SNEAK_MULT, ctx, collect),
   );
-  const bonusCollect = tracing ? ([] as BucketTrace[]) : undefined;
-  const bonus = foldRegisteredBucket(modifiers, 'sneakBonus', ctx, bonusCollect);
+  const { value: bonus, trace: bonusTrace } = tracedFold(tracing, (collect) =>
+    foldRegisteredBucket(modifiers, 'sneakBonus', ctx, collect),
+  );
   return {
     total: adjustedBase + bonus,
-    trace: tracing ? { base: lastTrace(baseCollect!), bonus: lastTrace(bonusCollect!) } : null,
+    trace: tracing && baseTrace && bonusTrace ? { base: baseTrace, bonus: bonusTrace } : null,
   };
 }
 
@@ -247,9 +237,11 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
   }
   let powerAttackTerm = 0; // PowerAttackDBM
   if (ctx.scenario.isPowerAttack) {
-    const collect = trace ? ([] as BucketTrace[]) : undefined;
-    powerAttackTerm = foldRegisteredBucket(modifiers, 'powerAttackBonus', ctx, collect);
-    if (trace && collect) trace.powerAttack = lastTrace(collect);
+    const { value, trace: powerAttackTrace } = tracedFold(!!trace, (collect) =>
+      foldRegisteredBucket(modifiers, 'powerAttackBonus', ctx, collect),
+    );
+    powerAttackTerm = value;
+    if (trace && powerAttackTrace) trace.powerAttack = powerAttackTrace;
   }
   const strTerm = strengthTerm(weapon, ctx.player.strength);
 
@@ -257,9 +249,11 @@ export function computePaperDamage(input: PaperDamageInput): HitBreakdown {
   const wholeMult = foldWholeDamage(modifiers, ctx, trace?.wholeDamage);
   let weakpointMult = 1.0; // WeakptDBM, folded as an outer multiplier (see Bucket doc-comment)
   if (bodyPartMult > 1.0) {
-    const collect = trace ? ([] as BucketTrace[]) : undefined;
-    weakpointMult = 1.0 + foldRegisteredBucket(modifiers, 'weakpointBonus', ctx, collect);
-    if (trace && collect) trace.weakpointBonus = lastTrace(collect);
+    const { value, trace: weakpointTrace } = tracedFold(!!trace, (collect) =>
+      foldRegisteredBucket(modifiers, 'weakpointBonus', ctx, collect),
+    );
+    weakpointMult = 1.0 + value;
+    if (trace && weakpointTrace) trace.weakpointBonus = weakpointTrace;
   }
   const paRaceMult = ctx.scenario.isPowerAttack
     ? powerAttackRaceMult(weapon, ctx.player.isInPowerArmor)

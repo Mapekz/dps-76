@@ -122,3 +122,25 @@ export function requireTrace(collect: BucketTrace[] | undefined): BucketTrace {
   if (!collect) throw new Error('requireTrace: tracing was not enabled');
   return lastTrace(collect);
 }
+
+/**
+ * Wraps a single traced fold call: builds the collect sink, runs `fn` with
+ * it, and reads back the trace — the `tracing ? [] : undefined` → fold →
+ * `lastTrace(collect!)` dance that otherwise repeats at every 1:1
+ * fold-to-trace-field call site. `fn` is the fold call itself (foldBucket,
+ * foldRegisteredBucket, ...), so this stays generic over which fold runs.
+ *
+ * Only fits a call site where ONE fold feeds ONE trace field — a site that
+ * combines two collects into one trace object (paper-damage.ts's
+ * baseDamage+dbm-into-one-ComponentTrace push, and its payload+twinDbm
+ * counterpart) stays hand-written; forcing those through a 1:1 helper would
+ * add indirection without actually collapsing anything.
+ */
+export function tracedFold(
+  tracing: boolean,
+  fn: (collect: BucketTrace[] | undefined) => number,
+): { value: number; trace: BucketTrace | null } {
+  const collect = tracing ? ([] as BucketTrace[]) : undefined;
+  const value = fn(collect);
+  return { value, trace: tracing ? lastTrace(collect!) : null };
+}

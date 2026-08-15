@@ -29,9 +29,8 @@ import { BULLET_STORM_AMMO_PER_STACK, bulletStormAvgStacks } from './bulletstorm
 import { computeSustain, DEFAULT_BATTLE_LOADERS_BASH_SEC, type SustainResult } from './sustain';
 import {
   createHitTrace,
-  requireTrace,
+  tracedFold,
   type ApRegenTrace,
-  type BucketTrace,
   type CritMeterTrace,
   type HitTrace,
 } from './trace';
@@ -932,17 +931,15 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   let apRegenTrace: ApRegenTrace | undefined;
   if (!isMelee(input.weapon) && (input.weapon.apCost ?? 0) > 0) {
     const apCtx = vatsCtx;
-    const percentCollect = tracing ? ([] as BucketTrace[]) : undefined;
-    const apRegenBonus = foldRegisteredBucket(input.modifiers, 'apRegen', apCtx, percentCollect);
-    const flatCollect = tracing ? ([] as BucketTrace[]) : undefined;
-    const apRegenFlatBonus = foldRegisteredBucket(
-      input.modifiers,
-      'apRegenFlat',
-      apCtx,
-      flatCollect,
+    const { value: apRegenBonus, trace: percentTrace } = tracedFold(tracing, (collect) =>
+      foldRegisteredBucket(input.modifiers, 'apRegen', apCtx, collect),
     );
-    const maxApCollect = tracing ? ([] as BucketTrace[]) : undefined;
-    const apMaxBonus = foldRegisteredBucket(input.modifiers, 'apMax', apCtx, maxApCollect);
+    const { value: apRegenFlatBonus, trace: flatTrace } = tracedFold(tracing, (collect) =>
+      foldRegisteredBucket(input.modifiers, 'apRegenFlat', apCtx, collect),
+    );
+    const { value: apMaxBonus, trace: maxApTrace } = tracedFold(tracing, (collect) =>
+      foldRegisteredBucket(input.modifiers, 'apMax', apCtx, collect),
+    );
     const apPerCrit = foldRegisteredBucket(input.modifiers, 'apPerCrit', apCtx);
     // apCritHot is collected per-modifier (not bucket-folded): each HoT keeps
     // its own duration window for the refresh-only steady-state term.
@@ -981,9 +978,9 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
         raceBasePct: input.player.isInPowerArmor
           ? apConstants.regenRatePctPowerArmor
           : apConstants.regenRatePct,
-        flat: requireTrace(flatCollect),
-        percent: requireTrace(percentCollect),
-        maxAp: requireTrace(maxApCollect),
+        flat: flatTrace!,
+        percent: percentTrace!,
+        maxAp: maxApTrace!,
         reloadSec: vatsSustain.reloadSec,
         magDumpSec: vatsSustain.magDumpSec,
         regenDelaySec: apConstants.regenDelaySec,
