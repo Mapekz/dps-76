@@ -1,15 +1,6 @@
 import * as React from 'react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { ToggleGroup } from '@/components/ui/toggle-group';
@@ -22,6 +13,7 @@ import { SectionTrigger } from './SectionTrigger';
 import { SpecialAllocationEditor } from './SpecialSection';
 import { PerkEditor } from './PerkEditorSection';
 import { usePerkStatus } from './usePerkStatus';
+import { RemovalConfirmDialog } from './RemovalConfirmDialog';
 
 /**
  * Human/Ghoul toggle. Switching is always allowed — perks locked to the race
@@ -74,29 +66,15 @@ function RaceControl() {
         onValueChange={handleClick}
       />
 
-      <Dialog open={pending !== null} onOpenChange={(open) => !open && setPending(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Switch to {pending?.isGhoul ? 'Ghoul' : 'Human'}?</DialogTitle>
-            <DialogDescription>
-              These {pending?.isGhoul ? 'human' : 'ghoul'}-only perks will be removed:
-            </DialogDescription>
-          </DialogHeader>
-          <ul className="text-negative list-inside list-disc text-sm">
-            {pending?.removing.map((name) => (
-              <li key={name}>{name}</li>
-            ))}
-          </ul>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setPending(null)}>
-              Cancel
-            </Button>
-            <Button type="button" variant="destructive" onClick={confirm}>
-              Switch &amp; remove
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <RemovalConfirmDialog
+        open={pending !== null}
+        onOpenChange={(open) => !open && setPending(null)}
+        title={`Switch to ${pending?.isGhoul ? 'Ghoul' : 'Human'}?`}
+        description={`These ${pending?.isGhoul ? 'human' : 'ghoul'}-only perks will be removed:`}
+        items={pending?.removing ?? []}
+        onCancel={() => setPending(null)}
+        onConfirm={confirm}
+      />
     </div>
   );
 }

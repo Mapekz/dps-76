@@ -4,14 +4,6 @@ import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { HelperText } from '@/components/ui/helper-text';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ToggleGroup } from '@/components/ui/toggle-group';
@@ -48,6 +40,7 @@ import type { ArmorWorn } from '@/types';
 import { ActionDelta } from '@/components/diff/ActionDelta';
 import { CountStepper } from './CountStepper';
 import { NoEffectBadge } from './OptionBadge';
+import { RemovalConfirmDialog } from './RemovalConfirmDialog';
 import { SectionTrigger } from './SectionTrigger';
 
 type FilterChip =
@@ -170,35 +163,21 @@ function ArmorTypeControl() {
         onValueChange={handleClick}
       />
 
-      <Dialog open={pending !== null} onOpenChange={(open) => !open && setPending(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              Switch to {pending ? ARMOR_WORN_LABELS[pending.armorWorn] : ''}?
-            </DialogTitle>
-            <DialogDescription>
-              {pending?.armorWorn === 'none'
-                ? 'All armor effects will be removed:'
-                : `These ${
-                    pending?.armorWorn === 'power' ? 'body armor' : 'power armor'
-                  }-only effects will be removed:`}
-            </DialogDescription>
-          </DialogHeader>
-          <ul className="text-negative list-inside list-disc text-sm">
-            {pending?.removing.map((id) => (
-              <li key={id}>{getArmorEffectById(mode, id)?.name ?? id}</li>
-            ))}
-          </ul>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setPending(null)}>
-              Cancel
-            </Button>
-            <Button type="button" variant="destructive" onClick={confirm}>
-              Switch &amp; remove
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <RemovalConfirmDialog
+        open={pending !== null}
+        onOpenChange={(open) => !open && setPending(null)}
+        title={`Switch to ${pending ? ARMOR_WORN_LABELS[pending.armorWorn] : ''}?`}
+        description={
+          pending?.armorWorn === 'none'
+            ? 'All armor effects will be removed:'
+            : `These ${
+                pending?.armorWorn === 'power' ? 'body armor' : 'power armor'
+              }-only effects will be removed:`
+        }
+        items={pending?.removing.map((id) => getArmorEffectById(mode, id)?.name ?? id) ?? []}
+        onCancel={() => setPending(null)}
+        onConfirm={confirm}
+      />
     </div>
   );
 }
