@@ -14,19 +14,10 @@ import type { EvaluatedSuggestion } from '@/lib/suggest/types';
 const PANEL_LIMIT = 8;
 const CONSUMABLE_LIMIT = 4;
 
-function SuggestionRow({
-  suggestion,
-  tied,
-  hero,
-}: {
-  suggestion: EvaluatedSuggestion;
-  tied?: boolean;
-  /** The lone emphasized top pick — larger text, filled Apply button. */
-  hero?: boolean;
-}) {
+function SuggestionRow({ suggestion, tied }: { suggestion: EvaluatedSuggestion; tied?: boolean }) {
   const dispatch = useBuildDispatch();
   return (
-    <div className={cn('flex items-center gap-2 py-1', hero ? 'text-base' : 'text-sm')}>
+    <div className="flex items-center gap-2 py-1 text-sm">
       <span className="min-w-0 flex-1 truncate" title={suggestion.label}>
         {suggestion.label}
       </span>
@@ -51,17 +42,16 @@ function SuggestionRow({
       )}
       <span
         className={cn(
-          'font-mono tabular-nums',
-          hero ? 'text-base' : 'text-xs',
+          'font-mono text-xs tabular-nums',
           tied ? 'text-muted-foreground' : 'text-positive',
         )}
       >
         {tied ? '≈' : formatPercentDelta(suggestion.primaryDeltaPct)}
       </span>
       <Button
-        variant={hero ? 'default' : 'ghost'}
+        variant="ghost"
         size="sm"
-        className={cn('px-2', hero ? 'h-7 text-sm' : 'h-6 text-xs')}
+        className="h-6 px-2 text-xs"
         onClick={() => suggestion.action.forEach((a) => dispatch(a))}
       >
         Apply
@@ -75,37 +65,23 @@ function SuggestionRow({
  * and the consumable-boosts section below it — same row markup, same "tied"
  * (<1%) treatment, different scope of candidates and empty-state copy.
  *
- * `emphasizeTop` renders `ranked[0]` as a larger hero row — every ranked row
- * used to render at equal visual weight (2026-08-10 design critique), which
- * buried the one recommendation actually worth acting on among up to 8
- * identically-styled rows. The rest still render underneath it, unabridged —
- * an earlier version collapsed them behind a "Show N more" toggle, default
- * collapsed, which traded "no emphasis" for "nothing visible," a worse
- * problem. Opt-in per section: the structural list is where this matters (up
- * to `PANEL_LIMIT` candidates); the 4-item consumable list stays flat.
- *
- * Only emphasizes when `ranked[0]` is a legal mover — `topSuggestions`
- * (evaluate.ts) appends over-budget candidates AFTER every legal one, so
- * `ranked[0]` is illegal only when there are zero legal movers at all, and an
- * un-appliable suggestion has no business being the "top pick."
+ * Every ranked row renders at equal visual weight, on purpose: a min-maxer
+ * picks the change that fits their own build/playstyle, not necessarily the
+ * single highest-delta one, so the list doesn't editorialize with a "top
+ * pick" treatment — an earlier version did (larger hero row, then a
+ * collapse-behind-"Show N more" for the rest), and both were reverted.
  */
 function SuggestionSection({
   title,
   ranked,
   tied,
   emptyMessage,
-  emphasizeTop,
 }: {
   title?: string;
   ranked: EvaluatedSuggestion[];
   tied: EvaluatedSuggestion[];
   emptyMessage: React.ReactNode;
-  emphasizeTop?: boolean;
 }) {
-  const canEmphasize = emphasizeTop && ranked.length > 0 && ranked[0].budget.legal;
-  const hero = canEmphasize ? ranked[0] : null;
-  const restRanked = canEmphasize ? ranked.slice(1) : ranked;
-
   return (
     <div>
       {title && (
@@ -118,11 +94,9 @@ function SuggestionSection({
         <p className="text-muted-foreground py-1 text-sm">{emptyMessage}</p>
       ) : (
         <>
-          {hero && <SuggestionRow suggestion={hero} hero />}
-
-          {restRanked.length > 0 && (
+          {ranked.length > 0 && (
             <div className="divide-border/50 divide-y">
-              {restRanked.map((s) => (
+              {ranked.map((s) => (
                 <SuggestionRow key={s.id} suggestion={s} />
               ))}
             </div>
@@ -206,7 +180,6 @@ export function SuggestionsPanel() {
           emptyMessage={
             <>Nothing beats the current setup — this build is locally optimal for {metricLabel}.</>
           }
-          emphasizeTop
         />
       </div>
 
