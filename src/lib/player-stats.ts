@@ -43,7 +43,7 @@ export const SPECIAL_BUCKETS: Record<SpecialKey, Bucket> = {
 /**
  * Max HP = 245 + 5×END + Σ maxHealth-bucket modifiers (Lifegiver...).
  * The base formula is user-supplied convention, not ESM-proven
- * (docs/assumptions.md "Max HP").
+ * (docs/assumptions.md "Max HP (derived)").
  */
 export const BASE_MAX_HP = 245;
 export const MAX_HP_PER_ENDURANCE = 5;

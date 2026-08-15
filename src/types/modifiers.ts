@@ -433,7 +433,7 @@ export type Bucket =
    * Flat max-HP bonuses (MGEF Peak Value Modifiers on AV HealthBonus
    * 0x007B74E4 — Lifegiver, Overeater-side effects...). Folded in
    * `resolveLoadout` over the base-HP formula 245 + 5×END
-   * (docs/assumptions.md "Max HP") to derive `PlayerConditions.maxHealth`.
+   * (docs/assumptions.md "Max HP (derived)") to derive `PlayerConditions.maxHealth`.
    */
   | 'maxHealth'
   /**
@@ -1386,7 +1386,7 @@ export type Condition =
    * WornApparelHasKeywordCount). Evaluated against
    * `PlayerConditions.wornPieceCounts`, which `resolveLoadout` derives from
    * the Armor checklist — see resolve.ts's `wornPieceCount` case and
-   * docs/assumptions.md "Armor".
+   * docs/assumptions.md "Armor (Phase 3 engine + UI, 2026-07-18)".
    */
   | { kind: 'wornPieceCount'; keyword: string; count: number; orMore?: boolean }
   /**

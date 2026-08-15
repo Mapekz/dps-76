@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'bun:test';
-import { readFileSync, readdirSync, statSync } from 'fs';
+import { readFileSync, readdirSync, statSync, lstatSync } from 'fs';
 import { resolve, dirname, extname, join } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -29,6 +29,12 @@ function walk(dir: string, exts: string[]): string[] {
     if (entry === 'node_modules' || entry === '.git') continue;
     const full = join(dir, entry);
     if (full === SELF) continue;
+    // Skip symlinks — `.claude/skills/{shadcn,migrate-radix-to-base}` are
+    // symlinks into `.agents/skills/`, vendored third-party skill docs
+    // hash-pinned by skills-lock.json and off-limits for this guard (and
+    // for editing generally). `lstatSync` (not `statSync`) is required to
+    // detect the symlink itself rather than following it.
+    if (lstatSync(full).isSymbolicLink()) continue;
     const stat = statSync(full);
     if (stat.isDirectory()) {
       out.push(...walk(full, exts));
@@ -47,10 +53,55 @@ function walk(dir: string, exts: string[]): string[] {
 const ASSUMPTIONS_PATH = resolve(projectRoot, 'docs/assumptions.md');
 
 /** Matches `assumptions.md "text` or the JSON-escaped `assumptions.md \"text`
- * form, capturing up to the closing quote OR end-of-line — comments word-wrap
- * mid-citation, so a citation split across lines is captured as a truncated
- * prefix. Anchor matching below is therefore prefix-based, not exact. */
-const CITATION_RE = /assumptions\.md \\?"([^"\\]*)/g;
+ * form; the citation text itself is read by `readWrappedCitation` below,
+ * which joins comment-wrapped continuation lines rather than truncating at
+ * the first line break. */
+const CITATION_START_RE = /assumptions\.md \\?"/g;
+
+/**
+ * Reads a citation's text starting right after the opening quote, joining
+ * comment-wrapped continuation lines (a leading `*` or `//` on the next
+ * line) so a citation split across lines by prose word-wrap is captured in
+ * full instead of being truncated at the first line break — the previous
+ * end-of-line cutoff is what let short truncated prefixes (e.g. bare
+ * "Armor") pass by matching almost any anchor. Stops at the closing quote,
+ * or at a line that isn't a comment continuation (code resumed, or a blank
+ * line), or after a generous length cap — whichever comes first.
+ */
+function readWrappedCitation(content: string, start: number): string {
+  let i = start;
+  let out = '';
+  while (i < content.length && out.length < 300) {
+    const ch = content[i];
+    // Closing delimiter: a bare `"` (comment source), or `\"` (the escaped
+    // quote JSON string values use, e.g. `.json` fixtures under src/) — in
+    // the latter case the backslash belongs to the delimiter, not the text.
+    if (ch === '"') break;
+    if (ch === '\\' && content[i + 1] === '"') break;
+    if (ch === '\n') {
+      let j = i + 1;
+      while (j < content.length && (content[j] === ' ' || content[j] === '\t')) j++;
+      if (content[j] === '*') {
+        j += 1;
+        if (content[j] === ' ') j += 1;
+      } else if (content[j] === '/' && content[j + 1] === '/') {
+        j += 2;
+        if (content[j] === ' ') j += 1;
+      } else {
+        break;
+      }
+      out += ' ';
+      i = j;
+      continue;
+    }
+    out += ch;
+    i++;
+  }
+  // Collapse runs of whitespace: a wrapped line's own trailing space plus
+  // the space this function inserts at the join point can otherwise leave
+  // a double space that fails to match the doc's single-spaced heading text.
+  return out.trim().replace(/\s+/g, ' ');
+}
 
 function collectCitations(): { file: string; text: string }[] {
   const files = [
@@ -60,11 +111,9 @@ function collectCitations(): { file: string; text: string }[] {
   const hits: { file: string; text: string }[] = [];
   for (const file of files) {
     const content = readFileSync(file, 'utf-8');
-    for (const line of content.split('\n')) {
-      for (const m of line.matchAll(CITATION_RE)) {
-        const text = m[1].trim();
-        if (text) hits.push({ file: file.slice(projectRoot.length + 1), text });
-      }
+    for (const m of content.matchAll(CITATION_START_RE)) {
+      const text = readWrappedCitation(content, m.index + m[0].length);
+      if (text) hits.push({ file: file.slice(projectRoot.length + 1), text });
     }
   }
   return hits;
@@ -79,6 +128,19 @@ const STATUS_TAG_PREFIXES = [
   'CLOSED',
 ];
 
+/**
+ * Only *leading* bold on a bullet or table-row line (`- **Anchor** — ...` /
+ * `| **Anchor** | ... |`) and H2/H3 headings count as anchors — a bare
+ * `**bold**` elsewhere in the line (a mid-sentence "see **Some Section**"
+ * cross-reference) does NOT, because collecting those meant a deleted
+ * section stayed "valid" as long as any stray cross-reference to it survived
+ * elsewhere in the file. Table rows count because the "Hand-supplied values"
+ * table is a registry in the same sense bullets are (`| **Tenderizer** |
+ * ... |`), just in table form. This also makes the `STATUS_TAG_PREFIXES`
+ * filter redundant for these lines (the leading bold is always the anchor,
+ * never its status tag), but it's kept as a defensive filter in case a line
+ * ever leads with the tag instead.
+ */
 function collectAnchors(): string[] {
   const content = readFileSync(ASSUMPTIONS_PATH, 'utf-8');
   const anchors: string[] = [];
@@ -86,7 +148,7 @@ function collectAnchors(): string[] {
   for (const m of content.matchAll(/^#{2,3}\s+(.+)$/gm)) {
     anchors.push(m[1].trim());
   }
-  for (const m of content.matchAll(/\*\*([^*]+)\*\*/g)) {
+  for (const m of content.matchAll(/^(?:-|\|)\s*\*\*([^*]+)\*\*/gm)) {
     const text = m[1].trim();
     const upper = text.toUpperCase();
     if (STATUS_TAG_PREFIXES.some((tag) => upper.startsWith(tag))) continue;
@@ -95,15 +157,31 @@ function collectAnchors(): string[] {
   return anchors;
 }
 
+/**
+ * Below this length, prefix matching is nearly unfalsifiable — a short
+ * citation like bare "Armor" is a prefix of almost any anchor that happens
+ * to start with the same word, so it can never actually fail. Citations
+ * this short must match an anchor exactly instead of merely prefixing one;
+ * a citation that trips this is too vague to know which section it means
+ * and should be rewritten with more of the section's name.
+ */
+const MIN_PREFIX_CITATION_LENGTH = 12;
+
 describe('docs/assumptions.md citation guard', () => {
-  it('every code/data citation is a prefix of a live heading or bold anchor', () => {
+  it('every code/data citation resolves to a live heading or bold anchor', () => {
     const anchors = collectAnchors();
     const citations = collectCitations();
-    const dead = citations.filter(({ text }) => !anchors.some((anchor) => anchor.startsWith(text)));
+    const dead = citations.filter(({ text }) => {
+      if (text.length < MIN_PREFIX_CITATION_LENGTH) return !anchors.includes(text);
+      return !anchors.some((anchor) => anchor.startsWith(text));
+    });
     expect(
       dead,
       dead
-        .map((d) => `${d.file}: cites "${d.text}", no live anchor starts with that text`)
+        .map(
+          (d) =>
+            `${d.file}: cites "${d.text}", no live anchor ${d.text.length < MIN_PREFIX_CITATION_LENGTH ? 'exactly matches it (too short to prefix-match safely)' : 'starts with that text'}`,
+        )
         .join('\n'),
     ).toEqual([]);
   });
@@ -136,11 +214,21 @@ const IDENTIFIER_ALLOWLIST = new Set([
 
 const DOC_EXTS = ['.md'];
 
+/**
+ * Previously scanned only docs/, CONTEXT.md, CLAUDE.md — DESIGN.md,
+ * README.md, and the `.claude/skills` procedure docs (SKILL.md files) went
+ * unchecked, which is exactly how a stale DESIGN.md claim and a stale
+ * README.md claim each survived undetected (see the contradiction fixes in
+ * this same change).
+ */
 function collectDocFiles(): string[] {
   return [
     ...walk(resolve(projectRoot, 'docs'), DOC_EXTS),
+    ...walk(resolve(projectRoot, '.claude/skills'), DOC_EXTS),
     resolve(projectRoot, 'CONTEXT.md'),
     resolve(projectRoot, 'CLAUDE.md'),
+    resolve(projectRoot, 'DESIGN.md'),
+    resolve(projectRoot, 'README.md'),
   ];
 }
 

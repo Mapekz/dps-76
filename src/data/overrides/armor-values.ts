@@ -13,7 +13,8 @@ import type { Modifier } from '@/types/modifiers';
  * Also used for a magnitude-preserving simplification (Battle-Loader's):
  * dropping condition rows that are provably redundant with the modifier's
  * own baked-in value or genuinely unmodeled (bash cadence) — see the entry's
- * own comment and docs/assumptions.md "Armor".
+ * own comment and docs/assumptions.md "Armor (Phase 3 engine + UI,
+ * 2026-07-18)".
  */
 export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> = {
   // Battle-Loader's (armor + PA): the extracted modifiers carry the correct

@@ -26,7 +26,8 @@ import type { ArmorEffectEntry } from './armor-types';
  * Known-bad records are excluded via `hiddenArmorOmodIds` (data-quality
  * issues, source-commented there) rather than by hand-picking what stays IN.
  *
- * Per-piece scaling model (docs/assumptions.md "Armor"):
+ * Per-piece scaling model (docs/assumptions.md "Armor (Phase 3 engine + UI,
+ * 2026-07-18)"):
  * - Most effects (Unyielding, 2★ SPECIAL, Powered, Active, Healthy,
  *   Bruiser's/Ranger's, Propelling, the PA Misc/Lining/underarmor mods) are
  *   flat per-piece bonuses with NO wornPieceCount condition of their own —

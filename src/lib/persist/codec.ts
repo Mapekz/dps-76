@@ -364,7 +364,7 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
       // condition; it's now the "Limit-Breaking" Armor checklist row
       // (mod_Legendary_Armor4_LimitBreak — same 0-5 worn-piece count, just
       // sourced from real OMOD data instead of a hand-authored crit-meter
-      // term — see docs/assumptions.md "Armor").
+      // term — see docs/assumptions.md "Armor (Phase 3 engine + UI, 2026-07-18)").
       const effect = getArmorEffectById(mode, 'mod_Legendary_Armor4_LimitBreak');
       if (effect && value > 0) {
         state.player.armorEffects[effect.id] = Math.max(0, Math.min(effect.maxCount, value));

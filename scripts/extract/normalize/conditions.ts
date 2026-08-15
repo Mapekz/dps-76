@@ -274,7 +274,7 @@ function translateSingle(
       // Packin' Light's gate (AbPerkPackinLight: +25% AP regen while not over
       // encumbered). The calculator assumes optimal play — never over
       // encumbered — so =0 is always true (consumed) and an =1-gated effect
-      // can never apply (docs/assumptions.md "Encumbrance").
+      // can never apply (docs/assumptions.md "Packin' Light").
       return wants ? 'inactive' : null;
     case 'IsUsingAltCurveTable':
       // Fire/poison DoT uniques gate the curve-table branch with =1 (=0 is the

@@ -505,7 +505,7 @@ export const FALLBACK_AVIF_ROUTES: Record<
   // Max-HP bonuses (Lifegiver's AbPerkFortifyHealth — Peak Value Modifier on
   // AV HealthBonus 0x007B74E4 "Health"/HP, END-keyed curve; also Nocturnal
   // Fortitude etc.). Flat HP points, scale 1. Folded over the base-HP formula
-  // in resolveLoadout (docs/assumptions.md "Max HP").
+  // in resolveLoadout (docs/assumptions.md "Max HP (derived)").
   HealthBonus: { bucket: 'maxHealth', scale: 1 },
   // Max-HP PENALTIES sit on the raw Health AV (0x000002D4) instead —
   // Mutation_ReduceMaxHealth (Adrenal Reaction, Peak Value Modifier +
@@ -665,7 +665,7 @@ export async function buildAvifRoutes(
  */
 export const CURVE_INPUT_AVS: Record<string, CurveInput> = {
   '0x000002C2': 'strength', // Strength — The Debilitator's limb-damage-vs-STR curve
-  '0x000002C4': 'endurance', // Endurance — Lifegiver's END-keyed max-HP curve (docs/assumptions.md "Max HP")
+  '0x000002C4': 'endurance', // Endurance — Lifegiver's END-keyed max-HP curve (docs/assumptions.md "Max HP (derived)")
   '0x000002C5': 'charisma', // Charisma — The Peace Maker's explosive-damage-vs-CHA curve
   '0x000002C6': 'intelligence', // Intelligence — Science!/Pyro-Technician's/Cryologist's damage-vs-INT curves
   '0x000002C3': 'perception', // Perception — Awareness perk's VATS-accuracy-vs-PER curve (Phase 4, display-only)
