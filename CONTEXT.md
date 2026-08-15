@@ -24,6 +24,15 @@ The term of the paper-damage formula a modifier feeds (`dbm`, `critDmgBase`,
 `sneakBonus`, `weakpointBonus`, `fireRateSpeed`, …).
 _Avoid_: category, slot (slot means an OMOD attach point).
 
+**DBM** (Damage Bonus Mult):
+Shorthand for the family of additively-stacked bonus modifiers feeding the
+`dbm` parenthesis of the paper-damage formula, and its per-mechanic flavors —
+CritDBM, SneakDBM, PowerAttackDBM, WeakptDBM — each a Bucket in its own right.
+Defined once in `src/types/modifiers.ts`'s `Bucket` doc-comment; a conditioned
+DBM entry (Down Ranger's Far-range bonus) is an ordinary `dbm` ADD gated by a
+condition, not a separate mechanism.
+_Avoid_: damage bonus, multiplier (too generic — say which DBM flavor).
+
 **Bucket Regime**:
 Which fold mechanism consumes a Bucket (`damageFold`, `dot`, `weaponStat`,
 `critEconomy`, `apEconomy`, `playerStat`, `bootstrap`, or `unfolded`), and
@@ -42,13 +51,14 @@ actually wires.
 _Avoid_: routing, dispatch.
 
 **Fold**:
-Combining all active modifiers on one bucket over an intrinsic base:
-`(last SET ?? base) + ΣMUL_ADD×base + ΣADD`. The arithmetic lives once in
-`foldOps` — except the `spellMagnitude` regime (Field Surgeon &c.'s
-Stimpak-healing multipliers), which composes multiplicatively
-(`∏(1+MUL_ADD)`) via the separate `foldBucketProduct`, since it models
-Bethesda perk entry points that multiply rather than the additive damage-pool
-convention every other bucket uses.
+Combining all active modifiers on one bucket over an intrinsic base. The
+arithmetic lives once in `foldOps` (`src/lib/engine/resolve.ts`) — additive,
+not multiplicative — except the `spellMagnitude` regime (Field Surgeon &c.'s
+Stimpak-healing multipliers), which composes multiplicatively via the
+separate `foldBucketProduct`, since it models Bethesda perk entry points that
+multiply rather than the additive damage-pool convention every other bucket
+uses. See `docs/assumptions.md`'s "Formula structure" for the exact
+expression — not repeated here to keep this file from becoming a third copy.
 _Avoid_: reduce, aggregate, sum.
 
 **Scenario**:
@@ -125,10 +135,22 @@ TargetSection), computed by `src/lib/build-delta.ts`. In the codec, the
 encode-side diff baseline and the decode-side seed **must be the same
 object** (`createDefaultBuildState()`) — a field a user set to a value that
 happens to equal a *different* default gets omitted from the wire and
-silently comes back as the decode seed's value instead. This bit the SPECIAL
-stats once (fixed 2026-08; `createDefaultPlayerInput()` and
-`createDefaultBuildState()` used to disagree on SPECIAL's default).
+silently comes back as the decode seed's value instead.
 _Avoid_: diff, delta count (say Build Delta).
+
+**Knob**:
+One entry in `PLAYER_KNOB_REGISTRY` or `ENEMY_KNOB_REGISTRY`
+(`src/types/knob-registry.ts`) — the UI-facing metadata (label, section,
+clamp range, badge behavior) for one `ResolvedPlayer`/`EnemyConditions`
+field. The registry is what lets
+`ConditionsSection`/`TargetSection` compute their "N active" badges
+data-driven, from the same source `codec.ts`'s `DERIVED_PLAYER_CONDITION_KEYS`
+reads, rather than each section hand-maintaining its own non-default
+checklist. A Knob is UI/persistence metadata about a field, not the field's
+value — see **Build Delta** for the value-level "is this non-default" question
+the badges ultimately answer.
+_Avoid_: field, setting (too generic — Knob specifically means a
+knob-registry entry).
 
 **Loadout**:
 The resolved, engine-ready view of a player build — weapon + OMODs + perks +
