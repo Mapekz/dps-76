@@ -1,33 +1,12 @@
 import { cn } from '@/lib/utils';
-import { formatDamage, formatRetainedPct, formatTtk } from '@/lib/format';
+import { formatDamage, formatTtk } from '@/lib/format';
 import type { ScenarioResult } from '@/lib/engine/scenarios';
 import type { ScenarioKey } from '@/state/build-reducer';
 import { useBuildDispatch } from '@/state/BuildProvider';
 import { DeltaFlash } from './DeltaFlash';
 import { CritGauge } from './CritGauge';
 
-const formatDotDps = (value: number) => `+${formatDamage(value)}/s`;
-const formatUptimePct = (uptime: number) => `${Math.round(uptime * 100)}% uptime`;
-const formatHitRatePct = (value: number) => `${Math.round(value)}%`;
-
-const EFFECTIVE_DPS_DEFINITION =
-  'Reload-aware sustained DPS × your hit chance — the realistic damage you deal over time. ' +
-  'In VATS, further throttled by the AP economy when the AP pool can\'t sustain continuous fire (see "unthrottled" below). During downtime the pool refills, the build free-aims instead of idling.';
-const UPTIME_DEFINITION =
-  "Passive AP regen doesn't tick during sustained VATS fire — uptime is the steady-state duty " +
-  'cycle: fire until the pool empties, exit VATS, wait ~1s, refill at passive regen. This row is ' +
-  'the un-throttled number, as if AP were never the constraint.';
-const DOWNTIME_FALLBACK_DEFINITION =
-  'While the AP pool refills, the build fires in free aim (free-aim accuracy, no crits). The VATS headline blends this rate in for the downtime share.';
-const BURST_DPS_DEFINITION =
-  'Theoretical ceiling: per-hit × fire rate, trigger held down continuously with no reload and every shot landing.';
-const HIT_CHANCE_DEFINITION =
-  'Share of shots that land — your Free-aim/VATS hit-rate setting. A miss still costs the shot but deals no damage.';
-const MITIGATED_DPS_DEFINITION =
-  'Sustained DPS after the target\'s resists (Phase 2 mitigation): (damage × 0.15 / Resist)^0.365, applied once to the crit-weighted blended hit (Option A) — see docs/assumptions.md "Resist mitigation".';
-const RETAINED_DEFINITION =
-  "Share of paper damage that gets through the target's resists (100% = fully penetrated).";
-const TTK_DEFINITION = 'Target HP ÷ mitigated sustained DPS for this scenario.';
+const formatUptimePct = (uptime: number) => `${Math.round(uptime * 100)}%`;
 
 interface ScenarioCardProps {
   scenarioKey: ScenarioKey;
@@ -43,6 +22,24 @@ interface ScenarioCardProps {
  * One instrument-cluster card. Clicking emphasizes it — the gold brackets
  * move, and that selection becomes the suggestions metric and the lead
  * number on the condensed mobile bar.
+ *
+ * Slimmed from the original 11-row/9-tooltip version (2026-08-10 design
+ * critique — the card's whole body was a `<button>`, and Base UI tooltip
+ * triggers can't legally nest inside one). Burst, hit chance, reload, and
+ * DoT moved to `BreakdownPanel`'s ledger, where they already mostly lived
+ * anyway; `retained` was dropped as pure derivation (mitigated ÷ pre-resist,
+ * both already on the card). With zero tooltips left, the card has zero
+ * focusable descendants — no restructuring needed, the root stays a
+ * `<button>` and the full-card hit target survives.
+ *
+ * Headline is post-resist DPS labeled plainly `DPS` (not "mitigated dps" —
+ * that's engine jargon) whenever a target is selected; `pre-resist` demotes
+ * to a secondary line. Verified in scenarios.ts (`applyMitigation` runs once
+ * over the same body-part-blended `cycleHit` that produces the pre-resist
+ * number), so resist is the ONLY thing separating the two — future
+ * enemy-defense work changes the resist formula, not this card. With no
+ * target, `result.effective` is absent and the headline falls back to the
+ * pre-resist number with no secondary line — there's nothing to compare yet.
  */
 export function ScenarioCard({
   scenarioKey,
@@ -53,7 +50,8 @@ export function ScenarioCard({
   targetLevel,
 }: ScenarioCardProps) {
   const dispatch = useBuildDispatch();
-  const hasReloadModel = result.sustain.reloadSec > 0;
+  const preResistDps = result.ap?.apLimitedDps ?? result.sustain.sustainedDps;
+  const headlineDps = result.effective?.sustainedDps ?? preResistDps;
 
   return (
     <button
@@ -72,72 +70,28 @@ export function ScenarioCard({
         {label}
       </p>
       <p className="text-2xl font-semibold leading-none">
-        <DeltaFlash value={result.ap?.apLimitedDps ?? result.sustain.sustainedDps} />
+        <DeltaFlash value={headlineDps} />
       </p>
-      <p
-        className="text-muted-foreground text-[11px] uppercase tracking-wide"
-        title={EFFECTIVE_DPS_DEFINITION}
-      >
-        effective dps
-      </p>
-      <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
-        <span title={BURST_DPS_DEFINITION}>burst</span>
-        <DeltaFlash className="text-foreground text-sm" value={result.burstDps} />
-      </div>
-      <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
-        <span title={HIT_CHANCE_DEFINITION}>hit chance</span>
-        <DeltaFlash
-          className="text-foreground text-sm"
-          value={result.hitRatePct}
-          format={formatHitRatePct}
-        />
-      </div>
-      {hasReloadModel && (
+      <p className="text-muted-foreground text-micro uppercase tracking-wide">DPS</p>
+      {result.effective && (
         <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
-          <span>reload</span>
-          <span
-            className="text-foreground text-sm tabular-nums"
-            title={
-              result.sustain.reloadApproximate
-                ? 'Reload time from the ESM animation length (per-shell weapons: × rounds), divided by the folded reload speed — unverified in-game.'
-                : undefined
-            }
-          >
-            {result.sustain.reloadSec.toFixed(2)}s
-          </span>
-        </div>
-      )}
-      {result.dotDps > 0 && (
-        <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
-          <span>dot</span>
+          <span>pre-resist</span>
           <DeltaFlash
             className="text-foreground text-sm"
-            value={result.dotDps}
-            format={formatDotDps}
+            value={preResistDps}
+            format={formatDamage}
           />
         </div>
       )}
       {result.ap && result.ap.uptime < 1 && (
-        <>
-          <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
-            <span title={UPTIME_DEFINITION}>unthrottled ({formatUptimePct(result.ap.uptime)})</span>
-            <DeltaFlash
-              className="text-foreground text-sm"
-              value={result.sustain.sustainedDps}
-              format={formatDamage}
-            />
-          </div>
-          <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
-            <span title={DOWNTIME_FALLBACK_DEFINITION}>
-              downtime fallback (free aim, {Math.round((1 - result.ap.uptime) * 100)}% of the time)
-            </span>
-            <DeltaFlash
-              className="text-foreground text-sm"
-              value={result.ap.downtimeFallbackDps}
-              format={formatDamage}
-            />
-          </div>
-        </>
+        <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
+          <span>vats uptime</span>
+          <DeltaFlash
+            className="text-foreground text-sm"
+            value={result.ap.uptime}
+            format={formatUptimePct}
+          />
+        </div>
       )}
       {result.critMeter && (
         <div className="pt-1">
@@ -146,27 +100,11 @@ export function ScenarioCard({
       )}
       {result.effective && targetName && (
         <div className="border-border/60 mt-1 space-y-1 border-t pt-1.5">
-          <p className="text-muted-foreground truncate text-[11px] uppercase tracking-wide">
+          <p className="text-muted-foreground truncate text-micro uppercase tracking-wide">
             vs {targetName} (Lv {targetLevel ?? '?'})
           </p>
           <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
-            <span title={MITIGATED_DPS_DEFINITION}>mitigated dps</span>
-            <DeltaFlash
-              className="text-foreground text-sm"
-              value={result.effective.sustainedDps}
-              format={formatDamage}
-            />
-          </div>
-          <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
-            <span title={RETAINED_DEFINITION}>retained</span>
-            <DeltaFlash
-              className="text-foreground text-sm"
-              value={result.effective.retainedPct}
-              format={formatRetainedPct}
-            />
-          </div>
-          <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
-            <span title={TTK_DEFINITION}>ttk</span>
+            <span>time to kill</span>
             <span className="text-foreground text-sm tabular-nums">
               {formatTtk(result.effective.ttk)}
             </span>

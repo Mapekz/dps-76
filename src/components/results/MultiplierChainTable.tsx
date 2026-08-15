@@ -1,8 +1,25 @@
 import { Fragment } from 'react';
 import type { ScenarioResult } from '@/lib/engine/scenarios';
 import { formatDamage } from '@/lib/format';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Row } from './breakdown-row';
 import { contributionRows, formatSeconds, signed, wholeDamageRows } from './trace-rows';
+
+/** A ledger row label that opens a definition on hover/keyboard focus. */
+function DefinitionLabel({
+  children,
+  definition,
+}: {
+  children: React.ReactNode;
+  definition: React.ReactNode;
+}) {
+  return (
+    <Tooltip>
+      <TooltipTrigger render={<span className="cursor-help" />}>{children}</TooltipTrigger>
+      <TooltipContent>{definition}</TooltipContent>
+    </Tooltip>
+  );
+}
 
 /**
  * Renders a HitTrace as the derivation a theorycrafter can check by hand:
@@ -89,10 +106,25 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
         </>
       )}
       {trace.bodyPartMult !== 1 && anyNonExplosive && (
-        <Row
-          label={trace.bodyPartMult > 1 ? 'Body part (weakpoint)' : 'Body part (limb)'}
-          value={`×${trace.bodyPartMult.toFixed(2)}`}
-        />
+        <>
+          <Row
+            label={trace.bodyPartMult > 1 ? 'Body part (weakpoint)' : 'Body part (limb)'}
+            value={`×${trace.bodyPartMult.toFixed(2)}`}
+          />
+          {/*
+           * VATS resolves the aimed part directly; Free Aim doesn't — a
+           * fraction of shots land the aimed part and the rest hit
+           * center-mass at ×1.00 (bodyPartBlendedHit, scenarios.ts), so this
+           * row is already the blended result, not a straight multiplier.
+           * Free Aim is the only scenario without result.ap.
+           */}
+          {!result.ap && (
+            <p className="text-muted-foreground text-micro pl-3">
+              Free aim blends aimed-part hits with center-mass (×1.00) hits at your body-part hit
+              rate — VATS resolves the aimed part directly.
+            </p>
+          )}
+        </>
       )}
       {trace.weakpointBonus && trace.weakpointBonus.result !== 0 && anyNonExplosive && (
         <>
@@ -132,8 +164,11 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
         {trace.charge && <Row label="Charge dmg mult" value={`×${trace.charge.mult.toFixed(1)}`} />}
         <Row label="Fire rate (approx.)" value={`×${result.fireRate.toFixed(2)}/s`} />
         <Row
-          label="Burst DPS"
-          title="Theoretical ceiling: per-hit × fire rate, trigger held down continuously with no reload and every shot landing."
+          label={
+            <DefinitionLabel definition="Theoretical ceiling: per-hit × fire rate, trigger held down continuously with no reload and every shot landing.">
+              Burst DPS
+            </DefinitionLabel>
+          }
           value={formatDamage(result.burstDps)}
         />
         {result.sustain.reloadSec > 0 && (
@@ -148,6 +183,17 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
               value={formatSeconds(result.sustain.magDumpSec)}
             />
             <Row indent label="Reload" value={formatSeconds(result.sustain.reloadSec)} />
+            {/*
+             * Data-confidence flag, not a definition — reload time comes
+             * from the ESM animation length ÷ folded reload speed, never
+             * measured in-game (sustain.ts's reloadApproximate is
+             * unconditionally true whenever a reload model applies at all).
+             * A visible marker, not a hover, per the design critique.
+             */}
+            <p className="text-muted-foreground text-micro pl-3">
+              Reload time is from the ESM animation length ÷ folded reload speed — unverified
+              in-game.
+            </p>
             {/* result.sustain.sustainedDps already has hit chance folded in (scenarios.ts) — back out the
                 reload-only figure so this row reconciles with Mag cycle/Mag dump/Reload above it. */}
             <Row
@@ -158,16 +204,33 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
         )}
         {result.hitRatePct < 100 && (
           <Row
-            label="Hit chance"
-            title="Your Free-aim/VATS hit-rate setting — a miss still costs the shot but deals no damage."
+            label={
+              <DefinitionLabel definition="Your Free-aim/VATS hit-rate setting — a miss still costs the shot but deals no damage.">
+                Hit chance
+              </DefinitionLabel>
+            }
             value={`×${(result.hitRatePct / 100).toFixed(2)}`}
           />
         )}
         <Row
-          label="Effective DPS"
-          title="Reload-aware sustained DPS × your hit chance — the realistic damage you deal over time."
+          label={
+            <DefinitionLabel definition="Reload-aware sustained DPS × your hit chance — the realistic damage dealt over time.">
+              Effective DPS
+            </DefinitionLabel>
+          }
           value={formatDamage(result.sustain.sustainedDps)}
         />
+        {result.dotDps > 0 && (
+          <Row
+            muted
+            label={
+              <DefinitionLabel definition="Steady-state damage-over-time while continuously attacking. Not mitigated by enemy resist in this version — see docs/assumptions.md.">
+                DoT
+              </DefinitionLabel>
+            }
+            value={`+${formatDamage(result.dotDps)}/s`}
+          />
+        )}
       </div>
     </div>
   );

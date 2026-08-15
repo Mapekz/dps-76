@@ -62,9 +62,21 @@ export function HeadlineStrip({ variant = 'full' }: HeadlineStripProps) {
               >
                 {LABELS[key]}
               </span>
+              {/*
+               * Same headline semantics as ScenarioCard — post-resist DPS
+               * when a target is selected, else pre-resist. Must stay in
+               * sync: this sticky strip and the card are showing the same
+               * scenario's same number (DESIGN.md's Numbers-Stay-Visible
+               * Rule), so a mismatch here would read as two different DPS
+               * figures for one build.
+               */}
               <DeltaFlash
                 className="text-sm font-semibold"
-                value={scenarios[key].ap?.apLimitedDps ?? scenarios[key].sustain.sustainedDps}
+                value={
+                  scenarios[key].effective?.sustainedDps ??
+                  scenarios[key].ap?.apLimitedDps ??
+                  scenarios[key].sustain.sustainedDps
+                }
                 format={formatDamage}
               />
             </span>
@@ -104,9 +116,10 @@ export function HeadlineStrip({ variant = 'full' }: HeadlineStripProps) {
           />
         ))}
       </div>
-      <p className="text-muted-foreground text-[11px] leading-relaxed">
-        Effective DPS folds in reload and your hit chance; burst is the every-shot-hits ceiling.
-        Fire rate and the reload model are approximate/unverified in-game.
+      <p className="text-muted-foreground text-micro leading-relaxed">
+        DPS is post-resist once a target is selected (pre-resist shows below it); with no target
+        it's the un-mitigated figure. Burst, reload, and fire-rate detail live under "Why these
+        numbers."
       </p>
     </div>
   );

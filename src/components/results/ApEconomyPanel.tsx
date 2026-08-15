@@ -1,4 +1,5 @@
 import type { ScenarioResult } from '@/lib/engine/scenarios';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Row } from './breakdown-row';
 import { contributionRows, flatPercentRows, formatSeconds } from './trace-rows';
 
@@ -77,15 +78,35 @@ export function ApEconomyPanel({ result }: { result: ScenarioResult }) {
 
       {ap.uptime < 1 ? (
         <>
+          {/*
+           * Replaces what used to be two separate ScenarioCard tooltips
+           * ("unthrottled" / "downtime fallback") — one short passage
+           * covering what the VATS headline actually blends: full VATS DPS
+           * while the pool holds, free-aim DPS while it refills, and how
+           * long that refill takes.
+           */}
+          <p className="text-muted-foreground text-micro">
+            The VATS headline blends full VATS DPS while the AP pool is positive with free-aim DPS
+            while it regenerates — {formatSeconds(ap.secondsToEmpty ?? 0)} of fire per{' '}
+            {formatSeconds(ap.pauseSec ?? 0)} of regen.
+          </p>
           <Row
             label={`fire ${formatSeconds(ap.secondsToEmpty ?? 0)} · pause ${formatSeconds(ap.pauseSec ?? 0)}`}
             value={`${(ap.uptime * 100).toFixed(1)}% uptime`}
           />
           <Row
             indent
-            label="downtime fallback (free aim)"
+            label={
+              <Tooltip>
+                <TooltipTrigger render={<span className="cursor-help" />}>
+                  downtime fallback (free aim)
+                </TooltipTrigger>
+                <TooltipContent>
+                  DPS credited while the pool refills — the Free Aim scenario's sustained rate.
+                </TooltipContent>
+              </Tooltip>
+            }
             value={`${ap.downtimeFallbackDps.toFixed(1)}/s`}
-            title="DPS credited while the pool refills — the Free Aim scenario's sustained rate."
           />
         </>
       ) : (
