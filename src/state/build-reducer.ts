@@ -29,7 +29,14 @@ import {
 import { legendarySlotsAtLevel, PLAYER_LEVEL, SPECIAL_POINTS_CAP } from '@/lib/player-stats';
 import { consumablesById, toggleConsumable } from '@/lib/consumable-rules';
 import { CARNIVORE_MUTATION_ID, HERBIVORE_MUTATION_ID } from '@/lib/diet-mutations';
-import { getPerks, getUniqueById, getEquippedUnique, getWeapons, maxEligibleLevel } from '@/data';
+import {
+  getPerks,
+  getUniqueById,
+  getEquippedUnique,
+  getWeapons,
+  maxEligibleLevel,
+  resolveUniqueIdentitySlot,
+} from '@/data';
 import { getOmodById } from '@/data/omods';
 import { wrongArmorTypeEffects } from '@/data/armor-modifiers';
 import { isOmodEligibleForWeapon } from '@/data/omod-eligibility';
@@ -236,10 +243,7 @@ function buildReducer(state: BuildState, action: BuildAction, mode: GameMode): B
         });
       }
 
-      const identitySlot =
-        Object.entries(unique.mods).find(([, omodId]) => omodId === unique.id)?.[0] ??
-        getOmodById(mode, unique.id)?.attachPointEdid ??
-        'ap_customName';
+      const identitySlot = resolveUniqueIdentitySlot(mode, unique);
 
       return withPlayer(state, {
         ...player,

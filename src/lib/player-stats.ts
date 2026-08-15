@@ -213,7 +213,17 @@ export function canSlotCardPoints(budget: PerkBudget, stat: SpecialKey, delta = 
  * (feeds the engine) and the Mutations header badge.
  */
 export function deriveStrangeInNumbers(perks: PerkLoadout[], conditions: PlayerInput): boolean {
-  return perks.some((p) => p.perkId === 'StrangeInNumbers') && (conditions.teammateCount ?? 0) >= 1;
+  return isStrangeInNumbersEquipped(perks) && (conditions.teammateCount ?? 0) >= 1;
+}
+
+/**
+ * Whether the Strange in Numbers card is equipped, independent of whether
+ * it's currently active (needs a teammate too — `deriveStrangeInNumbers`).
+ * Split out because the UI shows an "equipped but inactive" state
+ * (TeamSection, MutationsSection) that needs the two facts separately.
+ */
+export function isStrangeInNumbersEquipped(perks: PerkLoadout[]): boolean {
+  return perks.some((p) => p.perkId === 'StrangeInNumbers');
 }
 
 /**

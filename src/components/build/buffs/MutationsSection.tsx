@@ -7,7 +7,11 @@ import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getMutations } from '@/data/buffs';
 import { mutationDescriptionOverrides } from '@/data/overrides/mutation-descriptions';
-import { deriveClassFreakRank, deriveStrangeInNumbers } from '@/lib/player-stats';
+import {
+  deriveClassFreakRank,
+  deriveStrangeInNumbers,
+  isStrangeInNumbersEquipped,
+} from '@/lib/player-stats';
 import { describeBuffModifiers } from '@/lib/buff-description';
 import { CLASS_FREAK_TIER_FACTORS } from '@/lib/class-freak-mutations';
 import { isDietMutation } from '@/lib/diet-mutations';
@@ -72,7 +76,7 @@ export function MutationsSection() {
 
   // Derived, not a toggle: the Strange in Numbers card equipped + a teammate
   // to be mutated with (same rule resolveLoadout feeds the engine).
-  const sinEquipped = player.perks.some((p) => p.perkId === 'StrangeInNumbers');
+  const sinEquipped = isStrangeInNumbersEquipped(player.perks);
   const sinActive = deriveStrangeInNumbers(player.perks, player.conditions);
   const classFreakRank = deriveClassFreakRank(player.perks);
   const classFreakReductionPct = Math.round((1 - CLASS_FREAK_TIER_FACTORS[classFreakRank]) * 100);

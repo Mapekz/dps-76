@@ -15,7 +15,13 @@ export function getWeapons(mode: GameMode): Record<string, Weapon> {
   return getDataset(mode).weapons;
 }
 
-export { getUniques, getUniqueById, getEquippedUnique, getUniquesForWeapon } from './uniques';
+export {
+  getUniques,
+  getUniqueById,
+  getEquippedUnique,
+  getUniquesForWeapon,
+  resolveUniqueIdentitySlot,
+} from './uniques';
 
 /** ESM-extracted clamp on effective (post-buff) SPECIAL — see GeneratedConstants. */
 export function getSpecialClamp(mode: GameMode): { min: number; max: number } {

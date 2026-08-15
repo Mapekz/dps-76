@@ -11,7 +11,13 @@ import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
 import { resolveLoadout } from '@/lib/loadout';
 import { computeScenarios } from '@/lib/engine/scenarios';
-import { getWeapons, weaponLevelStops, getUniques, getEquippedUnique } from '@/data';
+import {
+  getWeapons,
+  weaponLevelStops,
+  getUniques,
+  getEquippedUnique,
+  resolveUniqueIdentitySlot,
+} from '@/data';
 import {
   classifyOmodDisplay,
   effectiveWeaponName,
@@ -90,11 +96,7 @@ export function WeaponSection() {
   const uniquesById = React.useMemo(() => new Map(uniques.map((u) => [u.id, u])), [uniques]);
   const equippedUnique = player.weapon ? getEquippedUnique(mode, player.weapon) : undefined;
   const equippedIdentitySlot = equippedUnique
-    ? (Object.entries(equippedUnique.mods).find(
-        ([, omodId]) => omodId === equippedUnique.id,
-      )?.[0] ??
-      getOmodById(mode, equippedUnique.id)?.attachPointEdid ??
-      'ap_customName')
+    ? resolveUniqueIdentitySlot(mode, equippedUnique)
     : undefined;
   const weaponOptions = [
     ...uniques.map((u) => ({

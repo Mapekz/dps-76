@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { ToggleGroup } from '@/components/ui/toggle-group';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { getPublicTeamModifiers } from '@/data/public-teams';
-import { deriveStrangeInNumbers } from '@/lib/player-stats';
+import { deriveStrangeInNumbers, isStrangeInNumbersEquipped } from '@/lib/player-stats';
 import type { PlayerInput } from '@/types';
 import type { Bucket } from '@/types/modifiers';
 import { SectionTrigger } from './SectionTrigger';
@@ -51,7 +51,7 @@ export function TeamSection() {
 
   // Derived, not stored: same rule resolveLoadout feeds the engine (see
   // deriveStrangeInNumbers) — the card must be equipped AND a teammate present.
-  const sinEquipped = player.perks.some((p) => p.perkId === 'StrangeInNumbers');
+  const sinEquipped = isStrangeInNumbersEquipped(player.perks);
   const sinActive = deriveStrangeInNumbers(player.perks, conditions);
 
   // United Ordeal (GHL_UnitedOrdeal): a ghoul-only perk with team bonuses —
