@@ -3,6 +3,7 @@ import { CheckIcon, LockIcon, PlusIcon, XIcon } from 'lucide-react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { HelperText } from '@/components/ui/helper-text';
 import {
   Dialog,
   DialogContent,
@@ -128,7 +129,7 @@ function formatSlotUsage(
 
 function EffectDescription({ description }: { description: string | null }) {
   if (!description) return null;
-  return <p className="text-muted-foreground text-xs">{description}</p>;
+  return <HelperText>{description}</HelperText>;
 }
 
 function ArmorTypeControl() {
@@ -520,7 +521,7 @@ function EffectGroup({
         <p className="font-condensed text-muted-foreground text-micro font-semibold uppercase tracking-[0.1em]">
           {title}
         </p>
-        {headerRight && <p className="text-muted-foreground text-xs">{headerRight}</p>}
+        {headerRight && <HelperText>{headerRight}</HelperText>}
       </div>
       <div className="grid gap-1">
         {activeEffects.map((effect) => (

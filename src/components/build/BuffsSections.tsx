@@ -3,6 +3,7 @@ import { BanIcon, CheckIcon, PillIcon, PlusIcon, SkullIcon, WineIcon, XIcon } fr
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { HelperText } from '@/components/ui/helper-text';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import { Radio } from '@/components/ui/radio';
@@ -90,7 +91,7 @@ function CheckboxRow({
           {noEffect && <NoEffectBadge />}
           {action && <ActionDelta action={action} />}
         </div>
-        {description && <p className="text-muted-foreground text-xs">{description}</p>}
+        {description && <HelperText>{description}</HelperText>}
         {penaltyDescription && <p className="text-negative text-xs">{penaltyDescription}</p>}
       </div>
     </label>
@@ -234,7 +235,7 @@ function ConsumableRadioRow({
               remove it (a radio can't un-select itself). */}
           {!active && <ActionDelta action={{ type: 'consumable/toggle', id: item.id }} />}
         </div>
-        {description && <p className="text-muted-foreground text-xs">{description}</p>}
+        {description && <HelperText>{description}</HelperText>}
       </div>
     </label>
   );

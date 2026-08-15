@@ -17,6 +17,7 @@ export function GroupHeading({
       <p className="font-condensed text-muted-foreground text-micro font-semibold uppercase tracking-[0.1em]">
         {title}
       </p>
+      {/* Short tabular status text ("2/4"), not prose — no HelperText/max-width here. */}
       {right && <p className="text-muted-foreground text-xs">{right}</p>}
     </div>
   );

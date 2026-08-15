@@ -2,6 +2,7 @@ import * as React from 'react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Combobox } from '@/components/ui/combobox';
 import { WeaponCombobox } from '@/components/build/WeaponCombobox';
+import { HelperText } from '@/components/ui/helper-text';
 import { Label } from '@/components/ui/label';
 import { Slider, type SliderMark } from '@/components/ui/slider';
 import { firstSliderValue } from '@/lib/slider-value';
@@ -75,7 +76,7 @@ function OmodDescription({
   if (!omod || classifyOmodDisplay(omod, weapon).badge === 'inert') return null;
   const description = describeBuffModifiers(omod);
   if (!description) return null;
-  return <p className="text-muted-foreground text-xs">{description}</p>;
+  return <HelperText>{description}</HelperText>;
 }
 
 export function WeaponSection() {
@@ -289,10 +290,10 @@ export function WeaponSection() {
               }
               marks={levelStops.map((level, i) => ({ value: i, label: String(level) }))}
             />
-            <p className="text-muted-foreground text-xs">
+            <HelperText>
               Only the weapon's real drop levels are offered. Base damage comes from the level
               curve.
-            </p>
+            </HelperText>
           </div>
 
           {charging && scenarios && (
@@ -329,10 +330,10 @@ export function WeaponSection() {
                 }
                 marks={chargeQuarterMarks(charging.fullPowerSeconds, charging.minimumChargeTime)}
               />
-              <p className="text-muted-foreground text-xs">
+              <HelperText>
                 Hold time before the shot fires. Defaults to a full charge (optimal play) — shorter
                 holds fire faster but hit softer.
-              </p>
+              </HelperText>
             </div>
           )}
         </div>

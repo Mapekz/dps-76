@@ -2,6 +2,7 @@ import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/
 import { Badge } from '@/components/ui/badge';
 import { Combobox } from '@/components/ui/combobox';
 import { GroupHeading } from '@/components/ui/group-heading';
+import { HelperText } from '@/components/ui/helper-text';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NumberField } from '@/components/ui/number-field';
@@ -353,12 +354,12 @@ export function TargetSection() {
                   />
                 </div>
               )}
-              <p className="text-muted-foreground max-w-prose text-xs">
+              <HelperText>
                 The neutral default is the race's ×1.00 part (torso when it's ×1.00, otherwise the
                 first alphabetically); picking a body part applies its multiplier immediately — no
                 need to flip a separate switch. 1.5 is a standard humanoid headshot (Super Mutants
                 take 1.25); below 1.0 models armored parts like the Mirelurk shell.
-              </p>
+              </HelperText>
 
               <div className="space-y-3 rounded-none border p-3">
                 <GroupHeading title="Accuracy" />
@@ -385,12 +386,12 @@ export function TargetSection() {
                       onChange={(v) => setPlayer('bodyPartHitRatePct', v)}
                     />
                   )}
-                  <p className="text-muted-foreground text-xs">
+                  <HelperText>
                     {isAiming
                       ? `→ ${((hitRatePct / 100) * (bodyPartHitRatePct / 100) * 100).toFixed(0)}% ${resolvedTarget.name} · ${((hitRatePct / 100) * (1 - bodyPartHitRatePct / 100) * 100).toFixed(0)}% ${centerMassName} · ${(100 - hitRatePct).toFixed(0)}% miss`
                       : `→ ${hitRatePct}% ${centerMassName} · ${100 - hitRatePct}% miss`}
                     {` A missed body part still lands on ${centerMassName.toLowerCase()}; a missed shot hits nothing.`}
-                  </p>
+                  </HelperText>
                 </div>
 
                 <div className="space-y-1.5">
@@ -408,10 +409,10 @@ export function TargetSection() {
                     step={5}
                     onChange={(v) => setPlayer('vatsHitRatePct', v)}
                   />
-                  <p className="text-muted-foreground text-xs">
+                  <HelperText>
                     VATS accuracy is not modeled (the game's hit-chance formula is a black box) —
                     this is your own estimate. A miss deals zero; there is no center-mass fallback.
-                  </p>
+                  </HelperText>
                   <div className="flex flex-wrap gap-2">
                     {vatsHitChanceBonus > 0 && (
                       <Tooltip>
@@ -477,7 +478,7 @@ export function TargetSection() {
                       {isFarRange && <Badge variant="default">Far</Badge>}
                     </div>
                   </div>
-                  <p className="text-muted-foreground max-w-prose text-xs">
+                  <HelperText>
                     Close (≤{closeGatePipBoy.toFixed(1)}) gates Guerrilla; Far (≥
                     {FAR_GATE_PIPBOY.toFixed(1)}) gates Down Ranger/Rifleman and Sniper's — both
                     independent of range falloff. Falloff: ×1.00 out to the weapon's own min range (
@@ -487,7 +488,7 @@ export function TargetSection() {
                     {(weaponRange.outOfRangeMult * 0.2).toFixed(2)} by roughly 1.5× max range (exact
                     point depends on the weapon's min/max ratio), flat beyond. All units above are
                     Pip-Boy.
-                  </p>
+                  </HelperText>
                 </div>
               )}
             </div>
@@ -507,9 +508,9 @@ export function TargetSection() {
                     onValueChange={(v) => setEnemy('epicRank', v)}
                   />
                   {forcedEpicRank != null && (
-                    <p className="text-muted-foreground text-xs">
+                    <HelperText>
                       Locked — this boss's summon quest forces ★{forcedEpicRank} every spawn.
-                    </p>
+                    </HelperText>
                   )}
                 </div>
               )}
@@ -622,10 +623,10 @@ export function TargetSection() {
                     dispatch({ type: 'condition/set', key: 'tenderizerStacks', value: v })
                   }
                 />
-                <p className="text-muted-foreground text-xs">
+                <HelperText>
                   +0.1% damage taken per stack, up to +100% at {TENDERIZER_MAX_STACKS} stacks.
                   Applied by any player's Tenderizer — you don't need the card equipped.
-                </p>
+                </HelperText>
               </div>
 
               <div className="space-y-1.5">
@@ -636,10 +637,10 @@ export function TargetSection() {
                   value={followThroughPct}
                   onValueChange={(v) => setPlayerCondition('followThroughPct', v)}
                 />
-                <p className="text-muted-foreground text-xs">
+                <HelperText>
                   Manual estimate of the 10s ranged-sneak damage-taken debuff's active multiplier.
                   Applied by any player's Follow Through — you don't need the card equipped.
-                </p>
+                </HelperText>
               </div>
 
               <div className="space-y-1.5">
@@ -650,12 +651,12 @@ export function TargetSection() {
                   value={takingOneForTheTeamDrRank}
                   onValueChange={setTakingOneForTheTeamRank}
                 />
-                <p className="text-muted-foreground max-w-prose text-xs">
+                <HelperText>
                   Any player's Taking One for the Team can proc both a %-damage-taken multiplier and
                   a flat Damage Resist reduction (physical only) on the target — you don't need the
                   card equipped yourself. Rank 4's jump to −50 DR (vs. the ~−20 an even progression
                   would predict) is a possible ESM data-entry anomaly, modeled as-is.
-                </p>
+                </HelperText>
               </div>
             </div>
           </div>

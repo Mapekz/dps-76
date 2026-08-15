@@ -1,6 +1,7 @@
 import { UsersIcon } from 'lucide-react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
+import { HelperText } from '@/components/ui/helper-text';
 import { Label } from '@/components/ui/label';
 import { ToggleGroup } from '@/components/ui/toggle-group';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
@@ -113,16 +114,14 @@ export function TeamSection() {
               onValueChange={(v) => set('publicTeamType', v)}
             />
             {teamBonusText && (
-              <p className="text-muted-foreground text-xs">
-                {teamBonusText} from the public-team SPECIAL fortify
-              </p>
+              <HelperText>{teamBonusText} from the public-team SPECIAL fortify</HelperText>
             )}
           </div>
 
-          <p className="text-muted-foreground text-xs">
+          <HelperText>
             Teammates are assumed mutated (for Strange in Numbers) and ghoul (for United Ordeal) —
             teammate identity isn't modeled.
-          </p>
+          </HelperText>
 
           <div className="space-y-1 text-sm">
             <div className="flex items-center justify-between">

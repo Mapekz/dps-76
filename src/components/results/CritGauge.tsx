@@ -1,3 +1,4 @@
+import { HelperText } from '@/components/ui/helper-text';
 import { cn } from '@/lib/utils';
 import type { CritMeterResult } from '@/lib/engine/crit-meter';
 
@@ -27,7 +28,7 @@ export function CritGauge({ critMeter }: { critMeter: CritMeterResult }) {
   const { shotsPerCrit } = critMeter;
 
   if (!Number.isFinite(shotsPerCrit)) {
-    return <p className="text-muted-foreground text-xs">No crits — the meter never fills.</p>;
+    return <HelperText>No crits — the meter never fills.</HelperText>;
   }
 
   const segments = Math.min(shotsPerCrit, MAX_SEGMENTS);
@@ -54,10 +55,10 @@ export function CritGauge({ critMeter }: { critMeter: CritMeterResult }) {
         })}
         {truncated && <span className="text-muted-foreground pl-1 text-micro">…</span>}
       </div>
-      <p className="text-muted-foreground text-xs">
+      <HelperText>
         Crit every {shotsPerCrit}
         {ordinalSuffix(shotsPerCrit)} shot
-      </p>
+      </HelperText>
     </div>
   );
 }

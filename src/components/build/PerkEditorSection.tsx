@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { CheckIcon, LockIcon, PlusIcon, XIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { HelperText } from '@/components/ui/helper-text';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   FilterListRoot,
@@ -194,7 +195,7 @@ function PerkRow({
           <XIcon className="size-3" />
         </Button>
       </div>
-      {description && <p className="text-muted-foreground text-xs">{description}</p>}
+      {description && <HelperText>{description}</HelperText>}
     </div>
   );
 }
@@ -540,9 +541,7 @@ export function PerkEditor() {
        * Undo affordance is the actual safety net; this is the warning.)
        */}
       {regularEntries.length > 0 && (
-        <p className="text-muted-foreground text-xs">
-          Importing a Nukes &amp; Dragons build replaces this list.
-        </p>
+        <HelperText>Importing a Nukes &amp; Dragons build replaces this list.</HelperText>
       )}
 
       {regularEntries.length > 0 ? (
@@ -637,12 +636,12 @@ export function PerkEditor() {
         <p className="text-muted-foreground text-sm">No legendary perks equipped.</p>
       )}
 
-      <p className="text-muted-foreground max-w-prose text-xs">
+      <HelperText>
         Card cost is the card's own per-rank point cost (not always equal to rank). Each stat's
         budget is its base allocation (SPECIAL section) plus Legendary SPECIAL card bonuses, capped
         at 15. Adding past the budget is blocked — imported or re-allocated builds that exceed it
         are flagged instead.
-      </p>
+      </HelperText>
     </div>
   );
 }

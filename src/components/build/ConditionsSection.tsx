@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
+import { HelperText } from '@/components/ui/helper-text';
 import { Label } from '@/components/ui/label';
 import { NumberField } from '@/components/ui/number-field';
 import { Slider } from '@/components/ui/slider';
@@ -312,9 +313,7 @@ export function ConditionsSection() {
                     label: i % 2 === 0 ? String(i) : undefined,
                   }))}
                 />
-                {!hasKillStreak && (
-                  <p className="text-muted-foreground text-xs">No kill-streak sources equipped</p>
-                )}
+                {!hasKillStreak && <HelperText>No kill-streak sources equipped</HelperText>}
               </div>
 
               <div className="space-y-1.5">
@@ -337,10 +336,10 @@ export function ConditionsSection() {
                   )}
                 </div>
                 {onslaughtReverse ? (
-                  <p className="text-muted-foreground text-xs">
+                  <HelperText>
                     Engine-computed average during sustained fire (Gunslinger Master). Consumption
                     scales with fire rate, projectiles, and targets hit below.
-                  </p>
+                  </HelperText>
                 ) : (
                   <Slider
                     id="char-onslaught"
@@ -360,9 +359,7 @@ export function ConditionsSection() {
                     }
                   />
                 )}
-                {onslaughtMax === 0 && (
-                  <p className="text-muted-foreground text-xs">No Onslaught sources equipped</p>
-                )}
+                {onslaughtMax === 0 && <HelperText>No Onslaught sources equipped</HelperText>}
               </div>
 
               <div className="space-y-1.5">
@@ -402,9 +399,7 @@ export function ConditionsSection() {
                       : undefined
                   }
                 />
-                {bulletStormMax === 0 && (
-                  <p className="text-muted-foreground text-xs">No Bullet Storm sources equipped</p>
-                )}
+                {bulletStormMax === 0 && <HelperText>No Bullet Storm sources equipped</HelperText>}
               </div>
 
               <div className="space-y-1.5">
@@ -424,15 +419,13 @@ export function ConditionsSection() {
                     label: i % 5 === 0 ? String(i) : undefined,
                   }))}
                 />
-                <p className="text-muted-foreground text-xs">
+                <HelperText>
                   Stacks build per VATS shot landed on the same body part and reset when you switch
                   body part or target — a manual stand-in for the game's hidden counter (each rank
                   adds +1/2/3% VATS damage per stack).
-                </p>
+                </HelperText>
                 {!hasConcentratedFire && (
-                  <p className="text-muted-foreground text-xs">
-                    No Concentrated Fire sources equipped
-                  </p>
+                  <HelperText>No Concentrated Fire sources equipped</HelperText>
                 )}
               </div>
 
@@ -503,17 +496,13 @@ export function ConditionsSection() {
                     { value: 2, label: '2s' },
                   ]}
                 />
-                <p className="text-muted-foreground text-xs">
+                <HelperText>
                   Seconds spent on the bash swing that triggers Battle-Loader's instant reload, used
                   in place of a real reload. The 0.75s default is an unmeasured placeholder pending
                   in-game stopwatch testing — actual timing likely depends on the weapon's bash
                   animation.
-                </p>
-                {!hasBattleLoaders && (
-                  <p className="text-muted-foreground text-xs">
-                    No Battle-Loader's sources equipped
-                  </p>
-                )}
+                </HelperText>
+                {!hasBattleLoaders && <HelperText>No Battle-Loader's sources equipped</HelperText>}
               </div>
 
               {onslaughtReverse && (
@@ -552,11 +541,11 @@ export function ConditionsSection() {
                   step={10}
                   onChange={(v) => set('playerDamageResist', v)}
                 />
-                <p className="text-muted-foreground text-xs">
+                <HelperText>
                   No armor model exists yet — this is a manual stand-in for Berserker's-style
                   effects that scale off your OWN damage resist (0 = naked, the curve's max-bonus
                   end).
-                </p>
+                </HelperText>
               </div>
 
               <div className="space-y-1.5">
@@ -569,10 +558,10 @@ export function ConditionsSection() {
                   step={100}
                   onChange={(v) => set('playerRadResist', v)}
                 />
-                <p className="text-muted-foreground text-xs">
+                <HelperText>
                   No armor model exists yet — this is a manual stand-in for Daisy Cutter's +20%
                   damage-per-1000-Rad-Resistance ladder, which caps at +160% (8000+).
-                </p>
+                </HelperText>
               </div>
             </div>
           </div>
@@ -588,10 +577,10 @@ export function ConditionsSection() {
                     checked={conditions.hydrated ?? true}
                     onCheckedChange={(v) => set('hydrated', v)}
                   />
-                  <p className="text-muted-foreground text-xs">
+                  <HelperText>
                     Fully hydrated grants +35% AP regen (45/60% with Rejuvenated). Ghouls have no
                     hydration.
-                  </p>
+                  </HelperText>
                 </div>
               )}
 
