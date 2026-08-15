@@ -1,6 +1,6 @@
 # DPS 76
 
-A Fallout 76 outgoing-DPS calculator. Configure your player build — perks, weapon, SPECIAL stats, and conditions — then optionally import a build URL from [Nukes & Dragons](https://nuclearwinter.wiki/nukes-and-dragons/) to see per-hit damage and DPS for weakpoint and non-weakpoint hits.
+A Fallout 76 outgoing-DPS calculator. Configure your player build — perks, weapon, SPECIAL stats, and conditions — then optionally import a build URL from [Nukes & Dragons](https://nuclearwinter.wiki/nukes-and-dragons/) to see Free Aim and VATS DPS side by side against your chosen target. (Weakpoint hits are a player condition you toggle, not a separate display — see `CONTEXT.md`'s **Scenario** entry.)
 
 **Live app:** <https://mapekz.github.io/dps-76/>
 
