@@ -15,9 +15,9 @@ export function perkLabelWithCost(name: string, rank: number, extraCost: number)
   return `${perkLabel(name, rank)} +${extraCost}pt`;
 }
 
-/** Weapon legendary-effect slot — repeated stars for the slot rank, no "Legendary" word or colon. */
+/** Weapon legendary-effect slot — repeated ★ for the slot rank, no "Legendary" word or colon. */
 export function legendaryEffectLabel(name: string, slotIndex0: number): string {
-  return `${'*'.repeat(slotIndex0 + 1)} ${name}`;
+  return `${'★'.repeat(slotIndex0 + 1)} ${name}`;
 }
 
 /** Regular OMOD slot — generic "Mod:", except the Unique slot (the base weapon-variant selector, not really a "mod"), which keeps its own name. */

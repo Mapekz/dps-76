@@ -177,8 +177,8 @@ describe('enumerateCombos', () => {
       // For empty slots, should target index 0 (the first legendary slot)
       expect(legendaryAction!.slotIndex).toBe(0);
 
-      // Label should reference slot 1 as a single star (legendaryEffectLabel — labels.ts)
-      expect(combo!.label).toContain('* Furious');
+      // Label should reference slot 1 as a single ★ (legendaryEffectLabel — labels.ts)
+      expect(combo!.label).toContain('★ Furious');
     });
   });
 
