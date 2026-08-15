@@ -1,7 +1,7 @@
 import type { GameMode, PerkId, PerkLoadout } from '@/types';
 import type { GeneratedPerk } from '@/types/generated';
-import type { Modifier } from '@/types/modifiers';
-import { hasAnyEngineEffect } from '@/types/modifiers';
+import type { Modifier, StaticLoadoutContext } from '@/types/modifiers';
+import { hasAnyEngineEffect, hasAnyLoadoutRelevantEffect } from '@/types/modifiers';
 import { getDataset } from './dataset';
 import { extraPerkModifiers, perkForceEffectivePerkIds } from './overrides/perk-overrides';
 import { LEGENDARY_SPECIAL_PERKS } from './perk-budget';
@@ -102,8 +102,20 @@ export function getUnjoinedPerkIds(mode: GameMode): string[] {
  * rank isn't badged inert; a card-less family reads its own ranks directly,
  * matching `resolveLoadoutRank`'s clamp. Unjoined perks (no generated family)
  * have nothing to check and read as no-effect.
+ *
+ * `ctx` is optional and deliberately doesn't change the badge's own
+ * semantics (build-agnostic — a perk useful with a weapon you might switch
+ * to later still reads as "has an effect"). Pass it only when the caller
+ * wants the STRICTER, current-loadout-aware check — the suggestion engine's
+ * candidate enumeration, so e.g. Master Infiltrator (real effect: Pirate
+ * Punch's lockpick-scaled damage) only surfaces while the Blackpowder Pistol
+ * is actually equipped, not for every other weapon in the game.
  */
-export function perkHasEngineEffect(mode: GameMode, perkId: string): boolean {
+export function perkHasEngineEffect(
+  mode: GameMode,
+  perkId: string,
+  ctx?: StaticLoadoutContext,
+): boolean {
   if (perkForceEffectivePerkIds.has(perkId)) return true;
   // Legendary SPECIAL cards act through the perk-budget baseSpecial pathway
   // (derivePerkBudget → derivePlayerStats), not the modifier IR — their PERK
@@ -119,7 +131,12 @@ export function perkHasEngineEffect(mode: GameMode, perkId: string): boolean {
     const { generated: family, familyRank } = resolved;
     const modifiers = family.ranks[familyRank - 1].modifiers;
     const extra = extraPerkModifiers[family.family]?.[familyRank - 1] ?? [];
-    if (hasAnyEngineEffect(modifiers) || hasAnyEngineEffect(extra)) return true;
+    if (ctx) {
+      if (hasAnyLoadoutRelevantEffect(modifiers, ctx) || hasAnyLoadoutRelevantEffect(extra, ctx))
+        return true;
+    } else if (hasAnyEngineEffect(modifiers) || hasAnyEngineEffect(extra)) {
+      return true;
+    }
   }
   return false;
 }

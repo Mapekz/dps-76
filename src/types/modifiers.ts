@@ -1,4 +1,4 @@
-import type { Weapon } from '@/types';
+import type { ArmorWorn, Weapon } from '@/types';
 
 /**
  * Unified modifier IR — every damage-affecting source (perk entry point,
@@ -1228,6 +1228,70 @@ export function modifierHasEngineEffect(m: Modifier): boolean {
 /** True iff at least one modifier in the list moves a number today (empty list → false). */
 export function hasAnyEngineEffect(modifiers: readonly Modifier[]): boolean {
   return modifiers.some(modifierHasEngineEffect);
+}
+
+/**
+ * Static loadout facts a suggestion candidate can check before the engine
+ * ever simulates it — the equipped weapon's keyword/class set, worn armor
+ * type, race, and which `CurveInput`s the current effective weapon's own
+ * modifier chain actually reads. Deliberately narrow: only the axes a
+ * `Condition` kind can prove false from build state alone (weaponKeyword/
+ * weaponKeywordAny/weaponClass, inPowerArmor, playerIsGhoul), plus the two
+ * known "pool" buckets whose real effect is entirely opt-in via a specific
+ * weapon's own curve reference. Every other condition kind (sneaking, crit,
+ * bodyPart, ...) describes in-the-moment playstyle, not a build fact, and is
+ * always treated as "can't rule out."
+ */
+export interface StaticLoadoutContext {
+  weaponKeywords: ReadonlySet<string>;
+  weaponClass: WeaponClass | undefined;
+  armorWorn: ArmorWorn;
+  isGhoul: boolean;
+  /** `curve.input` values actually referenced by the current weapon's own modifiers (intrinsic + every equipped OMOD, regular and legendary slots). */
+  consumedCurveInputs: ReadonlySet<CurveInput>;
+}
+
+function conditionRulesOutLoadout(c: Condition, ctx: StaticLoadoutContext): boolean {
+  switch (c.kind) {
+    case 'weaponKeyword':
+      return c.present ? !ctx.weaponKeywords.has(c.keyword) : ctx.weaponKeywords.has(c.keyword);
+    case 'weaponKeywordAny':
+      return !c.keywords.some((k) => ctx.weaponKeywords.has(k));
+    case 'weaponClass':
+      return ctx.weaponClass !== undefined && !c.classes.includes(ctx.weaponClass);
+    case 'inPowerArmor':
+      return c.value ? ctx.armorWorn !== 'power' : ctx.armorWorn === 'power';
+    case 'playerIsGhoul':
+      return c.value ? !ctx.isGhoul : ctx.isGhoul;
+    default:
+      return false;
+  }
+}
+
+/**
+ * A modifier is possibly relevant to THIS build: engine-effective, no
+ * condition already proves it can never fire for the equipped weapon/
+ * armor-type/race, and — for the two "pool" buckets whose only consumer is
+ * an opt-in curve reference elsewhere (lockpickSkill: Pirate Punch on the
+ * Blackpowder Pistol; hackingSkill: no consumer yet) — that curve is
+ * actually present on the current weapon. `player-stats.ts` folds these
+ * buckets into a number unconditionally, so `modifierHasEngineEffect` alone
+ * can't tell "nothing reads this today" apart from a normally-read bucket.
+ */
+export function modifierCouldApplyToLoadout(m: Modifier, ctx: StaticLoadoutContext): boolean {
+  if (!modifierHasEngineEffect(m)) return false;
+  if (m.conditions.some((c) => conditionRulesOutLoadout(c, ctx))) return false;
+  if (m.bucket === 'lockpickSkill' && !ctx.consumedCurveInputs.has('lockpickSkill')) return false;
+  if (m.bucket === 'hackingSkill' && !ctx.consumedCurveInputs.has('hackingSkill')) return false;
+  return true;
+}
+
+/** True iff at least one modifier in the list is possibly relevant to the current weapon/armor-type/race (empty list → false). */
+export function hasAnyLoadoutRelevantEffect(
+  modifiers: readonly Modifier[],
+  ctx: StaticLoadoutContext,
+): boolean {
+  return modifiers.some((m) => modifierCouldApplyToLoadout(m, ctx));
 }
 
 export type WeaponClass = Weapon['weaponClass'];
