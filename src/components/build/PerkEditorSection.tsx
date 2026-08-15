@@ -637,7 +637,7 @@ export function PerkEditor() {
         <p className="text-muted-foreground text-sm">No legendary perks equipped.</p>
       )}
 
-      <p className="text-muted-foreground text-xs">
+      <p className="text-muted-foreground max-w-prose text-xs">
         Card cost is the card's own per-rank point cost (not always equal to rank). Each stat's
         budget is its base allocation (SPECIAL section) plus Legendary SPECIAL card bonuses, capped
         at 15. Adding past the budget is blocked — imported or re-allocated builds that exceed it
