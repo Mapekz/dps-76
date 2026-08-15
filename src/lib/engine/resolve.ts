@@ -366,10 +366,6 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       const owns = (ctx.player.equippedPerkRanks?.[cond.family] ?? 0) >= cond.minRank;
       return owns === cond.present ? 1 : null;
     }
-    case 'perAddiction': {
-      const count = Math.max(0, Math.min(ctx.player.addictionCount ?? 0, cond.max));
-      return count > 0 ? count : null;
-    }
     case 'inPowerArmor':
       return ctx.player.isInPowerArmor === cond.value ? 1 : null;
     case 'playerIsGhoul':

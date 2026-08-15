@@ -1310,8 +1310,8 @@ export type StackCounter =
 
 /**
  * Gating/scaling conditions attached to a modifier. All conditions must pass
- * for the modifier to apply; `stacks`/`perAddiction` additionally scale the
- * value by a count from player state.
+ * for the modifier to apply; `stacks` additionally scales the value by a
+ * count from player state.
  */
 export type Condition =
   | { kind: 'weaponClass'; classes: WeaponClass[] }
@@ -1450,7 +1450,6 @@ export type Condition =
    * rankIndex < ownedRanks rule).
    */
   | { kind: 'perkFamilyRank'; family: string; minRank: number; present: boolean }
-  | { kind: 'perAddiction'; max: number }
   | { kind: 'inPowerArmor'; value: boolean }
   /** Character-type gate (GetIsPlayerGhoul): Gourmand's is human-only, Glowing Criticals ghoul-only. */
   | { kind: 'playerIsGhoul'; value: boolean }
