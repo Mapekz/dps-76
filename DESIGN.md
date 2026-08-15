@@ -133,7 +133,7 @@ The palette is desaturated and warm-neutral at rest; color is spent only to mean
 ### Hierarchy
 - **Header Title** (600, `text-xl`/20px, tight): Barlow Condensed, uppercase, `tracking-[0.12em]` — the app name in the header, the only place this large a label appears.
 - **Section Label** (600, 11px, `tracking-[0.14em]`): Barlow Condensed, uppercase — "Damage output," "Suggestions," scenario names. The system's primary structural label voice.
-- **Micro Label** (600, 10–12px, `tracking-widest`): Barlow (not condensed), uppercase — button text, badge text, card titles, field captions. Smaller, denser, and un-condensed on purpose so it doesn't compete with Section Labels.
+- **Micro Label** (600, 10px, `tracking-widest`): Barlow (not condensed), uppercase — button text, badge text, card titles, field captions. Smaller, denser, and un-condensed on purpose so it doesn't compete with Section Labels.
 - **Body** (400, 14px, relaxed line-height): Barlow — descriptions, helper copy, tooltip content.
 - **Readout** (500, 14–24px, tight, tabular-nums): Spline Sans Mono — every DPS/percentage/seconds/AP value on screen, from the headline DPS number down to a single row in the multiplier-chain ledger.
 
