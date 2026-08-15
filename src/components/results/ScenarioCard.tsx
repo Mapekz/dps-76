@@ -59,7 +59,13 @@ export function ScenarioCard({
       onClick={() => dispatch({ type: 'view/set', view: { emphasized: scenarioKey } })}
       aria-pressed={emphasized}
       data-emphasized={emphasized}
-      className="vats-brackets focus-visible:ring-ring flex-1 space-y-1 px-3 py-2.5 text-left focus-visible:outline-none focus-visible:ring-2"
+      // flex flex-col: browsers give <button> its own implicit content-centering
+      // that display:block alone doesn't fully override, so the shorter card
+      // (fewer rows — Free Aim never gets the VATS-only uptime/crit-gauge rows)
+      // rendered vertically centered inside the flex-stretched equal-height box
+      // instead of packed to the top like its taller sibling. An explicit
+      // column flex context makes top alignment the browser's default again.
+      className="vats-brackets focus-visible:ring-ring flex flex-1 flex-col space-y-1 px-3 py-2.5 text-left focus-visible:outline-none focus-visible:ring-2"
     >
       <p
         className={cn(
