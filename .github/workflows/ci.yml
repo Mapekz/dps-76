@@ -45,6 +45,9 @@ jobs:
       - name: Lint
         run: bun run lint
 
+      - name: Design-system lint
+        run: bun run lint:design
+
       - name: Format check
         run: bun run fmt:check
 

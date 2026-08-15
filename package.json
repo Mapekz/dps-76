@@ -9,6 +9,7 @@
     "typecheck": "tsc -b",
     "lint": "oxlint --deny-warnings",
     "lint:fix": "oxlint --fix",
+    "lint:design": "bun scripts/lint-design.ts",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "test": "bun test --parallel --path-ignore-patterns='**/.claude/**'",
