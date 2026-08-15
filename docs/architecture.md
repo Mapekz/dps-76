@@ -207,6 +207,13 @@ Real game mechanics that must not be "simplified" away:
   falloff, stack caps, body-part geometry); splitting it costs 10-parameter signatures or an
   invented context object in exchange for no reduction in what a reader has to hold in mind.
   See ADR-0016 for the general rule this instance falls under.
+- **`TargetSection.tsx` and `ConditionsSection.tsx`'s length** — same shape as
+  `computeScenarios`: one component, several `GroupHeading`-delimited visual sections, but a
+  single shared closure of derived state and dispatch handlers threaded across all of them
+  (e.g. `TargetSection`'s accuracy sliders are declared next to the body-part picker they're
+  "meaningless without," per the code's own comment). Splitting along the `GroupHeading`
+  boundaries was considered and rejected under ADR-0016's test — it fails the same
+  precondition `computeScenarios` failed.
 
 Accidental complexity — structural, not mechanical, and the target of the simplification
 pass this doc accompanies: the trace-collection boilerplate repeated at each fold call site,
