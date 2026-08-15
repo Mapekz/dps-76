@@ -210,6 +210,15 @@ const IDENTIFIER_ALLOWLIST = new Set([
   // Formula pseudo-variable — the doc defines this inline as notation for a
   // math expression, not a reference to a real TS identifier.
   'bashSec',
+  // ADR-0016 names the four helper functions a rejected split proposal would
+  // have created — they never existed and, per the ADR, never should.
+  'bootstrapStackSummary',
+  'computeHitCycles',
+  'computeApBlock',
+  'computeMitigationBlock',
+  // ADR-0016 also names `tracedFold`, a still-planned (not yet built) helper
+  // — proposed-but-unbuilt identifier, not a stale one.
+  'tracedFold',
 ]);
 
 const DOC_EXTS = ['.md'];
