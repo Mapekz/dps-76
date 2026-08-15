@@ -712,14 +712,19 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // onslaughtMaxStacks/rangeMult above.
   const bashAnimationSec = input.player.battleLoadersBashSec ?? DEFAULT_BATTLE_LOADERS_BASH_SEC;
 
+  // Flag-agnostic bootstrap context — shared by both Onslaught branches below
+  // (mutually exclusive: at most one runs) and by the Bullet Storm/armorPen
+  // folds further down. Built once rather than per-branch: none of these
+  // folds' inputs vary with scenario flags, so one context serves all of them.
+  const bootstrapCtx = scenarioCtx(
+    input,
+    BOOTSTRAP_FLAGS,
+    { maxStacks: 0 },
+    { maxStacks: 0, minStacks: 0 },
+  );
+
   let onslaughtReverseAvg: number | undefined;
   if (onslaughtReverse && onslaughtMaxStacks > 0) {
-    const bootstrapCtx = scenarioCtx(
-      input,
-      BOOTSTRAP_FLAGS,
-      { maxStacks: 0 },
-      { maxStacks: 0, minStacks: 0 },
-    );
     const consume = onslaughtHitEventsPerShot(
       input.weapon,
       input.modifiers,
@@ -737,12 +742,6 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
 
   let onslaughtForwardAvg: number | undefined;
   if (!onslaughtReverse && onslaughtMaxStacks > 0) {
-    const bootstrapCtx = scenarioCtx(
-      input,
-      BOOTSTRAP_FLAGS,
-      { maxStacks: 0 },
-      { maxStacks: 0, minStacks: 0 },
-    );
     const gain = onslaughtHitEventsPerShot(
       input.weapon,
       input.modifiers,
@@ -763,12 +762,6 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
     ...(onslaughtReverseAvg !== undefined && { reverseAvg: onslaughtReverseAvg }),
     ...(onslaughtForwardAvg !== undefined && { forwardAvg: onslaughtForwardAvg }),
   };
-  const bootstrapCtx = scenarioCtx(
-    input,
-    BOOTSTRAP_FLAGS,
-    { maxStacks: 0 },
-    { maxStacks: 0, minStacks: 0 },
-  );
   const bulletStormRetention = foldRegisteredBucket(
     input.modifiers,
     'bulletStormRetention',
