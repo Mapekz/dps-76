@@ -95,24 +95,24 @@ Numbers are the product. Every numeric readout — DPS, percentages, seconds, AP
 
 ## Colors
 
-The palette is desaturated and warm-neutral at rest; color is spent only to mean something (selection, gain, loss), never to decorate.
+The palette is desaturated and warm-neutral at rest; color is spent only to mean something (selection, gain, loss), never to decorate. Dark-mode values are this file's frontmatter `colors.*` block, pinned against `src/index.css`'s `.dark` block by a test — not repeated below. Light-mode values have no frontmatter representation (the block above is dark-mode only) and are given here as the sole source.
 
 ### Primary
-- **Vault Gold** (`oklch(0.82 0.14 80)`): the system's one accent. Used for the primary button, active/checked switches and toggles, focus rings, the emphasized scenario's corner brackets, and any "this is selected / this is the brand" signal. Renders darker (`oklch(0.66 0.13 75)`) in light mode to hold contrast on warm paper.
+- **Vault Gold** (`colors.vault-gold`): the system's one accent. Used for the primary button, active/checked switches and toggles, focus rings, the emphasized scenario's corner brackets, and any "this is selected / this is the brand" signal. Renders darker (`oklch(0.66 0.13 75)`) in light mode to hold contrast on warm paper.
 
 ### Neutral
-- **Terminal Black** (`oklch(0.19 0.01 145)`): the base screen surface (dark, default).
+- **Terminal Black** (`colors.terminal-black`): the base screen surface (dark, default).
 - **Field Paper** (`oklch(0.955 0.012 95)`, light mode background): the printed counterpart to Terminal Black.
-- **Terminal Cream** (`oklch(0.915 0.02 95)`): body text / ink on the dark screen.
+- **Terminal Cream** (`colors.terminal-cream`): body text / ink on the dark screen.
 - **Faded Ink** (`oklch(0.26 0.015 130)`, light mode foreground): body text on paper.
-- **Panel** (`oklch(0.23 0.012 145)` / popover `oklch(0.22 0.012 145)`): card and popover surfaces, one step lighter than the base screen.
-- **Panel Recede** (`oklch(0.27 0.014 145)`): secondary/muted surfaces — deliberately close to Panel so muted content recedes rather than boxes itself off.
-- **Muted Ink** (`oklch(0.67 0.02 130)`): secondary/caption text.
-- **Border Line** (`oklch(0.31 0.015 145)`): the hairline that does almost all of this system's depth work.
+- **Panel** (`colors.panel` / popover `colors.panel-popover`): card and popover surfaces, one step lighter than the base screen.
+- **Panel Recede** (`colors.panel-recede`): secondary/muted surfaces — deliberately close to Panel so muted content recedes rather than boxes itself off.
+- **Muted Ink** (`colors.muted-ink`): secondary/caption text.
+- **Border Line** (`colors.border-line`): the hairline that does almost all of this system's depth work.
 
 ### Functional (reserved meanings — never decorative)
-- **Phosphor Green** (`oklch(0.83 0.14 155)`, darker `oklch(0.53 0.14 150)` in light mode): positive deltas only — a number that just went up. Never a static label color.
-- **Ember Red** (`oklch(0.73 0.16 35)`, darker `oklch(0.55 0.19 30)` in light mode): negative deltas and destructive actions. Same hue family in both roles is intentional — "this got worse" and "this is destructive" read as one register.
+- **Phosphor Green** (`colors.phosphor-green`, darker `oklch(0.53 0.14 150)` in light mode): positive deltas only — a number that just went up. Never a static label color.
+- **Ember Red** (`colors.ember-red`, darker `oklch(0.55 0.19 30)` in light mode): negative deltas and destructive actions. Same hue family in both roles is intentional — "this got worse" and "this is destructive" read as one register.
 
 ### Reserved (unused today)
 - A five-step chart palette (`chart-1`…`chart-5`: gold, phosphor green, a blue at hue 230, ember red, a violet at hue 300) is declared as CSS tokens but not yet consumed by any component. Treat it as pre-registered for a future data-visualization surface, not as license to introduce ad hoc chart colors elsewhere.
