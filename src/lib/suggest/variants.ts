@@ -21,7 +21,13 @@ import { LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS, type BuildState } from '@/stat
 import { hasAnyEngineEffect } from '@/types/modifiers';
 import type { SuggestionBudget, SuggestionCandidate } from './types';
 import { enumerateCombos } from './combos';
-import { legendaryEffectLabel, modLabel, perkLabel, perkLabelWithCost } from './labels';
+import {
+  armorEffectLabel,
+  legendaryEffectLabel,
+  modLabel,
+  perkLabel,
+  perkLabelWithCost,
+} from './labels';
 
 /**
  * Enumerates every legal-ish variant of the current build: alternative OMODs
@@ -191,7 +197,7 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
       out.push({
         id: `armor-count:${effect.id}:${count}`,
         action: [{ type: 'armorEffect/setCount', id: effect.id, count }],
-        label: `${effect.name} ×${count}`,
+        label: armorEffectLabel(effect.name, count, effect.starTier),
         group: 'armor',
         budget: LEGAL,
         family,

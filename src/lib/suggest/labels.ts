@@ -24,3 +24,9 @@ export function legendaryEffectLabel(name: string, slotIndex0: number): string {
 export function modLabel(slotLabel: string, name: string): string {
   return slotLabel === 'Unique' ? `Unique: ${name}` : `Mod: ${name}`;
 }
+
+/** Armor-effect count — "<tier>★ " prefix for legendary-tier effects (matches ArmorSection's own tier headers), none for non-legendary effects. */
+export function armorEffectLabel(name: string, count: number, starTier?: number): string {
+  const prefix = starTier !== undefined ? `${starTier}★ ` : '';
+  return `${prefix}${name} ×${count}`;
+}
