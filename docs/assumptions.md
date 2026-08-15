@@ -158,20 +158,11 @@ Napalm/Cryo/Plasma tube barrels, Nuka-Launcher.
   `explosionChase`.
 
 ## Mixed damage-type OMOD conversion (DamageTypeValues)
-Engine: `materializeDamageTypeComponents`, `effective-weapon.ts`.
-
-OMODs like the Gauss Minigun's Tesla Coil Capacitor convert damage types.
+Engine: `materializeDamageTypeComponents`'s doc-comment (`effective-weapon.ts`)
+covers the missing-type materialization mechanic in full — not repeated here.
 
 - **Fold formula**: `final(X) = max(0, (last SET ?? base(X)) + Σ(MUL_ADD ×
   MUL-base) + Σ ADD)`, clamped to 0. **USER-CONFIRMED.**
-- **Missing-type materialization**: a `baseDamage` modifier scoped to an
-  absent type synthesizes a new component rather than no-op'ing. `scale` =
-  Σ POSITIVE MUL_ADD only (negatives on a missing type are dropped, not
-  netted) — keeps blanket automatic-receiver OMODs from spawning phantom
-  components.
-- New component borrows its curve from the first non-`fromExplosion`
-  ballistic component, else the first non-`fromExplosion` component —
-  never `weapon.damageType`. No eligible fallback ⇒ nothing materializes.
 - **Twins inherit the parent component's damage type**, not a hardcoded
   `'explosive'`. **USER-CONFIRMED** (Gauss Minigun + Tesla Coil). Generalizing
   beyond ballistic/energy is an **ASSUMPTION** — only Tesla/Science! is
