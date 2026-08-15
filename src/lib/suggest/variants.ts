@@ -21,6 +21,7 @@ import { LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS, type BuildState } from '@/stat
 import { hasAnyEngineEffect } from '@/types/modifiers';
 import type { SuggestionBudget, SuggestionCandidate } from './types';
 import { enumerateCombos } from './combos';
+import { legendaryEffectLabel, modLabel, perkLabel, perkLabelWithCost } from './labels';
 
 /**
  * Enumerates every legal-ish variant of the current build: alternative OMODs
@@ -72,7 +73,7 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
         out.push({
           id,
           action: [{ type: 'weapon/mod', slot: slot.slot, omodId: option.id }],
-          label: `${slot.label}: ${option.name}`,
+          label: modLabel(slot.label, option.name),
           group: 'mod',
           budget: LEGAL,
           family: id,
@@ -84,7 +85,7 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
         out.push({
           id,
           action: [{ type: 'weapon/mod', slot: slot.slot, omodId: null }],
-          label: `${slot.label}: Stock`,
+          label: modLabel(slot.label, 'Stock'),
           group: 'mod',
           budget: LEGAL,
           family: id,
@@ -101,7 +102,7 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
         out.push({
           id,
           action: [{ type: 'weapon/legendary', slotIndex: i, omodId: option.id }],
-          label: `Legendary ★${i + 1}: ${option.name}`,
+          label: legendaryEffectLabel(option.name, i),
           group: 'legendary',
           budget: LEGAL,
           family: id,
@@ -136,8 +137,8 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
         const cost = isLegendary ? rank - currentRank : extraCost;
         const budget = isLegendary ? LEGAL : perkMoveBudget(cardBudget, perk, extraCost);
         const label = isLegendary
-          ? `${perk.name} rank ${rank}`
-          : `${perk.name} rank ${rank} (+${extraCost} pts)`;
+          ? perkLabel(perk.name, rank)
+          : perkLabelWithCost(perk.name, rank, extraCost);
         out.push({
           id: `perk-rank:${perkId}:${rank}`,
           action: [{ type: 'perk/setRank', perkId, rank }],
@@ -158,14 +159,9 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
         const budget = isLegendary
           ? legendarySlotBudget
           : perkMoveBudget(cardBudget, perk, extraCost);
-        const label =
-          rank === 1
-            ? isLegendary
-              ? `Equip ${perk.name}`
-              : `Equip ${perk.name} (+${extraCost} pts)`
-            : isLegendary
-              ? `Equip ${perk.name} rank ${rank}`
-              : `Equip ${perk.name} rank ${rank} (+${extraCost} pts)`;
+        const label = isLegendary
+          ? perkLabel(perk.name, rank)
+          : perkLabelWithCost(perk.name, rank, extraCost);
         out.push({
           id: `perk-add:${perkId}:${rank}`,
           action: [{ type: 'perk/add', perkId, rank, legendary: isLegendary }],
@@ -232,7 +228,7 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
             { type: 'armorEffect/setCount', id: x.id, count: countX - k },
             { type: 'armorEffect/setCount', id: y.id, count: countY + k },
           ],
-          label: `Replace ${k}× ${x.name} with ${k}× ${y.name}`,
+          label: `${k}× ${x.name} → ${k}× ${y.name}`,
           group: 'armor',
           budget: LEGAL,
           family: `armor-swap:${x.id}->${y.id}`,

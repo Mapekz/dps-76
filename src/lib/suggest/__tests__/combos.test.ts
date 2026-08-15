@@ -174,11 +174,11 @@ describe('enumerateCombos', () => {
       );
       expect(legendaryAction).toBeDefined();
 
-      // For empty slots, should target index 0 (the first ★ slot)
+      // For empty slots, should target index 0 (the first legendary slot)
       expect(legendaryAction!.slotIndex).toBe(0);
 
-      // Label should reference ★1
-      expect(combo!.label).toContain('★1');
+      // Label should reference slot 1 as a single star (legendaryEffectLabel — labels.ts)
+      expect(combo!.label).toContain('* Furious');
     });
   });
 

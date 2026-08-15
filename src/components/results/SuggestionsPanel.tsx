@@ -36,7 +36,7 @@ function SuggestionRow({
           title="Would exceed the perk point budget"
         >
           {suggestion.budget.special
-            ? `needs ${suggestion.budget.deficit} pt in ${suggestion.budget.special.slice(0, 3).toUpperCase()}`
+            ? `+${suggestion.budget.deficit} ${suggestion.budget.special.slice(0, 3).toUpperCase()}`
             : 'no free slot'}
         </span>
       )}

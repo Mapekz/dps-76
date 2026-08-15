@@ -13,6 +13,7 @@ import {
   type SpecialKey,
 } from '@/state/build-reducer';
 import type { SuggestionBudget, SuggestionCandidate } from './types';
+import { legendaryEffectLabel, perkLabel } from './labels';
 
 /**
  * Combo Suggestions — mechanism-derived pair candidates that open synergy
@@ -350,8 +351,8 @@ function buildPlacementVariants(
         : { legal: false, deficit: 1 };
     }
 
-    const labelA = rankA === 1 ? perkA.name : `${perkA.name} rank ${rankA}`;
-    const labelB = rankB === 1 ? perkB.name : `${perkB.name} rank ${rankB}`;
+    const labelA = perkLabel(perkA.name, rankA);
+    const labelB = perkLabel(perkB.name, rankB);
 
     variants.push({
       id: `${family}:perk+perk`,
@@ -416,7 +417,7 @@ function buildPlacementVariants(
       }
     }
 
-    const perkLabel = perkRank === 1 ? perk.name : `${perk.name} rank ${perkRank}`;
+    const perkSideLabel = perkLabel(perk.name, perkRank);
 
     if (emptySlotIndex !== -1) {
       // Can place in empty slot
@@ -435,7 +436,7 @@ function buildPlacementVariants(
             omodId: legendaryPiece.omodId!,
           },
         ],
-        label: `${perkLabel} + ${legendaryPiece.name} ★${emptySlotIndex + 1}`,
+        label: `${perkSideLabel} + ${legendaryEffectLabel(legendaryPiece.name, emptySlotIndex)}`,
         group: 'combo',
         budget: perkSideBudget,
         family,
@@ -461,7 +462,7 @@ function buildPlacementVariants(
                 omodId: legendaryPiece.omodId!,
               },
             ],
-            label: `${perkLabel} + ${legendaryPiece.name} ★${slotIdx + 1}`,
+            label: `${perkSideLabel} + ${legendaryEffectLabel(legendaryPiece.name, slotIdx)}`,
             group: 'combo',
             budget: perkSideBudget,
             family,
@@ -516,7 +517,7 @@ function buildPlacementVariants(
             omodId: pieceB.omodId!,
           },
         ],
-        label: `${pieceA.name} ★${emptyA + 1} + ${pieceB.name} ★${emptyB + 1}`,
+        label: `${legendaryEffectLabel(pieceA.name, emptyA)} + ${legendaryEffectLabel(pieceB.name, emptyB)}`,
         group: 'combo',
         budget: LEGAL,
         family,
@@ -544,7 +545,7 @@ function buildPlacementVariants(
                   omodId: pieceB.omodId!,
                 },
               ],
-              label: `${pieceA.name} ★${slotIdx + 1} + ${pieceB.name} ★${emptyB + 1}`,
+              label: `${legendaryEffectLabel(pieceA.name, slotIdx)} + ${legendaryEffectLabel(pieceB.name, emptyB)}`,
               group: 'combo',
               budget: LEGAL,
               family,
@@ -575,7 +576,7 @@ function buildPlacementVariants(
                       omodId: pieceB.omodId!,
                     },
                   ],
-                  label: `${pieceA.name} ★${slotA + 1} + ${pieceB.name} ★${slotB + 1}`,
+                  label: `${legendaryEffectLabel(pieceA.name, slotA)} + ${legendaryEffectLabel(pieceB.name, slotB)}`,
                   group: 'combo',
                   budget: LEGAL,
                   family,
