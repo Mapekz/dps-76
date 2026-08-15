@@ -11,6 +11,7 @@ import {
   FilterItem,
 } from '@/components/ui/filter-list';
 import { Separator } from '@/components/ui/separator';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { matchesQuery } from '@/lib/filter-query';
 import { useFilterQuery } from '@/hooks/useFilterQuery';
@@ -96,18 +97,27 @@ function SpecialBudgetBar({
         const over = used > cap;
         const leggo = budget.legendaryBonus[key];
         return (
-          <button
-            type="button"
-            key={key}
-            className={cn(
-              'hover:bg-muted/60 cursor-pointer rounded border px-1 py-0.5 text-center font-mono text-[11px] tabular-nums',
-              over ? 'border-negative text-negative' : 'text-muted-foreground',
-            )}
-            title={`${special}: ${used} of ${cap} card points (${budget.allocation[key]} allocated${leggo > 0 ? ` + ${leggo} from Legendary ${special}` : ''})${over ? ' — over budget' : ''} — click to browse ${special} perks`}
-            onClick={() => onSelectSpecial?.(special)}
-          >
-            <span className="font-condensed font-semibold">{letter}</span> {used}/{cap}
-          </button>
+          <Tooltip key={key}>
+            <TooltipTrigger
+              render={
+                <button
+                  type="button"
+                  className={cn(
+                    'hover:bg-muted/60 cursor-pointer rounded-none border px-1 py-0.5 text-center font-mono text-[11px] tabular-nums',
+                    over ? 'border-negative text-negative' : 'text-muted-foreground',
+                  )}
+                  onClick={() => onSelectSpecial?.(special)}
+                />
+              }
+            >
+              <span className="font-condensed font-semibold">{letter}</span> {used}/{cap}
+            </TooltipTrigger>
+            <TooltipContent>
+              {special}: {used} of {cap} card points ({budget.allocation[key]} allocated
+              {leggo > 0 ? ` + ${leggo} from Legendary ${special}` : ''})
+              {over ? ' — over budget' : ''} — click to browse {special} perks
+            </TooltipContent>
+          </Tooltip>
         );
       })}
     </div>
@@ -284,17 +294,22 @@ function PerkAddCombobox({
           {scope !== 'legendary' && (
             <div className="flex items-center gap-0.5 border-b px-2 py-1">
               {SPECIAL_ORDER.map(({ special, letter }) => (
-                <Button
-                  key={special}
-                  type="button"
-                  variant={filterSpecial === special ? 'default' : 'ghost'}
-                  size="sm"
-                  className="h-6 flex-1 px-0 font-mono text-xs"
-                  title={`Show only ${special} perks`}
-                  onClick={() => setFilterSpecial(filterSpecial === special ? null : special)}
-                >
-                  {letter}
-                </Button>
+                <Tooltip key={special}>
+                  <TooltipTrigger
+                    render={
+                      <Button
+                        type="button"
+                        variant={filterSpecial === special ? 'default' : 'ghost'}
+                        size="sm"
+                        className="h-6 flex-1 px-0 font-mono text-xs"
+                        onClick={() => setFilterSpecial(filterSpecial === special ? null : special)}
+                      />
+                    }
+                  >
+                    {letter}
+                  </TooltipTrigger>
+                  <TooltipContent>Show only {special} perks</TooltipContent>
+                </Tooltip>
               ))}
               {filterSpecial !== null && (
                 <Button
@@ -376,23 +391,8 @@ function PerkList({
           // that invariant), so raceLocked only ever fires for unequipped cards.
           const raceLocked = rank === undefined && raceBlocked(perk);
           const blocked = raceLocked || slotBlocked(perkId, isLegendary, perk);
-          return (
-            <FilterItem
-              key={perkId}
-              disabled={blocked}
-              onClick={() => select(perkId, isLegendary, perk)}
-              onContextMenu={(e) => {
-                e.preventDefault();
-                decrement(perkId);
-              }}
-              title={
-                rank === undefined
-                  ? undefined
-                  : rank > 1
-                    ? 'Right-click to lower'
-                    : 'Right-click to remove'
-              }
-            >
+          const rowContent = (
+            <>
               <CheckIcon
                 className={cn('mr-2 size-4', rank !== undefined ? 'opacity-100' : 'opacity-0')}
               />
@@ -422,7 +422,29 @@ function PerkList({
                         ? `max ${perk.maxRank} · ${perkCardCostAtRank(perk, 1)} pt`
                         : `max ${perk.maxRank}`}
               </span>
+            </>
+          );
+          const itemProps = {
+            disabled: blocked,
+            onClick: () => select(perkId, isLegendary, perk),
+            onContextMenu: (e: React.MouseEvent) => {
+              e.preventDefault();
+              decrement(perkId);
+            },
+          };
+          // Only equipped perks (rank !== undefined) have a right-click
+          // action to explain — everyone else gets the plain row, no tooltip.
+          return rank === undefined ? (
+            <FilterItem key={perkId} {...itemProps}>
+              {rowContent}
             </FilterItem>
+          ) : (
+            <Tooltip key={perkId}>
+              <TooltipTrigger render={<FilterItem {...itemProps} />}>{rowContent}</TooltipTrigger>
+              <TooltipContent>
+                {rank > 1 ? 'Right-click to lower' : 'Right-click to remove'}
+              </TooltipContent>
+            </Tooltip>
           );
         })}
       </FilterGroup>

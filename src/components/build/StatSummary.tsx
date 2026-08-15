@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { HeartIcon } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild } from '@/state/BuildProvider';
 import { resolveStats } from '@/lib/loadout';
@@ -34,30 +35,40 @@ export function StatSummary() {
         const base = player.conditions[key];
         const buffed = value !== base;
         return (
-          <div
-            key={key}
-            className="bg-muted/40 rounded border px-1.5 py-0.5 text-center"
-            title={`${key[0].toUpperCase()}${key.slice(1)}: ${value}${buffed ? ` (base ${base} + buffs)` : ''} — derived from perks, legendary SPECIAL cards, and buffs`}
-          >
-            <span className="font-condensed text-muted-foreground text-[10px] font-semibold uppercase">
-              {LETTERS[key]}
-            </span>{' '}
-            <span className={`font-mono text-xs tabular-nums ${buffed ? 'text-positive' : ''}`}>
-              {value}
-            </span>
-          </div>
+          <Tooltip key={key}>
+            <TooltipTrigger
+              render={<div className="bg-muted/40 rounded-none border px-1.5 py-0.5 text-center" />}
+            >
+              <span className="font-condensed text-muted-foreground text-micro font-semibold uppercase">
+                {LETTERS[key]}
+              </span>{' '}
+              <span className={`font-mono text-xs tabular-nums ${buffed ? 'text-positive' : ''}`}>
+                {value}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              {key[0].toUpperCase()}
+              {key.slice(1)}: {value}
+              {buffed ? ` (base ${base} + buffs)` : ''} — derived from perks, legendary SPECIAL
+              cards, and buffs
+            </TooltipContent>
+          </Tooltip>
         );
       })}
-      <div
-        className="bg-muted/40 ml-auto flex items-center gap-1 rounded border px-1.5 py-0.5"
-        title="Max HP = 245 + 5×END + max-HP buffs"
-      >
-        <HeartIcon className="text-muted-foreground size-3" />
-        <span className="font-mono text-xs tabular-nums">{stats.maxHealth}</span>
-        <span className="font-condensed text-muted-foreground text-[10px] font-semibold uppercase">
-          HP
-        </span>
-      </div>
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <div className="bg-muted/40 rounded-none ml-auto flex items-center gap-1 border px-1.5 py-0.5" />
+          }
+        >
+          <HeartIcon className="text-muted-foreground size-3" />
+          <span className="font-mono text-xs tabular-nums">{stats.maxHealth}</span>
+          <span className="font-condensed text-muted-foreground text-micro font-semibold uppercase">
+            HP
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>Max HP = 245 + 5×END + max-HP buffs</TooltipContent>
+      </Tooltip>
     </div>
   );
 }

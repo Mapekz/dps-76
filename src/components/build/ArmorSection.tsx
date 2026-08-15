@@ -14,6 +14,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ToggleGroup } from '@/components/ui/toggle-group';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   FilterListRoot,
   FilterInput,
@@ -326,23 +327,8 @@ function ArmorEffectList({
         const count = equipped.get(effect.id);
         const typeLocked = !armorTypeEligible(effect, armorWorn);
         const blocked = typeLocked || incrementBlocked(effect);
-        return (
-          <FilterItem
-            key={effect.id}
-            disabled={blocked}
-            onClick={() => select(effect)}
-            onContextMenu={(e) => {
-              e.preventDefault();
-              decrement(effect);
-            }}
-            title={
-              count === undefined
-                ? undefined
-                : count > 1
-                  ? 'Right-click to lower'
-                  : 'Right-click to remove'
-            }
-          >
+        const rowContent = (
+          <>
             <CheckIcon
               className={cn('mr-2 size-4', count !== undefined ? 'opacity-100' : 'opacity-0')}
             />
@@ -372,7 +358,29 @@ function ArmorEffectList({
                     ? `×${count}/${effect.maxCount}`
                     : `max ${effect.maxCount}`}
             </span>
+          </>
+        );
+        const itemProps = {
+          disabled: blocked,
+          onClick: () => select(effect),
+          onContextMenu: (e: React.MouseEvent) => {
+            e.preventDefault();
+            decrement(effect);
+          },
+        };
+        // Only equipped effects (count !== undefined) have a right-click
+        // action to explain — everyone else gets the plain row, no tooltip.
+        return count === undefined ? (
+          <FilterItem key={effect.id} {...itemProps}>
+            {rowContent}
           </FilterItem>
+        ) : (
+          <Tooltip key={effect.id}>
+            <TooltipTrigger render={<FilterItem {...itemProps} />}>{rowContent}</TooltipTrigger>
+            <TooltipContent>
+              {count > 1 ? 'Right-click to lower' : 'Right-click to remove'}
+            </TooltipContent>
+          </Tooltip>
         );
       })}
     </FilterGroup>

@@ -88,19 +88,27 @@ function FilterGroup({
   );
 }
 
-function FilterItem({ className, disabled, ...props }: React.ComponentProps<'button'>) {
-  return (
-    <button
-      type="button"
-      data-slot="filter-item"
-      disabled={disabled}
-      className={cn(
-        "hover:bg-accent hover:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex w-full cursor-default items-center gap-2 rounded-none px-2 py-1.5 text-left text-sm outline-hidden select-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
+// forwardRef so a FilterItem can itself be a Tooltip's `render` target (Base
+// UI's composition pattern needs the ref to anchor the popup) — PerkEditorSection
+// and ArmorSection both wrap one in a Tooltip for the "Right-click to
+// lower/remove" hint.
+const FilterItem = React.forwardRef<HTMLButtonElement, React.ComponentProps<'button'>>(
+  ({ className, disabled, ...props }, ref) => {
+    return (
+      <button
+        ref={ref}
+        type="button"
+        data-slot="filter-item"
+        disabled={disabled}
+        className={cn(
+          "hover:bg-accent hover:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex w-full cursor-default items-center gap-2 rounded-none px-2 py-1.5 text-left text-sm outline-hidden select-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+          className,
+        )}
+        {...props}
+      />
+    );
+  },
+);
+FilterItem.displayName = 'FilterItem';
 
 export { FilterListRoot, FilterInput, FilterList, FilterEmpty, FilterGroup, FilterItem };
