@@ -8,7 +8,7 @@ import {
 import { getConsumables, getMutations } from '@/data/buffs';
 import { getLegendaryOmodSlots, getOmodSlots } from '@/data/omods';
 import { computePerkBudget } from '@/data/perk-budget';
-import { getGeneratedPerk } from '@/data/perk-modifiers';
+import { perkHasEngineEffect } from '@/data/perk-modifiers';
 import {
   allocationOf,
   maxAllowedArmorEffectCount,
@@ -45,12 +45,6 @@ import {
  */
 
 const LEGAL: SuggestionBudget = { legal: true };
-
-/** A perk family is damage-relevant when any rank emits modifiers. */
-function isDamageRelevant(mode: GameMode, perkId: string): boolean {
-  const generated = getGeneratedPerk(mode, perkId);
-  return !!generated && generated.ranks.some((r) => r.modifiers.length > 0);
-}
 
 /** An armor effect is damage-relevant when its per-piece modifiers reach the engine at all. */
 function isArmorEffectRelevant(effect: ArmorEffectEntry): boolean {
@@ -131,7 +125,7 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
   );
 
   for (const [perkId, perk] of Object.entries(registry)) {
-    if (!isDamageRelevant(mode, perkId)) continue;
+    if (!perkHasEngineEffect(mode, perkId)) continue;
     const isLegendary = legendaryPerkIds.has(perkId);
     const currentRank = equippedRanks.get(perkId);
     const family = `perk:${perkId}`;
