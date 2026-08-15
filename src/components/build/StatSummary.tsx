@@ -1,9 +1,8 @@
-import * as React from 'react';
 import { HeartIcon } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild } from '@/state/BuildProvider';
-import { resolveStats } from '@/lib/loadout';
+import { useResolvedStats } from '@/hooks/useResolvedStats';
 import { SPECIAL_KEYS } from '@/lib/player-stats';
 
 const LETTERS: Record<(typeof SPECIAL_KEYS)[number], string> = {
@@ -26,7 +25,7 @@ export function StatSummary() {
   const { mode } = useGameMode();
   const { player, enemy } = useBuild();
 
-  const stats = React.useMemo(() => resolveStats(player, enemy, mode), [player, enemy, mode]);
+  const stats = useResolvedStats(player, enemy, mode);
 
   return (
     <div className="mb-3 flex flex-wrap items-center gap-1.5">

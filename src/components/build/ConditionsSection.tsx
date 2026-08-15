@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { HelperText } from '@/components/ui/helper-text';
@@ -10,7 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
-import { resolveStats } from '@/lib/loadout';
+import { useResolvedStats } from '@/hooks/useResolvedStats';
 import {
   KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS,
   PIPE_WEAPON_CRAFTING_CHALLENGE_ID,
@@ -103,7 +102,7 @@ export function ConditionsSection() {
   const defaults = createDefaultPlayerInput();
   const isGhoul = conditions.isGhoul ?? false;
 
-  const stats = React.useMemo(() => resolveStats(player, enemy, mode), [player, enemy, mode]);
+  const stats = useResolvedStats(player, enemy, mode);
 
   // Onslaught: max from equipped sources (ScenarioSet.onslaughtMaxStacks); −1 =
   // auto (Sustained Stacks — engine-simulated forward avg or max fallback).
