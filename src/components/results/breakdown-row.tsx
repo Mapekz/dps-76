@@ -25,10 +25,13 @@ export function Row({
   value: React.ReactNode;
   indent?: boolean;
   muted?: boolean;
-  /** Falls back to `label` when it's a plain string; pass explicitly when `label` is JSX. */
+  /**
+   * No auto-fallback to `label` — that existed only to backstop the
+   * `truncate` this row no longer applies. Pass explicitly for definitions
+   * that add information beyond the visible label.
+   */
   title?: string;
 }) {
-  const titleText = title ?? (typeof label === 'string' ? label : undefined);
   return (
     <div
       className={cn(
@@ -37,7 +40,15 @@ export function Row({
         muted && 'text-muted-foreground',
       )}
     >
-      <span className="min-w-0 truncate text-xs" title={titleText}>
+      {/*
+       * No `truncate` — this row's whole value proposition is a
+       * hand-verifiable derivation (DESIGN.md's Derivation Ledger Table), so
+       * a cut-off label breaks that promise. `min-w-0` is still required: it
+       * lets this flex item shrink below its content width so long labels
+       * wrap instead of pushing the numeric column off-axis (that column is
+       * `shrink-0` — see `Num` above).
+       */}
+      <span className="min-w-0 text-xs" title={title}>
         {label}
       </span>
       <Num>{value}</Num>
