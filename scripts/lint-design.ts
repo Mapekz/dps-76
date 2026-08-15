@@ -172,7 +172,12 @@ function checkFontSize(file: string, content: string) {
 
 // --- run ---------------------------------------------------------------
 
-for (const file of walk(SRC, ['.ts', '.tsx'])) {
+// .tsx only, not .ts: Tailwind classNames only ever appear on JSX elements
+// in this codebase (verified — no plain .ts file holds a real className
+// string constant), so scanning .ts too only ever finds the English word
+// "rounded" in prose (a comment, a doc-string, a test description) — exactly
+// the false positive this script hit on its own new format.test.ts.
+for (const file of walk(SRC, ['.tsx'])) {
   const content = readFileSync(file, 'utf8');
   checkRadiusInSource(file, content);
   checkFontSize(file, content);
