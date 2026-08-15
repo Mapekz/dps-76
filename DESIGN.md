@@ -133,7 +133,7 @@ The palette is desaturated and warm-neutral at rest; color is spent only to mean
 ### Hierarchy
 - **Header Title** (600, `text-xl`/20px, tight): Barlow Condensed, uppercase, `tracking-[0.12em]` — the app name in the header, the only place this large a label appears.
 - **Section Label** (600, 11px, `tracking-[0.14em]`): Barlow Condensed, uppercase — "Damage output," "Suggestions," scenario names. The system's primary structural label voice.
-- **Micro Label** (600, 10px, `tracking-widest`): Barlow (not condensed), uppercase — button text, badge text, card titles, field captions. Smaller, denser, and un-condensed on purpose so it doesn't compete with Section Labels.
+- **Micro Label** (600, `tracking-widest`): Barlow (not condensed), uppercase. Denser and un-condensed on purpose so it doesn't compete with Section Labels. A shared *voice*, not one fixed size — 10px (`text-micro`, `0.625rem`) is the default for badges, group headings, and other micro text; buttons render it at 12px (`text-xs` — see Buttons below); the one exception in the other direction is the card/panel Title, which uses the voice at `text-lg` (see Cards below). `lint-design.ts` enforces a 10px floor under this voice, not a fixed size.
 - **Body** (400, 14px, relaxed line-height): Barlow — descriptions, helper copy, tooltip content.
 - **Readout** (500, 14–24px, tight, tabular-nums): Spline Sans Mono — every DPS/percentage/seconds/AP value on screen, from the headline DPS number down to a single row in the multiplier-chain ledger.
 
@@ -144,7 +144,7 @@ The palette is desaturated and warm-neutral at rest; color is spent only to mean
 
 ## Layout
 
-Desktop is a two-column instrument layout: the build-configuration column (accordion sections — weapon, armor, SPECIAL, perks, team, buffs, conditions, target) takes the wider, flexible `1fr` track; the results column is a narrower fixed-ish `clamp(340px, 32vw, 420px)` sidebar that stays legible without ever growing to dominate the page. Both sit inside a `container mx-auto` with `px-4` gutters.
+Desktop is a two-column instrument layout: the build-configuration column (accordion sections — see `docs/architecture.md`'s UI flow for the actual section list and order, rather than restating it here) takes the wider, flexible `1fr` track; the results column is a narrower fixed-ish `clamp(340px, 32vw, 420px)` sidebar that stays legible without ever growing to dominate the page. Both sit inside a `container mx-auto` with `px-4` gutters.
 
 Below the `lg` breakpoint the layout collapses to a single column: results render first (so the tweak → number loop stays visible before configuration), build sections follow, and a sticky condensed instrument strip (`HeadlineStrip variant="condensed"`) pins under the header so the current DPS is always on screen while the user scrolls the build form.
 
