@@ -40,15 +40,36 @@ interface PendingImport {
   locked: 'human' | 'ghoul' | null;
   /** The link mixes human-only and ghoul-only perks — no single race keeps everything. */
   conflict: boolean;
+  /**
+   * Both snapshotted at parse time (not re-read at dialog-render time) so
+   * the confirm copy can't drift from what was actually true when the user
+   * clicked Import.
+   */
+  hasExistingBuild: boolean;
+  raceChanges: boolean;
+  /**
+   * `locked !== null ? locked === 'ghoul' : current` — the same fallback the
+   * immediate-import path already used. Precomputed here so the dialog's
+   * confirm button doesn't have to re-derive it (and previously didn't
+   * handle `locked === null` at all, since before this change the dialog
+   * only opened when a real lock existed).
+   */
+  resolvedIsGhoul: boolean;
 }
+
+/** What `build/importNd` actually overwrites (build-reducer.ts) — weapon/OMOD/mutation/consumable state is untouched. */
+const REPLACES_CLAUSE = 'Importing replaces your perks and SPECIAL allocation';
 
 /**
  * Nukes & Dragons import. Importing REPLACES the perk loadout AND race
  * together, and merges the URL's s= SPECIAL (clamped to 1–15); weapon/
  * mutation/consumable state is untouched (N&D URLs don't carry it in a
- * decoded form yet). A same-race (or unrestricted) import applies
- * immediately; a race change or an invalid mixed-race link confirms first —
- * same confirm-dialog pattern as the Race toggle (SpecialLoadoutSection.tsx).
+ * decoded form yet). Imports into an empty build with no race conflict apply
+ * immediately; anything with something to lose — an existing perk loadout,
+ * a race change, or an invalid mixed-race link — confirms first, with copy
+ * naming the actual scope (perks + SPECIAL, optionally also race) rather
+ * than only ever mentioning race. Same confirm-dialog pattern as the Race
+ * toggle (SpecialLoadoutSection.tsx).
  *
  * A second import used to be irreversible — pasting one link over another
  * silently dropped the first import's tweaks with no way back. Every commit
@@ -130,25 +151,42 @@ export function BuildUrlInput() {
         const legendary = parsedPerksToLoadout(perks.filter((p) => isLegendaryPerkKey(p.key)));
         const lock = equippedRaceLock(mode, regular, legendary);
         const current = player.conditions.isGhoul ?? false;
+        const hasExistingBuild = player.perks.length > 0 || player.legendaryPerks.length > 0;
+        const raceChanges = lock.locked !== null && (lock.locked === 'ghoul') !== current;
+        const resolvedIsGhoul = lock.locked !== null ? lock.locked === 'ghoul' : current;
         const imp: PendingImport = {
           perks,
           name: buildName,
           special: parseSpecialFromUrl(url),
           locked: lock.locked,
           conflict: lock.conflict,
+          hasExistingBuild,
+          raceChanges,
+          resolvedIsGhoul,
         };
-        if (lock.conflict || (lock.locked !== null && (lock.locked === 'ghoul') !== current)) {
+        // Confirm first whenever there's something to lose (an existing perk
+        // loadout) or the link forces a race decision — previously this only
+        // fired for the race case, so replacing perks on a same-race import
+        // happened with zero warning at all.
+        if (lock.conflict || raceChanges || hasExistingBuild) {
           setParseState('idle');
           setPending(imp);
         } else {
-          runImport(imp, lock.locked !== null ? lock.locked === 'ghoul' : current);
+          runImport(imp, resolvedIsGhoul);
         }
       } catch {
         setError('Could not read that build link');
         setParseState('error');
       }
     }, 300);
-  }, [url, mode, player.conditions.isGhoul, runImport]);
+  }, [
+    url,
+    mode,
+    player.conditions.isGhoul,
+    player.perks.length,
+    player.legendaryPerks.length,
+    runImport,
+  ]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') handleParse();
@@ -219,12 +257,16 @@ export function BuildUrlInput() {
             <DialogTitle>
               {pending?.conflict
                 ? 'Invalid build link'
-                : `Switch to ${pending?.locked === 'ghoul' ? 'Ghoul' : 'Human'}?`}
+                : pending?.raceChanges
+                  ? `Switch to ${pending.locked === 'ghoul' ? 'Ghoul' : 'Human'}?`
+                  : 'Replace current build?'}
             </DialogTitle>
             <DialogDescription>
               {pending?.conflict
-                ? "This link mixes human-only and ghoul-only perks. Pick a race to import as — the other race's perks are dropped."
-                : `Importing this build switches you to ${pending?.locked === 'ghoul' ? 'Ghoul' : 'Human'}.`}
+                ? `This link mixes human-only and ghoul-only perks. Pick a race to import as — the other race's perks are dropped.${pending.hasExistingBuild ? ` ${REPLACES_CLAUSE}.` : ''}`
+                : pending?.raceChanges
+                  ? `${REPLACES_CLAUSE} — and switches you to ${pending.locked === 'ghoul' ? 'Ghoul' : 'Human'}.`
+                  : `${REPLACES_CLAUSE}.`}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -259,7 +301,7 @@ export function BuildUrlInput() {
                 type="button"
                 variant="default"
                 onClick={() => {
-                  if (pending) runImport(pending, pending.locked === 'ghoul');
+                  if (pending) runImport(pending, pending.resolvedIsGhoul);
                   setPending(null);
                 }}
               >
