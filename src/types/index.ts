@@ -380,7 +380,7 @@ export interface PlayerConfig {
    * count (0-`maxCount`; single-slot effects use 0/1). Authoritative source
    * for both the folded `Modifier[]` list and `ResolvedPlayer.wornPieceCounts`
    * — resolveLoadout derives both, the UI never sets either downstream field
-   * directly (docs/assumptions.md "Armor (Phase 3 engine + UI, 2026-07-18)").
+   * directly (docs/assumptions.md "Armor effects (engine + UI)").
    */
   armorEffects: Record<string, number>;
   mutations: string[];

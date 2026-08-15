@@ -421,7 +421,7 @@ export const FALLBACK_AVIF_ROUTES: Record<
   // scaledByWeaponApCost condition multiplies by the EFFECTIVE (post
   // weapon-OMOD vatsApCost fold) cost. User-confirmed: applies in free aim
   // too (no VATS gate), and armor-side AP-cost entry points (Scanner's 4★)
-  // must NOT feed it (docs/assumptions.md "Armor (Phase 3 engine + UI, 2026-07-18)").
+  // must NOT feed it (docs/assumptions.md "Armor effects (engine + UI)").
   STAT_DmgAP: { bucket: 'dbm', scale: 0.01, conditions: [{ kind: 'scaledByWeaponApCost' }] },
   // VATS hit-chance aggregate (Phase 4, display-only — vatsHitChance bucket
   // doc comment). AVIF STAT_VATSAccuracy 0x006C2035 — no plumbing perk maps

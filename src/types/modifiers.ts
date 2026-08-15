@@ -1386,7 +1386,7 @@ export type Condition =
    * WornApparelHasKeywordCount). Evaluated against
    * `PlayerConditions.wornPieceCounts`, which `resolveLoadout` derives from
    * the Armor checklist — see resolve.ts's `wornPieceCount` case and
-   * docs/assumptions.md "Armor (Phase 3 engine + UI, 2026-07-18)".
+   * docs/assumptions.md "Armor effects (engine + UI)".
    */
   | { kind: 'wornPieceCount'; keyword: string; count: number; orMore?: boolean }
   /**
@@ -1417,7 +1417,7 @@ export type Condition =
    * weapon-OMOD `vatsApCost` fold — user-confirmed it improves free aim too,
    * so no VATS gate. Armor-side AP-cost reductions (Scanner's 4★) use an
    * entry point that does NOT feed this scaling and must stay out of this
-   * input when armor modeling lands (docs/assumptions.md "Armor (Phase 3 engine + UI, 2026-07-18)").
+   * input when armor modeling lands (docs/assumptions.md "Armor effects (engine + UI)").
    */
   | { kind: 'scaledByWeaponApCost' }
   /** value × stackCount (clamped to max) from the matching player-state counter. */

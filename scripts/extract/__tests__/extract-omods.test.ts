@@ -1465,8 +1465,8 @@ describe('extractOmods (range barrel MinRange/MaxRange, Phase 1 extraction half)
 });
 
 /**
- * Phase 3 armor pipeline (docs/assumptions.md "Armor pipeline (Phase 3
- * extraction)"): classifyOmodRecordExclusion gates on Form Type ∈ {'Weapon',
+ * Phase 3 armor pipeline (docs/assumptions.md "Armor extraction pipeline"):
+ * classifyOmodRecordExclusion gates on Form Type ∈ {'Weapon',
  * 'Armor'} instead of Weapon-only, and extractOmods emits a SECOND array
  * (armorOmods) alongside the unchanged weapon `omods` array from one shared
  * OMOD list+get pass. Fixtures are verbatim `esm get <formid> --json`

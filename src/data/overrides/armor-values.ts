@@ -13,15 +13,14 @@ import type { Modifier } from '@/types/modifiers';
  * Also used for a magnitude-preserving simplification (Battle-Loader's):
  * dropping condition rows that are provably redundant with the modifier's
  * own baked-in value or genuinely unmodeled (bash cadence) — see the entry's
- * own comment and docs/assumptions.md "Armor (Phase 3 engine + UI,
- * 2026-07-18)".
+ * own comment and docs/assumptions.md "Armor effects (engine + UI)".
  */
 export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> = {
   // Battle-Loader's (armor + PA): the extracted modifiers carry the correct
   // wornPieceCount tier (1/2/3/4/≥5 → 15/30/45/60/75% reloadSkipChanceBash)
   // PLUS three `unresolved` conditions (IsPowerAttacking()=1,
   // GetRandomPercent()=N, GetDead()=0) — see docs/assumptions.md "Armor
-  // pipeline (Phase 3 extraction)". `evalCondition`'s `unresolved` case
+  // extraction pipeline". `evalCondition`'s `unresolved` case
   // always returns null, so ANY unresolved condition permanently
   // deactivates a modifier regardless of its other conditions — wiring
   // wornPieceCount alone can't make these fire. All three are safe to drop:
@@ -216,8 +215,8 @@ export const armorLegendaryValueOverrides: Readonly<Record<string, Modifier[]>> 
   // keyword is added to the ARMOR OMOD (`addedKeywords`), never to a weapon,
   // so `ctx.weapon.keywords` can never contain it and the modifier is
   // permanently dead as extracted (same class of bug as the `GetIsPlayer`
-  // Run-On-Target fix logged in docs/assumptions.md "Armor pipeline (Phase 3
-  // extraction)", but this exact row wasn't caught by that fix). Dropping
+  // Run-On-Target fix logged in docs/assumptions.md "Armor extraction
+  // pipeline", but this exact row wasn't caught by that fix). Dropping
   // the broken keyword gate and letting the generic per-piece value×count
   // scaling (`src/data/armor-modifiers.ts`) reconstruct the 5/10/15/20/25%
   // ladder from the single 5%-per-piece value is the same "trust the

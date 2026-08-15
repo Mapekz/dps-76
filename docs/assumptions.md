@@ -309,35 +309,35 @@ Policy: wiki-sourced values are banned — ESM-derived or in-game-measured only
 (`src/data/overrides/`). Effects the ESM can't express stay inert with a
 picker badge.
 
-| Effect | Model | Status |
-|---|---|---|
-| Furious | Onslaught stack counter (+9 max, +5%/stack dbm) — see **Onslaught** | ESM granted-perk chase |
-| Instigating | +50% dbm while enemy HP ≥ 60% | ESM |
-| Executioner's | +50% dbm while enemy HP ≤ 40% (default 100 → inactive) | ESM |
-| DmgVs* family (Hunter's, Exterminator's, Ghoul Slayer's, Assassin's, Troubleshooter's, Zealot's, Mutant Slayer's) | +50% dbm vs matching enemy race/keyword via the Target picker's race | ESM |
-| Bully's / Tormentor | dbm per crippled limb (+25%/+20%), cap **6** | ESM value; cap is ours |
-| Explosive (2★) | See **Launcher explosion damage** § "Explosive 2★" | ESM property; branch USER-MEASURED |
-| Crippling / Basher's | extracted to `limbDamage`/`bashDamage` — INERT until limb-targeting/bash is modeled | ESM |
-| Scaly Skin (+ Chameleon/Grounded ripple) | +DamageResist/+EnergyResist extracted to `damageResistGain`/`energyResistGain` (50/62 normal/Class-Freak) — INERT until wearer-side resist mitigation is modeled | ESM-confirmed |
-| Pyromaniac's / Viper's / Severing's | +50% dbm while target has an active fire/poison/bleed status (toggle, default off); Viper's `ImmuneToPoison` gate CONSUMED | ESM granted-perk chase |
-| Last Shot | +100% dbm on the magazine's last round (toggle, default off); steady-state doesn't model once-per-mag cadence | ESM |
-| Encircler's | +10%×N from `enemyGroupCount` tiers; default count **1** | ESM |
-| Fencer's (melee) | +12.5–50% from exact `teammateCount` tiers; range-check CONSUMED | ESM |
-| Mutant's / Gourmand's / Lucid | curve-driven on `mutationCount`/**Hunger & thirst tiers**/`feralTier` | ESM |
-| **Hunger & thirst tiers** | `hungerThirstTier`(0–8) = foodTier + drinkTier. **INFERENCE**: sum decomposition matches Gourmand's behavior but isn't record-proven | ESM AV max + inferred composition |
-| **Feral meter** names | 8/6–7/4–5/2–3/0–1 banding of 5 tier names over 9 values. **INFERENCE** (display-only) | ESM names; banding ours |
-| Two Shot | ×1.75 confirmed (Fixer@50: 103→180.25); extra projectile feeds no damage term yet | ESM + **user-confirmed** |
-| Anti-Armor family | −50% target armor via `armorPen`, live (`mitigation.ts`) | ESM |
-| Bleed/burn/shock mod DoTs | `dotDamage`, refresh-only model (re-applying resets the timer). **INFERENCE**: read as dmg/sec (ESM only proves total-over-duration). Exempt from sneak/crit/body-part | ESM magnitude; rate reading ours |
-| Adrenal Reaction (mutation) | +5%/stack (+6.25% SiN); below x=1 the curve clamps to its lowest point (standard curve-table convention) | ESM curve |
-| **Tenderizer** | +0.1% dbm/stack, manual 0–1000 (cap +100%), target-side, applied UNCONDITIONALLY | ESM; cap is ours |
-| Follow Through / Taking One for the Team | Both `wholeDamage` ×(1+value) target-side debuffs (10/20/30/40%/rank), manual toggle default 0, composing multiplicatively. Both grant a PERK to the struck actor via a spell chain carrying "Mod Incoming Weapon Damage" — esm-walk-confirmed | ESM |
-| SPECIAL buffs (Buffout, Bufftats, Mentats, Berry Mentats) | flat unconditional ADDs into STR/LCK; other stats stored-inert until perk-SPECIAL scaling | ESM |
-| Juggernaut's max-HP input | `maxHealth` is DERIVED (**Max HP (derived)**), read-only | — |
-| **Strange in Numbers** | DERIVED: active iff card equipped AND `teammateCount≥1` (teammate mutation status not modeled — **user decision**) | card text + user decision |
-| Kill-streak slider gating | existence scan over assembled modifiers, unlike Onslaught's dedicated bucket fold; the `0` default is deliberate — `docs/adr/0009` | engine wiring |
-| United Ordeal | Ghoul-only, +1/+2/+3 all 7 SPECIAL, ranks 1–3, while `playerIsGhoul` AND `teammateCount≥1` | ESM |
-| Public team bonuses | user-selected toggle (None/Casual/Exploration), NOT derived; magnitude `min(teammateCount+1,4)` is a documented bond-score-proxy simplification | ESM gate + ours |
+| Effect | Model | Status | Provenance |
+|---|---|---|---|
+| Furious | Onslaught stack counter (+9 max, +5%/stack dbm) — see **Onslaught** | ESM-PROVEN | granted-perk chase |
+| Instigating | +50% dbm while enemy HP ≥ 60% | ESM-PROVEN | — |
+| Executioner's | +50% dbm while enemy HP ≤ 40% (default 100 → inactive) | ESM-PROVEN | — |
+| DmgVs* family (Hunter's, Exterminator's, Ghoul Slayer's, Assassin's, Troubleshooter's, Zealot's, Mutant Slayer's) | +50% dbm vs matching enemy race/keyword via the Target picker's race | ESM-PROVEN | — |
+| Bully's / Tormentor | dbm per crippled limb (+25%/+20%), cap **6** | ASSUMPTION | ESM per-stack value; the 6-stack cap is not ESM-derived |
+| Explosive (2★) | See **Launcher explosion damage** § "Explosive 2★" | MEASURED | ESM property; which explosion-kind branch applies was settled by in-game measurement |
+| Crippling / Basher's | extracted to `limbDamage`/`bashDamage` — INERT until limb-targeting/bash is modeled | ESM-PROVEN | extracted, inert pending limb-targeting/bash modeling |
+| Scaly Skin (+ Chameleon/Grounded ripple) | +DamageResist/+EnergyResist extracted to `damageResistGain`/`energyResistGain` (50/62 normal/Class-Freak) — INERT until wearer-side resist mitigation is modeled | ESM-PROVEN | extracted, inert pending wearer-side resist mitigation |
+| Pyromaniac's / Viper's / Severing's | +50% dbm while target has an active fire/poison/bleed status (toggle, default off); Viper's `ImmuneToPoison` gate CONSUMED | ESM-PROVEN | granted-perk chase |
+| Last Shot | +100% dbm on the magazine's last round (toggle, default off); steady-state doesn't model once-per-mag cadence | ESM-PROVEN | — |
+| Encircler's | +10%×N from `enemyGroupCount` tiers; default count **1** | ESM-PROVEN | — |
+| Fencer's (melee) | +12.5–50% from exact `teammateCount` tiers; range-check CONSUMED | ESM-PROVEN | — |
+| Mutant's / Gourmand's / Lucid | curve-driven on `mutationCount`/**Hunger & thirst tiers**/`feralTier` | ESM-PROVEN | — |
+| **Hunger & thirst tiers** | `hungerThirstTier`(0–8) = foodTier + drinkTier | INFERENCE | ESM AV max is proven; the sum decomposition (foodTier + drinkTier) matches Gourmand's behavior but isn't record-proven |
+| **Feral meter** names | 8/6–7/4–5/2–3/0–1 banding of 5 tier names over 9 values (display-only) | INFERENCE | tier names are ESM-sourced; the banding over 9 values is ours |
+| Two Shot | ×1.75 confirmed (Fixer@50: 103→180.25); extra projectile feeds no damage term yet | USER-CONFIRMED | ESM property; multiplier confirmed in-game |
+| Anti-Armor family | −50% target armor via `armorPen`, live (`mitigation.ts`) | ESM-PROVEN | — |
+| Bleed/burn/shock mod DoTs | `dotDamage`, refresh-only model (re-applying resets the timer). Exempt from sneak/crit/body-part | INFERENCE | ESM proves total-over-duration; reading it as dmg/sec is ours, not record-proven |
+| Adrenal Reaction (mutation) | +5%/stack (+6.25% SiN); below x=1 the curve clamps to its lowest point (standard curve-table convention) | ESM-PROVEN | curve-driven |
+| **Tenderizer** | +0.1% dbm/stack, manual 0–1000 (cap +100%), target-side, applied UNCONDITIONALLY | ASSUMPTION | ESM per-stack value; the 0–1000 manual cap (+100%) is not ESM-derived |
+| Follow Through / Taking One for the Team | Both `wholeDamage` ×(1+value) target-side debuffs (10/20/30/40%/rank), manual toggle default 0, composing multiplicatively. Both grant a PERK to the struck actor via a spell chain carrying "Mod Incoming Weapon Damage" | ESM-PROVEN | esm-walk-confirmed spell chain |
+| SPECIAL buffs (Buffout, Bufftats, Mentats, Berry Mentats) | flat unconditional ADDs into STR/LCK; other stats stored-inert until perk-SPECIAL scaling | ESM-PROVEN | — |
+| Juggernaut's max-HP input | `maxHealth` is DERIVED (**Max HP (derived)**), read-only | CLOSED | not a hand-supplied value — cross-reference only |
+| **Strange in Numbers** | DERIVED: active iff card equipped AND `teammateCount≥1` (teammate mutation status not modeled) | ASSUMPTION | card text is ESM-provable; whether teammate mutation status also matters is an unmodeled project-owner decision |
+| Kill-streak slider gating | existence scan over assembled modifiers, unlike Onslaught's dedicated bucket fold; the `0` default is deliberate — `docs/adr/0009` | CLOSED | settled engine-wiring decision, not an open question |
+| United Ordeal | Ghoul-only, +1/+2/+3 all 7 SPECIAL, ranks 1–3, while `playerIsGhoul` AND `teammateCount≥1` | ESM-PROVEN | — |
+| Public team bonuses | user-selected toggle (None/Casual/Exploration), NOT derived; magnitude `min(teammateCount+1,4)` is a documented bond-score-proxy simplification | ASSUMPTION | the toggle gate is ESM-sourced; the bond-score-proxy magnitude formula is a documented simplification, not ESM-derived |
 
 ## Consumable stacking & addictions
 Implementation: `src/lib/consumable-rules.ts` (single shared implementation
@@ -912,7 +912,7 @@ must not be shown.
   that is `mod_Custom_TheGuarantee` (`0x008F0DCC`), already modeled via
   Demolition Expert on its identity OMOD.
 
-## Armor pipeline (Phase 3 extraction)
+## Armor extraction pipeline
 Engine: `extract-omods.ts`, `conditions.ts`. Armor/PA OMODs share the same
 OMOD record type as weapon mods, gated by `Data."Form Type"`; the
 `Properties[].Property` enum, `GetIsPlayer` tab-index-2 inversion, and
@@ -927,7 +927,7 @@ ESM-proven and documented at their respective extraction sites.
   per ARMO record, feeding armor-OMOD obtainability. No resistances, no
   mod slots — later Phase 3 scope.
 
-## Armor (Phase 3 engine + UI, 2026-07-18)
+## Armor effects (engine + UI)
 UI/data flow, per-piece scaling shapes (flat vs self-scaling), and the
 picker roster/grouping are documented at `src/data/armor-modifiers.ts`,
 `docs/adr/0008`, and `docs/adr/0010` — not repeated here.
@@ -974,7 +974,7 @@ picker roster/grouping are documented at `src/data/armor-modifiers.ts`,
   separate from this modifier gating and derives from record presence per
   name, COBJ-verified — `docs/adr/0010`.
 
-## Known gaps / deferred
+## Deliberate non-modeling
 - **Follow Through / Taking One for the Team** extract with empty
   `modifiers` (the chain to hidden debuff/companion perks isn't followed)
   but are not inert — see the manual toggle in **Hand-supplied values**.
