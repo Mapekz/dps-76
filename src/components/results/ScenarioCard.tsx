@@ -13,9 +13,13 @@ interface ScenarioCardProps {
   label: string;
   result: ScenarioResult;
   emphasized: boolean;
-  /** Selected target's display name, for the "vs {name} (Lv N)" block below — undefined hides it even if `result.effective` is somehow set. */
+  /**
+   * Gates the "time to kill" row — undefined hides it even if
+   * `result.effective` is somehow set. No longer displayed as text: the
+   * selected enemy already shows once, above both cards (HeadlineStrip),
+   * so repeating "vs {name}" on each card was redundant.
+   */
   targetName?: string;
-  targetLevel?: number;
 }
 
 /**
@@ -47,7 +51,6 @@ export function ScenarioCard({
   result,
   emphasized,
   targetName,
-  targetLevel,
 }: ScenarioCardProps) {
   const dispatch = useBuildDispatch();
   const preResistDps = result.ap?.apLimitedDps ?? result.sustain.sustainedDps;
@@ -106,9 +109,6 @@ export function ScenarioCard({
       )}
       {result.effective && targetName && (
         <div className="border-border/60 mt-1 space-y-1 border-t pt-1.5">
-          <p className="text-muted-foreground truncate text-micro uppercase tracking-wide">
-            vs {targetName} (Lv {targetLevel ?? '?'})
-          </p>
           <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
             <span>time to kill</span>
             <span className="text-foreground text-sm tabular-nums">
