@@ -68,6 +68,14 @@ investigation narrative into anything but a commit message (git already
 owns that history — a doc that repeats it just has to be kept in sync with
 itself).
 
+**`PRODUCT.md` and `.impeccable/*` are not documentation** — they're config
+and generated output for the `/impeccable` skill (`PRODUCT.md`'s
+`<!-- impeccable:product-schema 1 -->` header and `.impeccable/design.json`'s
+`generatedAt` field mark them as such). Don't hand-edit them as part of a
+docs pass, don't fold them into one of the four genres above, and don't flag
+them as undocumented or duplicative of `DESIGN.md` — the next `/impeccable`
+run overwrites hand edits, and a real fix belongs in that skill, not here.
+
 ## Registry entries: one claim, terse
 
 ```markdown

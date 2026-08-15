@@ -219,6 +219,10 @@ const IDENTIFIER_ALLOWLIST = new Set([
   // ADR-0016 also names `tracedFold`, a still-planned (not yet built) helper
   // — proposed-but-unbuilt identifier, not a stale one.
   'tracedFold',
+  // docs-writing/SKILL.md cites .impeccable/design.json's own `generatedAt`
+  // field — real, but in a directory the guard doesn't scan (.impeccable/
+  // is tool-owned generated output, not app source under src/ or scripts/).
+  'generatedAt',
 ]);
 
 const DOC_EXTS = ['.md'];
