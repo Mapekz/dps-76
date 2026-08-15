@@ -33,10 +33,12 @@ end-to-end even when no shipped content moves DPS yet; `false` = NYI (the
 picker's "no effect yet" badge means not implemented, not "0 with your build").
 Its optional
 `foldBase` and `deBased` fields also own non-default fold-output conventions
-(defaults: 0 and false). `WEAPON_STAT_BUCKETS` (`effective-weapon.ts`) and
-`INERT_ENGINE_BUCKETS` (the OMOD/consumable picker's "no engine effect" badge,
-`omods.ts`) are derived from it, not hand-maintained, so the picker can't
-silently drift from what the engine actually wires.
+(defaults: 0 and false). `WEAPON_STAT_BUCKETS` and `INERT_ENGINE_BUCKETS` are
+both defined in `src/types/modifiers.ts` alongside `BUCKET_REGISTRY` itself,
+derived from it rather than hand-maintained — `effective-weapon.ts` and
+`omods.ts` (the OMOD/consumable picker's "no engine effect" badge) only
+consume them, so the picker can't silently drift from what the engine
+actually wires.
 _Avoid_: routing, dispatch.
 
 **Fold**:
