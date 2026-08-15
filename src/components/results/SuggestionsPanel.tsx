@@ -75,13 +75,14 @@ function SuggestionRow({
  * and the consumable-boosts section below it — same row markup, same "tied"
  * (<1%) treatment, different scope of candidates and empty-state copy.
  *
- * `emphasizeTop` leads with `ranked[0]` as a hero row and collapses
- * everything else (the rest of `ranked` plus `tied`) behind a "Show N more"
- * disclosure, default collapsed — every ranked row used to render at equal
- * visual weight (2026-08-10 design critique), which buried the one
- * recommendation actually worth acting on among up to 8 identically-styled
- * rows. Opt-in per section: the structural list is where this matters (up to
- * `PANEL_LIMIT` candidates); the 4-item consumable list stays flat.
+ * `emphasizeTop` renders `ranked[0]` as a larger hero row — every ranked row
+ * used to render at equal visual weight (2026-08-10 design critique), which
+ * buried the one recommendation actually worth acting on among up to 8
+ * identically-styled rows. The rest still render underneath it, unabridged —
+ * an earlier version collapsed them behind a "Show N more" toggle, default
+ * collapsed, which traded "no emphasis" for "nothing visible," a worse
+ * problem. Opt-in per section: the structural list is where this matters (up
+ * to `PANEL_LIMIT` candidates); the 4-item consumable list stays flat.
  *
  * Only emphasizes when `ranked[0]` is a legal mover — `topSuggestions`
  * (evaluate.ts) appends over-budget candidates AFTER every legal one, so
@@ -101,11 +102,9 @@ function SuggestionSection({
   emptyMessage: React.ReactNode;
   emphasizeTop?: boolean;
 }) {
-  const [expanded, setExpanded] = React.useState(false);
   const canEmphasize = emphasizeTop && ranked.length > 0 && ranked[0].budget.legal;
   const hero = canEmphasize ? ranked[0] : null;
   const restRanked = canEmphasize ? ranked.slice(1) : ranked;
-  const collapsedCount = restRanked.length + tied.length;
 
   return (
     <div>
@@ -121,7 +120,7 @@ function SuggestionSection({
         <>
           {hero && <SuggestionRow suggestion={hero} hero />}
 
-          {(!canEmphasize || expanded) && restRanked.length > 0 && (
+          {restRanked.length > 0 && (
             <div className="divide-border/50 divide-y">
               {restRanked.map((s) => (
                 <SuggestionRow key={s.id} suggestion={s} />
@@ -129,7 +128,7 @@ function SuggestionSection({
             </div>
           )}
 
-          {tied.length > 0 && (!canEmphasize || expanded) && (
+          {tied.length > 0 && (
             <>
               <div className="flex items-center gap-2 pt-1">
                 <Separator className="flex-1" />
@@ -153,27 +152,6 @@ function SuggestionSection({
                 ))}
               </div>
             </>
-          )}
-
-          {canEmphasize && !expanded && collapsedCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-muted-foreground mt-1 h-6 px-2 text-xs"
-              onClick={() => setExpanded(true)}
-            >
-              Show {collapsedCount} more
-            </Button>
-          )}
-          {canEmphasize && expanded && collapsedCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-muted-foreground mt-1 h-6 px-2 text-xs"
-              onClick={() => setExpanded(false)}
-            >
-              Show less
-            </Button>
           )}
         </>
       )}
