@@ -237,3 +237,21 @@ export const weaponCorrections: Readonly<Record<string, Partial<Weapon>>> = {
     animDurationSec: 0.5,
   },
 };
+
+/**
+ * Weapons whose DEFAULT barrel is itself a continuous stream — a stream hit
+ * has no discrete projectile impact to trigger an explosion, so Explosive 2★
+ * (and any other explosive-family damage) never applies while it's equipped.
+ * Not ESM-provable (the Explosive omod's own modifier carries no gating
+ * condition) — USER-CONFIRMED 2026-08-15. Only the OBTAINABLE weapon id is
+ * listed; unobtainable boss/workshop-trap variants never reach the picker.
+ * Suppression lifts once a real explosive-conversion barrel is equipped
+ * (Cryolator's Polar Lobber Barrel — produces a genuine `explosionChase`,
+ * see effective-weapon.ts's `streamSuppressesExplosion`). Opposite direction
+ * from `streamConvertingOmodIds` (omod-corrections.ts): those weapons are
+ * normal by default and only become stream-suppressed once equipped.
+ */
+export const streamDeliveryWeaponIds: ReadonlySet<string> = new Set<string>([
+  'Cryolator',
+  'Flamer',
+]);

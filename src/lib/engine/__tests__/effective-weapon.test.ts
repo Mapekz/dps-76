@@ -1435,6 +1435,179 @@ describe('Explosive 2★ dual behavior (explosivePayload branch, docs/assumption
   });
 });
 
+describe('stream-delivery suppression (Cryolator/Flamer defaults, Plasma thrower-barrel OMODs — USER-CONFIRMED 2026-08-15, not ESM-provable)', () => {
+  const FLAT_100 = [
+    { x: 1, y: 100 },
+    { x: 50, y: 100 },
+  ];
+
+  const legendarySource = {
+    kind: 'omod' as const,
+    formId: '0xEXPL2',
+    edid: 'mod_Legendary_Weapon2_Guns_ExplosiveBullets',
+    name: 'Explosive',
+  };
+
+  function makeExplosiveOmod() {
+    return {
+      id: 'mod_Legendary_Weapon2_Guns_ExplosiveBullets',
+      formId: '0xEXPL2',
+      name: 'Explosive',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_Legendary2',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [
+        {
+          id: '0xEXPL2:0',
+          source: legendarySource,
+          bucket: 'explosivePayload' as const,
+          op: 'ADD' as const,
+          value: 0.2,
+          conditions: [],
+        },
+      ],
+    };
+  }
+
+  function makeWeapon(id: string, explosionBaseWeaponDamageMult?: number) {
+    return {
+      id,
+      name: id,
+      components: [
+        { damageType: 'ballistic' as const, tier: -1, levelCap: 50, curvePoints: FLAT_100 },
+      ],
+      damageType: 'ballistic' as const,
+      weaponClass: 'rifle' as const,
+      isAutomatic: false,
+      isPhysical: true,
+      critDamageMult: 2.0,
+      critChargeBonus: 1.0,
+      sneakAttackMult: 2.0,
+      damageBonusMult: 1.0,
+      ...(explosionBaseWeaponDamageMult !== undefined ? { explosionBaseWeaponDamageMult } : {}),
+    };
+  }
+
+  it('Cryolator (weapon-level default): strips explosivePayload and clears explosionBaseWeaponDamageMult even when the base weapon carries one', () => {
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      makeWeapon('Cryolator', 0.15),
+      [makeExplosiveOmod()],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
+    expect(weapon.explosionBaseWeaponDamageMult).toBe(0);
+    expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
+    expect(modifiers.some((m) => m.bucket === 'baseDamage')).toBe(false);
+  });
+
+  it('Flamer (weapon-level default): same suppression', () => {
+    const { modifiers } = buildEffectiveWeapon(
+      makeWeapon('Flamer'),
+      [makeExplosiveOmod()],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
+    expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
+  });
+
+  it('a normal weapon (not in the stream override lists): explosivePayload passes through untouched', () => {
+    const { modifiers } = buildEffectiveWeapon(
+      makeWeapon('test_plain_rifle'),
+      [makeExplosiveOmod()],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
+    expect(modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'explosivePayload', value: 0.2 }),
+    );
+  });
+
+  it('Cryolator with a real explosive-conversion barrel (explosionChase) equipped: suppression lifts, matching "the calculus changes if an explosive-capable barrel is added"', () => {
+    const polarLobberBarrel = {
+      id: 'mod_Cryolator_Barrel_PolarLobber',
+      formId: '0x0',
+      name: 'Polar Lobber Barrel',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_gun_Barrel',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [],
+      explosionChase: {
+        explEdid: 'TestPolarLobberExplosion',
+        baseWeaponDamageMult: 0,
+        components: [
+          {
+            damageType: 'cryo' as const,
+            damageTypeEdid: 'dtCryo',
+            amount: 0,
+            tier: 15,
+            curve: [
+              { x: 1, y: 10 },
+              { x: 50, y: 40 },
+            ],
+            fromExplosion: true,
+          },
+        ],
+      },
+    };
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      makeWeapon('Cryolator'),
+      [polarLobberBarrel, makeExplosiveOmod()],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
+    expect(weapon.components.some((c) => c.damageType === 'cryo' && c.fromExplosion)).toBe(true);
+    // Curve-Table Explosion branch now applies: rewritten into baseDamage, not stripped outright.
+    expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
+    expect(modifiers).toContainEqual(expect.objectContaining({ bucket: 'baseDamage', value: 0.2 }));
+  });
+
+  it('Plasma Gun with a Thrower Barrel equipped: suppressed even though the weapon itself is not in the default-stream list', () => {
+    const throwerBarrel = {
+      id: 'mod_PlasmaGun_barrel_Flamer_Base',
+      formId: '0x0',
+      name: 'Thrower Barrel',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_gun_Barrel',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [],
+    };
+    const { modifiers } = buildEffectiveWeapon(
+      makeWeapon('PlasmaGun'),
+      [throwerBarrel, makeExplosiveOmod()],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
+    expect(modifiers.some((m) => m.bucket === 'explosivePayload')).toBe(false);
+  });
+
+  it('Plasma Gun WITHOUT a Thrower Barrel: explosivePayload passes through untouched', () => {
+    const { modifiers } = buildEffectiveWeapon(
+      makeWeapon('PlasmaGun'),
+      [makeExplosiveOmod()],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
+    expect(modifiers).toContainEqual(
+      expect.objectContaining({ bucket: 'explosivePayload', value: 0.2 }),
+    );
+  });
+});
+
 describe('explosionChase ADDs to a weapon with no baseline explosion, docs/assumptions.md "OMOD-chased launcher payloads" (2026-07-30)', () => {
   const FLAT_100 = [
     { x: 1, y: 100 },

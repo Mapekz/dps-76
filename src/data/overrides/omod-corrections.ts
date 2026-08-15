@@ -465,3 +465,25 @@ export const omodModifierAdditions: Readonly<Record<string, Modifier[]>> = {
     },
   ],
 };
+
+/**
+ * OMODs that convert an otherwise-normal weapon into a continuous stream —
+ * Plasma Gun / Enclave Plasma Gun's "Thrower Barrel" family, Gatling
+ * Plasma's "Thrower Nozzle" — so Explosive 2★ (and any other explosive-family
+ * damage) stops applying while one of these is equipped, same outcome as
+ * `streamDeliveryWeaponIds` (weapon-corrections.ts) but opposite direction:
+ * these weapons are normal by default and only become stream while equipped.
+ * Not ESM-provable — USER-CONFIRMED 2026-08-15. See effective-weapon.ts's
+ * `streamSuppressesExplosion`.
+ */
+export const streamConvertingOmodIds: ReadonlySet<string> = new Set<string>([
+  'mod_PlasmaGun_barrel_Flamer_Base',
+  'mod_PlasmaGun_Barrel_Flamer_HipAccuracy',
+  'mod_PlasmaGun_Barrel_Flamer_Recoil',
+  'mod_PlasmaGun_Barrel_Flamer_Recoil-HipAccuracy',
+  'mod_Enclave_PlasmaGun_barrel_Flamer_Base',
+  'mod_Enclave_PlasmaGun_Barrel_Flamer_HipAccuracy',
+  'mod_Enclave_PlasmaGun_Barrel_Flamer_Recoil',
+  'mod_Enclave_PlasmaGun_Barrel_Flamer_Recoil-HipAccuracy',
+  'mod_GatlingPlasma_Muzzle_Flamer',
+]);

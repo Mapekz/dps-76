@@ -12,6 +12,8 @@ import {
   SUSTAIN_CHANCE_BUCKETS,
   WEAPON_STAT_BUCKETS,
 } from '@/types/modifiers';
+import { streamConvertingOmodIds } from '@/data/overrides/omod-corrections';
+import { streamDeliveryWeaponIds } from '@/data/overrides/weapon-corrections';
 import { effectiveValue, foldBucket, foldRegisteredBucket, type ResolveContext } from './resolve';
 
 export { SUSTAIN_CHANCE_BUCKETS, WEAPON_STAT_BUCKETS };
@@ -405,6 +407,18 @@ export function buildEffectiveWeapon(
   // absent entirely: see hasCurveExplosion/explosionBaseWeaponDamageMult and
   // the Explosive 2★ branch below.
   const chainSuppressesExplosion = equippedOmods.some((o) => o.chainSuppressesExplosion);
+  // Stream-delivery suppression (USER-CONFIRMED 2026-08-15, not ESM-provable
+  // — see streamDeliveryWeaponIds/streamConvertingOmodIds' own doc comments):
+  // a continuous stream (Cryolator's beam, Flamer's flame, Plasma Gun/Gatling
+  // Plasma with a Thrower Barrel/Nozzle equipped) has no discrete projectile
+  // impact to trigger an explosion — same dead-legendary outcome as chain
+  // suppression, folded into the same `explosionSuppressed` flag below so it
+  // wins over any residual explosion data on the weapon's own base record
+  // too. Lifted only by a REAL explosive-conversion OMOD (`explosionChase`,
+  // e.g. Cryolator's Polar Lobber Barrel) — checked together below.
+  const streamSuppressesExplosion =
+    streamDeliveryWeaponIds.has(weapon.id) ||
+    equippedOmods.some((o) => streamConvertingOmodIds.has(o.id));
 
   // OMOD `OverrideProjectile` chase (docs/assumptions.md "OMOD-chased
   // launcher payloads"): an equipped OMOD's EXPL chase can REPLACE the
@@ -423,7 +437,13 @@ export function buildEffectiveWeapon(
     (found, o) => o.explosionChase ?? found,
     undefined,
   );
-  const baseComponents = chainSuppressesExplosion
+  // Combined suppression: chain lightning always wins; stream-delivery only
+  // wins while no real explosive-conversion chase is equipped (that chase IS
+  // the "explosive-capable barrel" that legitimately turns a stream weapon
+  // explosive — Cryolator's Polar Lobber Barrel).
+  const explosionSuppressed =
+    chainSuppressesExplosion || (streamSuppressesExplosion && !explosionChase);
+  const baseComponents = explosionSuppressed
     ? (weapon.components ?? []).filter((c) => !c.fromExplosion)
     : explosionChase
       ? [
@@ -489,9 +509,11 @@ export function buildEffectiveWeapon(
   //    weapon — no twin off the direct-impact token either (decided: the 20%
   //    goes entirely into the explosion's own base, nowhere else).
   //  - Chain-suppressed (Tesla + AC muzzle — chain lightning, not an
-  //    explosion): the legendary is dead weight — stripped outright, no
-  //    twin, no base boost (user-confirmed 2026-07-30).
-  if (chainSuppressesExplosion || hasCurveExplosion) {
+  //    explosion) OR stream-suppressed (Cryolator/Flamer/thrower-barrel
+  //    Plasma weapons — no discrete impact to detonate): the legendary is
+  //    dead weight — stripped outright, no twin, no base boost
+  //    (chain: user-confirmed 2026-07-30; stream: user-confirmed 2026-08-15).
+  if (explosionSuppressed || hasCurveExplosion) {
     const payloadSource = [...allOmodModifiers, ...loadoutModifiers].find(
       (m) => m.bucket === 'explosivePayload',
     );
@@ -501,7 +523,7 @@ export function buildEffectiveWeapon(
     for (let i = resolvedModifiers.length - 1; i >= 0; i--) {
       if (resolvedModifiers[i].bucket === 'explosivePayload') resolvedModifiers.splice(i, 1);
     }
-    if (hasCurveExplosion && !chainSuppressesExplosion && payload > 0 && payloadSource) {
+    if (hasCurveExplosion && !explosionSuppressed && payload > 0 && payloadSource) {
       resolvedModifiers.push({
         id: `${payloadSource.id}:explosiveBaseDamage`,
         source: payloadSource.source,
@@ -533,13 +555,13 @@ export function buildEffectiveWeapon(
       minRange,
       maxRange,
       outOfRangeDamageMult,
-      // Cleared whenever chain-suppressed OR an OMOD chase applies: in
-      // either case the weapon's intrinsic mult-based explosivePayload twin
-      // mechanic (paper-damage.ts) would be redundant with — or simply
+      // Cleared whenever chain/stream-suppressed OR an OMOD chase applies:
+      // in either case the weapon's intrinsic mult-based explosivePayload
+      // twin mechanic (paper-damage.ts) would be redundant with — or simply
       // wrong alongside — the chase's own real components/suppression; the
       // mult is never itself carried over from a chase (curve/typed damage
       // supersedes it — GeneratedExplosionSwap's doc comment).
-      ...(chainSuppressesExplosion || explosionChase ? { explosionBaseWeaponDamageMult: 0 } : {}),
+      ...(explosionSuppressed || explosionChase ? { explosionBaseWeaponDamageMult: 0 } : {}),
       components: [...baseComponents, ...materialized],
     },
     modifiers: resolvedModifiers,

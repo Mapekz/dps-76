@@ -79,6 +79,31 @@ Suppresses the weapon's `explosionBaseWeaponDamageMult` and strips
   is ~30%/bounce; whether it composes subtractively or multiplicatively is
   **unmeasured**.
 
+### Stream-delivery weapons (Cryolator, Flamer, Plasma Gun/Gatling Plasma with a Thrower Barrel/Nozzle)
+Engine: `effective-weapon.ts buildEffectiveWeapon`'s `streamSuppressesExplosion`;
+overrides: `weapon-corrections.ts streamDeliveryWeaponIds`,
+`omod-corrections.ts streamConvertingOmodIds`.
+
+A continuous stream has no discrete projectile impact to trigger an
+explosion, so Explosive 2★ (and any other explosive-family damage) never
+applies — same dead-legendary outcome as chain suppression, folded into the
+same combined flag so it wins even over a residual `explosionBaseWeaponDamageMult`/
+curve-table component on the weapon's own base record. **Not ESM-provable**
+— the Explosive omod's own modifier carries `conditions: []` — **USER-CONFIRMED
+2026-08-15**.
+
+- **Two directions, hand-maintained by weapon family**: Cryolator and Flamer
+  default to stream (`streamDeliveryWeaponIds`, keyed by weapon id); Plasma
+  Gun / Enclave Plasma Gun / Gatling Plasma are normal by default and only
+  become stream while a specific OMOD is equipped (`streamConvertingOmodIds`
+  — the "Thrower Barrel"/"Thrower Nozzle" family).
+- **Lifted by a real explosive-conversion barrel**: Cryolator's Polar Lobber
+  Barrel (an `explosionChase` OMOD, docs/assumptions.md "OMOD-chased
+  launcher payloads") legitimately turns it explosive — matches "the
+  calculus changes if an explosive-capable barrel is added first."
+- Plasma Caster is **not** in this list — the user's report was specifically
+  Plasma Gun's Thrower Barrel and Gatling Plasma's Thrower Nozzle.
+
 ### Explosive-radius-to-damage conversion
 Engine: `effective-weapon.ts buildEffectiveWeapon`.
 
