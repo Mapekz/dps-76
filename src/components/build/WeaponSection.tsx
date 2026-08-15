@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Combobox } from '@/components/ui/combobox';
-import { WeaponCombobox } from '@/components/build/WeaponCombobox';
 import { HelperText } from '@/components/ui/helper-text';
 import { Label } from '@/components/ui/label';
 import { Slider, type SliderMark } from '@/components/ui/slider';
@@ -175,7 +174,7 @@ export function WeaponSection() {
         <div className="space-y-4">
           <div className="space-y-1.5">
             <Label>Weapon</Label>
-            <WeaponCombobox
+            <Combobox
               options={weaponOptions}
               value={equippedUnique?.id ?? player.weapon?.weaponId ?? null}
               onValueChange={(next) => {
