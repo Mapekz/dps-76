@@ -21,6 +21,7 @@ import { healthPercentIndex, PLAYER_HEALTH_PERCENT_STOPS } from '@/lib/health-pe
 import { cn } from '@/lib/utils';
 import { createDefaultPlayerInput, type PlayerInput } from '@/types';
 import { knobActiveBadgeObjects } from '@/types/knob-registry';
+import { GroupHeading } from '@/components/ui/group-heading';
 import { SectionTrigger } from './SectionTrigger';
 
 /**
@@ -175,410 +176,447 @@ export function ConditionsSection() {
         />
       </AccordionTrigger>
       <AccordionContent>
-        <div className="space-y-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="char-health">Health: {conditions.healthPercent}%</Label>
-            <Slider
-              id="char-health"
-              min={0}
-              max={PLAYER_HEALTH_PERCENT_STOPS.length - 1}
-              step={1}
-              value={[healthPercentIndex(conditions.healthPercent, PLAYER_HEALTH_PERCENT_STOPS)]}
-              onValueChange={(v) =>
-                set('healthPercent', PLAYER_HEALTH_PERCENT_STOPS[firstSliderValue(v)])
-              }
-              marks={PLAYER_HEALTH_PERCENT_STOPS.map((pct, i) => ({ value: i, label: `${pct}` }))}
-            />
-          </div>
-
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Max HP</span>
-            <span className="font-mono tabular-nums">{stats.maxHealth}</span>
-          </div>
-
-          {!isGhoul && (
-            <>
+        <div className="space-y-4">
+          <div>
+            <GroupHeading title="Vitals" />
+            <div className="space-y-3">
               <div className="space-y-1.5">
-                <Label htmlFor="char-food">Food meter: {FOOD_TIER_NAMES[foodTier]}</Label>
+                <Label htmlFor="char-health">Health: {conditions.healthPercent}%</Label>
                 <Slider
-                  id="char-food"
+                  id="char-health"
                   min={0}
-                  max={4}
+                  max={PLAYER_HEALTH_PERCENT_STOPS.length - 1}
                   step={1}
-                  value={[foodTier]}
-                  onValueChange={(v) => set('foodTier', firstSliderValue(v))}
-                  marks={FOOD_TIER_NAMES.map((_, i) => ({ value: i }))}
+                  value={[
+                    healthPercentIndex(conditions.healthPercent, PLAYER_HEALTH_PERCENT_STOPS),
+                  ]}
+                  onValueChange={(v) =>
+                    set('healthPercent', PLAYER_HEALTH_PERCENT_STOPS[firstSliderValue(v)])
+                  }
+                  marks={PLAYER_HEALTH_PERCENT_STOPS.map((pct, i) => ({
+                    value: i,
+                    label: `${pct}`,
+                  }))}
                 />
               </div>
 
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Max HP</span>
+                <span className="font-mono tabular-nums">{stats.maxHealth}</span>
+              </div>
+
+              {!isGhoul && (
+                <>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="char-food">Food meter: {FOOD_TIER_NAMES[foodTier]}</Label>
+                    <Slider
+                      id="char-food"
+                      min={0}
+                      max={4}
+                      step={1}
+                      value={[foodTier]}
+                      onValueChange={(v) => set('foodTier', firstSliderValue(v))}
+                      marks={FOOD_TIER_NAMES.map((_, i) => ({ value: i }))}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="char-drink">Drink meter: {DRINK_TIER_NAMES[drinkTier]}</Label>
+                    <Slider
+                      id="char-drink"
+                      min={0}
+                      max={4}
+                      step={1}
+                      value={[drinkTier]}
+                      onValueChange={(v) => set('drinkTier', firstSliderValue(v))}
+                      marks={DRINK_TIER_NAMES.map((_, i) => ({ value: i }))}
+                    />
+                  </div>
+                </>
+              )}
+
+              {isGhoul && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="char-feral">Feral meter: {feralStateName(feralTier)}</Label>
+                  <Slider
+                    id="char-feral"
+                    min={0}
+                    max={8}
+                    step={1}
+                    value={[feralTier]}
+                    onValueChange={(v) => set('feralTier', firstSliderValue(v))}
+                    marks={Array.from({ length: 9 }, (_, i) => ({
+                      value: i,
+                      label: i % 2 === 0 ? String(i) : undefined,
+                    }))}
+                  />
+                </div>
+              )}
+
+              {isGhoul && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="char-glow">
+                    Glow: {glow} / {stats.maxHealth}
+                  </Label>
+                  <Slider
+                    id="char-glow"
+                    min={0}
+                    max={stats.maxHealth}
+                    step={5}
+                    value={[glow]}
+                    onValueChange={(v) => set('glow', firstSliderValue(v))}
+                    marks={[
+                      { value: 0, label: '0' },
+                      { value: 180, label: '180' },
+                      { value: stats.maxHealth, label: String(stats.maxHealth) },
+                    ]}
+                  />
+                </div>
+              )}
+
               <div className="space-y-1.5">
-                <Label htmlFor="char-drink">Drink meter: {DRINK_TIER_NAMES[drinkTier]}</Label>
+                <Label htmlFor="char-caps">
+                  Caps on hand: {conditions.capsOnHand.toLocaleString()}
+                </Label>
                 <Slider
-                  id="char-drink"
+                  id="char-caps"
                   min={0}
-                  max={4}
-                  step={1}
-                  value={[drinkTier]}
-                  onValueChange={(v) => set('drinkTier', firstSliderValue(v))}
-                  marks={DRINK_TIER_NAMES.map((_, i) => ({ value: i }))}
+                  max={40000}
+                  step={1000}
+                  value={[Math.min(conditions.capsOnHand, 40000)]}
+                  onValueChange={(v) => set('capsOnHand', firstSliderValue(v))}
+                  marks={[0, 10000, 20000, 29000, 40000].map((v) => ({
+                    value: v,
+                    label: v === 0 ? '0' : `${v / 1000}k`,
+                  }))}
                 />
               </div>
-            </>
-          )}
-
-          {isGhoul && (
-            <div className="space-y-1.5">
-              <Label htmlFor="char-feral">Feral meter: {feralStateName(feralTier)}</Label>
-              <Slider
-                id="char-feral"
-                min={0}
-                max={8}
-                step={1}
-                value={[feralTier]}
-                onValueChange={(v) => set('feralTier', firstSliderValue(v))}
-                marks={Array.from({ length: 9 }, (_, i) => ({
-                  value: i,
-                  label: i % 2 === 0 ? String(i) : undefined,
-                }))}
-              />
             </div>
-          )}
-
-          {isGhoul && (
-            <div className="space-y-1.5">
-              <Label htmlFor="char-glow">
-                Glow: {glow} / {stats.maxHealth}
-              </Label>
-              <Slider
-                id="char-glow"
-                min={0}
-                max={stats.maxHealth}
-                step={5}
-                value={[glow]}
-                onValueChange={(v) => set('glow', firstSliderValue(v))}
-                marks={[
-                  { value: 0, label: '0' },
-                  { value: 180, label: '180' },
-                  { value: stats.maxHealth, label: String(stats.maxHealth) },
-                ]}
-              />
-            </div>
-          )}
-
-          <div className="space-y-1.5">
-            <Label htmlFor="char-caps">
-              Caps on hand: {conditions.capsOnHand.toLocaleString()}
-            </Label>
-            <Slider
-              id="char-caps"
-              min={0}
-              max={40000}
-              step={1000}
-              value={[Math.min(conditions.capsOnHand, 40000)]}
-              onValueChange={(v) => set('capsOnHand', firstSliderValue(v))}
-              marks={[0, 10000, 20000, 29000, 40000].map((v) => ({
-                value: v,
-                label: v === 0 ? '0' : `${v / 1000}k`,
-              }))}
-            />
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="char-killstreak">Kill streak: {conditions.killStreak}</Label>
-            <Slider
-              id="char-killstreak"
-              min={0}
-              max={10}
-              step={1}
-              disabled={!hasKillStreak}
-              value={[conditions.killStreak]}
-              onValueChange={(v) => set('killStreak', firstSliderValue(v))}
-              marks={Array.from({ length: 11 }, (_, i) => ({
-                value: i,
-                label: i % 2 === 0 ? String(i) : undefined,
-              }))}
-            />
-            {!hasKillStreak && (
-              <p className="text-muted-foreground text-xs">No kill-streak sources equipped</p>
-            )}
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between gap-2">
-              <Label htmlFor="char-onslaught">
-                {onslaughtReverse
-                  ? `Reverse Onslaught — avg ~${Math.round(onslaughtValue)} / max ${onslaughtMax}`
-                  : onslaughtStored === -1
-                    ? `Onslaught — auto ~${formatStackAvg(onslaughtValue)} avg / max ${onslaughtMax}`
-                    : `Onslaught stacks (${onslaughtValue} / max ${onslaughtMax})`}
-              </Label>
-              {!onslaughtReverse && onslaughtStored !== -1 && onslaughtMax > 0 && (
-                <button
-                  type="button"
-                  className="text-muted-foreground shrink-0 text-xs underline"
-                  onClick={() => set('onslaughtStacks', -1)}
-                >
-                  Auto
-                </button>
-              )}
-            </div>
-            {onslaughtReverse ? (
-              <p className="text-muted-foreground text-xs">
-                Engine-computed average during sustained fire (Gunslinger Master). Consumption
-                scales with fire rate, projectiles, and targets hit below.
-              </p>
-            ) : (
-              <Slider
-                id="char-onslaught"
-                min={0}
-                max={Math.max(onslaughtMax, 1)}
-                step={1}
-                disabled={onslaughtMax === 0}
-                value={[onslaughtValue]}
-                onValueChange={(v) => set('onslaughtStacks', firstSliderValue(v))}
-                marks={
-                  onslaughtMax > 0
-                    ? Array.from({ length: onslaughtMax + 1 }, (_, i) => ({
-                        value: i,
-                        label: i % 5 === 0 || i === onslaughtMax ? String(i) : undefined,
-                      }))
-                    : undefined
-                }
-              />
-            )}
-            {onslaughtMax === 0 && (
-              <p className="text-muted-foreground text-xs">No Onslaught sources equipped</p>
-            )}
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between gap-2">
-              <Label htmlFor="char-bulletstorm">
-                {bulletStormStored === -1
-                  ? `Bullet Storm — auto ~${formatStackAvg(bulletStormValue)} avg / max ${bulletStormMax}`
-                  : `Bullet Storm stacks (${bulletStormValue} / max ${bulletStormMax})`}
-              </Label>
-              {bulletStormStored !== -1 && bulletStormMax > 0 && (
-                <button
-                  type="button"
-                  className="text-muted-foreground shrink-0 text-xs underline"
-                  onClick={() => set('bulletStormStacks', -1)}
-                >
-                  Auto
-                </button>
-              )}
-            </div>
-            <Slider
-              id="char-bulletstorm"
-              min={bulletStormMin}
-              max={Math.max(bulletStormMax, bulletStormMin, 1)}
-              step={1}
-              disabled={bulletStormMax === 0}
-              value={[bulletStormValue]}
-              onValueChange={(v) => set('bulletStormStacks', firstSliderValue(v))}
-              marks={
-                bulletStormMax > 0
-                  ? Array.from({ length: bulletStormMax - bulletStormMin + 1 }, (_, i) => {
-                      const v = bulletStormMin + i;
-                      return {
-                        value: v,
-                        label: v % 5 === 0 || v === bulletStormMax ? String(v) : undefined,
-                      };
-                    })
-                  : undefined
-              }
-            />
-            {bulletStormMax === 0 && (
-              <p className="text-muted-foreground text-xs">No Bullet Storm sources equipped</p>
-            )}
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="char-concentrated-fire">
-              Concentrated Fire stacks ({concentratedFireStacks} / max 20)
-            </Label>
-            <Slider
-              id="char-concentrated-fire"
-              min={0}
-              max={20}
-              step={1}
-              disabled={!hasConcentratedFire}
-              value={[concentratedFireStacks]}
-              onValueChange={(v) => set('concentratedFireStacks', firstSliderValue(v))}
-              marks={Array.from({ length: 21 }, (_, i) => ({
-                value: i,
-                label: i % 5 === 0 ? String(i) : undefined,
-              }))}
-            />
-            <p className="text-muted-foreground text-xs">
-              Stacks build per VATS shot landed on the same body part and reset when you switch body
-              part or target — a manual stand-in for the game's hidden counter (each rank adds
-              +1/2/3% VATS damage per stack).
-            </p>
-            {!hasConcentratedFire && (
-              <p className="text-muted-foreground text-xs">No Concentrated Fire sources equipped</p>
-            )}
-          </div>
-
-          {hasPipeCraftingChallenge && (
-            <SwitchRow
-              id="char-pipe-crafting-challenge"
-              label="Completed pipe-weapon crafting challenge"
-              checked={pipeCraftingChallengeCompleted}
-              onCheckedChange={(checked) => {
-                const ids = conditions.completedChallengeIds ?? [];
-                set(
-                  'completedChallengeIds',
-                  checked
-                    ? [...ids, PIPE_WEAPON_CRAFTING_CHALLENGE_ID]
-                    : ids.filter((id) => id !== PIPE_WEAPON_CRAFTING_CHALLENGE_ID),
-                );
-              }}
-            />
-          )}
-
-          {hasKingfisherLocalLegend && (
-            <div className="space-y-1.5">
-              <Label htmlFor="char-kingfisher-local-legend">
-                Completed Local Legend fishing challenges ({localLegendFishingChallengesCompleted} /{' '}
-                {KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS.length})
-              </Label>
-              <Slider
-                id="char-kingfisher-local-legend"
-                min={0}
-                max={KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS.length}
-                step={1}
-                value={[localLegendFishingChallengesCompleted]}
-                onValueChange={(v) =>
-                  set('localLegendFishingChallengesCompleted', firstSliderValue(v))
-                }
-                marks={Array.from(
-                  { length: KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS.length + 1 },
-                  (_, i) => ({
+          <div>
+            <GroupHeading title="Stacks & streaks" />
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="char-killstreak">Kill streak: {conditions.killStreak}</Label>
+                <Slider
+                  id="char-killstreak"
+                  min={0}
+                  max={10}
+                  step={1}
+                  disabled={!hasKillStreak}
+                  value={[conditions.killStreak]}
+                  onValueChange={(v) => set('killStreak', firstSliderValue(v))}
+                  marks={Array.from({ length: 11 }, (_, i) => ({
                     value: i,
                     label: i % 2 === 0 ? String(i) : undefined,
-                  }),
+                  }))}
+                />
+                {!hasKillStreak && (
+                  <p className="text-muted-foreground text-xs">No kill-streak sources equipped</p>
                 )}
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <Label htmlFor="char-onslaught">
+                    {onslaughtReverse
+                      ? `Reverse Onslaught — avg ~${Math.round(onslaughtValue)} / max ${onslaughtMax}`
+                      : onslaughtStored === -1
+                        ? `Onslaught — auto ~${formatStackAvg(onslaughtValue)} avg / max ${onslaughtMax}`
+                        : `Onslaught stacks (${onslaughtValue} / max ${onslaughtMax})`}
+                  </Label>
+                  {!onslaughtReverse && onslaughtStored !== -1 && onslaughtMax > 0 && (
+                    <button
+                      type="button"
+                      className="text-muted-foreground shrink-0 text-xs underline"
+                      onClick={() => set('onslaughtStacks', -1)}
+                    >
+                      Auto
+                    </button>
+                  )}
+                </div>
+                {onslaughtReverse ? (
+                  <p className="text-muted-foreground text-xs">
+                    Engine-computed average during sustained fire (Gunslinger Master). Consumption
+                    scales with fire rate, projectiles, and targets hit below.
+                  </p>
+                ) : (
+                  <Slider
+                    id="char-onslaught"
+                    min={0}
+                    max={Math.max(onslaughtMax, 1)}
+                    step={1}
+                    disabled={onslaughtMax === 0}
+                    value={[onslaughtValue]}
+                    onValueChange={(v) => set('onslaughtStacks', firstSliderValue(v))}
+                    marks={
+                      onslaughtMax > 0
+                        ? Array.from({ length: onslaughtMax + 1 }, (_, i) => ({
+                            value: i,
+                            label: i % 5 === 0 || i === onslaughtMax ? String(i) : undefined,
+                          }))
+                        : undefined
+                    }
+                  />
+                )}
+                {onslaughtMax === 0 && (
+                  <p className="text-muted-foreground text-xs">No Onslaught sources equipped</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <Label htmlFor="char-bulletstorm">
+                    {bulletStormStored === -1
+                      ? `Bullet Storm — auto ~${formatStackAvg(bulletStormValue)} avg / max ${bulletStormMax}`
+                      : `Bullet Storm stacks (${bulletStormValue} / max ${bulletStormMax})`}
+                  </Label>
+                  {bulletStormStored !== -1 && bulletStormMax > 0 && (
+                    <button
+                      type="button"
+                      className="text-muted-foreground shrink-0 text-xs underline"
+                      onClick={() => set('bulletStormStacks', -1)}
+                    >
+                      Auto
+                    </button>
+                  )}
+                </div>
+                <Slider
+                  id="char-bulletstorm"
+                  min={bulletStormMin}
+                  max={Math.max(bulletStormMax, bulletStormMin, 1)}
+                  step={1}
+                  disabled={bulletStormMax === 0}
+                  value={[bulletStormValue]}
+                  onValueChange={(v) => set('bulletStormStacks', firstSliderValue(v))}
+                  marks={
+                    bulletStormMax > 0
+                      ? Array.from({ length: bulletStormMax - bulletStormMin + 1 }, (_, i) => {
+                          const v = bulletStormMin + i;
+                          return {
+                            value: v,
+                            label: v % 5 === 0 || v === bulletStormMax ? String(v) : undefined,
+                          };
+                        })
+                      : undefined
+                  }
+                />
+                {bulletStormMax === 0 && (
+                  <p className="text-muted-foreground text-xs">No Bullet Storm sources equipped</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="char-concentrated-fire">
+                  Concentrated Fire stacks ({concentratedFireStacks} / max 20)
+                </Label>
+                <Slider
+                  id="char-concentrated-fire"
+                  min={0}
+                  max={20}
+                  step={1}
+                  disabled={!hasConcentratedFire}
+                  value={[concentratedFireStacks]}
+                  onValueChange={(v) => set('concentratedFireStacks', firstSliderValue(v))}
+                  marks={Array.from({ length: 21 }, (_, i) => ({
+                    value: i,
+                    label: i % 5 === 0 ? String(i) : undefined,
+                  }))}
+                />
+                <p className="text-muted-foreground text-xs">
+                  Stacks build per VATS shot landed on the same body part and reset when you switch
+                  body part or target — a manual stand-in for the game's hidden counter (each rank
+                  adds +1/2/3% VATS damage per stack).
+                </p>
+                {!hasConcentratedFire && (
+                  <p className="text-muted-foreground text-xs">
+                    No Concentrated Fire sources equipped
+                  </p>
+                )}
+              </div>
+
+              {hasPipeCraftingChallenge && (
+                <SwitchRow
+                  id="char-pipe-crafting-challenge"
+                  label="Completed pipe-weapon crafting challenge"
+                  checked={pipeCraftingChallengeCompleted}
+                  onCheckedChange={(checked) => {
+                    const ids = conditions.completedChallengeIds ?? [];
+                    set(
+                      'completedChallengeIds',
+                      checked
+                        ? [...ids, PIPE_WEAPON_CRAFTING_CHALLENGE_ID]
+                        : ids.filter((id) => id !== PIPE_WEAPON_CRAFTING_CHALLENGE_ID),
+                    );
+                  }}
+                />
+              )}
+
+              {hasKingfisherLocalLegend && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="char-kingfisher-local-legend">
+                    Completed Local Legend fishing challenges (
+                    {localLegendFishingChallengesCompleted} /{' '}
+                    {KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS.length})
+                  </Label>
+                  <Slider
+                    id="char-kingfisher-local-legend"
+                    min={0}
+                    max={KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS.length}
+                    step={1}
+                    value={[localLegendFishingChallengesCompleted]}
+                    onValueChange={(v) =>
+                      set('localLegendFishingChallengesCompleted', firstSliderValue(v))
+                    }
+                    marks={Array.from(
+                      { length: KINGFISHER_LOCAL_LEGEND_CHALLENGE_IDS.length + 1 },
+                      (_, i) => ({
+                        value: i,
+                        label: i % 2 === 0 ? String(i) : undefined,
+                      }),
+                    )}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <GroupHeading title="Weapon upkeep" />
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="char-battle-loaders-bash">
+                  Bash time (Battle-Loader's): {battleLoadersBashSec.toFixed(2)}s
+                </Label>
+                <Slider
+                  id="char-battle-loaders-bash"
+                  min={0}
+                  max={2}
+                  step={0.25}
+                  disabled={!hasBattleLoaders}
+                  value={[battleLoadersBashSec]}
+                  onValueChange={(v) => set('battleLoadersBashSec', firstSliderValue(v))}
+                  marks={[
+                    { value: 0, label: '0s' },
+                    { value: 0.75, label: '0.75s' },
+                    { value: 2, label: '2s' },
+                  ]}
+                />
+                <p className="text-muted-foreground text-xs">
+                  Seconds spent on the bash swing that triggers Battle-Loader's instant reload, used
+                  in place of a real reload. The 0.75s default is an unmeasured placeholder pending
+                  in-game stopwatch testing — actual timing likely depends on the weapon's bash
+                  animation.
+                </p>
+                {!hasBattleLoaders && (
+                  <p className="text-muted-foreground text-xs">
+                    No Battle-Loader's sources equipped
+                  </p>
+                )}
+              </div>
+
+              {onslaughtReverse && (
+                <NumberField
+                  id="char-targets-hit"
+                  label="Targets hit per attack"
+                  value={conditions.targetsHit ?? 1}
+                  min={1}
+                  max={20}
+                  onChange={(v) => set('targetsHit', v)}
+                />
+              )}
+
+              <NumberField
+                id="char-weapon-condition"
+                label="Weapon condition %"
+                value={conditions.weaponConditionPct ?? 100}
+                min={0}
+                max={200}
+                step={10}
+                onChange={(v) => set('weaponConditionPct', v)}
               />
             </div>
-          )}
-
-          <div className="space-y-1.5">
-            <Label htmlFor="char-battle-loaders-bash">
-              Bash time (Battle-Loader's): {battleLoadersBashSec.toFixed(2)}s
-            </Label>
-            <Slider
-              id="char-battle-loaders-bash"
-              min={0}
-              max={2}
-              step={0.25}
-              disabled={!hasBattleLoaders}
-              value={[battleLoadersBashSec]}
-              onValueChange={(v) => set('battleLoadersBashSec', firstSliderValue(v))}
-              marks={[
-                { value: 0, label: '0s' },
-                { value: 0.75, label: '0.75s' },
-                { value: 2, label: '2s' },
-              ]}
-            />
-            <p className="text-muted-foreground text-xs">
-              Seconds spent on the bash swing that triggers Battle-Loader's instant reload, used in
-              place of a real reload. The 0.75s default is an unmeasured placeholder pending in-game
-              stopwatch testing — actual timing likely depends on the weapon's bash animation.
-            </p>
-            {!hasBattleLoaders && (
-              <p className="text-muted-foreground text-xs">No Battle-Loader's sources equipped</p>
-            )}
           </div>
 
-          {onslaughtReverse && (
-            <NumberField
-              id="char-targets-hit"
-              label="Targets hit per attack"
-              value={conditions.targetsHit ?? 1}
-              min={1}
-              max={20}
-              onChange={(v) => set('targetsHit', v)}
-            />
-          )}
+          <div>
+            <GroupHeading title="Your defenses" />
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <NumberField
+                  id="char-player-dr"
+                  label="Your damage resist"
+                  value={conditions.playerDamageResist ?? 0}
+                  min={0}
+                  max={2000}
+                  step={10}
+                  onChange={(v) => set('playerDamageResist', v)}
+                />
+                <p className="text-muted-foreground text-xs">
+                  No armor model exists yet — this is a manual stand-in for Berserker's-style
+                  effects that scale off your OWN damage resist (0 = naked, the curve's max-bonus
+                  end).
+                </p>
+              </div>
 
-          <NumberField
-            id="char-weapon-condition"
-            label="Weapon condition %"
-            value={conditions.weaponConditionPct ?? 100}
-            min={0}
-            max={200}
-            step={10}
-            onChange={(v) => set('weaponConditionPct', v)}
-          />
-
-          <div className="space-y-1.5">
-            <NumberField
-              id="char-player-dr"
-              label="Your damage resist"
-              value={conditions.playerDamageResist ?? 0}
-              min={0}
-              max={2000}
-              step={10}
-              onChange={(v) => set('playerDamageResist', v)}
-            />
-            <p className="text-muted-foreground text-xs">
-              No armor model exists yet — this is a manual stand-in for Berserker's-style effects
-              that scale off your OWN damage resist (0 = naked, the curve's max-bonus end).
-            </p>
+              <div className="space-y-1.5">
+                <NumberField
+                  id="char-player-rad-resist"
+                  label="Your radiation resist"
+                  value={conditions.playerRadResist ?? 0}
+                  min={0}
+                  max={10000}
+                  step={100}
+                  onChange={(v) => set('playerRadResist', v)}
+                />
+                <p className="text-muted-foreground text-xs">
+                  No armor model exists yet — this is a manual stand-in for Daisy Cutter's +20%
+                  damage-per-1000-Rad-Resistance ladder, which caps at +160% (8000+).
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-1.5">
-            <NumberField
-              id="char-player-rad-resist"
-              label="Your radiation resist"
-              value={conditions.playerRadResist ?? 0}
-              min={0}
-              max={10000}
-              step={100}
-              onChange={(v) => set('playerRadResist', v)}
-            />
-            <p className="text-muted-foreground text-xs">
-              No armor model exists yet — this is a manual stand-in for Daisy Cutter's +20%
-              damage-per-1000-Rad-Resistance ladder, which caps at +160% (8000+).
-            </p>
-          </div>
+          <div>
+            <GroupHeading title="Attack state" />
+            <div className="space-y-3">
+              {!isGhoul && (
+                <div className="space-y-1.5">
+                  <SwitchRow
+                    id="char-hydrated"
+                    label="Fully hydrated"
+                    checked={conditions.hydrated ?? true}
+                    onCheckedChange={(v) => set('hydrated', v)}
+                  />
+                  <p className="text-muted-foreground text-xs">
+                    Fully hydrated grants +35% AP regen (45/60% with Rejuvenated). Ghouls have no
+                    hydration.
+                  </p>
+                </div>
+              )}
 
-          {!isGhoul && (
-            <div className="space-y-1.5">
               <SwitchRow
-                id="char-hydrated"
-                label="Fully hydrated"
-                checked={conditions.hydrated ?? true}
-                onCheckedChange={(v) => set('hydrated', v)}
+                id="char-power-attack"
+                label="Power attacking (melee)"
+                checked={conditions.isPowerAttacking}
+                onCheckedChange={(v) => set('isPowerAttacking', v)}
               />
-              <p className="text-muted-foreground text-xs">
-                Fully hydrated grants +35% AP regen (45/60% with Rejuvenated). Ghouls have no
-                hydration.
-              </p>
+
+              <SwitchRow
+                id="char-last-shot"
+                label="Firing the magazine's last round"
+                checked={conditions.isLastShot ?? false}
+                onCheckedChange={(v) => set('isLastShot', v)}
+              />
+
+              <SwitchRow
+                id="char-ads"
+                label="Aiming down sights"
+                checked={conditions.isAimingDownSights ?? false}
+                onCheckedChange={(v) => set('isAimingDownSights', v)}
+              />
             </div>
-          )}
-
-          <SwitchRow
-            id="char-power-attack"
-            label="Power attacking (melee)"
-            checked={conditions.isPowerAttacking}
-            onCheckedChange={(v) => set('isPowerAttacking', v)}
-          />
-
-          <SwitchRow
-            id="char-last-shot"
-            label="Firing the magazine's last round"
-            checked={conditions.isLastShot ?? false}
-            onCheckedChange={(v) => set('isLastShot', v)}
-          />
-
-          <SwitchRow
-            id="char-ads"
-            label="Aiming down sights"
-            checked={conditions.isAimingDownSights ?? false}
-            onCheckedChange={(v) => set('isAimingDownSights', v)}
-          />
+          </div>
         </div>
       </AccordionContent>
     </AccordionItem>

@@ -1,6 +1,7 @@
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Combobox } from '@/components/ui/combobox';
+import { GroupHeading } from '@/components/ui/group-heading';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { NumberField } from '@/components/ui/number-field';
@@ -305,331 +306,358 @@ export function TargetSection() {
         />
       </AccordionTrigger>
       <AccordionContent>
-        <div className="space-y-3">
-          <div className="space-y-1.5">
-            <Label>Enemy</Label>
-            <Combobox
-              options={raceOptions}
-              value={conditions.targetRace ?? null}
-              onValueChange={selectRace}
-              placeholder="Custom multiplier…"
-              searchPlaceholder="Search enemies…"
-              emptyText="No enemy matches."
-            />
-          </div>
-
-          {selectedRace ? (
-            <div className="space-y-1.5">
-              <Label>Body part (×{effectiveMult.toFixed(2)})</Label>
-              <Combobox
-                options={partOptions}
-                value={pickerValue}
-                onValueChange={selectBodyPart}
-                placeholder="Pick a body part…"
-                searchPlaceholder="Search body parts…"
-                emptyText="No part matches."
-              />
-            </div>
-          ) : (
-            <div className="space-y-1.5">
-              <Label htmlFor="target-mult">
-                Custom body-part multiplier (×{effectiveMult.toFixed(2)})
-              </Label>
-              <Input
-                id="target-mult"
-                type="number"
-                min={0.1}
-                step={0.05}
-                value={player.weakpointMult}
-                onChange={(e) => {
-                  const value = parseFloat(e.target.value) || 1.5;
-                  dispatch({ type: 'weapon/weakpointMult', value });
-                  setAiming(value !== 1.0);
-                }}
-              />
-            </div>
-          )}
-          <p className="text-muted-foreground text-xs">
-            The neutral default is the race's ×1.00 part (torso when it's ×1.00, otherwise the first
-            alphabetically); picking a body part applies its multiplier immediately — no need to
-            flip a separate switch. 1.5 is a standard humanoid headshot (Super Mutants take 1.25);
-            below 1.0 models armored parts like the Mirelurk shell.
-          </p>
-
-          <div className="space-y-3 rounded-md border p-3">
-            <Label className="text-sm font-medium">Accuracy</Label>
-
-            <div className="space-y-1.5">
-              <p className="text-muted-foreground text-xs font-medium">Free aim</p>
-              <SliderField
-                id="target-hit-rate"
-                label="Shots that hit the target"
-                value={hitRatePct}
-                min={10}
-                max={100}
-                step={5}
-                onChange={(v) => setPlayer('hitRatePct', v)}
-              />
-              {isAiming && (
-                <SliderField
-                  id="target-bodypart-rate"
-                  label={`Of those, hitting ${resolvedTarget.name} ×${effectiveMult.toFixed(2)}`}
-                  value={bodyPartHitRatePct}
-                  min={10}
-                  max={100}
-                  step={5}
-                  onChange={(v) => setPlayer('bodyPartHitRatePct', v)}
+        <div className="space-y-4">
+          <div>
+            <GroupHeading title="Who & where you're hitting" />
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <Label>Enemy</Label>
+                <Combobox
+                  options={raceOptions}
+                  value={conditions.targetRace ?? null}
+                  onValueChange={selectRace}
+                  placeholder="Custom multiplier…"
+                  searchPlaceholder="Search enemies…"
+                  emptyText="No enemy matches."
                 />
-              )}
-              <p className="text-muted-foreground text-xs">
-                {isAiming
-                  ? `→ ${((hitRatePct / 100) * (bodyPartHitRatePct / 100) * 100).toFixed(0)}% ${resolvedTarget.name} · ${((hitRatePct / 100) * (1 - bodyPartHitRatePct / 100) * 100).toFixed(0)}% ${centerMassName} · ${(100 - hitRatePct).toFixed(0)}% miss`
-                  : `→ ${hitRatePct}% ${centerMassName} · ${100 - hitRatePct}% miss`}
-                {` A missed body part still lands on ${centerMassName.toLowerCase()}; a missed shot hits nothing.`}
-              </p>
-            </div>
-
-            <div className="space-y-1.5">
-              <p className="text-muted-foreground text-xs font-medium">V.A.T.S.</p>
-              <SliderField
-                id="target-vats-hit-rate"
-                label={
-                  isAiming
-                    ? `Shots that hit ${resolvedTarget.name} ×${effectiveMult.toFixed(2)}`
-                    : 'Shots that hit the target'
-                }
-                value={vatsHitRatePct}
-                min={10}
-                max={100}
-                step={5}
-                onChange={(v) => setPlayer('vatsHitRatePct', v)}
-              />
-              <p className="text-muted-foreground text-xs">
-                VATS accuracy is not modeled (the game's hit-chance formula is a black box) — this
-                is your own estimate. A miss deals zero; there is no center-mass fallback.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {vatsHitChanceBonus > 0 && (
-                  <Tooltip>
-                    <TooltipTrigger render={<Badge variant="secondary" className="cursor-help" />}>
-                      +{Math.round(vatsHitChanceBonus * 100)}% VATS hit bonus
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      Informational total of equipped VATS-accuracy sources (V.A.T.S. Enhanced,
-                      Awareness, Eye of the Hunter, V.A.T.S. Matrix Overlay...). The slider above
-                      stays authoritative — this never changes any DPS number.
-                    </TooltipContent>
-                  </Tooltip>
-                )}
-                {vatsHitChanceMult !== 1 && (
-                  <Tooltip>
-                    <TooltipTrigger render={<Badge variant="secondary" className="cursor-help" />}>
-                      hit chance × {vatsHitChanceMult.toFixed(2)}
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      Concentrated Fire multiplies the game's computed VATS hit chance directly (not
-                      a flat % add), per the Concentrated Fire stacks slider in Conditions.
-                      Informational only — the slider above stays authoritative and this never
-                      changes any DPS number.
-                    </TooltipContent>
-                  </Tooltip>
-                )}
               </div>
-            </div>
-          </div>
 
-          {selectedRace && epicAllowed && (
-            <div className="space-y-1.5">
-              <Label>Legendary</Label>
-              <ToggleGroup
-                aria-label="Legendary rank"
-                options={EPIC_RANK_OPTIONS}
-                value={displayedEpicRank}
-                disabled={forcedEpicRank != null}
-                onValueChange={(v) => setEnemy('epicRank', v)}
-              />
-              {forcedEpicRank != null && (
-                <p className="text-muted-foreground text-xs">
-                  Locked — this boss's summon quest forces ★{forcedEpicRank} every spawn.
-                </p>
-              )}
-            </div>
-          )}
-
-          {selectedRace && (
-            <div className="space-y-1.5">
-              <Label htmlFor="target-level">Level: {targetLevel}</Label>
-              <Slider
-                id="target-level"
-                min={levelBounds.min}
-                max={levelBounds.max}
-                step={1}
-                value={[targetLevel]}
-                onValueChange={(v) => setEnemy('targetLevel', firstSliderValue(v))}
-                marks={[
-                  { value: levelBounds.min, label: String(levelBounds.min) },
-                  { value: levelBounds.max, label: String(levelBounds.max) },
-                ]}
-              />
-              {targetDefenses && (
-                <p className="text-muted-foreground font-mono text-xs tabular-nums">
-                  HP {Math.round(targetDefenses.hp).toLocaleString()} · DR{' '}
-                  {Math.round(targetDefenses.resists.physical ?? 0).toLocaleString()} · ER{' '}
-                  {Math.round(targetDefenses.resists.energy ?? 0).toLocaleString()}
-                </p>
-              )}
-            </div>
-          )}
-
-          <div className="space-y-1.5">
-            <Label>Status effects</Label>
-            <ToggleChips
-              aria-label="Status effects"
-              options={STATUS_TOGGLES.map((s) => ({
-                value: s.key,
-                label: s.label,
-                title: s.title,
-                active: (conditions[s.key] as boolean | undefined) ?? false,
-              }))}
-              onToggle={(key, wasActive) => setEnemy(key, !wasActive)}
-            />
-          </div>
-
-          {weaponRange && (
-            <div className="space-y-1.5">
-              <Label htmlFor="target-distance">
-                Distance: {distancePipBoy.toFixed(1)} Pip-Boy units
-              </Label>
-              <div className="flex items-center gap-2">
-                <div className="min-w-0 flex-1">
-                  <Slider
-                    id="target-distance"
-                    min={0}
-                    max={distanceSliderMaxPipBoy}
-                    step={0.1}
-                    value={[distancePipBoy]}
-                    onValueChange={(v) =>
-                      setEnemy('targetDistance', Math.round(pipBoyToGameUnits(firstSliderValue(v))))
-                    }
-                    marks={distanceSliderMarks}
+              {selectedRace ? (
+                <div className="space-y-1.5">
+                  <Label>Body part (×{effectiveMult.toFixed(2)})</Label>
+                  <Combobox
+                    options={partOptions}
+                    value={pickerValue}
+                    onValueChange={selectBodyPart}
+                    placeholder="Pick a body part…"
+                    searchPlaceholder="Search body parts…"
+                    emptyText="No part matches."
                   />
                 </div>
-                {/* Fixed-size slot regardless of content — Close/Far toggling on and off
-                    must never change this row's height (the badge used to live inline in
-                    the flex-wrap label above, where its appearance/disappearance shifted
-                    the label onto/off a second line and jumped the whole page). */}
-                <div className="flex h-5 w-14 shrink-0 items-center justify-center">
-                  {isCloseRange && <Badge variant="default">Close</Badge>}
-                  {isFarRange && <Badge variant="default">Far</Badge>}
+              ) : (
+                <div className="space-y-1.5">
+                  <Label htmlFor="target-mult">
+                    Custom body-part multiplier (×{effectiveMult.toFixed(2)})
+                  </Label>
+                  <Input
+                    id="target-mult"
+                    type="number"
+                    min={0.1}
+                    step={0.05}
+                    value={player.weakpointMult}
+                    onChange={(e) => {
+                      const value = parseFloat(e.target.value) || 1.5;
+                      dispatch({ type: 'weapon/weakpointMult', value });
+                      setAiming(value !== 1.0);
+                    }}
+                  />
+                </div>
+              )}
+              <p className="text-muted-foreground max-w-prose text-xs">
+                The neutral default is the race's ×1.00 part (torso when it's ×1.00, otherwise the
+                first alphabetically); picking a body part applies its multiplier immediately — no
+                need to flip a separate switch. 1.5 is a standard humanoid headshot (Super Mutants
+                take 1.25); below 1.0 models armored parts like the Mirelurk shell.
+              </p>
+
+              <div className="space-y-3 rounded-none border p-3">
+                <GroupHeading title="Accuracy" />
+
+                <div className="space-y-1.5">
+                  <p className="text-muted-foreground text-xs font-medium">Free aim</p>
+                  <SliderField
+                    id="target-hit-rate"
+                    label="Shots that hit the target"
+                    value={hitRatePct}
+                    min={10}
+                    max={100}
+                    step={5}
+                    onChange={(v) => setPlayer('hitRatePct', v)}
+                  />
+                  {isAiming && (
+                    <SliderField
+                      id="target-bodypart-rate"
+                      label={`Of those, hitting ${resolvedTarget.name} ×${effectiveMult.toFixed(2)}`}
+                      value={bodyPartHitRatePct}
+                      min={10}
+                      max={100}
+                      step={5}
+                      onChange={(v) => setPlayer('bodyPartHitRatePct', v)}
+                    />
+                  )}
+                  <p className="text-muted-foreground text-xs">
+                    {isAiming
+                      ? `→ ${((hitRatePct / 100) * (bodyPartHitRatePct / 100) * 100).toFixed(0)}% ${resolvedTarget.name} · ${((hitRatePct / 100) * (1 - bodyPartHitRatePct / 100) * 100).toFixed(0)}% ${centerMassName} · ${(100 - hitRatePct).toFixed(0)}% miss`
+                      : `→ ${hitRatePct}% ${centerMassName} · ${100 - hitRatePct}% miss`}
+                    {` A missed body part still lands on ${centerMassName.toLowerCase()}; a missed shot hits nothing.`}
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <p className="text-muted-foreground text-xs font-medium">V.A.T.S.</p>
+                  <SliderField
+                    id="target-vats-hit-rate"
+                    label={
+                      isAiming
+                        ? `Shots that hit ${resolvedTarget.name} ×${effectiveMult.toFixed(2)}`
+                        : 'Shots that hit the target'
+                    }
+                    value={vatsHitRatePct}
+                    min={10}
+                    max={100}
+                    step={5}
+                    onChange={(v) => setPlayer('vatsHitRatePct', v)}
+                  />
+                  <p className="text-muted-foreground text-xs">
+                    VATS accuracy is not modeled (the game's hit-chance formula is a black box) —
+                    this is your own estimate. A miss deals zero; there is no center-mass fallback.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {vatsHitChanceBonus > 0 && (
+                      <Tooltip>
+                        <TooltipTrigger
+                          render={<Badge variant="secondary" className="cursor-help" />}
+                        >
+                          +{Math.round(vatsHitChanceBonus * 100)}% VATS hit bonus
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Informational total of equipped VATS-accuracy sources (V.A.T.S. Enhanced,
+                          Awareness, Eye of the Hunter, V.A.T.S. Matrix Overlay...). The slider
+                          above stays authoritative — this never changes any DPS number.
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                    {vatsHitChanceMult !== 1 && (
+                      <Tooltip>
+                        <TooltipTrigger
+                          render={<Badge variant="secondary" className="cursor-help" />}
+                        >
+                          hit chance × {vatsHitChanceMult.toFixed(2)}
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Concentrated Fire multiplies the game's computed VATS hit chance directly
+                          (not a flat % add), per the Concentrated Fire stacks slider in Conditions.
+                          Informational only — the slider above stays authoritative and this never
+                          changes any DPS number.
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                  </div>
                 </div>
               </div>
-              <p className="text-muted-foreground text-xs">
-                Close (≤{closeGatePipBoy.toFixed(1)}) gates Guerrilla; Far (≥
-                {FAR_GATE_PIPBOY.toFixed(1)}) gates Down Ranger/Rifleman and Sniper's — both
-                independent of range falloff. Falloff: ×1.00 out to the weapon's own min range (
-                {gameUnitsToPipBoy(weaponRange.minRange).toFixed(1)}), linear down to ×
-                {weaponRange.outOfRangeMult} by its max range (
-                {gameUnitsToPipBoy(weaponRange.maxRange).toFixed(1)}), then curving further to ×
-                {(weaponRange.outOfRangeMult * 0.2).toFixed(2)} by roughly 1.5× max range (exact
-                point depends on the weapon's min/max ratio), flat beyond. All units above are
-                Pip-Boy.
-              </p>
+
+              {weaponRange && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="target-distance">
+                    Distance: {distancePipBoy.toFixed(1)} Pip-Boy units
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <div className="min-w-0 flex-1">
+                      <Slider
+                        id="target-distance"
+                        min={0}
+                        max={distanceSliderMaxPipBoy}
+                        step={0.1}
+                        value={[distancePipBoy]}
+                        onValueChange={(v) =>
+                          setEnemy(
+                            'targetDistance',
+                            Math.round(pipBoyToGameUnits(firstSliderValue(v))),
+                          )
+                        }
+                        marks={distanceSliderMarks}
+                      />
+                    </div>
+                    {/* Fixed-size slot regardless of content — Close/Far toggling on and off
+                        must never change this row's height (the badge used to live inline in
+                        the flex-wrap label above, where its appearance/disappearance shifted
+                        the label onto/off a second line and jumped the whole page). */}
+                    <div className="flex h-5 w-14 shrink-0 items-center justify-center">
+                      {isCloseRange && <Badge variant="default">Close</Badge>}
+                      {isFarRange && <Badge variant="default">Far</Badge>}
+                    </div>
+                  </div>
+                  <p className="text-muted-foreground max-w-prose text-xs">
+                    Close (≤{closeGatePipBoy.toFixed(1)}) gates Guerrilla; Far (≥
+                    {FAR_GATE_PIPBOY.toFixed(1)}) gates Down Ranger/Rifleman and Sniper's — both
+                    independent of range falloff. Falloff: ×1.00 out to the weapon's own min range (
+                    {gameUnitsToPipBoy(weaponRange.minRange).toFixed(1)}), linear down to ×
+                    {weaponRange.outOfRangeMult} by its max range (
+                    {gameUnitsToPipBoy(weaponRange.maxRange).toFixed(1)}), then curving further to ×
+                    {(weaponRange.outOfRangeMult * 0.2).toFixed(2)} by roughly 1.5× max range (exact
+                    point depends on the weapon's min/max ratio), flat beyond. All units above are
+                    Pip-Boy.
+                  </p>
+                </div>
+              )}
             </div>
-          )}
-
-          <div className="space-y-1.5">
-            <Label htmlFor="target-healthPercent">Enemy health: {enemyHealthPercent}%</Label>
-            <Slider
-              id="target-healthPercent"
-              min={ENEMY_HEALTH_PERCENT_STOPS[0]}
-              max={ENEMY_HEALTH_PERCENT_STOPS[ENEMY_HEALTH_PERCENT_STOPS.length - 1]}
-              step={20}
-              value={[enemyHealthPercent]}
-              onValueChange={(v) => setEnemy('healthPercent', firstSliderValue(v))}
-              marks={ENEMY_HEALTH_PERCENT_STOPS.map((v) => ({ value: v, label: `${v}` }))}
-            />
           </div>
 
-          <div className="space-y-1.5">
-            <Label>Enemies in the group (incl. target)</Label>
-            <ToggleGroup
-              aria-label="Enemies in the group"
-              options={GROUP_COUNT_OPTIONS}
-              value={Math.min(conditions.groupTargetCount ?? 1, 5)}
-              onValueChange={(v) => setEnemy('groupTargetCount', v)}
-            />
+          <div>
+            <GroupHeading title="Enemy identity & defenses" />
+            <div className="space-y-3">
+              {selectedRace && epicAllowed && (
+                <div className="space-y-1.5">
+                  <Label>Legendary</Label>
+                  <ToggleGroup
+                    aria-label="Legendary rank"
+                    options={EPIC_RANK_OPTIONS}
+                    value={displayedEpicRank}
+                    disabled={forcedEpicRank != null}
+                    onValueChange={(v) => setEnemy('epicRank', v)}
+                  />
+                  {forcedEpicRank != null && (
+                    <p className="text-muted-foreground text-xs">
+                      Locked — this boss's summon quest forces ★{forcedEpicRank} every spawn.
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {selectedRace && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="target-level">Level: {targetLevel}</Label>
+                  <Slider
+                    id="target-level"
+                    min={levelBounds.min}
+                    max={levelBounds.max}
+                    step={1}
+                    value={[targetLevel]}
+                    onValueChange={(v) => setEnemy('targetLevel', firstSliderValue(v))}
+                    marks={[
+                      { value: levelBounds.min, label: String(levelBounds.min) },
+                      { value: levelBounds.max, label: String(levelBounds.max) },
+                    ]}
+                  />
+                  {targetDefenses && (
+                    <p className="text-muted-foreground font-mono text-xs tabular-nums">
+                      HP {Math.round(targetDefenses.hp).toLocaleString()} · DR{' '}
+                      {Math.round(targetDefenses.resists.physical ?? 0).toLocaleString()} · ER{' '}
+                      {Math.round(targetDefenses.resists.energy ?? 0).toLocaleString()}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <Label htmlFor="target-healthPercent">Enemy health: {enemyHealthPercent}%</Label>
+                <Slider
+                  id="target-healthPercent"
+                  min={ENEMY_HEALTH_PERCENT_STOPS[0]}
+                  max={ENEMY_HEALTH_PERCENT_STOPS[ENEMY_HEALTH_PERCENT_STOPS.length - 1]}
+                  step={20}
+                  value={[enemyHealthPercent]}
+                  onValueChange={(v) => setEnemy('healthPercent', firstSliderValue(v))}
+                  marks={ENEMY_HEALTH_PERCENT_STOPS.map((v) => ({ value: v, label: `${v}` }))}
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="target-crippled">
-              Crippled limbs (
-              {crippableMax === 0
-                ? selectedRace
-                  ? `${selectedRace.name} cannot be crippled`
-                  : '0 crippable'
-                : `${crippableMax} crippable${selectedRace ? ` on ${selectedRace.name}` : ' max'}`}
-              )
-            </Label>
-            <Slider
-              id="target-crippled"
-              min={0}
-              max={Math.max(crippableMax, 1)}
-              step={1}
-              disabled={crippableMax === 0}
-              value={[conditions.crippledLimbCount]}
-              onValueChange={(v) => setEnemy('crippledLimbCount', firstSliderValue(v))}
-              marks={Array.from({ length: Math.max(crippableMax, 1) + 1 }, (_, i) => ({
-                value: i,
-                label: String(i),
-              }))}
-            />
+          <div>
+            <GroupHeading title="Enemy state" />
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <Label>Status effects</Label>
+                <ToggleChips
+                  aria-label="Status effects"
+                  options={STATUS_TOGGLES.map((s) => ({
+                    value: s.key,
+                    label: s.label,
+                    title: s.title,
+                    active: (conditions[s.key] as boolean | undefined) ?? false,
+                  }))}
+                  onToggle={(key, wasActive) => setEnemy(key, !wasActive)}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Enemies in the group (incl. target)</Label>
+                <ToggleGroup
+                  aria-label="Enemies in the group"
+                  options={GROUP_COUNT_OPTIONS}
+                  value={Math.min(conditions.groupTargetCount ?? 1, 5)}
+                  onValueChange={(v) => setEnemy('groupTargetCount', v)}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="target-crippled">
+                  Crippled limbs (
+                  {crippableMax === 0
+                    ? selectedRace
+                      ? `${selectedRace.name} cannot be crippled`
+                      : '0 crippable'
+                    : `${crippableMax} crippable${selectedRace ? ` on ${selectedRace.name}` : ' max'}`}
+                  )
+                </Label>
+                <Slider
+                  id="target-crippled"
+                  min={0}
+                  max={Math.max(crippableMax, 1)}
+                  step={1}
+                  disabled={crippableMax === 0}
+                  value={[conditions.crippledLimbCount]}
+                  onValueChange={(v) => setEnemy('crippledLimbCount', firstSliderValue(v))}
+                  marks={Array.from({ length: Math.max(crippableMax, 1) + 1 }, (_, i) => ({
+                    value: i,
+                    label: String(i),
+                  }))}
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="target-tenderizer">Tenderizer stacks</Label>
-            <NumberField
-              id="target-tenderizer"
-              min={0}
-              max={TENDERIZER_MAX_STACKS}
-              value={tenderizer}
-              onChange={(v) =>
-                dispatch({ type: 'condition/set', key: 'tenderizerStacks', value: v })
-              }
-            />
-            <p className="text-muted-foreground text-xs">
-              +0.1% damage taken per stack, up to +100% at {TENDERIZER_MAX_STACKS} stacks. Applied
-              by any player's Tenderizer — you don't need the card equipped.
-            </p>
-          </div>
+          <div>
+            <GroupHeading title="Debuffs you apply" />
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="target-tenderizer">Tenderizer stacks</Label>
+                <NumberField
+                  id="target-tenderizer"
+                  min={0}
+                  max={TENDERIZER_MAX_STACKS}
+                  value={tenderizer}
+                  onChange={(v) =>
+                    dispatch({ type: 'condition/set', key: 'tenderizerStacks', value: v })
+                  }
+                />
+                <p className="text-muted-foreground text-xs">
+                  +0.1% damage taken per stack, up to +100% at {TENDERIZER_MAX_STACKS} stacks.
+                  Applied by any player's Tenderizer — you don't need the card equipped.
+                </p>
+              </div>
 
-          <div className="space-y-1.5">
-            <Label>Follow Through damage multiplier</Label>
-            <ToggleGroup
-              aria-label="Follow Through damage multiplier"
-              options={DAMAGE_MULT_PCT_OPTIONS}
-              value={followThroughPct}
-              onValueChange={(v) => setPlayerCondition('followThroughPct', v)}
-            />
-            <p className="text-muted-foreground text-xs">
-              Manual estimate of the 10s ranged-sneak damage-taken debuff's active multiplier.
-              Applied by any player's Follow Through — you don't need the card equipped.
-            </p>
-          </div>
+              <div className="space-y-1.5">
+                <Label>Follow Through damage multiplier</Label>
+                <ToggleGroup
+                  aria-label="Follow Through damage multiplier"
+                  options={DAMAGE_MULT_PCT_OPTIONS}
+                  value={followThroughPct}
+                  onValueChange={(v) => setPlayerCondition('followThroughPct', v)}
+                />
+                <p className="text-muted-foreground text-xs">
+                  Manual estimate of the 10s ranged-sneak damage-taken debuff's active multiplier.
+                  Applied by any player's Follow Through — you don't need the card equipped.
+                </p>
+              </div>
 
-          <div className="space-y-1.5">
-            <Label>Taking One for the Team</Label>
-            <ToggleGroup
-              aria-label="Taking One for the Team rank"
-              options={TAKING_ONE_FOR_THE_TEAM_RANK_OPTIONS}
-              value={takingOneForTheTeamDrRank}
-              onValueChange={setTakingOneForTheTeamRank}
-            />
-            <p className="text-muted-foreground text-xs">
-              Any player's Taking One for the Team can proc both a %-damage-taken multiplier and a
-              flat Damage Resist reduction (physical only) on the target — you don't need the card
-              equipped yourself. Rank 4's jump to −50 DR (vs. the ~−20 an even progression would
-              predict) is a possible ESM data-entry anomaly, modeled as-is.
-            </p>
+              <div className="space-y-1.5">
+                <Label>Taking One for the Team</Label>
+                <ToggleGroup
+                  aria-label="Taking One for the Team rank"
+                  options={TAKING_ONE_FOR_THE_TEAM_RANK_OPTIONS}
+                  value={takingOneForTheTeamDrRank}
+                  onValueChange={setTakingOneForTheTeamRank}
+                />
+                <p className="text-muted-foreground max-w-prose text-xs">
+                  Any player's Taking One for the Team can proc both a %-damage-taken multiplier and
+                  a flat Damage Resist reduction (physical only) on the target — you don't need the
+                  card equipped yourself. Rank 4's jump to −50 DR (vs. the ~−20 an even progression
+                  would predict) is a possible ESM data-entry anomaly, modeled as-is.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </AccordionContent>
