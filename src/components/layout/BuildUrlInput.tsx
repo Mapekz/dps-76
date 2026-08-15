@@ -28,6 +28,7 @@ import type { ParsedPerk } from '@/types';
 import { equippedRaceLock } from '@/data/perk-race';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
+import type { BuildState } from '@/state/build-reducer';
 
 type ParseState = 'idle' | 'parsing' | 'success' | 'error';
 
@@ -48,18 +49,42 @@ interface PendingImport {
  * decoded form yet). A same-race (or unrestricted) import applies
  * immediately; a race change or an invalid mixed-race link confirms first —
  * same confirm-dialog pattern as the Race toggle (SpecialLoadoutSection.tsx).
+ *
+ * A second import used to be irreversible — pasting one link over another
+ * silently dropped the first import's tweaks with no way back. Every commit
+ * path now snapshots the whole pre-import `BuildState` first, and an inline
+ * "Undo" affordance (mirroring the error message's placement/style) restores
+ * it via `build/hydrate`.
  */
 export function BuildUrlInput() {
   const { mode } = useGameMode();
-  const { player } = useBuild();
+  const build = useBuild();
+  const { player } = build;
   const dispatch = useBuildDispatch();
   const [url, setUrl] = React.useState('');
   const [parseState, setParseState] = React.useState<ParseState>('idle');
   const [error, setError] = React.useState<string | null>(null);
   const [pending, setPending] = React.useState<PendingImport | null>(null);
+  // The whole-state snapshot from right before the most recent import commit
+  // — `null` means there's nothing to undo. `build/importNd` is a single,
+  // wholesale-return reducer case (build-reducer.ts), so restoring via
+  // `build/hydrate` (already used by usePersistence's boot hydration, and
+  // pinned idempotent by build-reducer.test.ts) is a clean full revert, not
+  // a partial patch. Clicking Undo always means "put back whatever was here
+  // right before THIS import" — even if the user tweaked the build further
+  // afterward, which is the correct undo semantics, not a bug to guard.
+  const [preImportState, setPreImportState] = React.useState<BuildState | null>(null);
+
+  // `runImport` intentionally does NOT depend on `build` (which changes on
+  // every keystroke elsewhere in the app) — a ref keeps the snapshot fresh
+  // without recreating the callback (and therefore `handleParse`, which
+  // depends on it) on every unrelated state change.
+  const buildRef = React.useRef(build);
+  buildRef.current = build;
 
   const runImport = React.useCallback(
     (imp: PendingImport, isGhoul: boolean) => {
+      setPreImportState(buildRef.current);
       dispatch({
         type: 'build/importNd',
         perks: imp.perks,
@@ -72,6 +97,12 @@ export function BuildUrlInput() {
     },
     [dispatch],
   );
+
+  const handleUndo = React.useCallback(() => {
+    if (!preImportState) return;
+    dispatch({ type: 'build/hydrate', state: preImportState });
+    setPreImportState(null);
+  }, [dispatch, preImportState]);
 
   const handleParse = React.useCallback(() => {
     if (!url.trim()) {
@@ -154,6 +185,9 @@ export function BuildUrlInput() {
               setParseState('idle');
               setError(null);
             }
+            // Same dismiss-on-edit rule as the error message below — typing
+            // a new URL means the user has moved on from the last import.
+            if (preImportState) setPreImportState(null);
           }}
           onKeyDown={handleKeyDown}
           aria-invalid={parseState === 'error'}
@@ -168,6 +202,14 @@ export function BuildUrlInput() {
       {error && (
         <p className="text-negative mt-1 text-xs" role="alert">
           {error}
+        </p>
+      )}
+      {!error && preImportState && (
+        <p className="text-muted-foreground mt-1 text-xs" role="status">
+          Imported build.{' '}
+          <Button type="button" variant="link" className="h-auto p-0 text-xs" onClick={handleUndo}>
+            Undo
+          </Button>
         </p>
       )}
 

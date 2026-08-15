@@ -532,6 +532,19 @@ export function PerkEditor() {
         onFilterSpecialChange={setPickerFilter}
       />
 
+      {/*
+       * Previously lived only in the empty-perks branch below — shown
+       * exactly when there's nothing to lose, hidden whenever it would
+       * actually matter. Now always visible while perks are equipped, the
+       * one case an import is destructive. (BuildUrlInput's post-import
+       * Undo affordance is the actual safety net; this is the warning.)
+       */}
+      {regularEntries.length > 0 && (
+        <p className="text-muted-foreground text-xs">
+          Importing a Nukes &amp; Dragons build replaces this list.
+        </p>
+      )}
+
       {regularEntries.length > 0 ? (
         <div className="space-y-2">
           {regularGroups.map((group) => {
@@ -589,8 +602,7 @@ export function PerkEditor() {
         </div>
       ) : (
         <p className="text-muted-foreground text-sm">
-          No perks equipped. Import a Nukes &amp; Dragons build or add perks above. Importing
-          replaces this list.
+          No perks equipped. Import a Nukes &amp; Dragons build or add perks above.
         </p>
       )}
 
