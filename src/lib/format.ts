@@ -23,7 +23,14 @@ export function formatRetainedPct(value: number): string {
   return `${Math.round(value)}%`;
 }
 
-/** Time-to-kill in seconds or infinity symbol. */
+/** Time-to-kill: seconds under a minute (1 decimal), "Xm Ys" (whole seconds, no "0s") at or past it, or infinity symbol. */
 export function formatTtk(ttkSec: number): string {
-  return Number.isFinite(ttkSec) ? `${ttkSec.toFixed(1)}s` : '∞';
+  if (!Number.isFinite(ttkSec)) return '∞';
+  if (ttkSec < 60) return `${ttkSec.toFixed(1)}s`;
+  const minutes = Math.floor(ttkSec / 60);
+  const seconds = Math.round(ttkSec - minutes * 60);
+  // Rounding seconds up can itself reach 60 (e.g. 119.6s), which would
+  // otherwise print as the invalid "1m 60s" — roll it into the next minute.
+  if (seconds === 60) return `${minutes + 1}m`;
+  return seconds === 0 ? `${minutes}m` : `${minutes}m ${seconds}s`;
 }
