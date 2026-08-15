@@ -11,13 +11,17 @@ This is a Fallout 76 DPS (Damage Per Second) calculator web application. It comp
 - `bun run dev` - Start development server with HMR
 - `bun run build` - Type check and build for production
 - `bun run build:gh-pages` - Build for GitHub Pages deployment (sets NODE_ENV=production)
+- `bun run typecheck` - `tsc -b` only, no build (CI runs this as its own gate)
 - `bun run test` - Run the test suite (see "Testing" below)
 - `bun run bench` - Run the suggestion-engine hot-path benchmark (`scripts/bench-engine.ts`)
 - `bun run lint` / `bun run lint:fix` - Run oxlint (Rust-based; not ESLint)
+- `bun run lint:design` - Design-system lint (`scripts/lint-design.ts`) — CI runs this as its own gate, separate from `lint`
 - `bun run fmt` / `bun run fmt:check` - Format with oxfmt
 - `bun run preview` - Preview production build locally
 - `bun run extract --esm <path-to-SeventySix.esm> --mode live [--only weapons,perks,omods,buffs]` - Regenerate game data from an ESM dump (requires the `esm` CLI on PATH). `--esm` can be omitted if the `FO76_ESM_PATH` env var is set instead; `bun run esm:walk` uses the same fallback.
 - `bun run extract:diff [--base HEAD]` - Markdown review report of generated-data changes vs a git ref; run after every extraction
+- `bun run vet:weapons` - Check the vetted weapon roster against the current extraction (see the weapon-vetting skill)
+- `bun run audit:inert` - Audit for modifiers on inert/no-effect buckets
 
 This project uses **Bun** as the package manager and script runner (`bun install`, `bun run <script>`),
 not npm/yarn/pnpm. Vite and `tsc` still run under **Node** — their `#!/usr/bin/env node`
@@ -78,7 +82,7 @@ WeakptDBM — are defined once in that file's `Bucket` doc-comment; reuse those
 terms rather than re-deriving them.
 
 The engine lives in `src/lib/engine/`:
-- `resolve.ts` - condition evaluation + bucket folds via the shared `foldOps` primitive (SET → ×Π(1+MUL_ADD) → +ΣADD)
+- `resolve.ts` - condition evaluation + bucket folds via the shared `foldOps` primitive: `(last SET ?? base) + (Σ MUL_ADD) × base + Σ ADD` — additive, not multiplicative (see `docs/architecture.md`'s Modifier IR reference for the one exception)
 - `paper-damage.ts` - the spec formula, per damage component
 - `crit-meter.ts` - steady-state VATS crit cadence from LCK/Crit Savvy/Limit Breaking
 - `scenarios.ts` - one config → Free Aim / VATS results (sneak is a player condition, not a third scenario)
@@ -116,8 +120,8 @@ extracted today — pts re-exports live until a PTS dump is dropped in and
 ### Component Structure
 
 - `src/components/layout/` - Page shell (`AppShell` mounts `Header` + `BuildColumn` + `ResultsPane`), `BuildUrlInput` (N&D import), `ThemeToggle`
-- `src/components/build/` - Player/enemy configuration UI, mounted as `BuildColumn`'s accordion sections (in order): `WeaponSection`, `ArmorSection`, `SpecialLoadoutSection` (embeds `PerkEditor` from `PerkEditorSection.tsx`), `TeamSection`, `BuffsSections` (mutations/magazines/bobbleheads/chems/food-drink), `ConditionsSection`, `TargetSection` (enemy/target + body-part selection — the one place enemy config lives; there is no separate enemy column), `StatSummary`
-- `src/components/results/` - Damage statistics display: `ResultsPane` renders `HeadlineStrip` + one `ScenarioCard` per scenario (Free Aim / VATS), plus `CritGauge`, `DeltaFlash`, `BreakdownPanel`, `MultiplierChainTable`, `SuggestionsPanel`
+- `src/components/build/` - Player/enemy configuration UI, mounted as `BuildColumn`'s accordion sections (`TargetSection` is the one place enemy config lives; there is no separate enemy column) — see `docs/architecture.md`'s UI flow section for the actual section list and order, rather than restating it here where it can drift out of sync with `BuildColumn.tsx`
+- `src/components/results/` - Damage statistics display: `ResultsPane` renders `HeadlineStrip` (which renders the scenario cards), plus `CritGauge`, `DeltaFlash`, `BreakdownPanel`, `MultiplierChainTable`, `SuggestionsPanel`
 - `src/components/diff/` - N&D-import delta annotations (`ActionDelta`, `DiffTooltip`)
 - `src/components/ui/` - Reusable UI components (Base UI wrappers with Tailwind styling — not Radix)
 
@@ -136,10 +140,12 @@ name in `src/data/perk-modifiers.ts`; misses are patched in
   (`scripts/extract/__tests__/fixtures/`).
 - Golden cases (`src/lib/engine/__tests__/golden/cases.json`) hold in-game
   measured numbers; `expected: null` cases are skipped until measured.
-- `bun test --parallel` (`bun run test`) is the sole runner (CI runs it) — `bun:test`'s
-  `describe`/`it`/`expect`/`vi` cover the whole suite (no DOM/component tests, no
-  coverage tooling). `--parallel` (which implies `--isolate`) is **mandatory, not
-  a perf knob**: bare `bun test` shares one module registry across files, so a
+- `bun test --parallel --path-ignore-patterns='**/.claude/**'` (`bun run test`) is the sole
+  runner (CI runs it) — `bun:test`'s `describe`/`it`/`expect`/`vi` cover the whole suite (no
+  DOM/component tests, no coverage tooling). The ignore pattern is load-bearing: without it,
+  `bun test` also walks the vendored skill docs symlinked under `.claude/skills/`. `--parallel`
+  (which implies `--isolate`) is **mandatory, not a perf knob**: bare `bun test` shares one
+  module registry across files, so a
   `vi.mock` in one file can silently patch the module another file imports.
   Confirmed reproducible instance: `build-reducer.test.ts`'s `@/lib/consumable-rules`
   mock leaks into `src/lib/persist/__tests__/codec.test.ts` and breaks it, in
