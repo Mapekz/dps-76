@@ -25,8 +25,12 @@ function PersistenceGate({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
-  // Default to Live mode for MVP. PTS toggle wiring tracked as issue #40
-  // (Mapekz/dps-76) — the Header switch stays disabled until it ships.
+  // Default to Live mode. PTS toggle wiring landed under issue #40
+  // (Mapekz/dps-76), but the Header switch stays disabled: the currently
+  // extracted dump is on track to promote to Live in ~3 weeks (~2026-09-05),
+  // and the next distinct PTS test build isn't expected for ~5-6 weeks
+  // (~2026-09-19 to 2026-09-26). Re-enable once that build is ingested via
+  // `bun run extract --mode pts` and genuinely diverges from live data.
   return (
     <ThemeProvider>
       <GameModeProvider defaultMode="live">

@@ -3,12 +3,11 @@ import { useBuild } from '@/state/BuildProvider';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { BuildUrlInput } from './BuildUrlInput';
 import { ThemeToggle } from './ThemeToggle';
 
 export function Header() {
-  const { isLive } = useGameMode();
+  const { isLive, toggleMode } = useGameMode();
   const { buildName } = useBuild();
 
   return (
@@ -35,35 +34,31 @@ export function Header() {
         </div>
 
         <div className="ml-auto flex items-center gap-3">
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <div className="hidden cursor-not-allowed items-center gap-2 opacity-60 sm:flex" />
-              }
+          <div className="hidden cursor-not-allowed items-center gap-2 opacity-60 sm:flex">
+            <Label
+              htmlFor="game-mode-toggle"
+              className={`text-sm ${isLive ? 'text-foreground' : 'text-muted-foreground'}`}
             >
-              <Label
-                htmlFor="game-mode-toggle"
-                className={`text-sm ${isLive ? 'text-foreground' : 'text-muted-foreground'}`}
-              >
-                Live
-              </Label>
-              <Switch
-                id="game-mode-toggle"
-                checked={true}
-                disabled
-                aria-label="Toggle between Live and PTS"
-              />
-              <Label
-                htmlFor="game-mode-toggle"
-                className={`text-sm ${!isLive ? 'text-foreground' : 'text-muted-foreground'}`}
-              >
-                PTS
-              </Label>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>PTS data lands with the next extraction</p>
-            </TooltipContent>
-          </Tooltip>
+              Live
+            </Label>
+            <Switch
+              id="game-mode-toggle"
+              checked={isLive}
+              onCheckedChange={toggleMode}
+              // Stays locked to Live until a genuinely new PTS dump is
+              // extracted (see docs/agents/issue-tracker.md #40) — the
+              // handler is wired now so re-enabling later is a one-line
+              // change (drop this prop), not a new implementation.
+              disabled
+              aria-label="Toggle between Live and PTS"
+            />
+            <Label
+              htmlFor="game-mode-toggle"
+              className={`text-sm ${!isLive ? 'text-foreground' : 'text-muted-foreground'}`}
+            >
+              PTS
+            </Label>
+          </div>
           <ThemeToggle />
         </div>
       </div>
