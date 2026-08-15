@@ -35,7 +35,7 @@ export interface SustainResult extends SustainTiming {
  * genuine reload — **ASSUMPTION**, a user-approved placeholder pending an
  * in-game stopwatch measurement of a real bash swing (per-weapon animation
  * timing likely varies, `#61`). Overridable
- * per scenario via `PlayerConditions.battleLoadersBashSec`, which literally
+ * per scenario via `PlayerInput.battleLoadersBashSec`, which literally
  * duplicates this value as its default (types/ stays a leaf — no engine
  * import; `sustain.test.ts` regression-tests the two stay in sync).
  */

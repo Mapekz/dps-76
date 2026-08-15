@@ -2,7 +2,7 @@
 
 Kill-streak-scaling effects — Barbarian (+1 STR/kill), Mind Over Matter (+1
 INT/kill), the Adrenal family (+10% dbm/kill), Thrill-Seeker's — read as
-contributing nothing by default because `PlayerConditions.killStreak` defaults
+contributing nothing by default because `PlayerInput.killStreak` defaults
 to `0`. That looks identical to a bug. Compare ADR 0005: Onslaught and Bullet
 Storm stack sliders default to `−1` ("auto"), which resolves to a non-zero
 simulated **Sustained Stacks** average, not to their own worst case.
@@ -26,7 +26,7 @@ contributes `0` at the default. The engine and the suggestion sweep
 the sweep is preserved, not split: kill-streak effects are still genuinely
 absent from suggestions at a 0 streak, which is correct, not a gap.
 
-`PlayerConditions.adrenalineStacks` is named `killStreak` (matching the
+`PlayerInput.adrenalineStacks` is named `killStreak` (matching the
 game's own AV name, `0x00000399`) precisely because Barbarian/Mind Over
 Matter/Thrill-Seeker's read it too and have nothing to do with the
 "Adrenal" mechanic family. No backward-compat alias exists in the

@@ -540,7 +540,7 @@ describe('Action Boy/Girl (Stage C4, cross-family rank gate fix)', () => {
 describe('Lock and Load → Bullet Storm reload speed (cross-family perkFamilyRank gate, 2026-07-15)', () => {
   // Bullet Storm's hidden reload-speed curve (+1%/ammo-spent stack, 0→30) is
   // gated HasPerk(LockAndLoad01) — extracted as a perkFamilyRank condition,
-  // evaluated against PlayerConditions.equippedPerkRanks.
+  // evaluated against PlayerInput.equippedPerkRanks.
   //
   // 2026-07-16 (Bullet Storm engine core): the generated Bullet Storm perk
   // doesn't carry its own `bulletStormMaxStacks` modifier yet (pending

@@ -1,4 +1,4 @@
-import type { PlayerConditions } from '@/types';
+import type { PlayerInput } from '@/types';
 import type { Modifier } from '@/types/modifiers';
 
 /**
@@ -23,7 +23,7 @@ import type { Modifier } from '@/types/modifiers';
 
 /** The SPECIAL ADD modifier for the selected public team type, scaled by team size (bond-score proxy). */
 export function getPublicTeamModifiers(
-  publicTeamType: PlayerConditions['publicTeamType'],
+  publicTeamType: PlayerInput['publicTeamType'],
   teammateCount: number,
 ): Modifier[] {
   const bondScore = Math.min(teammateCount + 1, 4);

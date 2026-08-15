@@ -35,7 +35,7 @@ import type { ArmorEffectEntry } from './armor-types';
  * - A few effects (Battle-Loader's, Limit-Breaking) extract as 5 already-
  *   tiered modifiers, each gated on an EXACT (or ≥5) `wornPieceCount`
  *   condition — these are `selfScaling`: the checklist count feeds
- *   `PlayerConditions.wornPieceCounts` instead (via
+ *   `PlayerInput.wornPieceCounts` instead (via
  *   `getArmorEffectWornPieceCounts`) and the modifiers pass through
  *   unscaled, letting `resolve.ts`'s condition eval pick the one active tier.
  *   Detected generically (any modifier carrying a `wornPieceCount`
@@ -120,7 +120,7 @@ export function getArmorEffectModifiers(
 }
 
 /**
- * `PlayerConditions.wornPieceCounts` derived from the same selections —
+ * `PlayerInput.wornPieceCounts` derived from the same selections —
  * the single source of truth is the checklist (`PlayerConfig.armorEffects`),
  * resolveLoadout derives both this map and the modifier list from it so the
  * UI never sets wornPieceCounts directly. Only self-scaling effects

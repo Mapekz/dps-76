@@ -203,7 +203,7 @@ describe('condition evaluation', () => {
     expect(foldBucket([tenderizer], 'dbm', 1.0, makeCtx(weapon, { player: zero }))).toBe(1.0);
   });
 
-  it('aimingDownSights gates on PlayerConditions.isAimingDownSights', () => {
+  it('aimingDownSights gates on PlayerInput.isAimingDownSights', () => {
     const adsMod = mod({
       bucket: 'dbm',
       op: 'ADD',

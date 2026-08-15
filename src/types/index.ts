@@ -8,16 +8,11 @@ export type { Stat, StatModification } from '@/data/stats';
 export type {
   ArmorWorn,
   PlayerConditionContext,
-  PlayerConditions,
   PlayerInput,
   ResolvedPlayer,
 } from '@/types/player';
-import {
-  createDefaultPlayerConditions,
-  createDefaultPlayerInput,
-  createDefaultResolvedPlayer,
-} from '@/types/player';
-export { createDefaultPlayerConditions, createDefaultPlayerInput, createDefaultResolvedPlayer };
+import { createDefaultPlayerInput, createDefaultResolvedPlayer } from '@/types/player';
+export { createDefaultPlayerInput, createDefaultResolvedPlayer };
 
 // Enemy conditions for conditional damage calculations
 export interface EnemyConditions {
@@ -195,7 +190,7 @@ export interface Weapon {
    * effective-weapon.ts; consumed by sustain.ts). Battle-Loader's only
    * (EP199 "Instant Reload Clip On Bash") — split from `reloadSkipChance`
    * because a bash swing costs real time
-   * (`PlayerConditions.battleLoadersBashSec`), unlike a passive reload skip.
+   * (`PlayerInput.battleLoadersBashSec`), unlike a passive reload skip.
    */
   reloadSkipChanceBash?: number;
   /**

@@ -70,7 +70,7 @@ export function getLoadoutModifiers(mode: GameMode, loadouts: PerkLoadout[]): Mo
 /**
  * Family editor-id → highest owned rank across a merged regular+legendary
  * loadout (legendary families are `Legendary*`-namespaced, so one map is
- * collision-free). Feeds PlayerConditions.equippedPerkRanks — the runtime
+ * collision-free). Feeds PlayerInput.equippedPerkRanks — the runtime
  * input of `perkFamilyRank` conditions (cross-family HasPerk gates, e.g.
  * Lock and Load → Bullet Storm's reload speed).
  */

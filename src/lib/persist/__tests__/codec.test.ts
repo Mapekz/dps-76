@@ -291,7 +291,7 @@ describe('build codec', () => {
     // Pre-2026-07-30 share-URLs could carry this toggle alongside a manual
     // bulletStormStacks pin (docs/adr/0005-stack-defaults-are-sustained-averages.md
     // — the toggle was deleted, the `-1` sentinel now means auto). It's no
-    // longer a PlayerConditions field, so it falls through the same
+    // longer a PlayerInput field, so it falls through the same
     // `key in state.player.conditions` guard as any other unrecognized/future
     // key (see "tolerates future fields" above) — silently dropped, no warning.
     const encoded = await encodeRawWire({

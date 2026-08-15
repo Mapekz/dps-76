@@ -119,9 +119,6 @@ export interface ResolvedPlayer extends PlayerConditionContext {
   glow?: number;
 }
 
-/** @deprecated Use `PlayerInput`. */
-export type PlayerConditions = PlayerInput;
-
 /**
  * The nine fields `ResolvedPlayer` adds beyond `PlayerConditionContext` —
  * real folded values from `playerAgg`, but not yet known on the bootstrap
@@ -216,7 +213,7 @@ export function createDefaultPlayerInput(): PlayerInput {
 }
 
 /**
- * Synthetic-test defaults matching the pre-split `createDefaultPlayerConditions`.
+ * Synthetic-test defaults, not the app's real baseline.
  * Deliberately maxes SPECIAL to 15/15/15/15/15/15/15 — a maxed-out synthetic
  * test rig, not a value that's ever the app's actual default (that's
  * `createDefaultPlayerInput()`'s 1/1/1/1/1/1/1). Used by
@@ -249,9 +246,4 @@ export function createDefaultResolvedPlayer(): ResolvedPlayer {
     mutationCount: 0,
     hungerThirstTier: 0,
   };
-}
-
-/** @deprecated Use `createDefaultPlayerInput`. */
-export function createDefaultPlayerConditions(): PlayerInput {
-  return createDefaultPlayerInput();
 }

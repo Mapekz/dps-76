@@ -176,7 +176,7 @@ export type Bucket =
    * whistle.md) because a bash swing carries a real time cost a passive
    * skip doesn't: `sustain.ts` composes both channels (free-tier skip wins
    * first, then the bash tier either skips instantly at
-   * `PlayerConditions.battleLoadersBashSec = 0` or costs that many seconds
+   * `PlayerInput.battleLoadersBashSec = 0` or costs that many seconds
    * in place of the real reload). Folded via the same `foldChanceUnion` as
    * `reloadSkipChance` in effective-weapon.ts; consumed by sustain.ts's
    * `reloadSec` fold.
@@ -433,14 +433,14 @@ export type Bucket =
    * Flat max-HP bonuses (MGEF Peak Value Modifiers on AV HealthBonus
    * 0x007B74E4 — Lifegiver, Overeater-side effects...). Folded in
    * `resolveLoadout` over the base-HP formula 245 + 5×END
-   * (docs/assumptions.md "Max HP (derived)") to derive `PlayerConditions.maxHealth`.
+   * (docs/assumptions.md "Max HP (derived)") to derive `PlayerInput.maxHealth`.
    */
   | 'maxHealth'
   /**
    * Lockpick Skill (`STAT_LockpickingTier`, integer points, base 0). Folded
    * in player-stats.ts derivePlayerStats exactly like maxHealth — every
    * contributing perk/armor-effect modifier ADDs into this bucket — and
-   * threaded onto PlayerConditions.lockpickSkill, read by the `lockpickSkill`
+   * threaded onto PlayerInput.lockpickSkill, read by the `lockpickSkill`
    * CurveInput (Pirate Punch unique weapon mod: "+5% Damage per Lockpick
    * Skill", ESM curve PiratePunchBonus).
    */
@@ -450,7 +450,7 @@ export type Bucket =
    * Folded in player-stats.ts derivePlayerStats exactly like lockpickSkill —
    * Hacker/Hacker Expert/Hacker Master (+1 each), Master Infiltrator (+3),
    * Safecracker's 3★ armor (+1/piece) — threaded onto
-   * PlayerConditions.hackingSkill, read by the `hackingSkill` CurveInput.
+   * PlayerInput.hackingSkill, read by the `hackingSkill` CurveInput.
    * No shipped weapon reads it yet; wired for drop-in.
    */
   | 'hackingSkill'
@@ -458,7 +458,7 @@ export type Bucket =
    * Stimpak Healing (`STAT_HealMultStimpak` 0x00206F31, percent-point AV,
    * base 0). Folded in player-stats.ts derivePlayerStats — First Aid perk
    * (Intelligence-keyed curve) and Medicine Bobblehead (flat +30) — and
-   * threaded onto PlayerConditions.stimpakHealMult. Medical Malpractice's
+   * threaded onto PlayerInput.stimpakHealMult. Medical Malpractice's
    * identity perk scales dbm by this stat via the `scaledBy` mechanism (not a
    * curve input on the grant side).
    */
@@ -580,7 +580,7 @@ export type BucketRegime =
    * which compose multiplicatively (∏(1+value) via `foldBucketProduct` in
    * resolve.ts) rather than the additive damage-pool fold `foldOps` uses for
    * every other MUL_ADD bucket. Folded once in player-stats.ts
-   * derivePlayerStats and threaded on PlayerConditions — same "folded once,
+   * derivePlayerStats and threaded on PlayerInput — same "folded once,
    * threaded" shape as `playerStat`, distinct regime name because the fold
    * arithmetic differs.
    */
@@ -1215,7 +1215,7 @@ export const EFFECTIVE_WEAPON_CONSUMED_BUCKETS: ReadonlySet<Bucket> = new Set(
  * defenses, removed 2026-07-18) is GONE: that curve input was renamed
  * `playerDamageResist` (Berserker's reads the WIELDER's own DR, not the
  * enemy's — see the `CurveInput` doc comment) and is wired to a real manual
- * knob (`PlayerConditions.playerDamageResist`), so it's engine-effective like
+ * knob (`PlayerInput.playerDamageResist`), so it's engine-effective like
  * any other curve input now. `armorPen` also left `INERT_ENGINE_BUCKETS` this
  * phase (mitigation.ts). Distinct from the enemyType/enemyTypeAny CONDITION
  * kinds, which have always resolved against the Target picker's selected
@@ -1369,7 +1369,7 @@ export type Condition =
   | { kind: 'aimingDownSights'; value: boolean }
   /**
    * Lifetime lore/achievement challenge completed (HasCompletedChallenge on a
-   * CHAL formid). Evaluated against `PlayerConditions.completedChallengeIds`
+   * CHAL formid). Evaluated against `PlayerInput.completedChallengeIds`
    * (The Pipe) or `localLegendFishingChallengesCompleted` (Kingfisher's six
    * Local Legend fishing challenges — docs/assumptions.md).
    */
@@ -1384,7 +1384,7 @@ export type Condition =
    * Number of currently-worn armor pieces carrying `keyword` == count, or ≥
    * count with orMore (Battle-Loader's 1/2/3/4/≥5-piece tiers —
    * WornApparelHasKeywordCount). Evaluated against
-   * `PlayerConditions.wornPieceCounts`, which `resolveLoadout` derives from
+   * `PlayerInput.wornPieceCounts`, which `resolveLoadout` derives from
    * the Armor checklist — see resolve.ts's `wornPieceCount` case and
    * docs/assumptions.md "Armor effects (engine + UI)".
    */
@@ -1402,7 +1402,7 @@ export type Condition =
    * Kill-streak count == count, exact-match tier (Thrill-Seeker's 10 discrete
    * GetValue(killStreak) Equal To N rows — 0.03×N magnitude per tier, distinct
    * from the `stacks`/curve-scaled kill-streak sources). Evaluated against
-   * `PlayerConditions.killStreak`.
+   * `PlayerInput.killStreak`.
    */
   | { kind: 'killStreakCount'; count: number }
   /** value × missing-health fraction, capped (Bloodied: up to ×0.95 of the listed max). */
@@ -1442,7 +1442,7 @@ export type Condition =
    * MakeshiftWarrior0N). Resolved at EXTRACTION time
    * (ConditionTranslationContext.crossFamilyRank,
    * scripts/extract/normalize/conditions.ts) into the family editor-id +
-   * rank; evaluated at RUNTIME against PlayerConditions.equippedPerkRanks
+   * rank; evaluated at RUNTIME against PlayerInput.equippedPerkRanks
    * (derived from the selected perk loadout in src/lib/loadout.ts) —
    * contrast the SELF/paired-family rank gates, which the extractor resolves
    * by simulation and never emits as runtime conditions. Owning rank N
@@ -1484,7 +1484,7 @@ export type Condition =
    * with other damage bonuses rather than multiplying them. No armor model
    * derives Rad Resistance from equipped gear (same gap as `playerDamageResist`
    * / Berserker's), so the AV is a manual knob,
-   * `PlayerConditions.playerRadResist`, default 0.
+   * `PlayerInput.playerRadResist`, default 0.
    */
   | { kind: 'radResistAtLeast'; min: number }
   /** Extraction escape hatch: condition semantics not yet understood. Engine skips the modifier; UI badges it. */
@@ -1540,7 +1540,7 @@ export type CurveInput =
    * damage the LESS armored you are" effect — USER-CONFIRMED 2026-07-18. No
    * armor-mitigation model exists yet to derive this from equipped armor
    * (Phase 3 is slim and won't add one either), so it's a manual knob
-   * (`PlayerConditions.playerDamageResist`, default 0 — "naked", the curve's
+   * (`PlayerInput.playerDamageResist`, default 0 — "naked", the curve's
    * max-bonus end, which was this input's ALWAYS-0 hardcoded behavior before
    * this rename; see `resolve.ts` PLAYER_STATE_READERS and
    * docs/assumptions.md "Berserker's (Damage Unarmored)").
@@ -1590,7 +1590,7 @@ export type CurveInput =
    * The shared Bullet Storm / Heavy Gunner stack counter (ammo-spent stacks,
    * max 10) — AV 0x0000039B, no AVIF record (hardcoded slot, mirrors
    * onslaughtStacks). Distinct CurveInput from the `bulletStorm` StackCounter
-   * (same underlying `PlayerConditions.bulletStormStacks` field, different
+   * (same underlying `PlayerInput.bulletStormStacks` field, different
    * type space) because ValueCurve.input is typed as CurveInput, not
    * StackCounter.
    */

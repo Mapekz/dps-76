@@ -224,7 +224,7 @@ const armorEffectModifiersFor = scoped(
  * pays off for the 'mod'/'legendary'/'mutation'/most-'armor'/most-'consumable'
  * groups, where the 5 derived values collapse back to the same
  * primitives/references as the baseline and this returns the SAME
- * `PlayerConditions` object — which is itself the cache key every downstream
+ * `PlayerInput` object — which is itself the cache key every downstream
  * `conditions`-keyed consumer (`buildEffectiveWeapon`'s memo below) needs to
  * also hit.
  */

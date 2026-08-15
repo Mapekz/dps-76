@@ -1,4 +1,4 @@
-import type { PlayerConditions } from '@/types';
+import type { PlayerInput } from '@/types';
 import type { Modifier } from '@/types/modifiers';
 
 /**
@@ -46,7 +46,7 @@ const TAKING_ONE_FOR_THE_TEAM_DR_MGEF_FORM_IDS = [
 ] as const;
 
 export function getTargetDebuffModifiers(
-  conditions: Pick<PlayerConditions, 'takingOneForTheTeamDrRank'>,
+  conditions: Pick<PlayerInput, 'takingOneForTheTeamDrRank'>,
 ): Modifier[] {
   const modifiers: Modifier[] = [
     {

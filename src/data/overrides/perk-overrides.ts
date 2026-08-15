@@ -294,7 +294,7 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
   // Damage half (EP135, modeled below as a `dbm` ADD): value 0.01/0.02/0.03
   // × rank, reproducing `Float × rank` exactly; gated `vatsOnly` +
   // `stacks(counter: 'concentratedFire', max: 20)` so it scales with the
-  // player-driven stacks slider (PlayerConditions.concentratedFireStacks,
+  // player-driven stacks slider (PlayerInput.concentratedFireStacks,
   // ConditionsSection.tsx), which stands in for the game's hidden native
   // per-target consecutive-shots-fired counter this calculator has no
   // access to (docs/assumptions.md "Concentrated Fire stacks").

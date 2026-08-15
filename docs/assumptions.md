@@ -217,7 +217,7 @@ multiplicative stage on the already-folded reload time/capacity.
   "Instant Reload Clip On Bash") — a bash swing has a real time cost,
   unlike a passive skip. Full two-channel formula and the "free skip wins
   first" modeling choice: `sustain.ts`'s `sustainTiming` doc-comment.
-- **`bashSec`** = `PlayerConditions.battleLoadersBashSec` (default 0.75s) —
+- **`bashSec`** = `PlayerInput.battleLoadersBashSec` (default 0.75s) —
   **ASSUMPTION, user-approved placeholder** pending an in-game stopwatch
   (`#61`).
 - `capacity_eff = capacity / (1 − ammoFreeChance)`. Multiple sources on the

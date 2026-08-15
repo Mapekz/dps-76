@@ -33,7 +33,7 @@ export interface ArmorEffectEntry {
   maxCount: number;
   /** True when `modifiers` already carry their own wornPieceCount tiers (Battle-Loader's, Limit-Breaking) — see module header. */
   selfScaling: boolean;
-  /** Present iff selfScaling — the keyword `PlayerConditions.wornPieceCounts` is keyed by for this effect. */
+  /** Present iff selfScaling — the keyword `PlayerInput.wornPieceCounts` is keyed by for this effect. */
   wornPieceKeyword?: string;
   /** PER-PIECE (count=1) base modifiers, as extracted (+ armor-values.ts overrides). */
   modifiers: Modifier[];

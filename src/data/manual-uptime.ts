@@ -1,4 +1,4 @@
-import type { PlayerConditions } from '@/types';
+import type { PlayerInput } from '@/types';
 import type { Modifier } from '@/types/modifiers';
 
 /**
@@ -30,14 +30,14 @@ const MANUAL_UPTIME_PERKS = {
   },
 } as const satisfies Record<
   string,
-  { formId: string; edid: string; name: string; conditionKey: keyof PlayerConditions }
+  { formId: string; edid: string; name: string; conditionKey: keyof PlayerInput }
 >;
 
 export type ManualUptimePerkKey = keyof typeof MANUAL_UPTIME_PERKS;
 
 /** The wholeDamage ADD modifiers for whichever manual damage-multiplier toggles are dialed above 0%. */
 export function getManualUptimeModifiers(
-  conditions: Pick<PlayerConditions, 'followThroughPct' | 'takingOneForTheTeamPct'>,
+  conditions: Pick<PlayerInput, 'followThroughPct' | 'takingOneForTheTeamPct'>,
 ): Modifier[] {
   const modifiers: Modifier[] = [];
   for (const key of Object.keys(MANUAL_UPTIME_PERKS) as ManualUptimePerkKey[]) {

@@ -37,7 +37,7 @@ interface GoldenCase {
    * (Gauss family, bows, tesla/gamma/laser via charging-barrel OMODs — see
    * `PlayerConfig.chargeTimeSec`, src/lib/charge.ts). Omitted/undefined =
    * "always fully charge" (the default). This is a top-level PlayerConfig
-   * field, not a PlayerConditions one, so `conditions` patches can't reach it.
+   * field, not a PlayerInput one, so `conditions` patches can't reach it.
    */
   chargeTimeSec?: number;
   enemyConditions: Partial<EnemyConditions>;

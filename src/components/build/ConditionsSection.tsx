@@ -116,7 +116,7 @@ export function ConditionsSection() {
 
   // Concentrated Fire: manual 0–20 stacks slider standing in for the game's
   // hidden native per-target consecutive-shots-fired counter (see the
-  // PlayerConditions.concentratedFireStacks doc comment and
+  // PlayerInput.concentratedFireStacks doc comment and
   // docs/assumptions.md "Concentrated Fire stacks"). Unlike Onslaught/Bullet
   // Storm there is no equipped-source-derived max: the cap is the fixed GMST
   // 20, so this only needs an existence gate, not a fold.
