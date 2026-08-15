@@ -1232,19 +1232,21 @@ export function hasAnyEngineEffect(modifiers: readonly Modifier[]): boolean {
 
 /**
  * Static loadout facts a suggestion candidate can check before the engine
- * ever simulates it — the equipped weapon's keyword/class set, worn armor
- * type, race, and which `CurveInput`s the current effective weapon's own
- * modifier chain actually reads. Deliberately narrow: only the axes a
+ * ever simulates it — the equipped weapon's keyword/class/anim-type, worn
+ * armor type, race, and which `CurveInput`s the current effective weapon's
+ * own modifier chain actually reads. Deliberately narrow: only the axes a
  * `Condition` kind can prove false from build state alone (weaponKeyword/
- * weaponKeywordAny/weaponClass, inPowerArmor, playerIsGhoul), plus the two
- * known "pool" buckets whose real effect is entirely opt-in via a specific
- * weapon's own curve reference. Every other condition kind (sneaking, crit,
- * bodyPart, ...) describes in-the-moment playstyle, not a build fact, and is
- * always treated as "can't rule out."
+ * weaponKeywordAny/weaponClass/weaponAnimTypeMax, inPowerArmor,
+ * playerIsGhoul), plus the two known "pool" buckets whose real effect is
+ * entirely opt-in via a specific weapon's own curve reference. Every other
+ * condition kind (sneaking, crit, bodyPart, ...) describes in-the-moment
+ * playstyle, not a build fact, and is always treated as "can't rule out."
  */
 export interface StaticLoadoutContext {
   weaponKeywords: ReadonlySet<string>;
   weaponClass: WeaponClass | undefined;
+  /** GetWeaponAnimType() — Martial Artist's melee gate (`weaponAnimTypeMax`) reads this, not a keyword. */
+  weaponAnimType: number | undefined;
   armorWorn: ArmorWorn;
   isGhoul: boolean;
   /** `curve.input` values actually referenced by the current weapon's own modifiers (intrinsic + every equipped OMOD, regular and legendary slots). */
@@ -1259,6 +1261,8 @@ function conditionRulesOutLoadout(c: Condition, ctx: StaticLoadoutContext): bool
       return !c.keywords.some((k) => ctx.weaponKeywords.has(k));
     case 'weaponClass':
       return ctx.weaponClass !== undefined && !c.classes.includes(ctx.weaponClass);
+    case 'weaponAnimTypeMax':
+      return ctx.weaponAnimType !== undefined && ctx.weaponAnimType > c.max;
     case 'inPowerArmor':
       return c.value ? ctx.armorWorn !== 'power' : ctx.armorWorn === 'power';
     case 'playerIsGhoul':

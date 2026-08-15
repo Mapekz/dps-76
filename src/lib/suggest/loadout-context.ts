@@ -49,6 +49,7 @@ export function buildStaticLoadoutContext(
   return {
     weaponKeywords,
     weaponClass: weapon?.weaponClass,
+    weaponAnimType: weapon?.animType,
     armorWorn: player.conditions.armorWorn,
     isGhoul: player.conditions.isGhoul ?? false,
     consumedCurveInputs,
