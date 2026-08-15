@@ -22,6 +22,7 @@ import { getPerks } from '@/data';
 import { getLoadoutModifiers, perkHasEngineEffect } from '@/data/perk-modifiers';
 import { describeBuffModifiers } from '@/lib/buff-description';
 import { usePerkStatus } from './usePerkStatus';
+import { Row } from './Row';
 import { Special } from '@/data/special';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';
 import { canSlotCardPoints, perkCardCostAtRank, type PerkBudget } from '@/lib/player-stats';
@@ -144,59 +145,54 @@ function PerkRow({
   const modifiers = getLoadoutModifiers(mode, [{ perkId: entry.perkId, rank: entry.rank }]);
   const description = !noEffect ? describeBuffModifiers({ modifiers }) : null;
   return (
-    <div className="bg-muted/40 rounded-none px-2 py-1 text-sm">
-      <div className="flex items-center gap-1">
-        <span className="min-w-0 flex-1 truncate">{entry.perk.name}</span>
-        {noEffect && <NoEffectBadge />}
-        {cost !== null && (
-          <span
-            className="text-muted-foreground text-micro tabular-nums"
-            title={`Costs ${cost} perk point${cost === 1 ? '' : 's'} at rank ${entry.rank}`}
-          >
-            {cost} pt
-          </span>
-        )}
-        <CountStepper
-          count={entry.rank}
-          min={1}
-          max={maxRank}
-          onDecrement={() =>
-            dispatch({ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank - 1 })
-          }
-          onIncrement={() =>
-            dispatch({ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank + 1 })
-          }
-          incrementDisabled={raiseBlocked}
-          incrementTitle={
-            raiseBlocked && entry.rank < maxRank
-              ? 'SPECIAL budget exhausted (15/stat, 56 total)'
-              : undefined
-          }
-          decrementTooltipAction={{
-            type: 'perk/setRank',
-            perkId: entry.perkId,
-            rank: entry.rank - 1,
-          }}
-          incrementTooltipAction={{
-            type: 'perk/setRank',
-            perkId: entry.perkId,
-            rank: entry.rank + 1,
-          }}
-          decrementAriaLabel={`Lower ${entry.perk.name} rank`}
-          incrementAriaLabel={`Raise ${entry.perk.name} rank`}
-        />
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-muted-foreground size-6"
-          aria-label={`Remove ${entry.perk.name}`}
-          onClick={() => dispatch({ type: 'perk/remove', perkId: entry.perkId })}
+    <Row label={entry.perk.name} noEffect={noEffect} description={description}>
+      {cost !== null && (
+        <span
+          className="text-muted-foreground text-micro tabular-nums"
+          title={`Costs ${cost} perk point${cost === 1 ? '' : 's'} at rank ${entry.rank}`}
         >
-          <XIcon className="size-3" />
-        </Button>
-      </div>
-      {description && <HelperText>{description}</HelperText>}
-    </div>
+          {cost} pt
+        </span>
+      )}
+      <CountStepper
+        count={entry.rank}
+        min={1}
+        max={maxRank}
+        onDecrement={() =>
+          dispatch({ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank - 1 })
+        }
+        onIncrement={() =>
+          dispatch({ type: 'perk/setRank', perkId: entry.perkId, rank: entry.rank + 1 })
+        }
+        incrementDisabled={raiseBlocked}
+        incrementTitle={
+          raiseBlocked && entry.rank < maxRank
+            ? 'SPECIAL budget exhausted (15/stat, 56 total)'
+            : undefined
+        }
+        decrementTooltipAction={{
+          type: 'perk/setRank',
+          perkId: entry.perkId,
+          rank: entry.rank - 1,
+        }}
+        incrementTooltipAction={{
+          type: 'perk/setRank',
+          perkId: entry.perkId,
+          rank: entry.rank + 1,
+        }}
+        decrementAriaLabel={`Lower ${entry.perk.name} rank`}
+        incrementAriaLabel={`Raise ${entry.perk.name} rank`}
+      />
+      <Button
+        variant="ghost"
+        size="icon"
+        className="text-muted-foreground size-6"
+        aria-label={`Remove ${entry.perk.name}`}
+        onClick={() => dispatch({ type: 'perk/remove', perkId: entry.perkId })}
+      >
+        <XIcon className="size-3" />
+      </Button>
+    </Row>
   );
 }
 

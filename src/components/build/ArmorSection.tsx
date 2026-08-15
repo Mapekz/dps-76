@@ -41,6 +41,7 @@ import { ActionDelta } from '@/components/diff/ActionDelta';
 import { CountStepper } from './CountStepper';
 import { NoEffectBadge } from './OptionBadge';
 import { RemovalConfirmDialog } from './RemovalConfirmDialog';
+import { Row } from './Row';
 import { SectionTrigger } from './SectionTrigger';
 
 type FilterChip =
@@ -120,11 +121,6 @@ function formatSlotUsage(
   return parts.length > 0 ? parts.join(' · ') : undefined;
 }
 
-function EffectDescription({ description }: { description: string | null }) {
-  if (!description) return null;
-  return <HelperText>{description}</HelperText>;
-}
-
 function ArmorTypeControl() {
   const { mode } = useGameMode();
   const { player } = useBuild();
@@ -191,55 +187,9 @@ function ArmorEffectRow({ effect }: { effect: ArmorEffectEntry }) {
 
   if (effect.maxCount === 1) {
     return (
-      <div className="bg-muted/40 rounded-none space-y-1 px-2 py-1 text-sm">
-        <div className="flex items-center gap-1">
-          <span className="min-w-0 flex-1 truncate">{effect.name}</span>
-          {effect.badge === 'inert' && <NoEffectBadge />}
-          {/* No explicit size: Badge's base is already the canonical 0.625rem Micro Label size. */}
-          <Badge variant="secondary">on</Badge>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground size-6"
-            aria-label={`Remove ${effect.name}`}
-            onClick={() => dispatch({ type: 'armorEffect/setCount', id: effect.id, count: 0 })}
-          >
-            <XIcon className="size-3" />
-          </Button>
-        </div>
-        <EffectDescription description={effect.description} />
-      </div>
-    );
-  }
-
-  return (
-    <div className="bg-muted/40 rounded-none space-y-1 px-2 py-1 text-sm">
-      <div className="flex items-center gap-1">
-        <span className="min-w-0 flex-1 truncate">{effect.name}</span>
-        {effect.badge === 'inert' && <NoEffectBadge />}
-        <CountStepper
-          count={count}
-          min={1}
-          max={max}
-          onDecrement={() =>
-            dispatch({ type: 'armorEffect/setCount', id: effect.id, count: count - 1 })
-          }
-          onIncrement={() =>
-            dispatch({ type: 'armorEffect/setCount', id: effect.id, count: count + 1 })
-          }
-          decrementTooltipAction={{
-            type: 'armorEffect/setCount',
-            id: effect.id,
-            count: count - 1,
-          }}
-          incrementTooltipAction={{
-            type: 'armorEffect/setCount',
-            id: effect.id,
-            count: count + 1,
-          }}
-          decrementAriaLabel={`Lower ${effect.name} count`}
-          incrementAriaLabel={`Raise ${effect.name} count`}
-        />
+      <Row label={effect.name} noEffect={effect.badge === 'inert'} description={effect.description}>
+        {/* No explicit size: Badge's base is already the canonical 0.625rem Micro Label size. */}
+        <Badge variant="secondary">on</Badge>
         <Button
           variant="ghost"
           size="icon"
@@ -249,9 +199,45 @@ function ArmorEffectRow({ effect }: { effect: ArmorEffectEntry }) {
         >
           <XIcon className="size-3" />
         </Button>
-      </div>
-      <EffectDescription description={effect.description} />
-    </div>
+      </Row>
+    );
+  }
+
+  return (
+    <Row label={effect.name} noEffect={effect.badge === 'inert'} description={effect.description}>
+      <CountStepper
+        count={count}
+        min={1}
+        max={max}
+        onDecrement={() =>
+          dispatch({ type: 'armorEffect/setCount', id: effect.id, count: count - 1 })
+        }
+        onIncrement={() =>
+          dispatch({ type: 'armorEffect/setCount', id: effect.id, count: count + 1 })
+        }
+        decrementTooltipAction={{
+          type: 'armorEffect/setCount',
+          id: effect.id,
+          count: count - 1,
+        }}
+        incrementTooltipAction={{
+          type: 'armorEffect/setCount',
+          id: effect.id,
+          count: count + 1,
+        }}
+        decrementAriaLabel={`Lower ${effect.name} count`}
+        incrementAriaLabel={`Raise ${effect.name} count`}
+      />
+      <Button
+        variant="ghost"
+        size="icon"
+        className="text-muted-foreground size-6"
+        aria-label={`Remove ${effect.name}`}
+        onClick={() => dispatch({ type: 'armorEffect/setCount', id: effect.id, count: 0 })}
+      >
+        <XIcon className="size-3" />
+      </Button>
+    </Row>
   );
 }
 
