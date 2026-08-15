@@ -78,13 +78,6 @@ export function ApEconomyPanel({ result }: { result: ScenarioResult }) {
 
       {ap.uptime < 1 ? (
         <>
-          {/*
-           * Replaces what used to be two separate ScenarioCard tooltips
-           * ("unthrottled" / "downtime fallback") — one short passage
-           * covering what the VATS headline actually blends: full VATS DPS
-           * while the pool holds, free-aim DPS while it refills, and how
-           * long that refill takes.
-           */}
           <p className="text-muted-foreground text-micro">
             The VATS headline blends full VATS DPS while the AP pool is positive with free-aim DPS
             while it regenerates — {formatSeconds(ap.secondsToEmpty ?? 0)} of fire per{' '}

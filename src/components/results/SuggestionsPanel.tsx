@@ -68,8 +68,7 @@ function SuggestionRow({ suggestion, tied }: { suggestion: EvaluatedSuggestion; 
  * Every ranked row renders at equal visual weight, on purpose: a min-maxer
  * picks the change that fits their own build/playstyle, not necessarily the
  * single highest-delta one, so the list doesn't editorialize with a "top
- * pick" treatment — an earlier version did (larger hero row, then a
- * collapse-behind-"Show N more" for the rest), and both were reverted.
+ * pick" treatment.
  */
 function SuggestionSection({
   title,

@@ -110,10 +110,11 @@ function foldChanceUnion(modifiers: Modifier[], bucket: Bucket, ctx: ResolveCont
  * DamageTypeValues/AttackDamage OMOD conversion (2026-07-13 user-confirmed
  * semantics, docs/assumptions.md "Mixed damage-type OMOD conversion"): a
  * `baseDamage` modifier scoped to a damage type the weapon doesn't already
- * deal used to silently no-op — paper-damage.ts only folds `baseDamage` per
- * EXISTING component (the Tesla Coil Capacitor's +0.5 energy MUL_ADD on the
- * ballistic-only Gauss Minigun had no energy component to apply to). This
- * synthesizes the missing component so the fold has somewhere to land.
+ * deal would otherwise silently no-op — paper-damage.ts only folds
+ * `baseDamage` per EXISTING component (the Tesla Coil Capacitor's +0.5
+ * energy MUL_ADD on the ballistic-only Gauss Minigun has no energy
+ * component to apply to). This synthesizes the missing component so the
+ * fold has somewhere to land.
  *
  * - `scale` = Σ POSITIVE MUL_ADD values only. A negative MUL_ADD on a missing
  *   type multiplies that type's own (zero) base and contributes nothing — it

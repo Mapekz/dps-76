@@ -3,6 +3,17 @@ import { createDefaultEnemyConditions, createDefaultPlayerInput } from '@/types'
 import type { ResolvedPlayer } from '@/types/player';
 import { createDefaultResolvedPlayer } from '@/types/player';
 
+/**
+ * One row per player/enemy field, driving three consumers from a single
+ * source: `origin: 'derived'` fields are excluded from the persisted share
+ * URL (`src/lib/persist/codec.ts`'s `DERIVED_PLAYER_CONDITION_KEYS`, sourced
+ * from `PLAYER_KNOB_REGISTRY` below); `activeBadge`/`badgeRead` feed
+ * ConditionsSection/TargetSection's "N active" badge diff via
+ * `knobActiveBadgeObjects`; `clamp`/`clampRef` document (not enforce — see
+ * each field's comment) where a field's runtime bound lives. Adding a new
+ * player/enemy field means adding a row here, not just wiring the UI control.
+ */
+
 /** BuildColumn accordion id, ResultsPane scenario chips, or non-UI storage. */
 export type KnobSection =
   | 'conditions'
