@@ -210,13 +210,12 @@ function ArmorEffectRow({ effect }: { effect: ArmorEffectEntry }) {
 
   if (effect.maxCount === 1) {
     return (
-      <div className="bg-muted/40 space-y-1 rounded px-2 py-1 text-sm">
+      <div className="bg-muted/40 rounded-none space-y-1 px-2 py-1 text-sm">
         <div className="flex items-center gap-1">
           <span className="min-w-0 flex-1 truncate">{effect.name}</span>
           {effect.badge === 'inert' && <NoEffectBadge />}
-          <Badge variant="secondary" className="text-[10px]">
-            on
-          </Badge>
+          {/* No explicit size: Badge's base is already the canonical 0.625rem Micro Label size. */}
+          <Badge variant="secondary">on</Badge>
           <Button
             variant="ghost"
             size="icon"
@@ -233,7 +232,7 @@ function ArmorEffectRow({ effect }: { effect: ArmorEffectEntry }) {
   }
 
   return (
-    <div className="bg-muted/40 space-y-1 rounded px-2 py-1 text-sm">
+    <div className="bg-muted/40 rounded-none space-y-1 px-2 py-1 text-sm">
       <div className="flex items-center gap-1">
         <span className="min-w-0 flex-1 truncate">{effect.name}</span>
         {effect.badge === 'inert' && <NoEffectBadge />}

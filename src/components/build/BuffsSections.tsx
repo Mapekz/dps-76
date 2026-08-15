@@ -791,7 +791,7 @@ function FoodDrinkRow({
   return (
     <div
       className={cn(
-        'bg-muted/40 flex gap-1 rounded px-2 py-1 text-sm',
+        'bg-muted/40 rounded-none flex gap-1 px-2 py-1 text-sm',
         description ? 'items-start' : 'items-center',
       )}
     >

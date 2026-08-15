@@ -10,10 +10,24 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  /*
+   * Tailwind v4 ships `--radius: 0.25rem` inside its own `@theme default
+   * inline reference` block (node_modules/tailwindcss/theme.css), which is
+   * inlined at compile time — `:root { --radius: 0rem }` below cannot
+   * override it. Every step must be re-declared here, flat, or bare
+   * `rounded` silently leaks Tailwind's default radius. `--radius-full` is
+   * deliberately left un-neutralized — see ui/radio.tsx's documented
+   * carve-out (DESIGN.md's No-Radius Rule).
+   */
+  --radius: 0rem;
+  --radius-xs: 0rem;
+  --radius-sm: 0rem;
+  --radius-md: 0rem;
+  --radius-lg: 0rem;
+  --radius-xl: 0rem;
+  --radius-2xl: 0rem;
+  --radius-3xl: 0rem;
+  --radius-4xl: 0rem;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

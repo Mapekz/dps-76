@@ -7,7 +7,12 @@ import { cn } from '@/lib/utils';
  * radio sharing a `name` is one group, so "only one at a time" is enforced by
  * the browser (and arrow-key traversal comes free) even when the options are
  * spread across separate rows of a table. Styled to sit next to the Radix
- * Checkbox: same size, same focus ring, round instead of square.
+ * Checkbox: same size, same focus ring, round instead of square — the round
+ * shape is the codebase's one documented exception to DESIGN.md's No-Radius
+ * Rule (see "Shapes" there), because round-vs-square is the only remaining
+ * single-select/multi-select affordance cue now that Checkbox is
+ * `rounded-none`. Both `rounded-full` uses below (outer control, inner dot)
+ * are that exception — nowhere else in the app should reach for it.
  */
 function Radio({ className, ...props }: React.ComponentProps<'input'>) {
   return (

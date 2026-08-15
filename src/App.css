@@ -12,7 +12,7 @@ html {
 }
 .dark ::-webkit-scrollbar-thumb {
   background: oklch(0.34 0.015 145);
-  border-radius: 4px;
+  border-radius: 0; /* No-Radius Rule — see DESIGN.md */
 }
 .dark ::-webkit-scrollbar-thumb:hover {
   background: oklch(0.42 0.015 145);

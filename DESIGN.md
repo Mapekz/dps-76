@@ -165,7 +165,7 @@ This system is flat by design. Depth is conveyed by two devices only: a 1px `bor
 Zero radius, universally. Every rectangle — button, badge, card, input underline, switch track and thumb, accordion row, tooltip popup and its arrow — is a hard-cornered rectangle. The one exception to plain rectangles is the corner-bracket motif (see Components → VATS Bracket Frame), which is additive framing, not a softened corner.
 
 ### Named Rules
-**The No-Radius Rule.** `border-radius: 0` everywhere, no exceptions, no "just this once for a pill badge." A rounded corner appearing anywhere in this system is a regression, not a variant.
+**The No-Radius Rule.** `border-radius: 0` everywhere, no exceptions, no "just this once for a pill badge" — with one closed, named exception: radio indicators, and nothing else. A `Radio`'s outer control and inner dot stay `rounded-full` because round-vs-square is the only remaining visual cue distinguishing single-select from multi-select once `Checkbox` is square. Any other rounded corner appearing in this system is a regression, not a variant.
 
 ## Components
 
