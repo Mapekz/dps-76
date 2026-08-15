@@ -1,9 +1,16 @@
 import type { GameMode, Perk } from '@/types';
-import type { Bucket, Condition, CurveInput, Modifier, StackCounter } from '@/types/modifiers';
+import type {
+  Bucket,
+  Condition,
+  CurveInput,
+  Modifier,
+  StackCounter,
+  StaticLoadoutContext,
+} from '@/types/modifiers';
 import { getPerks, getWeapons } from '@/data';
 import { getLegendaryOmodSlots } from '@/data/omods';
 import { computePerkBudget } from '@/data/perk-budget';
-import { getGeneratedPerk } from '@/data/perk-modifiers';
+import { getGeneratedPerk, perkHasEngineEffect } from '@/data/perk-modifiers';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';
 import { perkCardCostAtRank, type PerkBudget } from '@/lib/player-stats';
 import { Special } from '@/data/special';
@@ -13,6 +20,7 @@ import {
   type SpecialKey,
 } from '@/state/build-reducer';
 import type { SuggestionBudget, SuggestionCandidate } from './types';
+import { buildStaticLoadoutContext } from './loadout-context';
 import { legendaryEffectLabel, perkLabel } from './labels';
 
 /**
@@ -123,14 +131,6 @@ function isContributor(modifiers: readonly Modifier[], mechanism: StackMechanism
 }
 
 /**
- * A perk family is damage-relevant when any rank emits modifiers.
- */
-function isDamageRelevant(mode: GameMode, perkId: string): boolean {
-  const generated = getGeneratedPerk(mode, perkId);
-  return !!generated && generated.ranks.some((r) => r.modifiers.length > 0);
-}
-
-/**
  * Discover all perk and legendary pieces participating in a mechanism
  * within the current build state (excluding already-equipped pieces).
  */
@@ -139,6 +139,7 @@ function discoverPieces(
   mode: GameMode,
   weapon: ReturnType<typeof getWeapons>[string],
   mechanism: StackMechanism,
+  loadoutCtx: StaticLoadoutContext,
 ): Piece[] {
   const pieces: Piece[] = [];
   const { player } = state;
@@ -153,7 +154,7 @@ function discoverPieces(
   // Discover perk pieces
   const perks = getPerks(mode) as Record<string, Perk>;
   for (const [perkId, perk] of Object.entries(perks)) {
-    if (!isDamageRelevant(mode, perkId)) continue;
+    if (!perkHasEngineEffect(mode, perkId, loadoutCtx)) continue;
     if (equippedPerkIds.has(perkId) || equippedLegendaryPerkIds.has(perkId)) continue;
 
     const generated = getGeneratedPerk(mode, perkId);
@@ -275,9 +276,10 @@ export function enumerateCombos(state: BuildState, mode: GameMode): SuggestionCa
     Object.values(SPECIAL_TO_KEY).map((key) => [key, player.conditions[key]]),
   ) as Record<SpecialKey, number>;
   const cardBudget = computePerkBudget(mode, player.perks, player.legendaryPerks, allocation);
+  const loadoutCtx = buildStaticLoadoutContext(mode, player, weapon);
 
   for (const mechanism of STACK_MECHANISMS) {
-    const pieces = discoverPieces(state, mode, weapon, mechanism);
+    const pieces = discoverPieces(state, mode, weapon, mechanism, loadoutCtx);
 
     // Generate unordered pairs where at least one has payoff
     for (let i = 0; i < pieces.length; i++) {
