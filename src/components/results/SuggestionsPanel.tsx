@@ -1,4 +1,6 @@
+import * as React from 'react';
 import { Loader2Icon } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -12,16 +14,25 @@ import type { EvaluatedSuggestion } from '@/lib/suggest/types';
 const PANEL_LIMIT = 8;
 const CONSUMABLE_LIMIT = 4;
 
-function SuggestionRow({ suggestion, tied }: { suggestion: EvaluatedSuggestion; tied?: boolean }) {
+function SuggestionRow({
+  suggestion,
+  tied,
+  hero,
+}: {
+  suggestion: EvaluatedSuggestion;
+  tied?: boolean;
+  /** The lone emphasized top pick — larger text, filled Apply button. */
+  hero?: boolean;
+}) {
   const dispatch = useBuildDispatch();
   return (
-    <div className="flex items-center gap-2 py-1 text-sm">
+    <div className={cn('flex items-center gap-2 py-1', hero ? 'text-base' : 'text-sm')}>
       <span className="min-w-0 flex-1 truncate" title={suggestion.label}>
         {suggestion.label}
       </span>
       {!suggestion.budget.legal && (
         <span
-          className="text-negative whitespace-nowrap text-[10px]"
+          className="text-negative whitespace-nowrap text-micro"
           title="Would exceed the perk point budget"
         >
           {suggestion.budget.special
@@ -30,25 +41,27 @@ function SuggestionRow({ suggestion, tied }: { suggestion: EvaluatedSuggestion; 
         </span>
       )}
       {suggestion.group === 'combo' && (
-        <span
-          className="bg-muted text-muted-foreground rounded px-1.5 py-0.5 text-[10px] whitespace-nowrap"
+        <Badge
+          variant="secondary"
+          className="whitespace-nowrap"
           title="Applies two changes at once"
         >
           Combo
-        </span>
+        </Badge>
       )}
       <span
         className={cn(
-          'font-mono text-xs tabular-nums',
+          'font-mono tabular-nums',
+          hero ? 'text-base' : 'text-xs',
           tied ? 'text-muted-foreground' : 'text-positive',
         )}
       >
         {tied ? '≈' : formatPercentDelta(suggestion.primaryDeltaPct)}
       </span>
       <Button
-        variant="ghost"
+        variant={hero ? 'default' : 'ghost'}
         size="sm"
-        className="h-6 px-2 text-xs"
+        className={cn('px-2', hero ? 'h-7 text-sm' : 'h-6 text-xs')}
         onClick={() => suggestion.action.forEach((a) => dispatch(a))}
       >
         Apply
@@ -61,22 +74,43 @@ function SuggestionRow({ suggestion, tied }: { suggestion: EvaluatedSuggestion; 
  * One ranked/tied/empty block. Reused for the structural-suggestions section
  * and the consumable-boosts section below it — same row markup, same "tied"
  * (<1%) treatment, different scope of candidates and empty-state copy.
+ *
+ * `emphasizeTop` leads with `ranked[0]` as a hero row and collapses
+ * everything else (the rest of `ranked` plus `tied`) behind a "Show N more"
+ * disclosure, default collapsed — every ranked row used to render at equal
+ * visual weight (2026-08-10 design critique), which buried the one
+ * recommendation actually worth acting on among up to 8 identically-styled
+ * rows. Opt-in per section: the structural list is where this matters (up to
+ * `PANEL_LIMIT` candidates); the 4-item consumable list stays flat.
+ *
+ * Only emphasizes when `ranked[0]` is a legal mover — `topSuggestions`
+ * (evaluate.ts) appends over-budget candidates AFTER every legal one, so
+ * `ranked[0]` is illegal only when there are zero legal movers at all, and an
+ * un-appliable suggestion has no business being the "top pick."
  */
 function SuggestionSection({
   title,
   ranked,
   tied,
   emptyMessage,
+  emphasizeTop,
 }: {
   title?: string;
   ranked: EvaluatedSuggestion[];
   tied: EvaluatedSuggestion[];
   emptyMessage: React.ReactNode;
+  emphasizeTop?: boolean;
 }) {
+  const [expanded, setExpanded] = React.useState(false);
+  const canEmphasize = emphasizeTop && ranked.length > 0 && ranked[0].budget.legal;
+  const hero = canEmphasize ? ranked[0] : null;
+  const restRanked = canEmphasize ? ranked.slice(1) : ranked;
+  const collapsedCount = restRanked.length + tied.length;
+
   return (
     <div>
       {title && (
-        <p className="font-condensed text-muted-foreground mb-1 text-[11px] font-semibold uppercase tracking-[0.12em]">
+        <p className="font-condensed text-muted-foreground mb-1 text-section font-semibold uppercase tracking-[0.12em]">
           {title}
         </p>
       )}
@@ -84,36 +118,63 @@ function SuggestionSection({
       {ranked.length === 0 && tied.length === 0 ? (
         <p className="text-muted-foreground py-1 text-sm">{emptyMessage}</p>
       ) : (
-        <div className="divide-border/50 divide-y">
-          {ranked.map((s) => (
-            <SuggestionRow key={s.id} suggestion={s} />
-          ))}
-        </div>
-      )}
-
-      {tied.length > 0 && (
         <>
-          <div className="flex items-center gap-2 pt-1">
-            <Separator className="flex-1" />
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <span className="text-muted-foreground cursor-default text-[10px] uppercase tracking-wide" />
-                }
-              >
-                effectively tied
-              </TooltipTrigger>
-              <TooltipContent>
-                Gains under 1% — within the noise of the fire-rate approximation.
-              </TooltipContent>
-            </Tooltip>
-            <Separator className="flex-1" />
-          </div>
-          <div className="divide-border/50 divide-y">
-            {tied.map((s) => (
-              <SuggestionRow key={s.id} suggestion={s} tied />
-            ))}
-          </div>
+          {hero && <SuggestionRow suggestion={hero} hero />}
+
+          {(!canEmphasize || expanded) && restRanked.length > 0 && (
+            <div className="divide-border/50 divide-y">
+              {restRanked.map((s) => (
+                <SuggestionRow key={s.id} suggestion={s} />
+              ))}
+            </div>
+          )}
+
+          {tied.length > 0 && (!canEmphasize || expanded) && (
+            <>
+              <div className="flex items-center gap-2 pt-1">
+                <Separator className="flex-1" />
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <span className="text-muted-foreground cursor-default text-micro uppercase tracking-wide" />
+                    }
+                  >
+                    effectively tied
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Gains under 1% — within the noise of the fire-rate approximation.
+                  </TooltipContent>
+                </Tooltip>
+                <Separator className="flex-1" />
+              </div>
+              <div className="divide-border/50 divide-y">
+                {tied.map((s) => (
+                  <SuggestionRow key={s.id} suggestion={s} tied />
+                ))}
+              </div>
+            </>
+          )}
+
+          {canEmphasize && !expanded && collapsedCount > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground mt-1 h-6 px-2 text-xs"
+              onClick={() => setExpanded(true)}
+            >
+              Show {collapsedCount} more
+            </Button>
+          )}
+          {canEmphasize && expanded && collapsedCount > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground mt-1 h-6 px-2 text-xs"
+              onClick={() => setExpanded(false)}
+            >
+              Show less
+            </Button>
+          )}
         </>
       )}
     </div>
@@ -147,7 +208,7 @@ export function SuggestionsPanel() {
           <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.14em]">
             Suggestions
           </p>
-          <span className="text-muted-foreground flex items-center gap-1 text-[10px]">
+          <span className="text-muted-foreground flex items-center gap-1 text-micro">
             {stale && <Loader2Icon className="size-3 animate-spin" />}
             <Tooltip>
               <TooltipTrigger render={<span className="cursor-default" />}>
@@ -167,6 +228,7 @@ export function SuggestionsPanel() {
           emptyMessage={
             <>Nothing beats the current setup — this build is locally optimal for {metricLabel}.</>
           }
+          emphasizeTop
         />
       </div>
 
