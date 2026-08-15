@@ -133,13 +133,13 @@ function PerkRow({
   const modifiers = getLoadoutModifiers(mode, [{ perkId: entry.perkId, rank: entry.rank }]);
   const description = !noEffect ? describeBuffModifiers({ modifiers }) : null;
   return (
-    <div className="bg-muted/40 rounded px-2 py-1 text-sm">
+    <div className="bg-muted/40 rounded-none px-2 py-1 text-sm">
       <div className="flex items-center gap-1">
         <span className="min-w-0 flex-1 truncate">{entry.perk.name}</span>
         {noEffect && <NoEffectBadge />}
         {cost !== null && (
           <span
-            className="text-muted-foreground text-[10px] tabular-nums"
+            className="text-muted-foreground text-micro tabular-nums"
             title={`Costs ${cost} perk point${cost === 1 ? '' : 's'} at rank ${entry.rank}`}
           >
             {cost} pt

@@ -509,7 +509,7 @@ function EffectGroup({
   return (
     <div>
       <div className="flex items-baseline justify-between pb-1">
-        <p className="font-condensed text-muted-foreground text-[10px] font-semibold uppercase tracking-[0.1em]">
+        <p className="font-condensed text-muted-foreground text-micro font-semibold uppercase tracking-[0.1em]">
           {title}
         </p>
         {headerRight && <p className="text-muted-foreground text-xs">{headerRight}</p>}

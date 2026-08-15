@@ -9,10 +9,9 @@ import { Badge } from '@/components/ui/badge';
  */
 export function OptionBadge({ children }: { children: React.ReactNode }) {
   return (
-    <Badge
-      variant="outline"
-      className="text-muted-foreground ml-1 px-1 py-0 text-[10px] font-normal"
-    >
+    // No explicit size: Badge's own base is already the canonical 0.625rem
+    // Micro Label size — an override here was pure redundancy.
+    <Badge variant="outline" className="text-muted-foreground ml-1 px-1 py-0 font-normal">
       {children}
     </Badge>
   );

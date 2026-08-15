@@ -27,7 +27,7 @@ function Banner({
       <div className="flex gap-3">
         <AlertTriangleIcon className="mt-0.5 size-4 shrink-0 text-negative" aria-hidden="true" />
         <div className="min-w-0 flex-1">
-          <p className="text-[0.625rem] font-semibold tracking-widest uppercase text-negative">
+          <p className="text-micro font-semibold tracking-widest uppercase text-negative">
             Build warnings
           </p>
           <ul className="mt-1.5 list-disc space-y-1 pl-4 text-muted-foreground">

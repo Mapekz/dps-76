@@ -22,7 +22,7 @@ export function ApEconomyPanel({ result }: { result: ScenarioResult }) {
 
   return (
     <div className="border-border/50 mt-1 space-y-1.5 border-t pt-1">
-      <p className="font-condensed text-muted-foreground pt-1 text-[10px] font-semibold uppercase tracking-wide">
+      <p className="font-condensed text-muted-foreground pt-1 text-micro font-semibold uppercase tracking-wide">
         AP economy
       </p>
 

@@ -42,7 +42,7 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
           // so damageType alone is not a stable/unique key.
           <Fragment key={`${component.damageType}-${i}`}>
             {multi && (
-              <p className="font-condensed text-muted-foreground pt-1 text-[10px] font-semibold uppercase tracking-wide">
+              <p className="font-condensed text-muted-foreground pt-1 text-micro font-semibold uppercase tracking-wide">
                 {component.damageType}
               </p>
             )}

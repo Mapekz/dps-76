@@ -24,7 +24,7 @@ typography:
     letterSpacing: "0.14em"
   micro-label:
     fontFamily: "'Barlow', ui-sans-serif, system-ui, sans-serif"
-    fontSize: "12px"
+    fontSize: "10px"
     fontWeight: 600
     lineHeight: 1
     letterSpacing: "0.1em"

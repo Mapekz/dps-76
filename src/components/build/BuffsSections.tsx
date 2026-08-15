@@ -380,7 +380,7 @@ function AddictionCell({
                 render={
                   <span
                     className={cn(
-                      'text-muted-foreground flex shrink-0 items-center gap-1 text-[10px] uppercase tracking-wide',
+                      'text-muted-foreground flex shrink-0 items-center gap-1 text-micro uppercase tracking-wide',
                       !addicted && 'opacity-50',
                     )}
                   />
@@ -398,8 +398,9 @@ function AddictionCell({
             showDelta && <ActionDelta action={{ type: 'addiction/toggle', id: addiction.id }} />
           )}
         </div>
+        {/* Body prose, not a Micro Label — text-xs (12px) is the right voice here. */}
         {description && (
-          <p className={cn('text-[10px]', counted ? 'text-negative' : 'text-muted-foreground')}>
+          <p className={cn('text-xs', counted ? 'text-negative' : 'text-muted-foreground')}>
             {description}
           </p>
         )}
@@ -593,7 +594,7 @@ export function ChemsSection() {
         />
       </AccordionTrigger>
       <AccordionContent>
-        <div className="font-condensed text-muted-foreground flex items-stretch pb-1 text-[10px] font-semibold uppercase tracking-[0.1em]">
+        <div className="font-condensed text-muted-foreground flex items-stretch pb-1 text-micro font-semibold uppercase tracking-[0.1em]">
           <span className="flex-1 px-2">Active — one alcohol, one chem</span>
           <span className={cn(RAIL, 'px-2 pl-3')}>Addicted</span>
         </div>

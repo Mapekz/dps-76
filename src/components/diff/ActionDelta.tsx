@@ -29,7 +29,7 @@ export function ActionDelta({
     <DeltaText
       base={baseline[emphasized].windowDps}
       delta={delta[emphasized].windowDps}
-      className={className ?? 'ml-2 text-[10px]'}
+      className={className ?? 'ml-2 text-micro'}
     />
   );
 }

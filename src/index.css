@@ -56,6 +56,16 @@
   --font-sans: 'Barlow', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'Spline Sans Mono Variable', ui-monospace, monospace;
   --font-condensed: 'Barlow Condensed', 'Barlow', sans-serif;
+  /*
+   * DESIGN.md's Micro Label (10–12px) and Section Label (11px) voices had no
+   * corresponding tokens — every instance was a hand-typed arbitrary value,
+   * which is how the 9px slider-tick regression happened undetected. These
+   * are the canonical sizes (Badge's documented 0.625rem; the Section Label
+   * prose's 11px) — new micro/section text should reach for `text-micro` /
+   * `text-section` rather than another arbitrary `text-[Npx]`.
+   */
+  --text-micro: 0.625rem;
+  --text-section: 0.6875rem;
 }
 
 /*
