@@ -3,10 +3,7 @@ import type { DamageType } from '@/types/modifiers';
 import type { ComponentHit, HitBreakdown } from './paper-damage';
 
 /**
- * Enemy-defense mitigation (Phase 2 — Enemy defenses). Promotes the dormant
- * `calculateDamageResistMult` (formerly `src/lib/damage-formulas.ts`, now
- * removed — that file's whole purpose was this scaffolding) into a real,
- * wired formula:
+ * Enemy-defense mitigation (Phase 2 — Enemy defenses):
  *
  *   Resist = max(0, base − flatDebuff) × (1 − clamp01(armorPenTotal))
  *   mult   = Resist ≤ 0 ? 1 : clamp((damage × 0.15 / Resist)^0.365, 0.01, 0.99)

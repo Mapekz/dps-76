@@ -18,13 +18,12 @@ interface DeltaFlashProps {
  * deliberately not an arrow/chevron, since those already mean "disclosure"
  * elsewhere in this app (accordion, combobox).
  *
- * `prefers-reduced-motion` used to strip the ONLY color the primary number
- * ever got — `animate-flash-{positive,negative}` was its sole color source,
- * entirely inside the keyframe's `from`, so disabling the animation left the
- * headline number with zero visual feedback (only the small corner badge
- * still showed anything, since its color was already a static class,
- * unaffected by the animation being off). `motion-reduce:text-*` below adds
- * a static fallback so the number itself still signals under reduced motion,
+ * `animate-flash-{positive,negative}` is the primary number's ONLY color
+ * source, entirely inside the keyframe's `from` — disabling it under
+ * `prefers-reduced-motion` would leave the headline number with zero visual
+ * feedback (only the small corner badge would still show anything, since its
+ * color is already a static class). `motion-reduce:text-*` below adds a
+ * static fallback so the number itself still signals under reduced motion,
  * without needing the keyframe.
  *
  * The ghost badge stays `aria-hidden`: it's a decorative superscript that

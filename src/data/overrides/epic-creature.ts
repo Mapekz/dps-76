@@ -32,8 +32,7 @@
  * fully data-driven, no caller-supplied rank. Today that's exactly
  * Scorchbeast Queen and Storm Goliath (both rank 3); every other race,
  * including Earle/Wendigo Colossus (checked — its summon quest proves no
- * rank), has no `epicRank` and reads plain curve HP. No manual rank picker
- * ships this phase — extracted ranks only. Enemy OUTGOING damage (the
+ * rank), has no `epicRank` and reads plain curve HP. Enemy OUTGOING damage (the
  * `outgoingDamageMult` column) is out of scope entirely for this DPS
  * calculator (incoming damage to the player isn't modeled) — kept here for
  * completeness/documentation only, no consumer reads it.

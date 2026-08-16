@@ -29,9 +29,7 @@ import type { SustainResult } from './sustain';
  * `apMax` fortifies and AGI raise absolute regen too. (GMST
  * `fActionPointsRestoreRate` = 4.0 exists but is NOT the operative base —
  * engine use unknown; superseded by the race Properties row.) The
- * stopwatch goldens pin the absolute numbers — measuring at two different
- * AGI values would also distinguish %-of-max from flat if any doubt
- * remains.
+ * stopwatch goldens pin the absolute numbers.
  *
  * On-crit AP HoTs (Conductor's 20 AP/s over 5s) are REFRESH-ONLY: a new crit
  * dispels the prior instance and restarts the window instead of stacking.
@@ -46,13 +44,9 @@ import type { SustainResult } from './sustain';
  * effects" — confirms REFRESH (dispel-and-reapply), not a conditional-skip
  * gate. The parallel Health HoT MGEF
  * (`...ApplyRestorePlayerHealthPerkEffect`, 0x007ACB08) carries the same
- * flag/keyword pair. The spell's two instant effects (MGEF
- * `RestoreActionPoints` 0x00047668 magnitude 10, `RestoreHealthGeneric`
- * 0x00023735 magnitude 10, both duration 0) are plain one-shot Value
- * Modifiers with no stacking semantics to check. This matches the in-game
- * 2026-07-15 confirmation ("a new crit restarts the window") exactly — ESM
- * and observation agree, no indistinguishability caveat needed. Mirrors the
- * dotDamage convention. Steady-state term is rate × min(1, durationSec ×
+ * flag/keyword pair. In-game testing (2026-07-15) confirms the same
+ * behavior ("a new crit restarts the window"). Mirrors the dotDamage
+ * convention. Steady-state term is rate × min(1, durationSec ×
  * critsPerSec) — fast crits saturate at the raw rate, slow crits (interval
  * ≥ duration) recover the full rate × duration per crit.
  *
