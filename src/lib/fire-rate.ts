@@ -11,10 +11,10 @@ import { resolvedChargeTimeSec, weaponCharges } from '@/lib/charge';
  *   fireRate_melee    = speed / animationAttackSec  (extracted WEAP "Animation Attack Seconds")
  *
  * Notes:
- * - `speed` is the EFFECTIVE weapon speed. The historical 0.8248× "physical"
- *   multiplier is actually `SET Speed 0.8248` on automatic-receiver OMODs —
- *   buildEffectiveWeapon() applies it from real mod data, so it is no longer
- *   hardcoded here.
+ * - `speed` is the EFFECTIVE weapon speed — the 0.8248× "physical" multiplier
+ *   some receivers apply is `SET Speed 0.8248` on the OMOD itself;
+ *   `buildEffectiveWeapon()` folds it in from real mod data, not a hardcoded
+ *   constant here.
  * - Charging weapons (Gauss family, bows, tesla/gamma/laser via
  *   charging-barrel OMODs, `src/lib/charge.ts`): holding the trigger/draw is
  *   REAL wall-clock time — Speed/fire-rate buffs never make the charge itself

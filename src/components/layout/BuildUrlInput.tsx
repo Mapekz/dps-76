@@ -50,9 +50,7 @@ interface PendingImport {
   /**
    * `locked !== null ? locked === 'ghoul' : current` — the same fallback the
    * immediate-import path already used. Precomputed here so the dialog's
-   * confirm button doesn't have to re-derive it (and previously didn't
-   * handle `locked === null` at all, since before this change the dialog
-   * only opened when a real lock existed).
+   * confirm button doesn't have to re-derive it.
    */
   resolvedIsGhoul: boolean;
 }
@@ -71,11 +69,9 @@ const REPLACES_CLAUSE = 'Importing replaces your perks and SPECIAL allocation';
  * than only ever mentioning race. Same confirm-dialog pattern as the Race
  * toggle (SpecialLoadoutSection.tsx).
  *
- * A second import used to be irreversible — pasting one link over another
- * silently dropped the first import's tweaks with no way back. Every commit
- * path now snapshots the whole pre-import `BuildState` first, and an inline
- * "Undo" affordance (mirroring the error message's placement/style) restores
- * it via `build/hydrate`.
+ * Imports are undoable: every commit path snapshots the whole pre-import
+ * `BuildState` first, and an inline "Undo" affordance (mirroring the error
+ * message's placement/style) restores it via `build/hydrate`.
  */
 export function BuildUrlInput() {
   const { mode } = useGameMode();
@@ -165,9 +161,7 @@ export function BuildUrlInput() {
           resolvedIsGhoul,
         };
         // Confirm first whenever there's something to lose (an existing perk
-        // loadout) or the link forces a race decision — previously this only
-        // fired for the race case, so replacing perks on a same-race import
-        // happened with zero warning at all.
+        // loadout) or the link forces a race decision.
         if (lock.conflict || raceChanges || hasExistingBuild) {
           setParseState('idle');
           setPending(imp);

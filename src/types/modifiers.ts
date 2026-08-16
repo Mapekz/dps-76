@@ -1211,12 +1211,12 @@ export const EFFECTIVE_WEAPON_CONSUMED_BUCKETS: ReadonlySet<Bucket> = new Set(
  * here, next to the bucket registry it reads, so no caller can drift from
  * what the engine actually folds.
  *
- * The `curve?.input === 'enemyDamageResist'` carve-out (Phase 2 — Enemy
- * defenses, removed 2026-07-18) is GONE: that curve input was renamed
- * `playerDamageResist` (Berserker's reads the WIELDER's own DR, not the
- * enemy's — see the `CurveInput` doc comment) and is wired to a real manual
- * knob (`PlayerInput.playerDamageResist`), so it's engine-effective like
- * any other curve input now. `armorPen` also left `INERT_ENGINE_BUCKETS` this
+ * There is no `curve?.input === 'enemyDamageResist'` carve-out here (Phase
+ * 2 — Enemy defenses): that curve input was renamed `playerDamageResist`
+ * (Berserker's reads the WIELDER's own DR, not the enemy's — see the
+ * `CurveInput` doc comment) and is wired to a real manual knob
+ * (`PlayerInput.playerDamageResist`), so it's engine-effective like any
+ * other curve input now. `armorPen` also left `INERT_ENGINE_BUCKETS` this
  * phase (mitigation.ts). Distinct from the enemyType/enemyTypeAny CONDITION
  * kinds, which have always resolved against the Target picker's selected
  * race and were never inert.
