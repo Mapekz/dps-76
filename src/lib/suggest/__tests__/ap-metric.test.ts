@@ -133,7 +133,6 @@ describe('VATS-Window DPS ranking objective', () => {
         action: [],
         label: id,
         group: 'perk',
-        budget: { legal: true },
         family: id,
         cost: 0,
         result: baseline,
@@ -166,9 +165,9 @@ describe('VATS-Window DPS ranking objective', () => {
 
   it('metric: freeAim reports are unaffected by the windowDps change', () => {
     const report = evaluateSuggestions(fixerState, 'live', 'freeAim');
-    const metricBase = report.baseline!.freeAim.sustainedDps;
+    const metricBase = report.baseline!.freeAim.windowDps;
     for (const s of report.suggestions) {
-      const expected = metricBase > 0 ? s.delta.freeAim.sustainedDps / metricBase : 0;
+      const expected = metricBase > 0 ? s.delta.freeAim.windowDps / metricBase : 0;
       expect(s.primaryDeltaPct).toBeCloseTo(expected, 6);
     }
   });

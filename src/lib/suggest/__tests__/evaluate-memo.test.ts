@@ -119,6 +119,19 @@ describe('evaluateSuggestions memoization correctness', () => {
       }
     });
   });
+
+  it('memoized evaluation matches naive ground truth for allocation compounds', () => {
+    const allocState = applyActions(createDefaultBuildState(), [
+      { type: 'weapon/select', weaponId: 'CombatRifle_Fixer' },
+      { type: 'special/set', stat: 'luck', value: 1 },
+    ]);
+    const allocReport = evaluateSuggestions(allocState, 'live', 'vats');
+    const compound = allocReport.suggestions.find((s) => s.id.endsWith(':alloc'));
+    expect(compound).toBeDefined();
+    const naive = naiveSnapshot(allocState, compound!.action);
+    expect(naive).not.toBeNull();
+    expect(compound!.result).toEqual(naive!);
+  });
 });
 
 /**

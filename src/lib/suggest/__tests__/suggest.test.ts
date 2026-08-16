@@ -51,7 +51,7 @@ describe('enumerateVariants', () => {
       ],
       fixerState,
     );
-    const variants = enumerateVariants(withReceiver, 'live');
+    const variants = enumerateVariants(withReceiver, 'live', 'vats');
     const receiverMods = variants.filter((v) => v.id.startsWith('mod:ap_gun_Receiver'));
     expect(receiverMods.length).toBeGreaterThan(0);
     expect(receiverMods.some((v) => v.id.endsWith('mod_CombatRifle_Receiver_Damage-Auto'))).toBe(
@@ -62,9 +62,10 @@ describe('enumerateVariants', () => {
   });
 
   it('offers per-rank rank-ups for equipped perks and per-rank adds for damage-relevant unequipped ones', () => {
-    const variants = enumerateVariants(fixerState, 'live');
-    const rankUp = variants.find((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:2`);
+    const variants = enumerateVariants(fixerState, 'live', 'vats');
+    const rankUp = variants.find((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:2:alloc`);
     expect(rankUp?.action).toEqual([
+      { type: 'special/set', stat: 'perception', value: 2 },
       { type: 'perk/setRank', perkId: PerkId.CenterMasochist, rank: 2 },
     ]);
     expect(rankUp?.family).toBe(`perk:${PerkId.CenterMasochist}`);
@@ -79,16 +80,24 @@ describe('enumerateVariants', () => {
       fixerState,
     );
     expect(
-      enumerateVariants(maxed, 'live').some((v) => v.family === `perk:${PerkId.CenterMasochist}`),
+      enumerateVariants(maxed, 'live', 'vats').some(
+        (v) => v.family === `perk:${PerkId.CenterMasochist}`,
+      ),
     ).toBe(false);
   });
 
-  it('flags perk moves that break the SPECIAL budget with the deficit', () => {
+  it('turns over-budget perk rank-ups into allocation compounds', () => {
     // Base Perception 1 with its 1 card point spent (Center Masochist rank 1)
-    // → the rank-up is illegal by exactly 1 point.
-    const variants = enumerateVariants(fixerState, 'live');
-    const rankUp = variants.find((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:2`);
-    expect(rankUp?.budget).toEqual({ legal: false, special: 'perception', deficit: 1 });
+    // → the rank-up becomes [special/set, perk/setRank], not a bare illegal row.
+    const variants = enumerateVariants(fixerState, 'live', 'vats');
+    expect(variants.some((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:2`)).toBe(false);
+    const rankUp = variants.find((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:2:alloc`);
+    expect(rankUp).toBeDefined();
+    expect(rankUp!.action).toEqual([
+      { type: 'special/set', stat: 'perception', value: 2 },
+      { type: 'perk/setRank', perkId: PerkId.CenterMasochist, rank: 2 },
+    ]);
+    expect(rankUp!.label).toMatch(/\(\+\d+ PER\)$/);
   });
 
   it('emits one candidate per rank above current, for a multi-rank equipped perk', () => {
@@ -98,21 +107,21 @@ describe('enumerateVariants', () => {
     const perk = getPerks('live')[PerkId.CenterMasochist];
     expect(perk.maxRank).toBe(3);
 
-    const variants = enumerateVariants(fixerState, 'live');
-    const rank2 = variants.find((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:2`);
-    const rank3 = variants.find((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:3`);
+    const variants = enumerateVariants(fixerState, 'live', 'vats');
+    const rank2 = variants.find((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:2:alloc`);
+    const rank3 = variants.find((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:3:alloc`);
     expect(rank2).toBeDefined();
     expect(rank3).toBeDefined();
     expect(rank2!.family).toBe(rank3!.family);
-    expect(rank2!.cost).toBe(1);
-    expect(rank3!.cost).toBe(2);
+    expect(rank2!.cost).toBe(2);
+    expect(rank3!.cost).toBe(4);
     // No rank-4 (past maxRank) or rank-1 (current) candidate.
     expect(variants.some((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:4`)).toBe(false);
     expect(variants.some((v) => v.id === `perk-rank:${PerkId.CenterMasochist}:1`)).toBe(false);
   });
 
   it('offers every rank 1..maxRank for unequipped damage-relevant perks', () => {
-    const variants = enumerateVariants(fixerState, 'live');
+    const variants = enumerateVariants(fixerState, 'live', 'vats');
     const addCandidates = variants.filter((v) => v.id.startsWith('perk-add:'));
     expect(addCandidates.length).toBeGreaterThan(0);
 
@@ -136,7 +145,7 @@ describe('enumerateVariants', () => {
   });
 
   it('offers mutation toggles in both directions', () => {
-    const variants = enumerateVariants(fixerState, 'live');
+    const variants = enumerateVariants(fixerState, 'live', 'vats');
     const takes = variants.filter((v) => v.group === 'mutation' && v.label.startsWith('Take'));
     expect(takes.length).toBeGreaterThan(0);
     const firstAction = takes[0].action[0];
@@ -149,7 +158,7 @@ describe('enumerateVariants', () => {
       ],
       fixerState,
     );
-    const drops = enumerateVariants(withMutation, 'live').filter(
+    const drops = enumerateVariants(withMutation, 'live', 'vats').filter(
       (v) => v.group === 'mutation' && v.label.startsWith('Drop'),
     );
     expect(drops.length).toBe(1);
@@ -161,13 +170,13 @@ describe('enumerateVariants', () => {
         [{ type: 'armorEffect/setCount', id: ARMOR_A, count: 3 }],
         fixerState,
       );
-      const variants = enumerateVariants(withA, 'live');
+      const variants = enumerateVariants(withA, 'live', 'vats');
 
       // free = 5 - 3 = 2: B (currently 0) can only step up to 1 and 2.
       const bIncreases = variants.filter((v) => v.id.startsWith(`armor-count:${ARMOR_B}:`));
       const bCounts = bIncreases.map((v) => Number(v.id.split(':')[2])).sort((a, b) => a - b);
       expect(bCounts).toEqual([1, 2]);
-      expect(bIncreases.every((v) => v.group === 'armor' && v.budget.legal)).toBe(true);
+      expect(bIncreases.every((v) => v.group === 'armor')).toBe(true);
       expect(bIncreases.every((v) => v.family === `armor-count:${ARMOR_B}`)).toBe(true);
 
       // Swaps: k of A (count 3) replaced by k of B, for every k in 1..3.
@@ -179,7 +188,6 @@ describe('enumerateVariants', () => {
         { type: 'armorEffect/setCount', id: ARMOR_A, count: 2 },
         { type: 'armorEffect/setCount', id: ARMOR_B, count: 1 },
       ]);
-      expect(swapK1.budget.legal).toBe(true);
       expect(swapK1.cost).toBe(1);
       expect(swaps.every((v) => v.family === `armor-swap:${ARMOR_A}->${ARMOR_B}`)).toBe(true);
     });
@@ -189,7 +197,7 @@ describe('enumerateVariants', () => {
         [{ type: 'armorEffect/setCount', id: ARMOR_A, count: 5 }],
         fixerState,
       );
-      const variants = enumerateVariants(fullTier, 'live');
+      const variants = enumerateVariants(fullTier, 'live', 'vats');
 
       const tier4Increases = variants.filter(
         (v) => v.group === 'armor' && v.id.startsWith('armor-count:') && v.id.includes('Armor4'),
@@ -206,11 +214,10 @@ describe('enumerateVariants', () => {
         [{ type: 'armorEffect/setCount', id: ARMOR_A, count: 5 }],
         fixerState,
       );
-      const variants = enumerateVariants(fullTier, 'live');
+      const variants = enumerateVariants(fullTier, 'live', 'vats');
       const miscIncrease = variants.find((v) => v.id === `armor-count:${ARMOR_MISC}:1`);
       expect(miscIncrease).toBeDefined();
       expect(miscIncrease?.group).toBe('armor');
-      expect(miscIncrease?.budget.legal).toBe(true);
     });
 
     it('never proposes counts above feasible piece limits or wrong-armor-type effects', () => {
@@ -222,14 +229,14 @@ describe('enumerateVariants', () => {
         [{ type: 'armorEffect/setCount', id: BODY_JETPACK, count: 1 }],
         fixerState,
       );
-      const increases = enumerateVariants(withJetpack, 'live').filter((v) =>
+      const increases = enumerateVariants(withJetpack, 'live', 'vats').filter((v) =>
         v.id.startsWith(`armor-count:${ULTRA_LIGHT}:`),
       );
       expect(increases.length).toBeGreaterThan(0);
       expect(increases.every((v) => Number(v.id.split(':')[2]) <= 4)).toBe(true);
 
       const inPa = stateFrom([{ type: 'armorType/set', armorWorn: 'power' }], fixerState);
-      const paVariants = enumerateVariants(inPa, 'live');
+      const paVariants = enumerateVariants(inPa, 'live', 'vats');
       expect(paVariants.some((v) => v.id.includes(UNYIELDING))).toBe(false);
       expect(
         paVariants.some((v) => v.id.startsWith('armor-count:') && v.id.includes(BODY_JETPACK)),
@@ -257,7 +264,7 @@ describe('evaluateSuggestions', () => {
         8,
       );
       expect(s.primaryDeltaPct).toBeCloseTo(
-        s.delta.freeAim.sustainedDps / report.baseline!.freeAim.sustainedDps,
+        s.delta.freeAim.windowDps / report.baseline!.freeAim.windowDps,
         8,
       );
     }
@@ -271,20 +278,19 @@ describe('evaluateSuggestions', () => {
     expect(report.suggestions).toEqual([]);
   });
 
-  it('topSuggestions splits ranked movers from <1% ties and surfaces over-budget perk rows', () => {
-    const report = evaluateSuggestions(fixerState, 'live', 'freeAim');
+  it('topSuggestions splits ranked movers from <1% ties and surfaces allocation compounds', () => {
+    const report = evaluateSuggestions(fixerState, 'live', 'vats');
     const { ranked, tied } = topSuggestions(report, 8);
-    const legalRanked = ranked.filter((s) => s.budget.legal);
-    expect(legalRanked.every((s) => s.primaryDeltaPct >= 0.01)).toBe(true);
+    expect(ranked.every((s) => s.primaryDeltaPct >= 0.01)).toBe(true);
     expect(tied.every((s) => s.primaryDeltaPct > 0 && s.primaryDeltaPct < 0.01)).toBe(true);
-    expect(legalRanked.length).toBeLessThanOrEqual(8);
-    const overBudget = ranked.filter((s) => !s.budget.legal);
-    expect(overBudget.some((s) => s.id === `perk-rank:${PerkId.CenterMasochist}:2`)).toBe(true);
-    expect(overBudget.every((s) => s.budget.legal === false)).toBe(true);
-    const firstIllegal = ranked.findIndex((s) => !s.budget.legal);
-    if (firstIllegal >= 0) {
-      expect(ranked.slice(0, firstIllegal).every((s) => s.budget.legal)).toBe(true);
-    }
+    expect(ranked.length).toBeLessThanOrEqual(8);
+    expect(report.suggestions.some((s) => s.id.endsWith(':alloc'))).toBe(true);
+    const allocation = [
+      ...topSuggestions(report, 500).ranked,
+      ...topSuggestions(report, 500).tied,
+    ].find((s) => s.id.endsWith(':alloc'));
+    expect(allocation).toBeDefined();
+    expect(allocation!.action.some((a) => a.type === 'special/set')).toBe(true);
   });
 
   it('topSuggestions defaults to structural groups only, but an explicit group set can select consumables', () => {
@@ -316,7 +322,6 @@ describe('collapseSuggestionFamilies', () => {
       action: [],
       label: id,
       group: 'perk',
-      budget: { legal: true },
       family,
       cost,
       result: snapshot,
