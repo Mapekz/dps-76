@@ -29,11 +29,11 @@ function walk(dir: string, exts: string[]): string[] {
     if (entry === 'node_modules' || entry === '.git') continue;
     const full = join(dir, entry);
     if (full === SELF) continue;
-    // Skip symlinks — `.claude/skills/{shadcn,migrate-radix-to-base}` are
-    // symlinks into `.agents/skills/`, vendored third-party skill docs
-    // hash-pinned by skills-lock.json and off-limits for this guard (and
-    // for editing generally). `lstatSync` (not `statSync`) is required to
-    // detect the symlink itself rather than following it.
+    // Skip symlinks — `.claude/skills/shadcn` is a symlink into
+    // `.agents/skills/`, a vendored third-party skill doc hash-pinned by
+    // skills-lock.json and off-limits for this guard (and for editing
+    // generally). `lstatSync` (not `statSync`) is required to detect the
+    // symlink itself rather than following it.
     if (lstatSync(full).isSymbolicLink()) continue;
     const stat = statSync(full);
     if (stat.isDirectory()) {
