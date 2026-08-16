@@ -28,15 +28,15 @@ PaperDamage = Σ_components base(c) × ( dbmFold(c) + Tenderizer + (CritMult−1
   part in its signature at all. **USER-CONFIRMED, 2026-07-14.**
 - **Curve tables override flat magnitudes** wherever both exist. See
   **Single-point curve tables**.
-- **STR melee scaling** — STR/20 (1h/2h melee), STR/10 (unarmed). **USER
-  spec**, not ESM-confirmed — rejected GMST candidates are in
-  `paper-damage.ts`'s `strengthTerm` doc.
+- **STR melee scaling** — STR/20 (1h/2h melee), STR/10 (unarmed).
+  **ASSUMPTION** (user-specified, not ESM-confirmed) — rejected GMST
+  candidates are in `paper-damage.ts`'s `strengthTerm` doc.
 - **Body-part multiplier** resolves from BPTD-extracted per-enemy data (see
   **Body parts (BPTD-extracted)**); manual fallback default 1.5.
 - **Range falloff** folds into `outerMult` — see **Target distance (Close /
   Far)**.
-- Thrown explosives (grenades, mines) stay excluded — vetting-scope decision
-  (launchers, not throwables); flagged `projectileOnly`.
+- Thrown explosives (grenades, mines) stay excluded. **CLOSED** — vetting-scope
+  decision (launchers, not throwables); flagged `projectileOnly`.
 
 ## Launcher explosion damage
 Engine: `chaseExplosion`, `extract-weapons.ts`.
@@ -52,7 +52,7 @@ projectiles carry a stale Explosion formid that never detonates).
   `explosionBaseWeaponDamageMult`; Curve-Table instead boosts the
   explosion's own `baseDamage`; Chain-suppressed gets zero). Full
   three-branch logic + rejected alternatives: `effective-weapon.ts`.
-  **USER-MEASURED 2026-07-30.**
+  **MEASURED** (user-measured, 2026-07-30).
 - **Explosion bonuses are ADDITIVE dbm**: Demolition Expert's
   `STAT_DmgExplosive` routes to `dbm`, scoped `['explosive']`, matching
   `fromExplosion` regardless of elemental type. 'Mod Player Explosion
@@ -358,7 +358,7 @@ freely UNLESS they grant the "same bonus", which displaces.
   Junkie's stack.
 - `addictionCount` (Junkie's curve input) is DERIVED: selected addictions
   minus those SUPPRESSED by a currently-active addictive consumable —
-  category-agnostic (**user decision**).
+  category-agnostic. **CLOSED** (user decision).
 - **Withdrawal penalties**: each addiction's own effects are flat
   Detrimental Peak-Value SPECIAL debuffs, uniform across all 12 families
   (no Class Freak gating — verified). Applied at selection-time.
@@ -485,8 +485,8 @@ all documented on that module's own doc-comment, not repeated here.
 - **Packin' Light** (**Encumbrance**): its `IsOverEncumbered()=0` gate is
   consumed as always-true.
 - **Number Cruncher**: routed as `dbm 0.02` scaled by the effective per-shot
-  AP cost, in every scenario — **user-confirmed** it improves free aim too.
-- **VATS canonical DPS = `apLimitedDps`** (**user decision**): the card
+  AP cost, in every scenario. **USER-CONFIRMED** it improves free aim too.
+- **VATS canonical DPS = `apLimitedDps`**. **CLOSED** (user decision): the card
   headline, headline strip, auto-emphasis, and suggestion deltas all use
   the duty-cycle blend `uptime × vatsSustained + (1 − uptime) ×
   freeAimSustained` — during the AP-empty pause the player free-aims
@@ -511,7 +511,7 @@ all documented on that module's own doc-comment, not repeated here.
 Engine: `scenarios.ts` (bootstrap fold → `ScenarioSet.vatsHitChanceBonus`).
 UI: `TargetSection.tsx` pill next to the VATS hit-rate slider.
 
-- **Aggregation ≠ computation** (user decision): the standing "auto-computing
+- **Aggregation ≠ computation**. **CLOSED** (user decision): the standing "auto-computing
   VATS hit chance is permanently out of scope" ruling bars DERIVING a
   hit-chance number from game state; it doesn't bar summing already-known
   ESM bonus magnitudes for display. `vatsHitChance` (`regime: 'display'`)
@@ -521,7 +521,7 @@ UI: `TargetSection.tsx` pill next to the VATS hit-rate slider.
 - **Fold base is 1, not 0** (unlike `armorPen`): `foldBucket(mods,
   'vatsHitChance', 1, ctx) - 1`.
 
-Modeled sources (all ESM-proven unless noted):
+Modeled sources (all **ESM-PROVEN** unless noted):
 
 | Source | Route | Contribution |
 |---|---|---|
@@ -636,7 +636,7 @@ a direct OMOD modifier) — cap ranges 10/20/25 by loadout. `bulletStormMinStack
 ## SPECIAL & perk budget
 Engine: `src/lib/player-stats.ts`.
 
-Rules (**user-confirmed**):
+Rules (**USER-CONFIRMED**):
 
 - **Base allocation is user-defined**: 1–15/stat, pool of 7 base + 49
   level-ups = **56**. Pool size **ESM-PROVEN** — curve-derived, extracted
@@ -648,11 +648,11 @@ Rules (**user-confirmed**):
   extra perk points — budget per stat is `min(15, base + legendary
   bonus)`.
 - **Card point costs are PCRD data, not rank** (`perk-cards.ts`).
-- **The PCRD `Perks[]` list is the LIVE shape of a card** (**user-confirmed**):
+- **The PCRD `Perks[]` list is the LIVE shape of a card** (**USER-CONFIRMED**):
   28 rebalanced cards record fewer entries than the family has PERK
   ranks — surplus ranks are dead content. `maxRank` clamps to entry count.
 - **Antibiotic / Conductor / Light Meal are NOT live cards**
-  (**user-confirmed**) — unreleased PCRDs, get no PerkId.
+  (**USER-CONFIRMED**) — unreleased PCRDs, get no PerkId.
 - **Blocking**: over-budget slotting refused in-app; N&D imports are NOT
   blocked (shown "over budget" instead).
 - **Race-restricted cards**: PCRD "Race Restriction" enum, card-level —
@@ -663,8 +663,8 @@ Rules (**user-confirmed**):
 ## Max HP (derived)
 Engine: `src/lib/player-stats.ts`.
 
-- **Base formula: `245 + 5 × effective END`** — **user-supplied
-  convention, NOT ESM-proven** (level-scaling GMSTs weren't chased).
+- **Base formula: `245 + 5 × effective END`** — **ASSUMPTION** (user-supplied
+  convention, not ESM-proven; level-scaling GMSTs weren't chased).
 - `maxHealth` bucket: MGEF Peak Value Modifiers on AV `HealthBonus` —
   Lifegiver (END-keyed curve), Nocturnal Fortitude, Spotlight.
 - **Lifegiver ranks 2/3 are dead content** — the live card records a
@@ -674,7 +674,7 @@ Engine: `src/lib/player-stats.ts`.
 Glow is the ghoul resource stored in the **Rads** actor value; ghoul perk
 effects gate on `GetValue(Rads) ≥ N`.
 
-- **Max Glow = max HP** — **user-stated convention, NOT ESM-proven**.
+- **Max Glow = max HP** — **ASSUMPTION** (user-stated convention, not ESM-proven).
 - Thresholds are absolute literals + GLOB-resolved spend gates, all
   translate to `{kind:'glowAtLeast', min}`.
 - Spend gates are steady-state — Glow drain over time isn't modeled.
@@ -733,7 +733,7 @@ Engine: `scripts/extract/extract-curvetables.ts`,
 - **Curve X-axis = the target's own effective level**: `effectiveLevel =
   clamp(nearbyPlayerLevel + levelOffsetGlobal, levelMinGlobal,
   levelMaxGlobal)`, fed into `CT_Creatures_{Health,Armor}_Universal_Tier<N>`.
-  **ESM-proven**: the `Renorm_*` GLOB family and per-AV Curve Table
+  **ESM-PROVEN**: the `Renorm_*` GLOB family and per-AV Curve Table
   attachment are directly observed. **INFERENCE**: the curve's implicit
   input axis is "Level" (no `Level` AVIF record exists) — standard
   Bethesda auto-calc-stats semantics, not provable from the plugin alone.
@@ -774,9 +774,9 @@ humanoid headshot).
   `bodyPart` condition category derives from the picked part's BPTD
   `partType`, not the mult's sign — a torso-weakpoint enemy (Deathclaw
   belly ×1.35, `partType: Torso`) counts as BOTH torso and weakpoint
-  (fixes Center Masochist on limb/armored-torso hits). **Not ESM-proven**:
-  `Pelvis`-slot center/belly parts are deliberately NOT counted as torso,
-  leaving those parts torso-gate-inactive until measured.
+  (fixes Center Masochist on limb/armored-torso hits). **ASSUMPTION**
+  (not ESM-proven): `Pelvis`-slot center/belly parts are deliberately NOT
+  counted as torso, leaving those parts torso-gate-inactive until measured.
 - **Body-part hit rate** (`bodyPartHitRatePct`, default 100%) — **Free Aim
   only**: each hit blends `rate×aimed-part + (1−rate)×torso`, independent
   of free-aim `hitRatePct`. VATS models a missed part as a miss (zero
@@ -788,9 +788,9 @@ humanoid headshot).
 - **EN06 Guardian's "torso is damage-immune until the shield breaks" phase
   gate is NOT modeled** — this is a steady-state calc with no phase
   scripting; exposing both parts is the closest approximation.
-- Auto-receiver crit/sneak base MUL_ADDs are −20% (**user-confirmed** — the
+- Auto-receiver crit/sneak base MUL_ADDs are −20%. **USER-CONFIRMED** — the
   −30% applies to AttackDamage/DamageTypeValues instead, see **Formula
-  structure**).
+  structure**.
 
 ## Unique weapons
 Rework basis: `WeaponsUniqueNamedList` FLST, base WEAP + `mod_Custom_*`
@@ -867,7 +867,7 @@ UI/data flow, per-piece scaling shapes (flat vs self-scaling), and the
 picker roster/grouping are documented at `src/data/armor-modifiers.ts`,
 `docs/adr/0008`, and `docs/adr/0010` — not repeated here.
 
-- **Unyielding threshold semantics** (user-confirmed 2026-07-19): the
+- **Unyielding threshold semantics** (**USER-CONFIRMED**, 2026-07-19): the
   extracted curve's near-vertical step points evaluate the +3/+2/+1
   SPECIAL tiers on a strict-`<` boundary, matching the current game build.
   An announced future patch flips the comparison to `<=` — when it ships,
