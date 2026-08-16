@@ -4347,7 +4347,7 @@
  {
   "id": "ATX_mod_BackPack_ForagersRucksack_Material_Default",
   "formId": "0x008E41AA",
-  "name": "Forager's Rucksack",
+  "name": "Forager's Rucksack Backpack",
   "description": "",
   "attachPointFormId": "0x0047876F",
   "attachPointEdid": "ap_Backpack_MaterialMod",
@@ -21170,7 +21170,7 @@
  {
   "id": "ATX_mod_PowerArmor_OldManSummerPAHelm_Helmet_Headlamp",
   "formId": "0x008B81FD",
-  "name": "OldManSummerPAHelm",
+  "name": "Old Man Summer PA Helmet",
   "description": "Adds headlamp.",
   "attachPointFormId": "0x008B81FF",
   "attachPointEdid": "ATX_ap_PowerArmor_OldManSummerPAHelm_Headlamp",
@@ -21188,7 +21188,7 @@
  {
   "id": "ATX_mod_PowerArmor_OldManSummerPAHelm_Helmet_Headlamp_Blue",
   "formId": "0x008B81FC",
-  "name": "OldManSummerPAHelm",
+  "name": "Old Man Summer PA Helmet Headlamp",
   "description": "Adds headlamp.",
   "attachPointFormId": "0x008B81FF",
   "attachPointEdid": "ATX_ap_PowerArmor_OldManSummerPAHelm_Headlamp",
@@ -21206,7 +21206,7 @@
  {
   "id": "ATX_mod_PowerArmor_OldManSummerPAHelm_Helmet_Headlamp_Bright",
   "formId": "0x008B81FB",
-  "name": "OldManSummerPAHelm",
+  "name": "Old Man Summer PA Helmet Headlamp Bright",
   "description": "Adds headlamp.",
   "attachPointFormId": "0x008B81FF",
   "attachPointEdid": "ATX_ap_PowerArmor_OldManSummerPAHelm_Headlamp",
@@ -21224,7 +21224,7 @@
  {
   "id": "ATX_mod_PowerArmor_OldManSummerPAHelm_Helmet_Headlamp_Purple",
   "formId": "0x008B81FA",
-  "name": "OldManSummerPAHelm",
+  "name": "Old Man Summer PA Helmet Headlamp Purple",
   "description": "",
   "attachPointFormId": "0x008B81FF",
   "attachPointEdid": "ATX_ap_PowerArmor_OldManSummerPAHelm_Headlamp",
@@ -21241,7 +21241,7 @@
  {
   "id": "ATX_mod_PowerArmor_OldManSummerPAHelm_Helmet_Headlamp_RedTactical",
   "formId": "0x008B81F9",
-  "name": "OldManSummerPAHelm",
+  "name": "Old Man Summer PA Helmet Headlamp Purple Red Tactical",
   "description": "",
   "attachPointFormId": "0x008B81FF",
   "attachPointEdid": "ATX_ap_PowerArmor_OldManSummerPAHelm_Headlamp",
@@ -21259,7 +21259,7 @@
  {
   "id": "ATX_mod_PowerArmor_OldManSummerPAHelm_Helmet_Headlamp_VaultBoy",
   "formId": "0x008B81F8",
-  "name": "OldManSummerPAHelm",
+  "name": "Old Man Summer PA Helmet Headlamp Vault Boy",
   "description": "Adds headlamp.",
   "attachPointFormId": "0x008B81FF",
   "attachPointEdid": "ATX_ap_PowerArmor_OldManSummerPAHelm_Headlamp",
@@ -122041,9 +122041,11 @@
    "NonPlayerTradable",
    "UnsellableObject"
   ],
-  "hasEnchantments": false,
+  "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [],
+  "notes": [
+   "MGEF SDOW_PowerArmor_SlasherVoiceModuleEffect archetype Script — needs override"
+  ],
   "obtainable": true
  },
  {

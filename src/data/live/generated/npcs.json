@@ -1897,7 +1897,7 @@
   "id": "HTO_LvlBloodEagle_Boss_T5",
   "formId": "0x0085A3B4",
   "name": "Blood Eagle Destroyer",
-  "healthCurveTier": 54,
+  "healthCurveTier": 52,
   "healthFlatValue": 0,
   "resists": [
    {
@@ -1940,7 +1940,7 @@
   "id": "HTO_LvlPRCGhoul_Boss_T5",
   "formId": "0x0085B67B",
   "name": "Communist Commissar",
-  "healthCurveTier": 54,
+  "healthCurveTier": 52,
   "healthFlatValue": 0,
   "resists": [
    {
@@ -1983,7 +1983,7 @@
   "id": "HTO_LvlCultist_Boss_T5",
   "formId": "0x0085CDA5",
   "name": "Cultist Prophet",
-  "healthCurveTier": 54,
+  "healthCurveTier": 52,
   "healthFlatValue": 0,
   "resists": [
    {
@@ -2026,7 +2026,7 @@
   "id": "HTO_LvlMoleMiner_Boss_T5",
   "formId": "0x0085DC79",
   "name": "Mole Miner Juggernaut",
-  "healthCurveTier": 54,
+  "healthCurveTier": 52,
   "healthFlatValue": 0,
   "resists": [
    {
@@ -2069,7 +2069,7 @@
   "id": "HTO_LvlSuperMutant_Boss_T5",
   "formId": "0x0086244F",
   "name": "Super Mutant Primus",
-  "healthCurveTier": 54,
+  "healthCurveTier": 52,
   "healthFlatValue": 0,
   "resists": [
    {
@@ -2112,7 +2112,7 @@
   "id": "HTO_LvlScorched_Boss_T5",
   "formId": "0x00863244",
   "name": "Scorched Exterminator",
-  "healthCurveTier": 54,
+  "healthCurveTier": 52,
   "healthFlatValue": 0,
   "resists": [
    {
@@ -2155,7 +2155,7 @@
   "id": "HTO_LvlRobot_Boss_T5",
   "formId": "0x00865B27",
   "name": "Assaultron Intimidator",
-  "healthCurveTier": 54,
+  "healthCurveTier": 52,
   "healthFlatValue": 0,
   "resists": [
    {
@@ -2198,7 +2198,7 @@
   "id": "SDOW_HTO_LvlSlasherShadow_Boss_T5",
   "formId": "0x008E06B5",
   "name": "Pint-Sized Phantom Trespasser",
-  "healthCurveTier": 54,
+  "healthCurveTier": 52,
   "healthFlatValue": 0,
   "resists": [
    {

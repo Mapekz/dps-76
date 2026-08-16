@@ -828,12 +828,6 @@
   "obtainable": true
  },
  {
-  "id": "SDOW_ARMO_Headwear_SlasherHat01",
-  "formId": "0x008E0689",
-  "name": "Blue Pint-Sized Slasher Hat",
-  "obtainable": true
- },
- {
   "id": "Headwear_E05_Caravan_Gasmask",
   "formId": "0x00594A46",
   "name": "Blue Ridge Caravan Gas Mask",
@@ -4554,12 +4548,6 @@
   "obtainable": true
  },
  {
-  "id": "SDOW_ARMO_Headwear_SlasherHat02",
-  "formId": "0x008E068B",
-  "name": "Green Pint-Sized Slasher Hat",
-  "obtainable": true
- },
- {
   "id": "Headwear_Resident5Hat",
   "formId": "0x000B3F4D",
   "name": "Green Rag Hat",
@@ -6468,12 +6456,6 @@
   "obtainable": false
  },
  {
-  "id": "SDOW_ARMO_Headwear_SlasherHat03",
-  "formId": "0x008E068A",
-  "name": "Orange Pint-Sized Slasher Hat",
-  "obtainable": true
- },
- {
   "id": "ATX_Clothes_Western_03",
   "formId": "0x001135E2",
   "name": "Orange Shirt Western Outfit",
@@ -6621,6 +6603,30 @@
   "id": "ATX_Clothes_PintSizedSlasher",
   "formId": "0x00569A86",
   "name": "Pint-Sized Slasher Costume",
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_ARMO_Headwear_SlasherHat01",
+  "formId": "0x008E0689",
+  "name": "Pint-Sized Slasher Hat - Blue",
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_ARMO_Headwear_SlasherHat02",
+  "formId": "0x008E068B",
+  "name": "Pint-Sized Slasher Hat - Green",
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_ARMO_Headwear_SlasherHat03",
+  "formId": "0x008E068A",
+  "name": "Pint-Sized Slasher Hat - Orange",
+  "obtainable": true
+ },
+ {
+  "id": "SDOW_ARMO_Headwear_SlasherHat04",
+  "formId": "0x008E0686",
+  "name": "Pint-Sized Slasher Hat - Red",
   "obtainable": true
  },
  {
@@ -7455,12 +7461,6 @@
   "id": "ATX_Clothes_ARMO_Outfit_RedHawaiianShirtandPants",
   "formId": "0x00787E1E",
   "name": "Red Hawaiian Shirt and Shorts Outfit",
-  "obtainable": true
- },
- {
-  "id": "SDOW_ARMO_Headwear_SlasherHat04",
-  "formId": "0x008E0686",
-  "name": "Red Pint-Sized Slasher Hat",
   "obtainable": true
  },
  {

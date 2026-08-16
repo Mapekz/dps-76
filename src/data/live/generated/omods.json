@@ -252,12 +252,48 @@
      "input": "killStreak",
      "points": [
       {
+       "x": 0,
+       "y": 0
+      },
+      {
        "x": 1,
-       "y": 1
+       "y": 0.05
+      },
+      {
+       "x": 2,
+       "y": 0.1
+      },
+      {
+       "x": 3,
+       "y": 0.15
+      },
+      {
+       "x": 4,
+       "y": 0.2
+      },
+      {
+       "x": 5,
+       "y": 0.25
+      },
+      {
+       "x": 6,
+       "y": 0.3
+      },
+      {
+       "x": 7,
+       "y": 0.35
+      },
+      {
+       "x": 8,
+       "y": 0.4
+      },
+      {
+       "x": 9,
+       "y": 0.45
       },
       {
        "x": 10,
-       "y": 1.5
+       "y": 0.5
       }
      ]
     },
@@ -2916,7 +2952,7 @@
  {
   "id": "ATX_mod_LightningGun_Weapon_Paint_GreenGlow_EnclaveSigmaSquad",
   "formId": "0x008D3192",
-  "name": "Enclave Sigma Squad Tesla Rifle Paint",
+  "name": "Enclave Sigma Squad Paint",
   "description": "",
   "attachPointFormId": "0x00114364",
   "attachPointEdid": "ap_gun_Appearance",
@@ -3960,7 +3996,7 @@
  {
   "id": "ATX_mod_Sword_Weapon_ModelSwap_2h_VeinSplitter",
   "formId": "0x008F478D",
-  "name": "Veinsplitter Pickaxe",
+  "name": "Veinsplitter Paint",
   "description": "",
   "attachPointFormId": "0x001A001E",
   "attachPointEdid": "ap_melee_Appearance",
@@ -41599,6 +41635,19 @@
      "edid": "mod_Cryolator_Muzzle_ColdSurgeMuzzle",
      "name": "Cold Surge Muzzle"
     },
+    "bucket": "fireRateSpeed",
+    "op": "MUL_ADD",
+    "value": -0.15,
+    "conditions": []
+   },
+   {
+    "id": "0x008EE1E1:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008EE1E1",
+     "edid": "mod_Cryolator_Muzzle_ColdSurgeMuzzle",
+     "name": "Cold Surge Muzzle"
+    },
     "bucket": "baseDamage",
     "op": "MUL_ADD",
     "value": 0.2,
@@ -41610,19 +41659,6 @@
       ]
      }
     ]
-   },
-   {
-    "id": "0x008EE1E1:1",
-    "source": {
-     "kind": "omod",
-     "formId": "0x008EE1E1",
-     "edid": "mod_Cryolator_Muzzle_ColdSurgeMuzzle",
-     "name": "Cold Surge Muzzle"
-    },
-    "bucket": "fireRateSpeed",
-    "op": "ADD",
-    "value": -0.15,
-    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -126795,7 +126831,7 @@
  {
   "id": "SDOW_Mod_Custom_SlasherAxe_Appearance",
   "formId": "0x008E075F",
-  "name": "Super Slasher Paint",
+  "name": "Pint-Sized Paint",
   "description": "",
   "attachPointFormId": "0x001A001E",
   "attachPointEdid": "ap_melee_Appearance",
@@ -126804,7 +126840,9 @@
    "ma_Melee_Appearance"
   ],
   "modifiers": [],
-  "addedKeywords": [],
+  "addedKeywords": [
+   "dn_HasMaterial_AutoAxe_PintSized"
+  ],
   "hasEnchantments": false,
   "hasGrantingCobj": true,
   "notes": [],
