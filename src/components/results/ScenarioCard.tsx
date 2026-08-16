@@ -81,7 +81,7 @@ export function ScenarioCard({
       <p className="text-2xl font-semibold leading-none">
         <DeltaFlash value={headlineDps} />
       </p>
-      <p className="text-muted-foreground text-micro uppercase tracking-wide">DPS</p>
+      <p className="text-muted-foreground text-3xs uppercase tracking-wide">DPS</p>
       {result.effective && (
         <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
           <span>pre-resist</span>

@@ -10,6 +10,25 @@ export function formatPercentDelta(fraction: number): string {
   return `${pct > 0 ? '+' : ''}${pct.toFixed(1)}%`;
 }
 
+/** Below this fractional magnitude, a delta reads as unchanged (float noise), not a real move. */
+const DELTA_NEUTRAL_EPSILON = 0.0005;
+
+/**
+ * Sign of a fractional delta → the semantic color class it renders in.
+ * Shared by every "+4.2%"-style delta (DeltaText, DeltaFlash's ghost badge,
+ * SuggestionsPanel's ranked-gain column) so the sign→class mapping lives in
+ * one place instead of being re-derived per call site. Not used for
+ * DeltaFlash's primary-number `motion-reduce:text-*` class — that variant
+ * needs the complete class name to appear as a literal source substring for
+ * Tailwind's scanner to generate it, so it stays a hand-written ternary.
+ */
+export function deltaToneClass(
+  fraction: number,
+): 'text-positive' | 'text-negative' | 'text-muted-foreground' {
+  if (Math.abs(fraction) < DELTA_NEUTRAL_EPSILON) return 'text-muted-foreground';
+  return fraction > 0 ? 'text-positive' : 'text-negative';
+}
+
 /** "+25%" for whole-number percentages, "+7.5%" otherwise. */
 export function formatPercent(fraction: number): string {
   const pct = fraction * 100;

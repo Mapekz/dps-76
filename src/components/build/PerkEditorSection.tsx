@@ -148,7 +148,7 @@ function PerkRow({
     <Row label={entry.perk.name} noEffect={noEffect} description={description}>
       {cost !== null && (
         <span
-          className="text-muted-foreground text-micro tabular-nums"
+          className="text-muted-foreground text-3xs tabular-nums"
           title={`Costs ${cost} perk point${cost === 1 ? '' : 's'} at rank ${entry.rank}`}
         >
           {cost} pt

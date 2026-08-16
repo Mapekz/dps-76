@@ -53,7 +53,7 @@ export function CritGauge({ critMeter }: { critMeter: CritMeterResult }) {
             />
           );
         })}
-        {truncated && <span className="text-muted-foreground pl-1 text-micro">…</span>}
+        {truncated && <span className="text-muted-foreground pl-1 text-3xs">…</span>}
       </div>
       <HelperText>
         Crit every {shotsPerCrit}

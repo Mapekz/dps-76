@@ -84,7 +84,7 @@ function Slider({
               >
                 <span className="bg-border block h-1 w-px" />
                 {m.label !== undefined && (
-                  <span className="text-muted-foreground text-micro leading-tight tabular-nums">
+                  <span className="text-muted-foreground text-3xs leading-tight tabular-nums">
                     {m.label}
                   </span>
                 )}

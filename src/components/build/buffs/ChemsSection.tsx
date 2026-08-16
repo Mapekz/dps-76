@@ -135,7 +135,7 @@ function AddictionCell({
                 render={
                   <span
                     className={cn(
-                      'text-muted-foreground flex shrink-0 items-center gap-1 text-micro uppercase tracking-wide',
+                      'text-muted-foreground flex shrink-0 items-center gap-1 text-3xs uppercase tracking-wide',
                       !addicted && 'opacity-50',
                     )}
                   />
@@ -269,7 +269,7 @@ export function ChemsSection() {
         />
       </AccordionTrigger>
       <AccordionContent>
-        <div className="font-condensed text-muted-foreground flex items-stretch pb-1 text-micro font-semibold uppercase tracking-[0.1em]">
+        <div className="font-condensed text-muted-foreground flex items-stretch pb-1 text-3xs font-semibold uppercase tracking-[0.1em]">
           <span className="flex-1 px-2">Active — one alcohol, one chem</span>
           <span className={cn(RAIL, 'px-2 pl-3')}>Addicted</span>
         </div>

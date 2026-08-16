@@ -38,7 +38,7 @@ export function StatSummary() {
             <TooltipTrigger
               render={<div className="bg-muted/40 rounded-none border px-1.5 py-0.5 text-center" />}
             >
-              <span className="font-condensed text-muted-foreground text-micro font-semibold uppercase">
+              <span className="font-condensed text-muted-foreground text-3xs font-semibold uppercase">
                 {LETTERS[key]}
               </span>{' '}
               <span className={`font-mono text-xs tabular-nums ${buffed ? 'text-positive' : ''}`}>
@@ -62,7 +62,7 @@ export function StatSummary() {
         >
           <HeartIcon className="text-muted-foreground size-3" />
           <span className="font-mono text-xs tabular-nums">{stats.maxHealth}</span>
-          <span className="font-condensed text-muted-foreground text-micro font-semibold uppercase">
+          <span className="font-condensed text-muted-foreground text-3xs font-semibold uppercase">
             HP
           </span>
         </TooltipTrigger>

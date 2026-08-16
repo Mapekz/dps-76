@@ -23,7 +23,7 @@ export function ApEconomyPanel({ result }: { result: ScenarioResult }) {
 
   return (
     <div className="border-border/50 mt-1 space-y-1.5 border-t pt-1">
-      <p className="font-condensed text-muted-foreground pt-1 text-micro font-semibold uppercase tracking-wide">
+      <p className="font-condensed text-muted-foreground pt-1 text-3xs font-semibold uppercase tracking-wide">
         AP economy
       </p>
 
@@ -78,7 +78,7 @@ export function ApEconomyPanel({ result }: { result: ScenarioResult }) {
 
       {ap.uptime < 1 ? (
         <>
-          <p className="text-muted-foreground text-micro">
+          <p className="text-muted-foreground text-3xs">
             The VATS headline blends full VATS DPS while the AP pool is positive with free-aim DPS
             while it regenerates — {formatSeconds(ap.secondsToEmpty ?? 0)} of fire per{' '}
             {formatSeconds(ap.pauseSec ?? 0)} of regen.

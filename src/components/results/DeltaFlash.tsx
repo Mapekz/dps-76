@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { useDeltaFlash } from '@/hooks/useDeltaFlash';
-import { formatDamage, formatPercentDelta } from '@/lib/format';
+import { deltaToneClass, formatDamage, formatPercentDelta } from '@/lib/format';
 
 interface DeltaFlashProps {
   value: number | null | undefined;
@@ -33,6 +33,14 @@ interface DeltaFlashProps {
  */
 export function DeltaFlash({ value, format = formatDamage, className }: DeltaFlashProps) {
   const flash = useDeltaFlash(value);
+  // useDeltaFlash never fires on a near-zero pct, so this is always
+  // 'text-positive'/'text-negative' in practice — deltaToneClass is reused
+  // here purely to keep the sign→class mapping in one place with DeltaText.
+  // Only used for the ghost badge's plain (unprefixed) class below: Tailwind
+  // v4's scanner needs a complete class name as a literal source substring,
+  // so `motion-reduce:${tone}` would NOT be picked up — that variant stays a
+  // hand-written literal ternary instead.
+  const tone = flash && deltaToneClass(flash.pct);
 
   return (
     <span className={cn('relative inline-block font-mono tabular-nums', className)}>
@@ -52,8 +60,8 @@ export function DeltaFlash({ value, format = formatDamage, className }: DeltaFla
           key={`ghost-${flash.id}`}
           aria-hidden
           className={cn(
-            'animate-ghost-rise absolute -right-1 -top-3 translate-x-full text-micro font-medium',
-            flash.dir === 'up' ? 'text-positive' : 'text-negative',
+            'animate-ghost-rise absolute -right-1 -top-3 translate-x-full text-3xs font-medium',
+            tone,
           )}
         >
           {formatPercentDelta(flash.pct)}

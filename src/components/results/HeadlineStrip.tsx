@@ -106,7 +106,7 @@ export function HeadlineStrip({ variant = 'full' }: HeadlineStripProps) {
           />
         ))}
       </div>
-      <p className="text-muted-foreground text-micro leading-relaxed">
+      <p className="text-muted-foreground text-3xs leading-relaxed">
         DPS is post-resist once a target is selected (pre-resist shows below it); with no target
         it's the un-mitigated figure. Burst, reload, and fire-rate detail live under "Why these
         numbers."

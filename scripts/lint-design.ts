@@ -23,6 +23,9 @@
  *      exception (see radio.tsx's doc comment).
  *   2. Typography — `text-[Npx]` / `text-[N.NNNrem]` arbitrary values below
  *      the 10px Micro Label floor (DESIGN.md "Hierarchy").
+ *   3. Custom `--text-*` @theme tokens whose name isn't shaped like a
+ *      Tailwind t-shirt size (see check 3's comment for why this matters —
+ *      it's a tailwind-merge trap, not a style preference).
  *
  *   bun run lint:design
  */
@@ -146,7 +149,7 @@ function checkRadiusInCss(file: string, content: string) {
 // --- 2. Sub-floor micro-label font sizes -----------------------------------
 
 // DESIGN.md's Hierarchy section documents Micro Label as 10–12px; the Badge
-// spec and this project's `--text-micro` token both land on the 10px floor.
+// spec and this project's `--text-3xs` token both land on the 10px floor.
 // Anything below that (the slider.tsx 9px regression the critique caught)
 // is a genuine violation, not a documentation disagreement.
 const FONT_SIZE_PATTERN = /text-\[(\d+(?:\.\d+)?)(px|rem)\]/g;
@@ -162,12 +165,43 @@ function checkFontSize(file: string, content: string) {
         findings.push({
           file,
           line: lineOf(content, absoluteIndex),
-          message: `'${full}' (${px}px) is below the 10px Micro Label floor (DESIGN.md "Hierarchy") — use 'text-micro' (0.625rem) or larger`,
+          message: `'${full}' (${px}px) is below the 10px Micro Label floor (DESIGN.md "Hierarchy") — use 'text-3xs' (0.625rem) or larger`,
           snippet: full,
         });
       }
     }
   });
+}
+
+// --- 3. Non-t-shirt-size custom --text-* @theme tokens ---------------------
+
+// tailwind-merge's `text-*` resolver only classifies a value as font-size
+// when it parses as an (optional numeric prefix +) t-shirt size (`xs`,
+// `2xs`, `3xs`, ...) or an arbitrary length — anything else (a descriptive
+// word, like the original `--text-micro`/`--text-section`) falls through to
+// its text-COLOR group instead. A custom @theme token with a non-t-shirt
+// name then silently loses (or evicts) a real color class wherever `cn()`
+// merges them: `cn('text-positive', 'text-micro')` dropped `text-positive`
+// entirely, which is exactly how combobox ΔDPS text and every Badge variant
+// lost their color/size once already. `--text-shadow-*` is a different
+// property namespace (text-shadow, not font-size) and is excluded.
+const TEXT_TOKEN_PATTERN = /--text-(?!shadow-)([a-zA-Z0-9.]+?)(?:--line-height)?\s*:/g;
+const TSHIRT_SIZE_PATTERN = /^(\d+(\.\d+)?)?(xs|sm|md|lg|xl)$/;
+
+function checkTextTokenNaming(file: string, content: string) {
+  const seen = new Set<string>();
+  for (const match of content.matchAll(TEXT_TOKEN_PATTERN)) {
+    const name = match[1];
+    if (seen.has(name)) continue; // one finding per token, not per --line-height companion line
+    seen.add(name);
+    if (TSHIRT_SIZE_PATTERN.test(name)) continue;
+    findings.push({
+      file,
+      line: lineOf(content, match.index ?? 0),
+      message: `'--text-${name}' isn't shaped like a Tailwind t-shirt size — tailwind-merge will treat 'text-${name}' as a text-COLOR utility, silently dropping/evicting real color classes in cn() calls; rename to a t-shirt-shaped step (e.g. '2xs'/'3xs')`,
+      snippet: match[0],
+    });
+  }
 }
 
 // --- run ---------------------------------------------------------------
@@ -186,6 +220,7 @@ for (const file of walk(SRC, ['.tsx'])) {
 for (const file of walk(SRC, ['.css'])) {
   const content = readFileSync(file, 'utf8');
   checkRadiusInCss(file, content);
+  checkTextTokenNaming(file, content);
 }
 
 if (findings.length === 0) {

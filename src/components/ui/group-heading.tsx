@@ -14,7 +14,7 @@ export function GroupHeading({
 }) {
   return (
     <div className="flex items-baseline justify-between pb-1">
-      <p className="font-condensed text-muted-foreground text-micro font-semibold uppercase tracking-[0.1em]">
+      <p className="font-condensed text-muted-foreground text-3xs font-semibold uppercase tracking-[0.1em]">
         {title}
       </p>
       {/* Short tabular status text ("2/4"), not prose — no HelperText/max-width here. */}

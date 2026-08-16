@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { formatPercentDelta } from '@/lib/format';
+import { deltaToneClass, formatPercentDelta } from '@/lib/format';
 import { useSuggestions } from '@/hooks/useSuggestions';
 import { topSuggestions } from '@/lib/suggest/evaluate';
 import { useBuildDispatch } from '@/state/BuildProvider';
@@ -23,7 +23,7 @@ function SuggestionRow({ suggestion, tied }: { suggestion: EvaluatedSuggestion; 
       </span>
       {!suggestion.budget.legal && (
         <span
-          className="text-negative whitespace-nowrap text-micro"
+          className="text-negative whitespace-nowrap text-3xs"
           title="Would exceed the perk point budget"
         >
           {suggestion.budget.special
@@ -43,7 +43,10 @@ function SuggestionRow({ suggestion, tied }: { suggestion: EvaluatedSuggestion; 
       <span
         className={cn(
           'font-mono text-xs tabular-nums',
-          tied ? 'text-muted-foreground' : 'text-positive',
+          // Suggestions are always net-positive changes (topSuggestions only
+          // ranks gains) — deltaToneClass is reused here for a shared
+          // sign→class mapping, not because a negative row is expected.
+          tied ? 'text-muted-foreground' : deltaToneClass(suggestion.primaryDeltaPct),
         )}
       >
         {tied ? '≈' : formatPercentDelta(suggestion.primaryDeltaPct)}
@@ -84,7 +87,7 @@ function SuggestionSection({
   return (
     <div>
       {title && (
-        <p className="font-condensed text-muted-foreground mb-1 text-section font-semibold uppercase tracking-[0.12em]">
+        <p className="font-condensed text-muted-foreground mb-1 text-2xs font-semibold uppercase tracking-[0.12em]">
           {title}
         </p>
       )}
@@ -108,7 +111,7 @@ function SuggestionSection({
                 <Tooltip>
                   <TooltipTrigger
                     render={
-                      <span className="text-muted-foreground cursor-default text-micro uppercase tracking-wide" />
+                      <span className="text-muted-foreground cursor-default text-3xs uppercase tracking-wide" />
                     }
                   >
                     effectively tied
@@ -159,7 +162,7 @@ export function SuggestionsPanel() {
           <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.14em]">
             Suggestions
           </p>
-          <span className="text-muted-foreground flex items-center gap-1 text-micro">
+          <span className="text-muted-foreground flex items-center gap-1 text-3xs">
             {stale && <Loader2Icon className="size-3 animate-spin" />}
             <Tooltip>
               <TooltipTrigger render={<span className="cursor-default" />}>

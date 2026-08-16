@@ -59,7 +59,7 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
           // so damageType alone is not a stable/unique key.
           <Fragment key={`${component.damageType}-${i}`}>
             {multi && (
-              <p className="font-condensed text-muted-foreground pt-1 text-micro font-semibold uppercase tracking-wide">
+              <p className="font-condensed text-muted-foreground pt-1 text-3xs font-semibold uppercase tracking-wide">
                 {component.damageType}
               </p>
             )}
@@ -119,7 +119,7 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
            * Free Aim is the only scenario without result.ap.
            */}
           {!result.ap && (
-            <p className="text-muted-foreground text-micro pl-3">
+            <p className="text-muted-foreground text-3xs pl-3">
               Free aim blends aimed-part hits with center-mass (×1.00) hits at your body-part hit
               rate — VATS resolves the aimed part directly.
             </p>
@@ -190,7 +190,7 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
              * unconditionally true whenever a reload model applies at all).
              * A visible marker, not a hover, per the design critique.
              */}
-            <p className="text-muted-foreground text-micro pl-3">
+            <p className="text-muted-foreground text-3xs pl-3">
               Reload time is from the ESM animation length ÷ folded reload speed — unverified
               in-game.
             </p>

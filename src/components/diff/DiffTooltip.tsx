@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { formatPercentDelta } from '@/lib/format';
+import { deltaToneClass, formatPercentDelta } from '@/lib/format';
 import { useHoverDiffs } from '@/hooks/useHoverDiff';
 import type { BuildAction } from '@/state/build-reducer';
 import type { DpsSnapshot } from '@/lib/suggest/types';
@@ -17,20 +17,11 @@ export function DeltaText({
   className?: string;
 }) {
   const pct = base > 0 ? delta / base : 0;
-  if (Math.abs(pct) < 0.0005)
-    return (
-      <span className={cn('text-muted-foreground font-mono tabular-nums', className)}>±0%</span>
-    );
+  const tone = deltaToneClass(pct);
+  if (tone === 'text-muted-foreground')
+    return <span className={cn(tone, 'font-mono tabular-nums', className)}>±0%</span>;
   return (
-    <span
-      className={cn(
-        pct > 0 ? 'text-positive' : 'text-negative',
-        'font-mono tabular-nums',
-        className,
-      )}
-    >
-      {formatPercentDelta(pct)}
-    </span>
+    <span className={cn(tone, 'font-mono tabular-nums', className)}>{formatPercentDelta(pct)}</span>
   );
 }
 

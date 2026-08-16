@@ -61,11 +61,19 @@
    * corresponding tokens — every instance was a hand-typed arbitrary value,
    * which is how the 9px slider-tick regression happened undetected. These
    * are the canonical sizes (Badge's documented 0.625rem; the Section Label
-   * prose's 11px) — new micro/section text should reach for `text-micro` /
-   * `text-section` rather than another arbitrary `text-[Npx]`.
+   * prose's 11px) — new micro/section text should reach for `text-3xs` /
+   * `text-2xs` rather than another arbitrary `text-[Npx]`.
+   *
+   * Naming: MUST parse as a Tailwind t-shirt size (`2xs`/`3xs`/…), not a
+   * descriptive word like the original `micro`/`section` this replaced.
+   * tailwind-merge's `text-*` heuristic only recognizes t-shirt sizes and
+   * arbitrary lengths as font-size; anything else falls through to its
+   * text-COLOR group, so `text-micro` silently lost to (or evicted) real
+   * color classes like `text-positive` in `cn()` calls — see the delta-text/
+   * badge-size regression this fixed. Never add a `--text-<word>` token.
    */
-  --text-micro: 0.625rem;
-  --text-section: 0.6875rem;
+  --text-3xs: 0.625rem;
+  --text-2xs: 0.6875rem;
 }
 
 /*
@@ -92,7 +100,7 @@
   --border: oklch(0.87 0.015 95);
   --input: oklch(0.87 0.015 95);
   --ring: oklch(0.66 0.13 75);
-  --positive: oklch(0.53 0.14 150);
+  --positive: oklch(0.485 0.14 150);
   --negative: oklch(0.55 0.19 30);
   --chart-1: oklch(0.66 0.13 75);
   --chart-2: oklch(0.53 0.14 150);
