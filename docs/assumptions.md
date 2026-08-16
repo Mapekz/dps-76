@@ -233,7 +233,7 @@ multiplicative stage on the already-folded reload time/capacity.
 ### Fast Fighter & the moveSpeedBonus bucket
 - Fast Fighter carries **no effects on-record** — "50% of bonus movement
   speed → reload speed" is engine-native, modeled as a hand-authored
-  override. The 50% factor is **DESCRIPTION-sourced, not ESM-proven**.
+  override. **ASSUMPTION** (description-sourced, not ESM-proven): the 50% factor.
 - `moveSpeedBonus` reads AV `SpeedMult` at scale 0.01, bootstrap-folded once
   per `buildEffectiveWeapon`.
 - **Sprint/swim-gated sources are excluded** (grounded, non-sprint combat
@@ -751,10 +751,10 @@ Engine: `scripts/extract/extract-curvetables.ts`,
 - **Per-rank HP multiplier — ESM-PROVEN**: `QUST SQ_EpicCreatures` VMAD
   property `EpicRankData` — `HealthMult` 2.0/2.4/3.2/4.0/4.8 at ranks 1–5.
   Scales `hp` only — DR/ER untouched (`epic-creature.ts`).
-- **Fixed epic rank IS ESM-provable for specific bosses** (SBQ, Storm
-  Goliath — both rank 3), via the summon quest's VMAD. **Earle/Wendigo
-  Colossus checked exhaustively and does NOT get a rank** — a circulating
-  informal claim to the contrary does not reproduce against a live query
+- **Fixed epic rank for specific bosses** (SBQ, Storm Goliath — both rank
+  3), via the summon quest's VMAD. **ESM-PROVEN**. **Earle/Wendigo Colossus
+  checked exhaustively and does NOT get a rank** — a circulating informal
+  claim to the contrary does not reproduce against a live query
   (`extract-npcs.ts`'s `BOSS_EPIC_RANK_QUESTS`).
 - **Loot-list rank ≠ epic creature rank** (UC Titan, Head Hunt, Bigfoot) —
   detail tracked in `#52`.

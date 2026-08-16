@@ -302,3 +302,129 @@ describe('ADR shape guard', () => {
     );
   });
 });
+
+// ---------------------------------------------------------------------------
+// Assertion 4: every docs/assumptions.md section (H2/H3, excluding the two
+// "Part A"/"Part B" dividers) is either cited from src/scripts, or listed in
+// UNCITED_SECTIONS with a reason — Stage 2b of the simplification plan.
+// ---------------------------------------------------------------------------
+
+const PART_HEADERS = new Set([
+  'Part A — Unproven claims',
+  'Part B — Deliberate non-modeling & cross-cutting rationale',
+]);
+
+/** Hand-maintained — every entry needs a reason. A section that SHOULD be
+ * cited from somewhere needs that citation added instead of landing here;
+ * this is for sections that are genuinely never referenced by exact name
+ * from code, verified against a live `collectCitations()` scan, not a
+ * default landing spot for "didn't get around to citing it yet". */
+const UNCITED_SECTIONS: Record<string, string> = {
+  'Formula structure':
+    "the doc's own foundational/overview section — referenced by its internal cross-references (see **Formula structure**), not by an exact code citation",
+  "Chain lightning (Tesla Cannon's Alternate Current muzzle)":
+    'subsection of "Launcher explosion damage" — citers reference the parent section',
+  'Stream-delivery weapons (Cryolator, Flamer, Plasma Gun/Gatling Plasma with a Thrower Barrel/Nozzle)':
+    'subsection of "Launcher explosion damage" — citers reference the parent section',
+  'Explosive-radius-to-damage conversion':
+    'subsection of "Launcher explosion damage" — citers reference the parent section',
+  'Fast Fighter & the moveSpeedBonus bucket':
+    'subsection of "Sustained DPS" — citers reference the parent section',
+  'Crit meter':
+    'the module doc-comment (`src/lib/engine/crit-meter.ts`) is the citation target for this mechanic — this section explicitly defers to it',
+  'Value curves':
+    'a glossary/reference section (the curve-effect table) rather than a single claim a code comment would point at',
+  'Hand-supplied values':
+    'a registry table whose individual rows (e.g. "Tenderizer", "Two Shot") are cited by name, not this section heading itself',
+  'Magazines & bobbleheads':
+    'genuinely uncited today — a real gap, not a deliberate deferral; flagged here rather than silently ignored',
+  'Lifetime challenge completions':
+    'genuinely uncited today — a real gap, not a deliberate deferral; flagged here rather than silently ignored',
+  'Power attacks & melee cadence':
+    'genuinely uncited today — a real gap, not a deliberate deferral; flagged here rather than silently ignored',
+  'Ghoul Glow':
+    'genuinely uncited today — a real gap, not a deliberate deferral; flagged here rather than silently ignored',
+  'Epic creatures':
+    'subsection of "Creature stat curves & NPC extraction (Phase 2 data)" — citers reference the parent section',
+  'Body parts (BPTD-extracted)':
+    'genuinely uncited today — a real gap, not a deliberate deferral; flagged here rather than silently ignored',
+  'Deliberate non-modeling':
+    'the Part B catch-all register itself — individual entries are self-contained, not pointed at by name from code',
+};
+
+describe('docs/assumptions.md section coverage', () => {
+  it('every section is cited from code/scripts, or allowlisted with a reason', () => {
+    const content = readFileSync(ASSUMPTIONS_PATH, 'utf-8');
+    const sections = [...content.matchAll(/^#{2,3}\s+(.+)$/gm)]
+      .map((m) => m[1].trim())
+      .filter((h) => !PART_HEADERS.has(h));
+    const citations = collectCitations();
+    const uncited = sections.filter((section) => {
+      if (section in UNCITED_SECTIONS) return false;
+      return !citations.some(({ text }) =>
+        text.length < MIN_PREFIX_CITATION_LENGTH ? text === section : section.startsWith(text),
+      );
+    });
+    expect(
+      uncited,
+      uncited
+        .map((s) => `"${s}": no citer found in src/scripts, and not in UNCITED_SECTIONS`)
+        .join('\n'),
+    ).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Assertion 5: every docs/assumptions.md Part A bullet that asserts a proof
+// status in informal prose ("user-confirmed", "ESM-proven", "user decision",
+// ...) also carries one of the six official bold tags somewhere in the same
+// bullet — catches exactly the drift a manual tagging pass just cleaned up
+// (informal casing, invented variants like "USER-MEASURED") from silently
+// reappearing. Does NOT verify the tag CHOSEN is the correct one — that's a
+// judgment call a human/agent makes when writing the bullet, not something
+// mechanically checkable — only that the fixed vocabulary is used at all
+// once a bullet is making a proof-status claim.
+// ---------------------------------------------------------------------------
+
+const PROOF_STATUS_SIGNAL_RE =
+  /user[- ]confirmed|user[- ]measured|user[- ]decision|user[- ]decided|user[- ]spec(?:ified)?|user[- ]supplied|user[- ]stated|user[- ]clarified|esm[- ]proven|esm[- ]provable/i;
+
+function collectPartABullets(): { line: number; text: string }[] {
+  const content = readFileSync(ASSUMPTIONS_PATH, 'utf-8');
+  const lines = content.split('\n');
+  const partAStart = lines.findIndex((l) => l.trim() === '## Part A — Unproven claims');
+  const partBStart = lines.findIndex(
+    (l) => l.trim() === '## Part B — Deliberate non-modeling & cross-cutting rationale',
+  );
+  const bullets: { line: number; text: string }[] = [];
+  for (let i = partAStart; i < partBStart; i++) {
+    if (!/^- /.test(lines[i])) continue;
+    const block = [lines[i]];
+    let j = i + 1;
+    while (j < partBStart && lines[j].startsWith('  ') && !lines[j].trim().startsWith('- ')) {
+      block.push(lines[j]);
+      j++;
+    }
+    bullets.push({ line: i + 1, text: block.map((l) => l.trim()).join(' ') });
+    i = j - 1;
+  }
+  return bullets;
+}
+
+describe('docs/assumptions.md Part A tag-vocabulary guard', () => {
+  it('every bullet asserting a proof status uses the fixed tag vocabulary', () => {
+    const flagged = collectPartABullets().filter(
+      ({ text }) =>
+        PROOF_STATUS_SIGNAL_RE.test(text) && !STATUS_TAG_PREFIXES.some((t) => text.includes(t)),
+    );
+    expect(
+      flagged,
+      flagged
+        .map(
+          (b) =>
+            `L${b.line}: proof-status language ("user-confirmed"/"ESM-proven"/etc.) with no fixed-vocabulary tag — ${b.text.slice(0, 100)}...`,
+        )
+        .join('\n'),
+    ).toEqual([]);
+  });
+});

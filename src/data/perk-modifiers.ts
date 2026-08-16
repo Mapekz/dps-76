@@ -119,8 +119,8 @@ export function perkHasEngineEffect(
   if (perkForceEffectivePerkIds.has(perkId)) return true;
   // Legendary SPECIAL cards act through the perk-budget baseSpecial pathway
   // (derivePerkBudget → derivePlayerStats), not the modifier IR — their PERK
-  // records extract with zero modifiers by design (docs/assumptions.md
-  // "SPECIAL & perk budget").
+  // records extract with zero modifiers by design (docs/assumptions.md "SPECIAL
+  // & perk budget").
   if (perkId in LEGENDARY_SPECIAL_PERKS) return true;
   const generated = getGeneratedPerk(mode, perkId);
   if (!generated) return false;
