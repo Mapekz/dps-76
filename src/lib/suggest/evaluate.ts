@@ -88,15 +88,6 @@ function computeSnapshot(state: BuildState, mode: GameMode, scope?: MemoScope): 
   );
 }
 
-function zeroHeadline(): ScenarioHeadline {
-  return { perHit: 0, burstDps: 0, sustainedDps: 0, windowDps: 0 };
-}
-
-function zeroSnapshot(): DpsSnapshot {
-  const z = zeroHeadline();
-  return { freeAim: z, vats: z };
-}
-
 function diff(a: ScenarioHeadline, b: ScenarioHeadline): ScenarioHeadline {
   return {
     perHit: a.perHit - b.perHit,
@@ -201,6 +192,28 @@ export function collapseSuggestionFamilies(
   return out;
 }
 
+export type ComboGatePolicy = 'positive' | 'margin' | 'door-closed';
+
+/** Tweak here while play-testing; 'positive' is the shipped default. */
+export const COMBO_GATE_POLICY: ComboGatePolicy = 'positive';
+
+export function comboCharts(
+  pct: number,
+  bestConstituentPct: number,
+  policy: ComboGatePolicy,
+): boolean {
+  switch (policy) {
+    case 'positive':
+      return pct > 0;
+    case 'margin':
+      return pct > bestConstituentPct + TIED_THRESHOLD_PCT;
+    case 'door-closed':
+      return (
+        bestConstituentPct < TIED_THRESHOLD_PCT && pct > bestConstituentPct + TIED_THRESHOLD_PCT
+      );
+  }
+}
+
 /** Full ranked sweep of every candidate variant (graduated families pre-collapsed to ≤2 rows). */
 export function evaluateSuggestions(
   state: BuildState,
@@ -223,28 +236,20 @@ export function evaluateSuggestions(
   const metricBase = baseline[metric].windowDps;
   const suggestions: EvaluatedSuggestion[] = [];
 
-  for (const candidate of enumerateVariants(state, mode)) {
-    const evaluated = candidate.budget.legal
-      ? evaluateActions(state, mode, candidate.action, baseline, scope)
-      : { result: baseline, delta: zeroSnapshot() };
+  for (const candidate of enumerateVariants(state, mode, metric)) {
+    const evaluated = evaluateActions(state, mode, candidate.action, baseline, scope);
     if (!evaluated) continue;
     const primaryDeltaPct = metricBase > 0 ? evaluated.delta[metric].windowDps / metricBase : 0;
     suggestions.push({ ...candidate, ...evaluated, primaryDeltaPct });
   }
 
-  // Combo dominance filter: pairs are door-openers for synergies the single-step
-  // ladder cannot start (e.g., clean slow weapon: every Onslaught single ≈ 0);
-  // when any constituent single already charts comparably, the ladder is open and
-  // the pair row is redundant noise. See docs/adr/0006-combo-suggestions-are-mechanism-derived-pairs.md.
   const bestByPiece = new Map<string, number>();
   for (const s of suggestions) {
     if (s.group === 'combo') continue;
     if (s.group === 'perk') {
-      // Perk singles: family IS the piece key (perk:<perkId>)
       const max = bestByPiece.get(s.family) ?? 0;
       bestByPiece.set(s.family, Math.max(max, s.primaryDeltaPct));
     } else if (s.group === 'legendary') {
-      // Legendary singles: extract piece key as 'omod:' + omodId from id like 'leg:<slotIndex>:<omodId>'
       const secondColon = s.id.indexOf(':', s.id.indexOf(':') + 1);
       if (secondColon > 0) {
         const pieceKey = 'omod:' + s.id.substring(secondColon + 1);
@@ -257,22 +262,11 @@ export function evaluateSuggestions(
   const filtered = suggestions.filter((s) => {
     if (s.group !== 'combo') return true;
     const bestConstituent = Math.max(...s.comboPieces!.map((key) => bestByPiece.get(key) ?? 0));
-    // Two clauses, both required: the pair must out-earn its best piece by the
-    // tie threshold, AND no piece may chart on its own — a charting single
-    // means the ladder already has a first rung there, so the pair is noise
-    // even when the synergy is superlinear (auto Fixer: Furious alone +31.8%
-    // suppresses every Furious pair; the ladder reaches the same build).
-    return (
-      bestConstituent < TIED_THRESHOLD_PCT &&
-      s.primaryDeltaPct > bestConstituent + TIED_THRESHOLD_PCT
-    );
+    return comboCharts(s.primaryDeltaPct, bestConstituent, COMBO_GATE_POLICY);
   });
 
   const collapsed = collapseSuggestionFamilies(filtered);
-  collapsed.sort(
-    (a, b) =>
-      b.primaryDeltaPct - a.primaryDeltaPct || Number(b.budget.legal) - Number(a.budget.legal),
-  );
+  collapsed.sort((a, b) => b.primaryDeltaPct - a.primaryDeltaPct);
   return { baseline, metric, suggestions: collapsed };
 }
 
@@ -286,7 +280,7 @@ export const STRUCTURAL_GROUPS: ReadonlySet<SuggestionGroup> = new Set([
   'combo',
 ]);
 
-/** Suggestions worth showing: positive movers, ranked; legality kept for labeling. */
+/** Suggestions worth showing: positive movers, ranked. */
 export function topSuggestions(
   report: SuggestionReport,
   limit: number,
@@ -298,30 +292,17 @@ export function topSuggestions(
 } {
   const groups = options.groups ?? STRUCTURAL_GROUPS;
   const scoped = report.suggestions.filter((s) => groups.has(s.group));
-  // Different ESM records can share a display name and an identical outcome
-  // (per-family receiver twins) — showing both is noise, keep the first.
   const seen = new Set<string>();
   const candidates = scoped.filter((s) => {
-    if (s.budget.legal) {
-      if (s.primaryDeltaPct <= 0) return false;
-      if (s.delta[report.metric].sustainedDps <= 0) return false;
-    } else if (s.group !== 'perk' && s.group !== 'combo') {
-      return false;
-    }
-    const key = s.budget.legal
-      ? `${s.label}|${s.primaryDeltaPct.toFixed(5)}`
-      : `${s.label}|over-budget`;
+    if (s.primaryDeltaPct <= 0) return false;
+    if (s.delta[report.metric].sustainedDps <= 0) return false;
+    const key = `${s.label}|${s.primaryDeltaPct.toFixed(5)}`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
-  const legalMovers = candidates.filter((s) => s.budget.legal);
-  const overBudget = candidates.filter((s) => !s.budget.legal);
-  const ranked = [
-    ...legalMovers.filter((s) => s.primaryDeltaPct >= tiedThresholdPct).slice(0, limit),
-    ...overBudget,
-  ];
-  const tied = legalMovers
+  const ranked = candidates.filter((s) => s.primaryDeltaPct >= tiedThresholdPct).slice(0, limit);
+  const tied = candidates
     .filter((s) => s.primaryDeltaPct < tiedThresholdPct)
     .slice(0, Math.max(0, limit - ranked.length) + 3);
   return { ranked, tied };

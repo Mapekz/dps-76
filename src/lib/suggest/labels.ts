@@ -10,11 +10,6 @@ export function perkLabel(name: string, rank: number): string {
   return rank === 1 ? name : `${name} ${rank}`;
 }
 
-/** `perkLabel` plus a condensed perk-point cost suffix (single-perk suggestions only — combos track cost separately, uncaptioned). */
-export function perkLabelWithCost(name: string, rank: number, extraCost: number): string {
-  return `${perkLabel(name, rank)} +${extraCost}pt`;
-}
-
 /** Weapon legendary-effect slot — repeated ★ for the slot rank, no "Legendary" word or colon. */
 export function legendaryEffectLabel(name: string, slotIndex0: number): string {
   return `${'★'.repeat(slotIndex0 + 1)} ${name}`;

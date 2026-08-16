@@ -15,11 +15,10 @@ export type SuggestionGroup =
   | 'consumable'
   | 'combo';
 
+/** Perk-budget legality for `perkMoveBudget` in build-rules — not carried on candidates. */
 export interface SuggestionBudget {
   legal: boolean;
-  /** SPECIAL that is over budget (perk suggestions only). */
   special?: SpecialKey;
-  /** Points that would need freeing ("requires dropping N points"). */
   deficit?: number;
 }
 
@@ -30,7 +29,6 @@ export interface SuggestionCandidate {
   action: BuildAction[];
   label: string;
   group: SuggestionGroup;
-  budget: SuggestionBudget;
   /**
    * Collapse unit: candidates sharing a `family` are graduated steps toward
    * the same change (e.g. every rank of one perk, every count of one armor
@@ -40,10 +38,12 @@ export interface SuggestionCandidate {
   family: string;
   /** Steps/points spent to reach this candidate (rank delta, worn-piece count delta, ...). 0 for non-graduated candidates (a single on/off toggle). */
   cost: number;
+  /** Tooltip text for combo rows: constituent piece display names and cost. */
+  detail?: string;
   /**
-   * Constituent piece keys (`perk:<perkId>` / `omod:<omodId>`) for combo
-   * suggestions — used by evaluate.ts's dominance filter to ensure a combo
-   * only charts when it beats its best constituent single.
+   * Constituent piece keys (`perk:<perkId>` / `omod:<omodId>` / `special:luck`)
+   * for combo suggestions — used by evaluate.ts's dominance filter to ensure a
+   * combo only charts when it beats its best constituent single.
    */
   comboPieces?: readonly string[];
 }

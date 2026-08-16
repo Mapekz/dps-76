@@ -1,4 +1,4 @@
-import type { ArmorWorn, GameMode, Perk } from '@/types';
+import type { ArmorWorn, GameMode, Perk, PlayerConfig } from '@/types';
 import { getPerks, getWeapons } from '@/data';
 import {
   type ArmorEffectEntry,
@@ -16,28 +16,32 @@ import {
   storedArmorEffectCount,
 } from '@/lib/build-rules';
 import { legendaryPerkIds } from '@/lib/nukes-dragons';
-import { perkCardCostAtRank } from '@/lib/player-stats';
-import { LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS, type BuildState } from '@/state/build-reducer';
+import {
+  perkCardCostAtRank,
+  SPECIAL_ALLOCATION_POOL,
+  SPECIAL_POINTS_CAP,
+} from '@/lib/player-stats';
+import {
+  LEGENDARY_PERK_SLOTS as LEGENDARY_SLOTS,
+  type BuildAction,
+  type BuildState,
+  type ScenarioKey,
+  type SpecialKey,
+} from '@/state/build-reducer';
 import { hasAnyEngineEffect } from '@/types/modifiers';
-import type { SuggestionBudget, SuggestionCandidate } from './types';
+import type { SuggestionCandidate } from './types';
 import { enumerateCombos } from './combos';
 import { buildStaticLoadoutContext } from './loadout-context';
-import {
-  armorEffectLabel,
-  legendaryEffectLabel,
-  modLabel,
-  perkLabel,
-  perkLabelWithCost,
-} from './labels';
+import { armorEffectLabel, legendaryEffectLabel, modLabel, perkLabel } from './labels';
 
 /**
- * Enumerates every legal-ish variant of the current build: alternative OMODs
+ * Enumerates every legal variant of the current build: alternative OMODs
  * per slot, legendary effects per star, perk rank-ups and damage-relevant
- * unequipped perks at every rank (budget-aware — illegal moves are emitted
- * with `legal: false` and a deficit so the UI can say "requires dropping N
- * points"), armor-effect count increases and same-tier legendary swaps,
- * mutation/consumable toggles in both directions, and mechanism-derived combo
- * pairs (Onslaught synergies, etc.) that open doors the single-step ladder cannot.
+ * unequipped perks at every rank (budget-aware — illegal moves become
+ * SPECIAL-allocation compounds or legendary swaps, or are omitted), armor-
+ * effect count increases and same-tier legendary swaps, mutation/consumable
+ * toggles in both directions, and mechanism-derived combo bundles (Onslaught
+ * synergies, etc.) that open doors the single-step ladder cannot.
  *
  * Graduated families (perk ranks, armor counts) emit one candidate PER STEP
  * rather than only the next step — `family` groups the steps so
@@ -45,7 +49,15 @@ import {
  * positive mover and the best mover after evaluation.
  */
 
-const LEGAL: SuggestionBudget = { legal: true };
+const SPECIAL_ABBR: Record<SpecialKey, string> = {
+  strength: 'STR',
+  perception: 'PER',
+  endurance: 'END',
+  charisma: 'CHA',
+  intelligence: 'INT',
+  agility: 'AGI',
+  luck: 'LCK',
+};
 
 /** An armor effect is damage-relevant when its per-piece modifiers reach the engine at all. */
 function isArmorEffectRelevant(effect: ArmorEffectEntry): boolean {
@@ -59,7 +71,64 @@ function armorTypeEligible(effect: ArmorEffectEntry, armorWorn: ArmorWorn): bool
   return effect.armorType === 'bodyArmor';
 }
 
-export function enumerateVariants(state: BuildState, mode: GameMode): SuggestionCandidate[] {
+function allocationPoolFree(allocation: Record<SpecialKey, number>): number {
+  let sum = 0;
+  for (const v of Object.values(allocation)) sum += v;
+  return SPECIAL_ALLOCATION_POOL - sum;
+}
+
+export function perkAddAction(perkId: string, rank: number, legendary: boolean): BuildAction {
+  return { type: 'perk/add', perkId, rank, legendary };
+}
+
+export function firstEmptyLegendarySlot(player: PlayerConfig, slotIndices: number[]): number | -1 {
+  if (!player.weapon) return -1;
+  for (const idx of slotIndices) {
+    if (player.weapon.legendaryEffects[idx] == null) return idx;
+  }
+  return -1;
+}
+
+function tryEmitPerkMove(
+  out: SuggestionCandidate[],
+  params: {
+    id: string;
+    action: BuildAction[];
+    label: string;
+    family: string;
+    cost: number;
+    perk: Perk;
+    extraCost: number;
+    cardBudget: ReturnType<typeof computePerkBudget>;
+    allocation: Record<SpecialKey, number>;
+  },
+): void {
+  const { id, action, label, family, cost, perk, extraCost, cardBudget, allocation } = params;
+  const budget = perkMoveBudget(cardBudget, perk, extraCost);
+  if (budget.legal) {
+    out.push({ id, action, label, group: 'perk', family, cost });
+    return;
+  }
+  if (!budget.special || budget.deficit === undefined) return;
+  const special = budget.special;
+  const d = budget.deficit;
+  const poolFree = allocationPoolFree(allocation);
+  if (poolFree < d || allocation[special] + d > SPECIAL_POINTS_CAP) return;
+  out.push({
+    id: `${id}:alloc`,
+    action: [{ type: 'special/set', stat: special, value: allocation[special] + d }, ...action],
+    label: `${label} (+${d} ${SPECIAL_ABBR[special]})`,
+    group: 'perk',
+    family,
+    cost: cost + d,
+  });
+}
+
+export function enumerateVariants(
+  state: BuildState,
+  mode: GameMode,
+  metric: ScenarioKey = 'vats',
+): SuggestionCandidate[] {
   const out: SuggestionCandidate[] = [];
   const { player } = state;
 
@@ -76,7 +145,6 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
           action: [{ type: 'weapon/mod', slot: slot.slot, omodId: option.id }],
           label: modLabel(slot.label, option.name),
           group: 'mod',
-          budget: LEGAL,
           family: id,
           cost: 0,
         });
@@ -88,7 +156,6 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
           action: [{ type: 'weapon/mod', slot: slot.slot, omodId: null }],
           label: modLabel(slot.label, 'Stock'),
           group: 'mod',
-          budget: LEGAL,
           family: id,
           cost: 0,
         });
@@ -105,7 +172,6 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
           action: [{ type: 'weapon/legendary', slotIndex: i, omodId: option.id }],
           label: legendaryEffectLabel(option.name, i),
           group: 'legendary',
-          budget: LEGAL,
           family: id,
           cost: 0,
         });
@@ -118,13 +184,10 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
   const equippedRanks = new Map(
     [...player.perks, ...player.legendaryPerks].map((p) => [p.perkId, p.rank]),
   );
-  const cardBudget = computePerkBudget(
-    mode,
-    player.perks,
-    player.legendaryPerks,
-    allocationOf(player),
-  );
+  const allocation = allocationOf(player);
+  const cardBudget = computePerkBudget(mode, player.perks, player.legendaryPerks, allocation);
   const loadoutCtx = buildStaticLoadoutContext(mode, player, weapon);
+  const equippedLegendaryIds = new Set(player.legendaryPerks.map((p) => p.perkId));
 
   for (const [perkId, perk] of Object.entries(registry)) {
     if (!perkHasEngineEffect(mode, perkId, loadoutCtx)) continue;
@@ -133,46 +196,87 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
     const family = `perk:${perkId}`;
 
     if (currentRank !== undefined) {
-      // Equipped — one candidate per rank above the current, all the way to max.
       for (let rank = currentRank + 1; rank <= perk.maxRank; rank++) {
         const extraCost = perkCardCostAtRank(perk, rank) - perkCardCostAtRank(perk, currentRank);
         const cost = isLegendary ? rank - currentRank : extraCost;
-        const budget = isLegendary ? LEGAL : perkMoveBudget(cardBudget, perk, extraCost);
-        const label = isLegendary
-          ? perkLabel(perk.name, rank)
-          : perkLabelWithCost(perk.name, rank, extraCost);
-        out.push({
-          id: `perk-rank:${perkId}:${rank}`,
-          action: [{ type: 'perk/setRank', perkId, rank }],
-          label,
-          group: 'perk',
-          budget,
-          family,
-          cost,
-        });
+        const label = perkLabel(perk.name, rank);
+        const action: BuildAction[] = [{ type: 'perk/setRank', perkId, rank }];
+
+        if (isLegendary) {
+          out.push({
+            id: `perk-rank:${perkId}:${rank}`,
+            action,
+            label,
+            group: 'perk',
+            family,
+            cost,
+          });
+        } else {
+          tryEmitPerkMove(out, {
+            id: `perk-rank:${perkId}:${rank}`,
+            action,
+            label,
+            family,
+            cost,
+            perk,
+            extraCost,
+            cardBudget,
+            allocation,
+          });
+        }
+      }
+    } else if (isLegendary) {
+      if (player.legendaryPerks.length < LEGENDARY_SLOTS) {
+        for (let rank = 1; rank <= perk.maxRank; rank++) {
+          out.push({
+            id: `perk-add:${perkId}:${rank}`,
+            action: [perkAddAction(perkId, rank, true)],
+            label: perkLabel(perk.name, rank),
+            group: 'perk',
+            family,
+            cost: rank,
+          });
+        }
       }
     } else {
-      // Unequipped — one candidate per rank from 1 to max (adding straight at that rank).
-      const legendarySlotBudget: SuggestionBudget =
-        player.legendaryPerks.length >= LEGENDARY_SLOTS ? { legal: false, deficit: 1 } : LEGAL;
       for (let rank = 1; rank <= perk.maxRank; rank++) {
         const extraCost = perkCardCostAtRank(perk, rank);
-        const cost = isLegendary ? rank : extraCost;
-        const budget = isLegendary
-          ? legendarySlotBudget
-          : perkMoveBudget(cardBudget, perk, extraCost);
-        const label = isLegendary
-          ? perkLabel(perk.name, rank)
-          : perkLabelWithCost(perk.name, rank, extraCost);
-        out.push({
+        const label = perkLabel(perk.name, rank);
+        const action: BuildAction[] = [perkAddAction(perkId, rank, false)];
+        tryEmitPerkMove(out, {
           id: `perk-add:${perkId}:${rank}`,
-          action: [{ type: 'perk/add', perkId, rank, legendary: isLegendary }],
+          action,
           label,
-          group: 'perk',
-          budget,
           family,
-          cost,
+          cost: extraCost,
+          perk,
+          extraCost,
+          cardBudget,
+          allocation,
         });
+      }
+    }
+  }
+
+  // Legendary perk swaps when slots are full
+  if (player.legendaryPerks.length >= LEGENDARY_SLOTS) {
+    for (const old of player.legendaryPerks) {
+      const oldPerk = registry[old.perkId];
+      const oldName = oldPerk?.name ?? old.perkId;
+      for (const [perkId, perk] of Object.entries(registry)) {
+        if (!legendaryPerkIds.has(perkId)) continue;
+        if (equippedLegendaryIds.has(perkId)) continue;
+        if (!perkHasEngineEffect(mode, perkId, loadoutCtx)) continue;
+        for (let r = 1; r <= perk.maxRank; r++) {
+          out.push({
+            id: `leg-perk-swap:${old.perkId}->${perkId}:${r}`,
+            action: [{ type: 'perk/remove', perkId: old.perkId }, perkAddAction(perkId, r, true)],
+            label: `${oldName} → ${perkLabel(perk.name, r)}`,
+            group: 'perk',
+            family: `leg-swap:${old.perkId}->${perkId}`,
+            cost: r,
+          });
+        }
       }
     }
   }
@@ -195,16 +299,12 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
         action: [{ type: 'armorEffect/setCount', id: effect.id, count }],
         label: armorEffectLabel(effect.name, count, effect.starTier),
         group: 'armor',
-        budget: LEGAL,
         family,
         cost: count - current,
       });
     }
   }
 
-  // Same-star-tier swaps: move k worn pieces from an active effect X to a
-  // damage-relevant effect Y, freeing X's tier room before spending it on Y
-  // so the pair is always legal even when the tier is already full.
   for (const x of armorEffects) {
     if (x.starTier === undefined) continue;
     const countX = storedArmorEffectCount(x, player.armorEffects);
@@ -232,7 +332,6 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
           ],
           label: `${k}× ${x.name} → ${k}× ${y.name}`,
           group: 'armor',
-          budget: LEGAL,
           family: `armor-swap:${x.id}->${y.id}`,
           cost: k,
         });
@@ -249,7 +348,6 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
       action: [{ type: 'mutation/toggle', id: mutation.id }],
       label: `${active ? 'Drop' : 'Take'} ${mutation.name}`,
       group: 'mutation',
-      budget: LEGAL,
       family: id,
       cost: 0,
     });
@@ -262,14 +360,13 @@ export function enumerateVariants(state: BuildState, mode: GameMode): Suggestion
       action: [{ type: 'consumable/toggle', id: consumable.id }],
       label: `${active ? 'Drop' : 'Use'} ${consumable.name}`,
       group: 'consumable',
-      budget: LEGAL,
       family: id,
       cost: 0,
     });
   }
 
-  // ── combo pairs ────────────────────────────────────────────────────────────
-  out.push(...enumerateCombos(state, mode));
+  // ── combo bundles ──────────────────────────────────────────────────────────
+  out.push(...enumerateCombos(state, mode, metric));
 
   return out;
 }

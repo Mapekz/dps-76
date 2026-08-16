@@ -19,19 +19,9 @@ function SuggestionRow({ suggestion, tied }: { suggestion: EvaluatedSuggestion; 
   const dispatch = useBuildDispatch();
   return (
     <div className="flex items-center gap-2 py-1 text-sm">
-      <span className="min-w-0 flex-1 truncate" title={suggestion.label}>
+      <span className="min-w-0 flex-1 truncate" title={suggestion.detail ?? suggestion.label}>
         {suggestion.label}
       </span>
-      {!suggestion.budget.legal && (
-        <span
-          className="text-negative whitespace-nowrap text-3xs"
-          title="Would exceed the perk point budget"
-        >
-          {suggestion.budget.special
-            ? `+${suggestion.budget.deficit} ${suggestion.budget.special.slice(0, 3).toUpperCase()}`
-            : 'no free slot'}
-        </span>
-      )}
       {suggestion.group === 'combo' && (
         <Badge
           variant="secondary"
