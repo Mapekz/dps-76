@@ -184,12 +184,23 @@ never presented as its basis.
 _Avoid_: primary/secondary suggestions, buffs (ambiguous with armor effects).
 
 **Combo Suggestion**:
-A two-piece Structural Suggestion pairing stack-mechanism pieces (one stack
-enabler/cap source, at least one per-stack payoff) whose joint DPS delta
-exceeds either piece alone, gated by the **dominance filter** — see
-`docs/adr/0006` for the filter's exact two-clause shape.
-_Avoid_: synergy pair, joint candidate; archetype is reserved for future
-playstyle suggestions and must not be used for pairs.
+A bundle Structural Suggestion applying one whole stack-mechanism package (all
+discovered payoff + contributor pieces that fit budget/slots) in one action
+list, displayed under a succinct mechanism name ("Full Onslaught"), constituents
+in the row tooltip, gated by the configurable combo gate policy — see
+`docs/adr/0006` for the gate and the endogenous-vs-exogenous criterion.
+_Avoid_: synergy pair, package, archetype (reserved for future playstyle
+suggestions).
+
+**Allocation Suggestion**:
+A compound suggestion that spends free SPECIAL pool points to make a perk
+slottable — `[special/set, perk action]`, labeled like `Better Criticals 2
+(+1 LCK)`. Only emitted when the pool covers the deficit within the 15/stat cap;
+the "over-budget suggestion" concept (unevaluated placeholder rows) is
+deleted.
+_Avoid_: over-budget suggestion, respec suggestion (changing allocation by
+TAKING points from another stat is future playstyle-suggestion territory, not
+this).
 
 ### Data pipeline
 
