@@ -20,7 +20,7 @@ typography:
     fontFamily: "'Barlow Condensed', 'Barlow', sans-serif"
     fontSize: "11px"
     fontWeight: 600
-    lineHeight: 1.2
+    lineHeight: 1.25
     letterSpacing: "0.14em"
   micro-label:
     fontFamily: "'Barlow', ui-sans-serif, system-ui, sans-serif"
@@ -32,13 +32,13 @@ typography:
     fontFamily: "'Barlow', ui-sans-serif, system-ui, sans-serif"
     fontSize: "14px"
     fontWeight: 400
-    lineHeight: 1.5
+    lineHeight: 1.625
     letterSpacing: "normal"
   readout:
     fontFamily: "'Spline Sans Mono Variable', ui-monospace, monospace"
     fontSize: "14px"
     fontWeight: 500
-    lineHeight: 1.2
+    lineHeight: 1.25
     letterSpacing: "normal"
 rounded:
   none: "0px"
@@ -131,11 +131,29 @@ The palette is desaturated and warm-neutral at rest; color is spent only to mean
 **Character:** A humanist grotesk doing double duty as both body copy and, condensed, as tracked-uppercase instrument labels; a true monospace is reserved exclusively for values. The pairing reads as "terminal readout," not "app UI" — labels are terse and shouted in small caps, values are exact and tabular.
 
 ### Hierarchy
-- **Header Title** (600, `text-xl`/20px, tight): Barlow Condensed, uppercase, `tracking-[0.12em]` — the app name in the header, the only place this large a label appears.
-- **Section Label** (600, 11px, `tracking-[0.14em]`): Barlow Condensed, uppercase — "Damage output," "Suggestions," scenario names. The system's primary structural label voice.
-- **Micro Label** (600, `tracking-widest`): Barlow (not condensed), uppercase. Denser and un-condensed on purpose so it doesn't compete with Section Labels. A shared *voice*, not one fixed size — 10px (`text-3xs`, `0.625rem`) is the default for badges, group headings, and other micro text; buttons render it at 12px (`text-xs` — see Buttons below); the one exception in the other direction is the card/panel Title, which uses the voice at `text-lg` (see Cards below). `lint-design.ts` enforces a 10px floor under this voice, not a fixed size.
-- **Body** (400, 14px, relaxed line-height): Barlow — descriptions, helper copy, tooltip content.
-- **Readout** (500, 14–24px, tight, tabular-nums): Spline Sans Mono — every DPS/percentage/seconds/AP value on screen, from the headline DPS number down to a single row in the multiplier-chain ledger.
+
+Each voice below is a component in `src/components/ui/typography.tsx` — `Title`,
+`SectionLabel`, `MicroLabel`, `Body`, `Readout` — that owns every axis (family, size,
+weight, tracking, leading) as one unit, pinned against this section's frontmatter by
+`src/data/__tests__/design-tokens.test.ts`. Outside `typography.tsx` itself and the
+vendored Base UI wrappers under `ui/` (which keep their own upstream-shaped classes),
+app code reaches for the component rather than hand-typing the voice's classes —
+that's what keeps this table from drifting out of sync with the app the way it once
+did (13 different class strings for Section Label alone, `text-[11px]` sitting
+alongside the `text-2xs` token meant to replace it).
+
+- **Header Title** (`Title`; 600, `text-xl`/20px, tight): Barlow Condensed, uppercase, `tracking-[0.12em]` — the app name in the header, the only place this large a label appears.
+- **Section Label** (`SectionLabel`; 600, 11px, `tracking-[0.14em]`): Barlow Condensed, uppercase — "Damage output," "Suggestions," scenario names. The system's primary structural label voice. `size="lg"` (14px) is the documented larger exception for an accordion section's own trigger label (`SectionTrigger`).
+- **Micro Label** (`MicroLabel`; 600, `tracking-widest`): Barlow (not condensed), uppercase. Denser and un-condensed on purpose so it doesn't compete with Section Labels. A shared *voice*, not one fixed size — 10px (`text-3xs`, `0.625rem`) is the default for badges, group headings, and other micro text; buttons and `size="sm"` render it at 12px (`text-xs` — see Buttons below); the one exception in the other direction is `size="lg"`, the card/panel Title (see Cards below). `lint-design.ts` enforces a 10px floor under this voice, not a fixed size.
+- **Body** (`Body`; 400, 14px, relaxed line-height): Barlow — descriptions, helper copy, tooltip content. `HelperText` (`ui/helper-text.tsx`) is this voice at the muted 12px caption scale, width-capped to `max-w-prose`.
+- **Readout** (`Readout`; 500, 14–24px, tight, tabular-nums): Spline Sans Mono — every DPS/percentage/seconds/AP value on screen, from the headline DPS number down to a single row in the multiplier-chain ledger. `size="sm"`/`"md"`/`"lg"` cover 12/14/24px; `DeltaFlash` and `DeltaText` (the pulsing/delta numbers) bundle the same `font-mono tabular-nums` pairing independently rather than wrapping `Readout`, since their color/animation logic needs the full class string under its own control.
+
+The app's heading outline runs `Title level={1}` (the page's one `<h1>`, in `Header`) →
+`SectionLabel`/`CardTitle level={2..3}` (panel and accordion-section titles — Base
+UI's `AccordionHeader` already wraps every accordion trigger in an unconditional
+`<h3>`, which is why panel titles outside an accordion match it at `level={3}` rather
+than `level={2}`) → `GroupHeading` (`ui/group-heading.tsx`, wrapping `SectionLabel
+level={4}`) for a cluster of controls within a section.
 
 ### Named Rules
 **The Numerals-Are-Mono Rule.** Any value that answers "how much" renders in Spline Sans Mono with `tabular-nums`. Everything else — labels, sentences, names — renders in Barlow or Barlow Condensed. A component that mixes the two within one number is a bug, not a style choice.
@@ -182,7 +200,7 @@ Zero radius, universally. Every rectangle — button, badge, card, input underli
 - **Corner Style:** 0px, matching the system rule.
 - **Background:** Panel, with `ring-1 ring-foreground/5` and `shadow-sm` as the only depth cue.
 - **Internal Padding:** a `--card-spacing` custom property (24px default, 20px on `size="sm"`) drives header/content/footer padding uniformly, so nested cards can shrink as a unit.
-- **Title:** Micro Label voice, `text-lg`, uppercase, `tracking-wider` — the one place Micro Label appears at a larger size than a button/badge.
+- **Title:** Micro Label voice (`MicroLabel size="lg"`, via `CardTitle`), `text-lg`, uppercase, `tracking-wider` — the one place Micro Label appears at a larger size than a button/badge. `level={1..3}` renders it as a real heading; the default renders a plain `<div>`.
 
 ### Inputs
 - **Style:** no box at all — a transparent field with only a bottom border (`border-b-input`), echoing a ledger line rather than a form field. Background stays fully transparent so the field reads as part of the surface, not a widget floating on it.

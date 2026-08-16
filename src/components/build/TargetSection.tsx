@@ -12,6 +12,7 @@ import { firstSliderValue } from '@/lib/slider-value';
 import { ToggleChips } from '@/components/ui/toggle-chips';
 import { ToggleGroup } from '@/components/ui/toggle-group';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Readout } from '@/components/ui/typography';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
@@ -534,11 +535,11 @@ export function TargetSection() {
                     ]}
                   />
                   {targetDefenses && (
-                    <p className="text-muted-foreground font-mono text-xs tabular-nums">
+                    <Readout size="sm" className="text-muted-foreground" as="p">
                       HP {Math.round(targetDefenses.hp).toLocaleString()} · DR{' '}
                       {Math.round(targetDefenses.resists.physical ?? 0).toLocaleString()} · ER{' '}
                       {Math.round(targetDefenses.resists.energy ?? 0).toLocaleString()}
-                    </p>
+                    </Readout>
                   )}
                 </div>
               )}

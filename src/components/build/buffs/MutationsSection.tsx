@@ -62,7 +62,9 @@ function CheckboxRow({
           {action && <ActionDelta action={action} />}
         </div>
         {description && <HelperText>{description}</HelperText>}
-        {penaltyDescription && <p className="text-negative text-xs">{penaltyDescription}</p>}
+        {penaltyDescription && (
+          <HelperText className="text-negative">{penaltyDescription}</HelperText>
+        )}
       </div>
     </label>
   );

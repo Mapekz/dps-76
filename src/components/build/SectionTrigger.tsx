@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { SectionLabel } from '@/components/ui/typography';
 
 /**
  * Accordion trigger row: section name + a muted summary of what's inside, so
@@ -19,9 +20,12 @@ export function SectionTrigger({
 }) {
   return (
     <span className="flex min-w-0 flex-1 items-center justify-between gap-2 pr-2">
-      <span className="font-condensed min-w-0 text-sm font-semibold uppercase tracking-[0.1em]">
+      {/* text-foreground override: unlike a passive Section Label sub-header
+          (muted by default), this is the accordion's primary clickable
+          header — full-ink emphasis, matching its pre-migration treatment. */}
+      <SectionLabel as="span" size="lg" className="min-w-0 text-foreground">
         {label}
-      </span>
+      </SectionLabel>
       <span className="flex min-w-0 items-center gap-2">
         {badge}
         {summary && (

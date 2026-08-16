@@ -1,5 +1,6 @@
 import { MinusIcon, PlusIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Readout } from '@/components/ui/typography';
 import { DiffTooltip } from '@/components/diff/DiffTooltip';
 import type { BuildAction } from '@/state/build-reducer';
 
@@ -45,7 +46,9 @@ export function CountStepper({
           <MinusIcon className="size-3" />
         </Button>
       </DiffTooltip>
-      <span className="w-4 text-center font-mono text-xs tabular-nums">{count}</span>
+      <Readout size="sm" className="w-4 text-center">
+        {count}
+      </Readout>
       <DiffTooltip action={incrementTooltipAction}>
         <Button
           variant="ghost"

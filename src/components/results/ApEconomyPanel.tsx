@@ -1,5 +1,6 @@
 import type { ScenarioResult } from '@/lib/engine/scenarios';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { SectionLabel } from '@/components/ui/typography';
 import { Row } from './breakdown-row';
 import { contributionRows, flatPercentRows, formatSeconds } from './trace-rows';
 
@@ -23,9 +24,7 @@ export function ApEconomyPanel({ result }: { result: ScenarioResult }) {
 
   return (
     <div className="border-border/50 mt-1 space-y-1.5 border-t pt-1">
-      <p className="font-condensed text-muted-foreground pt-1 text-3xs font-semibold uppercase tracking-wide">
-        AP economy
-      </p>
+      <SectionLabel className="pt-1">AP economy</SectionLabel>
 
       <Row
         muted

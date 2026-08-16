@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Body, MicroLabel, Readout, SectionLabel } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 import { deltaToneClass, formatPercentDelta } from '@/lib/format';
 import { useSuggestions } from '@/hooks/useSuggestions';
@@ -40,9 +41,9 @@ function SuggestionRow({ suggestion, tied }: { suggestion: EvaluatedSuggestion; 
           Combo
         </Badge>
       )}
-      <span
+      <Readout
+        size="sm"
         className={cn(
-          'font-mono text-xs tabular-nums',
           // Suggestions are always net-positive changes (topSuggestions only
           // ranks gains) — deltaToneClass is reused here for a shared
           // sign→class mapping, not because a negative row is expected.
@@ -50,7 +51,7 @@ function SuggestionRow({ suggestion, tied }: { suggestion: EvaluatedSuggestion; 
         )}
       >
         {tied ? '≈' : formatPercentDelta(suggestion.primaryDeltaPct)}
-      </span>
+      </Readout>
       <Button
         variant="ghost"
         size="sm"
@@ -86,14 +87,10 @@ function SuggestionSection({
 }) {
   return (
     <div>
-      {title && (
-        <p className="font-condensed text-muted-foreground mb-1 text-2xs font-semibold uppercase tracking-[0.12em]">
-          {title}
-        </p>
-      )}
+      {title && <SectionLabel className="mb-1">{title}</SectionLabel>}
 
       {ranked.length === 0 && tied.length === 0 ? (
-        <p className="text-muted-foreground py-1 text-sm">{emptyMessage}</p>
+        <Body className="text-muted-foreground py-1">{emptyMessage}</Body>
       ) : (
         <>
           {ranked.length > 0 && (
@@ -110,9 +107,7 @@ function SuggestionSection({
                 <Separator className="flex-1" />
                 <Tooltip>
                   <TooltipTrigger
-                    render={
-                      <span className="text-muted-foreground cursor-default text-3xs uppercase tracking-wide" />
-                    }
+                    render={<MicroLabel className="text-muted-foreground cursor-default" />}
                   >
                     effectively tied
                   </TooltipTrigger>
@@ -159,9 +154,8 @@ export function SuggestionsPanel() {
     <div className={cn('space-y-3 transition-opacity', stale && 'opacity-60')}>
       <div>
         <div className="flex items-center justify-between">
-          <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.14em]">
-            Suggestions
-          </p>
+          {/* h3, matching HeadlineStrip's "Damage output" — see its comment. */}
+          <SectionLabel level={3}>Suggestions</SectionLabel>
           <span className="text-muted-foreground flex items-center gap-1 text-3xs">
             {stale && <Loader2Icon className="size-3 animate-spin" />}
             <Tooltip>

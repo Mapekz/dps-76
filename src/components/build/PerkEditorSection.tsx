@@ -3,6 +3,8 @@ import { CheckIcon, LockIcon, PlusIcon, XIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { HelperText } from '@/components/ui/helper-text';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Readout, SectionLabel } from '@/components/ui/typography';
+import { readoutVariants } from '@/components/ui/typography-variants';
 import {
   FilterListRoot,
   FilterInput,
@@ -105,7 +107,8 @@ function SpecialBudgetBar({
                 <button
                   type="button"
                   className={cn(
-                    'hover:bg-muted/60 cursor-pointer rounded-none border px-1 py-0.5 text-center font-mono text-[11px] tabular-nums',
+                    readoutVariants({ size: 'sm' }),
+                    'hover:bg-muted/60 cursor-pointer rounded-none border px-1 py-0.5 text-center',
                     over ? 'border-negative text-negative' : 'text-muted-foreground',
                   )}
                   onClick={() => onSelectSpecial?.(special)}
@@ -148,7 +151,7 @@ function PerkRow({
     <Row label={entry.perk.name} noEffect={noEffect} description={description}>
       {cost !== null && (
         <span
-          className="text-muted-foreground text-3xs tabular-nums"
+          className="text-muted-foreground font-mono text-3xs tabular-nums"
           title={`Costs ${cost} perk point${cost === 1 ? '' : 's'} at rank ${entry.rank}`}
         >
           {cost} pt
@@ -334,9 +337,9 @@ function PerkAddCombobox({
             select={select}
             decrement={decrement}
           />
-          <p className="text-muted-foreground border-t px-2 py-1 text-[11px]">
+          <HelperText className="border-t px-2 py-1">
             Left-click to add or raise a rank · right-click to lower or remove.
-          </p>
+          </HelperText>
         </FilterListRoot>
       </PopoverContent>
     </Popover>
@@ -548,17 +551,15 @@ export function PerkEditor() {
             return (
               <div key={group.key} className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.1em]">
+                  <SectionLabel>
                     {group.letter} · {group.special}
-                  </p>
-                  <span
-                    className={cn(
-                      'font-mono text-[11px] tabular-nums',
-                      used > cap ? 'text-negative' : 'text-muted-foreground',
-                    )}
+                  </SectionLabel>
+                  <Readout
+                    size="sm"
+                    className={used > cap ? 'text-negative' : 'text-muted-foreground'}
                   >
                     {used}/{cap} pt
-                  </span>
+                  </Readout>
                 </div>
                 <div className="grid gap-1">
                   {group.entries.map((entry) => (
@@ -577,9 +578,7 @@ export function PerkEditor() {
           })}
           {ungroupedEntries.length > 0 && (
             <div className="space-y-1">
-              <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.1em]">
-                Other
-              </p>
+              <SectionLabel>Other</SectionLabel>
               <div className="grid gap-1">
                 {ungroupedEntries.map((entry) => (
                   <PerkRow
@@ -603,17 +602,10 @@ export function PerkEditor() {
 
       <Separator />
       <div className="flex items-center justify-between">
-        <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.1em]">
-          Legendary perks
-        </p>
-        <span
-          className={cn(
-            'text-xs font-mono',
-            legendaryOver ? 'text-negative' : 'text-muted-foreground',
-          )}
-        >
+        <SectionLabel>Legendary perks</SectionLabel>
+        <Readout size="sm" className={legendaryOver ? 'text-negative' : 'text-muted-foreground'}>
           {legendaryEntries.length}/{LEGENDARY_SLOTS} slots
-        </span>
+        </Readout>
       </div>
       <PerkAddCombobox budget={budget} scope="legendary" triggerLabel="Add legendary perk…" />
       {legendaryEntries.length > 0 ? (

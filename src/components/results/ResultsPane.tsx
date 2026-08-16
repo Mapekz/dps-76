@@ -1,6 +1,7 @@
 import { CrosshairIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Body } from '@/components/ui/typography';
 import { useScenarioResults } from '@/state/useScenarioResults';
 import { HeadlineStrip } from './HeadlineStrip';
 import { SuggestionsPanel } from './SuggestionsPanel';
@@ -26,10 +27,10 @@ export function ResultsPane() {
             <div className="space-y-2 py-6 text-center">
               <CrosshairIcon className="text-muted-foreground mx-auto size-8" />
               <p className="text-sm font-medium">No weapon equipped</p>
-              <p className="text-muted-foreground text-sm">
+              <Body className="text-muted-foreground">
                 Pick a weapon under <span className="text-foreground">Build → Weapon</span>, or
                 paste a Nukes &amp; Dragons link in the header to import your perks.
-              </p>
+              </Body>
             </div>
           )}
         </CardContent>

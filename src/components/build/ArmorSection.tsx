@@ -3,6 +3,7 @@ import { CheckIcon, LockIcon, PlusIcon, XIcon } from 'lucide-react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { GroupHeading } from '@/components/ui/group-heading';
 import { HelperText } from '@/components/ui/helper-text';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -406,9 +407,9 @@ function ArmorEffectAddPopover() {
             <FilterEmpty show={listEmpty}>No effect matches.</FilterEmpty>
             <ArmorEffectList filterChip={filterChip} armorWorn={armorWorn} onEmpty={setListEmpty} />
           </FilterList>
-          <p className="text-muted-foreground border-t px-2 py-1 text-[11px]">
+          <HelperText className="border-t px-2 py-1">
             Left-click to add or raise a count · right-click to lower or remove.
-          </p>
+          </HelperText>
         </FilterListRoot>
       </PopoverContent>
     </Popover>
@@ -482,12 +483,7 @@ function EffectGroup({
 
   return (
     <div>
-      <div className="flex items-baseline justify-between pb-1">
-        <p className="font-condensed text-muted-foreground text-3xs font-semibold uppercase tracking-[0.1em]">
-          {title}
-        </p>
-        {headerRight && <HelperText>{headerRight}</HelperText>}
-      </div>
+      <GroupHeading title={title} right={headerRight} />
       <div className="grid gap-1">
         {activeEffects.map((effect) => (
           <ArmorEffectRow key={effect.id} effect={effect} />

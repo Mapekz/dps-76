@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';
+import { microLabelVariants } from '@/components/ui/typography-variants';
 
 function Card({
   className,
@@ -33,11 +34,23 @@ function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
-function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
+/**
+ * Micro Label voice at its documented larger exception, `size="lg"`
+ * (DESIGN.md's Cards section: "Micro Label voice, text-lg, uppercase,
+ * tracking-wider" — the one place Micro Label appears larger than a
+ * button/badge). `level` renders it as a real heading — pass `level={2}`
+ * for a panel/card title in the app's h1→h2→h3 outline (Header is `h1`).
+ */
+function CardTitle({
+  level,
+  className,
+  ...props
+}: React.ComponentProps<'div'> & { level?: 1 | 2 | 3 }) {
+  const Tag = level ? (`h${level}` as const) : 'div';
   return (
-    <div
+    <Tag
       data-slot="card-title"
-      className={cn('text-lg font-semibold tracking-wider uppercase', className)}
+      className={cn(microLabelVariants({ size: 'lg' }), className)}
       {...props}
     />
   );

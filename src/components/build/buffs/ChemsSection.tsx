@@ -4,6 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { MicroLabel } from '@/components/ui/typography';
+import { sectionLabelVariants } from '@/components/ui/typography-variants';
 import { cn } from '@/lib/utils';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
@@ -133,9 +135,9 @@ function AddictionCell({
             <Tooltip>
               <TooltipTrigger
                 render={
-                  <span
+                  <MicroLabel
                     className={cn(
-                      'text-muted-foreground flex shrink-0 items-center gap-1 text-3xs uppercase tracking-wide',
+                      'text-muted-foreground flex shrink-0 items-center gap-1',
                       !addicted && 'opacity-50',
                     )}
                   />
@@ -269,7 +271,7 @@ export function ChemsSection() {
         />
       </AccordionTrigger>
       <AccordionContent>
-        <div className="font-condensed text-muted-foreground flex items-stretch pb-1 text-3xs font-semibold uppercase tracking-[0.1em]">
+        <div className={cn(sectionLabelVariants(), 'flex items-stretch pb-1')}>
           <span className="flex-1 px-2">Active — one alcohol, one chem</span>
           <span className={cn(RAIL, 'px-2 pl-3')}>Addicted</span>
         </div>

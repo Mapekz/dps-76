@@ -1,8 +1,8 @@
-import { cn } from '@/lib/utils';
 import { formatDamage, formatTtk } from '@/lib/format';
 import type { ScenarioResult } from '@/lib/engine/scenarios';
 import type { ScenarioKey } from '@/state/build-reducer';
 import { useBuildDispatch } from '@/state/BuildProvider';
+import { MicroLabel, Readout, SectionLabel } from '@/components/ui/typography';
 import { DeltaFlash } from './DeltaFlash';
 import { CritGauge } from './CritGauge';
 
@@ -70,18 +70,13 @@ export function ScenarioCard({
       // column flex context makes top alignment the browser's default again.
       className="vats-brackets focus-visible:ring-ring flex flex-1 flex-col space-y-1 px-3 py-2.5 text-left focus-visible:outline-none focus-visible:ring-2"
     >
-      <p
-        className={cn(
-          'font-condensed text-xs font-semibold uppercase tracking-[0.14em]',
-          emphasized ? 'text-primary' : 'text-muted-foreground',
-        )}
-      >
+      <SectionLabel as="span" className={emphasized ? 'text-primary' : undefined}>
         {label}
-      </p>
-      <p className="text-2xl font-semibold leading-none">
+      </SectionLabel>
+      <Readout size="lg" className="font-semibold leading-none">
         <DeltaFlash value={headlineDps} />
-      </p>
-      <p className="text-muted-foreground text-3xs uppercase tracking-wide">DPS</p>
+      </Readout>
+      <MicroLabel className="text-muted-foreground">DPS</MicroLabel>
       {result.effective && (
         <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
           <span>pre-resist</span>
@@ -111,9 +106,9 @@ export function ScenarioCard({
         <div className="border-border/60 mt-1 space-y-1 border-t pt-1.5">
           <div className="text-muted-foreground flex items-baseline justify-between gap-2 text-xs">
             <span>time to kill</span>
-            <span className="text-foreground text-sm tabular-nums">
+            <Readout size="md" className="text-foreground">
               {formatTtk(result.effective.ttk)}
-            </span>
+            </Readout>
           </div>
         </div>
       )}

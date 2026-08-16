@@ -12,6 +12,7 @@ import {
   FilterGroup,
   FilterItem,
 } from '@/components/ui/filter-list';
+import { Body } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 import { matchesQuery } from '@/lib/filter-query';
 import { useFilterQuery } from '@/hooks/useFilterQuery';
@@ -194,7 +195,7 @@ function FoodDrinkRow({
         <div className="flex items-center gap-1">
           <span className="min-w-0 flex-1 truncate">{item.name}</span>
           {!suppression && !hasAnyEngineEffect(item.modifiers) && <NoEffectBadge />}
-          {diet === 'doubled' && <span className="text-emerald-500 shrink-0 text-xs">×2 diet</span>}
+          {diet === 'doubled' && <span className="text-positive shrink-0 text-xs">×2 diet</span>}
           {suppression && <DietSuppressionBadge mutation={suppression} />}
         </div>
         {description && (
@@ -271,7 +272,7 @@ export function FoodDrinkSection() {
               ))}
             </div>
           ) : (
-            <p className="text-muted-foreground text-sm">No food or drink active.</p>
+            <Body className="text-muted-foreground">No food or drink active.</Body>
           )}
         </div>
       </AccordionContent>

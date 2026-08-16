@@ -1,8 +1,8 @@
 /**
- * Mechanical enforcement for two of DESIGN.md's Named Rules that had already
- * drifted from enforced to aspirational by the time the 2026-08-10 design
- * critique caught them (`.impeccable/critique/`) — bare-`rounded` radius
- * leaks and sub-floor micro-label font sizes. Neither oxlint nor the
+ * Mechanical enforcement for several of DESIGN.md's Named Rules that had
+ * already drifted from enforced to aspirational by the time the 2026-08-10
+ * design critique caught them (`.impeccable/critique/`) — bare-`rounded`
+ * radius leaks and sub-floor micro-label font sizes. Neither oxlint nor the
  * `impeccable` skill's `detect.mjs` can be this project's enforcement
  * mechanism: oxlint has no `no-restricted-syntax`-equivalent that can match
  * inside a JSX className string (only `no-restricted-{exports,globals,
@@ -11,7 +11,7 @@
  * the same regression can't happen twice.
  *
  * Deliberately grep-based, not an AST/PostCSS pass: the failure mode of a
- * clever check is that nobody keeps it working. Two independent scans:
+ * clever check is that nobody keeps it working. Independent scans:
  *
  *   1. Radius — Tailwind class names in `src/**\/*.{ts,tsx}` `className`
  *      strings that aren't neutralized by index.css's `--radius-*` tokens
@@ -26,6 +26,11 @@
  *   3. Custom `--text-*` @theme tokens whose name isn't shaped like a
  *      Tailwind t-shirt size (see check 3's comment for why this matters —
  *      it's a tailwind-merge trap, not a style preference).
+ *   4. `tabular-nums` in a className literal with no `font-mono` in that
+ *      same literal — DESIGN.md's Numerals-Are-Mono Rule
+ *      (src/components/ui/typography.tsx's Readout voice bundles both
+ *      together by construction; this catches a value styled by hand
+ *      instead of reaching for Readout).
  *
  *   bun run lint:design
  */
@@ -204,6 +209,35 @@ function checkTextTokenNaming(file: string, content: string) {
   }
 }
 
+// --- 4. tabular-nums without font-mono --------------------------------
+
+// DESIGN.md's Numerals-Are-Mono Rule: "Any value that answers 'how much'
+// renders in Spline Sans Mono with tabular-nums." A className literal that
+// sets tabular-nums but never reaches for font-mono in that same literal is
+// exactly the bug this caught twice already (ScenarioCard.tsx, PerkEditor
+// Section.tsx, both fixed) — a number left in the ambient sans font. Scoped
+// to one literal at a time (not the whole file) so a `cn()` call that pulls
+// font-mono in via a separate composed class (e.g. Readout's own variants,
+// applied through an imported function, not a literal in the caller's file)
+// isn't a false positive — those files hold neither token in a literal.
+const TABULAR_NUMS_PATTERN = /\btabular-nums\b/;
+const FONT_MONO_PATTERN = /\bfont-mono\b/;
+
+function checkTabularNumsHasFontMono(file: string, content: string) {
+  forEachStringLiteral(content, (text, startIndex) => {
+    const match = TABULAR_NUMS_PATTERN.exec(text);
+    if (!match) return;
+    if (FONT_MONO_PATTERN.test(text)) return;
+    const absoluteIndex = startIndex + match.index;
+    findings.push({
+      file,
+      line: lineOf(content, absoluteIndex),
+      message: `'tabular-nums' with no 'font-mono' in the same class string — DESIGN.md's Numerals-Are-Mono Rule; use the Readout voice (src/components/ui/typography.tsx) instead of hand-typing both`,
+      snippet: text,
+    });
+  });
+}
+
 // --- run ---------------------------------------------------------------
 
 // .tsx only, not .ts: Tailwind classNames only ever appear on JSX elements
@@ -215,6 +249,7 @@ for (const file of walk(SRC, ['.tsx'])) {
   const content = readFileSync(file, 'utf8');
   checkRadiusInSource(file, content);
   checkFontSize(file, content);
+  checkTabularNumsHasFontMono(file, content);
 }
 
 for (const file of walk(SRC, ['.css'])) {

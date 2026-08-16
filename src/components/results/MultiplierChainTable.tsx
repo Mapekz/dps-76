@@ -2,6 +2,7 @@ import { Fragment } from 'react';
 import type { ScenarioResult } from '@/lib/engine/scenarios';
 import { formatDamage } from '@/lib/format';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { SectionLabel } from '@/components/ui/typography';
 import { Row } from './breakdown-row';
 import { contributionRows, formatSeconds, signed, wholeDamageRows } from './trace-rows';
 
@@ -58,11 +59,7 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
           // its PARENT's damageType rather than a shared 'explosive' label),
           // so damageType alone is not a stable/unique key.
           <Fragment key={`${component.damageType}-${i}`}>
-            {multi && (
-              <p className="font-condensed text-muted-foreground pt-1 text-3xs font-semibold uppercase tracking-wide">
-                {component.damageType}
-              </p>
-            )}
+            {multi && <SectionLabel className="pt-1">{component.damageType}</SectionLabel>}
             <Row label="Base damage" value={formatDamage(componentHit.base)} />
             {contributionRows(component.baseDamage, `bd-${i}`)}
             <Row label="DMG Bonus Mult" value={`×${component.dbm.result.toFixed(2)}`} />

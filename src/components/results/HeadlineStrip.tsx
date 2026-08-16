@@ -4,7 +4,7 @@ import { useGameMode } from '@/hooks/useGameMode';
 import { getWeapons } from '@/data';
 import { effectiveWeaponName } from '@/data/omods';
 import { getBodyPartRace } from '@/data/bodyparts';
-import { cn } from '@/lib/utils';
+import { SectionLabel } from '@/components/ui/typography';
 import { formatDamage } from '@/lib/format';
 import { DeltaFlash } from './DeltaFlash';
 import { ScenarioCard } from './ScenarioCard';
@@ -45,14 +45,9 @@ export function HeadlineStrip({ variant = 'full' }: HeadlineStripProps) {
         <div className="flex items-baseline gap-4 overflow-x-auto">
           {keys.map((key, i) => (
             <span key={key} className="flex items-baseline gap-1.5 whitespace-nowrap">
-              <span
-                className={cn(
-                  'font-condensed text-[11px] font-semibold uppercase tracking-[0.12em]',
-                  i === 0 ? 'text-primary' : 'text-muted-foreground',
-                )}
-              >
+              <SectionLabel as="span" className={i === 0 ? 'text-primary' : undefined}>
                 {LABELS[key]}
-              </span>
+              </SectionLabel>
               {/*
                * Same headline semantics as ScenarioCard — post-resist DPS
                * when a target is selected, else pre-resist. Must stay in
@@ -89,9 +84,11 @@ export function HeadlineStrip({ variant = 'full' }: HeadlineStripProps) {
         </div>
       )}
       <div className="flex items-center justify-between">
-        <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.14em]">
-          Damage output
-        </p>
+        {/* h3, not h2: this panel is a conceptual sibling of BreakdownPanel's
+            "Why these numbers", which Base UI's AccordionHeader forces to h3
+            unconditionally — matching levels keeps the outline consistent
+            rather than mixing h2/h3 across three sibling ResultsPane panels. */}
+        <SectionLabel level={3}>Damage output</SectionLabel>
         <ScenarioChips />
       </div>
       <div className="flex gap-2 max-sm:flex-col">

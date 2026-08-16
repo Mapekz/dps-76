@@ -17,7 +17,7 @@ export function BuildColumn() {
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="font-condensed flex items-center gap-2 text-base font-semibold uppercase tracking-[0.12em]">
+        <CardTitle level={2} className="flex items-center gap-2">
           <UserIcon className="size-4" />
           Build
         </CardTitle>

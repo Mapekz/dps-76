@@ -23,6 +23,7 @@ import { createDefaultPlayerInput, type PlayerInput } from '@/types';
 import { knobActiveBadgeObjects } from '@/types/knob-registry';
 import { DRINK_TIER_NAMES, FOOD_TIER_NAMES, feralStateName } from '@/data/meter-names';
 import { GroupHeading } from '@/components/ui/group-heading';
+import { Readout } from '@/components/ui/typography';
 import { SectionTrigger } from './SectionTrigger';
 
 /**
@@ -180,7 +181,7 @@ export function ConditionsSection() {
 
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Max HP</span>
-                <span className="font-mono tabular-nums">{stats.maxHealth}</span>
+                <Readout size="md">{stats.maxHealth}</Readout>
               </div>
 
               {!isGhoul && (

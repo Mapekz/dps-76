@@ -1,5 +1,7 @@
 import type * as React from 'react';
 import { Button } from '@/components/ui/button';
+import { HelperText } from '@/components/ui/helper-text';
+import { Readout, SectionLabel } from '@/components/ui/typography';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { legendaryBonusOf } from '@/data/perk-budget';
 import { SPECIAL_ALLOCATION_POOL, SPECIAL_KEYS, SPECIAL_POINTS_CAP } from '@/lib/player-stats';
@@ -40,13 +42,15 @@ export function SpecialAllocationEditor() {
           };
           return (
             <div key={key} className="space-y-1 text-center">
-              <p className="font-condensed text-muted-foreground text-xs font-semibold uppercase">
-                {key.slice(0, 3)}
-              </p>
-              <p className="font-mono text-sm tabular-nums">
+              <SectionLabel>{key.slice(0, 3)}</SectionLabel>
+              <Readout as="p" size="md">
                 {base}
-                {leggo > 0 && <span className="text-positive text-xs">+{leggo}</span>}
-              </p>
+                {leggo > 0 && (
+                  <Readout size="sm" className="text-positive">
+                    +{leggo}
+                  </Readout>
+                )}
+              </Readout>
               <div className="flex justify-center gap-0.5">
                 <Button
                   variant="ghost"
@@ -73,19 +77,18 @@ export function SpecialAllocationEditor() {
           );
         })}
       </div>
-      <p
-        className={cn(
-          'mt-2 font-mono text-[11px] tabular-nums',
-          poolLeft < 0 ? 'text-negative' : 'text-muted-foreground',
-        )}
+      <Readout
+        as="p"
+        size="sm"
+        className={cn('mt-2', poolLeft < 0 ? 'text-negative' : 'text-muted-foreground')}
       >
         Points allocated: {total}/{SPECIAL_ALLOCATION_POOL}
-      </p>
-      <p className="text-muted-foreground mt-1 text-xs">
+      </Readout>
+      <HelperText className="mt-1">
         Base allocation caps at 15 per stat; Legendary SPECIAL cards add up to +5 on top (green) and
         raise that stat's perk-point budget (still capped at 15). Buffs from consumables and gear
         show in the stat summary above.
-      </p>
+      </HelperText>
     </div>
   );
 }

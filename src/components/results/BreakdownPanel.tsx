@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { SectionLabel } from '@/components/ui/typography';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
 import { ApEconomyPanel } from './ApEconomyPanel';
@@ -28,22 +29,16 @@ export function BreakdownPanel() {
     >
       <AccordionItem value="breakdown" className="border-b-0">
         <AccordionTrigger className="py-2">
-          <span className="font-condensed text-muted-foreground text-xs font-semibold uppercase tracking-[0.14em]">
-            Why these numbers
-          </span>
+          <SectionLabel as="span">Why these numbers</SectionLabel>
         </AccordionTrigger>
         <AccordionContent>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <p className="font-condensed text-muted-foreground mb-1 text-[11px] font-semibold uppercase tracking-[0.12em]">
-                Free Aim
-              </p>
+              <SectionLabel className="mb-1">Free Aim</SectionLabel>
               <MultiplierChainTable result={scenarios.freeAim} />
             </div>
             <div>
-              <p className="font-condensed text-muted-foreground mb-1 text-[11px] font-semibold uppercase tracking-[0.12em]">
-                VATS
-              </p>
+              <SectionLabel className="mb-1">VATS</SectionLabel>
               <MultiplierChainTable result={scenarios.vats} />
               <ApEconomyPanel result={scenarios.vats} />
             </div>

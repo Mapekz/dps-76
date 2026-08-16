@@ -1,5 +1,6 @@
 import { HeartIcon } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Readout, SectionLabel } from '@/components/ui/typography';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild } from '@/state/BuildProvider';
 import { useResolvedStats } from '@/hooks/useResolvedStats';
@@ -38,12 +39,10 @@ export function StatSummary() {
             <TooltipTrigger
               render={<div className="bg-muted/40 rounded-none border px-1.5 py-0.5 text-center" />}
             >
-              <span className="font-condensed text-muted-foreground text-3xs font-semibold uppercase">
-                {LETTERS[key]}
-              </span>{' '}
-              <span className={`font-mono text-xs tabular-nums ${buffed ? 'text-positive' : ''}`}>
+              <SectionLabel as="span">{LETTERS[key]}</SectionLabel>{' '}
+              <Readout size="sm" className={buffed ? 'text-positive' : undefined}>
                 {value}
-              </span>
+              </Readout>
             </TooltipTrigger>
             <TooltipContent>
               {key[0].toUpperCase()}
@@ -61,10 +60,8 @@ export function StatSummary() {
           }
         >
           <HeartIcon className="text-muted-foreground size-3" />
-          <span className="font-mono text-xs tabular-nums">{stats.maxHealth}</span>
-          <span className="font-condensed text-muted-foreground text-3xs font-semibold uppercase">
-            HP
-          </span>
+          <Readout size="sm">{stats.maxHealth}</Readout>
+          <SectionLabel as="span">HP</SectionLabel>
         </TooltipTrigger>
         <TooltipContent>Max HP = 245 + 5×END + max-HP buffs</TooltipContent>
       </Tooltip>

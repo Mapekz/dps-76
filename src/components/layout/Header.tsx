@@ -3,6 +3,7 @@ import { useBuild } from '@/state/BuildProvider';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Title } from '@/components/ui/typography';
 import { BuildUrlInput } from './BuildUrlInput';
 import { ThemeToggle } from './ThemeToggle';
 
@@ -14,9 +15,7 @@ export function Header() {
     <header className="border-b bg-card sticky top-0 z-40">
       <div className="container mx-auto flex flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
         <div className="flex items-center gap-3">
-          <h1 className="font-condensed text-xl font-semibold uppercase tracking-[0.12em]">
-            DPS-76
-          </h1>
+          <Title level={1}>DPS-76</Title>
           <Badge variant="secondary">Alpha</Badge>
         </div>
 

@@ -1,10 +1,11 @@
+import { Readout } from '@/components/ui/typography';
 import { cn } from '@/lib/utils';
 
 function Num({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <span className={cn('shrink-0 font-mono text-xs tabular-nums text-right', className)}>
+    <Readout size="sm" className={cn('shrink-0 text-right', className)}>
       {children}
-    </span>
+    </Readout>
   );
 }
 
