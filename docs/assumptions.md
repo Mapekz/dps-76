@@ -6,6 +6,10 @@ confirmed or corrected by an in-game golden measurement
 rules, placement matrix, status vocabulary, why section names below are
 load-bearing API): `.claude/skills/docs-writing/SKILL.md`.
 
+## Part A — Unproven claims
+
+One claim per bullet, each tagged with its proof status (**ESM-PROVEN**, **USER-CONFIRMED**, **ASSUMPTION**, **INFERENCE**, **MEASURED**, or **CLOSED**) and a code pointer. Entries retire the moment they're proven or measured — a settled claim is deleted, not marked done.
+
 ## Formula structure
 Engine: `src/lib/engine/paper-damage.ts`, `resolve.ts`.
 
@@ -788,51 +792,6 @@ humanoid headshot).
   −30% applies to AttackDamage/DamageTypeValues instead, see **Formula
   structure**).
 
-## OMOD eligibility & recipe chains
-Engine: `cobj-index.ts`, `isEligible` (`src/data/omods.ts`).
-
-- **A COBJ cannot name a target weapon** — per-weapon gating lives entirely
-  in the OMOD. "Recipe exists" (`hasGrantingCobj`) is a diagnostic, never
-  an eligibility input.
-- **`Learn Recipe From` is polymorphic by `Learn Method`** (plan BOOK /
-  explicit scrap source / NOCRAFT dummy stub). `Repair Method 5` is NOT a
-  NOCRAFT marker.
-- **Mod boxes substitute for recipe knowledge** (**user-clarified**): a
-  NOCRAFT-dummy COBJ's mod can still be player-slottable via a matching
-  loose-mod/mod-box item — `hasGrantingCobj: false` is correct for these.
-- **Picker eligibility**: attach point must be on the weapon;
-  keyword-scoped mods use the game's own subset gate; **empty-keyword mods
-  match NOTHING by default** — they're offered only via template
-  whitelisting or an explicit rescue entry.
-- **Picker display policy** (**user decision**): show ALL valid+obtainable
-  mods, including zero-DPS ones, badged `inert` rather than hidden. Two
-  curated exceptions excluded wholesale (`DEAD_MECHANIC_SLOT_EDIDS`): a
-  removed mechanic and pure cosmetic reskins.
-- **Weak-evidence review** (**user decision**: flag, never auto-hide): a
-  standard-slot mod whose only proof is riding along on its weapon lands
-  in `_meta.json reviewFlagged.omodWeakEvidence`.
-
-## Attach-point closure
-Engine: `ap-grant-index.ts`, `applyAttachPointClosure`.
-
-A WEAP's own `"Attach Parent Slots"` lists only the bare-frame points —
-most real slots are granted through *installed mods'* own `Attach Parent
-Slots`. Copying the WEAP field verbatim silently dropped whole slot
-families on 136 of 282 weapons.
-
-- `weapons.json.attachParentSlots` is a **fixpoint closure**: seed = WEAP's
-  own slots ∪ each default/template mod's own attach point ∪ the slots
-  those mods grant, iterated until stable. Eligibility during iteration is
-  the shared picker predicate (`omod-eligibility.ts`).
-- **The paper model wants the union over all reachable mod configurations**
-  — per-configuration availability is deliberately out of scope.
-- **Contributor gate is structural only** (dev/junk prefixes, non-weapon
-  mods) — full OMOD obtainability can't gate here (circular). Accepted
-  residual risk: a real-Name, non-junk but actually-unreleased donor mod
-  could open a slot.
-- Over-generation is structurally inert: `buildSlots` is OMOD-driven, not
-  AP-driven.
-
 ## Unique weapons
 Rework basis: `WeaponsUniqueNamedList` FLST, base WEAP + `mod_Custom_*`
 OMOD at `ap_customName` — full mechanism at `weapon-corrections.ts`. Legacy
@@ -903,21 +862,6 @@ must not be shown.
   that is `mod_Custom_TheGuarantee` (`0x008F0DCC`), already modeled via
   Demolition Expert on its identity OMOD.
 
-## Armor extraction pipeline
-Engine: `extract-omods.ts`, `conditions.ts`. Armor/PA OMODs share the same
-OMOD record type as weapon mods, gated by `Data."Form Type"`; the
-`Properties[].Property` enum, `GetIsPlayer` tab-index-2 inversion, and
-`WornApparelHasKeywordCount` → `wornPieceCount` translation are all
-ESM-proven and documented at their respective extraction sites.
-
-- Battle-Loader's PERK entry point 199 emits a boolean trigger placeholder,
-  not the real 15/30/45/60/75% chance (that lives in each tier's own
-  `GetRandomPercent` row) — `mgef.ts` special-cases this into
-  `reloadSkipChance`, leaving the rest `unresolved` — see **Armor**.
-- `extract-armor.ts` is grounding-only: `{id, formId, name, obtainable}`
-  per ARMO record, feeding armor-OMOD obtainability. No resistances, no
-  mod slots — later Phase 3 scope.
-
 ## Armor effects (engine + UI)
 UI/data flow, per-piece scaling shapes (flat vs self-scaling), and the
 picker roster/grouping are documented at `src/data/armor-modifiers.ts`,
@@ -964,6 +908,70 @@ picker roster/grouping are documented at `src/data/armor-modifiers.ts`,
   `overrides/armor-values.ts`. Roster-side armor-type classification is
   separate from this modifier gating and derives from record presence per
   name, COBJ-verified — `docs/adr/0010`.
+
+## Part B — Deliberate non-modeling & cross-cutting rationale
+
+What the engine intentionally does NOT model (and why), plus extraction/pipeline mechanism explanations that span multiple records or files rather than asserting one unproven claim.
+
+## OMOD eligibility & recipe chains
+Engine: `cobj-index.ts`, `isEligible` (`src/data/omods.ts`).
+
+- **A COBJ cannot name a target weapon** — per-weapon gating lives entirely
+  in the OMOD. "Recipe exists" (`hasGrantingCobj`) is a diagnostic, never
+  an eligibility input.
+- **`Learn Recipe From` is polymorphic by `Learn Method`** (plan BOOK /
+  explicit scrap source / NOCRAFT dummy stub). `Repair Method 5` is NOT a
+  NOCRAFT marker.
+- **Mod boxes substitute for recipe knowledge** (**user-clarified**): a
+  NOCRAFT-dummy COBJ's mod can still be player-slottable via a matching
+  loose-mod/mod-box item — `hasGrantingCobj: false` is correct for these.
+- **Picker eligibility**: attach point must be on the weapon;
+  keyword-scoped mods use the game's own subset gate; **empty-keyword mods
+  match NOTHING by default** — they're offered only via template
+  whitelisting or an explicit rescue entry.
+- **Picker display policy** (**user decision**): show ALL valid+obtainable
+  mods, including zero-DPS ones, badged `inert` rather than hidden. Two
+  curated exceptions excluded wholesale (`DEAD_MECHANIC_SLOT_EDIDS`): a
+  removed mechanic and pure cosmetic reskins.
+- **Weak-evidence review** (**user decision**: flag, never auto-hide): a
+  standard-slot mod whose only proof is riding along on its weapon lands
+  in `_meta.json reviewFlagged.omodWeakEvidence`.
+
+## Attach-point closure
+Engine: `ap-grant-index.ts`, `applyAttachPointClosure`.
+
+A WEAP's own `"Attach Parent Slots"` lists only the bare-frame points —
+most real slots are granted through *installed mods'* own `Attach Parent
+Slots`. Copying the WEAP field verbatim silently dropped whole slot
+families on 136 of 282 weapons.
+
+- `weapons.json.attachParentSlots` is a **fixpoint closure**: seed = WEAP's
+  own slots ∪ each default/template mod's own attach point ∪ the slots
+  those mods grant, iterated until stable. Eligibility during iteration is
+  the shared picker predicate (`omod-eligibility.ts`).
+- **The paper model wants the union over all reachable mod configurations**
+  — per-configuration availability is deliberately out of scope.
+- **Contributor gate is structural only** (dev/junk prefixes, non-weapon
+  mods) — full OMOD obtainability can't gate here (circular). Accepted
+  residual risk: a real-Name, non-junk but actually-unreleased donor mod
+  could open a slot.
+- Over-generation is structurally inert: `buildSlots` is OMOD-driven, not
+  AP-driven.
+
+## Armor extraction pipeline
+Engine: `extract-omods.ts`, `conditions.ts`. Armor/PA OMODs share the same
+OMOD record type as weapon mods, gated by `Data."Form Type"`; the
+`Properties[].Property` enum, `GetIsPlayer` tab-index-2 inversion, and
+`WornApparelHasKeywordCount` → `wornPieceCount` translation are all
+ESM-proven and documented at their respective extraction sites.
+
+- Battle-Loader's PERK entry point 199 emits a boolean trigger placeholder,
+  not the real 15/30/45/60/75% chance (that lives in each tier's own
+  `GetRandomPercent` row) — `mgef.ts` special-cases this into
+  `reloadSkipChance`, leaving the rest `unresolved` — see **Armor**.
+- `extract-armor.ts` is grounding-only: `{id, formId, name, obtainable}`
+  per ARMO record, feeding armor-OMOD obtainability. No resistances, no
+  mod slots — later Phase 3 scope.
 
 ## Deliberate non-modeling
 - **Follow Through / Taking One for the Team** extract with empty
