@@ -971,8 +971,9 @@ ESM-proven and documented at their respective extraction sites.
   not the real 15/30/45/60/75% chance (that lives in each tier's own
   `GetRandomPercent` row) — `mgef.ts` special-cases this into
   `reloadSkipChanceBash`, dropping the consumed roll and the unmodeled
-  sanity rows so the modifier isn't born inert (the same shape EP-172 and
-  EP-198 use) — see **Armor**.
+  sanity rows so the modifier isn't born inert (same as EP-198's; NOT
+  EP-172, which deliberately stops short — see its own comment) — see
+  **Armor**.
 - `extract-armor.ts` is grounding-only: `{id, formId, name, obtainable}`
   per ARMO record, feeding armor-OMOD obtainability. No resistances, no
   mod slots — later Phase 3 scope.

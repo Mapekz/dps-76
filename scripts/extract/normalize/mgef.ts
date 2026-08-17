@@ -1305,6 +1305,15 @@ export async function translateGrantedPerk(
       // ammo to ammoFreeChance (Tesla Science 5). Timed/keyword infinite-ammo
       // variants (HeadHunter's, Thirst Zapper) lack GetRandomPercent — stay
       // note-only. NOT in ENTRY_POINT_BUCKETS — would catch those variants.
+      // DELIBERATELY stops short of EP-198/EP-199's final shape: it keeps the
+      // consumed GetRandomPercent row, so the modifier stays inert and
+      // `buffValueOverrides` must supply the real one. That override is
+      // load-bearing for a reason the extractor can't reach — Tesla Science
+      // 5's heavy-gun gate is DESCRIPTION-sourced ("Heavy guns have a 20%
+      // chance to not consume ammo"); the ESM effect carries only the roll.
+      // Stripping the roll here would replace an obviously-inert modifier
+      // (flagged by `bun run audit:inert`) with a silently UNGATED 20% on
+      // every weapon class the moment that override is touched. Leave it.
       if (
         name === 'Mod Ammo Used Count' &&
         (functionName === 'Multiply Value' || functionName === 'Set Value') &&
