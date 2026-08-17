@@ -129,12 +129,12 @@ _Avoid_: max value, potential bonus (those don't distinguish it from a real
 simulated average).
 
 **Build Delta**:
-The set of non-default fields in a config object, shared by serialization
-(`src/lib/persist/codec.ts`) and the "N active" badges (ConditionsSection,
-TargetSection), computed by `src/lib/build-delta.ts`. In the codec, the
-encode-side diff baseline and the decode-side seed **must be the same
-object** (`createDefaultBuildState()`) — a field a user set to a value that
-happens to equal a *different* default gets omitted from the wire and
+The set of non-default fields in a config object, shared by share-link
+encoding (`src/lib/persist/wire-sections.ts`) and the "N active" badges
+(ConditionsSection, TargetSection), computed by `src/lib/build-delta.ts`.
+`encodeBuild`/`decodeBuild` (`src/lib/persist/codec.ts`) seed from the same
+baseline object (`createDefaultBuildState()`) — a field a user set to a value
+that happens to equal a *different* default gets omitted from the wire and
 silently comes back as the decode seed's value instead.
 _Avoid_: diff, delta count (say Build Delta).
 
@@ -148,7 +148,9 @@ data-driven, from the same source `codec.ts`'s `DERIVED_PLAYER_CONDITION_KEYS`
 reads, rather than each section hand-maintaining its own non-default
 checklist. A Knob is UI/persistence metadata about a field, not the field's
 value — see **Build Delta** for the value-level "is this non-default" question
-the badges ultimately answer.
+the badges ultimately answer. Each Knob's `wire` field is its wire ordinal in
+the condition bitstream — a spec-constant slot unrelated to **Wire Dictionary**
+indices.
 _Avoid_: field, setting (too generic — Knob specifically means a
 knob-registry entry).
 
@@ -234,6 +236,15 @@ The single mode-resolved view of all game data, produced by `getDataset(mode)`
 own doc-comment (`src/data/dataset.ts`), not repeated here.
 _Avoid_: combined data, resolved data.
 
+**Wire Dictionary**:
+The append-only checked-in id→integer maps under `src/data/wire-dictionary/`
+(`WireDictionary` in `types.ts`), synced by `bun run wire-dict:build`. Share
+links and localStorage resolve game ids through `wireIndexForId` /
+`wireIdForIndex` — distinct from the **Merged Dataset** because it never
+touches a record's data or visibility, only assigns a stable wire integer.
+See `docs/adr/0018-build-share-urls-encode-dictionary-indices.md`.
+_Avoid_: index, enum (both ambiguous against array position and typed enums).
+
 ## Relationships
 
 - A **Loadout** is assembled from a `PlayerConfig` and produces an **Effective
@@ -244,6 +255,9 @@ _Avoid_: combined data, resolved data.
 - The **Merged Dataset** = generated (ESM-extracted) data + the **Overlay**,
   resolved once per **Mode**. **Plumbing Perks** drive how extraction assigns
   Modifier IR to **Buckets**.
+- The **Wire Dictionary** is fed from the merged id sets (both **Mode**s) but
+  is not itself mode-scoped — share links carry dictionary integers, not
+  editor ids.
 - **VATS-Window DPS** is derived from **AP Uptime** and drives the suggestions
   ranking when VATS is emphasized — it is not the scenario's canonical DPS.
 

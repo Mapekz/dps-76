@@ -1,0 +1,18 @@
+{
+  "nextIndex": 12,
+  "ids": {
+    "AbAddictionAlcohol": 0,
+    "AbAddictionBuffout": 1,
+    "AbAddictionCalmex": 2,
+    "AbAddictionDaddyO": 3,
+    "AbAddictionDaytripper": 4,
+    "AbAddictionFormulaP": 5,
+    "AbAddictionFury": 6,
+    "AbAddictionMedX": 7,
+    "AbAddictionMentats": 8,
+    "AbAddictionOverdrive": 9,
+    "AbAddictionPsycho": 10,
+    "AbAddictionXCell": 11
+  },
+  "acknowledgedRemovals": []
+}

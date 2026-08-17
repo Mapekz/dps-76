@@ -2,6 +2,7 @@
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "singleQuote": true,
   "ignorePatterns": [
+    "src/data/wire-dictionary/**",
     "src/data/*/generated/**",
     "src/data/*/curvetables/**",
     "**/*.md",

@@ -1,7 +1,30 @@
 import { describe, it, expect, vi } from 'bun:test';
+import { getPerks } from '@/data';
+import perksDictionary from '@/data/wire-dictionary/perks.json';
 import { decodeBuild, encodeBuild } from '@/lib/persist/codec';
-import { makeBuildReducer, createDefaultBuildState, type BuildAction } from '@/state/build-reducer';
+import { BitWriter } from '@/lib/persist/bitstream';
+import {
+  writeAddictions,
+  writeArmorEffects,
+  writeBuildName,
+  writeConsumables,
+  writeEnemyConditions,
+  writeLegendaryPerks,
+  writeMutations,
+  writePerks,
+  writePlayerConditions,
+  writeView,
+  writeWeapon,
+} from '@/lib/persist/wire-sections';
+import { normalizeBuildState } from '@/lib/build-rules';
+import { reclassifyPerkLoadouts } from '@/lib/nukes-dragons';
 import { nukesDragonsPerks } from '@/lib/nukes-dragons';
+import {
+  makeBuildReducer,
+  createDefaultBuildState,
+  type BuildAction,
+  type BuildState,
+} from '@/state/build-reducer';
 import { createDefaultPlayerInput, createDefaultEnemyConditions } from '@/types';
 import { buildDelta } from '@/lib/build-delta';
 import type { GeneratedAddiction, GeneratedBuff } from '@/types/generated';
@@ -10,7 +33,8 @@ import type { GeneratedAddiction, GeneratedBuff } from '@/types/generated';
 // runs — it stands in for `importOriginal()`.
 import * as actualBuffs from '@/data/buffs';
 
-const buildReducer = makeBuildReducer('live');
+const mode = 'live' as const;
+const buildReducer = makeBuildReducer(mode);
 
 function stateFrom(actions: BuildAction[]) {
   return actions.reduce(buildReducer, createDefaultBuildState());
@@ -52,31 +76,163 @@ const testAddiction: GeneratedAddiction = {
   notes: [],
 };
 
+const realGetConsumables = actualBuffs.getConsumables;
+const realGetAddictions = actualBuffs.getAddictions;
+
 vi.mock('@/data/buffs', () => ({
   ...actualBuffs,
-  getConsumables: () => [testChemA, testChemB],
-  getAddictions: () => [testAddiction],
+  getConsumables: (m: Parameters<typeof realGetConsumables>[0]) => {
+    const heavyIds = new Set(['Buffout', 'Psycho', 'Fury', 'Overdrive', 'Med-X']);
+    const fromReal = realGetConsumables(m).filter((c) => heavyIds.has(c.id));
+    return [...fromReal, testChemA, testChemB];
+  },
+  getAddictions: (m: Parameters<typeof realGetAddictions>[0]) => {
+    const fromReal = realGetAddictions(m).filter((a) => a.id === 'AbAddictionPsycho');
+    return [...fromReal, testAddiction];
+  },
 }));
 
-/** Hand-builds a v1 wire payload without going through encodeBuild — lets a
- * test simulate a legacy/adversarial URL shape that the current app would
- * never itself produce (e.g. a stale manual `addictionCount`). */
-async function encodeRawWire(wire: Record<string, unknown>): Promise<string> {
-  const bytes = new TextEncoder().encode(JSON.stringify(wire));
-  const deflated = new Uint8Array(
+function payloadBytes(encoded: string): Uint8Array {
+  const firstDot = encoded.indexOf('.');
+  const secondDot = encoded.indexOf('.', firstDot + 1);
+  const payload = encoded.slice(secondDot + 1);
+  const bin = atob(payload.replaceAll('-', '+').replaceAll('_', '/'));
+  return Uint8Array.from(bin, (c) => c.charCodeAt(0));
+}
+
+function packStateBytes(state: BuildState): Uint8Array {
+  const w = new BitWriter();
+  const { player, enemy, buildName, view } = state;
+  writeWeapon(w, player.weapon, player);
+  writePerks(w, player.perks);
+  writeLegendaryPerks(w, player.legendaryPerks);
+  writeMutations(w, player.mutations);
+  writeAddictions(w, player.addictions);
+  writeConsumables(w, player.consumables);
+  writeArmorEffects(w, player.armorEffects);
+  writePlayerConditions(w, player.conditions);
+  writeEnemyConditions(w, enemy.conditions);
+  writeBuildName(w, buildName);
+  writeView(w, view);
+  return w.toBytes();
+}
+
+async function deflateRaw(bytes: Uint8Array): Promise<Uint8Array> {
+  return new Uint8Array(
     await new Response(
-      new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw')),
+      new Blob([bytes as Uint8Array<ArrayBuffer>])
+        .stream()
+        .pipeThrough(new CompressionStream('deflate-raw')),
     ).arrayBuffer(),
   );
-  let bin = '';
-  for (const b of deflated) bin += String.fromCharCode(b);
-  return '1.' + btoa(bin).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '');
+}
+
+function prepareHeavyBuild(): BuildState {
+  const raw = buildHeavyBuild();
+  const reclassified = reclassifyPerkLoadouts(raw.player.perks, raw.player.legendaryPerks);
+  raw.player.perks = reclassified.perks;
+  raw.player.legendaryPerks = reclassified.legendaryPerks;
+  return normalizeBuildState(mode, raw).state;
+}
+
+function buildHeavyBuild(): BuildState {
+  const perkIds = Object.keys(perksDictionary.ids).slice(0, 46);
+  const perks = perkIds.map((perkId, i) => ({
+    perkId,
+    rank: Math.max(
+      1,
+      (i % getPerks(mode)[perkId as keyof ReturnType<typeof getPerks>].maxRank) + 1,
+    ),
+  }));
+
+  const state = createDefaultBuildState();
+  state.buildName = 'Heavy Fixer Commando';
+  state.view = { emphasized: 'vats', breakdownOpen: true };
+  state.player.perks = perks;
+  for (const stat of [
+    'strength',
+    'perception',
+    'endurance',
+    'charisma',
+    'intelligence',
+    'agility',
+    'luck',
+  ] as const) {
+    state.player.conditions[stat] = 8;
+  }
+  state.player.mutations = [
+    'Mutation_Marsupial',
+    'Mutation_SpeedDemon',
+    'Mutation_AdrenalReaction',
+    'Mutation_EagleEyes',
+    'Mutation_HerdMentality',
+    'Mutation_ScalySkin',
+  ];
+  state.player.consumables = ['Buffout', 'Psycho', 'Fury', 'Overdrive', 'Med-X'];
+  state.player.armorEffects = {
+    mod_Legendary_Armor4_LimitBreak: 5,
+    mod_Legendary_Armor4_BattleLoaders: 3,
+    mod_Legendary_Armor2_StatStrength: 5,
+    mod_armor_UnderArmor_style_standard: 1,
+    mod_Legendary_Armor3_Healthy: 2,
+    mod_Legendary_Armor1_LowHealthIncreasesStats: 1,
+    mod_Legendary_Armor4_Bruiser: 1,
+    mod_Legendary_Armor4_Ranger: 1,
+  };
+  Object.assign(state.player.conditions, {
+    isSneaking: true,
+    healthPercent: 20,
+    killStreak: 5,
+    capsOnHand: 5000,
+    strength: 8,
+    perception: 8,
+    endurance: 7,
+    charisma: 6,
+    intelligence: 5,
+    agility: 4,
+    luck: 3,
+    tenderizerStacks: 500,
+    concentratedFireStacks: 10,
+    foodTier: 3,
+    drinkTier: 4,
+    bodyPartHitRatePct: 80,
+    teammateCount: 2,
+    publicTeamType: 'casual',
+  });
+  state.player.weapon = {
+    weaponId: 'CombatRifle_Fixer',
+    mods: {
+      ap_gun_Receiver: 'mod_CombatRifle_Receiver_Automatic',
+      ap_gun_Barrel: 'mod_CombatRifle_Barrel_Long_Recoil',
+      ap_gun_Mag: 'mod_CombatRifle_Magazine_Reload',
+      ap_gun_Grip: 'mod_CombatRifle_Grip_Recoil',
+      ap_gun_Receiver2: 'mod_CombatRifle_Receiver_HipAccuracy',
+      ap_gun_Barrel2: 'mod_CombatRifle_Barrel_Short_Recoil',
+      ap_gun_Mag2: 'mod_CombatRifle_Magazine_ArmorPen',
+    },
+    legendaryEffects: [
+      'mod_Legendary_Weapon1_DamageFirstBlood',
+      'mod_Legendary_Weapon2_Guns_RoF',
+      'mod_Legendary_Weapon3_Guns_ReloadSpeed',
+      'mod_Legendary_Weapon4_Encirclers',
+    ],
+  };
+  Object.assign(state.enemy.conditions, {
+    isBurning: true,
+    isBleeding: true,
+    isFrozen: true,
+    healthPercent: 40,
+    groupTargetCount: 2,
+    targetDistance: 900,
+    targetLevel: 50,
+  });
+  return state;
 }
 
 describe('build codec', () => {
   it('round-trips the default state', async () => {
     const state = createDefaultBuildState();
-    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded).not.toBeNull();
     expect(decoded!.state).toEqual(state);
     expect(decoded!.warnings).toEqual([]);
@@ -117,7 +273,7 @@ describe('build codec', () => {
         isGhoul: false,
       },
     ]);
-    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded).not.toBeNull();
     // importNd with [] cleared perks; re-check the state actually round-trips.
     expect(decoded!.state).toEqual(state);
@@ -133,7 +289,7 @@ describe('build codec', () => {
       null,
       'mod_Legendary_Weapon3_Guns_ReloadSpeed',
     ]);
-    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded!.state.player.weapon?.legendaryEffects).toEqual([
       null,
       null,
@@ -141,7 +297,7 @@ describe('build codec', () => {
     ]);
   });
 
-  it('round-trips perks through the N&D key dictionary', async () => {
+  it('round-trips perks through the wire dictionary', async () => {
     const state = stateFrom([
       ...(
         [
@@ -156,177 +312,122 @@ describe('build codec', () => {
       ).map((stat) => ({ type: 'special/set' as const, stat, value: 8 })),
       { type: 'perk/add', perkId: ndPerkId, rank: 2, legendary: false },
     ]);
-    const encoded = await encodeBuild(state);
-    const decoded = await decodeBuild(encoded, 'live');
+    const encoded = await encodeBuild(state, mode);
+    const decoded = await decodeBuild(encoded, mode);
     expect(decoded!.state.player.perks).toEqual([{ perkId: ndPerkId, rank: 2 }]);
   });
 
-  it('silently clamps an out-of-range decoded rank to the card maxRank', async () => {
-    // Tenderizer is a real single-rank card (maxRank 1) — an out-of-range
-    // rank could come from a stale link (a card's maxRank shrinking after an
-    // ESM sync) or an adversarial payload. `px` bypasses the N&D key
-    // dictionary so the fallback [perkId, rank] path is exercised directly.
-    const encoded = await encodeRawWire({ px: [['Tenderizer', 99]] });
-    const decoded = await decodeBuild(encoded, 'live');
+  it('silently clamps an out-of-range rank to the card maxRank on encode', async () => {
+    const state = createDefaultBuildState();
+    state.player.perks = [{ perkId: 'Tenderizer', rank: 99 }];
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded).not.toBeNull();
     expect(decoded!.state.player.perks).toEqual([{ perkId: 'Tenderizer', rank: 1 }]);
-    // Silent: no warning for the clamp itself (the over-budget flag covers overruns).
     expect(decoded!.warnings).toEqual([]);
   });
 
   it('returns null for corrupt or foreign input', async () => {
-    expect(await decodeBuild('garbage', 'live')).toBeNull();
-    expect(await decodeBuild('1.not-base64!!!', 'live')).toBeNull();
-    expect(await decodeBuild('2.' + 'AAAA', 'live')).toBeNull(); // unknown version
-    expect(await decodeBuild('', 'live')).toBeNull();
+    expect(await decodeBuild('garbage', mode)).toBeNull();
+    expect(await decodeBuild('1.not-base64!!!', mode)).toBeNull();
+    expect(await decodeBuild('9.' + 'AAAA', mode)).toBeNull(); // unknown version
+    expect(await decodeBuild('2.fixer.not-valid-base64!!!', mode)).toBeNull(); // corrupt payload
+    expect(await decodeBuild('', mode)).toBeNull();
   });
 
   it('drops unknown weapon/omod/mutation ids with warnings instead of throwing', async () => {
     const state = stateFrom([{ type: 'weapon/select', weaponId: 'CombatRifle_Fixer' }]);
     state.player.weapon!.mods['ap_gun_Receiver'] = 'mod_DoesNotExist';
     state.player.mutations = ['NotARealMutation'];
-    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded).not.toBeNull();
     expect(decoded!.state.player.weapon?.weaponId).toBe('CombatRifle_Fixer');
     expect(decoded!.state.player.weapon?.mods['ap_gun_Receiver']).toBeUndefined();
     expect(decoded!.state.player.mutations).toEqual([]);
-    expect(decoded!.warnings.length).toBeGreaterThanOrEqual(2);
+    expect(decoded!.warnings.length).toBeGreaterThanOrEqual(1);
+    expect(decoded!.warnings.some((w) => w.includes('weapon mod'))).toBe(true);
   });
 
   it('clears an unknown weapon entirely, with a warning', async () => {
     const state = stateFrom([{ type: 'weapon/select', weaponId: 'RemovedByPatch' }]);
-    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded!.state.player.weapon).toBeNull();
     expect(decoded!.warnings).toContain('unknown weapon "RemovedByPatch" — cleared');
   });
 
-  it('tolerates future fields (forward compatibility)', async () => {
-    // Simulate a newer app writing an extra key: decode a hand-built payload.
-    const state = stateFrom([{ type: 'condition/set', key: 'isSneaking', value: true }]);
-    const encoded = await encodeBuild(state);
-    // Splice a future field into the JSON by re-encoding manually.
-    const { decodeBuild: dec } = await import('@/lib/persist/codec');
-    const decoded = await dec(encoded, 'live');
-    expect(decoded!.state.player.conditions.isSneaking).toBe(true);
-    // Unknown condition keys are dropped rather than crashing.
-  });
-
-  it('round-trips chargeTimeSec when set, and omits "ct" from the wire when undefined', async () => {
-    const state = stateFrom([{ type: 'weapon/chargeTime', value: 1.5 }]);
-    const encoded = await encodeBuild(state);
-    const decoded = await decodeBuild(encoded, 'live');
+  it('round-trips chargeTimeSec when set, and omits it from the wire when undefined', async () => {
+    const state = stateFrom([
+      { type: 'weapon/select', weaponId: 'CombatRifle_Fixer' },
+      { type: 'weapon/chargeTime', value: 1.5 },
+    ]);
+    const encoded = await encodeBuild(state, mode);
+    const decoded = await decodeBuild(encoded, mode);
     expect(decoded!.state.player.chargeTimeSec).toBe(1.5);
 
-    const defaultEncoded = await encodeBuild(createDefaultBuildState());
-    const defaultDecoded = await decodeBuild(defaultEncoded, 'live');
+    const defaultEncoded = await encodeBuild(createDefaultBuildState(), mode);
+    const defaultDecoded = await decodeBuild(defaultEncoded, mode);
     expect(defaultDecoded!.state.player.chargeTimeSec).toBeUndefined();
   });
 
-  it('decodes a wire without "ct" to undefined chargeTimeSec (backward compat)', async () => {
-    const encoded = await encodeRawWire({});
-    const decoded = await decodeBuild(encoded, 'live');
-    expect(decoded!.state.player.chargeTimeSec).toBeUndefined();
-  });
-
-  it('clamps a negative decoded chargeTimeSec to 0', async () => {
-    const encoded = await encodeRawWire({ ct: -5 });
-    const decoded = await decodeBuild(encoded, 'live');
-    expect(decoded!.state.player.chargeTimeSec).toBe(0);
+  it('round-trips the all-default build with no warnings and a near-empty wire', async () => {
+    const encoded = await encodeBuild(createDefaultBuildState(), mode);
+    const decoded = await decodeBuild(encoded, mode);
+    expect(decoded!.warnings).toEqual([]);
+    expect(decoded!.state).toEqual(createDefaultBuildState());
+    expect(encoded.length).toBeLessThan(20);
   });
 
   it('non-default conditions survive while defaults are not serialized', async () => {
     const state = stateFrom([{ type: 'condition/set', key: 'tenderizerStacks', value: 500 }]);
-    const encoded = await encodeBuild(state);
-    const decoded = await decodeBuild(encoded, 'live');
+    const encoded = await encodeBuild(state, mode);
+    const decoded = await decodeBuild(encoded, mode);
     expect(decoded!.state.player.conditions.tenderizerStacks).toBe(500);
-    // Sanity: encoding stays compact (deflate of a sparse diff).
-    expect(encoded.length).toBeLessThan(200);
+    expect(encoded.length).toBeLessThan(80);
   });
 
   it('round-trips armorWorn none', async () => {
     const state = stateFrom([{ type: 'armorType/set', armorWorn: 'none' }]);
-    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded!.state.player.conditions.armorWorn).toBe('none');
     expect(decoded!.state.player.conditions.isInPowerArmor).toBe(false);
   });
 
-  it('decodes legacy pc without armorWorn from isInPowerArmor', async () => {
-    const powerEncoded = await encodeRawWire({ pc: { isInPowerArmor: true } });
-    const powerDecoded = await decodeBuild(powerEncoded, 'live');
-    expect(powerDecoded!.state.player.conditions.armorWorn).toBe('power');
-    expect(powerDecoded!.state.player.conditions.isInPowerArmor).toBe(true);
-
-    const bodyEncoded = await encodeRawWire({ pc: { isInPowerArmor: false } });
-    const bodyDecoded = await decodeBuild(bodyEncoded, 'live');
-    expect(bodyDecoded!.state.player.conditions.armorWorn).toBe('body');
-    expect(bodyDecoded!.state.player.conditions.isInPowerArmor).toBe(false);
-  });
-
   it('round-trips a SPECIAL stat set to 15 (regression: the sibling tests above use 8, which happens to differ from both the encode and decode baselines and so could not have caught this)', async () => {
-    // A single stat at 15 is legal (15 + 6×1 = 21, well under the 56-point
-    // pool) and a common endgame pick (e.g. Luck 15). Previously,
-    // encodeBuild diffed against createDefaultPlayerInput() (SPECIAL all 15)
-    // while decodeBuild seeded from createDefaultBuildState() (SPECIAL all
-    // 1) — a stat at exactly 15 matched the encode baseline, was omitted
-    // from the wire, and silently came back as 1.
     const state = stateFrom([{ type: 'special/set', stat: 'luck', value: 15 }]);
-    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded!.state.player.conditions.luck).toBe(15);
     expect(decoded!.warnings).toEqual([]);
   });
 
   it('round-trips concentratedFireStacks (Phase B — Concentrated Fire stacks)', async () => {
     const state = stateFrom([{ type: 'condition/set', key: 'concentratedFireStacks', value: 15 }]);
-    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded!.state.player.conditions.concentratedFireStacks).toBe(15);
   });
 
   it("round-trips battleLoadersBashSec (Phase C — Battle-Loader's bash cost)", async () => {
-    const state = stateFrom([{ type: 'condition/set', key: 'battleLoadersBashSec', value: 1.5 }]);
-    const decoded = await decodeBuild(await encodeBuild(state), 'live');
-    expect(decoded!.state.player.conditions.battleLoadersBashSec).toBe(1.5);
+    const state = stateFrom([{ type: 'condition/set', key: 'battleLoadersBashSec', value: 2 }]);
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
+    expect(decoded!.state.player.conditions.battleLoadersBashSec).toBe(2);
   });
 
-  it('decodes a legacy payload carrying the removed "bulletStormAverageMode" key without error, dropping it while sibling fields still apply', async () => {
-    // Pre-2026-07-30 share-URLs could carry this toggle alongside a manual
-    // bulletStormStacks pin (docs/adr/0005-stack-defaults-are-sustained-averages.md
-    // — the toggle was deleted, the `-1` sentinel now means auto). It's no
-    // longer a PlayerInput field, so it falls through the same
-    // `key in state.player.conditions` guard as any other unrecognized/future
-    // key (see "tolerates future fields" above) — silently dropped, no warning.
-    const encoded = await encodeRawWire({
-      pc: { bulletStormAverageMode: true, bulletStormStacks: 5 },
-    });
-    const decoded = await decodeBuild(encoded, 'live');
-    expect(decoded).not.toBeNull();
-    expect('bulletStormAverageMode' in decoded!.state.player.conditions).toBe(false);
-    expect(decoded!.state.player.conditions.bulletStormStacks).toBe(5); // sibling field still applies
-    expect(decoded!.warnings).toEqual([]);
-  });
-
-  it('legacy adrenalineStacks key in a decoded payload is dropped, not aliased (no back-compat shim by design)', async () => {
-    const encoded = await encodeRawWire({ pc: { adrenalineStacks: 7 } });
-    const decoded = await decodeBuild(encoded, 'live');
-    expect(decoded).not.toBeNull();
-    expect(decoded!.state.player.conditions.killStreak).toBe(0);
-    expect(decoded!.warnings).toEqual([]);
+  it('never emits the larger of the raw and deflated packed bytes', async () => {
+    const longName = createDefaultBuildState();
+    longName.buildName = 'A'.repeat(200);
+    for (const state of [createDefaultBuildState(), prepareHeavyBuild(), longName]) {
+      const packed = packStateBytes(state);
+      const deflated = await deflateRaw(packed);
+      const encoded = await encodeBuild(state, mode);
+      const wire = payloadBytes(encoded);
+      const bodyLen = wire.length - 1;
+      const usesDeflate = (wire[0]! & 1) === 1;
+      expect(bodyLen).toBe(Math.min(packed.length, deflated.length));
+      expect(usesDeflate).toBe(deflated.length < packed.length);
+    }
   });
 });
 
 describe('encode/decode baseline symmetry', () => {
   it('the encode delta baseline (createDefaultPlayerInput/createDefaultEnemyConditions) matches the decode seed (createDefaultBuildState) exactly', () => {
-    // encodeBuild diffs against createDefaultPlayerInput()/createDefaultEnemyConditions()
-    // (codec.ts's `pc`/`ec` baselines); decodeBuild seeds from
-    // createDefaultBuildState(). A key omitted from the wire because it
-    // matched the encode baseline is refilled from the decode seed — if the
-    // two ever disagree on a scalar field, that field silently loses its
-    // value on every round-trip where the user happened to pick the encode
-    // baseline's value (see the SPECIAL=15 regression test above).
-    //
-    // Array-valued fields (completedChallengeIds) are excluded: buildDelta's
-    // strict `!==` always treats two fresh empty-array instances as
-    // "different" regardless of content — harmless here since decode always
-    // overwrites the field wholesale, and predates this test.
     const scalarsOnly = (delta: Record<string, unknown>) =>
       Object.fromEntries(Object.entries(delta).filter(([, v]) => !Array.isArray(v)));
     const defaults = createDefaultBuildState();
@@ -342,7 +443,6 @@ describe('encode/decode baseline symmetry', () => {
 describe('derived condition fields', () => {
   it('never serializes derived keys, even when non-default in state', async () => {
     const state = createDefaultBuildState();
-    // Simulate a poisoned in-memory state (legacy payloads may carry these keys).
     Object.assign(state.player.conditions, {
       strangeInNumbers: true,
       hungerThirstTier: 6,
@@ -350,8 +450,8 @@ describe('derived condition fields', () => {
       mutationCount: 5,
       addictionCount: 7,
     });
-    const encoded = await encodeBuild(state);
-    const decoded = await decodeBuild(encoded, 'live');
+    const encoded = await encodeBuild(state, mode);
+    const decoded = await decodeBuild(encoded, mode);
     const conditions = decoded!.state.player.conditions;
     expect(conditions).not.toHaveProperty('strangeInNumbers');
     expect(conditions).not.toHaveProperty('hungerThirstTier');
@@ -370,7 +470,7 @@ describe('derived condition fields', () => {
       { type: 'enemy/condition', key: 'targetRace', value: 'SuperMutantRace' },
       { type: 'enemy/condition', key: 'targetBodyPart', value: 'Head' },
     ]);
-    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded!.state.player.conditions.foodTier).toBe(3);
     expect(decoded!.state.player.conditions.drinkTier).toBe(4);
     expect(decoded!.state.player.conditions.bodyPartHitRatePct).toBe(80);
@@ -386,7 +486,7 @@ describe('derived condition fields', () => {
         { type: 'condition/set', key: 'teammateCount', value: 2 },
         { type: 'condition/set', key: 'publicTeamType', value: publicTeamType },
       ]);
-      const decoded = await decodeBuild(await encodeBuild(state), 'live');
+      const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
       expect(decoded!.state.player.conditions.publicTeamType).toBe(publicTeamType);
       expect(decoded!.state.player.conditions.teammateCount).toBe(2);
       expect(decoded!.warnings).toEqual([]);
@@ -394,29 +494,13 @@ describe('derived condition fields', () => {
   });
 
   it('reclassifies a legacy build that stored a ghoul card under legendaryPerks', async () => {
-    // Pre-classification-fix builds filed ghoul cards (e.g. RadSpecialist) as
-    // legendary. encodePerks serializes whatever is in the array, so this
-    // legitimately simulates an old payload.
     const legacy = createDefaultBuildState();
     legacy.player.conditions.isGhoul = true;
     legacy.player.legendaryPerks = [{ perkId: 'RadSpecialist', rank: 1 }];
-    const decoded = await decodeBuild(await encodeBuild(legacy), 'live');
+    const decoded = await decodeBuild(await encodeBuild(legacy, mode), mode);
     expect(decoded!.state.player.legendaryPerks).toEqual([]);
     expect(decoded!.state.player.perks).toEqual([{ perkId: 'RadSpecialist', rank: 1 }]);
     expect(decoded!.warnings.some((w) => w.includes('classification'))).toBe(true);
-  });
-
-  it('rewrites legacy variant-container omod ids to the default variant without warnings', async () => {
-    const state = createDefaultBuildState();
-    state.player.weapon = {
-      weaponId: 'DLC04_CommieWhacker',
-      mods: { ap_customName: 'mod_Custom_CamdenWhacker' },
-      legendaryEffects: [],
-    };
-    const decoded = await decodeBuild(await encodeBuild(state), 'live');
-    expect(decoded!.state.player.weapon).toBeDefined();
-    expect(decoded!.state.player.weapon!.mods.ap_customName).toBe('mod_Custom_CamdenWhacker_Bleed');
-    expect(decoded!.warnings).toEqual([]);
   });
 });
 
@@ -427,8 +511,8 @@ describe('Armor checklist (Phase 3 armor pipeline, UI + state)', () => {
       { type: 'armorEffect/setCount', id: 'mod_Legendary_Armor2_StatStrength', count: 5 },
       { type: 'armorEffect/setCount', id: 'mod_armor_UnderArmor_style_standard', count: 1 },
     ]);
-    const encoded = await encodeBuild(state);
-    const decoded = await decodeBuild(encoded, 'live');
+    const encoded = await encodeBuild(state, mode);
+    const decoded = await decodeBuild(encoded, mode);
     expect(decoded!.state.player.armorEffects).toEqual({
       mod_Legendary_Armor4_BattleLoaders: 3,
       mod_Legendary_Armor2_StatStrength: 5,
@@ -447,19 +531,18 @@ describe('Armor checklist (Phase 3 armor pipeline, UI + state)', () => {
       count: 0,
     });
     expect(cleared.player.armorEffects).toEqual({});
-    const decoded = await decodeBuild(await encodeBuild(cleared), 'live');
+    const decoded = await decodeBuild(await encodeBuild(cleared, mode), mode);
     expect(decoded!.state.player.armorEffects).toEqual({});
   });
 
   it("clamps a count to the effect's maxCount and drops unknown ids with a warning", async () => {
-    const encoded = await encodeRawWire({
-      ae: [
-        ['mod_Legendary_Armor2_StatStrength', 99], // stackable, max 5
-        ['mod_armor_UnderArmor_style_standard', 5], // single-slot, max 1
-        ['NotARealArmorEffect', 3],
-      ],
-    });
-    const decoded = await decodeBuild(encoded, 'live');
+    const state = createDefaultBuildState();
+    state.player.armorEffects = {
+      mod_Legendary_Armor2_StatStrength: 99,
+      mod_armor_UnderArmor_style_standard: 5,
+      NotARealArmorEffect: 3,
+    };
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded!.state.player.armorEffects).toEqual({
       mod_Legendary_Armor2_StatStrength: 5,
       mod_armor_UnderArmor_style_standard: 1,
@@ -467,45 +550,13 @@ describe('Armor checklist (Phase 3 armor pipeline, UI + state)', () => {
     expect(decoded!.warnings.some((w) => w.includes('NotARealArmorEffect'))).toBe(true);
   });
 
-  it('snaps an off-grid legacy player healthPercent to the nearest slider stop', async () => {
-    const near40 = await decodeBuild(await encodeRawWire({ pc: { healthPercent: 37 } }), 'live');
-    expect(near40!.state.player.conditions.healthPercent).toBe(40);
-
-    const near5 = await decodeBuild(await encodeRawWire({ pc: { healthPercent: 1 } }), 'live');
-    expect(near5!.state.player.conditions.healthPercent).toBe(5);
-  });
-
-  it('snaps an off-grid legacy enemy healthPercent to the nearest (coarser) slider stop', async () => {
-    const decoded = await decodeBuild(await encodeRawWire({ ec: { healthPercent: 1 } }), 'live');
-    expect(decoded!.state.enemy.conditions.healthPercent).toBe(20);
-  });
-
-  it('migrates a legacy "limitBreakingPieces" condition into the checklist selection', async () => {
-    const encoded = await encodeRawWire({ pc: { limitBreakingPieces: 5 } });
-    const decoded = await decodeBuild(encoded, 'live');
-    expect(decoded!.state.player.armorEffects).toEqual({ mod_Legendary_Armor4_LimitBreak: 5 });
-    expect(decoded!.warnings.some((w) => w.includes('Armor checklist'))).toBe(true);
-  });
-
-  it('a legacy "limitBreakingPieces: 0" migrates to no selection at all (not a stored zero)', async () => {
-    const encoded = await encodeRawWire({ pc: { limitBreakingPieces: 0 } });
-    const decoded = await decodeBuild(encoded, 'live');
-    expect(decoded!.state.player.armorEffects).toEqual({});
-  });
-
   it('clamps an over-budget star tier on decode: first-encoded effect keeps its count, the second is trimmed, and a warning is surfaced', async () => {
-    // Both are tier 4 (mod_Legendary_Armor4_*); 5 + 3 = 8 > the 5-per-tier
-    // budget (clampArmorTierBudgets, src/data/armor-modifiers.ts). This is
-    // a hand-built wire payload (see encodeRawWire) because the reducer
-    // itself never lets a build get into this state — only a
-    // stale/adversarial URL can.
-    const encoded = await encodeRawWire({
-      ae: [
-        ['mod_Legendary_Armor4_BattleLoaders', 5],
-        ['mod_Legendary_Armor4_LimitBreak', 3],
-      ],
-    });
-    const decoded = await decodeBuild(encoded, 'live');
+    const state = createDefaultBuildState();
+    state.player.armorEffects = {
+      mod_Legendary_Armor4_BattleLoaders: 5,
+      mod_Legendary_Armor4_LimitBreak: 3,
+    };
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded!.state.player.armorEffects).toEqual({
       mod_Legendary_Armor4_BattleLoaders: 5,
     });
@@ -513,13 +564,12 @@ describe('Armor checklist (Phase 3 armor pipeline, UI + state)', () => {
   });
 
   it('an in-budget star tier round-trips unchanged with no star-tier warning', async () => {
-    const encoded = await encodeRawWire({
-      ae: [
-        ['mod_Legendary_Armor4_BattleLoaders', 2],
-        ['mod_Legendary_Armor4_LimitBreak', 3],
-      ],
-    });
-    const decoded = await decodeBuild(encoded, 'live');
+    const state = createDefaultBuildState();
+    state.player.armorEffects = {
+      mod_Legendary_Armor4_BattleLoaders: 2,
+      mod_Legendary_Armor4_LimitBreak: 3,
+    };
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded!.state.player.armorEffects).toEqual({
       mod_Legendary_Armor4_BattleLoaders: 2,
       mod_Legendary_Armor4_LimitBreak: 3,
@@ -527,17 +577,15 @@ describe('Armor checklist (Phase 3 armor pipeline, UI + state)', () => {
     expect(decoded!.warnings.some((w) => w.includes('star-tier limit'))).toBe(false);
   });
 
-  it('prunes wrong-armor-type effects after pc decodes and clamps piece capacities with warnings', async () => {
-    const encoded = await encodeRawWire({
-      ae: [
-        ['mod_PowerArmor_Excavator_Torso_Misc_Emergency', 1],
-        ['mod_PowerArmor_Hellcat_Torso_Misc_JetPack', 1],
-        ['mod_Legendary_PowerArmor4_Propelling', 2],
-        ['mod_Legendary_Armor1_LowHealthIncreasesStats', 3],
-      ],
-      pc: { isInPowerArmor: true },
-    });
-    const decoded = await decodeBuild(encoded, 'live');
+  it('prunes wrong-armor-type effects after decode and clamps piece capacities with warnings', async () => {
+    const state = stateFrom([{ type: 'armorType/set', armorWorn: 'power' }]);
+    state.player.armorEffects = {
+      mod_PowerArmor_Excavator_Torso_Misc_Emergency: 1,
+      mod_PowerArmor_Hellcat_Torso_Misc_JetPack: 1,
+      mod_Legendary_PowerArmor4_Propelling: 2,
+      mod_Legendary_Armor1_LowHealthIncreasesStats: 3,
+    };
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded!.state.player.conditions.isInPowerArmor).toBe(true);
     expect(decoded!.state.player.conditions.armorWorn).toBe('power');
     expect(decoded!.state.player.armorEffects).toEqual({
@@ -554,27 +602,25 @@ describe('Armor checklist (Phase 3 armor pipeline, UI + state)', () => {
 describe('consumables & addictions (2026-07-13 overhaul, hermetic fixtures)', () => {
   it('round-trips selected addictions', async () => {
     const state = createDefaultBuildState();
-    state.player.addictions = ['TestAddictionX'];
-    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    state.player.addictions = ['AbAddictionPsycho'];
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded).not.toBeNull();
-    expect(decoded!.state.player.addictions).toEqual(['TestAddictionX']);
+    expect(decoded!.state.player.addictions).toEqual(['AbAddictionPsycho']);
     expect(decoded!.warnings).toEqual([]);
   });
 
-  it('drops an unknown addiction id with a warning', async () => {
+  it('drops an unknown addiction id silently on encode (no wire entry to decode)', async () => {
     const state = createDefaultBuildState();
     state.player.addictions = ['NotARealAddiction'];
-    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded!.state.player.addictions).toEqual([]);
-    expect(decoded!.warnings.some((w) => w.includes('unknown addiction'))).toBe(true);
+    expect(decoded!.warnings).toEqual([]);
   });
 
   it('sanitizes a legacy two-chem payload down to one, with a warning', async () => {
-    // Hand-crafted: the reducer's consumable/toggle would never let two chems
-    // coexist, so this simulates an old (or adversarial) share URL.
     const state = createDefaultBuildState();
     state.player.consumables = ['TestChemA', 'TestChemB'];
-    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded!.state.player.consumables).toEqual(['TestChemB']);
     expect(decoded!.warnings).toContain(
       "removed to satisfy stacking rules (one chem/alcohol at a time; same-bonus food/drink don't stack)",
@@ -584,53 +630,16 @@ describe('consumables & addictions (2026-07-13 overhaul, hermetic fixtures)', ()
   it('a legal single-consumable payload round-trips without a stacking warning', async () => {
     const state = createDefaultBuildState();
     state.player.consumables = ['TestChemA'];
-    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded!.state.player.consumables).toEqual(['TestChemA']);
     expect(decoded!.warnings).toEqual([]);
   });
 
-  it('skips an incoming addictionCount condition key with a warning and does not set it', async () => {
-    // Simulates a pre-overhaul URL that stored a manual addictionCount.
-    const encoded = await encodeRawWire({ pc: { addictionCount: 7 } });
-    const decoded = await decodeBuild(encoded, 'live');
-    expect(decoded).not.toBeNull();
-    expect(decoded!.state.player.conditions).not.toHaveProperty('addictionCount');
-    expect(decoded!.warnings.some((w) => w.includes('addictionCount'))).toBe(true);
-  });
-
-  it('migrates a legacy string targetDistance bucket to a representative raw-unit number', async () => {
-    // Simulates a pre-Phase-1 URL that stored the old 'close'|'none'|'far' bucket.
-    const close = await decodeBuild(
-      await encodeRawWire({ ec: { targetDistance: 'close' } }),
-      'live',
-    );
-    expect(close!.state.enemy.conditions.targetDistance).toBe(400);
-    expect(close!.warnings).toEqual([]);
-
-    const none = await decodeBuild(await encodeRawWire({ ec: { targetDistance: 'none' } }), 'live');
-    expect(none!.state.enemy.conditions.targetDistance).toBe(900);
-
-    const far = await decodeBuild(await encodeRawWire({ ec: { targetDistance: 'far' } }), 'live');
-    expect(far!.state.enemy.conditions.targetDistance).toBe(1500);
-  });
-
-  it('warns and falls back to default on an unrecognized legacy targetDistance string', async () => {
-    const decoded = await decodeBuild(
-      await encodeRawWire({ ec: { targetDistance: 'medium' } }),
-      'live',
-    );
-    expect(decoded).not.toBeNull();
-    expect(decoded!.state.enemy.conditions.targetDistance).toBe(
-      createDefaultBuildState().enemy.conditions.targetDistance,
-    );
-    expect(decoded!.warnings.some((w) => w.includes('targetDistance'))).toBe(true);
-  });
-
   it('clamps crippledLimbCount to the selected race on decode and warns', async () => {
-    const encoded = await encodeRawWire({
-      ec: { targetRace: 'BlueDevilRace', crippledLimbCount: 6 },
-    });
-    const decoded = await decodeBuild(encoded, 'live');
+    const state = createDefaultBuildState();
+    state.enemy.conditions.targetRace = 'BlueDevilRace';
+    state.enemy.conditions.crippledLimbCount = 6;
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded!.state.enemy.conditions.crippledLimbCount).toBe(0);
     expect(decoded!.warnings.some((w) => w.includes('crippled limb count'))).toBe(true);
   });
@@ -638,8 +647,28 @@ describe('consumables & addictions (2026-07-13 overhaul, hermetic fixtures)', ()
   it('round-trips a real numeric targetDistance value written by the current app', async () => {
     const state = createDefaultBuildState();
     state.enemy.conditions.targetDistance = 3200;
-    const decoded = await decodeBuild(await encodeBuild(state), 'live');
+    const decoded = await decodeBuild(await encodeBuild(state, mode), mode);
     expect(decoded!.state.enemy.conditions.targetDistance).toBe(3200);
     expect(decoded!.warnings).toEqual([]);
+  });
+});
+
+describe('v2 size budget', () => {
+  it('keeps a realistic heavy build under 300 chars and round-trips exactly', async () => {
+    const state = prepareHeavyBuild();
+    const encoded = await encodeBuild(state, mode);
+    const decoded = await decodeBuild(encoded, mode);
+    expect(decoded).not.toBeNull();
+    expect(decoded!.warnings).toEqual([]);
+    expect(encoded.length).toBeLessThan(300);
+    // Mutation bitmask wire order is sorted by index, not selection order.
+    expect([...decoded!.state.player.mutations].sort()).toEqual([...state.player.mutations].sort());
+    expect({
+      ...decoded!.state,
+      player: { ...decoded!.state.player, mutations: [] },
+    }).toEqual({
+      ...state,
+      player: { ...state.player, mutations: [] },
+    });
   });
 });

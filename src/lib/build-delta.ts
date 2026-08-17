@@ -4,11 +4,21 @@
  * "N active" badges in ConditionsSection and TargetSection.
  */
 
-/** Fields in `value` that differ from `defaults` (strict `!==` per key). */
+function valuesDiffer(a: unknown, b: unknown): boolean {
+  const aIsObject = typeof a === 'object' && a !== null;
+  const bIsObject = typeof b === 'object' && b !== null;
+  if (aIsObject || bIsObject) {
+    if (aIsObject && bIsObject) return JSON.stringify(a) !== JSON.stringify(b);
+    return true;
+  }
+  return a !== b;
+}
+
+/** Fields in `value` that differ from `defaults` (content-aware for objects/arrays). */
 export function buildDelta<T extends object>(value: T, defaults: T): Partial<T> {
   const out: Partial<T> = {};
   for (const key of Object.keys(defaults) as Array<keyof T>) {
-    if (value[key] !== defaults[key]) out[key] = value[key];
+    if (valuesDiffer(value[key], defaults[key])) out[key] = value[key];
   }
   return out;
 }

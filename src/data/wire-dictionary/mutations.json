@@ -1,0 +1,25 @@
+{
+  "nextIndex": 19,
+  "ids": {
+    "Mutation_AdrenalReaction": 0,
+    "Mutation_BirdBones": 1,
+    "Mutation_Carnivore": 2,
+    "Mutation_Chameleon": 3,
+    "Mutation_EagleEyes": 4,
+    "Mutation_EggHead": 5,
+    "Mutation_ElectricallyCharged": 6,
+    "Mutation_Empath": 7,
+    "Mutation_Grounded": 8,
+    "Mutation_HealingFactor": 9,
+    "Mutation_Herbivore": 10,
+    "Mutation_HerdMentality": 11,
+    "Mutation_Marsupial": 12,
+    "Mutation_PlagueWalker": 13,
+    "Mutation_ScalySkin": 14,
+    "Mutation_SpeedDemon": 15,
+    "Mutation_Talons": 16,
+    "Mutation_TwistedMuscles": 17,
+    "Mutation_UnstableIsotope": 18
+  },
+  "acknowledgedRemovals": []
+}

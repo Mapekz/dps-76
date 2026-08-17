@@ -7,19 +7,20 @@ no decay model at all. Display and the suggestion sweep must agree or applied
 suggestions contradict their promised delta.
 
 Simulated sustained values become the engine-wide default. The `−1` sentinel
-is redefined to "auto = Sustained Stacks". The `bulletStormAverageMode`
+is redefined to "auto = Sustained Stacks". The Bullet Storm average-mode
 toggle is deleted rather than adding a second toggle for Onslaught. Manual
 slider pins remain and win over the sim. GSM reverse stays always-auto.
 
-Old share-URLs carrying the deleted toggle field decode by ignoring it (they
-shift to auto). URLs with a pinned slider + toggle-on formerly let the
-average override the pin; now the pin wins.
+A pinned slider plus the old toggle formerly let the average override the pin;
+now the pin wins. The share-URL codec no longer decodes the v1 payloads that
+could carry the deleted toggle field at all — see
+[ADR-0018](0018-build-share-urls-encode-dictionary-indices.md).
 
 ## Do not undo this
 
 A future reviewer might reasonably want to re-redefine the `−1` sentinel
 again (e.g. back to "auto = max stacks", or to add a per-mechanic toggle
-mirroring the deleted `bulletStormAverageMode`) — don't. Display and the
+mirroring the deleted Bullet Storm average-mode one) — don't. Display and the
 suggestion sweep share this same default by construction; splitting them
 reintroduces the original bug (a suggestion's promised delta stops matching
 what the build actually shows), and re-redefining the sentinel a second time

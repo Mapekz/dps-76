@@ -62,14 +62,14 @@ export function usePersistence(mode: GameMode): { warnings: string[]; hydrated: 
       return;
     }
     const timer = window.setTimeout(async () => {
-      const encoded = await encodeBuild(state);
+      const encoded = await encodeBuild(state, mode);
       const params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
       params.set(HASH_PARAM, encoded);
       window.history.replaceState(null, '', `#${params.toString()}`);
       window.localStorage.setItem(STORAGE_KEY, encoded);
     }, WRITE_DEBOUNCE_MS);
     return () => window.clearTimeout(timer);
-  }, [state, hydrated]);
+  }, [state, hydrated, mode]);
 
   return { warnings, hydrated };
 }

@@ -12,6 +12,11 @@ import { createDefaultResolvedPlayer } from '@/types/player';
  * `knobActiveBadgeObjects`; `clamp`/`clampRef` document (not enforce — see
  * each field's comment) where a field's runtime bound lives. Adding a new
  * player/enemy field means adding a row here, not just wiring the UI control.
+ *
+ * Each row's `wire` ordinal is the stable integer the bit-packed share codec
+ * writes per field. Ordinals are append-only (new rows take the next unused
+ * integer); a removed row's ordinal is retired and never reused — old links
+ * may still carry it.
  */
 
 /** BuildColumn accordion id, ResultsPane scenario chips, or non-UI storage. */
@@ -34,6 +39,12 @@ export interface KnobBadgeContext {
 
 interface KnobRowBase<K extends string, V> {
   key: K;
+  /**
+   * Stable wire ordinal for the bit-packed share codec. Append-only: new rows
+   * take the next unused integer. Retired ordinals (removed rows) are never
+   * reused — old share links may still carry them.
+   */
+  wire: number;
   owner: 'player' | 'enemy';
   /** `derived` = recomputed in resolveLoadout; omitted from share URLs. */
   origin: KnobOrigin;
@@ -65,9 +76,11 @@ const PLAYER_INPUT_DEFAULTS = createDefaultPlayerInput();
 const PLAYER_DEFAULTS = createDefaultResolvedPlayer();
 const ENEMY_DEFAULTS = createDefaultEnemyConditions();
 
+// retired wire ordinals: (none yet)
 export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerKnobRow>> = {
   isSneaking: {
     key: 'isSneaking',
+    wire: 0,
     owner: 'player',
     origin: 'input',
     section: 'scenario-chips',
@@ -76,6 +89,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   isAimingAtWeakpoint: {
     key: 'isAimingAtWeakpoint',
+    wire: 1,
     owner: 'player',
     origin: 'input',
     section: 'scenario-chips',
@@ -85,6 +99,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   armorWorn: {
     key: 'armorWorn',
+    wire: 2,
     owner: 'player',
     origin: 'input',
     section: 'armor',
@@ -93,6 +108,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   isInPowerArmor: {
     key: 'isInPowerArmor',
+    wire: 3,
     owner: 'player',
     origin: 'input',
     section: 'armor',
@@ -101,6 +117,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   isSolo: {
     key: 'isSolo',
+    wire: 4,
     owner: 'player',
     origin: 'input',
     section: 'none',
@@ -109,6 +126,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   isPowerAttacking: {
     key: 'isPowerAttacking',
+    wire: 5,
     owner: 'player',
     origin: 'input',
     section: 'attack-state',
@@ -118,6 +136,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   isLastShot: {
     key: 'isLastShot',
+    wire: 6,
     owner: 'player',
     origin: 'input',
     section: 'attack-state',
@@ -127,6 +146,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   isAimingDownSights: {
     key: 'isAimingDownSights',
+    wire: 7,
     owner: 'player',
     origin: 'input',
     section: 'attack-state',
@@ -136,6 +156,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   isGhoul: {
     key: 'isGhoul',
+    wire: 8,
     owner: 'player',
     origin: 'input',
     section: 'special-loadout',
@@ -144,6 +165,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   healthPercent: {
     key: 'healthPercent',
+    wire: 9,
     owner: 'player',
     origin: 'input',
     section: 'conditions',
@@ -154,6 +176,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   bulletStormStacks: {
     key: 'bulletStormStacks',
+    wire: 10,
     owner: 'player',
     origin: 'input',
     section: 'conditions',
@@ -164,6 +187,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   onslaughtStacks: {
     key: 'onslaughtStacks',
+    wire: 11,
     owner: 'player',
     origin: 'input',
     section: 'conditions',
@@ -174,6 +198,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   targetsHit: {
     key: 'targetsHit',
+    wire: 12,
     owner: 'player',
     origin: 'input',
     section: 'conditions',
@@ -184,6 +209,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   killStreak: {
     key: 'killStreak',
+    wire: 13,
     owner: 'player',
     origin: 'input',
     section: 'conditions',
@@ -194,6 +220,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   tenderizerStacks: {
     key: 'tenderizerStacks',
+    wire: 14,
     owner: 'player',
     origin: 'input',
     section: 'target',
@@ -205,6 +232,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   concentratedFireStacks: {
     key: 'concentratedFireStacks',
+    wire: 15,
     owner: 'player',
     origin: 'input',
     section: 'conditions',
@@ -215,6 +243,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   completedChallengeIds: {
     key: 'completedChallengeIds',
+    wire: 16,
     owner: 'player',
     origin: 'input',
     section: 'conditions',
@@ -224,6 +253,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   localLegendFishingChallengesCompleted: {
     key: 'localLegendFishingChallengesCompleted',
+    wire: 17,
     owner: 'player',
     origin: 'input',
     section: 'conditions',
@@ -234,6 +264,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   addictionCount: {
     key: 'addictionCount',
+    wire: 18,
     owner: 'player',
     origin: 'derived',
     section: 'none',
@@ -242,6 +273,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   capsOnHand: {
     key: 'capsOnHand',
+    wire: 19,
     owner: 'player',
     origin: 'input',
     section: 'conditions',
@@ -252,6 +284,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   maxHealth: {
     key: 'maxHealth',
+    wire: 20,
     owner: 'player',
     origin: 'derived',
     section: 'none',
@@ -260,6 +293,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   lockpickSkill: {
     key: 'lockpickSkill',
+    wire: 21,
     owner: 'player',
     origin: 'derived',
     section: 'none',
@@ -268,6 +302,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   hackingSkill: {
     key: 'hackingSkill',
+    wire: 22,
     owner: 'player',
     origin: 'derived',
     section: 'none',
@@ -276,6 +311,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   stimpakHealMult: {
     key: 'stimpakHealMult',
+    wire: 23,
     owner: 'player',
     origin: 'derived',
     section: 'none',
@@ -284,6 +320,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   stimpakHealMagMult: {
     key: 'stimpakHealMagMult',
+    wire: 24,
     owner: 'player',
     origin: 'derived',
     section: 'none',
@@ -292,6 +329,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   stimpakHealDurationMult: {
     key: 'stimpakHealDurationMult',
+    wire: 25,
     owner: 'player',
     origin: 'derived',
     section: 'none',
@@ -300,6 +338,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   mutationCount: {
     key: 'mutationCount',
+    wire: 26,
     owner: 'player',
     origin: 'derived',
     section: 'none',
@@ -308,6 +347,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   hungerThirstTier: {
     key: 'hungerThirstTier',
+    wire: 27,
     owner: 'player',
     origin: 'derived',
     section: 'none',
@@ -316,6 +356,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   foodTier: {
     key: 'foodTier',
+    wire: 28,
     owner: 'player',
     origin: 'input',
     section: 'conditions',
@@ -326,6 +367,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   drinkTier: {
     key: 'drinkTier',
+    wire: 29,
     owner: 'player',
     origin: 'input',
     section: 'conditions',
@@ -336,6 +378,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   feralTier: {
     key: 'feralTier',
+    wire: 30,
     owner: 'player',
     origin: 'input',
     section: 'conditions',
@@ -346,6 +389,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   glow: {
     key: 'glow',
+    wire: 31,
     owner: 'player',
     origin: 'input',
     section: 'conditions',
@@ -357,6 +401,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   underAlcoholEffect: {
     key: 'underAlcoholEffect',
+    wire: 32,
     owner: 'player',
     origin: 'input',
     section: 'none',
@@ -365,6 +410,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   strangeInNumbers: {
     key: 'strangeInNumbers',
+    wire: 33,
     owner: 'player',
     origin: 'derived',
     section: 'none',
@@ -373,6 +419,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   classFreakRank: {
     key: 'classFreakRank',
+    wire: 34,
     owner: 'player',
     origin: 'input',
     section: 'none',
@@ -383,6 +430,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   equippedPerkRanks: {
     key: 'equippedPerkRanks',
+    wire: 35,
     owner: 'player',
     origin: 'input',
     section: 'none',
@@ -392,6 +440,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   weaponConditionPct: {
     key: 'weaponConditionPct',
+    wire: 36,
     owner: 'player',
     origin: 'input',
     section: 'conditions',
@@ -402,6 +451,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   hitRatePct: {
     key: 'hitRatePct',
+    wire: 37,
     owner: 'player',
     origin: 'input',
     section: 'target',
@@ -412,6 +462,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   vatsHitRatePct: {
     key: 'vatsHitRatePct',
+    wire: 38,
     owner: 'player',
     origin: 'input',
     section: 'target',
@@ -422,6 +473,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   bodyPartHitRatePct: {
     key: 'bodyPartHitRatePct',
+    wire: 39,
     owner: 'player',
     origin: 'input',
     section: 'target',
@@ -432,6 +484,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   followThroughPct: {
     key: 'followThroughPct',
+    wire: 40,
     owner: 'player',
     origin: 'input',
     section: 'target',
@@ -443,6 +496,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   takingOneForTheTeamPct: {
     key: 'takingOneForTheTeamPct',
+    wire: 41,
     owner: 'player',
     origin: 'input',
     section: 'target',
@@ -453,6 +507,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   takingOneForTheTeamDrRank: {
     key: 'takingOneForTheTeamDrRank',
+    wire: 42,
     owner: 'player',
     origin: 'input',
     section: 'target',
@@ -464,6 +519,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   playerDamageResist: {
     key: 'playerDamageResist',
+    wire: 43,
     owner: 'player',
     origin: 'input',
     section: 'conditions',
@@ -473,6 +529,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   playerRadResist: {
     key: 'playerRadResist',
+    wire: 44,
     owner: 'player',
     origin: 'input',
     section: 'conditions',
@@ -482,6 +539,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   wornPieceCounts: {
     key: 'wornPieceCounts',
+    wire: 45,
     owner: 'player',
     origin: 'input',
     section: 'none',
@@ -491,6 +549,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   battleLoadersBashSec: {
     key: 'battleLoadersBashSec',
+    wire: 46,
     owner: 'player',
     origin: 'input',
     section: 'conditions',
@@ -501,6 +560,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   strength: {
     key: 'strength',
+    wire: 47,
     owner: 'player',
     origin: 'input',
     section: 'special-loadout',
@@ -511,6 +571,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   perception: {
     key: 'perception',
+    wire: 48,
     owner: 'player',
     origin: 'input',
     section: 'special-loadout',
@@ -521,6 +582,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   endurance: {
     key: 'endurance',
+    wire: 49,
     owner: 'player',
     origin: 'input',
     section: 'special-loadout',
@@ -531,6 +593,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   charisma: {
     key: 'charisma',
+    wire: 50,
     owner: 'player',
     origin: 'input',
     section: 'special-loadout',
@@ -541,6 +604,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   intelligence: {
     key: 'intelligence',
+    wire: 51,
     owner: 'player',
     origin: 'input',
     section: 'special-loadout',
@@ -551,6 +615,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   agility: {
     key: 'agility',
+    wire: 52,
     owner: 'player',
     origin: 'input',
     section: 'special-loadout',
@@ -561,6 +626,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   luck: {
     key: 'luck',
+    wire: 53,
     owner: 'player',
     origin: 'input',
     section: 'special-loadout',
@@ -571,6 +637,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   junkItemCount: {
     key: 'junkItemCount',
+    wire: 54,
     owner: 'player',
     origin: 'input',
     section: 'none',
@@ -579,6 +646,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   teammateCount: {
     key: 'teammateCount',
+    wire: 55,
     owner: 'player',
     origin: 'input',
     section: 'team',
@@ -588,6 +656,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   publicTeamType: {
     key: 'publicTeamType',
+    wire: 56,
     owner: 'player',
     origin: 'input',
     section: 'team',
@@ -596,6 +665,7 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
   hydrated: {
     key: 'hydrated',
+    wire: 57,
     owner: 'player',
     origin: 'input',
     section: 'attack-state',
@@ -605,9 +675,11 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
   },
 };
 
+// retired wire ordinals: (none yet)
 export const ENEMY_KNOB_REGISTRY: Readonly<Record<keyof EnemyConditions, EnemyKnobRow>> = {
   isCrippled: {
     key: 'isCrippled',
+    wire: 0,
     owner: 'enemy',
     origin: 'input',
     section: 'none',
@@ -616,6 +688,7 @@ export const ENEMY_KNOB_REGISTRY: Readonly<Record<keyof EnemyConditions, EnemyKn
   },
   crippledLimbCount: {
     key: 'crippledLimbCount',
+    wire: 1,
     owner: 'enemy',
     origin: 'input',
     section: 'target',
@@ -626,6 +699,7 @@ export const ENEMY_KNOB_REGISTRY: Readonly<Record<keyof EnemyConditions, EnemyKn
   },
   statusEffectCount: {
     key: 'statusEffectCount',
+    wire: 2,
     owner: 'enemy',
     origin: 'input',
     section: 'none',
@@ -634,6 +708,7 @@ export const ENEMY_KNOB_REGISTRY: Readonly<Record<keyof EnemyConditions, EnemyKn
   },
   isGlowing: {
     key: 'isGlowing',
+    wire: 3,
     owner: 'enemy',
     origin: 'input',
     section: 'none',
@@ -642,6 +717,7 @@ export const ENEMY_KNOB_REGISTRY: Readonly<Record<keyof EnemyConditions, EnemyKn
   },
   isInsect: {
     key: 'isInsect',
+    wire: 4,
     owner: 'enemy',
     origin: 'input',
     section: 'none',
@@ -650,6 +726,7 @@ export const ENEMY_KNOB_REGISTRY: Readonly<Record<keyof EnemyConditions, EnemyKn
   },
   healthPercent: {
     key: 'healthPercent',
+    wire: 5,
     owner: 'enemy',
     origin: 'input',
     section: 'target',
@@ -660,6 +737,7 @@ export const ENEMY_KNOB_REGISTRY: Readonly<Record<keyof EnemyConditions, EnemyKn
   },
   groupTargetCount: {
     key: 'groupTargetCount',
+    wire: 6,
     owner: 'enemy',
     origin: 'input',
     section: 'target',
@@ -670,6 +748,7 @@ export const ENEMY_KNOB_REGISTRY: Readonly<Record<keyof EnemyConditions, EnemyKn
   },
   isBurning: {
     key: 'isBurning',
+    wire: 7,
     owner: 'enemy',
     origin: 'input',
     section: 'target',
@@ -679,6 +758,7 @@ export const ENEMY_KNOB_REGISTRY: Readonly<Record<keyof EnemyConditions, EnemyKn
   },
   isPoisoned: {
     key: 'isPoisoned',
+    wire: 8,
     owner: 'enemy',
     origin: 'input',
     section: 'target',
@@ -688,6 +768,7 @@ export const ENEMY_KNOB_REGISTRY: Readonly<Record<keyof EnemyConditions, EnemyKn
   },
   isBleeding: {
     key: 'isBleeding',
+    wire: 9,
     owner: 'enemy',
     origin: 'input',
     section: 'target',
@@ -697,6 +778,7 @@ export const ENEMY_KNOB_REGISTRY: Readonly<Record<keyof EnemyConditions, EnemyKn
   },
   isFrozen: {
     key: 'isFrozen',
+    wire: 10,
     owner: 'enemy',
     origin: 'input',
     section: 'target',
@@ -706,6 +788,7 @@ export const ENEMY_KNOB_REGISTRY: Readonly<Record<keyof EnemyConditions, EnemyKn
   },
   targetDistance: {
     key: 'targetDistance',
+    wire: 11,
     owner: 'enemy',
     origin: 'input',
     section: 'target',
@@ -715,6 +798,7 @@ export const ENEMY_KNOB_REGISTRY: Readonly<Record<keyof EnemyConditions, EnemyKn
   },
   targetRace: {
     key: 'targetRace',
+    wire: 12,
     owner: 'enemy',
     origin: 'input',
     section: 'target',
@@ -724,6 +808,7 @@ export const ENEMY_KNOB_REGISTRY: Readonly<Record<keyof EnemyConditions, EnemyKn
   },
   targetBodyPart: {
     key: 'targetBodyPart',
+    wire: 13,
     owner: 'enemy',
     origin: 'input',
     section: 'target',
@@ -732,6 +817,7 @@ export const ENEMY_KNOB_REGISTRY: Readonly<Record<keyof EnemyConditions, EnemyKn
   },
   targetLevel: {
     key: 'targetLevel',
+    wire: 14,
     owner: 'enemy',
     origin: 'input',
     section: 'target',
@@ -741,6 +827,7 @@ export const ENEMY_KNOB_REGISTRY: Readonly<Record<keyof EnemyConditions, EnemyKn
   },
   epicRank: {
     key: 'epicRank',
+    wire: 15,
     owner: 'enemy',
     origin: 'input',
     section: 'target',

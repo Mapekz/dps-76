@@ -1,153 +1,52 @@
-import { type EnemyConditions, type GameMode, type PerkLoadout, type PlayerInput } from '@/types';
-import { getPerks, getWeapons } from '@/data';
-import { getAddictions, getConsumables, getMutations } from '@/data/buffs';
-import { getOmodById } from '@/data/omods';
-import { getArmorEffectById } from '@/data/armor-modifiers';
-import { nukesDragonsPerks, reclassifyPerkLoadouts } from '@/lib/nukes-dragons';
-import { buildDelta } from '@/lib/build-delta';
-import { DERIVED_PLAYER_CONDITION_KEYS } from '@/types/knob-registry';
-import {
-  ENEMY_HEALTH_PERCENT_STOPS,
-  PLAYER_HEALTH_PERCENT_STOPS,
-  snapHealthPercent,
-} from '@/lib/health-percent';
+import { type GameMode } from '@/types';
+import { getWeapons } from '@/data';
 import { consumablesById, sanitizeConsumables } from '@/lib/consumable-rules';
-import { createDefaultBuildState, type BuildState } from '@/state/build-reducer';
+import { reclassifyPerkLoadouts } from '@/lib/nukes-dragons';
 import { normalizeBuildState } from '@/lib/build-rules';
-import type { PerkId } from '@/data/perk-ids';
-import type { ResolvedPlayer } from '@/types/player';
-
-/**
- * Legacy identity-mod container ids from before the `Don't Use All` variant
- * split (2026-08): persisted URLs may still hold the container editor id;
- * remap to the lowest-formId default variant before the validity check below.
- * Same precedent as the case-insensitive weapon-id fallback.
- */
-const LEGACY_OMOD_ID_ALIASES: Readonly<Record<string, string>> = {
-  mod_Custom_CamdenWhacker: 'mod_Custom_CamdenWhacker_Bleed',
-  SDOW_Mod_Custom_RelicReaper: 'SDOW_Mod_Custom_RelicReaper_CapCollector',
-};
-
-function resolveLegacyOmodId(omodId: string): string {
-  return LEGACY_OMOD_ID_ALIASES[omodId] ?? omodId;
-}
+import { BitReader, BitWriter } from '@/lib/persist/bitstream';
+import { buildShareSlug } from '@/lib/persist/slug';
+import {
+  readAddictions,
+  readArmorEffects,
+  readBuildName,
+  readConsumables,
+  readEnemyConditions,
+  readLegendaryPerks,
+  readMutations,
+  readPerks,
+  readPlayerConditions,
+  readView,
+  readWeapon,
+  writeAddictions,
+  writeArmorEffects,
+  writeBuildName,
+  writeConsumables,
+  writeEnemyConditions,
+  writeLegendaryPerks,
+  writeMutations,
+  writePerks,
+  writePlayerConditions,
+  writeView,
+  writeWeapon,
+} from '@/lib/persist/wire-sections';
+import { createDefaultBuildState, type BuildState } from '@/state/build-reducer';
 
 /**
  * Versioned URL/localStorage codec for the full build state.
  *
- * Format: `1.` + base64url(deflate-raw(compact JSON)). The JSON stores only
- * non-default values (diffed against `createDefaultBuildState()` — the same
- * object decode() seeds from below, so a key omitted for matching the
- * baseline is refilled with that exact value on the way back), so old links
- * keep decoding as the schema grows — unknown keys are dropped, missing keys
- * fall back to defaults. Perk chunks reuse the N&D 2-char key dictionary with our
- * own base-36 rank wire format (see encodePerks); perks without an N&D key
- * travel in a fallback array.
+ * Format: `2.<slug>.<base64url(headerByte + packedBytes)>`. The slug is
+ * decorative (human-readable hint); decode reads and discards it. The
+ * packed bitstream is built from wire-section codecs; header bit 0 marks
+ * deflate-raw compression when that yields a shorter payload than raw.
+ *
+ * encode/decode both diff against `createDefaultBuildState()` — the same
+ * object decode seeds from, so omitted fields refill with that baseline.
  *
  * decode() never throws on user input: corrupt payloads return null, unknown
- * ids (weapon renamed by a patch, removed omod, ...) are skipped with a warning.
+ * ids are skipped with a warning.
  */
 
-const VERSION_PREFIX = '1.';
-
-/** v1 wire shape — every field optional; short keys on purpose. */
-interface SerializedBuild {
-  /** weapon: [weaponId, mods record, legendary effect ids by star index (null = empty slot)] */
-  w?: [string, Record<string, string | null>, (string | null)[]];
-  /** itemLevel (default 50) */
-  il?: number;
-  /** weakpointMult (default 1.5) */
-  wm?: number;
-  /** chargeTimeSec — absent means undefined (always fully charge) */
-  ct?: number;
-  /** perks as concatenated N&D-style 3-char chunks (key + base36 rank) */
-  p?: string;
-  /** legendary perks, same encoding */
-  lp?: string;
-  /** perks with no N&D key: [perkId, rank][] */
-  px?: Array<[string, number]>;
-  lpx?: Array<[string, number]>;
-  m?: string[];
-  c?: string[];
-  /** selected addiction ids (GeneratedAddiction.id) */
-  ad?: string[];
-  /** Armor checklist selections: [effectId, count][], count>0 only */
-  ae?: Array<[string, number]>;
-  /** non-default player conditions */
-  pc?: Partial<PlayerInput>;
-  /** non-default enemy conditions */
-  ec?: Partial<EnemyConditions>;
-  n?: string;
-  /** view: emphasized scenario + breakdown open */
-  ve?: 'freeAim' | 'vats';
-  vb?: boolean;
-}
-
-// ── perk chunk coding (our internal wire format) ────────────────────────────
-//
-// encodePerks/decodePerks implement OUR OWN #b=… share-link perk
-// encoding: 2-char key + 1-char base-36 rank (ranks 1–35), plus a fallback
-// array (px/lpx) for perks outside the 2-char dictionary. Deliberately
-// distinct from src/lib/nukes-dragons.ts parsePerkString, which decodes
-// nukesdragons.com's externally-fixed build-share URL scheme (base-10 rank,
-// capped at 5) — a format we do not control and cannot extend
-// (docs/adr/0003-nd-and-internal-perk-formats-are-separate.md). The one
-// shared seam is the nukesDragonsPerks dictionary (key → PerkId), imported
-// above and reversed via perkIdToKey below; it is not duplicated.
-
-let reverseKeyCache: Map<string, string> | null = null;
-function perkIdToKey(): Map<string, string> {
-  if (!reverseKeyCache) {
-    reverseKeyCache = new Map<string, string>();
-    for (const [key, perkId] of Object.entries(nukesDragonsPerks)) {
-      // First key wins; the map is injective in practice.
-      if (!reverseKeyCache.has(perkId)) reverseKeyCache.set(perkId, key);
-    }
-  }
-  return reverseKeyCache;
-}
-
-function encodePerks(loadout: PerkLoadout[]): {
-  chunks: string;
-  fallback: Array<[string, number]>;
-} {
-  const keys = perkIdToKey();
-  let chunks = '';
-  const fallback: Array<[string, number]> = [];
-  for (const { perkId, rank } of loadout) {
-    const key = keys.get(perkId);
-    if (key && key.length === 2 && rank >= 1 && rank <= 35) chunks += key + rank.toString(36);
-    else fallback.push([perkId, rank]);
-  }
-  return { chunks, fallback };
-}
-
-function decodePerks(
-  chunks: string | undefined,
-  fallback: Array<[string, number]> | undefined,
-  warnings: string[],
-): PerkLoadout[] {
-  const out: PerkLoadout[] = [];
-  if (chunks) {
-    for (let i = 0; i + 3 <= chunks.length; i += 3) {
-      const key = chunks.slice(i, i + 2);
-      const rank = parseInt(chunks[i + 2], 36);
-      const perkId = nukesDragonsPerks[key];
-      if (!perkId || !Number.isFinite(rank) || rank < 1) {
-        warnings.push(`unknown perk key "${key}" — skipped`);
-        continue;
-      }
-      out.push({ perkId, rank });
-    }
-  }
-  for (const [perkId, rank] of fallback ?? []) {
-    if (typeof perkId === 'string' && Number.isFinite(rank) && rank >= 1)
-      out.push({ perkId, rank });
-  }
-  return out;
-}
-
-// ── non-default diffing ─────────────────────────────────────────────────────
+const VERSION = '2';
 
 // ── deflate/base64url plumbing (browser + Node ≥18) ─────────────────────────
 
@@ -172,136 +71,48 @@ function fromBase64Url(s: string): Uint8Array<ArrayBuffer> {
   return bytes;
 }
 
-// ── public API ──────────────────────────────────────────────────────────────
+// ── envelope ────────────────────────────────────────────────────────────────
 
-export async function encodeBuild(state: BuildState): Promise<string> {
-  const defaults = createDefaultBuildState();
+function parseEnvelope(encoded: string): { payload: string } | null {
+  const firstDot = encoded.indexOf('.');
+  if (firstDot === -1) return null;
+  const secondDot = encoded.indexOf('.', firstDot + 1);
+  if (secondDot === -1) return null;
+  if (encoded.slice(0, firstDot) !== VERSION) return null;
+  const payload = encoded.slice(secondDot + 1);
+  if (payload.length === 0) return null;
+  return { payload };
+}
+
+function packState(state: BuildState): Uint8Array {
+  const w = new BitWriter();
   const { player, enemy, buildName, view } = state;
-
-  const perks = encodePerks(player.perks);
-  const legendaryPerks = encodePerks(player.legendaryPerks);
-
-  const wire: SerializedBuild = {
-    ...(player.weapon && {
-      w: [player.weapon.weaponId, player.weapon.mods, player.weapon.legendaryEffects],
-    }),
-    ...(player.itemLevel !== defaults.player.itemLevel && { il: player.itemLevel }),
-    ...(player.weakpointMult !== defaults.player.weakpointMult && { wm: player.weakpointMult }),
-    ...(player.chargeTimeSec !== undefined && { ct: player.chargeTimeSec }),
-    ...(perks.chunks && { p: perks.chunks }),
-    ...(legendaryPerks.chunks && { lp: legendaryPerks.chunks }),
-    ...(perks.fallback.length > 0 && { px: perks.fallback }),
-    ...(legendaryPerks.fallback.length > 0 && { lpx: legendaryPerks.fallback }),
-    ...(player.mutations.length > 0 && { m: player.mutations }),
-    ...(player.consumables.length > 0 && { c: player.consumables }),
-    ...(player.addictions.length > 0 && { ad: player.addictions }),
-    ...(Object.keys(player.armorEffects).length > 0 && {
-      ae: Object.entries(player.armorEffects).filter(([, count]) => count > 0),
-    }),
-    ...(buildName && { n: buildName }),
-    ...(view.emphasized && { ve: view.emphasized }),
-    ...(view.breakdownOpen && { vb: true }),
-  };
-  // Baseline must be `defaults` (createDefaultBuildState(), computed above) —
-  // the same object decode() seeds `state` from below. A key omitted here for
-  // matching this baseline is refilled with this baseline's value on decode;
-  // diffing against any other default silently drops values that happen to
-  // equal it (see the SPECIAL=15 regression in codec.test.ts).
-  const pc = buildDelta(player.conditions, defaults.player.conditions);
-  for (const key of DERIVED_PLAYER_CONDITION_KEYS) delete pc[key as keyof PlayerInput];
-  if (Object.keys(pc).length > 0) wire.pc = pc;
-  const ec = buildDelta(enemy.conditions, defaults.enemy.conditions);
-  if (Object.keys(ec).length > 0) wire.ec = ec;
-
-  const bytes = new TextEncoder().encode(JSON.stringify(wire)) as Uint8Array<ArrayBuffer>;
-  const deflated = await pipe(bytes, new CompressionStream('deflate-raw'));
-  return VERSION_PREFIX + toBase64Url(deflated);
+  writeWeapon(w, player.weapon, player);
+  writePerks(w, player.perks);
+  writeLegendaryPerks(w, player.legendaryPerks);
+  writeMutations(w, player.mutations);
+  writeAddictions(w, player.addictions);
+  writeConsumables(w, player.consumables);
+  writeArmorEffects(w, player.armorEffects);
+  writePlayerConditions(w, player.conditions);
+  writeEnemyConditions(w, enemy.conditions);
+  writeBuildName(w, buildName);
+  writeView(w, view);
+  return w.toBytes();
 }
 
-export interface DecodedBuild {
-  state: BuildState;
-  warnings: string[];
-}
-
-export async function decodeBuild(encoded: string, mode: GameMode): Promise<DecodedBuild | null> {
-  if (!encoded.startsWith(VERSION_PREFIX)) return null;
-  let wire: SerializedBuild;
-  try {
-    const deflated = fromBase64Url(encoded.slice(VERSION_PREFIX.length));
-    const json = new TextDecoder().decode(
-      await pipe(deflated, new DecompressionStream('deflate-raw')),
-    );
-    wire = JSON.parse(json) as SerializedBuild;
-  } catch {
-    return null;
-  }
-  if (!wire || typeof wire !== 'object') return null;
-
-  const warnings: string[] = [];
+function unpackState(bytes: Uint8Array, mode: GameMode, warnings: string[]): BuildState | null {
+  const r = new BitReader(bytes);
   const state = createDefaultBuildState();
-  const perkRegistry = getPerks(mode);
 
-  if (wire.w) {
-    const [rawWeaponId, mods, legendaryEffects] = wire.w;
-    // Weapon ids are ESM editor ids, whose casing Bethesda occasionally fixes
-    // (20260717: pickaxe→Pickaxe, crossbow→Crossbow, sledgehammer→Sledgehammer)
-    // — resolve stored ids case-insensitively so old share URLs keep working.
-    const weaponId =
-      getWeapons(mode)[rawWeaponId] !== undefined
-        ? rawWeaponId
-        : (Object.keys(getWeapons(mode)).find(
-            (id) => id.toLowerCase() === rawWeaponId.toLowerCase(),
-          ) ?? rawWeaponId);
-    if (getWeapons(mode)[weaponId]) {
-      const keptMods: Record<string, string | null> = {};
-      for (const [slot, omodId] of Object.entries(mods ?? {})) {
-        if (omodId === null) {
-          keptMods[slot] = omodId;
-          continue;
-        }
-        const resolvedOmodId = resolveLegacyOmodId(omodId);
-        if (getOmodById(mode, resolvedOmodId)) keptMods[slot] = resolvedOmodId;
-        else warnings.push(`unknown weapon mod "${omodId}" — removed`);
-      }
-      const keptLegendary: (string | null)[] = [];
-      for (const entry of legendaryEffects ?? []) {
-        if (entry === null) {
-          keptLegendary.push(null);
-          continue;
-        }
-        if (getOmodById(mode, entry)) keptLegendary.push(entry);
-        else warnings.push(`unknown legendary effect "${entry}" — removed`);
-      }
-      state.player.weapon = { weaponId, mods: keptMods, legendaryEffects: keptLegendary };
-    } else {
-      warnings.push(`unknown weapon "${weaponId}" — cleared`);
-    }
-  }
+  const weaponSection = readWeapon(r, mode, warnings);
+  state.player.weapon = weaponSection.weapon;
+  state.player.itemLevel = weaponSection.itemLevel;
+  state.player.weakpointMult = weaponSection.weakpointMult;
+  state.player.chargeTimeSec = weaponSection.chargeTimeSec;
 
-  if (typeof wire.il === 'number') state.player.itemLevel = Math.max(1, Math.min(50, wire.il));
-  if (typeof wire.wm === 'number') state.player.weakpointMult = Math.max(0.1, wire.wm);
-  // No upper clamp here either (see the reducer's weapon/chargeTime case) —
-  // absent wire.ct decodes as undefined (backward compat: full charge).
-  if (typeof wire.ct === 'number') state.player.chargeTimeSec = Math.max(0, wire.ct);
-
-  const keepKnown = (loadout: PerkLoadout[]) =>
-    loadout
-      .filter((p) => {
-        if (perkRegistry[p.perkId as PerkId]) return true;
-        warnings.push(`unknown perk "${p.perkId}" — removed`);
-        return false;
-      })
-      // Silent clamp: an out-of-range rank (stale/adversarial payload, or a
-      // card's maxRank shrinking after an ESM sync) is clamped rather than
-      // dropped — the existing over-budget flag covers budget overruns.
-      .map((p) => {
-        const maxRank = perkRegistry[p.perkId as PerkId].maxRank;
-        return p.rank > maxRank ? { ...p, rank: maxRank } : p;
-      });
-  state.player.perks = keepKnown(decodePerks(wire.p, wire.px, warnings));
-  state.player.legendaryPerks = keepKnown(decodePerks(wire.lp, wire.lpx, warnings));
-  // Builds encoded before the ghoul-card/legendary-perk classification fix
-  // stored ghoul cards under legendaryPerks — re-sort against the current set.
+  state.player.perks = readPerks(r, mode, warnings);
+  state.player.legendaryPerks = readLegendaryPerks(r, mode, warnings);
   const reclassified = reclassifyPerkLoadouts(state.player.perks, state.player.legendaryPerks);
   if (reclassified.migrated > 0) {
     warnings.push(
@@ -311,21 +122,10 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
     state.player.legendaryPerks = reclassified.legendaryPerks;
   }
 
-  const knownMutations = new Set(getMutations(mode).map((b) => b.id));
-  state.player.mutations = (wire.m ?? []).filter((id) => {
-    if (knownMutations.has(id)) return true;
-    warnings.push(`unknown mutation "${id}" — removed`);
-    return false;
-  });
-  const knownConsumables = new Set(getConsumables(mode).map((b) => b.id));
-  const knownConsumableIds = (wire.c ?? []).filter((id) => {
-    if (knownConsumables.has(id)) return true;
-    warnings.push(`unknown consumable "${id}" — removed`);
-    return false;
-  });
-  // Old/adversarial payloads can encode combinations the stacking rules
-  // (src/lib/consumable-rules.ts) no longer allow (two chems, two same-key
-  // foods, ...) — replay through the same rules the reducer enforces.
+  state.player.mutations = readMutations(r, mode, warnings);
+  state.player.addictions = readAddictions(r, mode, warnings);
+
+  const knownConsumableIds = readConsumables(r, mode, warnings);
   const sanitizedConsumables = sanitizeConsumables(consumablesById(mode), knownConsumableIds);
   if (sanitizedConsumables.length !== knownConsumableIds.length) {
     warnings.push(
@@ -334,94 +134,83 @@ export async function decodeBuild(encoded: string, mode: GameMode): Promise<Deco
   }
   state.player.consumables = sanitizedConsumables;
 
-  const knownAddictions = new Set(getAddictions(mode).map((a) => a.id));
-  state.player.addictions = (wire.ad ?? []).filter((id) => {
-    if (knownAddictions.has(id)) return true;
-    warnings.push(`unknown addiction "${id}" — removed`);
-    return false;
-  });
+  state.player.armorEffects = readArmorEffects(r, mode, warnings);
 
-  for (const [id, count] of wire.ae ?? []) {
-    const effect = getArmorEffectById(mode, id);
-    if (!effect || typeof count !== 'number') {
-      warnings.push(`unknown armor effect "${id}" — removed`);
-      continue;
-    }
-    state.player.armorEffects[id] = Math.max(0, Math.min(effect.maxCount, count));
-  }
-
-  // Conditions: only keys that exist in the current schema survive.
-  for (const [key, value] of Object.entries(wire.pc ?? {})) {
-    if (key === 'healthPercent' && typeof value === 'number') {
-      // Health % is now a discrete slider (src/lib/health-percent.ts); older
-      // URLs can carry any 1-100 value, so snap to the nearest allowed stop
-      // rather than let the stored value and the slider position disagree.
-      state.player.conditions.healthPercent = snapHealthPercent(value, PLAYER_HEALTH_PERCENT_STOPS);
-      continue;
-    }
-    if (key === 'limitBreakingPieces' && typeof value === 'number') {
-      // Pre-Phase-3 URLs stored Limit Breaking as a standalone manual
-      // condition; it's now the "Limit-Breaking" Armor checklist row
-      // (mod_Legendary_Armor4_LimitBreak — same 0-5 worn-piece count, just
-      // sourced from real OMOD data instead of a hand-authored crit-meter
-      // term — see docs/assumptions.md "Armor effects (engine + UI)").
-      const effect = getArmorEffectById(mode, 'mod_Legendary_Armor4_LimitBreak');
-      if (effect && value > 0) {
-        state.player.armorEffects[effect.id] = Math.max(0, Math.min(effect.maxCount, value));
-        warnings.push('"Limit Breaking armor pieces" moved into the Armor checklist');
-      }
-      continue;
-    }
-    if (key === 'addictionCount') {
-      // Pre-overhaul URLs stored a manual count; there's no way to map a
-      // bare number back to specific addiction ids, so it's dropped rather
-      // than silently winning over the (now addiction-less) picker state.
-      warnings.push(
-        '"addictionCount" is no longer a manual input — pick your addictions in Chems & Addictions',
-      );
-      continue;
-    }
-    if (DERIVED_PLAYER_CONDITION_KEYS.has(key as keyof ResolvedPlayer)) continue; // legacy payloads
+  const pc = readPlayerConditions(r, mode, warnings);
+  for (const [key, value] of Object.entries(pc)) {
     if (key in state.player.conditions) {
       (state.player.conditions as unknown as Record<string, unknown>)[key] = value;
     }
   }
 
-  const wirePc = wire.pc ?? {};
-  if (!('armorWorn' in wirePc)) {
-    state.player.conditions.armorWorn = state.player.conditions.isInPowerArmor ? 'power' : 'body';
-  }
-  state.player.conditions.isInPowerArmor = state.player.conditions.armorWorn === 'power';
-
-  for (const [key, value] of Object.entries(wire.ec ?? {})) {
-    if (key === 'healthPercent' && typeof value === 'number') {
-      // Same migration as the player loop above, using the coarser enemy stops.
-      state.enemy.conditions.healthPercent = snapHealthPercent(value, ENEMY_HEALTH_PERCENT_STOPS);
-      continue;
-    }
-    if (key === 'targetDistance' && typeof value === 'string') {
-      // Pre-Phase-1 URLs stored a three-way bucket ('close'|'none'|'far');
-      // targetDistance is now a continuous raw-game-units number. Map to a
-      // representative distance inside each old bucket (pattern: the
-      // addictionCount special case above) rather than dropping it outright
-      // — the perk gates it drove (Guerrilla, Sniper's) still resolve
-      // sensibly from a representative number.
-      const legacyDistance: Record<string, number> = { close: 400, none: 900, far: 1500 };
-      if (value in legacyDistance) {
-        state.enemy.conditions.targetDistance = legacyDistance[value];
-      } else {
-        warnings.push(`unknown "targetDistance" value "${value}" — using default`);
-      }
-      continue;
-    }
+  const ec = readEnemyConditions(r, mode, warnings);
+  for (const [key, value] of Object.entries(ec)) {
     if (key in state.enemy.conditions) {
       (state.enemy.conditions as unknown as Record<string, unknown>)[key] = value;
     }
   }
 
-  if (typeof wire.n === 'string') state.buildName = wire.n;
-  if (wire.ve === 'freeAim' || wire.ve === 'vats') state.view.emphasized = wire.ve;
-  if (wire.vb === true) state.view.breakdownOpen = true;
+  const buildName = readBuildName(r);
+  if (buildName !== null) state.buildName = buildName;
+
+  state.view = readView(r);
+
+  if (r.overrun) return null;
+  return state;
+}
+
+// ── public API ──────────────────────────────────────────────────────────────
+
+export async function encodeBuild(state: BuildState, mode: GameMode): Promise<string> {
+  const weaponName = getWeapons(mode)[state.player.weapon?.weaponId ?? '']?.name ?? null;
+  const slug = buildShareSlug(state.buildName, weaponName);
+
+  const packed = packState(state) as Uint8Array<ArrayBuffer>;
+  const deflated = await pipe(packed, new CompressionStream('deflate-raw'));
+
+  const useDeflate = deflated.length < packed.length;
+  const body = useDeflate ? deflated : packed;
+  const headerByte = useDeflate ? 1 : 0;
+
+  const wire = new Uint8Array(1 + body.length);
+  wire[0] = headerByte;
+  wire.set(body, 1);
+
+  return `${VERSION}.${slug}.${toBase64Url(wire)}`;
+}
+
+export interface DecodedBuild {
+  state: BuildState;
+  warnings: string[];
+}
+
+export async function decodeBuild(encoded: string, mode: GameMode): Promise<DecodedBuild | null> {
+  const parsed = parseEnvelope(encoded);
+  if (!parsed) return null;
+
+  let wire: Uint8Array;
+  try {
+    wire = fromBase64Url(parsed.payload);
+  } catch {
+    return null;
+  }
+  if (wire.length === 0) return null;
+
+  const compressed = (wire[0]! & 1) === 1;
+  const body = wire.subarray(1);
+
+  let packed: Uint8Array;
+  try {
+    packed = compressed
+      ? await pipe(body as Uint8Array<ArrayBuffer>, new DecompressionStream('deflate-raw'))
+      : body;
+  } catch {
+    return null;
+  }
+
+  const warnings: string[] = [];
+  const state = unpackState(packed, mode, warnings);
+  if (!state) return null;
 
   const normalized = normalizeBuildState(mode, state);
   warnings.push(...normalized.warnings);

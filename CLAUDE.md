@@ -22,6 +22,7 @@ This is a Fallout 76 DPS (Damage Per Second) calculator web application. It comp
 - `bun run extract:diff [--base HEAD]` - Markdown review report of generated-data changes vs a git ref; run after every extraction
 - `bun run vet:weapons` - Check the vetted weapon roster against the current extraction (see the weapon-vetting skill)
 - `bun run audit:inert` - Audit for modifiers on inert/no-effect buckets
+- `bun run wire-dict:build` - Sync append-only wire dictionaries from the merged dataset (`scripts/build-wire-dictionary.ts`)
 
 This project uses **Bun** as the package manager and script runner (`bun install`, `bun run <script>`),
 not npm/yarn/pnpm. Vite and `tsc` still run under **Node** — their `#!/usr/bin/env node`
@@ -63,7 +64,9 @@ Game data is **extracted, not hand-authored**:
 4. `src/data/dataset.ts` is the merge chokepoint: `getDataset(mode)` applies
    every overlay once and resolves the live/pts split in one place. The
    `src/data/*.ts` accessors (`getWeapons(mode)`, `getOmodSlots`,
-   `getLoadoutModifiers`, ...) are thin reads over it.
+   `getLoadoutModifiers`, ...) are thin reads over it. Share-link and
+   localStorage encoding resolve ids through `src/data/wire-dictionary/` — see
+   `docs/adr/0018-build-share-urls-encode-dictionary-indices.md`.
 
 Key extraction insight: perk/mutation/legendary stat semantics are data-driven
 from the game's hidden "plumbing" perks (`STAT_DamagePerk`,
@@ -203,6 +206,10 @@ import { useGameMode } from '@/hooks/useGameMode';
    multiplicative in the dbm parenthesis — except `'Mod Weapon DMG Bonus Mult'`
    routing (`normalize/mgef.ts`), always additive.
 4. Check `_meta.json` unresolved reports after extraction — silent gaps are bugs.
+5. After `bun run extract` (or any change that adds/removes app-facing ids),
+   run `bun run wire-dict:build` and review its report before committing —
+   `src/data/wire-dictionary/__tests__/dictionary.test.ts` fails CI if the
+   dictionary is stale.
 
 ## Agent skills
 

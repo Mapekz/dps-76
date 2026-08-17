@@ -1,0 +1,13 @@
+{
+  "nextIndex": 7,
+  "ids": {
+    "Burn_Challenge_Lifetime_Fishing_LocalLegend_04": 0,
+    "Challenge_Lifetime_CraftScrap_Weapon_Tiers_Ranged_Pistols_Pipe": 1,
+    "Challenge_Lifetime_Fishing_LocalLegend_01": 2,
+    "Challenge_Lifetime_Fishing_LocalLegend_02": 3,
+    "Challenge_Lifetime_Fishing_LocalLegend_03": 4,
+    "Challenge_Lifetime_Fishing_SeasonalFish_Fall_LocalLegend": 5,
+    "Challenge_Lifetime_Fishing_SeasonalFish_Summer_LocalLegend": 6
+  },
+  "acknowledgedRemovals": []
+}
