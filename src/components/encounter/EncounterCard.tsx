@@ -48,7 +48,11 @@ export function EncounterCard({
               Must stay OUTSIDE the ternary so the observed node never unmounts. */}
           <div ref={sentinelRef} aria-hidden="true" className="h-px" />
           <Separator />
-          <div className="grid gap-6 lg:grid-cols-2">
+          {/* The explicit minmax(0,1fr) single-column track matters for the same
+              reason as AppShell's main grid: an implicit `auto` track is sized by
+              min-content, so one wide unbreakable row inside TargetPanel would
+              push the whole card past a narrow viewport instead of wrapping. */}
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-2">
             <AttackStateGroup />
             <TargetPanel />
           </div>
