@@ -8,6 +8,7 @@ import {
 import { getConsumables, getMutations } from '@/data/buffs';
 import { getLegendaryOmodSlots, getOmodSlots } from '@/data/omods';
 import { computePerkBudget } from '@/data/perk-budget';
+import { manualUptimePerkSuggestible } from '@/data/manual-uptime';
 import { perkHasEngineEffect } from '@/data/perk-modifiers';
 import {
   allocationOf,
@@ -191,6 +192,7 @@ export function enumerateVariants(
 
   for (const [perkId, perk] of Object.entries(registry)) {
     if (!perkHasEngineEffect(mode, perkId, loadoutCtx)) continue;
+    if (!manualUptimePerkSuggestible(perkId, player.conditions.isSneaking)) continue;
     const isLegendary = legendaryPerkIds.has(perkId);
     const currentRank = equippedRanks.get(perkId);
     const family = `perk:${perkId}`;
@@ -267,6 +269,7 @@ export function enumerateVariants(
         if (!legendaryPerkIds.has(perkId)) continue;
         if (equippedLegendaryIds.has(perkId)) continue;
         if (!perkHasEngineEffect(mode, perkId, loadoutCtx)) continue;
+        if (!manualUptimePerkSuggestible(perkId, player.conditions.isSneaking)) continue;
         for (let r = 1; r <= perk.maxRank; r++) {
           out.push({
             id: `leg-perk-swap:${old.perkId}->${perkId}:${r}`,

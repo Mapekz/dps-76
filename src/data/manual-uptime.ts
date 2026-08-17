@@ -21,19 +21,41 @@ const MANUAL_UPTIME_PERKS = {
     edid: 'LGN_FollowThrough_Perk',
     name: 'Follow Through',
     conditionKey: 'followThroughPct',
+    sneakGate: 'requiresSneak',
   },
   TakingOneForTheTeam: {
     formId: '0x005A59C7',
     edid: 'LGN_TakingOneForTheTeam_Perk',
     name: 'Taking One for the Team',
     conditionKey: 'takingOneForTheTeamPct',
+    sneakGate: 'requiresNotSneak',
   },
 } as const satisfies Record<
   string,
-  { formId: string; edid: string; name: string; conditionKey: keyof PlayerInput }
+  {
+    formId: string;
+    edid: string;
+    name: string;
+    conditionKey: keyof PlayerInput;
+    sneakGate: 'requiresSneak' | 'requiresNotSneak';
+  }
 >;
 
 export type ManualUptimePerkKey = keyof typeof MANUAL_UPTIME_PERKS;
+
+/**
+ * Whether YOUR OWN card is worth suggesting under the current sneak state —
+ * Follow Through only procs off your sneak attacks; Taking One for the Team
+ * only procs while enemies target you, which sneaking precludes
+ * (docs/assumptions.md "Follow Through / TOftT suggestion sneak gate").
+ * Gates the suggestion sweep only — the manual Target-section knobs above
+ * stay unconditional, since any player's card can have placed the debuff.
+ */
+export function manualUptimePerkSuggestible(perkId: string, isSneaking: boolean): boolean {
+  const card = MANUAL_UPTIME_PERKS[perkId as ManualUptimePerkKey];
+  if (!card) return true;
+  return card.sneakGate === 'requiresSneak' ? isSneaking : !isSneaking;
+}
 
 /** The wholeDamage ADD modifiers for whichever manual damage-multiplier toggles are dialed above 0%. */
 export function getManualUptimeModifiers(

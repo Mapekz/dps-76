@@ -372,3 +372,57 @@ describe('collapseSuggestionFamilies', () => {
     expect(result.map((r) => r.id).sort()).toEqual(['a:0', 'b:0']);
   });
 });
+
+describe('manual-uptime sneak gate (Follow Through / Taking One for the Team)', () => {
+  // Follow Through only procs off the player's own sneak attacks; TOftT only
+  // procs while enemies target the player, which sneaking precludes. The
+  // Target-section knobs stay manual and unconditional (any player's card can
+  // place the debuff) — only YOUR-card suggestions are gated. See
+  // src/data/manual-uptime.ts manualUptimePerkSuggestible.
+  const sneaking = (state: BuildState, value: boolean): BuildState =>
+    stateFrom([{ type: 'condition/set', key: 'isSneaking', value }], state);
+
+  it('never suggests Follow Through while not sneaking', () => {
+    const candidates = enumerateVariants(sneaking(fixerState, false), 'live', 'vats');
+    expect(candidates.some((c) => c.id.includes(PerkId.FollowThrough))).toBe(false);
+  });
+
+  it('suggests Follow Through while sneaking', () => {
+    const candidates = enumerateVariants(sneaking(fixerState, true), 'live', 'vats');
+    expect(candidates.some((c) => c.id.includes(PerkId.FollowThrough))).toBe(true);
+  });
+
+  it('never suggests adding Taking One for the Team while sneaking', () => {
+    const candidates = enumerateVariants(sneaking(fixerState, true), 'live', 'vats');
+    expect(
+      candidates.some(
+        (c) =>
+          c.id.includes(PerkId.TakingOneForTheTeam) &&
+          !c.id.startsWith('leg-perk-swap:TakingOneForTheTeam->'),
+      ),
+    ).toBe(false);
+  });
+
+  it('suggests Taking One for the Team while not sneaking', () => {
+    const candidates = enumerateVariants(sneaking(fixerState, false), 'live', 'vats');
+    expect(candidates.some((c) => c.id.includes(PerkId.TakingOneForTheTeam))).toBe(true);
+  });
+
+  it('still offers swaps that REPLACE an equipped TOftT while sneaking', () => {
+    const sixLegendaries = stateFrom(
+      [
+        { type: 'perk/add', perkId: PerkId.TakingOneForTheTeam, rank: 4, legendary: true },
+        { type: 'perk/add', perkId: PerkId.LegendaryStrength, rank: 4, legendary: true },
+        { type: 'perk/add', perkId: PerkId.LegendaryPerception, rank: 4, legendary: true },
+        { type: 'perk/add', perkId: PerkId.LegendaryEndurance, rank: 4, legendary: true },
+        { type: 'perk/add', perkId: PerkId.LegendaryAgility, rank: 4, legendary: true },
+        { type: 'perk/add', perkId: PerkId.LegendaryIntelligence, rank: 4, legendary: true },
+      ],
+      sneaking(fixerState, true),
+    );
+    const candidates = enumerateVariants(sixLegendaries, 'live', 'vats');
+    expect(candidates.some((c) => c.id.startsWith('leg-perk-swap:TakingOneForTheTeam->'))).toBe(
+      true,
+    );
+  });
+});
