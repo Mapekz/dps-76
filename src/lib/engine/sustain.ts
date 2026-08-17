@@ -42,6 +42,24 @@ export interface SustainResult extends SustainTiming {
 export const DEFAULT_BATTLE_LOADERS_BASH_SEC = 0.75;
 
 /**
+ * Effective rounds per magazine: capacity ÷ ammo-per-shot, with `ammoFreeChance`
+ * stretching the effective capacity (a shot that costs no ammo doesn't advance
+ * the magazine). 0 = no magazine at all (melee/unarmed, capacity 0).
+ *
+ * Split out of `sustainTiming` so the magazine-cycle folds that don't need the
+ * rest of the timing model can share ONE definition of the mag size — notably
+ * resolve.ts's `lastRound` condition, which spreads the Last Shot legendary's
+ * bonus over 1 shot in `shotsPerMagazine`.
+ */
+export function shotsPerMagazine(weapon: Weapon): number {
+  const capacity = weapon.capacity ?? 0;
+  const ammoPerShot = weapon.ammoPerShot ?? 1;
+  const ammoFreeChance = weapon.ammoFreeChance ?? 0;
+  const effCapacity = ammoFreeChance > 0 ? capacity / (1 - ammoFreeChance) : capacity;
+  return ammoPerShot > 0 ? Math.floor(effCapacity / ammoPerShot) : 0;
+}
+
+/**
  * Magazine/reload timing shared by sustain DPS and reverse-onslaught/Bullet
  * Storm simulation.
  *
@@ -55,11 +73,7 @@ export function sustainTiming(
   fireRate: number,
   bashAnimationSec: number = DEFAULT_BATTLE_LOADERS_BASH_SEC,
 ): SustainTiming {
-  const capacity = weapon.capacity ?? 0;
-  const ammoPerShot = weapon.ammoPerShot ?? 1;
-  const ammoFreeChance = weapon.ammoFreeChance ?? 0;
-  const effCapacity = ammoFreeChance > 0 ? capacity / (1 - ammoFreeChance) : capacity;
-  const shotsPerMag = ammoPerShot > 0 ? Math.floor(effCapacity / ammoPerShot) : 0;
+  const shotsPerMag = shotsPerMagazine(weapon);
 
   if (shotsPerMag <= 0 || fireRate <= 0) {
     return { shotsPerMag: 0, magDumpSec: 0, reloadSec: 0 };

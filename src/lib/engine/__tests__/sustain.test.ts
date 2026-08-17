@@ -4,6 +4,7 @@ import { makeResolvedPlayer } from '@/lib/engine/__tests__/resolved-player-fixtu
 import {
   computeSustain,
   DEFAULT_BATTLE_LOADERS_BASH_SEC,
+  shotsPerMagazine,
   sustainTiming,
 } from '@/lib/engine/sustain';
 
@@ -23,6 +24,38 @@ function gun(overrides: Partial<Weapon> = {}): Weapon {
     ...overrides,
   };
 }
+
+describe('shotsPerMagazine', () => {
+  it('6-round mag, ammoPerShot 1 → 6', () => {
+    expect(shotsPerMagazine(gun({ capacity: 6 }))).toBe(6);
+  });
+
+  it('single-shot weapon (capacity 1) → 1', () => {
+    expect(shotsPerMagazine(gun({ capacity: 1 }))).toBe(1);
+  });
+
+  it('no magazine (capacity 0, e.g. melee) → 0', () => {
+    expect(shotsPerMagazine(gun({ capacity: 0, weaponClass: 'melee' }))).toBe(0);
+  });
+
+  it('ammoPerShot 2 with capacity 500 (Gauss Minigun shape) → 250', () => {
+    expect(shotsPerMagazine(gun({ capacity: 500, ammoPerShot: 2 }))).toBe(250);
+  });
+
+  it('ammoFreeChance 0.5 with capacity 10 → 20 (free ammo stretches effective capacity)', () => {
+    expect(shotsPerMagazine(gun({ capacity: 10, ammoFreeChance: 0.5 }))).toBe(20);
+  });
+
+  it('stays in sync with sustainTiming.shotsPerMag (6-round mag)', () => {
+    const weapon = gun({ capacity: 6 });
+    expect(sustainTiming(weapon, 5).shotsPerMag).toBe(shotsPerMagazine(weapon));
+  });
+
+  it('stays in sync with sustainTiming.shotsPerMag (ammoFreeChance stretch)', () => {
+    const weapon = gun({ capacity: 10, ammoFreeChance: 0.5 });
+    expect(sustainTiming(weapon, 5).shotsPerMag).toBe(shotsPerMagazine(weapon));
+  });
+});
 
 describe('computeSustain', () => {
   it('hand-computed cycle: 20-round mag, 5 shots/s, 2s reload, 100 dmg/hit', () => {

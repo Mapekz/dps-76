@@ -2,6 +2,8 @@ import { describe, it, expect } from 'bun:test';
 import type { Weapon } from '@/types';
 import { createDefaultEnemyConditions } from '@/types';
 import type { Modifier } from '@/types/modifiers';
+import { foldBucket, type ResolveContext } from '@/lib/engine/resolve';
+import type { BucketTrace } from '@/lib/engine/trace';
 import { computeScenarios, type ScenarioInput } from '@/lib/engine/scenarios';
 import { getWeapons } from '@/data';
 import { getLoadoutModifiers } from '@/data/perk-modifiers';
@@ -183,5 +185,46 @@ describe('attribution trace', () => {
       (c) => c.source.name,
     );
     expect(names.join()).toMatch(/Masochist/i);
+  });
+
+  it('records cadence pieces on lastRound-conditioned contributions', () => {
+    const lastShotMod = mod({
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 1.0,
+      conditions: [{ kind: 'lastRound' }],
+      source: { kind: 'omod', formId: '0xls', edid: 'LastShot', name: 'Last Shot' },
+    });
+    const ctx: ResolveContext = {
+      weapon: makeWeapon(),
+      player: makeResolvedPlayer(),
+      enemy: createDefaultEnemyConditions(),
+      scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
+      lastRound: { procChance: 0.25, shotsPerMag: 20 },
+    };
+    const collect: BucketTrace[] = [];
+    foldBucket([lastShotMod], 'dbm', 1.0, ctx, collect);
+    const add = collect[0]!.add[0]!;
+    expect(add.cadence).toEqual({ raw: 1, procChance: 0.25, oneInShots: 20 });
+    expect(add.value).toBeCloseTo(0.0125, 10);
+  });
+
+  it('omits cadence on ordinary modifier contributions', () => {
+    const ordinary = mod({
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.5,
+      source: { kind: 'perk', formId: '0x1', edid: 'Ordinary', name: 'Ordinary' },
+    });
+    const ctx: ResolveContext = {
+      weapon: makeWeapon(),
+      player: makeResolvedPlayer(),
+      enemy: createDefaultEnemyConditions(),
+      scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
+      lastRound: { procChance: 0.25, shotsPerMag: 20 },
+    };
+    const collect: BucketTrace[] = [];
+    foldBucket([ordinary], 'dbm', 1.0, ctx, collect);
+    expect(collect[0]!.add[0]).not.toHaveProperty('cadence');
   });
 });

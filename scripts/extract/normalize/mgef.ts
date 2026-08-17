@@ -1171,6 +1171,19 @@ function hasGetRandomPercentCondition(rows: RawCondition[]): boolean {
 }
 
 /**
+ * Drop the `GetRandomPercent` gate from already-translated conditions, for the
+ * branches that lift that roll INTO the modifier's value (a probability) —
+ * `translateConditions` has no kind for it, so it survives as
+ * `{ kind: 'unresolved' }`, which `resolve.ts`'s `evalCondition` always fails.
+ * Leaving it would silently make the very modifier the branch just built inert.
+ */
+function withoutRandomPercentGate(conditions: Condition[]): Condition[] {
+  return conditions.filter(
+    (c) => !(c.kind === 'unresolved' && c.raw.startsWith('GetRandomPercent(')),
+  );
+}
+
+/**
  * Read the percent bound from a GetRandomPercent row (e.g. `<= 20` → 0.20).
  * GLOB-valued Comparison Values resolve via `globalValues` when present.
  */
@@ -1327,6 +1340,41 @@ export async function translateGrantedPerk(
         const value = parseGetRandomPercentChance(conditionRows, globalValues);
         if (value !== null) {
           result.modifiers.push({ bucket: 'reloadSkipChance', op: 'ADD', value, conditions });
+        } else {
+          result.notes.push(
+            `perk ${perkEdid}: ${name} — GetRandomPercent present but chance unparsed, skipped`,
+          );
+        }
+        continue;
+      }
+
+      // EP-198 "Is Next Clip Last Shot" (Legendary_LastShot_Roll_Perk, chased from
+      // the Last Shot legendary): Function "Add Value" Float=1.0 is a boolean flag
+      // placeholder — the REAL chance lives in the effect's own GetRandomPercent
+      // gate against LGND_LastShotChance (GLOB 0x006C20BB = 25.0), the same shape as
+      // the EP-199 case above. The flag it sets is what the damage modifier's
+      // `lastRound` condition reads, so without this the +100% dbm looks
+      // unconditional on the mag's last round instead of a 25% roll.
+      // Narrowed to the exact Add Value 1.0 + GetRandomPercent combination so a
+      // hypothetical un-gated future use still falls through to ENTRY_POINT_BUCKETS.
+      if (
+        name === 'Is Next Clip Last Shot' &&
+        functionName === 'Add Value' &&
+        float === 1 &&
+        hasGetRandomPercentCondition(conditionRows)
+      ) {
+        const value = parseGetRandomPercentChance(conditionRows, globalValues);
+        if (value !== null) {
+          result.modifiers.push({
+            bucket: 'lastShotChance',
+            op: 'ADD',
+            value,
+            // The GetRandomPercent row IS this modifier's value — keeping it as
+            // a condition too would leave an `unresolved` gate that
+            // resolve.ts's evalCondition always fails, making the modifier
+            // inert (`bun run audit:inert`'s `unresolved-cond` bucket).
+            conditions: withoutRandomPercentGate(conditions),
+          });
         } else {
           result.notes.push(
             `perk ${perkEdid}: ${name} — GetRandomPercent present but chance unparsed, skipped`,

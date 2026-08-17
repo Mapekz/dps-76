@@ -43,13 +43,6 @@ export function AttackStateGroup() {
         />
 
         <SwitchRow
-          id="char-last-shot"
-          label="Firing the magazine's last round"
-          checked={conditions.isLastShot ?? false}
-          onCheckedChange={(v) => set('isLastShot', v)}
-        />
-
-        <SwitchRow
           id="char-ads"
           label="Aiming down sights"
           checked={conditions.isAimingDownSights ?? false}

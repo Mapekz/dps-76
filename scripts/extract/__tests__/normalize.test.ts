@@ -1009,6 +1009,109 @@ describe('translateConditions (2026-07-11 condition kinds)', () => {
   });
 });
 
+describe('translateGrantedPerk (Last Shot EP-198 Is Next Clip Last Shot, 2026-08-17)', () => {
+  const globFormId = '0x006C20BB';
+  const perkFormId = '0x0077176B';
+
+  function lastShotRollPerk(withGetRandomPercent: boolean): Record<string, unknown> {
+    const perkConditions = withGetRandomPercent
+      ? [
+          {
+            'Perk Condition': {
+              Conditions: [
+                {
+                  Condition: {
+                    'Condition Data': {
+                      Function: 'GetRandomPercent',
+                      'Comparison Value': globFormId,
+                      Operator: 'Less Than Or Equal To',
+                      'Run On': 'Subject',
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        ]
+      : [];
+
+    return {
+      editor_id: 'Legendary_LastShot_Roll_Perk',
+      fields: {
+        Effects: [
+          {
+            Effect: {
+              'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+              'Entry Point': {
+                'Entry Point': { name: 'Is Next Clip Last Shot' },
+                Function: { name: 'Add Value' },
+              },
+              Float: 1,
+              'Perk Conditions': perkConditions,
+            },
+          },
+        ],
+      },
+    };
+  }
+
+  function clientWithGlob(perk: Record<string, unknown>): EsmSource {
+    return createInMemoryEsmSource({
+      records: {
+        [perkFormId]: perk as unknown as EsmRecord,
+        [globFormId]: {
+          header: { signature: 'GLOB', form_id: globFormId },
+          editor_id: 'LGND_LastShotChance',
+          fields: { Value: 25 },
+        } as unknown as EsmRecord,
+      },
+      resolveEdidFallback: (formId) => formId,
+    });
+  }
+
+  it('maps GetRandomPercent-gated Add Value 1.0 to lastShotChance ADD 0.25 via LGND_LastShotChance', async () => {
+    const result = await translateGrantedPerk(
+      {
+        client: clientWithGlob(lastShotRollPerk(true)),
+        routes: new Map(),
+        edidByFormId: new Map(),
+      },
+      'mod_Legendary_Weapon2_Guns_LastShot',
+      perkFormId,
+    );
+    expect(result.modifiers).toHaveLength(1);
+    expect(result.modifiers[0]).toMatchObject({
+      bucket: 'lastShotChance',
+      op: 'ADD',
+      value: 0.25,
+    });
+    // The GetRandomPercent roll IS the value, so it must NOT also survive as an
+    // `unresolved` condition — that gate always fails in resolve.ts, which
+    // would leave this modifier inert (`bun run audit:inert`).
+    expect(result.modifiers[0]!.conditions).toEqual([]);
+    expect(result.notes.some((n) => n.includes('Is Next Clip Last Shot — not modeled'))).toBe(
+      false,
+    );
+  });
+
+  it('without GetRandomPercent falls through to the generic not-modeled note (no lastShotChance modifier)', async () => {
+    expect(ENTRY_POINT_BUCKETS['Is Next Clip Last Shot']).toBeUndefined();
+    const result = await translateGrantedPerk(
+      {
+        client: clientWithGlob(lastShotRollPerk(false)),
+        routes: new Map(),
+        edidByFormId: new Map(),
+      },
+      'mod_Legendary_Weapon2_Guns_LastShot',
+      perkFormId,
+    );
+    expect(result.modifiers.filter((m) => m.bucket === 'lastShotChance')).toEqual([]);
+    expect(result.notes).toContain(
+      'perk Legendary_LastShot_Roll_Perk: entry point Is Next Clip Last Shot — not modeled',
+    );
+  });
+});
+
 describe('translate (Damage-archetype DoT effects)', () => {
   it('emits a dotDamage modifier scoped to the resolved Resist Value element', () => {
     const dotEdids = new Map<string, string>([['0xResist', 'FireResist']]);

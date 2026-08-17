@@ -32,7 +32,7 @@ import { SectionTrigger } from './SectionTrigger';
  * target state AND the three accuracy sliders (hitRatePct/vatsHitRatePct/
  * bodyPartHitRatePct — they only make sense next to the body-part picker)
  * live in the Encounter card's TargetPanel; attack-state toggles (sneaking /
- * power attack / last shot / ADS) live in AttackStateGroup there too;
+ * power attack / ADS) live in AttackStateGroup there too;
  * weakpoint stays on the headline chips. There is no separate "hydrated" /
  * "well fed" toggle anywhere: the Drink/Food meter sliders below are each
  * ladder's sole input — AP regen and max HP respectively, both ESM-PROVEN

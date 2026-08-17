@@ -17,6 +17,13 @@ export interface TraceContribution {
   op: ModOp;
   /** Condition-scaled effective value that entered the fold. */
   value: number;
+  /**
+   * Set when this contribution is a magazine-cycle average of a once-per-N-shots
+   * proc (the Last Shot legendary): `value` is already `raw × procChance /
+   * oneInShots`, and these are the pieces behind it so the breakdown can show
+   * the derivation instead of an unexplained small number.
+   */
+  cadence?: { raw: number; procChance: number; oneInShots: number };
 }
 
 /** One foldBucket call: base → SET/MUL_ADD/ADD contributions → result. */

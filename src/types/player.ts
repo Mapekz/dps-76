@@ -14,7 +14,6 @@ export interface PlayerInput {
   isInPowerArmor: boolean;
   isSolo: boolean;
   isPowerAttacking: boolean;
-  isLastShot?: boolean;
   isAimingDownSights?: boolean;
   isGhoul?: boolean;
   healthPercent: number;
@@ -170,7 +169,6 @@ export function createDefaultPlayerInput(): PlayerInput {
     isInPowerArmor: false,
     isSolo: true,
     isPowerAttacking: false,
-    isLastShot: false,
     isAimingDownSights: false,
     isGhoul: false,
     healthPercent: 100,

@@ -315,7 +315,7 @@ picker badge.
 | Crippling / Basher's | extracted to `limbDamage`/`bashDamage` — INERT until limb-targeting/bash is modeled | ESM-PROVEN | extracted, inert pending limb-targeting/bash modeling |
 | Scaly Skin (+ Chameleon/Grounded ripple) | +DamageResist/+EnergyResist extracted to `damageResistGain`/`energyResistGain` (50/62 normal/Class-Freak) — INERT until wearer-side resist mitigation is modeled | ESM-PROVEN | extracted, inert pending wearer-side resist mitigation |
 | Pyromaniac's / Viper's / Severing's | +50% dbm while target has an active fire/poison/bleed status (toggle, default off); Viper's `ImmuneToPoison` gate CONSUMED | ESM-PROVEN | granted-perk chase |
-| Last Shot | +100% dbm on the magazine's last round (toggle, default off); steady-state doesn't model once-per-mag cadence | ESM-PROVEN | — |
+| Last Shot | +100% dbm on the magazine's last round, on a 25% roll (`LGND_LastShotChance`), folded to `procChance / shotsPerMagazine` per shot — see `docs/adr/0019-last-shot-is-a-magazine-cycle-average.md`. Whether `GetRandomPercent` re-rolls per shot or per reload is unproven; both readings give the same steady-state EV (the flag is only read on the one shot where `GetLoadedAmmoCount()==0`), a persists-once-set reading would be higher | INFERENCE | ESM proves the 25% gate; the roll's cadence is not record-proven |
 | Encircler's | +10%×N from `enemyGroupCount` tiers; default count **1** | ESM-PROVEN | — |
 | Fencer's (melee) | +12.5–50% from exact `teammateCount` tiers; range-check CONSUMED | ESM-PROVEN | — |
 | Mutant's / Gourmand's / Lucid | curve-driven on `mutationCount`/**Hunger & thirst tiers**/`feralTier` | ESM-PROVEN | — |

@@ -53,6 +53,7 @@ const ALL_BUCKETS: Bucket[] = [
   'reloadSkipChance',
   'reloadSkipChanceBash',
   'ammoFreeChance',
+  'lastShotChance',
   'vatsApCost',
   'chargeFullPowerSec',
   'chargeFullPowerDamageMult',
@@ -136,7 +137,12 @@ describe('BUCKET_REGISTRY', () => {
   });
 
   it('derives SUSTAIN_CHANCE_BUCKETS as exactly the sustainChance-regime buckets', () => {
-    const expected: Bucket[] = ['reloadSkipChance', 'reloadSkipChanceBash', 'ammoFreeChance'];
+    const expected: Bucket[] = [
+      'reloadSkipChance',
+      'reloadSkipChanceBash',
+      'ammoFreeChance',
+      'lastShotChance',
+    ];
     expect([...SUSTAIN_CHANCE_BUCKETS].sort()).toEqual(expected.sort());
   });
 

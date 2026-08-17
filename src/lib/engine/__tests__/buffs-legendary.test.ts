@@ -168,7 +168,7 @@ describe('legendary weapon effects', () => {
 });
 
 describe('legendary weapon effects (2026-07-11 condition kinds)', () => {
-  it('Last Shot adds +100% only while firing the last round in the magazine', () => {
+  it('Last Shot folds to a magazine-cycle average: +100% × 25% proc ÷ shotsPerMag', () => {
     const lastShot = getOmodById('live', 'mod_Legendary_Weapon2_Guns_LastShot')!;
     const { weapon, modifiers } = buildEffectiveWeapon(
       fixer,
@@ -177,12 +177,10 @@ describe('legendary weapon effects (2026-07-11 condition kinds)', () => {
       makeResolvedPlayer(),
       makeDefaultEnemy(),
     );
-    const normally = computeScenarios(base({ weapon, modifiers }));
-    expect(normally.freeAim.perHit.total).toBeCloseTo(stockTotal, 6);
-    const lastRound = computeScenarios(
-      base({ weapon, modifiers, player: { ...makeResolvedPlayer(), isLastShot: true } }),
-    );
-    expect(lastRound.freeAim.perHit.total / stockTotal).toBeCloseTo(2.0, 6);
+    const result = computeScenarios(base({ weapon, modifiers }));
+    // The Fixer holds 20 rounds and EP-198 rolls 25%, so the +1.00 dbm lands as
+    // +1.00 × 0.25 / 20 = +0.0125 on every shot.
+    expect(result.freeAim.perHit.total / stockTotal).toBeCloseTo(1.0125, 6);
   });
 
   it("Encircler's picks its tier from the enemy group size: +10% solo target, +30% at 3, capped +50% at ≥5", () => {

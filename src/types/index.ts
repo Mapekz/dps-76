@@ -198,6 +198,12 @@ export interface Weapon {
    * sustainChance bucket modifiers in effective-weapon.ts; consumed by sustain.ts).
    */
   ammoFreeChance?: number;
+  /**
+   * Engine-derived probability that the mag's last round is flagged as a Last
+   * Shot (folded from `lastShotChance` sustainChance bucket modifiers in
+   * effective-weapon.ts; consumed by resolve.ts's `lastRound` condition).
+   */
+  lastShotChance?: number;
   /** Reload speed multiplier (Data.Reload Speed; higher = faster). */
   reloadSpeed?: number;
   /** Base reload animation length in seconds (RGW3 Animation Reload Seconds). */

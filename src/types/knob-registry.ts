@@ -76,9 +76,10 @@ const PLAYER_INPUT_DEFAULTS = createDefaultPlayerInput();
 const PLAYER_DEFAULTS = createDefaultResolvedPlayer();
 const ENEMY_DEFAULTS = createDefaultEnemyConditions();
 
-// retired wire ordinals: 57 (hydrated — removed 2026-08-17; AP regen now
-// derives from drinkTier alone, see player-baseline.ts). Old share links
-// carrying wire 57 just drop the bit; never reassign 57 to a new row.
+// retired wire ordinals: 6 (isLastShot — replaced by resolve.ts's magazine-cycle
+// `lastRound` average; never reuse the ordinal), 57 (hydrated — removed
+// 2026-08-17; AP regen now derives from drinkTier alone, see
+// player-baseline.ts). Old share links carrying retired bits just drop them.
 export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerKnobRow>> = {
   isSneaking: {
     key: 'isSneaking',
@@ -135,16 +136,6 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
     section: 'attack-state',
     default: PLAYER_DEFAULTS.isPowerAttacking,
     label: 'Power attacking',
-    activeBadge: 'attack-state',
-  },
-  isLastShot: {
-    key: 'isLastShot',
-    wire: 6,
-    owner: 'player',
-    origin: 'input',
-    section: 'attack-state',
-    default: PLAYER_DEFAULTS.isLastShot ?? false,
-    label: 'Last shot in magazine',
     activeBadge: 'attack-state',
   },
   isAimingDownSights: {

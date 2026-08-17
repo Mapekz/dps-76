@@ -69496,6 +69496,19 @@
       "kind": "lastRound"
      }
     ]
+   },
+   {
+    "id": "0x006069EC:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x006069EC",
+     "edid": "mod_Legendary_Weapon2_Guns_LastShot",
+     "name": "Last Shot"
+    },
+    "bucket": "lastShotChance",
+    "op": "ADD",
+    "value": 0.25,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -69505,8 +69518,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk Legendary_LastShot_Roll_Perk: GetRandomPercent()=0x006C20BB",
-   "perk Legendary_LastShot_Roll_Perk: entry point Is Next Clip Last Shot — not modeled"
+   "perk Legendary_LastShot_Roll_Perk: GetRandomPercent()=0x006C20BB"
   ],
   "obtainable": true
  },

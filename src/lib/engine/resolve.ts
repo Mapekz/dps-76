@@ -134,6 +134,15 @@ export interface ResolveContext {
    * constant (`FAR_THRESHOLD_UNITS`) — see `distance.ts`.
    */
   closeThresholdUnits?: number;
+  /**
+   * Last Shot's magazine cadence, threaded from `scenarios.ts`'s `scenarioCtx`:
+   * `procChance` is the folded `weapon.lastShotChance` (EP-198's
+   * `GetRandomPercent` roll against `LGND_LastShotChance`), `shotsPerMag` is
+   * `sustain.ts`'s `shotsPerMagazine`. Read by the `lastRound` condition, which
+   * spreads the once-per-magazine bonus into a per-shot average. Undefined =
+   * inactive (synthetic test contexts).
+   */
+  lastRound?: { procChance: number; shotsPerMag: number };
 }
 
 /**
@@ -304,8 +313,17 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       const count = Math.max(0, Math.min(ctx.enemy.crippledLimbCount ?? 0, cond.max));
       return count > 0 ? count : null;
     }
-    case 'lastRound':
-      return ctx.player.isLastShot ? 1 : null;
+    case 'lastRound': {
+      // Steady-state EV, not a per-shot toggle: the bonus lands on the one shot
+      // per magazine where GetLoadedAmmoCount()==0, and only when the EP-198 roll
+      // won. EXACT rather than approximate because both current sources are plain
+      // `dbm` ADDs and paper damage is affine in the dbm fold — a future SET-op,
+      // product-folded (`wholeDamage`/`foldBucketProduct`, where E[∏] ≠ ∏E), or
+      // outside-the-parenthesis lastRound source would break that.
+      const r = ctx.lastRound;
+      if (!r || r.shotsPerMag <= 0 || r.procChance <= 0) return null;
+      return r.procChance / r.shotsPerMag;
+    }
     case 'enemyHasActiveEffect': {
       const active =
         cond.keyword === 'DamageTypeFire'
@@ -522,11 +540,18 @@ export function foldBucket(
   const result = foldOps(entries, base);
 
   if (collect) {
-    const contribution = (e: { op: ModOp; value: number; mod?: Modifier }): TraceContribution => ({
-      source: e.mod!.source,
-      op: e.op,
-      value: e.value,
-    });
+    const contribution = (e: { op: ModOp; value: number; mod?: Modifier }): TraceContribution => {
+      const mod = e.mod!;
+      const cadence =
+        ctx.lastRound && !mod.curve && mod.conditions.some((c) => c.kind === 'lastRound')
+          ? {
+              raw: mod.value,
+              procChance: ctx.lastRound.procChance,
+              oneInShots: ctx.lastRound.shotsPerMag,
+            }
+          : undefined;
+      return { source: mod.source, op: e.op, value: e.value, ...(cadence && { cadence }) };
+    };
     const sets = entries.filter((e) => e.op === 'SET');
     collect.push({
       bucket,

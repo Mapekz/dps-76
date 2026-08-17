@@ -1841,6 +1841,102 @@ describe('sustain chance buckets (foldChanceUnion)', () => {
   };
   const perkSource = { kind: 'perk' as const, formId: '0x1', edid: 'test_perk', name: 'Test Perk' };
 
+  it('lastShotChance folds a single modifier to its value', () => {
+    const lastShotOmod = {
+      id: 'test_last_shot',
+      formId: '0x0',
+      name: 'Test Last Shot',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_Legendary3',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [
+        {
+          id: '0x0:0',
+          source: omodSource,
+          bucket: 'lastShotChance' as const,
+          op: 'ADD' as const,
+          value: 0.25,
+          conditions: [],
+        },
+      ],
+    };
+    const { weapon } = buildEffectiveWeapon(
+      fixer,
+      [lastShotOmod],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
+    expect(weapon.lastShotChance).toBeCloseTo(0.25, 10);
+  });
+
+  it('two lastShotChance sources compose as 1 − (1 − c1)(1 − c2), same union as reloadSkipChance', () => {
+    const c1 = 0.25;
+    const c2 = 0.25;
+    const lastShotOmod = {
+      id: 'test_last_shot_union',
+      formId: '0x0',
+      name: 'Test Last Shot Union',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_Legendary3',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [c1, c2].map((value, i) => ({
+        id: `0x0:${i}`,
+        source: omodSource,
+        bucket: 'lastShotChance' as const,
+        op: 'ADD' as const,
+        value,
+        conditions: [],
+      })),
+    };
+    const { weapon } = buildEffectiveWeapon(
+      fixer,
+      [lastShotOmod],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
+    expect(weapon.lastShotChance).toBeCloseTo(1 - (1 - c1) * (1 - c2), 10);
+  });
+
+  it('lastShotChance reads 0 when the fold runs but no lastShotChance modifier is present', () => {
+    const reloadSkipOnly = {
+      id: 'test_reload_skip_only',
+      formId: '0x0',
+      name: 'Test Reload Skip Only',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_Legendary3',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [
+        {
+          id: '0x0:0',
+          source: omodSource,
+          bucket: 'reloadSkipChance' as const,
+          op: 'ADD' as const,
+          value: 0.2,
+          conditions: [],
+        },
+      ],
+    };
+    const { weapon } = buildEffectiveWeapon(
+      fixer,
+      [reloadSkipOnly],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
+    expect(weapon.lastShotChance).toBeCloseTo(0, 10);
+  });
+
   it('two reload-skip sources compose as 1 − (1 − c1)(1 − c2)', () => {
     const c1 = 0.06;
     const c2 = 0.12;

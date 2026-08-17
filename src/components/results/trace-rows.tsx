@@ -1,6 +1,22 @@
 import type { BucketTrace, TraceContribution } from '@/lib/engine/trace';
 import { Row } from './breakdown-row';
 
+function cadenceSubRow(c: TraceContribution, parentKey: string, op: 'mulAdd' | 'add') {
+  if (!c.cadence) return null;
+  const { raw, procChance, oneInShots } = c.cadence;
+  const rawFormatted = op === 'mulAdd' ? `${signed(raw * 100, 0)}%` : signed(raw);
+  const procPercent = Math.round(procChance * 100);
+  return (
+    <Row
+      key={`${parentKey}-cadence`}
+      indent={2}
+      muted
+      label={`${rawFormatted} at ${procPercent}% on 1 of ${oneInShots} shots`}
+      value=""
+    />
+  );
+}
+
 /** Shared by `MultiplierChainTable`'s reload/mag-cycle rows and `ApEconomyPanel`'s pool-cycle rows. */
 export const formatSeconds = (value: number) => `${value.toFixed(1)}s`;
 
@@ -14,6 +30,8 @@ export function signed(v: number, digits = 2): string {
  * crit-bonus rows above it rather than adding to the total directly) without
  * touching `source.name` itself — that name is shared with other UI (e.g. an
  * equipped-mods list) and shouldn't carry a breakdown-specific caveat.
+ * Magazine-cycle averages (`cadence` on a contribution) get a second muted
+ * sub-row showing the raw proc and shot count behind the folded value.
  */
 export function contributionRows(trace: BucketTrace, keyPrefix: string, labelSuffix = '') {
   // Key rows by fold-array index too: one source may emit several modifiers
@@ -44,24 +62,25 @@ export function contributionRows(trace: BucketTrace, keyPrefix: string, labelSuf
     );
   }
   for (const [i, c] of trace.mulAdd.entries()) {
+    const key = `${keyPrefix}-mul-${c.source.edid}-${c.source.rank ?? 0}-${i}`;
     rows.push(
       <Row
-        key={`${keyPrefix}-mul-${c.source.edid}-${c.source.rank ?? 0}-${i}`}
+        key={key}
         indent
         label={`${c.source.name}${labelSuffix}`}
         value={`${signed(c.value * 100, 0)}%`}
       />,
     );
+    const cadence = cadenceSubRow(c, key, 'mulAdd');
+    if (cadence) rows.push(cadence);
   }
   for (const [i, c] of trace.add.entries()) {
+    const key = `${keyPrefix}-add-${c.source.edid}-${c.source.rank ?? 0}-${i}`;
     rows.push(
-      <Row
-        key={`${keyPrefix}-add-${c.source.edid}-${c.source.rank ?? 0}-${i}`}
-        indent
-        label={`${c.source.name}${labelSuffix}`}
-        value={signed(c.value)}
-      />,
+      <Row key={key} indent label={`${c.source.name}${labelSuffix}`} value={signed(c.value)} />,
     );
+    const cadence = cadenceSubRow(c, key, 'add');
+    if (cadence) rows.push(cadence);
   }
   return rows;
 }

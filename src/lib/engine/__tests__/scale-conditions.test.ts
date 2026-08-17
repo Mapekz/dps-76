@@ -186,3 +186,37 @@ describe('perCrippledLimb', () => {
     expect(foldBucket([tightCap], 'dbm', 1.0, overRaceCap)).toBeCloseTo(1.2, 10);
   });
 });
+
+describe('lastRound', () => {
+  const weapon = makeWeapon();
+  const lastShotMod = mod({
+    bucket: 'dbm',
+    op: 'ADD',
+    value: 1.0,
+    conditions: [{ kind: 'lastRound' }],
+  });
+
+  it('averages the once-per-magazine bonus over shotsPerMag × procChance', () => {
+    const ctx = makeCtx(weapon, { lastRound: { procChance: 0.25, shotsPerMag: 20 } });
+    expect(foldBucket([lastShotMod], 'dbm', 1.0, ctx)).toBeCloseTo(1.0125, 10);
+  });
+
+  it('is inactive when shotsPerMag is zero', () => {
+    const ctx = makeCtx(weapon, { lastRound: { procChance: 0.25, shotsPerMag: 0 } });
+    expect(foldBucket([lastShotMod], 'dbm', 1.0, ctx)).toBe(1.0);
+  });
+
+  it('is inactive when procChance is zero', () => {
+    const ctx = makeCtx(weapon, { lastRound: { procChance: 0, shotsPerMag: 20 } });
+    expect(foldBucket([lastShotMod], 'dbm', 1.0, ctx)).toBe(1.0);
+  });
+
+  it('is inactive when lastRound cadence is not threaded', () => {
+    expect(foldBucket([lastShotMod], 'dbm', 1.0, makeCtx(weapon))).toBe(1.0);
+  });
+
+  it('reaches full procChance on a single-shot launcher', () => {
+    const ctx = makeCtx(weapon, { lastRound: { procChance: 0.25, shotsPerMag: 1 } });
+    expect(foldBucket([lastShotMod], 'dbm', 1.0, ctx)).toBeCloseTo(1.25, 10);
+  });
+});

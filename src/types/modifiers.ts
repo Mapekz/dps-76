@@ -189,6 +189,14 @@ export type Bucket =
    */
   | 'ammoFreeChance'
   /**
+   * Probability the magazine's last round is flagged as a Last Shot
+   * (EP-198 "Is Next Clip Last Shot", gated on `GetRandomPercent` vs the
+   * `LGND_LastShotChance` GLOB). Folded via independent-probability union
+   * in effective-weapon.ts; consumed by resolve.ts's `lastRound` condition as
+   * the per-magazine proc chance.
+   */
+  | 'lastShotChance'
+  /**
    * Rewrite on the weapon's per-shot VATS AP cost (WEAP "Action Point Cost").
    * V.A.T.S. Optimized MUL_ADD −0.35 (OMOD property AttackActionPointCost).
    * Folded over the weapon base the same way as ammoCapacity/reloadSpeed
@@ -828,6 +836,13 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
     hasEngineEffect: true,
     foldedBy:
       'effective-weapon.ts (weapon.ammoFreeChance rewrite); feeds sustain.ts effective capacity',
+  },
+  lastShotChance: {
+    foldBase: 'dynamic',
+    regime: 'sustainChance',
+    hasEngineEffect: true,
+    foldedBy:
+      "effective-weapon.ts (weapon.lastShotChance rewrite); feeds resolve.ts's lastRound condition — the Last Shot legendary's per-magazine proc chance",
   },
   vatsApCost: {
     foldBase: 'dynamic',

@@ -352,6 +352,10 @@ export function buildEffectiveWeapon(
   // (docs/assumptions.md "Reload-skip & free-ammo expected value").
   const reloadSkipChanceBash = foldChanceUnion(statModifiers, 'reloadSkipChanceBash', ctx);
   const ammoFreeChance = foldChanceUnion(statModifiers, 'ammoFreeChance', ctx);
+  // Last Shot's per-magazine proc chance (EP-198) — same foldChanceUnion as
+  // the reload/ammo chances above; read by resolve.ts's `lastRound` condition
+  // rather than by sustain.ts.
+  const lastShotChance = foldChanceUnion(statModifiers, 'lastShotChance', ctx);
   // VATS AP cost (Stage B): foldBucket Σ MUL_ADD on WEAP Action Point Cost
   // (V.A.T.S. Optimized −0.35, plasma barrel/stock/capacitor, …). Keep the
   // RAW float — Pip-Boy shows round(cost); do not round here
@@ -550,6 +554,7 @@ export function buildEffectiveWeapon(
       reloadSkipChance,
       reloadSkipChanceBash,
       ammoFreeChance,
+      lastShotChance,
       apCost,
       fullPowerSeconds,
       fullPowerDamageMult,

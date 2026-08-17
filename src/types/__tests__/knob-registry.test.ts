@@ -9,7 +9,7 @@ import {
 
 describe('KNOB_REGISTRY', () => {
   it('has exactly one player row per ResolvedPlayer key', () => {
-    expect(Object.keys(PLAYER_KNOB_REGISTRY).length).toBe(57);
+    expect(Object.keys(PLAYER_KNOB_REGISTRY).length).toBe(56);
     for (const key of Object.keys(makeResolvedPlayer())) {
       expect(PLAYER_KNOB_REGISTRY).toHaveProperty(key);
     }
@@ -65,7 +65,6 @@ describe('KNOB_REGISTRY', () => {
       { key: 'isInPowerArmor', wire: 3 },
       { key: 'isSolo', wire: 4 },
       { key: 'isPowerAttacking', wire: 5 },
-      { key: 'isLastShot', wire: 6 },
       { key: 'isAimingDownSights', wire: 7 },
       { key: 'isGhoul', wire: 8 },
       { key: 'healthPercent', wire: 9 },
@@ -116,8 +115,8 @@ describe('KNOB_REGISTRY', () => {
       { key: 'junkItemCount', wire: 54 },
       { key: 'teammateCount', wire: 55 },
       { key: 'publicTeamType', wire: 56 },
-      // wire 57 (hydrated) retired 2026-08-17 — see PLAYER_KNOB_REGISTRY's
-      // leading comment.
+      // wire 6 (isLastShot) and wire 57 (hydrated) retired — see
+      // PLAYER_KNOB_REGISTRY's leading comment.
     ];
     const fromRegistry = (Object.keys(PLAYER_KNOB_REGISTRY) as Array<keyof ResolvedPlayer>).map(
       (key) => ({ key, wire: PLAYER_KNOB_REGISTRY[key]!.wire }),

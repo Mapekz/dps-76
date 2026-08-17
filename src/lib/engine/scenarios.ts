@@ -26,7 +26,12 @@ import {
   reverseOnslaughtAvgStacks,
 } from './onslaught';
 import { BULLET_STORM_AMMO_PER_STACK, bulletStormAvgStacks } from './bulletstorm';
-import { computeSustain, DEFAULT_BATTLE_LOADERS_BASH_SEC, type SustainResult } from './sustain';
+import {
+  computeSustain,
+  DEFAULT_BATTLE_LOADERS_BASH_SEC,
+  shotsPerMagazine,
+  type SustainResult,
+} from './sustain';
 import {
   createHitTrace,
   tracedFold,
@@ -318,6 +323,14 @@ function scenarioCtx(
     ...(input.engineConstants?.distance && {
       closeThresholdUnits: input.engineConstants.distance.closeThresholdUnits,
     }),
+    // Last Shot's magazine cadence (resolve.ts's `lastRound` condition). Computed
+    // here rather than threaded through a Thread object like Onslaught/Bullet
+    // Storm: those wrap a 500-iteration fixed-point simulation worth computing
+    // once, this is O(1) arithmetic over input.weapon alone.
+    lastRound: {
+      procChance: input.weapon.lastShotChance ?? 0,
+      shotsPerMag: shotsPerMagazine(input.weapon),
+    },
   };
 }
 

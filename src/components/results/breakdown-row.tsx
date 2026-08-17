@@ -24,7 +24,8 @@ export function Row({
 }: {
   label: React.ReactNode;
   value: React.ReactNode;
-  indent?: boolean;
+  /** `true`/`1` → one step (`pl-3`); `2` → nested derivation sub-rows. */
+  indent?: boolean | 1 | 2;
   muted?: boolean;
   /**
    * No auto-fallback to `label` — that existed only to backstop the
@@ -37,7 +38,7 @@ export function Row({
     <div
       className={cn(
         'flex items-baseline justify-between gap-2 py-px',
-        indent && 'pl-3',
+        indent === 2 ? 'pl-6' : indent ? 'pl-3' : undefined,
         muted && 'text-muted-foreground',
       )}
     >
