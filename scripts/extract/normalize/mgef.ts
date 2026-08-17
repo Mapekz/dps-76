@@ -1301,33 +1301,39 @@ export async function translateGrantedPerk(
         ((ep['Function'] as Record<string, unknown> | undefined)?.['name'] as string) ?? 'Unknown';
       const float = typeof e['Float'] === 'number' ? (e['Float'] as number) : 0;
 
-      // EP-172 "Mod Ammo Used Count": narrowly map GetRandomPercent-gated zero-
-      // ammo to ammoFreeChance (Tesla Science 5). Timed/keyword infinite-ammo
-      // variants (HeadHunter's, Thirst Zapper) lack GetRandomPercent — stay
-      // note-only. NOT in ENTRY_POINT_BUCKETS — would catch those variants.
-      // DELIBERATELY stops short of EP-198/EP-199's final shape: it keeps the
-      // consumed GetRandomPercent row, so the modifier stays inert and
-      // `buffValueOverrides` must supply the real one. That override is
-      // load-bearing for a reason the extractor can't reach — Tesla Science
-      // 5's heavy-gun gate is DESCRIPTION-sourced ("Heavy guns have a 20%
-      // chance to not consume ammo"); the ESM effect carries only the roll.
-      // Stripping the roll here would replace an obviously-inert modifier
-      // (flagged by `bun run audit:inert`) with a silently UNGATED 20% on
-      // every weapon class the moment that override is touched. Leave it.
+      // EP-172 "Mod Ammo Used Count" (Magazine_TeslaScience05Perk 0x001F1BAA /
+      // Tesla Science 5 ALCH 0x00432D07, verified 2026-08-17): Function
+      // "Multiply Value" Float=0.0 gated on GetRandomPercent ≤ 20 — the roll IS
+      // the value, lifted out of conditions the same way EP-198/EP-199 do;
+      // leaving it as an `unresolved` gate made the modifier inert before
+      // (`bun run audit:inert`'s `unresolved-cond` bucket). Deliberately
+      // UNGATED despite the perk's "Heavy guns have a 20% chance to not consume
+      // ammo" description: no EP-172 perk in the dump carries a weapon-tab
+      // condition (tab 1 is declared but empty), so the prose has nothing
+      // behind it and the ESM wins — user-confirmed 2026-08-17. Narrowed to
+      // GetRandomPercent-gated only and kept out of ENTRY_POINT_BUCKETS so
+      // Thirst Zapper's WeaponTypeThirstZapper-gated Set Value 0 and
+      // HeadHunter's condition-less Set Value 0 still reach the generic
+      // not-modeled note instead of being silently widened to 100% free ammo.
       if (
         name === 'Mod Ammo Used Count' &&
         (functionName === 'Multiply Value' || functionName === 'Set Value') &&
         float === 0 &&
         hasGetRandomPercentCondition(conditionRows)
       ) {
-        const value = parseGetRandomPercentChance(conditionRows, globalValues) ?? 0.2;
-        const epConditions = [...conditions, ...(ENTRY_POINT_EXTRA_CONDITIONS[name] ?? [])];
-        result.modifiers.push({
-          bucket: 'ammoFreeChance',
-          op: 'ADD',
-          value,
-          conditions: epConditions,
-        });
+        const value = parseGetRandomPercentChance(conditionRows, globalValues);
+        if (value !== null) {
+          result.modifiers.push({
+            bucket: 'ammoFreeChance',
+            op: 'ADD',
+            value,
+            conditions: withoutRandomPercentGate(conditions),
+          });
+        } else {
+          result.notes.push(
+            `perk ${perkEdid}: ${name} — GetRandomPercent present but chance unparsed, skipped`,
+          );
+        }
         continue;
       }
 

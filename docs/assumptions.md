@@ -226,9 +226,11 @@ multiplicative stage on the already-folded reload time/capacity.
   (`#61`).
 - `capacity_eff = capacity / (1 − ammoFreeChance)`. Multiple sources on the
   same channel compose as independent probabilities.
-- **Tesla Science 5's heavy-gun gate is DESCRIPTION-sourced** — the ESM
-  effect carries only a random-percent roll, no weapon-class condition; the
-  gate is hand-supplied (`buff-overrides.ts`).
+- **Tesla Science 5's 20% `ammoFreeChance` applies to all weapon classes** —
+  **USER-CONFIRMED** (2026-08-17): no EP-172 perk in the dump carries a
+  weapon-tab condition; the "Heavy guns" card text is prose only. Same
+  card-text-vs-data pattern as **Magazines & bobbleheads** (Guns and Bullets
+  7). `mgef.ts` EP-172 branch.
 
 ### Fast Fighter & the moveSpeedBonus bucket
 - Fast Fighter carries **no effects on-record** — "50% of bonus movement
@@ -971,9 +973,8 @@ ESM-proven and documented at their respective extraction sites.
   not the real 15/30/45/60/75% chance (that lives in each tier's own
   `GetRandomPercent` row) — `mgef.ts` special-cases this into
   `reloadSkipChanceBash`, dropping the consumed roll and the unmodeled
-  sanity rows so the modifier isn't born inert (same as EP-198's; NOT
-  EP-172, which deliberately stops short — see its own comment) — see
-  **Armor**.
+  sanity rows so the modifier isn't born inert (the same shape EP-172 and
+  EP-198 use) — see **Armor**.
 - `extract-armor.ts` is grounding-only: `{id, formId, name, obtainable}`
   per ARMO record, feeding armor-OMOD obtainability. No resistances, no
   mod slots — later Phase 3 scope.

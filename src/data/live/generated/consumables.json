@@ -13590,12 +13590,7 @@
     "bucket": "ammoFreeChance",
     "op": "ADD",
     "value": 0.2,
-    "conditions": [
-     {
-      "kind": "unresolved",
-      "raw": "GetRandomPercent()=20"
-     }
-    ]
+    "conditions": []
    }
   ],
   "notes": [

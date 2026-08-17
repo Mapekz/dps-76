@@ -41,10 +41,16 @@ describe('consumable "no effect yet" badge (hasAnyEngineEffect over item.modifie
     expect(hasAnyEngineEffect(medX!.modifiers)).toBe(true);
   });
 
-  it('does not flag Tesla Science 5 — resolved via buffValueOverrides (concurrent work) to a real weaponClass-gated ammoFreeChance', () => {
+  it('does not flag Tesla Science 5 — extracted ammoFreeChance is deliberately ungated', () => {
     const teslaScience5 = byId('Magazine_TeslaScience05_Potion');
     expect(teslaScience5).toBeDefined();
     expect(hasAnyEngineEffect(teslaScience5!.modifiers)).toBe(true);
+    expect(teslaScience5!.modifiers).toHaveLength(1);
+    expect(teslaScience5!.modifiers[0]!.bucket).toBe('ammoFreeChance');
+    // Empty conditions: a regression to the inert unresolved GetRandomPercent
+    // gate would reintroduce conditions and fail this. Ungated is deliberate
+    // despite the card text ("Heavy guns have a 20% chance…").
+    expect(teslaScience5!.modifiers[0]!.conditions).toHaveLength(0);
   });
 
   it('does not flag the Wasteland Fish Sandwich, whose only modifier feeds Fast Fighter conditionally', () => {

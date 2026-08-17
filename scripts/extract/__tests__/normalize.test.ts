@@ -1112,6 +1112,152 @@ describe('translateGrantedPerk (Last Shot EP-198 Is Next Clip Last Shot, 2026-08
   });
 });
 
+describe('translateGrantedPerk (Tesla Science 5 EP-172 Mod Ammo Used Count, 2026-08-17)', () => {
+  const teslaPerkFormId = '0x001F1BAA';
+  const thirstZapperPerkFormId = '0xTHIRSTZAPPER';
+  const thirstZapperKwFormId = '0xKWThirstZapper';
+
+  function teslaScience05Perk(): Record<string, unknown> {
+    // Tab 0 (the perk owner) carries the whole gate. Tab 1 — the weapon tab,
+    // where ThirstZapper_WaterInfiniteAmmoPerk puts its keyword check below —
+    // is declared by the real record but empty, which is why the emitted
+    // modifier is ungated despite the perk's "Heavy guns" description.
+    const perkConditions = [
+      {
+        'Perk Condition': {
+          'Run On (Tab Index)': 0,
+          Conditions: [
+            {
+              Condition: {
+                'Condition Data': {
+                  Function: 'GetRandomPercent',
+                  Operator: 'Less Than Or Equal To',
+                  'Comparison Value': 20,
+                  'Run On': 'Subject',
+                },
+              },
+            },
+          ],
+        },
+      },
+    ];
+
+    return {
+      editor_id: 'Magazine_TeslaScience05Perk',
+      fields: {
+        Effects: [
+          {
+            Effect: {
+              'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+              'Entry Point': {
+                'Entry Point': { name: 'Mod Ammo Used Count' },
+                Function: { name: 'Multiply Value' },
+              },
+              Float: 0,
+              'Perk Conditions': perkConditions,
+            },
+          },
+        ],
+      },
+    };
+  }
+
+  function thirstZapperAmmoPerk(): Record<string, unknown> {
+    return {
+      editor_id: 'ThirstZapper_WaterInfiniteAmmoPerk',
+      fields: {
+        Effects: [
+          {
+            Effect: {
+              'Effect Header': { 'Effect Type': { name: 'Entry Point' } },
+              'Entry Point': {
+                'Entry Point': { name: 'Mod Ammo Used Count' },
+                Function: { name: 'Set Value' },
+              },
+              Float: 0,
+              'Perk Conditions': [
+                {
+                  'Perk Condition': {
+                    'Run On (Tab Index)': 1,
+                    Conditions: [
+                      {
+                        Condition: {
+                          'Condition Data': {
+                            Function: 'HasKeyword',
+                            'Parameter 1': thirstZapperKwFormId,
+                            'Comparison Value': 1,
+                            Operator: 'Equal To',
+                            'Run On': 'Subject',
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    };
+  }
+
+  function clientWithPerk(
+    perkFormId: string,
+    perk: Record<string, unknown>,
+    resolveEdid?: (formId: string) => string,
+  ): EsmSource {
+    return createInMemoryEsmSource({
+      records: { [perkFormId]: perk as unknown as EsmRecord },
+      resolveEdidFallback: resolveEdid ?? ((formId) => formId),
+    });
+  }
+
+  it('maps GetRandomPercent-gated Multiply Value 0.0 to ammoFreeChance ADD 0.2', async () => {
+    const result = await translateGrantedPerk(
+      {
+        client: clientWithPerk(teslaPerkFormId, teslaScience05Perk()),
+        routes: new Map(),
+        edidByFormId: new Map(),
+      },
+      'Magazine_TeslaScience05Perk',
+      teslaPerkFormId,
+    );
+    expect(result.modifiers).toHaveLength(1);
+    expect(result.modifiers[0]).toMatchObject({
+      bucket: 'ammoFreeChance',
+      op: 'ADD',
+      value: 0.2,
+    });
+    // The GetRandomPercent roll IS the value, so it must NOT also survive as an
+    // `unresolved` condition — that gate always fails in resolve.ts, which
+    // would leave this modifier inert (`bun run audit:inert`).
+    expect(result.modifiers[0]!.conditions).toEqual([]);
+    expect(result.notes.some((n) => n.includes('Mod Ammo Used Count — not modeled'))).toBe(false);
+  });
+
+  it('the Thirst Zapper shape falls through to the generic not-modeled note (no ammoFreeChance modifier)', async () => {
+    // Deliberate scope pin: EP-172 is NOT in ENTRY_POINT_BUCKETS so keyword/timed
+    // variants reach the not-modeled note instead of a silent 100% free-ammo SET.
+    expect(ENTRY_POINT_BUCKETS['Mod Ammo Used Count']).toBeUndefined();
+    const result = await translateGrantedPerk(
+      {
+        client: clientWithPerk(thirstZapperPerkFormId, thirstZapperAmmoPerk(), (formId) =>
+          formId === thirstZapperKwFormId ? 'WeaponTypeThirstZapper' : formId,
+        ),
+        routes: new Map(),
+        edidByFormId: new Map(),
+      },
+      'ThirstZapper_WaterInfiniteAmmoPerk',
+      thirstZapperPerkFormId,
+    );
+    expect(result.modifiers.filter((m) => m.bucket === 'ammoFreeChance')).toEqual([]);
+    expect(result.notes).toContain(
+      'perk ThirstZapper_WaterInfiniteAmmoPerk: entry point Mod Ammo Used Count — not modeled',
+    );
+  });
+});
+
 describe('translate (Damage-archetype DoT effects)', () => {
   it('emits a dotDamage modifier scoped to the resolved Resist Value element', () => {
     const dotEdids = new Map<string, string>([['0xResist', 'FireResist']]);
