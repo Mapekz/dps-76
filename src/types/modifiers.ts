@@ -1454,14 +1454,27 @@ export type Condition =
   /** Character-type gate (GetIsPlayerGhoul): Gourmand's is human-only, Glowing Criticals ghoul-only. */
   | { kind: 'playerIsGhoul'; value: boolean }
   /**
-   * Player is fully hydrated (SURV_Thirst below the WellHydrated threshold
-   * 720 — SURV_Thirst_Ability's top tier). Gates the hand-authored hydration
-   * AP-regen baseline (+35%) and Rejuvenated's boosts (player-baseline.ts /
-   * perk-overrides.ts). Default ON (optimal play); lower hydration tiers
-   * (25/15/15%) are not modeled — the toggle is all-or-nothing
-   * (docs/assumptions.md "Hydration AP regen").
+   * Exact `PlayerInput.drinkTier` match (0 Thirsty .. 4 Fully Hydrated —
+   * `DRINK_TIER_NAMES`). Gates the hand-authored hydration AP-regen ladder
+   * (player-baseline.ts) and Rejuvenated's boosts (perk-overrides.ts), which
+   * only apply at tier 4 — no other UI knob; the Drink meter slider is the
+   * sole input (2026-08-17 esm-walk of SPEL SURV_Thirst_Ability 0x00054DF3:
+   * MGEF 0x003E98F1 SURV_ThirstWellHydrated_FortifyActionPointRegen ties
+   * ActionPointsRateMult to 5 SURV_Thirst bands at 0/720/1440/2160/2880 —
+   * an ESM-PROVEN graduated ladder, not the all-or-nothing toggle this used
+   * to be).
    */
-  | { kind: 'hydrated'; value: boolean }
+  | { kind: 'drinkTierExact'; tier: number }
+  /**
+   * Exact `PlayerInput.foodTier` match (0 Hungry .. 4 Fully Fed —
+   * `FOOD_TIER_NAMES`) — satiation's mirror of `drinkTierExact`. Gates the
+   * hand-authored satiation maxHealth ladder (player-baseline.ts) and
+   * Rejuvenated's boosts (perk-overrides.ts), which only apply at tier 4.
+   * Same 2026-08-17 esm-walk, SPEL SURV_Hunger_Ability 0x00026841: MGEF
+   * 0x0004A0D2 AbFortifyHealth ties max Health to 5 SURV_Hunger bands at
+   * 0/1440/2880/4320/5760 — the Hunger-side twin of the Thirst ladder above.
+   */
+  | { kind: 'foodTierExact'; tier: number }
   /**
    * Target range bucket (Guerrilla: close, Down Ranger / Sniper's: far). The
    * close/far gate is native engine code — no distance condition rows exist

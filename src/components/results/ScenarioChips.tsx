@@ -1,15 +1,17 @@
-import { CrosshairIcon, EyeOffIcon } from 'lucide-react';
+import { CrosshairIcon } from 'lucide-react';
 import { ToggleChips } from '@/components/ui/toggle-chips';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useGameMode } from '@/hooks/useGameMode';
 import { getDefaultBodyPart, resolveTargetBodyPart } from '@/data/bodyparts';
 
 /**
- * Sneak / target-body-part toggles live on the strip, not in Conditions:
- * they re-frame what BOTH headline columns mean ("VATS · sneaking ·
- * headshots"), so they sit directly above the numbers they redefine.
+ * Target-body-part toggle lives on the strip, not in Conditions: it
+ * re-frames what BOTH headline columns mean ("VATS · headshots"), so it sits
+ * directly above the numbers it redefines. Sneaking lives in the Encounter
+ * card's Attack State group instead (AttackStateGroup.tsx) — it reads as a
+ * fight-state condition, not a headline reframing.
  *
- * The second chip is a live readout, not a bare on/off switch — it names
+ * The chip is a live readout, not a bare on/off switch — it names
  * whatever body part is currently applied (Torso by default, or the
  * Target section's pick/custom multiplier once armed) so aiming is never a
  * silent no-op. Clicking it toggles `isAimingAtWeakpoint`, re-arming the
@@ -40,12 +42,6 @@ export function ScenarioChips({ compact = false }: { compact?: boolean }) {
       size="xs"
       compact={compact}
       options={[
-        {
-          value: 'isSneaking' as const,
-          label: 'Sneaking',
-          icon: EyeOffIcon,
-          active: player.conditions.isSneaking,
-        },
         {
           value: 'isAimingAtWeakpoint' as const,
           label: targetLabel,

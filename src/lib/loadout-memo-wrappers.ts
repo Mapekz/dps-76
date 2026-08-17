@@ -347,7 +347,7 @@ export function loadoutModifiersFor(
     conditions.teammateCount,
   );
   // Hidden survival-ability baselines (hydration AP regen) — gated by the
-  // hydrated/playerIsGhoul conditions at resolve time, so pushed unconditionally.
+  // drinkTierExact/playerIsGhoul conditions at resolve time, so pushed unconditionally.
   // Target-side debuffs (Tenderizer stacks, Taking One for the Team's flat DR
   // debuff) — driven by the Target panel's inputs, not the player's own
   // cards, so pushed unconditionally too.

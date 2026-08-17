@@ -1,5 +1,4 @@
 import { Badge } from '@/components/ui/badge';
-import { HelperText } from '@/components/ui/helper-text';
 import { SwitchRow } from '@/components/ui/switch-row';
 import { SectionLabel } from '@/components/ui/typography';
 import { buildDeltaCount } from '@/lib/build-delta';
@@ -12,7 +11,6 @@ export function AttackStateGroup() {
   const { player, enemy } = useBuild();
   const dispatch = useBuildDispatch();
   const conditions = player.conditions;
-  const isGhoul = conditions.isGhoul ?? false;
   const set = (key: keyof PlayerInput, value: PlayerInput[keyof PlayerInput]) =>
     dispatch({ type: 'condition/set', key, value });
 
@@ -30,20 +28,12 @@ export function AttackStateGroup() {
         {activeCount > 0 && <Badge variant="secondary">{activeCount} active</Badge>}
       </div>
       <div className="mt-2 space-y-3">
-        {!isGhoul && (
-          <div className="space-y-1.5">
-            <SwitchRow
-              id="char-hydrated"
-              label="Fully hydrated"
-              checked={conditions.hydrated ?? true}
-              onCheckedChange={(v) => set('hydrated', v)}
-            />
-            <HelperText>
-              Fully hydrated grants +35% AP regen (45/60% with Rejuvenated). Ghouls have no
-              hydration.
-            </HelperText>
-          </div>
-        )}
+        <SwitchRow
+          id="char-sneaking"
+          label="Sneaking"
+          checked={conditions.isSneaking}
+          onCheckedChange={(v) => set('isSneaking', v)}
+        />
 
         <SwitchRow
           id="char-power-attack"

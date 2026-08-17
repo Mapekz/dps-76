@@ -384,10 +384,10 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
     }
     case 'underAlcoholEffect':
       return (ctx.player.underAlcoholEffect ?? false) === cond.value ? 1 : null;
-    case 'hydrated':
-      // Unset = fully hydrated (optimal-play default, same spirit as
-      // enemyHealthAbovePct's full-health default).
-      return (ctx.player.hydrated ?? true) === cond.value ? 1 : null;
+    case 'drinkTierExact':
+      return (ctx.player.drinkTier ?? 0) === cond.tier ? 1 : null;
+    case 'foodTierExact':
+      return (ctx.player.foodTier ?? 0) === cond.tier ? 1 : null;
     case 'targetDistance': {
       // Continuous distance (raw game units) vs the Close/Far perk-gate
       // thresholds (src/lib/distance.ts) — unset = DEFAULT_DISTANCE_UNITS,

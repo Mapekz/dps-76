@@ -76,16 +76,19 @@ const PLAYER_INPUT_DEFAULTS = createDefaultPlayerInput();
 const PLAYER_DEFAULTS = createDefaultResolvedPlayer();
 const ENEMY_DEFAULTS = createDefaultEnemyConditions();
 
-// retired wire ordinals: (none yet)
+// retired wire ordinals: 57 (hydrated — removed 2026-08-17; AP regen now
+// derives from drinkTier alone, see player-baseline.ts). Old share links
+// carrying wire 57 just drop the bit; never reassign 57 to a new row.
 export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerKnobRow>> = {
   isSneaking: {
     key: 'isSneaking',
     wire: 0,
     owner: 'player',
     origin: 'input',
-    section: 'scenario-chips',
+    section: 'attack-state',
     default: PLAYER_DEFAULTS.isSneaking,
     label: 'Sneaking',
+    activeBadge: 'attack-state',
   },
   isAimingAtWeakpoint: {
     key: 'isAimingAtWeakpoint',
@@ -662,16 +665,6 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
     section: 'team',
     default: PLAYER_DEFAULTS.publicTeamType ?? 'none',
     label: 'Public team type',
-  },
-  hydrated: {
-    key: 'hydrated',
-    wire: 57,
-    owner: 'player',
-    origin: 'input',
-    section: 'attack-state',
-    default: PLAYER_DEFAULTS.hydrated ?? true,
-    label: 'Fully hydrated',
-    activeBadge: 'attack-state',
   },
 };
 

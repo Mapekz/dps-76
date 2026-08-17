@@ -10,7 +10,7 @@ import { getLoadoutModifiers } from '@/data/perk-modifiers';
 import { PerkId } from '@/data/perk-ids';
 import { buildEffectiveWeapon } from '@/lib/engine/effective-weapon';
 import { computeScenarios, type ScenarioInput } from '@/lib/engine/scenarios';
-import { resolveLoadout } from '@/lib/loadout';
+import { resolveLoadout, resolveStats } from '@/lib/loadout';
 import {
   makeResolvedPlayer,
   makeDefaultEnemy,
@@ -986,42 +986,98 @@ describe('AP economy completion (2026-07-15, real extracted data)', () => {
     );
   });
 
-  it('hydration baseline (+35% AP regen) applies through resolveLoadout, gated by the toggle and ghoul', () => {
+  it('hydration baseline is a graduated AP-regen ladder keyed on drinkTier alone, gated by ghoul', () => {
     const resolve = (conditions: Partial<ReturnType<typeof makeResolvedPlayer>>) =>
       resolveLoadout(
         {
           ...createDefaultPlayerConfig(),
           weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [] },
-          conditions: { ...makeResolvedPlayer(), ...conditions },
+          conditions: { ...makeResolvedPlayer(), drinkTier: 0, ...conditions },
         },
         createDefaultEnemyConfig(),
         'live',
       )!;
-    expect(computeScenarios(resolve({})).vats.ap!.regenPerSec).toBeCloseTo(12.6 * 1.35, 6);
-    expect(computeScenarios(resolve({ hydrated: false })).vats.ap!.regenPerSec).toBeCloseTo(
-      12.6,
+    // Ladder: 0/15/15/25/35% for drinkTier 0..4 — no separate toggle.
+    expect(computeScenarios(resolve({ drinkTier: 0 })).vats.ap!.regenPerSec).toBeCloseTo(12.6, 6);
+    expect(computeScenarios(resolve({ drinkTier: 1 })).vats.ap!.regenPerSec).toBeCloseTo(
+      12.6 * 1.15,
       6,
     );
-    expect(computeScenarios(resolve({ isGhoul: true })).vats.ap!.regenPerSec).toBeCloseTo(12.6, 6);
+    expect(computeScenarios(resolve({ drinkTier: 2 })).vats.ap!.regenPerSec).toBeCloseTo(
+      12.6 * 1.15,
+      6,
+    );
+    expect(computeScenarios(resolve({ drinkTier: 3 })).vats.ap!.regenPerSec).toBeCloseTo(
+      12.6 * 1.25,
+      6,
+    );
+    expect(computeScenarios(resolve({ drinkTier: 4 })).vats.ap!.regenPerSec).toBeCloseTo(
+      12.6 * 1.35,
+      6,
+    );
+    expect(
+      computeScenarios(resolve({ drinkTier: 4, isGhoul: true })).vats.ap!.regenPerSec,
+    ).toBeCloseTo(12.6, 6);
   });
 
-  it('Rejuvenated deltas stack on the hydration baseline to the ESM tier values (45%/60%)', () => {
+  it('Rejuvenated deltas stack on the hydration baseline ONLY at drinkTier 4 (45%/60%) — lower tiers unaffected', () => {
     // AGI 15 (via makeResolvedPlayer, matching the sibling test above) is
     // stated explicitly — 12.6 = 60 + 10×15 AP pool × 6% regen — rather than
     // inherited from createDefaultPlayerConfig(), whose actual default is 1.
-    const resolve = (rank: 1 | 2) =>
+    const resolve = (rank: 1 | 2, drinkTier: number) =>
       resolveLoadout(
         {
           ...createDefaultPlayerConfig(),
           perks: [{ perkId: PerkId.Rejuvenated, rank }],
           weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [] },
-          conditions: { ...makeResolvedPlayer() },
+          conditions: { ...makeResolvedPlayer(), drinkTier },
         },
         createDefaultEnemyConfig(),
         'live',
       )!;
-    expect(computeScenarios(resolve(1)).vats.ap!.regenPerSec).toBeCloseTo(12.6 * 1.45, 6);
-    expect(computeScenarios(resolve(2)).vats.ap!.regenPerSec).toBeCloseTo(12.6 * 1.6, 6);
+    expect(computeScenarios(resolve(1, 4)).vats.ap!.regenPerSec).toBeCloseTo(12.6 * 1.45, 6);
+    expect(computeScenarios(resolve(2, 4)).vats.ap!.regenPerSec).toBeCloseTo(12.6 * 1.6, 6);
+    // drinkTier 3 (Well Hydrated) stays at the flat 25% — Rejuvenated's
+    // HasPerk gating only appears on the ESM's tier-4 effect rows.
+    expect(computeScenarios(resolve(2, 3)).vats.ap!.regenPerSec).toBeCloseTo(12.6 * 1.25, 6);
+  });
+
+  it('satiation baseline is a graduated max-HP ladder keyed on foodTier alone, gated by ghoul', () => {
+    // END 15 (via makeResolvedPlayer) → base maxHealth = 245 + 5×15 = 320.
+    const resolve = (conditions: Partial<ReturnType<typeof makeResolvedPlayer>>) =>
+      resolveStats(
+        {
+          ...createDefaultPlayerConfig(),
+          conditions: { ...makeResolvedPlayer(), foodTier: 0, ...conditions },
+        },
+        createDefaultEnemyConfig(),
+        'live',
+      );
+    // Ladder: +0/15/15/25/35 HP for foodTier 0..4 — no separate toggle.
+    expect(resolve({ foodTier: 0 }).maxHealth).toBe(320);
+    expect(resolve({ foodTier: 1 }).maxHealth).toBe(335);
+    expect(resolve({ foodTier: 2 }).maxHealth).toBe(335);
+    expect(resolve({ foodTier: 3 }).maxHealth).toBe(345);
+    expect(resolve({ foodTier: 4 }).maxHealth).toBe(355);
+    expect(resolve({ foodTier: 4, isGhoul: true }).maxHealth).toBe(320);
+  });
+
+  it('Rejuvenated deltas stack on the satiation baseline ONLY at foodTier 4 (+45/+60 HP) — lower tiers unaffected', () => {
+    const resolve = (rank: 1 | 2, foodTier: number) =>
+      resolveStats(
+        {
+          ...createDefaultPlayerConfig(),
+          perks: [{ perkId: PerkId.Rejuvenated, rank }],
+          conditions: { ...makeResolvedPlayer(), foodTier },
+        },
+        createDefaultEnemyConfig(),
+        'live',
+      );
+    expect(resolve(1, 4).maxHealth).toBe(365);
+    expect(resolve(2, 4).maxHealth).toBe(380);
+    // foodTier 3 (Well Fed) stays at the flat +25 — same tier-4-only gating
+    // as the hydration side.
+    expect(resolve(2, 3).maxHealth).toBe(345);
   });
 });
 

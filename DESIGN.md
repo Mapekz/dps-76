@@ -214,7 +214,7 @@ Zero radius, universally. Every rectangle — button, badge, card, input underli
 ### Cards
 - **Corner Style:** 0px, matching the system rule.
 - **Background:** Panel, with `ring-1 ring-foreground/5` and `shadow-sm` as the only depth cue.
-- **Internal Padding:** a `--card-spacing` custom property (24px default, 20px on `size="sm"`) drives header/content/footer padding uniformly, so nested cards can shrink as a unit.
+- **Internal Padding:** a `--card-spacing` custom property (24px default, 20px on `size="sm"`) drives header/content/footer padding uniformly, so nested cards can shrink as a unit. Below the `sm` breakpoint, horizontal padding drops to a fixed `16px` (matching the page container's `px-4`) while vertical padding/gap stay on `--card-spacing` — screen edges are tighter than internal rhythm on narrow viewports.
 - **Title:** Micro Label voice (`MicroLabel size="lg"`, via `CardTitle`), `text-lg`, uppercase, `tracking-wider` — the one place Micro Label appears at a larger size than a button/badge. `level={1..3}` renders it as a real heading; the default renders a plain `<div>`.
 
 ### Inputs

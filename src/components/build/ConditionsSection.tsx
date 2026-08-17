@@ -31,10 +31,19 @@ import { SectionTrigger } from './SectionTrigger';
  * (SpecialLoadoutSection.tsx); team size/public-team type in TeamSection;
  * target state AND the three accuracy sliders (hitRatePct/vatsHitRatePct/
  * bodyPartHitRatePct — they only make sense next to the body-part picker)
- * live in the Encounter card's TargetPanel; attack-state toggles (hydrated /
+ * live in the Encounter card's TargetPanel; attack-state toggles (sneaking /
  * power attack / last shot / ADS) live in AttackStateGroup there too;
- * sneak/weakpoint stay on the headline chips.
+ * weakpoint stays on the headline chips. There is no separate "hydrated" /
+ * "well fed" toggle anywhere: the Drink/Food meter sliders below are each
+ * ladder's sole input — AP regen and max HP respectively, both ESM-PROVEN
+ * graduated (not all-or-nothing) — see player-baseline.ts. No UI control
+ * shadows them.
  */
+
+/** Hydration AP-regen ladder by drinkTier (0 Thirsty .. 4 Fully Hydrated) — mirrors player-baseline.ts's ESM-proven magnitudes; tier 4 gets +10/+25% more with Rejuvenated ranks 1/2. */
+const DRINK_TIER_AP_REGEN_PCT = [0, 15, 15, 25, 35] as const;
+/** Satiation max-HP ladder by foodTier (0 Hungry .. 4 Fully Fed) — Hunger-side twin of DRINK_TIER_AP_REGEN_PCT; tier 4 gets +10/+25 more with Rejuvenated ranks 1/2. */
+const FOOD_TIER_MAX_HEALTH = [0, 15, 15, 25, 35] as const;
 
 /** One decimal for sustained-stack averages; whole numbers omit the fraction. */
 function formatStackAvg(value: number): string {
@@ -171,6 +180,11 @@ export function ConditionsSection() {
                       onValueChange={(v) => set('foodTier', firstSliderValue(v))}
                       marks={FOOD_TIER_NAMES.map((_, i) => ({ value: i }))}
                     />
+                    <HelperText>
+                      Max HP at this tier: +{FOOD_TIER_MAX_HEALTH[foodTier]}
+                      {foodTier === 4 && ' (also +10/+25 more with Rejuvenated)'}. Ghouls have no
+                      hunger or thirst.
+                    </HelperText>
                   </div>
 
                   <div className="space-y-1.5">
@@ -184,6 +198,10 @@ export function ConditionsSection() {
                       onValueChange={(v) => set('drinkTier', firstSliderValue(v))}
                       marks={DRINK_TIER_NAMES.map((_, i) => ({ value: i }))}
                     />
+                    <HelperText>
+                      AP regen at this tier: +{DRINK_TIER_AP_REGEN_PCT[drinkTier]}%
+                      {drinkTier === 4 && ' (also +10/+25% more with Rejuvenated)'}.
+                    </HelperText>
                   </div>
                 </>
               )}

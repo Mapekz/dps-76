@@ -59,22 +59,26 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
   // modeled in @/data/target-debuffs and driven by the Target panel's stack
   // input, never by equipping the card.
   // Rejuvenated (0x003DE58F/0x003DE590): the PERK records extract empty
-  // because the mechanics live on the hidden survival ability, not the perk —
-  // SPEL SURV_Thirst_Ability 0x00054DF3 tiers its fully-hydrated
-  // ActionPointsRateMult bonus by HasPerk(Rejuvenated0N) rows (2026-07-15
-  // esm-walk): no perk 35%, rank 1 45%, rank 1+2 60% (rank 2's tier also
-  // requires Rads ≤ 100). The +35% baseline every hydrated non-ghoul gets is
-  // hand-authored in @/data/player-baseline; these overrides carry only the
-  // DELTAS (+10% / +25%) so the two sources sum to the ESM tier values.
+  // because the mechanics live on TWO hidden survival abilities, not the
+  // perk — SPEL SURV_Thirst_Ability 0x00054DF3 tiers its fully-hydrated
+  // ActionPointsRateMult bonus AND SPEL SURV_Hunger_Ability 0x00026841 tiers
+  // its fully-fed Health bonus, both by HasPerk(Rejuvenated0N) rows
+  // (2026-07-15 esm-walk, re-confirmed + Hunger side added 2026-08-17): no
+  // perk 35%/35HP, rank 1 45%/45HP, rank 1+2 60%/60HP (rank 2's tier also
+  // requires Rads ≤ 100) — and the HasPerk gating appears ONLY on each
+  // ability's tier-4 (Fully Hydrated / Fully Fed) effect rows; the lower
+  // tiers' flat magnitudes carry no Rejuvenated variant. The baselines every
+  // fully-hydrated/fully-fed non-ghoul gets are hand-authored in
+  // @/data/player-baseline; these overrides carry only the DELTAS (+10% AP /
+  // +10 HP, +25% AP / +25 HP) so the two sources sum to the ESM tier values.
   // Rank 2 assumes low rads — optimal play, documented in
-  // docs/assumptions.md "Hydration AP regen". Ghoul-gated like the ability
-  // itself (GetIsPlayerGhoul()=0; the card is human-only anyway). The
-  // parallel Well Fed tiers on SURV_Hunger carry no AP effects (food-buff
-  // scope only), so nothing else routes here.
+  // docs/assumptions.md "Rejuvenated's low-Rads gate". Ghoul-gated like both
+  // abilities themselves (GetIsPlayerGhoul()=0; the card is human-only
+  // anyway).
   Rejuvenated: [
     [
       {
-        id: 'override:Rejuvenated:r1',
+        id: 'override:Rejuvenated:r1:apRegen',
         source: {
           kind: 'perk',
           formId: '0x003DE58F',
@@ -86,14 +90,31 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
         op: 'ADD',
         value: 0.1,
         conditions: [
-          { kind: 'hydrated', value: true },
+          { kind: 'drinkTierExact', tier: 4 },
+          { kind: 'playerIsGhoul', value: false },
+        ],
+      },
+      {
+        id: 'override:Rejuvenated:r1:maxHealth',
+        source: {
+          kind: 'perk',
+          formId: '0x003DE58F',
+          edid: 'Rejuvenated01',
+          name: 'Rejuvenated',
+          rank: 1,
+        },
+        bucket: 'maxHealth',
+        op: 'ADD',
+        value: 10,
+        conditions: [
+          { kind: 'foodTierExact', tier: 4 },
           { kind: 'playerIsGhoul', value: false },
         ],
       },
     ],
     [
       {
-        id: 'override:Rejuvenated:r2',
+        id: 'override:Rejuvenated:r2:apRegen',
         source: {
           kind: 'perk',
           formId: '0x003DE590',
@@ -105,7 +126,24 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
         op: 'ADD',
         value: 0.25,
         conditions: [
-          { kind: 'hydrated', value: true },
+          { kind: 'drinkTierExact', tier: 4 },
+          { kind: 'playerIsGhoul', value: false },
+        ],
+      },
+      {
+        id: 'override:Rejuvenated:r2:maxHealth',
+        source: {
+          kind: 'perk',
+          formId: '0x003DE590',
+          edid: 'Rejuvenated02',
+          name: 'Rejuvenated',
+          rank: 2,
+        },
+        bucket: 'maxHealth',
+        op: 'ADD',
+        value: 25,
+        conditions: [
+          { kind: 'foodTierExact', tier: 4 },
           { kind: 'playerIsGhoul', value: false },
         ],
       },

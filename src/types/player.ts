@@ -68,7 +68,6 @@ export interface PlayerInput {
   junkItemCount: number;
   teammateCount: number;
   publicTeamType?: 'none' | 'casual' | 'exploration';
-  hydrated?: boolean;
 }
 
 /**
@@ -208,7 +207,6 @@ export function createDefaultPlayerInput(): PlayerInput {
     junkItemCount: 0,
     teammateCount: 0,
     publicTeamType: 'none',
-    hydrated: true,
   };
 }
 

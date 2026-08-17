@@ -479,10 +479,10 @@ all documented on that module's own doc-comment, not repeated here.
 - **Instant AP restores are OUT OF SCOPE by design** (mirrors instant
   heals) — one-shot Value-Modifier events have no steady-state meaning.
   Same for on-kill restores (Grim Reaper's Sprint, Inertial).
-- **Hydration AP regen** (baseline): +35% AP-regen to every fully-hydrated
-  non-ghoul, no perk required. Modeled as **default-ON**. **ASSUMPTION**:
-  lower hydration tiers are NOT modeled — all-or-nothing. Rejuvenated
-  layers hand-authored deltas on top (`perk-overrides.ts`).
+- **Rejuvenated's low-Rads gate**: its rank-2 AP-regen/max-HP delta is
+  ESM-gated on `Rads ≤ 100` (`player-baseline.ts`, `perk-overrides.ts`).
+  **ASSUMPTION**: modeled unconditionally (optimal play) — the app doesn't
+  track player Rads.
 - **Packin' Light** (**Encumbrance**): its `IsOverEncumbered()=0` gate is
   consumed as always-true.
 - **Number Cruncher**: routed as `dbm 0.02` scaled by the effective per-shot

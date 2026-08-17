@@ -290,7 +290,7 @@ describe('wire-sections', () => {
         healthPercent: 15,
         armorWorn: 'power' as const,
         publicTeamType: 'exploration' as const,
-        hydrated: false,
+        isAimingDownSights: true,
         completedChallengeIds: ['Challenge_Lifetime_Fishing_LocalLegend_01'],
       };
 
@@ -305,7 +305,7 @@ describe('wire-sections', () => {
           expect(decoded.healthPercent).toBe(15);
           expect(decoded.armorWorn).toBe('power');
           expect(decoded.publicTeamType).toBe('exploration');
-          expect(decoded.hydrated).toBe(false);
+          expect(decoded.isAimingDownSights).toBe(true);
           expect(decoded.completedChallengeIds).toEqual([
             'Challenge_Lifetime_Fishing_LocalLegend_01',
           ]);
