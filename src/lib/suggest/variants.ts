@@ -260,7 +260,16 @@ export function enumerateVariants(
     }
   }
 
-  // Legendary perk swaps when slots are full
+  // Legendary perk swaps when slots are full. Swap-outs must be BUDGET-SOUND:
+  // removing a Legendary SPECIAL card shrinks budgetPerStat, but the reducer
+  // never unslots the regular cards that no longer fit and the engine still
+  // folds their modifiers — an unsound swap would chart a free-lunch delta and
+  // Apply would silently break build legality. So a swap is emitted only when
+  // the post-swap loadout stays within budget, either as-is or with an
+  // allocation fix (free pool points replacing the lost SPECIAL contribution,
+  // the same compound pattern as Allocation Suggestions). If the build is
+  // ALREADY over-budget, the gate is skipped — pre-existing illegality
+  // shouldn't suppress every swap.
   if (player.legendaryPerks.length >= LEGENDARY_SLOTS) {
     for (const old of player.legendaryPerks) {
       const oldPerk = registry[old.perkId];
@@ -271,13 +280,57 @@ export function enumerateVariants(
         if (!perkHasEngineEffect(mode, perkId, loadoutCtx)) continue;
         if (!manualUptimePerkSuggestible(perkId, player.conditions.isSneaking)) continue;
         for (let r = 1; r <= perk.maxRank; r++) {
+          const swapActions: BuildAction[] = [
+            { type: 'perk/remove', perkId: old.perkId },
+            perkAddAction(perkId, r, true),
+          ];
+          let label = `${oldName} → ${perkLabel(perk.name, r)}`;
+          let cost = r;
+
+          if (!cardBudget.overBudget) {
+            const postList = [
+              ...player.legendaryPerks.filter((p) => p.perkId !== old.perkId),
+              { perkId, rank: r },
+            ];
+            const postBudget = computePerkBudget(mode, player.perks, postList, allocation);
+            if (postBudget.overBudget) {
+              // Try covering each stat's deficit from the free pool.
+              const raises: Array<{ stat: SpecialKey; d: number }> = [];
+              let needed = 0;
+              for (const stat of Object.keys(allocation) as SpecialKey[]) {
+                const d = postBudget.cardPoints[stat] - postBudget.budgetPerStat[stat];
+                if (d > 0) {
+                  raises.push({ stat, d });
+                  needed += d;
+                }
+              }
+              const poolFree = allocationPoolFree(allocation);
+              const fixable =
+                needed > 0 &&
+                needed <= poolFree &&
+                raises.every(({ stat, d }) => allocation[stat] + d <= SPECIAL_POINTS_CAP);
+              if (!fixable) continue;
+              swapActions.unshift(
+                ...raises.map(
+                  ({ stat, d }): BuildAction => ({
+                    type: 'special/set',
+                    stat,
+                    value: allocation[stat] + d,
+                  }),
+                ),
+              );
+              label += ` (${raises.map(({ stat, d }) => `+${d} ${SPECIAL_ABBR[stat]}`).join(', ')})`;
+              cost += needed;
+            }
+          }
+
           out.push({
             id: `leg-perk-swap:${old.perkId}->${perkId}:${r}`,
-            action: [{ type: 'perk/remove', perkId: old.perkId }, perkAddAction(perkId, r, true)],
-            label: `${oldName} → ${perkLabel(perk.name, r)}`,
+            action: swapActions,
+            label,
             group: 'perk',
             family: `leg-swap:${old.perkId}->${perkId}`,
-            cost: r,
+            cost,
           });
         }
       }

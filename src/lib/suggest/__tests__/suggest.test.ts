@@ -7,6 +7,8 @@ import {
 } from '@/state/build-reducer';
 import { getPerks } from '@/data';
 import { getArmorEffects } from '@/data/armor-modifiers';
+import { computePerkBudget } from '@/data/perk-budget';
+import { perkCardCostAtRank } from '@/lib/player-stats';
 import { enumerateVariants } from '@/lib/suggest/variants';
 import {
   collapseSuggestionFamilies,
@@ -424,5 +426,129 @@ describe('manual-uptime sneak gate (Follow Through / Taking One for the Team)', 
     expect(candidates.some((c) => c.id.startsWith('leg-perk-swap:TakingOneForTheTeam->'))).toBe(
       true,
     );
+  });
+});
+
+describe('legendary swap budget soundness', () => {
+  // Removing a Legendary SPECIAL card shrinks budgetPerStat but never unslots
+  // the regular cards that no longer fit (perk/remove just filters; the engine
+  // folds over-budget cards' modifiers anyway) — so swap-outs must be emitted
+  // only when the post-swap loadout stays budget-legal, with a pool-funded
+  // allocation fix folded in when that makes it legal.
+  // A STR perk slotted at a rank whose cost fits base 1 + Legendary Strength 4
+  // (+5 budget) but NOT base 1 alone — removing the legendary orphans it.
+  const registry = getPerks('live');
+  const strEntry = Object.entries(registry).find(([, p]) => {
+    if (p.special !== 'Strength') return false;
+    for (let r = 1; r <= p.maxRank; r++) {
+      const cost = perkCardCostAtRank(p, r);
+      if (cost >= 2 && cost <= 6) return true;
+    }
+    return false;
+  });
+  const [strPerkId, strPerk] = strEntry!;
+  const strRank = (() => {
+    for (let r = 1; r <= strPerk.maxRank; r++) {
+      const cost = perkCardCostAtRank(strPerk, r);
+      if (cost >= 2 && cost <= 6) return r;
+    }
+    throw new Error('unreachable');
+  })();
+
+  const sixLegendaries = [
+    { perkId: PerkId.LegendaryStrength, rank: 4 },
+    { perkId: PerkId.LegendaryPerception, rank: 4 },
+    { perkId: PerkId.LegendaryEndurance, rank: 4 },
+    { perkId: PerkId.LegendaryAgility, rank: 4 },
+    { perkId: PerkId.LegendaryIntelligence, rank: 4 },
+    { perkId: PerkId.TakingOneForTheTeam, rank: 4 },
+  ];
+
+  function swapState(allocations: Record<string, number>): BuildState {
+    const base = createDefaultBuildState();
+    return {
+      ...base,
+      player: {
+        ...base.player,
+        weapon: { weaponId: 'CombatRifle_Fixer', mods: {}, legendaryEffects: [] },
+        perks: [{ perkId: strPerkId, rank: strRank }],
+        legendaryPerks: sixLegendaries,
+        conditions: { ...base.player.conditions, ...allocations },
+      },
+    };
+  }
+
+  // strength 1 everywhere; the rest differ only in whether the 56-point pool
+  // has free room for an allocation fix.
+  const exhausted = swapState({
+    strength: 1,
+    perception: 15,
+    endurance: 15,
+    charisma: 15,
+    intelligence: 5,
+    agility: 4,
+    luck: 1,
+  }); // sum 56 — no free points
+  const withPool = swapState({
+    strength: 1,
+    perception: 15,
+    endurance: 15,
+    charisma: 5,
+    intelligence: 5,
+    agility: 4,
+    luck: 1,
+  }); // sum 46 — 10 free points
+
+  it('skips Legendary Strength swap-outs when the orphaned STR cards cannot be re-funded', () => {
+    const candidates = enumerateVariants(exhausted, 'live', 'vats');
+    expect(
+      candidates.some((c) => c.id.startsWith(`leg-perk-swap:${PerkId.LegendaryStrength}->`)),
+    ).toBe(false);
+  });
+
+  it('emits the swap with a pool-funded allocation fix when the pool covers the deficit', () => {
+    const candidates = enumerateVariants(withPool, 'live', 'vats');
+    const swap = candidates.find(
+      (c) =>
+        c.id.startsWith(`leg-perk-swap:${PerkId.LegendaryStrength}->`) &&
+        /\(\+\d+ STR\)$/.test(c.label),
+    );
+    expect(swap).toBeDefined();
+    // Applying the compound must land on a budget-LEGAL loadout.
+    const applied = swap!.action.reduce(buildReducer, withPool);
+    const allocation = Object.fromEntries(
+      (
+        [
+          'strength',
+          'perception',
+          'endurance',
+          'charisma',
+          'intelligence',
+          'agility',
+          'luck',
+        ] as const
+      ).map((k) => [k, applied.player.conditions[k]]),
+    ) as Record<
+      'strength' | 'perception' | 'endurance' | 'charisma' | 'intelligence' | 'agility' | 'luck',
+      number
+    >;
+    const budget = computePerkBudget(
+      'live',
+      applied.player.perks,
+      applied.player.legendaryPerks,
+      allocation,
+    );
+    expect(budget.overBudget).toBe(false);
+  });
+
+  it('still emits plain swaps for stats with no orphaned cards', () => {
+    const candidates = enumerateVariants(withPool, 'live', 'vats');
+    expect(
+      candidates.some(
+        (c) =>
+          c.id.startsWith(`leg-perk-swap:${PerkId.LegendaryEndurance}->`) &&
+          !c.label.includes('(+'),
+      ),
+    ).toBe(true);
   });
 });
