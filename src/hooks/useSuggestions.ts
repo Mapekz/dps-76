@@ -40,6 +40,12 @@ export function useSuggestions(): { report: SuggestionReport | null; stale: bool
 
   const workerRef = React.useRef<Worker | null>(null);
   const requestIdRef = React.useRef(0);
+  // Latest full state for the worker request without making it an effect
+  // dependency — the recompute effect below keys on the build-relevant
+  // slices only, so UI-only dispatches (view/set breakdown toggle, renames)
+  // don't re-run the sweep or dim the panel.
+  const stateRef = React.useRef(state);
+  stateRef.current = state;
 
   React.useEffect(() => {
     const worker = new Worker(new URL('../workers/suggestions.worker.ts', import.meta.url), {
@@ -60,6 +66,12 @@ export function useSuggestions(): { report: SuggestionReport | null; stale: bool
     };
   }, []);
 
+  // Keyed on `state.player`/`state.enemy` (NOT the whole BuildState): the
+  // reducer's immutable updates preserve both slices' reference identity
+  // across UI-only actions (`view/set`, `build/rename`), and the sweep reads
+  // nothing else from the state — so breakdown toggles, dialogs, and other
+  // non-build UI churn neither recompute nor flash the panel stale.
+  const { player, enemy } = state;
   React.useEffect(() => {
     // Immediate stale flag so the panel dims while the debounced recompute runs.
     // (Deliberate setState-in-effect; no oxlint rule for this pattern today.)
@@ -68,11 +80,17 @@ export function useSuggestions(): { report: SuggestionReport | null; stale: bool
       const worker = workerRef.current;
       if (!worker) return;
       const id = ++requestIdRef.current;
-      const request: EvaluateRequest = { type: 'evaluate', id, state, mode, metric: emphasized };
+      const request: EvaluateRequest = {
+        type: 'evaluate',
+        id,
+        state: stateRef.current,
+        mode,
+        metric: emphasized,
+      };
       worker.postMessage(request);
     }, RECOMPUTE_DEBOUNCE_MS);
     return () => window.clearTimeout(timer);
-  }, [state, mode, emphasized]);
+  }, [player, enemy, mode, emphasized]);
 
   return { report, stale };
 }

@@ -604,3 +604,17 @@ describe('armorType/set', () => {
     expect(s.player.armorEffects).toEqual({});
   });
 });
+
+describe('view/set slice identity', () => {
+  // useSuggestions keys its recompute effect on state.player/state.enemy
+  // reference identity — a UI-only view/set (breakdown toggle, emphasis
+  // switch) must not produce fresh player/enemy objects or the panel
+  // re-sweeps and dims on pure UI churn.
+  it('preserves player and enemy references across a view-only update', () => {
+    const s0 = createDefaultBuildState();
+    const s1 = buildReducer(s0, { type: 'view/set', view: { breakdownOpen: true } });
+    expect(s1).not.toBe(s0);
+    expect(s1.player).toBe(s0.player);
+    expect(s1.enemy).toBe(s0.enemy);
+  });
+});
