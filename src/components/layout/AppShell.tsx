@@ -1,19 +1,11 @@
 import { Header } from './Header';
 import { BuildColumn } from '@/components/build/BuildColumn';
 import { ResultsPane } from '@/components/results/ResultsPane';
-import { HeadlineStrip } from '@/components/results/HeadlineStrip';
 
 export function AppShell() {
   return (
     <div className="bg-background min-h-screen">
       <Header />
-
-      {/* Mobile: condensed sticky readout keeps the tweak→flash loop visible. */}
-      <div className="bg-background/95 sticky top-[57px] z-30 border-b backdrop-blur lg:hidden">
-        <div className="container mx-auto px-4 py-2">
-          <HeadlineStrip variant="condensed" />
-        </div>
-      </div>
 
       {/* The single-column mobile track needs minmax(0,1fr) for the same reason the
           lg: tracks do: an implicit `auto` track is sized by its content's
