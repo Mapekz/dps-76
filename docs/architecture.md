@@ -75,8 +75,8 @@ One user edit to `BuildState` reaches a rendered number through:
    `computeCritMeter` (`crit-meter.ts`); sustained DPS via `computeSustain` (`sustain.ts`);
    DoT via `computeDotDps`; VATS AP uptime via `computeApEconomy` (`ap-economy.ts`); enemy
    mitigation via `applyMitigation` (`mitigation.ts`) when a target is selected.
-4. **`ResultsPane`** renders the emphasized `ScenarioResult` via `HeadlineStrip` →
-   `ScenarioCard` (the card renders *inside* the strip, not beside it).
+4. **`EncounterCard`** composes `HeadlineStrip` → `ScenarioCard` for the emphasized
+   `ScenarioResult`; `ResultsPane` renders suggestions + breakdown only.
 
 The suggestion sweep (`src/lib/suggest/evaluate.ts`) is the same chain run repeatedly: it
 enumerates candidates, applies each as a `BuildAction` through the reducer, and diffs the
@@ -140,9 +140,10 @@ so state reads and dispatch don't force unrelated re-renders. `makeBuildReducer(
 re-memoized when `GameModeContext`'s mode changes — mode is a reducer-factory parameter, never
 a `BuildState` field (ADR-0002).
 
-`AppShell` mounts `Header` + `BuildColumn` (the accordion: Weapon → Armor → SpecialLoadout →
-Team → Mutations → Conditions → Chems → FoodDrink → Magazines → Bobbleheads → Target) +
-`ResultsPane`.
+`AppShell` mounts `Header` + `EncounterCard` (Player vs Target: scenario cards, attack
+state, full target config) + `BuildColumn` (accordion: Weapon → Armor → SpecialLoadout →
+Team → Mutations → Conditions → Chems → FoodDrink → Magazines → Bobbleheads) +
+`ResultsPane` (suggestions + breakdown).
 
 **Three side paths off the same `BuildState`**, each solving a distinct performance problem:
 
@@ -180,7 +181,8 @@ Team → Mutations → Conditions → Chems → FoodDrink → Magazines → Bobb
 | `src/state/build-reducer.ts` | The 22-action `BuildState` reducer |
 | `src/state/BuildProvider.tsx` | Context wiring + the state/dispatch split |
 | `src/components/build/*` | One component per `BuildColumn` accordion section |
-| `src/components/results/*` | `ResultsPane` and its scenario-card/breakdown children |
+| `src/components/encounter/*` | Player-vs-Target card: `EncounterCard`, `TargetPanel`, `AttackStateGroup` |
+| `src/components/results/*` | `ResultsPane` and its suggestions/breakdown children |
 | `scripts/extract/normalize/mgef.ts` | The MGEF/entry-point → Bucket/Condition routing table |
 
 ## Essential vs. accidental complexity
@@ -207,13 +209,16 @@ Real game mechanics that must not be "simplified" away:
   falloff, stack caps, body-part geometry); splitting it costs 10-parameter signatures or an
   invented context object in exchange for no reduction in what a reader has to hold in mind.
   See ADR-0016 for the general rule this instance falls under.
-- **`TargetSection.tsx` and `ConditionsSection.tsx`'s length** — same shape as
-  `computeScenarios`: one component, several `GroupHeading`-delimited visual sections, but a
-  single shared closure of derived state and dispatch handlers threaded across all of them
-  (e.g. `TargetSection`'s accuracy sliders are declared next to the body-part picker they're
-  "meaningless without," per the code's own comment). Splitting along the `GroupHeading`
-  boundaries was considered and rejected under ADR-0016's test — it fails the same
-  precondition `computeScenarios` failed.
+- **`TargetPanel.tsx` (`src/components/encounter/`) and `ConditionsSection.tsx`'s length** —
+  same shape as `computeScenarios`: one component, several `GroupHeading`-delimited visual
+  sections, but a single shared closure of derived state and dispatch handlers threaded
+  across all of them (e.g. `TargetPanel`'s accuracy sliders are declared next to the
+  body-part picker they're "meaningless without," per the code's own comment). Splitting
+  along the `GroupHeading` boundaries was considered and rejected under ADR-0016's test — it
+  fails the same precondition `computeScenarios` failed. `AttackStateGroup` is ADR-0016's
+  "genuine seam" carve-out: it renders in the Encounter card (not inside
+  `ConditionsSection`) and shares no local state with the remaining groups beyond the
+  trivially re-derived `isGhoul` flag and the two-line `set()` dispatch wrapper.
 
 Accidental complexity — structural, not mechanical, and the target of the simplification
 pass this doc accompanies: the trace-collection boilerplate repeated at each fold call site,

@@ -6,11 +6,12 @@ import { SectionLabel } from '@/components/ui/typography';
  * ArmorSection.tsx/BuffsSections.tsx, extracted so ConditionsSection/
  * TargetSection's flat 12-22-control lists (2026-08-10 design critique —
  * cognitive-load chunking/grouping) can reuse it instead of inventing a
- * fourth heading treatment. Renders `<h4>` — every call site lives inside an
- * accordion section, and Base UI's AccordionHeader already wraps that
- * section's own trigger in an unconditional `<h3>` (not overridable from
- * this app's accordion.tsx wrapper), so this is one level deeper: Header
- * `h1` → panel/accordion-section titles `h2`/`h3` → this `h4`.
+ * fourth heading treatment. Renders `<h4>` — every call site lives one level
+ * below a real h3: either an accordion section's Base UI AccordionHeader
+ * (unconditional `<h3>` on the trigger, not overridable from this app's
+ * accordion.tsx wrapper) or a plain panel heading (see
+ * `EncounterCard.tsx`/`TargetPanel.tsx`), so this stays one level deeper:
+ * Header `h1` → panel/accordion-section titles `h2`/`h3` → this `h4`.
  */
 export function GroupHeading({
   title,

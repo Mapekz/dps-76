@@ -162,14 +162,29 @@ level={4}`) for a cluster of controls within a section.
 
 ## Layout
 
-Desktop is a two-column instrument layout: the build-configuration column (accordion sections — see `docs/architecture.md`'s UI flow for the actual section list and order, rather than restating it here) takes the wider, flexible `1fr` track; the results column is a narrower fixed-ish `clamp(340px, 32vw, 420px)` sidebar that stays legible without ever growing to dominate the page. Both sit inside a `container mx-auto` with `px-4` gutters.
+A full-width Encounter card (Player vs Target: scenario readout, fight-state toggles,
+target config) spans both columns above the grid — the player defines what they're
+optimizing for before descending into Build.
 
-Below the `lg` breakpoint the layout collapses to a single column: results render first (so the tweak → number loop stays visible before configuration), build sections follow, and a sticky condensed instrument strip (`HeadlineStrip variant="condensed"`) pins under the header so the current DPS is always on screen while the user scrolls the build form.
+Below it, desktop is the same two-column instrument layout as before: the
+build-configuration column (accordion sections — see `docs/architecture.md`'s UI flow
+for the actual section list and order, rather than restating it here) takes the wider,
+flexible `1fr` track; the results column is a narrower fixed-ish
+`clamp(340px, 32vw, 420px)` sidebar that stays legible without ever growing to
+dominate the page. Both sit inside a `container mx-auto` with `px-4` gutters.
+
+Below the `lg` breakpoint the layout collapses to a single column: the Encounter
+card first, results (suggestions/breakdown) next, build sections last.
+
+On every viewport, a scroll-triggered collapsing instrument strip
+(`HeadlineStrip variant="condensed"`) pins under the header only once the scenario
+band has scrolled out of view — an `IntersectionObserver` sentinel just under the
+scenario cards drives the transition.
 
 The header itself is `sticky top-0`, bordered, on the Panel surface — never transparent over content.
 
 ### Named Rules
-**The Numbers-Stay-Visible Rule.** On any viewport, the current DPS readout must remain on screen (full HeadlineStrip on desktop, the sticky condensed strip on mobile) no matter how far the user has scrolled into build configuration. The tweak → flash feedback loop is the product; losing sight of the number breaks it.
+**The Numbers-Stay-Visible Rule.** On any viewport, the current DPS readout must remain reachable: visible at the top of the page in the scenario band, and via the scroll-triggered collapsing strip once that band scrolls away. The tweak → flash feedback loop is the product; losing sight of the number breaks it.
 
 ## Elevation & Depth
 
@@ -224,7 +239,7 @@ Any headline numeric readout (`DeltaFlash`) is otherwise static ink-colored mono
 - **Do** keep every corner at 0px radius, including one-off components; check new UI against the No-Radius Rule before shipping it.
 - **Do** convey depth with a hairline border or the Card's `ring-1 + shadow-sm` combination, never a heavier drop shadow.
 - **Do** reserve the VATS corner-bracket frame for the scenario readouts it's thematically tied to.
-- **Do** keep the current DPS number on screen at every viewport width (full strip desktop, condensed sticky strip mobile).
+- **Do** keep the current DPS number on screen at every viewport width (scenario band at the top, scroll-triggered condensed strip once it scrolls away).
 
 ### Don't:
 - **Don't** add CRT kitsch — no scanlines, bloom/glow, vignette, chromatic aberration, or flicker. The terminal metaphor is structural (density, mono numerals, sharp corners), not a screen-texture effect.
