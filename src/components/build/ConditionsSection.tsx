@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { NumberField } from '@/components/ui/number-field';
 import { Slider } from '@/components/ui/slider';
 import { firstSliderValue } from '@/lib/slider-value';
-import { Switch } from '@/components/ui/switch';
+import { SwitchRow } from '@/components/ui/switch-row';
 import { useGameMode } from '@/hooks/useGameMode';
 import { useBuild, useBuildDispatch } from '@/state/BuildProvider';
 import { useScenarioResults } from '@/state/useScenarioResults';
@@ -18,7 +18,6 @@ import {
 } from '@/lib/engine/affordances';
 import { buildDeltaCount } from '@/lib/build-delta';
 import { healthPercentIndex, PLAYER_HEALTH_PERCENT_STOPS } from '@/lib/health-percent';
-import { cn } from '@/lib/utils';
 import { createDefaultPlayerInput, type PlayerInput } from '@/types';
 import { knobActiveBadgeObjects } from '@/types/knob-registry';
 import { DRINK_TIER_NAMES, FOOD_TIER_NAMES, feralStateName } from '@/data/meter-names';
@@ -32,40 +31,15 @@ import { SectionTrigger } from './SectionTrigger';
  * (SpecialLoadoutSection.tsx); team size/public-team type in TeamSection;
  * target state AND the three accuracy sliders (hitRatePct/vatsHitRatePct/
  * bodyPartHitRatePct — they only make sense next to the body-part picker)
- * live in TargetSection; sneak/weakpoint stay on the headline chips.
+ * live in the Encounter card's TargetPanel; attack-state toggles (hydrated /
+ * power attack / last shot / ADS) live in AttackStateGroup there too;
+ * sneak/weakpoint stay on the headline chips.
  */
 
 /** One decimal for sustained-stack averages; whole numbers omit the fraction. */
 function formatStackAvg(value: number): string {
   const rounded = Math.round(value * 10) / 10;
   return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
-}
-
-function SwitchRow({
-  id,
-  label,
-  checked,
-  onCheckedChange,
-  disabled,
-}: {
-  id: string;
-  label: string;
-  checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
-  disabled?: boolean;
-}) {
-  return (
-    <label
-      htmlFor={id}
-      className={cn(
-        'flex items-center justify-between gap-2 text-sm',
-        disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
-      )}
-    >
-      <span>{label}</span>
-      <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} disabled={disabled} />
-    </label>
-  );
 }
 
 export function ConditionsSection() {
@@ -541,47 +515,6 @@ export function ConditionsSection() {
                   damage-per-1000-Rad-Resistance ladder, which caps at +160% (8000+).
                 </HelperText>
               </div>
-            </div>
-          </div>
-
-          <div>
-            <GroupHeading title="Attack state" />
-            <div className="space-y-3">
-              {!isGhoul && (
-                <div className="space-y-1.5">
-                  <SwitchRow
-                    id="char-hydrated"
-                    label="Fully hydrated"
-                    checked={conditions.hydrated ?? true}
-                    onCheckedChange={(v) => set('hydrated', v)}
-                  />
-                  <HelperText>
-                    Fully hydrated grants +35% AP regen (45/60% with Rejuvenated). Ghouls have no
-                    hydration.
-                  </HelperText>
-                </div>
-              )}
-
-              <SwitchRow
-                id="char-power-attack"
-                label="Power attacking (melee)"
-                checked={conditions.isPowerAttacking}
-                onCheckedChange={(v) => set('isPowerAttacking', v)}
-              />
-
-              <SwitchRow
-                id="char-last-shot"
-                label="Firing the magazine's last round"
-                checked={conditions.isLastShot ?? false}
-                onCheckedChange={(v) => set('isLastShot', v)}
-              />
-
-              <SwitchRow
-                id="char-ads"
-                label="Aiming down sights"
-                checked={conditions.isAimingDownSights ?? false}
-                onCheckedChange={(v) => set('isAimingDownSights', v)}
-              />
             </div>
           </div>
         </div>

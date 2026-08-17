@@ -10,7 +10,6 @@ import { ChemsSection } from './buffs/ChemsSection';
 import { FoodDrinkSection } from './buffs/FoodDrinkSection';
 import { MagazinesSection, BobbleheadsSection } from './buffs/shared';
 import { ConditionsSection } from './ConditionsSection';
-import { TargetSection } from './TargetSection';
 import { TeamSection } from './TeamSection';
 
 export function BuildColumn() {
@@ -35,7 +34,6 @@ export function BuildColumn() {
           <FoodDrinkSection />
           <MagazinesSection />
           <BobbleheadsSection />
-          <TargetSection />
         </Accordion>
       </CardContent>
     </Card>

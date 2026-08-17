@@ -8,7 +8,7 @@ import { createDefaultResolvedPlayer } from '@/types/player';
  * source: `origin: 'derived'` fields are excluded from the persisted share
  * URL (`src/lib/persist/codec.ts`'s `DERIVED_PLAYER_CONDITION_KEYS`, sourced
  * from `PLAYER_KNOB_REGISTRY` below); `activeBadge`/`badgeRead` feed
- * ConditionsSection/TargetSection's "N active" badge diff via
+ * ConditionsSection/AttackStateGroup/TargetPanel's "N active" badge diff via
  * `knobActiveBadgeObjects`; `clamp`/`clampRef` document (not enforce — see
  * each field's comment) where a field's runtime bound lives. Adding a new
  * player/enemy field means adding a row here, not just wiring the UI control.
@@ -17,6 +17,7 @@ import { createDefaultResolvedPlayer } from '@/types/player';
 /** BuildColumn accordion id, ResultsPane scenario chips, or non-UI storage. */
 export type KnobSection =
   | 'conditions'
+  | 'attack-state'
   | 'target'
   | 'team'
   | 'special-loadout'
@@ -39,8 +40,8 @@ interface KnobRowBase<K extends string, V> {
   section: KnobSection;
   default: V;
   label: string;
-  /** Included in ConditionsSection or TargetSection "N active" badge diff. */
-  activeBadge?: 'conditions' | 'target';
+  /** Included in ConditionsSection, AttackStateGroup, or TargetPanel "N active" badge diff. */
+  activeBadge?: 'conditions' | 'target' | 'attack-state';
   /** When badge diff needs a coalesce or display clamp unlike stored value. */
   badgeRead?: (player: PlayerInput, ctx?: KnobBadgeContext) => unknown;
   /**
@@ -110,28 +111,28 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
     key: 'isPowerAttacking',
     owner: 'player',
     origin: 'input',
-    section: 'conditions',
+    section: 'attack-state',
     default: PLAYER_DEFAULTS.isPowerAttacking,
     label: 'Power attacking',
-    activeBadge: 'conditions',
+    activeBadge: 'attack-state',
   },
   isLastShot: {
     key: 'isLastShot',
     owner: 'player',
     origin: 'input',
-    section: 'conditions',
+    section: 'attack-state',
     default: PLAYER_DEFAULTS.isLastShot ?? false,
     label: 'Last shot in magazine',
-    activeBadge: 'conditions',
+    activeBadge: 'attack-state',
   },
   isAimingDownSights: {
     key: 'isAimingDownSights',
     owner: 'player',
     origin: 'input',
-    section: 'conditions',
+    section: 'attack-state',
     default: PLAYER_DEFAULTS.isAimingDownSights ?? false,
     label: 'Aiming down sights',
-    activeBadge: 'conditions',
+    activeBadge: 'attack-state',
   },
   isGhoul: {
     key: 'isGhoul',
@@ -597,10 +598,10 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
     key: 'hydrated',
     owner: 'player',
     origin: 'input',
-    section: 'conditions',
+    section: 'attack-state',
     default: PLAYER_DEFAULTS.hydrated ?? true,
     label: 'Fully hydrated',
-    activeBadge: 'conditions',
+    activeBadge: 'attack-state',
   },
 };
 
@@ -759,7 +760,7 @@ export const DERIVED_PLAYER_CONDITION_KEYS = new Set<keyof ResolvedPlayer>(
 
 /** Build value/defaults objects for a section "N active" badge via `buildDeltaCount`. */
 export function knobActiveBadgeObjects(
-  badge: 'conditions' | 'target',
+  badge: 'conditions' | 'target' | 'attack-state',
   player: PlayerInput,
   enemy: EnemyConditions,
   ctx?: KnobBadgeContext,
