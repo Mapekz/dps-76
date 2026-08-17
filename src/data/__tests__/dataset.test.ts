@@ -1,8 +1,10 @@
 import { describe, it, expect } from 'bun:test';
 import { getDataset, getUnresolvedOverrideKeys } from '@/data/dataset';
+import generatedArmorOmodsLive from '@/data/live/generated/armor-omods.json';
 import generatedUniquesLive from '@/data/live/generated/uniques.json';
 import { generatedWeaponsRaw as generatedWeaponsRawLive } from '@/data/live/weapons';
 import { getOmodById } from '@/data/omods';
+import { armorLegendaryValueOverrides } from '@/data/overrides/armor-values';
 import { legendaryValueOverrides } from '@/data/overrides/legendary-values';
 import type { GeneratedUnique } from '@/types/generated';
 
@@ -30,6 +32,55 @@ describe('getDataset value overlays', () => {
       legendaryValueOverrides[id],
     );
   });
+});
+
+/**
+ * `armor-values.ts` opens by promising "Every value below is still the
+ * extracted ESM value; only the condition shape changes" — these entries
+ * REPLACE a record's whole modifier array to fix a condition-translation
+ * artifact, never to supply a magnitude the ESM doesn't have. Nothing enforced
+ * that until now, so a balance patch that retuned one of these chances would
+ * update `armor-omods.json` and leave the app serving the stale literal
+ * silently (the wholesale replace masks it, and `extract:diff` reports
+ * modifier COUNT changes, not value changes).
+ *
+ * Magnitudes only — condition/bucket reshaping is the whole point of these
+ * entries, so shape is deliberately not asserted. A failure means the ESM
+ * moved: re-read the record (`esm get <formId>`) and update the override's
+ * values, don't relax this test.
+ */
+describe('armor value overrides preserve extracted magnitudes', () => {
+  const extractedById = new Map(generatedArmorOmodsLive.map((omod) => [omod.id, omod]));
+  /**
+   * Plain magnitude, or null for a curve-driven modifier (excluded: it carries
+   * `curve`/`curveScale` instead of a scalar to compare). Takes `unknown`
+   * because the two sides are differently typed — a checked-in JSON import
+   * (widened) and the `Modifier` union (discriminated on `curve`).
+   */
+  const magnitude = (m: unknown): number | null => {
+    const value = (m as { value?: unknown }).value;
+    return typeof value === 'number' ? value : null;
+  };
+
+  for (const [id, overrides] of Object.entries(armorLegendaryValueOverrides)) {
+    it(`${id} only re-shapes conditions, never magnitudes`, () => {
+      const extracted = extractedById.get(id);
+      expect(extracted, `${id} has no generated record`).toBeDefined();
+      const extractedValues = new Set(
+        extracted!.modifiers.map(magnitude).filter((v): v is number => v !== null),
+      );
+      for (const override of overrides) {
+        const value = magnitude(override);
+        if (value === null) continue;
+        expect(
+          extractedValues.has(value),
+          `${id}: override value ${value} is not among the extracted values ${[
+            ...extractedValues,
+          ].join(', ')}`,
+        ).toBe(true);
+      }
+    });
+  }
 });
 
 describe('generated uniques resolve', () => {
