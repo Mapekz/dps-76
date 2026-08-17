@@ -1331,6 +1331,21 @@ export async function translateGrantedPerk(
       // a hypothetical un-gated future use of this entry point still falls
       // through to the generic ENTRY_POINT_BUCKETS mapping (SET 1.0 =
       // unconditional 100% skip) instead of being silently swallowed.
+      //
+      // Emits the FINAL shape here rather than leaving an inert modifier for
+      // `armorLegendaryValueOverrides` to replace (as it did until 2026-08-17
+      // — same fallout as EP-198's, patched downstream instead of upstream,
+      // which left the five chances duplicated as hand-maintained literals an
+      // ESM retune would silently strand):
+      //   - `reloadSkipChanceBash`, not `reloadSkipChance` — this entry point
+      //     IS the bash trigger, and that channel is what lets sustain.ts
+      //     charge a real bash cost (`PlayerInput.battleLoadersBashSec`)
+      //     instead of treating it as a free Quick-Hands-style skip (EP-182).
+      //   - the `IsPowerAttacking` row is dropped as a CONDITION because the
+      //     bucket above already encodes its bash-ness; bash cadence (how
+      //     often a bash replaces a reload) stays unmodeled either way.
+      //   - `GetDead()=0` is a target-alive sanity check with no UI input and
+      //     no failure mode this calculator models.
       if (
         name === 'Instant Reload Clip On Bash' &&
         functionName === 'Set Value' &&
@@ -1339,7 +1354,16 @@ export async function translateGrantedPerk(
       ) {
         const value = parseGetRandomPercentChance(conditionRows, globalValues);
         if (value !== null) {
-          result.modifiers.push({ bucket: 'reloadSkipChance', op: 'ADD', value, conditions });
+          result.modifiers.push({
+            bucket: 'reloadSkipChanceBash',
+            op: 'ADD',
+            value,
+            conditions: withoutRandomPercentGate(conditions).filter(
+              (c) =>
+                c.kind !== 'powerAttack' &&
+                !(c.kind === 'unresolved' && c.raw.startsWith('GetDead(')),
+            ),
+          });
         } else {
           result.notes.push(
             `perk ${perkEdid}: ${name} — GetRandomPercent present but chance unparsed, skipped`,

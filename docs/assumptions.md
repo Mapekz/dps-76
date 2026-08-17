@@ -873,9 +873,10 @@ picker roster/grouping are documented at `src/data/armor-modifiers.ts`,
   SPECIAL tiers on a strict-`<` boundary, matching the current game build.
   An announced future patch flips the comparison to `<=` — when it ships,
   the step-eval convention needs revisiting, not just a data refresh.
-- **Battle-Loader's + Bruiser's/Ranger's overrides**: both replace a
-  broken ESM-extracted condition with the real mechanic — full
-  per-condition rationale at `armor-values.ts`.
+- **Bruiser's/Ranger's overrides**: replace a broken ESM-extracted
+  condition with the real mechanic — full per-condition rationale at
+  `armor-values.ts`. (Battle-Loader's needed the same treatment until
+  2026-08-17; its EP-199 branch now emits the final shape directly.)
 - **Excluded** (`hiddenArmorOmodIds`): Overeater's (real DR/ER mechanic is
   incoming-scope, unextracted — `#49`) and Punishing (extracted modifiers
   are chase noise, not the real reflect-damage mechanic) — full detail
@@ -969,7 +970,9 @@ ESM-proven and documented at their respective extraction sites.
 - Battle-Loader's PERK entry point 199 emits a boolean trigger placeholder,
   not the real 15/30/45/60/75% chance (that lives in each tier's own
   `GetRandomPercent` row) — `mgef.ts` special-cases this into
-  `reloadSkipChance`, leaving the rest `unresolved` — see **Armor**.
+  `reloadSkipChanceBash`, dropping the consumed roll and the unmodeled
+  sanity rows so the modifier isn't born inert (the same shape EP-172 and
+  EP-198 use) — see **Armor**.
 - `extract-armor.ts` is grounding-only: `{id, formId, name, obtainable}`
   per ARMO record, feeding armor-OMOD obtainability. No resistances, no
   mod slots — later Phase 3 scope.

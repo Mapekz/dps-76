@@ -71732,7 +71732,7 @@
      "edid": "mod_Legendary_Armor4_BattleLoaders",
      "name": "Battle-Loader's"
     },
-    "bucket": "reloadSkipChance",
+    "bucket": "reloadSkipChanceBash",
     "op": "ADD",
     "value": 0.75,
     "conditions": [
@@ -71741,18 +71741,6 @@
       "keyword": "HasLegendary_Armor_BattleLoaders",
       "count": 5,
       "orMore": true
-     },
-     {
-      "kind": "powerAttack",
-      "value": true
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetRandomPercent()=75"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=0"
      }
     ]
    },
@@ -71764,7 +71752,7 @@
      "edid": "mod_Legendary_Armor4_BattleLoaders",
      "name": "Battle-Loader's"
     },
-    "bucket": "reloadSkipChance",
+    "bucket": "reloadSkipChanceBash",
     "op": "ADD",
     "value": 0.6,
     "conditions": [
@@ -71772,18 +71760,6 @@
       "kind": "wornPieceCount",
       "keyword": "HasLegendary_Armor_BattleLoaders",
       "count": 4
-     },
-     {
-      "kind": "powerAttack",
-      "value": true
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetRandomPercent()=60"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=0"
      }
     ]
    },
@@ -71795,7 +71771,7 @@
      "edid": "mod_Legendary_Armor4_BattleLoaders",
      "name": "Battle-Loader's"
     },
-    "bucket": "reloadSkipChance",
+    "bucket": "reloadSkipChanceBash",
     "op": "ADD",
     "value": 0.45,
     "conditions": [
@@ -71803,18 +71779,6 @@
       "kind": "wornPieceCount",
       "keyword": "HasLegendary_Armor_BattleLoaders",
       "count": 3
-     },
-     {
-      "kind": "powerAttack",
-      "value": true
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetRandomPercent()=45"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=0"
      }
     ]
    },
@@ -71826,7 +71790,7 @@
      "edid": "mod_Legendary_Armor4_BattleLoaders",
      "name": "Battle-Loader's"
     },
-    "bucket": "reloadSkipChance",
+    "bucket": "reloadSkipChanceBash",
     "op": "ADD",
     "value": 0.3,
     "conditions": [
@@ -71834,18 +71798,6 @@
       "kind": "wornPieceCount",
       "keyword": "HasLegendary_Armor_BattleLoaders",
       "count": 2
-     },
-     {
-      "kind": "powerAttack",
-      "value": true
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetRandomPercent()=30"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=0"
      }
     ]
    },
@@ -71857,7 +71809,7 @@
      "edid": "mod_Legendary_Armor4_BattleLoaders",
      "name": "Battle-Loader's"
     },
-    "bucket": "reloadSkipChance",
+    "bucket": "reloadSkipChanceBash",
     "op": "ADD",
     "value": 0.15,
     "conditions": [
@@ -71865,18 +71817,6 @@
       "kind": "wornPieceCount",
       "keyword": "HasLegendary_Armor_BattleLoaders",
       "count": 1
-     },
-     {
-      "kind": "powerAttack",
-      "value": true
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetRandomPercent()=15"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=0"
      }
     ]
    }
@@ -74671,7 +74611,7 @@
      "edid": "mod_Legendary_PowerArmor4_BattleLoaders",
      "name": "Battle-Loader's"
     },
-    "bucket": "reloadSkipChance",
+    "bucket": "reloadSkipChanceBash",
     "op": "ADD",
     "value": 0.75,
     "conditions": [
@@ -74680,18 +74620,6 @@
       "keyword": "HasLegendary_Armor_BattleLoaders",
       "count": 5,
       "orMore": true
-     },
-     {
-      "kind": "powerAttack",
-      "value": true
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetRandomPercent()=75"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=0"
      }
     ]
    },
@@ -74703,7 +74631,7 @@
      "edid": "mod_Legendary_PowerArmor4_BattleLoaders",
      "name": "Battle-Loader's"
     },
-    "bucket": "reloadSkipChance",
+    "bucket": "reloadSkipChanceBash",
     "op": "ADD",
     "value": 0.6,
     "conditions": [
@@ -74711,18 +74639,6 @@
       "kind": "wornPieceCount",
       "keyword": "HasLegendary_Armor_BattleLoaders",
       "count": 4
-     },
-     {
-      "kind": "powerAttack",
-      "value": true
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetRandomPercent()=60"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=0"
      }
     ]
    },
@@ -74734,7 +74650,7 @@
      "edid": "mod_Legendary_PowerArmor4_BattleLoaders",
      "name": "Battle-Loader's"
     },
-    "bucket": "reloadSkipChance",
+    "bucket": "reloadSkipChanceBash",
     "op": "ADD",
     "value": 0.45,
     "conditions": [
@@ -74742,18 +74658,6 @@
       "kind": "wornPieceCount",
       "keyword": "HasLegendary_Armor_BattleLoaders",
       "count": 3
-     },
-     {
-      "kind": "powerAttack",
-      "value": true
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetRandomPercent()=45"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=0"
      }
     ]
    },
@@ -74765,7 +74669,7 @@
      "edid": "mod_Legendary_PowerArmor4_BattleLoaders",
      "name": "Battle-Loader's"
     },
-    "bucket": "reloadSkipChance",
+    "bucket": "reloadSkipChanceBash",
     "op": "ADD",
     "value": 0.3,
     "conditions": [
@@ -74773,18 +74677,6 @@
       "kind": "wornPieceCount",
       "keyword": "HasLegendary_Armor_BattleLoaders",
       "count": 2
-     },
-     {
-      "kind": "powerAttack",
-      "value": true
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetRandomPercent()=30"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=0"
      }
     ]
    },
@@ -74796,7 +74688,7 @@
      "edid": "mod_Legendary_PowerArmor4_BattleLoaders",
      "name": "Battle-Loader's"
     },
-    "bucket": "reloadSkipChance",
+    "bucket": "reloadSkipChanceBash",
     "op": "ADD",
     "value": 0.15,
     "conditions": [
@@ -74804,18 +74696,6 @@
       "kind": "wornPieceCount",
       "keyword": "HasLegendary_Armor_BattleLoaders",
       "count": 1
-     },
-     {
-      "kind": "powerAttack",
-      "value": true
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetRandomPercent()=15"
-     },
-     {
-      "kind": "unresolved",
-      "raw": "GetDead()=0"
      }
     ]
    }

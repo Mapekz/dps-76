@@ -1555,7 +1555,7 @@ describe('extractOmods (Phase 3 armor pipeline, 2026-07-18)', () => {
     expect(omod!.notes ?? []).not.toContain('ActorValues on Strength — unmapped');
   });
 
-  it("Battle-Loader's: 5 reloadSkipChance modifiers at the right per-worn-piece chances, each carrying the matching wornPieceCount condition", async () => {
+  it("Battle-Loader's: 5 reloadSkipChanceBash modifiers at the right per-worn-piece chances, carrying ONLY the matching wornPieceCount condition", async () => {
     const result = await extractOmods({
       client: makeArmorStubClient(),
       obtainableWeaponFormIds: new Set(),
@@ -1563,8 +1563,12 @@ describe('extractOmods (Phase 3 armor pipeline, 2026-07-18)', () => {
     const omod = result.armorOmods.find((o) => o.id === 'mod_Legendary_Armor4_BattleLoaders');
     expect(omod).toBeDefined();
 
-    const reloadMods = omod!.modifiers.filter((m) => m.bucket === 'reloadSkipChance');
+    // `reloadSkipChanceBash`, not the passive `reloadSkipChance` channel:
+    // EP-199 IS the bash trigger, and only that channel is charged a real
+    // bash cost in sustain.ts. Nothing may land on the passive bucket.
+    const reloadMods = omod!.modifiers.filter((m) => m.bucket === 'reloadSkipChanceBash');
     expect(reloadMods).toHaveLength(5);
+    expect(omod!.modifiers.filter((m) => m.bucket === 'reloadSkipChance')).toHaveLength(0);
     // Every emitted modifier is flat-valued (GetRandomPercent chance, not a
     // curve) — narrow accordingly instead of widening to `unknown`.
     const flatValue = (m: (typeof reloadMods)[number]): number => {
@@ -1592,10 +1596,19 @@ describe('extractOmods (Phase 3 armor pipeline, 2026-07-18)', () => {
         ['5+', 0.75],
       ]),
     );
-    // Every wornPieceCount condition names the Battle-Loader's keyword.
+    // Every wornPieceCount condition names the Battle-Loader's keyword, and it
+    // is the ONLY surviving condition: the GetRandomPercent roll is already
+    // the value, `IsPowerAttacking` is encoded structurally by the bash
+    // bucket, and the GetIsPlayer/GetDead sanity rows are unmodeled. Any
+    // leftover `unresolved` row would make the whole modifier permanently
+    // inert (evalCondition returns null for it) — the failure mode that used
+    // to force a hand-written armorLegendaryValueOverrides entry here.
     for (const m of reloadMods) {
-      const worn = m.conditions.find((c) => c.kind === 'wornPieceCount');
-      expect(worn).toMatchObject({ keyword: 'HasLegendary_Armor_BattleLoaders' });
+      expect(m.conditions).toHaveLength(1);
+      expect(m.conditions[0]).toMatchObject({
+        kind: 'wornPieceCount',
+        keyword: 'HasLegendary_Armor_BattleLoaders',
+      });
     }
   });
 });
