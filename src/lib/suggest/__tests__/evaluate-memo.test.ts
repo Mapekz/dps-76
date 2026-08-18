@@ -171,8 +171,8 @@ describe('addiction/toggle candidate — MemoScope key regression (see loadout.t
     const state = junkieBuildState();
     const scope = createMemoScope();
     const zero: DpsSnapshot = {
-      freeAim: { perHit: 0, burstDps: 0, sustainedDps: 0, windowDps: 0 },
-      vats: { perHit: 0, burstDps: 0, sustainedDps: 0, windowDps: 0 },
+      freeAim: { perHit: 0, burstDps: 0, sustainedDps: 0, uptime: 1 },
+      vats: { perHit: 0, burstDps: 0, sustainedDps: 0, uptime: 1 },
     };
 
     // Warm the scope on the 0-addiction state first — this is what makes the

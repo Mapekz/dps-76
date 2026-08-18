@@ -490,11 +490,11 @@ all documented on that module's own doc-comment, not repeated here.
 - **Number Cruncher**: routed as `dbm 0.02` scaled by the effective per-shot
   AP cost, in every scenario. **USER-CONFIRMED** it improves free aim too.
 - **VATS canonical DPS = `apLimitedDps`**. **CLOSED** (user decision): the card
-  headline, headline strip, auto-emphasis, and suggestion deltas all use
-  the duty-cycle blend `uptime × vatsSustained + (1 − uptime) ×
+  headline, headline strip, auto-emphasis, suggestion ranking, and suggestion
+  deltas all use the duty-cycle blend `uptime × vatsSustained + (1 − uptime) ×
   freeAimSustained` — during the AP-empty pause the player free-aims
   instead of idling. `effective.sustainedDps`/`ttk` blend the same weights
-  via `blendEffectiveDps` (`scenarios.ts`).
+  via `blendEffectiveDps` (`scenarios.ts`). See `docs/adr/0007`.
 - **Passive AP regen during free-aim fallback** (**USER-CONFIRMED** in-game,
   `#75`): keeps ticking at full `regenPerSec` in free aim — sighted, hip,
   and scoped ADS all cost no AP. Exception: holding breath while scoped.
@@ -507,8 +507,6 @@ all documented on that module's own doc-comment, not repeated here.
   **permanently out of scope**. Unlike Free Aim, a VATS miss deals **zero
   damage** — no torso fallback (full mechanism: `bodyPartBlendedHit`'s doc
   comment in `scenarios.ts`).
-- Suggestion ranking when VATS is emphasized uses VATS-Window DPS, not this
-  section's canonical blend — see `docs/adr/0007`.
 
 ## VATS hit-chance aggregate (display-only)
 Engine: `scenarios.ts` (bootstrap fold → `ScenarioSet.vatsHitChanceBonus`).

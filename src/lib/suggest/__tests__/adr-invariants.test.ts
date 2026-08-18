@@ -21,7 +21,6 @@ import type {
   EvaluatedSuggestion,
   ScenarioHeadline,
   SuggestionGroup,
-  SuggestionReport,
 } from '@/lib/suggest/types';
 import { createMemoScope } from '@/lib/loadout-memo';
 
@@ -36,85 +35,28 @@ function stateFrom(
 
 const fixerState = stateFrom([{ type: 'weapon/select', weaponId: 'CombatRifle_Fixer' }]);
 
-describe('ADR 0007: suggestions rank on windowDps, not sustainedDps', () => {
-  it('orders candidates by vats windowDps delta when that differs from sustainedDps ordering', () => {
+describe('ADR 0007: suggestions rank on canonical sustainedDps delta', () => {
+  it('primaryDeltaPct equals delta[metric].sustainedDps / baseline[metric].sustainedDps for every candidate', () => {
     const report = evaluateSuggestions(fixerState, 'live', 'vats');
-    const apEconomy = report.suggestions.find((s) => s.id === 'consumable:CompanyTea_RSVP02');
-    const rawDamage = report.suggestions.find((s) => s.id === 'perk-add:CenterMasochist:3:alloc');
-    expect(apEconomy).toBeDefined();
-    expect(rawDamage).toBeDefined();
-
-    const teaWindow = apEconomy!.delta.vats.windowDps;
-    const teaSustained = apEconomy!.delta.vats.sustainedDps;
-    const masoWindow = rawDamage!.delta.vats.windowDps;
-    const masoSustained = rawDamage!.delta.vats.sustainedDps;
-
-    expect(teaWindow).toBeGreaterThan(masoWindow);
-    expect(teaSustained).toBeLessThan(masoSustained);
-
-    const teaRank = report.suggestions.indexOf(apEconomy!);
-    const masoRank = report.suggestions.indexOf(rawDamage!);
-    expect(teaRank).toBeLessThan(masoRank);
-    expect(apEconomy!.primaryDeltaPct).toBeGreaterThan(rawDamage!.primaryDeltaPct);
+    const metricBase = report.baseline!.vats.sustainedDps;
+    for (const s of report.suggestions) {
+      const expected = metricBase > 0 ? s.delta.vats.sustainedDps / metricBase : 0;
+      expect(s.primaryDeltaPct).toBeCloseTo(expected, 6);
+    }
   });
 });
 
-describe('ADR 0007: canonical-delta guard rejects windowDps-up/sustained-down candidates', () => {
-  it('filters suggestions whose delta[metric].sustainedDps is not positive', () => {
-    const zeroHeadline: ScenarioHeadline = {
-      perHit: 0,
-      burstDps: 0,
-      sustainedDps: 0,
-      windowDps: 0,
-    };
-    const baseline: DpsSnapshot = { freeAim: zeroHeadline, vats: zeroHeadline };
-
-    function syntheticSuggestion(
-      id: string,
-      primaryDeltaPct: number,
-      vatsSustainedDelta: number,
-      vatsWindowDelta: number,
-    ): EvaluatedSuggestion {
-      return {
-        id,
-        action: [],
-        label: id,
-        group: 'perk',
-        family: id,
-        cost: 0,
-        result: baseline,
-        delta: {
-          freeAim: zeroHeadline,
-          vats: {
-            ...zeroHeadline,
-            sustainedDps: vatsSustainedDelta,
-            windowDps: vatsWindowDelta,
-          },
-        },
-        primaryDeltaPct,
-      };
-    }
-
-    const fakeReport: SuggestionReport = {
-      baseline,
-      metric: 'vats',
-      suggestions: [
-        syntheticSuggestion('window-up-sustained-down', 0.05, -1, 5),
-        syntheticSuggestion('both-up', 0.03, 2, 3),
-      ],
-    };
-
-    const shown = [
-      ...topSuggestions(fakeReport, 10).ranked,
-      ...topSuggestions(fakeReport, 10).tied,
-    ];
-    expect(shown.some((s) => s.id === 'both-up')).toBe(true);
-    expect(shown.some((s) => s.id === 'window-up-sustained-down')).toBe(false);
+describe('ADR 0007: AP-economy lever still scores > 0 (anti-unblended-V guard)', () => {
+  it('Company Tea scores positive primaryDeltaPct because the canonical blend contains uptime', () => {
+    const report = evaluateSuggestions(fixerState, 'live', 'vats');
+    const tea = report.suggestions.find((s) => s.id === 'consumable:CompanyTea_RSVP02');
+    expect(tea).toBeDefined();
+    expect(tea!.primaryDeltaPct).toBeGreaterThan(0);
   });
 });
 
 describe('family collapse emits at most 2 rows per family (next positive + best)', () => {
-  const headline: ScenarioHeadline = { perHit: 0, burstDps: 0, sustainedDps: 0, windowDps: 0 };
+  const headline: ScenarioHeadline = { perHit: 0, burstDps: 0, sustainedDps: 0, uptime: 1 };
   const snapshot: DpsSnapshot = { freeAim: headline, vats: headline };
 
   function fixture(
@@ -206,8 +148,8 @@ describe('ADR 0011: the sweep evaluates every candidate (no pruning)', () => {
     for (const candidate of enumerateVariants(state, 'live', 'vats')) {
       const result = evaluateActions(state, 'live', candidate.action, baseline, scope);
       expect(result).not.toBeNull();
-      const metricBase = baseline.vats.windowDps;
-      const primaryDeltaPct = metricBase > 0 ? result!.delta.vats.windowDps / metricBase : 0;
+      const metricBase = baseline.vats.sustainedDps;
+      const primaryDeltaPct = metricBase > 0 ? result!.delta.vats.sustainedDps / metricBase : 0;
       evaluated.push({ ...candidate, ...result!, primaryDeltaPct });
     }
 
@@ -239,8 +181,8 @@ describe('ADR 0011: the sweep evaluates every candidate (no pruning)', () => {
     const changing = report.suggestions.filter(
       (s) =>
         !(
-          s.delta.vats.windowDps === 0 &&
-          s.delta.freeAim.windowDps === 0 &&
+          s.delta.vats.uptime === 0 &&
+          s.delta.freeAim.uptime === 0 &&
           s.delta.vats.sustainedDps === 0 &&
           s.delta.freeAim.sustainedDps === 0
         ),

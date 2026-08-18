@@ -1,7 +1,6 @@
 import type { GameMode } from '@/types';
 import { resolveLoadout } from '@/lib/loadout';
 import { createKeyedCache, createMemoScope, type MemoScope } from '@/lib/loadout-memo';
-import { apLimitedDps } from '@/lib/engine/ap-economy';
 import { computeScenarios, type ScenarioResult, type ScenarioSet } from '@/lib/engine/scenarios';
 import {
   makeBuildReducer,
@@ -38,16 +37,10 @@ function headline(result: ScenarioResult): ScenarioHeadline {
     // through this snapshot, so this one fold is what makes AP-economy picks
     // show up in deltas.
     sustainedDps: result.ap?.apLimitedDps ?? result.sustain.sustainedDps,
-    // VATS-Window DPS: damage over the AP-funded firing window only, pause
-    // counted as zero (apLimitedDps's default `downtimeFallbackDps = 0`).
-    // This is the *ranking objective* for suggestions/ActionDelta when VATS
-    // is emphasized — deliberately NOT the same as `sustainedDps` above,
-    // which blends in the free-aim fallback and must stay canonical for the
-    // headline. Equals `sustainedDps`'s raw sustain value (no AP blend) when
-    // there's no `ap` block (free aim, melee, 0-AP-cost VATS).
-    windowDps: result.ap
-      ? apLimitedDps(result.sustain.sustainedDps, result.ap.uptime, 0)
-      : result.sustain.sustainedDps,
+    // VATS uptime ratio (1 for free aim / no AP block). Carried so a candidate
+    // that moves VATS uptime can be classified downstream (a follow-up task
+    // adds a "VATS uptime" suggestions section); never a ranking input.
+    uptime: result.ap?.uptime ?? 1,
     critRate: result.critRate,
   };
 }
@@ -93,7 +86,7 @@ function diff(a: ScenarioHeadline, b: ScenarioHeadline): ScenarioHeadline {
     perHit: a.perHit - b.perHit,
     burstDps: a.burstDps - b.burstDps,
     sustainedDps: a.sustainedDps - b.sustainedDps,
-    windowDps: a.windowDps - b.windowDps,
+    uptime: a.uptime - b.uptime,
   };
 }
 
@@ -233,13 +226,13 @@ export function evaluateSuggestions(
   const baseline = computeSnapshot(state, mode, scope);
   if (!baseline) return { baseline: null, metric, suggestions: [] };
 
-  const metricBase = baseline[metric].windowDps;
+  const metricBase = baseline[metric].sustainedDps;
   const suggestions: EvaluatedSuggestion[] = [];
 
   for (const candidate of enumerateVariants(state, mode, metric)) {
     const evaluated = evaluateActions(state, mode, candidate.action, baseline, scope);
     if (!evaluated) continue;
-    const primaryDeltaPct = metricBase > 0 ? evaluated.delta[metric].windowDps / metricBase : 0;
+    const primaryDeltaPct = metricBase > 0 ? evaluated.delta[metric].sustainedDps / metricBase : 0;
     suggestions.push({ ...candidate, ...evaluated, primaryDeltaPct });
   }
 
@@ -285,17 +278,22 @@ export function topSuggestions(
   report: SuggestionReport,
   limit: number,
   tiedThresholdPct = TIED_THRESHOLD_PCT,
-  options: { groups?: ReadonlySet<SuggestionGroup> } = {},
+  options: {
+    groups?: ReadonlySet<SuggestionGroup>;
+    filter?: (s: EvaluatedSuggestion) => boolean;
+  } = {},
 ): {
   ranked: EvaluatedSuggestion[];
   tied: EvaluatedSuggestion[];
 } {
   const groups = options.groups ?? STRUCTURAL_GROUPS;
-  const scoped = report.suggestions.filter((s) => groups.has(s.group));
+  const scoped = report.suggestions.filter(
+    (s) => groups.has(s.group) && (options.filter?.(s) ?? true),
+  );
   const seen = new Set<string>();
   const candidates = scoped.filter((s) => {
     if (s.primaryDeltaPct <= 0) return false;
-    if (s.delta[report.metric].sustainedDps <= 0) return false;
+    // ADR 0007's canonical-delta guard collapsed into the ranking metric itself.
     const key = `${s.label}|${s.primaryDeltaPct.toFixed(5)}`;
     if (seen.has(key)) return false;
     seen.add(key);

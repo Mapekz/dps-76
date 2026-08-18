@@ -8,15 +8,60 @@ import { Body, MicroLabel, Readout, SectionLabel } from '@/components/ui/typogra
 import { cn } from '@/lib/utils';
 import { deltaToneClass, formatPercentDelta } from '@/lib/format';
 import { useSuggestions } from '@/hooks/useSuggestions';
-import { topSuggestions } from '@/lib/suggest/evaluate';
+import { STRUCTURAL_GROUPS, topSuggestions } from '@/lib/suggest/evaluate';
 import { useBuildDispatch } from '@/state/BuildProvider';
-import type { EvaluatedSuggestion } from '@/lib/suggest/types';
+import type { EvaluatedSuggestion, SuggestionGroup } from '@/lib/suggest/types';
+import type { ScenarioKey } from '@/state/build-reducer';
 
 const PANEL_LIMIT = 8;
 const CONSUMABLE_LIMIT = 4;
+const UPTIME_LIMIT = 4;
+const UPTIME_EPSILON = 0.005;
 
-function SuggestionRow({ suggestion, tied }: { suggestion: EvaluatedSuggestion; tied?: boolean }) {
+/**
+ * DEV SCAFFOLDING — flip to compare how VATS uptime levers (AP regen/cost
+ * picks, worth 1–3% each) stay visible against +50% damage upgrades:
+ *   'sections' — a dedicated "VATS uptime" section below the main list
+ *   'inline'   — one list, each row annotated with its uptime effect
+ * Neither changes a percentage. Delete the losing branch and this flag once
+ * converged.
+ */
+const SUGGESTION_LAYOUT: 'sections' | 'inline' = 'sections';
+
+const ALL_SUGGESTION_GROUPS: ReadonlySet<SuggestionGroup> = new Set([
+  ...STRUCTURAL_GROUPS,
+  'consumable',
+]);
+
+function formatUptimePct(ratio: number): string {
+  return `${Math.round(ratio * 100)}%`;
+}
+
+function SuggestionRow({
+  suggestion,
+  tied,
+  baselineUptime,
+  metric,
+}: {
+  suggestion: EvaluatedSuggestion;
+  tied?: boolean;
+  baselineUptime?: number;
+  metric?: ScenarioKey;
+}) {
   const dispatch = useBuildDispatch();
+
+  const uptimeAnnotation =
+    SUGGESTION_LAYOUT === 'inline' &&
+    metric === 'vats' &&
+    baselineUptime !== undefined &&
+    Math.abs(suggestion.delta.vats.uptime) >= UPTIME_EPSILON
+      ? (() => {
+          const after = baselineUptime + suggestion.delta.vats.uptime;
+          const arrow = suggestion.delta.vats.uptime > 0 ? '↑' : '↓';
+          return `${arrow}uptime ${formatUptimePct(baselineUptime)}→${formatUptimePct(after)}`;
+        })()
+      : null;
+
   return (
     <div className="flex items-center gap-2 py-1 text-sm">
       <span className="min-w-0 flex-1 truncate" title={suggestion.detail ?? suggestion.label}>
@@ -42,6 +87,9 @@ function SuggestionRow({ suggestion, tied }: { suggestion: EvaluatedSuggestion; 
       >
         {tied ? '≈' : formatPercentDelta(suggestion.primaryDeltaPct)}
       </Readout>
+      {uptimeAnnotation && (
+        <span className="text-muted-foreground whitespace-nowrap text-3xs">{uptimeAnnotation}</span>
+      )}
       <Button
         variant="ghost"
         size="sm"
@@ -66,18 +114,34 @@ function SuggestionRow({ suggestion, tied }: { suggestion: EvaluatedSuggestion; 
  */
 function SuggestionSection({
   title,
+  titleTooltip,
   ranked,
   tied,
   emptyMessage,
+  baselineUptime,
+  metric,
 }: {
   title?: string;
+  titleTooltip?: React.ReactNode;
   ranked: EvaluatedSuggestion[];
   tied: EvaluatedSuggestion[];
   emptyMessage: React.ReactNode;
+  baselineUptime?: number;
+  metric?: ScenarioKey;
 }) {
   return (
     <div>
-      {title && <SectionLabel className="mb-1">{title}</SectionLabel>}
+      {title &&
+        (titleTooltip ? (
+          <Tooltip>
+            <TooltipTrigger render={<SectionLabel className="mb-1 cursor-default" />}>
+              {title}
+            </TooltipTrigger>
+            <TooltipContent>{titleTooltip}</TooltipContent>
+          </Tooltip>
+        ) : (
+          <SectionLabel className="mb-1">{title}</SectionLabel>
+        ))}
 
       {ranked.length === 0 && tied.length === 0 ? (
         <Body className="text-muted-foreground py-1">{emptyMessage}</Body>
@@ -86,7 +150,12 @@ function SuggestionSection({
           {ranked.length > 0 && (
             <div className="divide-border/50 divide-y">
               {ranked.map((s) => (
-                <SuggestionRow key={s.id} suggestion={s} />
+                <SuggestionRow
+                  key={s.id}
+                  suggestion={s}
+                  baselineUptime={baselineUptime}
+                  metric={metric}
+                />
               ))}
             </div>
           )}
@@ -109,7 +178,13 @@ function SuggestionSection({
               </div>
               <div className="divide-border/50 divide-y">
                 {tied.map((s) => (
-                  <SuggestionRow key={s.id} suggestion={s} tied />
+                  <SuggestionRow
+                    key={s.id}
+                    suggestion={s}
+                    tied
+                    baselineUptime={baselineUptime}
+                    metric={metric}
+                  />
                 ))}
               </div>
             </>
@@ -137,8 +212,16 @@ export function SuggestionsPanel() {
   const consumables = topSuggestions(report, CONSUMABLE_LIMIT, undefined, {
     groups: new Set(['consumable']),
   });
+  const uptimeLevers =
+    report.metric === 'vats' && SUGGESTION_LAYOUT === 'sections'
+      ? topSuggestions(report, UPTIME_LIMIT, undefined, {
+          groups: ALL_SUGGESTION_GROUPS,
+          filter: (s) => s.delta.vats.uptime > UPTIME_EPSILON,
+        })
+      : null;
   const metricLabel = report.metric === 'vats' ? 'VATS' : 'Free Aim';
-  const rankingLabel = report.metric === 'vats' ? 'VATS-window DPS' : 'Free Aim sustained';
+  const rankingLabel = report.metric === 'vats' ? 'VATS achieved DPS' : 'Free Aim sustained';
+  const baselineUptime = report.baseline[report.metric].uptime;
 
   return (
     <div className={cn('space-y-3 transition-opacity', stale && 'opacity-60')}>
@@ -153,8 +236,8 @@ export function SuggestionsPanel() {
                 ranked by {rankingLabel}
               </TooltipTrigger>
               <TooltipContent>
-                Counts only the AP-funded firing window, so VATS gains aren't diluted by the
-                free-aim pause. The headline above still reports blended achieved DPS.
+                Ranking uses the same blended achieved DPS the headline reports, so a
+                suggestion&apos;s percentage is exactly what the headline will move by.
               </TooltipContent>
             </Tooltip>
           </span>
@@ -163,6 +246,8 @@ export function SuggestionsPanel() {
         <SuggestionSection
           ranked={ranked}
           tied={tied}
+          baselineUptime={baselineUptime}
+          metric={report.metric}
           emptyMessage={
             <>Nothing beats the current setup — this build is locally optimal for {metricLabel}.</>
           }
@@ -174,9 +259,31 @@ export function SuggestionsPanel() {
           title="Consumable boosts"
           ranked={consumables.ranked}
           tied={consumables.tied}
+          baselineUptime={baselineUptime}
+          metric={report.metric}
           emptyMessage={<>No consumable currently helps {metricLabel} sustained.</>}
         />
       </div>
+
+      {uptimeLevers && (
+        <div>
+          <SuggestionSection
+            title="VATS uptime"
+            titleTooltip={
+              <>
+                These raise the share of time you can fire in VATS, which pays off indirectly
+                through more VATS seconds and therefore more crits. Small individually — which is
+                why they get their own section instead of competing in the main ranking.
+              </>
+            }
+            ranked={uptimeLevers.ranked}
+            tied={uptimeLevers.tied}
+            baselineUptime={baselineUptime}
+            metric={report.metric}
+            emptyMessage={<>Nothing currently raises VATS uptime.</>}
+          />
+        </div>
+      )}
     </div>
   );
 }
