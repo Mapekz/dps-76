@@ -1690,6 +1690,14 @@ export type Modifier = {
    * Medical Malpractice: dbm ADD 0.01 scaledBy 'stimpakHealMult'.
    */
   scaledBy?: CurveInput;
+  /**
+   * Display-only override for this modifier's generated effect line. When set,
+   * describeBuffModifiers emits this string verbatim instead of synthesizing
+   * one; the empty string suppresses the line entirely (used when a sibling
+   * modifier's describeAs already covers this branch). Engine code never reads
+   * it. Only hand-authored override modifiers set it — extraction never emits it.
+   */
+  describeAs?: string;
 } & ModifierValue;
 
 /** A modifier fragment without its id/source (as produced by MGEF translation). */

@@ -451,8 +451,17 @@ export async function extractBuffs(client: EsmSource): Promise<ExtractBuffsResul
   // Unobtainable records with real modifiers STILL make this list (kept in the
   // JSON, hidden app-side) — obtainability and the damage gate are independent
   // filters, same as weapons/omods.
+  //
+  // Bobbleheads and magazines bypass the modifier gate: they are collector
+  // categories whose pick lists must be complete (Bobblehead: Lockpick/Caps,
+  // Grognak 2/3/6/7/9, …). A no-effect one still lands in the app with the
+  // "no effect yet" badge. Food/drink/chem exclusions are unchanged — hunger-
+  // only foods must not flood those pickers.
   const isRelevant = (b: GeneratedBuff): boolean =>
-    b.modifiers.length > 0 || (b.addiction !== undefined && (b.dispelKeys?.length ?? 0) > 0);
+    b.modifiers.length > 0 ||
+    (b.addiction !== undefined && (b.dispelKeys?.length ?? 0) > 0) ||
+    b.category === 'bobblehead' ||
+    b.category === 'magazine';
   const consumables = categorized.map((c) => c.buff).filter(isRelevant);
   for (const { buff } of categorized) {
     if (!isRelevant(buff)) {

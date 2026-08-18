@@ -85,10 +85,16 @@ export const WEAPON_KEYWORD_LABELS: Record<string, string> = {
   WeaponTypeHandToHand: 'hand-to-hand weapons',
   WeaponTypeBow: 'bows',
   WeaponTypeCryolator: 'the Cryolator',
+  WeaponTypeExplosiveHybrid: 'the Hellstorm Missile Launcher',
+  WeaponTypeExplosive: 'explosive weapons',
   WeaponTypeFireDamage: 'fire-damage weapons',
   WeaponTypeLaserMusket: 'laser muskets',
   WeaponTypePlasmaGrenade: 'plasma grenades',
   WeaponTypePlasmaMine: 'plasma mines',
+  ma_Knife: 'knives',
+  ma_Switchblade: 'switchblades',
+  HasScope: 'scoped weapons',
+  HasScopeRecon: 'recon-scoped weapons',
   'POST-DLC04_WeaponTypeSmartGrenade': 'smart grenades',
   HasSilencer: 'suppressed weapons',
   HasLegendary_Weapon_Bully: 'Bully legendary weapons',
@@ -223,6 +229,21 @@ export const COLLAPSED_KEYWORD_SETS: Record<string, string> = {
     'WeaponTypeThrowingKnife',
     'WeaponTypeBow',
   ])]: 'melee, unarmed, bows, or thrown weapons',
+  // Fury, Grognak 1, Fencer's, …
+  [collapseKey(['WeaponTypeUnarmed', 'WeaponTypeMeleeGeneral'])]: 'melee or unarmed weapons',
+  // U.S. Covert Operations Manual 8 override
+  [collapseKey(['WeaponTypeUnarmed', 'ma_Knife', 'ma_Switchblade'])]: 'unarmed weapons or knives',
+  // Astoundingly Awesome Tales 10 override
+  [collapseKey(['HasScope', 'HasScopeRecon'])]: 'scoped weapons',
+  // Awesome Tales 1 — every mirelurk-variant race carries ActorTypeMirelurk
+  [collapseKey([
+    'ActorTypeMirelurkQueen',
+    'ActorTypeMirelurkKing',
+    'ActorTypeMirelurkHunter',
+    'ActorTypeMirelurk',
+  ])]: 'Mirelurks',
+  // Awesome Tales 2 — Behemoths carry ActorTypeSuperMutant
+  [collapseKey(['ActorTypeSuperMutantBehemoth', 'ActorTypeSuperMutant'])]: 'super mutants',
 };
 
 const weaponLabel = (edid: string): string => WEAPON_KEYWORD_LABELS[edid] ?? edid;
@@ -257,16 +278,9 @@ export interface BuffDescriptionCtx {
   penaltyScale?: number;
 }
 
-/** Qualifier clause for one modifier's conditions, plus whether any of them are currently inert. */
-function describeConditions(
-  conditions: readonly Condition[],
-  bucket: Bucket,
-): {
-  clause: string;
-  inactive: boolean;
-} {
+/** Qualifier clause for one modifier's conditions. */
+function describeConditions(conditions: readonly Condition[], bucket: Bucket): string {
   const clauses: string[] = [];
-  let inactive = false;
   const weaponPrep = bucket === 'incomingDamageMult' ? 'from' : 'with';
 
   for (const c of conditions) {
@@ -281,7 +295,8 @@ function describeConditions(
         if (collapsed) {
           clauses.push(`${weaponPrep} ${collapsed}`);
         } else {
-          clauses.push(`${weaponPrep} ${c.keywords.map(weaponLabel).join(' or ')}`);
+          const labels = c.keywords.map(weaponLabel).sort();
+          clauses.push(`${weaponPrep} ${labels.join(' or ')}`);
         }
         break;
       }
@@ -310,9 +325,11 @@ function describeConditions(
                 : 'vs';
           clauses.push(`${prep} ${collapsed}`);
         } else if (c.keywordsOrRaces.every(isWeaponFlavoredKeyword)) {
-          clauses.push(`${weaponPrep} ${c.keywordsOrRaces.map(weaponLabel).join(' or ')}`);
+          const labels = c.keywordsOrRaces.map(weaponLabel).sort();
+          clauses.push(`${weaponPrep} ${labels.join(' or ')}`);
         } else {
-          clauses.push(`vs ${c.keywordsOrRaces.map(enemyLabel).join(' or ')}`);
+          const labels = c.keywordsOrRaces.map(enemyLabel).sort();
+          clauses.push(`vs ${labels.join(' or ')}`);
         }
         break;
       }
@@ -322,7 +339,6 @@ function describeConditions(
         else clauses.push(`with ${c.count} teammate${c.count === 1 ? '' : 's'}`);
         break;
       case 'unresolved':
-        inactive = true;
         break;
       case 'aimingDownSights':
         clauses.push(c.value ? 'while aiming' : 'while not aiming');
@@ -345,7 +361,7 @@ function describeConditions(
         break;
     }
   }
-  return { clause: clauses.join(', '), inactive };
+  return clauses.join(', ');
 }
 
 /** "+5–100%" — lo keeps its sign but drops the '%' (only the range's tail carries it), hi drops the redundant '+'. */
@@ -414,10 +430,9 @@ function describeDotDamage(m: Modifier, scale: number): string | null {
 
   const extraClauses: string[] = [];
   if (m.durationSec !== undefined) extraClauses.push(`${m.durationSec}s`);
-  const { clause, inactive } = describeConditions(remaining, m.bucket);
+  const clause = describeConditions(remaining, m.bucket);
   if (clause) extraClauses.push(clause);
   if (extraClauses.length > 0) base += ` (${extraClauses.join(', ')})`;
-  if (inactive) base += ' — not modeled yet, no effect';
   return base;
 }
 
@@ -476,11 +491,10 @@ function describeModifier(m: Modifier, scale: number, labelOverride?: string): s
     return null; // unmodeled bucket — omit rather than show something unverified
   }
 
-  const { clause, inactive } = describeConditions(m.conditions, m.bucket);
+  const clause = describeConditions(m.conditions, m.bucket);
   if (clause) extraClauses.push(clause);
   let base = magnitude;
   if (extraClauses.length > 0) base += ` (${extraClauses.join(', ')})`;
-  if (inactive) base += ' — not modeled yet, no effect';
   return base;
 }
 
@@ -566,8 +580,20 @@ export function describeBuffModifiers(
   const relevant = buff.modifiers.filter((m) =>
     passesResolvedGates(m, strangeInNumbers, classFreakRank),
   );
-  const { groups, rest } = groupSpecialModifiers(relevant);
+
+  const describeAsParts: string[] = [];
+  const forSynthesis: Modifier[] = [];
+  for (const m of relevant) {
+    if (m.describeAs !== undefined) {
+      if (m.describeAs !== '') describeAsParts.push(m.describeAs);
+    } else {
+      forSynthesis.push(m);
+    }
+  }
+
+  const { groups, rest } = groupSpecialModifiers(forSynthesis);
   const parts = [
+    ...describeAsParts,
     ...groups.map((g) => describeModifier(g.representative, scale, g.label)),
     ...rest.map((m) => describeModifier(m, scale)),
   ].filter((s): s is string => s !== null);

@@ -233,6 +233,39 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_AwesomeTales12_Potion",
+  "formId": "0x004303AC",
+  "name": "Astoundingly Awesome Tales 12",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_AwesomeTales12_Potion: MGEF Magazine_ReduceDiseaseChance_Effect: no route for AV SURV_DiseaseChanceMult_Generic — needs mapping"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_AwesomeTales13_Potion",
+  "formId": "0x004303AF",
+  "name": "Astoundingly Awesome Tales 13",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_AwesomeTales13_Potion: perk Magazine_AwesomeTales13Perk: GetIsID(RadAway)=1",
+   "Magazine_AwesomeTales13_Potion: perk Magazine_AwesomeTales13Perk: entry point Mod Spell Magnitude — not modeled"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "Magazine_AwesomeTales02_Potion",
   "formId": "0x0043038E",
   "name": "Astoundingly Awesome Tales 2",
@@ -261,6 +294,23 @@
    }
   ],
   "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_AwesomeTales03_Potion",
+  "formId": "0x00430391",
+  "name": "Astoundingly Awesome Tales 3",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_AwesomeTales03_Potion: MGEF Magazine_AwesomeTales03_UIDummyEffect archetype Script — needs override",
+   "Magazine_AwesomeTales03_Potion: MGEF Magazine_FortifyWaterBreathing: no route for AV WaterBreathing — needs mapping"
+  ],
   "category": "magazine",
   "dispelKeys": [
    "MagazineDispelEffects"
@@ -337,6 +387,22 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_AwesomeTales06_Potion",
+  "formId": "0x0043039A",
+  "name": "Astoundingly Awesome Tales 6",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_AwesomeTales06_Potion: MGEF Magazine_FortifyHealRate_Effect: no route for AV HealRate — needs mapping"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "Magazine_AwesomeTales07_Potion",
   "formId": "0x0043039D",
   "name": "Astoundingly Awesome Tales 7",
@@ -398,6 +464,22 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_AwesomeTales09_Potion",
+  "formId": "0x004303A3",
+  "name": "Astoundingly Awesome Tales 9",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_AwesomeTales09_Potion: MGEF Magazine_FortifyResistPoison_Effect: no route for AV PoisonResist — needs mapping"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "OpossumMeatCooked",
   "formId": "0x004E722B",
   "name": "Awesome Opossum Bacon",
@@ -435,6 +517,88 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_Backwoodsman01_Potion",
+  "formId": "0x004303B3",
+  "name": "Backwoodsman 1",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_Backwoodsman01_Potion: MGEF Magazine_Backwoodsman01Effect archetype Script — needs override"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_Backwoodsman10_Potion",
+  "formId": "0x004303CE",
+  "name": "Backwoodsman 10",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_Backwoodsman10_Potion: MGEF Magazine_Backwoodsman10Effect archetype Script — needs override"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_Backwoodsman07_Potion",
+  "formId": "0x004303C5",
+  "name": "Backwoodsman 2",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_Backwoodsman07_Potion: perk Magazine_Backwoodsman07Perk: OR-group[EPMagic_SpellHasKeyword(ObjectTypeFood)=1 | EPMagic_SpellHasKeyword(ObjectTypeDrink)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeDiseaseVector)=1]",
+   "Magazine_Backwoodsman07_Potion: perk Magazine_Backwoodsman07Perk: entry point Mod Spell Magnitude — not modeled"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_Backwoodsman03_Potion",
+  "formId": "0x004303B9",
+  "name": "Backwoodsman 3",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_Backwoodsman03_Potion: perk Magazine_Backwoodsman03Perk: HasKeyword(ObjectTypeWeapon)=1",
+   "Magazine_Backwoodsman03_Potion: perk Magazine_Backwoodsman03Perk: entry point Mod Crafting Creation Recipe Level — not modeled"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_Backwoodsman04_Potion",
+  "formId": "0x004303BC",
+  "name": "Backwoodsman 4",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_Backwoodsman04_Potion: MGEF Magazine_Backwoodsman04Effect archetype Script — needs override"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "Magazine_Backwoodsman05_Potion",
   "formId": "0x004303BF",
   "name": "Backwoodsman 5",
@@ -460,6 +624,24 @@
    }
   ],
   "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_Backwoodsman06_Potion",
+  "formId": "0x004303C2",
+  "name": "Backwoodsman 6",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_Backwoodsman06_Potion: perk Magazine_Backwoodsman06Perk: EPMagic_SpellHasKeyword(MealTypeCooked)=1",
+   "Magazine_Backwoodsman06_Potion: perk Magazine_Backwoodsman06Perk: EPAlchemyEffectHasKeyword(SURV_EffectTypeFoodHealing)=1",
+   "Magazine_Backwoodsman06_Potion: perk Magazine_Backwoodsman06Perk: entry point Mod Spell Magnitude — not modeled"
+  ],
   "category": "magazine",
   "dispelKeys": [
    "MagazineDispelEffects"
@@ -494,6 +676,39 @@
    }
   ],
   "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_Backwoodsman08_Potion",
+  "formId": "0x004303C8",
+  "name": "Backwoodsman 8",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_Backwoodsman08_Potion: perk Magazine_Backwoodsman08Perk: OR-group[EPMagic_SpellHasKeyword(SURV_EffectTypeFoodHunger)=1 | EPMagic_SpellHasKeyword(SURV_EffectTypeDrink)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeDrink)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeFoodHunger)=1]",
+   "Magazine_Backwoodsman08_Potion: perk Magazine_Backwoodsman08Perk: entry point Mod Spell Magnitude — not modeled"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_Backwoodsman09_Potion",
+  "formId": "0x004303CB",
+  "name": "Backwoodsman 9",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_Backwoodsman09_Potion: perk Magazine_Backwoodsman09Perk: entry point Mod Workshop Repair Cost — not modeled"
+  ],
   "category": "magazine",
   "dispelKeys": [
    "MagazineDispelEffects"
@@ -1088,6 +1303,22 @@
   "obtainable": true
  },
  {
+  "id": "BobbleHead_Caps_Potion",
+  "formId": "0x004FE4EA",
+  "name": "Bobblehead: Caps",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "BobbleHead_Caps_Potion: MGEF BobbleHead_Caps_Effect archetype Script — needs override"
+  ],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "BobbleHead_Charisma_Potion",
   "formId": "0x004FE4EC",
   "name": "Bobblehead: Charisma",
@@ -1246,6 +1477,38 @@
   "obtainable": true
  },
  {
+  "id": "BobbleHead_Leader_Potion",
+  "formId": "0x0042FED2",
+  "name": "Bobblehead: Leader",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "BobbleHead_Leader_Potion: MGEF Bobblehead_FortifyXPBonus_Effect: no route for AV STAT_XPMult — needs mapping"
+  ],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "BobbleHead_LockPicking_Potion",
+  "formId": "0x0042FED4",
+  "name": "Bobblehead: Lock Picking",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "BobbleHead_LockPicking_Potion: MGEF Bobblehead_FortifyLockpicking_Effect: no route for AV STAT_Lockpicking — needs mapping"
+  ],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "BobbleHead_Luck_Potion",
   "formId": "0x0042FED6",
   "name": "Bobblehead: Luck",
@@ -1364,6 +1627,40 @@
   "obtainable": true
  },
  {
+  "id": "BobbleHead_Repair_Potion",
+  "formId": "0x0042FEDE",
+  "name": "Bobblehead: Repair",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "BobbleHead_Repair_Potion: perk Bobblehead_RepairPerk: OR-group[WornHasKeyword(ma_GatlingLaser)=1 | WornHasKeyword(ma_Ultracite_GatlingLaser)=1]",
+   "BobbleHead_Repair_Potion: perk Bobblehead_RepairPerk: entry point Mod Ammo Health Mult — not modeled",
+   "BobbleHead_Repair_Potion: MGEF Bobblehead_ReducePABatteryDamageRate_Effect: no route for AV PABatteryDamageRate — needs mapping"
+  ],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "BobbleHead_Science_Potion",
+  "formId": "0x0042FEE0",
+  "name": "Bobblehead: Science",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "BobbleHead_Science_Potion: perk Bobblehead_SciencePerk: entry point Mod Hacking Guesses — not modeled"
+  ],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "BobbleHead_SmallGuns_Potion",
   "formId": "0x0042FEE2",
   "name": "Bobblehead: Small Guns",
@@ -1394,6 +1691,20 @@
     ]
    }
   ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "BobbleHead_Sneak_Potion",
+  "formId": "0x0042FEE4",
+  "name": "Bobblehead: Sneak",
+  "kind": "consumable",
+  "modifiers": [],
   "notes": [],
   "category": "bobblehead",
   "dispelKeys": [
@@ -4612,6 +4923,22 @@
   "obtainable": true
  },
  {
+  "id": "GHL_GlowingBobbleHead_Caps_Potion",
+  "formId": "0x007A2F90",
+  "name": "Glowing Bobblehead: Caps",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "GHL_GlowingBobbleHead_Caps_Potion: MGEF BobbleHead_Caps_Effect archetype Script — needs override"
+  ],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "GHL_GlowingBobbleHead_Charisma_Potion",
   "formId": "0x007A2F91",
   "name": "Glowing Bobblehead: Charisma",
@@ -4770,6 +5097,38 @@
   "obtainable": true
  },
  {
+  "id": "GHL_GlowingBobbleHead_Leader_Potion",
+  "formId": "0x007A2F96",
+  "name": "Glowing Bobblehead: Leader",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "GHL_GlowingBobbleHead_Leader_Potion: MGEF Bobblehead_FortifyXPBonus_Effect: no route for AV STAT_XPMult — needs mapping"
+  ],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "GHL_GlowingBobbleHead_LockPicking_Potion",
+  "formId": "0x007A2F97",
+  "name": "Glowing Bobblehead: Lock Picking",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "GHL_GlowingBobbleHead_LockPicking_Potion: MGEF Bobblehead_FortifyLockpicking_Effect: no route for AV STAT_Lockpicking — needs mapping"
+  ],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "GHL_GlowingBobbleHead_Luck_Potion",
   "formId": "0x007A2F98",
   "name": "Glowing Bobblehead: Luck",
@@ -4888,6 +5247,40 @@
   "obtainable": true
  },
  {
+  "id": "GHL_GlowingBobbleHead_Repair_Potion",
+  "formId": "0x007A2F9C",
+  "name": "Glowing Bobblehead: Repair",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "GHL_GlowingBobbleHead_Repair_Potion: perk Bobblehead_RepairPerk: OR-group[WornHasKeyword(ma_GatlingLaser)=1 | WornHasKeyword(ma_Ultracite_GatlingLaser)=1]",
+   "GHL_GlowingBobbleHead_Repair_Potion: perk Bobblehead_RepairPerk: entry point Mod Ammo Health Mult — not modeled",
+   "GHL_GlowingBobbleHead_Repair_Potion: MGEF Bobblehead_ReducePABatteryDamageRate_Effect: no route for AV PABatteryDamageRate — needs mapping"
+  ],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "GHL_GlowingBobbleHead_Science_Potion",
+  "formId": "0x007A2F9D",
+  "name": "Glowing Bobblehead: Science",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "GHL_GlowingBobbleHead_Science_Potion: perk Bobblehead_SciencePerk: entry point Mod Hacking Guesses — not modeled"
+  ],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "GHL_GlowingBobbleHead_SmallGuns_Potion",
   "formId": "0x007A2F9E",
   "name": "Glowing Bobblehead: Small Guns",
@@ -4918,6 +5311,20 @@
     ]
    }
   ],
+  "notes": [],
+  "category": "bobblehead",
+  "dispelKeys": [
+   "BobbleheadDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "GHL_GlowingBobbleHead_Sneak_Potion",
+  "formId": "0x007A2F9F",
+  "name": "Glowing Bobblehead: Sneak",
+  "kind": "consumable",
+  "modifiers": [],
   "notes": [],
   "category": "bobblehead",
   "dispelKeys": [
@@ -5332,6 +5739,39 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_GrognakTheBarbarian02_Potion",
+  "formId": "0x004303D2",
+  "name": "Grognak the Barbarian 2",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_GrognakTheBarbarian02_Potion: perk Magazine_GrognakTheBarbarian02Perk: entry point Mod Detection Movement — not modeled",
+   "Magazine_GrognakTheBarbarian02_Potion: perk Magazine_GrognakTheBarbarian02Perk: entry point Mod Detection Light — not modeled"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_GrognakTheBarbarian03_Potion",
+  "formId": "0x004303D4",
+  "name": "Grognak the Barbarian 3",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_GrognakTheBarbarian03_Potion: MGEF Magazine_FortifyResistPoison_Effect: no route for AV PoisonResist — needs mapping"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "Magazine_GrognakTheBarbarian04_Potion",
   "formId": "0x004303D6",
   "name": "Grognak the Barbarian 4",
@@ -5397,6 +5837,70 @@
    }
   ],
   "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_GrognakTheBarbarian06_Potion",
+  "formId": "0x004303DC",
+  "name": "Grognak the Barbarian 6",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_GrognakTheBarbarian06_Potion: perk Magazine_GrognakTheBarbarian06Perk: entry point Mod Item Weight — not modeled"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_GrognakTheBarbarian07_Potion",
+  "formId": "0x004303DF",
+  "name": "Grognak the Barbarian 7",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_GrognakTheBarbarian07_Potion: perk Magazine_GrognakTheBarbarian07Perk: entry point Mod Item Condition Loss — not modeled"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_GrognakTheBarbarian08_Potion",
+  "formId": "0x004303E2",
+  "name": "Grognak the Barbarian 8",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_GrognakTheBarbarian08_Potion: MGEF Magazine_FortifyResistCryo_Effect: no route for AV FrostResist — needs mapping"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_GrognakTheBarbarian09_Potion",
+  "formId": "0x004303E5",
+  "name": "Grognak the Barbarian 9",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_GrognakTheBarbarian09_Potion: MGEF Magazine_FortifyCarryWeight_Effect: no route for AV CarryWeight — needs mapping"
+  ],
   "category": "magazine",
   "dispelKeys": [
    "MagazineDispelEffects"
@@ -5636,6 +6140,23 @@
    }
   ],
   "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_GunsAndBullets05_Potion",
+  "formId": "0x00430401",
+  "name": "Guns and Bullets 5",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_GunsAndBullets05_Potion: perk Magazine_GunsAndBullets05Perk: HasKeyword(ObjectTypeWeapon)=1",
+   "Magazine_GunsAndBullets05_Potion: perk Magazine_GunsAndBullets05Perk: entry point Mod Scrap Reward Mult — not modeled"
+  ],
   "category": "magazine",
   "dispelKeys": [
    "MagazineDispelEffects"
@@ -6826,6 +7347,23 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_LiveAndLove03_Potion",
+  "formId": "0x00432CC7",
+  "name": "Live & Love 3",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_LiveAndLove03_Potion: perk Magazine_LiveAndLove03Perk: OR-group[EPMagic_SpellHasKeyword(IngredientTypeVegetable)=1 | EPMagic_SpellHasKeyword(IngredientTypeFruit)=1 | EPMagic_SpellHasKeyword(IngredientTypeHerb)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeFoodHealing)=1]",
+   "Magazine_LiveAndLove03_Potion: perk Magazine_LiveAndLove03Perk: entry point Mod Spell Magnitude — not modeled"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "Magazine_LiveAndLove04_Potion",
   "formId": "0x00432CCA",
   "name": "Live & Love 4",
@@ -6961,6 +7499,23 @@
   ],
   "notes": [
    "Magazine_LiveAndLove07_Potion: MGEF Magazine_LiveAndLove07_UIDummyEffect archetype Script — needs override"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_LiveAndLove08_Potion",
+  "formId": "0x00432CD6",
+  "name": "Live & Love 8",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_LiveAndLove08_Potion: MGEF Magazine_LiveAndLove08Effect: no route for AV STAT_XPMult — needs mapping",
+   "Magazine_LiveAndLove08_Potion: MGEF Magazine_LiveAndLove08UIDummyEffect archetype Script — needs override"
   ],
   "category": "magazine",
   "dispelKeys": [
@@ -10538,6 +11093,38 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_ScoutsLife01_Potion",
+  "formId": "0x00432CDC",
+  "name": "Scouts' Life 1",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_ScoutsLife01_Potion: MGEF Magazine_FortifyResistRadIngestion_Effect: no route for AV STAT_ResistRadIngestion — needs mapping"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_ScoutsLife10_Potion",
+  "formId": "0x00432CF8",
+  "name": "Scouts' Life 10",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_ScoutsLife10_Potion: MGEF Magazine_ReduceItemDegradation_Effect: no route for AV STAT_ItemDegradation — needs mapping"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "Magazine_ScoutsLife02_Potion",
   "formId": "0x00432CDF",
   "name": "Scouts' Life 2",
@@ -10571,6 +11158,71 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_ScoutsLife03_Potion",
+  "formId": "0x00432CE2",
+  "name": "Scouts' Life 3",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_ScoutsLife03_Potion: perk Magazine_ScoutsLife03Perk: entry point Mod Item Weight — not modeled"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_ScoutsLife04_Potion",
+  "formId": "0x00432CE5",
+  "name": "Scouts' Life 4",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_ScoutsLife04_Potion: perk Magazine_ScoutsLife04Perk: entry point Mod Bleedout Time — not modeled"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_ScoutsLife05_Potion",
+  "formId": "0x00432CE8",
+  "name": "Scouts' Life 5",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_ScoutsLife05_Potion: MGEF Magazine_ReduceDiseaseChanceCombat_Effect: no route for AV SURV_DiseaseChanceMult_Combat — needs mapping"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_ScoutsLife06_Potion",
+  "formId": "0x00432CEB",
+  "name": "Scouts' Life 6",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_ScoutsLife06_Potion: perk Magazine_ScoutsLife06Perk: OR-group[EPAlchemyEffectHasKeyword(SURV_EffectTypeHunger)=1 | EPAlchemyEffectHasKeyword(SURV_EffectTypeThirst)=1]",
+   "Magazine_ScoutsLife06_Potion: perk Magazine_ScoutsLife06Perk: entry point Mod Spell Magnitude — not modeled"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "Magazine_ScoutsLife07_Potion",
   "formId": "0x00432CEE",
   "name": "Scouts' Life 7",
@@ -10596,6 +11248,38 @@
    }
   ],
   "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_ScoutsLife08_Potion",
+  "formId": "0x00432CF1",
+  "name": "Scouts' Life 8",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_ScoutsLife08_Potion: MGEF Magazine_FortifySprintAPEffect_Effect: no route for AV STAT_SprintAPCost — needs mapping"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_ScoutsLife09_Potion",
+  "formId": "0x00432CF4",
+  "name": "Scouts' Life 9",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_ScoutsLife09_Potion: MGEF Magazine_FortifyResistFire_Effect: no route for AV FireResist — needs mapping"
+  ],
   "category": "magazine",
   "dispelKeys": [
    "MagazineDispelEffects"
@@ -13574,6 +14258,24 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_TeslaScience04_Potion",
+  "formId": "0x00432D04",
+  "name": "Tesla Science 4",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_TeslaScience04_Potion: perk Magazine_TeslaScience04Perk: MGEF abReducePABatteryDamageRateEffect: no route for AV PABatteryDamageRate — needs mapping",
+   "Magazine_TeslaScience04_Potion: perk Magazine_TeslaScience04Perk: OR-group[WornHasKeyword(ma_Ultracite_GatlingLaser)=1 | WornHasKeyword(ArmorTypePower)=1 | WornHasKeyword(ma_GatlingLaser)=1]",
+   "Magazine_TeslaScience04_Potion: perk Magazine_TeslaScience04Perk: entry point Mod Ammo Health Mult — not modeled"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "Magazine_TeslaScience05_Potion",
   "formId": "0x00432D07",
   "name": "Tesla Science 5",
@@ -13595,6 +14297,22 @@
   ],
   "notes": [
    "Magazine_TeslaScience05_Potion: perk Magazine_TeslaScience05Perk: GetRandomPercent()=20"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_TeslaScience06_Potion",
+  "formId": "0x00432D0A",
+  "name": "Tesla Science 6",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_TeslaScience06_Potion: MGEF Magazine_FortifyResistRadExposure_Effect: no route for AV RadResistExposure — needs mapping"
   ],
   "category": "magazine",
   "dispelKeys": [
@@ -13861,6 +14579,86 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_TumblersToday01_Potion",
+  "formId": "0x00432D16",
+  "name": "Tumblers Today 1",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_TumblersToday01_Potion: MGEF Magazine_FortifyLockpicking_Effect: no route for AV STAT_Lockpicking — needs mapping"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_TumblersToday02_Potion",
+  "formId": "0x00432D19",
+  "name": "Tumblers Today 2",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_TumblersToday02_Potion: MGEF Magazine_TumblersToday02Effect archetype Script — needs override"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_TumblersToday03_Potion",
+  "formId": "0x00432D1C",
+  "name": "Tumblers Today 3",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_TumblersToday03_Potion: perk Magazine_TumblersToday03Perk: entry point Set Player Gate Lockpick — not modeled"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_TumblersToday04_Potion",
+  "formId": "0x00432D1F",
+  "name": "Tumblers Today 4",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_TumblersToday04_Potion: perk Magazine_TumblersToday04Perk: entry point Set Lockpicks Unbreakable — not modeled"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_TumblersToday05_Potion",
+  "formId": "0x00432D22",
+  "name": "Tumblers Today 5",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_TumblersToday05_Potion: MGEF Magazine_FortifyLockpicking_Effect: no route for AV STAT_Lockpicking — needs mapping"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "Magazine_USCovertOps01_Potion",
   "formId": "0x00432D39",
   "name": "U.S. Covert Operations Manual 1",
@@ -13914,6 +14712,20 @@
     "conditions": []
    }
   ],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_USCovertOps02_Potion",
+  "formId": "0x00432D3C",
+  "name": "U.S. Covert Operations Manual 2",
+  "kind": "consumable",
+  "modifiers": [],
   "notes": [],
   "category": "magazine",
   "dispelKeys": [
@@ -14012,6 +14824,36 @@
   "obtainable": true
  },
  {
+  "id": "Magazine_USCovertOps06_Potion",
+  "formId": "0x00432D48",
+  "name": "U.S. Covert Operations Manual 6",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_USCovertOps07_Potion",
+  "formId": "0x00432D4B",
+  "name": "U.S. Covert Operations Manual 7",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_USCovertOps07_Potion: perk Magazine_USCovertOps07Perk: entry point Mod VATS Attacker Accuracy — not modeled"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
   "id": "Magazine_USCovertOps08_Potion",
   "formId": "0x00432D4E",
   "name": "U.S. Covert Operations Manual 8",
@@ -14038,6 +14880,22 @@
   ],
   "notes": [
    "Magazine_USCovertOps08_Potion: perk Magazine_USCovertOps08Perk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(ma_Knife)=1 | HasKeyword(ma_Switchblade)=1]"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_USCovertOps09_Potion",
+  "formId": "0x00432D51",
+  "name": "U.S. Covert Operations Manual 9",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_USCovertOps09_Potion: MGEF Magazine_FortifyStealthBoyDuration_Effect: no route for AV STAT_StealthBoyDuration — needs mapping"
   ],
   "category": "magazine",
   "dispelKeys": [
@@ -14125,6 +14983,24 @@
   "notes": [
    "Magazine_Unstoppables02_Potion: perk Magazine_Unstoppables02Perk: EPIsCalculatingBaseDamage()=0",
    "Magazine_Unstoppables02_Potion: perk Magazine_Unstoppables02Perk: GetRandomPercent()=20"
+  ],
+  "category": "magazine",
+  "dispelKeys": [
+   "MagazineDispelEffects"
+  ],
+  "ingredientKeywords": [],
+  "obtainable": true
+ },
+ {
+  "id": "Magazine_Unstoppables03_Potion",
+  "formId": "0x00432D2B",
+  "name": "Unstoppables 3",
+  "kind": "consumable",
+  "modifiers": [],
+  "notes": [
+   "Magazine_Unstoppables03_Potion: perk Magazine_Unstoppables03Perk: EPIsCalculatingBaseDamage()=0",
+   "Magazine_Unstoppables03_Potion: perk Magazine_Unstoppables03Perk: GetRandomPercent()=30",
+   "Magazine_Unstoppables03_Potion: perk Magazine_Unstoppables03Perk: entry point Mod Incoming Explosion Damage — not modeled"
   ],
   "category": "magazine",
   "dispelKeys": [

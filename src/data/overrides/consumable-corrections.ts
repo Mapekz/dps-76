@@ -29,6 +29,13 @@ export const hiddenConsumableIds: ReadonlySet<string> = new Set<string>([
   'GHL_GlowingBobbleHead_SmallGuns_Potion',
   'GHL_GlowingBobbleHead_Strength_Potion',
   'GHL_GlowingBobbleHead_Unarmed_Potion',
+  'GHL_GlowingBobbleHead_Medicine_Potion', // was missing — leaked into the picker
+  'GHL_GlowingBobbleHead_Caps_Potion',
+  'GHL_GlowingBobbleHead_Repair_Potion',
+  'GHL_GlowingBobbleHead_Science_Potion',
+  'GHL_GlowingBobbleHead_Sneak_Potion',
+  'GHL_GlowingBobbleHead_LockPicking_Potion',
+  'GHL_GlowingBobbleHead_Leader_Potion',
 
   // Nuclear Don's Custom Chem Blend (2026-07-14): quest item from "The Ol'
   // Weston Shuffle" (W05_MQR_203P) — found in Nuclear Don's locker, meant to

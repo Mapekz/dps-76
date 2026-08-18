@@ -80,7 +80,7 @@ describe('describeBuffModifiers', () => {
     expect(describeBuffModifiers(buff([mod]))).toBe('+15% damage bonus (vs the Mothman)');
   });
 
-  it('an unresolved condition flags the bonus as currently inactive, not silently hidden', () => {
+  it('an unresolved condition omits the clause but still describes the magnitude', () => {
     const mod: Modifier = {
       id: '0x6:0',
       source,
@@ -89,9 +89,7 @@ describe('describeBuffModifiers', () => {
       value: 0.5,
       conditions: [{ kind: 'unresolved', raw: 'OR-group[...]' }],
     };
-    expect(describeBuffModifiers(buff([mod]))).toBe(
-      '+50% damage bonus — not modeled yet, no effect',
-    );
+    expect(describeBuffModifiers(buff([mod]))).toBe('+50% damage bonus');
   });
 
   it('a non-whole percentage keeps its decimal', () => {
@@ -699,5 +697,144 @@ describe('describeBuffModifiers: bucket and keyword routing', () => {
       conditions: [],
     };
     expect(describeBuffModifiers(buff([mod]))).toBe('+10% chance to not consume ammo');
+  });
+});
+
+describe('describeBuffModifiers: describeAs', () => {
+  it('emits describeAs verbatim instead of synthesizing a line', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.35,
+      conditions: [{ kind: 'weaponKeywordAny', keywords: ['HasScope', 'HasScopeRecon'] }],
+      describeAs: '+35% damage bonus (while aiming through scopes)',
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe(
+      '+35% damage bonus (while aiming through scopes)',
+    );
+  });
+
+  it('describeAs empty string suppresses the line entirely', () => {
+    const visible: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.2,
+      conditions: [{ kind: 'weaponKeyword', keyword: 'WeaponTypeHeavyGun', present: true }],
+      describeAs: '+20% damage bonus (with non-explosive heavy guns)',
+    };
+    const suppressed: Modifier = {
+      id: '0x1:1',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.2,
+      conditions: [{ kind: 'weaponKeyword', keyword: 'WeaponTypeExplosiveHybrid', present: true }],
+      describeAs: '',
+    };
+    expect(describeBuffModifiers(buff([visible, suppressed]))).toBe(
+      '+20% damage bonus (with non-explosive heavy guns)',
+    );
+  });
+});
+
+describe('describeBuffModifiers: keyword collapses and sorted fallbacks', () => {
+  it('collapses mirelurk variants to "vs Mirelurks" (Awesome Tales 1)', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.15,
+      conditions: [
+        {
+          kind: 'enemyTypeAny',
+          keywordsOrRaces: [
+            'ActorTypeMirelurkQueen',
+            'ActorTypeMirelurkKing',
+            'ActorTypeMirelurkHunter',
+            'ActorTypeMirelurk',
+          ],
+        },
+      ],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+15% damage bonus (vs Mirelurks)');
+  });
+
+  it('collapses super mutant variants to "vs super mutants" (Awesome Tales 2)', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.15,
+      conditions: [
+        {
+          kind: 'enemyTypeAny',
+          keywordsOrRaces: ['ActorTypeSuperMutantBehemoth', 'ActorTypeSuperMutant'],
+        },
+      ],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+15% damage bonus (vs super mutants)');
+  });
+
+  it('collapses WeaponTypeUnarmed + WeaponTypeMeleeGeneral to melee or unarmed weapons', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.1,
+      conditions: [
+        {
+          kind: 'weaponKeywordAny',
+          keywords: ['WeaponTypeUnarmed', 'WeaponTypeMeleeGeneral'],
+        },
+      ],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe(
+      '+10% damage bonus (with melee or unarmed weapons)',
+    );
+  });
+
+  it('collapses unarmed + knife-class keywords to unarmed weapons or knives', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.5,
+      conditions: [
+        {
+          kind: 'weaponKeywordAny',
+          keywords: ['WeaponTypeUnarmed', 'ma_Knife', 'ma_Switchblade'],
+        },
+      ],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe(
+      '+50% damage bonus (with unarmed weapons or knives)',
+    );
+  });
+
+  it('sorts fallback keyword labels alphabetically when no collapse applies', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.1,
+      conditions: [
+        {
+          kind: 'weaponKeywordAny',
+          keywords: ['WeaponTypeAlienBlaster', 'WeaponTypeBow', 'WeaponTypePistol'],
+        },
+      ],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe(
+      '+10% damage bonus (with alien blasters or bows or pistols)',
+    );
   });
 });
