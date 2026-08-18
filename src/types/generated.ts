@@ -424,6 +424,14 @@ export interface GeneratedBuff {
    * penalties. Absent when none qualify.
    */
   penaltyModifierIds?: string[];
+  /**
+   * Consumable-only (bobblehead/magazine): game item text from the ALCH
+   * Effects list — MGEF Magic Item Description with `<mag>` substituted, else
+   * Script perk Description, else MGEF Name (+magnitude). Display fallback
+   * when no effect line can be synthesized; never authoritative over the
+   * Modifier IR.
+   */
+  description?: string;
 }
 
 /** One entry of the mode-wide addiction catalog (addictions.json). */

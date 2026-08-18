@@ -155,6 +155,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Damage Vs. Mirelurks",
   "obtainable": true
  },
  {
@@ -194,6 +195,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Scoped Gun Damage +35",
   "obtainable": true
  },
  {
@@ -230,6 +232,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Damage Vs. Ghouls",
   "obtainable": true
  },
  {
@@ -246,6 +249,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Reduce Disease Chance +30",
   "obtainable": true
  },
  {
@@ -263,6 +267,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+30% RadAway Effectiveness",
   "obtainable": true
  },
  {
@@ -299,6 +304,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Damage Vs. Super Mutants",
   "obtainable": true
  },
  {
@@ -316,6 +322,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Heal Rate +1; Health Regen While Swimming; Breathe Underwater.",
   "obtainable": true
  },
  {
@@ -350,6 +357,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+25% Alien Blaster Dmg.",
   "obtainable": true
  },
  {
@@ -384,6 +392,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+25% Cryolator Dmg.",
   "obtainable": true
  },
  {
@@ -400,6 +409,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Heal Rate +0.2",
   "obtainable": true
  },
  {
@@ -428,6 +438,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Action Points +25",
   "obtainable": true
  },
  {
@@ -461,6 +472,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "25% Less Dmg. from Robots",
   "obtainable": true
  },
  {
@@ -477,6 +489,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Poison Resist +15",
   "obtainable": true
  },
  {
@@ -530,6 +543,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Find Meat from Animal Kills",
   "obtainable": true
  },
  {
@@ -546,6 +560,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+50% Workshop Turret Dmg.",
   "obtainable": true
  },
  {
@@ -563,6 +578,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "-50% food/drink disease chance",
   "obtainable": true
  },
  {
@@ -580,6 +596,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Reduced weapon material costs",
   "obtainable": true
  },
  {
@@ -596,6 +613,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+0% to Gain Double Yield From Plants",
   "obtainable": true
  },
  {
@@ -629,6 +647,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Damage Vs. Animals",
   "obtainable": true
  },
  {
@@ -647,6 +666,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+50% Healing from Cooked Food",
   "obtainable": true
  },
  {
@@ -681,6 +701,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+50% Throwing Weapon Dmg.",
   "obtainable": true
  },
  {
@@ -698,6 +719,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+30% Hunger & Thirst Cured by Food & Drink",
   "obtainable": true
  },
  {
@@ -714,6 +736,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "-50% Workshop Repair Cost",
   "obtainable": true
  },
  {
@@ -1265,6 +1288,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Agility",
   "obtainable": true
  },
  {
@@ -1300,6 +1324,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+20 <ITEM1.ABBR>",
   "obtainable": true
  },
  {
@@ -1316,6 +1341,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Better Caps Stashes!",
   "obtainable": true
  },
  {
@@ -1344,6 +1370,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Charisma",
   "obtainable": true
  },
  {
@@ -1372,6 +1399,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Endurance",
   "obtainable": true
  },
  {
@@ -1411,6 +1439,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Energy Damage +20",
   "obtainable": true
  },
  {
@@ -1446,6 +1475,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Explosive Dmg +30",
   "obtainable": true
  },
  {
@@ -1474,6 +1504,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Intelligence",
   "obtainable": true
  },
  {
@@ -1490,6 +1521,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "XP Bonus +5",
   "obtainable": true
  },
  {
@@ -1506,6 +1538,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+30 LOCKPICK SWEETSPOT",
   "obtainable": true
  },
  {
@@ -1534,6 +1567,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Luck",
   "obtainable": true
  },
  {
@@ -1562,6 +1596,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+30 STIMPAK EFFICIENCY",
   "obtainable": true
  },
  {
@@ -1596,6 +1631,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+20% MELEE WEAPON DMG",
   "obtainable": true
  },
  {
@@ -1624,6 +1660,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Perception",
   "obtainable": true
  },
  {
@@ -1642,6 +1679,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+30% Fusion Core Duration; Reduce PA Battery Damage Rate Effect +0.3",
   "obtainable": true
  },
  {
@@ -1658,6 +1696,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+1 Hacking Guess",
   "obtainable": true
  },
  {
@@ -1697,6 +1736,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+20% BALLISTIC DMG",
   "obtainable": true
  },
  {
@@ -1711,6 +1751,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+30% Harder to Detect While Sneaking",
   "obtainable": true
  },
  {
@@ -1739,6 +1780,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Strength",
   "obtainable": true
  },
  {
@@ -1773,6 +1815,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+25% Increased Fists Melee Dmg",
   "obtainable": true
  },
  {
@@ -4885,6 +4928,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Agility",
   "obtainable": true
  },
  {
@@ -4920,6 +4964,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+20 <ITEM1.ABBR>",
   "obtainable": true
  },
  {
@@ -4936,6 +4981,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Better Caps Stashes!",
   "obtainable": true
  },
  {
@@ -4964,6 +5010,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Charisma",
   "obtainable": true
  },
  {
@@ -4992,6 +5039,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Endurance",
   "obtainable": true
  },
  {
@@ -5031,6 +5079,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Energy Damage +20",
   "obtainable": true
  },
  {
@@ -5066,6 +5115,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Explosive Dmg +30",
   "obtainable": true
  },
  {
@@ -5094,6 +5144,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Intelligence",
   "obtainable": true
  },
  {
@@ -5110,6 +5161,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "XP Bonus +5",
   "obtainable": true
  },
  {
@@ -5126,6 +5178,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+30 LOCKPICK SWEETSPOT",
   "obtainable": true
  },
  {
@@ -5154,6 +5207,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Luck",
   "obtainable": true
  },
  {
@@ -5182,6 +5236,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+30 STIMPAK EFFICIENCY",
   "obtainable": true
  },
  {
@@ -5216,6 +5271,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+20% MELEE WEAPON DMG",
   "obtainable": true
  },
  {
@@ -5244,6 +5300,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Perception",
   "obtainable": true
  },
  {
@@ -5262,6 +5319,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+30% Fusion Core Duration; Reduce PA Battery Damage Rate Effect +0.3",
   "obtainable": true
  },
  {
@@ -5278,6 +5336,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+1 Hacking Guess",
   "obtainable": true
  },
  {
@@ -5317,6 +5376,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+20% BALLISTIC DMG",
   "obtainable": true
  },
  {
@@ -5331,6 +5391,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+30% Harder to Detect While Sneaking",
   "obtainable": true
  },
  {
@@ -5359,6 +5420,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Strength",
   "obtainable": true
  },
  {
@@ -5393,6 +5455,7 @@
    "BobbleheadDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+25% Increased Fists Melee Dmg",
   "obtainable": true
  },
  {
@@ -5708,6 +5771,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify All Melee Damage",
   "obtainable": true
  },
  {
@@ -5736,6 +5800,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Energy Resist +25",
   "obtainable": true
  },
  {
@@ -5753,6 +5818,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "20% Harder to Detect",
   "obtainable": true
  },
  {
@@ -5769,6 +5835,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Poison Resist +25",
   "obtainable": true
  },
  {
@@ -5806,6 +5873,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Melee Crit Damage",
   "obtainable": true
  },
  {
@@ -5842,6 +5910,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Damage Vs. Scorched",
   "obtainable": true
  },
  {
@@ -5858,6 +5927,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "-75% Melee Weapon Weight",
   "obtainable": true
  },
  {
@@ -5874,6 +5944,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "-50% Melee Weapon Condition Loss",
   "obtainable": true
  },
  {
@@ -5890,6 +5961,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Cryo Resist +25",
   "obtainable": true
  },
  {
@@ -5906,6 +5978,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Carry Weight +25",
   "obtainable": true
  },
  {
@@ -6016,6 +6089,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Damage Vs. Robots",
   "obtainable": true
  },
  {
@@ -6049,6 +6123,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Damage Vs. Liberators +15",
   "obtainable": true
  },
  {
@@ -6083,6 +6158,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Laser Crit Damage",
   "obtainable": true
  },
  {
@@ -6117,6 +6193,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+0% Ballistic Gun Crit Damage",
   "obtainable": true
  },
  {
@@ -6145,6 +6222,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify AP Regen +6",
   "obtainable": true
  },
  {
@@ -6162,6 +6240,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "More Scrap From Weapons",
   "obtainable": true
  },
  {
@@ -6198,6 +6277,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Damage Resist at Night: 75; Damage Resist at Night: 75",
   "obtainable": true
  },
  {
@@ -6226,6 +6306,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+10% Unscoped Weapon Dmg.",
   "obtainable": true
  },
  {
@@ -6259,6 +6340,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Damage Vs. Yao Guai",
   "obtainable": true
  },
  {
@@ -6293,6 +6375,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Plasma Crit Damage",
   "obtainable": true
  },
  {
@@ -7308,6 +7391,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Health When in a Team +25; +25 Max HP When in a Team",
   "obtainable": true
  },
  {
@@ -7344,6 +7428,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify All Damage When in a Team +5; +5% Damage When in a Team",
   "obtainable": true
  },
  {
@@ -7361,6 +7446,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+50% Healing from Veggies and Fruits",
   "obtainable": true
  },
  {
@@ -7397,6 +7483,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify AP Regen When in a Team +10; +10% AP Regen When in a Team",
   "obtainable": true
  },
  {
@@ -7433,6 +7520,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Luck +2; +2 Luck Under the Influence of Alcohol",
   "obtainable": true
  },
  {
@@ -7469,6 +7557,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Damage Resist When in a Team 25; +25 Damage Resist When in a Team",
   "obtainable": true
  },
  {
@@ -7505,6 +7594,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Action Points When in a Team +10; +10 Max AP When in a Team",
   "obtainable": true
  },
  {
@@ -7522,6 +7612,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "XP Bonus +5; +5% XP in a team",
   "obtainable": true
  },
  {
@@ -7555,6 +7646,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "-25% Damage from Robots",
   "obtainable": true
  },
  {
@@ -11106,6 +11198,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Resist Radiation Ingestion +30",
   "obtainable": true
  },
  {
@@ -11122,6 +11215,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Reduce Item Degradation +30",
   "obtainable": true
  },
  {
@@ -11155,6 +11249,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "25% Less Dmg. from Insects",
   "obtainable": true
  },
  {
@@ -11171,6 +11266,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "-10% All Items Weight",
   "obtainable": true
  },
  {
@@ -11187,6 +11283,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "100% Longer Bleedout Time",
   "obtainable": true
  },
  {
@@ -11203,6 +11300,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Resist Disease From Combat +80",
   "obtainable": true
  },
  {
@@ -11220,6 +11318,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Gain 30% less hunger & thirst",
   "obtainable": true
  },
  {
@@ -11253,6 +11352,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "25% Less Dmg. from Animals",
   "obtainable": true
  },
  {
@@ -11269,6 +11369,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Reduce Sprint AP Cost +20",
   "obtainable": true
  },
  {
@@ -11285,6 +11386,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Fire Resist +25",
   "obtainable": true
  },
  {
@@ -13653,6 +13755,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+15% Dmg. vs. the Wendigo",
   "obtainable": true
  },
  {
@@ -13686,6 +13789,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+15% Dmg. vs. the Mothman",
   "obtainable": true
  },
  {
@@ -13719,6 +13823,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+15% Dmg. vs. the Grafton Monster",
   "obtainable": true
  },
  {
@@ -13752,6 +13857,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+15% Dmg. vs. the Snallygaster",
   "obtainable": true
  },
  {
@@ -13785,6 +13891,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+15% Dmg. vs. the Flatwoods Alien",
   "obtainable": true
  },
  {
@@ -14190,6 +14297,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "-25% Damage from Robots",
   "obtainable": true
  },
  {
@@ -14227,6 +14335,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "-0% Plasma Damage Taken",
   "obtainable": true
  },
  {
@@ -14255,6 +14364,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Explosion Radius +30",
   "obtainable": true
  },
  {
@@ -14273,6 +14383,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+15% Fusion Core Duration",
   "obtainable": true
  },
  {
@@ -14303,6 +14414,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "-20% Heavy Weapon Ammo Consumption",
   "obtainable": true
  },
  {
@@ -14319,6 +14431,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Resist Radiation Exposure +100",
   "obtainable": true
  },
  {
@@ -14355,6 +14468,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Energy Crit Damage",
   "obtainable": true
  },
  {
@@ -14383,6 +14497,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify +50",
   "obtainable": true
  },
  {
@@ -14417,6 +14532,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Heavy Gun Crit Damage",
   "obtainable": true
  },
  {
@@ -14592,6 +14708,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Lockpicking +20",
   "obtainable": true
  },
  {
@@ -14608,6 +14725,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Find extra bobby pins when picking up bobby pin boxes.",
   "obtainable": true
  },
  {
@@ -14624,6 +14742,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Pick Locks of 1 Higher Tier",
   "obtainable": true
  },
  {
@@ -14640,6 +14759,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Bobby Pins are Unbreakable",
   "obtainable": true
  },
  {
@@ -14656,6 +14776,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Lockpicking +20",
   "obtainable": true
  },
  {
@@ -14690,6 +14811,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+50 Damage Resist While Sneaking; Fortify Damage Resist +50",
   "obtainable": true
  },
  {
@@ -14718,6 +14840,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Agility +1",
   "obtainable": true
  },
  {
@@ -14732,6 +14855,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Hide 50% Better in Full Light",
   "obtainable": true
  },
  {
@@ -14760,6 +14884,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "-10% Damage from Players",
   "obtainable": true
  },
  {
@@ -14793,6 +14918,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Damage Vs. Players +10",
   "obtainable": true
  },
  {
@@ -14821,6 +14947,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Perception +1",
   "obtainable": true
  },
  {
@@ -14835,6 +14962,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Make 50% Less Noise While Sneaking",
   "obtainable": true
  },
  {
@@ -14851,6 +14979,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "-50% Enemy Player V.A.T.S. Accuracy",
   "obtainable": true
  },
  {
@@ -14886,6 +15015,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+25% Fists & Knife Dmg.",
   "obtainable": true
  },
  {
@@ -14902,6 +15032,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "Fortify Stealth Boy Duration +50",
   "obtainable": true
  },
  {
@@ -14942,6 +15073,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+5% Chance to Avoid Dmg.",
   "obtainable": true
  },
  {
@@ -14989,6 +15121,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+20% Chance to Avoid Dmg. From Scorched",
   "obtainable": true
  },
  {
@@ -15007,6 +15140,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+30% Chance to Avoid Dmg. From Explosions",
   "obtainable": true
  },
  {
@@ -15055,6 +15189,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+30% Chance to Avoid Melee Dmg.",
   "obtainable": true
  },
  {
@@ -15105,6 +15240,7 @@
    "MagazineDispelEffects"
   ],
   "ingredientKeywords": [],
+  "description": "+30% Chance to Avoid Energy Dmg.",
   "obtainable": true
  },
  {

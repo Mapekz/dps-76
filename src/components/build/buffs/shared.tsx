@@ -141,7 +141,7 @@ function SingleSelectBuffSection({
                 key={item.id}
                 item={item}
                 groupName={groupName}
-                description={describeBuffModifiers(item)}
+                description={describeBuffModifiers(item) ?? item.description ?? null}
               />
             ))}
           </div>

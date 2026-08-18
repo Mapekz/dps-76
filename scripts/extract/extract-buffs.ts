@@ -14,8 +14,100 @@ import {
   translateMagicEffect,
   withSource,
   type AvifRoute,
+  type MgefInfo,
   type SpellEffect,
 } from './normalize/mgef';
+
+/** Fixture-friendly inputs for {@link deriveEffectDescription}. */
+export interface EffectDescriptionInput {
+  mgefName: string;
+  magicItemDescription?: string | null;
+  archetype: string;
+  perkToApplyDescription?: string | null;
+  magnitude: number;
+}
+
+function formatMagnitude(mag: number): string {
+  return Number.isInteger(mag) ? String(mag) : String(mag);
+}
+
+/** Replace `<mag>` / `<+MAG>` tokens in an MGEF Magic Item Description template. */
+export function substituteMagTemplate(template: string, magnitude: number): string {
+  const magStr = formatMagnitude(magnitude);
+  return template.replace(/<\+?mag>/gi, (match) => (/<\+/i.test(match) ? `+${magStr}` : magStr));
+}
+
+/**
+ * Per-effect game item text for bobbleheads/magazines: Magic Item Description
+ * (with magnitude substitution) → Script perk Description → MGEF Name (+mag).
+ */
+export function deriveEffectDescription(input: EffectDescriptionInput): string | undefined {
+  const { mgefName, magicItemDescription, archetype, perkToApplyDescription, magnitude } = input;
+
+  if (magicItemDescription) {
+    return substituteMagTemplate(magicItemDescription, magnitude);
+  }
+
+  if (archetype === 'Script' && perkToApplyDescription) {
+    return perkToApplyDescription;
+  }
+
+  if (mgefName) {
+    if (magnitude > 0) return `${mgefName} +${formatMagnitude(magnitude)}`;
+    return mgefName;
+  }
+
+  return undefined;
+}
+
+async function resolveEffectDescription(
+  client: EsmSource,
+  effect: SpellEffect,
+): Promise<string | undefined> {
+  if (!effect.mgefFormId) return undefined;
+
+  let record: EsmRecord;
+  let mgef: MgefInfo;
+  try {
+    record = await client.get(effect.mgefFormId);
+    mgef = await getMgefInfo(client, effect.mgefFormId);
+  } catch {
+    return undefined;
+  }
+
+  const magicItemDescription = record.fields['Magic Item Description'] as string | null | undefined;
+
+  let perkToApplyDescription: string | null = null;
+  if (!magicItemDescription && mgef.archetype === 'Script' && mgef.perkToApply) {
+    try {
+      const perk = await client.get(mgef.perkToApply);
+      perkToApplyDescription = (perk.fields['Description'] as string) || null;
+    } catch {
+      // skip — fall through to tier 3
+    }
+  }
+
+  return deriveEffectDescription({
+    mgefName: mgef.name,
+    magicItemDescription,
+    archetype: mgef.archetype,
+    perkToApplyDescription,
+    magnitude: effect.magnitude,
+  });
+}
+
+/** Join per-effect descriptions from an ALCH Effects list (`'; '`). */
+async function deriveConsumableItemDescription(
+  client: EsmSource,
+  effects: readonly SpellEffect[],
+): Promise<string | undefined> {
+  const parts: string[] = [];
+  for (const effect of effects) {
+    const text = await resolveEffectDescription(client, effect);
+    if (text) parts.push(text);
+  }
+  return parts.length > 0 ? parts.join('; ') : undefined;
+}
 
 /**
  * Mutations (SPEL) and consumables (ALCH). Mutations stay a curated
@@ -342,6 +434,11 @@ async function buildConsumable(
     .filter((_, i) => scalableIndexes.has(i))
     .map((m) => m.id);
 
+  const description =
+    category === 'bobblehead' || category === 'magazine'
+      ? await deriveConsumableItemDescription(client, effects)
+      : undefined;
+
   const buff: GeneratedBuff = {
     id: record.editor_id,
     formId: record.header.form_id,
@@ -354,6 +451,7 @@ async function buildConsumable(
     addiction,
     ingredientKeywords,
     ...(foodScalableModifierIds.length > 0 ? { foodScalableModifierIds } : {}),
+    ...(description ? { description } : {}),
   };
   return { buff, category };
 }

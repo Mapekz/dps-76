@@ -8,6 +8,8 @@ import {
   resolveAddiction,
   extractMutation,
   extractAddictionEffects,
+  deriveEffectDescription,
+  substituteMagTemplate,
 } from '../extract-buffs';
 import type { SpellEffect, AvifRoute } from '../normalize/mgef';
 import mutationEggHead from './fixtures/spel-mutation-egghead.json';
@@ -34,6 +36,101 @@ function record(
     ...overrides,
   } as EsmRecord;
 }
+
+describe('substituteMagTemplate', () => {
+  it('replaces <mag> with the magnitude (no leading +)', () => {
+    expect(substituteMagTemplate('-<mag>% Melee Weapon Weight', 75)).toBe(
+      '-75% Melee Weapon Weight',
+    );
+  });
+
+  it('replaces <+MAG> preserving the token leading +', () => {
+    expect(substituteMagTemplate('<+MAG> LOCKPICK SWEETSPOT', 30)).toBe('+30 LOCKPICK SWEETSPOT');
+  });
+
+  it('formats integral magnitudes as integers', () => {
+    expect(substituteMagTemplate('+<mag>% Chance to Avoid Dmg. From Explosions', 30)).toBe(
+      '+30% Chance to Avoid Dmg. From Explosions',
+    );
+  });
+});
+
+describe('deriveEffectDescription', () => {
+  it('tier 1: Magic Item Description with <mag> substitution (Unstoppables-style)', () => {
+    expect(
+      deriveEffectDescription({
+        mgefName: 'Fortify Explosion Avoid Chance',
+        magicItemDescription: '+<mag>% Chance to Avoid Dmg. From Explosions',
+        archetype: 'Peak Value Modifier',
+        magnitude: 30,
+      }),
+    ).toBe('+30% Chance to Avoid Dmg. From Explosions');
+  });
+
+  it('tier 1: <+MAG> template (Bobblehead: Lock Picking)', () => {
+    expect(
+      deriveEffectDescription({
+        mgefName: 'Fortify Lockpick Sweetspot',
+        magicItemDescription: '<+MAG> LOCKPICK SWEETSPOT',
+        archetype: 'Peak Value Modifier',
+        magnitude: 30,
+      }),
+    ).toBe('+30 LOCKPICK SWEETSPOT');
+  });
+
+  it('tier 2: Script archetype perk Description (Grognak 6)', () => {
+    expect(
+      deriveEffectDescription({
+        mgefName: 'Add Grognak Perk Effect',
+        archetype: 'Script',
+        perkToApplyDescription: 'Melee weapons weigh 75% less.',
+        magnitude: 75,
+      }),
+    ).toBe('Melee weapons weigh 75% less.');
+  });
+
+  it('tier 3: MGEF Name + magnitude when no template or perk text (Grognak 3)', () => {
+    expect(
+      deriveEffectDescription({
+        mgefName: 'Fortify Poison Resist',
+        archetype: 'Peak Value Modifier',
+        magnitude: 25,
+      }),
+    ).toBe('Fortify Poison Resist +25');
+  });
+
+  it('tier 3: bare MGEF Name when magnitude is 0', () => {
+    expect(
+      deriveEffectDescription({
+        mgefName: 'Some Passive Effect',
+        archetype: 'Script',
+        magnitude: 0,
+      }),
+    ).toBe('Some Passive Effect');
+  });
+
+  it('returns undefined when nothing resolves', () => {
+    expect(
+      deriveEffectDescription({
+        mgefName: '',
+        archetype: 'Script',
+        magnitude: 0,
+      }),
+    ).toBeUndefined();
+  });
+
+  it('prefers Magic Item Description over Script perk Description', () => {
+    expect(
+      deriveEffectDescription({
+        mgefName: 'Ignored',
+        magicItemDescription: '+<mag>% Fusion Core Duration',
+        archetype: 'Script',
+        perkToApplyDescription: 'Perk text should not win.',
+        magnitude: 30,
+      }),
+    ).toBe('+30% Fusion Core Duration');
+  });
+});
 
 describe('isExcludedConsumableEdid', () => {
   it('filters junk-prefixed edids (zzz_/cut_/DEPRECATED_/deleted/test/debug/post_)', () => {
