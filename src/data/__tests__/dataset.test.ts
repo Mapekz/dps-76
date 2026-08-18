@@ -25,6 +25,18 @@ describe('getUnresolvedOverrideKeys', () => {
   });
 });
 
+describe('consumableDescriptionOverrides', () => {
+  it('replaces the ESM-derived fallback description in the Merged Dataset', () => {
+    const byId = new Map(getDataset('live').consumables.map((c) => [c.id, c]));
+    // Raw derivation says "XP Bonus +5" — override pins the polished house style.
+    expect(byId.get('BobbleHead_Leader_Potion')?.description).toBe('+5% XP');
+    // Raw derivation rendered "+0%" (magnitude lives in a GLOB the template can't see).
+    expect(byId.get('Magazine_Backwoodsman04_Potion')?.description).toBe(
+      '+50% chance of double yield when harvesting plants',
+    );
+  });
+});
+
 describe('getDataset value overlays', () => {
   it('folds a real legendary modifier override into the live Merged Dataset', () => {
     const id = 'mod_Legendary_Weapon2_DmgLimbs';

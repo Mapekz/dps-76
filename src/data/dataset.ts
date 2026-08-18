@@ -44,6 +44,7 @@ import {
   perWeaponSlotLabelOverrides,
   hiddenConsumableIds,
   forceVisibleConsumableIds,
+  consumableDescriptionOverrides,
 } from './overrides/corrections';
 import { perkFamilyOverrides, extraPerkModifiers } from './overrides/perk-overrides';
 import { npcOverrides } from './overrides/npc-overrides';
@@ -98,6 +99,17 @@ export function applyModifierOverride<T extends { id: string; modifiers: Modifie
   return items.map((item) => {
     const override = overridesById[item.id];
     return override ? { ...item, modifiers: override } : item;
+  });
+}
+
+/** Replace the ESM-derived fallback `description` when keyed by the item's id (consumables). */
+export function applyDescriptionOverride<T extends { id: string; description?: string }>(
+  items: T[],
+  overridesById: Readonly<Record<string, string>>,
+): T[] {
+  return items.map((item) => {
+    const override = overridesById[item.id];
+    return override ? { ...item, description: override } : item;
   });
 }
 
@@ -234,6 +246,8 @@ export interface DatasetSource {
   forceVisibleArmorOmodIds: ReadonlySet<string>;
   hiddenConsumableIds: ReadonlySet<string>;
   forceVisibleConsumableIds: ReadonlySet<string>;
+  /** Optional so synthetic test sources (dataset-build.test.ts) omit it. */
+  consumableDescriptionOverrides?: Readonly<Record<string, string>>;
   omodBadgeOverrides: Readonly<Record<string, 'inert' | 'pendingMechanic'>>;
   omodWeaponRestrictions: Readonly<Record<string, readonly string[]>>;
   omodNameOverrides: Readonly<Record<string, string>>;
@@ -277,7 +291,10 @@ export function buildDataset(hand: HandAuthored, source: DatasetSource): Dataset
     perks: source.generatedPerks,
     perkRegistry: derivePerkRegistry(perkNames, source.generatedPerks),
     mutations: applyModifierOverride(source.generatedMutations, source.buffValueOverrides),
-    consumables: applyModifierOverride(source.generatedConsumables, source.buffValueOverrides),
+    consumables: applyDescriptionOverride(
+      applyModifierOverride(source.generatedConsumables, source.buffValueOverrides),
+      source.consumableDescriptionOverrides ?? {},
+    ),
     addictions: source.generatedAddictions,
     bodyPartRaces: source.generatedBodyParts,
     npcs: applyNpcOverrides(source.generatedNpcs, source.npcOverrides),
@@ -325,6 +342,7 @@ const liveSource: DatasetSource = {
   forceVisibleArmorOmodIds,
   hiddenConsumableIds,
   forceVisibleConsumableIds,
+  consumableDescriptionOverrides,
   omodBadgeOverrides,
   omodWeaponRestrictions,
   omodNameOverrides,
@@ -457,6 +475,21 @@ export function getUnresolvedOverrideKeys(mode: GameMode): UnresolvedOverrideKey
   check('buffValueOverrides', Object.keys(buffValueOverrides), buffIds);
   check('hiddenConsumableIds', hiddenConsumableIds, buffIds);
   check('forceVisibleConsumableIds', forceVisibleConsumableIds, buffIds);
+  const consumableIds = new Set(generatedConsumablesLive.map((b) => b.id));
+  check(
+    'consumableDescriptionOverrides',
+    Object.keys(consumableDescriptionOverrides),
+    consumableIds,
+  );
+  const generatedDescById = new Map<string, string>();
+  for (const b of generatedConsumablesLive as GeneratedBuff[]) {
+    if (b.description !== undefined) generatedDescById.set(b.id, b.description);
+  }
+  checkNoOpValue(
+    'consumableDescriptionOverrides',
+    consumableDescriptionOverrides,
+    generatedDescById,
+  );
 
   const familyIds = new Set(generatedPerksLive.map((p) => p.family));
   check('perkFamilyOverrides (target family)', Object.values(perkFamilyOverrides), familyIds);

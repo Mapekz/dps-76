@@ -108,7 +108,7 @@ describe('describeBuffModifiers', () => {
     const mod: Modifier = {
       id: '0x7:0',
       source,
-      bucket: 'apRegen',
+      bucket: 'apPerCrit',
       op: 'ADD',
       value: 0.1,
       conditions: [],
@@ -435,7 +435,7 @@ describe('describeBuffModifiers: new bucket labels', () => {
       value: 10,
       conditions: [],
     };
-    expect(describeBuffModifiers(buff([mod]))).toBe('+10 AP regen');
+    expect(describeBuffModifiers(buff([mod]))).toBe('+10 base AP regen');
   });
 
   it('stimpakHealMagMult reads as a percentage (Field Surgeon)', () => {

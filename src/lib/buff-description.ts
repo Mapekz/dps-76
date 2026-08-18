@@ -34,6 +34,9 @@ const PERCENT_BUCKET_LABELS: Partial<Record<Bucket, string>> = {
   vatsHitChance: 'VATS hit chance',
   explosionRadiusBonus: 'explosion radius',
   ammoFreeChance: 'chance to not consume ammo',
+  // The % mult on regen rate (Action Boy, Rejuvenated) — flat adds into the
+  // base term are `apRegenFlat` ("base AP regen") below.
+  apRegen: 'AP regen',
 };
 
 /** Buckets whose Modifier.value is a flat point add, not a percentage. */
@@ -47,7 +50,9 @@ const FLAT_POINT_BUCKET_LABELS: Partial<Record<Bucket, string>> = {
   specialLuck: 'Luck',
   maxHealth: 'max HP',
   apMax: 'max AP',
-  apRegenFlat: 'AP regen',
+  // "base" distinguishes the flat add (GnB 4, Powered — joins the race base
+  // BEFORE the apRegen mult, see modifiers.ts) from Action Boy's % mult.
+  apRegenFlat: 'base AP regen',
   damageResistGain: 'Damage Resist',
   energyResistGain: 'Energy Resist',
   lockpickSkill: 'Lockpick Skill',
