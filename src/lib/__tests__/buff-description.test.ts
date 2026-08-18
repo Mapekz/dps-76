@@ -24,7 +24,7 @@ describe('describeBuffModifiers', () => {
       value: 0.1,
       conditions: [],
     };
-    expect(describeBuffModifiers(buff([mod]))).toBe('+10% damage');
+    expect(describeBuffModifiers(buff([mod]))).toBe('+10% damage bonus');
   });
 
   it('SPECIAL bucket reads as a flat point add, not a percentage (Strength bobblehead)', () => {
@@ -52,7 +52,7 @@ describe('describeBuffModifiers', () => {
       ],
     };
     expect(describeBuffModifiers(buff([mod]))).toBe(
-      '+20% damage (with ballistic weapons, non-heavy guns)',
+      '+20% damage bonus (with ballistic weapons, non-heavy guns)',
     );
   });
 
@@ -65,7 +65,7 @@ describe('describeBuffModifiers', () => {
       value: 0.3,
       conditions: [{ kind: 'damageTypeScope', types: ['explosive'] }],
     };
-    expect(describeBuffModifiers(buff([mod]))).toBe('+30% damage (explosive damage only)');
+    expect(describeBuffModifiers(buff([mod]))).toBe('+30% damage bonus (explosive damage only)');
   });
 
   it('enemyType reads as a "vs X" qualifier (Astonishing Tales Mothman magazine)', () => {
@@ -77,7 +77,7 @@ describe('describeBuffModifiers', () => {
       value: 0.15,
       conditions: [{ kind: 'enemyType', keywordOrRace: 'ActorTypeMothman' }],
     };
-    expect(describeBuffModifiers(buff([mod]))).toBe('+15% damage (vs the Mothman)');
+    expect(describeBuffModifiers(buff([mod]))).toBe('+15% damage bonus (vs the Mothman)');
   });
 
   it('an unresolved condition flags the bonus as currently inactive, not silently hidden', () => {
@@ -89,7 +89,9 @@ describe('describeBuffModifiers', () => {
       value: 0.5,
       conditions: [{ kind: 'unresolved', raw: 'OR-group[...]' }],
     };
-    expect(describeBuffModifiers(buff([mod]))).toBe('+50% damage — not modeled yet, no effect');
+    expect(describeBuffModifiers(buff([mod]))).toBe(
+      '+50% damage bonus — not modeled yet, no effect',
+    );
   });
 
   it('a non-whole percentage keeps its decimal', () => {
@@ -101,7 +103,7 @@ describe('describeBuffModifiers', () => {
       value: 0.075,
       conditions: [],
     };
-    expect(describeBuffModifiers(buff([mod]))).toBe('+7.5% damage');
+    expect(describeBuffModifiers(buff([mod]))).toBe('+7.5% damage bonus');
   });
 
   it('an unmodeled bucket is omitted rather than guessed at', () => {
@@ -139,7 +141,7 @@ describe('describeBuffModifiers ctx: strangeInNumbers / classFreakRank filtering
       value: 0.15,
       conditions: [{ kind: 'strangeInNumbers', value: true }],
     };
-    expect(describeBuffModifiers(buff([base, boosted]))).toBe('+10% damage');
+    expect(describeBuffModifiers(buff([base, boosted]))).toBe('+10% damage bonus');
   });
 
   it('strangeInNumbers: true picks the boosted variant', () => {
@@ -160,7 +162,7 @@ describe('describeBuffModifiers ctx: strangeInNumbers / classFreakRank filtering
       conditions: [{ kind: 'strangeInNumbers', value: true }],
     };
     expect(describeBuffModifiers(buff([base, boosted]), { strangeInNumbers: true })).toBe(
-      '+15% damage',
+      '+15% damage bonus',
     );
   });
 
@@ -173,7 +175,7 @@ describe('describeBuffModifiers ctx: strangeInNumbers / classFreakRank filtering
       value: 0.1,
       conditions: [{ kind: 'strangeInNumbers', value: false }],
     };
-    expect(describeBuffModifiers(buff([mod]))).toBe('+10% damage');
+    expect(describeBuffModifiers(buff([mod]))).toBe('+10% damage bonus');
   });
 
   it('classFreakRank drops a modifier whose tier the current rank falls outside of', () => {
@@ -206,8 +208,12 @@ describe('describeBuffModifiers ctx: strangeInNumbers / classFreakRank filtering
       value: -0.15,
       conditions: [{ kind: 'classFreakRank', min: 1, max: 1 }],
     };
-    expect(describeBuffModifiers(buff([tier0, tier1]), { classFreakRank: 0 })).toBe('-20% damage');
-    expect(describeBuffModifiers(buff([tier0, tier1]), { classFreakRank: 1 })).toBe('-15% damage');
+    expect(describeBuffModifiers(buff([tier0, tier1]), { classFreakRank: 0 })).toBe(
+      '-20% damage bonus',
+    );
+    expect(describeBuffModifiers(buff([tier0, tier1]), { classFreakRank: 1 })).toBe(
+      '-15% damage bonus',
+    );
   });
 });
 
@@ -253,7 +259,7 @@ describe('describeBuffModifiers ctx: penaltyScale', () => {
       conditions: [],
     };
     expect(describeBuffModifiers(buff([mod]), { penaltyScale: 0.5 })).toBe(
-      '+2.5–50% damage (scales with kill streak)',
+      '+2.5–50% damage bonus (scales with kill streak)',
     );
   });
 
@@ -290,7 +296,9 @@ describe('describeBuffModifiers: curve support', () => {
       curveScale: 0.01,
       conditions: [],
     };
-    expect(describeBuffModifiers(buff([mod]))).toBe('+5–100% damage (scales with kill streak)');
+    expect(describeBuffModifiers(buff([mod]))).toBe(
+      '+5–100% damage bonus (scales with kill streak)',
+    );
   });
 
   it('an unmapped curve axis falls back to the raw CurveInput name', () => {
@@ -309,7 +317,7 @@ describe('describeBuffModifiers: curve support', () => {
       curveScale: 0.01,
       conditions: [],
     };
-    expect(describeBuffModifiers(buff([mod]))).toBe('0–20% damage (scales with capsOnHand)');
+    expect(describeBuffModifiers(buff([mod]))).toBe('0–20% damage bonus (scales with capsOnHand)');
   });
 
   it('a curve on a bucket with neither a percent nor a flat-point label is omitted, not guessed at', () => {
@@ -509,7 +517,7 @@ describe('describeBuffModifiers: teammateCount clause', () => {
       value: 0.1,
       conditions: [{ kind: 'teammateCount', count: 0 }],
     };
-    expect(describeBuffModifiers(buff([mod]))).toBe('+10% damage (while solo)');
+    expect(describeBuffModifiers(buff([mod]))).toBe('+10% damage bonus (while solo)');
   });
 
   it('orMore reads as "with N+ teammates"', () => {
@@ -521,7 +529,7 @@ describe('describeBuffModifiers: teammateCount clause', () => {
       value: 0.1,
       conditions: [{ kind: 'teammateCount', count: 2, orMore: true }],
     };
-    expect(describeBuffModifiers(buff([mod]))).toBe('+10% damage (with 2+ teammates)');
+    expect(describeBuffModifiers(buff([mod]))).toBe('+10% damage bonus (with 2+ teammates)');
   });
 
   it('an exact singular count reads as "with 1 teammate", not "1 teammates"', () => {
@@ -533,7 +541,7 @@ describe('describeBuffModifiers: teammateCount clause', () => {
       value: 0.1,
       conditions: [{ kind: 'teammateCount', count: 1 }],
     };
-    expect(describeBuffModifiers(buff([mod]))).toBe('+10% damage (with 1 teammate)');
+    expect(describeBuffModifiers(buff([mod]))).toBe('+10% damage bonus (with 1 teammate)');
   });
 });
 
@@ -559,5 +567,137 @@ describe('describeBuffModifiers: relaxed param type', () => {
       notes: [],
     };
     expect(describeBuffModifiers(addictionShaped)).toBe('-1 Agility');
+  });
+});
+
+describe('describeBuffModifiers: bucket and keyword routing', () => {
+  it('wholeDamage reads as total damage with weapon qualifier (Awesome Tales 5)', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'wholeDamage',
+      op: 'MUL_ADD',
+      value: 0.25,
+      conditions: [{ kind: 'weaponKeyword', keyword: 'WeaponTypeCryolator', present: true }],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+25% total damage (with the Cryolator)');
+  });
+
+  it('incomingDamageMult with plasma collapse reads "from" not "with" (Tesla Science 2)', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'incomingDamageMult',
+      op: 'MUL_ADD',
+      value: -0.25,
+      conditions: [
+        {
+          kind: 'enemyTypeAny',
+          keywordsOrRaces: ['WeaponTypePlasma', 'WeaponTypePlasmaGrenade', 'WeaponTypePlasmaMine'],
+        },
+      ],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe(
+      '-25% damage taken (from plasma weapons incl. grenades and mines)',
+    );
+  });
+
+  it('Grounded energy collapse reads as energy weapons (not per-keyword join)', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'MUL_ADD',
+      value: -0.1,
+      conditions: [
+        {
+          kind: 'weaponKeywordAny',
+          keywords: ['WeaponTypeEnergy', 'WeaponTypeAlienBlaster'],
+        },
+      ],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('-10% damage bonus (with energy weapons)');
+  });
+
+  it('mixed absorption list collapse reads "from energy damage" for incomingDamageMult', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'incomingDamageMult',
+      op: 'MUL_ADD',
+      value: -0.15,
+      conditions: [
+        {
+          kind: 'enemyTypeAny',
+          keywordsOrRaces: ['DamageTypeEnergy', 'AmmoTypeEnergy', 'WeaponTypeEnergy'],
+        },
+      ],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('-15% damage taken (from energy damage)');
+  });
+
+  it('POST-DLC04_WeaponTypeSmartGrenade routes through weapon path, not enemy "vs"', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.1,
+      conditions: [
+        {
+          kind: 'enemyType',
+          keywordOrRace: 'POST-DLC04_WeaponTypeSmartGrenade',
+        },
+      ],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+10% damage bonus (with smart grenades)');
+  });
+
+  it('HasSilencer weaponKeyword reads as suppressed weapons', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.1,
+      conditions: [{ kind: 'weaponKeyword', keyword: 'HasSilencer', present: true }],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+10% damage bonus (with suppressed weapons)');
+  });
+
+  it('vatsHitChance reads as a percentage', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'vatsHitChance',
+      op: 'ADD',
+      value: 0.1,
+      conditions: [],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+10% VATS hit chance');
+  });
+
+  it('explosionRadiusBonus reads as a percentage', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'explosionRadiusBonus',
+      op: 'ADD',
+      value: 0.1,
+      conditions: [],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+10% explosion radius');
+  });
+
+  it('ammoFreeChance reads as a percentage', () => {
+    const mod: Modifier = {
+      id: '0x1:0',
+      source,
+      bucket: 'ammoFreeChance',
+      op: 'ADD',
+      value: 0.1,
+      conditions: [],
+    };
+    expect(describeBuffModifiers(buff([mod]))).toBe('+10% chance to not consume ammo');
   });
 });

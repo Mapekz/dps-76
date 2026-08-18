@@ -19,6 +19,13 @@ The single normalized shape every damage source (perk, OMOD, legendary effect,
 mutation, consumable) is reduced to — `{ bucket, op, value | curveScale, conditions }`.
 _Avoid_: stat mod, effect, adjustment.
 
+**Effect line**:
+The human-readable summary of a buff, perk, OMOD, or mutation's effects shown
+in pickers, synthesized from its **Modifier IR** — never taken from ESM
+description or flavor text (the two can disagree; the displayed bonus must
+always match the applied one).
+_Avoid_: description, flavor text (those are ESM-authored and may disagree).
+
 **Bucket**:
 The term of the paper-damage formula a modifier feeds (`dbm`, `critDmgBase`,
 `sneakBonus`, `weakpointBonus`, `fireRateSpeed`, …).

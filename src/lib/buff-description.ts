@@ -18,7 +18,7 @@ import { formatPercent } from '@/lib/format';
 
 /** Buckets whose Modifier.value is a decimal fraction (0.1 = +10%). */
 const PERCENT_BUCKET_LABELS: Partial<Record<Bucket, string>> = {
-  dbm: 'damage',
+  dbm: 'damage bonus',
   critDmgBonus: 'critical damage',
   sneakBonus: 'sneak attack damage',
   weakpointBonus: 'weakpoint damage',
@@ -29,6 +29,11 @@ const PERCENT_BUCKET_LABELS: Partial<Record<Bucket, string>> = {
   incomingDamageMult: 'damage taken',
   stimpakHealMagMult: 'Stimpak/RadAway heal magnitude',
   stimpakHealDurationMult: 'Stimpak/RadAway heal duration',
+  // ESM: Awesome Tales 5 — entry point "Mod Weapon Attack Damage (Multiply Value)"
+  wholeDamage: 'total damage',
+  vatsHitChance: 'VATS hit chance',
+  explosionRadiusBonus: 'explosion radius',
+  ammoFreeChance: 'chance to not consume ammo',
 };
 
 /** Buckets whose Modifier.value is a flat point add, not a percentage. */
@@ -59,7 +64,7 @@ const CURVE_AXIS_LABELS: Partial<Record<CurveInput, string>> = {
   stimpakHealMult: 'Stimpak healing',
 };
 
-const WEAPON_KEYWORD_LABELS: Record<string, string> = {
+export const WEAPON_KEYWORD_LABELS: Record<string, string> = {
   WeaponTypeBallistic: 'ballistic weapons',
   WeaponTypeEnergy: 'energy weapons',
   WeaponTypeLaser: 'laser weapons',
@@ -72,9 +77,29 @@ const WEAPON_KEYWORD_LABELS: Record<string, string> = {
   WeaponTypeAutomaticMelee: 'automatic melee weapons',
   WeaponTypeUnarmed: 'unarmed',
   WeaponTypeThrowingKnife: 'throwing weapons',
+  WeaponTypeRanged: 'ranged weapons',
+  WeaponTypeRifle: 'rifles',
+  WeaponTypePistol: 'pistols',
+  WeaponTypeShotgun: 'shotguns',
+  WeaponTypeAutomatic: 'automatic weapons',
+  WeaponTypeHandToHand: 'hand-to-hand weapons',
+  WeaponTypeBow: 'bows',
+  WeaponTypeCryolator: 'the Cryolator',
+  WeaponTypeFireDamage: 'fire-damage weapons',
+  WeaponTypeLaserMusket: 'laser muskets',
+  WeaponTypePlasmaGrenade: 'plasma grenades',
+  WeaponTypePlasmaMine: 'plasma mines',
+  'POST-DLC04_WeaponTypeSmartGrenade': 'smart grenades',
+  HasSilencer: 'suppressed weapons',
+  HasLegendary_Weapon_Bully: 'Bully legendary weapons',
+  HasLegendary_Weapon_HealAllies: 'Heal Allies legendary weapons',
+  HasLegendary_Weapon_Polished: 'Polished legendary weapons',
+  HasLegendary_Weapon_Pounders: "Pounder's legendary weapons",
+  CustomItemName_FoundationsVengeance: "Foundation's Vengeance",
+  RD01_CustomItemName_Valkyrie: 'the Valkyrie',
 };
 
-const ENEMY_KEYWORD_LABELS: Record<string, string> = {
+export const ENEMY_KEYWORD_LABELS: Record<string, string> = {
   ActorTypeAnimal: 'animals',
   ActorTypeGhoul: 'ghouls',
   ActorTypeFeralGhoul: 'feral ghouls',
@@ -100,6 +125,104 @@ const ENEMY_KEYWORD_LABELS: Record<string, string> = {
   ActorTypeMolerat: 'mole rats',
   ActorTypeMoleMiner: 'mole miners',
   HumanRace: 'humans',
+  ActorTypeNPC: 'NPCs',
+  ActorTypeGlowing: 'glowing enemies',
+  ActorTypeFeralGhoulGlowingOne: 'glowing ones',
+  ActorTypeSynth: 'synths',
+  ActorTypeScorchbeastQueen: 'scorchbeast queens',
+  ActorTypeAngler: 'anglers',
+  DLC03_ActorTypeAngler: 'anglers',
+  DLC03_ActorTypeFogCrawler: 'fog crawlers',
+  DLC03_ActorTypeHermitCrab: 'hermit crabs',
+  ActorTypeBloodbug: 'bloodbugs',
+  ActorTypeHoneyBeast: 'honey beasts',
+  ActorTypeViciousDogPack: 'vicious dogs',
+  ActorTypeRadStag: 'radstags',
+  ActorTypeToad: 'radtoads',
+  ActorTypeStingwing: 'stingwings',
+  ActorTypeHuman: 'humans',
+  MothmanRace: 'the Mothman',
+  WendigoRace: 'Wendigos',
+  FlatwoodsMonsterRace: 'the Flatwoods Monster',
+  GraftonMonsterRace: 'the Grafton Monster',
+  SnallyGasterRace: 'the Snallygaster',
+  // Drifter/Epic Absorbtion perks (also collapsed in COLLAPSED_KEYWORD_SETS)
+  AmmoTypeBallistic: 'ballistic damage',
+  DamageTypeEnergy: 'energy damage',
+  AmmoTypeEnergy: 'energy damage',
+  DamageTypeFire: 'fire damage',
+  IsAmmoType_FlamerFuel: 'fire damage',
+};
+
+export const isWeaponFlavoredKeyword = (edid: string): boolean =>
+  edid in WEAPON_KEYWORD_LABELS || edid.includes('WeaponType');
+
+const collapseKey = (keywords: readonly string[]): string => [...keywords].sort().join('|');
+
+export const COLLAPSED_KEYWORD_SETS: Record<string, string> = {
+  // Grounded mutation, Charged penalty perk (alien blasters all carry the Energy keyword)
+  [collapseKey(['WeaponTypeEnergy', 'WeaponTypeAlienBlaster'])]: 'energy weapons',
+  // Tesla Science 2 magazine
+  [collapseKey(['WeaponTypePlasma', 'WeaponTypePlasmaGrenade', 'WeaponTypePlasmaMine'])]:
+    'plasma weapons incl. grenades and mines',
+  // Unstoppables 5 (NOT "energy weapons" — would overclaim gauss/gamma/cryo/flamer)
+  [collapseKey([
+    'WeaponTypeLaser',
+    'WeaponTypeLaserMusket',
+    'WeaponTypePlasma',
+    'WeaponTypePlasmaGrenade',
+    'WeaponTypePlasmaMine',
+  ])]: 'laser or plasma weapons',
+  // Drifter Absorbtion Energy perk
+  [collapseKey(['DamageTypeEnergy', 'AmmoTypeEnergy', 'WeaponTypeEnergy'])]: 'energy damage',
+  // Epic/Drifter Absorbtion Ballistic perks
+  [collapseKey(['AmmoTypeBallistic', 'WeaponTypeBallistic'])]: 'ballistic damage',
+  // Drifter Absorbtion Fire perk
+  [collapseKey(['DamageTypeFire', 'IsAmmoType_FlamerFuel', 'WeaponTypeFireDamage'])]: 'fire damage',
+  // Fierce, Jagged Reflection perks
+  [collapseKey([
+    'WeaponTypeHandToHand',
+    'WeaponTypeMelee1H',
+    'WeaponTypeMelee2H',
+    'WeaponTypeMeleeGeneral',
+    'WeaponTypeUnarmed',
+  ])]: 'melee or unarmed weapons',
+  // Epic/Drifter Absorbtion Melee perks
+  [collapseKey([
+    'WeaponTypeUnarmed',
+    'WeaponTypeMelee1H',
+    'WeaponTypeMelee2H',
+    'WeaponTypeMeleeGeneral',
+    'WeaponTypeAutomaticMelee',
+  ])]: 'melee or unarmed weapons',
+  // Incisor, Rooted, Unstoppable, Wasteland Survival 1
+  [collapseKey(['WeaponTypeMelee1H', 'WeaponTypeMelee2H', 'WeaponTypeUnarmed'])]:
+    'melee or unarmed weapons',
+  // "Ignore armor with melee weapons" perk
+  [collapseKey([
+    'WeaponTypeHandToHand',
+    'WeaponTypeMelee2H',
+    'WeaponTypeMelee1H',
+    'WeaponTypeUnarmed',
+  ])]: 'melee or unarmed weapons',
+  // Twisted Muscles mutation
+  [collapseKey(['WeaponTypeMelee1H', 'WeaponTypeMelee2H', 'WeaponTypeAutomaticMelee'])]:
+    'melee weapons',
+  // Enforcer, Ground Pounder, Modern Renegade (orders differ in data — hence sorted keys)
+  [collapseKey(['WeaponTypeRifle', 'WeaponTypePistol', 'WeaponTypeShotgun'])]:
+    'rifles, pistols, or shotguns',
+  // Bow Before Me
+  [collapseKey(['WeaponTypeBow', 'WeaponTypeThrowingKnife'])]: 'bows or thrown weapons',
+  // brew consumable
+  [collapseKey(['WeaponTypeLaser', 'WeaponTypePlasma'])]: 'laser or plasma weapons',
+  // Ninja
+  [collapseKey([
+    'WeaponTypeMelee1H',
+    'WeaponTypeMelee2H',
+    'WeaponTypeUnarmed',
+    'WeaponTypeThrowingKnife',
+    'WeaponTypeBow',
+  ])]: 'melee, unarmed, bows, or thrown weapons',
 };
 
 const weaponLabel = (edid: string): string => WEAPON_KEYWORD_LABELS[edid] ?? edid;
@@ -135,22 +258,33 @@ export interface BuffDescriptionCtx {
 }
 
 /** Qualifier clause for one modifier's conditions, plus whether any of them are currently inert. */
-function describeConditions(conditions: readonly Condition[]): {
+function describeConditions(
+  conditions: readonly Condition[],
+  bucket: Bucket,
+): {
   clause: string;
   inactive: boolean;
 } {
   const clauses: string[] = [];
   let inactive = false;
+  const weaponPrep = bucket === 'incomingDamageMult' ? 'from' : 'with';
+
   for (const c of conditions) {
     switch (c.kind) {
       case 'weaponKeyword':
         clauses.push(
-          c.present ? `with ${weaponLabel(c.keyword)}` : `non-${weaponLabel(c.keyword)}`,
+          c.present ? `${weaponPrep} ${weaponLabel(c.keyword)}` : `non-${weaponLabel(c.keyword)}`,
         );
         break;
-      case 'weaponKeywordAny':
-        clauses.push(`with ${c.keywords.map(weaponLabel).join(' or ')}`);
+      case 'weaponKeywordAny': {
+        const collapsed = COLLAPSED_KEYWORD_SETS[collapseKey(c.keywords)];
+        if (collapsed) {
+          clauses.push(`${weaponPrep} ${collapsed}`);
+        } else {
+          clauses.push(`${weaponPrep} ${c.keywords.map(weaponLabel).join(' or ')}`);
+        }
         break;
+      }
       case 'damageTypeScope':
         clauses.push(`${c.types.join('/')} damage only`);
         break;
@@ -160,18 +294,28 @@ function describeConditions(conditions: readonly Condition[]): {
         // name the WIELDED weapon, not the target) — render as a weapon "with
         // X" clause instead of an enemy "vs X" one when that's what it is.
         clauses.push(
-          c.keywordOrRace.startsWith('WeaponType')
-            ? `with ${weaponLabel(c.keywordOrRace)}`
+          isWeaponFlavoredKeyword(c.keywordOrRace)
+            ? `${weaponPrep} ${weaponLabel(c.keywordOrRace)}`
             : `vs ${enemyLabel(c.keywordOrRace)}`,
         );
         break;
-      case 'enemyTypeAny':
-        clauses.push(
-          c.keywordsOrRaces.every((k) => k.startsWith('WeaponType'))
-            ? `with ${c.keywordsOrRaces.map(weaponLabel).join(' or ')}`
-            : `vs ${c.keywordsOrRaces.map(enemyLabel).join(' or ')}`,
-        );
+      case 'enemyTypeAny': {
+        const collapsed = COLLAPSED_KEYWORD_SETS[collapseKey(c.keywordsOrRaces)];
+        if (collapsed) {
+          const prep =
+            bucket === 'incomingDamageMult'
+              ? 'from'
+              : c.keywordsOrRaces.every(isWeaponFlavoredKeyword)
+                ? 'with'
+                : 'vs';
+          clauses.push(`${prep} ${collapsed}`);
+        } else if (c.keywordsOrRaces.every(isWeaponFlavoredKeyword)) {
+          clauses.push(`${weaponPrep} ${c.keywordsOrRaces.map(weaponLabel).join(' or ')}`);
+        } else {
+          clauses.push(`vs ${c.keywordsOrRaces.map(enemyLabel).join(' or ')}`);
+        }
         break;
+      }
       case 'teammateCount':
         if (c.count === 0) clauses.push('while solo');
         else if (c.orMore) clauses.push(`with ${c.count}+ teammates`);
@@ -270,7 +414,7 @@ function describeDotDamage(m: Modifier, scale: number): string | null {
 
   const extraClauses: string[] = [];
   if (m.durationSec !== undefined) extraClauses.push(`${m.durationSec}s`);
-  const { clause, inactive } = describeConditions(remaining);
+  const { clause, inactive } = describeConditions(remaining, m.bucket);
   if (clause) extraClauses.push(clause);
   if (extraClauses.length > 0) base += ` (${extraClauses.join(', ')})`;
   if (inactive) base += ' — not modeled yet, no effect';
@@ -332,7 +476,7 @@ function describeModifier(m: Modifier, scale: number, labelOverride?: string): s
     return null; // unmodeled bucket — omit rather than show something unverified
   }
 
-  const { clause, inactive } = describeConditions(m.conditions);
+  const { clause, inactive } = describeConditions(m.conditions, m.bucket);
   if (clause) extraClauses.push(clause);
   let base = magnitude;
   if (extraClauses.length > 0) base += ` (${extraClauses.join(', ')})`;

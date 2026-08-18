@@ -62,7 +62,7 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
             {multi && <SectionLabel className="pt-1">{component.damageType}</SectionLabel>}
             <Row label="Base damage" value={formatDamage(componentHit.base)} />
             {contributionRows(component.baseDamage, `bd-${i}`)}
-            <Row label="DMG Bonus Mult" value={`×${component.dbm.result.toFixed(2)}`} />
+            <Row label="Damage Bonus Mult" value={`×${component.dbm.result.toFixed(2)}`} />
             {contributionRows(component.dbm, `dbm-${i}`)}
             {component.isExplosion && (
               <Row muted indent label="Explosive — ignores sneak & body part" value="" />
