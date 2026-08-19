@@ -69813,7 +69813,6 @@
    "MGEF Legendary_AutoStimpakEffect archetype Script — needs override",
    "condition: GetRadsHealthPercentage()=0",
    "condition: GetRadsHealthPercentage()=0.25",
-   "condition: HasActiveMagicEffect(Legendary_AutoStimpakEffect)=1",
    "condition: OR-group[GetItemCount(Stimpak)=0 | GetItemCount(SuperStimpak)=0 | GetItemCount(StimpakDiluted)=0]"
   ],
   "obtainable": true
@@ -72755,7 +72754,6 @@
    "MGEF Legendary_AutoStimpakEffect archetype Script — needs override",
    "condition: GetRadsHealthPercentage()=0",
    "condition: GetRadsHealthPercentage()=0.25",
-   "condition: HasActiveMagicEffect(Legendary_AutoStimpakEffect)=1",
    "condition: OR-group[GetItemCount(Stimpak)=0 | GetItemCount(SuperStimpak)=0 | GetItemCount(StimpakDiluted)=0]"
   ],
   "obtainable": true
@@ -94280,6 +94278,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
+   "condition: HasKeyword(IsAlly)=0",
    "perk RD01_PowerArmor_Reflection: OR-group[HasKeyword(WeaponTypeHandToHand)=1 | HasKeyword(WeaponTypeMelee1H)=1 | HasKeyword(WeaponTypeMelee2H)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | HasKeyword(WeaponTypeUnarmed)=1 | HasActiveMagicEffect(RD01_PowerArmor_ReflectionOnHitTakenEffect)=0]",
    "perk RD01_PowerArmor_Reflection: entry point Apply Combat Hit Spell Taken — not modeled"
   ],

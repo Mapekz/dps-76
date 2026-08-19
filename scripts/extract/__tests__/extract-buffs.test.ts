@@ -86,7 +86,8 @@ describe('deriveEffectDescription', () => {
         perkToApplyDescription: 'Melee weapons weigh 75% less.',
         magnitude: 75,
       }),
-    ).toBe('Melee weapons weigh 75% less.');
+      // Trailing period stripped (house style).
+    ).toBe('Melee weapons weigh 75% less');
   });
 
   it('tier 3: MGEF Name + magnitude when no template or perk text (Grognak 3)', () => {
@@ -96,7 +97,8 @@ describe('deriveEffectDescription', () => {
         archetype: 'Peak Value Modifier',
         magnitude: 25,
       }),
-    ).toBe('Fortify Poison Resist +25');
+      // House style: signed magnitude first, "Fortify" affix stripped.
+    ).toBe('+25 Poison Resist');
   });
 
   it('tier 3: bare MGEF Name when magnitude is 0', () => {

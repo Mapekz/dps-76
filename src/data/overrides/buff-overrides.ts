@@ -128,6 +128,140 @@ export const buffValueOverrides: Readonly<Record<string, Modifier[]>> = {
     },
   ],
 
+  // Mire Magic Moonshine (E08A_Brew_GulpershineFresh 0x00622F8B / Vintage
+  // 0x00655D13): the melee dbm effect (E08A_Gulpershine_GulperSmackerBuff_ME,
+  // STAT_DmgMelee 50/100) is entry-gated on
+  // HasActiveMagicEffect(E08A_GulperSmacker_GulpershineBuff_ME) — a marker
+  // buff only the Gulper Smacker weapon's own enchantment applies. So the
+  // bonus is a weapon-specific synergy, modeled as the Gulper Smacker's
+  // identity keyword (E08A_ma_GulperSmacker, on the WEAP's keyword list)
+  // instead of the untranslatable marker gate (which left the modifier
+  // permanently inactive AND rendered as an unconditional "+50% damage
+  // bonus" — wrong in both directions). SPECIAL/DR entries are unchanged
+  // extracted values, carried only because this overlay replaces the whole
+  // array (verified via esm get 2026-08-19).
+  E08A_Brew_GulpershineFresh: [
+    {
+      id: 'override:E08A_Brew_GulpershineFresh:dbm',
+      source: {
+        kind: 'consumable',
+        formId: '0x00622F8B',
+        edid: 'E08A_Brew_GulpershineFresh',
+        name: 'Mire Magic Moonshine',
+      },
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.5,
+      conditions: [{ kind: 'weaponKeyword', keyword: 'E08A_ma_GulperSmacker', present: true }],
+    },
+    {
+      id: 'override:E08A_Brew_GulpershineFresh:str',
+      source: {
+        kind: 'consumable',
+        formId: '0x00622F8B',
+        edid: 'E08A_Brew_GulpershineFresh',
+        name: 'Mire Magic Moonshine',
+      },
+      bucket: 'specialStrength',
+      op: 'ADD',
+      value: 2,
+      conditions: [],
+    },
+    {
+      id: 'override:E08A_Brew_GulpershineFresh:int',
+      source: {
+        kind: 'consumable',
+        formId: '0x00622F8B',
+        edid: 'E08A_Brew_GulpershineFresh',
+        name: 'Mire Magic Moonshine',
+      },
+      bucket: 'specialIntelligence',
+      op: 'ADD',
+      value: -1,
+      conditions: [],
+    },
+    {
+      id: 'override:E08A_Brew_GulpershineFresh:cha',
+      source: {
+        kind: 'consumable',
+        formId: '0x00622F8B',
+        edid: 'E08A_Brew_GulpershineFresh',
+        name: 'Mire Magic Moonshine',
+      },
+      bucket: 'specialCharisma',
+      op: 'ADD',
+      value: -1,
+      conditions: [],
+    },
+  ],
+  E08A_Brew_GulpershineVintage: [
+    {
+      id: 'override:E08A_Brew_GulpershineVintage:dbm',
+      source: {
+        kind: 'consumable',
+        formId: '0x00655D13',
+        edid: 'E08A_Brew_GulpershineVintage',
+        name: 'Vintage Mire Magic Moonshine',
+      },
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 1,
+      conditions: [{ kind: 'weaponKeyword', keyword: 'E08A_ma_GulperSmacker', present: true }],
+    },
+    {
+      id: 'override:E08A_Brew_GulpershineVintage:dr',
+      source: {
+        kind: 'consumable',
+        formId: '0x00655D13',
+        edid: 'E08A_Brew_GulpershineVintage',
+        name: 'Vintage Mire Magic Moonshine',
+      },
+      bucket: 'damageResistGain',
+      op: 'ADD',
+      value: 25,
+      conditions: [],
+    },
+    {
+      id: 'override:E08A_Brew_GulpershineVintage:str',
+      source: {
+        kind: 'consumable',
+        formId: '0x00655D13',
+        edid: 'E08A_Brew_GulpershineVintage',
+        name: 'Vintage Mire Magic Moonshine',
+      },
+      bucket: 'specialStrength',
+      op: 'ADD',
+      value: 4,
+      conditions: [],
+    },
+    {
+      id: 'override:E08A_Brew_GulpershineVintage:int',
+      source: {
+        kind: 'consumable',
+        formId: '0x00655D13',
+        edid: 'E08A_Brew_GulpershineVintage',
+        name: 'Vintage Mire Magic Moonshine',
+      },
+      bucket: 'specialIntelligence',
+      op: 'ADD',
+      value: -2,
+      conditions: [],
+    },
+    {
+      id: 'override:E08A_Brew_GulpershineVintage:cha',
+      source: {
+        kind: 'consumable',
+        formId: '0x00655D13',
+        edid: 'E08A_Brew_GulpershineVintage',
+        name: 'Vintage Mire Magic Moonshine',
+      },
+      bucket: 'specialCharisma',
+      op: 'ADD',
+      value: -2,
+      conditions: [],
+    },
+  ],
+
   // Live & Love 5 (Magazine_LiveAndLove05_Potion 0x00432CCD): +2 LCK under alcohol
   // (HasMagicEffectKeyword(AlcoholEffect); magnitude script-inferred — docs/assumptions.md).
   Magazine_LiveAndLove05_Potion: [

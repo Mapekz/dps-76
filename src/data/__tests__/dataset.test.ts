@@ -25,12 +25,14 @@ describe('getUnresolvedOverrideKeys', () => {
   });
 });
 
-describe('consumableDescriptionOverrides', () => {
-  it('replaces the ESM-derived fallback description in the Merged Dataset', () => {
+describe('consumable descriptions in the Merged Dataset', () => {
+  it('serves the polished house style, from derivation or override', () => {
     const byId = new Map(getDataset('live').consumables.map((c) => [c.id, c]));
-    // Raw derivation says "XP Bonus +5" — override pins the polished house style.
+    // Mechanically derived (extract-buffs' STAT_XPMult percent rule) — no
+    // override entry; pins the derivation's house style directly.
     expect(byId.get('BobbleHead_Leader_Potion')?.description).toBe('+5% XP');
-    // Raw derivation rendered "+0%" (magnitude lives in a GLOB the template can't see).
+    // Override-pinned: the raw derivation can't see the GLOB the template's
+    // magnitude lives in (Backwoodsman04_Chance_Global).
     expect(byId.get('Magazine_Backwoodsman04_Potion')?.description).toBe(
       '+50% chance of double yield when harvesting plants',
     );

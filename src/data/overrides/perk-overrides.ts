@@ -75,6 +75,50 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
   // docs/assumptions.md "Rejuvenated's low-Rads gate". Ghoul-gated like both
   // abilities themselves (GetIsPlayerGhoul()=0; the card is human-only
   // anyway).
+  // Happy-Go-Lucky (HappyGoLucky01/02, 0x0018E143/0x0018E147): +2/+3 Luck
+  // while under the influence of alcohol. The PERK records extract empty —
+  // the plumbing rides on every alcohol ALCH record as HasPerk-gated,
+  // MGEF-record-conditioned effects (PerkHappyGoLuckyFortifyLuck mag 2 /
+  // PerkHappyGoLucky02FortifyLuck mag 3, verified via `esm get` 2026-08-19).
+  // extract-buffs drops those consumable-side twins
+  // (CONSUMABLE_MGEFS_MODELED_ELSEWHERE) so the card carries its own effect
+  // here — the same source split Live & Love 5 uses (buffValueOverrides).
+  // Rank arrays replace, not stack: rank 2 is +3 total, matching the ESM's
+  // exclusive HasPerk gating (rank 1's effect requires HappyGoLucky02=0).
+  HappyGoLucky: [
+    [
+      {
+        id: 'override:HappyGoLucky:r1:luck',
+        source: {
+          kind: 'perk',
+          formId: '0x0018E143',
+          edid: 'HappyGoLucky01',
+          name: 'Happy-Go-Lucky',
+          rank: 1,
+        },
+        bucket: 'specialLuck',
+        op: 'ADD',
+        value: 2,
+        conditions: [{ kind: 'underAlcoholEffect', value: true }],
+      },
+    ],
+    [
+      {
+        id: 'override:HappyGoLucky:r2:luck',
+        source: {
+          kind: 'perk',
+          formId: '0x0018E147',
+          edid: 'HappyGoLucky02',
+          name: 'Happy-Go-Lucky',
+          rank: 2,
+        },
+        bucket: 'specialLuck',
+        op: 'ADD',
+        value: 3,
+        conditions: [{ kind: 'underAlcoholEffect', value: true }],
+      },
+    ],
+  ],
   Rejuvenated: [
     [
       {

@@ -6923,6 +6923,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -12357,6 +12362,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -13049,6 +13059,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -13122,6 +13137,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -13486,6 +13506,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -13669,6 +13694,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -15392,6 +15422,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -24503,10 +24538,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(ImmuneToPoison)=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "poison"
@@ -24525,8 +24556,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "EXPL ExplosionAlienBlasterPoison Base Weapon Damage Mult 0.1 — superseded by the EXPL's own direct damage above, not consumed",
-   "condition: HasPerk(ImmuneToPoison)=0"
+   "EXPL ExplosionAlienBlasterPoison Base Weapon Damage Mult 0.1 — superseded by the EXPL's own direct damage above, not consumed"
   ],
   "obtainable": true
  },
@@ -25207,10 +25237,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(ImmuneToPoison)=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "poison"
@@ -25229,9 +25255,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: HasPerk(ImmuneToPoison)=0"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -30335,7 +30359,10 @@
    "baseWeaponDamageMult": 0
   },
   "notes": [
-   "MGEF Generic_Weapon_CritPlasmaEffect archetype Script — needs override"
+   "MGEF Generic_Weapon_CritPlasmaEffect archetype Script — needs override",
+   "condition: GetRandomPercent()=70",
+   "condition: IsEssential()=0",
+   "condition: IsProtected()=0"
   ],
   "obtainable": true
  },
@@ -30833,6 +30860,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -42205,6 +42237,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -42865,6 +42902,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -43149,6 +43191,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -43825,6 +43872,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -46226,6 +46278,7 @@
   "hasEnchantments": false,
   "notes": [
    "ActorValues on LGND_Medic — unmapped",
+   "perk Legendary_Weapon_MedicPerk: HasKeyword(ActorTypeTurret)=0",
    "perk Legendary_Weapon_MedicPerk: entry point Apply Friendly Hit Spell — not modeled"
   ],
   "obtainable": true
@@ -46656,10 +46709,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(ImmuneToPoison)=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "poison"
@@ -46678,9 +46727,7 @@
    "dn_UniqueEffectPoisonDamage"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "condition: HasPerk(ImmuneToPoison)=0"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -69141,6 +69188,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on LGND_Medic — unmapped",
+   "perk Legendary_Weapon_MedicPerk: HasKeyword(ActorTypeTurret)=0",
    "perk Legendary_Weapon_MedicPerk: entry point Apply Friendly Hit Spell — not modeled"
   ],
   "obtainable": true
@@ -71833,10 +71881,6 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "HasPerk(ImmuneToPoison)=0"
-     },
-     {
       "kind": "damageTypeScope",
       "types": [
        "poison"
@@ -71855,9 +71899,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: HasPerk(ImmuneToPoison)=0"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -71988,6 +72030,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -72111,6 +72158,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -72513,6 +72565,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -72796,6 +72853,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -72997,6 +73059,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -73379,6 +73446,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -73592,6 +73664,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -73738,6 +73815,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -73905,6 +73987,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -74578,6 +74665,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -74795,6 +74887,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -75285,6 +75382,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -75478,8 +75580,13 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "WornHasKeyword(ma_CombatKnife)=1"
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ma_CombatKnife"
      },
      {
       "kind": "damageTypeScope",
@@ -75552,8 +75659,13 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "WornHasKeyword(ma_BowieKnife)=1"
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ma_BowieKnife"
      },
      {
       "kind": "damageTypeScope",
@@ -75626,8 +75738,13 @@
     "curveScale": 1,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "WornHasKeyword(ma_CultistDagger)=1"
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
+      "kind": "enemyType",
+      "keywordOrRace": "ma_CultistDagger"
      },
      {
       "kind": "damageTypeScope",
@@ -75645,11 +75762,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "condition: WornHasKeyword(ma_BowieKnife)=1",
-   "condition: WornHasKeyword(ma_CombatKnife)=1",
-   "condition: WornHasKeyword(ma_CultistDagger)=1"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -75744,6 +75857,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -75868,6 +75986,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -76005,6 +76128,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -76524,6 +76652,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -77042,6 +77175,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -77371,6 +77509,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -77583,6 +77726,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -78197,7 +78345,10 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "MGEF Generic_Weapon_CritPlasmaEffect archetype Script — needs override"
+   "MGEF Generic_Weapon_CritPlasmaEffect archetype Script — needs override",
+   "condition: GetRandomPercent()=70",
+   "condition: IsEssential()=0",
+   "condition: IsProtected()=0"
   ],
   "obtainable": true
  },
@@ -78293,6 +78444,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -78685,6 +78841,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -78857,6 +79018,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -79032,6 +79198,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -79282,6 +79453,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -79653,6 +79829,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -80048,6 +80229,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -80418,6 +80604,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -80812,6 +81003,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -81467,6 +81663,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -81973,6 +82174,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -82084,6 +82290,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -82194,6 +82405,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -82574,7 +82790,10 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "MGEF Generic_Weapon_CritPlasmaEffect archetype Script — needs override"
+   "MGEF Generic_Weapon_CritPlasmaEffect archetype Script — needs override",
+   "condition: GetRandomPercent()=70",
+   "condition: IsEssential()=0",
+   "condition: IsProtected()=0"
   ],
   "obtainable": true
  },
@@ -85387,6 +85606,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -97457,6 +97681,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -97725,8 +97954,7 @@
   "hasEnchantments": true,
   "notes": [
    "MGEF V96_1_SuppressionEffect_Weapon archetype Script — needs override",
-   "condition: HasKeyword(V96_1_Atrium_FlatwoodsBossKeyword)=0",
-   "condition: HasKeyword(V96_1_Atrium_FlatwoodsBossKeyword)=1"
+   "condition: HasKeyword(V96_1_Atrium_FlatwoodsBossKeyword)=0"
   ],
   "obtainable": true
  },
@@ -97792,8 +98020,7 @@
   "hasEnchantments": true,
   "notes": [
    "MGEF V96_1_SuppressionEffect_Weapon archetype Script — needs override",
-   "condition: HasKeyword(V96_1_Atrium_FlatwoodsBossKeyword)=0",
-   "condition: HasKeyword(V96_1_Atrium_FlatwoodsBossKeyword)=1"
+   "condition: HasKeyword(V96_1_Atrium_FlatwoodsBossKeyword)=0"
   ],
   "obtainable": true
  },
@@ -97859,8 +98086,7 @@
   "hasEnchantments": true,
   "notes": [
    "MGEF V96_1_SuppressionEffect_Weapon archetype Script — needs override",
-   "condition: HasKeyword(V96_1_Atrium_FlatwoodsBossKeyword)=0",
-   "condition: HasKeyword(V96_1_Atrium_FlatwoodsBossKeyword)=1"
+   "condition: HasKeyword(V96_1_Atrium_FlatwoodsBossKeyword)=0"
   ],
   "obtainable": true
  },
@@ -119220,7 +119446,10 @@
    "dn_HasMeleeMod_SpikesLarge"
   ],
   "hasEnchantments": true,
-  "notes": [],
+  "notes": [
+   "condition: GetRandomPercent()=25",
+   "condition: HasPerk(PowerArmorPerk)=1"
+  ],
   "obtainable": false
  },
  {
@@ -119485,6 +119714,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -119522,7 +119756,10 @@
    "DLC04_dn_HasMeleeMod_Rocket"
   ],
   "hasEnchantments": true,
-  "notes": [],
+  "notes": [
+   "condition: GetRandomPercent()=25",
+   "condition: HasPerk(PowerArmorPerk)=1"
+  ],
   "obtainable": false
  },
  {
@@ -120151,7 +120388,10 @@
    "dn_HasMeleeMod_ShockAndStun"
   ],
   "hasEnchantments": true,
-  "notes": [],
+  "notes": [
+   "condition: GetRandomPercent()=25",
+   "condition: HasPerk(PowerArmorPerk)=1"
+  ],
   "obtainable": false
  },
  {
@@ -120436,7 +120676,10 @@
    "dn_HasMeleeMod_ShockAndStun"
   ],
   "hasEnchantments": true,
-  "notes": [],
+  "notes": [
+   "condition: GetRandomPercent()=25",
+   "condition: HasPerk(PowerArmorPerk)=1"
+  ],
   "obtainable": false
  },
  {
@@ -120701,7 +120944,10 @@
    "dn_HasMeleeMod_ShockAndStun"
   ],
   "hasEnchantments": true,
-  "notes": [],
+  "notes": [
+   "condition: GetRandomPercent()=25",
+   "condition: HasPerk(PowerArmorPerk)=1"
+  ],
   "obtainable": false
  },
  {
@@ -122043,6 +122289,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -122177,6 +122428,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -126933,6 +127189,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [

@@ -36,6 +36,7 @@ function mgef(overrides: Partial<MgefInfo> = {}): MgefInfo {
     keywords: [],
     dispelWithKeywords: false,
     detrimental: false,
+    conditionRows: [],
     ...overrides,
   };
 }

@@ -822,6 +822,16 @@ export interface MgefInfo {
    * is the damage amount, not a stat delta.
    */
   detrimental: boolean;
+  /**
+   * The MGEF record's OWN top-level `Conditions` rows. These gate every
+   * application of the effect exactly like effect-entry rows do — Happy-Go-
+   * Lucky's HasPerk rank gates and Gulper Venom's not-the-player poison gate
+   * live here, NOT on the referencing ALCH/SPEL/ENCH entry.
+   * translateMagicEffect merges them ahead of the entry's rows; before
+   * 2026-08-19 they were silently dropped, which emitted every alcohol's
+   * perk-gated Luck bonuses as unconditional modifiers.
+   */
+  conditionRows: RawCondition[];
 }
 
 export async function getMgefInfo(client: EsmSource, formId: string): Promise<MgefInfo> {
@@ -847,6 +857,7 @@ export async function getMgefInfo(client: EsmSource, formId: string): Promise<Mg
     keywords,
     dispelWithKeywords: flagNames.includes('Dispel with Keywords'),
     detrimental: flagNames.includes('Detrimental'),
+    conditionRows: flattenConditionRows(record.fields['Conditions']),
   };
 }
 
@@ -1615,6 +1626,16 @@ export async function translateMagicEffect(
 ): Promise<MgefTranslationResult> {
   const { client, edidByFormId } = deps;
   const mgef = await getMgefInfo(client, effect.mgefFormId);
+
+  // MGEF-record-level Conditions gate the effect the same way entry-level
+  // rows do (see MgefInfo.conditionRows). Merged FIRST so they resolve
+  // through the same CNDF/edid gathering below and also gate the
+  // Script-archetype granted-perk path. Consumable-side effects whose gates
+  // route them to a different app source entirely are dropped upstream
+  // instead (extract-buffs' CONSUMABLE_MGEFS_MODELED_ELSEWHERE).
+  if (mgef.conditionRows.length > 0) {
+    effect = { ...effect, conditionRows: [...mgef.conditionRows, ...effect.conditionRows] };
+  }
 
   // CNDF indirections (IsTrueForConditionForm) pre-fetched for sync inline
   // expansion — extends the caller's shared map when one is passed

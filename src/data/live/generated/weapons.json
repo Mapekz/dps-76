@@ -2021,6 +2021,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -3087,6 +3092,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -5604,6 +5614,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -8306,6 +8321,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -12128,6 +12148,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -18424,6 +18449,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -18621,6 +18651,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -18929,6 +18964,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -19660,6 +19700,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -20186,6 +20231,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -22397,6 +22447,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -23123,6 +23178,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -29277,6 +29337,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -31728,6 +31793,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -38760,6 +38830,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -40009,6 +40084,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -40360,6 +40440,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [
@@ -45597,6 +45682,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -48134,6 +48224,11 @@
     "curveScale": 1,
     "conditions": [
      {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
+     {
       "kind": "damageTypeScope",
       "types": [
        "ballistic"
@@ -50079,6 +50174,11 @@
     },
     "curveScale": 1,
     "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "HasLegendary_Weapon_HealAllies",
+      "present": false
+     },
      {
       "kind": "damageTypeScope",
       "types": [

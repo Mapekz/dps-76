@@ -98,6 +98,9 @@ export const WEAPON_KEYWORD_LABELS: Record<string, string> = {
   WeaponTypePlasmaMine: 'plasma mines',
   ma_Knife: 'knives',
   ma_Switchblade: 'switchblades',
+  ma_CombatKnife: 'combat knives',
+  ma_BowieKnife: 'bowie knives',
+  ma_CultistDagger: 'cultist daggers',
   HasScope: 'scoped weapons',
   HasScopeRecon: 'recon-scoped weapons',
   'POST-DLC04_WeaponTypeSmartGrenade': 'smart grenades',
@@ -108,6 +111,9 @@ export const WEAPON_KEYWORD_LABELS: Record<string, string> = {
   HasLegendary_Weapon_Pounders: "Pounder's legendary weapons",
   CustomItemName_FoundationsVengeance: "Foundation's Vengeance",
   RD01_CustomItemName_Valkyrie: 'the Valkyrie',
+  // Mire Magic Moonshine's synergy gate (buff-overrides.ts) — the WEAP's
+  // model-attach identity keyword, not a WeaponType.
+  E08A_ma_GulperSmacker: 'the Gulper Smacker',
 };
 
 export const ENEMY_KEYWORD_LABELS: Record<string, string> = {
@@ -523,6 +529,45 @@ function specialGroupSignature(m: Modifier): string {
  * Unyielding's Endurance exclusion) — a partial/coincidental subset is left
  * as individual clauses rather than risk a misleading "all SPECIAL" label.
  */
+/**
+ * Sum same-bucket duplicate lines the way the engine's fold does (Σ ADD /
+ * Σ MUL_ADD): Super Chem MK II carries two separate +25 Damage Resist MGEFs
+ * and must read "+50 Damage Resist", not two "+25" lines. Only plain-value
+ * ADD/MUL_ADD modifiers merge, and only when bucket, op, duration,
+ * conditions, and scaling all match; SET and curve-driven modifiers pass
+ * through untouched.
+ */
+function mergeSameBucketModifiers(modifiers: readonly Modifier[]): Modifier[] {
+  const out: Modifier[] = [];
+  const indexBySignature = new Map<string, number>();
+  for (const m of modifiers) {
+    const value =
+      'curve' in m && m.curve !== undefined ? undefined : 'value' in m ? m.value : undefined;
+    if (typeof value !== 'number' || m.op === 'SET') {
+      out.push(m);
+      continue;
+    }
+    const sig = [
+      m.bucket,
+      m.op,
+      m.durationSec ?? '',
+      JSON.stringify(m.conditions),
+      JSON.stringify(m.scaledBy ?? null),
+    ].join('|');
+    const at = indexBySignature.get(sig);
+    if (at === undefined) {
+      indexBySignature.set(sig, out.length);
+      out.push(m);
+    } else {
+      // Only value-carrying modifiers ever receive a signature, so the
+      // previous entry at this index is the same shape.
+      const prev = out[at] as Modifier & { value: number };
+      out[at] = { ...prev, value: prev.value + value } as Modifier;
+    }
+  }
+  return out;
+}
+
 function groupSpecialModifiers(modifiers: readonly Modifier[]): {
   groups: Array<{ label: string; representative: Modifier }>;
   rest: Modifier[];
@@ -596,7 +641,7 @@ export function describeBuffModifiers(
     }
   }
 
-  const { groups, rest } = groupSpecialModifiers(forSynthesis);
+  const { groups, rest } = groupSpecialModifiers(mergeSameBucketModifiers(forSynthesis));
   const parts = [
     ...describeAsParts,
     ...groups.map((g) => describeModifier(g.representative, scale, g.label)),

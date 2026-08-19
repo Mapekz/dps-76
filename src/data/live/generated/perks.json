@@ -3030,6 +3030,7 @@
   ],
   "hasCard": false,
   "notes": [
+   "condition: GetGlobalValue(Burn_Bounty_HeadHuntEffects)=1",
    "condition: GetDead()=0",
    "MGEF Burn_Mutation_UnstableIsotopeSuperScriptEffect archetype Script — needs override"
   ]
@@ -4310,12 +4311,7 @@
       "bucket": "wholeDamage",
       "op": "MUL_ADD",
       "value": 1,
-      "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
-       }
-      ]
+      "conditions": []
      }
     ]
    }
@@ -4352,10 +4348,6 @@
       "conditions": [
        {
         "kind": "unresolved",
-        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
-       },
-       {
-        "kind": "unresolved",
         "raw": "GetCombatGroupMemberCount()=2"
        }
       ]
@@ -4373,10 +4365,6 @@
       "op": "MUL_ADD",
       "value": 0.5,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
-       },
        {
         "kind": "unresolved",
         "raw": "GetCombatGroupMemberCount()=3"
@@ -4398,10 +4386,6 @@
       "conditions": [
        {
         "kind": "unresolved",
-        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
-       },
-       {
-        "kind": "unresolved",
         "raw": "GetCombatGroupMemberCount()=4"
        }
       ]
@@ -4421,10 +4405,6 @@
       "conditions": [
        {
         "kind": "unresolved",
-        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
-       },
-       {
-        "kind": "unresolved",
         "raw": "GetCombatGroupMemberCount()=5"
        }
       ]
@@ -4442,10 +4422,6 @@
       "op": "MUL_ADD",
       "value": 2,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
-       },
        {
         "kind": "unresolved",
         "raw": "GetCombatGroupMemberCount()=6"
@@ -4487,10 +4463,6 @@
       "conditions": [
        {
         "kind": "unresolved",
-        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
-       },
-       {
-        "kind": "unresolved",
         "raw": "GetCombatGroupMemberCount()=4"
        }
       ]
@@ -4508,10 +4480,6 @@
       "op": "MUL_ADD",
       "value": -0.7,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
-       },
        {
         "kind": "unresolved",
         "raw": "GetCombatGroupMemberCount()=5"
@@ -4533,10 +4501,6 @@
       "conditions": [
        {
         "kind": "unresolved",
-        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
-       },
-       {
-        "kind": "unresolved",
         "raw": "GetCombatGroupMemberCount()=6"
        }
       ]
@@ -4556,10 +4520,6 @@
       "conditions": [
        {
         "kind": "unresolved",
-        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
-       },
-       {
-        "kind": "unresolved",
         "raw": "GetCombatGroupMemberCount()=2"
        }
       ]
@@ -4577,10 +4537,6 @@
       "op": "MUL_ADD",
       "value": -0.25,
       "conditions": [
-       {
-        "kind": "unresolved",
-        "raw": "GetIsReference(<unresolved:0x00000014>)=1"
-       },
        {
         "kind": "unresolved",
         "raw": "GetCombatGroupMemberCount()=3"
@@ -4965,7 +4921,7 @@
       "conditions": [
        {
         "kind": "unresolved",
-        "raw": "HasActiveMagicEffect(abRadHogFury_Visual_Effect)=1"
+        "raw": "HasActiveMagicEffect(abRadHogFury_Visual_Effect) Equal To 1"
        }
       ]
      }
@@ -5940,13 +5896,20 @@
       "bucket": "reloadSpeed",
       "op": "ADD",
       "value": 0.4,
-      "conditions": []
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "HasKeyword(MPE_NotSwiftFooted)=0"
+       }
+      ]
      }
     ]
    }
   ],
   "hasCard": false,
-  "notes": []
+  "notes": [
+   "condition: HasKeyword(MPE_NotSwiftFooted)=0"
+  ]
  },
  {
   "family": "DailyOps_MutationPerk_ToxicBlood",

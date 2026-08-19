@@ -91,13 +91,19 @@ export const hiddenConsumableIds: ReadonlySet<string> = new Set<string>([
  * "-<mag>% food/drink disease chance").
  */
 export const consumableDescriptionOverrides: Readonly<Record<string, string>> = {
+  // NOTE: plain "+N Stat" lines need no entry — extract-buffs'
+  // deriveEffectDescription emits house style directly (lead with the signed
+  // magnitude, Fortify/Food affixes stripped, STAT_XPMult as "+N% XP", no
+  // trailing period). Entries here cover only what the mechanical derivation
+  // can't know: percent-vs-points on odd AVs, GLOB-carried magnitudes it
+  // can't see, multi-effect consolidation, and prose recasing. The dataset
+  // reviewer (getUnresolvedOverrideKeys' no-op check) flags any entry the
+  // derivation catches up to — delete those rather than keeping duplicates.
+
   // ── Bobbleheads ────────────────────────────────────────────────────────
   // Bobblehead_CapsPerk description: "Double likelihood to get a better
   // caps stash" — no flat %, it doubles the better-stash roll.
   BobbleHead_Caps_Potion: '2x chance of a better caps stash',
-  // Bobblehead_FortifyXPBonus_Effect: AV STAT_XPMult, magnitude 5 (percent
-  // mult — user-confirmed +5% into the XP bonus multiplier).
-  BobbleHead_Leader_Potion: '+5% XP',
   // MGEF template "<+MAG> LOCKPICK SWEETSPOT" de-shouted. STAT_Lockpicking
   // is the minigame sweet-spot AV (NOT the STAT_LockpickingTier curve input).
   BobbleHead_LockPicking_Potion: '+30 lockpick sweet spot',
@@ -115,8 +121,6 @@ export const consumableDescriptionOverrides: Readonly<Record<string, string>> = 
   // Magazine_FortifyHealRate_Effect +1 gated on IsSwimming, plus
   // Magazine_FortifyWaterBreathing.
   Magazine_AwesomeTales03_Potion: '+1 Heal Rate while swimming; breathe underwater',
-  Magazine_AwesomeTales06_Potion: '+0.2 Heal Rate',
-  Magazine_AwesomeTales09_Potion: '+15 Poison Resist',
   Magazine_AwesomeTales12_Potion: '-30% disease chance',
   Magazine_AwesomeTales13_Potion: '+30% RadAway effectiveness',
 
@@ -139,11 +143,8 @@ export const consumableDescriptionOverrides: Readonly<Record<string, string>> = 
   // Magazine_GrognakTheBarbarian02Perk: detection entry points (47/48) —
   // always on, no sneaking clause (contrast the Sneak bobblehead above).
   Magazine_GrognakTheBarbarian02_Potion: '20% harder to detect',
-  Magazine_GrognakTheBarbarian03_Potion: '+25 Poison Resist',
   Magazine_GrognakTheBarbarian06_Potion: '-75% melee weapon weight',
   Magazine_GrognakTheBarbarian07_Potion: '-50% melee weapon condition loss',
-  Magazine_GrognakTheBarbarian08_Potion: '+25 Cryo Resist',
-  Magazine_GrognakTheBarbarian09_Potion: '+25 Carry Weight',
 
   // ── Guns and Bullets ───────────────────────────────────────────────────
   // Magazine_GunsAndBullets05Perk: "+50% Components From Scrapped Weapons".
@@ -157,15 +158,11 @@ export const consumableDescriptionOverrides: Readonly<Record<string, string>> = 
   Magazine_LiveAndLove08_Potion: '+5% XP (with 1+ teammates)',
 
   // ── Scouts' Life ───────────────────────────────────────────────────────
-  // Magazine_FortifyResistRadIngestion_Effect +30 (rad-resist points against
-  // ingested rads — not a percent AV, so no % here).
-  Magazine_ScoutsLife01_Potion: '+30 Rad Resist against radiation from food and drink',
   Magazine_ScoutsLife03_Potion: '-10% weight of all items',
   Magazine_ScoutsLife04_Potion: '+100% bleedout time',
   Magazine_ScoutsLife05_Potion: '-80% disease chance from combat',
   Magazine_ScoutsLife06_Potion: '-30% hunger and thirst gain',
   Magazine_ScoutsLife08_Potion: '-20% sprint AP cost',
-  Magazine_ScoutsLife09_Potion: '+25 Fire Resist',
   Magazine_ScoutsLife10_Potion: '-30% item condition loss',
 
   // ── Tesla Science ──────────────────────────────────────────────────────
@@ -188,6 +185,58 @@ export const consumableDescriptionOverrides: Readonly<Record<string, string>> = 
   Magazine_USCovertOps06_Potion: '-50% noise while sneaking',
   Magazine_USCovertOps07_Potion: '-50% enemy player VATS accuracy',
   Magazine_USCovertOps09_Potion: '+50% Stealth Boy duration',
+
+  // ── Non-collector consumables (2026-08-19 pass) ────────────────────────
+  // Items whose only effects are unmodeled, where the mechanical derivation
+  // (extract-buffs' deriveEffectDescription) still reads like game plumbing.
+
+  // Firecracker Whiskey family: game text "Melee Attacks trigger Self
+  // Immolation." / "Ballistic and Melee Attacks deal fire DMG." — recased.
+  Brew_FirecrackerWhiskeyFresh: 'melee attacks trigger self-immolation',
+  Brew_FirecrackerWhiskeyOldFashioned: 'melee attacks trigger self-immolation',
+  Brew_FirecrackerWhiskeyManhattan: 'ballistic and melee attacks deal fire damage',
+  Brew_FirecrackerWhiskeyVintage:
+    'ballistic and melee attacks deal fire damage; melee attacks trigger self-immolation',
+
+  // Lead Champagne: Alcohol_ResistRadiationExpose mag 250 +
+  // LeadChampagne_IncreaseSprintAP (Detrimental on STAT_SprintAPCost, mag 10
+  // — cheaper sprint, same stat as Scouts' Life 8). The MGEF's Name is the
+  // truncated "Increase", hence the override.
+  Brew_LeadChampagneFresh: '+250 Rad Resist; -10% sprint AP cost',
+  Brew_LeadChampagneMimosa: '+250 Rad Resist; -10% sprint AP cost',
+
+  // Tick Blood Tequila family: TickbloodTequila_FoodRegenEffect ("Melee
+  // attacks replenish hunger") / _HealthRegenEffect ("Melee Attacks Restore
+  // Health") / _DiseaseChanceEffect mag 1 ("Disease Chance On Hit") —
+  // recased, effects first, downside last.
+  Brew_TickBloodTequilaFresh: 'melee attacks replenish hunger; +1% disease chance when hit',
+  Brew_TickBloodTequilaSunrise: 'melee attacks replenish hunger; +1% disease chance when hit',
+  Brew_TickBloodTequilaMargarita: 'melee attacks restore health; +1% disease chance when hit',
+  Brew_TickBloodTequilaVintage:
+    'melee attacks restore health and replenish hunger; +1% disease chance when hit',
+
+  // White Russian: game text "-25% Limb DMG taken." — recased.
+  Brew_WhiteRussian: '-25% limb damage taken',
+
+  // RadAway: game text "Remove 60/30 points of Radiation." — house style
+  // leads with the signed magnitude.
+  RadAway: '-60 Rads',
+  RadAwayDiluted: '-30 Rads',
+
+  // Rad-X: game text "+300 Rad Resist, Mutations Suppressed." split into
+  // clauses; the Resist Radiation Ingestion effect (mag 75) keeps the
+  // Scouts' Life 1 phrasing.
+  RadX: '+300 Rad Resist; suppresses mutations; +75 Rad Resist against radiation from food and drink',
+
+  // Nuka-Colas with the Bottlecap Collector effect (a bottlecap on drink):
+  // numbers first, flavor last.
+  DLC04_NukaCola_Orange: '+15 HP/s; restores 10 AP; +50 Rad Resist; grants a bottlecap',
+  NukaColaCranberry: '+4 HP/s; +2% XP; grants a bottlecap',
+
+  // Restorative Venison and Tato Stew: StimpakRestoreHealth (the actual
+  // stimpak heal effect, Magic Item Description is just "HP") +
+  // FortifyHealRateFood 0.125.
+  VenisonAndTatoStew_Stimpak: 'heals like a stimpak; +0.125 Heal Rate',
 };
 
 export const forceVisibleConsumableIds: ReadonlySet<string> = new Set<string>([

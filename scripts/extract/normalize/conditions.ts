@@ -139,6 +139,23 @@ const UNIQUE_SELF_GATE_KEYWORDS = new Set([
   'RD01_CustomItemName_Valkyrie',
 ]);
 
+/**
+ * Enemy-side HasKeyword(x)=0 exclusion markers consumed under the same
+ * "generic hostile target is assumed vulnerable" reading as Viper's
+ * HasPerk(ImmuneToPoison)=0 (docs/assumptions.md): weapon bleed/poison/
+ * disintegrate DoT MGEFs gate on the struck target NOT being immune
+ * (modWeapBleedEffect's BleedImmune row) or NOT being a teammate (IsAlly).
+ * These surfaced 2026-08-19 when MGEF-record-level Conditions started
+ * translating; leaving them unresolved would have deactivated every
+ * intrinsic bleed DoT.
+ */
+const TARGET_EXCLUSION_KEYWORDS = new Set([
+  'BleedImmune',
+  'NoDisintegrate',
+  'ImmuneParalysis',
+  'IsAlly',
+]);
+
 function isWeaponTypeKeyword(edid: string): boolean {
   // HasLegendary_* keywords are ADDed by the legendary OMOD itself, so a
   // HasKeyword self-gate on one auto-passes once the mod is equipped
@@ -175,6 +192,14 @@ function translateSingle(
   const cmp = typeof rawCmp === 'string' ? ctx.globalValues?.get(rawCmp) : rawCmp;
   const wants = cmp === 1;
   const edid = ctx.edidByFormId.get(param) ?? param;
+  // Which actor a row's Run On names. Plain contexts: 'Target' is the enemy.
+  // Contact-delivery walks (ctx.subjectIsTarget — on-hit procs) invert the
+  // frame: Subject IS the struck enemy, and a 'Target' row refers back to the
+  // WIELDER (modWeapBleedEffect's WornHasKeyword(HasLegendary_Weapon_
+  // HealAllies)=0 — "the attacker has no Heal Allies mod equipped").
+  const onEnemySide = ctx.subjectIsTarget
+    ? cond['Run On'] !== 'Target'
+    : cond['Run On'] === 'Target';
 
   switch (fn) {
     case 'HasPerk': {
@@ -193,7 +218,16 @@ function translateSingle(
       }
       // Viper's gates on the target lacking ImmuneToPoison — a generic target
       // is assumed vulnerable, so the row is consumed (docs/assumptions.md).
-      if (cond['Run On'] === 'Target' && edid === 'ImmuneToPoison' && !wants) return null;
+      // `onEnemySide` (not a literal Run On check) so poison DoT MGEFs'
+      // record-level twins — spelled Run On: Subject inside contact-delivery
+      // walks — get the same reading.
+      if (onEnemySide && edid === 'ImmuneToPoison' && !wants) return null;
+      // The engine's "wearer is in power armor" marker perk — same gate the
+      // ArmorTypePower keyword expresses, so reuse that condition kind
+      // (wielder-side rows only; an enemy-in-PA gate has no kind yet).
+      if (edid === 'PowerArmorPerk' && !onEnemySide) {
+        return { kind: 'inPowerArmor', value: wants };
+      }
       // Class Freak tier gates on mutation penalty perks (Grounded's Mod
       // Weapon Attack Damage tiers): =1 → rank ≥ N, =0 → rank < N. The rows
       // AND together into exact-tier ranges — no OR-group handling needed.
@@ -235,7 +269,24 @@ function translateSingle(
         : { kind: 'teammateCount', count: 0 };
     case 'HasKeyword':
     case 'WornHasKeyword': {
-      if (cond['Run On'] === 'Target' || isEnemyKeyword(edid)) {
+      // Wielder-side weapon-flavored rows first: in a contact-delivery walk
+      // a 'Target' row names the wielder (see onEnemySide), so
+      // modWeapBleedEffect's HasLegendary_Weapon_HealAllies=0 row lands here
+      // as a present:false weaponKeyword (effective-weapon merges the
+      // legendary omod's added keywords), not on the enemy path below.
+      if (!onEnemySide && (isWeaponTypeKeyword(edid) || UNIQUE_SELF_GATE_KEYWORDS.has(edid))) {
+        return { kind: 'weaponKeyword', keyword: edid, present: wants };
+      }
+      if (onEnemySide || isEnemyKeyword(edid)) {
+        if (!wants) {
+          // Exclusion rows on the enemy side: known immunity/teammate
+          // markers are consumed under the generic-hostile-target
+          // assumption (the reading Viper's ImmuneToPoison row gets above);
+          // enemyType carries no negation, so anything else stays
+          // unresolved rather than silently inverting into a "vs X" gate.
+          if (TARGET_EXCLUSION_KEYWORDS.has(edid)) return null;
+          return { kind: 'unresolved', raw: `${fn}(${edid})=${cond['Comparison Value']}` };
+        }
         return { kind: 'enemyType', keywordOrRace: edid };
       }
       if (isWeaponTypeKeyword(edid)) {
@@ -514,6 +565,38 @@ function translateSingle(
         raw: `IsTrueForConditionForm(${edid})=${cond['Comparison Value']}`,
       };
     }
+    case 'HasActiveMagicEffect': {
+      // "Apply only while <effect> is NOT already active" — an anti-restack /
+      // exclusivity guard (Nukashine's fresh-vs-vintage lockout, NukaCola
+      // vaccines' self-guard spelled "Not Equal To 1"). A steady-state
+      // calculator has no re-application moment: selecting the source IS the
+      // effect being active, so the guard is consumed. Cross-rank exclusivity
+      // spellings (Happy-Go-Lucky rank 1 requiring rank 2's effect inactive)
+      // always ride with HasPerk rows carrying the same exclusion, so nothing
+      // is lost. A positive dependency ("only while X IS active") has no
+      // condition kind and stays unresolved.
+      const notActive =
+        (/^equal to$/i.test(cond.Operator ?? '') && cmp === 0) ||
+        (/^not equal to$/i.test(cond.Operator ?? '') && cmp === 1) ||
+        // Auto Stim's spelling (Legendary_AutoStimpakEffect "Less Than 1").
+        (/^less than$/i.test(cond.Operator ?? '') && cmp === 1);
+      if (notActive) return null;
+      return {
+        kind: 'unresolved',
+        raw: `HasActiveMagicEffect(${edid}) ${cond.Operator} ${rawCmp}`,
+      };
+    }
+    case 'GetIsReference':
+      // On PlayerRef this is GetIsPlayer by another name — same two readings.
+      // The =0-on-Subject case is Gulper Venom's DamageHealthPoison MGEF
+      // gate: the poison DoT only fires when the subject ISN'T the player, so
+      // eaten as a consumable it never damages (or buffs) anyone — 'inactive'
+      // correctly drops what used to extract as a phantom player DoT buff.
+      if (edid === 'PlayerRef' || param === '0x00000014') {
+        if (ctx.subjectIsTarget || cond['Run On'] === 'Target') return wants ? 'inactive' : null;
+        return wants ? null : 'inactive';
+      }
+      return { kind: 'unresolved', raw: `GetIsReference(${edid})=${cond['Comparison Value']}` };
     case 'GetWeaponAnimType':
       // WEAP Data."Weapon Type" anim enum. Only ≤ occurs in data (Martial
       // Artist/Swinger ≤6 = melee/unarmed; the FO76 roster has no anim types

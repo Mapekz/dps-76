@@ -20,7 +20,8 @@ import {
 
 /** Fixture-friendly inputs for {@link deriveEffectDescription}. */
 export interface EffectDescriptionInput {
-  mgefName: string;
+  /** The MGEF record's actual Name field — NOT the editor-id fallback. */
+  mgefName?: string;
   magicItemDescription?: string | null;
   archetype: string;
   perkToApplyDescription?: string | null;
@@ -31,6 +32,20 @@ function formatMagnitude(mag: number): string {
   return Number.isInteger(mag) ? String(mag) : String(mag);
 }
 
+/**
+ * Tier-3 stat names rewritten into the app's house vocabulary
+ * (src/data/overrides/consumable-corrections.ts): the ESM names the same
+ * stat several ways ("Radiation Resistance" / "Radiation Resist" vs the
+ * card's "Rad Resist"), and "Health Regen" is the Heal Rate AV
+ * (FortifyHealRateFood), matching the collector items' "+0.2 Heal Rate".
+ */
+const STAT_NAME_REWRITES: Record<string, string> = {
+  'Radiation Resistance': 'Rad Resist',
+  'Radiation Resist': 'Rad Resist',
+  'Health Regen': 'Heal Rate',
+  'Resist Radiation Ingestion': 'Rad Resist against radiation from food and drink',
+};
+
 /** Replace `<mag>` / `<+MAG>` tokens in an MGEF Magic Item Description template. */
 export function substituteMagTemplate(template: string, magnitude: number): string {
   const magStr = formatMagnitude(magnitude);
@@ -38,27 +53,72 @@ export function substituteMagTemplate(template: string, magnitude: number): stri
 }
 
 /**
- * Per-effect game item text for bobbleheads/magazines: Magic Item Description
- * (with magnitude substitution) → Script perk Description → MGEF Name (+mag).
+ * Per-effect game item text: Magic Item Description (with magnitude
+ * substitution) → Script perk Description → MGEF Name (+mag). House style
+ * (src/data/overrides/consumable-corrections.ts): tier 3 leads with the
+ * signed magnitude ("+30 Carry Weight"), dropping the game's "Fortify …"/
+ * "… Food" stat-plumbing affixes; no line ends with a period.
  */
 export function deriveEffectDescription(input: EffectDescriptionInput): string | undefined {
   const { mgefName, magicItemDescription, archetype, perkToApplyDescription, magnitude } = input;
 
-  if (magicItemDescription) {
-    return substituteMagTemplate(magicItemDescription, magnitude);
+  // A template magnitude that substitutes to zero renders as noise ("Restore
+  // 0 HP / second", "+0 Health Regen" — real magnitudes live in a GLOB or
+  // curve this path can't see). Suppress; hand overrides fill the real value.
+  if (magicItemDescription && /<\+?mag>/i.test(magicItemDescription) && magnitude === 0) {
+    return undefined;
   }
 
-  if (archetype === 'Script' && perkToApplyDescription) {
-    return perkToApplyDescription;
+  const text = magicItemDescription
+    ? substituteMagTemplate(magicItemDescription, magnitude)
+    : archetype === 'Script' && perkToApplyDescription
+      ? perkToApplyDescription
+      : undefined;
+  if (text !== undefined) {
+    // Unsubstituted game-text tokens (RadAway's "+50 <ITEM1.ABBR>") aren't
+    // renderable outside the game UI — drop the part rather than leak markup.
+    if (/<[^>]*>/.test(text)) return undefined;
+    return (
+      text
+        .replace(/\.\s*$/, '')
+        // The standard food-heal template, restyled to lead with the number.
+        .replace(/^Restore ([\d.]+) HP \/ second$/, '+$1 HP/s')
+        // Tier-1 spellings of stats the tier-3 rewrites already normalize.
+        .replace(/\bHealth Regen\b/, 'Heal Rate')
+        .replace(/^Breathe Underwater$/, 'breathe underwater')
+    );
   }
 
   if (mgefName) {
-    if (magnitude > 0) return `${mgefName} +${formatMagnitude(magnitude)}`;
-    return mgefName;
+    const cleaned = mgefName
+      .replace(/^Food: /, '')
+      .replace(/^Fortify /, '')
+      .replace(/ Food$/, '');
+    // STAT_XPMult magnitudes are percent (mag 5 = +5% XP — verified against
+    // the Leader bobblehead, consumable-corrections.ts).
+    if (cleaned === 'XP Bonus' && magnitude > 0) return `+${formatMagnitude(magnitude)}% XP`;
+    // Flat one-time AP restore, not a rate — phrase it, don't fake a stat.
+    if (cleaned === 'Restore Action Points' && magnitude > 0) {
+      return `restores ${formatMagnitude(magnitude)} AP`;
+    }
+    const stat = STAT_NAME_REWRITES[cleaned] ?? cleaned;
+    if (magnitude > 0) return `+${formatMagnitude(magnitude)} ${stat}`;
+    return stat;
   }
 
   return undefined;
 }
+
+/**
+ * MGEF edids whose derived text is survival/bookkeeping plumbing (see the
+ * skip site in resolveEffectDescription): the hunger/thirst restore meters
+ * and their GHL_ ghoul twins, disease-vector markers, addiction-odds rolls,
+ * rads-from-eating, per-item `*_Duration` markers, and the fall-speed joke
+ * effects (Lead Champagne). Deliberately NOT a bare `SURV_` prefix —
+ * SURV_IncreaseDiseaseResistance_Food_Effect and friends are real buffs.
+ */
+const DESCRIPTION_PLUMBING_MGEF_RE =
+  /^(?:SURV_Food_Effect$|SURV_Drink_Effect$|SURV_AddHunger|SURV_AddThirst|SURV_DiseaseVector|GHL_SURV_|AddictionOdds)|^DamageRadiationEating$|_Duration$|_AdjustFallSpeed$/;
 
 async function resolveEffectDescription(
   client: EsmSource,
@@ -75,6 +135,18 @@ async function resolveEffectDescription(
     return undefined;
   }
 
+  // Survival/bookkeeping plumbing — hunger/thirst/duration meters, addiction
+  // odds, rads-from-eating, ghoul survival twins — is metadata the in-game
+  // card renders separately, not a buff worth a description line. Effects
+  // whose modifiers are deliberately skipped (CONSUMABLE_MGEFS_MODELED_
+  // ELSEWHERE) must not resurface as description text either.
+  if (
+    DESCRIPTION_PLUMBING_MGEF_RE.test(mgef.edid) ||
+    CONSUMABLE_MGEFS_MODELED_ELSEWHERE[mgef.edid] !== undefined
+  ) {
+    return undefined;
+  }
+
   const magicItemDescription = record.fields['Magic Item Description'] as string | null | undefined;
 
   let perkToApplyDescription: string | null = null;
@@ -87,12 +159,29 @@ async function resolveEffectDescription(
     }
   }
 
+  // A GLOB-valued Magnitude overrides the flat float, same as in
+  // translateMagicEffect — RestoreHealthFood-style effects carry 0 flat and
+  // the real value in SURV_Food_Heal_Mag_* Globals; without this every such
+  // line either reads "+0" or gets zero-suppressed.
+  let magnitude = effect.magnitude;
+  if (effect.magnitudeGlobal) {
+    try {
+      const glob = await client.get(effect.magnitudeGlobal);
+      const value = glob.fields['Value'];
+      if (typeof value === 'number') magnitude = value;
+    } catch {
+      // keep the flat magnitude
+    }
+  }
+
   return deriveEffectDescription({
-    mgefName: mgef.name,
+    // The record's actual Name only — getMgefInfo's name falls back to the
+    // editor id, and a raw edid ("GHL_SURV_Chem_Effect") is not prose.
+    mgefName: (record.fields['Name'] as string | undefined) || undefined,
     magicItemDescription,
     archetype: mgef.archetype,
     perkToApplyDescription,
-    magnitude: effect.magnitude,
+    magnitude,
   });
 }
 
@@ -210,6 +299,30 @@ const MUTATION_NEGATIVE_EFFECT_KEYWORD = 'AbilityTypeMutation_NegativeEffect';
  * Skipped by edid so they don't surface as spurious "no route" notes.
  */
 const ADDICTION_BOOKKEEPING_MGEF_EDIDS = new Set(['abAddictionCount', 'CA_AddictionEffect']);
+
+/**
+ * Consumable-side MGEFs whose effect belongs to a DIFFERENT app source —
+ * emitting them here would double-count it. All three ride on every (or
+ * nearly every) alcohol ALCH record, gated by MGEF-record-level Conditions
+ * (verified via `esm get` 2026-08-19; each is also flagged "Hide in UI", so
+ * the in-game drink card omits them too):
+ * - PerkHappyGoLuckyFortifyLuck (+2) / PerkHappyGoLucky02FortifyLuck (+3):
+ *   the Happy-Go-Lucky perk card's Luck-while-drunk bonus, HasPerk-gated on
+ *   HappyGoLucky01/02. Modeled on the card itself via
+ *   extraPerkModifiers.HappyGoLucky (src/data/overrides/perk-overrides.ts)
+ *   with an underAlcoholEffect condition — same split as Live & Love 5.
+ * - FortifyLuckMagazineLiveLove (+1): legacy companion-gated variant
+ *   (HasPerk PerkMagLiveNLove05 AND GetGlobalValue(PlayerHasActiveCompanion)
+ *   > 0 — an FO4 leftover; 76 has no companions, the GLOB stays 0). Live &
+ *   Love 5's real +2-Luck-under-alcohol is already carried by
+ *   buffValueOverrides (src/data/overrides/buff-overrides.ts).
+ */
+const CONSUMABLE_MGEFS_MODELED_ELSEWHERE: Record<string, string> = {
+  PerkHappyGoLuckyFortifyLuck: 'modeled by Happy-Go-Lucky rank 1 (extraPerkModifiers)',
+  PerkHappyGoLucky02FortifyLuck: 'modeled by Happy-Go-Lucky rank 2 (extraPerkModifiers)',
+  FortifyLuckMagazineLiveLove:
+    'dead companion-gated variant (Live & Love 5 itself is modeled in buffValueOverrides)',
+};
 
 /**
  * Same-bonus collision key for one dispel-flagged effect: its resolved
@@ -402,12 +515,17 @@ async function buildConsumable(
   // after withSource assigns them.
   const scalableIndexes = new Set<number>();
   for (const effect of effects) {
+    const mgef = await getMgefInfo(client, effect.mgefFormId);
+    const elsewhere = CONSUMABLE_MGEFS_MODELED_ELSEWHERE[mgef.edid];
+    if (elsewhere) {
+      notes.add(`${record.editor_id}: MGEF ${mgef.edid} skipped — ${elsewhere}`);
+      continue;
+    }
     const result = await translateMagicEffect(
       { client, routes, edidByFormId, timedIsActive: true, noteUnroutedAvs: true },
       effect,
     );
     if (result.modifiers.length > 0) {
-      const mgef = await getMgefInfo(client, effect.mgefFormId);
       const kwEdids = await Promise.all(mgef.keywords.map((k) => client.resolveEdid(k)));
       if (kwEdids.some((k) => FOOD_SCALE_KEYWORD_EDIDS.has(k))) {
         for (let i = 0; i < result.modifiers.length; i++) scalableIndexes.add(fragments.length + i);
@@ -434,8 +552,14 @@ async function buildConsumable(
     .filter((_, i) => scalableIndexes.has(i))
     .map((m) => m.id);
 
+  // ESM-derived fallback text for the app's `describeBuffModifiers(...) ??
+  // description` chain. Collector categories always derive (their pick lists
+  // are complete, so many members have no modeled effect); other categories
+  // derive only when nothing is modeled — a modifier-less food/chem/drink
+  // would otherwise render a bare name (Firecracker Whiskey's accuracy buff,
+  // Rad-X's Rad Resist — real effects this engine doesn't model yet).
   const description =
-    category === 'bobblehead' || category === 'magazine'
+    category === 'bobblehead' || category === 'magazine' || fragments.length === 0
       ? await deriveConsumableItemDescription(client, effects)
       : undefined;
 
@@ -526,38 +650,36 @@ export async function extractBuffs(client: EsmSource): Promise<ExtractBuffsResul
   }
 
   // Final consumables list: categorized records with ≥1 routed modifier
-  // (HealthBonus→maxHealth already routes, so flat-HP food stays relevant;
-  // rads/hunger/disease effects have no route and correctly drop out) — OR a
-  // suppressor: an addiction plus at least one dispel-flagged effect.
+  // (HealthBonus→maxHealth already routes, so flat-HP food stays relevant) —
+  // OR at least one dispel-flagged effect — OR a collector category.
   //
-  // The suppressor clause matters because taking a chem SUPPRESSES its own
-  // addiction, which drops a Junkie's stack. A 0-modifier chem is therefore
-  // still a real damage lever, just a negative one: Med-X buffs nothing this
-  // engine models, but taking it costs a Med-X-addicted Junkie's build a stack.
-  // Gating on modifiers alone dropped those records entirely, leaving their
-  // addictions in the catalog (below) with an empty `causedBy` and no way to
-  // select the chem that suppresses them.
+  // `dispelKeys` (one entry per dispel-flagged MGEF — i.e. per actual named
+  // buff the game applies and tracks for stacking) is the flood guard that
+  // separates "applies a real effect this engine just doesn't model yet"
+  // (Rad-X's Rad Resist, cooked meals' rad reduction, Firecracker Whiskey's
+  // accuracy — kept, shown with the ESM-derived description + "no effect
+  // yet" badge) from hunger/rads-only look-alikes (raw meats, junk food,
+  // waters, the unfermented Brew_*Ferm mash records — still excluded; the
+  // pickers must not flood with items whose in-game card is only
+  // Food/HP/Rads). Widened from the old addiction-suppressor-only clause
+  // (2026-08-19, "add no-DPS-impact consumables"): a suppressor (Med-X
+  // costing a Junkie's stack) is now just the addictive subset of this rule.
   //
-  // `dispelKeys` is what separates a suppressor from a look-alike. It holds one
-  // entry per dispel-flagged MGEF — i.e. per actual chem/alcohol effect applied.
-  // Med-X has one (StackMedXDamageResist) and Nukashine has one (AlcoholEffect),
-  // so both really do apply the effect that suppresses. The unfermented mash
-  // records (Brew_*Ferm) and SCORE boosters merely *reference* an addiction while
-  // applying only rads/disease/thirst — no dispel-flagged effect, so nothing to
-  // suppress. Without this clause they'd all land in the brew picker as no-ops.
+  // Unobtainable records with real modifiers STILL make this list (kept in
+  // the JSON, hidden app-side) — obtainability and the damage gate are
+  // independent filters, same as weapons/omods.
   //
-  // Unobtainable records with real modifiers STILL make this list (kept in the
-  // JSON, hidden app-side) — obtainability and the damage gate are independent
-  // filters, same as weapons/omods.
-  //
-  // Bobbleheads and magazines bypass the modifier gate: they are collector
-  // categories whose pick lists must be complete (Bobblehead: Lockpick/Caps,
-  // Grognak 2/3/6/7/9, …). A no-effect one still lands in the app with the
-  // "no effect yet" badge. Food/drink/chem exclusions are unchanged — hunger-
-  // only foods must not flood those pickers.
+  // Bobbleheads and magazines bypass both gates: collector categories whose
+  // pick lists must be complete (Bobblehead: Lockpick/Caps, Grognak 2/3/6/7/9,
+  // …). A no-effect one still lands in the app with the "no effect yet" badge.
+  // The dispel clause additionally requires an addiction (a suppressor is a
+  // Junkie's lever even with nothing else) or a derived description (Winner's
+  // Cup carries a dispel-flagged Duration marker and nothing else — a bare
+  // name row helps nobody).
   const isRelevant = (b: GeneratedBuff): boolean =>
     b.modifiers.length > 0 ||
-    (b.addiction !== undefined && (b.dispelKeys?.length ?? 0) > 0) ||
+    ((b.dispelKeys?.length ?? 0) > 0 &&
+      (b.addiction !== undefined || b.description !== undefined)) ||
     b.category === 'bobblehead' ||
     b.category === 'magazine';
   const consumables = categorized.map((c) => c.buff).filter(isRelevant);
