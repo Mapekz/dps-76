@@ -1515,7 +1515,29 @@ export async function chaseGrantedSpell(
       continue;
     }
 
-    const sub = await translateMagicEffect(deps, se);
+    // Non-Ability (Function-Type-5 "Spell Item") chases are combat-TRIGGERED
+    // grants — a bash/hit/kill/cripple event casts the spell, it is not a
+    // permanently-worn ability — so a Duration>0 effect on the chased spell
+    // is a real timed buff whose uptime this engine doesn't model, exactly
+    // the case `MgefTranslationDeps.timedIsActive`'s doc comment calls "perk
+    // proc-buffs [that] keep the flag" (i.e. do NOT default to always-active).
+    // `deps.timedIsActive` is `true` here regardless, because
+    // extract-omods.ts sets it as a blanket default for the OMOD pass (right
+    // for a directly-granted Ability SPEL — allowNestedGrant `true` — whose
+    // Duration is typically a re-apply tick on a genuinely passive
+    // while-equipped effect). Without this override, `translate()`'s
+    // `effect.duration > 0 && !opts.timedIsActive` gate (mgef.ts) never
+    // fires and the buff folds as unconditional — confirmed 2026-08-19 on
+    // Love Tap (E09C_mod_Custom_LoveTap, EP173 "Apply Combat Melee Spell":
+    // Bashing Grants +30% Damage for 30s) and Holy Fire's friendly-hit buff
+    // (mod_custom_HolyFire_Effect, EP184 "Apply Friendly Hit Spell": +30%
+    // Damage and +50 DR for 15s) — both emitted a bare unconditional dbm/
+    // damageResistGain modifier instead of the `unresolved` timedBuff gate
+    // + note every other timed perk-proc buff already gets (issue #80/#42).
+    const sub = await translateMagicEffect(
+      allowNestedGrant ? deps : { ...deps, timedIsActive: false },
+      se,
+    );
     sub.notes.forEach((n) => result.notes.push(`${contextEdid}: ${n}`));
     sub.unmappedAvifs.forEach((a) => result.unmappedAvifs.push(a));
     for (const fragment of sub.modifiers) {

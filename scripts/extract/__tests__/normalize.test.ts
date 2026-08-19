@@ -3147,6 +3147,115 @@ describe('translateGrantedPerk (Circuit Breaker Function-Type-5 lastRound proc, 
   });
 });
 
+describe('translateGrantedPerk (Love Tap Function-Type-5 timed-buff gate, issue #80/#42, 2026-08-19)', () => {
+  // Real ESM chain (20260814 dump): PERK LoveTapPerk 0x008F2AEB — EP173
+  // "Apply Combat Melee Spell" ("Bashing Grants You and Teammates +30%
+  // Damage for 30 Seconds"), Function Type 5 "Spell Item", Spell
+  // 0x008F2AED → SPEL LoveTap → MGEF FortifyDamageAll 0x0018EEE0 (Peak Value
+  // Modifier, Actor Value STAT_DmgAll 0x0018EEE1, Magnitude 30, Duration
+  // 30). Before this fix, `chaseGrantedSpell`'s non-Ability call site (this
+  // Function-Type-5 branch, `allowNestedGrant: false`) inherited whatever
+  // `timedIsActive` the caller's `deps` carried — extract-omods.ts sets that
+  // `true` as a blanket default for the OMOD pass, which suppressed
+  // `translate()`'s `effect.duration > 0 && !opts.timedIsActive` timed-buff
+  // gate and let the +30% fold as unconditional. `deps.timedIsActive: true`
+  // below deliberately mirrors that blanket OMOD-pass default, to prove the
+  // override inside `chaseGrantedSpell` — not just an absent default —
+  // is what re-establishes the gate for this trigger-based grant.
+  const PERK_ID = '0x008F2AEB';
+  const SPEL_ID = '0x008F2AED';
+  const MGEF_ID = '0x0018EEE0';
+  const AV_ID = '0x0018EEE1';
+
+  const recordFor = (formId: string): EsmRecord => {
+    if (formId === PERK_ID) {
+      return {
+        header: { signature: 'PERK', form_id: PERK_ID },
+        editor_id: 'LoveTapPerk',
+        fields: {
+          Effects: [
+            {
+              Effect: {
+                'Effect Header': { 'Effect Type': { name: 'Entry Point' }, Rank: 0 },
+                'Entry Point': {
+                  'Entry Point': { name: 'Apply Combat Melee Spell' },
+                  Function: { name: 'Select Spell' },
+                },
+                'Function Type': { value: 5, name: 'Spell Item' },
+                Spell: SPEL_ID,
+              },
+            },
+          ],
+        },
+      } as unknown as EsmRecord;
+    }
+    if (formId === SPEL_ID) {
+      return {
+        header: { signature: 'SPEL', form_id: SPEL_ID },
+        editor_id: 'LoveTap',
+        fields: {
+          Data: { 'Target Type': { name: 'Self' } },
+          Effects: [
+            {
+              Effect: {
+                'Base Effect': MGEF_ID,
+                'Effect Item Data': { Magnitude: 30, Area: 0, Duration: 30 },
+                'Cooldown Duration': 0,
+              },
+            },
+          ],
+        },
+      } as unknown as EsmRecord;
+    }
+    if (formId === MGEF_ID) {
+      return {
+        header: { signature: 'MGEF', form_id: MGEF_ID },
+        editor_id: 'FortifyDamageAll',
+        fields: {
+          'Magic Effect Data': {
+            Data: {
+              Archetype: { name: 'Peak Value Modifier' },
+              'Actor Value': AV_ID,
+              Explosion: null,
+              Flags: { value: '0x0', flags: [] },
+            },
+          },
+        },
+      } as unknown as EsmRecord;
+    }
+    throw new Error(`unexpected get(${formId})`);
+  };
+
+  const client = createInMemoryEsmSource({
+    getFallback: recordFor,
+    resolveEdidMap: { [AV_ID]: 'STAT_DmgAll' },
+  });
+  const routes = new Map<string, AvifRoute[]>([
+    [AV_ID, [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]],
+  ]);
+
+  it('gates the +30% dbm behind an unresolved timedBuff condition instead of folding it unconditionally', async () => {
+    const result = await translateGrantedPerk(
+      // timedIsActive: true mirrors extract-omods.ts's blanket OMOD-pass
+      // default — see the describe-block comment above.
+      { client, routes, edidByFormId: new Map(), timedIsActive: true },
+      'E09C_mod_Custom_LoveTap',
+      PERK_ID,
+    );
+    expect(result.modifiers).toEqual([
+      {
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.3,
+        conditions: [{ kind: 'unresolved', raw: 'timedBuff(30s)' }],
+      },
+    ]);
+    expect(result.notes).toContain(
+      'perk LoveTapPerk: FortifyDamageAll: timedBuff(30s) — needs toggle override',
+    );
+  });
+});
+
 describe('translate (Phase 4 — VATS hit-chance aggregate, display-only, 2026-07-18)', () => {
   const vatsAccuracyEdids = new Map<string, string>([['0xAV', 'STAT_VATSAccuracy']]);
 

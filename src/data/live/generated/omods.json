@@ -16471,7 +16471,12 @@
     "bucket": "dbm",
     "op": "ADD",
     "value": 0.3,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "timedBuff(30s)"
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -16481,7 +16486,9 @@
    "CustomItemName_LoveTap"
   ],
   "hasEnchantments": false,
-  "notes": [],
+  "notes": [
+   "perk LoveTapPerk: FortifyDamageAll: timedBuff(30s) — needs toggle override"
+  ],
   "obtainable": true
  },
  {
@@ -44391,7 +44398,12 @@
     "bucket": "dbm",
     "op": "ADD",
     "value": 0.3,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "timedBuff(15s)"
+     }
+    ]
    },
    {
     "id": "0x006E06A3:perk:2",
@@ -44404,7 +44416,12 @@
     "bucket": "damageResistGain",
     "op": "ADD",
     "value": 50,
-    "conditions": []
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "timedBuff(15s)"
+     }
+    ]
    }
   ],
   "addedKeywords": [
@@ -44414,7 +44431,10 @@
    "Moon_ma_BlueFlamer"
   ],
   "hasEnchantments": true,
-  "notes": [],
+  "notes": [
+   "perk HolyFire_Perk: FortifyDamageAll: timedBuff(15s) — needs toggle override",
+   "perk HolyFire_Perk: FortifyDamageResist: timedBuff(15s) — needs toggle override"
+  ],
   "obtainable": true
  },
  {
@@ -71195,6 +71215,8 @@
   "hasGrantingCobj": true,
   "notes": [
    "perk Legendary_Weapon_Conductors: perk Legendary_Weapon_ConductorsPlayerPerk: GetLastHitCritical()=1",
+   "perk Legendary_Weapon_Conductors: perk Legendary_Weapon_ConductorsPlayerPerk: Legendary_Weapon_ConductorsApplyRestorePlayerAPPerkEffect: timedBuff(5s) — needs toggle override",
+   "perk Legendary_Weapon_Conductors: perk Legendary_Weapon_ConductorsPlayerPerk: Legendary_Weapon_ConductorsApplyRestorePlayerHealthPerkEffect: timedBuff(5s) — needs toggle override",
    "perk Legendary_Weapon_Conductors: perk Legendary_Weapon_ConductorsPlayerPerk: MGEF Legendary_Weapon_ConductorsAddCloakEffect archetype Cloak — needs override"
   ],
   "obtainable": true
@@ -120206,7 +120228,9 @@
    "MGEF P62_Legendary_Weapon_SatiatedDescriptionEffect archetype Script — needs override",
    "MGEF P62_Legendary_Weapon_SatiatedGhoulDescriptionEffect archetype Script — needs override",
    "perk P62_Legendary_Weapon_SatiatedPerk: MGEF P62_Legendary_Weapon_SatiatedPerkApplyHungerEffect: no route for AV SURV_Hunger — needs mapping",
-   "perk P62_Legendary_Weapon_SatiatedPerk: MGEF P62_Legendary_Weapon_SatiatedPerkApplyThirstEffect: no route for AV SURV_Thirst — needs mapping"
+   "perk P62_Legendary_Weapon_SatiatedPerk: MGEF P62_Legendary_Weapon_SatiatedPerkApplyThirstEffect: no route for AV SURV_Thirst — needs mapping",
+   "perk P62_Legendary_Weapon_SatiatedPerk: P62_Legendary_Weapon_SatiatedPerkApplyHungerEffect: timedBuff(1s) — needs toggle override",
+   "perk P62_Legendary_Weapon_SatiatedPerk: P62_Legendary_Weapon_SatiatedPerkApplyThirstEffect: timedBuff(1s) — needs toggle override"
   ],
   "obtainable": false
  },
