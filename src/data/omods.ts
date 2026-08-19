@@ -149,7 +149,19 @@ export function classifyOmodDisplay(
     ((weapon?.templateModFormIds ?? []).includes(omod.formId) && omod.variantOf === undefined) ||
     STOCK_NAME_RE.test(omod.name);
   const hasModifiers = omod.modifiers.length > 0;
-  if (!hasModifiers && !overrideBadge && !isStock) return { show: true, badge: 'inert' };
+  // A non-empty procChase (issue #42, PROC_DAMAGE_PLAN.md) is a real engine
+  // effect (buildEffectiveWeapon folds it into Weapon.procs, computeProcDps
+  // folds THAT into ScenarioResult.procDps) even when `modifiers` is empty —
+  // Electrician's/Fracturer's carry their damage entirely through
+  // Weapon.procs, not the Modifier IR. Never badge these 'inert'; treat the
+  // same as an ordinary real modifier below. (An onCripple proc reading 0 at
+  // the default procCripplesPerMin=0 is a conditional-zero, same as an
+  // enemyType-gated modifier with no target selected — not "incapable of
+  // ever moving a number," which is what 'inert' means.)
+  const hasProcs = (omod.procChase?.length ?? 0) > 0;
+  if (!hasModifiers && !hasProcs && !overrideBadge && !isStock) {
+    return { show: true, badge: 'inert' };
+  }
   if (overrideBadge) return { show: true, badge: overrideBadge };
   if (hasModifiers) {
     // enemyType/enemyTypeAny gates are NOT inert: they resolve against the
@@ -162,11 +174,12 @@ export function classifyOmodDisplay(
     // — both left INERT_ENGINE_BUCKETS (mitigation.ts, the Berserker's
     // playerDamageResist rename) — so every remaining all-inert case is a
     // plain 'inert' badge now (Anti-Armor-style mods show unbadged instead).
-    if (omod.modifiers.every((m) => !modifierHasEngineEffect(m))) {
+    if (!hasProcs && omod.modifiers.every((m) => !modifierHasEngineEffect(m))) {
       return { show: true, badge: 'inert' };
     }
     return { show: true };
   }
+  if (hasProcs) return { show: true };
   // Stock part with no stats: normal (unbadged) unless extraction flagged gaps.
   return { show: true, badge: omod.notes?.length ? 'inert' : undefined };
 }

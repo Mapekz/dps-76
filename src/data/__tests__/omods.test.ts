@@ -211,6 +211,30 @@ describe('show-all-mods display policy against live data', () => {
     expect(prime?.badge).toBeUndefined();
   });
 
+  it("proc-only legendaries (Fracturer's/Electrician's — issue #42) are unbadged, not 'inert', despite carrying zero ordinary modifiers", () => {
+    // Both carry their entire damage payload in GeneratedOmod.procChase, not
+    // GeneratedOmod.modifiers — classifyOmodDisplay must treat a real
+    // procChase as an engine effect, same as it already does for ordinary
+    // modifiers (omods.ts).
+    const fixer = getWeapons('live')['CombatRifle_Fixer'];
+    const star4 = getLegendaryOmodSlots('live', fixer).find(
+      (s) => /Weapon4/i.test(s.slot) || s.options.some((o) => o.id.includes('Weapon4')),
+    );
+    const fracturers = star4?.options.find((o) => o.id === 'mod_Legendary_Weapon4_Fracturers');
+    expect(fracturers).toBeDefined();
+    expect(fracturers?.modifiers).toHaveLength(0);
+    expect(fracturers?.procChase?.length).toBeGreaterThan(0);
+    expect(fracturers?.badge).toBeUndefined();
+
+    const electricians = star4?.options.find(
+      (o) => o.id === 'mod_Legendary_Weapon4_Guns_Electricians',
+    );
+    expect(electricians).toBeDefined();
+    expect(electricians?.modifiers).toHaveLength(0);
+    expect(electricians?.procChase?.length).toBeGreaterThan(0);
+    expect(electricians?.badge).toBeUndefined();
+  });
+
   it('dead-mechanic slots and legendary-reroll placeholders never surface anywhere in the roster', () => {
     for (const weapon of Object.values(getWeapons('live'))) {
       const slots = [...getOmodSlots('live', weapon), ...getLegendaryOmodSlots('live', weapon)];
