@@ -75,6 +75,13 @@ export function ConditionsSection() {
   const onslaughtValue = scenarios?.onslaughtEffectiveStacks ?? 0;
   const hasKillStreak = affordances?.hasKillStreakSources ?? false;
 
+  // Proc-triggered on-cripple damage (issue #42, PROC_DAMAGE_PLAN.md,
+  // ADR-0009): no crippling-frequency model exists, so cripples/minute is a
+  // manual knob feeding Fracturer's — same existence-gate pattern as
+  // hasKillStreak/hasBattleLoaders above.
+  const hasOnCrippleProcSource = affordances?.hasOnCrippleProcSource ?? false;
+  const procCripplesPerMin = conditions.procCripplesPerMin ?? 0;
+
   // Concentrated Fire: manual 0–20 stacks slider standing in for the game's
   // hidden native per-target consecutive-shots-fired counter (see the
   // PlayerInput.concentratedFireStacks doc comment and
@@ -284,6 +291,30 @@ export function ConditionsSection() {
                   }))}
                 />
                 {!hasKillStreak && <HelperText>No kill-streak sources equipped</HelperText>}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="char-proc-cripples">
+                  Cripples per minute: {procCripplesPerMin}
+                </Label>
+                <Slider
+                  id="char-proc-cripples"
+                  min={0}
+                  max={60}
+                  step={1}
+                  disabled={!hasOnCrippleProcSource}
+                  value={[procCripplesPerMin]}
+                  onValueChange={(v) => set('procCripplesPerMin', firstSliderValue(v))}
+                  marks={[0, 15, 30, 45, 60].map((v) => ({ value: v, label: String(v) }))}
+                />
+                <HelperText>
+                  No crippling-frequency model exists — this is a manual stand-in for how often you
+                  land a limb-crippling hit, feeding Fracturer's on-cripple detonation. 0 = honest
+                  zero, not a hidden average.
+                </HelperText>
+                {!hasOnCrippleProcSource && (
+                  <HelperText>No on-cripple proc sources equipped</HelperText>
+                )}
               </div>
 
               <div className="space-y-1.5">

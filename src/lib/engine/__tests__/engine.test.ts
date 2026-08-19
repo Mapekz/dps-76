@@ -2887,6 +2887,58 @@ describe('hasBattleLoadersSource detection (Phase C — bash-tier reload skip)',
   });
 });
 
+describe('hasOnCrippleProcSource detection (issue #42, PROC_DAMAGE_PLAN.md commit 9)', () => {
+  const weapon = makeWeapon();
+  const base = {
+    mode: 'live' as const,
+    weapon,
+    itemLevel: 50,
+    modifiers: [] as Modifier[],
+    player: makeResolvedPlayer(),
+    enemy: createDefaultEnemyConditions(),
+    weakpointMult: 2.0,
+    critRate: 0,
+  };
+
+  it('is false with no procs folded onto the effective weapon', () => {
+    expect(describeAffordances(base).hasOnCrippleProcSource).toBe(false);
+  });
+
+  it("is false when the weapon carries a proc, but none is onCripple (Electrician's reloadCycle)", () => {
+    const withReloadCycle = {
+      ...weapon,
+      procs: [
+        {
+          id: 'test:proc:0',
+          source: { kind: 'omod' as const, formId: '0x0', edid: 'Test', name: 'Test' },
+          trigger: { kind: 'reloadCycle' as const },
+          components: [{ damageType: 'energy' as const, value: 10 }],
+          conditions: [],
+        },
+      ],
+    };
+    expect(describeAffordances({ ...base, weapon: withReloadCycle }).hasOnCrippleProcSource).toBe(
+      false,
+    );
+  });
+
+  it("is true once buildEffectiveWeapon has folded an onCripple proc onto the weapon (Fracturer's)", () => {
+    const withCripple = {
+      ...weapon,
+      procs: [
+        {
+          id: 'test:proc:0',
+          source: { kind: 'omod' as const, formId: '0x0', edid: 'Test', name: 'Test' },
+          trigger: { kind: 'onCripple' as const, cooldownSec: 3 },
+          components: [{ damageType: 'explosive' as const, value: 150 }],
+          conditions: [],
+        },
+      ],
+    };
+    expect(describeAffordances({ ...base, weapon: withCripple }).hasOnCrippleProcSource).toBe(true);
+  });
+});
+
 describe('vatsHitChanceBonus (Phase 4 — VATS hit-chance aggregate, display-only, 2026-07-18)', () => {
   // apCost > 0 on a non-melee weapon so ap.apLimitedDps is populated too —
   // the regression guard below checks it stays untouched alongside sustainedDps.

@@ -54,6 +54,12 @@ export interface BuildAffordances {
    */
   hasBattleLoadersSource: boolean;
   /**
+   * True when the effective weapon carries an `onCripple`-triggered proc
+   * (Fracturer's — issue #42) — gates the UI's `procCripplesPerMin` slider,
+   * same pattern as `hasBattleLoadersSource`.
+   */
+  hasOnCrippleProcSource: boolean;
+  /**
    * The equipped weapon's charge parameters — null when the effective weapon
    * doesn't charge (hides the slider).
    */
@@ -113,6 +119,10 @@ export function describeAffordances(input: ScenarioInput): BuildAffordances {
 
   const hasBattleLoadersSource = (input.weapon.reloadSkipChanceBash ?? 0) > 0;
 
+  const hasOnCrippleProcSource = (input.weapon.procs ?? []).some(
+    (p) => p.trigger.kind === 'onCripple',
+  );
+
   const charging = weaponCharges(input.weapon)
     ? {
         fullPowerSeconds: input.weapon.fullPowerSeconds ?? 0,
@@ -139,6 +149,7 @@ export function describeAffordances(input: ScenarioInput): BuildAffordances {
     hasPipeCraftingChallengeSource,
     hasKingfisherLocalLegendSource,
     hasBattleLoadersSource,
+    hasOnCrippleProcSource,
     charging,
     range,
     vatsHitChanceBonus,

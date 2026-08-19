@@ -228,6 +228,17 @@ export function MultiplierChainTable({ result }: { result: ScenarioResult }) {
             value={`+${formatDamage(result.dotDps)}/s`}
           />
         )}
+        {result.procDps > 0 && (
+          <Row
+            muted
+            label={
+              <DefinitionLabel definition="Steady-state proc-triggered damage (Electrician's, Circuit Breaker, Fracturer's) — separately-cast, bypasses crit/sneak/dbm. Not mitigated by enemy resist in this version — see docs/assumptions.md.">
+                Proc damage
+              </DefinitionLabel>
+            }
+            value={`+${formatDamage(result.procDps)}/s`}
+          />
+        )}
       </div>
     </div>
   );
