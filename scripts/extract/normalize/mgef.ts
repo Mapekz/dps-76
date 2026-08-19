@@ -17,7 +17,7 @@ import {
   type ConditionTranslationContext,
   type RawCondition,
 } from './conditions';
-import { decodeProcComponentsFromExpl } from './proc';
+import { decodeInstantDamageComponent, decodeProcComponentsFromExpl } from './proc';
 
 /**
  * Shared MGEF → Modifier translation, driven by the hidden engine "plumbing"
@@ -806,7 +806,8 @@ export function parseMagicEffects(record: EsmRecord): SpellEffect[] {
         Array.isArray(curveTable?.curve) && curveTable.curve.length > 0 ? curveTable.curve : null,
       curveInputAv: (e['Actor Value'] as string) ?? null,
       magnitudeGlobal,
-      cooldownDurationSec: typeof e['Cooldown Duration'] === 'number' ? (e['Cooldown Duration'] as number) : null,
+      cooldownDurationSec:
+        typeof e['Cooldown Duration'] === 'number' ? (e['Cooldown Duration'] as number) : null,
       area: typeof data['Area'] === 'number' ? (data['Area'] as number) : null,
     });
   }
@@ -930,6 +931,20 @@ export interface MgefTranslationResult {
    * off it directly (Electrician's reload-animation-state fan-out).
    */
   procComponents?: GeneratedProcComponent[];
+  /**
+   * The chased effect's own `Cooldown Duration` (seconds), when `procComponents`
+   * came from a `chaseGrantedSpell` call — the `onCripple` trigger's
+   * `cooldownSec` (Fracturer's). Set alongside the FIRST effect that
+   * contributes to `procComponents`; irrelevant for `reloadCycle`/`lastRound`.
+   */
+  procCooldownSec?: number;
+  /**
+   * Already-classified procs (issue #42) — set only by `translateGrantedPerk`'s
+   * Function-Type-5 "Spell Item" chase, which knows the trigger from the
+   * granting Entry Point name (`onCripple`/`lastRound`) and so classifies
+   * directly instead of leaving it to `procComponents`.
+   */
+  procs?: GeneratedProc[];
 }
 
 export interface TranslateOptions {
@@ -1286,6 +1301,78 @@ function resolvePerkEffectAvFormId(effect: Record<string, unknown>): string | nu
   return null;
 }
 
+/**
+ * Chase a granted SPEL's own Effects list into modifiers/procComponents —
+ * shared by the `effectType === 'Ability'` branch below (Electrician's:
+ * Perk to Apply → PERK → Ability → SPEL) and the Function-Type-5 "Spell
+ * Item" branch (Fracturer's/Circuit Breaker: PERK Entry Point → Spell field
+ * directly, no Ability wrapper — issue #42, PROC_DAMAGE_PLAN.md).
+ *
+ * Most effects route through the ordinary `translateMagicEffect` (which
+ * already chases a Script/Damage-archetype Explosion field into
+ * `procComponents` — see that function). ONE shape needs special handling
+ * first: a Damage-archetype effect with NO Explosion and `Duration: 0` (the
+ * "Circuit Breaker shape") is a one-shot Contact hit, not a refresh DoT —
+ * `translateMagicEffect`'s generic Damage-archetype branch would otherwise
+ * misread it via `computeDotDps`'s refresh-only semantics, so it's decoded
+ * directly via `decodeInstantDamageComponent` instead.
+ *
+ * `outerConditions` (the granting perk-effect's own translated Perk
+ * Conditions) are threaded onto ordinary `modifiers` fragments exactly like
+ * the pre-refactor inline code did; `procComponents` carry no conditions
+ * (see `GeneratedProcComponent`), so they're merged as-is. `procCooldownSec`
+ * is the FIRST contributing effect's own `Cooldown Duration` — irrelevant
+ * for triggers other than `onCripple`, whose caller reads it.
+ */
+export async function chaseGrantedSpell(
+  deps: MgefTranslationDeps,
+  contextEdid: string,
+  spellFormId: string,
+  outerConditions: Condition[],
+): Promise<MgefTranslationResult> {
+  const { client, edidByFormId } = deps;
+  const result: MgefTranslationResult = { modifiers: [], notes: [], unmappedAvifs: [] };
+
+  let spell: EsmRecord;
+  try {
+    spell = await client.get(spellFormId);
+  } catch {
+    result.notes.push(`${contextEdid}: spell ${spellFormId} not found`);
+    return result;
+  }
+
+  for (const se of parseMagicEffects(spell)) {
+    const effectMgef = await getMgefInfo(client, se.mgefFormId);
+
+    if (effectMgef.archetype === 'Damage' && !effectMgef.explosion && se.duration === 0) {
+      if (effectMgef.resistValue && !edidByFormId.has(effectMgef.resistValue)) {
+        edidByFormId.set(effectMgef.resistValue, await client.resolveEdid(effectMgef.resistValue));
+      }
+      const component = decodeInstantDamageComponent(effectMgef, se, edidByFormId);
+      if (component) {
+        result.procComponents = [...(result.procComponents ?? []), component];
+        result.procCooldownSec ??= se.cooldownDurationSec ?? undefined;
+      }
+      continue;
+    }
+
+    const sub = await translateMagicEffect(deps, se);
+    sub.notes.forEach((n) => result.notes.push(`${contextEdid}: ${n}`));
+    sub.unmappedAvifs.forEach((a) => result.unmappedAvifs.push(a));
+    for (const fragment of sub.modifiers) {
+      result.modifiers.push({
+        ...fragment,
+        conditions: [...outerConditions, ...fragment.conditions],
+      });
+    }
+    if (sub.procComponents && sub.procComponents.length > 0) {
+      result.procComponents = [...(result.procComponents ?? []), ...sub.procComponents];
+      result.procCooldownSec ??= se.cooldownDurationSec ?? undefined;
+    }
+  }
+  return result;
+}
+
 export async function translateGrantedPerk(
   deps: MgefTranslationDeps,
   contextEdid: string,
@@ -1504,6 +1591,54 @@ export async function translateGrantedPerk(
         continue;
       }
 
+      // Function-Type-5 "Spell Item" (issue #42 — PROC_DAMAGE_PLAN.md):
+      // Fracturer's EP201 "Apply Spell On Actor When Limb Crippled" and
+      // Circuit Breaker's EP51 "Apply Combat Hit Spell" grant a SPEL
+      // directly rather than routing through a formula bucket — chase it via
+      // the same `chaseGrantedSpell` the Ability branch below uses.
+      // `functionName`/`float`/ENTRY_POINT_BUCKETS never apply to this shape
+      // (`Function Type`, read off `e` directly, is a SIBLING of `Entry
+      // Point`/`Perk Conditions` — NOT nested under `Effect Header` as
+      // PROC_DAMAGE_PLAN.md's draft assumed; esm-walk-corrected 2026-08-19
+      // against PERK 0x00795778/0x006EBCD6). Non-proc Spell-Item grants
+      // (Love Tap's EP173 "Apply Combat Melee Spell", a FortifyDamageAll
+      // dbm) fall through as ordinary modifiers — they never populate
+      // `procComponents`, so no special-casing is needed for them here.
+      const functionTypeName = (e['Function Type'] as Record<string, unknown> | undefined)?.[
+        'name'
+      ];
+      if (functionTypeName === 'Spell Item' && typeof e['Spell'] === 'string') {
+        const sub = await chaseGrantedSpell(deps, `perk ${perkEdid}`, e['Spell'], conditions);
+        sub.notes.forEach((n) => result.notes.push(n));
+        sub.unmappedAvifs.forEach((a) => result.unmappedAvifs.push(a));
+        result.modifiers.push(...sub.modifiers);
+        if (sub.procComponents && sub.procComponents.length > 0) {
+          const isOnCripple = name === 'Apply Spell On Actor When Limb Crippled';
+          const isLastRoundHit =
+            name === 'Apply Combat Hit Spell' && conditions.some((c) => c.kind === 'lastRound');
+          if (isOnCripple) {
+            result.procs = [
+              ...(result.procs ?? []),
+              {
+                trigger: 'onCripple',
+                cooldownSec: sub.procCooldownSec ?? 0,
+                components: sub.procComponents,
+              },
+            ];
+          } else if (isLastRoundHit) {
+            result.procs = [
+              ...(result.procs ?? []),
+              { trigger: 'lastRound', components: sub.procComponents },
+            ];
+          } else {
+            result.notes.push(
+              `perk ${perkEdid}: ${name} — Function-Type-5 chase produced damage but no proc-trigger classification, dropped`,
+            );
+          }
+        }
+        continue;
+      }
+
       const bucket = ENTRY_POINT_BUCKETS[name];
       if (!bucket) {
         result.notes.push(`perk ${perkEdid}: entry point ${name} — not modeled`);
@@ -1628,32 +1763,13 @@ export async function translateGrantedPerk(
     }
 
     if (effectType === 'Ability' && typeof e['Ability'] === 'string') {
-      let spell: EsmRecord;
-      try {
-        spell = await client.get(e['Ability']);
-      } catch {
-        result.notes.push(`perk ${perkEdid}: ability ${e['Ability']} not found`);
-        continue;
-      }
-      for (const se of parseMagicEffects(spell)) {
-        const sub = await translateMagicEffect(deps, se);
-        sub.notes.forEach((n) => result.notes.push(`perk ${perkEdid}: ${n}`));
-        sub.unmappedAvifs.forEach((a) => result.unmappedAvifs.push(a));
-        for (const fragment of sub.modifiers) {
-          result.modifiers.push({
-            ...fragment,
-            conditions: [...conditions, ...fragment.conditions],
-          });
-        }
-        // Proc-damage components chased off a nested Script/Damage-archetype
-        // MGEF (issue #42 — Electrician's: Ability → SPEL → Script MGEF with
-        // its own Explosion). No conditions attached — GeneratedProcComponent
-        // carries none; the classification into a GeneratedProc trigger
-        // happens at the ENCH level (translateEnchantment's
-        // dedupeReloadStateFanout), not here.
-        if (sub.procComponents && sub.procComponents.length > 0) {
-          result.procComponents = [...(result.procComponents ?? []), ...sub.procComponents];
-        }
+      const sub = await chaseGrantedSpell(deps, `perk ${perkEdid}`, e['Ability'], conditions);
+      sub.notes.forEach((n) => result.notes.push(n));
+      sub.unmappedAvifs.forEach((a) => result.unmappedAvifs.push(a));
+      result.modifiers.push(...sub.modifiers);
+      if (sub.procComponents && sub.procComponents.length > 0) {
+        result.procComponents = [...(result.procComponents ?? []), ...sub.procComponents];
+        result.procCooldownSec ??= sub.procCooldownSec;
       }
       continue;
     }
@@ -1710,7 +1826,8 @@ export async function translateMagicEffect(
     if (
       granted.modifiers.length > 0 ||
       granted.notes.length > 0 ||
-      (granted.procComponents?.length ?? 0) > 0
+      (granted.procComponents?.length ?? 0) > 0 ||
+      (granted.procs?.length ?? 0) > 0
     ) {
       // The effect's own condition rows still gate the grant.
       for (const row of effect.conditionRows) {
@@ -1938,15 +2055,20 @@ export async function translateEnchantment(
     const result = await translateMagicEffect(deps, effect, conditionCtx);
     result.notes.forEach((n) => notes.push(n));
     modifiers.push(...result.modifiers);
+    // Already-classified procs bubbled up from a nested Script+perkToApply
+    // chase (Fracturer's/Circuit Breaker's Function-Type-5 branch,
+    // translateGrantedPerk — issue #42): pass through as-is.
+    if (result.procs) procs.push(...result.procs);
     if (result.procComponents && result.procComponents.length > 0) {
       if (reloadCycleMgefFormIds.has(effect.mgefFormId)) {
         procs.push({ trigger: 'reloadCycle', components: result.procComponents });
       } else {
-        // A chased proc with no trigger classification — issue #42 only
-        // wires reloadCycle at this level today (Function-Type-5 grants
-        // classify their own trigger before ever reaching here). Note
-        // instead of silently dropping so a future same-shaped legendary
-        // shows up for review rather than vanishing.
+        // A chased proc with no trigger classification at THIS level —
+        // reloadCycle is the only trigger dedupeReloadStateFanout classifies
+        // here; every other trigger is classified inside translateGrantedPerk
+        // before its result ever reaches this loop. Note instead of silently
+        // dropping so a future same-shaped legendary shows up for review
+        // rather than vanishing.
         notes.push(
           `MGEF ${effect.mgefFormId}: Explosion chase produced damage components but no proc-trigger classification — dropped`,
         );

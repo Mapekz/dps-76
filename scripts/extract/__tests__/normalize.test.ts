@@ -2686,7 +2686,11 @@ describe("translateEnchantment (Electrician's reload-cycle proc chase, issue #42
     getFallback: recordFor,
     resolveEdidMap: { [ENERGY_RESIST_AV]: 'dtEnergy' },
   });
-  const deps = { client, routes: new Map<string, AvifRoute[]>(), edidByFormId: new Map<string, string>() };
+  const deps = {
+    client,
+    routes: new Map<string, AvifRoute[]>(),
+    edidByFormId: new Map<string, string>(),
+  };
 
   it('chases the deduped fan-out entry into exactly one reloadCycle proc, no ordinary modifiers', async () => {
     const result = await translateEnchantment(deps, ENCH_ID);
@@ -2709,6 +2713,437 @@ describe("translateEnchantment (Electrician's reload-cycle proc chase, issue #42
         ],
       },
     ]);
+  });
+});
+
+describe("translateGrantedPerk (Fracturer's Function-Type-5 onCripple proc, issue #42, 2026-08-19)", () => {
+  // Real ESM chain (20260814 dump): PERK Legendary_Weapon_FracturersPerk
+  // 0x00795778 — Entry Point 201 "Apply Spell On Actor When Limb Crippled",
+  // Function Type 5 "Spell Item", Spell 0x00795779 → SPEL
+  // Legendary_Weapon_FracturersExplosionSpell (Cooldown Duration 3) → MGEF
+  // Legendary_Weapon_FracturersApplyPerkEffect 0x00795776 (Damage archetype,
+  // Explosion 0x00795775, no Resist Value — the payload lives entirely on
+  // the EXPL) → EXPL LegendaryEffect_Fracturers_Explosion (main curve 22→50,
+  // flat Damage 150, no typed entries).
+  const PERK_ID = '0x00795778';
+  const SPEL_ID = '0x00795779';
+  const MGEF_ID = '0x00795776';
+  const EXPL_ID = '0x00795775';
+  const KEYWORD_ID = '0x0079296B';
+
+  const recordFor = (formId: string): EsmRecord => {
+    if (formId === PERK_ID) {
+      return {
+        header: { signature: 'PERK', form_id: PERK_ID },
+        editor_id: 'Legendary_Weapon_FracturersPerk',
+        fields: {
+          Effects: [
+            {
+              Effect: {
+                'Effect Header': { 'Effect Type': { name: 'Entry Point' }, Rank: 1 },
+                'Entry Point': {
+                  'Entry Point': { name: 'Apply Spell On Actor When Limb Crippled' },
+                  Function: { name: 'Select Spell' },
+                },
+                'Perk Conditions': [
+                  {
+                    'Perk Condition': {
+                      'Run On (Tab Index)': 0,
+                      Conditions: [
+                        {
+                          Condition: {
+                            'Condition Data': {
+                              Function: 'GetIsPlayer',
+                              'Comparison Value': 1,
+                              Operator: 'Equal To',
+                              'Run On': 'Subject',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    'Perk Condition': {
+                      'Run On (Tab Index)': 1,
+                      Conditions: [
+                        {
+                          Condition: {
+                            'Condition Data': {
+                              Function: 'HasKeyword',
+                              'Parameter 1': KEYWORD_ID,
+                              'Comparison Value': 1,
+                              Operator: 'Equal To',
+                              'Run On': 'Subject',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    'Perk Condition': {
+                      'Run On (Tab Index)': 2,
+                      Conditions: [
+                        {
+                          Condition: {
+                            'Condition Data': {
+                              Function: 'GetDead',
+                              'Comparison Value': 0,
+                              Operator: 'Equal To',
+                              'Run On': 'Subject',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+                'Function Type': { value: 5, name: 'Spell Item' },
+                Spell: SPEL_ID,
+              },
+            },
+          ],
+        },
+      } as unknown as EsmRecord;
+    }
+    if (formId === SPEL_ID) {
+      return {
+        header: { signature: 'SPEL', form_id: SPEL_ID },
+        editor_id: 'Legendary_Weapon_FracturersExplosionSpell',
+        fields: {
+          Data: { 'Target Type': { name: 'Contact' } },
+          Effects: [
+            {
+              Effect: {
+                'Base Effect': MGEF_ID,
+                'Effect Item Data': { Magnitude: 1, Area: 100, Duration: 0 },
+                'Cooldown Duration': 3,
+              },
+            },
+          ],
+        },
+      } as unknown as EsmRecord;
+    }
+    if (formId === MGEF_ID) {
+      return {
+        header: { signature: 'MGEF', form_id: MGEF_ID },
+        editor_id: 'Legendary_Weapon_FracturersApplyPerkEffect',
+        fields: {
+          'Magic Effect Data': {
+            Data: {
+              Archetype: { name: 'Damage' },
+              Explosion: EXPL_ID,
+              Flags: { value: '0x0', flags: [] },
+            },
+          },
+        },
+      } as unknown as EsmRecord;
+    }
+    if (formId === EXPL_ID) {
+      return {
+        header: { signature: 'EXPL', form_id: EXPL_ID },
+        editor_id: 'LegendaryEffect_Fracturers_Explosion',
+        fields: {
+          Data: {
+            'Damage Curve Table': {
+              curve_path: 'LegendaryMods\\Weapon_FracturersExplosionDMG.json',
+              curve: [
+                { x: 1, y: 22 },
+                { x: 50, y: 50 },
+              ],
+            },
+            Damage: 150,
+            'Base Weapon Damage Mult': 0,
+          },
+        },
+      } as unknown as EsmRecord;
+    }
+    if (formId === KEYWORD_ID) {
+      return {
+        header: { signature: 'KYWD', form_id: KEYWORD_ID },
+        editor_id: 'HasLegendary_Weapon_Fracturers',
+        fields: {},
+      } as unknown as EsmRecord;
+    }
+    throw new Error(`unexpected get(${formId})`);
+  };
+
+  const client = createInMemoryEsmSource({ getFallback: recordFor });
+  const deps = {
+    client,
+    routes: new Map<string, AvifRoute[]>(),
+    edidByFormId: new Map<string, string>(),
+  };
+
+  it("chases the Spell field into one onCripple proc, cooldownSec from the SPEL effect's own Cooldown Duration", async () => {
+    const result = await translateGrantedPerk(
+      deps,
+      'mod_Legendary_Weapon4_Guns_Fracturers',
+      PERK_ID,
+    );
+    expect(result.procs).toEqual([
+      {
+        trigger: 'onCripple',
+        cooldownSec: 3,
+        components: [
+          {
+            damageType: 'explosive',
+            damageTypeEdid: null,
+            amount: 150,
+            tier: null,
+            curve: [
+              { x: 1, y: 22 },
+              { x: 50, y: 50 },
+            ],
+          },
+        ],
+      },
+    ]);
+    expect(result.modifiers).toEqual([]);
+  });
+});
+
+describe('translateGrantedPerk (Circuit Breaker Function-Type-5 lastRound proc, issue #42, 2026-08-19)', () => {
+  // Real ESM chain (20260814 dump): PERK CircuitBreakerPerk 0x006EBCD6 — two
+  // EP51 "Apply Combat Hit Spell" effects, both Function Type 5 "Spell Item"
+  // gated GetLoadedAmmoCount < 1 (the lastRound Condition). Effect#0 → SPEL
+  // 0x006EBCD8 → MGEF 0x006EBCD4 (Script, Explosion 0x006E20EB, VFX only —
+  // no direct damage) → materializes nothing. Effect#1 → SPEL
+  // CircuitbreakerImpactSpell 0x006EBCD7 → 3 effects: a Stunned-archetype
+  // effect (skipped, no damage shape), CircuitBreaker_DamageHealthContact
+  // 0x007452C3 (Damage, no Explosion, duration 0, curve 31→103, Resist
+  // Value EnergyResist), and 0x006EBCD1 (same shape, curve 6→20, Area 50).
+  const PERK_ID = '0x006EBCD6';
+  const VFX_SPEL_ID = '0x006EBCD8';
+  const VFX_MGEF_ID = '0x006EBCD4';
+  const VFX_EXPL_ID = '0x006E20EB';
+  const IMPACT_SPEL_ID = '0x006EBCD7';
+  const STUN_MGEF_ID = '0x006EBCD3';
+  const BIG_HIT_MGEF_ID = '0x007452C3';
+  const SMALL_HIT_MGEF_ID = '0x006EBCD1';
+  const ENERGY_RESIST_FORMID = '0x000002EB';
+
+  const spellItemEffect = (spellFormId: string) => ({
+    Effect: {
+      'Effect Header': { 'Effect Type': { name: 'Entry Point' }, Rank: 0 },
+      'Entry Point': {
+        'Entry Point': { name: 'Apply Combat Hit Spell' },
+        Function: { name: 'Select Spell' },
+      },
+      'Perk Conditions': [
+        {
+          'Perk Condition': {
+            'Run On (Tab Index)': 0,
+            Conditions: [
+              {
+                Condition: {
+                  'Condition Data': {
+                    Function: 'GetLoadedAmmoCount',
+                    'Comparison Value': 1,
+                    Operator: 'Less Than',
+                    'Run On': 'Subject',
+                  },
+                },
+              },
+            ],
+          },
+        },
+        {
+          'Perk Condition': {
+            'Run On (Tab Index)': 2,
+            Conditions: [
+              {
+                Condition: {
+                  'Condition Data': {
+                    Function: 'GetDead',
+                    'Comparison Value': 0,
+                    Operator: 'Equal To',
+                    'Run On': 'Subject',
+                  },
+                },
+              },
+            ],
+          },
+        },
+      ],
+      'Function Type': { value: 5, name: 'Spell Item' },
+      Spell: spellFormId,
+    },
+  });
+
+  const instantDamageMgef = (formId: string, name: string): EsmRecord =>
+    ({
+      header: { signature: 'MGEF', form_id: formId },
+      editor_id: name,
+      fields: {
+        'Magic Effect Data': {
+          Data: {
+            Archetype: { name: 'Damage' },
+            'Resist Value': ENERGY_RESIST_FORMID,
+            Flags: { value: '0x0', flags: [] },
+          },
+        },
+      },
+    }) as unknown as EsmRecord;
+
+  const recordFor = (formId: string): EsmRecord => {
+    if (formId === PERK_ID) {
+      return {
+        header: { signature: 'PERK', form_id: PERK_ID },
+        editor_id: 'CircuitBreakerPerk',
+        fields: { Effects: [spellItemEffect(VFX_SPEL_ID), spellItemEffect(IMPACT_SPEL_ID)] },
+      } as unknown as EsmRecord;
+    }
+    if (formId === VFX_SPEL_ID) {
+      return {
+        header: { signature: 'SPEL', form_id: VFX_SPEL_ID },
+        editor_id: 'CircuitbreakerVFXSpell',
+        fields: {
+          Effects: [
+            {
+              Effect: {
+                'Base Effect': VFX_MGEF_ID,
+                'Effect Item Data': { Magnitude: 0, Area: 1, Duration: 0 },
+                'Cooldown Duration': 0,
+              },
+            },
+          ],
+        },
+      } as unknown as EsmRecord;
+    }
+    if (formId === VFX_MGEF_ID) {
+      return {
+        header: { signature: 'MGEF', form_id: VFX_MGEF_ID },
+        editor_id: 'CircuitBreaker_ApplyExplosionEffect',
+        fields: {
+          'Magic Effect Data': {
+            Data: {
+              Archetype: { name: 'Script' },
+              Explosion: VFX_EXPL_ID,
+              Flags: { value: '0x0', flags: [] },
+            },
+          },
+        },
+      } as unknown as EsmRecord;
+    }
+    if (formId === VFX_EXPL_ID) {
+      return {
+        header: { signature: 'EXPL', form_id: VFX_EXPL_ID },
+        editor_id: 'expl_circuitbreaker_vfx',
+        fields: { Data: { Damage: 0, 'Base Weapon Damage Mult': 0 } },
+      } as unknown as EsmRecord;
+    }
+    if (formId === IMPACT_SPEL_ID) {
+      return {
+        header: { signature: 'SPEL', form_id: IMPACT_SPEL_ID },
+        editor_id: 'CircuitbreakerImpactSpell',
+        fields: {
+          Data: { 'Target Type': { name: 'Contact' } },
+          Effects: [
+            {
+              Effect: {
+                'Base Effect': STUN_MGEF_ID,
+                'Effect Item Data': { Magnitude: 0, Area: 50, Duration: 5 },
+                'Cooldown Duration': 10,
+              },
+            },
+            {
+              Effect: {
+                'Base Effect': BIG_HIT_MGEF_ID,
+                'Effect Item Data': { Magnitude: 31, Area: 0, Duration: 0 },
+                'Curve Table': {
+                  curve_path: 'Player\\Damage\\Damage_Universal_Tier24.json',
+                  curve: [
+                    { x: 1, y: 31 },
+                    { x: 50, y: 103 },
+                  ],
+                },
+                'Cooldown Duration': 0,
+              },
+            },
+            {
+              Effect: {
+                'Base Effect': SMALL_HIT_MGEF_ID,
+                'Effect Item Data': { Magnitude: 6, Area: 50, Duration: 0 },
+                'Curve Table': {
+                  curve_path: 'Player\\Damage\\Damage_Universal_Tier10.json',
+                  curve: [
+                    { x: 1, y: 6 },
+                    { x: 50, y: 20 },
+                  ],
+                },
+                'Cooldown Duration': 0,
+              },
+            },
+          ],
+        },
+      } as unknown as EsmRecord;
+    }
+    if (formId === STUN_MGEF_ID) {
+      return {
+        header: { signature: 'MGEF', form_id: STUN_MGEF_ID },
+        editor_id: 'CircuitBreakerEffect_Stun',
+        fields: {
+          'Magic Effect Data': {
+            Data: { Archetype: { name: 'Stunned' }, Flags: { value: '0x0', flags: [] } },
+          },
+        },
+      } as unknown as EsmRecord;
+    }
+    if (formId === BIG_HIT_MGEF_ID)
+      return instantDamageMgef(BIG_HIT_MGEF_ID, 'CircuitBreaker_DamageHealthContact');
+    if (formId === SMALL_HIT_MGEF_ID)
+      return instantDamageMgef(SMALL_HIT_MGEF_ID, 'CircuitBreaker_SmallHit');
+    if (formId === ENERGY_RESIST_FORMID) {
+      return {
+        header: { signature: 'AVIF', form_id: ENERGY_RESIST_FORMID },
+        editor_id: 'EnergyResist',
+        fields: {},
+      } as unknown as EsmRecord;
+    }
+    throw new Error(`unexpected get(${formId})`);
+  };
+
+  const client = createInMemoryEsmSource({ getFallback: recordFor });
+  const deps = {
+    client,
+    routes: new Map<string, AvifRoute[]>(),
+    edidByFormId: new Map<string, string>(),
+  };
+
+  it('chases both Spell Item effects into one lastRound proc carrying both instant-damage components (the VFX-only cast contributes nothing)', async () => {
+    const result = await translateGrantedPerk(deps, 'mod_Custom_CircuitBreaker_Effect', PERK_ID);
+    expect(result.procs).toEqual([
+      {
+        trigger: 'lastRound',
+        components: [
+          {
+            damageType: 'energy',
+            damageTypeEdid: 'EnergyResist',
+            amount: 31,
+            tier: null,
+            curve: [
+              { x: 1, y: 31 },
+              { x: 50, y: 103 },
+            ],
+            isAoe: false,
+          },
+          {
+            damageType: 'energy',
+            damageTypeEdid: 'EnergyResist',
+            amount: 6,
+            tier: null,
+            curve: [
+              { x: 1, y: 6 },
+              { x: 50, y: 20 },
+            ],
+            isAoe: true,
+          },
+        ],
+      },
+    ]);
+    expect(result.modifiers).toEqual([]);
   });
 });
 
