@@ -33,6 +33,7 @@ function mgef(overrides: Partial<MgefInfo> = {}): MgefInfo {
     actorValue: '0xAV',
     resistValue: null,
     perkToApply: null,
+    explosion: null,
     keywords: [],
     dispelWithKeywords: false,
     detrimental: false,
@@ -50,6 +51,8 @@ function effect(overrides: Partial<SpellEffect> = {}): SpellEffect {
     curvePoints: null,
     curveInputAv: null,
     magnitudeGlobal: null,
+    cooldownDurationSec: null,
+    area: null,
     ...overrides,
   };
 }

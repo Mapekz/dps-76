@@ -737,9 +737,12 @@ function resolveCurveInput(curveInputAv: string | null, mgefEdid: string): Curve
 /**
  * Damage-archetype MGEFs (bleed/burn/shock weapon mods) carry their element in
  * the record's "Resist Value" AV. Resolved edid → app damage type; unknown
- * resists fall back to a note.
+ * resists fall back to a note. Exported for `normalize/proc.ts`'s
+ * `decodeInstantDamageComponent` (Circuit Breaker's instant-Contact-damage
+ * shape — issue #42), which needs the same edid → DamageType mapping outside
+ * the DoT path.
  */
-const RESIST_AV_DAMAGE_TYPES: Record<string, DamageType> = {
+export const RESIST_AV_DAMAGE_TYPES: Record<string, DamageType> = {
   DamageResist: 'ballistic', // bleeds resist as physical
   EnergyResist: 'energy',
   FireResist: 'fire',
@@ -765,6 +768,20 @@ export interface SpellEffect {
    * translateMagicEffect before the pure translate() call.
    */
   magnitudeGlobal: string | null;
+  /**
+   * The effect entry's own `Cooldown Duration` (a SIBLING of `Effect Item
+   * Data`, not nested inside it — esm-walk-verified 2026-08-19 on Fracturer's
+   * SPEL 0x00795779) — the per-cast cooldown of a Function-Type-5 "Spell
+   * Item" granted spell (issue #42's `onCripple` proc trigger). Null when
+   * absent/zero.
+   */
+  cooldownDurationSec: number | null;
+  /**
+   * `Effect Item Data.Area` — the effect's own area-of-effect radius, used by
+   * `normalize/proc.ts`'s `decodeInstantDamageComponent` to flag
+   * `GeneratedProcComponent.isAoe` (Circuit Breaker's shape). Null when absent.
+   */
+  area: number | null;
 }
 
 /** Parse the Effects list of a SPEL/ENCH/ALCH record. */
@@ -787,6 +804,8 @@ export function parseMagicEffects(record: EsmRecord): SpellEffect[] {
         Array.isArray(curveTable?.curve) && curveTable.curve.length > 0 ? curveTable.curve : null,
       curveInputAv: (e['Actor Value'] as string) ?? null,
       magnitudeGlobal,
+      cooldownDurationSec: typeof e['Cooldown Duration'] === 'number' ? (e['Cooldown Duration'] as number) : null,
+      area: typeof data['Area'] === 'number' ? (data['Area'] as number) : null,
     });
   }
   return out;
@@ -801,6 +820,14 @@ export interface MgefInfo {
   resistValue: string | null;
   /** "Perk to Apply" PERK formid — Script-archetype legendary effects carry their stats on a granted perk. */
   perkToApply: string | null;
+  /**
+   * "Explosion" EXPL formid — a Script- or Damage-archetype MGEF that detonates
+   * an EXPL instead of (or alongside) carrying its own magnitude/curve
+   * (Electrician's/Fracturer's proc payloads, issue #42). Authoritative over
+   * the MGEF's own magnitude/curve when set — see `translateMagicEffect`'s
+   * proc-chase branch. Null when absent/the zero sentinel.
+   */
+  explosion: string | null;
   /**
    * Consumable-only: raw KYWD formids from the MGEF's top-level
    * `Keywords.Keywords` field (empty array when the record carries none).
@@ -854,6 +881,10 @@ export async function getMgefInfo(client: EsmSource, formId: string): Promise<Mg
     actorValue: (data['Actor Value'] as string) ?? null,
     resistValue: (data['Resist Value'] as string) ?? null,
     perkToApply: perkToApply === '0x00000000' ? null : perkToApply,
+    explosion:
+      typeof data['Explosion'] === 'string' && data['Explosion'] !== '0x00000000'
+        ? (data['Explosion'] as string)
+        : null,
     keywords,
     dispelWithKeywords: flagNames.includes('Dispel with Keywords'),
     detrimental: flagNames.includes('Detrimental'),

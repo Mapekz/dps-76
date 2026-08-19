@@ -203,6 +203,8 @@ function spellEffect(mgefFormId: string): SpellEffect {
     curvePoints: null,
     curveInputAv: null,
     magnitudeGlobal: null,
+    cooldownDurationSec: null,
+    area: null,
   };
 }
 
