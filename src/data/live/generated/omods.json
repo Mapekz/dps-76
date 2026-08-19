@@ -16426,7 +16426,21 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00663B0C:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00663B0C",
+     "edid": "E09C_mod_Custom_LoveTap",
+     "name": "Love Tap"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.3,
+    "conditions": []
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "FeaturedItem",
@@ -16434,9 +16448,7 @@
    "CustomItemName_LoveTap"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "perk LoveTapPerk: entry point Apply Combat Melee Spell — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -42594,9 +42606,122 @@
    "HasLegendary_Weapon_ReloadSpeed"
   ],
   "hasEnchantments": true,
+  "procChase": [
+   {
+    "trigger": "lastRound",
+    "components": [
+     {
+      "damageType": "energy",
+      "damageTypeEdid": "EnergyResist",
+      "amount": 31,
+      "tier": null,
+      "curve": [
+       {
+        "x": 1,
+        "y": 31
+       },
+       {
+        "x": 5,
+        "y": 35
+       },
+       {
+        "x": 10,
+        "y": 39
+       },
+       {
+        "x": 15,
+        "y": 44
+       },
+       {
+        "x": 20,
+        "y": 50
+       },
+       {
+        "x": 25,
+        "y": 56
+       },
+       {
+        "x": 30,
+        "y": 64
+       },
+       {
+        "x": 35,
+        "y": 72
+       },
+       {
+        "x": 40,
+        "y": 81
+       },
+       {
+        "x": 45,
+        "y": 91
+       },
+       {
+        "x": 50,
+        "y": 103
+       }
+      ],
+      "isAoe": false
+     },
+     {
+      "damageType": "energy",
+      "damageTypeEdid": "EnergyResist",
+      "amount": 6,
+      "tier": null,
+      "curve": [
+       {
+        "x": 1,
+        "y": 6
+       },
+       {
+        "x": 5,
+        "y": 7
+       },
+       {
+        "x": 10,
+        "y": 8
+       },
+       {
+        "x": 15,
+        "y": 9
+       },
+       {
+        "x": 20,
+        "y": 10
+       },
+       {
+        "x": 25,
+        "y": 11
+       },
+       {
+        "x": 30,
+        "y": 13
+       },
+       {
+        "x": 35,
+        "y": 14
+       },
+       {
+        "x": 40,
+        "y": 16
+       },
+       {
+        "x": 45,
+        "y": 18
+       },
+       {
+        "x": 50,
+        "y": 20
+       }
+      ],
+      "isAoe": true
+     }
+    ]
+   }
+  ],
   "notes": [
    "perk CircuitBreakerPerk: GetDead()=0",
-   "perk CircuitBreakerPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk CircuitBreakerPerk: MGEF CircuitBreakerEffect_Explosion: Explosion 0x006E20EB chased — no direct damage"
   ],
   "obtainable": true
  },
@@ -42611,9 +42736,122 @@
   "modifiers": [],
   "addedKeywords": [],
   "hasEnchantments": true,
+  "procChase": [
+   {
+    "trigger": "lastRound",
+    "components": [
+     {
+      "damageType": "energy",
+      "damageTypeEdid": "EnergyResist",
+      "amount": 31,
+      "tier": null,
+      "curve": [
+       {
+        "x": 1,
+        "y": 31
+       },
+       {
+        "x": 5,
+        "y": 35
+       },
+       {
+        "x": 10,
+        "y": 39
+       },
+       {
+        "x": 15,
+        "y": 44
+       },
+       {
+        "x": 20,
+        "y": 50
+       },
+       {
+        "x": 25,
+        "y": 56
+       },
+       {
+        "x": 30,
+        "y": 64
+       },
+       {
+        "x": 35,
+        "y": 72
+       },
+       {
+        "x": 40,
+        "y": 81
+       },
+       {
+        "x": 45,
+        "y": 91
+       },
+       {
+        "x": 50,
+        "y": 103
+       }
+      ],
+      "isAoe": false
+     },
+     {
+      "damageType": "energy",
+      "damageTypeEdid": "EnergyResist",
+      "amount": 6,
+      "tier": null,
+      "curve": [
+       {
+        "x": 1,
+        "y": 6
+       },
+       {
+        "x": 5,
+        "y": 7
+       },
+       {
+        "x": 10,
+        "y": 8
+       },
+       {
+        "x": 15,
+        "y": 9
+       },
+       {
+        "x": 20,
+        "y": 10
+       },
+       {
+        "x": 25,
+        "y": 11
+       },
+       {
+        "x": 30,
+        "y": 13
+       },
+       {
+        "x": 35,
+        "y": 14
+       },
+       {
+        "x": 40,
+        "y": 16
+       },
+       {
+        "x": 45,
+        "y": 18
+       },
+       {
+        "x": 50,
+        "y": 20
+       }
+      ],
+      "isAoe": true
+     }
+    ]
+   }
+  ],
   "notes": [
    "perk CircuitBreakerPerk: GetDead()=0",
-   "perk CircuitBreakerPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk CircuitBreakerPerk: MGEF CircuitBreakerEffect_Explosion: Explosion 0x006E20EB chased — no direct damage"
   ],
   "obtainable": false
  },
@@ -43943,6 +44181,32 @@
      }
     ],
     "durationSec": 3
+   },
+   {
+    "id": "0x006E06A3:perk:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x006E06A3",
+     "edid": "mod_custom_HolyFire_Effect",
+     "name": "mod_custom_HolyFire_Effect"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.3,
+    "conditions": []
+   },
+   {
+    "id": "0x006E06A3:perk:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x006E06A3",
+     "edid": "mod_custom_HolyFire_Effect",
+     "name": "mod_custom_HolyFire_Effect"
+    },
+    "bucket": "damageResistGain",
+    "op": "ADD",
+    "value": 50,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -43952,9 +44216,7 @@
    "Moon_ma_BlueFlamer"
   ],
   "hasEnchantments": true,
-  "notes": [
-   "perk HolyFire_Perk: entry point Apply Friendly Hit Spell — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -44916,7 +45178,9 @@
   ],
   "hasEnchantments": false,
   "notes": [
-   "perk MintyBreather_Perk: entry point Apply Friendly Hit Spell — not modeled"
+   "perk MintyBreather_Perk: MGEF MintyBreatherRestoreHealthEffect archetype Stimpak — needs override",
+   "perk MintyBreather_Perk: condition: HasKeyword(ActorTypeTurret)=0",
+   "perk MintyBreather_Perk: condition: IsBleedingOut()=0"
   ],
   "obtainable": true
  },
@@ -44928,7 +45192,86 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x008EC62B:perk:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008EC62B",
+     "edid": "mod_Custom_Nailer",
+     "name": "Nailer"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "curve": {
+     "input": "itemLevel",
+     "points": [
+      {
+       "x": 1,
+       "y": 3
+      },
+      {
+       "x": 5,
+       "y": 3
+      },
+      {
+       "x": 10,
+       "y": 4
+      },
+      {
+       "x": 15,
+       "y": 4
+      },
+      {
+       "x": 20,
+       "y": 5
+      },
+      {
+       "x": 25,
+       "y": 5
+      },
+      {
+       "x": 30,
+       "y": 6
+      },
+      {
+       "x": 35,
+       "y": 7
+      },
+      {
+       "x": 40,
+       "y": 7
+      },
+      {
+       "x": 45,
+       "y": 8
+      },
+      {
+       "x": 50,
+       "y": 9
+      }
+     ]
+    },
+    "curveScale": 1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "HasKeyword(BleedImmune)=0"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "WornHasKeyword(HasLegendary_Weapon_HealAllies)=0"
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "ballistic"
+      ]
+     }
+    ],
+    "durationSec": 10
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItemName_Nailer",
@@ -44936,7 +45279,8 @@
   ],
   "hasEnchantments": false,
   "notes": [
-   "perk NailerPerk: entry point Mod Power Attack Damage uses Select Spell — skipped"
+   "perk NailerPerk: condition: HasKeyword(BleedImmune)=0",
+   "perk NailerPerk: condition: WornHasKeyword(HasLegendary_Weapon_HealAllies)=0"
   ],
   "obtainable": true
  },
@@ -46105,7 +46449,7 @@
   "hasEnchantments": false,
   "notes": [
    "ActorValues on LGND_APOnKill — unmapped",
-   "perk LegendaryAPViaKillPerk: entry point Apply On Kill Spell — not modeled"
+   "perk LegendaryAPViaKillPerk: MGEF RestoreActionPoints: zero magnitude, no curve — script/scaled, needs override"
   ],
   "obtainable": true
  },
@@ -46278,8 +46622,7 @@
   "hasEnchantments": false,
   "notes": [
    "ActorValues on LGND_Medic — unmapped",
-   "perk Legendary_Weapon_MedicPerk: HasKeyword(ActorTypeTurret)=0",
-   "perk Legendary_Weapon_MedicPerk: entry point Apply Friendly Hit Spell — not modeled"
+   "perk Legendary_Weapon_MedicPerk: HasKeyword(ActorTypeTurret)=0"
   ],
   "obtainable": true
  },
@@ -47773,8 +48116,10 @@
    "perk MoM_VoiceofSetPerk: MGEF MoM_VoiceofSet_Base_Desc archetype Script — needs override",
    "perk MoM_VoiceofSetPerk: MGEF MoM_VoiceofSet_EyeRA_Desc archetype Script — needs override",
    "perk MoM_VoiceofSetPerk: WornHasKeyword(MoMEyeOfRaItemKeyword)=1",
+   "perk MoM_VoiceofSetPerk: condition: GetRandomPercent()=25",
+   "perk MoM_VoiceofSetPerk: condition: HasKeyword(ImmuneParalysis)=0",
    "perk MoM_VoiceofSetPerk: condition: WornHasKeyword(MoMEyeOfRaItemKeyword)=1",
-   "perk MoM_VoiceofSetPerk: entry point Apply Combat Hit Spell — not modeled"
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -67738,7 +68083,7 @@
   "hasEnchantments": true,
   "notes": [
    "perk HeadHunter_OnKillPerk: GetHitLocation()=1",
-   "perk HeadHunter_OnKillPerk: entry point Apply On Kill Spell — not modeled"
+   "perk HeadHunter_OnKillPerk: MGEF HeadHunter_AddPerk grants a nested perk — target-redirect risk (see chaseGrantedSpell's allowNestedGrant doc comment), not modeled"
   ],
   "obtainable": false
  },
@@ -68256,7 +68601,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk LegendaryDebuffDamagePerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk LegendaryDebuffDamagePerk: MGEF Legendary_DebuffDamage_TargetEffect grants a nested perk — target-redirect risk (see chaseGrantedSpell's allowNestedGrant doc comment), not modeled"
   ],
   "obtainable": true
  },
@@ -69188,8 +69533,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on LGND_Medic — unmapped",
-   "perk Legendary_Weapon_MedicPerk: HasKeyword(ActorTypeTurret)=0",
-   "perk Legendary_Weapon_MedicPerk: entry point Apply Friendly Hit Spell — not modeled"
+   "perk Legendary_Weapon_MedicPerk: HasKeyword(ActorTypeTurret)=0"
   ],
   "obtainable": true
  },
@@ -69212,7 +69556,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk BOUNTY_Legendary_Weapon_IncreaseFeralPerk: entry point Apply On Kill Spell — not modeled"
+   "perk BOUNTY_Legendary_Weapon_IncreaseFeralPerk: MGEF BOUNTY_AddFeralWeaponLegendaryEffect: no route for AV GHL_SURV_Feral — needs mapping"
   ],
   "obtainable": true
  },
@@ -69235,7 +69579,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "perk LegendaryVampirePerk: GetDead()=0",
-   "perk LegendaryVampirePerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk LegendaryVampirePerk: MGEF Legendary_VampireRegenEffect archetype Stimpak — needs override"
   ],
   "obtainable": true
  },
@@ -69258,7 +69602,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on LGND_APOnKill — unmapped",
-   "perk LegendaryAPViaKillPerk: entry point Apply On Kill Spell — not modeled"
+   "perk LegendaryAPViaKillPerk: MGEF RestoreActionPoints: zero magnitude, no curve — script/scaled, needs override"
   ],
   "obtainable": true
  },
@@ -69726,7 +70070,7 @@
   "notes": [
    "MGEF BOUNTY_AbLegendary_Weapon_PickPocket_Description archetype Script — needs override",
    "perk BOUNTY_Legendary_Weapon_PickPocketPerk: GetRandomPercent()=50",
-   "perk BOUNTY_Legendary_Weapon_PickPocketPerk: entry point Apply On Kill Spell — not modeled"
+   "perk BOUNTY_Legendary_Weapon_PickPocketPerk: MGEF BOUNTY_PickPocketLegendaryEffect archetype Script — needs override"
   ],
   "obtainable": true
  },
@@ -69901,7 +70245,7 @@
   "notes": [
    "MGEF BOUNTY_AbLegendary_GlowingWeapon_Description archetype Script — needs override",
    "MGEF BOUNTY_AbLegendary_Glowing_Human_Description archetype Script — needs override",
-   "perk BOUNTY_Legendary_Weapon_GlowingPerk: entry point Apply On Kill Spell — not modeled"
+   "perk BOUNTY_Legendary_Weapon_GlowingPerk: MGEF BOUNTY_LegendaryWeapon_Glowing: no route for AV Rads — needs mapping"
   ],
   "obtainable": true
  },
@@ -69925,7 +70269,7 @@
   "notes": [
    "perk LegendaryCloakOnHitPerk: GetDead()=0",
    "perk LegendaryCloakOnHitPerk: GetRandomPercent()=0x006C1FA5",
-   "perk LegendaryCloakOnHitPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk LegendaryCloakOnHitPerk: MGEF Legendary_CloakEffect archetype Invisibility — needs override"
   ],
   "obtainable": true
  },
@@ -70532,7 +70876,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "perk Legendary_Weapon_Conductors: perk Legendary_Weapon_ConductorsPlayerPerk: GetLastHitCritical()=1",
-   "perk Legendary_Weapon_Conductors: perk Legendary_Weapon_ConductorsPlayerPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk Legendary_Weapon_Conductors: perk Legendary_Weapon_ConductorsPlayerPerk: MGEF Legendary_Weapon_ConductorsAddCloakEffect archetype Cloak — needs override"
   ],
   "obtainable": true
  },
@@ -70667,9 +71011,68 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
+  "procChase": [
+   {
+    "trigger": "onCripple",
+    "cooldownSec": 3,
+    "components": [
+     {
+      "damageType": "explosive",
+      "damageTypeEdid": null,
+      "amount": 150,
+      "tier": null,
+      "curve": [
+       {
+        "x": 1,
+        "y": 22
+       },
+       {
+        "x": 5,
+        "y": 24
+       },
+       {
+        "x": 10,
+        "y": 26
+       },
+       {
+        "x": 15,
+        "y": 28
+       },
+       {
+        "x": 20,
+        "y": 30
+       },
+       {
+        "x": 25,
+        "y": 33
+       },
+       {
+        "x": 30,
+        "y": 36
+       },
+       {
+        "x": 35,
+        "y": 39
+       },
+       {
+        "x": 40,
+        "y": 42
+       },
+       {
+        "x": 45,
+        "y": 46
+       },
+       {
+        "x": 50,
+        "y": 50
+       }
+      ]
+     }
+    ]
+   }
+  ],
   "notes": [
-   "perk Legendary_Weapon_FracturersPerk: GetDead()=0",
-   "perk Legendary_Weapon_FracturersPerk: entry point Apply Spell On Actor When Limb Crippled — not modeled"
+   "perk Legendary_Weapon_FracturersPerk: GetDead()=0"
   ],
   "obtainable": true
  },
@@ -70691,14 +71094,75 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
+  "procChase": [
+   {
+    "trigger": "reloadCycle",
+    "components": [
+     {
+      "damageType": "explosive",
+      "damageTypeEdid": null,
+      "amount": 0.01,
+      "tier": null,
+      "curve": null
+     },
+     {
+      "damageType": "energy",
+      "damageTypeEdid": "dtEnergy",
+      "amount": 0,
+      "tier": null,
+      "curve": [
+       {
+        "x": 1,
+        "y": 11
+       },
+       {
+        "x": 5,
+        "y": 12
+       },
+       {
+        "x": 10,
+        "y": 13
+       },
+       {
+        "x": 15,
+        "y": 14
+       },
+       {
+        "x": 20,
+        "y": 15
+       },
+       {
+        "x": 25,
+        "y": 16.5
+       },
+       {
+        "x": 30,
+        "y": 18
+       },
+       {
+        "x": 35,
+        "y": 19.5
+       },
+       {
+        "x": 40,
+        "y": 21
+       },
+       {
+        "x": 45,
+        "y": 23
+       },
+       {
+        "x": 50,
+        "y": 25
+       }
+      ]
+     }
+    ]
+   }
+  ],
   "notes": [
-   "condition: GetActorGunState()=10",
    "condition: GetActorGunState()=4",
-   "condition: GetActorGunState()=7",
-   "condition: GetActorGunState()=8",
-   "condition: GetActorGunState()=9",
-   "condition: WornHasKeyword(WeaponNoReload)=1",
-   "perk Legendary_Weapon_ElectriciansPerkSpell: MGEF Legendary_Weapon_ElectriciansApplyExplosionPerkEffect archetype Script — needs override"
+   "condition: WornHasKeyword(WeaponNoReload)=1"
   ],
   "obtainable": true
  },
@@ -118691,7 +119155,8 @@
   "hasEnchantments": true,
   "notes": [
    "perk P62_Weapon_crTempest_AddBleedPerk: HasKeyword(P62_ma_Tempest)=1",
-   "perk P62_Weapon_crTempest_AddBleedPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk P62_Weapon_crTempest_AddBleedPerk: P62_Weapon_Tempest_ApplyBleedEffect: DoT curve with unmapped input AV null — needs override",
+   "perk P62_Weapon_crTempest_AddBleedPerk: condition: WornHasKeyword(HasLegendary_Weapon_HealAllies)=0"
   ],
   "obtainable": true
  },
@@ -118853,7 +119318,9 @@
   "hasEnchantments": true,
   "notes": [
    "perk P62_Weapon_Tempest_AddBleedPerk: HasKeyword(P62_ma_Tempest)=1",
-   "perk P62_Weapon_Tempest_AddBleedPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk P62_Weapon_Tempest_AddBleedPerk: P62_Weapon_Tempest_ApplyBleedEffect: DoT curve with unmapped input AV null — needs override",
+   "perk P62_Weapon_Tempest_AddBleedPerk: condition: WornHasKeyword(HasLegendary_Weapon_HealAllies)=0",
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -119296,7 +119763,7 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "perk P62_Legendary_Weapon_BrutalistsPerk: entry point Apply On Kill Spell — not modeled"
+   "perk P62_Legendary_Weapon_BrutalistsPerk: MGEF P62_Legendary_Weapon_BrutalistsOnKillPerkEffect archetype Script — needs override"
   ],
   "obtainable": false
  },
@@ -119320,7 +119787,8 @@
   "notes": [
    "MGEF P62_Legendary_Weapon_SatiatedDescriptionEffect archetype Script — needs override",
    "MGEF P62_Legendary_Weapon_SatiatedGhoulDescriptionEffect archetype Script — needs override",
-   "perk P62_Legendary_Weapon_SatiatedPerk: entry point Apply On Kill Spell — not modeled"
+   "perk P62_Legendary_Weapon_SatiatedPerk: MGEF P62_Legendary_Weapon_SatiatedPerkApplyHungerEffect: no route for AV SURV_Hunger — needs mapping",
+   "perk P62_Legendary_Weapon_SatiatedPerk: MGEF P62_Legendary_Weapon_SatiatedPerkApplyThirstEffect: no route for AV SURV_Thirst — needs mapping"
   ],
   "obtainable": false
  },
@@ -126304,7 +126772,7 @@
   "hasEnchantments": true,
   "notes": [
    "MGEF S21_IceBreakerEffect_TextDummy archetype Script — needs override",
-   "perk SCORE_S21_IceBreaker_Perk: entry point Apply On Kill Spell — not modeled"
+   "perk SCORE_S21_IceBreaker_Perk: Apply On Kill Spell — Function-Type-5 chase produced damage but no proc-trigger classification, dropped"
   ],
   "obtainable": true
  },

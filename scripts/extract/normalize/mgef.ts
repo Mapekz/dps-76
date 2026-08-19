@@ -1329,6 +1329,27 @@ export async function chaseGrantedSpell(
   contextEdid: string,
   spellFormId: string,
   outerConditions: Condition[],
+  /**
+   * false (Function-Type-5 "Spell Item" call site only) refuses ordinary
+   * modifiers from an effect that is ITSELF a Script-archetype MGEF with its
+   * own `Perk to Apply` — a second hop of indirection that can retarget the
+   * grant onto the STRUCK ENEMY instead of the wielder. ESM-proven
+   * 2026-08-19: Suppressor's (`mod_Legendary_Weapon1_DebuffDamage`) chases
+   * EP51 "Apply Combat Hit Spell" → SPEL (Target Type Self) → MGEF (Script,
+   * Perk to Apply) → PERK `LegendaryDebuffDamage_TargetPerk` ("Reduce
+   * target's damage output by 25%... after you attack") — the SECOND
+   * Perk-to-Apply hop is what actually lands on the struck enemy, not the
+   * "Self" delivery on the first SPEL. Blindly folding its granted `Mod
+   * Weapon Attack Damage` modifier onto THIS omod would read as "your own
+   * weapon deals 25% less damage" — backwards. Neither of the two ESM-walked
+   * proc targets that route through this branch (Fracturer's/Circuit
+   * Breaker) has a nested Perk-to-Apply on their own chased effects, so this
+   * restriction costs them nothing; `true` (the Ability branch, effectType
+   * `'Ability'`) is unchanged from its pre-2026-08-19 behavior — Ability
+   * grants are conventionally simple wielder self-buffs, and no case of this
+   * shape is known to exist there.
+   */
+  allowNestedGrant: boolean,
 ): Promise<MgefTranslationResult> {
   const { client, edidByFormId } = deps;
   const result: MgefTranslationResult = { modifiers: [], notes: [], unmappedAvifs: [] };
@@ -1353,6 +1374,13 @@ export async function chaseGrantedSpell(
         result.procComponents = [...(result.procComponents ?? []), component];
         result.procCooldownSec ??= se.cooldownDurationSec ?? undefined;
       }
+      continue;
+    }
+
+    if (!allowNestedGrant && effectMgef.archetype === 'Script' && effectMgef.perkToApply) {
+      result.notes.push(
+        `${contextEdid}: MGEF ${effectMgef.edid} grants a nested perk — target-redirect risk (see chaseGrantedSpell's allowNestedGrant doc comment), not modeled`,
+      );
       continue;
     }
 
@@ -1608,7 +1636,13 @@ export async function translateGrantedPerk(
         'name'
       ];
       if (functionTypeName === 'Spell Item' && typeof e['Spell'] === 'string') {
-        const sub = await chaseGrantedSpell(deps, `perk ${perkEdid}`, e['Spell'], conditions);
+        const sub = await chaseGrantedSpell(
+          deps,
+          `perk ${perkEdid}`,
+          e['Spell'],
+          conditions,
+          false,
+        );
         sub.notes.forEach((n) => result.notes.push(n));
         sub.unmappedAvifs.forEach((a) => result.unmappedAvifs.push(a));
         result.modifiers.push(...sub.modifiers);
@@ -1763,7 +1797,7 @@ export async function translateGrantedPerk(
     }
 
     if (effectType === 'Ability' && typeof e['Ability'] === 'string') {
-      const sub = await chaseGrantedSpell(deps, `perk ${perkEdid}`, e['Ability'], conditions);
+      const sub = await chaseGrantedSpell(deps, `perk ${perkEdid}`, e['Ability'], conditions, true);
       sub.notes.forEach((n) => result.notes.push(n));
       sub.unmappedAvifs.forEach((a) => result.unmappedAvifs.push(a));
       result.modifiers.push(...sub.modifiers);

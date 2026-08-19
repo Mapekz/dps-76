@@ -2,6 +2,7 @@ import type {
   ExcludedRecordDetail,
   GeneratedExplosionSwap,
   GeneratedOmod,
+  GeneratedProc,
 } from '../../src/types/generated';
 import type { Bucket, Modifier } from '../../src/types/modifiers';
 import { mapPool, type EsmRecord, type EsmSource } from './esm-client';
@@ -630,6 +631,7 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
     let hasEnchantments = false;
     let explosionChase: GeneratedExplosionSwap | undefined;
     let chainSuppressesExplosion = false;
+    const procs: GeneratedProc[] = [];
     const source: Modifier['source'] = {
       kind: 'omod',
       formId: record.header.form_id,
@@ -657,13 +659,14 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
             modNotes.add(`removes enchantment ${await client.resolveEdid(prop.value1)}`);
           } else {
             // ADD/SET: this OMOD grants the enchantment.
-            await enchantmentModifiers(
+            const enchProcs = await enchantmentModifiers(
               prop.value1,
               source,
               modifiers,
               modNotes,
               projectileChaseDeps,
             );
+            procs.push(...enchProcs);
           }
         }
         continue;
@@ -714,6 +717,7 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
               ...fragment,
             });
           }
+          if (result.procs) procs.push(...result.procs);
         }
         continue;
       }
@@ -955,6 +959,7 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
       ...(hasGrantingCobj ? { hasGrantingCobj } : {}),
       ...(explosionChase ? { explosionChase } : {}),
       ...(chainSuppressesExplosion ? { chainSuppressesExplosion } : {}),
+      ...(procs.length > 0 ? { procChase: procs } : {}),
       ...(job.variantOf ? { variantOf: job.variantOf } : {}),
       notes: [...modNotes].sort(),
     };

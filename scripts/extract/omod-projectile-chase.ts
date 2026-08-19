@@ -1,4 +1,4 @@
-import type { GeneratedExplosionSwap } from '../../src/types/generated';
+import type { GeneratedExplosionSwap, GeneratedProc } from '../../src/types/generated';
 import type { Modifier } from '../../src/types/modifiers';
 import type { EsmRecord, EsmSource } from './esm-client';
 import { translateEnchantment, type MgefTranslationDeps } from './normalize/mgef';
@@ -14,14 +14,22 @@ export interface ProjectileChaseDeps {
   mgefDeps: MgefTranslationDeps;
 }
 
+/**
+ * Returns the ENCH's own classified procs (issue #42 — PROC_DAMAGE_PLAN.md;
+ * Electrician's/Fracturer's/Circuit Breaker) for the caller to attach as
+ * `GeneratedOmod.procChase` — empty when the ENCH chased none.
+ */
 export async function enchantmentModifiers(
   enchFormId: string,
   source: Modifier['source'],
   into: Modifier[],
   modNotes: Set<string>,
   deps: ProjectileChaseDeps,
-): Promise<void> {
-  const { modifiers, notes, targetType } = await translateEnchantment(deps.mgefDeps, enchFormId);
+): Promise<GeneratedProc[]> {
+  const { modifiers, notes, targetType, procs } = await translateEnchantment(
+    deps.mgefDeps,
+    enchFormId,
+  );
   notes.forEach((n) => modNotes.add(n));
   for (const fragment of modifiers) {
     // A Self-delivery ENCH applies to the WIELDER, so a damage-dealing
@@ -37,6 +45,7 @@ export async function enchantmentModifiers(
     }
     into.push({ id: `${source.formId}:ench:${into.length}`, source, ...fragment });
   }
+  return procs;
 }
 
 /**

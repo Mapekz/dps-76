@@ -69104,7 +69104,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "perk Legendary_CloakOnMeleePerk: IsMeleeAttacking()=1",
-   "perk Legendary_CloakOnMeleePerk: entry point Apply Combat Hit Spell Taken — not modeled"
+   "perk Legendary_CloakOnMeleePerk: MGEF Legendary_CloakEffect archetype Invisibility — needs override"
   ],
   "obtainable": true
  },
@@ -71089,8 +71089,8 @@
    "ActorValues on Legendary_Armor_BurningCount — unmapped",
    "MGEF AbLegendary_Burning_Description archetype Script — needs override",
    "perk Legendary_Armor_BurningPerk: GetRandomPercent()=5",
-   "perk Legendary_Armor_BurningPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]",
-   "perk Legendary_Armor_BurningPerk: entry point Apply Combat Hit Spell Taken — not modeled"
+   "perk Legendary_Armor_BurningPerk: Legendary_Burning_FireEffect: DoT curve with unmapped input AV 0x0073E432 — needs override",
+   "perk Legendary_Armor_BurningPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
   "obtainable": true
  },
@@ -71159,8 +71159,8 @@
    "ActorValues on Legendary_Armor_ElectrifiedCount — unmapped",
    "MGEF AbLegendary_Electrified_Description archetype Script — needs override",
    "perk Legendary_Armor_ElectrifiedPerk: GetRandomPercent()=5",
-   "perk Legendary_Armor_ElectrifiedPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]",
-   "perk Legendary_Armor_ElectrifiedPerk: entry point Apply Combat Hit Spell Taken — not modeled"
+   "perk Legendary_Armor_ElectrifiedPerk: Legendary_Electrified_EnergyEffect: DoT curve with unmapped input AV 0x0073E430 — needs override",
+   "perk Legendary_Armor_ElectrifiedPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
   "obtainable": true
  },
@@ -71185,8 +71185,8 @@
    "ActorValues on Legendary_Armor_FrozenCount — unmapped",
    "MGEF AbLegendary_Frozen_Description archetype Script — needs override",
    "perk Legendary_Armor_FrozenPerk: GetRandomPercent()=5",
-   "perk Legendary_Armor_FrozenPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]",
-   "perk Legendary_Armor_FrozenPerk: entry point Apply Combat Hit Spell Taken — not modeled"
+   "perk Legendary_Armor_FrozenPerk: Legendary_Frozen_FrostEffect: DoT curve with unmapped input AV 0x0073E433 — needs override",
+   "perk Legendary_Armor_FrozenPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
   "obtainable": true
  },
@@ -71588,8 +71588,8 @@
    "ActorValues on Legendary_Armor_ToxicCount — unmapped",
    "MGEF AbLegendary_Toxic_Description archetype Script — needs override",
    "perk Legendary_Armor_ToxicPerk: GetRandomPercent()=5",
-   "perk Legendary_Armor_ToxicPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]",
-   "perk Legendary_Armor_ToxicPerk: entry point Apply Combat Hit Spell Taken — not modeled"
+   "perk Legendary_Armor_ToxicPerk: Legendary_Toxic_PoisonEffect: DoT curve with unmapped input AV 0x0073E431 — needs override",
+   "perk Legendary_Armor_ToxicPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
   "obtainable": true
  },
@@ -72136,7 +72136,8 @@
   "notes": [
    "ActorValues on Legendary_Tankys_PowerArmorCount — unmapped",
    "perk Legendary_Armor_TankyAddPerk: IsMoving()=0",
-   "perk Legendary_Armor_TankyAddPerk: entry point Apply Combat Hit Spell Taken — not modeled"
+   "perk Legendary_Armor_TankyAddPerk: Legendary_Armor_TankyApplyPerkModDamageEffect: curve with unmapped input AV 0x007B956A — needs override",
+   "perk Legendary_Armor_TankyAddPerk: condition: IsMoving()=0"
   ],
   "obtainable": true
  },
@@ -72405,7 +72406,7 @@
   "hasGrantingCobj": true,
   "notes": [
    "perk Legendary_CloakOnMeleePerk: IsMeleeAttacking()=1",
-   "perk Legendary_CloakOnMeleePerk: entry point Apply Combat Hit Spell Taken — not modeled"
+   "perk Legendary_CloakOnMeleePerk: MGEF Legendary_CloakEffect archetype Invisibility — needs override"
   ],
   "obtainable": true
  },
@@ -74034,8 +74035,8 @@
    "ActorValues on Legendary_Armor_BurningCount — unmapped",
    "MGEF AbLegendary_Burning_Description archetype Script — needs override",
    "perk Legendary_Armor_BurningPerk: GetRandomPercent()=5",
-   "perk Legendary_Armor_BurningPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]",
-   "perk Legendary_Armor_BurningPerk: entry point Apply Combat Hit Spell Taken — not modeled"
+   "perk Legendary_Armor_BurningPerk: Legendary_Burning_FireEffect: DoT curve with unmapped input AV 0x0073E432 — needs override",
+   "perk Legendary_Armor_BurningPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
   "obtainable": true
  },
@@ -74107,8 +74108,8 @@
    "ActorValues on Legendary_Armor_ElectrifiedCount — unmapped",
    "MGEF AbLegendary_Electrified_Description archetype Script — needs override",
    "perk Legendary_Armor_ElectrifiedPerk: GetRandomPercent()=5",
-   "perk Legendary_Armor_ElectrifiedPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]",
-   "perk Legendary_Armor_ElectrifiedPerk: entry point Apply Combat Hit Spell Taken — not modeled"
+   "perk Legendary_Armor_ElectrifiedPerk: Legendary_Electrified_EnergyEffect: DoT curve with unmapped input AV 0x0073E430 — needs override",
+   "perk Legendary_Armor_ElectrifiedPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
   "obtainable": true
  },
@@ -74134,8 +74135,8 @@
    "ActorValues on Legendary_Armor_FrozenCount — unmapped",
    "MGEF AbLegendary_Frozen_Description archetype Script — needs override",
    "perk Legendary_Armor_FrozenPerk: GetRandomPercent()=5",
-   "perk Legendary_Armor_FrozenPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]",
-   "perk Legendary_Armor_FrozenPerk: entry point Apply Combat Hit Spell Taken — not modeled"
+   "perk Legendary_Armor_FrozenPerk: Legendary_Frozen_FrostEffect: DoT curve with unmapped input AV 0x0073E433 — needs override",
+   "perk Legendary_Armor_FrozenPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
   "obtainable": true
  },
@@ -74454,8 +74455,8 @@
    "ActorValues on Legendary_Armor_ToxicCount — unmapped",
    "MGEF AbLegendary_Toxic_Description archetype Script — needs override",
    "perk Legendary_Armor_ToxicPerk: GetRandomPercent()=5",
-   "perk Legendary_Armor_ToxicPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]",
-   "perk Legendary_Armor_ToxicPerk: entry point Apply Combat Hit Spell Taken — not modeled"
+   "perk Legendary_Armor_ToxicPerk: Legendary_Toxic_PoisonEffect: DoT curve with unmapped input AV 0x0073E431 — needs override",
+   "perk Legendary_Armor_ToxicPerk: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | GetIsPlayer(undefined)=0]"
   ],
   "obtainable": true
  },
@@ -75082,7 +75083,9 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk Legendary_PowerArmor_ReflectivePerk: entry point Apply Combat Hit Spell Taken — not modeled"
+   "perk Legendary_PowerArmor_ReflectivePerk: MGEF Legendary_PowerArmor_ReflectiveApplyRecievePerkEffect: zero magnitude, no curve — script/scaled, needs override",
+   "perk Legendary_PowerArmor_ReflectivePerk: MGEF Legendary_PowerArmor_ReflectiveApplyReflectPerkEffect: no route for AV ReflectDamage — needs mapping",
+   "perk Legendary_PowerArmor_ReflectivePerk: MGEF Legendary_PowerArmor_ReflectiveApplyReflectVFXEffect archetype Script — needs override"
   ],
   "obtainable": true
  },
@@ -75227,7 +75230,8 @@
   "notes": [
    "ActorValues on Legendary_Tankys_PowerArmorCount — unmapped",
    "perk Legendary_Armor_TankyAddPerk: IsMoving()=0",
-   "perk Legendary_Armor_TankyAddPerk: entry point Apply Combat Hit Spell Taken — not modeled"
+   "perk Legendary_Armor_TankyAddPerk: Legendary_Armor_TankyApplyPerkModDamageEffect: curve with unmapped input AV 0x007B956A — needs override",
+   "perk Legendary_Armor_TankyAddPerk: condition: IsMoving()=0"
   ],
   "obtainable": true
  },
@@ -75847,7 +75851,9 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_RustyKnuckles_AV — unmapped",
-   "perk PA_CommonArmPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -76972,7 +76978,9 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_RustyKnuckles_AV — unmapped",
-   "perk PA_CommonArmPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -77021,7 +77029,9 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on UnarmedEnergyDamage — unmapped",
-   "perk PA_CommonArmPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -78028,7 +78038,9 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_RustyKnuckles_AV — unmapped",
-   "perk PA_CommonArmPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -79107,7 +79119,9 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_RustyKnuckles_AV — unmapped",
-   "perk PA_CommonArmPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -79156,7 +79170,9 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on UnarmedEnergyDamage — unmapped",
-   "perk PA_CommonArmPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -80875,7 +80891,9 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_RustyKnuckles_AV — unmapped",
-   "perk PA_CommonArmPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -80924,7 +80942,9 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on UnarmedEnergyDamage — unmapped",
-   "perk PA_CommonArmPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -83554,7 +83574,9 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_RustyKnuckles_AV — unmapped",
-   "perk PA_CommonArmPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -83603,7 +83625,9 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on UnarmedEnergyDamage — unmapped",
-   "perk PA_CommonArmPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -86713,7 +86737,9 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_RustyKnuckles_AV — unmapped",
-   "perk PA_CommonArmPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -86762,7 +86788,9 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on UnarmedEnergyDamage — unmapped",
-   "perk PA_CommonArmPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -87909,7 +87937,9 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_RustyKnuckles_AV — unmapped",
-   "perk PA_CommonArmPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -89187,7 +89217,9 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_RustyKnuckles_AV — unmapped",
-   "perk PA_CommonArmPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -89236,7 +89268,9 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on UnarmedEnergyDamage — unmapped",
-   "perk PA_CommonArmPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -92087,8 +92121,10 @@
   ],
   "hasEnchantments": true,
   "notes": [
-   "perk P62_Legendary_Armor_ReboundersPerk: OR-group[HasKeyword(AmmoTypeBallistic)=1 | HasKeyword(AmmoTypeExplosive)=1 | HasKeyword(WeaponTypeBallistic)=1 | HasKeyword(WeaponTypeExplosive)=1]",
-   "perk P62_Legendary_Armor_ReboundersPerk: entry point Apply Combat Hit Spell Taken — not modeled"
+   "perk P62_Legendary_Armor_ReboundersPerk: MGEF P62_Legendary_Armor_ReboundersApplyRecievePerkEffect: zero magnitude, no curve — script/scaled, needs override",
+   "perk P62_Legendary_Armor_ReboundersPerk: MGEF P62_Legendary_Armor_ReboundersApplyReflectPerkEffect: no route for AV ReflectDamage — needs mapping",
+   "perk P62_Legendary_Armor_ReboundersPerk: MGEF P62_Legendary_Armor_ReboundersApplyReflectVFXEffect archetype Script — needs override",
+   "perk P62_Legendary_Armor_ReboundersPerk: OR-group[HasKeyword(AmmoTypeBallistic)=1 | HasKeyword(AmmoTypeExplosive)=1 | HasKeyword(WeaponTypeBallistic)=1 | HasKeyword(WeaponTypeExplosive)=1]"
   ],
   "obtainable": false
  },
@@ -92299,12 +92335,12 @@
   ],
   "hasEnchantments": true,
   "notes": [
+   "perk P62_Legendary_PowerArmor_OverLoadersPerk: Apply Combat Hit Spell Taken — Function-Type-5 chase produced damage but no proc-trigger classification, dropped",
    "perk P62_Legendary_PowerArmor_OverLoadersPerk: GetRandomPercent()=10",
    "perk P62_Legendary_PowerArmor_OverLoadersPerk: GetRandomPercent()=20",
    "perk P62_Legendary_PowerArmor_OverLoadersPerk: GetRandomPercent()=30",
    "perk P62_Legendary_PowerArmor_OverLoadersPerk: GetRandomPercent()=40",
-   "perk P62_Legendary_PowerArmor_OverLoadersPerk: GetRandomPercent()=50",
-   "perk P62_Legendary_PowerArmor_OverLoadersPerk: entry point Apply Combat Hit Spell Taken — not modeled"
+   "perk P62_Legendary_PowerArmor_OverLoadersPerk: GetRandomPercent()=50"
   ],
   "obtainable": false
  },
@@ -93146,7 +93182,9 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on PA_RustyKnuckles_AV — unmapped",
-   "perk PA_CommonArmPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -93195,7 +93233,9 @@
   "hasGrantingCobj": true,
   "notes": [
    "ActorValues on UnarmedEnergyDamage — unmapped",
-   "perk PA_CommonArmPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=18",
+   "perk PA_CommonArmPerk: condition: GetValue(PA_RustyKnuckles_AV)=9",
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -93242,7 +93282,7 @@
   "hasEnchantments": true,
   "hasGrantingCobj": true,
   "notes": [
-   "perk RD01_PowerArmor_UltraciteBracers: entry point Apply Combat Hit Spell — not modeled"
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
@@ -94280,7 +94320,7 @@
   "notes": [
    "condition: HasKeyword(IsAlly)=0",
    "perk RD01_PowerArmor_Reflection: OR-group[HasKeyword(WeaponTypeHandToHand)=1 | HasKeyword(WeaponTypeMelee1H)=1 | HasKeyword(WeaponTypeMelee2H)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | HasKeyword(WeaponTypeUnarmed)=1 | HasActiveMagicEffect(RD01_PowerArmor_ReflectionOnHitTakenEffect)=0]",
-   "perk RD01_PowerArmor_Reflection: entry point Apply Combat Hit Spell Taken — not modeled"
+   "self-targeted damage (hits the wielder, not enemies) — note-only"
   ],
   "obtainable": true
  },
