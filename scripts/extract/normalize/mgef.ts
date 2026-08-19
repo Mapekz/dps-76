@@ -142,6 +142,57 @@ export const ENTRY_POINT_BUCKETS: Record<string, Bucket> = {
   // scaled DR). Routed to `armorPen` (fraction, not `armorPenFlat` resist
   // points) — see src/types/modifiers.ts + mitigation.ts.
   'Mod Target Damage Resistance': 'armorPen',
+  // Concentrated Fire (issue #48, ESM-verified 2026-08-19 — replaces the old
+  // hand-authored `extraPerkModifiers.ConcentratedFire` override): EP135 on
+  // STAT_DamagePerk (0x0023A0EB), Function "Add Actor Value Mult", Float
+  // 0.01, AV param ConcentratedFireRank (0x00900A59) — dbm ADD 0.01 × the AV
+  // (the owned rank number, 1/2/3, set by PERK ConcentratedFire01's granted
+  // Ability SPEL AbPerkConcentratedFire 0x00900A5D via 3 HasPerk-gated
+  // magnitude branches on the family's own sibling ranks — rides the same
+  // rank-simulation rails as Commando, no new logic needed). See
+  // ENTRY_POINT_EXTRA_CONDITIONS below for the vatsOnly/stacks gating this
+  // needs (buildAvifRoutes carries no plumbing-perk conditions for it).
+  'Mod VATS Concentrated Fire Damage Mult': 'dbm',
+  // Concentrated Fire's hit-chance half — EP109 on the same plumbing perk,
+  // same Function/AV param, two branches keyed on
+  // HasKeyword(WeaponTypeAutomatic): ==0 (non-auto) Float 4.0, ==1 (auto)
+  // Float 1.0. USER-RESOLVED 2026-07-19 (see the removed override's doc
+  // comment, git history): these Floats are pre-2025-rework "accuracy
+  // points", not fractions — ENTRY_POINT_SCALE_MULTIPLIER below applies the
+  // ×0.01 conversion to a pure per-rank multiplier (0.04/0.01 per rank) so
+  // this bucket stays a MUL_ADD-shaped fraction like every other
+  // `vatsHitChanceMult` source-to-be. The two HasKeyword branches translate
+  // to the `weaponKeyword: WeaponTypeAutomatic` present:false/true split
+  // automatically via buildAvifRoutes' rawConditions → translateConditions.
+  'Mod VATS Concentrated Fire Chance Bonus': 'vatsHitChanceMult',
+};
+
+/**
+ * Per-entry-point scale correction applied on top of the plumbing perk's raw
+ * `Float`, for entry points whose ESM Float isn't already the final
+ * multiplier `buildAvifRoutes`/`push` expect (`effectiveMagnitude × scale`).
+ * Every other AvifRoute-routed entry point's Float IS the final per-AV-point
+ * multiplier already (e.g. EP135 above, Float 0.01) — this map exists solely
+ * for Concentrated Fire's EP109, whose Float is authored in "accuracy
+ * points" (see the ENTRY_POINT_BUCKETS comment above), not a fraction.
+ */
+export const ENTRY_POINT_SCALE_MULTIPLIER: Record<string, number> = {
+  'Mod VATS Concentrated Fire Chance Bonus': 0.01,
+};
+
+/**
+ * Per-entry-point op override for AvifRoute-routed entry points whose target
+ * bucket isn't the generic ADD-pool shape `push()` defaults every route to.
+ * `vatsHitChanceMult` (Concentrated Fire's hit-chance half) is a genuine
+ * multiplier (bootstrap base 1, see the Bucket doc-comment in
+ * src/types/modifiers.ts) — modeled as `MUL_ADD`, matching the removed
+ * hand-authored override, even though it folds to the same number as `ADD`
+ * would at base 1 (foldOps' `(Σ MUL_ADD) × base` term with base=1 degenerates
+ * to plain summation) — the equivalence gate for issue #48 compares op
+ * literally, not just the folded result.
+ */
+export const ENTRY_POINT_OP_OVERRIDE: Record<string, Modifier['op']> = {
+  'Mod VATS Concentrated Fire Chance Bonus': 'MUL_ADD',
 };
 
 /**
@@ -221,9 +272,12 @@ export function resolveStimpakHealEntryPoint(
 /**
  * Baked conditions appended to every modifier an entry point produces —
  * for entry points whose scope isn't expressible by the bucket alone.
- * Consumed by both entry-point translation sites (extract-perks.ts's direct
- * PERK path and `translateGrantedPerk` below). No plumbing perk carries
- * these entry points, so `buildAvifRoutes` needs no wiring.
+ * Consumed by three sites: extract-perks.ts's direct PERK path,
+ * `translateGrantedPerk` below, and (issue #48) `buildAvifRoutes`, which
+ * copies a matching entry onto each `AvifRoute.extraConditions` it builds
+ * from a plumbing perk's entry points — the AV-set-by-Ability path's own
+ * condition rows never carry this, since it isn't ESM-derived scoping (e.g.
+ * Concentrated Fire's manual `stacks` counter).
  */
 export const ENTRY_POINT_EXTRA_CONDITIONS: Record<string, Condition[]> = {
   // Explosion-scoped baseDamage (see the ENTRY_POINT_BUCKETS note): applies
@@ -231,6 +285,23 @@ export const ENTRY_POINT_EXTRA_CONDITIONS: Record<string, Condition[]> = {
   // `damageTypeScope ['explosive']` matches both via
   // `ResolveContext.componentIsExplosion` (resolve.ts).
   'Mod Player Explosion Damage': [{ kind: 'damageTypeScope', types: ['explosive'] }],
+  // Concentrated Fire damage half (issue #48): the game's own stack counter
+  // (player-driven consecutive-VATS-shots) has no ESM record — `vatsOnly` +
+  // `stacks(counter:'concentratedFire', max:20)` is the modeled stand-in
+  // (docs/assumptions.md "Concentrated Fire stacks"; max 20 = GMST
+  // iVATSConcentratedFireBonus). Threaded through `buildAvifRoutes`'
+  // `extraConditions` (below) since no plumbing-perk condition row carries
+  // this — it's a manual player-input gate, not ESM-derived.
+  'Mod VATS Concentrated Fire Damage Mult': [
+    { kind: 'vatsOnly', value: true },
+    { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+  ],
+  // Hit-chance half — deliberately NOT `vatsOnly` (matches every other
+  // `vatsHitChance`/`vatsHitChanceMult` source: the pill is a global display,
+  // not a per-scenario term), but still gated by the same manual stacks slider.
+  'Mod VATS Concentrated Fire Chance Bonus': [
+    { kind: 'stacks', counter: 'concentratedFire', max: 20 },
+  ],
 };
 
 /**
@@ -545,6 +616,20 @@ export interface AvifRoute {
   bucket: Bucket;
   scale: number;
   rawConditions: RawCondition[];
+  /**
+   * Baked conditions from `ENTRY_POINT_EXTRA_CONDITIONS`, copied in at
+   * `buildAvifRoutes` time (issue #48) — the route-path counterpart of the
+   * `translateGrantedPerk`/extract-perks.ts direct-entry-point sites, which
+   * apply the same map inline. Appended (not merged into `rawConditions`,
+   * which only holds real ESM Perk Condition rows) at the route's
+   * consumption site in `translate()`.
+   */
+  extraConditions?: Condition[];
+  /**
+   * `ENTRY_POINT_OP_OVERRIDE` match, copied in at `buildAvifRoutes` time —
+   * defaults to `'ADD'` (the generic AVIF-route shape) when absent.
+   */
+  op?: Modifier['op'];
 }
 
 /**
@@ -648,11 +733,16 @@ export async function buildAvifRoutes(
 
       const rawConditions = flattenPerkConditionRows(e['Perk Conditions']);
       collectConditionFormIds(rawConditions, formIdPool);
+      const rawScale = typeof e['Float'] === 'number' ? (e['Float'] as number) : 0.01;
       const list = routes.get(actorValue) ?? [];
       list.push({
         bucket,
-        scale: typeof e['Float'] === 'number' ? (e['Float'] as number) : 0.01,
+        scale: rawScale * (ENTRY_POINT_SCALE_MULTIPLIER[name] ?? 1),
         rawConditions,
+        ...(ENTRY_POINT_EXTRA_CONDITIONS[name] && {
+          extraConditions: ENTRY_POINT_EXTRA_CONDITIONS[name],
+        }),
+        ...(ENTRY_POINT_OP_OVERRIDE[name] && { op: ENTRY_POINT_OP_OVERRIDE[name] }),
       });
       routes.set(actorValue, list);
     }
@@ -1147,13 +1237,18 @@ export function translate(
     result.notes.push(`${mgef.edid}: ${raw} — needs toggle override`);
   }
 
-  const push = (bucket: Bucket, scale: number, conditions: Condition[]) => {
+  const push = (
+    bucket: Bucket,
+    scale: number,
+    conditions: Condition[],
+    op: Modifier['op'] = 'ADD',
+  ) => {
     // With a curve, the scale is `curveScale` (applied to the interpolated Y);
     // otherwise it multiplies the flat magnitude.
     result.modifiers.push(
       curve
-        ? { bucket, op: 'ADD', curve, curveScale: scale, conditions }
-        : { bucket, op: 'ADD', value: effectiveMagnitude * scale, conditions },
+        ? { bucket, op, curve, curveScale: scale, conditions }
+        : { bucket, op, value: effectiveMagnitude * scale, conditions },
     );
   };
 
@@ -1202,7 +1297,12 @@ export function translate(
       );
       if (routeConds === null) continue;
       routeUnresolved.forEach((u) => result.notes.push(`route(${avifEdid}): ${u}`));
-      push(route.bucket, route.scale, [...allConds, ...routeConds]);
+      push(
+        route.bucket,
+        route.scale,
+        [...allConds, ...routeConds, ...(route.extraConditions ?? [])],
+        route.op,
+      );
     }
   } else if (fallback) {
     push(fallback.bucket, fallback.scale, [...allConds, ...(fallback.conditions ?? [])]);

@@ -100,8 +100,6 @@ function applyBarbarianUnarmoredPostProcess(modifiers: Modifier[]): void {
 /** Entry-point names that are known damage-irrelevant (not reported as unknown). */
 const ENTRY_POINT_IGNORED = new Set([
   'Mod Cone-of-fire Mult',
-  'Mod VATS Concentrated Fire Chance Bonus',
-  'Mod VATS Concentrated Fire Damage Mult',
   'Mod Ricochet Damage',
   'Mod Ricochet Chance',
   'Mod Bashing Damage',

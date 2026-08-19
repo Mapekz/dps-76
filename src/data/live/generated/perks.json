@@ -3899,15 +3899,240 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004D890:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D890",
+       "edid": "ConcentratedFire",
+       "name": "Concentrated Fire",
+       "rank": 1
+      },
+      "bucket": "vatsHitChanceMult",
+      "op": "MUL_ADD",
+      "value": 0.04,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeAutomatic",
+        "present": false
+       },
+       {
+        "kind": "stacks",
+        "counter": "concentratedFire",
+        "max": 20
+       }
+      ]
+     },
+     {
+      "id": "0x0004D890:r1:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D890",
+       "edid": "ConcentratedFire",
+       "name": "Concentrated Fire",
+       "rank": 1
+      },
+      "bucket": "vatsHitChanceMult",
+      "op": "MUL_ADD",
+      "value": 0.01,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeAutomatic",
+        "present": true
+       },
+       {
+        "kind": "stacks",
+        "counter": "concentratedFire",
+        "max": 20
+       }
+      ]
+     },
+     {
+      "id": "0x0004D890:r1:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D890",
+       "edid": "ConcentratedFire",
+       "name": "Concentrated Fire",
+       "rank": 1
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.01,
+      "conditions": [
+       {
+        "kind": "vatsOnly",
+        "value": true
+       },
+       {
+        "kind": "stacks",
+        "counter": "concentratedFire",
+        "max": 20
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004D890:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D890",
+       "edid": "ConcentratedFire",
+       "name": "Concentrated Fire",
+       "rank": 2
+      },
+      "bucket": "vatsHitChanceMult",
+      "op": "MUL_ADD",
+      "value": 0.08,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeAutomatic",
+        "present": false
+       },
+       {
+        "kind": "stacks",
+        "counter": "concentratedFire",
+        "max": 20
+       }
+      ]
+     },
+     {
+      "id": "0x0004D890:r2:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D890",
+       "edid": "ConcentratedFire",
+       "name": "Concentrated Fire",
+       "rank": 2
+      },
+      "bucket": "vatsHitChanceMult",
+      "op": "MUL_ADD",
+      "value": 0.02,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeAutomatic",
+        "present": true
+       },
+       {
+        "kind": "stacks",
+        "counter": "concentratedFire",
+        "max": 20
+       }
+      ]
+     },
+     {
+      "id": "0x0004D890:r2:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D890",
+       "edid": "ConcentratedFire",
+       "name": "Concentrated Fire",
+       "rank": 2
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.02,
+      "conditions": [
+       {
+        "kind": "vatsOnly",
+        "value": true
+       },
+       {
+        "kind": "stacks",
+        "counter": "concentratedFire",
+        "max": 20
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0004D890:r3:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D890",
+       "edid": "ConcentratedFire",
+       "name": "Concentrated Fire",
+       "rank": 3
+      },
+      "bucket": "vatsHitChanceMult",
+      "op": "MUL_ADD",
+      "value": 0.12,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeAutomatic",
+        "present": false
+       },
+       {
+        "kind": "stacks",
+        "counter": "concentratedFire",
+        "max": 20
+       }
+      ]
+     },
+     {
+      "id": "0x0004D890:r3:1:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D890",
+       "edid": "ConcentratedFire",
+       "name": "Concentrated Fire",
+       "rank": 3
+      },
+      "bucket": "vatsHitChanceMult",
+      "op": "MUL_ADD",
+      "value": 0.03,
+      "conditions": [
+       {
+        "kind": "weaponKeyword",
+        "keyword": "WeaponTypeAutomatic",
+        "present": true
+       },
+       {
+        "kind": "stacks",
+        "counter": "concentratedFire",
+        "max": 20
+       }
+      ]
+     },
+     {
+      "id": "0x0004D890:r3:1:2",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0004D890",
+       "edid": "ConcentratedFire",
+       "name": "Concentrated Fire",
+       "rank": 3
+      },
+      "bucket": "dbm",
+      "op": "ADD",
+      "value": 0.03,
+      "conditions": [
+       {
+        "kind": "vatsOnly",
+        "value": true
+       },
+       {
+        "kind": "stacks",
+        "counter": "concentratedFire",
+        "max": 20
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -31718,9 +31943,11 @@
   "notes": [
    "entry point Mod Weapon DMG Bonus Mult uses Add Actor Value Mult — skipped",
    "entry point Mod Player Explosion Damage uses Multiply 1 + Actor Value Mult — skipped",
+   "entry point Mod VATS Concentrated Fire Chance Bonus uses Add Actor Value Mult — skipped",
    "entry point Mod Weapon Attack Damage uses Multiply 1 + Actor Value Mult — skipped",
    "entry point Mod Weak Body Part Damage Mult uses Multiply 1 + Actor Value Mult — skipped",
    "entry point Mod Outgoing Limb Damage uses Multiply 1 + Actor Value Mult — skipped",
+   "entry point Mod VATS Concentrated Fire Damage Mult uses Add Actor Value Mult — skipped",
    "entry point Mod Player Explosion Scale uses Multiply 1 + Actor Value Mult — skipped"
   ]
  },
