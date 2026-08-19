@@ -37,6 +37,33 @@ const PERCENT_BUCKET_LABELS: Partial<Record<Bucket, string>> = {
   // The % mult on regen rate (Action Boy, Rejuvenated) — flat adds into the
   // base term are `apRegenFlat` ("base AP regen") below.
   apRegen: 'AP regen',
+  // ADD-only fraction of enemy armor ignored (bootstrap fold — see
+  // unique-weapon audit 74919ea): 0.22 = 22% penetration, so percent even
+  // though the op is ADD.
+  armorPen: 'armor penetration',
+  // Battle-Loader's bash channel (foldChanceUnion — a chance, so percent).
+  reloadSkipChanceBash: 'chance to skip reload when bashing',
+};
+
+/**
+ * Weapon-stat buckets folded by effective-weapon's foldBucket, where the OP
+ * decides the unit: MUL_ADD is a fraction of the weapon's own base stat
+ * (render as %), ADD is flat in the stat's units, and SET replaces the stat
+ * outright — omitted, since a bare replacement value is not a delta and
+ * reads as nonsense without the base it replaces. These carry the standard
+ * weapon mods' effects (receivers' ±% base damage, barrels' ranges/AP cost,
+ * magazines' capacity), which rendered nothing before 2026-08-19.
+ */
+const WEAPON_STAT_BUCKET_LABELS: Partial<Record<Bucket, string>> = {
+  baseDamage: 'base damage',
+  vatsApCost: 'VATS AP cost',
+  fireRateSpeed: 'fire rate',
+  ammoCapacity: 'magazine size',
+  projectileCount: 'projectiles',
+  critDmgBase: 'critical damage',
+  sneakBase: 'sneak attack damage',
+  weaponMaxRange: 'max range',
+  weaponMinRange: 'min range',
 };
 
 /** Buckets whose Modifier.value is a flat point add, not a percentage. */
@@ -58,6 +85,9 @@ const FLAT_POINT_BUCKET_LABELS: Partial<Record<Bucket, string>> = {
   lockpickSkill: 'Lockpick Skill',
   hackingSkill: 'Hacking Skill',
   stimpakHealMult: 'Stimpak Healing',
+  // Flat points of enemy Damage Resist ignored (contrast the ADD-fraction
+  // `armorPen` above).
+  armorPenFlat: 'armor penetration',
 };
 
 /** Friendly names for curve axes; unmapped axes fall back to the raw CurveInput name. */
@@ -67,6 +97,7 @@ const CURVE_AXIS_LABELS: Partial<Record<CurveInput, string>> = {
   lockpickSkill: 'lockpick skill',
   hackingSkill: 'hacking skill',
   stimpakHealMult: 'Stimpak healing',
+  itemLevel: 'weapon level',
 };
 
 export const WEAPON_KEYWORD_LABELS: Record<string, string> = {
@@ -297,6 +328,12 @@ function describeConditions(conditions: readonly Condition[], bucket: Bucket): s
   for (const c of conditions) {
     switch (c.kind) {
       case 'weaponKeyword':
+        // Cross-legendary self-exclusions (bleed DoTs carry "no Heal Allies
+        // mod equipped" from modWeapBleedEffect's record conditions) stay
+        // engine-modeled but are suppressed as clauses: they'd stamp noise
+        // on every bleed line for an interaction that only bites when the
+        // OTHER mod is equipped.
+        if (!c.present && c.keyword.includes('HasLegendary_')) break;
         clauses.push(
           c.present ? `${weaponPrep} ${weaponLabel(c.keyword)}` : `non-${weaponLabel(c.keyword)}`,
         );
@@ -377,15 +414,18 @@ function describeConditions(conditions: readonly Condition[], bucket: Bucket): s
 
 /** "+5–100%" — lo keeps its sign but drops the '%' (only the range's tail carries it), hi drops the redundant '+'. */
 function formatPercentRange(lo: number, hi: number): string {
+  // A constant curve (all Ys equal — level-flat OMOD properties) is a single
+  // value, not a "-40–-40%" range.
+  if (lo === hi) return formatPercent(lo);
   const loStr = formatPercent(lo).replace(/%$/, '');
   const hiStr = formatPercent(hi).replace(/^\+/, '');
   return `${loStr}–${hiStr}`;
 }
 
-/** "+1–3" — flat-point analogue of formatPercentRange (Unyielding's stepped SPECIAL curves, Lining's apMax curves). */
+/** "+1–3" — flat-point analogue of formatPercentRange (Unyielding's stepped SPECIAL curves, Lining's apMax curves). The high end drops its sign only when the low end already showed one ("+1–3", but "0–+20"). */
 function formatFlatRange(lo: number, hi: number): string {
   const fmt = (v: number) => `${v > 0 ? '+' : ''}${v}`;
-  return lo === hi ? fmt(lo) : `${fmt(lo)}–${fmt(hi)}`;
+  return lo === hi ? fmt(lo) : `${fmt(lo)}–${lo > 0 && hi > 0 ? hi : fmt(hi)}`;
 }
 
 /**
@@ -426,7 +466,6 @@ function describeHealthFractionStaircase(
  * a separate "X damage only" clause.
  */
 function describeDotDamage(m: Modifier, scale: number): string | null {
-  if (m.curve) return null; // not produced for dotDamage today
   const scopeIndex = m.conditions.findIndex((c) => c.kind === 'damageTypeScope');
   const scope =
     scopeIndex >= 0
@@ -435,11 +474,26 @@ function describeDotDamage(m: Modifier, scale: number): string | null {
   const remaining =
     scopeIndex >= 0 ? m.conditions.filter((_, i) => i !== scopeIndex) : m.conditions;
 
-  const value = m.value * scale;
   const elementLabel = scope ? `${scope.types.join('/')} ` : '';
-  let base = `${value > 0 ? '+' : ''}${value}/s ${elementLabel}damage`;
-
   const extraClauses: string[] = [];
+  let base: string;
+  if (m.curve) {
+    // Weapon-mod bleed/burn/poison DoTs carry an item-level curve, not a
+    // flat magnitude — render the Y range and name the axis, mirroring
+    // describeModifier's curve branch.
+    const ys = m.curve.points.map((p) => p.y * m.curveScale * scale);
+    const lo = Math.min(...ys);
+    const hi = Math.max(...ys);
+    base = `${formatFlatRange(lo, hi)}/s ${elementLabel}damage`;
+    if (lo !== hi) {
+      const axisLabel = CURVE_AXIS_LABELS[m.curve.input] ?? m.curve.input;
+      extraClauses.push(`scales with ${axisLabel}`);
+    }
+  } else {
+    const value = m.value * scale;
+    base = `${value > 0 ? '+' : ''}${value}/s ${elementLabel}damage`;
+  }
+
   if (m.durationSec !== undefined) extraClauses.push(`${m.durationSec}s`);
   const clause = describeConditions(remaining, m.bucket);
   if (clause) extraClauses.push(clause);
@@ -458,6 +512,12 @@ function describeModifier(m: Modifier, scale: number, labelOverride?: string): s
 
   let percentLabel = PERCENT_BUCKET_LABELS[m.bucket];
   let flatLabel = FLAT_POINT_BUCKET_LABELS[m.bucket];
+  const statLabel = WEAPON_STAT_BUCKET_LABELS[m.bucket];
+  if (!percentLabel && !flatLabel && statLabel) {
+    if (m.op === 'SET') return null; // replacement value, not a delta — omit
+    if (m.op === 'MUL_ADD') percentLabel = statLabel;
+    else flatLabel = statLabel;
+  }
   if (labelOverride) {
     if (percentLabel) percentLabel = labelOverride;
     else if (flatLabel) flatLabel = labelOverride;
@@ -481,8 +541,10 @@ function describeModifier(m: Modifier, scale: number, labelOverride?: string): s
       magnitude = percentLabel
         ? `${formatPercentRange(lo, hi)} ${percentLabel}`
         : `${formatFlatRange(lo, hi)} ${flatLabel}`;
-      const axisLabel = CURVE_AXIS_LABELS[m.curve.input] ?? m.curve.input;
-      extraClauses.push(`scales with ${axisLabel}`);
+      if (lo !== hi) {
+        const axisLabel = CURVE_AXIS_LABELS[m.curve.input] ?? m.curve.input;
+        extraClauses.push(`scales with ${axisLabel}`);
+      }
     }
   } else if (m.scaledBy) {
     if (!percentLabel && !flatLabel) return null;
@@ -568,6 +630,112 @@ function mergeSameBucketModifiers(modifiers: readonly Modifier[]): Modifier[] {
   return out;
 }
 
+/** The six elemental damage channels (DamageType minus 'explosive', which is the blast channel, never routed through per-element rows). */
+const CORE_DAMAGE_TYPES: ReadonlySet<string> = new Set([
+  'ballistic',
+  'energy',
+  'radiation',
+  'poison',
+  'cryo',
+  'fire',
+]);
+
+/**
+ * Merge per-element duplicate lines into one scoped line: automatic barrels
+ * carry six identical "-30% base damage" entries, one per damage type
+ * (extract-omods emits one modifier per DamageTypeValues row). Modifiers
+ * identical except for their single damageTypeScope condition union their
+ * scopes; a union covering every core element drops the scope clause
+ * entirely — "-30% base damage", not six "(X damage only)" lines.
+ */
+function mergeDamageScopedDuplicates(modifiers: readonly Modifier[]): Modifier[] {
+  const out: Modifier[] = [];
+  const indexBySignature = new Map<string, number>();
+  for (const m of modifiers) {
+    const scopes = m.conditions.filter((c) => c.kind === 'damageTypeScope');
+    if (scopes.length !== 1) {
+      out.push(m);
+      continue;
+    }
+    const rest = m.conditions.filter((c) => c.kind !== 'damageTypeScope');
+    const sig = JSON.stringify({
+      bucket: m.bucket,
+      op: m.op,
+      value: 'curve' in m && m.curve !== undefined ? undefined : m.value,
+      curve: m.curve,
+      curveScale: 'curve' in m && m.curve !== undefined ? m.curveScale : undefined,
+      durationSec: m.durationSec,
+      rest,
+    });
+    const at = indexBySignature.get(sig);
+    if (at === undefined) {
+      indexBySignature.set(sig, out.length);
+      out.push(m);
+      continue;
+    }
+    const prev = out[at];
+    const prevScope = prev.conditions.find(
+      (c): c is Extract<Condition, { kind: 'damageTypeScope' }> => c.kind === 'damageTypeScope',
+    )!;
+    const scope = scopes[0] as Extract<Condition, { kind: 'damageTypeScope' }>;
+    const union = [...new Set([...prevScope.types, ...scope.types])];
+    const covered = [...CORE_DAMAGE_TYPES].every((t) => union.includes(t as never));
+    const restConds = prev.conditions.filter((c) => c.kind !== 'damageTypeScope');
+    out[at] = {
+      ...prev,
+      conditions: covered ? restConds : [...restConds, { kind: 'damageTypeScope', types: union }],
+    } as Modifier;
+  }
+  return out;
+}
+
+/**
+ * Barrels retune weaponMinRange and weaponMaxRange together with the same
+ * op/value/conditions — collapse each exact-signature pair into ONE line
+ * labeled "range" instead of a min/max near-duplicate pair. Unpaired range
+ * modifiers keep their own min/max label.
+ */
+function collapseRangePairs(modifiers: Modifier[]): {
+  pairs: Modifier[];
+  rest: Modifier[];
+} {
+  const sigOf = (m: Modifier): string =>
+    JSON.stringify({
+      op: m.op,
+      value: 'curve' in m && m.curve !== undefined ? undefined : m.value,
+      curve: m.curve,
+      curveScale: 'curve' in m && m.curve !== undefined ? m.curveScale : undefined,
+      conditions: m.conditions,
+    });
+  const minBySig = new Map<string, Modifier[]>();
+  for (const m of modifiers) {
+    if (m.bucket !== 'weaponMinRange') continue;
+    const sig = sigOf(m);
+    const list = minBySig.get(sig);
+    if (list) list.push(m);
+    else minBySig.set(sig, [m]);
+  }
+  const pairedMins = new Set<Modifier>();
+  const pairs: Modifier[] = [];
+  const rest: Modifier[] = [];
+  for (const m of modifiers) {
+    if (m.bucket === 'weaponMinRange') continue; // decided by pairing below
+    if (m.bucket === 'weaponMaxRange') {
+      const partner = minBySig.get(sigOf(m))?.find((x) => !pairedMins.has(x));
+      if (partner) {
+        pairedMins.add(partner);
+        pairs.push(m); // the max modifier represents the pair
+        continue;
+      }
+    }
+    rest.push(m);
+  }
+  for (const m of modifiers) {
+    if (m.bucket === 'weaponMinRange' && !pairedMins.has(m)) rest.push(m);
+  }
+  return { pairs, rest };
+}
+
 function groupSpecialModifiers(modifiers: readonly Modifier[]): {
   groups: Array<{ label: string; representative: Modifier }>;
   rest: Modifier[];
@@ -641,11 +809,15 @@ export function describeBuffModifiers(
     }
   }
 
-  const { groups, rest } = groupSpecialModifiers(mergeSameBucketModifiers(forSynthesis));
+  const { groups, rest } = groupSpecialModifiers(
+    mergeDamageScopedDuplicates(mergeSameBucketModifiers(forSynthesis)),
+  );
+  const { pairs: rangePairs, rest: ungrouped } = collapseRangePairs(rest);
   const parts = [
     ...describeAsParts,
     ...groups.map((g) => describeModifier(g.representative, scale, g.label)),
-    ...rest.map((m) => describeModifier(m, scale)),
+    ...rangePairs.map((m) => describeModifier(m, scale, 'range')),
+    ...ungrouped.map((m) => describeModifier(m, scale)),
   ].filter((s): s is string => s !== null);
   return parts.length > 0 ? parts.join('; ') : null;
 }

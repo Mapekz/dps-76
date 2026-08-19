@@ -322,7 +322,8 @@ describe('describeBuffModifiers: curve support', () => {
     const mod: Modifier = {
       id: '0x1:0',
       source,
-      bucket: 'armorPen',
+      // deflectChance stays unlabeled on purpose (The Action Hero's data-broken effect)
+      bucket: 'deflectChance',
       op: 'ADD',
       curve: {
         input: 'endurance',
@@ -835,6 +836,95 @@ describe('describeBuffModifiers: keyword collapses and sorted fallbacks', () => 
     };
     expect(describeBuffModifiers(buff([mod]))).toBe(
       '+10% damage bonus (with alien blasters or bows or pistols)',
+    );
+  });
+});
+
+describe('describeBuffModifiers: weapon-stat buckets (standard OMODs)', () => {
+  const stat = (bucket: Modifier['bucket'], op: Modifier['op'], value: number): Modifier =>
+    ({ id: `0x1:${bucket}`, source, bucket, op, value, conditions: [] }) as Modifier;
+
+  it('MUL_ADD is a fraction of the weapon base stat — percent', () => {
+    expect(describeBuffModifiers(buff([stat('vatsApCost', 'MUL_ADD', 0.2)]))).toBe(
+      '+20% VATS AP cost',
+    );
+    expect(describeBuffModifiers(buff([stat('baseDamage', 'MUL_ADD', -0.3)]))).toBe(
+      '-30% base damage',
+    );
+  });
+
+  it('ADD is flat in the stat units', () => {
+    expect(describeBuffModifiers(buff([stat('projectileCount', 'ADD', 4)]))).toBe('+4 projectiles');
+  });
+
+  it('SET is a replacement value, not a delta — omitted', () => {
+    expect(describeBuffModifiers(buff([stat('fireRateSpeed', 'SET', 0.86)]))).toBeNull();
+  });
+
+  it('same-signature min/max range modifiers collapse to one "range" line (long barrels)', () => {
+    const pair = [stat('weaponMaxRange', 'MUL_ADD', 0.5), stat('weaponMinRange', 'MUL_ADD', 0.5)];
+    expect(describeBuffModifiers(buff(pair))).toBe('+50% range');
+  });
+
+  it('unpaired range modifiers keep their own min/max label', () => {
+    const mods = [stat('weaponMaxRange', 'MUL_ADD', 0.5), stat('weaponMinRange', 'MUL_ADD', -0.5)];
+    expect(describeBuffModifiers(buff(mods))).toBe('+50% max range; -50% min range');
+  });
+});
+
+describe('describeBuffModifiers: duplicate-line folding', () => {
+  it('same-bucket duplicates sum the way the engine folds them (Super Chem MK II)', () => {
+    const dr = (value: number): Modifier => ({
+      id: `0x1:${Math.random()}`,
+      source,
+      bucket: 'damageResistGain',
+      op: 'ADD',
+      value,
+      conditions: [],
+    });
+    expect(describeBuffModifiers(buff([dr(25), dr(25)]))).toBe('+50 Damage Resist');
+  });
+
+  it('per-element duplicates union their damageTypeScope', () => {
+    const scoped = (type: string): Modifier =>
+      ({
+        id: `0x1:${type}`,
+        source,
+        bucket: 'baseDamage',
+        op: 'MUL_ADD',
+        value: -0.3,
+        conditions: [{ kind: 'damageTypeScope', types: [type] }],
+      }) as unknown as Modifier;
+    expect(describeBuffModifiers(buff([scoped('ballistic'), scoped('energy')]))).toBe(
+      '-30% base damage (ballistic/energy damage only)',
+    );
+    // Covering every core element drops the scope clause entirely
+    // (automatic-barrel receivers carry all six).
+    const all = ['ballistic', 'energy', 'radiation', 'poison', 'cryo', 'fire'].map(scoped);
+    expect(describeBuffModifiers(buff(all))).toBe('-30% base damage');
+  });
+});
+
+describe('describeBuffModifiers: curve DoTs (weapon-mod bleed/burn/poison)', () => {
+  it('renders the Y range, element, duration, and axis', () => {
+    const mod = {
+      id: '0x1:0',
+      source,
+      bucket: 'dotDamage',
+      op: 'ADD',
+      curve: {
+        input: 'itemLevel',
+        points: [
+          { x: 1, y: 5 },
+          { x: 50, y: 17 },
+        ],
+      },
+      curveScale: 1,
+      conditions: [{ kind: 'damageTypeScope', types: ['ballistic'] }],
+      durationSec: 11,
+    } as unknown as Modifier;
+    expect(describeBuffModifiers(buff([mod]))).toBe(
+      '+5–17/s ballistic damage (scales with weapon level, 11s)',
     );
   });
 });
