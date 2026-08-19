@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion } from '@/components/ui/accordion';
 import { UserIcon } from 'lucide-react';
+import { PresetPicker } from './PresetPicker';
 import { WeaponSection } from './WeaponSection';
 import { ArmorSection } from './ArmorSection';
 import { SpecialLoadoutSection } from './SpecialLoadoutSection';
@@ -22,6 +23,7 @@ export function BuildColumn() {
         </CardTitle>
       </CardHeader>
       <CardContent>
+        <PresetPicker />
         <StatSummary />
         <Accordion multiple defaultValue={['weapon', 'special-loadout']} className="w-full">
           <WeaponSection />
