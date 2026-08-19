@@ -460,6 +460,19 @@ export function effectiveValue(mod: Modifier, ctx: ResolveContext): number | nul
 }
 
 /**
+ * Do ALL of a proc's gate conditions currently hold (`ProcSource.conditions`,
+ * src/types/procs.ts)? Reuses the same per-condition evaluator `effectiveValue`
+ * folds against, but as a plain AND — proc conditions gate a trigger on/off,
+ * they never scale its magnitude the way a Modifier's conditions can (a
+ * curve-valued condition's non-null scale is still just "active" here).
+ * `conditions: []` (every proc today — GeneratedProc carries no condition
+ * data by design, PROC_DAMAGE_PLAN.md) is vacuously true.
+ */
+export function conditionsActive(conditions: readonly Condition[], ctx: ResolveContext): boolean {
+  return conditions.every((cond) => evalCondition(cond, ctx) !== null);
+}
+
+/**
  * Fold arithmetic shared by every bucket (user-confirmed OMOD semantics):
  *
  *   result = (last SET ?? base) + (Σ MUL_ADD) × base + Σ ADD
