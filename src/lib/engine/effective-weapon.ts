@@ -144,6 +144,25 @@ function foldChanceUnion(modifiers: Modifier[], bucket: Bucket, ctx: ResolveCont
  *   clamp correctly for those, and types that end up NOT materializing
  *   (all-dropped-negative groups) are also left alone — harmless, since no
  *   component of that type exists for them to match against.
+ *
+ * A second, independent pass (issue #83) covers `dotDamage`-scoped foreign
+ * types the same way: `computeDotDps` (paper-damage.ts) only iterates
+ * `weapon.components`' damage types, so an OMOD/legendary `dotDamage`
+ * modifier scoped to a type the weapon doesn't otherwise deal (Camden
+ * Whacker's Poison/Fire/Radiation variants — real ESM flat-amount DoT
+ * enchantments with no accompanying `baseDamage` property) would silently
+ * fold to 0. That pass materializes a component with `scale: 0, flatBonus: 0`
+ * — a ZERO base-damage contribution BY CONSTRUCTION (`componentBase` in
+ * paper-damage.ts computes `curveBase * scale + flatBonus`, so the borrowed
+ * curve's actual values never matter) — purely so the type exists for
+ * `computeDotDps`'s per-type fold and the ordinary per-hit component loop to
+ * iterate, contributing exactly 0 damage there. It never consumes any
+ * modifier id: the `dotDamage` modifiers still need to fold in
+ * `computeDotDps`'s own pass, and a `baseDamage` modifier that happens to
+ * share the same type stays exactly as inert against a 0-damage component as
+ * it already is against a real one. Skips any type the `baseDamage` pass
+ * above already materialized, so a type never gets two components (which
+ * would double-count its per-hit row).
  */
 function materializeDamageTypeComponents(
   weapon: Weapon,
@@ -171,6 +190,7 @@ function materializeDamageTypeComponents(
 
   const components: WeaponComponent[] = [];
   const consumedIds = new Set<string>();
+  const materializedTypes = new Set<DamageType>();
   for (const type of candidateTypes) {
     const typeCtx: ResolveContext = { ...ctx, componentType: type, componentIsExplosion: false };
     const matching = modifiers
@@ -202,7 +222,28 @@ function materializeDamageTypeComponents(
       scale,
       flatBonus,
     });
+    materializedTypes.add(type);
     for (const { mod: m } of matching) consumedIds.add(m.id);
+  }
+
+  // DoT-only foreign types (issue #83) — see doc comment above.
+  for (const m of modifiers) {
+    if (m.bucket !== 'dotDamage') continue;
+    for (const cond of m.conditions) {
+      if (cond.kind !== 'damageTypeScope') continue;
+      for (const t of cond.types) {
+        if (t === 'explosive' || existingTypes.has(t) || materializedTypes.has(t)) continue;
+        materializedTypes.add(t);
+        components.push({
+          damageType: t,
+          tier: fallback.tier,
+          levelCap: fallback.levelCap,
+          curvePoints: fallback.curvePoints,
+          scale: 0,
+          flatBonus: 0,
+        });
+      }
+    }
   }
 
   return { components, consumedIds };

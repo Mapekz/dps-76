@@ -7,7 +7,9 @@ import { getLoadoutModifiers } from '@/data/perk-modifiers';
 import { PerkId } from '@/data/perk-ids';
 import { weaponCharges } from '@/lib/charge';
 import { buildEffectiveWeapon } from '@/lib/engine/effective-weapon';
+import { computeDotDps } from '@/lib/engine/paper-damage';
 import { computeScenarios } from '@/lib/engine/scenarios';
+import type { ResolveContext } from '@/lib/engine/resolve';
 import { createDefaultEnemyConditions } from '@/types';
 import {
   makeResolvedPlayer,
@@ -845,6 +847,89 @@ describe('materializeDamageTypeComponents (DamageTypeValues conversion, 2026-07-
     expect(energy).toBeDefined();
     expect(energy!.scale).toBeCloseTo(0, 10);
     expect(energy!.flatBonus).toBeCloseTo(5, 10);
+  });
+});
+
+describe('dotDamage-only foreign damage types (issue #83)', () => {
+  // Commie Whacker: ballistic-only melee weapon (single component) that
+  // hosts the Camden Whacker unique identity OMODs on its ap_customName slot
+  // (the standalone CamdenWhackerWeapon WEAP is a true obtainability
+  // negative — see weapon-corrections.ts's forceVisibleWeaponIds comment;
+  // this base weapon is the real obtainable host). Its "(Rad)" variant
+  // grants a flat 35 dmg/2s radiation dotDamage enchantment with no matching
+  // baseDamage property — before the fix, computeDotDps's componentTypes
+  // scan (paper-damage.ts) never saw 'radiation' on the weapon and this
+  // OMOD's DoT silently folded to 0.
+  const commieWhacker = getWeapons('live')['DLC04_CommieWhacker'];
+  const radMod = getOmodById('live', 'mod_Custom_CamdenWhacker_RAD')!;
+
+  it('materializes a zero base-damage radiation component alongside the real ballistic one', () => {
+    const { weapon } = buildEffectiveWeapon(
+      commieWhacker,
+      [radMod],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
+    expect(weapon.components.map((c) => c.damageType)).toEqual(['ballistic', 'radiation']);
+    const radiation = weapon.components.find((c) => c.damageType === 'radiation')!;
+    expect(radiation.scale).toBe(0);
+    expect(radiation.flatBonus).toBe(0);
+  });
+
+  it('computeDotDps folds the OMOD-granted radiation DoT to nonzero after the effective-weapon pass', () => {
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      commieWhacker,
+      [radMod],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
+    const ctx: ResolveContext = {
+      weapon,
+      player: makeResolvedPlayer(),
+      enemy: makeDefaultEnemy(),
+      scenario: { isVats: false, isSneaking: false, isPowerAttack: false, isCrit: false },
+    };
+    // Before the fix this was 0 — the DoT's damageTypeScope(['radiation'])
+    // condition never matched any componentType the weapon carried.
+    expect(computeDotDps(modifiers, weapon, ctx)).toBeCloseTo(35, 10);
+  });
+
+  it('leaves per-hit damage unchanged: no phantom radiation row, ballistic total untouched', () => {
+    const base = {
+      mode: 'live' as const,
+      itemLevel: 50,
+      player: makeResolvedPlayer(),
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2.0,
+    };
+    const stock = computeScenarios({
+      ...base,
+      weapon: commieWhacker,
+      modifiers: [],
+      critRate: 0,
+    });
+    const { weapon, modifiers } = buildEffectiveWeapon(
+      commieWhacker,
+      [radMod],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
+    const modded = computeScenarios({ ...base, weapon, modifiers, critRate: 0 });
+
+    // The materialized radiation component gets its own per-hit row (same
+    // as any other component), but contributes exactly 0 damage — the
+    // weapon's own ballistic hit is byte-for-byte unchanged.
+    expect(modded.freeAim.perHit.components).toHaveLength(2);
+    const [ballistic, radiation] = modded.freeAim.perHit.components;
+    expect(ballistic.damageType).toBe('ballistic');
+    expect(radiation.damageType).toBe('radiation');
+    expect(radiation.base).toBe(0);
+    expect(radiation.damage).toBe(0);
+    expect(ballistic.damage).toBeCloseTo(stock.freeAim.perHit.components[0].damage, 10);
+    expect(modded.freeAim.perHit.total).toBeCloseTo(stock.freeAim.perHit.total, 6);
   });
 });
 
