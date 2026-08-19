@@ -9,6 +9,7 @@ import type {
   ValueCurve,
 } from '../../../src/types/modifiers';
 import type { EsmRecord, EsmSource } from '../esm-client';
+import type { GeneratedProc, GeneratedProcComponent } from '../../../src/types/generated';
 import {
   flattenConditionRows,
   flattenPerkConditionRows,
@@ -16,6 +17,7 @@ import {
   type ConditionTranslationContext,
   type RawCondition,
 } from './conditions';
+import { decodeProcComponentsFromExpl } from './proc';
 
 /**
  * Shared MGEF → Modifier translation, driven by the hidden engine "plumbing"
@@ -921,6 +923,13 @@ export interface MgefTranslationResult {
   modifiers: ModifierFragment[];
   notes: string[];
   unmappedAvifs: string[];
+  /**
+   * Chased proc-damage components (issue #42 — PROC_DAMAGE_PLAN.md), not yet
+   * classified into a `GeneratedProc` trigger — the caller decides that:
+   * `translateEnchantment`'s `dedupeReloadStateFanout` classifies `reloadCycle`
+   * off it directly (Electrician's reload-animation-state fan-out).
+   */
+  procComponents?: GeneratedProcComponent[];
 }
 
 export interface TranslateOptions {
@@ -1636,6 +1645,15 @@ export async function translateGrantedPerk(
             conditions: [...conditions, ...fragment.conditions],
           });
         }
+        // Proc-damage components chased off a nested Script/Damage-archetype
+        // MGEF (issue #42 — Electrician's: Ability → SPEL → Script MGEF with
+        // its own Explosion). No conditions attached — GeneratedProcComponent
+        // carries none; the classification into a GeneratedProc trigger
+        // happens at the ENCH level (translateEnchantment's
+        // dedupeReloadStateFanout), not here.
+        if (sub.procComponents && sub.procComponents.length > 0) {
+          result.procComponents = [...(result.procComponents ?? []), ...sub.procComponents];
+        }
       }
       continue;
     }
@@ -1689,7 +1707,11 @@ export async function translateMagicEffect(
       mgef.edid,
       mgef.perkToApply,
     );
-    if (granted.modifiers.length > 0 || granted.notes.length > 0) {
+    if (
+      granted.modifiers.length > 0 ||
+      granted.notes.length > 0 ||
+      (granted.procComponents?.length ?? 0) > 0
+    ) {
       // The effect's own condition rows still gate the grant.
       for (const row of effect.conditionRows) {
         const p = row['Parameter 1'];
@@ -1710,6 +1732,32 @@ export async function translateMagicEffect(
       }));
       return granted;
     }
+  }
+
+  // Proc-triggered damage (issue #42 — PROC_DAMAGE_PLAN.md): a Script- or
+  // Damage-archetype MGEF that detonates an EXPL is authoritative over its
+  // own magnitude/curve (Electrician's/Fracturer's) — chased BEFORE the
+  // generic translate() call below so it pre-empts both the Script "needs
+  // override" note and the Damage-archetype dotDamage misread (a duration-0,
+  // Explosion-bearing Damage effect is a one-shot detonation, not a refresh
+  // DoT). Unconditional once `mgef.explosion` is set, even when the chase
+  // finds no direct damage (VFX-only detonations, e.g. Circuit Breaker's
+  // stun-cast spell) — the Explosion field is authoritative either way, so
+  // falling through to translate() would risk misreading unrelated own
+  // magnitude/curve data on the same MGEF.
+  if (mgef.explosion && (mgef.archetype === 'Script' || mgef.archetype === 'Damage')) {
+    const chaseUnresolved: string[] = [];
+    const procComponents = await decodeProcComponentsFromExpl(
+      client,
+      mgef.explosion,
+      chaseUnresolved,
+    );
+    const chaseNotes = chaseUnresolved.map((u) => `MGEF ${mgef.edid}: ${u}`);
+    if (procComponents.length === 0) {
+      chaseNotes.push(`MGEF ${mgef.edid}: Explosion ${mgef.explosion} chased — no direct damage`);
+      return { modifiers: [], notes: chaseNotes, unmappedAvifs: [] };
+    }
+    return { modifiers: [], notes: chaseNotes, unmappedAvifs: [], procComponents };
   }
 
   for (const row of effect.conditionRows) {
@@ -1772,6 +1820,69 @@ export interface EnchantmentTranslation {
   notes: string[];
   /** The record's own Delivery ("Target Type") name (e.g. "Contact", "Self"), or null when the record wasn't found. */
   targetType: string | null;
+  /** Classified procs (issue #42) chased off this ENCH/SPEL's own Effects list — empty when none. */
+  procs: GeneratedProc[];
+}
+
+/** `GetActorGunState` Equal-To rows, or a `WornHasKeyword` row of any polarity — the two condition-row shapes an Electrician's-style reload-animation-state fan-out entry carries (esm-walk-verified 2026-08-19 on ENCH 0x00799381: each of its 5 duplicate effects gates on exactly one `GetActorGunState` state PLUS one `WornHasKeyword(WeaponNoReload)` row, Not-Equal-To-1 for the reload-capable branch and Equal-To-1 for each no-reload animation state). */
+function isReloadFanoutConditionRow(row: RawCondition): boolean {
+  if (row.Function === 'GetActorGunState') {
+    return (row.Operator ?? 'Equal To').toLowerCase() === 'equal to';
+  }
+  return row.Function === 'WornHasKeyword' && typeof row['Parameter 1'] === 'string';
+}
+
+function isReloadFanoutEffect(effect: SpellEffect): boolean {
+  return (
+    effect.conditionRows.length > 0 &&
+    effect.conditionRows.some((r) => r.Function === 'GetActorGunState') &&
+    effect.conditionRows.every(isReloadFanoutConditionRow)
+  );
+}
+
+export interface ReloadStateFanoutResult {
+  /** Original effects list with reload-animation-state fan-out duplicates collapsed to their first occurrence. */
+  effects: SpellEffect[];
+  /** `mgefFormId`s recognized as reload-animation-state fan-out — classify their chased proc as `reloadCycle`. */
+  reloadCycleMgefFormIds: Set<string>;
+}
+
+/**
+ * Collapse ENCH/SPEL effects sharing the same `mgefFormId` whose ENTIRE
+ * condition-row set is reload-animation-state-fan-out-shaped (Electrician's:
+ * one MGEF chased 5 times, once per `GetActorGunState` value the weapon can
+ * be in mid-reload) down to a single kept effect — every duplicate detonates
+ * the exact same proc, so translating all 5 would 5x the damage. A group only
+ * counts as fan-out when it has more than one member; a lone effect that
+ * happens to carry a `GetActorGunState` gate is left alone (nothing to
+ * collapse, and singling it out here would be a needless behavior change for
+ * unrelated content).
+ */
+export function dedupeReloadStateFanout(effects: SpellEffect[]): ReloadStateFanoutResult {
+  const groups = new Map<string, SpellEffect[]>();
+  for (const e of effects) {
+    const list = groups.get(e.mgefFormId);
+    if (list) list.push(e);
+    else groups.set(e.mgefFormId, [e]);
+  }
+
+  const reloadCycleMgefFormIds = new Set<string>();
+  for (const [mgefFormId, group] of groups) {
+    if (group.length > 1 && group.every(isReloadFanoutEffect)) {
+      reloadCycleMgefFormIds.add(mgefFormId);
+    }
+  }
+
+  const seen = new Set<string>();
+  const kept: SpellEffect[] = [];
+  for (const e of effects) {
+    if (reloadCycleMgefFormIds.has(e.mgefFormId)) {
+      if (seen.has(e.mgefFormId)) continue;
+      seen.add(e.mgefFormId);
+    }
+    kept.push(e);
+  }
+  return { effects: kept, reloadCycleMgefFormIds };
 }
 
 /**
@@ -1813,6 +1924,7 @@ export async function translateEnchantment(
       modifiers: [],
       notes: [`enchantment ${enchOrSpelFormId} not found`],
       targetType: null,
+      procs: [],
     };
   }
   const targetType = recordTargetType(record);
@@ -1820,10 +1932,26 @@ export async function translateEnchantment(
   const conditionCtx = targetType === 'Contact' ? { subjectIsTarget: true } : undefined;
   const modifiers: ModifierFragment[] = [];
   const notes: string[] = [];
-  for (const effect of parseMagicEffects(record)) {
+  const procs: GeneratedProc[] = [];
+  const { effects, reloadCycleMgefFormIds } = dedupeReloadStateFanout(parseMagicEffects(record));
+  for (const effect of effects) {
     const result = await translateMagicEffect(deps, effect, conditionCtx);
     result.notes.forEach((n) => notes.push(n));
     modifiers.push(...result.modifiers);
+    if (result.procComponents && result.procComponents.length > 0) {
+      if (reloadCycleMgefFormIds.has(effect.mgefFormId)) {
+        procs.push({ trigger: 'reloadCycle', components: result.procComponents });
+      } else {
+        // A chased proc with no trigger classification — issue #42 only
+        // wires reloadCycle at this level today (Function-Type-5 grants
+        // classify their own trigger before ever reaching here). Note
+        // instead of silently dropping so a future same-shaped legendary
+        // shows up for review rather than vanishing.
+        notes.push(
+          `MGEF ${effect.mgefFormId}: Explosion chase produced damage components but no proc-trigger classification — dropped`,
+        );
+      }
+    }
   }
-  return { modifiers, notes, targetType };
+  return { modifiers, notes, targetType, procs };
 }

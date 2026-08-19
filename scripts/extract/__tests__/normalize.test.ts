@@ -5,6 +5,7 @@ import {
   translateGrantedPerk,
   parseMagicEffects,
   getMgefInfo,
+  dedupeReloadStateFanout,
   ENTRY_POINT_BUCKETS,
   resolveStimpakHealEntryPoint,
   SHARED_ONSLAUGHT_COUNTER_AV,
@@ -2461,6 +2462,253 @@ describe('translateEnchantment (Contact-delivery weapon/OMOD on-hit procs, 2026-
     expect(result.targetType).toBe('Self');
     // Script archetype with no Perk to Apply and zero magnitude: no note, no modifier.
     expect(result.modifiers).toEqual([]);
+  });
+});
+
+describe("dedupeReloadStateFanout (issue #42 — Electrician's reload-animation-state fan-out)", () => {
+  const gunState = (value: number, wornHasNoReload: 1 | -1): SpellEffect =>
+    effect({
+      mgefFormId: '0xFANOUT',
+      conditionRows: [
+        {
+          Function: 'WornHasKeyword',
+          'Parameter 1': '0x007C2878',
+          'Comparison Value': 1,
+          Operator: wornHasNoReload === 1 ? 'Equal To' : 'Not Equal To',
+        },
+        { Function: 'GetActorGunState', 'Comparison Value': value, Operator: 'Equal To' },
+      ],
+    });
+
+  it('collapses a 5-way GetActorGunState + WornHasKeyword(WeaponNoReload) fan-out to the first entry, classified reloadCycle', () => {
+    const effects = [
+      gunState(4, -1),
+      gunState(7, 1),
+      gunState(8, 1),
+      gunState(9, 1),
+      gunState(10, 1),
+    ];
+    const { effects: deduped, reloadCycleMgefFormIds } = dedupeReloadStateFanout(effects);
+    expect(deduped).toEqual([effects[0]]);
+    expect(reloadCycleMgefFormIds).toEqual(new Set(['0xFANOUT']));
+  });
+
+  it('leaves a lone GetActorGunState-gated effect alone (nothing to collapse, not classified)', () => {
+    const effects = [gunState(4, -1)];
+    const { effects: deduped, reloadCycleMgefFormIds } = dedupeReloadStateFanout(effects);
+    expect(deduped).toEqual(effects);
+    expect(reloadCycleMgefFormIds.size).toBe(0);
+  });
+
+  it('does not collapse effects sharing an mgefFormId when a condition row is NOT GetActorGunState/WornHasKeyword-shaped', () => {
+    const other = effect({
+      mgefFormId: '0xFANOUT',
+      conditionRows: [{ Function: 'GetIsPlayer', 'Comparison Value': 1, Operator: 'Equal To' }],
+    });
+    const effects = [gunState(4, -1), other];
+    const { effects: deduped, reloadCycleMgefFormIds } = dedupeReloadStateFanout(effects);
+    expect(deduped).toEqual(effects);
+    expect(reloadCycleMgefFormIds.size).toBe(0);
+  });
+
+  it('leaves unrelated effects (different mgefFormId) untouched and in original order', () => {
+    const fanout = [gunState(4, -1), gunState(7, 1)];
+    const unrelated = effect({ mgefFormId: '0xOTHER' });
+    const effects = [fanout[0], unrelated, fanout[1]];
+    const { effects: deduped, reloadCycleMgefFormIds } = dedupeReloadStateFanout(effects);
+    expect(deduped).toEqual([fanout[0], unrelated]);
+    expect(reloadCycleMgefFormIds).toEqual(new Set(['0xFANOUT']));
+  });
+});
+
+describe("translateEnchantment (Electrician's reload-cycle proc chase, issue #42, 2026-08-19)", () => {
+  // Real ESM chain (20260814 dump, esm-walk-verified): ENCH 0x00799381 (5
+  // duplicate Script-archetype effects, one per GetActorGunState value, each
+  // ALSO gated by WornHasKeyword(WeaponNoReload) — Not-Equal-To-1 for the
+  // reload-capable state, Equal-To-1 for each no-reload animation state) →
+  // MGEF 0x007AC46C (Perk to Apply 0x007AC46A) → PERK 0x007AC46A (Ability →
+  // SPEL 0x007AC46B) → SPEL's own effect → MGEF 0x00799384 (Script, Explosion
+  // 0x00799382, no Perk to Apply) → EXPL 0x00799382 (typed energy Damage
+  // Types entry, curve 11→25, plus a residual flat Damage 0.01).
+  const ENCH_ID = '0x00799381';
+  const FANOUT_MGEF_ID = '0x007AC46C';
+  const PERK_ID = '0x007AC46A';
+  const SPEL_ID = '0x007AC46B';
+  const EXPLOSION_MGEF_ID = '0x00799384';
+  const EXPL_ID = '0x00799382';
+  const ENERGY_RESIST_AV = '0x00060A81';
+
+  const gunStateEffect = (value: number, wornHasNoReload: boolean) => ({
+    Effect: {
+      'Base Effect': FANOUT_MGEF_ID,
+      'Effect Item Data': { Magnitude: 0, Area: 0, Duration: 0 },
+      Conditions: {
+        Conditions: [
+          {
+            Condition: {
+              'Condition Data': {
+                Function: 'WornHasKeyword',
+                'Parameter 1': '0x007C2878',
+                'Comparison Value': 1,
+                Operator: wornHasNoReload ? 'Equal To' : 'Not Equal To',
+                'AND/OR': 'AND',
+              },
+            },
+          },
+          {
+            Condition: {
+              'Condition Data': {
+                Function: 'GetActorGunState',
+                'Comparison Value': value,
+                Operator: 'Equal To',
+                'AND/OR': 'AND',
+              },
+            },
+          },
+        ],
+      },
+    },
+  });
+
+  const recordFor = (formId: string): EsmRecord => {
+    if (formId === ENCH_ID) {
+      return {
+        header: { signature: 'ENCH', form_id: ENCH_ID },
+        editor_id: 'ench_LegendaryWeapon_Electricians_Explosion',
+        fields: {
+          'Effect Data': { 'Target Type': { name: 'Self' } },
+          Effects: [
+            gunStateEffect(4, false),
+            gunStateEffect(7, true),
+            gunStateEffect(8, true),
+            gunStateEffect(9, true),
+            gunStateEffect(10, true),
+          ],
+        },
+      } as unknown as EsmRecord;
+    }
+    if (formId === FANOUT_MGEF_ID) {
+      return {
+        header: { signature: 'MGEF', form_id: FANOUT_MGEF_ID },
+        editor_id: 'Legendary_Weapon_ElectriciansAddPerkEffect',
+        fields: {
+          'Magic Effect Data': {
+            Data: {
+              Archetype: { name: 'Script' },
+              'Perk to Apply': PERK_ID,
+              Flags: { value: '0x0', flags: [] },
+            },
+          },
+        },
+      } as unknown as EsmRecord;
+    }
+    if (formId === PERK_ID) {
+      return {
+        header: { signature: 'PERK', form_id: PERK_ID },
+        editor_id: 'Legendary_Weapon_ElectriciansPerkSpell',
+        fields: {
+          Effects: [
+            {
+              Effect: {
+                'Effect Header': { 'Effect Type': { name: 'Ability' } },
+                Ability: SPEL_ID,
+              },
+            },
+          ],
+        },
+      } as unknown as EsmRecord;
+    }
+    if (formId === SPEL_ID) {
+      return {
+        header: { signature: 'SPEL', form_id: SPEL_ID },
+        editor_id: 'Legendary_Weapon_ElectriciansExplosionSpell',
+        fields: {
+          Effects: [
+            {
+              Effect: {
+                'Base Effect': EXPLOSION_MGEF_ID,
+                'Effect Item Data': { Magnitude: 0, Area: 50, Duration: 0 },
+                'Cooldown Duration': 0,
+              },
+            },
+          ],
+        },
+      } as unknown as EsmRecord;
+    }
+    if (formId === EXPLOSION_MGEF_ID) {
+      return {
+        header: { signature: 'MGEF', form_id: EXPLOSION_MGEF_ID },
+        editor_id: 'Legendary_Weapon_ElectriciansApplyExplosionPerkEffect',
+        fields: {
+          'Magic Effect Data': {
+            Data: {
+              Archetype: { name: 'Script' },
+              Explosion: EXPL_ID,
+              Flags: { value: '0x1', flags: ['Hostile'] },
+            },
+          },
+        },
+      } as unknown as EsmRecord;
+    }
+    if (formId === EXPL_ID) {
+      return {
+        header: { signature: 'EXPL', form_id: EXPL_ID },
+        editor_id: 'LegendaryEffect_Electricians_Explosion',
+        fields: {
+          Data: { Damage: 0.01, 'Base Weapon Damage Mult': 0 },
+          'Damage Types': [
+            {
+              Type: ENERGY_RESIST_AV,
+              Amount: 0,
+              'Curve Table': {
+                curve_path: 'LegendaryMods\\Weapon_ElectriciansEnergyDMG.json',
+                curve: [
+                  { x: 1, y: 11 },
+                  { x: 50, y: 25 },
+                ],
+              },
+            },
+          ],
+        },
+      } as unknown as EsmRecord;
+    }
+    if (formId === '0x007C2878') {
+      return {
+        header: { signature: 'KYWD', form_id: '0x007C2878' },
+        editor_id: 'WeaponNoReload',
+        fields: {},
+      } as unknown as EsmRecord;
+    }
+    throw new Error(`unexpected get(${formId})`);
+  };
+
+  const client = createInMemoryEsmSource({
+    getFallback: recordFor,
+    resolveEdidMap: { [ENERGY_RESIST_AV]: 'dtEnergy' },
+  });
+  const deps = { client, routes: new Map<string, AvifRoute[]>(), edidByFormId: new Map<string, string>() };
+
+  it('chases the deduped fan-out entry into exactly one reloadCycle proc, no ordinary modifiers', async () => {
+    const result = await translateEnchantment(deps, ENCH_ID);
+    expect(result.modifiers).toEqual([]);
+    expect(result.procs).toEqual([
+      {
+        trigger: 'reloadCycle',
+        components: [
+          { damageType: 'explosive', damageTypeEdid: null, amount: 0.01, tier: null, curve: null },
+          {
+            damageType: 'energy',
+            damageTypeEdid: 'dtEnergy',
+            amount: 0,
+            tier: null,
+            curve: [
+              { x: 1, y: 11 },
+              { x: 50, y: 25 },
+            ],
+          },
+        ],
+      },
+    ]);
   });
 });
 
