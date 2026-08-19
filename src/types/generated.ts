@@ -307,6 +307,39 @@ export interface GeneratedExplosionSwap {
   baseWeaponDamageMult: number;
 }
 
+/**
+ * A single damage leg of a `GeneratedProc` (see `src/types/procs.ts`'s
+ * `ProcComponent` for the engine-side twin) — mirrors
+ * `GeneratedDamageComponent`'s shape minus `fromExplosion` (procs are never
+ * folded as ordinary weapon components).
+ */
+export interface GeneratedProcComponent {
+  damageType: GeneratedDamageType;
+  /** Source damage-type/resist-AV record edid, for review — provenance only, not authoritative. */
+  damageTypeEdid: string | null;
+  /** Flat amount (authoritative only when no curve exists). */
+  amount: number;
+  /** Universal curve tier parsed from curve_path; null for non-tier curves. */
+  tier: number | null;
+  /** Inline damage-by-item-level curve points (authoritative when present). */
+  curve: CurvePoint[] | null;
+  /** Display/assumptions only — the proc's EXPL Outer Radius or effect Area was > 0. */
+  isAoe?: boolean;
+}
+
+/**
+ * A proc-triggered damage cast chased off a legendary/unique OMOD's
+ * Enchantments or AttachedPerk chain — see `scripts/extract/normalize/proc.ts`
+ * and PROC_DAMAGE_PLAN.md (issue #42). Attached to `GeneratedOmod.procChase`;
+ * the engine (`effective-weapon.ts`) turns these into `ProcSource`s.
+ */
+export interface GeneratedProc {
+  trigger: 'reloadCycle' | 'lastRound' | 'onCripple';
+  /** Present only for `onCripple` — the granting SPEL's own Cooldown Duration. */
+  cooldownSec?: number;
+  components: GeneratedProcComponent[];
+}
+
 export interface GeneratedOmod {
   /** ESM editor_id (e.g. mod_CombatRifle_Receiver_Damage-Auto). */
   id: string;
@@ -356,6 +389,13 @@ export interface GeneratedOmod {
    * twin (user-confirmed 2026-07-30). Absent = false.
    */
   chainSuppressesExplosion?: boolean;
+  /**
+   * Proc-triggered damage chased off this OMOD's Enchantments/AttachedPerk
+   * chain (Electrician's, Fracturer's, Circuit Breaker — issue #42). Present
+   * only when the chase found at least one classified trigger with real
+   * damage components.
+   */
+  procChase?: GeneratedProc[];
 }
 
 /**
