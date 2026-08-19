@@ -58,6 +58,15 @@ export const extraPerkModifiers: Readonly<Record<string, Modifier[][]>> = {
   // debuff lives on the TARGET (anyone's card can have applied it), so it is
   // modeled in @/data/target-debuffs and driven by the Target panel's stack
   // input, never by equipping the card.
+  // Bloody Mess correctly extracts empty (maxRank 1 — PCRD BloodyMessCard
+  // 0x00073680 lists only rank 1, BloodyMess01 0x0004A0BB; ranks 02/03 are
+  // cut content, not an unjoined-family bug). The mechanic is script-side,
+  // not a weapon-damage dbm: MGEF PerkBloodyMessEffect 0x003C9B9B (Script
+  // archetype) → VMAD BloodyMessNearbyScript → EXPL
+  // ExplosionBloodyMessNearby 0x001F418C, chance from CURV
+  // BloodyMessChanceBonus 0x0084339D (LCK-scaled) — no formula-bucket
+  // effect exists to extract (docs/assumptions.md "Deliberate
+  // non-modeling", issue #46).
   // Rejuvenated (0x003DE58F/0x003DE590): the PERK records extract empty
   // because the mechanics live on TWO hidden survival abilities, not the
   // perk — SPEL SURV_Thirst_Ability 0x00054DF3 tiers its fully-hydrated

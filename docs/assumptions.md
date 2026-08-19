@@ -1055,3 +1055,18 @@ ESM-proven and documented at their respective extraction sites.
   and a few niche unique-mod curves remain unmapped: Eat The Rich
   (NPC-only, not player-obtainable), PA battery drain (no DPS/AP/HP
   impact).
+- **CLOSED** (issue #46, 2026-08-19): **Bloody Mess** correctly extracts
+  `ranks: [[],[],[]]` (maxRank 1 — 02/03 are cut, not a joining bug). PCRD
+  `BloodyMessCard` 0x00073680 lists only rank 1 (`BloodyMess01`
+  0x0004A0BB). The mechanic is script-side, not a weapon-damage dbm: MGEF
+  `PerkBloodyMessEffect` 0x003C9B9B (Script archetype) → VMAD
+  `BloodyMessNearbyScript` → `EXPL ExplosionBloodyMessNearby` 0x001F418C
+  (own `CT_Player_Damage_Universal_Tier40` curve), chance from `CURV
+  BloodyMessChanceBonus` 0x0084339D (LCK-scaled) — an on-kill AoE
+  explosion of bleeding enemies, no formula-bucket effect to extract.
+- **CLOSED** (issue #46, 2026-08-19): **BonusDamage x4/x5/x6** raw-ESM
+  names (`Burn_Bounty_mod_Custom_ExtraDamage*` 0x0083BD87/0x0083E0F2/
+  0x0083F270/0x0083BD89/0x008A5E5F) are live, enemy-NPC Bounty Hunter
+  event gear (script-equipped) with zero reverse refs — not player-facing,
+  `obtainable: false` is correct. x5 and x6 are byte-identical (`ADD 5.0`
+  each) — a genuine ESM copy-paste duplicate, not an extractor bug.
