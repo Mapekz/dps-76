@@ -161,6 +161,34 @@ Napalm/Cryo/Plasma tube barrels, Nuka-Launcher.
   **Chain lightning**; emits `chainSuppressesExplosion`, not
   `explosionChase`.
 
+## Proc-triggered damage
+Engine: `computeProcDps`'s doc-comment (`proc-damage.ts`) covers the fold
+mechanic (cadence per trigger kind, per-component damage) in full — not
+repeated here. See ADR-0020 for why this is a parallel stream (`Weapon.procs`
+/ `ScenarioResult.procDps`), not a `Bucket`.
+
+- **Bypasses dbm/crit/sneak entirely** — same precedent as the
+  weapon-intrinsic DoT above: each proc is a separately-cast SPEL, not a
+  per-hit component of the paper-damage formula. **USER-CONFIRMED** design
+  (PROC_DAMAGE_PLAN.md, issue #42).
+- **`reloadCycle`/`lastRound` cadence = `1/(magDumpSec+reloadSec)`** — the
+  trigger classification itself is ESM-proven (Electrician's `GetActorGunState`
+  reload fan-out; Circuit Breaker's `GetLoadedAmmoCount < 1`, the same shape
+  as the `lastRound` condition), but "once per magazine cycle" as the cadence
+  model is an **ASSUMPTION** — not measured in-game.
+- **`onCripple` cadence is the manual `PlayerInput.procCripplesPerMin` knob**
+  (default 0) capped by the granting SPEL's own cooldown — no
+  crippling-frequency model exists, same exogenous-knob treatment as
+  `killStreak` (**ADR-0009**).
+- **AoE components fold as a flat single-target add** (`ProcComponent.isAoe`
+  is display/provenance only) — no radius/falloff/multi-target model exists
+  for procs. **ASSUMPTION.**
+- **Circuit Breaker's stun and VFX-only detonation are not modeled** — its
+  first Combat-Hit-Spell effect chases a `Damage: 0.0` EXPL (VFX only,
+  nothing to materialize) and its second's `CircuitBreakerEffect_Stun`
+  sub-effect (no damage, out of scope) — deliberately unmapped, no damage
+  payload to chase in either case.
+
 ## Mixed damage-type OMOD conversion (DamageTypeValues)
 Engine: `materializeDamageTypeComponents`'s doc-comment (`effective-weapon.ts`)
 covers the missing-type materialization mechanic in full — not repeated here.

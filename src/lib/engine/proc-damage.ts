@@ -9,7 +9,9 @@ import type { SustainTiming } from './sustain';
  * `sustainedDps` (see ADR-0020). Procs bypass dbm/crit/sneak entirely: each
  * is a separately-cast SPEL (Electrician's reload-cycle explosion, Circuit
  * Breaker's last-round discharge, Fracturer's on-cripple detonation), not a
- * per-hit component of the weapon's own paper-damage formula.
+ * per-hit component of the weapon's own paper-damage formula. See
+ * docs/assumptions.md "Proc-triggered damage" for the unproven parts (cadence
+ * model, AoE folding, what's deliberately unmapped).
  *
  * Cadence per trigger kind:
  * - `reloadCycle` / `lastRound`: fires once per magazine cycle —

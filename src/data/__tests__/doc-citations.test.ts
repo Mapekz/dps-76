@@ -223,6 +223,11 @@ const IDENTIFIER_ALLOWLIST = new Set([
   // field — real, but in a directory the guard doesn't scan (.impeccable/
   // is tool-owned generated output, not app source under src/ or scripts/).
   'generatedAt',
+  // ADR-0020 cites `addDamageComponent` as the dead Bucket stub removed in
+  // 47e80d4 (git history, not live code) — historical justification for why
+  // procs got their own parallel-stream shape instead, not a stale
+  // reference to something the ADR expects to still exist.
+  'addDamageComponent',
 ]);
 
 const DOC_EXTS = ['.md'];
