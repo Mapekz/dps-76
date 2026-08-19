@@ -11,6 +11,7 @@ function stubScenario(sustainedDps: number): ScenarioResult {
     fireRate: 1,
     fireRateApproximate: true,
     dotDps: 0,
+    procDps: 0,
   };
 }
 

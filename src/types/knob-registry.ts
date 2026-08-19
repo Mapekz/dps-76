@@ -657,6 +657,18 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
     default: PLAYER_DEFAULTS.publicTeamType ?? 'none',
     label: 'Public team type',
   },
+  // wire 57 is retired (see the comment above this registry) — do not reuse.
+  procCripplesPerMin: {
+    key: 'procCripplesPerMin',
+    wire: 58,
+    owner: 'player',
+    origin: 'input',
+    section: 'conditions',
+    default: PLAYER_DEFAULTS.procCripplesPerMin ?? 0,
+    label: 'Cripples per minute',
+    activeBadge: 'conditions',
+    clamp: { min: 0, max: 60 },
+  },
 };
 
 // retired wire ordinals: (none yet)

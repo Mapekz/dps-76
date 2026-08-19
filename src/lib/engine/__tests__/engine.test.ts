@@ -2026,6 +2026,72 @@ describe('computeDotDps (Stage A2, DoT line)', () => {
   });
 });
 
+describe('computeScenarios: procDps (issue #42, PROC_DAMAGE_PLAN.md commit 8)', () => {
+  it('surfaces on ScenarioResult.procDps without moving perHit/burstDps/sustain; honest zero at the default procCripplesPerMin, nonzero once raised', () => {
+    const weapon = makeWeapon({
+      procs: [
+        {
+          id: 'test:proc:0',
+          source: {
+            kind: 'omod',
+            formId: '0x0',
+            edid: 'Test Fracturers',
+            name: "Test Fracturer's",
+          },
+          trigger: { kind: 'onCripple', cooldownSec: 3 },
+          components: [{ damageType: 'explosive', value: 150 }],
+          conditions: [],
+        },
+      ],
+    });
+    const input = {
+      mode: 'live' as const,
+      weapon,
+      itemLevel: 50,
+      modifiers: [],
+      player: makeResolvedPlayer(),
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2.0,
+      critRate: 0,
+    };
+    // ADR-0009: no crippling-frequency model, so procCripplesPerMin defaults
+    // to 0 — an honest zero, not a hidden average.
+    const atDefault = computeScenarios(input);
+    expect(atDefault.freeAim.procDps).toBe(0);
+    expect(atDefault.vats.procDps).toBe(0);
+
+    const raised = computeScenarios({
+      ...input,
+      player: { ...makeResolvedPlayer(), procCripplesPerMin: 6 },
+    });
+    // min(6/60, 1/3) = 0.1/s → 150 × 0.1 = 15/s.
+    expect(raised.freeAim.procDps).toBeCloseTo(15, 10);
+    expect(raised.vats.procDps).toBeCloseTo(15, 10);
+    expect(raised.freeAim.perHit.total).toBeCloseTo(atDefault.freeAim.perHit.total, 10);
+    expect(raised.freeAim.burstDps).toBeCloseTo(atDefault.freeAim.burstDps, 10);
+    expect(raised.freeAim.sustain.sustainedDps).toBeCloseTo(
+      atDefault.freeAim.sustain.sustainedDps,
+      10,
+    );
+  });
+
+  it('a weapon with no procs gets procDps 0 in both scenarios', () => {
+    const weapon = makeWeapon();
+    const withoutProcs = computeScenarios({
+      mode: 'live' as const,
+      weapon,
+      itemLevel: 50,
+      modifiers: [],
+      player: makeResolvedPlayer(),
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2.0,
+      critRate: 0,
+    });
+    expect(withoutProcs.freeAim.procDps).toBe(0);
+    expect(withoutProcs.vats.procDps).toBe(0);
+  });
+});
+
 describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
   // 20-round mag, 1 shot/s fire rate, 4s reload → magDumpSec 20s, reloadSec 4s,
   // reload-inclusive shots/s = 20/24 (effectiveShotsPerSecond, NOT the raw 1.0/s

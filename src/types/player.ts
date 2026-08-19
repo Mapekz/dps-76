@@ -53,6 +53,14 @@ export interface PlayerInput {
   playerDamageResist?: number;
   playerRadResist?: number;
   battleLoadersBashSec?: number;
+  /**
+   * Manual knob for `onCripple` proc cadence (Fracturer's — issue #42,
+   * PROC_DAMAGE_PLAN.md) — how many limb-crippling hits land per minute.
+   * No crippling-frequency model exists (ADR-0009 precedent, same as
+   * `followThroughPct`), so this is exogenous, default 0 (an honest zero,
+   * not a hidden average — `computeProcDps`/ScenarioResult.procDps).
+   */
+  procCripplesPerMin?: number;
 
   // SPECIAL base allocation (1–15, budget-enforced in BuildState).
   // On `ResolvedPlayer` these keys hold **buff-folded effective SPECIAL**.
@@ -195,6 +203,7 @@ export function createDefaultPlayerInput(): PlayerInput {
     takingOneForTheTeamDrRank: 0,
     playerDamageResist: 0,
     playerRadResist: 0,
+    procCripplesPerMin: 0,
     strength: 1,
     perception: 1,
     endurance: 1,

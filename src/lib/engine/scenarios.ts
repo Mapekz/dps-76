@@ -19,6 +19,7 @@ import {
   type VatsCritConstants,
 } from './crit-meter';
 import { computeDotDps, computePaperDamage, type HitBreakdown } from './paper-damage';
+import { computeProcDps } from './proc-damage';
 import { applyMitigation, type EnemyDefenses, type MitigationConstants } from './mitigation';
 import {
   onslaughtHitEventsPerShot,
@@ -122,6 +123,16 @@ export interface ScenarioResult {
    * which stay unchanged; 0 when no DoT modifier is active.
    */
   dotDps: number;
+  /**
+   * Steady-state proc-triggered damage add (issue #42, PROC_DAMAGE_PLAN.md)
+   * — separately-cast SPELs (Electrician's reload-cycle explosion, Circuit
+   * Breaker's last-round discharge, Fracturer's on-cripple detonation), NOT
+   * folded into `perHit`/`burstDps`/`sustain` (parallel to `dotDps`, see
+   * `computeProcDps`, ADR-0020). 0 when the weapon carries no `procs` or
+   * every proc's cadence resolves to 0 (e.g. an `onCripple` proc with the
+   * default `procCripplesPerMin` of 0 — an honest zero, not hidden).
+   */
+  procDps: number;
   /**
    * Steady-state VATS AP economy (Stage B) — only present for ranged weapons
    * with a real per-shot VATS AP cost (`weapon.apCost > 0`; melee/VATS-melee
@@ -937,6 +948,27 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   );
   const vatsDotDps = computeDotDps(input.modifiers, input.weapon, vatsCtx);
 
+  // Proc-triggered damage (issue #42, PROC_DAMAGE_PLAN.md commit 8) — same
+  // parallel-stream treatment as DoT above: un-hit-rate-scaled sustain
+  // timing (freeSustainRaw/vatsSustainRaw's magDumpSec/reloadSec), each
+  // scenario's own non-crit context. procCripplesPerMin defaults to 0
+  // (ADR-0009 — an honest zero, not a hidden average) via
+  // createDefaultPlayerInput().
+  const freeProcDps = computeProcDps(
+    input.weapon.procs ?? [],
+    input.itemLevel,
+    scenarioCtx(input, freeFlags, onslaught, bulletStorm),
+    freeSustainRaw,
+    input.player.procCripplesPerMin ?? 0,
+  );
+  const vatsProcDps = computeProcDps(
+    input.weapon.procs ?? [],
+    input.itemLevel,
+    vatsCtx,
+    vatsSustainRaw,
+    input.player.procCripplesPerMin ?? 0,
+  );
+
   // Steady-state VATS AP economy (Stage B): ranged weapons only (melee/VATS-
   // melee AP is out of scope — uptime is undefined without real melee AP
   // costs) and only when the weapon has a real per-shot VATS AP cost.
@@ -1063,6 +1095,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       fireRate,
       fireRateApproximate: true,
       dotDps: freeDotDps,
+      procDps: freeProcDps,
       ...(freeEffective && { effective: freeEffective }),
       ...(tracing && { explain: { nonCrit: freeTrace!, crit: null } }),
     },
@@ -1076,6 +1109,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       critRate,
       critMeter,
       dotDps: vatsDotDps,
+      procDps: vatsProcDps,
       ...(ap && { ap }),
       ...(vatsEffective && { effective: vatsEffective }),
       ...(tracing && {
