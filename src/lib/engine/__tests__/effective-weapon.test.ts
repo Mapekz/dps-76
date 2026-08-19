@@ -1808,6 +1808,205 @@ describe('explosionChase ADDs to a weapon with no baseline explosion, docs/assum
   });
 });
 
+describe('procChase → Weapon.procs (issue #42, PROC_DAMAGE_PLAN.md commit 6)', () => {
+  const FLAT_100 = [
+    { x: 1, y: 100 },
+    { x: 50, y: 100 },
+  ];
+
+  function makePlainWeapon() {
+    return {
+      id: 'test_proc_weapon',
+      name: 'Test Proc Weapon',
+      components: [
+        { damageType: 'ballistic' as const, tier: -1, levelCap: 50, curvePoints: FLAT_100 },
+      ],
+      damageType: 'ballistic' as const,
+      weaponClass: 'rifle' as const,
+      isAutomatic: false,
+      isPhysical: true,
+      critDamageMult: 2.0,
+      critChargeBonus: 1.0,
+      sneakAttackMult: 2.0,
+      damageBonusMult: 1.0,
+    };
+  }
+
+  /** Mirrors Fracturer's real procChase shape: onCripple, one curve-bearing explosive component. */
+  function makeFracturersOmod(formId = '0xFRACTURER', id = 'mod_Legendary_Weapon4_Fracturers') {
+    return {
+      id,
+      formId,
+      name: "Fracturer's",
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid: 'ap_Legendary4',
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [],
+      procChase: [
+        {
+          trigger: 'onCripple' as const,
+          cooldownSec: 3,
+          components: [
+            {
+              damageType: 'explosive' as const,
+              damageTypeEdid: null,
+              amount: 150,
+              tier: null,
+              curve: [
+                { x: 1, y: 22 },
+                { x: 50, y: 50 },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+  }
+
+  /** Mirrors Circuit Breaker's real shape: identical procChase content on two different formids/ids. */
+  function makeCircuitBreakerOmod(formId: string, id: string, attachPointEdid: string) {
+    return {
+      id,
+      formId,
+      name: 'Circuit Breaker',
+      description: '',
+      attachPointFormId: '0x0',
+      attachPointEdid,
+      targetKeywords: [],
+      addedKeywords: [],
+      hasEnchantments: false,
+      modifiers: [],
+      procChase: [
+        {
+          trigger: 'lastRound' as const,
+          components: [
+            {
+              damageType: 'energy' as const,
+              damageTypeEdid: 'EnergyResist',
+              amount: 31,
+              tier: null,
+              curve: [
+                { x: 1, y: 31 },
+                { x: 50, y: 103 },
+              ],
+              isAoe: false,
+            },
+          ],
+        },
+      ],
+    };
+  }
+
+  it('folds a single equipped procChase into Weapon.procs, mapping trigger/cooldown/curve', () => {
+    const { weapon } = buildEffectiveWeapon(
+      makePlainWeapon(),
+      [makeFracturersOmod()],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
+    expect(weapon.procs).toHaveLength(1);
+    const [proc] = weapon.procs!;
+    expect(proc.id).toBe('0xFRACTURER:proc:0');
+    expect(proc.source).toMatchObject({ kind: 'omod', formId: '0xFRACTURER' });
+    expect(proc.trigger).toEqual({ kind: 'onCripple', cooldownSec: 3 });
+    expect(proc.conditions).toEqual([]);
+    expect(proc.components).toEqual([
+      {
+        damageType: 'explosive',
+        curve: {
+          input: 'itemLevel',
+          points: [
+            { x: 1, y: 22 },
+            { x: 50, y: 50 },
+          ],
+        },
+        value: undefined,
+        isAoe: undefined,
+      },
+    ]);
+  });
+
+  it('a flat-amount component (no curve) becomes a plain `value`, not a curve', () => {
+    const flatOmod = {
+      ...makeFracturersOmod(),
+      procChase: [
+        {
+          trigger: 'reloadCycle' as const,
+          components: [
+            {
+              damageType: 'fire' as const,
+              damageTypeEdid: null,
+              amount: 12,
+              tier: null,
+              curve: null,
+            },
+          ],
+        },
+      ],
+    };
+    const { weapon } = buildEffectiveWeapon(
+      makePlainWeapon(),
+      [flatOmod],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
+    expect(weapon.procs![0].components[0]).toMatchObject({
+      damageType: 'fire',
+      value: 12,
+      curve: undefined,
+    });
+  });
+
+  it('collects procs from MULTIPLE distinct equipped omods (not last-wins like explosionChase)', () => {
+    const { weapon } = buildEffectiveWeapon(
+      makePlainWeapon(),
+      [
+        makeFracturersOmod(),
+        makeCircuitBreakerOmod('0xCB_IDENTITY', 'mod_Custom_CircuitBreaker', 'ap_customName'),
+      ],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
+    expect(weapon.procs).toHaveLength(2);
+    expect(weapon.procs!.map((p) => p.trigger.kind).sort()).toEqual(['lastRound', 'onCripple']);
+  });
+
+  it('dedupes byte-identical procChase content across two different equipped omods — the real Circuit Breaker identity/effect-mod shape', () => {
+    const { weapon } = buildEffectiveWeapon(
+      makePlainWeapon(),
+      [
+        makeCircuitBreakerOmod('0x006DC8DD', 'mod_Custom_CircuitBreaker', 'ap_customName'),
+        makeCircuitBreakerOmod('0x006EBCD5', 'mod_Custom_CircuitBreaker_Effect', 'ap_Legendary3'),
+      ],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
+    // Both omods carry the SAME procChase content (byte-identical trigger +
+    // components) — only one ProcSource should survive, not two (would
+    // double-count Circuit Breaker's discharge damage).
+    expect(weapon.procs).toHaveLength(1);
+    expect(weapon.procs![0].source.formId).toBe('0x006DC8DD');
+  });
+
+  it('a weapon with no procChase-carrying omods gets no procs field at all', () => {
+    const { weapon } = buildEffectiveWeapon(
+      makePlainWeapon(),
+      [],
+      50,
+      makeResolvedPlayer(),
+      makeDefaultEnemy(),
+    );
+    expect(weapon.procs).toBeUndefined();
+  });
+});
+
 describe('charging weapon-stat buckets (chargeFullPowerSec/chargeFullPowerDamageMult)', () => {
   const fixer = getWeapons('live')['CombatRifle_Fixer'];
 

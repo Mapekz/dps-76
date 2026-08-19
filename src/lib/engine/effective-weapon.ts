@@ -5,8 +5,11 @@ import type {
   GeneratedDamageType,
   GeneratedExplosionSwap,
   GeneratedOmod,
+  GeneratedProc,
+  GeneratedProcComponent,
 } from '@/types/generated';
 import type { Bucket, DamageType, Modifier } from '@/types/modifiers';
+import type { ProcComponent, ProcSource, ProcTrigger } from '@/types/procs';
 import {
   EFFECTIVE_WEAPON_CONSUMED_BUCKETS,
   SUSTAIN_CHANCE_BUCKETS,
@@ -94,6 +97,77 @@ function explosionSwapComponents(
     curvePoints: c.curve ?? (c.tier == null ? [{ x: 1, y: c.amount }] : undefined),
     fromExplosion: true,
   }));
+}
+
+/** `GeneratedProc.trigger` → the engine-shaped discriminated union (procs.ts). */
+function procTriggerFromGenerated(proc: GeneratedProc): ProcTrigger {
+  switch (proc.trigger) {
+    case 'reloadCycle':
+      return { kind: 'reloadCycle' };
+    case 'lastRound':
+      return { kind: 'lastRound' };
+    case 'onCripple':
+      return { kind: 'onCripple', cooldownSec: proc.cooldownSec ?? 0 };
+  }
+}
+
+/** Converts a `GeneratedProc`'s components to engine-shaped `ProcComponent`s — same damage-type map explosionSwapComponents uses (procs.ts's `DamageType` and `WeaponComponent['damageType']` are the same union). */
+function procComponentsFromGenerated(
+  components: readonly GeneratedProcComponent[],
+): ProcComponent[] {
+  return components.map((c) => ({
+    damageType: EXPLOSION_SWAP_DAMAGE_TYPE_MAP[c.damageType],
+    // itemLevel-keyed inline points (authoritative when present, procs.ts's
+    // ProcComponent.curve doc comment) — flat `amount` fallback otherwise.
+    curve: c.curve ? { input: 'itemLevel' as const, points: c.curve } : undefined,
+    value: c.curve ? undefined : c.amount,
+    isAoe: c.isAoe,
+  }));
+}
+
+/**
+ * Proc-triggered damage (issue #42, PROC_DAMAGE_PLAN.md commit 6): collects
+ * `procChase` across ALL equipped OMODs — unlike `explosionChase`'s
+ * last-equipped-wins convention, a weapon can plausibly carry more than one
+ * genuinely distinct proc source at once.
+ *
+ * Dedup investigation (2026-08-19): Circuit Breaker's `procChase` appears on
+ * BOTH its identity mod (`mod_Custom_CircuitBreaker`, ap_customName, listed
+ * in `defaultModFormIds`) and the OMOD its Includes chain pulls in
+ * (`mod_Custom_CircuitBreaker_Effect`, ap_Legendary3) — the extractor chases
+ * each OMOD record's own Enchantments/AttachedPerk property independently,
+ * so both end up carrying byte-identical `procChase` entries for the same
+ * underlying PERK/SPEL chain. Traced how equipped omods materialize
+ * (`equippedOmodsFor` in loadout-memo-wrappers.ts, `getDefaultOmods` in
+ * data/omods.ts, `isOmodEligibleForWeapon` in omod-eligibility.ts): the
+ * effect mod is in neither `defaultModFormIds` nor `templateModFormIds` for
+ * Circuit Breaker (or any other weapon), and its empty `targetKeywords`
+ * makes Branch 2 of the eligibility predicate require template membership or
+ * an explicit `restrictedToWeaponIds` rescue — neither is set — so under
+ * today's data the effect mod can never itself land in `equippedOmods`; only
+ * the identity mod's copy is ever seen. Still dedupe defensively by
+ * structural content (JSON-equal trigger+components) rather than trust that
+ * invariant to hold forever — a future rescue-list entry or corrections.ts
+ * change could put both in the same equipped set.
+ */
+function resolveGeneratedProcs(equippedOmods: readonly GeneratedOmod[]): ProcSource[] {
+  const procs: ProcSource[] = [];
+  const seen = new Set<string>();
+  for (const omod of equippedOmods) {
+    (omod.procChase ?? []).forEach((proc, i) => {
+      const key = JSON.stringify(proc);
+      if (seen.has(key)) return;
+      seen.add(key);
+      procs.push({
+        id: `${omod.formId}:proc:${i}`,
+        source: { kind: 'omod', formId: omod.formId, edid: omod.id, name: omod.name },
+        trigger: procTriggerFromGenerated(proc),
+        components: procComponentsFromGenerated(proc.components),
+        conditions: [],
+      });
+    });
+  }
+  return procs;
 }
 
 function foldChanceUnion(modifiers: Modifier[], bucket: Bucket, ctx: ResolveContext): number {
@@ -581,10 +655,13 @@ export function buildEffectiveWeapon(
     }
   }
 
+  const procs = resolveGeneratedProcs(equippedOmods);
+
   return {
     weapon: {
       ...weapon,
       keywords,
+      ...(procs.length > 0 && { procs }),
       speed,
       isAutomatic,
       animDurationSec,

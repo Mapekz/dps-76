@@ -1,4 +1,5 @@
 import type { Modifier } from '@/types/modifiers';
+import type { ProcSource } from '@/types/procs';
 import type { Special } from '@/data/special';
 import { DEFAULT_DISTANCE_UNITS } from '@/lib/distance';
 import type { PlayerInput } from '@/types/player';
@@ -306,6 +307,17 @@ export interface Weapon {
    * replace (docs/assumptions.md "Weapon-intrinsic DoT & OMOD replacement").
    */
   modifiers?: Modifier[];
+
+  /**
+   * Proc-triggered damage sources (issue #42, PROC_DAMAGE_PLAN.md) folded in
+   * by `buildEffectiveWeapon` from equipped OMODs' `GeneratedOmod.procChase`
+   * (Electrician's reload-cycle explosion, Circuit Breaker's last-round
+   * discharge, Fracturer's on-cripple detonation). Parallel to `dotDps`, NOT
+   * a `Bucket` — see `src/types/procs.ts`'s doc comment and ADR-0020.
+   * Absent/empty on the base extracted weapon; only ever populated by the
+   * effective-weapon fold.
+   */
+  procs?: ProcSource[];
 
   /**
    * Playstyle assumption, NOT a measured engine fact — lobbed/splash-dependent

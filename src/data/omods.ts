@@ -79,8 +79,16 @@ export function getDefaultOmods(
     // Pure-appearance cosmetic defaults are noise, but stat-carrying ones are
     // real unique effects riding cosmetic attach points (Cold Shoulder's
     // Paranormal Mod on ap_customName) — same rule as the picker's
-    // getOmodSlots includeSlot.
-    if (COSMETIC_SLOT_RE.test(omod.attachPointEdid) && omod.modifiers.length === 0) continue;
+    // getOmodSlots includeSlot. A cosmetic-slot omod with zero ordinary
+    // `modifiers` but a real `procChase` (issue #42 — a proc-only identity
+    // mod with no other stat) is not noise either; don't let it get silently
+    // dropped here just because it carries no Modifier IR entries.
+    if (
+      COSMETIC_SLOT_RE.test(omod.attachPointEdid) &&
+      omod.modifiers.length === 0 &&
+      !(omod.procChase && omod.procChase.length > 0)
+    )
+      continue;
     if (typeof chosenMods[omod.attachPointEdid] === 'string') continue;
     out.push(omod);
   }
