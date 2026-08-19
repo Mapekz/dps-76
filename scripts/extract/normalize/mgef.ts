@@ -153,6 +153,37 @@ export const ENTRY_POINT_BUCKETS: Record<string, Bucket> = {
   // ENTRY_POINT_EXTRA_CONDITIONS below for the vatsOnly/stacks gating this
   // needs (buildAvifRoutes carries no plumbing-perk conditions for it).
   'Mod VATS Concentrated Fire Damage Mult': 'dbm',
+  // Ammo Health (issue #46, 2026-08-19 — verified via `esm get`/`esm chase`):
+  // EP125, granted via the Script-MGEF → "Perk to Apply" chain chased from
+  // the 10mm/Gatling Gun magazine mods (mod_10mm_Magazine_Ammo,
+  // mod_GatlingGun_Magazine_ExtraLarge → Include
+  // _PARENT_mod_WEAPON_GENERIC_AmmoCapacity_Tier1/2 0x0052440F/0x00524410 →
+  // ENCH enchMod_Weapon_AmmoCapacity_PlasmaCoreHealth_Tier1/2
+  // 0x0091B688/0x007B23C8 → MGEF Mod_AmmoCapacity_PlasmaCoreHealth_Tier1/2
+  // → hidden PERK, Function "Add Value", Float 0.5). This multiplies the max
+  // condition Health of the equipped battery/core ammo item — each shot
+  // still costs exactly 1 Health, so more max Health means more shots fired
+  // before the core is expended, i.e. a magazine-capacity increase for
+  // core-based weapons, matching the ENCH's own display Name ("Ammo
+  // Capacity"). Three independent direct-PERK sources corroborate the
+  // mechanic and its weapon scope: Power User (PowerUser01-03
+  // 0x0027A873/74/75, card text "Fusion Cores now last 30/60/100% longer" —
+  // itself a shots-before-empty framing, Float 0.3/0.6/1.0), the Repair
+  // Bobblehead (Bobblehead_RepairPerk), and Tesla Science Magazine #4 — all
+  // three gate this SAME entry point on `WornHasKeyword(ma_GatlingLaser |
+  // ma_Ultracite_GatlingLaser)` and grant it ALONGSIDE a sibling MGEF that
+  // reduces "PA Battery Damage Rate" (a separate Power-Armor
+  // fusion-core-drain mechanic, not this one). Routed to the dedicated
+  // `ammoHealthMult` bucket (NOT `ammoCapacity` — see that bucket's doc
+  // comment in src/types/modifiers.ts for why folding it in would silently
+  // inflate magazine capacity for every standard-ammo weapon sharing the
+  // "GENERIC" magazine-mod template, on top of the ALREADY-correct direct
+  // `AmmoCapacity` OMOD-property fold present on the exact same records).
+  // Stored-inert: folding the Gatling Laser/Ultracite Gatling Laser-gated
+  // instances into effective shots-per-core needs a core-weapon gate this
+  // engine doesn't have yet (docs/assumptions.md "Ammo Health (battery/core
+  // Health)").
+  'Mod Ammo Health Mult': 'ammoHealthMult',
   // Concentrated Fire's hit-chance half — EP109 on the same plumbing perk,
   // same Function/AV param, two branches keyed on
   // HasKeyword(WeaponTypeAutomatic): ==0 (non-auto) Float 4.0, ==1 (auto)

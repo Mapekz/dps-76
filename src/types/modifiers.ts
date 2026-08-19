@@ -158,6 +158,46 @@ export type Bucket =
   | 'projectileCount'
   /** Magazine capacity rewrite from OMODs (drum/extended magazines) — feeds sustained DPS. */
   | 'ammoCapacity'
+  /**
+   * Entry Point 125 "Mod Ammo Health Mult" — a multiplier on the max
+   * condition Health of the equipped battery/core ammo item (Fusion Core /
+   * Plasma Cartridge), not a per-shot degradation-rate change: each shot
+   * still costs exactly 1 Health, so more max Health means more shots fired
+   * before the core is expended — mechanically a magazine-capacity increase
+   * for core-based weapons (user-confirmed 2026-08-20; the entry point's own
+   * name and the granting ENCH's own name,
+   * `enchMod_Weapon_AmmoCapacity_PlasmaCoreHealth_Tier1/2`
+   * 0x0091B688/0x007B23C8, both say "Health"/"AmmoCapacity" directly). Three
+   * independent ESM sources corroborate the mechanic and its weapon scope
+   * (issue #46, 2026-08-19): Power User (PERK PowerUser01-03
+   * 0x0027A873/74/75, card text "Fusion Cores now last 30/60/100% longer" —
+   * itself a shots-before-empty framing, `WornHasKeyword(ma_GatlingLaser |
+   * ma_Ultracite_GatlingLaser)`-gated), the Repair Bobblehead (PERK
+   * Bobblehead_RepairPerk, same Gatling-Laser keyword gate), and Tesla
+   * Science Magazine #4 (same gate plus ArmorTypePower) — all three grant
+   * this EXACT entry point ALONGSIDE a sibling MGEF that reduces "PA Battery
+   * Damage Rate" (a separate Power-Armor fusion-core-drain mechanic, not
+   * this one). The chain chased from the 10mm/Gatling Gun magazine mods
+   * (mod_10mm_Magazine_Ammo, mod_GatlingGun_Magazine_ExtraLarge → Include
+   * _PARENT_mod_WEAPON_GENERIC_AmmoCapacity_Tier1/2 0x0052440F/0x00524410 →
+   * ENCH enchMod_Weapon_AmmoCapacity_PlasmaCoreHealth_Tier1/2 → Script MGEF
+   * → Perk to Apply → this entry point, Float 0.5) is the SAME plumbing,
+   * reused generically on a "GENERIC" magazine-mod template shared by every
+   * standard-ammo weapon's Large Magazine family, not just core-ammo
+   * weapons — those non-core weapons don't track a Health-based ammo pool at
+   * all, so the entry point is a real no-op for them there, while the
+   * WEAPON's own direct `AmmoCapacity` OMOD property (co-present on the
+   * exact same records) already correctly models their magazine size.
+   * Mapping this bucket into `ammoCapacity` unconditionally would double-
+   * count for those weapons. Kept as its own bucket instead
+   * (`extract-omods.ts`/`normalize/mgef.ts` `ENTRY_POINT_BUCKETS`), still
+   * `hasEngineEffect: false` — folding the Gatling Laser/Ultracite Gatling
+   * Laser-gated instances into effective shots-per-core needs a core-weapon
+   * gate this engine doesn't have yet (see docs/assumptions.md "Ammo Health
+   * (battery/core Health)" for the follow-up scope), not just a framing
+   * fix. This doc comment only corrects the mechanic's description.
+   */
+  | 'ammoHealthMult'
   /** Reload speed multiplier rewrite from OMODs (quick-eject magazines) — feeds sustained DPS. */
   | 'reloadSpeed'
   /**
@@ -967,6 +1007,13 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
     regime: 'unfolded',
     hasEngineEffect: false,
     foldedBy: "none — spin-up/ramp timing not modeled (Valkyrie's)",
+  },
+  ammoHealthMult: {
+    foldBase: 'unfolded',
+    regime: 'unfolded',
+    hasEngineEffect: false,
+    foldedBy:
+      'none — battery/core degradation-rate reduction (Power User, Repair Bobblehead, Tesla Science 4), no consumable-degradation model exists; NOT the same mechanic as ammoCapacity (see the Bucket doc comment)',
   },
   deflectChance: {
     foldBase: 'unfolded',

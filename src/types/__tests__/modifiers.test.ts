@@ -49,6 +49,7 @@ const ALL_BUCKETS: Bucket[] = [
   'animDelaySec',
   'projectileCount',
   'ammoCapacity',
+  'ammoHealthMult',
   'reloadSpeed',
   'reloadSkipChance',
   'reloadSkipChanceBash',
@@ -176,6 +177,7 @@ describe('BUCKET_REGISTRY', () => {
     const expected: Bucket[] = [
       'limbDamage',
       'bashDamage',
+      'ammoHealthMult',
       'bulletStormOnKill',
       'bulletStormSpinUp',
       'deflectChance',

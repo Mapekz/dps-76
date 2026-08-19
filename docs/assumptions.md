@@ -1070,3 +1070,40 @@ ESM-proven and documented at their respective extraction sites.
   event gear (script-equipped) with zero reverse refs — not player-facing,
   `obtainable: false` is correct. x5 and x6 are byte-identical (`ADD 5.0`
   each) — a genuine ESM copy-paste duplicate, not an extractor bug.
+- **Ammo Health (battery/core Health)** — **CLOSED** (issue #46,
+  2026-08-19; mechanic corrected 2026-08-20 per user in-game confirmation):
+  Entry Point 125 "Mod Ammo Health Mult" is a multiplier on the max
+  condition Health of the equipped battery/core ammo item (Fusion Core /
+  Plasma Cartridge). Each shot still costs exactly 1 Health, so more max
+  Health means more shots fired before the core is expended — an effective
+  magazine-capacity increase for core-based weapons, not a change to the
+  per-shot cost itself. This matches the granting ENCH's own name
+  (`enchMod_Weapon_AmmoCapacity_PlasmaCoreHealth_Tier1/2`
+  0x0091B688/0x007B23C8) directly. Reaches this extractor through the exact
+  same magazine-mod chase the issue's "no extractable number" claim was
+  about (`mod_10mm_Magazine_Ammo` 0x0005E9DB,
+  `mod_GatlingGun_Magazine_ExtraLarge` 0x00011C01 → Include
+  `_PARENT_mod_WEAPON_GENERIC_AmmoCapacity_Tier1/2` 0x0052440F/0x00524410
+  → the ENCH above → Script MGEF → "Perk to Apply" → this entry point,
+  Float 0.5). Three independent direct-PERK sources corroborate the
+  mechanic and its weapon scope: Power User (`PowerUser01-03`
+  0x0027A873/74/75, card text "Fusion Cores now last 30/60/100% longer" —
+  itself a shots-before-empty framing, Float 0.3/0.6/1.0), the Repair
+  Bobblehead (`Bobblehead_RepairPerk`), and Tesla Science Magazine #4 — all
+  three gate this SAME entry point on `WornHasKeyword(ma_GatlingLaser |
+  ma_Ultracite_GatlingLaser)` and grant it ALONGSIDE a sibling MGEF
+  reducing "PA Battery Damage Rate" (a separate Power-Armor
+  fusion-core-drain mechanic, not this one). Extracted to its own
+  `ammoHealthMult` bucket (`hasEngineEffect: false`, `ENTRY_POINT_BUCKETS`
+  in `normalize/mgef.ts`) rather than folded into `ammoCapacity` — the
+  "GENERIC" magazine-mod template this chain lives on is shared by every
+  standard-ammo weapon's Large Magazine family (10mm Pistol, ballistic
+  Gatling Gun, Combat Rifle, Hunting Rifle, …), and those weapons don't
+  track a Health-based ammo pool at all, so the entry point is a genuine
+  no-op for them there — folding it into `ammoCapacity` unconditionally
+  would double-count against the ALREADY-correct direct `AmmoCapacity`
+  OMOD-property fold present on the exact same records. Folding the
+  Gatling Laser/Ultracite Gatling Laser-gated instances into effective
+  shots-per-core is still open — needs a core-weapon gate this engine
+  doesn't have yet, not just this framing fix. Full doc comment:
+  `src/types/modifiers.ts`'s `ammoHealthMult` Bucket entry.

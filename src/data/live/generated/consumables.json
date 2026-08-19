@@ -1618,10 +1618,28 @@
   "formId": "0x0042FEDE",
   "name": "Bobblehead: Repair",
   "kind": "consumable",
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0042FEDE:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x0042FEDE",
+     "edid": "BobbleHead_Repair_Potion",
+     "name": "Bobblehead: Repair"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "MUL_ADD",
+    "value": 0.30000000000000004,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "OR-group[WornHasKeyword(ma_GatlingLaser)=1 | WornHasKeyword(ma_Ultracite_GatlingLaser)=1]"
+     }
+    ]
+   }
+  ],
   "notes": [
    "BobbleHead_Repair_Potion: perk Bobblehead_RepairPerk: OR-group[WornHasKeyword(ma_GatlingLaser)=1 | WornHasKeyword(ma_Ultracite_GatlingLaser)=1]",
-   "BobbleHead_Repair_Potion: perk Bobblehead_RepairPerk: entry point Mod Ammo Health Mult — not modeled",
    "BobbleHead_Repair_Potion: MGEF Bobblehead_ReducePABatteryDamageRate_Effect: no route for AV PABatteryDamageRate — needs mapping"
   ],
   "category": "bobblehead",
@@ -5645,10 +5663,28 @@
   "formId": "0x007A2F9C",
   "name": "Glowing Bobblehead: Repair",
   "kind": "consumable",
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x007A2F9C:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x007A2F9C",
+     "edid": "GHL_GlowingBobbleHead_Repair_Potion",
+     "name": "Glowing Bobblehead: Repair"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "MUL_ADD",
+    "value": 0.30000000000000004,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "OR-group[WornHasKeyword(ma_GatlingLaser)=1 | WornHasKeyword(ma_Ultracite_GatlingLaser)=1]"
+     }
+    ]
+   }
+  ],
   "notes": [
    "GHL_GlowingBobbleHead_Repair_Potion: perk Bobblehead_RepairPerk: OR-group[WornHasKeyword(ma_GatlingLaser)=1 | WornHasKeyword(ma_Ultracite_GatlingLaser)=1]",
-   "GHL_GlowingBobbleHead_Repair_Potion: perk Bobblehead_RepairPerk: entry point Mod Ammo Health Mult — not modeled",
    "GHL_GlowingBobbleHead_Repair_Potion: MGEF Bobblehead_ReducePABatteryDamageRate_Effect: no route for AV PABatteryDamageRate — needs mapping"
   ],
   "category": "bobblehead",
@@ -15115,11 +15151,29 @@
   "formId": "0x00432D04",
   "name": "Tesla Science 4",
   "kind": "consumable",
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00432D04:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00432D04",
+     "edid": "Magazine_TeslaScience04_Potion",
+     "name": "Tesla Science 4"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "MUL_ADD",
+    "value": 0.1499999999999999,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "OR-group[WornHasKeyword(ma_Ultracite_GatlingLaser)=1 | WornHasKeyword(ArmorTypePower)=1 | WornHasKeyword(ma_GatlingLaser)=1]"
+     }
+    ]
+   }
+  ],
   "notes": [
    "Magazine_TeslaScience04_Potion: perk Magazine_TeslaScience04Perk: MGEF abReducePABatteryDamageRateEffect: no route for AV PABatteryDamageRate — needs mapping",
-   "Magazine_TeslaScience04_Potion: perk Magazine_TeslaScience04Perk: OR-group[WornHasKeyword(ma_Ultracite_GatlingLaser)=1 | WornHasKeyword(ArmorTypePower)=1 | WornHasKeyword(ma_GatlingLaser)=1]",
-   "Magazine_TeslaScience04_Potion: perk Magazine_TeslaScience04Perk: entry point Mod Ammo Health Mult — not modeled"
+   "Magazine_TeslaScience04_Potion: perk Magazine_TeslaScience04Perk: OR-group[WornHasKeyword(ma_Ultracite_GatlingLaser)=1 | WornHasKeyword(ArmorTypePower)=1 | WornHasKeyword(ma_GatlingLaser)=1]"
   ],
   "category": "magazine",
   "dispelKeys": [

@@ -9181,6 +9181,19 @@
     "op": "MUL_ADD",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x0031B1A2:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0031B1A2",
+     "edid": "DLC04_mod_HandMadeGun_Magazine_Ammo",
+     "name": "Drum Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -9189,9 +9202,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -9232,7 +9243,20 @@
     "conditions": []
    },
    {
-    "id": "0x0031B1A4:2",
+    "id": "0x0031B1A4:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0031B1A4",
+     "edid": "DLC04_mod_HandMadeGun_Magazine_Ammo-ArmorPen",
+     "name": "Stinging Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x0031B1A4:3",
     "source": {
      "kind": "omod",
      "formId": "0x0031B1A4",
@@ -9245,7 +9269,7 @@
     "conditions": []
    },
    {
-    "id": "0x0031B1A4:3",
+    "id": "0x0031B1A4:4",
     "source": {
      "kind": "omod",
      "formId": "0x0031B1A4",
@@ -9264,9 +9288,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -9307,7 +9329,20 @@
     "conditions": []
    },
    {
-    "id": "0x0031B1A5:2",
+    "id": "0x0031B1A5:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0031B1A5",
+     "edid": "DLC04_mod_HandMadeGun_Magazine_Ammo-Reload",
+     "name": "Swift Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x0031B1A5:3",
     "source": {
      "kind": "omod",
      "formId": "0x0031B1A5",
@@ -9325,9 +9360,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -18160,6 +18193,19 @@
     "op": "MUL_ADD",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x0005E9DB:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0005E9DB",
+     "edid": "mod_10mm_Magazine_Ammo",
+     "name": "Large Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -18167,9 +18213,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -18210,7 +18254,20 @@
     "conditions": []
    },
    {
-    "id": "0x0005EA48:2",
+    "id": "0x0005EA48:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0005EA48",
+     "edid": "mod_10mm_Magazine_Ammo-ArmorPen",
+     "name": "Stinging Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x0005EA48:3",
     "source": {
      "kind": "omod",
      "formId": "0x0005EA48",
@@ -18223,7 +18280,7 @@
     "conditions": []
    },
    {
-    "id": "0x0005EA48:3",
+    "id": "0x0005EA48:4",
     "source": {
      "kind": "omod",
      "formId": "0x0005EA48",
@@ -18243,9 +18300,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -18286,7 +18341,20 @@
     "conditions": []
    },
    {
-    "id": "0x0005EA58:2",
+    "id": "0x0005EA58:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0005EA58",
+     "edid": "mod_10mm_Magazine_Ammo-Reload",
+     "name": "Swift Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x0005EA58:3",
     "source": {
      "kind": "omod",
      "formId": "0x0005EA58",
@@ -18302,9 +18370,7 @@
   "addedKeywords": [],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -21750,6 +21816,19 @@
     "op": "MUL_ADD",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x005547B4:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x005547B4",
+     "edid": "mod_10mmSMG_Magazine_Ammo",
+     "name": "Drum Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -21758,9 +21837,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -25946,6 +26023,19 @@
     "op": "MUL_ADD",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x003128CB:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x003128CB",
+     "edid": "mod_AssaultRifle_Magazine_Ammo",
+     "name": "Drum Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -25954,9 +26044,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -25997,7 +26085,20 @@
     "conditions": []
    },
    {
-    "id": "0x003128CD:2",
+    "id": "0x003128CD:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x003128CD",
+     "edid": "mod_AssaultRifle_Magazine_Ammo-ArmorPen",
+     "name": "Stinging Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x003128CD:3",
     "source": {
      "kind": "omod",
      "formId": "0x003128CD",
@@ -26010,7 +26111,7 @@
     "conditions": []
    },
    {
-    "id": "0x003128CD:3",
+    "id": "0x003128CD:4",
     "source": {
      "kind": "omod",
      "formId": "0x003128CD",
@@ -26031,9 +26132,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -26074,7 +26173,20 @@
     "conditions": []
    },
    {
-    "id": "0x003128CE:2",
+    "id": "0x003128CE:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x003128CE",
+     "edid": "mod_AssaultRifle_Magazine_Ammo-Reload",
+     "name": "Swift Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x003128CE:3",
     "source": {
      "kind": "omod",
      "formId": "0x003128CE",
@@ -26093,9 +26205,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -29231,6 +29341,19 @@
     "op": "MUL_ADD",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x005EBFA5:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x005EBFA5",
+     "edid": "mod_BoSPistol_Magazine_Ammo",
+     "name": "Large Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -29238,9 +29361,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -31862,6 +31983,19 @@
     "op": "MUL_ADD",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x006DC8DE:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x006DC8DE",
+     "edid": "mod_CircuitBreaker_Magazine_Ammo",
+     "name": "Large Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -31869,9 +32003,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -32752,6 +32884,19 @@
     "op": "MUL_ADD",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x00243140:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00243140",
+     "edid": "mod_CombatRifle_Magazine_Ammo",
+     "name": "Large Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -32759,9 +32904,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -32802,7 +32945,20 @@
     "conditions": []
    },
    {
-    "id": "0x0024455E:2",
+    "id": "0x0024455E:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0024455E",
+     "edid": "mod_CombatRifle_Magazine_Ammo-ArmorPen",
+     "name": "Stinging Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x0024455E:3",
     "source": {
      "kind": "omod",
      "formId": "0x0024455E",
@@ -32815,7 +32971,7 @@
     "conditions": []
    },
    {
-    "id": "0x0024455E:3",
+    "id": "0x0024455E:4",
     "source": {
      "kind": "omod",
      "formId": "0x0024455E",
@@ -32834,9 +32990,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -32877,7 +33031,20 @@
     "conditions": []
    },
    {
-    "id": "0x00244559:2",
+    "id": "0x00244559:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00244559",
+     "edid": "mod_CombatRifle_Magazine_Ammo-Reload",
+     "name": "Swift Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x00244559:3",
     "source": {
      "kind": "omod",
      "formId": "0x00244559",
@@ -32895,9 +33062,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -36821,6 +36986,19 @@
     "op": "MUL_ADD",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x00202F20:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00202F20",
+     "edid": "mod_CombatShotgun_Magazine_Ammo",
+     "name": "Drum Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -36829,9 +37007,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -36872,7 +37048,20 @@
     "conditions": []
    },
    {
-    "id": "0x00202F23:2",
+    "id": "0x00202F23:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00202F23",
+     "edid": "mod_CombatShotgun_Magazine_Ammo-ArmorPen",
+     "name": "Stinging Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x00202F23:3",
     "source": {
      "kind": "omod",
      "formId": "0x00202F23",
@@ -36885,7 +37074,7 @@
     "conditions": []
    },
    {
-    "id": "0x00202F23:3",
+    "id": "0x00202F23:4",
     "source": {
      "kind": "omod",
      "formId": "0x00202F23",
@@ -36903,9 +37092,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -36946,7 +37133,20 @@
     "conditions": []
    },
    {
-    "id": "0x00202F93:2",
+    "id": "0x00202F93:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00202F93",
+     "edid": "mod_CombatShotgun_Magazine_Ammo-Reload",
+     "name": "Swift Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x00202F93:3",
     "source": {
      "kind": "omod",
      "formId": "0x00202F93",
@@ -36964,9 +37164,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -55531,6 +55729,19 @@
     "op": "MUL_ADD",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x00011C01:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00011C01",
+     "edid": "mod_GatlingGun_Magazine_ExtraLarge",
+     "name": "Extra Large Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -55539,9 +55750,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -57359,6 +57568,19 @@
     "op": "MUL_ADD",
     "value": 0.5,
     "conditions": []
+   },
+   {
+    "id": "0x007B23D4:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x007B23D4",
+     "edid": "mod_GatlingPlasma_Magazine_Ammo",
+     "name": "Large Core Receptacle"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -57366,9 +57588,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -58968,6 +59188,19 @@
     "op": "MUL_ADD",
     "value": 0.56,
     "conditions": []
+   },
+   {
+    "id": "0x0054A178:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0054A178",
+     "edid": "mod_GaussPistol_Magazine_Ammo",
+     "name": "Drum Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -58976,9 +59209,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -60039,6 +60270,19 @@
     "op": "MUL_ADD",
     "value": 0.6,
     "conditions": []
+   },
+   {
+    "id": "0x00313920:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00313920",
+     "edid": "mod_GaussRifle_Magazine_Ammo",
+     "name": "Large Capacitors"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -60047,9 +60291,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -60114,6 +60356,19 @@
     "op": "MUL_ADD",
     "value": 0.6,
     "conditions": []
+   },
+   {
+    "id": "0x00313922:ench:4",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00313922",
+     "edid": "mod_GaussRifle_Magazine_Ammo-ArmorPen",
+     "name": "Stinging Capacitors"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -60122,9 +60377,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -60176,6 +60429,19 @@
     "op": "MUL_ADD",
     "value": 0.6,
     "conditions": []
+   },
+   {
+    "id": "0x00313923:ench:3",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00313923",
+     "edid": "mod_GaussRifle_Magazine_Ammo-Reload",
+     "name": "Swift Capacitors"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -60183,9 +60449,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -61089,6 +61353,19 @@
     "op": "MUL_ADD",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x00589365:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00589365",
+     "edid": "mod_GaussShotgun_Magazine_Extended",
+     "name": "Extended Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -61096,9 +61373,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -62104,6 +62379,19 @@
     "op": "MUL_ADD",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x002446DA:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x002446DA",
+     "edid": "mod_HuntingRifle_Magazine_Ammo",
+     "name": "Large Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -62111,9 +62399,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -62154,7 +62440,20 @@
     "conditions": []
    },
    {
-    "id": "0x002446DC:2",
+    "id": "0x002446DC:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x002446DC",
+     "edid": "mod_HuntingRifle_Magazine_Ammo-ArmorPen",
+     "name": "Stinging Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x002446DC:3",
     "source": {
      "kind": "omod",
      "formId": "0x002446DC",
@@ -62167,7 +62466,7 @@
     "conditions": []
    },
    {
-    "id": "0x002446DC:3",
+    "id": "0x002446DC:4",
     "source": {
      "kind": "omod",
      "formId": "0x002446DC",
@@ -62186,9 +62485,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -62229,7 +62526,20 @@
     "conditions": []
    },
    {
-    "id": "0x002446DD:2",
+    "id": "0x002446DD:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x002446DD",
+     "edid": "mod_HuntingRifle_Magazine_Ammo-Reload",
+     "name": "Swift Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x002446DD:3",
     "source": {
      "kind": "omod",
      "formId": "0x002446DD",
@@ -62247,9 +62557,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -69334,6 +69642,19 @@
     "op": "MUL_ADD",
     "value": 3,
     "conditions": []
+   },
+   {
+    "id": "0x004F6AB1:ench:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x004F6AB1",
+     "edid": "mod_Legendary_Weapon1_Guns_AmmoCapacity4x",
+     "name": "Quad"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 3,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -69342,9 +69663,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk Legendary_AmmoCapacityx4Perk: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -83922,6 +84241,19 @@
     "op": "MUL_ADD",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x008D5ACA:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008D5ACA",
+     "edid": "mod_MG42_Magazine_Ammo",
+     "name": "Large Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -83934,9 +84266,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -91967,6 +92297,19 @@
     "op": "MUL_ADD",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x002D5DF2:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x002D5DF2",
+     "edid": "mod_PipeGun_Magazine_Ammo",
+     "name": "Drum Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -91975,9 +92318,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -92018,7 +92359,20 @@
     "conditions": []
    },
    {
-    "id": "0x002D5DF4:2",
+    "id": "0x002D5DF4:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x002D5DF4",
+     "edid": "mod_PipeGun_Magazine_Ammo-ArmorPen",
+     "name": "Stinging Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x002D5DF4:3",
     "source": {
      "kind": "omod",
      "formId": "0x002D5DF4",
@@ -92031,7 +92385,7 @@
     "conditions": []
    },
    {
-    "id": "0x002D5DF4:3",
+    "id": "0x002D5DF4:4",
     "source": {
      "kind": "omod",
      "formId": "0x002D5DF4",
@@ -92050,9 +92404,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -92093,7 +92445,20 @@
     "conditions": []
    },
    {
-    "id": "0x002D5DF5:2",
+    "id": "0x002D5DF5:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x002D5DF5",
+     "edid": "mod_PipeGun_Magazine_Ammo-Reload",
+     "name": "Swift Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x002D5DF5:3",
     "source": {
      "kind": "omod",
      "formId": "0x002D5DF5",
@@ -92111,9 +92476,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -106594,6 +106957,19 @@
     "op": "MUL_ADD",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x002DAD47:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x002DAD47",
+     "edid": "mod_RadiumRifle_Magazine_Ammo",
+     "name": "Large Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -106601,9 +106977,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -106644,7 +107018,20 @@
     "conditions": []
    },
    {
-    "id": "0x002DAD49:2",
+    "id": "0x002DAD49:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x002DAD49",
+     "edid": "mod_RadiumRifle_Magazine_Ammo-ArmorPen",
+     "name": "Stinging Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x002DAD49:3",
     "source": {
      "kind": "omod",
      "formId": "0x002DAD49",
@@ -106657,7 +107044,7 @@
     "conditions": []
    },
    {
-    "id": "0x002DAD49:3",
+    "id": "0x002DAD49:4",
     "source": {
      "kind": "omod",
      "formId": "0x002DAD49",
@@ -106675,9 +107062,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -106718,7 +107103,20 @@
     "conditions": []
    },
    {
-    "id": "0x002DAD4A:2",
+    "id": "0x002DAD4A:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x002DAD4A",
+     "edid": "mod_RadiumRifle_Magazine_Ammo-Reload",
+     "name": "Swift Magazine"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x002DAD4A:3",
     "source": {
      "kind": "omod",
      "formId": "0x002DAD4A",
@@ -106734,9 +107132,7 @@
   "addedKeywords": [],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -111881,6 +112277,19 @@
     "op": "MUL_ADD",
     "value": 1,
     "conditions": []
+   },
+   {
+    "id": "0x00188A59:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x00188A59",
+     "edid": "mod_SubmachineGun_Mag_Large",
+     "name": "Large Drum"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
    }
   ],
   "addedKeywords": [
@@ -111889,9 +112298,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {
@@ -111932,7 +112339,20 @@
     "conditions": []
    },
    {
-    "id": "0x001B28FD:2",
+    "id": "0x001B28FD:ench:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x001B28FD",
+     "edid": "mod_SubmachineGun_Mag_LargeQuick",
+     "name": "Large Quick Eject Drum"
+    },
+    "bucket": "ammoHealthMult",
+    "op": "ADD",
+    "value": 0.5,
+    "conditions": []
+   },
+   {
+    "id": "0x001B28FD:3",
     "source": {
      "kind": "omod",
      "formId": "0x001B28FD",
@@ -111952,9 +112372,7 @@
   ],
   "hasEnchantments": true,
   "hasGrantingCobj": true,
-  "notes": [
-   "perk WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier1: entry point Mod Ammo Health Mult — not modeled"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

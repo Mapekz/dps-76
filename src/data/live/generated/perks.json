@@ -2275,7 +2275,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x00061683:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x00061683",
+       "edid": "Bobblehead_RepairPerk",
+       "name": "Repair Bobblehead",
+       "rank": 1
+      },
+      "bucket": "ammoHealthMult",
+      "op": "MUL_ADD",
+      "value": 0.30000000000000004,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "OR-group[WornHasKeyword(ma_GatlingLaser)=1 | WornHasKeyword(ma_Ultracite_GatlingLaser)=1]"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -15875,7 +15895,22 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0072F409:r1:1:0",
+      "source": {
+       "kind": "legendaryPerk",
+       "formId": "0x0072F409",
+       "edid": "Legendary_AmmoCapacityx4Perk",
+       "name": "Increased Ammo Capacity Perk",
+       "rank": 1
+      },
+      "bucket": "ammoHealthMult",
+      "op": "ADD",
+      "value": 3,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -20480,7 +20515,27 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x001F1B25:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x001F1B25",
+       "edid": "Magazine_TeslaScience04Perk",
+       "name": "Tesla Science 4",
+       "rank": 1
+      },
+      "bucket": "ammoHealthMult",
+      "op": "MUL_ADD",
+      "value": 0.1499999999999999,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "OR-group[WornHasKeyword(ma_Ultracite_GatlingLaser)=1 | WornHasKeyword(ArmorTypePower)=1 | WornHasKeyword(ma_GatlingLaser)=1]"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": false,
@@ -27740,15 +27795,75 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0027A873:r1:2:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0027A873",
+       "edid": "PowerUser",
+       "name": "Power User",
+       "rank": 1
+      },
+      "bucket": "ammoHealthMult",
+      "op": "ADD",
+      "value": 0.3,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "OR-group[WornHasKeyword(ma_GatlingLaser)=1 | WornHasKeyword(ma_Ultracite_GatlingLaser)=1]"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0027A873:r2:3:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0027A873",
+       "edid": "PowerUser",
+       "name": "Power User",
+       "rank": 2
+      },
+      "bucket": "ammoHealthMult",
+      "op": "ADD",
+      "value": 0.6,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "OR-group[WornHasKeyword(ma_GatlingLaser)=1 | WornHasKeyword(ma_Ultracite_GatlingLaser)=1]"
+       }
+      ]
+     }
+    ]
    },
    {
     "rank": 3,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x0027A873:r3:4:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x0027A873",
+       "edid": "PowerUser",
+       "name": "Power User",
+       "rank": 3
+      },
+      "bucket": "ammoHealthMult",
+      "op": "ADD",
+      "value": 1,
+      "conditions": [
+       {
+        "kind": "unresolved",
+        "raw": "OR-group[WornHasKeyword(ma_GatlingLaser)=1 | WornHasKeyword(ma_Ultracite_GatlingLaser)=1]"
+       }
+      ]
+     }
+    ]
    }
   ],
   "hasCard": true,
@@ -35467,11 +35582,55 @@
   "ranks": [
    {
     "rank": 1,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x007B23D8:r1:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x007B23D8",
+       "edid": "WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier",
+       "name": "Increased Ammo Capacity Perk",
+       "rank": 1
+      },
+      "bucket": "ammoHealthMult",
+      "op": "ADD",
+      "value": 0.5,
+      "conditions": []
+     }
+    ]
    },
    {
     "rank": 2,
-    "modifiers": []
+    "modifiers": [
+     {
+      "id": "0x007B23D8:r2:1:0",
+      "source": {
+       "kind": "perk",
+       "formId": "0x007B23D8",
+       "edid": "WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier",
+       "name": "Increased Ammo Capacity Perk",
+       "rank": 2
+      },
+      "bucket": "ammoHealthMult",
+      "op": "ADD",
+      "value": 0.5,
+      "conditions": []
+     },
+     {
+      "id": "0x007B23D8:r2:2:1",
+      "source": {
+       "kind": "perk",
+       "formId": "0x007B23D8",
+       "edid": "WeaponPerk_AmmoCapacity_PlsamaCoreHealth_Tier",
+       "name": "Increased Ammo Capacity Perk",
+       "rank": 2
+      },
+      "bucket": "ammoHealthMult",
+      "op": "ADD",
+      "value": 1,
+      "conditions": []
+     }
+    ]
    }
   ],
   "hasCard": false,
