@@ -42100,15 +42100,85 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x008EE1EB:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008EE1EB",
+     "edid": "mod_Custom_AcceptableOverkill",
+     "name": "Acceptable Overkill"
+    },
+    "bucket": "vatsHitChanceMult",
+    "op": "MUL_ADD",
+    "value": 0.04,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeAutomatic",
+      "present": false
+     },
+     {
+      "kind": "stacks",
+      "counter": "concentratedFire",
+      "max": 20
+     }
+    ]
+   },
+   {
+    "id": "0x008EE1EB:1",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008EE1EB",
+     "edid": "mod_Custom_AcceptableOverkill",
+     "name": "Acceptable Overkill"
+    },
+    "bucket": "vatsHitChanceMult",
+    "op": "MUL_ADD",
+    "value": 0.01,
+    "conditions": [
+     {
+      "kind": "weaponKeyword",
+      "keyword": "WeaponTypeAutomatic",
+      "present": true
+     },
+     {
+      "kind": "stacks",
+      "counter": "concentratedFire",
+      "max": 20
+     }
+    ]
+   },
+   {
+    "id": "0x008EE1EB:2",
+    "source": {
+     "kind": "omod",
+     "formId": "0x008EE1EB",
+     "edid": "mod_Custom_AcceptableOverkill",
+     "name": "Acceptable Overkill"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.01,
+    "conditions": [
+     {
+      "kind": "vatsOnly",
+      "value": true
+     },
+     {
+      "kind": "stacks",
+      "counter": "concentratedFire",
+      "max": 20
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed"
   ],
   "hasEnchantments": false,
-  "notes": [
-   "ActorValues on ConcentratedFireRank — unmapped"
-  ],
+  "notes": [],
   "obtainable": true
  },
  {

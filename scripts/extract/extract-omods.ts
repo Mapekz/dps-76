@@ -740,14 +740,19 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
               : prop.functionType === 'MUL_ADD'
                 ? ('MUL_ADD' as const)
                 : ('ADD' as const);
-          const pushAv = (bucket: Bucket, scale: number, conditions: Modifier['conditions']) => {
+          const pushAv = (
+            bucket: Bucket,
+            scale: number,
+            conditions: Modifier['conditions'],
+            modOp: Modifier['op'] = op,
+          ) => {
             modifiers.push(
               curvePoints
                 ? {
                     id: `${record.header.form_id}:${modifiers.length}`,
                     source,
                     bucket,
-                    op,
+                    op: modOp,
                     curve: { input: 'itemLevel', points: curvePoints },
                     curveScale: scale,
                     conditions,
@@ -756,7 +761,7 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
                     id: `${record.header.form_id}:${modifiers.length}`,
                     source,
                     bucket,
-                    op,
+                    op: modOp,
                     value: flatValue * scale,
                     conditions,
                   },
@@ -765,6 +770,15 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
           // 1) Plumbing-perk routes (STAT_DamageVsPerk & co.) — bucket, scale,
           //    AND conditions (enemy-type gates) are data-driven, same as the
           //    MGEF path. This is how the DmgVs* legendary family feeds dbm.
+          //    Mirrors mgef.ts's `translate()` route-consumption exactly
+          //    (issue #48 double-stack fix): appends the entry point's
+          //    `extraConditions` (manual gating with no ESM condition row,
+          //    e.g. Concentrated Fire's `vatsOnly`/`stacks`) and honors its
+          //    `op` override (e.g. Concentrated Fire's hit-chance half is
+          //    MUL_ADD, not the OMOD property's own ADD function type) —
+          //    falls back to this property's own `op` when the route
+          //    specifies neither, so every other plumbed AV route (DmgVs*
+          //    family, which sets neither map) is byte-for-byte unchanged.
           const plumbed = avifRoutes.get(prop.value1);
           const fallback = FALLBACK_AVIF_ROUTES[avEdid];
           const avMapping = ACTOR_VALUE_BUCKETS[avEdid];
@@ -776,7 +790,12 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
               });
               if (conditions === null) continue;
               unresolved.forEach((u) => modNotes.add(`route(${avEdid}): ${u}`));
-              pushAv(route.bucket, route.scale, conditions);
+              pushAv(
+                route.bucket,
+                route.scale,
+                [...conditions, ...(route.extraConditions ?? [])],
+                route.op ?? op,
+              );
             }
           } else if (fallback) {
             pushAv(fallback.bucket, fallback.scale, [...(fallback.conditions ?? [])]);

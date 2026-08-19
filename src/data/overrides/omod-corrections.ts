@@ -408,62 +408,18 @@ export const omodModifierAdditions: Readonly<Record<string, Modifier[]>> = {
       conditions: [],
     },
   ],
-  // Acceptable Overkill (Laser unique): OMOD ADDs +1 to ConcentratedFireRank AV
-  // (0x00900A59) — "free Concentrated Fire rank 1". Mirrors the
-  // ConcentratedFire01 perk override in perk-overrides.ts (EP135/EP109 are
-  // still ENTRY_POINT_IGNORED upstream). If native extraction lands, remove
-  // BOTH this entry and the perk override in the same commit — double-stack
-  // hazard.
-  mod_Custom_AcceptableOverkill: [
-    {
-      id: 'mod_Custom_AcceptableOverkill:stacking',
-      source: {
-        kind: 'omod',
-        formId: '0x008EE1EB',
-        edid: 'mod_Custom_AcceptableOverkill',
-        name: 'Acceptable Overkill',
-      },
-      bucket: 'dbm',
-      op: 'ADD',
-      value: 0.01,
-      conditions: [
-        { kind: 'vatsOnly', value: true },
-        { kind: 'stacks', counter: 'concentratedFire', max: 20 },
-      ],
-    },
-    {
-      id: 'mod_Custom_AcceptableOverkill:hitChanceMultSemi',
-      source: {
-        kind: 'omod',
-        formId: '0x008EE1EB',
-        edid: 'mod_Custom_AcceptableOverkill',
-        name: 'Acceptable Overkill',
-      },
-      bucket: 'vatsHitChanceMult',
-      op: 'MUL_ADD',
-      value: 0.04,
-      conditions: [
-        { kind: 'weaponKeyword', keyword: 'WeaponTypeAutomatic', present: false },
-        { kind: 'stacks', counter: 'concentratedFire', max: 20 },
-      ],
-    },
-    {
-      id: 'mod_Custom_AcceptableOverkill:hitChanceMultAuto',
-      source: {
-        kind: 'omod',
-        formId: '0x008EE1EB',
-        edid: 'mod_Custom_AcceptableOverkill',
-        name: 'Acceptable Overkill',
-      },
-      bucket: 'vatsHitChanceMult',
-      op: 'MUL_ADD',
-      value: 0.01,
-      conditions: [
-        { kind: 'weaponKeyword', keyword: 'WeaponTypeAutomatic', present: true },
-        { kind: 'stacks', counter: 'concentratedFire', max: 20 },
-      ],
-    },
-  ],
+  // Acceptable Overkill (Laser unique, OMOD 0x008EE1EB): used to need a
+  // hand-authored "free Concentrated Fire rank 1" override for its
+  // `ActorValues ADD ConcentratedFireRank 1.0` property (issue #48). Removed
+  // 2026-08-19 — the OMOD's `ActorValues`-property plumbing-route consumer
+  // (extract-omods.ts) now applies the same `ENTRY_POINT_EXTRA_CONDITIONS`/
+  // `ENTRY_POINT_OP_OVERRIDE` treatment `mgef.ts`'s `translate()` already
+  // gave the MGEF-chase path, so native extraction carries the full
+  // `vatsOnly`/`stacks(concentratedFire, max:20)` gating and the
+  // `vatsHitChanceMult` MUL_ADD op this override used to hand-supply.
+  // Equivalence verified byte-for-byte (bucket/op/value/conditions, stripped
+  // of id/source) against this removed override before deletion — see the
+  // commit that removed it.
 };
 
 /**
