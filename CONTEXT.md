@@ -68,6 +68,13 @@ uses. See `docs/assumptions.md`'s "Formula structure" for the exact
 expression — not repeated here to keep this file from becoming a third copy.
 _Avoid_: reduce, aggregate, sum.
 
+**Proc**:
+A trigger-cadenced damage instance (fires on reload, last round, limb-cripple,
+etc.) with its own damage payload, folded as a rate alongside per-shot
+damage rather than into it.
+_Avoid_: extra hit, on-hit bonus, Bucket (a Proc is a parallel stream, not a
+formula term).
+
 **Scenario**:
 One of the two displayed attack contexts — Free Aim or VATS — each computed
 from one resolved config via per-attack `ScenarioFlags`. Sneak is a player
@@ -78,6 +85,12 @@ _Avoid_: mode (that means Live/PTS), case, Manual Aim (say Free Aim).
 The steady-state fraction of time a VATS build can actually fire before the AP
 pool forces a pause; the VATS scenario's canonical DPS is `uptime × VATS sustained + (1 − uptime) × Free Aim sustained` — the pause window is spent free-aiming, not idle (1 when AP never constrains). Also classifies which suggestions are uptime levers in the panel.
 _Avoid_: AP efficiency, duty cycle (say AP Uptime).
+
+**Total DPS**:
+The canonical damage-per-second metric: the sustained per-shot stream plus
+damage-over-time plus **Proc** damage, blended per **Scenario**. The one
+number the headline, suggestions, and deltas all speak in.
+_Avoid_: sustained DPS (the per-shot stream alone), burst DPS, raw DPS.
 
 **Effective Weapon**:
 A weapon with its equipped OMODs applied (merged keywords, rewritten speed/auto
