@@ -372,19 +372,14 @@
     "PepperoniRollTasty": 371,
     "PerkBubblegumCola": 372,
     "PerkBubblegumGrape": 373,
-    "RadAway": 374,
-    "RadAwayDiluted": 375,
     "RadStagMeatCooked": 376,
     "RadToadLegCooked": 377,
     "RadToadLegTasty": 378,
-    "RadX": 379,
-    "RadXDiluted": 380,
     "RadantMeatCooked": 381,
     "RadscorpionMeatCooked": 382,
     "RadscorpionMeatCooked_Cannery": 383,
     "RazorgrainVegetableCookedSoup": 384,
     "SCORE_S25_SmokedMirelurkGourmet_Cannery_G2": 385,
-    "SFM04_Organic_RadShield": 386,
     "SeasonalFish_Meal_FallSalad": 387,
     "SmokedMirelurkGourmet": 388,
     "SquirrelMeatTastyStew": 389,
@@ -405,6 +400,11 @@
   "acknowledgedRemovals": [
     "GHL_GlowingBobbleHead_Medicine_Potion",
     "GHL_GlowingBobbleHead_Leader_Potion",
-    "E08A_GulperVenom"
+    "E08A_GulperVenom",
+    "RadAway",
+    "RadAwayDiluted",
+    "RadX",
+    "RadXDiluted",
+    "SFM04_Organic_RadShield"
   ]
 }

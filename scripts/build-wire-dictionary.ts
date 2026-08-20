@@ -279,53 +279,55 @@ const categories: CategorySpec[] = [
   },
 ];
 
-let anyReview = false;
+if (import.meta.main) {
+  let anyReview = false;
 
-console.log(`# Wire dictionary sync${dryRun ? ' (dry run)' : ''}\n`);
+  console.log(`# Wire dictionary sync${dryRun ? ' (dry run)' : ''}\n`);
 
-for (const { file, label, collect } of categories) {
-  const existing = loadDictionary(file);
-  const { currentIds, formIdOf } = collect();
-  const result = syncWireDictionary(existing, currentIds, formIdOf);
+  for (const { file, label, collect } of categories) {
+    const existing = loadDictionary(file);
+    const { currentIds, formIdOf } = collect();
+    const result = syncWireDictionary(existing, currentIds, formIdOf);
 
-  console.log(`## ${label} (${file})`);
-  console.log(
-    `Current: ${currentIds.size} · Dictionary: ${Object.keys(result.dictionary.ids).length}`,
-  );
+    console.log(`## ${label} (${file})`);
+    console.log(
+      `Current: ${currentIds.size} · Dictionary: ${Object.keys(result.dictionary.ids).length}`,
+    );
 
-  if (result.added.length > 0) {
-    console.log(`\n### ADDED (${result.added.length})`);
-    for (const id of result.added) console.log(`- ${id} → ${result.dictionary.ids[id]}`);
-  }
-
-  if (result.possiblyRenamed.length > 0) {
-    anyReview = true;
-    console.log(`\n### POSSIBLY RENAMED (${result.possiblyRenamed.length}) — review`);
-    for (const { from, to, formId } of result.possiblyRenamed) {
-      console.log(`- ${from} → ${to} (formId ${formId})`);
+    if (result.added.length > 0) {
+      console.log(`\n### ADDED (${result.added.length})`);
+      for (const id of result.added) console.log(`- ${id} → ${result.dictionary.ids[id]}`);
     }
+
+    if (result.possiblyRenamed.length > 0) {
+      anyReview = true;
+      console.log(`\n### POSSIBLY RENAMED (${result.possiblyRenamed.length}) — review`);
+      for (const { from, to, formId } of result.possiblyRenamed) {
+        console.log(`- ${from} → ${to} (formId ${formId})`);
+      }
+    }
+
+    if (result.missing.length > 0) {
+      anyReview = true;
+      console.log(`\n### MISSING (${result.missing.length}) — needs decision`);
+      for (const id of result.missing) console.log(`- ${id}`);
+    }
+
+    if (
+      result.added.length === 0 &&
+      result.possiblyRenamed.length === 0 &&
+      result.missing.length === 0
+    ) {
+      console.log('_no changes_');
+    }
+
+    console.log('');
+
+    if (!dryRun) writeDictionary(file, result.dictionary);
   }
 
-  if (result.missing.length > 0) {
-    anyReview = true;
-    console.log(`\n### MISSING (${result.missing.length}) — needs decision`);
-    for (const id of result.missing) console.log(`- ${id}`);
+  if (anyReview) {
+    console.log('⚠ Review POSSIBLY RENAMED / MISSING entries before committing.');
+    process.exit(1);
   }
-
-  if (
-    result.added.length === 0 &&
-    result.possiblyRenamed.length === 0 &&
-    result.missing.length === 0
-  ) {
-    console.log('_no changes_');
-  }
-
-  console.log('');
-
-  if (!dryRun) writeDictionary(file, result.dictionary);
-}
-
-if (anyReview) {
-  console.log('⚠ Review POSSIBLY RENAMED / MISSING entries before committing.');
-  process.exit(1);
 }

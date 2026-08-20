@@ -65,6 +65,19 @@ export const hiddenConsumableIds: ReadonlySet<string> = new Set<string>([
   'AnglerMeatCooked_Cannery', // Canned Poached Angler → Poached Angler
   'StingwingMeatTastyStew_Cannery', // Canned Stingwing Stew → Stingwing Stew
   'SCORE_25_MeatWeek_TatoSaladCooked_Cannery_G1', // Canned Tato Salad → Tato Salad
+
+  // Pure rad-management chems (user decision 2026-08-19): never
+  // build-relevant — the ghoul Glow meter is a direct player input knob, not
+  // derived from chem use. Pulled in by the 2026-08-19 dispel-flag roster
+  // widening; hidden here rather than re-excluded at extraction so the
+  // generated JSON and wire dictionary stay stable (same convention as
+  // unobtainable records).
+  'RadAway',
+  'RadAwayDiluted',
+  'RadX',
+  'RadXDiluted',
+  'SFM04_Organic_RadShield',
+  'TrenchMed_Pitt',
 ]);
 /**
  * Consumable counterpart of forceVisibleWeaponIds/forceVisibleOmodIds
@@ -207,26 +220,24 @@ export const consumableDescriptionOverrides: Readonly<Record<string, string>> = 
 
   // Tick Blood Tequila family: TickbloodTequila_FoodRegenEffect ("Melee
   // attacks replenish hunger") / _HealthRegenEffect ("Melee Attacks Restore
-  // Health") / _DiseaseChanceEffect mag 1 ("Disease Chance On Hit") —
-  // recased, effects first, downside last.
-  Brew_TickBloodTequilaFresh: 'melee attacks replenish hunger; +1% disease chance when hit',
-  Brew_TickBloodTequilaSunrise: 'melee attacks replenish hunger; +1% disease chance when hit',
-  Brew_TickBloodTequilaMargarita: 'melee attacks restore health; +1% disease chance when hit',
+  // Health") / _DiseaseChanceEffect. The 2% comes from the VMAD chain, NOT
+  // the MGEF's mag 1: the shared TickBloodTequilaScript (decompiled from
+  // MiscClient.ba2, 2026-08-20) watches melee/unarmed damage-dealt events
+  // and casts its SpellToAdd — for the disease variant that's SPEL
+  // TickBloodTequila_DiseaseChance 0x00469855, whose
+  // SURV_DiseaseVector_Food_Effect reads 2 from its single-point Curve
+  // Table (CRVT Brewing_TickbloodTequila_DiseaseChance — the CRVT overrides
+  // the flat magnitude; user-corrected 2026-08-20). Direction (YOUR melee
+  // hits) user-confirmed 2026-08-19.
+  // Recased, effects first, downside last.
+  Brew_TickBloodTequilaFresh: 'melee attacks replenish hunger; +2% disease chance on melee hits',
+  Brew_TickBloodTequilaSunrise: 'melee attacks replenish hunger; +2% disease chance on melee hits',
+  Brew_TickBloodTequilaMargarita: 'melee attacks restore health; +2% disease chance on melee hits',
   Brew_TickBloodTequilaVintage:
-    'melee attacks restore health and replenish hunger; +1% disease chance when hit',
+    'melee attacks restore health and replenish hunger; +2% disease chance on melee hits',
 
   // White Russian: game text "-25% Limb DMG taken." — recased.
   Brew_WhiteRussian: '-25% limb damage taken',
-
-  // RadAway: game text "Remove 60/30 points of Radiation." — house style
-  // leads with the signed magnitude.
-  RadAway: '-60 Rads',
-  RadAwayDiluted: '-30 Rads',
-
-  // Rad-X: game text "+300 Rad Resist, Mutations Suppressed." split into
-  // clauses; the Resist Radiation Ingestion effect (mag 75) keeps the
-  // Scouts' Life 1 phrasing.
-  RadX: '+300 Rad Resist; suppresses mutations; +75 Rad Resist against radiation from food and drink',
 
   // Nuka-Colas with the Bottlecap Collector effect (a bottlecap on drink):
   // numbers first, flavor last.
