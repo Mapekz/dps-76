@@ -709,6 +709,34 @@ describe('translateConditions (WornHasKeyword unique self-gate allowlist — Bul
   });
 });
 
+describe('translateConditions (tautologicalKeywords — Tone Death Well Tuned keyword-hook, 2026-08-20)', () => {
+  const row: RawCondition = {
+    Function: 'WornHasKeyword',
+    'Parameter 1': '0x0064D000',
+    'Comparison Value': 1,
+    Operator: 'Equal To',
+    'Run On': 'Subject',
+  };
+  const edidMap = new Map([['0x0064D000', 'CustomItemName_ToneDeath']]);
+
+  it('leaves WornHasKeyword(CustomItemName_ToneDeath) unresolved off the unique self-gate allowlist', () => {
+    const { conditions, unresolved } = translateConditions([row], { edidByFormId: edidMap });
+    expect(conditions).toEqual([
+      { kind: 'unresolved', raw: 'WornHasKeyword(CustomItemName_ToneDeath)=1' },
+    ]);
+    expect(unresolved).toEqual(['WornHasKeyword(CustomItemName_ToneDeath)=1']);
+  });
+
+  it('consumes WornHasKeyword(CustomItemName_ToneDeath) when listed as tautological (OMOD self-gate)', () => {
+    const { conditions, unresolved } = translateConditions([row], {
+      edidByFormId: edidMap,
+      tautologicalKeywords: new Set(['CustomItemName_ToneDeath']),
+    });
+    expect(conditions).toEqual([]);
+    expect(unresolved).toEqual([]);
+  });
+});
+
 describe('translateConditions (subjectIsTarget — Contact-delivery GetIsPlayer inversion, 2026-07-14)', () => {
   it('consumes GetIsPlayer()=0 (the NPC branch) instead of marking it inactive, when subjectIsTarget is set', () => {
     const row: RawCondition = {

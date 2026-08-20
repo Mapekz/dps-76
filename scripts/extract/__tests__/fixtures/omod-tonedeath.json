@@ -1,0 +1,113 @@
+{
+  "header": {
+    "signature": "OMOD",
+    "form_id": "0x0064D005",
+    "flags": 64,
+    "form_version": 209,
+    "data_size": 217,
+    "offset": 914698625
+  },
+  "editor_id": "E08B_mod_Custom_ToneDeath",
+  "fields": {
+    "_record_type": "Object Modification",
+    "Editor ID": "E08B_mod_Custom_ToneDeath",
+    "DURL": "0",
+    "Name": "Tone Death",
+    "Description": "+20% Melee Damage while Well Tuned",
+    "Model": {
+      "Enlighten Transparency Color": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 255
+      },
+      "Enlighten Simplified Shape Scale": 1.0,
+      "Enlighten Auto UV": {
+        "Unknown": 1,
+        "Padding?": {
+          "hex": "000000"
+        },
+        "Max DIstance": 50.0,
+        "Max Initial Normal Deviation": 30.0,
+        "Max General Normal Deviation": 78.0,
+        "Expansion Factor": 0.6,
+        "Significant Area Ratio": 0.1,
+        "Unknown 2": 0,
+        "Padding? 2": {
+          "hex": "000000"
+        }
+      }
+    },
+    "Model Attach Index": 0,
+    "Data": {
+      "Include Count": 1,
+      "Property Count": 2,
+      "Unknown Bool 1": {
+        "value": 0,
+        "name": "False"
+      },
+      "Unknown Bool 2": {
+        "value": 0,
+        "name": "False"
+      },
+      "Form Type": {
+        "value": 1346454871,
+        "name": "Weapon"
+      },
+      "Max Rank": 0,
+      "Level Tier Scaled Offset": 0,
+      "Attach Point": "0x0047A264",
+      "Includes": [
+        {
+          "Mod": "0x0079C8A6",
+          "Minimum Level": 0,
+          "Optional": {
+            "value": 0,
+            "name": "False"
+          },
+          "Don't Use All": {
+            "value": 1,
+            "name": "True"
+          }
+        }
+      ],
+      "Properties": [
+        {
+          "Value Type": {
+            "value": 4,
+            "name": "FormID,Int"
+          },
+          "Function Type": {
+            "value": 2,
+            "name": "ADD"
+          },
+          "Property": {
+            "value": 31,
+            "name": "Keywords"
+          },
+          "Value 1": "0x00471871",
+          "Value 2": 2,
+          "Curve Table": null
+        },
+        {
+          "Value Type": {
+            "value": 4,
+            "name": "FormID,Int"
+          },
+          "Function Type": {
+            "value": 2,
+            "name": "ADD"
+          },
+          "Property": {
+            "value": 31,
+            "name": "Keywords"
+          },
+          "Value 1": "0x0064D000",
+          "Value 2": 2,
+          "Curve Table": null
+        }
+      ]
+    },
+    "Priority": 100
+  }
+}

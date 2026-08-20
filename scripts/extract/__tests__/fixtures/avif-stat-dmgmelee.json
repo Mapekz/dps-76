@@ -1,0 +1,35 @@
+{
+  "header": {
+    "signature": "AVIF",
+    "form_id": "0x00312D66",
+    "flags": 0,
+    "form_version": 209,
+    "data_size": 135,
+    "offset": 896692595
+  },
+  "editor_id": "STAT_DmgMelee",
+  "fields": {
+    "_record_type": "Actor Value Information",
+    "Editor ID": "STAT_DmgMelee",
+    "DURL": "No Limit",
+    "Name": "Melee Damage",
+    "Description": null,
+    "Abbreviation": "Melee DMG",
+    "Default Value": 0.0,
+    "Minimum Value": -3.4028235e38,
+    "Maximum Value": 3.4028235e38,
+    "Flags": {
+      "value": "0x1000500",
+      "flags": ["Allow Local Edits", "Default to 0", "Percentage (Scale By 100 In UI)"]
+    },
+    "Type": {
+      "value": 8,
+      "name": "Variable"
+    },
+    "Networking Flags": {
+      "value": "0x0",
+      "flags": []
+    },
+    "Actor Value Keyword": "0x004FACCC"
+  }
+}

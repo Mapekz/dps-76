@@ -89,6 +89,8 @@ export function ConditionsSection() {
   // Battle-Loader's bash-time slider (below) as the per-bash time cost.
   const hasBashBuffUptimeSource = affordances?.hasBashBuffUptimeSource ?? false;
   const onBashBuffUptime = conditions.onBashBuffUptime ?? 0;
+  const hasWellTunedSource = affordances?.hasWellTunedSource ?? false;
+  const wellTuned = conditions.wellTuned ?? false;
 
   // Concentrated Fire: manual 0–20 stacks slider standing in for the game's
   // hidden native per-target consecutive-shots-fired counter (see the
@@ -476,6 +478,21 @@ export function ConditionsSection() {
                     );
                   }}
                 />
+              )}
+
+              {hasWellTunedSource && (
+                <div className="space-y-1.5">
+                  <SwitchRow
+                    id="char-well-tuned"
+                    label="Well Tuned"
+                    checked={wellTuned}
+                    onCheckedChange={(checked) => set('wellTuned', checked)}
+                  />
+                  <HelperText>
+                    Playing an instrument grants this 1-hour buff. Tone Death's +20% melee only
+                    applies while it is active. Off by default (honest zero).
+                  </HelperText>
+                </div>
               )}
 
               {hasKingfisherLocalLegend && (

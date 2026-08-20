@@ -73,6 +73,14 @@ export interface PlayerInput {
    * not a hidden average, same as `procCripplesPerMin`).
    */
   onBashBuffUptime?: number;
+  /**
+   * Whether the 3600s Well Tuned furniture buff is active (playing an
+   * instrument — SPEL SURV_WellTunedSpell 0x0050CD15). Gates Tone Death's
+   * +20% melee (`E08B_mod_Custom_ToneDeath`). Default false: exogenous timed
+   * buff, ADR-0009 honest zero, not intrinsically always-on for any race.
+   * See docs/assumptions.md "Tone Death Well Tuned melee buff".
+   */
+  wellTuned?: boolean;
 
   // SPECIAL base allocation (1–15, budget-enforced in BuildState).
   // On `ResolvedPlayer` these keys hold **buff-folded effective SPECIAL**.
@@ -217,6 +225,7 @@ export function createDefaultPlayerInput(): PlayerInput {
     playerRadResist: 0,
     procCripplesPerMin: 0,
     onBashBuffUptime: 0,
+    wellTuned: false,
     strength: 1,
     perception: 1,
     endurance: 1,

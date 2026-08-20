@@ -680,6 +680,16 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
     activeBadge: 'conditions',
     clamp: { min: 0, max: 100 },
   },
+  wellTuned: {
+    key: 'wellTuned',
+    wire: 60,
+    owner: 'player',
+    origin: 'input',
+    section: 'conditions',
+    default: PLAYER_DEFAULTS.wellTuned ?? false,
+    label: 'Well Tuned',
+    activeBadge: 'conditions',
+  },
 };
 
 // retired wire ordinals: (none yet)

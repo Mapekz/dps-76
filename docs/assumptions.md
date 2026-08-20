@@ -1219,3 +1219,21 @@ whose dbm/DR terms don't need modeling here, so it stays on the generic
 this timed buff, and is unaffected either way. NOT a generalized
 combat-trigger-uptime model — a future bash/hit/kill/cripple-triggered
 timed buff needs its own scoping decision, not an automatic opt-in.
+
+## Tone Death Well Tuned melee buff
+
+Engine: `src/lib/engine/resolve.ts` `wellTuned` condition; extractor:
+`scripts/extract/extract-omods.ts` (`attachWellTunedKeywordHooks`).
+
+- **Well Tuned is a 3600s instrument-play buff**, SPEL
+  `SURV_WellTunedSpell` `0x0050CD15`, cast by Player VMAD
+  `SURV_PlayerUseFurnitureScript` on `FurnitureTypeInstrument`
+  `0x0050CD11` — not a hunger/thirst AV or `GhoulRace` gate.
+  **ESM-PROVEN** (20260814 dump).
+- **+20% melee** is Effects[1] (`FortifyDmgMeleeAll` `0x0004696E` → AV
+  `STAT_DmgMelee` `0x00312D66` mag 20, plumbing EP167 ×0.01), gated
+  `WornHasKeyword(CustomItemName_ToneDeath)` `0x0064D000` on OMOD
+  `E08B_mod_Custom_ToneDeath` `0x0064D005`. **ESM-PROVEN**.
+- **Default OFF** — exogenous timed furniture buff, ADR-0009 honest
+  zero; `PlayerInput.wellTuned`.
+

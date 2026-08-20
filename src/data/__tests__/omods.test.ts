@@ -2,7 +2,13 @@ import { describe, it, expect } from 'bun:test';
 import type { Weapon } from '@/types';
 import type { GeneratedOmod } from '@/types/generated';
 import { getWeapons } from '@/data';
-import { effectiveWeaponName, getLegendaryOmodSlots, getOmodSlots, isEligible } from '@/data/omods';
+import {
+  effectiveWeaponName,
+  getLegendaryOmodSlots,
+  getOmodById,
+  getOmodSlots,
+  isEligible,
+} from '@/data/omods';
 import { isOmodEligibleForWeapon } from '@/data/omod-eligibility';
 
 // 2026-07-13 unique-weapon rework: named uniques collapsed into base weapon +
@@ -36,6 +42,25 @@ describe('Unique mod slot (ap_customName)', () => {
     // classifyOmodDisplay's notes fallback: a zero-modifier stock part with
     // extraction notes badges 'inert' rather than showing unbadged.
     expect(option?.badge).toBe('inert');
+  });
+
+  it('Tone Death carries +20% dbm gated on wellTuned (instrument buff, default off)', () => {
+    const omod = getOmodById('live', 'E08B_mod_Custom_ToneDeath');
+    expect(omod).toBeDefined();
+    expect(omod!.modifiers).toEqual([
+      expect.objectContaining({
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.2,
+        conditions: [
+          { kind: 'wellTuned', value: true },
+          {
+            kind: 'weaponKeywordAny',
+            keywords: ['WeaponTypeUnarmed', 'WeaponTypeMeleeGeneral'],
+          },
+        ],
+      }),
+    ]);
   });
 });
 

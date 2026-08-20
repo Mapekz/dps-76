@@ -1447,6 +1447,14 @@ export type Condition =
   | { kind: 'lifetimeChallengeCompleted'; challengeId: string }
   /** Active alcohol consumable selected (HasMagicEffectKeyword(AlcoholEffect)) — derived in resolveLoadout. */
   | { kind: 'underAlcoholEffect'; value: boolean }
+  /**
+   * The 3600s Well Tuned furniture buff is active (playing an instrument —
+   * SPEL SURV_WellTunedSpell 0x0050CD15, Player VMAD
+   * SURV_PlayerUseFurnitureScript / FurnitureTypeInstrument 0x0050CD11).
+   * Gates Tone Death's +20% melee; default OFF (ADR-0009). See
+   * docs/assumptions.md "Tone Death Well Tuned melee buff".
+   */
+  | { kind: 'wellTuned'; value: boolean }
   /** Target carries ≥1 active effect with this keyword (Pyromaniac's: DamageTypeFire; Viper's: DamageTypePoison). */
   | { kind: 'enemyHasActiveEffect'; keyword: string }
   /** Enemies in the engaged group == count, or ≥ count for the top tier (Encircler's — GetGroupTargetCount). */

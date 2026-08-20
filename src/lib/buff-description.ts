@@ -409,6 +409,9 @@ function describeConditions(conditions: readonly Condition[], bucket: Bucket): s
       case 'underAlcoholEffect':
         clauses.push(c.value ? 'under alcohol' : 'while sober');
         break;
+      case 'wellTuned':
+        clauses.push(c.value ? 'while Well Tuned' : 'while not Well Tuned');
+        break;
       case 'healthBelowPct':
         clauses.push(`below ${c.pct}% health`);
         break;

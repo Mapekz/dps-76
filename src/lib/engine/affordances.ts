@@ -67,6 +67,11 @@ export interface BuildAffordances {
    */
   hasBashBuffUptimeSource: boolean;
   /**
+   * True when any equipped source carries a `wellTuned` condition (Tone
+   * Death — issue #80 follow-up) — shows the Well Tuned toggle in Conditions.
+   */
+  hasWellTunedSource: boolean;
+  /**
    * The equipped weapon's charge parameters — null when the effective weapon
    * doesn't charge (hides the slider).
    */
@@ -134,6 +139,10 @@ export function describeAffordances(input: ScenarioInput): BuildAffordances {
     m.conditions.some((c) => c.kind === 'bashBuffUptime'),
   );
 
+  const hasWellTunedSource = input.modifiers.some((m) =>
+    m.conditions.some((c) => c.kind === 'wellTuned'),
+  );
+
   const charging = weaponCharges(input.weapon)
     ? {
         fullPowerSeconds: input.weapon.fullPowerSeconds ?? 0,
@@ -162,6 +171,7 @@ export function describeAffordances(input: ScenarioInput): BuildAffordances {
     hasBattleLoadersSource,
     hasOnCrippleProcSource,
     hasBashBuffUptimeSource,
+    hasWellTunedSource,
     charging,
     range,
     vatsHitChanceBonus,

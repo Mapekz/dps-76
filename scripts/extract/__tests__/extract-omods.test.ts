@@ -31,6 +31,11 @@ import fireResistAvif from './fixtures/avif-fireresist.json';
 import fireHazardHazd from './fixtures/hazd-fire-molotov.json';
 import fireHazardSpel from './fixtures/spel-fire-hazard.json';
 import fireHazardMgef from './fixtures/mgef-fire-hazard-effect.json';
+import toneDeathOmod from './fixtures/omod-tonedeath.json';
+import wellTunedSpell from './fixtures/spel-welltuned.json';
+import fortifyDmgMeleeAll from './fixtures/mgef-fortifydmgmeleeall.json';
+import customItemNameToneDeath from './fixtures/kywd-customitemname-tonedeath.json';
+import statDmgMeleeAvif from './fixtures/avif-stat-dmgmelee.json';
 
 // Fixtures are verbatim `esm --esm <esmPath> get <edid|formid> --json` output
 // (20260710 ESM). These pin the unique-mod rework's two previously-undecoded
@@ -1847,5 +1852,144 @@ describe('extractOmods (variant container split)', () => {
     expect(fire?.modifiers.some((m) => m.bucket === 'dotDamage')).toBe(true);
     expect(poison?.modifiers.some((m) => m.bucket === 'dotDamage')).toBe(true);
     expect(result.variantContainers[CONTAINER_ID]?.length).toBe(2);
+  });
+});
+
+/**
+ * Tone Death (issue #80 follow-up): OMOD E08B_mod_Custom_ToneDeath ADDs
+ * KYWD CustomItemName_ToneDeath, which gates FortifyDmgMeleeAll on SPEL
+ * SURV_WellTunedSpell. Fixtures are verbatim `esm get --json` (20260814).
+ * STAT_DamagePerk is trimmed to the single STAT_DmgMelee plumbing entry
+ * (EP167, Float 0.01, HasKeyword Unarmed OR MeleeGeneral).
+ */
+const STAT_DMG_MELEE = '0x00312D66';
+const WEAPON_TYPE_UNARMED = '0x0005240E';
+const WEAPON_TYPE_MELEE_GENERAL = '0x0033AB12';
+const TONE_DEATH_FORM_ID = '0x0064D005';
+const TONE_DEATH_KEYWORD = '0x0064D000';
+const FORTIFY_DMG_MELEE_ALL = '0x0004696E';
+const WELL_TUNED_SPELL = '0x0050CD15';
+const AP_CUSTOM_NAME = '0x0047A264';
+
+function makeToneDeathStubClient(): EsmSource {
+  const statDamagePerk = {
+    header: { signature: 'PERK', form_id: '0x0023A0EB' },
+    editor_id: 'STAT_DamagePerk',
+    fields: {
+      Effects: [
+        {
+          Effect: {
+            'Entry Point': {
+              'Entry Point': { name: 'Mod Weapon DMG Bonus Mult' },
+              Function: { name: 'Add Actor Value Mult' },
+            },
+            'Perk Conditions': [
+              {
+                'Perk Condition': {
+                  'Run On (Tab Index)': 1,
+                  Conditions: [
+                    {
+                      Condition: {
+                        'Condition Data': {
+                          Operator: 'Equal To',
+                          'AND/OR': 'OR',
+                          'Comparison Value': 1.0,
+                          Function: 'HasKeyword',
+                          'Parameter 1': WEAPON_TYPE_UNARMED,
+                          'Run On': 'Subject',
+                        },
+                      },
+                    },
+                    {
+                      Condition: {
+                        'Condition Data': {
+                          Operator: 'Equal To',
+                          'AND/OR': 'OR',
+                          'Comparison Value': 1.0,
+                          Function: 'HasKeyword',
+                          'Parameter 1': WEAPON_TYPE_MELEE_GENERAL,
+                          'Run On': 'Subject',
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+            Float: 0.01,
+            'Function Parameter 3 (Actor Value)': STAT_DMG_MELEE,
+          },
+        },
+      ],
+    },
+  } as unknown as EsmRecord;
+
+  return createInMemoryEsmSource({
+    records: {
+      [TONE_DEATH_FORM_ID]: toneDeathOmod as unknown as EsmRecord,
+      SURV_WellTunedSpell: wellTunedSpell as unknown as EsmRecord,
+      [WELL_TUNED_SPELL]: wellTunedSpell as unknown as EsmRecord,
+      [FORTIFY_DMG_MELEE_ALL]: fortifyDmgMeleeAll as unknown as EsmRecord,
+      [TONE_DEATH_KEYWORD]: customItemNameToneDeath as unknown as EsmRecord,
+      [STAT_DMG_MELEE]: statDmgMeleeAvif as unknown as EsmRecord,
+      STAT_DamagePerk: statDamagePerk,
+      [WEAPON_TYPE_UNARMED]: {
+        header: { signature: 'KYWD', form_id: WEAPON_TYPE_UNARMED },
+        editor_id: 'WeaponTypeUnarmed',
+        fields: {},
+      } as unknown as EsmRecord,
+      [WEAPON_TYPE_MELEE_GENERAL]: {
+        header: { signature: 'KYWD', form_id: WEAPON_TYPE_MELEE_GENERAL },
+        editor_id: 'WeaponTypeMeleeGeneral',
+        fields: {},
+      } as unknown as EsmRecord,
+      [AP_CUSTOM_NAME]: {
+        header: { signature: 'KYWD', form_id: AP_CUSTOM_NAME },
+        editor_id: 'ap_customName',
+        fields: {},
+      } as unknown as EsmRecord,
+    },
+    rows: [
+      {
+        form_id: TONE_DEATH_FORM_ID,
+        record_type: 'OMOD',
+        editor_id: 'E08B_mod_Custom_ToneDeath',
+        name: 'Tone Death',
+      },
+    ],
+    getFallback: kywdPlaceholder,
+  });
+}
+
+describe('extractOmods (Tone Death Well Tuned keyword-hook, issue #80, 2026-08-20)', () => {
+  it('attributes SURV_WellTunedSpell FortifyDmgMeleeAll to the unique OMOD, gated wellTuned (not unconditional)', async () => {
+    const result = await extractOmods({
+      client: makeToneDeathStubClient(),
+      obtainableWeaponFormIds: new Set(),
+    });
+    const omod = result.omods.find((o) => o.id === 'E08B_mod_Custom_ToneDeath');
+    expect(omod).toBeDefined();
+    expect(omod!.addedKeywords).toContain('CustomItemName_ToneDeath');
+    expect(omod!.modifiers).toEqual([
+      {
+        id: `${TONE_DEATH_FORM_ID}:wellTuned:0`,
+        source: {
+          kind: 'omod',
+          formId: TONE_DEATH_FORM_ID,
+          edid: 'E08B_mod_Custom_ToneDeath',
+          name: 'Tone Death',
+        },
+        bucket: 'dbm',
+        op: 'ADD',
+        value: 0.2,
+        conditions: [
+          { kind: 'wellTuned', value: true },
+          {
+            kind: 'weaponKeywordAny',
+            keywords: ['WeaponTypeUnarmed', 'WeaponTypeMeleeGeneral'],
+          },
+        ],
+      },
+    ]);
   });
 });

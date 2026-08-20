@@ -78,6 +78,14 @@ export interface ConditionTranslationContext {
    * unresolved rows, as before).
    */
   crossFamilyRank?: Map<string, { family: string; rank: number }>;
+  /**
+   * WornHasKeyword/HasKeyword rows whose edid is in this set are consumed
+   * (the OMOD being extracted ADDs that keyword, so the self-gate is
+   * tautological). Used by extract-omods.ts's SURV_WellTunedSpell keyword-
+   * hook chase for Tone Death's CustomItemName_ToneDeath row — see
+   * docs/assumptions.md "Tone Death Well Tuned melee buff".
+   */
+  tautologicalKeywords?: ReadonlySet<string>;
 }
 
 export interface TranslationResult {
@@ -133,6 +141,10 @@ const CLASS_FREAK_RANK_BY_FORM_ID: Record<string, number> = {
  * A broader CustomItemName_* rule would un-gate every other unique's
  * self-check (Cold Shoulder etc.) — that's separate, un-scoped work; this
  * allowlist only covers the two Bullet Storm gates verified above.
+ * Tone Death's `CustomItemName_ToneDeath` (0x0064D000) is NOT listed —
+ * that WornHasKeyword lives on SPEL SURV_WellTunedSpell, attributed to
+ * the unique OMOD by extract-omods.ts's keyword-hook chase, which consumes
+ * the row as tautological and emits `{kind:'wellTuned'}` instead.
  */
 const UNIQUE_SELF_GATE_KEYWORDS = new Set([
   'CustomItemName_FoundationsVengeance',
@@ -282,6 +294,7 @@ function translateSingle(
       // modWeapBleedEffect's HasLegendary_Weapon_HealAllies=0 row lands here
       // as a present:false weaponKeyword (effective-weapon merges the
       // legendary omod's added keywords), not on the enemy path below.
+      if (!onEnemySide && ctx.tautologicalKeywords?.has(edid) && wants) return null;
       if (!onEnemySide && (isWeaponTypeKeyword(edid) || UNIQUE_SELF_GATE_KEYWORDS.has(edid))) {
         return { kind: 'weaponKeyword', keyword: edid, present: wants };
       }

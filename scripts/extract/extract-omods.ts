@@ -9,7 +9,9 @@ import { mapPool, type EsmRecord, type EsmSource } from './esm-client';
 import {
   FALLBACK_AVIF_ROUTES,
   buildAvifRoutes,
+  parseMagicEffects,
   translateGrantedPerk,
+  translateMagicEffect,
   type AvifRoute,
   type MgefTranslationDeps,
 } from './normalize/mgef';
@@ -446,6 +448,78 @@ export interface ExtractOmodsResult {
   reviewFlagged: Record<string, ExcludedRecordDetail[]>;
   unknownProperties: string[];
   notes: string[];
+}
+
+/**
+ * SPEL SURV_WellTunedSpell 0x0050CD15 — the 3600s instrument-play buff
+ * (Player VMAD SURV_PlayerUseFurnitureScript / FurnitureTypeInstrument
+ * 0x0050CD11). Effects[1] (FortifyDmgMeleeAll → STAT_DmgMelee mag 20) is
+ * gated WornHasKeyword(CustomItemName_ToneDeath); that row is tautological
+ * once attributed to the unique OMOD that ADDs the keyword, so the real
+ * gate is `{kind:'wellTuned'}`. See docs/assumptions.md "Tone Death Well
+ * Tuned melee buff".
+ */
+const WELL_TUNED_SPELL_EDID = 'SURV_WellTunedSpell';
+
+async function attachWellTunedKeywordHooks(
+  client: EsmSource,
+  omods: GeneratedOmod[],
+  mgefDeps: MgefTranslationDeps,
+  notes: Set<string>,
+): Promise<void> {
+  let spell;
+  try {
+    spell = await client.get(WELL_TUNED_SPELL_EDID);
+  } catch {
+    return;
+  }
+  if (spell.header.signature !== 'SPEL') return;
+
+  const byKeyword = new Map<string, GeneratedOmod[]>();
+  for (const omod of omods) {
+    for (const keyword of omod.addedKeywords) {
+      const list = byKeyword.get(keyword);
+      if (list) list.push(omod);
+      else byKeyword.set(keyword, [omod]);
+    }
+  }
+
+  for (const effect of parseMagicEffects(spell)) {
+    const keywordFormIds = effect.conditionRows
+      .filter((row) => row.Function === 'WornHasKeyword')
+      .map((row) => row['Parameter 1'])
+      .filter((p): p is string => typeof p === 'string');
+    if (keywordFormIds.length === 0) continue;
+
+    for (const formId of keywordFormIds) {
+      const edid = await client.resolveEdid(formId);
+      const targets = byKeyword.get(edid);
+      if (!targets) continue;
+      for (const omod of targets) {
+        const result = await translateMagicEffect(mgefDeps, effect, {
+          tautologicalKeywords: new Set([edid]),
+        });
+        for (const n of result.notes) {
+          (omod.notes ??= []).push(n);
+          notes.add(`${omod.id}: ${n}`);
+        }
+        const source: Modifier['source'] = {
+          kind: 'omod',
+          formId: omod.formId,
+          edid: omod.id,
+          name: omod.name,
+        };
+        for (const fragment of result.modifiers) {
+          omod.modifiers.push({
+            id: `${omod.formId}:wellTuned:${omod.modifiers.length}`,
+            source,
+            ...fragment,
+            conditions: [{ kind: 'wellTuned', value: true }, ...fragment.conditions],
+          });
+        }
+      }
+    }
+  }
 }
 
 export interface ExtractOmodsOptions {
@@ -990,6 +1064,8 @@ export async function extractOmods(options: ExtractOmodsOptions): Promise<Extrac
       }
     }
   }
+
+  await attachWellTunedKeywordHooks(client, omods, mgefDeps, notes);
 
   // Obtainability derivation (see extract-weapons.ts for the flag semantics:
   // failures stay in the data as obtainable:false for app-side hiding/rescue).

@@ -16021,7 +16021,33 @@
   "attachPointFormId": "0x0047A264",
   "attachPointEdid": "ap_customName",
   "targetKeywords": [],
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x0064D005:wellTuned:0",
+    "source": {
+     "kind": "omod",
+     "formId": "0x0064D005",
+     "edid": "E08B_mod_Custom_ToneDeath",
+     "name": "Tone Death"
+    },
+    "bucket": "dbm",
+    "op": "ADD",
+    "value": 0.2,
+    "conditions": [
+     {
+      "kind": "wellTuned",
+      "value": true
+     },
+     {
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "WeaponTypeUnarmed",
+       "WeaponTypeMeleeGeneral"
+      ]
+     }
+    ]
+   }
+  ],
   "addedKeywords": [
    "ObjectTypeUnique",
    "CustomItem_SpeciallyNamed",

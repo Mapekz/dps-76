@@ -1,0 +1,29 @@
+{
+  "header": {
+    "signature": "KYWD",
+    "form_id": "0x0064D000",
+    "flags": 0,
+    "form_version": 197,
+    "data_size": 61,
+    "offset": 503213
+  },
+  "editor_id": "CustomItemName_ToneDeath",
+  "fields": {
+    "_record_type": "Keyword",
+    "Editor ID": "CustomItemName_ToneDeath",
+    "Color": {
+      "r": 255,
+      "g": 255,
+      "b": 255,
+      "a": 0
+    },
+    "Unknown": {
+      "hex": "00000000",
+      "_raw": true
+    },
+    "Type": {
+      "value": 0,
+      "name": "None"
+    }
+  }
+}

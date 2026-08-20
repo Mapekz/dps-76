@@ -357,6 +357,21 @@ describe('condition evaluation', () => {
     expect(foldBucket([glowingCrit], 'dbm', 1.0, unset)).toBe(1.0); // glow undefined → treated as 0
   });
 
+  it('wellTuned gates Tone Death-style melee dbm (inert off, folds on)', () => {
+    const toneDeath = mod({
+      bucket: 'dbm',
+      op: 'ADD',
+      value: 0.2,
+      conditions: [{ kind: 'wellTuned', value: true }],
+    });
+
+    expect(foldBucket([toneDeath], 'dbm', 1.0, makeCtx(weapon))).toBe(1.0);
+    const on = makeCtx(weapon, {
+      player: { ...makeResolvedPlayer(), wellTuned: true },
+    });
+    expect(foldBucket([toneDeath], 'dbm', 1.0, on)).toBeCloseTo(1.2, 10);
+  });
+
   it("radResistAtLeast gates Daisy Cutter's 8-step Rad-Resistance ladder, capping at +160% (8000+)", () => {
     // Perk_Daisycutter's real ESM shape (esm chase 0x00471882): 8 discrete
     // dbm ADD 0.2 modifiers, each gated GetValue(RadResistExposure) >= N for
