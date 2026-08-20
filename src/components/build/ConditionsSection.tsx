@@ -82,6 +82,14 @@ export function ConditionsSection() {
   const hasOnCrippleProcSource = affordances?.hasOnCrippleProcSource ?? false;
   const procCripplesPerMin = conditions.procCripplesPerMin ?? 0;
 
+  // Bash-triggered timed-buff uptime (Love Tap — issue #80/#42 follow-up,
+  // ADR-0009, user-directed 2026-08-20): no bash-frequency model exists, so
+  // the player states the uptime they intend to sustain directly — same
+  // existence-gate pattern as hasOnCrippleProcSource above. Reuses the
+  // Battle-Loader's bash-time slider (below) as the per-bash time cost.
+  const hasBashBuffUptimeSource = affordances?.hasBashBuffUptimeSource ?? false;
+  const onBashBuffUptime = conditions.onBashBuffUptime ?? 0;
+
   // Concentrated Fire: manual 0–20 stacks slider standing in for the game's
   // hidden native per-target consecutive-shots-fired counter (see the
   // PlayerInput.concentratedFireStacks doc comment and
@@ -314,6 +322,29 @@ export function ConditionsSection() {
                 </HelperText>
                 {!hasOnCrippleProcSource && (
                   <HelperText>No on-cripple proc sources equipped</HelperText>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="char-bash-buff-uptime">Bash-buff uptime: {onBashBuffUptime}%</Label>
+                <Slider
+                  id="char-bash-buff-uptime"
+                  min={0}
+                  max={100}
+                  step={5}
+                  disabled={!hasBashBuffUptimeSource}
+                  value={[onBashBuffUptime]}
+                  onValueChange={(v) => set('onBashBuffUptime', firstSliderValue(v))}
+                  marks={[0, 25, 50, 75, 100].map((v) => ({ value: v, label: String(v) }))}
+                />
+                <HelperText>
+                  No bash-frequency model exists — this is a manual stand-in for how consistently
+                  you keep a bash-triggered buff (Love Tap) refreshed. Bashes/minute and the
+                  resulting attack-time cost are derived from this and the bash-time slider below. 0
+                  = honest zero, not a hidden average.
+                </HelperText>
+                {!hasBashBuffUptimeSource && (
+                  <HelperText>No bash-triggered buff sources equipped</HelperText>
                 )}
               </div>
 

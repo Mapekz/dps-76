@@ -3234,7 +3234,7 @@ describe('translateGrantedPerk (Love Tap Function-Type-5 timed-buff gate, issue 
     [AV_ID, [{ bucket: 'dbm', scale: 0.01, rawConditions: [] }]],
   ]);
 
-  it('gates the +30% dbm behind an unresolved timedBuff condition instead of folding it unconditionally', async () => {
+  it('gates the +30% dbm behind a bashBuffUptime condition instead of folding it unconditionally', async () => {
     const result = await translateGrantedPerk(
       // timedIsActive: true mirrors extract-omods.ts's blanket OMOD-pass
       // default — see the describe-block comment above.
@@ -3242,16 +3242,21 @@ describe('translateGrantedPerk (Love Tap Function-Type-5 timed-buff gate, issue 
       'E09C_mod_Custom_LoveTap',
       PERK_ID,
     );
+    // Bash-triggered uptime scaling (user-directed 2026-08-20, issue #80/#42
+    // follow-up) supersedes the generic `unresolved` timedBuff gate for this
+    // EP173 "Apply Combat Melee Spell" trigger specifically — see
+    // MgefTranslationDeps.bashTriggered and docs/assumptions.md
+    // "Bash-triggered buff uptime".
     expect(result.modifiers).toEqual([
       {
         bucket: 'dbm',
         op: 'ADD',
         value: 0.3,
-        conditions: [{ kind: 'unresolved', raw: 'timedBuff(30s)' }],
+        conditions: [{ kind: 'bashBuffUptime', durationSec: 30 }],
       },
     ]);
     expect(result.notes).toContain(
-      'perk LoveTapPerk: FortifyDamageAll: timedBuff(30s) — needs toggle override',
+      'perk LoveTapPerk: FortifyDamageAll: bash-triggered timedBuff(30s) — scaled by onBashBuffUptime',
     );
   });
 });

@@ -669,6 +669,17 @@ export const PLAYER_KNOB_REGISTRY: Readonly<Record<keyof ResolvedPlayer, PlayerK
     activeBadge: 'conditions',
     clamp: { min: 0, max: 60 },
   },
+  onBashBuffUptime: {
+    key: 'onBashBuffUptime',
+    wire: 59,
+    owner: 'player',
+    origin: 'input',
+    section: 'conditions',
+    default: PLAYER_DEFAULTS.onBashBuffUptime ?? 0,
+    label: 'Bash-buff uptime',
+    activeBadge: 'conditions',
+    clamp: { min: 0, max: 100 },
+  },
 };
 
 // retired wire ordinals: (none yet)

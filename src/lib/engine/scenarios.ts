@@ -41,6 +41,7 @@ import {
   type HitTrace,
 } from './trace';
 import {
+  bashUptimeDowntimeFraction,
   effectiveValue,
   foldRegisteredBucket,
   type ResolveContext,
@@ -928,14 +929,24 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // than) modeling individual misses. Free aim and VATS have independent
   // manual knobs — see docs/assumptions.md "Manual-aim hit rate".
   const hitRateFraction = (input.player.hitRatePct ?? 100) / 100;
+  // Bash-triggered buff uptime (Love Tap — issue #80/#42 follow-up):
+  // time spent bashing to sustain the chosen uptime is downtime the same as
+  // reload time — folds into sustainedDps only, alongside hitRateFraction,
+  // never burstDps. See resolve.ts's `bashUptimeDowntimeFraction`.
+  const freeBashDowntime = bashUptimeDowntimeFraction(
+    input.modifiers,
+    scenarioCtx(input, freeFlags, onslaught, bulletStorm),
+    bashAnimationSec,
+  );
   const freeSustain: SustainResult = {
     ...freeSustainRaw,
-    sustainedDps: freeSustainRaw.sustainedDps * hitRateFraction,
+    sustainedDps: freeSustainRaw.sustainedDps * hitRateFraction * (1 - freeBashDowntime),
   };
   const vatsHitRateFraction = (input.player.vatsHitRatePct ?? 100) / 100;
+  const vatsBashDowntime = bashUptimeDowntimeFraction(input.modifiers, vatsCtx, bashAnimationSec);
   const vatsSustain: SustainResult = {
     ...vatsSustainRaw,
-    sustainedDps: vatsSustainRaw.sustainedDps * vatsHitRateFraction,
+    sustainedDps: vatsSustainRaw.sustainedDps * vatsHitRateFraction * (1 - vatsBashDowntime),
   };
 
   // DoT is a separate steady-state add (refresh-only, not crit/vats-scaled by

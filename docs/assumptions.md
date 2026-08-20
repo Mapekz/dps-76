@@ -1102,8 +1102,67 @@ ESM-proven and documented at their respective extraction sites.
   track a Health-based ammo pool at all, so the entry point is a genuine
   no-op for them there — folding it into `ammoCapacity` unconditionally
   would double-count against the ALREADY-correct direct `AmmoCapacity`
-  OMOD-property fold present on the exact same records. Folding the
-  Gatling Laser/Ultracite Gatling Laser-gated instances into effective
-  shots-per-core is still open — needs a core-weapon gate this engine
-  doesn't have yet, not just this framing fix. Full doc comment:
+  OMOD-property fold present on the exact same records.
+
+  **Wired into effective capacity 2026-08-20** (user-confirmed: "plasma/
+  fusion core max base health can be obtained from AMMO records... with
+  Power User 3 you can get 1000 gatling laser ammo with a full health
+  fusion core"). AMMO `AmmoFusionCore` 0x00075FE4 (shared by both Gatling
+  Laser 0x000E27BC and Ultracite Gatling Laser 0x002EF66E — no separate
+  Ultracite core exists) carries `DNAM/Health = 500`, and both weapons'
+  own `weapon.capacity` is independently extracted as 500 — the AMMO
+  record's Health field and `weapon.capacity` are the same "shots per
+  core" quantity 1:1, so no new core-weapon concept was needed: 500 ×
+  (1 + 1.0 from Power User 3) = 1000 exactly, confirming the arithmetic.
+  The Power User/Repair Bobblehead OR-group above previously fell to
+  `unresolved` because `isWeaponTypeKeyword` (`normalize/conditions.ts`)
+  didn't recognize `ma_GatlingLaser`/`ma_Ultracite_GatlingLaser` as
+  weapon-identity keywords — widened to include exactly those two EDIDs
+  (not a blanket `ma_` prefix; other `ma_` keywords are armor-material
+  gates, a different Function), which resolves the OR-group to a real
+  `weaponKeywordAny` condition instead. `effective-weapon.ts`'s capacity
+  fold now additionally admits `ammoHealthMult` modifiers carrying a
+  `weaponKeywordAny` gate that includes `ma_GatlingLaser` — relabeled to
+  `ammoCapacity` and folded alongside the weapon's own OMOD capacity —
+  which can never reach the ungated magazine-mod GENERIC-template
+  instance (still correctly inert) or the unrelated, also-ungated
+  `Legendary_AmmoCapacityx4Perk` (0x0072F409, ADD 3 — an NPC/hidden-only
+  effect with no weapon gate at all, unaudited, unaffected either way).
+  Tesla Science Magazine #4's variant of the same entry point is a
+  THREE-way OR mixing `ArmorTypePower` in with the two weapon keywords —
+  a different shape `weaponKeywordAny` can't represent (it's "worn armor
+  type OR weapon keyword", not a pure weapon-keyword OR-group) — still
+  correctly `unresolved`, left as a known follow-up. Full doc comment:
   `src/types/modifiers.ts`'s `ammoHealthMult` Bucket entry.
+
+## Bash-triggered buff uptime
+
+Love Tap (`E09C_mod_Custom_LoveTap`, PERK `LoveTapPerk` 0x008F2AEB, EP173
+"Apply Combat Melee Spell": "Bashing Grants +30% Damage for 30 Seconds")
+grants its `dbm` bonus through a combat-triggered Function-Type-5 Spell
+Item chase (issue #42's proc-damage machinery, `chaseGrantedSpell`) —
+e93dcc6 (2026-08-19) correctly gated this behind the generic `unresolved`
+timedBuff marker rather than folding it unconditionally, since no
+bash-frequency model existed. **User-directed 2026-08-20**: rather than
+leave it permanently unmodeled, a manual `PlayerInput.onBashBuffUptime`
+knob (0–100%, default 0 — an honest zero, same ADR-0009 exogenous-knob
+precedent as `procCripplesPerMin`) lets the player state the uptime they
+intend to sustain by bashing on cooldown. `resolve.ts`'s `bashBuffUptime`
+condition scales the dbm value by that fraction directly; the paired
+`bashUptimeDowntimeFraction` derives bashesPerMinute = 60 ×
+(uptime/100) / buffDurationSec and reuses `battleLoadersBashSec` (the
+existing Battle-Loader's bash-time knob, `sustain.ts`) as the per-bash
+time cost, reducing `sustainedDps` only (never `burstDps`) by
+uptimeFraction × bashAnimationSec / durationSec — the same "downtime,
+sustained-only" convention reload time already uses. Scoped narrowly to
+EP173 specifically (`MgefTranslationDeps.bashTriggered`, set only when
+the granting perk's entry-point name is literally "Apply Combat Melee
+Spell") — Holy Fire's buff (`mod_custom_HolyFire_Effect`, EP184 "Apply
+Friendly Hit Spell") triggers on trigger-pull/hit rather than strictly on
+bash (user-clarified 2026-08-20) and is a support/healing-oriented effect
+whose dbm/DR terms don't need modeling here, so it stays on the generic
+`unresolved` gate untouched; its separate `dotDamage` fire modifier
+(Contact-delivered, unconditional) is a distinct on-hit burn, not part of
+this timed buff, and is unaffected either way. NOT a generalized
+combat-trigger-uptime model — a future bash/hit/kill/cripple-triggered
+timed buff needs its own scoping decision, not an automatic opt-in.

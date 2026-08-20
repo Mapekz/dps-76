@@ -2290,8 +2290,11 @@
       "value": 0.30000000000000004,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "OR-group[WornHasKeyword(ma_GatlingLaser)=1 | WornHasKeyword(ma_Ultracite_GatlingLaser)=1]"
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "ma_GatlingLaser",
+         "ma_Ultracite_GatlingLaser"
+        ]
        }
       ]
      }
@@ -16591,7 +16594,9 @@
   "hasCard": false,
   "notes": [
    "perk Legendary_Weapon_ConductorsPlayerPerk: GetLastHitCritical()=1",
-   "perk Legendary_Weapon_ConductorsPlayerPerk: entry point Apply Combat Hit Spell — not modeled"
+   "perk Legendary_Weapon_ConductorsPlayerPerk: Legendary_Weapon_ConductorsApplyRestorePlayerAPPerkEffect: timedBuff(5s) — needs toggle override",
+   "perk Legendary_Weapon_ConductorsPlayerPerk: Legendary_Weapon_ConductorsApplyRestorePlayerHealthPerkEffect: timedBuff(5s) — needs toggle override",
+   "perk Legendary_Weapon_ConductorsPlayerPerk: MGEF Legendary_Weapon_ConductorsAddCloakEffect archetype Cloak — needs override"
   ]
  },
  {
@@ -16630,9 +16635,7 @@
    }
   ],
   "hasCard": false,
-  "notes": [
-   "MGEF Legendary_Weapon_ElectriciansApplyExplosionPerkEffect archetype Script — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "Legendary_Weapon_ElectriciansPerkSpell",
@@ -16651,9 +16654,7 @@
    }
   ],
   "hasCard": false,
-  "notes": [
-   "MGEF Legendary_Weapon_ElectriciansApplyExplosionPerkEffect archetype Script — needs override"
-  ]
+  "notes": []
  },
  {
   "family": "Legendary_Weapon_EncirclersPerk",
@@ -27810,8 +27811,11 @@
       "value": 0.3,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "OR-group[WornHasKeyword(ma_GatlingLaser)=1 | WornHasKeyword(ma_Ultracite_GatlingLaser)=1]"
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "ma_GatlingLaser",
+         "ma_Ultracite_GatlingLaser"
+        ]
        }
       ]
      }
@@ -27834,8 +27838,11 @@
       "value": 0.6,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "OR-group[WornHasKeyword(ma_GatlingLaser)=1 | WornHasKeyword(ma_Ultracite_GatlingLaser)=1]"
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "ma_GatlingLaser",
+         "ma_Ultracite_GatlingLaser"
+        ]
        }
       ]
      }
@@ -27858,8 +27865,11 @@
       "value": 1,
       "conditions": [
        {
-        "kind": "unresolved",
-        "raw": "OR-group[WornHasKeyword(ma_GatlingLaser)=1 | WornHasKeyword(ma_Ultracite_GatlingLaser)=1]"
+        "kind": "weaponKeywordAny",
+        "keywords": [
+         "ma_GatlingLaser",
+         "ma_Ultracite_GatlingLaser"
+        ]
        }
       ]
      }

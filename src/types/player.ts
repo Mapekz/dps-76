@@ -61,6 +61,18 @@ export interface PlayerInput {
    * not a hidden average — `computeProcDps`/ScenarioResult.procDps).
    */
   procCripplesPerMin?: number;
+  /**
+   * Manual knob for a bash-triggered timed buff's sustained uptime (Love
+   * Tap — issue #80/#42 follow-up, user-directed 2026-08-20), 0–100 percent.
+   * Same ADR-0009 exogenous-knob precedent as `procCripplesPerMin`: no
+   * bash-frequency model exists, so the player states the uptime they
+   * intend to sustain directly rather than a bashes-per-minute count. The
+   * engine derives bashesPerMinute = 60 × (uptime/100) / buffDurationSec and
+   * reuses `battleLoadersBashSec` as the time-cost-per-bash factor —
+   * `resolve.ts`'s `bashUptimeDowntimeFraction`. Default 0 (an honest zero,
+   * not a hidden average, same as `procCripplesPerMin`).
+   */
+  onBashBuffUptime?: number;
 
   // SPECIAL base allocation (1–15, budget-enforced in BuildState).
   // On `ResolvedPlayer` these keys hold **buff-folded effective SPECIAL**.
@@ -204,6 +216,7 @@ export function createDefaultPlayerInput(): PlayerInput {
     playerDamageResist: 0,
     playerRadResist: 0,
     procCripplesPerMin: 0,
+    onBashBuffUptime: 0,
     strength: 1,
     perception: 1,
     endurance: 1,

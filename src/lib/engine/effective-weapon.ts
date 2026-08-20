@@ -459,7 +459,41 @@ export function buildEffectiveWeapon(
     weapon.projectileCount ?? 1,
     ctx,
   );
-  const capacity = foldBucket(statModifiers, 'ammoCapacity', weapon.capacity ?? 0, ctx);
+  // Ammo Health Mult → effective capacity for core-based weapons (Gatling
+  // Laser/Ultracite Gatling Laser — issue #46, user-directed 2026-08-20):
+  // Power User/Repair Bobblehead's `ammoHealthMult` modifiers carry a
+  // `weaponKeywordAny` gate on these two weapons' own identity keywords
+  // (resolved from an OR-group `isWeaponTypeKeyword` now recognizes — see
+  // conditions.ts), so folding a relabeled copy of just those into
+  // `ammoCapacity` alongside the weapon's own OMOD-driven capacity fold is
+  // safe: it can never reach an ungated `ammoHealthMult` source (the
+  // magazine-mod GENERIC-template instance, or the unrelated, also-ungated
+  // `Legendary_AmmoCapacityx4Perk`), which stay excluded and correctly
+  // inert. AmmoFusionCore's own base Health (500) already equals
+  // Gatling/Ultracite Gatling Laser's `weapon.capacity` 1:1 — verified
+  // 2026-08-20 — so no separate core-weapon concept is needed beyond this
+  // keyword gate. docs/assumptions.md "Ammo Health (battery/core Health)".
+  // Forced to MUL_ADD regardless of the modifier's own stored op — every
+  // qualifying value (Power User's own op 'ADD', Repair Bobblehead's own op
+  // 'MUL_ADD' — inconsistent because `ammoHealthMult` was never fold-
+  // consumed before, so this field was never exercised) is a fractional
+  // "% longer" figure (card text: "Fusion Cores now last 30/60/100%
+  // longer"), meant to scale the base, not add flat points to it.
+  const gatedAmmoHealthMult = statModifiers
+    .filter(
+      (m) =>
+        m.bucket === 'ammoHealthMult' &&
+        m.conditions.some(
+          (c) => c.kind === 'weaponKeywordAny' && c.keywords.includes('ma_GatlingLaser'),
+        ),
+    )
+    .map((m) => ({ ...m, bucket: 'ammoCapacity' as const, op: 'MUL_ADD' as const }));
+  const capacity = foldBucket(
+    [...statModifiers, ...gatedAmmoHealthMult],
+    'ammoCapacity',
+    weapon.capacity ?? 0,
+    ctx,
+  );
   const reloadSpeed = foldBucket(statModifiers, 'reloadSpeed', weapon.reloadSpeed ?? 1.0, ctx);
   const reloadSkipChance = foldChanceUnion(statModifiers, 'reloadSkipChance', ctx);
   // Bash-triggered channel (Battle-Loader's), separate from the passive

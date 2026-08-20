@@ -16473,8 +16473,8 @@
     "value": 0.3,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "timedBuff(30s)"
+      "kind": "bashBuffUptime",
+      "durationSec": 30
      }
     ]
    }
@@ -16487,7 +16487,7 @@
   ],
   "hasEnchantments": false,
   "notes": [
-   "perk LoveTapPerk: FortifyDamageAll: timedBuff(30s) — needs toggle override"
+   "perk LoveTapPerk: FortifyDamageAll: bash-triggered timedBuff(30s) — scaled by onBashBuffUptime"
   ],
   "obtainable": true
  },

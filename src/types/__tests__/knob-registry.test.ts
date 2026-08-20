@@ -9,7 +9,7 @@ import {
 
 describe('KNOB_REGISTRY', () => {
   it('has exactly one player row per ResolvedPlayer key', () => {
-    expect(Object.keys(PLAYER_KNOB_REGISTRY).length).toBe(57);
+    expect(Object.keys(PLAYER_KNOB_REGISTRY).length).toBe(58);
     for (const key of Object.keys(makeResolvedPlayer())) {
       expect(PLAYER_KNOB_REGISTRY).toHaveProperty(key);
     }
@@ -118,6 +118,7 @@ describe('KNOB_REGISTRY', () => {
       // wire 6 (isLastShot) and wire 57 (hydrated) retired — see
       // PLAYER_KNOB_REGISTRY's leading comment.
       { key: 'procCripplesPerMin', wire: 58 },
+      { key: 'onBashBuffUptime', wire: 59 },
     ];
     const fromRegistry = (Object.keys(PLAYER_KNOB_REGISTRY) as Array<keyof ResolvedPlayer>).map(
       (key) => ({ key, wire: PLAYER_KNOB_REGISTRY[key]!.wire }),

@@ -1026,6 +1026,16 @@ export interface MgefTranslationDeps {
    * the toggle. Perk proc-buffs keep the flag.
    */
   timedIsActive?: boolean;
+  /**
+   * Narrowly scoped to `chaseGrantedSpell`'s bash-triggered branch (Love Tap
+   * — issue #80/#42 follow-up, user-directed 2026-08-20): when set alongside
+   * `timedIsActive: false`, a real timed-buff Duration gets the
+   * `bashBuffUptime` scaling condition instead of the generic `unresolved`
+   * timedBuff gate. NOT a generalized combat-trigger-uptime model — other
+   * Function-Type-5 timed grants (Holy Fire's friendly-hit trigger) stay on
+   * the generic gate.
+   */
+  bashTriggered?: boolean;
   /** See TranslateOptions.noteUnroutedAvs. */
   noteUnroutedAvs?: boolean;
   /**
@@ -1070,6 +1080,8 @@ export interface MgefTranslationResult {
 
 export interface TranslateOptions {
   timedIsActive?: boolean;
+  /** See MgefTranslationDeps.bashTriggered. */
+  bashTriggered?: boolean;
   conditionCtx?: Partial<ConditionTranslationContext>;
   /**
    * Note EVERY value-modifier effect whose AV has no route (instead of only
@@ -1263,9 +1275,16 @@ export function translate(
 
   const allConds = [...effectConds];
   if (effect.duration > 0 && !opts.timedIsActive) {
-    const raw = `timedBuff(${effect.duration}s)`;
-    allConds.push({ kind: 'unresolved', raw });
-    result.notes.push(`${mgef.edid}: ${raw} — needs toggle override`);
+    if (opts.bashTriggered) {
+      allConds.push({ kind: 'bashBuffUptime', durationSec: effect.duration });
+      result.notes.push(
+        `${mgef.edid}: bash-triggered timedBuff(${effect.duration}s) — scaled by onBashBuffUptime`,
+      );
+    } else {
+      const raw = `timedBuff(${effect.duration}s)`;
+      allConds.push({ kind: 'unresolved', raw });
+      result.notes.push(`${mgef.edid}: ${raw} — needs toggle override`);
+    }
   }
 
   const push = (
@@ -1789,8 +1808,11 @@ export async function translateGrantedPerk(
         'name'
       ];
       if (functionTypeName === 'Spell Item' && typeof e['Spell'] === 'string') {
+        // Bash-triggered uptime scaling (Love Tap — issue #80/#42 follow-up,
+        // user-directed 2026-08-20) is scoped to EP173 "Apply Combat Melee
+        // Spell" specifically — see MgefTranslationDeps.bashTriggered.
         const sub = await chaseGrantedSpell(
-          deps,
+          { ...deps, bashTriggered: name === 'Apply Combat Melee Spell' },
           `perk ${perkEdid}`,
           e['Spell'],
           conditions,
@@ -2105,6 +2127,7 @@ export async function translateMagicEffect(
 
   return translate(mgef, resolvedEffect, deps.routes, edidByFormId, {
     timedIsActive: deps.timedIsActive,
+    bashTriggered: deps.bashTriggered,
     noteUnroutedAvs: deps.noteUnroutedAvs,
     conditionCtx,
   });

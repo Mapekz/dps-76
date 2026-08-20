@@ -370,6 +370,10 @@ function evalCondition(cond: Condition, ctx: ResolveContext): number | null {
       );
       return count > 0 ? count : null;
     }
+    case 'bashBuffUptime': {
+      const uptime = Math.max(0, Math.min((ctx.player.onBashBuffUptime ?? 0) / 100, 1));
+      return uptime > 0 ? uptime : null;
+    }
     case 'strangeInNumbers':
       return ctx.player.strangeInNumbers === cond.value ? 1 : null;
     case 'classFreakRank': {
@@ -457,6 +461,42 @@ export function effectiveValue(mod: Modifier, ctx: ResolveContext): number | nul
     : mod.value;
   const scaled = mod.scaledBy ? base * PLAYER_STATE_READERS[mod.scaledBy](ctx.player, ctx) : base;
   return scaled * scale;
+}
+
+/**
+ * Fraction of attack-cycle time lost to periodically bashing to sustain a
+ * bash-triggered timed buff's uptime (Love Tap — issue #80/#42 follow-up,
+ * user-directed 2026-08-20). For each currently-active modifier carrying a
+ * `bashBuffUptime` condition, bashesPerMinute = 60 × uptimeFraction /
+ * durationSec and each bash costs `bashAnimationSec` (battleLoadersBashSec,
+ * reused rather than adding a second "how long does a bash take" slider),
+ * giving a time-lost fraction of uptimeFraction × bashAnimationSec /
+ * durationSec. Deduped by distinct `durationSec` — a buff bundling multiple
+ * modifiers (Holy Fire-style dbm + damageResistGain pairs, if ever ported to
+ * this condition) shares one bash, not one per modifier. Only sustainedDps
+ * is scaled by the result — burstDps stays the no-downtime ceiling, the same
+ * convention reload downtime already uses.
+ */
+export function bashUptimeDowntimeFraction(
+  modifiers: readonly Modifier[],
+  ctx: ResolveContext,
+  bashAnimationSec: number,
+): number {
+  const uptimeFraction = Math.max(0, Math.min((ctx.player.onBashBuffUptime ?? 0) / 100, 1));
+  if (uptimeFraction <= 0) return 0;
+  const durations = new Set<number>();
+  for (const mod of modifiers) {
+    const uptimeCond = mod.conditions.find((c) => c.kind === 'bashBuffUptime');
+    if (!uptimeCond || uptimeCond.kind !== 'bashBuffUptime') continue;
+    if (effectiveValue(mod, ctx) === null) continue;
+    durations.add(uptimeCond.durationSec);
+  }
+  let lost = 0;
+  for (const durationSec of durations) {
+    if (durationSec <= 0) continue;
+    lost += (uptimeFraction * bashAnimationSec) / durationSec;
+  }
+  return Math.max(0, Math.min(lost, 1));
 }
 
 /**

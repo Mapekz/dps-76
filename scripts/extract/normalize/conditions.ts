@@ -162,12 +162,20 @@ function isWeaponTypeKeyword(edid: string): boolean {
   // (effective-weapon merges addedKeywords). Newer content prefixes its
   // records (SDOW_HasLegendary_Weapon_Severing) — match anywhere after a
   // prefix, not just at the start.
+  // ma_GatlingLaser/ma_Ultracite_GatlingLaser are per-weapon-model identity
+  // keywords (Power User/Repair Bobblehead's Ammo Health Mult OR-group gate
+  // — issue #46, user-directed 2026-08-20). Narrowly listed rather than a
+  // blanket `ma_` prefix — other `ma_` keywords are armor-material gates
+  // (WornApparelHasKeywordCount), a different Function entirely, and
+  // ma_Knife/ma_Switchblade's unarmed OR-group is unaudited, left unresolved.
   return (
     edid.startsWith('WeaponType') ||
     edid.startsWith('UI_WeaponType') ||
     edid === 'HasSilencer' ||
     edid.startsWith('HasLegendary_') ||
-    edid.includes('_HasLegendary_')
+    edid.includes('_HasLegendary_') ||
+    edid === 'ma_GatlingLaser' ||
+    edid === 'ma_Ultracite_GatlingLaser'
   );
 }
 

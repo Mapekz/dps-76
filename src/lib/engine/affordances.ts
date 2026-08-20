@@ -60,6 +60,13 @@ export interface BuildAffordances {
    */
   hasOnCrippleProcSource: boolean;
   /**
+   * True when any equipped source carries a `bashBuffUptime` condition
+   * (Love Tap — issue #80/#42 follow-up, user-directed 2026-08-20) — gates
+   * the UI's `onBashBuffUptime` slider, same pattern as
+   * `hasOnCrippleProcSource`.
+   */
+  hasBashBuffUptimeSource: boolean;
+  /**
    * The equipped weapon's charge parameters — null when the effective weapon
    * doesn't charge (hides the slider).
    */
@@ -123,6 +130,10 @@ export function describeAffordances(input: ScenarioInput): BuildAffordances {
     (p) => p.trigger.kind === 'onCripple',
   );
 
+  const hasBashBuffUptimeSource = input.modifiers.some((m) =>
+    m.conditions.some((c) => c.kind === 'bashBuffUptime'),
+  );
+
   const charging = weaponCharges(input.weapon)
     ? {
         fullPowerSeconds: input.weapon.fullPowerSeconds ?? 0,
@@ -150,6 +161,7 @@ export function describeAffordances(input: ScenarioInput): BuildAffordances {
     hasKingfisherLocalLegendSource,
     hasBattleLoadersSource,
     hasOnCrippleProcSource,
+    hasBashBuffUptimeSource,
     charging,
     range,
     vatsHitChanceBonus,

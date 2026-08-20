@@ -1632,14 +1632,16 @@
     "value": 0.30000000000000004,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "OR-group[WornHasKeyword(ma_GatlingLaser)=1 | WornHasKeyword(ma_Ultracite_GatlingLaser)=1]"
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "ma_GatlingLaser",
+       "ma_Ultracite_GatlingLaser"
+      ]
      }
     ]
    }
   ],
   "notes": [
-   "BobbleHead_Repair_Potion: perk Bobblehead_RepairPerk: OR-group[WornHasKeyword(ma_GatlingLaser)=1 | WornHasKeyword(ma_Ultracite_GatlingLaser)=1]",
    "BobbleHead_Repair_Potion: MGEF Bobblehead_ReducePABatteryDamageRate_Effect: no route for AV PABatteryDamageRate — needs mapping"
   ],
   "category": "bobblehead",
@@ -4609,13 +4611,38 @@
   "formId": "0x003EC2C1",
   "name": "Firecracker Whiskey Manhattan",
   "kind": "consumable",
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x003EC2C1:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x003EC2C1",
+     "edid": "Brew_FirecrackerWhiskeyManhattan",
+     "name": "Firecracker Whiskey Manhattan"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "value": 2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "OR-group[HasKeyword(WeaponTypeBallistic)=1 | HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | IsSpellTarget(FirecrackerWhiskey_BurnOnTouch)=0]"
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ],
+    "durationSec": 3
+   }
+  ],
   "notes": [
    "Brew_FirecrackerWhiskeyManhattan: condition: GetGlobalValue(Spotlight_BrewHaha)=0",
    "Brew_FirecrackerWhiskeyManhattan: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "Brew_FirecrackerWhiskeyManhattan: MGEF FirecrackerWhiskey_Duration archetype Script — needs override",
    "Brew_FirecrackerWhiskeyManhattan: perk FirecrackerWhiskeyBurnEnemies: OR-group[HasKeyword(WeaponTypeBallistic)=1 | HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | IsSpellTarget(FirecrackerWhiskey_BurnOnTouch)=0]",
-   "Brew_FirecrackerWhiskeyManhattan: perk FirecrackerWhiskeyBurnEnemies: entry point Apply Combat Hit Spell — not modeled",
    "Brew_FirecrackerWhiskeyManhattan: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
    "Brew_FirecrackerWhiskeyManhattan: MGEF PerkHappyGoLuckyFortifyLuck skipped — modeled by Happy-Go-Lucky rank 1 (extraPerkModifiers)",
    "Brew_FirecrackerWhiskeyManhattan: MGEF PerkHappyGoLucky02FortifyLuck skipped — modeled by Happy-Go-Lucky rank 2 (extraPerkModifiers)"
@@ -4631,7 +4658,6 @@
    "name": "Alcohol Addiction"
   },
   "ingredientKeywords": [],
-  "description": "Ballistic and Melee Attacks deal fire DMG",
   "obtainable": false
  },
  {
@@ -5677,14 +5703,16 @@
     "value": 0.30000000000000004,
     "conditions": [
      {
-      "kind": "unresolved",
-      "raw": "OR-group[WornHasKeyword(ma_GatlingLaser)=1 | WornHasKeyword(ma_Ultracite_GatlingLaser)=1]"
+      "kind": "weaponKeywordAny",
+      "keywords": [
+       "ma_GatlingLaser",
+       "ma_Ultracite_GatlingLaser"
+      ]
      }
     ]
    }
   ],
   "notes": [
-   "GHL_GlowingBobbleHead_Repair_Potion: perk Bobblehead_RepairPerk: OR-group[WornHasKeyword(ma_GatlingLaser)=1 | WornHasKeyword(ma_Ultracite_GatlingLaser)=1]",
    "GHL_GlowingBobbleHead_Repair_Potion: MGEF Bobblehead_ReducePABatteryDamageRate_Effect: no route for AV PABatteryDamageRate — needs mapping"
   ],
   "category": "bobblehead",
@@ -8412,13 +8440,42 @@
      "edid": "E08A_Brew_GulpershineFresh",
      "name": "Mire Magic Moonshine"
     },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | IsSpellTarget(ToxicGin_PoisonsOnHit)=0]"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(ImmuneToPoison)=0"
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "poison"
+      ]
+     }
+    ],
+    "durationSec": 5
+   },
+   {
+    "id": "0x00622F8B:3",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00622F8B",
+     "edid": "E08A_Brew_GulpershineFresh",
+     "name": "Mire Magic Moonshine"
+    },
     "bucket": "specialIntelligence",
     "op": "ADD",
     "value": -1,
     "conditions": []
    },
    {
-    "id": "0x00622F8B:3",
+    "id": "0x00622F8B:4",
     "source": {
      "kind": "consumable",
      "formId": "0x00622F8B",
@@ -8438,7 +8495,9 @@
    "E08A_Brew_GulpershineFresh: MGEF E08A_GulperShine_ME archetype Script — needs override",
    "E08A_Brew_GulpershineFresh: condition: HasActiveMagicEffect(E08A_GulperSmacker_GulpershineBuff_ME) Equal To 1",
    "E08A_Brew_GulpershineFresh: perk ToxicGin_PoisonEnemies: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | IsSpellTarget(ToxicGin_PoisonsOnHit)=0]",
-   "E08A_Brew_GulpershineFresh: perk ToxicGin_PoisonEnemies: entry point Apply Combat Hit Spell — not modeled",
+   "E08A_Brew_GulpershineFresh: perk ToxicGin_PoisonEnemies: ToxicGin_DamageResistEffect: timedBuff(60s) — needs toggle override",
+   "E08A_Brew_GulpershineFresh: perk ToxicGin_PoisonEnemies: MGEF ToxicGin_DamageResistEffect: no route for AV DamageResist — needs mapping",
+   "E08A_Brew_GulpershineFresh: perk ToxicGin_PoisonEnemies: condition: HasPerk(ImmuneToPoison)=0",
    "E08A_Brew_GulpershineFresh: condition: HasPerk(PA_RadScrubbers)=0",
    "E08A_Brew_GulpershineFresh: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "E08A_Brew_GulpershineFresh: MGEF Gulpershine_Duration archetype Script — needs override"
@@ -16022,13 +16081,38 @@
   "formId": "0x00469854",
   "name": "Vintage Firecracker Whiskey",
   "kind": "consumable",
-  "modifiers": [],
+  "modifiers": [
+   {
+    "id": "0x00469854:0",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00469854",
+     "edid": "Brew_FirecrackerWhiskeyVintage",
+     "name": "Vintage Firecracker Whiskey"
+    },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "value": 2,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "OR-group[HasKeyword(WeaponTypeBallistic)=1 | HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | IsSpellTarget(FirecrackerWhiskey_BurnOnTouch)=0]"
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "fire"
+      ]
+     }
+    ],
+    "durationSec": 3
+   }
+  ],
   "notes": [
    "Brew_FirecrackerWhiskeyVintage: condition: GetGlobalValue(Spotlight_BrewHaha)=0",
    "Brew_FirecrackerWhiskeyVintage: MGEF AddictionOddsAlcohol: no route for AV AddictionAlcohol — needs mapping",
    "Brew_FirecrackerWhiskeyVintage: MGEF FirecrackerWhiskey_Duration archetype Script — needs override",
    "Brew_FirecrackerWhiskeyVintage: perk FirecrackerWhiskeyBurnEnemies: OR-group[HasKeyword(WeaponTypeBallistic)=1 | HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | IsSpellTarget(FirecrackerWhiskey_BurnOnTouch)=0]",
-   "Brew_FirecrackerWhiskeyVintage: perk FirecrackerWhiskeyBurnEnemies: entry point Apply Combat Hit Spell — not modeled",
    "Brew_FirecrackerWhiskeyVintage: MGEF FirecrackerWhiskey_CastBurnOnTouch archetype Script — needs override",
    "Brew_FirecrackerWhiskeyVintage: MGEF SURV_Drink_Effect: no route for AV SURV_Thirst — needs mapping",
    "Brew_FirecrackerWhiskeyVintage: MGEF PerkHappyGoLuckyFortifyLuck skipped — modeled by Happy-Go-Lucky rank 1 (extraPerkModifiers)",
@@ -16046,7 +16130,6 @@
    "name": "Alcohol Addiction"
   },
   "ingredientKeywords": [],
-  "description": "Ballistic and Melee Attacks deal fire DMG; Melee Attacks trigger Self Immolation",
   "obtainable": true
  },
  {
@@ -16146,13 +16229,42 @@
      "edid": "E08A_Brew_GulpershineVintage",
      "name": "Vintage Mire Magic Moonshine"
     },
+    "bucket": "dotDamage",
+    "op": "ADD",
+    "value": 1,
+    "conditions": [
+     {
+      "kind": "unresolved",
+      "raw": "OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | IsSpellTarget(ToxicGin_PoisonsOnHit)=0]"
+     },
+     {
+      "kind": "unresolved",
+      "raw": "HasPerk(ImmuneToPoison)=0"
+     },
+     {
+      "kind": "damageTypeScope",
+      "types": [
+       "poison"
+      ]
+     }
+    ],
+    "durationSec": 5
+   },
+   {
+    "id": "0x00655D13:3",
+    "source": {
+     "kind": "consumable",
+     "formId": "0x00655D13",
+     "edid": "E08A_Brew_GulpershineVintage",
+     "name": "Vintage Mire Magic Moonshine"
+    },
     "bucket": "specialStrength",
     "op": "ADD",
     "value": 4,
     "conditions": []
    },
    {
-    "id": "0x00655D13:3",
+    "id": "0x00655D13:4",
     "source": {
      "kind": "consumable",
      "formId": "0x00655D13",
@@ -16165,7 +16277,7 @@
     "conditions": []
    },
    {
-    "id": "0x00655D13:4",
+    "id": "0x00655D13:5",
     "source": {
      "kind": "consumable",
      "formId": "0x00655D13",
@@ -16185,7 +16297,9 @@
    "E08A_Brew_GulpershineVintage: MGEF E08A_GulperShine_ME archetype Script — needs override",
    "E08A_Brew_GulpershineVintage: condition: HasActiveMagicEffect(E08A_GulperSmacker_GulpershineBuff_ME) Equal To 1",
    "E08A_Brew_GulpershineVintage: perk ToxicGin_PoisonEnemies: OR-group[HasKeyword(WeaponTypeUnarmed)=1 | HasKeyword(WeaponTypeMeleeGeneral)=1 | IsSpellTarget(ToxicGin_PoisonsOnHit)=0]",
-   "E08A_Brew_GulpershineVintage: perk ToxicGin_PoisonEnemies: entry point Apply Combat Hit Spell — not modeled",
+   "E08A_Brew_GulpershineVintage: perk ToxicGin_PoisonEnemies: ToxicGin_DamageResistEffect: timedBuff(60s) — needs toggle override",
+   "E08A_Brew_GulpershineVintage: perk ToxicGin_PoisonEnemies: MGEF ToxicGin_DamageResistEffect: no route for AV DamageResist — needs mapping",
+   "E08A_Brew_GulpershineVintage: perk ToxicGin_PoisonEnemies: condition: HasPerk(ImmuneToPoison)=0",
    "E08A_Brew_GulpershineVintage: condition: HasPerk(PA_RadScrubbers)=0",
    "E08A_Brew_GulpershineVintage: MGEF DamageRadiationEating: no route for AV Rads — needs mapping",
    "E08A_Brew_GulpershineVintage: MGEF Gulpershine_Duration archetype Script — needs override"

@@ -132,6 +132,8 @@ export const WEAPON_KEYWORD_LABELS: Record<string, string> = {
   ma_CombatKnife: 'combat knives',
   ma_BowieKnife: 'bowie knives',
   ma_CultistDagger: 'cultist daggers',
+  ma_GatlingLaser: 'the Gatling Laser',
+  ma_Ultracite_GatlingLaser: 'the Ultracite Gatling Laser',
   HasScope: 'scoped weapons',
   HasScopeRecon: 'recon-scoped weapons',
   'POST-DLC04_WeaponTypeSmartGrenade': 'smart grenades',

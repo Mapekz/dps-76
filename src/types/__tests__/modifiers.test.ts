@@ -126,6 +126,7 @@ describe('BUCKET_REGISTRY', () => {
       'animDelaySec',
       'projectileCount',
       'ammoCapacity',
+      'ammoHealthMult',
       'reloadSpeed',
       'vatsApCost',
       'chargeFullPowerSec',
@@ -174,10 +175,15 @@ describe('BUCKET_REGISTRY', () => {
     // are no longer inert either (Phase 2 — mitigation.ts consumes both).
     // damageResistGain (2026-08-06, Barbarian STR→DR): folded onto the manual
     // playerDamageResist knob in player-stats.ts — no longer inert.
+    // ammoHealthMult (2026-08-20): no longer inert either — see its Bucket
+    // doc comment ("Wired 2026-08-20") — though only its weaponKeywordAny-
+    // gated instances (Power User, Repair Bobblehead) actually reach
+    // ammoCapacity; the ungated magazine-mod/Legendary_AmmoCapacityx4Perk
+    // instances are still genuinely inert in practice, just no longer
+    // flagged bucket-wide.
     const expected: Bucket[] = [
       'limbDamage',
       'bashDamage',
-      'ammoHealthMult',
       'bulletStormOnKill',
       'bulletStormSpinUp',
       'deflectChance',

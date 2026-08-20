@@ -189,13 +189,22 @@ export type Bucket =
    * WEAPON's own direct `AmmoCapacity` OMOD property (co-present on the
    * exact same records) already correctly models their magazine size.
    * Mapping this bucket into `ammoCapacity` unconditionally would double-
-   * count for those weapons. Kept as its own bucket instead
-   * (`extract-omods.ts`/`normalize/mgef.ts` `ENTRY_POINT_BUCKETS`), still
-   * `hasEngineEffect: false` — folding the Gatling Laser/Ultracite Gatling
-   * Laser-gated instances into effective shots-per-core needs a core-weapon
-   * gate this engine doesn't have yet (see docs/assumptions.md "Ammo Health
-   * (battery/core Health)" for the follow-up scope), not just a framing
-   * fix. This doc comment only corrects the mechanic's description.
+   * count for those weapons. Kept as its own bucket
+   * (`extract-omods.ts`/`normalize/mgef.ts` `ENTRY_POINT_BUCKETS`) rather
+   * than routed there directly.
+   *
+   * **Wired 2026-08-20**: `effective-weapon.ts`'s capacity fold now admits a
+   * relabeled copy of ONLY the `weaponKeywordAny`-gated instances (Power
+   * User, Repair Bobblehead) into `ammoCapacity`, forced to `MUL_ADD`
+   * regardless of the modifier's own stored op (every qualifying value is a
+   * fractional "% longer" figure, not a flat point add) — see that fold's
+   * own `gatedAmmoHealthMult` comment. The ungated magazine-mod
+   * GENERIC-template instance and the hidden (no-card)
+   * `Legendary_AmmoCapacityx4Perk` stay excluded and genuinely inert; Tesla
+   * Science Magazine #4's variant mixes in `ArmorTypePower` (a different,
+   * unrepresentable OR-shape) and stays `unresolved`. See
+   * docs/assumptions.md "Ammo Health (battery/core Health)" for the full
+   * writeup.
    */
   | 'ammoHealthMult'
   /** Reload speed multiplier rewrite from OMODs (quick-eject magazines) — feeds sustained DPS. */
@@ -1009,11 +1018,11 @@ export const BUCKET_REGISTRY: Readonly<Record<Bucket, BucketRegimeEntry>> = {
     foldedBy: "none — spin-up/ramp timing not modeled (Valkyrie's)",
   },
   ammoHealthMult: {
-    foldBase: 'unfolded',
-    regime: 'unfolded',
-    hasEngineEffect: false,
+    foldBase: 'dynamic',
+    regime: 'weaponStat',
+    hasEngineEffect: true,
     foldedBy:
-      'none — battery/core degradation-rate reduction (Power User, Repair Bobblehead, Tesla Science 4), no consumable-degradation model exists; NOT the same mechanic as ammoCapacity (see the Bucket doc comment)',
+      "effective-weapon.ts buildEffectiveWeapon — ONLY the weaponKeywordAny-gated instances (Power User, Repair Bobblehead) relabel into the ammoCapacity fold, restricted to Gatling Laser/Ultracite Gatling Laser; the ungated magazine-mod GENERIC-template instance and the hidden (no-card) Legendary_AmmoCapacityx4Perk stay excluded and genuinely inert — see effective-weapon.ts's gatedAmmoHealthMult comment and the Bucket doc comment",
   },
   deflectChance: {
     foldBase: 'unfolded',
@@ -1484,6 +1493,20 @@ export type Condition =
   | { kind: 'scaledByWeaponApCost' }
   /** value × stackCount (clamped to max) from the matching player-state counter. */
   | { kind: 'stacks'; counter: StackCounter; max: number }
+  /**
+   * value × the player's chosen sustained uptime fraction for a
+   * bash-triggered timed buff (Love Tap — issue #80/#42 follow-up,
+   * user-directed 2026-08-20). `durationSec` is the buff's own ESM
+   * Duration; `PlayerInput.onBashBuffUptime` (0–100 percent) is how
+   * consistently the player expects to keep it refreshed by bashing. Scoped
+   * narrowly to bash-triggered grants (EP173 "Apply Combat Melee Spell") —
+   * NOT a generalized combat-trigger-uptime model; other Function-Type-5
+   * timed buffs (e.g. Holy Fire's friendly-hit trigger) still fall through
+   * to the generic `unresolved` timedBuff gate. See resolve.ts's
+   * `bashUptimeDowntimeFraction` for the paired attack-time cost and
+   * docs/assumptions.md "Bash-triggered buff uptime".
+   */
+  | { kind: 'bashBuffUptime'; durationSec: number }
   /** Mutation value tier: false = base values, true = Strange in Numbers boosted (+25%). */
   | { kind: 'strangeInNumbers'; value: boolean }
   /**

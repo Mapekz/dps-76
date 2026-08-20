@@ -231,7 +231,7 @@
    "Mutation_Chameleon: MGEF Mutation_Chameleon_UIDummy archetype Script — needs override",
    "Mutation_Chameleon: MGEF Mutation_Chameleon_UIDummySerum archetype Script — needs override",
    "Mutation_Chameleon: perk Mutation_ChameleonStealthIcon_Perk: MGEF Mutation_Chameleon_UIDummyStealthIcon archetype Script — needs override",
-   "Mutation_Chameleon: perk Mutation_ChameleonOnAttack_Perk: entry point Apply Weapon Attack Spell — not modeled",
+   "Mutation_Chameleon: perk Mutation_ChameleonOnAttack_Perk: MGEF Mutation_ChameleonOnAttackFlag_Effect archetype Script — needs override",
    "Mutation_Chameleon: MGEF abMutationCount: no route for AV MutationCount — needs mapping"
   ]
  },
