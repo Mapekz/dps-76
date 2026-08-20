@@ -345,8 +345,8 @@ describe('computeScenarios — ScenarioInput.enemyDefenses (synthetic enemy)', (
       s.freeAim.sustain.sustainedDps * retainedFraction,
       6,
     );
-    // TTK = enemy HP ÷ mitigated sustained DPS.
-    expect(s.freeAim.effective?.ttk).toBeCloseTo(1000 / s.freeAim.effective!.sustainedDps, 6);
+    // TTK = enemy HP ÷ mitigated total DPS (equals sustained here: no DoT/proc).
+    expect(s.freeAim.effective?.ttk).toBeCloseTo(1000 / s.freeAim.effective!.totalDps, 6);
   });
 
   it('ScenarioInput.mitigationConstants threads through to the applyMitigation call (end-to-end)', () => {
@@ -419,7 +419,7 @@ describe('computeScenarios — ScenarioInput.enemyDefenses (synthetic enemy)', (
     expect(s.vats.effective!.retainedPct).toBeCloseTo(vatsRetainedFraction * 100, 6);
   });
 
-  it('DoT stays unmitigated and separate from `effective` (v1 scope)', () => {
+  it('effective.ttk divides enemy HP by effective.totalDps, which includes mitigated DoT', () => {
     const enemyDefenses = { hp: 1000, resists: { physical: 300 } };
     const dotModifiers: ScenarioInput['modifiers'] = [
       {
@@ -433,8 +433,73 @@ describe('computeScenarios — ScenarioInput.enemyDefenses (synthetic enemy)', (
     ];
     const s = computeScenarios({ ...baseInput, modifiers: dotModifiers, enemyDefenses });
     expect(s.freeAim.dotDps).toBe(10);
-    // `effective` only reflects perHit/sustainedDps — dotDps is a wholly
-    // separate ScenarioResult field mitigation never touches.
-    expect(s.freeAim.effective).toBeDefined();
+    const mitigatedDot = 10 * Math.pow((10 * 0.15) / 300, 0.365);
+    const retainedFraction = s.freeAim.effective!.perHit.total / s.freeAim.perHit.total;
+    const expectedTotal = s.freeAim.sustain.sustainedDps * retainedFraction + mitigatedDot;
+    expect(s.freeAim.effective!.totalDps).toBeCloseTo(expectedTotal, 6);
+    expect(s.freeAim.effective!.ttk).toBeCloseTo(1000 / s.freeAim.effective!.totalDps, 6);
+    expect(s.freeAim.effective!.ttk).toBeLessThan(1000 / s.freeAim.effective!.sustainedDps);
+  });
+
+  it('unresisted: true bypasses mitigation in effective.totalDps while typed components mitigate', () => {
+    const enemyDefenses = { hp: 1000, resists: { physical: 300, fire: 300 } };
+    const weapon = makeWeapon({
+      animDelaySec: 1.0,
+      capacity: 1,
+      ammoPerShot: 1,
+      reloadSpeed: 1.0,
+      animationReloadSec: 0,
+      procs: [
+        {
+          id: 'test:proc:mixed',
+          source: { kind: 'omod', formId: '0x0', edid: 'TestProc', name: 'Test Proc' },
+          trigger: { kind: 'reloadCycle' },
+          components: [
+            { damageType: 'fire', value: 50 },
+            { damageType: 'fire', value: 50, unresisted: true },
+          ],
+          conditions: [],
+        },
+      ],
+    });
+    const modifiers: ScenarioInput['modifiers'] = [
+      {
+        id: 'test-typed-dot',
+        source: { kind: 'omod', formId: '0x0', edid: 'TestFireDot', name: 'Test Fire DoT' },
+        bucket: 'dotDamage',
+        op: 'ADD',
+        value: 10,
+        conditions: [],
+      },
+      {
+        id: 'test-unresisted-dot',
+        source: { kind: 'omod', formId: '0x0', edid: 'TestBleed', name: 'Test Bleed' },
+        bucket: 'dotDamage',
+        op: 'ADD',
+        value: 10,
+        conditions: [],
+        unresisted: true,
+      },
+    ];
+    const s = computeScenarios({ ...baseInput, weapon, modifiers, enemyDefenses });
+
+    // Mag cycle is 1s dump + 0s reload → cadence 1/s → raw proc = 50+50.
+    expect(s.freeAim.procDps).toBeCloseTo(100, 6);
+    expect(s.freeAim.dotDps).toBeCloseTo(20, 6);
+
+    const mitigatedFireProc = 50 * Math.pow((50 * 0.15) / 300, 0.365);
+    const mitigatedTypedDot = 10 * Math.pow((10 * 0.15) / 300, 0.365);
+    const retainedFraction = s.freeAim.effective!.perHit.total / s.freeAim.perHit.total;
+    const expectedTotal =
+      s.freeAim.sustain.sustainedDps * retainedFraction +
+      mitigatedTypedDot +
+      10 +
+      mitigatedFireProc +
+      50;
+    expect(s.freeAim.effective!.totalDps).toBeCloseTo(expectedTotal, 6);
+    // Unresisted legs contribute their raw magnitude; typed legs do not.
+    expect(s.freeAim.effective!.totalDps).toBeGreaterThan(
+      s.freeAim.sustain.sustainedDps * retainedFraction + mitigatedTypedDot + mitigatedFireProc,
+    );
   });
 });

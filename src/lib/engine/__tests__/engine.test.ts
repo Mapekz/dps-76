@@ -2137,6 +2137,72 @@ describe('computeScenarios: procDps (issue #42, PROC_DAMAGE_PLAN.md commit 8)', 
   });
 });
 
+describe('computeScenarios: totalDps (canonical = sustained + DoT + proc)', () => {
+  it('equals sustainedDps + dotDps + procDps in both scenarios', () => {
+    const weapon = makeWeapon({
+      components: [{ damageType: 'fire', tier: -1, levelCap: 50, curvePoints: FLAT_100 }],
+      procs: [
+        {
+          id: 'test:proc:0',
+          source: {
+            kind: 'omod',
+            formId: '0x0',
+            edid: 'Test Fracturers',
+            name: "Test Fracturer's",
+          },
+          trigger: { kind: 'onCripple', cooldownSec: 3 },
+          components: [{ damageType: 'explosive', value: 150 }],
+          conditions: [],
+        },
+      ],
+    });
+    const s = computeScenarios({
+      mode: 'live',
+      weapon,
+      itemLevel: 50,
+      modifiers: [
+        mod({
+          bucket: 'dotDamage',
+          op: 'ADD',
+          value: 3,
+          conditions: [{ kind: 'damageTypeScope', types: ['fire'] }],
+        }),
+      ],
+      player: { ...makeResolvedPlayer(), procCripplesPerMin: 6 },
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2.0,
+      critRate: 0,
+    });
+    expect(s.freeAim.dotDps).toBeCloseTo(3, 10);
+    expect(s.freeAim.procDps).toBeCloseTo(15, 10);
+    expect(s.freeAim.totalDps).toBeCloseTo(
+      s.freeAim.sustain.sustainedDps + s.freeAim.dotDps + s.freeAim.procDps,
+      10,
+    );
+    expect(s.vats.totalDps).toBeCloseTo(
+      s.vats.sustain.sustainedDps + s.vats.dotDps + s.vats.procDps,
+      10,
+    );
+  });
+
+  it('equals sustainedDps when both extra streams are 0', () => {
+    const s = computeScenarios({
+      mode: 'live',
+      weapon: makeWeapon(),
+      itemLevel: 50,
+      modifiers: [],
+      player: makeResolvedPlayer(),
+      enemy: createDefaultEnemyConditions(),
+      weakpointMult: 2.0,
+      critRate: 0,
+    });
+    expect(s.freeAim.dotDps).toBe(0);
+    expect(s.freeAim.procDps).toBe(0);
+    expect(s.freeAim.totalDps).toBe(s.freeAim.sustain.sustainedDps);
+    expect(s.vats.totalDps).toBe(s.vats.sustain.sustainedDps);
+  });
+});
+
 describe('computeScenarios AP economy (Stage B, ap-economy.ts)', () => {
   // 20-round mag, 1 shot/s fire rate, 4s reload → magDumpSec 20s, reloadSec 4s,
   // reload-inclusive shots/s = 20/24 (effectiveShotsPerSecond, NOT the raw 1.0/s

@@ -18,9 +18,19 @@ import {
   type CritMeterResult,
   type VatsCritConstants,
 } from './crit-meter';
-import { computeDotDps, computePaperDamage, type HitBreakdown } from './paper-damage';
-import { computeProcDps } from './proc-damage';
-import { applyMitigation, type EnemyDefenses, type MitigationConstants } from './mitigation';
+import {
+  collectDotStreams,
+  computeDotDps,
+  computePaperDamage,
+  type HitBreakdown,
+} from './paper-damage';
+import { collectProcStreams, computeProcDps } from './proc-damage';
+import {
+  applyMitigation,
+  mitigateDamageAmount,
+  type EnemyDefenses,
+  type MitigationConstants,
+} from './mitigation';
 import {
   onslaughtHitEventsPerShot,
   forwardOnslaughtAvgStacks,
@@ -80,19 +90,22 @@ export interface ScenarioExplain {
  * mitigated versions of this scenario's own `perHit`/`sustain.sustainedDps`
  * (for charged weapons, of the charge-cycle-blended hit that actually feeds
  * `sustain` — NOT the plain `perHit` field, which stays the un-cycled
- * display hit per the existing Charged split). `retainedPct` is
- * `mitigated / unmitigated × 100` on that same total (0-100, matching the
- * `*Pct` convention elsewhere on this type). `ttk` is enemy HP ÷
- * `sustainedDps` here (`Infinity` when `sustainedDps` is 0 — no damage
- * ever lands). For VATS, `sustainedDps`/`ttk` are blended over the AP duty
- * cycle via `blendEffectiveDps` — the same uptime-weighted mix of VATS and
- * Free Aim fallback as `apLimitedDps`, not just per-scenario mitigation. DoT
- * (`dotDps`) is NOT included — mitigation
- * doesn't apply to it in v1 (docs/assumptions.md "Resist mitigation").
+ * display hit per the existing Charged split). `totalDps` is the canonical
+ * post-resist metric: mitigated sustained + per-source mitigated DoT +
+ * per-component mitigated proc (docs/assumptions.md "DoT/proc resist
+ * provenance"). `retainedPct` is `mitigated / unmitigated × 100` on the
+ * per-hit total (0-100, matching the `*Pct` convention elsewhere on this
+ * type). `ttk` is enemy HP ÷ `totalDps` here (`Infinity` when `totalDps`
+ * is 0 — no damage ever lands). For VATS, `sustainedDps`/`totalDps`/`ttk`
+ * are blended over the AP duty cycle via `blendEffectiveDps` — the same
+ * uptime-weighted mix of VATS and Free Aim fallback as `apLimitedDps`, not
+ * just per-scenario mitigation.
  */
 export interface EffectiveResult {
   perHit: HitBreakdown;
   sustainedDps: number;
+  /** Canonical post-resist DPS: mitigated sustained + mitigated DoT + mitigated proc. */
+  totalDps: number;
   retainedPct: number;
   ttk: number;
 }
@@ -135,6 +148,14 @@ export interface ScenarioResult {
    */
   procDps: number;
   /**
+   * Canonical raw DPS: `sustain.sustainedDps + dotDps + procDps`. Not
+   * AP-blended (VATS AP blending lives on `ap.apLimitedTotalDps` /
+   * `effective.totalDps`, mirroring `apLimitedDps` / `effective.sustainedDps`).
+   * `sustainedDps` stays the pinned per-shot intermediate — this field is
+   * the one-number-everywhere metric (ADR-0007).
+   */
+  totalDps: number;
+  /**
    * Steady-state VATS AP economy (Stage B) — only present for ranged weapons
    * with a real per-shot VATS AP cost (`weapon.apCost > 0`; melee/VATS-melee
    * AP is out of scope, see `ap-economy.ts`). `uptime` is 1 when AP is not
@@ -144,6 +165,13 @@ export interface ScenarioResult {
   ap?: {
     uptime: number;
     apLimitedDps: number;
+    /**
+     * AP-duty-cycle blend of this scenario's `totalDps` with Free Aim's
+     * `totalDps` — the canonical pre-resist VATS number, mirroring
+     * `apLimitedDps` for the per-shot stream. Headline / ranking / emphasis
+     * read this (or `effective.totalDps` when a target is selected).
+     */
+    apLimitedTotalDps: number;
     /**
      * The Free Aim scenario's own hit-rate-scaled sustained DPS — the
      * downtime fallback rate `apLimitedDps` blends in for the (1 − uptime)
@@ -614,12 +642,17 @@ function bodyPartBlendedHit(
  * `vatsCycleHit` comment in `computeScenarios`). `retainedFraction` is
  * derived from the SAME total mitigation scales `sustainedDps` by, so the
  * mitigation-only ratio `mitigated.total / cycleHit.total` always equals
- * `retainedFraction`. The cross-scenario AP-duty-cycle blend (VATS + Free Aim
- * fallback over `ap.uptime`) lives in `blendEffectiveDps`, not here.
+ * `retainedFraction`. DoT/proc are mitigated per-source via
+ * `mitigateDamageAmount` (not scaled by `retainedFraction` — they have
+ * their own types/magnitudes). The cross-scenario AP-duty-cycle blend
+ * (VATS + Free Aim fallback over `ap.uptime`) lives in `blendEffectiveDps`,
+ * not here. `ttk` uses `totalDps` (DoTs and procs kill too).
  */
 function effectiveAgainstEnemy(
   cycleHit: HitBreakdown,
   sustainedDps: number,
+  mitigatedDotDps: number,
+  mitigatedProcDps: number,
   defenses: EnemyDefenses | undefined,
   armorPenTotal: number,
   armorPenFlatTotal: number,
@@ -635,11 +668,13 @@ function effectiveAgainstEnemy(
   );
   const retainedFraction = cycleHit.total > 0 ? mitigated.total / cycleHit.total : 1;
   const mitigatedSustainedDps = sustainedDps * retainedFraction;
+  const totalDps = mitigatedSustainedDps + mitigatedDotDps + mitigatedProcDps;
   return {
     perHit: mitigated,
     sustainedDps: mitigatedSustainedDps,
+    totalDps,
     retainedPct: retainedFraction * 100,
-    ttk: mitigatedSustainedDps > 0 ? defenses.hp / mitigatedSustainedDps : Infinity,
+    ttk: totalDps > 0 ? defenses.hp / totalDps : Infinity,
   };
 }
 
@@ -657,10 +692,12 @@ function blendEffectiveDps(
   hp: number,
 ): NonNullable<ScenarioResult['effective']> {
   const sustainedDps = apLimitedDps(vats.sustainedDps, uptime, freeAim.sustainedDps);
+  const totalDps = apLimitedDps(vats.totalDps, uptime, freeAim.totalDps);
   return {
     ...vats,
     sustainedDps,
-    ttk: sustainedDps > 0 ? hp / sustainedDps : Infinity,
+    totalDps,
+    ttk: totalDps > 0 ? hp / totalDps : Infinity,
   };
 }
 
@@ -675,6 +712,56 @@ function critWeighted(nonCrit: HitBreakdown, crit: HitBreakdown, critRate: numbe
     })),
     total: nonCrit.total * (1 - w) + crit.total * w,
   };
+}
+
+function mitigatedDotDps(
+  modifiers: Modifier[],
+  weapon: ScenarioInput['weapon'],
+  ctx: ResolveContext,
+  defenses: EnemyDefenses,
+  armorPenTotal: number,
+  armorPenFlatTotal: number,
+  constants: MitigationConstants | undefined,
+): number {
+  return collectDotStreams(modifiers, weapon, ctx).reduce(
+    (sum, s) =>
+      sum +
+      mitigateDamageAmount(
+        s.damage,
+        s.damageType,
+        s.unresisted,
+        defenses,
+        armorPenTotal,
+        armorPenFlatTotal,
+        constants,
+      ),
+    0,
+  );
+}
+
+function mitigatedProcDps(
+  procs: NonNullable<ScenarioInput['weapon']['procs']>,
+  itemLevel: number,
+  ctx: ResolveContext,
+  sustain: Pick<SustainResult, 'magDumpSec' | 'reloadSec'>,
+  cripplesPerMin: number,
+  defenses: EnemyDefenses,
+  armorPenTotal: number,
+  armorPenFlatTotal: number,
+  constants: MitigationConstants | undefined,
+): number {
+  return collectProcStreams(procs, itemLevel, ctx, sustain, cripplesPerMin).reduce((sum, s) => {
+    const perCast = mitigateDamageAmount(
+      s.damagePerCast,
+      s.damageType,
+      s.unresisted,
+      defenses,
+      armorPenTotal,
+      armorPenFlatTotal,
+      constants,
+    );
+    return sum + perCast * s.cadencePerSec;
+  }, 0);
 }
 
 export function computeScenarios(input: ScenarioInput): ScenarioSet {
@@ -952,11 +1039,8 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // DoT is a separate steady-state add (refresh-only, not crit/vats-scaled by
   // any extracted data today) — evaluated with each scenario's own non-crit
   // context so a future sneaking/powerAttack-gated DoT mod still resolves correctly.
-  const freeDotDps = computeDotDps(
-    input.modifiers,
-    input.weapon,
-    scenarioCtx(input, freeFlags, onslaught, bulletStorm),
-  );
+  const freeCtx = scenarioCtx(input, freeFlags, onslaught, bulletStorm);
+  const freeDotDps = computeDotDps(input.modifiers, input.weapon, freeCtx);
   const vatsDotDps = computeDotDps(input.modifiers, input.weapon, vatsCtx);
 
   // Proc-triggered damage (issue #42, PROC_DAMAGE_PLAN.md commit 8) — same
@@ -965,20 +1049,24 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // scenario's own non-crit context. procCripplesPerMin defaults to 0
   // (ADR-0009 — an honest zero, not a hidden average) via
   // createDefaultPlayerInput().
+  const cripplesPerMin = input.player.procCripplesPerMin ?? 0;
   const freeProcDps = computeProcDps(
     input.weapon.procs ?? [],
     input.itemLevel,
-    scenarioCtx(input, freeFlags, onslaught, bulletStorm),
+    freeCtx,
     freeSustainRaw,
-    input.player.procCripplesPerMin ?? 0,
+    cripplesPerMin,
   );
   const vatsProcDps = computeProcDps(
     input.weapon.procs ?? [],
     input.itemLevel,
     vatsCtx,
     vatsSustainRaw,
-    input.player.procCripplesPerMin ?? 0,
+    cripplesPerMin,
   );
+
+  const freeTotalDps = freeSustain.sustainedDps + freeDotDps + freeProcDps;
+  const vatsTotalDps = vatsSustain.sustainedDps + vatsDotDps + vatsProcDps;
 
   // Steady-state VATS AP economy (Stage B): ranged weapons only (melee/VATS-
   // melee AP is out of scope — uptime is undefined without real melee AP
@@ -1050,6 +1138,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
         economy.uptime,
         freeSustain.sustainedDps,
       ),
+      apLimitedTotalDps: apLimitedDps(vatsTotalDps, economy.uptime, freeTotalDps),
       downtimeFallbackDps: freeSustain.sustainedDps,
       ...(economy.secondsToEmpty !== undefined && { secondsToEmpty: economy.secondsToEmpty }),
       ...(economy.pauseSec !== undefined && { pauseSec: economy.pauseSec }),
@@ -1068,11 +1157,64 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   // when no target is selected. Uses the SAME cycle hit that produced
   // freeSustain/vatsSustain (freeCycleHit/vatsCycleHit — the charged-cycle
   // blend for charged weapons) so the mitigated sustainedDps stays
-  // consistent with the mitigated perHit's retained fraction.
+  // consistent with the mitigated perHit's retained fraction. DoT/proc are
+  // mitigated per-source (`mitigatedDotDps`/`mitigatedProcDps`) rather than
+  // scaled by that retained fraction — they have their own types/magnitudes.
   const defenses = input.enemyDefenses;
+  const freeMitigatedDot = defenses
+    ? mitigatedDotDps(
+        input.modifiers,
+        input.weapon,
+        freeCtx,
+        defenses,
+        armorPenTotal,
+        armorPenFlatTotal,
+        input.mitigationConstants,
+      )
+    : 0;
+  const vatsMitigatedDot = defenses
+    ? mitigatedDotDps(
+        input.modifiers,
+        input.weapon,
+        vatsCtx,
+        defenses,
+        armorPenTotal,
+        armorPenFlatTotal,
+        input.mitigationConstants,
+      )
+    : 0;
+  const procs = input.weapon.procs ?? [];
+  const freeMitigatedProc = defenses
+    ? mitigatedProcDps(
+        procs,
+        input.itemLevel,
+        freeCtx,
+        freeSustainRaw,
+        cripplesPerMin,
+        defenses,
+        armorPenTotal,
+        armorPenFlatTotal,
+        input.mitigationConstants,
+      )
+    : 0;
+  const vatsMitigatedProc = defenses
+    ? mitigatedProcDps(
+        procs,
+        input.itemLevel,
+        vatsCtx,
+        vatsSustainRaw,
+        cripplesPerMin,
+        defenses,
+        armorPenTotal,
+        armorPenFlatTotal,
+        input.mitigationConstants,
+      )
+    : 0;
   const freeEffective = effectiveAgainstEnemy(
     freeCycleHit,
     freeSustain.sustainedDps,
+    freeMitigatedDot,
+    freeMitigatedProc,
     defenses,
     armorPenTotal,
     armorPenFlatTotal,
@@ -1081,6 +1223,8 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
   const vatsEffectiveRaw = effectiveAgainstEnemy(
     vatsCycleHit,
     vatsSustain.sustainedDps,
+    vatsMitigatedDot,
+    vatsMitigatedProc,
     defenses,
     armorPenTotal,
     armorPenFlatTotal,
@@ -1107,6 +1251,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       fireRateApproximate: true,
       dotDps: freeDotDps,
       procDps: freeProcDps,
+      totalDps: freeTotalDps,
       ...(freeEffective && { effective: freeEffective }),
       ...(tracing && { explain: { nonCrit: freeTrace!, crit: null } }),
     },
@@ -1121,6 +1266,7 @@ export function computeScenarios(input: ScenarioInput): ScenarioSet {
       critMeter,
       dotDps: vatsDotDps,
       procDps: vatsProcDps,
+      totalDps: vatsTotalDps,
       ...(ap && { ap }),
       ...(vatsEffective && { effective: vatsEffective }),
       ...(tracing && {

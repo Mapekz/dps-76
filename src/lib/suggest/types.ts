@@ -51,8 +51,11 @@ export interface SuggestionCandidate {
 export interface ScenarioHeadline {
   perHit: number;
   burstDps: number;
-  /** Canonical achieved DPS — `ap.apLimitedDps` when AP-throttled. */
-  sustainedDps: number;
+  /**
+   * Canonical achieved DPS (ADR-0007): `ap.apLimitedTotalDps` when AP-
+   * throttled, else `totalDps` (`sustainedDps + dotDps + procDps`).
+   */
+  totalDps: number;
   /**
    * VATS uptime ratio (1 for free aim / no AP block). Carried so a candidate
    * that moves VATS uptime can be classified downstream; never a ranking input.

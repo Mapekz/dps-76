@@ -41,6 +41,13 @@ converged choice, not a shipped feature) rather than a distorted metric.
 `ScenarioHeadline.uptime` exists solely to classify which suggestions are
 uptime levers.
 
+Addendum 2026-08-20: the canonical metric is now `totalDps` (`sustainedDps +
+dotDps + procDps`, AP-duty-cycle-blended as `apLimitedTotalDps` when VATS is
+throttled). Real damage streams excluded from the one-number invariant made
+proc/DoT sources show ±0% in previews, contradicting this ADR's own
+principle. `sustainedDps` remains a pinned intermediate
+(`ScenarioResult.sustain.sustainedDps`).
+
 ## Do not undo this
 
 A future reviewer might reasonably want to rank on unblended VATS sustained

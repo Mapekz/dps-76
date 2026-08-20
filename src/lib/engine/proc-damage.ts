@@ -1,4 +1,5 @@
 import { interpolateCurve } from '@/lib/curve-tables';
+import type { DamageType } from '@/types/modifiers';
 import type { ProcSource, ProcTrigger } from '@/types/procs';
 import { conditionsActive, type ResolveContext } from './resolve';
 import type { SustainTiming } from './sustain';
@@ -29,23 +30,58 @@ export function computeProcDps(
   sustain: Pick<SustainTiming, 'magDumpSec' | 'reloadSec'>,
   cripplesPerMin: number,
 ): number {
+  return collectProcStreams(procs, itemLevel, ctx, sustain, cripplesPerMin).reduce(
+    (sum, s) => sum + s.damagePerCast * s.cadencePerSec,
+    0,
+  );
+}
+
+/** One proc-component cast, still at per-cast magnitude (the analog of a per-hit component). */
+export interface ProcStream {
+  damagePerCast: number;
+  cadencePerSec: number;
+  damageType: DamageType;
+  unresisted?: true;
+}
+
+/**
+ * Per-component proc streams for resist mitigation. Each component is
+ * mitigated at its per-cast magnitude (the analog of a per-hit component)
+ * then × cadence, matching how `applyMitigation` runs on a hit then
+ * `effective.sustainedDps` scales by the retained fraction. `unresisted`
+ * is provenance for the bypass in `mitigateDamageAmount`.
+ */
+export function collectProcStreams(
+  procs: readonly ProcSource[],
+  itemLevel: number,
+  ctx: ResolveContext,
+  sustain: Pick<SustainTiming, 'magDumpSec' | 'reloadSec'>,
+  cripplesPerMin: number,
+): ProcStream[] {
   // Same [1,50] clamp componentBase (paper-damage.ts) applies before
   // interpolating a weapon component's own curve.
   const clampedLevel = Math.max(1, Math.min(itemLevel, 50));
-  let total = 0;
+  const streams: ProcStream[] = [];
   for (const proc of procs) {
     if (!conditionsActive(proc.conditions, ctx)) continue;
 
     const cadence = procCadencePerSec(proc.trigger, sustain, cripplesPerMin);
     if (cadence <= 0) continue;
 
-    const damagePerCast = proc.components.reduce(
-      (sum, c) => sum + (c.curve ? interpolateCurve(c.curve.points, clampedLevel) : (c.value ?? 0)),
-      0,
-    );
-    total += damagePerCast * cadence;
+    for (const c of proc.components) {
+      const damagePerCast = c.curve
+        ? interpolateCurve(c.curve.points, clampedLevel)
+        : (c.value ?? 0);
+      if (damagePerCast === 0) continue;
+      streams.push({
+        damagePerCast,
+        cadencePerSec: cadence,
+        damageType: c.damageType,
+        ...(c.unresisted ? { unresisted: true as const } : {}),
+      });
+    }
   }
-  return total;
+  return streams;
 }
 
 function procCadencePerSec(

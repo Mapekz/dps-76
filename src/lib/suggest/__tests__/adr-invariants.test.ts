@@ -35,12 +35,12 @@ function stateFrom(
 
 const fixerState = stateFrom([{ type: 'weapon/select', weaponId: 'CombatRifle_Fixer' }]);
 
-describe('ADR 0007: suggestions rank on canonical sustainedDps delta', () => {
-  it('primaryDeltaPct equals delta[metric].sustainedDps / baseline[metric].sustainedDps for every candidate', () => {
+describe('ADR 0007: suggestions rank on canonical totalDps delta', () => {
+  it('primaryDeltaPct equals delta[metric].totalDps / baseline[metric].totalDps for every candidate', () => {
     const report = evaluateSuggestions(fixerState, 'live', 'vats');
-    const metricBase = report.baseline!.vats.sustainedDps;
+    const metricBase = report.baseline!.vats.totalDps;
     for (const s of report.suggestions) {
-      const expected = metricBase > 0 ? s.delta.vats.sustainedDps / metricBase : 0;
+      const expected = metricBase > 0 ? s.delta.vats.totalDps / metricBase : 0;
       expect(s.primaryDeltaPct).toBeCloseTo(expected, 6);
     }
   });
@@ -56,7 +56,7 @@ describe('ADR 0007: AP-economy lever still scores > 0 (anti-unblended-V guard)',
 });
 
 describe('family collapse emits at most 2 rows per family (next positive + best)', () => {
-  const headline: ScenarioHeadline = { perHit: 0, burstDps: 0, sustainedDps: 0, uptime: 1 };
+  const headline: ScenarioHeadline = { perHit: 0, burstDps: 0, totalDps: 0, uptime: 1 };
   const snapshot: DpsSnapshot = { freeAim: headline, vats: headline };
 
   function fixture(
@@ -148,8 +148,8 @@ describe('ADR 0011: the sweep evaluates every candidate (no pruning)', () => {
     for (const candidate of enumerateVariants(state, 'live', 'vats')) {
       const result = evaluateActions(state, 'live', candidate.action, baseline, scope);
       expect(result).not.toBeNull();
-      const metricBase = baseline.vats.sustainedDps;
-      const primaryDeltaPct = metricBase > 0 ? result!.delta.vats.sustainedDps / metricBase : 0;
+      const metricBase = baseline.vats.totalDps;
+      const primaryDeltaPct = metricBase > 0 ? result!.delta.vats.totalDps / metricBase : 0;
       evaluated.push({ ...candidate, ...result!, primaryDeltaPct });
     }
 
@@ -183,8 +183,8 @@ describe('ADR 0011: the sweep evaluates every candidate (no pruning)', () => {
         !(
           s.delta.vats.uptime === 0 &&
           s.delta.freeAim.uptime === 0 &&
-          s.delta.vats.sustainedDps === 0 &&
-          s.delta.freeAim.sustainedDps === 0
+          s.delta.vats.totalDps === 0 &&
+          s.delta.freeAim.totalDps === 0
         ),
     );
     expect(changing.length).toBeGreaterThan(0);

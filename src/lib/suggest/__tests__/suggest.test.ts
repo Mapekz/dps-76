@@ -261,12 +261,12 @@ describe('evaluateSuggestions', () => {
     // Center Masochist rank 2 on torso hits: +25% dbm over rank 1's +75%... rank deltas
     // are data-driven; just verify ordering and delta arithmetic consistency.
     for (const s of report.suggestions.slice(0, 20)) {
-      expect(s.result.freeAim.sustainedDps - report.baseline!.freeAim.sustainedDps).toBeCloseTo(
-        s.delta.freeAim.sustainedDps,
+      expect(s.result.freeAim.totalDps - report.baseline!.freeAim.totalDps).toBeCloseTo(
+        s.delta.freeAim.totalDps,
         8,
       );
       expect(s.primaryDeltaPct).toBeCloseTo(
-        s.delta.freeAim.sustainedDps / report.baseline!.freeAim.sustainedDps,
+        s.delta.freeAim.totalDps / report.baseline!.freeAim.totalDps,
         8,
       );
     }
@@ -307,10 +307,32 @@ describe('evaluateSuggestions', () => {
     const allStructural = [...structuralOnly.ranked, ...structuralOnly.tied];
     expect(allStructural.every((s) => s.group !== 'consumable')).toBe(true);
   });
+
+  it("a proc-carrying legendary (Electrician's) produces a nonzero preview delta", () => {
+    // Electrician's damage is entirely Weapon.procs (reload-cycle explosion) —
+    // it never touches sustain.sustainedDps, so the pre-totalDps metric printed
+    // ±0%. Rank on freeAim so AP blending cannot hide the proc stream.
+    const report = evaluateSuggestions(fixerState, 'live', 'freeAim');
+    const electrician = report.suggestions.find((s) =>
+      s.id.includes('mod_Legendary_Weapon4_Guns_Electricians'),
+    );
+    expect(electrician).toBeDefined();
+    expect(electrician!.delta.freeAim.totalDps).toBeGreaterThan(0);
+    expect(electrician!.primaryDeltaPct).toBeGreaterThan(0);
+
+    const patched = stateFrom(electrician!.action, fixerState);
+    const withProc = computeScenarios(resolveLoadout(patched.player, patched.enemy, 'live')!);
+    const baseline = computeScenarios(resolveLoadout(fixerState.player, fixerState.enemy, 'live')!);
+    expect(withProc.freeAim.procDps).toBeGreaterThan(0);
+    expect(withProc.freeAim.sustain.sustainedDps).toBeCloseTo(
+      baseline.freeAim.sustain.sustainedDps,
+      8,
+    );
+  });
 });
 
 describe('collapseSuggestionFamilies', () => {
-  const headline: ScenarioHeadline = { perHit: 0, burstDps: 0, sustainedDps: 0, uptime: 1 };
+  const headline: ScenarioHeadline = { perHit: 0, burstDps: 0, totalDps: 0, uptime: 1 };
   const snapshot: DpsSnapshot = { freeAim: headline, vats: headline };
 
   function fixture(

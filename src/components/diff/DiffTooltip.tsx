@@ -29,9 +29,9 @@ export function DiffRows({ delta, baseline }: { delta: DpsSnapshot; baseline: Dp
   return (
     <div className="grid grid-cols-[auto_auto] gap-x-3 gap-y-0.5 text-xs">
       <span className="text-muted-foreground">Free Aim</span>
-      <DeltaText base={baseline.freeAim.sustainedDps} delta={delta.freeAim.sustainedDps} />
+      <DeltaText base={baseline.freeAim.totalDps} delta={delta.freeAim.totalDps} />
       <span className="text-muted-foreground">VATS</span>
-      <DeltaText base={baseline.vats.sustainedDps} delta={delta.vats.sustainedDps} />
+      <DeltaText base={baseline.vats.totalDps} delta={delta.vats.totalDps} />
     </div>
   );
 }

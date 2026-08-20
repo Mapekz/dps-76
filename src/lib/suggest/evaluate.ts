@@ -30,13 +30,12 @@ function headline(result: ScenarioResult): ScenarioHeadline {
   return {
     perHit: result.perHit.total,
     burstDps: result.burstDps,
-    // Canonical DPS for this scenario: AP-limited when VATS AP is the
-    // constraint (see ScenarioCard.tsx/useScenarioResults.ts), else the same
-    // reload/hit-rate sustained value free aim always uses. Field name kept
-    // as `sustainedDps` — every consumer (DiffTooltip, ActionDelta) reads
-    // through this snapshot, so this one fold is what makes AP-economy picks
-    // show up in deltas.
-    sustainedDps: result.ap?.apLimitedDps ?? result.sustain.sustainedDps,
+    // Canonical DPS for this scenario (ADR-0007): AP-limited totalDps when
+    // VATS AP is the constraint, else the raw totalDps free aim always uses.
+    // Every consumer (DiffTooltip, ActionDelta, primaryDeltaPct) reads
+    // through this snapshot, so this one fold is what makes AP-economy
+    // picks AND proc/DoT streams show up in deltas.
+    totalDps: result.ap?.apLimitedTotalDps ?? result.totalDps,
     // VATS uptime ratio (1 for free aim / no AP block). Carried so a candidate
     // that moves VATS uptime can be classified downstream (a follow-up task
     // adds a "VATS uptime" suggestions section); never a ranking input.
@@ -85,7 +84,7 @@ function diff(a: ScenarioHeadline, b: ScenarioHeadline): ScenarioHeadline {
   return {
     perHit: a.perHit - b.perHit,
     burstDps: a.burstDps - b.burstDps,
-    sustainedDps: a.sustainedDps - b.sustainedDps,
+    totalDps: a.totalDps - b.totalDps,
     uptime: a.uptime - b.uptime,
   };
 }
@@ -226,13 +225,13 @@ export function evaluateSuggestions(
   const baseline = computeSnapshot(state, mode, scope);
   if (!baseline) return { baseline: null, metric, suggestions: [] };
 
-  const metricBase = baseline[metric].sustainedDps;
+  const metricBase = baseline[metric].totalDps;
   const suggestions: EvaluatedSuggestion[] = [];
 
   for (const candidate of enumerateVariants(state, mode, metric)) {
     const evaluated = evaluateActions(state, mode, candidate.action, baseline, scope);
     if (!evaluated) continue;
-    const primaryDeltaPct = metricBase > 0 ? evaluated.delta[metric].sustainedDps / metricBase : 0;
+    const primaryDeltaPct = metricBase > 0 ? evaluated.delta[metric].totalDps / metricBase : 0;
     suggestions.push({ ...candidate, ...evaluated, primaryDeltaPct });
   }
 

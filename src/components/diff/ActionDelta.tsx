@@ -32,8 +32,8 @@ export function ActionDelta({
   if (!delta) return null;
   return (
     <DeltaText
-      base={baseline[emphasized].sustainedDps}
-      delta={delta[emphasized].sustainedDps}
+      base={baseline[emphasized].totalDps}
+      delta={delta[emphasized].totalDps}
       className={className ?? 'ml-2 text-3xs'}
     />
   );

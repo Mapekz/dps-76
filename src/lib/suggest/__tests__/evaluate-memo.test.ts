@@ -171,8 +171,8 @@ describe('addiction/toggle candidate — MemoScope key regression (see loadout.t
     const state = junkieBuildState();
     const scope = createMemoScope();
     const zero: DpsSnapshot = {
-      freeAim: { perHit: 0, burstDps: 0, sustainedDps: 0, uptime: 1 },
-      vats: { perHit: 0, burstDps: 0, sustainedDps: 0, uptime: 1 },
+      freeAim: { perHit: 0, burstDps: 0, totalDps: 0, uptime: 1 },
+      vats: { perHit: 0, burstDps: 0, totalDps: 0, uptime: 1 },
     };
 
     // Warm the scope on the 0-addiction state first — this is what makes the
@@ -192,7 +192,7 @@ describe('addiction/toggle candidate — MemoScope key regression (see loadout.t
 
     // The bug's failure mode: toggled.result === warm.result (the stale
     // 0-addiction player object served again). Assert real movement instead.
-    expect(toggled!.result.freeAim.sustainedDps).toBeGreaterThan(warm!.result.freeAim.sustainedDps);
+    expect(toggled!.result.freeAim.totalDps).toBeGreaterThan(warm!.result.freeAim.totalDps);
 
     // And exactness against a fully naive (unmemoized, no scope at all)
     // evaluation of the SAME toggled state — not just "some" movement.

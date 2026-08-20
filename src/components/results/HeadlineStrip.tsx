@@ -59,9 +59,9 @@ export function HeadlineStrip({ variant = 'full' }: HeadlineStripProps) {
               <DeltaFlash
                 className="text-sm font-semibold"
                 value={
-                  scenarios[key].effective?.sustainedDps ??
-                  scenarios[key].ap?.apLimitedDps ??
-                  scenarios[key].sustain.sustainedDps
+                  scenarios[key].effective?.totalDps ??
+                  scenarios[key].ap?.apLimitedTotalDps ??
+                  scenarios[key].totalDps
                 }
                 format={formatDamage}
               />

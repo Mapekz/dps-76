@@ -53,8 +53,8 @@ export function ScenarioCard({
   targetName,
 }: ScenarioCardProps) {
   const dispatch = useBuildDispatch();
-  const preResistDps = result.ap?.apLimitedDps ?? result.sustain.sustainedDps;
-  const headlineDps = result.effective?.sustainedDps ?? preResistDps;
+  const preResistDps = result.ap?.apLimitedTotalDps ?? result.totalDps;
+  const headlineDps = result.effective?.totalDps ?? preResistDps;
 
   return (
     <button

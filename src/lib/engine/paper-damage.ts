@@ -2,7 +2,13 @@ import type { GameMode, Weapon } from '@/types';
 import type { DamageType, Modifier } from '@/types/modifiers';
 import { chargeDamageMultiplier, weaponCharges } from '@/lib/charge';
 import { getBaseDamage, interpolateCurve } from '@/lib/curve-tables';
-import { foldBucket, foldRegisteredBucket, foldWholeDamage, type ResolveContext } from './resolve';
+import {
+  effectiveValue,
+  foldBucket,
+  foldRegisteredBucket,
+  foldWholeDamage,
+  type ResolveContext,
+} from './resolve';
 import { lastTrace, tracedFold, type BucketTrace, type HitTrace } from './trace';
 
 /**
@@ -425,4 +431,71 @@ export function computeDotDps(modifiers: Modifier[], weapon: Weapon, ctx: Resolv
     total += foldBucket(rest, 'dotDamage', intrinsicBase, typeCtx);
   }
   return total;
+}
+
+/** One ticking DoT instance, attributed to the weapon-component type it folded against. */
+export interface DotStream {
+  damage: number;
+  damageType: DamageType;
+  unresisted?: true;
+}
+
+/**
+ * Per-source DoT streams for resist mitigation (`docs/assumptions.md`
+ * "DoT/proc resist provenance"): each live `dotDamage` modifier is its own
+ * ticking instance and must be mitigated independently before summing — the
+ * resist curve is non-linear, so two simultaneous ticks retain LESS than one
+ * combined tick of the same total. SET in the non-weapon pass replaces the
+ * weapon-intrinsic sources of that type (Cremator + Slow-Burner), matching
+ * `computeDotDps`'s fold. The loop is still per weapon-component type so
+ * `damageTypeScope` gates the same way the raw fold does.
+ */
+export function collectDotStreams(
+  modifiers: Modifier[],
+  weapon: Weapon,
+  ctx: ResolveContext,
+): DotStream[] {
+  const componentTypes = new Set((weapon.components ?? []).map((c) => c.damageType));
+  const intrinsic = modifiers.filter((m) => m.source.kind === 'weapon');
+  const rest = modifiers.filter((m) => m.source.kind !== 'weapon');
+  const streams: DotStream[] = [];
+
+  for (const type of componentTypes) {
+    const typeCtx = { ...ctx, componentType: type };
+    const live = (mods: Modifier[]) =>
+      mods.filter((m) => m.bucket === 'dotDamage' && effectiveValue(m, typeCtx) !== null);
+    const liveIntrinsic = live(intrinsic);
+    const liveRest = live(rest);
+    const lastSet = [...liveRest].filter((m) => m.op === 'SET').at(-1);
+    const baseSources = lastSet ? [lastSet] : liveIntrinsic;
+
+    const push = (m: Modifier, damage: number) => {
+      streams.push({
+        damage,
+        damageType: type,
+        ...(m.unresisted ? { unresisted: true as const } : {}),
+      });
+    };
+
+    for (const m of baseSources) {
+      if (m.op === 'MUL_ADD') continue;
+      const damage = effectiveValue(m, typeCtx);
+      if (damage === null || damage === 0) continue;
+      push(m, damage);
+    }
+
+    const originalBase = foldBucket(liveIntrinsic, 'dotDamage', 0, typeCtx);
+    for (const m of liveRest) {
+      if (m.op === 'SET') continue;
+      const value = effectiveValue(m, typeCtx);
+      if (value === null || value === 0) continue;
+      if (m.op === 'MUL_ADD') {
+        const extra = value * originalBase;
+        if (extra !== 0) push(m, extra);
+        continue;
+      }
+      push(m, value);
+    }
+  }
+  return streams;
 }

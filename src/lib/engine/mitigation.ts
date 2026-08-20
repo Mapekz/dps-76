@@ -43,9 +43,14 @@ import type { ComponentHit, HitBreakdown } from './paper-damage';
  * `mitigation.test.ts` "Option A divergence" for the measured magnitude
  * against a realistic crit mix, and docs/assumptions.md for the number.
  *
- * DoT is NOT mitigated in v1 (`ScenarioResult.dotDps` stays a separate,
- * unmitigated steady-state add — no resist model exists for DoT ticks in the
- * FO76 formula this app targets, and wiring it in is deferred, plan-documented).
+ * DoT and proc streams reuse this same curve via `mitigateDamageAmount`
+ * (`scenarios.ts` folds the results into `effective.totalDps`). Each
+ * `dotDamage` modifier / proc component is mitigated independently
+ * (per-source, before summing) against the resist type its record
+ * provenance named; `unresisted: true` bypasses the curve entirely.
+ * Per-source is load-bearing: the formula is non-linear, so two simultaneous
+ * ticks retain LESS than one combined tick of the same total (Holy Fire +
+ * Napalm Tank). docs/assumptions.md "DoT/proc resist provenance".
  */
 
 export interface EnemyDefenses {
@@ -176,4 +181,29 @@ export function applyMitigation(
   });
 
   return { components, total: components.reduce((sum, c) => sum + c.damage, 0) };
+}
+
+/**
+ * Mitigate one damage amount of a given type — the same resist-curve path
+ * `applyMitigation` uses per component, reused for DoT/proc streams so the
+ * formula cannot drift. `unresisted` (docs/assumptions.md "DoT/proc resist
+ * provenance") bypasses the curve entirely and returns `damage` unchanged.
+ */
+export function mitigateDamageAmount(
+  damage: number,
+  damageType: DamageType,
+  unresisted: boolean | undefined,
+  defenses: EnemyDefenses,
+  armorPenTotal: number,
+  flatResistDebuffPhysical: number,
+  constants: MitigationConstants = DEFAULT_MITIGATION_CONSTANTS,
+): number {
+  if (unresisted) return damage;
+  return applyMitigation(
+    { components: [{ damageType, base: damage, damage }], total: damage },
+    defenses,
+    armorPenTotal,
+    flatResistDebuffPhysical,
+    constants,
+  ).total;
 }

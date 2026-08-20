@@ -46,6 +46,7 @@ interface GoldenCase {
     | 'perHit'
     | 'burstDps'
     | 'sustainedDps'
+    | 'totalDps'
     | 'fireRate'
     | 'apRegenPerSec'
     | 'reloadSec'
@@ -102,42 +103,47 @@ describe('golden cases (in-game measurements)', () => {
             ? scenario.burstDps
             : c.measure === 'sustainedDps'
               ? scenario.sustain.sustainedDps
-              : c.measure === 'apRegenPerSec'
-                ? (expect(
-                    scenario.ap,
-                    'AP economy present for apRegenPerSec measure',
-                  ).toBeDefined(),
-                  scenario.ap!.regenPerSec)
-                : c.measure === 'reloadSec'
-                  ? scenario.sustain.reloadSec
-                  : c.measure === 'apUptime'
-                    ? (expect(scenario.ap, 'AP economy present for apUptime measure').toBeDefined(),
-                      scenario.ap!.uptime)
-                    : c.measure === 'effectivePerHit'
+              : c.measure === 'totalDps'
+                ? scenario.totalDps
+                : c.measure === 'apRegenPerSec'
+                  ? (expect(
+                      scenario.ap,
+                      'AP economy present for apRegenPerSec measure',
+                    ).toBeDefined(),
+                    scenario.ap!.regenPerSec)
+                  : c.measure === 'reloadSec'
+                    ? scenario.sustain.reloadSec
+                    : c.measure === 'apUptime'
                       ? (expect(
-                          scenario.effective,
-                          'target resolved for an effective* measure',
+                          scenario.ap,
+                          'AP economy present for apUptime measure',
                         ).toBeDefined(),
-                        scenario.effective!.perHit.total)
-                      : c.measure === 'effectiveSustainedDps'
+                        scenario.ap!.uptime)
+                      : c.measure === 'effectivePerHit'
                         ? (expect(
                             scenario.effective,
                             'target resolved for an effective* measure',
                           ).toBeDefined(),
-                          scenario.effective!.sustainedDps)
-                        : c.measure === 'effectiveRetainedPct'
+                          scenario.effective!.perHit.total)
+                        : c.measure === 'effectiveSustainedDps'
                           ? (expect(
                               scenario.effective,
                               'target resolved for an effective* measure',
                             ).toBeDefined(),
-                            scenario.effective!.retainedPct)
-                          : c.measure === 'effectiveTtk'
+                            scenario.effective!.sustainedDps)
+                          : c.measure === 'effectiveRetainedPct'
                             ? (expect(
                                 scenario.effective,
                                 'target resolved for an effective* measure',
                               ).toBeDefined(),
-                              scenario.effective!.ttk)
-                            : scenario.perHit.total;
+                              scenario.effective!.retainedPct)
+                            : c.measure === 'effectiveTtk'
+                              ? (expect(
+                                  scenario.effective,
+                                  'target resolved for an effective* measure',
+                                ).toBeDefined(),
+                                scenario.effective!.ttk)
+                              : scenario.perHit.total;
 
       const tolerance = (c.expected! * c.tolerancePct) / 100;
       expect(Math.abs(actual - c.expected!)).toBeLessThanOrEqual(tolerance);

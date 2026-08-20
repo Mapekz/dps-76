@@ -17,8 +17,8 @@ import type { SuggestionGroup } from '@/lib/suggest/types';
 
 /**
  * Canonical-metric contract: VATS suggestion/emphasis deltas must reward
- * AP-economy picks, not just raw sustained DPS (docs/agents plan "Canonical
- * metric" — sustainedDps in the snapshot is `ap?.apLimitedDps ?? sustain.sustainedDps`).
+ * AP-economy picks, not just raw per-shot DPS (docs/agents plan "Canonical
+ * metric" — totalDps in the snapshot is `ap?.apLimitedTotalDps ?? totalDps`).
  *
  * The Fixer at the default build's AGI 1 (createDefaultBuildState seeds every
  * SPECIAL to 1) is real ESM-throttled VATS AP economy — no synthetic weapon
@@ -48,12 +48,12 @@ describe('canonical VATS metric (AP-limited when throttled)', () => {
     expect(scenarios.vats.ap!.apLimitedDps).toBeLessThan(scenarios.vats.sustain.sustainedDps);
   });
 
-  it('snapshotOf captures ap.apLimitedDps for VATS when throttled, and raw sustained for Free Aim (no ap economy)', () => {
+  it('snapshotOf captures ap.apLimitedTotalDps for VATS when throttled, and raw totalDps for Free Aim (no ap economy)', () => {
     const input = resolveLoadout(fixerState.player, fixerState.enemy, 'live')!;
     const scenarios = computeScenarios(input);
     const snapshot = snapshotOf(scenarios);
-    expect(snapshot.vats.sustainedDps).toBe(scenarios.vats.ap!.apLimitedDps);
-    expect(snapshot.freeAim.sustainedDps).toBe(scenarios.freeAim.sustain.sustainedDps);
+    expect(snapshot.vats.totalDps).toBe(scenarios.vats.ap!.apLimitedTotalDps);
+    expect(snapshot.freeAim.totalDps).toBe(scenarios.freeAim.totalDps);
   });
 
   it('an apRegen-boosting consumable outranks a genuine no-op once the VATS metric is AP-limited', () => {
@@ -78,14 +78,14 @@ describe('canonical VATS metric (AP-limited when throttled)', () => {
 });
 
 describe('canonical ranking objective', () => {
-  it('a VATS-only gain scores its blended share (delta.vats.sustainedDps / baseline.vats.sustainedDps)', () => {
+  it('a VATS-only gain scores its blended share (delta.vats.totalDps / baseline.vats.totalDps)', () => {
     const report = evaluateSuggestions(fixerState, 'live', 'vats');
     const vatsOnly = report.suggestions.find(
-      (s) => s.delta.freeAim.sustainedDps === 0 && s.delta.vats.sustainedDps > 0,
+      (s) => s.delta.freeAim.totalDps === 0 && s.delta.vats.totalDps > 0,
     );
     expect(vatsOnly).toBeDefined();
     expect(vatsOnly!.primaryDeltaPct).toBeCloseTo(
-      vatsOnly!.delta.vats.sustainedDps / report.baseline!.vats.sustainedDps,
+      vatsOnly!.delta.vats.totalDps / report.baseline!.vats.totalDps,
       6,
     );
   });
@@ -99,18 +99,18 @@ describe('canonical ranking objective', () => {
 
   it('primaryDeltaPct IS the canonical delta ratio for every suggestion — a row contradicting the headline is structurally impossible', () => {
     const report = evaluateSuggestions(fixerState, 'live', 'vats');
-    const metricBase = report.baseline!.vats.sustainedDps;
+    const metricBase = report.baseline!.vats.totalDps;
     for (const s of report.suggestions) {
-      const expected = metricBase > 0 ? s.delta.vats.sustainedDps / metricBase : 0;
+      const expected = metricBase > 0 ? s.delta.vats.totalDps / metricBase : 0;
       expect(s.primaryDeltaPct).toBeCloseTo(expected, 6);
     }
   });
 
-  it('metric: freeAim reports use sustainedDps as the ranking objective', () => {
+  it('metric: freeAim reports use totalDps as the ranking objective', () => {
     const report = evaluateSuggestions(fixerState, 'live', 'freeAim');
-    const metricBase = report.baseline!.freeAim.sustainedDps;
+    const metricBase = report.baseline!.freeAim.totalDps;
     for (const s of report.suggestions) {
-      const expected = metricBase > 0 ? s.delta.freeAim.sustainedDps / metricBase : 0;
+      const expected = metricBase > 0 ? s.delta.freeAim.totalDps / metricBase : 0;
       expect(s.primaryDeltaPct).toBeCloseTo(expected, 6);
     }
   });
@@ -130,7 +130,7 @@ describe('canonical ranking objective', () => {
   it('a damage receiver that raises canonical DPS but lowers uptime survives topSuggestions ranked', () => {
     const report = evaluateSuggestions(fixerState, 'live', 'vats');
     const candidate = report.suggestions.find(
-      (s) => s.group === 'mod' && s.delta.vats.sustainedDps > 0 && s.delta.vats.uptime < 0,
+      (s) => s.group === 'mod' && s.delta.vats.totalDps > 0 && s.delta.vats.uptime < 0,
     );
     expect(candidate).toBeDefined();
     const { ranked } = topSuggestions(report, 500);
@@ -148,7 +148,7 @@ describe('canonical ranking objective', () => {
     const tea = ranked.find((s) => s.id === 'consumable:CompanyTea_RSVP02');
     expect(tea).toBeDefined();
     const pureDamage = report.suggestions.find(
-      (s) => s.group === 'mod' && s.delta.vats.uptime <= 0 && s.delta.vats.sustainedDps > 0,
+      (s) => s.group === 'mod' && s.delta.vats.uptime <= 0 && s.delta.vats.totalDps > 0,
     );
     expect(pureDamage).toBeDefined();
     expect(ranked.some((s) => s.id === pureDamage!.id)).toBe(false);

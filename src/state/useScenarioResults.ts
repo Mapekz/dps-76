@@ -13,8 +13,8 @@ export interface ScenarioResults {
   /**
    * The emphasized card — suggestions metric + condensed-bar lead. User
    * pick, else whichever scenario has the higher canonical DPS (VATS ←
-   * AP-limited when throttled, `vats.ap?.apLimitedDps ?? vats.sustain.sustainedDps`;
-   * Free Aim ← sustained, since it has no AP economy).
+   * AP-limited `totalDps` when throttled, `vats.ap?.apLimitedTotalDps ??
+   * vats.totalDps`; Free Aim ← `totalDps`, since it has no AP economy).
    */
   emphasized: ScenarioKey;
 }
